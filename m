@@ -1,77 +1,68 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3] pwm: mediatek: fix up PWM4 and PWM5 malfunction on
- MT7623
-Date: Wed, 28 Mar 2018 00:30:48 +0200
-Message-ID: <20180327223047.GG28163@mithrandir>
-References: <051f401bcca48ece188023ccf10b2cedc7a25a64.1519891948.git.sean.wang@mediatek.com>
- <20180302105719.GC27178@ulmo>
- <1520030090.8089.186.camel@mtkswgap22>
+Subject: Re: [PATCH v1] pwm: mediatek: improve precision in rate calculation
+Date: Wed, 28 Mar 2018 00:33:15 +0200
+Message-ID: <20180327223314.GH28163@mithrandir>
+References: <72b74a30ced1c7e7549dcbb56d6123fc27fac405.1519980119.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="hTiIB9CRvBOLTyqY"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="jRdC2OsRnuV8iIl8"
+Return-path: <stable-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1520030090.8089.186.camel@mtkswgap22>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sean Wang <sean.wang@mediatek.com>
-Cc: matthias.bgg@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>
+In-Reply-To: <72b74a30ced1c7e7549dcbb56d6123fc27fac405.1519980119.git.sean.wang@mediatek.com>
+Sender: stable-owner@vger.kernel.org
+To: sean.wang@mediatek.com
+Cc: matthias.bgg@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---hTiIB9CRvBOLTyqY
+--jRdC2OsRnuV8iIl8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 03, 2018 at 06:34:50AM +0800, Sean Wang wrote:
-> On Fri, 2018-03-02 at 11:57 +0100, Thierry Reding wrote:
-> > On Thu, Mar 01, 2018 at 04:19:12PM +0800, sean.wang@mediatek.com wrote:
-> > > From: Sean Wang <sean.wang@mediatek.com>
-> > >=20
-> > > Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
-> > > control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
-> > > programming on PWM hardware causes waveform cannot be output as expec=
-ted.
-> > > Thus, the patch adds the extra condition for fixing up the weird case=
- to
-> > > let PWM4 or PWM5 able to work on MT7623.
-> > >=20
-> > > v1 -> v2: use pwm45_fixup naming instead of pwm45_quirk
-> > > v2 -> v3: add more tags for Reviewed-by, Fixes, and Cc stable
-> > >=20
-> > > Cc: stable@vger.kernel.org
-> > > Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
-> > > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> > > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> > > Cc: Zhi Mao <zhi.mao@mediatek.com>
-> > > Cc: John Crispin <john@phrozen.org>
-> > > Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> > > ---
-> > >  drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
-> > >  1 file changed, 21 insertions(+), 3 deletions(-)
+On Fri, Mar 02, 2018 at 04:49:14PM +0800, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
+>=20
+> Add a way that turning resolution from in nanosecond into in picosecond
+> to improve noticeably almost 4.5% precision.
+>=20
+> It's necessary to hold the new resolution with type u64 and thus related
+> operations on u64 are applied instead in those rate calculations.
+>=20
+> And the patch has a dependency on [1].
+>=20
+> [1] http://lists.infradead.org/pipermail/linux-mediatek/2018-March/012225=
+=2Ehtml
+>=20
+> Cc: stable@vger.kernel.org
+> Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> ---
+>  drivers/pwm/pwm-mediatek.c | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---hTiIB9CRvBOLTyqY
+--jRdC2OsRnuV8iIl8
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6xhcACgkQ3SOs138+
-s6GemRAAven23G0YiLEVbk8S+JKm4WpzNzax/Nsk3xja50+dVlf3+VoeRa/PCW/e
-QguUdC8q9QyujEC/XzNJaaqxIa5T43kOcTePVuwrEHq54+2IFoNSDWi+OuUsCZyu
-ujjK0B3w1Q67ExSqUw9EbeF6dnJf4EZSZCo9iej4TCY8I/bMTcwOaope6itRyKn0
-Y6dp6v5Bpx4Frf4QEH9QObiCJmwsdCgKTNsoLdowqWYrXic3jXA9V1GQPBGXSCCJ
-s8k8bH8vBiGR8FVqPU+DE6NYMb/FjvAxHXMNaFSPhGyMyZpTcPloA0Aq9JTLWfhW
-0V7WrWI9oA0yomKC3nuNCOBFtByniUlrRIGncWLFrmU6vo/H4Th87TQzeDUc7ue3
-9pHcvWfW3Py9LgR0xDffTw1FNbeAAiVsedahQf2WfLR1ecR5ys4RjrHOoH7Ajjw0
-BnNPLxJN4jYyadlG+qtRTxnlExWEfVMyGvbmhaBtnpgqBTsrWL2T94QYWFKWc3AA
-9JOa4iBQ18D+IWWJM06et+ftMkWzkENL5mIPiQ1RomCIiAOFL6+EhYHx9t8kD+0o
-UR+LPVdYwmh+Yfj8uMNvghflJi4iIAijZ+0sA3M8SnhLyAmDPXWarissJ3Ei+5aG
-++a6F7qDY1K9XSwTQICbWhS2DYsxx+DBvVGIcjy6O9xx3rLc+0U=
-=aYXi
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6xqoACgkQ3SOs138+
+s6GCRRAArW5dSAE+wDWE+7hBfS66wYIK87ZXIPUO69YVGLG5H1GaJ/OGo1JepDJU
+ibVXdNZiAcJLiBWBYVuL/8YycVFUCMXZTj5IWaooczKWOj+p2vNIPorzYAkMPgZ8
+qLtJxi5fEGO5DqQlAGKBPMhlIIgG/PB1WPxNiaVzngJD81ioAY1H8gTC5+Yxwigp
+67wIBtxSHML3lqzpUHBitaIFNHmDQWng3eP8LU5rUqGYYsS3bq08JUQw3uA6/U50
+utBcXrzgPQdREhs2j6hyJMDPrdID9DZtcsfm4Z9VIN7cfBtqlNqA9bcrTKHIq6OF
+QO8BzGonimfsZk4JqBeVDdCnR3j442SYlrF4Iccat+fqHxGrNKtE8bvaPZqxCQeG
+uy3hx14uKOjUkR8vYbC0Oov+cN0WtSkI1VtUxwei/LBDwPWjznLl6W7Nv+NW41k+
+funPi3FjiEWC/54dQd0+0iIQZSB+spb06WTKeN3PzO7Qa0Sit3ybJthCSbLKXK+/
+A5JCNMlVKRelW0EFQ6eoZyUVeHKWyBGt827ZEDEfPjon5OYbe30zd/1E8owtjSje
+nSSJMmLSdinM2npCCmIlCMpYTVZ1tbL2VJ9ZdO7AuVDDHkRiR/3kq1VkphKrwqxi
+e4tzFc29xff40FkvhQkU5px1TsRYwv4bQbVTwuAWLH3uy+1k8qY=
+=Bg+w
 -----END PGP SIGNATURE-----
 
---hTiIB9CRvBOLTyqY--
+--jRdC2OsRnuV8iIl8--
