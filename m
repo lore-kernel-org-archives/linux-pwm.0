@@ -1,37 +1,31 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 3/4] dt-bindings: pwm: sunxi: add new
- compatible strings
-Date: Mon, 26 Mar 2018 17:23:08 -0500
-Message-ID: <20180326222308.x25zptv7qwnwy4gi@rob-hp-laptop>
-References: <20180318232847.14278-1-andre.przywara@arm.com>
- <20180318232847.14278-4-andre.przywara@arm.com>
-Reply-To: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V2 3/9] dt-bindings: Tegra186 tachometer device tree
+ bindings
+Date: Tue, 27 Mar 2018 09:52:49 -0500
+Message-ID: <20180327145249.xjoo42qow34ksdle@rob-hp-laptop>
+References: <1521607244-29734-1-git-send-email-rrajk@nvidia.com>
+ <1521607244-29734-4-git-send-email-rrajk@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDJIP47K7MERBTXF4XKQKGQEYGNS6FA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180318232847.14278-4-andre.przywara-5wv7dgnIgG8@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <rob.herring-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1521607244-29734-4-git-send-email-rrajk@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rajkumar Rampelli <rrajk@nvidia.com>
+Cc: mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, linux@roeck-us.net, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, Mar 18, 2018 at 11:28:46PM +0000, Andre Przywara wrote:
-> The PWM controllers found in the Allwinner A64 and H5 SoCs are fully
-> compatible to the PWM controllers found in the A13 and H3.
-> Add new compatible strings for those SoCs to the binding document, so
-> that they can be safely used, together with a fallback string
-> (preferably "allwinner,sun5i-a13-pwm").
+On Wed, Mar 21, 2018 at 10:10:38AM +0530, Rajkumar Rampelli wrote:
+> Supply Device tree binding documentation for the NVIDIA
+> Tegra186 SoC's Tachometer Controller
 > 
-> Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
 > ---
->  Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 2 ++
->  1 file changed, 2 insertions(+)
+> 
+> V2: Renamed compatible string to "nvidia,tegra186-pwm-tachometer"
+>     Renamed dt property values of clock-names and reset-names to "tachometer"
+>     from "tach"
 
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Read my prior comments on v1.
+
+Rob
