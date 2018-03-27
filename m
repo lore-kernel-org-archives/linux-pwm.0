@@ -1,56 +1,61 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwn: stm32: Adopt SPDX identifier
-Date: Tue, 27 Mar 2018 23:25:32 +0200
-Message-ID: <20180327212530.GA28058@mithrandir>
-References: <20171205145721.20403-1-benjamin.gaignard@st.com>
+Subject: Re: [PATCH] pwm-puv3: Delete an error message for a failed memory
+ allocation in pwm_probe()
+Date: Tue, 27 Mar 2018 23:28:01 +0200
+Message-ID: <20180327212800.GB28058@mithrandir>
+References: <93e81e95-01e0-1493-5b4a-92f36f998dac@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="GvXjxJ+pjyke8COw"
+        protocol="application/pgp-signature"; boundary="8P1HSweYDcXXzwPJ"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171205145721.20403-1-benjamin.gaignard@st.com>
+In-Reply-To: <93e81e95-01e0-1493-5b4a-92f36f998dac@users.sourceforge.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Benjamin Gaignard <benjamin.gaignard@st.com>
+To: SF Markus Elfring <elfring@users.sourceforge.net>
+Cc: linux-pwm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---GvXjxJ+pjyke8COw
+--8P1HSweYDcXXzwPJ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 05, 2017 at 03:57:21PM +0100, Benjamin Gaignard wrote:
-> Add SPDX identifer
+On Fri, Dec 15, 2017 at 06:33:49PM +0100, SF Markus Elfring wrote:
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Fri, 15 Dec 2017 18:29:49 +0100
 >=20
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> Omit an extra message for a memory allocation failure in this function.
+>=20
+> This issue was detected by using the Coccinelle software.
+>=20
+> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 > ---
->  drivers/pwm/pwm-stm32-lp.c | 3 +--
->  drivers/pwm/pwm-stm32.c    | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
+>  drivers/pwm/pwm-puv3.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---GvXjxJ+pjyke8COw
+--8P1HSweYDcXXzwPJ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6tsIACgkQ3SOs138+
-s6Hedg/8CsNgFI6sAH2vJXzPw9BEZ8vDopedDE4ZSxMkWIlUHXZC7iZmwaVFRqf8
-2hOZIONf6AlHmsj0xBCyGxMdnGdVpMd+AAMWT7cupQDaFLJtLI5puxTjyrWFuOvM
-zVbaEHrlaw17coqncuWIeWMAOKzFRa4FDzOCCovxMgIpzE59+vNBRDs9VltESnWw
-UlmH0908+7YIilGqseRvOq5+s8zr1IPU/xKuSfvVCji2Ug6NTnuaPNxhfQQXKYq9
-xs5SjyHn3GVCeAGgXK52W2mt8RHiteENrYLr9JwWfsv9tYJ2t25z+2ThBTiSJN/Z
-8Ge7Wt9EBWQ1Enujyb1KvpZdHeFg1+HCsd+2PCEe2HtgT/yOTG920djbgTubbTdr
-GOy/O3ljwRlrTXzSdR1HP5VtDDemLtrfT1TyH8dJrs4qNcyDxLXsGOmAJOzDbJUP
-P5lWkOr63PGLVTExL1nQ0huSWDJ3+E4/33VgYKAx4RhT+bzMZw99nO9WT+Ai3PeT
-/PQWiXBRF9OKHWi6jMsA0QlsS1AUDoZpxLyDFc+S4QaoJbvmIRwclHoTaP9QUPWP
-fneoDyWQlSl1IGNmVCoe9XYQylbsqbEKSsqkteYKOJtFBq4GEZB2p3OAS9i6Q8EW
-wNJKt4RCCk5fGHajYvUsCnfnDzBp8nH3OMEwKnPDFLZzqTNNWIw=
-=Zw4F
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6t2AACgkQ3SOs138+
+s6HBJA/9EEEWSz0ll4MuRhBseuY0eeF6Y4jEa4hWORg3Cq51w0rpIgwm7ma6f3pD
+PP3/lt285NUloke/CwEsLoSvajFfOGAh/ejDTOAFaC2cJI1HNOYOFuP//ULSymbv
+x054kIVqU8/TDy0tvl/LCJIIh33z4I5AEnibkagRNuyWd3Z4qWz5XpRxlRK85l0r
+iZFG+xram3u71sFaDr2U+FBI620SVSzzPeusW7yn0S3ngJ3AyFbdGEUfjj3dtxYC
+pixvjAAWMxBjy4oNCa9es8+WXCGOVqOkhkBvT1SIVwLQMbP5Mh5NkYIsvb8I9/Xj
+agAYuAhjvgPwYTXp9KFw3MG99jqQgrKPR7igiMtlnoAFGLieQCYUFXx/D9zNOTQX
+Vh8puizdORcRH2I91pFygVsSJ3eEZ0uMROlT9GddWR6T62TNjCOJlyJoFQss3BfT
+z8zti0JtDY10U+acApjCCy/HyT7p0ZpBVwzv3JNL5zA4OH0ZXbZ6JsRL9PDhcXdl
+M+pFVKOgx6KR3mMm1THOhsLk1rjy/eizIaSVoJFQOD0l4TWigOmgwpkNTCsVbg9G
+/r2Rw3Zzo+l+pW/qOw2hRyAAKy6Xw59uwXxuHML8XhY4MBMtq3+Cxif7b6zPYDvp
+26E1Ha9kOtel4T8DQcVpnOzeNurkqnF6hlzFvfaAIxwcGL2Mdrc=
+=GraV
 -----END PGP SIGNATURE-----
 
---GvXjxJ+pjyke8COw--
+--8P1HSweYDcXXzwPJ--
