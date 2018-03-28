@@ -1,77 +1,78 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: rcar: fix a condition to prevent mismatch value
- setting to duty
-Date: Wed, 28 Mar 2018 01:21:08 +0200
-Message-ID: <20180327232107.GD4097@mithrandir>
-References: <1520594661-6897-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Ladislav Michl <ladis@linux-mips.org>
+Subject: Re: [PATCH 4/6] pwm: pwm-omap-dmtimer: Fix frequency when using
+ prescaler
+Date: Wed, 28 Mar 2018 02:34:25 +0200
+Message-ID: <20180328003425.GA8707@lenoch>
+References: <20180223101254.GA5746@lenoch> <20180223101553.GE5746@lenoch>
+ <20180327215332.GC28163@mithrandir>
+ <20180327221401.GD28163@mithrandir>
+ <20180327222349.GK5700@atomide.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="48TaNjbzBVislYPb"
-Return-path: <stable-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1520594661-6897-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Sender: stable-owner@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: ryo.kodama.vz@renesas.com, linux-pwm@vger.kernel.org, stable@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+In-Reply-To: <20180327222349.GK5700@atomide.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-pwm@vger.kernel.org, aaro.koskinen@iki.fi, Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, t-kristo@ti.com, robh+dt@kernel.org, narmstrong@baylibre.com, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Brecht Neyrinck <brechtneyrinck@gmail.com>, sebastian.reichel@collabora.co.uk, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, Mar 27, 2018 at 03:23:49PM -0700, Tony Lindgren wrote:
+> * Thierry Reding <thierry.reding@gmail.com> [180327 22:15]:
+> > On Tue, Mar 27, 2018 at 11:53:33PM +0200, Thierry Reding wrote:
+> > > On Fri, Feb 23, 2018 at 11:15:53AM +0100, Ladislav Michl wrote:
+> > > > Prescaler setting is currently not taken into account.
+> > > > Fix that by introducing freq member variable and initialize
+> > > > it at device probe time. This also avoids frequency
+> > > > recomputing at each pwm configure time.
+> > > > 
+> > > > Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
+> > > > ---
+> > > >  drivers/pwm/pwm-omap-dmtimer.c | 93 +++++++++++++++++++++++++-----------------
+> > > >  1 file changed, 55 insertions(+), 38 deletions(-)
+> > > 
+> > > Applied, thanks.
+> > 
+> > Actually, that was a little premature. It seems like this conflicts with
+> > a patch series by Keerthy that Tony merged into his tree and that you've
+> > based this on.
+> > 
+> > I think it'd be easiest if Tony merged this through the TI tree, or we
+> > wait until v4.17-rc1 to resolve the dependency. Given how late we are in
+> > the release cycle, I think it'd have to be the latter.
+> 
+> Sorry about the extra hassle caused by the timer move to drivers.
+> 
+> > Tony, if you think you can find a way to still take this in for
+> > v4.17-rc1, feel free to do so:
+> > 
+> > Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> 
+> I pretty much only apply fixes after -rc6. So let's wait for the
+> dependencies to clear at this point. This seems like a "fix for
+> a feature that never worked" so might be hard to justify it as
+> a fix :)
 
---48TaNjbzBVislYPb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Well, DT bindings already contain prescaler, so technically it is
+a fix which also optimizes code a bit ;-) But of course, I can keep
+this patch localy and resend for 4.18 merge window.
 
-On Fri, Mar 09, 2018 at 08:24:21PM +0900, Yoshihiro Shimoda wrote:
-> From: Ryo Kodama <ryo.kodama.vz@renesas.com>
->=20
-> This patch fixes an issue that is possible to set mismatch value
-> to duty for R-Car PWM if we input the following commands:
->=20
->  # cd /sys/class/pwm/<pwmchip>/
->  # echo 0 > export
->  # cd pwm0
->  # echo 30 > period
->  # echo 30 > duty_cycle
->  # echo 0 > duty_cycle
->  # cat duty_cycle
->  0
->  # echo 1 > enable
->  --> Then, the actual duty_cycle is 30, not 0.
->=20
-> So, this patch adds a condition into rcar_pwm_config() to fix
-> this issue.
->=20
-> Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
-> [shimoda: revise the commit log and add Fixes and Cc tags]
-> Fixes: ed6c1476bf7f ("pwm: Add support for R-Car PWM Timer")
-> Cc: Cc: <stable@vger.kernel.org> # v4.4+
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
->  drivers/pwm/pwm-rcar.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+> Ladis, can you please resend the pending patches again to
+> Thierry after v4.17-rc? Then Thierry can queue it as a fix or
+> for v4.18.
 
-Applied, thanks.
+In fact, there is the only one patch ready to be applied - this one - and
+The others (event capture) needs to be yet sorted out. Unfortunately I do
+not have time for that at the moment.
 
-Thierry
-
---48TaNjbzBVislYPb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq60eMACgkQ3SOs138+
-s6EoBw/8Ci1i8K/d4aBCM0kdtAgaG08yMGzH0j8+z/1s9C6Yhu1QOBOqBqrmUqlT
-TqsHcTNlfBZZ463FLPNMWz7gEaJ0SRCoGJxsmWMGmE8ccEO/YinxDnuD3urG9MvD
-Ty4PMILaYWkgTQbxU4BqDHMpJHOX7fgZSe9TJ12m8c5IpVOxsryMT9+3IhrVhm5n
-XsgRG3+kCFTTGGy5ZwbVsy1vhC2rhHztVIkwIBgUbRosTnBCwQlBKyC0LpEvOqwg
-T0CWsF3A5m80VYzNC1sB3YQujhBqqbWX+xerAV1Cnby8yfWBrQPDCw5fVdWMT9zF
-yCSIMsCpOhbml7dFAQtxexUfUHdP9ZR2YVcrBjITDhEXNvy/kxFWPGEtA6canD5d
-LcsCk4RVz3n4wujal6z1cWHKkHiE+zSyOZeMlOyOhW9Ma54FWSx4GLAKWvsNXaNG
-2ck+KZcPreWkCoCNewxnxyRN6IpSfZ5KoWKqBtMdzvHpPL2mvD0tB+TZyNKeomvL
-M3AACoFZxt22DplAD8Xhd7CNOycnA6M0dGLTgXKfEQdrmjIvsudKmMRHHzxw6iWh
-ch0t5hOuWQHMQpjUohI66NRFt8ik47qCpzYWQsNM7ArrXb301OBCmdWEiFBh9ub+
-O+WRpO3gR4ZRLJ2KlmalwNHzkDD+W4/Y7Iw9AfbkWslsqG8kJAo=
-=Oeqe
------END PGP SIGNATURE-----
-
---48TaNjbzBVislYPb--
+Best regards,
+	ladis
