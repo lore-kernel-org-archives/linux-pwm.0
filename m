@@ -1,8 +1,8 @@
 From: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: [RESEND PATCH v6 4/5] ARM: dts: rockchip: set PWM delay backlight
- settings for Veyron.
-Date: Wed, 28 Mar 2018 19:03:26 +0200
-Message-ID: <20180328170327.5395-4-enric.balletbo@collabora.com>
+Subject: [RESEND PATCH v6 2/5] dt-bindings: pwm-backlight: add PWM delay
+ proprieties.
+Date: Wed, 28 Mar 2018 19:03:24 +0200
+Message-ID: <20180328170327.5395-2-enric.balletbo@collabora.com>
 References: <20180328170327.5395-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,42 +22,58 @@ To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thomps
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-For veyron the binding should provide both PWM timings, the delay between
-you enable the PWM and set the enable signal, and the delay between you
-disable the PWM signal and clear the enable signal. Update the binding
-accordingly, in this case the panels connected to the veyron boards have
-a symmetric power sequence, hence the same value is used.
+Hardware needs a delay between setting an initial (non-zero) PWM and
+enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
+this delay in milli seconds. Hardware also needs a delay between disabing
+the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
+is this delay in milli seconds.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Acked-by: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
+Based on the original Huang Lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org> work.
 Changes since v5:
- - None.
+ - Add Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+ - CC DT mainling list (for some reason dropped at some point, my
+   fault)
 Changes since v4:
- - Rebased on top of mainline.
+ - Rebase on top of mainline.
 Changes since v3:
- - Use new -ms names for proprieties.
+ - Replace us for ms.
+ - Add Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
 Changes since v2:
- - Use new names for proprieties.
+ - Use separate properties (Rob Herring)
 Changes since v1:
- - Add this new patch to fix current binding on veyron.
+ - As suggested by Daniel Thompson
+   - Do not assume power-on delay and power-off delay will be the same
 ---
- arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi b/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
-index d752a315f884..5a8c7f3abb38 100644
---- a/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
-+++ b/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
-@@ -96,7 +96,8 @@
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&bl_en>;
- 		pwms = <&pwm0 0 1000000 0>;
--		pwm-delay-us = <10000>;
+diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+index 764db86d441a..310810906613 100644
+--- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
++++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+@@ -17,6 +17,10 @@ Optional properties:
+                "pwms" property (see PWM binding[0])
+   - enable-gpios: contains a single GPIO specifier for the GPIO which enables
+                   and disables the backlight (see GPIO binding[1])
++  - post-pwm-on-delay-ms: Delay in ms between setting an initial (non-zero) PWM
++                          and enabling the backlight using GPIO.
++  - pwm-off-delay-ms: Delay in ms between disabling the backlight using GPIO
++                      and setting PWM value to 0.
+ 
+ [0]: Documentation/devicetree/bindings/pwm/pwm.txt
+ [1]: Documentation/devicetree/bindings/gpio/gpio.txt
+@@ -32,4 +36,6 @@ Example:
+ 
+ 		power-supply = <&vdd_bl_reg>;
+ 		enable-gpios = <&gpio 58 0>;
 +		post-pwm-on-delay-ms = <10>;
 +		pwm-off-delay-ms = <10>;
  	};
- 
- 	gpio-charger {
 -- 
 2.16.2
