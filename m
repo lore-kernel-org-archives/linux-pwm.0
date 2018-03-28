@@ -1,78 +1,70 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH 4/6] pwm: pwm-omap-dmtimer: Fix frequency when using
- prescaler
-Date: Wed, 28 Mar 2018 02:34:25 +0200
-Message-ID: <20180328003425.GA8707@lenoch>
-References: <20180223101254.GA5746@lenoch> <20180223101553.GE5746@lenoch>
- <20180327215332.GC28163@mithrandir>
- <20180327221401.GD28163@mithrandir>
- <20180327222349.GK5700@atomide.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND PATCH v2 0/8] Add support for PWM input capture on STM32
+Date: Wed, 28 Mar 2018 11:03:09 +0100
+Message-ID: <20180328100309.yig4d3bmml6jvodz@dell>
+References: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
+ <20180327225101.GJ28163@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180327222349.GK5700@atomide.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-pwm@vger.kernel.org, aaro.koskinen@iki.fi, Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, t-kristo@ti.com, robh+dt@kernel.org, narmstrong@baylibre.com, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Brecht Neyrinck <brechtneyrinck@gmail.com>, sebastian.reichel@collabora.co.uk, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180327225101.GJ28163@mithrandir>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, alexandre.torgue@st.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 27, 2018 at 03:23:49PM -0700, Tony Lindgren wrote:
-> * Thierry Reding <thierry.reding@gmail.com> [180327 22:15]:
-> > On Tue, Mar 27, 2018 at 11:53:33PM +0200, Thierry Reding wrote:
-> > > On Fri, Feb 23, 2018 at 11:15:53AM +0100, Ladislav Michl wrote:
-> > > > Prescaler setting is currently not taken into account.
-> > > > Fix that by introducing freq member variable and initialize
-> > > > it at device probe time. This also avoids frequency
-> > > > recomputing at each pwm configure time.
-> > > > 
-> > > > Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
-> > > > ---
-> > > >  drivers/pwm/pwm-omap-dmtimer.c | 93 +++++++++++++++++++++++++-----------------
-> > > >  1 file changed, 55 insertions(+), 38 deletions(-)
-> > > 
-> > > Applied, thanks.
+On Wed, 28 Mar 2018, Thierry Reding wrote:
+
+> On Wed, Feb 14, 2018 at 11:04:31AM +0100, Fabrice Gasnier wrote:
+> > This series adds support for capture to stm32-pwm driver.
+> > Capture is based on DMAs.
+> > - First two patches are precursor patches
+> > - Subsequent two patches add support for requesting DMAs to MFD core
+> > - Next three patches add support for capture to stm32-pwm driver
+> > - This has been tested on stm32429i-eval board.
 > > 
-> > Actually, that was a little premature. It seems like this conflicts with
-> > a patch series by Keerthy that Tony merged into his tree and that you've
-> > based this on.
+> > ---
+> > Resend v2:
+> > - Add collected Acks
 > > 
-> > I think it'd be easiest if Tony merged this through the TI tree, or we
-> > wait until v4.17-rc1 to resolve the dependency. Given how late we are in
-> > the release cycle, I think it'd have to be the latter.
-> 
-> Sorry about the extra hassle caused by the timer move to drivers.
-> 
-> > Tony, if you think you can find a way to still take this in for
-> > v4.17-rc1, feel free to do so:
+> > Changes in v2:
+> > - Abstract DMA handling from child driver: move it to MFD core
+> > - Rework pwm capture routines to adopt this change
+> > - Comment on optional dma support, beautify DMAs probe
 > > 
-> > Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> > Fabrice Gasnier (8):
+> >   pwm: stm32: fix, remove unused struct device
+> >   pwm: stm32: protect common prescaler for all channels
+> >   dt-bindings: mfd: stm32-timers: add support for dmas
+> >   mfd: stm32-timers: add support for dmas
+> >   pwm: stm32: add capture support
+> >   pwm: stm32: improve capture by tuning counter prescaler
+> >   pwm: stm32: use input prescaler to improve period capture
+> >   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
+> > 
+> >  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
+> >  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
+> >  drivers/mfd/stm32-timers.c                         | 215 +++++++++++++++-
+> >  drivers/pwm/pwm-stm32.c                            | 276 ++++++++++++++++++++-
+> >  include/linux/mfd/stm32-timers.h                   |  39 +++
+> >  5 files changed, 547 insertions(+), 6 deletions(-)
 > 
-> I pretty much only apply fixes after -rc6. So let's wait for the
-> dependencies to clear at this point. This seems like a "fix for
-> a feature that never worked" so might be hard to justify it as
-> a fix :)
+> I can't apply patches 1-2 and 5-6 since they depend on patches 3-4 for
+> which I'd need an Acked-by: from Lee if I'm to pick them up. Same goes
+> for patch 7.
+> 
+> By the looks of it there are minor conflicts with the MFD tree, but no
+> major ones. Perhaps it'd be better for Lee to pick up 3-4 for v4.17-rc1
+> and ack patch 7, then I can take the rest after v4.17-rc1?
 
-Well, DT bindings already contain prescaler, so technically it is
-a fix which also optimizes code a bit ;-) But of course, I can keep
-this patch localy and resend for 4.18 merge window.
+Sounds like a faff.
 
-> Ladis, can you please resend the pending patches again to
-> Thierry after v4.17-rc? Then Thierry can queue it as a fix or
-> for v4.18.
+Why don't I just pick them all up (except the ARM patch)?
 
-In fact, there is the only one patch ready to be applied - this one - and
-The others (event capture) needs to be yet sorted out. Unfortunately I do
-not have time for that at the moment.
-
-Best regards,
-	ladis
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
