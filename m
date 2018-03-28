@@ -1,8 +1,8 @@
 From: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: [RESEND PATCH v6 5/5] ARM: dts: rockchip: set PWM delay backlight
- settings for Minnie
-Date: Wed, 28 Mar 2018 19:03:27 +0200
-Message-ID: <20180328170327.5395-5-enric.balletbo@collabora.com>
+Subject: [RESEND PATCH v6 4/5] ARM: dts: rockchip: set PWM delay backlight
+ settings for Veyron.
+Date: Wed, 28 Mar 2018 19:03:26 +0200
+Message-ID: <20180328170327.5395-4-enric.balletbo@collabora.com>
 References: <20180328170327.5395-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,10 +22,11 @@ To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thomps
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-The minnie devices comes with an AUO B101EAN01 panel which is different
-from default veyron devices, thus the power on/off timing sequence is
-slightly different. The datasheet specifies a pwm delay of 200 ms, so
-update the PMW delay proprieties accordingly.
+For veyron the binding should provide both PWM timings, the delay between
+you enable the PWM and set the enable signal, and the delay between you
+disable the PWM signal and clear the enable signal. Update the binding
+accordingly, in this case the panels connected to the veyron boards have
+a symmetric power sequence, hence the same value is used.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
@@ -33,30 +34,30 @@ Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
 Changes since v5:
  - None.
 Changes since v4:
- - Rebase on top of mainline.
+ - Rebased on top of mainline.
 Changes since v3:
  - Use new -ms names for proprieties.
- - Fix the delay, should be 200ms instead of 20ms (Pavel)
 Changes since v2:
  - Use new names for proprieties.
 Changes since v1:
- - Add this new patch as minnie has differents timings
+ - Add this new patch to fix current binding on veyron.
 ---
- arch/arm/boot/dts/rk3288-veyron-minnie.dts | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/rk3288-veyron-minnie.dts b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
-index 544de6027aaa..4c5307e62001 100644
---- a/arch/arm/boot/dts/rk3288-veyron-minnie.dts
-+++ b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
-@@ -123,6 +123,8 @@
- 			240 241 242 243 244 245 246 247
- 			248 249 250 251 252 253 254 255>;
- 	power-supply = <&backlight_regulator>;
-+	post-pwm-on-delay-ms = <200>;
-+	pwm-off-delay-ms = <200>;
- };
+diff --git a/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi b/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
+index d752a315f884..5a8c7f3abb38 100644
+--- a/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
++++ b/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
+@@ -96,7 +96,8 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&bl_en>;
+ 		pwms = <&pwm0 0 1000000 0>;
+-		pwm-delay-us = <10000>;
++		post-pwm-on-delay-ms = <10>;
++		pwm-off-delay-ms = <10>;
+ 	};
  
- &emmc {
+ 	gpio-charger {
 -- 
 2.16.2
