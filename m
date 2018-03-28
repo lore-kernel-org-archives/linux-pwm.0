@@ -1,61 +1,40 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v6 1/5] pwm-backlight: enable/disable the PWM
- before/after LCD enable toggle.
-Date: Wed, 28 Mar 2018 12:12:09 +0100
-Message-ID: <20180328111209.qnce2tkisy5txbhj@dell>
-References: <20180326095213.18362-1-enric.balletbo@collabora.com>
+Subject: Re: [RESEND PATCH v2 3/8] dt-bindings: mfd: stm32-timers: add
+ support for dmas
+Date: Wed, 28 Mar 2018 12:16:22 +0100
+Message-ID: <20180328111622.r7f7e7duq7knvzfg@dell>
+References: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
+ <1518602679-3064-4-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180326095213.18362-1-enric.balletbo@collabora.com>
+In-Reply-To: <1518602679-3064-4-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, kernel@collabora.com
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: thierry.reding@gmail.com, alexandre.torgue@st.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 26 Mar 2018, Enric Balletbo i Serra wrote:
+On Wed, 14 Feb 2018, Fabrice Gasnier wrote:
 
-> Before this patch the enable signal was set before the PWM signal and
-> vice-versa on power off. This sequence is wrong, at least, it is on
-> the different panels datasheets that I checked, so I inverted the sequence
-> to follow the specs.
+> Add support for DMAs to STM32 timers. STM32 Timers can support up to 7
+> dma requests: up to 4 channels, update, compare and trigger.
+> DMAs may be used to transfer data from pwm capture for instance.
+> DMA support is made optional, PWM capture support is also an option.
+> This is much more wise system-wide to avoid shortage on DMA request
+> lines as there's significant amount of timer instances that can
+> request up to 7 channels.
 > 
-> For reference the following panels have the mentioned sequence:
->   - N133HSE-EA1 (Innolux)
->   - N116BGE (Innolux)
->   - N156BGE-L21 (Innolux)
->   - B101EAN0 (Auo)
->   - B101AW03 (Auo)
->   - LTN101NT05 (Samsung)
->   - CLAA101WA01A (Chunghwa)
-> 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Acked-by: Jingoo Han <jingoohan1@gmail.com>
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
 > ---
-> Changes since v5:
->  - Add Acked-by: Thierry Reding <thierry.reding@gmail.com>
-> Changes since v4:
->  - Rebase on top of mainline.
->  - Add the acks from Daniel Thompson and Jingoo Han.
-> Changes since v3:
->  - List the part numbers for the panel checked (Daniel Thompson)
-> Changes since v2:
->  - Add this as a separate patch (Thierry Reding)
-> Changes since v1:
->  - None
-> ---
->  drivers/video/backlight/pwm_bl.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
+>  .../devicetree/bindings/mfd/stm32-timers.txt         | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
 
-Enric,
-
-Please collect all of your Acks and submit a RESEND.
-
-I will then apply the set.
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 
 -- 
 Lee Jones [李琼斯]
