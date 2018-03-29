@@ -1,79 +1,100 @@
-From: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: [RESEND PATCH v6 2/5] dt-bindings: pwm-backlight: add PWM delay
- proprieties.
-Date: Wed, 28 Mar 2018 19:03:24 +0200
-Message-ID: <20180328170327.5395-2-enric.balletbo@collabora.com>
-References: <20180328170327.5395-1-enric.balletbo@collabora.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RESEND PATCH v2 0/8] Add support for PWM input capture on STM32
+Date: Thu, 29 Mar 2018 10:58:37 +0200
+Message-ID: <20180329085837.GA16952@ulmo>
+References: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
+ <20180327225101.GJ28163@mithrandir>
+ <20180328100309.yig4d3bmml6jvodz@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180328170327.5395-1-enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180328100309.yig4d3bmml6jvodz@dell>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, alexandre.torgue@st.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hardware needs a delay between setting an initial (non-zero) PWM and
-enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
-this delay in milli seconds. Hardware also needs a delay between disabing
-the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
-is this delay in milli seconds.
 
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Acked-by: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
-Based on the original Huang Lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org> work.
-Changes since v5:
- - Add Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
- - CC DT mainling list (for some reason dropped at some point, my
-   fault)
-Changes since v4:
- - Rebase on top of mainline.
-Changes since v3:
- - Replace us for ms.
- - Add Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Changes since v2:
- - Use separate properties (Rob Herring)
-Changes since v1:
- - As suggested by Daniel Thompson
-   - Do not assume power-on delay and power-off delay will be the same
----
- Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+--Qxx1br4bt0+wmkIi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-index 764db86d441a..310810906613 100644
---- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-+++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-@@ -17,6 +17,10 @@ Optional properties:
-                "pwms" property (see PWM binding[0])
-   - enable-gpios: contains a single GPIO specifier for the GPIO which enables
-                   and disables the backlight (see GPIO binding[1])
-+  - post-pwm-on-delay-ms: Delay in ms between setting an initial (non-zero) PWM
-+                          and enabling the backlight using GPIO.
-+  - pwm-off-delay-ms: Delay in ms between disabling the backlight using GPIO
-+                      and setting PWM value to 0.
- 
- [0]: Documentation/devicetree/bindings/pwm/pwm.txt
- [1]: Documentation/devicetree/bindings/gpio/gpio.txt
-@@ -32,4 +36,6 @@ Example:
- 
- 		power-supply = <&vdd_bl_reg>;
- 		enable-gpios = <&gpio 58 0>;
-+		post-pwm-on-delay-ms = <10>;
-+		pwm-off-delay-ms = <10>;
- 	};
--- 
-2.16.2
+On Wed, Mar 28, 2018 at 11:03:09AM +0100, Lee Jones wrote:
+> On Wed, 28 Mar 2018, Thierry Reding wrote:
+>=20
+> > On Wed, Feb 14, 2018 at 11:04:31AM +0100, Fabrice Gasnier wrote:
+> > > This series adds support for capture to stm32-pwm driver.
+> > > Capture is based on DMAs.
+> > > - First two patches are precursor patches
+> > > - Subsequent two patches add support for requesting DMAs to MFD core
+> > > - Next three patches add support for capture to stm32-pwm driver
+> > > - This has been tested on stm32429i-eval board.
+> > >=20
+> > > ---
+> > > Resend v2:
+> > > - Add collected Acks
+> > >=20
+> > > Changes in v2:
+> > > - Abstract DMA handling from child driver: move it to MFD core
+> > > - Rework pwm capture routines to adopt this change
+> > > - Comment on optional dma support, beautify DMAs probe
+> > >=20
+> > > Fabrice Gasnier (8):
+> > >   pwm: stm32: fix, remove unused struct device
+> > >   pwm: stm32: protect common prescaler for all channels
+> > >   dt-bindings: mfd: stm32-timers: add support for dmas
+> > >   mfd: stm32-timers: add support for dmas
+> > >   pwm: stm32: add capture support
+> > >   pwm: stm32: improve capture by tuning counter prescaler
+> > >   pwm: stm32: use input prescaler to improve period capture
+> > >   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
+> > >=20
+> > >  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
+> > >  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
+> > >  drivers/mfd/stm32-timers.c                         | 215 +++++++++++=
+++++-
+> > >  drivers/pwm/pwm-stm32.c                            | 276 +++++++++++=
++++++++++-
+> > >  include/linux/mfd/stm32-timers.h                   |  39 +++
+> > >  5 files changed, 547 insertions(+), 6 deletions(-)
+> >=20
+> > I can't apply patches 1-2 and 5-6 since they depend on patches 3-4 for
+> > which I'd need an Acked-by: from Lee if I'm to pick them up. Same goes
+> > for patch 7.
+> >=20
+> > By the looks of it there are minor conflicts with the MFD tree, but no
+> > major ones. Perhaps it'd be better for Lee to pick up 3-4 for v4.17-rc1
+> > and ack patch 7, then I can take the rest after v4.17-rc1?
+>=20
+> Sounds like a faff.
+>=20
+> Why don't I just pick them all up (except the ARM patch)?
+
+Fine with me. For all the PWM patches in this series:
+
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+
+--Qxx1br4bt0+wmkIi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq8qroACgkQ3SOs138+
+s6FL7Q/+Irm05gCxo3p7ZUuuUD8ishP/EJzMPZ0j0CMLQz/I0L0YIihDwrEJiV3B
+CpvOxJYhgAiOt2/99r3E7EdXvtS0BFqbeLmsuoY3vESWyEukfjeC9zDZbZkZ0W2i
++fzbuo9KL4tpBK59NuWKAB8HTj26Zj9qdYv9FON/xN7VyauFRR1HCRJOdFzprjRK
+yNkHEBQ7BKQcpA58wOmUgFpCNAuhYro80jtw6FZEUNdEoqxDSFtqQejNyKhz23b2
+Yf+op5CG1GTkY6nNKguiZVzpM1UZ4zSSSTdnYZC8lCyaaBZ/mFVk4cS9Bvutswd8
+SazFm0pNuziAeSrO5SZ8jnJs17JrbcWa/RBN9Gwlddh7kFiXW/nX7WVW6/yIKTVq
+XSWlY+ygUTpttrtsDwtHXDBcC6nKJ02EgpR0eGbk3MJHdkEffN/NwZhWKWcyo9YU
+nEBCy2t519nSEtZXGK2uAocXEdAmcgfVXLOo/hRZrxL7HN8ppLL6feu1rwEiLLYL
+n0SrDMzYuDY7ZYZX6ioYMM1wan8Na8RMNbOYyZpmdbf9jhotTu4EFGzdFNDo7C8E
+DR+pbdCFPJtMPIlnyHgXn3H8y0OVc/CZVH9oVIKrbTyGYZxpuCt+MUmZifaTcMmy
+KdeFqpO4RU+/OzQbcfBQjh2Z/AhL9tfzkJmdE05w0wb90nP+yYY=
+=uu/R
+-----END PGP SIGNATURE-----
+
+--Qxx1br4bt0+wmkIi--
