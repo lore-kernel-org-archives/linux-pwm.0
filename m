@@ -1,56 +1,112 @@
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v4 7/9] pwm: add push-pull mode support
-Date: Thu, 29 Mar 2018 14:10:33 +0300
-Message-ID: <1522321835-6460-8-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v4 5/9] pwm: add PWM modes
+Date: Thu, 29 Mar 2018 14:10:31 +0300
+Message-ID: <1522321835-6460-6-git-send-email-claudiu.beznea@microchip.com>
 References: <1522321835-6460-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1522321835-6460-1-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: thierry.reding@gmail.com, shc_work@mail.ru, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@free-electrons.com
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu Beznea <claudiu.beznea@microchip.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add push-pull mode support. In push-pull mode the channels' outputs have
-same polarities and the edges are complementary delayed for one period.
+Add PWM normal and complementary modes.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/pwm/core.c  | 1 +
- include/linux/pwm.h | 3 +++
- 2 files changed, 4 insertions(+)
+ Documentation/devicetree/bindings/pwm/pwm.txt |  9 +++++++--
+ Documentation/pwm.txt                         | 26 +++++++++++++++++++++++---
+ include/dt-bindings/pwm/pwm.h                 |  1 +
+ 3 files changed, 31 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 59a9df9120de..5fde2e685ca7 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -348,6 +348,7 @@ const char *pwm_mode_desc(struct pwm_device *pwm, unsigned long mode)
- 		"invalid",
- 		"normal",
- 		"complementary",
-+		"push-pull",
+diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
+index 8556263b8502..7c8aaac43f92 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+@@ -46,11 +46,16 @@ period in nanoseconds.
+ Optionally, the pwm-specifier can encode a number of flags (defined in
+ <dt-bindings/pwm/pwm.h>) in a third cell:
+ - PWM_POLARITY_INVERTED: invert the PWM signal polarity
++- PWM_MODE_COMPLEMENTARY: PWM complementary working mode (for PWM channels
++with two outputs); if not specified, the default for PWM channel will be
++used
+ 
+-Example with optional PWM specifier for inverse polarity
++Example with optional PWM specifier for inverse polarity and complementary
++mode:
+ 
+ 	bl: backlight {
+-		pwms = <&pwm 0 5000000 PWM_POLARITY_INVERTED>;
++		pwms = <&pwm 0 5000000
++			(PWM_MODE_COMPLEMENTARY | PWM_POLARITY_INVERTED)>;
+ 		pwm-names = "backlight";
  	};
  
- 	if (!pwm_mode_valid(pwm, mode))
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index c4aa997489f3..9a99d5659331 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -29,11 +29,14 @@ enum pwm_polarity {
-  * PWM modes capabilities
-  * @PWMC_MODE_NORMAL_BIT: PWM has one output
-  * @PWMC_MODE_COMPLEMENTARY_BIT: PWM has 2 outputs with opposite polarities
-+ * @PWMC_MODE_PUSH_PULL_BIT: PWM has 2 outputs with same polarities and the
-+ * edges are complementary delayed for one period
-  * @PWMC_MODE_CNT: PWM modes count
-  */
- enum {
- 	PWMC_MODE_NORMAL_BIT,
- 	PWMC_MODE_COMPLEMENTARY_BIT,
-+	PWMC_MODE_PUSH_PULL_BIT,
- 	PWMC_MODE_CNT,
- };
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 8fbf0aa3ba2d..912c43da8b48 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -61,9 +61,9 @@ In addition to the PWM state, the PWM API also exposes PWM arguments, which
+ are the reference PWM config one should use on this PWM.
+ PWM arguments are usually platform-specific and allows the PWM user to only
+ care about dutycycle relatively to the full period (like, duty = 50% of the
+-period). struct pwm_args contains 2 fields (period and polarity) and should
+-be used to set the initial PWM config (usually done in the probe function
+-of the PWM user). PWM arguments are retrieved with pwm_get_args().
++period). struct pwm_args contains 3 fields (period, polarity and mode) and
++should be used to set the initial PWM config (usually done in the probe
++function of the PWM user). PWM arguments are retrieved with pwm_get_args().
  
+ Using PWMs with the sysfs interface
+ -----------------------------------
+@@ -110,6 +110,26 @@ channel that was exported. The following properties will then be available:
+ 	- 0 - disabled
+ 	- 1 - enabled
+ 
++  mode
++    Get/set PWM channel working mode.
++
++    Normal mode - for PWM channels with one output; this should be the
++        default working mode for every PWM channel; output waveforms looks
++        like this:
++             __    __    __    __
++    PWM   __|  |__|  |__|  |__|  |__
++            <--T-->
++
++    Complementary mode - for PWM channels with two outputs; output waveforms
++        looks line this:
++             __    __    __    __
++    PWMH1 __|  |__|  |__|  |__|  |__
++          __    __    __    __    __
++    PWML1   |__|  |__|  |__|  |__|
++            <--T-->
++
++    Where T is the signal period.
++
+ Implementing a PWM driver
+ -------------------------
+ 
+diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
+index ab9a077e3c7d..b82279cc1787 100644
+--- a/include/dt-bindings/pwm/pwm.h
++++ b/include/dt-bindings/pwm/pwm.h
+@@ -11,5 +11,6 @@
+ #define _DT_BINDINGS_PWM_PWM_H
+ 
+ #define PWM_POLARITY_INVERTED			(1 << 0)
++#define PWM_MODE_COMPLEMENTARY			(1 << 1)
+ 
+ #endif
 -- 
 2.7.4
