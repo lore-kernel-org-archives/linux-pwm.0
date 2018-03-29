@@ -1,100 +1,175 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND PATCH v2 0/8] Add support for PWM input capture on STM32
-Date: Thu, 29 Mar 2018 10:58:37 +0200
-Message-ID: <20180329085837.GA16952@ulmo>
-References: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
- <20180327225101.GJ28163@mithrandir>
- <20180328100309.yig4d3bmml6jvodz@dell>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v4 0/9] extend PWM framework to support PWM modes
+Date: Thu, 29 Mar 2018 14:10:26 +0300
+Message-ID: <1522321835-6460-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180328100309.yig4d3bmml6jvodz@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, alexandre.torgue@st.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, shc_work@mail.ru, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@free-electrons.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu Beznea <claudiu.beznea@microchip.com>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi all,
 
---Qxx1br4bt0+wmkIi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Please give feedback on these patches which extends the PWM framework in
+order to support multiple PWM modes of operations. This series is a rework
+of [1] and [2].
 
-On Wed, Mar 28, 2018 at 11:03:09AM +0100, Lee Jones wrote:
-> On Wed, 28 Mar 2018, Thierry Reding wrote:
->=20
-> > On Wed, Feb 14, 2018 at 11:04:31AM +0100, Fabrice Gasnier wrote:
-> > > This series adds support for capture to stm32-pwm driver.
-> > > Capture is based on DMAs.
-> > > - First two patches are precursor patches
-> > > - Subsequent two patches add support for requesting DMAs to MFD core
-> > > - Next three patches add support for capture to stm32-pwm driver
-> > > - This has been tested on stm32429i-eval board.
-> > >=20
-> > > ---
-> > > Resend v2:
-> > > - Add collected Acks
-> > >=20
-> > > Changes in v2:
-> > > - Abstract DMA handling from child driver: move it to MFD core
-> > > - Rework pwm capture routines to adopt this change
-> > > - Comment on optional dma support, beautify DMAs probe
-> > >=20
-> > > Fabrice Gasnier (8):
-> > >   pwm: stm32: fix, remove unused struct device
-> > >   pwm: stm32: protect common prescaler for all channels
-> > >   dt-bindings: mfd: stm32-timers: add support for dmas
-> > >   mfd: stm32-timers: add support for dmas
-> > >   pwm: stm32: add capture support
-> > >   pwm: stm32: improve capture by tuning counter prescaler
-> > >   pwm: stm32: use input prescaler to improve period capture
-> > >   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
-> > >=20
-> > >  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
-> > >  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
-> > >  drivers/mfd/stm32-timers.c                         | 215 +++++++++++=
-++++-
-> > >  drivers/pwm/pwm-stm32.c                            | 276 +++++++++++=
-+++++++++-
-> > >  include/linux/mfd/stm32-timers.h                   |  39 +++
-> > >  5 files changed, 547 insertions(+), 6 deletions(-)
-> >=20
-> > I can't apply patches 1-2 and 5-6 since they depend on patches 3-4 for
-> > which I'd need an Acked-by: from Lee if I'm to pick them up. Same goes
-> > for patch 7.
-> >=20
-> > By the looks of it there are minor conflicts with the MFD tree, but no
-> > major ones. Perhaps it'd be better for Lee to pick up 3-4 for v4.17-rc1
-> > and ack patch 7, then I can take the rest after v4.17-rc1?
->=20
-> Sounds like a faff.
->=20
-> Why don't I just pick them all up (except the ARM patch)?
+The current patch series add the following PWM modes:
+- PWM mode normal
+- PWM mode complementary
+- PWM mode push-pull
 
-Fine with me. For all the PWM patches in this series:
+Normal mode - for PWM channels with one output; output waveforms looks like
+this:
+             __    __    __    __
+    PWM   __|  |__|  |__|  |__|  |__
+            <--T-->
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+    Where T is the signal period
 
---Qxx1br4bt0+wmkIi
-Content-Type: application/pgp-signature; name="signature.asc"
+Since PWMs with more than one output per channel could be used as one
+output PWM the normal mode is the default mode for all PWMs (if not
+specified otherwise).
 
------BEGIN PGP SIGNATURE-----
+Complementary mode - for PWM channels with two outputs; output waveforms
+for a PWM channel in complementary mode looks line this:
+             __    __    __    __
+    PWMH1 __|  |__|  |__|  |__|  |__
+          __    __    __    __    __
+    PWML1   |__|  |__|  |__|  |__|
+            <--T-->
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq8qroACgkQ3SOs138+
-s6FL7Q/+Irm05gCxo3p7ZUuuUD8ishP/EJzMPZ0j0CMLQz/I0L0YIihDwrEJiV3B
-CpvOxJYhgAiOt2/99r3E7EdXvtS0BFqbeLmsuoY3vESWyEukfjeC9zDZbZkZ0W2i
-+fzbuo9KL4tpBK59NuWKAB8HTj26Zj9qdYv9FON/xN7VyauFRR1HCRJOdFzprjRK
-yNkHEBQ7BKQcpA58wOmUgFpCNAuhYro80jtw6FZEUNdEoqxDSFtqQejNyKhz23b2
-Yf+op5CG1GTkY6nNKguiZVzpM1UZ4zSSSTdnYZC8lCyaaBZ/mFVk4cS9Bvutswd8
-SazFm0pNuziAeSrO5SZ8jnJs17JrbcWa/RBN9Gwlddh7kFiXW/nX7WVW6/yIKTVq
-XSWlY+ygUTpttrtsDwtHXDBcC6nKJ02EgpR0eGbk3MJHdkEffN/NwZhWKWcyo9YU
-nEBCy2t519nSEtZXGK2uAocXEdAmcgfVXLOo/hRZrxL7HN8ppLL6feu1rwEiLLYL
-n0SrDMzYuDY7ZYZX6ioYMM1wan8Na8RMNbOYyZpmdbf9jhotTu4EFGzdFNDo7C8E
-DR+pbdCFPJtMPIlnyHgXn3H8y0OVc/CZVH9oVIKrbTyGYZxpuCt+MUmZifaTcMmy
-KdeFqpO4RU+/OzQbcfBQjh2Z/AhL9tfzkJmdE05w0wb90nP+yYY=
-=uu/R
------END PGP SIGNATURE-----
+    Where T is the signal period.
 
---Qxx1br4bt0+wmkIi--
+Push-pull mode - for PWM channels with two outputs; output waveforms for a
+PWM channel in push-pull mode with normal polarity looks like this:
+            __          __
+    PWMH __|  |________|  |________
+                  __          __
+    PWML ________|  |________|  |__
+           <--T-->
+
+    If polarity is inversed:
+         __    ________    ________
+    PWMH   |__|        |__|
+         ________    ________    __
+    PWML         |__|        |__|
+           <--T-->
+
+    Where T is the signal period.
+
+The PWM working modes are per PWM channel registered as PWM's capabilities.
+The driver registers itself to PWM core a get_caps() function, in
+struct pwm_ops, that will be used by PWM core to retrieve PWM capabilities.
+If this function is not registered in driver's probe, a default function
+will be used to retrieve PWM capabilities. Currently, the default
+capabilities includes only PWM normal mode.
+
+PWM state has been updated to keep PWM mode. PWM mode could be configured
+via sysfs or via DT. pwm_apply_state() will do the preliminary validation
+for PWM mode to be applied.
+
+In sysfs, user could get PWM modes by reading mode file of PWM device:
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# ls -l
+total 0
+-r--r--r-- 1 root root 4096 Oct  9 09:07 capture
+lrwxrwxrwx 1 root root    0 Oct  9 09:07 device -> ../../pwmchip0
+-rw-r--r-- 1 root root 4096 Oct  9 08:42 duty_cycle
+-rw-r--r-- 1 root root 4096 Oct  9 08:44 enable
+--w------- 1 root root 4096 Oct  9 09:07 export
+-rw-r--r-- 1 root root 4096 Oct  9 08:43 mode
+-r--r--r-- 1 root root 4096 Oct  9 09:07 npwm
+-rw-r--r-- 1 root root 4096 Oct  9 08:42 period
+-rw-r--r-- 1 root root 4096 Oct  9 08:44 polarity
+drwxr-xr-x 2 root root    0 Oct  9 09:07 power
+lrwxrwxrwx 1 root root    0 Oct  9 09:07 subsystem -> ../../../../../../../../class/pwm
+-rw-r--r-- 1 root root 4096 Oct  9 08:42 uevent
+--w------- 1 root root 4096 Oct  9 09:07 unexport
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+normal complementary [push-pull]
+
+The mode enclosed in bracket is the currently active mode.
+
+The mode could be set, via sysfs, by writing to mode file one of the modes
+displayed at read:
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# echo normal > mode
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+[normal] complementary push-pull 
+
+The PWM push-pull mode could be usefull in applications like half bridge
+converters.
+
+This series also add PWM modes support for Atmel/Microchip SoCs.
+
+Thank you,
+Claudiu Beznea
+
+[1] https://www.spinics.net/lists/arm-kernel/msg580275.html
+[2] https://lkml.org/lkml/2018/1/12/359
+
+Changes in v4:
+- removed changes related to pwm_config() as per maintainer proposals
+- added pwm_mode_get_valid() to retrieve a valid PWM mode fror PWM device
+  instead of using BIT(ffs(caps.mode) - 1) and changed drivers to use
+  pwm_mode_get_valid() instead of pwm_get_caps() + BIT(ffs(caps.mode) - 1)
+  (patches 2, 3, 4 from this series)
+- renamed PWM_MODE() macro in PWMC_MODE() to avoid conflicts with
+  pwm-sun4i.c driver ('C' stands for capability)
+- removed pwm_caps_valid() function
+- renamed PWM_DTMODE_COMPLEMENTARY and PWM_DTMODE_PUSH_PULL macros in
+  PWM_MODE_COMPLEMENTARY and PWM_MODE_PUSH_PULL
+
+Changes in v3:
+- removed changes related to only one of_xlate function for all PWM drivers
+- switch to PWM capabilities per PWM channel nor per PWM chip
+- squash documentation and bindings patches as requeted by reviewer
+- introduced PWM_MODE(name) macro and used a bit enum for pwm modes
+- related to DT bindings, used flags cell also for PWM modes
+- updated of_xlate specific functions with "state->mode = mode;"
+  instructions to avoid pwm_apply_state() failures
+- use available modes for PWM channel in pwm_config() by first calling
+  pwm_get_caps() to get caps.modes
+- use loops through available modes in mode_store()/mode_show() and also in
+  of_pwm_xlate_with_flags() instead of "if else" instructions; in this way,
+  the addition of a new mode is independent of this code sections
+- use DTLI=1, DTHI=0 register settings to obtain push-pull mode waveforms
+  for Atmel/Microchip PWM controller.
+
+Changes in v2:
+- remove of_xlate and of_pwm_n_cells and use generic functions to pharse DT
+  inputs; this is done in patches 1, 2, 3, 4, 5, 6, 7 of this series; this will
+  make easy the addition of PWM mode support from DT
+- add PWM mode normal
+- register PWM modes as capabilities of PWM chips at driver probe and, in case
+  driver doesn't provide these capabilities use default ones
+- change the way PWM mode is pharsed via DT by using a new input for pwms
+  binding property
+
+
+Claudiu Beznea (9):
+  pwm: extend PWM framework with PWM modes
+  pwm: clps711x: populate PWM mode in of_xlate function
+  pwm: cros-ec: populate PWM mode in of_xlate function
+  pwm: pxa: populate PWM mode in of_xlate function
+  pwm: add PWM modes
+  pwm: atmel: add pwm capabilities
+  pwm: add push-pull mode support
+  pwm: add documentation for pwm push-pull mode
+  pwm: atmel: add push-pull mode support
+
+ Documentation/devicetree/bindings/pwm/pwm.txt |  11 ++-
+ Documentation/pwm.txt                         |  42 ++++++++-
+ drivers/pwm/core.c                            | 125 +++++++++++++++++++++++++-
+ drivers/pwm/pwm-atmel.c                       | 118 +++++++++++++++++-------
+ drivers/pwm/pwm-clps711x.c                    |  10 ++-
+ drivers/pwm/pwm-cros-ec.c                     |   1 +
+ drivers/pwm/pwm-pxa.c                         |   1 +
+ drivers/pwm/sysfs.c                           |  61 +++++++++++++
+ include/dt-bindings/pwm/pwm.h                 |   2 +
+ include/linux/pwm.h                           |  64 +++++++++++++
+ 10 files changed, 395 insertions(+), 40 deletions(-)
+
+-- 
+2.7.4
