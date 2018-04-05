@@ -1,58 +1,42 @@
 Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ot0-f177.google.com ([74.125.82.177]:33923 "EHLO
-        mail-ot0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753175AbeDRPkL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Apr 2018 11:40:11 -0400
-Received: by mail-ot0-f177.google.com with SMTP id i5-v6so2423333oth.1
-        for <linux-pwm@vger.kernel.org>; Wed, 18 Apr 2018 08:40:10 -0700 (PDT)
-MIME-Version: 1.0
-From: Patrick Doyle <wpdster@gmail.com>
-Date: Wed, 18 Apr 2018 11:39:39 -0400
-Message-ID: <CAF_dkJA6JdDA9CPmsqgVrRaMiJ4=Wjn_G4t9PETUFD2X7-qdcA@mail.gmail.com>
-Subject: Augmenting sysfs interface for a PWM driver
-Content-Type: text/plain; charset="UTF-8"
+Received: from sauhun.de ([88.99.104.3]:40854 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751259AbeDER0F (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 5 Apr 2018 13:26:05 -0400
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH] pwm: rcar: simplify getting .drvdata
+Date: Thu,  5 Apr 2018 19:25:51 +0200
+Message-Id: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-pwm@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-I would like to add some features to the Atmel(/Microchip) pwm-atmel
-driver and would like to access those features via sysfs.
+We should get drvdata from struct device directly. Going via
+platform_device is an unneeded step back and forth.
 
-Back story -- I have the high and low PWM outputs on my Atmel SoC
-connected to a TI motor driver chip, rather than directly to FETs as
-the peripheral was intended to be used.  I can wiggle the HIGH side
-output and hold the LOW side output low to make the motor spin
-forward, and wiggle the LOW side output, keeping the HIGH side output
-low, to make the motor spin backward.
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
 
-So, I would like to add the ability to override the PWM outputs (which
-the peripheral supports).
+Only build tested. Fixed numerous times in other drivers, however...
 
-AFAIK, the only way for me to control the PWM peripheral from user
-space is via sysfs.  Consequently, the only way I know to control the
-override outputs is via sysfs.
+ drivers/pwm/pwm-rcar.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-So... how can I add entries to the sysfs for the PWM channel?
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 91d11f2e2fef..748f614d5375 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -261,8 +261,7 @@ MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
+ #ifdef CONFIG_PM_SLEEP
+ static struct pwm_device *rcar_pwm_dev_to_pwm_dev(struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
++	struct rcar_pwm_chip *rcar_pwm = dev_get_drvdata(dev);
+ 	struct pwm_chip *chip = &rcar_pwm->chip;
+ 
+ 	return &chip->pwms[0];
+-- 
+2.11.0
 
-I can hack up the pwm subsystem to do this, but I feel like this might
-be a pwm-atmel specific feature, and I don't want to burden all the
-other drivers with this.  But I guess I could.
-
-Anyway, this project opens up a whole bunch of questions for me that I
-should probably seek the opinions of the PWM community at large before
-proceeding much further.
-
-Is this a bad idea from the start?
-Is there an easy way for me to add sysfs entries for a PWM channel?
-Is there a better way for me to do this?
-
-Should I even be using the sysfs interface to control the PWM
-peripheral from my user space application?  What else would I use?
-
-I guess I could write a "motor control" driver, but that driver
-wouldn't do much more than just pass its arguments to the pwm-atmel
-driver.
-
-Any thoughts, comments, snide remarks?
-
---wpd
