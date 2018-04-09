@@ -1,37 +1,29 @@
 Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qt0-f193.google.com ([209.85.216.193]:33594 "EHLO
-        mail-qt0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751635AbeDIIhj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Apr 2018 04:37:39 -0400
-MIME-Version: 1.0
-In-Reply-To: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
-References: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 9 Apr 2018 10:37:38 +0200
-Message-ID: <CAMuHMdWt89M=kMVKFWj_1kT9ftTfmvZif1NS7E6Cahmc+62HEA@mail.gmail.com>
+Received: from kirsty.vergenet.net ([202.4.237.240]:55657 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751507AbeDILrk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Apr 2018 07:47:40 -0400
+Date: Mon, 9 Apr 2018 13:47:36 +0200
+From: Simon Horman <horms@verge.net.au>
 Subject: Re: [PATCH] pwm: rcar: simplify getting .drvdata
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20180409114736.krzyciz2gyotbm72@verge.net.au>
+References: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-On Thu, Apr 5, 2018 at 7:25 PM, Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
+On Thu, Apr 05, 2018 at 07:25:51PM +0200, Wolfram Sang wrote:
 > We should get drvdata from struct device directly. Going via
 > platform_device is an unneeded step back and forth.
->
+> 
 > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+> 
+> Only build tested. Fixed numerous times in other drivers, however...
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
