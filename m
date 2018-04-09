@@ -1,58 +1,48 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RESEND PATCH v6 3/5] pwm-backlight: add support for PWM delays
- proprieties.
-Date: Tue, 3 Apr 2018 10:19:07 +0100
-Message-ID: <20180403091907.rfupwgx4ryy66ebu@dell>
-References: <20180328170327.5395-1-enric.balletbo@collabora.com>
- <20180328170327.5395-3-enric.balletbo@collabora.com>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+Subject: Re: [PATCH V2 3/9] dt-bindings: Tegra186 tachometer device tree
+ bindings
+Date: Mon, 9 Apr 2018 08:38:37 +0300
+Message-ID: <867aace8-dac7-51d4-bd46-15919b58b37d@kapsi.fi>
+References: <1521607244-29734-1-git-send-email-rrajk@nvidia.com>
+ <1521607244-29734-4-git-send-email-rrajk@nvidia.com>
+ <20180327145249.xjoo42qow34ksdle@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180328170327.5395-3-enric.balletbo@collabora.com>
+In-Reply-To: <20180327145249.xjoo42qow34ksdle@rob-hp-laptop>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, kernel@collabora.com
+To: Rob Herring <robh@kernel.org>, Rajkumar Rampelli <rrajk@nvidia.com>
+Cc: mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, linux@roeck-us.net, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 28 Mar 2018, Enric Balletbo i Serra wrote:
+Rob,
 
-> Some panels (i.e. N116BGE-L41), in their power sequence specifications,
-> request a delay between set the PWM signal and enable the backlight and
-> between clear the PWM signal and disable the backlight. Add support for
-> the new post-pwm-on-delay-ms and pwm-off-delay-ms proprieties to meet
-> the timings.
+this binding is for a specific IP block (for measuring/aggregating input 
+pulses) on the Tegra186 SoC, so I don't think it fits into any generic 
+binding.
+
+Thanks,
+Mikko
+
+On 03/27/2018 05:52 PM, Rob Herring wrote:
+> On Wed, Mar 21, 2018 at 10:10:38AM +0530, Rajkumar Rampelli wrote:
+>> Supply Device tree binding documentation for the NVIDIA
+>> Tegra186 SoC's Tachometer Controller
+>>
+>> Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
+>> ---
+>>
+>> V2: Renamed compatible string to "nvidia,tegra186-pwm-tachometer"
+>>      Renamed dt property values of clock-names and reset-names to "tachometer"
+>>      from "tach"
 > 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Acked-by: Jingoo Han <jingoohan1@gmail.com>
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
-> ---
-> Changes since v5:
->  - Add Acked-by: Thierry Reding <thierry.reding@gmail.com>
-> Changes since v4:
->  - Rebased on top of mainline.
->  - Added the acks from Pavel Machek, Daniel thompson and Jingoo Han
-> Changes since v3:
->  - Use two named members instead of pwm_delay[] (Daniel and Pavel)
->  - Use msleep instead of usleep_range. (Pavel)
-> Changes since v2:
->  - Move the pwm/enable sequence to another patch (Thierry Reding)
-> Changes since v1:
->  - As suggested by Daniel Thompson
->    - Do not assume power-on delay and power-off delay will be the same
->  - Move the check of dt property to the parse dt function.
-> ---
->  drivers/video/backlight/pwm_bl.c | 19 +++++++++++++++++++
->  include/linux/pwm_backlight.h    |  2 ++
->  2 files changed, 21 insertions(+)
-
-Applied, thanks.
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> Read my prior comments on v1.
+> 
+> Rob
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
