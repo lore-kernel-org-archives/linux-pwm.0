@@ -1,52 +1,29 @@
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [PATCH RESEND] backlight: pwm_bl: don't use GPIOF_* with gpiod_get_direction
-Date: Tue, 10 Apr 2018 14:32:40 +0200
-Message-ID: <20180410123241.25745-1-wsa+renesas@sang-engineering.com>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [RESEND PATCH v6 4/5] ARM: dts: rockchip: set PWM delay backlight settings for Veyron.
+Date: Tue, 10 Apr 2018 15:04:06 +0200
+Message-ID: <4925136.8dMFCuW7Px@phil>
+References: <20180328170327.5395-1-enric.balletbo@collabora.com> <20180328170327.5395-4-enric.balletbo@collabora.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180328170327.5395-4-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, kernel@collabora.com
 List-Id: linux-pwm@vger.kernel.org
 
-The documentation was wrong, gpiod_get_direction() returns 0/1 instead
-of the GPIOF_* flags. The docs were fixed with commit 94fc73094abe47
-("gpio: correct docs about return value of gpiod_get_direction"). Now,
-fix this user (until a better, system-wide solution is in place).
+Am Mittwoch, 28. März 2018, 19:03:26 CEST schrieb Enric Balletbo i Serra:
+> For veyron the binding should provide both PWM timings, the delay between
+> you enable the PWM and set the enable signal, and the delay between you
+> disable the PWM signal and clear the enable signal. Update the binding
+> accordingly, in this case the panels connected to the veyron boards have
+> a symmetric power sequence, hence the same value is used.
+> 
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Acked-by: Pavel Machek <pavel@ucw.cz>
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
----
+applied for 4.18
 
-Changes since V1:
-	* rebased to top-of-linus-tree
-	* added tag from Daniel, thanks!
-
-Through which tree does this need to go?
-
- drivers/video/backlight/pwm_bl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 1c2289ddd555..0fa7d2bd0e48 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -301,14 +301,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 	/*
- 	 * If the GPIO is not known to be already configured as output, that
--	 * is, if gpiod_get_direction returns either GPIOF_DIR_IN or -EINVAL,
--	 * change the direction to output and set the GPIO as active.
-+	 * is, if gpiod_get_direction returns either 1 or -EINVAL, change the
-+	 * direction to output and set the GPIO as active.
- 	 * Do not force the GPIO to active when it was already output as it
- 	 * could cause backlight flickering or we would enable the backlight too
- 	 * early. Leave the decision of the initial backlight state for later.
- 	 */
- 	if (pb->enable_gpio &&
--	    gpiod_get_direction(pb->enable_gpio) != GPIOF_DIR_OUT)
-+	    gpiod_get_direction(pb->enable_gpio) != 0)
- 		gpiod_direction_output(pb->enable_gpio, 1);
- 
- 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
--- 
-2.11.0
+Thanks
+Heiko
