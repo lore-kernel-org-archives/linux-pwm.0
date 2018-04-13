@@ -1,69 +1,67 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Mon, 30 Apr 2018 10:34:47 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: meson: fix allocation of meson_pwm_channel array
-Message-ID: <20180430083447.GJ2484@ulmo>
-References: <20180428212521.29328-1-martin.blumenstingl@googlemail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="q5r20fdKX+PFtYHw"
-Content-Disposition: inline
-In-Reply-To: <20180428212521.29328-1-martin.blumenstingl@googlemail.com>
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] ACPI / LPSS: Only call pwm_add_table() for Bay Trail PWM if PMIC HRV is 2
+Date: Fri, 13 Apr 2018 14:54:17 +0200
+Message-Id: <20180413125417.7263-1-hdegoede@redhat.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, narmstrong@baylibre.com, khilman@baylibre.com, carlo@caione.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
+The Point of View mobii wintab p800w Bay Trail tablet comes with a Crystal
+Cove PMIC, yet uses the LPSS PWM for backlight control, rather then the
+Crystal Cove's PWM, so we need to call pwm_add_table() to add a
+pwm_backlight mapping for the LPSS pwm despite there being an INT33FD
+ACPI device present.
 
---q5r20fdKX+PFtYHw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On all Bay Trail devices the _HRV object of the INT33FD ACPI device
+will normally return 2, to indicate the Bay Trail variant of the CRC
+PMIC is present, except on this tablet where _HRV is 0xffff. I guess this
+is a hack to make the windows Crystal Cove PWM driver not bind.
 
-On Sat, Apr 28, 2018 at 11:25:21PM +0200, Martin Blumenstingl wrote:
-> Using the pwm-meson driver on the 32-bit SoCs causes memory corruption.
-> The result are some hard-to-explain errors, for example
-> devm_clk_register crashes with a NULL dereference somewhere deep in the
-> common clock framework code.
-> In some cases the kernel even refused to boot when any of the PWM
-> controllers were enables on Meson8b.
->=20
-> The root cause seems to be an incorrect memory size in the devm_kcalloc
-> call in meson_pwm_probe. The code allocates an array of meson_pwm_channel
-> structs, but the size given is the size of the meson_pwm struct (which
-> seems like a small copy-and-paste error, as meson_pwm is allocated a few
-> lines above).
-> Even with this typo the code seemed to work fine on the 64-bit GX SoCs
-> (maybe due to the structs having the same size in the compiled result,
-> but I haven't checked this further).
->=20
-> Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
->  drivers/pwm/pwm-meson.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Out of the 44 DSTDs with an INT33FD device in there which I have (from
+different model devices) only the pov mobii wintab p800w uses 0xffff for
+the HRV.
 
-Applied, thanks.
+The byt_pwm_setup code calls acpi_dev_present to check for the presence
+of a INT33FD ACPI device which indicates that a CRC PMIC is present and
+if the INT33FD ACPI device is present then byt_pwm_setup will not add
+a pwm_backlight mapping for the LPSS pwm, so that the CRC PWM will get
+used instead.
 
-Thierry
+acpi_dev_present has a hrv parameter, this commit make us pass 2 instead
+of -1, so that things still match on normal tablets, but on this special
+case with its _HRV of 0xffff, the check will now fail so that the
+pwm_backlight mapping for the LPSS pwm gets added fixing backlight
+brightness control on this device.
 
---q5r20fdKX+PFtYHw
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/acpi/acpi_lpss.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrm1ScACgkQ3SOs138+
-s6EYkQ/+KygMKcOQWqiDjl7JCtrk2tqDYpkQuzvXSyFUpscyxNNpzIIVy3ErkTDU
-7E0G7SA6MSEBnaTcJ2fZkh53ADzediVRL4AOk4zBC9zKuOL+1GR7FXTb1tWClq6t
-z9WI7EzzR/6XPNw8u3SoaqvRsyQMAeDm2X7whKjm8lJtaCamMvqslYxhDHR4pbHQ
-hdGArVunRWdMs6ztVreucnbQ5edn1D81fRlwQ1mses8Zsr3mYvsLDhc3dNkiBOOo
-70XMViCyaz31guZW4P4kfRiqdf4G8C+kJyTKX2HaN0ffe+pX9JqIwULKNPMBAwEj
-1BUofOP9jV1dYphj7CnlL5smPmWHN3gY1/8lFTa+tgK7hL4ZjDr1HNznQUYbEzdb
-j0AlBAKm9K8by6bjukl2OhHvpD50b4ROliNpSFJm5hqrd9mDHpU2S9xBcl6oDmGL
-h0oiIBF+OTbLMSSBrAelIIh7RxSN63A5/5iH6vgWFA8N4g/PzQ519ey0I/NunpeZ
-9lHEvfMENgrgl3DPme5CVEVxkLFrxNaRqOXhg7w7REIXYLXvmju/mXJqfQrAxuzi
-7poecf0qugag1/OwG79RfIP5ke+TuE+m9VG3UV/amJGSPeg6uSZtqDBVqTK43RJ3
-dKOMkyiCyszFaeKdaO2q3Dx0pFVzw/yMuRV4bIgECciKO0zJ7FA=
-=A8mL
------END PGP SIGNATURE-----
-
---q5r20fdKX+PFtYHw--
+diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+index c4ba9164e582..38a286975c31 100644
+--- a/drivers/acpi/acpi_lpss.c
++++ b/drivers/acpi/acpi_lpss.c
+@@ -69,6 +69,10 @@ ACPI_MODULE_NAME("acpi_lpss");
+ #define LPSS_SAVE_CTX			BIT(4)
+ #define LPSS_NO_D3_DELAY		BIT(5)
+ 
++/* Crystal Cove PMIC shares same ACPI ID between different platforms */
++#define BYT_CRC_HRV			2
++#define CHT_CRC_HRV			3
++
+ struct lpss_private_data;
+ 
+ struct lpss_device_desc {
+@@ -162,7 +166,7 @@ static void byt_pwm_setup(struct lpss_private_data *pdata)
+ 	if (!adev->pnp.unique_id || strcmp(adev->pnp.unique_id, "1"))
+ 		return;
+ 
+-	if (!acpi_dev_present("INT33FD", NULL, -1))
++	if (!acpi_dev_present("INT33FD", NULL, BYT_CRC_HRV))
+ 		pwm_add_table(byt_pwm_lookup, ARRAY_SIZE(byt_pwm_lookup));
+ }
+ 
+-- 
+2.17.0
