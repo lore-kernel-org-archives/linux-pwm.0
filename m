@@ -1,192 +1,50 @@
 Return-Path: <hdegoede@redhat.com>
-Return-Path: <hdegoede@redhat.com>
-Subject: Re: [PATCH 1/2] pwm: lpss: platform: Save/restore the ctrl register
- over a suspend/resume
-References: <20180413125218.7131-1-hdegoede@redhat.com>
- <20180413125218.7131-2-hdegoede@redhat.com>
- <1524232836.21176.479.camel@linux.intel.com>
 From: Hans de Goede <hdegoede@redhat.com>
-Message-ID: <912636fc-81c1-bebc-a200-c186c1f0a628@redhat.com>
-Date: Fri, 20 Apr 2018 17:25:10 +0200
-MIME-Version: 1.0
-In-Reply-To: <1524232836.21176.479.camel@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH 2/2] ACPI / LPSS: Add missing prv_offset setting for byt/cht PWM devices
+Date: Fri, 13 Apr 2018 14:52:18 +0200
+Message-Id: <20180413125218.7131-3-hdegoede@redhat.com>
+In-Reply-To: <20180413125218.7131-1-hdegoede@redhat.com>
+References: <20180413125218.7131-1-hdegoede@redhat.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-Hi,
+The LPSS PWM device on on Bay Trail and Cherry Trail devices has a set
+of private registers at offset 0x800, the current lpss_device_desc for
+them already sets the LPSS_SAVE_CTX flag to have these saved/restored
+over device-suspend, but the current lpss_device_desc was not setting
+the prv_offset field, leading to the regular device registers getting
+saved/restored instead.
 
-On 04/20/2018 04:00 PM, Andy Shevchenko wrote:
-> On Fri, 2018-04-13 at 14:52 +0200, Hans de Goede wrote:
->> On some devices the contents of the ctrl register get lost over a
->> suspend/resume and the PWM comes back up disabled after the resume.
->>
->> This is seen on some Bay Trail devices with the PWM in ACPI enumerated
->> mode, so it shows up as a platform device instead of a PCI device.
->>
->> If we still think it is enabled and then try to change the duty-cycle
->> after this, we end up with a "PWM_SW_UPDATE was not cleared" error and
->> the PWM is stuck in that state from then on.
->>
->> This commit adds suspend and resume pm callbacks to the pwm-lpss-
->> platform
->> code, which save/restore the ctrl register over a suspend/resume,
->> fixing
->> this.
->>
->> Note that:
->>
->> 1) There is no need to do this over a runtime suspend, since we
->> only runtime suspend when disabled and then we properly set the enable
->> bit and reprogram the timings when we re-enable the PWM.
->>
->> 2) This may be happening on more systems then we realize, but has been
->> covered up sofar by a bug in the acpi-lpss.c code which was
->> save/restoring
->> the regular device registers instead of the lpss private registers due
->> to
->> lpss_device_desc.prv_offset not being set. This is fixed by a later
->> patch
->> in this series.
-> 
-> One question below, the rest is fine by me
-> 
-> Reviwed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
->>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->> ---
->>   drivers/pwm/pwm-lpss-platform.c |  5 +++++
-> 
-> What about PCI variant?
+This is causing the PWM controller to no longer work, resulting in a black
+screen,  after a suspend/resume on systems where the firmware clears the
+APB clock and reset bits at offset 0x804.
 
-So far the contents of the control register being lost with the
-platform variant got masked by the lpss-acpi code saving/restoring
-the actual device registers instead of the lpss-private-regs.
+This commit fixes this by properly setting prv_offset to 0x800 for
+the PWM devices.
 
-That only applies to ACPI instantiated LPSS-pwm devices,
-for PCI instantiated LPSS-pwm devices nothing has been saving/
-restoring the control register since as long as we support them
-(AFAICT), so I assume the control register contents getting lost
-is a problem only when the device is ACPI instantiated.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/acpi/acpi_lpss.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Regards,
-
-Hans
-
-
-
-
-> 
->>   drivers/pwm/pwm-lpss.c          | 30 ++++++++++++++++++++++++++++++
->>   drivers/pwm/pwm-lpss.h          |  2 ++
->>   3 files changed, 37 insertions(+)
->>
->> diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-
->> platform.c
->> index 5d6ed1507d29..5561b9e190f8 100644
->> --- a/drivers/pwm/pwm-lpss-platform.c
->> +++ b/drivers/pwm/pwm-lpss-platform.c
->> @@ -74,6 +74,10 @@ static int pwm_lpss_remove_platform(struct
->> platform_device *pdev)
->>   	return pwm_lpss_remove(lpwm);
->>   }
->>   
->> +static SIMPLE_DEV_PM_OPS(pwm_lpss_platform_pm_ops,
->> +			 pwm_lpss_suspend,
->> +			 pwm_lpss_resume);
->> +
->>   static const struct acpi_device_id pwm_lpss_acpi_match[] = {
->>   	{ "80860F09", (unsigned long)&pwm_lpss_byt_info },
->>   	{ "80862288", (unsigned long)&pwm_lpss_bsw_info },
->> @@ -86,6 +90,7 @@ static struct platform_driver
->> pwm_lpss_driver_platform = {
->>   	.driver = {
->>   		.name = "pwm-lpss",
->>   		.acpi_match_table = pwm_lpss_acpi_match,
->> +		.pm = &pwm_lpss_platform_pm_ops,
->>   	},
->>   	.probe = pwm_lpss_probe_platform,
->>   	.remove = pwm_lpss_remove_platform,
->> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
->> index 08d5cab0b8e8..49546a1d49ea 100644
->> --- a/drivers/pwm/pwm-lpss.c
->> +++ b/drivers/pwm/pwm-lpss.c
->> @@ -32,10 +32,13 @@
->>   /* Size of each PWM register space if multiple */
->>   #define PWM_SIZE			0x400
->>   
->> +#define MAX_PWMS			4
->> +
->>   struct pwm_lpss_chip {
->>   	struct pwm_chip chip;
->>   	void __iomem *regs;
->>   	const struct pwm_lpss_boardinfo *info;
->> +	u32 saved_ctrl[MAX_PWMS];
->>   };
->>   
->>   static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
->> @@ -225,6 +228,9 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device
->> *dev, struct resource *r,
->>   	unsigned long c;
->>   	int ret;
->>   
->> +	if (WARN_ON(info->npwm > MAX_PWMS))
->> +		return ERR_PTR(-ENODEV);
->> +
->>   	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
->>   	if (!lpwm)
->>   		return ERR_PTR(-ENOMEM);
->> @@ -264,6 +270,30 @@ int pwm_lpss_remove(struct pwm_lpss_chip *lpwm)
->>   }
->>   EXPORT_SYMBOL_GPL(pwm_lpss_remove);
->>   
->> +int pwm_lpss_suspend(struct device *dev)
->> +{
->> +	struct pwm_lpss_chip *lpwm = dev_get_drvdata(dev);
->> +	int i;
->> +
->> +	for (i = 0; i < lpwm->info->npwm; i++)
-> 
->> +		lpwm->saved_ctrl[i] = readl(lpwm->regs + i * PWM_SIZE
->> + PWM);
-> 
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(pwm_lpss_suspend);
->> +
->> +int pwm_lpss_resume(struct device *dev)
->> +{
->> +	struct pwm_lpss_chip *lpwm = dev_get_drvdata(dev);
->> +	int i;
->> +
->> +	for (i = 0; i < lpwm->info->npwm; i++)
->> +		writel(lpwm->saved_ctrl[i], lpwm->regs + i * PWM_SIZE
->> + PWM);
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(pwm_lpss_resume);
->> +
->>   MODULE_DESCRIPTION("PWM driver for Intel LPSS");
->>   MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
->>   MODULE_LICENSE("GPL v2");
->> diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
->> index 98306bb02cfe..7a4238ad1fcb 100644
->> --- a/drivers/pwm/pwm-lpss.h
->> +++ b/drivers/pwm/pwm-lpss.h
->> @@ -28,5 +28,7 @@ struct pwm_lpss_boardinfo {
->>   struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct
->> resource *r,
->>   				     const struct pwm_lpss_boardinfo
->> *info);
->>   int pwm_lpss_remove(struct pwm_lpss_chip *lpwm);
->> +int pwm_lpss_suspend(struct device *dev);
->> +int pwm_lpss_resume(struct device *dev);
->>   
->>   #endif	/* __PWM_LPSS_H */
-> 
+diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+index 2bcffec8dbf0..c4ba9164e582 100644
+--- a/drivers/acpi/acpi_lpss.c
++++ b/drivers/acpi/acpi_lpss.c
+@@ -229,11 +229,13 @@ static const struct lpss_device_desc lpt_sdio_dev_desc = {
+ 
+ static const struct lpss_device_desc byt_pwm_dev_desc = {
+ 	.flags = LPSS_SAVE_CTX,
++	.prv_offset = 0x800,
+ 	.setup = byt_pwm_setup,
+ };
+ 
+ static const struct lpss_device_desc bsw_pwm_dev_desc = {
+ 	.flags = LPSS_SAVE_CTX | LPSS_NO_D3_DELAY,
++	.prv_offset = 0x800,
+ 	.setup = bsw_pwm_setup,
+ };
+ 
+-- 
+2.17.0
