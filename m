@@ -1,119 +1,71 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.17-rc1
-Date: Thu, 12 Apr 2018 11:27:59 +0200
-Message-ID: <20180412092759.9984-1-thierry.reding@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [PATCH RESEND] backlight: pwm_bl: don't use GPIOF_* with
+ gpiod_get_direction
+Date: Fri, 13 Apr 2018 18:08:24 +0200
+Message-ID: <20180413160824.GD31310@phenom.ffwll.local>
+References: <20180410123241.25745-1-wsa+renesas@sang-engineering.com>
+ <20180411073215.fzvh4ejj2kd7wam3@verge.net.au>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180411073215.fzvh4ejj2kd7wam3@verge.net.au>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Simon Horman <horms@verge.net.au>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>, Thierry Reding <thierry.reding@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Linus,
-
-The following changes since commit 7928b2cbe55b2a410a0f5c1f154610059c57b1b2:
-
-  Linux 4.16-rc1 (2018-02-11 15:04:29 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.17-rc1
-
-for you to fetch changes up to 6873842235d678a245a378669f35e145df2441b9:
-
-  pwm: rcar: Add suspend/resume support (2018-03-28 01:27:10 +0200)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.17-rc1
-
-This set of changes adds support for more generations of the RCar
-controller as well as runtime PM support. The JZ4740 driver gains
-support for device tree and can now be used on all Ingenic SoCs.
-
-Rounding things off is a random assortment of fixes and cleanups
-all across the board.
-
-----------------------------------------------------------------
-Alexandre Belloni (1):
-      pwm: sun4i: Properly check current state
-
-Andre Przywara (3):
-      pwm: sun4i: Drop unused .has_rdy member
-      pwm: sun4i: Simplify controller mapping
-      dt-bindings: pwm: sunxi: Add new compatible strings
-
-Arvind Yadav (1):
-      pwm: sysfs: Use put_device() instead of kfree()
-
-Benjamin Gaignard (1):
-      pwm: stm32: Adopt SPDX identifier
-
-Corentin Labbe (1):
-      pwm: Remove depends on AVR32
-
-Fabio Estevam (1):
-      pwm: imx: Let PWM be active during suspend
-
-Fabrice Gasnier (2):
-      pwm: stm32: Remove unused struct device
-      pwm: stm32: Protect common prescaler for all channels
-
-Fabrizio Castro (2):
-      dt-bindings: pwm: renesas-tpu: Document r8a774[35] support
-      dt-bindings: pwm: rcar: Document r8a774[35] PWM bindings
-
-Geert Uytterhoeven (2):
-      dt-bindings: pwm: renesas-tpu: Correct example TPU register block size
-      dt-bindings: pwm: renesas-tpu: Correct SoC part numbers and family names
-
-Gerald Baeza (2):
-      dt-bindings: pwm-stm32-lp: Add #pwm-cells
-      pwm: stm32: LPTimer: Use 3 cells ->of_xlate()
-
-Hien Dang (1):
-      pwm: rcar: Use PM Runtime to control module clock
-
-Maarten ter Huurne (1):
-      pwm: jz4740: Make disable operation compatible with TCU2 mode
-
-Markus Elfring (2):
-      pwm: puv3: Delete an error message for a failed memory allocation
-      pwm: atmel-tcb: Delete an error message for a failed memory allocation
-
-Paul Cercueil (3):
-      pwm: jz4740: Implement ->set_polarity()
-      pwm: jz4740: Add support for devicetree
-      pwm: jz4740: Enable for all Ingenic SoCs
-
-Ryo Kodama (1):
-      pwm: rcar: Fix a condition to prevent mismatch value setting to duty
-
-Sean Wang (3):
-      pwm: mediatek: Fix up PWM4 and PWM5 malfunction on MT7623
-      pwm: mediatek: Remove redundant MODULE_ALIAS entries
-      pwm: mediatek: Improve precision in rate calculation
-
-Yoshihiro Shimoda (2):
-      dt-bindings: pwm: rcar: Add bindings for R-Car M3N support
-      pwm: rcar: Add suspend/resume support
-
- .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt | 25 ++++++++++
- .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  3 ++
- .../devicetree/bindings/pwm/pwm-sun4i.txt          |  2 +
- .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   | 11 ++--
- .../devicetree/bindings/pwm/renesas,tpu-pwm.txt    | 10 ++--
- drivers/pwm/Kconfig                                |  8 +--
- drivers/pwm/pwm-atmel-tcb.c                        |  1 -
- drivers/pwm/pwm-imx.c                              |  3 +-
- drivers/pwm/pwm-jz4740.c                           | 41 ++++++++++++++-
- drivers/pwm/pwm-mediatek.c                         | 36 +++++++++++---
- drivers/pwm/pwm-puv3.c                             |  4 +-
- drivers/pwm/pwm-rcar.c                             | 58 +++++++++++++++++++---
- drivers/pwm/pwm-stm32-lp.c                         |  5 +-
- drivers/pwm/pwm-stm32.c                            | 22 ++++++--
- drivers/pwm/pwm-sun4i.c                            | 38 +++++---------
- drivers/pwm/sysfs.c                                |  3 +-
- 16 files changed, 206 insertions(+), 64 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+T24gV2VkLCBBcHIgMTEsIDIwMTggYXQgMDk6MzI6MTZBTSArMDIwMCwgU2ltb24gSG9ybWFuIHdy
+b3RlOgo+IE9uIFR1ZSwgQXByIDEwLCAyMDE4IGF0IDAyOjMyOjQwUE0gKzAyMDAsIFdvbGZyYW0g
+U2FuZyB3cm90ZToKPiA+IFRoZSBkb2N1bWVudGF0aW9uIHdhcyB3cm9uZywgZ3Bpb2RfZ2V0X2Rp
+cmVjdGlvbigpIHJldHVybnMgMC8xIGluc3RlYWQKPiA+IG9mIHRoZSBHUElPRl8qIGZsYWdzLiBU
+aGUgZG9jcyB3ZXJlIGZpeGVkIHdpdGggY29tbWl0IDk0ZmM3MzA5NGFiZTQ3Cj4gPiAoImdwaW86
+IGNvcnJlY3QgZG9jcyBhYm91dCByZXR1cm4gdmFsdWUgb2YgZ3Bpb2RfZ2V0X2RpcmVjdGlvbiIp
+LiBOb3csCj4gPiBmaXggdGhpcyB1c2VyICh1bnRpbCBhIGJldHRlciwgc3lzdGVtLXdpZGUgc29s
+dXRpb24gaXMgaW4gcGxhY2UpLgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBXb2xmcmFtIFNhbmcg
+PHdzYStyZW5lc2FzQHNhbmctZW5naW5lZXJpbmcuY29tPgo+ID4gQWNrZWQtYnk6IERhbmllbCBU
+aG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+Cj4gCj4gUmV2aWV3ZWQtYnk6IFNp
+bW9uIEhvcm1hbiA8aG9ybXMrcmVuZXNhc0B2ZXJnZS5uZXQuYXU+Cj4gCj4gPiAtLS0KPiA+IAo+
+ID4gQ2hhbmdlcyBzaW5jZSBWMToKPiA+IAkqIHJlYmFzZWQgdG8gdG9wLW9mLWxpbnVzLXRyZWUK
+PiA+IAkqIGFkZGVkIHRhZyBmcm9tIERhbmllbCwgdGhhbmtzIQo+ID4gCj4gPiBUaHJvdWdoIHdo
+aWNoIHRyZWUgZG9lcyB0aGlzIG5lZWQgdG8gZ28/CgpJIHRoaW5rIERhbmllbCBUaG9tcHNvbiBo
+YXMgb25lIC4uLgotRGFuaWVsCgo+ID4gCj4gPiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdt
+X2JsLmMgfCA2ICsrKy0tLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMg
+ZGVsZXRpb25zKC0pCj4gPiAKPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
+dC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gPiBpbmRleCAx
+YzIyODlkZGQ1NTUuLjBmYTdkMmJkMGU0OCAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvdmlkZW8v
+YmFja2xpZ2h0L3B3bV9ibC5jCj4gPiArKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
+YmwuYwo+ID4gQEAgLTMwMSwxNCArMzAxLDE0IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9w
+cm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ID4gIAo+ID4gIAkvKgo+ID4gIAkg
+KiBJZiB0aGUgR1BJTyBpcyBub3Qga25vd24gdG8gYmUgYWxyZWFkeSBjb25maWd1cmVkIGFzIG91
+dHB1dCwgdGhhdAo+ID4gLQkgKiBpcywgaWYgZ3Bpb2RfZ2V0X2RpcmVjdGlvbiByZXR1cm5zIGVp
+dGhlciBHUElPRl9ESVJfSU4gb3IgLUVJTlZBTCwKPiA+IC0JICogY2hhbmdlIHRoZSBkaXJlY3Rp
+b24gdG8gb3V0cHV0IGFuZCBzZXQgdGhlIEdQSU8gYXMgYWN0aXZlLgo+ID4gKwkgKiBpcywgaWYg
+Z3Bpb2RfZ2V0X2RpcmVjdGlvbiByZXR1cm5zIGVpdGhlciAxIG9yIC1FSU5WQUwsIGNoYW5nZSB0
+aGUKPiA+ICsJICogZGlyZWN0aW9uIHRvIG91dHB1dCBhbmQgc2V0IHRoZSBHUElPIGFzIGFjdGl2
+ZS4KPiA+ICAJICogRG8gbm90IGZvcmNlIHRoZSBHUElPIHRvIGFjdGl2ZSB3aGVuIGl0IHdhcyBh
+bHJlYWR5IG91dHB1dCBhcyBpdAo+ID4gIAkgKiBjb3VsZCBjYXVzZSBiYWNrbGlnaHQgZmxpY2tl
+cmluZyBvciB3ZSB3b3VsZCBlbmFibGUgdGhlIGJhY2tsaWdodCB0b28KPiA+ICAJICogZWFybHku
+IExlYXZlIHRoZSBkZWNpc2lvbiBvZiB0aGUgaW5pdGlhbCBiYWNrbGlnaHQgc3RhdGUgZm9yIGxh
+dGVyLgo+ID4gIAkgKi8KPiA+ICAJaWYgKHBiLT5lbmFibGVfZ3BpbyAmJgo+ID4gLQkgICAgZ3Bp
+b2RfZ2V0X2RpcmVjdGlvbihwYi0+ZW5hYmxlX2dwaW8pICE9IEdQSU9GX0RJUl9PVVQpCj4gPiAr
+CSAgICBncGlvZF9nZXRfZGlyZWN0aW9uKHBiLT5lbmFibGVfZ3BpbykgIT0gMCkKPiA+ICAJCWdw
+aW9kX2RpcmVjdGlvbl9vdXRwdXQocGItPmVuYWJsZV9ncGlvLCAxKTsKPiA+ICAKPiA+ICAJcGIt
+PnBvd2VyX3N1cHBseSA9IGRldm1fcmVndWxhdG9yX2dldCgmcGRldi0+ZGV2LCAicG93ZXIiKTsK
+PiA+IC0tIAo+ID4gMi4xMS4wCj4gPiAKPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwo+IGRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKPiBkcmktZGV2ZWxAbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
+bi9saXN0aW5mby9kcmktZGV2ZWwKCi0tIApEYW5pZWwgVmV0dGVyClNvZnR3YXJlIEVuZ2luZWVy
+LCBJbnRlbCBDb3Jwb3JhdGlvbgpodHRwOi8vYmxvZy5mZndsbC5jaApfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRy
+aS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
