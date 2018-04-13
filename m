@@ -1,29 +1,24 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:55657 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751507AbeDILrk (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Apr 2018 07:47:40 -0400
-Date: Mon, 9 Apr 2018 13:47:36 +0200
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH] pwm: rcar: simplify getting .drvdata
-Message-ID: <20180409114736.krzyciz2gyotbm72@verge.net.au>
-References: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180405172552.8720-1-wsa+renesas@sang-engineering.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 0/2] pwm/ACPI: Fix LPSS PWM suspend/resume issues
+Date: Fri, 13 Apr 2018 14:52:16 +0200
+Message-Id: <20180413125218.7131-1-hdegoede@redhat.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-On Thu, Apr 05, 2018 at 07:25:51PM +0200, Wolfram Sang wrote:
-> We should get drvdata from struct device directly. Going via
-> platform_device is an unneeded step back and forth.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
-> 
-> Only build tested. Fixed numerous times in other drivers, however...
+Hi All,
 
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Here are 2 patches which together fix the LCD panel staying black
+(backlight brightness 0) after a suspend / resume on some Bay Trail
+devices. I guess these devices are unique in that their firmware
+disables the LPSS PWM APB clock / reset bits on a suspend / resume.
+
+The first patch is necessary to fix the second patch potentially
+causing a regression on some devices. So I suggest that we merge both
+patches through the pwm tree, with an ack from Rafael for the ACPI
+bits. Rafael, can we have your ack for that please?
+
+Regards,
+
+Hans
