@@ -1,216 +1,60 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH v3 2/6] mfd: stm32-timers: add support for dmas
-Date: Mon, 16 Apr 2018 14:46:47 +0200
-Message-ID: <7531300c-7b7e-75c9-ea5b-8ca01b684c45@st.com>
-References: <1522404084-24903-1-git-send-email-fabrice.gasnier@st.com>
- <1522404084-24903-3-git-send-email-fabrice.gasnier@st.com>
- <20180416122217.u7h3wawpdx3kj4wd@dell>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND PATCH v6 1/5] pwm-backlight: enable/disable the PWM
+ before/after LCD enable toggle.
+Date: Mon, 16 Apr 2018 15:43:32 +0100
+Message-ID: <20180416144332.caww5vttzrzjlnkt@dell>
+References: <20180328170327.5395-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180416122217.u7h3wawpdx3kj4wd@dell>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: mark.rutland@arm.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux@armlinux.org.uk, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, benjamin.gaignard@linaro.org, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180328170327.5395-1-enric.balletbo@collabora.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, kernel@collabora.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 04/16/2018 02:22 PM, Lee Jones wrote:
-> On Fri, 30 Mar 2018, Fabrice Gasnier wrote:
-> 
->> STM32 Timers can support up to 7 DMA requests:
->> - 4 channels, update, compare and trigger.
->> Optionally request part, or all DMAs from stm32-timers MFD core.
->>
->> Also add routine to implement burst reads using DMA from timer registers.
->> This is exported. So, it can be used by child drivers, PWM capture
->> for instance (but not limited to).
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->> Reviewed-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
->> ---
->> Changes in v3:
->> - Basically Lee's comments:
->> - rather create a struct stm32_timers_dma, and place a reference to it
->>   in existing ddata (instead of adding priv struct).
->> - rather use a struct device in exported routine prototype, and use
->>   standard helpers instead of ddata. Get rid of to_stm32_timers_priv().
->> - simplify error handling in probe (remove a goto)
->> - comment on devm_of_platform_*populate() usage.
->>
->> Changes in v2:
->> - Abstract DMA handling from child driver: move it to MFD core
->> - Add comments on optional dma support
->> ---
->>  drivers/mfd/stm32-timers.c       | 219 ++++++++++++++++++++++++++++++++++++++-
->>  include/linux/mfd/stm32-timers.h |  32 ++++++
->>  2 files changed, 249 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
->> index 1d347e5..98191ec 100644
->> --- a/drivers/mfd/stm32-timers.c
->> +++ b/drivers/mfd/stm32-timers.c
->> @@ -4,16 +4,165 @@
->>   * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
->>   */
->>  
->> +#include <linux/bitfield.h>
->> +#include <linux/dmaengine.h>
->> +#include <linux/dma-mapping.h>
->>  #include <linux/mfd/stm32-timers.h>
->>  #include <linux/module.h>
->>  #include <linux/of_platform.h>
->>  #include <linux/reset.h>
->>  
->> +#define STM32_TIMERS_MAX_REGISTERS	0x3fc
->> +
->> +struct stm32_timers_dma {
->> +	struct completion completion;
->> +	phys_addr_t phys_base;
->> +	struct mutex lock;		/* protect dma access */
-> 
-> Nit: I like comments to use good grammar i.e. capital letters to
-> start a sentence and 's/dma/DMA/'.  Or better still, drop the comment,
-> we know what the lock is for.
-> 
->> +	struct dma_chan *chan;
->> +	struct dma_chan *chans[STM32_TIMERS_MAX_DMAS];
-> 
-> This requires explanation.  Maybe a kerneldoc header would be good here.
+On Wed, 28 Mar 2018, Enric Balletbo i Serra wrote:
 
-Hi Lee,
+> Before this patch the enable signal was set before the PWM signal and
+> vice-versa on power off. This sequence is wrong, at least, it is on
+> the different panels datasheets that I checked, so I inverted the sequence
+> to follow the specs.
+> 
+> For reference the following panels have the mentioned sequence:
+>   - N133HSE-EA1 (Innolux)
+>   - N116BGE (Innolux)
+>   - N156BGE-L21 (Innolux)
+>   - B101EAN0 (Auo)
+>   - B101AW03 (Auo)
+>   - LTN101NT05 (Samsung)
+>   - CLAA101WA01A (Chunghwa)
+> 
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Acked-by: Jingoo Han <jingoohan1@gmail.com>
+> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> ---
+> Changes since v5:
+>  - Add Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> Changes since v4:
+>  - Rebase on top of mainline.
+>  - Add the acks from Daniel Thompson and Jingoo Han.
+> Changes since v3:
+>  - List the part numbers for the panel checked (Daniel Thompson)
+> Changes since v2:
+>  - Add this as a separate patch (Thierry Reding)
+> Changes since v1:
+>  - None
+> ---
+>  drivers/video/backlight/pwm_bl.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
 
-I'll add kerneldoc in next version.
+Applied, thanks.
 
-> 
-> [...]
-> 
->> +/**
->> + * stm32_timers_dma_burst_read - Read from timers registers using DMA.
->> + *
->> + * Read from STM32 timers registers using DMA on a single event.
->> + * @dev: reference to stm32_timers MFD device
->> + * @buf: dma'able destination buffer
->> + * @id: stm32_timers_dmas event identifier (ch[1..4], up, trig or com)
->> + * @reg: registers start offset for DMA to read from (like CCRx for capture)
->> + * @num_reg: number of registers to read upon each dma request, starting @reg.
->> + * @bursts: number of bursts to read (e.g. like two for pwm period capture)
->> + * @tmo_ms: timeout (milliseconds)
->> + */
->> +int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
->> +				enum stm32_timers_dmas id, u32 reg,
->> +				unsigned int num_reg, unsigned int bursts,
->> +				unsigned long tmo_ms)
->> +{
->> +	struct stm32_timers *ddata = dev_get_drvdata(dev);
->> +	unsigned long timeout = msecs_to_jiffies(tmo_ms);
->> +	struct regmap *regmap = ddata->regmap;
->> +	struct stm32_timers_dma *dma = ddata->dma;
->> +	size_t len = num_reg * bursts * sizeof(u32);
->> +	struct dma_async_tx_descriptor *desc;
->> +	struct dma_slave_config config;
->> +	dma_cookie_t cookie;
->> +	dma_addr_t dma_buf;
->> +	u32 dbl, dba;
->> +	long err;
->> +	int ret;
->> +
->> +	/* sanity check */
-> 
-> Proper grammar in all comments please.
-> 
-> "Sanity check"
-> 
-> [...]
-> 
->> +	/* select dma channel in use */
-> 
-> Here too.
-> 
-> Etc, etc, etc ...
-
-Okay, will take care of this.
-
-> 
->> +	dma->chan = dma->chans[id];
->> +	dma_buf = dma_map_single(dev, buf, len, DMA_FROM_DEVICE);
->> +	ret = dma_mapping_error(dev, dma_buf);
->> +	if (ret)
->> +		goto unlock;
->> +
->> +	/* Prepare DMA read from timer registers, using DMA burst mode */
-> 
-> This is good.
-> [...]
-> 
-> [...]
-> 
->> diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
->> index 2aadab6..585a4de 100644
->> --- a/include/linux/mfd/stm32-timers.h
->> +++ b/include/linux/mfd/stm32-timers.h
->> @@ -8,6 +8,8 @@
->>  #define _LINUX_STM32_GPTIMER_H_
->>  
->>  #include <linux/clk.h>
->> +#include <linux/dmaengine.h>
->> +#include <linux/dma-mapping.h>
->>  #include <linux/regmap.h>
-> 
-> [...]
-> 
->> +enum stm32_timers_dmas {
->> +	STM32_TIMERS_DMA_CH1,
->> +	STM32_TIMERS_DMA_CH2,
->> +	STM32_TIMERS_DMA_CH3,
->> +	STM32_TIMERS_DMA_CH4,
->> +	STM32_TIMERS_DMA_UP,
->> +	STM32_TIMERS_DMA_TRIG,
->> +	STM32_TIMERS_DMA_COM,
->> +	STM32_TIMERS_MAX_DMAS,
->> +};
->> +
->> +struct stm32_timers_dma;
-> 
-> Why don't you move the declaration into here?
-
-To follow previous discussions we had in V1 and V2, this is to avoid
-sharing all the information with child drivers, e.g. passing physical
-address of parent MFD into child devices.
-
-I should probably add a comment there ? Something like:
-
-/* STM32 timers MFD parent internal struct to handle DMA transfers */
-struct stm32_timers_dma;
-
-Do you agree with this ?
-
-Thanks for reviewing,
-BR,
-Fabrice
-
-> 
-> Then you don't need to forward declare.
-> 
->>  struct stm32_timers {
->>  	struct clk *clk;
->>  	struct regmap *regmap;
->>  	u32 max_arr;
->> +	struct stm32_timers_dma *dma;
->>  };
->> +
->> +int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
->> +				enum stm32_timers_dmas id, u32 reg,
->> +				unsigned int num_reg, unsigned int bursts,
->> +				unsigned long tmo_ms);
->>  #endif
-> 
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
