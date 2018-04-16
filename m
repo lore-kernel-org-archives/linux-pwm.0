@@ -1,16 +1,16 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 3/3] backlight: pwm_bl: don't use GPIOF_* with
+Subject: Re: [PATCH RESEND] backlight: pwm_bl: don't use GPIOF_* with
  gpiod_get_direction
-Date: Mon, 16 Apr 2018 10:11:06 +0100
-Message-ID: <20180416091106.lg7nesbqvfeehuzq@dell>
-References: <20180114210711.13863-1-wsa+renesas@sang-engineering.com>
- <20180114210711.13863-4-wsa+renesas@sang-engineering.com>
+Date: Mon, 16 Apr 2018 10:12:57 +0100
+Message-ID: <20180416091257.swbt7i6zjfbwysg2@dell>
+References: <20180410123241.25745-1-wsa+renesas@sang-engineering.com>
+ <20180411073215.fzvh4ejj2kd7wam3@verge.net.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20180114210711.13863-4-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20180411073215.fzvh4ejj2kd7wam3@verge.net.au>
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -20,20 +20,50 @@ List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+To: Simon Horman <horms@verge.net.au>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>, Thierry Reding <thierry.reding@gmail.com>, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gU3VuLCAxNCBKYW4gMjAxOCwgV29sZnJhbSBTYW5nIHdyb3RlOgoKPiBUaGUgZG9jdW1lbnRh
-dGlvbiB3YXMgd3JvbmcsIGdwaW9kX2dldF9kaXJlY3Rpb24oKSByZXR1cm5zIDAvMSBpbnN0ZWFk
-Cj4gb2YgdGhlIEdQSU9GXyogZmxhZ3MuIFRoZSBkb2NzIHdlcmUgZml4ZWQgd2l0aCBjb21taXQg
-OTRmYzczMDk0YWJlNDcKPiAoImdwaW86IGNvcnJlY3QgZG9jcyBhYm91dCByZXR1cm4gdmFsdWUg
-b2YgZ3Bpb2RfZ2V0X2RpcmVjdGlvbiIpLiBOb3csCj4gZml4IHRoaXMgdXNlciAodW50aWwgYSBi
-ZXR0ZXIsIHN5c3RlbS13aWRlIHNvbHV0aW9uIGlzIGluIHBsYWNlKS4KPiAKPiBTaWduZWQtb2Zm
-LWJ5OiBXb2xmcmFtIFNhbmcgPHdzYStyZW5lc2FzQHNhbmctZW5naW5lZXJpbmcuY29tPgo+IC0t
-LQo+IE9ubHkgYnVpbGQgdGVzdGVkIQo+IAo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
-YmwuYyB8IDYgKysrLS0tCj4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVs
-ZXRpb25zKC0pCgpBcHBsaWVkIHdpdGggRGFuaWVsIGFuZCBTaW1vbidzIEFja3MuCgotLSAKTGVl
+T24gV2VkLCAxMSBBcHIgMjAxOCwgU2ltb24gSG9ybWFuIHdyb3RlOgoKPiBPbiBUdWUsIEFwciAx
+MCwgMjAxOCBhdCAwMjozMjo0MFBNICswMjAwLCBXb2xmcmFtIFNhbmcgd3JvdGU6Cj4gPiBUaGUg
+ZG9jdW1lbnRhdGlvbiB3YXMgd3JvbmcsIGdwaW9kX2dldF9kaXJlY3Rpb24oKSByZXR1cm5zIDAv
+MSBpbnN0ZWFkCj4gPiBvZiB0aGUgR1BJT0ZfKiBmbGFncy4gVGhlIGRvY3Mgd2VyZSBmaXhlZCB3
+aXRoIGNvbW1pdCA5NGZjNzMwOTRhYmU0Nwo+ID4gKCJncGlvOiBjb3JyZWN0IGRvY3MgYWJvdXQg
+cmV0dXJuIHZhbHVlIG9mIGdwaW9kX2dldF9kaXJlY3Rpb24iKS4gTm93LAo+ID4gZml4IHRoaXMg
+dXNlciAodW50aWwgYSBiZXR0ZXIsIHN5c3RlbS13aWRlIHNvbHV0aW9uIGlzIGluIHBsYWNlKS4K
+PiA+IAo+ID4gU2lnbmVkLW9mZi1ieTogV29sZnJhbSBTYW5nIDx3c2ErcmVuZXNhc0BzYW5nLWVu
+Z2luZWVyaW5nLmNvbT4KPiA+IEFja2VkLWJ5OiBEYW5pZWwgVGhvbXBzb24gPGRhbmllbC50aG9t
+cHNvbkBsaW5hcm8ub3JnPgo+IAo+IFJldmlld2VkLWJ5OiBTaW1vbiBIb3JtYW4gPGhvcm1zK3Jl
+bmVzYXNAdmVyZ2UubmV0LmF1PgoKVGhhbmtzIGZvciB0aGUgUmV2aWV3ZWQtYnkgU2ltb24uICBJ
+IGhhdmUgYXBwbGllZCBpdCB0byB0aGUgb3JpZ2luYWwgbWFpbC4KCkRvIHlvdSBrbm93IHdoeSB5
+b3UgbWFpbCB3YXNuJ3Qgc2VudCBhdHRhY2hlZCB0byB0aGUgb3JpZ2luYWwgdGhyZWFkPwpGb3Ig
+c29tZSByZWFzb24gSSByZWNlaXZlZCB0aGlzIG1haWwgb24gaXQncyBvd24gaS5lLiBub3QgaW4g
+cmVwbHkKdG8gdGhlIG9yaWdpbmFsLgoKPiA+IC0tLQo+ID4gCj4gPiBDaGFuZ2VzIHNpbmNlIFYx
+Ogo+ID4gCSogcmViYXNlZCB0byB0b3Atb2YtbGludXMtdHJlZQo+ID4gCSogYWRkZWQgdGFnIGZy
+b20gRGFuaWVsLCB0aGFua3MhCj4gPiAKPiA+IFRocm91Z2ggd2hpY2ggdHJlZSBkb2VzIHRoaXMg
+bmVlZCB0byBnbz8KPiA+IAo+ID4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIHwg
+NiArKystLS0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9u
+cygtKQo+ID4gCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2Js
+LmMgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+ID4gaW5kZXggMWMyMjg5ZGRk
+NTU1Li4wZmE3ZDJiZDBlNDggMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
+dC9wd21fYmwuYwo+ID4gKysrIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiA+
+IEBAIC0zMDEsMTQgKzMwMSwxNCBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcHJvYmUoc3Ry
+dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiA+ICAKPiA+ICAJLyoKPiA+ICAJICogSWYgdGhl
+IEdQSU8gaXMgbm90IGtub3duIHRvIGJlIGFscmVhZHkgY29uZmlndXJlZCBhcyBvdXRwdXQsIHRo
+YXQKPiA+IC0JICogaXMsIGlmIGdwaW9kX2dldF9kaXJlY3Rpb24gcmV0dXJucyBlaXRoZXIgR1BJ
+T0ZfRElSX0lOIG9yIC1FSU5WQUwsCj4gPiAtCSAqIGNoYW5nZSB0aGUgZGlyZWN0aW9uIHRvIG91
+dHB1dCBhbmQgc2V0IHRoZSBHUElPIGFzIGFjdGl2ZS4KPiA+ICsJICogaXMsIGlmIGdwaW9kX2dl
+dF9kaXJlY3Rpb24gcmV0dXJucyBlaXRoZXIgMSBvciAtRUlOVkFMLCBjaGFuZ2UgdGhlCj4gPiAr
+CSAqIGRpcmVjdGlvbiB0byBvdXRwdXQgYW5kIHNldCB0aGUgR1BJTyBhcyBhY3RpdmUuCj4gPiAg
+CSAqIERvIG5vdCBmb3JjZSB0aGUgR1BJTyB0byBhY3RpdmUgd2hlbiBpdCB3YXMgYWxyZWFkeSBv
+dXRwdXQgYXMgaXQKPiA+ICAJICogY291bGQgY2F1c2UgYmFja2xpZ2h0IGZsaWNrZXJpbmcgb3Ig
+d2Ugd291bGQgZW5hYmxlIHRoZSBiYWNrbGlnaHQgdG9vCj4gPiAgCSAqIGVhcmx5LiBMZWF2ZSB0
+aGUgZGVjaXNpb24gb2YgdGhlIGluaXRpYWwgYmFja2xpZ2h0IHN0YXRlIGZvciBsYXRlci4KPiA+
+ICAJICovCj4gPiAgCWlmIChwYi0+ZW5hYmxlX2dwaW8gJiYKPiA+IC0JICAgIGdwaW9kX2dldF9k
+aXJlY3Rpb24ocGItPmVuYWJsZV9ncGlvKSAhPSBHUElPRl9ESVJfT1VUKQo+ID4gKwkgICAgZ3Bp
+b2RfZ2V0X2RpcmVjdGlvbihwYi0+ZW5hYmxlX2dwaW8pICE9IDApCj4gPiAgCQlncGlvZF9kaXJl
+Y3Rpb25fb3V0cHV0KHBiLT5lbmFibGVfZ3BpbywgMSk7Cj4gPiAgCj4gPiAgCXBiLT5wb3dlcl9z
+dXBwbHkgPSBkZXZtX3JlZ3VsYXRvcl9nZXQoJnBkZXYtPmRldiwgInBvd2VyIik7CgotLSAKTGVl
 IEpvbmVzIFvmnY7nkLzmlq9dCkxpbmFybyBTZXJ2aWNlcyBUZWNobmljYWwgTGVhZApMaW5hcm8u
 b3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9sbG93IExpbmFybzog
 RmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
