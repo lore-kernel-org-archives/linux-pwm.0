@@ -1,168 +1,147 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
 Subject: Re: [PATCH v4 2/6] mfd: stm32-timers: add support for dmas
-Date: Tue, 17 Apr 2018 14:25:18 +0300
-Message-ID: <20180417112518.pmvx4rubgxtr4nea@mwanda>
-References: <1523895561-4073-3-git-send-email-fabrice.gasnier@st.com>
+Date: Tue, 17 Apr 2018 13:54:32 +0200
+Message-ID: <72e211c8-7342-7722-e3e8-75442560bdfe@st.com>
+References: <1523895561-4073-1-git-send-email-fabrice.gasnier@st.com>
+ <1523895561-4073-3-git-send-email-fabrice.gasnier@st.com>
+ <20180417071250.yhgl7c7apn7w53xf@dell>
+ <34e30463-6236-a8e4-fd1f-6217612375eb@st.com>
+ <20180417101009.do42adq24ltgw4lt@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <kbuild-bounces@lists.01.org>
-Content-Disposition: inline
-In-Reply-To: <1523895561-4073-3-git-send-email-fabrice.gasnier@st.com>
-List-Unsubscribe: <https://lists.01.org/mailman/options/kbuild>,
- <mailto:kbuild-request@lists.01.org?subject=unsubscribe>
-List-Archive: <http://lists.01.org/pipermail/kbuild/>
-List-Post: <mailto:kbuild@lists.01.org>
-List-Help: <mailto:kbuild-request@lists.01.org?subject=help>
-List-Subscribe: <https://lists.01.org/mailman/listinfo/kbuild>,
- <mailto:kbuild-request@lists.01.org?subject=subscribe>
-Errors-To: kbuild-bounces@lists.01.org
-Sender: "kbuild" <kbuild-bounces@lists.01.org>
-To: kbuild@01.org
-Cc: mark.rutland@arm.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux@armlinux.org.uk, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, kbuild-all@01.org, benjamin.gaignard@linaro.org, fabrice.gasnier@st.com, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180417101009.do42adq24ltgw4lt@dell>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: alexandre.torgue@st.com, thierry.reding@gmail.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Fabrice,
+On 04/17/2018 12:10 PM, Lee Jones wrote:
+> On Tue, 17 Apr 2018, Fabrice Gasnier wrote:
+> 
+>> On 04/17/2018 09:12 AM, Lee Jones wrote:
+>>> On Mon, 16 Apr 2018, Fabrice Gasnier wrote:
+>>>
+>>>> STM32 Timers can support up to 7 DMA requests:
+>>>> - 4 channels, update, compare and trigger.
+>>>> Optionally request part, or all DMAs from stm32-timers MFD core.
+>>>>
+>>>> Also add routine to implement burst reads using DMA from timer registers.
+>>>> This is exported. So, it can be used by child drivers, PWM capture
+>>>> for instance (but not limited to).
+>>>>
+>>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+>>>> Reviewed-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+>>>> ---
+>>>> Changes in v4:
+>>>> - Lee's comments: Add kerneldoc header, better format comments.
+>>>> Changes in v3:
+>>>> - Basically Lee's comments:
+>>>> - rather create a struct stm32_timers_dma, and place a reference to it
+>>>>   in existing ddata (instead of adding priv struct).
+>>>> - rather use a struct device in exported routine prototype, and use
+>>>>   standard helpers instead of ddata. Get rid of to_stm32_timers_priv().
+>>>> - simplify error handling in probe (remove a goto)
+>>>> - comment on devm_of_platform_*populate() usage.
+>>>>
+>>>> Changes in v2:
+>>>> - Abstract DMA handling from child driver: move it to MFD core
+>>>> - Add comments on optional dma support
+>>>> ---
+>>>>  drivers/mfd/stm32-timers.c       | 227 ++++++++++++++++++++++++++++++++++++++-
+>>>>  include/linux/mfd/stm32-timers.h |  32 ++++++
+>>>>  2 files changed, 257 insertions(+), 2 deletions(-)
+>>>
+>>> [...]
+>>>
+>>>> diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
+>>>> index 2aadab6..a04d7a1 100644
+>>>> --- a/include/linux/mfd/stm32-timers.h
+>>>> +++ b/include/linux/mfd/stm32-timers.h
+>>>> @@ -8,6 +8,8 @@
+>>>>  #define _LINUX_STM32_GPTIMER_H_
+>>>>  
+>>>>  #include <linux/clk.h>
+>>>> +#include <linux/dmaengine.h>
+>>>> +#include <linux/dma-mapping.h>
+>>>>  #include <linux/regmap.h>
+>>>
+>>> [...]
+>>>
+>>>> +struct stm32_timers_dma;
+>>>> +
+>>>>  struct stm32_timers {
+>>>>  	struct clk *clk;
+>>>>  	struct regmap *regmap;
+>>>>  	u32 max_arr;
+>>>> +	struct stm32_timers_dma *dma; /* Only to be used by the parent */
+>>>
+>>> I'm confused.  I thought the point of putting this comment in was so
+>>> that you could place the definition of 'stm32_timers_dma' and remove
+>>> the forward declaration?
+>>
+>> Hi Lee,
+>>
+>> Sorry, if I miss-understood the point then. So, do you wish I both:
+>> - move the full struct definition in above header ?
+>> - and keep this comment ?
+> 
+> That was what I thought we agreed.
 
-Thank you for the patch! Perhaps something to improve:
+Hi Lee,
 
-[auto build test WARNING on pwm/for-next]
-[also build test WARNING on v4.17-rc1 next-20180416]
-[cannot apply to ljones-mfd/for-mfd-next]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+Ok, I'll update this in v5.
+BTW, I'll fix warning reported by Dan:
+> smatch warnings:
+drivers/mfd/stm32-timers.c:165 stm32_timers_dma_burst_read() warn: warn:
+dma_mapping_error() doesn't return an error code
 
-url:    https://github.com/0day-ci/linux/commits/Fabrice-Gasnier/Add-support-for-PWM-input-capture-on-STM32/20180417-052347
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git for-next
+Thanks,
+Fabrice
 
-smatch warnings:
-drivers/mfd/stm32-timers.c:165 stm32_timers_dma_burst_read() warn: warn: dma_mapping_error() doesn't return an error code
-
-# https://github.com/0day-ci/linux/commit/402362a100e6b02b807fbebdc05b7159b565ffa5
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 402362a100e6b02b807fbebdc05b7159b565ffa5
-vim +165 drivers/mfd/stm32-timers.c
-
-402362a1 Fabrice Gasnier 2018-04-16   54  
-402362a1 Fabrice Gasnier 2018-04-16   55  /**
-402362a1 Fabrice Gasnier 2018-04-16   56   * stm32_timers_dma_burst_read - Read from timers registers using DMA.
-402362a1 Fabrice Gasnier 2018-04-16   57   *
-402362a1 Fabrice Gasnier 2018-04-16   58   * Read from STM32 timers registers using DMA on a single event.
-402362a1 Fabrice Gasnier 2018-04-16   59   * @dev: reference to stm32_timers MFD device
-402362a1 Fabrice Gasnier 2018-04-16   60   * @buf: DMA'able destination buffer
-402362a1 Fabrice Gasnier 2018-04-16   61   * @id: stm32_timers_dmas event identifier (ch[1..4], up, trig or com)
-402362a1 Fabrice Gasnier 2018-04-16   62   * @reg: registers start offset for DMA to read from (like CCRx for capture)
-402362a1 Fabrice Gasnier 2018-04-16   63   * @num_reg: number of registers to read upon each DMA request, starting @reg.
-402362a1 Fabrice Gasnier 2018-04-16   64   * @bursts: number of bursts to read (e.g. like two for pwm period capture)
-402362a1 Fabrice Gasnier 2018-04-16   65   * @tmo_ms: timeout (milliseconds)
-402362a1 Fabrice Gasnier 2018-04-16   66   */
-402362a1 Fabrice Gasnier 2018-04-16   67  int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
-402362a1 Fabrice Gasnier 2018-04-16   68  				enum stm32_timers_dmas id, u32 reg,
-402362a1 Fabrice Gasnier 2018-04-16   69  				unsigned int num_reg, unsigned int bursts,
-402362a1 Fabrice Gasnier 2018-04-16   70  				unsigned long tmo_ms)
-402362a1 Fabrice Gasnier 2018-04-16   71  {
-402362a1 Fabrice Gasnier 2018-04-16   72  	struct stm32_timers *ddata = dev_get_drvdata(dev);
-402362a1 Fabrice Gasnier 2018-04-16   73  	unsigned long timeout = msecs_to_jiffies(tmo_ms);
-402362a1 Fabrice Gasnier 2018-04-16   74  	struct regmap *regmap = ddata->regmap;
-402362a1 Fabrice Gasnier 2018-04-16   75  	struct stm32_timers_dma *dma = ddata->dma;
-402362a1 Fabrice Gasnier 2018-04-16   76  	size_t len = num_reg * bursts * sizeof(u32);
-402362a1 Fabrice Gasnier 2018-04-16   77  	struct dma_async_tx_descriptor *desc;
-402362a1 Fabrice Gasnier 2018-04-16   78  	struct dma_slave_config config;
-402362a1 Fabrice Gasnier 2018-04-16   79  	dma_cookie_t cookie;
-402362a1 Fabrice Gasnier 2018-04-16   80  	dma_addr_t dma_buf;
-402362a1 Fabrice Gasnier 2018-04-16   81  	u32 dbl, dba;
-402362a1 Fabrice Gasnier 2018-04-16   82  	long err;
-402362a1 Fabrice Gasnier 2018-04-16   83  	int ret;
-402362a1 Fabrice Gasnier 2018-04-16   84  
-402362a1 Fabrice Gasnier 2018-04-16   85  	/* Sanity check */
-402362a1 Fabrice Gasnier 2018-04-16   86  	if (id < STM32_TIMERS_DMA_CH1 || id >= STM32_TIMERS_MAX_DMAS)
-402362a1 Fabrice Gasnier 2018-04-16   87  		return -EINVAL;
-402362a1 Fabrice Gasnier 2018-04-16   88  
-402362a1 Fabrice Gasnier 2018-04-16   89  	if (!num_reg || !bursts || reg > STM32_TIMERS_MAX_REGISTERS ||
-402362a1 Fabrice Gasnier 2018-04-16   90  	    (reg + num_reg * sizeof(u32)) > STM32_TIMERS_MAX_REGISTERS)
-402362a1 Fabrice Gasnier 2018-04-16   91  		return -EINVAL;
-402362a1 Fabrice Gasnier 2018-04-16   92  
-402362a1 Fabrice Gasnier 2018-04-16   93  	if (!dma->chans[id])
-402362a1 Fabrice Gasnier 2018-04-16   94  		return -ENODEV;
-402362a1 Fabrice Gasnier 2018-04-16   95  	mutex_lock(&dma->lock);
-402362a1 Fabrice Gasnier 2018-04-16   96  
-402362a1 Fabrice Gasnier 2018-04-16   97  	/* Select DMA channel in use */
-402362a1 Fabrice Gasnier 2018-04-16   98  	dma->chan = dma->chans[id];
-402362a1 Fabrice Gasnier 2018-04-16   99  	dma_buf = dma_map_single(dev, buf, len, DMA_FROM_DEVICE);
-402362a1 Fabrice Gasnier 2018-04-16  100  	ret = dma_mapping_error(dev, dma_buf);
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This should be:
-
-	if (dma_mapping_error(dev, dma_buf)) {
-		ret = -ENOMEM;
-		goto unlock;
-	}
-
-402362a1 Fabrice Gasnier 2018-04-16  101  	if (ret)
-402362a1 Fabrice Gasnier 2018-04-16  102  		goto unlock;
-402362a1 Fabrice Gasnier 2018-04-16  103  
-402362a1 Fabrice Gasnier 2018-04-16  104  	/* Prepare DMA read from timer registers, using DMA burst mode */
-402362a1 Fabrice Gasnier 2018-04-16  105  	memset(&config, 0, sizeof(config));
-402362a1 Fabrice Gasnier 2018-04-16  106  	config.src_addr = (dma_addr_t)dma->phys_base + TIM_DMAR;
-402362a1 Fabrice Gasnier 2018-04-16  107  	config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-402362a1 Fabrice Gasnier 2018-04-16  108  	ret = dmaengine_slave_config(dma->chan, &config);
-402362a1 Fabrice Gasnier 2018-04-16  109  	if (ret)
-402362a1 Fabrice Gasnier 2018-04-16  110  		goto unmap;
-402362a1 Fabrice Gasnier 2018-04-16  111  
-402362a1 Fabrice Gasnier 2018-04-16  112  	desc = dmaengine_prep_slave_single(dma->chan, dma_buf, len,
-402362a1 Fabrice Gasnier 2018-04-16  113  					   DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
-402362a1 Fabrice Gasnier 2018-04-16  114  	if (!desc) {
-402362a1 Fabrice Gasnier 2018-04-16  115  		ret = -EBUSY;
-402362a1 Fabrice Gasnier 2018-04-16  116  		goto unmap;
-402362a1 Fabrice Gasnier 2018-04-16  117  	}
-402362a1 Fabrice Gasnier 2018-04-16  118  
-402362a1 Fabrice Gasnier 2018-04-16  119  	desc->callback = stm32_timers_dma_done;
-402362a1 Fabrice Gasnier 2018-04-16  120  	desc->callback_param = dma;
-402362a1 Fabrice Gasnier 2018-04-16  121  	cookie = dmaengine_submit(desc);
-402362a1 Fabrice Gasnier 2018-04-16  122  	ret = dma_submit_error(cookie);
-402362a1 Fabrice Gasnier 2018-04-16  123  	if (ret)
-402362a1 Fabrice Gasnier 2018-04-16  124  		goto dma_term;
-402362a1 Fabrice Gasnier 2018-04-16  125  
-402362a1 Fabrice Gasnier 2018-04-16  126  	reinit_completion(&dma->completion);
-402362a1 Fabrice Gasnier 2018-04-16  127  	dma_async_issue_pending(dma->chan);
-402362a1 Fabrice Gasnier 2018-04-16  128  
-402362a1 Fabrice Gasnier 2018-04-16  129  	/* Setup and enable timer DMA burst mode */
-402362a1 Fabrice Gasnier 2018-04-16  130  	dbl = FIELD_PREP(TIM_DCR_DBL, bursts - 1);
-402362a1 Fabrice Gasnier 2018-04-16  131  	dba = FIELD_PREP(TIM_DCR_DBA, reg >> 2);
-402362a1 Fabrice Gasnier 2018-04-16  132  	ret = regmap_write(regmap, TIM_DCR, dbl | dba);
-402362a1 Fabrice Gasnier 2018-04-16  133  	if (ret)
-402362a1 Fabrice Gasnier 2018-04-16  134  		goto dma_term;
-402362a1 Fabrice Gasnier 2018-04-16  135  
-402362a1 Fabrice Gasnier 2018-04-16  136  	/* Clear pending flags before enabling DMA request */
-402362a1 Fabrice Gasnier 2018-04-16  137  	ret = regmap_write(regmap, TIM_SR, 0);
-402362a1 Fabrice Gasnier 2018-04-16  138  	if (ret)
-402362a1 Fabrice Gasnier 2018-04-16  139  		goto dcr_clr;
-402362a1 Fabrice Gasnier 2018-04-16  140  
-402362a1 Fabrice Gasnier 2018-04-16  141  	ret = regmap_update_bits(regmap, TIM_DIER, stm32_timers_dier_dmaen[id],
-402362a1 Fabrice Gasnier 2018-04-16  142  				 stm32_timers_dier_dmaen[id]);
-402362a1 Fabrice Gasnier 2018-04-16  143  	if (ret)
-402362a1 Fabrice Gasnier 2018-04-16  144  		goto dcr_clr;
-402362a1 Fabrice Gasnier 2018-04-16  145  
-402362a1 Fabrice Gasnier 2018-04-16  146  	err = wait_for_completion_interruptible_timeout(&dma->completion,
-402362a1 Fabrice Gasnier 2018-04-16  147  							timeout);
-402362a1 Fabrice Gasnier 2018-04-16  148  	if (err == 0)
-402362a1 Fabrice Gasnier 2018-04-16  149  		ret = -ETIMEDOUT;
-402362a1 Fabrice Gasnier 2018-04-16  150  	else if (err < 0)
-402362a1 Fabrice Gasnier 2018-04-16  151  		ret = err;
-402362a1 Fabrice Gasnier 2018-04-16  152  
-402362a1 Fabrice Gasnier 2018-04-16  153  	regmap_update_bits(regmap, TIM_DIER, stm32_timers_dier_dmaen[id], 0);
-402362a1 Fabrice Gasnier 2018-04-16  154  	regmap_write(regmap, TIM_SR, 0);
-402362a1 Fabrice Gasnier 2018-04-16  155  dcr_clr:
-402362a1 Fabrice Gasnier 2018-04-16  156  	regmap_write(regmap, TIM_DCR, 0);
-402362a1 Fabrice Gasnier 2018-04-16  157  dma_term:
-402362a1 Fabrice Gasnier 2018-04-16  158  	dmaengine_terminate_all(dma->chan);
-402362a1 Fabrice Gasnier 2018-04-16  159  unmap:
-402362a1 Fabrice Gasnier 2018-04-16  160  	dma_unmap_single(dev, dma_buf, len, DMA_FROM_DEVICE);
-402362a1 Fabrice Gasnier 2018-04-16  161  unlock:
-402362a1 Fabrice Gasnier 2018-04-16  162  	dma->chan = NULL;
-402362a1 Fabrice Gasnier 2018-04-16  163  	mutex_unlock(&dma->lock);
-402362a1 Fabrice Gasnier 2018-04-16  164  
-402362a1 Fabrice Gasnier 2018-04-16 @165  	return ret;
-402362a1 Fabrice Gasnier 2018-04-16  166  }
-402362a1 Fabrice Gasnier 2018-04-16  167  EXPORT_SYMBOL_GPL(stm32_timers_dma_burst_read);
-402362a1 Fabrice Gasnier 2018-04-16  168  
+> However, I left the final decision to you.  If you do not think this
+> is a reasonable i.e. the comment alone will not be enough to prevent
+> people from abusing the API, then leave it as it is.
+> 
+> Bear in mind that I think this introduces a build dependency on the
+> MFD driver for *each and every* other source file which includes this
+> header.  If you choose the current solution, you will need to handle
+> that accordingly.
+> 
+>> +/**
+>> + * struct stm32_timers_dma - STM32 timer DMA handling.
+>> + * @completion:		end of DMA transfer completion
+>> + * @phys_base:		control registers physical base address
+>> + * @lock:		protect DMA access
+>> + * @chan:		DMA channel in use
+>> + * @chans:		DMA channels available for this timer instance
+>> + */
+>> +struct stm32_timers_dma {
+>> +	struct completion completion;
+>> +	phys_addr_t phys_base;
+>> +	struct mutex lock;
+>> +	struct dma_chan *chan;
+>> +	struct dma_chan *chans[STM32_TIMERS_MAX_DMAS];
+>> +};
+>>
+>> This will basically expose the struct to child drivers. But I'm ok if
+>> you think this is acceptable.
+>>
+>> I can send a V5 if you wish...
+>>
+>> Please advise,
+>> Best regards,
+>> Fabrice
+>>
+>>>
+>>>>  };
+>>>> +
+>>>> +int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
+>>>> +				enum stm32_timers_dmas id, u32 reg,
+>>>> +				unsigned int num_reg, unsigned int bursts,
+>>>> +				unsigned long tmo_ms);
+>>>>  #endif
+>>>
+> 
