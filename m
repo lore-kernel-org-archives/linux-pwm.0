@@ -1,64 +1,58 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Wed, 28 Mar 2018 01:27:01 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/2] pwm: rcar: Add suspend/resume support and cleanup
- for runtime_pm
-Message-ID: <20180327232701.GA24786@ulmo>
-References: <1520929098-20873-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Return-Path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ot0-f177.google.com ([74.125.82.177]:33923 "EHLO
+        mail-ot0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753175AbeDRPkL (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Apr 2018 11:40:11 -0400
+Received: by mail-ot0-f177.google.com with SMTP id i5-v6so2423333oth.1
+        for <linux-pwm@vger.kernel.org>; Wed, 18 Apr 2018 08:40:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
-Content-Disposition: inline
-In-Reply-To: <1520929098-20873-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Patrick Doyle <wpdster@gmail.com>
+Date: Wed, 18 Apr 2018 11:39:39 -0400
+Message-ID: <CAF_dkJA6JdDA9CPmsqgVrRaMiJ4=Wjn_G4t9PETUFD2X7-qdcA@mail.gmail.com>
+Subject: Augmenting sysfs interface for a PWM driver
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+To: linux-pwm@vger.kernel.org
 
+I would like to add some features to the Atmel(/Microchip) pwm-atmel
+driver and would like to access those features via sysfs.
 
---fdj2RfSjLxBAspz7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Back story -- I have the high and low PWM outputs on my Atmel SoC
+connected to a TI motor driver chip, rather than directly to FETs as
+the peripheral was intended to be used.  I can wiggle the HIGH side
+output and hold the LOW side output low to make the motor spin
+forward, and wiggle the LOW side output, keeping the HIGH side output
+low, to make the motor spin backward.
 
-On Tue, Mar 13, 2018 at 05:18:16PM +0900, Yoshihiro Shimoda wrote:
-> This patch set improves power management for Renesas PWM driver.
->=20
-> Changes from v1:
->  - Add Reviewed-by Geert-san in patch 1 (Thanks!).
->  - Check a condition in suspend/resume if requested or not in patch 2.
->=20
-> Hien Dang (1):
->   pwm: rcar: Use PM Runtime to control module clock
->=20
-> Yoshihiro Shimoda (1):
->   pwm: rcar: add suspend/resume support
->=20
->  drivers/pwm/pwm-rcar.c | 50 ++++++++++++++++++++++++++++++++++++++++++++=
-------
->  1 file changed, 44 insertions(+), 6 deletions(-)
+So, I would like to add the ability to override the PWM outputs (which
+the peripheral supports).
 
-Applied, thanks.
+AFAIK, the only way for me to control the PWM peripheral from user
+space is via sysfs.  Consequently, the only way I know to control the
+override outputs is via sysfs.
 
-Thierry
+So... how can I add entries to the sysfs for the PWM channel?
 
---fdj2RfSjLxBAspz7
-Content-Type: application/pgp-signature; name="signature.asc"
+I can hack up the pwm subsystem to do this, but I feel like this might
+be a pwm-atmel specific feature, and I don't want to burden all the
+other drivers with this.  But I guess I could.
 
------BEGIN PGP SIGNATURE-----
+Anyway, this project opens up a whole bunch of questions for me that I
+should probably seek the opinions of the PWM community at large before
+proceeding much further.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq600IACgkQ3SOs138+
-s6EBww/9HN4VdVhQ15y1gF4OswgIsVEDt0WOUJdz729al/1sjIfWJvk/YLNJWv89
-q6Yc2WrP4QDR+pqqvioSLcnu6kWSHgiGfzDd6XbxQRUmyrQNkOrB3hdAyZXJ9qre
-8gtxaxzP/LJWgb+vGjh8tk+3HevTno9NnItFKwrJtdCZiz0h+oARhy+wGiNNdVfz
-FxmYauVSdfeBIMp2e4iXcx5x3REfqlQwmHaGPxwOvmcmIHywj0h2LO8O2Wovz95m
-a3MG9udJq7Y9/vcaj6V0OtEZXH3xK44BiboJNaq5+Y4w4zUwZBS9+umgi1xIcfjb
-CUDHwHZq+h5n3Ifnd/IOzOaem1KgBt+qQXZzs6RA6XZnWK5aRYc9BdQO197hUXw8
-mCwfuhOicQmZO8uTbqJk3tUOjHaG3YBN4AdpgNaOWyTIb03pkJP7eYwQTqWjOXA8
-4oMtR0f3HvWn9dvzcupI65kuHC6d9HQnD5NevnvJ+UA5C1NHYjCpYM4zPer5Xt0z
-iBWl5FsnwwqO8AXtgczHHpyYx5ccIRQjqlflvbcNESzB77IRtfgQKIWnGL25zDZf
-gDB4BeAePrERPuHJy8HoTDq33pcYvNKaf1lklULtKagUMAxrvscbNzk2mcLyIXK/
-vnwpYyx8kXPLPpeabsJ6VaXc/RPICM551PiPaXiKFRe8qZ8UhYw=
-=JJw9
------END PGP SIGNATURE-----
+Is this a bad idea from the start?
+Is there an easy way for me to add sysfs entries for a PWM channel?
+Is there a better way for me to do this?
 
---fdj2RfSjLxBAspz7--
+Should I even be using the sysfs interface to control the PWM
+peripheral from my user space application?  What else would I use?
+
+I guess I could write a "motor control" driver, but that driver
+wouldn't do much more than just pass its arguments to the pwm-atmel
+driver.
+
+Any thoughts, comments, snide remarks?
+
+--wpd
