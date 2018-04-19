@@ -1,77 +1,64 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH v5 4/6] pwm: stm32: improve capture by tuning counter prescaler
-Date: Tue, 17 Apr 2018 15:38:31 +0200
-Message-ID: <1523972313-28765-5-git-send-email-fabrice.gasnier@st.com>
-References: <1523972313-28765-1-git-send-email-fabrice.gasnier@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH 43/61] pwm: simplify getting .drvdata
+Date: Thu, 19 Apr 2018 16:06:13 +0200
+Message-ID: <20180419140641.27926-44-wsa+renesas@sang-engineering.com>
+References: <20180419140641.27926-1-wsa+renesas@sang-engineering.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1523972313-28765-1-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <20180419140641.27926-1-wsa+renesas@sang-engineering.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, alexandre.torgue@st.com
-Cc: dan.carpenter@oracle.com, thierry.reding@gmail.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org, kernel-janitors@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>, Thierry Reding <thierry.reding@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Currently, capture is based on timeout window to configure prescaler.
-PWM capture framework provides 1s window at the time of writing.
+We should get drvdata from struct device directly. Going via
+platform_device is an unneeded step back and forth.
 
-There's place for improvement, after input signal has been captured once:
-- Finer tune counter clock prescaler, by using 1st capture result (with
-arbitrary margin).
-- Do a 2nd capture, with scaled capture window.
-This increases accuracy, especially at high rates.
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Reviewed-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
-Changes in v2:
-- Adopt DMA read from MFD core.
----
- drivers/pwm/pwm-stm32.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index ed3961b..9a50acd 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -168,7 +168,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
- 	unsigned long long prd, div, dty;
- 	unsigned long rate;
--	unsigned int psc = 0;
-+	unsigned int psc = 0, scale;
- 	u32 raw_prd, raw_dty;
- 	int ret = 0;
+Build tested only. buildbot is happy. Please apply individually.
+
+ drivers/pwm/pwm-atmel-tcb.c | 6 ++----
+ drivers/pwm/pwm-rcar.c      | 3 +--
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 4fb1be246c44..0d0f8376bc35 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -460,8 +460,7 @@ MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
+ #ifdef CONFIG_PM_SLEEP
+ static int atmel_tcb_pwm_suspend(struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	struct atmel_tcb_pwm_chip *tcbpwm = dev_get_drvdata(dev);
+ 	void __iomem *base = tcbpwm->tc->regs;
+ 	int i;
  
-@@ -219,6 +219,28 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (ret)
- 		goto stop;
+@@ -478,8 +477,7 @@ static int atmel_tcb_pwm_suspend(struct device *dev)
  
-+	/*
-+	 * Got a capture. Try to improve accuracy at high rates:
-+	 * - decrease counter clock prescaler, scale up to max rate.
-+	 */
-+	if (raw_prd) {
-+		u32 max_arr = priv->max_arr - 0x1000; /* arbitrary margin */
-+
-+		scale = max_arr / min(max_arr, raw_prd);
-+	} else {
-+		scale = priv->max_arr; /* bellow resolution, use max scale */
-+	}
-+
-+	if (psc && scale > 1) {
-+		/* 2nd measure with new scale */
-+		psc /= scale;
-+		regmap_write(priv->regmap, TIM_PSC, psc);
-+		ret = stm32_pwm_raw_capture(priv, pwm, tmo_ms, &raw_prd,
-+					    &raw_dty);
-+		if (ret)
-+			goto stop;
-+	}
-+
- 	prd = (unsigned long long)raw_prd * (psc + 1) * NSEC_PER_SEC;
- 	result->period = DIV_ROUND_UP_ULL(prd, rate);
- 	dty = (unsigned long long)raw_dty * (psc + 1) * NSEC_PER_SEC;
+ static int atmel_tcb_pwm_resume(struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	struct atmel_tcb_pwm_chip *tcbpwm = dev_get_drvdata(dev);
+ 	void __iomem *base = tcbpwm->tc->regs;
+ 	int i;
+ 
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 91d11f2e2fef..748f614d5375 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -261,8 +261,7 @@ MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
+ #ifdef CONFIG_PM_SLEEP
+ static struct pwm_device *rcar_pwm_dev_to_pwm_dev(struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
++	struct rcar_pwm_chip *rcar_pwm = dev_get_drvdata(dev);
+ 	struct pwm_chip *chip = &rcar_pwm->chip;
+ 
+ 	return &chip->pwms[0];
 -- 
-1.9.1
+2.11.0
