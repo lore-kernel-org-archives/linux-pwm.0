@@ -1,76 +1,80 @@
-Return-Path: <hdegoede@redhat.com>
-Return-Path: <hdegoede@redhat.com>
-Subject: Re: [PATCH 2/2] ACPI / LPSS: Add missing prv_offset setting for
- byt/cht PWM devices
-References: <20180413125218.7131-1-hdegoede@redhat.com>
- <20180413125218.7131-3-hdegoede@redhat.com>
- <1524675075.21176.611.camel@linux.intel.com>
-From: Hans de Goede <hdegoede@redhat.com>
-Message-ID: <5774162e-c93a-3650-ef0f-87947c3770c4@redhat.com>
-Date: Thu, 26 Apr 2018 14:09:14 +0200
+Return-Path: <wesley@sifive.com>
 MIME-Version: 1.0
-In-Reply-To: <1524675075.21176.611.camel@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1524869998-2805-1-git-send-email-wesley@sifive.com>
+ <1524869998-2805-3-git-send-email-wesley@sifive.com> <72c263ef-09c3-a05f-3c16-1bc8df667d38@suse.de>
+In-Reply-To: <72c263ef-09c3-a05f-3c16-1bc8df667d38@suse.de>
+From: Wesley Terpstra <wesley@sifive.com>
+Date: Sat, 28 Apr 2018 22:37:56 +0000
+Message-ID: <CAMgXwThXvdzi27GjTD-q4Fw7kM5WOCtMewh7U3M4wcLwEx+VQw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] dt-bindings: Add "sifive" vendor prefix
+Content-Type: multipart/alternative; boundary="00000000000040277c056af046b0"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
+To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi,
+--00000000000040277c056af046b0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 25-04-18 18:51, Andy Shevchenko wrote:
-> On Fri, 2018-04-13 at 14:52 +0200, Hans de Goede wrote:
->> The LPSS PWM device on on Bay Trail and Cherry Trail devices has a set
->> of private registers at offset 0x800, the current lpss_device_desc for
->> them already sets the LPSS_SAVE_CTX flag to have these saved/restored
->> over device-suspend, but the current lpss_device_desc was not setting
->> the prv_offset field, leading to the regular device registers getting
->> saved/restored instead.
->>
->> This is causing the PWM controller to no longer work, resulting in a
->> black
->> screen,  after a suspend/resume on systems where the firmware clears
->> the
->> APB clock and reset bits at offset 0x804.
->>
->> This commit fixes this by properly setting prv_offset to 0x800 for
->> the PWM devices.
->>
-> 
-> Shouldn't be Fixes tag here?
+Will do, thanks!
 
-Good point, I'm sendout a v2 with the Fixes tag added now.
+On Sat, Apr 28, 2018, 4:21 AM Andreas F=C3=A4rber <afaerber@suse.de> wrote:
 
-Regards,
+> Am 28.04.2018 um 00:59 schrieb Wesley W. Terpstra:
+> > This adds a vendor prefix "sifive" for SiFive, Inc.
+> > We make chips.
+> >
+> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> > ---
+> >  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+>
+> Reviewed-by: Andreas F=C3=A4rber <afaerber@suse.de>
+>
+> but please reorder the patches, so that the prefix definition comes
+> before its first use in the pwm binding.
+>
+> Regards,
+> Andreas
+>
+> --
+> SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+> GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton
+> HRB 21284 (AG N=C3=BCrnberg)
+>
 
-Hans
+--00000000000040277c056af046b0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"auto"><div>Will do, thanks!=C2=A0<br><br><div class=3D"gmail_qu=
+ote"><div dir=3D"ltr">On Sat, Apr 28, 2018, 4:21 AM Andreas F=C3=A4rber &lt=
+;<a href=3D"mailto:afaerber@suse.de">afaerber@suse.de</a>&gt; wrote:<br></d=
+iv><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
+:1px #ccc solid;padding-left:1ex">Am 28.04.2018 um 00:59 schrieb Wesley W. =
+Terpstra:<br>
+&gt; This adds a vendor prefix &quot;sifive&quot; for SiFive, Inc.<br>
+&gt; We make chips.<br>
+&gt; <br>
+&gt; Signed-off-by: Wesley W. Terpstra &lt;<a href=3D"mailto:wesley@sifive.=
+com" target=3D"_blank" rel=3D"noreferrer">wesley@sifive.com</a>&gt;<br>
+&gt; ---<br>
+&gt;=C2=A0 Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +<br>
+&gt;=C2=A0 1 file changed, 1 insertion(+)<br>
+<br>
+Reviewed-by: Andreas F=C3=A4rber &lt;<a href=3D"mailto:afaerber@suse.de" ta=
+rget=3D"_blank" rel=3D"noreferrer">afaerber@suse.de</a>&gt;<br>
+<br>
+but please reorder the patches, so that the prefix definition comes<br>
+before its first use in the pwm binding.<br>
+<br>
+Regards,<br>
+Andreas<br>
+<br>
+-- <br>
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany<br>
+GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton<br>
+HRB 21284 (AG N=C3=BCrnberg)<br>
+</blockquote></div></div></div>
 
-
-> 
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->> ---
->>   drivers/acpi/acpi_lpss.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
->> index 2bcffec8dbf0..c4ba9164e582 100644
->> --- a/drivers/acpi/acpi_lpss.c
->> +++ b/drivers/acpi/acpi_lpss.c
->> @@ -229,11 +229,13 @@ static const struct lpss_device_desc
->> lpt_sdio_dev_desc = {
->>   
->>   static const struct lpss_device_desc byt_pwm_dev_desc = {
->>   	.flags = LPSS_SAVE_CTX,
->> +	.prv_offset = 0x800,
->>   	.setup = byt_pwm_setup,
->>   };
->>   
->>   static const struct lpss_device_desc bsw_pwm_dev_desc = {
->>   	.flags = LPSS_SAVE_CTX | LPSS_NO_D3_DELAY,
->> +	.prv_offset = 0x800,
->>   	.setup = bsw_pwm_setup,
->>   };
->>   
-> 
+--00000000000040277c056af046b0--
