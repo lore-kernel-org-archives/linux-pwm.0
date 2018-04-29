@@ -1,38 +1,97 @@
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH 2/3] dt-bindings: Add "sifive" vendor prefix
-Date: Sat, 28 Apr 2018 13:21:15 +0200
-Message-ID: <72c263ef-09c3-a05f-3c16-1bc8df667d38@suse.de>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: added new pwm-sifive driver
+ documentation
+Date: Sun, 29 Apr 2018 07:54:19 +0200
+Message-ID: <20180429055417.GA10221@mithrandir>
 References: <1524869998-2805-1-git-send-email-wesley@sifive.com>
- <1524869998-2805-3-git-send-email-wesley@sifive.com>
+ <1524869998-2805-2-git-send-email-wesley@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="2oS5YaxWCcQjTEyO"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1524869998-2805-3-git-send-email-wesley@sifive.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1524869998-2805-2-git-send-email-wesley@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: "Wesley W. Terpstra" <wesley@sifive.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>, Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Am 28.04.2018 um 00:59 schrieb Wesley W. Terpstra:
-> This adds a vendor prefix "sifive" for SiFive, Inc.
-> We make chips.
-> 
+
+--2oS5YaxWCcQjTEyO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Apr 27, 2018 at 03:59:56PM -0700, Wesley W. Terpstra wrote:
+> Document new PWM device tree bindings for SiFive SoCs.
+>=20
 > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
 > ---
->  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  .../devicetree/bindings/pwm/pwm-sifive.txt         | 28 ++++++++++++++++=
+++++++
+>  1 file changed, 28 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Docum=
+entation/devicetree/bindings/pwm/pwm-sifive.txt
+> new file mode 100644
+> index 0000000..7cea20d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> @@ -0,0 +1,28 @@
+> +SiFive PWM controller
+> +
+> +Unlike most other PWM controllers, the SiFive PWM controller currently o=
+nly
+> +supports one period for all channels in the PWM. This is set globally in=
+ DTS.
+> +The period also has significant restrictions on the values it can achiev=
+e,
+> +which the driver rounds to the nearest achievable frequency.
 
-Reviewed-by: Andreas Färber <afaerber@suse.de>
+How about you encode this in the driver rather than DT? We have several
+drivers with similar restrictions and they usually allow the first PWM
+channel to choose an arbitrary period and return an error if subsequent
+channels request a period that can't be supported.
 
-but please reorder the patches, so that the prefix definition comes
-before its first use in the pwm binding.
+I think something similar could work with that second restriction. Why
+not return an error if the exact period can't be set? Or perhaps allow
+some percentage of deviation.
 
-Regards,
-Andreas
+If the exact period is achieved in a deterministic way, it should be
+possible for board designers to specify it exactly, so the consumer's
+pwms property can simply take the correct period.
 
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+> +Required properties:
+> +- compatible: should be "sifive,pwm0"
+
+Why not simply "sifive,pwm"? If this is supposed to be some sort of
+version number, then it is more customary to use the name of the first
+SoC that integrates the IP. There are some exceptions, like for example
+when the IP is third-party and is integrated in a number of different
+SoCs. In such cases the IP is often properly versioned. But that doesn't
+seem to be the case here.
+
+Thierry
+
+--2oS5YaxWCcQjTEyO
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrlXgAACgkQ3SOs138+
+s6G0og/5AcKecMoLYsTgL/lfsWklBkmYsnoNapJacw4g7JWBgbhcx0HpWM3rK1AQ
+CdjVFvb5i/XPAG9O2VEobdWpSjzXwx3d71v9QfaSqLSPQnbhOPcBieWCcq1F0vll
+dtUMHwAPVmSDDIiCcmQoFRsEQ7NgtklZbQcFxR06PknQ14Dcg3KpOww5+JDv5zdy
+ZBPLGhRBm4jfcxeV6oIbEDSOHYKOdLZNwf7qnWFHo8fzMnI4PSkRfG09kHP3AJMz
+qK4dkj8ZwmhIT92XkCzt9Xa4zXyAp9CRDnhe9qT+Svy8RU1m1If7DbE5w/ENbmpJ
+735qfQL9jlgm/Q0bJQOHE8N8ZLTCCBmWRpcioPTy/+8TPJSmG3e8jPmlKnJDxUzF
+gCbWYL+PuiWBU+NRzCxTtQMarpmRc08pqPBbScHQgSioUfcd+KDZrPPQUdp1uUmB
+d2jadVcI+bRn7u/Hlt01Sax4h8hV5ZLWdiMPhZGB3MgoDRbNiv95X8MqcRnY9yd6
+usyj8ZHwTJ/SNtRCdCIZI26zwztzx4BYDyD4grE7noYMJFY4+yjfU07gb6qtSqgZ
+LvoXm6R1WDqeATn2g4svd4nKz5O7GpYe3lLf/EXUyIvtTxHjVu3BLpEXW7VwZPXV
+TpqnNC7thuVskPodkixMi+6bn2DFi0yOKwHLrIaUsFGJc9hhj0g=
+=DkNP
+-----END PGP SIGNATURE-----
+
+--2oS5YaxWCcQjTEyO--
