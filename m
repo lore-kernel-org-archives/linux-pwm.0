@@ -1,55 +1,32 @@
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH 1/3] dt-bindings: added new pwm-sifive driver
- documentation
-Date: Sun, 29 Apr 2018 23:01:20 +0200
-Message-ID: <60772240-3c75-7814-9237-d60916a8ceca@suse.de>
+From: Wesley Terpstra <wesley@sifive.com>
+Subject: Re: [PATCH 1/3] dt-bindings: added new pwm-sifive driver documentation
+Date: Sun, 29 Apr 2018 14:08:07 -0700
+Message-ID: <CAMgXwThYN1E=awkd8yF2aNN+QOLwHkx=UyWqGrOnMxv5jyVj5g@mail.gmail.com>
 References: <1524869998-2805-1-git-send-email-wesley@sifive.com>
- <1524869998-2805-2-git-send-email-wesley@sifive.com>
- <20180429055417.GA10221@mithrandir>
- <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com>
+ <1524869998-2805-2-git-send-email-wesley@sifive.com> <20180429055417.GA10221@mithrandir>
+ <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com> <60772240-3c75-7814-9237-d60916a8ceca@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <60772240-3c75-7814-9237-d60916a8ceca@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Wesley Terpstra <wesley@sifive.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Am 29.04.2018 um 22:51 schrieb Wesley Terpstra:
-> On Sat, Apr 28, 2018 at 10:54 PM, Thierry Reding
-> <thierry.reding@gmail.com> wrote:
->> On Fri, Apr 27, 2018 at 03:59:56PM -0700, Wesley W. Terpstra wrote:
->>> +Required properties:
->>> +- compatible: should be "sifive,pwm0"
->>
->> Why not simply "sifive,pwm"? If this is supposed to be some sort of
->> version number, then it is more customary to use the name of the first
->> SoC that integrates the IP. There are some exceptions, like for example
->> when the IP is third-party and is integrated in a number of different
->> SoCs. In such cases the IP is often properly versioned. But that doesn't
->> seem to be the case here.
-> 
-> It is indeed a version number. The first SoC which integrated this IP
-> cannot run linux. We've put a version number like this into all of our
-> IP blocks. Isn't an increasing number, which clearly indicates
-> increased functionality, better than a reference to a sequence of SoCs
-> whose relationships are not all that clear?
+On Sun, Apr 29, 2018 at 2:01 PM, Andreas F=C3=A4rber <afaerber@suse.de> wro=
+te:
+> "pwm0" sounds like a zero-indexed instance of some pwm block. If 0 is
+> the version here, I'd suggest to make it "pwm-0" for example - you might
+> want to take a look at the Xilinx bindings, which use a strict x.yy suffi=
+x.
 
-"pwm0" sounds like a zero-indexed instance of some pwm block. If 0 is
-the version here, I'd suggest to make it "pwm-0" for example - you might
-want to take a look at the Xilinx bindings, which use a strict x.yy suffix.
+That's fine. I'll change it to pwm-0.00 in the next patch series.
 
-Most SoCs don't have clearly versioned IP though, that's why for
-community-contributed bindings the first SoC we encounter the IP in
-usually gets the name.
+> Most SoCs don't have clearly versioned IP though, that's why for
+> community-contributed bindings the first SoC we encounter the IP in
+> usually gets the name.
 
-Regards,
-Andreas
-
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+In this particular case, we do have versioned IP, and we will be
+contributing drivers for those which wind up in linux-capable chips.
