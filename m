@@ -1,57 +1,110 @@
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH 1/3] dt-bindings: added new pwm-sifive driver
- documentation
-Date: Mon, 30 Apr 2018 12:45:20 +0200
-Message-ID: <61f24d16-5095-76e4-845e-2434029fe1f0@suse.de>
+From: Wesley Terpstra <wesley@sifive.com>
+Subject: Re: [PATCH 3/3] pwm-sifive: add a driver for SiFive SoC PWM
+Date: Mon, 30 Apr 2018 12:09:11 -0700
+Message-ID: <CAMgXwThkz5Ah6tWds9rY7BPOP2xM8qh9MgDc85RbTUnMFgEDew@mail.gmail.com>
 References: <1524869998-2805-1-git-send-email-wesley@sifive.com>
- <1524869998-2805-2-git-send-email-wesley@sifive.com>
- <20180429055417.GA10221@mithrandir>
- <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com>
- <60772240-3c75-7814-9237-d60916a8ceca@suse.de>
- <CAMgXwThYN1E=awkd8yF2aNN+QOLwHkx=UyWqGrOnMxv5jyVj5g@mail.gmail.com>
- <20180430081946.GH2484@ulmo>
+ <1524869998-2805-4-git-send-email-wesley@sifive.com> <20180430093907.GA2476@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180430081946.GH2484@ulmo>
-Content-Language: en-US
+In-Reply-To: <20180430093907.GA2476@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Wesley Terpstra <wesley@sifive.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, "Wesley W . Terpstra" <wesley@terpstra.ca>
 List-Id: linux-pwm@vger.kernel.org
 
-Am 30.04.2018 um 10:19 schrieb Thierry Reding:
-> On Sun, Apr 29, 2018 at 02:08:07PM -0700, Wesley Terpstra wrote:
->> On Sun, Apr 29, 2018 at 2:01 PM, Andreas Färber <afaerber@suse.de> wrote:
->>> "pwm0" sounds like a zero-indexed instance of some pwm block. If 0 is
->>> the version here, I'd suggest to make it "pwm-0" for example - you might
->>> want to take a look at the Xilinx bindings, which use a strict x.yy suffix.
->>
->> That's fine. I'll change it to pwm-0.00 in the next patch series.
-> 
-> This should match the version that you use. If you're internal
-> versioning uses single digits, or a single version number, then I think
-> there's no need to use 0.00, because that would just be confusing.
-> However I think it'd be good to make sure it is discernible as a version
-> number. Perhaps something like sifive,pwm-v0. That seems to be a fairly
-> common scheme.
+First of all, thank you very much for this detailed review! I really
+appreciate it, as this is just the first driver of several we would
+like to upstream and getting the reviews front-loaded like this will
+really help us improve the subsequent drivers before trying to
+upstream them.
 
-Yes. My point was not to adopt another vendor's versioning scheme but to
-adopt _some_ consistent scheme and document it, e.g., in a sifive.txt
-similar to xilinx.txt:
+On Mon, Apr 30, 2018 at 2:39 AM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> Please include a SPDX license identifier here. That's the preferred way
+> to specify the license these days.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/devicetree/bindings/xilinx.txt
+Done
 
-It should be made clear what in the compatible string the version is
-(thus my proposal of using a dash as separator), and there you may want
-to document how to map between IP/documentation and compatibles for any
-new bindings.
+>> +#include <dt-bindings/pwm/pwm.h>
+> There should be no need to include this in a driver.
 
-Regards,
-Andreas
+Done
 
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+>> +             if (state->polarity == PWM_POLARITY_NORMAL)
+>> +                     state->duty_cycle = state->period - state->duty_cycle;
+>
+> That's not the right way to handle polarity. The above often has the
+> same effect as inversed polarity, but it's not generally the right thing
+> to do. Please only support polarity if your hardware can actually really
+> reverse it. The above is something that PWM consumers (such as the
+> backlight driver) should take care of.
+
+I don't know how to declare non-support for polarity. How do I do that?
+
+I still want DTS references to state whether or not the polarity
+should be reversed, because the PWM might be connected with either
+positive or negative logic to an LED, for example.
+
+>> +     state->polarity   = PWM_POLARITY_INVERSED;
+> Is the polarity really reversed by default on this IP?
+
+Yes. In the sense that the PWM is low while the counter is less than
+the duty-cycle, and high when >= the duty-cycle.
+
+Note that this also means it's possible to achieve a constant high
+value, but impossible to achieve a constant low value, other than
+approximate.
+
+> I don't think this is a good idea. Nobody should be allowed to just
+> change the PWM period without letting the PWM controller have a say in
+> the matter.
+
+I agree and I intend to fight hard to make sure that future chips don't do this.
+
+> Is this ever really an issue?
+
+Unfortunately, yes. This chip has only one PLL output that controls
+almost everything. The core runs at the PLL's output. The bus runs at
+half the PLL's output. Each peripheral clock is a divided down version
+of the bus clock.
+
+> Does the PWM controller use a shared clock that changes rate frequently?
+
+When you want to change the CPU frequency, you have to update all the
+peripheral device clock dividers. It sucks, but that's what has to
+happen if the core clock is changed. Fortunately, this is not done
+dynamically, but might be done during boot.
+
+For PWM, this is not a big issue, because the period mostly does not
+matter as it's broken already. However, for an active SPI transfer,
+this can be problematic.
+
+>> +     ret = of_property_read_u32(node, "sifive,npwm", &chip->npwm);
+>> +     if (ret < 0 || chip->npwm > MAX_PWM)
+>> +             chip->npwm = MAX_PWM;
+>
+> I don't see this documented in the DT bindings. I also don't see a need
+> for it. Under what circumstances would you want to change this?
+
+The PWM controller can have less than 4 channels. I could try to probe
+how many there are by poking registers, but that seems risky if the
+PWM is attached to something.
+
+Shall I just add this to the dt-bindings?
+
+>> +     pwm->irq = platform_get_irq(pdev, 0);
+>> +     if (pwm->irq < 0) {
+>> +             dev_err(dev, "Unable to find interrupt\n");
+>> +             return pwm->irq;
+>> +     }
+>
+> You don't do anything with this, why bother retrieving it?
+
+Mostly to ensure that it is included in the DTS so that I can rely on
+it being there in any future driver updates.
+
+>> +     dev_info(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
+> Please don't do this.
+
+Removed.
