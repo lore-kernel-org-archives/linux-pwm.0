@@ -1,68 +1,128 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 1/3] dt-bindings: added new pwm-sifive driver
  documentation
-Date: Mon, 30 Apr 2018 10:19:46 +0200
-Message-ID: <20180430081946.GH2484@ulmo>
+Date: Mon, 30 Apr 2018 10:27:50 +0200
+Message-ID: <20180430082750.GI2484@ulmo>
 References: <1524869998-2805-1-git-send-email-wesley@sifive.com>
  <1524869998-2805-2-git-send-email-wesley@sifive.com>
  <20180429055417.GA10221@mithrandir>
  <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com>
- <60772240-3c75-7814-9237-d60916a8ceca@suse.de>
- <CAMgXwThYN1E=awkd8yF2aNN+QOLwHkx=UyWqGrOnMxv5jyVj5g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lrvsYIebpInmECXG"
+        protocol="application/pgp-signature"; boundary="QDIl5R72YNOeCxaP"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMgXwThYN1E=awkd8yF2aNN+QOLwHkx=UyWqGrOnMxv5jyVj5g@mail.gmail.com>
+In-Reply-To: <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Wesley Terpstra <wesley@sifive.com>
-Cc: Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Wesley Terpstra <wesley@sifive.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>, Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---lrvsYIebpInmECXG
-Content-Type: text/plain; charset=utf-8
+--QDIl5R72YNOeCxaP
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Apr 29, 2018 at 02:08:07PM -0700, Wesley Terpstra wrote:
-> On Sun, Apr 29, 2018 at 2:01 PM, Andreas F=C3=A4rber <afaerber@suse.de> w=
-rote:
-> > "pwm0" sounds like a zero-indexed instance of some pwm block. If 0 is
-> > the version here, I'd suggest to make it "pwm-0" for example - you might
-> > want to take a look at the Xilinx bindings, which use a strict x.yy suf=
-fix.
+On Sun, Apr 29, 2018 at 01:51:34PM -0700, Wesley Terpstra wrote:
+> On Sat, Apr 28, 2018 at 10:54 PM, Thierry Reding
+> <thierry.reding@gmail.com> wrote:
+> > On Fri, Apr 27, 2018 at 03:59:56PM -0700, Wesley W. Terpstra wrote:
+> >> +Unlike most other PWM controllers, the SiFive PWM controller currentl=
+y only
+> >> +supports one period for all channels in the PWM. This is set globally=
+ in DTS.
+> >> +The period also has significant restrictions on the values it can ach=
+ieve,
+> >> +which the driver rounds to the nearest achievable frequency.
+> >
+> > How about you encode this in the driver rather than DT? We have several
+> > drivers with similar restrictions and they usually allow the first PWM
+> > channel to choose an arbitrary period and return an error if subsequent
+> > channels request a period that can't be supported.
+> >
+> > I think something similar could work with that second restriction. Why
+> > not return an error if the exact period can't be set? Or perhaps allow
+> > some percentage of deviation.
 >=20
-> That's fine. I'll change it to pwm-0.00 in the next patch series.
+> Interesting. There are two ways to use this PWM. In one mode you use
+> all channels of the PWM as outputs. This is the mode the driver
+> supports because the HiFive Unleashed board uses all channels
+> connected to LEDs.
+>=20
+> In this case, the PWM period must always be a power-of-two reduction
+> from the core bus clock frequency. The core bus clock frequency can
+> vary. Therefore, even if the caller's frequency can be achieved at the
+> time of the method call, it may not remain achievable. You might say
+> this is a ridiculous PWM design, and I'd agree with you, but sadly
+> this is what is found in these chips. So effectively, the only thing
+> we can guarantee is that the period is within a multiple of sqrt(2)
+> from the requested period, except even that is not true due to
+> saturation restrictions that could push the period even further from
+> what you ask.
+>=20
+> In the other mode (where you sacrifice one of the output channels),
+> you have finer control of the period, but it still affects all
+> channels. This mode might be a better fit for your proposed API,
+> except that the driver would still be subject to saturation
+> restrictions on the period. And those restrictions will change as the
+> core bus frequency is changed, which means that again, even if your
+> target period can be achieved (common to all channels) at invocation,
+> it might not be achievable later.
+>=20
+> IMO the only real control this PWM can offer reliably is the duty
+> cycle, which is why I've written it how I have.
+>=20
+> If you see a better solution to the above problems, I am open to
+> suggestions.
 
-This should match the version that you use. If you're internal
-versioning uses single digits, or a single version number, then I think
-there's no need to use 0.00, because that would just be confusing.
-However I think it'd be good to make sure it is discernible as a version
-number. Perhaps something like sifive,pwm-v0. That seems to be a fairly
-common scheme.
+I don't like the idea of specifying something in DT that is completely
+approximate because it doesn't give users any kind of control over what
+is considered acceptable. In some cases an approximation to within 10%
+might be acceptable, in other cases users may only want to allow 5%. In
+this case there's even no way to catch or report a deviation from the
+desired value.
+
+How about you allow users to specify a valid frequency range with
+something like:
+
+	frequency-range =3D <MIN MAX>;
+
+or
+
+	period-range =3D <MIN MAX>;
+
+That would on one hand give users a way of specifying the valid range of
+frequencies and give your driver enough data to reject a change if it'd
+result in a frequency outside of the configured range. You would also
+have the possibility to react if a change in core bus clock frequency
+causes the PWM period to go out of range. I wonder if there's a
+mechanism that allows the clock change to be prevented (via a PRE_CHANGE
+notifier perhaps?), but if not at least you could disable the PWM if it
+was fed with an invalid range.
+
+Rob, any additional thoughts from you on this matter?
 
 Thierry
 
---lrvsYIebpInmECXG
+--QDIl5R72YNOeCxaP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrm0aAACgkQ3SOs138+
-s6ELZw/+Mci8WW7pIpcPzvO9Q7xNbU4NmKkMr2nPSVEEkPbnUsbeM/V7UhDYbXue
-Qp21a6rkiWvIskrKrtWFheerkOgp7UD6YpDnZc3ycEwdVtMs/LcYMtJEuQ5v6Aa5
-VBHXy5VDJHGbJt0uA6SXLq4hP8xSYCfSwEk7bmJSLdd/M0NnyJp2+rVHuQKybGK4
-ckd6NnKKp0Z0qgchUePVWspkRAZi6uNXme8X3eNIZc+YbPj3wocIMoW1St7vv1uO
-ckQl/Vrp3EtoK7fnMARbGPYjcHvgRN5IkJlznvPQS/0LWo4JG+Y+OxgeKRd1PvoN
-hZBTSeTwY4dNtE/VoEXQjKp/bd0DTcrLp9OL71CjQMTGOFMq4LyAurJUxHrs7BYY
-UVuEeJfLMWjW1f6/l74Efo5HC3lgjOaSQuY1Ki/auO3JVHV0O7NhLFXA1lIbyjOX
-NbLxdy4IjOMu9KC0Bm2hz4hjjk2WJjYATCrd+Zh85xnIKyb1+nwI+E3h5Wtyu/t7
-P25KiF0atkTW83MdBeER9tsd0e9wEqaiNszxMrTI4UWJwHowV/yCGcrMdR03TTJ6
-EtcSO1U/OSxaCU4QPQMmddi6A0Kh91+u0mhITDNuQ5rdWM/4UJLo5t3CVzLkmmpb
-0atNW6XLrZcRzjKBYqhncuvhzk6+x77o0sUQlQ4Ke2pE+2K3fFc=
-=BA9b
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrm04YACgkQ3SOs138+
+s6HPNA/9Hck9+p2yppeTRjfr1CJ+Vy9PtFuxpAezhLRtzn0PWS65loEjwkTah9Qe
+azYrsnHpRUNwr3B/IuxhZ3jqh93wd7wILV9bgLlYYc9iZ/Q1Ki7A/YT+FLvtEyjv
+hg/aRzefPbjhDPqt3TsBt/by8eu7KNeAHheCd3pFGkZ9Hz0cWN9Z/HimknlvIAKg
+myES7vJQjYm4g6k/YmKhfxI875HAMAvINaC09obsr3piFRloBb0odJ3YX4Wt913I
+0kMn+qwZv2iChvZzVKkcoqSrXoWwyvvuRVEFYw0BrChwjOhyTefvsyD9/rsppTdv
+mf25wHBSAIMC54Q2FgNBWpCkhFuAw3xMToOUt2rKyD13V6TxSZJe4cLoiQ53kNy/
+bQ08alp16PEffHF/68K8slEI47t+dsZFmT2qll+OuAm85ntzNuc5w8y+LuG6hBjb
+a3HlhkXD1k6WliU0GYb96xdRgwPkbhs9cpyup9SOQFZfjfInDpeRHGG+vwejZOBl
+PuncyY/asviz2UkK7zS5IIkjAOgkS+TCyw+99/lgS2pECrubQ8TUgoSEg8tkqQDl
+zFlJAt48BSvPKZHcJYEVNtOGQ5qeIw+Ns0G75OzXX7VO8jGHH5zI3se8fLcNrHWK
+Irc2FCRc6NEh8AmjY8EL6lOrQ4xHDk3d4p4XvzHH/fxPNZkSUI8=
+=e6AQ
 -----END PGP SIGNATURE-----
 
---lrvsYIebpInmECXG--
+--QDIl5R72YNOeCxaP--
