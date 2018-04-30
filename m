@@ -1,97 +1,57 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH V2 1/9] pwm: core: Add support for PWM HW driver with pwm
- capture only
-Date: Mon, 30 Apr 2018 11:51:59 +0200
-Message-ID: <20180430095159.GD2476@ulmo>
-References: <1521607244-29734-1-git-send-email-rrajk@nvidia.com>
- <1521607244-29734-2-git-send-email-rrajk@nvidia.com>
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+Subject: Re: [PATCH 1/3] dt-bindings: added new pwm-sifive driver
+ documentation
+Date: Mon, 30 Apr 2018 12:45:20 +0200
+Message-ID: <61f24d16-5095-76e4-845e-2434029fe1f0@suse.de>
+References: <1524869998-2805-1-git-send-email-wesley@sifive.com>
+ <1524869998-2805-2-git-send-email-wesley@sifive.com>
+ <20180429055417.GA10221@mithrandir>
+ <CAMgXwTgN26aKaSuVdSj2TDUgbR7bAmy4TdtOuKj_QC0kNNbphg@mail.gmail.com>
+ <60772240-3c75-7814-9237-d60916a8ceca@suse.de>
+ <CAMgXwThYN1E=awkd8yF2aNN+QOLwHkx=UyWqGrOnMxv5jyVj5g@mail.gmail.com>
+ <20180430081946.GH2484@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+B+y8wtTXqdUj1xM"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1521607244-29734-2-git-send-email-rrajk@nvidia.com>
+In-Reply-To: <20180430081946.GH2484@ulmo>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rajkumar Rampelli <rrajk@nvidia.com>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, jonathanh@nvidia.com, jdelvare@suse.com, linux@roeck-us.net, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
+To: Thierry Reding <thierry.reding@gmail.com>, Wesley Terpstra <wesley@sifive.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>, David Lechner <david@lechnology.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, SZ Lin <sz.lin@moxa.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
+Am 30.04.2018 um 10:19 schrieb Thierry Reding:
+> On Sun, Apr 29, 2018 at 02:08:07PM -0700, Wesley Terpstra wrote:
+>> On Sun, Apr 29, 2018 at 2:01 PM, Andreas Färber <afaerber@suse.de> wrote:
+>>> "pwm0" sounds like a zero-indexed instance of some pwm block. If 0 is
+>>> the version here, I'd suggest to make it "pwm-0" for example - you might
+>>> want to take a look at the Xilinx bindings, which use a strict x.yy suffix.
+>>
+>> That's fine. I'll change it to pwm-0.00 in the next patch series.
+> 
+> This should match the version that you use. If you're internal
+> versioning uses single digits, or a single version number, then I think
+> there's no need to use 0.00, because that would just be confusing.
+> However I think it'd be good to make sure it is discernible as a version
+> number. Perhaps something like sifive,pwm-v0. That seems to be a fairly
+> common scheme.
 
---+B+y8wtTXqdUj1xM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yes. My point was not to adopt another vendor's versioning scheme but to
+adopt _some_ consistent scheme and document it, e.g., in a sifive.txt
+similar to xilinx.txt:
 
-On Wed, Mar 21, 2018 at 10:10:36AM +0530, Rajkumar Rampelli wrote:
-> Add support for pwm HW driver which has only capture functionality.
-> This helps to implement the PWM based Tachometer driver which reads
-> the PWM output signals from electronic fans.
->=20
-> PWM Tachometer captures the period and duty cycle of the PWM signal
->=20
-> Add conditional checks for callabacks enable(), disable(), config()
-> to check if they are supported by the client driver or not. Skip these
-> callbacks if they are not supported.
->=20
-> Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
-> ---
->=20
-> V2: Added if conditional checks for pwm callbacks since drivers may
->     implements only pwm capture functionality.
->=20
->  drivers/pwm/core.c | 21 +++++++++++++++------
->  1 file changed, 15 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 1581f6a..f70fe68 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -246,6 +246,10 @@ static bool pwm_ops_check(const struct pwm_ops *ops)
->  	if (ops->apply)
->  		return true;
-> =20
-> +	/* driver supports capture operation */
-> +	if (ops->capture)
-> +		return true;
-> +
->  	return false;
->  }
-> =20
-> @@ -495,7 +499,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pw=
-m_state *state)
->  			 * ->apply().
->  			 */
->  			if (pwm->state.enabled) {
-> -				pwm->chip->ops->disable(pwm->chip, pwm);
-> +				if (pwm->chip->ops->disable)
-> +					pwm->chip->ops->disable(pwm->chip, pwm);
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/devicetree/bindings/xilinx.txt
 
-This is not a good idea. It means that you'll be able to successfully
-configure a capture-only PWM channel for output. I think all of the
-output configuration functions should return an error (-ENOSYS?) for
-capture-only devices, much like we return -ENOSYS for pwm_capture() if
-the driver doesn't implement capture support.
+It should be made clear what in the compatible string the version is
+(thus my proposal of using a dash as separator), and there you may want
+to document how to map between IP/documentation and compatibles for any
+new bindings.
 
-Thierry
+Regards,
+Andreas
 
---+B+y8wtTXqdUj1xM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrm5z8ACgkQ3SOs138+
-s6GW/A/+MImm7BmQSd+UOQUP4N0vddntkXN9FGKsxb1wIZPQBPMKfmH5xpBzfb61
-hz1s8KLWOpgqEZQVs7eVp2ICQEOXNgwKdCWbHPsHIU+FUf5zd1ESd7rNu9IrddhR
-ZM2lU8YGaREnIFPt2dFpjLVuXA8ak7id02RdeoylpLRaTlgcdE3q1AEY5ewnTNRn
-JLI4eEroYAfwtJVC5PSvdZvD5Diq2H+ASe+McYSAbTg8+rHQ3w4KMmTIKoEiv4Us
-UCwF89+zCm3K+AVcvdCe2jBSc2OtZm6QXY9BrhIBnGf4D9fGWBTQ0cmZpHtcxHhf
-YOqyb+tM1rFgZutFgcrJ2fmFRZp2wrJjGByilhwEWfrdM57zrCQSLPWdnELOIETM
-4aGyI1cmKc2DIdXI4Ksv7PRN3LBvvxq8H0Revozmi1MfNWrcB2Qr7sgvBNYTHTfi
-T5TWD8oWJ6rs9E+JUJd7SU2fimoDft7i7bbA26mKFN65Y+i7jgCi3d/lTDhVMMA0
-nby4wCgKDGnTK9vXsNK93WhUB5R3d6jXAgOePb3UotYIcE2z4hUv8I0Rp24PJWh4
-s4zL38OPugoEI0iPfTodURu1m7F1QK2wOdd48OzQBRiQ9nFXywm8KLVxVLZoSck6
-xsY1+I848Lu/UNHULnbaCY163rDTcM9/PJwRFrnuCA2Lpr/9M/s=
-=yusN
------END PGP SIGNATURE-----
-
---+B+y8wtTXqdUj1xM--
+-- 
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+GF: Felix Imendörffer, Jane Smithard, Graham Norton
+HRB 21284 (AG Nürnberg)
