@@ -1,64 +1,102 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 1/2] pwm: lpss: platform: Save/restore the ctrl
- register over a suspend/resume
-Date: Mon, 14 May 2018 15:08:32 +0100
-Message-ID: <fc46e2ab-13c6-4dfd-6539-703acec5555a@redhat.com>
-References: <20180426121024.22023-1-hdegoede@redhat.com>
- <2943907.WSHDcS9sfS@aspire.rjw.lan> <20180514115032.GF18312@ulmo>
+From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
+Date: Mon, 14 May 2018 22:45:44 +0800
+Message-ID: <CAJeuY7-Dz1u9J8GMu=OdzJ2cJUnE3wEobJoQz6RV-ibjBjoW4A@mail.gmail.com>
+References: <20180225135308.GA14561@arx-s1> <20180226090038.etk5q4pd4rl5dvf6@flea.lan>
+Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20180514115032.GF18312@ulmo>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-sunxi+bncBDKITZOARQMBBGOC43LQKGQE6SH62YQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20180226090038.etk5q4pd4rl5dvf6-ZC1Zs529Oq4@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Claudiu Beznea <Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+2018-02-26 17:00 GMT+08:00 Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>:
+> Hi,
+>
+> Thanks for respinning this serie. It looks mostly good, but you still
+> have a quite significant number of checkpatch (--strict) warnings that
+> you should address.
 
-On 05/14/2018 12:50 PM, Thierry Reding wrote:
-> On Thu, May 10, 2018 at 05:25:10PM +0200, Rafael J. Wysocki wrote:
->> On Thursday, April 26, 2018 2:10:23 PM CEST Hans de Goede wrote:
->>> On some devices the contents of the ctrl register get lost over a
->>> suspend/resume and the PWM comes back up disabled after the resume.
->>>
->>> This is seen on some Bay Trail devices with the PWM in ACPI enumerated
->>> mode, so it shows up as a platform device instead of a PCI device.
->>>
->>> If we still think it is enabled and then try to change the duty-cycle
->>> after this, we end up with a "PWM_SW_UPDATE was not cleared" error and
->>> the PWM is stuck in that state from then on.
->>>
->>> This commit adds suspend and resume pm callbacks to the pwm-lpss-platform
->>> code, which save/restore the ctrl register over a suspend/resume, fixing
->>> this.
->>>
->>> Note that:
->>>
->>> 1) There is no need to do this over a runtime suspend, since we
->>> only runtime suspend when disabled and then we properly set the enable
->>> bit and reprogram the timings when we re-enable the PWM.
->>>
->>> 2) This may be happening on more systems then we realize, but has been
->>> covered up sofar by a bug in the acpi-lpss.c code which was save/restoring
->>> the regular device registers instead of the lpss private registers due to
->>> lpss_device_desc.prv_offset not being set. This is fixed by a later patch
->>> in this series.
->>>
->>> Cc: stable@vger.kernel.org
->>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->>
->> Andy, Thierry, any comments or concerns regarding this series?
-> 
-> Hans said in the cover letter of the first version of this series that
-> he preferred to merge both patches through the PWM tree because of the
-> dependency. So I'm waiting for an Acked-by from you on the ACPI bits.
+Thanks for reviews :) ,i'm sorry for that, it will be fixed next time.
+and, besides, in what situation were the checkpatch warning can be ignore=
+=EF=BC=9F
 
-The other way around (both through ACPI) would work too, but yes it
-would be good to keep them together,
+>
+> On Sun, Feb 25, 2018 at 09:53:08PM +0800, hao_zhang wrote:
+>> +#define CAPTURE_IRQ_ENABLE_REG       0x0010
+>> +#define CFIE(ch)     BIT(ch << 1 + 1)
+>> +#define CRIE(ch)     BIT(ch << 1)
+>
+> You should also put your argument between parentheses here (and in all
+> your other macros).
 
-Regards,
+Do you mean like this ?
+#define CFIE(ch)     BIT((ch) << 1 + 1)
+#define CRIE(ch)     BIT((ch) << 1)
 
-Hans
+>
+>> +static const u16 div_m_table[] =3D {
+>> +     1,
+>> +     2,
+>> +     4,
+>> +     8,
+>> +     16,
+>> +     32,
+>> +     64,
+>> +     128,
+>> +     256
+>> +};
+>
+> If this is just a power of two, you can use either the power of two /
+> ilog2 to switch back and forth, instead of using that table.
+
+I think using table is more explicit and extended...
+
+>
+>> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pw=
+m,
+>> +             struct pwm_state *state)
+>> +{
+>> +     int ret;
+>> +     struct sun8i_pwm_chip *sun8i_pwm =3D to_sun8i_pwm_chip(chip);
+>> +     struct pwm_state cstate;
+>> +
+>> +     pwm_get_state(pwm, &cstate);
+>> +     if (!cstate.enabled) {
+>> +             ret =3D clk_prepare_enable(sun8i_pwm->clk);
+>> +             if (ret) {
+>> +                     dev_err(chip->dev, "Failed to enable PWM clock\n")=
+;
+>> +                     return ret;
+>> +             }
+>> +     }
+>> +
+>> +     spin_lock(&sun8i_pwm->ctrl_lock);
+>
+> What do you need that spinlock for? Can you use a mutex instead?
+It should be remove.
+>
+> Thanks!
+> Maxime
+>
+> --
+> Maxime Ripard, Bootlin (formerly Free Electrons)
+> Embedded Linux and Kernel engineering
+> https://bootlin.com
+
+--=20
+You received this message because you are subscribed to the Google Groups "=
+linux-sunxi" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+For more options, visit https://groups.google.com/d/optout.
