@@ -1,15 +1,15 @@
 From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
-Date: Mon, 14 May 2018 23:39:16 +0800
-Message-ID: <CAJeuY7-s595ceJugYEoedS3HTq06XQqBaOzW=FykHL3ZYD+nMQ@mail.gmail.com>
-References: <20180225135308.GA14561@arx-s1> <8bd4247f-45fd-1385-3ba2-accd7a1e7eb9@arm.com>
+Subject: Re: [PATCH v2 2/4] ARM: dtsi: add pwm node for sun8i.
+Date: Tue, 15 May 2018 00:08:57 +0800
+Message-ID: <CAJeuY7876=WEpg9M240ygNv6KW68_+tpP9PxpSQfKHNR7=FO-Q@mail.gmail.com>
+References: <20180225135134.GA14529@arx-s1> <b8af4f6a-c2df-7382-9a1c-9c1a9ea5f8c4@arm.com>
 Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBDKITZOARQMBBJW343LQKGQEEYLJ3QQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDKITZOARQMBBG7J43LQKGQEARZGIEY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <8bd4247f-45fd-1385-3ba2-accd7a1e7eb9-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <b8af4f6a-c2df-7382-9a1c-9c1a9ea5f8c4-5wv7dgnIgG8@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -17,641 +17,72 @@ List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto
 List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/linux-sunxi/subscribe>
 To: =?UTF-8?Q?Andr=C3=A9_Przywara?= <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Claudiu Beznea <Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-2018-02-28 9:55 GMT+08:00 Andr=C3=A9 Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>:
+2018-02-28 9:53 GMT+08:00 Andr=C3=A9 Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>:
 > Hi,
 >
-> On 25/02/18 13:53, hao_zhang wrote:
->> This patch add allwinner sun8i pwm support.
->
-> Again, the subject line is too generic. Mention the R40?
->
-> Can you elaborate here a bit? Mention that is used on the R40, but not
-> other sun8i SoCs, for instance. And mention that this is very different
-> from the sun4i-pwm device, so justifies a new driver. Possibly mention
-> some features? And that we for now just implement a subset of them.
+> The subject line should mention the R40, there are far too many sun8i SoC=
+s.
 
-Thanks for reviews, elaborate it next patch:)
+Okey.
 
 >
+> On 25/02/18 13:51, hao_zhang wrote:
+>> This patch adds pwm node for sun8i.
 >>
 >> Signed-off-by: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 >> ---
->>  drivers/pwm/Kconfig     |  10 ++
->>  drivers/pwm/Makefile    |   1 +
->>  drivers/pwm/pwm-sun8i.c | 401 +++++++++++++++++++++++++++++++++++++++++=
-+++++++
->
-> I am not too happy with this name, but I guess there are no better
-> alternatives, so it's probably OK to keep it.
->
->>  3 files changed, 412 insertions(+)
->>  create mode 100644 drivers/pwm/pwm-sun8i.c
+>>  arch/arm/boot/dts/sun8i-r40.dtsi | 13 +++++++++++++
+>>  1 file changed, 13 insertions(+)
 >>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 763ee50..7e68d0f 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -444,6 +444,16 @@ config PWM_SUN4I
->>         To compile this driver as a module, choose M here: the module
->>         will be called pwm-sun4i.
+>> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-=
+r40.dtsi
+>> index 173dcc1..99a0261 100644
+>> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
+>> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+>> @@ -295,6 +295,11 @@
+>>                               bias-pull-up;
+>>                       };
 >>
->> +config PWM_SUN8I
->> +     tristate "Allwinner PWM SUN8I support"
->> +     depends on ARCH_SUNXI || COMPILE_TEST
->> +     depends on HAS_IOMEM && COMMON_CLK
->> +     help
->> +       Generic PWM framework driver for Allwinner SoCs.
->
-> Mmh, not really. So far there is only one SoC using this. Maybe:
->           Driver for the enhanced PWM IP used in some newer Allwinner
->           SoCs.
->
+>> +                     pwm_ch0_pin: pwm-ch0-pin {
+>> +                             pins =3D "PB2";
+>> +                             function =3D "pwm";
+>> +                     };
 >> +
->> +       To compile this driver as a module, choose M here: the module
->> +       will be called pwm-sun8i.
->> +
->>  config PWM_TEGRA
->>       tristate "NVIDIA Tegra PWM support"
->>       depends on ARCH_TEGRA
->> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->> index 0258a74..cd6bf40 100644
->> --- a/drivers/pwm/Makefile
->> +++ b/drivers/pwm/Makefile
->> @@ -44,6 +44,7 @@ obj-$(CONFIG_PWM_STM32)             +=3D pwm-stm32.o
->>  obj-$(CONFIG_PWM_STM32_LP)   +=3D pwm-stm32-lp.o
->>  obj-$(CONFIG_PWM_STMPE)              +=3D pwm-stmpe.o
->>  obj-$(CONFIG_PWM_SUN4I)              +=3D pwm-sun4i.o
->> +obj-$(CONFIG_PWM_SUN8I)              +=3D pwm-sun8i.o
->>  obj-$(CONFIG_PWM_TEGRA)              +=3D pwm-tegra.o
->>  obj-$(CONFIG_PWM_TIECAP)     +=3D pwm-tiecap.o
->>  obj-$(CONFIG_PWM_TIEHRPWM)   +=3D pwm-tiehrpwm.o
->> diff --git a/drivers/pwm/pwm-sun8i.c b/drivers/pwm/pwm-sun8i.c
->> new file mode 100644
->> index 0000000..cf23b0a
->> --- /dev/null
->> +++ b/drivers/pwm/pwm-sun8i.c
->> @@ -0,0 +1,401 @@
->> +#include <linux/bitops.h>
->> +#include <linux/clk.h>
->> +#include <linux/delay.h>
->> +#include <linux/err.h>
->> +#include <linux/io.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/of_device.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/pwm.h>
->> +#include <linux/slab.h>
->> +#include <linux/spinlock.h>
->> +#include <linux/time.h>
->> +#include <linux/regmap.h>
->> +
->> +#define PWM_IRQ_ENABLE_REG   0x0000
->> +#define PCIE(ch)     BIT(ch)
+>>                       uart0_pb_pins: uart0-pb-pins {
+>>                               pins =3D "PB22", "PB23";
+>>                               function =3D "uart0";
+>> @@ -306,6 +311,14 @@
+>>                       reg =3D <0x01c20c90 0x10>;
+>>               };
+>>
+>> +             pwm: pwm@1c23400 {
+>> +                          compatible =3D "allwinner,sun8i-r40-pwm";
+>> +                          reg =3D <0x01c23400 0x154>;
 >
-> Can you please align those:
-> #define PWM_IRQ_ENABLE_REG      0x0000
-> #define PCIE(ch)                BIT(ch)
+> Following my comments on the binding document:
+>                         interrupts =3D <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
 >
-> And all those below as well? Which means you might want to insert
-> another tab to cater for those longer symbols.
+>> +                          clocks =3D <&osc24M>;
+>
+> And possibly multiple clocks here (though I fail to find the APB1 clock
+> being exposed by our CCU).
 
-yep, align it is batter :-)
-
->
->> +
->> +#define PWM_IRQ_STATUS_REG   0x0004
->> +#define PIS(ch)      BIT(ch)
->> +
->> +#define CAPTURE_IRQ_ENABLE_REG       0x0010
->> +#define CFIE(ch)     BIT(ch << 1 + 1)
->> +#define CRIE(ch)     BIT(ch << 1)
->> +
->> +#define CAPTURE_IRQ_STATUS_REG       0x0014
->> +#define CFIS(ch)     BIT(ch << 1 + 1)
->> +#define CRIS(ch)     BIT(ch << 1)
->> +
->> +#define CLK_CFG_REG(ch)      (0x0020 + (ch >> 1) * 4)
->> +#define CLK_SRC      BIT(7)
->> +#define CLK_SRC_BYPASS_SEC   BIT(6)
->> +#define CLK_SRC_BYPASS_FIR   BIT(5)
->> +#define CLK_GATING   BIT(4)
->> +#define CLK_DIV_M    GENMASK(3, 0)
->> +
->> +#define PWM_DZ_CTR_REG(ch)   (0x0030 + (ch >> 1) * 4)
->> +#define PWM_DZ_INTV  GENMASK(15, 8)
->> +#define PWM_DZ_EN    BIT(0)
->> +
->> +#define PWM_ENABLE_REG       0x0040
->> +#define PWM_EN(ch)   BIT(ch)
->> +
->> +#define CAPTURE_ENABLE_REG   0x0044
->> +#define CAP_EN(ch)   BIT(ch)
->> +
->> +#define PWM_CTR_REG(ch)      (0x0060 + ch * 0x20)
->> +#define PWM_PERIOD_RDY       BIT(11)
->> +#define PWM_PUL_START        BIT(10)
->> +#define PWM_MODE     BIT(9)
->> +#define PWM_ACT_STA  BIT(8)
->> +#define PWM_PRESCAL_K        GENMASK(7, 0)
->> +
->> +#define PWM_PERIOD_REG(ch)   (0x0064 + ch * 0x20)
->> +#define PWM_ENTIRE_CYCLE     GENMASK(31, 16)
->> +#define PWM_ACT_CYCLE        GENMASK(15, 0)
->> +
->> +#define PWM_CNT_REG(ch)      (0x0068 + ch * 0x20)
->> +#define PWM_CNT_VAL  GENMASK(15, 0)
->> +
->> +#define CAPTURE_CTR_REG(ch)  (0x006c + ch * 0x20)
->> +#define CAPTURE_CRLF BIT(2)
->> +#define CAPTURE_CFLF BIT(1)
->> +#define CAPINV       BIT(0)
->> +
->> +#define CAPTURE_RISE_REG(ch) (0x0070 + ch * 0x20)
->> +#define CAPTURE_CRLR GENMASK(15, 0)
->> +
->> +#define CAPTURE_FALL_REG(ch) (0x0074 + ch * 0x20)
->> +#define CAPTURE_CFLR GENMASK(15, 0)
->> +
->> +struct sun8i_pwm_data {
->> +     bool has_prescaler_bypass;
->> +     bool has_rdy;
->> +     unsigned int npwm;
->> +};
->
-> I believe you don't need this structure. See below.
-
-yep, clock will output directly while bypass has been set,
-and equivalent to 50% duty cycles...
-
->
->> +
->> +struct sun8i_pwm_chip {
->> +     struct pwm_chip chip;
->> +     struct clk *clk;
->> +     void __iomem *base;
->> +     spinlock_t ctrl_lock;
->> +     const struct sun8i_pwm_data *data;
->> +     struct regmap *regmap;
->> +};
->> +
->> +static const u16 div_m_table[] =3D {
->> +     1,
->> +     2,
->> +     4,
->> +     8,
->> +     16,
->> +     32,
->> +     64,
->> +     128,
->> +     256
->> +};
->
-> That looks very much like: "1U << x" to me.
-
-uhmm, i think using table is more explicit and extended...
-
->
->> +
->> +static inline struct sun8i_pwm_chip *to_sun8i_pwm_chip(struct pwm_chip =
-*chip)
->
-> No need for "inline", the compiler knows better. static is enough.
-
-okey :-)
-
->
->> +{
->> +     return container_of(chip, struct sun8i_pwm_chip, chip);
->> +}
->> +
->> +static u32 sun8i_pwm_read(struct sun8i_pwm_chip *sun8i_pwm,
->> +             unsigned long offset)
->
-> Can you please align those continuation lines properly? The first
-> character in the new line should be aligned to the first character of
-> the first argument. Use tabs first, then fill up with spaces:
-
-Align it next :-)
-
->
-> static u32 sun8i_pwm_read(struct sun8i_pwm_chip *sun8i_pwm,
->                           unsigned long offset)
->
-> This applies to the rest of the file as well.
->
->> +{
->> +     u32 val;
->> +
->> +     regmap_read(sun8i_pwm->regmap, offset, &val);
->> +
->> +     return val;
->> +}
->> +
->> +static inline void sun8i_pwm_set_bit(struct sun8i_pwm_chip *sun8i_pwm,
->
-> no inline (for those below as well)
->
->> +             unsigned long reg, u32 bit)
->> +{
->> +     regmap_update_bits(sun8i_pwm->regmap, reg, bit, bit);
->> +}
->> +
->> +static inline void sun8i_pwm_clear_bit(struct sun8i_pwm_chip *sun8i_pwm=
-,
->> +             unsigned long reg, u32 bit)
->> +{
->> +     regmap_update_bits(sun8i_pwm->regmap, reg, bit, 0);
->> +}
->> +
->> +static inline void sun8i_pwm_set_value(struct sun8i_pwm_chip *sun8i_pwm=
-,
->> +             unsigned long reg, u32 mask, u32 val)
->> +{
->> +     regmap_update_bits(sun8i_pwm->regmap, reg, mask, val);
->> +}
->> +
->> +static void sun8i_pwm_set_polarity(struct sun8i_pwm_chip *chip, u32 ch,
->> +             enum pwm_polarity polarity)
->> +{
->> +     if (polarity =3D=3D PWM_POLARITY_NORMAL)
->> +             sun8i_pwm_set_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
->> +     else
->> +             sun8i_pwm_clear_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
->> +}
->> +
->> +static int sun8i_pwm_config(struct sun8i_pwm_chip *sun8i_pwm, u8 ch,
->> +             struct pwm_state *state)
->> +{
->> +     u64 clk_rate, clk_div, val;
->> +     u16 prescaler =3D 0;
->> +     u8 id =3D 0;
->> +
->> +     clk_rate =3D clk_get_rate(sun8i_pwm->clk);
->> +
->> +     if (clk_rate =3D=3D 24000000)
->> +             sun8i_pwm_clear_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
->> +     else
->> +             sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
->
-> This hardcoded 24MHz looks slightly dodgy and should be replaced with
-> some proper code to select the best matching clock, out of a number of
-> them given in the DT (see the DT binding mail).
-> Without thinking too deeply about it, I guess we try which clocks gives
-> the least error for the given configuration. The frequency alone might
-> be a good first guide.
-> If you can't be bothered with coding this, we might just go ahead with
-> the first specified clock and always use this, for now.
-
-Dose the framework support parse 2 or more clk from DT ?
-yep, It is better to set the clk automatically
-
->
->> +
->> +     if (sun8i_pwm->data->has_prescaler_bypass) {
->
-> What is this about? I think this is a misunderstanding:
-> The bypass bits allows to directly pass on the input clock to the output
-> pin, without any actual PWM properties. So if one channel is (by
-> chance?) configured for a 50% duty cycle and the same frequency as one
-> of the input clocks, you might want to use the bypass bit instead. But I
-> don't see many advantages in doing so, so I guess we can ignore it in a
-> generic PWM driver.
-> Anyway using some hardcoded value from the "data" structure looks just
-> wrong to me. I guess you can just remove this, along with the
-> has_prescaler_bypass variable from the sun8i_pwm_data structure.
-
-Agree to remove it.
-
->
->> +             /* pwm output bypass */
->> +             if (ch % 2)
->> +                     sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
->> +                                     CLK_SRC_BYPASS_FIR);
->> +             else
->> +                     sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
->> +                                     CLK_SRC_BYPASS_SEC);
->> +             return 0;
->> +     }
->> +
->> +     val =3D state->period * clk_rate;
->> +     do_div(val, NSEC_PER_SEC);
->> +     if (val < 1) {
->> +             dev_err(sun8i_pwm->chip.dev,
->> +                             "Period expects a larger value\n");
->
-> Alignment.
-> And you might want to hook in here to select a higher frequency input clo=
-ck.
->
->> +             return -EINVAL;
->> +     }
->> +
->> +     /* calculate and set prescalar, div table, pwn entrie cycle */
->
->                              prescaler             PWM entire
->
-> though I believe this "entire cycle" term is an Allwinner invention.
-> Wouldn't period be a better term here, also matching the framework?
-
-It seem no...
-referent the manual,  "entire cycle" seem means the count of
-prescaler_clk(divide by prescaler),
-you shoule multiply Tprescaler_clk, then is Tperiod.
-
->
->> +     clk_div =3D val;
->> +
->> +     while (clk_div > 65535) {
->> +             prescaler++;
->> +             clk_div =3D val;
->> +             do_div(clk_div, prescaler + 1);
->> +             do_div(clk_div, div_m_table[id]);
->
->                                 1U << id
->
->> +
->> +             if (prescaler =3D=3D 255) {
->> +                     prescaler =3D 0;
->> +                     id++;
->> +                     if (id =3D=3D 9)
->> +                             return -EINVAL;
->> +             }
->> +     }
->> +
->> +     sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
->> +                     PWM_ENTIRE_CYCLE, clk_div << 16);
->> +     sun8i_pwm_set_value(sun8i_pwm, PWM_CTR_REG(ch),
->> +                     PWM_PRESCAL_K, prescaler << 0);
->> +     sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
->> +                     CLK_DIV_M, id << 0);
->> +
->> +     /* set duty cycle */
->> +     val =3D (prescaler + 1) * div_m_table[id] * clk_div;
->
->                                 (1U << id)
->
-> You might want to check for the range, though.
-
-Yep :-)
-
->
->> +     val =3D state->period;
->> +     do_div(val, clk_div);
->> +     clk_div =3D state->duty_cycle;
->> +     do_div(clk_div, val);
->> +
->> +     sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
->> +                     PWM_ACT_CYCLE, clk_div << 0);
->> +
->> +     return 0;
->> +}
->> +
->> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pw=
-m,
->> +             struct pwm_state *state)
->> +{
->> +     int ret;
->> +     struct sun8i_pwm_chip *sun8i_pwm =3D to_sun8i_pwm_chip(chip);
->> +     struct pwm_state cstate;
->> +
->> +     pwm_get_state(pwm, &cstate);
->> +     if (!cstate.enabled) {
->> +             ret =3D clk_prepare_enable(sun8i_pwm->clk);
->> +             if (ret) {
->> +                     dev_err(chip->dev, "Failed to enable PWM clock\n")=
-;
->> +                     return ret;
->> +             }
->> +     }
->> +
->> +     spin_lock(&sun8i_pwm->ctrl_lock);
->> +
->> +     if ((cstate.period !=3D state->period) ||
->> +                     (cstate.duty_cycle !=3D state->duty_cycle)) {
->> +             ret =3D sun8i_pwm_config(sun8i_pwm, pwm->hwpwm, state);
->> +             if (ret) {
->> +                     spin_unlock(&sun8i_pwm->ctrl_lock);
->> +                     dev_err(chip->dev, "Failed to config PWM\n");
->> +                     return ret;
->> +             }
->> +     }
->> +
->> +     if (state->polarity !=3D cstate.polarity)
->> +             sun8i_pwm_set_polarity(sun8i_pwm, pwm->hwpwm, state->polar=
-ity);
->> +
->> +     if (state->enabled) {
->> +             sun8i_pwm_set_bit(sun8i_pwm,
->> +                             CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
->> +
->> +             sun8i_pwm_set_bit(sun8i_pwm,
->> +                             PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
->> +     } else {
->> +             sun8i_pwm_clear_bit(sun8i_pwm,
->> +                             CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
->> +
->> +             sun8i_pwm_clear_bit(sun8i_pwm,
->> +                             PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
->> +     }
->> +
->> +     spin_unlock(&sun8i_pwm->ctrl_lock);
->> +
->> +     return 0;
->> +}
->> +
->> +static void sun8i_pwm_get_state(struct pwm_chip *chip, struct pwm_devic=
-e *pwm,
->> +             struct pwm_state *state)
->> +{
->> +     struct sun8i_pwm_chip *sun8i_pwm =3D to_sun8i_pwm_chip(chip);
->> +     u64 clk_rate, tmp;
->> +     u32 val;
->> +     u16 clk_div, act_cycle;
->> +     u8 prescal, id;
->
-> You might want to add a channel variable to increase readability:
->         int channel =3D pwm->hwpwm;
->
-
-Okey
-
->> +
->> +     clk_rate =3D clk_get_rate(sun8i_pwm->clk);
->> +
->> +     val =3D sun8i_pwm_read(sun8i_pwm, PWM_CTR_REG(pwm->hwpwm));
->> +     if (PWM_ACT_STA & val)
->> +             state->polarity =3D PWM_POLARITY_NORMAL;
->> +     else
->> +             state->polarity =3D PWM_POLARITY_INVERSED;
->> +
->> +     prescal =3D PWM_PRESCAL_K & val;
->> +
->> +     val =3D sun8i_pwm_read(sun8i_pwm, PWM_ENABLE_REG);
->> +     if (PWM_EN(pwm->hwpwm) & val)
->> +             state->enabled =3D true;
->> +     else
->> +             state->enabled =3D false;
->> +
->> +     val =3D sun8i_pwm_read(sun8i_pwm, PWM_PERIOD_REG(pwm->hwpwm));
->> +     act_cycle =3D PWM_ACT_CYCLE & val;
->> +     clk_div =3D val >> 16;
->> +
->> +     val =3D sun8i_pwm_read(sun8i_pwm, CLK_CFG_REG(pwm->hwpwm));
->> +     id =3D CLK_DIV_M & val;
->> +
->> +     tmp =3D act_cycle * prescal * div_m_table[id] * NSEC_PER_SEC;
->> +     state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
->> +     tmp =3D clk_div * prescal * div_m_table[id] * NSEC_PER_SEC;
->> +     state->period =3D DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
->> +}
->> +
->> +static const struct regmap_config sun8i_pwm_regmap_config =3D {
->> +     .reg_bits =3D 32,
->> +     .reg_stride =3D 4,
->> +     .val_bits =3D 32,
->> +     .max_register =3D CAPTURE_FALL_REG(7),
->> +};
->> +
->> +static const struct pwm_ops sun8i_pwm_ops =3D {
->> +     .apply =3D sun8i_pwm_apply,
->> +     .get_state =3D sun8i_pwm_get_state,
->> +     .owner =3D THIS_MODULE,
->> +};
->> +
->> +static const struct sun8i_pwm_data sun8i_pwm_data_r40 =3D {
->> +     .has_prescaler_bypass =3D false,
->
-> This is not needed (see my comment above).
-
-yep.
-
->
->> +     .has_rdy =3D true,
->
-> And this is not used. Copied from sun4i? Where it interestingly isn't
-> used either ;-)
->
->> +     .npwm =3D 8,
->
-> I would really love to see this being moved to the DT (see my other mail
-> to Thierry about the generic property).
->
-> This would mean you don't need a SoC specific structure at all.
-
-okey.
-
->
->> +};
->> +
->> +static const struct of_device_id sun8i_pwm_dt_ids[] =3D {
->> +     {
->> +             .compatible =3D "allwinner,sun8i-r40-pwm",
->> +             .data =3D &sun8i_pwm_data_r40,
->> +     },
->> +     {},
->> +};
->> +MODULE_DEVICE_TABLE(of, sun8i_pwm_dt_ids);
->> +
->> +static int sun8i_pwm_probe(struct platform_device *pdev)
->> +{
->> +     struct sun8i_pwm_chip *pwm;
->> +     struct resource *res;
->> +     int ret;
->> +     const struct of_device_id *match;
->> +
->> +     match =3D of_match_device(sun8i_pwm_dt_ids, &pdev->dev);
->> +     if (!match) {
->> +             dev_err(&pdev->dev, "Error: No device match found\n");
->> +             return -ENODEV;
->> +     }
->> +
->> +     pwm =3D devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
->> +     if (!pwm)
->> +             return -ENOMEM;
->> +
->> +     res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +     pwm->base =3D devm_ioremap_resource(&pdev->dev, res);
->> +     if (IS_ERR(pwm->base))
->> +             return PTR_ERR(pwm->base);
->> +
->> +     pwm->regmap =3D devm_regmap_init_mmio(&pdev->dev, pwm->base,
->> +                     &sun8i_pwm_regmap_config);
->> +     if (IS_ERR(pwm->regmap)) {
->> +             dev_err(&pdev->dev, "Failed to create regmap\n");
->> +             return PTR_ERR(pwm->regmap);
->> +     }
->> +
->> +     pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
->> +     if (IS_ERR(pwm->clk))
->> +             return PTR_ERR(pwm->clk);
->
-> This would need to be extended to get multiple clocks.
-
-okey.
-
->
->> +
->> +     pwm->data =3D match->data;
->> +     pwm->chip.dev =3D &pdev->dev;
->> +     pwm->chip.ops =3D &sun8i_pwm_ops;
->> +     pwm->chip.base =3D -1;
->> +     pwm->chip.npwm =3D pwm->data->npwm;
->
-> It should be fairly easy to initialise this from some DT property.
->
-> That's it for the my first review round. Haven't checked the actual
-> algorithm and bit assignments yet.
-> Did you manage to test this?
-
-Sure :-)
-All has been tested on my T3 board (compatible V40, R40)
-PWM signal is work well observe from oscilloscope.
+It seem CCU dosen't support APB1 clock for R40 PWM...
 
 >
 > Cheers,
 > Andre.
 >
->> +     pwm->chip.of_xlate =3D of_pwm_xlate_with_flags;
->> +     pwm->chip.of_pwm_n_cells =3D 3;
+>> +                          #pwm-cells =3D <3>;
+>> +                          status =3D "disabled";
+>> +             };
 >> +
->> +     spin_lock_init(&pwm->ctrl_lock);
->> +
->> +     ret =3D pwmchip_add(&pwm->chip);
->> +     if (ret < 0) {
->> +             dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
->> +             return ret;
->> +     }
->> +
->> +     platform_set_drvdata(pdev, pwm);
->> +
->> +     return 0;
->> +}
->> +
->> +static int sun8i_pwm_remove(struct platform_device *pdev)
->> +{
->> +     struct sun8i_pwm_chip *pwm =3D platform_get_drvdata(pdev);
->> +
->> +     return pwmchip_remove(&pwm->chip);
->> +}
->> +
->> +static struct platform_driver sun8i_pwm_driver =3D {
->> +     .driver =3D {
->> +             .name =3D "sun8i-pwm",
->> +             .of_match_table =3D sun8i_pwm_dt_ids,
->> +     },
->> +     .probe =3D sun8i_pwm_probe,
->> +     .remove =3D sun8i_pwm_remove,
->> +};
->> +module_platform_driver(sun8i_pwm_driver);
->> +
->> +MODULE_ALIAS("platform: sun8i-pwm");
->> +MODULE_AUTHOR("Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>");
->> +MODULE_DESCRIPTION("Allwinner sun8i PWM driver");
->> +MODULE_LICENSE("GPL v2");
+>>               uart0: serial@1c28000 {
+>>                       compatible =3D "snps,dw-apb-uart";
+>>                       reg =3D <0x01c28000 0x400>;
 >>
 >
 
