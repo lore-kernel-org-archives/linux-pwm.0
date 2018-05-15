@@ -1,108 +1,124 @@
-From: Thomas Hebb <tommyhebb@gmail.com>
-Subject: [PATCH 1/2] pwm: berlin: Don't use broken prescaler values
-Date: Mon, 14 May 2018 17:58:14 -0400
-Message-ID: <da60a97a0c6f754faa1f996334b3568ddb2f5ed0.1526334654.git.tommyhebb@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Thomas Hebb <tommyhebb@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
+From: Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
+Date: Tue, 15 May 2018 13:17:11 +0200
+Message-ID: <20180515111711.l2g4vgsal7yr6dbr@flea>
+References: <20180225135308.GA14561@arx-s1>
+ <20180226090038.etk5q4pd4rl5dvf6@flea.lan>
+ <CAJeuY7-Dz1u9J8GMu=OdzJ2cJUnE3wEobJoQz6RV-ibjBjoW4A@mail.gmail.com>
+Reply-To: maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="gknln4zbx57iat3f"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBBQUD5PLQKGQEVBG6DFQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <CAJeuY7-Dz1u9J8GMu=OdzJ2cJUnE3wEobJoQz6RV-ibjBjoW4A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Claudiu Beznea <Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Six of the eight prescaler values available for Berlin PWM are not true
-prescalers but rather internal shifts that throw away the high bits of
-TCNT. Currently, we attempt to use those high bits, leading to erratic
-behavior. Restrict the prescaler configurations we select to only the
-two that respect the full range of TCNT.
 
-Tested on BG2CD.
+--gknln4zbx57iat3f
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
----
- drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 20 deletions(-)
+Hi,
 
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-index 771859aca4be..7c8d6a168ceb 100644
---- a/drivers/pwm/pwm-berlin.c
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -21,8 +21,18 @@
- #define BERLIN_PWM_EN			0x0
- #define  BERLIN_PWM_ENABLE		BIT(0)
- #define BERLIN_PWM_CONTROL		0x4
--#define  BERLIN_PWM_PRESCALE_MASK	0x7
--#define  BERLIN_PWM_PRESCALE_MAX	4096
-+/*
-+ * The prescaler claims to support 8 different moduli, configured using the
-+ * low three bits of PWM_CONTROL. (Sequentially, they are 1, 4, 8, 16, 64,
-+ * 256, 1024, and 4096.)  However, the moduli from 4 to 1024 appear to be
-+ * implemented by internally shifting TCNT left without adding additional
-+ * bits. So, the max TCNT that actually works for a modulus of 4 is 0x3fff;
-+ * for 8, 0x1fff; and so on. This means that those moduli are entirely
-+ * useless, as we could just do the shift ourselves. The 4096 modulus is
-+ * implemented with a real prescaler, so we do use that, but we treat it
-+ * as a flag instead of pretending the modulus is actually configurable.
-+ */
-+#define  BERLIN_PWM_PRESCALE_4096	0x7
- #define  BERLIN_PWM_INVERT_POLARITY	BIT(3)
- #define BERLIN_PWM_DUTY			0x8
- #define BERLIN_PWM_TCNT			0xc
-@@ -46,10 +56,6 @@ static inline struct berlin_pwm_chip *to_berlin_pwm_chip(struct pwm_chip *chip)
- 	return container_of(chip, struct berlin_pwm_chip, chip);
- }
- 
--static const u32 prescaler_table[] = {
--	1, 4, 8, 16, 64, 256, 1024, 4096
--};
--
- static inline u32 berlin_pwm_readl(struct berlin_pwm_chip *chip,
- 				   unsigned int channel, unsigned long offset)
- {
-@@ -86,33 +92,32 @@ static int berlin_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm_dev,
- 			     int duty_ns, int period_ns)
- {
- 	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
--	unsigned int prescale;
-+	bool prescale_4096 = false;
- 	u32 value, duty, period;
--	u64 cycles, tmp;
-+	u64 cycles;
- 
- 	cycles = clk_get_rate(pwm->clk);
- 	cycles *= period_ns;
- 	do_div(cycles, NSEC_PER_SEC);
- 
--	for (prescale = 0; prescale < ARRAY_SIZE(prescaler_table); prescale++) {
--		tmp = cycles;
--		do_div(tmp, prescaler_table[prescale]);
-+	if (cycles > BERLIN_PWM_MAX_TCNT) {
-+		prescale_4096 = true;
-+		cycles >>= 12; // Prescaled by 4096
- 
--		if (tmp <= BERLIN_PWM_MAX_TCNT)
--			break;
-+		if (cycles > BERLIN_PWM_MAX_TCNT)
-+			return -ERANGE;
- 	}
- 
--	if (tmp > BERLIN_PWM_MAX_TCNT)
--		return -ERANGE;
--
--	period = tmp;
--	cycles = tmp * duty_ns;
-+	period = cycles;
-+	cycles *= duty_ns;
- 	do_div(cycles, period_ns);
- 	duty = cycles;
- 
- 	value = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_CONTROL);
--	value &= ~BERLIN_PWM_PRESCALE_MASK;
--	value |= prescale;
-+	if (prescale_4096)
-+		value |= BERLIN_PWM_PRESCALE_4096;
-+	else
-+		value &= ~BERLIN_PWM_PRESCALE_4096;
- 	berlin_pwm_writel(pwm, pwm_dev->hwpwm, value, BERLIN_PWM_CONTROL);
- 
- 	berlin_pwm_writel(pwm, pwm_dev->hwpwm, duty, BERLIN_PWM_DUTY);
--- 
-2.17.0
+On Mon, May 14, 2018 at 10:45:44PM +0800, Hao Zhang wrote:
+> 2018-02-26 17:00 GMT+08:00 Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>:
+> > Thanks for respinning this serie. It looks mostly good, but you still
+> > have a quite significant number of checkpatch (--strict) warnings that
+> > you should address.
+>=20
+> Thanks for reviews :) ,i'm sorry for that, it will be fixed next
+> time.  and, besides, in what situation were the checkpatch warning
+> can be ignore=EF=BC=9F
+
+The only one that can be reasonably be ignored is the long line
+warning, and only if complying to the limit would make it less easy to
+understand.
+
+> >
+> > On Sun, Feb 25, 2018 at 09:53:08PM +0800, hao_zhang wrote:
+> >> +#define CAPTURE_IRQ_ENABLE_REG       0x0010
+> >> +#define CFIE(ch)     BIT(ch << 1 + 1)
+> >> +#define CRIE(ch)     BIT(ch << 1)
+> >
+> > You should also put your argument between parentheses here (and in all
+> > your other macros).
+>=20
+> Do you mean like this ?
+> #define CFIE(ch)     BIT((ch) << 1 + 1)
+> #define CRIE(ch)     BIT((ch) << 1)
+
+Yep, exactly. Otherwise, if you do something like CRIE(1 + 1), the
+result will be BIT(1 + 1 << 1), which will expand to 3, instead of 4.
+
+Also, CFIE looks a bit weird here, is it the offset that is
+incremented, or the value? You should probably have parentheses to
+make it explicit.
+
+> >
+> >> +static const u16 div_m_table[] =3D {
+> >> +     1,
+> >> +     2,
+> >> +     4,
+> >> +     8,
+> >> +     16,
+> >> +     32,
+> >> +     64,
+> >> +     128,
+> >> +     256
+> >> +};
+> >
+> > If this is just a power of two, you can use either the power of two /
+> > ilog2 to switch back and forth, instead of using that table.
+>=20
+> I think using table is more explicit and extended...
+
+If you didn't have a simple mapping between the register values and
+the divider value, then yeah, sure. But it's not the case here.
+
+Thanks!
+Maxime
+
+--=20
+Maxime Ripard, Bootlin (formerly Free Electrons)
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--=20
+You received this message because you are subscribed to the Google Groups "=
+linux-sunxi" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+For more options, visit https://groups.google.com/d/optout.
+
+--gknln4zbx57iat3f
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlr6waEACgkQ0rTAlCFN
+r3RPFw/+JeurQEegEMeIm4JNTp7dnYT+zmfEGSK062yJIhYgiCXgWxxyqPd+2SnZ
+w0VoeGkC7ylD3R/5oRt5CCm2dce9JaOSJhYjRXU3zBsYicXQpWF0SgSgg8rfhmVb
+YFxPLqXYkW21szGXpufgx2en04pq9B1++FqbrgQzdKz4wc2UVGn9Ywz/se7FEDb1
+ACqJyolA3e7XiFJv3jhtZimoHGr1MReBNgPiwS9sHrGweB03R/NUfeb04G9w/ARo
+6DdeyHWjH+36TpZCzwMQPXwrqYpSjbFYEKf5vjVc2PB848+2h7p2vSmym/26vCkC
+xXvS/b/mNlp6EIEIWQs4ZdQKrYR4pCZq9M4WneBiLtVlq+ygiFn7uKeFGRjJukno
+iEiJrG3jOhnR2/37222rt/DZkb6oofJPtKyJadVwakQ3pFLeE8dB4a8xqsoHHoj1
+aPMzZhovzRNkWRZoeffbegOEVTahVABjrEiHuQb+8NDYbpb137pEHWJTRiBUhV+4
+h10Ez1d2OvugF7kZlkw2IVuzXdp4C5n3JMenTJ12el1JrjO7bfi+ddPVs3B/Iy7b
+CbPG/Ex+RAEULULg8dhpNmuweF5GN9pUlsAoxpPC/33Lg3Zx3AXyAdqWpjOLE0U7
+nOsqUEPtnywqyu7xGwPFN8LDagoXEhXn1V8vVEQUm3KNpvlFxgs=
+=apZD
+-----END PGP SIGNATURE-----
+
+--gknln4zbx57iat3f--
