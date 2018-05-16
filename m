@@ -1,97 +1,53 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RESEND PATCH v5 0/6] Add support for PWM input capture on STM32
-Date: Wed, 16 May 2018 11:13:08 +0100
-Message-ID: <20180516101308.GH5130@dell>
+Subject: [GIT PULL ++] Immutable branch between MFD and PWM due for the v4.18
+ merge window (v2)
+Date: Wed, 16 May 2018 11:16:53 +0100
+Message-ID: <20180516101653.GI5130@dell>
 References: <1526456161-27865-1-git-send-email-fabrice.gasnier@st.com>
- <20180516080635.GE5130@dell>
- <c48acc96-1eca-9adc-abb7-131921305ee8@st.com>
+ <20180516081910.GF5130@dell>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c48acc96-1eca-9adc-abb7-131921305ee8@st.com>
+In-Reply-To: <20180516081910.GF5130@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: alexandre.torgue@st.com, thierry.reding@gmail.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>, thierry.reding@gmail.com
+Cc: alexandre.torgue@st.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 16 May 2018, Fabrice Gasnier wrote:
+Subsequent pull-request containing additional bindings patch.
 
-> On 05/16/2018 10:06 AM, Lee Jones wrote:
-> > On Wed, 16 May 2018, Fabrice Gasnier wrote:
-> > 
-> >> This series adds support for capture to stm32-pwm driver.
-> >> Capture is based on DMAs.
-> >> - First two patches add support for requesting DMAs to MFD core
-> >> - Next three patches add support for capture to stm32-pwm driver
-> >> - This has been tested on stm32429i-eval board.
-> >>
-> >> ---
-> >> Changes in v5:
-> >> - update patch 2 (mfd: stm32-timers: add support for dmas)
-> >>   move stm32_timers_dma struct to header file,
-> >>   fix warning on dma_mapping_error().
-> >>
-> >> Changes in v4:
-> >> - Lee's comments on patch 2 (mfd: stm32-timers: add support for dmas)
-> >>   Add kerneldoc header, better format comments.
-> >>
-> >> Changes in v3:
-> >> - Dropped 2 precusor patches applied by Thierry in pwm tree:
-> >>   "pwm: stm32: fix, remove unused struct device"
-> >>   "pwm: stm32: protect common prescaler for all channels"
-> >> - Note: this series applies on top on pwm tree
-> >> - Implements Lee's comments on MFD part: rework stm32_timers_dma struct,
-> >>   exported routine prototype now use generic device struct, more
-> >>   various comments (see patch 2 changelog).
-> >>
-> >> Resend v2:
-> >> - Add collected Acks
-> >>
-> >> Changes in v2:
-> >> - Abstract DMA handling from child driver: move it to MFD core
-> >> - Rework pwm capture routines to adopt this change
-> >> - Comment on optional dma support, beautify DMAs probe
-> >>
-> >> Fabrice Gasnier (6):
-> >>   dt-bindings: mfd: stm32-timers: add support for dmas
-> >>   mfd: stm32-timers: add support for dmas
-> >>   pwm: stm32: add capture support
-> >>   pwm: stm32: improve capture by tuning counter prescaler
-> >>   pwm: stm32: use input prescaler to improve period capture
-> >>   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
-> > 
-> > Applied patches 1-5.
-> 
-> Many thanks Lee !
-> 
-> Maybe I missed something, but just in case...
-> In your pull request ("[GIT PULL] Immutable branch between MFD and PWM
-> due for the v4.18 merge window") I only see 4 patches:
-> Fabrice Gasnier (4):
->       mfd: stm32-timers: Add support for DMAs
->       pwm: stm32: Add capture support
->       pwm: stm32: Improve capture by tuning counter prescaler
->       pwm: stm32: Use input prescaler to improve period capture
-> 
-> I can't see patch 1 ("dt-bindings: mfd: stm32-timers: add support for dmas")
-> Is it applied on another tree ?
+Enjoy!
 
-Good spot.
+The following changes since commit 60cc43fc888428bb2f18f08997432d426a243338:
 
-Looks like a fumbled the key combination for the bindings patch.
+  Linux 4.17-rc1 (2018-04-15 18:24:20 -0700)
 
-Pull-request to follow.
+are available in the Git repository at:
 
-> >>  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
-> >>  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
-> >>  drivers/mfd/stm32-timers.c                         | 201 +++++++++++++++-
-> >>  drivers/pwm/pwm-stm32.c                            | 257 +++++++++++++++++++++
-> >>  include/linux/mfd/stm32-timers.h                   |  58 +++++
-> >>  5 files changed, 537 insertions(+), 2 deletions(-)
-> >>
-> > 
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-pwm-v4.18-1
+
+for you to fetch changes up to acc8e22f5d41558c90519aadc011b6d2839aedfe:
+
+  dt-bindings: mfd: stm32-timers: Add support for dmas (2018-05-16 11:13:13 +0100)
+
+----------------------------------------------------------------
+Immutable branch between MFD and PWM due for the v4.18 merge window (v2)
+
+----------------------------------------------------------------
+Fabrice Gasnier (5):
+      mfd: stm32-timers: Add support for DMAs
+      pwm: stm32: Add capture support
+      pwm: stm32: Improve capture by tuning counter prescaler
+      pwm: stm32: Use input prescaler to improve period capture
+      dt-bindings: mfd: stm32-timers: Add support for dmas
+
+ Documentation/devicetree/bindings/mfd/stm32-timers.txt |  20 ++++
+ drivers/mfd/stm32-timers.c                             | 201 +++++++++++++++++++++++++++++++-
+ drivers/pwm/pwm-stm32.c                                | 257 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/stm32-timers.h                       |  58 ++++++++++
+ 4 files changed, 534 insertions(+), 2 deletions(-)
 
 -- 
 Lee Jones [李琼斯]
