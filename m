@@ -1,62 +1,74 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RESEND PATCH v5 0/6] Add support for PWM input capture on STM32
-Date: Wed, 16 May 2018 09:35:55 +0200
-Message-ID: <1526456161-27865-1-git-send-email-fabrice.gasnier@st.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND PATCH v5 0/6] Add support for PWM input capture on STM32
+Date: Wed, 16 May 2018 09:06:35 +0100
+Message-ID: <20180516080635.GE5130@dell>
+References: <1526456161-27865-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1526456161-27865-1-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, alexandre.torgue@st.com
-Cc: thierry.reding@gmail.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: alexandre.torgue@st.com, thierry.reding@gmail.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-This series adds support for capture to stm32-pwm driver.
-Capture is based on DMAs.
-- First two patches add support for requesting DMAs to MFD core
-- Next three patches add support for capture to stm32-pwm driver
-- This has been tested on stm32429i-eval board.
+On Wed, 16 May 2018, Fabrice Gasnier wrote:
 
----
-Changes in v5:
-- update patch 2 (mfd: stm32-timers: add support for dmas)
-  move stm32_timers_dma struct to header file,
-  fix warning on dma_mapping_error().
+> This series adds support for capture to stm32-pwm driver.
+> Capture is based on DMAs.
+> - First two patches add support for requesting DMAs to MFD core
+> - Next three patches add support for capture to stm32-pwm driver
+> - This has been tested on stm32429i-eval board.
+> 
+> ---
+> Changes in v5:
+> - update patch 2 (mfd: stm32-timers: add support for dmas)
+>   move stm32_timers_dma struct to header file,
+>   fix warning on dma_mapping_error().
+> 
+> Changes in v4:
+> - Lee's comments on patch 2 (mfd: stm32-timers: add support for dmas)
+>   Add kerneldoc header, better format comments.
+> 
+> Changes in v3:
+> - Dropped 2 precusor patches applied by Thierry in pwm tree:
+>   "pwm: stm32: fix, remove unused struct device"
+>   "pwm: stm32: protect common prescaler for all channels"
+> - Note: this series applies on top on pwm tree
+> - Implements Lee's comments on MFD part: rework stm32_timers_dma struct,
+>   exported routine prototype now use generic device struct, more
+>   various comments (see patch 2 changelog).
+> 
+> Resend v2:
+> - Add collected Acks
+> 
+> Changes in v2:
+> - Abstract DMA handling from child driver: move it to MFD core
+> - Rework pwm capture routines to adopt this change
+> - Comment on optional dma support, beautify DMAs probe
+> 
+> Fabrice Gasnier (6):
+>   dt-bindings: mfd: stm32-timers: add support for dmas
+>   mfd: stm32-timers: add support for dmas
+>   pwm: stm32: add capture support
+>   pwm: stm32: improve capture by tuning counter prescaler
+>   pwm: stm32: use input prescaler to improve period capture
+>   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
 
-Changes in v4:
-- Lee's comments on patch 2 (mfd: stm32-timers: add support for dmas)
-  Add kerneldoc header, better format comments.
+Applied patches 1-5.
 
-Changes in v3:
-- Dropped 2 precusor patches applied by Thierry in pwm tree:
-  "pwm: stm32: fix, remove unused struct device"
-  "pwm: stm32: protect common prescaler for all channels"
-- Note: this series applies on top on pwm tree
-- Implements Lee's comments on MFD part: rework stm32_timers_dma struct,
-  exported routine prototype now use generic device struct, more
-  various comments (see patch 2 changelog).
-
-Resend v2:
-- Add collected Acks
-
-Changes in v2:
-- Abstract DMA handling from child driver: move it to MFD core
-- Rework pwm capture routines to adopt this change
-- Comment on optional dma support, beautify DMAs probe
-
-Fabrice Gasnier (6):
-  dt-bindings: mfd: stm32-timers: add support for dmas
-  mfd: stm32-timers: add support for dmas
-  pwm: stm32: add capture support
-  pwm: stm32: improve capture by tuning counter prescaler
-  pwm: stm32: use input prescaler to improve period capture
-  ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
-
- .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
- arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
- drivers/mfd/stm32-timers.c                         | 201 +++++++++++++++-
- drivers/pwm/pwm-stm32.c                            | 257 +++++++++++++++++++++
- include/linux/mfd/stm32-timers.h                   |  58 +++++
- 5 files changed, 537 insertions(+), 2 deletions(-)
+>  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
+>  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
+>  drivers/mfd/stm32-timers.c                         | 201 +++++++++++++++-
+>  drivers/pwm/pwm-stm32.c                            | 257 +++++++++++++++++++++
+>  include/linux/mfd/stm32-timers.h                   |  58 +++++
+>  5 files changed, 537 insertions(+), 2 deletions(-)
+> 
 
 -- 
-1.9.1
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
