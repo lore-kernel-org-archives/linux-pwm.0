@@ -1,65 +1,62 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 1/2] mfd: stm32-timers: fix pwm-stm32 linker issue with
- COMPILE_TEST
-Date: Fri, 18 May 2018 09:56:24 -0700
-Message-ID: <0f03fe4b-0b5f-92f1-2929-c6c585432159@infradead.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/2] pwm: stm32: initialize raw local variables
+Date: Sat, 19 May 2018 00:05:17 +0200
+Message-ID: <20180518220517.GD28123@ulmo>
 References: <1526657044-14879-1-git-send-email-fabrice.gasnier@st.com>
- <1526657044-14879-2-git-send-email-fabrice.gasnier@st.com>
+ <1526657044-14879-3-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wLAMOaPNJ0fu1fTG"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1526657044-14879-2-git-send-email-fabrice.gasnier@st.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1526657044-14879-3-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, lee.jones@linaro.org, thierry.reding@gmail.com
-Cc: sfr@canb.auug.org.au, gerald.baeza@st.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, linux-next@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: lee.jones@linaro.org, rdunlap@infradead.org, sfr@canb.auug.org.au, gerald.baeza@st.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, linux-next@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 05/18/2018 08:24 AM, Fabrice Gasnier wrote:
-> This is seen when COMPILE_TEST=y and MFD_STM32_TIMERS=n.
-> drivers/pwm/pwm-stm32.o: In function 'stm32_pwm_raw_capture':
-> pwm-stm32.c:... undefined reference to 'stm32_timers_dma_burst_read'
-> Fixes: 0c6609805b63 ("mfd: stm32-timers: Add support for DMAs")
-> 
+
+--wLAMOaPNJ0fu1fTG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, May 18, 2018 at 05:24:04PM +0200, Fabrice Gasnier wrote:
+> This removes build warning when COMPILE_TEST=3Dy and MFD_STM32_TIMERS=3Dn
+> in drivers/pwm/pwm-stm32.c. In function 'stm32_pwm_capture' 'raw_prd' and
+> 'raw_dty' may be used uninitialized in this function
+> [-Wmaybe-uninitialized]
+>=20
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks.
-
 > ---
->  include/linux/mfd/stm32-timers.h | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
-> index 9da1d7e..067d146 100644
-> --- a/include/linux/mfd/stm32-timers.h
-> +++ b/include/linux/mfd/stm32-timers.h
-> @@ -124,8 +124,20 @@ struct stm32_timers {
->  	struct stm32_timers_dma dma; /* Only to be used by the parent */
->  };
->  
-> +#if IS_REACHABLE(CONFIG_MFD_STM32_TIMERS)
->  int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
->  				enum stm32_timers_dmas id, u32 reg,
->  				unsigned int num_reg, unsigned int bursts,
->  				unsigned long tmo_ms);
-> +#else
-> +static inline int stm32_timers_dma_burst_read(struct device *dev, u32 *buf,
-> +					      enum stm32_timers_dmas id,
-> +					      u32 reg,
-> +					      unsigned int num_reg,
-> +					      unsigned int bursts,
-> +					      unsigned long tmo_ms)
-> +{
-> +	return -ENODEV;
-> +}
-> +#endif
->  #endif
-> 
+>  drivers/pwm/pwm-stm32.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
+Hi Lee,
 
--- 
-~Randy
+I assume you'll pick this up into your branch where you applied the
+initial patches along with 1/2 in this series?
+
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+
+--wLAMOaPNJ0fu1fTG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlr/Th0ACgkQ3SOs138+
+s6GinQ/+I1AYeroFcpvzzR4/KC9jYBJU5YKHtMnx/tR7Z0PDeRXTPUc12k53T97H
+lFMvHZ5V0sucs33IbCxncT7NZ+mcg5YJDbhj89Q4m3f2HGGOzRgygXHFWrhsL7Ys
+OMGCFZALjxHTOyNSNJNwNATW1LZxD8Nexm5wdVwOUIfcuSpL0Sww5Ha9m0Q7M03X
+Tut6UkRWViTdauLqLA82GrX+EGoyMlwlhqZvIQkAvwSSQQ3tBLGkXvUah8asHGPe
+SLlONoEW5Uh3pjzqLlpGBpakr7xKCaFV+sQpHh4Fjhz1HQ/lzOPYoc+j5HidE1Pk
+mgL3i18XNYWFoZvEM9d0eUkdzRN5MYnl2Av6FNWzIRZHB6QerE0U1Xv0A1EyDutk
+QBK1OFOB8G6n7TqEDhUmbRgWcXLG1IRQwX714RNBwnnqHr/EPCi3o1VOFPhTtQYD
+e6QyhdOXKvSCLk55IW0wcQrlxI8qX8UBJqBZaATBPxOEFt6IAzsRCHcqoceDHdnk
+FvCLCK1O7q2HUGFIRO/LpWmXtgFZEqZrnmKbN60TFcQcaHNixW5/W3u1t7LT8Fdm
+zcQRcik7akpjD91mHn2o4znnxTSdMoDy9FhOrWz6MwFZwQvErdoLC6GVukOz77ty
+0CLJ61ipHOj8T2o/Y0ZCmym7xn2HqEdE4NBs2JLiVkWIy4vGVEo=
+=+UwI
+-----END PGP SIGNATURE-----
+
+--wLAMOaPNJ0fu1fTG--
