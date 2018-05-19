@@ -1,62 +1,93 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: stm32: initialize raw local variables
-Date: Sat, 19 May 2018 00:05:17 +0200
-Message-ID: <20180518220517.GD28123@ulmo>
-References: <1526657044-14879-1-git-send-email-fabrice.gasnier@st.com>
- <1526657044-14879-3-git-send-email-fabrice.gasnier@st.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [RESEND][PATCH] pwm: Set class for exported channels in sysfs
+Date: Sat, 19 May 2018 13:50:05 +0200 (CEST)
+Message-ID: <492690429.60492.1526730605765@email.1und1.de>
+References: <20170926115951.GA29367@sukzessiv.net>
+ <c1b6b62e-8fcb-bff0-b532-aa0879d301ed@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wLAMOaPNJ0fu1fTG"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1526657044-14879-3-git-send-email-fabrice.gasnier@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: lee.jones@linaro.org, rdunlap@infradead.org, sfr@canb.auug.org.au, gerald.baeza@st.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, linux-next@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <c1b6b62e-8fcb-bff0-b532-aa0879d301ed@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gohai@sukzessiv.net, Thierry Reding <thierry.reding@gmail.com>, Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: Gottfried Haider <gottfried.haider@gmail.com>, linux-pwm@vger.kernel.org, Loic PALLARDY <loic.pallardy@st.com>, H Hartley Sweeten <hsweeten@visionengravers.com>, broonie@kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-
---wLAMOaPNJ0fu1fTG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, May 18, 2018 at 05:24:04PM +0200, Fabrice Gasnier wrote:
-> This removes build warning when COMPILE_TEST=3Dy and MFD_STM32_TIMERS=3Dn
-> in drivers/pwm/pwm-stm32.c. In function 'stm32_pwm_capture' 'raw_prd' and
-> 'raw_dty' may be used uninitialized in this function
-> [-Wmaybe-uninitialized]
->=20
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-> ---
->  drivers/pwm/pwm-stm32.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Hi Lee,
-
-I assume you'll pick this up into your branch where you applied the
-initial patches along with 1/2 in this series?
-
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-
---wLAMOaPNJ0fu1fTG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlr/Th0ACgkQ3SOs138+
-s6GinQ/+I1AYeroFcpvzzR4/KC9jYBJU5YKHtMnx/tR7Z0PDeRXTPUc12k53T97H
-lFMvHZ5V0sucs33IbCxncT7NZ+mcg5YJDbhj89Q4m3f2HGGOzRgygXHFWrhsL7Ys
-OMGCFZALjxHTOyNSNJNwNATW1LZxD8Nexm5wdVwOUIfcuSpL0Sww5Ha9m0Q7M03X
-Tut6UkRWViTdauLqLA82GrX+EGoyMlwlhqZvIQkAvwSSQQ3tBLGkXvUah8asHGPe
-SLlONoEW5Uh3pjzqLlpGBpakr7xKCaFV+sQpHh4Fjhz1HQ/lzOPYoc+j5HidE1Pk
-mgL3i18XNYWFoZvEM9d0eUkdzRN5MYnl2Av6FNWzIRZHB6QerE0U1Xv0A1EyDutk
-QBK1OFOB8G6n7TqEDhUmbRgWcXLG1IRQwX714RNBwnnqHr/EPCi3o1VOFPhTtQYD
-e6QyhdOXKvSCLk55IW0wcQrlxI8qX8UBJqBZaATBPxOEFt6IAzsRCHcqoceDHdnk
-FvCLCK1O7q2HUGFIRO/LpWmXtgFZEqZrnmKbN60TFcQcaHNixW5/W3u1t7LT8Fdm
-zcQRcik7akpjD91mHn2o4znnxTSdMoDy9FhOrWz6MwFZwQvErdoLC6GVukOz77ty
-0CLJ61ipHOj8T2o/Y0ZCmym7xn2HqEdE4NBs2JLiVkWIy4vGVEo=
-=+UwI
------END PGP SIGNATURE-----
-
---wLAMOaPNJ0fu1fTG--
+SGVsbG8gRmFicmljZSwKCj4gRmFicmljZSBHYXNuaWVyIDxmYWJyaWNlLmdhc25pZXJAc3QuY29t
+PiBoYXQgYW0gMzAuIE3DpHJ6IDIwMTggdW0gMTQ6NDAgZ2VzY2hyaWViZW46Cj4gCj4gCj4gT24g
+MDkvMjYvMjAxNyAwMTo1OSBQTSwgZ29oYWlAc3VremVzc2l2Lm5ldCB3cm90ZToKPiA+IE5vdGlm
+aWNhdGlvbnMgZm9yIGRldmljZXMgd2l0aG91dCBidXMgb3IgY2xhc3Mgc2V0IGdldCBkcm9wcGVk
+IGJ5Cj4gPiBkZXZfdWV2ZW50X2ZpbHRlci4gQWRkaW5nIHRoZSBjbGFzcyB0byB0aGUgZXhwb3J0
+ZWQgY2hpbGQgbWF0Y2hlcwo+ID4gd2hhdCB0aGUgZ3BpbyBzdWJzeXN0ZW0gaXMgZG9pbmcuCj4g
+PiAKPiA+IFdpdGggdGhpcyBjaGFuZ2UgZXhwb3J0aW5nIGEgY2hhbm5lbCB0cmlnZ2VycyBhIHVk
+ZXYgZXZlbnQsIHdoaWNoCj4gPiBnaXZlcyB1c2Vyc3BhY2UgYSBjaGFuY2UgdG8gZml4dXAgcGVy
+bWlzc2lvbnMgYW5kIG1ha2VzIGl0IHBvc3NpYmxlCj4gPiBmb3Igbm9uLXJvb3QgdXNlcnMgdG8g
+bWFrZSB1c2Ugb2YgdGhlIHB3bSBzdWJzeXN0ZW0uCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IEdv
+dHRmcmllZCBIYWlkZXIgPGdvdHRmcmllZC5oYWlkZXJAZ21haWwuY29tPgo+ID4gQ0M6IFRoaWVy
+cnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+Cj4gPiBDQzogSCBIYXJ0bGV5IFN3
+ZWV0ZW4gPGhzd2VldGVuQHZpc2lvbmVuZ3JhdmVycy5jb20+Cj4gPiBDQzogbGludXgtcHdtQHZn
+ZXIua2VybmVsLm9yZwo+ID4gQ0M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
+Zwo+ID4gQ0M6IGxpbnV4LXJwaS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwo+ID4gLS0tCj4g
+PiAgZHJpdmVycy9wd20vc3lzZnMuYyB8IDEgKwo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2Vy
+dGlvbigrKQo+ID4gCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vc3lzZnMuYyBiL2RyaXZl
+cnMvcHdtL3N5c2ZzLmMKPiA+IGluZGV4IGE4MTMyMzkuLjgzZjJiMGIgMTAwNjQ0Cj4gPiAtLS0g
+YS9kcml2ZXJzL3B3bS9zeXNmcy5jCj4gPiArKysgYi9kcml2ZXJzL3B3bS9zeXNmcy5jCj4gPiBA
+QCAtMjYzLDYgKzI2Myw3IEBAIHN0YXRpYyBpbnQgcHdtX2V4cG9ydF9jaGlsZChzdHJ1Y3QgZGV2
+aWNlICpwYXJlbnQsIHN0cnVjdCBwd21fZGV2aWNlICpwd20pCj4gPiAgICAgICAgIGV4cG9ydC0+
+cHdtID0gcHdtOwo+ID4gICAgICAgICBtdXRleF9pbml0KCZleHBvcnQtPmxvY2spOwo+ID4gCj4g
+PiArICAgICAgIGV4cG9ydC0+Y2hpbGQuY2xhc3MgPSBwYXJlbnQtPmNsYXNzOwo+IAo+IEhpIGFs
+bCwKPiAKPiBTb3JyeSB0byByYWlzZSB0aGlzIG9sZCBtYWlsIHRocmVhZC4gSSBqdXN0IGZpZ3Vy
+ZWQgb3V0IHRoaXMgcGF0Y2ggaXMKPiBjYXVzaW5nICpyZWdyZXNzaW9uKiBvbiB2NC4xNi1yY3Mu
+Cj4gCj4gVGhpcyBwYXRjaCBoYXMgc2lkZSBlZmZlY3QgYXQgbXkgZW5kLCB3aXRoIG11bHRpcGxl
+IHB3bSBjaGlwLiBJdCBjcmVhdGVzCj4gYSBuZXcgZW50cnkgaW4gJy9zeXMvY2xhc3MvcHdtJyBl
+dmVyeSB0aW1lIGEgJ3B3bVgnIGlzIGV4cG9ydGVkOgo+IC0gZWNobyBYID4gZXhwb3J0Cj4gCj4g
+VGhpcyBicmVha3MgcHdtIG9uIHBsYXRmb3JtcyB0aGF0IGhhdmUgbXVsdGlwbGUgcHdtY2hpcDoK
+PiAtIDFzdCB0aW1lIGV4cG9ydCB3aWxsIGNyZWF0ZSBhIC9zeXMvY2xhc3MvcHdtL3B3bVgKPiAt
+IHdoZW4gYW5vdGhlciBleHBvcnQgaGFwcGVucyBvbiBhbm90aGVyIHB3bWNoaXAsIGl0IGNhbid0
+IGJlIGNyZWF0ZWQKPiAoZS5nLiAtRUVYSVNUKQo+IAo+IEkgbG9va2VkIGF0IC9Eb2N1bWVudGF0
+aW9uL0FCSS90ZXN0aW5nL3N5c2ZzLWNsYXNzLXB3bToKPiAtIHBtd1ggc2hvdWxkIGJlIHRoZXJl
+OiAvc3lzL2NsYXNzL3B3bS9wd21jaGlwTi9wd21YIChvbmx5ID8pCj4gCj4gV2l0aCB0aGlzIHBh
+dGNoOgo+IC0gcHdtWCBzeW1saW5rIGlzIGNyZWF0ZWQgaW4gYWRkaXRpb24sIGRpcmVjdGx5IHVu
+ZGVyIC9zeXMvY2xhc3MvcHdtCj4gCj4gRXhhbXBsZSBvbiBzdG0zMiAoc3RtMzI0MjlpLWV2YWwp
+IHBsYXRmb3JtOgo+IC0tLQo+ICQgbHMgL3N5cy9jbGFzcy9wd20KPiBwd21jaGlwMCBwd21jaGlw
+NAo+IAo+ICQgY2QgL3N5cy9jbGFzcy9wd20vcHdtY2hpcDAvCj4gJCBlY2hvIDAgPiBleHBvcnQK
+PiAKPiAkIGxzIC9zeXMvY2xhc3MvcHdtCj4gcHdtMCBwd21jaGlwMCBwd21jaGlwNAo+IAo+ICQg
+Y2QgL3N5cy9jbGFzcy9wd20vcHdtY2hpcDQvCj4gJCBlY2hvIDAgPiBleHBvcnQKPiAKPiBzeXNm
+czogY2Fubm90IGNyZWF0ZSBkdXBsaWNhdGUgZmlsZW5hbWUgJy9jbGFzcy9wd20vcHdtMCcKPiBD
+UFU6IDAgUElEOiA1MCBDb21tOiBzaCBOb3QgdGFpbnRlZCA0LjE2LjAtcmM3LTAwMDIwLWczMzYx
+NTQ1ICMxNjgyCj4gSGFyZHdhcmUgbmFtZTogU1RNMzIgKERldmljZSBUcmVlIFN1cHBvcnQpCj4g
+WzwwMDAwYzBmMT5dICh1bndpbmRfYmFja3RyYWNlKSBmcm9tIFs8MDAwMGIyM2I+XSAoc2hvd19z
+dGFjaysweGIvMHhjKQo+IFs8MDAwMGIyM2I+XSAoc2hvd19zdGFjaykgZnJvbSBbPDAwMDhkMmYx
+Pl0gKHN5c2ZzX3dhcm5fZHVwKzB4MzEvMHg0OCkKPiBbPDAwMDhkMmYxPl0gKHN5c2ZzX3dhcm5f
+ZHVwKSBmcm9tIFs8MDAwOGQ0YTU+XQo+IChzeXNmc19kb19jcmVhdGVfbGlua19zZCsweDc1LzB4
+ODgpCj4gWzwwMDA4ZDRhNT5dIChzeXNmc19kb19jcmVhdGVfbGlua19zZCkgZnJvbSBbPDAwMGU4
+ZTkxPl0KPiAoZGV2aWNlX2FkZCsweDExMS8weDM3NCkKPiBbPDAwMGU4ZTkxPl0gKGRldmljZV9h
+ZGQpIGZyb20gWzwwMDBjYTc5NT5dIChleHBvcnRfc3RvcmUrMHhiNS8weDEyYykKPiBbPDAwMGNh
+Nzk1Pl0gKGV4cG9ydF9zdG9yZSkgZnJvbSBbPDAwMDhjODk5Pl0gKGtlcm5mc19mb3Bfd3JpdGUr
+MHg4Ny8weGRhKQo+IFs8MDAwOGM4OTk+XSAoa2VybmZzX2ZvcF93cml0ZSkgZnJvbSBbPDAwMDVh
+MGE1Pl0gKF9fdmZzX3dyaXRlKzB4MWQvMHhjYykKPiBbPDAwMDVhMGE1Pl0gKF9fdmZzX3dyaXRl
+KSBmcm9tIFs8MDAwNWExYzc+XSAodmZzX3dyaXRlKzB4NGYvMHg3YykKPiBbPDAwMDVhMWM3Pl0g
+KHZmc193cml0ZSkgZnJvbSBbPDAwMDVhMjliPl0gKFN5U193cml0ZSsweDMzLzB4NzApCj4gWzww
+MDA1YTI5Yj5dIChTeVNfd3JpdGUpIGZyb20gWzwwMDAwOTAwMT5dIChyZXRfZmFzdF9zeXNjYWxs
+KzB4MS8weDU4KQo+IEV4Y2VwdGlvbiBzdGFjay4uLgo+IC1zaDogd3JpdGUgZXJyb3I6IEZpbGUg
+ZXhpc3RzCj4gCj4gTm90IHN1cmUgd2hhdCB0aGUgYmVzdCBmaXggd291bGQgYmUgdGhvdWdodCA6
+LSgKPiAKPiBwcm9iYWJseSBwd21YIHNob3VsZCBiZSBuYW1lZCBhbHNvIGFjY29yZGluZyB3aXRo
+IHB3bWNoaXBOID8KPiAtIGRldl9zZXRfbmFtZSgmZXhwb3J0LT5jaGlsZCwgInB3bSV1IiwgcHdt
+LT5od3B3bSk7Cj4gKyBkZXZfc2V0X25hbWUoJmV4cG9ydC0+Y2hpbGQsICJwd21jaGlwJWQtcHdt
+JXUiLCBjaGlwLT5iYXNlLCBwd20tPmh3cHdtKTsKPiBCVVQgSSB0aGluayB0aGlzIHdvdWxkIGJy
+ZWFrIGV4aXN0aW5nIEFCSS4uLgo+IAo+IEFsc28gdGhpcyBpcyBxdWl0ZSBsYXRlIGluIHRoZSBj
+eWNsZS4gTWF5YmUgYSByZXZlcnQgd291bGQgYmUgd2lzZSBmb3Igbm93ID8KCnNvcnJ5IGkgZGlk
+bid0IG5vdGljZWQgeW91ciBtYWlsIGJlZm9yZS4gQ291bGQgeW91IHBsZWFzZSBwcmVwYXJlIGEg
+cmV2ZXJ0IHBhdGNoPwoKVGhhbmtzClN0ZWZhbgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgt
+YXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3Jn
+L21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
