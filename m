@@ -1,7 +1,7 @@
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v5 9/9] pwm: atmel: add push-pull mode support
-Date: Tue, 22 May 2018 15:07:13 +0300
-Message-ID: <1526990833-30707-10-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v5 8/9] pwm: add documentation for pwm push-pull mode
+Date: Tue, 22 May 2018 15:07:12 +0300
+Message-ID: <1526990833-30707-9-git-send-email-claudiu.beznea@microchip.com>
 References: <1526990833-30707-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,100 +12,66 @@ To: thierry.reding@gmail.com, shc_work@mail.ru, robh+dt@kernel.org, mark.rutland
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu Beznea <claudiu.beznea@microchip.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add support for PWM push-pull mode. This is only supported by SAMA5D2 SoCs.
+Add documentation for PWM push-pull mode.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/pwm/pwm-atmel.c | 40 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 36 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm.txt |  2 ++
+ Documentation/pwm.txt                         | 16 ++++++++++++++++
+ include/dt-bindings/pwm/pwm.h                 |  1 +
+ 3 files changed, 19 insertions(+)
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 87ef54bd492c..aaafc4dd30f2 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -33,8 +33,11 @@
+diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
+index 7c8aaac43f92..6a60c0fca112 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+@@ -49,6 +49,8 @@ Optionally, the pwm-specifier can encode a number of flags (defined in
+ - PWM_MODE_COMPLEMENTARY: PWM complementary working mode (for PWM channels
+ with two outputs); if not specified, the default for PWM channel will be
+ used
++- PWM_MODE_PUSH_PULL: PWM push-pull working modes (for PWM channels with
++two outputs); if not specified the default for PWM channel will be used
  
- #define PWM_CMR			0x0
- /* Bit field in CMR */
--#define PWM_CMR_CPOL		(1 << 9)
--#define PWM_CMR_UPD_CDTY	(1 << 10)
-+#define PWM_CMR_CPOL		BIT(9)
-+#define PWM_CMR_UPD_CDTY	BIT(10)
-+#define PWM_CMR_DTHI		BIT(17)
-+#define PWM_CMR_DTLI		BIT(18)
-+#define PWM_CMR_PPM		BIT(19)
- #define PWM_CMR_CPRE_MSK	0xF
+ Example with optional PWM specifier for inverse polarity and complementary
+ mode:
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 912c43da8b48..675f9351fed1 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -128,6 +128,22 @@ channel that was exported. The following properties will then be available:
+     PWML1   |__|  |__|  |__|  |__|
+             <--T-->
  
- /* The following registers for PWM v1 */
-@@ -219,16 +222,19 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 	struct pwm_state cstate;
-+	struct pwm_caps caps;
- 	unsigned long cprd, cdty;
- 	u32 pres, val;
- 	int ret;
- 
- 	pwm_get_state(pwm, &cstate);
-+	pwm_get_caps(chip, pwm, &caps);
- 
- 	if (state->enabled) {
- 		if (cstate.enabled &&
- 		    cstate.polarity == state->polarity &&
--		    cstate.period == state->period) {
-+		    cstate.period == state->period &&
-+		    cstate.mode == state->mode) {
- 			cprd = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
- 						  atmel_pwm->data->regs.period);
- 			atmel_pwm_calculate_cdty(state, cprd, &cdty);
-@@ -263,6 +269,18 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			val &= ~PWM_CMR_CPOL;
- 		else
- 			val |= PWM_CMR_CPOL;
++    Push-pull mode - for PWM channels with two outputs; output waveforms
++        for a PWM channel in push-pull mode, with normal polarity looks like
++        this:
++            __          __
++    PWMH __|  |________|  |________
++                  __          __
++    PWML ________|  |________|  |__
++           <--T-->
 +
-+		/* PWM mode. */
-+		if (caps.modes & PWMC_MODE(PUSH_PULL)) {
-+			if (state->mode == PWMC_MODE(PUSH_PULL)) {
-+				val |= PWM_CMR_PPM | PWM_CMR_DTLI;
-+				val &= ~PWM_CMR_DTHI;
-+			} else {
-+				val &= ~(PWM_CMR_PPM | PWM_CMR_DTLI |
-+					 PWM_CMR_DTHI);
-+			}
-+		}
++    If polarity is inversed:
++         __    ________    ________
++    PWMH   |__|        |__|
++         ________    ________    __
++    PWML         |__|        |__|
++           <--T-->
 +
- 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
- 		atmel_pwm_set_cprd_cdty(chip, pwm, cprd, cdty);
- 		mutex_lock(&atmel_pwm->isr_lock);
-@@ -315,6 +333,20 @@ static const struct atmel_pwm_data atmel_pwm_data_v2 = {
- 	},
- };
+     Where T is the signal period.
  
-+static const struct atmel_pwm_data atmel_pwm_data_v3 = {
-+	.regs = {
-+		.period		= PWMV2_CPRD,
-+		.period_upd	= PWMV2_CPRDUPD,
-+		.duty		= PWMV2_CDTY,
-+		.duty_upd	= PWMV2_CDTYUPD,
-+	},
-+	.caps = {
-+		.modes = PWMC_MODE(NORMAL) |
-+			 PWMC_MODE(COMPLEMENTARY) |
-+			 PWMC_MODE(PUSH_PULL),
-+	},
-+};
-+
- static const struct platform_device_id atmel_pwm_devtypes[] = {
- 	{
- 		.name = "at91sam9rl-pwm",
-@@ -337,7 +369,7 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
- 		.data = &atmel_pwm_data_v2,
- 	}, {
- 		.compatible = "atmel,sama5d2-pwm",
--		.data = &atmel_pwm_data_v2,
-+		.data = &atmel_pwm_data_v3,
- 	}, {
- 		/* sentinel */
- 	},
+ Implementing a PWM driver
+diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
+index b82279cc1787..cd4265bce968 100644
+--- a/include/dt-bindings/pwm/pwm.h
++++ b/include/dt-bindings/pwm/pwm.h
+@@ -12,5 +12,6 @@
+ 
+ #define PWM_POLARITY_INVERTED			(1 << 0)
+ #define PWM_MODE_COMPLEMENTARY			(1 << 1)
++#define PWM_MODE_PUSH_PULL			(1 << 2)
+ 
+ #endif
 -- 
 2.7.4
