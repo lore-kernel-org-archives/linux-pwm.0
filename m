@@ -1,139 +1,42 @@
-From: shenwei.wang@nxp.com
-Subject: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block on i.MX8x
-Date: Thu, 24 May 2018 13:08:48 -0500
-Message-ID: <20180524180848.61844-1-shenwei.wang@nxp.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] pwm: stm32: enforce dependency on CONFIG_MFD_STM32_TIMERS
+Date: Fri, 25 May 2018 18:04:54 +0200
+Message-ID: <20180525160523.29124-1-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Benjamin Gaignard <benjamin.gaignard@st.com>, Arnd Bergmann <arnd@arndb.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On the new i.MX8x SoC family, the following changes were made on the FTM
-block:
+When compile-testing the pwm driver without also enabling the
+stm32_timers MFD, we run into a link error:
 
-1. Need to enable the IPG clock before accessing any FTM registers. Because
-the IPG clock is not an option for FTM counter clock source, it can't be
-used as the ftm_sys clock.
+drivers/pwm/pwm-stm32.o: In function `stm32_pwm_raw_capture.isra.6':
+pwm-stm32.c:(.text+0xcb0): undefined reference to `stm32_timers_dma_burst_read'
 
-2. An additional PWM enable bit was added for each PWM channel in register
-FTM_SC[16:23]. It supports 8 channels. Bit16 is for channel 0, and bit23
-for channel 7.
+We don't need the '|| COMPILE_TEST' here, since stm32_timers itself
+can be built with CONFIG_COMPILE_TEST on all architectures, so we do
+get the coverage through allmodconfig and randconfig builds even
+when we make it a hard dependency.
 
-As the IP version information can not be obtained in any of the FTM
-registers, a property of "fsl,has-pwmen-bits" is added in the ftm pwm
-device node. If it has the property, the driver set the PWM enable bit
-when a PWM channel is requested.
-
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+Fixes: 7edf7369205b ("pwm: Add driver for STM32 plaftorm")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/pwm/pwm-fsl-ftm.c | 35 +++++++++++++++++++++++++++++------
- 1 file changed, 29 insertions(+), 6 deletions(-)
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index 557b4ea..0426458f 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -86,7 +86,9 @@ struct fsl_pwm_chip {
- 	struct regmap *regmap;
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 4635cb35008c..a4d262db9945 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -401,7 +401,7 @@ config PWM_STI
  
- 	int period_ns;
-+	bool has_pwmen;
+ config PWM_STM32
+ 	tristate "STMicroelectronics STM32 PWM"
+-	depends on MFD_STM32_TIMERS || COMPILE_TEST
++	depends on MFD_STM32_TIMERS
+ 	help
+ 	  Generic PWM framework driver for STM32 SoCs.
  
-+	struct clk *ipg_clk;
- 	struct clk *clk[FSL_PWM_CLK_MAX];
- };
- 
-@@ -97,16 +99,31 @@ static inline struct fsl_pwm_chip *to_fsl_chip(struct pwm_chip *chip)
- 
- static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
-+	int ret;
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
- 
--	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+	ret = clk_prepare_enable(fpc->ipg_clk);
-+
-+	if ((!ret) && (fpc->has_pwmen)) {
-+		mutex_lock(&fpc->lock);
-+		regmap_update_bits(fpc->regmap, FTM_SC,
-+				BIT(pwm->hwpwm + 16), BIT(pwm->hwpwm + 16));
-+		mutex_unlock(&fpc->lock);
-+	}
-+
-+	return ret;
- }
- 
- static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
- 
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+	if (fpc->has_pwmen) {
-+		mutex_lock(&fpc->lock);
-+		regmap_update_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16), 0);
-+		mutex_unlock(&fpc->lock);
-+	}
-+	clk_disable_unprepare(fpc->ipg_clk);
- }
- 
- static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc,
-@@ -363,7 +380,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
- {
- 	int ret;
- 
--	ret = clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+	ret = clk_prepare_enable(fpc->ipg_clk);
- 	if (ret)
- 		return ret;
- 
-@@ -371,7 +388,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
- 	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
- 	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
- 
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+	clk_disable_unprepare(fpc->ipg_clk);
- 
- 	return 0;
- }
-@@ -428,6 +445,10 @@ static int fsl_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_SYS]);
- 	}
- 
-+	fpc->ipg_clk = devm_clk_get(&pdev->dev, "ipg");
-+	if (IS_ERR(fpc->ipg_clk))
-+		fpc->ipg_clk = fpc->clk[FSL_PWM_CLK_SYS];
-+
- 	fpc->clk[FSL_PWM_CLK_FIX] = devm_clk_get(fpc->chip.dev, "ftm_fix");
- 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_FIX]))
- 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_FIX]);
-@@ -446,6 +467,8 @@ static int fsl_pwm_probe(struct platform_device *pdev)
- 	fpc->chip.of_pwm_n_cells = 3;
- 	fpc->chip.base = -1;
- 	fpc->chip.npwm = 8;
-+	fpc->has_pwmen = of_property_read_bool(pdev->dev.of_node,
-+						"fsl,ftm-has-pwmen-bits");
- 
- 	ret = pwmchip_add(&fpc->chip);
- 	if (ret < 0) {
-@@ -480,7 +503,7 @@ static int fsl_pwm_suspend(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
- 
--		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+		clk_disable_unprepare(fpc->ipg_clk);
- 
- 		if (!pwm_is_enabled(pwm))
- 			continue;
-@@ -503,7 +526,7 @@ static int fsl_pwm_resume(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
- 
--		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+		clk_prepare_enable(fpc->ipg_clk);
- 
- 		if (!pwm_is_enabled(pwm))
- 			continue;
 -- 
-2.9.2
+2.9.0
