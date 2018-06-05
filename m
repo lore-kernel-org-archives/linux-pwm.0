@@ -1,108 +1,65 @@
-From: Thomas Hebb <tommyhebb@gmail.com>
-Subject: [PATCH RESEND] pwm: berlin: Don't use broken prescaler values
-Date: Mon,  4 Jun 2018 14:32:41 -0400
-Message-ID: <da60a97a0c6f754faa1f996334b3568ddb2f5ed0.1528137144.git.tommyhebb@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH RESEND] pwm: berlin: Don't use broken prescaler values
+Date: Tue, 5 Jun 2018 11:10:02 +0200
+Message-ID: <20180605091002.GB20649@ulmo>
+References: <da60a97a0c6f754faa1f996334b3568ddb2f5ed0.1528137144.git.tommyhebb@gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gj572EiMnwbLXET9"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <da60a97a0c6f754faa1f996334b3568ddb2f5ed0.1528137144.git.tommyhebb@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@vger.kernel.org
-Cc: Antoine Tenart <antoine.tenart@free-electrons.com>, sebastian.hesselbarth@gmail.com, jszhang@marvell.com, Thomas Hebb <tommyhebb@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Thomas Hebb <tommyhebb@gmail.com>
+Cc: linux-arm-kernel@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, sebastian.hesselbarth@gmail.com, jszhang@marvell.com, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Six of the eight prescaler values available for Berlin PWM are not true
-prescalers but rather internal shifts that throw away the high bits of
-TCNT. Currently, we attempt to use those high bits, leading to erratic
-behavior. Restrict the prescaler configurations we select to only the
-two that respect the full range of TCNT.
 
-Tested on BG2CD.
+--gj572EiMnwbLXET9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
----
- drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 20 deletions(-)
+On Mon, Jun 04, 2018 at 02:32:41PM -0400, Thomas Hebb wrote:
+> Six of the eight prescaler values available for Berlin PWM are not true
+> prescalers but rather internal shifts that throw away the high bits of
+> TCNT. Currently, we attempt to use those high bits, leading to erratic
+> behavior. Restrict the prescaler configurations we select to only the
+> two that respect the full range of TCNT.
+>=20
+> Tested on BG2CD.
+>=20
+> Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
+> ---
+>  drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
+>  1 file changed, 25 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-index 771859aca4be..7c8d6a168ceb 100644
---- a/drivers/pwm/pwm-berlin.c
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -21,8 +21,18 @@
- #define BERLIN_PWM_EN			0x0
- #define  BERLIN_PWM_ENABLE		BIT(0)
- #define BERLIN_PWM_CONTROL		0x4
--#define  BERLIN_PWM_PRESCALE_MASK	0x7
--#define  BERLIN_PWM_PRESCALE_MAX	4096
-+/*
-+ * The prescaler claims to support 8 different moduli, configured using the
-+ * low three bits of PWM_CONTROL. (Sequentially, they are 1, 4, 8, 16, 64,
-+ * 256, 1024, and 4096.)  However, the moduli from 4 to 1024 appear to be
-+ * implemented by internally shifting TCNT left without adding additional
-+ * bits. So, the max TCNT that actually works for a modulus of 4 is 0x3fff;
-+ * for 8, 0x1fff; and so on. This means that those moduli are entirely
-+ * useless, as we could just do the shift ourselves. The 4096 modulus is
-+ * implemented with a real prescaler, so we do use that, but we treat it
-+ * as a flag instead of pretending the modulus is actually configurable.
-+ */
-+#define  BERLIN_PWM_PRESCALE_4096	0x7
- #define  BERLIN_PWM_INVERT_POLARITY	BIT(3)
- #define BERLIN_PWM_DUTY			0x8
- #define BERLIN_PWM_TCNT			0xc
-@@ -46,10 +56,6 @@ static inline struct berlin_pwm_chip *to_berlin_pwm_chip(struct pwm_chip *chip)
- 	return container_of(chip, struct berlin_pwm_chip, chip);
- }
- 
--static const u32 prescaler_table[] = {
--	1, 4, 8, 16, 64, 256, 1024, 4096
--};
--
- static inline u32 berlin_pwm_readl(struct berlin_pwm_chip *chip,
- 				   unsigned int channel, unsigned long offset)
- {
-@@ -86,33 +92,32 @@ static int berlin_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm_dev,
- 			     int duty_ns, int period_ns)
- {
- 	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
--	unsigned int prescale;
-+	bool prescale_4096 = false;
- 	u32 value, duty, period;
--	u64 cycles, tmp;
-+	u64 cycles;
- 
- 	cycles = clk_get_rate(pwm->clk);
- 	cycles *= period_ns;
- 	do_div(cycles, NSEC_PER_SEC);
- 
--	for (prescale = 0; prescale < ARRAY_SIZE(prescaler_table); prescale++) {
--		tmp = cycles;
--		do_div(tmp, prescaler_table[prescale]);
-+	if (cycles > BERLIN_PWM_MAX_TCNT) {
-+		prescale_4096 = true;
-+		cycles >>= 12; // Prescaled by 4096
- 
--		if (tmp <= BERLIN_PWM_MAX_TCNT)
--			break;
-+		if (cycles > BERLIN_PWM_MAX_TCNT)
-+			return -ERANGE;
- 	}
- 
--	if (tmp > BERLIN_PWM_MAX_TCNT)
--		return -ERANGE;
--
--	period = tmp;
--	cycles = tmp * duty_ns;
-+	period = cycles;
-+	cycles *= duty_ns;
- 	do_div(cycles, period_ns);
- 	duty = cycles;
- 
- 	value = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_CONTROL);
--	value &= ~BERLIN_PWM_PRESCALE_MASK;
--	value |= prescale;
-+	if (prescale_4096)
-+		value |= BERLIN_PWM_PRESCALE_4096;
-+	else
-+		value &= ~BERLIN_PWM_PRESCALE_4096;
- 	berlin_pwm_writel(pwm, pwm_dev->hwpwm, value, BERLIN_PWM_CONTROL);
- 
- 	berlin_pwm_writel(pwm, pwm_dev->hwpwm, duty, BERLIN_PWM_DUTY);
--- 
-2.17.0
+Antoine, Jisheng,
+
+can you guys review this patch? I'm personally on the fence about this,
+even if we can technically do the shift in software, I don't necessarily
+see a reason why we can't "offload" to the hardware.
+
+Thierry
+
+--gj572EiMnwbLXET9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsWU2oACgkQ3SOs138+
+s6GVRxAAjtDtoWcWJDED+8JBGHIwJ4bkBhydvYPZdxgcyemoA6A5BfjqloDGBOKh
+Ly6bVZbtxMy89hhnXlsrG5n2LPWbx/RzzTdmdFVSlmqZY7dbXSzhGs1ADIApG4DF
+iGjCdJtz8A60vCWyIY6TvYGmwDwth6R+Htk/j12rDWy91Al7k14NX+e4OfLAF0XC
+ARDh5NC/YrFaUbTbTNc36mrT/yUNag5ysmYhTcubuQC92Ogjhkvf1dE1eIjoMb91
+YLTFf15S7arZGyU5Yz71Tdolq2yEMuTZKh8vAH+Jk+hM7kQ8bSwF0UxaIvFCx6OL
+3cK6bkdpxrNGSU1Y27HXauUUqGFLSb/o1DqTGry0a/FFSHcpjfc/Q3vFdaPvU98N
+9MJY8DoHJ8FN4b/vlhf2xb+JtG48dZyb9AwNkEdncrKfg7SU064VrYagSt6DU3vn
+/f3eLJLAQutiK7AejJs9Jl0RpU9I3ePoYIHgU28NxEYXA5Ok33dmmUbIB7l+XBnP
+mneag4aRTVwe5CHlO5+bCL5UV+I2Ea6FUDyel1sBxGiy0sT9CAy801yjCtM9hywR
+yDgWqM6I9lG0kA8XlKgKNEzTGzW0/+8a+0aAXDEmdax4/IywL66sY3gc20KeWVWV
+nlA3BfPgEO4JMbUIRCBS7KEbL2iEyAt4mCMiteVH0d0H9/1HnsA=
+=N5PO
+-----END PGP SIGNATURE-----
+
+--gj572EiMnwbLXET9--
