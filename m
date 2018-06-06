@@ -1,72 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: stm32: enforce dependency on CONFIG_MFD_STM32_TIMERS
-Date: Wed, 6 Jun 2018 10:13:14 +0200
-Message-ID: <20180606081314.GC11810@ulmo>
-References: <20180525160523.29124-1-arnd@arndb.de>
+Subject: Re: [PATCH] pwm: stm32: fix build warning with CONFIG_DMA_ENGINE
+ disabled
+Date: Wed, 6 Jun 2018 10:18:27 +0200
+Message-ID: <20180606081827.GD11810@ulmo>
+References: <20180525210843.1821071-1-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="JgQwtEuHJzHdouWu"
+        protocol="application/pgp-signature"; boundary="IDYEmSnFhs3mNXr+"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180525160523.29124-1-arnd@arndb.de>
+In-Reply-To: <20180525210843.1821071-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Lee Jones <lee.jones@linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Lee Jones <lee.jones@linaro.org>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---JgQwtEuHJzHdouWu
+--IDYEmSnFhs3mNXr+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 25, 2018 at 06:04:54PM +0200, Arnd Bergmann wrote:
-> When compile-testing the pwm driver without also enabling the
-> stm32_timers MFD, we run into a link error:
+On Fri, May 25, 2018 at 11:08:30PM +0200, Arnd Bergmann wrote:
+> Without dmaengine support, we get a harmless warning about an
+> unused function:
 >=20
-> drivers/pwm/pwm-stm32.o: In function `stm32_pwm_raw_capture.isra.6':
-> pwm-stm32.c:(.text+0xcb0): undefined reference to `stm32_timers_dma_burst=
-_read'
+> drivers/pwm/pwm-stm32.c:166:12: error: 'stm32_pwm_capture' defined but no=
+t used [-Werror=3Dunused-function]
 >=20
-> We don't need the '|| COMPILE_TEST' here, since stm32_timers itself
-> can be built with CONFIG_COMPILE_TEST on all architectures, so we do
-> get the coverage through allmodconfig and randconfig builds even
-> when we make it a hard dependency.
+> Changing the #ifdef to an IS_ENABLED() check shuts up that warning
+> and is slightly nicer to read.
 >=20
-> Fixes: 7edf7369205b ("pwm: Add driver for STM32 plaftorm")
+> Fixes: 53e38fe73f94 ("pwm: stm32: Add capture support")
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/pwm/pwm-stm32.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 
-I think Lee already picked up a patch by Fabrice that fixes this by
-adding a dummy implementation, see:
+Applied, thanks.
 
-	http://patchwork.ozlabs.org/patch/916435/
-
-I prefer your solution, though, because the dummy is pretty redundant if
-we can just make this a hard-dependency and still get the same coverage.
+Lee, I applied this on top of your immutable MFD/PWM branch because it
+depends on the capture support that you applied. I wasn't sure what your
+PR timing was going to be, so I thought I'd do it this way since I'm
+pulling in some last minute fixes for v4.18.
 
 Thierry
 
---JgQwtEuHJzHdouWu
+--IDYEmSnFhs3mNXr+
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXl5oACgkQ3SOs138+
-s6EhkQ/+Nb9QA68rmBNxxuyFBujn6V180hqcmJV/+5diFzHDzABHk+WvAV8sZN+e
-ngGg/65oOx+TRLLFHwbvKl0rzIh1k2BMGnpjZXcQvMFXzacf9Asgi6+7vecvedk0
-6fU6PX+Gro9AUq5MPxshKdh/84Nze7RZuI6knW5TbUIcAe8k0UJvgHduJkSLWWKE
-HDoCANXoLasVnH2zlgAdd545G7prAdfibCViAHBjB5MhBskHT9Qm6qzjrr/QnwBl
-z7HyWhDlsE6o667LbhM2ygdjPMPfWZ3gz1IxJLJzUEPw4TMTps3YFg9LHFSAo35S
-0IAo8gbTj29lipzIAhZcqRqeJmzMg5ORth37VmHUqqVmbqxKlM+kY1AAa4jH5N7x
-xTbs6MPoFyNewGGlGpO64J7+lGAEfCDkPu7QXXejZdl+f3bmkCptFpNgm6xlECnD
-s+0ac85ozmAdeSL9KcfSAoh651EY0sBzL6DswMwThBLDe26+eJyFECEaKO0L0Wvg
-Dy+/SINKyVnzzHaVRjAudPOJUx7K4r49B7RMEUCguoXL0T4LCfobGxt3VZSP+RmL
-dyaggBY7DBmK/CKHsv0+CsQP8BP1BHHhie2JE4AkhKxn341Vshd7vVNYzf7FFHq3
-aefP/py+5DgMw9eIs0OboqOwSuFn82kdP9Dh+hWmix5CMk3cBfU=
-=hpfr
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXmNMACgkQ3SOs138+
+s6EcEBAAqwZUm5dl8ofKzCnB3CIifLjGBte4Yw5gnfyd4+WYlkth7fNMZgdCV+Y6
+0wb8O7kD1G3XR8JUFY2va6xkwJ+kZ77MUcxS30tv12y8XFngRIHnqtC8YEh+Yfnm
+mPT2Ci5KLl239jRiTgptWRxCzbbXCNpkGl+nzO5nFtvQ7RGGn0uhBzYvwVomnCMk
+kF9CXAzPe53zXerh4URh9UeU+64tzr1k9CntsqrKTAraqIlaA4tdGTGUfgvZxLu9
+CB7ejodJ5RXz7LbseIAjjoaprECU67Dtl8wrrhIE8GCqbV19TlczkLnUHuurPwMo
+0VewxWb2XP3hPGm1XDuflPAvsTvdBS/8JasVLXPN8N4+XyNtJhZLYykUBkaW2M5Q
+7OJCsgfh2Z8wVaNZ0n/l4CWyJDt2SkMFz1SNbDAlEbowJ0XCYTiagZsGAcrf32VV
+7RGtYlCTq8rZ99jVPUQsLBbbZZMgclG+NFXSGMnjcTdP//Ihf3Dw9KdMA8M3VgDC
+jh3DGrp1MAR07/diomHi97CX+9IAPm51VFWcKvonbPgHn7J9mckddCR0onk9h+wC
+6W4gZ1MTJpFcXL0nmBKMTU6DQPTzHvpCsdfmCBfbTVLKf0tDDBIHpS/JH8s776Ab
+oZ/dyickV62XE4f4C8X/Cf9/P141PmceysLLzotgaoj+HB2GOts=
+=/eQ9
 -----END PGP SIGNATURE-----
 
---JgQwtEuHJzHdouWu--
+--IDYEmSnFhs3mNXr+--
