@@ -1,106 +1,201 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH RESEND] pwm: berlin: Don't use broken prescaler values
-Date: Wed, 6 Jun 2018 11:44:26 +0200
-Message-ID: <20180606094426.GI11810@ulmo>
-References: <da60a97a0c6f754faa1f996334b3568ddb2f5ed0.1528137144.git.tommyhebb@gmail.com>
- <20180605091002.GB20649@ulmo>
- <75f1a632-80c3-1d99-8405-01fa9a4c2616@gmail.com>
+From: Shenwei Wang <shenwei.wang@nxp.com>
+Subject: RE: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block on
+ i.MX8x
+Date: Wed, 6 Jun 2018 15:57:57 +0000
+Message-ID: <HE1PR04MB3289F832BAC9F430241E394E89650@HE1PR04MB3289.eurprd04.prod.outlook.com>
+References: <20180524180848.61844-1-shenwei.wang@nxp.com>
+ <20180606083423.GE11810@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="HkMjoL2LAeBLhbFV"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <75f1a632-80c3-1d99-8405-01fa9a4c2616@gmail.com>
+In-Reply-To: <20180606083423.GE11810@ulmo>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Hebb <tommyhebb@gmail.com>
-Cc: linux-arm-kernel@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, sebastian.hesselbarth@gmail.com, jszhang@marvell.com, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Thierry,
 
---HkMjoL2LAeBLhbFV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the detailed review. I was intending to avoid adding a new co=
+mpatible string, and to limit the changes. But your comments make sense, an=
+d I will split the commit and use the compatible string to identify the IP =
+differences.
 
-On Tue, Jun 05, 2018 at 12:48:51PM -0400, Tom Hebb wrote:
-> On 06/05/2018 05:10 AM, Thierry Reding wrote:
-> > On Mon, Jun 04, 2018 at 02:32:41PM -0400, Thomas Hebb wrote:
-> >> Six of the eight prescaler values available for Berlin PWM are not true
-> >> prescalers but rather internal shifts that throw away the high bits of
-> >> TCNT. Currently, we attempt to use those high bits, leading to erratic
-> >> behavior. Restrict the prescaler configurations we select to only the
-> >> two that respect the full range of TCNT.
-> >>
-> >> Tested on BG2CD.
-> >>
-> >> Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
-> >> ---
-> >>  drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
-> >>  1 file changed, 25 insertions(+), 20 deletions(-)
-> >=20
-> > Antoine, Jisheng,
-> >=20
-> > can you guys review this patch? I'm personally on the fence about this,
-> > even if we can technically do the shift in software, I don't necessarily
-> > see a reason why we can't "offload" to the hardware.
-> >=20
-> > Thierry
->=20
-> Sorry if my commit message was unclear: this patch doesn't just
-> arbitrarily change the hw/sw division of responsibility. The driver in
-> its current state is broken (at least on BG2CD), and this patch
-> implements a fix.
->=20
-> The reason the middle six prescaler values are useless is because they
-> do not actually slow down the clock. Instead, they emulate slowing down
-> the clock by internally multiplying TCNT.
->=20
-> This would be a fine trick, if not for the fact that the internal TCNT
-> value has no extra bits beyond the 16 already exposed to software by the
-> register. What this means is that, for a prescaler of 4, the software
-> must ensure that the top two bits of TCNT are not set, because hardware
-> will chop them off; for a prescaler of 8, the top three bits must not be
-> set, and so forth. Software does not currently ensure this, resulting in
-> a TCNT several orders of magnitude lower than intended any time one of
-> those six prescalers are selected.
->=20
-> Because hardware chops off the high bits in its internal shift, the
-> middle six prescalers don't actually allow *anything* that the first
-> doesn't. In fact, they are strictly worse than the first, since the
-> internal shift of TCNT prevents software from setting the low bits,
-> decreasing the resolution, without providing any extra high bits.
->=20
-> By skipping the useless prescalers entirely, this patch actually
-> increases the driver's performance, since, when the 4096 prescaler is
-> selected, it now does only a single shift rather than the seven
-> successive divisions it did before.
->=20
-> Let me know if any of this is still unclear, or if you'd like me to
-> revise the commit message.
+Thanks,
+Shenwei
 
-Perfect, the above, with slight adaptations, would make a great commit
-message. =3D)
+-----Original Message-----
+From: Thierry Reding [mailto:thierry.reding@gmail.com]=20
+Sent: Wednesday, June 6, 2018 3:34 AM
+To: Shenwei Wang <shenwei.wang@nxp.com>
+Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
+el@vger.kernel.org
+Subject: Re: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block=
+ on i.MX8x
+
+On Thu, May 24, 2018 at 01:08:48PM -0500, shenwei.wang@nxp.com wrote:
+> On the new i.MX8x SoC family, the following changes were made on the=20
+> FTM
+> block:
+>=20
+> 1. Need to enable the IPG clock before accessing any FTM registers.=20
+> Because the IPG clock is not an option for FTM counter clock source,=20
+> it can't be used as the ftm_sys clock.
+>=20
+> 2. An additional PWM enable bit was added for each PWM channel in=20
+> register FTM_SC[16:23]. It supports 8 channels. Bit16 is for channel=20
+> 0, and bit23 for channel 7.
+
+Generally if you need to itemize changes in your commit message it is a goo=
+d indication that you should be splitting up the patch into multiple logica=
+l changes. In this case, one possibility would be to turn this into three p=
+atches:
+
+	1. Introduce the concept on an "interface" clock which is by
+	   default the same as the ftm_sys clock.
+
+	2. Add support for enable bits, based on some per-compatible
+	   data structure (see for example pwm-tegra.c for an example of
+	   how to do this).
+
+	3. Enable support for the new SoC family by adding an instance
+	   of the per-compatible structure for that compatible string.
+
+> As the IP version information can not be obtained in any of the FTM=20
+> registers, a property of "fsl,has-pwmen-bits" is added in the ftm pwm=20
+> device node. If it has the property, the driver set the PWM enable bit=20
+> when a PWM channel is requested.
+
+I don't see a corresponding device tree bindings update for this change.
+Also, I don't think doing this via a separate property is the right way, yo=
+u can just derive this from the new compatible string which you need to add=
+ anyway.
+
+So to the above patches, add:
+
+	0. Add DT bindings for new SoC family with a mention that they
+	   need to provide the new IPG clock.
+
+>=20
+> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> ---
+>  drivers/pwm/pwm-fsl-ftm.c | 35 +++++++++++++++++++++++++++++------
+>  1 file changed, 29 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c=20
+> index 557b4ea..0426458f 100644
+> --- a/drivers/pwm/pwm-fsl-ftm.c
+> +++ b/drivers/pwm/pwm-fsl-ftm.c
+> @@ -86,7 +86,9 @@ struct fsl_pwm_chip {
+>  	struct regmap *regmap;
+> =20
+>  	int period_ns;
+> +	bool has_pwmen;
+> =20
+> +	struct clk *ipg_clk;
+>  	struct clk *clk[FSL_PWM_CLK_MAX];
+>  };
+> =20
+> @@ -97,16 +99,31 @@ static inline struct fsl_pwm_chip=20
+> *to_fsl_chip(struct pwm_chip *chip)
+> =20
+>  static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device=20
+> *pwm)  {
+> +	int ret;
+>  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+> =20
+> -	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
+
+This is confusing because it looks as if you're breaking existing drivers, =
+until you realize that...
+
+> +
+> +	if ((!ret) && (fpc->has_pwmen)) {
+> +		mutex_lock(&fpc->lock);
+> +		regmap_update_bits(fpc->regmap, FTM_SC,
+> +				BIT(pwm->hwpwm + 16), BIT(pwm->hwpwm + 16));
+> +		mutex_unlock(&fpc->lock);
+> +	}
+> +
+> +	return ret;
+>  }
+> =20
+>  static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device=20
+> *pwm)  {
+>  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+> =20
+> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	if (fpc->has_pwmen) {
+> +		mutex_lock(&fpc->lock);
+> +		regmap_update_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16), 0);
+> +		mutex_unlock(&fpc->lock);
+> +	}
+> +	clk_disable_unprepare(fpc->ipg_clk);
+>  }
+> =20
+>  static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc, @@=20
+> -363,7 +380,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)  {
+>  	int ret;
+> =20
+> -	ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
+>  	if (ret)
+>  		return ret;
+> =20
+> @@ -371,7 +388,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
+>  	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
+>  	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
+> =20
+> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	clk_disable_unprepare(fpc->ipg_clk);
+> =20
+>  	return 0;
+>  }
+> @@ -428,6 +445,10 @@ static int fsl_pwm_probe(struct platform_device *pde=
+v)
+>  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_SYS]);
+>  	}
+> =20
+> +	fpc->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
+> +	if (IS_ERR(fpc->ipg_clk))
+> +		fpc->ipg_clk =3D fpc->clk[FSL_PWM_CLK_SYS];
+
+... fpc->ipg_clk is actually the same as fpc->clk[FSL_PWM_CLK_SYS] for olde=
+r chips. I think this could be made more obvious by splitting this patch in=
+to several smaller ones as suggested above.
+
+> +
+>  	fpc->clk[FSL_PWM_CLK_FIX] =3D devm_clk_get(fpc->chip.dev, "ftm_fix");
+>  	if (IS_ERR(fpc->clk[FSL_PWM_CLK_FIX]))
+>  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_FIX]);
+> @@ -446,6 +467,8 @@ static int fsl_pwm_probe(struct platform_device *pdev=
+)
+>  	fpc->chip.of_pwm_n_cells =3D 3;
+>  	fpc->chip.base =3D -1;
+>  	fpc->chip.npwm =3D 8;
+> +	fpc->has_pwmen =3D of_property_read_bool(pdev->dev.of_node,
+> +						"fsl,ftm-has-pwmen-bits");
+
+As I said earlier, I think this should be derived from the compatible strin=
+g. That is, you could have a data structure such as:
+
+	struct fsl_pwm_soc {
+		bool has_enable_bits;
+	};
+
+	static const struct fsl_pwm_soc vf610_ftm_pwm =3D {
+		.has_enable_bits =3D false,
+	};
+
+	/* up to here would be part of patch 2 */
+
+	/* and this is part of patch 3, along with an entry in the OF
+	 * match table */
+	static const struct fsl_pwm_soc imx8x_ftm_pwm =3D {
+		.has_enable_bits =3D true,
+	};
 
 Thierry
-
---HkMjoL2LAeBLhbFV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXrPoACgkQ3SOs138+
-s6GzxBAAj5Rgz9llkOkAO+xElptmSy+xjPnJ19nza0IIyS7y49dzz58ygvm5jzbA
-ayS1kbldwx2UXao0lkSmU8YWkT28KC7RPv5BC6g0vE0Th1OgcKhousPCr159J8i3
-BDi4TRGXsxLsegySklO89CJIK0Qsrzqok0A7TDDilGKtBAo35Bcoeg1lj32/sWic
-c2EOJorKsm17nR6bPzcNIh8U3OM9bV2TUsps9EyR0i3M4NF+uT1iy4EnYMxKFGBA
-jOjX6RqxlD0dG0ZcGeWGcQyMKoDPY5U0QAF0xSE5FHjPxPQOykkP+3zPbwE66oDG
-J53ry8PDuJdXXPzcwUdeqaZOBxby6skyfKq8elPTIuw+MhpyRtG0HEu0c5qQ6ecf
-BFVbsJ7rcshhDb6U+TdJvYegVGKNBxZmppXPay2U0JvrtrYo057BAEprzKg3HpEA
-nSad4jy3G5C4sxe4bSR44H15GlEZ4UpajCEidkkMst0BHcBf/zohkACQbiKpRkrJ
-L0IESJOR5EVmHhxMMlmby4cHNrZHjLtGVJBCGvmcAwSpBde44xhRYg5qi141G7IS
-Prz33/O7HOE7zz3EoBMybA/8H0qIsqvABduTtdFuK8RWVcjL5TE6CvSyFe4ZzEJZ
-Rs0C3wvZ1YgQRc9eEb1fdxD5B9XhzLQ8GNvUdkYiQxK7Yxi+BXk=
-=19hr
------END PGP SIGNATURE-----
-
---HkMjoL2LAeBLhbFV--
