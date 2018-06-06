@@ -1,201 +1,132 @@
-From: Shenwei Wang <shenwei.wang@nxp.com>
-Subject: RE: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block on
- i.MX8x
-Date: Wed, 6 Jun 2018 15:57:57 +0000
-Message-ID: <HE1PR04MB3289F832BAC9F430241E394E89650@HE1PR04MB3289.eurprd04.prod.outlook.com>
-References: <20180524180848.61844-1-shenwei.wang@nxp.com>
- <20180606083423.GE11810@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Thomas Hebb <tommyhebb@gmail.com>
+Subject: [PATCH v2] pwm: berlin: Don't use broken prescaler values
+Date: Wed,  6 Jun 2018 13:42:10 -0400
+Message-ID: <a4e1449967f3dbc95770b9ac2bbc1fd116e3cac7.1528306926.git.tommyhebb@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180606083423.GE11810@ulmo>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: Antoine Tenart <antoine.tenart@free-electrons.com>, sebastian.hesselbarth@gmail.com, Jisheng.Zhang@synaptics.com, Thomas Hebb <tommyhebb@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
+The Berlin PWM driver is currently broken on at least BG2CD. The
+symptoms manifest as a very non-linear and erratic mapping from the duty
+cycle configured in software to the duty cycle produced by hardware.
 
-Thank you for the detailed review. I was intending to avoid adding a new co=
-mpatible string, and to limit the changes. But your comments make sense, an=
-d I will split the commit and use the compatible string to identify the IP =
-differences.
+The cause of the bug is software's configuration of the prescaler, and
+in particular its usage of the six prescaler values between the minimum
+value of 1 and the maximum value of 4096. As it turns out, these six
+values do not actually slow down the PWM clock; rather, they emulate
+slowing down the clock by internally multiplying the value of TCNT.
 
-Thanks,
-Shenwei
+This would be a fine trick, if not for the fact that the internal,
+scaled TCNT value has no extra bits beyond the 16 already exposed to
+software in the register. What this means is that, for a prescaler of 4,
+the software must ensure that the top two bits of TCNT are not set,
+because hardware will chop them off; for a prescaler of 8, the top three
+bits must not be set, and so forth. Software does not currently ensure
+this, resulting in a TCNT several orders of magnitude lower than
+intended any time one of those six prescalers are selected.
 
------Original Message-----
-From: Thierry Reding [mailto:thierry.reding@gmail.com]=20
-Sent: Wednesday, June 6, 2018 3:34 AM
-To: Shenwei Wang <shenwei.wang@nxp.com>
-Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
-el@vger.kernel.org
-Subject: Re: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block=
- on i.MX8x
+Because hardware chops off the high bits in its internal shift, the
+middle six prescalers don't actually allow *anything* that the first
+doesn't. In fact, they are strictly worse than the first, since the
+internal shift of TCNT prevents software from setting the low bits,
+decreasing the resolution, without providing any extra high bits.
 
-On Thu, May 24, 2018 at 01:08:48PM -0500, shenwei.wang@nxp.com wrote:
-> On the new i.MX8x SoC family, the following changes were made on the=20
-> FTM
-> block:
->=20
-> 1. Need to enable the IPG clock before accessing any FTM registers.=20
-> Because the IPG clock is not an option for FTM counter clock source,=20
-> it can't be used as the ftm_sys clock.
->=20
-> 2. An additional PWM enable bit was added for each PWM channel in=20
-> register FTM_SC[16:23]. It supports 8 channels. Bit16 is for channel=20
-> 0, and bit23 for channel 7.
+By skipping the useless prescalers entirely, this patch both fixes the
+driver's behavior and increases its performance (since, when the 4096
+prescaler is selected, it now does only a single shift rather than the
+seven successive divisions it did before).
 
-Generally if you need to itemize changes in your commit message it is a goo=
-d indication that you should be splitting up the patch into multiple logica=
-l changes. In this case, one possibility would be to turn this into three p=
-atches:
+Tested on BG2CD.
 
-	1. Introduce the concept on an "interface" clock which is by
-	   default the same as the ftm_sys clock.
+Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
+---
+ drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
+ 1 file changed, 25 insertions(+), 20 deletions(-)
 
-	2. Add support for enable bits, based on some per-compatible
-	   data structure (see for example pwm-tegra.c for an example of
-	   how to do this).
-
-	3. Enable support for the new SoC family by adding an instance
-	   of the per-compatible structure for that compatible string.
-
-> As the IP version information can not be obtained in any of the FTM=20
-> registers, a property of "fsl,has-pwmen-bits" is added in the ftm pwm=20
-> device node. If it has the property, the driver set the PWM enable bit=20
-> when a PWM channel is requested.
-
-I don't see a corresponding device tree bindings update for this change.
-Also, I don't think doing this via a separate property is the right way, yo=
-u can just derive this from the new compatible string which you need to add=
- anyway.
-
-So to the above patches, add:
-
-	0. Add DT bindings for new SoC family with a mention that they
-	   need to provide the new IPG clock.
-
->=20
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
-> ---
->  drivers/pwm/pwm-fsl-ftm.c | 35 +++++++++++++++++++++++++++++------
->  1 file changed, 29 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c=20
-> index 557b4ea..0426458f 100644
-> --- a/drivers/pwm/pwm-fsl-ftm.c
-> +++ b/drivers/pwm/pwm-fsl-ftm.c
-> @@ -86,7 +86,9 @@ struct fsl_pwm_chip {
->  	struct regmap *regmap;
-> =20
->  	int period_ns;
-> +	bool has_pwmen;
-> =20
-> +	struct clk *ipg_clk;
->  	struct clk *clk[FSL_PWM_CLK_MAX];
->  };
-> =20
-> @@ -97,16 +99,31 @@ static inline struct fsl_pwm_chip=20
-> *to_fsl_chip(struct pwm_chip *chip)
-> =20
->  static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device=20
-> *pwm)  {
-> +	int ret;
->  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-> =20
-> -	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
-
-This is confusing because it looks as if you're breaking existing drivers, =
-until you realize that...
-
-> +
-> +	if ((!ret) && (fpc->has_pwmen)) {
-> +		mutex_lock(&fpc->lock);
-> +		regmap_update_bits(fpc->regmap, FTM_SC,
-> +				BIT(pwm->hwpwm + 16), BIT(pwm->hwpwm + 16));
-> +		mutex_unlock(&fpc->lock);
-> +	}
-> +
-> +	return ret;
->  }
-> =20
->  static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device=20
-> *pwm)  {
->  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-> =20
-> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	if (fpc->has_pwmen) {
-> +		mutex_lock(&fpc->lock);
-> +		regmap_update_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16), 0);
-> +		mutex_unlock(&fpc->lock);
-> +	}
-> +	clk_disable_unprepare(fpc->ipg_clk);
->  }
-> =20
->  static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc, @@=20
-> -363,7 +380,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)  {
->  	int ret;
-> =20
-> -	ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
->  	if (ret)
->  		return ret;
-> =20
-> @@ -371,7 +388,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
->  	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
->  	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
-> =20
-> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	clk_disable_unprepare(fpc->ipg_clk);
-> =20
->  	return 0;
->  }
-> @@ -428,6 +445,10 @@ static int fsl_pwm_probe(struct platform_device *pde=
-v)
->  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_SYS]);
->  	}
-> =20
-> +	fpc->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
-> +	if (IS_ERR(fpc->ipg_clk))
-> +		fpc->ipg_clk =3D fpc->clk[FSL_PWM_CLK_SYS];
-
-... fpc->ipg_clk is actually the same as fpc->clk[FSL_PWM_CLK_SYS] for olde=
-r chips. I think this could be made more obvious by splitting this patch in=
-to several smaller ones as suggested above.
-
-> +
->  	fpc->clk[FSL_PWM_CLK_FIX] =3D devm_clk_get(fpc->chip.dev, "ftm_fix");
->  	if (IS_ERR(fpc->clk[FSL_PWM_CLK_FIX]))
->  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_FIX]);
-> @@ -446,6 +467,8 @@ static int fsl_pwm_probe(struct platform_device *pdev=
-)
->  	fpc->chip.of_pwm_n_cells =3D 3;
->  	fpc->chip.base =3D -1;
->  	fpc->chip.npwm =3D 8;
-> +	fpc->has_pwmen =3D of_property_read_bool(pdev->dev.of_node,
-> +						"fsl,ftm-has-pwmen-bits");
-
-As I said earlier, I think this should be derived from the compatible strin=
-g. That is, you could have a data structure such as:
-
-	struct fsl_pwm_soc {
-		bool has_enable_bits;
-	};
-
-	static const struct fsl_pwm_soc vf610_ftm_pwm =3D {
-		.has_enable_bits =3D false,
-	};
-
-	/* up to here would be part of patch 2 */
-
-	/* and this is part of patch 3, along with an entry in the OF
-	 * match table */
-	static const struct fsl_pwm_soc imx8x_ftm_pwm =3D {
-		.has_enable_bits =3D true,
-	};
-
-Thierry
+diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
+index 771859aca4be..7c8d6a168ceb 100644
+--- a/drivers/pwm/pwm-berlin.c
++++ b/drivers/pwm/pwm-berlin.c
+@@ -21,8 +21,18 @@
+ #define BERLIN_PWM_EN			0x0
+ #define  BERLIN_PWM_ENABLE		BIT(0)
+ #define BERLIN_PWM_CONTROL		0x4
+-#define  BERLIN_PWM_PRESCALE_MASK	0x7
+-#define  BERLIN_PWM_PRESCALE_MAX	4096
++/*
++ * The prescaler claims to support 8 different moduli, configured using the
++ * low three bits of PWM_CONTROL. (Sequentially, they are 1, 4, 8, 16, 64,
++ * 256, 1024, and 4096.)  However, the moduli from 4 to 1024 appear to be
++ * implemented by internally shifting TCNT left without adding additional
++ * bits. So, the max TCNT that actually works for a modulus of 4 is 0x3fff;
++ * for 8, 0x1fff; and so on. This means that those moduli are entirely
++ * useless, as we could just do the shift ourselves. The 4096 modulus is
++ * implemented with a real prescaler, so we do use that, but we treat it
++ * as a flag instead of pretending the modulus is actually configurable.
++ */
++#define  BERLIN_PWM_PRESCALE_4096	0x7
+ #define  BERLIN_PWM_INVERT_POLARITY	BIT(3)
+ #define BERLIN_PWM_DUTY			0x8
+ #define BERLIN_PWM_TCNT			0xc
+@@ -46,10 +56,6 @@ static inline struct berlin_pwm_chip *to_berlin_pwm_chip(struct pwm_chip *chip)
+ 	return container_of(chip, struct berlin_pwm_chip, chip);
+ }
+ 
+-static const u32 prescaler_table[] = {
+-	1, 4, 8, 16, 64, 256, 1024, 4096
+-};
+-
+ static inline u32 berlin_pwm_readl(struct berlin_pwm_chip *chip,
+ 				   unsigned int channel, unsigned long offset)
+ {
+@@ -86,33 +92,32 @@ static int berlin_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm_dev,
+ 			     int duty_ns, int period_ns)
+ {
+ 	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
+-	unsigned int prescale;
++	bool prescale_4096 = false;
+ 	u32 value, duty, period;
+-	u64 cycles, tmp;
++	u64 cycles;
+ 
+ 	cycles = clk_get_rate(pwm->clk);
+ 	cycles *= period_ns;
+ 	do_div(cycles, NSEC_PER_SEC);
+ 
+-	for (prescale = 0; prescale < ARRAY_SIZE(prescaler_table); prescale++) {
+-		tmp = cycles;
+-		do_div(tmp, prescaler_table[prescale]);
++	if (cycles > BERLIN_PWM_MAX_TCNT) {
++		prescale_4096 = true;
++		cycles >>= 12; // Prescaled by 4096
+ 
+-		if (tmp <= BERLIN_PWM_MAX_TCNT)
+-			break;
++		if (cycles > BERLIN_PWM_MAX_TCNT)
++			return -ERANGE;
+ 	}
+ 
+-	if (tmp > BERLIN_PWM_MAX_TCNT)
+-		return -ERANGE;
+-
+-	period = tmp;
+-	cycles = tmp * duty_ns;
++	period = cycles;
++	cycles *= duty_ns;
+ 	do_div(cycles, period_ns);
+ 	duty = cycles;
+ 
+ 	value = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_CONTROL);
+-	value &= ~BERLIN_PWM_PRESCALE_MASK;
+-	value |= prescale;
++	if (prescale_4096)
++		value |= BERLIN_PWM_PRESCALE_4096;
++	else
++		value &= ~BERLIN_PWM_PRESCALE_4096;
+ 	berlin_pwm_writel(pwm, pwm_dev->hwpwm, value, BERLIN_PWM_CONTROL);
+ 
+ 	berlin_pwm_writel(pwm, pwm_dev->hwpwm, duty, BERLIN_PWM_DUTY);
+-- 
+2.17.1
