@@ -1,114 +1,106 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 6/8] pwm: cros-ec: Switch to SPDX identifier.
-Date: Wed, 6 Jun 2018 11:43:33 +0200
-Message-ID: <20180606094333.GH11810@ulmo>
-References: <20180605175429.9072-1-enric.balletbo@collabora.com>
- <20180605175429.9072-7-enric.balletbo@collabora.com>
- <20180606090848.GF11810@ulmo>
- <32b22e93-d8d3-d20a-f497-723c62d1bd2b@collabora.com>
+Subject: Re: [PATCH RESEND] pwm: berlin: Don't use broken prescaler values
+Date: Wed, 6 Jun 2018 11:44:26 +0200
+Message-ID: <20180606094426.GI11810@ulmo>
+References: <da60a97a0c6f754faa1f996334b3568ddb2f5ed0.1528137144.git.tommyhebb@gmail.com>
+ <20180605091002.GB20649@ulmo>
+ <75f1a632-80c3-1d99-8405-01fa9a4c2616@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="9sSKoi6Rw660DLir"
+        protocol="application/pgp-signature"; boundary="HkMjoL2LAeBLhbFV"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <32b22e93-d8d3-d20a-f497-723c62d1bd2b@collabora.com>
+In-Reply-To: <75f1a632-80c3-1d99-8405-01fa9a4c2616@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com, linux-pwm@vger.kernel.org
+To: Tom Hebb <tommyhebb@gmail.com>
+Cc: linux-arm-kernel@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, sebastian.hesselbarth@gmail.com, jszhang@marvell.com, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---9sSKoi6Rw660DLir
+--HkMjoL2LAeBLhbFV
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 06, 2018 at 11:21:01AM +0200, Enric Balletbo i Serra wrote:
-> Hi Thierry,
->=20
-> On 06/06/18 11:08, Thierry Reding wrote:
-> > On Tue, Jun 05, 2018 at 07:54:27PM +0200, Enric Balletbo i Serra wrote:
-> >> Adopt the SPDX license identifier headers to ease license compliance
-> >> management.
+On Tue, Jun 05, 2018 at 12:48:51PM -0400, Tom Hebb wrote:
+> On 06/05/2018 05:10 AM, Thierry Reding wrote:
+> > On Mon, Jun 04, 2018 at 02:32:41PM -0400, Thomas Hebb wrote:
+> >> Six of the eight prescaler values available for Berlin PWM are not true
+> >> prescalers but rather internal shifts that throw away the high bits of
+> >> TCNT. Currently, we attempt to use those high bits, leading to erratic
+> >> behavior. Restrict the prescaler configurations we select to only the
+> >> two that respect the full range of TCNT.
 > >>
-> >> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> >> Tested on BG2CD.
+> >>
+> >> Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
 > >> ---
-> >>
-> >> Changes in v2: None
-> >>
-> >>  drivers/pwm/pwm-cros-ec.c | 13 ++++---------
-> >>  1 file changed, 4 insertions(+), 9 deletions(-)
-> >>
-> >> diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-> >> index 9c13694eaa24..9bf4cde86765 100644
-> >> --- a/drivers/pwm/pwm-cros-ec.c
-> >> +++ b/drivers/pwm/pwm-cros-ec.c
-> >> @@ -1,12 +1,7 @@
-> >> -/*
-> >> - * Copyright (C) 2016 Google, Inc
-> >> - *
-> >> - * This program is free software; you can redistribute it and/or modi=
-fy it
-> >> - * under the terms of the GNU General Public License version 2, as pu=
-blished by
-> >> - * the Free Software Foundation.
-> >> - *
-> >> - * Expose a PWM controlled by the ChromeOS EC to the host processor.
-> >> - */
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +// Expose a PWM controlled by the ChromeOS EC to the host processor.
-> >> +//
-> >> +// Copyright (C) 2016 Google, Inc.
+> >>  drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
+> >>  1 file changed, 25 insertions(+), 20 deletions(-)
 > >=20
-> > This is odd. I understand that for some reason there is an exception for
-> > SPDX license identifies to use C++ style comments, but why would you
-> > make the whole comment C++ style? Why not just something like the below:
+> > Antoine, Jisheng,
 > >=20
+> > can you guys review this patch? I'm personally on the fence about this,
+> > even if we can technically do the shift in software, I don't necessarily
+> > see a reason why we can't "offload" to the hardware.
+> >=20
+> > Thierry
 >=20
-> Seems that there is some kind of controversy between different maintainer=
-s. I
-> did in that way because I was complained to use the c-style on other patc=
-hes,
-> and seems, that putting everything as // is Linus Torvalds' preferred sty=
-le:
+> Sorry if my commit message was unclear: this patch doesn't just
+> arbitrarily change the hw/sw division of responsibility. The driver in
+> its current state is broken (at least on BG2CD), and this patch
+> implements a fix.
 >=20
-> https://lkml.org/lkml/2017/11/25/133
+> The reason the middle six prescaler values are useless is because they
+> do not actually slow down the clock. Instead, they emulate slowing down
+> the clock by internally multiplying TCNT.
 >=20
-> I don't mind to change if the c-style is preferred by the maintainer (oth=
-ers
-> prefer the c++ style) but I think that would be good get an agreement bet=
-ween
-> subsystems maintainers and document properly.
+> This would be a fine trick, if not for the fact that the internal TCNT
+> value has no extra bits beyond the 16 already exposed to software by the
+> register. What this means is that, for a prescaler of 4, the software
+> must ensure that the top two bits of TCNT are not set, because hardware
+> will chop them off; for a prescaler of 8, the top three bits must not be
+> set, and so forth. Software does not currently ensure this, resulting in
+> a TCNT several orders of magnitude lower than intended any time one of
+> those six prescalers are selected.
+>=20
+> Because hardware chops off the high bits in its internal shift, the
+> middle six prescalers don't actually allow *anything* that the first
+> doesn't. In fact, they are strictly worse than the first, since the
+> internal shift of TCNT prevents software from setting the low bits,
+> decreasing the resolution, without providing any extra high bits.
+>=20
+> By skipping the useless prescalers entirely, this patch actually
+> increases the driver's performance, since, when the 4096 prescaler is
+> selected, it now does only a single shift rather than the seven
+> successive divisions it did before.
+>=20
+> Let me know if any of this is still unclear, or if you'd like me to
+> revise the commit message.
 
-I've read elsewhere that using // for SPDX was supposed to make it stand
-out, which is kind of contradicted by the above. However, I interpret
-Linus' reply to Mauro as "people tend to do less crazy things with //
-than with /* */", so to me it seems that as long you use /* */ sensibly,
-there's no reason to avoid it.
-
-No need to resend, though, I can adjust the patch to my own preference
-if I decide to do so.
+Perfect, the above, with slight adaptations, would make a great commit
+message. =3D)
 
 Thierry
 
---9sSKoi6Rw660DLir
+--HkMjoL2LAeBLhbFV
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXrMMACgkQ3SOs138+
-s6FYcQ/+PJWrm3mSUjMrnZ5Rj3zgZR2kxykZ04vwdb0nM+o9KwqXSa6tbxInWiLw
-mjY0K5yoBZ52UGdHnG0AkCwYR3QGYBaVlV1cReAUDqWQ0ga1QEBK697h972nTWyM
-h5+Jc20i0NiJd1kN3D4liy9RJJJl1MxL6PaGsVPow+eid0N6CqeeCeUZplfvkxkp
-ySjJpO+YfnemF6orK4o5HKKzxsToyXmYIVTtQgVSgO2IHHXaEKcTKmoNfgXPAKEK
-vUGR9W2WZpBaGFUx2bhmDufMMpRYAlKTeBfwH7wGAfaT2cnXfZKaTvj4phlToHCX
-TLp/Gms97D5hoK+zVGk11LpLfK3k0s3Aa7uT6uz6FLRK0sTV5vqtTXl98roTEh/G
-CiU2hGOoBegUSvhXGy2kU9k7rJKXMSG+iJu+VIuZaP0W1jnjtxbtWMjyDklbgGjV
-4lMUY7m0ezJddiA/8alRHu7ZKYkjSJXUh/FteOJSz+D2gmXVpgH5ou66ZOVf8n2X
-lFAYI5yu253GLmIbJaKLElyugQWha8sWtEvlSiHxbflbiEkq4IXOinbP/JX0HOkv
-gNfGnE86tAqUdoaI0enKIfmVkmGMeldP4ZtYTgqv/dXyWrrFKhE2yQuw2KDDfheZ
-uwZlzzYlpykj9/XB8nqNP63w/wj6+xMgOdh9BPPmLxAAr85Jchc=
-=uQ6D
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXrPoACgkQ3SOs138+
+s6GzxBAAj5Rgz9llkOkAO+xElptmSy+xjPnJ19nza0IIyS7y49dzz58ygvm5jzbA
+ayS1kbldwx2UXao0lkSmU8YWkT28KC7RPv5BC6g0vE0Th1OgcKhousPCr159J8i3
+BDi4TRGXsxLsegySklO89CJIK0Qsrzqok0A7TDDilGKtBAo35Bcoeg1lj32/sWic
+c2EOJorKsm17nR6bPzcNIh8U3OM9bV2TUsps9EyR0i3M4NF+uT1iy4EnYMxKFGBA
+jOjX6RqxlD0dG0ZcGeWGcQyMKoDPY5U0QAF0xSE5FHjPxPQOykkP+3zPbwE66oDG
+J53ry8PDuJdXXPzcwUdeqaZOBxby6skyfKq8elPTIuw+MhpyRtG0HEu0c5qQ6ecf
+BFVbsJ7rcshhDb6U+TdJvYegVGKNBxZmppXPay2U0JvrtrYo057BAEprzKg3HpEA
+nSad4jy3G5C4sxe4bSR44H15GlEZ4UpajCEidkkMst0BHcBf/zohkACQbiKpRkrJ
+L0IESJOR5EVmHhxMMlmby4cHNrZHjLtGVJBCGvmcAwSpBde44xhRYg5qi141G7IS
+Prz33/O7HOE7zz3EoBMybA/8H0qIsqvABduTtdFuK8RWVcjL5TE6CvSyFe4ZzEJZ
+Rs0C3wvZ1YgQRc9eEb1fdxD5B9XhzLQ8GNvUdkYiQxK7Yxi+BXk=
+=19hr
 -----END PGP SIGNATURE-----
 
---9sSKoi6Rw660DLir--
+--HkMjoL2LAeBLhbFV--
