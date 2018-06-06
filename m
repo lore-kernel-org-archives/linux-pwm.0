@@ -1,69 +1,209 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: stm32: fix build warning with CONFIG_DMA_ENGINE
- disabled
-Date: Wed, 6 Jun 2018 10:18:27 +0200
-Message-ID: <20180606081827.GD11810@ulmo>
-References: <20180525210843.1821071-1-arnd@arndb.de>
+Subject: Re: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block
+ on i.MX8x
+Date: Wed, 6 Jun 2018 10:34:23 +0200
+Message-ID: <20180606083423.GE11810@ulmo>
+References: <20180524180848.61844-1-shenwei.wang@nxp.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="IDYEmSnFhs3mNXr+"
+        protocol="application/pgp-signature"; boundary="XuV1QlJbYrcVoo+x"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180525210843.1821071-1-arnd@arndb.de>
+In-Reply-To: <20180524180848.61844-1-shenwei.wang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Lee Jones <lee.jones@linaro.org>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: shenwei.wang@nxp.com
+Cc: linux-pwm@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---IDYEmSnFhs3mNXr+
+--XuV1QlJbYrcVoo+x
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 25, 2018 at 11:08:30PM +0200, Arnd Bergmann wrote:
-> Without dmaengine support, we get a harmless warning about an
-> unused function:
+On Thu, May 24, 2018 at 01:08:48PM -0500, shenwei.wang@nxp.com wrote:
+> On the new i.MX8x SoC family, the following changes were made on the FTM
+> block:
 >=20
-> drivers/pwm/pwm-stm32.c:166:12: error: 'stm32_pwm_capture' defined but no=
-t used [-Werror=3Dunused-function]
+> 1. Need to enable the IPG clock before accessing any FTM registers. Becau=
+se
+> the IPG clock is not an option for FTM counter clock source, it can't be
+> used as the ftm_sys clock.
 >=20
-> Changing the #ifdef to an IS_ENABLED() check shuts up that warning
-> and is slightly nicer to read.
+> 2. An additional PWM enable bit was added for each PWM channel in register
+> FTM_SC[16:23]. It supports 8 channels. Bit16 is for channel 0, and bit23
+> for channel 7.
+
+Generally if you need to itemize changes in your commit message it is a
+good indication that you should be splitting up the patch into multiple
+logical changes. In this case, one possibility would be to turn this
+into three patches:
+
+	1. Introduce the concept on an "interface" clock which is by
+	   default the same as the ftm_sys clock.
+
+	2. Add support for enable bits, based on some per-compatible
+	   data structure (see for example pwm-tegra.c for an example of
+	   how to do this).
+
+	3. Enable support for the new SoC family by adding an instance
+	   of the per-compatible structure for that compatible string.
+
+> As the IP version information can not be obtained in any of the FTM
+> registers, a property of "fsl,has-pwmen-bits" is added in the ftm pwm
+> device node. If it has the property, the driver set the PWM enable bit
+> when a PWM channel is requested.
+
+I don't see a corresponding device tree bindings update for this change.
+Also, I don't think doing this via a separate property is the right way,
+you can just derive this from the new compatible string which you need
+to add anyway.
+
+So to the above patches, add:
+
+	0. Add DT bindings for new SoC family with a mention that they
+	   need to provide the new IPG clock.
+
 >=20
-> Fixes: 53e38fe73f94 ("pwm: stm32: Add capture support")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 > ---
->  drivers/pwm/pwm-stm32.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+>  drivers/pwm/pwm-fsl-ftm.c | 35 +++++++++++++++++++++++++++++------
+>  1 file changed, 29 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+> index 557b4ea..0426458f 100644
+> --- a/drivers/pwm/pwm-fsl-ftm.c
+> +++ b/drivers/pwm/pwm-fsl-ftm.c
+> @@ -86,7 +86,9 @@ struct fsl_pwm_chip {
+>  	struct regmap *regmap;
+> =20
+>  	int period_ns;
+> +	bool has_pwmen;
+> =20
+> +	struct clk *ipg_clk;
+>  	struct clk *clk[FSL_PWM_CLK_MAX];
+>  };
+> =20
+> @@ -97,16 +99,31 @@ static inline struct fsl_pwm_chip *to_fsl_chip(struct=
+ pwm_chip *chip)
+> =20
+>  static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+> +	int ret;
+>  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+> =20
+> -	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
 
-Applied, thanks.
+This is confusing because it looks as if you're breaking existing
+drivers, until you realize that...
 
-Lee, I applied this on top of your immutable MFD/PWM branch because it
-depends on the capture support that you applied. I wasn't sure what your
-PR timing was going to be, so I thought I'd do it this way since I'm
-pulling in some last minute fixes for v4.18.
+> +
+> +	if ((!ret) && (fpc->has_pwmen)) {
+> +		mutex_lock(&fpc->lock);
+> +		regmap_update_bits(fpc->regmap, FTM_SC,
+> +				BIT(pwm->hwpwm + 16), BIT(pwm->hwpwm + 16));
+> +		mutex_unlock(&fpc->lock);
+> +	}
+> +
+> +	return ret;
+>  }
+> =20
+>  static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+>  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+> =20
+> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	if (fpc->has_pwmen) {
+> +		mutex_lock(&fpc->lock);
+> +		regmap_update_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16), 0);
+> +		mutex_unlock(&fpc->lock);
+> +	}
+> +	clk_disable_unprepare(fpc->ipg_clk);
+>  }
+> =20
+>  static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc,
+> @@ -363,7 +380,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
+>  {
+>  	int ret;
+> =20
+> -	ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
+>  	if (ret)
+>  		return ret;
+> =20
+> @@ -371,7 +388,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
+>  	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
+>  	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
+> =20
+> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
+> +	clk_disable_unprepare(fpc->ipg_clk);
+> =20
+>  	return 0;
+>  }
+> @@ -428,6 +445,10 @@ static int fsl_pwm_probe(struct platform_device *pde=
+v)
+>  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_SYS]);
+>  	}
+> =20
+> +	fpc->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
+> +	if (IS_ERR(fpc->ipg_clk))
+> +		fpc->ipg_clk =3D fpc->clk[FSL_PWM_CLK_SYS];
+
+=2E.. fpc->ipg_clk is actually the same as fpc->clk[FSL_PWM_CLK_SYS] for
+older chips. I think this could be made more obvious by splitting this
+patch into several smaller ones as suggested above.
+
+> +
+>  	fpc->clk[FSL_PWM_CLK_FIX] =3D devm_clk_get(fpc->chip.dev, "ftm_fix");
+>  	if (IS_ERR(fpc->clk[FSL_PWM_CLK_FIX]))
+>  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_FIX]);
+> @@ -446,6 +467,8 @@ static int fsl_pwm_probe(struct platform_device *pdev)
+>  	fpc->chip.of_pwm_n_cells =3D 3;
+>  	fpc->chip.base =3D -1;
+>  	fpc->chip.npwm =3D 8;
+> +	fpc->has_pwmen =3D of_property_read_bool(pdev->dev.of_node,
+> +						"fsl,ftm-has-pwmen-bits");
+
+As I said earlier, I think this should be derived from the compatible
+string. That is, you could have a data structure such as:
+
+	struct fsl_pwm_soc {
+		bool has_enable_bits;
+	};
+
+	static const struct fsl_pwm_soc vf610_ftm_pwm =3D {
+		.has_enable_bits =3D false,
+	};
+
+	/* up to here would be part of patch 2 */
+
+	/* and this is part of patch 3, along with an entry in the OF
+	 * match table */
+	static const struct fsl_pwm_soc imx8x_ftm_pwm =3D {
+		.has_enable_bits =3D true,
+	};
 
 Thierry
 
---IDYEmSnFhs3mNXr+
+--XuV1QlJbYrcVoo+x
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXmNMACgkQ3SOs138+
-s6EcEBAAqwZUm5dl8ofKzCnB3CIifLjGBte4Yw5gnfyd4+WYlkth7fNMZgdCV+Y6
-0wb8O7kD1G3XR8JUFY2va6xkwJ+kZ77MUcxS30tv12y8XFngRIHnqtC8YEh+Yfnm
-mPT2Ci5KLl239jRiTgptWRxCzbbXCNpkGl+nzO5nFtvQ7RGGn0uhBzYvwVomnCMk
-kF9CXAzPe53zXerh4URh9UeU+64tzr1k9CntsqrKTAraqIlaA4tdGTGUfgvZxLu9
-CB7ejodJ5RXz7LbseIAjjoaprECU67Dtl8wrrhIE8GCqbV19TlczkLnUHuurPwMo
-0VewxWb2XP3hPGm1XDuflPAvsTvdBS/8JasVLXPN8N4+XyNtJhZLYykUBkaW2M5Q
-7OJCsgfh2Z8wVaNZ0n/l4CWyJDt2SkMFz1SNbDAlEbowJ0XCYTiagZsGAcrf32VV
-7RGtYlCTq8rZ99jVPUQsLBbbZZMgclG+NFXSGMnjcTdP//Ihf3Dw9KdMA8M3VgDC
-jh3DGrp1MAR07/diomHi97CX+9IAPm51VFWcKvonbPgHn7J9mckddCR0onk9h+wC
-6W4gZ1MTJpFcXL0nmBKMTU6DQPTzHvpCsdfmCBfbTVLKf0tDDBIHpS/JH8s776Ab
-oZ/dyickV62XE4f4C8X/Cf9/P141PmceysLLzotgaoj+HB2GOts=
-=/eQ9
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXnIwACgkQ3SOs138+
+s6GZMw/9Fpn2QrvI7aIOf1dAZDhR5JDtMV28XOGGLCJ/eRvyol+ApUp+AE1R0mUb
+CswVojEYCx+lWRewD96ESw6vvyQ0gt/6JWwsW5+0dAxr5+tis1dAdh5nqATU/nNV
+b7o2au+wKceweqghxfmdhPLdnKXfii7D54vMvait+PNl+pZWp55jwZil3x4ivDMz
+xfgmNH0IUwulQ10Mz/oPDYe/4QS5CIyIzfVRrtNNtiBo9Clez21Kna+qVWEGQvO0
+iJhV9uFXx99yfBFmZkKoYHTNi5Ycz6o3RuEy+HJv8B5WXnnQ5Rh2SJPkmGXT31Fw
+4HaOfQayB4n9JxEyh2NARiTxIL+ma1MZLjGJTuXxdJz+Q11shMALoopPA1xf2DKm
+XXLKl8qX+33KVE3Ez9ywVJCQFNw0ZtJPfq2yRXXaSuZyT5UZfS4igzcYFPau1U4r
+MCXIe7Ix94tCQkBUI5HVJsxKEM8y48MuIeP9VdPvJ08PPjHsgwvTG0matNHdFa1M
+t9cr30finADbgjd2h4dn/FGgCFDqHHoWS7/Euhl0ab1LNWQU6/797BV822rMar9B
+6c+lc4cZLlr7u25suU/XZydp/Xg91FPCZUpVhMGfhJDNSBiT02kevUoGUTFH+vZX
+ELXKZRHAPSg08PoLHEU4Zj+4tCFD1RNiUm3A1Ub1hJI+v0HeSYg=
+=qFyJ
 -----END PGP SIGNATURE-----
 
---IDYEmSnFhs3mNXr+--
+--XuV1QlJbYrcVoo+x--
