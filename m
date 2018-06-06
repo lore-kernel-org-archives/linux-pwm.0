@@ -1,21 +1,21 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH] pwm: stm32: enforce dependency on CONFIG_MFD_STM32_TIMERS
-Date: Wed, 6 Jun 2018 10:04:47 +0200
-Message-ID: <20180606080447.GB11810@ulmo>
+Date: Wed, 6 Jun 2018 10:13:14 +0200
+Message-ID: <20180606081314.GC11810@ulmo>
 References: <20180525160523.29124-1-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xgyAXRrhYN0wYx8y"
+        protocol="application/pgp-signature"; boundary="JgQwtEuHJzHdouWu"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20180525160523.29124-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: Benjamin Gaignard <benjamin.gaignard@st.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Lee Jones <lee.jones@linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---xgyAXRrhYN0wYx8y
+--JgQwtEuHJzHdouWu
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -39,28 +39,34 @@ _read'
 >  drivers/pwm/Kconfig | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied, thanks.
+I think Lee already picked up a patch by Fabrice that fixes this by
+adding a dummy implementation, see:
+
+	http://patchwork.ozlabs.org/patch/916435/
+
+I prefer your solution, though, because the dummy is pretty redundant if
+we can just make this a hard-dependency and still get the same coverage.
 
 Thierry
 
---xgyAXRrhYN0wYx8y
+--JgQwtEuHJzHdouWu
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXlZ8ACgkQ3SOs138+
-s6GHOxAAjzrOSS+vSZ5YUbmkDs7Kq6nIMWvjXX3UFfn1ooi7tXZA4WZ81SCn08O2
-ytwxtdlIfsnQ/TgWjMY0jSpk94Dh4XPoHeKSsJUOYfQKirN6x5CLj3P2rviYFBIZ
-2z/F+nRwsaJ9hax2ILZawcknPOSi7oZY2orwC7laOfaASvA8X2Rw1j5fWcU7OsMA
-4euQStPfpAHGgyZusP/5N4zFlB4fzoHF7us4RMYBIpZcn3I/g4lDKJnjhmQEpO77
-5WVi+U0wRO7UIjXQKariocS4I3a7ZH/iAZWLRnuUJhtxBER0hwUuKd5qcgCRedUr
-5nlzdRB0lPk31YYsHJYdBZ5n4WpYUqddZZBPUxo2AwpwzLLfsgU2Pn8MDrTXZPN4
-x2ur1UMw43LQn2A5L5xgg7hOsKr4/YLo+xrxfs5hto/gki/i5ulYvnLF4PWKyADn
-AV/0oBB5GLxQIYObqVKltva54q+P2K67tTqQjayEiViDjVYuIEtrM8aBFyUYQSwR
-BjWJCC0pDRCbTiSd/ww48tTtN/G/ChC7bSY4DYc8tZiMlbvKL9MWGdjthhAYnl5L
-OQumW7cc5DlIsac7QV3tWY/0EVG+r3eyGk/9Kqs+a/ExL8kTIdp3f5/BUwzObKIR
-0jnR4dg8n6iYA6d0pJHX0oOSLcxSMQCV8etI2NNXK001ti8qqrY=
-=ZYFI
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXl5oACgkQ3SOs138+
+s6EhkQ/+Nb9QA68rmBNxxuyFBujn6V180hqcmJV/+5diFzHDzABHk+WvAV8sZN+e
+ngGg/65oOx+TRLLFHwbvKl0rzIh1k2BMGnpjZXcQvMFXzacf9Asgi6+7vecvedk0
+6fU6PX+Gro9AUq5MPxshKdh/84Nze7RZuI6knW5TbUIcAe8k0UJvgHduJkSLWWKE
+HDoCANXoLasVnH2zlgAdd545G7prAdfibCViAHBjB5MhBskHT9Qm6qzjrr/QnwBl
+z7HyWhDlsE6o667LbhM2ygdjPMPfWZ3gz1IxJLJzUEPw4TMTps3YFg9LHFSAo35S
+0IAo8gbTj29lipzIAhZcqRqeJmzMg5ORth37VmHUqqVmbqxKlM+kY1AAa4jH5N7x
+xTbs6MPoFyNewGGlGpO64J7+lGAEfCDkPu7QXXejZdl+f3bmkCptFpNgm6xlECnD
+s+0ac85ozmAdeSL9KcfSAoh651EY0sBzL6DswMwThBLDe26+eJyFECEaKO0L0Wvg
+Dy+/SINKyVnzzHaVRjAudPOJUx7K4r49B7RMEUCguoXL0T4LCfobGxt3VZSP+RmL
+dyaggBY7DBmK/CKHsv0+CsQP8BP1BHHhie2JE4AkhKxn341Vshd7vVNYzf7FFHq3
+aefP/py+5DgMw9eIs0OboqOwSuFn82kdP9Dh+hWmix5CMk3cBfU=
+=hpfr
 -----END PGP SIGNATURE-----
 
---xgyAXRrhYN0wYx8y--
+--JgQwtEuHJzHdouWu--
