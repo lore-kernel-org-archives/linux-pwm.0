@@ -1,209 +1,95 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/1] pwm: fsl-ftm: Support the new version of FTM block
- on i.MX8x
-Date: Wed, 6 Jun 2018 10:34:23 +0200
-Message-ID: <20180606083423.GE11810@ulmo>
-References: <20180524180848.61844-1-shenwei.wang@nxp.com>
+Subject: Re: [PATCH v2 6/8] pwm: cros-ec: Switch to SPDX identifier.
+Date: Wed, 6 Jun 2018 11:08:48 +0200
+Message-ID: <20180606090848.GF11810@ulmo>
+References: <20180605175429.9072-1-enric.balletbo@collabora.com>
+ <20180605175429.9072-7-enric.balletbo@collabora.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="XuV1QlJbYrcVoo+x"
+        protocol="application/pgp-signature"; boundary="7mxbaLlpDEyR1+x6"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180524180848.61844-1-shenwei.wang@nxp.com>
+In-Reply-To: <20180605175429.9072-7-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: shenwei.wang@nxp.com
-Cc: linux-pwm@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---XuV1QlJbYrcVoo+x
+--7mxbaLlpDEyR1+x6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 24, 2018 at 01:08:48PM -0500, shenwei.wang@nxp.com wrote:
-> On the new i.MX8x SoC family, the following changes were made on the FTM
-> block:
+On Tue, Jun 05, 2018 at 07:54:27PM +0200, Enric Balletbo i Serra wrote:
+> Adopt the SPDX license identifier headers to ease license compliance
+> management.
 >=20
-> 1. Need to enable the IPG clock before accessing any FTM registers. Becau=
-se
-> the IPG clock is not an option for FTM counter clock source, it can't be
-> used as the ftm_sys clock.
->=20
-> 2. An additional PWM enable bit was added for each PWM channel in register
-> FTM_SC[16:23]. It supports 8 channels. Bit16 is for channel 0, and bit23
-> for channel 7.
-
-Generally if you need to itemize changes in your commit message it is a
-good indication that you should be splitting up the patch into multiple
-logical changes. In this case, one possibility would be to turn this
-into three patches:
-
-	1. Introduce the concept on an "interface" clock which is by
-	   default the same as the ftm_sys clock.
-
-	2. Add support for enable bits, based on some per-compatible
-	   data structure (see for example pwm-tegra.c for an example of
-	   how to do this).
-
-	3. Enable support for the new SoC family by adding an instance
-	   of the per-compatible structure for that compatible string.
-
-> As the IP version information can not be obtained in any of the FTM
-> registers, a property of "fsl,has-pwmen-bits" is added in the ftm pwm
-> device node. If it has the property, the driver set the PWM enable bit
-> when a PWM channel is requested.
-
-I don't see a corresponding device tree bindings update for this change.
-Also, I don't think doing this via a separate property is the right way,
-you can just derive this from the new compatible string which you need
-to add anyway.
-
-So to the above patches, add:
-
-	0. Add DT bindings for new SoC family with a mention that they
-	   need to provide the new IPG clock.
-
->=20
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 > ---
->  drivers/pwm/pwm-fsl-ftm.c | 35 +++++++++++++++++++++++++++++------
->  1 file changed, 29 insertions(+), 6 deletions(-)
 >=20
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-> index 557b4ea..0426458f 100644
-> --- a/drivers/pwm/pwm-fsl-ftm.c
-> +++ b/drivers/pwm/pwm-fsl-ftm.c
-> @@ -86,7 +86,9 @@ struct fsl_pwm_chip {
->  	struct regmap *regmap;
-> =20
->  	int period_ns;
-> +	bool has_pwmen;
-> =20
-> +	struct clk *ipg_clk;
->  	struct clk *clk[FSL_PWM_CLK_MAX];
->  };
-> =20
-> @@ -97,16 +99,31 @@ static inline struct fsl_pwm_chip *to_fsl_chip(struct=
- pwm_chip *chip)
-> =20
->  static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
-> +	int ret;
->  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-> =20
-> -	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
+> Changes in v2: None
+>=20
+>  drivers/pwm/pwm-cros-ec.c | 13 ++++---------
+>  1 file changed, 4 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+> index 9c13694eaa24..9bf4cde86765 100644
+> --- a/drivers/pwm/pwm-cros-ec.c
+> +++ b/drivers/pwm/pwm-cros-ec.c
+> @@ -1,12 +1,7 @@
+> -/*
+> - * Copyright (C) 2016 Google, Inc
+> - *
+> - * This program is free software; you can redistribute it and/or modify =
+it
+> - * under the terms of the GNU General Public License version 2, as publi=
+shed by
+> - * the Free Software Foundation.
+> - *
+> - * Expose a PWM controlled by the ChromeOS EC to the host processor.
+> - */
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Expose a PWM controlled by the ChromeOS EC to the host processor.
+> +//
+> +// Copyright (C) 2016 Google, Inc.
 
-This is confusing because it looks as if you're breaking existing
-drivers, until you realize that...
+This is odd. I understand that for some reason there is an exception for
+SPDX license identifies to use C++ style comments, but why would you
+make the whole comment C++ style? Why not just something like the below:
 
-> +
-> +	if ((!ret) && (fpc->has_pwmen)) {
-> +		mutex_lock(&fpc->lock);
-> +		regmap_update_bits(fpc->regmap, FTM_SC,
-> +				BIT(pwm->hwpwm + 16), BIT(pwm->hwpwm + 16));
-> +		mutex_unlock(&fpc->lock);
-> +	}
-> +
-> +	return ret;
->  }
-> =20
->  static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-> =20
-> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	if (fpc->has_pwmen) {
-> +		mutex_lock(&fpc->lock);
-> +		regmap_update_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16), 0);
-> +		mutex_unlock(&fpc->lock);
-> +	}
-> +	clk_disable_unprepare(fpc->ipg_clk);
->  }
-> =20
->  static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc,
-> @@ -363,7 +380,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
->  {
->  	int ret;
-> =20
-> -	ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	ret =3D clk_prepare_enable(fpc->ipg_clk);
->  	if (ret)
->  		return ret;
-> =20
-> @@ -371,7 +388,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
->  	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
->  	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
-> =20
-> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-> +	clk_disable_unprepare(fpc->ipg_clk);
-> =20
->  	return 0;
->  }
-> @@ -428,6 +445,10 @@ static int fsl_pwm_probe(struct platform_device *pde=
-v)
->  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_SYS]);
->  	}
-> =20
-> +	fpc->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
-> +	if (IS_ERR(fpc->ipg_clk))
-> +		fpc->ipg_clk =3D fpc->clk[FSL_PWM_CLK_SYS];
-
-=2E.. fpc->ipg_clk is actually the same as fpc->clk[FSL_PWM_CLK_SYS] for
-older chips. I think this could be made more obvious by splitting this
-patch into several smaller ones as suggested above.
-
-> +
->  	fpc->clk[FSL_PWM_CLK_FIX] =3D devm_clk_get(fpc->chip.dev, "ftm_fix");
->  	if (IS_ERR(fpc->clk[FSL_PWM_CLK_FIX]))
->  		return PTR_ERR(fpc->clk[FSL_PWM_CLK_FIX]);
-> @@ -446,6 +467,8 @@ static int fsl_pwm_probe(struct platform_device *pdev)
->  	fpc->chip.of_pwm_n_cells =3D 3;
->  	fpc->chip.base =3D -1;
->  	fpc->chip.npwm =3D 8;
-> +	fpc->has_pwmen =3D of_property_read_bool(pdev->dev.of_node,
-> +						"fsl,ftm-has-pwmen-bits");
-
-As I said earlier, I think this should be derived from the compatible
-string. That is, you could have a data structure such as:
-
-	struct fsl_pwm_soc {
-		bool has_enable_bits;
-	};
-
-	static const struct fsl_pwm_soc vf610_ftm_pwm =3D {
-		.has_enable_bits =3D false,
-	};
-
-	/* up to here would be part of patch 2 */
-
-	/* and this is part of patch 3, along with an entry in the OF
-	 * match table */
-	static const struct fsl_pwm_soc imx8x_ftm_pwm =3D {
-		.has_enable_bits =3D true,
-	};
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * Copyright (C) 2016 Google, Inc
+  *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License version 2, as publish=
+ed by
+- * the Free Software Foundation.
+- *
+  * Expose a PWM controlled by the ChromeOS EC to the host processor.
+  */
 
 Thierry
 
---XuV1QlJbYrcVoo+x
+--7mxbaLlpDEyR1+x6
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXnIwACgkQ3SOs138+
-s6GZMw/9Fpn2QrvI7aIOf1dAZDhR5JDtMV28XOGGLCJ/eRvyol+ApUp+AE1R0mUb
-CswVojEYCx+lWRewD96ESw6vvyQ0gt/6JWwsW5+0dAxr5+tis1dAdh5nqATU/nNV
-b7o2au+wKceweqghxfmdhPLdnKXfii7D54vMvait+PNl+pZWp55jwZil3x4ivDMz
-xfgmNH0IUwulQ10Mz/oPDYe/4QS5CIyIzfVRrtNNtiBo9Clez21Kna+qVWEGQvO0
-iJhV9uFXx99yfBFmZkKoYHTNi5Ycz6o3RuEy+HJv8B5WXnnQ5Rh2SJPkmGXT31Fw
-4HaOfQayB4n9JxEyh2NARiTxIL+ma1MZLjGJTuXxdJz+Q11shMALoopPA1xf2DKm
-XXLKl8qX+33KVE3Ez9ywVJCQFNw0ZtJPfq2yRXXaSuZyT5UZfS4igzcYFPau1U4r
-MCXIe7Ix94tCQkBUI5HVJsxKEM8y48MuIeP9VdPvJ08PPjHsgwvTG0matNHdFa1M
-t9cr30finADbgjd2h4dn/FGgCFDqHHoWS7/Euhl0ab1LNWQU6/797BV822rMar9B
-6c+lc4cZLlr7u25suU/XZydp/Xg91FPCZUpVhMGfhJDNSBiT02kevUoGUTFH+vZX
-ELXKZRHAPSg08PoLHEU4Zj+4tCFD1RNiUm3A1Ub1hJI+v0HeSYg=
-=qFyJ
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsXpJ4ACgkQ3SOs138+
+s6HerhAAwUNTeDQcpNnFb4Q3vWN1ijtYuXHlkaMqSlNZAUVxQ4IM2BVMeWTxTCJa
+dq56ik35zor2j4yY1X/mKuYpevEEypl2DKFc3saZraThG0b6fv/+olRAw6Rwb3Lr
+Hzy+Q8muy7sg7ISd7Pa74HTzdzwW0XVvvUG0nE4ODo72SzFHV2TiYNdjx0scQmzR
+AUoeT/wrD2GFW3ZTLKfMPC/Tb2MdmWIxM9n0tkNsBeZwVL6bNCPuXpk7MhHVhOsN
+vknOZYRstIb1N+cDq/te1Wdszu/tjYl3VflRkTa/tX3l3kXNNLxAs4l2owToFDLC
+Zqk7kDQlcRs4RxvbW4qsNecMOQKQO4pnR7l8cgtOj/LA1y4W/UlnAeEe6lUCZ4SA
+JBlUTCEnYIPrfEAFpd4zRqyQTm2STr7RjwHuIOLQJu9aEUSTFz+vIMt1quFCvZDn
+2R8j3l+ar3Dbwb0pNfCdkogDd5JGJ9+4egJYVggKpO1TtzkBzm5Zw9sbITvTUcXF
+32fe5k4//3bdtcVwO6tBBnp6CHnfsQdOw1NtGKawawFiIJVS3nFIUXyZzpOV/fJB
+9GUdWm8E4id7uYZqYXQZk0mvHOUTgsIwwOELM9e47npEnjz5fJUvz07ZMOYGX2Oc
+3v9amaFF625ie21WOZMxDizxZ1RpbQe9aHwHgqTLkRDkfksFYZk=
+=2GIJ
 -----END PGP SIGNATURE-----
 
---XuV1QlJbYrcVoo+x--
+--7mxbaLlpDEyR1+x6--
