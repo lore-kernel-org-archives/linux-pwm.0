@@ -1,111 +1,115 @@
 From: shenwei.wang@nxp.com
-Subject: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
-Date: Fri,  8 Jun 2018 14:22:34 -0500
-Message-ID: <20180608192237.11063-1-shenwei.wang@nxp.com>
+Subject: [PATCH v2 2/4] pwm: fsl-ftm: Added the support of per-compatible data
+Date: Fri,  8 Jun 2018 14:22:35 -0500
+Message-ID: <20180608192237.11063-2-shenwei.wang@nxp.com>
+References: <20180608192237.11063-1-shenwei.wang@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180608192237.11063-1-shenwei.wang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com
 Cc: linux-pwm@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The current driver assumes that the ftm_sys clock works as
-one of the clock sources for the IP block as well as the IP
-interface clock. This assumption does not apply any more on
-the latest i.MX8x SoC family. On i.MX8x SoCs, a dedicated IP
-interface clock is introduced and it must be enabled before
-accessing any FTM registers. Moreover, the clock can not be
-used as the source clock for the FTM IP block. This patch
-introduces the ipg_clk as the dedicated IP interface clock
-and by default it is the same as the ftm_sys clock if not
-specified.
+On the i.MX8x SoC family, an additional PWM enable bit is
+added for each PWM channel in the register FTM_SC[23:16].
+It supports 8 channels. Bit16 is for channel 0, and bit23
+is for channel 7. As the IP version information can not
+be obtained via any of the FTM registers, a property of
+"has_enable_bits" is added via per-compatible data structure.
 
 Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 ---
- drivers/pwm/pwm-fsl-ftm.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index 557b4ea..df0a1c0 100644
+index df0a1c0..e4c76da 100644
 --- a/drivers/pwm/pwm-fsl-ftm.c
 +++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -87,6 +87,7 @@ struct fsl_pwm_chip {
- 
- 	int period_ns;
- 
-+	struct clk *ipg_clk;
- 	struct clk *clk[FSL_PWM_CLK_MAX];
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/of_device.h>
+ #include <linux/of_address.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm.h>
+@@ -75,6 +76,10 @@ enum fsl_pwm_clk {
+ 	FSL_PWM_CLK_MAX
  };
  
-@@ -99,14 +100,14 @@ static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
++struct fsl_ftm_soc {
++	bool has_enable_bits;
++};
++
+ struct fsl_pwm_chip {
+ 	struct pwm_chip chip;
+ 
+@@ -89,6 +94,8 @@ struct fsl_pwm_chip {
+ 
+ 	struct clk *ipg_clk;
+ 	struct clk *clk[FSL_PWM_CLK_MAX];
++
++	const struct fsl_ftm_soc *soc;
+ };
+ 
+ static inline struct fsl_pwm_chip *to_fsl_chip(struct pwm_chip *chip)
+@@ -98,15 +105,31 @@ static inline struct fsl_pwm_chip *to_fsl_chip(struct pwm_chip *chip)
+ 
+ static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
  {
++	int ret;
  	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
  
--	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+	return clk_prepare_enable(fpc->ipg_clk);
+-	return clk_prepare_enable(fpc->ipg_clk);
++	ret = clk_prepare_enable(fpc->ipg_clk);
++
++	if ((!ret) && (fpc->soc->has_enable_bits)) {
++		mutex_lock(&fpc->lock);
++		regmap_update_bits(fpc->regmap, FTM_SC,
++				BIT(pwm->hwpwm + 16), BIT(pwm->hwpwm + 16));
++		mutex_unlock(&fpc->lock);
++	}
++
++	return ret;
  }
  
  static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
  {
  	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
  
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+	clk_disable_unprepare(fpc->ipg_clk);
++	if (fpc->soc->has_enable_bits) {
++		mutex_lock(&fpc->lock);
++		regmap_update_bits(fpc->regmap, FTM_SC, BIT(pwm->hwpwm + 16), 0);
++		mutex_unlock(&fpc->lock);
++	}
++
+ 	clk_disable_unprepare(fpc->ipg_clk);
  }
  
- static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc,
-@@ -363,7 +364,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
- {
- 	int ret;
+@@ -409,6 +432,7 @@ static int fsl_pwm_probe(struct platform_device *pdev)
  
--	ret = clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+	ret = clk_prepare_enable(fpc->ipg_clk);
- 	if (ret)
- 		return ret;
+ 	mutex_init(&fpc->lock);
  
-@@ -371,7 +372,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
- 	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
- 	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
++	fpc->soc = of_device_get_match_data(&pdev->dev);
+ 	fpc->chip.dev = &pdev->dev;
  
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+	clk_disable_unprepare(fpc->ipg_clk);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -534,8 +558,12 @@ static const struct dev_pm_ops fsl_pwm_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(fsl_pwm_suspend, fsl_pwm_resume)
+ };
  
- 	return 0;
- }
-@@ -441,6 +442,15 @@ static int fsl_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]))
- 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 
-+	/* ipg_clk is the interface clock for the IP.
-+	 * If not provided, use the ftm_sys clock as
-+	 * the default
-+	 */
-+	fpc->ipg_clk = devm_clk_get(&pdev->dev, "ipg");
-+	if (IS_ERR(fpc->ipg_clk))
-+		fpc->ipg_clk = fpc->clk[FSL_PWM_CLK_SYS];
++static const struct fsl_ftm_soc vf610_ftm_pwm = {
++	.has_enable_bits = false,
++};
 +
-+
- 	fpc->chip.ops = &fsl_pwm_ops;
- 	fpc->chip.of_xlate = of_pwm_xlate_with_flags;
- 	fpc->chip.of_pwm_n_cells = 3;
-@@ -480,7 +490,7 @@ static int fsl_pwm_suspend(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
- 
--		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+		clk_disable_unprepare(fpc->ipg_clk);
- 
- 		if (!pwm_is_enabled(pwm))
- 			continue;
-@@ -503,7 +513,7 @@ static int fsl_pwm_resume(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
- 
--		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+		clk_prepare_enable(fpc->ipg_clk);
- 
- 		if (!pwm_is_enabled(pwm))
- 			continue;
+ static const struct of_device_id fsl_pwm_dt_ids[] = {
+-	{ .compatible = "fsl,vf610-ftm-pwm", },
++	{ .compatible = "fsl,vf610-ftm-pwm", .data = &vf610_ftm_pwm },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, fsl_pwm_dt_ids);
 -- 
 2.9.2
