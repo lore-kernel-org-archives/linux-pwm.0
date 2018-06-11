@@ -1,43 +1,25 @@
-From: shenwei.wang@nxp.com
-Subject: [PATCH v2 3/4] pwm: fsl-ftm: Enable support for the new SoC i.mx8qm
-Date: Fri,  8 Jun 2018 14:22:36 -0500
-Message-ID: <20180608192237.11063-3-shenwei.wang@nxp.com>
-References: <20180608192237.11063-1-shenwei.wang@nxp.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: [PATCH 0/2] pwm-tiehrpwm: fixes for disabling PWMs
+Date: Mon, 11 Jun 2018 11:39:54 +0530
+Message-ID: <20180611060956.27999-1-vigneshr@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180608192237.11063-1-shenwei.wang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Vignesh R <vigneshr@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Enabled the support for the new SoC i.mx8qm by adding the
-compatible string of "fsl,imx8qm-ftm-pwm" and its
-per-compatible data with setting "has_enable_bits" to "true".
+EHRPWM has two PWM outputs. Currently with pwm-tiehrpwm driver, if PWMA
+is enabled and then disabled, and then PWMB is enabled, it is seen that
+PWMA turns on automatically. This series fixes the bug.
 
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
----
- drivers/pwm/pwm-fsl-ftm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Vignesh R (2):
+  pwm: pwm-tiehrpwm: Don't use emulation mode bits to control PWM output
+  pwm: pwm-tiehrpwm: Fix disabling of output of PWMs
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index e4c76da..28b87ec 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -562,8 +562,13 @@ static const struct fsl_ftm_soc vf610_ftm_pwm = {
- 	.has_enable_bits = false,
- };
- 
-+static const struct fsl_ftm_soc imx8qm_ftm_pwm = {
-+	.has_enable_bits = true,
-+};
-+
- static const struct of_device_id fsl_pwm_dt_ids[] = {
- 	{ .compatible = "fsl,vf610-ftm-pwm", .data = &vf610_ftm_pwm },
-+	{ .compatible = "fsl,imx8qm-ftm-pwm", .data = &imx8qm_ftm_pwm },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, fsl_pwm_dt_ids);
+ drivers/pwm/pwm-tiehrpwm.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
 -- 
-2.9.2
+2.17.1
