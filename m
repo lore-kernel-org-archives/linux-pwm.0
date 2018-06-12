@@ -1,73 +1,59 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH 1/2] pwm: pwm-tiehrpwm: Don't use emulation mode bits to control PWM output
-Date: Mon, 11 Jun 2018 11:39:55 +0530
-Message-ID: <20180611060956.27999-2-vigneshr@ti.com>
-References: <20180611060956.27999-1-vigneshr@ti.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] pwm: stm32: fix build warning with CONFIG_DMA_ENGINE disabled
+Date: Tue, 12 Jun 2018 09:25:05 +0200
+Message-ID: <CAMuHMdXJg0mYbs=e0QJMDb=A+bRbPsNF=TJzSumSjjOK3yJw2Q@mail.gmail.com>
+References: <20180525210843.1821071-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611060956.27999-1-vigneshr@ti.com>
+In-Reply-To: <20180525210843.1821071-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Vignesh R <vigneshr@ti.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, fabrice.gasnier@st.com, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-As per AM335x TRM SPRUH73P "15.2.2.11 ePWM Behavior During Emulation",
-TBCTL[15:14] only have effect during emulation suspend events (IOW,
-to stop PWM when debugging using a debugger). These bits have no effect
-on PWM output during normal running of system. Hence, remove code
-accessing these bits as they have no role in enabling/disabling PWMs.
+Hi Arnd,
 
-Fixes: 19891b20e7c2 ("pwm: pwm-tiehrpwm: PWM driver support for EHRPWM")
-Cc: stable@vger.kernel.org
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/pwm/pwm-tiehrpwm.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+On Fri, May 25, 2018 at 11:09 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> Without dmaengine support, we get a harmless warning about an
+> unused function:
+>
+> drivers/pwm/pwm-stm32.c:166:12: error: 'stm32_pwm_capture' defined but not used [-Werror=unused-function]
+>
+> Changing the #ifdef to an IS_ENABLED() check shuts up that warning
+> and is slightly nicer to read.
+>
+> Fixes: 53e38fe73f94 ("pwm: stm32: Add capture support")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-index 4c22cb395040..768176f54d5e 100644
---- a/drivers/pwm/pwm-tiehrpwm.c
-+++ b/drivers/pwm/pwm-tiehrpwm.c
-@@ -33,10 +33,6 @@
- #define TBCTL			0x00
- #define TBPRD			0x0A
- 
--#define TBCTL_RUN_MASK		(BIT(15) | BIT(14))
--#define TBCTL_STOP_NEXT		0
--#define TBCTL_STOP_ON_CYCLE	BIT(14)
--#define TBCTL_FREE_RUN		(BIT(15) | BIT(14))
- #define TBCTL_PRDLD_MASK	BIT(3)
- #define TBCTL_PRDLD_SHDW	0
- #define TBCTL_PRDLD_IMDT	BIT(3)
-@@ -360,7 +356,7 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	/* Channels polarity can be configured from action qualifier module */
- 	configure_polarity(pc, pwm->hwpwm);
- 
--	/* Enable TBCLK before enabling PWM device */
-+	/* Enable TBCLK */
- 	ret = clk_enable(pc->tbclk);
- 	if (ret) {
- 		dev_err(chip->dev, "Failed to enable TBCLK for %s: %d\n",
-@@ -368,9 +364,6 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		return ret;
- 	}
- 
--	/* Enable time counter for free_run */
--	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_RUN_MASK, TBCTL_FREE_RUN);
--
- 	return 0;
- }
- 
-@@ -400,9 +393,6 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	/* Disabling TBCLK on PWM disable */
- 	clk_disable(pc->tbclk);
- 
--	/* Stop Time base counter */
--	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_RUN_MASK, TBCTL_STOP_NEXT);
--
- 	/* Disable clock on PWM disable */
- 	pm_runtime_put_sync(chip->dev);
- }
+Thanks!
+
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+> --- a/drivers/pwm/pwm-stm32.c
+> +++ b/drivers/pwm/pwm-stm32.c
+> @@ -484,9 +484,7 @@ static int stm32_pwm_apply_locked(struct pwm_chip *chip, struct pwm_device *pwm,
+>  static const struct pwm_ops stm32pwm_ops = {
+>         .owner = THIS_MODULE,
+>         .apply = stm32_pwm_apply_locked,
+> -#if IS_ENABLED(CONFIG_DMA_ENGINE)
+> -       .capture = stm32_pwm_capture,
+> -#endif
+> +       .capture = IS_ENABLED(CONFIG_DMA_ENGINE) ? stm32_pwm_capture : NULL,
+
+Cool, I didn't know IS_ENABLED() can be used in static initializers.
+I guess it's too late/much work to use this trick in e.g. SET_*_PM_OPS(),
+as there are lots of places protecting the functions by #ifdefs?
+
+>  };
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.17.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
