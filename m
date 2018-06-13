@@ -1,38 +1,73 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] pwm: stm32: fix build warning with CONFIG_DMA_ENGINE disabled
-Date: Tue, 12 Jun 2018 12:43:14 +0200
-Message-ID: <CAK8P3a2=v5cazbSvdAMX8yf0x=PmCAQatQR6ZD=N0oM5-RGoUQ@mail.gmail.com>
-References: <20180525210843.1821071-1-arnd@arndb.de> <CAMuHMdXJg0mYbs=e0QJMDb=A+bRbPsNF=TJzSumSjjOK3yJw2Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v4.18-rc1
+Date: Wed, 13 Jun 2018 14:16:26 +0200
+Message-ID: <20180613121626.17188-1-thierry.reding@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdXJg0mYbs=e0QJMDb=A+bRbPsNF=TJzSumSjjOK3yJw2Q@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, Fabrice Gasnier <fabrice.gasnier@st.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Jun 12, 2018 at 9:25 AM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
+Hi Linus,
 
->> --- a/drivers/pwm/pwm-stm32.c
->> +++ b/drivers/pwm/pwm-stm32.c
->> @@ -484,9 +484,7 @@ static int stm32_pwm_apply_locked(struct pwm_chip *chip, struct pwm_device *pwm,
->>  static const struct pwm_ops stm32pwm_ops = {
->>         .owner = THIS_MODULE,
->>         .apply = stm32_pwm_apply_locked,
->> -#if IS_ENABLED(CONFIG_DMA_ENGINE)
->> -       .capture = stm32_pwm_capture,
->> -#endif
->> +       .capture = IS_ENABLED(CONFIG_DMA_ENGINE) ? stm32_pwm_capture : NULL,
->
-> Cool, I didn't know IS_ENABLED() can be used in static initializers.
-> I guess it's too late/much work to use this trick in e.g. SET_*_PM_OPS(),
-> as there are lots of places protecting the functions by #ifdefs?
+The following changes since commit 60cc43fc888428bb2f18f08997432d426a243338:
 
-It's one of those things I've been planning to do for a long time, but as
-you noticed, we can't just change the macro but have to come up with a
-replacement that works without those #ifdefs. Unfortunately, nobody has
-come up with a good /name/ for those macros, which is still the main blocker ;-)
+  Linux 4.17-rc1 (2018-04-15 18:24:20 -0700)
 
-      Arnd
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.18-rc1
+
+for you to fetch changes up to 414c52b7899aa9097c2fa8444654a866e1df4a0c:
+
+  pwm: stm32: Fix build warning with CONFIG_DMA_ENGINE disabled (2018-06-06 10:15:55 +0200)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v4.18-rc1
+
+This contains a couple of fixes and cleanups for the Meson and ACPI/LPSS
+drivers as well as capture support for STM32. Note that given the cross-
+subsystem changes, the STM32 patches were merged through the MFD and PWM
+trees, both sharing an immutable branch.
+
+----------------------------------------------------------------
+Arnd Bergmann (2):
+      pwm: stm32: Enforce dependency on CONFIG_MFD_STM32_TIMERS
+      pwm: stm32: Fix build warning with CONFIG_DMA_ENGINE disabled
+
+Fabrice Gasnier (5):
+      mfd: stm32-timers: Add support for DMAs
+      pwm: stm32: Add capture support
+      pwm: stm32: Improve capture by tuning counter prescaler
+      pwm: stm32: Use input prescaler to improve period capture
+      dt-bindings: mfd: stm32-timers: Add support for dmas
+
+Hans de Goede (2):
+      pwm: lpss: platform: Save/restore the ctrl register over a suspend/resume
+      ACPI / LPSS: Add missing prv_offset setting for byt/cht PWM devices
+
+Martin Blumenstingl (1):
+      pwm: meson: Fix allocation of PWM channel array
+
+Thierry Reding (1):
+      Merge tag 'ib-mfd-pwm-v4.18-1' of git://git.kernel.org/.../lee/mfd into for-next
+
+Wolfram Sang (1):
+      pwm: simplify getting .drvdata
+
+ .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
+ drivers/acpi/acpi_lpss.c                           |   2 +
+ drivers/mfd/stm32-timers.c                         | 201 +++++++++++++++-
+ drivers/pwm/Kconfig                                |   2 +-
+ drivers/pwm/pwm-atmel-tcb.c                        |   6 +-
+ drivers/pwm/pwm-lpss-platform.c                    |   5 +
+ drivers/pwm/pwm-lpss.c                             |  30 +++
+ drivers/pwm/pwm-lpss.h                             |   2 +
+ drivers/pwm/pwm-meson.c                            |   4 +-
+ drivers/pwm/pwm-rcar.c                             |   3 +-
+ drivers/pwm/pwm-stm32.c                            | 255 +++++++++++++++++++++
+ include/linux/mfd/stm32-timers.h                   |  58 +++++
+ 12 files changed, 577 insertions(+), 11 deletions(-)
