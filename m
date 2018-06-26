@@ -1,73 +1,123 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.18-rc1
-Date: Wed, 13 Jun 2018 14:16:26 +0200
-Message-ID: <20180613121626.17188-1-thierry.reding@gmail.com>
+From: Shenwei Wang <shenwei.wang@nxp.com>
+Subject: RE: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
+Date: Tue, 26 Jun 2018 15:03:08 +0000
+Message-ID: <HE1PR04MB3289046CBDA6B77A733994E889490@HE1PR04MB3289.eurprd04.prod.outlook.com>
+References: <20180608192237.11063-1-shenwei.wang@nxp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180608192237.11063-1-shenwei.wang@nxp.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Linus,
+Ping.
 
-The following changes since commit 60cc43fc888428bb2f18f08997432d426a243338:
+Shenwei
 
-  Linux 4.17-rc1 (2018-04-15 18:24:20 -0700)
+-----Original Message-----
+From: Shenwei Wang=20
+Sent: Friday, June 8, 2018 2:23 PM
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
+el@vger.kernel.org; Shenwei Wang <shenwei.wang@nxp.com>
+Subject: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
 
-are available in the Git repository at:
+The current driver assumes that the ftm_sys clock works as one of the clock=
+ sources for the IP block as well as the IP interface clock. This assumptio=
+n does not apply any more on the latest i.MX8x SoC family. On i.MX8x SoCs, =
+a dedicated IP interface clock is introduced and it must be enabled before =
+accessing any FTM registers. Moreover, the clock can not be used as the sou=
+rce clock for the FTM IP block. This patch introduces the ipg_clk as the de=
+dicated IP interface clock and by default it is the same as the ftm_sys clo=
+ck if not specified.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.18-rc1
+Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+---
+ drivers/pwm/pwm-fsl-ftm.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-for you to fetch changes up to 414c52b7899aa9097c2fa8444654a866e1df4a0c:
-
-  pwm: stm32: Fix build warning with CONFIG_DMA_ENGINE disabled (2018-06-06 10:15:55 +0200)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.18-rc1
-
-This contains a couple of fixes and cleanups for the Meson and ACPI/LPSS
-drivers as well as capture support for STM32. Note that given the cross-
-subsystem changes, the STM32 patches were merged through the MFD and PWM
-trees, both sharing an immutable branch.
-
-----------------------------------------------------------------
-Arnd Bergmann (2):
-      pwm: stm32: Enforce dependency on CONFIG_MFD_STM32_TIMERS
-      pwm: stm32: Fix build warning with CONFIG_DMA_ENGINE disabled
-
-Fabrice Gasnier (5):
-      mfd: stm32-timers: Add support for DMAs
-      pwm: stm32: Add capture support
-      pwm: stm32: Improve capture by tuning counter prescaler
-      pwm: stm32: Use input prescaler to improve period capture
-      dt-bindings: mfd: stm32-timers: Add support for dmas
-
-Hans de Goede (2):
-      pwm: lpss: platform: Save/restore the ctrl register over a suspend/resume
-      ACPI / LPSS: Add missing prv_offset setting for byt/cht PWM devices
-
-Martin Blumenstingl (1):
-      pwm: meson: Fix allocation of PWM channel array
-
-Thierry Reding (1):
-      Merge tag 'ib-mfd-pwm-v4.18-1' of git://git.kernel.org/.../lee/mfd into for-next
-
-Wolfram Sang (1):
-      pwm: simplify getting .drvdata
-
- .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
- drivers/acpi/acpi_lpss.c                           |   2 +
- drivers/mfd/stm32-timers.c                         | 201 +++++++++++++++-
- drivers/pwm/Kconfig                                |   2 +-
- drivers/pwm/pwm-atmel-tcb.c                        |   6 +-
- drivers/pwm/pwm-lpss-platform.c                    |   5 +
- drivers/pwm/pwm-lpss.c                             |  30 +++
- drivers/pwm/pwm-lpss.h                             |   2 +
- drivers/pwm/pwm-meson.c                            |   4 +-
- drivers/pwm/pwm-rcar.c                             |   3 +-
- drivers/pwm/pwm-stm32.c                            | 255 +++++++++++++++++++++
- include/linux/mfd/stm32-timers.h                   |  58 +++++
- 12 files changed, 577 insertions(+), 11 deletions(-)
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c index 55=
+7b4ea..df0a1c0 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -87,6 +87,7 @@ struct fsl_pwm_chip {
+=20
+ 	int period_ns;
+=20
++	struct clk *ipg_clk;
+ 	struct clk *clk[FSL_PWM_CLK_MAX];
+ };
+=20
+@@ -99,14 +100,14 @@ static int fsl_pwm_request(struct pwm_chip *chip, stru=
+ct pwm_device *pwm)  {
+ 	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+=20
+-	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
++	return clk_prepare_enable(fpc->ipg_clk);
+ }
+=20
+ static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)  {
+ 	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+=20
+-	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
++	clk_disable_unprepare(fpc->ipg_clk);
+ }
+=20
+ static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc, @@ -363,=
+7 +364,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)  {
+ 	int ret;
+=20
+-	ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
++	ret =3D clk_prepare_enable(fpc->ipg_clk);
+ 	if (ret)
+ 		return ret;
+=20
+@@ -371,7 +372,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
+ 	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
+ 	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
+=20
+-	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
++	clk_disable_unprepare(fpc->ipg_clk);
+=20
+ 	return 0;
+ }
+@@ -441,6 +442,15 @@ static int fsl_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]))
+ 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]);
+=20
++	/* ipg_clk is the interface clock for the IP.
++	 * If not provided, use the ftm_sys clock as
++	 * the default
++	 */
++	fpc->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
++	if (IS_ERR(fpc->ipg_clk))
++		fpc->ipg_clk =3D fpc->clk[FSL_PWM_CLK_SYS];
++
++
+ 	fpc->chip.ops =3D &fsl_pwm_ops;
+ 	fpc->chip.of_xlate =3D of_pwm_xlate_with_flags;
+ 	fpc->chip.of_pwm_n_cells =3D 3;
+@@ -480,7 +490,7 @@ static int fsl_pwm_suspend(struct device *dev)
+ 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
+ 			continue;
+=20
+-		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
++		clk_disable_unprepare(fpc->ipg_clk);
+=20
+ 		if (!pwm_is_enabled(pwm))
+ 			continue;
+@@ -503,7 +513,7 @@ static int fsl_pwm_resume(struct device *dev)
+ 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
+ 			continue;
+=20
+-		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
++		clk_prepare_enable(fpc->ipg_clk);
+=20
+ 		if (!pwm_is_enabled(pwm))
+ 			continue;
+--
+2.9.2
