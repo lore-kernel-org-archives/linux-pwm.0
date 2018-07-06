@@ -1,18 +1,33 @@
 From: Shenwei Wang <shenwei.wang@nxp.com>
 Subject: RE: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
-Date: Tue, 26 Jun 2018 15:03:08 +0000
-Message-ID: <HE1PR04MB3289046CBDA6B77A733994E889490@HE1PR04MB3289.eurprd04.prod.outlook.com>
+Date: Fri, 6 Jul 2018 14:25:16 +0000
+Message-ID: <HE1PR04MB3289D7DB7BCDAA199B16CE0A89470@HE1PR04MB3289.eurprd04.prod.outlook.com>
 References: <20180608192237.11063-1-shenwei.wang@nxp.com>
+ <HE1PR04MB3289046CBDA6B77A733994E889490@HE1PR04MB3289.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180608192237.11063-1-shenwei.wang@nxp.com>
+In-Reply-To: <HE1PR04MB3289046CBDA6B77A733994E889490@HE1PR04MB3289.eurprd04.prod.outlook.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
+
+2nd ping.
+
+Regards,
+Shenwei
+
+-----Original Message-----
+From: Shenwei Wang=20
+Sent: Tuesday, June 26, 2018 10:03 AM
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
+el@vger.kernel.org
+Subject: RE: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface cl=
+ock
 
 Ping.
 
