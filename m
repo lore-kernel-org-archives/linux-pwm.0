@@ -1,138 +1,85 @@
-From: Shenwei Wang <shenwei.wang@nxp.com>
-Subject: RE: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
-Date: Fri, 6 Jul 2018 14:25:16 +0000
-Message-ID: <HE1PR04MB3289D7DB7BCDAA199B16CE0A89470@HE1PR04MB3289.eurprd04.prod.outlook.com>
-References: <20180608192237.11063-1-shenwei.wang@nxp.com>
- <HE1PR04MB3289046CBDA6B77A733994E889490@HE1PR04MB3289.eurprd04.prod.outlook.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2] pwm: berlin: Don't use broken prescaler values
+Date: Mon, 9 Jul 2018 18:57:24 +0200
+Message-ID: <20180709165724.GB26651@ulmo>
+References: <a4e1449967f3dbc95770b9ac2bbc1fd116e3cac7.1528306926.git.tommyhebb@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="St7VIuEGZ6dlpu13"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <HE1PR04MB3289046CBDA6B77A733994E889490@HE1PR04MB3289.eurprd04.prod.outlook.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <a4e1449967f3dbc95770b9ac2bbc1fd116e3cac7.1528306926.git.tommyhebb@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Thomas Hebb <tommyhebb@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, sebastian.hesselbarth@gmail.com, Jisheng.Zhang@synaptics.com, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-2nd ping.
 
-Regards,
-Shenwei
+--St7VIuEGZ6dlpu13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
------Original Message-----
-From: Shenwei Wang=20
-Sent: Tuesday, June 26, 2018 10:03 AM
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
-el@vger.kernel.org
-Subject: RE: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface cl=
-ock
+On Wed, Jun 06, 2018 at 01:42:10PM -0400, Thomas Hebb wrote:
+> The Berlin PWM driver is currently broken on at least BG2CD. The
+> symptoms manifest as a very non-linear and erratic mapping from the duty
+> cycle configured in software to the duty cycle produced by hardware.
+>=20
+> The cause of the bug is software's configuration of the prescaler, and
+> in particular its usage of the six prescaler values between the minimum
+> value of 1 and the maximum value of 4096. As it turns out, these six
+> values do not actually slow down the PWM clock; rather, they emulate
+> slowing down the clock by internally multiplying the value of TCNT.
+>=20
+> This would be a fine trick, if not for the fact that the internal,
+> scaled TCNT value has no extra bits beyond the 16 already exposed to
+> software in the register. What this means is that, for a prescaler of 4,
+> the software must ensure that the top two bits of TCNT are not set,
+> because hardware will chop them off; for a prescaler of 8, the top three
+> bits must not be set, and so forth. Software does not currently ensure
+> this, resulting in a TCNT several orders of magnitude lower than
+> intended any time one of those six prescalers are selected.
+>=20
+> Because hardware chops off the high bits in its internal shift, the
+> middle six prescalers don't actually allow *anything* that the first
+> doesn't. In fact, they are strictly worse than the first, since the
+> internal shift of TCNT prevents software from setting the low bits,
+> decreasing the resolution, without providing any extra high bits.
+>=20
+> By skipping the useless prescalers entirely, this patch both fixes the
+> driver's behavior and increases its performance (since, when the 4096
+> prescaler is selected, it now does only a single shift rather than the
+> seven successive divisions it did before).
+>=20
+> Tested on BG2CD.
+>=20
+> Signed-off-by: Thomas Hebb <tommyhebb@gmail.com>
+> ---
+>  drivers/pwm/pwm-berlin.c | 45 ++++++++++++++++++++++------------------
+>  1 file changed, 25 insertions(+), 20 deletions(-)
 
-Ping.
+Applied, thanks.
 
-Shenwei
+Thierry
 
------Original Message-----
-From: Shenwei Wang=20
-Sent: Friday, June 8, 2018 2:23 PM
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
-el@vger.kernel.org; Shenwei Wang <shenwei.wang@nxp.com>
-Subject: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
+--St7VIuEGZ6dlpu13
+Content-Type: application/pgp-signature; name="signature.asc"
 
-The current driver assumes that the ftm_sys clock works as one of the clock=
- sources for the IP block as well as the IP interface clock. This assumptio=
-n does not apply any more on the latest i.MX8x SoC family. On i.MX8x SoCs, =
-a dedicated IP interface clock is introduced and it must be enabled before =
-accessing any FTM registers. Moreover, the clock can not be used as the sou=
-rce clock for the FTM IP block. This patch introduces the ipg_clk as the de=
-dicated IP interface clock and by default it is the same as the ftm_sys clo=
-ck if not specified.
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
----
- drivers/pwm/pwm-fsl-ftm.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltDk/QACgkQ3SOs138+
+s6GzSg/+JeatRGdrJmsErClcFd4iadL/LxRhrcxR+qX12x/xu1eaVmqdxhTIUDW/
+BD2ZwnNIeTs8cDsBEgc2M2Y3+40Qc5XKY6sk/IHHHI4Dkid0dW6PAK+fwpE+nyY+
+9UAg2oVG7e5NO7T93SDF4iZdUFYMFve1EHPdayacf+BaLSAHfQSTfNq9EPgShIqq
+f9xSNXheIW20D26NNjVxFqXAQzxXDO4+tTNHZC8qyTr9Eulk0MZCjkBzh49COeCw
+fpumSqUrohGkBu6RkEgjAYwsIRZzT/mW+SGsOCQOBU5NfYuRsRl4h4jP7dEQXFBU
+LIRmbzFaJYVkFMhsT5P9XMcw/sAeSegpV/9YuKMS/7IH4UWN0S+YIVjN0mGWFt45
+8UE/S9c3C2zLMEtEFetAX+c+lg2xFWI46Jg+JPGtvuI1YFZ71xU6IWajK+ugK5ie
+GwtrGY/V1Q9S45R+18Ypau4mUIPovX7i3HrtFtCNxpceEC9TIfrbi33f1QFdpNSE
+sRWP699As3Qp7E9p4tdl6XpssC3GhohyvMNdBnr9D97gjtbp+ZC8bUDEhr0mMumb
+vdoC5B34gXUpW9yWwrQQzVWT4d8D9Q1HdR+rXhvI720uiAyqukedZgV1evM1lMN+
+VqHCqQ+mFU644jHWKAuMoOW638Gr1UDreQcGLExNW7u4zlp7hGc=
+=jPBn
+-----END PGP SIGNATURE-----
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c index 55=
-7b4ea..df0a1c0 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -87,6 +87,7 @@ struct fsl_pwm_chip {
-=20
- 	int period_ns;
-=20
-+	struct clk *ipg_clk;
- 	struct clk *clk[FSL_PWM_CLK_MAX];
- };
-=20
-@@ -99,14 +100,14 @@ static int fsl_pwm_request(struct pwm_chip *chip, stru=
-ct pwm_device *pwm)  {
- 	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-=20
--	return clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+	return clk_prepare_enable(fpc->ipg_clk);
- }
-=20
- static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)  {
- 	struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
-=20
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+	clk_disable_unprepare(fpc->ipg_clk);
- }
-=20
- static int fsl_pwm_calculate_default_ps(struct fsl_pwm_chip *fpc, @@ -363,=
-7 +364,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)  {
- 	int ret;
-=20
--	ret =3D clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+	ret =3D clk_prepare_enable(fpc->ipg_clk);
- 	if (ret)
- 		return ret;
-=20
-@@ -371,7 +372,7 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
- 	regmap_write(fpc->regmap, FTM_OUTINIT, 0x00);
- 	regmap_write(fpc->regmap, FTM_OUTMASK, 0xFF);
-=20
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+	clk_disable_unprepare(fpc->ipg_clk);
-=20
- 	return 0;
- }
-@@ -441,6 +442,15 @@ static int fsl_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]))
- 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]);
-=20
-+	/* ipg_clk is the interface clock for the IP.
-+	 * If not provided, use the ftm_sys clock as
-+	 * the default
-+	 */
-+	fpc->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
-+	if (IS_ERR(fpc->ipg_clk))
-+		fpc->ipg_clk =3D fpc->clk[FSL_PWM_CLK_SYS];
-+
-+
- 	fpc->chip.ops =3D &fsl_pwm_ops;
- 	fpc->chip.of_xlate =3D of_pwm_xlate_with_flags;
- 	fpc->chip.of_pwm_n_cells =3D 3;
-@@ -480,7 +490,7 @@ static int fsl_pwm_suspend(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
-=20
--		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+		clk_disable_unprepare(fpc->ipg_clk);
-=20
- 		if (!pwm_is_enabled(pwm))
- 			continue;
-@@ -503,7 +513,7 @@ static int fsl_pwm_resume(struct device *dev)
- 		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 			continue;
-=20
--		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+		clk_prepare_enable(fpc->ipg_clk);
-=20
- 		if (!pwm_is_enabled(pwm))
- 			continue;
---
-2.9.2
+--St7VIuEGZ6dlpu13--
