@@ -1,59 +1,60 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/2] pwm-tiehrpwm: fixes for disabling PWMs
-Date: Mon, 9 Jul 2018 18:58:46 +0200
-Message-ID: <20180709165846.GC26651@ulmo>
-References: <20180611060956.27999-1-vigneshr@ti.com>
+Subject: Re: [PATCH v2 6/8] pwm: cros-ec: Switch to SPDX identifier.
+Date: Mon, 9 Jul 2018 19:02:37 +0200
+Message-ID: <20180709170237.GE26651@ulmo>
+References: <20180605175429.9072-1-enric.balletbo@collabora.com>
+ <20180605175429.9072-7-enric.balletbo@collabora.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qtZFehHsKgwS5rPz"
+        protocol="application/pgp-signature"; boundary="47eKBCiAZYFK5l32"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180611060956.27999-1-vigneshr@ti.com>
+In-Reply-To: <20180605175429.9072-7-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>
-Cc: linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---qtZFehHsKgwS5rPz
+--47eKBCiAZYFK5l32
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 11, 2018 at 11:39:54AM +0530, Vignesh R wrote:
-> EHRPWM has two PWM outputs. Currently with pwm-tiehrpwm driver, if PWMA
-> is enabled and then disabled, and then PWMB is enabled, it is seen that
-> PWMA turns on automatically. This series fixes the bug.
+On Tue, Jun 05, 2018 at 07:54:27PM +0200, Enric Balletbo i Serra wrote:
+> Adopt the SPDX license identifier headers to ease license compliance
+> management.
 >=20
-> Vignesh R (2):
->   pwm: pwm-tiehrpwm: Don't use emulation mode bits to control PWM output
->   pwm: pwm-tiehrpwm: Fix disabling of output of PWMs
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> ---
 >=20
->  drivers/pwm/pwm-tiehrpwm.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
+> Changes in v2: None
+>=20
+>  drivers/pwm/pwm-cros-ec.c | 13 ++++---------
+>  1 file changed, 4 insertions(+), 9 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---qtZFehHsKgwS5rPz
+--47eKBCiAZYFK5l32
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltDlEYACgkQ3SOs138+
-s6GPIxAAtvbBhGo4Kk614u3dQM6GF4zNASDL37o87buK0flh7zac0nvaVs0GV3De
-P7BAj5Dir0zk03E4SwqWvM/Sg4ZVY/w/GP4oWWu7I9nWv6/KVmjg07fOhNuGZ3Cm
-POnixN3GP80JBkD9HXK4uvtGAnaKGOZnWHyMfp+a9+oMDJdT7U3uocPAvFzpnrm3
-QJjXOU8ETxLZzBU1Di/slXlcquzCyZmG0d2JFUco+sFy03FwQruSW4gy43CvscgI
-1z7wSwBb3vEnPgzZi9ipFItDDhsntIPuWeaKdPuf5VEr+pOd/Yk6gIhJAqMaLyrD
-W/jzSRortAb4qiZBT/SPYE73ST+z99Hy24LlSHe8B6u0gVzCM9nVKwGbWvlV2lHd
-43eLelo3jlACFVVoIdrBUle5pWDoJKBqeYRFG339nKuTP3/WJkBsAx3qUmAM8vJ6
-U9I+/UvACNXbo6g64udicy8oZNeHAAyqcRXRoNxjaWuwZKxbQtOh5j7Reom64ee0
-+Ul4gEIGcKkXXlmVhHuiA6+Ced5ST76cGf5Bg6VpeZzZ8Wmc2spdTxuicSul5dn9
-ctQM4fLbDDNdUCTkJh5zq7MDw/e+uVYfBXGApaQskzHI3Io+9QnAK7bTqkD8rEAz
-hbkvsxroglzqbj5xa8XCS7w/QMxUYeIkvEZN5FVUOLUpIdXHbVM=
-=ZWzG
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltDlS0ACgkQ3SOs138+
+s6E3ww//RSQdA4BEAn2Tz6L7FOULNUMCJN/itBVul55azU7X8RWi8Lf+3ED6/uFq
+napmFqadsFc7gaWtlb/Po5raIOkP6oFzIb6PIT77tdGSBgNSV5vTdTa7pnZO3Lwt
+fqbXS98nesKnLIMWPVOqVD0A5jxdAfhod20o9e4LUOqI/eM5o7WzktoJqaOU3q4R
+K7ec7S/jkvmHfoKHSVW13TJ7TETdNv2iUCxrRhtbMQLVvkxpQ/OU6CU0H/TC0CRj
+n5EiwxsyH9uKbbahC59JhaXBU/Hw3J08quyq8OlKNgBKcjbuqE/y75Y1tZeFEVhO
+9XuqtZwh4DqDsftcqCHYtpFk9heaNs1p9SQCRANK8M02dE2qXjbC12dJ8jtlt+7v
+ntvJmi7Fxx98ZdVVvXU3xAyHPYqVx/CvwuMk2K3hsJobanI+PYWrZthvaJSQZg1+
+HUJzbvq3kQ/uIHTcduB43kJOH+7gy0QEU/Tbg4XqvlDSqF1p8KnHV6RvJgQoG1LG
+m8nt58iVKzhuS+j92WO6fvj9t1V88hTgoXlWKimgAQf8H4h0I51FTAewFcFSrJPc
+k91fbvUkrXK3wkqPOFl/jh/jIHWP8KweCpv78dGScC34MKhAzfXaFgWmSq6fS2HU
+xD1T7yzpDCUHz22BLBgm9sVoiqRA557LiqZyZY5ySJ48BU5DaeE=
+=kgR/
 -----END PGP SIGNATURE-----
 
---qtZFehHsKgwS5rPz--
+--47eKBCiAZYFK5l32--
