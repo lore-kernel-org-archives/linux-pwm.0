@@ -1,50 +1,54 @@
-From: Shenwei Wang <shenwei.wang@nxp.com>
-Subject: RE: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface clock
-Date: Mon, 9 Jul 2018 19:00:34 +0000
-Message-ID: <HE1PR04MB32897C3E284B8E4B1A5530CB89440@HE1PR04MB3289.eurprd04.prod.outlook.com>
-References: <20180608192237.11063-1-shenwei.wang@nxp.com>
- <20180709170926.GF26651@ulmo>
+From: David Rivshin <drivshin@awxrd.com>
+Subject: [PATCH] pwm: pwm-omap-dmtimer: return -EPROBE_DEFER if no dmtimer
+ platform data
+Date: Thu, 12 Jul 2018 13:28:53 -0400
+Message-ID: <20180712172853.22293-1-drivshin@awxrd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180709170926.GF26651@ulmo>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Keerthy <j-keerthy@ti.com>, Ladislav Michl <ladis@linux-mips.org>, Neil Armstrong <narmstrong@baylibre.com>
+Cc: Tony Lindgren <tony@atomide.com>, linux-pwm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Thank you, Thierry.=20
-Have you also reviewed and accepted the other 3 patches in this serial?
+From: David Rivshin <DRivshin@allworx.com>
 
-Regards,
-Shenwei
+If a pwm-omap-dmtimer is probed before the dmtimer it uses, the platform
+data won't be set yet.
 
------Original Message-----
-From: Thierry Reding [mailto:thierry.reding@gmail.com]=20
-Sent: Monday, July 9, 2018 12:09 PM
-To: Shenwei Wang <shenwei.wang@nxp.com>
-Cc: linux-pwm@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; linux-kern=
-el@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] pwm: fsl-ftm: Added a dedicated IP interface cl=
-ock
+Fixes: ac30751df953 ("ARM: OMAP: pdata-quirks: Remove unused timer pdata")
+Cc: <stable@vger.kernel.org> # 4.17+
+Signed-off-by: David Rivshin <drivshin@allworx.com>
+---
+ drivers/pwm/pwm-omap-dmtimer.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-On Fri, Jun 08, 2018 at 02:22:34PM -0500, shenwei.wang@nxp.com wrote:
-> The current driver assumes that the ftm_sys clock works as one of the=20
-> clock sources for the IP block as well as the IP interface clock. This=20
-> assumption does not apply any more on the latest i.MX8x SoC family. On=20
-> i.MX8x SoCs, a dedicated IP interface clock is introduced and it must=20
-> be enabled before accessing any FTM registers. Moreover, the clock can=20
-> not be used as the source clock for the FTM IP block. This patch=20
-> introduces the ipg_clk as the dedicated IP interface clock and by=20
-> default it is the same as the ftm_sys clock if not specified.
->=20
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
-> ---
->  drivers/pwm/pwm-fsl-ftm.c | 22 ++++++++++++++++------
->  1 file changed, 16 insertions(+), 6 deletions(-)
+diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+index 665da3c8fbceb..d3d7ea7a53146 100644
+--- a/drivers/pwm/pwm-omap-dmtimer.c
++++ b/drivers/pwm/pwm-omap-dmtimer.c
+@@ -264,8 +264,9 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ 
+ 	timer_pdata = dev_get_platdata(&timer_pdev->dev);
+ 	if (!timer_pdata) {
+-		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
+-		ret = -EINVAL;
++		dev_info(&pdev->dev,
++			 "dmtimer pdata structure NULL, deferring probe\n");
++		ret = -EPROBE_DEFER;
+ 		goto put;
+ 	}
+ 
 
-Applied, thanks.
-
-Thierry
+base-commit: 1e4b044d22517cae7047c99038abb444423243ca
+-- 
+2.17.1
