@@ -1,74 +1,54 @@
-From: David Rivshin <drivshin@awxrd.com>
-Subject: Re: [PATCH] pwm-omap: handle timers not ready in probe
-Date: Mon, 16 Jul 2018 11:47:58 -0400
-Message-ID: <20180716114758.60a6a6cb.drivshin@awxrd.com>
-References: <20180709214910.tes6u4ivxomd3aja@earth.universe>
- <20180709220211.GA7760@amd>
- <20180710101147.lyu65ro4czvrs2da@earth.universe>
- <20180710133040.GA4391@amd>
- <20180710161123.azym6sbboriuj4yc@earth.universe>
- <20180711080218.GA21225@amd> <20180711132739.GL99251@atomide.com>
- <20180711142526.dto6iost57zx5t5l@earth.universe>
- <20180716071323.GB23110@amd> <20180716075740.GT99251@atomide.com>
- <20180716083720.GA3047@amd>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180716083720.GA3047@amd>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Pavel Machek <pavel@ucw.cz>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, mpartap@gmx.net, Tony Lindgren <tony@atomide.com>, merlijn@wizzup.org, Sebastian Reichel <sre@kernel.org>, kernel list <linux-kernel@vger.kernel.org>, nekit1000@gmail.com, linux-omap@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH] backlight: pwm_bl: Fix uninitialized variable
+Date: Mon, 16 Jul 2018 22:02:41 +0100
+Message-ID: <20180716210241.9457-1-daniel.thompson@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 16 Jul 2018 10:37:20 +0200
-Pavel Machek <pavel@ucw.cz> wrote:
+Currently, if the DT does not define num-interpolated-steps then
+num_steps is undefined and the interpolation code will deploy randomly.
+Fix this.
 
-> On Mon 2018-07-16 00:57:40, Tony Lindgren wrote:
-> > * Pavel Machek <pavel@ucw.cz> [180716 07:16]:  
-> > > 
-> > > When all the drivers are built-in, timers are not ready and probing
-> > > fails. Fix that with -EPROBE_DEFFER.
-> > > 
-> > > Signed-off-by: Pavel Machek <pavel@ucw.cz>
-> > > 
-> > > diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-> > > index 665da3c..debeb70 100644
-> > > --- a/drivers/pwm/pwm-omap-dmtimer.c
-> > > +++ b/drivers/pwm/pwm-omap-dmtimer.c
-> > > @@ -265,7 +271,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
-> > >  	timer_pdata = dev_get_platdata(&timer_pdev->dev);
-> > >  	if (!timer_pdata) {
-> > >  		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
-> > > -		ret = -EINVAL;
-> > > +		ret = -EPROBE_DEFER;
-> > >  		goto put;
-> > >  	}  
-> > 
-> > There seems to be an earlier similar patch, care to take a look
-> > at "[PATCH] pwm: pwm-omap-dmtimer: return -EPROBE_DEFER if no
-> > dmtimer platform data"?  
-> 
-> Yes, that one is equivalent.
-> 
-> You can add
-> 
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> Tested-by: Pavel Machek <pavel@ucw.cz>
-> 
-> on it.
-> 
-> Thanks,
-> 									Pavel
+Fixes: 573fe6d1c25c ("backlight: pwm_bl: Linear interpolation between
+brightness-levels")
+Reported-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+---
+ drivers/video/backlight/pwm_bl.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-Thanks Pavel. I hadn't been watching the Droid 4 threads, so I didn't 
-see you were hitting the same problem. I'm assuming the patch will go
-through the PWM tree, so copying in Thierry.
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 9ee4c1b735b2..e3c22b79fbcd 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -299,15 +299,14 @@ static int pwm_backlight_parse_dt(struct device *dev,
+ 		 * interpolation between each of the values of brightness levels
+ 		 * and creates a new pre-computed table.
+ 		 */
+-		of_property_read_u32(node, "num-interpolated-steps",
+-				     &num_steps);
+-
+-		/*
+-		 * Make sure that there is at least two entries in the
+-		 * brightness-levels table, otherwise we can't interpolate
+-		 * between two points.
+-		 */
+-		if (num_steps) {
++		if ((of_property_read_u32(node, "num-interpolated-steps",
++					  &num_steps) == 0) && num_steps) {
++			/*
++			 * Make sure that there is at least two entries in the
++			 * brightness-levels table, otherwise we can't
++			 * interpolate
++			 * between two points.
++			 */
+ 			if (data->max_brightness < 2) {
+ 				dev_err(dev, "can't interpolate\n");
+ 				return -EINVAL;
+--
+2.17.1
