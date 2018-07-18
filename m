@@ -1,92 +1,128 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 Subject: Re: [PATCH] backlight: pwm_bl: Fix uninitialized variable
-Date: Wed, 18 Jul 2018 10:53:35 +0100
-Message-ID: <20180718095335.GD4641@dell>
+Date: Wed, 18 Jul 2018 11:12:27 +0100
+Message-ID: <20180718101227.shqf54wpt4kdrsj2@holly.lan>
 References: <20180716210241.9457-1-daniel.thompson@linaro.org>
  <20180718080913.GB4641@dell>
  <1531902119.16896.13.camel@toradex.com>
+ <20180718095335.GD4641@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1531902119.16896.13.camel@toradex.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>, "b.zolnierkie@samsung.com" <b.zolnierkie@samsung.com>, "jingoohan1@gmail.com" <jingoohan1@gmail.com>, "patches@linaro.org" <patches@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
+In-Reply-To: <20180718095335.GD4641@dell>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jingoohan1@gmail.com" <jingoohan1@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "b.zolnierkie@samsung.com" <b.zolnierkie@samsung.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "patches@linaro.org" <patches@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCAxOCBKdWwgMjAxOCwgTWFyY2VsIFppc3dpbGVyIHdyb3RlOgoKPiBPbiBXZWQsIDIw
-MTgtMDctMTggYXQgMDk6MDkgKzAxMDAsIExlZSBKb25lcyB3cm90ZToKPiA+IE9uIE1vbiwgMTYg
-SnVsIDIwMTgsIERhbmllbCBUaG9tcHNvbiB3cm90ZToKPiA+IAo+ID4gPiBDdXJyZW50bHksIGlm
-IHRoZSBEVCBkb2VzIG5vdCBkZWZpbmUgbnVtLWludGVycG9sYXRlZC1zdGVwcyB0aGVuCj4gPiA+
-IG51bV9zdGVwcyBpcyB1bmRlZmluZWQgYW5kIHRoZSBpbnRlcnBvbGF0aW9uIGNvZGUgd2lsbCBk
-ZXBsb3kKPiA+ID4gcmFuZG9tbHkuCj4gPiA+IEZpeCB0aGlzLgo+ID4gPiAKPiA+ID4gRml4ZXM6
-IDU3M2ZlNmQxYzI1YyAoImJhY2tsaWdodDogcHdtX2JsOiBMaW5lYXIgaW50ZXJwb2xhdGlvbgo+
-ID4gPiBiZXR3ZWVuCj4gPiA+IGJyaWdodG5lc3MtbGV2ZWxzIikKPiA+ID4gUmVwb3J0ZWQtYnk6
-IE1hcmNlbCBaaXN3aWxlciA8bWFyY2VsLnppc3dpbGVyQHRvcmFkZXguY29tPgo+ID4gPiBTaWdu
-ZWQtb2ZmLWJ5OiBEYW5pZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPgo+
-ID4gPiBTaWduZWQtb2ZmLWJ5OiBNYXJjZWwgWmlzd2lsZXIgPG1hcmNlbC56aXN3aWxlckB0b3Jh
-ZGV4LmNvbT4KPiA+IAo+ID4gVGhpcyBsaW5lIGlzIGNvbmZ1c2luZy4gIERpZCB5b3UgZ3V5cyBh
-dXRob3IgdGhpcyBwYXRjaCB0b2dldGhlcj8KPiAKPiBZZXMsIEkgcmVwb3J0ZWQgaXQgYW5kIHdl
-IGNhbWUgdG8gYSBjb25jbHVzaW9uIHRvZ2V0aGVyLgoKSXQgc291bmRzIGxpa2UgeW91IG5lZWQg
-dG8gaGF2ZSBhbGwgb2YgdGhlIHRhZ3MgKGV4Y2VwdCB0aGlzIG9uZSkuIDopCgogUmVwb3J0ZWQt
-Ynk6ICBmb3IgcmVwb3J0aW5nIHRoZSBpc3N1ZQogU3VnZ2VzdGVkLWJ5OiBmb3Igc3VnZ2VzdGlu
-ZyBhIHJlc29sdXRpb24KIEFja2VkLWJ5OiAgICAgZm9yIHJldmlld2luZyBpdAogVGVzdGVkLWJ5
-OiAgICBmb3IgdGVzdGluZyBpdAoKU2lnbmVkLW9mZi1ieSB1c3VhbGx5IG1lYW5zIHlvdSBlaXRo
-ZXIgd3JvdGUgYSBzaWduaWZpY2FudCBhbW91bnQgb2YKdGhlIGRpZmZzdGF0IG9yIHlvdSB3ZXJl
-IHBhcnQgb2YgdGhlIHN1Ym1pc3Npb24gcGF0aC4KCj4gPiBNeSBndWVzcyBpcyB0aGF0IHRoaXMg
-bGluZSBzaG91bGQgYmUgZHJvcHBlZCBhbmQgdGhlIFJCIGFuZCBUQiB0YWdzCj4gPiBzaG91bGQg
-cmVtYWluPyAgSWYgaXQgd2FzIHJldmlld2VkIHRvbywgcGVyaGFwcyBhbiBBQiB0b28/Cj4gCj4g
-SSdtIE9LIGVpdGhlciB3YXkgYW5kIGRvIG5vdCBuZWVkIGFueSBleHBsaWNpdCBhdXRob3JzaGlw
-IHRvIGJlCj4gZXhwcmVzc2VkIGZvciBtZS4KCkluIHRoaXMgaW5zdGFuY2UgSSBzdWdnZXN0IGtl
-ZXBpbmcgUmVwb3J0ZWQtYnkgYW5kIFRlc3RlZC1ieS4KCj4gPiA+IFRlc3RlZC1ieTogTWFyY2Vs
-IFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+Cj4gPiA+IC0tLQo+ID4gPiAg
-ZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCAxNyArKysrKysrKy0tLS0tLS0tLQo+
-ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKPiA+
-ID4gCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+
-ID4gPiBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gPiA+IGluZGV4IDllZTRj
-MWI3MzViMi4uZTNjMjJiNzlmYmNkIDEwMDY0NAo+ID4gPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2Jh
-Y2tsaWdodC9wd21fYmwuYwo+ID4gPiArKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
-YmwuYwo+ID4gPiBAQCAtMjk5LDE1ICsyOTksMTQgQEAgc3RhdGljIGludCBwd21fYmFja2xpZ2h0
-X3BhcnNlX2R0KHN0cnVjdAo+ID4gPiBkZXZpY2UgKmRldiwKPiA+ID4gIAkJICogaW50ZXJwb2xh
-dGlvbiBiZXR3ZWVuIGVhY2ggb2YgdGhlIHZhbHVlcyBvZgo+ID4gPiBicmlnaHRuZXNzIGxldmVs
-cwo+ID4gPiAgCQkgKiBhbmQgY3JlYXRlcyBhIG5ldyBwcmUtY29tcHV0ZWQgdGFibGUuCj4gPiA+
-ICAJCSAqLwo+ID4gPiAtCQlvZl9wcm9wZXJ0eV9yZWFkX3UzMihub2RlLCAibnVtLWludGVycG9s
-YXRlZC0KPiA+ID4gc3RlcHMiLAo+ID4gPiAtCQkJCSAgICAgJm51bV9zdGVwcyk7Cj4gPiA+IC0K
-PiA+ID4gLQkJLyoKPiA+ID4gLQkJICogTWFrZSBzdXJlIHRoYXQgdGhlcmUgaXMgYXQgbGVhc3Qg
-dHdvIGVudHJpZXMgaW4KPiA+ID4gdGhlCj4gPiA+IC0JCSAqIGJyaWdodG5lc3MtbGV2ZWxzIHRh
-YmxlLCBvdGhlcndpc2Ugd2UgY2FuJ3QKPiA+ID4gaW50ZXJwb2xhdGUKPiA+ID4gLQkJICogYmV0
-d2VlbiB0d28gcG9pbnRzLgo+ID4gPiAtCQkgKi8KPiA+ID4gLQkJaWYgKG51bV9zdGVwcykgewo+
-ID4gPiArCQlpZiAoKG9mX3Byb3BlcnR5X3JlYWRfdTMyKG5vZGUsICJudW0taW50ZXJwb2xhdGVk
-LQo+ID4gPiBzdGVwcyIsCj4gPiA+ICsJCQkJCSAgJm51bV9zdGVwcykgPT0gMCkgJiYKPiA+ID4g
-bnVtX3N0ZXBzKSB7Cj4gPiAKPiA+IFRoaXMgaXMgcHJldHR5IHVnbHksIGFuZCBpc24ndCBpdCBz
-dWZmZXJpbmcgZnJvbSBvdmVyLWJyYWNrZXRpbmc/ICBNeQo+ID4gc3VnZ2VzdGlvbiB3b3VsZCBi
-ZSB0byBicmVhayBvdXQgdGhlIGludm9jYXRpb24gb2YKPiA+IG9mX3Byb3BlcnR5X3JlYWRfdTMy
-KCkgZnJvbSB0aGUgaWYgYW5kIHRlc3Qgb25seSB0aGUgcmVzdWx0Lgo+ID4gCj4gPiAJCW9mX3By
-b3BlcnR5X3JlYWRfdTMyKG5vZGUsICJudW0taW50ZXJwb2xhdGVkLXN0ZXBzIiwgCj4gPiAmbnVt
-X3N0ZXBzKTsKPiAKPiB5b3UgbWVhbjoKPiAKPiAJCXJldCA9IG9mX3Byb3BlcnR5X3JlYWRfdTMy
-KG5vZGUsICJudW0taW50ZXJwb2xhdGVkLQo+IHN0ZXBzIiwgJm51bV9zdGVwcyk7Cj4gCj4gPiAJ
-CWlmICghcmV0ICYmIG51bV9zdGVwcykgewo+ID4gCj4gPiBJIGhhdmVuJ3QgY2hlY2tlZCB0aGUg
-dW5kZXJsaW5nIGNvZGUsIGJ1dCBpcyBpdCBldmVuIGZlYXNpYmxlIGZvcgo+ID4gb2ZfcHJvcGVy
-dHlfcmVhZF91MzIoKSB0byBub3Qgc3VjY2VlZCBBTkQgZm9yIG51bV9zdGVwcyB0byBiZSBzZXQ/
-Cj4gPiAKPiA+IElmIG5vdCwgdGhlIGNoZWNrIGZvciAhcmV0IGlmIHN1cGVyZmx1b3VzIGFuZCB5
-b3UgY2FuIGRyb3AgaXQuCj4gCj4gTm8sIHRoZW4gd2UgYXJlIGJhY2sgdG8gdGhlIGluaXRpYWwg
-aXNzdWUgb2YgbnVtX3N0ZXBzIHBvdGVudGlhbGx5IG5vdAo+IGJlaW5nIGluaXRpYWxpc2VkLiBX
-ZSByZWFsbHkgd2FudCBib3RoIG9mX3Byb3BlcnR5X3JlYWRfdTMyKCkgdG8KPiBzdWNjZWVkIEFO
-RCBudW1fc3RlcHMgdG8gYWN0dWFsbHkgYmUgc2V0LgoKSSBhbHNvIHRoaW5rIG51bV9zdGVwcyBz
-aG91bGQgYmUgcHJlLWluaXRpYWxpc2VkLgoKVGhlbiBpdCB3aWxsIG9ubHkgYmUgc2V0IGlmIG9m
-X3Byb3BlcnR5X3JlYWRfdTMyKCkgc3VjY2VlZHMuCgotLSAKTGVlIEpvbmVzIFvmnY7nkLzmlq9d
-CkxpbmFybyBTZXJ2aWNlcyBUZWNobmljYWwgTGVhZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJj
-ZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVy
-IHwgQmxvZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpk
-cmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0
-cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Wed, Jul 18, 2018 at 10:53:35AM +0100, Lee Jones wrote:
+> On Wed, 18 Jul 2018, Marcel Ziswiler wrote:
+> 
+> > On Wed, 2018-07-18 at 09:09 +0100, Lee Jones wrote:
+> > > On Mon, 16 Jul 2018, Daniel Thompson wrote:
+> > > 
+> > > > Currently, if the DT does not define num-interpolated-steps then
+> > > > num_steps is undefined and the interpolation code will deploy
+> > > > randomly.
+> > > > Fix this.
+> > > > 
+> > > > Fixes: 573fe6d1c25c ("backlight: pwm_bl: Linear interpolation
+> > > > between
+> > > > brightness-levels")
+> > > > Reported-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> > > > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> > > > Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> > > 
+> > > This line is confusing.  Did you guys author this patch together?
+> > 
+> > Yes, I reported it and we came to a conclusion together.
+> 
+> It sounds like you need to have all of the tags (except this one). :)
+> 
+>  Reported-by:  for reporting the issue
+>  Suggested-by: for suggesting a resolution
+>  Acked-by:     for reviewing it
+>  Tested-by:    for testing it
+> 
+> Signed-off-by usually means you either wrote a significant amount of
+> the diffstat or you were part of the submission path.
+
+He did [I don't object to but wouldn't have used the extra brackets you
+brought up ;-) ].
+
+> 
+> > > My guess is that this line should be dropped and the RB and TB tags
+> > > should remain?  If it was reviewed too, perhaps an AB too?
+> > 
+> > I'm OK either way and do not need any explicit authorship to be
+> > expressed for me.
+> 
+> In this instance I suggest keeping Reported-by and Tested-by.
+> 
+> > > > Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> > > > ---
+> > > >  drivers/video/backlight/pwm_bl.c | 17 ++++++++---------
+> > > >  1 file changed, 8 insertions(+), 9 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/video/backlight/pwm_bl.c
+> > > > b/drivers/video/backlight/pwm_bl.c
+> > > > index 9ee4c1b735b2..e3c22b79fbcd 100644
+> > > > --- a/drivers/video/backlight/pwm_bl.c
+> > > > +++ b/drivers/video/backlight/pwm_bl.c
+> > > > @@ -299,15 +299,14 @@ static int pwm_backlight_parse_dt(struct
+> > > > device *dev,
+> > > >  		 * interpolation between each of the values of
+> > > > brightness levels
+> > > >  		 * and creates a new pre-computed table.
+> > > >  		 */
+> > > > -		of_property_read_u32(node, "num-interpolated-
+> > > > steps",
+> > > > -				     &num_steps);
+> > > > -
+> > > > -		/*
+> > > > -		 * Make sure that there is at least two entries in
+> > > > the
+> > > > -		 * brightness-levels table, otherwise we can't
+> > > > interpolate
+> > > > -		 * between two points.
+> > > > -		 */
+> > > > -		if (num_steps) {
+> > > > +		if ((of_property_read_u32(node, "num-interpolated-
+> > > > steps",
+> > > > +					  &num_steps) == 0) &&
+> > > > num_steps) {
+> > > 
+> > > This is pretty ugly, and isn't it suffering from over-bracketing?  My
+> > > suggestion would be to break out the invocation of
+> > > of_property_read_u32() from the if and test only the result.
+> > > 
+> > > 		of_property_read_u32(node, "num-interpolated-steps", 
+> > > &num_steps);
+> > 
+> > you mean:
+> > 
+> > 		ret = of_property_read_u32(node, "num-interpolated-
+> > steps", &num_steps);
+> > 
+> > > 		if (!ret && num_steps) {
+> > > 
+> > > I haven't checked the underling code, but is it even feasible for
+> > > of_property_read_u32() to not succeed AND for num_steps to be set?
+> > > 
+> > > If not, the check for !ret if superfluous and you can drop it.
+> > 
+> > No, then we are back to the initial issue of num_steps potentially not
+> > being initialised. We really want both of_property_read_u32() to
+> > succeed AND num_steps to actually be set.
+> 
+> I also think num_steps should be pre-initialised.
+> 
+> Then it will only be set if of_property_read_u32() succeeds.
+> 
+> -- 
+> Lee Jones [李琼斯]
+> Linaro Services Technical Lead
+> Linaro.org │ Open source software for ARM SoCs
+> Follow Linaro: Facebook | Twitter | Blog
