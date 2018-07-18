@@ -1,128 +1,104 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 Subject: Re: [PATCH] backlight: pwm_bl: Fix uninitialized variable
-Date: Wed, 18 Jul 2018 11:12:27 +0100
-Message-ID: <20180718101227.shqf54wpt4kdrsj2@holly.lan>
+Date: Wed, 18 Jul 2018 12:57:08 +0000
+Message-ID: <1531918626.16896.22.camel@toradex.com>
 References: <20180716210241.9457-1-daniel.thompson@linaro.org>
- <20180718080913.GB4641@dell>
- <1531902119.16896.13.camel@toradex.com>
- <20180718095335.GD4641@dell>
+         <20180718080913.GB4641@dell> <1531902119.16896.13.camel@toradex.com>
+         <20180718095335.GD4641@dell> <20180718101227.shqf54wpt4kdrsj2@holly.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180718095335.GD4641@dell>
+In-Reply-To: <20180718101227.shqf54wpt4kdrsj2@holly.lan>
+Content-Language: en-US
+Content-ID: <86CFB1BC0835954B8309CFE36E11BA92@eurprd05.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jingoohan1@gmail.com" <jingoohan1@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "b.zolnierkie@samsung.com" <b.zolnierkie@samsung.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "patches@linaro.org" <patches@linaro.org>
+To: "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>, "lee.jones@linaro.org" <lee.jones@linaro.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jingoohan1@gmail.com" <jingoohan1@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "b.zolnierkie@samsung.com" <b.zolnierkie@samsung.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "patches@linaro.org" <patches@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Jul 18, 2018 at 10:53:35AM +0100, Lee Jones wrote:
-> On Wed, 18 Jul 2018, Marcel Ziswiler wrote:
-> 
-> > On Wed, 2018-07-18 at 09:09 +0100, Lee Jones wrote:
-> > > On Mon, 16 Jul 2018, Daniel Thompson wrote:
-> > > 
-> > > > Currently, if the DT does not define num-interpolated-steps then
-> > > > num_steps is undefined and the interpolation code will deploy
-> > > > randomly.
-> > > > Fix this.
-> > > > 
-> > > > Fixes: 573fe6d1c25c ("backlight: pwm_bl: Linear interpolation
-> > > > between
-> > > > brightness-levels")
-> > > > Reported-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> > > > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> > > > Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> > > 
-> > > This line is confusing.  Did you guys author this patch together?
-> > 
-> > Yes, I reported it and we came to a conclusion together.
-> 
-> It sounds like you need to have all of the tags (except this one). :)
-> 
->  Reported-by:  for reporting the issue
->  Suggested-by: for suggesting a resolution
->  Acked-by:     for reviewing it
->  Tested-by:    for testing it
-> 
-> Signed-off-by usually means you either wrote a significant amount of
-> the diffstat or you were part of the submission path.
-
-He did [I don't object to but wouldn't have used the extra brackets you
-brought up ;-) ].
-
-> 
-> > > My guess is that this line should be dropped and the RB and TB tags
-> > > should remain?  If it was reviewed too, perhaps an AB too?
-> > 
-> > I'm OK either way and do not need any explicit authorship to be
-> > expressed for me.
-> 
-> In this instance I suggest keeping Reported-by and Tested-by.
-> 
-> > > > Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> > > > ---
-> > > >  drivers/video/backlight/pwm_bl.c | 17 ++++++++---------
-> > > >  1 file changed, 8 insertions(+), 9 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/video/backlight/pwm_bl.c
-> > > > b/drivers/video/backlight/pwm_bl.c
-> > > > index 9ee4c1b735b2..e3c22b79fbcd 100644
-> > > > --- a/drivers/video/backlight/pwm_bl.c
-> > > > +++ b/drivers/video/backlight/pwm_bl.c
-> > > > @@ -299,15 +299,14 @@ static int pwm_backlight_parse_dt(struct
-> > > > device *dev,
-> > > >  		 * interpolation between each of the values of
-> > > > brightness levels
-> > > >  		 * and creates a new pre-computed table.
-> > > >  		 */
-> > > > -		of_property_read_u32(node, "num-interpolated-
-> > > > steps",
-> > > > -				     &num_steps);
-> > > > -
-> > > > -		/*
-> > > > -		 * Make sure that there is at least two entries in
-> > > > the
-> > > > -		 * brightness-levels table, otherwise we can't
-> > > > interpolate
-> > > > -		 * between two points.
-> > > > -		 */
-> > > > -		if (num_steps) {
-> > > > +		if ((of_property_read_u32(node, "num-interpolated-
-> > > > steps",
-> > > > +					  &num_steps) == 0) &&
-> > > > num_steps) {
-> > > 
-> > > This is pretty ugly, and isn't it suffering from over-bracketing?  My
-> > > suggestion would be to break out the invocation of
-> > > of_property_read_u32() from the if and test only the result.
-> > > 
-> > > 		of_property_read_u32(node, "num-interpolated-steps", 
-> > > &num_steps);
-> > 
-> > you mean:
-> > 
-> > 		ret = of_property_read_u32(node, "num-interpolated-
-> > steps", &num_steps);
-> > 
-> > > 		if (!ret && num_steps) {
-> > > 
-> > > I haven't checked the underling code, but is it even feasible for
-> > > of_property_read_u32() to not succeed AND for num_steps to be set?
-> > > 
-> > > If not, the check for !ret if superfluous and you can drop it.
-> > 
-> > No, then we are back to the initial issue of num_steps potentially not
-> > being initialised. We really want both of_property_read_u32() to
-> > succeed AND num_steps to actually be set.
-> 
-> I also think num_steps should be pre-initialised.
-> 
-> Then it will only be set if of_property_read_u32() succeeds.
-> 
-> -- 
-> Lee Jones [李琼斯]
-> Linaro Services Technical Lead
-> Linaro.org │ Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+T24gV2VkLCAyMDE4LTA3LTE4IGF0IDExOjEyICswMTAwLCBEYW5pZWwgVGhvbXBzb24gd3JvdGU6
+DQo+IE9uIFdlZCwgSnVsIDE4LCAyMDE4IGF0IDEwOjUzOjM1QU0gKzAxMDAsIExlZSBKb25lcyB3
+cm90ZToNCj4gPiBPbiBXZWQsIDE4IEp1bCAyMDE4LCBNYXJjZWwgWmlzd2lsZXIgd3JvdGU6DQo+
+ID4gDQo+ID4gPiBPbiBXZWQsIDIwMTgtMDctMTggYXQgMDk6MDkgKzAxMDAsIExlZSBKb25lcyB3
+cm90ZToNCj4gPiA+ID4gT24gTW9uLCAxNiBKdWwgMjAxOCwgRGFuaWVsIFRob21wc29uIHdyb3Rl
+Og0KPiA+ID4gPiANCj4gPiA+ID4gPiBDdXJyZW50bHksIGlmIHRoZSBEVCBkb2VzIG5vdCBkZWZp
+bmUgbnVtLWludGVycG9sYXRlZC1zdGVwcw0KPiA+ID4gPiA+IHRoZW4NCj4gPiA+ID4gPiBudW1f
+c3RlcHMgaXMgdW5kZWZpbmVkIGFuZCB0aGUgaW50ZXJwb2xhdGlvbiBjb2RlIHdpbGwgZGVwbG95
+DQo+ID4gPiA+ID4gcmFuZG9tbHkuDQo+ID4gPiA+ID4gRml4IHRoaXMuDQo+ID4gPiA+ID4gDQo+
+ID4gPiA+ID4gRml4ZXM6IDU3M2ZlNmQxYzI1YyAoImJhY2tsaWdodDogcHdtX2JsOiBMaW5lYXIg
+aW50ZXJwb2xhdGlvbg0KPiA+ID4gPiA+IGJldHdlZW4NCj4gPiA+ID4gPiBicmlnaHRuZXNzLWxl
+dmVscyIpDQo+ID4gPiA+ID4gUmVwb3J0ZWQtYnk6IE1hcmNlbCBaaXN3aWxlciA8bWFyY2VsLnpp
+c3dpbGVyQHRvcmFkZXguY29tPg0KPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IERhbmllbCBUaG9t
+cHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+DQo+ID4gPiA+ID4gU2lnbmVkLW9mZi1i
+eTogTWFyY2VsIFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+DQo+ID4gPiA+
+IA0KPiA+ID4gPiBUaGlzIGxpbmUgaXMgY29uZnVzaW5nLiAgRGlkIHlvdSBndXlzIGF1dGhvciB0
+aGlzIHBhdGNoDQo+ID4gPiA+IHRvZ2V0aGVyPw0KPiA+ID4gDQo+ID4gPiBZZXMsIEkgcmVwb3J0
+ZWQgaXQgYW5kIHdlIGNhbWUgdG8gYSBjb25jbHVzaW9uIHRvZ2V0aGVyLg0KPiA+IA0KPiA+IEl0
+IHNvdW5kcyBsaWtlIHlvdSBuZWVkIHRvIGhhdmUgYWxsIG9mIHRoZSB0YWdzIChleGNlcHQgdGhp
+cyBvbmUpLg0KPiA+IDopDQo+ID4gDQo+ID4gIFJlcG9ydGVkLWJ5OiAgZm9yIHJlcG9ydGluZyB0
+aGUgaXNzdWUNCj4gPiAgU3VnZ2VzdGVkLWJ5OiBmb3Igc3VnZ2VzdGluZyBhIHJlc29sdXRpb24N
+Cj4gPiAgQWNrZWQtYnk6ICAgICBmb3IgcmV2aWV3aW5nIGl0DQo+ID4gIFRlc3RlZC1ieTogICAg
+Zm9yIHRlc3RpbmcgaXQNCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5IHVzdWFsbHkgbWVhbnMgeW91
+IGVpdGhlciB3cm90ZSBhIHNpZ25pZmljYW50IGFtb3VudA0KPiA+IG9mDQo+ID4gdGhlIGRpZmZz
+dGF0IG9yIHlvdSB3ZXJlIHBhcnQgb2YgdGhlIHN1Ym1pc3Npb24gcGF0aC4NCj4gDQo+IEhlIGRp
+ZCBbSSBkb24ndCBvYmplY3QgdG8gYnV0IHdvdWxkbid0IGhhdmUgdXNlZCB0aGUgZXh0cmEgYnJh
+Y2tldHMNCj4geW91DQo+IGJyb3VnaHQgdXAgOy0pIF0uDQoNClllcywgSSB0YWtlIGFsbCB0aGUg
+YmxhbWUgZm9yIHRoZSBleHRyYSBicmFja2V0cy4gUmVnYXJkbGVzcyBvZiBoYXZpbmcNCmEgbWFz
+dGVycyBpbiBDUyBvciBub3QgSSBzdGlsbCBwcmVmZXIgdG9vIG1hbnkgdGhlbiB0b28gZmV3IG9m
+IHRoZW0gKDstDQpwKS4NCg0KPiA+ID4gPiBNeSBndWVzcyBpcyB0aGF0IHRoaXMgbGluZSBzaG91
+bGQgYmUgZHJvcHBlZCBhbmQgdGhlIFJCIGFuZCBUQg0KPiA+ID4gPiB0YWdzDQo+ID4gPiA+IHNo
+b3VsZCByZW1haW4/ICBJZiBpdCB3YXMgcmV2aWV3ZWQgdG9vLCBwZXJoYXBzIGFuIEFCIHRvbz8N
+Cj4gPiA+IA0KPiA+ID4gSSdtIE9LIGVpdGhlciB3YXkgYW5kIGRvIG5vdCBuZWVkIGFueSBleHBs
+aWNpdCBhdXRob3JzaGlwIHRvIGJlDQo+ID4gPiBleHByZXNzZWQgZm9yIG1lLg0KPiA+IA0KPiA+
+IEluIHRoaXMgaW5zdGFuY2UgSSBzdWdnZXN0IGtlZXBpbmcgUmVwb3J0ZWQtYnkgYW5kIFRlc3Rl
+ZC1ieS4NCj4gPiANCj4gPiA+ID4gPiBUZXN0ZWQtYnk6IE1hcmNlbCBaaXN3aWxlciA8bWFyY2Vs
+Lnppc3dpbGVyQHRvcmFkZXguY29tPg0KPiA+ID4gPiA+IC0tLQ0KPiA+ID4gPiA+ICBkcml2ZXJz
+L3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyB8IDE3ICsrKysrKysrLS0tLS0tLS0tDQo+ID4gPiA+
+ID4gIDEgZmlsZSBjaGFuZ2VkLCA4IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pDQo+ID4g
+PiA+ID4gDQo+ID4gPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
+bV9ibC5jDQo+ID4gPiA+ID4gYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYw0KPiA+
+ID4gPiA+IGluZGV4IDllZTRjMWI3MzViMi4uZTNjMjJiNzlmYmNkIDEwMDY0NA0KPiA+ID4gPiA+
+IC0tLSBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jDQo+ID4gPiA+ID4gKysrIGIv
+ZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMNCj4gPiA+ID4gPiBAQCAtMjk5LDE1ICsy
+OTksMTQgQEAgc3RhdGljIGludA0KPiA+ID4gPiA+IHB3bV9iYWNrbGlnaHRfcGFyc2VfZHQoc3Ry
+dWN0DQo+ID4gPiA+ID4gZGV2aWNlICpkZXYsDQo+ID4gPiA+ID4gIAkJICogaW50ZXJwb2xhdGlv
+biBiZXR3ZWVuIGVhY2ggb2YgdGhlIHZhbHVlcw0KPiA+ID4gPiA+IG9mDQo+ID4gPiA+ID4gYnJp
+Z2h0bmVzcyBsZXZlbHMNCj4gPiA+ID4gPiAgCQkgKiBhbmQgY3JlYXRlcyBhIG5ldyBwcmUtY29t
+cHV0ZWQgdGFibGUuDQo+ID4gPiA+ID4gIAkJICovDQo+ID4gPiA+ID4gLQkJb2ZfcHJvcGVydHlf
+cmVhZF91MzIobm9kZSwgIm51bS0NCj4gPiA+ID4gPiBpbnRlcnBvbGF0ZWQtDQo+ID4gPiA+ID4g
+c3RlcHMiLA0KPiA+ID4gPiA+IC0JCQkJICAgICAmbnVtX3N0ZXBzKTsNCj4gPiA+ID4gPiAtDQo+
+ID4gPiA+ID4gLQkJLyoNCj4gPiA+ID4gPiAtCQkgKiBNYWtlIHN1cmUgdGhhdCB0aGVyZSBpcyBh
+dCBsZWFzdCB0d28NCj4gPiA+ID4gPiBlbnRyaWVzIGluDQo+ID4gPiA+ID4gdGhlDQo+ID4gPiA+
+ID4gLQkJICogYnJpZ2h0bmVzcy1sZXZlbHMgdGFibGUsIG90aGVyd2lzZSB3ZQ0KPiA+ID4gPiA+
+IGNhbid0DQo+ID4gPiA+ID4gaW50ZXJwb2xhdGUNCj4gPiA+ID4gPiAtCQkgKiBiZXR3ZWVuIHR3
+byBwb2ludHMuDQo+ID4gPiA+ID4gLQkJICovDQo+ID4gPiA+ID4gLQkJaWYgKG51bV9zdGVwcykg
+ew0KPiA+ID4gPiA+ICsJCWlmICgob2ZfcHJvcGVydHlfcmVhZF91MzIobm9kZSwgIm51bS0NCj4g
+PiA+ID4gPiBpbnRlcnBvbGF0ZWQtDQo+ID4gPiA+ID4gc3RlcHMiLA0KPiA+ID4gPiA+ICsJCQkJ
+CSAgJm51bV9zdGVwcykgPT0gMCkNCj4gPiA+ID4gPiAmJg0KPiA+ID4gPiA+IG51bV9zdGVwcykg
+ew0KPiA+ID4gPiANCj4gPiA+ID4gVGhpcyBpcyBwcmV0dHkgdWdseSwgYW5kIGlzbid0IGl0IHN1
+ZmZlcmluZyBmcm9tIG92ZXItDQo+ID4gPiA+IGJyYWNrZXRpbmc/ICBNeQ0KPiA+ID4gPiBzdWdn
+ZXN0aW9uIHdvdWxkIGJlIHRvIGJyZWFrIG91dCB0aGUgaW52b2NhdGlvbiBvZg0KPiA+ID4gPiBv
+Zl9wcm9wZXJ0eV9yZWFkX3UzMigpIGZyb20gdGhlIGlmIGFuZCB0ZXN0IG9ubHkgdGhlIHJlc3Vs
+dC4NCj4gPiA+ID4gDQo+ID4gPiA+IAkJb2ZfcHJvcGVydHlfcmVhZF91MzIobm9kZSwgIm51bS1p
+bnRlcnBvbGF0ZWQtDQo+ID4gPiA+IHN0ZXBzIiwgDQo+ID4gPiA+ICZudW1fc3RlcHMpOw0KPiA+
+ID4gDQo+ID4gPiB5b3UgbWVhbjoNCj4gPiA+IA0KPiA+ID4gCQlyZXQgPSBvZl9wcm9wZXJ0eV9y
+ZWFkX3UzMihub2RlLCAibnVtLWludGVycG9sYXRlZC0NCj4gPiA+IHN0ZXBzIiwgJm51bV9zdGVw
+cyk7DQo+ID4gPiANCj4gPiA+ID4gCQlpZiAoIXJldCAmJiBudW1fc3RlcHMpIHsNCj4gPiA+ID4g
+DQo+ID4gPiA+IEkgaGF2ZW4ndCBjaGVja2VkIHRoZSB1bmRlcmxpbmcgY29kZSwgYnV0IGlzIGl0
+IGV2ZW4gZmVhc2libGUNCj4gPiA+ID4gZm9yDQo+ID4gPiA+IG9mX3Byb3BlcnR5X3JlYWRfdTMy
+KCkgdG8gbm90IHN1Y2NlZWQgQU5EIGZvciBudW1fc3RlcHMgdG8gYmUNCj4gPiA+ID4gc2V0Pw0K
+PiA+ID4gPiANCj4gPiA+ID4gSWYgbm90LCB0aGUgY2hlY2sgZm9yICFyZXQgaWYgc3VwZXJmbHVv
+dXMgYW5kIHlvdSBjYW4gZHJvcCBpdC4NCj4gPiA+IA0KPiA+ID4gTm8sIHRoZW4gd2UgYXJlIGJh
+Y2sgdG8gdGhlIGluaXRpYWwgaXNzdWUgb2YgbnVtX3N0ZXBzDQo+ID4gPiBwb3RlbnRpYWxseSBu
+b3QNCj4gPiA+IGJlaW5nIGluaXRpYWxpc2VkLiBXZSByZWFsbHkgd2FudCBib3RoIG9mX3Byb3Bl
+cnR5X3JlYWRfdTMyKCkgdG8NCj4gPiA+IHN1Y2NlZWQgQU5EIG51bV9zdGVwcyB0byBhY3R1YWxs
+eSBiZSBzZXQuDQo+ID4gDQo+ID4gSSBhbHNvIHRoaW5rIG51bV9zdGVwcyBzaG91bGQgYmUgcHJl
+LWluaXRpYWxpc2VkLg0KDQpZZXMsIEkgZ3Vlc3MgaXQgZGVmaW5pdGVseSBkb2VzIG5vdCBodXJ0
+Lg0KDQo+ID4gVGhlbiBpdCB3aWxsIG9ubHkgYmUgc2V0IGlmIG9mX3Byb3BlcnR5X3JlYWRfdTMy
+KCkgc3VjY2VlZHMuDQoNClllcywgYnV0IHdlIHN0aWxsIG5lZWQgdG8gY2hlY2sgZm9yIGJvdGgs
+IHRoZSBmdW5jdGlvbiBub3QgZmFpbGluZyBhbmQNCm51bV9zdGVwcyB0byBhY3R1YWxseSBiZSBu
+b24gemVyby4NCg0KPiA+IC0tIA0KPiA+IExlZSBKb25lcyBb5p2O55C85pavXQ0KPiA+IExpbmFy
+byBTZXJ2aWNlcyBUZWNobmljYWwgTGVhZA0KPiA+IExpbmFyby5vcmcg4pSCIE9wZW4gc291cmNl
+IHNvZnR3YXJlIGZvciBBUk0gU29Dcw0KPiA+IEZvbGxvdyBMaW5hcm86IEZhY2Vib29rIHwgVHdp
+dHRlciB8IEJsb2c=
