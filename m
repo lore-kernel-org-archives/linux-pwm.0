@@ -1,64 +1,29 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RESEND PATCH] Revert "pwm: Set class for exported channels in sysfs"
-Date: Fri, 20 Jul 2018 09:27:25 +0200
-Message-ID: <1532071645-17718-1-git-send-email-fabrice.gasnier@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com, stefan.wahren@i2se.com, gohai@sukzessiv.net
-Cc: gottfried.haider@gmail.com, linux-pwm@vger.kernel.org, loic.pallardy@st.com, linux-kernel@vger.kernel.org, hsweeten@visionengravers.com, broonie@kernel.org, linux-rpi-kernel@lists.infradead.org, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org
+From: Aditya Prayoga <aditya@kobol.io>
+Subject: [PATCH 0/2] gpio: mvebu: Add support for multiple PWM lines
+Date: Sat, 21 Jul 2018 03:23:41 +0800
+Message-ID: <1532114623-81911-1-git-send-email-aditya@kobol.io>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-gpio@vger.kernel.org
+Cc: Gauthier Provost <gauthier@kobol.io>, Alban Browaeys <alban.browaeys@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Aditya Prayoga <aditya@kobol.io>
 List-Id: linux-pwm@vger.kernel.org
 
-This reverts commit 7e5d1fd75c3dde9fc10c4472b9368089d1b81d00 as it causes
-regression with multiple pwm chip. It creates a new entry in
-'/sys/class/pwm' every time a 'pwmX' is exported with 'echo X > export':
-- 1st time export will create an entry in /sys/class/pwm/pwmX
-- when another export happens on another pwmchip, it can't be created
-(e.g. -EEXIST)
+Hi everyone,
 
-This also changes existing ABI (Documentation/ABI/testing/sysfs-class-pwm):
-- pmwX should be there: /sys/class/pwm/pwmchipN/pwmX
+Helios4, an Armada 388 based NAS SBC, provides 2 (4-pins) fan connectors.
+The PWM pins on both connector are connected to GPIO on bank 1. Current gpio-
+mvebu does not allow more than one PWM on the same bank.
 
-Example on stm32 (stm32429i-eval) platform:
-$ ls /sys/class/pwm
-pwmchip0 pwmchip4
+Aditya
 
-$ cd /sys/class/pwm/pwmchip0/
-$ echo 0 > export
-$ ls /sys/class/pwm
-pwm0 pwmchip0 pwmchip4
-
-$ cd /sys/class/pwm/pwmchip4/
-$ echo 0 > export
-sysfs: cannot create duplicate filename '/class/pwm/pwm0'
-...Exception stack follows...
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/pwm/sysfs.c | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 7c71cdb..4726d43 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -263,7 +263,6 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 	export->pwm = pwm;
- 	mutex_init(&export->lock);
- 
--	export->child.class = parent->class;
- 	export->child.release = pwm_export_release;
- 	export->child.parent = parent;
- 	export->child.devt = MKDEV(0, 0);
+Aditya Prayoga (2):
+  gpio: mvebu: Add support for multiple PWM lines per GPIO chip
+  gpio: mvebu: Allow to use non-default PWM counter
+
+ drivers/gpio/gpio-mvebu.c | 111 ++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 92 insertions(+), 19 deletions(-)
+
 -- 
-1.9.1
+2.7.4
