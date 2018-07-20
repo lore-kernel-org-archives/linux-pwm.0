@@ -1,7 +1,7 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH] pwm: stm32-lp: Remove useless loop in stm32_pwm_lp_remove()
-Date: Fri, 20 Jul 2018 09:16:32 +0200
-Message-ID: <1532070992-16831-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [RESEND PATCH] Revert "pwm: Set class for exported channels in sysfs"
+Date: Fri, 20 Jul 2018 09:27:25 +0200
+Message-ID: <1532071645-17718-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,33 +15,50 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, alexandre.torgue@st.com, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org
+To: thierry.reding@gmail.com, stefan.wahren@i2se.com, gohai@sukzessiv.net
+Cc: gottfried.haider@gmail.com, linux-pwm@vger.kernel.org, loic.pallardy@st.com, linux-kernel@vger.kernel.org, hsweeten@visionengravers.com, broonie@kernel.org, linux-rpi-kernel@lists.infradead.org, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-LPTimer has only one pwm channel (npwm = 1). Remove useless for loop
-in remove routine.
+This reverts commit 7e5d1fd75c3dde9fc10c4472b9368089d1b81d00 as it causes
+regression with multiple pwm chip. It creates a new entry in
+'/sys/class/pwm' every time a 'pwmX' is exported with 'echo X > export':
+- 1st time export will create an entry in /sys/class/pwm/pwmX
+- when another export happens on another pwmchip, it can't be created
+(e.g. -EEXIST)
+
+This also changes existing ABI (Documentation/ABI/testing/sysfs-class-pwm):
+- pmwX should be there: /sys/class/pwm/pwmchipN/pwmX
+
+Example on stm32 (stm32429i-eval) platform:
+$ ls /sys/class/pwm
+pwmchip0 pwmchip4
+
+$ cd /sys/class/pwm/pwmchip0/
+$ echo 0 > export
+$ ls /sys/class/pwm
+pwm0 pwmchip0 pwmchip4
+
+$ cd /sys/class/pwm/pwmchip4/
+$ echo 0 > export
+sysfs: cannot create duplicate filename '/class/pwm/pwm0'
+...Exception stack follows...
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/pwm/pwm-stm32-lp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/pwm/sysfs.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index 7c13e25..0059b24c 100644
---- a/drivers/pwm/pwm-stm32-lp.c
-+++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -217,10 +217,8 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
- static int stm32_pwm_lp_remove(struct platform_device *pdev)
- {
- 	struct stm32_pwm_lp *priv = platform_get_drvdata(pdev);
--	unsigned int i;
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 7c71cdb..4726d43 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -263,7 +263,6 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 	export->pwm = pwm;
+ 	mutex_init(&export->lock);
  
--	for (i = 0; i < priv->chip.npwm; i++)
--		pwm_disable(&priv->chip.pwms[i]);
-+	pwm_disable(&priv->chip.pwms[0]);
- 
- 	return pwmchip_remove(&priv->chip);
- }
+-	export->child.class = parent->class;
+ 	export->child.release = pwm_export_release;
+ 	export->child.parent = parent;
+ 	export->child.devt = MKDEV(0, 0);
 -- 
 1.9.1
