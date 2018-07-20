@@ -1,70 +1,47 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v2] backlight: pwm_bl: Fix uninitialized variable
-Date: Thu, 19 Jul 2018 17:19:23 +0100
-Message-ID: <20180719161923.21510-1-daniel.thompson@linaro.org>
-References: <20180716210241.9457-1-daniel.thompson@linaro.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH] pwm: stm32-lp: Remove useless loop in stm32_pwm_lp_remove()
+Date: Fri, 20 Jul 2018 09:16:32 +0200
+Message-ID: <1532070992-16831-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180716210241.9457-1-daniel.thompson@linaro.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, patches@linaro.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, alexandre.torgue@st.com, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Q3VycmVudGx5LCBpZiB0aGUgRFQgZG9lcyBub3QgZGVmaW5lIG51bS1pbnRlcnBvbGF0ZWQtc3Rl
-cHMgdGhlbgpudW1fc3RlcHMgaXMgdW5kZWZpbmVkIGFuZCB0aGUgaW50ZXJwb2xhdGlvbiBjb2Rl
-IHdpbGwgZGVwbG95IHJhbmRvbWx5LgpGaXggdGhpcy4KCkFkZGl0aW9uYWxseSBmaXggYSBzbWFs
-bCBncmFtbWFyIGVycm9yIHRoYXQgd2FzIGlkZW50aWZpZWQgYW5kCnRpZ2h0ZW4gdXAgcmV0dXJu
-IGNvZGUgY2hlY2tpbmcgb2YgRFQgcHJvcGVydGllcywgYm90aCBvZiB3aGljaCBjYW1lCnVwIGR1
-cmluZyByZXZpZXcgb2YgdGhpcyBwYXRjaC4KCkZpeGVzOiA1NzNmZTZkMWMyNWMgKCJiYWNrbGln
-aHQ6IHB3bV9ibDogTGluZWFyIGludGVycG9sYXRpb24gYmV0d2VlbgpicmlnaHRuZXNzLWxldmVs
-cyIpClJlcG9ydGVkLWJ5OiBNYXJjZWwgWmlzd2lsZXIgPG1hcmNlbC56aXN3aWxlckB0b3JhZGV4
-LmNvbT4KU2lnbmVkLW9mZi1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGlu
-YXJvLm9yZz4KVGVzdGVkLWJ5OiBNYXJjZWwgWmlzd2lsZXIgPG1hcmNlbC56aXN3aWxlckB0b3Jh
-ZGV4LmNvbT4KLS0tCgpOb3RlczoKICAgIHYyOgogICAgIC0gU2ltcGxpZnkgU29CIGNoYWluICh3
-aXRoIE1hcmNlbCdzIHBlcm1pc3Npb24pCiAgICAgLSBTZXBhcmF0ZSBjb21wbGV4IGlmIHN0YXRl
-bWVudCBhbmQgbWFrZSBvdGhlciBzaW1pbGFyIGNhbGxzIHVzZSBzYW1lCiAgICAgICByZXR1cm4g
-Y29kZSBjaGVja2luZyBhcHByb2FjaAogICAgIC0gVGlkeSB1cCBjb21tZW50IGZvcm1hdHRpbmcg
-YW5kIGZpeCBwcmUtZXhpc3RpbmcgZ3JhbW1hciBlcnJvcgoKIGRyaXZlcnMvdmlkZW8vYmFja2xp
-Z2h0L3B3bV9ibC5jIHwgMjUgKysrKysrKysrKysrLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5n
-ZWQsIDEyIGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdt
-X2JsLmMKaW5kZXggOWVlNGMxYjczNWIyLi5mNzc5OWY2MmZlYTAgMTAwNjQ0Ci0tLSBhL2RyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCisrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0
-L3B3bV9ibC5jCkBAIC0yODQsMzAgKzI4NCwyOSBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRf
-cGFyc2VfZHQoc3RydWN0IGRldmljZSAqZGV2LAogCQlyZXQgPSBvZl9wcm9wZXJ0eV9yZWFkX3Uz
-Ml9hcnJheShub2RlLCAiYnJpZ2h0bmVzcy1sZXZlbHMiLAogCQkJCQkJIGRhdGEtPmxldmVscywK
-IAkJCQkJCSBkYXRhLT5tYXhfYnJpZ2h0bmVzcyk7Ci0JCWlmIChyZXQgPCAwKQorCQlpZiAoIXJl
-dCkKIAkJCXJldHVybiByZXQ7CgogCQlyZXQgPSBvZl9wcm9wZXJ0eV9yZWFkX3UzMihub2RlLCAi
-ZGVmYXVsdC1icmlnaHRuZXNzLWxldmVsIiwKIAkJCQkJICAgJnZhbHVlKTsKLQkJaWYgKHJldCA8
-IDApCisJCWlmICghcmV0KQogCQkJcmV0dXJuIHJldDsKCiAJCWRhdGEtPmRmdF9icmlnaHRuZXNz
-ID0gdmFsdWU7CgogCQkvKgogCQkgKiBUaGlzIHByb3BlcnR5IGlzIG9wdGlvbmFsLCBpZiBpcyBz
-ZXQgZW5hYmxlcyBsaW5lYXIKLQkJICogaW50ZXJwb2xhdGlvbiBiZXR3ZWVuIGVhY2ggb2YgdGhl
-IHZhbHVlcyBvZiBicmlnaHRuZXNzIGxldmVscwotCQkgKiBhbmQgY3JlYXRlcyBhIG5ldyBwcmUt
-Y29tcHV0ZWQgdGFibGUuCisJCSAqIGludGVycG9sYXRpb24gYmV0d2VlbiBlYWNoIG9mIHRoZSB2
-YWx1ZXMgb2YgYnJpZ2h0bmVzcworCQkgKiBsZXZlbHMgYW5kIGNyZWF0ZXMgYSBuZXcgcHJlLWNv
-bXB1dGVkIHRhYmxlLgogCQkgKi8KLQkJb2ZfcHJvcGVydHlfcmVhZF91MzIobm9kZSwgIm51bS1p
-bnRlcnBvbGF0ZWQtc3RlcHMiLAotCQkJCSAgICAgJm51bV9zdGVwcyk7Ci0KLQkJLyoKLQkJICog
-TWFrZSBzdXJlIHRoYXQgdGhlcmUgaXMgYXQgbGVhc3QgdHdvIGVudHJpZXMgaW4gdGhlCi0JCSAq
-IGJyaWdodG5lc3MtbGV2ZWxzIHRhYmxlLCBvdGhlcndpc2Ugd2UgY2FuJ3QgaW50ZXJwb2xhdGUK
-LQkJICogYmV0d2VlbiB0d28gcG9pbnRzLgotCQkgKi8KLQkJaWYgKG51bV9zdGVwcykgeworCQly
-ZXQgPSBvZl9wcm9wZXJ0eV9yZWFkX3UzMihub2RlLCAibnVtLWludGVycG9sYXRlZC1zdGVwcyIs
-CisJCQkJCSAgICZudW1fc3RlcHMpOworCQlpZiAoIXJldCB8fCBudW1fc3RlcHMpIHsKKwkJCS8q
-CisJCQkgKiBNYWtlIHN1cmUgdGhhdCB0aGVyZSBhcmUgYXQgbGVhc3QgdHdvIGVudHJpZXMgaW4K
-KwkJCSAqIHRoZSBicmlnaHRuZXNzLWxldmVscyB0YWJsZSwgb3RoZXJ3aXNlIHdlIGNhbid0CisJ
-CQkgKiBpbnRlcnBvbGF0ZSBiZXR3ZWVuIHR3byBwb2ludHMuCisJCQkgKi8KIAkJCWlmIChkYXRh
-LT5tYXhfYnJpZ2h0bmVzcyA8IDIpIHsKIAkJCQlkZXZfZXJyKGRldiwgImNhbid0IGludGVycG9s
-YXRlXG4iKTsKIAkJCQlyZXR1cm4gLUVJTlZBTDsKLS0KMi4xNy4xCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRy
-aS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+LPTimer has only one pwm channel (npwm = 1). Remove useless for loop
+in remove routine.
+
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ drivers/pwm/pwm-stm32-lp.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+index 7c13e25..0059b24c 100644
+--- a/drivers/pwm/pwm-stm32-lp.c
++++ b/drivers/pwm/pwm-stm32-lp.c
+@@ -217,10 +217,8 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
+ static int stm32_pwm_lp_remove(struct platform_device *pdev)
+ {
+ 	struct stm32_pwm_lp *priv = platform_get_drvdata(pdev);
+-	unsigned int i;
+ 
+-	for (i = 0; i < priv->chip.npwm; i++)
+-		pwm_disable(&priv->chip.pwms[i]);
++	pwm_disable(&priv->chip.pwms[0]);
+ 
+ 	return pwmchip_remove(&priv->chip);
+ }
+-- 
+1.9.1
