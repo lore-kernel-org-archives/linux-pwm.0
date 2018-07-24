@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v5 19/21] MIPS: CI20: Reduce system timer clock to 3 MHz
-Date: Wed, 25 Jul 2018 01:19:56 +0200
-Message-ID: <20180724231958.20659-20-paul@crapouillou.net>
+Subject: [PATCH v5 20/21] MIPS: CI20: defconfig: enable OST driver
+Date: Wed, 25 Jul 2018 01:19:57 +0200
+Message-ID: <20180724231958.20659-21-paul@crapouillou.net>
 References: <20180724231958.20659-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180724231958.20659-1-paul@crapouillou.net>
@@ -10,29 +10,27 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Paul Cercueil <paul@crapouillou.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The default clock (48 MHz) is too fast for the system timer, which fails
-to report time accurately.
+The OST driver provides a clocksource and sched_clock that are much more
+accurate than the default ones.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- arch/mips/boot/dts/ingenic/ci20.dts | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/mips/configs/ci20_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
  v5: New patch
 
-diff --git a/arch/mips/boot/dts/ingenic/ci20.dts b/arch/mips/boot/dts/ingenic/ci20.dts
-index 50cff3cbcc6d..700cf28a52ec 100644
---- a/arch/mips/boot/dts/ingenic/ci20.dts
-+++ b/arch/mips/boot/dts/ingenic/ci20.dts
-@@ -238,3 +238,9 @@
- 		bias-disable;
- 	};
- };
-+
-+&tcu {
-+	/* 3 MHz for the system timer */
-+	assigned-clocks = <&tcu TCU_CLK_TIMER0>;
-+	assigned-clock-rates = <3000000>;
-+};
+diff --git a/arch/mips/configs/ci20_defconfig b/arch/mips/configs/ci20_defconfig
+index be23fd25eeaa..e56dc5c024b9 100644
+--- a/arch/mips/configs/ci20_defconfig
++++ b/arch/mips/configs/ci20_defconfig
+@@ -109,6 +109,7 @@ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_JZ4740=y
+ CONFIG_DMADEVICES=y
+ CONFIG_DMA_JZ4780=y
++CONFIG_INGENIC_OST=y
+ # CONFIG_IOMMU_SUPPORT is not set
+ CONFIG_MEMORY=y
+ CONFIG_EXT4_FS=y
 -- 
 2.11.0
