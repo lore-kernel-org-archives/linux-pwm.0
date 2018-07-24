@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v5 20/21] MIPS: CI20: defconfig: enable OST driver
-Date: Wed, 25 Jul 2018 01:19:57 +0200
-Message-ID: <20180724231958.20659-21-paul@crapouillou.net>
+Subject: [PATCH v5 18/21] MIPS: qi_lb60: Use 750 kHz system timer & enable clocksource
+Date: Wed, 25 Jul 2018 01:19:55 +0200
+Message-ID: <20180724231958.20659-19-paul@crapouillou.net>
 References: <20180724231958.20659-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180724231958.20659-1-paul@crapouillou.net>
@@ -10,27 +10,32 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Paul Cercueil <paul@crapouillou.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The OST driver provides a clocksource and sched_clock that are much more
-accurate than the default ones.
+The default clock (12 MHz) is too fast for the system timer, which fails
+to report time accurately.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- arch/mips/configs/ci20_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/boot/dts/ingenic/qi_lb60.dts | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
  v5: New patch
 
-diff --git a/arch/mips/configs/ci20_defconfig b/arch/mips/configs/ci20_defconfig
-index be23fd25eeaa..e56dc5c024b9 100644
---- a/arch/mips/configs/ci20_defconfig
-+++ b/arch/mips/configs/ci20_defconfig
-@@ -109,6 +109,7 @@ CONFIG_RTC_CLASS=y
- CONFIG_RTC_DRV_JZ4740=y
- CONFIG_DMADEVICES=y
- CONFIG_DMA_JZ4780=y
-+CONFIG_INGENIC_OST=y
- # CONFIG_IOMMU_SUPPORT is not set
- CONFIG_MEMORY=y
- CONFIG_EXT4_FS=y
+diff --git a/arch/mips/boot/dts/ingenic/qi_lb60.dts b/arch/mips/boot/dts/ingenic/qi_lb60.dts
+index 85529a142409..5d2aca867427 100644
+--- a/arch/mips/boot/dts/ingenic/qi_lb60.dts
++++ b/arch/mips/boot/dts/ingenic/qi_lb60.dts
+@@ -45,3 +45,12 @@
+ 		bias-disable;
+ 	};
+ };
++
++&tcu {
++	/* Use TCU1 channel as clocksource */
++	ingenic,clocksource-channel = <1>;
++
++	/* 750 kHz for the system timer and clocksource */
++	assigned-clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>;
++	assigned-clock-rates = <750000>, <750000>;
++};
 -- 
 2.11.0
