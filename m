@@ -1,123 +1,100 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
 Subject: Re: [PATCH v2] backlight: pwm_bl: Fix uninitialized variable
-Date: Tue, 24 Jul 2018 07:48:43 +0100
-Message-ID: <20180724064843.GA3099@wychelm.lan>
+Date: Tue, 24 Jul 2018 08:01:13 +0100
+Message-ID: <20180724070113.GA9871@wychelm.lan>
 References: <20180716210241.9457-1-daniel.thompson@linaro.org>
  <20180719161923.21510-1-daniel.thompson@linaro.org>
  <20180723072343.GD4213@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
 In-Reply-To: <20180723072343.GD4213@dell>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Lee Jones <lee.jones@linaro.org>
-Cc: Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Jingoo Han <jingoohan1@gmail.com>, patches@linaro.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Jul 23, 2018 at 08:23:43AM +0100, Lee Jones wrote:
-> On Thu, 19 Jul 2018, Daniel Thompson wrote:
-> 
-> > Currently, if the DT does not define num-interpolated-steps then
-> > num_steps is undefined and the interpolation code will deploy randomly.
-> > Fix this.
-> > 
-> > Additionally fix a small grammar error that was identified and
-> > tighten up return code checking of DT properties, both of which came
-> > up during review of this patch.
-> > 
-> > Fixes: 573fe6d1c25c ("backlight: pwm_bl: Linear interpolation between
-> > brightness-levels")
-> > Reported-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> > Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> > ---
-> > 
-> > Notes:
-> >     v2:
-> >      - Simplify SoB chain (with Marcel's permission)
-> >      - Separate complex if statement and make other similar calls use same
-> >        return code checking approach
-> >      - Tidy up comment formatting and fix pre-existing grammar error
-> > 
-> >  drivers/video/backlight/pwm_bl.c | 25 ++++++++++++-------------
-> >  1 file changed, 12 insertions(+), 13 deletions(-)
-> 
-> I'm hesitant to provide feedback on this, as I feel as though I've
-> messed you around enough, however ... ;)
-> 
-> > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> > index 9ee4c1b735b2..f7799f62fea0 100644
-> > --- a/drivers/video/backlight/pwm_bl.c
-> > +++ b/drivers/video/backlight/pwm_bl.c
-> > @@ -284,30 +284,29 @@ static int pwm_backlight_parse_dt(struct device *dev,
-> >  		ret = of_property_read_u32_array(node, "brightness-levels",
-> >  						 data->levels,
-> >  						 data->max_brightness);
-> > -		if (ret < 0)
-> > +		if (!ret)
-> >  			return ret;
-> > 
-> >  		ret = of_property_read_u32(node, "default-brightness-level",
-> >  					   &value);
-> > -		if (ret < 0)
-> > +		if (!ret)
-> >  			return ret;
-> 
-> Just FYI (it didn't even make it to 'nit' status), this should really
-> be done in a separate patch since it is unrelated to the rest of the
-> patch.
-> 
-> >  		data->dft_brightness = value;
-> > 
-> >  		/*
-> >  		 * This property is optional, if is set enables linear
-> > -		 * interpolation between each of the values of brightness levels
-> > -		 * and creates a new pre-computed table.
-> > +		 * interpolation between each of the values of brightness
-> > +		 * levels and creates a new pre-computed table.
-> >  		 */
-> > -		of_property_read_u32(node, "num-interpolated-steps",
-> > -				     &num_steps);
-> > -
-> > -		/*
-> > -		 * Make sure that there is at least two entries in the
-> > -		 * brightness-levels table, otherwise we can't interpolate
-> > -		 * between two points.
-> > -		 */
-> > -		if (num_steps) {
-> > +		ret = of_property_read_u32(node, "num-interpolated-steps",
-> > +					   &num_steps);
-> > +		if (!ret || num_steps) {
-> 
-> Not sure if it's even possible for of_property_read_u32() to fail AND
-> still populate num_steps, however this check makes it sound like that's
-> okay.  Is that correct?
-
-No, it's bogus. Looks like when I broke the if statement into two
-clauses I ended up flipping the && to an ||.
-
-
-> I can't help but think that this all 'just goes away' if you
-> pre-initialise num_steps.  I wouldn't let the "do not initialise too
-> far away from the code using variable" affect this.  However, if
-> you're insistent, perhaps consider moving the declaration to just
-> below:
-> 
->   if (data->max_brightness > 0) {
-> 
-> > +			/*
-> > +			 * Make sure that there are at least two entries in
-> > +			 * the brightness-levels table, otherwise we can't
-> > +			 * interpolate between two points.
-> > +			 */
-> >  			if (data->max_brightness < 2) {
-> >  				dev_err(dev, "can't interpolate\n");
-> >  				return -EINVAL;
-> 
-> -- 
-> Lee Jones [李琼斯]
-> Linaro Services Technical Lead
-> Linaro.org │ Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+T24gTW9uLCBKdWwgMjMsIDIwMTggYXQgMDg6MjM6NDNBTSArMDEwMCwgTGVlIEpvbmVzIHdyb3Rl
+Ogo+IE9uIFRodSwgMTkgSnVsIDIwMTgsIERhbmllbCBUaG9tcHNvbiB3cm90ZToKPiAKPiA+IEN1
+cnJlbnRseSwgaWYgdGhlIERUIGRvZXMgbm90IGRlZmluZSBudW0taW50ZXJwb2xhdGVkLXN0ZXBz
+IHRoZW4KPiA+IG51bV9zdGVwcyBpcyB1bmRlZmluZWQgYW5kIHRoZSBpbnRlcnBvbGF0aW9uIGNv
+ZGUgd2lsbCBkZXBsb3kgcmFuZG9tbHkuCj4gPiBGaXggdGhpcy4KPiA+IAo+ID4gQWRkaXRpb25h
+bGx5IGZpeCBhIHNtYWxsIGdyYW1tYXIgZXJyb3IgdGhhdCB3YXMgaWRlbnRpZmllZCBhbmQKPiA+
+IHRpZ2h0ZW4gdXAgcmV0dXJuIGNvZGUgY2hlY2tpbmcgb2YgRFQgcHJvcGVydGllcywgYm90aCBv
+ZiB3aGljaCBjYW1lCj4gPiB1cCBkdXJpbmcgcmV2aWV3IG9mIHRoaXMgcGF0Y2guCj4gPiAKPiA+
+IEZpeGVzOiA1NzNmZTZkMWMyNWMgKCJiYWNrbGlnaHQ6IHB3bV9ibDogTGluZWFyIGludGVycG9s
+YXRpb24gYmV0d2Vlbgo+ID4gYnJpZ2h0bmVzcy1sZXZlbHMiKQo+ID4gUmVwb3J0ZWQtYnk6IE1h
+cmNlbCBaaXN3aWxlciA8bWFyY2VsLnppc3dpbGVyQHRvcmFkZXguY29tPgo+ID4gU2lnbmVkLW9m
+Zi1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGluYXJvLm9yZz4KPiA+IFRl
+c3RlZC1ieTogTWFyY2VsIFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+Cj4g
+PiAtLS0KPiA+IAo+ID4gTm90ZXM6Cj4gPiAgICAgdjI6Cj4gPiAgICAgIC0gU2ltcGxpZnkgU29C
+IGNoYWluICh3aXRoIE1hcmNlbCdzIHBlcm1pc3Npb24pCj4gPiAgICAgIC0gU2VwYXJhdGUgY29t
+cGxleCBpZiBzdGF0ZW1lbnQgYW5kIG1ha2Ugb3RoZXIgc2ltaWxhciBjYWxscyB1c2Ugc2FtZQo+
+ID4gICAgICAgIHJldHVybiBjb2RlIGNoZWNraW5nIGFwcHJvYWNoCj4gPiAgICAgIC0gVGlkeSB1
+cCBjb21tZW50IGZvcm1hdHRpbmcgYW5kIGZpeCBwcmUtZXhpc3RpbmcgZ3JhbW1hciBlcnJvcgo+
+ID4gCj4gPiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCAyNSArKysrKysrKysr
+KystLS0tLS0tLS0tLS0tCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDEz
+IGRlbGV0aW9ucygtKQo+IAo+IEknbSBoZXNpdGFudCB0byBwcm92aWRlIGZlZWRiYWNrIG9uIHRo
+aXMsIGFzIEkgZmVlbCBhcyB0aG91Z2ggSSd2ZQo+IG1lc3NlZCB5b3UgYXJvdW5kIGVub3VnaCwg
+aG93ZXZlciAuLi4gOykKPiAKPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
+dC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gPiBpbmRleCA5
+ZWU0YzFiNzM1YjIuLmY3Nzk5ZjYyZmVhMCAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvdmlkZW8v
+YmFja2xpZ2h0L3B3bV9ibC5jCj4gPiArKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
+YmwuYwo+ID4gQEAgLTI4NCwzMCArMjg0LDI5IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9w
+YXJzZV9kdChzdHJ1Y3QgZGV2aWNlICpkZXYsCj4gPiAgCQlyZXQgPSBvZl9wcm9wZXJ0eV9yZWFk
+X3UzMl9hcnJheShub2RlLCAiYnJpZ2h0bmVzcy1sZXZlbHMiLAo+ID4gIAkJCQkJCSBkYXRhLT5s
+ZXZlbHMsCj4gPiAgCQkJCQkJIGRhdGEtPm1heF9icmlnaHRuZXNzKTsKPiA+IC0JCWlmIChyZXQg
+PCAwKQo+ID4gKwkJaWYgKCFyZXQpCj4gPiAgCQkJcmV0dXJuIHJldDsKPiA+IAo+ID4gIAkJcmV0
+ID0gb2ZfcHJvcGVydHlfcmVhZF91MzIobm9kZSwgImRlZmF1bHQtYnJpZ2h0bmVzcy1sZXZlbCIs
+Cj4gPiAgCQkJCQkgICAmdmFsdWUpOwo+ID4gLQkJaWYgKHJldCA8IDApCj4gPiArCQlpZiAoIXJl
+dCkKPiA+ICAJCQlyZXR1cm4gcmV0Owo+IAo+IEp1c3QgRllJIChpdCBkaWRuJ3QgZXZlbiBtYWtl
+IGl0IHRvICduaXQnIHN0YXR1cyksIHRoaXMgc2hvdWxkIHJlYWxseQo+IGJlIGRvbmUgaW4gYSBz
+ZXBhcmF0ZSBwYXRjaCBzaW5jZSBpdCBpcyB1bnJlbGF0ZWQgdG8gdGhlIHJlc3Qgb2YgdGhlCj4g
+cGF0Y2guCgpEaWQgd29uZGVyIHdoaWNoIHdheSB0byBnbyBvbiB0aGlzLi4uIEkgZmlndXJlZCB0
+aGlzIGNsb3NlIEknZCBhY2NlcHQKY29kZSBlaXRoZXIgd2F5IHNvIGFkb3B0ZWQgZmV3ZXN0IHBh
+dGNoZXMuCgpIb3dldmVyIEkgd2lsbCBzcGxpdCB0aGlzIG91dCBiZWNhdXNlIEknbSBnb2luZyB0
+byBnbyBiYWNrIHRvIHRoZSBvcmlnbmFsCnByZS12MSBhcHByb2FjaCBvZiBqdXN0IGluaXRpYWxp
+emluZyB0aGUgZGFtbiB2YXJpYWJsZS4KCgo+ID4gIAkJZGF0YS0+ZGZ0X2JyaWdodG5lc3MgPSB2
+YWx1ZTsKPiA+IAo+ID4gIAkJLyoKPiA+ICAJCSAqIFRoaXMgcHJvcGVydHkgaXMgb3B0aW9uYWws
+IGlmIGlzIHNldCBlbmFibGVzIGxpbmVhcgo+ID4gLQkJICogaW50ZXJwb2xhdGlvbiBiZXR3ZWVu
+IGVhY2ggb2YgdGhlIHZhbHVlcyBvZiBicmlnaHRuZXNzIGxldmVscwo+ID4gLQkJICogYW5kIGNy
+ZWF0ZXMgYSBuZXcgcHJlLWNvbXB1dGVkIHRhYmxlLgo+ID4gKwkJICogaW50ZXJwb2xhdGlvbiBi
+ZXR3ZWVuIGVhY2ggb2YgdGhlIHZhbHVlcyBvZiBicmlnaHRuZXNzCj4gPiArCQkgKiBsZXZlbHMg
+YW5kIGNyZWF0ZXMgYSBuZXcgcHJlLWNvbXB1dGVkIHRhYmxlLgo+ID4gIAkJICovCj4gPiAtCQlv
+Zl9wcm9wZXJ0eV9yZWFkX3UzMihub2RlLCAibnVtLWludGVycG9sYXRlZC1zdGVwcyIsCj4gPiAt
+CQkJCSAgICAgJm51bV9zdGVwcyk7Cj4gPiAtCj4gPiAtCQkvKgo+ID4gLQkJICogTWFrZSBzdXJl
+IHRoYXQgdGhlcmUgaXMgYXQgbGVhc3QgdHdvIGVudHJpZXMgaW4gdGhlCj4gPiAtCQkgKiBicmln
+aHRuZXNzLWxldmVscyB0YWJsZSwgb3RoZXJ3aXNlIHdlIGNhbid0IGludGVycG9sYXRlCj4gPiAt
+CQkgKiBiZXR3ZWVuIHR3byBwb2ludHMuCj4gPiAtCQkgKi8KPiA+IC0JCWlmIChudW1fc3RlcHMp
+IHsKPiA+ICsJCXJldCA9IG9mX3Byb3BlcnR5X3JlYWRfdTMyKG5vZGUsICJudW0taW50ZXJwb2xh
+dGVkLXN0ZXBzIiwKPiA+ICsJCQkJCSAgICZudW1fc3RlcHMpOwo+ID4gKwkJaWYgKCFyZXQgfHwg
+bnVtX3N0ZXBzKSB7Cj4gCj4gTm90IHN1cmUgaWYgaXQncyBldmVuIHBvc3NpYmxlIGZvciBvZl9w
+cm9wZXJ0eV9yZWFkX3UzMigpIHRvIGZhaWwgQU5ECj4gc3RpbGwgcG9wdWxhdGUgbnVtX3N0ZXBz
+LCBob3dldmVyIHRoaXMgY2hlY2sgbWFrZXMgaXQgc291bmQgbGlrZSB0aGF0J3MKPiBva2F5LiAg
+SXMgdGhhdCBjb3JyZWN0Pwo+IAo+IEkgY2FuJ3QgaGVscCBidXQgdGhpbmsgdGhhdCB0aGlzIGFs
+bCAnanVzdCBnb2VzIGF3YXknIGlmIHlvdQo+IHByZS1pbml0aWFsaXNlIG51bV9zdGVwcy4gIEkg
+d291bGRuJ3QgbGV0IHRoZSAiZG8gbm90IGluaXRpYWxpc2UgdG9vCj4gZmFyIGF3YXkgZnJvbSB0
+aGUgY29kZSB1c2luZyB2YXJpYWJsZSIgYWZmZWN0IHRoaXMuICBIb3dldmVyLCBpZgo+IHlvdSdy
+ZSBpbnNpc3RlbnQsIHBlcmhhcHMgY29uc2lkZXIgbW92aW5nIHRoZSBkZWNsYXJhdGlvbiB0byBq
+dXN0Cj4gYmVsb3c6Cj4gCj4gICBpZiAoZGF0YS0+bWF4X2JyaWdodG5lc3MgPiAwKSB7Cj4gCj4g
+PiArCQkJLyoKPiA+ICsJCQkgKiBNYWtlIHN1cmUgdGhhdCB0aGVyZSBhcmUgYXQgbGVhc3QgdHdv
+IGVudHJpZXMgaW4KPiA+ICsJCQkgKiB0aGUgYnJpZ2h0bmVzcy1sZXZlbHMgdGFibGUsIG90aGVy
+d2lzZSB3ZSBjYW4ndAo+ID4gKwkJCSAqIGludGVycG9sYXRlIGJldHdlZW4gdHdvIHBvaW50cy4K
+PiA+ICsJCQkgKi8KPiA+ICAJCQlpZiAoZGF0YS0+bWF4X2JyaWdodG5lc3MgPCAyKSB7Cj4gPiAg
+CQkJCWRldl9lcnIoZGV2LCAiY2FuJ3QgaW50ZXJwb2xhdGVcbiIpOwo+ID4gIAkJCQlyZXR1cm4g
+LUVJTlZBTDsKPiAKPiAtLSAKPiBMZWUgSm9uZXMgW+adjueQvOaWr10KPiBMaW5hcm8gU2Vydmlj
+ZXMgVGVjaG5pY2FsIExlYWQKPiBMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBm
+b3IgQVJNIFNvQ3MKPiBGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBt
+YWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
+LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
