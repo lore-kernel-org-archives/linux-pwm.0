@@ -1,54 +1,52 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v3] backlight: pwm_bl: Fix uninitialized variable
-Date: Tue, 24 Jul 2018 08:12:23 +0100
-Message-ID: <20180724071223.18901-1-daniel.thompson@linaro.org>
-References: <20180716210241.9457-1-daniel.thompson@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180716210241.9457-1-daniel.thompson@linaro.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, patches@linaro.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v5 00/21] Ingenic JZ47xx TCU patchset v5
+Date: Wed, 25 Jul 2018 01:19:37 +0200
+Message-ID: <20180724231958.20659-1-paul@crapouillou.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>
+Cc: Paul Cercueil <paul@crapouillou.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Q3VycmVudGx5LCBpZiB0aGUgRFQgZG9lcyBub3QgZGVmaW5lIG51bS1pbnRlcnBvbGF0ZWQtc3Rl
-cHMgdGhlbgpudW1fc3RlcHMgaXMgdW5kZWZpbmVkIGFuZCB0aGUgaW50ZXJwb2xhdGlvbiBjb2Rl
-IHdpbGwgZGVwbG95IHJhbmRvbWx5LgpGaXggd2l0aCBhIHNpbXBsZSBpbml0aWFsaXplIHRvIHpl
-cm8uCgpGaXhlczogNTczZmU2ZDFjMjVjICgiYmFja2xpZ2h0OiBwd21fYmw6IExpbmVhciBpbnRl
-cnBvbGF0aW9uIGJldHdlZW4KYnJpZ2h0bmVzcy1sZXZlbHMiKQpSZXBvcnRlZC1ieTogTWFyY2Vs
-IFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+ClNpZ25lZC1vZmYtYnk6IERh
-bmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+ClRlc3RlZC1ieTogTWFy
-Y2VsIFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+Ci0tLQoKTm90ZXM6CiAg
-ICB2MzoKICAgICAtIFN3aXRjaCB0byB0aGUgc2ltcGxlc3QgZml4IGFuZCB6ZXJvIHRoZSB1bmlu
-aXRpYWxpemVkIHZhcmlhYmxlLiBnaXQKICAgICAgIGdyZXAgaW5kaWNhdGVzIHRoYXQgfjI1JSBv
-ZiBjYWxscyB0byBvZl9wcm9wZXJ0eV9yZWFkX3UzMigpIHVzZSB0aGlzCiAgICAgICBwYXR0ZXJu
-IChwcmUtaW5pdGlhbGl6ZSBvcHRpb25hbCBwcm9wZXJ0aWVzIHdpdGggc2FuZSB2YWx1ZXMgYW5k
-CiAgICAgICBpZ25vcmUgdGhlIHJldHVybiBjb2RlKS4KICAgIAogICAgdjI6CiAgICAgLSBTaW1w
-bGlmeSBTb0IgY2hhaW4gKHdpdGggTWFyY2VsJ3MgcGVybWlzc2lvbikKICAgICAtIFNlcGFyYXRl
-IGNvbXBsZXggaWYgc3RhdGVtZW50IGFuZCBtYWtlIG90aGVyIHNpbWlsYXIgY2FsbHMgdXNlIHNh
-bWUKICAgICAgIHJldHVybiBjb2RlIGNoZWNraW5nIGFwcHJvYWNoCiAgICAgLSBUaWR5IHVwIGNv
-bW1lbnQgZm9ybWF0dGluZyBhbmQgZml4IHByZS1leGlzdGluZyBncmFtbWFyIGVycm9yCgogZHJp
-dmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBp
-bnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2Jh
-Y2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCmluZGV4
-IDllZTRjMWI3MzViMi4uYmRmY2MwYTcxZGIxIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2Jh
-Y2tsaWdodC9wd21fYmwuYworKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwpA
-QCAtMjUwLDcgKzI1MCw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wYXJzZV9kdChzdHJ1
-Y3QgZGV2aWNlICpkZXYsCiAJc3RydWN0IGRldmljZV9ub2RlICpub2RlID0gZGV2LT5vZl9ub2Rl
-OwogCXVuc2lnbmVkIGludCBudW1fbGV2ZWxzID0gMDsKIAl1bnNpZ25lZCBpbnQgbGV2ZWxzX2Nv
-dW50OwotCXVuc2lnbmVkIGludCBudW1fc3RlcHM7CisJdW5zaWduZWQgaW50IG51bV9zdGVwcyA9
-IDA7CiAJc3RydWN0IHByb3BlcnR5ICpwcm9wOwogCXVuc2lnbmVkIGludCAqdGFibGU7CiAJaW50
-IGxlbmd0aDsKLS0KMi4xNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9k
-cmktZGV2ZWwK
+Hi,
+
+This is the V5 of my patchset that adds support to the Timer/Counter
+Unit (TCU) present on Ingenic JZ47xx SoCs.
+
+Way too much has changed since V4, we went from 8 patches in V4 up to
+21 patches in V5.
+I did not know if I had to submit it as V5 or start a new series.
+In doubt, I sent a V5.
+
+Very succint description of the changes:
+
+- The interrupt, clocks, clocksource drivers have been merged into one;
+  ingenic-timer now inits the TCU clocks, handles the interrupts,
+  provides a system timer and optionally also a clocksource and
+  sched_clock. The TCU channel #0 will be used as system timer, unless
+  another channel is specified from devicetree.
+
+- The simple-mfd and syscon are gone. The ingenic-timer driver will
+  probe the drivers registered as children in the devicetree.
+
+- The watchdog driver was updated to use the WDT clock and regmap
+  provided by ingenic-timer. This breaks the devicetree ABI, but as
+  explained in the corresponding commit message, right now all Ingenic
+  boards compile the devicetree into the kernel anyway - so it's better
+  to update it now before it's too late.
+
+- The PWM driver was updated to use the TCU timer clocks as well as the
+  regmap provided by ingenic-timer. Unused devicetree compatible strings
+  were removed (the driver was never probed from devicetree), and
+  support for the JZ4725B has been added.
+
+- A new ingenic-ost driver was added, which provides a clocksource and
+  a sched_clock that are more accurate than the ones provided by
+  ingenic-timer (32 or 64-bit vs. 16-bit). It is not available on every
+  SoC.
+
+- Mostly tested on the JZ4725B and JZ4770. It would be great if somebody
+  could test on the JZ4780 and JZ4740.
+
+Thanks,
+-Paul
