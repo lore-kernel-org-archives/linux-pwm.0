@@ -1,52 +1,97 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v5 00/21] Ingenic JZ47xx TCU patchset v5
-Date: Wed, 25 Jul 2018 01:19:37 +0200
-Message-ID: <20180724231958.20659-1-paul@crapouillou.net>
+Subject: [PATCH v5 01/21] mfd: Add ingenic-tcu.h header
+Date: Wed, 25 Jul 2018 01:19:38 +0200
+Message-ID: <20180724231958.20659-2-paul@crapouillou.net>
+References: <20180724231958.20659-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180724231958.20659-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>
 Cc: Paul Cercueil <paul@crapouillou.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+This header contains macros for the registers that are present in the
+regmap shared by all the drivers related to the TCU (Timer Counter Unit)
+of the Ingenic JZ47xx SoCs.
 
-This is the V5 of my patchset that adds support to the Timer/Counter
-Unit (TCU) present on Ingenic JZ47xx SoCs.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
+ include/linux/mfd/ingenic-tcu.h | 56 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+ create mode 100644 include/linux/mfd/ingenic-tcu.h
 
-Way too much has changed since V4, we went from 8 patches in V4 up to
-21 patches in V5.
-I did not know if I had to submit it as V5 or start a new series.
-In doubt, I sent a V5.
+ v2: Use SPDX identifier for the license
 
-Very succint description of the changes:
+ v3: - Use macros instead of enum
+     - Add 'TCU_' at the beginning of each macro
+	 - Remove useless include <linux/regmap.h>
 
-- The interrupt, clocks, clocksource drivers have been merged into one;
-  ingenic-timer now inits the TCU clocks, handles the interrupts,
-  provides a system timer and optionally also a clocksource and
-  sched_clock. The TCU channel #0 will be used as system timer, unless
-  another channel is specified from devicetree.
+ v4: No change
 
-- The simple-mfd and syscon are gone. The ingenic-timer driver will
-  probe the drivers registered as children in the devicetree.
+ v5: No change
 
-- The watchdog driver was updated to use the WDT clock and regmap
-  provided by ingenic-timer. This breaks the devicetree ABI, but as
-  explained in the corresponding commit message, right now all Ingenic
-  boards compile the devicetree into the kernel anyway - so it's better
-  to update it now before it's too late.
-
-- The PWM driver was updated to use the TCU timer clocks as well as the
-  regmap provided by ingenic-timer. Unused devicetree compatible strings
-  were removed (the driver was never probed from devicetree), and
-  support for the JZ4725B has been added.
-
-- A new ingenic-ost driver was added, which provides a clocksource and
-  a sched_clock that are more accurate than the ones provided by
-  ingenic-timer (32 or 64-bit vs. 16-bit). It is not available on every
-  SoC.
-
-- Mostly tested on the JZ4725B and JZ4770. It would be great if somebody
-  could test on the JZ4780 and JZ4740.
-
-Thanks,
--Paul
+diff --git a/include/linux/mfd/ingenic-tcu.h b/include/linux/mfd/ingenic-tcu.h
+new file mode 100644
+index 000000000000..3d85f075d2db
+--- /dev/null
++++ b/include/linux/mfd/ingenic-tcu.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Header file for the Ingenic JZ47xx TCU driver
++ */
++#ifndef __LINUX_CLK_INGENIC_TCU_H_
++#define __LINUX_CLK_INGENIC_TCU_H_
++
++#include <linux/bitops.h>
++
++#define TCU_REG_WDT_TDR		0x00
++#define TCU_REG_WDT_TCER	0x04
++#define TCU_REG_WDT_TCNT	0x08
++#define TCU_REG_WDT_TCSR	0x0c
++#define TCU_REG_TER		0x10
++#define TCU_REG_TESR		0x14
++#define TCU_REG_TECR		0x18
++#define TCU_REG_TSR		0x1c
++#define TCU_REG_TFR		0x20
++#define TCU_REG_TFSR		0x24
++#define TCU_REG_TFCR		0x28
++#define TCU_REG_TSSR		0x2c
++#define TCU_REG_TMR		0x30
++#define TCU_REG_TMSR		0x34
++#define TCU_REG_TMCR		0x38
++#define TCU_REG_TSCR		0x3c
++#define TCU_REG_TDFR0		0x40
++#define TCU_REG_TDHR0		0x44
++#define TCU_REG_TCNT0		0x48
++#define TCU_REG_TCSR0		0x4c
++#define TCU_REG_OST_DR		0xe0
++#define TCU_REG_OST_CNTL	0xe4
++#define TCU_REG_OST_CNTH	0xe8
++#define TCU_REG_OST_TCSR	0xec
++#define TCU_REG_TSTR		0xf0
++#define TCU_REG_TSTSR		0xf4
++#define TCU_REG_TSTCR		0xf8
++#define TCU_REG_OST_CNTHBUF	0xfc
++
++#define TCU_TCSR_RESERVED_BITS		0x3f
++#define TCU_TCSR_PARENT_CLOCK_MASK	0x07
++#define TCU_TCSR_PRESCALE_LSB		3
++#define TCU_TCSR_PRESCALE_MASK		0x38
++
++#define TCU_TCSR_PWM_SD		BIT(9)	/* 0: Shutdown abruptly 1: gracefully */
++#define TCU_TCSR_PWM_INITL_HIGH	BIT(8)	/* Sets the initial output level */
++#define TCU_TCSR_PWM_EN		BIT(7)	/* PWM pin output enable */
++
++#define TCU_WDT_TCER_TCEN	BIT(0)	/* Watchdog timer enable */
++
++#define TCU_CHANNEL_STRIDE	0x10
++#define TCU_REG_TDFRc(c)	(TCU_REG_TDFR0 + ((c) * TCU_CHANNEL_STRIDE))
++#define TCU_REG_TDHRc(c)	(TCU_REG_TDHR0 + ((c) * TCU_CHANNEL_STRIDE))
++#define TCU_REG_TCNTc(c)	(TCU_REG_TCNT0 + ((c) * TCU_CHANNEL_STRIDE))
++#define TCU_REG_TCSRc(c)	(TCU_REG_TCSR0 + ((c) * TCU_CHANNEL_STRIDE))
++
++#endif /* __LINUX_CLK_INGENIC_TCU_H_ */
+-- 
+2.11.0
