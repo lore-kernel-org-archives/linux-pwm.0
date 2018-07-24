@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v5 18/21] MIPS: qi_lb60: Use 750 kHz system timer & enable clocksource
-Date: Wed, 25 Jul 2018 01:19:55 +0200
-Message-ID: <20180724231958.20659-19-paul@crapouillou.net>
+Subject: [PATCH v5 11/21] pwm: jz4740: Drop dependency on MACH_INGENIC, use COMPILE_TEST
+Date: Wed, 25 Jul 2018 01:19:48 +0200
+Message-ID: <20180724231958.20659-12-paul@crapouillou.net>
 References: <20180724231958.20659-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180724231958.20659-1-paul@crapouillou.net>
@@ -10,32 +10,33 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Paul Cercueil <paul@crapouillou.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The default clock (12 MHz) is too fast for the system timer, which fails
-to report time accurately.
+Depending on MACH_INGENIC prevent us from creating a generic kernel that
+works on more than one MIPS board. Instead, we just depend on MIPS being
+set.
+
+On other architectures, this driver can still be built, thanks to
+COMPILE_TEST. This is used by automated tools to find bugs, for
+instance.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- arch/mips/boot/dts/ingenic/qi_lb60.dts | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
  v5: New patch
 
-diff --git a/arch/mips/boot/dts/ingenic/qi_lb60.dts b/arch/mips/boot/dts/ingenic/qi_lb60.dts
-index 85529a142409..5d2aca867427 100644
---- a/arch/mips/boot/dts/ingenic/qi_lb60.dts
-+++ b/arch/mips/boot/dts/ingenic/qi_lb60.dts
-@@ -45,3 +45,12 @@
- 		bias-disable;
- 	};
- };
-+
-+&tcu {
-+	/* Use TCU1 channel as clocksource */
-+	ingenic,clocksource-channel = <1>;
-+
-+	/* 750 kHz for the system timer and clocksource */
-+	assigned-clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>;
-+	assigned-clock-rates = <750000>, <750000>;
-+};
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 58359bf22b96..e53ad662ef87 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -201,7 +201,7 @@ config PWM_IMX
+ 
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+-	depends on MACH_INGENIC
++	depends on MIPS || COMPILE_TEST
+ 	depends on COMMON_CLK
+ 	select INGENIC_TIMER
+ 	help
 -- 
 2.11.0
