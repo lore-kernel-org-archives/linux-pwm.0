@@ -1,57 +1,57 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: [PATCH v4] backlight: pwm_bl: Fix uninitialized variable
-Date: Wed, 25 Jul 2018 08:38:30 +0100
-Message-ID: <20180725073830.31421-1-daniel.thompson@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4] backlight: pwm_bl: Fix uninitialized variable
+Date: Wed, 25 Jul 2018 09:03:55 +0100
+Message-ID: <20180725080355.GC5835@dell>
 References: <20180716210241.9457-1-daniel.thompson@linaro.org>
+ <20180725073830.31421-1-daniel.thompson@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180716210241.9457-1-daniel.thompson@linaro.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, patches@linaro.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180725073830.31421-1-daniel.thompson@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
 List-Id: linux-pwm@vger.kernel.org
 
-Q3VycmVudGx5LCBpZiB0aGUgRFQgZG9lcyBub3QgZGVmaW5lIG51bS1pbnRlcnBvbGF0ZWQtc3Rl
-cHMgdGhlbgpudW1fc3RlcHMgaXMgdW5kZWZpbmVkIGFuZCB0aGUgaW50ZXJwb2xhdGlvbiBjb2Rl
-IHdpbGwgZGVwbG95IHJhbmRvbWx5LgpGaXggd2l0aCBhIHNpbXBsZSBpbml0aWFsaXplIHRvIHpl
-cm8uCgpGaXhlczogNTczZmU2ZDFjMjVjICgiYmFja2xpZ2h0OiBwd21fYmw6IExpbmVhciBpbnRl
-cnBvbGF0aW9uIGJldHdlZW4gYnJpZ2h0bmVzcy1sZXZlbHMiKQpSZXBvcnRlZC1ieTogTWFyY2Vs
-IFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+ClNpZ25lZC1vZmYtYnk6IERh
-bmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+ClRlc3RlZC1ieTogTWFy
-Y2VsIFppc3dpbGVyIDxtYXJjZWwuemlzd2lsZXJAdG9yYWRleC5jb20+ClJldmlld2VkLWJ5OiBE
-b3VnbGFzIEFuZGVyc29uIDxkaWFuZGVyc0BjaHJvbWl1bS5vcmc+CkFja2VkLWJ5OiBMZWUgSm9u
-ZXMgPGxlZS5qb25lc0BsaW5hcm8ub3JnPgotLS0KCk5vdGVzOgogICAgdjQ6CiAgICAgLSBSZW1v
-dmUgbGluZSBicmVhayBmcm9tIEZpeGVzOiBhbmQgdXBkYXRlIHRoZSAqLWJ5OnMKICAgIAogICAg
-djM6CiAgICAgLSBTd2l0Y2ggdG8gdGhlIHNpbXBsZXN0IGZpeCBhbmQgemVybyB0aGUgdW5pbml0
-aWFsaXplZCB2YXJpYWJsZS4gZ2l0CiAgICAgICBncmVwIGluZGljYXRlcyB0aGF0IH4yNSUgb2Yg
-Y2FsbHMgdG8gb2ZfcHJvcGVydHlfcmVhZF91MzIoKSB1c2UgdGhpcwogICAgICAgcGF0dGVybiAo
-cHJlLWluaXRpYWxpemUgb3B0aW9uYWwgcHJvcGVydGllcyB3aXRoIHNhbmUgdmFsdWVzIGFuZAog
-ICAgICAgaWdub3JlIHRoZSByZXR1cm4gY29kZSkuCiAgICAKICAgIHYyOgogICAgIC0gU2ltcGxp
-ZnkgU29CIGNoYWluICh3aXRoIE1hcmNlbCdzIHBlcm1pc3Npb24pCiAgICAgLSBTZXBhcmF0ZSBj
-b21wbGV4IGlmIHN0YXRlbWVudCBhbmQgbWFrZSBvdGhlciBzaW1pbGFyIGNhbGxzIHVzZSBzYW1l
-CiAgICAgICByZXR1cm4gY29kZSBjaGVja2luZyBhcHByb2FjaAogICAgIC0gVGlkeSB1cCBjb21t
-ZW50IGZvcm1hdHRpbmcgYW5kIGZpeCBwcmUtZXhpc3RpbmcgZ3JhbW1hciBlcnJvcgoKIGRyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIHwgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5z
-ZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9iYWNr
-bGlnaHQvcHdtX2JsLmMgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwppbmRleCA5
-ZWU0YzFiNzM1YjIuLmJkZmNjMGE3MWRiMSAxMDA2NDQKLS0tIGEvZHJpdmVycy92aWRlby9iYWNr
-bGlnaHQvcHdtX2JsLmMKKysrIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKQEAg
-LTI1MCw3ICsyNTAsNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcGFyc2VfZHQoc3RydWN0
-IGRldmljZSAqZGV2LAogCXN0cnVjdCBkZXZpY2Vfbm9kZSAqbm9kZSA9IGRldi0+b2Zfbm9kZTsK
-IAl1bnNpZ25lZCBpbnQgbnVtX2xldmVscyA9IDA7CiAJdW5zaWduZWQgaW50IGxldmVsc19jb3Vu
-dDsKLQl1bnNpZ25lZCBpbnQgbnVtX3N0ZXBzOworCXVuc2lnbmVkIGludCBudW1fc3RlcHMgPSAw
-OwogCXN0cnVjdCBwcm9wZXJ0eSAqcHJvcDsKIAl1bnNpZ25lZCBpbnQgKnRhYmxlOwogCWludCBs
-ZW5ndGg7Ci0tCjIuMTcuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
-b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
-LWRldmVsCg==
+On Wed, 25 Jul 2018, Daniel Thompson wrote:
+
+> Currently, if the DT does not define num-interpolated-steps then
+> num_steps is undefined and the interpolation code will deploy randomly.
+> Fix with a simple initialize to zero.
+> 
+> Fixes: 573fe6d1c25c ("backlight: pwm_bl: Linear interpolation between brightness-levels")
+> Reported-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> ---
+> 
+> Notes:
+>     v4:
+>      - Remove line break from Fixes: and update the *-by:s
+>     
+>     v3:
+>      - Switch to the simplest fix and zero the uninitialized variable. git
+>        grep indicates that ~25% of calls to of_property_read_u32() use this
+>        pattern (pre-initialize optional properties with sane values and
+>        ignore the return code).
+>     
+>     v2:
+>      - Simplify SoB chain (with Marcel's permission)
+>      - Separate complex if statement and make other similar calls use same
+>        return code checking approach
+>      - Tidy up comment formatting and fix pre-existing grammar error
+> 
+>  drivers/video/backlight/pwm_bl.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Applied, thanks.
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
