@@ -1,125 +1,248 @@
-From: Sean Wang <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [SPAM][PATCH 2/2] pwm: mediatek: Add MT7628 support
-Date: Wed, 25 Jul 2018 22:36:13 +0800
-Message-ID: <1532529373.8953.306.camel@mtkswgap22>
-References: <20180725095209.10641-1-john@phrozen.org>
- <20180725095209.10641-2-john@phrozen.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v5 04/21] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Wed, 25 Jul 2018 09:21:05 -0600
+Message-ID: <20180725152105.GA6347@rob-hp-laptop>
+References: <20180724231958.20659-1-paul@crapouillou.net>
+ <20180724231958.20659-5-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180725095209.10641-2-john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180724231958.20659-5-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 2018-07-25 at 11:52 +0200, John Crispin wrote:
-> Add support for MT7628. The SoC is legacy MIPS and hence has no complex
-> clock tree. This patch add an extra flag to the SoC specific data
-> indicating, that no clocks are present.
+On Wed, Jul 25, 2018 at 01:19:41AM +0200, Paul Cercueil wrote:
+> Add documentation about how to properly use the Ingenic TCU
+> (Timer/Counter Unit) drivers from devicetree.
 > 
-> Signed-off-by: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-
-Acked-by: Sean Wang <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > ---
->  drivers/pwm/Kconfig        |  2 +-
->  drivers/pwm/pwm-mediatek.c | 19 ++++++++++++++++++-
->  2 files changed, 19 insertions(+), 2 deletions(-)
+>  .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  24 +---
+>  .../devicetree/bindings/timer/ingenic,tcu.txt      | 147 +++++++++++++++++++++
+>  .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 +--
+>  3 files changed, 151 insertions(+), 37 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
 > 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 4635cb35008c..3fae66c692c4 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -286,7 +286,7 @@ config PWM_MTK_DISP
+>  v4: New patch in this series. Corresponds to V2 patches 3-4-5 with
+>      added content.
+> 
+>  v5: - Edited PWM/watchdog DT bindings documentation to point to the new
+>        document.
+>      - Moved main document to
+>        Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>      - Updated documentation to reflect the new devicetree bindings.
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+> index 7d9d3f90641b..a722cdde3aa7 100644
+> --- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+> @@ -1,25 +1,5 @@
+>  Ingenic JZ47xx PWM Controller
+>  =============================
 >  
->  config PWM_MEDIATEK
->  	tristate "MediaTek PWM support"
-> -	depends on ARCH_MEDIATEK || COMPILE_TEST
-> +	depends on ARCH_MEDIATEK || RALINK || COMPILE_TEST
->  	help
->  	  Generic PWM framework driver for Mediatek ARM SoC.
->  
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index 328c124773b2..eb6674ce995f 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -57,6 +57,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
->  struct mtk_pwm_platform_data {
->  	unsigned int num_pwms;
->  	bool pwm45_fixup;
-> +	bool has_clks;
->  };
->  
->  /**
-> @@ -86,6 +87,9 @@ static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
->  	int ret;
->  
-> +	if (!pc->soc->has_clks)
-> +		return 0;
+> -Required properties:
+> -- compatible: One of:
+> -  * "ingenic,jz4740-pwm"
+> -  * "ingenic,jz4770-pwm"
+> -  * "ingenic,jz4780-pwm"
+> -- #pwm-cells: Should be 3. See pwm.txt in this directory for a description
+> -  of the cells format.
+> -- clocks : phandle to the external clock.
+> -- clock-names : Should be "ext".
+> -
+> -
+> -Example:
+> -
+> -	pwm: pwm@10002000 {
+> -		compatible = "ingenic,jz4740-pwm";
+> -		reg = <0x10002000 0x1000>;
+> -
+> -		#pwm-cells = <3>;
+> -
+> -		clocks = <&ext>;
+> -		clock-names = "ext";
+> -	};
+> +This documentation has moved; for a description of the devicetree bindings of
+> +this driver, please refer to ../timer/ingenic,tcu.txt.
+
+This should be evident from the git log. Just remove it.
+
+> diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> new file mode 100644
+> index 000000000000..65d125b460aa
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> @@ -0,0 +1,147 @@
+> +Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
+> +==========================================================
 > +
->  	ret = clk_prepare_enable(pc->clks[MTK_CLK_TOP]);
->  	if (ret < 0)
->  		return ret;
-> @@ -112,6 +116,9 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
->  
-> +	if (!pc->soc->has_clks)
-> +		return;
+> +For a description of the TCU hardware and drivers, have a look at
+> +Documentation/mips/ingenic-tcu.txt.
 > +
->  	clk_disable_unprepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
->  	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
->  	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
-> @@ -239,7 +246,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
->  	if (IS_ERR(pc->regs))
->  		return PTR_ERR(pc->regs);
->  
-> -	for (i = 0; i < data->num_pwms + 2; i++) {
-> +	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
->  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
->  		if (IS_ERR(pc->clks[i])) {
->  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-> @@ -274,22 +281,32 @@ static int mtk_pwm_remove(struct platform_device *pdev)
->  static const struct mtk_pwm_platform_data mt2712_pwm_data = {
->  	.num_pwms = 8,
->  	.pwm45_fixup = false,
-> +	.has_clks = true,
->  };
->  
->  static const struct mtk_pwm_platform_data mt7622_pwm_data = {
->  	.num_pwms = 6,
->  	.pwm45_fixup = false,
-> +	.has_clks = true,
->  };
->  
->  static const struct mtk_pwm_platform_data mt7623_pwm_data = {
->  	.num_pwms = 5,
->  	.pwm45_fixup = true,
-> +	.has_clks = true,
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4740-tcu
+> +  * ingenic,jz4725b-tcu
+> +  * ingenic,jz4770-tcu
+> +- reg: Should be the offset/length value corresponding to the TCU registers
+
+> +- #address-cells: Should be <1>;
+> +- #size-cells: Should be <1>;
+> +- ranges: Should be one range for the full TCU registers area
+
+These can all be implied.
+
+> +- clocks: List of phandle & clock specifiers for clocks external to the TCU.
+> +  The "pclk", "rtc", "ext" and "tcu" clocks should be provided.
+> +- clock-names: List of name strings for the external clocks.
+> +- #clock-cells: Should be <1>;
+> +  Clock consumers specify this argument to identify a clock. The valid values
+> +  may be found in <dt-bindings/clock/ingenic,tcu.h>.
+> +- interrupt-controller : Identifies the node as an interrupt controller
+> +- #interrupt-cells : Specifies the number of cells needed to encode an
+> +  interrupt source. The value should be 1.
+> +- interrupt-parent : phandle of the interrupt controller.
+> +- interrupts : Specifies the interrupt the controller is connected to.
+
+How many and what are they. The example shows there are 3.
+> +
+> +Optional properties:
+> +
+> +- ingenic,timer-channel: Specifies the TCU channel that should be used as
+> +  system timer. If not provided, the TCU channel 0 is used for the system timer.
+> +
+> +- ingenic,clocksource-channel: Specifies the TCU channel that should be used
+> +  as clocksource and sched_clock. It must be a different channel than the one
+> +  used as system timer. If not provided, neither a clocksource nor a
+> +  sched_clock is instantiated.
+
+clocksource and sched_clock are Linux specific and don't belong in DT. 
+You should define properties of the hardware or use existing properties 
+like interrupts or clocks to figure out which channel to use. For 
+example, if some channels don't have an interrupt, then use them for 
+clocksource and not a clockevent. Or you could have timers that run in 
+low-power modes or not. If all the channels are identical, then it 
+shouldn't matter which ones the OS picks.
+
+> +
+> +
+> +Children nodes
+> +==========================================================
+> +
+> +
+> +PWM node:
+> +---------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4740-pwm
+> +  * ingenic,jz4725b-pwm
+> +- #pwm-cells: Should be 3. See ../pwm/pwm.txt for a description of the cell
+> +  format.
+> +- clocks: List of phandle & clock specifiers for the TCU clocks.
+> +- clock-names: List of name strings for the TCU clocks.
+> +
+> +
+> +Watchdog node:
+> +--------------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4740-watchdog
+> +  * ingenic,jz4780-watchdog
+> +- clocks: phandle to the RTC clock
+> +- clock-names: should be "rtc"
+> +
+> +
+> +OST node:
+> +---------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4725b-ost
+> +  * ingenic,jz4770-ost
+> +- clocks: phandle to the OST clock
+> +- clock-names: should be "ost"
+> +- interrupts : Specifies the interrupt the OST is connected to.
+> +
+> +
+> +Example
+> +==========================================================
+> +
+> +#include <dt-bindings/clock/jz4770-cgu.h>
+> +#include <dt-bindings/clock/ingenic,tcu.h>
+> +
+> +/ {
+> +	tcu: timer@10002000 {
+> +		compatible = "ingenic,jz4770-tcu";
+> +		reg = <0x10002000 0x1000>;
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		ranges = <0x0 0x10002000 0x1000>;
+> +
+> +		#clock-cells = <1>;
+> +
+> +		clocks = <&cgu JZ4770_CLK_RTC
+> +			  &cgu JZ4770_CLK_EXT
+> +			  &cgu JZ4770_CLK_PCLK
+> +			  &cgu JZ4770_CLK_EXT>;
+> +		clock-names = "rtc", "ext", "pclk", "tcu";
+> +
+> +		interrupt-controller;
+> +		#interrupt-cells = <1>;
+> +
+> +		interrupt-parent = <&intc>;
+> +		interrupts = <27 26 25>;
+> +
+> +		watchdog: watchdog@0 {
+> +			compatible = "ingenic,jz4740-watchdog";
+> +			reg = <0x0 0x10>;
+> +
+> +			clocks = <&tcu TCU_CLK_WDT>;
+> +			clock-names = "wdt";
+> +		};
+> +
+> +		pwm: pwm@10 {
+> +			compatible = "ingenic,jz4740-pwm";
+> +			reg = <0x10 0xff0>;
+> +
+> +			#pwm-cells = <3>;
+> +
+> +			clocks = <&tcu TCU_CLK_TIMER0
+> +				  &tcu TCU_CLK_TIMER1
+> +				  &tcu TCU_CLK_TIMER2
+> +				  &tcu TCU_CLK_TIMER3
+> +				  &tcu TCU_CLK_TIMER4
+> +				  &tcu TCU_CLK_TIMER5
+> +				  &tcu TCU_CLK_TIMER6
+> +				  &tcu TCU_CLK_TIMER7>;
+> +			clock-names = "timer0", "timer1", "timer2", "timer3",
+> +				      "timer4", "timer5", "timer6", "timer7";
+> +		};
+> +
+> +		ost: timer@e0 {
+> +			compatible = "ingenic,jz4770-ost";
+> +			reg = <0xe0 0x20>;
+
+This is creating an overlapping region with PWM which should be avoided. 
+Are timers and PWM the same h/w? Then there should be one node (or maybe 
+you can do 1 node per channel if each channel is independent (has its 
+own register range, clocks, interrupts, etc.
+
+Or the PWM node needs to exclude this region (by having 2 reg regions).
+
+> +
+> +			clocks = <&tcu TCU_CLK_OST>;
+> +			clock-names = "ost";
+> +
+> +			interrupts = <15>;
+> +		};
+> +	};
 > +};
-> +
-> +static const struct mtk_pwm_platform_data mt7628_pwm_data = {
-> +	.num_pwms = 4,
-> +	.pwm45_fixup = true,
-> +	.has_clks = false,
->  };
->  
->  static const struct of_device_id mtk_pwm_of_match[] = {
->  	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
->  	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
->  	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
-> +	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
