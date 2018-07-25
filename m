@@ -1,57 +1,122 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v4] backlight: pwm_bl: Fix uninitialized variable
-Date: Wed, 25 Jul 2018 09:03:55 +0100
-Message-ID: <20180725080355.GC5835@dell>
-References: <20180716210241.9457-1-daniel.thompson@linaro.org>
- <20180725073830.31421-1-daniel.thompson@linaro.org>
+From: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
+Subject: [PATCH 2/2] pwm: mediatek: Add MT7628 support
+Date: Wed, 25 Jul 2018 11:52:09 +0200
+Message-ID: <20180725095209.10641-2-john@phrozen.org>
+References: <20180725095209.10641-1-john@phrozen.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180725073830.31421-1-daniel.thompson@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, patches@linaro.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20180725095209.10641-1-john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 25 Jul 2018, Daniel Thompson wrote:
+Add support for MT7628. The SoC is legacy MIPS and hence has no complex
+clock tree. This patch add an extra flag to the SoC specific data
+indicating, that no clocks are present.
 
-> Currently, if the DT does not define num-interpolated-steps then
-> num_steps is undefined and the interpolation code will deploy randomly.
-> Fix with a simple initialize to zero.
-> 
-> Fixes: 573fe6d1c25c ("backlight: pwm_bl: Linear interpolation between brightness-levels")
-> Reported-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Tested-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> Acked-by: Lee Jones <lee.jones@linaro.org>
-> ---
-> 
-> Notes:
->     v4:
->      - Remove line break from Fixes: and update the *-by:s
->     
->     v3:
->      - Switch to the simplest fix and zero the uninitialized variable. git
->        grep indicates that ~25% of calls to of_property_read_u32() use this
->        pattern (pre-initialize optional properties with sane values and
->        ignore the return code).
->     
->     v2:
->      - Simplify SoB chain (with Marcel's permission)
->      - Separate complex if statement and make other similar calls use same
->        return code checking approach
->      - Tidy up comment formatting and fix pre-existing grammar error
-> 
->  drivers/video/backlight/pwm_bl.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Signed-off-by: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
+---
+ drivers/pwm/Kconfig        |  2 +-
+ drivers/pwm/pwm-mediatek.c | 19 ++++++++++++++++++-
+ 2 files changed, 19 insertions(+), 2 deletions(-)
 
-Applied, thanks.
-
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 4635cb35008c..3fae66c692c4 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -286,7 +286,7 @@ config PWM_MTK_DISP
+ 
+ config PWM_MEDIATEK
+ 	tristate "MediaTek PWM support"
+-	depends on ARCH_MEDIATEK || COMPILE_TEST
++	depends on ARCH_MEDIATEK || RALINK || COMPILE_TEST
+ 	help
+ 	  Generic PWM framework driver for Mediatek ARM SoC.
+ 
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index 328c124773b2..eb6674ce995f 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -57,6 +57,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
+ struct mtk_pwm_platform_data {
+ 	unsigned int num_pwms;
+ 	bool pwm45_fixup;
++	bool has_clks;
+ };
+ 
+ /**
+@@ -86,6 +87,9 @@ static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+ 	int ret;
+ 
++	if (!pc->soc->has_clks)
++		return 0;
++
+ 	ret = clk_prepare_enable(pc->clks[MTK_CLK_TOP]);
+ 	if (ret < 0)
+ 		return ret;
+@@ -112,6 +116,9 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+ 
++	if (!pc->soc->has_clks)
++		return;
++
+ 	clk_disable_unprepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+ 	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
+ 	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
+@@ -239,7 +246,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pc->regs))
+ 		return PTR_ERR(pc->regs);
+ 
+-	for (i = 0; i < data->num_pwms + 2; i++) {
++	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
+ 		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
+ 		if (IS_ERR(pc->clks[i])) {
+ 			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
+@@ -274,22 +281,32 @@ static int mtk_pwm_remove(struct platform_device *pdev)
+ static const struct mtk_pwm_platform_data mt2712_pwm_data = {
+ 	.num_pwms = 8,
+ 	.pwm45_fixup = false,
++	.has_clks = true,
+ };
+ 
+ static const struct mtk_pwm_platform_data mt7622_pwm_data = {
+ 	.num_pwms = 6,
+ 	.pwm45_fixup = false,
++	.has_clks = true,
+ };
+ 
+ static const struct mtk_pwm_platform_data mt7623_pwm_data = {
+ 	.num_pwms = 5,
+ 	.pwm45_fixup = true,
++	.has_clks = true,
++};
++
++static const struct mtk_pwm_platform_data mt7628_pwm_data = {
++	.num_pwms = 4,
++	.pwm45_fixup = true,
++	.has_clks = false,
+ };
+ 
+ static const struct of_device_id mtk_pwm_of_match[] = {
+ 	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
+ 	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
+ 	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
++	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.11.0
