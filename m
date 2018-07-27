@@ -1,149 +1,118 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v2] pwm: pwm-omap-dmtimer: return -EPROBE_DEFER if no
- dmtimer platform data
-Date: Fri, 27 Jul 2018 13:00:06 +0200
-Message-ID: <20180727110006.GC20233@amd>
-References: <20180726133658.23902-1-drivshin@awxrd.com>
- <20180726185426.GA3546@lenoch>
- <20180726163705.4981d44a.drivshin@awxrd.com>
- <20180727071901.GA10846@lenoch>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: switch to using "atomic" PWM API
+Date: Fri, 27 Jul 2018 12:32:33 +0100
+Message-ID: <2e157deb-de8d-9f12-b4f2-04e04ff2e5ed@linaro.org>
+References: <20180726091534.27521-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0623898332303718815=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180727071901.GA10846@lenoch>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Ladislav Michl <ladis@linux-mips.org>
-Cc: linux-pwm@vger.kernel.org, David Rivshin <drivshin@awxrd.com>, Neil Armstrong <narmstrong@baylibre.com>, Tony Lindgren <tony@atomide.com>, Keerthy <j-keerthy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20180726091534.27521-1-enric.balletbo@collabora.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-kernel@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, Lee Jones <lee.jones@linaro.org>, cl@rock-chips.com
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============0623898332303718815==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jousvV0MzM2p6OtC"
-Content-Disposition: inline
-
-
---jousvV0MzM2p6OtC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri 2018-07-27 09:19:01, Ladislav Michl wrote:
-> On Thu, Jul 26, 2018 at 04:37:05PM -0400, David Rivshin wrote:
-> > On Thu, 26 Jul 2018 20:54:26 +0200
-> > Ladislav Michl <ladis@linux-mips.org> wrote:
-> >=20
-> > > On Thu, Jul 26, 2018 at 09:36:58AM -0400, David Rivshin wrote:
-> > > > From: David Rivshin <DRivshin@allworx.com>
-> > > >=20
-> > > > If a pwm-omap-dmtimer is probed before the dmtimer it uses, the pla=
-tform
-> > > > data won't be set yet.
-> > > >=20
-> > > > Fixes: ac30751df953 ("ARM: OMAP: pdata-quirks: Remove unused timer =
-pdata")
-> > > > Cc: <stable@vger.kernel.org> # 4.17+
-> > > > Signed-off-by: David Rivshin <drivshin@allworx.com>
-> > > > Acked-by: Pavel Machek <pavel@ucw.cz>
-> > > > Tested-by: Pavel Machek <pavel@ucw.cz>
-> > > > ---
-> > > > Changes in v2:
-> > > > * Added Pavel's Acked-by/Tested-by [1]
-> > > >=20
-> > > > [1] https://lkml.org/lkml/2018/7/16/346
-> > > >=20
-> > > >  drivers/pwm/pwm-omap-dmtimer.c | 5 +++--
-> > > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-=
-dmtimer.c
-> > > > index 665da3c8fbceb..d3d7ea7a53146 100644
-> > > > --- a/drivers/pwm/pwm-omap-dmtimer.c
-> > > > +++ b/drivers/pwm/pwm-omap-dmtimer.c
-> > > > @@ -264,8 +264,9 @@ static int pwm_omap_dmtimer_probe(struct platfo=
-rm_device *pdev)
-> > > > =20
-> > > >  	timer_pdata =3D dev_get_platdata(&timer_pdev->dev);
-> > > >  	if (!timer_pdata) {
-> > > > -		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
-> > > > -		ret =3D -EINVAL;
-> > > > +		dev_info(&pdev->dev,
-> > > > +			 "dmtimer pdata structure NULL, deferring probe\n"); =20
-> > >=20
-> > > This seems to be a bit verbose for EPROBE_DEFER case. Could we either=
- remove
-> > > it as it is done later in pdata->request_by_node(timer) failure case =
-or at
-> > > least make it dev_dbg? Otherwise thank you and with mentioned change
-> > > Acked-by: Ladislav Michl <ladis@linux-mips.org>
-> >=20
-> > Hi Ladislav, thanks for the review.
-> >=20
-> > I had grepped through other drivers and found no consistent pattern. So=
-me
-> > places used dev_err still, others reduced to one of dev_{warn,info,dbg}=
-,=20
-> > and others no message at all. Some messages mentioned they are deferrin=
-g=20
-> > the probe, other didn't. I was already getting a couple of dev_info fro=
-m=20
-> > the pinctrl core code, so I went that way. I figured the message might =
-be
-> > useful to someone, but I don't feel strongly.
->=20
-> Well, pinctrl probe deferal message is a bit annoying. It really does not
-> tell us much as long as pins are correctly configured and in case they are
-> not it is useless as well :)
->=20
-> > I personally would lean to dev_dbg if you think dev_info is too harsh,=
-=20
-> > just in case someone's board suddenly isn't working after upgrade. But=
-=20
-> > I'm certainly willing to remove the message entirely if you feel strong=
-ly,
-> > or anyone else cares to weigh in.
->=20
-> I'm fine with dev_dbg as well.
-
-Looks good to me, too.
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---jousvV0MzM2p6OtC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlta+zYACgkQMOfwapXb+vIy3gCdH2G3FQf8ALe1Fo9v4RRc7uIr
-oVIAn2ONJkQxCQfkoIl0qgLGSD/svq8g
-=W/HL
------END PGP SIGNATURE-----
-
---jousvV0MzM2p6OtC--
-
-
---===============0623898332303718815==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============0623898332303718815==--
+T24gMjYvMDcvMTggMTA6MTUsIEVucmljIEJhbGxldGJvIGkgU2VycmEgd3JvdGU6Cj4gVGhlICJh
+dG9taWMiIEFQSSBhbGxvd3MgdXMgdG8gY29uZmlndXJlIFBXTSBwZXJpb2QgYW5kIGR1dHlfY3lj
+bGUgYW5kCj4gZW5hYmxlIGl0IGluIG9uZSBjYWxsLgo+IAo+IFRoZSBwYXRjaCBhbHNvIG1vdmVz
+IHRoZSBwd21faW5pdF9zdGF0ZSBqdXN0IGJlZm9yZSBhbnkgdXNlIG9mIHRoZQo+IHB3bV9zdGF0
+ZSBzdHJ1Y3QsIHRoaXMgZml4ZXMgYSBwb3RlbnRpYWwgYnVnIHdoZXJlIHB3bV9nZXRfc3RhdGUK
+PiBjYW4gYmUgY2FsbGVkIGJlZm9yZSBwd21faW5pdF9zdGF0ZS4KPiAKPiBTaWduZWQtb2ZmLWJ5
+OiBFbnJpYyBCYWxsZXRibyBpIFNlcnJhIDxlbnJpYy5iYWxsZXRib0Bjb2xsYWJvcmEuY29tPgo+
+IC0tLQo+IAo+ICAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCA0OCArKysrKysr
+KysrKysrKysrKysrKy0tLS0tLS0tLS0tLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDMwIGluc2VydGlv
+bnMoKyksIDE4IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2Jh
+Y2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gaW5k
+ZXggYmRmY2MwYTcxZGIxLi4yYzczNGQ1NWQ2MDcgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy92aWRl
+by9iYWNrbGlnaHQvcHdtX2JsLmMKPiArKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
+YmwuYwo+IEBAIC00Niw3ICs0Niw4IEBAIHN0cnVjdCBwd21fYmxfZGF0YSB7Cj4gICAJdm9pZAkJ
+CSgqZXhpdCkoc3RydWN0IGRldmljZSAqKTsKPiAgIH07Cj4gICAKPiAtc3RhdGljIHZvaWQgcHdt
+X2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVz
+cykKPiArc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2Rh
+dGEgKnBiLAo+ICsJCQkJICAgc3RydWN0IHB3bV9zdGF0ZSAqc3RhdGUpCj4gICB7Cj4gICAJaW50
+IGVycjsKPiAgIAo+IEBAIC01Nyw3ICs1OCw4IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRf
+cG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRhICpwYiwgaW50IGJyaWdodG5lc3MpCj4gICAJaWYg
+KGVyciA8IDApCj4gICAJCWRldl9lcnIocGItPmRldiwgImZhaWxlZCB0byBlbmFibGUgcG93ZXIg
+c3VwcGx5XG4iKTsKPiAgIAo+IC0JcHdtX2VuYWJsZShwYi0+cHdtKTsKPiArCXN0YXRlLT5lbmFi
+bGVkID0gdHJ1ZTsKPiArCXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCBzdGF0ZSk7Cj4gICAKPiAg
+IAlpZiAocGItPnBvc3RfcHdtX29uX2RlbGF5KQo+ICAgCQltc2xlZXAocGItPnBvc3RfcHdtX29u
+X2RlbGF5KTsKPiBAQCAtNzAsNiArNzIsOCBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bv
+d2VyX29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzKQo+ICAgCj4gICBz
+dGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBi
+KQo+ICAgewo+ICsJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiArCj4gICAJaWYgKCFwYi0+ZW5h
+YmxlZCkKPiAgIAkJcmV0dXJuOwo+ICAgCj4gQEAgLTc5LDggKzgzLDExIEBAIHN0YXRpYyB2b2lk
+IHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gICAJaWYg
+KHBiLT5wd21fb2ZmX2RlbGF5KQo+ICAgCQltc2xlZXAocGItPnB3bV9vZmZfZGVsYXkpOwo+ICAg
+Cj4gLQlwd21fY29uZmlnKHBiLT5wd20sIDAsIHBiLT5wZXJpb2QpOwo+IC0JcHdtX2Rpc2FibGUo
+cGItPnB3bSk7Cj4gKwlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gKwlzdGF0ZS5l
+bmFibGVkID0gZmFsc2U7Cj4gKwlzdGF0ZS5wZXJpb2QgPSBwYi0+cGVyaW9kOwo+ICsJc3RhdGUu
+ZHV0eV9jeWNsZSA9IDA7Cj4gKwlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAg
+IAo+ICAgCXJlZ3VsYXRvcl9kaXNhYmxlKHBiLT5wb3dlcl9zdXBwbHkpOwo+ICAgCXBiLT5lbmFi
+bGVkID0gZmFsc2U7Cj4gQEAgLTEwNiw2ICsxMTMsNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGln
+aHRfdXBkYXRlX3N0YXR1cyhzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwpCj4gICB7Cj4gICAJ
+c3RydWN0IHB3bV9ibF9kYXRhICpwYiA9IGJsX2dldF9kYXRhKGJsKTsKPiAgIAlpbnQgYnJpZ2h0
+bmVzcyA9IGJsLT5wcm9wcy5icmlnaHRuZXNzOwo+ICsJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsK
+PiAgIAlpbnQgZHV0eV9jeWNsZTsKPiAgIAo+ICAgCWlmIChibC0+cHJvcHMucG93ZXIgIT0gRkJf
+QkxBTktfVU5CTEFOSyB8fAo+IEBAIC0xMTgsOCArMTI2LDEzIEBAIHN0YXRpYyBpbnQgcHdtX2Jh
+Y2tsaWdodF91cGRhdGVfc3RhdHVzKHN0cnVjdCBiYWNrbGlnaHRfZGV2aWNlICpibCkKPiAgIAo+
+ICAgCWlmIChicmlnaHRuZXNzID4gMCkgewo+ICAgCQlkdXR5X2N5Y2xlID0gY29tcHV0ZV9kdXR5
+X2N5Y2xlKHBiLCBicmlnaHRuZXNzKTsKPiAtCQlwd21fY29uZmlnKHBiLT5wd20sIGR1dHlfY3lj
+bGUsIHBiLT5wZXJpb2QpOwo+IC0JCXB3bV9iYWNrbGlnaHRfcG93ZXJfb24ocGIsIGJyaWdodG5l
+c3MpOwo+ICsJCXB3bV9nZXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiArCQlzdGF0ZS5kdXR5
+X2N5Y2xlID0gZHV0eV9jeWNsZTsKPiArCQlzdGF0ZS5wZXJpb2QgPSBwYi0+cGVyaW9kOwo+ICsJ
+CWlmICghc3RhdGUuZW5hYmxlZCkKPiArCQkJcHdtX2JhY2tsaWdodF9wb3dlcl9vbihwYiwgJnN0
+YXRlKTsKPiArCQllbHNlCj4gKwkJCXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+
+ICAgCX0gZWxzZQo+ICAgCQlwd21fYmFja2xpZ2h0X3Bvd2VyX29mZihwYik7Cj4gICAKPiBAQCAt
+NDQ3LDcgKzQ2MCw2IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGxh
+dGZvcm1fZGV2aWNlICpwZGV2KQo+ICAgCXN0cnVjdCBkZXZpY2Vfbm9kZSAqbm9kZSA9IHBkZXYt
+PmRldi5vZl9ub2RlOwo+ICAgCXN0cnVjdCBwd21fYmxfZGF0YSAqcGI7Cj4gICAJc3RydWN0IHB3
+bV9zdGF0ZSBzdGF0ZTsKPiAtCXN0cnVjdCBwd21fYXJncyBwYXJnczsKPiAgIAl1bnNpZ25lZCBp
+bnQgaTsKPiAgIAlpbnQgcmV0Owo+ICAgCj4gQEAgLTUzOSwxMCArNTUxLDE3IEBAIHN0YXRpYyBp
+bnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ICAg
+Cj4gICAJZGV2X2RiZygmcGRldi0+ZGV2LCAiZ290IHB3bSBmb3IgYmFja2xpZ2h0XG4iKTsKPiAg
+IAo+IC0JaWYgKCFkYXRhLT5sZXZlbHMpIHsKPiAtCQkvKiBHZXQgdGhlIFBXTSBwZXJpb2QgKGlu
+IG5hbm9zZWNvbmRzKSAqLwo+IC0JCXB3bV9nZXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAr
+CS8qIFN5bmMgdXAgUFdNIHN0YXRlIGFuZCBlbnN1cmUgaXQgaXMgb2ZmLiAqLwo+ICsJcHdtX2lu
+aXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiArCXN0YXRlLmVuYWJsZWQgPSBmYWxzZTsKPiAr
+CXJldCA9IHB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwoKV2h5IGRvIHdlIGVuc3Vy
+ZSB0aGUgUFdNIGlzIG9mZj8gRG9lcyB0aGlzIGNhdXNlIGJhY2tsaWdodCBmbGlja2VycyBvciAK
+bWFrZSBzb21lIG9mIHRoZSBjb2RlIGluIHB3bV9iYWNrbGlnaHRfaW5pdGlhbF9wb3dlcl9zdGF0
+ZSgpIHVucmVhY2hhYmxlPwoKCj4gKwlpZiAocmV0KSB7Cj4gKwkJZGV2X2VycigmcGRldi0+ZGV2
+LCAiZmFpbGVkIHRvIGFwcGx5IGluaXRpYWwgUFdNIHN0YXRlOiAlZFxuIiwKPiArCQkJcmV0KTsK
+PiArCQlnb3RvIGVycl9hbGxvYzsKPiArCX0KPiAgIAo+ICsJaWYgKCFkYXRhLT5sZXZlbHMpIHsK
+PiAgIAkJcmV0ID0gcHdtX2JhY2tsaWdodF9icmlnaHRuZXNzX2RlZmF1bHQoJnBkZXYtPmRldiwg
+ZGF0YSwKPiAgIAkJCQkJCSAgICAgICBzdGF0ZS5wZXJpb2QpOwo+ICAgCQlpZiAocmV0IDwgMCkg
+ewo+IEBAIC01NTksMjAgKzU3OCwxMyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcHJvYmUo
+c3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgIAkJcGItPmxldmVscyA9IGRhdGEtPmxl
+dmVsczsKPiAgIAl9Cj4gICAKPiAtCS8qCj4gLQkgKiBGSVhNRTogcHdtX2FwcGx5X2FyZ3MoKSBz
+aG91bGQgYmUgcmVtb3ZlZCB3aGVuIHN3aXRjaGluZyB0bwo+IC0JICogdGhlIGF0b21pYyBQV00g
+QVBJLgo+IC0JICovCj4gLQlwd21fYXBwbHlfYXJncyhwYi0+cHdtKTsKPiAtCj4gICAJLyoKPiAg
+IAkgKiBUaGUgRFQgY2FzZSB3aWxsIHNldCB0aGUgcHdtX3BlcmlvZF9ucyBmaWVsZCB0byAwIGFu
+ZCBzdG9yZSB0aGUKPiAgIAkgKiBwZXJpb2QsIHBhcnNlZCBmcm9tIHRoZSBEVCwgaW4gdGhlIFBX
+TSBkZXZpY2UuIEZvciB0aGUgbm9uLURUIGNhc2UsCj4gICAJICogc2V0IHRoZSBwZXJpb2QgZnJv
+bSBwbGF0Zm9ybSBkYXRhIGlmIGl0IGhhcyBub3QgYWxyZWFkeSBiZWVuIHNldAo+ICAgCSAqIHZp
+YSB0aGUgUFdNIGxvb2t1cCB0YWJsZS4KPiAgIAkgKi8KPiAtCXB3bV9nZXRfYXJncyhwYi0+cHdt
+LCAmcGFyZ3MpOwo+IC0JcGItPnBlcmlvZCA9IHBhcmdzLnBlcmlvZDsKPiArCXBiLT5wZXJpb2Qg
+PSBzdGF0ZS5wZXJpb2Q7Cj4gICAJaWYgKCFwYi0+cGVyaW9kICYmIChkYXRhLT5wd21fcGVyaW9k
+X25zID4gMCkpCj4gICAJCXBiLT5wZXJpb2QgPSBkYXRhLT5wd21fcGVyaW9kX25zOwoKQ291bGQg
+d2UgaGF2ZSBkZWxheWVkIGFwcGx5aW5nIHRoZSBzdGF0ZSB1bnRpbCB3ZSBrbm93IHdoYXQgdGhl
+IHBlcmlvZCAKaXMgc3VwcG9zZWQgdG8gYmU/IE5vIG90aGVyIGNhbGwgdG8gcHdtX2FwcGx5X3N0
+YXRlKCkgaGFzIGl0cyBlcnJvciAKdmFsdWUgY2hlY2tlZC4uLiBzbyBpZiB0aGVyZSBhcmUgcHJv
+YmxlbXMgd2l0aCB0aGUgcGVyaW9kIHdlIGNvdWxkIApkZXRlY3QgdGhlbSBoZXJlLgoKTm90ZSBh
+bHNvIHRoYXQgd2UgY2FuIGd1YXJhbnRlZSB0aGUgcGVyaW9kIGlzIHNldCBiZWZvcmUgdGhlIHBy
+b2JlIApjb21wbGV0ZXMgdGhlbiBJIHRoaW5rIHBiLT5wZXJpb2QgY291bGQgYmUgcmVtb3ZlZCBl
+bnRpcmVseS4gSXQgd2FzIG9ubHkgCnJlYWxseSBiZWluZyBjYXJyaWVkIGFyb3VuZCB0byBoZWxw
+IHdpdGggY2FsbHMgdG8gcHdtX2NvbmZpZygpIGFuZCB0aGVzZSAKbm8gbG9uZ2VyIGV4aXN0LgoK
+CkRhbmllbC4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+ZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0
+dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
