@@ -1,42 +1,119 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 0/2] gpio: mvebu: Add support for multiple PWM lines
-Date: Sun, 29 Jul 2018 22:58:16 +0200
-Message-ID: <CACRpkdbiAkt6hT+LeRXCjWDZwjeYDF-e3sckMOWqnL2rdqLDug@mail.gmail.com>
-References: <1532114623-81911-1-git-send-email-aditya@kobol.io>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH v2] backlight: pwm_bl: switch to using "atomic" PWM API
+Date: Mon, 30 Jul 2018 12:12:59 +0100
+Message-ID: <20180730111259.5qjtchfo67nquila@holly.lan>
+References: <20180727151121.12296-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1532114623-81911-1-git-send-email-aditya@kobol.io>
-Sender: linux-kernel-owner@vger.kernel.org
-To: aditya@kobol.io, Gregory CLEMENT <gregory.clement@free-electrons.com>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Richard Genoud <richard.genoud@gmail.com>
-Cc: "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, gauthier@kobol.io, alban.browaeys@gmail.com, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180727151121.12296-1-enric.balletbo@collabora.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, Lee Jones <lee.jones@linaro.org>, cl@rock-chips.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hoping for some review from Gergory, Ralph or Richard who all seem
-to use this driver!
-
-Yours,
-Linus Walleij
-
-On Fri, Jul 20, 2018 at 9:24 PM Aditya Prayoga <aditya@kobol.io> wrote:
->
-> Hi everyone,
->
-> Helios4, an Armada 388 based NAS SBC, provides 2 (4-pins) fan connectors.
-> The PWM pins on both connector are connected to GPIO on bank 1. Current gpio-
-> mvebu does not allow more than one PWM on the same bank.
->
-> Aditya
->
-> ---
->
-> Aditya Prayoga (2):
->   gpio: mvebu: Add support for multiple PWM lines per GPIO chip
->   gpio: mvebu: Allow to use non-default PWM counter
->
->  drivers/gpio/gpio-mvebu.c | 111 ++++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 92 insertions(+), 19 deletions(-)
->
-> --
-> 2.7.4
->
+T24gRnJpLCBKdWwgMjcsIDIwMTggYXQgMDU6MTE6MjFQTSArMDIwMCwgRW5yaWMgQmFsbGV0Ym8g
+aSBTZXJyYSB3cm90ZToKPiBUaGUgImF0b21pYyIgQVBJIGFsbG93cyB1cyB0byBjb25maWd1cmUg
+UFdNIHBlcmlvZCBhbmQgZHV0eV9jeWNsZSBhbmQKPiBlbmFibGUgaXQgaW4gb25lIGNhbGwuCj4g
+Cj4gVGhlIHBhdGNoIGFsc28gbW92ZXMgdGhlIHB3bV9pbml0X3N0YXRlIGp1c3QgYmVmb3JlIGFu
+eSB1c2Ugb2YgdGhlCj4gcHdtX3N0YXRlIHN0cnVjdCwgdGhpcyBmaXhlcyBhIHBvdGVudGlhbCBi
+dWcgd2hlcmUgcHdtX2dldF9zdGF0ZQo+IGNhbiBiZSBjYWxsZWQgYmVmb3JlIHB3bV9pbml0X3N0
+YXRlLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEVucmljIEJhbGxldGJvIGkgU2VycmEgPGVucmljLmJh
+bGxldGJvQGNvbGxhYm9yYS5jb20+Cj4gLS0tCj4gCj4gQ2hhbmdlcyBpbiB2MjoKPiAtIERvIG5v
+dCBmb3JjZSB0aGUgUFdNIGJlIG9mZiBpbiB0aGUgZmlyc3QgY2FsbCB0byBwd21fYXBwbHlfc3Rh
+dGUuCj4gLSBEZWxheWVkIGFwcGx5aW5nIHRoZSBzdGF0ZSB1bnRpbCB3ZSBrbm93IHdoYXQgdGhl
+IHBlcmlvZCBpcy4KPiAtIFJlbW92ZWQgcGItPnBlcmlvZCBhcyBhZnRlciB0aGUgY29udmVyc2lv
+biBpcyBub3QgbmVlZGVkLgoKUmUtcmVhZGluZyB0aGlzIEkgaGF2ZSBzcG90dGVkIGEgY291cGxl
+IG9mIHRoaW5ncyBJIHByb2JhYmx5IGNvdWxkIGhhdmUKbWVudGlvbmVkIGFnYWluc3QgdjEuLi4g
+c29ycnkuCgpJIHRoaW5rIGl0J3MgbG9va2luZyBnb29kIHRob3VnaCwgSSBleHBlY3QgdG8gYmUg
+YWJsZSB0byBhY2sgdjMuCgoKPiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCA3
+MSArKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgNDEg
+aW5zZXJ0aW9ucygrKSwgMzAgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+dmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2Js
+LmMKPiBpbmRleCBiZGZjYzBhNzFkYjEuLmRkMWNiMjliNTMzMiAxMDA2NDQKPiAtLS0gYS9kcml2
+ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xp
+Z2h0L3B3bV9ibC5jCj4gQEAgLTI4LDcgKzI4LDYgQEAKPiAgc3RydWN0IHB3bV9ibF9kYXRhIHsK
+PiAgCXN0cnVjdCBwd21fZGV2aWNlCSpwd207Cj4gIAlzdHJ1Y3QgZGV2aWNlCQkqZGV2Owo+IC0J
+dW5zaWduZWQgaW50CQlwZXJpb2Q7Cj4gIAl1bnNpZ25lZCBpbnQJCWx0aF9icmlnaHRuZXNzOwo+
+ICAJdW5zaWduZWQgaW50CQkqbGV2ZWxzOwo+ICAJYm9vbAkJCWVuYWJsZWQ7Cj4gQEAgLTQ2LDcg
+KzQ1LDggQEAgc3RydWN0IHB3bV9ibF9kYXRhIHsKPiAgCXZvaWQJCQkoKmV4aXQpKHN0cnVjdCBk
+ZXZpY2UgKik7Cj4gIH07Cj4gIAo+IC1zdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29u
+KHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzKQo+ICtzdGF0aWMgdm9pZCBw
+d21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsCj4gKwkJCQkgICBz
+dHJ1Y3QgcHdtX3N0YXRlICpzdGF0ZSkKPiAgewo+ICAJaW50IGVycjsKPiAgCj4gQEAgLTU3LDcg
+KzU3LDggQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2Js
+X2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykKPiAgCWlmIChlcnIgPCAwKQo+ICAJCWRldl9lcnIo
+cGItPmRldiwgImZhaWxlZCB0byBlbmFibGUgcG93ZXIgc3VwcGx5XG4iKTsKPiAgCj4gLQlwd21f
+ZW5hYmxlKHBiLT5wd20pOwo+ICsJc3RhdGUtPmVuYWJsZWQgPSB0cnVlOwo+ICsJcHdtX2FwcGx5
+X3N0YXRlKHBiLT5wd20sIHN0YXRlKTsKPiAgCj4gIAlpZiAocGItPnBvc3RfcHdtX29uX2RlbGF5
+KQo+ICAJCW1zbGVlcChwYi0+cG9zdF9wd21fb25fZGVsYXkpOwo+IEBAIC03MCw2ICs3MSw4IEBA
+IHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRhICpw
+YiwgaW50IGJyaWdodG5lc3MpCj4gIAo+ICBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
+X29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICB7Cj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHN0
+YXRlOwo+ICsKPiAgCWlmICghcGItPmVuYWJsZWQpCj4gIAkJcmV0dXJuOwo+ICAKPiBAQCAtNzks
+OCArODIsMTAgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3
+bV9ibF9kYXRhICpwYikKPiAgCWlmIChwYi0+cHdtX29mZl9kZWxheSkKPiAgCQltc2xlZXAocGIt
+PnB3bV9vZmZfZGVsYXkpOwo+ICAKPiAtCXB3bV9jb25maWcocGItPnB3bSwgMCwgcGItPnBlcmlv
+ZCk7Cj4gLQlwd21fZGlzYWJsZShwYi0+cHdtKTsKPiArCXB3bV9nZXRfc3RhdGUocGItPnB3bSwg
+JnN0YXRlKTsKPiArCXN0YXRlLmVuYWJsZWQgPSBmYWxzZTsKPiArCXN0YXRlLmR1dHlfY3ljbGUg
+PSAwOwo+ICsJcHdtX2FwcGx5X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7CgpUaGlzIGlzIGFuIGlu
+IGV4YWN0IGNvbnZlcnNpb24gYmVjYXVzZSB0aGlzIGNvZGUgaWdub3JlcyBhIGZhaWx1cmUgdG8K
+c2V0IHRoZSBkdXR5IGN5Y2xlIHRvIHplcm8gd2hpbHN0IHB3bV9hcHBseV9zdGF0ZSgpIGRvZXMg
+bm90LgoKVGhpcyB3b3VsZCBvbmx5IG1hdHRlciBpZiBwd21fY29uZmlnKCkgcmV0dXJucyBhbiBl
+cnJvciBhbmQgZ2l2ZW4gdGhhdCBhClBXTSB3aGljaCBkb2VzIG5vdCBzdXBwb3J0IGEgZHV0eSBj
+eWNsZSBvZiB6ZXJvIGlzIHBlcm1pdHRlZCB0byBhZGp1c3QKemVybyB0byB0aGUgc21hbGxlc3Qg
+c3VwcG9ydGVkIHZhbHVlIHRoZXJlIGlzIG5vICpuZWVkKiBmb3IgYSBkcml2ZXIgdG8KcmV0dXJu
+IGFuIGVycm9yIGhlcmUuIEluIG90aGVyIHdvcmRzLi4uIHRoaXMgaXMgYSBzdWJ0bGUgY2hhbmdl
+IG9mCmJlaGF2aW91ciBhbmQgcGVyaGFwcyAoZXZlbiBwcm9iYWJseSkgaXJyZWxldmFudC4KCkhv
+d2V2ZXIgSSdtIHN0aWxsIGludGVyZXN0ZWQgd2hldGhlciB5b3UgZGlkIGFueSB3b3JrIHRvIGNv
+bmZpcm0gb3IKZGVueSB3aGV0aGVyIGRyaXZlcnMgdGhhdCByZXBvcnRzIGVycm9yIG9uIHplcm8g
+ZHV0eSBjeWNsZSBhY3R1YWxseQpleGlzdC4KCgo+ICAJcmVndWxhdG9yX2Rpc2FibGUocGItPnBv
+d2VyX3N1cHBseSk7Cj4gIAlwYi0+ZW5hYmxlZCA9IGZhbHNlOwo+IEBAIC04OSwxNCArOTQsMTcg
+QEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRh
+ICpwYikKPiAgc3RhdGljIGludCBjb21wdXRlX2R1dHlfY3ljbGUoc3RydWN0IHB3bV9ibF9kYXRh
+ICpwYiwgaW50IGJyaWdodG5lc3MpCj4gIHsKPiAgCXVuc2lnbmVkIGludCBsdGggPSBwYi0+bHRo
+X2JyaWdodG5lc3M7Cj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHN0YXRlOwo+ICAJdTY0IGR1dHlfY3lj
+bGU7Cj4gIAo+ICsJcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+ICsKPiAgCWlmIChw
+Yi0+bGV2ZWxzKQo+ICAJCWR1dHlfY3ljbGUgPSBwYi0+bGV2ZWxzW2JyaWdodG5lc3NdOwo+ICAJ
+ZWxzZQo+ICAJCWR1dHlfY3ljbGUgPSBicmlnaHRuZXNzOwo+ICAKPiAtCWR1dHlfY3ljbGUgKj0g
+cGItPnBlcmlvZCAtIGx0aDsKPiArCWR1dHlfY3ljbGUgKj0gc3RhdGUucGVyaW9kIC0gbHRoOwo+
+ICAJZG9fZGl2KGR1dHlfY3ljbGUsIHBiLT5zY2FsZSk7Cj4gIAo+ICAJcmV0dXJuIGR1dHlfY3lj
+bGUgKyBsdGg7Cj4gQEAgLTEwNiw2ICsxMTQsNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRf
+dXBkYXRlX3N0YXR1cyhzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwpCj4gIHsKPiAgCXN0cnVj
+dCBwd21fYmxfZGF0YSAqcGIgPSBibF9nZXRfZGF0YShibCk7Cj4gIAlpbnQgYnJpZ2h0bmVzcyA9
+IGJsLT5wcm9wcy5icmlnaHRuZXNzOwo+ICsJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiAgCWlu
+dCBkdXR5X2N5Y2xlOwo+ICAKPiAgCWlmIChibC0+cHJvcHMucG93ZXIgIT0gRkJfQkxBTktfVU5C
+TEFOSyB8fAo+IEBAIC0xMTgsOCArMTI3LDEyIEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF91
+cGRhdGVfc3RhdHVzKHN0cnVjdCBiYWNrbGlnaHRfZGV2aWNlICpibCkKPiAgCj4gIAlpZiAoYnJp
+Z2h0bmVzcyA+IDApIHsKPiAgCQlkdXR5X2N5Y2xlID0gY29tcHV0ZV9kdXR5X2N5Y2xlKHBiLCBi
+cmlnaHRuZXNzKTsKPiAtCQlwd21fY29uZmlnKHBiLT5wd20sIGR1dHlfY3ljbGUsIHBiLT5wZXJp
+b2QpOwoKSW4gcHJpbmNpcGxlIHRoZSBzYW1lIHN1YnRsZSBjaGFuZ2UgYXBwbGllcyBoZXJlLi4u
+IGJ1dCBpZiBwd21fY29uZmlnKCkKcmVwb3J0ZWQgYW4gZXJyb3IgaGVyZSB0aGVuIHRoZSBiYWNr
+bGlnaHQgcHJvYmFibHkgZGlkbid0IHdvcmsgYmVmb3JlCnlvdXIgY2hhbmdlIGVpdGhlciBzbyBs
+ZXNzIG5lZWQgdG8gd29ycnkgYWJvdXQgaXQhCgoKPiAtCQlwd21fYmFja2xpZ2h0X3Bvd2VyX29u
+KHBiLCBicmlnaHRuZXNzKTsKPiArCQlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4g
+KwkJc3RhdGUuZHV0eV9jeWNsZSA9IGR1dHlfY3ljbGU7Cj4gKwkJaWYgKCFzdGF0ZS5lbmFibGVk
+KQo+ICsJCQlwd21fYmFja2xpZ2h0X3Bvd2VyX29uKHBiLCAmc3RhdGUpOwoKSXQgdmVyZ2VzIHRv
+d2FyZHMgbml0IHBpY2tpbmcgYnV0IEkgZG9uJ3QgcmVhbGx5IGxpa2UgdGhlIHdheSBhIGhhbGYg
+dXBkYXRlZApzdGF0ZSBpcyBzaGFyZWQgYmV0d2VlbiAuLi51cGRhdGVfc3RhdHVzIGFuZCAuLi5w
+b3dlcl9vbi4KCkknZCByYXRoZXIgaXQgbG9va2VkIHNvbWV0aGluZyBsaWtlOgoKCQlwd21fZ2V0
+X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7CgkJaWYgKCFzdGF0ZS5lbmFibGVkKSB7CgkJCXB3bV9i
+YWNrbGlnaHRfcG93ZXJfb24ocGIpOyAgPC0tIG5vIHNoYXJpbmcgaGVyZSwKCQkJICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgbWFrZSBvbiBtYXRjaCBvZmYKCQl9IGVsc2UgewoJCQlw
+d21fYmFja2xpZ2h0X3VwZGF0ZV9kdXR5X2N5Y2xlKHBiLCAmc3RhdGUsIGJyaWdodG5lc3MpOwoJ
+CQlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKCQl9CgkKKGFuZCBoYXZlIHB3bV9i
+YWNrbGlnaHRfcG93ZXJfb24oKSBhbHNvIGNhbGwgLi4udXBkYXRlX2R1dHlfY3ljbGUgdG9vKQoK
+VGhvdWdodHM/CgoKRGFuaWVsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVz
+a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9k
+cmktZGV2ZWwK
