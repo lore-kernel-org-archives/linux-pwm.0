@@ -1,119 +1,356 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v2] backlight: pwm_bl: switch to using "atomic" PWM API
-Date: Mon, 30 Jul 2018 12:12:59 +0100
-Message-ID: <20180730111259.5qjtchfo67nquila@holly.lan>
-References: <20180727151121.12296-1-enric.balletbo@collabora.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v5 08/21] watchdog: jz4740: Use regmap and WDT clock
+ provided by TCU driver
+Date: Mon, 30 Jul 2018 23:27:54 +0200
+Message-ID: <1532986074.4702.1@smtp.crapouillou.net>
+References: <20180724231958.20659-1-paul@crapouillou.net>
+        <20180724231958.20659-9-paul@crapouillou.net>
+        <9179ab75-f071-d6a2-ef61-52431ca6409b@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20180727151121.12296-1-enric.balletbo@collabora.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, Lee Jones <lee.jones@linaro.org>, cl@rock-chips.com
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9179ab75-f071-d6a2-ef61-52431ca6409b@roeck-us.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpLCBKdWwgMjcsIDIwMTggYXQgMDU6MTE6MjFQTSArMDIwMCwgRW5yaWMgQmFsbGV0Ym8g
-aSBTZXJyYSB3cm90ZToKPiBUaGUgImF0b21pYyIgQVBJIGFsbG93cyB1cyB0byBjb25maWd1cmUg
-UFdNIHBlcmlvZCBhbmQgZHV0eV9jeWNsZSBhbmQKPiBlbmFibGUgaXQgaW4gb25lIGNhbGwuCj4g
-Cj4gVGhlIHBhdGNoIGFsc28gbW92ZXMgdGhlIHB3bV9pbml0X3N0YXRlIGp1c3QgYmVmb3JlIGFu
-eSB1c2Ugb2YgdGhlCj4gcHdtX3N0YXRlIHN0cnVjdCwgdGhpcyBmaXhlcyBhIHBvdGVudGlhbCBi
-dWcgd2hlcmUgcHdtX2dldF9zdGF0ZQo+IGNhbiBiZSBjYWxsZWQgYmVmb3JlIHB3bV9pbml0X3N0
-YXRlLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEVucmljIEJhbGxldGJvIGkgU2VycmEgPGVucmljLmJh
-bGxldGJvQGNvbGxhYm9yYS5jb20+Cj4gLS0tCj4gCj4gQ2hhbmdlcyBpbiB2MjoKPiAtIERvIG5v
-dCBmb3JjZSB0aGUgUFdNIGJlIG9mZiBpbiB0aGUgZmlyc3QgY2FsbCB0byBwd21fYXBwbHlfc3Rh
-dGUuCj4gLSBEZWxheWVkIGFwcGx5aW5nIHRoZSBzdGF0ZSB1bnRpbCB3ZSBrbm93IHdoYXQgdGhl
-IHBlcmlvZCBpcy4KPiAtIFJlbW92ZWQgcGItPnBlcmlvZCBhcyBhZnRlciB0aGUgY29udmVyc2lv
-biBpcyBub3QgbmVlZGVkLgoKUmUtcmVhZGluZyB0aGlzIEkgaGF2ZSBzcG90dGVkIGEgY291cGxl
-IG9mIHRoaW5ncyBJIHByb2JhYmx5IGNvdWxkIGhhdmUKbWVudGlvbmVkIGFnYWluc3QgdjEuLi4g
-c29ycnkuCgpJIHRoaW5rIGl0J3MgbG9va2luZyBnb29kIHRob3VnaCwgSSBleHBlY3QgdG8gYmUg
-YWJsZSB0byBhY2sgdjMuCgoKPiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCA3
-MSArKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgNDEg
-aW5zZXJ0aW9ucygrKSwgMzAgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-dmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2Js
-LmMKPiBpbmRleCBiZGZjYzBhNzFkYjEuLmRkMWNiMjliNTMzMiAxMDA2NDQKPiAtLS0gYS9kcml2
-ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xp
-Z2h0L3B3bV9ibC5jCj4gQEAgLTI4LDcgKzI4LDYgQEAKPiAgc3RydWN0IHB3bV9ibF9kYXRhIHsK
-PiAgCXN0cnVjdCBwd21fZGV2aWNlCSpwd207Cj4gIAlzdHJ1Y3QgZGV2aWNlCQkqZGV2Owo+IC0J
-dW5zaWduZWQgaW50CQlwZXJpb2Q7Cj4gIAl1bnNpZ25lZCBpbnQJCWx0aF9icmlnaHRuZXNzOwo+
-ICAJdW5zaWduZWQgaW50CQkqbGV2ZWxzOwo+ICAJYm9vbAkJCWVuYWJsZWQ7Cj4gQEAgLTQ2LDcg
-KzQ1LDggQEAgc3RydWN0IHB3bV9ibF9kYXRhIHsKPiAgCXZvaWQJCQkoKmV4aXQpKHN0cnVjdCBk
-ZXZpY2UgKik7Cj4gIH07Cj4gIAo+IC1zdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29u
-KHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzKQo+ICtzdGF0aWMgdm9pZCBw
-d21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsCj4gKwkJCQkgICBz
-dHJ1Y3QgcHdtX3N0YXRlICpzdGF0ZSkKPiAgewo+ICAJaW50IGVycjsKPiAgCj4gQEAgLTU3LDcg
-KzU3LDggQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2Js
-X2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykKPiAgCWlmIChlcnIgPCAwKQo+ICAJCWRldl9lcnIo
-cGItPmRldiwgImZhaWxlZCB0byBlbmFibGUgcG93ZXIgc3VwcGx5XG4iKTsKPiAgCj4gLQlwd21f
-ZW5hYmxlKHBiLT5wd20pOwo+ICsJc3RhdGUtPmVuYWJsZWQgPSB0cnVlOwo+ICsJcHdtX2FwcGx5
-X3N0YXRlKHBiLT5wd20sIHN0YXRlKTsKPiAgCj4gIAlpZiAocGItPnBvc3RfcHdtX29uX2RlbGF5
-KQo+ICAJCW1zbGVlcChwYi0+cG9zdF9wd21fb25fZGVsYXkpOwo+IEBAIC03MCw2ICs3MSw4IEBA
-IHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRhICpw
-YiwgaW50IGJyaWdodG5lc3MpCj4gIAo+ICBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
-X29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICB7Cj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHN0
-YXRlOwo+ICsKPiAgCWlmICghcGItPmVuYWJsZWQpCj4gIAkJcmV0dXJuOwo+ICAKPiBAQCAtNzks
-OCArODIsMTAgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3
-bV9ibF9kYXRhICpwYikKPiAgCWlmIChwYi0+cHdtX29mZl9kZWxheSkKPiAgCQltc2xlZXAocGIt
-PnB3bV9vZmZfZGVsYXkpOwo+ICAKPiAtCXB3bV9jb25maWcocGItPnB3bSwgMCwgcGItPnBlcmlv
-ZCk7Cj4gLQlwd21fZGlzYWJsZShwYi0+cHdtKTsKPiArCXB3bV9nZXRfc3RhdGUocGItPnB3bSwg
-JnN0YXRlKTsKPiArCXN0YXRlLmVuYWJsZWQgPSBmYWxzZTsKPiArCXN0YXRlLmR1dHlfY3ljbGUg
-PSAwOwo+ICsJcHdtX2FwcGx5X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7CgpUaGlzIGlzIGFuIGlu
-IGV4YWN0IGNvbnZlcnNpb24gYmVjYXVzZSB0aGlzIGNvZGUgaWdub3JlcyBhIGZhaWx1cmUgdG8K
-c2V0IHRoZSBkdXR5IGN5Y2xlIHRvIHplcm8gd2hpbHN0IHB3bV9hcHBseV9zdGF0ZSgpIGRvZXMg
-bm90LgoKVGhpcyB3b3VsZCBvbmx5IG1hdHRlciBpZiBwd21fY29uZmlnKCkgcmV0dXJucyBhbiBl
-cnJvciBhbmQgZ2l2ZW4gdGhhdCBhClBXTSB3aGljaCBkb2VzIG5vdCBzdXBwb3J0IGEgZHV0eSBj
-eWNsZSBvZiB6ZXJvIGlzIHBlcm1pdHRlZCB0byBhZGp1c3QKemVybyB0byB0aGUgc21hbGxlc3Qg
-c3VwcG9ydGVkIHZhbHVlIHRoZXJlIGlzIG5vICpuZWVkKiBmb3IgYSBkcml2ZXIgdG8KcmV0dXJu
-IGFuIGVycm9yIGhlcmUuIEluIG90aGVyIHdvcmRzLi4uIHRoaXMgaXMgYSBzdWJ0bGUgY2hhbmdl
-IG9mCmJlaGF2aW91ciBhbmQgcGVyaGFwcyAoZXZlbiBwcm9iYWJseSkgaXJyZWxldmFudC4KCkhv
-d2V2ZXIgSSdtIHN0aWxsIGludGVyZXN0ZWQgd2hldGhlciB5b3UgZGlkIGFueSB3b3JrIHRvIGNv
-bmZpcm0gb3IKZGVueSB3aGV0aGVyIGRyaXZlcnMgdGhhdCByZXBvcnRzIGVycm9yIG9uIHplcm8g
-ZHV0eSBjeWNsZSBhY3R1YWxseQpleGlzdC4KCgo+ICAJcmVndWxhdG9yX2Rpc2FibGUocGItPnBv
-d2VyX3N1cHBseSk7Cj4gIAlwYi0+ZW5hYmxlZCA9IGZhbHNlOwo+IEBAIC04OSwxNCArOTQsMTcg
-QEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRh
-ICpwYikKPiAgc3RhdGljIGludCBjb21wdXRlX2R1dHlfY3ljbGUoc3RydWN0IHB3bV9ibF9kYXRh
-ICpwYiwgaW50IGJyaWdodG5lc3MpCj4gIHsKPiAgCXVuc2lnbmVkIGludCBsdGggPSBwYi0+bHRo
-X2JyaWdodG5lc3M7Cj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHN0YXRlOwo+ICAJdTY0IGR1dHlfY3lj
-bGU7Cj4gIAo+ICsJcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+ICsKPiAgCWlmIChw
-Yi0+bGV2ZWxzKQo+ICAJCWR1dHlfY3ljbGUgPSBwYi0+bGV2ZWxzW2JyaWdodG5lc3NdOwo+ICAJ
-ZWxzZQo+ICAJCWR1dHlfY3ljbGUgPSBicmlnaHRuZXNzOwo+ICAKPiAtCWR1dHlfY3ljbGUgKj0g
-cGItPnBlcmlvZCAtIGx0aDsKPiArCWR1dHlfY3ljbGUgKj0gc3RhdGUucGVyaW9kIC0gbHRoOwo+
-ICAJZG9fZGl2KGR1dHlfY3ljbGUsIHBiLT5zY2FsZSk7Cj4gIAo+ICAJcmV0dXJuIGR1dHlfY3lj
-bGUgKyBsdGg7Cj4gQEAgLTEwNiw2ICsxMTQsNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRf
-dXBkYXRlX3N0YXR1cyhzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwpCj4gIHsKPiAgCXN0cnVj
-dCBwd21fYmxfZGF0YSAqcGIgPSBibF9nZXRfZGF0YShibCk7Cj4gIAlpbnQgYnJpZ2h0bmVzcyA9
-IGJsLT5wcm9wcy5icmlnaHRuZXNzOwo+ICsJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiAgCWlu
-dCBkdXR5X2N5Y2xlOwo+ICAKPiAgCWlmIChibC0+cHJvcHMucG93ZXIgIT0gRkJfQkxBTktfVU5C
-TEFOSyB8fAo+IEBAIC0xMTgsOCArMTI3LDEyIEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF91
-cGRhdGVfc3RhdHVzKHN0cnVjdCBiYWNrbGlnaHRfZGV2aWNlICpibCkKPiAgCj4gIAlpZiAoYnJp
-Z2h0bmVzcyA+IDApIHsKPiAgCQlkdXR5X2N5Y2xlID0gY29tcHV0ZV9kdXR5X2N5Y2xlKHBiLCBi
-cmlnaHRuZXNzKTsKPiAtCQlwd21fY29uZmlnKHBiLT5wd20sIGR1dHlfY3ljbGUsIHBiLT5wZXJp
-b2QpOwoKSW4gcHJpbmNpcGxlIHRoZSBzYW1lIHN1YnRsZSBjaGFuZ2UgYXBwbGllcyBoZXJlLi4u
-IGJ1dCBpZiBwd21fY29uZmlnKCkKcmVwb3J0ZWQgYW4gZXJyb3IgaGVyZSB0aGVuIHRoZSBiYWNr
-bGlnaHQgcHJvYmFibHkgZGlkbid0IHdvcmsgYmVmb3JlCnlvdXIgY2hhbmdlIGVpdGhlciBzbyBs
-ZXNzIG5lZWQgdG8gd29ycnkgYWJvdXQgaXQhCgoKPiAtCQlwd21fYmFja2xpZ2h0X3Bvd2VyX29u
-KHBiLCBicmlnaHRuZXNzKTsKPiArCQlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4g
-KwkJc3RhdGUuZHV0eV9jeWNsZSA9IGR1dHlfY3ljbGU7Cj4gKwkJaWYgKCFzdGF0ZS5lbmFibGVk
-KQo+ICsJCQlwd21fYmFja2xpZ2h0X3Bvd2VyX29uKHBiLCAmc3RhdGUpOwoKSXQgdmVyZ2VzIHRv
-d2FyZHMgbml0IHBpY2tpbmcgYnV0IEkgZG9uJ3QgcmVhbGx5IGxpa2UgdGhlIHdheSBhIGhhbGYg
-dXBkYXRlZApzdGF0ZSBpcyBzaGFyZWQgYmV0d2VlbiAuLi51cGRhdGVfc3RhdHVzIGFuZCAuLi5w
-b3dlcl9vbi4KCkknZCByYXRoZXIgaXQgbG9va2VkIHNvbWV0aGluZyBsaWtlOgoKCQlwd21fZ2V0
-X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7CgkJaWYgKCFzdGF0ZS5lbmFibGVkKSB7CgkJCXB3bV9i
-YWNrbGlnaHRfcG93ZXJfb24ocGIpOyAgPC0tIG5vIHNoYXJpbmcgaGVyZSwKCQkJICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgbWFrZSBvbiBtYXRjaCBvZmYKCQl9IGVsc2UgewoJCQlw
-d21fYmFja2xpZ2h0X3VwZGF0ZV9kdXR5X2N5Y2xlKHBiLCAmc3RhdGUsIGJyaWdodG5lc3MpOwoJ
-CQlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKCQl9CgkKKGFuZCBoYXZlIHB3bV9i
-YWNrbGlnaHRfcG93ZXJfb24oKSBhbHNvIGNhbGwgLi4udXBkYXRlX2R1dHlfY3ljbGUgdG9vKQoK
-VGhvdWdodHM/CgoKRGFuaWVsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9k
-cmktZGV2ZWwK
+Hi Guenter,
+
+Le mer. 25 juil. 2018 =E0 3:14, Guenter Roeck <linux@roeck-us.net> a=20
+=E9crit :
+> On 07/24/2018 04:19 PM, Paul Cercueil wrote:
+>> Instead of requesting the "ext" clock and handling the watchdog clock
+>> divider and gating in the watchdog driver, we now request and use the
+>> "wdt" clock that is supplied by the ingenic-timer "TCU" driver.
+>>=20
+>> The major benefit is that the watchdog's clock rate and parent can=20
+>> now
+>> be specified from within devicetree, instead of hardcoded in the=20
+>> driver.
+>>=20
+>=20
+> Where is the clock _rate_ specified in the devicetree file ?
+>=20
+> Changing the clock rate in the driver may not be as hardcoded as=20
+> before,
+> but the driver still changes the clock rate.
+
+Right.
+
+>> Also, this driver won't poke anymore into the TCU registers to
+>> enable/disable the clock, as this is now handled by the TCU driver.
+>>=20
+>> On the bad side, we break the ABI with devicetree - as we now=20
+>> request a
+>> different clock. In this very specific case it is still okay, as=20
+>> every
+>> Ingenic JZ47xx-based board out there compile the devicetree within=20
+>> the
+>> kernel; so it's still time to push breaking changes, in order to get=20
+>> a
+>> clean devicetree that won't break once it musn't.
+>=20
+> mustn't
+>=20
+>>=20
+>=20
+> This change needs to be documented in the devicetree bindings and=20
+> must be
+> approved by a DT maintainer. The bindings change only changes the=20
+> clock name
+> in the example, but not in the bindings description itself (which=20
+> still
+> references the rtc clock).
+
+Right, that's an error in the doc. Easily fixed.
+
+>> Since we broke the ABI by changing the clock, the driver was also
+>> updated to use the regmap provided by the TCU driver.
+>>=20
+>=20
+> Odd logic. What does one have to do with the other ? Why not split
+> the patch into two parts, one per logical change, as would be=20
+> customary ?
+
+I didn't want to break the devicetree ABI twice ;)
+I'll split them.
+
+>> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>> ---
+>>   drivers/watchdog/Kconfig      |   2 +
+>>   drivers/watchdog/jz4740_wdt.c | 128=20
+>> +++++++++++++++++++++---------------------
+>>   2 files changed, 66 insertions(+), 64 deletions(-)
+>>=20
+>>   v5: New patch
+>>=20
+>> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+>> index 9af07fd92763..834222abbbdb 100644
+>> --- a/drivers/watchdog/Kconfig
+>> +++ b/drivers/watchdog/Kconfig
+>> @@ -1476,7 +1476,9 @@ config INDYDOG
+>>   config JZ4740_WDT
+>>   	tristate "Ingenic jz4740 SoC hardware watchdog"
+>>   	depends on MACH_JZ4740 || MACH_JZ4780
+>> +	depends on COMMON_CLK
+>>   	select WATCHDOG_CORE
+>> +	select INGENIC_TIMER
+>>   	help
+>>   	  Hardware driver for the built-in watchdog timer on Ingenic=20
+>> jz4740 SoCs.
+>>   =7Fdiff --git a/drivers/watchdog/jz4740_wdt.c=20
+>> b/drivers/watchdog/jz4740_wdt.c
+>> index ec4d99a830ba..aaa6fc87136c 100644
+>> --- a/drivers/watchdog/jz4740_wdt.c
+>> +++ b/drivers/watchdog/jz4740_wdt.c
+>> @@ -13,6 +13,7 @@
+>>    *
+>>    */
+>>   =7F+#include <linux/mfd/ingenic-tcu.h>
+>>   #include <linux/module.h>
+>>   #include <linux/moduleparam.h>
+>>   #include <linux/types.h>
+>> @@ -25,26 +26,7 @@
+>>   #include <linux/slab.h>
+>>   #include <linux/err.h>
+>>   #include <linux/of.h>
+>> -
+>> -#include <asm/mach-jz4740/timer.h>
+>> -
+>> -#define JZ_REG_WDT_TIMER_DATA     0x0
+>> -#define JZ_REG_WDT_COUNTER_ENABLE 0x4
+>> -#define JZ_REG_WDT_TIMER_COUNTER  0x8
+>> -#define JZ_REG_WDT_TIMER_CONTROL  0xC
+>> -
+>> -#define JZ_WDT_CLOCK_PCLK 0x1
+>> -#define JZ_WDT_CLOCK_RTC  0x2
+>> -#define JZ_WDT_CLOCK_EXT  0x4
+>> -
+>> -#define JZ_WDT_CLOCK_DIV_SHIFT   3
+>> -
+>> -#define JZ_WDT_CLOCK_DIV_1    (0 << JZ_WDT_CLOCK_DIV_SHIFT)
+>> -#define JZ_WDT_CLOCK_DIV_4    (1 << JZ_WDT_CLOCK_DIV_SHIFT)
+>> -#define JZ_WDT_CLOCK_DIV_16   (2 << JZ_WDT_CLOCK_DIV_SHIFT)
+>> -#define JZ_WDT_CLOCK_DIV_64   (3 << JZ_WDT_CLOCK_DIV_SHIFT)
+>> -#define JZ_WDT_CLOCK_DIV_256  (4 << JZ_WDT_CLOCK_DIV_SHIFT)
+>> -#define JZ_WDT_CLOCK_DIV_1024 (5 << JZ_WDT_CLOCK_DIV_SHIFT)
+>> +#include <linux/regmap.h>
+>>   =7F  #define DEFAULT_HEARTBEAT 5
+>>   #define MAX_HEARTBEAT     2048
+>> @@ -64,15 +46,15 @@ MODULE_PARM_DESC(heartbeat,
+>>   =7F  struct jz4740_wdt_drvdata {
+>>   	struct watchdog_device wdt;
+>> -	void __iomem *base;
+>> -	struct clk *rtc_clk;
+>> +	struct regmap *map;
+>> +	struct clk *clk;
+>>   };
+>>   =7F  static int jz4740_wdt_ping(struct watchdog_device *wdt_dev)
+>>   {
+>>   	struct jz4740_wdt_drvdata *drvdata =3D=20
+>> watchdog_get_drvdata(wdt_dev);
+>>   =7F-	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
+>> +	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
+>>   	return 0;
+>>   }
+>>   =7F@@ -80,52 +62,65 @@ static int jz4740_wdt_set_timeout(struct=20
+>> watchdog_device *wdt_dev,
+>>   				    unsigned int new_timeout)
+>>   {
+>>   	struct jz4740_wdt_drvdata *drvdata =3D=20
+>> watchdog_get_drvdata(wdt_dev);
+>> -	unsigned int rtc_clk_rate;
+>> -	unsigned int timeout_value;
+>> -	unsigned short clock_div =3D JZ_WDT_CLOCK_DIV_1;
+>> -
+>> -	rtc_clk_rate =3D clk_get_rate(drvdata->rtc_clk);
+>> -
+>> -	timeout_value =3D rtc_clk_rate * new_timeout;
+>> -	while (timeout_value > 0xffff) {
+>> -		if (clock_div =3D=3D JZ_WDT_CLOCK_DIV_1024) {
+>> -			/* Requested timeout too high;
+>> -			* use highest possible value. */
+>> -			timeout_value =3D 0xffff;
+>> -			break;
+>> -		}
+>> -		timeout_value >>=3D 2;
+>> -		clock_div +=3D (1 << JZ_WDT_CLOCK_DIV_SHIFT);
+>> +	struct clk *clk =3D drvdata->clk;
+>> +	unsigned long clk_rate, timeout_value;
+>> +	bool change_rate =3D false;
+>> +	u32 tcer;
+>> +	int ret =3D 0;
+>> +
+>> +	clk_rate =3D clk_get_rate(clk);
+>> +	timeout_value =3D clk_rate * new_timeout;
+>> +
+>> +	if (timeout_value > 0xffff) {
+>> +		clk_rate =3D clk_round_rate(clk, 0xffff / new_timeout);
+>> +		timeout_value =3D clk_rate * new_timeout;
+>> +		if (timeout_value > 0xffff)
+>> +			return -EINVAL;
+>=20
+> This is conceptually wrong. The probe code should determine the
+> maximum timeout and report it to the watchdog core, and it should
+> not be necessary to validate the timeout in this function.
+
+That sounds better indeed.
+
+> Also, unless I am missing something, the new code only ever reduces=20
+> the clock
+> rate and never increases it. Given that, you might as well set the=20
+> clock
+> rate to the lowest possible rate when instantiating the driver and not
+> bother with updating it later. That would simplify the code=20
+> significantly
+> and make it much easier to understand.
+
+Actually I could even use whatever rate the clock is running at without=20
+trying
+to change it within the driver. Then my clock provider can default to=20
+the highest
+divider, and the rate would be overridable in devicetree for those who=20
+don't like
+the default rate.
+
+> Also, clk_round_rate() can technically return 0 or even a negative=20
+> (error)
+> value. Please make sure that the returned rate is valid.
+>=20
+>> +		change_rate =3D true;
+>>   	}
+>>   =7F-	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+>> -	writew(clock_div, drvdata->base + JZ_REG_WDT_TIMER_CONTROL);
+>> +	regmap_read(drvdata->map, TCU_REG_WDT_TCER, &tcer);
+>> +	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
+>>   =7F-	writew((u16)timeout_value, drvdata->base +=20
+>> JZ_REG_WDT_TIMER_DATA);
+>> -	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
+>> -	writew(clock_div | JZ_WDT_CLOCK_RTC,
+>> -		drvdata->base + JZ_REG_WDT_TIMER_CONTROL);
+>> +	if (change_rate) {
+>> +		clk_disable_unprepare(clk);
+>> +		ret =3D clk_set_rate(clk, clk_rate);
+>> +		clk_prepare_enable(clk);
+>> +		if (ret)
+>> +			goto done;
+>> +	}
+>>   =7F-	writeb(0x1, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+>> +	regmap_write(drvdata->map, TCU_REG_WDT_TDR, (u16)timeout_value);
+>> +	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
+>>   =7F  	wdt_dev->timeout =3D new_timeout;
+>> -	return 0;
+>> +
+>> +done:
+>> +	regmap_write(drvdata->map, TCU_REG_WDT_TCER, tcer &=20
+>> TCU_WDT_TCER_TCEN);
+>=20
+> regmap_read() and regmap_write return errors. Are those ignored on=20
+> purpose ?
+
+Sort of. It's MMIO without IOMMU, what can go wrong?
+
+>> +	return ret;
+>>   }
+>>   =7F  static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
+>>   {
+>> -	jz4740_timer_enable_watchdog();
+>> -	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
+>> +	struct jz4740_wdt_drvdata *drvdata =3D watchdog_get_drvdata(wdt_dev);
+>> +	int ret;
+>>   =7F-	return 0;
+>> +	clk_prepare_enable(drvdata->clk);
+>> +	ret =3D jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
+>> +	if (ret)
+>> +		clk_disable_unprepare(drvdata->clk);
+>> +	else
+>> +		regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
+>> +
+>=20
+> No else here please. Proper error handling is preferred.
+
+Sure.
+
+>> +	return ret;
+>>   }
+>>   =7F  static int jz4740_wdt_stop(struct watchdog_device *wdt_dev)
+>>   {
+>>   	struct jz4740_wdt_drvdata *drvdata =3D=20
+>> watchdog_get_drvdata(wdt_dev);
+>>   =7F-	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+>> -	jz4740_timer_disable_watchdog();
+>> +	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
+>> +	clk_disable_unprepare(drvdata->clk);
+>>   =7F  	return 0;
+>>   }
+>> @@ -163,13 +158,17 @@ MODULE_DEVICE_TABLE(of, jz4740_wdt_of_matches);
+>>   =7F  static int jz4740_wdt_probe(struct platform_device *pdev)
+>>   {
+>> +	struct device *dev =3D &pdev->dev;
+>>   	struct jz4740_wdt_drvdata *drvdata;
+>>   	struct watchdog_device *jz4740_wdt;
+>> -	struct resource	*res;
+>>   	int ret;
+>>   =7F-	drvdata =3D devm_kzalloc(&pdev->dev, sizeof(struct=20
+>> jz4740_wdt_drvdata),
+>> -			       GFP_KERNEL);
+>> +	if (!dev->of_node) {
+>> +		dev_err(dev, "jz4740-wdt must be probed via devicetree\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>=20
+> Please explain. This check seems technically unnecessary and thus=20
+> pointless.
+> The driver doesn't even initialize its watchdog timeout from=20
+> devicetree data.
+
+Right, we get the regmap from the device's parent but that does not=20
+imply devicetree.
+I'll remove that.
+
+>> +	drvdata =3D devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
+>>   	if (!drvdata)
+>>   		return -ENOMEM;
+>>   =7F@@ -182,19 +181,20 @@ static int jz4740_wdt_probe(struct=20
+>> platform_device *pdev)
+>>   	jz4740_wdt->timeout =3D heartbeat;
+>>   	jz4740_wdt->min_timeout =3D 1;
+>>   	jz4740_wdt->max_timeout =3D MAX_HEARTBEAT;
+>> -	jz4740_wdt->parent =3D &pdev->dev;
+>> +	jz4740_wdt->parent =3D dev;
+>>   	watchdog_set_nowayout(jz4740_wdt, nowayout);
+>>   	watchdog_set_drvdata(jz4740_wdt, drvdata);
+>>   =7F-	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> -	drvdata->base =3D devm_ioremap_resource(&pdev->dev, res);
+>> -	if (IS_ERR(drvdata->base))
+>> -		return PTR_ERR(drvdata->base);
+>> +	drvdata->map =3D dev_get_regmap(dev->parent, NULL);
+>> +	if (IS_ERR(drvdata->map)) {
+>=20
+> dev_get_regmap() does not return an ERR_PTR().
+
+Oops.
+
+>> +		dev_warn(dev, "regmap not found\n");
+>> +		return PTR_ERR(drvdata->map);
+>> +	}
+>>   =7F-	drvdata->rtc_clk =3D devm_clk_get(&pdev->dev, "rtc");
+>> -	if (IS_ERR(drvdata->rtc_clk)) {
+>> -		dev_err(&pdev->dev, "cannot find RTC clock\n");
+>> -		return PTR_ERR(drvdata->rtc_clk);
+>> +	drvdata->clk =3D devm_clk_get(&pdev->dev, "wdt");
+>> +	if (IS_ERR(drvdata->clk)) {
+>> +		dev_err(&pdev->dev, "cannot find WDT clock\n");
+>> +		return PTR_ERR(drvdata->clk);
+>>   	}
+>>   =7F  	ret =3D devm_watchdog_register_device(&pdev->dev, &drvdata->wdt)=
+;
+>>=20
+>=20
+
+Thanks!
+-Paul Cercueil
+=
