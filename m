@@ -1,31 +1,23 @@
-Return-Path: <geert.uytterhoeven@gmail.com>
-MIME-Version: 1.0
-References: <1532951391-28792-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1532951391-28792-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 30 Jul 2018 17:18:38 +0200
-Message-ID: <CAMuHMdUxKVU2WUqakEPmAd13Fpj8Pk4BJnnTOS7eLw2PpW-7hw@mail.gmail.com>
+Return-Path: <horms@verge.net.au>
+Date: Tue, 31 Jul 2018 12:40:43 +0200
+From: Simon Horman <horms@verge.net.au>
 Subject: Re: [PATCH] dt-bindings: pwm: rcar: Add bindings for R-Car E3 support
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20180731104042.4jl4ykaeoh3sxyo4@verge.net.au>
+References: <1532951391-28792-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1532951391-28792-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
 
-On Mon, Jul 30, 2018 at 1:51 PM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
+On Mon, Jul 30, 2018 at 08:49:51PM +0900, Yoshihiro Shimoda wrote:
 > This patch adds bindings for R-Car E3. No driver update is needed.
->
+> 
 > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
