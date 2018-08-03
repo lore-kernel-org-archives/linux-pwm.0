@@ -1,72 +1,99 @@
-Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/2] pwm: document the pin state after pwm_disable() to be
- undefined
-Date: Mon, 20 Aug 2018 16:43:56 +0200
-Message-Id: <20180820144357.7206-2-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20180820144357.7206-1-u.kleine-koenig@pengutronix.de>
-References: <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
- <20180820144357.7206-1-u.kleine-koenig@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, kernel@pengutronix.de
+Return-Path: <matthieu.castet@gmail.com>
+Return-Path: <matthieu.castet@gmail.com>
+Sender: Castet Matthieu <matthieu.castet@gmail.com>
+From: Matthieu CASTET <matthieu.castet@parrot.com>
+Subject: [PATCH] pwm: Add tracepoint for apply state
+Date: Fri,  3 Aug 2018 16:00:29 +0200
+Message-Id: <20180803140029.29810-1-matthieu.castet@parrot.com>
 List-ID: <linux-pwm.vger.kernel.org>
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Matthieu CASTET <matthieu.castet@parrot.com>
 
-Contrarily to the common assumption that pwm_disable() stops the
-output at the state where it just happens to be, this isn't what the
-hardware does on some machines. For example on i.MX6 the pin goes to
-0 level instead.
+This allows to trace pwm with ftrace
 
-Note this doesn't reduce the expressiveness of the pwm-API because if
-you want the PWM-Pin to stay at a given state, you are supposed to
-configure it to 0% or 100% duty cycle without calling pwm_disable().
-The backend driver is free to implement potential power savings
-already when the duty cycle changes to one of these two cases so this
-doesn't come at an increased runtime power cost (once the respective
-drivers are fixed).
-
-In return this allows to adhere to the API more easily for drivers that
-currently cannot know if it's ok to disable the hardware on
-pwm_disable() because the caller might or might not rely on the pin
-stopping at a certain level.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Matthieu Castet <matthieu.castet@parrot.com>
 ---
- Documentation/pwm.txt | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/pwm/core.c         |  5 ++++
+ include/trace/events/pwm.h | 48 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 53 insertions(+)
+ create mode 100644 include/trace/events/pwm.h
 
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 8fbf0aa3ba2d..36cbcd353e37 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -49,11 +49,15 @@ After being requested, a PWM has to be configured using::
- This API controls both the PWM period/duty_cycle config and the
- enable/disable state.
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 1581f6ab1b1f..4342974af31a 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -32,6 +32,9 @@
  
-+Note that it is explicitly undefined what happens to the PWM pin when the
-+pwm-device is disabled, even if the duty cycle was configured to 0% or 100%
-+before. It might stay at the last configured state, it might go to 0 or High-Z.
+ #include <dt-bindings/pwm/pwm.h>
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/pwm.h>
 +
- The pwm_config(), pwm_enable() and pwm_disable() functions are just wrappers
- around pwm_apply_state() and should not be used if the user wants to change
- several parameter at once. For example, if you see pwm_config() and
--pwm_{enable,disable}() calls in the same function, this probably means you
--should switch to pwm_apply_state().
-+pwm_enable() calls in the same function, this probably means you should switch
-+to pwm_apply_state().
+ #define MAX_PWMS 1024
  
- The PWM user API also allows one to query the PWM state with pwm_get_state().
+ static DEFINE_MUTEX(pwm_lookup_lock);
+@@ -475,6 +478,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
+ 	if (!memcmp(state, &pwm->state, sizeof(*state)))
+ 		return 0;
  
++	trace_pwm_apply_state(pwm, state);
++
+ 	if (pwm->chip->ops->apply) {
+ 		err = pwm->chip->ops->apply(pwm->chip, pwm, state);
+ 		if (err)
+diff --git a/include/trace/events/pwm.h b/include/trace/events/pwm.h
+new file mode 100644
+index 000000000000..0c28a76b1f60
+--- /dev/null
++++ b/include/trace/events/pwm.h
+@@ -0,0 +1,48 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM pwm
++
++#if !defined(_TRACE_PWM_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_PWM_H
++
++#include <linux/pwm.h>
++#include <linux/tracepoint.h>
++
++
++TRACE_EVENT(pwm_apply_state,
++
++	TP_PROTO(struct pwm_device *pwm, struct pwm_state *state),
++
++	TP_ARGS(pwm, state),
++
++	TP_STRUCT__entry(
++		__string(name,			pwm->label)
++		__field(struct pwm_device *,	pwm)
++		__field(unsigned int,			num)
++		__field(unsigned int,			period)
++		__field(unsigned int,			duty_cycle)
++		__field(enum pwm_polarity,		polarity)
++		__field(bool,					enabled)
++	),
++
++	TP_fast_assign(
++		__assign_str(name, pwm->label);
++		__entry->pwm = pwm;
++		__entry->num = pwm->pwm;
++		__entry->period = state->period;
++		__entry->duty_cycle = state->duty_cycle;
++		__entry->polarity = state->polarity;
++		__entry->enabled = state->enabled;
++	),
++
++	TP_printk("%s: apply state struct pwm[%p]: pwm%u "
++		"enabled=%d polarity=%u period_ns=%u duty_ns=%u",
++		  __get_str(name), __entry->pwm, __entry->num,
++		  __entry->enabled, __entry->polarity,
++		  __entry->period, __entry->duty_cycle)
++);
++
++#endif /* _TRACE_PWM_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
 -- 
 2.18.0
