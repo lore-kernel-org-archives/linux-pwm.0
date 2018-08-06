@@ -1,86 +1,47 @@
 From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH RESEND 1/2] gpio: mvebu: Add support for multiple PWM
- lines per GPIO chip
-Date: Mon, 6 Aug 2018 05:38:02 +0200
-Message-ID: <20180806033802.GA32450@lunn.ch>
+Subject: Re: [PATCH RESEND 2/2] gpio: mvebu: Allow to use non-default PWM
+ counter
+Date: Mon, 6 Aug 2018 15:52:57 +0200
+Message-ID: <20180806135257.GB6584@lunn.ch>
 References: <1533522556-55055-1-git-send-email-aditya@kobol.io>
- <1533522556-55055-2-git-send-email-aditya@kobol.io>
+ <1533522556-55055-3-git-send-email-aditya@kobol.io>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1533522556-55055-2-git-send-email-aditya@kobol.io>
+In-Reply-To: <1533522556-55055-3-git-send-email-aditya@kobol.io>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Aditya Prayoga <aditya@kobol.io>
 Cc: linux-gpio@vger.kernel.org, Richard Genoud <richard.genoud@gmail.com>, Gregory CLEMENT <gregory.clement@bootlin.com>, Gauthier Provost <gauthier@kobol.io>, Alban Browaeys <alban.browaeys@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Dennis Gilmore <dennis@ausil.us>, Ralph Sennhauser <ralph.sennhauser@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Aug 06, 2018 at 10:29:15AM +0800, Aditya Prayoga wrote:
+On Mon, Aug 06, 2018 at 10:29:16AM +0800, Aditya Prayoga wrote:
+> On multiple PWM lines, if the other PWM counter is unused, allocate it
+> to next PWM request. The priority would be:
+> 1. Default counter assigned to the bank
+> 2. Unused counter that is assigned to other bank
+> 3. Fallback to default counter
+> 
+> For example on second bank there are three PWM request, first one would
+> use default counter (counter B), second one would try to use counter A,
+> and the third one would use counter B.
 
 Hi Aditya
 
-> +	item = kzalloc(sizeof(*item), GFP_KERNEL);
-> +	if (!item)
-> +		return -ENODEV;
+There are only two PWM counters for all the GPIO lines. So you cannot
+support 3 PWM requests. You have to enforce a maximum of two PWMs.
 
-ENOMEM would be better, since it is a memory allocation which is
-failing.
+When i implemented this PWM code, i only needed one PWM. So it took
+the easy option. GPIO bank 0 uses counter A, GPIO bank1 uses counter
+B. For the hardware you have, this is not sufficient, so you need to
+generalise this. Any PWM can use any counter, whatever is available
+when the PWM is requested.
 
->  
-> -		ret = gpiod_direction_output(desc, 0);
-> -		if (ret) {
-> -			gpiochip_free_own_desc(desc);
-> -			goto out;
-> -		}
-> +	spin_lock_irqsave(&mvpwm->lock, flags);
-> +	desc = gpiochip_request_own_desc(&mvchip->chip,
-> +					 pwm->hwpwm, "mvebu-pwm");
-> +	if (IS_ERR(desc)) {
-> +		ret = PTR_ERR(desc);
-> +		goto out;
-> +	}
->  
-> -		mvpwm->gpiod = desc;
-> +	ret = gpiod_direction_output(desc, 0);
-> +	if (ret) {
-> +		gpiochip_free_own_desc(desc);
-> +		goto out;
->  	}
-> +	item->gpiod = desc;
-> +	item->device = pwm;
-> +	INIT_LIST_HEAD(&item->node);
-> +	list_add_tail(&item->node, &mvpwm->pwms);
->  out:
->  	spin_unlock_irqrestore(&mvpwm->lock, flags);
->  	return ret;
+Rather than have a linked list of PWM, i think it would be better to
+have a static array of two mvebu_pwm structures. Index 0 uses counter
+A, index 1 uses counter B. You can then keep with the concept of
+pwm->pgiod != NULL means the counter is in use. The request() call can
+then find an unused PWM, set pwm->gpiod, and point mvchip->mvpwm to
+one of the two static instances.
 
-You don't cleanup item on the error path.
-
-> @@ -630,12 +639,20 @@ static int mvebu_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
->  static void mvebu_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
-> +	struct mvebu_pwm_item *item, *tmp;
->  	unsigned long flags;
->  
-> -	spin_lock_irqsave(&mvpwm->lock, flags);
-> -	gpiochip_free_own_desc(mvpwm->gpiod);
-> -	mvpwm->gpiod = NULL;
-> -	spin_unlock_irqrestore(&mvpwm->lock, flags);
-> +	list_for_each_entry_safe(item, tmp, &mvpwm->pwms, node) {
-> +		if (item->device == pwm) {
-> +			spin_lock_irqsave(&mvpwm->lock, flags);
-> +			gpiochip_free_own_desc(item->gpiod);
-> +			item->gpiod = NULL;
-> +			item->device = NULL;
-
-Since you are about to free item, these two lines are pointless.
-
-> +			list_del(&item->node);
-> +			spin_unlock_irqrestore(&mvpwm->lock, flags);
-> +			kfree(item);
-> +		}
-> +	}
->  }
-
-   Andrew
+    Andrew
