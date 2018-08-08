@@ -1,238 +1,95 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: Re: [PATCH v2] backlight: pwm_bl: switch to using "atomic" PWM API
-Date: Tue, 7 Aug 2018 11:38:04 +0200
-Message-ID: <d4f418dd-f5bb-c08a-e43b-f15fbc435961@collabora.com>
-References: <20180727151121.12296-1-enric.balletbo@collabora.com>
- <20180730111259.5qjtchfo67nquila@holly.lan>
+From: Aditya Prayoga <aditya@kobol.io>
+Subject: Re: [PATCH RESEND 1/2] gpio: mvebu: Add support for multiple PWM
+ lines per GPIO chip
+Date: Wed, 8 Aug 2018 17:27:16 +0700
+Message-ID: <CAFTRUBcQ1Kj8sPVFv=mSc1hdcUOTj9GT8ZfZckNmvVwgJWPczA@mail.gmail.com>
+References: <1533522556-55055-1-git-send-email-aditya@kobol.io>
+ <1533522556-55055-2-git-send-email-aditya@kobol.io> <20180806033802.GA32450@lunn.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180730111259.5qjtchfo67nquila@holly.lan>
-Content-Language: en-GB
+In-Reply-To: <20180806033802.GA32450@lunn.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: linux-kernel@vger.kernel.org, kernel@collabora.com, cl@rock-chips.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>
+To: andrew@lunn.ch
+Cc: linux-gpio@vger.kernel.org, richard.genoud@gmail.com, gregory.clement@bootlin.com, Gauthier Provost <gauthier@kobol.io>, alban.browaeys@gmail.com, thierry.reding@gmail.com, linus.walleij@linaro.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Dennis Gilmore <dennis@ausil.us>, ralph.sennhauser@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Daniel,
+On Mon, Aug 6, 2018 at 10:38 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Mon, Aug 06, 2018 at 10:29:15AM +0800, Aditya Prayoga wrote:
+>
+> Hi Aditya
+>
+> > +     item = kzalloc(sizeof(*item), GFP_KERNEL);
+> > +     if (!item)
+> > +             return -ENODEV;
+>
+> ENOMEM would be better, since it is a memory allocation which is
+> failing.
+>
+> >
+> > -             ret = gpiod_direction_output(desc, 0);
+> > -             if (ret) {
+> > -                     gpiochip_free_own_desc(desc);
+> > -                     goto out;
+> > -             }
+> > +     spin_lock_irqsave(&mvpwm->lock, flags);
+> > +     desc = gpiochip_request_own_desc(&mvchip->chip,
+> > +                                      pwm->hwpwm, "mvebu-pwm");
+> > +     if (IS_ERR(desc)) {
+> > +             ret = PTR_ERR(desc);
+> > +             goto out;
+> > +     }
+> >
+> > -             mvpwm->gpiod = desc;
+> > +     ret = gpiod_direction_output(desc, 0);
+> > +     if (ret) {
+> > +             gpiochip_free_own_desc(desc);
+> > +             goto out;
+> >       }
+> > +     item->gpiod = desc;
+> > +     item->device = pwm;
+> > +     INIT_LIST_HEAD(&item->node);
+> > +     list_add_tail(&item->node, &mvpwm->pwms);
+> >  out:
+> >       spin_unlock_irqrestore(&mvpwm->lock, flags);
+> >       return ret;
+>
+> You don't cleanup item on the error path.
+>
+> > @@ -630,12 +639,20 @@ static int mvebu_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+> >  static void mvebu_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+> >  {
+> >       struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
+> > +     struct mvebu_pwm_item *item, *tmp;
+> >       unsigned long flags;
+> >
+> > -     spin_lock_irqsave(&mvpwm->lock, flags);
+> > -     gpiochip_free_own_desc(mvpwm->gpiod);
+> > -     mvpwm->gpiod = NULL;
+> > -     spin_unlock_irqrestore(&mvpwm->lock, flags);
+> > +     list_for_each_entry_safe(item, tmp, &mvpwm->pwms, node) {
+> > +             if (item->device == pwm) {
+> > +                     spin_lock_irqsave(&mvpwm->lock, flags);
+> > +                     gpiochip_free_own_desc(item->gpiod);
+> > +                     item->gpiod = NULL;
+> > +                     item->device = NULL;
+>
+> Since you are about to free item, these two lines are pointless.
+>
+> > +                     list_del(&item->node);
+> > +                     spin_unlock_irqrestore(&mvpwm->lock, flags);
+> > +                     kfree(item);
+> > +             }
+> > +     }
+> >  }
+>
+>    Andrew
 
-On 30/07/18 13:12, Daniel Thompson wrote:
-> On Fri, Jul 27, 2018 at 05:11:21PM +0200, Enric Balletbo i Serra wrote:
->> The "atomic" API allows us to configure PWM period and duty_cycle and
->> enable it in one call.
->>
->> The patch also moves the pwm_init_state just before any use of the
->> pwm_state struct, this fixes a potential bug where pwm_get_state
->> can be called before pwm_init_state.
->>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->> ---
->>
->> Changes in v2:
->> - Do not force the PWM be off in the first call to pwm_apply_state.
->> - Delayed applying the state until we know what the period is.
->> - Removed pb->period as after the conversion is not needed.
-> 
-> Re-reading this I have spotted a couple of things I probably could have
-> mentioned against v1... sorry.
-> 
-> I think it's looking good though, I expect to be able to ack v3.
-> 
-> 
->>  drivers/video/backlight/pwm_bl.c | 71 ++++++++++++++++++--------------
->>  1 file changed, 41 insertions(+), 30 deletions(-)
->>
->> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
->> index bdfcc0a71db1..dd1cb29b5332 100644
->> --- a/drivers/video/backlight/pwm_bl.c
->> +++ b/drivers/video/backlight/pwm_bl.c
->> @@ -28,7 +28,6 @@
->>  struct pwm_bl_data {
->>  	struct pwm_device	*pwm;
->>  	struct device		*dev;
->> -	unsigned int		period;
->>  	unsigned int		lth_brightness;
->>  	unsigned int		*levels;
->>  	bool			enabled;
->> @@ -46,7 +45,8 @@ struct pwm_bl_data {
->>  	void			(*exit)(struct device *);
->>  };
->>  
->> -static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
->> +static void pwm_backlight_power_on(struct pwm_bl_data *pb,
->> +				   struct pwm_state *state)
->>  {
->>  	int err;
->>  
->> @@ -57,7 +57,8 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
->>  	if (err < 0)
->>  		dev_err(pb->dev, "failed to enable power supply\n");
->>  
->> -	pwm_enable(pb->pwm);
->> +	state->enabled = true;
->> +	pwm_apply_state(pb->pwm, state);
->>  
->>  	if (pb->post_pwm_on_delay)
->>  		msleep(pb->post_pwm_on_delay);
->> @@ -70,6 +71,8 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
->>  
->>  static void pwm_backlight_power_off(struct pwm_bl_data *pb)
->>  {
->> +	struct pwm_state state;
->> +
->>  	if (!pb->enabled)
->>  		return;
->>  
->> @@ -79,8 +82,10 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
->>  	if (pb->pwm_off_delay)
->>  		msleep(pb->pwm_off_delay);
->>  
->> -	pwm_config(pb->pwm, 0, pb->period);
->> -	pwm_disable(pb->pwm);
->> +	pwm_get_state(pb->pwm, &state);
->> +	state.enabled = false;
->> +	state.duty_cycle = 0;
->> +	pwm_apply_state(pb->pwm, &state);
-> 
-> This is an in exact conversion because this code ignores a failure to
-> set the duty cycle to zero whilst pwm_apply_state() does not.
-> 
-> This would only matter if pwm_config() returns an error and given that a
-> PWM which does not support a duty cycle of zero is permitted to adjust
-> zero to the smallest supported value there is no *need* for a driver to
-> return an error here. In other words... this is a subtle change of
-> behaviour and perhaps (even probably) irrelevant.
-> 
-> However I'm still interested whether you did any work to confirm or
-> deny whether drivers that reports error on zero duty cycle actually
-> exist.
-> 
+Hi Andrew,
 
-Interesting, actually I don't have a use case for this, and I think that there
-is nothing in the kernel. I know that some devices (like chromebook minnie and
-jaq) the pwm must be >= 1% or 3% for the first non-zero value but I don't know
-any where 0 is a problem.
+Thanks, I will fix it on next version.
 
-> 
->>  	regulator_disable(pb->power_supply);
->>  	pb->enabled = false;
->> @@ -89,14 +94,17 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
->>  static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
->>  {
->>  	unsigned int lth = pb->lth_brightness;
->> +	struct pwm_state state;
->>  	u64 duty_cycle;
->>  
->> +	pwm_get_state(pb->pwm, &state);
->> +
->>  	if (pb->levels)
->>  		duty_cycle = pb->levels[brightness];
->>  	else
->>  		duty_cycle = brightness;
->>  
->> -	duty_cycle *= pb->period - lth;
->> +	duty_cycle *= state.period - lth;
->>  	do_div(duty_cycle, pb->scale);
->>  
->>  	return duty_cycle + lth;
->> @@ -106,6 +114,7 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
->>  {
->>  	struct pwm_bl_data *pb = bl_get_data(bl);
->>  	int brightness = bl->props.brightness;
->> +	struct pwm_state state;
->>  	int duty_cycle;
->>  
->>  	if (bl->props.power != FB_BLANK_UNBLANK ||
->> @@ -118,8 +127,12 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
->>  
->>  	if (brightness > 0) {
->>  		duty_cycle = compute_duty_cycle(pb, brightness);
->> -		pwm_config(pb->pwm, duty_cycle, pb->period);
-> 
-> In principle the same subtle change applies here... but if pwm_config()
-> reported an error here then the backlight probably didn't work before
-> your change either so less need to worry about it!
-> 
-> 
->> -		pwm_backlight_power_on(pb, brightness);
->> +		pwm_get_state(pb->pwm, &state);
->> +		state.duty_cycle = duty_cycle;
->> +		if (!state.enabled)
->> +			pwm_backlight_power_on(pb, &state);
-> 
-> It verges towards nit picking but I don't really like the way a half updated
-> state is shared between ...update_status and ...power_on.
-> 
-> I'd rather it looked something like:
-> 
-> 		pwm_get_state(pb->pwm, &state);
-> 		if (!state.enabled) {
-> 			pwm_backlight_power_on(pb);  <-- no sharing here,
-> 			                                 make on match off
-> 		} else {
-> 			pwm_backlight_update_duty_cycle(pb, &state, brightness);
-> 			pwm_apply_state(pb->pwm, &state);
-> 		}
-> 	
-> (and have pwm_backlight_power_on() also call ...update_duty_cycle too)
-> 
-> Thoughts?
+Regards,
 
-What about something like this:
-
-static int pwm_backlight_update_status(struct backlight_device *bl)
-{
-        ...
-
-	if (brightness > 0) {
-		pwm_get_state(pb->pwm, &state);
-                /* we can get rid of duty_cycle temporal variable */
-		state.duty_cycle = compute_duty_cycle(pb, brightness);
-		pwm_apply_state(pb->pwm, &state);
-		pwm_backlight_power_on(pb);
-	} else
-		pwm_backlight_power_off(pb);
-        ...
-}
-
-static void pwm_backlight_power_on(struct pwm_bl_data *pb)
-{
-	struct pwm_state state;
-
-	pwm_get_state(pb->pwm, &state);
-
-	if (state.enabled)
-		return;
-
-        ...
-
-	state.enabled = true;
-	pwm_apply_state(pb->pwm, &state);
-
-        ...
-}
-
-static void pwm_backlight_power_off(struct pwm_bl_data *pb)
-{
-	struct pwm_state state;
-
-        ...
-
-	pwm_get_state(pb->pwm, &state);
-	state.enabled = false;
-	state.duty_cycle = 0;
-	pwm_apply_state(pb->pwm, &state);
-
-        ...
-}
-
-And I think that we can get rid of pb->enabled variable.
-
-Best regards,
- Enric
-
-> 
-> 
-> Daniel.
-> 
+Aditya
