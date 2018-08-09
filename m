@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v6 16/24] pwm: jz4740: Add support for the JZ4725B
-Date: Thu,  9 Aug 2018 23:44:06 +0200
-Message-ID: <20180809214414.20905-17-paul@crapouillou.net>
+Subject: [PATCH v6 13/24] pwm: jz4740: Allow selection of PWM channels 0 and 1
+Date: Thu,  9 Aug 2018 23:44:03 +0200
+Message-ID: <20180809214414.20905-14-paul@crapouillou.net>
 References: <20180809214414.20905-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180809214414.20905-1-paul@crapouillou.net>
@@ -10,77 +10,74 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thier
 Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM in the JZ4725B works the same as in the JZ4740, except that it
-only has 6 channels available instead of 8.
+The TCU channels 0 and 1 were previously reserved for system tasks, and
+thus unavailable for PWM.
+
+This commit uses the newly introduced API functions of the ingenic-timer
+driver to request/release the TCU channels that should be used as PWM.
+This allows all the TCU channels to be used as PWM.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/pwm/pwm-jz4740.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-jz4740.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
- v5: New patch
-
- v6: - Move of_device_id structure back at the bottom (less noise in
-       patch)
-     - Use device_get_match_data() instead of of_* variant
+ v6: New patch
 
 diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index 5814825d9bed..66a72bd7424f 100644
+index 1bda8d8e9865..d08274ec007f 100644
 --- a/drivers/pwm/pwm-jz4740.c
 +++ b/drivers/pwm/pwm-jz4740.c
-@@ -25,6 +25,10 @@
+@@ -43,27 +43,30 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	char clk_name[16];
+ 	int ret;
  
- #define NUM_PWM 8
+-	/*
+-	 * Timers 0 and 1 are used for system tasks, so they are unavailable
+-	 * for use as PWMs.
+-	 */
+-	if (pwm->hwpwm < 2)
+-		return -EBUSY;
++	ret = ingenic_tcu_request_channel(pwm->hwpwm);
++	if (ret)
++		return ret;
  
-+struct jz4740_soc_info {
-+	unsigned int num_pwms;
-+};
+ 	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
+ 
+ 	clk = clk_get(chip->dev, clk_name);
+-	if (IS_ERR(clk))
+-		return PTR_ERR(clk);
++	if (IS_ERR(clk)) {
++		ret = PTR_ERR(clk);
++		goto err_free_channel;
++	}
+ 
+ 	ret = clk_prepare_enable(clk);
+-	if (ret) {
+-		clk_put(clk);
+-		return ret;
+-	}
++	if (ret)
++		goto err_clk_put;
+ 
+ 	jz->clks[pwm->hwpwm] = clk;
+ 	return 0;
 +
- struct jz4740_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clks[NUM_PWM];
-@@ -200,9 +204,14 @@ static const struct pwm_ops jz4740_pwm_ops = {
- 
- static int jz4740_pwm_probe(struct platform_device *pdev)
- {
-+	const struct jz4740_soc_info *soc_info;
- 	struct jz4740_pwm_chip *jz4740;
- 	struct device *dev = &pdev->dev;
- 
-+	soc_info = device_get_match_data(dev);
-+	if (!soc_info)
-+		return -EINVAL;
-+
- 	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
- 	if (!jz4740)
- 		return -ENOMEM;
-@@ -215,7 +224,7 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
- 
- 	jz4740->chip.dev = dev;
- 	jz4740->chip.ops = &jz4740_pwm_ops;
--	jz4740->chip.npwm = NUM_PWM;
-+	jz4740->chip.npwm = soc_info->num_pwms;
- 	jz4740->chip.base = -1;
- 	jz4740->chip.of_xlate = of_pwm_xlate_with_flags;
- 	jz4740->chip.of_pwm_n_cells = 3;
-@@ -233,8 +242,17 @@ static int jz4740_pwm_remove(struct platform_device *pdev)
++err_clk_put:
++	clk_put(clk);
++err_free_channel:
++	ingenic_tcu_release_channel(pwm->hwpwm);
++	return ret;
  }
  
- #ifdef CONFIG_OF
-+static const struct jz4740_soc_info jz4740_soc_info = {
-+	.num_pwms = 8,
-+};
-+
-+static const struct jz4740_soc_info jz4725b_soc_info = {
-+	.num_pwms = 6,
-+};
-+
- static const struct of_device_id jz4740_pwm_dt_ids[] = {
--	{ .compatible = "ingenic,jz4740-pwm", },
-+	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
-+	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
+ static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -73,6 +76,7 @@ static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	clk_disable_unprepare(clk);
+ 	clk_put(clk);
++	ingenic_tcu_release_channel(pwm->hwpwm);
+ }
+ 
+ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 -- 
 2.11.0
