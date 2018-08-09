@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v6 20/24] MIPS: qi_lb60: Move PWM devices to devicetree
-Date: Thu,  9 Aug 2018 23:44:10 +0200
-Message-ID: <20180809214414.20905-21-paul@crapouillou.net>
+Subject: [PATCH v6 16/24] pwm: jz4740: Add support for the JZ4725B
+Date: Thu,  9 Aug 2018 23:44:06 +0200
+Message-ID: <20180809214414.20905-17-paul@crapouillou.net>
 References: <20180809214414.20905-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180809214414.20905-1-paul@crapouillou.net>
@@ -10,108 +10,77 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thier
 Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Probe the few drivers using PWMs from devicetree, now that we have a
-devicetree node for the PWM driver.
+The PWM in the JZ4725B works the same as in the JZ4740, except that it
+only has 6 channels available instead of 8.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- arch/mips/boot/dts/ingenic/qi_lb60.dts | 14 ++++++++++++++
- arch/mips/jz4740/board-qi_lb60.c       | 19 -------------------
- 2 files changed, 14 insertions(+), 19 deletions(-)
+ drivers/pwm/pwm-jz4740.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
  v5: New patch
 
- v6: No change
+ v6: - Move of_device_id structure back at the bottom (less noise in
+       patch)
+     - Use device_get_match_data() instead of of_* variant
 
-diff --git a/arch/mips/boot/dts/ingenic/qi_lb60.dts b/arch/mips/boot/dts/ingenic/qi_lb60.dts
-index 76aaf8982554..85529a142409 100644
---- a/arch/mips/boot/dts/ingenic/qi_lb60.dts
-+++ b/arch/mips/boot/dts/ingenic/qi_lb60.dts
-@@ -9,6 +9,14 @@
- 	chosen {
- 		stdout-path = &uart0;
- 	};
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index 5814825d9bed..66a72bd7424f 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -25,6 +25,10 @@
+ 
+ #define NUM_PWM 8
+ 
++struct jz4740_soc_info {
++	unsigned int num_pwms;
++};
 +
-+	beeper {
-+		compatible = "pwm-beeper";
-+		pwms = <&pwm 4 0 0>;
+ struct jz4740_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clks[NUM_PWM];
+@@ -200,9 +204,14 @@ static const struct pwm_ops jz4740_pwm_ops = {
+ 
+ static int jz4740_pwm_probe(struct platform_device *pdev)
+ {
++	const struct jz4740_soc_info *soc_info;
+ 	struct jz4740_pwm_chip *jz4740;
+ 	struct device *dev = &pdev->dev;
+ 
++	soc_info = device_get_match_data(dev);
++	if (!soc_info)
++		return -EINVAL;
 +
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pins_pwm4>;
-+	};
- };
+ 	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
+ 	if (!jz4740)
+ 		return -ENOMEM;
+@@ -215,7 +224,7 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
  
- &ext {
-@@ -30,4 +38,10 @@
- 		groups = "uart0-data";
- 		bias-disable;
- 	};
+ 	jz4740->chip.dev = dev;
+ 	jz4740->chip.ops = &jz4740_pwm_ops;
+-	jz4740->chip.npwm = NUM_PWM;
++	jz4740->chip.npwm = soc_info->num_pwms;
+ 	jz4740->chip.base = -1;
+ 	jz4740->chip.of_xlate = of_pwm_xlate_with_flags;
+ 	jz4740->chip.of_pwm_n_cells = 3;
+@@ -233,8 +242,17 @@ static int jz4740_pwm_remove(struct platform_device *pdev)
+ }
+ 
+ #ifdef CONFIG_OF
++static const struct jz4740_soc_info jz4740_soc_info = {
++	.num_pwms = 8,
++};
 +
-+	pins_pwm4: pwm4 {
-+		function = "pwm4";
-+		groups = "pwm4";
-+		bias-disable;
-+	};
++static const struct jz4740_soc_info jz4725b_soc_info = {
++	.num_pwms = 6,
++};
++
+ static const struct of_device_id jz4740_pwm_dt_ids[] = {
+-	{ .compatible = "ingenic,jz4740-pwm", },
++	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
++	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
+ 	{},
  };
-diff --git a/arch/mips/jz4740/board-qi_lb60.c b/arch/mips/jz4740/board-qi_lb60.c
-index 60f0767507c6..2db32cb9ed47 100644
---- a/arch/mips/jz4740/board-qi_lb60.c
-+++ b/arch/mips/jz4740/board-qi_lb60.c
-@@ -27,7 +27,6 @@
- #include <linux/power_supply.h>
- #include <linux/power/jz4740-battery.h>
- #include <linux/power/gpio-charger.h>
--#include <linux/pwm.h>
- 
- #include <asm/mach-jz4740/gpio.h>
- #include <asm/mach-jz4740/jz4740_fb.h>
-@@ -391,17 +390,6 @@ static struct jz4740_mmc_platform_data qi_lb60_mmc_pdata = {
- 	.power_active_low	= 1,
- };
- 
--/* beeper */
--static struct pwm_lookup qi_lb60_pwm_lookup[] = {
--	PWM_LOOKUP("jz4740-pwm", 4, "pwm-beeper", NULL, 0,
--		   PWM_POLARITY_NORMAL),
--};
--
--static struct platform_device qi_lb60_pwm_beeper = {
--	.name = "pwm-beeper",
--	.id = -1,
--};
--
- /* charger */
- static char *qi_lb60_batteries[] = {
- 	"battery",
-@@ -450,10 +438,8 @@ static struct platform_device *jz_platform_devices[] __initdata = {
- 	&jz4740_i2s_device,
- 	&jz4740_codec_device,
- 	&jz4740_adc_device,
--	&jz4740_pwm_device,
- 	&jz4740_dma_device,
- 	&qi_lb60_gpio_keys,
--	&qi_lb60_pwm_beeper,
- 	&qi_lb60_charger_device,
- 	&qi_lb60_audio_device,
- };
-@@ -482,10 +468,6 @@ static struct pinctrl_map pin_map[] __initdata = {
- 			"10010000.jz4740-pinctrl", "PD0", pin_cfg_bias_disable),
- 	PIN_MAP_CONFIGS_PIN_DEFAULT("jz4740-mmc.0",
- 			"10010000.jz4740-pinctrl", "PD2", pin_cfg_bias_disable),
--
--	/* PWM pin configuration */
--	PIN_MAP_MUX_GROUP_DEFAULT("jz4740-pwm",
--			"10010000.jz4740-pinctrl", "pwm4", "pwm4"),
- };
- 
- 
-@@ -503,7 +485,6 @@ static int __init qi_lb60_init_platform_devices(void)
- 	spi_register_board_info(qi_lb60_spi_board_info,
- 				ARRAY_SIZE(qi_lb60_spi_board_info));
- 
--	pwm_add_table(qi_lb60_pwm_lookup, ARRAY_SIZE(qi_lb60_pwm_lookup));
- 	pinctrl_register_mappings(pin_map, ARRAY_SIZE(pin_map));
- 
- 	return platform_add_devices(jz_platform_devices,
+ MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
 -- 
 2.11.0
