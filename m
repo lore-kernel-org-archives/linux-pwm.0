@@ -1,41 +1,40 @@
-From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH RESEND 2/2] gpio: mvebu: Allow to use non-default PWM
- counter
-Date: Thu, 9 Aug 2018 17:43:05 +0200
-Message-ID: <20180809154305.GE20006@lunn.ch>
-References: <1533522556-55055-1-git-send-email-aditya@kobol.io>
- <1533522556-55055-3-git-send-email-aditya@kobol.io>
- <20180806135257.GB6584@lunn.ch>
- <9d12abba-0be8-bce7-45d5-99659cbe0915@sorico.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v6 00/24] Ingenic TCU patchset v6
+Date: Thu,  9 Aug 2018 23:43:50 +0200
+Message-ID: <20180809214414.20905-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9d12abba-0be8-bce7-45d5-99659cbe0915@sorico.fr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Aditya Prayoga <aditya@kobol.io>, linux-gpio@vger.kernel.org, Gregory CLEMENT <gregory.clement@bootlin.com>, Gauthier Provost <gauthier@kobol.io>, Alban Browaeys <alban.browaeys@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Dennis Gilmore <dennis@ausil.us>, Ralph Sennhauser <ralph.sennhauser@gmail.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-> I'm not sure that the logic:
-> 1. Default counter assigned to the bank
-> 2. Unused counter that is assigned to other bank
-> 3. Fallback to default counter
-> is the best one.
+Hi,
 
-Hi Richard
+This is the V6 of my Ingenic Timer/Counter Unit (TCU) patchset.
 
-It it totally broken, as you point out. That is why i said it needs to
-be limited to two PWMs.
+Major changes since V5:
 
-> IMHO, I would either:
-> - allow only 2 pwm and no more (but that's a pity)
-> - allow lots of fans, but once 2 different speeds are set, return
->   EINVAL for another different speed (even if it's on another bank)
+- ingenic,timer-channel / ingenic,clocksource-channel devicetree
+  properties for the ingenic-timer driver are gone. The system timer
+  will default to use TCU channel #0, the clocksource will default to
+  use TCU channel #1. When a client driver requests one of these TCU
+  channels (e.g. the PWM driver), the ingenic-timer driver will
+  dynamically switch the system timer or clocksource to a new TCU
+  channel.
 
-This second option also breaks the Linux PWM model.
+- The big watchdog commit in v5 was split into multiple smaller commits.
 
-What you should be thinking about is extending the Linux PWM model so
-that one PWM can drive more than one pin.
+- The watchdog driver now just sets its clock to the lowest rate
+  possible, and calculate the maximum timeout from that.
 
-     Andrew
+- The PWM driver now requests the TCU channels it wants to use using the
+  API functions provided by ingenic-timer. Channels 0 and 1 can now be
+  used.
+
+- The register lengths in the pwm/watchdog nodes were fixed. They no
+  longer overlap.
+
+- Small fixes here and there, see each patch's changelog for more info.
+
+Regards,
+-Paul Cercueil
