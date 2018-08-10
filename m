@@ -1,481 +1,226 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v6 24/24] MIPS: jz4740: Drop obsolete code
-Date: Thu,  9 Aug 2018 23:48:41 +0200
-Message-ID: <20180809214841.21566-1-paul@crapouillou.net>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v6 08/24] watchdog: jz4740: Use WDT clock provided by TCU
+ driver
+Date: Fri, 10 Aug 2018 06:36:48 -0700
+Message-ID: <20180810133648.GA29028@roeck-us.net>
 References: <20180809214414.20905-1-paul@crapouillou.net>
+ <20180809214414.20905-9-paul@crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180809214414.20905-1-paul@crapouillou.net>
+Content-Disposition: inline
+In-Reply-To: <20180809214414.20905-9-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The old clocksource/timer platform code is now obsoleted by the newly
-introduced ingenic-timer and ingenic-ost drivers.
+On Thu, Aug 09, 2018 at 11:43:58PM +0200, Paul Cercueil wrote:
+> Instead of requesting the "ext" clock and handling the watchdog clock
+> divider and gating in the watchdog driver, we now request and use the
+> "wdt" clock that is supplied by the ingenic-timer "TCU" driver.
+> 
+> The major benefit is that the watchdog's clock rate and parent can now
+> be specified from within devicetree, instead of hardcoded in the driver.
+> 
+> Also, this driver won't poke anymore into the TCU registers to
+> enable/disable the clock, as this is now handled by the TCU driver.
+> 
+> On the bad side, we break the ABI with devicetree - as we now request a
+> different clock. In this very specific case it is still okay, as every
+> Ingenic JZ47xx-based board out there compile the devicetree within the
+> kernel; so it's still time to push breaking changes, in order to get a
+> clean devicetree that won't break once it musn't.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- arch/mips/include/asm/mach-jz4740/platform.h |   1 -
- arch/mips/include/asm/mach-jz4740/timer.h    | 135 --------------------
- arch/mips/jz4740/Makefile                    |   3 +-
- arch/mips/jz4740/platform.c                  |   6 -
- arch/mips/jz4740/setup.c                     |   8 ++
- arch/mips/jz4740/time.c                      | 176 ---------------------------
- arch/mips/jz4740/timer.c                     |  51 --------
- 7 files changed, 9 insertions(+), 371 deletions(-)
- delete mode 100644 arch/mips/include/asm/mach-jz4740/timer.h
- delete mode 100644 arch/mips/jz4740/time.c
- delete mode 100644 arch/mips/jz4740/timer.c
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
- v5: New patch
-
- v6: No change
-
-diff --git a/arch/mips/include/asm/mach-jz4740/platform.h b/arch/mips/include/asm/mach-jz4740/platform.h
-index c0c932ac72a7..cd464d956882 100644
---- a/arch/mips/include/asm/mach-jz4740/platform.h
-+++ b/arch/mips/include/asm/mach-jz4740/platform.h
-@@ -29,7 +29,6 @@ extern struct platform_device jz4740_i2s_device;
- extern struct platform_device jz4740_pcm_device;
- extern struct platform_device jz4740_codec_device;
- extern struct platform_device jz4740_adc_device;
--extern struct platform_device jz4740_pwm_device;
- extern struct platform_device jz4740_dma_device;
- 
- #endif
-diff --git a/arch/mips/include/asm/mach-jz4740/timer.h b/arch/mips/include/asm/mach-jz4740/timer.h
-deleted file mode 100644
-index 8750a1d04e22..000000000000
---- a/arch/mips/include/asm/mach-jz4740/timer.h
-+++ /dev/null
-@@ -1,135 +0,0 @@
--/*
-- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
-- *  JZ4740 platform timer support
-- *
-- *  This program is free software; you can redistribute it and/or modify it
-- *  under  the terms of the GNU General	 Public License as published by the
-- *  Free Software Foundation;  either version 2 of the License, or (at your
-- *  option) any later version.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  675 Mass Ave, Cambridge, MA 02139, USA.
-- *
-- */
--
--#ifndef __ASM_MACH_JZ4740_TIMER
--#define __ASM_MACH_JZ4740_TIMER
--
--#define JZ_REG_TIMER_STOP		0x0C
--#define JZ_REG_TIMER_STOP_SET		0x1C
--#define JZ_REG_TIMER_STOP_CLEAR		0x2C
--#define JZ_REG_TIMER_ENABLE		0x00
--#define JZ_REG_TIMER_ENABLE_SET		0x04
--#define JZ_REG_TIMER_ENABLE_CLEAR	0x08
--#define JZ_REG_TIMER_FLAG		0x10
--#define JZ_REG_TIMER_FLAG_SET		0x14
--#define JZ_REG_TIMER_FLAG_CLEAR		0x18
--#define JZ_REG_TIMER_MASK		0x20
--#define JZ_REG_TIMER_MASK_SET		0x24
--#define JZ_REG_TIMER_MASK_CLEAR		0x28
--
--#define JZ_REG_TIMER_DFR(x) (((x) * 0x10) + 0x30)
--#define JZ_REG_TIMER_DHR(x) (((x) * 0x10) + 0x34)
--#define JZ_REG_TIMER_CNT(x) (((x) * 0x10) + 0x38)
--#define JZ_REG_TIMER_CTRL(x) (((x) * 0x10) + 0x3C)
--
--#define JZ_TIMER_IRQ_HALF(x) BIT((x) + 0x10)
--#define JZ_TIMER_IRQ_FULL(x) BIT(x)
--
--#define JZ_TIMER_CTRL_PWM_ABBRUPT_SHUTDOWN	BIT(9)
--#define JZ_TIMER_CTRL_PWM_ACTIVE_LOW		BIT(8)
--#define JZ_TIMER_CTRL_PWM_ENABLE		BIT(7)
--#define JZ_TIMER_CTRL_PRESCALE_MASK		0x1c
--#define JZ_TIMER_CTRL_PRESCALE_OFFSET		0x3
--#define JZ_TIMER_CTRL_PRESCALE_1		(0 << 3)
--#define JZ_TIMER_CTRL_PRESCALE_4		(1 << 3)
--#define JZ_TIMER_CTRL_PRESCALE_16		(2 << 3)
--#define JZ_TIMER_CTRL_PRESCALE_64		(3 << 3)
--#define JZ_TIMER_CTRL_PRESCALE_256		(4 << 3)
--#define JZ_TIMER_CTRL_PRESCALE_1024		(5 << 3)
--
--#define JZ_TIMER_CTRL_PRESCALER(x) ((x) << JZ_TIMER_CTRL_PRESCALE_OFFSET)
--
--#define JZ_TIMER_CTRL_SRC_EXT		BIT(2)
--#define JZ_TIMER_CTRL_SRC_RTC		BIT(1)
--#define JZ_TIMER_CTRL_SRC_PCLK		BIT(0)
--
--extern void __iomem *jz4740_timer_base;
--void __init jz4740_timer_init(void);
--
--void jz4740_timer_enable_watchdog(void);
--void jz4740_timer_disable_watchdog(void);
--
--static inline void jz4740_timer_stop(unsigned int timer)
--{
--	writel(BIT(timer), jz4740_timer_base + JZ_REG_TIMER_STOP_SET);
--}
--
--static inline void jz4740_timer_start(unsigned int timer)
--{
--	writel(BIT(timer), jz4740_timer_base + JZ_REG_TIMER_STOP_CLEAR);
--}
--
--static inline bool jz4740_timer_is_enabled(unsigned int timer)
--{
--	return readb(jz4740_timer_base + JZ_REG_TIMER_ENABLE) & BIT(timer);
--}
--
--static inline void jz4740_timer_enable(unsigned int timer)
--{
--	writeb(BIT(timer), jz4740_timer_base + JZ_REG_TIMER_ENABLE_SET);
--}
--
--static inline void jz4740_timer_disable(unsigned int timer)
--{
--	writeb(BIT(timer), jz4740_timer_base + JZ_REG_TIMER_ENABLE_CLEAR);
--}
--
--static inline void jz4740_timer_set_period(unsigned int timer, uint16_t period)
--{
--	writew(period, jz4740_timer_base + JZ_REG_TIMER_DFR(timer));
--}
--
--static inline void jz4740_timer_set_duty(unsigned int timer, uint16_t duty)
--{
--	writew(duty, jz4740_timer_base + JZ_REG_TIMER_DHR(timer));
--}
--
--static inline void jz4740_timer_set_count(unsigned int timer, uint16_t count)
--{
--	writew(count, jz4740_timer_base + JZ_REG_TIMER_CNT(timer));
--}
--
--static inline uint16_t jz4740_timer_get_count(unsigned int timer)
--{
--	return readw(jz4740_timer_base + JZ_REG_TIMER_CNT(timer));
--}
--
--static inline void jz4740_timer_ack_full(unsigned int timer)
--{
--	writel(JZ_TIMER_IRQ_FULL(timer), jz4740_timer_base + JZ_REG_TIMER_FLAG_CLEAR);
--}
--
--static inline void jz4740_timer_irq_full_enable(unsigned int timer)
--{
--	writel(JZ_TIMER_IRQ_FULL(timer), jz4740_timer_base + JZ_REG_TIMER_FLAG_CLEAR);
--	writel(JZ_TIMER_IRQ_FULL(timer), jz4740_timer_base + JZ_REG_TIMER_MASK_CLEAR);
--}
--
--static inline void jz4740_timer_irq_full_disable(unsigned int timer)
--{
--	writel(JZ_TIMER_IRQ_FULL(timer), jz4740_timer_base + JZ_REG_TIMER_MASK_SET);
--}
--
--static inline void jz4740_timer_set_ctrl(unsigned int timer, uint16_t ctrl)
--{
--	writew(ctrl, jz4740_timer_base + JZ_REG_TIMER_CTRL(timer));
--}
--
--static inline uint16_t jz4740_timer_get_ctrl(unsigned int timer)
--{
--	return readw(jz4740_timer_base + JZ_REG_TIMER_CTRL(timer));
--}
--
--#endif
-diff --git a/arch/mips/jz4740/Makefile b/arch/mips/jz4740/Makefile
-index 88d6aa7d000b..72eb805028a4 100644
---- a/arch/mips/jz4740/Makefile
-+++ b/arch/mips/jz4740/Makefile
-@@ -5,8 +5,7 @@
- 
- # Object file lists.
- 
--obj-y += prom.o time.o reset.o setup.o \
--	platform.o timer.o
-+obj-y += prom.o reset.o setup.o platform.o
- 
- CFLAGS_setup.o = -I$(src)/../../../scripts/dtc/libfdt
- 
-diff --git a/arch/mips/jz4740/platform.c b/arch/mips/jz4740/platform.c
-index cbc5f8e87230..af0ecaeb4931 100644
---- a/arch/mips/jz4740/platform.c
-+++ b/arch/mips/jz4740/platform.c
-@@ -233,12 +233,6 @@ struct platform_device jz4740_adc_device = {
- 	.resource	= jz4740_adc_resources,
- };
- 
--/* PWM */
--struct platform_device jz4740_pwm_device = {
--	.name = "jz4740-pwm",
--	.id   = -1,
--};
--
- /* DMA */
- static struct resource jz4740_dma_resources[] = {
- 	{
-diff --git a/arch/mips/jz4740/setup.c b/arch/mips/jz4740/setup.c
-index afb40f8bce96..099e4164afff 100644
---- a/arch/mips/jz4740/setup.c
-+++ b/arch/mips/jz4740/setup.c
-@@ -14,6 +14,8 @@
-  *
-  */
- 
-+#include <linux/clk-provider.h>
-+#include <linux/clocksource.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/irqchip.h>
-@@ -101,3 +103,9 @@ void __init arch_init_irq(void)
- {
- 	irqchip_init();
- }
-+
-+void __init plat_time_init(void)
-+{
-+	of_clk_init(NULL);
-+	timer_probe();
-+}
-diff --git a/arch/mips/jz4740/time.c b/arch/mips/jz4740/time.c
-deleted file mode 100644
-index 2ca9160f642a..000000000000
---- a/arch/mips/jz4740/time.c
-+++ /dev/null
-@@ -1,176 +0,0 @@
--/*
-- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
-- *  JZ4740 platform time support
-- *
-- *  This program is free software; you can redistribute it and/or modify it
-- *  under  the terms of the GNU General	 Public License as published by the
-- *  Free Software Foundation;  either version 2 of the License, or (at your
-- *  option) any later version.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  675 Mass Ave, Cambridge, MA 02139, USA.
-- *
-- */
--
--#include <linux/clk.h>
--#include <linux/clk-provider.h>
--#include <linux/interrupt.h>
--#include <linux/kernel.h>
--#include <linux/time.h>
--
--#include <linux/clockchips.h>
--#include <linux/sched_clock.h>
--
--#include <asm/mach-jz4740/clock.h>
--#include <asm/mach-jz4740/irq.h>
--#include <asm/mach-jz4740/timer.h>
--#include <asm/time.h>
--
--#include "clock.h"
--
--#define TIMER_CLOCKEVENT 0
--#define TIMER_CLOCKSOURCE 1
--
--static uint16_t jz4740_jiffies_per_tick;
--
--static u64 jz4740_clocksource_read(struct clocksource *cs)
--{
--	return jz4740_timer_get_count(TIMER_CLOCKSOURCE);
--}
--
--static struct clocksource jz4740_clocksource = {
--	.name = "jz4740-timer",
--	.rating = 200,
--	.read = jz4740_clocksource_read,
--	.mask = CLOCKSOURCE_MASK(16),
--	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
--};
--
--static u64 notrace jz4740_read_sched_clock(void)
--{
--	return jz4740_timer_get_count(TIMER_CLOCKSOURCE);
--}
--
--static irqreturn_t jz4740_clockevent_irq(int irq, void *devid)
--{
--	struct clock_event_device *cd = devid;
--
--	jz4740_timer_ack_full(TIMER_CLOCKEVENT);
--
--	if (!clockevent_state_periodic(cd))
--		jz4740_timer_disable(TIMER_CLOCKEVENT);
--
--	cd->event_handler(cd);
--
--	return IRQ_HANDLED;
--}
--
--static int jz4740_clockevent_set_periodic(struct clock_event_device *evt)
--{
--	jz4740_timer_set_count(TIMER_CLOCKEVENT, 0);
--	jz4740_timer_set_period(TIMER_CLOCKEVENT, jz4740_jiffies_per_tick);
--	jz4740_timer_irq_full_enable(TIMER_CLOCKEVENT);
--	jz4740_timer_enable(TIMER_CLOCKEVENT);
--
--	return 0;
--}
--
--static int jz4740_clockevent_resume(struct clock_event_device *evt)
--{
--	jz4740_timer_irq_full_enable(TIMER_CLOCKEVENT);
--	jz4740_timer_enable(TIMER_CLOCKEVENT);
--
--	return 0;
--}
--
--static int jz4740_clockevent_shutdown(struct clock_event_device *evt)
--{
--	jz4740_timer_disable(TIMER_CLOCKEVENT);
--
--	return 0;
--}
--
--static int jz4740_clockevent_set_next(unsigned long evt,
--	struct clock_event_device *cd)
--{
--	jz4740_timer_set_count(TIMER_CLOCKEVENT, 0);
--	jz4740_timer_set_period(TIMER_CLOCKEVENT, evt);
--	jz4740_timer_enable(TIMER_CLOCKEVENT);
--
--	return 0;
--}
--
--static struct clock_event_device jz4740_clockevent = {
--	.name = "jz4740-timer",
--	.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
--	.set_next_event = jz4740_clockevent_set_next,
--	.set_state_shutdown = jz4740_clockevent_shutdown,
--	.set_state_periodic = jz4740_clockevent_set_periodic,
--	.set_state_oneshot = jz4740_clockevent_shutdown,
--	.tick_resume = jz4740_clockevent_resume,
--	.rating = 200,
--#ifdef CONFIG_MACH_JZ4740
--	.irq = JZ4740_IRQ_TCU0,
--#endif
--#if defined(CONFIG_MACH_JZ4770) || defined(CONFIG_MACH_JZ4780)
--	.irq = JZ4780_IRQ_TCU2,
--#endif
--};
--
--static struct irqaction timer_irqaction = {
--	.handler	= jz4740_clockevent_irq,
--	.flags		= IRQF_PERCPU | IRQF_TIMER,
--	.name		= "jz4740-timerirq",
--	.dev_id		= &jz4740_clockevent,
--};
--
--void __init plat_time_init(void)
--{
--	int ret;
--	uint32_t clk_rate;
--	uint16_t ctrl;
--	struct clk *ext_clk;
--
--	of_clk_init(NULL);
--	jz4740_timer_init();
--
--	ext_clk = clk_get(NULL, "ext");
--	if (IS_ERR(ext_clk))
--		panic("unable to get ext clock");
--	clk_rate = clk_get_rate(ext_clk) >> 4;
--	clk_put(ext_clk);
--
--	jz4740_jiffies_per_tick = DIV_ROUND_CLOSEST(clk_rate, HZ);
--
--	clockevent_set_clock(&jz4740_clockevent, clk_rate);
--	jz4740_clockevent.min_delta_ns = clockevent_delta2ns(100, &jz4740_clockevent);
--	jz4740_clockevent.min_delta_ticks = 100;
--	jz4740_clockevent.max_delta_ns = clockevent_delta2ns(0xffff, &jz4740_clockevent);
--	jz4740_clockevent.max_delta_ticks = 0xffff;
--	jz4740_clockevent.cpumask = cpumask_of(0);
--
--	clockevents_register_device(&jz4740_clockevent);
--
--	ret = clocksource_register_hz(&jz4740_clocksource, clk_rate);
--
--	if (ret)
--		printk(KERN_ERR "Failed to register clocksource: %d\n", ret);
--
--	sched_clock_register(jz4740_read_sched_clock, 16, clk_rate);
--
--	setup_irq(jz4740_clockevent.irq, &timer_irqaction);
--
--	ctrl = JZ_TIMER_CTRL_PRESCALE_16 | JZ_TIMER_CTRL_SRC_EXT;
--
--	jz4740_timer_set_ctrl(TIMER_CLOCKEVENT, ctrl);
--	jz4740_timer_set_ctrl(TIMER_CLOCKSOURCE, ctrl);
--
--	jz4740_timer_set_period(TIMER_CLOCKEVENT, jz4740_jiffies_per_tick);
--	jz4740_timer_irq_full_enable(TIMER_CLOCKEVENT);
--
--	jz4740_timer_set_period(TIMER_CLOCKSOURCE, 0xffff);
--
--	jz4740_timer_enable(TIMER_CLOCKEVENT);
--	jz4740_timer_enable(TIMER_CLOCKSOURCE);
--}
-diff --git a/arch/mips/jz4740/timer.c b/arch/mips/jz4740/timer.c
-deleted file mode 100644
-index 777877feef71..000000000000
---- a/arch/mips/jz4740/timer.c
-+++ /dev/null
-@@ -1,51 +0,0 @@
--/*
-- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
-- *  JZ4740 platform timer support
-- *
-- *  This program is free software; you can redistribute it and/or modify it
-- *  under  the terms of the GNU General	 Public License as published by the
-- *  Free Software Foundation;  either version 2 of the License, or (at your
-- *  option) any later version.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  675 Mass Ave, Cambridge, MA 02139, USA.
-- *
-- */
--
--#include <linux/export.h>
--#include <linux/io.h>
--#include <linux/init.h>
--#include <linux/kernel.h>
--
--#include <asm/mach-jz4740/base.h>
--#include <asm/mach-jz4740/timer.h>
--
--void __iomem *jz4740_timer_base;
--EXPORT_SYMBOL_GPL(jz4740_timer_base);
--
--void jz4740_timer_enable_watchdog(void)
--{
--	writel(BIT(16), jz4740_timer_base + JZ_REG_TIMER_STOP_CLEAR);
--}
--EXPORT_SYMBOL_GPL(jz4740_timer_enable_watchdog);
--
--void jz4740_timer_disable_watchdog(void)
--{
--	writel(BIT(16), jz4740_timer_base + JZ_REG_TIMER_STOP_SET);
--}
--EXPORT_SYMBOL_GPL(jz4740_timer_disable_watchdog);
--
--void __init jz4740_timer_init(void)
--{
--	jz4740_timer_base = ioremap(JZ4740_TCU_BASE_ADDR, 0x100);
--
--	if (!jz4740_timer_base)
--		panic("Failed to ioremap timer registers");
--
--	/* Disable all timer clocks except for those used as system timers */
--	writel(0x000100fc, jz4740_timer_base + JZ_REG_TIMER_STOP_SET);
--
--	/* Timer irqs are unmasked by default, mask them */
--	writel(0x00ff00ff, jz4740_timer_base + JZ_REG_TIMER_MASK_SET);
--}
--- 
-2.11.0
+> ---
+>  drivers/watchdog/Kconfig      |  2 +
+>  drivers/watchdog/jz4740_wdt.c | 86 +++++++++++++++++--------------------------
+>  2 files changed, 36 insertions(+), 52 deletions(-)
+> 
+>  v5: New patch
+> 
+>  v6: - Split regmap change to new patch 09/24
+>      - The code now sets the WDT clock to the smallest rate possible and
+>        calculates the maximum timeout from that
+> 
+> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+> index 9af07fd92763..834222abbbdb 100644
+> --- a/drivers/watchdog/Kconfig
+> +++ b/drivers/watchdog/Kconfig
+> @@ -1476,7 +1476,9 @@ config INDYDOG
+>  config JZ4740_WDT
+>  	tristate "Ingenic jz4740 SoC hardware watchdog"
+>  	depends on MACH_JZ4740 || MACH_JZ4780
+> +	depends on COMMON_CLK
+>  	select WATCHDOG_CORE
+> +	select INGENIC_TIMER
+>  	help
+>  	  Hardware driver for the built-in watchdog timer on Ingenic jz4740 SoCs.
+>  
+> diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
+> index ec4d99a830ba..1d504ecf45e1 100644
+> --- a/drivers/watchdog/jz4740_wdt.c
+> +++ b/drivers/watchdog/jz4740_wdt.c
+> @@ -26,25 +26,9 @@
+>  #include <linux/err.h>
+>  #include <linux/of.h>
+>  
+> -#include <asm/mach-jz4740/timer.h>
+> -
+>  #define JZ_REG_WDT_TIMER_DATA     0x0
+>  #define JZ_REG_WDT_COUNTER_ENABLE 0x4
+>  #define JZ_REG_WDT_TIMER_COUNTER  0x8
+> -#define JZ_REG_WDT_TIMER_CONTROL  0xC
+> -
+> -#define JZ_WDT_CLOCK_PCLK 0x1
+> -#define JZ_WDT_CLOCK_RTC  0x2
+> -#define JZ_WDT_CLOCK_EXT  0x4
+> -
+> -#define JZ_WDT_CLOCK_DIV_SHIFT   3
+> -
+> -#define JZ_WDT_CLOCK_DIV_1    (0 << JZ_WDT_CLOCK_DIV_SHIFT)
+> -#define JZ_WDT_CLOCK_DIV_4    (1 << JZ_WDT_CLOCK_DIV_SHIFT)
+> -#define JZ_WDT_CLOCK_DIV_16   (2 << JZ_WDT_CLOCK_DIV_SHIFT)
+> -#define JZ_WDT_CLOCK_DIV_64   (3 << JZ_WDT_CLOCK_DIV_SHIFT)
+> -#define JZ_WDT_CLOCK_DIV_256  (4 << JZ_WDT_CLOCK_DIV_SHIFT)
+> -#define JZ_WDT_CLOCK_DIV_1024 (5 << JZ_WDT_CLOCK_DIV_SHIFT)
+>  
+>  #define DEFAULT_HEARTBEAT 5
+>  #define MAX_HEARTBEAT     2048
+> @@ -65,7 +49,8 @@ MODULE_PARM_DESC(heartbeat,
+>  struct jz4740_wdt_drvdata {
+>  	struct watchdog_device wdt;
+>  	void __iomem *base;
+> -	struct clk *rtc_clk;
+> +	struct clk *clk;
+> +	unsigned long clk_rate;
+>  };
+>  
+>  static int jz4740_wdt_ping(struct watchdog_device *wdt_dev)
+> @@ -80,31 +65,12 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
+>  				    unsigned int new_timeout)
+>  {
+>  	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+> -	unsigned int rtc_clk_rate;
+> -	unsigned int timeout_value;
+> -	unsigned short clock_div = JZ_WDT_CLOCK_DIV_1;
+> -
+> -	rtc_clk_rate = clk_get_rate(drvdata->rtc_clk);
+> -
+> -	timeout_value = rtc_clk_rate * new_timeout;
+> -	while (timeout_value > 0xffff) {
+> -		if (clock_div == JZ_WDT_CLOCK_DIV_1024) {
+> -			/* Requested timeout too high;
+> -			* use highest possible value. */
+> -			timeout_value = 0xffff;
+> -			break;
+> -		}
+> -		timeout_value >>= 2;
+> -		clock_div += (1 << JZ_WDT_CLOCK_DIV_SHIFT);
+> -	}
+> +	u16 timeout_value = (u16)(drvdata->clk_rate * new_timeout);
+>  
+>  	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+> -	writew(clock_div, drvdata->base + JZ_REG_WDT_TIMER_CONTROL);
+>  
+>  	writew((u16)timeout_value, drvdata->base + JZ_REG_WDT_TIMER_DATA);
+>  	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
+> -	writew(clock_div | JZ_WDT_CLOCK_RTC,
+> -		drvdata->base + JZ_REG_WDT_TIMER_CONTROL);
+>  
+>  	writeb(0x1, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+>  
+> @@ -114,7 +80,13 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
+>  
+>  static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
+>  {
+> -	jz4740_timer_enable_watchdog();
+> +	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+> +	int ret;
+> +
+> +	ret = clk_prepare_enable(drvdata->clk);
+> +	if (ret)
+> +		return ret;
+> +
+>  	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
+>  
+>  	return 0;
+> @@ -125,7 +97,7 @@ static int jz4740_wdt_stop(struct watchdog_device *wdt_dev)
+>  	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+>  
+>  	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+> -	jz4740_timer_disable_watchdog();
+> +	clk_disable_unprepare(drvdata->clk);
+>  
+>  	return 0;
+>  }
+> @@ -163,26 +135,42 @@ MODULE_DEVICE_TABLE(of, jz4740_wdt_of_matches);
+>  
+>  static int jz4740_wdt_probe(struct platform_device *pdev)
+>  {
+> +	struct device *dev = &pdev->dev;
+>  	struct jz4740_wdt_drvdata *drvdata;
+>  	struct watchdog_device *jz4740_wdt;
+>  	struct resource	*res;
+> +	long rate;
+>  	int ret;
+>  
+> -	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct jz4740_wdt_drvdata),
+> -			       GFP_KERNEL);
+> +	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
+>  	if (!drvdata)
+>  		return -ENOMEM;
+>  
+> -	if (heartbeat < 1 || heartbeat > MAX_HEARTBEAT)
+> -		heartbeat = DEFAULT_HEARTBEAT;
+> +	drvdata->clk = devm_clk_get(&pdev->dev, "wdt");
+> +	if (IS_ERR(drvdata->clk)) {
+> +		dev_err(&pdev->dev, "cannot find WDT clock\n");
+> +		return PTR_ERR(drvdata->clk);
+> +	}
+> +
+> +	/* Set smallest clock possible */
+> +	rate = clk_round_rate(drvdata->clk, 1);
+> +	if (rate < 0)
+> +		return rate;
+>  
+> +	ret = clk_set_rate(drvdata->clk, rate);
+> +	if (ret)
+> +		return ret;
+> +
+> +	drvdata->clk_rate = rate;
+>  	jz4740_wdt = &drvdata->wdt;
+>  	jz4740_wdt->info = &jz4740_wdt_info;
+>  	jz4740_wdt->ops = &jz4740_wdt_ops;
+> -	jz4740_wdt->timeout = heartbeat;
+>  	jz4740_wdt->min_timeout = 1;
+> -	jz4740_wdt->max_timeout = MAX_HEARTBEAT;
+> -	jz4740_wdt->parent = &pdev->dev;
+> +	jz4740_wdt->max_timeout = 0xffff / rate;
+> +	jz4740_wdt->timeout = clamp(heartbeat,
+> +				    jz4740_wdt->min_timeout,
+> +				    jz4740_wdt->max_timeout);
+> +	jz4740_wdt->parent = dev;
+>  	watchdog_set_nowayout(jz4740_wdt, nowayout);
+>  	watchdog_set_drvdata(jz4740_wdt, drvdata);
+>  
+> @@ -191,12 +179,6 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
+>  	if (IS_ERR(drvdata->base))
+>  		return PTR_ERR(drvdata->base);
+>  
+> -	drvdata->rtc_clk = devm_clk_get(&pdev->dev, "rtc");
+> -	if (IS_ERR(drvdata->rtc_clk)) {
+> -		dev_err(&pdev->dev, "cannot find RTC clock\n");
+> -		return PTR_ERR(drvdata->rtc_clk);
+> -	}
+> -
+>  	ret = devm_watchdog_register_device(&pdev->dev, &drvdata->wdt);
+>  	if (ret < 0)
+>  		return ret;
+> -- 
+> 2.11.0
+> 
