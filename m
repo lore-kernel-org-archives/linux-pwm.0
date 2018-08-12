@@ -1,7 +1,7 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v1 3/7] mfd: add atmel-lcdc driver
-Date: Sun, 12 Aug 2018 20:46:25 +0200
-Message-ID: <20180812184629.3808-3-sam@ravnborg.org>
+Subject: [PATCH v1 7/7] drm: add Atmel LCDC display controller support
+Date: Sun, 12 Aug 2018 20:46:29 +0200
+Message-ID: <20180812184629.3808-7-sam@ravnborg.org>
 References: <20180812184152.GA22343@ravnborg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,421 +18,1188 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Sam Ravnborg <sam@ravnborg.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-The LCDC IP used by some Atmel SOC's have a
-    multifunction device that include two sub-devices:
-    - pwm
-    - display controller
+This is a DRM based driver for the Atmel LCDC IP.
+There exist today a framebuffer based driver and
+this is a re-implmentation of the same on top of DRM.
 
-This mfd device provide a regmap that can be used by the
-sub-devices to safely access the registers.
-The mfd device also support the clock used by the
-LCDC IP + a bus clock that in some cases are required.
+The rewrite was based on the original fbdev driver
+but the driver has also seen inspiration from
+the atmel-hlcdc_dc driver and others.
 
-The driver is based on the atmel-hlcdc driver.
-
-The Atmel SOC's are at91sam9261, at91sam9263 etc.
+The driver is not a full replacement:
+- STN displays are not supported
+	Binding support is missing but most of the
+	STN specific functionality is otherwise ported
+	from the fbdev driver.
+- gamma support is missing
+	The driver utilises drm_simple_kms_helper and
+	this helper lacks support for settting up gamma
+- modesetting is not checked (see TODO in file)
+- support for extra modes as applicable (and lcd-wiring-mode)
+- support for AVR32 (is it relevant?)
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
 Cc: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/mfd/Kconfig            |  10 +++
- drivers/mfd/Makefile           |   1 +
- drivers/mfd/atmel-lcdc.c       | 158 +++++++++++++++++++++++++++++++++++
- include/linux/mfd/atmel-lcdc.h | 184 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 353 insertions(+)
- create mode 100644 drivers/mfd/atmel-lcdc.c
- create mode 100644 include/linux/mfd/atmel-lcdc.h
+ MAINTAINERS                           |    7 +
+ drivers/gpu/drm/atmel/Kconfig         |   12 +
+ drivers/gpu/drm/atmel/Makefile        |    2 +
+ drivers/gpu/drm/atmel/atmel_lcdc-dc.c | 1094 +++++++++++++++++++++++++++++++++
+ 4 files changed, 1115 insertions(+)
+ create mode 100644 drivers/gpu/drm/atmel/atmel_lcdc-dc.c
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index b860eb5aa194..f4851f0f033f 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -121,6 +121,16 @@ config MFD_ATMEL_HLCDC
- 	  additional drivers must be enabled in order to use the
- 	  functionality of the device.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 09ce76a9a1dc..0a594d02a7c0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4685,6 +4685,13 @@ F:	drivers/gpu/drm/atmel/atmel-hlcdc*
+ F:	Documentation/devicetree/bindings/display/atmel/
+ T:	git git://anongit.freedesktop.org/drm/drm-misc
  
-+config MFD_ATMEL_LCDC
-+	tristate "Atmel LCDC (LCD Controller)"
-+	select MFD_CORE
-+	depends on OF
-+	help
-+	  If you say yes here you get support for the LCDC block.
-+	  This driver provides common support for accessing the device,
-+	  additional drivers must be enabled in order to use the
-+	  functionality of the device.
++DRM DRIVERS FOR ATMEL LCDC
++M:	Sam Ravnborg <sam@ravnborg.org>
++L:	dri-devel@lists.freedesktop.org
++S:	Maintained
++F:	drivers/gpu/drm/atmel/atmel-lcdc*
++F:	Documentation/devicetree/bindings/display/atmel/
 +
- config MFD_ATMEL_SMC
- 	bool
- 	select MFD_SYSCON
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index e9fd20dba18d..dba8465e0d96 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -186,6 +186,7 @@ obj-$(CONFIG_MFD_TPS65090)	+= tps65090.o
- obj-$(CONFIG_MFD_AAT2870_CORE)	+= aat2870-core.o
- obj-$(CONFIG_MFD_ATMEL_FLEXCOM)	+= atmel-flexcom.o
- obj-$(CONFIG_MFD_ATMEL_HLCDC)	+= atmel-hlcdc.o
-+obj-$(CONFIG_MFD_ATMEL_LCDC)	+= atmel-lcdc.o
- obj-$(CONFIG_MFD_ATMEL_SMC)	+= atmel-smc.o
- obj-$(CONFIG_MFD_INTEL_LPSS)	+= intel-lpss.o
- obj-$(CONFIG_MFD_INTEL_LPSS_PCI)	+= intel-lpss-pci.o
-diff --git a/drivers/mfd/atmel-lcdc.c b/drivers/mfd/atmel-lcdc.c
+ DRM DRIVERS FOR BRIDGE CHIPS
+ M:	Archit Taneja <architt@codeaurora.org>
+ M:	Andrzej Hajda <a.hajda@samsung.com>
+diff --git a/drivers/gpu/drm/atmel/Kconfig b/drivers/gpu/drm/atmel/Kconfig
+index 7cd3862f9d18..c4c6150f271a 100644
+--- a/drivers/gpu/drm/atmel/Kconfig
++++ b/drivers/gpu/drm/atmel/Kconfig
+@@ -14,3 +14,15 @@ config DRM_ATMEL_HLCDC
+ 	help
+ 	  Choose this option if you have an ATMEL SoC with an HLCDC display
+ 	  controller (i.e. at91sam9n12, at91sam9x5 family or sama5d3 family).
++
++config DRM_ATMEL_LCDC
++	tristate "DRM Support for ATMEL LCDC Display Controller"
++	depends on DRM && OF && COMMON_CLK && MFD_ATMEL_LCDC && ARM
++	select DRM_ATMEL
++	select DRM_GEM_CMA_HELPER
++	select DRM_KMS_HELPER
++	select DRM_KMS_CMA_HELPER
++	select DRM_PANEL
++	help
++	  Choose this option if you have an ATMEL SoC with an LCDC display
++	  controller (only at91sam9263 or at91sam9rl).
+diff --git a/drivers/gpu/drm/atmel/Makefile b/drivers/gpu/drm/atmel/Makefile
+index 49dc89f36b73..9fdfada613d2 100644
+--- a/drivers/gpu/drm/atmel/Makefile
++++ b/drivers/gpu/drm/atmel/Makefile
+@@ -5,3 +5,5 @@ atmel-hlcdc-dc-y := atmel_hlcdc_crtc.o \
+ 		atmel_hlcdc_plane.o
+ 
+ obj-$(CONFIG_DRM_ATMEL_HLCDC)	+= atmel-hlcdc-dc.o
++
++obj-$(CONFIG_DRM_ATMEL_LCDC)	+= atmel_lcdc-dc.o
+diff --git a/drivers/gpu/drm/atmel/atmel_lcdc-dc.c b/drivers/gpu/drm/atmel/atmel_lcdc-dc.c
 new file mode 100644
-index 000000000000..8928976bafca
+index 000000000000..275a09e2e100
 --- /dev/null
-+++ b/drivers/mfd/atmel-lcdc.c
-@@ -0,0 +1,158 @@
++++ b/drivers/gpu/drm/atmel/atmel_lcdc-dc.c
+@@ -0,0 +1,1094 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2018 Sam Ravnborg
 + *
-+ * Author: Sam Ravnborg <sam@ravnborg.org>
++ * The driver is based on atmel_lcdfb which is:
++ * Copyright (C) 2007 Atmel Corporation
 + *
-+ * Based on atmel-hlcdc.c wich is:
-+ * Copyright (C) 2014 Free Electrons
-+ * Copyright (C) 2014 Atmel
-+ * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
++ * Atmel LCD Controller Display Controller.
++ * A sub-device of the Atmel LCDC IP.
++ *
++ * The Atmel LCD Controller supports in the following configuration:
++ * - TFT only, with BGR565, 8 bits/pixel
++ * - Resolution up to 2048x2048
++ * - Single plane, crtc, one fixed output
++ *
++ * Features not (yet) ported from atmel_lcdfb:
++ * - Support for extra modes (and configurable intensify bit)
++ * - Check modesetting support - lcdc_dc_display_check()
++ * - set color / palette handling
++ * - support for STN displays (partly implemented)
++ * - AVR32 support (relevant?)
 + */
 +
++#include <linux/regulator/consumer.h>
 +#include <linux/mfd/atmel-lcdc.h>
-+#include <linux/mfd/core.h>
-+#include <linux/module.h>
++#include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
++#include <linux/irqreturn.h>
++#include <linux/device.h>
 +#include <linux/regmap.h>
-+#include <linux/clk.h>
-+#include <linux/io.h>
 +
-+#define ATMEL_LCDC_REG_MAX		(0x1000 - 0x4)
++#include <video/videomode.h>
 +
-+struct lcdc_regmap {
-+	void __iomem *regs;
++#include <drm/drm_gem_framebuffer_helper.h>
++#include <drm/drm_simple_kms_helper.h>
++#include <drm/drm_gem_cma_helper.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_fb_cma_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_fb_helper.h>
++#include <drm/drm_fourcc.h>
++#include <drm/drm_vblank.h>
++#include <drm/drm_modes.h>
++#include <drm/drm_panel.h>
++#include <drm/drm_print.h>
++#include <drm/drm_drv.h>
++#include <drm/drm_of.h>
++
++/* Parameters */
++#define ATMEL_LCDC_DMA_BURST_LEN	8	/* words */
++
++/**
++ * struct atmel_lcdc_dc_desc - CPU specific configuration properties
++ */
++struct atmel_lcdc_dc_desc {
++	int guard_time;
++	int fifo_size;
++	int min_width;
++	int min_height;
++	int max_width;
++	int max_height;
++	bool have_hozval;
++	bool have_alt_pixclock;
 +};
 +
-+static const struct mfd_cell lcdc_cells[] = {
-+	{
-+		.name = "atmel-lcdc-pwm",
-+		.of_compatible = "atmel,lcdc-pwm",
-+	},
-+	{
-+		.name = "atmel-lcdc-dc",
-+		.of_compatible = "atmel,lcdc-display-controller",
-+	},
++/* private data */
++struct lcdc_dc {
++	const struct atmel_lcdc_dc_desc *desc;
++	struct atmel_mfd_lcdc *mfd_lcdc;
++	struct regulator *lcd_supply;
++	struct drm_fbdev_cma *fbdev;
++	struct drm_bridge *bridge;
++	struct drm_panel *panel;
++	struct regmap *regmap;
++	struct device *dev;
++
++	struct drm_simple_display_pipe pipe;
++	struct work_struct reset_lcdc_work;
++	struct drm_connector connector;
 +};
 +
-+static int regmap_lcdc_reg_write(void *context, unsigned int reg,
-+				 unsigned int val)
++/* Configuration of individual CPU's */
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9261 = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = true,
++	.have_alt_pixclock = false,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9263 = {
++	.guard_time = 1,
++	.fifo_size = 2048,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = false,
++	.have_alt_pixclock = false,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9g10 = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = true,
++	.have_alt_pixclock = false,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9g45 = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = false,
++	.have_alt_pixclock = true,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9g46 = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = false,
++	.have_alt_pixclock = false,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9m10 = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = false,
++	.have_alt_pixclock = false,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9m11 = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = false,
++	.have_alt_pixclock = false,
++};
++
++static const struct atmel_lcdc_dc_desc atmel_lcdc_dc_at91sam9rl = {
++	.guard_time = 1,
++	.fifo_size = 512,
++	.min_width = 0,
++	.min_height = 0,
++	.max_width = 2048,
++	.max_height = 2048,
++	.have_hozval = false,
++	.have_alt_pixclock = false,
++};
++
++static const struct of_device_id atmel_lcdc_of_match[] = {
++	{
++		.compatible = "atmel,at91sam9261-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9261,
++	}, {
++		.compatible = "atmel,at91sam9263-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9263,
++	}, {
++		.compatible = "atmel,at91sam9g10-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9g10,
++	}, {
++		.compatible = "atmel,at91sam9g45-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9g45,
++	}, {
++		.compatible = "atmel,at91sam9g46-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9g46,
++	}, {
++		.compatible = "atmel,at91sam9m10-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9m10,
++	}, {
++		.compatible = "atmel,at91sam9m11-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9m11,
++	}, {
++		.compatible = "atmel,at91sam9rl-lcdc-mfd",
++		.data = &atmel_lcdc_dc_at91sam9rl,
++	},
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, atmel_lcdc_of_match);
++
++/*
++ * The Atmel LCD controller display-controller supports several formats but
++ * this driver supports only a small subset.
++ * TODO: atmel_lcdfb supports more - port it over
++ * Maybe actual wiring will impact mode support?
++ */
++static const u32 lcdc_dc_formats[] = {
++	DRM_FORMAT_BGR565,
++};
++
++/* Start LCD Controller (DMA + PWR) */
++static void lcdc_dc_start(struct lcdc_dc *lcdc_dc)
 +{
-+	struct lcdc_regmap *regmap = context;
++	// Enable DMA
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_DMACON, ATMEL_LCDC_DMAEN);
++	// Enable LCD
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_PWRCON,
++		     (lcdc_dc->desc->guard_time << ATMEL_LCDC_GUARDT_OFFSET)
++		     | ATMEL_LCDC_PWR);
++}
 +
-+	writel(val, regmap->regs + reg);
++/* Stop LCD Controller (PWR + DMA) */
++static void lcdc_dc_stop(struct lcdc_dc *lcdc_dc)
++{
++	unsigned int pwrcon;
++
++	might_sleep();
++
++	/* Turn off the LCD controller and the DMA controller */
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_PWRCON,
++			lcdc_dc->desc->guard_time << ATMEL_LCDC_GUARDT_OFFSET);
++
++	/* Wait for the LCDC core to become idle */
++	regmap_read_poll_timeout(lcdc_dc->regmap, ATMEL_LCDC_PWRCON, pwrcon,
++				 !(pwrcon & ATMEL_LCDC_BUSY), 100, 10000);
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_DMACON, !(ATMEL_LCDC_DMAEN));
++}
++
++static void lcdc_dc_start_clock(struct lcdc_dc *lcdc_dc)
++{
++	clk_prepare_enable(lcdc_dc->mfd_lcdc->bus_clk);
++	clk_prepare_enable(lcdc_dc->mfd_lcdc->lcdc_clk);
++}
++
++static void lcdc_dc_stop_clock(struct lcdc_dc *lcdc_dc)
++{
++	clk_disable_unprepare(lcdc_dc->mfd_lcdc->bus_clk);
++	clk_disable_unprepare(lcdc_dc->mfd_lcdc->lcdc_clk);
++}
++
++static int lcdc_dc_display_check(struct drm_simple_display_pipe *pipe,
++				 struct drm_plane_state *pstate,
++				 struct drm_crtc_state *cstate)
++{
++	const struct drm_display_mode *dmode;
++	struct drm_framebuffer *old_fb;
++	struct drm_framebuffer *fb;
++
++	dmode = &cstate->mode;
++	old_fb = pipe->plane.state->fb;
++	fb = pstate->fb;
++
++	/* Check timing? */
++	/* TODO */
 +
 +	return 0;
 +}
 +
-+static int regmap_lcdc_reg_read(void *context, unsigned int reg,
-+				unsigned int *val)
++/* Horizontal size of LCD module - configuration dependent */
++static unsigned int compute_hozval(struct lcdc_dc *lcdc_dc, unsigned int width)
 +{
-+	struct lcdc_regmap *regmap = context;
++	unsigned int valid_lcdd_data_line;
++	unsigned int hoz_display_size;
++	unsigned int disptype;
++	unsigned int scanmode;
++	unsigned int ifwidth;
++	unsigned int lcdcon2;
 +
-+	*val = readl(regmap->regs + reg);
++	if (!lcdc_dc->desc->have_hozval)
++		return width;
++
++	regmap_read(lcdc_dc->regmap, ATMEL_LCDC_LCDCON2, &lcdcon2);
++	disptype = lcdcon2 & ATMEL_LCDC_DISTYPE;
++
++	if (disptype == ATMEL_LCDC_DISTYPE_TFT)
++		return width;
++
++	ifwidth = lcdcon2 & ATMEL_LCDC_IFWIDTH;
++	scanmode = lcdcon2 & ATMEL_LCDC_SCANMOD;
++
++	/*
++	 * STN display
++	 * Based on algorithm from datasheet calculate hozval
++	 */
++	if (disptype == ATMEL_LCDC_DISTYPE_STNCOLOR)
++		hoz_display_size = width * 3;
++	else
++		hoz_display_size = width;
++
++	switch (ifwidth) {
++	case ATMEL_LCDC_IFWIDTH_4:
++		valid_lcdd_data_line = 4;
++		break;
++	case ATMEL_LCDC_IFWIDTH_8:
++		if (scanmode == ATMEL_LCDC_SCANMOD_DUAL)
++			valid_lcdd_data_line = 4;
++		else
++			valid_lcdd_data_line = 8;
++		break;
++	default:
++		valid_lcdd_data_line = 8;
++		break;
++	}
++
++	return DIV_ROUND_UP(hoz_display_size, valid_lcdd_data_line);
++}
++
++static void set_vertical_timing(struct lcdc_dc *lcdc_dc,
++				struct drm_display_mode *dmode)
++{
++	unsigned int tim1;
++	unsigned int vfp;
++	unsigned int vbp;
++	unsigned int vpw;
++	unsigned int vhdly;
++
++	/* VFP: Vertical Front Porch */
++	vfp = dmode->vsync_start - dmode->vdisplay;
++
++	/* VBP: Vertical Back Porch */
++	vbp = dmode->vtotal - dmode->vsync_end;
++
++	/* VPW: Vertical Synchronization pulse width */
++	vpw = dmode->vsync_end - dmode->vsync_start - 1;
++
++	/* VHDLY: Vertical to horizontal delay */
++	vhdly = 0;
++
++	tim1 = vfp << ATMEL_LCDC_VFP_OFFSET |
++	       vbp << ATMEL_LCDC_VBP_OFFSET |
++	       vpw << ATMEL_LCDC_VPW_OFFSET |
++	       vhdly << ATMEL_LCDC_VHDLY_OFFSET;
++
++	DRM_DEV_DEBUG(lcdc_dc->dev, " TIM1 = %08x\n", tim1);
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_TIM1, tim1);
++}
++
++static void set_horizontal_timing(struct lcdc_dc *lcdc_dc,
++				  struct drm_display_mode *dmode)
++{
++	unsigned int tim2;
++	unsigned int hbp;
++	unsigned int hpw;
++	unsigned int hfp;
++
++	/* HBP: Horizontal Back Porch */
++	hbp = dmode->htotal - dmode->hsync_end - 1;
++
++	/* HPW: Horizontal synchronization pulse width */
++	hpw = dmode->hsync_end - dmode->hsync_start - 1;
++
++	/* HFP: Horizontal Front Porch */
++	hfp = dmode->hsync_start - dmode->hdisplay - 2;
++
++	tim2 = hbp << ATMEL_LCDC_HBP_OFFSET |
++	       hpw << ATMEL_LCDC_HPW_OFFSET |
++	       hfp << ATMEL_LCDC_HFP_OFFSET;
++
++	DRM_DEV_DEBUG(lcdc_dc->dev, " TIM2 = %08x\n", tim2);
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_TIM2, tim2);
++}
++
++static void lcdc_dc_crtc_mode_set_nofb(struct lcdc_dc *lcdc_dc)
++{
++	struct drm_display_mode *dmode;
++	unsigned int hozval_linesz;
++	unsigned int value;
++
++	dmode = &lcdc_dc->pipe.crtc.state->adjusted_mode;
++
++	/* Vertical & horizontal timing */
++	set_vertical_timing(lcdc_dc, dmode);
++	set_horizontal_timing(lcdc_dc, dmode);
++
++	/* Horizontal value (aka line size) */
++	hozval_linesz = compute_hozval(lcdc_dc, dmode->crtc_hdisplay);
++
++	/* Display size */
++	value = (hozval_linesz - 1) << ATMEL_LCDC_HOZVAL_OFFSET;
++	value |= dmode->crtc_vdisplay - 1;
++	DRM_DEV_DEBUG(lcdc_dc->dev, " LCDFRMCFG = %08x\n", value);
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_LCDFRMCFG, value);
++
++	/* FIFO Threshold: Use formula from data sheet */
++	value = lcdc_dc->desc->fifo_size - (2 * ATMEL_LCDC_DMA_BURST_LEN + 3);
++	DRM_DEV_DEBUG(lcdc_dc->dev, " FIFO = %08x\n", value);
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_FIFO, value);
++
++	/*
++	 * Toggle LCD_MODE every frame
++	 * Note: register not documented, this is from atmel_lcdfb
++	 */
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_MVAL, 0);
++}
++
++static void lcdc_dc_enable(struct lcdc_dc *lcdc_dc,
++			   struct drm_device *drm,
++			   struct drm_crtc *crtc)
++{
++	const struct drm_format_info *format;
++	struct drm_display_mode *dmode;
++	unsigned long clk_value_khz;
++	unsigned int pix_factor;
++	unsigned int lcdcon1;
++	unsigned int lcdcon2;
++	u32 bus_flags;
++
++	dmode = &lcdc_dc->pipe.crtc.state->adjusted_mode;
++	format = crtc->primary->state->fb->format;
++
++	/* Control register 1 */
++
++	/* Set pixel clock */
++	if (lcdc_dc->desc->have_alt_pixclock)
++		pix_factor = 1;
++	else
++		pix_factor = 2;
++
++	clk_value_khz = clk_get_rate(lcdc_dc->mfd_lcdc->lcdc_clk) / 1000;
++	lcdcon1 = DIV_ROUND_UP(clk_value_khz, dmode->clock);
++
++	if (lcdcon1 < pix_factor) {
++		DRM_DEV_INFO(lcdc_dc->dev, "Bypassing pixel clock divider\n");
++		regmap_write(lcdc_dc->regmap,
++			     ATMEL_LCDC_LCDCON1, ATMEL_LCDC_BYPASS);
++	} else {
++
++		lcdcon1 = (lcdcon1 / pix_factor) - 1;
++		DRM_DEV_DEBUG(lcdc_dc->dev, "CLKVAL = 0x%08x\n", lcdcon1);
++		regmap_write(lcdc_dc->regmap, ATMEL_LCDC_LCDCON1,
++			     lcdcon1 << ATMEL_LCDC_CLKVAL_OFFSET);
++		dmode->clock = clk_value_khz / (pix_factor * (lcdcon1 + 1));
++		DRM_DEV_DEBUG(lcdc_dc->dev, "updated pixclk:  %u KHz\n",
++					dmode->clock);
++	}
++
++	/* Control register 2 */
++	/* Only TFT supported (Controller supports STN too) */
++	lcdcon2 = ATMEL_LCDC_DISTYPE_TFT;
++
++	/* scan mode (STN only) */
++	if (dmode->flags & DRM_MODE_FLAG_DBLSCAN)
++		lcdcon2 |= ATMEL_LCDC_SCANMOD_DUAL;
++	else
++		lcdcon2 |= ATMEL_LCDC_SCANMOD_SINGLE;
++
++	/* Interface width 4 bits (STN only) */
++	lcdcon2 |= ATMEL_LCDC_IFWIDTH_4;
++
++	/* bits per pixel */
++	switch (format->depth) {
++	case 1:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_1;
++		break;
++	case 2:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_2;
++		break;
++	case 4:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_4;
++		break;
++	case 8:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_8;
++		break;
++	case 15:
++		/* fall through */
++	case 16:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_16;
++		break;
++	case 24:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_24;
++		break;
++	case 32:
++		lcdcon2 |= ATMEL_LCDC_PIXELSIZE_32;
++		break;
++	default:
++		DRM_DEV_ERROR(lcdc_dc->dev, "Unexpected depth (%d)",
++			      format->depth);
++		break;
++	}
++
++	/* Polarity normal */
++	lcdcon2 |= ATMEL_LCDC_INVVD_NORMAL;
++
++	/* vsync polarity */
++	if (dmode->flags & DRM_MODE_FLAG_PVSYNC)
++		lcdcon2 |= ATMEL_LCDC_INVFRAME_INVERTED;
++	else
++		lcdcon2 |= ATMEL_LCDC_INVFRAME_NORMAL;
++
++	/* hsync polarity */
++	if (dmode->flags & DRM_MODE_FLAG_PHSYNC)
++		lcdcon2 |= ATMEL_LCDC_INVLINE_INVERTED;
++	else
++		lcdcon2 |= ATMEL_LCDC_INVLINE_NORMAL;
++
++	bus_flags = lcdc_dc->connector.display_info.bus_flags;
++
++	/* dot clock (pix clock) polarity */
++	if (bus_flags & DRM_BUS_FLAG_PIXDATA_NEGEDGE)
++		lcdcon2 |= ATMEL_LCDC_INVCLK_INVERTED;
++	else
++		lcdcon2 |= ATMEL_LCDC_INVCLK_NORMAL;
++
++	/* Date Enable polarity */
++	if (bus_flags & DRM_BUS_FLAG_DE_LOW)
++		lcdcon2 |= ATMEL_LCDC_INVDVAL_INVERTED;
++	else
++		lcdcon2 |= ATMEL_LCDC_INVDVAL_NORMAL;
++
++	/* Clock is always active */
++	lcdcon2 |= ATMEL_LCDC_CLKMOD_ALWAYSACTIVE;
++
++	/* Memory layout */
++	if (format->format & DRM_FORMAT_BIG_ENDIAN)
++		lcdcon2 |= ATMEL_LCDC_MEMOR_BIG;
++	else
++		lcdcon2 |= ATMEL_LCDC_MEMOR_LITTLE;
++
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_LCDCON2, lcdcon2);
++
++	lcdc_dc_start(lcdc_dc);
++
++	drm_crtc_vblank_on(crtc);
++}
++
++static void lcdc_dc_display_enable(struct drm_simple_display_pipe *pipe,
++				   struct drm_crtc_state *cstate,
++				   struct drm_plane_state *plane_state)
++{
++	struct lcdc_dc *lcdc_dc;
++	struct drm_device *drm;
++	struct drm_crtc *crtc;
++	int ret;
++
++	crtc = &pipe->crtc;
++	drm = crtc->dev;
++	lcdc_dc = drm->dev_private;
++
++	ret = regulator_enable(lcdc_dc->lcd_supply);
++	if (ret)
++		DRM_DEV_ERROR(lcdc_dc->dev, "regulator_enable failed (%d)",
++			      ret);
++
++	drm_panel_prepare(lcdc_dc->panel);
++	lcdc_dc_crtc_mode_set_nofb(lcdc_dc);
++
++	/*
++	 * drm_simple_kms_helper have no support for gamma setup.
++	 * Add: lcdc_dc_setcolor(lcdc_dc, crtc); when we have it
++	 */
++	lcdc_dc_enable(lcdc_dc, drm, crtc);
++
++	drm_panel_enable(lcdc_dc->panel);
++}
++
++static void lcdc_dc_display_disable(struct drm_simple_display_pipe *pipe)
++{
++	struct lcdc_dc *lcdc_dc;
++	struct drm_device *drm;
++	struct drm_crtc *crtc;
++
++	crtc = &pipe->crtc;
++	drm = crtc->dev;
++	lcdc_dc = drm->dev_private;
++
++	drm_crtc_vblank_off(crtc);
++
++	drm_panel_disable(lcdc_dc->panel);
++
++	lcdc_dc_stop(lcdc_dc);
++
++	drm_panel_unprepare(lcdc_dc->panel);
++	regulator_disable(lcdc_dc->lcd_supply);
++}
++
++/* Update DMA config */
++static void lcdc_dc_update_dma(struct lcdc_dc *lcdc_dc,
++			       struct drm_simple_display_pipe *pipe)
++{
++	struct drm_plane_state *plane_state;
++	struct drm_framebuffer *fb;
++	unsigned int burst_length;
++	unsigned int frame_size;
++	dma_addr_t dma_addr;
++
++	plane_state = pipe->plane.state;
++	fb = plane_state->fb;
++
++	if (fb) {
++		unsigned int dmafrmcfg;
++
++		dma_addr = drm_fb_cma_get_gem_addr(fb, pipe->plane.state, 0);
++
++		/* Set frame buffer DMA base address */
++		regmap_write(lcdc_dc->regmap, ATMEL_LCDC_DMABADDR1, dma_addr);
++
++		/*
++		 * Set frame size and burst length
++		 * Frame_size equals size of visible area * bits / 32
++		 * (size in 32 bit words)
++		 */
++		frame_size = plane_state->crtc_w * plane_state->crtc_h;
++		frame_size = (frame_size * fb->format->depth) / 32;
++
++		burst_length = ATMEL_LCDC_DMA_BURST_LEN - 1;
++
++		dmafrmcfg = frame_size;
++		dmafrmcfg |= burst_length << ATMEL_LCDC_BLENGTH_OFFSET;
++
++		regmap_write(lcdc_dc->regmap, ATMEL_LCDC_DMAFRMCFG, dmafrmcfg);
++	}
++}
++
++static void lcdc_dc_update_event(struct drm_simple_display_pipe *pipe)
++{
++	struct drm_pending_vblank_event *event;
++	struct drm_crtc *crtc;
++
++	crtc = &pipe->crtc;
++	if (!crtc)
++		return;
++
++	spin_lock_irq(&crtc->dev->event_lock);
++	event = crtc->state->event;
++	if (event) {
++		crtc->state->event = NULL;
++
++		if (drm_crtc_vblank_get(crtc) == 0)
++			drm_crtc_arm_vblank_event(crtc, event);
++		else
++			drm_crtc_send_vblank_event(crtc, event);
++	}
++	spin_unlock_irq(&crtc->dev->event_lock);
++}
++
++static void lcdc_dc_display_update(struct drm_simple_display_pipe *pipe,
++				   struct drm_plane_state *old_pstate)
++{
++	struct drm_device *drm;
++	struct lcdc_dc *lcdc_dc;
++
++	drm = pipe->crtc.dev;
++	lcdc_dc = drm->dev_private;
++
++	/* Re-initialize the DMA engine... */
++	lcdc_dc_update_dma(lcdc_dc, pipe);
++
++	/* vblank event handling */
++	lcdc_dc_update_event(pipe);
++}
++
++static int lcdc_dc_display_enable_vblank(struct drm_simple_display_pipe *pipe)
++{
++	struct drm_crtc *crtc;
++	struct lcdc_dc *lcdc_dc;
++
++	crtc  = &pipe->crtc;
++	lcdc_dc = crtc->dev->dev_private;
++
++	/* Last line interrupt enable */
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_IER, ATMEL_LCDC_LSTLNI);
 +
 +	return 0;
 +}
 +
-+static const struct regmap_config lcdc_regmap_config = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = 4,
-+	.max_register = ATMEL_LCDC_REG_MAX,
-+	.reg_write = regmap_lcdc_reg_write,
-+	.reg_read = regmap_lcdc_reg_read,
-+	.fast_io = true,
++static void lcdc_dc_display_disable_vblank(struct drm_simple_display_pipe *pipe)
++{
++	struct drm_crtc *crtc;
++	struct lcdc_dc *lcdc_dc;
++
++	crtc  = &pipe->crtc;
++	lcdc_dc = crtc->dev->dev_private;
++
++	/* Last line interrupt disable */
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_IDR, ATMEL_LCDC_LSTLNI);
++}
++
++static const struct drm_simple_display_pipe_funcs lcdc_dc_display_funcs = {
++	.check = lcdc_dc_display_check,
++	.enable = lcdc_dc_display_enable,
++	.disable = lcdc_dc_display_disable,
++	.update = lcdc_dc_display_update,
++	.prepare_fb = drm_gem_fb_simple_display_pipe_prepare_fb,
++	.enable_vblank = lcdc_dc_display_enable_vblank,
++	.disable_vblank = lcdc_dc_display_disable_vblank,
 +};
 +
-+static int lcdc_probe(struct platform_device *pdev)
++static const struct drm_mode_config_funcs mode_config_funcs = {
++	.fb_create = drm_gem_fb_create,
++	.atomic_check = drm_atomic_helper_check,
++	.atomic_commit = drm_atomic_helper_commit,
++};
++
++/* scheduled worker to reset LCD */
++static void reset_lcdc_work(struct work_struct *work)
 +{
-+	struct atmel_mfd_lcdc *lcdc;
-+	struct lcdc_regmap *regmap;
-+	struct resource *res;
++	struct lcdc_dc *lcdc_dc;
++
++	lcdc_dc = container_of(work, struct lcdc_dc, reset_lcdc_work);
++
++	lcdc_dc_stop(lcdc_dc);
++	lcdc_dc_start(lcdc_dc);
++}
++
++static irqreturn_t lcdc_dc_irq_handler(int irq, void *arg)
++{
++	struct lcdc_dc *lcdc_dc;
++	struct drm_device *drm;
++	unsigned int status;
++	struct device *dev;
++	unsigned int imr;
++	unsigned int isr;
++
++	drm = arg;
++	lcdc_dc = drm->dev_private;
++	dev = lcdc_dc->dev;
++
++	regmap_read(lcdc_dc->regmap, ATMEL_LCDC_IMR, &imr);
++	regmap_read(lcdc_dc->regmap, ATMEL_LCDC_ISR, &isr);
++	status = imr & isr;
++	if (!status)
++		return IRQ_NONE;
++
++	if (status & ATMEL_LCDC_LSTLNI)
++		drm_crtc_handle_vblank(&lcdc_dc->pipe.crtc);
++
++	if (status & ATMEL_LCDC_UFLWI) {
++		DRM_DEV_INFO(dev, "FIFO underflow %#x\n", status);
++		/* reset DMA and FIFO to avoid screen shifting */
++		schedule_work(&lcdc_dc->reset_lcdc_work);
++	}
++	if (status & ATMEL_LCDC_OWRI)
++		DRM_DEV_INFO(dev, "FIFO overwrite interrupt");
++
++	if (status & ATMEL_LCDC_MERI)
++		DRM_DEV_INFO(dev, "DMA memory error");
++
++	/* Clear all reported (from ISR) interrupts */
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_ICR, isr);
++
++	return IRQ_HANDLED;
++}
++
++static int lcdc_dc_irq_postinstall(struct drm_device *dev)
++{
++	struct lcdc_dc *lcdc_dc;
++	unsigned int ier;
++
++	lcdc_dc = dev->dev_private;
++
++	ier = 0;
++	/* FIFO underflow interrupt enable */
++	ier |= ATMEL_LCDC_UFLWI;
++	/* FIFO overwrite interrupt enable */
++	ier |= ATMEL_LCDC_OWRI;
++	/* DMA memory error interrupt enable */
++	ier |= ATMEL_LCDC_MERI;
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_IER, ier);
++
++	return 0;
++}
++
++static void lcdc_dc_irq_uninstall(struct drm_device *dev)
++{
++	struct lcdc_dc *lcdc_dc;
++	unsigned int isr;
++
++	lcdc_dc  = dev->dev_private;
++
++	/* disable all interrupts */
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_IDR, ~0);
++	regmap_write(lcdc_dc->regmap, ATMEL_LCDC_ICR, ~0);
++
++	/* Clear any pending interrupts */
++	regmap_read(lcdc_dc->regmap, ATMEL_LCDC_ISR, &isr);
++}
++
++DEFINE_DRM_GEM_CMA_FOPS(lcdc_dc_drm_fops);
++
++static struct drm_driver lcdc_dc_drm_driver = {
++	.driver_features = DRIVER_HAVE_IRQ |
++			   DRIVER_GEM |
++			   DRIVER_MODESET |
++			   DRIVER_PRIME |
++			   DRIVER_ATOMIC,
++	.name = "atmel-lcdc",
++	.desc = "Atmel LCD Display Controller DRM",
++	.date = "20180808",
++	.major = 1,
++	.minor = 0,
++	.patchlevel = 0,
++
++	.lastclose = drm_fb_helper_lastclose,
++	.fops = &lcdc_dc_drm_fops,
++
++	.irq_handler = lcdc_dc_irq_handler,
++	.irq_preinstall = lcdc_dc_irq_uninstall,
++	.irq_postinstall = lcdc_dc_irq_postinstall,
++	.irq_uninstall = lcdc_dc_irq_uninstall,
++
++	.dumb_create = drm_gem_cma_dumb_create,
++
++	.gem_print_info = drm_gem_cma_print_info,
++	.gem_vm_ops = &drm_gem_cma_vm_ops,
++
++	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
++	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
++
++	.gem_prime_import = drm_gem_prime_import,
++	.gem_prime_export = drm_gem_prime_export,
++
++	.gem_prime_get_sg_table	= drm_gem_cma_prime_get_sg_table,
++	.gem_free_object_unlocked = drm_gem_cma_free_object,
++
++	.gem_prime_import_sg_table = drm_gem_cma_prime_import_sg_table,
++	.gem_prime_vmap = drm_gem_cma_prime_vmap,
++	.gem_prime_vunmap = drm_gem_cma_prime_vunmap,
++	.gem_prime_mmap = drm_gem_cma_prime_mmap,
++};
++
++static int lcdc_dc_modeset_init(struct lcdc_dc *lcdc_dc, struct drm_device *drm)
++{
++	struct drm_bridge *bridge;
++	struct drm_panel *panel;
++	struct device_node *np;
++	struct device *dev;
++	int ret;
++
++	dev = drm->dev;
++
++	drm_mode_config_init(drm);
++	drm->mode_config.min_width  = lcdc_dc->desc->min_width;
++	drm->mode_config.min_height = lcdc_dc->desc->min_height;
++	drm->mode_config.max_width  = lcdc_dc->desc->max_width;
++	drm->mode_config.max_height = lcdc_dc->desc->max_height;
++	drm->mode_config.funcs	    = &mode_config_funcs;
++
++	np = dev->of_node;
++	/* port@0 is the output port */
++	ret = drm_of_find_panel_or_bridge(np, 0, 0, &panel, &bridge);
++	if (ret && ret != -ENODEV) {
++		DRM_DEV_ERROR(dev, "Failed to find panel (%d)\n", ret);
++		goto err_out;
++	}
++
++	bridge = drm_panel_bridge_add(panel, DRM_MODE_CONNECTOR_Unknown);
++	if (IS_ERR(bridge)) {
++		ret = PTR_ERR(bridge);
++		DRM_DEV_ERROR(dev, "Failed to add bridge (%d)", ret);
++		goto err_panel_remove;
++	}
++
++	lcdc_dc->panel = panel;
++	lcdc_dc->bridge = bridge;
++
++	ret = drm_simple_display_pipe_init(drm,
++					   &lcdc_dc->pipe,
++					   &lcdc_dc_display_funcs,
++					   lcdc_dc_formats,
++					   ARRAY_SIZE(lcdc_dc_formats),
++					   NULL,
++					   &lcdc_dc->connector);
++	if (ret) {
++		DRM_DEV_ERROR(dev, "Failed to init display pipe (%d)\n", ret);
++		goto err_panel_remove;
++	}
++
++	ret = drm_simple_display_pipe_attach_bridge(&lcdc_dc->pipe, bridge);
++	if (ret) {
++		DRM_DEV_ERROR(dev, "failed to attach bridge (%d)", ret);
++		goto err_panel_remove;
++	}
++
++	drm_mode_config_reset(drm);
++
++	return 0;
++
++err_panel_remove:
++	if (panel)
++		drm_panel_bridge_remove(bridge);
++
++err_out:
++	return ret;
++}
++
++static int lcdc_dc_load(struct drm_device *drm)
++{
++	const struct of_device_id *match;
++	struct platform_device *pdev;
++	struct lcdc_dc *lcdc_dc;
++	struct device *dev;
++	int ret;
++
++	dev = drm->dev;
++	pdev = to_platform_device(dev);
++
++	match = of_match_node(atmel_lcdc_of_match, dev->parent->of_node);
++	if (!match) {
++		DRM_DEV_ERROR(dev, "invalid compatible string (node=%s)",
++			      dev->parent->of_node->name);
++		return -ENODEV;
++	}
++
++	if (!match->data) {
++		DRM_DEV_ERROR(dev, "invalid lcdc_dc description\n");
++		return -EINVAL;
++	}
++
++	lcdc_dc = devm_kzalloc(dev, sizeof(*lcdc_dc), GFP_KERNEL);
++	if (!lcdc_dc) {
++		DRM_DEV_ERROR(dev, "Failed to allocate lcdc_dc\n");
++		return -ENOMEM;
++	}
++
++	/* reset of lcdc might sleep and require a preemptible task context */
++	INIT_WORK(&lcdc_dc->reset_lcdc_work, reset_lcdc_work);
++
++	platform_set_drvdata(pdev, drm);
++	dev_set_drvdata(dev, lcdc_dc);
++
++	lcdc_dc->mfd_lcdc = dev_get_drvdata(dev->parent);
++	drm->dev_private = lcdc_dc;
++
++	lcdc_dc->regmap = lcdc_dc->mfd_lcdc->regmap;
++	lcdc_dc->desc = match->data;
++	lcdc_dc->dev = dev;
++
++	lcdc_dc->lcd_supply = devm_regulator_get(dev, "lcd");
++	if (IS_ERR(lcdc_dc->lcd_supply)) {
++		DRM_DEV_ERROR(dev, "Failed to get lcd-supply (%ld)\n",
++			      PTR_ERR(lcdc_dc->lcd_supply));
++		lcdc_dc->lcd_supply = NULL;
++	}
++
++	lcdc_dc_start_clock(lcdc_dc);
++
++	pm_runtime_enable(dev);
++
++	ret = drm_vblank_init(drm, 1);
++	if (ret) {
++		DRM_DEV_ERROR(dev, "failed to initialize vblank (%d)\n",
++			      ret);
++		goto err_pm_runtime_disable;
++	}
++
++	ret = lcdc_dc_modeset_init(lcdc_dc, drm);
++	if (ret) {
++		DRM_DEV_ERROR(dev, "modeset_init failed (%d)", ret);
++		goto err_pm_runtime_disable;
++	}
++
++	pm_runtime_get_sync(dev);
++	ret = drm_irq_install(drm, lcdc_dc->mfd_lcdc->irq);
++	pm_runtime_put_sync(dev);
++	if (ret < 0) {
++		DRM_DEV_ERROR(dev, "Failed to install IRQ (%d)\n", ret);
++
++		goto err_pm_runtime_disable;
++	}
++
++	/*
++	 * Passing in 16 here will make the RGB656 mode the default
++	 * Passing in 32 will use XRGB8888 mode
++	 */
++	drm_fb_cma_fbdev_init(drm, 16, 0);
++
++	drm_kms_helper_poll_init(drm);
++
++	lcdc_dc->fbdev = drm_fbdev_cma_init(drm, 8, 1);
++	if (IS_ERR(lcdc_dc->fbdev)) {
++		ret = PTR_ERR(lcdc_dc->fbdev);
++		DRM_DEV_ERROR(dev, "Failed to init FB CMA area (%d)", ret);
++		goto err_irq_uninstall;
++	}
++
++	drm_helper_hpd_irq_event(drm);
++
++	return 0;
++
++err_irq_uninstall:
++	pm_runtime_get_sync(dev);
++	drm_irq_uninstall(drm);
++	pm_runtime_put_sync(dev);
++
++err_pm_runtime_disable:
++	pm_runtime_disable(dev);
++	lcdc_dc_stop_clock(lcdc_dc);
++
++	cancel_work_sync(&lcdc_dc->reset_lcdc_work);
++
++	return ret;
++}
++
++static void lcdc_dc_unload(struct drm_device *dev)
++{
++	struct lcdc_dc *lcdc_dc = dev->dev_private;
++
++	drm_fb_cma_fbdev_fini(dev);
++	flush_work(&lcdc_dc->reset_lcdc_work);
++	drm_kms_helper_poll_fini(dev);
++	if (lcdc_dc->panel)
++		drm_panel_bridge_remove(lcdc_dc->bridge);
++	drm_mode_config_cleanup(dev);
++
++	pm_runtime_get_sync(dev->dev);
++	drm_irq_uninstall(dev);
++	pm_runtime_put_sync(dev->dev);
++
++	dev->dev_private = NULL;
++
++	pm_runtime_disable(dev->dev);
++	lcdc_dc_stop_clock(lcdc_dc);
++	cancel_work_sync(&lcdc_dc->reset_lcdc_work);
++}
++
++
++static int lcdc_dc_probe(struct platform_device *pdev)
++{
++	struct drm_device *drm;
 +	struct device *dev;
 +	int ret;
 +
 +	dev = &pdev->dev;
 +
-+	regmap = devm_kzalloc(dev, sizeof(*regmap), GFP_KERNEL);
-+	if (!regmap)
-+		return -ENOMEM;
-+
-+	lcdc = devm_kzalloc(dev, sizeof(*lcdc), GFP_KERNEL);
-+	if (!lcdc)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	regmap->regs = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(regmap->regs)) {
-+		dev_err(dev, "Failed to allocate IO mem (%ld)\n",
-+			PTR_ERR(regmap->regs));
-+		return PTR_ERR(regmap->regs);
++	drm = drm_dev_alloc(&lcdc_dc_drm_driver, dev);
++	if (IS_ERR(drm)) {
++		DRM_DEV_ERROR(dev, "Failed to allocate drm device\n");
++		return PTR_ERR(drm);
 +	}
 +
-+	lcdc->irq = platform_get_irq(pdev, 0);
-+	if (lcdc->irq < 0) {
-+		dev_err(dev, "Failed to get irq (%d)\n", lcdc->irq);
-+		return lcdc->irq;
++	ret = lcdc_dc_load(drm);
++	if (ret)
++		goto err_put_ref;
++
++	ret = drm_dev_register(drm, 0);
++	if (ret) {
++		DRM_DEV_ERROR(dev, "Failed to register drm (%d)\n", ret);
++		goto err_unload;
 +	}
 +
-+	lcdc->lcdc_clk = devm_clk_get(dev, "lcdc_clk");
-+	if (IS_ERR(lcdc->lcdc_clk)) {
-+		dev_err(dev, "failed to get lcdc clock (%ld)\n",
-+			PTR_ERR(lcdc->lcdc_clk));
-+		return PTR_ERR(lcdc->lcdc_clk);
-+	}
++	return 0;
 +
-+	lcdc->bus_clk = devm_clk_get(dev, "hclk");
-+	if (IS_ERR(lcdc->bus_clk)) {
-+		dev_err(dev, "failed to get bus clock (%ld)\n",
-+			PTR_ERR(lcdc->bus_clk));
-+		return PTR_ERR(lcdc->bus_clk);
-+	}
++err_unload:
++	lcdc_dc_unload(drm);
 +
-+	lcdc->regmap = devm_regmap_init(dev, NULL, regmap,
-+					 &lcdc_regmap_config);
-+	if (IS_ERR(lcdc->regmap)) {
-+		dev_err(dev, "Failed to init regmap (%ld)\n",
-+			PTR_ERR(lcdc->regmap));
-+		return PTR_ERR(lcdc->regmap);
-+	}
-+
-+	dev_set_drvdata(dev, lcdc);
-+
-+	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
-+				   lcdc_cells, ARRAY_SIZE(lcdc_cells),
-+				   NULL, 0, NULL);
-+	if (ret < 0)
-+		dev_err(dev, "Failed to add %d mfd devices (%d)\n",
-+			ARRAY_SIZE(lcdc_cells), ret);
-+
++err_put_ref:
++	drm_dev_put(drm);
 +	return ret;
 +}
 +
-+static const struct of_device_id lcdc_match[] = {
-+	{ .compatible = "atmel,at91sam9261-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9263-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9g10-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9g45-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9g46-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9m10-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9m11-lcdc-mfd" },
-+	{ .compatible = "atmel,at91sam9rl-lcdc-mfd" },
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, lcdc_match);
++static int lcdc_dc_remove(struct platform_device *pdev)
++{
++	struct drm_device *drm;
 +
-+static struct platform_driver lcdc_driver = {
-+	.probe = lcdc_probe,
-+	.driver = {
-+		.name = "atmel-lcdc",
-+		.of_match_table = lcdc_match,
++	drm = platform_get_drvdata(pdev);
++
++	drm_dev_unregister(drm);
++	lcdc_dc_unload(drm);
++	drm_dev_unref(drm);
++
++	return 0;
++}
++
++static const struct of_device_id lcdc_dc_dt_ids[] = {
++	{ .compatible = "atmel,lcdc-display-controller", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, lcdc_dc_dt_ids);
++
++static struct platform_driver lcdc_dc_driver = {
++	.probe		= lcdc_dc_probe,
++	.remove		= lcdc_dc_remove,
++	.driver		= {
++		.of_match_table = lcdc_dc_dt_ids,
++		.name	= "atmel-lcdc-dc",
 +	},
 +};
-+module_platform_driver(lcdc_driver);
 +
-+MODULE_ALIAS("platform:atmel-lcdc");
++module_platform_driver(lcdc_dc_driver);
++
 +MODULE_AUTHOR("Sam Ravnborg <sam@ravnborg.org>");
-+MODULE_DESCRIPTION("Atmel LCDC mfd driver");
++MODULE_DESCRIPTION("Atmel LCDC Display Controller DRM Driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mfd/atmel-lcdc.h b/include/linux/mfd/atmel-lcdc.h
-new file mode 100644
-index 000000000000..fdab269baa8e
---- /dev/null
-+++ b/include/linux/mfd/atmel-lcdc.h
-@@ -0,0 +1,184 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2018 Sam Ravnborg
-+ *
-+ * Author: Sam Ravnborg <sam@ravnborg.org>
-+ */
-+
-+#ifndef __LINUX_MFD_LCDC_H
-+#define __LINUX_MFD_LCDC_H
-+
-+#include <linux/regmap.h>
-+#include <linux/clk.h>
-+
-+/**
-+ * Structure shared by the Atmel LCD Controller device and its sub-devices.
-+ *
-+ * @regmap: register map used to access LCDC IP registers
-+ * @lcdc_clk: the lcd controller peripheral clock
-+ * @bus_clk: the bus clock clock (often the same as lcdc_clk)
-+ * @irq: the lcdc irq
-+ */
-+struct atmel_mfd_lcdc {
-+	struct regmap *regmap;
-+	struct clk *lcdc_clk;
-+	struct clk *bus_clk;
-+	int irq;
-+};
-+
-+#define ATMEL_LCDC_DMABADDR1	0x00
-+#define ATMEL_LCDC_DMABADDR2	0x04
-+#define ATMEL_LCDC_DMAFRMPT1	0x08
-+#define ATMEL_LCDC_DMAFRMPT2	0x0c
-+#define ATMEL_LCDC_DMAFRMADD1	0x10
-+#define ATMEL_LCDC_DMAFRMADD2	0x14
-+
-+#define ATMEL_LCDC_DMAFRMCFG	0x18
-+#define	ATMEL_LCDC_FRSIZE	(0x7fffff <<  0)
-+#define	ATMEL_LCDC_BLENGTH_OFFSET	24
-+#define	ATMEL_LCDC_BLENGTH	(0x7f     << ATMEL_LCDC_BLENGTH_OFFSET)
-+
-+#define ATMEL_LCDC_DMACON	0x1c
-+#define	ATMEL_LCDC_DMAEN	(0x1 << 0)
-+#define	ATMEL_LCDC_DMARST	(0x1 << 1)
-+#define	ATMEL_LCDC_DMABUSY	(0x1 << 2)
-+#define		ATMEL_LCDC_DMAUPDT	(0x1 << 3)
-+#define		ATMEL_LCDC_DMA2DEN	(0x1 << 4)
-+
-+#define ATMEL_LCDC_DMA2DCFG	0x20
-+#define		ATMEL_LCDC_ADDRINC_OFFSET	0
-+#define		ATMEL_LCDC_ADDRINC		(0xffff)
-+#define		ATMEL_LCDC_PIXELOFF_OFFSET	24
-+#define		ATMEL_LCDC_PIXELOFF		(0x1f << 24)
-+
-+#define ATMEL_LCDC_LCDCON1	0x0800
-+#define	ATMEL_LCDC_BYPASS	(1     <<  0)
-+#define	ATMEL_LCDC_CLKVAL_OFFSET	12
-+#define	ATMEL_LCDC_CLKVAL	(0x1ff << ATMEL_LCDC_CLKVAL_OFFSET)
-+#define	ATMEL_LCDC_LINCNT	(0x7ff << 21)
-+
-+#define ATMEL_LCDC_LCDCON2	0x0804
-+#define	ATMEL_LCDC_DISTYPE	(3 << 0)
-+#define		ATMEL_LCDC_DISTYPE_STNMONO	(0 << 0)
-+#define		ATMEL_LCDC_DISTYPE_STNCOLOR	(1 << 0)
-+#define		ATMEL_LCDC_DISTYPE_TFT		(2 << 0)
-+#define	ATMEL_LCDC_SCANMOD	(1 << 2)
-+#define		ATMEL_LCDC_SCANMOD_SINGLE	(0 << 2)
-+#define		ATMEL_LCDC_SCANMOD_DUAL		(1 << 2)
-+#define	ATMEL_LCDC_IFWIDTH	(3 << 3)
-+#define		ATMEL_LCDC_IFWIDTH_4		(0 << 3)
-+#define		ATMEL_LCDC_IFWIDTH_8		(1 << 3)
-+#define		ATMEL_LCDC_IFWIDTH_16		(2 << 3)
-+#define	ATMEL_LCDC_PIXELSIZE	(7 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_1		(0 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_2		(1 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_4		(2 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_8		(3 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_16		(4 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_24		(5 << 5)
-+#define		ATMEL_LCDC_PIXELSIZE_32		(6 << 5)
-+#define	ATMEL_LCDC_INVVD	(1 << 8)
-+#define		ATMEL_LCDC_INVVD_NORMAL		(0 << 8)
-+#define		ATMEL_LCDC_INVVD_INVERTED	(1 << 8)
-+#define	ATMEL_LCDC_INVFRAME	(1 << 9)
-+#define		ATMEL_LCDC_INVFRAME_NORMAL	(0 << 9)
-+#define		ATMEL_LCDC_INVFRAME_INVERTED	(1 << 9)
-+#define	ATMEL_LCDC_INVLINE	(1 << 10)
-+#define		ATMEL_LCDC_INVLINE_NORMAL	(0 << 10)
-+#define		ATMEL_LCDC_INVLINE_INVERTED	(1 << 10)
-+#define	ATMEL_LCDC_INVCLK	(1 << 11)
-+#define		ATMEL_LCDC_INVCLK_NORMAL	(0 << 11)
-+#define		ATMEL_LCDC_INVCLK_INVERTED	(1 << 11)
-+#define	ATMEL_LCDC_INVDVAL	(1 << 12)
-+#define		ATMEL_LCDC_INVDVAL_NORMAL	(0 << 12)
-+#define		ATMEL_LCDC_INVDVAL_INVERTED	(1 << 12)
-+#define	ATMEL_LCDC_CLKMOD	(1 << 15)
-+#define		ATMEL_LCDC_CLKMOD_ACTIVEDISPLAY	(0 << 15)
-+#define		ATMEL_LCDC_CLKMOD_ALWAYSACTIVE	(1 << 15)
-+#define	ATMEL_LCDC_MEMOR	(1 << 31)
-+#define		ATMEL_LCDC_MEMOR_BIG		(0 << 31)
-+#define		ATMEL_LCDC_MEMOR_LITTLE		(1 << 31)
-+
-+#define ATMEL_LCDC_TIM1		0x0808
-+#define	ATMEL_LCDC_VFP_OFFSET		0
-+#define	ATMEL_LCDC_VFP		(0xffU <<  0)
-+#define	ATMEL_LCDC_VBP_OFFSET		8
-+#define	ATMEL_LCDC_VBP		(0xffU <<  ATMEL_LCDC_VBP_OFFSET)
-+#define	ATMEL_LCDC_VPW_OFFSET		16
-+#define	ATMEL_LCDC_VPW		(0x3fU << ATMEL_LCDC_VPW_OFFSET)
-+#define	ATMEL_LCDC_VHDLY_OFFSET		24
-+#define	ATMEL_LCDC_VHDLY	(0xfU  << ATMEL_LCDC_VHDLY_OFFSET)
-+
-+#define ATMEL_LCDC_TIM2		0x080c
-+#define	ATMEL_LCDC_HBP_OFFSET		0
-+#define	ATMEL_LCDC_HBP		(0xffU  <<  0)
-+#define	ATMEL_LCDC_HPW_OFFSET		8
-+#define	ATMEL_LCDC_HPW		(0x3fU  <<  ATMEL_LCDC_HPW_OFFSET)
-+#define	ATMEL_LCDC_HFP_OFFSET		21
-+#define	ATMEL_LCDC_HFP		(0x7ffU << ATMEL_LCDC_HFP_OFFSET)
-+
-+#define ATMEL_LCDC_LCDFRMCFG	0x0810
-+#define	ATMEL_LCDC_LINEVAL	(0x7ff <<  0)
-+#define	ATMEL_LCDC_HOZVAL_OFFSET	21
-+#define	ATMEL_LCDC_HOZVAL	(0x7ff << ATMEL_LCDC_HOZVAL_OFFSET)
-+
-+#define ATMEL_LCDC_FIFO		0x0814
-+#define	ATMEL_LCDC_FIFOTH	(0xffff)
-+
-+#define ATMEL_LCDC_MVAL		0x0818
-+
-+#define ATMEL_LCDC_DP1_2	0x081c
-+#define ATMEL_LCDC_DP4_7	0x0820
-+#define ATMEL_LCDC_DP3_5	0x0824
-+#define ATMEL_LCDC_DP2_3	0x0828
-+#define ATMEL_LCDC_DP5_7	0x082c
-+#define ATMEL_LCDC_DP3_4	0x0830
-+#define ATMEL_LCDC_DP4_5	0x0834
-+#define ATMEL_LCDC_DP6_7	0x0838
-+#define	ATMEL_LCDC_DP1_2_VAL	(0xff)
-+#define	ATMEL_LCDC_DP4_7_VAL	(0xfffffff)
-+#define	ATMEL_LCDC_DP3_5_VAL	(0xfffff)
-+#define	ATMEL_LCDC_DP2_3_VAL	(0xfff)
-+#define	ATMEL_LCDC_DP5_7_VAL	(0xfffffff)
-+#define	ATMEL_LCDC_DP3_4_VAL	(0xffff)
-+#define	ATMEL_LCDC_DP4_5_VAL	(0xfffff)
-+#define	ATMEL_LCDC_DP6_7_VAL	(0xfffffff)
-+
-+#define ATMEL_LCDC_PWRCON	0x083c
-+#define	ATMEL_LCDC_PWR		(1    <<  0)
-+#define	ATMEL_LCDC_GUARDT_OFFSET	1
-+#define	ATMEL_LCDC_GUARDT	(0x7f <<  ATMEL_LCDC_GUARDT_OFFSET)
-+#define	ATMEL_LCDC_BUSY		(1    << 31)
-+
-+#define ATMEL_LCDC_CONTRAST_CTR	0x0840
-+#define	ATMEL_LCDC_PS		(3 << 0)
-+#define		ATMEL_LCDC_PS_DIV1		(0 << 0)
-+#define		ATMEL_LCDC_PS_DIV2		(1 << 0)
-+#define		ATMEL_LCDC_PS_DIV4		(2 << 0)
-+#define		ATMEL_LCDC_PS_DIV8		(3 << 0)
-+#define	ATMEL_LCDC_POL		(1 << 2)
-+#define		ATMEL_LCDC_POL_NEGATIVE		(0 << 2)
-+#define		ATMEL_LCDC_POL_POSITIVE		(1 << 2)
-+#define	ATMEL_LCDC_ENA		(1 << 3)
-+#define		ATMEL_LCDC_ENA_PWMDISABLE	(0 << 3)
-+#define		ATMEL_LCDC_ENA_PWMENABLE	(1 << 3)
-+
-+#define ATMEL_LCDC_CONTRAST_VAL	0x0844
-+#define	ATMEL_LCDC_CVAL	(0xff)
-+
-+#define ATMEL_LCDC_IER		0x0848
-+#define ATMEL_LCDC_IDR		0x084c
-+#define ATMEL_LCDC_IMR		0x0850
-+#define ATMEL_LCDC_ISR		0x0854
-+#define ATMEL_LCDC_ICR		0x0858
-+#define	ATMEL_LCDC_LNI		(1 << 0)
-+#define	ATMEL_LCDC_LSTLNI	(1 << 1)
-+#define	ATMEL_LCDC_EOFI		(1 << 2)
-+#define	ATMEL_LCDC_UFLWI	(1 << 4)
-+#define	ATMEL_LCDC_OWRI		(1 << 5)
-+#define	ATMEL_LCDC_MERI		(1 << 6)
-+
-+#define ATMEL_LCDC_LUT(n)	(0x0c00 + ((n)*4))
-+#define ATMEL_LCDC_LUT_SIZE	256
-+
-+#endif /* __LINUX_MFD_LCDC_H */
++MODULE_ALIAS("platform:atmel-lcdc-dc");
 -- 
 2.12.0
