@@ -1,70 +1,31 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Mon, 13 Aug 2018 16:47:26 +0200
-Message-ID: <264d51a0-7e41-6c27-d438-9ae337e6dcf0@microchip.com>
-References: <20180812184152.GA22343@ravnborg.org>
- <20180812195536.GA29811@ravnborg.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v6 04/24] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Mon, 13 Aug 2018 09:24:22 -0600
+Message-ID: <20180813152422.GA18650@rob-hp-laptop>
+References: <20180809214414.20905-1-paul@crapouillou.net>
+ <20180809214414.20905-5-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180812195536.GA29811@ravnborg.org>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sam Ravnborg <sam@ravnborg.org>, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Lee Jones <lee.jones@linaro.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Joshua Henderson <joshua.henderson@microchip.com>
-Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180809214414.20905-5-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 12/08/2018 at 21:55, Sam Ravnborg wrote:
-> The at91sam9263 has a few interesting "GPU" features:
+On Thu, Aug 09, 2018 at 11:43:54PM +0200, Paul Cercueil wrote:
+> Add documentation about how to properly use the Ingenic TCU
+> (Timer/Counter Unit) drivers from devicetree.
 > 
-> - 2D memory addressing
->    Data sheet says:
-> 	The LCDC can be configured to work on a frame buffer
-> 	larger than the actual screen size. By changing the
-> 	values in a few registers, it is easy to move the
-> 	displayed area along the frame buffer width and height
-> 
-> - 2D Graphics controller
->    Data sheet says:
-> 	The Two D Graphics Controller (TDGC) features a
-> 	hardware accelerator which highly simplifies drawing
-> 	tasks and graphic management operations.
-> 	The hardware accelerator makes it easy to draw lines
-> 	and complex polygons and to perform block transfers
-> 	within the frame buffer.
-> 	The TDGC also features a draw command queue that
-> 	automatically executes a more complex drawing function
-> 	that is composed of several register accesses.
-> 
-> The datasheet text is from: chapter 43.9 + chapter 44:
-> http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-6249-32-bit-ARM926EJ-S-Embedded-Microprocessor-SAM9263_Datasheet.pdf
-> (No NDA required)
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ----
+>  .../devicetree/bindings/timer/ingenic,tcu.txt      | 134 +++++++++++++++++++++
+>  .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 ---
+>  3 files changed, 134 insertions(+), 42 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>  delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
 
-(old memories) this 2D engine prove itself of being quite limited as the 
-fill polygon and clipping functions are not working.
-
-> Based on the above, would it be possible to utilise some
-> of these features without any dedicated userspace (mesa) support?
-> Any other driver that has something similar that can be used
-> for inspiration?
-
-This is really an interesting question indeed.
-
-> Or is this in reality a simple GPU that requires a
-> dedicated GPU driver?
-> 
-> 	Sam
-> 
-
-
--- 
-Nicolas Ferre
+Reviewed-by: Rob Herring <robh@kernel.org>
