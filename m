@@ -1,137 +1,71 @@
-From: Sam Ravnborg <sam@ravnborg.org>
+From: Rob Herring <robh@kernel.org>
 Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Mon, 13 Aug 2018 20:18:08 +0200
-Message-ID: <20180813181808.GA2357@ravnborg.org>
+Date: Mon, 13 Aug 2018 16:04:54 -0600
+Message-ID: <20180813220454.GA28913@rob-hp-laptop>
 References: <20180812184152.GA22343@ravnborg.org>
  <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
+ <20180813181808.GA2357@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180813181808.GA2357@ravnborg.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Nicholas.
-
-On Mon, Aug 13, 2018 at 05:54:48PM +0200, Nicolas Ferre wrote:
-> On 12/08/2018 at 20:41, Sam Ravnborg wrote:
-> >New DRM based driver for at91sam9 SOC's that uses the
-> >Atmel LCDC IP core.
-> 
-> I'm delighted to see this work: Thanks a lot Sam!
-Glad to hear.
-I was a bit worried that the response would be "this is
-waste of time as we have a working driver already".
-
-> 
-> >This is first version of a patch set that adds
-> >drivers for the Atmel LCDC IP core.
-> >Posted for review as the basics works now.
-> >
-> >The LCDC IP core contains two devices:
-> >- a PWM often used for backlight
-> >- a LCD display controller
-> >
-> >Both devices are supported today by the atmel_lcdfb driver.
-> >For this new set of drivers the compatible strings was
-> >selected to avoid clash with the existing compatible
-> >strings used for the atmel_lcdfb driver to allow them
-> >to co-exist.
-> 
-> Would be good to have a plan to phase-out the old atmel_lcdfb fbdev
-> driver when this one addresses some TODO items that make sense.
-Agree on this.
-One approach could be to say that when all in-kernel users of atmel_lcdfb
-are ported, then the old driver could be dropped after a kernel release.
-
-> The mfd suffix seems strange to me. What about "atmel,at91sam9263-lcdc-mfd"
-> => "atmel,at91sam9263-lcd" (or "microchip,at91sam9263-lcdc").
-The "-mfd" suffix was added to avoid clashing with the current
-compatible string used by the atmel_lcdfb driver.
-
-I susggest we do the following:
-- use the microchip prefix, as this is now owned by microchip
-- and add the driver to a drm/microchip/ directory
-(Then we can only hope that microchip do not change name or
-are purchased by someone else).
-
-> 
-> >The DRM implementation has a few shortcomings compared to the
-> >existing fbdev based driver:
-> >     - STN displays are not supported
-> >             Binding support is missing but most of the
-> >             STN specific functionality is otherwise ported
-> >             from the fbdev driver.
-> >             I assume the info should come from the panel
-> >             but as I lack HW I have not looked too much
-> >             into what is required.
-> 
-> Yes, I'm not even sure if STN displays are still available those
-> days... Might not be worth it spending time on this.
-Then I will delete all the STN bits that was ported over.
-If we need them later they can be found on the mailign list.
-
-> 
-> >     - gamma support is missing
-> >             The driver utilises drm_simple_kms_helper and
-> >             this helper lacks support for setting up gamma.
-> >             If this is useful please let me know and I
-> >             will extend drm_simple_kms_helper to support this
-> >             and update the driver.
-> >     - modesetting is not checked (see TODO in file)
-> >             Is this required for such a simple setup?
-> >     - support for extra modes as applicable (and lcd-wiring-mode)
-> >     - support for AVR32 (is it relevant?)
-> 
-> No, AVR32 is not relevant anymore as the core and SoC were removed
-> some years ago from Linux.
-> All mention of AT32 or AVR32 can be remove then.
-Ok, I will delete these.
-
-> >The drivers _works_ on a proprietary at91sam9263 based board
-> >and I will eventually migrate the at91sam9263ek over
-> >to use it as well.
-> 
-> We'll be able to test it on other SoCs and boards.
-Thanks!
-
-> 
-> >Works is maybe a stretch - the following was tested:
-> >   modetest shows reasonable output
-> >   modetest -s shows some nice colored squares
-> 
-> You must see something like this (without the overlay additional
-> black square):
-> http://www.at91.com/linux4sam/bin/view/Linux4SAM/UsingAtmelDRMDriver#Some_modetest_commands
-I posted a picture to G+ here:
-https://plus.google.com/+SamRavnborg/posts/YBt4jUGLgWa
-
-They look similar but are not equal. For now I assume this is OK.
-I will do some testing with a Qt app, and will test colors with this too.
-
-> >All feedback (from spelling errors to general structure) appreciated!
-> 
-> On my side, it's mostly Nitpicking ;-)
-> Now that we're Microchip for a little bit more than 2 years, I tend
-> to make this name prevalent compared to Atmel for new work around
-> our products... But I know this driver is for older SoCs and that it
-> got inspired by two former drivers that have this "atmel" naming
-> everywhere. MAINTAINERS and Kconfig changes could include Microchip
-> name, so that it's obvious for the newcomers...
-Will fix, as described above.
-
-Thanks for the inputs!
-
-	Sam
+T24gTW9uLCBBdWcgMTMsIDIwMTggYXQgMDg6MTg6MDhQTSArMDIwMCwgU2FtIFJhdm5ib3JnIHdy
+b3RlOgo+IEhpIE5pY2hvbGFzLgo+IAo+IE9uIE1vbiwgQXVnIDEzLCAyMDE4IGF0IDA1OjU0OjQ4
+UE0gKzAyMDAsIE5pY29sYXMgRmVycmUgd3JvdGU6Cj4gPiBPbiAxMi8wOC8yMDE4IGF0IDIwOjQx
+LCBTYW0gUmF2bmJvcmcgd3JvdGU6Cj4gPiA+TmV3IERSTSBiYXNlZCBkcml2ZXIgZm9yIGF0OTFz
+YW05IFNPQydzIHRoYXQgdXNlcyB0aGUKPiA+ID5BdG1lbCBMQ0RDIElQIGNvcmUuCj4gPiAKPiA+
+IEknbSBkZWxpZ2h0ZWQgdG8gc2VlIHRoaXMgd29yazogVGhhbmtzIGEgbG90IFNhbSEKPiBHbGFk
+IHRvIGhlYXIuCj4gSSB3YXMgYSBiaXQgd29ycmllZCB0aGF0IHRoZSByZXNwb25zZSB3b3VsZCBi
+ZSAidGhpcyBpcwo+IHdhc3RlIG9mIHRpbWUgYXMgd2UgaGF2ZSBhIHdvcmtpbmcgZHJpdmVyIGFs
+cmVhZHkiLgo+IAo+ID4gCj4gPiA+VGhpcyBpcyBmaXJzdCB2ZXJzaW9uIG9mIGEgcGF0Y2ggc2V0
+IHRoYXQgYWRkcwo+ID4gPmRyaXZlcnMgZm9yIHRoZSBBdG1lbCBMQ0RDIElQIGNvcmUuCj4gPiA+
+UG9zdGVkIGZvciByZXZpZXcgYXMgdGhlIGJhc2ljcyB3b3JrcyBub3cuCj4gPiA+Cj4gPiA+VGhl
+IExDREMgSVAgY29yZSBjb250YWlucyB0d28gZGV2aWNlczoKPiA+ID4tIGEgUFdNIG9mdGVuIHVz
+ZWQgZm9yIGJhY2tsaWdodAo+ID4gPi0gYSBMQ0QgZGlzcGxheSBjb250cm9sbGVyCj4gPiA+Cj4g
+PiA+Qm90aCBkZXZpY2VzIGFyZSBzdXBwb3J0ZWQgdG9kYXkgYnkgdGhlIGF0bWVsX2xjZGZiIGRy
+aXZlci4KPiA+ID5Gb3IgdGhpcyBuZXcgc2V0IG9mIGRyaXZlcnMgdGhlIGNvbXBhdGlibGUgc3Ry
+aW5ncyB3YXMKPiA+ID5zZWxlY3RlZCB0byBhdm9pZCBjbGFzaCB3aXRoIHRoZSBleGlzdGluZyBj
+b21wYXRpYmxlCj4gPiA+c3RyaW5ncyB1c2VkIGZvciB0aGUgYXRtZWxfbGNkZmIgZHJpdmVyIHRv
+IGFsbG93IHRoZW0KPiA+ID50byBjby1leGlzdC4KPiA+IAo+ID4gV291bGQgYmUgZ29vZCB0byBo
+YXZlIGEgcGxhbiB0byBwaGFzZS1vdXQgdGhlIG9sZCBhdG1lbF9sY2RmYiBmYmRldgo+ID4gZHJp
+dmVyIHdoZW4gdGhpcyBvbmUgYWRkcmVzc2VzIHNvbWUgVE9ETyBpdGVtcyB0aGF0IG1ha2Ugc2Vu
+c2UuCj4gQWdyZWUgb24gdGhpcy4KPiBPbmUgYXBwcm9hY2ggY291bGQgYmUgdG8gc2F5IHRoYXQg
+d2hlbiBhbGwgaW4ta2VybmVsIHVzZXJzIG9mIGF0bWVsX2xjZGZiCj4gYXJlIHBvcnRlZCwgdGhl
+biB0aGUgb2xkIGRyaXZlciBjb3VsZCBiZSBkcm9wcGVkIGFmdGVyIGEga2VybmVsIHJlbGVhc2Uu
+Cj4gCj4gPiBUaGUgbWZkIHN1ZmZpeCBzZWVtcyBzdHJhbmdlIHRvIG1lLiBXaGF0IGFib3V0ICJh
+dG1lbCxhdDkxc2FtOTI2My1sY2RjLW1mZCIKPiA+ID0+ICJhdG1lbCxhdDkxc2FtOTI2My1sY2Qi
+IChvciAibWljcm9jaGlwLGF0OTFzYW05MjYzLWxjZGMiKS4KPiBUaGUgIi1tZmQiIHN1ZmZpeCB3
+YXMgYWRkZWQgdG8gYXZvaWQgY2xhc2hpbmcgd2l0aCB0aGUgY3VycmVudAo+IGNvbXBhdGlibGUg
+c3RyaW5nIHVzZWQgYnkgdGhlIGF0bWVsX2xjZGZiIGRyaXZlci4KCkkgZG9uJ3Qga25vdyB0aGF0
+IDIgcmVnaXN0ZXJzIGZvciBhIGJhY2tsaWdodCBQV00gY29uc3RpdHV0ZSBhbiBNRkQuIEEgCnNp
+bmdsZSBub2RlIGNhbiBiZSBib3RoIGFuIExDRCBjb250cm9sbGVyIGFuZCBhIFBXTS4KClRoZSBm
+YWN0IHRoYXQgdGhlIE9TIGhhcyAyIGRyaXZlcnMgaXMgaXJyZWxldmFudCB0byB0aGUgYmluZGlu
+ZyBhbmQgRFQgCmlzIG5vdCBhIHdheSB0byBzZWxlY3QgZHJpdmVycy4gWW91ciBjaG9pY2Ugd2l0
+aCBMaW51eCBpcyBlaXRoZXIga2NvbmZpZyAKb3IgbWFudWFsIG1vZHVsZSBsb2FkaW5nLgoKPiBJ
+IHN1c2dnZXN0IHdlIGRvIHRoZSBmb2xsb3dpbmc6Cj4gLSB1c2UgdGhlIG1pY3JvY2hpcCBwcmVm
+aXgsIGFzIHRoaXMgaXMgbm93IG93bmVkIGJ5IG1pY3JvY2hpcAo+IC0gYW5kIGFkZCB0aGUgZHJp
+dmVyIHRvIGEgZHJtL21pY3JvY2hpcC8gZGlyZWN0b3J5Cj4gKFRoZW4gd2UgY2FuIG9ubHkgaG9w
+ZSB0aGF0IG1pY3JvY2hpcCBkbyBub3QgY2hhbmdlIG5hbWUgb3IKPiBhcmUgcHVyY2hhc2VkIGJ5
+IHNvbWVvbmUgZWxzZSkuCgpJIHdvdWxkIG5vdCBkbyB0aGF0LiBUaGVuIHlvdSBoYXZlIGEgZHRz
+IHdpdGggYSBtaXh0dXJlIGJhc2VkIG9uIHdoZW4gCnlvdSBnb3QgYXJvdW5kIHRvIHdyaXRpbmcg
+ZWFjaCBiaW5kaW5nLiBpLk1YIGhhcyBjb250aW51ZWQgdXNpbmcgJ2ZzbCcgCmV2ZW4gb24gbmV3
+IGNoaXBzIHRvZGF5LiBQcm9iYWJseSBhIGdvb2QgY2hvaWNlIGhhZCB0aGUgUUNvbSBhY3EgaGFk
+IApnb25lIHRocnUuCgpSb2IKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
+LWRldmVsCg==
