@@ -1,220 +1,98 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v3] backlight: pwm_bl: switch to using "atomic" PWM API
-Date: Tue, 14 Aug 2018 18:50:59 +0200
-Message-ID: <20180814165059.13219-1-enric.balletbo@collabora.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: kernel@collabora.com, cl@rock-chips.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
+Date: Tue, 14 Aug 2018 16:42:52 -0600
+Message-ID: <20180814224252.GA20667@rob-hp-laptop>
+References: <20180812184152.GA22343@ravnborg.org>
+ <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
+ <20180813181808.GA2357@ravnborg.org>
+ <20180813220454.GA28913@rob-hp-laptop>
+ <20180814164343.GA13848@ravnborg.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180814164343.GA13848@ravnborg.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-The "atomic" API allows us to configure PWM period and duty_cycle and
-enable it in one call.
-
-The patch also moves the pwm_init_state just before any use of the
-pwm_state struct, this fixes a potential bug where pwm_get_state
-can be called before pwm_init_state.
-
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
-
-Changes in v3:
-- Get rid of duty_cycle variable from pwm_backlight_update_status.
-- Get rid of pb->enabled and use only the status.enabled variable.
-- Make power_on match power_off.
-- Do not share status between ...update_status and ...power_on
-
-Changes in v2:
-- Do not force the PWM be off in the first call to pwm_apply_state.
-- Delayed applying the state until we know what the period is.
-- Removed pb->period as after the conversion is not needed.
-
- drivers/video/backlight/pwm_bl.c | 81 +++++++++++++++++---------------
- 1 file changed, 42 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index bdfcc0a71db1..678b27063198 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -28,10 +28,8 @@
- struct pwm_bl_data {
- 	struct pwm_device	*pwm;
- 	struct device		*dev;
--	unsigned int		period;
- 	unsigned int		lth_brightness;
- 	unsigned int		*levels;
--	bool			enabled;
- 	struct regulator	*power_supply;
- 	struct gpio_desc	*enable_gpio;
- 	unsigned int		scale;
-@@ -46,31 +44,35 @@ struct pwm_bl_data {
- 	void			(*exit)(struct device *);
- };
- 
--static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
-+static void pwm_backlight_power_on(struct pwm_bl_data *pb)
- {
-+	struct pwm_state state;
- 	int err;
- 
--	if (pb->enabled)
-+	pwm_get_state(pb->pwm, &state);
-+	if (state.enabled)
- 		return;
- 
- 	err = regulator_enable(pb->power_supply);
- 	if (err < 0)
- 		dev_err(pb->dev, "failed to enable power supply\n");
- 
--	pwm_enable(pb->pwm);
-+	state.enabled = true;
-+	pwm_apply_state(pb->pwm, &state);
- 
- 	if (pb->post_pwm_on_delay)
- 		msleep(pb->post_pwm_on_delay);
- 
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
--
--	pb->enabled = true;
- }
- 
- static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- {
--	if (!pb->enabled)
-+	struct pwm_state state;
-+
-+	pwm_get_state(pb->pwm, &state);
-+	if (!state.enabled)
- 		return;
- 
- 	if (pb->enable_gpio)
-@@ -79,24 +81,27 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- 	if (pb->pwm_off_delay)
- 		msleep(pb->pwm_off_delay);
- 
--	pwm_config(pb->pwm, 0, pb->period);
--	pwm_disable(pb->pwm);
-+	state.enabled = false;
-+	state.duty_cycle = 0;
-+	pwm_apply_state(pb->pwm, &state);
- 
- 	regulator_disable(pb->power_supply);
--	pb->enabled = false;
- }
- 
- static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
- {
- 	unsigned int lth = pb->lth_brightness;
-+	struct pwm_state state;
- 	u64 duty_cycle;
- 
-+	pwm_get_state(pb->pwm, &state);
-+
- 	if (pb->levels)
- 		duty_cycle = pb->levels[brightness];
- 	else
- 		duty_cycle = brightness;
- 
--	duty_cycle *= pb->period - lth;
-+	duty_cycle *= state.period - lth;
- 	do_div(duty_cycle, pb->scale);
- 
- 	return duty_cycle + lth;
-@@ -106,7 +111,7 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
- {
- 	struct pwm_bl_data *pb = bl_get_data(bl);
- 	int brightness = bl->props.brightness;
--	int duty_cycle;
-+	struct pwm_state state;
- 
- 	if (bl->props.power != FB_BLANK_UNBLANK ||
- 	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
-@@ -117,9 +122,10 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
- 		brightness = pb->notify(pb->dev, brightness);
- 
- 	if (brightness > 0) {
--		duty_cycle = compute_duty_cycle(pb, brightness);
--		pwm_config(pb->pwm, duty_cycle, pb->period);
--		pwm_backlight_power_on(pb, brightness);
-+		pwm_get_state(pb->pwm, &state);
-+		state.duty_cycle = compute_duty_cycle(pb, brightness);
-+		pwm_apply_state(pb->pwm, &state);
-+		pwm_backlight_power_on(pb);
- 	} else
- 		pwm_backlight_power_off(pb);
- 
-@@ -447,7 +453,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 	struct pwm_bl_data *pb;
- 	struct pwm_state state;
--	struct pwm_args pargs;
- 	unsigned int i;
- 	int ret;
- 
-@@ -478,7 +483,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	pb->check_fb = data->check_fb;
- 	pb->exit = data->exit;
- 	pb->dev = &pdev->dev;
--	pb->enabled = false;
- 	pb->post_pwm_on_delay = data->post_pwm_on_delay;
- 	pb->pwm_off_delay = data->pwm_off_delay;
- 
-@@ -539,10 +543,26 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
- 
--	if (!data->levels) {
--		/* Get the PWM period (in nanoseconds) */
--		pwm_get_state(pb->pwm, &state);
-+	/* Sync up PWM state. */
-+	pwm_init_state(pb->pwm, &state);
- 
-+	/*
-+	 * The DT case will set the pwm_period_ns field to 0 and store the
-+	 * period, parsed from the DT, in the PWM device. For the non-DT case,
-+	 * set the period from platform data if it has not already been set
-+	 * via the PWM lookup table.
-+	 */
-+	if (!state.period && (data->pwm_period_ns > 0))
-+		state.period = data->pwm_period_ns;
-+
-+	ret = pwm_apply_state(pb->pwm, &state);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to apply initial PWM state: %d\n",
-+			ret);
-+		goto err_alloc;
-+	}
-+
-+	if (!data->levels) {
- 		ret = pwm_backlight_brightness_default(&pdev->dev, data,
- 						       state.period);
- 		if (ret < 0) {
-@@ -559,24 +579,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		pb->levels = data->levels;
- 	}
- 
--	/*
--	 * FIXME: pwm_apply_args() should be removed when switching to
--	 * the atomic PWM API.
--	 */
--	pwm_apply_args(pb->pwm);
--
--	/*
--	 * The DT case will set the pwm_period_ns field to 0 and store the
--	 * period, parsed from the DT, in the PWM device. For the non-DT case,
--	 * set the period from platform data if it has not already been set
--	 * via the PWM lookup table.
--	 */
--	pwm_get_args(pb->pwm, &pargs);
--	pb->period = pargs.period;
--	if (!pb->period && (data->pwm_period_ns > 0))
--		pb->period = data->pwm_period_ns;
--
--	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
-+	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
- 
- 	memset(&props, 0, sizeof(struct backlight_properties));
- 	props.type = BACKLIGHT_RAW;
--- 
-2.18.0
+T24gVHVlLCBBdWcgMTQsIDIwMTggYXQgMDY6NDM6NDNQTSArMDIwMCwgU2FtIFJhdm5ib3JnIHdy
+b3RlOgo+IEhpIFJvYi4KPiAKPiA+IEkgZG9uJ3Qga25vdyB0aGF0IDIgcmVnaXN0ZXJzIGZvciBh
+IGJhY2tsaWdodCBQV00gY29uc3RpdHV0ZSBhbiBNRkQuIEEgCj4gPiBzaW5nbGUgbm9kZSBjYW4g
+YmUgYm90aCBhbiBMQ0QgY29udHJvbGxlciBhbmQgYSBQV00uCj4gCj4gQ3VycmVudCBzdWdnZXN0
+aW9uIGZyb20gdjEgcGF0Y2hzZXQgbG9va3MgbGlrZSB0aGlzOgo+IAlsY2RjMDogbGNkY0A3MDAw
+MDAgewo+IAkJY29tcGF0aWJsZSA9ICJhdG1lbCxhdDkxc2FtOTI2My1sY2RjLW1mZCI7Cj4gCQly
+ZWcgPSA8MHg3MDAwMDAgMHgxMDAwPjsKPiAJCWludGVycnVwdHMgPSA8MjYgSVJRX1RZUEVfTEVW
+RUxfSElHSCAzPjsKPiAJCWNsb2NrcyA9IDwmbGNkX2Nsaz4sIDwmbGNkX2Nsaz47Cj4gCQljbG9j
+ay1uYW1lcyA9ICJsY2RjX2NsayIsICJoY2xrIjsKPiAKPiAJCWxjZGMtZGlzcGxheS1jb250cm9s
+bGVyIHsKPiAJCQljb21wYXRpYmxlID0gImF0bWVsLGxjZGMtZGlzcGxheS1jb250cm9sbGVyIjsK
+PiAJCQlsY2Qtc3VwcGx5ID0gPCZsY2RjX3JlZz47Cj4gCj4gCQkJcG9ydEAwIHsKPiAJCQl9Owo+
+IAkJfTsKPiAKPiAJCWxjZGNfcHdtOiBsY2RjLXB3bSB7Cj4gCQkJY29tcGF0aWJsZSA9ICJhdG1l
+bCxsY2RjLXB3bSI7Cj4gCQkJI3B3bS1jZWxscyA9IDwzPjsKPiAJCX07Cj4gCj4gCX07Cj4gCj4g
+ICAgICAgICBiYWNrbGlnaHQ6IGJhY2tsaWdodCB7Cj4gICAgICAgICAgICAgICAgIGNvbXBhdGli
+bGUgPSAicHdtLWJhY2tsaWdodCI7Cj4gICAgICAgICAgICAgICAgIHB3bXMgPSA8JmxjZGNfcHdt
+IDAgNTAwMDAgMD47Cj4gICAgICAgICB9Owo+IAo+IAo+IFdlIGNvdWxkIGhhdmUgZGVzY3JpYmVk
+IHRoZSBmdWxsIGJpbmRpbmcgaW4gb25lIGZpbGUsIHJhdGhlciB0aGFuIGluCj4gdGhyZWUgZmls
+ZXMgbGlrZSBpdCBpcyBkb25lIGluIHYxLiBCdXQgdGhlIHN0cnVjdHVyZSB3YXMgZG9uZSBzbyBp
+dCBtYXRjaGVkCj4gd2hhdCB3YXMgZG9uZSBmb3IgaGxjZGMuCj4gCj4gCj4gSWYgSSB1bmRlcnN0
+YW5kIHRoZSBwcm9wb3NhbCBmcm9tIHlvdSBjb3JyZWN0IGFuIGV4YW1wbGUgYmluZGluZyB3b3Vs
+ZAo+IGxvb2sgbGlrZSB0aGlzOgo+IAo+ICAgICAgICBsY2RjMDogbGNkY0A3MDAwMDAgewo+ICAg
+ICAgICAgICAgICAgICBjb21wYXRpYmxlID0gImF0bWVsLGF0OTFzYW05MjYzLWxjZGMiOwo+ICAg
+ICAgICAgICAgICAgICByZWcgPSA8MHg3MDAwMDAgMHgxMDAwPjsKPiAgICAgICAgICAgICAgICAg
+aW50ZXJydXB0cyA9IDwyNiBJUlFfVFlQRV9MRVZFTF9ISUdIIDM+Owo+ICAgICAgICAgICAgICAg
+ICBjbG9ja3MgPSA8JmxjZF9jbGs+LCA8JmxjZF9jbGs+Owo+ICAgICAgICAgICAgICAgICBjbG9j
+ay1uYW1lcyA9ICJsY2RjX2NsayIsICJoY2xrIjsKPiAKPiAgICAgICAgICAgICAgICAgbGNkLXN1
+cHBseSA9IDwmbGNkY19yZWc+Owo+IAo+ICAgICAgICAgICAgICAgICBwb3J0QDAgewo+ICAgICAg
+ICAgICAgICAgICB9Owo+IAo+ICAgICAgICAgICAgICAgICAjcHdtLWNlbGxzID0gPDM+Owo+ICAg
+ICAgICAgfTsKPiAKPiAgICAgICAgIGJhY2tsaWdodDogYmFja2xpZ2h0IHsKPiAgICAgICAgICAg
+ICAgICAgY29tcGF0aWJsZSA9ICJwd20tYmFja2xpZ2h0IjsKPiAgICAgICAgICAgICAgICAgcHdt
+cyA9IDwmbGNkMCAwIDUwMDAwIDA+Owo+ICAgICAgICAgfTsKPiAKPiAKPiBUaGlzIGlzIGRvYWJs
+ZSwgYnV0IElNTyBpdCBpcyBsZXNzIG9idmlvdXMgdGhhdCB0aGUgTENEQyBJUCBjb3JlIGltcGxl
+bWVudHMKPiB0d28gZGlmZmVyZW50IGZlYXR1cmVzIC0gYSBQV00gYW5kIGEgTENEIGNvbnRyb2xs
+ZXIuCgpGZWF0dXJlcyBkb24ndCBlcXVhdGUgdG8gbm9kZXMuIElmIHRoZSBzdWItYmxvY2tzIGNh
+biBiZSBzZXBhcmF0ZWx5IAppbnN0YW50aWF0ZWQgb3IgaGF2ZSB0aGVpciBvd24gcmVzb3VyY2Vz
+IHRoZW4gc3ViLW5vZGVzIG1ha2Ugc2Vuc2UuIApPdGhlcndpc2UsIGl0J3MgYSBzaW5nbGUgZGV2
+aWNlIChub2RlKSB3aXRoIG11bHRpcGxlIHByb3ZpZGVycy4KCj4gUmlnaHQgbm93IHRoZSBwcmVm
+ZXJlbmNlIGlzIHRvIHN0YXkgd2l0aCB0aGUgdjEgYXBwcm9hY2g6Cj4gLSBJdCBpcyBhIG1pcnJv
+ciBvZiB3aGF0IHdlIGRvIHRvZGF5IGZvciBobGNkYywgc28gbm8gc3VwcmlzZXMKCldoaWNoIEJU
+VyBkb2Vzbid0IGFwcGVhciB0byBoYXZlIGFjdHVhbGx5IGJlZW4gcmV2aWV3ZWQuCgpEbyB0aGVz
+ZSBJUCBibG9ja3MgYWN0dWFsbHkgc2hhcmUgYW55dGhpbmc/IAoKQ29uc2lzdGVuY3kgaXMgbmlj
+ZSwgYnV0IGtlZXBpbmcgY29tcGF0aWJpbGl0eSB3aXRoIHRoZSBleGlzdGluZyBiaW5kaW5nIApi
+eSBleHRlbmRpbmcgdGhpbmdzIGluIGEgYmFja3dhcmRzIGNvbXBhdGlibGUgd2F5IGlzIG1vcmUg
+aW1wb3J0YW50LiAKSW1wbGVtZW50aW5nIGEgbmV3IGRyaXZlciBpcyBub3QgbGljZW5zZSB0byBj
+aGFuZ2UgdGhlIGJpbmRpbmcuIFNoYWxsIEkgCmxldCB1LWJvb3Qgb3IgKkJTRCBkZXZlbG9wZXJz
+IGNoYW5nZSB0aGUgYmluZGluZyB0b28gZm9yIHRoZWlyIGRyaXZlcj8KCj4gLSBJdCBzaG93cyBp
+biBhIG5pY2Ugd2F5IHRoYXQgdGhlIExDREMgSVAgY29yZSBpbXBsbWVudHMgYm90aCBhbiBMQ0Qg
+Y29udHJvbGxlciBhbmQgYSBQV00KPiAtIFRoZSBwd20gZnVuY3Rpb25hbGl0eSBpcyBub3QgaGlk
+ZGluIGluc2lkZSB0aGUgbGNkYyBzdHVmZiwgYW5kIGl0IGlzIHRodXMKPiAgIHNpbXBsZXIgdG8g
+YWRkIGdvb2QgcGluLWN0cmwgaGFuZGxlcyB3aXRoIG5pY2UgbmFtZXMgdGhhdCBtYXRjaGVzIHRo
+ZSB1c2FnZS4KPiAgIChJIGNvdWxkIGFsd2F5cyBhZGQgbW9yZSBwaW4tY3RybCwgYnV0IGl0IGlz
+IGNvbW1vbiB0byByZWZlciB0byBhIHNpbmdsZSBwaW4tY3RybC4KCkRvZXMgYW55b25lIGFjdHVh
+bGx5IHVzZSB0aGlzIGZvciBhIG5vbi1iYWNrbGlnaHQgUFdNPyBJJ20gbm90IHN1cmUgdGhlIAph
+YnN0cmFjdGlvbiBpcyB3b3J0aCBpdC4gVGhlIGRyaXZlciBjb3VsZCBqdXN0IHJlZ2lzdGVyIGl0
+c2VsZiBhcyBhIApiYWNrbGlnaHQgcHJvdmlkZXIgcmF0aGVyIHRoYW4gYSBQV00gcHJvdmlkZXIu
+Cgo+IE9uZSBEVCByZWxhdGVkIFE6Cj4gVGhlIExDRCBDb250cm9sbGVyIHN1cHBvcnRzIEJHUjU2
+NSwgYnV0IGFzIHRoaXMgaXMgbGVzcyBjb21tb24gc29tZSBIVyBpbXBsbWVudGF0aW9ucwo+IGV4
+Y2hhbmdlIFIgYW5kIEIsIGV4cGVzc2VkIGluIHRoZSBvbGQgYmluZGluZyBhcyB3aXJpbmctbW9k
+ZSBsaWtlIHRoaXM6Cj4gCj4gCWF0bWVsLGxjZC13aXJpbmctbW9kZTogbGNkIHdpcmluZyBtb2Rl
+ICJSR0IiIG9yICJCUkciCj4gCj4gSG93IGNhbiB3ZSBleHByZXNzIHRoaXMgd2lyaW5nLW1vZGUg
+aW4gYSBnZW5lcmljIHdheSwgYm90aCBpbiBEVCBhbmQgaW4gY29kZT8KPiBJcyBpdCBzb21ldGhp
+bmcgdGhhdCBpbiBEUk0gYmVsb25ncyB0byB0aGUgcGFuZWwsIHRoZSBlbmNvZGVyLCB0aGUgY29u
+bmVjdG9yLCBvcj8KPiBBbmQgY2FuIGFueSBvZiB0aGUgZXhpc2l0bmcgZmxhZ3MgYmUgdXNlZD8K
+CkkgdGhvdWdodCB3ZSBoYWQgY29tZSB1cCB3aXRoIGEgY29tbW9uIGRlZmluaXRpb24sIGJ1dCBJ
+IGd1ZXNzIGl0IGRpZG4ndCAKbWFrZSBpdCB1cHN0cmVhbS4gSXQncyBkZWZpbml0ZWx5IG5lZWRl
+ZCBhbmQgSSd2ZSBiZWVuIHJlamVjdGluZyAKYW55dGhpbmcgbmV3IHRoYXQncyB2ZW5kb3Igc3Bl
+Y2lmaWMuCgpSb2IKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+Cg==
