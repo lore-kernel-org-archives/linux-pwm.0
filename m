@@ -1,113 +1,220 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Tue, 14 Aug 2018 18:43:43 +0200
-Message-ID: <20180814164343.GA13848@ravnborg.org>
-References: <20180812184152.GA22343@ravnborg.org>
- <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
- <20180813181808.GA2357@ravnborg.org>
- <20180813220454.GA28913@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180813220454.GA28913@rob-hp-laptop>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: [PATCH v3] backlight: pwm_bl: switch to using "atomic" PWM API
+Date: Tue, 14 Aug 2018 18:50:59 +0200
+Message-ID: <20180814165059.13219-1-enric.balletbo@collabora.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: kernel@collabora.com, cl@rock-chips.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Rob.
+The "atomic" API allows us to configure PWM period and duty_cycle and
+enable it in one call.
 
-> I don't know that 2 registers for a backlight PWM constitute an MFD. A 
-> single node can be both an LCD controller and a PWM.
+The patch also moves the pwm_init_state just before any use of the
+pwm_state struct, this fixes a potential bug where pwm_get_state
+can be called before pwm_init_state.
 
-Current suggestion from v1 patchset looks like this:
-	lcdc0: lcdc@700000 {
-		compatible = "atmel,at91sam9263-lcdc-mfd";
-		reg = <0x700000 0x1000>;
-		interrupts = <26 IRQ_TYPE_LEVEL_HIGH 3>;
-		clocks = <&lcd_clk>, <&lcd_clk>;
-		clock-names = "lcdc_clk", "hclk";
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
 
-		lcdc-display-controller {
-			compatible = "atmel,lcdc-display-controller";
-			lcd-supply = <&lcdc_reg>;
+Changes in v3:
+- Get rid of duty_cycle variable from pwm_backlight_update_status.
+- Get rid of pb->enabled and use only the status.enabled variable.
+- Make power_on match power_off.
+- Do not share status between ...update_status and ...power_on
 
-			port@0 {
-			};
-		};
+Changes in v2:
+- Do not force the PWM be off in the first call to pwm_apply_state.
+- Delayed applying the state until we know what the period is.
+- Removed pb->period as after the conversion is not needed.
 
-		lcdc_pwm: lcdc-pwm {
-			compatible = "atmel,lcdc-pwm";
-			#pwm-cells = <3>;
-		};
+ drivers/video/backlight/pwm_bl.c | 81 +++++++++++++++++---------------
+ 1 file changed, 42 insertions(+), 39 deletions(-)
 
-	};
-
-        backlight: backlight {
-                compatible = "pwm-backlight";
-                pwms = <&lcdc_pwm 0 50000 0>;
-        };
-
-
-We could have described the full binding in one file, rather than in
-three files like it is done in v1. But the structure was done so it matched
-what was done for hlcdc.
-
-
-If I understand the proposal from you correct an example binding would
-look like this:
-
-       lcdc0: lcdc@700000 {
-                compatible = "atmel,at91sam9263-lcdc";
-                reg = <0x700000 0x1000>;
-                interrupts = <26 IRQ_TYPE_LEVEL_HIGH 3>;
-                clocks = <&lcd_clk>, <&lcd_clk>;
-                clock-names = "lcdc_clk", "hclk";
-
-                lcd-supply = <&lcdc_reg>;
-
-                port@0 {
-                };
-
-                #pwm-cells = <3>;
-        };
-
-        backlight: backlight {
-                compatible = "pwm-backlight";
-                pwms = <&lcd0 0 50000 0>;
-        };
-
-
-This is doable, but IMO it is less obvious that the LCDC IP core implements
-two different features - a PWM and a LCD controller.
-Right now the preference is to stay with the v1 approach:
-- It is a mirror of what we do today for hlcdc, so no suprises
-- It shows in a nice way that the LCDC IP core implments both an LCD controller and a PWM
-- The pwm functionality is not hiddin inside the lcdc stuff, and it is thus
-  simpler to add good pin-ctrl handles with nice names that matches the usage.
-  (I could always add more pin-ctrl, but it is common to refer to a single pin-ctrl.
-
-
-One DT related Q:
-The LCD Controller supports BGR565, but as this is less common some HW implmentations
-exchange R and B, expessed in the old binding as wiring-mode like this:
-
-	atmel,lcd-wiring-mode: lcd wiring mode "RGB" or "BRG"
-
-How can we express this wiring-mode in a generic way, both in DT and in code?
-Is it something that in DRM belongs to the panel, the encoder, the connector, or?
-And can any of the exisitng flags be used?
-
-Thanks in advance,
-
-	Sam
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index bdfcc0a71db1..678b27063198 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -28,10 +28,8 @@
+ struct pwm_bl_data {
+ 	struct pwm_device	*pwm;
+ 	struct device		*dev;
+-	unsigned int		period;
+ 	unsigned int		lth_brightness;
+ 	unsigned int		*levels;
+-	bool			enabled;
+ 	struct regulator	*power_supply;
+ 	struct gpio_desc	*enable_gpio;
+ 	unsigned int		scale;
+@@ -46,31 +44,35 @@ struct pwm_bl_data {
+ 	void			(*exit)(struct device *);
+ };
+ 
+-static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
++static void pwm_backlight_power_on(struct pwm_bl_data *pb)
+ {
++	struct pwm_state state;
+ 	int err;
+ 
+-	if (pb->enabled)
++	pwm_get_state(pb->pwm, &state);
++	if (state.enabled)
+ 		return;
+ 
+ 	err = regulator_enable(pb->power_supply);
+ 	if (err < 0)
+ 		dev_err(pb->dev, "failed to enable power supply\n");
+ 
+-	pwm_enable(pb->pwm);
++	state.enabled = true;
++	pwm_apply_state(pb->pwm, &state);
+ 
+ 	if (pb->post_pwm_on_delay)
+ 		msleep(pb->post_pwm_on_delay);
+ 
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
+-
+-	pb->enabled = true;
+ }
+ 
+ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ {
+-	if (!pb->enabled)
++	struct pwm_state state;
++
++	pwm_get_state(pb->pwm, &state);
++	if (!state.enabled)
+ 		return;
+ 
+ 	if (pb->enable_gpio)
+@@ -79,24 +81,27 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ 	if (pb->pwm_off_delay)
+ 		msleep(pb->pwm_off_delay);
+ 
+-	pwm_config(pb->pwm, 0, pb->period);
+-	pwm_disable(pb->pwm);
++	state.enabled = false;
++	state.duty_cycle = 0;
++	pwm_apply_state(pb->pwm, &state);
+ 
+ 	regulator_disable(pb->power_supply);
+-	pb->enabled = false;
+ }
+ 
+ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
+ {
+ 	unsigned int lth = pb->lth_brightness;
++	struct pwm_state state;
+ 	u64 duty_cycle;
+ 
++	pwm_get_state(pb->pwm, &state);
++
+ 	if (pb->levels)
+ 		duty_cycle = pb->levels[brightness];
+ 	else
+ 		duty_cycle = brightness;
+ 
+-	duty_cycle *= pb->period - lth;
++	duty_cycle *= state.period - lth;
+ 	do_div(duty_cycle, pb->scale);
+ 
+ 	return duty_cycle + lth;
+@@ -106,7 +111,7 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+ {
+ 	struct pwm_bl_data *pb = bl_get_data(bl);
+ 	int brightness = bl->props.brightness;
+-	int duty_cycle;
++	struct pwm_state state;
+ 
+ 	if (bl->props.power != FB_BLANK_UNBLANK ||
+ 	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
+@@ -117,9 +122,10 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+ 		brightness = pb->notify(pb->dev, brightness);
+ 
+ 	if (brightness > 0) {
+-		duty_cycle = compute_duty_cycle(pb, brightness);
+-		pwm_config(pb->pwm, duty_cycle, pb->period);
+-		pwm_backlight_power_on(pb, brightness);
++		pwm_get_state(pb->pwm, &state);
++		state.duty_cycle = compute_duty_cycle(pb, brightness);
++		pwm_apply_state(pb->pwm, &state);
++		pwm_backlight_power_on(pb);
+ 	} else
+ 		pwm_backlight_power_off(pb);
+ 
+@@ -447,7 +453,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	struct device_node *node = pdev->dev.of_node;
+ 	struct pwm_bl_data *pb;
+ 	struct pwm_state state;
+-	struct pwm_args pargs;
+ 	unsigned int i;
+ 	int ret;
+ 
+@@ -478,7 +483,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	pb->check_fb = data->check_fb;
+ 	pb->exit = data->exit;
+ 	pb->dev = &pdev->dev;
+-	pb->enabled = false;
+ 	pb->post_pwm_on_delay = data->post_pwm_on_delay;
+ 	pb->pwm_off_delay = data->pwm_off_delay;
+ 
+@@ -539,10 +543,26 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 
+ 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
+ 
+-	if (!data->levels) {
+-		/* Get the PWM period (in nanoseconds) */
+-		pwm_get_state(pb->pwm, &state);
++	/* Sync up PWM state. */
++	pwm_init_state(pb->pwm, &state);
+ 
++	/*
++	 * The DT case will set the pwm_period_ns field to 0 and store the
++	 * period, parsed from the DT, in the PWM device. For the non-DT case,
++	 * set the period from platform data if it has not already been set
++	 * via the PWM lookup table.
++	 */
++	if (!state.period && (data->pwm_period_ns > 0))
++		state.period = data->pwm_period_ns;
++
++	ret = pwm_apply_state(pb->pwm, &state);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to apply initial PWM state: %d\n",
++			ret);
++		goto err_alloc;
++	}
++
++	if (!data->levels) {
+ 		ret = pwm_backlight_brightness_default(&pdev->dev, data,
+ 						       state.period);
+ 		if (ret < 0) {
+@@ -559,24 +579,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		pb->levels = data->levels;
+ 	}
+ 
+-	/*
+-	 * FIXME: pwm_apply_args() should be removed when switching to
+-	 * the atomic PWM API.
+-	 */
+-	pwm_apply_args(pb->pwm);
+-
+-	/*
+-	 * The DT case will set the pwm_period_ns field to 0 and store the
+-	 * period, parsed from the DT, in the PWM device. For the non-DT case,
+-	 * set the period from platform data if it has not already been set
+-	 * via the PWM lookup table.
+-	 */
+-	pwm_get_args(pb->pwm, &pargs);
+-	pb->period = pargs.period;
+-	if (!pb->period && (data->pwm_period_ns > 0))
+-		pb->period = data->pwm_period_ns;
+-
+-	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
++	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
+ 
+ 	memset(&props, 0, sizeof(struct backlight_properties));
+ 	props.type = BACKLIGHT_RAW;
+-- 
+2.18.0
