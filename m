@@ -1,17 +1,16 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Tue, 14 Aug 2018 18:16:05 +0200
-Message-ID: <20180814161605.GA12387@ravnborg.org>
+Subject: Re: [PATCH v1 1/7] atmel-hlcdc: renamed directory to drm/atmel/
+Date: Tue, 14 Aug 2018 18:19:52 +0200
+Message-ID: <20180814161952.GA27951@ravnborg.org>
 References: <20180812184152.GA22343@ravnborg.org>
- <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
- <20180813181808.GA2357@ravnborg.org>
- <20180814143603.GO943@piout.net>
+ <20180812184629.3808-1-sam@ravnborg.org>
+ <20180814083913.GD21634@phenom.ffwll.local>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20180814143603.GO943@piout.net>
+In-Reply-To: <20180814083913.GD21634@phenom.ffwll.local>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,38 +20,29 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Aug 14, 2018 at 04:36:03PM +0200, Alexandre Belloni wrote:
-> On 13/08/2018 20:18:08+0200, Sam Ravnborg wrote:
-> > > Would be good to have a plan to phase-out the old atmel_lcdfb fbdev
-> > > driver when this one addresses some TODO items that make sense.
-> > Agree on this.
-> > One approach could be to say that when all in-kernel users of atmel_lcdfb
-> > are ported, then the old driver could be dropped after a kernel release.
-> > 
-> 
-> I would drop it only after an LTS release.
-Much better, agreed.
+Hi Daniel.
 
-> 
-> > > The mfd suffix seems strange to me. What about "atmel,at91sam9263-lcdc-mfd"
-> > > => "atmel,at91sam9263-lcd" (or "microchip,at91sam9263-lcdc").
-> > The "-mfd" suffix was added to avoid clashing with the current
-> > compatible string used by the atmel_lcdfb driver.
+> >  rename drivers/gpu/drm/{atmel-hlcdc => atmel}/atmel_hlcdc_plane.c (100%)
 > > 
-> > I susggest we do the following:
-> > - use the microchip prefix, as this is now owned by microchip
-> > - and add the driver to a drm/microchip/ directory
-> > (Then we can only hope that microchip do not change name or
-> > are purchased by someone else).
-> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 96e98e206b0d..09ce76a9a1dc 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -4681,7 +4681,7 @@ DRM DRIVERS FOR ATMEL HLCDC
+> >  M:	Boris Brezillon <boris.brezillon@bootlin.com>
+> >  L:	dri-devel@lists.freedesktop.org
+> >  S:	Supported
+> > -F:	drivers/gpu/drm/atmel-hlcdc/
+> > +F:	drivers/gpu/drm/atmel/atmel-hlcdc*
 > 
-> The compatible string should remain the same but the drivers have to be
-> mutually exclusive in Kconfig.
-OK, will do so in v2.
-I had planned to keep both in the DT file but then I will just replace one with the other.
+> I'd strongly suggest you group-maintain the entire atmel stuff in
+> drm-misc instead of only atmel-hlcdc.
+
+If OK with Boris then I am fine with this too.
+Will suggest so in v2.
 
 	Sam
