@@ -1,157 +1,311 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v2] backlight: pwm_bl: switch to using "atomic" PWM API
-Date: Tue, 14 Aug 2018 09:48:13 +0100
-Message-ID: <20180814084813.krmxiwux7ufcywaf@holly.lan>
-References: <20180727151121.12296-1-enric.balletbo@collabora.com>
- <20180730111259.5qjtchfo67nquila@holly.lan>
- <d4f418dd-f5bb-c08a-e43b-f15fbc435961@collabora.com>
+From: Mathieu Malaterre <malat@debian.org>
+Subject: Re: [PATCH v6 06/24] clocksource: Add driver for the Ingenic JZ47xx OST
+Date: Tue, 14 Aug 2018 11:42:47 +0200
+Message-ID: <CA+7wUsxKtiJZD35dvT7UrmWYXcDdpmRq3NVM25=dX=4qQ_ewuw@mail.gmail.com>
+References: <20180809214414.20905-1-paul@crapouillou.net> <20180809214414.20905-7-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <d4f418dd-f5bb-c08a-e43b-f15fbc435961@collabora.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, Lee Jones <lee.jones@linaro.org>, cl@rock-chips.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180809214414.20905-7-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, thierry.reding@gmail.com, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, wim@linux-watchdog.org, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-watchdog@vger.kernel.org, Linux-MIPS <linux-mips@linux-mips.org>, linux-doc@vger.kernel.org, linux-clk@vger.kernel.orgMaarten ter Huurne <ma>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCBBdWcgMDcsIDIwMTggYXQgMTE6Mzg6MDRBTSArMDIwMCwgRW5yaWMgQmFsbGV0Ym8g
-aSBTZXJyYSB3cm90ZToKPiBIaSBEYW5pZWwsCj4gCj4gT24gMzAvMDcvMTggMTM6MTIsIERhbmll
-bCBUaG9tcHNvbiB3cm90ZToKPiA+IE9uIEZyaSwgSnVsIDI3LCAyMDE4IGF0IDA1OjExOjIxUE0g
-KzAyMDAsIEVucmljIEJhbGxldGJvIGkgU2VycmEgd3JvdGU6Cj4gPj4gVGhlICJhdG9taWMiIEFQ
-SSBhbGxvd3MgdXMgdG8gY29uZmlndXJlIFBXTSBwZXJpb2QgYW5kIGR1dHlfY3ljbGUgYW5kCj4g
-Pj4gZW5hYmxlIGl0IGluIG9uZSBjYWxsLgo+ID4+Cj4gPj4gVGhlIHBhdGNoIGFsc28gbW92ZXMg
-dGhlIHB3bV9pbml0X3N0YXRlIGp1c3QgYmVmb3JlIGFueSB1c2Ugb2YgdGhlCj4gPj4gcHdtX3N0
-YXRlIHN0cnVjdCwgdGhpcyBmaXhlcyBhIHBvdGVudGlhbCBidWcgd2hlcmUgcHdtX2dldF9zdGF0
-ZQo+ID4+IGNhbiBiZSBjYWxsZWQgYmVmb3JlIHB3bV9pbml0X3N0YXRlLgo+ID4+Cj4gPj4gU2ln
-bmVkLW9mZi1ieTogRW5yaWMgQmFsbGV0Ym8gaSBTZXJyYSA8ZW5yaWMuYmFsbGV0Ym9AY29sbGFi
-b3JhLmNvbT4KPiA+PiAtLS0KPiA+Pgo+ID4+IENoYW5nZXMgaW4gdjI6Cj4gPj4gLSBEbyBub3Qg
-Zm9yY2UgdGhlIFBXTSBiZSBvZmYgaW4gdGhlIGZpcnN0IGNhbGwgdG8gcHdtX2FwcGx5X3N0YXRl
-Lgo+ID4+IC0gRGVsYXllZCBhcHBseWluZyB0aGUgc3RhdGUgdW50aWwgd2Uga25vdyB3aGF0IHRo
-ZSBwZXJpb2QgaXMuCj4gPj4gLSBSZW1vdmVkIHBiLT5wZXJpb2QgYXMgYWZ0ZXIgdGhlIGNvbnZl
-cnNpb24gaXMgbm90IG5lZWRlZC4KPiA+IAo+ID4gUmUtcmVhZGluZyB0aGlzIEkgaGF2ZSBzcG90
-dGVkIGEgY291cGxlIG9mIHRoaW5ncyBJIHByb2JhYmx5IGNvdWxkIGhhdmUKPiA+IG1lbnRpb25l
-ZCBhZ2FpbnN0IHYxLi4uIHNvcnJ5Lgo+ID4gCj4gPiBJIHRoaW5rIGl0J3MgbG9va2luZyBnb29k
-IHRob3VnaCwgSSBleHBlY3QgdG8gYmUgYWJsZSB0byBhY2sgdjMuCj4gPiAKPiA+IAo+ID4+ICBk
-cml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyB8IDcxICsrKysrKysrKysrKysrKysrKy0t
-LS0tLS0tLS0tLS0tCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCA0MSBpbnNlcnRpb25zKCspLCAzMCBk
-ZWxldGlvbnMoLSkKPiA+Pgo+ID4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
-dC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gPj4gaW5kZXgg
-YmRmY2MwYTcxZGIxLi5kZDFjYjI5YjUzMzIgMTAwNjQ0Cj4gPj4gLS0tIGEvZHJpdmVycy92aWRl
-by9iYWNrbGlnaHQvcHdtX2JsLmMKPiA+PiArKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9w
-d21fYmwuYwo+ID4+IEBAIC0yOCw3ICsyOCw2IEBACj4gPj4gIHN0cnVjdCBwd21fYmxfZGF0YSB7
-Cj4gPj4gIAlzdHJ1Y3QgcHdtX2RldmljZQkqcHdtOwo+ID4+ICAJc3RydWN0IGRldmljZQkJKmRl
-djsKPiA+PiAtCXVuc2lnbmVkIGludAkJcGVyaW9kOwo+ID4+ICAJdW5zaWduZWQgaW50CQlsdGhf
-YnJpZ2h0bmVzczsKPiA+PiAgCXVuc2lnbmVkIGludAkJKmxldmVsczsKPiA+PiAgCWJvb2wJCQll
-bmFibGVkOwo+ID4+IEBAIC00Niw3ICs0NSw4IEBAIHN0cnVjdCBwd21fYmxfZGF0YSB7Cj4gPj4g
-IAl2b2lkCQkJKCpleGl0KShzdHJ1Y3QgZGV2aWNlICopOwo+ID4+ICB9Owo+ID4+ICAKPiA+PiAt
-c3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBi
-LCBpbnQgYnJpZ2h0bmVzcykKPiA+PiArc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9v
-bihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLAo+ID4+ICsJCQkJICAgc3RydWN0IHB3bV9zdGF0ZSAq
-c3RhdGUpCj4gPj4gIHsKPiA+PiAgCWludCBlcnI7Cj4gPj4gIAo+ID4+IEBAIC01Nyw3ICs1Nyw4
-IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRh
-ICpwYiwgaW50IGJyaWdodG5lc3MpCj4gPj4gIAlpZiAoZXJyIDwgMCkKPiA+PiAgCQlkZXZfZXJy
-KHBiLT5kZXYsICJmYWlsZWQgdG8gZW5hYmxlIHBvd2VyIHN1cHBseVxuIik7Cj4gPj4gIAo+ID4+
-IC0JcHdtX2VuYWJsZShwYi0+cHdtKTsKPiA+PiArCXN0YXRlLT5lbmFibGVkID0gdHJ1ZTsKPiA+
-PiArCXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCBzdGF0ZSk7Cj4gPj4gIAo+ID4+ICAJaWYgKHBi
-LT5wb3N0X3B3bV9vbl9kZWxheSkKPiA+PiAgCQltc2xlZXAocGItPnBvc3RfcHdtX29uX2RlbGF5
-KTsKPiA+PiBAQCAtNzAsNiArNzEsOCBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
-X29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzKQo+ID4+ICAKPiA+PiAg
-c3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRhICpw
-YikKPiA+PiAgewo+ID4+ICsJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiA+PiArCj4gPj4gIAlp
-ZiAoIXBiLT5lbmFibGVkKQo+ID4+ICAJCXJldHVybjsKPiA+PiAgCj4gPj4gQEAgLTc5LDggKzgy
-LDEwIEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxf
-ZGF0YSAqcGIpCj4gPj4gIAlpZiAocGItPnB3bV9vZmZfZGVsYXkpCj4gPj4gIAkJbXNsZWVwKHBi
-LT5wd21fb2ZmX2RlbGF5KTsKPiA+PiAgCj4gPj4gLQlwd21fY29uZmlnKHBiLT5wd20sIDAsIHBi
-LT5wZXJpb2QpOwo+ID4+IC0JcHdtX2Rpc2FibGUocGItPnB3bSk7Cj4gPj4gKwlwd21fZ2V0X3N0
-YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gPj4gKwlzdGF0ZS5lbmFibGVkID0gZmFsc2U7Cj4gPj4g
-KwlzdGF0ZS5kdXR5X2N5Y2xlID0gMDsKPiA+PiArCXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAm
-c3RhdGUpOwo+ID4gCj4gPiBUaGlzIGlzIGFuIGluIGV4YWN0IGNvbnZlcnNpb24gYmVjYXVzZSB0
-aGlzIGNvZGUgaWdub3JlcyBhIGZhaWx1cmUgdG8KPiA+IHNldCB0aGUgZHV0eSBjeWNsZSB0byB6
-ZXJvIHdoaWxzdCBwd21fYXBwbHlfc3RhdGUoKSBkb2VzIG5vdC4KPiA+IAo+ID4gVGhpcyB3b3Vs
-ZCBvbmx5IG1hdHRlciBpZiBwd21fY29uZmlnKCkgcmV0dXJucyBhbiBlcnJvciBhbmQgZ2l2ZW4g
-dGhhdCBhCj4gPiBQV00gd2hpY2ggZG9lcyBub3Qgc3VwcG9ydCBhIGR1dHkgY3ljbGUgb2YgemVy
-byBpcyBwZXJtaXR0ZWQgdG8gYWRqdXN0Cj4gPiB6ZXJvIHRvIHRoZSBzbWFsbGVzdCBzdXBwb3J0
-ZWQgdmFsdWUgdGhlcmUgaXMgbm8gKm5lZWQqIGZvciBhIGRyaXZlciB0bwo+ID4gcmV0dXJuIGFu
-IGVycm9yIGhlcmUuIEluIG90aGVyIHdvcmRzLi4uIHRoaXMgaXMgYSBzdWJ0bGUgY2hhbmdlIG9m
-Cj4gPiBiZWhhdmlvdXIgYW5kIHBlcmhhcHMgKGV2ZW4gcHJvYmFibHkpIGlycmVsZXZhbnQuCj4g
-PiAKPiA+IEhvd2V2ZXIgSSdtIHN0aWxsIGludGVyZXN0ZWQgd2hldGhlciB5b3UgZGlkIGFueSB3
-b3JrIHRvIGNvbmZpcm0gb3IKPiA+IGRlbnkgd2hldGhlciBkcml2ZXJzIHRoYXQgcmVwb3J0cyBl
-cnJvciBvbiB6ZXJvIGR1dHkgY3ljbGUgYWN0dWFsbHkKPiA+IGV4aXN0Lgo+ID4gCj4gCj4gSW50
-ZXJlc3RpbmcsIGFjdHVhbGx5IEkgZG9uJ3QgaGF2ZSBhIHVzZSBjYXNlIGZvciB0aGlzLCBhbmQg
-SSB0aGluayB0aGF0IHRoZXJlCj4gaXMgbm90aGluZyBpbiB0aGUga2VybmVsLiBJIGtub3cgdGhh
-dCBzb21lIGRldmljZXMgKGxpa2UgY2hyb21lYm9vayBtaW5uaWUgYW5kCj4gamFxKSB0aGUgcHdt
-IG11c3QgYmUgPj0gMSUgb3IgMyUgZm9yIHRoZSBmaXJzdCBub24temVybyB2YWx1ZSBidXQgSSBk
-b24ndCBrbm93Cj4gYW55IHdoZXJlIDAgaXMgYSBwcm9ibGVtLgo+IAo+ID4gCj4gPj4gIAlyZWd1
-bGF0b3JfZGlzYWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKPiA+PiAgCXBiLT5lbmFibGVkID0gZmFs
-c2U7Cj4gPj4gQEAgLTg5LDE0ICs5NCwxNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bv
-d2VyX29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ID4+ICBzdGF0aWMgaW50IGNvbXB1dGVf
-ZHV0eV9jeWNsZShzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykKPiA+PiAg
-ewo+ID4+ICAJdW5zaWduZWQgaW50IGx0aCA9IHBiLT5sdGhfYnJpZ2h0bmVzczsKPiA+PiArCXN0
-cnVjdCBwd21fc3RhdGUgc3RhdGU7Cj4gPj4gIAl1NjQgZHV0eV9jeWNsZTsKPiA+PiAgCj4gPj4g
-Kwlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gPj4gKwo+ID4+ICAJaWYgKHBiLT5s
-ZXZlbHMpCj4gPj4gIAkJZHV0eV9jeWNsZSA9IHBiLT5sZXZlbHNbYnJpZ2h0bmVzc107Cj4gPj4g
-IAllbHNlCj4gPj4gIAkJZHV0eV9jeWNsZSA9IGJyaWdodG5lc3M7Cj4gPj4gIAo+ID4+IC0JZHV0
-eV9jeWNsZSAqPSBwYi0+cGVyaW9kIC0gbHRoOwo+ID4+ICsJZHV0eV9jeWNsZSAqPSBzdGF0ZS5w
-ZXJpb2QgLSBsdGg7Cj4gPj4gIAlkb19kaXYoZHV0eV9jeWNsZSwgcGItPnNjYWxlKTsKPiA+PiAg
-Cj4gPj4gIAlyZXR1cm4gZHV0eV9jeWNsZSArIGx0aDsKPiA+PiBAQCAtMTA2LDYgKzExNCw3IEBA
-IHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF91cGRhdGVfc3RhdHVzKHN0cnVjdCBiYWNrbGlnaHRf
-ZGV2aWNlICpibCkKPiA+PiAgewo+ID4+ICAJc3RydWN0IHB3bV9ibF9kYXRhICpwYiA9IGJsX2dl
-dF9kYXRhKGJsKTsKPiA+PiAgCWludCBicmlnaHRuZXNzID0gYmwtPnByb3BzLmJyaWdodG5lc3M7
-Cj4gPj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHN0YXRlOwo+ID4+ICAJaW50IGR1dHlfY3ljbGU7Cj4g
-Pj4gIAo+ID4+ICAJaWYgKGJsLT5wcm9wcy5wb3dlciAhPSBGQl9CTEFOS19VTkJMQU5LIHx8Cj4g
-Pj4gQEAgLTExOCw4ICsxMjcsMTIgQEAgc3RhdGljIGludCBwd21fYmFja2xpZ2h0X3VwZGF0ZV9z
-dGF0dXMoc3RydWN0IGJhY2tsaWdodF9kZXZpY2UgKmJsKQo+ID4+ICAKPiA+PiAgCWlmIChicmln
-aHRuZXNzID4gMCkgewo+ID4+ICAJCWR1dHlfY3ljbGUgPSBjb21wdXRlX2R1dHlfY3ljbGUocGIs
-IGJyaWdodG5lc3MpOwo+ID4+IC0JCXB3bV9jb25maWcocGItPnB3bSwgZHV0eV9jeWNsZSwgcGIt
-PnBlcmlvZCk7Cj4gPiAKPiA+IEluIHByaW5jaXBsZSB0aGUgc2FtZSBzdWJ0bGUgY2hhbmdlIGFw
-cGxpZXMgaGVyZS4uLiBidXQgaWYgcHdtX2NvbmZpZygpCj4gPiByZXBvcnRlZCBhbiBlcnJvciBo
-ZXJlIHRoZW4gdGhlIGJhY2tsaWdodCBwcm9iYWJseSBkaWRuJ3Qgd29yayBiZWZvcmUKPiA+IHlv
-dXIgY2hhbmdlIGVpdGhlciBzbyBsZXNzIG5lZWQgdG8gd29ycnkgYWJvdXQgaXQhCj4gPiAKPiA+
-IAo+ID4+IC0JCXB3bV9iYWNrbGlnaHRfcG93ZXJfb24ocGIsIGJyaWdodG5lc3MpOwo+ID4+ICsJ
-CXB3bV9nZXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiA+PiArCQlzdGF0ZS5kdXR5X2N5Y2xl
-ID0gZHV0eV9jeWNsZTsKPiA+PiArCQlpZiAoIXN0YXRlLmVuYWJsZWQpCj4gPj4gKwkJCXB3bV9i
-YWNrbGlnaHRfcG93ZXJfb24ocGIsICZzdGF0ZSk7Cj4gPiAKPiA+IEl0IHZlcmdlcyB0b3dhcmRz
-IG5pdCBwaWNraW5nIGJ1dCBJIGRvbid0IHJlYWxseSBsaWtlIHRoZSB3YXkgYSBoYWxmIHVwZGF0
-ZWQKPiA+IHN0YXRlIGlzIHNoYXJlZCBiZXR3ZWVuIC4uLnVwZGF0ZV9zdGF0dXMgYW5kIC4uLnBv
-d2VyX29uLgo+ID4gCj4gPiBJJ2QgcmF0aGVyIGl0IGxvb2tlZCBzb21ldGhpbmcgbGlrZToKPiA+
-IAo+ID4gCQlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gPiAJCWlmICghc3RhdGUu
-ZW5hYmxlZCkgewo+ID4gCQkJcHdtX2JhY2tsaWdodF9wb3dlcl9vbihwYik7ICA8LS0gbm8gc2hh
-cmluZyBoZXJlLAo+ID4gCQkJICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWFrZSBv
-biBtYXRjaCBvZmYKPiA+IAkJfSBlbHNlIHsKPiA+IAkJCXB3bV9iYWNrbGlnaHRfdXBkYXRlX2R1
-dHlfY3ljbGUocGIsICZzdGF0ZSwgYnJpZ2h0bmVzcyk7Cj4gPiAJCQlwd21fYXBwbHlfc3RhdGUo
-cGItPnB3bSwgJnN0YXRlKTsKPiA+IAkJfQo+ID4gCQo+ID4gKGFuZCBoYXZlIHB3bV9iYWNrbGln
-aHRfcG93ZXJfb24oKSBhbHNvIGNhbGwgLi4udXBkYXRlX2R1dHlfY3ljbGUgdG9vKQo+ID4gCj4g
-PiBUaG91Z2h0cz8KPiAKPiBXaGF0IGFib3V0IHNvbWV0aGluZyBsaWtlIHRoaXM6Cj4gCj4gc3Rh
-dGljIGludCBwd21fYmFja2xpZ2h0X3VwZGF0ZV9zdGF0dXMoc3RydWN0IGJhY2tsaWdodF9kZXZp
-Y2UgKmJsKQo+IHsKPiAgICAgICAgIC4uLgo+IAo+IAlpZiAoYnJpZ2h0bmVzcyA+IDApIHsKPiAJ
-CXB3bV9nZXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAgICAgICAgICAgICAgICAgLyogd2Ug
-Y2FuIGdldCByaWQgb2YgZHV0eV9jeWNsZSB0ZW1wb3JhbCB2YXJpYWJsZSAqLwo+IAkJc3RhdGUu
-ZHV0eV9jeWNsZSA9IGNvbXB1dGVfZHV0eV9jeWNsZShwYiwgYnJpZ2h0bmVzcyk7Cj4gCQlwd21f
-YXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAJCXB3bV9iYWNrbGlnaHRfcG93ZXJfb24o
-cGIpOwo+IAl9IGVsc2UKPiAJCXB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHBiKTsKPiAgICAgICAg
-IC4uLgo+IH0KClRoaXMgcmVhZHMgdmVyeSB3ZWxsLiBJJ20gaGFwcHkgdG8gZ28gd2l0aCB0aGlz
-IGFwcHJvYWNoLgoKCj4gc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3Qg
-cHdtX2JsX2RhdGEgKnBiKQo+IHsKPiAJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiAKPiAJcHdt
-X2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+IAo+IAlpZiAoc3RhdGUuZW5hYmxlZCkKPiAJ
-CXJldHVybjsKPiAKPiAgICAgICAgIC4uLgo+IAo+IAlzdGF0ZS5lbmFibGVkID0gdHJ1ZTsKPiAJ
-cHdtX2FwcGx5X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gCj4gICAgICAgICAuLi4KPiB9Cj4g
-Cj4gc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRh
-ICpwYikKPiB7Cj4gCXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7Cj4gCj4gICAgICAgICAuLi4KPiAK
-PiAJcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+IAlzdGF0ZS5lbmFibGVkID0gZmFs
-c2U7Cj4gCXN0YXRlLmR1dHlfY3ljbGUgPSAwOwo+IAlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwg
-JnN0YXRlKTsKPiAKPiAgICAgICAgIC4uLgo+IH0KPiAKPiBBbmQgSSB0aGluayB0aGF0IHdlIGNh
-biBnZXQgcmlkIG9mIHBiLT5lbmFibGVkIHZhcmlhYmxlLgo+IAo+IEJlc3QgcmVnYXJkcywKPiAg
-RW5yaWMKPiAKPiA+IAo+ID4gCj4gPiBEYW5pZWwuCj4gPiAKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2
-ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21h
-aWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On Thu, Aug 9, 2018 at 11:44 PM Paul Cercueil <paul@crapouillou.net> wrote:
+>
+> From: Maarten ter Huurne <maarten@treewalker.org>
+>
+> OST is the OS Timer, a 64-bit timer/counter with buffered reading.
+>
+> SoCs before the JZ4770 had (if any) a 32-bit OST; the JZ4770 and
+> JZ4780 have a 64-bit OST.
+>
+> This driver will register both a clocksource and a sched_clock to the
+> system.
+
+With CONFIG_DEBUG_SECTION_MISMATCH=y here is what I see:
+
+  MODPOST vmlinux.o
+WARNING: vmlinux.o(.data+0x26600): Section mismatch in reference from
+the variable ingenic_ost_driver to the function
+.init.text:ingenic_ost_probe()
+The variable ingenic_ost_driver references
+the function __init ingenic_ost_probe()
+If the reference is valid then annotate the
+variable with __init* or __refdata (see linux/init.h) or name the variable:
+*_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console
+
+WARNING: vmlinux.o(.data+0x26660): Section mismatch in reference from
+the variable ingenic_tcu_driver to the function
+.init.text:ingenic_tcu_probe()
+The variable ingenic_tcu_driver references
+the function __init ingenic_tcu_probe()
+If the reference is valid then annotate the
+variable with __init* or __refdata (see linux/init.h) or name the variable:
+*_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console
+
+Thanks
+
+> Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  drivers/clocksource/Kconfig       |   8 ++
+>  drivers/clocksource/Makefile      |   1 +
+>  drivers/clocksource/ingenic-ost.c | 208 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 217 insertions(+)
+>  create mode 100644 drivers/clocksource/ingenic-ost.c
+>
+>  v5: New patch
+>
+>  v6: - Get rid of SoC IDs; pass pointer to ingenic_ost_soc_info as
+>        devicetree match data instead.
+>      - Use device_get_match_data() instead of the of_* variant
+>      - Handle error of dev_get_regmap() properly
+>
+> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+> index 98f708208a8d..e855938c69f1 100644
+> --- a/drivers/clocksource/Kconfig
+> +++ b/drivers/clocksource/Kconfig
+> @@ -619,4 +619,12 @@ config INGENIC_TIMER
+>         help
+>           Support for the timer/counter unit of the Ingenic JZ SoCs.
+>
+> +config INGENIC_OST
+> +       bool "Ingenic JZ47xx Operating System Timer"
+> +       depends on MIPS || COMPILE_TEST
+> +       depends on COMMON_CLK
+> +       select INGENIC_TIMER
+> +       help
+> +         Support for the OS Timer of the Ingenic JZ4770 or similar SoC.
+> +
+>  endmenu
+> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+> index 26877505d400..56ce37252944 100644
+> --- a/drivers/clocksource/Makefile
+> +++ b/drivers/clocksource/Makefile
+> @@ -75,6 +75,7 @@ obj-$(CONFIG_ASM9260_TIMER)           += asm9260_timer.o
+>  obj-$(CONFIG_H8300_TMR8)               += h8300_timer8.o
+>  obj-$(CONFIG_H8300_TMR16)              += h8300_timer16.o
+>  obj-$(CONFIG_H8300_TPU)                        += h8300_tpu.o
+> +obj-$(CONFIG_INGENIC_OST)              += ingenic-ost.o
+>  obj-$(CONFIG_INGENIC_TIMER)            += ingenic-timer.o
+>  obj-$(CONFIG_CLKSRC_ST_LPC)            += clksrc_st_lpc.o
+>  obj-$(CONFIG_X86_NUMACHIP)             += numachip.o
+> diff --git a/drivers/clocksource/ingenic-ost.c b/drivers/clocksource/ingenic-ost.c
+> new file mode 100644
+> index 000000000000..400d30656790
+> --- /dev/null
+> +++ b/drivers/clocksource/ingenic-ost.c
+> @@ -0,0 +1,208 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * JZ47xx SoCs TCU Operating System Timer driver
+> + *
+> + * Copyright (C) 2016 Maarten ter Huurne <maarten@treewalker.org>
+> + * Copyright (C) 2018 Paul Cercueil <paul@crapouillou.net>
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/clocksource.h>
+> +#include <linux/mfd/ingenic-tcu.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/sched_clock.h>
+> +
+> +#include "ingenic-timer.h"
+> +
+> +#define TCU_OST_TCSR_MASK      0xc0
+> +#define TCU_OST_TCSR_CNT_MD    BIT(15)
+> +
+> +#define TCU_OST_CHANNEL                15
+> +
+> +struct ingenic_ost_soc_info {
+> +       bool is64bit;
+> +};
+> +
+> +struct ingenic_ost {
+> +       struct regmap *map;
+> +       struct clk *clk;
+> +
+> +       struct clocksource cs;
+> +};
+> +
+> +static u64 notrace ingenic_ost_read_cntl(void)
+> +{
+> +       /* Bypass the regmap here as we must return as soon as possible */
+> +       return readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
+> +}
+> +
+> +static u64 notrace ingenic_ost_read_cnth(void)
+> +{
+> +       /* Bypass the regmap here as we must return as soon as possible */
+> +       return readl(ingenic_tcu_base + TCU_REG_OST_CNTH);
+> +}
+> +
+> +static u64 notrace ingenic_ost_clocksource_read(struct clocksource *cs)
+> +{
+> +       u32 val1, val2;
+> +       u64 count, recount;
+> +       s64 diff;
+> +
+> +       /*
+> +        * The buffering of the upper 32 bits of the timer prevents wrong
+> +        * results from the bottom 32 bits overflowing due to the timer ticking
+> +        * along. However, it does not prevent wrong results from simultaneous
+> +        * reads of the timer, which could reset the buffer mid-read.
+> +        * Since this kind of wrong read can happen only when the bottom bits
+> +        * overflow, there will be minutes between wrong reads, so if we read
+> +        * twice in succession, at least one of the reads will be correct.
+> +        */
+> +
+> +       /* Bypass the regmap here as we must return as soon as possible */
+> +       val1 = readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
+> +       val2 = readl(ingenic_tcu_base + TCU_REG_OST_CNTHBUF);
+> +       count = (u64)val1 | (u64)val2 << 32;
+> +
+> +       val1 = readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
+> +       val2 = readl(ingenic_tcu_base + TCU_REG_OST_CNTHBUF);
+> +       recount = (u64)val1 | (u64)val2 << 32;
+> +
+> +       /*
+> +        * A wrong read will produce a result that is 1<<32 too high: the bottom
+> +        * part from before overflow and the upper part from after overflow.
+> +        * Therefore, the lower value of the two reads is the correct value.
+> +        */
+> +
+> +       diff = (s64)(recount - count);
+> +       if (unlikely(diff < 0))
+> +               count = recount;
+> +
+> +       return count;
+> +}
+> +
+> +static int __init ingenic_ost_probe(struct platform_device *pdev)
+> +{
+> +       const struct ingenic_ost_soc_info *soc_info;
+> +       struct device *dev = &pdev->dev;
+> +       struct ingenic_ost *ost;
+> +       struct clocksource *cs;
+> +       unsigned long rate, flags;
+> +       int err;
+> +
+> +       soc_info = device_get_match_data(dev);
+> +       if (!soc_info)
+> +               return -EINVAL;
+> +
+> +       ost = devm_kzalloc(dev, sizeof(*ost), GFP_KERNEL);
+> +       if (!ost)
+> +               return -ENOMEM;
+> +
+> +       ost->map = dev_get_regmap(dev->parent, NULL);
+> +       if (!ost->map) {
+> +               dev_err(dev, "regmap not found\n");
+> +               return -EINVAL;
+> +       }
+> +
+> +       ost->clk = devm_clk_get(dev, "ost");
+> +       if (IS_ERR(ost->clk))
+> +               return PTR_ERR(ost->clk);
+> +
+> +       err = clk_prepare_enable(ost->clk);
+> +       if (err)
+> +               return err;
+> +
+> +       /* Clear counter high/low registers */
+> +       if (soc_info->is64bit)
+> +               regmap_write(ost->map, TCU_REG_OST_CNTL, 0);
+> +       regmap_write(ost->map, TCU_REG_OST_CNTH, 0);
+> +
+> +       /* Don't reset counter at compare value. */
+> +       regmap_update_bits(ost->map, TCU_REG_OST_TCSR,
+> +                          TCU_OST_TCSR_MASK, TCU_OST_TCSR_CNT_MD);
+> +
+> +       rate = clk_get_rate(ost->clk);
+> +
+> +       /* Enable OST TCU channel */
+> +       regmap_write(ost->map, TCU_REG_TESR, BIT(TCU_OST_CHANNEL));
+> +
+> +       cs = &ost->cs;
+> +       cs->name        = "ingenic-ost";
+> +       cs->rating      = 320;
+> +       cs->flags       = CLOCK_SOURCE_IS_CONTINUOUS;
+> +
+> +       if (soc_info->is64bit) {
+> +               cs->mask = CLOCKSOURCE_MASK(64);
+> +               cs->read = ingenic_ost_clocksource_read;
+> +       } else {
+> +               cs->mask = CLOCKSOURCE_MASK(32);
+> +               cs->read = (u64 (*)(struct clocksource *))ingenic_ost_read_cnth;
+> +       }
+> +
+> +       err = clocksource_register_hz(cs, rate);
+> +       if (err) {
+> +               dev_err(dev, "clocksource registration failed: %d\n", err);
+> +               clk_disable_unprepare(ost->clk);
+> +               return err;
+> +       }
+> +
+> +       /* Cannot register a sched_clock with interrupts on */
+> +       local_irq_save(flags);
+> +       if (soc_info->is64bit)
+> +               sched_clock_register(ingenic_ost_read_cntl, 32, rate);
+> +       else
+> +               sched_clock_register(ingenic_ost_read_cnth, 32, rate);
+> +       local_irq_restore(flags);
+> +
+> +       return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int ingenic_ost_suspend(struct device *dev)
+> +{
+> +       struct ingenic_ost *ost = dev_get_drvdata(dev);
+> +
+> +       clk_disable(ost->clk);
+> +       return 0;
+> +}
+> +
+> +static int ingenic_ost_resume(struct device *dev)
+> +{
+> +       struct ingenic_ost *ost = dev_get_drvdata(dev);
+> +
+> +       return clk_enable(ost->clk);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(ingenic_ost_pm_ops, ingenic_ost_suspend,
+> +                        ingenic_ost_resume);
+> +#define INGENIC_OST_PM_OPS (&ingenic_ost_pm_ops)
+> +#else
+> +#define INGENIC_OST_PM_OPS NULL
+> +#endif /* CONFIG_PM_SUSPEND */
+> +
+> +static const struct ingenic_ost_soc_info jz4725b_ost_soc_info = {
+> +       .is64bit = false,
+> +};
+> +
+> +static const struct ingenic_ost_soc_info jz4770_ost_soc_info = {
+> +       .is64bit = true,
+> +};
+> +
+> +static const struct of_device_id ingenic_ost_of_match[] = {
+> +       { .compatible = "ingenic,jz4725b-ost", .data = &jz4725b_ost_soc_info, },
+> +       { .compatible = "ingenic,jz4770-ost",  .data = &jz4770_ost_soc_info,  },
+> +       { }
+> +};
+> +MODULE_DEVICE_TABLE(of, ingenic_ost_of_match);
+> +
+> +static struct platform_driver ingenic_ost_driver = {
+> +       .probe = ingenic_ost_probe,
+> +       .driver = {
+> +               .name   = "ingenic-ost",
+> +               .pm     = INGENIC_OST_PM_OPS,
+> +               .of_match_table = ingenic_ost_of_match,
+> +       },
+> +};
+> +module_platform_driver(ingenic_ost_driver);
+> --
+> 2.11.0
+>
