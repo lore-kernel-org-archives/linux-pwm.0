@@ -1,98 +1,112 @@
-From: Rob Herring <robh@kernel.org>
+From: Sam Ravnborg <sam@ravnborg.org>
 Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Tue, 14 Aug 2018 16:42:52 -0600
-Message-ID: <20180814224252.GA20667@rob-hp-laptop>
+Date: Wed, 15 Aug 2018 06:48:08 +0200
+Message-ID: <20180815044808.GA1806@ravnborg.org>
 References: <20180812184152.GA22343@ravnborg.org>
  <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
  <20180813181808.GA2357@ravnborg.org>
  <20180813220454.GA28913@rob-hp-laptop>
  <20180814164343.GA13848@ravnborg.org>
+ <20180814224252.GA20667@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20180814164343.GA13848@ravnborg.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Sam Ravnborg <sam@ravnborg.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180814224252.GA20667@rob-hp-laptop>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCBBdWcgMTQsIDIwMTggYXQgMDY6NDM6NDNQTSArMDIwMCwgU2FtIFJhdm5ib3JnIHdy
-b3RlOgo+IEhpIFJvYi4KPiAKPiA+IEkgZG9uJ3Qga25vdyB0aGF0IDIgcmVnaXN0ZXJzIGZvciBh
-IGJhY2tsaWdodCBQV00gY29uc3RpdHV0ZSBhbiBNRkQuIEEgCj4gPiBzaW5nbGUgbm9kZSBjYW4g
-YmUgYm90aCBhbiBMQ0QgY29udHJvbGxlciBhbmQgYSBQV00uCj4gCj4gQ3VycmVudCBzdWdnZXN0
-aW9uIGZyb20gdjEgcGF0Y2hzZXQgbG9va3MgbGlrZSB0aGlzOgo+IAlsY2RjMDogbGNkY0A3MDAw
-MDAgewo+IAkJY29tcGF0aWJsZSA9ICJhdG1lbCxhdDkxc2FtOTI2My1sY2RjLW1mZCI7Cj4gCQly
-ZWcgPSA8MHg3MDAwMDAgMHgxMDAwPjsKPiAJCWludGVycnVwdHMgPSA8MjYgSVJRX1RZUEVfTEVW
-RUxfSElHSCAzPjsKPiAJCWNsb2NrcyA9IDwmbGNkX2Nsaz4sIDwmbGNkX2Nsaz47Cj4gCQljbG9j
-ay1uYW1lcyA9ICJsY2RjX2NsayIsICJoY2xrIjsKPiAKPiAJCWxjZGMtZGlzcGxheS1jb250cm9s
-bGVyIHsKPiAJCQljb21wYXRpYmxlID0gImF0bWVsLGxjZGMtZGlzcGxheS1jb250cm9sbGVyIjsK
-PiAJCQlsY2Qtc3VwcGx5ID0gPCZsY2RjX3JlZz47Cj4gCj4gCQkJcG9ydEAwIHsKPiAJCQl9Owo+
-IAkJfTsKPiAKPiAJCWxjZGNfcHdtOiBsY2RjLXB3bSB7Cj4gCQkJY29tcGF0aWJsZSA9ICJhdG1l
-bCxsY2RjLXB3bSI7Cj4gCQkJI3B3bS1jZWxscyA9IDwzPjsKPiAJCX07Cj4gCj4gCX07Cj4gCj4g
-ICAgICAgICBiYWNrbGlnaHQ6IGJhY2tsaWdodCB7Cj4gICAgICAgICAgICAgICAgIGNvbXBhdGli
-bGUgPSAicHdtLWJhY2tsaWdodCI7Cj4gICAgICAgICAgICAgICAgIHB3bXMgPSA8JmxjZGNfcHdt
-IDAgNTAwMDAgMD47Cj4gICAgICAgICB9Owo+IAo+IAo+IFdlIGNvdWxkIGhhdmUgZGVzY3JpYmVk
-IHRoZSBmdWxsIGJpbmRpbmcgaW4gb25lIGZpbGUsIHJhdGhlciB0aGFuIGluCj4gdGhyZWUgZmls
-ZXMgbGlrZSBpdCBpcyBkb25lIGluIHYxLiBCdXQgdGhlIHN0cnVjdHVyZSB3YXMgZG9uZSBzbyBp
-dCBtYXRjaGVkCj4gd2hhdCB3YXMgZG9uZSBmb3IgaGxjZGMuCj4gCj4gCj4gSWYgSSB1bmRlcnN0
-YW5kIHRoZSBwcm9wb3NhbCBmcm9tIHlvdSBjb3JyZWN0IGFuIGV4YW1wbGUgYmluZGluZyB3b3Vs
-ZAo+IGxvb2sgbGlrZSB0aGlzOgo+IAo+ICAgICAgICBsY2RjMDogbGNkY0A3MDAwMDAgewo+ICAg
-ICAgICAgICAgICAgICBjb21wYXRpYmxlID0gImF0bWVsLGF0OTFzYW05MjYzLWxjZGMiOwo+ICAg
-ICAgICAgICAgICAgICByZWcgPSA8MHg3MDAwMDAgMHgxMDAwPjsKPiAgICAgICAgICAgICAgICAg
-aW50ZXJydXB0cyA9IDwyNiBJUlFfVFlQRV9MRVZFTF9ISUdIIDM+Owo+ICAgICAgICAgICAgICAg
-ICBjbG9ja3MgPSA8JmxjZF9jbGs+LCA8JmxjZF9jbGs+Owo+ICAgICAgICAgICAgICAgICBjbG9j
-ay1uYW1lcyA9ICJsY2RjX2NsayIsICJoY2xrIjsKPiAKPiAgICAgICAgICAgICAgICAgbGNkLXN1
-cHBseSA9IDwmbGNkY19yZWc+Owo+IAo+ICAgICAgICAgICAgICAgICBwb3J0QDAgewo+ICAgICAg
-ICAgICAgICAgICB9Owo+IAo+ICAgICAgICAgICAgICAgICAjcHdtLWNlbGxzID0gPDM+Owo+ICAg
-ICAgICAgfTsKPiAKPiAgICAgICAgIGJhY2tsaWdodDogYmFja2xpZ2h0IHsKPiAgICAgICAgICAg
-ICAgICAgY29tcGF0aWJsZSA9ICJwd20tYmFja2xpZ2h0IjsKPiAgICAgICAgICAgICAgICAgcHdt
-cyA9IDwmbGNkMCAwIDUwMDAwIDA+Owo+ICAgICAgICAgfTsKPiAKPiAKPiBUaGlzIGlzIGRvYWJs
-ZSwgYnV0IElNTyBpdCBpcyBsZXNzIG9idmlvdXMgdGhhdCB0aGUgTENEQyBJUCBjb3JlIGltcGxl
-bWVudHMKPiB0d28gZGlmZmVyZW50IGZlYXR1cmVzIC0gYSBQV00gYW5kIGEgTENEIGNvbnRyb2xs
-ZXIuCgpGZWF0dXJlcyBkb24ndCBlcXVhdGUgdG8gbm9kZXMuIElmIHRoZSBzdWItYmxvY2tzIGNh
-biBiZSBzZXBhcmF0ZWx5IAppbnN0YW50aWF0ZWQgb3IgaGF2ZSB0aGVpciBvd24gcmVzb3VyY2Vz
-IHRoZW4gc3ViLW5vZGVzIG1ha2Ugc2Vuc2UuIApPdGhlcndpc2UsIGl0J3MgYSBzaW5nbGUgZGV2
-aWNlIChub2RlKSB3aXRoIG11bHRpcGxlIHByb3ZpZGVycy4KCj4gUmlnaHQgbm93IHRoZSBwcmVm
-ZXJlbmNlIGlzIHRvIHN0YXkgd2l0aCB0aGUgdjEgYXBwcm9hY2g6Cj4gLSBJdCBpcyBhIG1pcnJv
-ciBvZiB3aGF0IHdlIGRvIHRvZGF5IGZvciBobGNkYywgc28gbm8gc3VwcmlzZXMKCldoaWNoIEJU
-VyBkb2Vzbid0IGFwcGVhciB0byBoYXZlIGFjdHVhbGx5IGJlZW4gcmV2aWV3ZWQuCgpEbyB0aGVz
-ZSBJUCBibG9ja3MgYWN0dWFsbHkgc2hhcmUgYW55dGhpbmc/IAoKQ29uc2lzdGVuY3kgaXMgbmlj
-ZSwgYnV0IGtlZXBpbmcgY29tcGF0aWJpbGl0eSB3aXRoIHRoZSBleGlzdGluZyBiaW5kaW5nIApi
-eSBleHRlbmRpbmcgdGhpbmdzIGluIGEgYmFja3dhcmRzIGNvbXBhdGlibGUgd2F5IGlzIG1vcmUg
-aW1wb3J0YW50LiAKSW1wbGVtZW50aW5nIGEgbmV3IGRyaXZlciBpcyBub3QgbGljZW5zZSB0byBj
-aGFuZ2UgdGhlIGJpbmRpbmcuIFNoYWxsIEkgCmxldCB1LWJvb3Qgb3IgKkJTRCBkZXZlbG9wZXJz
-IGNoYW5nZSB0aGUgYmluZGluZyB0b28gZm9yIHRoZWlyIGRyaXZlcj8KCj4gLSBJdCBzaG93cyBp
-biBhIG5pY2Ugd2F5IHRoYXQgdGhlIExDREMgSVAgY29yZSBpbXBsbWVudHMgYm90aCBhbiBMQ0Qg
-Y29udHJvbGxlciBhbmQgYSBQV00KPiAtIFRoZSBwd20gZnVuY3Rpb25hbGl0eSBpcyBub3QgaGlk
-ZGluIGluc2lkZSB0aGUgbGNkYyBzdHVmZiwgYW5kIGl0IGlzIHRodXMKPiAgIHNpbXBsZXIgdG8g
-YWRkIGdvb2QgcGluLWN0cmwgaGFuZGxlcyB3aXRoIG5pY2UgbmFtZXMgdGhhdCBtYXRjaGVzIHRo
-ZSB1c2FnZS4KPiAgIChJIGNvdWxkIGFsd2F5cyBhZGQgbW9yZSBwaW4tY3RybCwgYnV0IGl0IGlz
-IGNvbW1vbiB0byByZWZlciB0byBhIHNpbmdsZSBwaW4tY3RybC4KCkRvZXMgYW55b25lIGFjdHVh
-bGx5IHVzZSB0aGlzIGZvciBhIG5vbi1iYWNrbGlnaHQgUFdNPyBJJ20gbm90IHN1cmUgdGhlIAph
-YnN0cmFjdGlvbiBpcyB3b3J0aCBpdC4gVGhlIGRyaXZlciBjb3VsZCBqdXN0IHJlZ2lzdGVyIGl0
-c2VsZiBhcyBhIApiYWNrbGlnaHQgcHJvdmlkZXIgcmF0aGVyIHRoYW4gYSBQV00gcHJvdmlkZXIu
-Cgo+IE9uZSBEVCByZWxhdGVkIFE6Cj4gVGhlIExDRCBDb250cm9sbGVyIHN1cHBvcnRzIEJHUjU2
-NSwgYnV0IGFzIHRoaXMgaXMgbGVzcyBjb21tb24gc29tZSBIVyBpbXBsbWVudGF0aW9ucwo+IGV4
-Y2hhbmdlIFIgYW5kIEIsIGV4cGVzc2VkIGluIHRoZSBvbGQgYmluZGluZyBhcyB3aXJpbmctbW9k
-ZSBsaWtlIHRoaXM6Cj4gCj4gCWF0bWVsLGxjZC13aXJpbmctbW9kZTogbGNkIHdpcmluZyBtb2Rl
-ICJSR0IiIG9yICJCUkciCj4gCj4gSG93IGNhbiB3ZSBleHByZXNzIHRoaXMgd2lyaW5nLW1vZGUg
-aW4gYSBnZW5lcmljIHdheSwgYm90aCBpbiBEVCBhbmQgaW4gY29kZT8KPiBJcyBpdCBzb21ldGhp
-bmcgdGhhdCBpbiBEUk0gYmVsb25ncyB0byB0aGUgcGFuZWwsIHRoZSBlbmNvZGVyLCB0aGUgY29u
-bmVjdG9yLCBvcj8KPiBBbmQgY2FuIGFueSBvZiB0aGUgZXhpc2l0bmcgZmxhZ3MgYmUgdXNlZD8K
-CkkgdGhvdWdodCB3ZSBoYWQgY29tZSB1cCB3aXRoIGEgY29tbW9uIGRlZmluaXRpb24sIGJ1dCBJ
-IGd1ZXNzIGl0IGRpZG4ndCAKbWFrZSBpdCB1cHN0cmVhbS4gSXQncyBkZWZpbml0ZWx5IG5lZWRl
-ZCBhbmQgSSd2ZSBiZWVuIHJlamVjdGluZyAKYW55dGhpbmcgbmV3IHRoYXQncyB2ZW5kb3Igc3Bl
-Y2lmaWMuCgpSb2IKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
-Cg==
+Hi Rob.
+
+Thanks for the feedback, as I am rather new to this DT stuff
+a few iterations are no suprise.
+
+> > If I understand the proposal from you correct an example binding would
+> > look like this:
+> > 
+> >        lcdc0: lcdc@700000 {
+> >                 compatible = "atmel,at91sam9263-lcdc";
+> >                 reg = <0x700000 0x1000>;
+> >                 interrupts = <26 IRQ_TYPE_LEVEL_HIGH 3>;
+> >                 clocks = <&lcd_clk>, <&lcd_clk>;
+> >                 clock-names = "lcdc_clk", "hclk";
+> > 
+> >                 lcd-supply = <&lcdc_reg>;
+> > 
+> >                 port@0 {
+> >                 };
+> > 
+> >                 #pwm-cells = <3>;
+> >         };
+> > 
+> >         backlight: backlight {
+> >                 compatible = "pwm-backlight";
+> >                 pwms = <&lcd0 0 50000 0>;
+> >         };
+> > 
+> > 
+> > This is doable, but IMO it is less obvious that the LCDC IP core implements
+> > two different features - a PWM and a LCD controller.
+> 
+> Features don't equate to nodes. If the sub-blocks can be separately 
+> instantiated or have their own resources then sub-nodes make sense. 
+> Otherwise, it's a single device (node) with multiple providers.
+> 
+> > Right now the preference is to stay with the v1 approach:
+> > - It is a mirror of what we do today for hlcdc, so no suprises
+> 
+> Which BTW doesn't appear to have actually been reviewed.
+> 
+> Do these IP blocks actually share anything? 
+They have registers in the same memory area - and I think that it.
+
+ 
+> Consistency is nice, but keeping compatibility with the existing binding 
+> by extending things in a backwards compatible way is more important. 
+> Implementing a new driver is not license to change the binding. Shall I 
+> let u-boot or *BSD developers change the binding too for their driver?
+
+So in other words - the existing binding in atmel,lcdc.txt needs to be extended in
+a backward compatible way.
+I will take a look at that and post a proposal in v2.
+
+
+> > - It shows in a nice way that the LCDC IP core implments both an LCD controller and a PWM
+> > - The pwm functionality is not hiddin inside the lcdc stuff, and it is thus
+> >   simpler to add good pin-ctrl handles with nice names that matches the usage.
+> >   (I could always add more pin-ctrl, but it is common to refer to a single pin-ctrl.
+> 
+> Does anyone actually use this for a non-backlight PWM? I'm not sure the 
+> abstraction is worth it. The driver could just register itself as a 
+> backlight provider rather than a PWM provider.
+Makes sense.
+
+> 
+> > One DT related Q:
+> > The LCD Controller supports BGR565, but as this is less common some HW implmentations
+> > exchange R and B, expessed in the old binding as wiring-mode like this:
+> > 
+> > 	atmel,lcd-wiring-mode: lcd wiring mode "RGB" or "BRG"
+> > 
+> > How can we express this wiring-mode in a generic way, both in DT and in code?
+> > Is it something that in DRM belongs to the panel, the encoder, the connector, or?
+> > And can any of the exisitng flags be used?
+> 
+> I thought we had come up with a common definition, but I guess it didn't 
+> make it upstream. It's definitely needed and I've been rejecting 
+> anything new that's vendor specific.
+I found this: https://patchwork.ozlabs.org/patch/659570/
+The suggestion with a boolean seems simple and I will try that.
+
+	Sam
