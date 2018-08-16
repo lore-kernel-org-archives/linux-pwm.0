@@ -1,73 +1,51 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Wed, 15 Aug 2018 22:48:15 +0200
-Message-ID: <20180815204815.GB29041@ravnborg.org>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [PATCH v1 1/7] atmel-hlcdc: renamed directory to drm/atmel/
+Date: Thu, 16 Aug 2018 09:41:23 +0200
+Message-ID: <20180816074123.GB21634@phenom.ffwll.local>
 References: <20180812184152.GA22343@ravnborg.org>
- <f1f2a2d7-ae27-87af-8041-93d3f8fe07cc@microchip.com>
- <20180813181808.GA2357@ravnborg.org>
- <20180813220454.GA28913@rob-hp-laptop>
- <20180814164343.GA13848@ravnborg.org>
- <20180814224252.GA20667@rob-hp-laptop>
- <20180815044808.GA1806@ravnborg.org>
- <CAL_JsqLwazj=7hOwSeAtcyvnYCmMDP-Nw3H8xHSr0n3YGUS21A@mail.gmail.com>
- <CAKMK7uHm03UxLNUieJFR4TD3ppTMHwkitbQTrVq67K=Mjh6OYA@mail.gmail.com>
- <4def26df-0f4b-77e5-fea9-6c8f3537d831@axentia.se>
+ <20180812184629.3808-1-sam@ravnborg.org>
+ <20180814083913.GD21634@phenom.ffwll.local>
+ <20180814161952.GA27951@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <4def26df-0f4b-77e5-fea9-6c8f3537d831@axentia.se>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Rosin <peda@axentia.se>
-Cc: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Joshua Henderson <joshua.henderson@microchip.com>, dri-devel <dri-devel@lists.freedesktop.org>, Boris Brezillon <boris.brezillon@bootlin.com>, devicetree@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>, Lee Jones <lee.jones@linaro.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20180814161952.GA27951@ravnborg.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Peter.
-
-> 
-> I stopped pushing that patch for reasons mentioned in
-> https://lkml.org/lkml/2018/4/9/108
-> 
-> However, since then, the component approach mentioned in that mail was
-> shot down and instead the tda998x driver is now a bridge (or soon, I expect
-> the series from Russell King that to land in 4.19-rc1) which means that the
-> binding from that series is back on the table. At least I guess so? However,
-> in that series the approach is that the bridge states its expected input and
-> the output then adjusts to what is needed. However, the "problem" is really in
-> the atmel-hlcdc output (it moves the MSB for the RGB colors around depending
-> on the output mode) so I no longer subscribe to all ideas in that series
-> and think it is cleaner to state the needed bus format closer to the atmel-
-> hlcdc endpoint as is done e.g. in this latest series:
-> 
-> https://lkml.org/lkml/2018/8/10/309
-> 
-> This latest series uses the media/video-interface approach and specifies
-> the bus-width in the endpoint. However, the bus-width is alone obviously not
-> enough to differentiate rgb565 and brg565, so will not help Sam
-Some digging in diverse threads required.
-I may take the easy way in v2 and postpone this feature.
-But you all confirmed that doing something locally in the driver is the
-wrong approach so that is ruled out.
-
-> (or is it bgr565 that Sam needs? The above quoted text is ambiguous).
-My bad. I need either rgb565 or bgr565 (at lest this is how I understood
-the application note from Atmel/Microchip - need to re-read this too).
-
-Some of the IP cores have an intensify bit which I do not yet understand
-how to adapt to the supported formats. This is also on the todo list.
-
-> I think something like my bus-format binding in [3] is generic enough to
-> also help Sam.
-Thanks, if I find time I will look into this, but first priority is to get the
-bindinns correct, and then the overall structure of the driver.
-
-	Sam
+T24gVHVlLCBBdWcgMTQsIDIwMTggYXQgMDY6MTk6NTJQTSArMDIwMCwgU2FtIFJhdm5ib3JnIHdy
+b3RlOgo+IEhpIERhbmllbC4KPiAKPiA+ID4gIHJlbmFtZSBkcml2ZXJzL2dwdS9kcm0ve2F0bWVs
+LWhsY2RjID0+IGF0bWVsfS9hdG1lbF9obGNkY19wbGFuZS5jICgxMDAlKQo+ID4gPiAKPiA+ID4g
+ZGlmZiAtLWdpdCBhL01BSU5UQUlORVJTIGIvTUFJTlRBSU5FUlMKPiA+ID4gaW5kZXggOTZlOThl
+MjA2YjBkLi4wOWNlNzZhOWExZGMgMTAwNjQ0Cj4gPiA+IC0tLSBhL01BSU5UQUlORVJTCj4gPiA+
+ICsrKyBiL01BSU5UQUlORVJTCj4gPiA+IEBAIC00NjgxLDcgKzQ2ODEsNyBAQCBEUk0gRFJJVkVS
+UyBGT1IgQVRNRUwgSExDREMKPiA+ID4gIE06CUJvcmlzIEJyZXppbGxvbiA8Ym9yaXMuYnJlemls
+bG9uQGJvb3RsaW4uY29tPgo+ID4gPiAgTDoJZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9y
+Zwo+ID4gPiAgUzoJU3VwcG9ydGVkCj4gPiA+IC1GOglkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxj
+ZGMvCj4gPiA+ICtGOglkcml2ZXJzL2dwdS9kcm0vYXRtZWwvYXRtZWwtaGxjZGMqCj4gPiAKPiA+
+IEknZCBzdHJvbmdseSBzdWdnZXN0IHlvdSBncm91cC1tYWludGFpbiB0aGUgZW50aXJlIGF0bWVs
+IHN0dWZmIGluCj4gPiBkcm0tbWlzYyBpbnN0ZWFkIG9mIG9ubHkgYXRtZWwtaGxjZGMuCj4gCj4g
+SWYgT0sgd2l0aCBCb3JpcyB0aGVuIEkgYW0gZmluZSB3aXRoIHRoaXMgdG9vLgo+IFdpbGwgc3Vn
+Z2VzdCBzbyBpbiB2Mi4KCkJvcmlzIGFja2VkIHRvbywgYnV0IGhlJ3Mgb24gdmFjYXRpb24uIEhl
+IHNhaWQgb24gaXJjIGhlJ2xsIHJldmlldyB0aGUKcGF0Y2hlcyB3aGVuIGhlJ3MgYmFjay4gTWVh
+bndoaWxlIEkgZ3Vlc3MgeW91IGNhbiBwcmVwIGJ5IGdldHRpbmcgdGhlIGZkLm8KYWNjb3VudCBy
+ZXF1ZXN0ZWQ6CgpodHRwczovL3d3dy5mcmVlZGVza3RvcC5vcmcvd2lraS9BY2NvdW50UmVxdWVz
+dHMvCgpBbmQgY2hlY2tpbmcgb3V0IHRoZSB0b29saW5nIHdlIHVzZSB0byBtYWludGFpbiBkcm0t
+bWlzYzoKCmh0dHBzOi8vZHJpLmZyZWVkZXNrdG9wLm9yZy9kb2NzL2RpbS9nZXR0aW5nLXN0YXJ0
+ZWQuaHRtbAoKQ2hlZXJzLCBEYW5pZWwKLS0gCkRhbmllbCBWZXR0ZXIKU29mdHdhcmUgRW5naW5l
+ZXIsIEludGVsIENvcnBvcmF0aW9uCmh0dHA6Ly9ibG9nLmZmd2xsLmNoCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QK
+ZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9w
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
