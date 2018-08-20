@@ -1,13 +1,12 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/2] pwm: mediatek: Add MT7628 support
-Date: Mon, 20 Aug 2018 11:39:05 +0200
-Message-ID: <20180820093905.GE8242@ulmo>
+Subject: Re: [PATCH 1/2] dt-bindings: pwm: Add MT7628 information
+Date: Mon, 20 Aug 2018 11:39:18 +0200
+Message-ID: <20180820093918.GF8242@ulmo>
 References: <20180725095209.10641-1-john@phrozen.org>
- <20180725095209.10641-2-john@phrozen.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5738738356857052962=="
+Content-Type: multipart/mixed; boundary="===============8226584202089992473=="
 Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180725095209.10641-2-john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
+In-Reply-To: <20180725095209.10641-1-john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
  <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
@@ -22,59 +21,54 @@ Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, lin
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============5738738356857052962==
+--===============8226584202089992473==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ZInfyf7laFu/Kiw7"
+	protocol="application/pgp-signature"; boundary="9ADF8FXzFeE7X4jE"
 Content-Disposition: inline
 
 
---ZInfyf7laFu/Kiw7
+--9ADF8FXzFeE7X4jE
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 25, 2018 at 11:52:09AM +0200, John Crispin wrote:
-> Add support for MT7628. The SoC is legacy MIPS and hence has no complex
-> clock tree. This patch add an extra flag to the SoC specific data
-> indicating, that no clocks are present.
+On Wed, Jul 25, 2018 at 11:52:08AM +0200, John Crispin wrote:
+> Enhance the MediaTek PWM binding with details about the IP found in the
+> MT7628 SoC.
 >=20
 > Signed-off-by: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
 > ---
->  drivers/pwm/Kconfig        |  2 +-
->  drivers/pwm/pwm-mediatek.c | 19 ++++++++++++++++++-
->  2 files changed, 19 insertions(+), 2 deletions(-)
-
-Very odd that they would use the same naming scheme for a chip that is
-radically different, but they did, so:
+>  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
 Applied, thanks.
 
 Thierry
 
---ZInfyf7laFu/Kiw7
+--9ADF8FXzFeE7X4jE
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlt6jDkACgkQ3SOs138+
-s6FUyBAAmysnI2eI9B5HMkl/oRWhlKnm2KnMpfsEp7nLmpv2DgU3dI+mGRF0jv+t
-cz5rBYboHBABwIK09y8XRqI7vLV3YtvenSRVPjEtp8Sc+tW5TTC8YmUdS13JBzfR
-bto5qLYIbtof9tIGpuLOrzGQWBi9XxrWfhDcYsKbuca7QG5hYc6tmx5FUz2Orr+l
-G3SHGA+taQzewi9HtfCxAWzVMJqz5SVcGde6D70X4zhm7S+W6lT5sob/lYHJM4Uy
-8GS+4zoQEb5Lz0LZlSxIJgAKHp7GeKPE+gitOVYhoLCoPddG5OMNyKtSFygmns5s
-CxFxxTjB6JtZLKX2cwJT4oHUxgLvlUC4LoC0r1yDNrBZ/aDQkbFAxZpl1LKq9tU7
-KQdl44n70rKbALaYlGONzSjqePaYSwzOb79RmNi/stITGpxMFxl8P6wCWXP2M/bD
-5DBIxa0lTposOMcWhGbYEN6Yn6tkylJkYht0QhkeLvKaGCNAIMFrkZnxwx+AX59G
-wyiIeby/9E8IwErAOpOu8YhBKD5KIwEBPuYNgSdLsbk7Laq6FG3NzPfggROX4h/e
-5OF7s+fn1/LboCundXO6hmaJOGH2elXM+GoyLGg7+CR/RpeXDGjk5QHq7V15oJk+
-kA4T5uATr7IgYgRbWdgb48nchSSt+eLpAxOUgGOz2bWjxUT9OBg=
-=i5Vr
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlt6jEYACgkQ3SOs138+
+s6GMjg//VtjaSeuNnfriujuVCungEywVeBLAjZsQO88Nj7pacmeMNJYuZBlOr7Ts
+vj9ta0WCJx+b7nhK6jjrnNmS7bWQ6Kym7qBm1RbVJQRgd1dgbvbL/PNEV8IrqGuo
+Fl1PnIuJkOTi/fzfM3PPFY5WMgA2eR8ekZOIUC2AA/DhP5Fbe6hY02SDQyJEUp9B
+hUcIIZFIZfTY04qQlUDEVAdPF8qHDDSnU6Mh/r816e59fDLnanZK4tBkAifULQFl
+HThAWBtYTS2UFpQTNaDXm7d99IUT7vyf0Ds/otqVWLS111mx7c69mG148S4yEg24
+wXGC3yI+yXzN2124rmR8J035jklzx+6ejBqX71OEzBU3yocHYx91y6wki2GmXdDn
++1JxGQSp8FVjiwKBls29mAFSg1RpmXFF9pX0HMNFUAIlBL7TZnDwXffYzilc6ypV
+Snm/8ZsBvfxYjGrFCFPg7Af0WfiP/F/LI9nauUnXqY2EuAIjTLOIzGaoK/uxk3ZK
+Y4YHZthzVgHftUHDRIQgbrhX/V77/eb5/8rlzJ6h8nu33iDX+7sT6EQstMvAjnlp
+AhtllKKRXZdd1LkL+m+VMYWQ6vgEBsT42v1ILQ6HPV86OxpWcn1F78lMq0UM26m3
+oDufV55ksBgpbFR9ok6RdujDw13EaeehcOqoxBbBFxJIMNx+Wq8=
+=HVR0
 -----END PGP SIGNATURE-----
 
---ZInfyf7laFu/Kiw7--
+--9ADF8FXzFeE7X4jE--
 
 
---===============5738738356857052962==
+--===============8226584202089992473==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -85,4 +79,4 @@ Linux-mediatek mailing list
 Linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
---===============5738738356857052962==--
+--===============8226584202089992473==--
