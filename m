@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v7 11/24] watchdog: jz4740: Drop dependency on MACH_JZ47xx, use COMPILE_TEST
-Date: Tue, 21 Aug 2018 19:16:22 +0200
-Message-ID: <20180821171635.22740-12-paul@crapouillou.net>
+Subject: [PATCH v7 14/24] pwm: jz4740: Drop dependency on MACH_INGENIC, use COMPILE_TEST
+Date: Tue, 21 Aug 2018 19:16:25 +0200
+Message-ID: <20180821171635.22740-15-paul@crapouillou.net>
 References: <20180821171635.22740-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180821171635.22740-1-paul@crapouillou.net>
@@ -10,7 +10,7 @@ To: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.
 Cc: od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Depending on MACH_JZ47xx prevent us from creating a generic kernel that
+Depending on MACH_INGENIC prevent us from creating a generic kernel that
 works on more than one MIPS board. Instead, we just depend on MIPS being
 set.
 
@@ -19,7 +19,6 @@ COMPILE_TEST. This is used by automated tools to find bugs, for
 instance.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 ---
 
 Notes:
@@ -29,21 +28,21 @@ Notes:
     
      v7: No change
 
- drivers/watchdog/Kconfig | 2 +-
+ drivers/pwm/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index 834222abbbdb..13a46cfa69b0 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -1475,7 +1475,7 @@ config INDYDOG
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 58359bf22b96..e53ad662ef87 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -201,7 +201,7 @@ config PWM_IMX
  
- config JZ4740_WDT
- 	tristate "Ingenic jz4740 SoC hardware watchdog"
--	depends on MACH_JZ4740 || MACH_JZ4780
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+-	depends on MACH_INGENIC
 +	depends on MIPS || COMPILE_TEST
  	depends on COMMON_CLK
- 	select WATCHDOG_CORE
  	select INGENIC_TIMER
+ 	help
 -- 
 2.11.0
