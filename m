@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v7 03/24] doc: Add doc for the Ingenic TCU hardware
-Date: Tue, 21 Aug 2018 19:16:14 +0200
-Message-ID: <20180821171635.22740-4-paul@crapouillou.net>
+Subject: [PATCH v7 08/24] watchdog: jz4740: Use WDT clock provided by TCU driver
+Date: Tue, 21 Aug 2018 19:16:19 +0200
+Message-ID: <20180821171635.22740-9-paul@crapouillou.net>
 References: <20180821171635.22740-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180821171635.22740-1-paul@crapouillou.net>
@@ -10,145 +10,212 @@ To: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.
 Cc: od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add a documentation file about the Timer/Counter Unit (TCU) present in
-the Ingenic JZ47xx SoCs.
+Instead of requesting the "ext" clock and handling the watchdog clock
+divider and gating in the watchdog driver, we now request and use the
+"wdt" clock that is supplied by the ingenic-timer "TCU" driver.
 
-The Timer/Counter Unit (TCU) in Ingenic JZ47xx SoCs is a multi-function
-hardware block. It features up to to eight channels, that can be used as
-counters, timers, or PWM.
+The major benefit is that the watchdog's clock rate and parent can now
+be specified from within devicetree, instead of hardcoded in the driver.
 
-- JZ4725B, JZ4750, JZ4755 only have six TCU channels. The other SoCs all
-  have eight channels.
+Also, this driver won't poke anymore into the TCU registers to
+enable/disable the clock, as this is now handled by the TCU driver.
 
-- JZ4725B introduced a separate channel, called Operating System Timer
-  (OST). It is a 32-bit programmable timer. On JZ4770 and above, it is
-  64-bit.
-
-- Each one of the TCU channels has its own clock, which can be reparented
-  to three different clocks (pclk, ext, rtc), gated, and reclocked, through
-  their TCSR register.
-  * The watchdog and OST hardware blocks also feature a TCSR register with
-    the same format in their register space.
-  * The TCU registers used to gate/ungate can also gate/ungate the watchdog
-    and OST clocks.
-
-- Each TCU channel works in one of two modes:
-  * mode TCU1: channels cannot work in sleep mode, but are easier to
-    operate.
-  * mode TCU2: channels can work in sleep mode, but the operation is a bit
-    more complicated than with TCU1 channels.
-
-- The mode of each TCU channel depends on the SoC used:
-  * On the oldest SoCs (up to JZ4740), all of the eight channels operate in
-    TCU1 mode.
-  * On JZ4725B, channel 5 operates as TCU2, the others operate as TCU1.
-  * On newest SoCs (JZ4750 and above), channels 1-2 operate as TCU2, the
-    others operate as TCU1.
-
-- Each channel can generate an interrupt. Some channels share an interrupt
-  line, some don't, and this changes between SoC versions:
-  * on older SoCs (JZ4740 and below), channel 0 and channel 1 have their
-    own interrupt line; channels 2-7 share the last interrupt line.
-  * On JZ4725B, channel 0 has its own interrupt; channels 1-5 share one
-    interrupt line; the OST uses the last interrupt line.
-  * on newer SoCs (JZ4750 and above), channel 5 has its own interrupt;
-    channels 0-4 and (if eight channels) 6-7 all share one interrupt line;
-    the OST uses the last interrupt line.
+On the bad side, we break the ABI with devicetree - as we now request a
+different clock. In this very specific case it is still okay, as every
+Ingenic JZ47xx-based board out there compile the devicetree within the
+kernel; so it's still time to push breaking changes, in order to get a
+clean devicetree that won't break once it musn't.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 ---
 
 Notes:
-     v4: New patch in this series
+     v5: New patch
     
-     v5: Added information about number of channels, and improved
-         documentation about channel modes
-    
-     v6: Add info about OST (can be 32-bit on older SoCs)
+     v6: - Split regmap change to new patch 09/24
+         - The code now sets the WDT clock to the smallest rate possible and
+           calculates the maximum timeout from that
     
      v7: No change
 
- Documentation/mips/00-INDEX        |  3 ++
- Documentation/mips/ingenic-tcu.txt | 60 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 63 insertions(+)
- create mode 100644 Documentation/mips/ingenic-tcu.txt
+ drivers/watchdog/Kconfig      |  2 +
+ drivers/watchdog/jz4740_wdt.c | 86 +++++++++++++++++--------------------------
+ 2 files changed, 36 insertions(+), 52 deletions(-)
 
-diff --git a/Documentation/mips/00-INDEX b/Documentation/mips/00-INDEX
-index 8ae9cffc2262..8ab8c3f83771 100644
---- a/Documentation/mips/00-INDEX
-+++ b/Documentation/mips/00-INDEX
-@@ -2,3 +2,6 @@
- 	- this file.
- AU1xxx_IDE.README
- 	- README for MIPS AU1XXX IDE driver.
-+ingenic-tcu.txt
-+	- Information file about the Timer/Counter Unit present
-+	  in Ingenic JZ47xx SoCs.
-diff --git a/Documentation/mips/ingenic-tcu.txt b/Documentation/mips/ingenic-tcu.txt
-new file mode 100644
-index 000000000000..0ea35b2a46da
---- /dev/null
-+++ b/Documentation/mips/ingenic-tcu.txt
-@@ -0,0 +1,60 @@
-+Ingenic JZ47xx SoCs Timer/Counter Unit hardware
-+-----------------------------------------------
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index 9af07fd92763..834222abbbdb 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -1476,7 +1476,9 @@ config INDYDOG
+ config JZ4740_WDT
+ 	tristate "Ingenic jz4740 SoC hardware watchdog"
+ 	depends on MACH_JZ4740 || MACH_JZ4780
++	depends on COMMON_CLK
+ 	select WATCHDOG_CORE
++	select INGENIC_TIMER
+ 	help
+ 	  Hardware driver for the built-in watchdog timer on Ingenic jz4740 SoCs.
+ 
+diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
+index ec4d99a830ba..1d504ecf45e1 100644
+--- a/drivers/watchdog/jz4740_wdt.c
++++ b/drivers/watchdog/jz4740_wdt.c
+@@ -26,25 +26,9 @@
+ #include <linux/err.h>
+ #include <linux/of.h>
+ 
+-#include <asm/mach-jz4740/timer.h>
+-
+ #define JZ_REG_WDT_TIMER_DATA     0x0
+ #define JZ_REG_WDT_COUNTER_ENABLE 0x4
+ #define JZ_REG_WDT_TIMER_COUNTER  0x8
+-#define JZ_REG_WDT_TIMER_CONTROL  0xC
+-
+-#define JZ_WDT_CLOCK_PCLK 0x1
+-#define JZ_WDT_CLOCK_RTC  0x2
+-#define JZ_WDT_CLOCK_EXT  0x4
+-
+-#define JZ_WDT_CLOCK_DIV_SHIFT   3
+-
+-#define JZ_WDT_CLOCK_DIV_1    (0 << JZ_WDT_CLOCK_DIV_SHIFT)
+-#define JZ_WDT_CLOCK_DIV_4    (1 << JZ_WDT_CLOCK_DIV_SHIFT)
+-#define JZ_WDT_CLOCK_DIV_16   (2 << JZ_WDT_CLOCK_DIV_SHIFT)
+-#define JZ_WDT_CLOCK_DIV_64   (3 << JZ_WDT_CLOCK_DIV_SHIFT)
+-#define JZ_WDT_CLOCK_DIV_256  (4 << JZ_WDT_CLOCK_DIV_SHIFT)
+-#define JZ_WDT_CLOCK_DIV_1024 (5 << JZ_WDT_CLOCK_DIV_SHIFT)
+ 
+ #define DEFAULT_HEARTBEAT 5
+ #define MAX_HEARTBEAT     2048
+@@ -65,7 +49,8 @@ MODULE_PARM_DESC(heartbeat,
+ struct jz4740_wdt_drvdata {
+ 	struct watchdog_device wdt;
+ 	void __iomem *base;
+-	struct clk *rtc_clk;
++	struct clk *clk;
++	unsigned long clk_rate;
+ };
+ 
+ static int jz4740_wdt_ping(struct watchdog_device *wdt_dev)
+@@ -80,31 +65,12 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
+ 				    unsigned int new_timeout)
+ {
+ 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+-	unsigned int rtc_clk_rate;
+-	unsigned int timeout_value;
+-	unsigned short clock_div = JZ_WDT_CLOCK_DIV_1;
+-
+-	rtc_clk_rate = clk_get_rate(drvdata->rtc_clk);
+-
+-	timeout_value = rtc_clk_rate * new_timeout;
+-	while (timeout_value > 0xffff) {
+-		if (clock_div == JZ_WDT_CLOCK_DIV_1024) {
+-			/* Requested timeout too high;
+-			* use highest possible value. */
+-			timeout_value = 0xffff;
+-			break;
+-		}
+-		timeout_value >>= 2;
+-		clock_div += (1 << JZ_WDT_CLOCK_DIV_SHIFT);
+-	}
++	u16 timeout_value = (u16)(drvdata->clk_rate * new_timeout);
+ 
+ 	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+-	writew(clock_div, drvdata->base + JZ_REG_WDT_TIMER_CONTROL);
+ 
+ 	writew((u16)timeout_value, drvdata->base + JZ_REG_WDT_TIMER_DATA);
+ 	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
+-	writew(clock_div | JZ_WDT_CLOCK_RTC,
+-		drvdata->base + JZ_REG_WDT_TIMER_CONTROL);
+ 
+ 	writeb(0x1, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+ 
+@@ -114,7 +80,13 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
+ 
+ static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
+ {
+-	jz4740_timer_enable_watchdog();
++	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
++	int ret;
 +
-+The Timer/Counter Unit (TCU) in Ingenic JZ47xx SoCs is a multi-function
-+hardware block. It features up to to eight channels, that can be used as
-+counters, timers, or PWM.
++	ret = clk_prepare_enable(drvdata->clk);
++	if (ret)
++		return ret;
 +
-+- JZ4725B, JZ4750, JZ4755 only have six TCU channels. The other SoCs all
-+  have eight channels.
+ 	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
+ 
+ 	return 0;
+@@ -125,7 +97,7 @@ static int jz4740_wdt_stop(struct watchdog_device *wdt_dev)
+ 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+ 
+ 	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
+-	jz4740_timer_disable_watchdog();
++	clk_disable_unprepare(drvdata->clk);
+ 
+ 	return 0;
+ }
+@@ -163,26 +135,42 @@ MODULE_DEVICE_TABLE(of, jz4740_wdt_of_matches);
+ 
+ static int jz4740_wdt_probe(struct platform_device *pdev)
+ {
++	struct device *dev = &pdev->dev;
+ 	struct jz4740_wdt_drvdata *drvdata;
+ 	struct watchdog_device *jz4740_wdt;
+ 	struct resource	*res;
++	long rate;
+ 	int ret;
+ 
+-	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct jz4740_wdt_drvdata),
+-			       GFP_KERNEL);
++	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
+ 	if (!drvdata)
+ 		return -ENOMEM;
+ 
+-	if (heartbeat < 1 || heartbeat > MAX_HEARTBEAT)
+-		heartbeat = DEFAULT_HEARTBEAT;
++	drvdata->clk = devm_clk_get(&pdev->dev, "wdt");
++	if (IS_ERR(drvdata->clk)) {
++		dev_err(&pdev->dev, "cannot find WDT clock\n");
++		return PTR_ERR(drvdata->clk);
++	}
 +
-+- JZ4725B introduced a separate channel, called Operating System Timer
-+  (OST). It is a 32-bit programmable timer. On JZ4770 and above, it is
-+  64-bit.
++	/* Set smallest clock possible */
++	rate = clk_round_rate(drvdata->clk, 1);
++	if (rate < 0)
++		return rate;
+ 
++	ret = clk_set_rate(drvdata->clk, rate);
++	if (ret)
++		return ret;
 +
-+- Each one of the TCU channels has its own clock, which can be reparented
-+  to three different clocks (pclk, ext, rtc), gated, and reclocked, through
-+  their TCSR register.
-+  * The watchdog and OST hardware blocks also feature a TCSR register with
-+    the same format in their register space.
-+  * The TCU registers used to gate/ungate can also gate/ungate the watchdog
-+    and OST clocks.
-+
-+- Each TCU channel works in one of two modes:
-+  * mode TCU1: channels cannot work in sleep mode, but are easier to
-+    operate.
-+  * mode TCU2: channels can work in sleep mode, but the operation is a bit
-+    more complicated than with TCU1 channels.
-+
-+- The mode of each TCU channel depends on the SoC used:
-+  * On the oldest SoCs (up to JZ4740), all of the eight channels operate in
-+    TCU1 mode.
-+  * On JZ4725B, channel 5 operates as TCU2, the others operate as TCU1.
-+  * On newest SoCs (JZ4750 and above), channels 1-2 operate as TCU2, the
-+    others operate as TCU1.
-+
-+- Each channel can generate an interrupt. Some channels share an interrupt
-+  line, some don't, and this changes between SoC versions:
-+  * on older SoCs (JZ4740 and below), channel 0 and channel 1 have their
-+    own interrupt line; channels 2-7 share the last interrupt line.
-+  * On JZ4725B, channel 0 has its own interrupt; channels 1-5 share one
-+    interrupt line; the OST uses the last interrupt line.
-+  * on newer SoCs (JZ4750 and above), channel 5 has its own interrupt;
-+    channels 0-4 and (if eight channels) 6-7 all share one interrupt line;
-+    the OST uses the last interrupt line.
-+
-+Implementation
-+--------------
-+
-+The functionalities of the TCU hardware are spread across multiple drivers:
-+- clocks/irq/timer: drivers/clocksource/ingenic-timer.c
-+- PWM:              drivers/pwm/pwm-jz4740.c
-+- watchdog:         drivers/watchdog/jz4740_wdt.c
-+- OST:              drivers/clocksource/ingenic-ost.c
-+
-+Because various functionalities of the TCU that belong to different drivers
-+and frameworks can be controlled from the same registers, all of these
-+drivers access their registers through the same regmap.
-+
-+For more information regarding the devicetree bindings of the TCU drivers,
-+have a look at Documentation/devicetree/bindings/mfd/ingenic,tcu.txt.
++	drvdata->clk_rate = rate;
+ 	jz4740_wdt = &drvdata->wdt;
+ 	jz4740_wdt->info = &jz4740_wdt_info;
+ 	jz4740_wdt->ops = &jz4740_wdt_ops;
+-	jz4740_wdt->timeout = heartbeat;
+ 	jz4740_wdt->min_timeout = 1;
+-	jz4740_wdt->max_timeout = MAX_HEARTBEAT;
+-	jz4740_wdt->parent = &pdev->dev;
++	jz4740_wdt->max_timeout = 0xffff / rate;
++	jz4740_wdt->timeout = clamp(heartbeat,
++				    jz4740_wdt->min_timeout,
++				    jz4740_wdt->max_timeout);
++	jz4740_wdt->parent = dev;
+ 	watchdog_set_nowayout(jz4740_wdt, nowayout);
+ 	watchdog_set_drvdata(jz4740_wdt, drvdata);
+ 
+@@ -191,12 +179,6 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
+ 	if (IS_ERR(drvdata->base))
+ 		return PTR_ERR(drvdata->base);
+ 
+-	drvdata->rtc_clk = devm_clk_get(&pdev->dev, "rtc");
+-	if (IS_ERR(drvdata->rtc_clk)) {
+-		dev_err(&pdev->dev, "cannot find RTC clock\n");
+-		return PTR_ERR(drvdata->rtc_clk);
+-	}
+-
+ 	ret = devm_watchdog_register_device(&pdev->dev, &drvdata->wdt);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.11.0
