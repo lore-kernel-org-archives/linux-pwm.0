@@ -1,67 +1,130 @@
 From: =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
-Subject: [RFC PATCH 0/2] pwm: imx: Configure output to GPIO in disabled state
-Date: Tue, 21 Aug 2018 16:38:51 +0200
-Message-ID: <1534862333-27950-1-git-send-email-michal.vokac@ysoft.com>
+Subject: [RFC PATCH 2/2] pmw: imx: Configure output to GPIO in disabled state
+Date: Tue, 21 Aug 2018 16:38:53 +0200
+Message-ID: <1534862333-27950-3-git-send-email-michal.vokac@ysoft.com>
+References: <1534862333-27950-1-git-send-email-michal.vokac@ysoft.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1534862333-27950-1-git-send-email-michal.vokac@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>
 Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@karo-electronics.de>, =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This is an attempt to deal with i.MX SoC PWM HW limitation.
-When a pad is configured as a PWM output the output level is always 0V
-if the PWM block is disabled. This can cause problems when inverted PWM
-signal is needed to drive the connected circuit. With inverted output
-duty cycle = 0% corresponds to high output level and duty cycle = 100%
-corresponds to low output level. This means that whenever the PWM block is
-disabled the connected circuit is fed with 100% duty cycle.
+The PWM output is held at zero whenever the PWM block is disabled.
+This can cause issues when inverted PWM signal polarity is needed.
 
-This issue has been discussed in various threads about inverted PWM support
-implementation. Finally this commit 326ed314fefe ("pwm: imx: Add polarity
-inversion support to i.MX's PWMv2") from Lukasz was merged.
+Allow users to set a "default" pinctrl state that will be used when
+PWM is disabled and a "pwm" pinctrl state that will be used when
+PWM output is needed.
 
-Later on Fabio came up with the same problem as I described.
-His commit 1f6eefeb7cd4 ("pwm: imx: Let PWM be active during suspend")
-solves the problem only in suspend state and not whenever PWM is disabled.
+As an example, with this a PWM controlled backlight with inversed
+signal polarity can be used in full brightness range. Without this
+the backlight could not be turned off as brightness = 0 disables
+the PWM and that in turn set output to 0V, that is full brightness.
 
-In the discussion Fabio also suggested a pinctrl solution though it was
-still only for suspend [1].
+When the pinctrl states are not correctly specifid in DT the logic
+will work as before.
 
-I would like to bring attention to that pinctrl solution once again.
-The code is basically a copy of the I2C recovery function [2].
+Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
+---
+ drivers/pwm/pwm-imx.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-The binding is totally optional and current users are not affected.
-The idea is to use the "default" pinctrl state to set the pin to a safe
-state. That is a GPIO function with pull-up. Then when a PWM signal is
-needed on the output, select the "pwm" state.
-
-Using the GPIO function as a default state assures that the pad is in
-a safe state all the time from power-up and is switched to PWM only when
-it is really needed.
-
-It is also important to first change the muxing and then disable the PWM.
-Otherwise you will get unwanted level changes on the output. And vice
-versa when PWM output needs to be enabled. Enable PWM first, then change
-the muxing.
-
-I would like to know your opinion on this, thanks.
-
-Michal
-
-[1] https://patchwork.ozlabs.org/patch/839834/#1819865
-[2] https://elixir.bootlin.com/linux/latest/source/drivers/i2c/busses/i2c-imx.c#L989
-
-
-Michal Vokáč (2):
-  dt-bindings: pwm: imx: Allow switching PWM output between PWM and GPIO
-  pmw: imx: Configure output to GPIO in disabled state
-
- Documentation/devicetree/bindings/pwm/imx-pwm.txt | 44 ++++++++++++++++++
- drivers/pwm/pwm-imx.c                             | 56 +++++++++++++++++++++++
- 2 files changed, 100 insertions(+)
-
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index 1d5242c..6212c98 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -13,6 +13,7 @@
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/io.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/pwm.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+@@ -52,10 +53,39 @@ struct imx_chip {
+ 	void __iomem	*mmio_base;
+ 
+ 	struct pwm_chip	chip;
++
++	struct pinctrl *pinctrl;
++	struct pinctrl_state *pinctrl_pins_default;
++	struct pinctrl_state *pinctrl_pins_pwm;
+ };
+ 
++
+ #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
+ 
++static int imx_pwm_init_pinctrl_info(struct imx_chip *imx_chip,
++		struct platform_device *pdev)
++{
++	imx_chip->pinctrl = devm_pinctrl_get(&pdev->dev);
++	if (!imx_chip->pinctrl || IS_ERR(imx_chip->pinctrl)) {
++		dev_info(&pdev->dev, "can not get pinctrl\n");
++		return PTR_ERR(imx_chip->pinctrl);
++	}
++
++	imx_chip->pinctrl_pins_default = pinctrl_lookup_state(imx_chip->pinctrl,
++			PINCTRL_STATE_DEFAULT);
++	imx_chip->pinctrl_pins_pwm = pinctrl_lookup_state(imx_chip->pinctrl,
++			"pwm");
++
++	if (IS_ERR(imx_chip->pinctrl_pins_default) ||
++	    IS_ERR(imx_chip->pinctrl_pins_pwm)) {
++		dev_info(&pdev->dev, "PWM output mux information incomplete\n");
++		devm_pinctrl_put(imx_chip->pinctrl);
++		imx_chip->pinctrl = NULL;
++	}
++
++	return 0;
++}
++
+ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns)
+ {
+@@ -216,7 +246,29 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			cr |= MX3_PWMCR_POUTC;
+ 
+ 		writel(cr, imx->mmio_base + MX3_PWMCR);
++
++		/*
++		 * If we are in charge of pinctrl then switch output to
++		 * the PWM signal.
++		 */
++		if (imx->pinctrl)
++			pinctrl_select_state(imx->pinctrl,
++					imx->pinctrl_pins_pwm);
+ 	} else if (cstate.enabled) {
++		/*
++		 * PWM block will be disabled. Normally its output will go
++		 * to 0 no matter what polarity is set. In case reversed PWM
++		 * polarity is required reconfigure the output pin to GPIO to
++		 * keep the output at the same level as for duty-cycle = 0.
++		 *
++		 * First switch the muxing and then disable the PWM. In that
++		 * order we do not get unwanted logic level changes on the
++		 * output.
++		 */
++		if (imx->pinctrl)
++			pinctrl_select_state(imx->pinctrl,
++					imx->pinctrl_pins_default);
++
+ 		writel(0, imx->mmio_base + MX3_PWMCR);
+ 
+ 		clk_disable_unprepare(imx->clk_per);
+@@ -294,6 +346,10 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 		imx->chip.of_pwm_n_cells = 3;
+ 	}
+ 
++	ret = imx_pwm_init_pinctrl_info(imx, pdev);
++	if (ret)
++		return ret;
++
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	imx->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+ 	if (IS_ERR(imx->mmio_base))
 -- 
 2.1.4
