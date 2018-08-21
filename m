@@ -1,82 +1,85 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/2] dt-bindings: pwm: Add MT7628 information
-Date: Mon, 20 Aug 2018 11:39:18 +0200
-Message-ID: <20180820093918.GF8242@ulmo>
-References: <20180725095209.10641-1-john@phrozen.org>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH v3] backlight: pwm_bl: switch to using "atomic" PWM API
+Date: Tue, 21 Aug 2018 14:48:19 +0200
+Message-ID: <1691066.Iypvixkm4y@phil>
+References: <20180814165059.13219-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8226584202089992473=="
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180725095209.10641-1-john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20180814165059.13219-1-enric.balletbo@collabora.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: dri-devel@lists.freedesktop.org
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, kernel@collabora.com, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>, cl@rock-chips.com
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============8226584202089992473==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="9ADF8FXzFeE7X4jE"
-Content-Disposition: inline
-
-
---9ADF8FXzFeE7X4jE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jul 25, 2018 at 11:52:08AM +0200, John Crispin wrote:
-> Enhance the MediaTek PWM binding with details about the IP found in the
-> MT7628 SoC.
->=20
-> Signed-off-by: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-
-Applied, thanks.
-
-Thierry
-
---9ADF8FXzFeE7X4jE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlt6jEYACgkQ3SOs138+
-s6GMjg//VtjaSeuNnfriujuVCungEywVeBLAjZsQO88Nj7pacmeMNJYuZBlOr7Ts
-vj9ta0WCJx+b7nhK6jjrnNmS7bWQ6Kym7qBm1RbVJQRgd1dgbvbL/PNEV8IrqGuo
-Fl1PnIuJkOTi/fzfM3PPFY5WMgA2eR8ekZOIUC2AA/DhP5Fbe6hY02SDQyJEUp9B
-hUcIIZFIZfTY04qQlUDEVAdPF8qHDDSnU6Mh/r816e59fDLnanZK4tBkAifULQFl
-HThAWBtYTS2UFpQTNaDXm7d99IUT7vyf0Ds/otqVWLS111mx7c69mG148S4yEg24
-wXGC3yI+yXzN2124rmR8J035jklzx+6ejBqX71OEzBU3yocHYx91y6wki2GmXdDn
-+1JxGQSp8FVjiwKBls29mAFSg1RpmXFF9pX0HMNFUAIlBL7TZnDwXffYzilc6ypV
-Snm/8ZsBvfxYjGrFCFPg7Af0WfiP/F/LI9nauUnXqY2EuAIjTLOIzGaoK/uxk3ZK
-Y4YHZthzVgHftUHDRIQgbrhX/V77/eb5/8rlzJ6h8nu33iDX+7sT6EQstMvAjnlp
-AhtllKKRXZdd1LkL+m+VMYWQ6vgEBsT42v1ILQ6HPV86OxpWcn1F78lMq0UM26m3
-oDufV55ksBgpbFR9ok6RdujDw13EaeehcOqoxBbBFxJIMNx+Wq8=
-=HVR0
------END PGP SIGNATURE-----
-
---9ADF8FXzFeE7X4jE--
-
-
---===============8226584202089992473==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linux-mediatek mailing list
-Linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-http://lists.infradead.org/mailman/listinfo/linux-mediatek
-
---===============8226584202089992473==--
+QW0gRGllbnN0YWcsIDE0LiBBdWd1c3QgMjAxOCwgMTg6NTA6NTkgQ0VTVCBzY2hyaWViIEVucmlj
+IEJhbGxldGJvIGkgU2VycmE6Cj4gVGhlICJhdG9taWMiIEFQSSBhbGxvd3MgdXMgdG8gY29uZmln
+dXJlIFBXTSBwZXJpb2QgYW5kIGR1dHlfY3ljbGUgYW5kCj4gZW5hYmxlIGl0IGluIG9uZSBjYWxs
+Lgo+IAo+IFRoZSBwYXRjaCBhbHNvIG1vdmVzIHRoZSBwd21faW5pdF9zdGF0ZSBqdXN0IGJlZm9y
+ZSBhbnkgdXNlIG9mIHRoZQo+IHB3bV9zdGF0ZSBzdHJ1Y3QsIHRoaXMgZml4ZXMgYSBwb3RlbnRp
+YWwgYnVnIHdoZXJlIHB3bV9nZXRfc3RhdGUKPiBjYW4gYmUgY2FsbGVkIGJlZm9yZSBwd21faW5p
+dF9zdGF0ZS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBFbnJpYyBCYWxsZXRibyBpIFNlcnJhIDxlbnJp
+Yy5iYWxsZXRib0Bjb2xsYWJvcmEuY29tPgoKT24gYSBSb2NrY2hpcCByazMzOTktc2NhcmxldCB0
+YWJsZXQKVGVzdGVkLWJ5OiBIZWlrbyBTdHVlYm5lciA8aGVpa29Ac250ZWNoLmRlPgoKVGhpcyBw
+YXRjaCBhbHNvIF9maXhlc18gdGhlIGtlcm5lbCBidWcgYmVsb3cuCgpTY2FybGV0IGlzIG5vdCB5
+ZXQgc3VibWl0dGVkIHVwc3RyZWFtLCBidXQgd2hlbiBJIHJlbW92ZQp0aGUgYnJpZ2h0bmVzcy1s
+ZXZlbHMgYW5kIGRlZmF1bHQtYnJpZ2h0bmVzcy1sZXZlbCBwcm9wZXJ0aWVzCmluIG15IHdpcCBk
+ZXZpY2V0cmVlIGZpbGVzIHRvIHJlbHkgb24gdGhlIG5ld2x5IGludHJvZHVjZWQKYXV0b21hdGlj
+IGxldmVsIGNhbGN1bGF0aW9uLCBJIGVuZCB1cCB3aXRoIHRoZSBmb2xsb3dpbmc6CgpbICAxMzYu
+NzIzNTg2XSBJbnRlcm5hbCBlcnJvcjogcHRyYWNlIEJSSyBoYW5kbGVyOiBmMjAwMDNlOCBbIzFd
+IFBSRUVNUFQgU01QClsgIDEzNi43MzU5MjBdIE1vZHVsZXMgbGlua2VkIGluOiBkcm1fcGFuZWxf
+b3JpZW50YXRpb25fcXVpcmtzIHB3bV9ibCgrKSBpcF90YWJsZXMgeF90YWJsZXMgaXB2NiBzbXNj
+OTV4eCBzbXNjNzV4eCBheDg4MTc5XzE3OGEgYXNpeCB1c2JuZXQgcGh5X3JvY2tjaGlwX3BjaWUg
+aTJjX2hpZApbICAxMzYuNzUyMjI3XSBDUFU6IDUgUElEOiAxNTQ3IENvbW06IHN5c3RlbWQtdWRl
+dmQgVGFpbnRlZDogRyAgICAgICAgVyAgICAgICAgIDQuMTguMC0xMjYxMS1nMDRiY2ZlNWZlZTJk
+LWRpcnR5ICMxMDMzClsgIDEzNi43NjM5MTZdIEhhcmR3YXJlIG5hbWU6IEdvb2dsZSBTY2FybGV0
+IChEVCkKWyAgMTM2Ljc2MzkyM10gcHN0YXRlOiA4MDAwMDAwNSAoTnpjdiBkYWlmIC1QQU4gLVVB
+TykKWyAgMTM2Ljc2Mzk0M10gcGMgOiBwd21fYmFja2xpZ2h0X3Byb2JlKzB4NjEwLzB4ODUwIFtw
+d21fYmxdClsgIDEzNi43NjM5NThdIGxyIDogcHdtX2JhY2tsaWdodF9wcm9iZSsweDEwOC8weDg1
+MCBbcHdtX2JsXQpbICAxMzYuNzg2MzQ5XSBzcCA6IGZmZmYwMDAwMGEzM2I5MzAKWyAgMTM2Ljc5
+NDQyMV0geDI5OiBmZmZmMDAwMDBhMzNiOTMwIHgyODogZmZmZjAwMDAwYTMzYmRmMCAKWyAgMTM2
+LjgwMDM3M10geDI3OiAwMDAwMDAwMDAwMDAwMTAwIHgyNjogZmZmZjAwMDAwMGFkYTExMCAKWyAg
+MTM2LjgwNjMyN10geDI1OiAwMDAwMDAwMDAwMDAwMDAwIHgyNDogZmZmZjAwMDAwMGFkOTM0OCAK
+WyAgMTM2LjgwNjM0M10geDIzOiBmZmZmODAwMGYxYTNlNDAwIHgyMjogZmZmZjAwMDAwOGUyOTAw
+MCAKWyAgMTM2LjgxODIzOV0geDIxOiBmZmZmODAwMGYxYTNlNDEwIHgyMDogZmZmZjgwMDBmMDk3
+YTc5OCAKWyAgMTM2LjgyNDE4OV0geDE5OiBmZmZmMDAwMDBhMzNiOWEwIHgxODogMDAwMDAwMDAw
+MDAwMDAwMCAKWyAgMTM2LjgzMDEzN10geDE3OiAwMDAwMDAwMDAwMDAwMDAwIHgxNjogMDAwMDAw
+MDAwMDAwMDAwMCAKWyAgMTM2LjgzNjE1Nl0geDE1OiAwMDAwMDAwMDAwMDAwNDAwIHgxNDogMDAw
+MDAwMDAwMDAwMDQwMCAKWyAgMTM2Ljg0MjEwNF0geDEzOiAwMDAwMDAwMDAwMDAwMDAwIHgxMjog
+MDAwMDAwMDAwMDAwMDAwMSAKWyAgMTM2Ljg0ODA1Ml0geDExOiAwMDAwMDAwMDAwMDAwMDAzIHgx
+MDogMDEwMTAxMDEwMTAxMDEwMSAKWyAgMTM2Ljg1NTYzOV0geDkgOiBmZmZmZmZmZmZmZmZmZmZk
+IHg4IDogN2Y3ZjdmN2Y3ZjdmN2Y3ZiAKWyAgMTM2Ljg2MTU4OF0geDcgOiAwMDAwMDAwMDAwMDAw
+MDAwIHg2IDogMDAwMDAwMDAwMDAwMDAwNSAKWyAgMTM2Ljg2NzcyN10geDUgOiBmZmZmODAwMGYx
+NTBjOTAwIHg0IDogZmZmZjgwMDBmMWEzZTYxMCAKWyAgMTM2Ljg3NjU3MV0geDMgOiBmZmZmODAw
+MGYwOTdhODgwIHgyIDogMDAwMDAwMDAwMDAwMDAwMCAKWyAgMTM2Ljg4MjUxOV0geDEgOiBmZmZm
+ODAwMDE2MzkzNTAwIHgwIDogMDAwMDAwMDAwMDAwMDAwMCAKWyAgMTM2Ljg4ODQ4MV0gUHJvY2Vz
+cyBzeXN0ZW1kLXVkZXZkIChwaWQ6IDE1NDcsIHN0YWNrIGxpbWl0ID0gMHgwMDAwMDAwMDk1Yzlh
+ZTQzKQpbICAxMzYuODg4NDg0XSBDYWxsIHRyYWNlOgpbICAxMzYuODg4NDk4XSAgcHdtX2JhY2ts
+aWdodF9wcm9iZSsweDYxMC8weDg1MCBbcHdtX2JsXQpbICAxMzYuODg4NTIzXSAgcGxhdGZvcm1f
+ZHJ2X3Byb2JlKzB4NTAvMHhhMApbICAxMzYuOTA5NTUwXSAgcmVhbGx5X3Byb2JlKzB4MWM4LzB4
+MmEwClsgIDEzNi45MTQ1MTVdICBkcml2ZXJfcHJvYmVfZGV2aWNlKzB4NTgvMHgxMDgKWyAgMTM2
+LjkxOTE5Nl0gIF9fZHJpdmVyX2F0dGFjaCsweGRjLzB4ZTAKWyAgMTM2LjkzMDEwM10gIGRyaXZl
+cl9hdHRhY2grMHgyMC8weDI4ClsgIDEzNi45MzQyODZdICBidXNfYWRkX2RyaXZlcisweDFiOC8w
+eDIyOApbICAxMzYuOTM4NTgwXSAgZHJpdmVyX3JlZ2lzdGVyKzB4NjAvMHgxMTAKWyAgMTM2Ljk0
+Mjg5MF0gIF9fcGxhdGZvcm1fZHJpdmVyX3JlZ2lzdGVyKzB4NDAvMHg0OApbICAxMzYuOTQ4MTcy
+XSAgcHdtX2JhY2tsaWdodF9kcml2ZXJfaW5pdCsweDFjLzB4MTAwMCBbcHdtX2JsXQpbICAxMzYu
+OTQ4MTg3XSAgZG9fb25lX2luaXRjYWxsKzB4NWMvMHgxODAKWyAgMTM2Ljk1ODcwOV0gIGRvX2lu
+aXRfbW9kdWxlKzB4NTgvMHgxYjAKWyAgMTM2Ljk2MjkwNV0gIGxvYWRfbW9kdWxlKzB4MWJmYy8w
+eDIyMDAKWyAgMTM2Ljk2NzEwNF0gIF9fc2Vfc3lzX2Zpbml0X21vZHVsZSsweGMwLzB4ZDgKWyAg
+MTM2Ljk3MTk2N10gIF9fYXJtNjRfc3lzX2Zpbml0X21vZHVsZSsweDE0LzB4MjAKWyAgMTM2Ljk3
+NzAzOF0gIGVsMF9zdmNfY29tbW9uKzB4NjAvMHhlOApbICAxMzYuOTgxMTM2XSAgZWwwX3N2Y19o
+YW5kbGVyKzB4MjQvMHg4OApbICAxMzYuOTg1MzMzXSAgZWwwX3N2YysweDgvMHhjClsgIDEzNi45
+ODg1NThdIENvZGU6IDk1ZWI0OWY2IDE3ZmZmZjI1IDkxMDFjM2IzIDE3ZmZmZThkIChkNDIwN2Qw
+MCkgClsgIDEzNi45OTUzNzldIC0tLVsgZW5kIHRyYWNlIDBmNzkwMmQzMzRiODRmMTIgXS0tLQoK
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZl
+bCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xp
+c3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
