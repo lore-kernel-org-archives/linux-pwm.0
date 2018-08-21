@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v7 07/24] MAINTAINERS: Add myself as maintainer for Ingenic TCU drivers
-Date: Tue, 21 Aug 2018 19:16:18 +0200
-Message-ID: <20180821171635.22740-8-paul@crapouillou.net>
+Subject: [PATCH v7 21/24] MIPS: qi_lb60: Reduce system timer and clocksource to 750 kHz
+Date: Tue, 21 Aug 2018 19:18:34 +0200
+Message-ID: <20180821171834.22995-1-paul@crapouillou.net>
 References: <20180821171635.22740-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180821171635.22740-1-paul@crapouillou.net>
@@ -10,46 +10,35 @@ To: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.
 Cc: od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add myself as maintainer for the ingenic-timer and ingenic-ost drivers.
+The default clock (12 MHz) is too fast for the system timer, which fails
+to report time accurately.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
 
 Notes:
-     v2: No change
+     v5: New patch
     
-     v3: No change
-    
-     v4: No change
-    
-     v5: Update with new files
-    
-     v6: No change
+     v6: Remove ingenic,clocksource-channel property
     
      v7: No change
 
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/mips/boot/dts/ingenic/qi_lb60.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 544cac829cf4..159246c3209a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7074,6 +7074,15 @@ L:	linux-mtd@lists.infradead.org
- S:	Maintained
- F:	drivers/mtd/nand/raw/jz4780_*
- 
-+INGENIC TCU driver
-+M:	Paul Cercueil <paul@crapouillou.net>
-+S:	Maintained
-+F:	drivers/clocksource/ingenic-ost.c
-+F:	drivers/clocksource/ingenic-timer.c
-+F:	drivers/clocksource/ingenic-timer.h
-+F:	include/linux/mfd/ingenic-tcu.h
-+F:	include/dt-bindings/clock/ingenic,tcu.h
+diff --git a/arch/mips/boot/dts/ingenic/qi_lb60.dts b/arch/mips/boot/dts/ingenic/qi_lb60.dts
+index 85529a142409..de9d45e2c24a 100644
+--- a/arch/mips/boot/dts/ingenic/qi_lb60.dts
++++ b/arch/mips/boot/dts/ingenic/qi_lb60.dts
+@@ -45,3 +45,9 @@
+ 		bias-disable;
+ 	};
+ };
 +
- INOTIFY
- M:	Jan Kara <jack@suse.cz>
- R:	Amir Goldstein <amir73il@gmail.com>
++&tcu {
++	/* 750 kHz for the system timer and clocksource */
++	assigned-clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>;
++	assigned-clock-rates = <750000>, <750000>;
++};
 -- 
 2.11.0
