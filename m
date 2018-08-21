@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v7 04/24] dt-bindings: Add doc for the Ingenic TCU drivers
-Date: Tue, 21 Aug 2018 19:16:15 +0200
-Message-ID: <20180821171635.22740-5-paul@crapouillou.net>
+Subject: [PATCH v7 09/24] watchdog: jz4740: Use regmap provided by TCU driver
+Date: Tue, 21 Aug 2018 19:16:20 +0200
+Message-ID: <20180821171635.22740-10-paul@crapouillou.net>
 References: <20180821171635.22740-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180821171635.22740-1-paul@crapouillou.net>
@@ -10,233 +10,112 @@ To: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.
 Cc: od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add documentation about how to properly use the Ingenic TCU
-(Timer/Counter Unit) drivers from devicetree.
+Since we broke the ABI by changing the clock, the driver was also
+updated to use the regmap provided by the TCU driver.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 ---
 
 Notes:
-     v4: New patch in this series. Corresponds to V2 patches 3-4-5 with
-         added content.
-    
-     v5: - Edited PWM/watchdog DT bindings documentation to point to the new
-           document.
-         - Moved main document to
-           Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-         - Updated documentation to reflect the new devicetree bindings.
-    
-     v6: - Removed PWM/watchdog documentation files as asked by upstream
-         - Removed doc about properties that should be implicit
-         - Removed doc about ingenic,timer-channel /
-           ingenic,clocksource-channel as they are gone
-         - Fix WDT clock name in the binding doc
-         - Fix lengths of register areas in watchdog/pwm nodes
+     v6: New patch
     
      v7: No change
 
- .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ----
- .../devicetree/bindings/timer/ingenic,tcu.txt      | 134 +++++++++++++++++++++
- .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 ---
- 3 files changed, 134 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
- create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
- delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
+ drivers/watchdog/jz4740_wdt.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-deleted file mode 100644
-index 7d9d3f90641b..000000000000
---- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-+++ /dev/null
-@@ -1,25 +0,0 @@
--Ingenic JZ47xx PWM Controller
--=============================
+diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
+index 1d504ecf45e1..0f54306aee25 100644
+--- a/drivers/watchdog/jz4740_wdt.c
++++ b/drivers/watchdog/jz4740_wdt.c
+@@ -13,6 +13,7 @@
+  *
+  */
+ 
++#include <linux/mfd/ingenic-tcu.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/types.h>
+@@ -25,10 +26,7 @@
+ #include <linux/slab.h>
+ #include <linux/err.h>
+ #include <linux/of.h>
 -
--Required properties:
--- compatible: One of:
--  * "ingenic,jz4740-pwm"
--  * "ingenic,jz4770-pwm"
--  * "ingenic,jz4780-pwm"
--- #pwm-cells: Should be 3. See pwm.txt in this directory for a description
--  of the cells format.
--- clocks : phandle to the external clock.
--- clock-names : Should be "ext".
--
--
--Example:
--
--	pwm: pwm@10002000 {
--		compatible = "ingenic,jz4740-pwm";
--		reg = <0x10002000 0x1000>;
--
--		#pwm-cells = <3>;
--
--		clocks = <&ext>;
--		clock-names = "ext";
--	};
-diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-new file mode 100644
-index 000000000000..838ce5065534
---- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-@@ -0,0 +1,134 @@
-+Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
-+==========================================================
-+
-+For a description of the TCU hardware and drivers, have a look at
-+Documentation/mips/ingenic-tcu.txt.
-+
-+Required properties:
-+
-+- compatible: Must be one of:
-+  * ingenic,jz4740-tcu
-+  * ingenic,jz4725b-tcu
-+  * ingenic,jz4770-tcu
-+- reg: Should be the offset/length value corresponding to the TCU registers
-+- clocks: List of phandle & clock specifiers for clocks external to the TCU.
-+  The "pclk", "rtc", "ext" and "tcu" clocks should be provided.
-+- clock-names: List of name strings for the external clocks.
-+- #clock-cells: Should be <1>;
-+  Clock consumers specify this argument to identify a clock. The valid values
-+  may be found in <dt-bindings/clock/ingenic,tcu.h>.
-+- interrupt-controller : Identifies the node as an interrupt controller
-+- #interrupt-cells : Specifies the number of cells needed to encode an
-+  interrupt source. The value should be 1.
-+- interrupt-parent : phandle of the interrupt controller.
-+- interrupts : Specifies the interrupt the controller is connected to.
-+
-+
-+Children nodes
-+==========================================================
-+
-+
-+PWM node:
-+---------
-+
-+Required properties:
-+
-+- compatible: Must be one of:
-+  * ingenic,jz4740-pwm
-+  * ingenic,jz4725b-pwm
-+- #pwm-cells: Should be 3. See ../pwm/pwm.txt for a description of the cell
-+  format.
-+- clocks: List of phandle & clock specifiers for the TCU clocks.
-+- clock-names: List of name strings for the TCU clocks.
-+
-+
-+Watchdog node:
-+--------------
-+
-+Required properties:
-+
-+- compatible: Must be one of:
-+  * ingenic,jz4740-watchdog
-+  * ingenic,jz4780-watchdog
-+- clocks: phandle to the WDT clock
-+- clock-names: should be "wdt"
-+
-+
-+OST node:
-+---------
-+
-+Required properties:
-+
-+- compatible: Must be one of:
-+  * ingenic,jz4725b-ost
-+  * ingenic,jz4770-ost
-+- clocks: phandle to the OST clock
-+- clock-names: should be "ost"
-+- interrupts : Specifies the interrupt the OST is connected to.
-+
-+
-+Example
-+==========================================================
-+
-+#include <dt-bindings/clock/jz4770-cgu.h>
-+#include <dt-bindings/clock/ingenic,tcu.h>
-+
-+/ {
-+	tcu: timer@10002000 {
-+		compatible = "ingenic,jz4770-tcu";
-+		reg = <0x10002000 0x1000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x10002000 0x1000>;
-+
-+		#clock-cells = <1>;
-+
-+		clocks = <&cgu JZ4770_CLK_RTC
-+			  &cgu JZ4770_CLK_EXT
-+			  &cgu JZ4770_CLK_PCLK
-+			  &cgu JZ4770_CLK_EXT>;
-+		clock-names = "rtc", "ext", "pclk", "tcu";
-+
-+		interrupt-controller;
-+		#interrupt-cells = <1>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <27 26 25>;
-+
-+		watchdog: watchdog@0 {
-+			compatible = "ingenic,jz4740-watchdog";
-+			reg = <0x0 0xc>;
-+
-+			clocks = <&tcu TCU_CLK_WDT>;
-+			clock-names = "wdt";
-+		};
-+
-+		pwm: pwm@10 {
-+			compatible = "ingenic,jz4740-pwm";
-+			reg = <0x10 0x40>;
-+
-+			#pwm-cells = <3>;
-+
-+			clocks = <&tcu TCU_CLK_TIMER0
-+				  &tcu TCU_CLK_TIMER1
-+				  &tcu TCU_CLK_TIMER2
-+				  &tcu TCU_CLK_TIMER3
-+				  &tcu TCU_CLK_TIMER4
-+				  &tcu TCU_CLK_TIMER5
-+				  &tcu TCU_CLK_TIMER6
-+				  &tcu TCU_CLK_TIMER7>;
-+			clock-names = "timer0", "timer1", "timer2", "timer3",
-+				      "timer4", "timer5", "timer6", "timer7";
-+		};
-+
-+		ost: timer@e0 {
-+			compatible = "ingenic,jz4770-ost";
-+			reg = <0xe0 0x20>;
-+
-+			clocks = <&tcu TCU_CLK_OST>;
-+			clock-names = "ost";
-+
-+			interrupts = <15>;
-+		};
-+	};
-+};
-diff --git a/Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt b/Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
-deleted file mode 100644
-index ce1cb72d5345..000000000000
---- a/Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
-+++ /dev/null
-@@ -1,17 +0,0 @@
--Ingenic Watchdog Timer (WDT) Controller for JZ4740 & JZ4780
--
--Required properties:
--compatible: "ingenic,jz4740-watchdog" or "ingenic,jz4780-watchdog"
--reg: Register address and length for watchdog registers
--clocks: phandle to the RTC clock
--clock-names: should be "rtc"
--
--Example:
--
--watchdog: jz4740-watchdog@10002000 {
--	compatible = "ingenic,jz4740-watchdog";
--	reg = <0x10002000 0x10>;
--
--	clocks = <&cgu JZ4740_CLK_RTC>;
--	clock-names = "rtc";
--};
+-#define JZ_REG_WDT_TIMER_DATA     0x0
+-#define JZ_REG_WDT_COUNTER_ENABLE 0x4
+-#define JZ_REG_WDT_TIMER_COUNTER  0x8
++#include <linux/regmap.h>
+ 
+ #define DEFAULT_HEARTBEAT 5
+ #define MAX_HEARTBEAT     2048
+@@ -48,7 +46,7 @@ MODULE_PARM_DESC(heartbeat,
+ 
+ struct jz4740_wdt_drvdata {
+ 	struct watchdog_device wdt;
+-	void __iomem *base;
++	struct regmap *map;
+ 	struct clk *clk;
+ 	unsigned long clk_rate;
+ };
+@@ -57,7 +55,7 @@ static int jz4740_wdt_ping(struct watchdog_device *wdt_dev)
+ {
+ 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+ 
+-	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
+ 	return 0;
+ }
+ 
+@@ -67,12 +65,12 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
+ 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+ 	u16 timeout_value = (u16)(drvdata->clk_rate * new_timeout);
+ 
+-	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
+ 
+-	writew((u16)timeout_value, drvdata->base + JZ_REG_WDT_TIMER_DATA);
+-	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
++	regmap_write(drvdata->map, TCU_REG_WDT_TDR, timeout_value);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
+ 
+-	writeb(0x1, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
+ 
+ 	wdt_dev->timeout = new_timeout;
+ 	return 0;
+@@ -96,7 +94,7 @@ static int jz4740_wdt_stop(struct watchdog_device *wdt_dev)
+ {
+ 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+ 
+-	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
+ 	clk_disable_unprepare(drvdata->clk);
+ 
+ 	return 0;
+@@ -138,7 +136,6 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct jz4740_wdt_drvdata *drvdata;
+ 	struct watchdog_device *jz4740_wdt;
+-	struct resource	*res;
+ 	long rate;
+ 	int ret;
+ 
+@@ -174,10 +171,11 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
+ 	watchdog_set_nowayout(jz4740_wdt, nowayout);
+ 	watchdog_set_drvdata(jz4740_wdt, drvdata);
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	drvdata->base = devm_ioremap_resource(&pdev->dev, res);
+-	if (IS_ERR(drvdata->base))
+-		return PTR_ERR(drvdata->base);
++	drvdata->map = dev_get_regmap(dev->parent, NULL);
++	if (!drvdata->map) {
++		dev_err(dev, "regmap not found\n");
++		return -EINVAL;
++	}
+ 
+ 	ret = devm_watchdog_register_device(&pdev->dev, &drvdata->wdt);
+ 	if (ret < 0)
 -- 
 2.11.0
