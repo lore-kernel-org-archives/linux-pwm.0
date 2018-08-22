@@ -1,18 +1,17 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v1 1/7] atmel-hlcdc: renamed directory to drm/atmel/
-Date: Wed, 22 Aug 2018 22:09:42 +0200
-Message-ID: <20180822200942.GA22148@ravnborg.org>
+Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
+Date: Wed, 22 Aug 2018 22:12:26 +0200
+Message-ID: <20180822201226.GB22148@ravnborg.org>
 References: <20180812184152.GA22343@ravnborg.org>
- <20180812184629.3808-1-sam@ravnborg.org>
- <20180814083913.GD21634@phenom.ffwll.local>
- <20180814161952.GA27951@ravnborg.org>
- <20180816074123.GB21634@phenom.ffwll.local>
+ <20180812195536.GA29811@ravnborg.org>
+ <264d51a0-7e41-6c27-d438-9ae337e6dcf0@microchip.com>
+ <20180814084112.GE21634@phenom.ffwll.local>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20180816074123.GB21634@phenom.ffwll.local>
+In-Reply-To: <20180814084112.GE21634@phenom.ffwll.local>
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -23,22 +22,24 @@ List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Daniel Vetter <daniel@ffwll.ch>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Joshua Henderson <joshua.henderson@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Boris Brezillon <boris.brezillon@bootlin.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgRGFuaWVsLgoKPiA+ID4gCj4gPiA+IEknZCBzdHJvbmdseSBzdWdnZXN0IHlvdSBncm91cC1t
-YWludGFpbiB0aGUgZW50aXJlIGF0bWVsIHN0dWZmIGluCj4gPiA+IGRybS1taXNjIGluc3RlYWQg
-b2Ygb25seSBhdG1lbC1obGNkYy4KPiA+IAo+ID4gSWYgT0sgd2l0aCBCb3JpcyB0aGVuIEkgYW0g
-ZmluZSB3aXRoIHRoaXMgdG9vLgo+ID4gV2lsbCBzdWdnZXN0IHNvIGluIHYyLgo+IAo+IEJvcmlz
-IGFja2VkIHRvbywgYnV0IGhlJ3Mgb24gdmFjYXRpb24uIEhlIHNhaWQgb24gaXJjIGhlJ2xsIHJl
-dmlldyB0aGUKPiBwYXRjaGVzIHdoZW4gaGUncyBiYWNrLiBNZWFud2hpbGUgSSBndWVzcyB5b3Ug
-Y2FuIHByZXAgYnkgZ2V0dGluZyB0aGUgZmQubwo+IGFjY291bnQgcmVxdWVzdGVkOgo+IAo+IGh0
-dHBzOi8vd3d3LmZyZWVkZXNrdG9wLm9yZy93aWtpL0FjY291bnRSZXF1ZXN0cy8KPiAKPiBBbmQg
-Y2hlY2tpbmcgb3V0IHRoZSB0b29saW5nIHdlIHVzZSB0byBtYWludGFpbiBkcm0tbWlzYzoKPiAK
-PiBodHRwczovL2RyaS5mcmVlZGVza3RvcC5vcmcvZG9jcy9kaW0vZ2V0dGluZy1zdGFydGVkLmh0
-bWwKCldpdGggZW5vdWdoIG9uIHRoZSBwbGF0ZSBhbHJlYWR5IEkgZGVjaWRlZCB0byBwb3N0cG9u
-ZSB0aGlzCnBhcnQgdW50aWwgdGhlIG1pZ3JhdGlvbiB0byBnaXRsYWIgaXMgZG9uZS4KSnVzdCB0
-byB0ZWxsIHRoaXMgd2FzIG5vdCBpZ25vcmVkLCBvbmx5IHBvc3Rwb25lZC4KCglTYW0KX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxp
-bmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+SGkgRGFuaWVsLgoKPiA+ID4gQmFzZWQgb24gdGhlIGFib3ZlLCB3b3VsZCBpdCBiZSBwb3NzaWJs
+ZSB0byB1dGlsaXNlIHNvbWUKPiA+ID4gb2YgdGhlc2UgZmVhdHVyZXMgd2l0aG91dCBhbnkgZGVk
+aWNhdGVkIHVzZXJzcGFjZSAobWVzYSkgc3VwcG9ydD8KPiA+ID4gQW55IG90aGVyIGRyaXZlciB0
+aGF0IGhhcyBzb21ldGhpbmcgc2ltaWxhciB0aGF0IGNhbiBiZSB1c2VkCj4gPiA+IGZvciBpbnNw
+aXJhdGlvbj8KPiA+IAo+ID4gVGhpcyBpcyByZWFsbHkgYW4gaW50ZXJlc3RpbmcgcXVlc3Rpb24g
+aW5kZWVkLgo+IAo+IE5lZWRzIHVzZXJzcGFjZSBsaWtlIGV2ZXJ5dGhpbmcgZWxzZS4gVGhlcmUn
+cyB1bmZvcnR1bmF0ZWx5IG5vIHJlYWwKPiBzdGFuZGFyZCBmb3IgMmQgYXBpcyBpbiB1c2Vyc3Bh
+Y2UsIHdoaWNoIG1lYW5zIG5vbmUgb2YgdGhlc2UgZWZmb3J0cyBnbwo+IHZlcnkgZmFyLiBNb3N0
+bHkgaXQncyBqdXN0IHNvbWUgY3VzdG9tLW1hZGUgWCBkcml2ZXJzLgo+IAo+IEFkZGluZyBhIGdl
+bmVyaWMgMmQgYXBpIHRvIGRybSBpcyBhIEZBUSwgYW5kIHRoZSBhbnN3ZXIgaXMgIm5vIi4KCkFu
+ZCB0aGVuIHlvdSB3ZW50IG9mZiB3cml0aW5nIGEgYmxvZyBwb3N0IGFib3V0IGl0IC0gdGhhbmtz
+LgpUaGUgYmxvZyBwb3N0IHByb3ZpZGVkIGEgbG90IG9mIHVzZWZ1bCBhbnN3ZXJzIC0gZ3JlYXQu
+CgooT3IgcmF0aGVyIHlvdSB3aWxsIHdyaXRlIHRoZSBibG9nIGluIDUgZGF5cywgc2VlbXMgdG8g
+YmUgc29tZSB0aW1lCiBtYWNoaW5lIGludm9sdmVkLiAoRGF0ZSBpcyB0aGUgMjd0aCBiZWxvdyB0
+aGUgdGl0bGUpKS4KCglTYW0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
+LWRldmVsCg==
