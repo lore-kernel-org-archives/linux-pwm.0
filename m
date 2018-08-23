@@ -1,186 +1,132 @@
-From: Lukasz Majewski <lukma@denx.de>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: pwm: imx: Allow switching PWM
- output between PWM and GPIO
-Date: Thu, 23 Aug 2018 14:36:00 +0200
-Message-ID: <20180823143600.3e417542@jawa>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: Re: [RFC PATCH 1/2] dt-bindings: pwm: imx: Allow switching PWM output
+ between PWM and GPIO
+Date: Thu, 23 Aug 2018 14:38:22 +0200
+Message-ID: <5a5c419a-b08f-f913-01ad-715e28164731@ysoft.com>
 References: <1534862333-27950-1-git-send-email-michal.vokac@ysoft.com>
-        <1534862333-27950-2-git-send-email-michal.vokac@ysoft.com>
-        <20180823123759.68b78e9f@jawa>
-        <0691e93d-c2e2-21e5-374f-c29e7765de93@ysoft.com>
+ <1534862333-27950-2-git-send-email-michal.vokac@ysoft.com>
+ <20180822081436.13d8f55b@ipc1.ka-ro>
+ <175003bc-eae7-1b30-ebfe-b56ffc58705e@ysoft.com>
+ <20180822131758.162d5351@ipc1.ka-ro>
+ <18b4a847-bc59-4450-331a-0b17f27c97a8@ysoft.com>
+ <20180822161036.4d69bdc1@ipc1.ka-ro>
+ <5b13d21c-f83f-49b0-eedd-9a4995dbd469@ysoft.com>
+ <20180823131816.741c09cc@ipc1.ka-ro>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/bSzWo+0iYXRf0ckL35a+C5W"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <0691e93d-c2e2-21e5-374f-c29e7765de93@ysoft.com>
+In-Reply-To: <20180823131816.741c09cc@ipc1.ka-ro>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal =?UTF-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@karo-electronics.de>
+To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@KARO-electronics.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
---Sig_/bSzWo+0iYXRf0ckL35a+C5W
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On 23.8.2018 13:18, Lothar Waßmann wrote:
+> Michal Vokáč <michal.vokac@ysoft.com> wrote:
+>> On 22.8.2018 16:10, Lothar Waßmann wrote:
+>>> My use case is attaching different displays to the same baseboard,
+>>> where some displays have the brightness control pin inverted with
+>>> respect to the others. It's easy to change the compatible string for
+>>> the simple-panel driver and the PWM polarity setting for the
+>>> pwm-backlight driver from U-Boot according to the display model, but
+>>> it's not so easy, to edit the pinctrl settings from pull-up to
+>>> pull-down or vice versa.
+>>
+>> OK, I got it. Though that is something different than having two clients,
+>> right?
+>>
+>> You do not actually need to change the pinctrl pull-up/down configuration
+>> in bootloader. You define the two pinctrl groups as I suggested in the
+>> example. Or more precisely, you add a new pinctrl group where the PWM
+>> output pad is configured as a GPIO with pull-up. You add this group to
+>> all your common device trees. This does no harm as the group is not used
+>> yet.
+>>
+>> In bootloader you detect the type of the panel. Normal PWM polarity? OK,
+>> do nothing and boot. Inverted PWM polarity? Set the pinctrl-names property
+>> to "default", "pwm". Set the pinctrl-0 property to point to the GPIO group
+>> and set pinctrl-1 property to point to the old PWM group.
+>>
+>> E.g. something like:
+>>
+>> => fdt set /soc/aips-bus@2000000/pwm@2080000 pinctrl-names default pwm
+>> => fdt get value gpio-phandle /soc/aips-bus@2000000/iomuxc@20e0000/pwm1grp-gpio phandle
+>> => fdt get value pwm-phandle /soc/aips-bus@2000000/iomuxc@20e0000/pwm1grp-pwm phandle
+>> => fdt set /soc/aips-bus@2000000/pwm@2080000 pinctrl-0 ${gpio-phandle}
+>> => fdt set /soc/aips-bus@2000000/pwm@2080000 pinctrl-1 ${pwm-phandle}
+>>
+>> Will this work for you?
+>>
+> This would probably work, but it's quite ugly.
+> I'd still prefer to set the pin output state to the desired level
+> rather than relying on the chip internal pullup/pulldown facility.
 
-Hi Michal,
+You mean like actively setting the pin HIGH or LOW using
+gpiod_set_value_cansleep()? I also used that in my very first prototype.
+But even for that you still need to define the second GPIO pinctrl group
+and select it before you can set the GPIO value. I think because this is
+all meant to be used only with inverted PWM output you naturally configure
+the GPIO with pull-up. So you do not need to actively drive the pin.
+Is your concern that the 22k pull-up may not be strong enough for any
+connected circuit? IMO the whole point of totally disabling the PWM is to
+save some power. So I will go with just the pull-up.
 
-> On 23.8.2018 12:40, Lukasz Majewski wrote:
->=20
-> Hi Lukasz, thanks for the reply!
-> > Hi Michal,
-> >  =20
-> >> Output of the PWM block of i.MX SoCs is always zero volts when the
-> >> block is disabled. This can caue issues when inverted PWM polarity
-> >> is needed. With inverted polarity a duty cycle =3D 0% corresponds to
-> >> solid high level on the output. If the PWM is dissabled its output
-> >> instantly goes to solid zero which corresponds to duty cycle =3D
-> >> 100%.
-> >>
-> >> To have a trully inverted PWM output configure the PWM pad as a
-> >> GPIO with pull-up. Then switch the pad to PWM output whenever
-> >> non-zero duty cycle is needed. =20
-> >=20
-> > Just to ask - Is your display equipped with power supply
-> > enable/disable pin? =20
->=20
-> No it is not. The backlight on my display is just a bunch of serial-
-> parallel connected LEDs with separate GND and VCC pins on a separate
-> flex cable. And the display itself also does not have a reset or
-> enable signal. It is a PITA=C2=A0to use it I must say..
+In your case you also need additional xxxx-gpios property that describes
+the GPIO. Actually here you have one more option to invert the logic as
+you can specify the GPIO as GPIO_ACTIVE_LOW or GPIO_ACTIVE_HIGH.
+For inverted PWM output you should use GPIO_ACIVE_LOW. In your case you
+will need to tweak that in the bootloader also.
 
-Yes, it seems so. I must have had more luck than you with the HW....
+The final DT fow inverted PWM for backlight will look like this:
 
->  =20
-> > As fair as I remember the trick to avoid flickering the display
-> > was to disable the display (enable-gpio property) and set the PWM
-> > PIN as GPIO to high in u-boot. =20
->=20
-> Yes, I know about that. I can not use this as the PWM output is the
-> only signal I have to control the backlight. I mentioned that
-> somewhere in the previous discussion with Lothar.
+         backlight {
+                 compatible = "pwm-backlight";
+                 pwms = <&pwm1 0 500000 PWM_POLARITY_INVERTED>;
+                 brightness-levels = <0 32 64 128 255>;
+                 default-brightness-level = <32>;
+                 num-interpolated-steps = <8>;
+                 power-supply = <&sw2_reg>;
+                 status = "okay";
+         };
 
-Yes, I've read it. I also find the PWM pinctrl as "default" state more
-natural.
+	&pwm1 {
+		#pwm-cells = <3>;
+		pinctrl-names = "default", "pwm";
+		pinctrl-0 = <&pinctrl_backlight_gpio>;
+		pinctrl-1 = <&pinctrl_backlight_pwm>;
+		pwm-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
+		status = "disabled";
+	};
 
-One more idea - though.
+	&iomuxc {
+		pinctrl_backlight_gpio: pwm1grp-gpio {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_9__GPIO1_IO09   0x8
+			>;
+		};
 
-In iMX6Q it was possible to specify the pinctrl PIN setup as 0x80000000
-- this means that it goes untouched to the IP block (configured by
-  bootloader).
+		pinctrl_backlight_pwm: pwm1grp-pwm {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_9__PWM1_OUT     0x8
+			>;
+		};
+	};
 
-Maybe it would work to:
+I think that for further effective discussion we need to wait for some
+comments from PWM maintainers.
 
-1. Setup the PWM output as GPIO in u-boot (high)
+The main questions still remain:
 
-2. In PWM IMX probe configure PWM to be 100% duty cycle. And switch
-iomux to PWM function of the pin
+- Is it acceptable to use pinctrl from the PWM driver in the first place?
+- If so, is it acceptable to allow to use the approach where GPIO is used
+   as the default state and we switch to "pwm" when needed? This produces
+   the cleanest inverted PWM signal.
+- If not, we will use the "gpio" state as the second optional one and use
+   it when clients disable PWM.
+- In both cases, can we rely on internal the pull-up facility or do we
+   need to actively drive the pin?
 
-3. Then latter in the code PWM gets configured and we can control it in
-"normal" way ?
-
-Or am I missing some important point?
-
->=20
-> I also think this could be useful not only for backlight. Any circuit
-> that requires truly inverted PWM signal can use it. I see it as an
-> enhancement to what you with Lothar have already done ;)
->  =20
-> >>
-> >> Signed-off-by: Michal Vok=C3=A1=C4=8D <michal.vokac@ysoft.com>
-> >> ---
-> >>   Documentation/devicetree/bindings/pwm/imx-pwm.txt | 44
-> >> +++++++++++++++++++++++ 1 file changed, 44 insertions(+)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-> >> b/Documentation/devicetree/bindings/pwm/imx-pwm.txt index
-> >> c61bdf8..3b1bc4c 100644 ---
-> >> a/Documentation/devicetree/bindings/pwm/imx-pwm.txt +++
-> >> b/Documentation/devicetree/bindings/pwm/imx-pwm.txt @@ -14,6 +14,12
-> >> @@ See the clock consumer binding,
-> >> Documentation/devicetree/bindings/clock/clock-bindings.txt
-> >>   - interrupts: The interrupt for the pwm controller
-> >>  =20
-> >> +Optional properties:
-> >> +- pinctrl: For i.MX27 and newer SoCs. Add extra pinctrl to
-> >> configure the PWM
-> >> +  pin to gpio function.  It allows control over the pin output
-> >> level when the
-> >> +  PWM block is disabled. This is meant to be used if inverted
-> >> polarity of the
-> >> +  PWM signal is required. See "Inverted PWM output" section
-> >> bellow. +
-> >>   Example:
-> >>  =20
-> >>   pwm1: pwm@53fb4000 {
-> >> @@ -25,3 +31,41 @@ pwm1: pwm@53fb4000 {
-> >>   	clock-names =3D "ipg", "per";
-> >>   	interrupts =3D <61>;
-> >>   };
-> >> +
-> >> +Inverted PWM output
-> >> +-------------------
-> >> +
-> >> +The i.MX SoC has such limitation that whenever a pad is configured
-> >> as a PWM +output, the output level is always zero volts when the
-> >> PWM block is disabled. +The zero output level is actively driven
-> >> by the output stage of the PWM block +and can not be overridden by
-> >> pull-up. It also does not matter what PWM polarity +a PWM client
-> >> (e.g. backlight) requested. +
-> >> +To gain control of the PWM output level in disabled state two
-> >> pinctrl states +can be used. The "default" state and the "pwm"
-> >> state. In the default state the +PWM output is configured as a
-> >> GPIO with pull-up. In the "pwm" state the output +is configured as
-> >> a PWM output. This setup assures that the PWM output is at +the
-> >> required level that corresponds to duty cycle =3D 0 when PWM is
-> >> disabled. +E.g. at boot. +
-> >> +Example:
-> >> +
-> >> +&pwm1 {
-> >> +	pinctrl-names =3D "default", "pwm";
-> >> +	pinctrl-0 =3D <&pinctrl_backlight_gpio>;
-> >> +	pinctrl-1 =3D <&pinctrl_backlight_pwm>;
-> >> +}
-> >> +
-> >> +pinctrl_backlight_gpio: pwm1grp-gpio {
-> >> +	fsl,pins =3D <
-> >> +		/* GPIO with 22kOhm pull-up */
-> >> +		MX6QDL_PAD_GPIO_9__GPIO1_IO09	0xF008
-> >> +	>;
-> >> +};
-> >> +
-> >> +pinctrl_backlight_pwm: pwm1grp-pwm {
-> >> +	fsl,pins =3D <
-> >> +		/* PWM output */
-> >> +		MX6QDL_PAD_GPIO_9__PWM1_OUT	0x8
-> >> +	>;
-> >> +}; =20
-
-
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-
---Sig_/bSzWo+0iYXRf0ckL35a+C5W
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAlt+qjAACgkQAR8vZIA0
-zr2jVgf/cT9BMXZrWumniSwKM1BMNZQUsUM5wnxP8jaTMvl0JRS74z7CRbTe3j5J
-FexaDCLnIf6eE62XjGikn/j3pjMJ43/G7n6sTn/6B2JU1FDVrL+pfXseSLNXuRt3
-STW+nAU45T9OO4Q/yM7MY8IziOY7leS+FWdXeP4LN9aoWFAEC08YRKbUrGisiLzt
-CbJpZ9qGZaMk6rSEjOR792kkmlIqKahpSVqe39VqYJv9/lDkDV2PPc3U5Pi8xR0p
-0CSDKBeZnk9opqJC42vqAO6nc9V1xZWxOUGlGK62rZjdwyFHI6gKqJNxGAOLwqlz
-MDADTr1fgZjQTSnmr73SpoeCdylmyg==
-=TSWt
------END PGP SIGNATURE-----
-
---Sig_/bSzWo+0iYXRf0ckL35a+C5W--
+Thank you for your time!
+Michal
