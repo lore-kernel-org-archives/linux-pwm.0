@@ -1,115 +1,78 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH] backlight: pwm_bl: Fix brightness levels for non-DT case.
-Date: Fri, 24 Aug 2018 17:54:02 +0200
-Message-ID: <20180824155402.2822-1-enric.balletbo@collabora.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, robert.jarzmik@free.fr, daniel.thompson@linaro.org, lee.jones@linaro.org
-Cc: kernel@collabora.com, heiko@sntech.de, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>
+From: Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v1 2/7] dt-binding: add bindings for Atmel LCDC mfd
+Date: Fri, 24 Aug 2018 17:58:24 +0200
+Message-ID: <20180824155824.GC26678@ravnborg.org>
+References: <20180812184152.GA22343@ravnborg.org>
+ <20180812184629.3808-2-sam@ravnborg.org>
+ <20180824104517.29f24f44@bbrezillon>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180824104517.29f24f44@bbrezillon>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Boris Brezillon <boris.brezillon@bootlin.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Commit '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
-linearly to human eye")' allows the possibility to compute a default
-brightness table when there isn't the brightness-levels property in the
-DT. Unfortunately the changes made broke the pwm backlight for the
-non-DT boards.
-
-Usually, the non-DT boards don't pass the brightness levels via platform
-data, instead, they set the max_brightness in their platform data and the
-driver calculates the level without a table. The ofending patch assumed
-that when there is no brightness levels table we should create one, but this
-is clearly wrong for the non-DT case.
-
-After this patch the code handles the DT and the non-DT case taking in
-consideration also if max_brightness is set or not. The default table is
-only created when neither, brightness-levels and max_brightness, are
-set.
-
-The patch also fixes another issue found by Robert. Before this patch
-looks like a division by 0 was possible when state.period returned 0 by
-pwm_get_state(). This is because pwm_get_state() was called before
-pwm_apply_args() so state.period was not initialized. The patch moves
-the pwm_apply_args() call before any call to pwm_get_state().
-
-Fixes: '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")'
-Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
-
- drivers/video/backlight/pwm_bl.c | 50 ++++++++++++++++++++++++--------
- 1 file changed, 38 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index bdfcc0a71db1..19770f7bffe4 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -539,7 +539,33 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
- 
--	if (!data->levels) {
-+	/*
-+	 * FIXME: pwm_apply_args() should be removed when switching to
-+	 * the atomic PWM API.
-+	 */
-+	pwm_apply_args(pb->pwm);
-+
-+	if (data->levels) {
-+		/*
-+		 * For the DT case, only when brightness levels is defined
-+		 * data->levels is filled. For the non-DT case, data->levels
-+		 * can come from platform data, however is not usual.
-+		 */
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > pb->scale)
-+				pb->scale = data->levels[i];
-+
-+			pb->levels = data->levels;
-+		}
-+	} else if (!data->max_brightness) {
-+		/*
-+		 * If no brightness levels are provided and max_brightness is
-+		 * not set, use the default brightness table. For the DT case,
-+		 * max_brightness is set to 0 when brightness levels is not
-+		 * specified. For the non-DT case, max_brightness is usually
-+		 * set to some value.
-+		 */
-+
- 		/* Get the PWM period (in nanoseconds) */
- 		pwm_get_state(pb->pwm, &state);
- 
-@@ -550,21 +576,21 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 				"failed to setup default brightness table\n");
- 			goto err_alloc;
- 		}
--	}
- 
--	for (i = 0; i <= data->max_brightness; i++) {
--		if (data->levels[i] > pb->scale)
--			pb->scale = data->levels[i];
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > pb->scale)
-+				pb->scale = data->levels[i];
- 
--		pb->levels = data->levels;
-+			pb->levels = data->levels;
-+		}
-+	} else {
-+		/*
-+		 * That only happens for the non-DT case, where platform data
-+		 * sets the max_brightness value.
-+		 */
-+		pb->scale = data->max_brightness;
- 	}
- 
--	/*
--	 * FIXME: pwm_apply_args() should be removed when switching to
--	 * the atomic PWM API.
--	 */
--	pwm_apply_args(pb->pwm);
--
- 	/*
- 	 * The DT case will set the pwm_period_ns field to 0 and store the
- 	 * period, parsed from the DT, in the PWM device. For the non-DT case,
--- 
-2.18.0
+SGkgQm9yaXMuCgo+ID4gK1RoZSBMQ0RDIElQIGV4cG9zZXMgdHdvIHN1YmRldmljZXM6Cj4gPiAr
+IC0gYSBQV00gY2hpcDogc2VlIC4uL3B3bS9hdG1lbC1sY2RjLXB3bS50eHQKPiA+ICsgLSBhIERp
+c3BsYXkgQ29udHJvbGxlcjogc2VlIC4uL2Rpc3BsYXkvYXRtZWwvbGNkYy1kaXNwbGF5LWNvbnRy
+b2xsZXIudHh0Cj4gPiArCj4gPiArRXhhbXBsZToKPiA+ICsJbGNkYzA6IGxjZGNANzAwMDAwIHsK
+PiA+ICsJCWNvbXBhdGlibGUgPSAiYXRtZWwsYXQ5MXNhbTkyNjMtbGNkYy1tZmQiOwo+ID4gKwkJ
+cmVnID0gPDB4NzAwMDAwIDB4MTAwMD47Cj4gPiArCQlpbnRlcnJ1cHRzID0gPDI2IElSUV9UWVBF
+X0xFVkVMX0hJR0ggMz47Cj4gPiArCQljbG9ja3MgPSA8JmxjZF9jbGs+LCA8JmxjZF9jbGs+Owo+
+ID4gKwkJY2xvY2stbmFtZXMgPSAibGNkY19jbGsiLCAiaGNsayI7Cj4gPiArCj4gPiArCQlsY2Rj
+LWRpc3BsYXktY29udHJvbGxlciB7Cj4gPiArCQkJY29tcGF0aWJsZSA9ICJhdG1lbCxsY2RjLWRp
+c3BsYXktY29udHJvbGxlciI7Cj4gPiArCQkJbGNkLXN1cHBseSA9IDwmbGNkY19yZWc+Owo+ID4g
+KwkJCSNhZGRyZXNzLWNlbGxzID0gPDE+Owo+ID4gKwkJCSNzaXplLWNlbGxzID0gPDA+Owo+ID4g
+Kwo+ID4gKwkJCXBvcnRAMCB7Cj4gPiArCQkJCXJlZyA9IDwwPjsKPiA+ICsJCQkJI2FkZHJlc3Mt
+Y2VsbHMgPSA8MT47Cj4gPiArCQkJCSNzaXplLWNlbGxzID0gPDA+Owo+ID4gKwkJCQlsY2RjX3Bh
+bmVsX291dHB1dDogZW5kcG9pbnRAMCB7Cj4gPiArCQkJCQlyZWcgPSA8MD47Cj4gPiArCQkJCQly
+ZW1vdGUtZW5kcG9pbnQgPSA8JnBhbmVsX2lucHV0PjsKPiA+ICsJCQkJfTsKPiA+ICsJCQl9Owo+
+ID4gKwkJfTsKPiA+ICsKPiA+ICsJCWxjZGNfcHdtOiBsY2RjLXB3bSB7Cj4gPiArCQkJY29tcGF0
+aWJsZSA9ICJhdG1lbCxsY2RjLXB3bSI7Cj4gPiArCQkJcGluY3RybC1uYW1lcyA9ICJkZWZhdWx0
+IjsKPiA+ICsJCQlwaW5jdHJsLTAgPSA8JnBpbmN0cmxfbGNkY19wd20+Owo+ID4gKwkJCSNwd20t
+Y2VsbHMgPSA8Mz47Cj4gPiArCQl9Owo+ID4gKwo+ID4gKwl9Owo+IAo+IEFsc28sIEkgZG9uJ3Qg
+cmVtZW1iZXIgd2h5IEkgZGVjaWRlZCB0byBkZWNsYXJlIGRpc3RpbmN0IG5vZGVzIGZvciB0aGUK
+PiBQV00gYW5kIGRpc3BsYXkgY29udHJvbGxlciwgYnV0IHlvdSBzaG91bGQgcHJvYmFibHkgdHJ5
+IHRvIG9ubHkgZGVjbGFyZQo+IHRoZSBsY2RjIG5vZGUuIFNvbWV0aGluZyBsaWtlIHRoYXQ6Cj4g
+Cj4gCWxjZGMwOiBsY2RjQDcwMDAwMCB7Cj4gCQljb21wYXRpYmxlID0gImF0bWVsLGF0OTFzYW05
+MjYzLWxjZGMiOwo+IAkJcmVnID0gPDB4NzAwMDAwIDB4MTAwMD47Cj4gCQlpbnRlcnJ1cHRzID0g
+PDI2IElSUV9UWVBFX0xFVkVMX0hJR0ggMz47Cj4gCQljbG9ja3MgPSA8JmxjZF9jbGs+LCA8Jmxj
+ZF9jbGs+Owo+IAkJY2xvY2stbmFtZXMgPSAibGNkY19jbGsiLCAiaGNsayI7Cj4gCQlwaW5jdHJs
+LW5hbWVzID0gImRlZmF1bHQiOwo+IAkJcGluY3RybC0wID0gPCZwaW5jdHJsX2xjZGNfcHdtIC4u
+Lj47Cj4gCQkjcHdtLWNlbGxzID0gPDM+Owo+IAkJI2FkZHJlc3MtY2VsbHMgPSA8MT47Cj4gCQkj
+c2l6ZS1jZWxscyA9IDwwPjsKPiAKPiAJCXBvcnRAMCB7Cj4gCQkJcmVnID0gPDA+Owo+IAkJCSNh
+ZGRyZXNzLWNlbGxzID0gPDE+Owo+IAkJCSNzaXplLWNlbGxzID0gPDA+Owo+IAkJCWxjZGNfcGFu
+ZWxfb3V0cHV0OiBlbmRwb2ludEAwIHsKPiAJCQkJcmVnID0gPDA+Owo+IAkJCQlyZW1vdGUtZW5k
+cG9pbnQgPSA8JnBhbmVsX2lucHV0PjsKPiAJCQl9Owo+IAkJfTsKPiAJfTsKPiAKPiBOb3RlIHRo
+YXQgdGhpcyByZXByZXNlbnRhdGlvbiBkb2VzIG5vdCBwcmV2ZW50IHVzIGZyb20gaGF2aW5nIGFu
+IE1GRAo+IHdoaWNoIGRlY2xhcmVzIHRoZSBQV00gYW5kIERpc3BsYXkgRW5naW5lLCBpdCdzIGp1
+c3QgdGhhdCBhbGwgZGV2cyB3aWxsCj4gcG9pbnQgdG8gdGhlIHNhbWUgb2Zfbm9kZS4KCkkgaGF2
+ZSBzb21ldGhpbmcgc2ltaWxhciBpbiBteSB0cmVlIG5vdywganVzdCBuZWVkIHRvIGZpZ3VyZSBv
+dXQgdGhlIG1mZCBwYXJ0cy4KCj4gCj4gPiArCj4gPiArCQlsY2RjLWRpc3BsYXktY29udHJvbGxl
+ciB7Cj4gPiArCQkJY29tcGF0aWJsZSA9ICJhdG1lbCxsY2RjLWRpc3BsYXktY29udHJvbGxlciI7
+Cj4gPiArCQkJbGNkLXN1cHBseSA9IDwmbGNkY19yZWc+Owo+IAo+IEhtLCBpcyB0aGlzIGEgcmVn
+dWxhdG9yIGZvciB0aGUgTENEIGNvbnRyb2xsZXIgb3IgdGhlIExDRD8gSWYgaXQncyBmb3IKPiB0
+aGUgTENEIGl0IHNob3VsZCBiZSBwbGFjZWQgdW5kZXIgdGhlIHBhbmVsIG5vZGUuCkl0IHdhcyBh
+ZGRlZCBvbmx5IGJlY2F1c2UgSSBjb3VsZCBkbyBpdCBhbmQgSSB3YXMgKGFuZCBjb250aW51ZSB0
+byBiZSkgYQpEVCBuZXdiaWUuICBXaWxsIGRyb3AgaXQgaW4gdjIgYXMgdGhpcyBpcyBqdXN0IGFu
+IGV4YW1wbGUgd2hpY2ggdGhpcyBwYXJ0IGRvCm5vdCBhZGQgYW55IHZhbHVlIHRvLgoKPiA+ICsJ
+cGFuZWw6IHBhbmVsIHsKPiA+ICsJCWNvbXBhdGlibGUgPSAibG9naWN0ZWNobm9sb2dpZXMsbHR0
+ZDgwMDQ4MDA3MC1sMnJ0IiwgInNpbXBsZS1wYW5lbCI7ClJlbWluZHMgbWUgdGhhdCBJIG5lZWQg
+dG8gZGlnIG91dCBhIHBhbmVsLXNpbXBsZSBwYXRjaCBmb3IgYSBmZXcKZGlzcGxheXMgSSB1c2Ug
+KGxvZ2ljICsgc2Vpa28pLgpCdXQgdGhleSBhcmUgb3RoZXJ3aXNlIG5vdCByZWxhdGVkIHRvIHRo
+aXMgd29yay4KCglTYW0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRl
+dmVsCg==
