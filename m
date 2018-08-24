@@ -1,67 +1,115 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [RFC PATCH 0/7] add at91sam9 LCDC DRM driver
-Date: Fri, 24 Aug 2018 17:52:46 +0200
-Message-ID: <20180824155246.GB26678@ravnborg.org>
-References: <20180812184152.GA22343@ravnborg.org>
- <20180824102233.73852596@bbrezillon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20180824102233.73852596@bbrezillon>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris Brezillon <boris.brezillon@bootlin.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: [PATCH] backlight: pwm_bl: Fix brightness levels for non-DT case.
+Date: Fri, 24 Aug 2018 17:54:02 +0200
+Message-ID: <20180824155402.2822-1-enric.balletbo@collabora.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, robert.jarzmik@free.fr, daniel.thompson@linaro.org, lee.jones@linaro.org
+Cc: kernel@collabora.com, heiko@sntech.de, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgQm9yaXMuCgo+ID4gCj4gPiBCb3RoIGRldmljZXMgYXJlIHN1cHBvcnRlZCB0b2RheSBieSB0
-aGUgYXRtZWxfbGNkZmIgZHJpdmVyLgo+ID4gRm9yIHRoaXMgbmV3IHNldCBvZiBkcml2ZXJzIHRo
-ZSBjb21wYXRpYmxlIHN0cmluZ3Mgd2FzCj4gPiBzZWxlY3RlZCB0byBhdm9pZCBjbGFzaCB3aXRo
-IHRoZSBleGlzdGluZyBjb21wYXRpYmxlCj4gPiBzdHJpbmdzIHVzZWQgZm9yIHRoZSBhdG1lbF9s
-Y2RmYiBkcml2ZXIgdG8gYWxsb3cgdGhlbQo+ID4gdG8gY28tZXhpc3QuCj4gCj4gSG0sIEkgdGhp
-bmsgUm9iIGNvbW1lbnRlZCBvbiB0aGF0IGFscmVhZHksIGJ1dCB3ZSB1c3VhbGx5IHRyeSB0byBz
-dGF5Cj4gY29tcGF0aWJsZSB3aXRoIHRoZSBleGlzaXRpbmcvb2xkIGJpbmRpbmdzIHdoZW4gaW50
-cm9kdWNpbmcgYSBuZXcgb25lLgo+IERvbid0IGtub3cgaG93IGZlYXNpYmxlIHRoaXMgaXMgaW4g
-dGhpcyBwYXJ0aWN1bGFyIGNhc2UgdGhvdWdoLgpJIHYyIEkgYW0gd29ya2luZyB3aXRoIGEgYmFj
-a3dhcmQgY29tcGF0aWJsZQphcHByb2FjaC4gVGhpcyBpcyBiZXR0ZXIgdGhhdCB3aGF0IEkgY2Ft
-IHVwIHdpdGggaW5pdGlhbGx5LgoKPiA+IFRoZSBEUk0gaW1wbGVtZW50YXRpb24gaGFzIGEgZmV3
-IHNob3J0Y29taW5ncyBjb21wYXJlZCB0byB0aGUKPiA+IGV4aXN0aW5nIGZiZGV2IGJhc2VkIGRy
-aXZlcjoKPiA+ICAgICAtIFNUTiBkaXNwbGF5cyBhcmUgbm90IHN1cHBvcnRlZAo+ID4gICAgICAg
-ICAgICAgQmluZGluZyBzdXBwb3J0IGlzIG1pc3NpbmcgYnV0IG1vc3Qgb2YgdGhlCj4gPiAgICAg
-ICAgICAgICBTVE4gc3BlY2lmaWMgZnVuY3Rpb25hbGl0eSBpcyBvdGhlcndpc2UgcG9ydGVkCj4g
-PiAgICAgICAgICAgICBmcm9tIHRoZSBmYmRldiBkcml2ZXIuCj4gPiAgICAgICAgICAgICBJIGFz
-c3VtZSB0aGUgaW5mbyBzaG91bGQgY29tZSBmcm9tIHRoZSBwYW5lbAo+ID4gICAgICAgICAgICAg
-YnV0IGFzIEkgbGFjayBIVyBJIGhhdmUgbm90IGxvb2tlZCB0b28gbXVjaAo+ID4gICAgICAgICAg
-ICAgaW50byB3aGF0IGlzIHJlcXVpcmVkLgo+ID4gICAgIC0gZ2FtbWEgc3VwcG9ydCBpcyBtaXNz
-aW5nCj4gPiAgICAgICAgICAgICBUaGUgZHJpdmVyIHV0aWxpc2VzIGRybV9zaW1wbGVfa21zX2hl
-bHBlciBhbmQKPiA+ICAgICAgICAgICAgIHRoaXMgaGVscGVyIGxhY2tzIHN1cHBvcnQgZm9yIHNl
-dHRpbmcgdXAgZ2FtbWEuCj4gPiAgICAgICAgICAgICBJZiB0aGlzIGlzIHVzZWZ1bCBwbGVhc2Ug
-bGV0IG1lIGtub3cgYW5kIEkKPiA+ICAgICAgICAgICAgIHdpbGwgZXh0ZW5kIGRybV9zaW1wbGVf
-a21zX2hlbHBlciB0byBzdXBwb3J0IHRoaXMKPiA+ICAgICAgICAgICAgIGFuZCB1cGRhdGUgdGhl
-IGRyaXZlci4KPiAKPiBJIGd1ZXNzIHlvdSBjYW4gc2tpcCB0aGF0IGZvciBub3cuCkFsc28gYmFz
-ZWQgb24gZmVlZGJhY2sgZnJvbSBOaWNob2xhcyB0aGUgU1ROIHBhcnRzIHdpbGwgYmUgZHJvcHBl
-ZCBpbiB2Mi4KRm9yIHRoZSBnYW1tYSBzdHVmZiB0aGlzIGxvb2tzIGZlYXNpYmxlIHdpdGggYSBz
-bWFsbCBleHRlbnNpb24KdG8gZHJtX3NpbXBsZV9rbXNfaGVscGVyIC0gYnV0IEkgZHVubm8gaWYg
-dGhpcyBpcyBzb21ldGhpbmcgdGhhdAp1c2Vyc3BhY2Ugd2lsbCBhY3R1YWxseSB1c2UuClNvIHRo
-YXQgd2lsbCB3YWl0IHVudGlsIHRoZXJlIGlzIHNvbWUgZ29vZCByZWFzb24gdG8gaW1wbGVtZW50
-IGl0LAphbmQgSSBrbm93IGhvdyB0byB0ZXN0IGl0IHRvby4KCj4gCj4gPiAgICAgLSBtb2Rlc2V0
-dGluZyBpcyBub3QgY2hlY2tlZCAoc2VlIFRPRE8gaW4gZmlsZSkKPiA+ICAgICAgICAgICAgIElz
-IHRoaXMgcmVxdWlyZWQgZm9yIHN1Y2ggYSBzaW1wbGUgc2V0dXA/Cj4gCj4gV2VsbCwgdGhhdCdz
-IGFsd2F5cyBiZXR0ZXIgaWYgeW91IGNhbiBjaGVjayB0aGF0IHRoZSByZXF1ZXN0ZWQgZGlzcGxh
-eQo+IG1vZGUgaXMgc3VwcG9ydGVkIGJlZm9yZSB0cnlpbmcgdG8gYXBwbHkgaXQuCkkgd2lsbCB0
-cnkgdG8gY29vayB1cCBzb21ldGhpbmcsIGhhdmUgbGVhcm5lZCBhIGxpdHRsZSBzaW5jZSBwb3N0
-aW5nIHYxLgoKPiAKPiA+ICAgICAtIHN1cHBvcnQgZm9yIGV4dHJhIG1vZGVzIGFzIGFwcGxpY2Fi
-bGUgKGFuZCBsY2Qtd2lyaW5nLW1vZGUpCj4gCj4gUGV0ZXIgYWxyZWFkeSBzdWdnZXN0ZWQgc29t
-ZXRoaW5nIEkgdGhpbmsuClllcCwgcGxlbnR5IG9mIGxpbmtzIHRvIHJlYWQuCgoJU2FtCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWls
-aW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZy
-ZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Commit '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
+linearly to human eye")' allows the possibility to compute a default
+brightness table when there isn't the brightness-levels property in the
+DT. Unfortunately the changes made broke the pwm backlight for the
+non-DT boards.
+
+Usually, the non-DT boards don't pass the brightness levels via platform
+data, instead, they set the max_brightness in their platform data and the
+driver calculates the level without a table. The ofending patch assumed
+that when there is no brightness levels table we should create one, but this
+is clearly wrong for the non-DT case.
+
+After this patch the code handles the DT and the non-DT case taking in
+consideration also if max_brightness is set or not. The default table is
+only created when neither, brightness-levels and max_brightness, are
+set.
+
+The patch also fixes another issue found by Robert. Before this patch
+looks like a division by 0 was possible when state.period returned 0 by
+pwm_get_state(). This is because pwm_get_state() was called before
+pwm_apply_args() so state.period was not initialized. The patch moves
+the pwm_apply_args() call before any call to pwm_get_state().
+
+Fixes: '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")'
+Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
+
+ drivers/video/backlight/pwm_bl.c | 50 ++++++++++++++++++++++++--------
+ 1 file changed, 38 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index bdfcc0a71db1..19770f7bffe4 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -539,7 +539,33 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 
+ 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
+ 
+-	if (!data->levels) {
++	/*
++	 * FIXME: pwm_apply_args() should be removed when switching to
++	 * the atomic PWM API.
++	 */
++	pwm_apply_args(pb->pwm);
++
++	if (data->levels) {
++		/*
++		 * For the DT case, only when brightness levels is defined
++		 * data->levels is filled. For the non-DT case, data->levels
++		 * can come from platform data, however is not usual.
++		 */
++		for (i = 0; i <= data->max_brightness; i++) {
++			if (data->levels[i] > pb->scale)
++				pb->scale = data->levels[i];
++
++			pb->levels = data->levels;
++		}
++	} else if (!data->max_brightness) {
++		/*
++		 * If no brightness levels are provided and max_brightness is
++		 * not set, use the default brightness table. For the DT case,
++		 * max_brightness is set to 0 when brightness levels is not
++		 * specified. For the non-DT case, max_brightness is usually
++		 * set to some value.
++		 */
++
+ 		/* Get the PWM period (in nanoseconds) */
+ 		pwm_get_state(pb->pwm, &state);
+ 
+@@ -550,21 +576,21 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 				"failed to setup default brightness table\n");
+ 			goto err_alloc;
+ 		}
+-	}
+ 
+-	for (i = 0; i <= data->max_brightness; i++) {
+-		if (data->levels[i] > pb->scale)
+-			pb->scale = data->levels[i];
++		for (i = 0; i <= data->max_brightness; i++) {
++			if (data->levels[i] > pb->scale)
++				pb->scale = data->levels[i];
+ 
+-		pb->levels = data->levels;
++			pb->levels = data->levels;
++		}
++	} else {
++		/*
++		 * That only happens for the non-DT case, where platform data
++		 * sets the max_brightness value.
++		 */
++		pb->scale = data->max_brightness;
+ 	}
+ 
+-	/*
+-	 * FIXME: pwm_apply_args() should be removed when switching to
+-	 * the atomic PWM API.
+-	 */
+-	pwm_apply_args(pb->pwm);
+-
+ 	/*
+ 	 * The DT case will set the pwm_period_ns field to 0 and store the
+ 	 * period, parsed from the DT, in the PWM device. For the non-DT case,
+-- 
+2.18.0
