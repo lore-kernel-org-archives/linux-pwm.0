@@ -1,79 +1,181 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v1 7/7] drm: add Atmel LCDC display controller support
-Date: Sun, 26 Aug 2018 20:41:21 +0200
-Message-ID: <20180826184121.GA24867@ravnborg.org>
-References: <20180812184152.GA22343@ravnborg.org>
- <20180812184629.3808-7-sam@ravnborg.org>
- <20180824143125.4e99e791@bbrezillon>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [RESEND PATCH v5 0/9] extend PWM framework to support PWM modes
+Date: Tue, 28 Aug 2018 16:01:17 +0300
+Message-ID: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20180824143125.4e99e791@bbrezillon>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris Brezillon <boris.brezillon@bootlin.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-pwm@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com, shc_work@mail.ru, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Claudiu Beznea <claudiu.beznea@microchip.com>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgQm9yaXMuCgpWZXJ5IHVzZWZ1bGwgZmVlZGJhY2shCkkgYW0gd29ya2luZyBvbiB2MiwgYW5k
-IGhhdmUgYWRkcmVzc2VkIHlvdXIgcmV2aWV3IGl0ZW1zLgpKdXN0IGEgZmV3IGNvbW1lbnRzIGJl
-bG93IHRvIGEgZmV3IGl0ZW1zLgpUaGUgcmVzdCBpcyBwcm9jZXNzZWQvZG9uZS4KCkkgaG9wZSB0
-byBwb3N0IHYyIGluIHRoZSB3ZWVrIHRvIGNvbWUuCgo+ID4gK3N0YXRpYyBpbnQgbGNkY19kY19s
-b2FkKHN0cnVjdCBkcm1fZGV2aWNlICpkcm0pCj4gPiArewo+ID4gKwljb25zdCBzdHJ1Y3Qgb2Zf
-ZGV2aWNlX2lkICptYXRjaDsKPiA+ICsJc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldjsKPiA+
-ICsJc3RydWN0IGxjZGNfZGMgKmxjZGNfZGM7Cj4gPiArCXN0cnVjdCBkZXZpY2UgKmRldjsKPiA+
-ICsJaW50IHJldDsKPiA+ICsKPiA+ICsJZGV2ID0gZHJtLT5kZXY7Cj4gPiArCXBkZXYgPSB0b19w
-bGF0Zm9ybV9kZXZpY2UoZGV2KTsKPiA+ICsKPiA+ICsJbWF0Y2ggPSBvZl9tYXRjaF9ub2RlKGF0
-bWVsX2xjZGNfb2ZfbWF0Y2gsIGRldi0+cGFyZW50LT5vZl9ub2RlKTsKPiA+ICsJaWYgKCFtYXRj
-aCkgewo+ID4gKwkJRFJNX0RFVl9FUlJPUihkZXYsICJpbnZhbGlkIGNvbXBhdGlibGUgc3RyaW5n
-IChub2RlPSVzKSIsCj4gPiArCQkJICAgICAgZGV2LT5wYXJlbnQtPm9mX25vZGUtPm5hbWUpOwo+
-ID4gKwkJcmV0dXJuIC1FTk9ERVY7Cj4gPiArCX0KPiA+ICsKPiA+ICsJaWYgKCFtYXRjaC0+ZGF0
-YSkgewo+ID4gKwkJRFJNX0RFVl9FUlJPUihkZXYsICJpbnZhbGlkIGxjZGNfZGMgZGVzY3JpcHRp
-b25cbiIpOwo+ID4gKwkJcmV0dXJuIC1FSU5WQUw7Cj4gPiArCX0KPiA+ICsKPiA+ICsJbGNkY19k
-YyA9IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigqbGNkY19kYyksIEdGUF9LRVJORUwpOwo+ID4g
-KwlpZiAoIWxjZGNfZGMpIHsKPiA+ICsJCURSTV9ERVZfRVJST1IoZGV2LCAiRmFpbGVkIHRvIGFs
-bG9jYXRlIGxjZGNfZGNcbiIpOwo+ID4gKwkJcmV0dXJuIC1FTk9NRU07Cj4gPiArCX0KPiA+ICsK
-PiA+ICsJLyogcmVzZXQgb2YgbGNkYyBtaWdodCBzbGVlcCBhbmQgcmVxdWlyZSBhIHByZWVtcHRp
-YmxlIHRhc2sgY29udGV4dCAqLwo+ID4gKwlJTklUX1dPUksoJmxjZGNfZGMtPnJlc2V0X2xjZGNf
-d29yaywgcmVzZXRfbGNkY193b3JrKTsKPiA+ICsKPiA+ICsJcGxhdGZvcm1fc2V0X2RydmRhdGEo
-cGRldiwgZHJtKTsKPiA+ICsJZGV2X3NldF9kcnZkYXRhKGRldiwgbGNkY19kYyk7Cj4gPiArCj4g
-PiArCWxjZGNfZGMtPm1mZF9sY2RjID0gZGV2X2dldF9kcnZkYXRhKGRldi0+cGFyZW50KTsKPiA+
-ICsJZHJtLT5kZXZfcHJpdmF0ZSA9IGxjZGNfZGM7Cj4gPiArCj4gPiArCWxjZGNfZGMtPnJlZ21h
-cCA9IGxjZGNfZGMtPm1mZF9sY2RjLT5yZWdtYXA7Cj4gPiArCWxjZGNfZGMtPmRlc2MgPSBtYXRj
-aC0+ZGF0YTsKPiA+ICsJbGNkY19kYy0+ZGV2ID0gZGV2Owo+ID4gKwo+ID4gKwlsY2RjX2RjLT5s
-Y2Rfc3VwcGx5ID0gZGV2bV9yZWd1bGF0b3JfZ2V0KGRldiwgImxjZCIpOwo+ID4gKwlpZiAoSVNf
-RVJSKGxjZGNfZGMtPmxjZF9zdXBwbHkpKSB7Cj4gPiArCQlEUk1fREVWX0VSUk9SKGRldiwgIkZh
-aWxlZCB0byBnZXQgbGNkLXN1cHBseSAoJWxkKVxuIiwKPiA+ICsJCQkgICAgICBQVFJfRVJSKGxj
-ZGNfZGMtPmxjZF9zdXBwbHkpKTsKPiA+ICsJCWxjZGNfZGMtPmxjZF9zdXBwbHkgPSBOVUxMOwo+
-ID4gKwl9Cj4gPiArCj4gPiArCWxjZGNfZGNfc3RhcnRfY2xvY2sobGNkY19kYyk7Cj4gCj4gSG0s
-IGRvIHlvdSByZWFsbHkgbmVlZCB0byBjYWxsIHRoYXQgaGVyZT8gSSdkIG1ha2UgaXQgcGFydCBv
-ZiB0aGUKPiBydW50aW1lIFBNIHJlc3VtZSBob29rLCBhbmQgcHV0IGEgbGNkY19kY19zdG9wX2Ns
-b2NrKCkgaW4gdGhlIHN1c3BlbmQKPiBob29rLgoKQXMgc3VnZ2VzdGVkIEkgaGF2ZSBpbnRyb2R1
-Y2VkIHN1c3BlbmQvcmVzdW1lIGhvb2tzIGFuZCBoYXZlIGluY2x1ZGVkCnN0YXJ0L3N0b3AgY2xv
-Y2sgY2FsbHMuCgpCdXQgYXMgdGhlIHN1c3BlbmQvcmVzdW1lIGhvb2tzIGRlcGVuZHMgb24gQ09O
-RklHX1BNX1NMRUVQIEkKc3RpbGwgbmVlZCB0aGUgZXhwbGljaXQgY2FsbCBpbiB0aGlzIGZ1bmN0
-aW9uLgoKPiA+ICsKPiA+ICsJcG1fcnVudGltZV9lbmFibGUoZGV2KTsKPiA+ICsKPiA+ICsJcmV0
-ID0gZHJtX3ZibGFua19pbml0KGRybSwgMSk7Cj4gPiArCWlmIChyZXQpIHsKPiA+ICsJCURSTV9E
-RVZfRVJST1IoZGV2LCAiZmFpbGVkIHRvIGluaXRpYWxpemUgdmJsYW5rICglZClcbiIsCj4gPiAr
-CQkJICAgICAgcmV0KTsKPiA+ICsJCWdvdG8gZXJyX3BtX3J1bnRpbWVfZGlzYWJsZTsKPiA+ICsJ
-fQo+ID4gKwo+ID4gKwlyZXQgPSBsY2RjX2RjX21vZGVzZXRfaW5pdChsY2RjX2RjLCBkcm0pOwo+
-ID4gKwlpZiAocmV0KSB7Cj4gPiArCQlEUk1fREVWX0VSUk9SKGRldiwgIm1vZGVzZXRfaW5pdCBm
-YWlsZWQgKCVkKSIsIHJldCk7Cj4gPiArCQlnb3RvIGVycl9wbV9ydW50aW1lX2Rpc2FibGU7Cj4g
-PiArCX0KPiA+ICsKPiA+ICsJcG1fcnVudGltZV9nZXRfc3luYyhkZXYpOwo+IAo+IFRoaXMgY2Fs
-bCB3aWxsIGF1dG9tYXRpY2FsbHkgY2FsbCB0aGUgcnVudGltZSBQTSByZXN1bWUgaG9vaywgc28g
-aWYgeW91Cj4gbmVlZCB0aGUgY2xrIHRvIGJlIGVuYWJsZWQgYmVmb3JlIHRoYXQgcG9pbnQgeW91
-IHNob3VsZCBwdXQgaXQgZWFybGllci4KPiAKPiBBbHNvLCB5b3Ugc2hvdWxkIGNhbGwgcG1fcnVu
-dGltZV9nZXRfc3luYygpIGluIHRoZSAtPmVuYWJsZSgpIHBhdGggYW5kCj4gcG1fcnVudGltZV9w
-dXQoKSBpbiB0aGUgLT5kaXNhYmxlKCkgcGF0aC4KR29vZCBjYXRjaCEgQWRkZWQuCgoJU2FtCgoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+Hi,
+
+Please give feedback on these patches which extends the PWM framework in
+order to support multiple PWM modes of operations. This series is a rework
+of [1] and [2].
+
+The current patch series add the following PWM modes:
+- PWM mode normal
+- PWM mode complementary
+- PWM mode push-pull
+
+Normal mode - for PWM channels with one output; output waveforms looks like
+this:
+             __    __    __    __
+    PWM   __|  |__|  |__|  |__|  |__
+            <--T-->
+
+    Where T is the signal period
+
+Since PWMs with more than one output per channel could be used as one
+output PWM the normal mode is the default mode for all PWMs (if not
+specified otherwise).
+
+Complementary mode - for PWM channels with two outputs; output waveforms
+for a PWM channel in complementary mode looks line this:
+             __    __    __    __
+    PWMH1 __|  |__|  |__|  |__|  |__
+          __    __    __    __    __
+    PWML1   |__|  |__|  |__|  |__|
+            <--T-->
+
+    Where T is the signal period.
+
+Push-pull mode - for PWM channels with two outputs; output waveforms for a
+PWM channel in push-pull mode with normal polarity looks like this:
+            __          __
+    PWMH __|  |________|  |________
+                  __          __
+    PWML ________|  |________|  |__
+           <--T-->
+
+    If polarity is inversed:
+         __    ________    ________
+    PWMH   |__|        |__|
+         ________    ________    __
+    PWML         |__|        |__|
+           <--T-->
+
+    Where T is the signal period.
+
+The PWM working modes are per PWM channel registered as PWM's capabilities.
+The driver registers itself to PWM core a get_caps() function, in
+struct pwm_ops, that will be used by PWM core to retrieve PWM capabilities.
+If this function is not registered in driver's probe, a default function
+will be used to retrieve PWM capabilities. Currently, the default
+capabilities includes only PWM normal mode.
+
+PWM state has been updated to keep PWM mode. PWM mode could be configured
+via sysfs or via DT. pwm_apply_state() will do the preliminary validation
+for PWM mode to be applied.
+
+In sysfs, user could get PWM modes by reading mode file of PWM device:
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# ls -l
+total 0
+-r--r--r-- 1 root root 4096 Oct  9 09:07 capture
+lrwxrwxrwx 1 root root    0 Oct  9 09:07 device -> ../../pwmchip0
+-rw-r--r-- 1 root root 4096 Oct  9 08:42 duty_cycle
+-rw-r--r-- 1 root root 4096 Oct  9 08:44 enable
+--w------- 1 root root 4096 Oct  9 09:07 export
+-rw-r--r-- 1 root root 4096 Oct  9 08:43 mode
+-r--r--r-- 1 root root 4096 Oct  9 09:07 npwm
+-rw-r--r-- 1 root root 4096 Oct  9 08:42 period
+-rw-r--r-- 1 root root 4096 Oct  9 08:44 polarity
+drwxr-xr-x 2 root root    0 Oct  9 09:07 power
+lrwxrwxrwx 1 root root    0 Oct  9 09:07 subsystem -> ../../../../../../../../class/pwm
+-rw-r--r-- 1 root root 4096 Oct  9 08:42 uevent
+--w------- 1 root root 4096 Oct  9 09:07 unexport
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+normal complementary [push-pull]
+
+The mode enclosed in bracket is the currently active mode.
+
+The mode could be set, via sysfs, by writing to mode file one of the modes
+displayed at read:
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# echo normal > mode
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+[normal] complementary push-pull 
+
+The PWM push-pull mode could be usefull in applications like half bridge
+converters.
+
+This series also add PWM modes support for Atmel/Microchip SoCs.
+
+Thank you,
+Claudiu Beznea
+
+[1] https://www.spinics.net/lists/arm-kernel/msg580275.html
+[2] https://lkml.org/lkml/2018/1/12/359
+
+Changes in v5:
+- solved kbuild errors by removing dummy functions for case where
+  CONFIG_PWM is not defined; adopted this approach since the removed
+  function are used only when CONFIG_PWM is defined (in PWM core
+  and few drivers from drivers/pwm/ directory)
+
+Changes in v4:
+- removed changes related to pwm_config() as per maintainer proposals
+- added pwm_mode_get_valid() to retrieve a valid PWM mode fror PWM device
+  instead of using BIT(ffs(caps.mode) - 1) and changed drivers to use
+  pwm_mode_get_valid() instead of pwm_get_caps() + BIT(ffs(caps.mode) - 1)
+  (patches 2, 3, 4 from this series)
+- renamed PWM_MODE() macro in PWMC_MODE() to avoid conflicts with
+  pwm-sun4i.c driver ('C' stands for capability)
+- removed pwm_caps_valid() function
+- renamed PWM_DTMODE_COMPLEMENTARY and PWM_DTMODE_PUSH_PULL macros in
+  PWM_MODE_COMPLEMENTARY and PWM_MODE_PUSH_PULL
+
+Changes in v3:
+- removed changes related to only one of_xlate function for all PWM drivers
+- switch to PWM capabilities per PWM channel nor per PWM chip
+- squash documentation and bindings patches as requeted by reviewer
+- introduced PWM_MODE(name) macro and used a bit enum for pwm modes
+- related to DT bindings, used flags cell also for PWM modes
+- updated of_xlate specific functions with "state->mode = mode;"
+  instructions to avoid pwm_apply_state() failures
+- use available modes for PWM channel in pwm_config() by first calling
+  pwm_get_caps() to get caps.modes
+- use loops through available modes in mode_store()/mode_show() and also in
+  of_pwm_xlate_with_flags() instead of "if else" instructions; in this way,
+  the addition of a new mode is independent of this code sections
+- use DTLI=1, DTHI=0 register settings to obtain push-pull mode waveforms
+  for Atmel/Microchip PWM controller.
+
+Changes in v2:
+- remove of_xlate and of_pwm_n_cells and use generic functions to pharse DT
+  inputs; this is done in patches 1, 2, 3, 4, 5, 6, 7 of this series; this will
+  make easy the addition of PWM mode support from DT
+- add PWM mode normal
+- register PWM modes as capabilities of PWM chips at driver probe and, in case
+  driver doesn't provide these capabilities use default ones
+- change the way PWM mode is pharsed via DT by using a new input for pwms
+  binding property
+
+
+Claudiu Beznea (9):
+  pwm: extend PWM framework with PWM modes
+  pwm: clps711x: populate PWM mode in of_xlate function
+  pwm: cros-ec: populate PWM mode in of_xlate function
+  pwm: pxa: populate PWM mode in of_xlate function
+  pwm: add PWM modes
+  pwm: atmel: add pwm capabilities
+  pwm: add push-pull mode support
+  pwm: add documentation for pwm push-pull mode
+  pwm: atmel: add push-pull mode support
+
+ Documentation/devicetree/bindings/pwm/pwm.txt |  11 ++-
+ Documentation/pwm.txt                         |  42 ++++++++-
+ drivers/pwm/core.c                            | 125 +++++++++++++++++++++++++-
+ drivers/pwm/pwm-atmel.c                       | 118 +++++++++++++++++-------
+ drivers/pwm/pwm-clps711x.c                    |  10 ++-
+ drivers/pwm/pwm-cros-ec.c                     |   1 +
+ drivers/pwm/pwm-pxa.c                         |   1 +
+ drivers/pwm/sysfs.c                           |  61 +++++++++++++
+ include/dt-bindings/pwm/pwm.h                 |   2 +
+ include/linux/pwm.h                           |  64 +++++++++++++
+ 10 files changed, 395 insertions(+), 40 deletions(-)
+
+-- 
+2.7.4
