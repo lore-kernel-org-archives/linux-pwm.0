@@ -1,77 +1,76 @@
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [RESEND PATCH v5 8/9] pwm: add documentation for pwm push-pull mode
-Date: Tue, 28 Aug 2018 16:01:25 +0300
-Message-ID: <1535461286-12308-9-git-send-email-claudiu.beznea@microchip.com>
-References: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
+Date: Tue, 28 Aug 2018 10:23:05 -0700
+Message-ID: <20180828172305.bohg6cggnzm3wsuj@pburton-laptop>
+References: <20180821171635.22740-1-paul@crapouillou.net>
+ <20180821171635.22740-6-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
+Content-Disposition: inline
+In-Reply-To: <20180821171635.22740-6-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, shc_work@mail.ru, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Claudiu Beznea <claudiu.beznea@microchip.com>
+To: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add documentation for PWM push-pull mode.
+Hi Daniel & Thomas,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/pwm/pwm.txt |  2 ++
- Documentation/pwm.txt                         | 16 ++++++++++++++++
- include/dt-bindings/pwm/pwm.h                 |  1 +
- 3 files changed, 19 insertions(+)
+On Tue, Aug 21, 2018 at 07:16:16PM +0200, Paul Cercueil wrote:
+> This driver handles the TCU (Timer Counter Unit) present on the Ingenic
+> JZ47xx SoCs, and provides the kernel with a system timer, and optionally
+> with a clocksource and a sched_clock.
+> 
+> It also provides clocks and interrupt handling to client drivers.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+> 
+> Notes:
+>      v2: Use SPDX identifier for the license
+>     
+>      v3: - Move documentation to its own patch
+>          - Search the devicetree for PWM clients, and use all the TCU
+>     	   channels that won't be used for PWM
+>     
+>      v4: - Add documentation about why we search for PWM clients
+>          - Verify that the PWM clients are for the TCU PWM driver
+>     
+>      v5: Major overhaul. Too many changes to list. Consider it's a new
+>          patch.
+>     
+>      v6: - Add two API functions ingenic_tcu_request_channel and
+>            ingenic_tcu_release_channel. To be used by the PWM driver to
+>            request the use of a TCU channel. The driver will now dynamically
+>            move away the system timer or clocksource to a new TCU channel.
+>          - The system timer now defaults to channel 0, the clocksource now
+>            defaults to channel 1 and is no more optional. The
+>            ingenic,timer-channel and ingenic,clocksource-channel devicetree
+>            properties are now gone.
+>          - Fix round_rate / set_rate not calculating the prescale divider
+>            the same way. This caused problems when (parent_rate / div) would
+>            give a non-integer result. The behaviour is correct now.
+>          - The clocksource clock is turned off on suspend now.
+>     
+>      v7: Fix section mismatch by using builtin_platform_driver_probe()
+> 
+>  drivers/clocksource/Kconfig         |   10 +
+>  drivers/clocksource/Makefile        |    1 +
+>  drivers/clocksource/ingenic-timer.c | 1124 +++++++++++++++++++++++++++++++++++
+>  drivers/clocksource/ingenic-timer.h |   15 +
+>  include/linux/mfd/ingenic-tcu.h     |    3 +
+>  5 files changed, 1153 insertions(+)
+>  create mode 100644 drivers/clocksource/ingenic-timer.c
+>  create mode 100644 drivers/clocksource/ingenic-timer.h
+>%
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
-index 7c8aaac43f92..6a60c0fca112 100644
---- a/Documentation/devicetree/bindings/pwm/pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm.txt
-@@ -49,6 +49,8 @@ Optionally, the pwm-specifier can encode a number of flags (defined in
- - PWM_MODE_COMPLEMENTARY: PWM complementary working mode (for PWM channels
- with two outputs); if not specified, the default for PWM channel will be
- used
-+- PWM_MODE_PUSH_PULL: PWM push-pull working modes (for PWM channels with
-+two outputs); if not specified the default for PWM channel will be used
- 
- Example with optional PWM specifier for inverse polarity and complementary
- mode:
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 912c43da8b48..675f9351fed1 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -128,6 +128,22 @@ channel that was exported. The following properties will then be available:
-     PWML1   |__|  |__|  |__|  |__|
-             <--T-->
- 
-+    Push-pull mode - for PWM channels with two outputs; output waveforms
-+        for a PWM channel in push-pull mode, with normal polarity looks like
-+        this:
-+            __          __
-+    PWMH __|  |________|  |________
-+                  __          __
-+    PWML ________|  |________|  |__
-+           <--T-->
-+
-+    If polarity is inversed:
-+         __    ________    ________
-+    PWMH   |__|        |__|
-+         ________    ________    __
-+    PWML         |__|        |__|
-+           <--T-->
-+
-     Where T is the signal period.
- 
- Implementing a PWM driver
-diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
-index b82279cc1787..cd4265bce968 100644
---- a/include/dt-bindings/pwm/pwm.h
-+++ b/include/dt-bindings/pwm/pwm.h
-@@ -12,5 +12,6 @@
- 
- #define PWM_POLARITY_INVERTED			(1 << 0)
- #define PWM_MODE_COMPLEMENTARY			(1 << 1)
-+#define PWM_MODE_PUSH_PULL			(1 << 2)
- 
- #endif
--- 
-2.7.4
+How is this & patch 6 of the series looking to you from a
+drivers/clocksource perspective?
+
+If you're happy with them it'd be great to get an ack so I can take this
+through the MIPS tree with the rest of the series. The alternative would
+be to get the drivers in first then the MIPS bits in the next release
+cycle.
+
+Thanks,
+    Paul
