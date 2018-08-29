@@ -1,94 +1,36 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
-Date: Wed, 29 Aug 2018 11:10:42 +0200
-Message-ID: <62569807-7be8-51df-4683-82392224432d@linaro.org>
-References: <20180821171635.22740-1-paul@crapouillou.net>
- <20180821171635.22740-6-paul@crapouillou.net>
- <20180828172305.bohg6cggnzm3wsuj@pburton-laptop>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH RESEND 1/2] gpio: mvebu: Add support for multiple PWM
+ lines per GPIO chip
+Date: Wed, 29 Aug 2018 14:09:37 +0200
+Message-ID: <CACRpkdZU36s=-G7ncW3JMb+vXDmpdLO+3zupQD_fwUyfZxx4vA@mail.gmail.com>
+References: <1533522556-55055-1-git-send-email-aditya@kobol.io>
+ <1533522556-55055-2-git-send-email-aditya@kobol.io> <CACRpkda2qXxyEj+y8DaZ-_PWcj3pBGtvVAac8qaFCnC0LTNkNA@mail.gmail.com>
+ <20180829100229.7566e0db@windsurf>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180828172305.bohg6cggnzm3wsuj@pburton-laptop>
-Content-Language: en-US
+In-Reply-To: <20180829100229.7566e0db@windsurf>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Burton <paul.burton@mips.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
+To: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Cc: aditya@kobol.io, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, gauthier@kobol.io, Alban Browaeys <alban.browaeys@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dennis Gilmore <dennis@ausil.us>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Andrew Lunn <andrew@lunn.ch>
 List-Id: linux-pwm@vger.kernel.org
 
-On 28/08/2018 19:23, Paul Burton wrote:
-> Hi Daniel & Thomas,
-> 
-> On Tue, Aug 21, 2018 at 07:16:16PM +0200, Paul Cercueil wrote:
->> This driver handles the TCU (Timer Counter Unit) present on the Ingenic
->> JZ47xx SoCs, and provides the kernel with a system timer, and optionally
->> with a clocksource and a sched_clock.
->>
->> It also provides clocks and interrupt handling to client drivers.
->>
->> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->> ---
->>
->> Notes:
->>      v2: Use SPDX identifier for the license
->>     
->>      v3: - Move documentation to its own patch
->>          - Search the devicetree for PWM clients, and use all the TCU
->>     	   channels that won't be used for PWM
->>     
->>      v4: - Add documentation about why we search for PWM clients
->>          - Verify that the PWM clients are for the TCU PWM driver
->>     
->>      v5: Major overhaul. Too many changes to list. Consider it's a new
->>          patch.
->>     
->>      v6: - Add two API functions ingenic_tcu_request_channel and
->>            ingenic_tcu_release_channel. To be used by the PWM driver to
->>            request the use of a TCU channel. The driver will now dynamically
->>            move away the system timer or clocksource to a new TCU channel.
->>          - The system timer now defaults to channel 0, the clocksource now
->>            defaults to channel 1 and is no more optional. The
->>            ingenic,timer-channel and ingenic,clocksource-channel devicetree
->>            properties are now gone.
->>          - Fix round_rate / set_rate not calculating the prescale divider
->>            the same way. This caused problems when (parent_rate / div) would
->>            give a non-integer result. The behaviour is correct now.
->>          - The clocksource clock is turned off on suspend now.
->>     
->>      v7: Fix section mismatch by using builtin_platform_driver_probe()
->>
->>  drivers/clocksource/Kconfig         |   10 +
->>  drivers/clocksource/Makefile        |    1 +
->>  drivers/clocksource/ingenic-timer.c | 1124 +++++++++++++++++++++++++++++++++++
->>  drivers/clocksource/ingenic-timer.h |   15 +
->>  include/linux/mfd/ingenic-tcu.h     |    3 +
->>  5 files changed, 1153 insertions(+)
->>  create mode 100644 drivers/clocksource/ingenic-timer.c
->>  create mode 100644 drivers/clocksource/ingenic-timer.h
->> %
-> 
-> How is this & patch 6 of the series looking to you from a
-> drivers/clocksource perspective?
+On Wed, Aug 29, 2018 at 10:02 AM Thomas Petazzoni
+<thomas.petazzoni@bootlin.com> wrote:
 
-The presence of completion, mutexes, etc ... makes me think the driver
-is not going to the right direction.
+> Andrew Lunn did the initial support for PWM in this driver, and he
+> outlined in the commit log the limitation of his first implementation:
+>
+>     However, there are only two sets of PWM configuration registers for
+>     all the GPIO lines. This driver simply allows a single GPIO line per
+>     GPIO chip of 32 lines to be used as a PWM. Attempts to use more
+>     return EBUSY.
+>
+> Andrew, perhaps you could review the patch posted by Aditya, since you
+> already looked at PWM support on mvebu platforms ?
 
-I have to review the drivers again but it will take some time because
-I'm returning from vacations and there are a trillion emails to sort out :/
+Thanks yes Andrew is involved, I will wait for Andrew's definitive ACK
+before merging any of this.
 
-> If you're happy with them it'd be great to get an ack so I can take this
-> through the MIPS tree with the rest of the series. The alternative would
-> be to get the drivers in first then the MIPS bits in the next release
-> cycle.
-> 
-> Thanks,
->     Paul
-> 
-
-
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Yours,
+Linus Walleij
