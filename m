@@ -1,30 +1,82 @@
-From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH RESEND 1/2] gpio: mvebu: Add support for multiple PWM
- lines per GPIO chip
-Date: Wed, 29 Aug 2018 14:52:09 +0200
-Message-ID: <20180829125209.GB1955@lunn.ch>
-References: <1533522556-55055-1-git-send-email-aditya@kobol.io>
- <1533522556-55055-2-git-send-email-aditya@kobol.io>
- <CACRpkda2qXxyEj+y8DaZ-_PWcj3pBGtvVAac8qaFCnC0LTNkNA@mail.gmail.com>
- <20180829100229.7566e0db@windsurf>
- <CACRpkdZU36s=-G7ncW3JMb+vXDmpdLO+3zupQD_fwUyfZxx4vA@mail.gmail.com>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
+Date: Wed, 29 Aug 2018 10:43:41 -0700
+Message-ID: <20180829174341.nbcebor5herksvld@pburton-laptop>
+References: <20180821171635.22740-1-paul@crapouillou.net>
+ <20180821171635.22740-6-paul@crapouillou.net>
+ <20180828172305.bohg6cggnzm3wsuj@pburton-laptop>
+ <62569807-7be8-51df-4683-82392224432d@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CACRpkdZU36s=-G7ncW3JMb+vXDmpdLO+3zupQD_fwUyfZxx4vA@mail.gmail.com>
+In-Reply-To: <62569807-7be8-51df-4683-82392224432d@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, aditya@kobol.io, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, gauthier@kobol.io, Alban Browaeys <alban.browaeys@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Dennis Gilmore <dennis@ausil.us>, Ralph Sennhauser <ralph.sennhauser@gmail.com>
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-> Thanks yes Andrew is involved, I will wait for Andrew's definitive ACK
-> before merging any of this.
+Hi Daniel,
 
-Hi Linus
+On Wed, Aug 29, 2018 at 11:10:42AM +0200, Daniel Lezcano wrote:
+> On 28/08/2018 19:23, Paul Burton wrote:
+> > On Tue, Aug 21, 2018 at 07:16:16PM +0200, Paul Cercueil wrote:
+> >> This driver handles the TCU (Timer Counter Unit) present on the Ingenic
+> >> JZ47xx SoCs, and provides the kernel with a system timer, and optionally
+> >> with a clocksource and a sched_clock.
+> >>
+> >> It also provides clocks and interrupt handling to client drivers.
+> >>
+> >> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> >> ---
+> >>
+> >> Notes:
+> >>      v2: Use SPDX identifier for the license
+> >>     
+> >>      v3: - Move documentation to its own patch
+> >>          - Search the devicetree for PWM clients, and use all the TCU
+> >>     	   channels that won't be used for PWM
+> >>     
+> >>      v4: - Add documentation about why we search for PWM clients
+> >>          - Verify that the PWM clients are for the TCU PWM driver
+> >>     
+> >>      v5: Major overhaul. Too many changes to list. Consider it's a new
+> >>          patch.
+> >>     
+> >>      v6: - Add two API functions ingenic_tcu_request_channel and
+> >>            ingenic_tcu_release_channel. To be used by the PWM driver to
+> >>            request the use of a TCU channel. The driver will now dynamically
+> >>            move away the system timer or clocksource to a new TCU channel.
+> >>          - The system timer now defaults to channel 0, the clocksource now
+> >>            defaults to channel 1 and is no more optional. The
+> >>            ingenic,timer-channel and ingenic,clocksource-channel devicetree
+> >>            properties are now gone.
+> >>          - Fix round_rate / set_rate not calculating the prescale divider
+> >>            the same way. This caused problems when (parent_rate / div) would
+> >>            give a non-integer result. The behaviour is correct now.
+> >>          - The clocksource clock is turned off on suspend now.
+> >>     
+> >>      v7: Fix section mismatch by using builtin_platform_driver_probe()
+> >>
+> >>  drivers/clocksource/Kconfig         |   10 +
+> >>  drivers/clocksource/Makefile        |    1 +
+> >>  drivers/clocksource/ingenic-timer.c | 1124 +++++++++++++++++++++++++++++++++++
+> >>  drivers/clocksource/ingenic-timer.h |   15 +
+> >>  include/linux/mfd/ingenic-tcu.h     |    3 +
+> >>  5 files changed, 1153 insertions(+)
+> >>  create mode 100644 drivers/clocksource/ingenic-timer.c
+> >>  create mode 100644 drivers/clocksource/ingenic-timer.h
+> >> %
+> > 
+> > How is this & patch 6 of the series looking to you from a
+> > drivers/clocksource perspective?
+> 
+> The presence of completion, mutexes, etc ... makes me think the driver
+> is not going to the right direction.
+> 
+> I have to review the drivers again but it will take some time because
+> I'm returning from vacations and there are a trillion emails to sort out :/
 
-Given the review comments i made so far, it has a NACK.
+OK no problem, thanks for the heads up!
 
-I will happily review the next version.
-
-  Andrew
+Paul
