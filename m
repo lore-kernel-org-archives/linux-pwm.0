@@ -1,28 +1,34 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [RESEND PATCH v5 5/9] pwm: add PWM modes
-Date: Tue, 28 Aug 2018 17:27:08 -0500
-Message-ID: <20180828222708.GA22527@bogus>
-References: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
- <1535461286-12308-6-git-send-email-claudiu.beznea@microchip.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH RESEND 1/2] gpio: mvebu: Add support for multiple PWM
+ lines per GPIO chip
+Date: Wed, 29 Aug 2018 09:54:04 +0200
+Message-ID: <CACRpkda2qXxyEj+y8DaZ-_PWcj3pBGtvVAac8qaFCnC0LTNkNA@mail.gmail.com>
+References: <1533522556-55055-1-git-send-email-aditya@kobol.io> <1533522556-55055-2-git-send-email-aditya@kobol.io>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1535461286-12308-6-git-send-email-claudiu.beznea@microchip.com>
+In-Reply-To: <1533522556-55055-2-git-send-email-aditya@kobol.io>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: thierry.reding@gmail.com, shc_work@mail.ru, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: aditya@kobol.io, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>
+Cc: "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, gauthier@kobol.io, Alban Browaeys <alban.browaeys@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dennis@ausil.us, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Andrew Lunn <andrew@lunn.ch>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Aug 28, 2018 at 04:01:22PM +0300, Claudiu Beznea wrote:
-> Add PWM normal and complementary modes.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm.txt |  9 +++++++--
+On Mon, Aug 6, 2018 at 4:31 AM Aditya Prayoga <aditya@kobol.io> wrote:
 
-Acked-by: Rob Herring <robh@kernel.org>
+> Allow more than 1 PWM request (eg. PWM fan) on the same GPIO chip.
+>
+> based on initial work on LK4.4 by Alban Browaeys.
+> URL: https://github.com/helios-4/linux-marvell/commit/743ae97
+> [Aditya Prayoga: forward port, cleanup]
+> Signed-off-by: Aditya Prayoga <aditya@kobol.io>
 
->  Documentation/pwm.txt                         | 26 +++++++++++++++++++++++---
->  include/dt-bindings/pwm/pwm.h                 |  1 +
->  3 files changed, 31 insertions(+), 5 deletions(-)
+It would be awesome to get some feedback from the MVEBU maintainers
+on this patch set.
+
+Who are most active on Marvell stuff these days? Thomas?
+
+Likewise I'd be very grateful for a nod from the PWM maintainer that
+this is OK with him.
+
+Yours,
+Linus Walleij
