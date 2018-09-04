@@ -1,50 +1,71 @@
-Return-Path: <andriy.shevchenko@linux.intel.com>
-Date: Wed, 29 Aug 2018 19:45:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] pwm: lpss: Add ACPI HID for second PWM controller on
- Cherry Trail devices
-Message-ID: <20180829164550.GA11447@smile.fi.intel.com>
-References: <20180827075233.6408-1-hdegoede@redhat.com>
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Tue, 4 Sep 2018 22:37:24 +0200
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: RFC: don't let drivers issue pwm_disable after pwm_config(pwm,
+ 0, period)
+Message-ID: <20180904203724.isth6bmytgvlal5e@pengutronix.de>
+References: <20180806155129.cjcc7okmwtaujf43@pengutronix.de>
+ <20180809113054.GH21639@ulmo>
+ <20180809152329.s6othcezo4enj3xg@pengutronix.de>
+ <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <20180827075233.6408-1-hdegoede@redhat.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-On Mon, Aug 27, 2018 at 09:52:33AM +0200, Hans de Goede wrote:
-> The second PWM controller on Cherry Trail devices uses a separate ACPI
-> HID: "80862289", add this so that the driver will properly bind to the
-> second PWM controller.
-> 
-> The second PWM controller is usually not used, the main thing gained by
-> this is properly putting the PWM controller in D3 on suspend.
-> 
+Hello Thierry,
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Mon, Aug 20, 2018 at 11:52:21AM +0200, Uwe Kleine-K=F6nig wrote:
+> On Thu, Aug 09, 2018 at 05:23:30PM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Thu, Aug 09, 2018 at 01:30:54PM +0200, Thierry Reding wrote:
+> > > I don't see how you could make that work. In practically all cases a
+> > > pwm_disable() would have to be assumed to cause the pin level to beco=
+me
+> > > undefined. That makes it pretty much useless.
+> >=20
+> > Right, that's what I want. pwm_disable() should make no guarantees about
+> > the pin level. [...]
+> >
+> > > I agree that this is simpler and clearer. However it also significant=
+ly
+> > > reduces the flexibility of the API, and I'm not sure that it is enoug=
+h.
+> > > Again, yes, for many cases this is sufficient, but it doesn't fully
+> > > expose the capabilities of hardware.
+> >=20
+> > Can you show me a use case that isn't possible to express with the
+> > suggested change in semantic?
+>=20
+> To get forward here the only missing points are:
+>=20
+>  a) Your claim that this simplification looses expressive power.
+>  b) Actually convert the users (assuming a) can be resolved)
+>=20
+> I cannot find a usecase that cannot be handled with the suggested change
+> in semantic. So can I lure you in explaining what setup you have in
+> mind?
 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->  drivers/pwm/pwm-lpss-platform.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-> index 5561b9e190f8..7304f36ee715 100644
-> --- a/drivers/pwm/pwm-lpss-platform.c
-> +++ b/drivers/pwm/pwm-lpss-platform.c
-> @@ -81,6 +81,7 @@ static SIMPLE_DEV_PM_OPS(pwm_lpss_platform_pm_ops,
->  static const struct acpi_device_id pwm_lpss_acpi_match[] = {
->  	{ "80860F09", (unsigned long)&pwm_lpss_byt_info },
->  	{ "80862288", (unsigned long)&pwm_lpss_bsw_info },
-> +	{ "80862289", (unsigned long)&pwm_lpss_bsw_info },
->  	{ "80865AC8", (unsigned long)&pwm_lpss_bxt_info },
->  	{ },
->  };
-> -- 
-> 2.18.0
-> 
+I'd really like to get forward here, so you feedback would be very
+welcome. What is the use case you have in mind when writing "it also
+significantly reduces the flexibility of the API, and I'm not sure that
+it is enough"?
 
--- 
-With Best Regards,
-Andy Shevchenko
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
