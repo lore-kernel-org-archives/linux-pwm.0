@@ -1,67 +1,66 @@
-Return-Path: <paul@crapouillou.net>
-Message-Id: <5bab3024.1c69fb81.874bc.644aSMTPIN_ADDED_MISSING@mx.google.com>
-Date: Wed, 26 Sep 2018 08:01:03 +0200
-Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
-From: Paul Cercueil <paul@crapouillou.net>
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 1/2] pwm: lpss: Move struct pwm_lpss_chip definition to the header file
+Date: Tue, 11 Sep 2018 19:30:49 +0200
+Message-Id: <20180911173050.2374-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-CkxlIDI1IHNlcHQuIDIwMTggMTA6MTIgUE0sIERhbmllbCBMZXpjYW5vIDxkYW5pZWwubGV6Y2Fu
-b0BsaW5hcm8ub3JnPiBhIMOpY3JpdCA6Cj4KPiBPbiAyNS8wOS8yMDE4IDE1OjM4LCBQYXVsIENl
-cmN1ZWlsIHdyb3RlOiAKPiA+IAo+ID4gTGUgMjQgc2VwdC4gMjAxOCA5OjE0IEFNLCBEYW5pZWwg
-TGV6Y2FubyA8ZGFuaWVsLmxlemNhbm9AbGluYXJvLm9yZz4gYSDDqWNyaXQgOiAKPiA+PiAKPiA+
-PiBPbiAyNC8wOS8yMDE4IDA4OjUzLCBQYXVsIENlcmN1ZWlsIHdyb3RlOiAKPiA+Pj4gCj4gPj4+
-IExlIDI0IHNlcHQuIDIwMTggMDc6NTgsIERhbmllbCBMZXpjYW5vIDxkYW5pZWwubGV6Y2Fub0Bs
-aW5hcm8ub3JnPiBhIMOpY3JpdCA6IAo+ID4+Pj4gCj4gPj4+PiBPbiAyNC8wOS8yMDE4IDA3OjQ5
-LCBQYXVsIENlcmN1ZWlsIHdyb3RlOiAKPiA+Pj4+PiAKPiA+Pj4+PiBMZSAyNCBzZXB0LiAyMDE4
-IDA3OjM1LCBEYW5pZWwgTGV6Y2FubyA8ZGFuaWVsLmxlemNhbm9AbGluYXJvLm9yZz4gYSAKPiA+
-Pj4+PiDDqWNyaXQgOiAKPiA+Pj4+Pj4gCj4gPj4+Pj4+IE9uIDI0LzA5LzIwMTggMDc6MjQsIFBh
-dWwgQ2VyY3VlaWwgd3JvdGU6IAo+ID4+Pj4+Pj4gSGkgRGFuaWVsLCAKPiA+Pj4+Pj4+IAo+ID4+
-Pj4+Pj4gTGUgMjQgc2VwdC4gMjAxOCAwNToxMiwgRGFuaWVsIExlemNhbm8gCj4gPj4+Pj4+PiA8
-ZGFuaWVsLmxlemNhbm9AbGluYXJvLm9yZz4gYSDDqWNyaXQgOiAKPiA+Pj4+Pj4+PiAKPiA+Pj4+
-Pj4+PiBPbiAyMS8wOC8yMDE4IDE5OjE2LCBQYXVsIENlcmN1ZWlsIHdyb3RlOiAKPiA+Pj4+Pj4+
-Pj4gVGhpcyBkcml2ZXIgaGFuZGxlcyB0aGUgVENVIChUaW1lciBDb3VudGVyIFVuaXQpIHByZXNl
-bnQgb24gCj4gPj4+Pj4+Pj4+IHRoZSBJbmdlbmljIEpaNDd4eCBTb0NzLCBhbmQgcHJvdmlkZXMg
-dGhlIGtlcm5lbCB3aXRoIGEgCj4gPj4+Pj4+Pj4+IHN5c3RlbSB0aW1lciwgYW5kIG9wdGlvbmFs
-bHkgd2l0aCBhIGNsb2Nrc291cmNlIGFuZCBhIAo+ID4+Pj4+Pj4+PiBzY2hlZF9jbG9jay4gCj4g
-Pj4+Pj4+Pj4+IAo+ID4+Pj4+Pj4+PiBJdCBhbHNvIHByb3ZpZGVzIGNsb2NrcyBhbmQgaW50ZXJy
-dXB0IGhhbmRsaW5nIHRvIGNsaWVudCAKPiA+Pj4+Pj4+Pj4gZHJpdmVycy4gCj4gPj4+Pj4+Pj4g
-Cj4gPj4+Pj4+Pj4gQ2FuIHlvdSBwcm92aWRlIGEgbXVjaCBtb3JlIGNvbXBsZXRlIGRlc2NyaXB0
-aW9uIG9mIHRoZSB0aW1lciAKPiA+Pj4+Pj4+PiBpbiBvcmRlciB0byBtYWtlIG15IGxpZmUgZWFz
-aWVyIGZvciB0aGUgcmV2aWV3IG9mIHRoaXMgcGF0Y2g/IAo+ID4+Pj4+Pj4gCj4gPj4+Pj4+PiBT
-ZWUgcGF0Y2ggWzAzLzI0XSwgaXQgYWRkcyBhIGRvYyBmaWxlIHRoYXQgZGVzY3JpYmVzIHRoZSAK
-PiA+Pj4+Pj4+IGhhcmR3YXJlLiAKPiA+Pj4+Pj4gCj4gPj4+Pj4+IFRoYW5rcywgSSB3ZW50IHRo
-cm91Z2ggYnV0IGl0IGlzIGluY29tcGxldGUgdG8gdW5kZXJzdGFuZCB3aGF0IHRoZSAKPiA+Pj4+
-Pj4gdGltZXIgZG8uIEkgd2lsbCByZXZlcnNlLWVuZ2luZWVyIHRoZSBjb2RlIGJ1dCBpdCB3b3Vs
-ZCBoZWxwIGlmIHlvdSAKPiA+Pj4+Pj4gY2FuIGdpdmUgdGhlIGdyb3NzIGFwcHJvYWNoLiBXaHkg
-bXVsdGlwbGUgY2hhbm5lbHMgPyBtdXRleGVzIGFuZCAKPiA+Pj4+Pj4gY29tcGxldGlvbiA/IAo+
-ID4+Pj4+IAo+ID4+Pj4+IE11Y2ggb2YgdGhlIGNvbXBsZXhpdHkgaXMgYmVjYXVzZSBvZiB0aGUg
-bXVsdGktcHVycG9zZSBuYXR1cmUgb2YgdGhlIAo+ID4+Pj4+IFRDVSBjaGFubmVscy4gRWFjaCBv
-bmUgY2FuIGJlIHVzZWQgYXMgdGltZXIvY2xvY2tzb3VyY2UsIG9yIFBXTS4gCj4gPj4+Pj4gCj4g
-Pj4+Pj4gVGhlIGRyaXZlciBzdGFydHMgYnkgdXNpbmcgY2hhbm5lbHMgMCBhbmQgMSBhcyBzeXN0
-ZW0gdGltZXIgYW5kIAo+ID4+Pj4+IGNsb2Nrc291cmNlLCByZXNwZWN0aXZlbHksIHRoZSBvdGhl
-ciBvbmVzIGJlaW5nIHVudXNlZCBmb3Igbm93LiBUaGVuLCAKPiA+Pj4+PiAqaWYqIHRoZSBQV00g
-ZHJpdmVyIHJlcXVlc3RzIG9uZSBvZiB0aGUgY2hhbm5lbHMgaW4gdXNlIGJ5IHRoZSAKPiA+Pj4+
-PiB0aW1lci9jbG9ja3NvdXJjZSBkcml2ZXIsIHNheSBjaGFubmVsIDAsIHRoZSB0aW1lci9jbG9j
-a3NvdXJjZSBkcml2ZXIgCj4gPj4+Pj4gd2lsbCBkeW5hbWljYWxseSByZWFzc2lnbiB0aGUgc3lz
-dGVtIHRpbWVyIHRvIGEgZnJlZSBjaGFubmVsLCBmcm9tIAo+ID4+Pj4+IGNoYW5uZWwgMCB0byBl
-LmcuIGNoYW5uZWwgMi4gT25seSBpbiB0aGF0IGNhc2UgdGhlIGNvbXBsZXRpb24vbXV0ZXggCj4g
-Pj4+Pj4gYXJlIGFjdHVhbGx5IHVzZWQuIAo+ID4+Pj4gCj4gPj4+PiBXaHkgZG8geW91IG5lZWQg
-dG8gZG8gdGhpcz8gQ2FuJ3QgYmUgdGhlIGNoYW5uZWxzIGRlZGljYXRlZCBhbmQgcmVzZXJ2ZWQg
-Cj4gPj4+PiBmb3IgY2xvY2tzb3VyY2UgYW5kIGNsb2NrZXZlbnQ/IAo+ID4+PiAKPiA+Pj4gVGhh
-dCdzIHdoYXQgSSBoYWQgaW4gcGxhY2UgKGluZ2VuaWMsdGltZXItY2hhbm5lbCBhbmQgaW5nZW5p
-YyxjbG9ja3NvdXJjZS1jaGFubmVsIERUIHByb3BlcnRpZXMpLCBidXQgUm9iIGRpZG4ndCB3YW50
-IGFueSBsaW51eC1zcGVjaWZpYyBwcm9wZXJ0aWVzIGluIHRoZSBkZXZpY2V0cmVlIGJpbmRpbmcg
-OiggCj4gPj4gCj4gPj4gSXNuJ3QgcG9zc2libGUgdG8gc3BlY2lmeSB0aGUgY2hhbm5lbCB0byB1
-c2UgaW4gdGhlIERUPyBsaWtlIHJlbmVzYXMxNiA/IAo+ID4gCj4gPiBUaGF0J3Mgd2hhdCBJIGRp
-ZCBpbiBWNiAoYW5kIGJlZm9yZSksIGJ1dCBSb2IgZGlkIG5vdCB3YW50IG1lIHRvIGFkZCBwcm9w
-ZXJ0aWVzIGZvciBMaW51eC1zcGVjaWZpYyBjb25jZXB0cyBzdWNoIGFzIGNsb2Nrc291cmNlLiAK
-Pgo+IEhtbSwgSSByZW1lbWJlciBzb21ldGhpbmcgbGlrZSB0aGF0LCB5ZXMgYnV0IEkgZGlkIGEg
-ZGVsZXRlIG9mIHRoZSAKPiBwcmV2aW91cyB2ZXJzaW9uIHdoZW4geW91IHBvc3RlZCB0aGUgdjcu
-IENhbiB5b3UgZ2l2ZSBhIHBvaW50ZXIgdG8gaXRzIAo+IGFuc3dlciA/IAoKWWVzLCB0aGlzIHdh
-cyBoaXMgYW5zd2VyOgpodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOC83LzI1LzUwOAoKVGhlbiBt
-aW5lOgpodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOC83LzMwLzg4MwoKLVBhdWw=
+Move struct pwm_lpss_chip definition from pwm-lpss.c to pwm-lpss.h,
+so that the pci/platform drivers can access the info member
+(struct pwm_lpss_boardinfo *).
+
+This is a preparation patch for adding platform specific quirks, which
+the drivers need access to, to pwm_lpss_boardinfo.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/pwm/pwm-lpss.c | 9 ---------
+ drivers/pwm/pwm-lpss.h | 9 ++++++++-
+ 2 files changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 4721a264bac2..e602835fd6de 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -32,15 +32,6 @@
+ /* Size of each PWM register space if multiple */
+ #define PWM_SIZE			0x400
+ 
+-#define MAX_PWMS			4
+-
+-struct pwm_lpss_chip {
+-	struct pwm_chip chip;
+-	void __iomem *regs;
+-	const struct pwm_lpss_boardinfo *info;
+-	u32 saved_ctrl[MAX_PWMS];
+-};
+-
+ static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
+ {
+ 	return container_of(chip, struct pwm_lpss_chip, chip);
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 7a4238ad1fcb..8f029ed263af 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -16,7 +16,14 @@
+ #include <linux/device.h>
+ #include <linux/pwm.h>
+ 
+-struct pwm_lpss_chip;
++#define MAX_PWMS			4
++
++struct pwm_lpss_chip {
++	struct pwm_chip chip;
++	void __iomem *regs;
++	const struct pwm_lpss_boardinfo *info;
++	u32 saved_ctrl[MAX_PWMS];
++};
+ 
+ struct pwm_lpss_boardinfo {
+ 	unsigned long clk_rate;
+-- 
+2.19.0.rc0
