@@ -1,79 +1,60 @@
-From: Brian Masney <masneyb@onstation.org>
-Subject: [PATCH 3/3] ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for vibrator
-Date: Wed, 19 Sep 2018 11:09:12 -0400
-Message-ID: <20180919150912.8948-4-masneyb@onstation.org>
-References: <20180919150912.8948-1-masneyb@onstation.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180919150912.8948-1-masneyb@onstation.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: sebastian.reichel@collabora.co.uk, masneyb@onstation.org
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: Re: [PATCH] backlight: pwm_bl: Fix brightness levels for non-DT
+ case.
+Date: Thu, 20 Sep 2018 09:23:49 -0700
+Message-ID: <9cc21df6-67f2-e210-33b8-e0e14f052e7e@linaro.org>
+References: <20180824155402.2822-1-enric.balletbo@collabora.com>
+ <87h8ji98jp.fsf@belgarion.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <87h8ji98jp.fsf@belgarion.home>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Robert Jarzmik <robert.jarzmik@free.fr>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, lee.jones@linaro.org
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds device device tree bindings for the vibrator found on
-the LG Nexus 5 (hammerhead) phone.
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 39 +++++++++++++++++++
- 1 file changed, 39 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-index ed8f064d0895..e738a472cb99 100644
---- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-@@ -5,6 +5,7 @@
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
-+#include <dt-bindings/clock/qcom,mmcc-msm8974.h>
- 
- / {
- 	model = "LGE MSM 8974 HAMMERHEAD";
-@@ -268,6 +269,44 @@
- 				input-enable;
- 			};
- 		};
-+
-+		vibrator_pin: vibrator {
-+			pwm {
-+				pins = "gpio27";
-+				function = "gp1_clk";
-+
-+				drive-strength = <6>;
-+				bias-disable;
-+			};
-+
-+			enable {
-+				pins = "gpio60";
-+				function = "gpio";
-+			};
-+		};
-+	};
-+
-+	msm_pwm_vibrator_enable: msm_pwm_vibrator@fd8c3450 {
-+		compatible = "qcom,msm8974-pwm-vibrator";
-+		reg = <0xfd8c3450 0x400>;
-+		#pwm-cells = <3>;
-+
-+		vcc-supply = <&pm8941_l19>;
-+
-+		clocks = <&mmcc CAMSS_GP1_CLK>;
-+		clock-names = "pwm";
-+
-+		enable-gpios = <&msmgpio 60 GPIO_ACTIVE_HIGH>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vibrator_pin>;
-+	};
-+
-+	vibrator {
-+		compatible = "pwm-vibrator";
-+
-+		pwms = <&msm_pwm_vibrator_enable 0 1000000000 0>;
-+		pwm-names = "enable";
- 	};
- 
- 	sdhci@f9824900 {
--- 
-2.17.1
+T24gMjUvMDgvMTggMDE6MDQsIFJvYmVydCBKYXJ6bWlrIHdyb3RlOgo+IEVucmljIEJhbGxldGJv
+IGkgU2VycmEgPGVucmljLmJhbGxldGJvQGNvbGxhYm9yYS5jb20+IHdyaXRlczoKPiAKPj4gQ29t
+bWl0ICc4OGJhOTViZWRiNzkgKCJiYWNrbGlnaHQ6IHB3bV9ibDogQ29tcHV0ZSBicmlnaHRuZXNz
+IG9mIExFRAo+PiBsaW5lYXJseSB0byBodW1hbiBleWUiKScgYWxsb3dzIHRoZSBwb3NzaWJpbGl0
+eSB0byBjb21wdXRlIGEgZGVmYXVsdAo+PiBicmlnaHRuZXNzIHRhYmxlIHdoZW4gdGhlcmUgaXNu
+J3QgdGhlIGJyaWdodG5lc3MtbGV2ZWxzIHByb3BlcnR5IGluIHRoZQo+PiBEVC4gVW5mb3J0dW5h
+dGVseSB0aGUgY2hhbmdlcyBtYWRlIGJyb2tlIHRoZSBwd20gYmFja2xpZ2h0IGZvciB0aGUKPj4g
+bm9uLURUIGJvYXJkcy4KPj4KPj4gVXN1YWxseSwgdGhlIG5vbi1EVCBib2FyZHMgZG9uJ3QgcGFz
+cyB0aGUgYnJpZ2h0bmVzcyBsZXZlbHMgdmlhIHBsYXRmb3JtCj4+IGRhdGEsIGluc3RlYWQsIHRo
+ZXkgc2V0IHRoZSBtYXhfYnJpZ2h0bmVzcyBpbiB0aGVpciBwbGF0Zm9ybSBkYXRhIGFuZCB0aGUK
+Pj4gZHJpdmVyIGNhbGN1bGF0ZXMgdGhlIGxldmVsIHdpdGhvdXQgYSB0YWJsZS4gVGhlIG9mZW5k
+aW5nIHBhdGNoIGFzc3VtZWQKPj4gdGhhdCB3aGVuIHRoZXJlIGlzIG5vIGJyaWdodG5lc3MgbGV2
+ZWxzIHRhYmxlIHdlIHNob3VsZCBjcmVhdGUgb25lLCBidXQgdGhpcwo+PiBpcyBjbGVhcmx5IHdy
+b25nIGZvciB0aGUgbm9uLURUIGNhc2UuCj4+Cj4+IEFmdGVyIHRoaXMgcGF0Y2ggdGhlIGNvZGUg
+aGFuZGxlcyB0aGUgRFQgYW5kIHRoZSBub24tRFQgY2FzZSB0YWtpbmcgaW4KPj4gY29uc2lkZXJh
+dGlvbiBhbHNvIGlmIG1heF9icmlnaHRuZXNzIGlzIHNldCBvciBub3QuIFRoZSBkZWZhdWx0IHRh
+YmxlIGlzCj4+IG9ubHkgY3JlYXRlZCB3aGVuIG5laXRoZXIsIGJyaWdodG5lc3MtbGV2ZWxzIGFu
+ZCBtYXhfYnJpZ2h0bmVzcywgYXJlCj4+IHNldC4KPj4KPj4gVGhlIHBhdGNoIGFsc28gZml4ZXMg
+YW5vdGhlciBpc3N1ZSBmb3VuZCBieSBSb2JlcnQuIEJlZm9yZSB0aGlzIHBhdGNoCj4+IGxvb2tz
+IGxpa2UgYSBkaXZpc2lvbiBieSAwIHdhcyBwb3NzaWJsZSB3aGVuIHN0YXRlLnBlcmlvZCByZXR1
+cm5lZCAwIGJ5Cj4+IHB3bV9nZXRfc3RhdGUoKS4gVGhpcyBpcyBiZWNhdXNlIHB3bV9nZXRfc3Rh
+dGUoKSB3YXMgY2FsbGVkIGJlZm9yZQo+PiBwd21fYXBwbHlfYXJncygpIHNvIHN0YXRlLnBlcmlv
+ZCB3YXMgbm90IGluaXRpYWxpemVkLiBUaGUgcGF0Y2ggbW92ZXMKPj4gdGhlIHB3bV9hcHBseV9h
+cmdzKCkgY2FsbCBiZWZvcmUgYW55IGNhbGwgdG8gcHdtX2dldF9zdGF0ZSgpLgo+Pgo+PiBGaXhl
+czogJzg4YmE5NWJlZGI3OSAoImJhY2tsaWdodDogcHdtX2JsOiBDb21wdXRlIGJyaWdodG5lc3Mg
+b2YgTEVEIGxpbmVhcmx5IHRvIGh1bWFuIGV5ZSIpJwo+PiBSZXBvcnRlZC1ieTogUm9iZXJ0IEph
+cnptaWsgPHJvYmVydC5qYXJ6bWlrQGZyZWUuZnI+Cj4+IFNpZ25lZC1vZmYtYnk6IEVucmljIEJh
+bGxldGJvIGkgU2VycmEgPGVucmljLmJhbGxldGJvQGNvbGxhYm9yYS5jb20+Cj4gVGVzdGVkLWJ5
+OiBSb2JlcnQgSmFyem1payA8cm9iZXJ0LmphcnptaWtAZnJlZS5mcj4KCkFja2VkLWJ5OiBEYW5p
+ZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPgoKKGFuZCBzb3JyeSBmb3Ig
+dGhlIGRlbGF5KQoKCkRhbmllbC4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
+ZHJpLWRldmVsCg==
