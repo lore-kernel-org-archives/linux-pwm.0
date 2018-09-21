@@ -1,60 +1,36 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: Re: [PATCH] backlight: pwm_bl: Fix brightness levels for non-DT
- case.
-Date: Thu, 20 Sep 2018 09:23:49 -0700
-Message-ID: <9cc21df6-67f2-e210-33b8-e0e14f052e7e@linaro.org>
-References: <20180824155402.2822-1-enric.balletbo@collabora.com>
- <87h8ji98jp.fsf@belgarion.home>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH] pwm: tegra: Remove gratuituous blank line
+Date: Fri, 21 Sep 2018 12:13:07 +0200
+Message-ID: <20180921101307.12089-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <87h8ji98jp.fsf@belgarion.home>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Robert Jarzmik <robert.jarzmik@free.fr>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, lee.jones@linaro.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMjUvMDgvMTggMDE6MDQsIFJvYmVydCBKYXJ6bWlrIHdyb3RlOgo+IEVucmljIEJhbGxldGJv
-IGkgU2VycmEgPGVucmljLmJhbGxldGJvQGNvbGxhYm9yYS5jb20+IHdyaXRlczoKPiAKPj4gQ29t
-bWl0ICc4OGJhOTViZWRiNzkgKCJiYWNrbGlnaHQ6IHB3bV9ibDogQ29tcHV0ZSBicmlnaHRuZXNz
-IG9mIExFRAo+PiBsaW5lYXJseSB0byBodW1hbiBleWUiKScgYWxsb3dzIHRoZSBwb3NzaWJpbGl0
-eSB0byBjb21wdXRlIGEgZGVmYXVsdAo+PiBicmlnaHRuZXNzIHRhYmxlIHdoZW4gdGhlcmUgaXNu
-J3QgdGhlIGJyaWdodG5lc3MtbGV2ZWxzIHByb3BlcnR5IGluIHRoZQo+PiBEVC4gVW5mb3J0dW5h
-dGVseSB0aGUgY2hhbmdlcyBtYWRlIGJyb2tlIHRoZSBwd20gYmFja2xpZ2h0IGZvciB0aGUKPj4g
-bm9uLURUIGJvYXJkcy4KPj4KPj4gVXN1YWxseSwgdGhlIG5vbi1EVCBib2FyZHMgZG9uJ3QgcGFz
-cyB0aGUgYnJpZ2h0bmVzcyBsZXZlbHMgdmlhIHBsYXRmb3JtCj4+IGRhdGEsIGluc3RlYWQsIHRo
-ZXkgc2V0IHRoZSBtYXhfYnJpZ2h0bmVzcyBpbiB0aGVpciBwbGF0Zm9ybSBkYXRhIGFuZCB0aGUK
-Pj4gZHJpdmVyIGNhbGN1bGF0ZXMgdGhlIGxldmVsIHdpdGhvdXQgYSB0YWJsZS4gVGhlIG9mZW5k
-aW5nIHBhdGNoIGFzc3VtZWQKPj4gdGhhdCB3aGVuIHRoZXJlIGlzIG5vIGJyaWdodG5lc3MgbGV2
-ZWxzIHRhYmxlIHdlIHNob3VsZCBjcmVhdGUgb25lLCBidXQgdGhpcwo+PiBpcyBjbGVhcmx5IHdy
-b25nIGZvciB0aGUgbm9uLURUIGNhc2UuCj4+Cj4+IEFmdGVyIHRoaXMgcGF0Y2ggdGhlIGNvZGUg
-aGFuZGxlcyB0aGUgRFQgYW5kIHRoZSBub24tRFQgY2FzZSB0YWtpbmcgaW4KPj4gY29uc2lkZXJh
-dGlvbiBhbHNvIGlmIG1heF9icmlnaHRuZXNzIGlzIHNldCBvciBub3QuIFRoZSBkZWZhdWx0IHRh
-YmxlIGlzCj4+IG9ubHkgY3JlYXRlZCB3aGVuIG5laXRoZXIsIGJyaWdodG5lc3MtbGV2ZWxzIGFu
-ZCBtYXhfYnJpZ2h0bmVzcywgYXJlCj4+IHNldC4KPj4KPj4gVGhlIHBhdGNoIGFsc28gZml4ZXMg
-YW5vdGhlciBpc3N1ZSBmb3VuZCBieSBSb2JlcnQuIEJlZm9yZSB0aGlzIHBhdGNoCj4+IGxvb2tz
-IGxpa2UgYSBkaXZpc2lvbiBieSAwIHdhcyBwb3NzaWJsZSB3aGVuIHN0YXRlLnBlcmlvZCByZXR1
-cm5lZCAwIGJ5Cj4+IHB3bV9nZXRfc3RhdGUoKS4gVGhpcyBpcyBiZWNhdXNlIHB3bV9nZXRfc3Rh
-dGUoKSB3YXMgY2FsbGVkIGJlZm9yZQo+PiBwd21fYXBwbHlfYXJncygpIHNvIHN0YXRlLnBlcmlv
-ZCB3YXMgbm90IGluaXRpYWxpemVkLiBUaGUgcGF0Y2ggbW92ZXMKPj4gdGhlIHB3bV9hcHBseV9h
-cmdzKCkgY2FsbCBiZWZvcmUgYW55IGNhbGwgdG8gcHdtX2dldF9zdGF0ZSgpLgo+Pgo+PiBGaXhl
-czogJzg4YmE5NWJlZGI3OSAoImJhY2tsaWdodDogcHdtX2JsOiBDb21wdXRlIGJyaWdodG5lc3Mg
-b2YgTEVEIGxpbmVhcmx5IHRvIGh1bWFuIGV5ZSIpJwo+PiBSZXBvcnRlZC1ieTogUm9iZXJ0IEph
-cnptaWsgPHJvYmVydC5qYXJ6bWlrQGZyZWUuZnI+Cj4+IFNpZ25lZC1vZmYtYnk6IEVucmljIEJh
-bGxldGJvIGkgU2VycmEgPGVucmljLmJhbGxldGJvQGNvbGxhYm9yYS5jb20+Cj4gVGVzdGVkLWJ5
-OiBSb2JlcnQgSmFyem1payA8cm9iZXJ0LmphcnptaWtAZnJlZS5mcj4KCkFja2VkLWJ5OiBEYW5p
-ZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPgoKKGFuZCBzb3JyeSBmb3Ig
-dGhlIGRlbGF5KQoKCkRhbmllbC4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
-ZHJpLWRldmVsCg==
+From: Thierry Reding <treding@nvidia.com>
+
+It's common to follow a device tree ID table by the MODULE_DEVICE_TABLE
+immediately, without an extra blank line between.
+
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/pwm/pwm-tegra.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index f8ebbece57b7..48c4595a0ffc 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -300,7 +300,6 @@ static const struct of_device_id tegra_pwm_of_match[] = {
+ 	{ .compatible = "nvidia,tegra186-pwm", .data = &tegra186_pwm_soc },
+ 	{ }
+ };
+-
+ MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
+ 
+ static const struct dev_pm_ops tegra_pwm_pm_ops = {
+-- 
+2.19.0
