@@ -1,6 +1,6 @@
 Return-Path: <paul@crapouillou.net>
-Message-Id: <5ba8750a.1c69fb81.65d07.da43SMTPIN_ADDED_MISSING@mx.google.com>
-Date: Mon, 24 Sep 2018 07:24:06 +0200
+Message-Id: <5ba87b01.1c69fb81.1ccf0.6065SMTPIN_ADDED_MISSING@mx.google.com>
+Date: Mon, 24 Sep 2018 07:49:36 +0200
 Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
 From: Paul Cercueil <paul@crapouillou.net>
 MIME-Version: 1.0
@@ -8,17 +8,33 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: base64
 List-ID: <linux-pwm.vger.kernel.org>
 To: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-watchdog@vger.kernel.org, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-SGkgRGFuaWVsLAoKTGUgMjQgc2VwdC4gMjAxOCAwNToxMiwgRGFuaWVsIExlemNhbm8gPGRhbmll
-bC5sZXpjYW5vQGxpbmFyby5vcmc+IGEgw6ljcml0IDoKPgo+IE9uIDIxLzA4LzIwMTggMTk6MTYs
-IFBhdWwgQ2VyY3VlaWwgd3JvdGU6IAo+ID4gVGhpcyBkcml2ZXIgaGFuZGxlcyB0aGUgVENVIChU
-aW1lciBDb3VudGVyIFVuaXQpIHByZXNlbnQgb24gdGhlIEluZ2VuaWMgCj4gPiBKWjQ3eHggU29D
-cywgYW5kIHByb3ZpZGVzIHRoZSBrZXJuZWwgd2l0aCBhIHN5c3RlbSB0aW1lciwgYW5kIG9wdGlv
-bmFsbHkgCj4gPiB3aXRoIGEgY2xvY2tzb3VyY2UgYW5kIGEgc2NoZWRfY2xvY2suIAo+ID4gCj4g
-PiBJdCBhbHNvIHByb3ZpZGVzIGNsb2NrcyBhbmQgaW50ZXJydXB0IGhhbmRsaW5nIHRvIGNsaWVu
-dCBkcml2ZXJzLiAKPgo+IENhbiB5b3UgcHJvdmlkZSBhIG11Y2ggbW9yZSBjb21wbGV0ZSBkZXNj
-cmlwdGlvbiBvZiB0aGUgdGltZXIgaW4gb3JkZXIgCj4gdG8gbWFrZSBteSBsaWZlIGVhc2llciBm
-b3IgdGhlIHJldmlldyBvZiB0aGlzIHBhdGNoPyAKClNlZSBwYXRjaCBbMDMvMjRdLCBpdCBhZGRz
-IGEgZG9jIGZpbGUgdGhhdCBkZXNjcmliZXMgdGhlIGhhcmR3YXJlLgoKPiBUaGFua3MgCj4KPiDC
-oCAtLSBEYW5pZWwgCgpUaGFua3MsCi1QYXVs
+CkxlIDI0IHNlcHQuIDIwMTggMDc6MzUsIERhbmllbCBMZXpjYW5vIDxkYW5pZWwubGV6Y2Fub0Bs
+aW5hcm8ub3JnPiBhIMOpY3JpdCA6Cj4KPiBPbiAyNC8wOS8yMDE4IDA3OjI0LCBQYXVsIENlcmN1
+ZWlsIHdyb3RlOiAKPiA+IEhpIERhbmllbCwgCj4gPiAKPiA+IExlIDI0IHNlcHQuIDIwMTggMDU6
+MTIsIERhbmllbCBMZXpjYW5vIDxkYW5pZWwubGV6Y2Fub0BsaW5hcm8ub3JnPiBhIMOpY3JpdCA6
+IAo+ID4+IAo+ID4+IE9uIDIxLzA4LzIwMTggMTk6MTYsIFBhdWwgQ2VyY3VlaWwgd3JvdGU6IAo+
+ID4+PiBUaGlzIGRyaXZlciBoYW5kbGVzIHRoZSBUQ1UgKFRpbWVyIENvdW50ZXIgVW5pdCkgcHJl
+c2VudCBvbiB0aGUgSW5nZW5pYyAKPiA+Pj4gSlo0N3h4IFNvQ3MsIGFuZCBwcm92aWRlcyB0aGUg
+a2VybmVsIHdpdGggYSBzeXN0ZW0gdGltZXIsIGFuZCBvcHRpb25hbGx5IAo+ID4+PiB3aXRoIGEg
+Y2xvY2tzb3VyY2UgYW5kIGEgc2NoZWRfY2xvY2suIAo+ID4+PiAKPiA+Pj4gSXQgYWxzbyBwcm92
+aWRlcyBjbG9ja3MgYW5kIGludGVycnVwdCBoYW5kbGluZyB0byBjbGllbnQgZHJpdmVycy4gCj4g
+Pj4gCj4gPj4gQ2FuIHlvdSBwcm92aWRlIGEgbXVjaCBtb3JlIGNvbXBsZXRlIGRlc2NyaXB0aW9u
+IG9mIHRoZSB0aW1lciBpbiBvcmRlciAKPiA+PiB0byBtYWtlIG15IGxpZmUgZWFzaWVyIGZvciB0
+aGUgcmV2aWV3IG9mIHRoaXMgcGF0Y2g/IAo+ID4gCj4gPiBTZWUgcGF0Y2ggWzAzLzI0XSwgaXQg
+YWRkcyBhIGRvYyBmaWxlIHRoYXQgZGVzY3JpYmVzIHRoZSBoYXJkd2FyZS4gCj4KPiBUaGFua3Ms
+IEkgd2VudCB0aHJvdWdoIGJ1dCBpdCBpcyBpbmNvbXBsZXRlIHRvIHVuZGVyc3RhbmQgd2hhdCB0
+aGUgdGltZXIgCj4gZG8uIEkgd2lsbCByZXZlcnNlLWVuZ2luZWVyIHRoZSBjb2RlIGJ1dCBpdCB3
+b3VsZCBoZWxwIGlmIHlvdSBjYW4gZ2l2ZSAKPiB0aGUgZ3Jvc3MgYXBwcm9hY2guIFdoeSBtdWx0
+aXBsZSBjaGFubmVscyA/IG11dGV4ZXMgYW5kIGNvbXBsZXRpb24gPyAKCk11Y2ggb2YgdGhlIGNv
+bXBsZXhpdHkgaXMgYmVjYXVzZSBvZiB0aGUgbXVsdGktcHVycG9zZSBuYXR1cmUgb2YgdGhlIFRD
+VSBjaGFubmVscy4gRWFjaCBvbmUgY2FuIGJlIHVzZWQgYXMgdGltZXIvY2xvY2tzb3VyY2UsIG9y
+IFBXTS4KClRoZSBkcml2ZXIgc3RhcnRzIGJ5IHVzaW5nIGNoYW5uZWxzIDAgYW5kIDEgYXMgc3lz
+dGVtIHRpbWVyIGFuZCBjbG9ja3NvdXJjZSwgcmVzcGVjdGl2ZWx5LCB0aGUgb3RoZXIgb25lcyBi
+ZWluZyB1bnVzZWQgZm9yIG5vdy4gVGhlbiwgKmlmKiB0aGUgUFdNIGRyaXZlciByZXF1ZXN0cyBv
+bmUgb2YgdGhlIGNoYW5uZWxzIGluIHVzZSBieSB0aGUgdGltZXIvY2xvY2tzb3VyY2UgZHJpdmVy
+LCBzYXkgY2hhbm5lbCAwLCB0aGUgdGltZXIvY2xvY2tzb3VyY2UgZHJpdmVyIHdpbGwgZHluYW1p
+Y2FsbHkgcmVhc3NpZ24gdGhlIHN5c3RlbSB0aW1lciB0byBhIGZyZWUgY2hhbm5lbCwgZnJvbSBj
+aGFubmVsIDAgdG8gZS5nLiBjaGFubmVsIDIuIE9ubHkgaW4gdGhhdCBjYXNlIHRoZSBjb21wbGV0
+aW9uL211dGV4IGFyZSBhY3R1YWxseSB1c2VkLgoKLVBhdWw=
