@@ -1,75 +1,80 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
-Date: Mon, 24 Sep 2018 09:14:26 +0200
-Message-ID: <a9d7366a-7118-9819-4d15-cdc10fa6c41c@linaro.org>
-References: <5ba88a1a.1c69fb81.2ba56.ccdaSMTPIN_ADDED_MISSING@mx.google.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RESEND PATCH] Revert "pwm: Set class for exported channels in
+ sysfs"
+Date: Mon, 24 Sep 2018 13:53:01 +0200
+Message-ID: <20180924115301.GV21032@ulmo>
+References: <1537538567-5377-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="3a/Z8KDuKqDOIvAo"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5ba88a1a.1c69fb81.2ba56.ccdaSMTPIN_ADDED_MISSING@mx.google.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1537538567-5377-1-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: stefan.wahren@i2se.com, gohai@sukzessiv.net, hsweeten@visionengravers.com, gottfried.haider@gmail.com, loic.pallardy@st.com, broonie@kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 24/09/2018 08:53, Paul Cercueil wrote:
-> 
-> Le 24 sept. 2018 07:58, Daniel Lezcano <daniel.lezcano@linaro.org> a écrit :
->>
->> On 24/09/2018 07:49, Paul Cercueil wrote: 
->>>
->>> Le 24 sept. 2018 07:35, Daniel Lezcano <daniel.lezcano@linaro.org> a 
->>> écrit : 
->>>>
->>>> On 24/09/2018 07:24, Paul Cercueil wrote: 
->>>>> Hi Daniel, 
->>>>>
->>>>> Le 24 sept. 2018 05:12, Daniel Lezcano 
->>>>> <daniel.lezcano@linaro.org> a écrit : 
->>>>>>
->>>>>> On 21/08/2018 19:16, Paul Cercueil wrote: 
->>>>>>> This driver handles the TCU (Timer Counter Unit) present on 
->>>>>>> the Ingenic JZ47xx SoCs, and provides the kernel with a 
->>>>>>> system timer, and optionally with a clocksource and a 
->>>>>>> sched_clock. 
->>>>>>>
->>>>>>> It also provides clocks and interrupt handling to client 
->>>>>>> drivers. 
->>>>>>
->>>>>> Can you provide a much more complete description of the timer 
->>>>>> in order to make my life easier for the review of this patch? 
->>>>>
->>>>> See patch [03/24], it adds a doc file that describes the 
->>>>> hardware. 
->>>>
->>>> Thanks, I went through but it is incomplete to understand what the 
->>>> timer do. I will reverse-engineer the code but it would help if you 
->>>> can give the gross approach. Why multiple channels ? mutexes and 
->>>> completion ? 
->>>
->>> Much of the complexity is because of the multi-purpose nature of the 
->>> TCU channels. Each one can be used as timer/clocksource, or PWM. 
->>>
->>> The driver starts by using channels 0 and 1 as system timer and 
->>> clocksource, respectively, the other ones being unused for now. Then, 
->>> *if* the PWM driver requests one of the channels in use by the 
->>> timer/clocksource driver, say channel 0, the timer/clocksource driver 
->>> will dynamically reassign the system timer to a free channel, from 
->>> channel 0 to e.g. channel 2. Only in that case the completion/mutex 
->>> are actually used. 
->>
->> Why do you need to do this? Can't be the channels dedicated and reserved 
->> for clocksource and clockevent? 
-> 
-> That's what I had in place (ingenic,timer-channel and ingenic,clocksource-channel DT properties), but Rob didn't want any linux-specific properties in the devicetree binding :(
 
-Isn't possible to specify the channel to use in the DT? like renesas16 ?
+--3a/Z8KDuKqDOIvAo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+On Fri, Sep 21, 2018 at 04:02:47PM +0200, Fabrice Gasnier wrote:
+> This reverts commit 7e5d1fd75c3dde9fc10c4472b9368089d1b81d00 as it causes
+> regression with multiple pwm chip. It creates a new entry in
+> '/sys/class/pwm' every time a 'pwmX' is exported with 'echo X > export':
+> - 1st time export will create an entry in /sys/class/pwm/pwmX
+> - when another export happens on another pwmchip, it can't be created
+> (e.g. -EEXIST)
+>=20
+> This also changes existing ABI (Documentation/ABI/testing/sysfs-class-pwm=
+):
+> - pmwX should be there: /sys/class/pwm/pwmchipN/pwmX
+>=20
+> Example on stm32 (stm32429i-eval) platform:
+> $ ls /sys/class/pwm
+> pwmchip0 pwmchip4
+>=20
+> $ cd /sys/class/pwm/pwmchip0/
+> $ echo 0 > export
+> $ ls /sys/class/pwm
+> pwm0 pwmchip0 pwmchip4
+>=20
+> $ cd /sys/class/pwm/pwmchip4/
+> $ echo 0 > export
+> sysfs: cannot create duplicate filename '/class/pwm/pwm0'
+> ...Exception stack follows...
+>=20
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> ---
+>  drivers/pwm/sysfs.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Can we come up with an alternative that allows us to have both? We want
+uevent and proper sysfs creation, or is that not possible?
+
+Thierry
+
+--3a/Z8KDuKqDOIvAo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluo0BwACgkQ3SOs138+
+s6EHUw//XihD4PTiYRbp2BgEONYQVv9olCZpDV9XeDuhhEp7ejTEp9cDDzfuT/nJ
+gMEWrVvzykDiL+x4YwknSNOif9ID4dctHsgky8obwHjkwCnbL7JpZg7z3wf6JVpP
+ZGx2TJzKP5bxnogpdT8pPf6o0rraaGKfsF6VjNk/Br/Q1+Fok5dQlOVq+koK+awi
+B5MeVTp7HkeM28H0GKB+W949cnm+c151atfUaqUTDiNr5m3sPddt66YOoAdacp2g
+HRyn5SoXgifc8g/BiOLCbdJ6jkVE8/J024nmX5ocVjKmp3RPpbmNZcSP/UYfhCps
+wApPJWlQZi6Mcog+oDVkHSgwYnSe8qpjTS5i1IYXedxt53DMpG+lb4W39+ri6AQ9
+erpzlVS54Q96AUjNEy5pTFWz2bjCLbWqthw5N1eQdQ03k6N0AiMioWo/mMOlFdIq
+TZ0OR9fERejWbdqmPwEJmFp++ArM1FGgezWoBOUXtSeu7tg1f/dTI1SHHdWN2n4Y
+caozOKJkZvDcDlUNEtx46aRFCQsXz24D3B98Hc1ke8VW7JJcSY2O0gFfq/oppy4J
+6IfDznypkzTX7OkroXxZrzxm9ScpoUitW3q+fyMNhpScnyx9Run4/0kDFLEpfKpi
+ITterfo9MsyQqvwROIVWIv5i3QtwfaWBXrU1/u5IhcHIFzjOrPs=
+=wDcO
+-----END PGP SIGNATURE-----
+
+--3a/Z8KDuKqDOIvAo--
