@@ -1,86 +1,24 @@
-Return-Path: <andriy.shevchenko@linux.intel.com>
-Date: Tue, 25 Sep 2018 12:40:25 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 2/2] pwm: lpss: Add get_state callback
-Message-ID: <20180925094025.GT15943@smile.fi.intel.com>
-References: <20180925072536.17406-1-hdegoede@redhat.com>
- <20180925072536.17406-2-hdegoede@redhat.com>
+Return-Path: <paul@crapouillou.net>
+Message-Id: <5ba8750a.1c69fb81.65d07.da43SMTPIN_ADDED_MISSING@mx.google.com>
+Date: Mon, 24 Sep 2018 07:24:06 +0200
+Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
+From: Paul Cercueil <paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180925072536.17406-2-hdegoede@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 List-ID: <linux-pwm.vger.kernel.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-On Tue, Sep 25, 2018 at 09:25:36AM +0200, Hans de Goede wrote:
-> Add a get_state callback so that the initial state correctly reflects
-> the actual hardware state.
-> 
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Acked-by: Jani Nikula <jani.nikula@intel.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Changes in v2:
-> -Stop using the dropped pwm_lpss_get_put_runtime_pm() helper
-> ---
->  drivers/pwm/pwm-lpss.c | 34 ++++++++++++++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
-> 
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> index 723ca9de8325..ea93ef9f3672 100644
-> --- a/drivers/pwm/pwm-lpss.c
-> +++ b/drivers/pwm/pwm-lpss.c
-> @@ -159,8 +159,42 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  	return 0;
->  }
->  
-> +/* This function gets called once from pwmchip_add to get the initial state */
-> +static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			       struct pwm_state *state)
-> +{
-> +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-> +	unsigned long base_unit_range;
-> +	unsigned long long base_unit, freq, on_time_div;
-> +	u32 ctrl;
-> +
-> +	base_unit_range = BIT(lpwm->info->base_unit_bits);
-> +
-> +	ctrl = pwm_lpss_read(pwm);
-> +	on_time_div = 255 - (ctrl & PWM_ON_TIME_DIV_MASK);
-> +	base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range - 1);
-> +
-> +	freq = base_unit * lpwm->info->clk_rate;
-> +	do_div(freq, base_unit_range);
-> +	if (freq == 0)
-> +		state->period = NSEC_PER_SEC;
-> +	else
-> +		state->period = NSEC_PER_SEC / (unsigned long)freq;
-> +
-> +	on_time_div *= state->period;
-> +	do_div(on_time_div, 255);
-> +	state->duty_cycle = on_time_div;
-> +
-> +	state->polarity = PWM_POLARITY_NORMAL;
-> +	state->enabled = !!(ctrl & PWM_ENABLE);
-> +
-> +	if (state->enabled)
-> +		pm_runtime_get(chip->dev);
-> +}
-> +
->  static const struct pwm_ops pwm_lpss_ops = {
->  	.apply = pwm_lpss_apply,
-> +	.get_state = pwm_lpss_get_state,
->  	.owner = THIS_MODULE,
->  };
->  
-> -- 
-> 2.19.0.rc1
-> 
-
--- 
-With Best Regards,
-Andy Shevchenko
+SGkgRGFuaWVsLAoKTGUgMjQgc2VwdC4gMjAxOCAwNToxMiwgRGFuaWVsIExlemNhbm8gPGRhbmll
+bC5sZXpjYW5vQGxpbmFyby5vcmc+IGEgw6ljcml0IDoKPgo+IE9uIDIxLzA4LzIwMTggMTk6MTYs
+IFBhdWwgQ2VyY3VlaWwgd3JvdGU6IAo+ID4gVGhpcyBkcml2ZXIgaGFuZGxlcyB0aGUgVENVIChU
+aW1lciBDb3VudGVyIFVuaXQpIHByZXNlbnQgb24gdGhlIEluZ2VuaWMgCj4gPiBKWjQ3eHggU29D
+cywgYW5kIHByb3ZpZGVzIHRoZSBrZXJuZWwgd2l0aCBhIHN5c3RlbSB0aW1lciwgYW5kIG9wdGlv
+bmFsbHkgCj4gPiB3aXRoIGEgY2xvY2tzb3VyY2UgYW5kIGEgc2NoZWRfY2xvY2suIAo+ID4gCj4g
+PiBJdCBhbHNvIHByb3ZpZGVzIGNsb2NrcyBhbmQgaW50ZXJydXB0IGhhbmRsaW5nIHRvIGNsaWVu
+dCBkcml2ZXJzLiAKPgo+IENhbiB5b3UgcHJvdmlkZSBhIG11Y2ggbW9yZSBjb21wbGV0ZSBkZXNj
+cmlwdGlvbiBvZiB0aGUgdGltZXIgaW4gb3JkZXIgCj4gdG8gbWFrZSBteSBsaWZlIGVhc2llciBm
+b3IgdGhlIHJldmlldyBvZiB0aGlzIHBhdGNoPyAKClNlZSBwYXRjaCBbMDMvMjRdLCBpdCBhZGRz
+IGEgZG9jIGZpbGUgdGhhdCBkZXNjcmliZXMgdGhlIGhhcmR3YXJlLgoKPiBUaGFua3MgCj4KPiDC
+oCAtLSBEYW5pZWwgCgpUaGFua3MsCi1QYXVs
