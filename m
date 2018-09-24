@@ -1,55 +1,37 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RESEND PATCH] Revert "pwm: Set class for exported channels in sysfs"
-Date: Fri, 21 Sep 2018 16:02:47 +0200
-Message-ID: <1537538567-5377-1-git-send-email-fabrice.gasnier@st.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
+Date: Mon, 24 Sep 2018 05:12:29 +0200
+Message-ID: <e0836866-552f-374b-d271-a4ea2d4953ac@linaro.org>
+References: <20180821171635.22740-1-paul@crapouillou.net>
+ <20180821171635.22740-6-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180821171635.22740-6-paul@crapouillou.net>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, stefan.wahren@i2se.com, gohai@sukzessiv.net
-Cc: hsweeten@visionengravers.com, gottfried.haider@gmail.com, loic.pallardy@st.com, broonie@kernel.org, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-This reverts commit 7e5d1fd75c3dde9fc10c4472b9368089d1b81d00 as it causes
-regression with multiple pwm chip. It creates a new entry in
-'/sys/class/pwm' every time a 'pwmX' is exported with 'echo X > export':
-- 1st time export will create an entry in /sys/class/pwm/pwmX
-- when another export happens on another pwmchip, it can't be created
-(e.g. -EEXIST)
+On 21/08/2018 19:16, Paul Cercueil wrote:
+> This driver handles the TCU (Timer Counter Unit) present on the Ingenic
+> JZ47xx SoCs, and provides the kernel with a system timer, and optionally
+> with a clocksource and a sched_clock.
+> 
+> It also provides clocks and interrupt handling to client drivers.
 
-This also changes existing ABI (Documentation/ABI/testing/sysfs-class-pwm):
-- pmwX should be there: /sys/class/pwm/pwmchipN/pwmX
+Can you provide a much more complete description of the timer in order
+to make my life easier for the review of this patch?
 
-Example on stm32 (stm32429i-eval) platform:
-$ ls /sys/class/pwm
-pwmchip0 pwmchip4
+Thanks
 
-$ cd /sys/class/pwm/pwmchip0/
-$ echo 0 > export
-$ ls /sys/class/pwm
-pwm0 pwmchip0 pwmchip4
+  -- Daniel
 
-$ cd /sys/class/pwm/pwmchip4/
-$ echo 0 > export
-sysfs: cannot create duplicate filename '/class/pwm/pwm0'
-...Exception stack follows...
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- drivers/pwm/sysfs.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 7c71cdb..4726d43 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -263,7 +263,6 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 	export->pwm = pwm;
- 	mutex_init(&export->lock);
- 
--	export->child.class = parent->class;
- 	export->child.release = pwm_export_release;
- 	export->child.parent = parent;
- 	export->child.devt = MKDEV(0, 0);
 -- 
-1.9.1
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
