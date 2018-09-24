@@ -1,33 +1,40 @@
 From: Daniel Lezcano <daniel.lezcano@linaro.org>
 Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
-Date: Mon, 24 Sep 2018 05:12:29 +0200
-Message-ID: <e0836866-552f-374b-d271-a4ea2d4953ac@linaro.org>
-References: <20180821171635.22740-1-paul@crapouillou.net>
- <20180821171635.22740-6-paul@crapouillou.net>
+Date: Mon, 24 Sep 2018 07:35:05 +0200
+Message-ID: <58645f14-aec2-4f66-3a39-34beeabdb035@linaro.org>
+References: <5ba8750a.1c69fb81.501e8.d0f0SMTPIN_ADDED_MISSING@mx.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180821171635.22740-6-paul@crapouillou.net>
+In-Reply-To: <5ba8750a.1c69fb81.501e8.d0f0SMTPIN_ADDED_MISSING@mx.google.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 21/08/2018 19:16, Paul Cercueil wrote:
-> This driver handles the TCU (Timer Counter Unit) present on the Ingenic
-> JZ47xx SoCs, and provides the kernel with a system timer, and optionally
-> with a clocksource and a sched_clock.
+On 24/09/2018 07:24, Paul Cercueil wrote:
+> Hi Daniel,
 > 
-> It also provides clocks and interrupt handling to client drivers.
+> Le 24 sept. 2018 05:12, Daniel Lezcano <daniel.lezcano@linaro.org> a écrit :
+>>
+>> On 21/08/2018 19:16, Paul Cercueil wrote: 
+>>> This driver handles the TCU (Timer Counter Unit) present on the Ingenic 
+>>> JZ47xx SoCs, and provides the kernel with a system timer, and optionally 
+>>> with a clocksource and a sched_clock. 
+>>>
+>>> It also provides clocks and interrupt handling to client drivers. 
+>>
+>> Can you provide a much more complete description of the timer in order 
+>> to make my life easier for the review of this patch? 
+> 
+> See patch [03/24], it adds a doc file that describes the hardware.
 
-Can you provide a much more complete description of the timer in order
-to make my life easier for the review of this patch?
+Thanks, I went through but it is incomplete to understand what the timer
+do. I will reverse-engineer the code but it would help if you can give
+the gross approach. Why multiple channels ? mutexes and completion ?
 
-Thanks
-
-  -- Daniel
 
 -- 
  <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
