@@ -1,59 +1,75 @@
-Return-Path: <andriy.shevchenko@linux.intel.com>
-Date: Tue, 25 Sep 2018 12:09:23 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 1/2] pwm: lpss: Release runtime-pm reference from the
- driver's remove callback
-Message-ID: <20180925090923.GS15943@smile.fi.intel.com>
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v2 2/2] pwm: lpss: Add get_state callback
+Date: Tue, 25 Sep 2018 09:25:36 +0200
+Message-Id: <20180925072536.17406-2-hdegoede@redhat.com>
+In-Reply-To: <20180925072536.17406-1-hdegoede@redhat.com>
 References: <20180925072536.17406-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20180925072536.17406-1-hdegoede@redhat.com>
+Content-Transfer-Encoding: 8bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-On Tue, Sep 25, 2018 at 09:25:35AM +0200, Hans de Goede wrote:
-> For each pwm output which gets enabled through pwm_lpss_apply(), we do a
-> pm_runtime_get_sync().
-> 
-> This commit adds pm_runtime_put() calls to pwm_lpss_remove() to balance
-> these when the driver gets removed with some of the outputs still enabled.
+Add a get_state callback so that the initial state correctly reflects
+the actual hardware state.
 
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Changes in v2:
+-Stop using the dropped pwm_lpss_get_put_runtime_pm() helper
+---
+ drivers/pwm/pwm-lpss.c | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-> 
-> Fixes: f080be27d7d9 ("pwm: lpss: Add support for runtime PM")
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Changes in v2:
-> -New patch in v2 of this patch-set replacing "pwm: lpss: Add
->  pwm_lpss_get_put_runtime_pm helper function"
-> ---
->  drivers/pwm/pwm-lpss.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> index e602835fd6de..723ca9de8325 100644
-> --- a/drivers/pwm/pwm-lpss.c
-> +++ b/drivers/pwm/pwm-lpss.c
-> @@ -205,6 +205,12 @@ EXPORT_SYMBOL_GPL(pwm_lpss_probe);
->  
->  int pwm_lpss_remove(struct pwm_lpss_chip *lpwm)
->  {
-> +	int i;
-> +
-> +	for (i = 0; i < lpwm->info->npwm; i++) {
-> +		if (pwm_is_enabled(&lpwm->chip.pwms[i]))
-> +			pm_runtime_put(lpwm->chip.dev);
-> +	}
->  	return pwmchip_remove(&lpwm->chip);
->  }
->  EXPORT_SYMBOL_GPL(pwm_lpss_remove);
-> -- 
-> 2.19.0.rc1
-> 
-
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 723ca9de8325..ea93ef9f3672 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -159,8 +159,42 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++/* This function gets called once from pwmchip_add to get the initial state */
++static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++			       struct pwm_state *state)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	unsigned long base_unit_range;
++	unsigned long long base_unit, freq, on_time_div;
++	u32 ctrl;
++
++	base_unit_range = BIT(lpwm->info->base_unit_bits);
++
++	ctrl = pwm_lpss_read(pwm);
++	on_time_div = 255 - (ctrl & PWM_ON_TIME_DIV_MASK);
++	base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range - 1);
++
++	freq = base_unit * lpwm->info->clk_rate;
++	do_div(freq, base_unit_range);
++	if (freq == 0)
++		state->period = NSEC_PER_SEC;
++	else
++		state->period = NSEC_PER_SEC / (unsigned long)freq;
++
++	on_time_div *= state->period;
++	do_div(on_time_div, 255);
++	state->duty_cycle = on_time_div;
++
++	state->polarity = PWM_POLARITY_NORMAL;
++	state->enabled = !!(ctrl & PWM_ENABLE);
++
++	if (state->enabled)
++		pm_runtime_get(chip->dev);
++}
++
+ static const struct pwm_ops pwm_lpss_ops = {
+ 	.apply = pwm_lpss_apply,
++	.get_state = pwm_lpss_get_state,
+ 	.owner = THIS_MODULE,
+ };
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.19.0.rc1
