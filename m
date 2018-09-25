@@ -1,108 +1,192 @@
-From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
-Subject: Re: [BUG] pwm: sysfs: It is not possible to export more than one
- channel
-Date: Tue, 25 Sep 2018 13:52:46 +0200
-Message-ID: <06ae5eac-6474-2eaa-94fe-68c750ef5479@ysoft.com>
-References: <cd7b3cad-98bf-d976-2e30-0b018f51f90a@ysoft.com>
- <20180925102153.GI7097@ulmo>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: Re: [RESEND PATCH] Revert "pwm: Set class for exported channels in
+ sysfs"
+Date: Tue, 25 Sep 2018 15:59:26 +0200
+Message-ID: <4278fef9-ec60-239a-dd0a-29a89d742fa4@st.com>
+References: <1537538567-5377-1-git-send-email-fabrice.gasnier@st.com>
+ <20180924115301.GV21032@ulmo> <fc02ced1-01ba-dde4-95da-285d9351338b@st.com>
+ <20180924142318.GG23547@ulmo> <c4866533-1c7e-2675-5d80-3b824e32ae9b@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180925102153.GI7097@ulmo>
+In-Reply-To: <c4866533-1c7e-2675-5d80-3b824e32ae9b@st.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, Gottfried Haider <gottfried.haider@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, H Hartley Sweeten <hsweeten@visionengravers.com>
+Cc: stefan.wahren@i2se.com, gohai@sukzessiv.net, hsweeten@visionengravers.com, gottfried.haider@gmail.com, loic.pallardy@st.com, broonie@kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, michal.vokac@ysoft.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 25.9.2018 12:21, Thierry Reding wrote:
-> On Tue, Sep 25, 2018 at 11:11:32AM +0200, Michal Vokáč wrote:
->> Hi,
+On 09/24/2018 05:50 PM, Fabrice Gasnier wrote:
+> On 09/24/2018 04:23 PM, Thierry Reding wrote:
+>> On Mon, Sep 24, 2018 at 03:59:03PM +0200, Fabrice Gasnier wrote:
+>>> On 09/24/2018 01:53 PM, Thierry Reding wrote:
+>>>> On Fri, Sep 21, 2018 at 04:02:47PM +0200, Fabrice Gasnier wrote:
+>>>>> This reverts commit 7e5d1fd75c3dde9fc10c4472b9368089d1b81d00 as it causes
+>>>>> regression with multiple pwm chip. It creates a new entry in
+>>>>> '/sys/class/pwm' every time a 'pwmX' is exported with 'echo X > export':
+>>>>> - 1st time export will create an entry in /sys/class/pwm/pwmX
+>>>>> - when another export happens on another pwmchip, it can't be created
+>>>>> (e.g. -EEXIST)
+>>>>>
+>>>>> This also changes existing ABI (Documentation/ABI/testing/sysfs-class-pwm):
+>>>>> - pmwX should be there: /sys/class/pwm/pwmchipN/pwmX
+>>>>>
+>>>>> Example on stm32 (stm32429i-eval) platform:
+>>>>> $ ls /sys/class/pwm
+>>>>> pwmchip0 pwmchip4
+>>>>>
+>>>>> $ cd /sys/class/pwm/pwmchip0/
+>>>>> $ echo 0 > export
+>>>>> $ ls /sys/class/pwm
+>>>>> pwm0 pwmchip0 pwmchip4
+>>>>>
+>>>>> $ cd /sys/class/pwm/pwmchip4/
+>>>>> $ echo 0 > export
+>>>>> sysfs: cannot create duplicate filename '/class/pwm/pwm0'
+>>>>> ...Exception stack follows...
+>>>>>
+>>>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+>>>>> ---
+>>>>>  drivers/pwm/sysfs.c | 1 -
+>>>>>  1 file changed, 1 deletion(-)
+>>>>
+>>>> Can we come up with an alternative that allows us to have both? We want
+>>>> uevent and proper sysfs creation, or is that not possible?
+>>>
+>>> Hi Thierry, all,
+>>>
+>>> With current approach:
+>>> - "export->child.class = parent->class"
+>>> - ABI (e.g. "pwm%d") device name isn't unique with multiple pwm chip.
+>>> I think this is not possible.
+>>>
+>>> Trying to think of an alternative... I just did a quick test, by
+>>> changing device name, to take pwmchip into account:
+>>> +       export->child.class = parent->class;
+>>>         export->child.release = pwm_export_release;
+>>>         export->child.parent = parent;
+>>>         export->child.devt = MKDEV(0, 0);
+>>>         export->child.groups = pwm_groups;
+>>> -       dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
+>>> +       dev_set_name(&export->child, "pwmchip%d-pwm%u", chip->base,
+>>> pwm->hwpwm);
+>>>
+>>> But this also impacts existing ABI :-(
+>>> Would you have suggestions to send an uevent, without modifying ABI ?
 >>
->> Since commit 7e5d1fd75c3d ("pwm: Set class for exported channels in
->> sysfs") it is not possible to export more than one PWM channel.
->>
->> This is because for each exported channel a directory named pwmN is
->> created in /sys/class/pwm/. As channels for all PWM chips are numbered
->> from 0 it is not possible to export pwmN channel from one chip and
->> pwmN channel from another chip at the same time.
->>
->> In theory if your SoC has N PWM chips and each chip has N channels you
->> should be able to export N channels. But only one channel from each chip.
->>
->> I found the issue on i.MX6dl SoC with two PWM chips where each PWM chip
->> has just one channel.
->>
->> This is how it can be reproduced:
->>
->> root@hydraco:/sys/class/pwm# ls
->> pwmchip0 -> ../../devices/soc0/soc/2000000.aips-bus/2080000.pwm/pwm/pwmchip0
->> pwmchip1 -> ../../devices/soc0/soc/2000000.aips-bus/208c000.pwm/pwm/pwmchip1
->>
->> root@hydraco:/sys/class/pwm# cat pwmchip0/npwm
->> 1
->> root@hydraco:/sys/class/pwm# cat pwmchip1/npwm
->> 1
->>
->> root@hydraco:/sys/class/pwm# echo 0 > pwmchip0/export
->> root@hydraco:/sys/class/pwm# ls -l
->> pwm0 -> ../../devices/soc0/soc/2000000.aips-bus/2080000.pwm/pwm/pwmchip0/pwm0
->> pwmchip0 -> ../../devices/soc0/soc/2000000.aips-bus/2080000.pwm/pwm/pwmchip0
->> pwmchip1 -> ../../devices/soc0/soc/2000000.aips-bus/208c000.pwm/pwm/pwmchip1
->>
->> root@hydraco:/sys/class/pwm# echo 0 > pwmchip1/export
->> [  543.110824] sysfs: cannot create duplicate filename '/class/pwm/pwm0'
->> [  543.117314] CPU: 1 PID: 351 Comm: sh Not tainted 4.19.0-rc5-00025-g249f3ed-dirty #8
->> [  543.124990] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
->> [  543.131587] [<80112d20>] (unwind_backtrace) from [<8010ddb4>] (show_stack+0x20/0x24)
->> [  543.139383] [<8010ddb4>] (show_stack) from [<80ba1044>] (dump_stack+0x80/0x94)
->> [  543.146652] [<80ba1044>] (dump_stack) from [<8031e2b4>] (sysfs_warn_dup+0x6c/0x78)
->> [  543.154257] [<8031e2b4>] (sysfs_warn_dup) from [<8031e61c>] (sysfs_do_create_link_sd+0xd8/0xdc)
->> [  543.162988] [<8031e61c>] (sysfs_do_create_link_sd) from [<8031e678>] (sysfs_create_link+0x38/0x44)
->> [  543.171986] [<8031e678>] (sysfs_create_link) from [<806026b0>] (device_add+0x2c8/0x630)
->> [  543.180025] [<806026b0>] (device_add) from [<80602a3c>] (device_register+0x24/0x28)
->> [  543.187724] [<80602a3c>] (device_register) from [<80501acc>] (export_store+0x118/0x190)
->> [  543.195762] [<80501acc>] (export_store) from [<805ffc10>] (dev_attr_store+0x28/0x34)
->> [  543.203539] [<805ffc10>] (dev_attr_store) from [<8031d7dc>] (sysfs_kf_write+0x48/0x54)
->> [  543.211485] [<8031d7dc>] (sysfs_kf_write) from [<8031cde0>] (kernfs_fop_write+0xf8/0x1e0)
->> [  543.219696] [<8031cde0>] (kernfs_fop_write) from [<80294d78>] (__vfs_write+0x48/0x170)
->> [  543.227645] [<80294d78>] (__vfs_write) from [<80295064>] (vfs_write+0xb4/0x1c0)
->> [  543.234981] [<80295064>] (vfs_write) from [<802952e8>] (ksys_write+0x5c/0xbc)
->> [  543.242144] [<802952e8>] (ksys_write) from [<80295360>] (sys_write+0x18/0x1c)
->> [  543.249313] [<80295360>] (sys_write) from [<80101000>] (ret_fast_syscall+0x0/0x54)
->> [  543.256901] Exception stack(0xecfbffa8 to 0xecfbfff0)
->> [  543.261980] ffa0:                   00000002 76fc8000 00000001 76fc8000 00000002 00000000
->> [  543.270184] ffc0: 00000002 76fc8000 76f5cd60 00000004 00000002 000bd134 00000001 000ba730
->> [  543.278380] ffe0: 00000000 7ebff954 76e8b988 76ee3cd0
->> -sh: echo: write error: File exists
->>
->> I am not sure what will be the right solution. The problem is that
->> numbering of the PWM channels does not work the same way as in the GPIO
->> subsystem where each GPIO has its unique number.
->>
->> Should we just revert the change? It was not documented in the PWM sysfs
->> interface. What do you think?
+>> I don't quite understand why, in the example you show in the commit
+>> message, the pwmX nodes appear in the top-level /sys/class/pwm
+>> directory. According to Documentation/ABI/testing/sysfs-class-pwm they
+>> should appear as /sys/class/pwm/pwmchipN/pwmX. I can only imagine that
+>> setting the class may have changed that.
 > 
-> Fabrice has reported the same thing. We've been discussing possible
-> solutions here:
+> Yes, adding the class makes the link to be created under /sys/class/pwm:
+> device_register() -> device_add() -> device_add_class_symlinks()
+> In device_add_class_symlinks():
+> ...
+> 	if (!dev->class)
+> 		return 0;
+> ...
+> 	/* link in the class directory pointing to the device */
+> 	error = sysfs_create_link(&dev->class->p->subsys.kobj,
+> 				  &dev->kobj, dev_name(dev));
+> ...
 > 
-> 	http://patchwork.ozlabs.org/patch/973224/
+>> If so, perhaps we can
+>> workaround that by creating a new class that is not parent->class?
 
-Thank you for the reference Thierry. I was convinced there must be someone
-else who encountered the same problem. My search did not produce anything
-useful though.
+Hi Thierry,
 
-> It looks to me like we'd need to at least revert the patch to restore
-> the sysfs ABI. At the same time I think we'll want to fix the issue that
-> the offending commit was trying to address.
+Maybe there's a way around, keeping the revert patch, without impacting
+the ABI:
+- pwmX cannot be added to pwm/another class without issue as discussed
+(numbering isn't unique).
+- pwmchipN already belongs to pwm class.
 
-Agree, ideally we want to solve both problems. My knowledge of the overall
-architecture is still fairly limited though. I have no idea if/how we can
-deal with the issue the offending commit was addressing if we revert it.
+I did some testing, trying to send uevent on the pwmX directly, without
+success: uevents are filtered as pwmX doesn't belong to a class.
 
-Would be great if we could somehow choose a different name just for the
-symlink but leave the device name as is to not break the ABI as Fabrice
-suggested.
+Still, it is possible to send uevent (KOBJ_CHANGE) on pwmchipN device,
+to notify of a change, e.g. pwmX channel being exported/unexported.
 
-Michal
+I run following prototype (with revert patch).
+
+static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ {
++       char *pwm_prop[2];
+        struct pwm_export *export;
+        int ret;
+ ...
+                kfree(export);
+                return ret;
+        }
++       pwm_prop[0] = kasprintf(GFP_KERNEL, "EXPORT=pwm%u", pwm->hwpwm);
++       pwm_prop[1] = NULL;
++       kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
++       kfree(pwm_prop[0]);
+
+        return 0;
+ }
+
+ static int pwm_unexport_child(struct device *parent, struct pwm_device
+*pwm)
+ {
+        struct device *child;
++       char *pwm_prop[2];
+
+        if (!test_and_clear_bit(PWMF_EXPORTED, &pwm->flags))
+                return -ENODEV;
+...
+        if (!child)
+                return -ENODEV;
+
++       pwm_prop[0] = kasprintf(GFP_KERNEL, "UNEXPORT=pwm%u", pwm->hwpwm);
++       pwm_prop[1] = NULL;
++       kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
++       kfree(pwm_prop[0]);
++
+        /* for device_find_child() */
+
+Then, I run a quick test:
+
+# udevadm monitor --environment &
+# echo 0 > /sys/class/pwm/pwmchip0/export
+KERNEL[197.321736] change   /devices/.../pwm/pwmchip0 (pwm)
+ACTION=change
+DEVPATH=/devices/.../pwm/pwmchip0
+EXPORT=pwm0
+SEQNUM=2045
+SUBSYSTEM=pwm
+
+# echo 0 > /sys/class/pwm/pwmchip4/export
+KERNEL[202.089676] change   /devices/.../pwm/pwmchip4 (pwm)
+ACTION=change
+DEVPATH=/devices/.../pwm/pwmchip4
+EXPORT=pwm0
+SEQNUM=2046
+SUBSYSTEM=pwm
+
+
+Also unexport will report change events to userland:
+
+# echo 0 > /sys/class/pwm/pwmchip0/unexport
+KERNEL[1691.112765] change   /devices/.../pwm/pwmchip0 (pwm)
+ACTION=change
+DEVPATH=/devices/.../pwm/pwmchip0
+SEQNUM=2047
+SUBSYSTEM=pwm
+UNEXPORT=pwm0
+
+Do you think this may be a way around?
+Please let me know if this may satisfy need for uevents.
+
+Best regards,
+Fabrice
+> 
+> And this link is added using dev_name(). So I doubt adding a new class
+> will change the current behavior.
+> 
+>>
+>> Thierry
+>>
