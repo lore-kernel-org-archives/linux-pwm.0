@@ -1,87 +1,90 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v7 05/24] clocksource: Add a new timer-ingenic driver
-Date: Tue, 25 Sep 2018 22:12:28 +0200
-Message-ID: <346cb95c-f9ce-f19b-30f3-75e9fb379290@linaro.org>
-References: <5baa3fa9.1c69fb81.4c7b7.19fdSMTPIN_ADDED_MISSING@mx.google.com>
+From: Brian Masney <masneyb@onstation.org>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: msm-vibrator: new bindings for MSM
+ vibrator driver
+Date: Tue, 25 Sep 2018 16:40:02 -0400
+Message-ID: <20180925204002.upoxfm5udmepgz4e@232b6f9c30d0>
+References: <20180919150912.8948-1-masneyb@onstation.org>
+ <20180919150912.8948-2-masneyb@onstation.org>
+ <5baa1af9.1c69fb81.73ad9.3bd5@mx.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5baa3fa9.1c69fb81.4c7b7.19fdSMTPIN_ADDED_MISSING@mx.google.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <5baa1af9.1c69fb81.73ad9.3bd5@mx.google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Mathieu Malaterre <malat@debian.org>, Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-watchdog@vger.kernel.org, od@zcrc.me, linux-mips@linux-mips.org, Paul Burton <paul.burton@mips.com>, Mark Rutland <mark.rutland@arm.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sebastian.reichel@collabora.co.uk
 List-Id: linux-pwm@vger.kernel.org
 
-On 25/09/2018 15:38, Paul Cercueil wrote:
+Hi Rob,
+
+On Mon, Sep 24, 2018 at 03:01:11PM -0700, Rob Herring wrote:
+> On Wed, Sep 19, 2018 at 11:09:10AM -0400, Brian Masney wrote:
+> > This patch adds the device tree bindings for the pwm-msm-vibrator.c
+> > driver that supports the vibrator found on various Qualcomm MSM SOCs.
 > 
-> Le 24 sept. 2018 9:14 AM, Daniel Lezcano <daniel.lezcano@linaro.org> a écrit :
->>
->> On 24/09/2018 08:53, Paul Cercueil wrote: 
->>>
->>> Le 24 sept. 2018 07:58, Daniel Lezcano <daniel.lezcano@linaro.org> a écrit : 
->>>>
->>>> On 24/09/2018 07:49, Paul Cercueil wrote: 
->>>>>
->>>>> Le 24 sept. 2018 07:35, Daniel Lezcano <daniel.lezcano@linaro.org> a 
->>>>> écrit : 
->>>>>>
->>>>>> On 24/09/2018 07:24, Paul Cercueil wrote: 
->>>>>>> Hi Daniel, 
->>>>>>>
->>>>>>> Le 24 sept. 2018 05:12, Daniel Lezcano 
->>>>>>> <daniel.lezcano@linaro.org> a écrit : 
->>>>>>>>
->>>>>>>> On 21/08/2018 19:16, Paul Cercueil wrote: 
->>>>>>>>> This driver handles the TCU (Timer Counter Unit) present on 
->>>>>>>>> the Ingenic JZ47xx SoCs, and provides the kernel with a 
->>>>>>>>> system timer, and optionally with a clocksource and a 
->>>>>>>>> sched_clock. 
->>>>>>>>>
->>>>>>>>> It also provides clocks and interrupt handling to client 
->>>>>>>>> drivers. 
->>>>>>>>
->>>>>>>> Can you provide a much more complete description of the timer 
->>>>>>>> in order to make my life easier for the review of this patch? 
->>>>>>>
->>>>>>> See patch [03/24], it adds a doc file that describes the 
->>>>>>> hardware. 
->>>>>>
->>>>>> Thanks, I went through but it is incomplete to understand what the 
->>>>>> timer do. I will reverse-engineer the code but it would help if you 
->>>>>> can give the gross approach. Why multiple channels ? mutexes and 
->>>>>> completion ? 
->>>>>
->>>>> Much of the complexity is because of the multi-purpose nature of the 
->>>>> TCU channels. Each one can be used as timer/clocksource, or PWM. 
->>>>>
->>>>> The driver starts by using channels 0 and 1 as system timer and 
->>>>> clocksource, respectively, the other ones being unused for now. Then, 
->>>>> *if* the PWM driver requests one of the channels in use by the 
->>>>> timer/clocksource driver, say channel 0, the timer/clocksource driver 
->>>>> will dynamically reassign the system timer to a free channel, from 
->>>>> channel 0 to e.g. channel 2. Only in that case the completion/mutex 
->>>>> are actually used. 
->>>>
->>>> Why do you need to do this? Can't be the channels dedicated and reserved 
->>>> for clocksource and clockevent? 
->>>
->>> That's what I had in place (ingenic,timer-channel and ingenic,clocksource-channel DT properties), but Rob didn't want any linux-specific properties in the devicetree binding :( 
->>
->> Isn't possible to specify the channel to use in the DT? like renesas16 ? 
+> Bindings are for h/w, not some driver.
+
+OK, I will fix this and the other references in v2.
+
+> > +Required properties:
+> > +
+> > +  - compatible: Should be one of
+> > +		"qcom,msm8226-pwm-vibrator"
+> > +		"qcom,msm8974-pwm-vibrator"
 > 
-> That's what I did in V6 (and before), but Rob did not want me to add properties for Linux-specific concepts such as clocksource.
+> The block only works for a vibrator?
 
-Hmm, I remember something like that, yes but I did a delete of the
-previous version when you posted the v7. Can you give a pointer to its
-answer ?
+Yes.
+
+I cannot find a publicly-available datasheet for the MSM8974 to see if
+there are other uses for this particular PWM available. The only thing
+that I have to work with right now is the downstream Android sources at
+https://android.googlesource.com/kernel/msm/+/android-msm-lenok-3.10-lollipop-wear-release/drivers/misc/msm_pwm_vibrator.c.
+
+> > +  - reg: the base address and length of the IO memory for the registers.
+> > +  - #pwm-cells: set to 3.
+> > +  - pinctrl-names: set to default.
+> > +  - pinctrl-0: phandles pointing to pin configuration nodes. See
+> > +               Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
+> > +  - clock-names: set to pwm
+> > +  - clocks: phandle of the clock used by the PWM module. See
+> > +            Documentation/devicetree/bindings/clock/clock-bindings.txt
+> > +  - enable-gpios: GPIO that enables the vibrator.
+> 
+> Shouldn't this go in the vibrator node as it is connected to the 
+> vibrator.
+
+This should be labeled "GPIO that enables the PWM".
+
+Brian
 
 
-
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+> > +
+> > +Optional properties:
+> > +
+> > +  - vcc-supply: phandle to the regulator that provides power to the sensor.
+> > +
+> > +Example from a LG Nexus 5 (hammerhead) phone:
+> > +
+> > +msm_pwm_vibrator_enable: msm_pwm_vibrator@fd8c3450 {
+> 
+> pwm@...
+> 
+> > +	reg = <0xfd8c3450 0x400>;
+> > +	compatible = "qcom,msm8974-pwm-vibrator";
+> > +	#pwm-cells = <3>;
+> > +
+> > +	vcc-supply = <&pm8941_l19>;
+> > +
+> > +	clocks = <&mmcc CAMSS_GP1_CLK>;
+> > +	clock-names = "pwm";
+> > +
+> > +	enable-gpios = <&msmgpio 60 GPIO_ACTIVE_HIGH>;
+> > +
+> > +	pinctrl-names = "default";
+> > +	pinctrl-0 = <&vibrator_pin>;
+> > +};
+> > -- 
+> > 2.17.1
+> > 
