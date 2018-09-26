@@ -1,47 +1,67 @@
 From: Brian Masney <masneyb@onstation.org>
-Subject: [PATCH v2 0/3] treewide: add vibrator support for various MSM SOCs
-Date: Wed, 26 Sep 2018 19:51:09 -0400
-Message-ID: <20180926235112.25710-1-masneyb@onstation.org>
+Subject: [PATCH v2 1/3] dt-bindings: pwm: msm-vibrator: new bindings for MSM vibrator PWM
+Date: Wed, 26 Sep 2018 19:51:10 -0400
+Message-ID: <20180926235112.25710-2-masneyb@onstation.org>
+References: <20180926235112.25710-1-masneyb@onstation.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180926235112.25710-1-masneyb@onstation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: masneyb@onstation.org, jonathan@marek.ca, ctatlor97@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-This patch set adds support for the vibrator found on various Qualcomm
-MSM SOCs. This is based on work from:
+This patch adds the device tree bindings for the vibrator PWM found on
+various Qualcomm MSM SOCs.
 
-Jonathan Marek from qcom,pwm-vibrator.c in the PostmarketOS repo:
-https://gitlab.com/postmarketOS/linux-postmarketos/commit/7647fb36cb1cbd060f8b52087a68ab93583292b5
-
-Jongrak Kwon and Devin Kim from msm_pwm_vibrator.c in the downstream
-Android 3.4.0 sources:
-https://android.googlesource.com/kernel/msm/+/android-msm-lenok-3.10-lollipop-wear-release/drivers/misc/msm_pwm_vibrator.c
-
-Driver was tested on a LG Nexus 5 (hammerhead) phone using rumble-test:
-https://git.collabora.com/cgit/user/sre/rumble-test.git/plain/rumble-test.c
-
-Changes since v1
-- Update device tree binding document based on feedback from Rob
-  Herring.
-- Changed the driver description to: Qualcomm PWM driver for the MSM
-  vibrator.
-
-Brian Masney (3):
-  dt-bindings: pwm: msm-vibrator: new bindings for MSM vibrator PWM
-  pwm: msm-vibrator: new driver for the vibrator found on various MSM
-    SOCs
-  ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for
-    vibrator
-
- .../bindings/pwm/pwm-msm-vibrator.txt         |  38 +++
- .../qcom-msm8974-lge-nexus5-hammerhead.dts    |  39 +++
- drivers/pwm/Kconfig                           |   9 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-msm-vibrator.c                | 227 ++++++++++++++++++
- 5 files changed, 314 insertions(+)
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ .../bindings/pwm/pwm-msm-vibrator.txt         | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-msm-vibrator.txt
- create mode 100644 drivers/pwm/pwm-msm-vibrator.c
 
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-msm-vibrator.txt b/Documentation/devicetree/bindings/pwm/pwm-msm-vibrator.txt
+new file mode 100644
+index 000000000000..44bb8b979c60
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-msm-vibrator.txt
+@@ -0,0 +1,38 @@
++* Device tree bindings for the vibrator PWM on various MSM SOCs.
++
++Required properties:
++
++  - compatible: Should be one of
++		"qcom,msm8226-pwm-vibrator"
++		"qcom,msm8974-pwm-vibrator"
++  - reg: the base address and length of the IO memory for the registers.
++  - #pwm-cells: set to 3.
++  - pinctrl-names: set to default.
++  - pinctrl-0: phandles pointing to pin configuration nodes. See
++               Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
++  - clock-names: set to pwm
++  - clocks: phandle of the clock used by the PWM module. See
++            Documentation/devicetree/bindings/clock/clock-bindings.txt
++  - enable-gpios: GPIO that enables the PWM.
++
++Optional properties:
++
++  - vcc-supply: phandle to the regulator that provides power to the sensor.
++
++Example from a LG Nexus 5 (hammerhead) phone:
++
++msm_pwm_vibrator_enable: pwm@fd8c3450 {
++	reg = <0xfd8c3450 0x400>;
++	compatible = "qcom,msm8974-pwm-vibrator";
++	#pwm-cells = <3>;
++
++	vcc-supply = <&pm8941_l19>;
++
++	clocks = <&mmcc CAMSS_GP1_CLK>;
++	clock-names = "pwm";
++
++	enable-gpios = <&msmgpio 60 GPIO_ACTIVE_HIGH>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&vibrator_pin>;
++};
 -- 
 2.17.1
