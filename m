@@ -1,52 +1,41 @@
-From: Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH v3] backlight: pwm_bl: switch to using "atomic" PWM API
-Date: Fri, 28 Sep 2018 15:21:47 +0200
-Message-ID: <2092357.WrANtTvkTV@phil>
-References: <20180814165059.13219-1-enric.balletbo@collabora.com> <20180910144924.GU28860@dell>
+From: Gottfried Haider <gottfried.haider@gmail.com>
+Subject: Re: [RESEND PATCH] Revert "pwm: Set class for exported channels in sysfs"
+Date: Fri, 28 Sep 2018 17:19:18 -0700
+Message-ID: <CAPoCmY+mNYSV8gq7VCcSJHDpmoq-i7SDJ6uQ5VbLpMZB=b0waQ@mail.gmail.com>
+References: <1537538567-5377-1-git-send-email-fabrice.gasnier@st.com>
+ <20180924115301.GV21032@ulmo> <fc02ced1-01ba-dde4-95da-285d9351338b@st.com>
+ <20180924142318.GG23547@ulmo> <c4866533-1c7e-2675-5d80-3b824e32ae9b@st.com>
+ <4278fef9-ec60-239a-dd0a-29a89d742fa4@st.com> <20180925152022.GB27695@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180910144924.GU28860@dell>
+In-Reply-To: <20180925152022.GB27695@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: dri-devel@lists.freedesktop.org
-Cc: Lee Jones <lee.jones@linaro.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, cl@rock-chips.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: fabrice.gasnier@st.com, stefan.wahren@i2se.com, gohai@sukzessiv.net, H Hartley Sweeten <hsweeten@visionengravers.com>, loic.pallardy@st.com, broonie@kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org, michal.vokac@ysoft.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Lee,
+Hello Thierry & Fabrice,
 
-Am Montag, 10. September 2018, 16:49:24 CEST schrieb Lee Jones:
-> On Tue, 14 Aug 2018, Enric Balletbo i Serra wrote:
-> 
-> > The "atomic" API allows us to configure PWM period and duty_cycle and
-> > enable it in one call.
-> > 
-> > The patch also moves the pwm_init_state just before any use of the
-> > pwm_state struct, this fixes a potential bug where pwm_get_state
-> > can be called before pwm_init_state.
-> > 
-> > Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> > ---
-> > 
-> > Changes in v3:
-> > - Get rid of duty_cycle variable from pwm_backlight_update_status.
-> > - Get rid of pb->enabled and use only the status.enabled variable.
-> > - Make power_on match power_off.
-> > - Do not share status between ...update_status and ...power_on
-> > 
-> > Changes in v2:
-> > - Do not force the PWM be off in the first call to pwm_apply_state.
-> > - Delayed applying the state until we know what the period is.
-> > - Removed pb->period as after the conversion is not needed.
-> > 
-> >  drivers/video/backlight/pwm_bl.c | 81 +++++++++++++++++---------------
-> >  1 file changed, 42 insertions(+), 39 deletions(-)
-> 
-> Applied, thanks.
+>> Still, it is possible to send uevent (KOBJ_CHANGE) on pwmchipN device,
+>> to notify of a change, e.g. pwmX channel being exported/unexported.
 
-did this miss some push or so, because looking at [0], I don't see
-any new patches for a while now?
+I tested this patch, and I am happy to report that it works with the
+udev rule that Raspbian (Raspberry Pi's Debian derivative) has in
+place:
 
-Heiko
+SUBSYSTEM=="pwm*", PROGRAM="/bin/sh -c '\
+        chown -R root:gpio /sys/class/pwm && chmod -R 770 /sys/class/pwm;\
+        chown -R root:gpio
+/sys/devices/platform/soc/*.pwm/pwm/pwmchip* && chmod -R 770
+/sys/devices/platform/soc/*.pwm/pwm/pwmchip*\
+'"
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git/
+
+So while I can't comment on the uevent semantics, it would solve what
+the original patch attempted to enable (non-root use of pwm).
+
+Tested-by: Gottfried Haider <gottfried.haider@gmail.com>
+
+Best,
+Gottfried
