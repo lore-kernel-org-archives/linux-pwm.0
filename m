@@ -1,101 +1,68 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH v2 2/2] pwm: send a uevent on the pwmchip device upon channel
- sysfs (un)export
-Date: Mon, 1 Oct 2018 15:23:57 +0200
-Message-ID: <1538400237-28766-3-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH v2 1/2] Revert "pwm: Set class for exported channels in sysfs"
+Date: Mon, 1 Oct 2018 15:23:56 +0200
+Message-ID: <1538400237-28766-2-git-send-email-fabrice.gasnier@st.com>
 References: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, gottfried.haider@gmail.com
-Cc: stefan.wahren@i2se.com, linux-pwm@vger.kernel.org, gohai@sukzessiv.net, michal.vokac@ysoft.com, loic.pallardy@st.com, linux-kernel@vger.kernel.org, hsweeten@visionengravers.com, broonie@kernel.org, linux-rpi-kernel@lists.infradead.org, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
+Cc: stefan.wahren@i2se.com, hsweeten@visionengravers.com, loic.pallardy@st.com, broonie@kernel.org, fabrice.gasnier@st.com, gohai@sukzessiv.net, michal.vokac@ysoft.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-This patch sends a uevent (KOBJ_CHANGE) on the pwmchipN device, everytime
-a pwmX channel has been exported/unexported via sysfs.
-This allows udev to implement rules on such events, like:
+This reverts commit 7e5d1fd75c3dde9fc10c4472b9368089d1b81d00 ("pwm: Set
+class for exported channels in sysfs") as it causes regression with
+multiple pwm chip[1], when exporting a pwm channel (echo X > export):
 
-SUBSYSTEM=="pwm*", PROGRAM="/bin/sh -c '\
-        chown -R root:gpio /sys/class/pwm && chmod -R 770 /sys/class/pwm;\
-        chown -R root:gpio
-/sys/devices/platform/soc/*.pwm/pwm/pwmchip* && chmod -R 770
-/sys/devices/platform/soc/*.pwm/pwm/pwmchip*\
-'"
+- ABI (Documentation/ABI/testing/sysfs-class-pwm) states pwmX should be
+  created in /sys/class/pwm/pwmchipN/pwmX
+- Reverted patch causes new entry to be also created directly in
+  /sys/class/pwm/pwmX
+- 1st time, exporting pwmX will create an entry in /sys/class/pwm/pwmX
+- class attributes are added under pwmX folder, such as export, unexport
+  npwm, symlinks. This is wrong as it belongs to pwmchipN. It may cause
+  bad behavior and report wrong values.
+- when another export happens on another pwmchip, it can't be created
+  (e.g. -EEXIST). This is causing the issue with multiple pwmchip.
 
-This is a replacement patch for commit 7e5d1fd75c3d ("pwm: Set class for
-exported channels in sysfs"), see [1].
+Example on stm32 (stm32429i-eval) platform:
+$ ls /sys/class/pwm
+pwmchip0 pwmchip4
 
-basic testing:
-$ udevadm monitor --environment &
-$ echo 0 > /sys/class/pwm/pwmchip0/export
-KERNEL[197.321736] change   /devices/.../pwm/pwmchip0 (pwm)
-ACTION=change
-DEVPATH=/devices/.../pwm/pwmchip0
-EXPORT=pwm0
-SEQNUM=2045
-SUBSYSTEM=pwm
+$ cd /sys/class/pwm/pwmchip0/
+$ echo 0 > export
+$ ls /sys/class/pwm
+pwm0 pwmchip0 pwmchip4
+
+$ cd /sys/class/pwm/pwmchip4/
+$ echo 0 > export
+sysfs: cannot create duplicate filename '/class/pwm/pwm0'
+...Exception stack follows...
+
+This is also seen on other platform [2]
 
 [1] https://lkml.org/lkml/2018/9/25/713
+[2] https://lkml.org/lkml/2018/9/25/447
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 Tested-by: Gottfried Haider <gottfried.haider@gmail.com>
 ---
- drivers/pwm/sysfs.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/pwm/sysfs.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 4726d43..ceb233d 100644
+index 7c71cdb..4726d43 100644
 --- a/drivers/pwm/sysfs.c
 +++ b/drivers/pwm/sysfs.c
-@@ -249,6 +249,7 @@ static void pwm_export_release(struct device *child)
- static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- {
- 	struct pwm_export *export;
-+	char *pwm_prop[2];
- 	int ret;
+@@ -263,7 +263,6 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 	export->pwm = pwm;
+ 	mutex_init(&export->lock);
  
- 	if (test_and_set_bit(PWMF_EXPORTED, &pwm->flags))
-@@ -276,6 +277,10 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 		export = NULL;
- 		return ret;
- 	}
-+	pwm_prop[0] = kasprintf(GFP_KERNEL, "EXPORT=pwm%u", pwm->hwpwm);
-+	pwm_prop[1] = NULL;
-+	kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
-+	kfree(pwm_prop[0]);
- 
- 	return 0;
- }
-@@ -288,6 +293,7 @@ static int pwm_unexport_match(struct device *child, void *data)
- static int pwm_unexport_child(struct device *parent, struct pwm_device *pwm)
- {
- 	struct device *child;
-+	char *pwm_prop[2];
- 
- 	if (!test_and_clear_bit(PWMF_EXPORTED, &pwm->flags))
- 		return -ENODEV;
-@@ -296,6 +302,11 @@ static int pwm_unexport_child(struct device *parent, struct pwm_device *pwm)
- 	if (!child)
- 		return -ENODEV;
- 
-+	pwm_prop[0] = kasprintf(GFP_KERNEL, "UNEXPORT=pwm%u", pwm->hwpwm);
-+	pwm_prop[1] = NULL;
-+	kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
-+	kfree(pwm_prop[0]);
-+
- 	/* for device_find_child() */
- 	put_device(child);
- 	device_unregister(child);
+-	export->child.class = parent->class;
+ 	export->child.release = pwm_export_release;
+ 	export->child.parent = parent;
+ 	export->child.devt = MKDEV(0, 0);
 -- 
 1.9.1
