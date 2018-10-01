@@ -1,73 +1,101 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v5 04/21] dt-bindings: Add doc for the Ingenic TCU drivers
-Date: Mon, 1 Oct 2018 10:48:09 +0200
-Message-ID: <cfecfae5-abd0-c051-51a3-cb5d906006e9@linaro.org>
-References: <20180724231958.20659-1-paul@crapouillou.net>
- <20180724231958.20659-5-paul@crapouillou.net>
- <20180725152105.GA6347@rob-hp-laptop>
- <1532988062.4702.2@smtp.crapouillou.net>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH v2 2/2] pwm: send a uevent on the pwmchip device upon channel
+ sysfs (un)export
+Date: Mon, 1 Oct 2018 15:23:57 +0200
+Message-ID: <1538400237-28766-3-git-send-email-fabrice.gasnier@st.com>
+References: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1532988062.4702.2@smtp.crapouillou.net>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com, gottfried.haider@gmail.com
+Cc: stefan.wahren@i2se.com, linux-pwm@vger.kernel.org, gohai@sukzessiv.net, michal.vokac@ysoft.com, loic.pallardy@st.com, linux-kernel@vger.kernel.org, hsweeten@visionengravers.com, broonie@kernel.org, linux-rpi-kernel@lists.infradead.org, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 31/07/2018 00:01, Paul Cercueil wrote:
+This patch sends a uevent (KOBJ_CHANGE) on the pwmchipN device, everytime
+a pwmX channel has been exported/unexported via sysfs.
+This allows udev to implement rules on such events, like:
 
-[ ... ]
+SUBSYSTEM=="pwm*", PROGRAM="/bin/sh -c '\
+        chown -R root:gpio /sys/class/pwm && chmod -R 770 /sys/class/pwm;\
+        chown -R root:gpio
+/sys/devices/platform/soc/*.pwm/pwm/pwmchip* && chmod -R 770
+/sys/devices/platform/soc/*.pwm/pwm/pwmchip*\
+'"
 
->>>  +- ingenic,timer-channel: Specifies the TCU channel that should be
->>> used as
->>>  +  system timer. If not provided, the TCU channel 0 is used for the
->>> system timer.
->>>  +
->>>  +- ingenic,clocksource-channel: Specifies the TCU channel that
->>> should be used
->>>  +  as clocksource and sched_clock. It must be a different channel
->>> than the one
->>>  +  used as system timer. If not provided, neither a clocksource nor a
->>>  +  sched_clock is instantiated.
->>
->> clocksource and sched_clock are Linux specific and don't belong in DT.
->> You should define properties of the hardware or use existing properties
->> like interrupts or clocks to figure out which channel to use. For
->> example, if some channels don't have an interrupt, then use them for
->> clocksource and not a clockevent. Or you could have timers that run in
->> low-power modes or not. If all the channels are identical, then it
->> shouldn't matter which ones the OS picks.
+This is a replacement patch for commit 7e5d1fd75c3d ("pwm: Set class for
+exported channels in sysfs"), see [1].
 
-It can't work in this case because the pmw and the timer driver are not
-communicating and the first one can stole a channel to the last one.
+basic testing:
+$ udevadm monitor --environment &
+$ echo 0 > /sys/class/pwm/pwmchip0/export
+KERNEL[197.321736] change   /devices/.../pwm/pwmchip0 (pwm)
+ACTION=change
+DEVPATH=/devices/.../pwm/pwmchip0
+EXPORT=pwm0
+SEQNUM=2045
+SUBSYSTEM=pwm
 
+[1] https://lkml.org/lkml/2018/9/25/713
 
-> We already talked about that. All the TCU channels can be used for PWM.
-> The problem is I cannot know from the driver's scope which channels will
-> be free and which channels will be requested for PWM. You suggested that I
-> parse the devicetree for clients, and I did that in the V3/V4 patchset. But
-> it only works for clients requesting through devicetree, not from platform
-> code or even sysfs.
-> 
-> One thing I can try is to dynamically change the channels the system timer
-> and clocksource are using when the current ones are requested for PWM. But
-> that sounds hardcore...
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Tested-by: Gottfried Haider <gottfried.haider@gmail.com>
+---
+ drivers/pwm/sysfs.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Yes, it is :/
-
-Sorry for letting you wasting time and effort to write an overkill code
-not suitable for upstream.
-
-A very gross thought, wouldn't be possible to "register" a channel from
-the timer driver code in a shared data area (but well self-encapsulated)
-and the pwm code will check such channel isn't in use ?
-
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 4726d43..ceb233d 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -249,6 +249,7 @@ static void pwm_export_release(struct device *child)
+ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ {
+ 	struct pwm_export *export;
++	char *pwm_prop[2];
+ 	int ret;
+ 
+ 	if (test_and_set_bit(PWMF_EXPORTED, &pwm->flags))
+@@ -276,6 +277,10 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 		export = NULL;
+ 		return ret;
+ 	}
++	pwm_prop[0] = kasprintf(GFP_KERNEL, "EXPORT=pwm%u", pwm->hwpwm);
++	pwm_prop[1] = NULL;
++	kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
++	kfree(pwm_prop[0]);
+ 
+ 	return 0;
+ }
+@@ -288,6 +293,7 @@ static int pwm_unexport_match(struct device *child, void *data)
+ static int pwm_unexport_child(struct device *parent, struct pwm_device *pwm)
+ {
+ 	struct device *child;
++	char *pwm_prop[2];
+ 
+ 	if (!test_and_clear_bit(PWMF_EXPORTED, &pwm->flags))
+ 		return -ENODEV;
+@@ -296,6 +302,11 @@ static int pwm_unexport_child(struct device *parent, struct pwm_device *pwm)
+ 	if (!child)
+ 		return -ENODEV;
+ 
++	pwm_prop[0] = kasprintf(GFP_KERNEL, "UNEXPORT=pwm%u", pwm->hwpwm);
++	pwm_prop[1] = NULL;
++	kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
++	kfree(pwm_prop[0]);
++
+ 	/* for device_find_child() */
+ 	put_device(child);
+ 	device_unregister(child);
 -- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+1.9.1
