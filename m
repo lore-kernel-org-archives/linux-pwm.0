@@ -1,113 +1,88 @@
-From: =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
-Subject: [PATCH 3/3] pwm: imx: Implement get_state() function for hardware readout
-Date: Mon,  1 Oct 2018 16:19:48 +0200
-Message-ID: <1538403588-68850-3-git-send-email-michal.vokac@ysoft.com>
-References: <1538403588-68850-1-git-send-email-michal.vokac@ysoft.com>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: Re: [PATCH v2 0/2] pwm: sysfs: fix exporting PWM channel
+Date: Mon, 1 Oct 2018 18:24:52 +0200
+Message-ID: <517897d0-7320-253f-54d3-9447693e8876@ysoft.com>
+References: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1538403588-68850-1-git-send-email-michal.vokac@ysoft.com>
+In-Reply-To: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
+To: Fabrice Gasnier <fabrice.gasnier@st.com>, thierry.reding@gmail.com, gottfried.haider@gmail.com
+Cc: stefan.wahren@i2se.com, hsweeten@visionengravers.com, loic.pallardy@st.com, broonie@kernel.org, gohai@sukzessiv.net, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Implement the get_state() function and set the initial state to reflect
-real state of the hardware. This allows to keep the PWM running if it was
-enabled in bootloader. It is very similar to the GPIO behavior. GPIO pin
-set as output in bootloader keep the same setting in Linux unless it is
-reconfigured.
+On 1.10.2018 15:23, Fabrice Gasnier wrote:
+> Since commit 7e5d1fd75c3d ("pwm: Set class for exported channels in sysfs")
+> - it's not possible to export more than one PWM channel
+> - ABI has changed, as a side effect. It may cause bad behavior as pwmchip
+>    attributes are wrongly added to pwm channels and report wrong values.
+> See [1] and [2].
+> 
+> One purpose of the original patch is to send uevents to udev, when exporting a
+> PWM channel through the sysfs. This series:
+> - Reverts the original patch.
+> - Proposes a new way to send notifications to be used by udev rules.
+> 
+> - With this series:
+> $ echo 0 > /sys/class/pwm/pwmchip0/export
+> $ ls /sys/class/pwm
+> pwmchip0 pwmchip4
+> 
+> $ ls /sys/class/pwm/pwmchip0/pwm0/
+> capture     enable      polarity    uevent
+> duty_cycle  period      power
+> 
+> - Without this series:
+> $ echo 0 > /sys/class/pwm/pwmchip0/export
+> $ ls /sys/class/pwm
+> pwm0 pwmchip0 pwmchip4
+> 
+> $ ls /sys/class/pwm/pwmchip0/pwm0/
+> capture     duty_cycle  export      period      power       uevent
+> device      enable      npwm        polarity    subsystem   unexport
+> 
+> - Backtrace when exporting a 2nd channel (0) on a separate pwmchip device:
+> $ echo 0 > /sys/class/pwm/pwmchip4/export
+> [   95.286558] sysfs: cannot create duplicate filename '/class/pwm/pwm0'
+> [   95.293630] CPU: 0 PID: 54 Comm: sh Not tainted 4.19.0-rc6-00013-g00b49b0 #151
+> [   95.301344] Hardware name: STM32 (Device Tree Support)
+> [   95.306833] [<0000c155>] (unwind_backtrace) from [<0000b273>] (show_stack+0xb/0xc)
+> [   95.315136] [<0000b273>] (show_stack) from [<00092455>] (sysfs_warn_dup+0x31/0x48)
+> [   95.323247] [<00092455>] (sysfs_warn_dup) from [<00092635>] (sysfs_do_create_link_sd+0x75/0x88)
+> [   95.332539] [<00092635>] (sysfs_do_create_link_sd) from [<00125823>] (device_add+0x133/0x3b0)
+> [   95.341694] [<00125823>] (device_add) from [<001059ed>] (export_store+0xb5/0x12c)
+> [   95.349761] [<001059ed>] (export_store) from [<00091911>] (kernfs_fop_write+0x87/0xda)
+> [   95.358150] [<00091911>] (kernfs_fop_write) from [<0005beb1>] (__vfs_write+0x1d/0xe0)
+> [   95.366295] [<0005beb1>] (__vfs_write) from [<0005bfe7>] (vfs_write+0x4f/0x7c)
+> [   95.374053] [<0005bfe7>] (vfs_write) from [<0005c0bf>] (ksys_write+0x33/0x70)
+> [   95.381708] [<0005c0bf>] (ksys_write) from [<00009001>] (ret_fast_syscall+0x1/0x58)
+> [   95.389682] Exception stack(0x01bcffa8 to 0x01bcfff0)
+> [   95.394946] ffa0:                   00000000 00c4883c 00000001 00c4e590 00000002 00000004
+> [   95.403639] ffc0: 00000000 00c4883c 00c4cbe8 00000004 00000002 00000020 00000000 00c4d008
+> [   95.412223] ffe0: 00c29151 00c4cbe8 00c17833 00c13c0c
+> -sh: write error: File exists
+> 
+> [1] https://lkml.org/lkml/2018/9/25/713
+> [2] https://lkml.org/lkml/2018/9/25/447
 
-If we find the PWM block enabled we need to prepare and enable its source
-clock otherwise the clock will be disabled late in the boot as unused.
-That will leave the PWM in enabled state but with disabled clock. That has
-a side effect that the PWM output is left at its current level at which
-the clock was disabled. It is totally non-deterministic and it may be LOW
-or HIGH.
+The [2] report came from me. I tested both patches on my i.MX6 boards and
+it works just fine. Thanks for the fix Fabrice!
 
-Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
----
- drivers/pwm/pwm-imx.c | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+Michal
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 7a4907b..6cd3b72 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -83,6 +83,9 @@
- 
- #define MX3_PWM_SWR_LOOP		5
- 
-+/* PWMPR register value of 0xffff has the same effect as 0xfffe */
-+#define MX3_PWMPR_MAX			0xfffe
-+
- struct imx_chip {
- 	struct clk	*clk_per;
- 
-@@ -93,6 +96,55 @@ struct imx_chip {
- 
- #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
- 
-+static void imx_pwm_get_state(struct pwm_chip *chip,
-+		struct pwm_device *pwm, struct pwm_state *state)
-+{
-+	struct imx_chip *imx = to_imx_chip(chip);
-+	u32 period, prescaler, pwm_clk, ret, val;
-+	u64 tmp;
-+
-+	val = readl(imx->mmio_base + MX3_PWMCR);
-+
-+	if (val & MX3_PWMCR_EN) {
-+		state->enabled = true;
-+		ret = clk_prepare_enable(imx->clk_per);
-+		if (ret)
-+			return;
-+	} else {
-+		state->enabled = false;
-+	}
-+
-+	switch (FIELD_GET(MX3_PWMCR_POUTC, val)) {
-+	case MX3_PWMCR_POUTC_NORMAL:
-+		state->polarity = PWM_POLARITY_NORMAL;
-+		break;
-+	case MX3_PWMCR_POUTC_INVERTED:
-+		state->polarity = PWM_POLARITY_INVERSED;
-+		break;
-+	default:
-+		dev_warn(chip->dev, "can't set polarity, output disconnected");
-+	}
-+
-+	prescaler = MX3_PWMCR_PRESCALER_GET(val);
-+	pwm_clk = clk_get_rate(imx->clk_per);
-+	pwm_clk = DIV_ROUND_CLOSEST_ULL(pwm_clk, prescaler);
-+	val = readl(imx->mmio_base + MX3_PWMPR);
-+	period = val >= MX3_PWMPR_MAX ? MX3_PWMPR_MAX : val;
-+
-+	/* PWMOUT (Hz) = PWMCLK / (PWMPR + 2) */
-+	tmp = NSEC_PER_SEC * (u64)(period + 2);
-+	state->period = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
-+
-+	/* PWMSAR can be read only if PWM is enabled */
-+	if (state->enabled) {
-+		val = readl(imx->mmio_base + MX3_PWMSAR);
-+		tmp = NSEC_PER_SEC * (u64)(val);
-+		state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
-+	} else {
-+		state->duty_cycle = 0;
-+	}
-+}
-+
- static int imx_pwm_config_v1(struct pwm_chip *chip,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
- {
-@@ -272,6 +324,7 @@ static const struct pwm_ops imx_pwm_ops_v1 = {
- 
- static const struct pwm_ops imx_pwm_ops_v2 = {
- 	.apply = imx_pwm_apply_v2,
-+	.get_state = imx_pwm_get_state,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.1.4
+> 
+> ---
+> Changes in v2:
+> - update revert commit message
+> - new patch 2/2 to propose uevent notification (change) on pwmchip
+> 
+> Fabrice Gasnier (2):
+>    Revert "pwm: Set class for exported channels in sysfs"
+>    pwm: send a uevent on the pwmchip device upon channel sysfs (un)export
+> 
+>   drivers/pwm/sysfs.c | 12 +++++++++++-
+>   1 file changed, 11 insertions(+), 1 deletion(-)
+> 
