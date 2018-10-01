@@ -1,41 +1,73 @@
-From: Gottfried Haider <gottfried.haider@gmail.com>
-Subject: Re: [RESEND PATCH] Revert "pwm: Set class for exported channels in sysfs"
-Date: Fri, 28 Sep 2018 17:19:18 -0700
-Message-ID: <CAPoCmY+mNYSV8gq7VCcSJHDpmoq-i7SDJ6uQ5VbLpMZB=b0waQ@mail.gmail.com>
-References: <1537538567-5377-1-git-send-email-fabrice.gasnier@st.com>
- <20180924115301.GV21032@ulmo> <fc02ced1-01ba-dde4-95da-285d9351338b@st.com>
- <20180924142318.GG23547@ulmo> <c4866533-1c7e-2675-5d80-3b824e32ae9b@st.com>
- <4278fef9-ec60-239a-dd0a-29a89d742fa4@st.com> <20180925152022.GB27695@ulmo>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v5 04/21] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Mon, 1 Oct 2018 10:48:09 +0200
+Message-ID: <cfecfae5-abd0-c051-51a3-cb5d906006e9@linaro.org>
+References: <20180724231958.20659-1-paul@crapouillou.net>
+ <20180724231958.20659-5-paul@crapouillou.net>
+ <20180725152105.GA6347@rob-hp-laptop>
+ <1532988062.4702.2@smtp.crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180925152022.GB27695@ulmo>
+In-Reply-To: <1532988062.4702.2@smtp.crapouillou.net>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: fabrice.gasnier@st.com, stefan.wahren@i2se.com, gohai@sukzessiv.net, H Hartley Sweeten <hsweeten@visionengravers.com>, loic.pallardy@st.com, broonie@kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org, michal.vokac@ysoft.com
+To: Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Thierry & Fabrice,
+On 31/07/2018 00:01, Paul Cercueil wrote:
 
->> Still, it is possible to send uevent (KOBJ_CHANGE) on pwmchipN device,
->> to notify of a change, e.g. pwmX channel being exported/unexported.
+[ ... ]
 
-I tested this patch, and I am happy to report that it works with the
-udev rule that Raspbian (Raspberry Pi's Debian derivative) has in
-place:
+>>>  +- ingenic,timer-channel: Specifies the TCU channel that should be
+>>> used as
+>>>  +  system timer. If not provided, the TCU channel 0 is used for the
+>>> system timer.
+>>>  +
+>>>  +- ingenic,clocksource-channel: Specifies the TCU channel that
+>>> should be used
+>>>  +  as clocksource and sched_clock. It must be a different channel
+>>> than the one
+>>>  +  used as system timer. If not provided, neither a clocksource nor a
+>>>  +  sched_clock is instantiated.
+>>
+>> clocksource and sched_clock are Linux specific and don't belong in DT.
+>> You should define properties of the hardware or use existing properties
+>> like interrupts or clocks to figure out which channel to use. For
+>> example, if some channels don't have an interrupt, then use them for
+>> clocksource and not a clockevent. Or you could have timers that run in
+>> low-power modes or not. If all the channels are identical, then it
+>> shouldn't matter which ones the OS picks.
 
-SUBSYSTEM=="pwm*", PROGRAM="/bin/sh -c '\
-        chown -R root:gpio /sys/class/pwm && chmod -R 770 /sys/class/pwm;\
-        chown -R root:gpio
-/sys/devices/platform/soc/*.pwm/pwm/pwmchip* && chmod -R 770
-/sys/devices/platform/soc/*.pwm/pwm/pwmchip*\
-'"
+It can't work in this case because the pmw and the timer driver are not
+communicating and the first one can stole a channel to the last one.
 
 
-So while I can't comment on the uevent semantics, it would solve what
-the original patch attempted to enable (non-root use of pwm).
+> We already talked about that. All the TCU channels can be used for PWM.
+> The problem is I cannot know from the driver's scope which channels will
+> be free and which channels will be requested for PWM. You suggested that I
+> parse the devicetree for clients, and I did that in the V3/V4 patchset. But
+> it only works for clients requesting through devicetree, not from platform
+> code or even sysfs.
+> 
+> One thing I can try is to dynamically change the channels the system timer
+> and clocksource are using when the current ones are requested for PWM. But
+> that sounds hardcore...
 
-Tested-by: Gottfried Haider <gottfried.haider@gmail.com>
+Yes, it is :/
 
-Best,
-Gottfried
+Sorry for letting you wasting time and effort to write an overkill code
+not suitable for upstream.
+
+A very gross thought, wouldn't be possible to "register" a channel from
+the timer driver code in a shared data area (but well self-encapsulated)
+and the pwm code will check such channel isn't in use ?
+
+-- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
