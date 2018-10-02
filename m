@@ -1,41 +1,34 @@
-Return-Path: <sergei.shtylyov@cogentembedded.com>
-Return-Path: <sergei.shtylyov@cogentembedded.com>
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: [PATCH] dt-bindings: pwm: renesas: pwm-rcar: document R8A779{7|8}0
- bindings
-Message-ID: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
-Date: Mon, 1 Oct 2018 22:57:39 +0300
+Return-Path: <geert.uytterhoeven@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+References: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
+In-Reply-To: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 2 Oct 2018 09:14:40 +0200
+Message-ID: <CAMuHMdWzNn_=S-gJNECHgj3YOrz5sWrtLL93qOt0uQwbZr4FBw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: pwm: renesas: pwm-rcar: document
+ R8A779{7|8}0 bindings
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-renesas-soc@vger.kernel.org
+To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-Document the R-Car V3{M|H} (R8A779{7|8}0) SoC in the  Renesas R-Car PWM
-bindings. R8A77970's hardware is a generic R-Car gen3 PWM, while R8A77980
-has an extra error injection register...
+On Mon, Oct 1, 2018 at 9:58 PM Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com> wrote:
+> Document the R-Car V3{M|H} (R8A779{7|8}0) SoC in the  Renesas R-Car PWM
+> bindings. R8A77970's hardware is a generic R-Car gen3 PWM, while R8A77980
+> has an extra error injection register...
+>
+> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
-Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
----
-This patch is against the 'for-next' branch of Thierry Reding's 'linux-pwm.git'
-repo.
+Gr{oetje,eeting}s,
 
- Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt |    2 ++
- 1 file changed, 2 insertions(+)
+                        Geert
 
-Index: linux-pwm/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-===================================================================
---- linux-pwm.orig/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-+++ linux-pwm/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-@@ -12,6 +12,8 @@ Required Properties:
-  - "renesas,pwm-r8a7795": for R-Car H3
-  - "renesas,pwm-r8a7796": for R-Car M3-W
-  - "renesas,pwm-r8a77965": for R-Car M3-N
-+ - "renesas,pwm-r8a77970": for R-Car V3M
-+ - "renesas,pwm-r8a77980": for R-Car V3H
-  - "renesas,pwm-r8a77990": for R-Car E3
-  - "renesas,pwm-r8a77995": for R-Car D3
- - reg: base address and length of the registers block for the PWM.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
