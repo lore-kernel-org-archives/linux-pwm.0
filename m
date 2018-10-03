@@ -1,49 +1,103 @@
-From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
-Subject: Re: [PATCH v2 2/2] pwm: send a uevent on the pwmchip device upon
- channel sysfs (un)export
-Date: Mon, 1 Oct 2018 18:29:25 +0200
-Message-ID: <b43c5dd5-6ffd-5e5a-f4d0-86792feac304@ysoft.com>
-References: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
- <1538400237-28766-3-git-send-email-fabrice.gasnier@st.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v5 04/21] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Wed, 3 Oct 2018 14:47:21 +0200
+Message-ID: <7c448bfb-b4a6-8a09-db3d-32c829d5ec78@linaro.org>
+References: <5bb49c78.1c69fb81.4b6a9.fb44SMTPIN_ADDED_MISSING@mx.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1538400237-28766-3-git-send-email-fabrice.gasnier@st.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5bb49c78.1c69fb81.4b6a9.fb44SMTPIN_ADDED_MISSING@mx.google.com>
 Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, thierry.reding@gmail.com, gottfried.haider@gmail.com
-Cc: stefan.wahren@i2se.com, linux-pwm@vger.kernel.org, loic.pallardy@st.com, linux-kernel@vger.kernel.org, hsweeten@visionengravers.com, broonie@kernel.org, linux-rpi-kernel@lists.infradead.org, gohai@sukzessiv.net, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>, robh@kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-mips@linux-mips.org, Stephen Boyd <sboyd@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, Mark Rutland <mark.rutland@arm.com>, Paul Burton <paul.burton@mips.com>, Michael Turquette <mturquette@baylibre.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMS4xMC4yMDE4IDE1OjIzLCBGYWJyaWNlIEdhc25pZXIgd3JvdGU6Cj4gVGhpcyBwYXRjaCBz
-ZW5kcyBhIHVldmVudCAoS09CSl9DSEFOR0UpIG9uIHRoZSBwd21jaGlwTiBkZXZpY2UsIGV2ZXJ5
-dGltZQo+IGEgcHdtWCBjaGFubmVsIGhhcyBiZWVuIGV4cG9ydGVkL3VuZXhwb3J0ZWQgdmlhIHN5
-c2ZzLgo+IFRoaXMgYWxsb3dzIHVkZXYgdG8gaW1wbGVtZW50IHJ1bGVzIG9uIHN1Y2ggZXZlbnRz
-LCBsaWtlOgo+IAo+IFNVQlNZU1RFTT09InB3bSoiLCBQUk9HUkFNPSIvYmluL3NoIC1jICdcCj4g
-ICAgICAgICAgY2hvd24gLVIgcm9vdDpncGlvIC9zeXMvY2xhc3MvcHdtICYmIGNobW9kIC1SIDc3
-MCAvc3lzL2NsYXNzL3B3bTtcCj4gICAgICAgICAgY2hvd24gLVIgcm9vdDpncGlvCj4gL3N5cy9k
-ZXZpY2VzL3BsYXRmb3JtL3NvYy8qLnB3bS9wd20vcHdtY2hpcCogJiYgY2htb2QgLVIgNzcwCj4g
-L3N5cy9kZXZpY2VzL3BsYXRmb3JtL3NvYy8qLnB3bS9wd20vcHdtY2hpcCpcCj4gJyIKPiAKPiBU
-aGlzIGlzIGEgcmVwbGFjZW1lbnQgcGF0Y2ggZm9yIGNvbW1pdCA3ZTVkMWZkNzVjM2QgKCJwd206
-IFNldCBjbGFzcyBmb3IKPiBleHBvcnRlZCBjaGFubmVscyBpbiBzeXNmcyIpLCBzZWUgWzFdLgo+
-IAo+IGJhc2ljIHRlc3Rpbmc6Cj4gJCB1ZGV2YWRtIG1vbml0b3IgLS1lbnZpcm9ubWVudCAmCj4g
-JCBlY2hvIDAgPiAvc3lzL2NsYXNzL3B3bS9wd21jaGlwMC9leHBvcnQKPiBLRVJORUxbMTk3LjMy
-MTczNl0gY2hhbmdlICAgL2RldmljZXMvLi4uL3B3bS9wd21jaGlwMCAocHdtKQo+IEFDVElPTj1j
-aGFuZ2UKPiBERVZQQVRIPS9kZXZpY2VzLy4uLi9wd20vcHdtY2hpcDAKPiBFWFBPUlQ9cHdtMAo+
-IFNFUU5VTT0yMDQ1Cj4gU1VCU1lTVEVNPXB3bQo+IAo+IFsxXSBodHRwczovL2xrbWwub3JnL2xr
-bWwvMjAxOC85LzI1LzcxMwo+IAo+IFNpZ25lZC1vZmYtYnk6IEZhYnJpY2UgR2FzbmllciA8ZmFi
-cmljZS5nYXNuaWVyQHN0LmNvbT4KPiBUZXN0ZWQtYnk6IEdvdHRmcmllZCBIYWlkZXIgPGdvdHRm
-cmllZC5oYWlkZXJAZ21haWwuY29tPgoKVGVzdGVkLWJ5OiBNaWNoYWwgVm9rw6HEjSA8bWljaGFs
-LnZva2FjQHlzb2Z0LmNvbT4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxA
-bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On 03/10/2018 12:32, Paul Cercueil wrote:
+> 
+> Le 1 oct. 2018 10:48, Daniel Lezcano <daniel.lezcano@linaro.org> a
+> écrit :
+>> 
+>> On 31/07/2018 00:01, Paul Cercueil wrote:
+>> 
+>> [ ... ]
+>> 
+>>>>> +- ingenic,timer-channel: Specifies the TCU channel that
+>>>>> should be used as +  system timer. If not provided, the TCU
+>>>>> channel 0 is used for the system timer. + +-
+>>>>> ingenic,clocksource-channel: Specifies the TCU channel that 
+>>>>> should be used +  as clocksource and sched_clock. It must be
+>>>>> a different channel than the one +  used as system timer. If
+>>>>> not provided, neither a clocksource nor a +  sched_clock is
+>>>>> instantiated.
+>>>> 
+>>>> clocksource and sched_clock are Linux specific and don't belong
+>>>> in DT. You should define properties of the hardware or use
+>>>> existing properties like interrupts or clocks to figure out
+>>>> which channel to use. For example, if some channels don't have
+>>>> an interrupt, then use them for clocksource and not a
+>>>> clockevent. Or you could have timers that run in low-power
+>>>> modes or not. If all the channels are identical, then it 
+>>>> shouldn't matter which ones the OS picks.
+>> 
+>> It can't work in this case because the pmw and the timer driver are
+>> not communicating and the first one can stole a channel to the last
+>> one.
+> 
+> In that particular case the timer driver will always request its
+> channels first; with no timer set the system hangs before
+> subsys_initcall, and the PWM driver is a subnode of the timer node,
+> so is probed only after the timer probed.
+> 
+>>> We already talked about that. All the TCU channels can be used
+>>> for PWM. The problem is I cannot know from the driver's scope
+>>> which channels will be free and which channels will be requested
+>>> for PWM. You suggested that I parse the devicetree for clients,
+>>> and I did that in the V3/V4 patchset. But it only works for
+>>> clients requesting through devicetree, not from platform code or
+>>> even sysfs.
+>>> 
+>>> One thing I can try is to dynamically change the channels the
+>>> system timer and clocksource are using when the current ones are
+>>> requested for PWM. But that sounds hardcore...
+>> 
+>> Yes, it is :/
+>> 
+>> Sorry for letting you wasting time and effort to write an overkill
+>> code not suitable for upstream.
+>> 
+>> A very gross thought, wouldn't be possible to "register" a channel
+>> from the timer driver code in a shared data area (but well
+>> self-encapsulated) and the pwm code will check such channel isn't
+>> in use ?
+> 
+> Probably, but it's the contrary I need to do. The timer driver code
+> can use any channel, and probes first. The PWM driver code must use
+> specific channels, and probes last. So either the timer driver knows
+> what channels it can't use, thanks to a device property, or it adapts
+> itself when a channel in use is requested for PWM, which is what I
+> tried in v7.
+
+When you say "must use specific channels", where is coming this
+information ?
+
+> I think we could find a way to use a devicetree property that doesn't
+> trigger Rob. That would still be the easiest and cleanest solution.
+> 
+> Maybe "ingenic,reserved-channels-mask", which would contain a mask of
+> channels that can only be used by the timer driver. And what the
+> timer driver does with these channels, would be specific to the
+> implementation and would not appear in the bindings. I hope Rob can
+> work with that.
+> 
+> -Paul
+> 
+
+
+-- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
