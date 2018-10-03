@@ -1,102 +1,71 @@
-Return-Path: <hdegoede@redhat.com>
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v3 2/2] pwm: lpss: Check PWM powerstate after resume on Cherry Trail devices
-Date: Sat,  6 Oct 2018 11:22:30 +0200
-Message-Id: <20181006092230.8575-2-hdegoede@redhat.com>
-In-Reply-To: <20181006092230.8575-1-hdegoede@redhat.com>
-References: <20181006092230.8575-1-hdegoede@redhat.com>
+Return-Path: <paul@crapouillou.net>
+Message-Id: <5bb49c77.1c69fb81.9b225.ed87SMTPIN_ADDED_MISSING@mx.google.com>
+Date: Wed, 03 Oct 2018 12:32:51 +0200
+Subject: Re: [PATCH v5 04/21] dt-bindings: Add doc for the Ingenic TCU
+ drivers
+From: Paul Cercueil <paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>, robh@kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-mips@linux-mips.org, Stephen Boyd <sboyd@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, Mark Rutland <mark.rutland@arm.com>, Paul Burton <paul.burton@mips.com>, Michael Turquette <mturquette@baylibre.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-The _PS0 method for the integrated graphics on some Cherry Trail devices
-(observed on a HP Pavilion X2 10-p0XX) turns on the PWM chip (puts it in
-D0), causing an inconsistency between the state the pm-core thinks it is
-in (left runtime suspended as it was before the suspend/resume) and the
-state it actually is in.
-
-Interestingly enough this is done on a device where the pwm controller is
-not used for the backlight at all, since it uses an eDP panel. On devices
-where the PWM is used this is not a problem since we will resume it
-ourselves anyways.
-
-This inconsistency causes us to never suspend the pwm controller again,
-which causes the device to not be able to reach S0ix states when suspended.
-
-This commit adds a resume-complete handler, which when we think the device
-is still run-time suspended checks the actual power-state and if necessary
-updates the rpm-core's internal state.
-
-This fixes the Pavilion X2 10-p0XX not reaching S0ix states when suspended.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
-Changes in v2:
--Do the pm_runtime_en/disable before/after checking the power-state
----
- drivers/pwm/pwm-lpss-platform.c | 27 ++++++++++++++++++++++++---
- drivers/pwm/pwm-lpss.h          |  2 ++
- 2 files changed, 26 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 7304f36ee715..390ee50157a1 100644
---- a/drivers/pwm/pwm-lpss-platform.c
-+++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -30,6 +30,7 @@ static const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 1,
- 	.base_unit_bits = 16,
-+	.check_power_on_resume = true,
- };
- 
- /* Broxton */
-@@ -74,9 +75,29 @@ static int pwm_lpss_remove_platform(struct platform_device *pdev)
- 	return pwm_lpss_remove(lpwm);
- }
- 
--static SIMPLE_DEV_PM_OPS(pwm_lpss_platform_pm_ops,
--			 pwm_lpss_suspend,
--			 pwm_lpss_resume);
-+static void pwm_lpss_complete(struct device *dev)
-+{
-+	struct pwm_lpss_chip *lpwm = dev_get_drvdata(dev);
-+	unsigned long long psc;
-+	acpi_status status;
-+
-+	/* The PWM may be turned on by AML code, update our state to match */
-+	if (pm_runtime_suspended(dev) && lpwm->info->check_power_on_resume) {
-+		pm_runtime_disable(dev);
-+
-+		status = acpi_evaluate_integer(ACPI_HANDLE(dev), "_PSC",
-+					       NULL, &psc);
-+		if (ACPI_SUCCESS(status) && psc == ACPI_STATE_D0)
-+			pm_runtime_set_active(dev);
-+
-+		pm_runtime_enable(dev);
-+	}
-+}
-+
-+static const struct dev_pm_ops pwm_lpss_platform_pm_ops = {
-+	.complete = pwm_lpss_complete,
-+	SET_SYSTEM_SLEEP_PM_OPS(pwm_lpss_suspend, pwm_lpss_resume)
-+};
- 
- static const struct acpi_device_id pwm_lpss_acpi_match[] = {
- 	{ "80860F09", (unsigned long)&pwm_lpss_byt_info },
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 8f029ed263af..1a2575d25bea 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -30,6 +30,8 @@ struct pwm_lpss_boardinfo {
- 	unsigned int npwm;
- 	unsigned long base_unit_bits;
- 	bool bypass;
-+	/* Some devices have AML code messing with the state underneath us */
-+	bool check_power_on_resume;
- };
- 
- struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
--- 
-2.19.0
+CkxlIDEgb2N0LiAyMDE4IDEwOjQ4LCBEYW5pZWwgTGV6Y2FubyA8ZGFuaWVsLmxlemNhbm9AbGlu
+YXJvLm9yZz4gYSDDqWNyaXQgOgo+Cj4gT24gMzEvMDcvMjAxOCAwMDowMSwgUGF1bCBDZXJjdWVp
+bCB3cm90ZTogCj4KPiBbIC4uLiBdIAo+Cj4gPj4+IMKgKy0gaW5nZW5pYyx0aW1lci1jaGFubmVs
+OiBTcGVjaWZpZXMgdGhlIFRDVSBjaGFubmVsIHRoYXQgc2hvdWxkIGJlIAo+ID4+PiB1c2VkIGFz
+IAo+ID4+PiDCoCvCoCBzeXN0ZW0gdGltZXIuIElmIG5vdCBwcm92aWRlZCwgdGhlIFRDVSBjaGFu
+bmVsIDAgaXMgdXNlZCBmb3IgdGhlIAo+ID4+PiBzeXN0ZW0gdGltZXIuIAo+ID4+PiDCoCsgCj4g
+Pj4+IMKgKy0gaW5nZW5pYyxjbG9ja3NvdXJjZS1jaGFubmVsOiBTcGVjaWZpZXMgdGhlIFRDVSBj
+aGFubmVsIHRoYXQgCj4gPj4+IHNob3VsZCBiZSB1c2VkIAo+ID4+PiDCoCvCoCBhcyBjbG9ja3Nv
+dXJjZSBhbmQgc2NoZWRfY2xvY2suIEl0IG11c3QgYmUgYSBkaWZmZXJlbnQgY2hhbm5lbCAKPiA+
+Pj4gdGhhbiB0aGUgb25lIAo+ID4+PiDCoCvCoCB1c2VkIGFzIHN5c3RlbSB0aW1lci4gSWYgbm90
+IHByb3ZpZGVkLCBuZWl0aGVyIGEgY2xvY2tzb3VyY2Ugbm9yIGEgCj4gPj4+IMKgK8KgIHNjaGVk
+X2Nsb2NrIGlzIGluc3RhbnRpYXRlZC4gCj4gPj4gCj4gPj4gY2xvY2tzb3VyY2UgYW5kIHNjaGVk
+X2Nsb2NrIGFyZSBMaW51eCBzcGVjaWZpYyBhbmQgZG9uJ3QgYmVsb25nIGluIERULiAKPiA+PiBZ
+b3Ugc2hvdWxkIGRlZmluZSBwcm9wZXJ0aWVzIG9mIHRoZSBoYXJkd2FyZSBvciB1c2UgZXhpc3Rp
+bmcgcHJvcGVydGllcyAKPiA+PiBsaWtlIGludGVycnVwdHMgb3IgY2xvY2tzIHRvIGZpZ3VyZSBv
+dXQgd2hpY2ggY2hhbm5lbCB0byB1c2UuIEZvciAKPiA+PiBleGFtcGxlLCBpZiBzb21lIGNoYW5u
+ZWxzIGRvbid0IGhhdmUgYW4gaW50ZXJydXB0LCB0aGVuIHVzZSB0aGVtIGZvciAKPiA+PiBjbG9j
+a3NvdXJjZSBhbmQgbm90IGEgY2xvY2tldmVudC4gT3IgeW91IGNvdWxkIGhhdmUgdGltZXJzIHRo
+YXQgcnVuIGluIAo+ID4+IGxvdy1wb3dlciBtb2RlcyBvciBub3QuIElmIGFsbCB0aGUgY2hhbm5l
+bHMgYXJlIGlkZW50aWNhbCwgdGhlbiBpdCAKPiA+PiBzaG91bGRuJ3QgbWF0dGVyIHdoaWNoIG9u
+ZXMgdGhlIE9TIHBpY2tzLiAKPgo+IEl0IGNhbid0IHdvcmsgaW4gdGhpcyBjYXNlIGJlY2F1c2Ug
+dGhlIHBtdyBhbmQgdGhlIHRpbWVyIGRyaXZlciBhcmUgbm90IAo+IGNvbW11bmljYXRpbmcgYW5k
+IHRoZSBmaXJzdCBvbmUgY2FuIHN0b2xlIGEgY2hhbm5lbCB0byB0aGUgbGFzdCBvbmUuIAoKSW4g
+dGhhdCBwYXJ0aWN1bGFyIGNhc2UgdGhlIHRpbWVyIGRyaXZlciB3aWxsIGFsd2F5cyByZXF1ZXN0
+IGl0cyBjaGFubmVscyBmaXJzdDsgd2l0aCBubyB0aW1lciBzZXQgdGhlIHN5c3RlbSBoYW5ncyBi
+ZWZvcmUgc3Vic3lzX2luaXRjYWxsLCBhbmQgdGhlIFBXTSBkcml2ZXIgaXMgYSBzdWJub2RlIG9m
+IHRoZSB0aW1lciBub2RlLCBzbyBpcyBwcm9iZWQgb25seSBhZnRlciB0aGUgdGltZXIgcHJvYmVk
+LgoKPiA+IFdlIGFscmVhZHkgdGFsa2VkIGFib3V0IHRoYXQuIEFsbCB0aGUgVENVIGNoYW5uZWxz
+IGNhbiBiZSB1c2VkIGZvciBQV00uIAo+ID4gVGhlIHByb2JsZW0gaXMgSSBjYW5ub3Qga25vdyBm
+cm9tIHRoZSBkcml2ZXIncyBzY29wZSB3aGljaCBjaGFubmVscyB3aWxsIAo+ID4gYmUgZnJlZSBh
+bmQgd2hpY2ggY2hhbm5lbHMgd2lsbCBiZSByZXF1ZXN0ZWQgZm9yIFBXTS4gWW91IHN1Z2dlc3Rl
+ZCB0aGF0IEkgCj4gPiBwYXJzZSB0aGUgZGV2aWNldHJlZSBmb3IgY2xpZW50cywgYW5kIEkgZGlk
+IHRoYXQgaW4gdGhlIFYzL1Y0IHBhdGNoc2V0LiBCdXQgCj4gPiBpdCBvbmx5IHdvcmtzIGZvciBj
+bGllbnRzIHJlcXVlc3RpbmcgdGhyb3VnaCBkZXZpY2V0cmVlLCBub3QgZnJvbSBwbGF0Zm9ybSAK
+PiA+IGNvZGUgb3IgZXZlbiBzeXNmcy4gCj4gPiAKPiA+IE9uZSB0aGluZyBJIGNhbiB0cnkgaXMg
+dG8gZHluYW1pY2FsbHkgY2hhbmdlIHRoZSBjaGFubmVscyB0aGUgc3lzdGVtIHRpbWVyIAo+ID4g
+YW5kIGNsb2Nrc291cmNlIGFyZSB1c2luZyB3aGVuIHRoZSBjdXJyZW50IG9uZXMgYXJlIHJlcXVl
+c3RlZCBmb3IgUFdNLiBCdXQgCj4gPiB0aGF0IHNvdW5kcyBoYXJkY29yZS4uLiAKPgo+IFllcywg
+aXQgaXMgOi8gCj4KPiBTb3JyeSBmb3IgbGV0dGluZyB5b3Ugd2FzdGluZyB0aW1lIGFuZCBlZmZv
+cnQgdG8gd3JpdGUgYW4gb3ZlcmtpbGwgY29kZSAKPiBub3Qgc3VpdGFibGUgZm9yIHVwc3RyZWFt
+LiAKPgo+IEEgdmVyeSBncm9zcyB0aG91Z2h0LCB3b3VsZG4ndCBiZSBwb3NzaWJsZSB0byAicmVn
+aXN0ZXIiIGEgY2hhbm5lbCBmcm9tIAo+IHRoZSB0aW1lciBkcml2ZXIgY29kZSBpbiBhIHNoYXJl
+ZCBkYXRhIGFyZWEgKGJ1dCB3ZWxsIHNlbGYtZW5jYXBzdWxhdGVkKSAKPiBhbmQgdGhlIHB3bSBj
+b2RlIHdpbGwgY2hlY2sgc3VjaCBjaGFubmVsIGlzbid0IGluIHVzZSA/IAoKUHJvYmFibHksIGJ1
+dCBpdCdzIHRoZSBjb250cmFyeSBJIG5lZWQgdG8gZG8uIFRoZSB0aW1lciBkcml2ZXIgY29kZSBj
+YW4gdXNlIGFueSBjaGFubmVsLCBhbmQgcHJvYmVzIGZpcnN0LiBUaGUgUFdNIGRyaXZlciBjb2Rl
+IG11c3QgdXNlIHNwZWNpZmljIGNoYW5uZWxzLCBhbmQgcHJvYmVzIGxhc3QuIFNvIGVpdGhlciB0
+aGUgdGltZXIgZHJpdmVyIGtub3dzIHdoYXQgY2hhbm5lbHMgaXQgY2FuJ3QgdXNlLCB0aGFua3Mg
+dG8gYSBkZXZpY2UgcHJvcGVydHksIG9yIGl0IGFkYXB0cyBpdHNlbGYgd2hlbiBhIGNoYW5uZWwg
+aW4gdXNlIGlzIHJlcXVlc3RlZCBmb3IgUFdNLCB3aGljaCBpcyB3aGF0IEkgdHJpZWQgaW4gdjcu
+CgpJIHRoaW5rIHdlIGNvdWxkIGZpbmQgYSB3YXkgdG8gdXNlIGEgZGV2aWNldHJlZSBwcm9wZXJ0
+eSB0aGF0IGRvZXNuJ3QgdHJpZ2dlciBSb2IuIFRoYXQgd291bGQgc3RpbGwgYmUgdGhlIGVhc2ll
+c3QgYW5kIGNsZWFuZXN0IHNvbHV0aW9uLiAKCk1heWJlICJpbmdlbmljLHJlc2VydmVkLWNoYW5u
+ZWxzLW1hc2siLCB3aGljaCB3b3VsZCBjb250YWluIGEgbWFzayBvZiBjaGFubmVscyB0aGF0IGNh
+biBvbmx5IGJlIHVzZWQgYnkgdGhlIHRpbWVyIGRyaXZlci4gQW5kIHdoYXQgdGhlIHRpbWVyIGRy
+aXZlciBkb2VzIHdpdGggdGhlc2UgY2hhbm5lbHMsIHdvdWxkIGJlIHNwZWNpZmljIHRvIHRoZSBp
+bXBsZW1lbnRhdGlvbiBhbmQgd291bGQgbm90IGFwcGVhciBpbiB0aGUgYmluZGluZ3MuIEkgaG9w
+ZSBSb2IgY2FuIHdvcmsgd2l0aCB0aGF0LgoKLVBhdWw=
