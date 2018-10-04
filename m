@@ -1,34 +1,23 @@
-Return-Path: <geert.uytterhoeven@gmail.com>
-MIME-Version: 1.0
-References: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
-In-Reply-To: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 2 Oct 2018 09:14:40 +0200
-Message-ID: <CAMuHMdWzNn_=S-gJNECHgj3YOrz5sWrtLL93qOt0uQwbZr4FBw@mail.gmail.com>
+Return-Path: <horms@verge.net.au>
+Date: Thu, 4 Oct 2018 11:30:55 +0200
+From: Simon Horman <horms@verge.net.au>
 Subject: Re: [PATCH] dt-bindings: pwm: renesas: pwm-rcar: document
  R8A779{7|8}0 bindings
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20181004093050.kbrw5qagzxflb64r@verge.net.au>
+References: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-renesas-soc@vger.kernel.org
 
-On Mon, Oct 1, 2018 at 9:58 PM Sergei Shtylyov
-<sergei.shtylyov@cogentembedded.com> wrote:
+On Mon, Oct 01, 2018 at 10:57:39PM +0300, Sergei Shtylyov wrote:
 > Document the R-Car V3{M|H} (R8A779{7|8}0) SoC in the  Renesas R-Car PWM
 > bindings. R8A77970's hardware is a generic R-Car gen3 PWM, while R8A77980
 > has an extra error injection register...
->
+> 
 > Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
