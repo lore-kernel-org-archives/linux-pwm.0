@@ -1,94 +1,69 @@
-Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Date: Mon, 15 Oct 2018 10:21:52 +0200
-Message-Id: <20181015082152.5900-1-u.kleine-koenig@pengutronix.de>
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v3 1/2] pwm: lpss: Move struct pwm_lpss_chip definition to the header file
+Date: Sat,  6 Oct 2018 11:22:29 +0200
+Message-Id: <20181006092230.8575-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: [PATCH] PWM: drop legacy wrapper for changing polarity
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, =?UTF-8?q?Vok=C3=A1=C4=8D=20Michal?= <Michal.Vokac@ysoft.com>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-The API to configure a PWM using pwm_enable(), pwm_disable(),
-pwm_config() and pwm_set_polarity() is superseeded by atomically setting
-the parameters using pwm_apply_state(). To get forward with deprecating
-the former set of functions use the opportunity that there is no current
-user of pwm_set_polarity() and remove it.
+Move struct pwm_lpss_chip definition from pwm-lpss.c to pwm-lpss.h,
+so that the pci/platform drivers can access the info member
+(struct pwm_lpss_boardinfo *).
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+This is a preparation patch for adding platform specific quirks, which
+the drivers need access to, to pwm_lpss_boardinfo.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- include/linux/pwm.h | 42 ------------------------------------------
- 1 file changed, 42 deletions(-)
+Changes in v2:
+-No changes in v2 of this patch-set
+---
+ drivers/pwm/pwm-lpss.c | 9 ---------
+ drivers/pwm/pwm-lpss.h | 9 ++++++++-
+ 2 files changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 56518adc31dd..d5199b507d79 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -348,42 +348,6 @@ static inline int pwm_config(struct pwm_device *pwm, int duty_ns,
- 	return pwm_apply_state(pwm, &state);
- }
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 4721a264bac2..e602835fd6de 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -32,15 +32,6 @@
+ /* Size of each PWM register space if multiple */
+ #define PWM_SIZE			0x400
  
--/**
-- * pwm_set_polarity() - configure the polarity of a PWM signal
-- * @pwm: PWM device
-- * @polarity: new polarity of the PWM signal
-- *
-- * Note that the polarity cannot be configured while the PWM device is
-- * enabled.
-- *
-- * Returns: 0 on success or a negative error code on failure.
-- */
--static inline int pwm_set_polarity(struct pwm_device *pwm,
--				   enum pwm_polarity polarity)
--{
--	struct pwm_state state;
+-#define MAX_PWMS			4
 -
--	if (!pwm)
--		return -EINVAL;
+-struct pwm_lpss_chip {
+-	struct pwm_chip chip;
+-	void __iomem *regs;
+-	const struct pwm_lpss_boardinfo *info;
+-	u32 saved_ctrl[MAX_PWMS];
+-};
 -
--	pwm_get_state(pwm, &state);
--	if (state.polarity == polarity)
--		return 0;
--
--	/*
--	 * Changing the polarity of a running PWM without adjusting the
--	 * dutycycle/period value is a bit risky (can introduce glitches).
--	 * Return -EBUSY in this case.
--	 * Note that this is allowed when using pwm_apply_state() because
--	 * the user specifies all the parameters.
--	 */
--	if (state.enabled)
--		return -EBUSY;
--
--	state.polarity = polarity;
--	return pwm_apply_state(pwm, &state);
--}
--
- /**
-  * pwm_enable() - start a PWM output toggling
-  * @pwm: PWM device
-@@ -483,12 +447,6 @@ static inline int pwm_capture(struct pwm_device *pwm,
- 	return -EINVAL;
- }
- 
--static inline int pwm_set_polarity(struct pwm_device *pwm,
--				   enum pwm_polarity polarity)
--{
--	return -ENOTSUPP;
--}
--
- static inline int pwm_enable(struct pwm_device *pwm)
+ static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
  {
- 	return -EINVAL;
+ 	return container_of(chip, struct pwm_lpss_chip, chip);
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 7a4238ad1fcb..8f029ed263af 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -16,7 +16,14 @@
+ #include <linux/device.h>
+ #include <linux/pwm.h>
+ 
+-struct pwm_lpss_chip;
++#define MAX_PWMS			4
++
++struct pwm_lpss_chip {
++	struct pwm_chip chip;
++	void __iomem *regs;
++	const struct pwm_lpss_boardinfo *info;
++	u32 saved_ctrl[MAX_PWMS];
++};
+ 
+ struct pwm_lpss_boardinfo {
+ 	unsigned long clk_rate;
 -- 
-2.19.1
+2.19.0
