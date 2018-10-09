@@ -1,22 +1,17 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Mon, 8 Oct 2018 22:02:25 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: RFC: don't let drivers issue pwm_disable after pwm_config(pwm,
- 0, period)
-Message-ID: <20181008200225.gxvo3fmuxhaoyosu@pengutronix.de>
-References: <20180806155129.cjcc7okmwtaujf43@pengutronix.de>
- <20180809113054.GH21639@ulmo>
- <20180809152329.s6othcezo4enj3xg@pengutronix.de>
- <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
- <20180904203724.isth6bmytgvlal5e@pengutronix.de>
- <20180921160230.eeej4tbrkdfxwi7s@pengutronix.de>
- <20180927182607.7onqymk5cde522kr@pengutronix.de>
- <20180927202955.GA4184@ulmo>
+Date: Tue, 9 Oct 2018 09:34:07 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Message-ID: <20181009073407.GA5565@ulmo>
+References: <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
+ <20180820144357.7206-1-u.kleine-koenig@pengutronix.de>
+ <20180820144357.7206-2-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="WIyZ46R2i8wDzkSu"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20180927202955.GA4184@ulmo>
+In-Reply-To: <20180820144357.7206-2-u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] pwm: document the pin state after pwm_disable() to
+ be undefined
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -26,81 +21,75 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-Hello Thierry,
 
-On Thu, Sep 27, 2018 at 10:29:55PM +0200, Thierry Reding wrote:
-> On Thu, Sep 27, 2018 at 08:26:07PM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Fri, Sep 21, 2018 at 06:02:30PM +0200, Uwe Kleine-K=F6nig wrote:
-> > > On Tue, Sep 04, 2018 at 10:37:24PM +0200, Uwe Kleine-K=F6nig wrote:
-> > > > On Mon, Aug 20, 2018 at 11:52:21AM +0200, Uwe Kleine-K=F6nig wrote:
-> > > > > On Thu, Aug 09, 2018 at 05:23:30PM +0200, Uwe Kleine-K=F6nig wrot=
-e:
-> > > > > > On Thu, Aug 09, 2018 at 01:30:54PM +0200, Thierry Reding wrote:
-> > > > > > > I don't see how you could make that work. In practically all =
-cases a
-> > > > > > > pwm_disable() would have to be assumed to cause the pin level=
- to become
-> > > > > > > undefined. That makes it pretty much useless.
-> > > > > >=20
-> > > > > > Right, that's what I want. pwm_disable() should make no guarant=
-ees about
-> > > > > > the pin level. [...]
-> > > > > >
-> > > > > > > I agree that this is simpler and clearer. However it also sig=
-nificantly
-> > > > > > > reduces the flexibility of the API, and I'm not sure that it =
-is enough.
-> > > > > > > Again, yes, for many cases this is sufficient, but it doesn't=
- fully
-> > > > > > > expose the capabilities of hardware.
-> > > > > >=20
-> > > > > > Can you show me a use case that isn't possible to express with =
-the
-> > > > > > suggested change in semantic?
-> > > > >=20
-> > > > > To get forward here the only missing points are:
-> > > > >=20
-> > > > >  a) Your claim that this simplification looses expressive power.
-> > > > >  b) Actually convert the users (assuming a) can be resolved)
-> > > > >=20
-> > > > > I cannot find a usecase that cannot be handled with the suggested=
- change
-> > > > > in semantic. So can I lure you in explaining what setup you have =
-in
-> > > > > mind?
-> > > >=20
-> > > > I'd really like to get forward here, so you feedback would be very
-> > > > welcome. What is the use case you have in mind when writing "it also
-> > > > significantly reduces the flexibility of the API, and I'm not sure =
-that
-> > > > it is enough"?
-> > >=20
-> > > I'm a bit irritated that you don't continue to communicate here. On
-> > > August 9 I had the impression that we can discuss this topic to an en=
-d.
-> > > But as you stopped replying we unfortunately cannot :-|
-> >=20
-> > Seeing you reply on other topics I wonder what is the problem here. Can
-> > you at least quickly confirm that you received my mails?
+--WIyZ46R2i8wDzkSu
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Aug 20, 2018 at 04:43:56PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> Contrarily to the common assumption that pwm_disable() stops the
+> output at the state where it just happens to be, this isn't what the
+> hardware does on some machines. For example on i.MX6 the pin goes to
+> 0 level instead.
 >=20
-> Confirming that I'm receiving your emails. Sorry, but I haven't found
-> the necessary time to look at the details here any closer to continue
-> the discussion in a meaningful way.
+> Note this doesn't reduce the expressiveness of the pwm-API because if
+> you want the PWM-Pin to stay at a given state, you are supposed to
+> configure it to 0% or 100% duty cycle without calling pwm_disable().
+> The backend driver is free to implement potential power savings
+> already when the duty cycle changes to one of these two cases so this
+> doesn't come at an increased runtime power cost (once the respective
+> drivers are fixed).
 >=20
-> I will hopefully get around to it within the next couple of days.
+> In return this allows to adhere to the API more easily for drivers that
+> currently cannot know if it's ok to disable the hardware on
+> pwm_disable() because the caller might or might not rely on the pin
+> stopping at a certain level.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  Documentation/pwm.txt | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 
-I would really like to continue this discussion before it is swapped out
-of my mind again.
+I don't think this is correct. An API whose result is an undefined state
+is useless in my opinion. So either we properly define what the state
+should be after a disable operation, or we might as well just remove the
+disable operation altogether.
 
-Did you find the time to consider my thoughts?
+=46rom an API point of view I think it makes more sense to define the
+state after disable to be inactive, that is high for normal PWM and low
+for inversed PWM. The reason for this is that the disabled state is
+effectively what the reset state of the PWM would be. If the PWM is
+inverted, typically the board design has a pull-up somewhere to avoid a
+backlight or LED from getting enabled by default. In all other cases a
+PWM pin is likely just going to default to low when disabled.
 
-Best regards
-Uwe
+This also matches what all other drivers, and users, assume.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Thierry
+
+--WIyZ46R2i8wDzkSu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlu8WewACgkQ3SOs138+
+s6GiWBAAqpR+4FRB2fZtqC5vXcpUGKCIeH8BoqQznPRCVOsYjtZDdCyfXdjZDazx
+eD/mAFV0e1OIyOoqd6Z+HPJJ8kpQYX3nl3drxeoFjvef9uMPyF7DUIRYdoCzimMX
+atlb3lD1+QKan3NRbDXDncD/txPkmGhEK2md2Q1pnKRosjbStv6XIAMRjpoVFPJd
+y0dSF41eN4l+sM4gy2sRTJ0VGQCxqT3x8XDXnk2GqnMbRmlIbuFCikjOHPtLG+d7
+oZGUPfcDx5RYpP2gb9jLX66WCZkxHdC16BdOpK0zX1dwpeNKrzohoMpfI1rkJ275
+mSMMzNkLpVLQAZ051nD26JYjwoGe/h7R/Jo4fK58S9aYJhphSq9SyXqbF5GoKocw
+Z115BwTM87bv+WMhhleQAecUi/WvbvecuxSyfMPXz8o+aAks5E0plSHg2wn2ne0R
+dezku7aJIledwxx4Gs1NI9WxS4OXotYAjVeKCJToWj7Vj2M9rfZkKHMDt/xZemBo
+twMUEjljPfuMazTRBJFYXUfj69NfsbYjGS+RCybMoBsW+cDrH6fhlENRNj+Zubup
+LMlZYkgdFwf0uAc+YCnzWotqka9wMpaM6uI2io2fg6NLguE3Vc28PpCrBWc22S30
+ZgDTFGdKuxwg/Qx1X1V2LG7HSRDjcPXcCb/SZzJuNpZlYky8YeA=
+=C8GX
+-----END PGP SIGNATURE-----
+
+--WIyZ46R2i8wDzkSu--
