@@ -1,127 +1,36 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: pwm: imx: Allow switching PWM output
- between PWM and GPIO
-Date: Tue, 9 Oct 2018 11:03:59 +0000
-Message-ID: <1dff44a8-2c1a-910b-dde6-cb04e1ccc4b5@ysoft.com>
-References: <1534862333-27950-1-git-send-email-michal.vokac@ysoft.com>
- <1534862333-27950-2-git-send-email-michal.vokac@ysoft.com>
- <20180823123759.68b78e9f@jawa>
- <0691e93d-c2e2-21e5-374f-c29e7765de93@ysoft.com>
- <20180823143600.3e417542@jawa>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Atish Patra <atish.patra@wdc.com>
+Subject: [RFC 0/4] GPIO & PWM support for HiFive Unleashed
+Date: Tue,  9 Oct 2018 11:51:21 -0700
+Message-ID: <1539111085-25502-1-git-send-email-atish.patra@wdc.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180823143600.3e417542@jawa>
-Content-Language: en-US
-Content-ID: <DB252AD023EA1E46AD6D38FBAA19719B@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lukasz Majewski <lukma@denx.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>
+To: palmer@sifive.com, linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
+Cc: linus.walleij@linaro.org, robh+dt@kernel.org, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, hch@infradead.org, atish.patra@wdc.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMjMuOC4yMDE4IDE0OjM2LCBMdWthc3ogTWFqZXdza2kgd3JvdGU6DQo+IEhpIE1pY2hhbCwN
-Cj4gDQo+PiBPbiAyMy44LjIwMTggMTI6NDAsIEx1a2FzeiBNYWpld3NraSB3cm90ZToNCj4+DQo+
-PiBIaSBMdWthc3osIHRoYW5rcyBmb3IgdGhlIHJlcGx5IQ0KPj4+IEhpIE1pY2hhbCwNCj4+PiAg
-ICANCj4+Pj4gT3V0cHV0IG9mIHRoZSBQV00gYmxvY2sgb2YgaS5NWCBTb0NzIGlzIGFsd2F5cyB6
-ZXJvIHZvbHRzIHdoZW4gdGhlDQo+Pj4+IGJsb2NrIGlzIGRpc2FibGVkLiBUaGlzIGNhbiBjYXVl
-IGlzc3VlcyB3aGVuIGludmVydGVkIFBXTSBwb2xhcml0eQ0KPj4+PiBpcyBuZWVkZWQuIFdpdGgg
-aW52ZXJ0ZWQgcG9sYXJpdHkgYSBkdXR5IGN5Y2xlID0gMCUgY29ycmVzcG9uZHMgdG8NCj4+Pj4g
-c29saWQgaGlnaCBsZXZlbCBvbiB0aGUgb3V0cHV0LiBJZiB0aGUgUFdNIGlzIGRpc3NhYmxlZCBp
-dHMgb3V0cHV0DQo+Pj4+IGluc3RhbnRseSBnb2VzIHRvIHNvbGlkIHplcm8gd2hpY2ggY29ycmVz
-cG9uZHMgdG8gZHV0eSBjeWNsZSA9DQo+Pj4+IDEwMCUuDQo+Pj4+DQo+Pj4+IFRvIGhhdmUgYSB0
-cnVsbHkgaW52ZXJ0ZWQgUFdNIG91dHB1dCBjb25maWd1cmUgdGhlIFBXTSBwYWQgYXMgYQ0KPj4+
-PiBHUElPIHdpdGggcHVsbC11cC4gVGhlbiBzd2l0Y2ggdGhlIHBhZCB0byBQV00gb3V0cHV0IHdo
-ZW5ldmVyDQo+Pj4+IG5vbi16ZXJvIGR1dHkgY3ljbGUgaXMgbmVlZGVkLg0KPj4+DQo+Pj4gSnVz
-dCB0byBhc2sgLSBJcyB5b3VyIGRpc3BsYXkgZXF1aXBwZWQgd2l0aCBwb3dlciBzdXBwbHkNCj4+
-PiBlbmFibGUvZGlzYWJsZSBwaW4/DQo+Pg0KPj4gTm8gaXQgaXMgbm90LiBUaGUgYmFja2xpZ2h0
-IG9uIG15IGRpc3BsYXkgaXMganVzdCBhIGJ1bmNoIG9mIHNlcmlhbC0NCj4+IHBhcmFsbGVsIGNv
-bm5lY3RlZCBMRURzIHdpdGggc2VwYXJhdGUgR05EIGFuZCBWQ0MgcGlucyBvbiBhIHNlcGFyYXRl
-DQo+PiBmbGV4IGNhYmxlLiBBbmQgdGhlIGRpc3BsYXkgaXRzZWxmIGFsc28gZG9lcyBub3QgaGF2
-ZSBhIHJlc2V0IG9yDQo+PiBlbmFibGUgc2lnbmFsLiBJdCBpcyBhIFBJVEEgdG8gdXNlIGl0IEkg
-bXVzdCBzYXkuLg0KPiANCj4gWWVzLCBpdCBzZWVtcyBzby4gSSBtdXN0IGhhdmUgaGFkIG1vcmUg
-bHVjayB0aGFuIHlvdSB3aXRoIHRoZSBIVy4uLi4NCj4gDQo+PiAgICANCj4+PiBBcyBmYWlyIGFz
-IEkgcmVtZW1iZXIgdGhlIHRyaWNrIHRvIGF2b2lkIGZsaWNrZXJpbmcgdGhlIGRpc3BsYXkNCj4+
-PiB3YXMgdG8gZGlzYWJsZSB0aGUgZGlzcGxheSAoZW5hYmxlLWdwaW8gcHJvcGVydHkpIGFuZCBz
-ZXQgdGhlIFBXTQ0KPj4+IFBJTiBhcyBHUElPIHRvIGhpZ2ggaW4gdS1ib290Lg0KPj4NCj4+IFll
-cywgSSBrbm93IGFib3V0IHRoYXQuIEkgY2FuIG5vdCB1c2UgdGhpcyBhcyB0aGUgUFdNIG91dHB1
-dCBpcyB0aGUNCj4+IG9ubHkgc2lnbmFsIEkgaGF2ZSB0byBjb250cm9sIHRoZSBiYWNrbGlnaHQu
-IEkgbWVudGlvbmVkIHRoYXQNCj4+IHNvbWV3aGVyZSBpbiB0aGUgcHJldmlvdXMgZGlzY3Vzc2lv
-biB3aXRoIExvdGhhci4NCj4gDQo+IFllcywgSSd2ZSByZWFkIGl0LiBJIGFsc28gZmluZCB0aGUg
-UFdNIHBpbmN0cmwgYXMgImRlZmF1bHQiIHN0YXRlIG1vcmUNCj4gbmF0dXJhbC4NCj4gDQo+IE9u
-ZSBtb3JlIGlkZWEgLSB0aG91Z2guDQo+IA0KPiBJbiBpTVg2USBpdCB3YXMgcG9zc2libGUgdG8g
-c3BlY2lmeSB0aGUgcGluY3RybCBQSU4gc2V0dXAgYXMgMHg4MDAwMDAwMA0KPiAtIHRoaXMgbWVh
-bnMgdGhhdCBpdCBnb2VzIHVudG91Y2hlZCB0byB0aGUgSVAgYmxvY2sgKGNvbmZpZ3VyZWQgYnkN
-Cj4gICAgYm9vdGxvYWRlcikuDQoNCkhpIEx1a2FzeiwNClRoYW5rIHlvdSBmb3IgdGhlIGlkZWFz
-IGFuZCBzb3JyeSBmb3IgdGhlIGxvbmcgZGVsYXkuDQoNCiBGcm9tIHJlYWRpbmcgYSBsb3Qgb2Yg
-cmVwbGllcyBmcm9tIChub3Qgb25seSkgRFQgbWFpbnRhaW5lcnMgSSBnb3QgdGhlDQppbXByZXNz
-aW9uIHRoYXQgdXNpbmcgdGhlIDB4ODAwMDAwMDAgY29uZmlndXJhdGlvbiB2YWx1ZSBpcyBnZW5l
-cmFsbHkNCmRpc2NvdXJhZ2VkLiBBbmQgSSBzdXBwb3J0IHRoYXQgaWRlYS4NCg0KPiBNYXliZSBp
-dCB3b3VsZCB3b3JrIHRvOg0KPiANCj4gMS4gU2V0dXAgdGhlIFBXTSBvdXRwdXQgYXMgR1BJTyBp
-biB1LWJvb3QgKGhpZ2gpDQo+IA0KPiAyLiBJbiBQV00gSU1YIHByb2JlIGNvbmZpZ3VyZSBQV00g
-dG8gYmUgMTAwJSBkdXR5IGN5Y2xlLiBBbmQgc3dpdGNoDQo+IGlvbXV4IHRvIFBXTSBmdW5jdGlv
-biBvZiB0aGUgcGluDQoNClRoZSBwcm9iZSBmdW5jdGlvbiBzaG91bGQgb25seSBwcmVwYXJlIHN0
-cnVjdHVyZXMsIG5vdCBjb25maWd1cmUgdGhlIEhXLg0KQWxzbyB5b3Ugc29tZWhvdyBuZWVkIHRv
-IGtub3cgd2hldGhlciBvciBub3QgdG8gZW5hYmxlIHRoZSBQV00vR1BJTy4NCk5vcm1hbGx5IGl0
-IGlzIHRoZSBjbGllbnQgKGJhY2tsaWdodCwgc3lzZnMuLikgd2hvIGNhbGxzIHRoZSBwd21fYXBw
-bHkgdG8NCmNvbmZpZ3VyZSBhbmQgZW5hYmxlL2Rpc2FibGUgdGhlIFBXTS4NCg0KPiAzLiBUaGVu
-IGxhdHRlciBpbiB0aGUgY29kZSBQV00gZ2V0cyBjb25maWd1cmVkIGFuZCB3ZSBjYW4gY29udHJv
-bCBpdCBpbg0KPiAibm9ybWFsIiB3YXkgPw0KPiANCj4gT3IgYW0gSSBtaXNzaW5nIHNvbWUgaW1w
-b3J0YW50IHBvaW50Pw0KDQpJZGVhbGx5LCB0aGUgZmluYWwgc29sdXRpb24gc2hvdWxkIGFsbG93
-IGFsbCBwb3NzaWJsZSB1c2UtY2FzZXM6DQoNCi0gaW52ZXJ0ZWQgUFdNLCBlbmFibGVkIGZyb20g
-Ym9vdGxvYWRlciB0byB1c2Vyc3BhY2UNCi0gaW52ZXJ0ZWQgUFdNLCBkaXNhYmxlZCBmcm9tIGJv
-b3Rsb2FkZXIgdG8gdXNlcnNwYWNlDQoNClRoZSBzYW1lIGZvciBub24taW52ZXJ0ZWQgUFdNLg0K
-DQpXaGF0IHlvdSBhcmUgc3VnZ2VzdGluZyBkb2VzIG5vdCBzZWVtIGxpa2UgaXQgc3VwcG9ydHMg
-dGhhdCBpZGVhLg0KDQpJIHdpbGwgc2VuZCB2MiB3aXRoIHNvbWUgcHJvcG9zZWQgY2hhbmdlcyBz
-b29uLg0KDQo+Pg0KPj4gSSBhbHNvIHRoaW5rIHRoaXMgY291bGQgYmUgdXNlZnVsIG5vdCBvbmx5
-IGZvciBiYWNrbGlnaHQuIEFueSBjaXJjdWl0DQo+PiB0aGF0IHJlcXVpcmVzIHRydWx5IGludmVy
-dGVkIFBXTSBzaWduYWwgY2FuIHVzZSBpdC4gSSBzZWUgaXQgYXMgYW4NCj4+IGVuaGFuY2VtZW50
-IHRvIHdoYXQgeW91IHdpdGggTG90aGFyIGhhdmUgYWxyZWFkeSBkb25lIDspDQo+PiAgICANCj4+
-Pj4NCj4+Pj4gU2lnbmVkLW9mZi1ieTogTWljaGFsIFZva8OhxI0gPG1pY2hhbC52b2thY0B5c29m
-dC5jb20+DQo+Pj4+IC0tLQ0KPj4+PiAgICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
-Z3MvcHdtL2lteC1wd20udHh0IHwgNDQNCj4+Pj4gKysrKysrKysrKysrKysrKysrKysrKysgMSBm
-aWxlIGNoYW5nZWQsIDQ0IGluc2VydGlvbnMoKykNCj4+Pj4NCj4+Pj4gZGlmZiAtLWdpdCBhL0Rv
-Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXB3bS50eHQNCj4+Pj4gYi9E
-b2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC1wd20udHh0IGluZGV4DQo+
-Pj4+IGM2MWJkZjguLjNiMWJjNGMgMTAwNjQ0IC0tLQ0KPj4+PiBhL0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXB3bS50eHQgKysrDQo+Pj4+IGIvRG9jdW1lbnRhdGlv
-bi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtcHdtLnR4dCBAQCAtMTQsNiArMTQsMTINCj4+
-Pj4gQEAgU2VlIHRoZSBjbG9jayBjb25zdW1lciBiaW5kaW5nLA0KPj4+PiBEb2N1bWVudGF0aW9u
-L2RldmljZXRyZWUvYmluZGluZ3MvY2xvY2svY2xvY2stYmluZGluZ3MudHh0DQo+Pj4+ICAgIC0g
-aW50ZXJydXB0czogVGhlIGludGVycnVwdCBmb3IgdGhlIHB3bSBjb250cm9sbGVyDQo+Pj4+ICAg
-IA0KPj4+PiArT3B0aW9uYWwgcHJvcGVydGllczoNCj4+Pj4gKy0gcGluY3RybDogRm9yIGkuTVgy
-NyBhbmQgbmV3ZXIgU29Dcy4gQWRkIGV4dHJhIHBpbmN0cmwgdG8NCj4+Pj4gY29uZmlndXJlIHRo
-ZSBQV00NCj4+Pj4gKyAgcGluIHRvIGdwaW8gZnVuY3Rpb24uICBJdCBhbGxvd3MgY29udHJvbCBv
-dmVyIHRoZSBwaW4gb3V0cHV0DQo+Pj4+IGxldmVsIHdoZW4gdGhlDQo+Pj4+ICsgIFBXTSBibG9j
-ayBpcyBkaXNhYmxlZC4gVGhpcyBpcyBtZWFudCB0byBiZSB1c2VkIGlmIGludmVydGVkDQo+Pj4+
-IHBvbGFyaXR5IG9mIHRoZQ0KPj4+PiArICBQV00gc2lnbmFsIGlzIHJlcXVpcmVkLiBTZWUgIklu
-dmVydGVkIFBXTSBvdXRwdXQiIHNlY3Rpb24NCj4+Pj4gYmVsbG93LiArDQo+Pj4+ICAgIEV4YW1w
-bGU6DQo+Pj4+ICAgIA0KPj4+PiAgICBwd20xOiBwd21ANTNmYjQwMDAgew0KPj4+PiBAQCAtMjUs
-MyArMzEsNDEgQEAgcHdtMTogcHdtQDUzZmI0MDAwIHsNCj4+Pj4gICAgCWNsb2NrLW5hbWVzID0g
-ImlwZyIsICJwZXIiOw0KPj4+PiAgICAJaW50ZXJydXB0cyA9IDw2MT47DQo+Pj4+ICAgIH07DQo+
-Pj4+ICsNCj4+Pj4gK0ludmVydGVkIFBXTSBvdXRwdXQNCj4+Pj4gKy0tLS0tLS0tLS0tLS0tLS0t
-LS0NCj4+Pj4gKw0KPj4+PiArVGhlIGkuTVggU29DIGhhcyBzdWNoIGxpbWl0YXRpb24gdGhhdCB3
-aGVuZXZlciBhIHBhZCBpcyBjb25maWd1cmVkDQo+Pj4+IGFzIGEgUFdNICtvdXRwdXQsIHRoZSBv
-dXRwdXQgbGV2ZWwgaXMgYWx3YXlzIHplcm8gdm9sdHMgd2hlbiB0aGUNCj4+Pj4gUFdNIGJsb2Nr
-IGlzIGRpc2FibGVkLiArVGhlIHplcm8gb3V0cHV0IGxldmVsIGlzIGFjdGl2ZWx5IGRyaXZlbg0K
-Pj4+PiBieSB0aGUgb3V0cHV0IHN0YWdlIG9mIHRoZSBQV00gYmxvY2sgK2FuZCBjYW4gbm90IGJl
-IG92ZXJyaWRkZW4gYnkNCj4+Pj4gcHVsbC11cC4gSXQgYWxzbyBkb2VzIG5vdCBtYXR0ZXIgd2hh
-dCBQV00gcG9sYXJpdHkgK2EgUFdNIGNsaWVudA0KPj4+PiAoZS5nLiBiYWNrbGlnaHQpIHJlcXVl
-c3RlZC4gKw0KPj4+PiArVG8gZ2FpbiBjb250cm9sIG9mIHRoZSBQV00gb3V0cHV0IGxldmVsIGlu
-IGRpc2FibGVkIHN0YXRlIHR3bw0KPj4+PiBwaW5jdHJsIHN0YXRlcyArY2FuIGJlIHVzZWQuIFRo
-ZSAiZGVmYXVsdCIgc3RhdGUgYW5kIHRoZSAicHdtIg0KPj4+PiBzdGF0ZS4gSW4gdGhlIGRlZmF1
-bHQgc3RhdGUgdGhlICtQV00gb3V0cHV0IGlzIGNvbmZpZ3VyZWQgYXMgYQ0KPj4+PiBHUElPIHdp
-dGggcHVsbC11cC4gSW4gdGhlICJwd20iIHN0YXRlIHRoZSBvdXRwdXQgK2lzIGNvbmZpZ3VyZWQg
-YXMNCj4+Pj4gYSBQV00gb3V0cHV0LiBUaGlzIHNldHVwIGFzc3VyZXMgdGhhdCB0aGUgUFdNIG91
-dHB1dCBpcyBhdCArdGhlDQo+Pj4+IHJlcXVpcmVkIGxldmVsIHRoYXQgY29ycmVzcG9uZHMgdG8g
-ZHV0eSBjeWNsZSA9IDAgd2hlbiBQV00gaXMNCj4+Pj4gZGlzYWJsZWQuICtFLmcuIGF0IGJvb3Qu
-ICsNCj4+Pj4gK0V4YW1wbGU6DQo+Pj4+ICsNCj4+Pj4gKyZwd20xIHsNCj4+Pj4gKwlwaW5jdHJs
-LW5hbWVzID0gImRlZmF1bHQiLCAicHdtIjsNCj4+Pj4gKwlwaW5jdHJsLTAgPSA8JnBpbmN0cmxf
-YmFja2xpZ2h0X2dwaW8+Ow0KPj4+PiArCXBpbmN0cmwtMSA9IDwmcGluY3RybF9iYWNrbGlnaHRf
-cHdtPjsNCj4+Pj4gK30NCj4+Pj4gKw0KPj4+PiArcGluY3RybF9iYWNrbGlnaHRfZ3BpbzogcHdt
-MWdycC1ncGlvIHsNCj4+Pj4gKwlmc2wscGlucyA9IDwNCj4+Pj4gKwkJLyogR1BJTyB3aXRoIDIy
-a09obSBwdWxsLXVwICovDQo+Pj4+ICsJCU1YNlFETF9QQURfR1BJT185X19HUElPMV9JTzA5CTB4
-RjAwOA0KPj4+PiArCT47DQo+Pj4+ICt9Ow0KPj4+PiArDQo+Pj4+ICtwaW5jdHJsX2JhY2tsaWdo
-dF9wd206IHB3bTFncnAtcHdtIHsNCj4+Pj4gKwlmc2wscGlucyA9IDwNCj4+Pj4gKwkJLyogUFdN
-IG91dHB1dCAqLw0KPj4+PiArCQlNWDZRRExfUEFEX0dQSU9fOV9fUFdNMV9PVVQJMHg4DQo+Pj4+
-ICsJPjsNCj4+Pj4gK307DQoNCg==
+This patch series adds GPIO & PWM drivers and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
+
+Wesley W. Terpstra (4):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller.
+  pwm: sifive: Add a driver for SiFive SoC PWM
+  gpio: sifive: Add DT documentation for SiFive GPIO.
+  gpio: sifive: Add GPIO driver for SiFive SoCs
+
+ .../devicetree/bindings/gpio/gpio-sifive.txt       |  28 ++
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  32 ++
+ drivers/gpio/Kconfig                               |   7 +
+ drivers/gpio/Makefile                              |   1 +
+ drivers/gpio/gpio-sifive.c                         | 326 +++++++++++++++++++++
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 240 +++++++++++++++
+ 8 files changed, 645 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gpio/gpio-sifive.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/gpio/gpio-sifive.c
+ create mode 100644 drivers/pwm/pwm-sifive.c
+
+-- 
+2.7.4
