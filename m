@@ -1,60 +1,40 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3] backlight: pwm_bl: switch to using "atomic" PWM API
-Date: Mon, 8 Oct 2018 23:04:40 -0700
-Message-ID: <20181009060440.GB4324@dell>
-References: <20180814165059.13219-1-enric.balletbo@collabora.com>
- <20180910144924.GU28860@dell>
- <2092357.WrANtTvkTV@phil>
+Subject: Re: [PATCH v5 04/21] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Mon, 8 Oct 2018 23:36:40 -0700
+Message-ID: <20181009063640.GB32033@dell>
+References: <5bb4c6ad.1c69fb81.42bb.93ecSMTPIN_ADDED_MISSING@mx.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <2092357.WrANtTvkTV@phil>
+In-Reply-To: <5bb4c6ad.1c69fb81.42bb.93ecSMTPIN_ADDED_MISSING@mx.google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Heiko Stuebner <heiko@sntech.de>
-Cc: dri-devel@lists.freedesktop.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, kernel@collabora.com, cl@rock-chips.com
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-doc@vger.kernel.org, linux-watchdog@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, robh@kernel.org, linux-mips@linux-mips.org, Stephen Boyd <sboyd@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, Mark Rutland <mark.rutland@arm.com>, Paul Burton <paul.burton@mips.com>, Michael Turquette <mturquette@baylibre.com>, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 28 Sep 2018, Heiko Stuebner wrote:
+On Wed, 03 Oct 2018, Paul Cercueil wrote:
+> Le 3 oct. 2018 3:02 PM, Daniel Lezcano <daniel.lezcano@linaro.org> a écrit :
+> > On 03/10/2018 14:51, Paul Cercueil wrote: 
+> > > 
+> > > Le 3 oct. 2018 2:47 PM, Daniel Lezcano <daniel.lezcano@linaro.org> a 
+> > > écrit : 
+> > >> 
+> > >> On 03/10/2018 12:32, Paul Cercueil wrote: 
+> > >>> 
+> > >>> Le 1 oct. 2018 10:48, Daniel Lezcano <daniel.lezcano@linaro.org> 
+> > >>> a écrit : 
+> > >>>> 
+> > >>>> On 31/07/2018 00:01, Paul Cercueil wrote: 
+> > >>>> 
+> > >>>> [ ... ] 
 
-> Hi Lee,
-> 
-> Am Montag, 10. September 2018, 16:49:24 CEST schrieb Lee Jones:
-> > On Tue, 14 Aug 2018, Enric Balletbo i Serra wrote:
-> > 
-> > > The "atomic" API allows us to configure PWM period and duty_cycle and
-> > > enable it in one call.
-> > > 
-> > > The patch also moves the pwm_init_state just before any use of the
-> > > pwm_state struct, this fixes a potential bug where pwm_get_state
-> > > can be called before pwm_init_state.
-> > > 
-> > > Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> > > ---
-> > > 
-> > > Changes in v3:
-> > > - Get rid of duty_cycle variable from pwm_backlight_update_status.
-> > > - Get rid of pb->enabled and use only the status.enabled variable.
-> > > - Make power_on match power_off.
-> > > - Do not share status between ...update_status and ...power_on
-> > > 
-> > > Changes in v2:
-> > > - Do not force the PWM be off in the first call to pwm_apply_state.
-> > > - Delayed applying the state until we know what the period is.
-> > > - Removed pb->period as after the conversion is not needed.
-> > > 
-> > >  drivers/video/backlight/pwm_bl.c | 81 +++++++++++++++++---------------
-> > >  1 file changed, 42 insertions(+), 39 deletions(-)
-> > 
-> > Applied, thanks.
-> 
-> did this miss some push or so, because looking at [0], I don't see
-> any new patches for a while now?
+Paul,
 
-Yes.  It has been applied locally for a while though, so don't worry.
-
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git/
+I think there is something wrong with your mailer since your replies
+are being scattered across my inbox un-threaded, making conversations
+very difficult to follow.
 
 -- 
 Lee Jones [李琼斯]
