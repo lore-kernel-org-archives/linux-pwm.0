@@ -1,76 +1,32 @@
 From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [RFC 2/4] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Wed, 10 Oct 2018 06:11:29 -0700
-Message-ID: <20181010131128.GA29142@infradead.org>
+Subject: Re: [RFC 4/4] gpio: sifive: Add GPIO driver for SiFive SoCs
+Date: Wed, 10 Oct 2018 06:12:55 -0700
+Message-ID: <20181010131255.GB29142@infradead.org>
 References: <1539111085-25502-1-git-send-email-atish.patra@wdc.com>
- <1539111085-25502-3-git-send-email-atish.patra@wdc.com>
+ <1539111085-25502-5-git-send-email-atish.patra@wdc.com>
+ <mvmo9c22bx2.fsf@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1539111085-25502-3-git-send-email-atish.patra@wdc.com>
+In-Reply-To: <mvmo9c22bx2.fsf@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Atish Patra <atish.patra@wdc.com>
-Cc: palmer@sifive.com, linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linus.walleij@linaro.org, robh+dt@kernel.org, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, hch@infradead.org
+To: Andreas Schwab <schwab@suse.de>
+Cc: Atish Patra <atish.patra@wdc.com>, palmer@sifive.com, linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linus.walleij@linaro.org, robh+dt@kernel.org, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, hch@infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Thanks for getting these drivers submitted upstream!
+On Wed, Oct 10, 2018 at 03:01:29PM +0200, Andreas Schwab wrote:
+> On Okt 09 2018, Atish Patra <atish.patra@wdc.com> wrote:
+> 
+> > +static void sifive_set_ie(struct sifive_gpio *chip, unsigned int offset)
+> > +{
+> > +	unsigned long flags;
+> > +	unsigned int trigger;
+> > +
+> > +	raw_spin_lock_irqsave(&chip->lock, flags);
+> > +	trigger = (chip->enabled & BIT(offset)) ? chip->trigger[offset] : 0;
+> 
+> This should use test_bit instead.
 
-I don't really know anything about PWM, so just some random nitpicking
-below..
-
-> +	iowrite32(frac, pwm->regs + REG_PWMCMP0 + (dev->hwpwm * SIZE_PWMCMP));
-
-* already has a higher precedence than +, so no need for the inner
-braces.
-
-> +	duty = ioread32(pwm->regs + REG_PWMCMP0 + (dev->hwpwm * SIZE_PWMCMP));
-
-Same here.
-
-> +	/* (1 << (16+scale)) * 10^9/rate = real_period */
-	unsigned long scalePow = (pwm->approx_period * (u64)rate) / 1000000000;
-
-no camcel case, please.
-
-> +	int scale = ilog2(scalePow) - 16;
-> +
-> +	scale = clamp(scale, 0, 0xf);
-
-Why not:
-
-	int scale = clamp(ilog2(scale_pow) - 16, 0, 0xf);
-
-> +static int sifive_pwm_clock_notifier(struct notifier_block *nb,
-> +				     unsigned long event, void *data)
-> +{
-> +	struct clk_notifier_data *ndata = data;
-> +	struct sifive_pwm_device *pwm = container_of(nb,
-> +						     struct sifive_pwm_device,
-> +						     notifier);
-
-I don't think there are any guidlines, but I always prefer to just move
-the whole container_of onto a new line:
-
-	struct sifive_pwm_device *pwm =
-		container_of(nb, struct sifive_pwm_device, notifier);
-
-> +static struct platform_driver sifive_pwm_driver = {
-> +	.probe = sifive_pwm_probe,
-> +	.remove = sifive_pwm_remove,
-> +	.driver = {
-> +		.name = "pwm-sifivem",
-> +		.of_match_table = of_match_ptr(sifive_pwm_of_match),
-> +	},
-> +};
-
-What about using tabs to align this a little more nicely?
-
-static struct platform_driver sifive_pwm_driver = {
-	.probe			= sifive_pwm_probe,
-	.remove			= sifive_pwm_remove,
-	.driver = {
-		.name		= "pwm-sifivem",
-		.of_match_table	= of_match_ptr(sifive_pwm_of_match),
-	},
-};
+Given that this apparently needs the spinlock for atomciy with more than
+just the bitmap test_bit would be rather pointless.
