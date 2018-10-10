@@ -1,130 +1,152 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: =?utf-8?B?W1JDRsKgUEFUQ0ggdjIgMi8yXSBwd206IGlteDogQ29uZmlndXJlIG91dHB1?=
- =?utf-8?Q?t_to_GPIO_in_disabled_state?=
-Date: Wed, 10 Oct 2018 09:33:26 +0000
-Message-ID: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
-References: <1539163920-9442-1-git-send-email-michal.vokac@ysoft.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [RFC 4/4] gpio: sifive: Add GPIO driver for SiFive SoCs
+Date: Wed, 10 Oct 2018 14:35:19 +0200
+Message-ID: <CACRpkdaoBwqQ4V5Hm9f_G5_jrdkvjT5anhBK1_HoFTj6=cba-Q@mail.gmail.com>
+References: <1539111085-25502-1-git-send-email-atish.patra@wdc.com> <1539111085-25502-5-git-send-email-atish.patra@wdc.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1539163920-9442-1-git-send-email-michal.vokac@ysoft.com>
-Content-Language: en-US
-Content-ID: <1B3A97A781D508498FD89649644DED9F@eurprd04.prod.outlook.com>
+In-Reply-To: <1539111085-25502-5-git-send-email-atish.patra@wdc.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+To: atish.patra@wdc.com, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Christoph Hellwig <hch@infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Tm9ybWFsbHkgdGhlIFBXTSBvdXRwdXQgaXMgaGVsZCBMT1cgd2hlbiBQV00gaXMgZGlzYWJsZWQu
-IFRoaXMgY2FuIGNhdXNlDQpwcm9ibGVtcyB3aGVuIGludmVydGVkIFBXTSBzaWduYWwgcG9sYXJp
-dHkgaXMgbmVlZGVkLiBXaXRoIHRoaXMgYmVoYXZpb3INCnRoZSBjb25uZWN0ZWQgY2lyY3VpdCBp
-cyBmZWQgYnkgMTAwJSBkdXR5IGN5Y2xlIGluc3RlYWQgb2YgYmVpbmcgc2h1dC1vZmYuDQoNCkFs
-bG93IHVzZXJzIHRvIGRlZmluZSBhICJncGlvIiBhbmQgYSAicHdtIiBwaW5jdHJsIHN0YXRlcy4g
-VGhlIHB3bSBwaW5jdHJsDQpzdGF0ZSBpcyB0aGVuIHNlbGVjdGVkIHdoZW4gUFdNIGlzIGVuYWJs
-ZWQgYW5kIHRoZSBncGlvIHBpbmN0cmwgc3RhdGUgaXMNCnNlbGVjdGVkIHdoZW4gUFdNIGlzIGRp
-c2FibGVkLiBBbHNvIGFkZCBhIG5ldyBwd20tZ3Bpb3MgR1BJTyB0aGF0IGlzIHVzZWQNCnRvIGRy
-aXZlIHRoZSBvdXRwdXQgaW4gdGhlIGdwaW8gc3RhdGUuDQoNCklmIGFsbCB0aGUgcGluY3RybCBz
-dGF0ZXMgYW5kIHRoZSBwd20tZ3Bpb3MgYXJlIG5vdCBjb3JyZWN0bHkgc3BlY2lmaWVkDQppbiBE
-VCB0aGUgbG9naWMgd2lsbCB3b3JrIGFzIGJlZm9yZS4NCg0KQXMgYW4gZXhhbXBsZSwgd2l0aCB0
-aGlzIHBhdGNoIGEgUFdNIGNvbnRyb2xsZWQgYmFja2xpZ2h0IHdpdGggaW52ZXJzZWQNCnNpZ25h
-bCBwb2xhcml0eSBjYW4gYmUgdXNlZCBpbiBmdWxsIGJyaWdodG5lc3MgcmFuZ2UuIFdpdGhvdXQg
-dGhpcyBwYXRjaA0KdGhlIGJhY2tsaWdodCBjYW4gbm90IGJlIHR1cm5lZCBvZmYgYXMgYnJpZ2h0
-bmVzcyA9IDAgZGlzYWJsZXMgdGhlIFBXTQ0KYW5kIHRoYXQgaW4gdHVybiBzZXQgUFdNIG91dHB1
-dCBMT1csIHRoYXQgaXMgZnVsbCBicmlnaHRuZXNzLg0KDQpPdXRwdXQgb2YgdGhlIFBXTSB3aXRo
-ICJkZWZhdWx0IiBwaW5jdHJsIGFuZCB3aXRoICJwd20iKyJncGlvIiBwaW5jdHJsOg0KDQorLS0t
-LS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0rDQp8IEFmdGVyIHJlc2V0ICB8IEJvb3Rsb2FkZXIgfCBMaW51eCBwaW5jdHJs
-IHwgVXNlciAoc3lzZnMsIGJhY2tsaWdodC4uKSB8DQp8IDEwMGsgcHVsbC11cCB8IChub3QgdXNl
-ZCkgfCAgICAgICAgICAgICAgIHwgICBlbmFibGUgICAgfCAgIGRpc2FibGUgICB8DQorLS0tLS0t
-LS0tLS0tLS0rLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0rDQogX19fX19fX19fX19fX19fX19fX19fX19fX19fICAgIGRlZmF1bHQgICAgICAg
-IF8gICBfICAgXw0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIHxfX19fX19fX19fX19fX19f
-X3wgfF98IHxffCB8X3xfX19fX19fX19fX19fDQoNCiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICBwd20gKyBncGlvDQogX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXyAgIF8gICBfICAgXyAgIF9fX19fX19fX19fX18NCiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgfF98IHxffCB8X3wgfF98DQoNClNpZ25lZC1vZmYtYnk6IE1p
-Y2hhbCBWb2vDocSNIDxtaWNoYWwudm9rYWNAeXNvZnQuY29tPg0KLS0tDQpDaGFuZ2VzIGluIHYy
-Og0KIC0gVXRpbGl6ZSB0aGUgInB3bSIgYW5kICJncGlvIiBwaW5jdHJsIHN0YXRlcy4NCiAtIFVz
-ZSB0aGUgcHdtLWdwaW9zIHNpZ25hbCB0byBkcml2ZSB0aGUgb3V0cHV0IGluICJncGlvIiBwaW5j
-dHJsIHN0YXRlLg0KIC0gU2VsZWN0IHRoZSByaWdodCBwaW5jdHJsIHN0YXRlIGluIHByb2JlLiAN
-Cg0KIGRyaXZlcnMvcHdtL3B3bS1pbXguYyB8IDg2ICsrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKw0KIDEgZmlsZSBjaGFuZ2VkLCA4NiBpbnNlcnRpb25z
-KCspDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20taW14LmMgYi9kcml2ZXJzL3B3bS9w
-d20taW14LmMNCmluZGV4IDZjZDNiNzIuLjM1MDIxMjMgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3B3
-bS9wd20taW14LmMNCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXguYw0KQEAgLTEwLDExICsxMCwx
-MyBAQA0KICNpbmNsdWRlIDxsaW51eC9jbGsuaD4NCiAjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4N
-CiAjaW5jbHVkZSA8bGludXgvZXJyLmg+DQorI2luY2x1ZGUgPGxpbnV4L2dwaW8vY29uc3VtZXIu
-aD4NCiAjaW5jbHVkZSA8bGludXgvaW8uaD4NCiAjaW5jbHVkZSA8bGludXgva2VybmVsLmg+DQog
-I2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KICNpbmNsdWRlIDxsaW51eC9vZi5oPg0KICNpbmNs
-dWRlIDxsaW51eC9vZl9kZXZpY2UuaD4NCisjaW5jbHVkZSA8bGludXgvcGluY3RybC9jb25zdW1l
-ci5oPg0KICNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4NCiAjaW5jbHVkZSA8bGlu
-dXgvcHdtLmg+DQogI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4NCkBAIC05MiwxMCArOTQsNDUgQEAg
-c3RydWN0IGlteF9jaGlwIHsNCiAJdm9pZCBfX2lvbWVtCSptbWlvX2Jhc2U7DQogDQogCXN0cnVj
-dCBwd21fY2hpcAljaGlwOw0KKw0KKwlzdHJ1Y3QgcGluY3RybCAqcGluY3RybDsNCisJc3RydWN0
-IHBpbmN0cmxfc3RhdGUgKnBpbmN0cmxfcGluc19ncGlvOw0KKwlzdHJ1Y3QgcGluY3RybF9zdGF0
-ZSAqcGluY3RybF9waW5zX3B3bTsNCisJc3RydWN0IGdwaW9fZGVzYyAqcHdtX2dwaW9kOw0KIH07
-DQogDQorDQogI2RlZmluZSB0b19pbXhfY2hpcChjaGlwKQljb250YWluZXJfb2YoY2hpcCwgc3Ry
-dWN0IGlteF9jaGlwLCBjaGlwKQ0KIA0KK3N0YXRpYyBpbnQgaW14X3B3bV9pbml0X3BpbmN0cmxf
-aW5mbyhzdHJ1Y3QgaW14X2NoaXAgKmlteF9jaGlwLA0KKwkJc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZSAqcGRldikNCit7DQorCWlteF9jaGlwLT5waW5jdHJsID0gZGV2bV9waW5jdHJsX2dldCgmcGRl
-di0+ZGV2KTsNCisJaWYgKCFpbXhfY2hpcC0+cGluY3RybCB8fCBJU19FUlIoaW14X2NoaXAtPnBp
-bmN0cmwpKSB7DQorCQlkZXZfaW5mbygmcGRldi0+ZGV2LCAiY2FuIG5vdCBnZXQgcGluY3RybFxu
-Iik7DQorCQlyZXR1cm4gUFRSX0VSUihpbXhfY2hpcC0+cGluY3RybCk7DQorCX0NCisNCisJaW14
-X2NoaXAtPnBpbmN0cmxfcGluc19wd20gPSBwaW5jdHJsX2xvb2t1cF9zdGF0ZShpbXhfY2hpcC0+
-cGluY3RybCwNCisJCQkicHdtIik7DQorCWlteF9jaGlwLT5waW5jdHJsX3BpbnNfZ3BpbyA9IHBp
-bmN0cmxfbG9va3VwX3N0YXRlKGlteF9jaGlwLT5waW5jdHJsLA0KKwkJCSJncGlvIik7DQorCWlt
-eF9jaGlwLT5wd21fZ3Bpb2QgPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbCgmcGRldi0+ZGV2LCAi
-cHdtIiwNCisJCQlHUElPRF9JTik7DQorDQorCWlmIChQVFJfRVJSKGlteF9jaGlwLT5wd21fZ3Bp
-b2QpID09IC1FUFJPQkVfREVGRVIpIHsNCisJCXJldHVybiAtRVBST0JFX0RFRkVSOw0KKwl9IGVs
-c2UgaWYgKElTX0VSUihpbXhfY2hpcC0+cHdtX2dwaW9kKSB8fA0KKwkJICAgSVNfRVJSKGlteF9j
-aGlwLT5waW5jdHJsX3BpbnNfcHdtKSB8fA0KKwkJICAgSVNfRVJSKGlteF9jaGlwLT5waW5jdHJs
-X3BpbnNfZ3BpbykpIHsNCisJCWRldl9kYmcoJnBkZXYtPmRldiwgIlBXTSBwaW5jdHJsIGluZm9y
-bWF0aW9uIGluY29tcGxldGVcbiIpOw0KKwkJZGV2bV9waW5jdHJsX3B1dChpbXhfY2hpcC0+cGlu
-Y3RybCk7DQorCQlpbXhfY2hpcC0+cGluY3RybCA9IE5VTEw7DQorCX0NCisNCisJcmV0dXJuIDA7
-DQorfQ0KKw0KIHN0YXRpYyB2b2lkIGlteF9wd21fZ2V0X3N0YXRlKHN0cnVjdCBwd21fY2hpcCAq
-Y2hpcCwNCiAJCXN0cnVjdCBwd21fZGV2aWNlICpwd20sIHN0cnVjdCBwd21fc3RhdGUgKnN0YXRl
-KQ0KIHsNCkBAIC0zMDYsNyArMzQzLDMxIEBAIHN0YXRpYyBpbnQgaW14X3B3bV9hcHBseV92Mihz
-dHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQogCQkJCQlNWDNf
-UFdNQ1JfUE9VVENfSU5WRVJURUQpOw0KIA0KIAkJd3JpdGVsKGNyLCBpbXgtPm1taW9fYmFzZSAr
-IE1YM19QV01DUik7DQorDQorCQkvKg0KKwkJICogSWYgd2UgYXJlIGluIGNoYXJnZSBvZiBwaW5j
-dHJsIHRoZW4gc3dpdGNoIG91dHB1dCB0bw0KKwkJICogdGhlIFBXTSBzaWduYWwuDQorCQkgKi8N
-CisJCWlmIChpbXgtPnBpbmN0cmwpDQorCQkJcGluY3RybF9zZWxlY3Rfc3RhdGUoaW14LT5waW5j
-dHJsLA0KKwkJCQkJaW14LT5waW5jdHJsX3BpbnNfcHdtKTsNCiAJfSBlbHNlIGlmIChjc3RhdGUu
-ZW5hYmxlZCkgew0KKwkJLyoNCisJCSAqIFBXTSBibG9jayB3aWxsIGJlIGRpc2FibGVkLiBOb3Jt
-YWxseSBpdHMgb3V0cHV0IHdpbGwgYmUgc2V0DQorCQkgKiBsb3cgbm8gbWF0dGVyIHdoYXQgb3V0
-cHV0IHBvbGFyaXR5IGlzIGNvbmZpZ3VyZWQuIExldHMgdXNlDQorCQkgKiBwaW5jdHJsIHRvIHN3
-aXRjaCB0aGUgb3V0cHV0IHBpbiB0byBHUElPIGZ1bmN0b24gYW5kIGtlZXANCisJCSAqIHRoZSBv
-dXRwdXQgYXQgdGhlIHNhbWUgbGV2ZWwgYXMgZm9yIGR1dHktY3ljbGUgPSAwLg0KKwkJICoNCisJ
-CSAqIEZpcnN0IHNldCB0aGUgR1BJTyB0byB0aGUgZGVzaXJlZCBsZXZlbCwgdGhlbiBzd2l0Y2gg
-dGhlDQorCQkgKiBtdXhpbmcgYW5kIGF0IGxhc3QgZGlzYWJsZSBQV00uIEluIHRoYXQgb3JkZXIg
-d2UgZG8gbm90IGdldA0KKwkJICogdW53YW50ZWQgbG9naWMgbGV2ZWwgY2hhbmdlcyBvbiB0aGUg
-b3V0cHV0Lg0KKwkJICovDQorCQlpZiAoaW14LT5waW5jdHJsKSB7DQorCQkJZ3Bpb2Rfc2V0X3Zh
-bHVlX2NhbnNsZWVwKGlteC0+cHdtX2dwaW9kLCAwKTsNCisJCQlwaW5jdHJsX3NlbGVjdF9zdGF0
-ZShpbXgtPnBpbmN0cmwsDQorCQkJCQlpbXgtPnBpbmN0cmxfcGluc19ncGlvKTsNCisJCX0NCisN
-CiAJCXdyaXRlbCgwLCBpbXgtPm1taW9fYmFzZSArIE1YM19QV01DUik7DQogDQogCQljbGtfZGlz
-YWJsZV91bnByZXBhcmUoaW14LT5jbGtfcGVyKTsNCkBAIC0zNTQsNiArNDE1LDcgQEAgc3RhdGlj
-IGludCBpbXhfcHdtX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQogCWNvbnN0
-IHN0cnVjdCBvZl9kZXZpY2VfaWQgKm9mX2lkID0NCiAJCQlvZl9tYXRjaF9kZXZpY2UoaW14X3B3
-bV9kdF9pZHMsICZwZGV2LT5kZXYpOw0KIAljb25zdCBzdHJ1Y3QgaW14X3B3bV9kYXRhICpkYXRh
-Ow0KKwlzdHJ1Y3QgcHdtX3N0YXRlIGNzdGF0ZTsNCiAJc3RydWN0IGlteF9jaGlwICppbXg7DQog
-CXN0cnVjdCByZXNvdXJjZSAqcjsNCiAJaW50IHJldCA9IDA7DQpAQCAtMzg1LDYgKzQ0NywxMCBA
-QCBzdGF0aWMgaW50IGlteF9wd21fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikN
-CiAJCWlteC0+Y2hpcC5vZl9wd21fbl9jZWxscyA9IDM7DQogCX0NCiANCisJcmV0ID0gaW14X3B3
-bV9pbml0X3BpbmN0cmxfaW5mbyhpbXgsIHBkZXYpOw0KKwlpZiAocmV0KQ0KKwkJcmV0dXJuIHJl
-dDsNCisNCiAJciA9IHBsYXRmb3JtX2dldF9yZXNvdXJjZShwZGV2LCBJT1JFU09VUkNFX01FTSwg
-MCk7DQogCWlteC0+bW1pb19iYXNlID0gZGV2bV9pb3JlbWFwX3Jlc291cmNlKCZwZGV2LT5kZXYs
-IHIpOw0KIAlpZiAoSVNfRVJSKGlteC0+bW1pb19iYXNlKSkNCkBAIC0zOTQsNiArNDYwLDI2IEBA
-IHN0YXRpYyBpbnQgaW14X3B3bV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0K
-IAlpZiAocmV0IDwgMCkNCiAJCXJldHVybiByZXQ7DQogDQorCWlmIChpbXgtPnBpbmN0cmwpIHsN
-CisJCS8qDQorCQkgKiBVcGRhdGUgY3N0YXRlIGFmdGVyIHB3bWNoaXBfYWRkKCkgY2FsbCBhcyB0
-aGUgY29yZSBtaWdodA0KKwkJICogY2FsbCB0aGUgZ2V0X3N0YXRlKCkgZnVuY3Rpb24gdG8gcmVh
-ZCB0aGUgUFdNIHJlZ2lzdGVycw0KKwkJICogdG8gZ2V0IHRoZSBhY3R1YWwgSFfCoHN0YXRlLg0K
-KwkJICovDQorCQlwd21fZ2V0X3N0YXRlKGlteC0+Y2hpcC5wd21zLCAmY3N0YXRlKTsNCisJCWlm
-IChjc3RhdGUuZW5hYmxlZCkgew0KKwkJCWRldl9kYmcoJnBkZXYtPmRldiwNCisJCQkJIlBXTSBl
-bnRlcmVkIHByb2JlIGluIGVuYWJsZWQgc3RhdGVcbiIpOw0KKwkJCXBpbmN0cmxfc2VsZWN0X3N0
-YXRlKGlteC0+cGluY3RybCwNCisJCQkJCWlteC0+cGluY3RybF9waW5zX3B3bSk7DQorCQl9IGVs
-c2Ugew0KKwkJCWdwaW9kX3NldF92YWx1ZV9jYW5zbGVlcChpbXgtPnB3bV9ncGlvZCwgMCk7DQor
-CQkJcGluY3RybF9zZWxlY3Rfc3RhdGUoaW14LT5waW5jdHJsLA0KKwkJCQkJaW14LT5waW5jdHJs
-X3BpbnNfZ3Bpbyk7DQorDQorCQl9DQorCX0NCisNCiAJcGxhdGZvcm1fc2V0X2RydmRhdGEocGRl
-diwgaW14KTsNCiAJcmV0dXJuIDA7DQogfQ0KLS0gDQoyLjEuNA0KDQo=
+Hi Atish,
+
+thanks for your patch!
+
+On Tue, Oct 9, 2018 at 8:51 PM Atish Patra <atish.patra@wdc.com> wrote:
+
+> From: "Wesley W. Terpstra" <wesley@sifive.com>
+>
+> Adds the GPIO driver for SiFive RISC-V SoCs.
+>
+> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> [Atish: Various fixes and code cleanup]
+> Signed-off-by: Atish Patra <atish.patra@wdc.com>
+
+(...)
+
+> +config GPIO_SIFIVE
+> +       bool "SiFive GPIO support"
+> +       depends on OF_GPIO
+> +       select GPIOLIB_IRQCHIP
+
+I suggest to add
+select GPIO_GENERIC as per below.
+
+Maybe select REGMAP_MMIO as well.
+
+> +       help
+> +         Say yes here to support the GPIO device on SiFive SoCs.
+> +
+
+> +#include <linux/of_irq.h>
+> +#include <linux/irqchip/chained_irq.h>
+
+Do you need these two? I think <linux/gpio/driver.h>
+will bring them in for you.
+
+> +#include <linux/pinctrl/consumer.h>
+
+Are you using this?
+
+> +struct sifive_gpio {
+> +       raw_spinlock_t          lock;
+> +       void __iomem            *base;
+> +       struct gpio_chip        gc;
+> +       unsigned long           enabled;
+
+Since max GPIO is 32 why not use an u32 for this?
+
+> +       unsigned int            trigger[MAX_GPIO];
+> +       unsigned int            irq_parent[MAX_GPIO];
+> +       struct sifive_gpio      *self_ptr[MAX_GPIO];
+> +};
+> +
+> +static void sifive_assign_bit(void __iomem *ptr, unsigned int offset, int value)
+> +{
+> +       /*
+> +        * It's frustrating that we are not allowed to use the device atomics
+> +        * which are GUARANTEED to be supported by this device on RISC-V
+> +        */
+> +       u32 bit = BIT(offset), old = ioread32(ptr);
+> +
+> +       if (value)
+> +               iowrite32(old | bit, ptr);
+> +       else
+> +               iowrite32(old & ~bit, ptr);
+> +}
+
+This looks like a mask and set implementation, you are
+essentially reinventing regmap MMIO and the
+regmap_update_bits() call. Could you look into
+just using regmap MMIO in that case?
+
+If you need examples, look at gpio-mvebu.c that calls
+devm_regmap_init_mmio() for example.
+
+> +static int sifive_direction_input(struct gpio_chip *gc, unsigned int offset)
+> +static int sifive_direction_output(struct gpio_chip *gc, unsigned int offset,
+> +static int sifive_get_direction(struct gpio_chip *gc, unsigned int offset)
+> +static int sifive_get_value(struct gpio_chip *gc, unsigned int offset)
+> +static void sifive_set_value(struct gpio_chip *gc, unsigned int offset,
+
+These functions look like a typical hardware that can use
+
+GPIOLIB_GENERIC and bgpio_init() to set up the accessors.
+
+See gpio-ftgpio010.c for an example.
+
+As a bonus you will get .get/.set_multiple implemented by
+the generic GPIO.
+
+> +static void sifive_irq_enable(struct irq_data *d)
+> +static void sifive_irq_disable(struct irq_data *d)
+(...)
+> +static struct irq_chip sifive_irqchip = {
+> +       .name           = "sifive-gpio",
+> +       .irq_set_type   = sifive_irq_set_type,
+> +       .irq_mask       = sifive_irq_mask,
+> +       .irq_unmask     = sifive_irq_unmask,
+> +       .irq_enable     = sifive_irq_enable,
+> +       .irq_disable    = sifive_irq_disable,
+
+The handling of .irq_enable and .irq_disable has
+changed upstream. Please align with the new codebase
+as changed by Hans Verkuil:
+
+commit 461c1a7d4733d1dfd5c47b040cf32a5e7eefbc6c
+"gpiolib: override irq_enable/disable"
+commit 4e9439ddacea06f35acce4d374bf6bd0acf99bc8
+"gpiolib: add flag to indicate if the irq is disabled"
+
+You will need to rebase your work on the v4.20-rc1 once it is
+out. Right now the changes are on linux-next or my devel
+branch.
+
+> +       ngpio = of_irq_count(node);
+> +       if (ngpio >= MAX_GPIO) {
+> +               dev_err(dev, "Too many GPIO interrupts (max=%d)\n", MAX_GPIO);
+> +               return -ENXIO;
+> +       }
+(...)
+> +       for (gpio = 0; gpio < ngpio; ++gpio) {
+> +               irq = platform_get_irq(pdev, gpio);
+> +               if (irq < 0) {
+> +                       dev_err(dev, "invalid IRQ\n");
+> +                       gpiochip_remove(&chip->gc);
+> +                       return -ENODEV;
+> +               }
+
+This is an hierarchical IRQ so it should use an hierarchical
+irqdomain.
+
+I am discussing with Thierry to make more generic irq domains
+for hierarchical IRQ GPIOs, until then you have to look at
+gpio-thunderx.c, gpio-uniphier.c or gpio-xgene-sb.c that all
+use hierarchical IRQs.
+
+Yours,
+Linus Walleij
