@@ -1,61 +1,70 @@
-From: Atish Patra <atish.patra@wdc.com>
-Subject: [RFC 3/4] gpio: sifive: Add DT documentation for SiFive GPIO.
-Date: Tue,  9 Oct 2018 11:51:24 -0700
-Message-ID: <1539111085-25502-4-git-send-email-atish.patra@wdc.com>
-References: <1539111085-25502-1-git-send-email-atish.patra@wdc.com>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: =?utf-8?B?W1JDRsKgUEFUQ0ggdjIgMC8yXSBwd206IGlteDogQ29uZmlndXJlIG91dHB1?=
+ =?utf-8?Q?t_to_GPIO_in_disabled_state?=
+Date: Wed, 10 Oct 2018 09:33:24 +0000
+Message-ID: <1539163920-9442-1-git-send-email-michal.vokac@ysoft.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1539111085-25502-1-git-send-email-atish.patra@wdc.com>
+Content-Language: en-US
+Content-ID: <A50B41DAFF1AD14F9064867B803F0D80@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: palmer@sifive.com, linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
-Cc: linus.walleij@linaro.org, robh+dt@kernel.org, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, hch@infradead.org, atish.patra@wdc.com
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: "Wesley W. Terpstra" <wesley@sifive.com>
-
-DT documentation for GPIO added with updated compatible
-string.
-
-Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-[Atish: Compatible string update]
-Signed-off-by: Atish Patra <atish.patra@wdc.com>
----
- .../devicetree/bindings/gpio/gpio-sifive.txt       | 28 ++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/gpio/gpio-sifive.txt
-
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-sifive.txt b/Documentation/devicetree/bindings/gpio/gpio-sifive.txt
-new file mode 100644
-index 00000000..781fe4ad
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/gpio-sifive.txt
-@@ -0,0 +1,28 @@
-+SiFive GPIO controller bindings
-+
-+Required properties:
-+- compatible: should be one of
-+  	 "sifive,fu540-c000-gpio0","sifive,gpio0"
-+- reg: Physical base address and length of the controller's registers.
-+- #gpio-cells : Should be 2
-+  - The first cell is the GPIO offset number.
-+  - The second cell indicates the polarity of the GPIO
-+- gpio-controller : Marks the device node as a GPIO controller.
-+- interrupt-controller: Marks the device node as an interrupt controller.
-+- #interrupt-cells : Should be 2.
-+  - The first cell is the GPIO offset number within the GPIO controller.
-+  - The second cell is the edge/level to use for interrupt generation.
-+- interrupts: Specify the interrupts, one per GPIO
-+
-+Example:
-+
-+gpio: gpio@10060000 {
-+	compatible = "sifive,fu540-c000-gpio0","sifive,gpio0";
-+	interrupt-parent = <&plic>;
-+	interrupts = <7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22>;
-+	reg = <0x0 0x10060000 0x0 0x1000>;
-+	gpio-controller;
-+	#gpio-cells = <2>;
-+	interrupt-controller;
-+	#interrupt-cells = <2>;
-+};
--- 
-2.7.4
+VGhpcyBpcyBhbiBhdHRlbXB0IHRvIGRlYWwgd2l0aCBpLk1YIFNvQyBQV00gSFcgbGltaXRhdGlv
+bi4NCldoZW4gYSBwYWQgaXMgY29uZmlndXJlZCBhcyBhIFBXTSBvdXRwdXQgdGhlIG91dHB1dCBs
+ZXZlbCBpcyBhbHdheXMgMFYNCmlmIHRoZSBQV00gYmxvY2sgaXMgZGlzYWJsZWQuIFRoaXMgY2Fu
+IGNhdXNlIHByb2JsZW1zIHdoZW4gaW52ZXJ0ZWQgUFdNDQpzaWduYWwgaXMgbmVlZGVkIHRvIGRy
+aXZlIHRoZSBjb25uZWN0ZWQgY2lyY3VpdC4gV2l0aCBpbnZlcnRlZCBvdXRwdXQNCmR1dHkgY3lj
+bGUgPSAwJSBjb3JyZXNwb25kcyB0byBoaWdoIG91dHB1dCBsZXZlbCBhbmQgZHV0eSBjeWNsZSA9
+IDEwMCUNCmNvcnJlc3BvbmRzIHRvIGxvdyBvdXRwdXQgbGV2ZWwuIFRoaXMgbWVhbnMgdGhhdCB3
+aGVuZXZlciB0aGUgUFdNIGJsb2NrDQppcyBkaXNhYmxlZCB0aGUgY29ubmVjdGVkIGNpcmN1aXQg
+aXMgZmVkIHdpdGggMTAwJSBkdXR5IGN5Y2xlLg0KDQpUaGlzIGlzc3VlIGhhcyBiZWVuIGRpc2N1
+c3NlZCBpbiB2YXJpb3VzIHRocmVhZHMgYWJvdXQgaW52ZXJ0ZWQgUFdNDQpzdXBwb3J0IGltcGxl
+bWVudGF0aW9uLiBGaW5hbGx5IHRoaXMgY29tbWl0IDMyNmVkMzE0ZmVmZSAoInB3bTogaW14Og0K
+QWRkIHBvbGFyaXR5IGludmVyc2lvbiBzdXBwb3J0IHRvIGkuTVgncyBQV012MiIpIGZyb20gTHVr
+YXN6IHdhcyBtZXJnZWQuDQoNCkxhdGVyIG9uIEZhYmlvIGNhbWUgdXAgd2l0aCB0aGUgc2FtZSBw
+cm9ibGVtIGFzIEkgZGVzY3JpYmVkLg0KSGlzIGNvbW1pdCAxZjZlZWZlYjdjZDQgKCJwd206IGlt
+eDogTGV0IFBXTSBiZSBhY3RpdmUgZHVyaW5nIHN1c3BlbmQiKQ0Kc29sdmVzIHRoZSBwcm9ibGVt
+IG9ubHkgaW4gc3VzcGVuZCBzdGF0ZSBhbmQgbm90IHdoZW5ldmVyIFBXTSBpcyBkaXNhYmxlZC4N
+Cg0KSW4gdGhlIGRpc2N1c3Npb24gRmFiaW8gYWxzbyBzdWdnZXN0ZWQgYSBwaW5jdHJsIHNvbHV0
+aW9uIHRob3VnaCBpdCB3YXMNCnN0aWxsIG9ubHkgZm9yIHN1c3BlbmQgWzFdLg0KDQpJIHdvdWxk
+IGxpa2UgdG8gYnJpbmcgYXR0ZW50aW9uIHRvIHRoYXQgcGluY3RybCBzb2x1dGlvbiBvbmNlIGFn
+YWluLg0KVGhlIGNvZGUgaXMgYmFzaWNhbGx5IGEgY29weSBvZiB0aGUgSTJDIHJlY292ZXJ5IGZ1
+bmN0aW9uIFsyXS4NCg0KVGhpcyBiaW5kaW5nIGlzIHRvdGFsbHkgb3B0aW9uYWwgYW5kIGN1cnJl
+bnQgdXNlcnMgYXJlIG5vdCBhZmZlY3RlZC4NCg0KVGhlIGlkZWEgaXMgdG8gdXNlIHR3byBuZXcg
+cGluY3RybCBzdGF0ZXMsICJwd20iIGFuZCAiZ3BpbyIsIGluc3RlYWQgb2YNCnRoZSAiZGVmYXVs
+dCIgcGluY3RybCBzdGF0ZS4gVGhlIGdwaW8gc3RhdGUgaXMgc2VsZWN0ZWQgIHdoZW4gUFdNIGlz
+DQpkaXNhYmxlZCBhbmQgdGhlIHB3bSBwaW5jdHJsIHN0YXRlIGlzIHNlbGVjdGVkIHdoZW4gUFdN
+IGlzIGVuYWJsZWQuIEluIHRoZQ0KZ3BpbyBzdGF0ZSBsZXZlbCBvbiB0aGUgb3V0cHV0IGlzIGNv
+bnRyb2xsZWQgYnkgYSBuZXcgcHdtLWdwaW9zIHNpZ25hbC4NCg0KTm90ZSB0aGF0IHRoZXJlIGlz
+IG5vIGNvbmZsaWN0IHdpdGggdGhlICJkZWZhdWx0IiBwaW5jdHJsIHN0YXRlLiBZb3UgY2FuDQph
+Y3R1YWxseSBkZWZpbmUgYWxsIHRoZSB0aHJlZSBzdGF0ZXMgYXQgdGhlIHNhbWUgdGltZS4gVGhl
+IG9ubHkgZWZmZWN0IGlzDQp0aGF0IHRoZSBwaW5jdGwgZHJpdmVyIHdpbGwgY29uZmlndXJlIHRo
+ZSBwaW5zIHRvIHRoZSBkZWZhdWx0IHBpbmN0cmwNCnN0YXRlIGFzIHVzdWFsLiBUaGVuIHdoZW4g
+dGhlIGlteC1wd20gZHJpdmVyIGdldHMgY29udHJvbCBvZiB0aGUgSFcsIGl0DQpjb25maWd1cmVz
+IHRoZSByaWdodCBwaW5jdHJsIHN0YXRlIGFjY29yZGluZyB0byB0aGUgUFdNIHN0YXRlLiBTbyB5
+b3UgbWF5DQplbmQgdXAgd2l0aCBzb21lIGFkZGl0aW9uYWwgbGV2ZWwgY2hhbmdlcyBvbiB0aGUg
+b3V0cHV0IGR1cmluZyBwcm9iZS4NCg0KV2hlbiBzd2l0Y2hpbmcgdGhlIHBpbmN0cmwgc3RhdGVz
+IGl0IGlzIGltcG9ydGFudCB0byBkbyBpdCBpbiB0aGUgcmlnaHQNCm9yZGVyLiBXaGVuIGRpc2Fi
+bGluZyBQV00sIGZpcnN0IHNldCB0aGUgR1BJTyBvdXRwdXQgdmFsdWUsIHRoZW4gY2hhbmdlDQp0
+aGUgbXV4aW5nIGFuZCBhdCBsYXN0IGRpc2FibGUgdGhlIFBXTS4gQW5kIHZpY2UgdmVyc2EgdG8g
+ZW5hYmxlIHRoZSBQV00NCm91dHB1dC4gT3RoZXJ3aXNlIHlvdSB3aWxsIGdldCB1bndhbnRlZCBs
+ZXZlbCBjaGFuZ2VzIG9uIHRoZSBvdXRwdXQuDQoNCkkgd291bGQgbGlrZSB0byBrbm93IHlvdXIg
+b3BpbmlvbiBvbiB0aGlzLCB0aGFua3MuDQoNCk1pY2hhbA0KDQpbMV0gaHR0cHM6Ly9wYXRjaHdv
+cmsub3psYWJzLm9yZy9wYXRjaC84Mzk4MzQvIzE4MTk4NjUNClsyXSBodHRwczovL2VsaXhpci5i
+b290bGluLmNvbS9saW51eC9sYXRlc3Qvc291cmNlL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMtaW14
+LmMjTDk4OQ0KDQpDaGFuZ2VzIGluIHYyOg0KIC0gRG8gbm90IHVzZSB0aGUgImRlZmF1bHQiIHBp
+bmN0cmwgc3RhdGUgZm9yIEdQSU8uDQogLSBVc2UgZXh0cmEgInB3bSIgYW5kICJncGlvIiBwaW5j
+dHJsIHN0YXRlcy4NCiAtIEFkZCBhIHB3bS1ncGlvcyBzaWduYWwgdG8gZHJpdmUgdGhlIG91dHB1
+dCBpbiAiZ3BpbyIgcGluY3RybCBzdGF0ZS4NCiAtIFNlbGVjdCB0aGUgcmlnaHQgcGluY3RybCBz
+dGF0ZSBpbiBwcm9iZS4NCg0KTWljaGFsIFZva8OhxI0gKDIpOg0KICBkdC1iaW5kaW5nczogcHdt
+OiBpbXg6IEFsbG93IHN3aXRjaGluZyBQV00gb3V0cHV0IGJldHdlZW4gUFdNIGFuZCBHUElPDQog
+IHB3bTogaW14OiBDb25maWd1cmUgb3V0cHV0IHRvIEdQSU8gaW4gZGlzYWJsZWQgc3RhdGUNCg0K
+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXB3bS50eHQgfCA1MSAr
+KysrKysrKysrKysrKw0KIGRyaXZlcnMvcHdtL3B3bS1pbXguYyAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgfCA4NiArKysrKysrKysrKysrKysrKysrKysrKw0KIDIgZmlsZXMgY2hhbmdlZCwg
+MTM3IGluc2VydGlvbnMoKykNCg0KLS0gDQoyLjEuNA0KDQo=
