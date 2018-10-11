@@ -1,33 +1,78 @@
 Return-Path: <hdegoede@redhat.com>
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v4 0/3] pwm: lpss: Check PWM powerstate after resume on Cherry Trail devices
-Date: Thu, 11 Oct 2018 18:14:41 +0200
-Message-Id: <20181011161444.328-1-hdegoede@redhat.com>
+Subject: [PATCH v4 2/3] pwm: lpss: Move struct pwm_lpss_chip definition to the header file
+Date: Thu, 11 Oct 2018 18:14:43 +0200
+Message-Id: <20181011161444.328-3-hdegoede@redhat.com>
+In-Reply-To: <20181011161444.328-1-hdegoede@redhat.com>
+References: <20181011161444.328-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-Hi All,
+Move struct pwm_lpss_chip definition from pwm-lpss.c to pwm-lpss.h,
+so that the pci/platform drivers can access the info member
+(struct pwm_lpss_boardinfo *).
 
-As requested here is a new version of this series adding a patch exporting
-acpi_device_get_power() and using that.
+This is a preparation patch for adding platform specific quirks, which
+the drivers need access to, to pwm_lpss_boardinfo.
 
-This means that the PWM changes now rely on an ACPI patch.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Changes in v4:
+-No changes in v4 of this patch-set
 
-I've 3 other LPSS PWM changes in flight which all have already been
-acked or reviewed by Andy. One option would be to merge the entire
-series + the 3 patches through Rafael's PM tree. If we want to go that
-route I can send out a new series with all 6 patches together to Rafael.
+Changes in v3:
+-There was no v3, but I accidentally put v3 in the Subject of the v2
+ patches, so lets skip v3
 
-Another option would be to merge the single line ACPI change through the
-PWM tree.
+Changes in v2:
+-No changes in v2 of this patch-set
+---
+ drivers/pwm/pwm-lpss.c | 9 ---------
+ drivers/pwm/pwm-lpss.h | 9 ++++++++-
+ 2 files changed, 8 insertions(+), 10 deletions(-)
 
-Rafael, Thierry how do you want to proceed with this? And if you prefer
-for the changes to go through the other tree, may we have your Acked-by
-for the patch(es) which would normally go in through your own tree ?
-
-Regards,
-
-Hans
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 4721a264bac2..e602835fd6de 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -32,15 +32,6 @@
+ /* Size of each PWM register space if multiple */
+ #define PWM_SIZE			0x400
+ 
+-#define MAX_PWMS			4
+-
+-struct pwm_lpss_chip {
+-	struct pwm_chip chip;
+-	void __iomem *regs;
+-	const struct pwm_lpss_boardinfo *info;
+-	u32 saved_ctrl[MAX_PWMS];
+-};
+-
+ static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
+ {
+ 	return container_of(chip, struct pwm_lpss_chip, chip);
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index 7a4238ad1fcb..8f029ed263af 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -16,7 +16,14 @@
+ #include <linux/device.h>
+ #include <linux/pwm.h>
+ 
+-struct pwm_lpss_chip;
++#define MAX_PWMS			4
++
++struct pwm_lpss_chip {
++	struct pwm_chip chip;
++	void __iomem *regs;
++	const struct pwm_lpss_boardinfo *info;
++	u32 saved_ctrl[MAX_PWMS];
++};
+ 
+ struct pwm_lpss_boardinfo {
+ 	unsigned long clk_rate;
+-- 
+2.19.0
