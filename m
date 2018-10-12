@@ -1,131 +1,110 @@
-From: =?iso-8859-2?Q?Vok=E1=E8_Michal?= <Michal.Vokac@ysoft.com>
-Subject: Re: [PATCH v2 0/2] pwm: sysfs: fix exporting PWM channel
-Date: Fri, 12 Oct 2018 12:44:21 +0000
-Message-ID: <d58f077b-a486-31cb-d299-4ec556e91c08@ysoft.com>
-References: <1538400237-28766-1-git-send-email-fabrice.gasnier@st.com>
- <20181012115500.GD31561@ulmo> <ad0206b8-2cda-a147-1b71-8e2eced06e61@i2se.com>
- <b56bc059-573f-545e-da45-51765f8937a7@st.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: Re: [RESEND PATCH v5 8/9] pwm: add documentation for pwm push-pull
+ mode
+Date: Fri, 12 Oct 2018 13:05:50 +0000
+Message-ID: <f4a1f9e3-b3a8-2847-f13e-bb07dab400e6@microchip.com>
+References: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
+ <1535461286-12308-9-git-send-email-claudiu.beznea@microchip.com>
+ <20181012121552.GE31561@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
+Content-Type: text/plain; charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b56bc059-573f-545e-da45-51765f8937a7@st.com>
+In-Reply-To: <20181012121552.GE31561@ulmo>
 Content-Language: en-US
-Content-ID: <6CF0D3102FD8AD4BA7F13CCCC8EB6F6F@eurprd04.prod.outlook.com>
+Content-ID: <2122BCBB722E1A45B16B7E23800C80D3@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, Stefan Wahren <stefan.wahren@i2se.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: "gottfried.haider@gmail.com" <gottfried.haider@gmail.com>, "loic.pallardy@st.com" <loic.pallardy@st.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "hsweeten@visionengravers.com" <hsweeten@visionengravers.com>, "broonie@kernel.org" <broonie@kernel.org>, "linux-rpi-kernel@lists.infradead.org" <linux-rpi-kernel@lists.infradead.org>, "gohai@sukzessiv.net" <gohai@sukzessiv.net>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 12.10.2018 14:36, Fabrice Gasnier wrote:
-> On 10/12/2018 02:15 PM, Stefan Wahren wrote:
->> Am 12.10.2018 um 13:55 schrieb Thierry Reding:
->>> On Mon, Oct 01, 2018 at 03:23:55PM +0200, Fabrice Gasnier wrote:
->>>> Since commit 7e5d1fd75c3d ("pwm: Set class for exported channels in sy=
-sfs")
->>>> - it's not possible to export more than one PWM channel
->>>> - ABI has changed, as a side effect. It may cause bad behavior as pwmc=
-hip
->>>>    attributes are wrongly added to pwm channels and report wrong value=
-s.
->>>> See [1] and [2].
->>>>
->>>> One purpose of the original patch is to send uevents to udev, when exp=
-orting a
->>>> PWM channel through the sysfs. This series:
->>>> - Reverts the original patch.
->>>> - Proposes a new way to send notifications to be used by udev rules.
->>>>
->>>> - With this series:
->>>> $ echo 0 > /sys/class/pwm/pwmchip0/export
->>>> $ ls /sys/class/pwm
->>>> pwmchip0 pwmchip4
->>>>
->>>> $ ls /sys/class/pwm/pwmchip0/pwm0/
->>>> capture     enable      polarity    uevent
->>>> duty_cycle  period      power
->>>>
->>>> - Without this series:
->>>> $ echo 0 > /sys/class/pwm/pwmchip0/export
->>>> $ ls /sys/class/pwm
->>>> pwm0 pwmchip0 pwmchip4
->>>>
->>>> $ ls /sys/class/pwm/pwmchip0/pwm0/
->>>> capture     duty_cycle  export      period      power       uevent
->>>> device      enable      npwm        polarity    subsystem   unexport
->>>>
->>>> - Backtrace when exporting a 2nd channel (0) on a separate pwmchip dev=
-ice:
->>>> $ echo 0 > /sys/class/pwm/pwmchip4/export
->>>> [   95.286558] sysfs: cannot create duplicate filename '/class/pwm/pwm=
-0'
->>>> [   95.293630] CPU: 0 PID: 54 Comm: sh Not tainted 4.19.0-rc6-00013-g0=
-0b49b0 #151
->>>> [   95.301344] Hardware name: STM32 (Device Tree Support)
->>>> [   95.306833] [<0000c155>] (unwind_backtrace) from [<0000b273>] (show=
-_stack+0xb/0xc)
->>>> [   95.315136] [<0000b273>] (show_stack) from [<00092455>] (sysfs_warn=
-_dup+0x31/0x48)
->>>> [   95.323247] [<00092455>] (sysfs_warn_dup) from [<00092635>] (sysfs_=
-do_create_link_sd+0x75/0x88)
->>>> [   95.332539] [<00092635>] (sysfs_do_create_link_sd) from [<00125823>=
-] (device_add+0x133/0x3b0)
->>>> [   95.341694] [<00125823>] (device_add) from [<001059ed>] (export_sto=
-re+0xb5/0x12c)
->>>> [   95.349761] [<001059ed>] (export_store) from [<00091911>] (kernfs_f=
-op_write+0x87/0xda)
->>>> [   95.358150] [<00091911>] (kernfs_fop_write) from [<0005beb1>] (__vf=
-s_write+0x1d/0xe0)
->>>> [   95.366295] [<0005beb1>] (__vfs_write) from [<0005bfe7>] (vfs_write=
-+0x4f/0x7c)
->>>> [   95.374053] [<0005bfe7>] (vfs_write) from [<0005c0bf>] (ksys_write+=
-0x33/0x70)
->>>> [   95.381708] [<0005c0bf>] (ksys_write) from [<00009001>] (ret_fast_s=
-yscall+0x1/0x58)
->>>> [   95.389682] Exception stack(0x01bcffa8 to 0x01bcfff0)
->>>> [   95.394946] ffa0:                   00000000 00c4883c 00000001 00c4=
-e590 00000002 00000004
->>>> [   95.403639] ffc0: 00000000 00c4883c 00c4cbe8 00000004 00000002 0000=
-0020 00000000 00c4d008
->>>> [   95.412223] ffe0: 00c29151 00c4cbe8 00c17833 00c13c0c
->>>> -sh: write error: File exists
->>>>
->>>> [1] https://lkml.org/lkml/2018/9/25/713
->>>> [2] https://lkml.org/lkml/2018/9/25/447
->>>>
->>>> ---
->>>> Changes in v2:
->>>> - update revert commit message
->>>> - new patch 2/2 to propose uevent notification (change) on pwmchip
->>>>
->>>> Fabrice Gasnier (2):
->>>>    Revert "pwm: Set class for exported channels in sysfs"
->>>>    pwm: send a uevent on the pwmchip device upon channel sysfs (un)exp=
-ort
->>>>
->>>>   drivers/pwm/sysfs.c | 12 +++++++++++-
->>>>   1 file changed, 11 insertions(+), 1 deletion(-)
->>> Both patches applied, thanks. What do you think would be the importance
->>> of getting this into stable kernels? We can't get one of the patches in
->>> without the other, so they'd both have to be backported. The second one
->>> is still fairly small, so would qualify for stable, I think.
->> I think the revert patch should go to stable, because it fixes a regress=
-ion.
+
+
+On 12.10.2018 15:15, Thierry Reding wrote:
+> On Tue, Aug 28, 2018 at 04:01:25PM +0300, Claudiu Beznea wrote:
+>> Add documentation for PWM push-pull mode.
 >>
->=20
-> Hi,
->=20
-> Thierry, Thanks for taking these.
-> I also think at least the 1st patch (revert) should be backported in
-> stable branch. Not taking the second one may lead to another issue for
-> the users that now expect uevents. This is replacement patch to the
-> original one. So, I'd advise to push both: revert + replacement patch.
-
-I also vote for pushing both.
-M.
-
->>> However, given that it's taken a long time for somebody to notice this,
->>> I'm not sure if this is something that people care about too much in th=
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> Reviewed-by: Rob Herring <robh@kernel.org>
+>> ---
+>>  Documentation/devicetree/bindings/pwm/pwm.txt |  2 ++
+>>  Documentation/pwm.txt                         | 16 ++++++++++++++++
+>>  include/dt-bindings/pwm/pwm.h                 |  1 +
+>>  3 files changed, 19 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentati=
+on/devicetree/bindings/pwm/pwm.txt
+>> index 7c8aaac43f92..6a60c0fca112 100644
+>> --- a/Documentation/devicetree/bindings/pwm/pwm.txt
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+>> @@ -49,6 +49,8 @@ Optionally, the pwm-specifier can encode a number of f=
+lags (defined in
+>>  - PWM_MODE_COMPLEMENTARY: PWM complementary working mode (for PWM chann=
+els
+>>  with two outputs); if not specified, the default for PWM channel will b=
 e
->>> stable kernels>>
->>> Thierry
+>>  used
+>> +- PWM_MODE_PUSH_PULL: PWM push-pull working modes (for PWM channels wit=
+h
+>> +two outputs); if not specified the default for PWM channel will be used
+>=20
+> What if somebody has this in the DT:
+>=20
+> 	PWM_MODE_COMPLEMENTARY | PWM_MODE_PUSH_PULL
+>=20
+> which one takes precedence, or do we reject it?
+
+The first valid one will be selected.
+
+In patch 1/1 from this series, changes added to of_pwm_xlate_with_flags()
+function, there is this code:
+
++		for (modebit =3D PWMC_MODE_COMPLEMENTARY_BIT;
++		     modebit < PWMC_MODE_CNT; modebit++) {
++			unsigned long mode =3D BIT(modebit);
++
++			if ((args->args[2] & mode) &&
++			    pwm_mode_valid(pwm, mode)) {
++				pwm->args.mode =3D mode;
++				break;
++			}
++		}
+
+And since the modes bits are defined as follows:
+
+enum {
+	PWMC_MODE_NORMAL_BIT,
+	PWMC_MODE_COMPLEMENTARY_BIT,
+	PWMC_MODE_PUSH_PULL_BIT,
+	PWMC_MODE_CNT,
+};
+
+in your proposed scenario: PWM_MODE_COMPLEMENTARY | PWM_MODE_PUSH_PULL
+the PWM_MODE_COMPLEMENTARY mode will be selected since it is the first
+valid one.
+
+>=20
+> Wouldn't it be preferable to either move the modes into an extra field
+> within the flags field, or perhaps even add another field?
+
+This approach was proposed in version 2 of this series and based on the
+discussions I had with Rob Herring [1] I decided to use the remaining space
+from cell specific to PWM flags.
+
+Thank you,
+Claudiu Beznea
+
+[1] https://lkml.org/lkml/2018/1/22/655
+
+>=20
+> I guess since Rob's already acked this, that concern may be unfounded.
+>=20
+> Thierry
+>=20
+>=20
+>=20
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>=20
