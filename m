@@ -1,75 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 14/24] pwm: jz4740: Drop dependency on MACH_INGENIC,
- use COMPILE_TEST
-Date: Fri, 12 Oct 2018 12:44:13 +0200
-Message-ID: <20181012104413.GL9162@ulmo>
-References: <20180821171635.22740-1-paul@crapouillou.net>
- <20180821171635.22740-15-paul@crapouillou.net>
- <20181012104150.GH9162@ulmo>
+Subject: Re: [PATCH v2 0/3] treewide: add vibrator support for various MSM
+ SOCs
+Date: Fri, 12 Oct 2018 13:47:49 +0200
+Message-ID: <20181012114749.GC31561@ulmo>
+References: <20180926235112.25710-1-masneyb@onstation.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="KIbT1ud6duwZIwNL"
+        protocol="application/pgp-signature"; boundary="wxDdMuZNg1r63Hyj"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181012104150.GH9162@ulmo>
+In-Reply-To: <20180926235112.25710-1-masneyb@onstation.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Jonathan Corbet <corbet@lwn.net>, od@zcrc.me, Mathieu Malaterre <malat@debian.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@linux-mips.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
+To: Brian Masney <masneyb@onstation.org>
+Cc: linux-pwm@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, jonathan@marek.ca, ctatlor97@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---KIbT1ud6duwZIwNL
+--wxDdMuZNg1r63Hyj
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 12, 2018 at 12:41:50PM +0200, Thierry Reding wrote:
-> On Tue, Aug 21, 2018 at 07:16:25PM +0200, Paul Cercueil wrote:
-> > Depending on MACH_INGENIC prevent us from creating a generic kernel that
-> > works on more than one MIPS board. Instead, we just depend on MIPS being
-> > set.
-> >=20
-> > On other architectures, this driver can still be built, thanks to
-> > COMPILE_TEST. This is used by automated tools to find bugs, for
-> > instance.
-> >=20
-> > Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> > ---
-> >=20
-> > Notes:
-> >      v5: New patch
-> >    =20
-> >      v6: No change
-> >    =20
-> >      v7: No change
-> >=20
-> >  drivers/pwm/Kconfig | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Sep 26, 2018 at 07:51:09PM -0400, Brian Masney wrote:
+> This patch set adds support for the vibrator found on various Qualcomm
+> MSM SOCs. This is based on work from:
 >=20
-> Acked-by: Thierry Reding <treding@nvidia.com>
+> Jonathan Marek from qcom,pwm-vibrator.c in the PostmarketOS repo:
+> https://gitlab.com/postmarketOS/linux-postmarketos/commit/7647fb36cb1cbd0=
+60f8b52087a68ab93583292b5
+>=20
+> Jongrak Kwon and Devin Kim from msm_pwm_vibrator.c in the downstream
+> Android 3.4.0 sources:
+> https://android.googlesource.com/kernel/msm/+/android-msm-lenok-3.10-loll=
+ipop-wear-release/drivers/misc/msm_pwm_vibrator.c
+>=20
+> Driver was tested on a LG Nexus 5 (hammerhead) phone using rumble-test:
+> https://git.collabora.com/cgit/user/sre/rumble-test.git/plain/rumble-test=
+=2Ec
 
-Again, technically:
+Looking at all of this it seems like this would be more appropriately
+implemented as a force-feedback input device directly. The only reason
+you seem to be making this a PWM driver is so that it can be used in
+conjunction with pwm-vibrator. The device itself doesn't seem to be a
+generic PWM in the way that the PWM framework expects it.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Thierry
 
---KIbT1ud6duwZIwNL
+--wxDdMuZNg1r63Hyj
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvAevwACgkQ3SOs138+
-s6GelQ/+IO3/3WkTMSnpQ2QJHnzotuHHGdyWg9WiVsJXTCWZBd3gXvHrg8HwLrDH
-DrxXd4eh/0ZJLoY5/HO0UdtsWcSkCm5DyL3UrZ8WeIYjxZAQGTnxsHGip1yMnOtN
-grZXhj171MGsvyJlnjULrWYRjOKQaHlMNusp1J54zLH9gsfKAiv3kjhunxPTCfWT
-5yxsy7dAlKp2mlwKg5nT3PFEJvRIk803EvKcivowpSIzhiK5uijW0vWYM/KpyGUJ
-1zHK1HJsm097AJrb1d7MXbVx72uMjclZTmVk8RXgqESYGOSHqt5LdenA2xlqUwZ5
-Myp5bbr2I0F45H8A8NCw7BYQwXUkSLoCLw+Up9U142QAEjG02rV09vgBzC2gAbxB
-piSs6XMY5IHmf6oR7ujMLM/14epj1BdrGPwG/VH7dSKt+VERC6QZ4eNYdyOUzkHr
-RtdrCk2Vol8cedHbk70hdWQMMSY8sB3QurTCYaTg/ZIIyViUxR/lu2Zf3xwFqbt7
-w/+ICttqjsY750sU/aFUv7lIS40skAgYEIPXxu3Nj95nkaWmrEtfvFQ7YJ+GkPgT
-5j4g6cStKFoJ498CDkZGThTGD8Eyb5vJZGFMS768xKdlRkXajXOwoP9cSuqBJGaS
-/IbRlVmrzOy7/VYQzJNWzwfEUz+6a5CUi51+6na99M/eT0xsBDE=
-=yYfr
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvAieUACgkQ3SOs138+
+s6Edag//XmsTS/HXwJuq0xpBLVXaiqwnPyZAd64I2AhPdhysIBxVktH/+Bj8+Rt4
+XnRe3nksdvLciKBE2k88d4ZSVr2V3tyOHStXpQ9PS/7PhT7dzSfgXrlx4TtAiw86
+lCttOns77DoI6aDMEHWaLHl5nfof0OUasE37zxC8TsJlDmZZF2YevVlkNIqZNaV/
+htDNlMXOuldwpc6eqjRdQFgPF4jHpQBavFuUFy0rCxTzzwOoFxowWamA32BEUNT2
+pNB6SrKjiZkhboGXNCOcWqTDfzPxUJayBWTMFswU73+HzVphpbSVylei7SS7qdcd
+Uy7fM96A83eOQpwY1DKJUXoO8CA41ZRmtv5Ltu5WPwU6FeqzpnfFy/VWI2kIjhKP
+5x/6Mtumh6AIRkIwUDPfiLhalGDvfkuV8MbduXyZrZptmLF4svWUgSxkhC6SClsx
+rdwzj5PhVh9yLjhWHQYH95+dfaKOuw5/5CbON3VOl69msNCcaTP9asyL/MRDzGWe
+G8RekvDWHgfqW07Ichp3BPK6tYpbmAgE5fn5zOGCU9kkz+6Soe43ajhJWK1tXuPZ
+OGZEDdsOr60b+EKZg8Yi0+BYBbIjDEPBO47EC9SOs7shsLN6CreIJefm9o4FHyEY
+IkLiNPsbeGCifxgl4Zk6835MabDBHaiQ6cu+javUoFzCqIRGVWU=
+=yKT2
 -----END PGP SIGNATURE-----
 
---KIbT1ud6duwZIwNL--
+--wxDdMuZNg1r63Hyj--
