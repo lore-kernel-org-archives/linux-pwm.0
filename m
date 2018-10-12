@@ -1,28 +1,39 @@
 Return-Path: <hdegoede@redhat.com>
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 0/6] pwm: Collected LPSS-pwm patches for 4.20
-Date: Fri, 12 Oct 2018 12:12:23 +0200
-Message-Id: <20181012101229.27805-1-hdegoede@redhat.com>
+Subject: [PATCH 1/6] ACPI / PM: Export acpi_device_get_power() for use by modular build drivers
+Date: Fri, 12 Oct 2018 12:12:24 +0200
+Message-Id: <20181012101229.27805-2-hdegoede@redhat.com>
+In-Reply-To: <20181012101229.27805-1-hdegoede@redhat.com>
+References: <20181012101229.27805-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org
 
-Hi Thierry,
+Export acpi_device_get_power() for use by modular build drivers.
 
-I've 3 different pwm-lpss patch-sets outstanding, 2 of which have seen
-multiple revisions.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Changes in v4:
+-New patch in v4 of this patch-set
+---
+ drivers/acpi/device_pm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-For your convenience here is a series which collects the latest version
-of them all including all the acks and reviews they have received.
-
-This series superceeds / replaces all my other outstanding pwm patches.
-
-The first patch is an ACPI patch, which is a dependency for the fourth
-patch in the series. This has an Acked-by from Rafael, indicating that
-he is ok with merging this simple one-line patch through your PWM tree.
-
-Regards,
-
-Hans
+diff --git a/drivers/acpi/device_pm.c b/drivers/acpi/device_pm.c
+index a7c2673ffd36..824ae985ad93 100644
+--- a/drivers/acpi/device_pm.c
++++ b/drivers/acpi/device_pm.c
+@@ -126,6 +126,7 @@ int acpi_device_get_power(struct acpi_device *device, int *state)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(acpi_device_get_power);
+ 
+ static int acpi_dev_pm_explicit_set(struct acpi_device *adev, int state)
+ {
+-- 
+2.19.0
