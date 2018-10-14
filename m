@@ -1,76 +1,47 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Tue, 16 Oct 2018 12:46:51 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] dt-bindings: pwm: renesas: pwm-rcar: document
- R8A779{7|8}0 bindings
-Message-ID: <20181016104651.GA8852@ulmo>
-References: <7f2ce332-a128-073a-762e-fb268780a145@cogentembedded.com>
- <20181012112114.GE30261@ulmo>
- <20181015185713.GA15344@bogus>
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 0/2] pwm: lpss: Force runtime-resume on suspend on CHT devices
+Date: Sun, 14 Oct 2018 17:12:00 +0200
+Message-Id: <20181014151202.29955-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
-Content-Disposition: inline
-In-Reply-To: <20181015185713.GA15344@bogus>
+Content-Transfer-Encoding: 8bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-renesas-soc@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
 
+Hi All,
 
---CE+1k2dSO48ffgeK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Here are 2 more / new pwm-lpss fixes.
 
-On Mon, Oct 15, 2018 at 01:57:13PM -0500, Rob Herring wrote:
-> On Fri, Oct 12, 2018 at 01:21:14PM +0200, Thierry Reding wrote:
-> > On Mon, Oct 01, 2018 at 10:57:39PM +0300, Sergei Shtylyov wrote:
-> > > Document the R-Car V3{M|H} (R8A779{7|8}0) SoC in the  Renesas R-Car P=
-WM
-> > > bindings. R8A77970's hardware is a generic R-Car gen3 PWM, while R8A7=
-7980
-> > > has an extra error injection register...
-> > >=20
-> > > Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-> > >=20
-> > > ---
-> > > This patch is against the 'for-next' branch of Thierry Reding's 'linu=
-x-pwm.git'
-> > > repo.
-> > >=20
-> > >  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt |    2 ++
-> > >  1 file changed, 2 insertions(+)
-> >=20
-> > Applied, thanks.
->=20
-> Some reason your tree isn't updated for linux-next?
+I've received a bug report that the recent ACPI-LPSS code changes which
+properly order device resume on Cherry Trail so that the GFX0 _PS0 method
+no longer exits with an error causes the backlight to flicker on some
+Cherry Trail devices.
 
-No particular reason, I just had not pushed it out yet because the build
-tests were taking longer than expected and I had to clean up a couple of
-minor things.
+This series is the result of investigating this issue. On Cherry Trail
+devices under Windows the PWM controller used for the backlight is
+considered part of the GPU even though it is part of the LPSS block and
+thus is an entirely different independent hardware unit.
 
-It's pushed out now.
+Because of this on Cherry Trail the GPU's (GFX0 ACPI node) _PS3 and _PS0
+ACPI methods save and restore the PWM controller registers.
 
-Thierry
+After the recent fixes this save + restore of the PWM controller registers
+is actually also happening under Linux.
 
---CE+1k2dSO48ffgeK
-Content-Type: application/pgp-signature; name="signature.asc"
+If userspace blanks the screen before suspending, such as e.g. GNOME
+does, then the PWM controller will be runtime-suspended when the suspend
+starts. This causes the GFX0 _PS3 method to save a value of 0xffffffff
+for the PWM control register and to restore this value on resume.
+Note that the GPU's _PS0 method also puts the PWM controller in D0, so
+this write of 0xffffffff does actually stick.
 
------BEGIN PGP SIGNATURE-----
+The first patch in this patch-set fixes this. This fix exposes another
+issue, the pwm-lpss driver unconditionally sets the update bit when
+pwm_apply gets called, even if nothing has changed. At least on
+Cherry Trail this seems to cause the next update (which actually changes
+something) to be ignored. The second patch fixes this issue.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvFwZgACgkQ3SOs138+
-s6FzSw/9FeyQp9q1T6sOloRSEknt6BjV8JEmsCx7FZobkCWgK6N5P6RwJG4JPPrJ
-7tJ0k24fJLwMzg6gXBoPwdPwkrAJnpoPeU3YWPoLG51c9mrsNsVN/mQoCsq9zYvb
-rv+g6XbvLFkBGfKM8BnHSBSMxbSub5T9vmedyoIMMAq9UBByvAH1JmCETYbkjo2t
-Cq+FGsanNrKm8eIIUYiiLTbqY3kgIV2jlhkZSAcZuv45SwST5VfoWCgQeYfpBLmO
-pPQs+wNQyhLvfJj+9uPE42mUoKXj7Di9XEnj5nIdEQgLrfkcClCx6RjI2wt3giQM
-yGf+73BspGIntRVKscj4nwdhU4ZQM+nl3kwRJB6qVMNOdMCPRhMNZ2PFTCGGE0NY
-UvmBWv+AbSYdZ8/VivDPJNLTou4gg0G7wC4CV4ikLSmLTjy9xXm12aAQM53fB4qC
-Ipl+qaEoZeyAzJsxronngS+0fzIUj67ZIiCWditaiUKbeaOT4vdv1dgCCYbL3FOP
-yLfFtu2Cv0t3gJHYG7zI5Uu2ina9aQlwedtIl77CLa2q+lCXnbJOMBWjFgT49pr5
-/LN63p3e21PjMLp4FMhf77SkzzE8/N6WeoVXjimC7fE6WgDXaR8/EGzyzpACc5gn
-0PbFcyKaYkaLlHOxqr18kc94+/3PYohh7Vz1ssJunknNwIGOeXw=
-=rTY8
------END PGP SIGNATURE-----
+Regards,
 
---CE+1k2dSO48ffgeK--
+Hans
