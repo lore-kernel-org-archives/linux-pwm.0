@@ -1,8 +1,8 @@
 Return-Path: <hdegoede@redhat.com>
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 1/2] pwm: lpss: Force runtime-resume on suspend on Cherry Trail
-Date: Sun, 14 Oct 2018 17:12:01 +0200
-Message-Id: <20181014151202.29955-2-hdegoede@redhat.com>
+Subject: [PATCH 2/2] pwm: lpss: Only set update bit if we are actually changing the settings
+Date: Sun, 14 Oct 2018 17:12:02 +0200
+Message-Id: <20181014151202.29955-3-hdegoede@redhat.com>
 In-Reply-To: <20181014151202.29955-1-hdegoede@redhat.com>
 References: <20181014151202.29955-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -11,109 +11,87 @@ List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
 
-On Cherry Trail devices under Windows the PWM controller used for the
-backlight is considered part of the GPU even though it is part of the LPSS
-block and thus is an entirely different independent hardware unit.
+According to the datasheet the update bit must be set if the on-time-div
+or the base-unit changes.
 
-Because of this on Cherry Trail the GPU's (GFX0 ACPI node) _PS3 and _PS0
-methods save and restore the PWM controller registers.
+Now that we properly order device resume on Cherry Trail so that the GFX0
+_PS0 method no longer exits with an error, we end up with a sequence of
+events where we are writing the same values twice in a row.
 
-If userspace blanks the screen before suspending, such as e.g. GNOME
-does, then the PWM controller will be runtime-suspended when the suspend
-starts. This causes the GFX0 _PS? methods to save a value of 0xffffffff
-for the PWM control register and to restore this value on resume.
+First the _PS0 method restores the duty cycle of 0% the GPU driver set
+on suspend and then the GPU driver first updates just the enabled bit in
+the pwm_state from 0 to 1, causing us to write the same values again,
+before restoring the pre-suspend duty-cycle in a separate pwm_apply call.
 
-0xffffffff is not a valid value for the register and writing this causes
-problems such as e.g. a flickering backlight.
+When writing the update bit the second time, without changing any of
+the values the update bit clears immediately / instantly, instead of
+staying 1 for a while as usual. After this the next setting of the update
+bit seems to be ignored, causing the restoring of the pre-suspend
+duty-cycle to not get applied. This makes the backlight come up with
+a 0% dutycycle after suspend/resume.
 
-This commit adds a prepare method to the dev_pm_ops and makes it return 0
-on Cherry Trail devices forcing a runtime-resume before other device's
-suspend methods run. This fixes the reading and writing back of 0xffffffff.
+Any further brightness changes after this do work.
 
-Since we now always runtime-resume the device on suspend, it will be
-resumed on resume too and we no longer need to check for the GFX0 _PS0
-method having resumed it underneath us, so this commit removes the now no
-longer necessary complete dev_pm_op.
+This commit moves the setting of the update bit into pwm_lpss_prepare()
+and only sets the bit if we have actually changed any of the values.
+
+This avoids the setting of the update bit the second time we configure
+the PWM to 0% dutycycle, this fixes the backlight coming up with 0%
+duty-cycle after a suspend/resume.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-lpss-platform.c | 24 +++++++++++-------------
- drivers/pwm/pwm-lpss.h          |  7 +++++--
- 2 files changed, 16 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-lpss.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index b6edf8af26cc..757230e1f575 100644
---- a/drivers/pwm/pwm-lpss-platform.c
-+++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -30,7 +30,7 @@ static const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 1,
- 	.base_unit_bits = 16,
--	.check_power_on_resume = true,
-+	.other_devices_aml_touches_pwm_regs = true,
- };
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 293e5139b091..f170873e6fb4 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -88,7 +88,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	unsigned long long on_time_div;
+ 	unsigned long c = lpwm->info->clk_rate, base_unit_range;
+ 	unsigned long long base_unit, freq = NSEC_PER_SEC;
+-	u32 ctrl;
++	u32 orig_ctrl, ctrl;
  
- /* Broxton */
-@@ -61,6 +61,7 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
+ 	do_div(freq, period_ns);
  
- 	platform_set_drvdata(pdev, lpwm);
+@@ -105,13 +105,17 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	do_div(on_time_div, period_ns);
+ 	on_time_div = 255ULL - on_time_div;
  
-+	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_SMART_PREPARE);
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
- 
-@@ -75,25 +76,22 @@ static int pwm_lpss_remove_platform(struct platform_device *pdev)
- 	return pwm_lpss_remove(lpwm);
+-	ctrl = pwm_lpss_read(pwm);
++	orig_ctrl = ctrl = pwm_lpss_read(pwm);
+ 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
+ 	ctrl &= ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
+ 	base_unit &= base_unit_range;
+ 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+ 	ctrl |= on_time_div;
+-	pwm_lpss_write(pwm, ctrl);
++
++	if (orig_ctrl != ctrl) {
++		pwm_lpss_write(pwm, ctrl);
++		pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
++	}
  }
  
--static void pwm_lpss_complete(struct device *dev)
-+static int pwm_lpss_prepare(struct device *dev)
- {
- 	struct pwm_lpss_chip *lpwm = dev_get_drvdata(dev);
--	int ret, state;
- 
--	/* The PWM may be turned on by AML code, update our state to match */
--	if (pm_runtime_suspended(dev) && lpwm->info->check_power_on_resume) {
--		pm_runtime_disable(dev);
-+	/*
-+	 * If other device's AML code touches the PWM regs on suspend/resume
-+	 * force runtime-resume the PWM controller to allow this.
-+	 */
-+	if (lpwm->info->other_devices_aml_touches_pwm_regs)
-+		return 0; /* Force runtime-resume */
- 
--		ret = acpi_device_get_power(ACPI_COMPANION(dev), &state);
--		if (ret == 0 && state == ACPI_STATE_D0)
--			pm_runtime_set_active(dev);
--
--		pm_runtime_enable(dev);
--	}
-+	return 1; /* If runtime-suspended leave as is */
- }
- 
- static const struct dev_pm_ops pwm_lpss_platform_pm_ops = {
--	.complete = pwm_lpss_complete,
-+	.prepare = pwm_lpss_prepare,
- 	SET_SYSTEM_SLEEP_PM_OPS(pwm_lpss_suspend, pwm_lpss_resume)
- };
- 
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index 1a2575d25bea..3236be835bd9 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -30,8 +30,11 @@ struct pwm_lpss_boardinfo {
- 	unsigned int npwm;
- 	unsigned long base_unit_bits;
- 	bool bypass;
--	/* Some devices have AML code messing with the state underneath us */
--	bool check_power_on_resume;
-+	/*
-+	 * On some devices the _PS0/_PS3 AML code of the GPU (GFX0) device
-+	 * messes with the PWM0 controllers state,
-+	 */
-+	bool other_devices_aml_touches_pwm_regs;
- };
- 
- struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+ static inline void pwm_lpss_cond_enable(struct pwm_device *pwm, bool cond)
+@@ -135,7 +139,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				return ret;
+ 			}
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
+ 			pwm_lpss_cond_enable(pwm, lpwm->info->bypass == false);
+ 			ret = pwm_lpss_wait_for_update(pwm);
+ 			if (ret) {
+@@ -148,7 +151,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			if (ret)
+ 				return ret;
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
+ 			return pwm_lpss_wait_for_update(pwm);
+ 		}
+ 	} else if (pwm_is_enabled(pwm)) {
 -- 
 2.19.0
