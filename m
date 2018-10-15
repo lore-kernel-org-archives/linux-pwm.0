@@ -1,14 +1,11 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Mon, 29 Oct 2018 12:48:35 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20181029114835.GB9500@ulmo>
-References: <20181025194524.2xdhqni666zfgfzp@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Date: Mon, 15 Oct 2018 10:21:52 +0200
+Message-Id: <20181015082152.5900-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature"; boundary="BwCQnh7xodEAoBMC"
-Content-Disposition: inline
-In-Reply-To: <20181025194524.2xdhqni666zfgfzp@pengutronix.de>
-Subject: Re: is pwm_put supposed to stop a PWM?
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [PATCH] PWM: drop legacy wrapper for changing polarity
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -18,83 +15,80 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Boris Brezillon <boris.brezillon@bootlin.com>, kernel@pengutronix.de, Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, =?UTF-8?q?Vok=C3=A1=C4=8D=20Michal?= <Michal.Vokac@ysoft.com>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
+The API to configure a PWM using pwm_enable(), pwm_disable(),
+pwm_config() and pwm_set_polarity() is superseeded by atomically setting
+the parameters using pwm_apply_state(). To get forward with deprecating
+the former set of functions use the opportunity that there is no current
+user of pwm_set_polarity() and remove it.
 
---BwCQnh7xodEAoBMC
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ include/linux/pwm.h | 42 ------------------------------------------
+ 1 file changed, 42 deletions(-)
 
-On Thu, Oct 25, 2018 at 09:45:24PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
->=20
-> while digging around in the pwm drivers I found
-> drivers/pwm/pwm-lpc18xx-sct.c which in its .free callback calls
-> pwm_disable() and pwm_set_duty_cycle(pwm, 0).
->=20
-> I think calling pwm_disable is wrong for two reasons:
->=20
->  a) pwm_disable is for PWM users, not for drivers
-
-PWM controller drivers can still call pwm_disable(), though they should
-do so very carefully and not behind consumers' backs.
-
->  b) .free isn't supposed to stop the pwm.
-
-That's a bit of a gray area. I still think we need a way of stopping the
-PWM at some point. Some drivers do this on ->remove() and it was in fact
-discussed at one point that this should be moved to the core, so that
-all channels would be automatically disabled when the PWM chip is
-removed.
-
-Disabling in ->free() should not have any effect, because users should
-already have disabled it before they even call pwm_put() on it.
-
-So perhaps a good compromise would be to document that users are
-supposed to disable the PWM before they release it and then drivers (or
-the core) could go and check that they're really disabled when the chip
-is being removed and WARN() if not. That way we can flag all consumers
-that don't behave and fix them.
-
-> Also I'm surprised that .request calls pwm_get_duty_cycle() and writes
-> the result into hardware. Still more as I think pwm_get_duty_cycle()
-> always returns 0 in .request.
->=20
-> BTW, this is the only caller of pwm_set_duty_cycle(), so if the driver
-> is simplified/fixed to not care about the duty cycle in .free and
-> .request, this function can go away.
->=20
-> What do you think?
-
-Yeah, it looks as if pwm_get_duty_cycle() would always return 0 because
-the driver doesn't implement hardware readout. pwm_set_duty_cycle() was
-introduced back at the time when sysfs support was added, but it seems
-to have otherwise been unused ever since. I think it no longer makes
-sense to keep it around once all consumers have adopted the atomic API.
-
-Thierry
-
---BwCQnh7xodEAoBMC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvW85AACgkQ3SOs138+
-s6HkUxAAwRLXBwPP1+9zxQ71dEZX2J1ii1dt9ePewRtD0pGio3+yGM15arOa3MOl
-6s+l8nauCA+GULX/yZRUBvkkNUSRqcTtw8u/vpErKoXfc4IUfP/9n9OOK3jpnsSy
-+4rcz9VDfLIeR1hhvZXqIkuMUqopkZdljsTlz+/xQI0MfMJYYBuupzJLsyPCqnpZ
-QrOZ/8LPLnZL/Y9EW6h8417BxWZ4o3wuwfRhjrgB3xQgoyi4fTM8y665EHOjBKUh
-Ae6/5wJLBEzAbQeXZorsOBVa2TyB/R6TRJ+JvRHRS+zgOSmtaAgBjRQFWpBu3wSX
-N2JAHdqpSNmt3yQMV+ML83PrllPP2LhjdI6ZVrIF3FYSIACowHYPH36p4cf7tAtz
-QerxgbjEp5kKFnmI5wCbpMNR7PbWaomEk4GGy3vluslbJh1vng8E28+N3w2cpHnA
-kCWyHeMO2DFffrVlWoC1BYIPRH+CwTribNXQP25c0OKpipotwjRTII9RCkWxcXPp
-JyaxVoavRI15WE/15W0wv82zYGTYnucxOtXdEIU1g7nyHBIEqv8qIft3Y4M1SJZ9
-i+yh1wXjnRWI91d4yRWUA220wu2UY4dCB9eqh7tNok25sLJtPxzCmDkcs4gL3Dyc
-A89bZccXkH6WiocS5Jrga/j13rY5Dq7QIWx1/8s+E/6ab06SIwM=
-=KqPM
------END PGP SIGNATURE-----
-
---BwCQnh7xodEAoBMC--
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 56518adc31dd..d5199b507d79 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -348,42 +348,6 @@ static inline int pwm_config(struct pwm_device *pwm, int duty_ns,
+ 	return pwm_apply_state(pwm, &state);
+ }
+ 
+-/**
+- * pwm_set_polarity() - configure the polarity of a PWM signal
+- * @pwm: PWM device
+- * @polarity: new polarity of the PWM signal
+- *
+- * Note that the polarity cannot be configured while the PWM device is
+- * enabled.
+- *
+- * Returns: 0 on success or a negative error code on failure.
+- */
+-static inline int pwm_set_polarity(struct pwm_device *pwm,
+-				   enum pwm_polarity polarity)
+-{
+-	struct pwm_state state;
+-
+-	if (!pwm)
+-		return -EINVAL;
+-
+-	pwm_get_state(pwm, &state);
+-	if (state.polarity == polarity)
+-		return 0;
+-
+-	/*
+-	 * Changing the polarity of a running PWM without adjusting the
+-	 * dutycycle/period value is a bit risky (can introduce glitches).
+-	 * Return -EBUSY in this case.
+-	 * Note that this is allowed when using pwm_apply_state() because
+-	 * the user specifies all the parameters.
+-	 */
+-	if (state.enabled)
+-		return -EBUSY;
+-
+-	state.polarity = polarity;
+-	return pwm_apply_state(pwm, &state);
+-}
+-
+ /**
+  * pwm_enable() - start a PWM output toggling
+  * @pwm: PWM device
+@@ -483,12 +447,6 @@ static inline int pwm_capture(struct pwm_device *pwm,
+ 	return -EINVAL;
+ }
+ 
+-static inline int pwm_set_polarity(struct pwm_device *pwm,
+-				   enum pwm_polarity polarity)
+-{
+-	return -ENOTSUPP;
+-}
+-
+ static inline int pwm_enable(struct pwm_device *pwm)
+ {
+ 	return -EINVAL;
+-- 
+2.19.1
