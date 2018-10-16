@@ -1,92 +1,59 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RFC 1/4] pwm: sifive: Add DT documentation for SiFive PWM
- Controller.
-Date: Tue, 16 Oct 2018 13:13:24 +0200
-Message-ID: <20181016111324.GD8852@ulmo>
-References: <1539111085-25502-1-git-send-email-atish.patra@wdc.com>
- <1539111085-25502-2-git-send-email-atish.patra@wdc.com>
- <20181010134926.GD21134@ulmo>
- <25758ab9-eb36-741b-6264-42412b3ddd8e@wdc.com>
- <CAMgXwTieXNa13_xGp2mkw99+VJm-R1xrxMHSmRLZV-hG5oSdzA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] pwm-tiecap: Add support for AM654 SoCs
+Date: Tue, 16 Oct 2018 13:15:41 +0200
+Message-ID: <20181016111541.GE8852@ulmo>
+References: <20181016060402.18756-1-vigneshr@ti.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="vni90+aGYgRvsTuO"
+        protocol="application/pgp-signature"; boundary="ey/N+yb7u/X9mFhi"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMgXwTieXNa13_xGp2mkw99+VJm-R1xrxMHSmRLZV-hG5oSdzA@mail.gmail.com>
+In-Reply-To: <20181016060402.18756-1-vigneshr@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Wesley Terpstra <wesley@sifive.com>
-Cc: Atish Patra <atish.patra@wdc.com>, Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linus.walleij@linaro.org, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Christoph Hellwig <hch@infradead.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Andrew Davis <afd@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---vni90+aGYgRvsTuO
+--ey/N+yb7u/X9mFhi
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 15, 2018 at 04:19:20PM -0700, Wesley Terpstra wrote:
-> On Mon, Oct 15, 2018 at 3:57 PM Atish Patra <atish.patra@wdc.com> wrote:
-> > >> +SiFive PWM controller
-> > >> +
-> > >> +Unlike most other PWM controllers, the SiFive PWM controller curren=
-tly only
-> > >> +supports one period for all channels in the PWM. This is set global=
-ly in DTS.
-> > >> +The period also has significant restrictions on the values it can a=
-chieve,
-> > >> +which the driver rounds to the nearest achievable frequency.
-> > >
-> > > What restrictions are these? If "nearest achievable" is too far off t=
-he
-> > > target period it might be preferable to error out.
-> > >
-> >
-> > @Wes: Any comments?
+On Tue, Oct 16, 2018 at 11:34:00AM +0530, Vignesh R wrote:
+> Couple of patches to enable pwm-tiecap driver to be used with TI's new
+> AM654 platforms.
 >=20
-> When I last looked at this driver and hardware, I briefly considered
-> throwing up my hands and pretending that this PWM device had no period
-> control at all, only duty-cycle. There are several examples of PWM
-> controllers in linux already that behave that way.
+> Vignesh R (2):
+>   dt-bindings: pwm: tiecap: Add TI AM654 SoC specific compatible
+>   pwm: Kconfig: Enable TI ECAP driver for ARCH_K3
+>=20
+>  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 1 +
+>  drivers/pwm/Kconfig                                  | 5 ++---
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
-Can you point those out? So far we've always opted to refuse changing
-the period of PWM channels that share a period if it didn't match the
-current period.
-
-> Most of the uses of this PWM are only going to care about the
-> duty-cycle, not the period. So failing when the period is unachievable
-> seems worse to me than just completely eliminating access to period
-> control.
-
-I'm not sure we've ever tried to completely take period out of the
-picture. You could probably do it if you use only the atomic API because
-then you just leave the period untouched. And if you have a post-clock
-change you just need to make sure to record the new period and update
-the duty cycle so that the ratio remains the same.
-
-I think that could work, but I think it'd be best to be explicit about
-it, rather than just handwaving it.
+Applied, thanks.
 
 Thierry
 
---vni90+aGYgRvsTuO
+--ey/N+yb7u/X9mFhi
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvFx9IACgkQ3SOs138+
-s6EG5Q//VozF9Lk+dGPqd7hls3pRBj6SyqljD13wEXsC+zLveuBBDKtOFvJ53yYj
-A5PxNzKHGdfFcEm+WWNthJezglWFUBwoeiJVmOkuhHSTAwSXr+bhKjPRzPyRssNe
-Av0PZyxQ9yB9XsmZSZrixTtGT6XpAW3MB/9ha3G/PkL6lEM7mI1rCoA1riiZsnpq
-gX5v1d8+lizsAJMYIDduyAbyB3+zvpRwtrQSEuM+p5pwpQBZhZiEI18fXOazDGmF
-p0FCHWwRTXXlVN2gOk84+Q8/mXRFA35NqbhTJ6yrqavZLd2k7nhwVr69N1bw2DQC
-PzdzYM/JD4CowrfzpAnNG6ysqvkzh44zQB0uHhF8dDNQC+JqAYReUNH8/JjbHqd/
-cuI21LU5l0mBgMyza9Eal+WwXXMe/tppz9CcHddMEke3RUXDo+MRHDNtphid/sOf
-TznJLIAbOiOGsoUfyoHycbEh0xmMiNoqnayt7sUvdzoKSxi+HIwsvVbsPMvlqapM
-qGq0t3q/gK19MiEG5yUEhNf3WzhJCGMdJKcnlAzX8chKA2nrmIGvBIr29TUnPo8X
-cMmOUncqNkQ3oj9ypACk+9ACXNAAQoupww+fLQZ/0V6lm4BM7JjLRCpsxPqKjYhK
-nbW9AskHYjXg5kVVMj7/GwwdXNXV9Q/iWCxax2JxY8bsuXuxnMk=
-=DuQI
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvFyF0ACgkQ3SOs138+
+s6FGaw//csiUGEqfwZ8tliCNgbz5WYxINJb+RjG/Chxlb0md2/9EuQkgVzAC4pNe
+mEMRD+h46h74M+21M4pb87zPjklMQPyBMkopY1h+S2mf4sGRtibFwBntK9/vX5Jq
+0NN1gAFUrv8ckHYfCvR6uMJ6Gu72RpX9KkJjNVnZtJF18tCIR03+jvKLZCbHe7F5
+aK/VTHy8zzLMx70po1iIcubTnxOxRi8MfVIVW52gsj6ffG7KHouTN19DJGUvkicy
+7VDUR9OMNl/4BgtlkGxzcM9Jmc27iUUS9xUZEk5OCheGuFfQCnKnxKDapuseb1u/
+hPoabCvx/3OPjo5Dmhy7rc0KPRHeybRFKbIavPvzQ+UNqK6E0suRgGEu5bB43/Wi
+t3PyY5bbEI6toEt02ONgCDGT2apINvPvscN42CqyQzVXD+/lfB0ayLKex5v60ARC
+q0wwonzglROvLjrVeaOfcz5zs2RsfI65nQSwgoz1yb1PeTEocZ2h4vrZnIwVAUn5
+mKScjezE2uBtKhnnLNaFO332CeGMmaMpBhCa3Ak0QT3yqNIspQCYjlYFRWHV+Mz5
+1CmdTFCbRxf0/egNDYWXjQxkD07/uRclZt7g37iuRx7N8+VZd5pi44Me7SGD7k95
+8Nu0EKFApi8HgP5Rw+Y6FneH6ZeowlEuMaCJo3Bgrq5ozbrpSQg=
+=vO/S
 -----END PGP SIGNATURE-----
 
---vni90+aGYgRvsTuO--
+--ey/N+yb7u/X9mFhi--
