@@ -1,22 +1,26 @@
-From: Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH v2 0/3] treewide: add vibrator support for various MSM SOCs
-Date: Mon, 15 Oct 2018 17:52:49 -0700
-Message-ID: <153965116919.5275.18169434559839796065@swboyd.mtv.corp.google.com>
-References: <20180926235112.25710-1-masneyb@onstation.org>
+From: Vignesh R <vigneshr@ti.com>
+Subject: [PATCH v2 0/2] pwm-tiecap: Add support for AM654 SoCs
+Date: Tue, 16 Oct 2018 11:34:00 +0530
+Message-ID: <20181016060402.18756-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180926235112.25710-1-masneyb@onstation.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: andy.gross@linaro.org, david.brown@linaro.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-soc@vger.kernel.org, mark.rutland@arm.com, robh+dt@kernel.org, thierry.reding@gmail.com
-Cc: masneyb@onstation.org, jonathan@marek.ca, ctatlor97@gmail.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Vignesh R <vigneshr@ti.com>, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Andrew Davis <afd@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Quoting Brian Masney (2018-09-26 16:51:09)
-> This patch set adds support for the vibrator found on various Qualcomm
-> MSM SOCs. This is based on work from:
+Couple of patches to enable pwm-tiecap driver to be used with TI's new
+AM654 platforms.
 
-Can you please stop adding 'treewide:' to your cover letters? It is very
-confusing while reading over subject summaries to see something that
-isn't actually treewide end up being qcom specific.
+Vignesh R (2):
+  dt-bindings: pwm: tiecap: Add TI AM654 SoC specific compatible
+  pwm: Kconfig: Enable TI ECAP driver for ARCH_K3
+
+ Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 1 +
+ drivers/pwm/Kconfig                                  | 5 ++---
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+-- 
+2.19.1
