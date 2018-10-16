@@ -1,97 +1,81 @@
-Return-Path: <hdegoede@redhat.com>
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 2/2] pwm: lpss: Only set update bit if we are actually changing the settings
-Date: Sun, 14 Oct 2018 17:12:02 +0200
-Message-Id: <20181014151202.29955-3-hdegoede@redhat.com>
-In-Reply-To: <20181014151202.29955-1-hdegoede@redhat.com>
+Return-Path: <thierry.reding@gmail.com>
+Date: Tue, 16 Oct 2018 13:16:52 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 0/2] pwm: lpss: Force runtime-resume on suspend on CHT
+ devices
+Message-ID: <20181016111652.GF8852@ulmo>
 References: <20181014151202.29955-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="hK8Uo4Yp55NZU70L"
+Content-Disposition: inline
+In-Reply-To: <20181014151202.29955-1-hdegoede@redhat.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
 
-According to the datasheet the update bit must be set if the on-time-div
-or the base-unit changes.
 
-Now that we properly order device resume on Cherry Trail so that the GFX0
-_PS0 method no longer exits with an error, we end up with a sequence of
-events where we are writing the same values twice in a row.
+--hK8Uo4Yp55NZU70L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-First the _PS0 method restores the duty cycle of 0% the GPU driver set
-on suspend and then the GPU driver first updates just the enabled bit in
-the pwm_state from 0 to 1, causing us to write the same values again,
-before restoring the pre-suspend duty-cycle in a separate pwm_apply call.
+On Sun, Oct 14, 2018 at 05:12:00PM +0200, Hans de Goede wrote:
+> Hi All,
+>=20
+> Here are 2 more / new pwm-lpss fixes.
+>=20
+> I've received a bug report that the recent ACPI-LPSS code changes which
+> properly order device resume on Cherry Trail so that the GFX0 _PS0 method
+> no longer exits with an error causes the backlight to flicker on some
+> Cherry Trail devices.
+>=20
+> This series is the result of investigating this issue. On Cherry Trail
+> devices under Windows the PWM controller used for the backlight is
+> considered part of the GPU even though it is part of the LPSS block and
+> thus is an entirely different independent hardware unit.
+>=20
+> Because of this on Cherry Trail the GPU's (GFX0 ACPI node) _PS3 and _PS0
+> ACPI methods save and restore the PWM controller registers.
+>=20
+> After the recent fixes this save + restore of the PWM controller registers
+> is actually also happening under Linux.
+>=20
+> If userspace blanks the screen before suspending, such as e.g. GNOME
+> does, then the PWM controller will be runtime-suspended when the suspend
+> starts. This causes the GFX0 _PS3 method to save a value of 0xffffffff
+> for the PWM control register and to restore this value on resume.
+> Note that the GPU's _PS0 method also puts the PWM controller in D0, so
+> this write of 0xffffffff does actually stick.
+>=20
+> The first patch in this patch-set fixes this. This fix exposes another
+> issue, the pwm-lpss driver unconditionally sets the update bit when
+> pwm_apply gets called, even if nothing has changed. At least on
+> Cherry Trail this seems to cause the next update (which actually changes
+> something) to be ignored. The second patch fixes this issue.
 
-When writing the update bit the second time, without changing any of
-the values the update bit clears immediately / instantly, instead of
-staying 1 for a while as usual. After this the next setting of the update
-bit seems to be ignored, causing the restoring of the pre-suspend
-duty-cycle to not get applied. This makes the backlight come up with
-a 0% dutycycle after suspend/resume.
+Applied, thanks.
 
-Any further brightness changes after this do work.
+Thierry
 
-This commit moves the setting of the update bit into pwm_lpss_prepare()
-and only sets the bit if we have actually changed any of the values.
+--hK8Uo4Yp55NZU70L
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This avoids the setting of the update bit the second time we configure
-the PWM to 0% dutycycle, this fixes the backlight coming up with 0%
-duty-cycle after a suspend/resume.
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/pwm/pwm-lpss.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvFyKQACgkQ3SOs138+
+s6GzEQ//WsHr46KV1MOWtGI8uKTsY9ga49WBsNPcyPA5k6UdpnOBn/5Og8Qyd9wn
+lXuw3j7hYlyiqJsz2WJf3Phnh9+lgW0g2u8MZgAJrjrizkPhfX4WQb/X9D6Ic/0M
+6LG5gtITTpKv4EvrbFj0n0JcV7VmyqB0Rn3Az6PH9yp9YzyTxGQyvxw8LRqzDAKD
+c8SwIMcS9mPGCIfypn0OS8mAUHFx2FLIETtNflW1RXyDIUKSvc9qCO998LZA9FpE
+6GskBcgvnDJRA8eI1QsYqsLMboBmJJvGNGNzKWe86WYvjwOrEoDrAtUt706vBHAK
+IpI7i5FeMRHOxVx5z7CXuRslw1GhjbEswVjJDFgVjZVUTtta8EIWqAdJ1MvIKtCB
+L9crUsbOHUpJICs1Pdg9otO/YO6UXnNFj20Uv1DmCWv/X49iHDLPX004kx4BBO4a
+T3ex1KeGTnOGUjBeiXLvXF2sVvuDt7I46zD/EhUdKFdEfOIUIo69i+Rxz8XR99ca
+UvAMOpfaiMwmYmxbj8EvsDDMMvzUTHy6B//sbS0MxGUms7tGxB8vfTcQE3CHP8MS
+UCOjKwU1nNFLcj7Xyw1lnY7RQd668apGphGqOVgkUi3oyhQwcj3CJz6dLIU2uV7U
+e3HwJMsJN6wvHITZ5evjSjI8M+rgweemJFaJJiEH+ZDhYqK/zJo=
+=oCad
+-----END PGP SIGNATURE-----
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 293e5139b091..f170873e6fb4 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -88,7 +88,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	unsigned long long on_time_div;
- 	unsigned long c = lpwm->info->clk_rate, base_unit_range;
- 	unsigned long long base_unit, freq = NSEC_PER_SEC;
--	u32 ctrl;
-+	u32 orig_ctrl, ctrl;
- 
- 	do_div(freq, period_ns);
- 
-@@ -105,13 +105,17 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	do_div(on_time_div, period_ns);
- 	on_time_div = 255ULL - on_time_div;
- 
--	ctrl = pwm_lpss_read(pwm);
-+	orig_ctrl = ctrl = pwm_lpss_read(pwm);
- 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
- 	ctrl &= ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
- 	base_unit &= base_unit_range;
- 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
--	pwm_lpss_write(pwm, ctrl);
-+
-+	if (orig_ctrl != ctrl) {
-+		pwm_lpss_write(pwm, ctrl);
-+		pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
-+	}
- }
- 
- static inline void pwm_lpss_cond_enable(struct pwm_device *pwm, bool cond)
-@@ -135,7 +139,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 				return ret;
- 			}
- 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
--			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
- 			pwm_lpss_cond_enable(pwm, lpwm->info->bypass == false);
- 			ret = pwm_lpss_wait_for_update(pwm);
- 			if (ret) {
-@@ -148,7 +151,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			if (ret)
- 				return ret;
- 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
--			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
- 			return pwm_lpss_wait_for_update(pwm);
- 		}
- 	} else if (pwm_is_enabled(pwm)) {
--- 
-2.19.0
+--hK8Uo4Yp55NZU70L--
