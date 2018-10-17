@@ -1,187 +1,231 @@
-From: Atish Patra <atish.patra@wdc.com>
-Subject: Re: [RFC 4/4] gpio: sifive: Add GPIO driver for SiFive SoCs
-Date: Tue, 16 Oct 2018 18:01:13 -0700
-Message-ID: <d8fe9a17-283c-e2ad-9e01-2754b35699b4@wdc.com>
-References: <1539111085-25502-1-git-send-email-atish.patra@wdc.com>
- <1539111085-25502-5-git-send-email-atish.patra@wdc.com>
- <CACRpkdaoBwqQ4V5Hm9f_G5_jrdkvjT5anhBK1_HoFTj6=cba-Q@mail.gmail.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: Re: [RESEND PATCH v5 0/9] extend PWM framework to support PWM modes
+Date: Wed, 17 Oct 2018 12:41:53 +0000
+Message-ID: <fca49cff-f883-baf4-4bd3-80f45635bb5a@microchip.com>
+References: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
+ <b95d0de2-1a97-36f0-03ad-3b5e52b1fa5d@microchip.com>
+ <20181016120321.GG8852@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdaoBwqQ4V5Hm9f_G5_jrdkvjT5anhBK1_HoFTj6=cba-Q@mail.gmail.com>
+In-Reply-To: <20181016120321.GG8852@ulmo>
 Content-Language: en-US
+Content-ID: <92A636DC92C2E84789D1F075F388771E@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc: Palmer Dabbelt <palmer@sifive.com>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Christoph Hellwig <hch@infradead.org>
+To: thierry.reding@gmail.com, Nicolas.Ferre@microchip.com, robh+dt@kernel.org
+Cc: alexandre.belloni@bootlin.com, linux-pwm@vger.kernel.org, treding@nvidia.com, shc_work@mail.ru, mark.rutland@arm.com, corbet@lwn.net, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, thomas.petazzoni@bootlin.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 10/10/18 5:35 AM, Linus Walleij wrote:
-> Hi Atish,
-> 
-> thanks for your patch!
-> 
-> On Tue, Oct 9, 2018 at 8:51 PM Atish Patra <atish.patra@wdc.com> wrote:
-> 
->> From: "Wesley W. Terpstra" <wesley@sifive.com>
+
+
+On 16.10.2018 15:03, Thierry Reding wrote:
+> On Fri, Sep 14, 2018 at 06:20:48PM +0200, Nicolas Ferre wrote:
+>> Thierry,
 >>
->> Adds the GPIO driver for SiFive RISC-V SoCs.
+>> On 28/08/2018 at 15:01, Claudiu Beznea wrote:
+>>> Hi,
+>>>
+>>> Please give feedback on these patches which extends the PWM framework i=
+n
+>>> order to support multiple PWM modes of operations. This series is a rew=
+ork
+>>> of [1] and [2].
 >>
->> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
->> [Atish: Various fixes and code cleanup]
->> Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> 
-> (...)
-> 
->> +config GPIO_SIFIVE
->> +       bool "SiFive GPIO support"
->> +       depends on OF_GPIO
->> +       select GPIOLIB_IRQCHIP
-> 
-> I suggest to add
-> select GPIO_GENERIC as per below.
-> 
-> Maybe select REGMAP_MMIO as well.
+>> This series started with a RFC back on 5 April 2017 "extend PWM framewor=
+k to
+>> support PWM modes". The continuous work starting with v2 of this series =
+on
+>> January 12, 2018.
+>>
+>> Then Claudiu tried to address all comments up to v4 which didn't have an=
+y
+>> more reviews. He posted a v5 without comments since May 22, 2018. This
+>> series is basically a resent of the v5 (as said in the $subject).
+>>
+>> We would like to know what is preventing this series to be included in t=
+he
+>> PWM sub-system. Note that if some issue still remain with it, we are rea=
+dy
+>> to help to solve them.
+>>
+>> Without feedback from you side, we fear that we would miss a merge windo=
+w
+>> again for no obvious reason (DT part is Acked by Rob: patch 5/9).
+>=20
+> First off, apologies for not getting around to this earlier.
+>=20
+> I think this series is mostly fine, but I still have doubts about the DT
+> aspects of this. In particular, Rob raised a concern about this here:
+>=20
+> 	https://lkml.org/lkml/2018/1/22/655
+>=20
+> and it seems like that particular question was never fully resolved as
+> the discussion veered off that particular topic.
 
-ok.
+1/ If you are talking about this sentence:
+"Yes, but you have to make "normal" be no bit set to be compatible with
+everything already out there."
 
-> 
->> +       help
->> +         Say yes here to support the GPIO device on SiFive SoCs.
->> +
-> 
->> +#include <linux/of_irq.h>
->> +#include <linux/irqchip/chained_irq.h>
-> 
-> Do you need these two? I think <linux/gpio/driver.h>
-> will bring them in for you.
-> 
+The current implementation consider that if no mode is provided then, the
+old approach is considered, meaning the normal mode will be used by every
+PWM in-kernel clients.
 
-driver.h only brings chained_irq.h. of_irq.h is still required. Right ?
+In of_pwm_xlate_with_flags() the pmw->args.mode is initialized with what
+pwm_mode_get_valid() returns. In case of controllers which does not
+implement something special for PWM modes the PWM normal mode will be
+returned (pwmchip_get_default_caps() function has to be called in the end).
+Otherwise the pwm->args.mode will be populated with what user provided as
+input from DT, if what was provided from DT is valid for PWM channel.
+Please see that pwm_mode_valid() is used to validate user input, otherwise
+PWM normal mode will be used.
 
->> +#include <linux/pinctrl/consumer.h>
-> 
-> Are you using this?
++	pwm->args.mode =3D pwm_mode_get_valid(pc, pwm);
 
-My bad. Left over from the old code. I will remove it.
-
-> 
->> +struct sifive_gpio {
->> +       raw_spinlock_t          lock;
->> +       void __iomem            *base;
->> +       struct gpio_chip        gc;
->> +       unsigned long           enabled;
-> 
-> Since max GPIO is 32 why not use an u32 for this?
-> 
-
-Sure.
-
->> +       unsigned int            trigger[MAX_GPIO];
->> +       unsigned int            irq_parent[MAX_GPIO];
->> +       struct sifive_gpio      *self_ptr[MAX_GPIO];
->> +};
->> +
->> +static void sifive_assign_bit(void __iomem *ptr, unsigned int offset, int value)
->> +{
->> +       /*
->> +        * It's frustrating that we are not allowed to use the device atomics
->> +        * which are GUARANTEED to be supported by this device on RISC-V
->> +        */
->> +       u32 bit = BIT(offset), old = ioread32(ptr);
->> +
->> +       if (value)
->> +               iowrite32(old | bit, ptr);
->> +       else
->> +               iowrite32(old & ~bit, ptr);
->> +}
-> 
-> This looks like a mask and set implementation, you are
-> essentially reinventing regmap MMIO and the
-> regmap_update_bits() call. Could you look into
-> just using regmap MMIO in that case?
-> 
-> If you need examples, look at gpio-mvebu.c that calls
-> devm_regmap_init_mmio() for example.
-> 
-
-That's really cool. Sorry, for not checking that earlier.
-I am pretty new to this.
-
->> +static int sifive_direction_input(struct gpio_chip *gc, unsigned int offset)
->> +static int sifive_direction_output(struct gpio_chip *gc, unsigned int offset,
->> +static int sifive_get_direction(struct gpio_chip *gc, unsigned int offset)
->> +static int sifive_get_value(struct gpio_chip *gc, unsigned int offset)
->> +static void sifive_set_value(struct gpio_chip *gc, unsigned int offset,
-> 
-> These functions look like a typical hardware that can use
-> 
-> GPIOLIB_GENERIC and bgpio_init() to set up the accessors.
-> 
-> See gpio-ftgpio010.c for an example.
-> 
-> As a bonus you will get .get/.set_multiple implemented by
-> the generic GPIO.
-> 
-
-Great. This will reduce the driver a code by a big factor.
-Thanks for the pointer.
+-	if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
+-		pwm->args.polarity =3D PWM_POLARITY_INVERSED;
++	if (args->args_count > 2) {
++		if (args->args[2] & PWM_POLARITY_INVERTED)
++			pwm->args.polarity =3D PWM_POLARITY_INVERSED;
++
++		for (modebit =3D PWMC_MODE_COMPLEMENTARY_BIT;
++		     modebit < PWMC_MODE_CNT; modebit++) {
++			unsigned long mode =3D BIT(modebit);
++
++			if ((args->args[2] & mode) &&
++			    pwm_mode_valid(pwm, mode)) {
++				pwm->args.mode =3D mode;
++				break;
++			}
++		}
++	}
 
 
->> +static void sifive_irq_enable(struct irq_data *d)
->> +static void sifive_irq_disable(struct irq_data *d)
-> (...)
->> +static struct irq_chip sifive_irqchip = {
->> +       .name           = "sifive-gpio",
->> +       .irq_set_type   = sifive_irq_set_type,
->> +       .irq_mask       = sifive_irq_mask,
->> +       .irq_unmask     = sifive_irq_unmask,
->> +       .irq_enable     = sifive_irq_enable,
->> +       .irq_disable    = sifive_irq_disable,
-> 
-> The handling of .irq_enable and .irq_disable has
-> changed upstream. Please align with the new codebase
-> as changed by Hans Verkuil:
-> 
-> commit 461c1a7d4733d1dfd5c47b040cf32a5e7eefbc6c
-> "gpiolib: override irq_enable/disable"
-> commit 4e9439ddacea06f35acce4d374bf6bd0acf99bc8
-> "gpiolib: add flag to indicate if the irq is disabled"
-> 
-> You will need to rebase your work on the v4.20-rc1 once it is
-> out. Right now the changes are on linux-next or my devel
-> branch.
+2/ If you are talking about this sentence:
+"Thinking about this some more, shouldn't the new modes just be
+implied? A client is going to require one of these modes or it won't
+work right."
 
-Will do.
+As explained at point 1, if there is no mode requested from DT the default
+mode for channel will be used, which, in case of PWM controller which are
+not implementing the new modes, will be PWM normal mode.
 
-> 
->> +       ngpio = of_irq_count(node);
->> +       if (ngpio >= MAX_GPIO) {
->> +               dev_err(dev, "Too many GPIO interrupts (max=%d)\n", MAX_GPIO);
->> +               return -ENXIO;
->> +       }
-> (...)
->> +       for (gpio = 0; gpio < ngpio; ++gpio) {
->> +               irq = platform_get_irq(pdev, gpio);
->> +               if (irq < 0) {
->> +                       dev_err(dev, "invalid IRQ\n");
->> +                       gpiochip_remove(&chip->gc);
->> +                       return -ENODEV;
->> +               }
-> 
-> This is an hierarchical IRQ so it should use an hierarchical
-> irqdomain.
-> 
-> I am discussing with Thierry to make more generic irq domains
-> for hierarchical IRQ GPIOs, until then you have to look at
-> gpio-thunderx.c, gpio-uniphier.c or gpio-xgene-sb.c that all
-> use hierarchical IRQs.
-> 
+3/ If you are talking about:
+"Also complementary mode could be accomplished with a single pwm output
+and a board level inverter, right? How would that be handled when the
+PWM driver doesn't support that mode?"
+This complicates the things and I think it requires extra device tree
+bindings to describe extra per-pwm channel capabilities. For the moment,
+with this series I've stopped to only have the capabilities registered from
+driver. My understanding is that this could be accomplished with extra
+device tree bindings in PWM controller to describe PWM channels
+capabilities. If you also want me to look into this direction please let me
+know. And also, suggestions would be appreciated.
 
-Thanks. I will convert them to hierarchical IRQ.
+I know that Rob acked
+> the DT parts of this, but I suspect that this might have been glossed
+> over.
 
-Regards,
-Atish
-> Yours,
-> Linus Walleij
-> 
+If this is about point 3 I've emphasize above I would like to have some
+inputs from your side, if you agree with a behavior like having extra DT
+bindings. The intention wasn't to left this over but to have a better
+understanding of the subject. I'm thinking if it is ok to have modules
+outside of the SoC that model a behavior that could not be controlled from
+software (it could be only hardware) but to behave in a single way. Take
+for instance this scenario:
+
+- new DT bindings are implemented to specify this behavior per channel
+- hardware modules are soldered outside of a PWM channel with one output
+- the new DT bindings are not specified for the soldered PWM channel
+- user enables this channel, it will have only normal mode available for it
+to configure (because the new DT bindings were not provided)
+- but the real output the user will see would be in complementary or even
+push-pull mode.
+
+>=20
+> To restate the concern: these extended modes have special uses and none
+> of the users in the kernel, other than sysfs, can use anything other
+> than the normal mode. They may work fine with other modes, but only if
+> they ignore the extras that come with them. Therefore I think it's safe
+> to say that anyone who would want to use these modes would want to
+> explicitly say so. For example the sysfs interface already does that by
+> changing the mode only after the "mode" attribute is written. Any users
+> for special use-cases would want to do the same thing, that is, drive a
+> PWM in a specific mode, on purpose. You wouldn't have a "generic" user
+> such as pwm-backlight or leds-pwm request anything other than the normal
+> mode.
+>=20
+> So my question is, do we really need to represent these modes in DT? The
+> series currently doesn't contain any patches that add users of these new
+> modes. Are such patches available somewhere, or is the only user of this
+> supposed to be sysfs?
+
+For the moment, no, there is no in-kernel user for this, only sysfs. I had
+in mind to adapt the use of these new mode for PWM regulator for scenarios
+described in [1] page 2126. Anyway, since these patches doesn't introduce
+any user other that sysfs it will not disturbed me to drop the changes. By
+the time I or someone else will do some other changes that requires this,
+the DT part should also be introduced.
+
+[1] http://ww1.microchip.com/downloads/en/DeviceDoc/DS60001476B.pdf
+
+>=20
+> I'm hesitant to move forward with this as-is without seeing how it will
+> be used.
+
+For the moment only sysfs is supposed to use this.
+
+The PWM specifier flags are somewhat abused by adding modes to
+> them.=20
+
+I see.
+
+I think this hasn't been completely thought through, because the
+> only reason to specify a mode is to actually set that mode.
+
+Maybe it wasn't clear understand, with the current implementation if no
+mode will be specified the default mode will be used. There is no impose to
+specify a mode.
+
+ But then the
+> DT ABI allows a bitmask of modes to be requested via DT. I know that
+> only the first of those modes will end up being used, but then why even
+> allow it in the first place?
+
+I had in mind that I will change the PWM regulator driver to work in
+scenarios like the one specified in the link above.
+
+>=20
+> And again, even if we allow the mode to be specified in DT, how do the
+> consumer drivers know that the correct mode was being set in DT.=20
+
+PWM user will call at some point devm_pwm_get() which, in turn, will call
+of_pwm_get() which in turn will initialize PWM args with inputs from DT.
+After that PWM user will, at some point, apply a PWM state; if it is
+initialized with PWM args initialized when devm_pwm_get() was called then
+pwm_apply_state() would fail if no good mode is provided as input via DT.
+
+Same thing happens if a bad period is provided via DT.
+
+Let's
+> say we have a consumer that requires the PWM to be driven in
+> complementary mode. Should it rely on the DT to contain the correct
+> specification for the mode? And if it knows that it needs complementary
+> mode, why not just set that mode itself?
+
+I'm thinking it's the same way as is with PWM period which could also be
+provided from DT. In the end a bad period value could be provided from
+device tree. E.g. Atmel PWM controller could generate PWM signals who's
+periods could not be higher than ~0.6 seconds. If a bad value is provided
+the pwm_apply_state() will fail.
+
+Thank you,
+Claudiu Beznea
+
+That way there's no margin for
+> error.
+
+
+>=20
+> Thierry
+>=20
