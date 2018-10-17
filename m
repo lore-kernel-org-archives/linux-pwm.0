@@ -1,231 +1,396 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [RESEND PATCH v5 0/9] extend PWM framework to support PWM modes
-Date: Wed, 17 Oct 2018 12:41:53 +0000
-Message-ID: <fca49cff-f883-baf4-4bd3-80f45635bb5a@microchip.com>
+Subject: Re: [RESEND PATCH v5 1/9] pwm: extend PWM framework with PWM modes
+Date: Wed, 17 Oct 2018 12:42:00 +0000
+Message-ID: <139cc421-ac12-1262-bc32-763731528ccf@microchip.com>
 References: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
- <b95d0de2-1a97-36f0-03ad-3b5e52b1fa5d@microchip.com>
- <20181016120321.GG8852@ulmo>
+ <1535461286-12308-2-git-send-email-claudiu.beznea@microchip.com>
+ <20181016122508.GH8852@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181016120321.GG8852@ulmo>
+In-Reply-To: <20181016122508.GH8852@ulmo>
 Content-Language: en-US
-Content-ID: <92A636DC92C2E84789D1F075F388771E@namprd11.prod.outlook.com>
+Content-ID: <CFEF1475EE1F8840ACB5C6A630E84E05@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, Nicolas.Ferre@microchip.com, robh+dt@kernel.org
-Cc: alexandre.belloni@bootlin.com, linux-pwm@vger.kernel.org, treding@nvidia.com, shc_work@mail.ru, mark.rutland@arm.com, corbet@lwn.net, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, thomas.petazzoni@bootlin.com
+To: thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 
 
-On 16.10.2018 15:03, Thierry Reding wrote:
-> On Fri, Sep 14, 2018 at 06:20:48PM +0200, Nicolas Ferre wrote:
->> Thierry,
+On 16.10.2018 15:25, Thierry Reding wrote:
+> On Tue, Aug 28, 2018 at 04:01:18PM +0300, Claudiu Beznea wrote:
+>> Add basic PWM modes: normal and complementary. These modes should
+>> differentiate the single output PWM channels from two outputs PWM
+>> channels. These modes could be set as follow:
+>> 1. PWM channels with one output per channel:
+>> - normal mode
+>> 2. PWM channels with two outputs per channel:
+>> - normal mode
+>> - complementary mode
+>> Since users could use a PWM channel with two output as one output PWM
+>> channel, the PWM normal mode is allowed to be set for PWM channels with
+>> two outputs; in fact PWM normal mode should be supported by all PWMs.
 >>
->> On 28/08/2018 at 15:01, Claudiu Beznea wrote:
->>> Hi,
->>>
->>> Please give feedback on these patches which extends the PWM framework i=
-n
->>> order to support multiple PWM modes of operations. This series is a rew=
-ork
->>> of [1] and [2].
+>> The PWM capabilities were implemented per PWM channel. Every PWM control=
+ler
+>> will register a function to get PWM capabilities. If this is not explici=
+tly
+>> set by the driver a default function will be used to retrieve the PWM
+>> capabilities (in this case the PWM capabilities will contain only PWM
+>> normal mode). This function is set in pwmchip_add_with_polarity() as a
+>> member of "struct pwm_chip". To retrieve capabilities the pwm_get_caps()
+>> function could be used.
 >>
->> This series started with a RFC back on 5 April 2017 "extend PWM framewor=
-k to
->> support PWM modes". The continuous work starting with v2 of this series =
-on
->> January 12, 2018.
+>> Every PWM channel have associated a mode in the PWM state. Proper
+>> support was added to get/set PWM mode. The mode could also be set
+>> from DT via flag cells. The valid DT modes are located in
+>> include/dt-bindings/pwm/pwm.h. Only modes supported by PWM channel could=
+ be
+>> set. If nothing is specified for a PWM channel, via DT, the first availa=
+ble
+>> mode will be used (normally, this will be PWM normal mode).
 >>
->> Then Claudiu tried to address all comments up to v4 which didn't have an=
-y
->> more reviews. He posted a v5 without comments since May 22, 2018. This
->> series is basically a resent of the v5 (as said in the $subject).
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> ---
+>>  drivers/pwm/core.c  | 124 +++++++++++++++++++++++++++++++++++++++++++++=
++++++--
+>>  drivers/pwm/sysfs.c |  61 ++++++++++++++++++++++++++
+>>  include/linux/pwm.h |  39 +++++++++++++++++
+>>  3 files changed, 221 insertions(+), 3 deletions(-)
 >>
->> We would like to know what is preventing this series to be included in t=
-he
->> PWM sub-system. Note that if some issue still remain with it, we are rea=
-dy
->> to help to solve them.
->>
->> Without feedback from you side, we fear that we would miss a merge windo=
-w
->> again for no obvious reason (DT part is Acked by Rob: patch 5/9).
+>> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+>> index 1581f6ab1b1f..59a9df9120de 100644
+>> --- a/drivers/pwm/core.c
+>> +++ b/drivers/pwm/core.c
+>> @@ -136,6 +136,7 @@ struct pwm_device *
+>>  of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_ar=
+gs *args)
+>>  {
+>>  	struct pwm_device *pwm;
+>> +	int modebit;
+>> =20
+>>  	/* check, whether the driver supports a third cell for flags */
+>>  	if (pc->of_pwm_n_cells < 3)
+>> @@ -154,9 +155,23 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const =
+struct of_phandle_args *args)
+>> =20
+>>  	pwm->args.period =3D args->args[1];
+>>  	pwm->args.polarity =3D PWM_POLARITY_NORMAL;
+>> +	pwm->args.mode =3D pwm_mode_get_valid(pc, pwm);
+>> =20
+>> -	if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
+>> -		pwm->args.polarity =3D PWM_POLARITY_INVERSED;
+>> +	if (args->args_count > 2) {
+>> +		if (args->args[2] & PWM_POLARITY_INVERTED)
+>> +			pwm->args.polarity =3D PWM_POLARITY_INVERSED;
+>> +
+>> +		for (modebit =3D PWMC_MODE_COMPLEMENTARY_BIT;
+>> +		     modebit < PWMC_MODE_CNT; modebit++) {
+>> +			unsigned long mode =3D BIT(modebit);
+>> +
+>> +			if ((args->args[2] & mode) &&
+>> +			    pwm_mode_valid(pwm, mode)) {
+>> +				pwm->args.mode =3D mode;
+>> +				break;
+>> +			}
+>> +		}
+>> +	}
+>> =20
+>>  	return pwm;
+>>  }
+>> @@ -183,6 +198,7 @@ of_pwm_simple_xlate(struct pwm_chip *pc, const struc=
+t of_phandle_args *args)
+>>  		return pwm;
+>> =20
+>>  	pwm->args.period =3D args->args[1];
+>> +	pwm->args.mode =3D pwm_mode_get_valid(pc, pwm);
+>> =20
+>>  	return pwm;
+>>  }
+>> @@ -250,6 +266,97 @@ static bool pwm_ops_check(const struct pwm_ops *ops=
+)
+>>  }
+>> =20
+>>  /**
+>> + * pwm_get_caps() - get PWM capabilities of a PWM device
+>> + * @chip: PWM chip
+>> + * @pwm: PWM device to get the capabilities for
+>> + * @caps: returned capabilities
+>> + *
+>> + * Returns: 0 on success or a negative error code on failure
+>> + */
+>> +int pwm_get_caps(struct pwm_chip *chip, struct pwm_device *pwm,
+>> +		 struct pwm_caps *caps)
+>> +{
+>> +	if (!chip || !pwm || !caps)
+>> +		return -EINVAL;
+>> +
+>> +	if (chip->ops && chip->ops->get_caps)
+>> +		pwm->chip->ops->get_caps(chip, pwm, caps);
+>> +	else if (chip->get_default_caps)
+>> +		chip->get_default_caps(caps);
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(pwm_get_caps);
 >=20
-> First off, apologies for not getting around to this earlier.
->=20
-> I think this series is mostly fine, but I still have doubts about the DT
-> aspects of this. In particular, Rob raised a concern about this here:
->=20
-> 	https://lkml.org/lkml/2018/1/22/655
->=20
-> and it seems like that particular question was never fully resolved as
-> the discussion veered off that particular topic.
+> I'm confused by the way ->get_default_caps() is used here. This always
+> points at pwmchip_get_default_caps() if I understand correctly, so why
+> bother with the indirection?
 
-1/ If you are talking about this sentence:
-"Yes, but you have to make "normal" be no bit set to be compatible with
-everything already out there."
-
-The current implementation consider that if no mode is provided then, the
-old approach is considered, meaning the normal mode will be used by every
-PWM in-kernel clients.
-
-In of_pwm_xlate_with_flags() the pmw->args.mode is initialized with what
-pwm_mode_get_valid() returns. In case of controllers which does not
-implement something special for PWM modes the PWM normal mode will be
-returned (pwmchip_get_default_caps() function has to be called in the end).
-Otherwise the pwm->args.mode will be populated with what user provided as
-input from DT, if what was provided from DT is valid for PWM channel.
-Please see that pwm_mode_valid() is used to validate user input, otherwise
-PWM normal mode will be used.
-
-+	pwm->args.mode =3D pwm_mode_get_valid(pc, pwm);
-
--	if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
--		pwm->args.polarity =3D PWM_POLARITY_INVERSED;
-+	if (args->args_count > 2) {
-+		if (args->args[2] & PWM_POLARITY_INVERTED)
-+			pwm->args.polarity =3D PWM_POLARITY_INVERSED;
-+
-+		for (modebit =3D PWMC_MODE_COMPLEMENTARY_BIT;
-+		     modebit < PWMC_MODE_CNT; modebit++) {
-+			unsigned long mode =3D BIT(modebit);
-+
-+			if ((args->args[2] & mode) &&
-+			    pwm_mode_valid(pwm, mode)) {
-+				pwm->args.mode =3D mode;
-+				break;
-+			}
-+		}
-+	}
-
-
-2/ If you are talking about this sentence:
-"Thinking about this some more, shouldn't the new modes just be
-implied? A client is going to require one of these modes or it won't
-work right."
-
-As explained at point 1, if there is no mode requested from DT the default
-mode for channel will be used, which, in case of PWM controller which are
-not implementing the new modes, will be PWM normal mode.
-
-3/ If you are talking about:
-"Also complementary mode could be accomplished with a single pwm output
-and a board level inverter, right? How would that be handled when the
-PWM driver doesn't support that mode?"
-This complicates the things and I think it requires extra device tree
-bindings to describe extra per-pwm channel capabilities. For the moment,
-with this series I've stopped to only have the capabilities registered from
-driver. My understanding is that this could be accomplished with extra
-device tree bindings in PWM controller to describe PWM channels
-capabilities. If you also want me to look into this direction please let me
-know. And also, suggestions would be appreciated.
-
-I know that Rob acked
-> the DT parts of this, but I suspect that this might have been glossed
-> over.
-
-If this is about point 3 I've emphasize above I would like to have some
-inputs from your side, if you agree with a behavior like having extra DT
-bindings. The intention wasn't to left this over but to have a better
-understanding of the subject. I'm thinking if it is ok to have modules
-outside of the SoC that model a behavior that could not be controlled from
-software (it could be only hardware) but to behave in a single way. Take
-for instance this scenario:
-
-- new DT bindings are implemented to specify this behavior per channel
-- hardware modules are soldered outside of a PWM channel with one output
-- the new DT bindings are not specified for the soldered PWM channel
-- user enables this channel, it will have only normal mode available for it
-to configure (because the new DT bindings were not provided)
-- but the real output the user will see would be in complementary or even
-push-pull mode.
+Yep, looking again at this it also looks ugly to me and I dont't remember
+why I chose this approach. I looked over emails and so but didn't manage to
+find the reason for this. I agree with you that there is no need to keep a
+pointer in struct pwm_chip for this.
 
 >=20
-> To restate the concern: these extended modes have special uses and none
-> of the users in the kernel, other than sysfs, can use anything other
-> than the normal mode. They may work fine with other modes, but only if
-> they ignore the extras that come with them. Therefore I think it's safe
-> to say that anyone who would want to use these modes would want to
-> explicitly say so. For example the sysfs interface already does that by
-> changing the mode only after the "mode" attribute is written. Any users
-> for special use-cases would want to do the same thing, that is, drive a
-> PWM in a specific mode, on purpose. You wouldn't have a "generic" user
-> such as pwm-backlight or leds-pwm request anything other than the normal
-> mode.
+> I think it would be better to either export pwmchip_get_default_caps()
+> as a default implementation of ->get_caps(), something like:
 >=20
-> So my question is, do we really need to represent these modes in DT? The
-> series currently doesn't contain any patches that add users of these new
-> modes. Are such patches available somewhere, or is the only user of this
-> supposed to be sysfs?
+> 	void pwm_get_default_caps(struct pwm_chip *chip, struct pwm_device *pwm,
+> 				  struct pwm_caps *caps)
+> 	{
+> 		...
+> 	}
+> 	EXPORT_SYMBOL_GPL(pwm_get_default_caps);
+>=20
+> This could be used by the individual drivers as the implementation if
+> they don't support any modes.
+>=20
+> Another, probably simpler approach would be to just get rid of the
+> chip->get_default_caps() pointer and directly call
+> pwmchip_get_default_caps() from pwm_get_caps():
+>=20
+> 	int pwm_get_caps(...)
+> 	{
+> 		/*
+> 		 * Note that you don't need the check for chip->ops because
+> 		 * the core checks for that upon registration of the chip.
+> 		 */
+> 		if (chip->ops->get_caps)
+> 			return chip->ops->get_caps(...);
+>=20
+> 		return pwm_get_default_caps(...);
+> 	}
+>=20
+> And if we do that, might as well fold pwm_get_default_caps() into
+> pwm_get_caps().
 
-For the moment, no, there is no in-kernel user for this, only sysfs. I had
-in mind to adapt the use of these new mode for PWM regulator for scenarios
-described in [1] page 2126. Anyway, since these patches doesn't introduce
-any user other that sysfs it will not disturbed me to drop the changes. By
-the time I or someone else will do some other changes that requires this,
-the DT part should also be introduced.
+I am also in favor of this approach.
+
+>=20
+>> +/**
+>> + * pwm_mode_get_valid() - get the first available valid mode for PWM
+>> + * @chip: PWM chip
+>> + * @pwm: PWM device to get the valid mode for
+>> + *
+>> + * Returns: first valid mode for PWM device
+>> + */
+>> +unsigned long pwm_mode_get_valid(struct pwm_chip *chip, struct pwm_devi=
+ce *pwm)
+>=20
+> This is a little ambiguous. Perhaps pwm_get_default_mode()?
+
+
+Ok, will change it to pwm_get_default_mode(). I placed pwm_mode in front of
+every function in this patch to emphasize the functions are dealing with
+PWM modes. But being inside PWM core and using this approach might be
+confusing.
+
+>=20
+>> +/**
+>> + * pwm_mode_valid() - check if mode is valid for PWM device
+>> + * @pwm: PWM device
+>> + * @mode: PWM mode to check if valid
+>> + *
+>> + * Returns: true if mode is valid and false otherwise
+>> + */
+>> +bool pwm_mode_valid(struct pwm_device *pwm, unsigned long mode)
+>=20
+> Again, this is slightly ambiguous because the name suggests that it
+> merely tests a mode for validity, not that it is really supported by the
+> given device. Perhaps something like pwm_supports_mode()?
+
+Ok, understand. I'll use pwm_supports_mode() instead.
+
+>=20
+>> +const char *pwm_mode_desc(struct pwm_device *pwm, unsigned long mode)
+>> +{
+>> +	static const char * const modes[] =3D {
+>> +		"invalid",
+>> +		"normal",
+>> +		"complementary",
+>> +	};
+>> +
+>> +	if (!pwm_mode_valid(pwm, mode))
+>> +		return modes[0];
+>> +
+>> +	return modes[ffs(mode)];
+>> +}
+>=20
+> Do we really need to be able to get the name of the mode in the context
+> of a given PWM channel? Couldn't we drop the pwm parameter and simply
+> return the name (pwm_get_mode_name()?) and at the same time remove the
+> extra "invalid" mode in there? I'm not sure what the use-case here is,
+> but it seems to me like the code should always check for supported modes
+> first before reporting their names in any way.
+
+Looking back at this code, the main use case for checking PWM mode validity
+in pwm_mode_desc() was only with regards to mode_store(). But there is not
+need for this checking since the same thing will be checked in
+pwm_apply_state() and, in case user provides an invalid mode via sysfs the
+pwm_apply_state() will fail.
+
+To conclude, I will change this function in something like:
+
+if (mode =3D=3D PWM_MODE_NORMAL)
+	return "normal";
+else if (mode =3D=3D PWM_MODE_COMPLEMENTARY)
+	return "complementary";
+else if (mode =3D=3D PWM_MODE_PUSH_PULL)
+	return "push-pull";
+else
+	return "invalid";
+
+Please let me know if it is OK for you.
+
+>=20
+>> +/**
+>>   * pwmchip_add_with_polarity() - register a new PWM chip
+>>   * @chip: the PWM chip to add
+>>   * @polarity: initial polarity of PWM channels
+>> @@ -275,6 +382,8 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+>> =20
+>>  	mutex_lock(&pwm_lock);
+>> =20
+>> +	chip->get_default_caps =3D pwmchip_get_default_caps;
+>> +
+>>  	ret =3D alloc_pwms(chip->base, chip->npwm);
+>>  	if (ret < 0)
+>>  		goto out;
+>> @@ -294,6 +403,7 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+>>  		pwm->pwm =3D chip->base + i;
+>>  		pwm->hwpwm =3D i;
+>>  		pwm->state.polarity =3D polarity;
+>> +		pwm->state.mode =3D pwm_mode_get_valid(chip, pwm);
+>> =20
+>>  		if (chip->ops->get_state)
+>>  			chip->ops->get_state(chip, pwm, &pwm->state);
+>> @@ -469,7 +579,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct p=
+wm_state *state)
+>>  	int err;
+>> =20
+>>  	if (!pwm || !state || !state->period ||
+>> -	    state->duty_cycle > state->period)
+>> +	    state->duty_cycle > state->period ||
+>> +	    !pwm_mode_valid(pwm, state->mode))
+>>  		return -EINVAL;
+>> =20
+>>  	if (!memcmp(state, &pwm->state, sizeof(*state)))
+>> @@ -530,6 +641,9 @@ int pwm_apply_state(struct pwm_device *pwm, struct p=
+wm_state *state)
+>> =20
+>>  			pwm->state.enabled =3D state->enabled;
+>>  		}
+>> +
+>> +		/* No mode support for non-atomic PWM. */
+>> +		pwm->state.mode =3D state->mode;
+>=20
+> That comment seems misplaced. This is actually part of atomic PWM, so
+> maybe just reverse the logic and say "mode support only for atomic PWM"
+> or something. I would personally just leave it away.
+
+Ok, sure. I will remove the comment. But the code has to be there to avoid
+unassigned mode value for PWM state (normal mode means BIT(0)) and so to
+avoid future PWM applies failure.
+
+The legacy API has
+> no way of setting the mode, which is indication enough that we don't
+> support it.
+>=20
+>> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+>> index 56518adc31dd..a4ce4ad7edf0 100644
+>> --- a/include/linux/pwm.h
+>> +++ b/include/linux/pwm.h
+>> @@ -26,9 +26,32 @@ enum pwm_polarity {
+>>  };
+>> =20
+>>  /**
+>> + * PWM modes capabilities
+>> + * @PWMC_MODE_NORMAL_BIT: PWM has one output
+>> + * @PWMC_MODE_COMPLEMENTARY_BIT: PWM has 2 outputs with opposite polari=
+ties
+>> + * @PWMC_MODE_CNT: PWM modes count
+>> + */
+>> +enum {
+>> +	PWMC_MODE_NORMAL_BIT,
+>> +	PWMC_MODE_COMPLEMENTARY_BIT,
+>> +	PWMC_MODE_CNT,
+>> +};
+>> +
+>> +#define PWMC_MODE(name)		BIT(PWMC_MODE_##name##_BIT)
+>=20
+> Why the C in the prefix? Why not just PWM_MODE_* for all of the above?
+
+Well... PWM_MODE() macro was already took by pwm-sun4i.c driver at the time
+I wrote this patch... So I choose to add extra C to this macro, "C" meaning
+"constant" in my mind. I was not sure it was the best solution at that time
+either.
+
+>=20
+>> +
+>> +/**
+>> + * struct pwm_caps - PWM capabilities
+>> + * @modes: PWM modes
+>=20
+> This should probably say that it's a bitmask of PWM_MODE_*.
+
+Ok, I'll update.
+
+>=20
+>> +struct pwm_caps {
+>> +	unsigned long modes;
+>> +};
+>> +
+>> +/**
+>>   * struct pwm_args - board-dependent PWM arguments
+>>   * @period: reference period
+>>   * @polarity: reference polarity
+>> + * @mode: reference mode
+>=20
+> As discussed in my reply to the cover letter, what is the use for the
+> reference mode? Drivers want to use either normal or some other mode.
+> What good is it to get this from board-dependent arguments if the
+> driver already knows which one it wants or needs?
+
+For the moment, no, there is no in-kernel user. Only sysfs. I was thinking
+I would also adapt, e.g., the pwm-regulator driver to also make use of this
+features in setups like the one described in [1], page 2126
+(Figure 56-13: Half-Bridge Converter Application: No Feedback Regulation).
+But, for the moment there is no in-kernel user.
 
 [1] http://ww1.microchip.com/downloads/en/DeviceDoc/DS60001476B.pdf
 
 >=20
-> I'm hesitant to move forward with this as-is without seeing how it will
-> be used.
-
-For the moment only sysfs is supposed to use this.
-
-The PWM specifier flags are somewhat abused by adding modes to
-> them.=20
-
-I see.
-
-I think this hasn't been completely thought through, because the
-> only reason to specify a mode is to actually set that mode.
-
-Maybe it wasn't clear understand, with the current implementation if no
-mode will be specified the default mode will be used. There is no impose to
-specify a mode.
-
- But then the
-> DT ABI allows a bitmask of modes to be requested via DT. I know that
-> only the first of those modes will end up being used, but then why even
-> allow it in the first place?
-
-I had in mind that I will change the PWM regulator driver to work in
-scenarios like the one specified in the link above.
-
+>> @@ -300,6 +331,7 @@ struct pwm_chip {
+>> =20
+>>  	struct pwm_device * (*of_xlate)(struct pwm_chip *pc,
+>>  					const struct of_phandle_args *args);
+>> +	void (*get_default_caps)(struct pwm_caps *caps);
 >=20
-> And again, even if we allow the mode to be specified in DT, how do the
-> consumer drivers know that the correct mode was being set in DT.=20
+> As mentioned above, I don't think we need this.
 
-PWM user will call at some point devm_pwm_get() which, in turn, will call
-of_pwm_get() which in turn will initialize PWM args with inputs from DT.
-After that PWM user will, at some point, apply a PWM state; if it is
-initialized with PWM args initialized when devm_pwm_get() was called then
-pwm_apply_state() would fail if no good mode is provided as input via DT.
-
-Same thing happens if a bad period is provided via DT.
-
-Let's
-> say we have a consumer that requires the PWM to be driven in
-> complementary mode. Should it rely on the DT to contain the correct
-> specification for the mode? And if it knows that it needs complementary
-> mode, why not just set that mode itself?
-
-I'm thinking it's the same way as is with PWM period which could also be
-provided from DT. In the end a bad period value could be provided from
-device tree. E.g. Atmel PWM controller could generate PWM signals who's
-periods could not be higher than ~0.6 seconds. If a bad value is provided
-the pwm_apply_state() will fail.
-
-Thank you,
-Claudiu Beznea
-
-That way there's no margin for
-> error.
-
+Ok, I'll update.
 
 >=20
 > Thierry
+>=20
+>=20
+>=20
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 >=20
