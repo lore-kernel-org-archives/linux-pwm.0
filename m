@@ -1,7 +1,9 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Thu, 18 Oct 2018 17:06:50 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20181018150650.GB6226@ulmo>
+Date: Thu, 18 Oct 2018 10:44:05 +0200
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] pwm: document the pin state after pwm_disable() to
+ be undefined
+Message-ID: <20181018084405.so5zabawknwkwacs@pengutronix.de>
 References: <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
  <20180820144357.7206-1-u.kleine-koenig@pengutronix.de>
  <20180820144357.7206-2-u.kleine-koenig@pengutronix.de>
@@ -9,12 +11,10 @@ References: <20180820095221.fydcvtz7ppcymrta@pengutronix.de>
  <20181009090401.3mlceegalzo53bd7@pengutronix.de>
  <20181016094417.64114816@bbrezillon>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature"; boundary="zx4FCpZtqtKETZ7O"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 In-Reply-To: <20181016094417.64114816@bbrezillon>
-Subject: Re: [PATCH 1/2] pwm: document the pin state after pwm_disable() to
- be undefined
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -24,29 +24,23 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Boris Brezillon <boris.brezillon@bootlin.com>
-Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, kernel@pengutronix.de, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Boris Brezillon <boris.brezillon@bootlin.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-
---zx4FCpZtqtKETZ7O
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hello Boris,
 
 On Tue, Oct 16, 2018 at 09:44:17AM +0200, Boris Brezillon wrote:
-> Hi Thierry,
->=20
 > On Tue, 9 Oct 2018 11:04:01 +0200
-> Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
+> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
 >=20
 > > Hello Thierry,
 > >=20
 > > thanks for taking time to reply in this thread.
 > >=20
 > > On Tue, Oct 09, 2018 at 09:34:07AM +0200, Thierry Reding wrote:
-> > > On Mon, Aug 20, 2018 at 04:43:56PM +0200, Uwe Kleine-K=C3=B6nig wrote=
-: =20
+> > > On Mon, Aug 20, 2018 at 04:43:56PM +0200, Uwe Kleine-K=F6nig wrote:  =
+
 > > > > Contrarily to the common assumption that pwm_disable() stops the
 > > > > output at the state where it just happens to be, this isn't what the
 > > > > hardware does on some machines. For example on i.MX6 the pin goes to
@@ -68,8 +62,7 @@ that
 > > > > pwm_disable() because the caller might or might not rely on the pin
 > > > > stopping at a certain level.
 > > > >=20
-> > > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.d=
-e>
+> > > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 > > > > ---
 > > > >  Documentation/pwm.txt | 8 ++++++--
 > > > >  1 file changed, 6 insertions(+), 2 deletions(-) =20
@@ -117,76 +110,92 @@ oks
 > > desired state and only one function to call.)
 >=20
 > I kinda agree with Uwe on this point. The "disable PWM on duty=3D0% or
-> duty=3D100%" logic should, IMHO, be a HW-specific optimization. And if you
-> look at existing drivers, it shouldn't be that hard to patch those that
-> support this optimization since they most of the time have a separate
-> disable function which could be called from the their config function
-> if needed.
+> duty=3D100%" logic should, IMHO, be a HW-specific optimization.
 
-There's nothing in the API that prevents you from doing so and I never
-said that this couldn't be done in pwm_config(). If you know it's safe
-to disable the PWM if the duty cycle goes to zero, then by all means
-do it.
+Note that according to Thierry the behaviour of
 
-That doesn't mean we necessarily have to go and change the API. There
-may be drivers that prefer to do it in pwm_disable() and I don't see a
-reason why we shouldn't be able to have both.
+	pwm_config(pwm, 100, 100);
+	pwm_disable(pwm);
 
-Quite frankly I think this whole discussion is moot. We already have a
-different API (atomic) that was created specifically to solve these
-kinds of issues. So if there's any driver issues with the legacy API,
-then those drivers should be moved to the new API. All the public-facing
-APIs already use those if available anyway. I don't see the point in
-rev'ing an API that's deprecated anyway.
+(and similarily of
 
-Also, the whole discussion here started because Uwe reported that the
-i.MX driver wasn't expecting according to the assumptions from PWM
-consumers (i.e. the PWM pin goes low for inverted PWM). So really no
-amount of API changes is going to magically fix that problem.
+	pwm_apply_state({.period =3D 100, .duty_cycle =3D 100, .enabled =3D false}=
+);
 
-> On the other hand, if we do it the other way around, and expect
-> pwm_disable() to keep the pin in the state it was after setting a duty
-> of 0, it becomes more complicated (impossible?) for PWM blocks that do
-> not support specifying a default pin state when the PWM is disabled.
+) should (assuming an uninverted pwm) result in the output stopping at 0
+(i.e. it's inactive level which is the same as after pwm_config(pwm, 0, 100=
+)).
 
-I think that'd be an unrealistic expectation. If you look at your
-typical hardware design, engineers will have put it together in a way
-that with the (hardware) defaults, your device will behave normally.
-Those hardware defaults, or at least something as close to it as
-possible, are what you should be programming your hardware blocks with
-before you relinquish control in the driver. For pretty much all the
-hardware devices that I'm familiar with, the "off" or "no power" state
-is that hardware default.
+So there isn't anything special about "disable PWM on duty=3D0% or
+duty=3D100%". "disable PWM" in Thierry's eyes is always "stop at inactive
+level" independant of the previously configured duty cycle.
 
-In other words, when you boot a device the fans, backlights and LEDs
-will be off by default. Therefore I think pwm_disable() should put the
-PWM back into that state. That's evidently not what is happening for
-i.MX currently, otherwise Uwe wouldn't be seeing that problem.
+You talking about the specific cases 0% and 100% makes me believe that
+you are an example (BTW, I'm another) that makes Thierry's claim
 
-Furthermore, there is another patch currently under review that does
-attempt to fix this in a proper way. So I just don't understand why we
-keep going around in circles here.
+	The current assumption by all users is more that [after
+	pwm_disable()] the pin would stop at the no power state, which
+	would be 0 for normal PWM and 1 for inverted.
 
-Thierry
+wrong. (See mail with Message-ID: 20181012095349.GA9162@ulmo in this
+thread.)
+=20
+To get forward here: Thierry, can you please confirm that there is no
+semantical difference between "pwm_disable()" and "pwm_config(pwm, 0,
+period)". (Or alternatively come up with a use case where a difference
+really matters. I'm sure this is impossible though.)
 
---zx4FCpZtqtKETZ7O
-Content-Type: application/pgp-signature; name="signature.asc"
+Then I can start simplifying API users and adapt the pwm
+hardware drivers. When this is done there will be no user left of
+pwm_disable and struct pwm_state::enabled because nobody needs it with
+the current semantic. After that we can either rip the concept of
+pwm_disable or shift it's semantic to my initial suggestion of "no
+guarantees about the output level" and use that in the few drivers that
+really don't care about the output level[1] and so give the hardware the
+possibility to disable the clock even if that results in something
+different than "inactive".
 
------BEGIN PGP SIGNATURE-----
+As a first step I'd suggest to explicitly state the expectations on
+hardware driver implementations and pwm-API users to get all affected
+parties in line. These are in my eyes:
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvIoYgACgkQ3SOs138+
-s6HBPRAAuCmuj+EGUoIOXsJ2SmZovnp2XRvMFNOeZz/d3cA5lO4C5sd+KOr9BaBs
-E26i74WKISL4H8IAzLawP9jBk98BG+BFWjzDhx2J9QY1TMyMSvekDbqLxOaGpUUu
-LHv1cft6SVS01nZzjNFZTiQpi7ZbDGVK4Iq+bTEqhA+mWlk9lq2NKiLMFjxHBa8h
-dwkTadLkKWg9HFMg4dHsj/wKjVo5fqIXifrhBUezS1+1NWPAxLS9LgOjlPHcH9uJ
-1T9pqt9BGUjB5mcpJWH1orL3UOKjQNKnFkvOqS0m73idKD8CTQDYc8CxAWD4drv4
-Do92omMljwt1NfK0mRp3MKKSP3LecBW8IwvUUX85eHJwEsLNcNJGdal6EBYJfRqX
-7tnYUL0f8uMLsue4yJa65aRz1s5RhHGPDsKZ0hQHEBVkamn/X3389oAtDBPcM6ya
-IjH9XU1aNhbTXUtEN3DP06avBaeDx6gSbxb1u6vszs2ugOhzLCRWEiIFPbDO7yAv
-4Zu14XSwnes6R+sQfYhj+pBRlLTbjIimpQpc15KTY3962b+EH6+n4Ga8TcLRPkZT
-jEw+k5VDOmO4C17osTw4m2t/YZ2QNAqrQHRSvk98sdkWNcVIXWT+Qij+fDqupvD9
-tm+vdq3iv0A9DMpPICxGAUwgMMYN3K/C89ZVqeiyHjb89ttQ23Q=
-=c1nL
------END PGP SIGNATURE-----
+ - configuring the duty cycle should (if possible) not result in
+   glitches, so the currently running period should be completed and
+   after that a new period with the new configuration should start.
+   (Is this reasonable to expect this from all implementations? If not
+   we should maybe introduce a way to let the users know?)
 
---zx4FCpZtqtKETZ7O--
+ - The function to configure the duty cycle should only return when the
+   period with the new configuration actually started.
+
+If the concept of pwm_disable() stays, we should document the expected
+behaviour of the pin. Something like:
+
+ - After disabling the pwm you must not make any assumptions about the
+   pin level. It might be low, or inactive, or even high-z. So don't
+   disable the pwm if you for example care about a display backlight to
+   stay off.
+
+If desired we might even keep the behaviour for the sysfs implementation
+that disable there for historic reasons keeps the semantic of
+duty-cycle=3D0.
+
+Further things that could be done (eventually after discussing they are
+really sensible) are:
+
+ - for pwms that can be programmed now for the next period implement the
+   necessary sleep in the PWM-Framework (mxs, atmel, sun4i at least);
+ - abstract inversed pwms in the framework instead of each hw driver;
+ - let hw drivers correct *state on apply
+   (if the user requests period=3D1ms and the driver can only provide
+   multiples of 0.6667 ms because the input clock is fixed at 1500 Hz)
+
+Best regards
+Uwe
+
+[1] the only example I know is the pwm-backlight driver that could
+    disable the pwm without the inactive level guarantee when the
+    enable-gpio is inactive.
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
