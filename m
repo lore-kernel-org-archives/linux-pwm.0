@@ -1,285 +1,230 @@
-From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Subject: Re: [RESEND PATCH v5 1/9] pwm: extend PWM framework with PWM modes
-Date: Fri, 19 Oct 2018 14:18:22 +0300
-Message-ID: <1e98ea6f-1ff8-9822-fa77-ffbedb8e2443@microchip.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RESEND PATCH v5 0/9] extend PWM framework to support PWM modes
+Date: Mon, 22 Oct 2018 10:29:10 +0200
+Message-ID: <20181022082910.uw6i64h3w7jwxyx5@pengutronix.de>
 References: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
- <1535461286-12308-2-git-send-email-claudiu.beznea@microchip.com>
- <20181016122508.GH8852@ulmo>
- <139cc421-ac12-1262-bc32-763731528ccf@microchip.com>
- <20181018153250.GC6226@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181018153250.GC6226@ulmo>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1535461286-12308-1-git-send-email-claudiu.beznea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org
+To: Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: thierry.reding@gmail.com, shc_work@mail.ru, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+Hello Claudiu,
 
-
-On 18.10.2018 18:32, Thierry Reding wrote:
-> On Wed, Oct 17, 2018 at 12:42:00PM +0000, Claudiu.Beznea@microchip.com wrote:
->> On 16.10.2018 15:25, Thierry Reding wrote:
->>> On Tue, Aug 28, 2018 at 04:01:18PM +0300, Claudiu Beznea wrote:
-> [...]
->>>> +const char *pwm_mode_desc(struct pwm_device *pwm, unsigned long mode)
->>>> +{
->>>> +	static const char * const modes[] = {
->>>> +		"invalid",
->>>> +		"normal",
->>>> +		"complementary",
->>>> +	};
->>>> +
->>>> +	if (!pwm_mode_valid(pwm, mode))
->>>> +		return modes[0];
->>>> +
->>>> +	return modes[ffs(mode)];
->>>> +}
->>>
->>> Do we really need to be able to get the name of the mode in the context
->>> of a given PWM channel? Couldn't we drop the pwm parameter and simply
->>> return the name (pwm_get_mode_name()?) and at the same time remove the
->>> extra "invalid" mode in there? I'm not sure what the use-case here is,
->>> but it seems to me like the code should always check for supported modes
->>> first before reporting their names in any way.
->>
->> Looking back at this code, the main use case for checking PWM mode validity
->> in pwm_mode_desc() was only with regards to mode_store(). But there is not
->> need for this checking since the same thing will be checked in
->> pwm_apply_state() and, in case user provides an invalid mode via sysfs the
->> pwm_apply_state() will fail.
->>
->> To conclude, I will change this function in something like:
->>
->> if (mode == PWM_MODE_NORMAL)
->> 	return "normal";
->> else if (mode == PWM_MODE_COMPLEMENTARY)
->> 	return "complementary";
->> else if (mode == PWM_MODE_PUSH_PULL)
->> 	return "push-pull";
->> else
->> 	return "invalid";
->>
->> Please let me know if it is OK for you.
+On Tue, Aug 28, 2018 at 04:01:17PM +0300, Claudiu Beznea wrote:
+> Please give feedback on these patches which extends the PWM framework in
+> order to support multiple PWM modes of operations. This series is a rework
+> of [1] and [2].
 > 
-> Do we even have to check here for validity of the mode in the first
-> place? Shouldn't this already happen at a higher level? I mean we do
-> need to check for valid input in mode_store(), but whatever mode we
-> pass into this could already have been validated, so that this would
-> never return "invalid".
-
-Ok, now I see your point. I agree, there is no need here for "invalid" here
-neither since in mode_store there is a look through all the defined modes
-and, anyway, if nothing valid matches with what user provides, yes, the:
-
-+	if (modebit == PWMC_MODE_CNT)
-+		return -EINVAL;
-
-will return anyway.
-
-And every place this pwm_mode_desc() is used, the mode has been already
-checked and it is valid.
-
+> The current patch series add the following PWM modes:
+> - PWM mode normal
+> - PWM mode complementary
+> - PWM mode push-pull
 > 
-> For example, you already define an enum for the PWM modes. I think it'd
-> be best if we then used that enum to pass the modes around. That way it
-> becomes easy to check for validity.
-
-Ok.
-
-> 
-> So taking one step back, I think we can remove some of the ambiguities
-> by making sure we only ever specify one mode. When the mode is
-> explicitly being set, we only ever want one, right?
-
-Right!
-
-> The only point in
-> time where we can store more than one is for the capabilities. So I
-> think being more explicit about that would be useful.
-
-Ok.
-
-> That way we remove
-> any uncertainties about what the unsigned long might contain at any
-> point in time.
-> 
->>>> +/**
->>>>   * pwmchip_add_with_polarity() - register a new PWM chip
->>>>   * @chip: the PWM chip to add
->>>>   * @polarity: initial polarity of PWM channels
->>>> @@ -275,6 +382,8 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
->>>>  
->>>>  	mutex_lock(&pwm_lock);
->>>>  
->>>> +	chip->get_default_caps = pwmchip_get_default_caps;
->>>> +
->>>>  	ret = alloc_pwms(chip->base, chip->npwm);
->>>>  	if (ret < 0)
->>>>  		goto out;
->>>> @@ -294,6 +403,7 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
->>>>  		pwm->pwm = chip->base + i;
->>>>  		pwm->hwpwm = i;
->>>>  		pwm->state.polarity = polarity;
->>>> +		pwm->state.mode = pwm_mode_get_valid(chip, pwm);
->>>>  
->>>>  		if (chip->ops->get_state)
->>>>  			chip->ops->get_state(chip, pwm, &pwm->state);
->>>> @@ -469,7 +579,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
->>>>  	int err;
->>>>  
->>>>  	if (!pwm || !state || !state->period ||
->>>> -	    state->duty_cycle > state->period)
->>>> +	    state->duty_cycle > state->period ||
->>>> +	    !pwm_mode_valid(pwm, state->mode))
->>>>  		return -EINVAL;
->>>>  
->>>>  	if (!memcmp(state, &pwm->state, sizeof(*state)))
->>>> @@ -530,6 +641,9 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
->>>>  
->>>>  			pwm->state.enabled = state->enabled;
->>>>  		}
->>>> +
->>>> +		/* No mode support for non-atomic PWM. */
->>>> +		pwm->state.mode = state->mode;
->>>
->>> That comment seems misplaced. This is actually part of atomic PWM, so
->>> maybe just reverse the logic and say "mode support only for atomic PWM"
->>> or something. I would personally just leave it away.
->>
->> Ok, sure. I will remove the comment. But the code has to be there to avoid
->> unassigned mode value for PWM state (normal mode means BIT(0)) and so to
->> avoid future PWM applies failure.
-> 
-> Oh yeah, definitely keep the code around. I was only commenting on
-> the... comment. =)
-> 
->> The legacy API has
->>> no way of setting the mode, which is indication enough that we don't
->>> support it.
->>>
->>>> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
->>>> index 56518adc31dd..a4ce4ad7edf0 100644
->>>> --- a/include/linux/pwm.h
->>>> +++ b/include/linux/pwm.h
->>>> @@ -26,9 +26,32 @@ enum pwm_polarity {
->>>>  };
->>>>  
->>>>  /**
->>>> + * PWM modes capabilities
->>>> + * @PWMC_MODE_NORMAL_BIT: PWM has one output
->>>> + * @PWMC_MODE_COMPLEMENTARY_BIT: PWM has 2 outputs with opposite polarities
->>>> + * @PWMC_MODE_CNT: PWM modes count
->>>> + */
->>>> +enum {
->>>> +	PWMC_MODE_NORMAL_BIT,
->>>> +	PWMC_MODE_COMPLEMENTARY_BIT,
->>>> +	PWMC_MODE_CNT,
->>>> +};
->>>> +
->>>> +#define PWMC_MODE(name)		BIT(PWMC_MODE_##name##_BIT)
->>>
->>> Why the C in the prefix? Why not just PWM_MODE_* for all of the above?
->>
->> Well... PWM_MODE() macro was already took by pwm-sun4i.c driver at the time
->> I wrote this patch... So I choose to add extra C to this macro, "C" meaning
->> "constant" in my mind. I was not sure it was the best solution at that time
->> either.
-> 
-> We can always rename definitions in drivers if we want to use
-> conflicting names in the core. In this particular case, and given what I
-> said above regarding the PWM mode definitions, I think it'd be better to
-> drop the _BIT suffix from the enum values, so that we get something like
+> Normal mode - for PWM channels with one output; output waveforms looks like
 > this:
+>              __    __    __    __
+>     PWM   __|  |__|  |__|  |__|  |__
+>             <--T-->
 > 
-> 	enum pwm_mode {
-> 		PWM_MODE_NORMAL,
-> 		PWM_MODE_COMPLEMENTARY,
-> 		PWM_MODE_COUNT
-> 	};
+>     Where T is the signal period
+
+In my discussion about some suggested changes to the PWM framework I
+used slightly different way to show the wave-forms in ASCII which are
+IMHO slightly better. Also I think it is valuable to not use a 50% duty
+cycle in the examples to remove some ambiguity.
+
+With a duty cycle of 1/3 the normal mode looks as follows in "my" way:
+
+          __       __       __
+ PWM   __/  \_____/  \_____/  \_____/
+         ^        ^        ^        ^
+
+The carets mark always the start of a period. And note the rising and
+falling edges are already part of the active and inactive phases
+respectively which matches reality.
+ 
+> Since PWMs with more than one output per channel could be used as one
+> output PWM the normal mode is the default mode for all PWMs (if not
+> specified otherwise).
 > 
-> Then in order to create the actual bitmasks we can use a macro that is
-> explicit about creating bitmasks:
+> Complementary mode - for PWM channels with two outputs; output waveforms
+> for a PWM channel in complementary mode looks line this:
+>              __    __    __    __
+>     PWMH1 __|  |__|  |__|  |__|  |__
+>           __    __    __    __    __
+>     PWML1   |__|  |__|  |__|  |__|
+>             <--T-->
 > 
-> 	#define PWM_MODE_MASK(name) BIT(PWM_MODE_##name##)
+>     Where T is the signal period.
+
+So this translates to (I think):
+
+           __       __       __       __       __
+ PWMH   __/  \_____/  \_____/  \_____/  \_____/  \_____/
+        __    _____    _____    _____    _____    _____
+ PWML     \__/     \__/     \__/     \__/     \__/     \
+          ^        ^        ^        ^        ^        ^
+
+That is PWML always pulls in the opposite direction of PWMH. Maybe we
+could come up with better terms than PWMH and PWML (which might be
+specific for the Atmel implementation?). Maybe "normal" and
+"complement"?
+
+> Push-pull mode - for PWM channels with two outputs; output waveforms for a
+> PWM channel in push-pull mode with normal polarity looks like this:
+>             __          __
+>     PWMH __|  |________|  |________
+>                   __          __
+>     PWML ________|  |________|  |__
+>            <--T-->
+
+That again with the alternative display method and duty cycle 1/3:
+
+           __                __                __
+ PWMA   __/  \______________/  \______________/  \______
+                    __                __
+ PWMB   ___________/  \______________/  \______________/
+          ^        ^        ^        ^        ^        ^
+
+That is PWMA and PWMB are active only every 2nd period taking alternate
+turns, right?
+
+
+>     If polarity is inversed:
+>          __    ________    ________
+>     PWMH   |__|        |__|
+>          ________    ________    __
+>     PWML         |__|        |__|
+>            <--T-->
+
+That's again with duty cycle 1/3:
+
+        __    ______________    ______________    ______
+ PWMA     \__/              \__/              \__/
+        ___________    ______________    ______________
+ PWMB              \__/              \__/              \
+          ^        ^        ^        ^        ^        ^
+
+Given that the start of period isn't externally visible this is
+equivalent to using a duty cycle 2/3 and not inverting which results in:
+
+        __    ______________    ______________    ______
+ PWMA     \__/              \__/              \__/
+        ___________    ______________    ______________
+ PWMB              \__/              \__/              \
+             ^        ^        ^        ^        ^
+
+I would really like if a more detailed description of the modes would be
+created as part of this series. Currently there are a few implied
+properties hidden in the PWM API (unrelated to this series) which I try
+to resolve together with Thierry. Getting this documented right from the
+start would be great here.
+
+I didn't look in detail into the driver implementation, but from the
+PWMs implemented in the STM32F4 family I would have chosen a different
+model which makes me wonder if we should stick to a more general way to
+describe two outputs from a single PWM channel.
+
+I would use four values with nanosecond resolution to describe these:
+
+  .period
+  .duty_cycle
+  .alt_duty_cycle
+  .alt_offset
+
+period and duty_cycle is as before for the primary output and then the
+alt_* values describe offset and duty cycle of the secondary output.
+
+What you called "normal mode" would then be specified using
+
+  .period = $period
+  .duty_cycle = $duty_cycle
+  .alt_duty_cycle = 0
+  .alt_offset = dontcare
+
+Your "push pull mode" would be:
+
+  .period = 2 * $period
+  .duty_cycle = $duty_cycle
+  .alt_duty_cycle = $duty_cycle
+  .alt_offset = $period
+
+and complementary mode would be specified using:
+
+  .period = $period
+  .duty_cycle = $duty_cycle
+  .alt_duty_cycle = $period - $duty_cycle
+  .alt_offset = $duty_cycle
+
+With this abstraction stuff like "complementary output with dead-time
+insertion" (something like:
+
+           __                __                __
+ PWMA   __/  \______________/  \______________/  \______
+                __________        __________          __
+ PWMB   _______/          \______/          \______/
+          ^                 ^                 ^
+
+) could be modelled.
+
+> The PWM working modes are per PWM channel registered as PWM's capabilities.
+> The driver registers itself to PWM core a get_caps() function, in
+> struct pwm_ops, that will be used by PWM core to retrieve PWM capabilities.
+> If this function is not registered in driver's probe, a default function
+> will be used to retrieve PWM capabilities. Currently, the default
+> capabilities includes only PWM normal mode.
+
+In the i2c framework this is a function, too, and I wonder if simplicity
+is better served when this is just a flags member in the pwm_ops
+structure.
+
+> PWM state has been updated to keep PWM mode. PWM mode could be configured
+> via sysfs or via DT. pwm_apply_state() will do the preliminary validation
+> for PWM mode to be applied.
 > 
-> With that, the conflict with pwm-sun4i conveniently goes away.
-
-Ok, thanks!
-
+> In sysfs, user could get PWM modes by reading mode file of PWM device:
+> root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# ls -l
+> total 0
+> -r--r--r-- 1 root root 4096 Oct  9 09:07 capture
+> lrwxrwxrwx 1 root root    0 Oct  9 09:07 device -> ../../pwmchip0
+> -rw-r--r-- 1 root root 4096 Oct  9 08:42 duty_cycle
+> -rw-r--r-- 1 root root 4096 Oct  9 08:44 enable
+> --w------- 1 root root 4096 Oct  9 09:07 export
+> -rw-r--r-- 1 root root 4096 Oct  9 08:43 mode
+> -r--r--r-- 1 root root 4096 Oct  9 09:07 npwm
+> -rw-r--r-- 1 root root 4096 Oct  9 08:42 period
+> -rw-r--r-- 1 root root 4096 Oct  9 08:44 polarity
+> drwxr-xr-x 2 root root    0 Oct  9 09:07 power
+> lrwxrwxrwx 1 root root    0 Oct  9 09:07 subsystem -> ../../../../../../../../class/pwm
+> -rw-r--r-- 1 root root 4096 Oct  9 08:42 uevent
+> --w------- 1 root root 4096 Oct  9 09:07 unexport
+> root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+> normal complementary [push-pull]
 > 
->>>> +struct pwm_caps {
->>>> +	unsigned long modes;
->>>> +};
->>>> +
->>>> +/**
->>>>   * struct pwm_args - board-dependent PWM arguments
->>>>   * @period: reference period
->>>>   * @polarity: reference polarity
->>>> + * @mode: reference mode
->>>
->>> As discussed in my reply to the cover letter, what is the use for the
->>> reference mode? Drivers want to use either normal or some other mode.
->>> What good is it to get this from board-dependent arguments if the
->>> driver already knows which one it wants or needs?
->>
->> For the moment, no, there is no in-kernel user. Only sysfs. I was thinking
->> I would also adapt, e.g., the pwm-regulator driver to also make use of this
->> features in setups like the one described in [1], page 2126
->> (Figure 56-13: Half-Bridge Converter Application: No Feedback Regulation).
->> But, for the moment there is no in-kernel user.
->>
->> [1] http://ww1.microchip.com/downloads/en/DeviceDoc/DS60001476B.pdf
+> The mode enclosed in bracket is the currently active mode.
 > 
-> Okay, so that means we don't have any use-cases where we even need the
-> mode in DT? If so, I don't think we should add that code yet.
+> The mode could be set, via sysfs, by writing to mode file one of the modes
+> displayed at read:
+> root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# echo normal > mode
+> root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+> [normal] complementary push-pull 
 
-Agree!
+Getting a simple user of this into the kernel would be beneficial, too.
+In my discussion with Thierry I'm faced with arguments like: You're
+simplifying stuff which might destroy a use-case for sysfs users. This
+is hard to argue against because it involves some guesswork to
+reconstruct or contradict such arguments.
 
-> We'd be
-> adding an ABI that we don't know how it will be used or if it is even
-> sufficient. Granted, as long as nobody uses it we could probably just
-> silently drop it again, but why risk if it's just dead code anyway.
+Best regards
+Uwe
 
-I agree with you. My bad that I added without having a user. I've just had
-in mind that I will work with it around PWM regulator.
-
-> 
-> If I understand the half-bridge converter application correctly you
-> would want to model that with pwm-regulator and instead of using a
-> regular PWM (normal mode) you'd use a PWM_MODE_PUSH_PULL instead. 
-
-Yes, that was the idea.
-
-> Is
-> that really all there is to support this?
-
-Than and the the variation at page 2127, same datasheet [1] (figure
-Figure 56-14: Half-Bridge Converter Application: Feedback Regulation).
-Also, complementary could also be used in motor control applications.
-
-[1] http://ww1.microchip.com/downloads/en/DeviceDoc/DS60001476B.pdf
-
-> Does the voltage output of
-> the half-bridge converter vary linearly with the duty-cycle?
-
-That's my understanding.
-
-> I suppose
-> one could always combine the push-pull PWM with a voltage table to make
-> it work. I'm not opposed to the idea, just trying to figure out if the
-> pwm-regulator driver would be viable or whether there are other things
-> we need to make these setups work.
-
-Till now I didn't do any changes on PWM regulator to check how it the
-current behavior with push-pull mode.
-
-Thank you,
-Claudiu Beznea
-
-> 
-> Thierry
-> 
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
