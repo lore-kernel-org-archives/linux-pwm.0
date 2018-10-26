@@ -1,14 +1,12 @@
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 4/4] bus: ts-nbus: weaken driver dependency to allow broader
- compile testing
-Date: Fri, 26 Oct 2018 20:41:58 +0200
-Message-ID: <20181026184157.16371-4-u.kleine-koenig@pengutronix.de>
-References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 1/4] pwm: Add new helper to initialize a pwm_state variable
+ with defaults
+Date: Fri, 26 Oct 2018 20:41:55 +0200
+Message-ID: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,23 +16,32 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>, Krzysztof Kozlowski <krzk@kernel.org>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlcmUgaXMgbm90aGluZyBzcGVjaWZpYyBmb3IgdGhlIGkuTVgyOCBTb0MgaW4gdGhlIHRzLW5i
-dXMgZHJpdmVyIGFuZAppdCBjb21waWxlcyBqdXN0IGZpbmUgd2l0aCBhbiBBUk0vczNjMjR4eCBj
-b25maWd1cmF0aW9uLgoKU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5l
-LWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0tCiBkcml2ZXJzL2J1cy9LY29uZmlnIHwgMiArLQog
-MSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9idXMvS2NvbmZpZyBiL2RyaXZlcnMvYnVzL0tjb25maWcKaW5kZXggMTg1MTEx
-MmNjYzI5Li5iZjFmNDNiODQ3ZTkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvYnVzL0tjb25maWcKKysr
-IGIvZHJpdmVycy9idXMvS2NvbmZpZwpAQCAtMTQ5LDcgKzE0OSw3IEBAIGNvbmZpZyBUSV9TWVND
-CiAKIGNvbmZpZyBUU19OQlVTCiAJdHJpc3RhdGUgIlRlY2hub2xvZ2ljIFN5c3RlbXMgTkJVUyBE
-cml2ZXIiCi0JZGVwZW5kcyBvbiBTT0NfSU1YMjgKKwlkZXBlbmRzIG9uIFNPQ19JTVgyOCB8fCBD
-T01QSUxFX1RFU1QKIAlkZXBlbmRzIG9uIE9GX0dQSU8gJiYgUFdNCiAJaGVscAogCSAgRHJpdmVy
-IGZvciB0aGUgVGVjaG5vbG9naWMgU3lzdGVtcyBOQlVTIHdoaWNoIGlzIHVzZWQgdG8gaW50ZXJm
-YWNlCi0tIAoyLjE5LjEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxp
-c3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0
-aW5mby9saW51eC1hcm0ta2VybmVsCg==
+VGhpcyBoZWxwcyB0byBjb252ZXJ0IGRyaXZlcnMgZnJvbSB0aGUgbGVnYWN5IEFQSSB0byBwd21f
+YXBwbHlfc3RhdGUgd2l0aG91dApoYXZpbmcgdG8gbWFrZSB0aGUgYXdhcmUgb2YgdGhlIGNvbmZp
+Z3VyZWQgcG9sYXJpdHkgKGFuZCBpbiBzb21lIGNhc2VzIGV2ZW4KcGVyaW9kKS4KClNpZ25lZC1v
+ZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+
+Ci0tLQogaW5jbHVkZS9saW51eC9wd20uaCB8IDEzICsrKysrKysrKystLS0KIDEgZmlsZSBjaGFu
+Z2VkLCAxMCBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2luY2x1
+ZGUvbGludXgvcHdtLmggYi9pbmNsdWRlL2xpbnV4L3B3bS5oCmluZGV4IGQ1MTk5YjUwN2Q3OS4u
+MDE3ZDFlMTNlMjlkIDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L3B3bS5oCisrKyBiL2luY2x1
+ZGUvbGludXgvcHdtLmgKQEAgLTUyMiw2ICs1MjIsMTUgQEAgc3RhdGljIGlubGluZSB2b2lkIGRl
+dm1fcHdtX3B1dChzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBwd21fZGV2aWNlICpwd20pCiB9
+CiAjZW5kaWYKIAorc3RhdGljIGlubGluZSB2b2lkIHB3bV9nZXRfc3RhdGVfZGVmYXVsdChjb25z
+dCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLAorCQkJCQkgc3RydWN0IHB3bV9zdGF0ZSAqc3RhdGUp
+Cit7CisJc3RhdGUtPnBlcmlvZCA9IHB3bS0+YXJncy5wZXJpb2Q7CisJc3RhdGUtPmR1dHlfY3lj
+bGUgPSAwOworCXN0YXRlLT5wb2xhcml0eSA9IHB3bS0+YXJncy5wb2xhcml0eTsKKwlzdGF0ZS0+
+ZW5hYmxlZCA9IGZhbHNlOworfQorCiBzdGF0aWMgaW5saW5lIHZvaWQgcHdtX2FwcGx5X2FyZ3Mo
+c3RydWN0IHB3bV9kZXZpY2UgKnB3bSkKIHsKIAlzdHJ1Y3QgcHdtX3N0YXRlIHN0YXRlID0geyB9
+OwpAQCAtNTQ3LDkgKzU1Niw3IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBwd21fYXBwbHlfYXJncyhz
+dHJ1Y3QgcHdtX2RldmljZSAqcHdtKQogCSAqIHB3bV9hcHBseV9hcmdzKCkuCiAJICovCiAKLQlz
+dGF0ZS5lbmFibGVkID0gZmFsc2U7Ci0Jc3RhdGUucG9sYXJpdHkgPSBwd20tPmFyZ3MucG9sYXJp
+dHk7Ci0Jc3RhdGUucGVyaW9kID0gcHdtLT5hcmdzLnBlcmlvZDsKKwlwd21fZ2V0X3N0YXRlX2Rl
+ZmF1bHQocHdtLCAmc3RhdGUpOwogCiAJcHdtX2FwcGx5X3N0YXRlKHB3bSwgJnN0YXRlKTsKIH0K
+LS0gCjIuMTkuMQoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
+aW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2xpbnV4LWFybS1rZXJuZWwK
