@@ -1,56 +1,105 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: =?utf-8?B?UmU6IFtSQ0bCoFBBVENILHYyLDIvMl0gcHdtOiBpbXg6IENvbmZpZ3VyZSBv?=
- =?utf-8?Q?utput_to_GPIO_in_disabled_state?=
-Date: Mon, 29 Oct 2018 15:55:12 +0000
-Message-ID: <05f8c6b8-1952-6869-f659-535f04e99b2a@ysoft.com>
-References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
- <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
- <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
- <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
- <20181014202457.dohwgz3frgcpdpy6@pengutronix.de>
- <20181015084505.GA12357@ulmo>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: [PATCH v2] backlight: pwm_bl: Fix brightness levels for non-DT case.
+Date: Tue, 30 Oct 2018 11:34:41 +0100
+Message-ID: <20181030103441.29145-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181015084505.GA12357@ulmo>
-Content-Language: en-US
-Content-ID: <1BB8DD6F3C77CE408C8901D63F1794D7@eurprd04.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, robert.jarzmik@free.fr, daniel.thompson@linaro.org, lee.jones@linaro.org
+Cc: kernel@collabora.com, heiko@sntech.de, stable@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMTUuMTAuMjAxOCAxMDo0NSwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6DQo+IE9uIFN1biwgT2N0
-IDE0LCAyMDE4IGF0IDEwOjI0OjU3UE0gKzAyMDAsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0K
-Pj4gSGVsbG8sDQo+Pg0KPj4gT24gRnJpLCBPY3QgMTIsIDIwMTggYXQgMDY6MDg6NTRQTSArMDIw
-MCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+Pj4+Pj4gKwlpZiAoUFRSX0VSUihpbXhfY2hp
-cC0+cHdtX2dwaW9kKSA9PSAtRVBST0JFX0RFRkVSKSB7DQo+Pj4+Pg0KPj4+Pj4gWW91IG11c3Qg
-bm90IHVzZSBQVFJfRVJSIG9uIGEgdmFsdWUgdGhhdCBtaWdodCBub3QgY29udGFpbiBhbiBlcnJv
-cg0KPj4+Pj4gcG9pbnRlci4NCj4+Pj4NCj4+Pj4gT0ssIHRoYW5rIHlvdSBmb3IgdmFsdWFibGUg
-aW5mby4NCj4+Pj4gU28gaXQgc2VlbXMgbGlrZSB0aGUgSTJDIGZvbGtzIGFyZSBpbiB0cm91Ymxl
-cyBhcyB3ZWxsOg0KPj4+Pg0KPj4+PiAJaHR0cHM6Ly9lbGl4aXIuYm9vdGxpbi5jb20vbGludXgv
-bGF0ZXN0L3NvdXJjZS9kcml2ZXJzL2kyYy9idXNzZXMvaTJjLWlteC5jI0w5OTYNCj4+Pg0KPj4+
-IGNvcnJlY3QuIEkgY2Fubm90IGZpbmQgdGhpcyBkb2N1bWVudGVkIHRob3VnaC4NCj4+DQo+PiBJ
-IGZvdW5kIGluIExERDNbMV0sIGNoYXB0ZXIgMTEgb24gcGFnZSAyOTU6DQo+Pg0KPj4gCUlmIHlv
-dSBuZWVkIHRoZSBhY3R1YWwgZXJyb3IgY29kZSwgaXQgY2FuIGJlIGV4dHJhY3RlZCB3aXRoOg0K
-Pj4NCj4+IAkJbG9uZyBQVFJfRVJSKGNvbnN0IHZvaWQgKnB0cik7DQo+Pg0KPj4gCVlvdSBzaG91
-bGQgdXNlIFBUUl9FUlIgb25seSBvbiBhIHZhbHVlIGZvciB3aGljaCBJU19FUlIgcmV0dXJucyBh
-IHRydWUNCj4+IAl2YWx1ZTsgYW55IG90aGVyIHZhbHVlIGlzIGEgdmFsaWQgcG9pbnRlci4NCj4+
-DQo+PiBUaGF0IGlzIHByb2JhYmx5IHdoZXJlIEkgaGF2ZSBteSBjbGFpbSBmcm9tLiBUaGVyZSBp
-cyBubyBmdXJ0aGVyDQo+PiBleHBsYW5hdGlvbiB0aG91Z2gsIHNvIEknbGwgcG9zdCBhIHBhdGNo
-IGFkZGluZyBhIGNvbW1lbnQgdG8gdGhlDQo+PiBkZWZpbml0aW9uIG9mIFBUUl9FUlIgdG8gZmlu
-ZCBvdXQgaWYgdGhlcmUgaXMgYSByZWxldmFudCByZWFzb24uDQoNClRoYW5rcyBmb3IgbWVudGlv
-bmluZyB0aGUgTEREMyBVd2UuIEkgYWxtb3N0IGZvcmdvdCBpdCBleGlzdC4NCkkgd2lsbCBkdXN0
-LW9mZiBteSBlbGVjdHJvbmljIGNvcHkgOykNCg0KPiBNaWNoYWwncyBjb2RlIGFib3ZlIGRvZXMg
-YW4gaW1wbGljaXQgSVNfRVJSKCkgYnkgY29tcGFyaW5nIHRvIGFuIGFjdHVhbA0KPiBlcnJvciBj
-b2RlLiBJdCdzIGNlcnRhaW5seSB0cnVlIHRoYXQgUFRSX0VSUigpIG9uIGFueSBwb2ludGVyIGFu
-ZCB0aGVuDQo+IHVzaW5nIHRoYXQgdmFsdWUgY2FuIGJlIHJpc2t5IGJlY2F1c2UgaXQgbWF5IG5v
-dCBhY3R1YWxseSBiZSBhbiBlcnJvci4NCj4gU28gaWYgeW91IGdvIGFuZCB1bmNvbmRpdGlvbmFs
-bHkgcHJpbnQgdGhhdCBlcnJvciBjb2RlIGV2ZW4gaWYgaXQgaXNuJ3QNCj4gYW4gZXJyb3IgYnV0
-IGEgdmFsaWQgcG9pbnRlciwgeW91J3ZlIGxlYWtlZCBhIGtlcm5lbCBhZGRyZXNzLg0KPiANCj4g
-SG93ZXZlciwgaXQncyBwZXJmZWN0bHkgc2FmZSB0byB1c2UgUFRSX0VSUihwdHIpID09IC1FUFJP
-QkVfREVGRVIgKG9yDQo+IGZvciBhbnkgb3RoZXIgZXJyb3IgY29kZSBmb3IgdGhhdCBtYXR0ZXIp
-Lg0KDQpPSywgSSB3aWxsIGxlYXZlIHRoYXQgYXMgaXMuIEFuZCB0aGFua3MgZm9yIGFsbCB0aGUg
-ZGV0YWlscy4NCkkgYWx3YXlzIGxlYXJuIHNvbWV0aGluZyBuZXcgZnJvbSB0aGUgY29tbWVudHMh
-DQoNCk1pY2hhbA0K
+Commit '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
+linearly to human eye")' allows the possibility to compute a default
+brightness table when there isn't the brightness-levels property in the
+DT. Unfortunately the changes made broke the pwm backlight for the
+non-DT boards.
+
+Usually, the non-DT boards don't pass the brightness levels via platform
+data, instead, it sets the max_brightness in their platform data and the
+driver calculates the level without a table. The ofending patch assumed
+hat when there is no brightness levels table we should create one, but this
+is clearly wrong for the non-DT case.
+
+After this patch the code handles the DT and the non-DT case taking in
+consideration also if max_brightness is set or not.
+
+Fixes: '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")'
+Cc: <stable@vger.kernel.org>
+Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+
+Changes in v2:
+- Rebase on top of mainline
+- Add Tested-by and Acked-by tags.
+
+ drivers/video/backlight/pwm_bl.c | 41 +++++++++++++++++++++++++++-----
+ 1 file changed, 35 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 678b27063198..f9ef0673a083 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -562,7 +562,30 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		goto err_alloc;
+ 	}
+ 
+-	if (!data->levels) {
++	if (data->levels) {
++		/*
++		 * For the DT case, only when brightness levels is defined
++		 * data->levels is filled. For the non-DT case, data->levels
++		 * can come from platform data, however is not usual.
++		 */
++		for (i = 0; i <= data->max_brightness; i++) {
++			if (data->levels[i] > pb->scale)
++				pb->scale = data->levels[i];
++
++			pb->levels = data->levels;
++		}
++	} else if (!data->max_brightness) {
++		/*
++		 * If no brightness levels are provided and max_brightness is
++		 * not set, use the default brightness table. For the DT case,
++		 * max_brightness is set to 0 when brightness levels is not
++		 * specified. For the non-DT case, max_brightness is usually
++		 * set to some value.
++		 */
++
++		/* Get the PWM period (in nanoseconds) */
++		pwm_get_state(pb->pwm, &state);
++
+ 		ret = pwm_backlight_brightness_default(&pdev->dev, data,
+ 						       state.period);
+ 		if (ret < 0) {
+@@ -570,13 +593,19 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 				"failed to setup default brightness table\n");
+ 			goto err_alloc;
+ 		}
+-	}
+ 
+-	for (i = 0; i <= data->max_brightness; i++) {
+-		if (data->levels[i] > pb->scale)
+-			pb->scale = data->levels[i];
++		for (i = 0; i <= data->max_brightness; i++) {
++			if (data->levels[i] > pb->scale)
++				pb->scale = data->levels[i];
+ 
+-		pb->levels = data->levels;
++			pb->levels = data->levels;
++		}
++	} else {
++		/*
++		 * That only happens for the non-DT case, where platform data
++		 * sets the max_brightness value.
++		 */
++		pb->scale = data->max_brightness;
+ 	}
+ 
+ 	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
+-- 
+2.19.1
