@@ -1,105 +1,42 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v2] backlight: pwm_bl: Fix brightness levels for non-DT case.
-Date: Tue, 30 Oct 2018 11:34:41 +0100
-Message-ID: <20181030103441.29145-1-enric.balletbo@collabora.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH v2 0/2] pwm-tiecap: Add support for AM654 SoCs
+Date: Wed, 31 Oct 2018 19:02:23 +0530
+Message-ID: <e3d4afac-edc3-3b2a-3c75-8eb307705dd4@ti.com>
+References: <20181016060402.18756-1-vigneshr@ti.com>
+ <20181016111541.GE8852@ulmo>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, robert.jarzmik@free.fr, daniel.thompson@linaro.org, lee.jones@linaro.org
-Cc: kernel@collabora.com, heiko@sntech.de, stable@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181016111541.GE8852@ulmo>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Andrew Davis <afd@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Commit '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
-linearly to human eye")' allows the possibility to compute a default
-brightness table when there isn't the brightness-levels property in the
-DT. Unfortunately the changes made broke the pwm backlight for the
-non-DT boards.
+Hi Thierry,
 
-Usually, the non-DT boards don't pass the brightness levels via platform
-data, instead, it sets the max_brightness in their platform data and the
-driver calculates the level without a table. The ofending patch assumed
-hat when there is no brightness levels table we should create one, but this
-is clearly wrong for the non-DT case.
+On 16/10/18 4:45 PM, Thierry Reding wrote:
+> On Tue, Oct 16, 2018 at 11:34:00AM +0530, Vignesh R wrote:
+>> Couple of patches to enable pwm-tiecap driver to be used with TI's new
+>> AM654 platforms.
+>>
+>> Vignesh R (2):
+>>   dt-bindings: pwm: tiecap: Add TI AM654 SoC specific compatible
+>>   pwm: Kconfig: Enable TI ECAP driver for ARCH_K3
+>>
+>>  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 1 +
+>>  drivers/pwm/Kconfig                                  | 5 ++---
+>>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> Applied, thanks.
+> 
 
-After this patch the code handles the DT and the non-DT case taking in
-consideration also if max_brightness is set or not.
+I could not see this patch series in pwm tree here:
+https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
+Is this queued for v4.20?
 
-Fixes: '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")'
-Cc: <stable@vger.kernel.org>
-Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
----
-
-Changes in v2:
-- Rebase on top of mainline
-- Add Tested-by and Acked-by tags.
-
- drivers/video/backlight/pwm_bl.c | 41 +++++++++++++++++++++++++++-----
- 1 file changed, 35 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 678b27063198..f9ef0673a083 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -562,7 +562,30 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		goto err_alloc;
- 	}
- 
--	if (!data->levels) {
-+	if (data->levels) {
-+		/*
-+		 * For the DT case, only when brightness levels is defined
-+		 * data->levels is filled. For the non-DT case, data->levels
-+		 * can come from platform data, however is not usual.
-+		 */
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > pb->scale)
-+				pb->scale = data->levels[i];
-+
-+			pb->levels = data->levels;
-+		}
-+	} else if (!data->max_brightness) {
-+		/*
-+		 * If no brightness levels are provided and max_brightness is
-+		 * not set, use the default brightness table. For the DT case,
-+		 * max_brightness is set to 0 when brightness levels is not
-+		 * specified. For the non-DT case, max_brightness is usually
-+		 * set to some value.
-+		 */
-+
-+		/* Get the PWM period (in nanoseconds) */
-+		pwm_get_state(pb->pwm, &state);
-+
- 		ret = pwm_backlight_brightness_default(&pdev->dev, data,
- 						       state.period);
- 		if (ret < 0) {
-@@ -570,13 +593,19 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 				"failed to setup default brightness table\n");
- 			goto err_alloc;
- 		}
--	}
- 
--	for (i = 0; i <= data->max_brightness; i++) {
--		if (data->levels[i] > pb->scale)
--			pb->scale = data->levels[i];
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > pb->scale)
-+				pb->scale = data->levels[i];
- 
--		pb->levels = data->levels;
-+			pb->levels = data->levels;
-+		}
-+	} else {
-+		/*
-+		 * That only happens for the non-DT case, where platform data
-+		 * sets the max_brightness value.
-+		 */
-+		pb->scale = data->max_brightness;
- 	}
- 
- 	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
 -- 
-2.19.1
+Regards
+Vignesh
