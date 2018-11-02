@@ -1,75 +1,87 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/2] pwm-tiecap: Add support for AM654 SoCs
-Date: Thu, 1 Nov 2018 10:56:40 +0100
-Message-ID: <20181101095640.GA23707@ulmo>
-References: <20181016060402.18756-1-vigneshr@ti.com>
- <20181016111541.GE8852@ulmo>
- <e3d4afac-edc3-3b2a-3c75-8eb307705dd4@ti.com>
+Subject: [GIT PULL] pwm: Changes for v4.20-rc1
+Date: Fri,  2 Nov 2018 14:23:59 +0100
+Message-ID: <20181102132359.11720-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e3d4afac-edc3-3b2a-3c75-8eb307705dd4@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>
-Cc: Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Andrew Davis <afd@ti.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Linus,
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
 
-On Wed, Oct 31, 2018 at 07:02:23PM +0530, Vignesh R wrote:
-> Hi Thierry,
->=20
-> On 16/10/18 4:45 PM, Thierry Reding wrote:
-> > On Tue, Oct 16, 2018 at 11:34:00AM +0530, Vignesh R wrote:
-> >> Couple of patches to enable pwm-tiecap driver to be used with TI's new
-> >> AM654 platforms.
-> >>
-> >> Vignesh R (2):
-> >>   dt-bindings: pwm: tiecap: Add TI AM654 SoC specific compatible
-> >>   pwm: Kconfig: Enable TI ECAP driver for ARCH_K3
-> >>
-> >>  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 1 +
-> >>  drivers/pwm/Kconfig                                  | 5 ++---
-> >>  2 files changed, 3 insertions(+), 3 deletions(-)
-> >=20
-> > Applied, thanks.
-> >=20
->=20
-> I could not see this patch series in pwm tree here:
-> https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.=
-git
-> Is this queued for v4.20?
+  Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
 
-I forgot to push out those patches to for-next. Done that now. It's
-quite late for those to go in, but since these don't touch any code
-it looks okay.
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.20-rc1
+
+for you to fetch changes up to 2153bbc12f77fb2203276befc0f0dddbfb023bb1:
+
+  pwm: lpss: Only set update bit if we are actually changing the settings (2018-10-16 13:16:15 +0200)
+
+Thanks,
 Thierry
 
---d6Gm4EdcadzBjdND
-Content-Type: application/pgp-signature; name="signature.asc"
+----------------------------------------------------------------
+pwm: Changes for v4.20-rc1
 
------BEGIN PGP SIGNATURE-----
+This series contains a number of improvements to existing drivers, such
+as LPSS. Some drivers, such as renesas-tpu and rcar get support for more
+SoC generations. To round things off this fixes an issue with the sysfs
+interface.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvazdUACgkQ3SOs138+
-s6FFaA/8DhaXRA4Rhay0Y/7xnxiNrhzZwNegQ75Pi73yJHimZbJbYQ//a53aiB7J
-/yaTC7Gvqd/QiVZ0CuzOBXVx1Lzo06mVDghQ/sscrG2KnrnozyNDbEFhAaZ6Y3yt
-J8hLcwQ2oyBdQT9LBbAIljQsnhM1kQ9iieDDVHCfNzEvCjCw+Xplv4Nkn+aNw87f
-Y9pxiqf5NWtxp0bRF2Awb/gBVhqSLGZ7fm3VrxOV9qm3cG/b04G7ZtA8NkXcihnh
-Fp+pEqukEU2wE2X1i/Y2RjWr1xdHnx309YEvEqNF6xDVQ1LWpIBFIweDuKgkdd6L
-D5z+u5WfxU2SgbLy+ukHGvrWPt7pwbLIUHfNu0nfGZxFGej8w6gZTp9F9FyiDVbv
-fdusFth/BFW5BkpUGgCkJA052LD2bvrHNcR7xERTsfBybrt1AqRf+MnvoMnYwsUj
-C5yduQ04he1w5yTHcrcfIBE6YdkL6Zrezb5zrF5x+06SvdBVvUa+WRprhWZAD24j
-Q3tCSn02aRmYf9cF3WvYXMPBOKmvIuJ8EuYKMev3Y9zIuxuh9N3JbMHAJvLvOCF1
-BdL/13CUonx/qQ6BamLRp0uOVOsQ9XPkf9lzUQa52dvIHLdqO9U/FXy+FuOAq6kA
-60eepjPS93XO1J1z5345NnrmhwfMKOYH/V5Qii6zA5dDc8y2QzQ=
-=PO6m
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+Biju Das (2):
+      dt-bindings: pwm: rcar: Add r8a7744 support
+      dt-bindings: pwm: renesas-tpu: Document r8a7744 support
 
---d6Gm4EdcadzBjdND--
+Fabrice Gasnier (2):
+      Revert "pwm: Set class for exported channels in sysfs"
+      pwm: Send a uevent on the pwmchip device upon channel sysfs (un)export
+
+Fabrizio Castro (1):
+      dt-bindings: pwm: rcar: Add r8a774a1 support
+
+Hans de Goede (8):
+      ACPI / PM: Export acpi_device_get_power() for use by modular build drivers
+      pwm: lpss: Add ACPI HID for second PWM controller on Cherry Trail devices
+      pwm: lpss: Move struct pwm_lpss_chip definition to the header file
+      pwm: lpss: Check PWM powerstate after resume on Cherry Trail devices
+      pwm: lpss: Release runtime-pm reference from the driver's remove callback
+      pwm: lpss: Add get_state callback
+      pwm: lpss: Force runtime-resume on suspend on Cherry Trail
+      pwm: lpss: Only set update bit if we are actually changing the settings
+
+Sergei Shtylyov (3):
+      dt-bindings: pwm: renesas: tpu: Fix "compatible" prop description
+      dt-bindings: pwm: renesas: pwm-rcar: Document R8A779{7|8}0 bindings
+      dt-bindings: pwm: renesas: tpu: Document R8A779{7|8}0 bindings
+
+Thierry Reding (1):
+      pwm: tegra: Remove gratuituous blank line
+
+Vignesh R (2):
+      dt-bindings: pwm: tiecap: Add TI AM654 SoC specific compatible
+      pwm: Enable TI ECAP driver for ARCH_K3
+
+Wolfram Sang (1):
+      pwm: Use SPDX identifier for Renesas drivers
+
+ .../devicetree/bindings/pwm/pwm-tiecap.txt         |  1 +
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  4 ++
+ .../devicetree/bindings/pwm/renesas,tpu-pwm.txt    | 10 +++-
+ drivers/acpi/device_pm.c                           |  1 +
+ drivers/pwm/Kconfig                                |  5 +-
+ drivers/pwm/pwm-lpss-platform.c                    | 24 +++++++--
+ drivers/pwm/pwm-lpss.c                             | 61 +++++++++++++++++-----
+ drivers/pwm/pwm-lpss.h                             | 14 ++++-
+ drivers/pwm/pwm-rcar.c                             |  5 +-
+ drivers/pwm/pwm-renesas-tpu.c                      | 10 +---
+ drivers/pwm/pwm-tegra.c                            |  1 -
+ drivers/pwm/sysfs.c                                | 12 ++++-
+ 12 files changed, 110 insertions(+), 38 deletions(-)
