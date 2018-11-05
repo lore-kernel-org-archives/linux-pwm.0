@@ -1,166 +1,109 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.bootlin.com ([62.4.15.54]:37404 "EHLO mail.bootlin.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726358AbeKEVaj (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 5 Nov 2018 16:30:39 -0500
-Date: Mon, 5 Nov 2018 13:11:10 +0100
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Message-ID: <20181105121110.GM24212@piout.net>
+Received: from mail1.bemta24.messagelabs.com ([67.219.250.210]:5491 "EHLO
+        mail1.bemta24.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387471AbeKFBZy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Nov 2018 20:25:54 -0500
+From: "Palacios, Hector" <Hector.Palacios@digi.com>
+Date: Mon, 5 Nov 2018 16:04:21 +0000
+Message-ID: <12a87ca1-2d6f-5690-d2ce-19163aa7c601@digi.com>
 References: <52F917CEA1B9C64C94833D53889D478C01AA4F33@dor-sms-xch01.digi.com>
+ <20181105121110.GM24212@piout.net>
+In-Reply-To: <20181105121110.GM24212@piout.net>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C19AC2E0BD10174DB63DD94ADBEE7E11@digi.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <52F917CEA1B9C64C94833D53889D478C01AA4F33@dor-sms-xch01.digi.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 Subject: Re: MFD with multiple PWM chips
-To: "Palacios, Hector" <Hector.Palacios@digi.com>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "Perez, Pedro" <Pedro.Perez@digi.com>, "broonie@kernel.org" <broonie@kernel.org>
 
-Hello Hector,
-
-I'm not sure why I'm in cc but here is my 2 cents:
-
-On 05/11/2018 11:50:12+0000, Palacios, Hector wrote:
-> Hello,
->=20
-> I have an MFD device connected via I2C. This chip has several PWM control=
-lers, each one containing a number of PWM channels.
->=20
-> The device tree looks like this:
->=20
-> &i2c0 {
-> 	mca@63 {
-> 		...
-> 		mca_pwm {
-> 			compatible =3D "digi,mca-pwm";
-> 			#address-cells =3D <1>;
-> 			#size-cells =3D <0>;
->=20
-
-Why don't you simply have
-
-pwm-channels =3D <10>;
-#pwm-cells =3D <2>;
-
-at this position?
-
-The child nodes don't seems that necessary to me, especially since you
-have to handle everything from a single driver anyway.
-
-> 			mca_pwm0: pwm@0 {
-> 				reg =3D <0>;
-> 				pwm-channels =3D <6>;
-> 				#pwm-cells =3D <2>;
-> 			};
->=20
-> 			mca_pwm1: pwm@1 {
-> 				reg =3D <1>;
-> 				pwm-channels =3D <2>;
-> 				#pwm-cells =3D <2>;
-> 			};
->=20
-> 			mca_pwm2: pwm@2 {
-> 				reg =3D <2>;
-> 				pwm-channels =3D <2>;
-> 				#pwm-cells =3D <2>;
-> 			};
-> 		};
->=20
-> Being an MFD driver, the PWM driver is only probed once for the node "pwm=
-s".
-> I can iterate through the children, initialize them and add the PWM chips=
- with 'pwmchip_add()'. This works and I can then request and use the differ=
-ent channels via the sysfs on each of the three controllers.
->=20
-> The problem comes when another driver wants to use a PWM, for example:
->=20
-> 	backlight {
-> 		compatible =3D "pwm-backlight";
-> 		pwms =3D <&mca_pwm2 0 50000>;
-> 		brightness-levels =3D <0 4 8 16 32 64 128 255>;
-> 		default-brightness-level =3D <6>;
-> 		status =3D "okay";
-> 	};
->=20
-> This doesn't won't work because the PWM framework only knows about the "p=
-wms" node (which is the parent of my PWM chips in the DT), so the call 'of_=
-pwm_get()' returns with "PWM chip not found".
-> I guess it is not common to have several PWM chips inside a single contro=
-ller and that is why the framework doesn't support it. Other subsystems, li=
-ke the regulators, do support declaring them as children, but not the PWM.
->=20
-> What would be the best approach to support it?
-> A patch like this makes it work but I guess it's not ideal:
->=20
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 172ef8245811..f4a4cbdda0b2 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -627,6 +627,29 @@ static struct pwm_chip *of_node_to_pwmchip(struct de=
-vice_node *np)
->         return ERR_PTR(-EPROBE_DEFER);
->  }
-> =20
-> +static struct pwm_chip *of_subnode_to_pwmchip(struct device_node *np)
-> +{
-> +       struct pwm_chip *chip;
-> +       struct device_node *node;
-> +
-> +       mutex_lock(&pwm_lock);
-> +
-> +       list_for_each_entry(chip, &pwm_chips, list) {
-> +               if (chip->dev && chip->dev->of_node) {
-> +                       for_each_child_of_node(chip->dev->of_node, node) {
-> +                               if (node =3D=3D np) {
-> +                                       mutex_unlock(&pwm_lock);
-> +                                       return chip;
-> +                               }
-> +                       }
-> +               }
-> +       }
-> +
-> +       mutex_unlock(&pwm_lock);
-> +
-> +       return ERR_PTR(-EPROBE_DEFER);
-> +}
-> +
->  /**
->   * of_pwm_get() - request a PWM via the PWM framework
->   * @np: device node to get the PWM from
-> @@ -669,9 +692,17 @@ struct pwm_device *of_pwm_get(struct device_node *np=
-, const char *con_id)
-> =20
->         pc =3D of_node_to_pwmchip(args.np);
->         if (IS_ERR(pc)) {
-> -               pr_debug("%s(): PWM chip not found\n", __func__);
-> -               pwm =3D ERR_CAST(pc);
-> -               goto put;
-> +               /*
-> +                * Check the subnodes of the device before returning with=
- error,
-> +                * just in case it is a device with multiple pwmchips def=
-ined as
-> +                * subnodes.
-> +                */
-> +               pc =3D of_subnode_to_pwmchip(args.np);
-> +               if (IS_ERR(pc)) {
-> +                       pr_debug("%s(): PWM chip not found\n", __func__);
-> +                       pwm =3D ERR_CAST(pc);
-> +                       goto put;
-> +               }
->         }
-> =20
->         if (args.args_count !=3D pc->of_pwm_n_cells) {
->=20
-> Thanks,
-> --
-> H=E9ctor Palacios
->=20
->=20
-
---=20
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+SGkgQWxleGFuZHJlLA0KDQpPbiAxMS81LzE4IDE6MTEgUE0sIEFsZXhhbmRyZSBCZWxsb25pIHdy
+b3RlOg0KPiBIZWxsbyBIZWN0b3IsDQo+IA0KPiBJJ20gbm90IHN1cmUgd2h5IEknbSBpbiBjYyBi
+dXQgaGVyZSBpcyBteSAyIGNlbnRzOg0KPiANCj4gT24gMDUvMTEvMjAxOCAxMTo1MDoxMiswMDAw
+LCBQYWxhY2lvcywgSGVjdG9yIHdyb3RlOg0KPj4gSGVsbG8sDQo+Pg0KPj4gSSBoYXZlIGFuIE1G
+RCBkZXZpY2UgY29ubmVjdGVkIHZpYSBJMkMuIFRoaXMgY2hpcCBoYXMgc2V2ZXJhbCBQV00gY29u
+dHJvbGxlcnMsIGVhY2ggb25lIGNvbnRhaW5pbmcgYSBudW1iZXIgb2YgUFdNIGNoYW5uZWxzLg0K
+Pj4NCj4+IFRoZSBkZXZpY2UgdHJlZSBsb29rcyBsaWtlIHRoaXM6DQo+Pg0KPj4gJmkyYzAgew0K
+Pj4gCW1jYUA2MyB7DQo+PiAJCS4uLg0KPj4gCQltY2FfcHdtIHsNCj4+IAkJCWNvbXBhdGlibGUg
+PSAiZGlnaSxtY2EtcHdtIjsNCj4+IAkJCSNhZGRyZXNzLWNlbGxzID0gPDE+Ow0KPj4gCQkJI3Np
+emUtY2VsbHMgPSA8MD47DQo+Pg0KPiANCj4gV2h5IGRvbid0IHlvdSBzaW1wbHkgaGF2ZQ0KPiAN
+Cj4gcHdtLWNoYW5uZWxzID0gPDEwPjsNCj4gI3B3bS1jZWxscyA9IDwyPjsNCj4gDQo+IGF0IHRo
+aXMgcG9zaXRpb24/DQo+IA0KPiBUaGUgY2hpbGQgbm9kZXMgZG9uJ3Qgc2VlbXMgdGhhdCBuZWNl
+c3NhcnkgdG8gbWUsIGVzcGVjaWFsbHkgc2luY2UgeW91DQo+IGhhdmUgdG8gaGFuZGxlIGV2ZXJ5
+dGhpbmcgZnJvbSBhIHNpbmdsZSBkcml2ZXIgYW55d2F5Lg0KDQpFYWNoIFBXTSBjb250cm9sbGVy
+IGNhbiBoYXZlIGEgZGlmZmVyZW50IGZyZXF1ZW5jeSAoYWx0aG91Z2ggaXQgaXMgdGhlIA0Kc2Ft
+ZSBmb3IgYWxsIGNoYW5uZWxzIGluIGl0KSBhbmQgZGlmZmVyZW50IGltcGxlbWVudGF0aW9ucyBv
+ZiB0aGUgDQpmaXJtd2FyZSAodGhpcyBpcyBhIG1pY3JvLWNvbnRyb2xsZXIgSUMpIG1heSBoYXZl
+IG1vcmUgb3IgbGVzcyBjaGFubmVscyANCmluIGVhY2ggY29udHJvbGxlciwgc28gdGhlIHNlcGFy
+YXRpb24gaXMgY29udmVuaWVudC4NClRoZSByZWdpc3RlcnMgd2hlcmUgdGhlIGNoYW5uZWxzIGFy
+ZSBwcm9ncmFtbWVkIGFyZSBhbHNvIGRpZmZlcmVudCANCmRlcGVuZGluZyBvbiB0aGUgUFdNIGNv
+bnRyb2xsZXIuIFdpdGggYSBwbGFpbiBEVCBJIHdvdWxkIG5lZWQgdG8gDQpoYXJkLWNvZGUgaW4g
+dGhlIGRyaXZlciB3aGF0IFBXTSBjb250cm9sbGVyIGVhY2ggY2hhbm5lbCBiZWxvbmdzIHRvLg0K
+DQoNCj4gDQo+PiAJCQltY2FfcHdtMDogcHdtQDAgew0KPj4gCQkJCXJlZyA9IDwwPjsNCj4+IAkJ
+CQlwd20tY2hhbm5lbHMgPSA8Nj47DQo+PiAJCQkJI3B3bS1jZWxscyA9IDwyPjsNCj4+IAkJCX07
+DQo+Pg0KPj4gCQkJbWNhX3B3bTE6IHB3bUAxIHsNCj4+IAkJCQlyZWcgPSA8MT47DQo+PiAJCQkJ
+cHdtLWNoYW5uZWxzID0gPDI+Ow0KPj4gCQkJCSNwd20tY2VsbHMgPSA8Mj47DQo+PiAJCQl9Ow0K
+Pj4NCj4+IAkJCW1jYV9wd20yOiBwd21AMiB7DQo+PiAJCQkJcmVnID0gPDI+Ow0KPj4gCQkJCXB3
+bS1jaGFubmVscyA9IDwyPjsNCj4+IAkJCQkjcHdtLWNlbGxzID0gPDI+Ow0KPj4gCQkJfTsNCj4+
+IAkJfTsNCj4+DQo+PiBCZWluZyBhbiBNRkQgZHJpdmVyLCB0aGUgUFdNIGRyaXZlciBpcyBvbmx5
+IHByb2JlZCBvbmNlIGZvciB0aGUgbm9kZSAicHdtcyIuDQo+PiBJIGNhbiBpdGVyYXRlIHRocm91
+Z2ggdGhlIGNoaWxkcmVuLCBpbml0aWFsaXplIHRoZW0gYW5kIGFkZCB0aGUgUFdNIGNoaXBzIHdp
+dGggJ3B3bWNoaXBfYWRkKCknLiBUaGlzIHdvcmtzIGFuZCBJIGNhbiB0aGVuIHJlcXVlc3QgYW5k
+IHVzZSB0aGUgZGlmZmVyZW50IGNoYW5uZWxzIHZpYSB0aGUgc3lzZnMgb24gZWFjaCBvZiB0aGUg
+dGhyZWUgY29udHJvbGxlcnMuDQo+Pg0KPj4gVGhlIHByb2JsZW0gY29tZXMgd2hlbiBhbm90aGVy
+IGRyaXZlciB3YW50cyB0byB1c2UgYSBQV00sIGZvciBleGFtcGxlOg0KPj4NCj4+IAliYWNrbGln
+aHQgew0KPj4gCQljb21wYXRpYmxlID0gInB3bS1iYWNrbGlnaHQiOw0KPj4gCQlwd21zID0gPCZt
+Y2FfcHdtMiAwIDUwMDAwPjsNCj4+IAkJYnJpZ2h0bmVzcy1sZXZlbHMgPSA8MCA0IDggMTYgMzIg
+NjQgMTI4IDI1NT47DQo+PiAJCWRlZmF1bHQtYnJpZ2h0bmVzcy1sZXZlbCA9IDw2PjsNCj4+IAkJ
+c3RhdHVzID0gIm9rYXkiOw0KPj4gCX07DQo+Pg0KPj4gVGhpcyBkb2Vzbid0IHdvbid0IHdvcmsg
+YmVjYXVzZSB0aGUgUFdNIGZyYW1ld29yayBvbmx5IGtub3dzIGFib3V0IHRoZSAicHdtcyIgbm9k
+ZSAod2hpY2ggaXMgdGhlIHBhcmVudCBvZiBteSBQV00gY2hpcHMgaW4gdGhlIERUKSwgc28gdGhl
+IGNhbGwgJ29mX3B3bV9nZXQoKScgcmV0dXJucyB3aXRoICJQV00gY2hpcCBub3QgZm91bmQiLg0K
+Pj4gSSBndWVzcyBpdCBpcyBub3QgY29tbW9uIHRvIGhhdmUgc2V2ZXJhbCBQV00gY2hpcHMgaW5z
+aWRlIGEgc2luZ2xlIGNvbnRyb2xsZXIgYW5kIHRoYXQgaXMgd2h5IHRoZSBmcmFtZXdvcmsgZG9l
+c24ndCBzdXBwb3J0IGl0LiBPdGhlciBzdWJzeXN0ZW1zLCBsaWtlIHRoZSByZWd1bGF0b3JzLCBk
+byBzdXBwb3J0IGRlY2xhcmluZyB0aGVtIGFzIGNoaWxkcmVuLCBidXQgbm90IHRoZSBQV00uDQo+
+Pg0KPj4gV2hhdCB3b3VsZCBiZSB0aGUgYmVzdCBhcHByb2FjaCB0byBzdXBwb3J0IGl0Pw0KPj4g
+QSBwYXRjaCBsaWtlIHRoaXMgbWFrZXMgaXQgd29yayBidXQgSSBndWVzcyBpdCdzIG5vdCBpZGVh
+bDoNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vY29yZS5jIGIvZHJpdmVycy9wd20v
+Y29yZS5jDQo+PiBpbmRleCAxNzJlZjgyNDU4MTEuLmY0YTRjYmRkYTBiMiAxMDA2NDQNCj4+IC0t
+LSBhL2RyaXZlcnMvcHdtL2NvcmUuYw0KPj4gKysrIGIvZHJpdmVycy9wd20vY29yZS5jDQo+PiBA
+QCAtNjI3LDYgKzYyNywyOSBAQCBzdGF0aWMgc3RydWN0IHB3bV9jaGlwICpvZl9ub2RlX3RvX3B3
+bWNoaXAoc3RydWN0IGRldmljZV9ub2RlICpucCkNCj4+ICAgICAgICAgIHJldHVybiBFUlJfUFRS
+KC1FUFJPQkVfREVGRVIpOw0KPj4gICB9DQo+PiAgIA0KPj4gK3N0YXRpYyBzdHJ1Y3QgcHdtX2No
+aXAgKm9mX3N1Ym5vZGVfdG9fcHdtY2hpcChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wKQ0KPj4gK3sN
+Cj4+ICsgICAgICAgc3RydWN0IHB3bV9jaGlwICpjaGlwOw0KPj4gKyAgICAgICBzdHJ1Y3QgZGV2
+aWNlX25vZGUgKm5vZGU7DQo+PiArDQo+PiArICAgICAgIG11dGV4X2xvY2soJnB3bV9sb2NrKTsN
+Cj4+ICsNCj4+ICsgICAgICAgbGlzdF9mb3JfZWFjaF9lbnRyeShjaGlwLCAmcHdtX2NoaXBzLCBs
+aXN0KSB7DQo+PiArICAgICAgICAgICAgICAgaWYgKGNoaXAtPmRldiAmJiBjaGlwLT5kZXYtPm9m
+X25vZGUpIHsNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgIGZvcl9lYWNoX2NoaWxkX29mX25v
+ZGUoY2hpcC0+ZGV2LT5vZl9ub2RlLCBub2RlKSB7DQo+PiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIGlmIChub2RlID09IG5wKSB7DQo+PiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgbXV0ZXhfdW5sb2NrKCZwd21fbG9jayk7DQo+PiArICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGNoaXA7DQo+PiArICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIH0NCj4+ICsgICAgICAgICAgICAgICAgICAgICAgIH0NCj4+ICsg
+ICAgICAgICAgICAgICB9DQo+PiArICAgICAgIH0NCj4+ICsNCj4+ICsgICAgICAgbXV0ZXhfdW5s
+b2NrKCZwd21fbG9jayk7DQo+PiArDQo+PiArICAgICAgIHJldHVybiBFUlJfUFRSKC1FUFJPQkVf
+REVGRVIpOw0KPj4gK30NCj4+ICsNCj4+ICAgLyoqDQo+PiAgICAqIG9mX3B3bV9nZXQoKSAtIHJl
+cXVlc3QgYSBQV00gdmlhIHRoZSBQV00gZnJhbWV3b3JrDQo+PiAgICAqIEBucDogZGV2aWNlIG5v
+ZGUgdG8gZ2V0IHRoZSBQV00gZnJvbQ0KPj4gQEAgLTY2OSw5ICs2OTIsMTcgQEAgc3RydWN0IHB3
+bV9kZXZpY2UgKm9mX3B3bV9nZXQoc3RydWN0IGRldmljZV9ub2RlICpucCwgY29uc3QgY2hhciAq
+Y29uX2lkKQ0KPj4gICANCj4+ICAgICAgICAgIHBjID0gb2Zfbm9kZV90b19wd21jaGlwKGFyZ3Mu
+bnApOw0KPj4gICAgICAgICAgaWYgKElTX0VSUihwYykpIHsNCj4+IC0gICAgICAgICAgICAgICBw
+cl9kZWJ1ZygiJXMoKTogUFdNIGNoaXAgbm90IGZvdW5kXG4iLCBfX2Z1bmNfXyk7DQo+PiAtICAg
+ICAgICAgICAgICAgcHdtID0gRVJSX0NBU1QocGMpOw0KPj4gLSAgICAgICAgICAgICAgIGdvdG8g
+cHV0Ow0KPj4gKyAgICAgICAgICAgICAgIC8qDQo+PiArICAgICAgICAgICAgICAgICogQ2hlY2sg
+dGhlIHN1Ym5vZGVzIG9mIHRoZSBkZXZpY2UgYmVmb3JlIHJldHVybmluZyB3aXRoIGVycm9yLA0K
+Pj4gKyAgICAgICAgICAgICAgICAqIGp1c3QgaW4gY2FzZSBpdCBpcyBhIGRldmljZSB3aXRoIG11
+bHRpcGxlIHB3bWNoaXBzIGRlZmluZWQgYXMNCj4+ICsgICAgICAgICAgICAgICAgKiBzdWJub2Rl
+cy4NCj4+ICsgICAgICAgICAgICAgICAgKi8NCj4+ICsgICAgICAgICAgICAgICBwYyA9IG9mX3N1
+Ym5vZGVfdG9fcHdtY2hpcChhcmdzLm5wKTsNCj4+ICsgICAgICAgICAgICAgICBpZiAoSVNfRVJS
+KHBjKSkgew0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgcHJfZGVidWcoIiVzKCk6IFBXTSBj
+aGlwIG5vdCBmb3VuZFxuIiwgX19mdW5jX18pOw0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+cHdtID0gRVJSX0NBU1QocGMpOw0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgZ290byBwdXQ7
+DQo+PiArICAgICAgICAgICAgICAgfQ0KPj4gICAgICAgICAgfQ0KPj4gICANCj4+ICAgICAgICAg
+IGlmIChhcmdzLmFyZ3NfY291bnQgIT0gcGMtPm9mX3B3bV9uX2NlbGxzKSB7DQo+Pg0KDQpUaGFu
+a3MNCi0tDQpIZWN0b3IgUGFsYWNpb3M=
