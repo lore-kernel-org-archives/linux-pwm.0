@@ -1,81 +1,140 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Tue, 16 Oct 2018 13:16:52 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/2] pwm: lpss: Force runtime-resume on suspend on CHT
- devices
-Message-ID: <20181016111652.GF8852@ulmo>
-References: <20181014151202.29955-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="hK8Uo4Yp55NZU70L"
-Content-Disposition: inline
-In-Reply-To: <20181014151202.29955-1-hdegoede@redhat.com>
-List-ID: <linux-pwm.vger.kernel.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-
-
---hK8Uo4Yp55NZU70L
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail1.bemta24.messagelabs.com ([67.219.250.209]:30083 "EHLO
+        mail1.bemta24.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726368AbeKEVJj (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Nov 2018 16:09:39 -0500
+From: "Palacios, Hector" <Hector.Palacios@digi.com>
+Date: Mon, 5 Nov 2018 11:50:12 +0000
+Message-ID: <52F917CEA1B9C64C94833D53889D478C01AA4F33@dor-sms-xch01.digi.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Sender: linux-pwm-owner@vger.kernel.org
+List-ID: <linux-pwm.vger.kernel.org>
+Subject: MFD with multiple PWM chips
+To: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "Perez, Pedro" <Pedro.Perez@digi.com>, "broonie@kernel.org" <broonie@kernel.org>, "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>
 
-On Sun, Oct 14, 2018 at 05:12:00PM +0200, Hans de Goede wrote:
-> Hi All,
->=20
-> Here are 2 more / new pwm-lpss fixes.
->=20
-> I've received a bug report that the recent ACPI-LPSS code changes which
-> properly order device resume on Cherry Trail so that the GFX0 _PS0 method
-> no longer exits with an error causes the backlight to flicker on some
-> Cherry Trail devices.
->=20
-> This series is the result of investigating this issue. On Cherry Trail
-> devices under Windows the PWM controller used for the backlight is
-> considered part of the GPU even though it is part of the LPSS block and
-> thus is an entirely different independent hardware unit.
->=20
-> Because of this on Cherry Trail the GPU's (GFX0 ACPI node) _PS3 and _PS0
-> ACPI methods save and restore the PWM controller registers.
->=20
-> After the recent fixes this save + restore of the PWM controller registers
-> is actually also happening under Linux.
->=20
-> If userspace blanks the screen before suspending, such as e.g. GNOME
-> does, then the PWM controller will be runtime-suspended when the suspend
-> starts. This causes the GFX0 _PS3 method to save a value of 0xffffffff
-> for the PWM control register and to restore this value on resume.
-> Note that the GPU's _PS0 method also puts the PWM controller in D0, so
-> this write of 0xffffffff does actually stick.
->=20
-> The first patch in this patch-set fixes this. This fix exposes another
-> issue, the pwm-lpss driver unconditionally sets the update bit when
-> pwm_apply gets called, even if nothing has changed. At least on
-> Cherry Trail this seems to cause the next update (which actually changes
-> something) to be ignored. The second patch fixes this issue.
+Hello,
 
-Applied, thanks.
+I have an MFD device connected via I2C. This chip has several PWM controlle=
+rs, each one containing a number of PWM channels.
 
-Thierry
+The device tree looks like this:
 
---hK8Uo4Yp55NZU70L
-Content-Type: application/pgp-signature; name="signature.asc"
+&i2c0 {
+	mca@63 {
+		...
+		mca_pwm {
+			compatible =3D "digi,mca-pwm";
+			#address-cells =3D <1>;
+			#size-cells =3D <0>;
 
------BEGIN PGP SIGNATURE-----
+			mca_pwm0: pwm@0 {
+				reg =3D <0>;
+				pwm-channels =3D <6>;
+				#pwm-cells =3D <2>;
+			};
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvFyKQACgkQ3SOs138+
-s6GzEQ//WsHr46KV1MOWtGI8uKTsY9ga49WBsNPcyPA5k6UdpnOBn/5Og8Qyd9wn
-lXuw3j7hYlyiqJsz2WJf3Phnh9+lgW0g2u8MZgAJrjrizkPhfX4WQb/X9D6Ic/0M
-6LG5gtITTpKv4EvrbFj0n0JcV7VmyqB0Rn3Az6PH9yp9YzyTxGQyvxw8LRqzDAKD
-c8SwIMcS9mPGCIfypn0OS8mAUHFx2FLIETtNflW1RXyDIUKSvc9qCO998LZA9FpE
-6GskBcgvnDJRA8eI1QsYqsLMboBmJJvGNGNzKWe86WYvjwOrEoDrAtUt706vBHAK
-IpI7i5FeMRHOxVx5z7CXuRslw1GhjbEswVjJDFgVjZVUTtta8EIWqAdJ1MvIKtCB
-L9crUsbOHUpJICs1Pdg9otO/YO6UXnNFj20Uv1DmCWv/X49iHDLPX004kx4BBO4a
-T3ex1KeGTnOGUjBeiXLvXF2sVvuDt7I46zD/EhUdKFdEfOIUIo69i+Rxz8XR99ca
-UvAMOpfaiMwmYmxbj8EvsDDMMvzUTHy6B//sbS0MxGUms7tGxB8vfTcQE3CHP8MS
-UCOjKwU1nNFLcj7Xyw1lnY7RQd668apGphGqOVgkUi3oyhQwcj3CJz6dLIU2uV7U
-e3HwJMsJN6wvHITZ5evjSjI8M+rgweemJFaJJiEH+ZDhYqK/zJo=
-=oCad
------END PGP SIGNATURE-----
+			mca_pwm1: pwm@1 {
+				reg =3D <1>;
+				pwm-channels =3D <2>;
+				#pwm-cells =3D <2>;
+			};
 
---hK8Uo4Yp55NZU70L--
+			mca_pwm2: pwm@2 {
+				reg =3D <2>;
+				pwm-channels =3D <2>;
+				#pwm-cells =3D <2>;
+			};
+		};
+
+Being an MFD driver, the PWM driver is only probed once for the node "pwms".
+I can iterate through the children, initialize them and add the PWM chips w=
+ith 'pwmchip_add()'. This works and I can then request and use the differen=
+t channels via the sysfs on each of the three controllers.
+
+The problem comes when another driver wants to use a PWM, for example:
+
+	backlight {
+		compatible =3D "pwm-backlight";
+		pwms =3D <&mca_pwm2 0 50000>;
+		brightness-levels =3D <0 4 8 16 32 64 128 255>;
+		default-brightness-level =3D <6>;
+		status =3D "okay";
+	};
+
+This doesn't won't work because the PWM framework only knows about the "pwm=
+s" node (which is the parent of my PWM chips in the DT), so the call 'of_pw=
+m_get()' returns with "PWM chip not found".
+I guess it is not common to have several PWM chips inside a single controll=
+er and that is why the framework doesn't support it. Other subsystems, like=
+ the regulators, do support declaring them as children, but not the PWM.
+
+What would be the best approach to support it?
+A patch like this makes it work but I guess it's not ideal:
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 172ef8245811..f4a4cbdda0b2 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -627,6 +627,29 @@ static struct pwm_chip *of_node_to_pwmchip(struct devi=
+ce_node *np)
+        return ERR_PTR(-EPROBE_DEFER);
+ }
+=20
++static struct pwm_chip *of_subnode_to_pwmchip(struct device_node *np)
++{
++       struct pwm_chip *chip;
++       struct device_node *node;
++
++       mutex_lock(&pwm_lock);
++
++       list_for_each_entry(chip, &pwm_chips, list) {
++               if (chip->dev && chip->dev->of_node) {
++                       for_each_child_of_node(chip->dev->of_node, node) {
++                               if (node =3D=3D np) {
++                                       mutex_unlock(&pwm_lock);
++                                       return chip;
++                               }
++                       }
++               }
++       }
++
++       mutex_unlock(&pwm_lock);
++
++       return ERR_PTR(-EPROBE_DEFER);
++}
++
+ /**
+  * of_pwm_get() - request a PWM via the PWM framework
+  * @np: device node to get the PWM from
+@@ -669,9 +692,17 @@ struct pwm_device *of_pwm_get(struct device_node *np, =
+const char *con_id)
+=20
+        pc =3D of_node_to_pwmchip(args.np);
+        if (IS_ERR(pc)) {
+-               pr_debug("%s(): PWM chip not found\n", __func__);
+-               pwm =3D ERR_CAST(pc);
+-               goto put;
++               /*
++                * Check the subnodes of the device before returning with e=
+rror,
++                * just in case it is a device with multiple pwmchips defin=
+ed as
++                * subnodes.
++                */
++               pc =3D of_subnode_to_pwmchip(args.np);
++               if (IS_ERR(pc)) {
++                       pr_debug("%s(): PWM chip not found\n", __func__);
++                       pwm =3D ERR_CAST(pc);
++                       goto put;
++               }
+        }
+=20
+        if (args.args_count !=3D pc->of_pwm_n_cells) {
+
+Thanks,
+--
+H=E9ctor Palacios
