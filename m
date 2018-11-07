@@ -1,63 +1,77 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Fri, 30 Nov 2018 09:59:42 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] PWM: drop legacy wrapper for changing polarity
-Message-ID: <20181130085942.epcatcj3zeegprz6@pengutronix.de>
-References: <20181015082152.5900-1-u.kleine-koenig@pengutronix.de>
- <20181104211945.ychhco6vrmuf6jtc@pengutronix.de>
- <20181120165758.pwprvrhzpftkghap@pengutronix.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail1.bemta24.messagelabs.com ([67.219.250.6]:19116 "EHLO
+        mail1.bemta24.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726097AbeKGTI4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Nov 2018 14:08:56 -0500
+From: "Palacios, Hector" <Hector.Palacios@digi.com>
+Date: Wed, 7 Nov 2018 09:39:16 +0000
+Message-ID: <6d5cd8a8-07cb-2d6e-16c9-40b4765129de@digi.com>
+References: <52F917CEA1B9C64C94833D53889D478C01AA4F33@dor-sms-xch01.digi.com>
+ <20181107092521.a27npxabb5hmzunj@pengutronix.de>
+In-Reply-To: <20181107092521.a27npxabb5hmzunj@pengutronix.de>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <859F938C6DF82B4690B6E8E2C4814F20@digi.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20181120165758.pwprvrhzpftkghap@pengutronix.de>
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, kernel@pengutronix.de
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: Re: MFD with multiple PWM chips
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "Perez, Pedro" <Pedro.Perez@digi.com>, "broonie@kernel.org" <broonie@kernel.org>, "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>
 
-On Tue, Nov 20, 2018 at 05:57:58PM +0100, Uwe Kleine-K=F6nig wrote:
-> On Sun, Nov 04, 2018 at 10:19:45PM +0100, Uwe Kleine-K=F6nig wrote:
-> > Hello Thierry,
-> >=20
-> > On Mon, Oct 15, 2018 at 10:21:52AM +0200, Uwe Kleine-K=F6nig wrote:
-> > > The API to configure a PWM using pwm_enable(), pwm_disable(),
-> > > pwm_config() and pwm_set_polarity() is superseeded by atomically sett=
-ing
-> > > the parameters using pwm_apply_state(). To get forward with deprecati=
-ng
-> > > the former set of functions use the opportunity that there is no curr=
-ent
-> > > user of pwm_set_polarity() and remove it.
-> > >=20
-> > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> >=20
-> > I think this patch is undisputed and wonder if it fell through the
-> > cracks given that a patch sent later made it into your pwm/for-4.20-rc1
-> > pull request.
->=20
-> Now that you pushed out my lpc patch to your for-next branch (thanks!),
-> I wonder what you plan to do with this patch.
-
-Ping! There are also a few other patches that didn't catch your
-attention yet:
-
- - series for pwm-imx starting with
-   "pwm: imx: remove if block where the condition is always wrong"
- - "pwm: don't use memcmp to compare struct state variables"
- - "pwm: drop per-chip dbg_show callback"
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgVXdlLA0KDQpPbiAxMS83LzE4IDEwOjI1IEFNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToN
+Cj4gSGVsbG8gSGVjdG9yLA0KPiANCj4gT24gTW9uLCBOb3YgMDUsIDIwMTggYXQgMTE6NTA6MTJB
+TSArMDAwMCwgUGFsYWNpb3MsIEhlY3RvciB3cm90ZToNCj4+IEkgaGF2ZSBhbiBNRkQgZGV2aWNl
+IGNvbm5lY3RlZCB2aWEgSTJDLiBUaGlzIGNoaXAgaGFzIHNldmVyYWwgUFdNIGNvbnRyb2xsZXJz
+LCBlYWNoIG9uZSBjb250YWluaW5nIGEgbnVtYmVyIG9mIFBXTSBjaGFubmVscy4NCj4+DQo+PiBU
+aGUgZGV2aWNlIHRyZWUgbG9va3MgbGlrZSB0aGlzOg0KPj4NCj4+ICZpMmMwIHsNCj4+IAltY2FA
+NjMgew0KPj4gCQkuLi4NCj4+IAkJbWNhX3B3bSB7DQo+PiAJCQljb21wYXRpYmxlID0gImRpZ2ks
+bWNhLXB3bSI7DQo+PiAJCQkjYWRkcmVzcy1jZWxscyA9IDwxPjsNCj4+IAkJCSNzaXplLWNlbGxz
+ID0gPDA+Ow0KPj4NCj4+IAkJCW1jYV9wd20wOiBwd21AMCB7DQo+PiAJCQkJcmVnID0gPDA+Ow0K
+Pj4gCQkJCXB3bS1jaGFubmVscyA9IDw2PjsNCj4+IAkJCQkjcHdtLWNlbGxzID0gPDI+Ow0KPj4g
+CQkJfTsNCj4+DQo+PiAJCQltY2FfcHdtMTogcHdtQDEgew0KPj4gCQkJCXJlZyA9IDwxPjsNCj4+
+IAkJCQlwd20tY2hhbm5lbHMgPSA8Mj47DQo+PiAJCQkJI3B3bS1jZWxscyA9IDwyPjsNCj4+IAkJ
+CX07DQo+Pg0KPj4gCQkJbWNhX3B3bTI6IHB3bUAyIHsNCj4+IAkJCQlyZWcgPSA8Mj47DQo+PiAJ
+CQkJcHdtLWNoYW5uZWxzID0gPDI+Ow0KPj4gCQkJCSNwd20tY2VsbHMgPSA8Mj47DQo+PiAJCQl9
+Ow0KPj4gCQl9Ow0KPj4NCj4+IEJlaW5nIGFuIE1GRCBkcml2ZXIsIHRoZSBQV00gZHJpdmVyIGlz
+IG9ubHkgcHJvYmVkIG9uY2UgZm9yIHRoZSBub2RlICJwd21zIi4NCj4gDQo+IG5vdCBzdXJlIGhv
+dyB0aGlzIHJlbGF0ZXMgdG8gYmVpbmcgYW4gTUZEIGRyaXZlciwgYnV0IHlvdSBjYW4gYWxzbyBk
+bw0KPiB0aGUgZm9sbG93aW5nOg0KPiANCj4gCW1jYV9wd20gew0KPiAJCSNhZGRyZXNzLWNlbGxz
+ID0gPDI+Ow0KPiAJCSNzaXplLWNlbGxzID0gPDA+Ow0KPiANCj4gCQltY2FfcHdtMDA6IHB3bUAw
+MCB7DQo+IAkJCWNvbXBhdGlibGUgPSAiLi4uIjsNCj4gCQkJcmVnID0gPDAgMD47DQo+IAkJCSNw
+d20tY2VsbHMgPSA8Li4uPjsNCj4gCQl9DQo+IA0KPiAJCW1jYV9wd20wMTogcHdtQDAxIHsNCj4g
+CQkJY29tcGF0aWJsZSA9ICIuLi4iOw0KPiAJCQlyZWcgPSA8MCAxPjsNCj4gCQkJI3B3bS1jZWxs
+cyA9IDwuLi4+Ow0KPiAJCX0NCj4gDQo+IAkJLi4uDQo+IA0KPiAJCW1jYV9wd20wNTogcHdtQDA1
+IHsNCj4gCQkJY29tcGF0aWJsZSA9ICIuLi4iOw0KPiAJCQlyZWcgPSA8MCA1PjsNCj4gCQkJI3B3
+bS1jZWxscyA9IDwuLi4+Ow0KPiAJCX0NCj4gDQo+IAkJbWNhX3B3bTA1OiBwd21AMTAgew0KPiAJ
+CQljb21wYXRpYmxlID0gIi4uLiI7DQo+IAkJCXJlZyA9IDwxIDA+Ow0KPiAJCQkjcHdtLWNlbGxz
+ID0gPC4uLj47DQo+IAkJfQ0KPiANCj4gCQkuLi4NCj4gCX0NCg0KQmVpbmcgYW4gTUZEIGRyaXZl
+ciwgSSBoYXZlIGFuIGVudHJ5IGZvciBlYWNoIGNlbGwvZHJpdmVyIHRoZSANCm1pY3JvLWNvbnRy
+b2xsZXIgaGFuZGxlczogR1BJTywgd2F0Y2hkb2csIFJUQywgUFdNOg0KDQpzdGF0aWMgY29uc3Qg
+c3RydWN0IG1mZF9jZWxsIG1jYV9kZXZzW10gPSB7DQogICAgICAgICB7DQogICAgICAgICAgICAg
+ICAgIC5uYW1lICAgICAgICAgICA9IE1DQV9EUlZOQU1FX1JUQywNCiAgICAgICAgICAgICAgICAg
+Lm51bV9yZXNvdXJjZXMgID0gQVJSQVlfU0laRShtY2FfcnRjX3Jlc291cmNlcyksDQogICAgICAg
+ICAgICAgICAgIC5yZXNvdXJjZXMgICAgICA9IG1jYV9ydGNfcmVzb3VyY2VzLA0KICAgICAgICAg
+ICAgICAgICAub2ZfY29tcGF0aWJsZSAgPSAiZGlnaSxtY2EtcnRjIiwNCiAgICAgICAgIH0sDQog
+ICAgICAgICB7DQogICAgICAgICAgICAgICAgIC5uYW1lICAgICAgICAgICA9IE1DQV9EUlZOQU1F
+X1dBVENIRE9HLA0KICAgICAgICAgICAgICAgICAubnVtX3Jlc291cmNlcyAgPSBBUlJBWV9TSVpF
+KG1jYV93YXRjaGRvZ19yZXNvdXJjZXMpLA0KICAgICAgICAgICAgICAgICAucmVzb3VyY2VzICAg
+ICAgPSBtY2Ffd2F0Y2hkb2dfcmVzb3VyY2VzLA0KICAgICAgICAgICAgICAgICAub2ZfY29tcGF0
+aWJsZSAgPSAiZGlnaSxtY2Etd2F0Y2hkb2ciLA0KICAgICAgICAgfSwNCiAgICAgICAgIHsNCiAg
+ICAgICAgICAgICAgICAgLm5hbWUgICAgICAgICAgID0gTUNBX0RSVk5BTUVfR1BJTywNCiAgICAg
+ICAgICAgICAgICAgLm51bV9yZXNvdXJjZXMgID0gQVJSQVlfU0laRShtY2FfZ3Bpb3NfcmVzb3Vy
+Y2VzKSwNCiAgICAgICAgICAgICAgICAgLnJlc291cmNlcyAgICAgID0gbWNhX2dwaW9zX3Jlc291
+cmNlcywNCiAgICAgICAgICAgICAgICAgLm9mX2NvbXBhdGlibGUgPSAiZGlnaSxtY2EtZ3BpbyIs
+DQogICAgICAgICB9LA0KCQ0KCS4uLg0KDQoJew0KICAgICAgICAgICAgICAgICAubmFtZSAgICAg
+ICAgICAgPSBNQ0FfRFJWTkFNRV9QV00sDQogICAgICAgICAgICAgICAgIC5udW1fcmVzb3VyY2Vz
+ICA9IEFSUkFZX1NJWkUobWNhX3B3bV9yZXNvdXJjZXMpLA0KICAgICAgICAgICAgICAgICAucmVz
+b3VyY2VzICAgICAgPSBtY2FfcHdtX3Jlc291cmNlcywNCiAgICAgICAgICAgICAgICAgLm9mX2Nv
+bXBhdGlibGUgPSAiZGlnaSxtY2EtZ3BpbyIsDQogICAgICAgICB9LA0KfTsNCg0KVGhpcyBtZWFu
+cyB0aGVyZSBpcyBvbmx5ICpvbmUgcHJvYmUgY2FsbCogZm9yIGVhY2ggZW50cnkvY2VsbC9kcml2
+ZXIgaW4gDQp0aGUgTUZEIGNvcmUgZHJpdmVyLCBubyBtYXR0ZXIgaG93IG1hbnkgJ2NvbXBhdGli
+bGUnIGVudHJpZXMgSSBhZGQgb24gDQp0aGUgRFQuDQpIYXZpbmcgb25seSBvbmUgcHJvYmUgY2Fs
+bCwgSSBhbHNvIG9ubHkgaGF2ZSBvbmUgJ2RldmljZScgYW5kIG9uZSANCidvZl9ub2RlJyB0byBy
+ZWZlciB0byAodGhlIHBhcmVudCBvZiB0aGUgUFdNIGNvbnRyb2xsZXJzKS4NCg0KPiANCj4gQmVz
+dCByZWdhcmRzIGFuZCBncmVldGluZ3MgdG8gU3BhaW4sDQo+IFV3ZQ0KPiANCg0KVGhhbmtzIGFu
+ZCByZWdhcmRzIDopDQotLQ0KSGVjdG9yIFBhbGFjaW9z
