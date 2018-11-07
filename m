@@ -1,109 +1,224 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail1.bemta24.messagelabs.com ([67.219.250.114]:28679 "EHLO
-        mail1.bemta24.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726248AbeKGVLt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Nov 2018 16:11:49 -0500
-From: "Palacios, Hector" <Hector.Palacios@digi.com>
-Date: Wed, 7 Nov 2018 11:41:42 +0000
-Message-ID: <d9f995da-0db2-7640-9a9c-6494db23d0a8@digi.com>
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:32870 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726670AbeKHBU3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Nov 2018 20:20:29 -0500
+Received: by mail-ed1-f68.google.com with SMTP id d15-v6so10762415edr.0
+        for <linux-pwm@vger.kernel.org>; Wed, 07 Nov 2018 07:49:32 -0800 (PST)
+Date: Wed, 7 Nov 2018 16:49:30 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Message-ID: <20181107154930.GB7155@ulmo>
 References: <52F917CEA1B9C64C94833D53889D478C01AA4F33@dor-sms-xch01.digi.com>
  <20181107092521.a27npxabb5hmzunj@pengutronix.de>
  <6d5cd8a8-07cb-2d6e-16c9-40b4765129de@digi.com>
  <20181107094818.GW24212@piout.net>
-In-Reply-To: <20181107094818.GW24212@piout.net>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2ECB2BFD1F5FD7439D99E97024D4FCEA@digi.com>
-Content-Transfer-Encoding: base64
+ <d9f995da-0db2-7640-9a9c-6494db23d0a8@digi.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
+Content-Disposition: inline
+In-Reply-To: <d9f995da-0db2-7640-9a9c-6494db23d0a8@digi.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 Subject: Re: MFD with multiple PWM chips
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "Perez, Pedro" <Pedro.Perez@digi.com>, "broonie@kernel.org" <broonie@kernel.org>
+To: "Palacios, Hector" <Hector.Palacios@digi.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "Perez, Pedro" <Pedro.Perez@digi.com>, "broonie@kernel.org" <broonie@kernel.org>
 
-T24gMTEvNy8xOCAxMDo0OCBBTSwgQWxleGFuZHJlIEJlbGxvbmkgd3JvdGU6DQo+IE9uIDA3LzEx
-LzIwMTggMDk6Mzk6MTYrMDAwMCwgUGFsYWNpb3MsIEhlY3RvciB3cm90ZToNCj4+IEhpIFV3ZSwN
-Cj4+DQo+PiBPbiAxMS83LzE4IDEwOjI1IEFNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+
-PiBIZWxsbyBIZWN0b3IsDQo+Pj4NCj4+PiBPbiBNb24sIE5vdiAwNSwgMjAxOCBhdCAxMTo1MDox
-MkFNICswMDAwLCBQYWxhY2lvcywgSGVjdG9yIHdyb3RlOg0KPj4+PiBJIGhhdmUgYW4gTUZEIGRl
-dmljZSBjb25uZWN0ZWQgdmlhIEkyQy4gVGhpcyBjaGlwIGhhcyBzZXZlcmFsIFBXTSBjb250cm9s
-bGVycywgZWFjaCBvbmUgY29udGFpbmluZyBhIG51bWJlciBvZiBQV00gY2hhbm5lbHMuDQo+Pj4+
-DQo+Pj4+IFRoZSBkZXZpY2UgdHJlZSBsb29rcyBsaWtlIHRoaXM6DQo+Pj4+DQo+Pj4+ICZpMmMw
-IHsNCj4+Pj4gCW1jYUA2MyB7DQo+Pj4+IAkJLi4uDQo+Pj4+IAkJbWNhX3B3bSB7DQo+Pj4+IAkJ
-CWNvbXBhdGlibGUgPSAiZGlnaSxtY2EtcHdtIjsNCj4+Pj4gCQkJI2FkZHJlc3MtY2VsbHMgPSA8
-MT47DQo+Pj4+IAkJCSNzaXplLWNlbGxzID0gPDA+Ow0KPj4+Pg0KPj4+PiAJCQltY2FfcHdtMDog
-cHdtQDAgew0KPj4+PiAJCQkJcmVnID0gPDA+Ow0KPj4+PiAJCQkJcHdtLWNoYW5uZWxzID0gPDY+
-Ow0KPj4+PiAJCQkJI3B3bS1jZWxscyA9IDwyPjsNCj4+Pj4gCQkJfTsNCj4+Pj4NCj4+Pj4gCQkJ
-bWNhX3B3bTE6IHB3bUAxIHsNCj4+Pj4gCQkJCXJlZyA9IDwxPjsNCj4+Pj4gCQkJCXB3bS1jaGFu
-bmVscyA9IDwyPjsNCj4+Pj4gCQkJCSNwd20tY2VsbHMgPSA8Mj47DQo+Pj4+IAkJCX07DQo+Pj4+
-DQo+Pj4+IAkJCW1jYV9wd20yOiBwd21AMiB7DQo+Pj4+IAkJCQlyZWcgPSA8Mj47DQo+Pj4+IAkJ
-CQlwd20tY2hhbm5lbHMgPSA8Mj47DQo+Pj4+IAkJCQkjcHdtLWNlbGxzID0gPDI+Ow0KPj4+PiAJ
-CQl9Ow0KPj4+PiAJCX07DQo+Pj4+DQo+Pj4+IEJlaW5nIGFuIE1GRCBkcml2ZXIsIHRoZSBQV00g
-ZHJpdmVyIGlzIG9ubHkgcHJvYmVkIG9uY2UgZm9yIHRoZSBub2RlICJwd21zIi4NCj4+Pg0KPj4+
-IG5vdCBzdXJlIGhvdyB0aGlzIHJlbGF0ZXMgdG8gYmVpbmcgYW4gTUZEIGRyaXZlciwgYnV0IHlv
-dSBjYW4gYWxzbyBkbw0KPj4+IHRoZSBmb2xsb3dpbmc6DQo+Pj4NCj4+PiAJbWNhX3B3bSB7DQo+
-Pj4gCQkjYWRkcmVzcy1jZWxscyA9IDwyPjsNCj4+PiAJCSNzaXplLWNlbGxzID0gPDA+Ow0KPj4+
-DQo+Pj4gCQltY2FfcHdtMDA6IHB3bUAwMCB7DQo+Pj4gCQkJY29tcGF0aWJsZSA9ICIuLi4iOw0K
-Pj4+IAkJCXJlZyA9IDwwIDA+Ow0KPj4+IAkJCSNwd20tY2VsbHMgPSA8Li4uPjsNCj4+PiAJCX0N
-Cj4+Pg0KPj4+IAkJbWNhX3B3bTAxOiBwd21AMDEgew0KPj4+IAkJCWNvbXBhdGlibGUgPSAiLi4u
-IjsNCj4+PiAJCQlyZWcgPSA8MCAxPjsNCj4+PiAJCQkjcHdtLWNlbGxzID0gPC4uLj47DQo+Pj4g
-CQl9DQo+Pj4NCj4+PiAJCS4uLg0KPj4+DQo+Pj4gCQltY2FfcHdtMDU6IHB3bUAwNSB7DQo+Pj4g
-CQkJY29tcGF0aWJsZSA9ICIuLi4iOw0KPj4+IAkJCXJlZyA9IDwwIDU+Ow0KPj4+IAkJCSNwd20t
-Y2VsbHMgPSA8Li4uPjsNCj4+PiAJCX0NCj4+Pg0KPj4+IAkJbWNhX3B3bTA1OiBwd21AMTAgew0K
-Pj4+IAkJCWNvbXBhdGlibGUgPSAiLi4uIjsNCj4+PiAJCQlyZWcgPSA8MSAwPjsNCj4+PiAJCQkj
-cHdtLWNlbGxzID0gPC4uLj47DQo+Pj4gCQl9DQo+Pj4NCj4+PiAJCS4uLg0KPj4+IAl9DQo+Pg0K
-Pj4gQmVpbmcgYW4gTUZEIGRyaXZlciwgSSBoYXZlIGFuIGVudHJ5IGZvciBlYWNoIGNlbGwvZHJp
-dmVyIHRoZQ0KPj4gbWljcm8tY29udHJvbGxlciBoYW5kbGVzOiBHUElPLCB3YXRjaGRvZywgUlRD
-LCBQV006DQo+Pg0KPj4gc3RhdGljIGNvbnN0IHN0cnVjdCBtZmRfY2VsbCBtY2FfZGV2c1tdID0g
-ew0KPj4gICAgICAgICAgIHsNCj4+ICAgICAgICAgICAgICAgICAgIC5uYW1lICAgICAgICAgICA9
-IE1DQV9EUlZOQU1FX1JUQywNCj4+ICAgICAgICAgICAgICAgICAgIC5udW1fcmVzb3VyY2VzICA9
-IEFSUkFZX1NJWkUobWNhX3J0Y19yZXNvdXJjZXMpLA0KPj4gICAgICAgICAgICAgICAgICAgLnJl
-c291cmNlcyAgICAgID0gbWNhX3J0Y19yZXNvdXJjZXMsDQo+PiAgICAgICAgICAgICAgICAgICAu
-b2ZfY29tcGF0aWJsZSAgPSAiZGlnaSxtY2EtcnRjIiwNCj4+ICAgICAgICAgICB9LA0KPj4gICAg
-ICAgICAgIHsNCj4+ICAgICAgICAgICAgICAgICAgIC5uYW1lICAgICAgICAgICA9IE1DQV9EUlZO
-QU1FX1dBVENIRE9HLA0KPj4gICAgICAgICAgICAgICAgICAgLm51bV9yZXNvdXJjZXMgID0gQVJS
-QVlfU0laRShtY2Ffd2F0Y2hkb2dfcmVzb3VyY2VzKSwNCj4+ICAgICAgICAgICAgICAgICAgIC5y
-ZXNvdXJjZXMgICAgICA9IG1jYV93YXRjaGRvZ19yZXNvdXJjZXMsDQo+PiAgICAgICAgICAgICAg
-ICAgICAub2ZfY29tcGF0aWJsZSAgPSAiZGlnaSxtY2Etd2F0Y2hkb2ciLA0KPj4gICAgICAgICAg
-IH0sDQo+PiAgICAgICAgICAgew0KPj4gICAgICAgICAgICAgICAgICAgLm5hbWUgICAgICAgICAg
-ID0gTUNBX0RSVk5BTUVfR1BJTywNCj4+ICAgICAgICAgICAgICAgICAgIC5udW1fcmVzb3VyY2Vz
-ICA9IEFSUkFZX1NJWkUobWNhX2dwaW9zX3Jlc291cmNlcyksDQo+PiAgICAgICAgICAgICAgICAg
-ICAucmVzb3VyY2VzICAgICAgPSBtY2FfZ3Bpb3NfcmVzb3VyY2VzLA0KPj4gICAgICAgICAgICAg
-ICAgICAgLm9mX2NvbXBhdGlibGUgPSAiZGlnaSxtY2EtZ3BpbyIsDQo+PiAgICAgICAgICAgfSwN
-Cj4+IAkNCj4+IAkuLi4NCj4+DQo+PiAJew0KPj4gICAgICAgICAgICAgICAgICAgLm5hbWUgICAg
-ICAgICAgID0gTUNBX0RSVk5BTUVfUFdNLA0KPj4gICAgICAgICAgICAgICAgICAgLm51bV9yZXNv
-dXJjZXMgID0gQVJSQVlfU0laRShtY2FfcHdtX3Jlc291cmNlcyksDQo+PiAgICAgICAgICAgICAg
-ICAgICAucmVzb3VyY2VzICAgICAgPSBtY2FfcHdtX3Jlc291cmNlcywNCj4+ICAgICAgICAgICAg
-ICAgICAgIC5vZl9jb21wYXRpYmxlID0gImRpZ2ksbWNhLWdwaW8iLA0KPj4gICAgICAgICAgIH0s
-DQo+PiB9Ow0KPj4NCj4+IFRoaXMgbWVhbnMgdGhlcmUgaXMgb25seSAqb25lIHByb2JlIGNhbGwq
-IGZvciBlYWNoIGVudHJ5L2NlbGwvZHJpdmVyIGluDQo+PiB0aGUgTUZEIGNvcmUgZHJpdmVyLCBu
-byBtYXR0ZXIgaG93IG1hbnkgJ2NvbXBhdGlibGUnIGVudHJpZXMgSSBhZGQgb24NCj4+IHRoZSBE
-VC4NCj4+IEhhdmluZyBvbmx5IG9uZSBwcm9iZSBjYWxsLCBJIGFsc28gb25seSBoYXZlIG9uZSAn
-ZGV2aWNlJyBhbmQgb25lDQo+PiAnb2Zfbm9kZScgdG8gcmVmZXIgdG8gKHRoZSBwYXJlbnQgb2Yg
-dGhlIFBXTSBjb250cm9sbGVycykuDQo+Pg0KPiANCj4gWWVzLCBVd2UncyBwb2ludCB3YXMgdG8g
-aGF2ZSBvbmUgY29tcGF0aWJsZS9kZXZpY2UvcHJvYmUgcGVyIFBXTSBzdWJub2RlDQo+IGluc3Rl
-YWQgb2Ygb25lIGZvciBhbGwgdGhlIFBXTXMuDQoNCk1heWJlIEknbSBtaXNzaW5nIHNvbWV0aGlu
-ZyBidXQgd291bGRuJ3QgSSB0aGVuIG5lZWQgdG8gYWRkIG1mZF9jZWxscyANCmZvciBldmVyeSBQ
-V00gZGV2aWNlIHRvIG15IE1GRCBjb3JlIGRyaXZlcj8NCkkgaGFkIGFscmVhZHkgdHJpZWQgVXdl
-J3MgYXBwcm9hY2ggYmVmb3JlIGhlIG1lbnRpb25lZCBpdCBidXQgdGhlbiANCnJlYWxpemVkIHRo
-YXQgdGhlIE1GRCBJMkMgZHJpdmVyIHdhcyByZWFsbHkgb25seSBjYWxsaW5nIHByb2JlIG9uY2Ug
-cGVyIA0KZWFjaCBtZmRfY2VsbC4NCg0KSSBuZWVkIHNvbWV0aGluZyBsaWtlIHRoZSBQTUlDIERB
-OTA2MyB3aXRoIGl0cyByZWd1bGF0b3JzLiBUaGUgTUZEIGNvcmUgDQpkcml2ZXIgb25seSBoYXMg
-b25jZSBjZWxsIGZvciB0aGUgcmVndWxhdG9yczoNCmh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHVi
-L3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC90cmVlL2RyaXZlcnMvbWZk
-L2RhOTA2My1jb3JlLmMjbjc5DQoNCmJ1dCBpdCBoYXMgbXVsdGlwbGUgcmVndWxhdG9ycyBkZWZp
-bmVkIGluIHRoZSBEVFM6DQpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2Vy
-bmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9hcmNoL2FybS9ib290L2R0cy9pbXg2cS1i
-YTE2LmR0c2kjbjIwMg0KQWx0aG91Z2ggbm9uZSBvZiB0aGVtIGhhcyBhICdjb21wYXRpYmxlJyBz
-dHJpbmcsIHRoZXkgY2FuIGFsbCBiZSANCnJlZmVyZW5jZWQgYnkgb3RoZXIgbm9kZXMgaW4gdGhl
-IERUIGFuZCBiZSBoYW5kbGVkIHNlcGFyYXRlbHkuDQoNClRoZSByZWd1bGF0b3IgZHJpdmVyIHBy
-b2JlIGlzIG9ubHkgY2FsbGVkIG9uY2UgKGFzIHBlciB0aGUgdW5pcXVlIGNlbGwgDQppbiB0aGUg
-TUZEIGRyaXZlcikgYW5kIHRoZSBEVCBpcyBwYXJzZWQgdG8gZ2V0IGFuZCByZWdpc3RlciBlYWNo
-IA0KcmVndWxhdG9yIGluIGEgbG9vcDoNCmh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9s
-aW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC90cmVlL2RyaXZlcnMvcmVndWxhdG9y
-L2RhOTA2My1yZWd1bGF0b3IuYyNuODUzDQoNClRoZSB0cmljayBpcywgaW4gdGhlIHJlZ3VsYXRv
-cnMgZnJhbWV3b3JrLCB0aGVyZSBpcyBhICdyZWd1bGF0b3JfY29uZmlnJyANCnN0cnVjdCB0aGF0
-IGhhcyBhbiBvZl9ub2RlIGZpZWxkIHdoaWNoIHRoZSBkcml2ZXIgc2V0cyB0byBlYWNoIHJlZ3Vs
-YXRvciANCm5vZGUgaW4gdGhlIERULiBUaGF0IGRvZXNuJ3QgZXhpc3Qgb24gdGhlIFBXTSBmcmFt
-ZXdvcmsuDQoNClJlZ2FyZHMsDQotLQ0KSGVjdG9yIFBhbGFjaW9z
+
+--i9LlY+UWpKt15+FH
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Nov 07, 2018 at 11:41:42AM +0000, Palacios, Hector wrote:
+> On 11/7/18 10:48 AM, Alexandre Belloni wrote:
+> > On 07/11/2018 09:39:16+0000, Palacios, Hector wrote:
+> >> Hi Uwe,
+> >>
+> >> On 11/7/18 10:25 AM, Uwe Kleine-K=C3=B6nig wrote:
+> >>> Hello Hector,
+> >>>
+> >>> On Mon, Nov 05, 2018 at 11:50:12AM +0000, Palacios, Hector wrote:
+> >>>> I have an MFD device connected via I2C. This chip has several PWM co=
+ntrollers, each one containing a number of PWM channels.
+> >>>>
+> >>>> The device tree looks like this:
+> >>>>
+> >>>> &i2c0 {
+> >>>> 	mca@63 {
+> >>>> 		...
+> >>>> 		mca_pwm {
+> >>>> 			compatible =3D "digi,mca-pwm";
+> >>>> 			#address-cells =3D <1>;
+> >>>> 			#size-cells =3D <0>;
+> >>>>
+> >>>> 			mca_pwm0: pwm@0 {
+> >>>> 				reg =3D <0>;
+> >>>> 				pwm-channels =3D <6>;
+> >>>> 				#pwm-cells =3D <2>;
+> >>>> 			};
+> >>>>
+> >>>> 			mca_pwm1: pwm@1 {
+> >>>> 				reg =3D <1>;
+> >>>> 				pwm-channels =3D <2>;
+> >>>> 				#pwm-cells =3D <2>;
+> >>>> 			};
+> >>>>
+> >>>> 			mca_pwm2: pwm@2 {
+> >>>> 				reg =3D <2>;
+> >>>> 				pwm-channels =3D <2>;
+> >>>> 				#pwm-cells =3D <2>;
+> >>>> 			};
+> >>>> 		};
+> >>>>
+> >>>> Being an MFD driver, the PWM driver is only probed once for the node=
+ "pwms".
+> >>>
+> >>> not sure how this relates to being an MFD driver, but you can also do
+> >>> the following:
+> >>>
+> >>> 	mca_pwm {
+> >>> 		#address-cells =3D <2>;
+> >>> 		#size-cells =3D <0>;
+> >>>
+> >>> 		mca_pwm00: pwm@00 {
+> >>> 			compatible =3D "...";
+> >>> 			reg =3D <0 0>;
+> >>> 			#pwm-cells =3D <...>;
+> >>> 		}
+> >>>
+> >>> 		mca_pwm01: pwm@01 {
+> >>> 			compatible =3D "...";
+> >>> 			reg =3D <0 1>;
+> >>> 			#pwm-cells =3D <...>;
+> >>> 		}
+> >>>
+> >>> 		...
+> >>>
+> >>> 		mca_pwm05: pwm@05 {
+> >>> 			compatible =3D "...";
+> >>> 			reg =3D <0 5>;
+> >>> 			#pwm-cells =3D <...>;
+> >>> 		}
+> >>>
+> >>> 		mca_pwm05: pwm@10 {
+> >>> 			compatible =3D "...";
+> >>> 			reg =3D <1 0>;
+> >>> 			#pwm-cells =3D <...>;
+> >>> 		}
+> >>>
+> >>> 		...
+> >>> 	}
+> >>
+> >> Being an MFD driver, I have an entry for each cell/driver the
+> >> micro-controller handles: GPIO, watchdog, RTC, PWM:
+> >>
+> >> static const struct mfd_cell mca_devs[] =3D {
+> >>           {
+> >>                   .name           =3D MCA_DRVNAME_RTC,
+> >>                   .num_resources  =3D ARRAY_SIZE(mca_rtc_resources),
+> >>                   .resources      =3D mca_rtc_resources,
+> >>                   .of_compatible  =3D "digi,mca-rtc",
+> >>           },
+> >>           {
+> >>                   .name           =3D MCA_DRVNAME_WATCHDOG,
+> >>                   .num_resources  =3D ARRAY_SIZE(mca_watchdog_resource=
+s),
+> >>                   .resources      =3D mca_watchdog_resources,
+> >>                   .of_compatible  =3D "digi,mca-watchdog",
+> >>           },
+> >>           {
+> >>                   .name           =3D MCA_DRVNAME_GPIO,
+> >>                   .num_resources  =3D ARRAY_SIZE(mca_gpios_resources),
+> >>                   .resources      =3D mca_gpios_resources,
+> >>                   .of_compatible =3D "digi,mca-gpio",
+> >>           },
+> >> =09
+> >> 	...
+> >>
+> >> 	{
+> >>                   .name           =3D MCA_DRVNAME_PWM,
+> >>                   .num_resources  =3D ARRAY_SIZE(mca_pwm_resources),
+> >>                   .resources      =3D mca_pwm_resources,
+> >>                   .of_compatible =3D "digi,mca-gpio",
+> >>           },
+> >> };
+> >>
+> >> This means there is only *one probe call* for each entry/cell/driver in
+> >> the MFD core driver, no matter how many 'compatible' entries I add on
+> >> the DT.
+> >> Having only one probe call, I also only have one 'device' and one
+> >> 'of_node' to refer to (the parent of the PWM controllers).
+> >>
+> >=20
+> > Yes, Uwe's point was to have one compatible/device/probe per PWM subnode
+> > instead of one for all the PWMs.
+>=20
+> Maybe I'm missing something but wouldn't I then need to add mfd_cells=20
+> for every PWM device to my MFD core driver?
+> I had already tried Uwe's approach before he mentioned it but then=20
+> realized that the MFD I2C driver was really only calling probe once per=
+=20
+> each mfd_cell.
+>=20
+> I need something like the PMIC DA9063 with its regulators. The MFD core=
+=20
+> driver only has once cell for the regulators:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/d=
+rivers/mfd/da9063-core.c#n79
+>=20
+> but it has multiple regulators defined in the DTS:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/a=
+rch/arm/boot/dts/imx6q-ba16.dtsi#n202
+> Although none of them has a 'compatible' string, they can all be=20
+> referenced by other nodes in the DT and be handled separately.
+>=20
+> The regulator driver probe is only called once (as per the unique cell=20
+> in the MFD driver) and the DT is parsed to get and register each=20
+> regulator in a loop:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/d=
+rivers/regulator/da9063-regulator.c#n853
+>=20
+> The trick is, in the regulators framework, there is a 'regulator_config'=
+=20
+> struct that has an of_node field which the driver sets to each regulator=
+=20
+> node in the DT. That doesn't exist on the PWM framework.
+
+It should be fairly easy to implement that manually, though. All of the
+necessary helpers exist (da9063 uses them, though perhaps hidden in the
+regulator helpers).
+
+With the PWM framework you can't attach a PWM chip to just a struct
+device_node, so you'll have to have a full struct device for it. The
+easiest way to make this work would probably be to have an MFD driver
+that dynamically registers subdevices based on the nodes it finds in
+device tree. Then a PWM driver could bind against each of these devices
+and set pwm_chip.dev to point to the platform device's ->dev field. You
+can probably automate most of that using of_platform_populate(), which
+may already work automatically if you set the compatible string of the
+top-level node to "simple-bus".
+
+Thierry
+
+--i9LlY+UWpKt15+FH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvjCYcACgkQ3SOs138+
+s6FuuA/9Fq7yqg4bixbjKX51H66cLgyEVEhbtlwQaAvw0BtxhuY4GwmmvkzVGDMT
+4N6RkT7KtlzZ4m3gz8jDoaB+yf1tuOMPnyK/NDsbAqvAd1qagJ1IGQjeizkpvnnP
+bFHOb+lh4KWy+akecGlSRUM3V/uclkUuExTp9BugdCajX8tt3Rn9T5KKGzby5Yho
+7GNFgyRnUDms31FbR1EB8yRhXGDoLofcMhdWFoy1KZcQKEtxhsirHX4pQI6CPlrn
+STN0q9Y55nQiByTX9OEazlfTT1LNPFjb7O6XBktnOXy4IcgHNcj1+7SylNIG8ZWc
+l+U1kkPvH91VOg8fsPZGfb+FFaifrKSkdlytaKglk+8ESEZISfFyYMALq199/HTT
+kibVKo3/KNJ9SkCr3jwQMOn2hs3sjkSOxmeDmCNuSQ4Gk2U8FWyH771s5tgfkJPH
+jJS9srMHYFdj1GuXq9PIpTLwSEhkb+82XpCEwGEcbRM0eZuQgIQPx2rJg+DQ9fOW
+8f3lh8x8ZzzIG5iWK96vhWoFNPaUfRaiCXy360LLkZ/GnWVxKI05EDu7aKIKRYp7
+u9FNpR/R+/0Qp7uiftRjOxL7T9PtD1adm0AKU3hCbmCVooyMzed2bHu98oDHWF4/
+hz3qU/7CKv3bbdMYXT0m5Rt5u6+Jd/brALSBYDx72qKqYj+Nbpg=
+=RaaK
+-----END PGP SIGNATURE-----
+
+--i9LlY+UWpKt15+FH--
