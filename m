@@ -1,57 +1,38 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
- imx: Configure output to GPIO in disabled state
-Date: Wed, 7 Nov 2018 10:33:55 +0100
-Message-ID: <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
-References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
- <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
- <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
- <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
- <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
+From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+Subject: [PATCH 1/2] pwm: kconfig: enable kona pwm to be built for cygnus arch
+Date: Wed,  7 Nov 2018 10:36:12 +0100
+Message-ID: <20181107093613.26734-1-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, kernel@pengutronix.de
+To: Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
+Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Michal,
+The Cygnus architecture use a Kona PWM. This is already present
+in the device tree but can't be built actually. Hence, allow the
+Kona PWM to be built for Cygnus arch.
 
-just to state it more explicitly, I think the following patch (not even
-compile tested) is much preferable over your approach:
+Signed-off-by: Clément Péron <peron.clem@gmail.com>
+---
+ drivers/pwm/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 1d5242c9cde0..af88644b5efb 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -216,7 +216,14 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
- 			cr |= MX3_PWMCR_POUTC;
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 763ee50ea57d..76d56fc8b1b7 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -88,7 +88,8 @@ config PWM_BCM_IPROC
  
- 		writel(cr, imx->mmio_base + MX3_PWMCR);
--	} else if (cstate.enabled) {
-+	} else if (cstate.enabled && state->polarity == PWM_POLARITY_NORMAL) {
-+		/*
-+		 * When disabled in hardware the output pin goes to 0
-+		 * independant of the polarity setting. The expectation of some
-+		 * people however is that after disabling the pin goes to the
-+		 * inactive level which isn't given for an inversed pwm, so
-+		 * only disable for normal polarity.
-+		 */
- 		writel(0, imx->mmio_base + MX3_PWMCR);
+ config PWM_BCM_KONA
+ 	tristate "Kona PWM support"
+-	depends on ARCH_BCM_MOBILE
++	depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS
++	default ARCH_BCM_CYGNUS
+ 	help
+ 	  Generic PWM framework driver for Broadcom Kona PWM block.
  
- 		clk_disable_unprepare(imx->clk_per);
-
-I think it solves most if not all problems you want to address with the
-pinctrl stuff.
-
-Best regards
-Uwe
-
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+2.19.1
