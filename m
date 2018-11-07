@@ -1,80 +1,121 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: =?utf-8?B?UmU6IFtSQ0bCoFBBVENILHYyLDIvMl0gcHdtOiBpbXg6IENvbmZpZ3VyZSBv?=
- =?utf-8?Q?utput_to_GPIO_in_disabled_state?=
-Date: Wed, 7 Nov 2018 13:32:10 +0000
-Message-ID: <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
+ imx: Configure output to GPIO in disabled state
+Date: Wed, 7 Nov 2018 16:01:25 +0100
+Message-ID: <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
 References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
  <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
  <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
  <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
  <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
  <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
+ <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
-Content-Language: en-US
-Content-ID: <600809C2ADC88C46B242E0F79BBFC84E@eurprd04.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>
+To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgVXdlLA0KDQpPbiA3LjExLjIwMTggMTA6MzMsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0K
-PiBIZWxsbyBNaWNoYWwsDQo+IA0KPiBqdXN0IHRvIHN0YXRlIGl0IG1vcmUgZXhwbGljaXRseSwg
-SSB0aGluayB0aGUgZm9sbG93aW5nIHBhdGNoIChub3QgZXZlbg0KPiBjb21waWxlIHRlc3RlZCkg
-aXMgbXVjaCBwcmVmZXJhYmxlIG92ZXIgeW91ciBhcHByb2FjaDoNCg0KSW50ZXJlc3RpbmcgaWRl
-YS4gSSBqdXN0IHdvbmRlciB3aHkgbm9ib2R5IGVsc2UgZGlkIG5vdCBjb21lIHVwIHdpdGggc3Vj
-aA0KYSBzaW1wbGUgc29sdXRpb24gYmVmb3JlLg0KDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
-bS9wd20taW14LmMgYi9kcml2ZXJzL3B3bS9wd20taW14LmMNCj4gaW5kZXggMWQ1MjQyYzljZGUw
-Li5hZjg4NjQ0YjVlZmIgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1pbXguYw0KPiAr
-KysgYi9kcml2ZXJzL3B3bS9wd20taW14LmMNCj4gQEAgLTIxNiw3ICsyMTYsMTQgQEAgc3RhdGlj
-IGludCBpbXhfcHdtX2FwcGx5X3YyKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9k
-ZXZpY2UgKnB3bSwNCj4gICAJCQljciB8PSBNWDNfUFdNQ1JfUE9VVEM7DQo+ICAgDQo+ICAgCQl3
-cml0ZWwoY3IsIGlteC0+bW1pb19iYXNlICsgTVgzX1BXTUNSKTsNCj4gLQl9IGVsc2UgaWYgKGNz
-dGF0ZS5lbmFibGVkKSB7DQo+ICsJfSBlbHNlIGlmIChjc3RhdGUuZW5hYmxlZCAmJiBzdGF0ZS0+
-cG9sYXJpdHkgPT0gUFdNX1BPTEFSSVRZX05PUk1BTCkgew0KPiArCQkvKg0KPiArCQkgKiBXaGVu
-IGRpc2FibGVkIGluIGhhcmR3YXJlIHRoZSBvdXRwdXQgcGluIGdvZXMgdG8gMA0KPiArCQkgKiBp
-bmRlcGVuZGFudCBvZiB0aGUgcG9sYXJpdHkgc2V0dGluZy4gVGhlIGV4cGVjdGF0aW9uIG9mIHNv
-bWUNCj4gKwkJICogcGVvcGxlIGhvd2V2ZXIgaXMgdGhhdCBhZnRlciBkaXNhYmxpbmcgdGhlIHBp
-biBnb2VzIHRvIHRoZQ0KPiArCQkgKiBpbmFjdGl2ZSBsZXZlbCB3aGljaCBpc24ndCBnaXZlbiBm
-b3IgYW4gaW52ZXJzZWQgcHdtLCBzbw0KPiArCQkgKiBvbmx5IGRpc2FibGUgZm9yIG5vcm1hbCBw
-b2xhcml0eS4NCj4gKwkJICovDQo+ICAgCQl3cml0ZWwoMCwgaW14LT5tbWlvX2Jhc2UgKyBNWDNf
-UFdNQ1IpOw0KPiAgIA0KPiAgIAkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGlteC0+Y2xrX3Blcik7
-DQoNCkkgdGVzdGVkIHlvdXIgcGF0Y2guIEl0IGRvZXMgbm90IHdvcmsgYXMgeW91IGV4cGVjdGVk
-Lg0KDQpJbiB2NC4yMC1yYzEgdGhlIHB3bS1iYWNrbGlnaHQgZHJpdmVyIGhhcyBiZWVuIGNvbnZl
-cnRlZCB0byBhdG9taWMgQVBJLg0KU28gdGhlIHB3bV9hcHBseV92MiBmdW5jdGlvbiBpcyBjYWxs
-ZWQgb25seSBvbmNlIHRvIHNldCBuZXcgcGVyaW9kL2R1dHkNCmFuZCBzdGF0ZS4gV2l0aCB5b3Vy
-IHBhdGNoIHRoYXQgbWVhbnMgdGhhdCAiZWNobyAwID4gYnJpZ2h0bmVzcyIgaGFzIG5vDQp2aXNp
-YmxlIGVmZmVjdC4gSXQgbGVhdmVzIHRoZSBQV00gY2hpcCBlbmFibGVkIHdpdGggcGVyaW9kL2R1
-dHkgc2V0IHRvDQpob3dldmVyIGl0IHdhcy4gQnV0IHRoZSBjb3JlIHRoaW5rcyBpdCB3YXMgcmVj
-b25maWd1cmVkOg0KDQojIGNhdCAvc3lzL2NsYXNzL2JhY2tsaWdodC9iYWNraWdodC9icmlnaHRu
-ZXNzDQowDQoNCiMgY2F0IC9zeXMva2VybmVsL2RlYnVnL3B3bQ0KcGxhdGZvcm0vMjA4MDAwMC5w
-d20sIDEgUFdNIGRldmljZQ0KICBwd20tMCAgIChiYWNrbGlnaHQgICAgICAgICAgICk6IHJlcXVl
-c3RlZCBwZXJpb2Q6IDUwMDAwMCBucyBkdXR5OiAwIG5zIHBvbGFyaXR5OiBpbnZlcnNlDQoNCj4g
-SSB0aGluayBpdCBzb2x2ZXMgbW9zdCBpZiBub3QgYWxsIHByb2JsZW1zIHlvdSB3YW50IHRvIGFk
-ZHJlc3Mgd2l0aCB0aGUNCj4gcGluY3RybCBzdHVmZi4NCg0KVW5mb3J0dW5hdGVseSBub3QuIEkg
-YWxzbyB0ZXN0ZWQgeW91ciBwYXRjaCBvbiB2NC4xOS4gSXQgd29ya3MgYXMgeW91DQpwcm9iYWJs
-eSBpbnRlbmRlZCAtIGl0IGlzIHBvc3NpYmxlIHRvIGRpc2FibGUgYmFja2xpZ2h0IHdpdGhvdXQg
-dGhlIFBXTQ0KY2hpcCBiZWluZyBkaXNhYmxlZC4gQnV0IGl0IGRvZXMgbm90IHNvbHZlIHRoZSB0
-aW1lIGZyYW1lIGJldHdlZW4NCmlteF9wd21fcHJvYmUoKSBhbmQgaW14X3B3bV9hcHBseV92Migp
-Lg0KDQpJbiBwcm9iZSB5b3UgZG8gbm90IGhhdmUgYW55IHVzZXJzIHlldC4gU28geW91IGRvIG5v
-dCBrbm93IHRoZSByZXF1ZXN0ZWQNCm91dHB1dCBwb2xhcml0eS4gV2l0aCAiZGVmYXVsdCIgcGlu
-Y3RybCB0aGUgUFdNIG91dHB1dCB3b3VsZCBiZSBtdXhlZCB0bw0KdGhlIHNlbGVjdGVkIHBpbiBh
-bmQgc2luY2UgdGhlIFBXTSBjaGlwIGlzIG1vc3QgcHJvYmFibHkgZGlzYWJsZWQNCih1bmxlc3Mg
-eW91IGVuYWJsZWQgaXQgaW4gYm9vdGxvYWRlcikgeW91IHdvdWxkIGdldCBsb3cgbGV2ZWwgb24g
-dGhlIHBpbi4NClRoYXQgbWVhbnMgeW91ciBiYWNrbGlnaHQgaXMgZnVsbHkgZW5hYmxlZCB1bnRp
-bCB0aGUgZmlyc3QgY2FsbCB0bw0KaW14X3B3bV9hcHBseV92MigpLiBPbiBteSBzeXN0ZW0gdGhp
-cyBpcyAyIHNlY29uZHMuDQoNCkl0IG1pZ2h0IG5vdCBiZSBhIGJpZyBpc3N1ZSBmb3IgYmFja2xp
-Z2h0IGJ1dCBmb3IgbW90b3IgY29udHJvbCBpdCBpcw0Kbm90IHRoZSByaWdodCB0aGluZyB0byBk
-by4NCg0KVGhlIG90aGVyIHRoaW5nIGlzIEkgd291bGQgcHJlZmVyIHRvIG1ha2UgdGhlIGNoYW5n
-ZSBvcHRpb25hbC4gV2l0aCB5b3VyDQphcHByb2FjaCB5b3UgYXJlIGNoYW5naW5nIHRoZSBiZWhh
-dmlvciBmb3IgYWxsIGN1cnJlbnQgdXNlcnMgb2YgaW52ZXJ0ZWQNClBXTS4gSSBkbyBub3QgdGhp
-bmsgYWxsIGlteDYgdXNlcnMgYXJlIGF3YXJlIG9mIHRoZSBwcm9ibGVtIHNvIHRoZXkgbWlnaHQN
-Cm5vdCBiZSBPSyB3aXRoIHRoZSBzdWRkZW4gY2hhbmdlIGluIHRoZSBiZWhhdmlvci4NCg0KSSBh
-Z3JlZSBpdCB3b3VsZCBiZSBuaWNlIGlmIHN1Y2ggYSBzaW1wbGUgY2hhbmdlIGFzIHlvdSBwcm9w
-b3NlZCB3b3VsZA0Kc29sdmUgdGhlIHByb2JsZW0uIFN0aWxsLCBJIGRvIG5vdCBzZWUgYW55IG90
-aGVyIHNvbHV0aW9uIHRoYW4gcGluY3RybA0KdG8gZGVhbCB3aXRoIGFsbCB0aGUgcHJvYmxlbXMg
-SSB3b3VsZCBsaWtlIHRvIGFkZHJlc3MuDQoNCkFueXdheSwgdGhhbmsgeW91IGZvciB0aGUgaWRl
-YSENCg0KQWxsIHRoZSBiZXN0LA0KTWljaGFsDQo=
+Hello Michal,
+
+On Wed, Nov 07, 2018 at 01:32:10PM +0000, Vokáč Michal wrote:
+> On 7.11.2018 10:33, Uwe Kleine-König wrote:
+> > Hello Michal,
+> > 
+> > just to state it more explicitly, I think the following patch (not even
+> > compile tested) is much preferable over your approach:
+> 
+> Interesting idea. I just wonder why nobody else did not come up with such
+> a simple solution before.
+
+I think I mentioned it already in this thread, but it went unnoticed :-)
+
+> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> > index 1d5242c9cde0..af88644b5efb 100644
+> > --- a/drivers/pwm/pwm-imx.c
+> > +++ b/drivers/pwm/pwm-imx.c
+> > @@ -216,7 +216,14 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+> >   			cr |= MX3_PWMCR_POUTC;
+> >   
+> >   		writel(cr, imx->mmio_base + MX3_PWMCR);
+> > -	} else if (cstate.enabled) {
+> > +	} else if (cstate.enabled && state->polarity == PWM_POLARITY_NORMAL) {
+> > +		/*
+> > +		 * When disabled in hardware the output pin goes to 0
+> > +		 * independant of the polarity setting. The expectation of some
+> > +		 * people however is that after disabling the pin goes to the
+> > +		 * inactive level which isn't given for an inversed pwm, so
+> > +		 * only disable for normal polarity.
+> > +		 */
+> >   		writel(0, imx->mmio_base + MX3_PWMCR);
+> >   
+> >   		clk_disable_unprepare(imx->clk_per);
+> 
+> I tested your patch. It does not work as you expected.
+> 
+> In v4.20-rc1 the pwm-backlight driver has been converted to atomic API.
+> So the pwm_apply_v2 function is called only once to set new period/duty
+> and state. With your patch that means that "echo 0 > brightness" has no
+> visible effect. It leaves the PWM chip enabled with period/duty set to
+> however it was. But the core thinks it was reconfigured:
+
+Then the patch isn't correct yet. The idea is always keep the hardware
+running and only disable it if it's uninverted.
+> 
+> # cat /sys/class/backlight/backight/brightness
+> 0
+> 
+> # cat /sys/kernel/debug/pwm
+> platform/2080000.pwm, 1 PWM device
+>   pwm-0   (backlight           ): requested period: 500000 ns duty: 0 ns polarity: inverse
+> 
+> > I think it solves most if not all problems you want to address with the
+> > pinctrl stuff.
+> 
+> Unfortunately not. I also tested your patch on v4.19. It works as you
+> probably intended - it is possible to disable backlight without the PWM
+> chip being disabled. But it does not solve the time frame between
+> imx_pwm_probe() and imx_pwm_apply_v2().
+
+In imx_pwm_probe it's not yet known what the polarity is supposed to be,
+right? So the right thing to do there is to not touch the configuration
+of the pwm. I think all states that are problematic then are also
+problematic with the gpio/pinmux approach. (I might be wrong here, so
+feel free to invest some brain cycles to prove me wrong. But I'd be
+surprised if there are problems that are relevant.)
+ 
+> In probe you do not have any users yet. So you do not know the requested
+> output polarity. With "default" pinctrl the PWM output would be muxed to
+> the selected pin and since the PWM chip is most probably disabled
+> (unless you enabled it in bootloader) you would get low level on the pin.
+> That means your backlight is fully enabled until the first call to
+> imx_pwm_apply_v2(). On my system this is 2 seconds.
+
+With the gpio/pinmux approach you don't know the intended polarity
+either and maybe enable the display, too. For both the solution is to
+let the bootloader enable the pwm with the right output level.
+Am I missing something?
+
+> It might not be a big issue for backlight but for motor control it is
+> not the right thing to do.
+> 
+> The other thing is I would prefer to make the change optional. With your
+> approach you are changing the behavior for all current users of inverted
+> PWM. I do not think all imx6 users are aware of the problem so they might
+> not be OK with the sudden change in the behavior.
+
+Isn't my change an improvement for all users? What state do you have in
+mind that make things worse than they are now?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
