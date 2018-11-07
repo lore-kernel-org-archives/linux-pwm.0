@@ -1,76 +1,80 @@
-From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH 2/2] pwm: bcm-kona: apply pwm settings on enable
-Date: Wed,  7 Nov 2018 10:36:13 +0100
-Message-ID: <20181107093613.26734-2-peron.clem@gmail.com>
-References: <20181107093613.26734-1-peron.clem@gmail.com>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: =?utf-8?B?UmU6IFtSQ0bCoFBBVENILHYyLDIvMl0gcHdtOiBpbXg6IENvbmZpZ3VyZSBv?=
+ =?utf-8?Q?utput_to_GPIO_in_disabled_state?=
+Date: Wed, 7 Nov 2018 13:32:10 +0000
+Message-ID: <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
+References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
+ <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
+ <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
+ <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
+ <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
+ <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181107093613.26734-1-peron.clem@gmail.com>
+In-Reply-To: <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
+Content-Language: en-US
+Content-ID: <600809C2ADC88C46B242E0F79BBFC84E@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Suji Velupillai <suji.velupillai@broadcom.com>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Suji Velupillai <suji.velupillai@broadcom.com>
-
-When pwm_bl framework calls enable, a call to pwm_is_enabled(pwm) still
-return false, this prevents the backlight being turn on at boot time.
-
-Signed-off-by: Suji Velupillai <suji.velupillai@broadcom.com>
-Signed-off-by: Clément Péron <peron.clem@gmail.com>
----
- drivers/pwm/pwm-bcm-kona.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index 09a95aeb3a70..d991d53c4b38 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -108,8 +108,8 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
- 	ndelay(400);
- }
- 
--static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			    int duty_ns, int period_ns)
-+static int __pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			 int duty_ns, int period_ns, bool pwmc_enabled)
- {
- 	struct kona_pwmc *kp = to_kona_pwmc(chip);
- 	u64 val, div, rate;
-@@ -155,7 +155,7 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * always calculated above to ensure the new values are
- 	 * validated immediately instead of on enable.
- 	 */
--	if (pwm_is_enabled(pwm)) {
-+	if (pwm_is_enabled(pwm) || pwmc_enabled) {
- 		kona_pwmc_prepare_for_settings(kp, chan);
- 
- 		value = readl(kp->base + PRESCALE_OFFSET);
-@@ -173,6 +173,12 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	return 0;
- }
- 
-+static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    int duty_ns, int period_ns)
-+{
-+	return __pwmc_config(chip, pwm, duty_ns, period_ns, false);
-+}
-+
- static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
- 				  enum pwm_polarity polarity)
- {
-@@ -216,8 +222,8 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		return ret;
- 	}
- 
--	ret = kona_pwmc_config(chip, pwm, pwm_get_duty_cycle(pwm),
--			       pwm_get_period(pwm));
-+	ret = __pwmc_config(chip, pwm, pwm_get_duty_cycle(pwm),
-+			    pwm_get_period(pwm), true);
- 	if (ret < 0) {
- 		clk_disable_unprepare(kp->clk);
- 		return ret;
--- 
-2.19.1
+SGkgVXdlLA0KDQpPbiA3LjExLjIwMTggMTA6MzMsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0K
+PiBIZWxsbyBNaWNoYWwsDQo+IA0KPiBqdXN0IHRvIHN0YXRlIGl0IG1vcmUgZXhwbGljaXRseSwg
+SSB0aGluayB0aGUgZm9sbG93aW5nIHBhdGNoIChub3QgZXZlbg0KPiBjb21waWxlIHRlc3RlZCkg
+aXMgbXVjaCBwcmVmZXJhYmxlIG92ZXIgeW91ciBhcHByb2FjaDoNCg0KSW50ZXJlc3RpbmcgaWRl
+YS4gSSBqdXN0IHdvbmRlciB3aHkgbm9ib2R5IGVsc2UgZGlkIG5vdCBjb21lIHVwIHdpdGggc3Vj
+aA0KYSBzaW1wbGUgc29sdXRpb24gYmVmb3JlLg0KDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
+bS9wd20taW14LmMgYi9kcml2ZXJzL3B3bS9wd20taW14LmMNCj4gaW5kZXggMWQ1MjQyYzljZGUw
+Li5hZjg4NjQ0YjVlZmIgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1pbXguYw0KPiAr
+KysgYi9kcml2ZXJzL3B3bS9wd20taW14LmMNCj4gQEAgLTIxNiw3ICsyMTYsMTQgQEAgc3RhdGlj
+IGludCBpbXhfcHdtX2FwcGx5X3YyKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9k
+ZXZpY2UgKnB3bSwNCj4gICAJCQljciB8PSBNWDNfUFdNQ1JfUE9VVEM7DQo+ICAgDQo+ICAgCQl3
+cml0ZWwoY3IsIGlteC0+bW1pb19iYXNlICsgTVgzX1BXTUNSKTsNCj4gLQl9IGVsc2UgaWYgKGNz
+dGF0ZS5lbmFibGVkKSB7DQo+ICsJfSBlbHNlIGlmIChjc3RhdGUuZW5hYmxlZCAmJiBzdGF0ZS0+
+cG9sYXJpdHkgPT0gUFdNX1BPTEFSSVRZX05PUk1BTCkgew0KPiArCQkvKg0KPiArCQkgKiBXaGVu
+IGRpc2FibGVkIGluIGhhcmR3YXJlIHRoZSBvdXRwdXQgcGluIGdvZXMgdG8gMA0KPiArCQkgKiBp
+bmRlcGVuZGFudCBvZiB0aGUgcG9sYXJpdHkgc2V0dGluZy4gVGhlIGV4cGVjdGF0aW9uIG9mIHNv
+bWUNCj4gKwkJICogcGVvcGxlIGhvd2V2ZXIgaXMgdGhhdCBhZnRlciBkaXNhYmxpbmcgdGhlIHBp
+biBnb2VzIHRvIHRoZQ0KPiArCQkgKiBpbmFjdGl2ZSBsZXZlbCB3aGljaCBpc24ndCBnaXZlbiBm
+b3IgYW4gaW52ZXJzZWQgcHdtLCBzbw0KPiArCQkgKiBvbmx5IGRpc2FibGUgZm9yIG5vcm1hbCBw
+b2xhcml0eS4NCj4gKwkJICovDQo+ICAgCQl3cml0ZWwoMCwgaW14LT5tbWlvX2Jhc2UgKyBNWDNf
+UFdNQ1IpOw0KPiAgIA0KPiAgIAkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGlteC0+Y2xrX3Blcik7
+DQoNCkkgdGVzdGVkIHlvdXIgcGF0Y2guIEl0IGRvZXMgbm90IHdvcmsgYXMgeW91IGV4cGVjdGVk
+Lg0KDQpJbiB2NC4yMC1yYzEgdGhlIHB3bS1iYWNrbGlnaHQgZHJpdmVyIGhhcyBiZWVuIGNvbnZl
+cnRlZCB0byBhdG9taWMgQVBJLg0KU28gdGhlIHB3bV9hcHBseV92MiBmdW5jdGlvbiBpcyBjYWxs
+ZWQgb25seSBvbmNlIHRvIHNldCBuZXcgcGVyaW9kL2R1dHkNCmFuZCBzdGF0ZS4gV2l0aCB5b3Vy
+IHBhdGNoIHRoYXQgbWVhbnMgdGhhdCAiZWNobyAwID4gYnJpZ2h0bmVzcyIgaGFzIG5vDQp2aXNp
+YmxlIGVmZmVjdC4gSXQgbGVhdmVzIHRoZSBQV00gY2hpcCBlbmFibGVkIHdpdGggcGVyaW9kL2R1
+dHkgc2V0IHRvDQpob3dldmVyIGl0IHdhcy4gQnV0IHRoZSBjb3JlIHRoaW5rcyBpdCB3YXMgcmVj
+b25maWd1cmVkOg0KDQojIGNhdCAvc3lzL2NsYXNzL2JhY2tsaWdodC9iYWNraWdodC9icmlnaHRu
+ZXNzDQowDQoNCiMgY2F0IC9zeXMva2VybmVsL2RlYnVnL3B3bQ0KcGxhdGZvcm0vMjA4MDAwMC5w
+d20sIDEgUFdNIGRldmljZQ0KICBwd20tMCAgIChiYWNrbGlnaHQgICAgICAgICAgICk6IHJlcXVl
+c3RlZCBwZXJpb2Q6IDUwMDAwMCBucyBkdXR5OiAwIG5zIHBvbGFyaXR5OiBpbnZlcnNlDQoNCj4g
+SSB0aGluayBpdCBzb2x2ZXMgbW9zdCBpZiBub3QgYWxsIHByb2JsZW1zIHlvdSB3YW50IHRvIGFk
+ZHJlc3Mgd2l0aCB0aGUNCj4gcGluY3RybCBzdHVmZi4NCg0KVW5mb3J0dW5hdGVseSBub3QuIEkg
+YWxzbyB0ZXN0ZWQgeW91ciBwYXRjaCBvbiB2NC4xOS4gSXQgd29ya3MgYXMgeW91DQpwcm9iYWJs
+eSBpbnRlbmRlZCAtIGl0IGlzIHBvc3NpYmxlIHRvIGRpc2FibGUgYmFja2xpZ2h0IHdpdGhvdXQg
+dGhlIFBXTQ0KY2hpcCBiZWluZyBkaXNhYmxlZC4gQnV0IGl0IGRvZXMgbm90IHNvbHZlIHRoZSB0
+aW1lIGZyYW1lIGJldHdlZW4NCmlteF9wd21fcHJvYmUoKSBhbmQgaW14X3B3bV9hcHBseV92Migp
+Lg0KDQpJbiBwcm9iZSB5b3UgZG8gbm90IGhhdmUgYW55IHVzZXJzIHlldC4gU28geW91IGRvIG5v
+dCBrbm93IHRoZSByZXF1ZXN0ZWQNCm91dHB1dCBwb2xhcml0eS4gV2l0aCAiZGVmYXVsdCIgcGlu
+Y3RybCB0aGUgUFdNIG91dHB1dCB3b3VsZCBiZSBtdXhlZCB0bw0KdGhlIHNlbGVjdGVkIHBpbiBh
+bmQgc2luY2UgdGhlIFBXTSBjaGlwIGlzIG1vc3QgcHJvYmFibHkgZGlzYWJsZWQNCih1bmxlc3Mg
+eW91IGVuYWJsZWQgaXQgaW4gYm9vdGxvYWRlcikgeW91IHdvdWxkIGdldCBsb3cgbGV2ZWwgb24g
+dGhlIHBpbi4NClRoYXQgbWVhbnMgeW91ciBiYWNrbGlnaHQgaXMgZnVsbHkgZW5hYmxlZCB1bnRp
+bCB0aGUgZmlyc3QgY2FsbCB0bw0KaW14X3B3bV9hcHBseV92MigpLiBPbiBteSBzeXN0ZW0gdGhp
+cyBpcyAyIHNlY29uZHMuDQoNCkl0IG1pZ2h0IG5vdCBiZSBhIGJpZyBpc3N1ZSBmb3IgYmFja2xp
+Z2h0IGJ1dCBmb3IgbW90b3IgY29udHJvbCBpdCBpcw0Kbm90IHRoZSByaWdodCB0aGluZyB0byBk
+by4NCg0KVGhlIG90aGVyIHRoaW5nIGlzIEkgd291bGQgcHJlZmVyIHRvIG1ha2UgdGhlIGNoYW5n
+ZSBvcHRpb25hbC4gV2l0aCB5b3VyDQphcHByb2FjaCB5b3UgYXJlIGNoYW5naW5nIHRoZSBiZWhh
+dmlvciBmb3IgYWxsIGN1cnJlbnQgdXNlcnMgb2YgaW52ZXJ0ZWQNClBXTS4gSSBkbyBub3QgdGhp
+bmsgYWxsIGlteDYgdXNlcnMgYXJlIGF3YXJlIG9mIHRoZSBwcm9ibGVtIHNvIHRoZXkgbWlnaHQN
+Cm5vdCBiZSBPSyB3aXRoIHRoZSBzdWRkZW4gY2hhbmdlIGluIHRoZSBiZWhhdmlvci4NCg0KSSBh
+Z3JlZSBpdCB3b3VsZCBiZSBuaWNlIGlmIHN1Y2ggYSBzaW1wbGUgY2hhbmdlIGFzIHlvdSBwcm9w
+b3NlZCB3b3VsZA0Kc29sdmUgdGhlIHByb2JsZW0uIFN0aWxsLCBJIGRvIG5vdCBzZWUgYW55IG90
+aGVyIHNvbHV0aW9uIHRoYW4gcGluY3RybA0KdG8gZGVhbCB3aXRoIGFsbCB0aGUgcHJvYmxlbXMg
+SSB3b3VsZCBsaWtlIHRvIGFkZHJlc3MuDQoNCkFueXdheSwgdGhhbmsgeW91IGZvciB0aGUgaWRl
+YSENCg0KQWxsIHRoZSBiZXN0LA0KTWljaGFsDQo=
