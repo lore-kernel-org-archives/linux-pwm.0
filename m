@@ -1,92 +1,68 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] pwm: kconfig: enable kona pwm to be built for cygnus
- arch
-Date: Thu, 8 Nov 2018 13:22:46 +0100
-Message-ID: <20181108122246.GB1340@ulmo>
-References: <20181107093613.26734-1-peron.clem@gmail.com>
- <20181107161247.sesu2comhes2d4kx@pengutronix.de>
- <dbd99d36-4ff2-8e14-cc54-0896459fdb0e@broadcom.com>
- <CAJiuCccuFKaht93QPvT+taaT8g7CHGS9uP9Ekr0VWASp+ZGZmA@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/4] pwm: Add new helper to initialize a pwm_state
+ variable with defaults
+Date: Thu, 8 Nov 2018 16:13:19 +0100
+Message-ID: <20181108151319.nokv3pwaeteznm4b@pengutronix.de>
+References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
+ <20181029113337.GA9500@ulmo>
+ <20181103142545.m3gdh6aqxpow7na5@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="4SFOXa2GPu3tIq4H"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <CAJiuCccuFKaht93QPvT+taaT8g7CHGS9uP9Ekr0VWASp+ZGZmA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
-Cc: Scott Branden <scott.branden@broadcom.com>, u.kleine-koenig@pengutronix.de, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20181103142545.m3gdh6aqxpow7na5@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: kernel@pengutronix.de, linux-pwm@vger.kernel.org, Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>, Krzysztof Kozlowski <krzk@kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+Hello,
 
---4SFOXa2GPu3tIq4H
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Sat, Nov 03, 2018 at 03:25:45PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Mon, Oct 29, 2018 at 12:33:37PM +0100, Thierry Reding wrote:
+> > On Fri, Oct 26, 2018 at 08:41:55PM +0200, Uwe Kleine-K=F6nig wrote:
+> > > This helps to convert drivers from the legacy API to pwm_apply_state =
+without
+> > > having to make the aware of the configured polarity (and in some case=
+s even
+> > > period).
+> > > =
 
-On Thu, Nov 08, 2018 at 11:47:53AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
-> Hi Uwe, Scott,
->=20
-> On Wed, 7 Nov 2018 at 17:48, Scott Branden <scott.branden@broadcom.com> w=
-rote:
-> >
-> >
-> > On 2018-11-07 8:12 a.m., Uwe Kleine-K=C3=B6nig wrote:
-> > > On Wed, Nov 07, 2018 at 10:36:12AM +0100, Cl=C3=A9ment P=C3=A9ron wro=
-te:
-> > >> The Cygnus architecture use a Kona PWM. This is already present
-> > >> in the device tree but can't be built actually. Hence, allow the
-> > >> Kona PWM to be built for Cygnus arch.
-> > >>
-> > >> Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
-> > >> ---
-> > >>   drivers/pwm/Kconfig | 3 ++-
-> > >>   1 file changed, 2 insertions(+), 1 deletion(-)
-> > >>
-> > >> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > >> index 763ee50ea57d..76d56fc8b1b7 100644
-> > >> --- a/drivers/pwm/Kconfig
-> > >> +++ b/drivers/pwm/Kconfig
-> > >> @@ -88,7 +88,8 @@ config PWM_BCM_IPROC
-> > >>
-> > >>   config PWM_BCM_KONA
-> > >>      tristate "Kona PWM support"
-> > >> -    depends on ARCH_BCM_MOBILE
-> > >> +    depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS
-> > >> +    default ARCH_BCM_CYGNUS
-> > > Is it possible to build this driver also on other arches? Then you mi=
-ght
-> > > want to consider
-> > >
-> > >       depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS || COMPILE_TEST
-> > good idea to add the COMPILE_TEST just to increase compile coverage
->=20
-> Will Do.
+> > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > > ---
+> > >  include/linux/pwm.h | 13 ++++++++++---
+> > >  1 file changed, 10 insertions(+), 3 deletions(-)
+> > =
 
-This is known to potentially break builds on things like UM where we
-have !HAS_IOMEM. Please make sure you thoroughly build-test before you
-switch on COMPILE_TEST.
+> > You're going to have to at least Cc me on patches 2 & 3 so that I can
+> > see how you intend this to be used.
+> =
 
-Thierry
+> you were in To: for all four patches:
+> =
 
---4SFOXa2GPu3tIq4H
-Content-Type: application/pgp-signature; name="signature.asc"
+>   patch 1: https://www.spinics.net/lists/linux-pwm/msg08178.html
+>   patch 2: https://www.spinics.net/lists/linux-pwm/msg08179.html
+>   patch 3: https://www.spinics.net/lists/linux-pwm/msg08180.html
+>   patch 4: https://www.spinics.net/lists/linux-pwm/msg08181.html
 
------BEGIN PGP SIGNATURE-----
+Did you find those in your mailbox in the meantime? If google just
+failed to put them in your inbox I can send you a bounce of 2 and 3 if
+you want to. Just tell me (in irc if you want to).
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvkKpYACgkQ3SOs138+
-s6F7oA/9EjJkBQQRIgfAYs0biyk/VGIMo9UkStI+h7X7tYOvLBx0AMnpBLftJVuZ
-e4/kZj3mrFA1ertrfo68AYqzxGY63p0xHVZVpiuJYx7k4GhpHBLhnLk5NzhOfYrC
-Y1we4u0d4BjmSq0E4CxkHmN+vy8IYh70AFZ1OF+Bh0l5FasYkdrYqMTX2FKHzTIj
-hyLLjFHH7lTYK7m/XOwU2ObKm3O6FA8BhlWysOfi+OlG9YmGkUE0OFN8CGwRe5Md
-QNsIxXed6cS9gxic1bEqXocikJDujW6T5AJEOY/hAhtAR2hAaIYJy5pX32rarA5A
-MfY7ER2SCCnna50VyT+D/LKoUa4H51elJkNOPGAhrhOgF7gYcQ8vJ3ZrWMt6PY8K
-58f9VInywUEvr4c5XpuHO9669CKP1LxnwaxEDcwXJyh9eB93la3mp7yXImMzMm0Z
-k2ZU7jZhpUUDhTmQRsRuBFM7Li9zmf9QDu2Tna2LfhjFJBBIT/zwZTkerFp8ghTn
-gOBQKlcxiTp7lqDxIk+LwKlObvlYDunqI3vCIZIq9Phrdm9Z0ft7QPiRHgMTIGO2
-/khnxh+Y0pe9WJJiuDYRcs7mCvaCgphPvooMD2xFTO7RAvxo2+3d3HQGZDeMcJ7d
-G8EfyuB7xF9zVSy11WgEhuXvV8VcpVWic+o4vHuE/AetGaOG0wA=
-=MiXc
------END PGP SIGNATURE-----
+Best regards
+Uwe
 
---4SFOXa2GPu3tIq4H--
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
