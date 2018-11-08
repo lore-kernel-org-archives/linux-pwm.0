@@ -1,135 +1,120 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: =?utf-8?B?UmU6IFtSQ0bCoFBBVENILHYyLDIvMl0gcHdtOiBpbXg6IENvbmZpZ3VyZSBv?=
- =?utf-8?Q?utput_to_GPIO_in_disabled_state?=
-Date: Thu, 8 Nov 2018 15:21:44 +0000
-Message-ID: <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
-References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
- <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
- <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
- <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
- <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
- <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
- <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
- <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [PATCH 2/2] pwm: bcm-kona: apply pwm settings on enable
+Date: Thu, 8 Nov 2018 07:32:02 -0800
+Message-ID: <CAD7vxxKA3feHK97WiQsb-003qp4Cvj2CQ3C+1sfpo9iZUBhm_A@mail.gmail.com>
+References: <20181107093613.26734-1-peron.clem@gmail.com> <20181107093613.26734-2-peron.clem@gmail.com>
+ <20181107162908.tejzekhc35pbknut@pengutronix.de> <CAJiuCccMtBsCVHeqxQhXRj_Ltdv91Qk-6WDKAhb5S7whZOWsAw@mail.gmail.com>
+ <20181108105922.p557jxrebjlhnsho@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
-Content-Language: en-US
-Content-ID: <E5C14D70851E954DB183922420FF9C91@eurprd04.prod.outlook.com>
+In-Reply-To: <20181108105922.p557jxrebjlhnsho@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>
+To: u.kleine-koenig@pengutronix.de
+Cc: peron.clem@gmail.com, Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, Linux PWM <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, suji.velupillai@broadcom.com, Tim Kryger <tim.kryger@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgVXdlLA0KDQpPbiA3LjExLjIwMTggMTY6MDEsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0K
-Pj4gSW50ZXJlc3RpbmcgaWRlYS4gSSBqdXN0IHdvbmRlciB3aHkgbm9ib2R5IGVsc2UgZGlkIG5v
-dCBjb21lIHVwIHdpdGggc3VjaA0KPj4gYSBzaW1wbGUgc29sdXRpb24gYmVmb3JlLg0KPiANCj4g
-SSB0aGluayBJIG1lbnRpb25lZCBpdCBhbHJlYWR5IGluIHRoaXMgdGhyZWFkLCBidXQgaXQgd2Vu
-dCB1bm5vdGljZWQgOi0pDQoNCkkgbWVhbnQgaXQgbGlrZSAiSG93IGhhcHBlbmVkIHRoaXMgd2Fz
-IG5vdCBpbnZlbnRlZCB5ZWFycyBhZ28sIHdoZW4gcGVvcGxlDQpmaXJzdCBub3RpY2VkIHRoZSBp
-c3N1ZSB3aXRoIHVzaW5nIGludmVydGVkIFBXTSBmb3IgYmFja2xpZ2h0IG9uIGkuTVg2LiINCklu
-IG91ciBwcm9qZWN0LCB0aGlzIGlzc3VlIGRhdGVzIGJhY2sgdG8gMjAxNSA6KA0KDQo+IFRoZW4g
-dGhlIHBhdGNoIGlzbid0IGNvcnJlY3QgeWV0LiBUaGUgaWRlYSBpcyBhbHdheXMga2VlcCB0aGUg
-aGFyZHdhcmUNCj4gcnVubmluZyBhbmQgb25seSBkaXNhYmxlIGl0IGlmIGl0J3MgdW5pbnZlcnRl
-ZC4NCg0KT0ssIEkgZ290IHRoZSBwb2ludC4NCg0KPiBJbiBpbXhfcHdtX3Byb2JlIGl0J3Mgbm90
-IHlldCBrbm93biB3aGF0IHRoZSBwb2xhcml0eSBpcyBzdXBwb3NlZCB0byBiZSwNCj4gcmlnaHQ/
-DQoNCk5vdCByZWFsbHkuIEl0IGNhbiBhbHJlYWR5IGJlIGtub3duIGJ1dCBjdXJyZW50bHkgdGhl
-cmUgaXMgbm8gd2F5IGhvdyB0bw0KcGFzcyB0aGUgaW5mb3JtYXRpb24gdG8gdGhlIHByb2JlIGZ1
-bmN0aW9uLiBJLCBhcyBhIGNyZWF0b3Igb2YgdGhlIGRldmljZQ0KKGFuZCBhdXRob3Igb2YgYSBE
-VFMgZmlsZSkga25vdyB0aGF0IHRoZSBjaXJjdWl0IG5lZWRzIGludmVydGVkIFBXTSBzaWduYWwu
-DQpBbmQgSSBrbm93IHRoYXQgdGhlIGNpcmN1aXQgbmVlZHMgdG8gYmUgZGlzYWJsZWQgdW50aWwg
-SSBzYXkgaXQgY2FuIGJlDQplbmFibGVkLiBIb3cgSSBzYXkgdGhhdCBjYW4gd2FycnkuIEl0IG1h
-eSBiZSBkZWZhdWx0IGJyaWdodG5lc3MgbGV2ZWwgPiAwDQppbiBEVFMgZmlsZSBvciBmcm9tIGEg
-dXNlcnNwYWNlIHByb2dyYW0gdXNpbmcgUFdNIHN5c2ZzIGludGVyZmFjZS4NCg0KPsKgU28gdGhl
-IHJpZ2h0IHRoaW5nIHRvIGRvIHRoZXJlIGlzIHRvIG5vdCB0b3VjaCB0aGUgY29uZmlndXJhdGlv
-bg0KPiBvZiB0aGUgcHdtLiBJIHRoaW5rIGFsbCBzdGF0ZXMgdGhhdCBhcmUgcHJvYmxlbWF0aWMg
-dGhlbiBhcmUgYWxzbw0KPiBwcm9ibGVtYXRpYyB3aXRoIHRoZSBncGlvL3Bpbm11eCBhcHByb2Fj
-aC4NCg0KSSB0aGluayBteSB1c2UtY2FzZSBJIGFscmVhZHkgcHJlc2VudGVkIGJlZm9yZSBpcyBh
-biBleGFtcGxlIHdoZXJlDQppbnZvbHZpbmcgcGluY3RybCBzb2x2ZXMgdGhlIHByb2JsZW0gd2hp
-bGUgdGhlICJsZWF2ZSBQV00gZW5hYmxlZA0KZm9yIGludmVydGVkIHVzZXJzIiBkb2VzIG5vdC4g
-VGhhdCBpcyBhbGwgdGhlIHRpbWUgYmV0d2Vlbg0KaW14X3B3bV9wcm9iZSgpIGFuZCBpbXhfcHdt
-X2FwcGx5X3YyKCkuDQogIA0KPj4gSW4gcHJvYmUgeW91IGRvIG5vdCBoYXZlIGFueSB1c2VycyB5
-ZXQuIFNvIHlvdSBkbyBub3Qga25vdyB0aGUgcmVxdWVzdGVkDQo+PiBvdXRwdXQgcG9sYXJpdHku
-IFdpdGggImRlZmF1bHQiIHBpbmN0cmwgdGhlIFBXTSBvdXRwdXQgd291bGQgYmUgbXV4ZWQgdG8N
-Cj4+IHRoZSBzZWxlY3RlZCBwaW4gYW5kIHNpbmNlIHRoZSBQV00gY2hpcCBpcyBtb3N0IHByb2Jh
-Ymx5IGRpc2FibGVkDQo+PiAodW5sZXNzIHlvdSBlbmFibGVkIGl0IGluIGJvb3Rsb2FkZXIpIHlv
-dSB3b3VsZCBnZXQgbG93IGxldmVsIG9uIHRoZSBwaW4uDQo+PiBUaGF0IG1lYW5zIHlvdXIgYmFj
-a2xpZ2h0IGlzIGZ1bGx5IGVuYWJsZWQgdW50aWwgdGhlIGZpcnN0IGNhbGwgdG8NCj4+IGlteF9w
-d21fYXBwbHlfdjIoKS4gT24gbXkgc3lzdGVtIHRoaXMgaXMgMiBzZWNvbmRzLg0KPiANCj4gV2l0
-aCB0aGUgZ3Bpby9waW5tdXggYXBwcm9hY2ggeW91IGRvbid0IGtub3cgdGhlIGludGVuZGVkIHBv
-bGFyaXR5DQo+IGVpdGhlciBhbmQgbWF5YmUgZW5hYmxlIHRoZSBkaXNwbGF5LCB0b28uDQoNCllv
-dSBrbm93IGl0IGJlY2F1c2UgdGhlIHBpbmN0cmwgc29sdXRpb24gaXMgb3B0aW9uYWwuIFNvIGlm
-IHlvdSB1c2UgaXQsDQp5b3UgdXNlIGl0IG9uIHB1cnBvc2UgdG8gb3ZlcnJpZGUgdGhlIGRlZmF1
-bHQgUFdNIG91dHB1dCBsZXZlbCBpbiBQV00NCmRpc2FibGVkIHN0YXRlLiBJdCBpcyB2ZXJ5IHVz
-ZWZ1bCBpbiBjYXNlcyB3aGVyZSB5b3UgbmVlZCBpbnZlcnRlZCBhbmQNCmRpc2FibGVkIFBXTSBz
-aWduYWwgZnJvbSBwb3dlci11cCB0byB1c2Vyc3BhY2UuIE9yIHVudGlsIHNvbWUga2VybmVsDQpk
-cml2ZXIgKGJhY2tsaWdodCwgbGVkLCBmYW4uLikgZW5hYmxlcyBpdC4gRm9yIHRoaXMgaXQgaXMg
-dGhlIG9ubHkNCnNvbHV0aW9uIEkgdGhpbmsuDQoNCkl0IGFsbG93cyB5b3UgdG8gYm9vdCB3aXRo
-IGRpc2FibGVkIFBXTSB0aGF0IGhhcyBub3JtYWwgcG9sYXJpdHkgc2V0DQpieSBkZWZhdWx0LiBM
-YXRlciBvbiBmcm9tIHlvdXIgdXNlcnNwYWNlIHByb2dyYW0geW91IGNvbmZpZ3VyZSB0aGUgUFdN
-DQp0byBkZXNpcmVkIHBlcmlvZC9kdXR5LCBzZXQgUFdNIG91dHB1dCB0byBpbnZlcnNlZCBhbmQg
-ZW5hYmxlIGl0Lg0KVW50aWwgdGhpcyBwb2ludCB0aGUgY2lyY3VpdCBpcyBkaXNhYmxlZCB3aXRo
-IG15IHNvbHV0aW9uLg0KDQo+IEZvciBib3RoIHRoZSBzb2x1dGlvbiBpcyB0byBsZXQgdGhlIGJv
-b3Rsb2FkZXIgZW5hYmxlIHRoZSBwd20gd2l0aA0KPiB0aGUgcmlnaHQgb3V0cHV0IGxldmVsLiBB
-bSBJIG1pc3Npbmcgc29tZXRoaW5nPw0KDQpCb290bG9hZGVyIGlzIG9ubHkgYSBzbWFsbCBwYXJ0
-IG9mIHRoZSB3aG9sZSBzb2x1dGlvbiBJIHRoaW5rLiBBbmQgSQ0Kc3VwcG9zZSB5b3UgbWVhbnQ6
-ICJlbmFibGUgdGhlICpHUElPKiB3aXRoIHRoZSByaWdodCBvdXRwdXQgbGV2ZWwiLg0KDQogIC0g
-RXZlbiBpZiB5b3UgdXNlIEdQSU8gaW4gYm9vdGxvYWRlciB0byBzZXQgdGhlIHJlcXVpcmVkIGxl
-dmVsIHRoZQ0KICAgIHRpbWUgZnJhbWUgZnJvbSBpbXhfcHdtX3Byb2JlIHRvIGlteF9wd21fYXBw
-bHkgaXMgbm90IGNvdmVyZWQuDQoNCiAgLSBDdXJyZW50bHkgdGhlcmUgaXMgbm8gc3VwcG9ydCBp
-biBMaW51eCBwd20taW14IGRyaXZlciB0byBkZXRlY3QNCiAgICB0aGUgUFdNIGNoaXAgaXMgYWxy
-ZWFkeSBlbmFibGVkIGF0IHByb2JlIHRpbWUuIEkgYWN0dWFsbHkgc2VuZA0KICAgIHBhdGNoZXMg
-Zm9yIHRoaXMgYSBtb250aCBhZ28gWzFdLiBObyByZXNwb25zZSB5ZXQuDQoNCiAgLSBJbnZlcnRl
-ZCBQV00gZG9lcyBub3Qgd29yayBpbiBVLUJvb3QgKG9uIGlteCBhdCBsZWFzdCkuIEFuZCBpdA0K
-ICAgIGRvZXMgbm90IHNlYW0gbGlrZSBpdCBjYW4gYmUgZml4ZWQgZWFzaWx5LiBJIGRvIG5vdCBr
-bm93IHdoYXQgaXMNCiAgICB0aGUgc2l0dWF0aW9uIGluIG90aGVyIGJvb3Rsb2FkZXJzLg0KDQpT
-byBteSBjdXJyZW50IGJvb3Rsb2FkZXIgc29sdXRpb24gaXMgb25lIG9mOg0KICAtIFNldCB0aGUg
-cGluIHRvIHRoZSBhcHByb3ByaWF0ZSAoSElHSCkgbGV2ZWwgdXNpbmcgR1BJTy4NCiAgLSBEbyBu
-b3QgdG91Y2ggdGhlIHBpbiBhdCBhbGwsIGl0IGhhcyAxMDBrIHB1bGwtdXAgYnkgZGVmYXVsdC4N
-Cg0KPj4gVGhlIG90aGVyIHRoaW5nIGlzIEkgd291bGQgcHJlZmVyIHRvIG1ha2UgdGhlIGNoYW5n
-ZSBvcHRpb25hbC4gV2l0aCB5b3VyDQo+PiBhcHByb2FjaCB5b3UgYXJlIGNoYW5naW5nIHRoZSBi
-ZWhhdmlvciBmb3IgYWxsIGN1cnJlbnQgdXNlcnMgb2YgaW52ZXJ0ZWQNCj4+IFBXTS4gSSBkbyBu
-b3QgdGhpbmsgYWxsIGlteDYgdXNlcnMgYXJlIGF3YXJlIG9mIHRoZSBwcm9ibGVtIHNvIHRoZXkg
-bWlnaHQNCj4+IG5vdCBiZSBPSyB3aXRoIHRoZSBzdWRkZW4gY2hhbmdlIGluIHRoZSBiZWhhdmlv
-ci4NCj4gDQo+IElzbid0IG15IGNoYW5nZSBhbiBpbXByb3ZlbWVudCBmb3IgYWxsIHVzZXJzPyBX
-aGF0IHN0YXRlIGRvIHlvdSBoYXZlIGluDQo+IG1pbmQgdGhhdCBtYWtlIHRoaW5ncyB3b3JzZSB0
-aGFuIHRoZXkgYXJlIG5vdz8NCg0KTGV0cyBzYXkgdGhhdCB0aGUgdXNlcjoNCi0gTmVlZHMgaW52
-ZXJ0ZWQgUFdNIHNpZ25hbC4NCi0gTmVlZHMgaXQgdG8gYmUgZGlzYWJsZWQgYWxsIHRoZSB0aW1l
-IHVubGVzcyBoZSBlbmFibGUgaXQuDQoNCkN1cnJlbnQgc2l0dWF0aW9uOg0KSHxfX19fX19fX19f
-X19fX19fX19fXw0KTHwgICAgICAgICAgICAgICAgICAgIFxfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fDQogICstLS0tLS0tKy0tLS0tLS0tLS0tLSstLS0t
-LS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tKw0KICB8IHJlc2V0
-IHwgYm9vdGxvYWRlciB8IGRlZmF1bHQgcGluY3RybCB8IFBXTSBlbmFibGUgMTAwJSB8IFBXTSBk
-aXNhYmxlIHwNCg0KV2hhdCB5b3UgcHJvcG9zZSAoZm9yIGFsbCB1c2VycyBvZiBpbnZlcnRlZCBQ
-V00pOg0KSHxfX19fX19fX19fX19fX19fX19fXyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBfX19fX19fX19fX19fDQpMfCAgICAgICAgICAgICAgICAgICAgXF9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fLw0KICArLS0tLS0tLSstLS0tLS0tLS0tLS0rLS0tLS0t
-LS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLSsNCiAgfCByZXNldCB8
-IGJvb3Rsb2FkZXIgfCBkZWZhdWx0IHBpbmN0cmwgfCBQV00gZW5hYmxlIDEwMCUgfCBQV00gZGlz
-YWJsZSB8DQoNCk15IHNvbHV0aW9uIChmb3IgdGhvc2Ugd2hvIHdhbnQgaXQpOg0KSHxfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXyAgICAgICAgICAgICAgICAgICBfX19fX19f
-X19fX19fDQpMfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXF9fX19fX19f
-X19fX19fX19fLw0KICArLS0tLS0tLSstLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tLS0rLS0t
-LS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLSsNCiAgfCByZXNldCB8IGJvb3Rsb2FkZXIgfCBk
-ZWZhdWx0IHBpbmN0cmwgfCBQV00gZW5hYmxlIDEwMCUgfCBQV00gZGlzYWJsZSB8DQoNClNvIHlv
-dXIgc29sdXRpb24gYXQgbGVhc3QgYWxsb3dzIHRoZSB1c2VyIHRvIHJlYWxseSBkaXNhYmxlIHRo
-ZSBjaXJjdWl0Lg0KSSBjYW4gbm90IHJlYWxseSB0aGluayBvZiBjYXNlcyB3aGVyZSB0aGlzIG1p
-Z2h0IG5vdCBiZSBnb29kIGZvciBjdXJyZW50DQp1c2Vycy4gTWF5YmUgdGhhdCB0aGV5IHNpbXBs
-eSBleHBlY3QgdGhhdCBubyBtYXR0ZXIgd2hhdCBwb2xhcml0eSBpcyBzZXQsDQp0aGUgb3V0cHV0
-IGluIGRpc2FibGVkIHN0YXRlIGlzIGFsd2F5cyBsb3cuIEFuZCB0aGV5IG1heSBoYXZlIEhXIHRo
-YXQNCmdldCBhbHJlYWR5IHVzZWQgdG8gdGhhdCBhbmQgZG9lcyBub3QgbGlrZSB0aGUgY2hhbmdl
-IDopDQoNCkFuZCBpdCByZW1pbmRzIG1lIG9mIHNvbWV0aGluZyBzaW1pbGFyIEkgaGF2ZSBkb25l
-IGZvciBPTEVEwqBkaXNwbGF5IHJlc2V0DQpyZWNlbnRseSBbMl0uIEkgdHJpZWQgdG8gZml4IGFj
-dGl2ZS1sb3cgcmVzZXQgc2VxdWVuY2UgdGhhdCBpcyBoYXJkY29kZWQNCmluIHRoZSBkcml2ZXIu
-IFNvIHlvdSBhcmUgc3VwcG9zZWQgdG8gdXNlIEdQSU9fQUNUSVZFX0hJR0ggaW4gRFQgdG8gbWFr
-ZQ0KdGhlIGFjdGl2ZS1sb3cgcmVzZXQgd29yay4gSXQgd2FzIHJlamVjdGVkLiBUaGUgcmVhc29u
-IHdhcyBiYWNrd2FyZCBEVEINCmNvbXBhdGliaWxpdHkgWzNdLiBJbiBvdGhlciB3b3JkczogIlVz
-ZXJzIG9mIG5ld2VyIGtlcm5lbHMgZXhwZWN0IHRoYXQNCnRoZSByZXNldCBzdGlsbCB3b3JrIHRo
-ZSBzYW1lIGlmIHRoZXkgZG8gbm90IHVwZGF0ZSBEVEJzIG9uIHRoZWlyIGJvYXJkcyIuDQpJIHRo
-aW5rIHRoaXMgaXMga2luZCBvZiBzaW1pbGFyPw0KDQpbMV0gaHR0cDovL3BhdGNod29yay5vemxh
-YnMub3JnL3Byb2plY3QvbGludXgtcHdtL2xpc3QvP3Nlcmllcz02ODQ0NQ0KWzJdIGh0dHBzOi8v
-cGF0Y2h3b3JrLmtlcm5lbC5vcmcvcHJvamVjdC9saW51eC1mYmRldi9saXN0Lz9zZXJpZXM9MjM3
-NzUNClszXSBodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOC8xMC85LzEzNQ0KDQpCZXN0IHJlZ2Fy
-ZHMsDQpNaWNoYWwNCg==
+On Thu, Nov 8, 2018 at 2:59 AM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> adding Tim Kryger as the initial author of the bcm-kona driver to Cc:.
+> Maybe he can shed some light to the questions below?
+>
+> On Thu, Nov 08, 2018 at 11:47:17AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
+> > On Wed, 7 Nov 2018 at 17:29, Uwe Kleine-K=C3=B6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Wed, Nov 07, 2018 at 10:36:13AM +0100, Cl=C3=A9ment P=C3=A9ron wro=
+te:
+> > > > From: Suji Velupillai <suji.velupillai@broadcom.com>
+> > > >
+> > > > When pwm_bl framework calls enable, a call to pwm_is_enabled(pwm) s=
+till
+> > > > return false, this prevents the backlight being turn on at boot tim=
+e.
+> > > >
+> > > > Signed-off-by: Suji Velupillai <suji.velupillai@broadcom.com>
+> > > > Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
+> > > > ---
+> > > >  drivers/pwm/pwm-bcm-kona.c | 16 +++++++++++-----
+> > > >  1 file changed, 11 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.=
+c
+> > > > index 09a95aeb3a70..d991d53c4b38 100644
+> > > > --- a/drivers/pwm/pwm-bcm-kona.c
+> > > > +++ b/drivers/pwm/pwm-bcm-kona.c
+> > > > @@ -108,8 +108,8 @@ static void kona_pwmc_apply_settings(struct kon=
+a_pwmc *kp, unsigned int chan)
+> > > >       ndelay(400);
+> > > >  }
+> > > >
+> > > > -static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_devi=
+ce *pwm,
+> > > > -                         int duty_ns, int period_ns)
+> > > > +static int __pwmc_config(struct pwm_chip *chip, struct pwm_device =
+*pwm,
+> > > > +                      int duty_ns, int period_ns, bool pwmc_enable=
+d)
+> > > >  {
+> > > >       struct kona_pwmc *kp =3D to_kona_pwmc(chip);
+> > > >       u64 val, div, rate;
+> > > > @@ -155,7 +155,7 @@ static int kona_pwmc_config(struct pwm_chip *ch=
+ip, struct pwm_device *pwm,
+> > > >        * always calculated above to ensure the new values are
+> > > >        * validated immediately instead of on enable.
+> > > >        */
+> > > > -     if (pwm_is_enabled(pwm)) {
+> > > > +     if (pwm_is_enabled(pwm) || pwmc_enabled) {
+> > >
+> > > Having pwm-API-calls in hw-drivers is ugly. Apart from not giving the
+> > > intended return code this function should IMHO be reserved to pwm
+> > > consumers. The underlaying problem is that pwm-bl does:
+> > >
+> > >         pwm_config(pwm, duty_cycle, period);
+> > >         pwm_enable(pwm);
+> > >
+> > > and expects that the duty_cycle and period is used then. Doesn't
+> > > everything works just fine if the if-block is always executed?
+> >
+> > Tested and works fine for me. But I only have a Cygnus proc.
+> > Maybe there is some issue with Kona as explained by the comment (even
+> > if I don't understand it well).
+> >
+> >  * Don't apply settings if disabled. The period and duty cycle are
+> >  * always calculated above to ensure the new values are
+> >  * validated immediately instead of on enable.
+>
+> I wouldn't understand that as "If you apply settings on a disabled PWM a
+> kitten dies". I think it only means: At the current point in time
+> duty_cycle and period are not important as the hardware is off. So don't
+> bother to write these values to the hardware.
+>
+> @Tim: Do you think (or can test if) there is a problem when doing
+>
+> -       if (pwm_is_enabled(pwm)) {
+> +       if (1) {
+>
+> in kona_pwmc_config? (For sure the comment needs adaption and the if (1)
+> shouldn't make it into the driver, just used that as shorthand for the
+> change I want to suggest.)
+>
+> But still better than dropping the check is to convert the driver to the
+> atomic API. With that this problem would simply not occur.
+>
+> Best regards
+> Uwe
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
+|
+
+There is no per channel disable in the hardware so to simulate a
+disable, duty is set to zero.
+
+The check is there to prevent new config values from applying until
+the channel is enabled.
