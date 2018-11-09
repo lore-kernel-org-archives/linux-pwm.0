@@ -1,199 +1,71 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
- imx: Configure output to GPIO in disabled state
-Date: Thu, 8 Nov 2018 20:18:55 +0100
-Message-ID: <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
-References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
- <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
- <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
- <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
- <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
- <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
- <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
- <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
+Date: Fri,  9 Nov 2018 10:48:57 +0100
+Message-ID: <20181109094857.27079-1-heiko@sntech.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: lee.jones@linaro.org, daniel.thompson@linaro.org, jingoohan1@gmail.com
+Cc: enric.balletbo@collabora.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Nov 08, 2018 at 03:21:44PM +0000, Vokáč Michal wrote:
-> Hi Uwe,
-> 
-> On 7.11.2018 16:01, Uwe Kleine-König wrote:
-> >> Interesting idea. I just wonder why nobody else did not come up with such
-> >> a simple solution before.
-> > 
-> > I think I mentioned it already in this thread, but it went unnoticed :-)
-> 
-> I meant it like "How happened this was not invented years ago, when people
-> first noticed the issue with using inverted PWM for backlight on i.MX6."
-> In our project, this issue dates back to 2015 :(
-> 
-> > Then the patch isn't correct yet. The idea is always keep the hardware
-> > running and only disable it if it's uninverted.
-> 
-> OK, I got the point.
-> 
-> > In imx_pwm_probe it's not yet known what the polarity is supposed to be,
-> > right?
-> 
-> Not really. It can already be known but currently there is no way how to
-> pass the information to the probe function. I, as a creator of the device
-> (and author of a DTS file) know that the circuit needs inverted PWM signal.
-> And I know that the circuit needs to be disabled until I say it can be
-> enabled. How I say that can warry. It may be default brightness level > 0
-> in DTS file or from a userspace program using PWM sysfs interface.
-> 
-> > So the right thing to do there is to not touch the configuration
-> > of the pwm. I think all states that are problematic then are also
-> > problematic with the gpio/pinmux approach.
-> 
-> I think my use-case I already presented before is an example where
-> involving pinctrl solves the problem while the "leave PWM enabled
-> for inverted users" does not. That is all the time between
-> imx_pwm_probe() and imx_pwm_apply_v2().
-
-You're doing in probe:
-
-  if (pwm_is_running()):
-    mux(pin, function=pwm)
-  else:
-    gpio_set_value(gpio, 0)
-    mux(pin, function=gpio)
-
-This gives you the right level assuming the gpio specification uses the
-right flag (GPIO_ACTIVE_HIGH or GPIO_ACTIVE_LOW).
-
-Taking your example with the backlight device you specify an "init" and
-a "default" pinctrl and only "default" contains the muxing for the PWM
-pin everything should be as smooth as necessary: The pwm is only muxed
-when the backlight device is successfully bound. The probe function (of
-the backlight) should have initialized the PWM with the right polarity.
-Until then nothing happens on the pin (either because it's not muxed as
-PWM or because the PWM is already initialized by the bootloader).
-
-The only thing that is (maybe) needed on top of my change is that the
-pwm isn't stopped in pwm-imx's .probe.
-
-> >> In probe you do not have any users yet. So you do not know the requested
-> >> output polarity. With "default" pinctrl the PWM output would be muxed to
-> >> the selected pin and since the PWM chip is most probably disabled
-> >> (unless you enabled it in bootloader) you would get low level on the pin.
-> >> That means your backlight is fully enabled until the first call to
-> >> imx_pwm_apply_v2(). On my system this is 2 seconds.
-> > 
-> > With the gpio/pinmux approach you don't know the intended polarity
-> > either and maybe enable the display, too.
-> 
-> You know it because the pinctrl solution is optional. So if you use it,
-> you use it on purpose to override the default PWM output level in PWM
-> disabled state. It is very useful in cases where you need inverted and
-> disabled PWM signal from power-up to userspace. Or until some kernel
-> driver (backlight, led, fan..) enables it. For this it is the only
-> solution I think.
-> 
-> It allows you to boot with disabled PWM that has normal polarity set
-> by default. Later on from your userspace program you configure the PWM
-> to desired period/duty, set PWM output to inversed and enable it.
-> Until this point the circuit is disabled with my solution.
-> 
-> > For both the solution is to let the bootloader enable the pwm with
-> > the right output level. Am I missing something?
-> 
-> Bootloader is only a small part of the whole solution I think. And I
-> suppose you meant: "enable the *GPIO* with the right output level".
-
-No I meant the pwm. Well, it's as easy as that: Whenever with your
-approach you configure the pin as GPIO with the output set to low,
-instead configure the pwm with duty_cycle to zero (or disable it).
-Whenever with your approach you configure the pin as GPIO with the
-output set to high, configure the pwm with duty_cycle to 100%. (Keeping
-out inverted PWMs for the ease of discussion, but the procedure can be
-adapted accordingly.) The only difference then is that with your
-approach you already "know" in pwm-imx's .probe the idle level and can
-configure the GPIO accordingly. With my approach you just have to wait
-until the first pwm_apply which (as described above) works just as well.
- 
->   - Even if you use GPIO in bootloader to set the required level the
->     time frame from imx_pwm_probe to imx_pwm_apply is not covered.
-> 
->   - Currently there is no support in Linux pwm-imx driver to detect
->     the PWM chip is already enabled at probe time. I actually send
->     patches for this a month ago [1]. No response yet.
-> 
->   - Inverted PWM does not work in U-Boot (on imx at least). And it
->     does not seam like it can be fixed easily. I do not know what is
->     the situation in other bootloaders.
-> 
-> So my current bootloader solution is one of:
->   - Set the pin to the appropriate (HIGH) level using GPIO.
->   - Do not touch the pin at all, it has 100k pull-up by default.
-> 
-> >> The other thing is I would prefer to make the change optional. With your
-> >> approach you are changing the behavior for all current users of inverted
-> >> PWM. I do not think all imx6 users are aware of the problem so they might
-> >> not be OK with the sudden change in the behavior.
-> > 
-> > Isn't my change an improvement for all users? What state do you have in
-> > mind that make things worse than they are now?
-> 
-> Lets say that the user:
-> - Needs inverted PWM signal.
-> - Needs it to be disabled all the time unless he enable it.
-
-I don't see why anybody should care if the PWM is "disabled". A user
-should only care about the output level, how the pwm-imx driver
-implements this is out of scope. As backlight-pwm user/author you
-shouldn't even care which PWM driver is in use. It might be even an
-implementation that cannot be disabled (like the bcm-kona one).
-
-> What you propose (for all users of inverted PWM):
-> H|____________________                                     _____________
-> L|                    \___________________________________/
->   +-------+------------+-----------------+-----------------+-------------+
->   | reset | bootloader | default pinctrl | PWM enable 100% | PWM disable |
-> 
-> My solution (for those who want it):
-> H|______________________________________                   _____________
-> L|                                      \_________________/
->   +-------+------------+-----------------+-----------------+-------------+
->   | reset | bootloader | default pinctrl | PWM enable 100% | PWM disable |
-> 
-
-With the above changes there is no relevant difference between your and
-my approach. I save your and my time to repeat this once more with these
-nice pictures. (If you don't believe me, I can do this later if you
-wish.) The nice upside of my approach however is that the pwm-imx driver
-stays simpler and the dts author doesn't need to care to add a gpio
-specifier and two pinmux configurations instead of one.
- 
-> So your solution at least allows the user to really disable the circuit.
-> I can not really think of cases where this might not be good for current
-> users. Maybe that they simply expect that no matter what polarity is set,
-> the output in disabled state is always low. And they may have HW that
-> get already used to that and does not like the change :)
-> 
-> And it reminds me of something similar I have done for OLED display reset
-> recently [2]. I tried to fix active-low reset sequence that is hardcoded
-> in the driver. So you are supposed to use GPIO_ACTIVE_HIGH in DT to make
-> the active-low reset work. It was rejected. The reason was backward DTB
-> compatibility [3]. In other words: "Users of newer kernels expect that
-> the reset still work the same if they do not update DTBs on their boards".
-> I think this is kind of similar?
-
-I don't see a compatibility issue here.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Q29tbWl0IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2JsOiBTd2l0Y2ggdG8gdXNpbmcg
+ImF0b21pYyIgUFdNIEFQSSIpCnJlbW92ZWQgdGhlIGRyaXZlciBpbnRlcm5hbCBlbmFibGVkIHRy
+YWNraW5nIGluIGZhdm9yIG9mIHNpbXBseSBjaGVja2luZwp0aGUgcHdtIHN0YXRlLgoKVGhpcyBj
+YW4gbGVhZCB0byBpc3N1ZXMgYXMgYWxsIG9mIGdwaW8tLCByZWd1bGF0b3ItIGFuZCBwd20tc3Rh
+dGUgYXJlIHVzZWQKdG8gZGV0ZXJtaW5lIHRoZSBpbml0aWFsIHN0YXRlIGFuZCB0aGUgYm9vdGxv
+YWRlciBvciBrZXJuZWwgY2FuIGxlYXZlIHRoZW0KaW4gYW4gaW5jb25zaXN0ZW50IHN0YXRlIGF0
+IGJvb3QuCgpJbiBteSBjYXNlIG9uIHJrMzM5OS1rZXZpbiwgdGhlIHB3bSBiYWNrbGlnaHQgaXMg
+YnVpbGQgYXMgbW9kdWxlIGFuZCB0aGUKa2VybmVsIGRpc2FibGVzIHRoZSBzdXBwbHkgcmVndWxh
+dG9yIGFzIHVudXNlZCB3aGlsZSBrZWVwaW5nIHRoZSBwd20gcnVubmluZwp0aHVzIHB3bV9ibCBj
+YWxsaW5nIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKCkgZHVyaW5nIHByb2JlIGFuZCBjcmVhdGlu
+ZyBhbgp1bm1hdGNoZWQgcmVndWxhdG9yLWRpc2FibGUgY2FsbCwgYXMgaXQgbmV2ZXIgZ290IGVu
+YWJsZWQgZnJvbSB0aGUgcHdtLWJsCmJlZm9yZS4KClRvIHByZXZlbnQgdGhlc2UgY29uc2lzdGVu
+Y3kgaXNzdWVzLCByZWludHJvZHVjZSB0aGUgZHJpdmVyLWludGVybmFsCnRyYWNraW5nIG9mIHRo
+ZSBlbmFibGVkIHN0YXRlLgoKRml4ZXM6IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2Js
+OiBTd2l0Y2ggdG8gdXNpbmcgImF0b21pYyIgUFdNIEFQSSIpClNpZ25lZC1vZmYtYnk6IEhlaWtv
+IFN0dWVibmVyIDxoZWlrb0BzbnRlY2guZGU+Ci0tLQogZHJpdmVycy92aWRlby9iYWNrbGlnaHQv
+cHdtX2JsLmMgfCA5ICsrKysrKystLQogMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwg
+MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
+YmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCmluZGV4IDY3OGIyNzA2MzE5
+OC4uYmNkMDhiNDE3NjVkIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
+YmwuYworKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwpAQCAtMzAsNiArMzAs
+NyBAQCBzdHJ1Y3QgcHdtX2JsX2RhdGEgewogCXN0cnVjdCBkZXZpY2UJCSpkZXY7CiAJdW5zaWdu
+ZWQgaW50CQlsdGhfYnJpZ2h0bmVzczsKIAl1bnNpZ25lZCBpbnQJCSpsZXZlbHM7CisJYm9vbAkJ
+CWVuYWJsZWQ7CiAJc3RydWN0IHJlZ3VsYXRvcgkqcG93ZXJfc3VwcGx5OwogCXN0cnVjdCBncGlv
+X2Rlc2MJKmVuYWJsZV9ncGlvOwogCXVuc2lnbmVkIGludAkJc2NhbGU7CkBAIC01MCw3ICs1MSw3
+IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRh
+ICpwYikKIAlpbnQgZXJyOwogCiAJcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwotCWlm
+IChzdGF0ZS5lbmFibGVkKQorCWlmIChwYi0+ZW5hYmxlZCkKIAkJcmV0dXJuOwogCiAJZXJyID0g
+cmVndWxhdG9yX2VuYWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKQEAgLTY1LDYgKzY2LDggQEAgc3Rh
+dGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQog
+CiAJaWYgKHBiLT5lbmFibGVfZ3BpbykKIAkJZ3Bpb2Rfc2V0X3ZhbHVlX2NhbnNsZWVwKHBiLT5l
+bmFibGVfZ3BpbywgMSk7CisKKwlwYi0+ZW5hYmxlZCA9IHRydWU7CiB9CiAKIHN0YXRpYyB2b2lk
+IHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCkBAIC03Miw3
+ICs3NSw3IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21f
+YmxfZGF0YSAqcGIpCiAJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKIAogCXB3bV9nZXRfc3RhdGUo
+cGItPnB3bSwgJnN0YXRlKTsKLQlpZiAoIXN0YXRlLmVuYWJsZWQpCisJaWYgKCFwYi0+ZW5hYmxl
+ZCkKIAkJcmV0dXJuOwogCiAJaWYgKHBiLT5lbmFibGVfZ3BpbykKQEAgLTg2LDYgKzg5LDcgQEAg
+c3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRhICpw
+YikKIAlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKIAogCXJlZ3VsYXRvcl9kaXNh
+YmxlKHBiLT5wb3dlcl9zdXBwbHkpOworCXBiLT5lbmFibGVkID0gZmFsc2U7CiB9CiAKIHN0YXRp
+YyBpbnQgY29tcHV0ZV9kdXR5X2N5Y2xlKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmln
+aHRuZXNzKQpAQCAtNDgzLDYgKzQ4Nyw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9i
+ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogCXBiLT5jaGVja19mYiA9IGRhdGEtPmNo
+ZWNrX2ZiOwogCXBiLT5leGl0ID0gZGF0YS0+ZXhpdDsKIAlwYi0+ZGV2ID0gJnBkZXYtPmRldjsK
+KwlwYi0+ZW5hYmxlZCA9IGZhbHNlOwogCXBiLT5wb3N0X3B3bV9vbl9kZWxheSA9IGRhdGEtPnBv
+c3RfcHdtX29uX2RlbGF5OwogCXBiLT5wd21fb2ZmX2RlbGF5ID0gZGF0YS0+cHdtX29mZl9kZWxh
+eTsKIAotLSAKMi4xOC4wCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3Rv
+cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmkt
+ZGV2ZWwK
