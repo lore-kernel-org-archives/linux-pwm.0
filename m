@@ -1,45 +1,82 @@
-From: Eric Anholt <eric@anholt.net>
-Subject: Re: [PATCH 13/17] pwm: bcm2835: Switch to SPDX identifier
-Date: Sat, 10 Nov 2018 08:56:15 -0800
-Message-ID: <87r2fsyiq8.fsf@anholt.net>
-References: <1541866978-7943-1-git-send-email-stefan.wahren@i2se.com>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: Re: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
+Date: Fri, 9 Nov 2018 11:15:18 +0100
+Message-ID: <3f7df9d3-9293-2bdd-73c8-d4ad01801ab0@collabora.com>
+References: <20181109094857.27079-1-heiko@sntech.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1541866978-7943-1-git-send-email-stefan.wahren@i2se.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>, Bart Tanghe <bart.tanghe@thomasmore.be>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20181109094857.27079-1-heiko@sntech.de>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Heiko Stuebner <heiko@sntech.de>, lee.jones@linaro.org, daniel.thompson@linaro.org, jingoohan1@gmail.com
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-
-Stefan Wahren <stefan.wahren@i2se.com> writes:
-
-> Adopt the SPDX license identifier headers to ease license compliance
-> management.
-
-Reviewed-by: Eric Anholt <eric@anholt.net>
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEE/JuuFDWp9/ZkuCBXtdYpNtH8nugFAlvnDa8ACgkQtdYpNtH8
-nujDPg/+Pesihf2sETykqYJ7+U6uPWEd74trGLjIto3OiOvhxJG3djUUu9uyRiZD
-sS9w9gOpWYQtvZv9F7ZsDri1pWQc9DPIGkfzg7jN68AA9tuyiM85PbSS1eCR/yOF
-p6W+vL7owy8ICX5yXBMiyD6fdRaKnkK5gT8zqrvXX1uJPcHpybM9lv1b4PoL0Hk9
-Air/ikMAj+icVkLB3vVMR+0EmDGkWdbBpeQMsvc6C/BY2hqaQAT4Qnu3F29L53N6
-oDhDNF9vs8fgOUndOmFR7wjogIoXhSa5n0Qo9CQE73uxPFtL/pReaOsVWT+EVC1l
-kmsFVOERupq6xrJBNvZYXvK+VUFTefgBxrQYrvyiw/uwqzXSJ5lOCfFGeTrz1x74
-UhBg+C69SJNKUoBl5orLL1Du+rM2XMiOFgBlrIL+QNVn2EQv4fDEkLTfD9b1357J
-LminKq3j44fxcOh7uUYXTRy9deOWyCbVDlISpSFkysMg+PwiPTmD1DmhX6rfz825
-RqVkGB/ZRYFtOw/1/6ZQv2XZfccaw8epXprBKq3oHlmqAH/VJIFEaKiiDD9max7b
-W4AEXRrk+WbwKgHvV0+13qykL5WgQ/zcpSrCqT3f70UxZNIoi3Ia1YSU8n/IpPeX
-C7hRdpRlTBCL8sumnVwsPduGMz1QQKadDpUAC3EJxc+HmhUFEys=
-=9i8p
------END PGP SIGNATURE-----
---=-=-=--
+SGkgSGVpa28sCgpNYW55IHRoYW5rcyB0byBjYXRjaCBhbmQgZGlnIGludG8gdGhpcywgSSBkaWQg
+bW9yZSB0ZXN0cyBidXQgSSB3YXMgbm90IGFibGUgdG8KcmVwcm9kdWNlIHRoZSBpc3N1ZSB3aXRo
+IG15IG5mcyBlbnZpcm9ubWVudC4gQW55d2F5IHRoZSBwYXRjaCBsb29rcyBnb29kIHRvIG1lCmFu
+ZCBmaXhlcyB0aGUgaXNzdWUgZm9yIHlvdSwgc28KCk9uIDkvMTEvMTggMTA6NDgsIEhlaWtvIFN0
+dWVibmVyIHdyb3RlOgo+IENvbW1pdCBlNmJjY2EwODkwYjkgKCJiYWNrbGlnaHQ6IHB3bV9ibDog
+U3dpdGNoIHRvIHVzaW5nICJhdG9taWMiIFBXTSBBUEkiKQo+IHJlbW92ZWQgdGhlIGRyaXZlciBp
+bnRlcm5hbCBlbmFibGVkIHRyYWNraW5nIGluIGZhdm9yIG9mIHNpbXBseSBjaGVja2luZwo+IHRo
+ZSBwd20gc3RhdGUuCj4gCj4gVGhpcyBjYW4gbGVhZCB0byBpc3N1ZXMgYXMgYWxsIG9mIGdwaW8t
+LCByZWd1bGF0b3ItIGFuZCBwd20tc3RhdGUgYXJlIHVzZWQKPiB0byBkZXRlcm1pbmUgdGhlIGlu
+aXRpYWwgc3RhdGUgYW5kIHRoZSBib290bG9hZGVyIG9yIGtlcm5lbCBjYW4gbGVhdmUgdGhlbQo+
+IGluIGFuIGluY29uc2lzdGVudCBzdGF0ZSBhdCBib290Lgo+IAo+IEluIG15IGNhc2Ugb24gcmsz
+Mzk5LWtldmluLCB0aGUgcHdtIGJhY2tsaWdodCBpcyBidWlsZCBhcyBtb2R1bGUgYW5kIHRoZQo+
+IGtlcm5lbCBkaXNhYmxlcyB0aGUgc3VwcGx5IHJlZ3VsYXRvciBhcyB1bnVzZWQgd2hpbGUga2Vl
+cGluZyB0aGUgcHdtIHJ1bm5pbmcKPiB0aHVzIHB3bV9ibCBjYWxsaW5nIHB3bV9iYWNrbGlnaHRf
+cG93ZXJfb2ZmKCkgZHVyaW5nIHByb2JlIGFuZCBjcmVhdGluZyBhbgo+IHVubWF0Y2hlZCByZWd1
+bGF0b3ItZGlzYWJsZSBjYWxsLCBhcyBpdCBuZXZlciBnb3QgZW5hYmxlZCBmcm9tIHRoZSBwd20t
+YmwKPiBiZWZvcmUuCj4gCj4gVG8gcHJldmVudCB0aGVzZSBjb25zaXN0ZW5jeSBpc3N1ZXMsIHJl
+aW50cm9kdWNlIHRoZSBkcml2ZXItaW50ZXJuYWwKPiB0cmFja2luZyBvZiB0aGUgZW5hYmxlZCBz
+dGF0ZS4KPiAKPiBGaXhlczogZTZiY2NhMDg5MGI5ICgiYmFja2xpZ2h0OiBwd21fYmw6IFN3aXRj
+aCB0byB1c2luZyAiYXRvbWljIiBQV00gQVBJIikKPiBTaWduZWQtb2ZmLWJ5OiBIZWlrbyBTdHVl
+Ym5lciA8aGVpa29Ac250ZWNoLmRlPgo+IC0tLQo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9w
+d21fYmwuYyB8IDkgKysrKysrKy0tCj4gIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyks
+IDIgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0
+L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBpbmRleCA2Nzhi
+MjcwNjMxOTguLmJjZDA4YjQxNzY1ZCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2ts
+aWdodC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4g
+QEAgLTMwLDYgKzMwLDcgQEAgc3RydWN0IHB3bV9ibF9kYXRhIHsKPiAgCXN0cnVjdCBkZXZpY2UJ
+CSpkZXY7Cj4gIAl1bnNpZ25lZCBpbnQJCWx0aF9icmlnaHRuZXNzOwo+ICAJdW5zaWduZWQgaW50
+CQkqbGV2ZWxzOwo+ICsJYm9vbAkJCWVuYWJsZWQ7Cj4gIAlzdHJ1Y3QgcmVndWxhdG9yCSpwb3dl
+cl9zdXBwbHk7Cj4gIAlzdHJ1Y3QgZ3Bpb19kZXNjCSplbmFibGVfZ3BpbzsKPiAgCXVuc2lnbmVk
+IGludAkJc2NhbGU7Cj4gQEAgLTUwLDcgKzUxLDcgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdo
+dF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAJaW50IGVycjsKPiAgCj4gIAlw
+d21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gLQlpZiAoc3RhdGUuZW5hYmxlZCkKPiAr
+CWlmIChwYi0+ZW5hYmxlZCkKPiAgCQlyZXR1cm47Cj4gIAo+ICAJZXJyID0gcmVndWxhdG9yX2Vu
+YWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKPiBAQCAtNjUsNiArNjYsOCBAQCBzdGF0aWMgdm9pZCBw
+d21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gIAo+ICAJaWYg
+KHBiLT5lbmFibGVfZ3BpbykKPiAgCQlncGlvZF9zZXRfdmFsdWVfY2Fuc2xlZXAocGItPmVuYWJs
+ZV9ncGlvLCAxKTsKPiArCj4gKwlwYi0+ZW5hYmxlZCA9IHRydWU7Cj4gIH0KPiAgCj4gIHN0YXRp
+YyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4g
+QEAgLTcyLDcgKzc1LDcgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3Ry
+dWN0IHB3bV9ibF9kYXRhICpwYikKPiAgCXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7Cj4gIAo+ICAJ
+cHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+IC0JaWYgKCFzdGF0ZS5lbmFibGVkKQo+
+ICsJaWYgKCFwYi0+ZW5hYmxlZCkKPiAgCQlyZXR1cm47Cj4gIAo+ICAJaWYgKHBiLT5lbmFibGVf
+Z3BpbykKPiBAQCAtODYsNiArODksNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
+X29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAJcHdtX2FwcGx5X3N0YXRlKHBiLT5wd20s
+ICZzdGF0ZSk7Cj4gIAo+ICAJcmVndWxhdG9yX2Rpc2FibGUocGItPnBvd2VyX3N1cHBseSk7Cj4g
+KwlwYi0+ZW5hYmxlZCA9IGZhbHNlOwo+ICB9Cj4gIAo+ICBzdGF0aWMgaW50IGNvbXB1dGVfZHV0
+eV9jeWNsZShzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykKPiBAQCAtNDgz
+LDYgKzQ4Nyw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+ICAJcGItPmNoZWNrX2ZiID0gZGF0YS0+Y2hlY2tfZmI7Cj4gIAlw
+Yi0+ZXhpdCA9IGRhdGEtPmV4aXQ7Cj4gIAlwYi0+ZGV2ID0gJnBkZXYtPmRldjsKPiArCXBiLT5l
+bmFibGVkID0gZmFsc2U7Cj4gIAlwYi0+cG9zdF9wd21fb25fZGVsYXkgPSBkYXRhLT5wb3N0X3B3
+bV9vbl9kZWxheTsKPiAgCXBiLT5wd21fb2ZmX2RlbGF5ID0gZGF0YS0+cHdtX29mZl9kZWxheTsK
+PiAgCj4gCgpSZXZpZXdlZC1ieTogRW5yaWMgQmFsbGV0Ym8gaSBTZXJyYSA8ZW5yaWMuYmFsbGV0
+Ym9AY29sbGFib3JhLmNvbT4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
+LWRldmVsCg==
