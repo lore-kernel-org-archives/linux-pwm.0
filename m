@@ -1,71 +1,80 @@
-From: Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
-Date: Fri,  9 Nov 2018 10:48:57 +0100
-Message-ID: <20181109094857.27079-1-heiko@sntech.de>
+From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
+Subject: Re: [PATCH 1/2] pwm: kconfig: enable kona pwm to be built for cygnus arch
+Date: Fri, 9 Nov 2018 10:58:41 +0100
+Message-ID: <CAJiuCcc07mTfqk1UOKqkSuJGOR-2AN18EJZ7qcvzkKoTGeUhaA@mail.gmail.com>
+References: <20181107093613.26734-1-peron.clem@gmail.com> <20181107161247.sesu2comhes2d4kx@pengutronix.de>
+ <dbd99d36-4ff2-8e14-cc54-0896459fdb0e@broadcom.com> <CAJiuCccuFKaht93QPvT+taaT8g7CHGS9uP9Ekr0VWASp+ZGZmA@mail.gmail.com>
+ <20181108122246.GB1340@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: lee.jones@linaro.org, daniel.thompson@linaro.org, jingoohan1@gmail.com
-Cc: enric.balletbo@collabora.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181108122246.GB1340@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Scott Branden <scott.branden@broadcom.com>, u.kleine-koenig@pengutronix.de, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Q29tbWl0IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2JsOiBTd2l0Y2ggdG8gdXNpbmcg
-ImF0b21pYyIgUFdNIEFQSSIpCnJlbW92ZWQgdGhlIGRyaXZlciBpbnRlcm5hbCBlbmFibGVkIHRy
-YWNraW5nIGluIGZhdm9yIG9mIHNpbXBseSBjaGVja2luZwp0aGUgcHdtIHN0YXRlLgoKVGhpcyBj
-YW4gbGVhZCB0byBpc3N1ZXMgYXMgYWxsIG9mIGdwaW8tLCByZWd1bGF0b3ItIGFuZCBwd20tc3Rh
-dGUgYXJlIHVzZWQKdG8gZGV0ZXJtaW5lIHRoZSBpbml0aWFsIHN0YXRlIGFuZCB0aGUgYm9vdGxv
-YWRlciBvciBrZXJuZWwgY2FuIGxlYXZlIHRoZW0KaW4gYW4gaW5jb25zaXN0ZW50IHN0YXRlIGF0
-IGJvb3QuCgpJbiBteSBjYXNlIG9uIHJrMzM5OS1rZXZpbiwgdGhlIHB3bSBiYWNrbGlnaHQgaXMg
-YnVpbGQgYXMgbW9kdWxlIGFuZCB0aGUKa2VybmVsIGRpc2FibGVzIHRoZSBzdXBwbHkgcmVndWxh
-dG9yIGFzIHVudXNlZCB3aGlsZSBrZWVwaW5nIHRoZSBwd20gcnVubmluZwp0aHVzIHB3bV9ibCBj
-YWxsaW5nIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKCkgZHVyaW5nIHByb2JlIGFuZCBjcmVhdGlu
-ZyBhbgp1bm1hdGNoZWQgcmVndWxhdG9yLWRpc2FibGUgY2FsbCwgYXMgaXQgbmV2ZXIgZ290IGVu
-YWJsZWQgZnJvbSB0aGUgcHdtLWJsCmJlZm9yZS4KClRvIHByZXZlbnQgdGhlc2UgY29uc2lzdGVu
-Y3kgaXNzdWVzLCByZWludHJvZHVjZSB0aGUgZHJpdmVyLWludGVybmFsCnRyYWNraW5nIG9mIHRo
-ZSBlbmFibGVkIHN0YXRlLgoKRml4ZXM6IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2Js
-OiBTd2l0Y2ggdG8gdXNpbmcgImF0b21pYyIgUFdNIEFQSSIpClNpZ25lZC1vZmYtYnk6IEhlaWtv
-IFN0dWVibmVyIDxoZWlrb0BzbnRlY2guZGU+Ci0tLQogZHJpdmVycy92aWRlby9iYWNrbGlnaHQv
-cHdtX2JsLmMgfCA5ICsrKysrKystLQogMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwg
-MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
-YmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCmluZGV4IDY3OGIyNzA2MzE5
-OC4uYmNkMDhiNDE3NjVkIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
-YmwuYworKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwpAQCAtMzAsNiArMzAs
-NyBAQCBzdHJ1Y3QgcHdtX2JsX2RhdGEgewogCXN0cnVjdCBkZXZpY2UJCSpkZXY7CiAJdW5zaWdu
-ZWQgaW50CQlsdGhfYnJpZ2h0bmVzczsKIAl1bnNpZ25lZCBpbnQJCSpsZXZlbHM7CisJYm9vbAkJ
-CWVuYWJsZWQ7CiAJc3RydWN0IHJlZ3VsYXRvcgkqcG93ZXJfc3VwcGx5OwogCXN0cnVjdCBncGlv
-X2Rlc2MJKmVuYWJsZV9ncGlvOwogCXVuc2lnbmVkIGludAkJc2NhbGU7CkBAIC01MCw3ICs1MSw3
-IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRh
-ICpwYikKIAlpbnQgZXJyOwogCiAJcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwotCWlm
-IChzdGF0ZS5lbmFibGVkKQorCWlmIChwYi0+ZW5hYmxlZCkKIAkJcmV0dXJuOwogCiAJZXJyID0g
-cmVndWxhdG9yX2VuYWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKQEAgLTY1LDYgKzY2LDggQEAgc3Rh
-dGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQog
-CiAJaWYgKHBiLT5lbmFibGVfZ3BpbykKIAkJZ3Bpb2Rfc2V0X3ZhbHVlX2NhbnNsZWVwKHBiLT5l
-bmFibGVfZ3BpbywgMSk7CisKKwlwYi0+ZW5hYmxlZCA9IHRydWU7CiB9CiAKIHN0YXRpYyB2b2lk
-IHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCkBAIC03Miw3
-ICs3NSw3IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21f
-YmxfZGF0YSAqcGIpCiAJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKIAogCXB3bV9nZXRfc3RhdGUo
-cGItPnB3bSwgJnN0YXRlKTsKLQlpZiAoIXN0YXRlLmVuYWJsZWQpCisJaWYgKCFwYi0+ZW5hYmxl
-ZCkKIAkJcmV0dXJuOwogCiAJaWYgKHBiLT5lbmFibGVfZ3BpbykKQEAgLTg2LDYgKzg5LDcgQEAg
-c3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRhICpw
-YikKIAlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKIAogCXJlZ3VsYXRvcl9kaXNh
-YmxlKHBiLT5wb3dlcl9zdXBwbHkpOworCXBiLT5lbmFibGVkID0gZmFsc2U7CiB9CiAKIHN0YXRp
-YyBpbnQgY29tcHV0ZV9kdXR5X2N5Y2xlKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmln
-aHRuZXNzKQpAQCAtNDgzLDYgKzQ4Nyw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9i
-ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogCXBiLT5jaGVja19mYiA9IGRhdGEtPmNo
-ZWNrX2ZiOwogCXBiLT5leGl0ID0gZGF0YS0+ZXhpdDsKIAlwYi0+ZGV2ID0gJnBkZXYtPmRldjsK
-KwlwYi0+ZW5hYmxlZCA9IGZhbHNlOwogCXBiLT5wb3N0X3B3bV9vbl9kZWxheSA9IGRhdGEtPnBv
-c3RfcHdtX29uX2RlbGF5OwogCXBiLT5wd21fb2ZmX2RlbGF5ID0gZGF0YS0+cHdtX29mZl9kZWxh
-eTsKIAotLSAKMi4xOC4wCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3Rv
-cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmkt
-ZGV2ZWwK
+Hi Thierry,
+
+On Thu, 8 Nov 2018 at 13:22, Thierry Reding <thierry.reding@gmail.com> wrot=
+e:
+>
+> On Thu, Nov 08, 2018 at 11:47:53AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
+> > Hi Uwe, Scott,
+> >
+> > On Wed, 7 Nov 2018 at 17:48, Scott Branden <scott.branden@broadcom.com>=
+ wrote:
+> > >
+> > >
+> > > On 2018-11-07 8:12 a.m., Uwe Kleine-K=C3=B6nig wrote:
+> > > > On Wed, Nov 07, 2018 at 10:36:12AM +0100, Cl=C3=A9ment P=C3=A9ron w=
+rote:
+> > > >> The Cygnus architecture use a Kona PWM. This is already present
+> > > >> in the device tree but can't be built actually. Hence, allow the
+> > > >> Kona PWM to be built for Cygnus arch.
+> > > >>
+> > > >> Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
+> > > >> ---
+> > > >>   drivers/pwm/Kconfig | 3 ++-
+> > > >>   1 file changed, 2 insertions(+), 1 deletion(-)
+> > > >>
+> > > >> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > > >> index 763ee50ea57d..76d56fc8b1b7 100644
+> > > >> --- a/drivers/pwm/Kconfig
+> > > >> +++ b/drivers/pwm/Kconfig
+> > > >> @@ -88,7 +88,8 @@ config PWM_BCM_IPROC
+> > > >>
+> > > >>   config PWM_BCM_KONA
+> > > >>      tristate "Kona PWM support"
+> > > >> -    depends on ARCH_BCM_MOBILE
+> > > >> +    depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS
+> > > >> +    default ARCH_BCM_CYGNUS
+> > > > Is it possible to build this driver also on other arches? Then you =
+might
+> > > > want to consider
+> > > >
+> > > >       depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS || COMPILE_TEST
+> > > good idea to add the COMPILE_TEST just to increase compile coverage
+> >
+> > Will Do.
+>
+> This is known to potentially break builds on things like UM where we
+> have !HAS_IOMEM. Please make sure you thoroughly build-test before you
+> switch on COMPILE_TEST.
+
+Thanks for the point, so something like this (but maybe it's too
+protective no ?) :
+
+config PWM_BCM_KONA
+        tristate "Kona PWM support"
+        depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS || COMPILE_TEST
+        depends on COMMON_CLK && HAS_IOMEM && OF
+        default ARCH_BCM_CYGNUS
+
+Regards,
+Clement
+
+
+>
+> Thierry
