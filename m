@@ -1,50 +1,48 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [resend PATCH 3/3] dt-bindings: pwm: update bindings for MT7629
- SoC
-Date: Tue, 13 Nov 2018 10:55:39 +0100
-Message-ID: <20181113095539.frqnvdfts632k3os@pengutronix.de>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [resend PATCH 1/3] pwm: mediatek: drop flag 'has_clks'
+Date: Tue, 13 Nov 2018 10:00:58 -0800
+Message-ID: <154213205843.88331.7023190778461777093@swboyd.mtv.corp.google.com>
 References: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
- <630234ce3f13d93650c820be8f1724b84dd3c0ba.1542074855.git.ryder.lee@mediatek.com>
+ <20181113095210.mh3iy5tcsu6w6tem@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <630234ce3f13d93650c820be8f1724b84dd3c0ba.1542074855.git.ryder.lee@mediatek.com>
+In-Reply-To: <20181113095210.mh3iy5tcsu6w6tem@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ryder Lee <ryder.lee@mediatek.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+To: Ryder Lee <ryder.lee@mediatek.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, John Crispin <john@phrozen.org>, kernel@pengutronix.de, linux-clk@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Nov 13, 2018 at 10:08:24AM +0800, Ryder Lee wrote:
-> This updates bindings for MT7629 pwm controller.
-> 
-> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> index 991728c..4a2885b 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> @@ -6,6 +6,7 @@ Required properties:
->     - "mediatek,mt7622-pwm": found on mt7622 SoC.
->     - "mediatek,mt7623-pwm": found on mt7623 SoC.
->     - "mediatek,mt7628-pwm": found on mt7628 SoC.
-> +   - "mediatek,mt7629-pwm": found on mt7629 SoC.
->   - reg: physical base address and length of the controller's registers.
->   - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
->     the cell format.
+Quoting Uwe Kleine-K=C3=B6nig (2018-11-13 01:52:10)
+> =
 
-Does the mt7629 need clocks? I'd suggest to move the clocks and
-clock-names description to a section "Optional properties" to match what
-is implemented in patch 1 of this series.
+> I wonder if it would make sense to introduce functions like:
+> =
 
-Best regards
-Uwe
+>         struct clk *clk_get_optional(struct device *dev, const char *id)
+> =
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> that return NULL instead of ERR_PTR(-ENODEV).
+> =
+
+> Then the above would simplify to:
+> =
+
+>         pc->clks[i] =3D devm_clk_get_optional(&pdev->dev, mtk_pwm_clk_nam=
+e[i]);
+>         if (IS_ERR(pc->clks[i]) {
+>                 if (PTR_ERR(pc->clks[i]) =3D=3D -EPROBE_DEFER)
+>                         dev_err(...);
+>                 return PTR_ERR(pc->clks[i]);
+>         }
+> =
+
+> (added the clk people to Cc for this question).
+> =
+
+
+Such a patch is already on the list and not getting much review.
+
+http://lkml.kernel.org/r/1535724443-21150-1-git-send-email-phil.edworthy@re=
+nesas.com
