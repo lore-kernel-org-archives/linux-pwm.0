@@ -1,82 +1,44 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: Re: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
-Date: Fri, 9 Nov 2018 11:15:18 +0100
-Message-ID: <3f7df9d3-9293-2bdd-73c8-d4ad01801ab0@collabora.com>
-References: <20181109094857.27079-1-heiko@sntech.de>
+From: Ryder Lee <ryder.lee@mediatek.com>
+Subject: [resend PATCH 2/3] pwm: mediatek: add pwm support for MT7629 SoC
+Date: Tue, 13 Nov 2018 10:08:23 +0800
+Message-ID: <9043534495d49c532bdb0b904344b77faeb41359.1542074855.git.ryder.lee@mediatek.com>
+References: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20181109094857.27079-1-heiko@sntech.de>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Heiko Stuebner <heiko@sntech.de>, lee.jones@linaro.org, daniel.thompson@linaro.org, jingoohan1@gmail.com
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Ryder Lee <ryder.lee@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgSGVpa28sCgpNYW55IHRoYW5rcyB0byBjYXRjaCBhbmQgZGlnIGludG8gdGhpcywgSSBkaWQg
-bW9yZSB0ZXN0cyBidXQgSSB3YXMgbm90IGFibGUgdG8KcmVwcm9kdWNlIHRoZSBpc3N1ZSB3aXRo
-IG15IG5mcyBlbnZpcm9ubWVudC4gQW55d2F5IHRoZSBwYXRjaCBsb29rcyBnb29kIHRvIG1lCmFu
-ZCBmaXhlcyB0aGUgaXNzdWUgZm9yIHlvdSwgc28KCk9uIDkvMTEvMTggMTA6NDgsIEhlaWtvIFN0
-dWVibmVyIHdyb3RlOgo+IENvbW1pdCBlNmJjY2EwODkwYjkgKCJiYWNrbGlnaHQ6IHB3bV9ibDog
-U3dpdGNoIHRvIHVzaW5nICJhdG9taWMiIFBXTSBBUEkiKQo+IHJlbW92ZWQgdGhlIGRyaXZlciBp
-bnRlcm5hbCBlbmFibGVkIHRyYWNraW5nIGluIGZhdm9yIG9mIHNpbXBseSBjaGVja2luZwo+IHRo
-ZSBwd20gc3RhdGUuCj4gCj4gVGhpcyBjYW4gbGVhZCB0byBpc3N1ZXMgYXMgYWxsIG9mIGdwaW8t
-LCByZWd1bGF0b3ItIGFuZCBwd20tc3RhdGUgYXJlIHVzZWQKPiB0byBkZXRlcm1pbmUgdGhlIGlu
-aXRpYWwgc3RhdGUgYW5kIHRoZSBib290bG9hZGVyIG9yIGtlcm5lbCBjYW4gbGVhdmUgdGhlbQo+
-IGluIGFuIGluY29uc2lzdGVudCBzdGF0ZSBhdCBib290Lgo+IAo+IEluIG15IGNhc2Ugb24gcmsz
-Mzk5LWtldmluLCB0aGUgcHdtIGJhY2tsaWdodCBpcyBidWlsZCBhcyBtb2R1bGUgYW5kIHRoZQo+
-IGtlcm5lbCBkaXNhYmxlcyB0aGUgc3VwcGx5IHJlZ3VsYXRvciBhcyB1bnVzZWQgd2hpbGUga2Vl
-cGluZyB0aGUgcHdtIHJ1bm5pbmcKPiB0aHVzIHB3bV9ibCBjYWxsaW5nIHB3bV9iYWNrbGlnaHRf
-cG93ZXJfb2ZmKCkgZHVyaW5nIHByb2JlIGFuZCBjcmVhdGluZyBhbgo+IHVubWF0Y2hlZCByZWd1
-bGF0b3ItZGlzYWJsZSBjYWxsLCBhcyBpdCBuZXZlciBnb3QgZW5hYmxlZCBmcm9tIHRoZSBwd20t
-YmwKPiBiZWZvcmUuCj4gCj4gVG8gcHJldmVudCB0aGVzZSBjb25zaXN0ZW5jeSBpc3N1ZXMsIHJl
-aW50cm9kdWNlIHRoZSBkcml2ZXItaW50ZXJuYWwKPiB0cmFja2luZyBvZiB0aGUgZW5hYmxlZCBz
-dGF0ZS4KPiAKPiBGaXhlczogZTZiY2NhMDg5MGI5ICgiYmFja2xpZ2h0OiBwd21fYmw6IFN3aXRj
-aCB0byB1c2luZyAiYXRvbWljIiBQV00gQVBJIikKPiBTaWduZWQtb2ZmLWJ5OiBIZWlrbyBTdHVl
-Ym5lciA8aGVpa29Ac250ZWNoLmRlPgo+IC0tLQo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9w
-d21fYmwuYyB8IDkgKysrKysrKy0tCj4gIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyks
-IDIgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0
-L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBpbmRleCA2Nzhi
-MjcwNjMxOTguLmJjZDA4YjQxNzY1ZCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2ts
-aWdodC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4g
-QEAgLTMwLDYgKzMwLDcgQEAgc3RydWN0IHB3bV9ibF9kYXRhIHsKPiAgCXN0cnVjdCBkZXZpY2UJ
-CSpkZXY7Cj4gIAl1bnNpZ25lZCBpbnQJCWx0aF9icmlnaHRuZXNzOwo+ICAJdW5zaWduZWQgaW50
-CQkqbGV2ZWxzOwo+ICsJYm9vbAkJCWVuYWJsZWQ7Cj4gIAlzdHJ1Y3QgcmVndWxhdG9yCSpwb3dl
-cl9zdXBwbHk7Cj4gIAlzdHJ1Y3QgZ3Bpb19kZXNjCSplbmFibGVfZ3BpbzsKPiAgCXVuc2lnbmVk
-IGludAkJc2NhbGU7Cj4gQEAgLTUwLDcgKzUxLDcgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdo
-dF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAJaW50IGVycjsKPiAgCj4gIAlw
-d21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gLQlpZiAoc3RhdGUuZW5hYmxlZCkKPiAr
-CWlmIChwYi0+ZW5hYmxlZCkKPiAgCQlyZXR1cm47Cj4gIAo+ICAJZXJyID0gcmVndWxhdG9yX2Vu
-YWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKPiBAQCAtNjUsNiArNjYsOCBAQCBzdGF0aWMgdm9pZCBw
-d21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gIAo+ICAJaWYg
-KHBiLT5lbmFibGVfZ3BpbykKPiAgCQlncGlvZF9zZXRfdmFsdWVfY2Fuc2xlZXAocGItPmVuYWJs
-ZV9ncGlvLCAxKTsKPiArCj4gKwlwYi0+ZW5hYmxlZCA9IHRydWU7Cj4gIH0KPiAgCj4gIHN0YXRp
-YyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4g
-QEAgLTcyLDcgKzc1LDcgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3Ry
-dWN0IHB3bV9ibF9kYXRhICpwYikKPiAgCXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7Cj4gIAo+ICAJ
-cHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+IC0JaWYgKCFzdGF0ZS5lbmFibGVkKQo+
-ICsJaWYgKCFwYi0+ZW5hYmxlZCkKPiAgCQlyZXR1cm47Cj4gIAo+ICAJaWYgKHBiLT5lbmFibGVf
-Z3BpbykKPiBAQCAtODYsNiArODksNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
-X29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAJcHdtX2FwcGx5X3N0YXRlKHBiLT5wd20s
-ICZzdGF0ZSk7Cj4gIAo+ICAJcmVndWxhdG9yX2Rpc2FibGUocGItPnBvd2VyX3N1cHBseSk7Cj4g
-KwlwYi0+ZW5hYmxlZCA9IGZhbHNlOwo+ICB9Cj4gIAo+ICBzdGF0aWMgaW50IGNvbXB1dGVfZHV0
-eV9jeWNsZShzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykKPiBAQCAtNDgz
-LDYgKzQ4Nyw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGxhdGZv
-cm1fZGV2aWNlICpwZGV2KQo+ICAJcGItPmNoZWNrX2ZiID0gZGF0YS0+Y2hlY2tfZmI7Cj4gIAlw
-Yi0+ZXhpdCA9IGRhdGEtPmV4aXQ7Cj4gIAlwYi0+ZGV2ID0gJnBkZXYtPmRldjsKPiArCXBiLT5l
-bmFibGVkID0gZmFsc2U7Cj4gIAlwYi0+cG9zdF9wd21fb25fZGVsYXkgPSBkYXRhLT5wb3N0X3B3
-bV9vbl9kZWxheTsKPiAgCXBiLT5wd21fb2ZmX2RlbGF5ID0gZGF0YS0+cHdtX29mZl9kZWxheTsK
-PiAgCj4gCgpSZXZpZXdlZC1ieTogRW5yaWMgQmFsbGV0Ym8gaSBTZXJyYSA8ZW5yaWMuYmFsbGV0
-Ym9AY29sbGFib3JhLmNvbT4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
-b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
-LWRldmVsCg==
+This adds pwm controller support for MT7629 SoC.
+
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+---
+ drivers/pwm/pwm-mediatek.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index 9400c41..4ed95e5 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -292,11 +292,16 @@ static int mtk_pwm_remove(struct platform_device *pdev)
+ 	.pwm45_fixup = true,
+ };
+ 
++static const struct mtk_pwm_platform_data mt7629_pwm_data = {
++	.num_pwms = 1,
++};
++
+ static const struct of_device_id mtk_pwm_of_match[] = {
+ 	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
+ 	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
+ 	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
+ 	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
++	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
+-- 
+1.9.1
