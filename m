@@ -1,48 +1,104 @@
-From: Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [resend PATCH 1/3] pwm: mediatek: drop flag 'has_clks'
-Date: Tue, 13 Nov 2018 10:00:58 -0800
-Message-ID: <154213205843.88331.7023190778461777093@swboyd.mtv.corp.google.com>
-References: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
- <20181113095210.mh3iy5tcsu6w6tem@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
+ imx: Configure output to GPIO in disabled state
+Date: Wed, 14 Nov 2018 10:09:53 +0100
+Message-ID: <20181114090953.jc6wkvgshn32bcm5@pengutronix.de>
+References: <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
+ <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
+ <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
+ <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
+ <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
+ <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
+ <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
+ <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
+ <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
+ <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181113095210.mh3iy5tcsu6w6tem@pengutronix.de>
+Content-Disposition: inline
+In-Reply-To: <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ryder Lee <ryder.lee@mediatek.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, John Crispin <john@phrozen.org>, kernel@pengutronix.de, linux-clk@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>
+To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-Quoting Uwe Kleine-K=C3=B6nig (2018-11-13 01:52:10)
-> =
+Hello Michal,
 
-> I wonder if it would make sense to introduce functions like:
-> =
+On Fri, Nov 09, 2018 at 05:55:55PM +0100, Uwe Kleine-König wrote:
+> On Fri, Nov 09, 2018 at 02:24:42PM +0000, Vokáč Michal wrote:
+> > On 8.11.2018 20:18, Uwe Kleine-König wrote:
+> > > On Thu, Nov 08, 2018 at 03:21:44PM +0000, Vokáč Michal wrote:
+> > >> Hi Uwe,
+> > >>
+> > >> On 7.11.2018 16:01, Uwe Kleine-König wrote:
+> > >>>> Interesting idea. I just wonder why nobody else did not come up with such
+> > >>>> a simple solution before.
+> > >>>
+> > >>> I think I mentioned it already in this thread, but it went unnoticed :-)
+> > >>
+> > >> I meant it like "How happened this was not invented years ago, when people
+> > >> first noticed the issue with using inverted PWM for backlight on i.MX6."
+> > >> In our project, this issue dates back to 2015 :(
+> > >>
+> > >>> Then the patch isn't correct yet. The idea is always keep the hardware
+> > >>> running and only disable it if it's uninverted.
+> > >>
+> > >> OK, I got the point.
+> > >>
+> > >>> In imx_pwm_probe it's not yet known what the polarity is supposed to be,
+> > >>> right?
+> > >>
+> > >> Not really. It can already be known but currently there is no way how to
+> > >> pass the information to the probe function. I, as a creator of the device
+> > >> (and author of a DTS file) know that the circuit needs inverted PWM signal.
+> > >> And I know that the circuit needs to be disabled until I say it can be
+> > >> enabled. How I say that can warry. It may be default brightness level > 0
+> > >> in DTS file or from a userspace program using PWM sysfs interface.
+> > >>
+> > >>>   So the right thing to do there is to not touch the configuration
+> > >>> of the pwm. I think all states that are problematic then are also
+> > >>> problematic with the gpio/pinmux approach.
+> > >>
+> > >> I think my use-case I already presented before is an example where
+> > >> involving pinctrl solves the problem while the "leave PWM enabled
+> > >> for inverted users" does not. That is all the time between
+> > >> imx_pwm_probe() and imx_pwm_apply_v2().
+> > > 
+> > > You're doing in probe:
+> > > 
+> > >    if (pwm_is_running()):
+> > >      mux(pin, function=pwm)
+> > >    else:
+> > >      gpio_set_value(gpio, 0)
+> > >      mux(pin, function=gpio)
+> > > 
+> > > This gives you the right level assuming the gpio specification uses the
+> > > right flag (GPIO_ACTIVE_HIGH or GPIO_ACTIVE_LOW).
+> > 
+> > Agree.
+> > 
+> > > Taking your example with the backlight device you specify an "init" and
+> > > a "default" pinctrl and only "default" contains the muxing for the PWM
+> > > pin everything should be as smooth as necessary: The pwm is only muxed
+> > > when the backlight device is successfully bound.
+> > 
+> > Have you tried that Uwe? The bad news is I tested that before and now
+> > again and it does not work like that. We already discussed that earlier.
+> 
+> The key is that the pinmux setting for the PWM pin should be part of the
+> bl pinctrl, not the pwm pinctrl. Then "default" is only setup when the
+> bl device is successfully bound which is after the bl's .probe callback
+> called pwm_apply().
 
->         struct clk *clk_get_optional(struct device *dev, const char *id)
-> =
+Did my mail clear up my suggestion? Do you agree it should work like
+this (or even did you test that, as I did not)?
 
-> that return NULL instead of ERR_PTR(-ENODEV).
-> =
+Best regards
+Uwe
 
-> Then the above would simplify to:
-> =
-
->         pc->clks[i] =3D devm_clk_get_optional(&pdev->dev, mtk_pwm_clk_nam=
-e[i]);
->         if (IS_ERR(pc->clks[i]) {
->                 if (PTR_ERR(pc->clks[i]) =3D=3D -EPROBE_DEFER)
->                         dev_err(...);
->                 return PTR_ERR(pc->clks[i]);
->         }
-> =
-
-> (added the clk people to Cc for this question).
-> =
-
-
-Such a patch is already on the list and not getting much review.
-
-http://lkml.kernel.org/r/1535724443-21150-1-git-send-email-phil.edworthy@re=
-nesas.com
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
