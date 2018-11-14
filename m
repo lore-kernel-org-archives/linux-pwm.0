@@ -1,49 +1,59 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
-Date: Wed, 14 Nov 2018 10:11:24 +0100
-Message-ID: <20181114091124.3r6pcvtikpuxntue@pengutronix.de>
-References: <20181109094857.27079-1-heiko@sntech.de>
+Subject: Re: [PATCH 2/4] ARM: S3C24XX: rx1950: make use of atomic PWM API
+Date: Wed, 14 Nov 2018 10:15:37 +0100
+Message-ID: <20181114091537.bvriiawz3rnamazl@pengutronix.de>
+References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
+ <20181026184157.16371-2-u.kleine-koenig@pengutronix.de>
+ <CAJKOXPfuUFzFFwJoPutQz+zYqtom8evscpq2=PafX1EbBAnC+Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20181109094857.27079-1-heiko@sntech.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Heiko Stuebner <heiko@sntech.de>
-Cc: linux-pwm@vger.kernel.org, daniel.thompson@linaro.org, jingoohan1@gmail.com, dri-devel@lists.freedesktop.org, thierry.reding@gmail.com, enric.balletbo@collabora.com, lee.jones@linaro.org
+In-Reply-To: <CAJKOXPfuUFzFFwJoPutQz+zYqtom8evscpq2=PafX1EbBAnC+Q@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Krzysztof Kozlowski <krzk@kernel.org>, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, reding@gmail.com, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-SGVsbG8gSGVpa28sCgpPbiBGcmksIE5vdiAwOSwgMjAxOCBhdCAxMDo0ODo1N0FNICswMTAwLCBI
-ZWlrbyBTdHVlYm5lciB3cm90ZToKPiBDb21taXQgZTZiY2NhMDg5MGI5ICgiYmFja2xpZ2h0OiBw
-d21fYmw6IFN3aXRjaCB0byB1c2luZyAiYXRvbWljIiBQV00gQVBJIikKPiByZW1vdmVkIHRoZSBk
-cml2ZXIgaW50ZXJuYWwgZW5hYmxlZCB0cmFja2luZyBpbiBmYXZvciBvZiBzaW1wbHkgY2hlY2tp
-bmcKPiB0aGUgcHdtIHN0YXRlLgo+IAo+IFRoaXMgY2FuIGxlYWQgdG8gaXNzdWVzIGFzIGFsbCBv
-ZiBncGlvLSwgcmVndWxhdG9yLSBhbmQgcHdtLXN0YXRlIGFyZSB1c2VkCj4gdG8gZGV0ZXJtaW5l
-IHRoZSBpbml0aWFsIHN0YXRlIGFuZCB0aGUgYm9vdGxvYWRlciBvciBrZXJuZWwgY2FuIGxlYXZl
-IHRoZW0KPiBpbiBhbiBpbmNvbnNpc3RlbnQgc3RhdGUgYXQgYm9vdC4KPiAKPiBJbiBteSBjYXNl
-IG9uIHJrMzM5OS1rZXZpbiwgdGhlIHB3bSBiYWNrbGlnaHQgaXMgYnVpbGQgYXMgbW9kdWxlIGFu
-ZCB0aGUKPiBrZXJuZWwgZGlzYWJsZXMgdGhlIHN1cHBseSByZWd1bGF0b3IgYXMgdW51c2VkIHdo
-aWxlIGtlZXBpbmcgdGhlIHB3bSBydW5uaW5nCj4gdGh1cyBwd21fYmwgY2FsbGluZyBwd21fYmFj
-a2xpZ2h0X3Bvd2VyX29mZigpIGR1cmluZyBwcm9iZSBhbmQgY3JlYXRpbmcgYW4KPiB1bm1hdGNo
-ZWQgcmVndWxhdG9yLWRpc2FibGUgY2FsbCwgYXMgaXQgbmV2ZXIgZ290IGVuYWJsZWQgZnJvbSB0
-aGUgcHdtLWJsCj4gYmVmb3JlLgo+IAo+IFRvIHByZXZlbnQgdGhlc2UgY29uc2lzdGVuY3kgaXNz
-dWVzLCByZWludHJvZHVjZSB0aGUgZHJpdmVyLWludGVybmFsCj4gdHJhY2tpbmcgb2YgdGhlIGVu
-YWJsZWQgc3RhdGUuCj4gCj4gRml4ZXM6IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2Js
-OiBTd2l0Y2ggdG8gdXNpbmcgImF0b21pYyIgUFdNIEFQSSIpCj4gU2lnbmVkLW9mZi1ieTogSGVp
-a28gU3R1ZWJuZXIgPGhlaWtvQHNudGVjaC5kZT4KClRoaXMgbG9va3MgcmlnaHQsCgpBY2tlZC1i
-eTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KCkJl
-c3QgcmVnYXJkcwpVd2UKCi0tIApQZW5ndXRyb25peCBlLksuICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgfCBVd2UgS2xlaW5lLUvDtm5pZyAgICAgICAgICAgIHwKSW5kdXN0cmlhbCBMaW51eCBT
-b2x1dGlvbnMgICAgICAgICAgICAgICAgIHwgaHR0cDovL3d3dy5wZW5ndXRyb25peC5kZS8gIHwK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On Mon, Oct 29, 2018 at 11:46:15AM +0100, Krzysztof Kozlowski wrote:
+> On Fri, 26 Oct 2018 at 20:54, Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> wrote:
+> >
+> > The legacy PWM API should be removed in the long run, so convert a user
+> > to the atomic PWM API.
+> >
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> >  arch/arm/mach-s3c24xx/mach-rx1950.c | 18 +++++++++---------
+> >  1 file changed, 9 insertions(+), 9 deletions(-)
+> =
+
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> I see this depends on first patch so I assume this will go through pwm tr=
+ee.
+
+Right, I assume so, too. Unfortunately I didn't hear anything back from
+Thierry about this because there seems to be a mail reception problem on
+his end.
+
+@Thierry: Could you find the problem? It would be great to get some
+feedback from you regarding these patches. There are more pwm users that
+could benefit from this change, but I first want some feedback about
+this before investing more time here.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
