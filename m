@@ -1,198 +1,159 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: =?utf-8?B?W1JDRsKgUEFUQ0gsdjIsMi8y?= =?utf-8?Q?=5D?= pwm: imx:
- Configure output to GPIO in disabled state
-Date: Wed, 14 Nov 2018 12:34:49 +0100
-Message-ID: <20181114113449.GB2620@ulmo>
-References: <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
- <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
- <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
- <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
- <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
- <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
- <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
- <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
- <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
+Subject: Re: [PATCH 2/4] ARM: S3C24XX: rx1950: make use of atomic PWM API
+Date: Wed, 14 Nov 2018 13:08:14 +0100
+Message-ID: <20181114120814.GD2620@ulmo>
+References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
+ <20181026184157.16371-2-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0ntfKIWw70PvrIHh"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============6233009531081371068=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181026184157.16371-2-u.kleine-koenig@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@karo-electronics.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, kernel@pengutronix.de, Krzysztof Kozlowski <krzk@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---0ntfKIWw70PvrIHh
+--===============6233009531081371068==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="LKTjZJSUETSlgu2t"
+Content-Disposition: inline
+
+
+--LKTjZJSUETSlgu2t
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Nov 09, 2018 at 05:55:55PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> On Fri, Nov 09, 2018 at 02:24:42PM +0000, Vok=C3=A1=C4=8D Michal wrote:
-> > On 8.11.2018 20:18, Uwe Kleine-K=C3=B6nig wrote:
-> > > On Thu, Nov 08, 2018 at 03:21:44PM +0000, Vok=C3=A1=C4=8D Michal wrot=
-e:
-> > >> Hi Uwe,
-> > >>
-> > >> On 7.11.2018 16:01, Uwe Kleine-K=C3=B6nig wrote:
-> > >>>> Interesting idea. I just wonder why nobody else did not come up wi=
-th such
-> > >>>> a simple solution before.
-> > >>>
-> > >>> I think I mentioned it already in this thread, but it went unnotice=
-d :-)
-> > >>
-> > >> I meant it like "How happened this was not invented years ago, when =
-people
-> > >> first noticed the issue with using inverted PWM for backlight on i.M=
-X6."
-> > >> In our project, this issue dates back to 2015 :(
-> > >>
-> > >>> Then the patch isn't correct yet. The idea is always keep the hardw=
-are
-> > >>> running and only disable it if it's uninverted.
-> > >>
-> > >> OK, I got the point.
-> > >>
-> > >>> In imx_pwm_probe it's not yet known what the polarity is supposed t=
-o be,
-> > >>> right?
-> > >>
-> > >> Not really. It can already be known but currently there is no way ho=
-w to
-> > >> pass the information to the probe function. I, as a creator of the d=
-evice
-> > >> (and author of a DTS file) know that the circuit needs inverted PWM =
-signal.
-> > >> And I know that the circuit needs to be disabled until I say it can =
-be
-> > >> enabled. How I say that can warry. It may be default brightness leve=
-l > 0
-> > >> in DTS file or from a userspace program using PWM sysfs interface.
-> > >>
-> > >>>   So the right thing to do there is to not touch the configuration
-> > >>> of the pwm. I think all states that are problematic then are also
-> > >>> problematic with the gpio/pinmux approach.
-> > >>
-> > >> I think my use-case I already presented before is an example where
-> > >> involving pinctrl solves the problem while the "leave PWM enabled
-> > >> for inverted users" does not. That is all the time between
-> > >> imx_pwm_probe() and imx_pwm_apply_v2().
-> > >=20
-> > > You're doing in probe:
-> > >=20
-> > >    if (pwm_is_running()):
-> > >      mux(pin, function=3Dpwm)
-> > >    else:
-> > >      gpio_set_value(gpio, 0)
-> > >      mux(pin, function=3Dgpio)
-> > >=20
-> > > This gives you the right level assuming the gpio specification uses t=
-he
-> > > right flag (GPIO_ACTIVE_HIGH or GPIO_ACTIVE_LOW).
-> >=20
-> > Agree.
-> >=20
-> > > Taking your example with the backlight device you specify an "init" a=
-nd
-> > > a "default" pinctrl and only "default" contains the muxing for the PWM
-> > > pin everything should be as smooth as necessary: The pwm is only muxed
-> > > when the backlight device is successfully bound.
-> >=20
-> > Have you tried that Uwe? The bad news is I tested that before and now
-> > again and it does not work like that. We already discussed that earlier.
+On Fri, Oct 26, 2018 at 08:41:56PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> The legacy PWM API should be removed in the long run, so convert a user
+> to the atomic PWM API.
 >=20
-> The key is that the pinmux setting for the PWM pin should be part of the
-> bl pinctrl, not the pwm pinctrl. Then "default" is only setup when the
-> bl device is successfully bound which is after the bl's .probe callback
-> called pwm_apply().
-
-No, that's not at all correct. Pinmux settings should reside with the
-consumer of the pin. In this case, the PWM is the consumer of the pin,
-whereas the backlight is the consumer of the *PWM*.
-
-The problem with making the PWM mode the "default" pinctrl state is that
-the default state will be applied before the driver is even probed. That
-makes it unsuitable for this case. I think what we really want here is
-explicitly "active" and "inactive" states for pinctrl where the PWM
-driver controls when exactly each state is applied.
-
-This solves the problem quite nicely because by default the pinctrl
-state isn't touched. For the case where the bootloader didn't initialize
-the PWM pin at all, the driver core won't do anything and keep it at the
-100k pull-up default. Only when the PWM is actually taken into active
-use will the "active" state (i.e. PWM mode) be applied, so that the PWM
-can drive it with the right configuration to give the desired result. If
-the bootloader did initialize the PWM it would also work because then at
-PWM driver probe time we don't do anything either, keeping the pin in
-the PWM mode as configured by the bootloader and not touching the PWM
-configuration either. If hardware readout is implemented, we can load
-the exact state that we're in and seamlessly take over in the kernel
-driver. Enabling the PWM in this case would apply the current setting,
-which should be a no-op, or at least idempotent.
-
-> > > No I meant the pwm. Well, it's as easy as that: Whenever with your
-> > > approach you configure the pin as GPIO with the output set to low,
-> > > instead configure the pwm with duty_cycle to zero (or disable it).
-> > > Whenever with your approach you configure the pin as GPIO with the
-> > > output set to high, configure the pwm with duty_cycle to 100%. (Keepi=
-ng
-> > > out inverted PWMs for the ease of discussion, but the procedure can be
-> > > adapted accordingly.) The only difference then is that with your
-> > > approach you already "know" in pwm-imx's .probe the idle level and can
-> > > configure the GPIO accordingly. With my approach you just have to wait
-> > > until the first pwm_apply which (as described above) works just as we=
-ll.
-> >=20
-> > While here I am quite confident you are talking about kernel code, righ=
-t?
-> > If yes, then your approach is clear to me.
-> >=20
-> > The problem is I am quite sure your approach does not solve the cases
-> > the pinctrl solution does. And according to my tests so far it does not
-> > work at all because the "init" and "default" states does not work as you
-> > are saying.
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  arch/arm/mach-s3c24xx/mach-rx1950.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 >=20
-> That's as pointed out above, because you're looking at the pwm's pinctrl
-> and I at the pwm-consumer's pinctrl.
->=20
-> Note that a sysfs consumer cannot be operated smoothly here, because
-> there is no pinctrl node to add the PWM mode to that only gets active
-> after the first configuration. This however is something that should not
-> be addressed in the imx driver but in the pwm core (if at all).
+> diff --git a/arch/arm/mach-s3c24xx/mach-rx1950.c b/arch/arm/mach-s3c24xx/=
+mach-rx1950.c
+> index 7f5a18fa305b..5c4459f9a5f7 100644
+> --- a/arch/arm/mach-s3c24xx/mach-rx1950.c
+> +++ b/arch/arm/mach-s3c24xx/mach-rx1950.c
+> @@ -375,6 +375,7 @@ static struct pwm_lookup rx1950_pwm_lookup[] =3D {
+>  		   PWM_POLARITY_NORMAL),
+>  };
+> =20
+> +static struct pwm_state lcd_pwm_state;
 
-With the pinctrl-based solution outlined above you can even operate a
-sysfs consumer properly. The pinctrl states are where they belong, with
-the PWM device and therefore they can be properly set when the PWM is
-used, rather than waiting for a PWM consumer to muck with the pinmux.
+You shouldn't need this. The whole point of the atomic API is that the
+PWM carries its state, so the proper way to make a change is to query
+the current state, make any required modifications and then apply the
+new state.
 
-Note how all the pieces are suddenly falling into place. In my
-experience that's usually a good indication that you're on the right
-track.
+>  static struct pwm_device *lcd_pwm;
+> =20
+>  static void rx1950_lcd_power(int enable)
+> @@ -428,15 +429,17 @@ static void rx1950_lcd_power(int enable)
+> =20
+>  		/* GPB1->OUTPUT, GPB1->0 */
+>  		gpio_direction_output(S3C2410_GPB(1), 0);
+> -		pwm_config(lcd_pwm, 0, LCD_PWM_PERIOD);
+> -		pwm_disable(lcd_pwm);
+> +		lcd_pwm_state.duty_cycle =3D 0;
+> +		lcd_pwm_state.enabled =3D false;
+> +		pwm_apply_state(lcd_pwm, &lcd_pwm_state);
+
+The correct way to do this would be:
+
+	struct pwm_state state;
+
+	pwm_get_state(lcd_pwm, &state);
+	state.enabled =3D false;
+	state.duty_cycle =3D 0;
+	pwm_apply_state(lcd_pwm, &state);
+
+> =20
+>  		/* GPC0->0, GPC10->0 */
+>  		gpio_direction_output(S3C2410_GPC(0), 0);
+>  		gpio_direction_output(S3C2410_GPC(10), 0);
+>  	} else {
+> -		pwm_config(lcd_pwm, LCD_PWM_DUTY, LCD_PWM_PERIOD);
+> -		pwm_enable(lcd_pwm);
+> +		lcd_pwm_state.duty_cycle =3D LCD_PWM_DUTY;
+> +		lcd_pwm_state.enabled =3D true;
+> +		pwm_apply_state(lcd_pwm, &lcd_pwm_state);
+
+Similarily here.
+
+> =20
+>  		gpio_direction_output(S3C2410_GPC(0), 1);
+>  		gpio_direction_output(S3C2410_GPC(5), 1);
+> @@ -491,11 +494,8 @@ static int rx1950_backlight_init(struct device *dev)
+>  		return PTR_ERR(lcd_pwm);
+>  	}
+> =20
+> -	/*
+> -	 * FIXME: pwm_apply_args() should be removed when switching to
+> -	 * the atomic PWM API.
+> -	 */
+> -	pwm_apply_args(lcd_pwm);
+> +	pwm_get_state_default(lcd_pwm, &lcd_pwm_state);
+> +	lcd_pwm_state.period =3D LCD_PWM_PERIOD;
+
+This is wrong, though it's probably because the comment is also
+confusing. There should be nothing wrong with using pwm_apply_args() in
+this case.
+
+While at it, I think the conversion should also be include replacing the
+call to pwm_request() by pwm_get(). There's already a PWM lookup table
+in the RX1950 board code, so pwm_get() would be able to use that. Note
+that for some reason that table contains a period that is different from
+LCD_PWM_PERIOD, so I think that should also be addressed. Basically all
+the information other than duty cycle should be coming from either DT or
+a lookup table.
 
 Thierry
 
---0ntfKIWw70PvrIHh
+--LKTjZJSUETSlgu2t
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvsCFYACgkQ3SOs138+
-s6EEmg/+IVegheNPysHXpL7YpVsJ7M5r3GzQH1CtJymARhVbzxcOIBwAH6RN3e2n
-CCrksv//ottANi195fRhXimdMyyZcIpasounYxLR/a/KYRtUsKoaZlJ3QOu1WcAW
-vv7BvQ+sDXh87ZkQp39hUhPND410k9MAmkh4U+H46a8fU3I7yw1pS4U/vENxMHyM
-u/d+dlH9qz1iB0sG9xyeZCDB1QHLBItoynbqnaU3M8okPC/b6lUWxfCiBj2vy6Sz
-W1IAa+VaxXuvHQJSj27NAODrC5l7jQm4JjPJV0qn5wh+ljmJYS2kAJ4W/wAitD+E
-ETvI8jq6P2t2EeSxSpOVFBf+LEYC/bgMac7pQiCGUC8So5Tz3w4inOYx/rncvoDd
-Qz9HE3tzhZoVm6bN7y5+IbGFFzTKQFZaLBcf5keFHFa5U5upjsTaAY2YlP7GgONd
-baQl1kP+EQCQ+5ACMxVBclvnOTyQapgeMaY95l3EzwXDFAYZUC5q83ow59RtP2wt
-NF7x2BU/VJDdfuC+PxVuP4SRjTbXCeSX3VCzGiwIV1CRJEN90F7AQU6KO/q6rbm/
-o9To/xisWO/ruJB6MHDpkOeJG/vi9T9vRJUUjhCwlbs0EZPo1fDBaJ/f268hyKog
-u9ZKFLgZVJMBCpiJSRszyNhqX4vr05Q9HksdANSnmvg+pl/0+aA=
-=CHJ6
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvsECsACgkQ3SOs138+
+s6F3Eg//Tuvrot17m5wGKoK61kVmNMp45oib1RKD0kiFxtZuPaeNV5YBUYzQNVrz
+XvFqvIoemlSDH6SWeQA9Jh5FonV2yOH/jFPB5vyR4MAiGauqjcTjWwJHxQUlr1Up
+C2EjzavnDbrUORSL1nzcp7q2+rtNjf+gTWVXcM4EIH9fZ87E3SHOkLVTi3c3lseT
+sB4MXftPSSb1a8h7xOE8W+xcBszQj8J70OYG5j1uHXhsyVF5jS0tMhuZFTX/MHAd
+YKrfbe/HBFN7fCb4NtXHnSiWTjH9pY4gTx53FJUYla7EugKXBeE7mRRnVhc4hWWb
+W/n6r/d0xshjnNO9gpouJ6SEA++xE/8WhwaWRs18fOhrLwErLU179K146jE7cM/f
+4HM27dfnwLPlBt6OTAyXJ+Aqz5lrkBaT2foM9SF/WUP15IvQHhe8haw/L78exFwv
+U9ePUf4uf1rYBywFY8R+Uk82jZeqpxZe/LUoaAZUIASGiLF7NCDGbPwzv9hEs8SZ
+quKK/cFteW8cQ8XIsTKYSX1Up4HREnBdLUAh5/j6qzdczNyQD8qm3MhIm9Meit11
+WIEEFLcKw7lzqCcKbP6gT2EEzlElMLhT8qR1eKY3IgwDAid2XoIkvZ9aCV1U9Nbb
+yfzO3M52AbqllNXIGt6mEVCxJ+pbSqTCdwKCisy5pblOQadSShc=
+=Ceoa
 -----END PGP SIGNATURE-----
 
---0ntfKIWw70PvrIHh--
+--LKTjZJSUETSlgu2t--
+
+
+--===============6233009531081371068==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============6233009531081371068==--
