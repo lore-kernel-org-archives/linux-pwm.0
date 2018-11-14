@@ -1,59 +1,100 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/4] ARM: S3C24XX: rx1950: make use of atomic PWM API
-Date: Wed, 14 Nov 2018 10:15:37 +0100
-Message-ID: <20181114091537.bvriiawz3rnamazl@pengutronix.de>
-References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
- <20181026184157.16371-2-u.kleine-koenig@pengutronix.de>
- <CAJKOXPfuUFzFFwJoPutQz+zYqtom8evscpq2=PafX1EbBAnC+Q@mail.gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: =?utf-8?B?W1JDRsKgUEFUQ0gsdjIsMi8y?= =?utf-8?Q?=5D?= pwm: imx:
+ Configure output to GPIO in disabled state
+Date: Wed, 14 Nov 2018 12:14:15 +0100
+Message-ID: <20181114111415.GA2620@ulmo>
+References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
+ <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
+ <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
+ <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
+ <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
+ <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
+ <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
+ <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
+ <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAJKOXPfuUFzFFwJoPutQz+zYqtom8evscpq2=PafX1EbBAnC+Q@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Krzysztof Kozlowski <krzk@kernel.org>, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, reding@gmail.com, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+In-Reply-To: <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@karo-electronics.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Oct 29, 2018 at 11:46:15AM +0100, Krzysztof Kozlowski wrote:
-> On Fri, 26 Oct 2018 at 20:54, Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> >
-> > The legacy PWM API should be removed in the long run, so convert a user
-> > to the atomic PWM API.
-> >
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> >  arch/arm/mach-s3c24xx/mach-rx1950.c | 18 +++++++++---------
-> >  1 file changed, 9 insertions(+), 9 deletions(-)
-> =
 
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> I see this depends on first patch so I assume this will go through pwm tr=
-ee.
+--+HP7ph2BbKc20aGI
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Right, I assume so, too. Unfortunately I didn't hear anything back from
-Thierry about this because there seems to be a mail reception problem on
-his end.
+On Thu, Nov 08, 2018 at 03:21:44PM +0000, Vok=C3=A1=C4=8D Michal wrote:
+> On 7.11.2018 16:01, Uwe Kleine-K=C3=B6nig wrote:
+[...]
+> > For both the solution is to let the bootloader enable the pwm with
+> > the right output level. Am I missing something?
+>=20
+> Bootloader is only a small part of the whole solution I think. And I
+> suppose you meant: "enable the *GPIO* with the right output level".
+>=20
+>   - Even if you use GPIO in bootloader to set the required level the
+>     time frame from imx_pwm_probe to imx_pwm_apply is not covered.
+>=20
+>   - Currently there is no support in Linux pwm-imx driver to detect
+>     the PWM chip is already enabled at probe time. I actually send
+>     patches for this a month ago [1]. No response yet.
+>=20
+>   - Inverted PWM does not work in U-Boot (on imx at least). And it
+>     does not seam like it can be fixed easily. I do not know what is
+>     the situation in other bootloaders.
+>=20
+> So my current bootloader solution is one of:
+>   - Set the pin to the appropriate (HIGH) level using GPIO.
+>   - Do not touch the pin at all, it has 100k pull-up by default.
 
-@Thierry: Could you find the problem? It would be great to get some
-feedback from you regarding these patches. There are more pwm users that
-could benefit from this change, but I first want some feedback about
-this before investing more time here.
+First of all, I don't think we should rely on any bootloader setting up
+things properly. I already said elsewhere that the reset defaults will
+likely already be such that the PWM outputs zero power (i.e. high for
+inversed PWM). Michal's comments above seem to suggest that this is
+indeed the case. If the pin is 100k pull-up by default (I assume that
+means on reset), then that's exactly what I would expect for this kind
+of pin.
 
-Best regards
-Uwe
+And that's also an excellent pin state for the kernel to use when it no
+longer needs to actively drive the PWM. That means on pwm_disable() we
+can simply revert to the 100k pull-up default and let the PWM pin be in
+the very same state that it is on reset. Can't get any better than that.
 
--- =
+So really, I think the only proper solution to this problem is to get
+pinctrl involved and configure the pin as PWM when it is actively used,
+and change it back to 100k pull-up otherwise.
 
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+And, yes, I understand that this slightly complicates the driver, but
+it's really the right thing to do and it fixes all known issues, and to
+me that's clear evidence that it is the right solution and therefore
+definitely worth the added complexity.
+
+Thierry
+
+--+HP7ph2BbKc20aGI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvsA4UACgkQ3SOs138+
+s6E/HA/+LNGOP9plUBaj0mGF70tAnkx3vTigto0VUCCyFlUU/vJQRSvufCPh2aV3
+klxiBXTHYKE6L4BiIhheWwDjFWe7j33CDbD9JGqQ6vupLY1daRZdhTSjxjKNyutf
+53ILYEli/JSs5g5pA2u4O4BcOMgdX1AVEMj9RTsu7T2zfM8JN6Kl7gzEYt33P3OJ
+NWDScehY0PkiCdGc4vEQKIBXstzAQi7OTPRuQJDyOPftNlBYYLAkGzQDgOOL83s4
+e0vrNaumRLgf6Ync8aGeTWM/k1KGVQc3IZiXaQwmV8QU/WxPWO2vLlHsFnuC/qYa
+neAO8qA1RLE7xfRq443l23iCZA1ENxAGgs79JhonZ8fXAhoE5R/jnkPI1M2g5Z/U
+y9mwnSPbJK+mvxZF5V14E43hrEqTJ8NaItXbZaeOXPzQwz9AVTP9Oof3KW6kJ/vw
++2ekiGfGTqWsb52R2qgQ0uXkPV31JGc336/7DdrBWuNX7L1h3sxaYUpPVggMdjE8
+i+OcuDSJXJRaWL7kWSyrZXMvAfZ7vLF3xHhICzlau+9R6VbVNd8xlTTiBhogTFz/
+cB8uvDl2HAL6G6Cfb56hOZWeypvtqW4rK2D7nDi2pHsrkuAqN2qhnOrF2q64guFE
+3YepHHeWCoxXrUqjJYtdCuXSoGxqU54+YsBaKTu7P2C+8x2BI4U=
+=r4V3
+-----END PGP SIGNATURE-----
+
+--+HP7ph2BbKc20aGI--
