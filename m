@@ -1,100 +1,198 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: =?utf-8?B?W1JDRsKgUEFUQ0gsdjIsMi8y?= =?utf-8?Q?=5D?= pwm: imx:
  Configure output to GPIO in disabled state
-Date: Wed, 14 Nov 2018 12:14:15 +0100
-Message-ID: <20181114111415.GA2620@ulmo>
-References: <1539163920-9442-3-git-send-email-michal.vokac@ysoft.com>
- <20181012085720.GA9451@taurus.defre.kleine-koenig.org>
- <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
+Date: Wed, 14 Nov 2018 12:34:49 +0100
+Message-ID: <20181114113449.GB2620@ulmo>
+References: <fa96ae2a-c2cc-b47a-1198-5daffa7c865f@ysoft.com>
  <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
  <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
  <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
  <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
  <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
  <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
+ <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
+ <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
+ <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
+        protocol="application/pgp-signature"; boundary="0ntfKIWw70PvrIHh"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
+In-Reply-To: <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
-Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@karo-electronics.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@karo-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
 
---+HP7ph2BbKc20aGI
+--0ntfKIWw70PvrIHh
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 08, 2018 at 03:21:44PM +0000, Vok=C3=A1=C4=8D Michal wrote:
-> On 7.11.2018 16:01, Uwe Kleine-K=C3=B6nig wrote:
-[...]
-> > For both the solution is to let the bootloader enable the pwm with
-> > the right output level. Am I missing something?
+On Fri, Nov 09, 2018 at 05:55:55PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> On Fri, Nov 09, 2018 at 02:24:42PM +0000, Vok=C3=A1=C4=8D Michal wrote:
+> > On 8.11.2018 20:18, Uwe Kleine-K=C3=B6nig wrote:
+> > > On Thu, Nov 08, 2018 at 03:21:44PM +0000, Vok=C3=A1=C4=8D Michal wrot=
+e:
+> > >> Hi Uwe,
+> > >>
+> > >> On 7.11.2018 16:01, Uwe Kleine-K=C3=B6nig wrote:
+> > >>>> Interesting idea. I just wonder why nobody else did not come up wi=
+th such
+> > >>>> a simple solution before.
+> > >>>
+> > >>> I think I mentioned it already in this thread, but it went unnotice=
+d :-)
+> > >>
+> > >> I meant it like "How happened this was not invented years ago, when =
+people
+> > >> first noticed the issue with using inverted PWM for backlight on i.M=
+X6."
+> > >> In our project, this issue dates back to 2015 :(
+> > >>
+> > >>> Then the patch isn't correct yet. The idea is always keep the hardw=
+are
+> > >>> running and only disable it if it's uninverted.
+> > >>
+> > >> OK, I got the point.
+> > >>
+> > >>> In imx_pwm_probe it's not yet known what the polarity is supposed t=
+o be,
+> > >>> right?
+> > >>
+> > >> Not really. It can already be known but currently there is no way ho=
+w to
+> > >> pass the information to the probe function. I, as a creator of the d=
+evice
+> > >> (and author of a DTS file) know that the circuit needs inverted PWM =
+signal.
+> > >> And I know that the circuit needs to be disabled until I say it can =
+be
+> > >> enabled. How I say that can warry. It may be default brightness leve=
+l > 0
+> > >> in DTS file or from a userspace program using PWM sysfs interface.
+> > >>
+> > >>>   So the right thing to do there is to not touch the configuration
+> > >>> of the pwm. I think all states that are problematic then are also
+> > >>> problematic with the gpio/pinmux approach.
+> > >>
+> > >> I think my use-case I already presented before is an example where
+> > >> involving pinctrl solves the problem while the "leave PWM enabled
+> > >> for inverted users" does not. That is all the time between
+> > >> imx_pwm_probe() and imx_pwm_apply_v2().
+> > >=20
+> > > You're doing in probe:
+> > >=20
+> > >    if (pwm_is_running()):
+> > >      mux(pin, function=3Dpwm)
+> > >    else:
+> > >      gpio_set_value(gpio, 0)
+> > >      mux(pin, function=3Dgpio)
+> > >=20
+> > > This gives you the right level assuming the gpio specification uses t=
+he
+> > > right flag (GPIO_ACTIVE_HIGH or GPIO_ACTIVE_LOW).
+> >=20
+> > Agree.
+> >=20
+> > > Taking your example with the backlight device you specify an "init" a=
+nd
+> > > a "default" pinctrl and only "default" contains the muxing for the PWM
+> > > pin everything should be as smooth as necessary: The pwm is only muxed
+> > > when the backlight device is successfully bound.
+> >=20
+> > Have you tried that Uwe? The bad news is I tested that before and now
+> > again and it does not work like that. We already discussed that earlier.
 >=20
-> Bootloader is only a small part of the whole solution I think. And I
-> suppose you meant: "enable the *GPIO* with the right output level".
->=20
->   - Even if you use GPIO in bootloader to set the required level the
->     time frame from imx_pwm_probe to imx_pwm_apply is not covered.
->=20
->   - Currently there is no support in Linux pwm-imx driver to detect
->     the PWM chip is already enabled at probe time. I actually send
->     patches for this a month ago [1]. No response yet.
->=20
->   - Inverted PWM does not work in U-Boot (on imx at least). And it
->     does not seam like it can be fixed easily. I do not know what is
->     the situation in other bootloaders.
->=20
-> So my current bootloader solution is one of:
->   - Set the pin to the appropriate (HIGH) level using GPIO.
->   - Do not touch the pin at all, it has 100k pull-up by default.
+> The key is that the pinmux setting for the PWM pin should be part of the
+> bl pinctrl, not the pwm pinctrl. Then "default" is only setup when the
+> bl device is successfully bound which is after the bl's .probe callback
+> called pwm_apply().
 
-First of all, I don't think we should rely on any bootloader setting up
-things properly. I already said elsewhere that the reset defaults will
-likely already be such that the PWM outputs zero power (i.e. high for
-inversed PWM). Michal's comments above seem to suggest that this is
-indeed the case. If the pin is 100k pull-up by default (I assume that
-means on reset), then that's exactly what I would expect for this kind
-of pin.
+No, that's not at all correct. Pinmux settings should reside with the
+consumer of the pin. In this case, the PWM is the consumer of the pin,
+whereas the backlight is the consumer of the *PWM*.
 
-And that's also an excellent pin state for the kernel to use when it no
-longer needs to actively drive the PWM. That means on pwm_disable() we
-can simply revert to the 100k pull-up default and let the PWM pin be in
-the very same state that it is on reset. Can't get any better than that.
+The problem with making the PWM mode the "default" pinctrl state is that
+the default state will be applied before the driver is even probed. That
+makes it unsuitable for this case. I think what we really want here is
+explicitly "active" and "inactive" states for pinctrl where the PWM
+driver controls when exactly each state is applied.
 
-So really, I think the only proper solution to this problem is to get
-pinctrl involved and configure the pin as PWM when it is actively used,
-and change it back to 100k pull-up otherwise.
+This solves the problem quite nicely because by default the pinctrl
+state isn't touched. For the case where the bootloader didn't initialize
+the PWM pin at all, the driver core won't do anything and keep it at the
+100k pull-up default. Only when the PWM is actually taken into active
+use will the "active" state (i.e. PWM mode) be applied, so that the PWM
+can drive it with the right configuration to give the desired result. If
+the bootloader did initialize the PWM it would also work because then at
+PWM driver probe time we don't do anything either, keeping the pin in
+the PWM mode as configured by the bootloader and not touching the PWM
+configuration either. If hardware readout is implemented, we can load
+the exact state that we're in and seamlessly take over in the kernel
+driver. Enabling the PWM in this case would apply the current setting,
+which should be a no-op, or at least idempotent.
 
-And, yes, I understand that this slightly complicates the driver, but
-it's really the right thing to do and it fixes all known issues, and to
-me that's clear evidence that it is the right solution and therefore
-definitely worth the added complexity.
+> > > No I meant the pwm. Well, it's as easy as that: Whenever with your
+> > > approach you configure the pin as GPIO with the output set to low,
+> > > instead configure the pwm with duty_cycle to zero (or disable it).
+> > > Whenever with your approach you configure the pin as GPIO with the
+> > > output set to high, configure the pwm with duty_cycle to 100%. (Keepi=
+ng
+> > > out inverted PWMs for the ease of discussion, but the procedure can be
+> > > adapted accordingly.) The only difference then is that with your
+> > > approach you already "know" in pwm-imx's .probe the idle level and can
+> > > configure the GPIO accordingly. With my approach you just have to wait
+> > > until the first pwm_apply which (as described above) works just as we=
+ll.
+> >=20
+> > While here I am quite confident you are talking about kernel code, righ=
+t?
+> > If yes, then your approach is clear to me.
+> >=20
+> > The problem is I am quite sure your approach does not solve the cases
+> > the pinctrl solution does. And according to my tests so far it does not
+> > work at all because the "init" and "default" states does not work as you
+> > are saying.
+>=20
+> That's as pointed out above, because you're looking at the pwm's pinctrl
+> and I at the pwm-consumer's pinctrl.
+>=20
+> Note that a sysfs consumer cannot be operated smoothly here, because
+> there is no pinctrl node to add the PWM mode to that only gets active
+> after the first configuration. This however is something that should not
+> be addressed in the imx driver but in the pwm core (if at all).
+
+With the pinctrl-based solution outlined above you can even operate a
+sysfs consumer properly. The pinctrl states are where they belong, with
+the PWM device and therefore they can be properly set when the PWM is
+used, rather than waiting for a PWM consumer to muck with the pinmux.
+
+Note how all the pieces are suddenly falling into place. In my
+experience that's usually a good indication that you're on the right
+track.
 
 Thierry
 
---+HP7ph2BbKc20aGI
+--0ntfKIWw70PvrIHh
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvsA4UACgkQ3SOs138+
-s6E/HA/+LNGOP9plUBaj0mGF70tAnkx3vTigto0VUCCyFlUU/vJQRSvufCPh2aV3
-klxiBXTHYKE6L4BiIhheWwDjFWe7j33CDbD9JGqQ6vupLY1daRZdhTSjxjKNyutf
-53ILYEli/JSs5g5pA2u4O4BcOMgdX1AVEMj9RTsu7T2zfM8JN6Kl7gzEYt33P3OJ
-NWDScehY0PkiCdGc4vEQKIBXstzAQi7OTPRuQJDyOPftNlBYYLAkGzQDgOOL83s4
-e0vrNaumRLgf6Ync8aGeTWM/k1KGVQc3IZiXaQwmV8QU/WxPWO2vLlHsFnuC/qYa
-neAO8qA1RLE7xfRq443l23iCZA1ENxAGgs79JhonZ8fXAhoE5R/jnkPI1M2g5Z/U
-y9mwnSPbJK+mvxZF5V14E43hrEqTJ8NaItXbZaeOXPzQwz9AVTP9Oof3KW6kJ/vw
-+2ekiGfGTqWsb52R2qgQ0uXkPV31JGc336/7DdrBWuNX7L1h3sxaYUpPVggMdjE8
-i+OcuDSJXJRaWL7kWSyrZXMvAfZ7vLF3xHhICzlau+9R6VbVNd8xlTTiBhogTFz/
-cB8uvDl2HAL6G6Cfb56hOZWeypvtqW4rK2D7nDi2pHsrkuAqN2qhnOrF2q64guFE
-3YepHHeWCoxXrUqjJYtdCuXSoGxqU54+YsBaKTu7P2C+8x2BI4U=
-=r4V3
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvsCFYACgkQ3SOs138+
+s6EEmg/+IVegheNPysHXpL7YpVsJ7M5r3GzQH1CtJymARhVbzxcOIBwAH6RN3e2n
+CCrksv//ottANi195fRhXimdMyyZcIpasounYxLR/a/KYRtUsKoaZlJ3QOu1WcAW
+vv7BvQ+sDXh87ZkQp39hUhPND410k9MAmkh4U+H46a8fU3I7yw1pS4U/vENxMHyM
+u/d+dlH9qz1iB0sG9xyeZCDB1QHLBItoynbqnaU3M8okPC/b6lUWxfCiBj2vy6Sz
+W1IAa+VaxXuvHQJSj27NAODrC5l7jQm4JjPJV0qn5wh+ljmJYS2kAJ4W/wAitD+E
+ETvI8jq6P2t2EeSxSpOVFBf+LEYC/bgMac7pQiCGUC8So5Tz3w4inOYx/rncvoDd
+Qz9HE3tzhZoVm6bN7y5+IbGFFzTKQFZaLBcf5keFHFa5U5upjsTaAY2YlP7GgONd
+baQl1kP+EQCQ+5ACMxVBclvnOTyQapgeMaY95l3EzwXDFAYZUC5q83ow59RtP2wt
+NF7x2BU/VJDdfuC+PxVuP4SRjTbXCeSX3VCzGiwIV1CRJEN90F7AQU6KO/q6rbm/
+o9To/xisWO/ruJB6MHDpkOeJG/vi9T9vRJUUjhCwlbs0EZPo1fDBaJ/f268hyKog
+u9ZKFLgZVJMBCpiJSRszyNhqX4vr05Q9HksdANSnmvg+pl/0+aA=
+=CHJ6
 -----END PGP SIGNATURE-----
 
---+HP7ph2BbKc20aGI--
+--0ntfKIWw70PvrIHh--
