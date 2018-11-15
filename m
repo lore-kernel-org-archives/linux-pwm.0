@@ -1,243 +1,214 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
- imx: Configure output to GPIO in disabled state
-Date: Thu, 15 Nov 2018 21:37:33 +0100
-Message-ID: <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
-References: <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
- <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
- <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
- <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
- <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
- <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
- <20181114113449.GB2620@ulmo>
- <20181114215120.vddykljqyavm64wj@pengutronix.de>
- <20181115152545.GA8611@ulmo>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 2/4] ARM: S3C24XX: rx1950: make use of atomic PWM API
+Date: Thu, 15 Nov 2018 22:00:17 +0100
+Message-ID: <20181115210017.cvpyicjuw5vjpcwl@pengutronix.de>
+References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
+ <20181026184157.16371-2-u.kleine-koenig@pengutronix.de>
+ <20181114120814.GD2620@ulmo>
+ <20181115085808.ihg4of72forhulzc@pengutronix.de>
+ <20181115161516.GC8611@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20181115152545.GA8611@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <20181115161516.GC8611@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-pwm@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 Hello Thierry,
 
-On Thu, Nov 15, 2018 at 04:25:45PM +0100, Thierry Reding wrote:
-> On Wed, Nov 14, 2018 at 10:51:20PM +0100, Uwe Kleine-König wrote:
-> > On Wed, Nov 14, 2018 at 12:34:49PM +0100, Thierry Reding wrote:
-> > > On Fri, Nov 09, 2018 at 05:55:55PM +0100, Uwe Kleine-König wrote:
-> > > > On Fri, Nov 09, 2018 at 02:24:42PM +0000, Vokáč Michal wrote:
-> > > > > On 8.11.2018 20:18, Uwe Kleine-König wrote:
-> > > > > > Taking your example with the backlight device you specify an "init" and
-> > > > > > a "default" pinctrl and only "default" contains the muxing for the PWM
-> > > > > > pin everything should be as smooth as necessary: The pwm is only muxed
-> > > > > > when the backlight device is successfully bound.
-> > > > > 
-> > > > > Have you tried that Uwe? The bad news is I tested that before and now
-> > > > > again and it does not work like that. We already discussed that earlier.
-> > > > 
-> > > > The key is that the pinmux setting for the PWM pin should be part of the
-> > > > bl pinctrl, not the pwm pinctrl. Then "default" is only setup when the
-> > > > bl device is successfully bound which is after the bl's .probe callback
-> > > > called pwm_apply().
-> > > 
-> > > No, that's not at all correct. Pinmux settings should reside with the
-> > > consumer of the pin. In this case, the PWM is the consumer of the pin,
-> > > whereas the backlight is the consumer of the *PWM*.
-> > 
-> > This is news to me. Adding Linus W. to Cc, maybe he can comment?!
-> > 
-> > Grepping through the arm device trees it really seems common to put the
-> > pinctrl for the pwm pin into the pwm device. I didn't search in depth,
-> > but I didn't find a counter example.
-> > 
-> > For GPIOs it is common that the pinmuxing is included in the GPIO's
-> > consumer pinctrl. Ditto for mdio busses whose pinctrl is included in the
-> > ethernet pinctrl.
-> 
-> GPIO is different from PWM in that the GPIO is already the pin itself
-> and is otherwise generic. So typically you put the pinmuxing options
-> into the device tree node for the consumer of the GPIO, because it is
-> only when the consumer uses the GPIO that you need to configure that
-> pin as GPIO.
-> 
-> For PWM, however, the PWM consumer is only the consumer of the PWM, but
-> the PWM device itself is the real consumer of the pin that outputs the
-> PWM signal. So the PWM determines when the pinmux states need to be
-> applied, whereas the consumer of the PWM only deals with the PWM.
-> 
-> For MDIO busses, I think they are usually part of, and driven by, the
-> ethernet controller, so again it makes sense to put the pinmux into the
-> node of the ethernet controller, because the ethernet controller is the
-> user of the pins.
+On Thu, Nov 15, 2018 at 05:15:16PM +0100, Thierry Reding wrote:
+> On Thu, Nov 15, 2018 at 09:58:08AM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Wed, Nov 14, 2018 at 01:08:14PM +0100, Thierry Reding wrote:
+> > > On Fri, Oct 26, 2018 at 08:41:56PM +0200, Uwe Kleine-K=F6nig wrote:
+> > > > +static struct pwm_state lcd_pwm_state;
+> > > >  static struct pwm_device *lcd_pwm;
+> > > >  =
 
-Maybe it was a bad idea to broaden the discussion to talk about gpios
-and ethernet stuff here. I'd still consider it a valid construct to put
-the pwm pin into the backlight's pinctrl unless Linux W. disagrees.
+> > > >  static void rx1950_lcd_power(int enable)
+> > > > @@ -428,15 +429,17 @@ static void rx1950_lcd_power(int enable)
+> > > >  =
 
-> > > The problem with making the PWM mode the "default" pinctrl state is that
-> > > the default state will be applied before the driver is even probed. That
-> > > makes it unsuitable for this case. I think what we really want here is
-> > > explicitly "active" and "inactive" states for pinctrl where the PWM
-> > > driver controls when exactly each state is applied.
-> > 
-> > Note that this problem goes away nicely if the pwm pin is attached to
-> > the backlight. Because it's the backlight's driver that "knows" when the
-> > pwm is configured correctly and so the already existing mechanisms that
-> > setup the mux when the bl is correctly probed do the right thing at the
-> > right time.
-> 
-> Actually that's not exactly true. The default pinctrl state will be
-> applied before the driver's ->probe() implementation, so the pinctrl
-> state will be active some time before even the backlight driver gets
-> around to setting up the PWM. If you look at drivers/base/dd.c you'll
-> see that really_probe() calls pinctrl_bind_pins() before calling the
-> driver's ->probe() and will select the default state (unless there's
-> also an "init" state defined, in which case that will get applied and
-> only after successful probe will the default state be selected).
-> 
-> So if you use only a default state, then you could even get into a
-> situation where ->probe() return -EPROBE_DEFER and it would potentially
-> take several seconds before the driver is reprobed, during which time
-> the pinmux will already be set up but the PWM not configured properly
-> and potentially outputting the wrong level.
+> > > >  		/* GPB1->OUTPUT, GPB1->0 */
+> > > >  		gpio_direction_output(S3C2410_GPB(1), 0);
+> > > > -		pwm_config(lcd_pwm, 0, LCD_PWM_PERIOD);
+> > > > -		pwm_disable(lcd_pwm);
+> > > > +		lcd_pwm_state.duty_cycle =3D 0;
+> > > > +		lcd_pwm_state.enabled =3D false;
+> > > > +		pwm_apply_state(lcd_pwm, &lcd_pwm_state);
+> > > =
 
-If you reread my suggestion to Michal completely you will notice I got
-that right.
+> > > The correct way to do this would be:
+> > > =
 
-> > > This solves the problem quite nicely because by default the pinctrl
-> > > state isn't touched. For the case where the bootloader didn't initialize
-> > > the PWM pin at all, the driver core won't do anything and keep it at the
-> > > 100k pull-up default.
-> > 
-> > Ditto if the pwm pinctrl is attached to the consumer without having to
-> > introduce new pwm-specific stuff.
-> 
-> Well yes, but you'd obviously also have to avoid using the "default"
-> state, otherwise you'd run into the issues that I described above.
+> > > 	struct pwm_state state;
+> > > =
 
-I'd need "default" and "init", right.
+> > > 	pwm_get_state(lcd_pwm, &state);
+> > > 	state.enabled =3D false;
+> > > 	state.duty_cycle =3D 0;
+> > > 	pwm_apply_state(lcd_pwm, &state);
+> > =
 
-> > > > > > No I meant the pwm. Well, it's as easy as that: Whenever with your
-> > > > > > approach you configure the pin as GPIO with the output set to low,
-> > > > > > instead configure the pwm with duty_cycle to zero (or disable it).
-> > > > > > Whenever with your approach you configure the pin as GPIO with the
-> > > > > > output set to high, configure the pwm with duty_cycle to 100%. (Keeping
-> > > > > > out inverted PWMs for the ease of discussion, but the procedure can be
-> > > > > > adapted accordingly.) The only difference then is that with your
-> > > > > > approach you already "know" in pwm-imx's .probe the idle level and can
-> > > > > > configure the GPIO accordingly. With my approach you just have to wait
-> > > > > > until the first pwm_apply which (as described above) works just as well.
-> > > > > 
-> > > > > While here I am quite confident you are talking about kernel code, right?
-> > > > > If yes, then your approach is clear to me.
-> > > > > 
-> > > > > The problem is I am quite sure your approach does not solve the cases
-> > > > > the pinctrl solution does. And according to my tests so far it does not
-> > > > > work at all because the "init" and "default" states does not work as you
-> > > > > are saying.
-> > > > 
-> > > > That's as pointed out above, because you're looking at the pwm's pinctrl
-> > > > and I at the pwm-consumer's pinctrl.
-> > > > 
-> > > > Note that a sysfs consumer cannot be operated smoothly here, because
-> > > > there is no pinctrl node to add the PWM mode to that only gets active
-> > > > after the first configuration. This however is something that should not
-> > > > be addressed in the imx driver but in the pwm core (if at all).
-> > > 
-> > > With the pinctrl-based solution outlined above you can even operate a
-> > > sysfs consumer properly. The pinctrl states are where they belong, with
-> > > the PWM device and therefore they can be properly set when the PWM is
-> > > used, rather than waiting for a PWM consumer to muck with the pinmux.
-> > > 
-> > > Note how all the pieces are suddenly falling into place. In my
-> > > experience that's usually a good indication that you're on the right
-> > > track.
-> > 
-> > OK, sysfs is the only point where the "put pinctrl stuff into the pwm
-> > core (or driver)" is superior to the already existing and otherwise
-> > completely working status quo. (Apart from bugs that need fixing in
-> > your scenario, too.)
-> 
-> Nope, sorry. It's superior in all of the other cases as well. You've
-> said elsewhere already that the prerequisite for the current solution to
-> support inverse polarity with the i.MX driver is to keep the driver
-> running, even after the PWM is no longer used. Sorry but that's just not
-> an option for me.
+> > The difference here is that with my approach the rx1950 driver caches
+> > the intended pwm_state saving a few cycles for repeatedly copying the
+> > pwm cache to a stack variable at the cost of some memory. I like my
+> > approach a little better but I'm not willing to argue about that one and
+> > can give in.
+> =
 
-You want that after pwm_disable() the pin still keeps the idle level. As
-the hardware doesn't provide this feature "as is" something has to be
-done about it. This can be reached either by operating the pin as PWM
-with 0% duty cycle or by switching to GPIO that is configured to the
-desired level. From the PWM driver's POV the first is the more natural,
-as this can be accomplished with the registers this driver cares about
-anyhow.
+> It's a redundant copy of the PWM's internal state
 
-Also note this is similar in the pwm-bcm-kona driver that doesn't seem
-to have the concept of "disable" at all. kona_pwmc_disable() just sets
-up 0% duty cycle. In my eyes this is an argument that is good enough to
-at least nack the imx-specific implementation of that pinctrl stuff.
+That the pwm keeps a copy of this is an implementation detail of the pwm
+framework that shouldn't matter to its consumers.
 
-If the pinctrl idea is implemented in the pwm core, I won't object.
- 
-> > Given that I would not want to encourage people to stick to the sysfs
-> > interface for their use case, that's ok IMHO. (And note that with the
-> > bootloader's help you can even do this in a smooth way today.)
-> 
-> No it's not. sysfs is a supported interface, so we shouldn't treat it
-> differently from the other in-kernel users. And we also shouldn't rely
-> on bootloaders to always do the right thing. People may not always be
-> able to update the bootloader, or they may not have a use to drive a
-> PWM from the bootloader and hence choose to leave it uninitialized.
+> and not guaranteed to remain in sync with the PWM hardware state.
 
-If they are unable to adapt the bootloader they might be unable to (for
-example) keep a display off until the kernel takes full control of all
-necessary hardware to disable it. Yes, you might call that "bad hardware
-design" if the display is on after a power cycle. I call it "reality".
-And if these people care about each edge on the pwm output because the
-PWM is connected to a rocket engine, they better have control over the
-bootloader.
+What should happen that the driver's pwm_state and the hardware state
+diverge?
 
-> > Other than that my approach looks more elegant to me (which obviously is
-> > subjective). It works in all cases apart from sysfs (which is special
-> > because it's not integrated into the device model) and there is no need
-> > to teach the pwm framework about pinmuxing and invent new pinctrl modes
-> > for it.
-> 
-> Elegance is useless if what you have doesn't work consistently and
-> reliably.
-> 
-> I don't understand your resistance to the pinctrl work. It's not rocket
-> science. Michal already posted patches showing how it can be done and
-> they're not very complicated. Also we're not doing anything out of the
-> ordinary here. This is exactly the purpose of the pinctrl framework, so
-> let's use the best tool at hand.
+> You also require a global variable, which is usually a bad idea.
 
-In my last exchange with Michal I had the impression that he liked
-my approach, too.
- 
-> > Also dts writes don't need to lookup the needed GPIO numbers and pinctrl.
-> 
-> Just to clarify: I don't think that we need to get the GPIO number
-> involved in this case, because we don't have to reconfigure the pin as
-> GPIO to make this work. The only reason that Michal's proposal did that
-> is because that was believed to be necessary. But if the pin can just be
-> configured with a 100k pull-up, that's enough to pull the pin high when
-> we need it.
+Right, but that's attributable to the fact, that the struct pwm_device
+is a global variable, too.
 
-Unless the gpio happens to be configured as output at the wrong value.
-Further I'm not sure if the pwm in disabled state actively pulls to 0
-and if in this state the PU of the pin is good enough to ensure a one
-here. That would need verification first.
+> And we're not repeatedly copying data. We occasionally do. These
+> operations are typically only executed once or twice per boot, so
+> hardly anything that needs to be optimized for speed.
+> =
+
+> > > >  		gpio_direction_output(S3C2410_GPC(0), 1);
+> > > >  		gpio_direction_output(S3C2410_GPC(5), 1);
+> > > > @@ -491,11 +494,8 @@ static int rx1950_backlight_init(struct device=
+ *dev)
+> > > >  		return PTR_ERR(lcd_pwm);
+> > > >  	}
+> > > >  =
+
+> > > > -	/*
+> > > > -	 * FIXME: pwm_apply_args() should be removed when switching to
+> > > > -	 * the atomic PWM API.
+> > > > -	 */
+> > > > -	pwm_apply_args(lcd_pwm);
+> > > > +	pwm_get_state_default(lcd_pwm, &lcd_pwm_state);
+> > > > +	lcd_pwm_state.period =3D LCD_PWM_PERIOD;
+> > > =
+
+> > > This is wrong, though it's probably because the comment is also
+> > > confusing. There should be nothing wrong with using pwm_apply_args() =
+in
+> > > this case.
+> > =
+
+> > In my eyes it is wrong because it results in a call to the backend
+> > driver's apply callback to get the default setting just to fix the
+> > configuration and apply that in the code to follow.
+> =
+
+> Okay, I see. But there's already pwm_init_state() which pretty much does
+> what you do here, right?
+> =
+
+> Thinking about it some more, I wonder if we shouldn't be more consistent
+> about state handling here. So the reason why pwm_apply_args() exists is
+> to program the PWM with a known state if the PWM doesn't support
+> hardware readout. Since most drivers don't support hardware readout, we
+> need this to at some specific point synchronize the hardware and
+> internal states.
+> =
+
+> In retrospect I'm not sure that's necessary, because there's more and
+> more evidence that we don't want to touch a PWM configuration until a
+> consumer explicitly says so. There's also the slight problem that the
+> pwm_apply_args() is really only necessary if the PWM driver doesn't
+> support hardware readout, but that's not something that consumers are
+> aware of or should worry about.
+
+I consider your words as a light in the tunnel. Maybe we will reach a
+conclusion eventually.
+
+> In light of that I think perhaps a better solution would be to basically
+> apply the PWM arguments to the internal state at request time. We can't
+> do it earlier because we don't know the arguments before the PWM is
+> requested. So I think at request time we could do something like this:
+> =
+
+> 	if (chip->ops->get_state)
+> 		chip->ops->get_state(chip, pwm, &pwm->state);
+> 	else
+> 		pwm_init_state(pwm, &pwm->state);
+> =
+
+> That way drivers always get either the current state or the "default"
+> state that was configured via platform-specific means (DT or lookup).
+
+I think a gap in this reasoning is that if the DT dictates a period of
+say 1 ms and the hardware is configured to something else, the consumer
+should still work with the 1 ms value.
+
+> > > While at it, I think the conversion should also be include replacing =
+the
+> > > call to pwm_request() by pwm_get(). There's already a PWM lookup table
+> > > in the RX1950 board code, so pwm_get() would be able to use that. Note
+> > > that for some reason that table contains a period that is different f=
+rom
+> > > LCD_PWM_PERIOD, so I think that should also be addressed. Basically a=
+ll
+> > > the information other than duty cycle should be coming from either DT=
+ or
+> > > a lookup table.
+> > =
+
+> > Yeah, I noticed that, too. It's not entirely clear to me how to do that
+> > yet. So I thought to care about getting rid of the legacy usage of
+> > pwm_config and pwm_apply_args first.
+> =
+
+> So I think I got the backlight PWM confused with the LCD PWM. The former
+> is what we have in the PWM lookup table and which controls the backlight
+> brightness. The latter is what we don't have in the table and which is
+> requested using the legacy pwm_request() function. That also explains
+> why there's a difference between the period in the PWM lookup table for
+> the backlight PWM and the LCD_PWM_PERIOD macro.
+> =
+
+> Adding support for pwm_get() should be as simple ad adding an entry to
+> rx1950_pwm_lookup[], such as this:
+> =
+
+> 	PWM_LOOKUP("samsung-pwm", 1, "pwm-backlight.0", "lcd", 192960,
+> 		   PWM_POLARITY_NORMAL),
+> =
+
+> Then in rx1950_backlight_init(), which is passed the device structure
+> that represents the backlight (i.e. "pwm-backlight.0"), pwm_get() can
+> be called like this:
+> =
+
+> 	lcd_pwm =3D pwm_get(dev, "lcd");
+> =
+
+> The matching code should then be able to find the second entry as the
+> best match and return the correct one.
+
+Does this lookup belong to the board file or to a more general place
+near the provider of the "samsung-pwm" devices?
 
 Best regards
 Uwe
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
