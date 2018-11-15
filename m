@@ -1,157 +1,61 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
- imx: Configure output to GPIO in disabled state
-Date: Wed, 14 Nov 2018 22:51:20 +0100
-Message-ID: <20181114215120.vddykljqyavm64wj@pengutronix.de>
-References: <20181012160854.hmgpokxgsrqdzobx@pengutronix.de>
- <e4289ee5-3fc1-2848-1cae-77d29b5ed93c@ysoft.com>
- <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
- <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
- <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
- <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
- <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
- <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
- <20181114113449.GB2620@ulmo>
+From: Ryder Lee <ryder.lee@mediatek.com>
+Subject: Re: [resend PATCH 1/3] pwm: mediatek: drop flag 'has_clks'
+Date: Thu, 15 Nov 2018 10:16:16 +0800
+Message-ID: <1542248176.30611.4.camel@mtkswgap22>
+References: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
+         <20181114124752.GI2620@ulmo>
+         <2fc9dbac-4919-4ceb-49ac-67ddd7f203b5@phrozen.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181114113449.GB2620@ulmo>
+In-Reply-To: <2fc9dbac-4919-4ceb-49ac-67ddd7f203b5@phrozen.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+To: John Crispin <john@phrozen.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Thierry,
-
-On Wed, Nov 14, 2018 at 12:34:49PM +0100, Thierry Reding wrote:
-> On Fri, Nov 09, 2018 at 05:55:55PM +0100, Uwe Kleine-König wrote:
-> > On Fri, Nov 09, 2018 at 02:24:42PM +0000, Vokáč Michal wrote:
-> > > On 8.11.2018 20:18, Uwe Kleine-König wrote:
-> > > > Taking your example with the backlight device you specify an "init" and
-> > > > a "default" pinctrl and only "default" contains the muxing for the PWM
-> > > > pin everything should be as smooth as necessary: The pwm is only muxed
-> > > > when the backlight device is successfully bound.
-> > > 
-> > > Have you tried that Uwe? The bad news is I tested that before and now
-> > > again and it does not work like that. We already discussed that earlier.
-> > 
-> > The key is that the pinmux setting for the PWM pin should be part of the
-> > bl pinctrl, not the pwm pinctrl. Then "default" is only setup when the
-> > bl device is successfully bound which is after the bl's .probe callback
-> > called pwm_apply().
+On Wed, 2018-11-14 at 14:27 +0100, John Crispin wrote:
+> On 14/11/2018 13:47, Thierry Reding wrote:
+> > On Tue, Nov 13, 2018 at 10:08:22AM +0800, Ryder Lee wrote:
+> >> The flag 'has_clks' and related checks are superfluous as the CCF
+> >> subsystem does this for you.
+> > Both of these mechanisms aren't equivalent. While CCF can deal with
+> > optional clocks, what the has_clks flag actually means is that the
+> > device doesn't need a clock (or doesn't have a clock input) on the
+> > devices where it is cleared.
+> >
+> > So I'd actually be in favor of keeping the has_clks property because it
+> > serves as an additional sanity check. For example if you run this driver
+> > on an SoC that "has clocks" but if you don't list them in DT, then after
+> > this patch the driver will happily continue without clocks, even though
+> > it may break completely without those clocks. I've seen SoCs respond to
+> > disabled clocks for a hardware block in different ways, in many cases an
+> > access to any of the registers will completely hang the CPU. In other
+> > cases it may just crash in some other way or give you some sort of
+> > machine exception. None of those are good, and make the tiny bit of
+> > additional code required to support the has_clks flag very attractive.
+> >
+> > But that's just my opinion. If you prefer to throw away that safety
+> > barrier, be my guest. But if you do, please move this functionality into
+> > the clock framework first and then make the driver use it.
+> >
+> > Thierry
 > 
-> No, that's not at all correct. Pinmux settings should reside with the
-> consumer of the pin. In this case, the PWM is the consumer of the pin,
-> whereas the backlight is the consumer of the *PWM*.
-
-This is news to me. Adding Linus W. to Cc, maybe he can comment?!
-
-Grepping through the arm device trees it really seems common to put the
-pinctrl for the pwm pin into the pwm device. I didn't search in depth,
-but I didn't find a counter example.
-
-For GPIOs it is common that the pinmuxing is included in the GPIO's
-consumer pinctrl. Ditto for mdio busses whose pinctrl is included in the
-ethernet pinctrl.
-
-> The problem with making the PWM mode the "default" pinctrl state is that
-> the default state will be applied before the driver is even probed. That
-> makes it unsuitable for this case. I think what we really want here is
-> explicitly "active" and "inactive" states for pinctrl where the PWM
-> driver controls when exactly each state is applied.
-
-Note that this problem goes away nicely if the pwm pin is attached to
-the backlight. Because it's the backlight's driver that "knows" when the
-pwm is configured correctly and so the already existing mechanisms that
-setup the mux when the bl is correctly probed do the right thing at the
-right time.
-
-> This solves the problem quite nicely because by default the pinctrl
-> state isn't touched. For the case where the bootloader didn't initialize
-> the PWM pin at all, the driver core won't do anything and keep it at the
-> 100k pull-up default.
-
-Ditto if the pwm pinctrl is attached to the consumer without having to
-introduce new pwm-specific stuff.
-
-> Only when the PWM is actually taken into active use will the "active"
-> state (i.e. PWM mode) be applied, so that the PWM can drive it with
-> the right configuration to give the desired result. If the bootloader
-> did initialize the PWM it would also work because then at PWM driver
-> probe time we don't do anything either, keeping the pin in the PWM
-> mode as configured by the bootloader and not touching the PWM
-> configuration either.
-
-Ditto if the pwm pinctrl is attached to the consumer without having to
-introduce new pwm-specific stuff.
-
-> If hardware readout is implemented, we can load
-> the exact state that we're in and seamlessly take over in the kernel
-> driver. Enabling the PWM in this case would apply the current setting,
-> which should be a no-op, or at least idempotent.
-
-Ditto if the pwm pinctrl is attached to the consumer without having to
-introduce new pwm-specific stuff.
-
-> > > > No I meant the pwm. Well, it's as easy as that: Whenever with your
-> > > > approach you configure the pin as GPIO with the output set to low,
-> > > > instead configure the pwm with duty_cycle to zero (or disable it).
-> > > > Whenever with your approach you configure the pin as GPIO with the
-> > > > output set to high, configure the pwm with duty_cycle to 100%. (Keeping
-> > > > out inverted PWMs for the ease of discussion, but the procedure can be
-> > > > adapted accordingly.) The only difference then is that with your
-> > > > approach you already "know" in pwm-imx's .probe the idle level and can
-> > > > configure the GPIO accordingly. With my approach you just have to wait
-> > > > until the first pwm_apply which (as described above) works just as well.
-> > > 
-> > > While here I am quite confident you are talking about kernel code, right?
-> > > If yes, then your approach is clear to me.
-> > > 
-> > > The problem is I am quite sure your approach does not solve the cases
-> > > the pinctrl solution does. And according to my tests so far it does not
-> > > work at all because the "init" and "default" states does not work as you
-> > > are saying.
-> > 
-> > That's as pointed out above, because you're looking at the pwm's pinctrl
-> > and I at the pwm-consumer's pinctrl.
-> > 
-> > Note that a sysfs consumer cannot be operated smoothly here, because
-> > there is no pinctrl node to add the PWM mode to that only gets active
-> > after the first configuration. This however is something that should not
-> > be addressed in the imx driver but in the pwm core (if at all).
+> Hi,
 > 
-> With the pinctrl-based solution outlined above you can even operate a
-> sysfs consumer properly. The pinctrl states are where they belong, with
-> the PWM device and therefore they can be properly set when the PWM is
-> used, rather than waiting for a PWM consumer to muck with the pinmux.
+> sorry for my late response. I added the flag for the legacy MIPS 
+> silicon. These SoCs only have a single clock register with a few on/off 
+> bits. there is no complex clocktree or scaling. Hence COMMON_CLK is not 
+> supported by those SoCs. I fully agree with Thierry, that the flag makes 
+> this explicit and the intent was indeed to make sure that on silicon 
+> where clocks are required, that they really are listed in OF. This is 
+> indeed an extra sanity check and hiding it in an implicit check inside 
+> CCF does not feel right.
 > 
-> Note how all the pieces are suddenly falling into place. In my
-> experience that's usually a good indication that you're on the right
-> track.
+>      John
+> 
 
-OK, sysfs is the only point where the "put pinctrl stuff into the pwm
-core (or driver)" is superior to the already existing and otherwise
-completely working status quo. (Apart from bugs that need fixing in
-your scenario, too.)
+Thanks for the detailed information:)  I will drop this patch in v1.
 
-Given that I would not want to encourage people to stick to the sysfs
-interface for their use case, that's ok IMHO. (And note that with the
-bootloader's help you can even do this in a smooth way today.)
-
-Other than that my approach looks more elegant to me (which obviously is
-subjective). It works in all cases apart from sysfs (which is special
-because it's not integrated into the device model) and there is no need
-to teach the pwm framework about pinmuxing and invent new pinctrl modes
-for it. Also dts writes don't need to lookup the needed GPIO numbers
-and pinctrl.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Ryder
