@@ -1,64 +1,39 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Fri, 16 Nov 2018 09:25:57 +0100
-Message-ID: <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
-References: <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
- <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
- <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
- <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
- <20181114113449.GB2620@ulmo>
- <20181114215120.vddykljqyavm64wj@pengutronix.de>
- <20181115152545.GA8611@ulmo>
- <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
- <20181116083430.7f1d8452@ipc1.ka-ro>
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: Re: [PATCH] pwm: lpc18xx-sct: don't reconfigure PWM in .request and
+ .free
+Date: Fri, 16 Nov 2018 11:22:49 +0200
+Message-ID: <1391bbe1-75b5-c86e-ed3a-1e1afb393917@mleia.com>
+References: <20181114115025.GC2620@ulmo>
+ <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181116083430.7f1d8452@ipc1.ka-ro>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Nov 16, 2018 at 08:34:30AM +0100, Lothar Waßmann wrote:
-> Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
-> 
-> > Hello Thierry,
-> > 
-> > On Thu, Nov 15, 2018 at 04:25:45PM +0100, Thierry Reding wrote:
-> > > On Wed, Nov 14, 2018 at 10:51:20PM +0100, Uwe Kleine-König wrote:  
-> > > > On Wed, Nov 14, 2018 at 12:34:49PM +0100, Thierry Reding wrote:  
-> [...]
-> > > > Also dts writes don't need to lookup the needed GPIO numbers and pinctrl.  
-> > > 
-> > > Just to clarify: I don't think that we need to get the GPIO number
-> > > involved in this case, because we don't have to reconfigure the pin as
-> > > GPIO to make this work. The only reason that Michal's proposal did that
-> > > is because that was believed to be necessary. But if the pin can just be
-> > > configured with a 100k pull-up, that's enough to pull the pin high when
-> > > we need it.  
-> > 
-> > Unless the gpio happens to be configured as output at the wrong value.
-> > Further I'm not sure if the pwm in disabled state actively pulls to 0
-> > and if in this state the PU of the pin is good enough to ensure a one
-> > here. That would need verification first.
->
-> No. You can disable the output driver via pinctrl, so that only the
-> selected pull-up/down is relevant. The pin function and GPIO register
-> settings don't matter at all in this case.
-
-Is this about DSE=HI-Z in the pad control register? I didn't know about
-this. I see this exists on i.MX6 but not on i.MX25. Also i.MX51 doesn't
-seem to have this feature.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGVsbG8gVXdlLAoKT24gMTEvMTYvMjAxOCAwODo1MiBBTSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3Jv
+dGU6Cj4gUmVnYXJkaW5nIHRoZSAucmVxdWVzdCBjYXNlOiBUaGUgY29uc3VtZXIgbWlnaHQgYmUg
+aW50ZXJlc3RlZCBpbiB0YWtpbmcKPiBvdmVyIHRoZSBjb25maWd1cmVkIHN0YXRlIGZyb20gdGhl
+IGJvb3QgbG9hZGVyLiBTbyB0aGUgaW5pdGlhbGx5Cj4gY29uZmlndXJlZCBzdGF0ZSBzaG91bGQg
+YmUgcmV0YWluZWQuCj4gCj4gRm9yIHRoZSBmcmVlIGNhc2UgdGhlIFBXTSBjb25zdW1lciBpcyBy
+ZXNwb25zaWJsZSB0byBkaXNhYmxlIHRoZSBQV00KPiBiZWZvcmUgY2FsbGluZyBwd21fcmVsZWFz
+ZSBhbmQgdGhlcmUgYXJlIHRocmVlIHN1YmNhc2VzIHRvIGNvbnNpZGVyOgo+IAoKdGhlIGNoYW5n
+ZXMgYXJlIGZpbmUgcGVyIHNlLCBidXQgcGxlYXNlIHNwbGl0IHRoZW0gaW50byB0d28uCgpQcm9i
+YWJseSBwd21fZGlzYWJsZSgpIG1pc3VzYWdlIGJlZ2FuIHNwcmVhZGluZyBmcm9tIGNvbW1pdCA1
+NGIyYTk5OWExNjc1LgoKLS0KQmVzdCB3aXNoZXMsClZsYWRpbWlyCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcg
+bGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmlu
+ZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
