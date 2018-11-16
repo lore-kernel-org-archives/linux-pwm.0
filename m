@@ -1,83 +1,79 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [resend PATCH 1/3] pwm: mediatek: drop flag 'has_clks'
-Date: Fri, 16 Nov 2018 11:22:44 +0100
-Message-ID: <20181116102244.GB14769@ulmo>
-References: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
- <20181114124752.GI2620@ulmo>
- <20181116064748.6c7shn3am4wejrnj@pengutronix.de>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
+Date: Fri, 16 Nov 2018 10:22:48 +0000
+Message-ID: <20181116102248.w46f2mnlqr2dffwx@holly.lan>
+References: <20181109094857.27079-1-heiko@sntech.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="s2ZSL+KKDSLx8OML"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20181116064748.6c7shn3am4wejrnj@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Ryder Lee <ryder.lee@mediatek.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, John Crispin <john@phrozen.org>
+In-Reply-To: <20181109094857.27079-1-heiko@sntech.de>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: linux-pwm@vger.kernel.org, jingoohan1@gmail.com, dri-devel@lists.freedesktop.org, thierry.reding@gmail.com, enric.balletbo@collabora.com, lee.jones@linaro.org
 List-Id: linux-pwm@vger.kernel.org
 
-
---s2ZSL+KKDSLx8OML
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Nov 16, 2018 at 07:47:48AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> On Wed, Nov 14, 2018 at 01:47:52PM +0100, Thierry Reding wrote:
-> > On Tue, Nov 13, 2018 at 10:08:22AM +0800, Ryder Lee wrote:
-> > > The flag 'has_clks' and related checks are superfluous as the CCF
-> > > subsystem does this for you.
-> >=20
-> > Both of these mechanisms aren't equivalent. While CCF can deal with
-> > optional clocks, what the has_clks flag actually means is that the
-> > device doesn't need a clock (or doesn't have a clock input) on the
-> > devices where it is cleared.
-> >=20
-> > So I'd actually be in favor of keeping the has_clks property because it
-> > serves as an additional sanity check. For example if you run this driver
-> > on an SoC that "has clocks" but if you don't list them in DT, then after
-> > this patch the driver will happily continue without clocks, even though
-> > it may break completely without those clocks. I've seen SoCs respond to
-> > disabled clocks for a hardware block in different ways, in many cases an
-> > access to any of the registers will completely hang the CPU. In other
-> > cases it may just crash in some other way or give you some sort of
-> > machine exception. None of those are good, and make the tiny bit of
-> > additional code required to support the has_clks flag very attractive.
-> >=20
-> > But that's just my opinion. If you prefer to throw away that safety
-> > barrier, be my guest. But if you do, please move this functionality into
-> > the clock framework first and then make the driver use it.
->=20
-> The usual policy is: If the things specified in the dt are
-> wrong or incomplete, it's ok to fail however you like. So from a
-> correctness POV I think the change is fine.
-
-Erm... that's pretty much what I said. It doesn't necessarily mean that
-it's the right thing to do, though. If we know that clocks are required
-and we don't find them in DT, it's better to complain and let the user
-know exactly what is wrong rather than just let it crash and have them
-track down the bug without additional information.
-
-Thierry
-
---s2ZSL+KKDSLx8OML
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvumnQACgkQ3SOs138+
-s6FeCg/+IGbZAVX4NM9KqGMAlCKbZZHB50ybxRy44LZmoepfGNAyx/aTSRIUqJPJ
-nZpBi4xS+lDw2cDg9yhBkIGbDvcKZciTsR7zq2AEPgg0jeigRlqZk0uTSkzJdYnA
-WcNnv1MW8L3X74MpLlBVU7iqpQb1ihj3VaLgqH7ySdMVp70G+b18SSZYjxoxvsGP
-9PbCroW823NhLfNLLYe6Goc3B2AzHFY3imB0wHhE3qPCewxT5qv9v7VqGRozGR4Y
-Ne2gY738btUEPCiU/1ncMzNQ3zSB16ip3YUSX7abJFf8FGR2W9EZZ0KzNsNPreV/
-hEDF56dJNDDB3HrpxW7t4KBOzct2tbjWLQLKNuDYxshdsOolNIb7IgtOCiddTHi/
-Yo+vA74iquxsAFlL5bjWwkSyem6UeZFztBt6IQHL/WvaiosrvxGzYau061Nf3E6T
-q+13Bv3bUKU3H2Fm8bLi1OnRkENUsbHurzXY+Q9uw8i0k08FIf8lH2LbDYs6E7U7
-lLYfQhAaJlurHPepdctFzCZGXpUStYu/sVj/QDbhqPssXi6/AgiMcYnWLxufWDwN
-/wKfjMAg9AmBpXuZTmDJBQF6KuUzDsAhvhxcbHgpfO/8tAMHC2aDKp6dTmAvC3/W
-VNo/2hmln98pZlhy+cqhjygcqXl77BnSBUKSS/h1UjTuIeBvi+k=
-=oX8L
------END PGP SIGNATURE-----
-
---s2ZSL+KKDSLx8OML--
+T24gRnJpLCBOb3YgMDksIDIwMTggYXQgMTA6NDg6NTdBTSArMDEwMCwgSGVpa28gU3R1ZWJuZXIg
+d3JvdGU6Cj4gQ29tbWl0IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2JsOiBTd2l0Y2gg
+dG8gdXNpbmcgImF0b21pYyIgUFdNIEFQSSIpCj4gcmVtb3ZlZCB0aGUgZHJpdmVyIGludGVybmFs
+IGVuYWJsZWQgdHJhY2tpbmcgaW4gZmF2b3Igb2Ygc2ltcGx5IGNoZWNraW5nCj4gdGhlIHB3bSBz
+dGF0ZS4KPiAKPiBUaGlzIGNhbiBsZWFkIHRvIGlzc3VlcyBhcyBhbGwgb2YgZ3Bpby0sIHJlZ3Vs
+YXRvci0gYW5kIHB3bS1zdGF0ZSBhcmUgdXNlZAo+IHRvIGRldGVybWluZSB0aGUgaW5pdGlhbCBz
+dGF0ZSBhbmQgdGhlIGJvb3Rsb2FkZXIgb3Iga2VybmVsIGNhbiBsZWF2ZSB0aGVtCj4gaW4gYW4g
+aW5jb25zaXN0ZW50IHN0YXRlIGF0IGJvb3QuCj4gCj4gSW4gbXkgY2FzZSBvbiByazMzOTkta2V2
+aW4sIHRoZSBwd20gYmFja2xpZ2h0IGlzIGJ1aWxkIGFzIG1vZHVsZSBhbmQgdGhlCj4ga2VybmVs
+IGRpc2FibGVzIHRoZSBzdXBwbHkgcmVndWxhdG9yIGFzIHVudXNlZCB3aGlsZSBrZWVwaW5nIHRo
+ZSBwd20gcnVubmluZwo+IHRodXMgcHdtX2JsIGNhbGxpbmcgcHdtX2JhY2tsaWdodF9wb3dlcl9v
+ZmYoKSBkdXJpbmcgcHJvYmUgYW5kIGNyZWF0aW5nIGFuCj4gdW5tYXRjaGVkIHJlZ3VsYXRvci1k
+aXNhYmxlIGNhbGwsIGFzIGl0IG5ldmVyIGdvdCBlbmFibGVkIGZyb20gdGhlIHB3bS1ibAo+IGJl
+Zm9yZS4KPiAKPiBUbyBwcmV2ZW50IHRoZXNlIGNvbnNpc3RlbmN5IGlzc3VlcywgcmVpbnRyb2R1
+Y2UgdGhlIGRyaXZlci1pbnRlcm5hbAo+IHRyYWNraW5nIG9mIHRoZSBlbmFibGVkIHN0YXRlLgo+
+IAo+IEZpeGVzOiBlNmJjY2EwODkwYjkgKCJiYWNrbGlnaHQ6IHB3bV9ibDogU3dpdGNoIHRvIHVz
+aW5nICJhdG9taWMiIFBXTSBBUEkiKQo+IFNpZ25lZC1vZmYtYnk6IEhlaWtvIFN0dWVibmVyIDxo
+ZWlrb0BzbnRlY2guZGU+CgpBY2tlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBz
+b25AbGluYXJvLm9yZz4KCj4gLS0tCj4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5j
+IHwgOSArKysrKysrLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgMiBkZWxl
+dGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2Js
+LmMgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+IGluZGV4IDY3OGIyNzA2MzE5
+OC4uYmNkMDhiNDE3NjVkIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
+bV9ibC5jCj4gKysrIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBAQCAtMzAs
+NiArMzAsNyBAQCBzdHJ1Y3QgcHdtX2JsX2RhdGEgewo+ICAJc3RydWN0IGRldmljZQkJKmRldjsK
+PiAgCXVuc2lnbmVkIGludAkJbHRoX2JyaWdodG5lc3M7Cj4gIAl1bnNpZ25lZCBpbnQJCSpsZXZl
+bHM7Cj4gKwlib29sCQkJZW5hYmxlZDsKPiAgCXN0cnVjdCByZWd1bGF0b3IJKnBvd2VyX3N1cHBs
+eTsKPiAgCXN0cnVjdCBncGlvX2Rlc2MJKmVuYWJsZV9ncGlvOwo+ICAJdW5zaWduZWQgaW50CQlz
+Y2FsZTsKPiBAQCAtNTAsNyArNTEsNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
+X29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gIAlpbnQgZXJyOwo+ICAKPiAgCXB3bV9nZXRf
+c3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAtCWlmIChzdGF0ZS5lbmFibGVkKQo+ICsJaWYgKHBi
+LT5lbmFibGVkKQo+ICAJCXJldHVybjsKPiAgCj4gIAllcnIgPSByZWd1bGF0b3JfZW5hYmxlKHBi
+LT5wb3dlcl9zdXBwbHkpOwo+IEBAIC02NSw2ICs2Niw4IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNr
+bGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRhICpwYikKPiAgCj4gIAlpZiAocGItPmVu
+YWJsZV9ncGlvKQo+ICAJCWdwaW9kX3NldF92YWx1ZV9jYW5zbGVlcChwYi0+ZW5hYmxlX2dwaW8s
+IDEpOwo+ICsKPiArCXBiLT5lbmFibGVkID0gdHJ1ZTsKPiAgfQo+ICAKPiAgc3RhdGljIHZvaWQg
+cHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRhICpwYikKPiBAQCAtNzIs
+NyArNzUsNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29mZihzdHJ1Y3QgcHdt
+X2JsX2RhdGEgKnBiKQo+ICAJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiAgCj4gIAlwd21fZ2V0
+X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gLQlpZiAoIXN0YXRlLmVuYWJsZWQpCj4gKwlpZiAo
+IXBiLT5lbmFibGVkKQo+ICAJCXJldHVybjsKPiAgCj4gIAlpZiAocGItPmVuYWJsZV9ncGlvKQo+
+IEBAIC04Niw2ICs4OSw3IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0
+cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gIAlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRl
+KTsKPiAgCj4gIAlyZWd1bGF0b3JfZGlzYWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKPiArCXBiLT5l
+bmFibGVkID0gZmFsc2U7Cj4gIH0KPiAgCj4gIHN0YXRpYyBpbnQgY29tcHV0ZV9kdXR5X2N5Y2xl
+KHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzKQo+IEBAIC00ODMsNiArNDg3
+LDcgQEAgc3RhdGljIGludCBwd21fYmFja2xpZ2h0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpCj4gIAlwYi0+Y2hlY2tfZmIgPSBkYXRhLT5jaGVja19mYjsKPiAgCXBiLT5leGl0
+ID0gZGF0YS0+ZXhpdDsKPiAgCXBiLT5kZXYgPSAmcGRldi0+ZGV2Owo+ICsJcGItPmVuYWJsZWQg
+PSBmYWxzZTsKPiAgCXBiLT5wb3N0X3B3bV9vbl9kZWxheSA9IGRhdGEtPnBvc3RfcHdtX29uX2Rl
+bGF5Owo+ICAJcGItPnB3bV9vZmZfZGVsYXkgPSBkYXRhLT5wd21fb2ZmX2RlbGF5Owo+ICAKPiAt
+LSAKPiAyLjE4LjAKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRl
+dmVsCg==
