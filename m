@@ -1,79 +1,153 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: re-add driver internal enabled tracking
-Date: Fri, 16 Nov 2018 10:22:48 +0000
-Message-ID: <20181116102248.w46f2mnlqr2dffwx@holly.lan>
-References: <20181109094857.27079-1-heiko@sntech.de>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/4] pwm: Add new helper to initialize a pwm_state
+ variable with defaults
+Date: Fri, 16 Nov 2018 11:24:28 +0100
+Message-ID: <20181116102428.GC14769@ulmo>
+References: <20181026184157.16371-1-u.kleine-koenig@pengutronix.de>
+ <20181114123236.GG2620@ulmo>
+ <20181115091644.d5hdk5vao6x74zwp@pengutronix.de>
+ <20181115162159.GD8611@ulmo>
+ <20181115210535.mxmyjjbpzrjdufsr@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20181109094857.27079-1-heiko@sntech.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Heiko Stuebner <heiko@sntech.de>
-Cc: linux-pwm@vger.kernel.org, jingoohan1@gmail.com, dri-devel@lists.freedesktop.org, thierry.reding@gmail.com, enric.balletbo@collabora.com, lee.jones@linaro.org
+Content-Type: multipart/mixed; boundary="===============0228818933232894906=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181115210535.mxmyjjbpzrjdufsr@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: kernel@pengutronix.de, linux-pwm@vger.kernel.org, Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>, Krzysztof Kozlowski <krzk@kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpLCBOb3YgMDksIDIwMTggYXQgMTA6NDg6NTdBTSArMDEwMCwgSGVpa28gU3R1ZWJuZXIg
-d3JvdGU6Cj4gQ29tbWl0IGU2YmNjYTA4OTBiOSAoImJhY2tsaWdodDogcHdtX2JsOiBTd2l0Y2gg
-dG8gdXNpbmcgImF0b21pYyIgUFdNIEFQSSIpCj4gcmVtb3ZlZCB0aGUgZHJpdmVyIGludGVybmFs
-IGVuYWJsZWQgdHJhY2tpbmcgaW4gZmF2b3Igb2Ygc2ltcGx5IGNoZWNraW5nCj4gdGhlIHB3bSBz
-dGF0ZS4KPiAKPiBUaGlzIGNhbiBsZWFkIHRvIGlzc3VlcyBhcyBhbGwgb2YgZ3Bpby0sIHJlZ3Vs
-YXRvci0gYW5kIHB3bS1zdGF0ZSBhcmUgdXNlZAo+IHRvIGRldGVybWluZSB0aGUgaW5pdGlhbCBz
-dGF0ZSBhbmQgdGhlIGJvb3Rsb2FkZXIgb3Iga2VybmVsIGNhbiBsZWF2ZSB0aGVtCj4gaW4gYW4g
-aW5jb25zaXN0ZW50IHN0YXRlIGF0IGJvb3QuCj4gCj4gSW4gbXkgY2FzZSBvbiByazMzOTkta2V2
-aW4sIHRoZSBwd20gYmFja2xpZ2h0IGlzIGJ1aWxkIGFzIG1vZHVsZSBhbmQgdGhlCj4ga2VybmVs
-IGRpc2FibGVzIHRoZSBzdXBwbHkgcmVndWxhdG9yIGFzIHVudXNlZCB3aGlsZSBrZWVwaW5nIHRo
-ZSBwd20gcnVubmluZwo+IHRodXMgcHdtX2JsIGNhbGxpbmcgcHdtX2JhY2tsaWdodF9wb3dlcl9v
-ZmYoKSBkdXJpbmcgcHJvYmUgYW5kIGNyZWF0aW5nIGFuCj4gdW5tYXRjaGVkIHJlZ3VsYXRvci1k
-aXNhYmxlIGNhbGwsIGFzIGl0IG5ldmVyIGdvdCBlbmFibGVkIGZyb20gdGhlIHB3bS1ibAo+IGJl
-Zm9yZS4KPiAKPiBUbyBwcmV2ZW50IHRoZXNlIGNvbnNpc3RlbmN5IGlzc3VlcywgcmVpbnRyb2R1
-Y2UgdGhlIGRyaXZlci1pbnRlcm5hbAo+IHRyYWNraW5nIG9mIHRoZSBlbmFibGVkIHN0YXRlLgo+
-IAo+IEZpeGVzOiBlNmJjY2EwODkwYjkgKCJiYWNrbGlnaHQ6IHB3bV9ibDogU3dpdGNoIHRvIHVz
-aW5nICJhdG9taWMiIFBXTSBBUEkiKQo+IFNpZ25lZC1vZmYtYnk6IEhlaWtvIFN0dWVibmVyIDxo
-ZWlrb0BzbnRlY2guZGU+CgpBY2tlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBz
-b25AbGluYXJvLm9yZz4KCj4gLS0tCj4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5j
-IHwgOSArKysrKysrLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgMiBkZWxl
-dGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2Js
-LmMgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+IGluZGV4IDY3OGIyNzA2MzE5
-OC4uYmNkMDhiNDE3NjVkIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
-bV9ibC5jCj4gKysrIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBAQCAtMzAs
-NiArMzAsNyBAQCBzdHJ1Y3QgcHdtX2JsX2RhdGEgewo+ICAJc3RydWN0IGRldmljZQkJKmRldjsK
-PiAgCXVuc2lnbmVkIGludAkJbHRoX2JyaWdodG5lc3M7Cj4gIAl1bnNpZ25lZCBpbnQJCSpsZXZl
-bHM7Cj4gKwlib29sCQkJZW5hYmxlZDsKPiAgCXN0cnVjdCByZWd1bGF0b3IJKnBvd2VyX3N1cHBs
-eTsKPiAgCXN0cnVjdCBncGlvX2Rlc2MJKmVuYWJsZV9ncGlvOwo+ICAJdW5zaWduZWQgaW50CQlz
-Y2FsZTsKPiBAQCAtNTAsNyArNTEsNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2Vy
-X29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gIAlpbnQgZXJyOwo+ICAKPiAgCXB3bV9nZXRf
-c3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAtCWlmIChzdGF0ZS5lbmFibGVkKQo+ICsJaWYgKHBi
-LT5lbmFibGVkKQo+ICAJCXJldHVybjsKPiAgCj4gIAllcnIgPSByZWd1bGF0b3JfZW5hYmxlKHBi
-LT5wb3dlcl9zdXBwbHkpOwo+IEBAIC02NSw2ICs2Niw4IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNr
-bGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRhICpwYikKPiAgCj4gIAlpZiAocGItPmVu
-YWJsZV9ncGlvKQo+ICAJCWdwaW9kX3NldF92YWx1ZV9jYW5zbGVlcChwYi0+ZW5hYmxlX2dwaW8s
-IDEpOwo+ICsKPiArCXBiLT5lbmFibGVkID0gdHJ1ZTsKPiAgfQo+ICAKPiAgc3RhdGljIHZvaWQg
-cHdtX2JhY2tsaWdodF9wb3dlcl9vZmYoc3RydWN0IHB3bV9ibF9kYXRhICpwYikKPiBAQCAtNzIs
-NyArNzUsNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29mZihzdHJ1Y3QgcHdt
-X2JsX2RhdGEgKnBiKQo+ICAJc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiAgCj4gIAlwd21fZ2V0
-X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gLQlpZiAoIXN0YXRlLmVuYWJsZWQpCj4gKwlpZiAo
-IXBiLT5lbmFibGVkKQo+ICAJCXJldHVybjsKPiAgCj4gIAlpZiAocGItPmVuYWJsZV9ncGlvKQo+
-IEBAIC04Niw2ICs4OSw3IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0
-cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gIAlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRl
-KTsKPiAgCj4gIAlyZWd1bGF0b3JfZGlzYWJsZShwYi0+cG93ZXJfc3VwcGx5KTsKPiArCXBiLT5l
-bmFibGVkID0gZmFsc2U7Cj4gIH0KPiAgCj4gIHN0YXRpYyBpbnQgY29tcHV0ZV9kdXR5X2N5Y2xl
-KHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzKQo+IEBAIC00ODMsNiArNDg3
-LDcgQEAgc3RhdGljIGludCBwd21fYmFja2xpZ2h0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
-Y2UgKnBkZXYpCj4gIAlwYi0+Y2hlY2tfZmIgPSBkYXRhLT5jaGVja19mYjsKPiAgCXBiLT5leGl0
-ID0gZGF0YS0+ZXhpdDsKPiAgCXBiLT5kZXYgPSAmcGRldi0+ZGV2Owo+ICsJcGItPmVuYWJsZWQg
-PSBmYWxzZTsKPiAgCXBiLT5wb3N0X3B3bV9vbl9kZWxheSA9IGRhdGEtPnBvc3RfcHdtX29uX2Rl
-bGF5Owo+ICAJcGItPnB3bV9vZmZfZGVsYXkgPSBkYXRhLT5wd21fb2ZmX2RlbGF5Owo+ICAKPiAt
-LSAKPiAyLjE4LjAKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRl
-dmVsCg==
+
+--===============0228818933232894906==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="kVXhAStRUZ/+rrGn"
+Content-Disposition: inline
+
+
+--kVXhAStRUZ/+rrGn
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Nov 15, 2018 at 10:05:35PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello Thierry,
+>=20
+> On Thu, Nov 15, 2018 at 05:21:59PM +0100, Thierry Reding wrote:
+> > On Thu, Nov 15, 2018 at 10:16:44AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> > > On Wed, Nov 14, 2018 at 01:32:36PM +0100, Thierry Reding wrote:
+> > > > On Fri, Oct 26, 2018 at 08:41:55PM +0200, Uwe Kleine-K=C3=B6nig wro=
+te:
+> > > > > This helps to convert drivers from the legacy API to pwm_apply_st=
+ate without
+> > > > > having to make the aware of the configured polarity (and in some =
+cases even
+> > > > > period).
+> > > > >=20
+> > > > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix=
+=2Ede>
+> > > > > ---
+> > > > >  include/linux/pwm.h | 13 ++++++++++---
+> > > > >  1 file changed, 10 insertions(+), 3 deletions(-)
+> > > >=20
+> > > > So if I understand your intention correctly here you want consumers=
+ to
+> > > > be able to get at the default state, which would be the state as it=
+ was
+> > > > "configured" in DT or the PWM lookup table so that you can modify t=
+hat
+> > > > state (well, really just setting the duty-cycle) before you actually
+> > > > send the state to the hardware.
+> > > >=20
+> > > > So the difference to pwm_apply_args() is that you don't want the dr=
+iver
+> > > > to specifically program a duty cycle of 0 before setting the actual=
+ duty
+> > > > cycle that you want to set.
+> > > >=20
+> > > > Is that about right?
+> > >=20
+> > > Yes, and a resulting advantage is that the apply callback is only cal=
+led
+> > > once.
+> > > =20
+> > > > Isn't that exactly what pwm_init_state() already does? pwm-backlight
+> > > > uses it for exactly the same purpose that you seem to be using it in
+> > > > RX1950 backlight control.
+> > >=20
+> > > I didn't use pwm_init_state because that doesn't give a helpful value
+> > > for state->enabled. (I think it is: if the driver provides a get_state
+> > > callback it is whatever that one set, otherwise it's off.)
+> >=20
+> > That's correct. It's pretty much the same thing that you have, except
+> > you explicitly set enable =3D false. But that's not really important
+> > because consumers are supposed to explicitly override that anyway.
+>=20
+> If we hardcode to enable=3Dfalse the call to pwm_get_state could be
+> dropped, too. Then the two functions are really semantically identical.
+> >=20
+> > > Also the name pwm_init_state isn't that good IMHO. Just from the name
+> > > I'd expect it to be something like
+> > >=20
+> > > 	memset(state, 0, sizeof(&state));
+> > >=20
+> > > instead of something more informed that depends on hardware state and=
+/or
+> > > data provided by a device tree.
+> >=20
+> > Be that as it may, the kerneldoc is pretty explicit about what it does
+> > and so is the code. Not liking the name shouldn't be an excuse for
+> > duplicating functionality.
+>=20
+> With your suggestion to move the initialisation of ->state into the
+> core, maybe this function can go away from the public API such that the
+> naming doesn't really matter (and can be adapted easily).
+
+Yeah, I think it would be best to move it into core.c and make it static
+in that case. There should be no need for anyone to create any special
+state, they can just use pwm_get_state() instead.
+
+Thierry
+
+--kVXhAStRUZ/+rrGn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvumtsACgkQ3SOs138+
+s6H/3RAAgGYreZQ0DRulJIPnUM6KqBcashdaA3+B98Fs/6KHqKEMZraRtBTOxo2B
+/mI42bSrvi8iXBQnN49EuDE7aVeb0pUfSrOUFUocYpQ1Wx0tHmRMTraKyTaVIixr
+CliJGaj9jdgJDCDuvRjTD3sE3x4F8/nrYEABmH9tk4DYim4FJvKqbG+Vtc81vVLV
+I+qN5/7CEoGJHOLM8YlypmlEEcaq0H4jDGTLfyyzuBzRXovLBKMBVs3QL/lz54hQ
+3FPcCHNkMA5Vr/+ah5nJerDaHPblC/6kkVrA8J2QO1RwKu4d7LCqDxHBczBDj38O
+kVeX6q34XZEUZWMO6716Z2Ltm/Ah+1ZI9+LThOOQWkCwIoigVuoulWoulYQCR0tp
+FENjzGCxrWnWNzb5Tm0khsMnGoPWVWR60+JPxOYve9DgeiEFCYy4QTeXC/9Y7l5L
+5q6R6XR5a2zLgK6bc3iSrVvuMONKioaEK0UCZT2sv326l4H1ik7H1sz4v6xWtziQ
+9Sarf0RkkqrfoE0O3f8kBaufDTwsIWyKsFWs6hB9Nr7tKQii64kFKEJpOc5V+9+A
+mot07Q0xq1KJK2Ek7GV4xKJMNYCC5+ApJ0+yfxWvRXTMuWbhR6pfeBKiNVUjJQf+
+SE+W45TVVgUXe+23wQBwSStC4uGzHg6RR0wBE37AoelTHP66dlI=
+=DaJo
+-----END PGP SIGNATURE-----
+
+--kVXhAStRUZ/+rrGn--
+
+
+--===============0228818933232894906==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============0228818933232894906==--
