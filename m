@@ -1,13 +1,16 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] pwm: lpc18xx-sct: don't reconfigure PWM in .request and .free
-Date: Fri, 16 Nov 2018 07:52:08 +0100
-Message-ID: <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: lpc18xx-sct: don't reconfigure PWM in .request and
+ .free
+Date: Fri, 16 Nov 2018 08:02:25 +0100
+Message-ID: <20181116070225.qfyscekdgfvgqwfv@pengutronix.de>
 References: <20181114115025.GC2620@ulmo>
+ <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181114115025.GC2620@ulmo>
+Content-Disposition: inline
+In-Reply-To: <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,43 +20,24 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Joachim Eastwood <manabian@gmail.com>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-UmVnYXJkaW5nIHRoZSAucmVxdWVzdCBjYXNlOiBUaGUgY29uc3VtZXIgbWlnaHQgYmUgaW50ZXJl
-c3RlZCBpbiB0YWtpbmcKb3ZlciB0aGUgY29uZmlndXJlZCBzdGF0ZSBmcm9tIHRoZSBib290IGxv
-YWRlci4gU28gdGhlIGluaXRpYWxseQpjb25maWd1cmVkIHN0YXRlIHNob3VsZCBiZSByZXRhaW5l
-ZC4KCkZvciB0aGUgZnJlZSBjYXNlIHRoZSBQV00gY29uc3VtZXIgaXMgcmVzcG9uc2libGUgdG8g
-ZGlzYWJsZSB0aGUgUFdNCmJlZm9yZSBjYWxsaW5nIHB3bV9yZWxlYXNlIGFuZCB0aGVyZSBhcmUg
-dGhyZWUgc3ViY2FzZXMgdG8gY29uc2lkZXI6CgogYSkgVGhlIHB3bSBpcyBhbHJlYWR5IG9mZi4g
-VGhlbiB0aGVyZSBpcyBubyBnYWluIGluIGRpc2FibGluZyB0aGUgUFdNCiAgICBvbmNlIG1vcmUu
-CiBiKSBUaGUgcHdtIGlzIHN0aWxsIHJ1bm5pbmcgYW5kIHRoZXJlIGlzIGEgZ29vZCByZWFzb24g
-Zm9yIHRoYXQuIChOb3QKICAgIHN1cmUgdGhpcyBpcyBhIHZhbGlkIGNhc2UsIEkgY2Fubm90IGlt
-YWdpbmUgc3VjaCBhIGdvb2QgcmVhc29uLikKICAgIFRoZW4gaXQgaXMgY29udHJhIHByb2R1Y3Rp
-dmUgdG8gZGlzYWJsZSB0aGUgcHdtLgogYykgVGhlIHB3bSBpcyBzdGlsbCBydW5uaW5nIGJlY2F1
-c2UgdGhlIGNvbnN1bWVyIGZhaWxlZCB0byBkaXNhYmxlIHRoZQogICAgUFdNLiBUaGVuIHRoZSBj
-b25zdW1lciBuZWVkcyBmaXhpbmcgYW5kIHRoZXJlIGlzIGxpdHRsZSBpbmNlbnRpdmUgdG8KICAg
-IHBhcGVyIG92ZXIgdGhlIHByb2JsZW0gaW4gdGhlIGJhY2tlbmQgZHJpdmVyLgoKVGhpcyBhbGln
-bnMgdGhlIGxwYzE4eHgtc2N0IGRyaXZlciB0byB0aGUgb3RoZXIgUFdNIGRyaXZlcnMgdGhhdCBh
-bHNvCmRvbid0IHJlY29uZmlndXJlIHRoZSBoYXJkd2FyZSBpbiAucmVxdWVzdCBhbmQgLmZyZWUu
-CgpTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1
-dHJvbml4LmRlPgotLS0KIGRyaXZlcnMvcHdtL3B3bS1scGMxOHh4LXNjdC5jIHwgMyAtLS0KIDEg
-ZmlsZSBjaGFuZ2VkLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3
-bS1scGMxOHh4LXNjdC5jIGIvZHJpdmVycy9wd20vcHdtLWxwYzE4eHgtc2N0LmMKaW5kZXggZDdm
-NWY3ZGUwMzBkLi40NzU5MThkOWY1NDMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1scGMx
-OHh4LXNjdC5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1scGMxOHh4LXNjdC5jCkBAIC0yOTYsNyAr
-Mjk2LDYgQEAgc3RhdGljIGludCBscGMxOHh4X3B3bV9yZXF1ZXN0KHN0cnVjdCBwd21fY2hpcCAq
-Y2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSkKIAogCXNldF9iaXQoZXZlbnQsICZscGMxOHh4
-X3B3bS0+ZXZlbnRfbWFwKTsKIAlscGMxOHh4X2RhdGEtPmR1dHlfZXZlbnQgPSBldmVudDsKLQls
-cGMxOHh4X3B3bV9jb25maWdfZHV0eShjaGlwLCBwd20sIHB3bV9nZXRfZHV0eV9jeWNsZShwd20p
-KTsKIAogCXJldHVybiAwOwogfQpAQCAtMzA2LDggKzMwNSw2IEBAIHN0YXRpYyB2b2lkIGxwYzE4
-eHhfcHdtX2ZyZWUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdt
-KQogCXN0cnVjdCBscGMxOHh4X3B3bV9jaGlwICpscGMxOHh4X3B3bSA9IHRvX2xwYzE4eHhfcHdt
-X2NoaXAoY2hpcCk7CiAJc3RydWN0IGxwYzE4eHhfcHdtX2RhdGEgKmxwYzE4eHhfZGF0YSA9IHB3
-bV9nZXRfY2hpcF9kYXRhKHB3bSk7CiAKLQlwd21fZGlzYWJsZShwd20pOwotCXB3bV9zZXRfZHV0
-eV9jeWNsZShwd20sIDApOwogCWNsZWFyX2JpdChscGMxOHh4X2RhdGEtPmR1dHlfZXZlbnQsICZs
-cGMxOHh4X3B3bS0+ZXZlbnRfbWFwKTsKIH0KIAotLSAKMi4xOS4xCgoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
-IGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5p
-bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Hello,
+
+FTR: The e-mail address of Joachim Eastwood doesn't work. I got a bounce
+back saying "The email account that you tried to reach is over quota.
+Please direct the recipient to
+https://support.google.com/mail/?p=3DOverQuotaPerm."
+
+If you remember this when replying to this thread I think the right
+thing is to drop him from the recipents.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
