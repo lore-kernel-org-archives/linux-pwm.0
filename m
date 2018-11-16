@@ -1,56 +1,59 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [resend PATCH 1/3] pwm: mediatek: drop flag 'has_clks'
-Date: Fri, 16 Nov 2018 07:47:48 +0100
-Message-ID: <20181116064748.6c7shn3am4wejrnj@pengutronix.de>
-References: <4c9044427b1aab373acd6ac76f0c905e2be79784.1542074855.git.ryder.lee@mediatek.com>
- <20181114124752.GI2620@ulmo>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] pwm: lpc18xx-sct: don't reconfigure PWM in .request and .free
+Date: Fri, 16 Nov 2018 07:52:08 +0100
+Message-ID: <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
+References: <20181114115025.GC2620@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181114124752.GI2620@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>, Roy Luo <cheng-hao.luo@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, John Crispin <john@phrozen.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181114115025.GC2620@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Joachim Eastwood <manabian@gmail.com>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Nov 14, 2018 at 01:47:52PM +0100, Thierry Reding wrote:
-> On Tue, Nov 13, 2018 at 10:08:22AM +0800, Ryder Lee wrote:
-> > The flag 'has_clks' and related checks are superfluous as the CCF
-> > subsystem does this for you.
-> 
-> Both of these mechanisms aren't equivalent. While CCF can deal with
-> optional clocks, what the has_clks flag actually means is that the
-> device doesn't need a clock (or doesn't have a clock input) on the
-> devices where it is cleared.
-> 
-> So I'd actually be in favor of keeping the has_clks property because it
-> serves as an additional sanity check. For example if you run this driver
-> on an SoC that "has clocks" but if you don't list them in DT, then after
-> this patch the driver will happily continue without clocks, even though
-> it may break completely without those clocks. I've seen SoCs respond to
-> disabled clocks for a hardware block in different ways, in many cases an
-> access to any of the registers will completely hang the CPU. In other
-> cases it may just crash in some other way or give you some sort of
-> machine exception. None of those are good, and make the tiny bit of
-> additional code required to support the has_clks flag very attractive.
-> 
-> But that's just my opinion. If you prefer to throw away that safety
-> barrier, be my guest. But if you do, please move this functionality into
-> the clock framework first and then make the driver use it.
-
-The usual policy is: If the things specified in the dt are
-wrong or incomplete, it's ok to fail however you like. So from a
-correctness POV I think the change is fine.
-
-I don't know about the mips details that John pointed out in a followup
-to this mail though.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+UmVnYXJkaW5nIHRoZSAucmVxdWVzdCBjYXNlOiBUaGUgY29uc3VtZXIgbWlnaHQgYmUgaW50ZXJl
+c3RlZCBpbiB0YWtpbmcKb3ZlciB0aGUgY29uZmlndXJlZCBzdGF0ZSBmcm9tIHRoZSBib290IGxv
+YWRlci4gU28gdGhlIGluaXRpYWxseQpjb25maWd1cmVkIHN0YXRlIHNob3VsZCBiZSByZXRhaW5l
+ZC4KCkZvciB0aGUgZnJlZSBjYXNlIHRoZSBQV00gY29uc3VtZXIgaXMgcmVzcG9uc2libGUgdG8g
+ZGlzYWJsZSB0aGUgUFdNCmJlZm9yZSBjYWxsaW5nIHB3bV9yZWxlYXNlIGFuZCB0aGVyZSBhcmUg
+dGhyZWUgc3ViY2FzZXMgdG8gY29uc2lkZXI6CgogYSkgVGhlIHB3bSBpcyBhbHJlYWR5IG9mZi4g
+VGhlbiB0aGVyZSBpcyBubyBnYWluIGluIGRpc2FibGluZyB0aGUgUFdNCiAgICBvbmNlIG1vcmUu
+CiBiKSBUaGUgcHdtIGlzIHN0aWxsIHJ1bm5pbmcgYW5kIHRoZXJlIGlzIGEgZ29vZCByZWFzb24g
+Zm9yIHRoYXQuIChOb3QKICAgIHN1cmUgdGhpcyBpcyBhIHZhbGlkIGNhc2UsIEkgY2Fubm90IGlt
+YWdpbmUgc3VjaCBhIGdvb2QgcmVhc29uLikKICAgIFRoZW4gaXQgaXMgY29udHJhIHByb2R1Y3Rp
+dmUgdG8gZGlzYWJsZSB0aGUgcHdtLgogYykgVGhlIHB3bSBpcyBzdGlsbCBydW5uaW5nIGJlY2F1
+c2UgdGhlIGNvbnN1bWVyIGZhaWxlZCB0byBkaXNhYmxlIHRoZQogICAgUFdNLiBUaGVuIHRoZSBj
+b25zdW1lciBuZWVkcyBmaXhpbmcgYW5kIHRoZXJlIGlzIGxpdHRsZSBpbmNlbnRpdmUgdG8KICAg
+IHBhcGVyIG92ZXIgdGhlIHByb2JsZW0gaW4gdGhlIGJhY2tlbmQgZHJpdmVyLgoKVGhpcyBhbGln
+bnMgdGhlIGxwYzE4eHgtc2N0IGRyaXZlciB0byB0aGUgb3RoZXIgUFdNIGRyaXZlcnMgdGhhdCBh
+bHNvCmRvbid0IHJlY29uZmlndXJlIHRoZSBoYXJkd2FyZSBpbiAucmVxdWVzdCBhbmQgLmZyZWUu
+CgpTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1
+dHJvbml4LmRlPgotLS0KIGRyaXZlcnMvcHdtL3B3bS1scGMxOHh4LXNjdC5jIHwgMyAtLS0KIDEg
+ZmlsZSBjaGFuZ2VkLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3
+bS1scGMxOHh4LXNjdC5jIGIvZHJpdmVycy9wd20vcHdtLWxwYzE4eHgtc2N0LmMKaW5kZXggZDdm
+NWY3ZGUwMzBkLi40NzU5MThkOWY1NDMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1scGMx
+OHh4LXNjdC5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1scGMxOHh4LXNjdC5jCkBAIC0yOTYsNyAr
+Mjk2LDYgQEAgc3RhdGljIGludCBscGMxOHh4X3B3bV9yZXF1ZXN0KHN0cnVjdCBwd21fY2hpcCAq
+Y2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSkKIAogCXNldF9iaXQoZXZlbnQsICZscGMxOHh4
+X3B3bS0+ZXZlbnRfbWFwKTsKIAlscGMxOHh4X2RhdGEtPmR1dHlfZXZlbnQgPSBldmVudDsKLQls
+cGMxOHh4X3B3bV9jb25maWdfZHV0eShjaGlwLCBwd20sIHB3bV9nZXRfZHV0eV9jeWNsZShwd20p
+KTsKIAogCXJldHVybiAwOwogfQpAQCAtMzA2LDggKzMwNSw2IEBAIHN0YXRpYyB2b2lkIGxwYzE4
+eHhfcHdtX2ZyZWUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdt
+KQogCXN0cnVjdCBscGMxOHh4X3B3bV9jaGlwICpscGMxOHh4X3B3bSA9IHRvX2xwYzE4eHhfcHdt
+X2NoaXAoY2hpcCk7CiAJc3RydWN0IGxwYzE4eHhfcHdtX2RhdGEgKmxwYzE4eHhfZGF0YSA9IHB3
+bV9nZXRfY2hpcF9kYXRhKHB3bSk7CiAKLQlwd21fZGlzYWJsZShwd20pOwotCXB3bV9zZXRfZHV0
+eV9jeWNsZShwd20sIDApOwogCWNsZWFyX2JpdChscGMxOHh4X2RhdGEtPmR1dHlfZXZlbnQsICZs
+cGMxOHh4X3B3bS0+ZXZlbnRfbWFwKTsKIH0KIAotLSAKMi4xOS4xCgoKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
+IGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5p
+bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
