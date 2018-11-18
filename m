@@ -1,9 +1,9 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Sun, 18 Nov 2018 12:30:34 +0100
-Message-ID: <20181118113034.pguv66idde5idinb@pengutronix.de>
+Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
+ imx: Configure output to GPIO in disabled state
+Date: Sun, 18 Nov 2018 21:08:15 +0100
+Message-ID: <20181118200815.a6hkokt3otfm4yl4@pengutronix.de>
 References: <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
  <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
  <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
@@ -13,60 +13,390 @@ References: <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
  <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
  <20181116095124.GA28631@ulmo>
  <20181116103929.cxfvuc2te7cadhp2@pengutronix.de>
- <20181116125633.4e110125@ipc1.ka-ro>
+ <20181116122445.GA25386@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181116125633.4e110125@ipc1.ka-ro>
+In-Reply-To: <20181116122445.GA25386@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Lothar,
+Hello Thierry,
 
-On Fri, Nov 16, 2018 at 12:56:33PM +0100, Lothar Wa�mann wrote:
-> Uwe Kleine-K�nig <u.kleine-koenig@pengutronix.de> wrote:
+On Fri, Nov 16, 2018 at 01:24:45PM +0100, Thierry Reding wrote:
+> On Fri, Nov 16, 2018 at 11:39:29AM +0100, Uwe Kleine-König wrote:
 > > On Fri, Nov 16, 2018 at 10:51:24AM +0100, Thierry Reding wrote:
-> > > On Thu, Nov 15, 2018 at 09:37:33PM +0100, Uwe Kleine-K�nig wrote:  
-> > > > On Thu, Nov 15, 2018 at 04:25:45PM +0100, Thierry Reding wrote:  
-> [...]
+> > > On Thu, Nov 15, 2018 at 09:37:33PM +0100, Uwe Kleine-König wrote:
+> > > > On Thu, Nov 15, 2018 at 04:25:45PM +0100, Thierry Reding wrote:
+> > > > > On Wed, Nov 14, 2018 at 10:51:20PM +0100, Uwe Kleine-König wrote:
+> > > > > > On Wed, Nov 14, 2018 at 12:34:49PM +0100, Thierry Reding wrote:
+> > > > > > > On Fri, Nov 09, 2018 at 05:55:55PM +0100, Uwe Kleine-König wrote:
+> > > > > > > > On Fri, Nov 09, 2018 at 02:24:42PM +0000, Vokáč Michal wrote:
+> > > > > > > > > On 8.11.2018 20:18, Uwe Kleine-König wrote:
+> > > > > > > > > > Taking your example with the backlight device you specify an "init" and
+> > > > > > > > > > a "default" pinctrl and only "default" contains the muxing for the PWM
+> > > > > > > > > > pin everything should be as smooth as necessary: The pwm is only muxed
+> > > > > > > > > > when the backlight device is successfully bound.
+> > > > > > > > > 
+> > > > > > > > > Have you tried that Uwe? The bad news is I tested that before and now
+> > > > > > > > > again and it does not work like that. We already discussed that earlier.
+> > > > > > > > 
+> > > > > > > > The key is that the pinmux setting for the PWM pin should be part of the
+> > > > > > > > bl pinctrl, not the pwm pinctrl. Then "default" is only setup when the
+> > > > > > > > bl device is successfully bound which is after the bl's .probe callback
+> > > > > > > > called pwm_apply().
+> > > > > > > 
+> > > > > > > No, that's not at all correct. Pinmux settings should reside with the
+> > > > > > > consumer of the pin. In this case, the PWM is the consumer of the pin,
+> > > > > > > whereas the backlight is the consumer of the *PWM*.
+> > > > > > 
+> > > > > > This is news to me. Adding Linus W. to Cc, maybe he can comment?!
+> > > > > > 
+> > > > > > Grepping through the arm device trees it really seems common to put the
+> > > > > > pinctrl for the pwm pin into the pwm device. I didn't search in depth,
+> > > > > > but I didn't find a counter example.
+> > > > > > 
+> > > > > > For GPIOs it is common that the pinmuxing is included in the GPIO's
+> > > > > > consumer pinctrl. Ditto for mdio busses whose pinctrl is included in the
+> > > > > > ethernet pinctrl.
+> > > > > 
+> > > > > GPIO is different from PWM in that the GPIO is already the pin itself
+> > > > > and is otherwise generic. So typically you put the pinmuxing options
+> > > > > into the device tree node for the consumer of the GPIO, because it is
+> > > > > only when the consumer uses the GPIO that you need to configure that
+> > > > > pin as GPIO.
+> > > > > 
+> > > > > For PWM, however, the PWM consumer is only the consumer of the PWM, but
+> > > > > the PWM device itself is the real consumer of the pin that outputs the
+> > > > > PWM signal. So the PWM determines when the pinmux states need to be
+> > > > > applied, whereas the consumer of the PWM only deals with the PWM.
+> > > > > 
+> > > > > For MDIO busses, I think they are usually part of, and driven by, the
+> > > > > ethernet controller, so again it makes sense to put the pinmux into the
+> > > > > node of the ethernet controller, because the ethernet controller is the
+> > > > > user of the pins.
+> > > > 
+> > > > Maybe it was a bad idea to broaden the discussion to talk about gpios
+> > > > and ethernet stuff here. I'd still consider it a valid construct to put
+> > > > the pwm pin into the backlight's pinctrl unless Linux W. disagrees.
+> > > 
 > > > But why? The backlight doesn't care about the specific pinmuxing of the
 > > > PWM pin. All it cares about is the PWM signal. That's the level of
 > > > abstraction that the PWM consumer expects, anything lower level belongs
-> > > in the PWM driver.  
+> > > in the PWM driver.
 > > 
 > > The backlight driver cares about the PWM pin muxing because if it's
 > > wrongly muxed the backlight doesn't work as intended.
->
-> With this argumentation you would also have to define the clocks needed
-> for the PWM in the backlight (or whatever pwm consumer) driver, because
-> if the clocks are not set up correctly the backlight won't work as
-> expected...
+> 
+> It shouldn't care about that. It should only care about the PWM and the
+> PWM should make sure that the pin is correctly muxed because otherwise
+> it can't work as expected.
+> 
+> > > > > > > The problem with making the PWM mode the "default" pinctrl state is that
+> > > > > > > the default state will be applied before the driver is even probed. That
+> > > > > > > makes it unsuitable for this case. I think what we really want here is
+> > > > > > > explicitly "active" and "inactive" states for pinctrl where the PWM
+> > > > > > > driver controls when exactly each state is applied.
+> > > > > > 
+> > > > > > Note that this problem goes away nicely if the pwm pin is attached to
+> > > > > > the backlight. Because it's the backlight's driver that "knows" when the
+> > > > > > pwm is configured correctly and so the already existing mechanisms that
+> > > > > > setup the mux when the bl is correctly probed do the right thing at the
+> > > > > > right time.
+> > > > > 
+> > > > > Actually that's not exactly true. The default pinctrl state will be
+> > > > > applied before the driver's ->probe() implementation, so the pinctrl
+> > > > > state will be active some time before even the backlight driver gets
+> > > > > around to setting up the PWM. If you look at drivers/base/dd.c you'll
+> > > > > see that really_probe() calls pinctrl_bind_pins() before calling the
+> > > > > driver's ->probe() and will select the default state (unless there's
+> > > > > also an "init" state defined, in which case that will get applied and
+> > > > > only after successful probe will the default state be selected).
+> > > > > 
+> > > > > So if you use only a default state, then you could even get into a
+> > > > > situation where ->probe() return -EPROBE_DEFER and it would potentially
+> > > > > take several seconds before the driver is reprobed, during which time
+> > > > > the pinmux will already be set up but the PWM not configured properly
+> > > > > and potentially outputting the wrong level.
+> > > > 
+> > > > If you reread my suggestion to Michal completely you will notice I got
+> > > > that right.
+> > > > 
+> > > > > > > This solves the problem quite nicely because by default the pinctrl
+> > > > > > > state isn't touched. For the case where the bootloader didn't initialize
+> > > > > > > the PWM pin at all, the driver core won't do anything and keep it at the
+> > > > > > > 100k pull-up default.
+> > > > > > 
+> > > > > > Ditto if the pwm pinctrl is attached to the consumer without having to
+> > > > > > introduce new pwm-specific stuff.
+> > > > > 
+> > > > > Well yes, but you'd obviously also have to avoid using the "default"
+> > > > > state, otherwise you'd run into the issues that I described above.
+> > > > 
+> > > > I'd need "default" and "init", right.
+> > > > 
+> > > > > > > > > > No I meant the pwm. Well, it's as easy as that: Whenever with your
+> > > > > > > > > > approach you configure the pin as GPIO with the output set to low,
+> > > > > > > > > > instead configure the pwm with duty_cycle to zero (or disable it).
+> > > > > > > > > > Whenever with your approach you configure the pin as GPIO with the
+> > > > > > > > > > output set to high, configure the pwm with duty_cycle to 100%. (Keeping
+> > > > > > > > > > out inverted PWMs for the ease of discussion, but the procedure can be
+> > > > > > > > > > adapted accordingly.) The only difference then is that with your
+> > > > > > > > > > approach you already "know" in pwm-imx's .probe the idle level and can
+> > > > > > > > > > configure the GPIO accordingly. With my approach you just have to wait
+> > > > > > > > > > until the first pwm_apply which (as described above) works just as well.
+> > > > > > > > > 
+> > > > > > > > > While here I am quite confident you are talking about kernel code, right?
+> > > > > > > > > If yes, then your approach is clear to me.
+> > > > > > > > > 
+> > > > > > > > > The problem is I am quite sure your approach does not solve the cases
+> > > > > > > > > the pinctrl solution does. And according to my tests so far it does not
+> > > > > > > > > work at all because the "init" and "default" states does not work as you
+> > > > > > > > > are saying.
+> > > > > > > > 
+> > > > > > > > That's as pointed out above, because you're looking at the pwm's pinctrl
+> > > > > > > > and I at the pwm-consumer's pinctrl.
+> > > > > > > > 
+> > > > > > > > Note that a sysfs consumer cannot be operated smoothly here, because
+> > > > > > > > there is no pinctrl node to add the PWM mode to that only gets active
+> > > > > > > > after the first configuration. This however is something that should not
+> > > > > > > > be addressed in the imx driver but in the pwm core (if at all).
+> > > > > > > 
+> > > > > > > With the pinctrl-based solution outlined above you can even operate a
+> > > > > > > sysfs consumer properly. The pinctrl states are where they belong, with
+> > > > > > > the PWM device and therefore they can be properly set when the PWM is
+> > > > > > > used, rather than waiting for a PWM consumer to muck with the pinmux.
+> > > > > > > 
+> > > > > > > Note how all the pieces are suddenly falling into place. In my
+> > > > > > > experience that's usually a good indication that you're on the right
+> > > > > > > track.
+> > > > > > 
+> > > > > > OK, sysfs is the only point where the "put pinctrl stuff into the pwm
+> > > > > > core (or driver)" is superior to the already existing and otherwise
+> > > > > > completely working status quo. (Apart from bugs that need fixing in
+> > > > > > your scenario, too.)
+> > > > > 
+> > > > > Nope, sorry. It's superior in all of the other cases as well. You've
+> > > > > said elsewhere already that the prerequisite for the current solution to
+> > > > > support inverse polarity with the i.MX driver is to keep the driver
+> > > > > running, even after the PWM is no longer used. Sorry but that's just not
+> > > > > an option for me.
+> > > > 
+> > > > You want that after pwm_disable() the pin still keeps the idle level. As
+> > > > the hardware doesn't provide this feature "as is" something has to be
+> > > > done about it. This can be reached either by operating the pin as PWM
+> > > > with 0% duty cycle or by switching to GPIO that is configured to the
+> > > > desired level. From the PWM driver's POV the first is the more natural,
+> > > > as this can be accomplished with the registers this driver cares about
+> > > > anyhow.
+> > > 
+> > > We've been over this before. Yes, as long as you operate the pin as PWM
+> > > it's okay to just actively drive it. But once you no longer use the pin,
+> > > why would you want to still actively drive it?
+> > 
+> > This is because you say the pin should keep its level as inactive even
+> > though that's not what the hardware does without keeping care.
+> > 
+> > I say this is strange: The consumer specifies if the pwm should be
+> > inverted or not because the pwm alone doesn't know that. Then with the
+> > consumer gone *you* want the pwm to "remember" its last user requested
+> > inversion and so the pin should stay at 1.
+> > 
+> > To answer your question: I don't want to actively drive the pin when the
+> > user is gone. That's a requirement comming from you.
+> 
+> That's not actually what I'm suggesting. What I'm saying is that the PWM
+> should not actively drive the pin at all.
 
-The reason why I think it is sensible to put the PWM pin into the
-consumer's pinctrl is that only after the consumer grabbed the PWM it is
-fixed (in software) what the idle level is. So the pwm alone isn't
-complete and it's not clear what to do with this pin. High-Z is probably
-a good choice for most setups, but this relies on a PU or PD into the
-right direction that isn't always present. (I'm currently working with
-such a machine, where such a PD/PU is missing. Not entirely sure this is
-a problem because maybe the display unit has a pull. Didn't take the
-time yet to verify.) Also this needs some care because the PWM might
-already running on purpose (e.g. to show a splash screen) then switching
-to High-Z should be avoided.
+I'm a tad annoyed and grumpy here. We're discussing since quite some
+time about what is the right thing to do on pwm_disable(). Up to now I
+understood you that it should make the pin drive the inactive level.
 
-So IMHO it is sensible to delay setting up the pinmux until the boundary
-conditions are fixed. This is also the general idea with the involvement
-of pinctrl stuff, but given that even without handling pinctrl specially
-it already works just fine when the pwm is only muxed as part of the
-consumer.
+Thinking a bit about this it doesn't really matter for the consumer if
+the pin stays in the idle level because there is a pull into the right
+direction and the PWM is high-Z or if the PWM pulls actively in the
+right direction. Also for pwm_config(pwm, 0, 100) the PWM could disable
+its output in the presence of a pull, so the property says true that the
+effects of pwm_config(pwm, 0, 100) and pwm_disable(pwm) should be the
+same. And so my claim that pwm_disable is a part of the API that
+doesn't give any value stays true.
+
+> That's my entire point here.
+> If the device gets out of boot, nobody is actively driving the pin
+> either, so it has that 100k pull-up to make sure it is high by default,
+> which in turn causes the backlight to remain off. I'm saying that that
+> is exactly the state that the pin should be put back into when nobody is
+> using the PWM.
+> 
+> So in other words I'm saying that that pin should be passively driven by
+> that 100k pull-up if it is not actively used by the PWM.
+> 
+> What you are saying is that either we actively drive irrespective of
+> whether there are any users, or that we leave it undefined what we do
+> with a pin when it is no longer used. I think those are both wrong
+> because the former doesn't allow you to properly shut down the system
+> and the latter gives you undefined results, which is pretty useless
+> because it is completely non-deterministic.
+
+I think shut down doesn't matter because on shutdown the backlight
+driver doesn't release the pwm and so it continues to keep the intended
+level.
+
+> > If it was my decision, I'd say: If the backlight driver calls
+> > 
+> > 	pwm_config(pwm, 0, 100);
+> > 	pwm_disable(pwm);
+> > 
+> > I'd interpret that as: The consumer doesn't use the pin any more, so I'm
+> > not bound to keep the pin at a certain level. If however after
+> > pwm_disable the consumer is still considered to use the pin, then
+> > implementing it the same way as pwm_config(pwm, 0, 100) is the right
+> > thing to do. This applies then to all pwm implementations and so should
+> > be solved in the pwm core, not in the imx driver. In this case the
+> > concept of "disabling a PWM" can go away completely.
+> 
+> But again, why should PWMs be special? You turn off all other resources
+> when you no longer need them, right? If you power your panel with a
+> regulator, then when the panel is disabled you want to disable the
+> regulator, right? Similarily if you don't use your I2C controller you
+> want to turn off the clock that drives it, right? This is the same for
+> any resource in your system: if you no longer need it, disable it. The
+> fact that "disabling" the PWM is not straightforward on i.MX doesn't
+> mean that we should simply ignore it.
+
+I don't say we should ignore it. I say we shouldn't disable the hardware
+if the consumer calls pwm_disable() if disabling the hardware results in
+a state that shouldn't happen on pwm_disable().
+
+Also note, that there are two different "disable" you are talking about.
+One is disable in the sense of "pwm_disable". This is about the pwm to
+stop oscillating. And the other is about unsetting the enable bit in a
+control register and stopping the input clock. Even though both usually
+go hand in hand, if you still have requirements on the hardware state
+after pwm_disable that are not given if you disable the hardware it is
+stupid to require to disable the hardware and then implement something
+else on top to undo this unwanted result.
+
+> > In another mail you wrote:
+> > > Your example of keeping an LED in the current state is actually an
+> > > example of where the consumer still needs it. As long as you want to use
+> > > the LED you need to keep the LED driver around, and as long as the LED
+> > > driver is around you have a consumer for the PWM.
+> > 
+> > With an analog reasoning I'd say: As long as the backlight driver cares
+> > about the backlight being off, it should not disable (or put) the PWM.
+> 
+> It shouldn't put the PWM because it still needs it. But it should be
+> totally fine to disable it. Disabling a PWM should result in the PWM not
+> outputting any power.
+> 
+> > > > Also note this is similar in the pwm-bcm-kona driver that doesn't seem
+> > > > to have the concept of "disable" at all. kona_pwmc_disable() just sets
+> > > > up 0% duty cycle. In my eyes this is an argument that is good enough to
+> > > > at least nack the imx-specific implementation of that pinctrl stuff.
+> > > 
+> > > It's not a good enough argument for me. It's certainly possible that not
+> > > all PWM driver can be made to behave exactly as needed. pwm-bcm-kona
+> > > might be one of those, but that doesn't mean that everybody else should
+> > > be restricted to the same behaviour. If we can make i.MX behave exactly
+> > > right, then we should do that.
+> > 
+> > And if we can make the imx-specific implementation right in a generic
+> > way in the pwm core that might help the bcm-kona driver for free.
+> 
+> It may, but we don't know that.
+
+Look at the .disable callback of the bcm-kona driver. The way it is
+written together with the comments in it makes it obvious that this
+driver also actively drives the pin after disable.
+
+> Look, I'm not generally opposed to do this in the core, but I'm not
+> going to implement it in the core until I'm convinced that it is
+> useful in a large number of cases. One or two are not large numbers.
+
+Last time I suggested to implement this is in the core you said: "So I
+try not to attempt genericity until there are at least two or more
+use-cases that can be the basis for a generic solution." Now that I
+found a 2nd driver that can benefit you suddenly request "a large number
+of cases".
+
+I believe one reason for Linux being as good as it is today is, that
+usually with this kind of scenario things are done in the generic way
+even if there is only a single user up to now. And even if this solution
+doesn't 100% satisfies the needs for the next user, it is much easier
+for the next one to adapt and adopt generic code than to first cut it
+out from a hardware driver. And until the second user appears the
+separation helps to better understand the code because it is not bound
+to a hardware driver that a reviewer might not know.
+
+> > > > If the pinctrl idea is implemented in the pwm core, I won't object.
+> > > 
+> > > Let me see if I get this straight: you're not objecting to the idea of
+> > > implementing the pinctrl solution, your only objection is to put it in
+> > > the i.MX driver?
+> > 
+> > Given that the pinctrl solution is a generic solution that might help
+> > other drivers, too, I think it should not go into the imx specific
+> > driver just because for now this is the only driver that might benefit
+> > from it.
+> > 
+> > I still don't think it's the best solution for the imx problem but as I
+> > care more for imx in general than for pwm in general I'm interested in
+> > keeping the imx driver focused to the imx specific parts. I won't repeat
+> > the advantages of putting generic stuff into a generic location instead
+> > of its first user.
+> 
+> We can debate this for another few weeks, but I don't think you're going
+> to be able to convince me, so let's cut this short: pinctrl support goes
+> in the i.MX driver for now. Let's move on.
+
+OK, you're taking out your maintainer's club. That's sad because I'm
+convinced you're forcing a solution that is not optimal. I accept that
+the pinctrl stuff solves the problem, but I'm sure it's wrong to put it
+into a hardware driver.
  
+> > > > > > Also dts writes don't need to lookup the needed GPIO numbers and pinctrl.
+> > > > > 
+> > > > > Just to clarify: I don't think that we need to get the GPIO number
+> > > > > involved in this case, because we don't have to reconfigure the pin as
+> > > > > GPIO to make this work. The only reason that Michal's proposal did that
+> > > > > is because that was believed to be necessary. But if the pin can just be
+> > > > > configured with a 100k pull-up, that's enough to pull the pin high when
+> > > > > we need it.
+> > > > 
+> > > > Unless the gpio happens to be configured as output at the wrong value.
+> > > > Further I'm not sure if the pwm in disabled state actively pulls to 0
+> > > > and if in this state the PU of the pin is good enough to ensure a one
+> > > > here. That would need verification first.
+> > > 
+> > > The idea is to *not* configure the GPIO as output and output the wrong
+> > > value. The idea is to not use the GPIO at all and instead use whatever
+> > > the hardware default is that makes it such that the backlight is off by
+> > > default at boot.
+> > 
+> > Which might be possible with Lothar's idea for some machines, but not
+> > for all users of the pwm-imx driver.
+> > 
+> > Also note that you don't include the poor souls where there is no
+> > hardware pullup into the right direction.
+> 
+> The poor souls should speak up and then we can look into finding a good
+> solution for them. I'm pretty sure there must be some equivalent that
+> can be used for other users.
+
+I think one of the boards that I'm working with has an enabled backlight
+at power on until the bootloader actively drives the related pwm to
+the right level (either using the pwm or the gpio function of the pin).
+I will double check that but assuming that is right, just disabling the
+output won't work here.
+
 Best regards
 Uwe
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
+Pengutronix e.K.                           | Uwe Kleine-König            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
