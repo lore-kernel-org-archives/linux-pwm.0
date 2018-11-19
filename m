@@ -1,29 +1,45 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH 13/17] pwm: bcm2835: Switch to SPDX identifier
-Date: Mon, 19 Nov 2018 10:33:45 +0100
-Message-ID: <00989205-1712-09ab-e73e-1c189e6d83d1@i2se.com>
-References: <1541866978-7943-1-git-send-email-stefan.wahren@i2se.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: lpc18xx-sct: don't reconfigure PWM in .request and
+ .free
+Date: Mon, 19 Nov 2018 20:55:28 +0100
+Message-ID: <20181119195528.elyioqz36be3ews3@pengutronix.de>
+References: <20181114115025.GC2620@ulmo>
+ <20181116065208.3920-1-u.kleine-koenig@pengutronix.de>
+ <20181116100500.GC28631@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1541866978-7943-1-git-send-email-stefan.wahren@i2se.com>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20181116100500.GC28631@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Eric Anholt <eric@anholt.net>, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
+Hello Thierry,
 
-Am 10.11.2018 um 17:22 schrieb Stefan Wahren:
-> Adopt the SPDX license identifier headers to ease license compliance
-> management.
->
-> Cc: Bart Tanghe <bart.tanghe@thomasmore.be>
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+On Fri, Nov 16, 2018 at 11:05:00AM +0100, Thierry Reding wrote:
+> Applied, with some minor fixes to the commit message (pwm -> PWM,
+> pwm_release -> pwm_put(), ...).
 
-are you fine with this patch?
+Thanks. I wonder though why the commit didn't make it into next yet.
+Your for-next branch doesn't contain anything that's not already in
+Linus Torvalds' tree. I assume this isn't on purpose and you just didn't
+push your changes out?
 
-Regards
-Stefan
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
