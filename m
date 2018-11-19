@@ -1,71 +1,70 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Mon, 19 Nov 2018 09:32:30 +0100
-Message-ID: <20181119083230.re3dtq4alnrojbnd@pengutronix.de>
-References: <20181107093355.e4n3irrnkybqsjvc@pengutronix.de>
- <eb4e7a42-bd5c-3ae2-ccb7-d1a73d5ae99c@ysoft.com>
- <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
- <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
- <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
+Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
+ imx: Configure output to GPIO in disabled state
+Date: Mon, 19 Nov 2018 09:48:22 +0100
+Message-ID: <20181119084822.qljinfgxpjtumojk@pengutronix.de>
+References: <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
  <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
  <20181114113449.GB2620@ulmo>
  <20181114215120.vddykljqyavm64wj@pengutronix.de>
- <CACRpkdZAew3bUea=iR4t-a7SVSMf=-CTeWfeU215uT_jQ-o81A@mail.gmail.com>
+ <20181115152545.GA8611@ulmo>
+ <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
+ <20181116095124.GA28631@ulmo>
+ <20181116103929.cxfvuc2te7cadhp2@pengutronix.de>
+ <20181116122445.GA25386@ulmo>
+ <20181118200815.a6hkokt3otfm4yl4@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CACRpkdZAew3bUea=iR4t-a7SVSMf=-CTeWfeU215uT_jQ-o81A@mail.gmail.com>
+In-Reply-To: <20181118200815.a6hkokt3otfm4yl4@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Michal.Vokac@ysoft.com, Mark Rutland <mark.rutland@arm.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, linux-pwm@vger.kernel.org, l.majewski@majess.pl, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Linus,
+Hello,
 
-On Mon, Nov 19, 2018 at 08:44:38AM +0100, Linus Walleij wrote:
-> There is quite a discussion you folks have going on here. I tried to
-> grasp it but I can't. I can try to answer the above question specifically.
-
-To sumarize: When the pwm driver probes it is not yet clear if the idle
-state of the output pin is high or low. Even when the pinctrl device has
-an "init" and a "default" pinctrl, it is not yet fixed when its
-"default" is configured.
-
-The way Thierry wants to fix that is by disabling the output driver
-until the pwm is in use und rely on a pull-up or pull-down in hardware.
-
-The way I want to fix this is to only configure the pwm pin as part of
-the consumer. This is late enough that the consumer already requested
-and configured the pwm such that the idle level is known.
-Thierry's and Lothar's claim was that putting the pin setup of the pwm
-pin into the pwm consumer's pinctrl was forbidden. That's why I asked
-you as pinctrl maintainer if there is a requirement that I don't know
-of.
-
-> So compared to things like that (that we still have to support
-> forever) whatever you are doing here you're doing great as long
-> as it is consumer controlled.
+On Sun, Nov 18, 2018 at 09:08:15PM +0100, Uwe Kleine-König wrote:
+> On Fri, Nov 16, 2018 at 01:24:45PM +0100, Thierry Reding wrote:
+> > On Fri, Nov 16, 2018 at 11:39:29AM +0100, Uwe Kleine-König wrote:
+> > > Also note that you don't include the poor souls where there is no
+> > > hardware pullup into the right direction.
+> > 
+> > The poor souls should speak up and then we can look into finding a good
+> > solution for them. I'm pretty sure there must be some equivalent that
+> > can be used for other users.
 > 
-> Whether that consumer is the previous driver thingie in the
-> daisy-chain of consumers or the final end user consumer of
-> the pin doesn't really matter to pin control, as long as it is a
-> consumer. I would tend to say it is up to the subsystem,
-> and the old IETF motto "rough consensus and running code".
+> I think one of the boards that I'm working with has an enabled backlight
+> at power on until the bootloader actively drives the related pwm to
+> the right level (either using the pwm or the gpio function of the pin).
+> I will double check that but assuming that is right, just disabling the
+> output won't work here.
 
-So I understand that from the pinctrl side there is no hard requirement
-that the PWM pin must be muxed as part of the pwm device. And if things
-work better when the pin is only configured as part of its consumer this
-is legitimate.
+I just confirmed this. On the board I have in mind the backlight really
+goes on during powerup. One of the first things the bootloader does is
+to ensure the backlight goes off again by actively driving the
+respective pin.
 
-Thanks for your feedback.
+I fully agree with you this is unfortunate and the hardware team could
+have made the situation smoother if there were a pull up. I guess asking
+them to go back and fix that won't be accepted[1]. So please whatever
+solution you force through, please consider it should work without a
+sane pull and also with the imx SoCs before i.MX6 which cannot disable
+the output driver via pinmux.
 
 Best regards
 Uwe
+
+[1] Additionally this is a bought display+backlight+touch combo, so the
+    right place to put the pull would be in this unit, because the board
+    designer rightfully says: I won't put a pull up on my board because
+    for the next batch we're maybe switching to the similar display
+    combo that needs an active high signal for the backlight and I won't
+    create another factor 2 for the board variants for stuff that can be
+    fixed in software.
 
 -- 
 Pengutronix e.K.                           | Uwe Kleine-König            |
