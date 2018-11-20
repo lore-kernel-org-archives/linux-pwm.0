@@ -1,11 +1,11 @@
 Return-path: <kernel-bounces@pengutronix.de>
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Date: Mon, 19 Nov 2018 20:56:37 +0100
-Message-Id: <20181119195637.16341-1-u.kleine-koenig@pengutronix.de>
+Date: Tue, 20 Nov 2018 17:45:30 +0100
+Message-Id: <20181120164530.6400-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: [PATCH] pwm: don't use memcmp to compare struct state variables
+Subject: [PATCH] pwm: drop per-chip dbg_show callback
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -19,34 +19,45 @@ To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-Given that struct pwm_state is sparse (at least on some platforms)
-variables of this type might represent the same state because all fields
-are pairwise identical but still memcmp returns a difference because some
-of the unused bits are different.
-
-To prevent surprises compare member by member instead of the whole occupied
-memory.
+This callback was introduced in commit 62099abf67a2 ("pwm: Add debugfs
+interface") in 2012 and up to now there is not a single user. So drop this
+unused code.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pwm/core.c  | 5 +----
+ include/linux/pwm.h | 3 ---
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 1581f6ab1b1f..253a459fe0d8 100644
+index 253a459fe0d8..3149204567f3 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -472,7 +472,10 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
- 	    state->duty_cycle > state->period)
- 		return -EINVAL;
+@@ -1036,10 +1036,7 @@ static int pwm_seq_show(struct seq_file *s, void *v)
+ 		   dev_name(chip->dev), chip->npwm,
+ 		   (chip->npwm != 1) ? "s" : "");
  
--	if (!memcmp(state, &pwm->state, sizeof(*state)))
-+	if (state->period == pwm->state.period &&
-+	    state->duty_cycle == pwm->state.duty_cycle &&
-+	    state->polarity == pwm->state.polarity &&
-+	    state->enabled == pwm->state.enabled)
- 		return 0;
+-	if (chip->ops->dbg_show)
+-		chip->ops->dbg_show(chip, s);
+-	else
+-		pwm_dbg_show(chip, s);
++	pwm_dbg_show(chip, s);
  
- 	if (pwm->chip->ops->apply) {
+ 	return 0;
+ }
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 017d1e13e29d..a40bbe55fd29 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -272,9 +272,6 @@ struct pwm_ops {
+ 		     struct pwm_state *state);
+ 	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  struct pwm_state *state);
+-#ifdef CONFIG_DEBUG_FS
+-	void (*dbg_show)(struct pwm_chip *chip, struct seq_file *s);
+-#endif
+ 	struct module *owner;
+ };
+ 
 -- 
 2.19.1
