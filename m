@@ -1,14 +1,15 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Sun, 4 Nov 2018 22:19:45 +0100
+Date: Tue, 20 Nov 2018 17:57:58 +0100
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH] PWM: drop legacy wrapper for changing polarity
-Message-ID: <20181104211945.ychhco6vrmuf6jtc@pengutronix.de>
+Message-ID: <20181120165758.pwprvrhzpftkghap@pengutronix.de>
 References: <20181015082152.5900-1-u.kleine-koenig@pengutronix.de>
+ <20181104211945.ychhco6vrmuf6jtc@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20181015082152.5900-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20181104211945.ychhco6vrmuf6jtc@pengutronix.de>
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -22,20 +23,24 @@ To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, Gavin Schenk <g.schenk@eckelmann.de>, =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-Hello Thierry,
-
-On Mon, Oct 15, 2018 at 10:21:52AM +0200, Uwe Kleine-K=F6nig wrote:
-> The API to configure a PWM using pwm_enable(), pwm_disable(),
-> pwm_config() and pwm_set_polarity() is superseeded by atomically setting
-> the parameters using pwm_apply_state(). To get forward with deprecating
-> the former set of functions use the opportunity that there is no current
-> user of pwm_set_polarity() and remove it.
+On Sun, Nov 04, 2018 at 10:19:45PM +0100, Uwe Kleine-K=F6nig wrote:
+> Hello Thierry,
 >=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> On Mon, Oct 15, 2018 at 10:21:52AM +0200, Uwe Kleine-K=F6nig wrote:
+> > The API to configure a PWM using pwm_enable(), pwm_disable(),
+> > pwm_config() and pwm_set_polarity() is superseeded by atomically setting
+> > the parameters using pwm_apply_state(). To get forward with deprecating
+> > the former set of functions use the opportunity that there is no current
+> > user of pwm_set_polarity() and remove it.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+>=20
+> I think this patch is undisputed and wonder if it fell through the
+> cracks given that a patch sent later made it into your pwm/for-4.20-rc1
+> pull request.
 
-I think this patch is undisputed and wonder if it fell through the
-cracks given that a patch sent later made it into your pwm/for-4.20-rc1
-pull request.
+Now that you pushed out my lpc patch to your for-next branch (thanks!),
+I wonder what you plan to do with this patch.
 
 Best regards
 Uwe
