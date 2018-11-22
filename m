@@ -1,67 +1,89 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in disabled
- state
-Date: Thu, 22 Nov 2018 15:42:14 +0000
-Message-ID: <91640f9b-d219-553e-043a-c6151f2f68d7@ysoft.com>
-References: <20181107150125.7cpd4v5t7yi2254c@pengutronix.de>
- <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
- <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
- <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
- <20181109165555.vqbiwh4hlcnozdna@pengutronix.de> <20181114113449.GB2620@ulmo>
- <20181114215120.vddykljqyavm64wj@pengutronix.de> <20181115152545.GA8611@ulmo>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
+ imx: Configure output to GPIO in disabled state
+Date: Thu, 22 Nov 2018 17:17:48 +0100
+Message-ID: <20181122161748.2ud7f26xkww5g24m@pengutronix.de>
+References: <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
+ <20181114113449.GB2620@ulmo>
+ <20181114215120.vddykljqyavm64wj@pengutronix.de>
+ <20181115152545.GA8611@ulmo>
  <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
- <20181116083430.7f1d8452@ipc1.ka-ro>
- <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
+ <20181116095124.GA28631@ulmo>
+ <20181116103929.cxfvuc2te7cadhp2@pengutronix.de>
+ <20181116122445.GA25386@ulmo>
+ <20181118200815.a6hkokt3otfm4yl4@pengutronix.de>
+ <20181122150338.GA24661@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
-Content-Language: en-US
-Content-ID: <56D2D7D36DFD5A41A8A8480CEEFC4355@eurprd04.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <20181122150338.GA24661@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@KARO-electronics.de>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, viresh kumar <viresh.kumar@linaro.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMTYuMTEuMjAxOCAwOToyNSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+IE9uIEZyaSwg
-Tm92IDE2LCAyMDE4IGF0IDA4OjM0OjMwQU0gKzAxMDAsIExvdGhhciBXYcOfbWFubiB3cm90ZToN
-Cj4+IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdy
-b3RlOg0KPj4+IE9uIFRodSwgTm92IDE1LCAyMDE4IGF0IDA0OjI1OjQ1UE0gKzAxMDAsIFRoaWVy
-cnkgUmVkaW5nIHdyb3RlOg0KPj4+PiBPbiBXZWQsIE5vdiAxNCwgMjAxOCBhdCAxMDo1MToyMFBN
-ICswMTAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+Pj4+IE9uIFdlZCwgTm92IDE0LCAy
-MDE4IGF0IDEyOjM0OjQ5UE0gKzAxMDAsIFRoaWVycnkgUmVkaW5nIHdyb3RlOg0KPj4gWy4uLl0N
-Cj4+Pj4+IEFsc28gZHRzIHdyaXRlcyBkb24ndCBuZWVkIHRvIGxvb2t1cCB0aGUgbmVlZGVkIEdQ
-SU8gbnVtYmVycyBhbmQgcGluY3RybC4NCj4+Pj4NCj4+Pj4gSnVzdCB0byBjbGFyaWZ5OiBJIGRv
-bid0IHRoaW5rIHRoYXQgd2UgbmVlZCB0byBnZXQgdGhlIEdQSU8gbnVtYmVyDQo+Pj4+IGludm9s
-dmVkIGluIHRoaXMgY2FzZSwgYmVjYXVzZSB3ZSBkb24ndCBoYXZlIHRvIHJlY29uZmlndXJlIHRo
-ZSBwaW4gYXMNCj4+Pj4gR1BJTyB0byBtYWtlIHRoaXMgd29yay4gVGhlIG9ubHkgcmVhc29uIHRo
-YXQgTWljaGFsJ3MgcHJvcG9zYWwgZGlkIHRoYXQNCj4+Pj4gaXMgYmVjYXVzZSB0aGF0IHdhcyBi
-ZWxpZXZlZCB0byBiZSBuZWNlc3NhcnkuIEJ1dCBpZiB0aGUgcGluIGNhbiBqdXN0IGJlDQo+Pj4+
-IGNvbmZpZ3VyZWQgd2l0aCBhIDEwMGsgcHVsbC11cCwgdGhhdCdzIGVub3VnaCB0byBwdWxsIHRo
-ZSBwaW4gaGlnaCB3aGVuDQo+Pj4+IHdlIG5lZWQgaXQuDQoNClRoaWVycnksIEkgaGF2ZSB0byBk
-aXNhZ3JlZSBoZXJlLiBJIGRvIG5vdCByZWFsbHkga25vdyBob3cgdG8gYWN0aXZhdGUNCnRoZSBp
-bnRlcm5hbCBwdWxsLXVwIHdpdGhvdXQgcmVxdWVzdGluZyB0aGUgR1BJTyBhbmQgY29uZmlndXJp
-bmcgdGhlIHBpbg0KYXMgKmlucHV0Ki4gQW5kIHRvIGRvIGl0IHRoZSBHUElPIG51bWJlciBuZWVk
-cyB0byBiZSBzcGVjaWZpZWQgaW4gRFQuDQoNCj4+PiBVbmxlc3MgdGhlIGdwaW8gaGFwcGVucyB0
-byBiZSBjb25maWd1cmVkIGFzIG91dHB1dCBhdCB0aGUgd3JvbmcgdmFsdWUuDQo+Pj4gRnVydGhl
-ciBJJ20gbm90IHN1cmUgaWYgdGhlIHB3bSBpbiBkaXNhYmxlZCBzdGF0ZSBhY3RpdmVseSBwdWxs
-cyB0byAwDQo+Pj4gYW5kIGlmIGluIHRoaXMgc3RhdGUgdGhlIFBVIG9mIHRoZSBwaW4gaXMgZ29v
-ZCBlbm91Z2ggdG8gZW5zdXJlIGEgb25lDQo+Pj4gaGVyZS4gVGhhdCB3b3VsZCBuZWVkIHZlcmlm
-aWNhdGlvbiBmaXJzdC4NCj4+DQo+PiBOby4gWW91IGNhbiBkaXNhYmxlIHRoZSBvdXRwdXQgZHJp
-dmVyIHZpYSBwaW5jdHJsLCBzbyB0aGF0IG9ubHkgdGhlDQo+PiBzZWxlY3RlZCBwdWxsLXVwL2Rv
-d24gaXMgcmVsZXZhbnQuIFRoZSBwaW4gZnVuY3Rpb24gYW5kIEdQSU8gcmVnaXN0ZXINCj4+IHNl
-dHRpbmdzIGRvbid0IG1hdHRlciBhdCBhbGwgaW4gdGhpcyBjYXNlLg0KDQpMb3RoYXIsIHBsZWFz
-ZSBjYW4geW91IGJlIG1vcmUgc3BlY2lmaWMgaG93IHdvdWxkIHlvdSBkbyB0aGF0PyBJRkFJSyB0
-aGUNCnB1bGwtdXAvZG93biBpbnRlcm5hbCByZXNpc3RvcnMgaGF2ZSBlZmZlY3Qgb25seSBpZiB0
-aGUgcGluIGlzIGNvbmZpZ3VyZWQNCmFzIEdQSU8gKmlucHV0KiAob24gaS5NWDYgYXQgbGVhc3Qp
-LiBTZWUgdGhlIFRSTSwgMjkuNC4yLjIgT3V0cHV0IGRyaXZlcjoNCg0KICAiSW50ZXJuYWwgcHVs
-bC11cCwgcHVsbC1kb3duIHJlc2lzdG9ycywgYW5kIHBhZCBrZWVwZXIgYXJlIGRpc2FibGVkIGlu
-DQogICBvdXRwdXQgbW9kZS4iDQoNCj4gSXMgdGhpcyBhYm91dCBEU0U9SEktWiBpbiB0aGUgcGFk
-IGNvbnRyb2wgcmVnaXN0ZXI/IEkgZGlkbid0IGtub3cgYWJvdXQNCj4gdGhpcy4gSSBzZWUgdGhp
-cyBleGlzdHMgb24gaS5NWDYgYnV0IG5vdCBvbiBpLk1YMjUuIEFsc28gaS5NWDUxIGRvZXNuJ3QN
-Cj4gc2VlbSB0byBoYXZlIHRoaXMgZmVhdHVyZS4NCg0KVXdlLCBJIGFsc28gZGlkIG5vdCBmaW5k
-IHRoZSBEU0Ugb3B0aW9uIG9uIG90aGVyIFNvQ3MgaW4gdGhlaXIgcmVzcGVjdGl2ZQ0KbWFudWFs
-cyBhbmQgc291cmNlIGNvZGUuIEJ1dCBldmVuIGlmIGl0IHdvdWxkIGJlIGF2YWlsYWJsZSBvbiBh
-bGwgU29Dcw0KSSBzdGlsbCB0aGluayBpdCBpcyBub3QgZW5vdWdoLg0KDQpCZXN0IHJlZ2FyZHMs
-DQpNaWNoYWwNCg==
+Hello Thierry,
+
+On Thu, Nov 22, 2018 at 04:03:38PM +0100, Thierry Reding wrote:
+> On Sun, Nov 18, 2018 at 09:08:15PM +0100, Uwe Kleine-König wrote:
+> > Thinking a bit about this it doesn't really matter for the consumer if
+> > the pin stays in the idle level because there is a pull into the right
+> > direction and the PWM is high-Z or if the PWM pulls actively in the
+> > right direction. Also for pwm_config(pwm, 0, 100) the PWM could disable
+> > its output in the presence of a pull, so the property says true that the
+> > effects of pwm_config(pwm, 0, 100) and pwm_disable(pwm) should be the
+> > same. And so my claim that pwm_disable is a part of the API that
+> > doesn't give any value stays true.
+> 
+> I still think there's a slight difference there. Granted the effect on
+> the consumer is the same whether you disable or set the duty-cycle to
+> zero because the power output is the same. pwm_disable() is still more
+> explicit, though, so it may involve more than just setting the duty-
+> cycle.
+
+If pwm_disable() vs. duty-cycle=0 doesn't make a difference to the
+consumer, who do we do a favour by providing pwm_disable()?
+
+> > > But again, why should PWMs be special? You turn off all other resources
+> > > when you no longer need them, right? If you power your panel with a
+> > > regulator, then when the panel is disabled you want to disable the
+> > > regulator, right? Similarily if you don't use your I2C controller you
+> > > want to turn off the clock that drives it, right? This is the same for
+> > > any resource in your system: if you no longer need it, disable it. The
+> > > fact that "disabling" the PWM is not straightforward on i.MX doesn't
+> > > mean that we should simply ignore it.
+> > 
+> > I don't say we should ignore it. I say we shouldn't disable the hardware
+> > if the consumer calls pwm_disable() if disabling the hardware results in
+> > a state that shouldn't happen on pwm_disable().
+> 
+> That's backwards. If disabling the hardware results in a state that
+> shouldn't happen when you disable the hardware, that just means that
+> you're doing something wrong. When you do something wrong you fix it.
+
+For you pwm_disable must imply disabling the PWM hardware. As you cannot
+have both (disable the hardware and keep the pin on the idle level
+without involving pinmux and GPIO) on i.MX in my eyes it is sensible to
+drop one requirement from the framework's expectations to make it
+possible for i.MX to fulfill them.
+
+As there is no advantage for anyone to force .disable() to actually
+disable the hardware (apart from a little power saving that probably
+isn't even measurable) that's IMHO the one to drop.
+
+> If the pin goes to the wrong level when you disable the hardware, the
+> natural fix for the problem is to make sure the pin stays at the right
+> level.
+
+Ack. And you can do this either in an easy variant or in a more
+complicated one.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
