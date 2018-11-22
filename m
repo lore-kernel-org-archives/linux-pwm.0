@@ -1,89 +1,64 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: =?iso-8859-1?B?W1JDRqBQQVRDSCx2Miwy?= =?iso-8859-1?B?LzJd?= pwm:
- imx: Configure output to GPIO in disabled state
-Date: Thu, 22 Nov 2018 17:17:48 +0100
-Message-ID: <20181122161748.2ud7f26xkww5g24m@pengutronix.de>
-References: <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
+Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in
+ disabled state
+Date: Thu, 22 Nov 2018 17:23:59 +0100
+Message-ID: <20181122162359.ufngpgxkenlmgqni@pengutronix.de>
+References: <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
+ <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
+ <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
  <20181114113449.GB2620@ulmo>
  <20181114215120.vddykljqyavm64wj@pengutronix.de>
  <20181115152545.GA8611@ulmo>
  <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
- <20181116095124.GA28631@ulmo>
- <20181116103929.cxfvuc2te7cadhp2@pengutronix.de>
- <20181116122445.GA25386@ulmo>
- <20181118200815.a6hkokt3otfm4yl4@pengutronix.de>
- <20181122150338.GA24661@ulmo>
+ <20181116083430.7f1d8452@ipc1.ka-ro>
+ <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
+ <91640f9b-d219-553e-043a-c6151f2f68d7@ysoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181122150338.GA24661@ulmo>
+In-Reply-To: <91640f9b-d219-553e-043a-c6151f2f68d7@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
+Cc: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, viresh kumar <viresh.kumar@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Thierry,
+Hello Michal,
 
-On Thu, Nov 22, 2018 at 04:03:38PM +0100, Thierry Reding wrote:
-> On Sun, Nov 18, 2018 at 09:08:15PM +0100, Uwe Kleine-K�nig wrote:
-> > Thinking a bit about this it doesn't really matter for the consumer if
-> > the pin stays in the idle level because there is a pull into the right
-> > direction and the PWM is high-Z or if the PWM pulls actively in the
-> > right direction. Also for pwm_config(pwm, 0, 100) the PWM could disable
-> > its output in the presence of a pull, so the property says true that the
-> > effects of pwm_config(pwm, 0, 100) and pwm_disable(pwm) should be the
-> > same. And so my claim that pwm_disable is a part of the API that
-> > doesn't give any value stays true.
+On Thu, Nov 22, 2018 at 03:42:14PM +0000, Vokáč Michal wrote:
+> On 16.11.2018 09:25, Uwe Kleine-König wrote:
+> > On Fri, Nov 16, 2018 at 08:34:30AM +0100, Lothar Waßmann wrote:
+> > > No. You can disable the output driver via pinctrl, so that only the
+> > > selected pull-up/down is relevant. The pin function and GPIO register
+> > > settings don't matter at all in this case.
 > 
-> I still think there's a slight difference there. Granted the effect on
-> the consumer is the same whether you disable or set the duty-cycle to
-> zero because the power output is the same. pwm_disable() is still more
-> explicit, though, so it may involve more than just setting the duty-
-> cycle.
-
-If pwm_disable() vs. duty-cycle=0 doesn't make a difference to the
-consumer, who do we do a favour by providing pwm_disable()?
-
-> > > But again, why should PWMs be special? You turn off all other resources
-> > > when you no longer need them, right? If you power your panel with a
-> > > regulator, then when the panel is disabled you want to disable the
-> > > regulator, right? Similarily if you don't use your I2C controller you
-> > > want to turn off the clock that drives it, right? This is the same for
-> > > any resource in your system: if you no longer need it, disable it. The
-> > > fact that "disabling" the PWM is not straightforward on i.MX doesn't
-> > > mean that we should simply ignore it.
-> > 
-> > I don't say we should ignore it. I say we shouldn't disable the hardware
-> > if the consumer calls pwm_disable() if disabling the hardware results in
-> > a state that shouldn't happen on pwm_disable().
+> Lothar, please can you be more specific how would you do that? IFAIK the
+> pull-up/down internal resistors have effect only if the pin is configured
+> as GPIO *input* (on i.MX6 at least). See the TRM, 29.4.2.2 Output driver:
 > 
-> That's backwards. If disabling the hardware results in a state that
-> shouldn't happen when you disable the hardware, that just means that
-> you're doing something wrong. When you do something wrong you fix it.
+>   "Internal pull-up, pull-down resistors, and pad keeper are disabled in
+>    output mode."
+> 
+> > Is this about DSE=HI-Z in the pad control register? I didn't know about
+> > this. I see this exists on i.MX6 but not on i.MX25. Also i.MX51 doesn't
+> > seem to have this feature.
+> 
+> Uwe, I also did not find the DSE option on other SoCs in their respective
+> manuals and source code. But even if it would be available on all SoCs
+> I still think it is not enough.
 
-For you pwm_disable must imply disabling the PWM hardware. As you cannot
-have both (disable the hardware and keep the pin on the idle level
-without involving pinmux and GPIO) on i.MX in my eyes it is sensible to
-drop one requirement from the framework's expectations to make it
-possible for i.MX to fulfill them.
+If I understand Lothar correctly and this is about the pad control
+register, there is no need for software support. You just specify the
+value you want to have written to the pad register in the device tree.
 
-As there is no advantage for anyone to force .disable() to actually
-disable the hardware (apart from a little power saving that probably
-isn't even measurable) that's IMHO the one to drop.
-
-> If the pin goes to the wrong level when you disable the hardware, the
-> natural fix for the problem is to make sure the pin stays at the right
-> level.
-
-Ack. And you can do this either in an easy variant or in a more
-complicated one.
+So I'd expect this to really work on i.MX6 but not the earlier SoCs
+without a gpio specifier.
 
 Best regards
 Uwe
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
+Pengutronix e.K.                           | Uwe Kleine-König            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
