@@ -1,56 +1,78 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH v2] pwm: kconfig: enable kona pwm to be built for cygnus
- arch
-Date: Wed, 21 Nov 2018 11:07:03 -0800
-Message-ID: <dcadd42d-1ef6-732b-400c-8008bc4fcd0a@broadcom.com>
-References: <20181121123508.25119-1-peron.clem@gmail.com>
- <29dc5815-e897-ca7d-0e26-668faa635938@broadcom.com>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: =?utf-8?B?UmU6IFtSQ0bCoFBBVENILHYyLDIvMl0gcHdtOiBpbXg6IENvbmZpZ3VyZSBv?=
+ =?utf-8?Q?utput_to_GPIO_in_disabled_state?=
+Date: Thu, 22 Nov 2018 14:23:22 +0000
+Message-ID: <7c1dedaf-9a00-5dc2-e0dc-f94b637380bb@ysoft.com>
+References: <4fbb7307-df01-d7bd-f2e2-e05e6d17807d@ysoft.com>
+ <20181108191855.zuon3ecv4yjfbs7g@pengutronix.de>
+ <283cfef3-16d0-8bd4-e306-6e34d44c3a86@ysoft.com>
+ <20181109165555.vqbiwh4hlcnozdna@pengutronix.de> <20181114113449.GB2620@ulmo>
+ <20181114215120.vddykljqyavm64wj@pengutronix.de> <20181115152545.GA8611@ulmo>
+ <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
+ <20181116095124.GA28631@ulmo>
+ <6e81d63b-61a1-36fe-0c24-3ff27438cbc0@ysoft.com>
+ <20181120165457.x7svxgzaae5at32x@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <29dc5815-e897-ca7d-0e26-668faa635938@broadcom.com>
+In-Reply-To: <20181120165457.x7svxgzaae5at32x@pengutronix.de>
 Content-Language: en-US
+Content-ID: <7C39776F290355408DE6D906C2A018ED@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Florian Fainelli <florian.fainelli@broadcom.com>, =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>, viresh kumar <viresh.kumar@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
-On 2018-11-21 11:00 a.m., Florian Fainelli wrote:
->
-> On 11/21/2018 4:35 AM, Clément Péron wrote:
->> The Cygnus architecture use a Kona PWM. This is already present
->> in the device tree but can't be built actually. Hence, allow the
->> Kona PWM to be built for Cygnus arch.
->>
->> Signed-off-by: Clément Péron <peron.clem@gmail.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-
->
-> The "default ARCH_BCM_CYGNUS" could arguably cover ARCH_BCM_MOBILE as
-> well, but this is not probably worth a respin just to address that.
-Yes, it's fine as is.
->
->> ---
->>   drivers/pwm/Kconfig | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 27e5dd47a01f..982f4059f4e8 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -88,7 +88,9 @@ config PWM_BCM_IPROC
->>   
->>   config PWM_BCM_KONA
->>   	tristate "Kona PWM support"
->> -	depends on ARCH_BCM_MOBILE
->> +	depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS || COMPILE_TEST
->> +	depends on HAVE_CLK && HAS_IOMEM
->> +	default ARCH_BCM_CYGNUS
->>   	help
->>   	  Generic PWM framework driver for Broadcom Kona PWM block.
->>   
->>
+QWhvaiBVd2UsDQoNCk9uIDIwLjExLjIwMTggMTc6NTQsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3Rl
+Og0KPiBPbiBUdWUsIE5vdiAyMCwgMjAxOCBhdCAwMToxNDozM1BNICswMDAwLCBWb2vDocSNIE1p
+Y2hhbCB3cm90ZToNCj4+IE9uIDE2LjExLjIwMTggMTA6NTEsIFRoaWVycnkgUmVkaW5nIHdyb3Rl
+Og0KPj4+IE9uIFRodSwgTm92IDE1LCAyMDE4IGF0IDA5OjM3OjMzUE0gKzAxMDAsIFV3ZSBLbGVp
+bmUtS8O2bmlnIHdyb3RlOg0KPj4+PiBPbiBUaHUsIE5vdiAxNSwgMjAxOCBhdCAwNDoyNTo0NVBN
+ICswMTAwLCBUaGllcnJ5IFJlZGluZyB3cm90ZToNCj4+PiBNeSBpbXByZXNzaW9uIHdhcyB0aGF0
+IGhlIHdhcyB0cnlpbmcgdG8gZmluZCBjb25jZW5zdXMuIEJ1dCB0aGUgd2F5IEkNCj4+PiByZWFk
+IGl0IGhlIHdhcyBzdGlsbCBhcmd1aW5nIHRoYXQgdGhlIHBpbmN0cmwgc29sdXRpb24gd2FzIHN0
+aWxsIHRoZQ0KPj4+IG1vc3QgY29tcGxldGUsIGFuZCB3b3VsZCB0aGVyZWZvcmUgc3RpbGwgcHJl
+ZmVyIGl0Lg0KPj4NCj4+IEl0IGlzIGxpa2UgeW91IHNhaWQgVGhpZXJyeS4gSSBhbSBvbmx5IHRy
+eWluZyB0byByZW1haW4gb3BlbiB0byB0ZXN0DQo+PiBVd2UncyBpZGVhcy4gQWZ0ZXIgd2hhdCBJ
+IGhhdmUgdGVzdGVkIHNvIGZhciBJIHN0aWxsIHByZWZlciBhIGlteC1zcGVjaWZpYw0KPj4gcGlu
+Y3RybCBzb2x1dGlvbi4NCj4gDQo+IElzIHRoYXQgYmVjYXVzZSB5b3UgY29uc2lkZXIgaXQgcmln
+aHQgdG8gYmUgaW14LXNwZWNpZmljIG9yIGJlY2F1c2UNCj4gdGhhdCdzIHdoYXQgeW91IGFscmVh
+ZHkgaGF2ZT8gSXMgdGhlcmUgYSBmbGF3IGluIG15IGV4cGxhbmF0aW9uIHRoYXQNCj4gdGhlIHBy
+b2JsZW0gaXNuJ3QgaW14LXNwZWNpZmljIHBlciBzZSBhbmQgc28gdGhlIHNvbHV0aW9uIHNob3Vs
+ZG4ndCBiZQ0KPiB0aGF0IGVpdGhlcj8NCg0KSSBjb25zaWRlciBpdCByaWdodCB0byBiZSBpbXgt
+c3BlY2lmaWMgYmVjYXVzZSBvZiB0aGUgY3VycmVudCBzdGF0ZSBvZg0KYXdhcmVuZXNzIGFuZCBp
+bnRlcmVzdCBpbiB0aGlzIHByb2JsZW0gZnJvbSBvdGhlciBTb0MncyBjb21tdW5pdGllcy4NCkkg
+c3BlbnQgcXVpdGUgc29tZSB0aW1lIGxvb2tpbmcgZm9yIGEgc29sdXRpb24gYW5kIG15IGltcHJl
+c3Npb24gaXMgdGhhdA0Kb25seSBpbXggdXNlcnMgcGVyY2VpdmUgdGhpcyBwcm9ibGVtIGFuZCBh
+cmUgdGhlIG9ubHkgb25lIHRoYXQgYWxyZWFkeQ0KZGlkIHNvbWUgYXR0ZW1wdHMgdG8gc29sdmUg
+aXQuDQoNCkkgdGhpbmsgdGhpcyBpcyBpbiBsaW5lIHdpdGggd2hhdCBUaGllcnJ5IHNhaWQgLSBp
+ZiBvdGhlciB1c2VycyBoYXZlDQp0aGUgc2FtZSBwcm9ibGVtLCB0aGV5IHNob3VsZCBzcGVhay11
+cC4gSW4gbXkgZXllcyBhcyBoZSBpcyB0aGUgcHdtDQpzdWJzeXN0ZW0gbWFpbnRhaW5lciBoZSBr
+bm93cyB0aGUgYmVzdCBpZiBvdGhlcnMgaGF2ZSB0aGUgc2FtZSBwcm9ibGVtDQpvciBub3QuIE15
+IHVuZGVyc3RhbmRpbmcgb2YgaGlzIGFyZ3VtZW50cyBpcyBzdWNoIHRoYXQgdGhleSBkbyBub3Qu
+DQoNCkkgdW5kZXJzdGFuZCB0aGF0IGhhdmluZyBhIG1vcmUgZ2VuZXJpYyBzb2x1dGlvbiBtYXkg
+YmUgYmV0dGVyLiBJIGFtIG5vdA0KcmVhbGx5IHN1cmUgaWYgaXQgaXMgdmFsaWQgaW4gdGhpcyBj
+YXNlLg0KDQo+IElzIHRoZSBwcm9ibGVtIHdpdGggdGhlICJ0ZXN0cyBzbyBmYXIiIHRoYXQgaXQg
+ZG9lc24ndCB3b3JrIHlldCwgb3IgaXMNCj4gdGhlcmUgc29tZXRoaW5nIGNvbmNlcHR1YWxseSB3
+cm9uZyBpbiB5b3VyIGV5ZXM/DQoNCkl0IGRvZXMgbm90IHdvcmsgeWV0LiBBbmQgaXQgd291bGQg
+bm90IHNvbHZlIGFsbCB0aGUgY2FzZXMuIE5hbWVseSB0aGUNCnN5c2ZzIHVzZS1jYXNlLiBBbmQg
+VGhpZXJyeSBjb25maXJtZWQgc3lzZnMgaXMgYSBzdXBwb3J0ZWQgaW50ZXJmYWNlLg0KDQpJIGRv
+IG5vdCBkYXJlIHRvIHNwZWN1bGF0ZSB3aGV0aGVyIHlvdXIgaWRlYSBpcyBjb25jZXB0dWFsbHkg
+d3Jvbmcgb3INCm5vdC4gSSBvbmx5IGNhbiBzYXkgdGhhdCBwdXR0aW5nIHRoZSBwaW5jdHJsIG9m
+IHRoZSBQV00gcGluIGludG8gdGhlDQpQV00gY29uc3VtZXIgc2VlbXMgdmVyeSB1bm5hdHVyYWwg
+dG8gbWUuIEkgaGF2ZSBub3Qgc2VlbiBhbnkgZXhhbXBsZQ0Kb2Ygc3VjaCB1c2FnZSB5ZXQuIFRo
+YXQgZG9lcyBub3QgbWVhbiBpdCBpcyB3cm9uZyBvZiBjb3Vyc2UuDQoNCk9uIHRoZSBvdGhlciBo
+YW5kLCB5b3Ugc2FpZCB0aGF0IHdlIGFyZSBpbnZlbnRpbmcgbmV3IHBpbmN0cmwgbmFtZXMuDQpC
+dXQgSSBzZWUgcXVpdGUgYSBsb3Qgb2YgdXNhZ2VzIG9mIG5vbi1bImluaXQiLCAiZGVmYXVsdCIs
+ICJzbGVlcCJdDQpwaW5jdHJsIG5hbWVzIGluIHRoZSBEVFMgZmlsZXMuIE1vc3Qgb2YgdGhlbSBh
+cmUgYWN0dWFsbHkgaW14IHVzZXJzLg0KDQpTdGlsbCwgdGhlIG1haW4gcHJvYmxlbSBpcyBpdCBp
+cyBub3QgcG9zc2libGUgdG8gdHVybi1vZmYgdGhlIGJhY2tsaWdodA0Kb3IgY29vbGluZyBmYW4g
+b3Igd2hvZXZlciBpcyB0aGUgUFdNIGNvbnN1bWVyIGlmIGludmVydGVkIFBXTSBpcyB1c2VkLg0K
+Tm90IHRoYXQgaXQgaXMgbm90IHBvc3NpYmxlIHRvIGtlZXAgaXQgdHVybmVkLW9mZiB1bnRpbCBp
+dCBpcyB0dXJuZWQtb24NCmJ5IHRoZSB1c2VyLiBTbyBmb3IgbWUsIGFueSBzb2x1dGlvbiB0aGF0
+IGF0IGxlYXN0IGFsbG93cyB0aGF0IGlzIGJldHRlcg0KdGhhbiB0aGUgY3VycmVudCBzdGF0ZS4g
+VGhlIHBpbmN0cmwgc29sdXRpb24ganVzdCBzb2x2ZXMgYWxsIGF0IG9uY2UuDQoNCkkgZnVsbHkg
+YWdyZWUgdGhlIHBpbmN0cmwgc29sdXRpb24gaGFzIGRyYXdiYWNrcy4gSXQgbmVlZHMgdG8gYmUg
+d2VsbA0KZG9jdW1lbnRlZCBhbmQgRFQgYXV0aG9ycyBuZWVkIHRvIGtub3cgaG93IHRvIHVzZSBp
+dCBhbmQgaW4gd2hhdCBjYXNlcy4NCg0KQmVzdCByZWdhcmRzLA0KTWljaGFsDQoNCg==
