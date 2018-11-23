@@ -1,42 +1,52 @@
-From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH v3] pwm: kconfig: enable kona pwm to be built for cygnus arch
-Date: Fri, 23 Nov 2018 10:35:59 +0100
-Message-ID: <20181123093559.10397-1-peron.clem@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2] pwm: kconfig: enable kona pwm to be built for cygnus
+ arch
+Date: Fri, 23 Nov 2018 11:25:38 +0100
+Message-ID: <20181123102538.7gpabj7idmuraaid@pengutronix.de>
+References: <20181121123508.25119-1-peron.clem@gmail.com>
+ <20181122200536.ndgrxuxealtovngy@pengutronix.de>
+ <CAJiuCcdt9Kk3z6gsr68O1JrPfan-ENpRjo0dnBaGxs4xDidOzQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAJiuCcdt9Kk3z6gsr68O1JrPfan-ENpRjo0dnBaGxs4xDidOzQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The Cygnus architecture use a Kona PWM. This is already present
-in the device tree but can't be built actually. Hence, allow the
-Kona PWM to be built for Cygnus arch.
+Hello Clément,
 
-Signed-off-by: ClÃ©ment PÃ©ron <peron.clem@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-Acked-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/Kconfig | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+On Fri, Nov 23, 2018 at 10:31:18AM +0100, Clément Péron wrote:
+> On Thu, 22 Nov 2018 at 21:05, Uwe Kleine-König
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > Related to this driver I have a set of questions: If the disable
+> > callback completed, does the hardware still drive the pin? If yes, would
+> > it be possible to disable the pin driver such that the pin gets high-Z?
+> > If yes, how?
+> 
+> The output pin type is configured with the bit "21:16 PWMOUT_TYPE RW
+> default 0x3F" in the Control register
+> PWM_CONTROL_TYPE_SHIFT macro in the driver
+> Datasheets says : "When set to 1 the PWM Output signal will have a
+> push/pull type.When set to 0 the PWM Output signal will have an open
+> drain output type.Recommend to leave it push/pull type."
+> 
+> In the driver we actually set push/pull mode for all channels :
+> /* Set push/pull for all channels */
+> for (chan = 0; chan < kp->chip.npwm; chan++)
+> value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 27e5dd47a01f..a8f47df0655a 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -88,7 +88,9 @@ config PWM_BCM_IPROC
- 
- config PWM_BCM_KONA
- 	tristate "Kona PWM support"
--	depends on ARCH_BCM_MOBILE
-+	depends on ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS || COMPILE_TEST
-+	depends on HAVE_CLK && HAS_IOMEM
-+	default ARCH_BCM_MOBILE || ARCH_BCM_CYGNUS
- 	help
- 	  Generic PWM framework driver for Broadcom Kona PWM block.
- 
+So if disabling the output driver was part of the requirements for
+.disable the bcm-kona driver could not implement this for both inverted
+and uninverted PWMs. (At least not without resorting to pinmuxing.)
+
+Thanks
+Uwe
+
 -- 
-2.19.1
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
