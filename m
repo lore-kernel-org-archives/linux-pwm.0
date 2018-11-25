@@ -1,61 +1,53 @@
-From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 4/6] DEV: CLK: add function to check the
- using clock name of driver.
-Date: Mon, 26 Nov 2018 00:21:18 +0800
-Message-ID: <20181125162118.GA5358@arx-s1>
-Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Hao Zhang <hao5781286@gmail.com>
+Subject: [PATCH v3 5/6] DEV: CLK: sunxi ccu: export clk_apb1 for sun8i-r40
+ soc pwm.
+Date: Mon, 26 Nov 2018 00:22:03 +0800
+Message-ID: <20181125162203.GA5392@arx-s1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDKITZOARQMBBBMY5PPQKGQEDMLECTA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, maxime.ripard@bootlin.com, wens@csie.org, mturquette@baylibre.com, sboyd@kernel.org, thierry.reding@gmail.com
+Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com, hao5781286@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-In some situation we want to check clock whether is we want
-and after the driver been probed use to change different clock source.
+The clock source for sun8i R40 is from apb1, so export it for
+dt parses.
 
-Signed-off-by: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Hao Zhang <hao5781286@gmail.com>
 ---
- drivers/clk/clk.c            | 6 ++++++
- include/linux/clk-provider.h | 1 +
- 2 files changed, 7 insertions(+)
+ drivers/clk/sunxi-ng/ccu-sun8i-r40.h      | 4 +++-
+ include/dt-bindings/clock/sun8i-r40-ccu.h | 2 ++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index d31055a..3d2c2cd 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3466,6 +3466,12 @@ static int devm_clk_hw_match(struct device *dev, void *res, void *data)
- 	return hw == data;
- }
+diff --git a/drivers/clk/sunxi-ng/ccu-sun8i-r40.h b/drivers/clk/sunxi-ng/ccu-sun8i-r40.h
+index db2a124..181ab26 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun8i-r40.h
++++ b/drivers/clk/sunxi-ng/ccu-sun8i-r40.h
+@@ -51,7 +51,9 @@
  
-+bool devm_clk_name_match(struct clk *clk, const char *string)
-+{
-+	return match_string(&clk->con_id, 1, string) == 0;
-+}
-+EXPORT_SYMBOL_GPL(devm_clk_name_match);
+ #define CLK_AXI			25
+ #define CLK_AHB1		26
+-#define CLK_APB1		27
 +
- /**
-  * devm_clk_unregister - resource managed clk_unregister()
-  * @clk: clock to unregister
-diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-index 08b1aa7..5cd2eed 100644
---- a/include/linux/clk-provider.h
-+++ b/include/linux/clk-provider.h
-@@ -764,6 +764,7 @@ struct clk *devm_clk_register(struct device *dev, struct clk_hw *hw);
- int __must_check clk_hw_register(struct device *dev, struct clk_hw *hw);
- int __must_check devm_clk_hw_register(struct device *dev, struct clk_hw *hw);
++/* The APB1 clock is exported */
++
+ #define CLK_APB2		28
  
-+bool devm_clk_name_match(struct clk *clk, const char *string);
- void clk_unregister(struct clk *clk);
- void devm_clk_unregister(struct device *dev, struct clk *clk);
+ /* All the bus gates are exported */
+diff --git a/include/dt-bindings/clock/sun8i-r40-ccu.h b/include/dt-bindings/clock/sun8i-r40-ccu.h
+index f9e15a2..a2b8f06 100644
+--- a/include/dt-bindings/clock/sun8i-r40-ccu.h
++++ b/include/dt-bindings/clock/sun8i-r40-ccu.h
+@@ -49,6 +49,8 @@
  
+ #define CLK_CPU			24
+ 
++#define CLK_APB1                27
++
+ #define CLK_BUS_MIPI_DSI	29
+ #define CLK_BUS_CE		30
+ #define CLK_BUS_DMA		31
 -- 
 2.7.4
