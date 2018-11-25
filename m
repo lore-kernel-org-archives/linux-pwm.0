@@ -1,64 +1,47 @@
-From: Hao Zhang <hao5781286@gmail.com>
-Subject: [PATCH v3 2/6] ARM: dtsi: add pwm node for sun8i R40.
-Date: Mon, 26 Nov 2018 00:19:41 +0800
-Message-ID: <20181125161941.GA5305@arx-s1>
+From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 3/6] ARM: dts: add PWM for Bananapi M2 Ultrar board.
+Date: Mon, 26 Nov 2018 00:20:40 +0800
+Message-ID: <20181125162040.GA5333@arx-s1>
+Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDKITZOARQMBBYEX5PPQKGQESEH2MXQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: robh+dt@kernel.org, mark.rutland@arm.com, maxime.ripard@bootlin.com, wens@csie.org, mturquette@baylibre.com, sboyd@kernel.org, thierry.reding@gmail.com
-Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com, hao5781286@gmail.com
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds pwm node for sun8i R40.
+This patch adds pwm status for Bananapi M2 Ultrar board and the status
+also used as LCD-PWM status.
 
-Signed-off-by: Hao Zhang <hao5781286@gmail.com>
+Signed-off-by: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- arch/arm/boot/dts/sun8i-r40.dtsi | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
-index 6f4c9ca..cc05b2c 100644
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-@@ -317,6 +317,7 @@
- 			clock-names = "hosc", "losc";
- 			#clock-cells = <1>;
- 			#reset-cells = <1>;
-+
- 		};
+diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+index 438b7b4..d785c9b 100644
+--- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
++++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+@@ -272,6 +272,12 @@
+ 	status = "okay";
+ };
  
- 		pio: pinctrl@1c20800 {
-@@ -373,6 +374,11 @@
- 				bias-pull-up;
- 			};
- 
-+			pwm_ch0_pin: pwm-ch0-pin {
-+				pins = "PB2";
-+				function = "pwm";
-+			};
++&pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_ch0_pin>;
++	status = "okay";
++};
 +
- 			uart0_pb_pins: uart0-pb-pins {
- 				pins = "PB22", "PB23";
- 				function = "uart0";
-@@ -384,6 +390,17 @@
- 			reg = <0x01c20c90 0x10>;
- 		};
- 
-+		pwm: pwm@1c23400 {
-+			compatible = "allwinner,sun8i-r40-pwm";
-+			reg = <0x01c23400 0x400>;
-+			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&osc24M>, <&ccu CLK_APB1>;
-+			clock-names = "mux-0", "mux-1";
-+			pwm-channels = <8>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
-+
- 		uart0: serial@1c28000 {
- 			compatible = "snps,dw-apb-uart";
- 			reg = <0x01c28000 0x400>;
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
 -- 
 2.7.4
