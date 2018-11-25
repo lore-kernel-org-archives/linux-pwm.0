@@ -1,11 +1,12 @@
 From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 3/6] ARM: dts: add PWM for Bananapi M2 Ultrar board.
-Date: Mon, 26 Nov 2018 00:20:40 +0800
-Message-ID: <20181125162040.GA5333@arx-s1>
+Subject: [PATCH v3 4/6] DEV: CLK: add function to check the
+ using clock name of driver.
+Date: Mon, 26 Nov 2018 00:21:18 +0800
+Message-ID: <20181125162118.GA5358@arx-s1>
 Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDKITZOARQMBBYEX5PPQKGQESEH2MXQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDKITZOARQMBBBMY5PPQKGQEDMLECTA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -18,30 +19,43 @@ To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@pu
 Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds pwm status for Bananapi M2 Ultrar board and the status
-also used as LCD-PWM status.
+In some situation we want to check clock whether is we want
+and after the driver been probed use to change different clock source.
 
 Signed-off-by: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/clk/clk.c            | 6 ++++++
+ include/linux/clk-provider.h | 1 +
+ 2 files changed, 7 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-index 438b7b4..d785c9b 100644
---- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-+++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-@@ -272,6 +272,12 @@
- 	status = "okay";
- };
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index d31055a..3d2c2cd 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3466,6 +3466,12 @@ static int devm_clk_hw_match(struct device *dev, void *res, void *data)
+ 	return hw == data;
+ }
  
-+&pwm {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwm_ch0_pin>;
-+	status = "okay";
-+};
++bool devm_clk_name_match(struct clk *clk, const char *string)
++{
++	return match_string(&clk->con_id, 1, string) == 0;
++}
++EXPORT_SYMBOL_GPL(devm_clk_name_match);
 +
- &uart0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart0_pb_pins>;
+ /**
+  * devm_clk_unregister - resource managed clk_unregister()
+  * @clk: clock to unregister
+diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
+index 08b1aa7..5cd2eed 100644
+--- a/include/linux/clk-provider.h
++++ b/include/linux/clk-provider.h
+@@ -764,6 +764,7 @@ struct clk *devm_clk_register(struct device *dev, struct clk_hw *hw);
+ int __must_check clk_hw_register(struct device *dev, struct clk_hw *hw);
+ int __must_check devm_clk_hw_register(struct device *dev, struct clk_hw *hw);
+ 
++bool devm_clk_name_match(struct clk *clk, const char *string);
+ void clk_unregister(struct clk *clk);
+ void devm_clk_unregister(struct device *dev, struct clk *clk);
+ 
 -- 
 2.7.4
