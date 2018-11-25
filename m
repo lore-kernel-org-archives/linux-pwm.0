@@ -1,99 +1,82 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in disabled
- state
-Date: Fri, 23 Nov 2018 15:15:11 +0000
-Message-ID: <9da8c6d9-d97c-200c-d8e4-2eb9f73eedc5@ysoft.com>
-References: <20181109165555.vqbiwh4hlcnozdna@pengutronix.de>
- <20181114113449.GB2620@ulmo> <20181114215120.vddykljqyavm64wj@pengutronix.de>
- <20181115152545.GA8611@ulmo> <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
- <20181116083430.7f1d8452@ipc1.ka-ro>
- <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
- <91640f9b-d219-553e-043a-c6151f2f68d7@ysoft.com>
- <20181122162359.ufngpgxkenlmgqni@pengutronix.de>
- <b332b319-cbb3-547f-c8b7-1dd275c1596d@ysoft.com>
- <20181122190321.ktqegs7kpvhcemvi@pengutronix.de>
+From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 0/6] PWM support for allwinner sun8i
+ R40/T3/V40 SOCs.
+Date: Mon, 26 Nov 2018 00:18:02 +0800
+Message-ID: <20181125161534.GA4481@arx-s1>
+Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181122190321.ktqegs7kpvhcemvi@pengutronix.de>
-Content-Language: en-US
-Content-ID: <5589E540D28C4D4E9600DF710858549B@eurprd04.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@KARO-electronics.de>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, viresh kumar <viresh.kumar@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDKITZOARQMBBQ4W5PPQKGQEWY5WB5Q-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMjIuMTEuMjAxOCAyMDowMywgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+IE9uIFRodSwg
-Tm92IDIyLCAyMDE4IGF0IDA0OjQ2OjM5UE0gKzAwMDAsIFZva8OhxI0gTWljaGFsIHdyb3RlOg0K
-Pj4gT24gMjIuMTEuMjAxOCAxNzoyMywgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+Pj4gT24g
-VGh1LCBOb3YgMjIsIDIwMTggYXQgMDM6NDI6MTRQTSArMDAwMCwgVm9rw6HEjSBNaWNoYWwgd3Jv
-dGU6DQo+Pj4+IE9uIDE2LjExLjIwMTggMDk6MjUsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0K
-Pj4+Pj4gT24gRnJpLCBOb3YgMTYsIDIwMTggYXQgMDg6MzQ6MzBBTSArMDEwMCwgTG90aGFyIFdh
-w59tYW5uIHdyb3RlOg0KPj4+Pj4+IE5vLiBZb3UgY2FuIGRpc2FibGUgdGhlIG91dHB1dCBkcml2
-ZXIgdmlhIHBpbmN0cmwsIHNvIHRoYXQgb25seSB0aGUNCj4+Pj4+PiBzZWxlY3RlZCBwdWxsLXVw
-L2Rvd24gaXMgcmVsZXZhbnQuIFRoZSBwaW4gZnVuY3Rpb24gYW5kIEdQSU8gcmVnaXN0ZXINCj4+
-Pj4+PiBzZXR0aW5ncyBkb24ndCBtYXR0ZXIgYXQgYWxsIGluIHRoaXMgY2FzZS4NCj4+Pj4NCj4+
-Pj4gTG90aGFyLCBwbGVhc2UgY2FuIHlvdSBiZSBtb3JlIHNwZWNpZmljIGhvdyB3b3VsZCB5b3Ug
-ZG8gdGhhdD8gSUZBSUsgdGhlDQo+Pj4+IHB1bGwtdXAvZG93biBpbnRlcm5hbCByZXNpc3RvcnMg
-aGF2ZSBlZmZlY3Qgb25seSBpZiB0aGUgcGluIGlzIGNvbmZpZ3VyZWQNCj4+Pj4gYXMgR1BJTyAq
-aW5wdXQqIChvbiBpLk1YNiBhdCBsZWFzdCkuIFNlZSB0aGUgVFJNLCAyOS40LjIuMiBPdXRwdXQg
-ZHJpdmVyOg0KPj4+Pg0KPj4+PiAgICAgIkludGVybmFsIHB1bGwtdXAsIHB1bGwtZG93biByZXNp
-c3RvcnMsIGFuZCBwYWQga2VlcGVyIGFyZSBkaXNhYmxlZCBpbg0KPj4+PiAgICAgIG91dHB1dCBt
-b2RlLiINCj4gDQo+IFRoaXMgd291bGQgbWVhbiB5b3UnZCBoYXZlIHRvIHJlbHkgb24gYW4gZXh0
-ZXJuYWwgcHVsbCB1cCBmb3IgeW91ciB1c2UNCj4gY2FzZS4gSSB3b3VsZG4ndCBiZSBzdXJwcmlz
-ZWQgaG93ZXZlciBpZiBEU0U9MCB3b3VsZG4ndCBjb3VudCBhcyAib3V0cHV0DQo+IG1vZGUiLiBH
-aXZlbiB0aGUgcmVsaWFiaWxpdHkgb2YgTlhQIGRvY3VtZW50YXRpb24gSSB3b3VsZG4ndCBiZXQg
-bmVpdGhlcg0KPiBvbiBvbmUgbm9yIHRoZSBvdGhlciBwb3NzaWJpbGl0eS4NCg0KWWVhaCwgdGhl
-IE5YUCBkb2N1bWVudGF0aW9uIHNvbWV0aW1lcyBkb2VzIG5vdCByZWFsbHkgbWF0Y2ggcmVhbGl0
-eS4NCk15IHVzZSBjYXNlIGlzIGJhc2VkIG9uIHRoZSBmYWN0IHRoYXQgSSBjb25maWd1cmUgdGhl
-IHBpbiBhcyBpbnB1dCBpbg0KdGhlIGRyaXZlci4gVGhlbiBpdCB3b3JrcyBqdXN0IGZpbmUuDQoN
-Cj4+PiBTbyBJJ2QgZXhwZWN0IHRoaXMgdG8gcmVhbGx5IHdvcmsgb24gaS5NWDYgYnV0IG5vdCB0
-aGUgZWFybGllciBTb0NzDQo+Pj4gd2l0aG91dCBhIGdwaW8gc3BlY2lmaWVyLg0KPj4NCj4+IE1h
-eWJlIHlvdSB3b3VsZCBleHBlY3QgaXQgdG8gd29yayBidXQgSSBhbHJlYWR5IHRlc3RlZCBhbmQg
-bWVhc3VyZWQNCj4+IHRoYXQgd2Vla3MgYWdvIDspIEl0IGRpZCBub3Qgd29yay4NCj4gDQo+IFdo
-aWNoIHBpbi9ncGlvIGRvIHdlIHRhbGsgYWJvdXQ/IFdoaWNoIGkuTVg2IHZhcmlhbnQgZGlkIHlv
-dSB0ZXN0IHRoaXMNCj4gb24/IChBc3N1bWluZyBpLk1YNkQgb3IgaS5NWDZRIGFuZCBQQURfRElT
-UDBfREFUQTA5LCBkaWQgeW91IHRyeSBzZXR0aW5nDQo+IA0KPiAJSU9NVVhDX1NXX01VWF9DVExf
-UEFEX0RJU1AwX0RBVEEwOSAoMHgwMjBFMDE5NCkgPSAweDAwMDAwMDA1DQo+IAlJT01VWENfU1df
-UEFEX0NUTF9QQURfRElTUDBfREFUQTA5ICgweDAyMEUwNEE4KSA9IDB4MDAwMGIwODANCj4gDQo+
-IGFuZCB0aGVuIHBsYXkgd2l0aCBHUElPIDQuMzAgZGlyZWN0aW9uIGFuZCBvdXRwdXQgdmFsdWU/
-KQ0KDQpNeSB0ZXN0IHNldHVwIGlzIGFzIGZvbGxvd3M6DQotIFNvQyBpcyBpLk1YNkRMIG9yIGku
-TVg2UyAtIEkgaGF2ZSB0aHJlZSBib2FyZCB2YXJpYW50cyBpbiB0b3RhbC4NCi0gUGluIHVzZWQg
-Zm9yIFBXTS9HUElPIGlzIFBBRF9HUElPOS4NCi0gVGhlIHBpbiBpcyBub3QgY29ubmVjdGVkIHRv
-IGFueSBjaXJjdWl0LiBKdXN0IGEgdGVzdCBwb2ludC4NCi0gcGluY3RybCBzZXR1cCBpbiBEVDoN
-CiAgIC0gZm9yICJwd20iOg0KICAgICAtIGZzbCxwaW5zID0gPE1YNlFETF9QQURfR1BJT185X19Q
-V00xX09VVCAweDg+DQogICAgIC0gSU9NVVhDX1NXX01VWF9DVExfUEFEX0dQSU8wOSA9IDB4MDAw
-MDAwMDQNCiAgICAgLSBJT01VWENfU1dfUEFEX0NUTF9QQURfR1BJTzA5ID0gMHgwMDAwMDAwOA0K
-DQogICAtIGZvciAiZ3BpbyI6DQogICAgLSBmc2wscGlucyA9IDxNWDZRRExfUEFEX0dQSU9fOV9f
-R1BJTzFfSU8wOSAweGIwMDA+DQogICAgLSBJT01VWENfU1dfTVVYX0NUTF9QQURfR1BJTzA5ID0g
-MHgwMDAwMDAwNQ0KICAgIC0gSU9NVVhDX1NXX1BBRF9DVExfUEFEX0dQSU8wOSA9IDB4MDAwMGIw
-MDANCg0KVGVzdCBzY2VuYXJpbzoNCg0KLSBJbiBib290bG9hZGVyIGNvbmZpZ3VyZSB0aGUgcGlu
-IGFzIEdQSU8gb3V0cHV0LCBzZXQgaXQgTE9XICgwVikuDQogICBJIHNldCBpdCBMT1cgdG8gc3Rh
-cnQgaW4gdGhlIG9wb3NpdGUgc3RhdGUgdGhhbiBJIHdhbnQgdG8gZW5kIHVwIGluLg0KLSBCb290
-IExpbnV4DQotIFVzZSBzeXNmcyB0byBjb25maWd1cmUgdGhlIFBXTSB0byBwcm9kdWNlIHNvbWUg
-c2lnbmFsLg0KLSBJbiB0aGUgUFdNIGRyaXZlciBzZWxlY3QgdGhlICJwd20iIHBpbmN0cmwgc3Rh
-dGUuDQotIE1lYXN1cmUgdGhlIG91dHB1dCAtIGV4cGVjdGVkIHdhdmVmb3JtIG9uIHRoZSBzY29w
-ZS4NCi0gVXNlIHN5c2ZzIHRvIHN0b3AgdGhlIFBXTSAiZWNobyAwID4gL3N5cy9jbGFzcy9wd20v
-cHdtY2hpcDAvcHdtMC9lbmFibGXCsA0KLSBJbiB0aGUgUFdNIGRyaXZlciBzZWxlY3QgdGhlICJn
-cGlvIiBwaW5jdHJsIHN0YXRlLg0KLSBUaGVuIGluIHRoZSBQV00gZHJpdmVyOg0KDQphKSBub24t
-d29ya2luZyB2YXJpYW50DQotIERvIG5vdCByZXF1ZXN0IHRoZSBHUElPIC0gc28gZG8gbm90IHRv
-dWNoIGl0cyBwYWQgY29udHJvbCByZWcuDQogICBJdCBpcyBzZXQgYXMgb3V0cHV0IGZyb20gdGhl
-IGJvb3Rsb2FkZXIsIGRhdGEgcmVnaXN0ZXIgPSAwLg0KLSBNZWFzdXJlIHZvbHRhZ2Ugb24gdGhl
-IG91dHB1dA0KICAgLSBhZ2FpbnN0IEdORCA9IDBWDQogICAtIGFnYWluc3QgVkNDID0gMFYNCi0g
-TWVhc3VyZSByZXNpc3RhbmNlIGFnYWluc3QgVkNDOiBIaS1aDQoNClRoZSBwaW4gaXMgaW4gSGkt
-WiBtb2RlLiBUaGF0IGlzIGZpbmUgYnV0IHRoYXQgZG9lcyBub3Qgc2F0aXNmeSBhbnkNCmxvZ2lj
-IGxldmVsLg0KDQpiKSB3b3JraW5nIHZhcmlhbnQNCi0gUmVxdWVzdCB0aGUgR1BJTywgY29uZmln
-dXJlIGl0IGFzIGlucHV0Lg0KLSBNZWFzdXJlIHZvbHRhZ2Ugb24gdGhlIG91dHB1dA0KICAgLSBh
-Z2FpbnN0IEdORCA9IFZDQyAoMy4zVikNCiAgIC0gYWdhaW5zdCBWQ0MgPSAwVg0KLSBNZWFzdXJl
-IHJlc2lzdGFuY2UgYWdhaW5zdCBWQ0MgPSA5MS4xa09obQ0KDQpUaGUgcHVsbC11cCBpcyBhY3Rp
-dmUuDQoNCkkgY2FuIHJlcGVhdCB0aGUgcmVzdWx0cyBvbiBib3RoIGkuTVg2REwgYW5kIGkuTVg2
-UyBvbiBwd20xIGFuZCBwd200Lg0KQWxsIHB1bGwtdXAgYW5kIHB1bGwtZG93biBjb21iaW5hdGlv
-bnMgZ2F2ZSBtZSB0aGUgZXhwZWN0ZWQgcmVzdWx0cw0Kb25seSBpZiB0aGUgcGluIGlzIGNvbmZp
-Z3VyZWQgYXMgaW5wdXQuIFNvIGlmIEkgcmVwZWF0IHRoZSB0ZXN0IGFuZA0KZG8gbm90IHRvdWNo
-IHRoZSBwaW4gaW4gYm9vdGxvYWRlciBhdCBhbGwsIGl0IHdvcmtzIGFzIHdlbGwgZXZlbiBpZg0K
-SSBkbyBub3QgcmVxdWVzdC9jb25maWd1cmUgdGhlIEdQSU8gaW4gdGhlIFBXTSBkcml2ZXIuDQoN
-CkJ1dCB3ZSBjYW4gbm90IHJlbHkgb24gdGhlIGZhY3QgdGhhdCB0aGUgcGluIGlzIGNvcnJlY3Rs
-eSBjb25maWd1cmVkDQpmcm9tIGJvb3Rsb2FkZXIgb3IgdGhhdCBpdCBpcyBpbiB0aGUgYWZ0ZXIt
-cmVzZXQgc3RhdGUuIEl0IHNob3VsZA0KanVzdCB3b3JrIHJlZ2FyZGxlc3Mgb2Ygd2hhdCBzdGF0
-ZSBpdCB3YXMgbGVmdCBpbi4NCg0KQmVzdCByZWdhcmRzLA0KTWljaGFsDQo=
+PWM support for allwinner sun8i R40/T3/V40 SOCs.
+
+The sun8i R40/T3/V40 PWM has 8 PWM channals and divides to 4 PWM pairs,
+each PWM pair built-in 1 clock module, 2 timer logic module and 1
+programmable dead-time generator, it also support waveform capture.
+It has 2 clock sources OSC24M and APB1, it is different with the
+sun4i-pwm driver, Therefore add a new driver for it.
+
+Some test method:
+cd /sys/class/pwm/pwmchip0
+echo 0 > export
+cd pwm0
+echo 1000 > period
+echo 500 > duty_cycle
+echo 1 > enable
+then check the PB2 pin with oscilloscope.
+
+v3 Changes:
+1. fix coding format.
+2. use 2/ilog2 instead of divide table
+3. remove spinlock.
+4. remove sun8i_pwm_data structure and use DT to parse pwm-channals  
+5. remove inline because complier knows it better.
+6. don't hardcode clock source and parse two clock source from dt "mux-0"
+   and "mux-1"
+7. remove bypass method.
+8. add a method to change clock source when mux-0 is not support the
+   input period it can change to mux-1.
+9. add cycle range check.
+10. add some variable to make it more readability.
+11. add clk_disable_unprepare when some false accur.
+
+v2 Changes:
+1. change sun8i-r40 symbol to sun8i.
+2. change pwm0_pin, pwm0-pin to pwm_ch0_pin, pwm-ch0-pin.
+3. remove clk_disable_unprepare(), check !match and IS_ERR(pwm->regmap).
+
+Hao Zhang (6):
+  Documentation: ARM: sunxi: pwm: add Allwinner sun8i.
+  ARM: dtsi: add pwm node for sun8i R40.
+  ARM: dts: add PWM for Bananapi M2 Ultrar board.
+  DEV: CLK: add function to check the using clock name of driver.
+  DEV: CLK: sunxi ccu: export clk_apb1 for sun8i-r40 soc pwm.
+  ARM: PWM: add allwinner sun8i R40/T3/V40 PWM support.
+
+ .../devicetree/bindings/pwm/pwm-sun8i.txt          |  24 ++
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |   6 +
+ arch/arm/boot/dts/sun8i-r40.dtsi                   |  17 +
+ drivers/clk/clk.c                                  |   6 +
+ drivers/clk/sunxi-ng/ccu-sun8i-r40.h               |   4 +-
+ drivers/pwm/Kconfig                                |  12 +-
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sun8i.c                            | 418 +++++++++++++++++++++
+ include/dt-bindings/clock/sun8i-r40-ccu.h          |   2 +
+ include/linux/clk-provider.h                       |   1 +
+ 10 files changed, 489 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+ create mode 100644 drivers/pwm/pwm-sun8i.c
+
+-- 
+2.7.4
