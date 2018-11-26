@@ -1,85 +1,101 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 4/6] DEV: CLK: add function to check the
- using clock name of driver.
-Date: Mon, 26 Nov 2018 16:26:37 +0100
-Message-ID: <20181126152637.GB19710@ulmo>
-References: <20181125162118.GA5358@arx-s1>
-Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Mon, 26 Nov 2018 15:50:49 +0000
+Message-ID: <f417d672-4335-13f3-1525-d43003740018@ysoft.com>
+References: <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
+ <20181116083430.7f1d8452@ipc1.ka-ro>
+ <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
+ <91640f9b-d219-553e-043a-c6151f2f68d7@ysoft.com>
+ <20181122162359.ufngpgxkenlmgqni@pengutronix.de>
+ <b332b319-cbb3-547f-c8b7-1dd275c1596d@ysoft.com>
+ <20181122190321.ktqegs7kpvhcemvi@pengutronix.de>
+ <9da8c6d9-d97c-200c-d8e4-2eb9f73eedc5@ysoft.com>
+ <20181126115123.GA15164@ulmo> <20181126132316.541a4131@ipc1.ka-ro>
+ <20181126133441.GA19710@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="7iMSBzlTiPOCCT2k"
-Return-path: <linux-sunxi+bncBDTKFPPJUEHRBMFB6DPQKGQEXWYIPOY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20181125162118.GA5358@arx-s1>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181126133441.GA19710@ulmo>
+Content-Language: en-US
+Content-ID: <68A86F31AB514F4AB494D2F801F9FD76@eurprd04.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, viresh kumar <viresh.kumar@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
---7iMSBzlTiPOCCT2k
-Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
-
-On Mon, Nov 26, 2018 at 12:21:18AM +0800, Hao Zhang wrote:
-> In some situation we want to check clock whether is we want
-> and after the driver been probed use to change different clock source.
-> 
-> Signed-off-by: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/clk/clk.c            | 6 ++++++
->  include/linux/clk-provider.h | 1 +
->  2 files changed, 7 insertions(+)
-
-This doesn't seem right. If you're going to change to to a different
-clock source anyway, why would you even want to know what it was set
-before that? Isn't that completely irrelevant?
-
-But if you really need this, perhaps a combination of clk_get() and
-clk_is_match() would be a better approach? Perhaps best to let Mike
-and Stephen share their feelings about this kind of API.
-
-> diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-> index d31055a..3d2c2cd 100644
-> --- a/drivers/clk/clk.c
-> +++ b/drivers/clk/clk.c
-> @@ -3466,6 +3466,12 @@ static int devm_clk_hw_match(struct device *dev, void *res, void *data)
->  	return hw == data;
->  }
->  
-> +bool devm_clk_name_match(struct clk *clk, const char *string)
-> +{
-> +	return match_string(&clk->con_id, 1, string) == 0;
-> +}
-> +EXPORT_SYMBOL_GPL(devm_clk_name_match);
-
-Also, there's nothing about this that would be device-managed, so the
-devm_ prefix on the function name is misleading.
-
->  /**
->   * devm_clk_unregister - resource managed clk_unregister()
->   * @clk: clock to unregister
-> diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-> index 08b1aa7..5cd2eed 100644
-> --- a/include/linux/clk-provider.h
-> +++ b/include/linux/clk-provider.h
-> @@ -764,6 +764,7 @@ struct clk *devm_clk_register(struct device *dev, struct clk_hw *hw);
->  int __must_check clk_hw_register(struct device *dev, struct clk_hw *hw);
->  int __must_check devm_clk_hw_register(struct device *dev, struct clk_hw *hw);
->  
-> +bool devm_clk_name_match(struct clk *clk, const char *string);
->  void clk_unregister(struct clk *clk);
->  void devm_clk_unregister(struct device *dev, struct clk *clk);
-
-You use this from clock consumers, so clk-provider.h is not the right
-place for it. Also, you'll want to add a dummy implementation for the
-case where CONFIG_COMMON_CLK is not set.
-
-Thierry
---7iMSBzlTiPOCCT2k--
+T24gMjYuMTEuMjAxOCAxNDozNCwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6DQo+IE9uIE1vbiwgTm92
+IDI2LCAyMDE4IGF0IDAxOjIzOjE2UE0gKzAxMDAsIExvdGhhciBXYcOfbWFubiB3cm90ZToNCj4+
+IFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+IHdyb3RlOg0KPj4NCj4+
+PiBPbiBGcmksIE5vdiAyMywgMjAxOCBhdCAwMzoxNToxMVBNICswMDAwLCBWb2vDocSNIE1pY2hh
+bCB3cm90ZToNCj4+Pj4gT24gMjIuMTEuMjAxOCAyMDowMywgVXdlIEtsZWluZS1Lw7ZuaWcgd3Jv
+dGU6DQo+Pj4+PiBPbiBUaHUsIE5vdiAyMiwgMjAxOCBhdCAwNDo0NjozOVBNICswMDAwLCBWb2vD
+ocSNIE1pY2hhbCB3cm90ZToNCj4+Pj4+PiBPbiAyMi4xMS4yMDE4IDE3OjIzLCBVd2UgS2xlaW5l
+LUvDtm5pZyB3cm90ZToNCj4+Pj4+Pj4gT24gVGh1LCBOb3YgMjIsIDIwMTggYXQgMDM6NDI6MTRQ
+TSArMDAwMCwgVm9rw6HEjSBNaWNoYWwgd3JvdGU6DQo+Pj4+Pj4+PiBPbiAxNi4xMS4yMDE4IDA5
+OjI1LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+Pj4+Pj4+PiBPbiBGcmksIE5vdiAxNiwg
+MjAxOCBhdCAwODozNDozMEFNICswMTAwLCBMb3RoYXIgV2HDn21hbm4gd3JvdGU6DQo+Pj4+Pj4+
+Pj4+IE5vLiBZb3UgY2FuIGRpc2FibGUgdGhlIG91dHB1dCBkcml2ZXIgdmlhIHBpbmN0cmwsIHNv
+IHRoYXQgb25seSB0aGUNCj4+Pj4+Pj4+Pj4gc2VsZWN0ZWQgcHVsbC11cC9kb3duIGlzIHJlbGV2
+YW50LiBUaGUgcGluIGZ1bmN0aW9uIGFuZCBHUElPIHJlZ2lzdGVyDQo+Pj4+Pj4+Pj4+IHNldHRp
+bmdzIGRvbid0IG1hdHRlciBhdCBhbGwgaW4gdGhpcyBjYXNlLg0KPj4+Pj4+Pj4NCj4+Pj4+Pj4+
+IExvdGhhciwgcGxlYXNlIGNhbiB5b3UgYmUgbW9yZSBzcGVjaWZpYyBob3cgd291bGQgeW91IGRv
+IHRoYXQ/IElGQUlLIHRoZQ0KPj4+Pj4+Pj4gcHVsbC11cC9kb3duIGludGVybmFsIHJlc2lzdG9y
+cyBoYXZlIGVmZmVjdCBvbmx5IGlmIHRoZSBwaW4gaXMgY29uZmlndXJlZA0KPj4+Pj4+Pj4gYXMg
+R1BJTyAqaW5wdXQqIChvbiBpLk1YNiBhdCBsZWFzdCkuIFNlZSB0aGUgVFJNLCAyOS40LjIuMiBP
+dXRwdXQgZHJpdmVyOg0KPj4+Pj4+Pj4NCj4+Pj4+Pj4+ICAgICAgIkludGVybmFsIHB1bGwtdXAs
+IHB1bGwtZG93biByZXNpc3RvcnMsIGFuZCBwYWQga2VlcGVyIGFyZSBkaXNhYmxlZCBpbg0KPj4+
+Pj4+Pj4gICAgICAgb3V0cHV0IG1vZGUuIg0KPj4+Pj4NCj4+Pj4+IFRoaXMgd291bGQgbWVhbiB5
+b3UnZCBoYXZlIHRvIHJlbHkgb24gYW4gZXh0ZXJuYWwgcHVsbCB1cCBmb3IgeW91ciB1c2UNCj4+
+Pj4+IGNhc2UuIEkgd291bGRuJ3QgYmUgc3VycHJpc2VkIGhvd2V2ZXIgaWYgRFNFPTAgd291bGRu
+J3QgY291bnQgYXMgIm91dHB1dA0KPj4+Pj4gbW9kZSIuIEdpdmVuIHRoZSByZWxpYWJpbGl0eSBv
+ZiBOWFAgZG9jdW1lbnRhdGlvbiBJIHdvdWxkbid0IGJldCBuZWl0aGVyDQo+Pj4+PiBvbiBvbmUg
+bm9yIHRoZSBvdGhlciBwb3NzaWJpbGl0eS4NCj4+Pj4NCj4+Pj4gWWVhaCwgdGhlIE5YUCBkb2N1
+bWVudGF0aW9uIHNvbWV0aW1lcyBkb2VzIG5vdCByZWFsbHkgbWF0Y2ggcmVhbGl0eS4NCj4+Pj4g
+TXkgdXNlIGNhc2UgaXMgYmFzZWQgb24gdGhlIGZhY3QgdGhhdCBJIGNvbmZpZ3VyZSB0aGUgcGlu
+IGFzIGlucHV0IGluDQo+Pj4+IHRoZSBkcml2ZXIuIFRoZW4gaXQgd29ya3MganVzdCBmaW5lLg0K
+Pj4+PiAgICANCj4+Pj4+Pj4gU28gSSdkIGV4cGVjdCB0aGlzIHRvIHJlYWxseSB3b3JrIG9uIGku
+TVg2IGJ1dCBub3QgdGhlIGVhcmxpZXIgU29Dcw0KPj4+Pj4+PiB3aXRob3V0IGEgZ3BpbyBzcGVj
+aWZpZXIuDQo+Pj4+Pj4NCj4+Pj4+PiBNYXliZSB5b3Ugd291bGQgZXhwZWN0IGl0IHRvIHdvcmsg
+YnV0IEkgYWxyZWFkeSB0ZXN0ZWQgYW5kIG1lYXN1cmVkDQo+Pj4+Pj4gdGhhdCB3ZWVrcyBhZ28g
+OykgSXQgZGlkIG5vdCB3b3JrLg0KPj4+Pj4NCj4+Pj4+IFdoaWNoIHBpbi9ncGlvIGRvIHdlIHRh
+bGsgYWJvdXQ/IFdoaWNoIGkuTVg2IHZhcmlhbnQgZGlkIHlvdSB0ZXN0IHRoaXMNCj4+Pj4+IG9u
+PyAoQXNzdW1pbmcgaS5NWDZEIG9yIGkuTVg2USBhbmQgUEFEX0RJU1AwX0RBVEEwOSwgZGlkIHlv
+dSB0cnkgc2V0dGluZw0KPj4+Pj4NCj4+Pj4+IAlJT01VWENfU1dfTVVYX0NUTF9QQURfRElTUDBf
+REFUQTA5ICgweDAyMEUwMTk0KSA9IDB4MDAwMDAwMDUNCj4+Pj4+IAlJT01VWENfU1dfUEFEX0NU
+TF9QQURfRElTUDBfREFUQTA5ICgweDAyMEUwNEE4KSA9IDB4MDAwMGIwODANCj4+Pj4+DQo+Pj4+
+PiBhbmQgdGhlbiBwbGF5IHdpdGggR1BJTyA0LjMwIGRpcmVjdGlvbiBhbmQgb3V0cHV0IHZhbHVl
+PykNCj4+Pj4NCj4+Pj4gTXkgdGVzdCBzZXR1cCBpcyBhcyBmb2xsb3dzOg0KPj4+PiAtIFNvQyBp
+cyBpLk1YNkRMIG9yIGkuTVg2UyAtIEkgaGF2ZSB0aHJlZSBib2FyZCB2YXJpYW50cyBpbiB0b3Rh
+bC4NCj4+Pj4gLSBQaW4gdXNlZCBmb3IgUFdNL0dQSU8gaXMgUEFEX0dQSU85Lg0KPj4+PiAtIFRo
+ZSBwaW4gaXMgbm90IGNvbm5lY3RlZCB0byBhbnkgY2lyY3VpdC4gSnVzdCBhIHRlc3QgcG9pbnQu
+DQo+Pj4+IC0gcGluY3RybCBzZXR1cCBpbiBEVDoNCj4+Pj4gICAgIC0gZm9yICJwd20iOg0KPj4+
+PiAgICAgICAtIGZzbCxwaW5zID0gPE1YNlFETF9QQURfR1BJT185X19QV00xX09VVCAweDg+DQo+
+Pj4+ICAgICAgIC0gSU9NVVhDX1NXX01VWF9DVExfUEFEX0dQSU8wOSA9IDB4MDAwMDAwMDQNCj4+
+Pj4gICAgICAgLSBJT01VWENfU1dfUEFEX0NUTF9QQURfR1BJTzA5ID0gMHgwMDAwMDAwOA0KPj4+
+Pg0KPj4+PiAgICAgLSBmb3IgImdwaW8iOg0KPj4+PiAgICAgIC0gZnNsLHBpbnMgPSA8TVg2UURM
+X1BBRF9HUElPXzlfX0dQSU8xX0lPMDkgMHhiMDAwPg0KPj4+PiAgICAgIC0gSU9NVVhDX1NXX01V
+WF9DVExfUEFEX0dQSU8wOSA9IDB4MDAwMDAwMDUNCj4+Pj4gICAgICAtIElPTVVYQ19TV19QQURf
+Q1RMX1BBRF9HUElPMDkgPSAweDAwMDBiMDAwDQo+Pj4NCj4+PiBEb2VzIGl0IGhlbHAgaWYgeW91
+IGFkZGl0aW9uYWxseSBzZXQgdGhlIE9ERSBiaXQgKGJpdCAxMSkgaGVyZT8NCj4+Pg0KPj4gVGhh
+dCBvbmx5IGhlbHBzIHRvIE5PVCBhY3RpdmVseSBwdWxsaW5nIHRoZSBwaW4gSElHSCwgYnV0IHRo
+ZSBvcHBvc2l0ZQ0KPj4gaXMgd2hhdCBpcyBuZWVkZWQgaGVyZS4NCj4gDQo+ICBGcm9tIHRoZSBk
+ZXNjcmlwdGlvbiBpbiB0aGUgcmVmZXJlbmNlIG1hbnVhbCBpdCBzb3VuZGVkIGxpa2UgdGhlIE9E
+RQ0KPiB3b3VsZCBhdm9pZCB0aGUgcGluIGZyb20gYWN0aXZlbHkgYmVpbmcgZHJpdmVuIGFueXdo
+ZXJlIGlmIGNvbmZpZ3VyZWQgYXMNCj4gb3V0cHV0LiBTbyBJIHdhcyBob3BpbmcgdGhhdCBpbiBj
+b25qdW5jdGlvbiB3aXRoIHRoZSBwdWxsLXVwIGl0IHdvdWxkDQo+IGFjdHVhbGx5IGRvIHRoZSBy
+aWdodCB0aGluZy4NCg0KTm90IGV4YWN0bHkuIEkgdGVzdGVkL21lYXN1cmVkIHRoaXMgYW5kIHRo
+ZSBPREUgc2V0dGluZyB3b3JrcyBsaWtlDQpMb3RoYXIgc2FpZC4NCg0KSWYgT0RFPTEgYW5kIEdQ
+SU8gaXMgaW4gb3V0cHV0IG1vZGU6DQoNCi0gVGhlIGludGVybmFsIHB1bGwgcmVzaXN0b3JzIGFy
+ZSBlbmFibGVkIGV2ZW4gaWYgUEtFPTAgKHB1bGwva2VlcGVyDQogICBpcyBkaXNhYmxlZCkuIFRo
+YXQncyBuZXdzIHRvIG1lIGJ1dCBpdCBhY3R1YWxseSBtYXRjaGVzIHRoZSBHUElPIHBhZA0KICAg
+ZnVuY3Rpb25hbCBkaWFncmFtLiBTZWUgRmlndXJlIDI5LTMgaW4gUk0uDQoNCi0gSWYgdGhlIEdQ
+SU8gb3V0cHV0IGlzIHNldCBMT1csIHRoZSBvdXRwdXQgaXMgYWN0aXZlbHkgcHVsbGVkIGRvd24g
+YnkNCiAgIHRoZSBsb3cgc2lkZSB0cmFuc2lzdG9yLg0KDQotIElmIHRoZSBHUElPIG91dHB1dCBp
+cyBzZXQgSElHSCB0aGUgb3V0cHV0IGlzIHBhc3NpdmVseSBwdWxsZWQgdXAgYnkNCiAgIHRoZSBp
+bnRlcm5hbCBwdWxsLXVwIHJlc2lzdG9yLiBUaGUgdmFsdWUgb2YgdGhlIHJlc2lzdG9yIGNhbiBi
+ZQ0KICAgc2VsZWN0ZWQgYnkgUFVTIGFuZCBJIGFtIGFibGUgdG8gbWVhc3VyZSBpdC4NCg0KVGhh
+dCBkb2VzIG5vdCBzb2x2ZSB0aGUgaXNzdWUgdGhhdCB0aGUgcGluIG1heSBtZSBjb25maWd1cmVk
+IGFzIG91dHB1dA0KYW5kIHNldCBMT1cgZnJvbSBib290bG9hZGVyIHRob3VnaC4NCg0KTWljaGFs
+DQo=
