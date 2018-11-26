@@ -1,101 +1,45 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: Re: [RCF PATCH,v2,2/2] pwm: imx: Configure output to GPIO in disabled
- state
-Date: Mon, 26 Nov 2018 15:50:49 +0000
-Message-ID: <f417d672-4335-13f3-1525-d43003740018@ysoft.com>
-References: <20181115203733.qvonika6yhn2bsnb@pengutronix.de>
- <20181116083430.7f1d8452@ipc1.ka-ro>
- <20181116082557.l2ljgu3hsu7tvdci@pengutronix.de>
- <91640f9b-d219-553e-043a-c6151f2f68d7@ysoft.com>
- <20181122162359.ufngpgxkenlmgqni@pengutronix.de>
- <b332b319-cbb3-547f-c8b7-1dd275c1596d@ysoft.com>
- <20181122190321.ktqegs7kpvhcemvi@pengutronix.de>
- <9da8c6d9-d97c-200c-d8e4-2eb9f73eedc5@ysoft.com>
- <20181126115123.GA15164@ulmo> <20181126132316.541a4131@ipc1.ka-ro>
- <20181126133441.GA19710@ulmo>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 2/6] ARM: dtsi: add pwm node for sun8i R40.
+Date: Mon, 26 Nov 2018 21:46:08 +0100
+Message-ID: <20181126204608.3dpwygx5owbbszdd@pengutronix.de>
+References: <20181125161941.GA5305@arx-s1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181126133441.GA19710@ulmo>
-Content-Language: en-US
-Content-ID: <68A86F31AB514F4AB494D2F801F9FD76@eurprd04.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <20181125161941.GA5305@arx-s1>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, viresh kumar <viresh.kumar@linaro.org>
+To: Hao Zhang <hao5781286@gmail.com>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, maxime.ripard@bootlin.com, wens@csie.org, mturquette@baylibre.com, sboyd@kernel.org, thierry.reding@gmail.com, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMjYuMTEuMjAxOCAxNDozNCwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6DQo+IE9uIE1vbiwgTm92
-IDI2LCAyMDE4IGF0IDAxOjIzOjE2UE0gKzAxMDAsIExvdGhhciBXYcOfbWFubiB3cm90ZToNCj4+
-IFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+IHdyb3RlOg0KPj4NCj4+
-PiBPbiBGcmksIE5vdiAyMywgMjAxOCBhdCAwMzoxNToxMVBNICswMDAwLCBWb2vDocSNIE1pY2hh
-bCB3cm90ZToNCj4+Pj4gT24gMjIuMTEuMjAxOCAyMDowMywgVXdlIEtsZWluZS1Lw7ZuaWcgd3Jv
-dGU6DQo+Pj4+PiBPbiBUaHUsIE5vdiAyMiwgMjAxOCBhdCAwNDo0NjozOVBNICswMDAwLCBWb2vD
-ocSNIE1pY2hhbCB3cm90ZToNCj4+Pj4+PiBPbiAyMi4xMS4yMDE4IDE3OjIzLCBVd2UgS2xlaW5l
-LUvDtm5pZyB3cm90ZToNCj4+Pj4+Pj4gT24gVGh1LCBOb3YgMjIsIDIwMTggYXQgMDM6NDI6MTRQ
-TSArMDAwMCwgVm9rw6HEjSBNaWNoYWwgd3JvdGU6DQo+Pj4+Pj4+PiBPbiAxNi4xMS4yMDE4IDA5
-OjI1LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+Pj4+Pj4+PiBPbiBGcmksIE5vdiAxNiwg
-MjAxOCBhdCAwODozNDozMEFNICswMTAwLCBMb3RoYXIgV2HDn21hbm4gd3JvdGU6DQo+Pj4+Pj4+
-Pj4+IE5vLiBZb3UgY2FuIGRpc2FibGUgdGhlIG91dHB1dCBkcml2ZXIgdmlhIHBpbmN0cmwsIHNv
-IHRoYXQgb25seSB0aGUNCj4+Pj4+Pj4+Pj4gc2VsZWN0ZWQgcHVsbC11cC9kb3duIGlzIHJlbGV2
-YW50LiBUaGUgcGluIGZ1bmN0aW9uIGFuZCBHUElPIHJlZ2lzdGVyDQo+Pj4+Pj4+Pj4+IHNldHRp
-bmdzIGRvbid0IG1hdHRlciBhdCBhbGwgaW4gdGhpcyBjYXNlLg0KPj4+Pj4+Pj4NCj4+Pj4+Pj4+
-IExvdGhhciwgcGxlYXNlIGNhbiB5b3UgYmUgbW9yZSBzcGVjaWZpYyBob3cgd291bGQgeW91IGRv
-IHRoYXQ/IElGQUlLIHRoZQ0KPj4+Pj4+Pj4gcHVsbC11cC9kb3duIGludGVybmFsIHJlc2lzdG9y
-cyBoYXZlIGVmZmVjdCBvbmx5IGlmIHRoZSBwaW4gaXMgY29uZmlndXJlZA0KPj4+Pj4+Pj4gYXMg
-R1BJTyAqaW5wdXQqIChvbiBpLk1YNiBhdCBsZWFzdCkuIFNlZSB0aGUgVFJNLCAyOS40LjIuMiBP
-dXRwdXQgZHJpdmVyOg0KPj4+Pj4+Pj4NCj4+Pj4+Pj4+ICAgICAgIkludGVybmFsIHB1bGwtdXAs
-IHB1bGwtZG93biByZXNpc3RvcnMsIGFuZCBwYWQga2VlcGVyIGFyZSBkaXNhYmxlZCBpbg0KPj4+
-Pj4+Pj4gICAgICAgb3V0cHV0IG1vZGUuIg0KPj4+Pj4NCj4+Pj4+IFRoaXMgd291bGQgbWVhbiB5
-b3UnZCBoYXZlIHRvIHJlbHkgb24gYW4gZXh0ZXJuYWwgcHVsbCB1cCBmb3IgeW91ciB1c2UNCj4+
-Pj4+IGNhc2UuIEkgd291bGRuJ3QgYmUgc3VycHJpc2VkIGhvd2V2ZXIgaWYgRFNFPTAgd291bGRu
-J3QgY291bnQgYXMgIm91dHB1dA0KPj4+Pj4gbW9kZSIuIEdpdmVuIHRoZSByZWxpYWJpbGl0eSBv
-ZiBOWFAgZG9jdW1lbnRhdGlvbiBJIHdvdWxkbid0IGJldCBuZWl0aGVyDQo+Pj4+PiBvbiBvbmUg
-bm9yIHRoZSBvdGhlciBwb3NzaWJpbGl0eS4NCj4+Pj4NCj4+Pj4gWWVhaCwgdGhlIE5YUCBkb2N1
-bWVudGF0aW9uIHNvbWV0aW1lcyBkb2VzIG5vdCByZWFsbHkgbWF0Y2ggcmVhbGl0eS4NCj4+Pj4g
-TXkgdXNlIGNhc2UgaXMgYmFzZWQgb24gdGhlIGZhY3QgdGhhdCBJIGNvbmZpZ3VyZSB0aGUgcGlu
-IGFzIGlucHV0IGluDQo+Pj4+IHRoZSBkcml2ZXIuIFRoZW4gaXQgd29ya3MganVzdCBmaW5lLg0K
-Pj4+PiAgICANCj4+Pj4+Pj4gU28gSSdkIGV4cGVjdCB0aGlzIHRvIHJlYWxseSB3b3JrIG9uIGku
-TVg2IGJ1dCBub3QgdGhlIGVhcmxpZXIgU29Dcw0KPj4+Pj4+PiB3aXRob3V0IGEgZ3BpbyBzcGVj
-aWZpZXIuDQo+Pj4+Pj4NCj4+Pj4+PiBNYXliZSB5b3Ugd291bGQgZXhwZWN0IGl0IHRvIHdvcmsg
-YnV0IEkgYWxyZWFkeSB0ZXN0ZWQgYW5kIG1lYXN1cmVkDQo+Pj4+Pj4gdGhhdCB3ZWVrcyBhZ28g
-OykgSXQgZGlkIG5vdCB3b3JrLg0KPj4+Pj4NCj4+Pj4+IFdoaWNoIHBpbi9ncGlvIGRvIHdlIHRh
-bGsgYWJvdXQ/IFdoaWNoIGkuTVg2IHZhcmlhbnQgZGlkIHlvdSB0ZXN0IHRoaXMNCj4+Pj4+IG9u
-PyAoQXNzdW1pbmcgaS5NWDZEIG9yIGkuTVg2USBhbmQgUEFEX0RJU1AwX0RBVEEwOSwgZGlkIHlv
-dSB0cnkgc2V0dGluZw0KPj4+Pj4NCj4+Pj4+IAlJT01VWENfU1dfTVVYX0NUTF9QQURfRElTUDBf
-REFUQTA5ICgweDAyMEUwMTk0KSA9IDB4MDAwMDAwMDUNCj4+Pj4+IAlJT01VWENfU1dfUEFEX0NU
-TF9QQURfRElTUDBfREFUQTA5ICgweDAyMEUwNEE4KSA9IDB4MDAwMGIwODANCj4+Pj4+DQo+Pj4+
-PiBhbmQgdGhlbiBwbGF5IHdpdGggR1BJTyA0LjMwIGRpcmVjdGlvbiBhbmQgb3V0cHV0IHZhbHVl
-PykNCj4+Pj4NCj4+Pj4gTXkgdGVzdCBzZXR1cCBpcyBhcyBmb2xsb3dzOg0KPj4+PiAtIFNvQyBp
-cyBpLk1YNkRMIG9yIGkuTVg2UyAtIEkgaGF2ZSB0aHJlZSBib2FyZCB2YXJpYW50cyBpbiB0b3Rh
-bC4NCj4+Pj4gLSBQaW4gdXNlZCBmb3IgUFdNL0dQSU8gaXMgUEFEX0dQSU85Lg0KPj4+PiAtIFRo
-ZSBwaW4gaXMgbm90IGNvbm5lY3RlZCB0byBhbnkgY2lyY3VpdC4gSnVzdCBhIHRlc3QgcG9pbnQu
-DQo+Pj4+IC0gcGluY3RybCBzZXR1cCBpbiBEVDoNCj4+Pj4gICAgIC0gZm9yICJwd20iOg0KPj4+
-PiAgICAgICAtIGZzbCxwaW5zID0gPE1YNlFETF9QQURfR1BJT185X19QV00xX09VVCAweDg+DQo+
-Pj4+ICAgICAgIC0gSU9NVVhDX1NXX01VWF9DVExfUEFEX0dQSU8wOSA9IDB4MDAwMDAwMDQNCj4+
-Pj4gICAgICAgLSBJT01VWENfU1dfUEFEX0NUTF9QQURfR1BJTzA5ID0gMHgwMDAwMDAwOA0KPj4+
-Pg0KPj4+PiAgICAgLSBmb3IgImdwaW8iOg0KPj4+PiAgICAgIC0gZnNsLHBpbnMgPSA8TVg2UURM
-X1BBRF9HUElPXzlfX0dQSU8xX0lPMDkgMHhiMDAwPg0KPj4+PiAgICAgIC0gSU9NVVhDX1NXX01V
-WF9DVExfUEFEX0dQSU8wOSA9IDB4MDAwMDAwMDUNCj4+Pj4gICAgICAtIElPTVVYQ19TV19QQURf
-Q1RMX1BBRF9HUElPMDkgPSAweDAwMDBiMDAwDQo+Pj4NCj4+PiBEb2VzIGl0IGhlbHAgaWYgeW91
-IGFkZGl0aW9uYWxseSBzZXQgdGhlIE9ERSBiaXQgKGJpdCAxMSkgaGVyZT8NCj4+Pg0KPj4gVGhh
-dCBvbmx5IGhlbHBzIHRvIE5PVCBhY3RpdmVseSBwdWxsaW5nIHRoZSBwaW4gSElHSCwgYnV0IHRo
-ZSBvcHBvc2l0ZQ0KPj4gaXMgd2hhdCBpcyBuZWVkZWQgaGVyZS4NCj4gDQo+ICBGcm9tIHRoZSBk
-ZXNjcmlwdGlvbiBpbiB0aGUgcmVmZXJlbmNlIG1hbnVhbCBpdCBzb3VuZGVkIGxpa2UgdGhlIE9E
-RQ0KPiB3b3VsZCBhdm9pZCB0aGUgcGluIGZyb20gYWN0aXZlbHkgYmVpbmcgZHJpdmVuIGFueXdo
-ZXJlIGlmIGNvbmZpZ3VyZWQgYXMNCj4gb3V0cHV0LiBTbyBJIHdhcyBob3BpbmcgdGhhdCBpbiBj
-b25qdW5jdGlvbiB3aXRoIHRoZSBwdWxsLXVwIGl0IHdvdWxkDQo+IGFjdHVhbGx5IGRvIHRoZSBy
-aWdodCB0aGluZy4NCg0KTm90IGV4YWN0bHkuIEkgdGVzdGVkL21lYXN1cmVkIHRoaXMgYW5kIHRo
-ZSBPREUgc2V0dGluZyB3b3JrcyBsaWtlDQpMb3RoYXIgc2FpZC4NCg0KSWYgT0RFPTEgYW5kIEdQ
-SU8gaXMgaW4gb3V0cHV0IG1vZGU6DQoNCi0gVGhlIGludGVybmFsIHB1bGwgcmVzaXN0b3JzIGFy
-ZSBlbmFibGVkIGV2ZW4gaWYgUEtFPTAgKHB1bGwva2VlcGVyDQogICBpcyBkaXNhYmxlZCkuIFRo
-YXQncyBuZXdzIHRvIG1lIGJ1dCBpdCBhY3R1YWxseSBtYXRjaGVzIHRoZSBHUElPIHBhZA0KICAg
-ZnVuY3Rpb25hbCBkaWFncmFtLiBTZWUgRmlndXJlIDI5LTMgaW4gUk0uDQoNCi0gSWYgdGhlIEdQ
-SU8gb3V0cHV0IGlzIHNldCBMT1csIHRoZSBvdXRwdXQgaXMgYWN0aXZlbHkgcHVsbGVkIGRvd24g
-YnkNCiAgIHRoZSBsb3cgc2lkZSB0cmFuc2lzdG9yLg0KDQotIElmIHRoZSBHUElPIG91dHB1dCBp
-cyBzZXQgSElHSCB0aGUgb3V0cHV0IGlzIHBhc3NpdmVseSBwdWxsZWQgdXAgYnkNCiAgIHRoZSBp
-bnRlcm5hbCBwdWxsLXVwIHJlc2lzdG9yLiBUaGUgdmFsdWUgb2YgdGhlIHJlc2lzdG9yIGNhbiBi
-ZQ0KICAgc2VsZWN0ZWQgYnkgUFVTIGFuZCBJIGFtIGFibGUgdG8gbWVhc3VyZSBpdC4NCg0KVGhh
-dCBkb2VzIG5vdCBzb2x2ZSB0aGUgaXNzdWUgdGhhdCB0aGUgcGluIG1heSBtZSBjb25maWd1cmVk
-IGFzIG91dHB1dA0KYW5kIHNldCBMT1cgZnJvbSBib290bG9hZGVyIHRob3VnaC4NCg0KTWljaGFs
-DQo=
+On Mon, Nov 26, 2018 at 12:19:41AM +0800, Hao Zhang wrote:
+> This patch adds pwm node for sun8i R40.
+> 
+> Signed-off-by: Hao Zhang <hao5781286@gmail.com>
+> ---
+>  arch/arm/boot/dts/sun8i-r40.dtsi | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
+> index 6f4c9ca..cc05b2c 100644
+> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
+> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+> @@ -317,6 +317,7 @@
+>  			clock-names = "hosc", "losc";
+>  			#clock-cells = <1>;
+>  			#reset-cells = <1>;
+> +
+
+This added line is unrelated (and wrong).
+
+>  		};
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
