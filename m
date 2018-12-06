@@ -1,139 +1,226 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in disabled
- state
-Date: Thu, 6 Dec 2018 13:41:31 +0000
-Message-ID: <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in
+ disabled state
+Date: Thu, 6 Dec 2018 14:59:02 +0100
+Message-ID: <20181206135902.un2nbreqfmi6mpd6@pengutronix.de>
 References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
+ <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
-Content-Language: en-US
-Content-ID: <577EB1F8DB007F45B32FB85FF5611041@eurprd04.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>, =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Tm9ybWFsbHkgdGhlIFBXTSBvdXRwdXQgaXMgaGVsZCBMT1cgd2hlbiBQV00gaXMgZGlzYWJsZWQu
-IFRoaXMgY2FuIGNhdXNlDQpwcm9ibGVtcyB3aGVuIGludmVydGVkIFBXTSBzaWduYWwgcG9sYXJp
-dHkgaXMgbmVlZGVkLiBXaXRoIHRoaXMgYmVoYXZpb3INCnRoZSBjb25uZWN0ZWQgY2lyY3VpdCBp
-cyBmZWQgYnkgMTAwJSBkdXR5IGN5Y2xlIGluc3RlYWQgb2YgYmVpbmcgc2h1dC1vZmYuDQoNCkFs
-bG93IHVzZXJzIHRvIGRlZmluZSBhICJwd20iIGFuZCBhICJncGlvIiBwaW5jdHJsIHN0YXRlcy4g
-VGhlIHB3bSBwaW5jdHJsDQpzdGF0ZSBpcyBzZWxlY3RlZCB3aGVuIFBXTSBpcyBlbmFibGVkIGFu
-ZCB0aGUgZ3BpbyBwaW5jdHJsIHN0YXRlIGlzDQpzZWxlY3RlZCB3aGVuIFBXTSBpcyBkaXNhYmxl
-ZC4gSW4gdGhlIGdwaW8gc3RhdGUgdGhlIG5ldyBwd20tZ3Bpb3MgR1BJTyBpcw0KY29uZmlndXJl
-ZCBhcyBpbnB1dCBhbmQgdGhlIGludGVybmFsIHB1bGwtdXAgcmVzaXN0b3IgaXMgdXNlZCB0byBw
-dWxsIHRoZQ0Kb3V0cHV0IGxldmVsIGhpZ2guDQoNCklmIGFsbCB0aGUgcGluY3RybCBzdGF0ZXMg
-YW5kIHRoZSBwd20tZ3Bpb3MgR1BJTyBhcmUgbm90IGNvcnJlY3RseQ0Kc3BlY2lmaWVkIGluIERU
-IHRoZSBQV00gd29yayBhcyB1c3VhbC4NCg0KQXMgYW4gZXhhbXBsZSwgd2l0aCB0aGlzIHBhdGNo
-IGEgUFdNIGNvbnRyb2xsZWQgYmFja2xpZ2h0IHdpdGggaW52ZXJzZWQNCnNpZ25hbCBwb2xhcml0
-eSBjYW4gYmUgdXNlZCBpbiBmdWxsIGJyaWdodG5lc3MgcmFuZ2UuIFdpdGhvdXQgdGhpcyBwYXRj
-aA0KdGhlIGJhY2tsaWdodCBjYW4gbm90IGJlIHR1cm5lZCBvZmYgYXMgYnJpZ2h0bmVzcyA9IDAg
-ZGlzYWJsZXMgdGhlIFBXTQ0KYW5kIHRoYXQgaW4gdHVybiBzZXQgUFdNIG91dHB1dCBMT1csIHRo
-YXQgaXMgZnVsbCBicmlnaHRuZXNzLg0KDQpJbnZlcnRlZCBvdXRwdXQgb2YgdGhlIFBXTSB3aXRo
-ICJkZWZhdWx0IiBhbmQgd2l0aCAicHdtIisiZ3BpbyIgcGluY3RybDoNCg0KKy0tLS0tLS0tLS0t
-LS0tKy0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0gKy0tLS0tLS0tLS0t
-LS0rDQp8IEFmdGVyIHJlc2V0ICB8IEJvb3Rsb2FkZXIgfCAgIFBXTSBwcm9iZSAgIHwgICAgIFBX
-TSAgICB8ICAgICBQV00gICAgIHwNCnwgMTAwayBwdWxsLXVwIHwgICAgICAgICAgICB8ICAgICAg
-ICAgICAgICAgfCBlbmFibGUgMzAlIHwgICBkaXNhYmxlICAgfA0KKy0tLS0tLS0tLS0tLS0tKy0t
-LS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0rDQp8
-IHBpbmN0cmwgICAgICB8ICAgIG5vbmUgICAgfCAgICBkZWZhdWx0ICAgIHwgICBkZWZhdWx0ICB8
-ICAgZGVmYXVsdCAgIHwNCnwgb3V0IEggICBfX19fX19fX19fX19fX19fX18gICAgICAgICAgICAg
-ICAgICAgX18gICBfXyAgICAgICAgICAgICAgICAgfA0KfCBvdXQgTCAgICAgICAgICAgICAgICAg
-ICAgIFxfX19fX19fX19fX19fX19fXy8gIFxfLyAgXF8vXF9fX19fX19fX19fXyB8DQp8ICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4gICAgXiAgICBeICAgICAgICAg
-ICAgICAgIHwNCistLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tKy0t
-LS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tKw0KfCBwaW5jdHJsICAgICAgfCAgICBub25lICAgIHwg
-ICAgICBncGlvICAgICB8ICAgICBwd20gICAgfCAgICAgZ3BpbyAgICB8DQp8IG91dCBIICAgX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXyAgIF9fICAgX18gICBfX19fX19fX19fX19f
-IHwNCnwgb3V0IEwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXF8vICBcXy8g
-IFxfLyAgICAgICAgICAgICAgfA0KfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBeICAgIF4gICAgXiAgICAgICAgICAgICAgICB8DQorLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsNCg0K
-U2lnbmVkLW9mZi1ieTogTWljaGFsIFZva8OhxI0gPG1pY2hhbC52b2thY0B5c29mdC5jb20+DQot
-LS0NCkNoYW5nZXMgaW4gdjM6DQogLSBDb21taXQgbWVzc2FnZSB1cGRhdGUuDQogLSBNaW5vciBm
-aXggaW4gY29kZSBjb21tZW50IChVd2UpDQogLSBBbGlnbiBmdW5jdGlvbiBhcmd1bWVudHMgdG8g
-dGhlIG9wZW5pbmcgcGFyZW50aGVzZXMuIChVd2UpDQogLSBEbyBub3QgdGVzdCBkZXZtX3BpbmN0
-cmxfZ2V0IGZvciBOVUxMLiAoVGhpZXJyeSkNCiAtIENvbnZlcnQgYWxsIG1lc3NhZ2VzIHRvIGRl
-dl9kYmcoKSAoVGhpZXJyeSkNCiAtIERvIG5vdCBhY3RpdmVseSBkcml2ZSB0aGUgcGluIGluIGdw
-aW8gc3RhdGUuIENvbmZpZ3VyZSBpdCBhcyBpbnB1dA0KICAgYW5kIHJlbHkgc29sZWx5IG9uIHRo
-ZSBpbnRlcm5hbCBwdWxsLXVwLiAoVGhpZXJyeSkNCg0KQ2hhbmdlcyBpbiB2MjoNCiAtIFV0aWxp
-emUgdGhlICJwd20iIGFuZCAiZ3BpbyIgcGluY3RybCBzdGF0ZXMuDQogLSBVc2UgdGhlIHB3bS1n
-cGlvcyBzaWduYWwgdG8gZHJpdmUgdGhlIG91dHB1dCBpbiAiZ3BpbyIgcGluY3RybCBzdGF0ZS4N
-CiAtIFNlbGVjdCB0aGUgcmlnaHQgcGluY3RybCBzdGF0ZSBpbiBwcm9iZS4NCg0KIGRyaXZlcnMv
-cHdtL3B3bS1pbXguYyB8IDc3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKw0KIDEgZmlsZSBjaGFuZ2VkLCA3NyBpbnNlcnRpb25zKCspDQoNCmRpZmYg
-LS1naXQgYS9kcml2ZXJzL3B3bS9wd20taW14LmMgYi9kcml2ZXJzL3B3bS9wd20taW14LmMNCmlu
-ZGV4IDFkNTI0MmMuLjg0ZWFlYzggMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3B3bS9wd20taW14LmMN
-CisrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXguYw0KQEAgLTEyLDEwICsxMiwxMiBAQA0KICNpbmNs
-dWRlIDxsaW51eC9lcnIuaD4NCiAjaW5jbHVkZSA8bGludXgvY2xrLmg+DQogI2luY2x1ZGUgPGxp
-bnV4L2RlbGF5Lmg+DQorI2luY2x1ZGUgPGxpbnV4L2dwaW8vY29uc3VtZXIuaD4NCiAjaW5jbHVk
-ZSA8bGludXgvaW8uaD4NCiAjaW5jbHVkZSA8bGludXgvcHdtLmg+DQogI2luY2x1ZGUgPGxpbnV4
-L29mLmg+DQogI2luY2x1ZGUgPGxpbnV4L29mX2RldmljZS5oPg0KKyNpbmNsdWRlIDxsaW51eC9w
-aW5jdHJsL2NvbnN1bWVyLmg+DQogDQogLyogaS5NWDEgYW5kIGkuTVgyMSBzaGFyZSB0aGUgc2Ft
-ZSBQV00gZnVuY3Rpb24gYmxvY2s6ICovDQogDQpAQCAtNTIsMTAgKzU0LDQ0IEBAIHN0cnVjdCBp
-bXhfY2hpcCB7DQogCXZvaWQgX19pb21lbQkqbW1pb19iYXNlOw0KIA0KIAlzdHJ1Y3QgcHdtX2No
-aXAJY2hpcDsNCisNCisJc3RydWN0IHBpbmN0cmwgKnBpbmN0cmw7DQorCXN0cnVjdCBwaW5jdHJs
-X3N0YXRlICpwaW5jdHJsX3BpbnNfZ3BpbzsNCisJc3RydWN0IHBpbmN0cmxfc3RhdGUgKnBpbmN0
-cmxfcGluc19wd207DQorCXN0cnVjdCBncGlvX2Rlc2MgKnB3bV9ncGlvZDsNCiB9Ow0KIA0KICNk
-ZWZpbmUgdG9faW14X2NoaXAoY2hpcCkJY29udGFpbmVyX29mKGNoaXAsIHN0cnVjdCBpbXhfY2hp
-cCwgY2hpcCkNCiANCitzdGF0aWMgaW50IGlteF9wd21faW5pdF9waW5jdHJsX2luZm8oc3RydWN0
-IGlteF9jaGlwICppbXhfY2hpcCwNCisJCXN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQor
-ew0KKwlpbXhfY2hpcC0+cGluY3RybCA9IGRldm1fcGluY3RybF9nZXQoJnBkZXYtPmRldik7DQor
-CWlmIChJU19FUlIoaW14X2NoaXAtPnBpbmN0cmwpKSB7DQorCQlkZXZfZGJnKCZwZGV2LT5kZXYs
-ICJjYW4gbm90IGdldCBwaW5jdHJsXG4iKTsNCisJCXJldHVybiBQVFJfRVJSKGlteF9jaGlwLT5w
-aW5jdHJsKTsNCisJfQ0KKw0KKwlpbXhfY2hpcC0+cGluY3RybF9waW5zX3B3bSA9IHBpbmN0cmxf
-bG9va3VwX3N0YXRlKGlteF9jaGlwLT5waW5jdHJsLA0KKwkJCQkJCQkgICJwd20iKTsNCisJaW14
-X2NoaXAtPnBpbmN0cmxfcGluc19ncGlvID0gcGluY3RybF9sb29rdXBfc3RhdGUoaW14X2NoaXAt
-PnBpbmN0cmwsDQorCQkJCQkJCSAgICJncGlvIik7DQorCWlteF9jaGlwLT5wd21fZ3Bpb2QgPSBk
-ZXZtX2dwaW9kX2dldF9vcHRpb25hbCgmcGRldi0+ZGV2LCAicHdtIiwNCisJCQkJCQkgICAgICBH
-UElPRF9JTik7DQorDQorCWlmIChQVFJfRVJSKGlteF9jaGlwLT5wd21fZ3Bpb2QpID09IC1FUFJP
-QkVfREVGRVIpIHsNCisJCXJldHVybiAtRVBST0JFX0RFRkVSOw0KKwl9IGVsc2UgaWYgKElTX0VS
-UihpbXhfY2hpcC0+cHdtX2dwaW9kKSB8fA0KKwkJICAgSVNfRVJSKGlteF9jaGlwLT5waW5jdHJs
-X3BpbnNfcHdtKSB8fA0KKwkJICAgSVNfRVJSKGlteF9jaGlwLT5waW5jdHJsX3BpbnNfZ3Bpbykp
-IHsNCisJCWRldl9kYmcoJnBkZXYtPmRldiwgIlBXTSBwaW5jdHJsIGluZm9ybWF0aW9uIGluY29t
-cGxldGVcbiIpOw0KKwkJZGV2bV9waW5jdHJsX3B1dChpbXhfY2hpcC0+cGluY3RybCk7DQorCQlp
-bXhfY2hpcC0+cGluY3RybCA9IE5VTEw7DQorCX0NCisNCisJcmV0dXJuIDA7DQorfQ0KKw0KIHN0
-YXRpYyBpbnQgaW14X3B3bV9jb25maWdfdjEoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KIAkJc3Ry
-dWN0IHB3bV9kZXZpY2UgKnB3bSwgaW50IGR1dHlfbnMsIGludCBwZXJpb2RfbnMpDQogew0KQEAg
-LTIxNiw3ICsyNTIsMjUgQEAgc3RhdGljIGludCBpbXhfcHdtX2FwcGx5X3YyKHN0cnVjdCBwd21f
-Y2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCiAJCQljciB8PSBNWDNfUFdNQ1Jf
-UE9VVEM7DQogDQogCQl3cml0ZWwoY3IsIGlteC0+bW1pb19iYXNlICsgTVgzX1BXTUNSKTsNCisN
-CisJCS8qDQorCQkgKiBJZiB3ZSBhcmUgaW4gY2hhcmdlIG9mIHBpbmN0cmwgdGhlbiBzd2l0Y2gg
-b3V0cHV0IHRvDQorCQkgKiB0aGUgUFdNIHNpZ25hbC4NCisJCSAqLw0KKwkJaWYgKGlteC0+cGlu
-Y3RybCkNCisJCQlwaW5jdHJsX3NlbGVjdF9zdGF0ZShpbXgtPnBpbmN0cmwsDQorCQkJCQkgICAg
-IGlteC0+cGluY3RybF9waW5zX3B3bSk7DQogCX0gZWxzZSBpZiAoY3N0YXRlLmVuYWJsZWQpIHsN
-CisJCS8qDQorCQkgKiBQV00gYmxvY2sgd2lsbCBiZSBkaXNhYmxlZC4gTm9ybWFsbHkgaXRzIG91
-dHB1dCB3aWxsIGJlIHNldA0KKwkJICogbG93IG5vIG1hdHRlciB3aGF0IG91dHB1dCBwb2xhcml0
-eSBpcyBjb25maWd1cmVkLiBMZXQncyB1c2UNCisJCSAqIHBpbmN0cmwgdG8gc3dpdGNoIHRoZSBv
-dXRwdXQgcGluIHRvIEdQSU8gZnVuY3RvbiBhbmQga2VlcA0KKwkJICogdGhlIG91dHB1dCBhdCB0
-aGUgc2FtZSBsZXZlbCBhcyBmb3IgZHV0eS1jeWNsZSA9IDAuDQorCQkgKi8NCisJCWlmIChpbXgt
-PnBpbmN0cmwpDQorCQkJcGluY3RybF9zZWxlY3Rfc3RhdGUoaW14LT5waW5jdHJsLA0KKwkJCQkJ
-ICAgICBpbXgtPnBpbmN0cmxfcGluc19ncGlvKTsNCisNCiAJCXdyaXRlbCgwLCBpbXgtPm1taW9f
-YmFzZSArIE1YM19QV01DUik7DQogDQogCQljbGtfZGlzYWJsZV91bnByZXBhcmUoaW14LT5jbGtf
-cGVyKTsNCkBAIC0yNjMsNiArMzE3LDcgQEAgc3RhdGljIGludCBpbXhfcHdtX3Byb2JlKHN0cnVj
-dCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQogCWNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgKm9m
-X2lkID0NCiAJCQlvZl9tYXRjaF9kZXZpY2UoaW14X3B3bV9kdF9pZHMsICZwZGV2LT5kZXYpOw0K
-IAljb25zdCBzdHJ1Y3QgaW14X3B3bV9kYXRhICpkYXRhOw0KKwlzdHJ1Y3QgcHdtX3N0YXRlIGNz
-dGF0ZTsNCiAJc3RydWN0IGlteF9jaGlwICppbXg7DQogCXN0cnVjdCByZXNvdXJjZSAqcjsNCiAJ
-aW50IHJldCA9IDA7DQpAQCAtMjk0LDYgKzM0OSwxMCBAQCBzdGF0aWMgaW50IGlteF9wd21fcHJv
-YmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiAJCWlteC0+Y2hpcC5vZl9wd21fbl9j
-ZWxscyA9IDM7DQogCX0NCiANCisJcmV0ID0gaW14X3B3bV9pbml0X3BpbmN0cmxfaW5mbyhpbXgs
-IHBkZXYpOw0KKwlpZiAocmV0KQ0KKwkJcmV0dXJuIHJldDsNCisNCiAJciA9IHBsYXRmb3JtX2dl
-dF9yZXNvdXJjZShwZGV2LCBJT1JFU09VUkNFX01FTSwgMCk7DQogCWlteC0+bW1pb19iYXNlID0g
-ZGV2bV9pb3JlbWFwX3Jlc291cmNlKCZwZGV2LT5kZXYsIHIpOw0KIAlpZiAoSVNfRVJSKGlteC0+
-bW1pb19iYXNlKSkNCkBAIC0zMDMsNiArMzYyLDI0IEBAIHN0YXRpYyBpbnQgaW14X3B3bV9wcm9i
-ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KIAlpZiAocmV0IDwgMCkNCiAJCXJldHVy
-biByZXQ7DQogDQorCWlmIChpbXgtPnBpbmN0cmwpIHsNCisJCS8qDQorCQkgKiBVcGRhdGUgY3N0
-YXRlIGFmdGVyIHB3bWNoaXBfYWRkKCkgY2FsbCBhcyB0aGUgY29yZSBtaWdodA0KKwkJICogY2Fs
-bCB0aGUgZ2V0X3N0YXRlKCkgZnVuY3Rpb24gdG8gcmVhZCB0aGUgUFdNIHJlZ2lzdGVycw0KKwkJ
-ICogdG8gZ2V0IHRoZSBhY3R1YWwgSFfCoHN0YXRlLg0KKwkJICovDQorCQlwd21fZ2V0X3N0YXRl
-KGlteC0+Y2hpcC5wd21zLCAmY3N0YXRlKTsNCisJCWlmIChjc3RhdGUuZW5hYmxlZCkgew0KKwkJ
-CWRldl9kYmcoJnBkZXYtPmRldiwNCisJCQkJIlBXTSBlbnRlcmVkIHByb2JlIGluIGVuYWJsZWQg
-c3RhdGVcbiIpOw0KKwkJCXBpbmN0cmxfc2VsZWN0X3N0YXRlKGlteC0+cGluY3RybCwNCisJCQkJ
-CSAgICAgaW14LT5waW5jdHJsX3BpbnNfcHdtKTsNCisJCX0gZWxzZSB7DQorCQkJcGluY3RybF9z
-ZWxlY3Rfc3RhdGUoaW14LT5waW5jdHJsLA0KKwkJCQkJICAgICBpbXgtPnBpbmN0cmxfcGluc19n
-cGlvKTsNCisJCX0NCisJfQ0KKw0KIAlwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBpbXgpOw0K
-IAlyZXR1cm4gMDsNCiB9DQotLSANCjIuMS40DQoNCg==
+On Thu, Dec 06, 2018 at 01:41:31PM +0000, Vokáč Michal wrote:
+> Normally the PWM output is held LOW when PWM is disabled. This can cause
+> problems when inverted PWM signal polarity is needed. With this behavior
+> the connected circuit is fed by 100% duty cycle instead of being shut-off.
+> 
+> Allow users to define a "pwm" and a "gpio" pinctrl states. The pwm pinctrl
+> state is selected when PWM is enabled and the gpio pinctrl state is
+> selected when PWM is disabled. In the gpio state the new pwm-gpios GPIO is
+> configured as input and the internal pull-up resistor is used to pull the
+> output level high.
+> 
+> If all the pinctrl states and the pwm-gpios GPIO are not correctly
+> specified in DT the PWM work as usual.
+> 
+> As an example, with this patch a PWM controlled backlight with inversed
+> signal polarity can be used in full brightness range. Without this patch
+> the backlight can not be turned off as brightness = 0 disables the PWM
+> and that in turn set PWM output LOW, that is full brightness.
+> 
+> Inverted output of the PWM with "default" and with "pwm"+"gpio" pinctrl:
+> 
+> +--------------+------------+---------------+----------- +-------------+
+> | After reset  | Bootloader |   PWM probe   |     PWM    |     PWM     |
+> | 100k pull-up |            |               | enable 30% |   disable   |
+> +--------------+------------+---------------+------------+-------------+
+> | pinctrl      |    none    |    default    |   default  |   default   |
+> | out H   __________________                   __   __                 |
+> | out L                     \_________________/  \_/  \_/\____________ |
+> |                                           ^    ^    ^                |
+> +--------------+------------+---------------+------------+-------------+
+> | pinctrl      |    none    |      gpio     |     pwm    |     gpio    |
+> | out H   __________________________________   __   __   _____________ |
+> | out L                                     \_/  \_/  \_/              |
+> |                                           ^    ^    ^                |
+> +----------------------------------------------------------------------+
+> 
+> Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
+> ---
+> Changes in v3:
+>  - Commit message update.
+>  - Minor fix in code comment (Uwe)
+>  - Align function arguments to the opening parentheses. (Uwe)
+>  - Do not test devm_pinctrl_get for NULL. (Thierry)
+>  - Convert all messages to dev_dbg() (Thierry)
+>  - Do not actively drive the pin in gpio state. Configure it as input
+>    and rely solely on the internal pull-up. (Thierry)
+> 
+> Changes in v2:
+>  - Utilize the "pwm" and "gpio" pinctrl states.
+>  - Use the pwm-gpios signal to drive the output in "gpio" pinctrl state.
+>  - Select the right pinctrl state in probe.
+> 
+>  drivers/pwm/pwm-imx.c | 77 +++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 77 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index 1d5242c..84eaec8 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -12,10 +12,12 @@
+>  #include <linux/err.h>
+>  #include <linux/clk.h>
+>  #include <linux/delay.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/io.h>
+>  #include <linux/pwm.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/pinctrl/consumer.h>
+>  
+>  /* i.MX1 and i.MX21 share the same PWM function block: */
+>  
+> @@ -52,10 +54,44 @@ struct imx_chip {
+>  	void __iomem	*mmio_base;
+>  
+>  	struct pwm_chip	chip;
+> +
+> +	struct pinctrl *pinctrl;
+> +	struct pinctrl_state *pinctrl_pins_gpio;
+> +	struct pinctrl_state *pinctrl_pins_pwm;
+> +	struct gpio_desc *pwm_gpiod;
+>  };
+>  
+>  #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
+>  
+> +static int imx_pwm_init_pinctrl_info(struct imx_chip *imx_chip,
+> +		struct platform_device *pdev)
+
+Please indent the follow up line to the opening parenthesis.
+
+> +{
+> +	imx_chip->pinctrl = devm_pinctrl_get(&pdev->dev);
+> +	if (IS_ERR(imx_chip->pinctrl)) {
+> +		dev_dbg(&pdev->dev, "can not get pinctrl\n");
+> +		return PTR_ERR(imx_chip->pinctrl);
+> +	}
+> +
+> +	imx_chip->pinctrl_pins_pwm = pinctrl_lookup_state(imx_chip->pinctrl,
+> +							  "pwm");
+> +	imx_chip->pinctrl_pins_gpio = pinctrl_lookup_state(imx_chip->pinctrl,
+> +							   "gpio");
+> +	imx_chip->pwm_gpiod = devm_gpiod_get_optional(&pdev->dev, "pwm",
+> +						      GPIOD_IN);
+> +
+> +	if (PTR_ERR(imx_chip->pwm_gpiod) == -EPROBE_DEFER) {
+> +		return -EPROBE_DEFER;
+> +	} else if (IS_ERR(imx_chip->pwm_gpiod) ||
+> +		   IS_ERR(imx_chip->pinctrl_pins_pwm) ||
+> +		   IS_ERR(imx_chip->pinctrl_pins_gpio)) {
+> +		dev_dbg(&pdev->dev, "PWM pinctrl information incomplete\n");
+> +		devm_pinctrl_put(imx_chip->pinctrl);
+> +		imx_chip->pinctrl = NULL;
+
+Can it happen, that pinctrl_pins_pwm is PTR_ERR(-EPROBE_DEFER)?
+Maybe you only want to ignore PTR_ERR(-ENODEV) and for example propagate
+-EIO? I think you want to put the gpio if the failure is because there
+is a pinctrl related error.
+
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int imx_pwm_config_v1(struct pwm_chip *chip,
+>  		struct pwm_device *pwm, int duty_ns, int period_ns)
+>  {
+> @@ -216,7 +252,25 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+>  			cr |= MX3_PWMCR_POUTC;
+>  
+>  		writel(cr, imx->mmio_base + MX3_PWMCR);
+> +
+> +		/*
+> +		 * If we are in charge of pinctrl then switch output to
+> +		 * the PWM signal.
+> +		 */
+> +		if (imx->pinctrl)
+> +			pinctrl_select_state(imx->pinctrl,
+> +					     imx->pinctrl_pins_pwm);
+>  	} else if (cstate.enabled) {
+> +		/*
+> +		 * PWM block will be disabled. Normally its output will be set
+> +		 * low no matter what output polarity is configured. Let's use
+> +		 * pinctrl to switch the output pin to GPIO functon and keep
+> +		 * the output at the same level as for duty-cycle = 0.
+> +		 */
+> +		if (imx->pinctrl)
+> +			pinctrl_select_state(imx->pinctrl,
+> +					     imx->pinctrl_pins_gpio);
+> +
+>  		writel(0, imx->mmio_base + MX3_PWMCR);
+>  
+>  		clk_disable_unprepare(imx->clk_per);
+> @@ -263,6 +317,7 @@ static int imx_pwm_probe(struct platform_device *pdev)
+>  	const struct of_device_id *of_id =
+>  			of_match_device(imx_pwm_dt_ids, &pdev->dev);
+>  	const struct imx_pwm_data *data;
+> +	struct pwm_state cstate;
+>  	struct imx_chip *imx;
+>  	struct resource *r;
+>  	int ret = 0;
+> @@ -294,6 +349,10 @@ static int imx_pwm_probe(struct platform_device *pdev)
+>  		imx->chip.of_pwm_n_cells = 3;
+>  	}
+>  
+> +	ret = imx_pwm_init_pinctrl_info(imx, pdev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	imx->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+>  	if (IS_ERR(imx->mmio_base))
+> @@ -303,6 +362,24 @@ static int imx_pwm_probe(struct platform_device *pdev)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	if (imx->pinctrl) {
+> +		/*
+> +		 * Update cstate after pwmchip_add() call as the core might
+> +		 * call the get_state() function to read the PWM registers
+> +		 * to get the actual HW state.
+> +		 */
+> +		pwm_get_state(imx->chip.pwms, &cstate);
+> +		if (cstate.enabled) {
+> +			dev_dbg(&pdev->dev,
+> +				"PWM entered probe in enabled state\n");
+> +			pinctrl_select_state(imx->pinctrl,
+> +					     imx->pinctrl_pins_pwm);
+> +		} else {
+> +			pinctrl_select_state(imx->pinctrl,
+> +					     imx->pinctrl_pins_gpio);
+> +		}
+> +	}
+> +
+
+ISTR that there was a patch that implements get_state for imx. Is there
+a dependency on that one? Otherwise the state returned by
+pwm_get_state() might not be what is actually configured.
+
+Do you know if this is required for the old i.MX pwm, e.g. on i.MX21?
+I ask because of https://patchwork.ozlabs.org/patch/1000071/
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
