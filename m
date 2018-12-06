@@ -1,21 +1,38 @@
-From: Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH 1/1] ARM: dts: ls1021a: add nodes for PWMs
-Date: Wed, 5 Dec 2018 09:15:26 +0800
-Message-ID: <20181205011524.GC3987@dragon>
-References: <20181127140944.31018-1-patrick.havelange@essensium.com>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: [RFC PATCH v3 0/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Thu, 6 Dec 2018 13:41:29 +0000
+Message-ID: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181127140944.31018-1-patrick.havelange@essensium.com>
+Content-Language: en-US
+Content-ID: <F49DC93FFA0E2B42B3AADCB9C587AE68@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Patrick Havelange <patrick.havelange@essensium.com>
-Cc: Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, matthew.weber@rockwellcollins.com
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>, =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Nov 27, 2018 at 03:09:44PM +0100, Patrick Havelange wrote:
-> The LS1021A has 8 possible PWMs, so adding them (disabled by default)
-> 
-> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-
-Applied, thanks.
+VGhpcyBpcyBhbiBhdHRlbXB0IHRvIGRlYWwgd2l0aCBpLk1YIFNvQyBQV00gSFcgbGltaXRhdGlv
+bi4NCldoZW4gYSBwYWQgaXMgY29uZmlndXJlZCBhcyBhIFBXTSBvdXRwdXQgdGhlIG91dHB1dCBs
+ZXZlbCBpcyBhbHdheXMgMFYNCmlmIHRoZSBQV00gYmxvY2sgaXMgZGlzYWJsZWQuIFRoaXMgY2Fu
+IGNhdXNlIHByb2JsZW1zIHdoZW4gaW52ZXJ0ZWQgUFdNDQpzaWduYWwgaXMgbmVlZGVkIHRvIGRy
+aXZlIHRoZSBjb25uZWN0ZWQgY2lyY3VpdC4gV2l0aCBpbnZlcnRlZCBvdXRwdXQNCmR1dHkgY3lj
+bGUgPSAwJSBjb3JyZXNwb25kcyB0byBoaWdoIG91dHB1dCBsZXZlbCBhbmQgZHV0eSBjeWNsZSA9
+IDEwMCUNCmNvcnJlc3BvbmRzIHRvIGxvdyBvdXRwdXQgbGV2ZWwuIFRoaXMgbWVhbnMgdGhhdCB3
+aGVuZXZlciB0aGUgUFdNIGJsb2NrDQppcyBkaXNhYmxlZCB0aGUgY29ubmVjdGVkIGNpcmN1aXQg
+aXMgZmVkIHdpdGggMTAwJSBkdXR5IGN5Y2xlLg0KDQpUaGlzIGJpbmRpbmcgaXMgdG90YWxseSBv
+cHRpb25hbCBhbmQgY3VycmVudCB1c2VycyBhcmUgbm90IGFmZmVjdGVkLg0KVGhlIGlkZWEgaXMg
+dG8gdXNlIHR3byBuZXcgcGluY3RybCBzdGF0ZXMsICJwd20iIGFuZCAiZ3BpbyIsIGluc3RlYWQg
+b2YNCnRoZSAiZGVmYXVsdCIgcGluY3RybCBzdGF0ZS4gVGhlIGdwaW8gc3RhdGUgaXMgc2VsZWN0
+ZWQgIHdoZW4gUFdNIGlzDQpkaXNhYmxlZCBhbmQgdGhlIHB3bSBwaW5jdHJsIHN0YXRlIGlzIHNl
+bGVjdGVkIHdoZW4gUFdNIGlzIGVuYWJsZWQuIEluIHRoZQ0KZ3BpbyBzdGF0ZSBsZXZlbCBvbiB0
+aGUgb3V0cHV0IGlzIGNvbnRyb2xsZWQgYnkgdGhlIGludGVybmFsIHB1bGwtdXAuDQoNCk1pY2hh
+bCBWb2vDocSNICgyKToNCiAgZHQtYmluZGluZ3M6IHB3bTogaW14OiBBbGxvdyBzd2l0Y2hpbmcg
+UFdNIG91dHB1dCBiZXR3ZWVuIFBXTSBhbmQgR1BJTw0KICBwd206IGlteDogQ29uZmlndXJlIG91
+dHB1dCB0byBHUElPIGluIGRpc2FibGVkIHN0YXRlDQoNCiBEb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3MvcHdtL2lteC1wd20udHh0IHwgNDkgKysrKysrKysrKysrKysrDQogZHJpdmVy
+cy9wd20vcHdtLWlteC5jICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IDc3ICsrKysrKysr
+KysrKysrKysrKysrKysrDQogMiBmaWxlcyBjaGFuZ2VkLCAxMjYgaW5zZXJ0aW9ucygrKQ0KDQot
+LSANCjIuMS40DQoNCg==
