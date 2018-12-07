@@ -1,54 +1,32 @@
-Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Date: Mon, 19 Nov 2018 20:58:07 +0100
-Message-Id: <20181119195808.16436-3-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20181119195808.16436-1-u.kleine-koenig@pengutronix.de>
-References: <20181119195808.16436-1-u.kleine-koenig@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: [PATCH 3/4] pwm: imx: don't print an error on -EPROBE_DEFER
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from relmlor1.renesas.com ([210.160.252.171]:22042 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725967AbeLGIcC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Dec 2018 03:32:02 -0500
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Fri,  7 Dec 2018 17:29:28 +0900
+Message-Id: <1544171373-29618-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: [PATCH 0/5] pwm: rcar: Add support "atomic" API and workaround
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-When getting the peripheral clock fails with -EPROBE_DEFER the driver is
-usually probed again later and emitting an error message is more irritating
-than helpful.
+This patch adds support for PWM "atomic" API.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-imx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+This patch also adds a workaround to output "pseudo" low level.
+Otherwise, the PWM backlight driver doesn't work correctly, especially
+it cannot output maximum brightness actually.
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index bd2650ccc0a2..3fa47ba86f87 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -279,9 +279,12 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 
- 	imx->clk_per = devm_clk_get(&pdev->dev, "per");
- 	if (IS_ERR(imx->clk_per)) {
--		dev_err(&pdev->dev, "getting per clock failed with %ld\n",
--				PTR_ERR(imx->clk_per));
--		return PTR_ERR(imx->clk_per);
-+		int ret = PTR_ERR(imx->clk_per);
-+
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "getting per clock failed (%d)\n",
-+				ret);
-+		return ret;
- 	}
- 
- 	imx->chip.ops = data->ops;
+Yoshihiro Shimoda (5):
+  pwm: rcar: add rcar_pwm_calc_counter() to calculate PWMCNT value only
+  pwm: rcar: Add support "atomic" API
+  pwm: rcar: Use "atomic" API on rcar_pwm_resume()
+  pwm: rcar: remove legacy APIs
+  pwm: rcar: add workaround to output "pseudo" low level
+
+ drivers/pwm/pwm-rcar.c | 108 ++++++++++++++++++++++++++++---------------------
+ 1 file changed, 62 insertions(+), 46 deletions(-)
+
 -- 
-2.19.1
+1.9.1
