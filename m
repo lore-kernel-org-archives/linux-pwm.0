@@ -1,121 +1,96 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Mon, 10 Dec 2018 12:17:46 +0100
-Message-ID: <20181210111746.36zyedeaajfcdfeh@pengutronix.de>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Mon, 10 Dec 2018 11:38:25 +0000
+Message-ID: <8295c13f-9381-d994-71d4-f4fc350804fd@ysoft.com>
 References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
  <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
  <20181206135902.un2nbreqfmi6mpd6@pengutronix.de>
  <01aaa6ff-fb3e-37a7-0e72-099ad013ee2a@ysoft.com>
  <20181206161622.okpfiecfphar77jk@pengutronix.de>
  <8b88d225-efc7-623a-d1a6-8b3cfcfd5e07@ysoft.com>
+ <20181210111746.36zyedeaajfcdfeh@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <8b88d225-efc7-623a-d1a6-8b3cfcfd5e07@ysoft.com>
+In-Reply-To: <20181210111746.36zyedeaajfcdfeh@pengutronix.de>
+Content-Language: en-US
+Content-ID: <B7D44DB7A2FCAC41ABA898D8F749031D@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Dec 10, 2018 at 11:15:05AM +0000, Vokáč Michal wrote:
-> On 6.12.2018 17:16, Uwe Kleine-König wrote:
-> > On Thu, Dec 06, 2018 at 03:37:55PM +0000, Vokáč Michal wrote:
-> >> On 6.12.2018 14:59, Uwe Kleine-König wrote:
-> >>> On Thu, Dec 06, 2018 at 01:41:31PM +0000, Vokáč Michal wrote:
-> >>>
-> >>> Can it happen, that pinctrl_pins_pwm is PTR_ERR(-EPROBE_DEFER)?
-> >>
-> >> No. The pinctrl_lookup_state either returns pointer to the pinctrl state
-> >> or ERR_PTR(-ENODEV). But I do not explicitly test the pinctrl_pins_pwm
-> >> for PTR_ERR(-EPROBE_DEFER), or do I?
-> > 
-> > You don't, I just wondered if this could happen and the function should
-> > return -EPROBE_DEFER in this case, too.
-> 
-> OK.
-> 
-> >>> Maybe you only want to ignore PTR_ERR(-ENODEV) and for example propagate
-> >>> -EIO? I think you want to put the gpio if the failure is because there
-> >>> is a pinctrl related error.
-> >>
-> >> I think that is what I am doing. In case the GPIO is not ready the probe
-> >> is deferred. In case of any other error with the GPIO or pinctrl failure
-> >> I put the pinctrl. Or maybe I do not really understand what you mean.
-> > 
-> > Yes, you put the pinctrl, but not the GPIO. I.e. you're not undoing
-> > devm_gpiod_get_optional(). Maybe only do this if the pinctrl stuff
-> > succeeded to not touch the GPIO if it won't be used?
-> 
-> OK, I agree it seems better to get the pinctrl first and if it succeeds
-> only then try to get the GPIO. In that case I need to use the non-optional
-> variant of devm_gpio_get(). Note that then I do not really need to put the
-> GPIO in the error path as it means I did not get it.
-> The code would look like:
-> 
-> +static int imx_pwm_init_pinctrl_info(struct imx_chip *imx_chip,
-> +				      struct platform_device *pdev)
-> +{
-> +	imx_chip->pinctrl = devm_pinctrl_get(&pdev->dev);
-> +	if (IS_ERR(imx_chip->pinctrl)) {
-> +		dev_dbg(&pdev->dev, "can not get pinctrl\n");
-> +		return PTR_ERR(imx_chip->pinctrl);
-> +	}
-> +
-> +	imx_chip->pinctrl_pins_pwm = pinctrl_lookup_state(imx_chip->pinctrl,
-> +							  "pwm");
-> +	imx_chip->pinctrl_pins_gpio = pinctrl_lookup_state(imx_chip->pinctrl,
-> +							   "gpio");
-> +
-> +	if (IS_ERR(imx_chip->pinctrl_pins_pwm) ||
-> +	    IS_ERR(imx_chip->pinctrl_pins_gpio)) {
-> +		dev_dbg(&pdev->dev, "pinctrl information incomplete\n");
-> +		goto out;
-> +	}
-> +
-> +	imx_chip->pwm_gpiod = devm_gpiod_get(&pdev->dev, "pwm", GPIOD_IN);
-> +	if (PTR_ERR(imx_chip->pwm_gpiod) == -EPROBE_DEFER) {
-> +		return -EPROBE_DEFER;
-> +	} else if (IS_ERR(imx_chip->pwm_gpiod)) {
-> +		dev_dbg(&pdev->dev, "GPIO information incomplete\n");
-> +		goto out;
-> +	}
-> +
-> +	return 0;
-> +
-> +out:
-> +	devm_pinctrl_put(imx_chip->pinctrl);
-> +	imx_chip->pinctrl = NULL;
-> +
-> +	return 0;
-> +}
-
-This looks right.
-
-> >>> ISTR that there was a patch that implements get_state for imx. Is there
-> >>> a dependency on that one? Otherwise the state returned by
-> >>> pwm_get_state() might not be what is actually configured.
-> >>
-> >> No, it should be independent. One can go without the other. I tested all
-> >> three combinations (mainline with .get_state, mainline with this series,
-> >> mainline with .get_state AND this series) and got the expected results.
-> >> Without the .get_state() patch the core always returns the default which
-> >> is disabled state so the gpio pinctrl state is selected in probe.
-> > 
-> > Without .get_state it won't be possible to smoothly take over a running
-> > PWM.
-> 
-> But that is exactly how the current pwm-imx code works, right?
-
-But then at least the pwm would run until the first consumer
-reconfigures it.
- 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+T24gMTAuMTIuMjAxOCAxMjoxNywgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+IE9uIE1vbiwg
+RGVjIDEwLCAyMDE4IGF0IDExOjE1OjA1QU0gKzAwMDAsIFZva8OhxI0gTWljaGFsIHdyb3RlOg0K
+Pj4gT24gNi4xMi4yMDE4IDE3OjE2LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+PiBPbiBU
+aHUsIERlYyAwNiwgMjAxOCBhdCAwMzozNzo1NVBNICswMDAwLCBWb2vDocSNIE1pY2hhbCB3cm90
+ZToNCj4+Pj4gT24gNi4xMi4yMDE4IDE0OjU5LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+
+Pj4+IE9uIFRodSwgRGVjIDA2LCAyMDE4IGF0IDAxOjQxOjMxUE0gKzAwMDAsIFZva8OhxI0gTWlj
+aGFsIHdyb3RlOg0KPj4+Pj4NCj4+Pj4+IENhbiBpdCBoYXBwZW4sIHRoYXQgcGluY3RybF9waW5z
+X3B3bSBpcyBQVFJfRVJSKC1FUFJPQkVfREVGRVIpPw0KPj4+Pg0KPj4+PiBOby4gVGhlIHBpbmN0
+cmxfbG9va3VwX3N0YXRlIGVpdGhlciByZXR1cm5zIHBvaW50ZXIgdG8gdGhlIHBpbmN0cmwgc3Rh
+dGUNCj4+Pj4gb3IgRVJSX1BUUigtRU5PREVWKS4gQnV0IEkgZG8gbm90IGV4cGxpY2l0bHkgdGVz
+dCB0aGUgcGluY3RybF9waW5zX3B3bQ0KPj4+PiBmb3IgUFRSX0VSUigtRVBST0JFX0RFRkVSKSwg
+b3IgZG8gST8NCj4+Pg0KPj4+IFlvdSBkb24ndCwgSSBqdXN0IHdvbmRlcmVkIGlmIHRoaXMgY291
+bGQgaGFwcGVuIGFuZCB0aGUgZnVuY3Rpb24gc2hvdWxkDQo+Pj4gcmV0dXJuIC1FUFJPQkVfREVG
+RVIgaW4gdGhpcyBjYXNlLCB0b28uDQo+Pg0KPj4gT0suDQo+Pg0KPj4+Pj4gTWF5YmUgeW91IG9u
+bHkgd2FudCB0byBpZ25vcmUgUFRSX0VSUigtRU5PREVWKSBhbmQgZm9yIGV4YW1wbGUgcHJvcGFn
+YXRlDQo+Pj4+PiAtRUlPPyBJIHRoaW5rIHlvdSB3YW50IHRvIHB1dCB0aGUgZ3BpbyBpZiB0aGUg
+ZmFpbHVyZSBpcyBiZWNhdXNlIHRoZXJlDQo+Pj4+PiBpcyBhIHBpbmN0cmwgcmVsYXRlZCBlcnJv
+ci4NCj4+Pj4NCj4+Pj4gSSB0aGluayB0aGF0IGlzIHdoYXQgSSBhbSBkb2luZy4gSW4gY2FzZSB0
+aGUgR1BJTyBpcyBub3QgcmVhZHkgdGhlIHByb2JlDQo+Pj4+IGlzIGRlZmVycmVkLiBJbiBjYXNl
+IG9mIGFueSBvdGhlciBlcnJvciB3aXRoIHRoZSBHUElPIG9yIHBpbmN0cmwgZmFpbHVyZQ0KPj4+
+PiBJIHB1dCB0aGUgcGluY3RybC4gT3IgbWF5YmUgSSBkbyBub3QgcmVhbGx5IHVuZGVyc3RhbmQg
+d2hhdCB5b3UgbWVhbi4NCj4+Pg0KPj4+IFllcywgeW91IHB1dCB0aGUgcGluY3RybCwgYnV0IG5v
+dCB0aGUgR1BJTy4gSS5lLiB5b3UncmUgbm90IHVuZG9pbmcNCj4+PiBkZXZtX2dwaW9kX2dldF9v
+cHRpb25hbCgpLiBNYXliZSBvbmx5IGRvIHRoaXMgaWYgdGhlIHBpbmN0cmwgc3R1ZmYNCj4+PiBz
+dWNjZWVkZWQgdG8gbm90IHRvdWNoIHRoZSBHUElPIGlmIGl0IHdvbid0IGJlIHVzZWQ/DQo+Pg0K
+Pj4gT0ssIEkgYWdyZWUgaXQgc2VlbXMgYmV0dGVyIHRvIGdldCB0aGUgcGluY3RybCBmaXJzdCBh
+bmQgaWYgaXQgc3VjY2VlZHMNCj4+IG9ubHkgdGhlbiB0cnkgdG8gZ2V0IHRoZSBHUElPLiBJbiB0
+aGF0IGNhc2UgSSBuZWVkIHRvIHVzZSB0aGUgbm9uLW9wdGlvbmFsDQo+PiB2YXJpYW50IG9mIGRl
+dm1fZ3Bpb19nZXQoKS4gTm90ZSB0aGF0IHRoZW4gSSBkbyBub3QgcmVhbGx5IG5lZWQgdG8gcHV0
+IHRoZQ0KPj4gR1BJTyBpbiB0aGUgZXJyb3IgcGF0aCBhcyBpdCBtZWFucyBJIGRpZCBub3QgZ2V0
+IGl0Lg0KPj4gVGhlIGNvZGUgd291bGQgbG9vayBsaWtlOg0KPj4NCj4+ICtzdGF0aWMgaW50IGlt
+eF9wd21faW5pdF9waW5jdHJsX2luZm8oc3RydWN0IGlteF9jaGlwICppbXhfY2hpcCwNCj4+ICsJ
+CQkJICAgICAgc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4+ICt7DQo+PiArCWlteF9j
+aGlwLT5waW5jdHJsID0gZGV2bV9waW5jdHJsX2dldCgmcGRldi0+ZGV2KTsNCj4+ICsJaWYgKElT
+X0VSUihpbXhfY2hpcC0+cGluY3RybCkpIHsNCj4+ICsJCWRldl9kYmcoJnBkZXYtPmRldiwgImNh
+biBub3QgZ2V0IHBpbmN0cmxcbiIpOw0KPj4gKwkJcmV0dXJuIFBUUl9FUlIoaW14X2NoaXAtPnBp
+bmN0cmwpOw0KPj4gKwl9DQo+PiArDQo+PiArCWlteF9jaGlwLT5waW5jdHJsX3BpbnNfcHdtID0g
+cGluY3RybF9sb29rdXBfc3RhdGUoaW14X2NoaXAtPnBpbmN0cmwsDQo+PiArCQkJCQkJCSAgInB3
+bSIpOw0KPj4gKwlpbXhfY2hpcC0+cGluY3RybF9waW5zX2dwaW8gPSBwaW5jdHJsX2xvb2t1cF9z
+dGF0ZShpbXhfY2hpcC0+cGluY3RybCwNCj4+ICsJCQkJCQkJICAgImdwaW8iKTsNCj4+ICsNCj4+
+ICsJaWYgKElTX0VSUihpbXhfY2hpcC0+cGluY3RybF9waW5zX3B3bSkgfHwNCj4+ICsJICAgIElT
+X0VSUihpbXhfY2hpcC0+cGluY3RybF9waW5zX2dwaW8pKSB7DQo+PiArCQlkZXZfZGJnKCZwZGV2
+LT5kZXYsICJwaW5jdHJsIGluZm9ybWF0aW9uIGluY29tcGxldGVcbiIpOw0KPj4gKwkJZ290byBv
+dXQ7DQo+PiArCX0NCj4+ICsNCj4+ICsJaW14X2NoaXAtPnB3bV9ncGlvZCA9IGRldm1fZ3Bpb2Rf
+Z2V0KCZwZGV2LT5kZXYsICJwd20iLCBHUElPRF9JTik7DQo+PiArCWlmIChQVFJfRVJSKGlteF9j
+aGlwLT5wd21fZ3Bpb2QpID09IC1FUFJPQkVfREVGRVIpIHsNCj4+ICsJCXJldHVybiAtRVBST0JF
+X0RFRkVSOw0KPj4gKwl9IGVsc2UgaWYgKElTX0VSUihpbXhfY2hpcC0+cHdtX2dwaW9kKSkgew0K
+Pj4gKwkJZGV2X2RiZygmcGRldi0+ZGV2LCAiR1BJTyBpbmZvcm1hdGlvbiBpbmNvbXBsZXRlXG4i
+KTsNCj4+ICsJCWdvdG8gb3V0Ow0KPj4gKwl9DQo+PiArDQo+PiArCXJldHVybiAwOw0KPj4gKw0K
+Pj4gK291dDoNCj4+ICsJZGV2bV9waW5jdHJsX3B1dChpbXhfY2hpcC0+cGluY3RybCk7DQo+PiAr
+CWlteF9jaGlwLT5waW5jdHJsID0gTlVMTDsNCj4+ICsNCj4+ICsJcmV0dXJuIDA7DQo+PiArfQ0K
+PiANCj4gVGhpcyBsb29rcyByaWdodC4NCg0KV293LCB5b3UncmUgcXVpY2shIE9LLCB0aGFua3Mu
+DQoNCj4+Pj4+IElTVFIgdGhhdCB0aGVyZSB3YXMgYSBwYXRjaCB0aGF0IGltcGxlbWVudHMgZ2V0
+X3N0YXRlIGZvciBpbXguIElzIHRoZXJlDQo+Pj4+PiBhIGRlcGVuZGVuY3kgb24gdGhhdCBvbmU/
+IE90aGVyd2lzZSB0aGUgc3RhdGUgcmV0dXJuZWQgYnkNCj4+Pj4+IHB3bV9nZXRfc3RhdGUoKSBt
+aWdodCBub3QgYmUgd2hhdCBpcyBhY3R1YWxseSBjb25maWd1cmVkLg0KPj4+Pg0KPj4+PiBObywg
+aXQgc2hvdWxkIGJlIGluZGVwZW5kZW50LiBPbmUgY2FuIGdvIHdpdGhvdXQgdGhlIG90aGVyLiBJ
+IHRlc3RlZCBhbGwNCj4+Pj4gdGhyZWUgY29tYmluYXRpb25zIChtYWlubGluZSB3aXRoIC5nZXRf
+c3RhdGUsIG1haW5saW5lIHdpdGggdGhpcyBzZXJpZXMsDQo+Pj4+IG1haW5saW5lIHdpdGggLmdl
+dF9zdGF0ZSBBTkQgdGhpcyBzZXJpZXMpIGFuZCBnb3QgdGhlIGV4cGVjdGVkIHJlc3VsdHMuDQo+
+Pj4+IFdpdGhvdXQgdGhlIC5nZXRfc3RhdGUoKSBwYXRjaCB0aGUgY29yZSBhbHdheXMgcmV0dXJu
+cyB0aGUgZGVmYXVsdCB3aGljaA0KPj4+PiBpcyBkaXNhYmxlZCBzdGF0ZSBzbyB0aGUgZ3BpbyBw
+aW5jdHJsIHN0YXRlIGlzIHNlbGVjdGVkIGluIHByb2JlLg0KPj4+DQo+Pj4gV2l0aG91dCAuZ2V0
+X3N0YXRlIGl0IHdvbid0IGJlIHBvc3NpYmxlIHRvIHNtb290aGx5IHRha2Ugb3ZlciBhIHJ1bm5p
+bmcNCj4+PiBQV00uDQo+Pg0KPj4gQnV0IHRoYXQgaXMgZXhhY3RseSBob3cgdGhlIGN1cnJlbnQg
+cHdtLWlteCBjb2RlIHdvcmtzLCByaWdodD8NCj4gDQo+IEJ1dCB0aGVuIGF0IGxlYXN0IHRoZSBw
+d20gd291bGQgcnVuIHVudGlsIHRoZSBmaXJzdCBjb25zdW1lcg0KPiByZWNvbmZpZ3VyZXMgaXQu
+DQoNClRoYXQgaXMgcmlnaHQuIEkgdGhpbmsgaXQgaXMgYWN0dWFsbHkgcG9zc2libGUgKGFuZCBt
+YXliZSBnb29kIGlkZWE/KQ0KdG8gZHJvcCB0aGUgcHJvYmUgcGFydCBmcm9tIHRoaXMgcGluY3Ry
+bC9HUElPIHNlcmllcyBhbmQgcHV0IGl0IGludG8NCnRoZSAuZ2V0X3N0YXRlIHNlcmllcyBpZiB0
+aGUgLmdldF9zdGF0ZSBzZXJpZXMgd291bGQgbGFuZCBpbiBsYXRlci4NCldoYXQgZG8geW91IHRo
+aW5rPw0KDQpNaWNoYWwNCg==
