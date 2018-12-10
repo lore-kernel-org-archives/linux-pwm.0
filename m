@@ -1,109 +1,43 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [RESEND PATCH v3] backlight: pwm_bl: Fix brightness levels for non-DT case.
-Date: Mon, 10 Dec 2018 13:14:37 +0100
-Message-ID: <20181210121437.30170-1-enric.balletbo@collabora.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH v3 1/2] dt-bindings: pwm: imx: Allow switching PWM
+ output  between PWM and GPIO
+Date: Mon, 10 Dec 2018 17:16:25 -0600
+Message-ID: <20181210231625.GA30721@bogus>
+References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
+ <1544103655-104466-2-git-send-email-michal.vokac@ysoft.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, robert.jarzmik@free.fr, daniel.thompson@linaro.org, lee.jones@linaro.org
-Cc: kernel@collabora.com, heiko@sntech.de, stable@vger.kernel.org, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1544103655-104466-2-git-send-email-michal.vokac@ysoft.com>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>, =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Commit '88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
-linearly to human eye")' allows the possibility to compute a default
-brightness table when there isn't the brightness-levels property in the
-DT. Unfortunately the changes made broke the pwm backlight for the
-non-DT boards.
+On Thu, 6 Dec 2018 13:41:30 +0000, =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= wrote:
+> Output of the PWM block on i.MX SoCs is always low when the block is
+> disabled. This can cause issues when inverted PWM polarity is needed.
+> With inverted polarity a duty cycle = 0% corresponds to high level on
+> the output. Now, when PWM is disabled its output instantly goes low
+> which corresponds to duty cycle = 100%.
+> 
+> To get a truly inverted PWM output two pinctrl states of the PWM pin
+> can be used. Configure the pin to GPIO function when PWM is disabled
+> and switch back to PWM function whenever non-zero duty cycle is needed.
+> 
+> Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
+> ---
+> Changes in v3:
+>  - Slightly different description of the pinctrl and pwm-gpio.
+> 
+> Changes in v2:
+>  - Do not use the "default" pinctrl state for GPIO.
+>  - Use two new "pwm" and "gpio" pinctrl states.
+>  - Add a new pwm-gpios signal.
+> 
+>  Documentation/devicetree/bindings/pwm/imx-pwm.txt | 49 +++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+> 
 
-Usually, the non-DT boards don't pass the brightness levels via platform
-data, instead, it sets the max_brightness in their platform data and the
-driver calculates the level without a table. The offending patch assumed
-that when there is no brightness levels table we should create one, but this
-is clearly wrong for the non-DT case.
-
-After this patch the code handles the DT and the non-DT case taking in
-consideration also if max_brightness is set or not.
-
-Fixes: 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")
-Cc: <stable@vger.kernel.org>
-Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
----
-
-Changes in v3:
-- Fixed some typos in commit message.
-- Removed ' in Fixes tag.
-
-Changes in v2:
-- Rebase on top of mainline
-- Add Tested-by and Acked-by tags.
-
- drivers/video/backlight/pwm_bl.c | 41 +++++++++++++++++++++++++++-----
- 1 file changed, 35 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index b7b5b31f3824..feb90764a811 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -568,7 +568,30 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		goto err_alloc;
- 	}
- 
--	if (!data->levels) {
-+	if (data->levels) {
-+		/*
-+		 * For the DT case, only when brightness levels is defined
-+		 * data->levels is filled. For the non-DT case, data->levels
-+		 * can come from platform data, however is not usual.
-+		 */
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > pb->scale)
-+				pb->scale = data->levels[i];
-+
-+			pb->levels = data->levels;
-+		}
-+	} else if (!data->max_brightness) {
-+		/*
-+		 * If no brightness levels are provided and max_brightness is
-+		 * not set, use the default brightness table. For the DT case,
-+		 * max_brightness is set to 0 when brightness levels is not
-+		 * specified. For the non-DT case, max_brightness is usually
-+		 * set to some value.
-+		 */
-+
-+		/* Get the PWM period (in nanoseconds) */
-+		pwm_get_state(pb->pwm, &state);
-+
- 		ret = pwm_backlight_brightness_default(&pdev->dev, data,
- 						       state.period);
- 		if (ret < 0) {
-@@ -576,13 +599,19 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 				"failed to setup default brightness table\n");
- 			goto err_alloc;
- 		}
--	}
- 
--	for (i = 0; i <= data->max_brightness; i++) {
--		if (data->levels[i] > pb->scale)
--			pb->scale = data->levels[i];
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > pb->scale)
-+				pb->scale = data->levels[i];
- 
--		pb->levels = data->levels;
-+			pb->levels = data->levels;
-+		}
-+	} else {
-+		/*
-+		 * That only happens for the non-DT case, where platform data
-+		 * sets the max_brightness value.
-+		 */
-+		pb->scale = data->max_brightness;
- 	}
- 
- 	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
--- 
-2.19.2
+Reviewed-by: Rob Herring <robh@kernel.org>
