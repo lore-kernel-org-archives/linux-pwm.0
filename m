@@ -1,43 +1,59 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC PATCH v3 1/2] dt-bindings: pwm: imx: Allow switching PWM
- output  between PWM and GPIO
-Date: Mon, 10 Dec 2018 17:16:25 -0600
-Message-ID: <20181210231625.GA30721@bogus>
-References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
- <1544103655-104466-2-git-send-email-michal.vokac@ysoft.com>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: [PATCH] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
+Date: Tue, 11 Dec 2018 20:00:53 +0100
+Message-ID: <20181211190053.9997-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1544103655-104466-2-git-send-email-michal.vokac@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>, =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
+To: linux-kernel@vger.kernel.org
+Cc: Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-i2c@vger.kernel.org, groeck@chromium.org, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pm@vger.kernel.org, Benson Leung <bleung@chromiumg.org>, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob Herring <robh+dt@kernel.org>, Lar
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 6 Dec 2018 13:41:30 +0000, =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= wrote:
-> Output of the PWM block on i.MX SoCs is always low when the block is
-> disabled. This can cause issues when inverted PWM polarity is needed.
-> With inverted polarity a duty cycle = 0% corresponds to high level on
-> the output. Now, when PWM is disabled its output instantly goes low
-> which corresponds to duty cycle = 100%.
-> 
-> To get a truly inverted PWM output two pinctrl states of the PWM pin
-> can be used. Configure the pin to GPIO function when PWM is disabled
-> and switch back to PWM function whenever non-zero duty cycle is needed.
-> 
-> Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
-> ---
-> Changes in v3:
->  - Slightly different description of the pinctrl and pwm-gpio.
-> 
-> Changes in v2:
->  - Do not use the "default" pinctrl state for GPIO.
->  - Use two new "pwm" and "gpio" pinctrl states.
->  - Add a new pwm-gpios signal.
-> 
->  Documentation/devicetree/bindings/pwm/imx-pwm.txt | 49 +++++++++++++++++++++++
->  1 file changed, 49 insertions(+)
-> 
+There are multiple ChromeOS EC sub-drivers spread in different
+subsystems, as all of them are related to the Chrome stuff add
+Benson and myself as a maintainers for all these sub-drivers.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
+
+ MAINTAINERS | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a24129b0b043..2f24f5c977ca 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3625,6 +3625,30 @@ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+ F:	drivers/platform/chrome/
+ 
++CHROMEOS EC SUBDRIVERS
++M:	Benson Leung <bleung@chromiumg.org>
++M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
++F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
++F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
++F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
++F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
++F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
++F:	drivers/extcon/extcon-usbc-cros-ec.c
++F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
++F:	drivers/iio/accel/cros_ec*
++F:	drivers/iio/common/cros_ec_sensors/
++F:	drivers/iio/light/cros_ec*
++F:	drivers/iio/pressure/cros_ec*
++F:	drivers/input/keyboard/cros_ec*
++F:	drivers/mfd/cros_ec*
++F:	drivers/power/supply/cros_usbpd-charger.c
++F:	drivers/pwm/pwm-cros-ec.c
++F:	drivers/rtc/rtc-cros-ec.c
++F:	include/linux/iio/common/cros_ec_sensors_core.h
++F:	include/linux/mfd/cros_ec*
++
+ CIRRUS LOGIC AUDIO CODEC DRIVERS
+ M:	Brian Austin <brian.austin@cirrus.com>
+ M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
+-- 
+2.19.2
