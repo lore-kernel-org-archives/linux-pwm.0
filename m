@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v8 06/26] MAINTAINERS: Add myself as maintainer for Ingenic TCU drivers
-Date: Wed, 12 Dec 2018 23:09:01 +0100
-Message-ID: <20181212220922.18759-7-paul@crapouillou.net>
+Subject: [PATCH v8 16/26] clk: jz4740: Add TCU clock
+Date: Wed, 12 Dec 2018 23:09:11 +0100
+Message-ID: <20181212220922.18759-17-paul@crapouillou.net>
 References: <20181212220922.18759-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181212220922.18759-1-paul@crapouillou.net>
@@ -10,19 +10,16 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add myself as maintainer for the ingenic-timer and ingenic-ost drivers.
+Add the missing TCU clock to the list of clocks supplied by the CGU for
+the JZ4740 SoC.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
 
 Notes:
-     v2: No change
-    
-     v3: No change
-    
-     v4: No change
-    
-     v5: Update with new files
+     v5: New patch
     
      v6: No change
     
@@ -30,28 +27,37 @@ Notes:
 
      v8: No change
 
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/clk/ingenic/jz4740-cgu.c       | 6 ++++++
+ include/dt-bindings/clock/jz4740-cgu.h | 1 +
+ 2 files changed, 7 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8119141a926f..7a035cd5787a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7387,6 +7387,15 @@ L:	linux-mtd@lists.infradead.org
- S:	Maintained
- F:	drivers/mtd/nand/raw/jz4780_*
- 
-+INGENIC TCU driver
-+M:	Paul Cercueil <paul@crapouillou.net>
-+S:	Maintained
-+F:	drivers/clocksource/ingenic-ost.c
-+F:	drivers/clocksource/ingenic-timer.c
-+F:	drivers/clocksource/ingenic-timer.h
-+F:	include/linux/mfd/ingenic-tcu.h
-+F:	include/dt-bindings/clock/ingenic,tcu.h
+diff --git a/drivers/clk/ingenic/jz4740-cgu.c b/drivers/clk/ingenic/jz4740-cgu.c
+index 4479c102e899..d8ac7f2e183a 100644
+--- a/drivers/clk/ingenic/jz4740-cgu.c
++++ b/drivers/clk/ingenic/jz4740-cgu.c
+@@ -211,6 +211,12 @@ static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
+ 		.parents = { JZ4740_CLK_EXT, -1, -1, -1 },
+ 		.gate = { CGU_REG_CLKGR, 5 },
+ 	},
 +
- INOTIFY
- M:	Jan Kara <jack@suse.cz>
- R:	Amir Goldstein <amir73il@gmail.com>
++	[JZ4740_CLK_TCU] = {
++		"tcu", CGU_CLK_GATE,
++		.parents = { JZ4740_CLK_EXT, -1, -1, -1 },
++		.gate = { CGU_REG_CLKGR, 1 },
++	},
+ };
+ 
+ static void __init jz4740_cgu_init(struct device_node *np)
+diff --git a/include/dt-bindings/clock/jz4740-cgu.h b/include/dt-bindings/clock/jz4740-cgu.h
+index 6ed83f926ae7..e82d77028581 100644
+--- a/include/dt-bindings/clock/jz4740-cgu.h
++++ b/include/dt-bindings/clock/jz4740-cgu.h
+@@ -34,5 +34,6 @@
+ #define JZ4740_CLK_ADC		19
+ #define JZ4740_CLK_I2C		20
+ #define JZ4740_CLK_AIC		21
++#define JZ4740_CLK_TCU		22
+ 
+ #endif /* __DT_BINDINGS_CLOCK_JZ4740_CGU_H__ */
 -- 
 2.11.0
