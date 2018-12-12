@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v8 02/26] doc: Add doc for the Ingenic TCU hardware
-Date: Wed, 12 Dec 2018 23:08:57 +0100
-Message-ID: <20181212220922.18759-3-paul@crapouillou.net>
+Subject: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
+Date: Wed, 12 Dec 2018 23:09:10 +0100
+Message-ID: <20181212220922.18759-16-paul@crapouillou.net>
 References: <20181212220922.18759-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181212220922.18759-1-paul@crapouillou.net>
@@ -10,135 +10,84 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add a documentation file about the Timer/Counter Unit (TCU) present in
-the Ingenic JZ47xx SoCs.
-
-The Timer/Counter Unit (TCU) in Ingenic JZ47xx SoCs is a multi-function
-hardware block. It features up to to eight channels, that can be used as
-counters, timers, or PWM.
-
-- JZ4725B, JZ4750, JZ4755 only have six TCU channels. The other SoCs all
-  have eight channels.
-
-- JZ4725B introduced a separate channel, called Operating System Timer
-  (OST). It is a 32-bit programmable timer. On JZ4770 and above, it is
-  64-bit.
-
-- Each one of the TCU channels has its own clock, which can be reparented
-  to three different clocks (pclk, ext, rtc), gated, and reclocked, through
-  their TCSR register.
-  * The watchdog and OST hardware blocks also feature a TCSR register with
-    the same format in their register space.
-  * The TCU registers used to gate/ungate can also gate/ungate the watchdog
-    and OST clocks.
-
-- Each TCU channel works in one of two modes:
-  * mode TCU1: channels cannot work in sleep mode, but are easier to
-    operate.
-  * mode TCU2: channels can work in sleep mode, but the operation is a bit
-    more complicated than with TCU1 channels.
-
-- The mode of each TCU channel depends on the SoC used:
-  * On the oldest SoCs (up to JZ4740), all of the eight channels operate in
-    TCU1 mode.
-  * On JZ4725B, channel 5 operates as TCU2, the others operate as TCU1.
-  * On newest SoCs (JZ4750 and above), channels 1-2 operate as TCU2, the
-    others operate as TCU1.
-
-- Each channel can generate an interrupt. Some channels share an interrupt
-  line, some don't, and this changes between SoC versions:
-  * on older SoCs (JZ4740 and below), channel 0 and channel 1 have their
-    own interrupt line; channels 2-7 share the last interrupt line.
-  * On JZ4725B, channel 0 has its own interrupt; channels 1-5 share one
-    interrupt line; the OST uses the last interrupt line.
-  * on newer SoCs (JZ4750 and above), channel 5 has its own interrupt;
-    channels 0-4 and (if eight channels) 6-7 all share one interrupt line;
-    the OST uses the last interrupt line.
+The PWM in the JZ4725B works the same as in the JZ4740, except that it
+only has 6 channels available instead of 8.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 ---
 
 Notes:
-     v4: New patch in this series
+     v5: New patch
     
-     v5: Added information about number of channels, and improved
-         documentation about channel modes
-    
-     v6: Add info about OST (can be 32-bit on older SoCs)
+     v6: - Move of_device_id structure back at the bottom (less noise in
+           patch)
+         - Use device_get_match_data() instead of of_* variant
     
      v7: No change
-    
+
      v8: No change
 
- Documentation/mips/ingenic-tcu.txt | 60 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
- create mode 100644 Documentation/mips/ingenic-tcu.txt
+ drivers/pwm/pwm-jz4740.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/mips/ingenic-tcu.txt b/Documentation/mips/ingenic-tcu.txt
-new file mode 100644
-index 000000000000..0ea35b2a46da
---- /dev/null
-+++ b/Documentation/mips/ingenic-tcu.txt
-@@ -0,0 +1,60 @@
-+Ingenic JZ47xx SoCs Timer/Counter Unit hardware
-+-----------------------------------------------
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index cb8d8cec353f..a3a8da8af0de 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -24,6 +24,10 @@
+ 
+ #define NUM_PWM 8
+ 
++struct jz4740_soc_info {
++	unsigned int num_pwms;
++};
 +
-+The Timer/Counter Unit (TCU) in Ingenic JZ47xx SoCs is a multi-function
-+hardware block. It features up to to eight channels, that can be used as
-+counters, timers, or PWM.
+ struct jz4740_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clks[NUM_PWM];
+@@ -217,9 +221,14 @@ static const struct pwm_ops jz4740_pwm_ops = {
+ 
+ static int jz4740_pwm_probe(struct platform_device *pdev)
+ {
++	const struct jz4740_soc_info *soc_info;
+ 	struct jz4740_pwm_chip *jz4740;
+ 	struct device *dev = &pdev->dev;
+ 
++	soc_info = device_get_match_data(dev);
++	if (!soc_info)
++		return -EINVAL;
 +
-+- JZ4725B, JZ4750, JZ4755 only have six TCU channels. The other SoCs all
-+  have eight channels.
+ 	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
+ 	if (!jz4740)
+ 		return -ENOMEM;
+@@ -238,7 +247,7 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
+ 
+ 	jz4740->chip.dev = dev;
+ 	jz4740->chip.ops = &jz4740_pwm_ops;
+-	jz4740->chip.npwm = NUM_PWM;
++	jz4740->chip.npwm = soc_info->num_pwms;
+ 	jz4740->chip.base = -1;
+ 	jz4740->chip.of_xlate = of_pwm_xlate_with_flags;
+ 	jz4740->chip.of_pwm_n_cells = 3;
+@@ -256,8 +265,17 @@ static int jz4740_pwm_remove(struct platform_device *pdev)
+ }
+ 
+ #ifdef CONFIG_OF
++static const struct jz4740_soc_info jz4740_soc_info = {
++	.num_pwms = 8,
++};
 +
-+- JZ4725B introduced a separate channel, called Operating System Timer
-+  (OST). It is a 32-bit programmable timer. On JZ4770 and above, it is
-+  64-bit.
++static const struct jz4740_soc_info jz4725b_soc_info = {
++	.num_pwms = 6,
++};
 +
-+- Each one of the TCU channels has its own clock, which can be reparented
-+  to three different clocks (pclk, ext, rtc), gated, and reclocked, through
-+  their TCSR register.
-+  * The watchdog and OST hardware blocks also feature a TCSR register with
-+    the same format in their register space.
-+  * The TCU registers used to gate/ungate can also gate/ungate the watchdog
-+    and OST clocks.
-+
-+- Each TCU channel works in one of two modes:
-+  * mode TCU1: channels cannot work in sleep mode, but are easier to
-+    operate.
-+  * mode TCU2: channels can work in sleep mode, but the operation is a bit
-+    more complicated than with TCU1 channels.
-+
-+- The mode of each TCU channel depends on the SoC used:
-+  * On the oldest SoCs (up to JZ4740), all of the eight channels operate in
-+    TCU1 mode.
-+  * On JZ4725B, channel 5 operates as TCU2, the others operate as TCU1.
-+  * On newest SoCs (JZ4750 and above), channels 1-2 operate as TCU2, the
-+    others operate as TCU1.
-+
-+- Each channel can generate an interrupt. Some channels share an interrupt
-+  line, some don't, and this changes between SoC versions:
-+  * on older SoCs (JZ4740 and below), channel 0 and channel 1 have their
-+    own interrupt line; channels 2-7 share the last interrupt line.
-+  * On JZ4725B, channel 0 has its own interrupt; channels 1-5 share one
-+    interrupt line; the OST uses the last interrupt line.
-+  * on newer SoCs (JZ4750 and above), channel 5 has its own interrupt;
-+    channels 0-4 and (if eight channels) 6-7 all share one interrupt line;
-+    the OST uses the last interrupt line.
-+
-+Implementation
-+--------------
-+
-+The functionalities of the TCU hardware are spread across multiple drivers:
-+- clocks/irq/timer: drivers/clocksource/ingenic-timer.c
-+- PWM:              drivers/pwm/pwm-jz4740.c
-+- watchdog:         drivers/watchdog/jz4740_wdt.c
-+- OST:              drivers/clocksource/ingenic-ost.c
-+
-+Because various functionalities of the TCU that belong to different drivers
-+and frameworks can be controlled from the same registers, all of these
-+drivers access their registers through the same regmap.
-+
-+For more information regarding the devicetree bindings of the TCU drivers,
-+have a look at Documentation/devicetree/bindings/mfd/ingenic,tcu.txt.
+ static const struct of_device_id jz4740_pwm_dt_ids[] = {
+-	{ .compatible = "ingenic,jz4740-pwm", },
++	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
++	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
 -- 
 2.11.0
