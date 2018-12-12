@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
-Date: Wed, 12 Dec 2018 23:09:10 +0100
-Message-ID: <20181212220922.18759-16-paul@crapouillou.net>
+Subject: [PATCH v8 13/26] pwm: jz4740: Drop dependency on MACH_INGENIC, use COMPILE_TEST
+Date: Wed, 12 Dec 2018 23:09:08 +0100
+Message-ID: <20181212220922.18759-14-paul@crapouillou.net>
 References: <20181212220922.18759-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181212220922.18759-1-paul@crapouillou.net>
@@ -10,8 +10,13 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM in the JZ4725B works the same as in the JZ4740, except that it
-only has 6 channels available instead of 8.
+Depending on MACH_INGENIC prevent us from creating a generic kernel that
+works on more than one MIPS board. Instead, we just depend on MIPS being
+set.
+
+On other architectures, this driver can still be built, thanks to
+COMPILE_TEST. This is used by automated tools to find bugs, for
+instance.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Acked-by: Thierry Reding <thierry.reding@gmail.com>
@@ -20,74 +25,27 @@ Acked-by: Thierry Reding <thierry.reding@gmail.com>
 Notes:
      v5: New patch
     
-     v6: - Move of_device_id structure back at the bottom (less noise in
-           patch)
-         - Use device_get_match_data() instead of of_* variant
+     v6: No change
     
      v7: No change
 
      v8: No change
 
- drivers/pwm/pwm-jz4740.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index cb8d8cec353f..a3a8da8af0de 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -24,6 +24,10 @@
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 0343f0c1238e..d6f62d9cdc18 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -201,7 +201,7 @@ config PWM_IMX
  
- #define NUM_PWM 8
- 
-+struct jz4740_soc_info {
-+	unsigned int num_pwms;
-+};
-+
- struct jz4740_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clks[NUM_PWM];
-@@ -217,9 +221,14 @@ static const struct pwm_ops jz4740_pwm_ops = {
- 
- static int jz4740_pwm_probe(struct platform_device *pdev)
- {
-+	const struct jz4740_soc_info *soc_info;
- 	struct jz4740_pwm_chip *jz4740;
- 	struct device *dev = &pdev->dev;
- 
-+	soc_info = device_get_match_data(dev);
-+	if (!soc_info)
-+		return -EINVAL;
-+
- 	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
- 	if (!jz4740)
- 		return -ENOMEM;
-@@ -238,7 +247,7 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
- 
- 	jz4740->chip.dev = dev;
- 	jz4740->chip.ops = &jz4740_pwm_ops;
--	jz4740->chip.npwm = NUM_PWM;
-+	jz4740->chip.npwm = soc_info->num_pwms;
- 	jz4740->chip.base = -1;
- 	jz4740->chip.of_xlate = of_pwm_xlate_with_flags;
- 	jz4740->chip.of_pwm_n_cells = 3;
-@@ -256,8 +265,17 @@ static int jz4740_pwm_remove(struct platform_device *pdev)
- }
- 
- #ifdef CONFIG_OF
-+static const struct jz4740_soc_info jz4740_soc_info = {
-+	.num_pwms = 8,
-+};
-+
-+static const struct jz4740_soc_info jz4725b_soc_info = {
-+	.num_pwms = 6,
-+};
-+
- static const struct of_device_id jz4740_pwm_dt_ids[] = {
--	{ .compatible = "ingenic,jz4740-pwm", },
-+	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
-+	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+-	depends on MACH_INGENIC
++	depends on MIPS || COMPILE_TEST
+ 	depends on COMMON_CLK
+ 	select INGENIC_TIMER
+ 	help
 -- 
 2.11.0
