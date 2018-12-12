@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v8 22/26] MIPS: CI20: defconfig: enable OST driver
-Date: Wed, 12 Dec 2018 23:12:41 +0100
-Message-ID: <20181212221241.19256-1-paul@crapouillou.net>
+Subject: [PATCH v8 19/26] MIPS: qi_lb60: Move PWM devices to devicetree
+Date: Wed, 12 Dec 2018 23:09:14 +0100
+Message-ID: <20181212220922.18759-20-paul@crapouillou.net>
 References: <20181212220922.18759-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181212220922.18759-1-paul@crapouillou.net>
@@ -10,8 +10,8 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-The OST driver provides a clocksource and sched_clock that are much more
-accurate than the default ones.
+Probe the few drivers using PWMs from devicetree, now that we have a
+devicetree node for the PWM driver.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
@@ -25,20 +25,99 @@ Notes:
 
      v8: No change
 
- arch/mips/configs/ci20_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/boot/dts/ingenic/qi_lb60.dts | 14 ++++++++++++++
+ arch/mips/jz4740/board-qi_lb60.c       | 19 -------------------
+ 2 files changed, 14 insertions(+), 19 deletions(-)
 
-diff --git a/arch/mips/configs/ci20_defconfig b/arch/mips/configs/ci20_defconfig
-index 030ff9c205fb..9b09b9a7f943 100644
---- a/arch/mips/configs/ci20_defconfig
-+++ b/arch/mips/configs/ci20_defconfig
-@@ -111,6 +111,7 @@ CONFIG_RTC_CLASS=y
- CONFIG_RTC_DRV_JZ4740=y
- CONFIG_DMADEVICES=y
- CONFIG_DMA_JZ4780=y
-+CONFIG_INGENIC_OST=y
- # CONFIG_IOMMU_SUPPORT is not set
- CONFIG_MEMORY=y
- CONFIG_EXT4_FS=y
+diff --git a/arch/mips/boot/dts/ingenic/qi_lb60.dts b/arch/mips/boot/dts/ingenic/qi_lb60.dts
+index 76aaf8982554..85529a142409 100644
+--- a/arch/mips/boot/dts/ingenic/qi_lb60.dts
++++ b/arch/mips/boot/dts/ingenic/qi_lb60.dts
+@@ -9,6 +9,14 @@
+ 	chosen {
+ 		stdout-path = &uart0;
+ 	};
++
++	beeper {
++		compatible = "pwm-beeper";
++		pwms = <&pwm 4 0 0>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&pins_pwm4>;
++	};
+ };
+ 
+ &ext {
+@@ -30,4 +38,10 @@
+ 		groups = "uart0-data";
+ 		bias-disable;
+ 	};
++
++	pins_pwm4: pwm4 {
++		function = "pwm4";
++		groups = "pwm4";
++		bias-disable;
++	};
+ };
+diff --git a/arch/mips/jz4740/board-qi_lb60.c b/arch/mips/jz4740/board-qi_lb60.c
+index af0c8ace0141..cc556be656d6 100644
+--- a/arch/mips/jz4740/board-qi_lb60.c
++++ b/arch/mips/jz4740/board-qi_lb60.c
+@@ -27,7 +27,6 @@
+ #include <linux/power_supply.h>
+ #include <linux/power/jz4740-battery.h>
+ #include <linux/power/gpio-charger.h>
+-#include <linux/pwm.h>
+ 
+ #include <linux/platform_data/jz4740/jz4740_nand.h>
+ 
+@@ -392,17 +391,6 @@ static struct jz4740_mmc_platform_data qi_lb60_mmc_pdata = {
+ 	.power_active_low	= 1,
+ };
+ 
+-/* beeper */
+-static struct pwm_lookup qi_lb60_pwm_lookup[] = {
+-	PWM_LOOKUP("jz4740-pwm", 4, "pwm-beeper", NULL, 0,
+-		   PWM_POLARITY_NORMAL),
+-};
+-
+-static struct platform_device qi_lb60_pwm_beeper = {
+-	.name = "pwm-beeper",
+-	.id = -1,
+-};
+-
+ /* charger */
+ static char *qi_lb60_batteries[] = {
+ 	"battery",
+@@ -451,10 +439,8 @@ static struct platform_device *jz_platform_devices[] __initdata = {
+ 	&jz4740_i2s_device,
+ 	&jz4740_codec_device,
+ 	&jz4740_adc_device,
+-	&jz4740_pwm_device,
+ 	&jz4740_dma_device,
+ 	&qi_lb60_gpio_keys,
+-	&qi_lb60_pwm_beeper,
+ 	&qi_lb60_charger_device,
+ 	&qi_lb60_audio_device,
+ };
+@@ -483,10 +469,6 @@ static struct pinctrl_map pin_map[] __initdata = {
+ 			"10010000.jz4740-pinctrl", "PD0", pin_cfg_bias_disable),
+ 	PIN_MAP_CONFIGS_PIN_DEFAULT("jz4740-mmc.0",
+ 			"10010000.jz4740-pinctrl", "PD2", pin_cfg_bias_disable),
+-
+-	/* PWM pin configuration */
+-	PIN_MAP_MUX_GROUP_DEFAULT("jz4740-pwm",
+-			"10010000.jz4740-pinctrl", "pwm4", "pwm4"),
+ };
+ 
+ 
+@@ -504,7 +486,6 @@ static int __init qi_lb60_init_platform_devices(void)
+ 	spi_register_board_info(qi_lb60_spi_board_info,
+ 				ARRAY_SIZE(qi_lb60_spi_board_info));
+ 
+-	pwm_add_table(qi_lb60_pwm_lookup, ARRAY_SIZE(qi_lb60_pwm_lookup));
+ 	pinctrl_register_mappings(pin_map, ARRAY_SIZE(pin_map));
+ 
+ 	return platform_add_devices(jz_platform_devices,
 -- 
 2.11.0
