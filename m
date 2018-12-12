@@ -1,189 +1,62 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
-Subject: Re: [2/3] pwm: imx: Use bitops and bitfield macros to define
- register values
-Date: Wed, 12 Dec 2018 11:55:06 +0100
-Message-ID: <20181212105506.GB9268@taurus.defre.kleine-koenig.org>
-References: <1538403588-68850-2-git-send-email-michal.vokac@ysoft.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/2] pwm: bcm-kona: apply pwm settings on enable
+Date: Wed, 12 Dec 2018 12:04:46 +0100
+Message-ID: <20181212110446.GF17654@ulmo>
+References: <20181107093613.26734-1-peron.clem@gmail.com>
+ <20181107093613.26734-2-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bCsyhTFzCvuiizWE"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="0rSojgWGcpz+ezC3"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1538403588-68850-2-git-send-email-michal.vokac@ysoft.com>
+In-Reply-To: <20181107093613.26734-2-peron.clem@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Suji Velupillai <suji.velupillai@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---bCsyhTFzCvuiizWE
+--0rSojgWGcpz+ezC3
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 01, 2018 at 04:19:47PM +0200, Michal Vok=C3=A1=C4=8D wrote:
-> Use existing macros to define register fields instead of manually shifting
-> the bit masks. Also define some more register bits.
-
-I didn't check, but wonder if these additional register bits are then
-used in the next patch. Maybe I'd change this patch to not introduce
-something new, only let it modify the already existing stuff and then
-introduce the new bits in the patch that makes use of them.
-
-> Signed-off-by: Michal Vok=C3=A1=C4=8D <michal.vokac@ysoft.com>
-> ---
->  drivers/pwm/pwm-imx.c | 78 ++++++++++++++++++++++++++++++++++++++-------=
-------
->  1 file changed, 58 insertions(+), 20 deletions(-)
+On Wed, Nov 07, 2018 at 10:36:13AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
+> From: Suji Velupillai <suji.velupillai@broadcom.com>
 >=20
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index bcbcac4..7a4907b 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -5,6 +5,8 @@
->   * Derived from pxa PWM driver by eric miao <eric.miao@marvell.com>
->   */
-> =20
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
->  #include <linux/clk.h>
->  #include <linux/delay.h>
->  #include <linux/err.h>
-> @@ -23,7 +25,7 @@
->  #define MX1_PWMS			0x04   /* PWM Sample Register */
->  #define MX1_PWMP			0x08   /* PWM Period Register */
-> =20
-> -#define MX1_PWMC_EN			(1 << 4)
-> +#define MX1_PWMC_EN			BIT(4)
-> =20
->  /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
-> =20
-> @@ -31,18 +33,53 @@
->  #define MX3_PWMSR			0x04    /* PWM Status Register */
->  #define MX3_PWMSAR			0x0C    /* PWM Sample Register */
->  #define MX3_PWMPR			0x10    /* PWM Period Register */
-> -#define MX3_PWMCR_PRESCALER(x)		((((x) - 1) & 0xFFF) << 4)
-> -#define MX3_PWMCR_STOPEN		(1 << 25)
-> -#define MX3_PWMCR_DOZEEN		(1 << 24)
-> -#define MX3_PWMCR_WAITEN		(1 << 23)
-> -#define MX3_PWMCR_DBGEN			(1 << 22)
-> -#define MX3_PWMCR_POUTC			(1 << 18)
-> -#define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
-> -#define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
-> -#define MX3_PWMCR_SWR			(1 << 3)
-> -#define MX3_PWMCR_EN			(1 << 0)
-> -#define MX3_PWMSR_FIFOAV_4WORDS		0x4
-> -#define MX3_PWMSR_FIFOAV_MASK		0x7
-> +
-> +#define MX3_PWMCR_FWM			GENMASK(27, 26)
-> +#define MX3_PWMCR_STOPEN		BIT(25)
-> +#define MX3_PWMCR_DOZEN			BIT(24)
-> +#define MX3_PWMCR_WAITEN		BIT(23)
-> +#define MX3_PWMCR_DBGEN			BIT(22)
-> +#define MX3_PWMCR_BCTR			BIT(21)
-> +#define MX3_PWMCR_HCTR			BIT(20)
-> +
-> +#define MX3_PWMCR_POUTC			GENMASK(19, 18)
-> +#define MX3_PWMCR_POUTC_NORMAL		0
-> +#define MX3_PWMCR_POUTC_INVERTED	1
-> +#define MX3_PWMCR_POUTC_OFF		2
-> +
-> +#define MX3_PWMCR_CLKSRC		GENMASK(17, 16)
-> +#define MX3_PWMCR_CLKSRC_OFF		0
-> +#define MX3_PWMCR_CLKSRC_IPG		1
-> +#define MX3_PWMCR_CLKSRC_IPG_HIGH	2
-> +#define MX3_PWMCR_CLKSRC_IPG_32K	3
-> +
-> +#define MX3_PWMCR_PRESCALER		GENMASK(15, 4)
-> +
-> +#define MX3_PWMCR_SWR			BIT(3)
-> +
-> +#define MX3_PWMCR_REPEAT		GENMASK(2, 1)
-> +#define MX3_PWMCR_REPEAT_1X		0
-> +#define MX3_PWMCR_REPEAT_2X		1
-> +#define MX3_PWMCR_REPEAT_4X		2
-> +#define MX3_PWMCR_REPEAT_8X		3
-> +
-> +#define MX3_PWMCR_EN			BIT(0)
-> +
-> +#define MX3_PWMSR_FWE			BIT(6)
-> +#define MX3_PWMSR_CMP			BIT(5)
-> +#define MX3_PWMSR_ROV			BIT(4)
-> +#define MX3_PWMSR_FE			BIT(3)
-> +
-> +#define MX3_PWMSR_FIFOAV		GENMASK(2, 0)
-> +#define MX3_PWMSR_FIFOAV_EMPTY		0
-> +#define MX3_PWMSR_FIFOAV_1WORD		1
-> +#define MX3_PWMSR_FIFOAV_2WORDS		2
-> +#define MX3_PWMSR_FIFOAV_3WORDS		3
-> +#define MX3_PWMSR_FIFOAV_4WORDS		4
-> +
-> +#define MX3_PWMCR_PRESCALER_SET(x)	FIELD_PREP(MX3_PWMCR_PRESCALER, (x) -=
- 1)
-> +#define MX3_PWMCR_PRESCALER_GET(x)	(FIELD_GET(MX3_PWMCR_PRESCALER, \
-> +						   (x)) + 1)
+> When pwm_bl framework calls enable, a call to pwm_is_enabled(pwm) still
+> return false, this prevents the backlight being turn on at boot time.
+>=20
+> Signed-off-by: Suji Velupillai <suji.velupillai@broadcom.com>
+> Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
+> ---
+>  drivers/pwm/pwm-bcm-kona.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
 
-I wouldn't hide the +1 and -1 in a macro but as this was already the
-case before your patch, that's ok.
+I see v2 and v3 of patch 1 of the series. Did you work on v2 of this
+patch (2/2) as well? I don't see it on the list and it didn't seem like
+everyone was happy with this version.
 
->  #define MX3_PWM_SWR_LOOP		5
-> =20
-> @@ -142,14 +179,14 @@ static void imx_pwm_wait_fifo_slot(struct pwm_chip =
-*chip,
->  	u32 sr;
-> =20
->  	sr =3D readl(imx->mmio_base + MX3_PWMSR);
-> -	fifoav =3D sr & MX3_PWMSR_FIFOAV_MASK;
-> +	fifoav =3D FIELD_GET(MX3_PWMSR_FIFOAV, sr);
->  	if (fifoav =3D=3D MX3_PWMSR_FIFOAV_4WORDS) {
->  		period_ms =3D DIV_ROUND_UP(pwm_get_period(pwm),
->  					 NSEC_PER_MSEC);
->  		msleep(period_ms);
-> =20
->  		sr =3D readl(imx->mmio_base + MX3_PWMSR);
-> -		if (fifoav =3D=3D (sr & MX3_PWMSR_FIFOAV_MASK))
-> +		if (fifoav =3D=3D FIELD_GET(MX3_PWMSR_FIFOAV, sr))
->  			dev_warn(dev, "there is no free FIFO slot\n");
->  	}
->  }
-> @@ -207,13 +244,14 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, =
-struct pwm_device *pwm,
->  		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
->  		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-> =20
-> -		cr =3D MX3_PWMCR_PRESCALER(prescale) |
-> -		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-> -		     MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
-> -		     MX3_PWMCR_EN;
-> +		cr =3D MX3_PWMCR_PRESCALER_SET(prescale) |
-> +		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-> +		     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
-> +		     MX3_PWMCR_DBGEN | MX3_PWMCR_EN;
-> =20
->  		if (state->polarity =3D=3D PWM_POLARITY_INVERSED)
-> -			cr |=3D MX3_PWMCR_POUTC;
-> +			cr |=3D FIELD_PREP(MX3_PWMCR_POUTC,
-> +					MX3_PWMCR_POUTC_INVERTED);
-> =20
->  		writel(cr, imx->mmio_base + MX3_PWMCR);
->  	} else if (cstate.enabled) {
+Thierry
 
-Best regards
-Uwe
-
---bCsyhTFzCvuiizWE
+--0rSojgWGcpz+ezC3
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAlwQ6QcACgkQwfwUeK3K
-7An0EQf/U/abZnK5uMZ8s9+bR5WjAO/QDzYKy8negD0scOLVGCmfbtyzWoA6iIWx
-CV+TqoH4kmf3pqh/Tnc4u03QNpYbjeZPP27aWLbqjEtFn+NA/pkzeZKxPSxENx5d
-CmajABb8VlG2tgScUOJSS3LX2I/auLIgx6nys88M/AqcLfg5S+1ii3lmkbRhK6I7
-TH8fMhL3qlRZe+Muy3JNVOus34s6nxifDVyi/37HnxkhkowaZpT4Ltcw9JOCDG6L
-UgOH4BtLfIVK3F8T91rKjgOKJWctmXMLM6xGDJmQW2/Mepex/QaePZlXh1mj9Bb3
-eMpv2DjEEYUOypFAp7FxCYVSkyRd9w==
-=Nc4F
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ604ACgkQ3SOs138+
+s6HurBAAu4FglpN1Tc0q8ipMLFF7FdNMQKJc5c8pjpK3EyqwfmtJXPZiEPKvA38F
+kuOTau+A8Nu/AjwEtnVKp6h2XzOy9DUXtWEU8JnhGKQvomm01SucysxEd6a/f0/N
+7WAlzabOMvYwhXZGAgeuIMiGNmlw5q2AuKhXOtCFeTmjHJC1tJU/kqYHrTjLOdoH
+JCNCp8WzLLSsMXPi/4EkBz0T14kS3iWpnm5Bx3fVORyT+Ep22IRWf7r1wi21aK3X
+6z88IqprWiKCjFdnhVoa3b3Qf152e+Rzr854Y5pZ4ihvdTqA735MZ+forHlxbjK7
+VGUtEcK5NrjDP0l3r3qhH9dkGlfb/UpAX1001H9TzS0gcMyamlMVJneQ+ipBWRcL
+BfTmyyuNiXShJjQ1UzkgOY+Je9vvdq9XV3NIzTA3d8qsHANM1JyPzus0WtIklDHf
+RYxXw68OlbbFUKv70ShbWzYyKVBEGXN/BknUvM4lTcISMRVfxi0VwMQwlGXIDGND
+d8Y25zA1J/s41H6ZxhG2h6/Na6ymsSJkNSaye/X5+BcpXEfDH1oZmkizKYqkuCnt
+cMmzg/T1KlUxMIGKgB2TQ1+KzNbT+RiIDmLi6xFSnqhJwN3tQoCFi/83Kuy+fIRM
+vVxxz9NyfZB9vMiZnk0qAndDSq4rc/DIMfg2JVGHv1ZM/GzYLSA=
+=/vm3
 -----END PGP SIGNATURE-----
 
---bCsyhTFzCvuiizWE--
+--0rSojgWGcpz+ezC3--
