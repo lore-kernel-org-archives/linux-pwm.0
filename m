@@ -1,47 +1,90 @@
-From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: bcm-kona: apply pwm settings on enable
-Date: Wed, 12 Dec 2018 12:07:23 +0100
-Message-ID: <CAJiuCccG+NtaDF70_4bJwgBCKAKxiE8379h=6qkN8OAQ8rjKBA@mail.gmail.com>
-References: <20181107093613.26734-1-peron.clem@gmail.com> <20181107093613.26734-2-peron.clem@gmail.com>
- <20181212110446.GF17654@ulmo>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Wed, 12 Dec 2018 11:42:17 +0000
+Message-ID: <52ed0614-d1f5-81cb-3b17-8eb137967872@ysoft.com>
+References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
+ <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
+ <20181212080154.kcfh57mulypwuscu@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181212110446.GF17654@ulmo>
+In-Reply-To: <20181212080154.kcfh57mulypwuscu@pengutronix.de>
+Content-Language: en-US
+Content-ID: <1287C928D1C2794F83464EDC9125F542@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Suji Velupillai <suji.velupillai@broadcom.com>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?utf-8?B?TG90aGFyIFdhw59tYW5u?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
-
-On Wed, 12 Dec 2018 at 12:04, Thierry Reding <thierry.reding@gmail.com> wro=
-te:
->
-> On Wed, Nov 07, 2018 at 10:36:13AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
-> > From: Suji Velupillai <suji.velupillai@broadcom.com>
-> >
-> > When pwm_bl framework calls enable, a call to pwm_is_enabled(pwm) still
-> > return false, this prevents the backlight being turn on at boot time.
-> >
-> > Signed-off-by: Suji Velupillai <suji.velupillai@broadcom.com>
-> > Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
-> > ---
-> >  drivers/pwm/pwm-bcm-kona.c | 16 +++++++++++-----
-> >  1 file changed, 11 insertions(+), 5 deletions(-)
->
-> I see v2 and v3 of patch 1 of the series. Did you work on v2 of this
-> patch (2/2) as well? I don't see it on the list and it didn't seem like
-> everyone was happy with this version.
-
-No, I dropped it.
-
-Was working on an atomic convert of the driver but I don't have access
-to my cygnus board anymore.
-
-Regards,
-Clement
-
->
-> Thierry
+T24gMTIuMTIuMjAxOCAwOTowMSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+IE9uIFRodSwg
+RGVjIDA2LCAyMDE4IGF0IDAxOjQxOjMxUE0gKzAwMDAsIFZva8OhxI0gTWljaGFsIHdyb3RlOg0K
+Pj4gTm9ybWFsbHkgdGhlIFBXTSBvdXRwdXQgaXMgaGVsZCBMT1cgd2hlbiBQV00gaXMgZGlzYWJs
+ZWQuIFRoaXMgY2FuIGNhdXNlDQo+PiBwcm9ibGVtcyB3aGVuIGludmVydGVkIFBXTSBzaWduYWwg
+cG9sYXJpdHkgaXMgbmVlZGVkLiBXaXRoIHRoaXMgYmVoYXZpb3INCj4+IHRoZSBjb25uZWN0ZWQg
+Y2lyY3VpdCBpcyBmZWQgYnkgMTAwJSBkdXR5IGN5Y2xlIGluc3RlYWQgb2YgYmVpbmcgc2h1dC1v
+ZmYuDQo+Pg0KPj4gQWxsb3cgdXNlcnMgdG8gZGVmaW5lIGEgInB3bSIgYW5kIGEgImdwaW8iIHBp
+bmN0cmwgc3RhdGVzLiBUaGUgcHdtIHBpbmN0cmwNCj4+IHN0YXRlIGlzIHNlbGVjdGVkIHdoZW4g
+UFdNIGlzIGVuYWJsZWQgYW5kIHRoZSBncGlvIHBpbmN0cmwgc3RhdGUgaXMNCj4+IHNlbGVjdGVk
+IHdoZW4gUFdNIGlzIGRpc2FibGVkLiBJbiB0aGUgZ3BpbyBzdGF0ZSB0aGUgbmV3IHB3bS1ncGlv
+cyBHUElPIGlzDQo+PiBjb25maWd1cmVkIGFzIGlucHV0IGFuZCB0aGUgaW50ZXJuYWwgcHVsbC11
+cCByZXNpc3RvciBpcyB1c2VkIHRvIHB1bGwgdGhlDQo+PiBvdXRwdXQgbGV2ZWwgaGlnaC4NCj4+
+DQo+PiBJZiBhbGwgdGhlIHBpbmN0cmwgc3RhdGVzIGFuZCB0aGUgcHdtLWdwaW9zIEdQSU8gYXJl
+IG5vdCBjb3JyZWN0bHkNCj4+IHNwZWNpZmllZCBpbiBEVCB0aGUgUFdNIHdvcmsgYXMgdXN1YWwu
+DQo+Pg0KPj4gQXMgYW4gZXhhbXBsZSwgd2l0aCB0aGlzIHBhdGNoIGEgUFdNIGNvbnRyb2xsZWQg
+YmFja2xpZ2h0IHdpdGggaW52ZXJzZWQNCj4+IHNpZ25hbCBwb2xhcml0eSBjYW4gYmUgdXNlZCBp
+biBmdWxsIGJyaWdodG5lc3MgcmFuZ2UuIFdpdGhvdXQgdGhpcyBwYXRjaA0KPj4gdGhlIGJhY2ts
+aWdodCBjYW4gbm90IGJlIHR1cm5lZCBvZmYgYXMgYnJpZ2h0bmVzcyA9IDAgZGlzYWJsZXMgdGhl
+IFBXTQ0KPj4gYW5kIHRoYXQgaW4gdHVybiBzZXQgUFdNIG91dHB1dCBMT1csIHRoYXQgaXMgZnVs
+bCBicmlnaHRuZXNzLg0KPj4NCj4+IEludmVydGVkIG91dHB1dCBvZiB0aGUgUFdNIHdpdGggImRl
+ZmF1bHQiIGFuZCB3aXRoICJwd20iKyJncGlvIiBwaW5jdHJsOg0KPj4NCj4+ICstLS0tLS0tLS0t
+LS0tLSstLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tICstLS0tLS0tLS0t
+LS0tKw0KPj4gfCBBZnRlciByZXNldCAgfCBCb290bG9hZGVyIHwgICBQV00gcHJvYmUgICB8ICAg
+ICBQV00gICAgfCAgICAgUFdNICAgICB8DQo+PiB8IDEwMGsgcHVsbC11cCB8ICAgICAgICAgICAg
+fCAgICAgICAgICAgICAgIHwgZW5hYmxlIDMwJSB8ICAgZGlzYWJsZSAgIHwNCj4+ICstLS0tLS0t
+LS0tLS0tLSstLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLSstLS0tLS0t
+LS0tLS0tKw0KPj4gfCBwaW5jdHJsICAgICAgfCAgICBub25lICAgIHwgICAgZGVmYXVsdCAgICB8
+ICAgZGVmYXVsdCAgfCAgIGRlZmF1bHQgICB8DQo+PiB8IG91dCBIICAgX19fX19fX19fX19fX19f
+X19fICAgICAgICAgICAgICAgICAgIF9fICAgX18gICAgICAgICAgICAgICAgIHwNCj4+IHwgb3V0
+IEwgICAgICAgICAgICAgICAgICAgICBcX19fX19fX19fX19fX19fX18vICBcXy8gIFxfL1xfX19f
+X19fX19fX18gfA0KPj4gfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBeICAgIF4gICAgXiAgICAgICAgICAgICAgICB8DQo+PiArLS0tLS0tLS0tLS0tLS0rLS0tLS0t
+LS0tLS0tKy0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLSsNCj4+IHwg
+cGluY3RybCAgICAgIHwgICAgbm9uZSAgICB8ICAgICAgZ3BpbyAgICAgfCAgICAgcHdtICAgIHwg
+ICAgIGdwaW8gICAgfA0KPj4gfCBvdXQgSCAgIF9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18gICBfXyAgIF9fICAgX19fX19fX19fX19fXyB8DQo+PiB8IG91dCBMICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIFxfLyAgXF8vICBcXy8gICAgICAgICAgICAgIHwNCj4+
+IHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXiAgICBeICAgIF4g
+ICAgICAgICAgICAgICAgfA0KPj4gKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rDQo+Pg0KPj4gU2lnbmVkLW9mZi1i
+eTogTWljaGFsIFZva8OhxI0gPG1pY2hhbC52b2thY0B5c29mdC5jb20+DQo+PiAtLS0NCj4+IENo
+YW5nZXMgaW4gdjM6DQo+PiAgIC0gQ29tbWl0IG1lc3NhZ2UgdXBkYXRlLg0KPj4gICAtIE1pbm9y
+IGZpeCBpbiBjb2RlIGNvbW1lbnQgKFV3ZSkNCj4+ICAgLSBBbGlnbiBmdW5jdGlvbiBhcmd1bWVu
+dHMgdG8gdGhlIG9wZW5pbmcgcGFyZW50aGVzZXMuIChVd2UpDQo+PiAgIC0gRG8gbm90IHRlc3Qg
+ZGV2bV9waW5jdHJsX2dldCBmb3IgTlVMTC4gKFRoaWVycnkpDQo+PiAgIC0gQ29udmVydCBhbGwg
+bWVzc2FnZXMgdG8gZGV2X2RiZygpIChUaGllcnJ5KQ0KPj4gICAtIERvIG5vdCBhY3RpdmVseSBk
+cml2ZSB0aGUgcGluIGluIGdwaW8gc3RhdGUuIENvbmZpZ3VyZSBpdCBhcyBpbnB1dA0KPj4gICAg
+IGFuZCByZWx5IHNvbGVseSBvbiB0aGUgaW50ZXJuYWwgcHVsbC11cC4gKFRoaWVycnkpDQo+Pg0K
+Pj4gQ2hhbmdlcyBpbiB2MjoNCj4+ICAgLSBVdGlsaXplIHRoZSAicHdtIiBhbmQgImdwaW8iIHBp
+bmN0cmwgc3RhdGVzLg0KPj4gICAtIFVzZSB0aGUgcHdtLWdwaW9zIHNpZ25hbCB0byBkcml2ZSB0
+aGUgb3V0cHV0IGluICJncGlvIiBwaW5jdHJsIHN0YXRlLg0KPj4gICAtIFNlbGVjdCB0aGUgcmln
+aHQgcGluY3RybCBzdGF0ZSBpbiBwcm9iZS4NCj4+DQo+PiAgIGRyaXZlcnMvcHdtL3B3bS1pbXgu
+YyB8IDc3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+Kw0KPj4gICAxIGZpbGUgY2hhbmdlZCwgNzcgaW5zZXJ0aW9ucygrKQ0KPj4NCg0KWyBzbmlwIF0N
+Cg0KPiBPbiB0aGluZyBJIG5vdGljZWQgd2hpbGUgbG9va2luZyBhdCB0aGUgcmNhciBkcml2ZXIg
+aXM6IFRoaXMgZG9lc24ndA0KPiB3YWl0IGZvciB0aGUgY3VycmVudCBwZXJpb2QgdG8gZW5kLiBJ
+cyB0aGlzIHN1cHBvc2VkIHRvIGhhcHBlbj8gQWxzbyBmb3INCj4gdGhlIGVuYWJsZSBjYXNlIHRo
+ZSBoYXJkd2FyZSBpcyBjb25maWd1cmVkIGZvciB0aGUgZGVzaXJlZCBkdXR5IGN5Y2xlDQo+IGFu
+ZCBvbmx5IHRoZW4gdGhlIHBpbmN0cmwgaXMgc3dpdGNoZWQgdG8gcHdtLiBCb3RoIG1pZ2h0IHJl
+c3VsdCBpbiBhDQo+IHNwaWtlIHRoYXQgaXMgbm90IGRlc2lyZWQuDQoNClRoZSBiZWhhdmlvciBz
+aG91bGQgbm90IGNoYW5nZSBmcm9tIGhvdyBpbXgtcHdtIHdhcyB3b3JraW5nIGJlZm9yZS4NCldo
+ZW4gUFdNIGlzIGRpc2FibGVkIHRoZSBvdXRwdXQgaXMgaW1tZWRpYXRlbHkgZ2F0ZWQgb2ZmIChw
+dXQgaW50bw0KdGhlIGlkbGUgc3RhdGUpIGluZGVwZW5kZW50bHkgb24gdGhlIHBlcmlvZC4gSSBt
+ZWFzdXJlZCB0aGlzLg0KDQpGb3IgdGhlIGVuYWJsZSBjYXNlIHlvdSB3b3VsZCBjZXJ0YWlubHkg
+bm90IGdldCBhbnkgYWRkaXRpb25hbCBzcGlrZXMuDQpUaGUgd29yc3QgdGhpbmcgdGhhdCBtYXkg
+aGFwcGVuIGlzIHRoYXQgdGhlIGZpcnN0IHBlcmlvZCB3aWxsIGJlDQpzbGlnaHRseSBzaG9ydGVy
+IGRlcGVuZGluZyBvbiBob3cgbG9uZyBpdCB0YWtlcyB0byB0ZXN0IHRoZSBwaW5jdHJsDQphbmQg
+c3dpdGNoIHRoZSBtdXhpbmcuIEFuZCB0aGlzIGlzIHVuYXZvaWRhYmxlLCBpdCB3b3VsZCBoYXBw
+ZW4gZXZlbg0KaWYgeW91IHdhaXQgZm9yIHRoZSBzdGFydCBvZiBhIHBlcmlvZC4gVGhlIHRlc3Qg
+KyBtdXhpbmcgc3RpbGwgdGFrZXMNCnNvbWUgdGltZS4NCg0KTWljaGFsDQo=
