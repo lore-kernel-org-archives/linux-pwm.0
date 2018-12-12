@@ -1,96 +1,157 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RFC v2] pwm: Add Xilinx AXI Timer in PWM mode support
-Date: Wed, 12 Dec 2018 11:42:41 +0100
-Message-ID: <20181212104241.GA17654@ulmo>
-References: <20180322135316.19685-1-alvaro.gamez@hazent.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
+Subject: Re: [3/3] pwm: imx: Implement get_state() function for hardware
+ readout
+Date: Wed, 12 Dec 2018 11:51:24 +0100
+Message-ID: <20181212105118.GA9268@taurus.defre.kleine-koenig.org>
+References: <1538403588-68850-3-git-send-email-michal.vokac@ysoft.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="liOOAslEiF7prFVr"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180322135316.19685-1-alvaro.gamez@hazent.com>
+In-Reply-To: <1538403588-68850-3-git-send-email-michal.vokac@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alvaro Gamez Machado <alvaro.gamez@hazent.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---0F1p//8PRICkK4MW
-Content-Type: text/plain; charset=us-ascii
+--liOOAslEiF7prFVr
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 22, 2018 at 02:53:16PM +0100, Alvaro Gamez Machado wrote:
-> This patch adds support for the IP core provided by Xilinx.
-> This IP core can function as a two independent timers, but also use both
-> counters as values for period and duty cycle of a PWM output.
+Hello,
+
+On Mon, Oct 01, 2018 at 04:19:48PM +0200, Michal Vok=C3=A1=C4=8D wrote:
+> Implement the get_state() function and set the initial state to reflect
+> real state of the hardware. This allows to keep the PWM running if it was
+> enabled in bootloader. It is very similar to the GPIO behavior. GPIO pin
+> set as output in bootloader keep the same setting in Linux unless it is
+> reconfigured.
 >=20
-> There can be many instances of this IP in a design, but the first one of
-> them will be used to generate system's clock. If we were to use this driv=
-er
-> against the first timer instance found on the DT, we would expose it as a
-> PWM controller, and reconfiguring it will break the clock.
->=20
-> To avoid this we add an attribute pwm-outputs to this device declaration.
-> This new driver will fail to probe when pwm-outputs is different than 1.
->=20
-> We could use a boolean, but future versions of this IP core could impleme=
-nt
-> several PWM and counters, so when (if) this happens, we would only have to
-> adjust the pwm-outputs comparison to allow more than one PWM devices.
->=20
-> Signed-off-by: Alvaro Gamez Machado <alvaro.gamez@hazent.com>
+> If we find the PWM block enabled we need to prepare and enable its source
+> clock otherwise the clock will be disabled late in the boot as unused.
+> That will leave the PWM in enabled state but with disabled clock. That has
+> a side effect that the PWM output is left at its current level at which
+> the clock was disabled. It is totally non-deterministic and it may be LOW
+> or HIGH.
+
+Does this problem still exist if the pwm-imx driver is a module?
+
+> Signed-off-by: Michal Vok=C3=A1=C4=8D <michal.vokac@ysoft.com>
 > ---
->=20
-> This is the second proposal on getting AXI Timer PWM capability into Linu=
-x.=20
-> The other alternative, which was sent un June past year, didn't look for
-> pwm-output attribute, so in order not to kidnap control from
-> arch/microblaze/kernel/timer.c it used a different compatible string. Tha=
-t's
-> not wrong per se, but raises the question: can one piece of hardware have
-> two compatible strings depending on its intended use, rather than on the
-> nature of the hardware itself?
->=20
-> If there's interest in mainlining this or the proposal I sent last year, =
-I'd
-> be grateful to hear from the devicetree maintainers and maybe approve or
-> suggest any different aproach.
->=20
-> Best regards
->=20
->  drivers/pwm/Kconfig         |   9 ++
->  drivers/pwm/Makefile        |   1 +
->  drivers/pwm/pwm-axi-timer.c | 204 ++++++++++++++++++++++++++++++++++++++=
+>  drivers/pwm/pwm-imx.c | 53 +++++++++++++++++++++++++++++++++++++++++++++=
 ++++++
->  3 files changed, 214 insertions(+)
->  create mode 100644 drivers/pwm/pwm-axi-timer.c
+>  1 file changed, 53 insertions(+)
+>=20
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index 7a4907b..6cd3b72 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -83,6 +83,9 @@
+> =20
+>  #define MX3_PWM_SWR_LOOP		5
+> =20
+> +/* PWMPR register value of 0xffff has the same effect as 0xfffe */
+> +#define MX3_PWMPR_MAX			0xfffe
+> +
+>  struct imx_chip {
+>  	struct clk	*clk_per;
+> =20
+> @@ -93,6 +96,55 @@ struct imx_chip {
+> =20
+>  #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
+> =20
+> +static void imx_pwm_get_state(struct pwm_chip *chip,
+> +		struct pwm_device *pwm, struct pwm_state *state)
 
-Did any discussion regarding the above-mentioned issues ever ensue? How
-do you want to proceed? At the very least we'll need some sort of device
-tree binding for this driver, so perhaps start with a DT binding
-proposal and take it from there?
+broken alignment.
 
-Thierry
+> +{
+> +	struct imx_chip *imx =3D to_imx_chip(chip);
+> +	u32 period, prescaler, pwm_clk, ret, val;
+> +	u64 tmp;
+> +
+> +	val =3D readl(imx->mmio_base + MX3_PWMCR);
+> +
+> +	if (val & MX3_PWMCR_EN) {
+> +		state->enabled =3D true;
+> +		ret =3D clk_prepare_enable(imx->clk_per);
+> +		if (ret)
+> +			return;
+> +	} else {
+> +		state->enabled =3D false;
+> +	}
+> +
+> +	switch (FIELD_GET(MX3_PWMCR_POUTC, val)) {
+> +	case MX3_PWMCR_POUTC_NORMAL:
+> +		state->polarity =3D PWM_POLARITY_NORMAL;
+> +		break;
+> +	case MX3_PWMCR_POUTC_INVERTED:
+> +		state->polarity =3D PWM_POLARITY_INVERSED;
+> +		break;
+> +	default:
+> +		dev_warn(chip->dev, "can't set polarity, output disconnected");
 
---0F1p//8PRICkK4MW
+Should we return an error here?
+
+> +	}
+> +
+> +	prescaler =3D MX3_PWMCR_PRESCALER_GET(val);
+> +	pwm_clk =3D clk_get_rate(imx->clk_per);
+> +	pwm_clk =3D DIV_ROUND_CLOSEST_ULL(pwm_clk, prescaler);
+> +	val =3D readl(imx->mmio_base + MX3_PWMPR);
+
+It would be more cautionous to not rely on the reserved bits to read as
+zero. So I suggest to mask the value with 0xffff.
+
+> +	period =3D val >=3D MX3_PWMPR_MAX ? MX3_PWMPR_MAX : val;
+> +
+> +	/* PWMOUT (Hz) =3D PWMCLK / (PWMPR + 2) */
+> +	tmp =3D NSEC_PER_SEC * (u64)(period + 2);
+> +	state->period =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+
+Would it make sense to introduce a policy about how to round in this
+case? (Similarily for .apply?) This is of course out of scope for this
+patch.
+
+> +
+> +	/* PWMSAR can be read only if PWM is enabled */
+> +	if (state->enabled) {
+> +		val =3D readl(imx->mmio_base + MX3_PWMSAR);
+> +		tmp =3D NSEC_PER_SEC * (u64)(val);
+> +		state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+> +	} else {
+> +		state->duty_cycle =3D 0;
+> +	}
+> +}
+> +
+>  static int imx_pwm_config_v1(struct pwm_chip *chip,
+>  		struct pwm_device *pwm, int duty_ns, int period_ns)
+>  {
+> @@ -272,6 +324,7 @@ static const struct pwm_ops imx_pwm_ops_v1 =3D {
+> =20
+>  static const struct pwm_ops imx_pwm_ops_v2 =3D {
+>  	.apply =3D imx_pwm_apply_v2,
+> +	.get_state =3D imx_pwm_get_state,
+>  	.owner =3D THIS_MODULE,
+>  };
+> =20
+
+--liOOAslEiF7prFVr
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ5h8ACgkQ3SOs138+
-s6Eqvw//dWmvMrydYl6c8WeS0Y8XwZY64KX/7cExH8bO6PvV/+WoPzyrIXW4CRDP
-oPSIkzrGvg04uoNYs/5lI23t0pxu11cSsG1oqZJcbJymRyv4HzoaXk9eek6OCLff
-Z3emfLCGplLrR/vpL9lIvatGUGV35JiQ8FC2KSEPqwRU3TqKxJEWu/WcT5JwCO9f
-qI99RS+eef5rzoUiiekePrkQu9U9FXlnLszTyp9bm+vSCHvjWaKfBADPEIkieCXv
-+KvqjGgCZq0r88Hjk/14Cp1XGda9hq0olKKYyXFrQUIT7dIULycpp/HehjLr7SrD
-CHzOOKNGf4el5KZZNsWQGTqJB0LjgoMne8gEe4+T5P6F5Dh1Q1nL09H+HWUKmB5l
-JASjN2cQK/+CC/GCx0wtkt/ESw10ZvQb8Ln3YFGHmNRkO4rYkzWTL6Y3hZ3d9QA3
-mU0KidpgJwvxCaEaTf6n7DmEs2VkbZnaMaQOaEndvfcIrPhGpzsUNEqqXKc1JvXd
-Pa6DCbdlhN0OiYisPGn3ZmFlOlvLZVBBhYunL1rJWToP4R9vGyIQXo7m/BhZg7aR
-F1I8D88eSW4wy3oLA4QPgJJyr8TDE3Z7InSZCEWkAcYZrNxGOHFqeWyhKYpex0+e
-uW2VUXRbmSOCAnM+eqZE9GTUSj1siQ/M5v7XdctaoI9Hdu25prA=
-=ri20
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAlwQ6CIACgkQwfwUeK3K
+7AlMWgf9Gj9lIoShtg2SzUGV34HsRZ0VXDzyUeASF86bsQechN8iN5SsR+PQNmgC
+LtStIJnVKknQz2FhdgcRfXo2wUVBpMIvmsyJSH4IhmYVd51u1TX8sigjIMZarofi
+pN2Hy2jua0pwxQeOWicEgXO3ukl9yoOlQc6C716Gaf4fjxXCYddEUz3EyXEXumQM
+XijO9J1bx22fr4hEmxCve95rV6xP2mpjhyvRLhVGFwR8RWlTj+ToOJQZ4Kv7j9hU
+uc+S1G+WcV+Z8bvufh3Vko/C1pWwNfI6mD73X9sOapJVfQ7Wscx9Q4U6EoJBfmx/
+PTxjDqSQvSuVUg+T4Hk7C5of+trTGw==
+=+grv
 -----END PGP SIGNATURE-----
 
---0F1p//8PRICkK4MW--
+--liOOAslEiF7prFVr--
