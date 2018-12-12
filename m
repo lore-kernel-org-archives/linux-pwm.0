@@ -1,19 +1,20 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Wed, 12 Dec 2018 08:37:33 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 5/5] pwm: rcar: add workaround to output "pseudo" low level
-Message-ID: <20181212073733.th23v5cvaxfbhy53@pengutronix.de>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Wed, 12 Dec 2018 10:49:32 +0000
+Message-ID: <OSBPR01MB2293ACA05221DB5A6D3A6BB2D8A70@OSBPR01MB2293.jpnprd01.prod.outlook.com>
 References: <1544171373-29618-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1544171373-29618-6-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <20181207091337.mvrzzbgqa77adgbd@pengutronix.de>
  <OSBPR01MB229351E3EC1B66339E6C9635D8A50@OSBPR01MB2293.jpnprd01.prod.outlook.com>
  <20181210081103.zxayrzpbxiuvv6hb@pengutronix.de>
  <OSBPR01MB2293BE0147A4A535136BDF82D8A70@OSBPR01MB2293.jpnprd01.prod.outlook.com>
-MIME-Version: 1.0
+ <20181212073733.th23v5cvaxfbhy53@pengutronix.de>
+In-Reply-To: <20181212073733.th23v5cvaxfbhy53@pengutronix.de>
+Content-Language: ja-JP
 Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <OSBPR01MB2293BE0147A4A535136BDF82D8A70@OSBPR01MB2293.jpnprd01.prod.outlook.com>
+MIME-Version: 1.0
+Subject: RE: [PATCH 5/5] pwm: rcar: add workaround to output "pseudo" low level
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -23,100 +24,55 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-ID: <linux-pwm.vger.kernel.org>
 
-On Wed, Dec 12, 2018 at 03:19:40AM +0000, Yoshihiro Shimoda wrote:
-> Hi Uwe,
+Hi Uwe,
+
+> From: Uwe Kleine-K=F6nig, Sent: Wednesday, December 12, 2018 4:38 PM
+<snip>
+> > > In the past I suggested to weaken the requirements after pwm_disable,
+> > > but Thierry didn't like it.
+> >
+> > I read the following discussion once:
+> > https://patchwork.ozlabs.org/patch/959776/
 >=20
-> > From: Uwe Kleine-Konig, Sent: Monday, December 10, 2018 5:11 PM
-> >=20
-> > Hello,
-> >=20
-> > On Mon, Dec 10, 2018 at 04:49:17AM +0000, Yoshihiro Shimoda wrote:
-> > > > From: Uwe Kleine-Konig, Sent: Friday, December 7, 2018 6:14 PM
-> > > >
-> > > > On Fri, Dec 07, 2018 at 05:29:33PM +0900, Yoshihiro Shimoda wrote:
-> > > <snip>
-> > > > > +static void rcar_pwm_workaround_output_low(struct rcar_pwm_chip =
-*rp)
-> > > > > +{
-> > > > > +	/*
-> > > > > +	 * This PWM Timer cannot output low because setting 0x000 is
-> > > > > +	 * prohibited on PWMCNT.PH0 (High-Level Period) bitfields. So, =
-avoiding
-> > > > > +	 * the prohibited, this function changes the value from 0 to 1 =
-as
-> > > > > +	 * pseudo low level.
-> > > > > +	 *
-> > > > > +	 * TODO: Add GPIO handling to output low level.
-> > > > > +	 */
-> > > > > +	if ((rp->pwmcnt & RCAR_PWMCNT_PH0_MASK) =3D=3D 0)
-> > > > > +		rp->pwmcnt |=3D 1;
-> > > >
-> > > > In my eyes this is too broken to do. Not sure I have the complete
-> > > > picture, but given a small period (say 2) this 1 cycle might result=
- in
-> > > > 50 % duty cycle. Depending on how the hardware behaves if you disab=
-le
-> > > > it, better do this instead.
-> > >
-> > > You're right.
-> >=20
-> > But in the meantime I learned that the pwm gets active on disable, so
-> > this won't help.
-> >=20
-> > > > Are you aware of the series adding such gpio support to the imx dri=
-ver?
-> > >
-> > > I didn't know that.
-> > >
-> > > > @Thierry: So there are three drivers now that could benefit for a
-> > > > generic approach.
-> > >
-> > > Should I wait for Thierry's opinion whether PWM subsystem will have
-> > > a generic approach or not?
-> >=20
-> > Not sure how to preceed here. The needed procedure would be:
-> >=20
-> > 	set duty_cycle to 0%
-> > 	delay long enough to be sure the duty cycle is active
-> > 	switch to gpio
-> > 	disable the hardware
-> >=20
-> > The additional blocker for rcar is that it doesn't support duty_cycle
-> > 0%.
-> >=20
-> > So unless your hardware guys confirm that 0% works even though not
-> > supported according to the hardware manual I have no good idea.
-> >=20
-> > In the past I suggested to weaken the requirements after pwm_disable,
-> > but Thierry didn't like it.
+> Yeah, that's (part of) the discussion I meant. Thierry doesn't agree
+> though, so for now that's a dead end. My plan is to watch the pwm list
+> for a while to get a better picture about the different pwm
+> implementations because just one or two problematic cases are not
+> enough to justify a generic solution in the core in his eyes.
+
+I got it.
+
+> > I could not understand all this yet, but I think I should try to add a =
+special gpio handling
+> > to the pwm-rcar.c driver instead of a generic approach because as you m=
+entioned above,
+> > such special handling needs for the hardware.
 >=20
-> I read the following discussion once:
-> https://patchwork.ozlabs.org/patch/959776/
+> Being able to set PHO to zero would be still better, so I hope you
+> follow up on the question to your hardware guys if this is really
+> forbidden. (If I had access to such hardware, I'd bluntly try what
+> happens.)
 
-Yeah, that's (part of) the discussion I meant. Thierry doesn't agree
-though, so for now that's a dead end. My plan is to watch the pwm list
-for a while to get a better picture about the different pwm
-implementations because just one or two problematic cases are not
-enough to justify a generic solution in the core in his eyes.
-=20
-> I could not understand all this yet, but I think I should try to add a sp=
-ecial gpio handling
-> to the pwm-rcar.c driver instead of a generic approach because as you men=
-tioned above,
-> such special handling needs for the hardware.
+The hardware guy said that the output level is always high if PH0 is set to=
+ 0.
+However, the PH0 bitfields means "PWM High-Level Period" so that the behavi=
+or of
+the zero differs between the document and the hardware. So, we have to assu=
+me
+this is really forbidden unfortunately...
 
-Being able to set PHO to zero would be still better, so I hope you
-follow up on the question to your hardware guys if this is really
-forbidden. (If I had access to such hardware, I'd bluntly try what
-happens.)
+Best regards,
+Yoshihiro Shimoda
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
+|
