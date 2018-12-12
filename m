@@ -1,55 +1,59 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/3] pwm: imx: Sort include files
-Date: Wed, 12 Dec 2018 11:52:05 +0100
-Message-ID: <20181212105205.GB17654@ulmo>
+Subject: Re: [PATCH 2/3] pwm: imx: Use bitops and bitfield macros to define
+ register values
+Date: Wed, 12 Dec 2018 11:53:04 +0100
+Message-ID: <20181212105304.GC17654@ulmo>
 References: <1538403588-68850-1-git-send-email-michal.vokac@ysoft.com>
+ <1538403588-68850-2-git-send-email-michal.vokac@ysoft.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qlTNgmc+xy1dBmNv"
+        protocol="application/pgp-signature"; boundary="Clx92ZfkiYIKRjnr"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1538403588-68850-1-git-send-email-michal.vokac@ysoft.com>
+In-Reply-To: <1538403588-68850-2-git-send-email-michal.vokac@ysoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---qlTNgmc+xy1dBmNv
+--Clx92ZfkiYIKRjnr
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 01, 2018 at 04:19:46PM +0200, Michal Vok=C3=A1=C4=8D wrote:
-> Sort included header files alphabetically.
+On Mon, Oct 01, 2018 at 04:19:47PM +0200, Michal Vok=C3=A1=C4=8D wrote:
+> Use existing macros to define register fields instead of manually shifting
+> the bit masks. Also define some more register bits.
 >=20
 > Signed-off-by: Michal Vok=C3=A1=C4=8D <michal.vokac@ysoft.com>
 > ---
->  drivers/pwm/pwm-imx.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+>  drivers/pwm/pwm-imx.c | 78 ++++++++++++++++++++++++++++++++++++++-------=
+------
+>  1 file changed, 58 insertions(+), 20 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---qlTNgmc+xy1dBmNv
+--Clx92ZfkiYIKRjnr
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ6FUACgkQ3SOs138+
-s6FFsQ//btDu0pz+GTZtr4KqoQPIKacHrD7MbWlyLFERBtFikwDK13mZv5q9Sl2c
-jZmFCNXtGC6aD43mTQjno+4UCRw9WOCacnKLGPu3wbF4hnD/sJ8hKT3HFASfcX+P
-v4mINeTfY62Z9A0sLGcrVlJ10clRBBZiIhKmI2uVwtVHi22LCOLyXGNtgn/EPGv4
-t6cXi8DS++kd7BGukRMM09Q3dHcCAV2Cp/7HaBfZBZYed7+p930+7V9cqvcgh11+
-HzlUDmcQ7w1rybU32N61d631zepFuHeln2zAbf93M1xMItNiAu3mwXZNWS/tdufw
-FlQcZA01eqVcwdDNcyfYMaUyp9O4F438Ym4Sp7pJ+1z1CX1lKDLhNVmRONM3u7+4
-gZXoveMPIF1OlVudYIsGpef1hIgPmVzOznvMRTqChKs8T0ScgNXNX2OMGrMhRSDt
-VEoQWQUOMWiRrZk75l9J8SiG7BdTImKxomLehS1zBPR/OVfJoJOPhljEMoOpW1Ar
-q+zf+DoOM0sCM6Nzuv3iPHS6dXqc2FcP/Yl2m7p01wXDr8Fom9kI72aMOSCw998R
-FPYbIiQQrM4EBQy45nvS4FGWNF7WmuGTcuMvQJm4r2o1STFMKkHzBd1wG51tFIsH
-10RoHvNcLbkxLqx7q+8CE+MdNe8jH44csi8gx9WHaWDBEwOURFg=
-=ux8v
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ6JAACgkQ3SOs138+
+s6FWHg//XmrkBX1MOHOJxSKNoeDjxd7tnUqJ7BBL474nB+urg+LI8a1V8mdD/JQJ
+/gQsfU5Fzj4SN8aPCCCagZ3VfTdpBNlU1zdyn/VLZSxsDcS5lBbjD3xj+VMrNwGF
+J2hsSYnPVRtkUKhXjTAduFjkvj3z8wTr6JdXH3TFOGlB4xuNkQ/yYsi+9PYNdbSg
+0Dlo44y9XsNOoWSk9he9/X3hI7zoy94RYsREGaQ7JUKRV0RVLwI/EmoDycuoX3Ao
+QTs65BxCbF80OsRmRtUBnFQm9Hm+vXkYQOq29bwC10j96lvGQrB/96nlyu9QuBoo
+SZ0BJXaZ2gCmMCVHDiWo9YLT9iF2hSJtgxuRktH2xgm3qLOEJ0wPhIPmz3h8keIu
+FXm6g3KhO8cxI13tVYLLao4P1wmgWsAvoBdSr3aItSJYEajThxsrajuLUe7FAC+W
+c2mjOPvi5s3fUWVJX889kFFcGV8D9N/asV71R8cyJkqNO1P3BDClZIn1Y5JUJ9/m
+j31X9KwHB21aoe7Vh8j5Ilq9xyYvYzZTCfrsFw57O3Hd9qBpIl1OV2afiEEGHf0l
+82mcGyxN2KvI3sonc2yp1f4GEofryEHr9XEfFLroV6VeXs0/7RFUI9kRWXFITuQU
+EdjOAATNiNR3Z++cF2nt0++TFD4TvS3s5li5moBxitwLe21ojpg=
+=X4Yq
 -----END PGP SIGNATURE-----
 
---qlTNgmc+xy1dBmNv--
+--Clx92ZfkiYIKRjnr--
