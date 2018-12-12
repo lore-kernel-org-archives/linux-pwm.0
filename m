@@ -1,77 +1,58 @@
-From: Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
- sub-drivers
-Date: Wed, 12 Dec 2018 09:55:09 +0900
-Message-ID: <5C105C6D.30806@samsung.com>
-References: <CGME20181211191040epcas2p2a15c57e7488f216d012efe553a007d43@epcas2p2.samsung.com>
-        <20181211190953.13626-1-enric.balletbo@collabora.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND PATCH v3] backlight: pwm_bl: Fix brightness levels for
+ non-DT case.
+Date: Wed, 12 Dec 2018 06:14:04 +0000
+Message-ID: <20181212061404.GK4497@dell>
+References: <20181210121437.30170-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20181211190953.13626-1-enric.balletbo@collabora.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-kernel@vger.kernel.org
-Cc: Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-i2c@vger.kernel.org, groeck@chromium.org, kernel@collabora.com, linux-rtc@vger.kernel.org, Benson Leung <bleung@chromium.org>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob Herring <robh+dt@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Mark
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20181210121437.30170-1-enric.balletbo@collabora.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-pwm@vger.kernel.org, daniel.thompson@linaro.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, u.kleine-koenig@pengutronix.de, kernel@collabora.com, robert.jarzmik@free.fr
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Enric,
-
-On 2018년 12월 12일 04:09, Enric Balletbo i Serra wrote:
-> There are multiple ChromeOS EC sub-drivers spread in different
-> subsystems, as all of them are related to the Chrome stuff add
-> Benson and myself as a maintainers for all these sub-drivers.
-> 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> ---
-> 
-> Changes in v2:
-> - Fix typo in Benson email address.
-> 
->  MAINTAINERS | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a24129b0b043..bbe7180e2851 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3625,6 +3625,30 @@ S:	Maintained
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
->  F:	drivers/platform/chrome/
->  
-> +CHROMEOS EC SUBDRIVERS
-> +M:	Benson Leung <bleung@chromium.org>
-> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
-> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
-> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
-> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
-> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-> +F:	drivers/extcon/extcon-usbc-cros-ec.c
-> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
-> +F:	drivers/iio/accel/cros_ec*
-> +F:	drivers/iio/common/cros_ec_sensors/
-> +F:	drivers/iio/light/cros_ec*
-> +F:	drivers/iio/pressure/cros_ec*
-> +F:	drivers/input/keyboard/cros_ec*
-> +F:	drivers/mfd/cros_ec*
-> +F:	drivers/power/supply/cros_usbpd-charger.c
-> +F:	drivers/pwm/pwm-cros-ec.c
-> +F:	drivers/rtc/rtc-cros-ec.c
-> +F:	include/linux/iio/common/cros_ec_sensors_core.h
-> +F:	include/linux/mfd/cros_ec*
-> +
->  CIRRUS LOGIC AUDIO CODEC DRIVERS
->  M:	Brian Austin <brian.austin@cirrus.com>
->  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
-> 
-
-For extcon part,
-Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
-
--- 
-Best Regards,
-Chanwoo Choi
-Samsung Electronics
+T24gTW9uLCAxMCBEZWMgMjAxOCwgRW5yaWMgQmFsbGV0Ym8gaSBTZXJyYSB3cm90ZToKCj4gQ29t
+bWl0ICc4OGJhOTViZWRiNzkgKCJiYWNrbGlnaHQ6IHB3bV9ibDogQ29tcHV0ZSBicmlnaHRuZXNz
+IG9mIExFRAo+IGxpbmVhcmx5IHRvIGh1bWFuIGV5ZSIpJyBhbGxvd3MgdGhlIHBvc3NpYmlsaXR5
+IHRvIGNvbXB1dGUgYSBkZWZhdWx0Cj4gYnJpZ2h0bmVzcyB0YWJsZSB3aGVuIHRoZXJlIGlzbid0
+IHRoZSBicmlnaHRuZXNzLWxldmVscyBwcm9wZXJ0eSBpbiB0aGUKPiBEVC4gVW5mb3J0dW5hdGVs
+eSB0aGUgY2hhbmdlcyBtYWRlIGJyb2tlIHRoZSBwd20gYmFja2xpZ2h0IGZvciB0aGUKPiBub24t
+RFQgYm9hcmRzLgo+IAo+IFVzdWFsbHksIHRoZSBub24tRFQgYm9hcmRzIGRvbid0IHBhc3MgdGhl
+IGJyaWdodG5lc3MgbGV2ZWxzIHZpYSBwbGF0Zm9ybQo+IGRhdGEsIGluc3RlYWQsIGl0IHNldHMg
+dGhlIG1heF9icmlnaHRuZXNzIGluIHRoZWlyIHBsYXRmb3JtIGRhdGEgYW5kIHRoZQo+IGRyaXZl
+ciBjYWxjdWxhdGVzIHRoZSBsZXZlbCB3aXRob3V0IGEgdGFibGUuIFRoZSBvZmZlbmRpbmcgcGF0
+Y2ggYXNzdW1lZAo+IHRoYXQgd2hlbiB0aGVyZSBpcyBubyBicmlnaHRuZXNzIGxldmVscyB0YWJs
+ZSB3ZSBzaG91bGQgY3JlYXRlIG9uZSwgYnV0IHRoaXMKPiBpcyBjbGVhcmx5IHdyb25nIGZvciB0
+aGUgbm9uLURUIGNhc2UuCj4gCj4gQWZ0ZXIgdGhpcyBwYXRjaCB0aGUgY29kZSBoYW5kbGVzIHRo
+ZSBEVCBhbmQgdGhlIG5vbi1EVCBjYXNlIHRha2luZyBpbgo+IGNvbnNpZGVyYXRpb24gYWxzbyBp
+ZiBtYXhfYnJpZ2h0bmVzcyBpcyBzZXQgb3Igbm90Lgo+IAo+IEZpeGVzOiA4OGJhOTViZWRiNzkg
+KCJiYWNrbGlnaHQ6IHB3bV9ibDogQ29tcHV0ZSBicmlnaHRuZXNzIG9mIExFRCBsaW5lYXJseSB0
+byBodW1hbiBleWUiKQo+IENjOiA8c3RhYmxlQHZnZXIua2VybmVsLm9yZz4KPiBSZXBvcnRlZC1i
+eTogUm9iZXJ0IEphcnptaWsgPHJvYmVydC5qYXJ6bWlrQGZyZWUuZnI+Cj4gU2lnbmVkLW9mZi1i
+eTogRW5yaWMgQmFsbGV0Ym8gaSBTZXJyYSA8ZW5yaWMuYmFsbGV0Ym9AY29sbGFib3JhLmNvbT4K
+PiBUZXN0ZWQtYnk6IFJvYmVydCBKYXJ6bWlrIDxyb2JlcnQuamFyem1pa0BmcmVlLmZyPgo+IEFj
+a2VkLWJ5OiBEYW5pZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPgo+IC0t
+LQo+IAo+IENoYW5nZXMgaW4gdjM6Cj4gLSBGaXhlZCBzb21lIHR5cG9zIGluIGNvbW1pdCBtZXNz
+YWdlLgo+IC0gUmVtb3ZlZCAnIGluIEZpeGVzIHRhZy4KPiAKPiBDaGFuZ2VzIGluIHYyOgo+IC0g
+UmViYXNlIG9uIHRvcCBvZiBtYWlubGluZQo+IC0gQWRkIFRlc3RlZC1ieSBhbmQgQWNrZWQtYnkg
+dGFncy4KPiAKPiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCA0MSArKysrKysr
+KysrKysrKysrKysrKysrKysrKystLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgMzUgaW5zZXJ0aW9u
+cygrKSwgNiBkZWxldGlvbnMoLSkKCkZZSSwgdGhpcyBwYXRjaCBpcyBub3cgaW4gTWFpbmxpbmUu
+CgotLSAKTGVlIEpvbmVzIFvmnY7nkLzmlq9dCkxpbmFybyBTZXJ2aWNlcyBUZWNobmljYWwgTGVh
+ZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9sbG93
+IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
+bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
+bG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
