@@ -1,73 +1,68 @@
-From: Alvaro Gamez Machado <alvaro.gamez@hazent.com>
-Subject: Re: [RFC v2] pwm: Add Xilinx AXI Timer in PWM mode support
-Date: Wed, 12 Dec 2018 16:06:12 +0100
-Message-ID: <20181212150610.GA17818@salem.gmr.ssr.upm.es>
-References: <20180322135316.19685-1-alvaro.gamez@hazent.com>
- <20181212104241.GA17654@ulmo>
+From: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
+ sub-drivers
+Date: Wed, 12 Dec 2018 17:06:35 +0000
+Message-ID: <20181212170635.09c3363d@archlinux>
+References: <20181211190953.13626-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181212104241.GA17654@ulmo>
+In-Reply-To: <20181211190953.13626-1-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-i2c@vger.kernel.org, groeck@chromium.org, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Benson Leung <bleung@chromium.org>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob Herring <robh+dt@kernel.org>, Lars-Peter
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Dec 12, 2018 at 11:42:41AM +0100, Thierry Reding wrote:
-> Did any discussion regarding the above-mentioned issues ever ensue? How
-> do you want to proceed? At the very least we'll need some sort of device
-> tree binding for this driver, so perhaps start with a DT binding
-> proposal and take it from there?
+On Tue, 11 Dec 2018 20:09:52 +0100
+Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
 
-No, nothing ever came up about this.
-
-When I sent v1 of this RFC patch I started using it on the application I
-needed it for, so what I did was to copy standard DT binding for
-xlnx,xps-timer-1.00.a (the one that arch/microblaze/kernel.c looks for) and
-replace the compatible string with one I just came up with in the moment,
-xlnx,axi-timer-2.0, but now I don't think this was a good name, and it'd
-look better as xlnx,axi-pwm
-
-This would be my preferred approach, choosing the driver to use for each
-instance of the same IP core by changing the compatible string. I think it's
-cleaner and less error prone, but I don't know if this is acceptable (two
-identical hardware devices with different compatible strings).
-
-For Xilinx IP cores there's an utility from Xilinx that generates DTS
-entries, so leaving the rest of settings as they are could be acceptable,
-meaning that DT binding for an AXI timer being used as a PWM driver would be
-like this, where the only change is the compatible string:
-
-pwm_0: timer@timer@41c10000 {
-	clock-frequency = <83250000>; // Redundant given clocks property
-	clocks = <&clk_bus_0>;
-	compatible = "xlnx,axi-pwm";
-	reg = <0x41c10000 0x10000>;
-	xlnx,count-width = <0x20>; // Could be used as limiting factor
-	xlnx,gen0-assert = <0x1>; // Not used
-	xlnx,gen1-assert = <0x1>; // Not used
-	xlnx,one-timer-only = <0x0>; // If 1, IP can't do PWM
-	xlnx,trig0-assert = <0x1>; // Not used
-	xlnx,trig1-assert = <0x1>; // Not used
-}
-
-Required properties:
-- compatible: should be "xlnx,axi-pwm" or whatever we agree on
-- reg: physical base address and length of the controller's registers
-- clocks: This clock defines the base clock frequency of the PWM hardware
-  system, the period and the duty_cycle of the PWM signal is a multiple of
-  the base period.
-- xlnx,one-timer-only: Should be 1.
-
-Correct me if I'm mistaken, but clock-frequency is redundant both here and
-in the timer definitions, right?
-
-Property 'xlnx,one-timer-only' is also used by kernel.c to check that the IP
-core was synthesized with two timers, needed also for PWM operation, so I'd
-leave too with the same intent.
-
-Thanks for your interest!
-
--- 
-Alvaro G. M.
+> There are multiple ChromeOS EC sub-drivers spread in different
+> subsystems, as all of them are related to the Chrome stuff add
+> Benson and myself as a maintainers for all these sub-drivers.
+> 
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> for iio parts.
+> ---
+> 
+> Changes in v2:
+> - Fix typo in Benson email address.
+> 
+>  MAINTAINERS | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a24129b0b043..bbe7180e2851 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3625,6 +3625,30 @@ S:	Maintained
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+>  F:	drivers/platform/chrome/
+>  
+> +CHROMEOS EC SUBDRIVERS
+> +M:	Benson Leung <bleung@chromium.org>
+> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
+> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
+> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
+> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
+> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+> +F:	drivers/extcon/extcon-usbc-cros-ec.c
+> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
+> +F:	drivers/iio/accel/cros_ec*
+> +F:	drivers/iio/common/cros_ec_sensors/
+> +F:	drivers/iio/light/cros_ec*
+> +F:	drivers/iio/pressure/cros_ec*
+> +F:	drivers/input/keyboard/cros_ec*
+> +F:	drivers/mfd/cros_ec*
+> +F:	drivers/power/supply/cros_usbpd-charger.c
+> +F:	drivers/pwm/pwm-cros-ec.c
+> +F:	drivers/rtc/rtc-cros-ec.c
+> +F:	include/linux/iio/common/cros_ec_sensors_core.h
+> +F:	include/linux/mfd/cros_ec*
+> +
+>  CIRRUS LOGIC AUDIO CODEC DRIVERS
+>  M:	Brian Austin <brian.austin@cirrus.com>
+>  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
