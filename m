@@ -1,77 +1,76 @@
-From: Guenter Roeck <groeck@google.com>
-Subject: Re: [PATCH] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
-Date: Thu, 13 Dec 2018 06:43:02 -0800
-Message-ID: <CABXOdTcN5d69w4vorq_5hGPiaq_nDcAGDNVbU6gyVjNWy9Yubw@mail.gmail.com>
-References: <20181211190053.9997-1-enric.balletbo@collabora.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
+Date: Thu, 13 Dec 2018 17:18:31 +0100
+Message-ID: <20181213161831.GC13531@ulmo>
+References: <20181212220922.18759-1-paul@crapouillou.net>
+ <20181212220922.18759-16-paul@crapouillou.net>
+ <20181213092409.ml4wpnzow2nnszkd@pengutronix.de>
+ <1544709795.18952.1@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="8NvZYKFJsRX2Djef"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211190053.9997-1-enric.balletbo@collabora.com>
+Content-Disposition: inline
+In-Reply-To: <1544709795.18952.1@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, a.zummo@towertech.it, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, alexandre.belloni@bootlin.com, linux-i2c@vger.kernel.org, Guenter Roeck <groeck@chromium.org>, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE" <devicetree@vger.kernel.org>, thierry.reding@gmail.com, linux-pm@vger.kernel.org, bleung@chromiumg.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
 List-Id: linux-pwm@vger.kernel.org
 
-Enric,
 
-On Tue, Dec 11, 2018 at 11:01 AM Enric Balletbo i Serra
-<enric.balletbo@collabora.com> wrote:
->
-> There are multiple ChromeOS EC sub-drivers spread in different
-> subsystems, as all of them are related to the Chrome stuff add
-> Benson and myself as a maintainers for all these sub-drivers.
->
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> ---
->
->  MAINTAINERS | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a24129b0b043..2f24f5c977ca 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3625,6 +3625,30 @@ S:       Maintained
->  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
->  F:     drivers/platform/chrome/
->
-> +CHROMEOS EC SUBDRIVERS
-> +M:     Benson Leung <bleung@chromiumg.org>
-> +M:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+--8NvZYKFJsRX2Djef
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It might possibly make sense to add
+On Thu, Dec 13, 2018 at 03:03:15PM +0100, Paul Cercueil wrote:
+> Hi,
+>=20
+> Le jeu. 13 d=C3=A9c. 2018 =C3=A0 10:24, Uwe Kleine-K=C3=B6nig
+> <u.kleine-koenig@pengutronix.de> a =C3=A9crit :
+> > Hello,
+> >=20
+> > On Wed, Dec 12, 2018 at 11:09:10PM +0100, Paul Cercueil wrote:
+> > >  The PWM in the JZ4725B works the same as in the JZ4740, except that
+> > > it
+> > >  only has 6 channels available instead of 8.
+> >=20
+> > this driver is probed only from device tree? If yes, it might be
+> > sensible to specify the number of PWMs there and get it from there.
+> > There doesn't seem to be a generic binding for that, but there are
+> > several drivers that could benefit from it. (This is a bigger project
+> > though and shouldn't stop your patch. Still more as it already got
+> > Thierry's ack.)
+>=20
+> I think there needs to be a proper guideline, as there doesn't seem to be
+> a consensus about this. I learned from emails with Rob and Linus (Walleij)
+> that I should not have in devicetree what I can deduce from the compatible
+> string.
 
-R: Guenter Roeck <groeck@chromium.org>
+Correct. If the compatible string already defines the number of PWMs
+that the hardware exposes, there's no need to explicitly say so again in
+DT.
 
-since it looks like I am doing a lot of the actual reviewing anyway.
+Thierry
 
-Thanks,
-Guenter
+--8NvZYKFJsRX2Djef
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +S:     Maintained
-> +F:     Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
-> +F:     Documentation/devicetree/bindings/input/cros-ec-keyb.txt
-> +F:     Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-> +F:     Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
-> +F:     Documentation/devicetree/bindings/mfd/cros-ec.txt
-> +F:     Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-> +F:     drivers/extcon/extcon-usbc-cros-ec.c
-> +F:     drivers/i2c/busses/i2c-cros-ec-tunnel.c
-> +F:     drivers/iio/accel/cros_ec*
-> +F:     drivers/iio/common/cros_ec_sensors/
-> +F:     drivers/iio/light/cros_ec*
-> +F:     drivers/iio/pressure/cros_ec*
-> +F:     drivers/input/keyboard/cros_ec*
-> +F:     drivers/mfd/cros_ec*
-> +F:     drivers/power/supply/cros_usbpd-charger.c
-> +F:     drivers/pwm/pwm-cros-ec.c
-> +F:     drivers/rtc/rtc-cros-ec.c
-> +F:     include/linux/iio/common/cros_ec_sensors_core.h
-> +F:     include/linux/mfd/cros_ec*
-> +
->  CIRRUS LOGIC AUDIO CODEC DRIVERS
->  M:     Brian Austin <brian.austin@cirrus.com>
->  M:     Paul Handrigan <Paul.Handrigan@cirrus.com>
-> --
-> 2.19.2
->
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwShlcACgkQ3SOs138+
+s6FpGBAAnSdBj1VfdT/8QgKaKbqU4xM6IIM84lPPIcpnwOx61r4Q9wKVlcWX7I9h
+uYpGNc+ObutBYqeqCt73aJZ6AW9EQyvD47/D2dMHt6SexpCAse2Rg7OfwPxV3qN7
+NlfVdBSqtBGcrVZZLtZ3+JPkLzIUhl4UooMQo6j73FCRiww7k1B5YfdrGeN38kDA
+o8nMXKNuSRSXSF3KUNeDHx2mIB1BjRJJjW5pOwfIbQbO4EdhxHzkgS54UlZU/bUr
+z0gqwFMOGsRPrhSmvDv5CR5GKbbxC/YR3uPcAFOSgEuXr+1LEaEtzhTea5h1yokw
+POmWLezWZ6Y8RlhawFhnBWGg44E/HO1x5H3UVUQjmM16I++lovIyZh8PwwAhyO5q
+6mEWlcLjBnPoOXh7t8RRmZUJ5s6za2l2oBm6Ot/mjDjrPmabwNCMVDTz5GyHDtK3
+uflj6xxSlSt8eQV66yFA62wdoXPz5MFSGumz+kOQQOs2rqzSGh3C7rp3nU5xmE/K
+DfsNs92AvWte+ad0nbvZ3IrPYkZH/FdJErx6QMEBUvbwcmwxPh0m4VfKaa8DUZ7Z
+s9dKdJYLkT6RtGpBK9qK3Anrh7Cp6+zImtyf7pyh89KN2P4oIQroq51Ape6gpFnt
+RZVc3NqUTOk2/RXelfCPC23ShWn1dxzOSOhXrtQ6FQOAKwQ7bkY=
+=qfF6
+-----END PGP SIGNATURE-----
+
+--8NvZYKFJsRX2Djef--
