@@ -1,81 +1,50 @@
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
- sub-drivers
-Date: Wed, 12 Dec 2018 23:29:37 +0100
-Message-ID: <20181212222937.GL19816@piout.net>
-References: <20181211190953.13626-1-enric.balletbo@collabora.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 3/3] pwm: imx: Implement get_state() function for
+ hardware readout
+Date: Thu, 13 Dec 2018 09:52:13 +0100
+Message-ID: <20181213085213.7k5ihn7bdrtess3g@pengutronix.de>
+References: <1538403588-68850-1-git-send-email-michal.vokac@ysoft.com>
+ <1538403588-68850-3-git-send-email-michal.vokac@ysoft.com>
+ <20181212105432.GD17654@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181211190953.13626-1-enric.balletbo@collabora.com>
+In-Reply-To: <20181212105432.GD17654@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org, groeck@chromium.org, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Benson Leung <bleung@chromium.org>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob Herring <robh+dt@kernel.org>, Lars-Peter Clausen <lars@>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 11/12/2018 20:09:52+0100, Enric Balletbo i Serra wrote:
-> There are multiple ChromeOS EC sub-drivers spread in different
-> subsystems, as all of them are related to the Chrome stuff add
-> Benson and myself as a maintainers for all these sub-drivers.
+On Wed, Dec 12, 2018 at 11:54:32AM +0100, Thierry Reding wrote:
+> On Mon, Oct 01, 2018 at 04:19:48PM +0200, Michal Vokáč wrote:
+> > Implement the get_state() function and set the initial state to reflect
+> > real state of the hardware. This allows to keep the PWM running if it was
+> > enabled in bootloader. It is very similar to the GPIO behavior. GPIO pin
+> > set as output in bootloader keep the same setting in Linux unless it is
+> > reconfigured.
+> > 
+> > If we find the PWM block enabled we need to prepare and enable its source
+> > clock otherwise the clock will be disabled late in the boot as unused.
+> > That will leave the PWM in enabled state but with disabled clock. That has
+> > a side effect that the PWM output is left at its current level at which
+> > the clock was disabled. It is totally non-deterministic and it may be LOW
+> > or HIGH.
+> > 
+> > Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
+> > ---
+> >  drivers/pwm/pwm-imx.c | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 53 insertions(+)
 > 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Applied, thanks.
 
-You definitively don't need my ack to get that applied but anyway:
+Did you miss my feedback for this patch or did you choose to ignore it?
 
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-
-However, you should probably indicate which tree do you expect that to
-go through ;)
-
-> ---
-> 
-> Changes in v2:
-> - Fix typo in Benson email address.
-> 
->  MAINTAINERS | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a24129b0b043..bbe7180e2851 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3625,6 +3625,30 @@ S:	Maintained
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
->  F:	drivers/platform/chrome/
->  
-> +CHROMEOS EC SUBDRIVERS
-> +M:	Benson Leung <bleung@chromium.org>
-> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
-> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
-> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
-> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
-> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-> +F:	drivers/extcon/extcon-usbc-cros-ec.c
-> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
-> +F:	drivers/iio/accel/cros_ec*
-> +F:	drivers/iio/common/cros_ec_sensors/
-> +F:	drivers/iio/light/cros_ec*
-> +F:	drivers/iio/pressure/cros_ec*
-> +F:	drivers/input/keyboard/cros_ec*
-> +F:	drivers/mfd/cros_ec*
-> +F:	drivers/power/supply/cros_usbpd-charger.c
-> +F:	drivers/pwm/pwm-cros-ec.c
-> +F:	drivers/rtc/rtc-cros-ec.c
-> +F:	include/linux/iio/common/cros_ec_sensors_core.h
-> +F:	include/linux/mfd/cros_ec*
-> +
->  CIRRUS LOGIC AUDIO CODEC DRIVERS
->  M:	Brian Austin <brian.austin@cirrus.com>
->  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
-> -- 
-> 2.19.2
-> 
+Best regards
+Uwe
 
 -- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
