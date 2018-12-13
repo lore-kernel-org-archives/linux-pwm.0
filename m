@@ -1,57 +1,117 @@
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
- sub-drivers
-Date: Thu, 13 Dec 2018 11:59:23 +0100
-Message-ID: <20181213105923.GN19816@piout.net>
-References: <20181211190953.13626-1-enric.balletbo@collabora.com>
- <20181212222937.GL19816@piout.net>
- <6f688bfe-2ebe-1934-0375-016ae859dcfb@collabora.com>
- <20181213095050.GM19816@piout.net>
- <d603fcb9-c1f1-a622-5774-10fac45fc7a5@collabora.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v8 12/26] pwm: jz4740: Allow selection of PWM channels 0
+ and 1
+Date: Thu, 13 Dec 2018 14:58:31 +0100
+Message-ID: <1544709511.18952.0@crapouillou.net>
+References: <20181212220922.18759-1-paul@crapouillou.net>
+        <20181212220922.18759-13-paul@crapouillou.net>
+        <20181213091822.r5ilpsllfhzaiqw4@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <d603fcb9-c1f1-a622-5774-10fac45fc7a5@collabora.com>
+In-Reply-To: <20181213091822.r5ilpsllfhzaiqw4@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org, groeck@chromium.org, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Benson Leung <bleung@chromium.org>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob Herring <robh+dt@kernel.org>, Lars-Peter Clausen <lars@>
+To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
 List-Id: linux-pwm@vger.kernel.org
 
-On 13/12/2018 10:55:29+0100, Enric Balletbo i Serra wrote:
-> 
-> 
-> On 13/12/18 10:50, Alexandre Belloni wrote:
-> > On 13/12/2018 10:30:16+0100, Enric Balletbo i Serra wrote:
-> >>> However, you should probably indicate which tree do you expect that to
-> >>> go through ;)
-> >>>
-> >>
-> >> Well, these are sub-drivers for different subsystems but are related to the main
-> >> ChromeOS EC. I expect all go through their specific subsystem and their
-> >> maintainer. I.e the rtc driver go through your tree, the mfd go through Lee's
-> >> tree, iio drivers through Jonathan's tree, etc. This is the reason I did not add
-> >> the tree. Main purpose here as that Benson and I are aware when someone sends a
-> >> change on one of the sub-drivers and we can review these patches.
-> >>
-> > 
-> > Sure, sorry I was not clear but I was asking about this particular
-> > patch because as it is, you will get acks from all the maintainers but I
-> > think they all think someone else will apply it ;)
-> > 
-> 
-> Ah, ok, I didn't got it :)
-> 
-> If nobody complains and we have all the acks I think that this can go through
-> the Benson's tree (chrome-platform). The reason is that he already has a couple
-> of patches related to this (remove Olof as a chrome-platform maintainer and
-> adding me)
-> 
+Hi,
 
-Ok, great.
+Le jeu. 13 d=E9c. 2018 =E0 10:18, Uwe Kleine-K=F6nig=20
+<u.kleine-koenig@pengutronix.de> a =E9crit :
+> On Wed, Dec 12, 2018 at 11:09:07PM +0100, Paul Cercueil wrote:
+>>  The TCU channels 0 and 1 were previously reserved for system tasks,=20
+>> and
+>>  thus unavailable for PWM.
+>>=20
+>>  The driver will now only allow a PWM channel to be requested if=20
+>> memory
+>>  resources corresponding to the register area of the channel were
+>>  supplied to the driver. This allows the TCU channels to be reserved=20
+>> for
+>>  system tasks from within the devicetree.
+>>=20
+>>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>=20
+> While there is someone caring for this driver I'd like to complete (a
+> bit) my picture about the different capabilities and specialities of=20
+> the
+> supported PWMs. So I have a few questions:
+>=20
+> Is there a publicly available reference manual for this device? (If
+> yes, adding a link to the driver would be great.)
 
+I have them here: https://zcrc.me/~paul/jz_docs/
 
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+> jz4740_pwm_config looks as if the currently running period isn't
+> completed before the new config is in effect. Is that correct? If yes,
+> can this be fixed? A similar question for set_polarity: Does setting=20
+> the
+> JZ_TIMER_CTRL_PWM_ACTIVE_LOW bit in the control register take effect
+> immediately or is this shadowed until the next period starts?
+
+I don't really know. We only use this driver for a rumble motor and=20
+backlight.
+Somebody would have to check with a logic analyzer.
+
+> How does the device's output behave after the PWM is disabled?
+> Does it complete the currently running period? How does the output
+> behave then? (active/inactive/high/low/high-z?)
+
+There's a bit to toggle between "graceful" shutdown (bit clear) and=20
+"abrupt"
+shutdown (bit set). TCSR bit 9. I think that graceful shutdown will=20
+complete
+the running period, then keep the level active. Abrupt shutdown will=20
+keep the
+current level of the line.
+
+>>  @@ -42,11 +68,7 @@ static int jz4740_pwm_request(struct pwm_chip=20
+>> *chip, struct pwm_device *pwm)
+>>   	char clk_name[16];
+>>   	int ret;
+>>=20
+>>  -	/*
+>>  -	 * Timers 0 and 1 are used for system tasks, so they are=20
+>> unavailable
+>>  -	 * for use as PWMs.
+>>  -	 */
+>>  -	if (pwm->hwpwm < 2)
+>>  +	if (!jz4740_pwm_can_use_chn(jz, pwm->hwpwm))
+>>   		return -EBUSY;
+>=20
+> Maybe EBUSY isn't the best choice here. If the needed register space=20
+> for
+> the requested pwm is not included in the memory resources provided to
+> the device I'd prefer ENXIO or ENODEV.
+
+The idea was that if we don't get the register space we need, that means
+the channel is used for something else, hence the EBUSY. Should I switch
+it to ENXIO?
+
+>>   	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
+>>  @@ -208,6 +230,12 @@ static int jz4740_pwm_probe(struct=20
+>> platform_device *pdev)
+>>   		return -EINVAL;
+>>   	}
+>>=20
+>>  +	jz4740->parent_res =3D platform_get_resource(
+>>  +				to_platform_device(dev->parent),
+>>  +				IORESOURCE_MEM, 0);
+>>  +	if (!jz4740->parent_res)
+>>  +		return -EINVAL;
+>>  +
+>>   	jz4740->chip.dev =3D dev;
+>>   	jz4740->chip.ops =3D &jz4740_pwm_ops;
+>>   	jz4740->chip.npwm =3D NUM_PWM;
+>=20
+> Thanks
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig       =20
+>     |
+> Industrial Linux Solutions                 |=20
+> http://www.pengutronix.de/  |
+=
