@@ -1,104 +1,77 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v8 11/26] pwm: jz4740: Use regmap and clocks from TCU
- driver
-Date: Thu, 13 Dec 2018 15:34:48 +0100
-Message-ID: <1544711688.18952.2@crapouillou.net>
-References: <20181212220922.18759-1-paul@crapouillou.net>
-        <20181212220922.18759-12-paul@crapouillou.net>
-        <20181213093049.rxdvf6tip7iqdj3c@pengutronix.de>
+From: Guenter Roeck <groeck@google.com>
+Subject: Re: [PATCH] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
+Date: Thu, 13 Dec 2018 06:43:02 -0800
+Message-ID: <CABXOdTcN5d69w4vorq_5hGPiaq_nDcAGDNVbU6gyVjNWy9Yubw@mail.gmail.com>
+References: <20181211190053.9997-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181213093049.rxdvf6tip7iqdj3c@pengutronix.de>
+In-Reply-To: <20181211190053.9997-1-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, a.zummo@towertech.it, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, alexandre.belloni@bootlin.com, linux-i2c@vger.kernel.org, Guenter Roeck <groeck@chromium.org>, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE" <devicetree@vger.kernel.org>, thierry.reding@gmail.com, linux-pm@vger.kernel.org, bleung@chromiumg.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>, Rob
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Enric,
 
-Le jeu. 13 d=E9c. 2018 =E0 10:30, Uwe Kleine-K=F6nig=20
-<u.kleine-koenig@pengutronix.de> a =E9crit :
-> Hello,
->=20
-> On Wed, Dec 12, 2018 at 11:09:06PM +0100, Paul Cercueil wrote:
->>  [...]
->>   static int jz4740_pwm_enable(struct pwm_chip *chip, struct=20
->> pwm_device *pwm)
->>   {
->>  -	uint32_t ctrl =3D jz4740_timer_get_ctrl(pwm->pwm);
->>  +	struct jz4740_pwm_chip *jz =3D to_jz4740(chip);
->>=20
->>  -	ctrl |=3D JZ_TIMER_CTRL_PWM_ENABLE;
->>  -	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
->>  -	jz4740_timer_enable(pwm->hwpwm);
->>  +	/* Enable PWM output */
->>  +	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
->>  +				TCU_TCSR_PWM_EN, TCU_TCSR_PWM_EN);
->=20
-> Usually follow-up lines are indented to the matching parenthesis.
+On Tue, Dec 11, 2018 at 11:01 AM Enric Balletbo i Serra
+<enric.balletbo@collabora.com> wrote:
+>
+> There are multiple ChromeOS EC sub-drivers spread in different
+> subsystems, as all of them are related to the Chrome stuff add
+> Benson and myself as a maintainers for all these sub-drivers.
+>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> ---
+>
+>  MAINTAINERS | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a24129b0b043..2f24f5c977ca 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3625,6 +3625,30 @@ S:       Maintained
+>  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+>  F:     drivers/platform/chrome/
+>
+> +CHROMEOS EC SUBDRIVERS
+> +M:     Benson Leung <bleung@chromiumg.org>
+> +M:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-OK.
+It might possibly make sense to add
 
->>  [...]
->>   static int jz4740_pwm_config(struct pwm_chip *chip, struct=20
->> pwm_device *pwm,
->>   			     int duty_ns, int period_ns)
->>   {
->>   	struct jz4740_pwm_chip *jz4740 =3D to_jz4740(pwm->chip);
->>  +	struct clk *clk =3D jz4740->clks[pwm->hwpwm];
->>  +	unsigned long rate, new_rate, period, duty;
->>   	unsigned long long tmp;
->>  -	unsigned long period, duty;
->>  -	unsigned int prescaler =3D 0;
->>  -	uint16_t ctrl;
->>  +	unsigned int tcsr;
->>   	bool is_enabled;
->>=20
->>  -	tmp =3D (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
->>  -	do_div(tmp, 1000000000);
->>  -	period =3D tmp;
->>  +	rate =3D clk_get_rate(clk);
->>  +
->>  +	for (;;) {
->>  +		tmp =3D (unsigned long long) rate * period_ns;
->>  +		do_div(tmp, 1000000000);
->>=20
->>  -	while (period > 0xffff && prescaler < 6) {
->>  -		period >>=3D 2;
->>  -		++prescaler;
->>  +		if (tmp <=3D 0xffff)
->>  +			break;
->>  +
->>  +		new_rate =3D clk_round_rate(clk, rate / 2);
->>  +
->>  +		if (new_rate < rate)
->>  +			rate =3D new_rate;
->>  +		else
->>  +			return -EINVAL;
->>   	}
->>=20
->>  -	if (prescaler =3D=3D 6)
->>  -		return -EINVAL;
->>  +	clk_set_rate(clk, rate);
->=20
-> Maybe this could better live in a separate patch. If you split still
-> further to have the conversion to regmap in a single patch, then the
-> conversion to the clk_* functions and then improve the algorithm for=20
-> the
-> clk settings each of the patches is easier to review than this one=20
-> patch
-> that does all three things at once.
+R: Guenter Roeck <groeck@chromium.org>
 
-I can try.
+since it looks like I am doing a lot of the actual reviewing anyway.
 
-> Best regards
-> Uwe
->=20
+Thanks,
+Guenter
+
+> +S:     Maintained
+> +F:     Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
+> +F:     Documentation/devicetree/bindings/input/cros-ec-keyb.txt
+> +F:     Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+> +F:     Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
+> +F:     Documentation/devicetree/bindings/mfd/cros-ec.txt
+> +F:     Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+> +F:     drivers/extcon/extcon-usbc-cros-ec.c
+> +F:     drivers/i2c/busses/i2c-cros-ec-tunnel.c
+> +F:     drivers/iio/accel/cros_ec*
+> +F:     drivers/iio/common/cros_ec_sensors/
+> +F:     drivers/iio/light/cros_ec*
+> +F:     drivers/iio/pressure/cros_ec*
+> +F:     drivers/input/keyboard/cros_ec*
+> +F:     drivers/mfd/cros_ec*
+> +F:     drivers/power/supply/cros_usbpd-charger.c
+> +F:     drivers/pwm/pwm-cros-ec.c
+> +F:     drivers/rtc/rtc-cros-ec.c
+> +F:     include/linux/iio/common/cros_ec_sensors_core.h
+> +F:     include/linux/mfd/cros_ec*
+> +
+>  CIRRUS LOGIC AUDIO CODEC DRIVERS
+>  M:     Brian Austin <brian.austin@cirrus.com>
+>  M:     Paul Handrigan <Paul.Handrigan@cirrus.com>
 > --
-> Pengutronix e.K.                           | Uwe Kleine-K=F6nig       =20
->     |
-> Industrial Linux Solutions                 |=20
-> http://www.pengutronix.de/  |
-=
+> 2.19.2
+>
