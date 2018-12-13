@@ -1,67 +1,84 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RFC PATCH v4 2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Thu, 13 Dec 2018 09:56:05 +0100
-Message-ID: <20181213085605.j2e76y67srg5qfbc@pengutronix.de>
-References: <1544616263-82642-1-git-send-email-michal.vokac@ysoft.com>
- <1544616263-82642-3-git-send-email-michal.vokac@ysoft.com>
+Subject: Re: [PATCH v8 12/26] pwm: jz4740: Allow selection of PWM channels 0
+ and 1
+Date: Thu, 13 Dec 2018 10:18:22 +0100
+Message-ID: <20181213091822.r5ilpsllfhzaiqw4@pengutronix.de>
+References: <20181212220922.18759-1-paul@crapouillou.net>
+ <20181212220922.18759-13-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1544616263-82642-3-git-send-email-michal.vokac@ysoft.com>
+In-Reply-To: <20181212220922.18759-13-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?Vm9rw6HEjQ==?= Michal <Michal.Vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+On Wed, Dec 12, 2018 at 11:09:07PM +0100, Paul Cercueil wrote:
+> The TCU channels 0 and 1 were previously reserved for system tasks, and
+> thus unavailable for PWM.
+> 
+> The driver will now only allow a PWM channel to be requested if memory
+> resources corresponding to the register area of the channel were
+> supplied to the driver. This allows the TCU channels to be reserved for
+> system tasks from within the devicetree.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 
-On Wed, Dec 12, 2018 at 12:04:51PM +0000, Vokáč Michal wrote:
-> Normally the PWM output is held LOW when PWM is disabled. This can cause
-> problems when inverted PWM signal polarity is needed. With this behavior
-> the connected circuit is fed by 100% duty cycle instead of being shut-off.
-> 
-> Allow users to define a "pwm" and a "gpio" pinctrl states. The pwm pinctrl
-> state is selected when PWM is enabled and the gpio pinctrl state is
-> selected when PWM is disabled. In the gpio state the new pwm-gpios GPIO is
-> configured as input and the internal pull-up resistor is used to pull the
-> output level high.
-> 
-> If all the pinctrl states and the pwm-gpios GPIO are not correctly
-> specified in DT the PWM work as usual.
-> 
-> As an example, with this patch a PWM controlled backlight with inversed
-> signal polarity can be used in full brightness range. Without this patch
-> the backlight can not be turned off as brightness = 0 disables the PWM
-> and that in turn set PWM output LOW, that is full brightness.
-> 
-> Inverted output of the PWM with "default" and with "pwm"+"gpio" pinctrl:
-> 
-> +--------------+------------+---------------+----------- +-------------+
-> | After reset  | Bootloader |   PWM probe   |     PWM    |     PWM     |
-> | 100k pull-up |            |               | enable 30% |   disable   |
-> +--------------+------------+---------------+------------+-------------+
-> | pinctrl      |    none    |    default    |   default  |   default   |
-> | out H   __________________                   __   __                 |
-> | out L                     \_________________/  \_/  \_/\____________ |
-> |                                           ^    ^    ^                |
-> +--------------+------------+---------------+------------+-------------+
-> | pinctrl      |    none    |      gpio     |     pwm    |     gpio    |
-> | out H   __________________________________   __   __   _____________ |
-> | out L                                     \_/  \_/  \_/              |
-> |                                           ^    ^    ^                |
-> +----------------------------------------------------------------------+
+While there is someone caring for this driver I'd like to complete (a
+bit) my picture about the different capabilities and specialities of the
+supported PWMs. So I have a few questions:
 
-Just for the record: My last concern against this patch set (that I sent
-for v3) and v4 of the series criss-crossed. So the problem with the
-peaks that could happen is still unaddressed.
+Is there a publicly available reference manual for this device? (If
+yes, adding a link to the driver would be great.)
 
-Best regards
+jz4740_pwm_config looks as if the currently running period isn't
+completed before the new config is in effect. Is that correct? If yes,
+can this be fixed? A similar question for set_polarity: Does setting the
+JZ_TIMER_CTRL_PWM_ACTIVE_LOW bit in the control register take effect
+immediately or is this shadowed until the next period starts?
+
+How does the device's output behave after the PWM is disabled?
+Does it complete the currently running period? How does the output
+behave then? (active/inactive/high/low/high-z?)
+
+> @@ -42,11 +68,7 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+>  	char clk_name[16];
+>  	int ret;
+>  
+> -	/*
+> -	 * Timers 0 and 1 are used for system tasks, so they are unavailable
+> -	 * for use as PWMs.
+> -	 */
+> -	if (pwm->hwpwm < 2)
+> +	if (!jz4740_pwm_can_use_chn(jz, pwm->hwpwm))
+>  		return -EBUSY;
+
+Maybe EBUSY isn't the best choice here. If the needed register space for
+the requested pwm is not included in the memory resources provided to
+the device I'd prefer ENXIO or ENODEV.
+
+>  	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
+> @@ -208,6 +230,12 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
+>  		return -EINVAL;
+>  	}
+>  
+> +	jz4740->parent_res = platform_get_resource(
+> +				to_platform_device(dev->parent),
+> +				IORESOURCE_MEM, 0);
+> +	if (!jz4740->parent_res)
+> +		return -EINVAL;
+> +
+>  	jz4740->chip.dev = dev;
+>  	jz4740->chip.ops = &jz4740_pwm_ops;
+>  	jz4740->chip.npwm = NUM_PWM;
+
+Thanks
 Uwe
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+Pengutronix e.K.                           | Uwe Kleine-K�nig            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
