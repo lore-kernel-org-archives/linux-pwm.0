@@ -1,82 +1,66 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
-Date: Fri, 14 Dec 2018 15:26:28 +0100
-Message-ID: <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
-References: <20181212220922.18759-1-paul@crapouillou.net>
- <20181212220922.18759-16-paul@crapouillou.net>
- <20181213092409.ml4wpnzow2nnszkd@pengutronix.de>
- <1544709795.18952.1@crapouillou.net>
- <20181213204219.onem3q6dcmakusl2@pengutronix.de>
- <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
+From: Guenter Roeck <groeck@google.com>
+Subject: Re: [PATCH v3] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
+Date: Fri, 14 Dec 2018 06:29:19 -0800
+Message-ID: <CABXOdTdDNaPgBK74dcTgRDy5mJKztZ9GTGRiXDv=ZXOwauO-2A@mail.gmail.com>
+References: <20181214114858.21231-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
+In-Reply-To: <20181214114858.21231-1-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc: Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, paul.burton@mips.com, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, ezequiel@collabora.co.uk, prasannatsmkumar@gmail.com, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>, od@zcrc.me
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, alexandre.belloni@bootlin.com, linux-i2c@vger.kernel.org, Guenter Roeck <groeck@chromium.org>, kernel@collabora.com, linux-rtc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Benson Leung <bleung@chromium.org>, Sebastian Reichel <sre@kernel.org>, linux-input@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE" <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linar>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+On Fri, Dec 14, 2018 at 3:49 AM Enric Balletbo i Serra
+<enric.balletbo@collabora.com> wrote:
+>
+> There are multiple ChromeOS EC sub-drivers spread in different
+> subsystems, as all of them are related to the Chrome stuff add
+> Benson and myself as a maintainers for all these sub-drivers.
+>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Signed-off-by: Benson Leung <bleung@chromium.org>
+> Acked-by: Wolfram Sang <wsa@the-dreams.de>
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> for iio parts.
+> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
 
-On Fri, Dec 14, 2018 at 02:50:20PM +0100, Linus Walleij wrote:
-> On Thu, Dec 13, 2018 at 9:42 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > [Adding Linus Walleij to Cc:]
-> > On Thu, Dec 13, 2018 at 03:03:15PM +0100, Paul Cercueil wrote:
-> > > Le jeu. 13 déc. 2018 à 10:24, Uwe Kleine-König
-> > > <u.kleine-koenig@pengutronix.de> a écrit :
-> > > > On Wed, Dec 12, 2018 at 11:09:10PM +0100, Paul Cercueil wrote:
-> > > > >  The PWM in the JZ4725B works the same as in the JZ4740, except that
-> > > > > it
-> > > > >  only has 6 channels available instead of 8.
-> > > >
-> > > > this driver is probed only from device tree? If yes, it might be
-> > > > sensible to specify the number of PWMs there and get it from there.
-> > > > There doesn't seem to be a generic binding for that, but there are
-> > > > several drivers that could benefit from it. (This is a bigger project
-> > > > though and shouldn't stop your patch. Still more as it already got
-> > > > Thierry's ack.)
-> > >
-> > > I think there needs to be a proper guideline, as there doesn't seem to be
-> > > a consensus about this. I learned from emails with Rob and Linus (Walleij)
-> > > that I should not have in devicetree what I can deduce from the compatible
-> > > string.
-> >
-> > I understood them a bit differently. It is ok to deduce things from the
-> > compatible string. But if you define a generic property (say) "num-pwms"
-> > that is used uniformly in most bindings this is ok, too. (And then the
-> > two different devices could use the same compatible.)
-> >
-> > An upside of the generic "num-pwms" property is that the pwm core could
-> > sanity check pwm phandles before passing them to the hardware drivers.
-> 
-> I don't know if this helps, but in GPIO we have "ngpios" which is
-> used to augment an existing block as to the number of lines actually
-> used with it.
-> 
-> The typical case is that an ASIC engineer synthesize a block for
-> 32 GPIOs but only 12 of them are routed to external pads. So
-> we augment the behaviour of that driver to only use 12 of the
-> 32 lines.
-> 
-> I guess using the remaining 20 lines "works" in a sense but they
-> have no practical use and will just bias electrons in the silicon
-> for no use.
+Acked-by: Guenter Roeck <groeck@chromium.org>
 
-This looks very similar to the case under discussion.
- 
-> So if the PWM case is something similar, then by all means add
-> num-pwms.
-
-.. or "npwms" to use the same nomenclature as the gpio binding?
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> ---
+>
+> Changes in v3:
+> - Add collected acks
+> - Use a cros[-_]ec pattern instead of list all the files.
+> - Add Guenter as a reviewer.
+>
+> Changes in v2:
+> - Fix typo in Benson email address.
+>
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e7260191301b..437e036435d5 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3629,6 +3629,14 @@ S:       Maintained
+>  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+>  F:     drivers/platform/chrome/
+>
+> +CHROMEOS EC SUBDRIVERS
+> +M:     Benson Leung <bleung@chromium.org>
+> +M:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> +R:     Guenter Roeck <groeck@chromium.org>
+> +S:     Maintained
+> +N:     cros[-_]ec
+> +F:     drivers/power/supply/cros_usbpd-charger.c
+> +
+>  CIRRUS LOGIC AUDIO CODEC DRIVERS
+>  M:     Brian Austin <brian.austin@cirrus.com>
+>  M:     Paul Handrigan <Paul.Handrigan@cirrus.com>
+> --
+> 2.19.2
+>
