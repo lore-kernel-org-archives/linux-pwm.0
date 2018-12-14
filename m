@@ -1,32 +1,43 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
-Date: Fri, 14 Dec 2018 15:56:39 +0100
-Message-ID: <CACRpkdYo0RrQTnjQhxG=CRa1AWoRrVjL9naYC_ZCz2_dzAz-Jg@mail.gmail.com>
-References: <20181212220922.18759-1-paul@crapouillou.net> <20181212220922.18759-16-paul@crapouillou.net>
- <20181213092409.ml4wpnzow2nnszkd@pengutronix.de> <1544709795.18952.1@crapouillou.net>
- <20181213204219.onem3q6dcmakusl2@pengutronix.de> <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
- <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
+From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
+Subject: Re: [3/3] pwm: imx: Implement get_state() function for hardware
+ readout
+Date: Fri, 14 Dec 2018 16:40:30 +0000
+Message-ID: <37cc424e-cafd-acb6-d7d2-c6c98abf53de@ysoft.com>
+References: <1538403588-68850-3-git-send-email-michal.vokac@ysoft.com>
+ <20181212105118.GA9268@taurus.defre.kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
+In-Reply-To: <20181212105118.GA9268@taurus.defre.kleine-koenig.org>
+Content-Language: en-US
+Content-ID: <000F27EA2DB23041AA4355250AD4BF89@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Paul Cercueil <paul@crapouillou.net>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, paul.burton@mips.com, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, ezequiel@collabora.co.uk, prasannatsmkumar@gmail.com, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk <linux-clk>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <uwe@kleine-koenig.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Dec 14, 2018 at 3:26 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Fri, Dec 14, 2018 at 02:50:20PM +0100, Linus Walleij wrote:
-
-> > So if the PWM case is something similar, then by all means add
-> > num-pwms.
->
-> .. or "npwms" to use the same nomenclature as the gpio binding?
-
-Either works for me, I don't have a very high need of consistency
-but there are others that have so your suggestion seems wise.
-
-Yours,
-Linus Walleij
+T24gMTIuMTIuMjAxOCAxMTo1MSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+IEhlbGxvLA0K
+PiANCj4gT24gTW9uLCBPY3QgMDEsIDIwMTggYXQgMDQ6MTk6NDhQTSArMDIwMCwgTWljaGFsIFZv
+a8OhxI0gd3JvdGU6DQo+PiBJbXBsZW1lbnQgdGhlIGdldF9zdGF0ZSgpIGZ1bmN0aW9uIGFuZCBz
+ZXQgdGhlIGluaXRpYWwgc3RhdGUgdG8gcmVmbGVjdA0KPj4gcmVhbCBzdGF0ZSBvZiB0aGUgaGFy
+ZHdhcmUuIFRoaXMgYWxsb3dzIHRvIGtlZXAgdGhlIFBXTSBydW5uaW5nIGlmIGl0IHdhcw0KPj4g
+ZW5hYmxlZCBpbiBib290bG9hZGVyLiBJdCBpcyB2ZXJ5IHNpbWlsYXIgdG8gdGhlIEdQSU8gYmVo
+YXZpb3IuIEdQSU8gcGluDQo+PiBzZXQgYXMgb3V0cHV0IGluIGJvb3Rsb2FkZXIga2VlcCB0aGUg
+c2FtZSBzZXR0aW5nIGluIExpbnV4IHVubGVzcyBpdCBpcw0KPj4gcmVjb25maWd1cmVkLg0KPj4N
+Cj4+IElmIHdlIGZpbmQgdGhlIFBXTSBibG9jayBlbmFibGVkIHdlIG5lZWQgdG8gcHJlcGFyZSBh
+bmQgZW5hYmxlIGl0cyBzb3VyY2UNCj4+IGNsb2NrIG90aGVyd2lzZSB0aGUgY2xvY2sgd2lsbCBi
+ZSBkaXNhYmxlZCBsYXRlIGluIHRoZSBib290IGFzIHVudXNlZC4NCj4+IFRoYXQgd2lsbCBsZWF2
+ZSB0aGUgUFdNIGluIGVuYWJsZWQgc3RhdGUgYnV0IHdpdGggZGlzYWJsZWQgY2xvY2suIFRoYXQg
+aGFzDQo+PiBhIHNpZGUgZWZmZWN0IHRoYXQgdGhlIFBXTSBvdXRwdXQgaXMgbGVmdCBhdCBpdHMg
+Y3VycmVudCBsZXZlbCBhdCB3aGljaA0KPj4gdGhlIGNsb2NrIHdhcyBkaXNhYmxlZC4gSXQgaXMg
+dG90YWxseSBub24tZGV0ZXJtaW5pc3RpYyBhbmQgaXQgbWF5IGJlIExPVw0KPj4gb3IgSElHSC4N
+Cj4gDQo+IERvZXMgdGhpcyBwcm9ibGVtIHN0aWxsIGV4aXN0IGlmIHRoZSBwd20taW14IGRyaXZl
+ciBpcyBhIG1vZHVsZT8NCg0KWWVzLiBUaGUgc291cmNlIGNsb2NrIGZvciBQV00gaXMgc3RvcHBl
+ZCBieSB0aGUgY2xvY2sgY29yZSBzaG9ydGx5DQpiZWZvcmUgaW5pdCBwcm9jZXNzIGlzIHN0YXJ0
+ZWQgYW5kIGl0IGRvZXMgbm90IG1hdHRlciBpZiB0aGUgcHdtLWlteA0KZHJpdmVyIGlzIGJ1aWx0
+IGFzIGEgbW9kdWxlIG9yIGJ1aWx0IGludG8gdGhlIGtlcm5lbC4NCg0KV2hlbiB0aGUgbW9kdWxl
+IGlzIGxvYWRlZCwgdGhlIC5nZXRfc3RhdGUgZnVuY3Rpb24gaXMgZXhlY3V0ZWQgYW5kDQpyZWFk
+cyB0aGUgUFdNIHJlZ2lzdGVycy4gSWYgdGhlIEVOIGJpdCBpcyBzZXQgdGhlIGNsb2NrIGlzIHN0
+YXJ0ZWQNCmFuZCBQV00gY29udGludWVzIGZyb20gd2hlcmUgaXQgd2FzIHN0b3BwZWQuDQoNCk1p
+Y2hhbA0K
