@@ -1,43 +1,21 @@
-From: =?utf-8?B?Vm9rw6HEjSBNaWNoYWw=?= <Michal.Vokac@ysoft.com>
-Subject: Re: [3/3] pwm: imx: Implement get_state() function for hardware
- readout
-Date: Fri, 14 Dec 2018 16:40:30 +0000
-Message-ID: <37cc424e-cafd-acb6-d7d2-c6c98abf53de@ysoft.com>
-References: <1538403588-68850-3-git-send-email-michal.vokac@ysoft.com>
- <20181212105118.GA9268@taurus.defre.kleine-koenig.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH] dt-bindings: pwm: rcar: Add r8a774c0 support
+Date: Fri, 14 Dec 2018 17:57:31 +0100
+Message-ID: <20181214165731.5ygiye5nuhr2a35z@verge.net.au>
+References: <1544732415-6453-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181212105118.GA9268@taurus.defre.kleine-koenig.org>
-Content-Language: en-US
-Content-ID: <000F27EA2DB23041AA4355250AD4BF89@eurprd04.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <1544732415-6453-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <uwe@kleine-koenig.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMTIuMTIuMjAxOCAxMTo1MSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+IEhlbGxvLA0K
-PiANCj4gT24gTW9uLCBPY3QgMDEsIDIwMTggYXQgMDQ6MTk6NDhQTSArMDIwMCwgTWljaGFsIFZv
-a8OhxI0gd3JvdGU6DQo+PiBJbXBsZW1lbnQgdGhlIGdldF9zdGF0ZSgpIGZ1bmN0aW9uIGFuZCBz
-ZXQgdGhlIGluaXRpYWwgc3RhdGUgdG8gcmVmbGVjdA0KPj4gcmVhbCBzdGF0ZSBvZiB0aGUgaGFy
-ZHdhcmUuIFRoaXMgYWxsb3dzIHRvIGtlZXAgdGhlIFBXTSBydW5uaW5nIGlmIGl0IHdhcw0KPj4g
-ZW5hYmxlZCBpbiBib290bG9hZGVyLiBJdCBpcyB2ZXJ5IHNpbWlsYXIgdG8gdGhlIEdQSU8gYmVo
-YXZpb3IuIEdQSU8gcGluDQo+PiBzZXQgYXMgb3V0cHV0IGluIGJvb3Rsb2FkZXIga2VlcCB0aGUg
-c2FtZSBzZXR0aW5nIGluIExpbnV4IHVubGVzcyBpdCBpcw0KPj4gcmVjb25maWd1cmVkLg0KPj4N
-Cj4+IElmIHdlIGZpbmQgdGhlIFBXTSBibG9jayBlbmFibGVkIHdlIG5lZWQgdG8gcHJlcGFyZSBh
-bmQgZW5hYmxlIGl0cyBzb3VyY2UNCj4+IGNsb2NrIG90aGVyd2lzZSB0aGUgY2xvY2sgd2lsbCBi
-ZSBkaXNhYmxlZCBsYXRlIGluIHRoZSBib290IGFzIHVudXNlZC4NCj4+IFRoYXQgd2lsbCBsZWF2
-ZSB0aGUgUFdNIGluIGVuYWJsZWQgc3RhdGUgYnV0IHdpdGggZGlzYWJsZWQgY2xvY2suIFRoYXQg
-aGFzDQo+PiBhIHNpZGUgZWZmZWN0IHRoYXQgdGhlIFBXTSBvdXRwdXQgaXMgbGVmdCBhdCBpdHMg
-Y3VycmVudCBsZXZlbCBhdCB3aGljaA0KPj4gdGhlIGNsb2NrIHdhcyBkaXNhYmxlZC4gSXQgaXMg
-dG90YWxseSBub24tZGV0ZXJtaW5pc3RpYyBhbmQgaXQgbWF5IGJlIExPVw0KPj4gb3IgSElHSC4N
-Cj4gDQo+IERvZXMgdGhpcyBwcm9ibGVtIHN0aWxsIGV4aXN0IGlmIHRoZSBwd20taW14IGRyaXZl
-ciBpcyBhIG1vZHVsZT8NCg0KWWVzLiBUaGUgc291cmNlIGNsb2NrIGZvciBQV00gaXMgc3RvcHBl
-ZCBieSB0aGUgY2xvY2sgY29yZSBzaG9ydGx5DQpiZWZvcmUgaW5pdCBwcm9jZXNzIGlzIHN0YXJ0
-ZWQgYW5kIGl0IGRvZXMgbm90IG1hdHRlciBpZiB0aGUgcHdtLWlteA0KZHJpdmVyIGlzIGJ1aWx0
-IGFzIGEgbW9kdWxlIG9yIGJ1aWx0IGludG8gdGhlIGtlcm5lbC4NCg0KV2hlbiB0aGUgbW9kdWxl
-IGlzIGxvYWRlZCwgdGhlIC5nZXRfc3RhdGUgZnVuY3Rpb24gaXMgZXhlY3V0ZWQgYW5kDQpyZWFk
-cyB0aGUgUFdNIHJlZ2lzdGVycy4gSWYgdGhlIEVOIGJpdCBpcyBzZXQgdGhlIGNsb2NrIGlzIHN0
-YXJ0ZWQNCmFuZCBQV00gY29udGludWVzIGZyb20gd2hlcmUgaXQgd2FzIHN0b3BwZWQuDQoNCk1p
-Y2hhbA0K
+On Thu, Dec 13, 2018 at 08:20:15PM +0000, Fabrizio Castro wrote:
+> Document RZ/G2E (R8A774C0) SoC bindings.
+> 
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
