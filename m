@@ -1,100 +1,56 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
-Date: Mon, 17 Dec 2018 08:53:21 +0100
-Message-ID: <20181217075321.k45vhgnszeqs3tea@pengutronix.de>
-References: <20181212220922.18759-1-paul@crapouillou.net>
- <20181212220922.18759-16-paul@crapouillou.net>
- <20181213092409.ml4wpnzow2nnszkd@pengutronix.de>
- <1544709795.18952.1@crapouillou.net>
- <20181213204219.onem3q6dcmakusl2@pengutronix.de>
- <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
- <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
- <1544969932.1649.1@crapouillou.net>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH] backlight: pwm_bl: Use SIMPLE_DEV_PM_OPS()
+Date: Sun, 16 Dec 2018 07:21:12 +0300
+Message-ID: <20181216042112.22644-1-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1544969932.1649.1@crapouillou.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Linus Walleij <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, paul.burton@mips.com, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, ezequiel@collabora.co.uk, prasannatsmkumar@gmail.com, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, linux-doc@vger.kernel.orglinux-clk <linux>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-fbdev@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, Dec 16, 2018 at 03:18:52PM +0100, Paul Cercueil wrote:
-> Hi,
-> 
-> Le ven. 14 déc. 2018 à 15:26, Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> a écrit :
-> > Hello,
-> > 
-> > On Fri, Dec 14, 2018 at 02:50:20PM +0100, Linus Walleij wrote:
-> > > On Thu, Dec 13, 2018 at 9:42 PM Uwe Kleine-König
-> > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > [Adding Linus Walleij to Cc:]
-> > > > On Thu, Dec 13, 2018 at 03:03:15PM +0100, Paul Cercueil wrote:
-> > > > > Le jeu. 13 déc. 2018 à 10:24, Uwe Kleine-König
-> > > > > <u.kleine-koenig@pengutronix.de> a écrit :
-> > > > > > On Wed, Dec 12, 2018 at 11:09:10PM +0100, Paul Cercueil wrote:
-> > > > > > >  The PWM in the JZ4725B works the same as in the JZ4740,
-> > > > > > >  except that it only has 6 channels available instead of
-> > > > > > >  8.
-> > > > > >
-> > > > > > this driver is probed only from device tree? If yes, it
-> > > > > > might be sensible to specify the number of PWMs there and
-> > > > > > get it from there.
-> > > > > > There doesn't seem to be a generic binding for that, but there are
-> > > > > > several drivers that could benefit from it. (This is a bigger project
-> > > > > > though and shouldn't stop your patch. Still more as it already got
-> > > > > > Thierry's ack.)
-> > > > >
-> > > > > I think there needs to be a proper guideline, as there doesn't seem to be
-> > > > > a consensus about this. I learned from emails with Rob and  Linus (Walleij)
-> > > > > that I should not have in devicetree what I can deduce from the compatible
-> > > > > string.
-> > > >
-> > > > I understood them a bit differently. It is ok to deduce things from the
-> > > > compatible string. But if you define a generic property (say) "num-pwms"
-> > > > that is used uniformly in most bindings this is ok, too. (And then the
-> > > > two different devices could use the same compatible.)
-> > > >
-> > > > An upside of the generic "num-pwms" property is that the pwm core could
-> > > > sanity check pwm phandles before passing them to the hardware drivers.
-> > > 
-> > >  I don't know if this helps, but in GPIO we have "ngpios" which is
-> > >  used to augment an existing block as to the number of lines actually
-> > >  used with it.
-> > > 
-> > >  The typical case is that an ASIC engineer synthesize a block for
-> > >  32 GPIOs but only 12 of them are routed to external pads. So
-> > >  we augment the behaviour of that driver to only use 12 of the
-> > >  32 lines.
-> > > 
-> > >  I guess using the remaining 20 lines "works" in a sense but they
-> > >  have no practical use and will just bias electrons in the silicon
-> > >  for no use.
-> > 
-> > This looks very similar to the case under discussion.
-> > 
-> > >  So if the PWM case is something similar, then by all means add
-> > >  num-pwms.
-> > 
-> > .. or "npwms" to use the same nomenclature as the gpio binding?
-> 
-> If we're going to do something like this, should it be the drivers or
-> the core (within pwmchip_add) that checks for this "npwms" property?
-
-Of course this should be done in the core. The driver than can rely on
-the validity of the index. But as I wrote before, this shouldn't stop
-your patch from going in.
-
-But if Thierry agrees that this npmws (or num-pwms) is a good idea, it
-would be great to start early to convert drivers.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+VXNlIHRoZSBTSU1QTEVfREVWX1BNX09QUygpIG1hY3JvIHRvIGRlY2xhcmUgdGhlIGRyaXZlcidz
+IHBtX29wcy4KQXMgYSBzaWRlIGVmZmVjdCwgcmVtb3ZpbmcgI2lmZGVmIENPTkZJR19QTV9TTEVF
+UCB3aWxsIGltcHJvdmUKY29tcGlsYXRpb24gY292ZXJhZ2UuCgpTaWduZWQtb2ZmLWJ5OiBBbGV4
+YW5kZXIgU2hpeWFuIDxzaGNfd29ya0BtYWlsLnJ1PgotLS0KIGRyaXZlcnMvdmlkZW8vYmFja2xp
+Z2h0L3B3bV9ibC5jIHwgMTcgKysrKy0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCA0IGlu
+c2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8v
+YmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKaW5k
+ZXggZjllZjA2Ny4uMzM1MDNjZSAxMDA2NDQKLS0tIGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQv
+cHdtX2JsLmMKKysrIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKQEAgLTY2Nyw4
+ICs2NjcsNyBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3NodXRkb3duKHN0cnVjdCBwbGF0
+Zm9ybV9kZXZpY2UgKnBkZXYpCiAJcHdtX2JhY2tsaWdodF9wb3dlcl9vZmYocGIpOwogfQogCi0j
+aWZkZWYgQ09ORklHX1BNX1NMRUVQCi1zdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfc3VzcGVuZChz
+dHJ1Y3QgZGV2aWNlICpkZXYpCitzdGF0aWMgaW50IF9fbWF5YmVfdW51c2VkIHB3bV9ibF9zdXNw
+ZW5kKHN0cnVjdCBkZXZpY2UgKmRldikKIHsKIAlzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwg
+PSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsKIAlzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiID0gYmxfZ2V0
+X2RhdGEoYmwpOwpAQCAtNjg0LDcgKzY4Myw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9z
+dXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikKIAlyZXR1cm4gMDsKIH0KIAotc3RhdGljIGludCBw
+d21fYmFja2xpZ2h0X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCitzdGF0aWMgaW50IF9fbWF5
+YmVfdW51c2VkIHB3bV9ibF9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2KQogewogCXN0cnVjdCBi
+YWNrbGlnaHRfZGV2aWNlICpibCA9IGRldl9nZXRfZHJ2ZGF0YShkZXYpOwogCkBAIC02OTIsMjEg
+KzY5MSwxMyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcmVzdW1lKHN0cnVjdCBkZXZpY2Ug
+KmRldikKIAogCXJldHVybiAwOwogfQotI2VuZGlmCiAKLXN0YXRpYyBjb25zdCBzdHJ1Y3QgZGV2
+X3BtX29wcyBwd21fYmFja2xpZ2h0X3BtX29wcyA9IHsKLSNpZmRlZiBDT05GSUdfUE1fU0xFRVAK
+LQkuc3VzcGVuZCA9IHB3bV9iYWNrbGlnaHRfc3VzcGVuZCwKLQkucmVzdW1lID0gcHdtX2JhY2ts
+aWdodF9yZXN1bWUsCi0JLnBvd2Vyb2ZmID0gcHdtX2JhY2tsaWdodF9zdXNwZW5kLAotCS5yZXN0
+b3JlID0gcHdtX2JhY2tsaWdodF9yZXN1bWUsCi0jZW5kaWYKLX07CitzdGF0aWMgU0lNUExFX0RF
+Vl9QTV9PUFMocHdtX2JsX3BtX29wcywgcHdtX2JsX3N1c3BlbmQsIHB3bV9ibF9yZXN1bWUpOwog
+CiBzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2RyaXZlciBwd21fYmFja2xpZ2h0X2RyaXZlciA9IHsK
+IAkuZHJpdmVyCQk9IHsKIAkJLm5hbWUJCT0gInB3bS1iYWNrbGlnaHQiLAotCQkucG0JCT0gJnB3
+bV9iYWNrbGlnaHRfcG1fb3BzLAorCQkucG0JCT0gJnB3bV9ibF9wbV9vcHMsCiAJCS5vZl9tYXRj
+aF90YWJsZQk9IG9mX21hdGNoX3B0cihwd21fYmFja2xpZ2h0X29mX21hdGNoKSwKIAl9LAogCS5w
+cm9iZQkJPSBwd21fYmFja2xpZ2h0X3Byb2JlLAotLSAKMi4xMC4yCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRy
+aS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
