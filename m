@@ -1,158 +1,94 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v8 12/26] pwm: jz4740: Allow selection of PWM channels 0
- and 1
-Date: Mon, 17 Dec 2018 08:43:18 +0100
-Message-ID: <20181217074318.y3mtn5aqmnknae3d@pengutronix.de>
-References: <20181212220922.18759-1-paul@crapouillou.net>
- <20181212220922.18759-13-paul@crapouillou.net>
- <20181213091822.r5ilpsllfhzaiqw4@pengutronix.de>
- <1544709511.18952.0@crapouillou.net>
- <20181213203243.ucjwqtkyp6aboxp4@pengutronix.de>
- <1544967364.1649.0@crapouillou.net>
+From: Alexander Shiyan <shc_work@mail.ru>
+Subject: [PATCH 2/2] video: lcd: Remove useless BACKLIGHT_CLASS_DEVICE
+ dependencies
+Date: Sun, 16 Dec 2018 08:02:47 +0300
+Message-ID: <20181216050247.30043-2-shc_work@mail.ru>
+References: <20181216050247.30043-1-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1544967364.1649.0@crapouillou.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20181216050247.30043-1-shc_work@mail.ru>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-fbdev@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Paul,
-
-On Sun, Dec 16, 2018 at 02:36:03PM +0100, Paul Cercueil wrote:
-> Le jeu. 13 déc. 2018 à 21:32, Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> a écrit :
-> > On Thu, Dec 13, 2018 at 02:58:31PM +0100, Paul Cercueil wrote:
-> > >  Hi,
-> > > 
-> > >  Le jeu. 13 déc. 2018 à 10:18, Uwe Kleine-König
-> > >  <u.kleine-koenig@pengutronix.de> a écrit :
-> > >  > On Wed, Dec 12, 2018 at 11:09:07PM +0100, Paul Cercueil wrote:
-> > >  > >  The TCU channels 0 and 1 were previously reserved for system
-> > > tasks,
-> > >  > > and
-> > >  > >  thus unavailable for PWM.
-> > >  > >
-> > >  > >  The driver will now only allow a PWM channel to be requested if
-> > >  > > memory
-> > >  > >  resources corresponding to the register area of the channel
-> > > were
-> > >  > >  supplied to the driver. This allows the TCU channels to be
-> > > reserved
-> > >  > > for
-> > >  > >  system tasks from within the devicetree.
-> > >  > >
-> > >  > >  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> > >  >
-> > >  > While there is someone caring for this driver I'd like to
-> > > complete (a
-> > >  > bit) my picture about the different capabilities and specialities
-> > > of the
-> > >  > supported PWMs. So I have a few questions:
-> > >  >
-> > >  > Is there a publicly available reference manual for this device?
-> > > (If
-> > >  > yes, adding a link to the driver would be great.)
-> > > 
-> > >  I have them here: https://zcrc.me/~paul/jz_docs/
-> > 
-> > Is this link good enough to add it to the driver? From a quick view I'd
-> > say this is another pwm implementation that gets active on
-> > pwm_disable().
-> > Can you confirm this?
-> 
-> It's my website, so if these get moved, I can update the link.
-> 
-> What do you mean it gets active on pwm_disable()? If pwm_disable() gets
-> called the PWM line goes back to inactive state, which is what it
-> should do.
-
-The register description for TCSRn.PWM_EN reads:
-
-	1: PWM pin output enable
-	0: PWM pin output disable, and the PWM pin will be set to the
-	   initial level according to INITL
-
-As I read the manual (but that differes from the driver) you should use
-INITL=1 for an uninverted PWM such that the period starts with the
-output being 1. And with that I'd expect that the output goes high on
-disable. Given that the driver inverts this and sets INITL (called
-JZ_TIMER_CTRL_PWM_ACTIVE_LOW in the driver) for an inverted pwm that
-behaviour is ok. With this approach the bug is not the level when
-pwm_disable was called but that the period doesn't start with the active
-part of the period.
-
-> > >  > jz4740_pwm_config looks as if the currently running period isn't
-> > >  > completed before the new config is in effect. Is that correct? If
-> > > yes,
-> > >  > can this be fixed? A similar question for set_polarity: Does
-> > > setting the
-> > >  > JZ_TIMER_CTRL_PWM_ACTIVE_LOW bit in the control register take
-> > > effect
-> > >  > immediately or is this shadowed until the next period starts?
-> > > 
-> > >  I don't really know. We only use this driver for a rumble motor and
-> > >  backlight.
-> > >  Somebody would have to check with a logic analyzer.
-> > 
-> > depending on the possible timings you might also be able to test this
-> > e.g. by setting:
-> > 
-> > 	duty_cycle=1ms, period=5s
-> > 
-> > and then
-> > 
-> > 	duty_cycle=5s, period=5s
-> > 
-> > . If the implementation is right your display should be dark for nearly
-> > 5 seconds. (And the second call to pwm_apply should also block until the
-> > display is on.)
-> 
-> So it switches to full ON as soon as I set the duty cycle to 5s. Same for
-> the polarity, it is updated as soon as the register is written. So the
-> registers are not shadowed.
-
-Then I think the right thing to do is to gracefully disable the hardware
-on a duty/period change first to ensure the currently running period is
-completed before the next configuration gets active.
-
-> > >  > How does the device's output behave after the PWM is disabled?
-> > >  > Does it complete the currently running period? How does the output
-> > >  > behave then? (active/inactive/high/low/high-z?)
-> > > 
-> > >  There's a bit to toggle between "graceful" shutdown (bit clear) and
-> > > "abrupt"
-> > >  shutdown (bit set). TCSR bit 9. I think that graceful shutdown will
-> > > complete
-> > >  the running period, then keep the level active. Abrupt shutdown
-> > > will keep
-> > >  the
-> > >  current level of the line.
-> > 
-> > Can you confirm the things you think above? I'd like to have them
-> > eventually documented in the driver.
-> 
-> From what I can see, with "abrupt" shutdown the line will always return to
-> its inactive state (be it low or high, depending on the polarity). Setting
-> this bit to "graceful" shutdown, the only difference is that the hardware
-> will keep its current state, active or inactive. That's why we use the
-> "abrupt" shutdown in the PWM driver.
-
-That sounds backwards from your last mail and the reference manual. As I
-read the manual "graceful" means the period is completed until FULL
-matches. And I understand "aprupt" as "immediatly freeze". If this is
-the case the names in the manual are well chosen.
-
-For the pwm framework the intended behaviour is the graceful one. (For
-both, disable and duty/period change.)
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+VGhpcyBwYXRjaCByZW1vdmVzIGRlcGVuZGVuY2llcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNF
+IGZvciBpdGVtcwp0aGF0IGFyZSBhbHJlYWR5IHBsYWNlZCB1bmRlciAjaWZkZWYgQkFDS0xJR0hU
+X0NMQVNTX0RFVklDRS4KClNpZ25lZC1vZmYtYnk6IEFsZXhhbmRlciBTaGl5YW4gPHNoY193b3Jr
+QG1haWwucnU+Ci0tLQogZHJpdmVycy92aWRlby9iYWNrbGlnaHQvS2NvbmZpZyB8IDI1ICsrKysr
+KysrKysrKy0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAx
+MyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29u
+ZmlnIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvS2NvbmZpZwppbmRleCAzZmRjMThlLi4zZWQx
+ZDkwIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29uZmlnCisrKyBiL2Ry
+aXZlcnMvdmlkZW8vYmFja2xpZ2h0L0tjb25maWcKQEAgLTE5Myw3ICsxOTMsNiBAQCBjb25maWcg
+QkFDS0xJR0hUX0lQQVFfTUlDUk8KIAogY29uZmlnIEJBQ0tMSUdIVF9MTTM1MzMKIAl0cmlzdGF0
+ZSAiQmFja2xpZ2h0IERyaXZlciBmb3IgTE0zNTMzIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NM
+QVNTX0RFVklDRQogCWRlcGVuZHMgb24gTUZEX0xNMzUzMwogCWhlbHAKIAkgIFNheSBZIHRvIGVu
+YWJsZSB0aGUgYmFja2xpZ2h0IGRyaXZlciBmb3IgTmF0aW9uYWwgU2VtaWNvbmR1Y3RvciAvIFRJ
+CkBAIC0zMTcsNyArMzE2LDcgQEAgY29uZmlnIEJBQ0tMSUdIVF9BRFA1NTIwCiAKIGNvbmZpZyBC
+QUNLTElHSFRfQURQODg2MAogCXRyaXN0YXRlICJCYWNrbGlnaHQgRHJpdmVyIGZvciBBRFA4ODYw
+L0FEUDg4NjEvQURQODg2MyB1c2luZyBXTEVEIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNT
+X0RFVklDRSAmJiBJMkMKKwlkZXBlbmRzIG9uIEkyQwogCXNlbGVjdCBORVdfTEVEUwogCXNlbGVj
+dCBMRURTX0NMQVNTCiAJaGVscApAQCAtMzI5LDcgKzMyOCw3IEBAIGNvbmZpZyBCQUNLTElHSFRf
+QURQODg2MAogCiBjb25maWcgQkFDS0xJR0hUX0FEUDg4NzAKIAl0cmlzdGF0ZSAiQmFja2xpZ2h0
+IERyaXZlciBmb3IgQURQODg3MCB1c2luZyBXTEVEIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NM
+QVNTX0RFVklDRSAmJiBJMkMKKwlkZXBlbmRzIG9uIEkyQwogCXNlbGVjdCBORVdfTEVEUwogCXNl
+bGVjdCBMRURTX0NMQVNTCiAJaGVscApAQCAtMzQ3LDI4ICszNDYsMjggQEAgY29uZmlnIEJBQ0tM
+SUdIVF84OFBNODYwWAogCiBjb25maWcgQkFDS0xJR0hUX1BDRjUwNjMzCiAJdHJpc3RhdGUgIkJh
+Y2tsaWdodCBkcml2ZXIgZm9yIE5YUCBQQ0Y1MDYzMyBNRkQiCi0JZGVwZW5kcyBvbiBCQUNLTElH
+SFRfQ0xBU1NfREVWSUNFICYmIE1GRF9QQ0Y1MDYzMworCWRlcGVuZHMgb24gTUZEX1BDRjUwNjMz
+CiAJaGVscAogCSAgSWYgeW91IGhhdmUgYSBiYWNrbGlnaHQgZHJpdmVuIGJ5IGEgTlhQIFBDRjUw
+NjMzIE1GRCwgc2F5IFkgaGVyZSB0bwogCSAgZW5hYmxlIGl0cyBkcml2ZXIuCiAKIGNvbmZpZyBC
+QUNLTElHSFRfQUFUMjg3MAogCXRyaXN0YXRlICJBbmFsb2dpY1RlY2ggQUFUMjg3MCBCYWNrbGln
+aHQiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIE1GRF9BQVQyODcwX0NP
+UkUKKwlkZXBlbmRzIG9uIE1GRF9BQVQyODcwX0NPUkUKIAloZWxwCiAJICBJZiB5b3UgaGF2ZSBh
+IEFuYWxvZ2ljVGVjaCBBQVQyODcwIHNheSBZIHRvIGVuYWJsZSB0aGUKIAkgIGJhY2tsaWdodCBk
+cml2ZXIuCiAKIGNvbmZpZyBCQUNLTElHSFRfTE0zNjMwQQogCXRyaXN0YXRlICJCYWNrbGlnaHQg
+RHJpdmVyIGZvciBMTTM2MzBBIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNTX0RFVklDRSAm
+JiBJMkMgJiYgUFdNCisJZGVwZW5kcyBvbiBJMkMgJiYgUFdNCiAJc2VsZWN0IFJFR01BUF9JMkMK
+IAloZWxwCiAJICBUaGlzIHN1cHBvcnRzIFRJIExNMzYzMEEgQmFja2xpZ2h0IERyaXZlcgogCiBj
+b25maWcgQkFDS0xJR0hUX0xNMzYzOQogCXRyaXN0YXRlICJCYWNrbGlnaHQgRHJpdmVyIGZvciBM
+TTM2MzkiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIEkyQworCWRlcGVu
+ZHMgb24gSTJDCiAJc2VsZWN0IFJFR01BUF9JMkMKIAlzZWxlY3QgTkVXX0xFRFMKIAlzZWxlY3Qg
+TEVEU19DTEFTUwpAQCAtMzc3LDIwICszNzYsMjAgQEAgY29uZmlnIEJBQ0tMSUdIVF9MTTM2MzkK
+IAogY29uZmlnIEJBQ0tMSUdIVF9MUDg1NVgKIAl0cmlzdGF0ZSAiQmFja2xpZ2h0IGRyaXZlciBm
+b3IgVEkgTFA4NTVYIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNTX0RFVklDRSAmJiBJMkMg
+JiYgUFdNCisJZGVwZW5kcyBvbiBJMkMgJiYgUFdNCiAJaGVscAogCSAgVGhpcyBzdXBwb3J0cyBU
+SSBMUDg1NTAsIExQODU1MSwgTFA4NTUyLCBMUDg1NTMsIExQODU1NSwgTFA4NTU2IGFuZAogCSAg
+TFA4NTU3IGJhY2tsaWdodCBkcml2ZXIuCiAKIGNvbmZpZyBCQUNLTElHSFRfTFA4Nzg4CiAJdHJp
+c3RhdGUgIkJhY2tsaWdodCBkcml2ZXIgZm9yIFRJIExQODc4OCBNRkQiCi0JZGVwZW5kcyBvbiBC
+QUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIE1GRF9MUDg3ODggJiYgUFdNCisJZGVwZW5kcyBvbiBN
+RkRfTFA4Nzg4ICYmIFBXTQogCWhlbHAKIAkgIFRoaXMgc3VwcG9ydHMgVEkgTFA4Nzg4IGJhY2ts
+aWdodCBkcml2ZXIuCiAKIGNvbmZpZyBCQUNLTElHSFRfT1QyMDAKIAl0cmlzdGF0ZSAiQmFja2xp
+Z2h0IGRyaXZlciBmb3Igb3QyMDAgdmlzdWFsaXNhdGlvbiBkZXZpY2UiCi0JZGVwZW5kcyBvbiBC
+QUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIENTNTUzNV9NRkdQVCAmJiBHUElPX0NTNTUzNQorCWRl
+cGVuZHMgb24gQ1M1NTM1X01GR1BUICYmIEdQSU9fQ1M1NTM1CiAJaGVscAogCSAgVG8gY29tcGls
+ZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlIG1vZHVsZSB3aWxs
+IGJlCiAJICBjYWxsZWQgb3QyMDBfYmwuCkBAIC00MDQsNyArNDAzLDcgQEAgY29uZmlnIEJBQ0tM
+SUdIVF9QQU5ET1JBCiAKIGNvbmZpZyBCQUNLTElHSFRfU0tZODE0NTIKIAl0cmlzdGF0ZSAiQmFj
+a2xpZ2h0IGRyaXZlciBmb3IgU0tZODE0NTIiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1Nf
+REVWSUNFICYmIE1GRF9TS1k4MTQ1MgorCWRlcGVuZHMgb24gTUZEX1NLWTgxNDUyCiAJaGVscAog
+CSAgSWYgeW91IGhhdmUgYSBTa3l3b3JrcyBTS1k4MTQ1Miwgc2F5IFkgdG8gZW5hYmxlIHRoZQog
+CSAgYmFja2xpZ2h0IGRyaXZlci4KQEAgLTQxNCwxNCArNDEzLDE0IEBAIGNvbmZpZyBCQUNLTElH
+SFRfU0tZODE0NTIKIAogY29uZmlnIEJBQ0tMSUdIVF9UUFM2NTIxNwogCXRyaXN0YXRlICJUUFM2
+NTIxNyBCYWNrbGlnaHQiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIE1G
+RF9UUFM2NTIxNworCWRlcGVuZHMgb24gTUZEX1RQUzY1MjE3CiAJaGVscAogCSAgSWYgeW91IGhh
+dmUgYSBUZXhhcyBJbnN0cnVtZW50cyBUUFM2NTIxNyBzYXkgWSB0byBlbmFibGUgdGhlCiAJICBi
+YWNrbGlnaHQgZHJpdmVyLgogCiBjb25maWcgQkFDS0xJR0hUX0FTMzcxMQogCXRyaXN0YXRlICJB
+UzM3MTEgQmFja2xpZ2h0IgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNTX0RFVklDRSAmJiBN
+RkRfQVMzNzExCisJZGVwZW5kcyBvbiBNRkRfQVMzNzExCiAJaGVscAogCSAgSWYgeW91IGhhdmUg
+YW4gQXVzdHJpYW4gTWljcm9zeXN0ZW1zIEFTMzcxMSBzYXkgWSB0byBlbmFibGUgdGhlCiAJICBi
+YWNrbGlnaHQgZHJpdmVyLgotLSAKMi4xMC4yCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9kcmktZGV2ZWwK
