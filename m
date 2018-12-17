@@ -1,191 +1,98 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v8 03/26] dt-bindings: Add doc for the Ingenic TCU drivers
-Date: Mon, 17 Dec 2018 15:05:31 -0600
-Message-ID: <20181217210531.GA29770@bogus>
-References: <20181212220922.18759-1-paul@crapouillou.net>
- <20181212220922.18759-4-paul@crapouillou.net>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RFC v2 1/2] pwm: sifive: Add DT documentation for SiFive PWM
+ Controller
+Date: Mon, 17 Dec 2018 22:16:24 +0100
+Message-ID: <20181217211624.5sj4n6pyartnd3fc@pengutronix.de>
+References: <1544768442-12530-1-git-send-email-yash.shah@sifive.com>
+ <1544768442-12530-2-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181212220922.18759-4-paul@crapouillou.net>
+In-Reply-To: <1544768442-12530-2-git-send-email-yash.shah@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
+To: Yash Shah <yash.shah@sifive.com>
+Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Dec 12, 2018 at 11:08:58PM +0100, Paul Cercueil wrote:
-> Add documentation about how to properly use the Ingenic TCU
-> (Timer/Counter Unit) drivers from devicetree.
+On Fri, Dec 14, 2018 at 11:50:41AM +0530, Yash Shah wrote:
+> DT documentation for PWM controller added with updated compatible
+> string.
 > 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> [Atish: Compatible string update]
+> Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> Signed-off-by: Yash Shah <yash.shah@sifive.com>
 > ---
+>  .../devicetree/bindings/pwm/pwm-sifive.txt         | 44 ++++++++++++++++++++++
+>  1 file changed, 44 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
 > 
-> Notes:
->      v4: New patch in this series. Corresponds to V2 patches 3-4-5 with
->          added content.
->     
->      v5: - Edited PWM/watchdog DT bindings documentation to point to the new
->            document.
->          - Moved main document to
->            Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->          - Updated documentation to reflect the new devicetree bindings.
->     
->      v6: - Removed PWM/watchdog documentation files as asked by upstream
->          - Removed doc about properties that should be implicit
->          - Removed doc about ingenic,timer-channel /
->            ingenic,clocksource-channel as they are gone
->          - Fix WDT clock name in the binding doc
->          - Fix lengths of register areas in watchdog/pwm nodes
->     
->      v7: No change
-> 
->      v8: - Fix address of the PWM node
->          - Added doc about system timer and clocksource children nodes
-
-I thought we'd sorted this out...
-
-> 
->  .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ---
->  .../devicetree/bindings/timer/ingenic,tcu.txt      | 176 +++++++++++++++++++++
->  .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 --
->  3 files changed, 176 insertions(+), 42 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
->  create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->  delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-> deleted file mode 100644
-> index 7d9d3f90641b..000000000000
-> --- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-> +++ /dev/null
-> @@ -1,25 +0,0 @@
-> -Ingenic JZ47xx PWM Controller
-> -=============================
-> -
-> -Required properties:
-> -- compatible: One of:
-> -  * "ingenic,jz4740-pwm"
-> -  * "ingenic,jz4770-pwm"
-> -  * "ingenic,jz4780-pwm"
-> -- #pwm-cells: Should be 3. See pwm.txt in this directory for a description
-> -  of the cells format.
-> -- clocks : phandle to the external clock.
-> -- clock-names : Should be "ext".
-> -
-> -
-> -Example:
-> -
-> -	pwm: pwm@10002000 {
-> -		compatible = "ingenic,jz4740-pwm";
-> -		reg = <0x10002000 0x1000>;
-> -
-> -		#pwm-cells = <3>;
-> -
-> -		clocks = <&ext>;
-> -		clock-names = "ext";
-> -	};
-> diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
 > new file mode 100644
-> index 000000000000..8a4ce7edf50f
+> index 0000000..250d8ee
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
-> @@ -0,0 +1,176 @@
-> +Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
-> +==========================================================
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> @@ -0,0 +1,44 @@
+> +SiFive PWM controller
 > +
-> +For a description of the TCU hardware and drivers, have a look at
-> +Documentation/mips/ingenic-tcu.txt.
-> +
-> +Required properties:
-> +
-> +- compatible: Must be one of:
-> +  * ingenic,jz4740-tcu
-> +  * ingenic,jz4725b-tcu
-> +  * ingenic,jz4770-tcu
-> +- reg: Should be the offset/length value corresponding to the TCU registers
-> +- clocks: List of phandle & clock specifiers for clocks external to the TCU.
-> +  The "pclk", "rtc", "ext" and "tcu" clocks should be provided.
-> +- clock-names: List of name strings for the external clocks.
-> +- #clock-cells: Should be <1>;
-> +  Clock consumers specify this argument to identify a clock. The valid values
-> +  may be found in <dt-bindings/clock/ingenic,tcu.h>.
-> +- interrupt-controller : Identifies the node as an interrupt controller
-> +- #interrupt-cells : Specifies the number of cells needed to encode an
-> +  interrupt source. The value should be 1.
-> +- interrupt-parent : phandle of the interrupt controller.
-> +- interrupts : Specifies the interrupt the controller is connected to.
-> +
-> +
-> +Children nodes
-> +==========================================================
-> +
-> +
-> +PWM node:
-> +---------
+> +Unlike most other PWM controllers, the SiFive PWM controller currently only
+> +supports one period for all channels in the PWM. This is set globally in DTS.
+> +The period also has significant restrictions on the values it can achieve,
+> +which the driver rounds to the nearest achievable frequency.
 > +
 > +Required properties:
-> +
-> +- compatible: Must be one of:
-> +  * ingenic,jz4740-pwm
-> +  * ingenic,jz4725b-pwm
-> +- #pwm-cells: Should be 3. See ../pwm/pwm.txt for a description of the cell
-> +  format.
-> +- clocks: List of phandle & clock specifiers for the TCU clocks.
-> +- clock-names: List of name strings for the TCU clocks.
-> +
-> +
-> +Watchdog node:
-> +--------------
-> +
-> +Required properties:
-> +
-> +- compatible: Must be one of:
-> +  * ingenic,jz4740-watchdog
-> +  * ingenic,jz4780-watchdog
-> +- clocks: phandle to the WDT clock
-> +- clock-names: should be "wdt"
-> +
-> +
-> +OST node:
-> +---------
-> +
-> +Required properties:
-> +
-> +- compatible: Must be one of:
-> +  * ingenic,jz4725b-ost
-> +  * ingenic,jz4770-ost
-> +- clocks: phandle to the OST clock
-> +- clock-names: should be "ost"
-> +- interrupts : Specifies the interrupt the OST is connected to.
-> +
-> +
-> +System timer node:
-> +------------------
-> +
-> +Required properties:
-> +
-> +- compatible: Must be "ingenic,jz4740-tcu-timer"
+> +- compatible: should be something similar to "sifive,<chip>-pwm" for
+> +	      the PWM as integrated on a particular chip, and
+> +	      "sifive,pwm<version>" for the general PWM IP block
+> +	      programming model. Supported compatible strings are:
+> +	      "sifive,fu540-c000-pwm" for the SiFive PWM v0 as
+> +	      integrated onto the SiFive FU540 chip, and "sifive,pwm0"
+> +	      for the SiFive PWM v0 IP block with no chip integration
+> +	      tweaks.
+> +- reg: physical base address and length of the controller's registers
+> +- clocks: The frequency the controller runs at
 
-Is this an actual sub-block? Or just a way to assign a timer to a 
-clockevent?
+This is unusual and the example below lists a clock phandle (which is
+the common thing), so I guess the description is just wrong.
 
-> +- clocks: phandle to the clock of the TCU channel used
-> +- clock-names: Should be "timer"
-> +- interrupts : Specifies the interrupt line of the TCU channel used.
-> +
-> +
-> +System clocksource node:
-> +------------------------
-> +
-> +Required properties:
-> +
-> +- compatible: Must be "ingenic,jz4740-tcu-clocksource"
+> +- #pwm-cells: Should be 2.
+> +  The first cell is the PWM channel number
+> +  The second cell is the PWM polarity
+> +- sifive,approx-period: the driver will get as close to this period as it can
 
-The h/w has a block called 'clocksource'?
+What is the unit? I'd drop "approx", that the driver might not be able
+to exactly hit the specified period is (IMHO) obvious and doesn't need
+to be mentioned in the property name.
 
-If there's a difference in the timer channels, then that difference 
-should be described in DT, not just 'use timer X for clocksource'.
+> +- interrupts: one interrupt per PWM channel
+> +
+> +PWM RTL that corresponds to the IP block version numbers can be found
+> +here:
+> +
+> +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
+> +
+> +Further information on the format of the IP
+> +block-specific version numbers can be found in
+> +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt
+> +
+> +Examples:
+> +
+> +pwm:  pwm@10020000 {
+> +	compatible = "sifive,fu540-c000-pwm","sifive,pwm0";
+> +	reg = <0x0 0x10020000 0x0 0x1000>;
+> +	clocks = <&tlclk>;
+> +	interrupt-parent = <&plic>;
+> +	interrupts = <42 43 44 45>;
+> +	#pwm-cells = <2>;
+> +	sifive,approx-period = <1000000>;
+> +};
 
-> +- clocks: phandle to the clock of the TCU channel used
-> +- clock-names: Should be "timer"
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
