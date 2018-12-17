@@ -1,94 +1,100 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH 2/2] video: lcd: Remove useless BACKLIGHT_CLASS_DEVICE
- dependencies
-Date: Sun, 16 Dec 2018 08:02:47 +0300
-Message-ID: <20181216050247.30043-2-shc_work@mail.ru>
-References: <20181216050247.30043-1-shc_work@mail.ru>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
+Date: Mon, 17 Dec 2018 08:53:21 +0100
+Message-ID: <20181217075321.k45vhgnszeqs3tea@pengutronix.de>
+References: <20181212220922.18759-1-paul@crapouillou.net>
+ <20181212220922.18759-16-paul@crapouillou.net>
+ <20181213092409.ml4wpnzow2nnszkd@pengutronix.de>
+ <1544709795.18952.1@crapouillou.net>
+ <20181213204219.onem3q6dcmakusl2@pengutronix.de>
+ <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
+ <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
+ <1544969932.1649.1@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20181216050247.30043-1-shc_work@mail.ru>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: linux-fbdev@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Alexander Shiyan <shc_work@mail.ru>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1544969932.1649.1@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Linus Walleij <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, paul.burton@mips.com, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, ezequiel@collabora.co.uk, prasannatsmkumar@gmail.com, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, linux-doc@vger.kernel.orglinux-clk <linux>
 List-Id: linux-pwm@vger.kernel.org
 
-VGhpcyBwYXRjaCByZW1vdmVzIGRlcGVuZGVuY2llcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNF
-IGZvciBpdGVtcwp0aGF0IGFyZSBhbHJlYWR5IHBsYWNlZCB1bmRlciAjaWZkZWYgQkFDS0xJR0hU
-X0NMQVNTX0RFVklDRS4KClNpZ25lZC1vZmYtYnk6IEFsZXhhbmRlciBTaGl5YW4gPHNoY193b3Jr
-QG1haWwucnU+Ci0tLQogZHJpdmVycy92aWRlby9iYWNrbGlnaHQvS2NvbmZpZyB8IDI1ICsrKysr
-KysrKysrKy0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAx
-MyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29u
-ZmlnIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvS2NvbmZpZwppbmRleCAzZmRjMThlLi4zZWQx
-ZDkwIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29uZmlnCisrKyBiL2Ry
-aXZlcnMvdmlkZW8vYmFja2xpZ2h0L0tjb25maWcKQEAgLTE5Myw3ICsxOTMsNiBAQCBjb25maWcg
-QkFDS0xJR0hUX0lQQVFfTUlDUk8KIAogY29uZmlnIEJBQ0tMSUdIVF9MTTM1MzMKIAl0cmlzdGF0
-ZSAiQmFja2xpZ2h0IERyaXZlciBmb3IgTE0zNTMzIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NM
-QVNTX0RFVklDRQogCWRlcGVuZHMgb24gTUZEX0xNMzUzMwogCWhlbHAKIAkgIFNheSBZIHRvIGVu
-YWJsZSB0aGUgYmFja2xpZ2h0IGRyaXZlciBmb3IgTmF0aW9uYWwgU2VtaWNvbmR1Y3RvciAvIFRJ
-CkBAIC0zMTcsNyArMzE2LDcgQEAgY29uZmlnIEJBQ0tMSUdIVF9BRFA1NTIwCiAKIGNvbmZpZyBC
-QUNLTElHSFRfQURQODg2MAogCXRyaXN0YXRlICJCYWNrbGlnaHQgRHJpdmVyIGZvciBBRFA4ODYw
-L0FEUDg4NjEvQURQODg2MyB1c2luZyBXTEVEIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNT
-X0RFVklDRSAmJiBJMkMKKwlkZXBlbmRzIG9uIEkyQwogCXNlbGVjdCBORVdfTEVEUwogCXNlbGVj
-dCBMRURTX0NMQVNTCiAJaGVscApAQCAtMzI5LDcgKzMyOCw3IEBAIGNvbmZpZyBCQUNLTElHSFRf
-QURQODg2MAogCiBjb25maWcgQkFDS0xJR0hUX0FEUDg4NzAKIAl0cmlzdGF0ZSAiQmFja2xpZ2h0
-IERyaXZlciBmb3IgQURQODg3MCB1c2luZyBXTEVEIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NM
-QVNTX0RFVklDRSAmJiBJMkMKKwlkZXBlbmRzIG9uIEkyQwogCXNlbGVjdCBORVdfTEVEUwogCXNl
-bGVjdCBMRURTX0NMQVNTCiAJaGVscApAQCAtMzQ3LDI4ICszNDYsMjggQEAgY29uZmlnIEJBQ0tM
-SUdIVF84OFBNODYwWAogCiBjb25maWcgQkFDS0xJR0hUX1BDRjUwNjMzCiAJdHJpc3RhdGUgIkJh
-Y2tsaWdodCBkcml2ZXIgZm9yIE5YUCBQQ0Y1MDYzMyBNRkQiCi0JZGVwZW5kcyBvbiBCQUNLTElH
-SFRfQ0xBU1NfREVWSUNFICYmIE1GRF9QQ0Y1MDYzMworCWRlcGVuZHMgb24gTUZEX1BDRjUwNjMz
-CiAJaGVscAogCSAgSWYgeW91IGhhdmUgYSBiYWNrbGlnaHQgZHJpdmVuIGJ5IGEgTlhQIFBDRjUw
-NjMzIE1GRCwgc2F5IFkgaGVyZSB0bwogCSAgZW5hYmxlIGl0cyBkcml2ZXIuCiAKIGNvbmZpZyBC
-QUNLTElHSFRfQUFUMjg3MAogCXRyaXN0YXRlICJBbmFsb2dpY1RlY2ggQUFUMjg3MCBCYWNrbGln
-aHQiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIE1GRF9BQVQyODcwX0NP
-UkUKKwlkZXBlbmRzIG9uIE1GRF9BQVQyODcwX0NPUkUKIAloZWxwCiAJICBJZiB5b3UgaGF2ZSBh
-IEFuYWxvZ2ljVGVjaCBBQVQyODcwIHNheSBZIHRvIGVuYWJsZSB0aGUKIAkgIGJhY2tsaWdodCBk
-cml2ZXIuCiAKIGNvbmZpZyBCQUNLTElHSFRfTE0zNjMwQQogCXRyaXN0YXRlICJCYWNrbGlnaHQg
-RHJpdmVyIGZvciBMTTM2MzBBIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNTX0RFVklDRSAm
-JiBJMkMgJiYgUFdNCisJZGVwZW5kcyBvbiBJMkMgJiYgUFdNCiAJc2VsZWN0IFJFR01BUF9JMkMK
-IAloZWxwCiAJICBUaGlzIHN1cHBvcnRzIFRJIExNMzYzMEEgQmFja2xpZ2h0IERyaXZlcgogCiBj
-b25maWcgQkFDS0xJR0hUX0xNMzYzOQogCXRyaXN0YXRlICJCYWNrbGlnaHQgRHJpdmVyIGZvciBM
-TTM2MzkiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIEkyQworCWRlcGVu
-ZHMgb24gSTJDCiAJc2VsZWN0IFJFR01BUF9JMkMKIAlzZWxlY3QgTkVXX0xFRFMKIAlzZWxlY3Qg
-TEVEU19DTEFTUwpAQCAtMzc3LDIwICszNzYsMjAgQEAgY29uZmlnIEJBQ0tMSUdIVF9MTTM2MzkK
-IAogY29uZmlnIEJBQ0tMSUdIVF9MUDg1NVgKIAl0cmlzdGF0ZSAiQmFja2xpZ2h0IGRyaXZlciBm
-b3IgVEkgTFA4NTVYIgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNTX0RFVklDRSAmJiBJMkMg
-JiYgUFdNCisJZGVwZW5kcyBvbiBJMkMgJiYgUFdNCiAJaGVscAogCSAgVGhpcyBzdXBwb3J0cyBU
-SSBMUDg1NTAsIExQODU1MSwgTFA4NTUyLCBMUDg1NTMsIExQODU1NSwgTFA4NTU2IGFuZAogCSAg
-TFA4NTU3IGJhY2tsaWdodCBkcml2ZXIuCiAKIGNvbmZpZyBCQUNLTElHSFRfTFA4Nzg4CiAJdHJp
-c3RhdGUgIkJhY2tsaWdodCBkcml2ZXIgZm9yIFRJIExQODc4OCBNRkQiCi0JZGVwZW5kcyBvbiBC
-QUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIE1GRF9MUDg3ODggJiYgUFdNCisJZGVwZW5kcyBvbiBN
-RkRfTFA4Nzg4ICYmIFBXTQogCWhlbHAKIAkgIFRoaXMgc3VwcG9ydHMgVEkgTFA4Nzg4IGJhY2ts
-aWdodCBkcml2ZXIuCiAKIGNvbmZpZyBCQUNLTElHSFRfT1QyMDAKIAl0cmlzdGF0ZSAiQmFja2xp
-Z2h0IGRyaXZlciBmb3Igb3QyMDAgdmlzdWFsaXNhdGlvbiBkZXZpY2UiCi0JZGVwZW5kcyBvbiBC
-QUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIENTNTUzNV9NRkdQVCAmJiBHUElPX0NTNTUzNQorCWRl
-cGVuZHMgb24gQ1M1NTM1X01GR1BUICYmIEdQSU9fQ1M1NTM1CiAJaGVscAogCSAgVG8gY29tcGls
-ZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlIG1vZHVsZSB3aWxs
-IGJlCiAJICBjYWxsZWQgb3QyMDBfYmwuCkBAIC00MDQsNyArNDAzLDcgQEAgY29uZmlnIEJBQ0tM
-SUdIVF9QQU5ET1JBCiAKIGNvbmZpZyBCQUNLTElHSFRfU0tZODE0NTIKIAl0cmlzdGF0ZSAiQmFj
-a2xpZ2h0IGRyaXZlciBmb3IgU0tZODE0NTIiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1Nf
-REVWSUNFICYmIE1GRF9TS1k4MTQ1MgorCWRlcGVuZHMgb24gTUZEX1NLWTgxNDUyCiAJaGVscAog
-CSAgSWYgeW91IGhhdmUgYSBTa3l3b3JrcyBTS1k4MTQ1Miwgc2F5IFkgdG8gZW5hYmxlIHRoZQog
-CSAgYmFja2xpZ2h0IGRyaXZlci4KQEAgLTQxNCwxNCArNDEzLDE0IEBAIGNvbmZpZyBCQUNLTElH
-SFRfU0tZODE0NTIKIAogY29uZmlnIEJBQ0tMSUdIVF9UUFM2NTIxNwogCXRyaXN0YXRlICJUUFM2
-NTIxNyBCYWNrbGlnaHQiCi0JZGVwZW5kcyBvbiBCQUNLTElHSFRfQ0xBU1NfREVWSUNFICYmIE1G
-RF9UUFM2NTIxNworCWRlcGVuZHMgb24gTUZEX1RQUzY1MjE3CiAJaGVscAogCSAgSWYgeW91IGhh
-dmUgYSBUZXhhcyBJbnN0cnVtZW50cyBUUFM2NTIxNyBzYXkgWSB0byBlbmFibGUgdGhlCiAJICBi
-YWNrbGlnaHQgZHJpdmVyLgogCiBjb25maWcgQkFDS0xJR0hUX0FTMzcxMQogCXRyaXN0YXRlICJB
-UzM3MTEgQmFja2xpZ2h0IgotCWRlcGVuZHMgb24gQkFDS0xJR0hUX0NMQVNTX0RFVklDRSAmJiBN
-RkRfQVMzNzExCisJZGVwZW5kcyBvbiBNRkRfQVMzNzExCiAJaGVscAogCSAgSWYgeW91IGhhdmUg
-YW4gQXVzdHJpYW4gTWljcm9zeXN0ZW1zIEFTMzcxMSBzYXkgWSB0byBlbmFibGUgdGhlCiAJICBi
-YWNrbGlnaHQgZHJpdmVyLgotLSAKMi4xMC4yCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
-cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9kcmktZGV2ZWwK
+On Sun, Dec 16, 2018 at 03:18:52PM +0100, Paul Cercueil wrote:
+> Hi,
+> 
+> Le ven. 14 déc. 2018 à 15:26, Uwe Kleine-König
+> <u.kleine-koenig@pengutronix.de> a écrit :
+> > Hello,
+> > 
+> > On Fri, Dec 14, 2018 at 02:50:20PM +0100, Linus Walleij wrote:
+> > > On Thu, Dec 13, 2018 at 9:42 PM Uwe Kleine-König
+> > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > > [Adding Linus Walleij to Cc:]
+> > > > On Thu, Dec 13, 2018 at 03:03:15PM +0100, Paul Cercueil wrote:
+> > > > > Le jeu. 13 déc. 2018 à 10:24, Uwe Kleine-König
+> > > > > <u.kleine-koenig@pengutronix.de> a écrit :
+> > > > > > On Wed, Dec 12, 2018 at 11:09:10PM +0100, Paul Cercueil wrote:
+> > > > > > >  The PWM in the JZ4725B works the same as in the JZ4740,
+> > > > > > >  except that it only has 6 channels available instead of
+> > > > > > >  8.
+> > > > > >
+> > > > > > this driver is probed only from device tree? If yes, it
+> > > > > > might be sensible to specify the number of PWMs there and
+> > > > > > get it from there.
+> > > > > > There doesn't seem to be a generic binding for that, but there are
+> > > > > > several drivers that could benefit from it. (This is a bigger project
+> > > > > > though and shouldn't stop your patch. Still more as it already got
+> > > > > > Thierry's ack.)
+> > > > >
+> > > > > I think there needs to be a proper guideline, as there doesn't seem to be
+> > > > > a consensus about this. I learned from emails with Rob and  Linus (Walleij)
+> > > > > that I should not have in devicetree what I can deduce from the compatible
+> > > > > string.
+> > > >
+> > > > I understood them a bit differently. It is ok to deduce things from the
+> > > > compatible string. But if you define a generic property (say) "num-pwms"
+> > > > that is used uniformly in most bindings this is ok, too. (And then the
+> > > > two different devices could use the same compatible.)
+> > > >
+> > > > An upside of the generic "num-pwms" property is that the pwm core could
+> > > > sanity check pwm phandles before passing them to the hardware drivers.
+> > > 
+> > >  I don't know if this helps, but in GPIO we have "ngpios" which is
+> > >  used to augment an existing block as to the number of lines actually
+> > >  used with it.
+> > > 
+> > >  The typical case is that an ASIC engineer synthesize a block for
+> > >  32 GPIOs but only 12 of them are routed to external pads. So
+> > >  we augment the behaviour of that driver to only use 12 of the
+> > >  32 lines.
+> > > 
+> > >  I guess using the remaining 20 lines "works" in a sense but they
+> > >  have no practical use and will just bias electrons in the silicon
+> > >  for no use.
+> > 
+> > This looks very similar to the case under discussion.
+> > 
+> > >  So if the PWM case is something similar, then by all means add
+> > >  num-pwms.
+> > 
+> > .. or "npwms" to use the same nomenclature as the gpio binding?
+> 
+> If we're going to do something like this, should it be the drivers or
+> the core (within pwmchip_add) that checks for this "npwms" property?
+
+Of course this should be done in the core. The driver than can rely on
+the validity of the index. But as I wrote before, this shouldn't stop
+your patch from going in.
+
+But if Thierry agrees that this npmws (or num-pwms) is a good idea, it
+would be great to start early to convert drivers.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
