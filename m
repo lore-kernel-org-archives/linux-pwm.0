@@ -1,77 +1,191 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v7 5/6] pwm: add documentation for pwm push-pull mode
-Date: Mon, 17 Dec 2018 14:13:53 +0000
-Message-ID: <1545055999-23950-6-git-send-email-claudiu.beznea@microchip.com>
-References: <1545055999-23950-1-git-send-email-claudiu.beznea@microchip.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v8 03/26] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Mon, 17 Dec 2018 15:05:31 -0600
+Message-ID: <20181217210531.GA29770@bogus>
+References: <20181212220922.18759-1-paul@crapouillou.net>
+ <20181212220922.18759-4-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1545055999-23950-1-git-send-email-claudiu.beznea@microchip.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20181212220922.18759-4-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, robh@kernel.org, corbet@lwn.net, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
-Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu.Beznea@microchip.com
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
 List-Id: linux-pwm@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+On Wed, Dec 12, 2018 at 11:08:58PM +0100, Paul Cercueil wrote:
+> Add documentation about how to properly use the Ingenic TCU
+> (Timer/Counter Unit) drivers from devicetree.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+> 
+> Notes:
+>      v4: New patch in this series. Corresponds to V2 patches 3-4-5 with
+>          added content.
+>     
+>      v5: - Edited PWM/watchdog DT bindings documentation to point to the new
+>            document.
+>          - Moved main document to
+>            Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>          - Updated documentation to reflect the new devicetree bindings.
+>     
+>      v6: - Removed PWM/watchdog documentation files as asked by upstream
+>          - Removed doc about properties that should be implicit
+>          - Removed doc about ingenic,timer-channel /
+>            ingenic,clocksource-channel as they are gone
+>          - Fix WDT clock name in the binding doc
+>          - Fix lengths of register areas in watchdog/pwm nodes
+>     
+>      v7: No change
+> 
+>      v8: - Fix address of the PWM node
+>          - Added doc about system timer and clocksource children nodes
 
-Add documentation for PWM push-pull mode.
+I thought we'd sorted this out...
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
+> 
+>  .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ---
+>  .../devicetree/bindings/timer/ingenic,tcu.txt      | 176 +++++++++++++++++++++
+>  .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 --
+>  3 files changed, 176 insertions(+), 42 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>  delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+> deleted file mode 100644
+> index 7d9d3f90641b..000000000000
+> --- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+> +++ /dev/null
+> @@ -1,25 +0,0 @@
+> -Ingenic JZ47xx PWM Controller
+> -=============================
+> -
+> -Required properties:
+> -- compatible: One of:
+> -  * "ingenic,jz4740-pwm"
+> -  * "ingenic,jz4770-pwm"
+> -  * "ingenic,jz4780-pwm"
+> -- #pwm-cells: Should be 3. See pwm.txt in this directory for a description
+> -  of the cells format.
+> -- clocks : phandle to the external clock.
+> -- clock-names : Should be "ext".
+> -
+> -
+> -Example:
+> -
+> -	pwm: pwm@10002000 {
+> -		compatible = "ingenic,jz4740-pwm";
+> -		reg = <0x10002000 0x1000>;
+> -
+> -		#pwm-cells = <3>;
+> -
+> -		clocks = <&ext>;
+> -		clock-names = "ext";
+> -	};
+> diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> new file mode 100644
+> index 000000000000..8a4ce7edf50f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+> @@ -0,0 +1,176 @@
+> +Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
+> +==========================================================
+> +
+> +For a description of the TCU hardware and drivers, have a look at
+> +Documentation/mips/ingenic-tcu.txt.
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4740-tcu
+> +  * ingenic,jz4725b-tcu
+> +  * ingenic,jz4770-tcu
+> +- reg: Should be the offset/length value corresponding to the TCU registers
+> +- clocks: List of phandle & clock specifiers for clocks external to the TCU.
+> +  The "pclk", "rtc", "ext" and "tcu" clocks should be provided.
+> +- clock-names: List of name strings for the external clocks.
+> +- #clock-cells: Should be <1>;
+> +  Clock consumers specify this argument to identify a clock. The valid values
+> +  may be found in <dt-bindings/clock/ingenic,tcu.h>.
+> +- interrupt-controller : Identifies the node as an interrupt controller
+> +- #interrupt-cells : Specifies the number of cells needed to encode an
+> +  interrupt source. The value should be 1.
+> +- interrupt-parent : phandle of the interrupt controller.
+> +- interrupts : Specifies the interrupt the controller is connected to.
+> +
+> +
+> +Children nodes
+> +==========================================================
+> +
+> +
+> +PWM node:
+> +---------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4740-pwm
+> +  * ingenic,jz4725b-pwm
+> +- #pwm-cells: Should be 3. See ../pwm/pwm.txt for a description of the cell
+> +  format.
+> +- clocks: List of phandle & clock specifiers for the TCU clocks.
+> +- clock-names: List of name strings for the TCU clocks.
+> +
+> +
+> +Watchdog node:
+> +--------------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4740-watchdog
+> +  * ingenic,jz4780-watchdog
+> +- clocks: phandle to the WDT clock
+> +- clock-names: should be "wdt"
+> +
+> +
+> +OST node:
+> +---------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be one of:
+> +  * ingenic,jz4725b-ost
+> +  * ingenic,jz4770-ost
+> +- clocks: phandle to the OST clock
+> +- clock-names: should be "ost"
+> +- interrupts : Specifies the interrupt the OST is connected to.
+> +
+> +
+> +System timer node:
+> +------------------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be "ingenic,jz4740-tcu-timer"
 
-Hi Rob,                                                                    =
-    =20
-                                                                           =
-    =20
-In prevous version I had your Reviewed-by tag on this patch but I removed i=
-t      =20
-in this version since there are some changes b/w the previous one and this =
-    =20
-one. Please see bellow and let me know if you are ok with this.            =
-                                           =20
+Is this an actual sub-block? Or just a way to assign a timer to a 
+clockevent?
 
-Thank you,
-Claudiu Beznea
+> +- clocks: phandle to the clock of the TCU channel used
+> +- clock-names: Should be "timer"
+> +- interrupts : Specifies the interrupt line of the TCU channel used.
+> +
+> +
+> +System clocksource node:
+> +------------------------
+> +
+> +Required properties:
+> +
+> +- compatible: Must be "ingenic,jz4740-tcu-clocksource"
 
-Changes in v6:
-- remove bindings part
-- use 1/3 duty factor ratio
-- use '^' symbols to emphasize the beginning of a new period
-- use PWMx_y to refrer to output y of PWM x
+The h/w has a block called 'clocksource'?
 
- Documentation/pwm.txt | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+If there's a difference in the timer channels, then that difference 
+should be described in DT, not just 'use timer X for clocksource'.
 
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 669fd4c9cc8e..80552627627d 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -130,6 +130,22 @@ channel that was exported. The following properties wi=
-ll then be available:
-     PWMx_1   |__|    |__|    |__|    |__|
-              ^       ^       ^       ^
-=20
-+    Push-pull mode - for PWM channels with two outputs; output waveforms
-+        for a PWM channel in push-pull mode, with normal polarity looks li=
-ke
-+        this:
-+              __              __
-+    PWMx_0 __|  |____________|  |__________
-+                      __              __
-+    PWMx_1 __________|  |____________|  |__
-+             ^       ^       ^       ^
-+
-+    If polarity is inversed:
-+           __    ____________    __________
-+    PWMx_0   |__|            |__|
-+           __________    ____________    __
-+    PWMx_1           |__|            |__|
-+             ^       ^       ^       ^
-+
-     Where '^' specifies the beginning of a period.
-=20
- Implementing a PWM driver
---=20
-2.7.4
+> +- clocks: phandle to the clock of the TCU channel used
+> +- clock-names: Should be "timer"
