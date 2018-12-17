@@ -1,7 +1,7 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v7 2/6] pwm: add PWM modes
-Date: Mon, 17 Dec 2018 14:13:43 +0000
-Message-ID: <1545055999-23950-3-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v7 4/6] pwm: add push-pull mode support
+Date: Mon, 17 Dec 2018 14:13:50 +0000
+Message-ID: <1545055999-23950-5-git-send-email-claudiu.beznea@microchip.com>
 References: <1545055999-23950-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -16,64 +16,48 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Add PWM normal and complementary modes.
+Add push-pull mode support. In push-pull mode the channels' outputs have
+same polarities and the edges are complementary delayed for one period.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
+ drivers/pwm/core.c  | 3 +++
+ include/linux/pwm.h | 3 +++
+ 2 files changed, 6 insertions(+)
 
-Hi Rob,
-
-In prevous version I had your Acked-by tag on this patch but I removed it
-in this version since there are some changes b/w the previous one and this
-one. Please see bellow and let me know if you are ok with this.
-
-Thank you,
-Claudiu Beznea
-
-Changes in v6:
-- remove DT bindings since they were also removed from code
-- use 1/3 duty factor ratio
-- use '^' symbols to emphasize the beginning of a new period
-- use PWMx_y to refrer to output y of PWM x
-
- Documentation/pwm.txt | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 8fbf0aa3ba2d..669fd4c9cc8e 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -110,6 +110,28 @@ channel that was exported. The following properties wi=
-ll then be available:
- 	- 0 - disabled
- 	- 1 - enabled
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index eb444ee8d486..f182d1eb564e 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -328,6 +328,9 @@ const char *pwm_get_mode_name(unsigned long modebit)
+ 	if (modebit =3D=3D PWM_MODE_BIT(COMPLEMENTARY))
+ 		return "complementary";
 =20
-+  mode
-+    Get/set PWM channel working mode.
++	if (modebit =3D=3D PWM_MODE_BIT(PUSH_PULL))
++		return "push-pull";
 +
-+    In the following description PWMx_y refers to output y of PWM with ID =
-x.
-+
-+    Normal mode - for PWM channels with one output; this should be the
-+        default working mode for every PWM channel; output waveforms looks
-+        like this:
-+              __      __      __      __
-+    PWMx   __|  |____|  |____|  |____|  |__
-+             ^       ^       ^       ^
-+
-+    Complementary mode - for PWM channels with two outputs; output wavefor=
-ms
-+        looks line this:
-+              __      __      __      __
-+    PWMx_0 __|  |____|  |____|  |____|  |__
-+           __    ____    ____    ____    __
-+    PWMx_1   |__|    |__|    |__|    |__|
-+             ^       ^       ^       ^
-+
-+    Where '^' specifies the beginning of a period.
-+
- Implementing a PWM driver
- -------------------------
+ 	return "normal";
+ }
+=20
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index abe189d891af..cce29733d44e 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -32,11 +32,14 @@ enum pwm_polarity {
+  * PWM modes capabilities
+  * @PWM_MODE_NORMAL: PWM has one output
+  * @PWM_MODE_COMPLEMENTARY: PWM has 2 outputs with opposite polarities
++ * @PWM_MODE_PUSH_PULL: PWM has 2 outputs with same polarities and the edg=
+es
++ * are complementary delayed for one period
+  * @PWM_MODE_CNT: PWM modes count
+  */
+ enum pwm_mode {
+ 	PWM_MODE_NORMAL,
+ 	PWM_MODE_COMPLEMENTARY,
++	PWM_MODE_PUSH_PULL,
+ 	PWM_MODE_CNT,
+ };
 =20
 --=20
 2.7.4
