@@ -1,239 +1,345 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v8 03/26] dt-bindings: Add doc for the Ingenic TCU drivers
-Date: Mon, 17 Dec 2018 23:03:42 +0100
-Message-ID: <1545084222.1958.0@smtp.crapouillou.net>
-References: <20181212220922.18759-1-paul@crapouillou.net>
-        <20181212220922.18759-4-paul@crapouillou.net> <20181217210531.GA29770@bogus>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RFC v2 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Mon, 17 Dec 2018 23:11:51 +0100
+Message-ID: <20181217221151.h63swo4xpi2zj3q5@pengutronix.de>
+References: <1544768442-12530-1-git-send-email-yash.shah@sifive.com>
+ <1544768442-12530-3-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181217210531.GA29770@bogus>
+Content-Disposition: inline
+In-Reply-To: <1544768442-12530-3-git-send-email-yash.shah@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me
+To: Yash Shah <yash.shah@sifive.com>
+Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Rob,
+On Fri, Dec 14, 2018 at 11:50:42AM +0530, Yash Shah wrote:
+> Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC.
+> 
+> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> [Atish: Various fixes and code cleanup]
+> Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> ---
+>  drivers/pwm/Kconfig      |  10 +++
+>  drivers/pwm/Makefile     |   1 +
+>  drivers/pwm/pwm-sifive.c | 229 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 240 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-sifive.c
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 27e5dd4..da85557 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -378,6 +378,16 @@ config PWM_SAMSUNG
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-samsung.
+>  
+> +config PWM_SIFIVE
+> +	tristate "SiFive PWM support"
+> +	depends on OF
+> +	depends on COMMON_CLK
+> +	help
+> +	  Generic PWM framework driver for SiFive SoCs.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-sifive.
+> +
+>  config PWM_SPEAR
+>  	tristate "STMicroelectronics SPEAr PWM support"
+>  	depends on PLAT_SPEAR
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 9c676a0..30089ca 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_RCAR)		+= pwm-rcar.o
+>  obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
+>  obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
+>  obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+> +obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
+>  obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+>  obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
+>  obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+> diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+> new file mode 100644
+> index 0000000..26913b6
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-sifive.c
+> @@ -0,0 +1,229 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2017-2018 SiFive
 
-Le lun. 17 d=E9c. 2018 =E0 22:05, Rob Herring <robh@kernel.org> a =E9crit :
-> On Wed, Dec 12, 2018 at 11:08:58PM +0100, Paul Cercueil wrote:
->>  Add documentation about how to properly use the Ingenic TCU
->>  (Timer/Counter Unit) drivers from devicetree.
->>=20
->>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->>  ---
->>=20
->>  Notes:
->>       v4: New patch in this series. Corresponds to V2 patches 3-4-5=20
->> with
->>           added content.
->>=20
->>       v5: - Edited PWM/watchdog DT bindings documentation to point=20
->> to the new
->>             document.
->>           - Moved main document to
->>             Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->>           - Updated documentation to reflect the new devicetree=20
->> bindings.
->>=20
->>       v6: - Removed PWM/watchdog documentation files as asked by=20
->> upstream
->>           - Removed doc about properties that should be implicit
->>           - Removed doc about ingenic,timer-channel /
->>             ingenic,clocksource-channel as they are gone
->>           - Fix WDT clock name in the binding doc
->>           - Fix lengths of register areas in watchdog/pwm nodes
->>=20
->>       v7: No change
->>=20
->>       v8: - Fix address of the PWM node
->>           - Added doc about system timer and clocksource children=20
->> nodes
->=20
-> I thought we'd sorted this out...
+If there is a publically available reference manual, please add a link
+to it here.
 
-Yeah, well I just can't please everybody. V6/V7 didn't have the
-system timer or clocksource in devicetree, which was good for
-you, but then the driver nearly doubled in size and complexity,
-and Thierry rightfully refused it. Now I'm at the point where
-I'm trying alternative ways of encoding the information in
-devicetree, as suggested by various people, just so that you
-accept it. Because I don't see any other option.
+> + */
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/slab.h>
+> +
+> +/* Register offsets */
+> +#define REG_PWMCFG		0x0
+> +#define REG_PWMCOUNT		0x8
+> +#define REG_PWMS		0x10
+> +#define REG_PWMCMP0		0x20
+> +
+> +/* PWMCFG fields */
+> +#define BIT_PWM_SCALE		0
+> +#define BIT_PWM_STICKY		8
+> +#define BIT_PWM_ZERO_ZMP	9
+> +#define BIT_PWM_DEGLITCH	10
+> +#define BIT_PWM_EN_ALWAYS	12
+> +#define BIT_PWM_EN_ONCE		13
+> +#define BIT_PWM0_CENTER		16
+> +#define BIT_PWM0_GANG		24
+> +#define BIT_PWM0_IP		28
+> +
+> +#define SIZE_PWMCMP		4
+> +#define MASK_PWM_SCALE		0xf
+> +
+> +struct sifive_pwm_device {
+> +	struct pwm_chip	chip;
+> +	struct notifier_block notifier;
+> +	struct clk *clk;
+> +	void __iomem *regs;
+> +	unsigned int approx_period;
+> +	unsigned int real_period;
+> +};
+> +
+> +static inline struct sifive_pwm_device *to_sifive_pwm_chip(struct pwm_chip *c)
+> +{
+> +	return container_of(c, struct sifive_pwm_device, chip);
+> +}
+> +
+> +static int sifive_pwm_apply(struct pwm_chip *chip, struct pwm_device *dev,
+> +			    struct pwm_state *state)
+> +{
+> +	struct sifive_pwm_device *pwm = to_sifive_pwm_chip(chip);
+> +	unsigned int duty_cycle;
+> +	u32 frac;
+> +
+> +	duty_cycle = state->duty_cycle;
+> +	if (!state->enabled)
+> +		duty_cycle = 0;
 
->>=20
->>   .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ---
->>   .../devicetree/bindings/timer/ingenic,tcu.txt      | 176=20
->> +++++++++++++++++++++
->>   .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 --
->>   3 files changed, 176 insertions(+), 42 deletions(-)
->>   delete mode 100644=20
->> Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
->>   create mode 100644=20
->> Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->>   delete mode 100644=20
->> Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
->>=20
->>  diff --git=20
->> a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt=20
->> b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
->>  deleted file mode 100644
->>  index 7d9d3f90641b..000000000000
->>  --- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
->>  +++ /dev/null
->>  @@ -1,25 +0,0 @@
->>  -Ingenic JZ47xx PWM Controller
->>  -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
->>  -
->>  -Required properties:
->>  -- compatible: One of:
->>  -  * "ingenic,jz4740-pwm"
->>  -  * "ingenic,jz4770-pwm"
->>  -  * "ingenic,jz4780-pwm"
->>  -- #pwm-cells: Should be 3. See pwm.txt in this directory for a=20
->> description
->>  -  of the cells format.
->>  -- clocks : phandle to the external clock.
->>  -- clock-names : Should be "ext".
->>  -
->>  -
->>  -Example:
->>  -
->>  -	pwm: pwm@10002000 {
->>  -		compatible =3D "ingenic,jz4740-pwm";
->>  -		reg =3D <0x10002000 0x1000>;
->>  -
->>  -		#pwm-cells =3D <3>;
->>  -
->>  -		clocks =3D <&ext>;
->>  -		clock-names =3D "ext";
->>  -	};
->>  diff --git=20
->> a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt=20
->> b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->>  new file mode 100644
->>  index 000000000000..8a4ce7edf50f
->>  --- /dev/null
->>  +++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->>  @@ -0,0 +1,176 @@
->>  +Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
->>  +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>  +
->>  +For a description of the TCU hardware and drivers, have a look at
->>  +Documentation/mips/ingenic-tcu.txt.
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be one of:
->>  +  * ingenic,jz4740-tcu
->>  +  * ingenic,jz4725b-tcu
->>  +  * ingenic,jz4770-tcu
->>  +- reg: Should be the offset/length value corresponding to the TCU=20
->> registers
->>  +- clocks: List of phandle & clock specifiers for clocks external=20
->> to the TCU.
->>  +  The "pclk", "rtc", "ext" and "tcu" clocks should be provided.
->>  +- clock-names: List of name strings for the external clocks.
->>  +- #clock-cells: Should be <1>;
->>  +  Clock consumers specify this argument to identify a clock. The=20
->> valid values
->>  +  may be found in <dt-bindings/clock/ingenic,tcu.h>.
->>  +- interrupt-controller : Identifies the node as an interrupt=20
->> controller
->>  +- #interrupt-cells : Specifies the number of cells needed to=20
->> encode an
->>  +  interrupt source. The value should be 1.
->>  +- interrupt-parent : phandle of the interrupt controller.
->>  +- interrupts : Specifies the interrupt the controller is connected=20
->> to.
->>  +
->>  +
->>  +Children nodes
->>  +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>  +
->>  +
->>  +PWM node:
->>  +---------
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be one of:
->>  +  * ingenic,jz4740-pwm
->>  +  * ingenic,jz4725b-pwm
->>  +- #pwm-cells: Should be 3. See ../pwm/pwm.txt for a description of=20
->> the cell
->>  +  format.
->>  +- clocks: List of phandle & clock specifiers for the TCU clocks.
->>  +- clock-names: List of name strings for the TCU clocks.
->>  +
->>  +
->>  +Watchdog node:
->>  +--------------
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be one of:
->>  +  * ingenic,jz4740-watchdog
->>  +  * ingenic,jz4780-watchdog
->>  +- clocks: phandle to the WDT clock
->>  +- clock-names: should be "wdt"
->>  +
->>  +
->>  +OST node:
->>  +---------
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be one of:
->>  +  * ingenic,jz4725b-ost
->>  +  * ingenic,jz4770-ost
->>  +- clocks: phandle to the OST clock
->>  +- clock-names: should be "ost"
->>  +- interrupts : Specifies the interrupt the OST is connected to.
->>  +
->>  +
->>  +System timer node:
->>  +------------------
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be "ingenic,jz4740-tcu-timer"
->=20
-> Is this an actual sub-block? Or just a way to assign a timer to a
-> clockevent?
+@Thierry: You see, this driver is cheating in the same way that I
+suggested to implement for imx.
 
-Just a way to assign a timer to a clockevent.
+> +
+> +	frac = ((u64)duty_cycle << 16) / state->period;
 
->>  +- clocks: phandle to the clock of the TCU channel used
->>  +- clock-names: Should be "timer"
->>  +- interrupts : Specifies the interrupt line of the TCU channel=20
->> used.
->>  +
->>  +
->>  +System clocksource node:
->>  +------------------------
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be "ingenic,jz4740-tcu-clocksource"
->=20
-> The h/w has a block called 'clocksource'?
->=20
-> If there's a difference in the timer channels, then that difference
-> should be described in DT, not just 'use timer X for clocksource'.
+You must not use / to divide an u64 (unless you're on a 64 bit arch).
 
-Same as above, this is just a way to assign a channel to the=20
-clocksource.
+> +	frac = min(frac, 0xFFFFU);
 
->>=20
->  +- clock-names: Should be "timer"
->  +- clocks: phandle to the clock of the TCU channel use
+Also if real_period is for example 10 ms and the consumer requests
+duty=12 ms + period=100 ms, the hardware is configured for duty=1.2 ms +
+period=10 ms, right?
 
-Regards,
-- Paul Cercueil
-=
+You should also check polarity (and fail if it's !=
+PWM_POLARITY_INVERSED?).
+
+If state->duty_cycle == state->period, we end up with frac = 0xffff.
+Does that mean the chip cannot output 100%?
+
+> +	writel(frac, pwm->regs + REG_PWMCMP0 + dev->hwpwm * SIZE_PWMCMP);
+> +
+> +	if (state->enabled) {
+> +		state->period = pwm->real_period;
+> +		state->duty_cycle = ((u64)frac * pwm->real_period) >> 16;
+> +	}
+
+Is this the expected behaviour of .apply to update *state? (I think it's
+a good idea, but I think it misses official blessing.)
+
+> +	return 0;
+> +}
+
+How does a period start with this PWM hardware. The expected behaviour
+would be to start with low level for duty_cycle and then high for the
+rest of the period (given that the polarity is always inversed). Is this
+what the hardware actually does?
+
+If the duty cycle changes, is the currently running period completed
+before the new setting gets active? If yes, .apply is supposed to block
+until the new setting is active.
+
+> +static void sifive_pwm_get_state(struct pwm_chip *chip, struct pwm_device *dev,
+> +				 struct pwm_state *state)
+> +{
+> +	struct sifive_pwm_device *pwm = to_sifive_pwm_chip(chip);
+> +	u32 duty;
+> +
+> +	duty = readl(pwm->regs + REG_PWMCMP0 + dev->hwpwm * SIZE_PWMCMP);
+> +
+> +	state->period = pwm->real_period;
+> +	state->duty_cycle = ((u64)duty * pwm->real_period) >> 16;
+> +	state->polarity = PWM_POLARITY_INVERSED;
+> +	state->enabled = duty > 0;
+> +}
+> +
+> +static const struct pwm_ops sifive_pwm_ops = {
+> +	.get_state = sifive_pwm_get_state,
+> +	.apply = sifive_pwm_apply,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static struct pwm_device *sifive_pwm_xlate(struct pwm_chip *chip,
+> +					   const struct of_phandle_args *args)
+> +{
+> +	struct sifive_pwm_device *pwm = to_sifive_pwm_chip(chip);
+> +	struct pwm_device *dev;
+> +
+> +	if (args->args[0] >= chip->npwm)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	dev = pwm_request_from_chip(chip, args->args[0], NULL);
+> +	if (IS_ERR(dev))
+> +		return dev;
+> +
+> +	/* The period cannot be changed on a per-PWM basis */
+> +	dev->args.period   = pwm->real_period;
+
+A single space before the = please.
+
+> +	dev->args.polarity = PWM_POLARITY_NORMAL;
+> +	if (args->args[1] & PWM_POLARITY_INVERSED)
+> +		dev->args.polarity = PWM_POLARITY_INVERSED;
+> +
+> +	return dev;
+> +}
+> +
+> +static void sifive_pwm_update_clock(struct sifive_pwm_device *pwm,
+> +				    unsigned long rate)
+> +{
+> +	/* (1 << (16+scale)) * 10^9/rate = real_period */
+> +	unsigned long scale_pow = (pwm->approx_period * (u64)rate) / 1000000000;
+> +	int scale = clamp(ilog2(scale_pow) - 16, 0, 0xf);
+> +
+> +	writel((1 << BIT_PWM_EN_ALWAYS) | (scale << BIT_PWM_SCALE),
+> +	       pwm->regs + REG_PWMCFG);
+
+What happens with the output if you don't set the BIT_PWM_EN_ALWAYS bit?
+
+> +	pwm->real_period = (1000000000ULL << (16 + scale)) / rate;
+
+I suggest commenting this assignment with something like: "As scale <=
+15 the shift operation cannot overflow." You must use div64_ul for
+dividing an unsigned long long variable. Can it happen that the result
+is too big to be hold by read_period (which is an unsigned int only)?
+
+Maybe add a dev_dbg with the new real_period here.
+
+> +}
+> +
+> +static int sifive_pwm_clock_notifier(struct notifier_block *nb,
+> +				     unsigned long event, void *data)
+> +{
+> +	struct clk_notifier_data *ndata = data;
+> +	struct sifive_pwm_device *pwm =
+> +		container_of(nb, struct sifive_pwm_device, notifier);
+> +
+> +	if (event == POST_RATE_CHANGE)
+> +		sifive_pwm_update_clock(pwm, ndata->new_rate);
+> +
+> +	return NOTIFY_OK;
+> +}
+> +
+> +static int sifive_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct sifive_pwm_device *pwm;
+> +	struct pwm_chip *chip;
+> +	struct resource *res;
+> +	int ret;
+> +
+> +	pwm = devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	chip = &pwm->chip;
+> +	chip->dev = dev;
+> +	chip->ops = &sifive_pwm_ops;
+> +	chip->of_xlate = sifive_pwm_xlate;
+> +	chip->of_pwm_n_cells = 2;
+> +	chip->base = -1;
+> +	chip->npwm = 4;
+> +
+> +	ret = of_property_read_u32(node, "sifive,approx-period",
+> +				   &pwm->approx_period);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Unable to read sifive,approx-period from DTS\n");
+> +		return ret;
+> +	}
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	pwm->regs = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(pwm->regs)) {
+> +		dev_err(dev, "Unable to map IO resources\n");
+> +		return PTR_ERR(pwm->regs);
+> +	}
+> +
+> +	pwm->clk = devm_clk_get(dev, NULL);
+> +	if (IS_ERR(pwm->clk)) {
+> +		dev_err(dev, "Unable to find controller clock\n");
+
+Please don't emit an error message if PTR_ERR(pwm->clk) is
+-EPROBE_DEFER.
+
+> +		return PTR_ERR(pwm->clk);
+> +	}
+> +
+> +	/* Watch for changes to underlying clock frequency */
+> +	pwm->notifier.notifier_call = sifive_pwm_clock_notifier;
+> +	ret = clk_notifier_register(pwm->clk, &pwm->notifier);
+> +	if (ret) {
+> +		dev_err(dev, "failed to register clock notifier: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Initialize PWM config */
+> +	sifive_pwm_update_clock(pwm, clk_get_rate(pwm->clk));
+
+You're supposed to call clk_get_rate only after you enabled the clk.
+
+> +	ret = pwmchip_add(chip);
+> +	if (ret < 0) {
+> +		dev_err(dev, "cannot register PWM: %d\n", ret);
+> +		clk_notifier_unregister(pwm->clk, &pwm->notifier);
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, pwm);
+> +	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int sifive_pwm_remove(struct platform_device *dev)
+> +{
+> +	struct sifive_pwm_device *pwm = platform_get_drvdata(dev);
+> +
+> +	clk_notifier_unregister(pwm->clk, &pwm->notifier);
+> +	return pwmchip_remove(&pwm->chip);
+
+In probe you setup the clk notifier before calling pwmchip_add. So it's
+a good habit to do it the other way round in .remove.
+
+> +}
+
+You're not using the irq that according to the dt binding is required?!
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
