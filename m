@@ -1,90 +1,173 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC v2 1/2] pwm: sifive: Add DT documentation for SiFive PWM
- Controller
-Date: Tue, 18 Dec 2018 11:20:31 -0600
-Message-ID: <20181218172031.GA7272@bogus>
-References: <1544768442-12530-1-git-send-email-yash.shah@sifive.com>
- <1544768442-12530-2-git-send-email-yash.shah@sifive.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH 1/2] video: lcd: Remove useless BACKLIGHT_LCD_SUPPORT
+ kernel symbol
+Date: Tue, 18 Dec 2018 17:21:20 +0000
+Message-ID: <20181218172120.GC28994@wychelm.lan>
+References: <20181216050247.30043-1-shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <1544768442-12530-2-git-send-email-yash.shah@sifive.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
+In-Reply-To: <20181216050247.30043-1-shc_work@mail.ru>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Dec 14, 2018 at 11:50:41AM +0530, Yash Shah wrote:
-> DT documentation for PWM controller added with updated compatible
-> string.
-> 
-> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> [Atish: Compatible string update]
-> Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> ---
->  .../devicetree/bindings/pwm/pwm-sifive.txt         | 44 ++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> new file mode 100644
-> index 0000000..250d8ee
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> @@ -0,0 +1,44 @@
-> +SiFive PWM controller
-> +
-> +Unlike most other PWM controllers, the SiFive PWM controller currently only
-> +supports one period for all channels in the PWM. This is set globally in DTS.
-> +The period also has significant restrictions on the values it can achieve,
-> +which the driver rounds to the nearest achievable frequency.
-> +
-> +Required properties:
-> +- compatible: should be something similar to "sifive,<chip>-pwm" for
-> +	      the PWM as integrated on a particular chip, and
-> +	      "sifive,pwm<version>" for the general PWM IP block
-> +	      programming model. Supported compatible strings are:
-> +	      "sifive,fu540-c000-pwm" for the SiFive PWM v0 as
-> +	      integrated onto the SiFive FU540 chip, and "sifive,pwm0"
-> +	      for the SiFive PWM v0 IP block with no chip integration
-> +	      tweaks.
-
-This should reference the common doc Paul has written and not re-explain 
-the versioning scheme again.
-
-> +- reg: physical base address and length of the controller's registers
-> +- clocks: The frequency the controller runs at
-> +- #pwm-cells: Should be 2.
-> +  The first cell is the PWM channel number
-> +  The second cell is the PWM polarity
-> +- sifive,approx-period: the driver will get as close to this period as it can
-
-Needs a unit suffix as defined in property-units.txt
-
-> +- interrupts: one interrupt per PWM channel
-> +
-> +PWM RTL that corresponds to the IP block version numbers can be found
-> +here:
-> +
-> +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
-> +
-> +Further information on the format of the IP
-> +block-specific version numbers can be found in
-> +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt
-> +
-> +Examples:
-> +
-> +pwm:  pwm@10020000 {
-> +	compatible = "sifive,fu540-c000-pwm","sifive,pwm0";
-> +	reg = <0x0 0x10020000 0x0 0x1000>;
-> +	clocks = <&tlclk>;
-> +	interrupt-parent = <&plic>;
-> +	interrupts = <42 43 44 45>;
-> +	#pwm-cells = <2>;
-> +	sifive,approx-period = <1000000>;
-> +};
-> -- 
-> 1.9.1
-> 
+T24gU3VuLCBEZWMgMTYsIDIwMTggYXQgMDg6MDI6NDZBTSArMDMwMCwgQWxleGFuZGVyIFNoaXlh
+biB3cm90ZToKPiBTeW1ib2wgQkFDS0xJR0hUX0xDRF9TVVBQT1JUIGFmZmVjdGluZyBhbnl0aGlu
+ZywgZXhjZXB0IGVuYWJsaW5nCj4gdGhlIGJhY2tsaWdodCAmIExDRCBLY29uZmlnIG1lbnUuIFRo
+ZSBwYXRjaCByZW1vdmVzIHRoaXMgc3ltYm9sIGFzCj4gdXNlbGVzcyBhbmQgY29udmVydHMgaXQg
+aW50byBhIG1lbnUuCgpTb21ldGhpbmcgYm90aGVyZWQgbWUgYWJvdXQgdGhlIHBhdGNoIGJ1dCBJ
+IHRoaW5rIGl0cyB0aGUgbGFjayBvZgpleHBsYW5hdGlvbiBpbiB0aGUgcGF0Y2ggaGVhZGVyIGFi
+b3V0ICp3aHkqIHdlIGRvbid0IHVzZS9uZWVkL3dhbnQKQkFDS0xJR0hUX0xDRF9TVVBQT1JULgoK
+RXNzZW50aWFsbHkgdGhlIHJlYXNvbiBCQUNLTElHSFRfTENEX1NVUFBPUlQgaXMgdXNlbGVzcyBp
+cyB0aGF0IHdlIGhhdmUKdHdvIF9DTEFTU19ERVZJQ0UgY29uZmlncyAoTENEX0NMQVNTX0RFVklD
+RSBhbmQgQkFDS0xJR0hUX0xDRF9ERVZJQ0UpCnRoYXQgZG8gdGhlIHNhbWUgam9iIChhZCB0aGF0
+IGRvIGhhdmUgY29kZSBhdHRhY2hlZCB0byB0aGVtKS4KCkl0IHdvdWxkIGJlIGdvb2QgdG8gbWVu
+dGlvbiB0aGF0IGluIHRoZSBwYXRjaCBoZWFkZXIuCgoKRGFuaWVsLgoKPiAKPiBTaWduZWQtb2Zm
+LWJ5OiBBbGV4YW5kZXIgU2hpeWFuIDxzaGNfd29ya0BtYWlsLnJ1Pgo+IC0tLQo+ICBhcmNoL3Vu
+aWNvcmUzMi9LY29uZmlnICAgICAgICAgICAgfCAgMSAtCj4gIGRyaXZlcnMvZ3B1L2RybS9LY29u
+ZmlnICAgICAgICAgICB8ICAyIC0tCj4gIGRyaXZlcnMvZ3B1L2RybS9icmlkZ2UvS2NvbmZpZyAg
+ICB8ICAxIC0KPiAgZHJpdmVycy9ncHUvZHJtL2ZzbC1kY3UvS2NvbmZpZyAgIHwgIDEgLQo+ICBk
+cml2ZXJzL2dwdS9kcm0vaTkxNS9LY29uZmlnICAgICAgfCAgMSAtCj4gIGRyaXZlcnMvZ3B1L2Ry
+bS9ub3V2ZWF1L0tjb25maWcgICB8ICAxIC0KPiAgZHJpdmVycy9ncHUvZHJtL3NobW9iaWxlL0tj
+b25maWcgIHwgIDEgLQo+ICBkcml2ZXJzL2dwdS9kcm0vdGlsY2RjL0tjb25maWcgICAgfCAgMSAt
+Cj4gIGRyaXZlcnMvc3RhZ2luZy9vbHBjX2Rjb24vS2NvbmZpZyB8ICAxIC0KPiAgZHJpdmVycy91
+c2IvbWlzYy9LY29uZmlnICAgICAgICAgIHwgIDEgLQo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
+dC9LY29uZmlnICAgfCAxMCArKy0tLS0tLS0tCj4gIGRyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZp
+ZyAgICAgICB8ICA1IC0tLS0tCj4gIDEyIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwg
+MjQgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2FyY2gvdW5pY29yZTMyL0tjb25maWcg
+Yi9hcmNoL3VuaWNvcmUzMi9LY29uZmlnCj4gaW5kZXggYTRjMDUxNS4uYWZlZWEzZCAxMDA2NDQK
+PiAtLS0gYS9hcmNoL3VuaWNvcmUzMi9LY29uZmlnCj4gKysrIGIvYXJjaC91bmljb3JlMzIvS2Nv
+bmZpZwo+IEBAIC0yMTEsNyArMjExLDYgQEAgY29uZmlnIEkyQ19FRVBST01fQVQyNAo+ICAKPiAg
+Y29uZmlnIExDRF9CQUNLTElHSFQKPiAgCXRyaXN0YXRlICJMQ0QgQmFja2xpZ2h0IHN1cHBvcnQi
+Cj4gLQlzZWxlY3QgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gIAlzZWxlY3QgQkFDS0xJR0hUX1BX
+TQo+ICAKPiAgZW5kbWVudQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vS2NvbmZpZyBi
+L2RyaXZlcnMvZ3B1L2RybS9LY29uZmlnCj4gaW5kZXggNDM4NWYwMC4uZWY0NDJhNyAxMDA2NDQK
+PiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9L
+Y29uZmlnCj4gQEAgLTE5OCw3ICsxOTgsNiBAQCBjb25maWcgRFJNX1JBREVPTgo+ICAJc2VsZWN0
+IFBPV0VSX1NVUFBMWQo+ICAJc2VsZWN0IEhXTU9OCj4gIAlzZWxlY3QgQkFDS0xJR0hUX0NMQVNT
+X0RFVklDRQo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9MQ0RfU1VQUE9SVAo+ICAJc2VsZWN0IElOVEVS
+VkFMX1RSRUUKPiAgCWhlbHAKPiAgCSAgQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSBoYXZlIGFu
+IEFUSSBSYWRlb24gZ3JhcGhpY3MgY2FyZC4gIFRoZXJlCj4gQEAgLTIxOSw3ICsyMTgsNiBAQCBj
+b25maWcgRFJNX0FNREdQVQo+ICAJc2VsZWN0IFBPV0VSX1NVUFBMWQo+ICAJc2VsZWN0IEhXTU9O
+Cj4gIAlzZWxlY3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRQo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9M
+Q0RfU1VQUE9SVAo+ICAJc2VsZWN0IElOVEVSVkFMX1RSRUUKPiAgCXNlbGVjdCBDSEFTSAo+ICAJ
+aGVscAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vYnJpZGdlL0tjb25maWcgYi9kcml2
+ZXJzL2dwdS9kcm0vYnJpZGdlL0tjb25maWcKPiBpbmRleCA5ZWViOGVmLi4wZjcyNGUyIDEwMDY0
+NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9icmlkZ2UvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMv
+Z3B1L2RybS9icmlkZ2UvS2NvbmZpZwo+IEBAIC03NSw3ICs3NSw2IEBAIGNvbmZpZyBEUk1fUEFS
+QURFX1BTODYyMgo+ICAJZGVwZW5kcyBvbiBPRgo+ICAJc2VsZWN0IERSTV9QQU5FTAo+ICAJc2Vs
+ZWN0IERSTV9LTVNfSEVMUEVSCj4gLQlzZWxlY3QgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gIAlz
+ZWxlY3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRQo+ICAJLS0taGVscC0tLQo+ICAJICBQYXJhZGUg
+ZURQLUxWRFMgYnJpZGdlIGNoaXAgZHJpdmVyLgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9k
+cm0vZnNsLWRjdS9LY29uZmlnIGIvZHJpdmVycy9ncHUvZHJtL2ZzbC1kY3UvS2NvbmZpZwo+IGlu
+ZGV4IDE0YTcyYzQuLmRjODI1ODggMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2ZzbC1k
+Y3UvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9mc2wtZGN1L0tjb25maWcKPiBAQCAt
+Miw3ICsyLDYgQEAgY29uZmlnIERSTV9GU0xfRENVCj4gIAl0cmlzdGF0ZSAiRFJNIFN1cHBvcnQg
+Zm9yIEZyZWVzY2FsZSBEQ1UiCj4gIAlkZXBlbmRzIG9uIERSTSAmJiBPRiAmJiBBUk0gJiYgQ09N
+TU9OX0NMSwo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNlbGVjdCBCQUNL
+TElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBEUk1fS01TX0hFTFBFUgo+ICAJc2VsZWN0IERS
+TV9LTVNfQ01BX0hFTFBFUgo+ICAJc2VsZWN0IERSTV9QQU5FTAo+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL2dwdS9kcm0vaTkxNS9LY29uZmlnIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvS2NvbmZpZwo+
+IGluZGV4IDMzYTQ1OGIuLjkwZDQwNmU3MyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0v
+aTkxNS9LY29uZmlnCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvS2NvbmZpZwo+IEBAIC0x
+NSw3ICsxNSw2IEBAIGNvbmZpZyBEUk1fSTkxNQo+ICAJc2VsZWN0IElSUV9XT1JLCj4gIAkjIGk5
+MTUgZGVwZW5kcyBvbiBBQ1BJX1ZJREVPIHdoZW4gQUNQSSBpcyBlbmFibGVkCj4gIAkjIGJ1dCBm
+b3Igc2VsZWN0IHRvIHdvcmssIG5lZWQgdG8gc2VsZWN0IEFDUElfVklERU8ncyBkZXBlbmRlbmNp
+ZXMsIGljawo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9MQ0RfU1VQUE9SVCBpZiBBQ1BJCj4gIAlzZWxl
+Y3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRSBpZiBBQ1BJCj4gIAlzZWxlY3QgSU5QVVQgaWYgQUNQ
+SQo+ICAJc2VsZWN0IEFDUElfVklERU8gaWYgQUNQSQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dw
+dS9kcm0vbm91dmVhdS9LY29uZmlnIGIvZHJpdmVycy9ncHUvZHJtL25vdXZlYXUvS2NvbmZpZwo+
+IGluZGV4IDRiNzVhZDQwLi5hMDIzOGJmIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9u
+b3V2ZWF1L0tjb25maWcKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vbm91dmVhdS9LY29uZmlnCj4g
+QEAgLTExLDcgKzExLDYgQEAgY29uZmlnIERSTV9OT1VWRUFVCj4gIAlzZWxlY3QgTVhNX1dNSSBp
+ZiBBQ1BJICYmIFg4Ngo+ICAJc2VsZWN0IFBPV0VSX1NVUFBMWQo+ICAJIyBTaW1pbGFyIHRvIGk5
+MTUsIHdlIG5lZWQgdG8gc2VsZWN0IEFDUElfVklERU8gYW5kIGl0J3MgZGVwZW5kZW5jaWVzCj4g
+LQlzZWxlY3QgQkFDS0xJR0hUX0xDRF9TVVBQT1JUIGlmIEFDUEkgJiYgWDg2Cj4gIAlzZWxlY3Qg
+QkFDS0xJR0hUX0NMQVNTX0RFVklDRSBpZiBBQ1BJICYmIFg4Ngo+ICAJc2VsZWN0IElOUFVUIGlm
+IEFDUEkgJiYgWDg2Cj4gIAlzZWxlY3QgVEhFUk1BTCBpZiBBQ1BJICYmIFg4Ngo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2dwdS9kcm0vc2htb2JpbGUvS2NvbmZpZyBiL2RyaXZlcnMvZ3B1L2RybS9z
+aG1vYmlsZS9LY29uZmlnCj4gaW5kZXggNjFiYmU4ZS4uZTJhNmM4MiAxMDA2NDQKPiAtLS0gYS9k
+cml2ZXJzL2dwdS9kcm0vc2htb2JpbGUvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9z
+aG1vYmlsZS9LY29uZmlnCj4gQEAgLTQsNyArNCw2IEBAIGNvbmZpZyBEUk1fU0hNT0JJTEUKPiAg
+CWRlcGVuZHMgb24gRFJNICYmIEFSTQo+ICAJZGVwZW5kcyBvbiBBUkNIX1NITU9CSUxFIHx8IENP
+TVBJTEVfVEVTVAo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNlbGVjdCBC
+QUNLTElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBEUk1fS01TX0hFTFBFUgo+ICAJc2VsZWN0
+IERSTV9LTVNfQ01BX0hFTFBFUgo+ICAJc2VsZWN0IERSTV9HRU1fQ01BX0hFTFBFUgo+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vdGlsY2RjL0tjb25maWcgYi9kcml2ZXJzL2dwdS9kcm0v
+dGlsY2RjL0tjb25maWcKPiBpbmRleCA1MjU5ODA0Li5jYjdkZjIwIDEwMDY0NAo+IC0tLSBhL2Ry
+aXZlcnMvZ3B1L2RybS90aWxjZGMvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS90aWxj
+ZGMvS2NvbmZpZwo+IEBAIC04LDcgKzgsNiBAQCBjb25maWcgRFJNX1RJTENEQwo+ICAJc2VsZWN0
+IERSTV9QQU5FTF9CUklER0UKPiAgCXNlbGVjdCBWSURFT01PREVfSEVMUEVSUwo+ICAJc2VsZWN0
+IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNlbGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQK
+PiAgCWhlbHAKPiAgCSAgQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSBoYXZlIGFuIFRJIFNvQyB3
+aXRoIExDREMgZGlzcGxheQo+ICAJICBjb250cm9sbGVyLCBmb3IgZXhhbXBsZSBBTTMzeHggaW4g
+YmVhZ2xlLWJvbmUsIERBOHh4LCBvcgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvb2xw
+Y19kY29uL0tjb25maWcgYi9kcml2ZXJzL3N0YWdpbmcvb2xwY19kY29uL0tjb25maWcKPiBpbmRl
+eCAxOTJjYzhkLi5jOTFhNTZmIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9vbHBjX2Rj
+b24vS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9vbHBjX2Rjb24vS2NvbmZpZwo+IEBA
+IC0yLDcgKzIsNiBAQCBjb25maWcgRkJfT0xQQ19EQ09OCj4gIAl0cmlzdGF0ZSAiT25lIExhcHRv
+cCBQZXIgQ2hpbGQgRGlzcGxheSBDT050cm9sbGVyIHN1cHBvcnQiCj4gIAlkZXBlbmRzIG9uIE9M
+UEMgJiYgRkIKPiAgCWRlcGVuZHMgb24gSTJDCj4gLQlkZXBlbmRzIG9uIEJBQ0tMSUdIVF9MQ0Rf
+U1VQUE9SVAo+ICAJZGVwZW5kcyBvbiAoR1BJT19DUzU1MzUgfHwgR1BJT19DUzU1MzU9bikKPiAg
+CXNlbGVjdCBCQUNLTElHSFRfQ0xBU1NfREVWSUNFCj4gIAloZWxwCj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvdXNiL21pc2MvS2NvbmZpZyBiL2RyaXZlcnMvdXNiL21pc2MvS2NvbmZpZwo+IGluZGV4
+IDY4ZDJmMmMuLmE4NmE4MGIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy91c2IvbWlzYy9LY29uZmln
+Cj4gKysrIGIvZHJpdmVycy91c2IvbWlzYy9LY29uZmlnCj4gQEAgLTE0MSw3ICsxNDEsNiBAQCBj
+b25maWcgVVNCX0ZURElfRUxBTgo+ICAKPiAgY29uZmlnIFVTQl9BUFBMRURJU1BMQVkKPiAgCXRy
+aXN0YXRlICJBcHBsZSBDaW5lbWEgRGlzcGxheSBzdXBwb3J0Igo+IC0Jc2VsZWN0IEJBQ0tMSUdI
+VF9MQ0RfU1VQUE9SVAo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAgCWhlbHAK
+PiAgCSAgU2F5IFkgaGVyZSBpZiB5b3Ugd2FudCB0byBjb250cm9sIHRoZSBiYWNrbGlnaHQgb2Yg
+QXBwbGUgQ2luZW1hCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L0tjb25m
+aWcgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29uZmlnCj4gaW5kZXggNzFlZTk3OC4uM2Zk
+YzE4ZSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29uZmlnCj4gKysr
+IGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvS2NvbmZpZwo+IEBAIC0yLDEzICsyLDcgQEAKPiAg
+IyBCYWNrbGlnaHQgJiBMQ0QgZHJpdmVycyBjb25maWd1cmF0aW9uCj4gICMKPiAgCj4gLW1lbnVj
+b25maWcgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gLQlib29sICJCYWNrbGlnaHQgJiBMQ0QgZGV2
+aWNlIHN1cHBvcnQiCj4gLQloZWxwCj4gLQkgIEVuYWJsZSB0aGlzIHRvIGJlIGFibGUgdG8gY2hv
+b3NlIHRoZSBkcml2ZXJzIGZvciBjb250cm9sbGluZyB0aGUKPiAtCSAgYmFja2xpZ2h0IGFuZCB0
+aGUgTENEIHBhbmVsIG9uIHNvbWUgcGxhdGZvcm1zLCBmb3IgZXhhbXBsZSBvbiBQREFzLgo+IC0K
+PiAtaWYgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gK21lbnUgIkJhY2tsaWdodCAmIExDRCBkZXZp
+Y2Ugc3VwcG9ydCIKPiAgCj4gICMKPiAgIyBMQ0QKPiBAQCAtNDY2LDQgKzQ2MCw0IEBAIGNvbmZp
+ZyBCQUNLTElHSFRfUkFWRV9TUAo+ICAKPiAgZW5kaWYgIyBCQUNLTElHSFRfQ0xBU1NfREVWSUNF
+Cj4gIAo+IC1lbmRpZiAjIEJBQ0tMSUdIVF9MQ0RfU1VQUE9SVAo+ICtlbmRtZW51Cj4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZpZyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYv
+S2NvbmZpZwo+IGluZGV4IGU0MTNmNTQuLjAwMzdkNWUgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy92
+aWRlby9mYmRldi9LY29uZmlnCj4gKysrIGIvZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnCj4g
+QEAgLTE4Niw3ICsxODYsNiBAQCBjb25maWcgRkJfTUFDTU9ERVMKPiAgY29uZmlnIEZCX0JBQ0tM
+SUdIVAo+ICAJYm9vbAo+ICAJZGVwZW5kcyBvbiBGQgo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9MQ0Rf
+U1VQUE9SVAo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAgCj4gIGNvbmZpZyBG
+Ql9NT0RFX0hFTFBFUlMKPiBAQCAtMjgxLDcgKzI4MCw2IEBAIGNvbmZpZyBGQl9BUk1DTENECj4g
+IAlzZWxlY3QgRkJfQ0ZCX0lNQUdFQkxJVAo+ICAJc2VsZWN0IEZCX01PREVfSEVMUEVSUyBpZiBP
+Rgo+ICAJc2VsZWN0IFZJREVPTU9ERV9IRUxQRVJTIGlmIE9GCj4gLQlzZWxlY3QgQkFDS0xJR0hU
+X0xDRF9TVVBQT1JUIGlmIE9GCj4gIAlzZWxlY3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRSBpZiBP
+Rgo+ICAJaGVscAo+ICAJICBUaGlzIGZyYW1lYnVmZmVyIGRldmljZSBkcml2ZXIgaXMgZm9yIHRo
+ZSBBUk0gUHJpbWVDZWxsIFBMMTEwCj4gQEAgLTMxNSw3ICszMTMsNiBAQCBjb25maWcgRkJfQUNP
+Uk4KPiAgY29uZmlnIEZCX0NMUFM3MTFYCj4gIAl0cmlzdGF0ZSAiQ0xQUzcxMVggTENEIHN1cHBv
+cnQiCj4gIAlkZXBlbmRzIG9uIEZCICYmIChBUkNIX0NMUFM3MTFYIHx8IENPTVBJTEVfVEVTVCkK
+PiAtCXNlbGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBGQl9NT0RFX0hFTFBF
+UlMKPiAgCXNlbGVjdCBGQl9TWVNfRklMTFJFQ1QKPiAgCXNlbGVjdCBGQl9TWVNfQ09QWUFSRUEK
+PiBAQCAtMzQzLDcgKzM0MCw2IEBAIGNvbmZpZyBGQl9TQTExMDAKPiAgY29uZmlnIEZCX0lNWAo+
+ICAJdHJpc3RhdGUgIkZyZWVzY2FsZSBpLk1YMS8yMS8yNS8yNyBMQ0Qgc3VwcG9ydCIKPiAgCWRl
+cGVuZHMgb24gRkIgJiYgQVJDSF9NWEMKPiAtCXNlbGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQK
+PiAgCXNlbGVjdCBMQ0RfQ0xBU1NfREVWSUNFCj4gIAlzZWxlY3QgRkJfQ0ZCX0ZJTExSRUNUCj4g
+IAlzZWxlY3QgRkJfQ0ZCX0NPUFlBUkVBCj4gQEAgLTIxOTEsNyArMjE4Nyw2IEBAIGNvbmZpZyBG
+Ql9NWDMKPiAgCXRyaXN0YXRlICJNWDMgRnJhbWVidWZmZXIgc3VwcG9ydCIKPiAgCWRlcGVuZHMg
+b24gRkIgJiYgTVgzX0lQVQo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNl
+bGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBGQl9DRkJfRklMTFJFQ1QKPiAg
+CXNlbGVjdCBGQl9DRkJfQ09QWUFSRUEKPiAgCXNlbGVjdCBGQl9DRkJfSU1BR0VCTElUCj4gLS0g
+Cj4gMi4xMC4yCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9y
+ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZl
+bAo=
