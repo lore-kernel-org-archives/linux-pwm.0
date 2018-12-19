@@ -1,173 +1,167 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH 1/2] video: lcd: Remove useless BACKLIGHT_LCD_SUPPORT
- kernel symbol
-Date: Tue, 18 Dec 2018 17:21:20 +0000
-Message-ID: <20181218172120.GC28994@wychelm.lan>
-References: <20181216050247.30043-1-shc_work@mail.ru>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: [PATCH] pwm: imx: add ipg clock operation
+Date: Wed, 19 Dec 2018 05:24:58 +0000
+Message-ID: <1545196822-31361-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20181216050247.30043-1-shc_work@mail.ru>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gU3VuLCBEZWMgMTYsIDIwMTggYXQgMDg6MDI6NDZBTSArMDMwMCwgQWxleGFuZGVyIFNoaXlh
-biB3cm90ZToKPiBTeW1ib2wgQkFDS0xJR0hUX0xDRF9TVVBQT1JUIGFmZmVjdGluZyBhbnl0aGlu
-ZywgZXhjZXB0IGVuYWJsaW5nCj4gdGhlIGJhY2tsaWdodCAmIExDRCBLY29uZmlnIG1lbnUuIFRo
-ZSBwYXRjaCByZW1vdmVzIHRoaXMgc3ltYm9sIGFzCj4gdXNlbGVzcyBhbmQgY29udmVydHMgaXQg
-aW50byBhIG1lbnUuCgpTb21ldGhpbmcgYm90aGVyZWQgbWUgYWJvdXQgdGhlIHBhdGNoIGJ1dCBJ
-IHRoaW5rIGl0cyB0aGUgbGFjayBvZgpleHBsYW5hdGlvbiBpbiB0aGUgcGF0Y2ggaGVhZGVyIGFi
-b3V0ICp3aHkqIHdlIGRvbid0IHVzZS9uZWVkL3dhbnQKQkFDS0xJR0hUX0xDRF9TVVBQT1JULgoK
-RXNzZW50aWFsbHkgdGhlIHJlYXNvbiBCQUNLTElHSFRfTENEX1NVUFBPUlQgaXMgdXNlbGVzcyBp
-cyB0aGF0IHdlIGhhdmUKdHdvIF9DTEFTU19ERVZJQ0UgY29uZmlncyAoTENEX0NMQVNTX0RFVklD
-RSBhbmQgQkFDS0xJR0hUX0xDRF9ERVZJQ0UpCnRoYXQgZG8gdGhlIHNhbWUgam9iIChhZCB0aGF0
-IGRvIGhhdmUgY29kZSBhdHRhY2hlZCB0byB0aGVtKS4KCkl0IHdvdWxkIGJlIGdvb2QgdG8gbWVu
-dGlvbiB0aGF0IGluIHRoZSBwYXRjaCBoZWFkZXIuCgoKRGFuaWVsLgoKPiAKPiBTaWduZWQtb2Zm
-LWJ5OiBBbGV4YW5kZXIgU2hpeWFuIDxzaGNfd29ya0BtYWlsLnJ1Pgo+IC0tLQo+ICBhcmNoL3Vu
-aWNvcmUzMi9LY29uZmlnICAgICAgICAgICAgfCAgMSAtCj4gIGRyaXZlcnMvZ3B1L2RybS9LY29u
-ZmlnICAgICAgICAgICB8ICAyIC0tCj4gIGRyaXZlcnMvZ3B1L2RybS9icmlkZ2UvS2NvbmZpZyAg
-ICB8ICAxIC0KPiAgZHJpdmVycy9ncHUvZHJtL2ZzbC1kY3UvS2NvbmZpZyAgIHwgIDEgLQo+ICBk
-cml2ZXJzL2dwdS9kcm0vaTkxNS9LY29uZmlnICAgICAgfCAgMSAtCj4gIGRyaXZlcnMvZ3B1L2Ry
-bS9ub3V2ZWF1L0tjb25maWcgICB8ICAxIC0KPiAgZHJpdmVycy9ncHUvZHJtL3NobW9iaWxlL0tj
-b25maWcgIHwgIDEgLQo+ICBkcml2ZXJzL2dwdS9kcm0vdGlsY2RjL0tjb25maWcgICAgfCAgMSAt
-Cj4gIGRyaXZlcnMvc3RhZ2luZy9vbHBjX2Rjb24vS2NvbmZpZyB8ICAxIC0KPiAgZHJpdmVycy91
-c2IvbWlzYy9LY29uZmlnICAgICAgICAgIHwgIDEgLQo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
-dC9LY29uZmlnICAgfCAxMCArKy0tLS0tLS0tCj4gIGRyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZp
-ZyAgICAgICB8ICA1IC0tLS0tCj4gIDEyIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwg
-MjQgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2FyY2gvdW5pY29yZTMyL0tjb25maWcg
-Yi9hcmNoL3VuaWNvcmUzMi9LY29uZmlnCj4gaW5kZXggYTRjMDUxNS4uYWZlZWEzZCAxMDA2NDQK
-PiAtLS0gYS9hcmNoL3VuaWNvcmUzMi9LY29uZmlnCj4gKysrIGIvYXJjaC91bmljb3JlMzIvS2Nv
-bmZpZwo+IEBAIC0yMTEsNyArMjExLDYgQEAgY29uZmlnIEkyQ19FRVBST01fQVQyNAo+ICAKPiAg
-Y29uZmlnIExDRF9CQUNLTElHSFQKPiAgCXRyaXN0YXRlICJMQ0QgQmFja2xpZ2h0IHN1cHBvcnQi
-Cj4gLQlzZWxlY3QgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gIAlzZWxlY3QgQkFDS0xJR0hUX1BX
-TQo+ICAKPiAgZW5kbWVudQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vS2NvbmZpZyBi
-L2RyaXZlcnMvZ3B1L2RybS9LY29uZmlnCj4gaW5kZXggNDM4NWYwMC4uZWY0NDJhNyAxMDA2NDQK
-PiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9L
-Y29uZmlnCj4gQEAgLTE5OCw3ICsxOTgsNiBAQCBjb25maWcgRFJNX1JBREVPTgo+ICAJc2VsZWN0
-IFBPV0VSX1NVUFBMWQo+ICAJc2VsZWN0IEhXTU9OCj4gIAlzZWxlY3QgQkFDS0xJR0hUX0NMQVNT
-X0RFVklDRQo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9MQ0RfU1VQUE9SVAo+ICAJc2VsZWN0IElOVEVS
-VkFMX1RSRUUKPiAgCWhlbHAKPiAgCSAgQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSBoYXZlIGFu
-IEFUSSBSYWRlb24gZ3JhcGhpY3MgY2FyZC4gIFRoZXJlCj4gQEAgLTIxOSw3ICsyMTgsNiBAQCBj
-b25maWcgRFJNX0FNREdQVQo+ICAJc2VsZWN0IFBPV0VSX1NVUFBMWQo+ICAJc2VsZWN0IEhXTU9O
-Cj4gIAlzZWxlY3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRQo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9M
-Q0RfU1VQUE9SVAo+ICAJc2VsZWN0IElOVEVSVkFMX1RSRUUKPiAgCXNlbGVjdCBDSEFTSAo+ICAJ
-aGVscAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vYnJpZGdlL0tjb25maWcgYi9kcml2
-ZXJzL2dwdS9kcm0vYnJpZGdlL0tjb25maWcKPiBpbmRleCA5ZWViOGVmLi4wZjcyNGUyIDEwMDY0
-NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9icmlkZ2UvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMv
-Z3B1L2RybS9icmlkZ2UvS2NvbmZpZwo+IEBAIC03NSw3ICs3NSw2IEBAIGNvbmZpZyBEUk1fUEFS
-QURFX1BTODYyMgo+ICAJZGVwZW5kcyBvbiBPRgo+ICAJc2VsZWN0IERSTV9QQU5FTAo+ICAJc2Vs
-ZWN0IERSTV9LTVNfSEVMUEVSCj4gLQlzZWxlY3QgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gIAlz
-ZWxlY3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRQo+ICAJLS0taGVscC0tLQo+ICAJICBQYXJhZGUg
-ZURQLUxWRFMgYnJpZGdlIGNoaXAgZHJpdmVyLgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9k
-cm0vZnNsLWRjdS9LY29uZmlnIGIvZHJpdmVycy9ncHUvZHJtL2ZzbC1kY3UvS2NvbmZpZwo+IGlu
-ZGV4IDE0YTcyYzQuLmRjODI1ODggMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2ZzbC1k
-Y3UvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9mc2wtZGN1L0tjb25maWcKPiBAQCAt
-Miw3ICsyLDYgQEAgY29uZmlnIERSTV9GU0xfRENVCj4gIAl0cmlzdGF0ZSAiRFJNIFN1cHBvcnQg
-Zm9yIEZyZWVzY2FsZSBEQ1UiCj4gIAlkZXBlbmRzIG9uIERSTSAmJiBPRiAmJiBBUk0gJiYgQ09N
-TU9OX0NMSwo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNlbGVjdCBCQUNL
-TElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBEUk1fS01TX0hFTFBFUgo+ICAJc2VsZWN0IERS
-TV9LTVNfQ01BX0hFTFBFUgo+ICAJc2VsZWN0IERSTV9QQU5FTAo+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL2dwdS9kcm0vaTkxNS9LY29uZmlnIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvS2NvbmZpZwo+
-IGluZGV4IDMzYTQ1OGIuLjkwZDQwNmU3MyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0v
-aTkxNS9LY29uZmlnCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvS2NvbmZpZwo+IEBAIC0x
-NSw3ICsxNSw2IEBAIGNvbmZpZyBEUk1fSTkxNQo+ICAJc2VsZWN0IElSUV9XT1JLCj4gIAkjIGk5
-MTUgZGVwZW5kcyBvbiBBQ1BJX1ZJREVPIHdoZW4gQUNQSSBpcyBlbmFibGVkCj4gIAkjIGJ1dCBm
-b3Igc2VsZWN0IHRvIHdvcmssIG5lZWQgdG8gc2VsZWN0IEFDUElfVklERU8ncyBkZXBlbmRlbmNp
-ZXMsIGljawo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9MQ0RfU1VQUE9SVCBpZiBBQ1BJCj4gIAlzZWxl
-Y3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRSBpZiBBQ1BJCj4gIAlzZWxlY3QgSU5QVVQgaWYgQUNQ
-SQo+ICAJc2VsZWN0IEFDUElfVklERU8gaWYgQUNQSQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dw
-dS9kcm0vbm91dmVhdS9LY29uZmlnIGIvZHJpdmVycy9ncHUvZHJtL25vdXZlYXUvS2NvbmZpZwo+
-IGluZGV4IDRiNzVhZDQwLi5hMDIzOGJmIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9u
-b3V2ZWF1L0tjb25maWcKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vbm91dmVhdS9LY29uZmlnCj4g
-QEAgLTExLDcgKzExLDYgQEAgY29uZmlnIERSTV9OT1VWRUFVCj4gIAlzZWxlY3QgTVhNX1dNSSBp
-ZiBBQ1BJICYmIFg4Ngo+ICAJc2VsZWN0IFBPV0VSX1NVUFBMWQo+ICAJIyBTaW1pbGFyIHRvIGk5
-MTUsIHdlIG5lZWQgdG8gc2VsZWN0IEFDUElfVklERU8gYW5kIGl0J3MgZGVwZW5kZW5jaWVzCj4g
-LQlzZWxlY3QgQkFDS0xJR0hUX0xDRF9TVVBQT1JUIGlmIEFDUEkgJiYgWDg2Cj4gIAlzZWxlY3Qg
-QkFDS0xJR0hUX0NMQVNTX0RFVklDRSBpZiBBQ1BJICYmIFg4Ngo+ICAJc2VsZWN0IElOUFVUIGlm
-IEFDUEkgJiYgWDg2Cj4gIAlzZWxlY3QgVEhFUk1BTCBpZiBBQ1BJICYmIFg4Ngo+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2dwdS9kcm0vc2htb2JpbGUvS2NvbmZpZyBiL2RyaXZlcnMvZ3B1L2RybS9z
-aG1vYmlsZS9LY29uZmlnCj4gaW5kZXggNjFiYmU4ZS4uZTJhNmM4MiAxMDA2NDQKPiAtLS0gYS9k
-cml2ZXJzL2dwdS9kcm0vc2htb2JpbGUvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9z
-aG1vYmlsZS9LY29uZmlnCj4gQEAgLTQsNyArNCw2IEBAIGNvbmZpZyBEUk1fU0hNT0JJTEUKPiAg
-CWRlcGVuZHMgb24gRFJNICYmIEFSTQo+ICAJZGVwZW5kcyBvbiBBUkNIX1NITU9CSUxFIHx8IENP
-TVBJTEVfVEVTVAo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNlbGVjdCBC
-QUNLTElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBEUk1fS01TX0hFTFBFUgo+ICAJc2VsZWN0
-IERSTV9LTVNfQ01BX0hFTFBFUgo+ICAJc2VsZWN0IERSTV9HRU1fQ01BX0hFTFBFUgo+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vdGlsY2RjL0tjb25maWcgYi9kcml2ZXJzL2dwdS9kcm0v
-dGlsY2RjL0tjb25maWcKPiBpbmRleCA1MjU5ODA0Li5jYjdkZjIwIDEwMDY0NAo+IC0tLSBhL2Ry
-aXZlcnMvZ3B1L2RybS90aWxjZGMvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS90aWxj
-ZGMvS2NvbmZpZwo+IEBAIC04LDcgKzgsNiBAQCBjb25maWcgRFJNX1RJTENEQwo+ICAJc2VsZWN0
-IERSTV9QQU5FTF9CUklER0UKPiAgCXNlbGVjdCBWSURFT01PREVfSEVMUEVSUwo+ICAJc2VsZWN0
-IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNlbGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQK
-PiAgCWhlbHAKPiAgCSAgQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSBoYXZlIGFuIFRJIFNvQyB3
-aXRoIExDREMgZGlzcGxheQo+ICAJICBjb250cm9sbGVyLCBmb3IgZXhhbXBsZSBBTTMzeHggaW4g
-YmVhZ2xlLWJvbmUsIERBOHh4LCBvcgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvb2xw
-Y19kY29uL0tjb25maWcgYi9kcml2ZXJzL3N0YWdpbmcvb2xwY19kY29uL0tjb25maWcKPiBpbmRl
-eCAxOTJjYzhkLi5jOTFhNTZmIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9vbHBjX2Rj
-b24vS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9vbHBjX2Rjb24vS2NvbmZpZwo+IEBA
-IC0yLDcgKzIsNiBAQCBjb25maWcgRkJfT0xQQ19EQ09OCj4gIAl0cmlzdGF0ZSAiT25lIExhcHRv
-cCBQZXIgQ2hpbGQgRGlzcGxheSBDT050cm9sbGVyIHN1cHBvcnQiCj4gIAlkZXBlbmRzIG9uIE9M
-UEMgJiYgRkIKPiAgCWRlcGVuZHMgb24gSTJDCj4gLQlkZXBlbmRzIG9uIEJBQ0tMSUdIVF9MQ0Rf
-U1VQUE9SVAo+ICAJZGVwZW5kcyBvbiAoR1BJT19DUzU1MzUgfHwgR1BJT19DUzU1MzU9bikKPiAg
-CXNlbGVjdCBCQUNLTElHSFRfQ0xBU1NfREVWSUNFCj4gIAloZWxwCj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvdXNiL21pc2MvS2NvbmZpZyBiL2RyaXZlcnMvdXNiL21pc2MvS2NvbmZpZwo+IGluZGV4
-IDY4ZDJmMmMuLmE4NmE4MGIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy91c2IvbWlzYy9LY29uZmln
-Cj4gKysrIGIvZHJpdmVycy91c2IvbWlzYy9LY29uZmlnCj4gQEAgLTE0MSw3ICsxNDEsNiBAQCBj
-b25maWcgVVNCX0ZURElfRUxBTgo+ICAKPiAgY29uZmlnIFVTQl9BUFBMRURJU1BMQVkKPiAgCXRy
-aXN0YXRlICJBcHBsZSBDaW5lbWEgRGlzcGxheSBzdXBwb3J0Igo+IC0Jc2VsZWN0IEJBQ0tMSUdI
-VF9MQ0RfU1VQUE9SVAo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAgCWhlbHAK
-PiAgCSAgU2F5IFkgaGVyZSBpZiB5b3Ugd2FudCB0byBjb250cm9sIHRoZSBiYWNrbGlnaHQgb2Yg
-QXBwbGUgQ2luZW1hCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L0tjb25m
-aWcgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29uZmlnCj4gaW5kZXggNzFlZTk3OC4uM2Zk
-YzE4ZSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9LY29uZmlnCj4gKysr
-IGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvS2NvbmZpZwo+IEBAIC0yLDEzICsyLDcgQEAKPiAg
-IyBCYWNrbGlnaHQgJiBMQ0QgZHJpdmVycyBjb25maWd1cmF0aW9uCj4gICMKPiAgCj4gLW1lbnVj
-b25maWcgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gLQlib29sICJCYWNrbGlnaHQgJiBMQ0QgZGV2
-aWNlIHN1cHBvcnQiCj4gLQloZWxwCj4gLQkgIEVuYWJsZSB0aGlzIHRvIGJlIGFibGUgdG8gY2hv
-b3NlIHRoZSBkcml2ZXJzIGZvciBjb250cm9sbGluZyB0aGUKPiAtCSAgYmFja2xpZ2h0IGFuZCB0
-aGUgTENEIHBhbmVsIG9uIHNvbWUgcGxhdGZvcm1zLCBmb3IgZXhhbXBsZSBvbiBQREFzLgo+IC0K
-PiAtaWYgQkFDS0xJR0hUX0xDRF9TVVBQT1JUCj4gK21lbnUgIkJhY2tsaWdodCAmIExDRCBkZXZp
-Y2Ugc3VwcG9ydCIKPiAgCj4gICMKPiAgIyBMQ0QKPiBAQCAtNDY2LDQgKzQ2MCw0IEBAIGNvbmZp
-ZyBCQUNLTElHSFRfUkFWRV9TUAo+ICAKPiAgZW5kaWYgIyBCQUNLTElHSFRfQ0xBU1NfREVWSUNF
-Cj4gIAo+IC1lbmRpZiAjIEJBQ0tMSUdIVF9MQ0RfU1VQUE9SVAo+ICtlbmRtZW51Cj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZpZyBiL2RyaXZlcnMvdmlkZW8vZmJkZXYv
-S2NvbmZpZwo+IGluZGV4IGU0MTNmNTQuLjAwMzdkNWUgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy92
-aWRlby9mYmRldi9LY29uZmlnCj4gKysrIGIvZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnCj4g
-QEAgLTE4Niw3ICsxODYsNiBAQCBjb25maWcgRkJfTUFDTU9ERVMKPiAgY29uZmlnIEZCX0JBQ0tM
-SUdIVAo+ICAJYm9vbAo+ICAJZGVwZW5kcyBvbiBGQgo+IC0Jc2VsZWN0IEJBQ0tMSUdIVF9MQ0Rf
-U1VQUE9SVAo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAgCj4gIGNvbmZpZyBG
-Ql9NT0RFX0hFTFBFUlMKPiBAQCAtMjgxLDcgKzI4MCw2IEBAIGNvbmZpZyBGQl9BUk1DTENECj4g
-IAlzZWxlY3QgRkJfQ0ZCX0lNQUdFQkxJVAo+ICAJc2VsZWN0IEZCX01PREVfSEVMUEVSUyBpZiBP
-Rgo+ICAJc2VsZWN0IFZJREVPTU9ERV9IRUxQRVJTIGlmIE9GCj4gLQlzZWxlY3QgQkFDS0xJR0hU
-X0xDRF9TVVBQT1JUIGlmIE9GCj4gIAlzZWxlY3QgQkFDS0xJR0hUX0NMQVNTX0RFVklDRSBpZiBP
-Rgo+ICAJaGVscAo+ICAJICBUaGlzIGZyYW1lYnVmZmVyIGRldmljZSBkcml2ZXIgaXMgZm9yIHRo
-ZSBBUk0gUHJpbWVDZWxsIFBMMTEwCj4gQEAgLTMxNSw3ICszMTMsNiBAQCBjb25maWcgRkJfQUNP
-Uk4KPiAgY29uZmlnIEZCX0NMUFM3MTFYCj4gIAl0cmlzdGF0ZSAiQ0xQUzcxMVggTENEIHN1cHBv
-cnQiCj4gIAlkZXBlbmRzIG9uIEZCICYmIChBUkNIX0NMUFM3MTFYIHx8IENPTVBJTEVfVEVTVCkK
-PiAtCXNlbGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBGQl9NT0RFX0hFTFBF
-UlMKPiAgCXNlbGVjdCBGQl9TWVNfRklMTFJFQ1QKPiAgCXNlbGVjdCBGQl9TWVNfQ09QWUFSRUEK
-PiBAQCAtMzQzLDcgKzM0MCw2IEBAIGNvbmZpZyBGQl9TQTExMDAKPiAgY29uZmlnIEZCX0lNWAo+
-ICAJdHJpc3RhdGUgIkZyZWVzY2FsZSBpLk1YMS8yMS8yNS8yNyBMQ0Qgc3VwcG9ydCIKPiAgCWRl
-cGVuZHMgb24gRkIgJiYgQVJDSF9NWEMKPiAtCXNlbGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQK
-PiAgCXNlbGVjdCBMQ0RfQ0xBU1NfREVWSUNFCj4gIAlzZWxlY3QgRkJfQ0ZCX0ZJTExSRUNUCj4g
-IAlzZWxlY3QgRkJfQ0ZCX0NPUFlBUkVBCj4gQEAgLTIxOTEsNyArMjE4Nyw2IEBAIGNvbmZpZyBG
-Ql9NWDMKPiAgCXRyaXN0YXRlICJNWDMgRnJhbWVidWZmZXIgc3VwcG9ydCIKPiAgCWRlcGVuZHMg
-b24gRkIgJiYgTVgzX0lQVQo+ICAJc2VsZWN0IEJBQ0tMSUdIVF9DTEFTU19ERVZJQ0UKPiAtCXNl
-bGVjdCBCQUNLTElHSFRfTENEX1NVUFBPUlQKPiAgCXNlbGVjdCBGQl9DRkJfRklMTFJFQ1QKPiAg
-CXNlbGVjdCBGQl9DRkJfQ09QWUFSRUEKPiAgCXNlbGVjdCBGQl9DRkJfSU1BR0VCTElUCj4gLS0g
-Cj4gMi4xMC4yCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9y
-ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZl
-bAo=
+i.MX PWM module's ipg_clk_s is for PWM register access, on
+most of i.MX SoCs, this ipg_clk_s is from system ipg clock
+or perclk which is always enabled, but on i.MX7D, the ipg_clk_s
+is from PWM1_CLK_ROOT which is controlled by CCGR132, that means
+the CCGR132 MUST be enabled first before accessing PWM registers
+on i.MX7D. This patch adds ipg clock operation to make sure
+register access successfully on i.MX7D and it fixes Linux kernel
+boot up hang during PWM driver probe.
+
+Fixes: 4a23e6ee9f69 ("ARM: dts: imx7d-sdb: Restore pwm backlight support")
+Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+---
+ drivers/pwm/pwm-imx.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++-=
+----
+ 1 file changed, 48 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index 6cd3b72..55a3a36 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -87,6 +87,8 @@
+ #define MX3_PWMPR_MAX			0xfffe
+=20
+ struct imx_chip {
++	struct clk	*clk_ipg;
++
+ 	struct clk	*clk_per;
+=20
+ 	void __iomem	*mmio_base;
+@@ -96,6 +98,32 @@ struct imx_chip {
+=20
+ #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
+=20
++static int imx_pwm_clk_prepare_enable(struct pwm_chip *chip)
++{
++	struct imx_chip *imx =3D to_imx_chip(chip);
++	int ret;
++
++	ret =3D clk_prepare_enable(imx->clk_ipg);
++	if (ret)
++		return ret;
++
++	ret =3D clk_prepare_enable(imx->clk_per);
++	if (ret) {
++		clk_disable_unprepare(imx->clk_ipg);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void imx_pwm_clk_disable_unprepare(struct pwm_chip *chip)
++{
++	struct imx_chip *imx =3D to_imx_chip(chip);
++
++	clk_disable_unprepare(imx->clk_per);
++	clk_disable_unprepare(imx->clk_ipg);
++}
++
+ static void imx_pwm_get_state(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, struct pwm_state *state)
+ {
+@@ -103,11 +131,15 @@ static void imx_pwm_get_state(struct pwm_chip *chip,
+ 	u32 period, prescaler, pwm_clk, ret, val;
+ 	u64 tmp;
+=20
++	ret =3D imx_pwm_clk_prepare_enable(chip);
++	if (ret < 0)
++		return;
++
+ 	val =3D readl(imx->mmio_base + MX3_PWMCR);
+=20
+ 	if (val & MX3_PWMCR_EN) {
+ 		state->enabled =3D true;
+-		ret =3D clk_prepare_enable(imx->clk_per);
++		ret =3D imx_pwm_clk_prepare_enable(chip);
+ 		if (ret)
+ 			return;
+ 	} else {
+@@ -143,6 +175,8 @@ static void imx_pwm_get_state(struct pwm_chip *chip,
+ 	} else {
+ 		state->duty_cycle =3D 0;
+ 	}
++
++	imx_pwm_clk_disable_unprepare(chip);
+ }
+=20
+ static int imx_pwm_config_v1(struct pwm_chip *chip,
+@@ -180,7 +214,7 @@ static int imx_pwm_enable_v1(struct pwm_chip *chip, str=
+uct pwm_device *pwm)
+ 	u32 val;
+ 	int ret;
+=20
+-	ret =3D clk_prepare_enable(imx->clk_per);
++	ret =3D imx_pwm_clk_prepare_enable(chip);
+ 	if (ret < 0)
+ 		return ret;
+=20
+@@ -200,7 +234,7 @@ static void imx_pwm_disable_v1(struct pwm_chip *chip, s=
+truct pwm_device *pwm)
+ 	val &=3D ~MX1_PWMC_EN;
+ 	writel(val, imx->mmio_base + MX1_PWMC);
+=20
+-	clk_disable_unprepare(imx->clk_per);
++	imx_pwm_clk_disable_unprepare(chip);
+ }
+=20
+ static void imx_pwm_sw_reset(struct pwm_chip *chip)
+@@ -286,7 +320,7 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, stru=
+ct pwm_device *pwm,
+ 		if (cstate.enabled) {
+ 			imx_pwm_wait_fifo_slot(chip, pwm);
+ 		} else {
+-			ret =3D clk_prepare_enable(imx->clk_per);
++			ret =3D imx_pwm_clk_prepare_enable(chip);
+ 			if (ret)
+ 				return ret;
+=20
+@@ -309,7 +343,7 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, stru=
+ct pwm_device *pwm,
+ 	} else if (cstate.enabled) {
+ 		writel(0, imx->mmio_base + MX3_PWMCR);
+=20
+-		clk_disable_unprepare(imx->clk_per);
++		imx_pwm_clk_disable_unprepare(chip);
+ 	}
+=20
+ 	return 0;
+@@ -367,6 +401,13 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (imx =3D=3D NULL)
+ 		return -ENOMEM;
+=20
++	imx->clk_ipg =3D devm_clk_get(&pdev->dev, "ipg");
++	if (IS_ERR(imx->clk_ipg)) {
++		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
++				PTR_ERR(imx->clk_ipg));
++		return PTR_ERR(imx->clk_ipg);
++	}
++
+ 	imx->clk_per =3D devm_clk_get(&pdev->dev, "per");
+ 	if (IS_ERR(imx->clk_per)) {
+ 		dev_err(&pdev->dev, "getting per clock failed with %ld\n",
+@@ -406,6 +447,8 @@ static int imx_pwm_remove(struct platform_device *pdev)
+ 	if (imx =3D=3D NULL)
+ 		return -ENODEV;
+=20
++	imx_pwm_clk_disable_unprepare(&imx->chip);
++
+ 	return pwmchip_remove(&imx->chip);
+ }
+=20
+--=20
+2.7.4
