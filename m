@@ -1,364 +1,155 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 6/6] ARM: PWM: add allwinner sun8i
- R40/T3/V40 PWM support.
-Date: Thu, 20 Dec 2018 18:57:50 +0100
-Message-ID: <20181220175750.GG9408@ulmo>
-References: <20181125162319.GA5422@arx-s1>
-Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
+Date: Thu, 20 Dec 2018 21:58:09 +0100
+Message-ID: <20181220205809.5t2klpb7donmoibb@pengutronix.de>
+References: <20181212220922.18759-1-paul@crapouillou.net>
+ <20181212220922.18759-16-paul@crapouillou.net>
+ <20181213092409.ml4wpnzow2nnszkd@pengutronix.de>
+ <1544709795.18952.1@crapouillou.net>
+ <20181213204219.onem3q6dcmakusl2@pengutronix.de>
+ <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
+ <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
+ <1544969932.1649.1@crapouillou.net>
+ <20181217075321.k45vhgnszeqs3tea@pengutronix.de>
+ <20181220173904.GE9408@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="oXNgvKVxGWJ0RPMJ"
-Return-path: <linux-sunxi+bncBDTKFPPJUEHRBINQ57QAKGQEVBHICPY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181125162319.GA5422@arx-s1>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20181220173904.GE9408@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Paul Cercueil <paul@crapouillou.net>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, paul.burton@mips.com, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, ezequiel@collabora.co.uk, prasannatsmkumar@gmail.com, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk <linux-clk@vger.kernel.>
 List-Id: linux-pwm@vger.kernel.org
 
+On Thu, Dec 20, 2018 at 06:39:04PM +0100, Thierry Reding wrote:
+> On Mon, Dec 17, 2018 at 08:53:21AM +0100, Uwe Kleine-König wrote:
+> > On Sun, Dec 16, 2018 at 03:18:52PM +0100, Paul Cercueil wrote:
+> > > Hi,
+> > > 
+> > > Le ven. 14 déc. 2018 à 15:26, Uwe Kleine-König
+> > > <u.kleine-koenig@pengutronix.de> a écrit :
+> > > > Hello,
+> > > > 
+> > > > On Fri, Dec 14, 2018 at 02:50:20PM +0100, Linus Walleij wrote:
+> > > > > On Thu, Dec 13, 2018 at 9:42 PM Uwe Kleine-König
+> > > > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > > > > [Adding Linus Walleij to Cc:]
+> > > > > > On Thu, Dec 13, 2018 at 03:03:15PM +0100, Paul Cercueil wrote:
+> > > > > > > Le jeu. 13 déc. 2018 à 10:24, Uwe Kleine-König
+> > > > > > > <u.kleine-koenig@pengutronix.de> a écrit :
+> > > > > > > > On Wed, Dec 12, 2018 at 11:09:10PM +0100, Paul Cercueil wrote:
+> > > > > > > > >  The PWM in the JZ4725B works the same as in the JZ4740,
+> > > > > > > > >  except that it only has 6 channels available instead of
+> > > > > > > > >  8.
+> > > > > > > >
+> > > > > > > > this driver is probed only from device tree? If yes, it
+> > > > > > > > might be sensible to specify the number of PWMs there and
+> > > > > > > > get it from there.
+> > > > > > > > There doesn't seem to be a generic binding for that, but there are
+> > > > > > > > several drivers that could benefit from it. (This is a bigger project
+> > > > > > > > though and shouldn't stop your patch. Still more as it already got
+> > > > > > > > Thierry's ack.)
+> > > > > > >
+> > > > > > > I think there needs to be a proper guideline, as there doesn't seem to be
+> > > > > > > a consensus about this. I learned from emails with Rob and  Linus (Walleij)
+> > > > > > > that I should not have in devicetree what I can deduce from the compatible
+> > > > > > > string.
+> > > > > >
+> > > > > > I understood them a bit differently. It is ok to deduce things from the
+> > > > > > compatible string. But if you define a generic property (say) "num-pwms"
+> > > > > > that is used uniformly in most bindings this is ok, too. (And then the
+> > > > > > two different devices could use the same compatible.)
+> > > > > >
+> > > > > > An upside of the generic "num-pwms" property is that the pwm core could
+> > > > > > sanity check pwm phandles before passing them to the hardware drivers.
+> > > > > 
+> > > > >  I don't know if this helps, but in GPIO we have "ngpios" which is
+> > > > >  used to augment an existing block as to the number of lines actually
+> > > > >  used with it.
+> > > > > 
+> > > > >  The typical case is that an ASIC engineer synthesize a block for
+> > > > >  32 GPIOs but only 12 of them are routed to external pads. So
+> > > > >  we augment the behaviour of that driver to only use 12 of the
+> > > > >  32 lines.
+> > > > > 
+> > > > >  I guess using the remaining 20 lines "works" in a sense but they
+> > > > >  have no practical use and will just bias electrons in the silicon
+> > > > >  for no use.
+> > > > 
+> > > > This looks very similar to the case under discussion.
+> > > > 
+> > > > >  So if the PWM case is something similar, then by all means add
+> > > > >  num-pwms.
+> > > > 
+> > > > .. or "npwms" to use the same nomenclature as the gpio binding?
+> > > 
+> > > If we're going to do something like this, should it be the drivers or
+> > > the core (within pwmchip_add) that checks for this "npwms" property?
+> > 
+> > Of course this should be done in the core. The driver than can rely on
+> > the validity of the index. But as I wrote before, this shouldn't stop
+> > your patch from going in.
 
---oXNgvKVxGWJ0RPMJ
-Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
-
-On Mon, Nov 26, 2018 at 12:23:19AM +0800, Hao Zhang wrote:
-> The sun8i R40/T3/V40 PWM has 8 PWM channals and divides to 4 PWM pairs,
-> each PWM pair built-in 1 clock module, 2 timer logic module and 1
-> programmable dead-time generator, it also support waveform capture.
-> It has 2 clock sources OSC24M and APB1, it is different with the
-> sun4i-pwm driver, Therefore add a new driver for it.
+Actually the core already takes care of the validity of the index with
+the number of pwms being provided to pwmchip_add().
+ 
+> > But if Thierry agrees that this npmws (or num-pwms) is a good idea, it
+> > would be great to start early to convert drivers.
 > 
-> Signed-off-by: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/pwm/Kconfig     |  12 +-
->  drivers/pwm/Makefile    |   1 +
->  drivers/pwm/pwm-sun8i.c | 418 ++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 430 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/pwm/pwm-sun8i.c
-> 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 504d252..6105ac8 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -426,7 +426,7 @@ config PWM_STMPE
->  	  expanders.
->  
->  config PWM_SUN4I
-> -	tristate "Allwinner PWM support"
-> +	tristate "Allwinner SUN4I PWM support"
->  	depends on ARCH_SUNXI || COMPILE_TEST
->  	depends on HAS_IOMEM && COMMON_CLK
->  	help
-> @@ -435,6 +435,16 @@ config PWM_SUN4I
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-sun4i.
->  
-> +config PWM_SUN8I
-> +	tristate "Allwinner SUN8I (R40/V40/T3) PWM support"
-> +	depends on ARCH_SUNXI || COMPILE_TEST
-> +	depends on HAS_IOMEM && COMMON_CLK
-> +	help
-> +	  Generic PWM framework driver for Allwinner R40/V40/T3 SoCs.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-sun8i.
-> +
->  config PWM_TEGRA
->  	tristate "NVIDIA Tegra PWM support"
->  	depends on ARCH_TEGRA
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 9c676a0..32c8d2d 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -43,6 +43,7 @@ obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
->  obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
->  obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
->  obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
-> +obj-$(CONFIG_PWM_SUN8I)		+= pwm-sun8i.o
->  obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
->  obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
->  obj-$(CONFIG_PWM_TIEHRPWM)	+= pwm-tiehrpwm.o
-> diff --git a/drivers/pwm/pwm-sun8i.c b/drivers/pwm/pwm-sun8i.c
-> new file mode 100644
-> index 0000000..d8597e4
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-sun8i.c
-> @@ -0,0 +1,418 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (C) 2018 Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> +
-> +#include <linux/bitops.h>
-> +#include <linux/clk.h>
-> +#include <linux/clk-provider.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/slab.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/time.h>
-> +#include <linux/regmap.h>
-> +
-> +#define PWM_IRQ_ENABLE_REG	0x0000
-> +#define PCIE(ch)		BIT(ch)
-> +
-> +#define PWM_IRQ_STATUS_REG	0x0004
-> +#define PIS(ch)			BIT(ch)
-> +
-> +#define CAPTURE_IRQ_ENABLE_REG	0x0010
-> +#define CRIE(ch)		BIT((ch) * 2)
-> +#define CFIE(ch)		BIT((ch) * 2 + 1)
-> +
-> +#define CAPTURE_IRQ_STATUS_REG	0x0014
-> +#define CRIS(ch)		BIT((ch) * 2)
-> +#define CFIS(ch)		BIT((ch) * 2 + 1)
-> +
-> +#define CLK_CFG_REG(ch)		(0x0020 + ((ch) >> 1) * 4)
-> +#define CLK_SRC_SEL		GENMASK(8, 7)
-> +#define CLK_SRC_BYPASS_SEC	BIT(6)
-> +#define CLK_SRC_BYPASS_FIR	BIT(5)
-> +#define CLK_GATING		BIT(4)
-> +#define CLK_DIV_M		GENMASK(3, 0)
-> +
-> +#define PWM_DZ_CTR_REG(ch)	(0x0030 + ((ch) >> 1) * 4)
-> +#define PWM_DZ_INTV		GENMASK(15, 8)
-> +#define PWM_DZ_EN		BIT(0)
-> +
-> +#define PWM_ENABLE_REG		0x0040
-> +#define PWM_EN(ch)		BIT(ch)
-> +
-> +#define CAPTURE_ENABLE_REG	0x0044
-> +#define CAP_EN(ch)		BIT(ch)
-> +
-> +#define PWM_CTR_REG(ch)		(0x0060 + (ch) * 0x20)
-> +#define PWM_PERIOD_RDY		BIT(11)
-> +#define PWM_PUL_START		BIT(10)
-> +#define PWM_MODE		BIT(9)
-> +#define PWM_ACT_STA		BIT(8)
-> +#define PWM_PRESCAL_K		GENMASK(7, 0)
-> +
-> +#define PWM_PERIOD_REG(ch)	(0x0064 + (ch) * 0x20)
-> +#define PWM_ENTIRE_CYCLE	GENMASK(31, 16)
-> +#define PWM_ACT_CYCLE		GENMASK(15, 0)
-> +
-> +#define PWM_CNT_REG(ch)		(0x0068 + (ch) * 0x20)
-> +#define PWM_CNT_VAL		GENMASK(15, 0)
-> +
-> +#define CAPTURE_CTR_REG(ch)	(0x006c + (ch) * 0x20)
-> +#define CAPTURE_CRLF		BIT(2)
-> +#define CAPTURE_CFLF		BIT(1)
-> +#define CAPINV			BIT(0)
-> +
-> +#define CAPTURE_RISE_REG(ch)	(0x0070 + (ch) * 0x20)
-> +#define CAPTURE_CRLR		GENMASK(15, 0)
-> +
-> +#define CAPTURE_FALL_REG(ch)	(0x0074 + (ch) * 0x20)
-> +#define CAPTURE_CFLR		GENMASK(15, 0)
-> +
-> +struct sun8i_pwm_chip {
-> +	struct pwm_chip chip;
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	const struct sun8i_pwm_data *data;
-> +	struct regmap *regmap;
-> +};
-> +
-> +static struct sun8i_pwm_chip *to_sun8i_pwm_chip(struct pwm_chip *chip)
-> +{
-> +	return container_of(chip, struct sun8i_pwm_chip, chip);
-> +}
-> +
-> +static u32 sun8i_pwm_read(struct sun8i_pwm_chip *sun8i_pwm,
-> +			  unsigned long offset)
-> +{
-> +	u32 val;
-> +
-> +	regmap_read(sun8i_pwm->regmap, offset, &val);
-> +	return val;
-> +}
-> +
-> +static void sun8i_pwm_set_bit(struct sun8i_pwm_chip *sun8i_pwm,
-> +			      unsigned long reg, u32 bit)
-> +{
-> +	regmap_update_bits(sun8i_pwm->regmap, reg, bit, bit);
-> +}
-> +
-> +static void sun8i_pwm_clear_bit(struct sun8i_pwm_chip *sun8i_pwm,
-> +				unsigned long reg, u32 bit)
-> +{
-> +	regmap_update_bits(sun8i_pwm->regmap, reg, bit, 0);
-> +}
-> +
-> +static void sun8i_pwm_set_value(struct sun8i_pwm_chip *sun8i_pwm,
-> +				unsigned long reg, u32 mask, u32 val)
-> +{
-> +	regmap_update_bits(sun8i_pwm->regmap, reg, mask, val);
-> +}
-> +
-> +static void sun8i_pwm_set_polarity(struct sun8i_pwm_chip *chip, u32 ch,
-> +				   enum pwm_polarity polarity)
-> +{
-> +	if (polarity == PWM_POLARITY_NORMAL)
-> +		sun8i_pwm_set_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
-> +	else
-> +		sun8i_pwm_clear_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
-> +}
-> +
-> +static int sun8i_pwm_config(struct sun8i_pwm_chip *sun8i_pwm, u8 ch,
-> +			    struct pwm_state *state)
-> +{
-> +	u64 clk_rate, clk_div, val;
-> +	u16 prescaler = 0;
-> +	u16 div_id = 0;
-> +	struct clk *clk;
-> +	bool is_clk;
-> +	int ret;
-> +
-> +	clk_rate = clk_get_rate(sun8i_pwm->clk);
-> +
-> +	/* check period and select clock source */
-> +	val = state->period * clk_rate;
-> +	do_div(val, NSEC_PER_SEC);
-> +	is_clk = devm_clk_name_match(sun8i_pwm->clk, "mux-0");
-> +	if (val <= 1 && is_clk) {
-> +		clk = devm_clk_get(sun8i_pwm->chip.dev, "mux-1");
-> +		if (IS_ERR(clk)) {
-> +			dev_err(sun8i_pwm->chip.dev,
-> +				"Period expects a larger value\n");
-> +			return -EINVAL;
-> +		}
+> Do we actually need this? It seems like Paul's patch here properly
+> derives the number of available PWMs from the compatible string, so I
+> don't see what the extra num-pwms (or whatever) property would add.
 
-You should never try to get resources at this point. You should have
-requested them already at ->probe() time. Otherwise, how are you going
-to handle failures here?
+Given that the only difference between the two different implementations
+is just the number of pwms provided, this could just be expressed in the
+dts as:
 
-> +
-> +		clk_rate = clk_get_rate(clk);
-> +		val = state->period * clk_rate;
-> +		do_div(val, NSEC_PER_SEC);
-> +		if (val <= 1) {
-> +			dev_err(sun8i_pwm->chip.dev,
-> +				"Period expects a larger value\n");
-> +			return -EINVAL;
-> +		}
-> +
-> +		/* change clock source to "mux-1" */
-> +		clk_disable_unprepare(sun8i_pwm->clk);
-> +		devm_clk_put(sun8i_pwm->chip.dev, sun8i_pwm->clk);
-> +		sun8i_pwm->clk = clk;
-> +
-> +		ret = clk_prepare_enable(sun8i_pwm->clk);
-> +		if (ret) {
-> +			dev_err(sun8i_pwm->chip.dev,
-> +				"Failed to enable PWM clock\n");
-> +			return ret;
-> +		}
-> +
-> +	} else {
-> +		dev_err(sun8i_pwm->chip.dev,
-> +			"Period expects a larger value\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	is_clk = devm_clk_name_match(sun8i_pwm->clk, "mux-0");
-> +	if (is_clk)
-> +		sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
-> +				    CLK_SRC_SEL, 0 << 7);
-> +	else
-> +		sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
-> +				    CLK_SRC_SEL, 1 << 7);
-> +
-> +	dev_info(sun8i_pwm->chip.dev, "clock source freq:%lldHz\n", clk_rate);
-> +
-> +	/* calculate and set prescaler, div table, PWM entire cycle */
-> +	clk_div = val;
-> +	while (clk_div > 65535) {
-> +		prescaler++;
-> +		clk_div = val;
-> +		do_div(clk_div, 1U << div_id);
-> +		do_div(clk_div, prescaler + 1);
-> +
-> +		if (prescaler == 255) {
-> +			prescaler = 0;
-> +			div_id++;
-> +			if (div_id == 9) {
-> +				dev_err(sun8i_pwm->chip.dev,
-> +					"unsupport period value\n");
-> +				return -EINVAL;
-> +			}
-> +		}
-> +	}
-> +
-> +	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
-> +			    PWM_ENTIRE_CYCLE, clk_div << 16);
-> +	sun8i_pwm_set_value(sun8i_pwm, PWM_CTR_REG(ch),
-> +			    PWM_PRESCAL_K, prescaler << 0);
-> +	sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
-> +			    CLK_DIV_M, div_id << 0);
-> +
-> +	/* set duty cycle */
-> +	val = state->period;
-> +	do_div(val, clk_div);
-> +	clk_div = state->duty_cycle;
-> +	do_div(clk_div, val);
-> +	if (clk_div > 65535)
-> +		clk_div = 65535;
-> +
-> +	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
-> +			    PWM_ACT_CYCLE, clk_div << 0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			   struct pwm_state *state)
-> +{
-> +	int ret;
-> +	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
-> +	struct pwm_state cstate;
-> +
-> +	pwm_get_state(pwm, &cstate);
-> +	if (!cstate.enabled) {
-> +		ret = clk_prepare_enable(sun8i_pwm->clk);
-> +		if (ret) {
-> +			dev_err(chip->dev, "Failed to enable PWM clock\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	if ((cstate.period != state->period) ||
-> +	    (cstate.duty_cycle != state->duty_cycle)) {
-> +		ret = sun8i_pwm_config(sun8i_pwm, pwm->hwpwm, state);
-> +		if (ret) {
-> +			dev_err(chip->dev, "Failed to config PWM\n");
-> +			return ret;
-> +		}
-> +	}
+	pwm@2000000 {
+		compatible = "jz4740";
+		num-pwms = <8>;
+	}
 
-So this isn't really how atomic is supposed to work. The whole point of
-the single callback is to allow the driver to apply the changes in an
-atomic way, which means that either everything is applied or nothing is
-applied.
+and
 
-That's not what you do here. In the above you can end up with an enabled
-clock but the settings not being applied. Similarly sun8i_pwm_config()
-can abort in a number of places, which would leave you with a half-
-configured PWM channel.
+	pwm@2000000 {
+		compatible = "jz4740";
+		num-pwms = <6>;
+	}
 
-Instead, what you should be doing is precompute everything and check
-that the configuration can be applied before touching any registers or
-enabling clocks. Once you've validate the new state, you need to write
-everything and there should be no more risk of failure.
+instead of
 
-Thierry
---oXNgvKVxGWJ0RPMJ--
+	pwm@2000000 {
+		compatible = "jz4740";
+	}
+
+and
+
+	pwm@2000000 {
+		compatible = "jz4725";
+	}
+
+. According to my metric the former is more descriptive and so better.
+
+And then the pwm core could provide parsing of that property (e.g. if
+chip.npwm == 0) which simplifies the driver (and all others using that
+mechanism).
+
+Regarding the question "Do we actually need this?": We don't, but I
+think it would make a nice step to get more descriptive device trees and
+so I consider it an improvement. It would also allow to check a dtb
+because even without the driver you can notice that
+
+	pwms = <&pwm 12 0>;
+
+is invalid if &pwm has "num-pwms = <8>". Drivers that could benefit are
+(at least): hibvt, sun4i, tegra, lpss.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
