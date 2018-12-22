@@ -1,155 +1,89 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v8 15/26] pwm: jz4740: Add support for the JZ4725B
-Date: Thu, 20 Dec 2018 21:58:09 +0100
-Message-ID: <20181220205809.5t2klpb7donmoibb@pengutronix.de>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v8 03/26] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Sat, 22 Dec 2018 12:09:32 +0100
+Message-ID: <1545476972.2113.1@crapouillou.net>
 References: <20181212220922.18759-1-paul@crapouillou.net>
- <20181212220922.18759-16-paul@crapouillou.net>
- <20181213092409.ml4wpnzow2nnszkd@pengutronix.de>
- <1544709795.18952.1@crapouillou.net>
- <20181213204219.onem3q6dcmakusl2@pengutronix.de>
- <CACRpkdbABtDgwKai=8Pfji7qVb-XHsX8pDsuDdS5hhg7qEN0Bw@mail.gmail.com>
- <20181214142628.zwi4hadrju53z6f3@pengutronix.de>
- <1544969932.1649.1@crapouillou.net>
- <20181217075321.k45vhgnszeqs3tea@pengutronix.de>
- <20181220173904.GE9408@ulmo>
+        <20181212220922.18759-4-paul@crapouillou.net> <20181217210531.GA29770@bogus>
+        <1545084222.1958.0@smtp.crapouillou.net>
+        <CAL_JsqLhnitSM7-S1hq8M7S-7BHO5oYByXQ8QD2JkUY3jb63fQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181220173904.GE9408@ulmo>
+In-Reply-To: <CAL_JsqLhnitSM7-S1hq8M7S-7BHO5oYByXQ8QD2JkUY3jb63fQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Paul Cercueil <paul@crapouillou.net>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, paul.burton@mips.com, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, ezequiel@collabora.co.uk, prasannatsmkumar@gmail.com, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk <linux-clk@vger.kernel.>
+To: Rob Herring <robh@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mathieu Malaterre <malat@debian.org>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>, linux-mips@vger.kernel.org, Linux Doc Mailing List <linux-doc@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>, od@zcrc.me
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Dec 20, 2018 at 06:39:04PM +0100, Thierry Reding wrote:
-> On Mon, Dec 17, 2018 at 08:53:21AM +0100, Uwe Kleine-König wrote:
-> > On Sun, Dec 16, 2018 at 03:18:52PM +0100, Paul Cercueil wrote:
-> > > Hi,
-> > > 
-> > > Le ven. 14 déc. 2018 à 15:26, Uwe Kleine-König
-> > > <u.kleine-koenig@pengutronix.de> a écrit :
-> > > > Hello,
-> > > > 
-> > > > On Fri, Dec 14, 2018 at 02:50:20PM +0100, Linus Walleij wrote:
-> > > > > On Thu, Dec 13, 2018 at 9:42 PM Uwe Kleine-König
-> > > > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > > > [Adding Linus Walleij to Cc:]
-> > > > > > On Thu, Dec 13, 2018 at 03:03:15PM +0100, Paul Cercueil wrote:
-> > > > > > > Le jeu. 13 déc. 2018 à 10:24, Uwe Kleine-König
-> > > > > > > <u.kleine-koenig@pengutronix.de> a écrit :
-> > > > > > > > On Wed, Dec 12, 2018 at 11:09:10PM +0100, Paul Cercueil wrote:
-> > > > > > > > >  The PWM in the JZ4725B works the same as in the JZ4740,
-> > > > > > > > >  except that it only has 6 channels available instead of
-> > > > > > > > >  8.
-> > > > > > > >
-> > > > > > > > this driver is probed only from device tree? If yes, it
-> > > > > > > > might be sensible to specify the number of PWMs there and
-> > > > > > > > get it from there.
-> > > > > > > > There doesn't seem to be a generic binding for that, but there are
-> > > > > > > > several drivers that could benefit from it. (This is a bigger project
-> > > > > > > > though and shouldn't stop your patch. Still more as it already got
-> > > > > > > > Thierry's ack.)
-> > > > > > >
-> > > > > > > I think there needs to be a proper guideline, as there doesn't seem to be
-> > > > > > > a consensus about this. I learned from emails with Rob and  Linus (Walleij)
-> > > > > > > that I should not have in devicetree what I can deduce from the compatible
-> > > > > > > string.
-> > > > > >
-> > > > > > I understood them a bit differently. It is ok to deduce things from the
-> > > > > > compatible string. But if you define a generic property (say) "num-pwms"
-> > > > > > that is used uniformly in most bindings this is ok, too. (And then the
-> > > > > > two different devices could use the same compatible.)
-> > > > > >
-> > > > > > An upside of the generic "num-pwms" property is that the pwm core could
-> > > > > > sanity check pwm phandles before passing them to the hardware drivers.
-> > > > > 
-> > > > >  I don't know if this helps, but in GPIO we have "ngpios" which is
-> > > > >  used to augment an existing block as to the number of lines actually
-> > > > >  used with it.
-> > > > > 
-> > > > >  The typical case is that an ASIC engineer synthesize a block for
-> > > > >  32 GPIOs but only 12 of them are routed to external pads. So
-> > > > >  we augment the behaviour of that driver to only use 12 of the
-> > > > >  32 lines.
-> > > > > 
-> > > > >  I guess using the remaining 20 lines "works" in a sense but they
-> > > > >  have no practical use and will just bias electrons in the silicon
-> > > > >  for no use.
-> > > > 
-> > > > This looks very similar to the case under discussion.
-> > > > 
-> > > > >  So if the PWM case is something similar, then by all means add
-> > > > >  num-pwms.
-> > > > 
-> > > > .. or "npwms" to use the same nomenclature as the gpio binding?
-> > > 
-> > > If we're going to do something like this, should it be the drivers or
-> > > the core (within pwmchip_add) that checks for this "npwms" property?
-> > 
-> > Of course this should be done in the core. The driver than can rely on
-> > the validity of the index. But as I wrote before, this shouldn't stop
-> > your patch from going in.
 
-Actually the core already takes care of the validity of the index with
-the number of pwms being provided to pwmchip_add().
- 
-> > But if Thierry agrees that this npmws (or num-pwms) is a good idea, it
-> > would be great to start early to convert drivers.
-> 
-> Do we actually need this? It seems like Paul's patch here properly
-> derives the number of available PWMs from the compatible string, so I
-> don't see what the extra num-pwms (or whatever) property would add.
 
-Given that the only difference between the two different implementations
-is just the number of pwms provided, this could just be expressed in the
-dts as:
+Le mar. 18 d=E9c. 2018 =E0 17:36, Rob Herring <robh@kernel.org> a =E9crit :
+> On Mon, Dec 17, 2018 at 4:04 PM Paul Cercueil <paul@crapouillou.net>=20
+> wrote:
+>>=20
+>>  Hi Rob,
+>>=20
+>>  Le lun. 17 d=E9c. 2018 =E0 22:05, Rob Herring <robh@kernel.org> a=20
+>> =E9crit :
+>>  > On Wed, Dec 12, 2018 at 11:08:58PM +0100, Paul Cercueil wrote:
+>>  >>  Add documentation about how to properly use the Ingenic TCU
+>>  >>  (Timer/Counter Unit) drivers from devicetree.
+>>  >>
+>>  >>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>>  >>  ---
+>>  >>
+>>  >>  Notes:
+>>  >>       v4: New patch in this series. Corresponds to V2 patches=20
+>> 3-4-5
+>>  >> with
+>>  >>           added content.
+>>  >>
+>>  >>       v5: - Edited PWM/watchdog DT bindings documentation to=20
+>> point
+>>  >> to the new
+>>  >>             document.
+>>  >>           - Moved main document to
+>>  >>            =20
+>> Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>>  >>           - Updated documentation to reflect the new devicetree
+>>  >> bindings.
+>>  >>
+>>  >>       v6: - Removed PWM/watchdog documentation files as asked by
+>>  >> upstream
+>>  >>           - Removed doc about properties that should be implicit
+>>  >>           - Removed doc about ingenic,timer-channel /
+>>  >>             ingenic,clocksource-channel as they are gone
+>>  >>           - Fix WDT clock name in the binding doc
+>>  >>           - Fix lengths of register areas in watchdog/pwm nodes
+>>  >>
+>>  >>       v7: No change
+>>  >>
+>>  >>       v8: - Fix address of the PWM node
+>>  >>           - Added doc about system timer and clocksource children
+>>  >> nodes
+>>  >
+>>  > I thought we'd sorted this out...
+>>=20
+>>  Yeah, well I just can't please everybody. V6/V7 didn't have the
+>>  system timer or clocksource in devicetree, which was good for
+>>  you, but then the driver nearly doubled in size and complexity,
+>>  and Thierry rightfully refused it. Now I'm at the point where
+>=20
+> You mean Daniel?
 
-	pwm@2000000 {
-		compatible = "jz4740";
-		num-pwms = <8>;
-	}
+Oops - I meant Daniel yes.
 
-and
+>>  I'm trying alternative ways of encoding the information in
+>>  devicetree, as suggested by various people, just so that you
+>>  accept it. Because I don't see any other option.
+>=20
+> Does the problem boil down to needing to reserve channel x to use PWMx
+> pin? If so, just do a mask property of reserved for PWM channels.
 
-	pwm@2000000 {
-		compatible = "jz4740";
-		num-pwms = <6>;
-	}
+Yes, that's exactly the problem. I will go with a property then. Thanks!
 
-instead of
-
-	pwm@2000000 {
-		compatible = "jz4740";
-	}
-
-and
-
-	pwm@2000000 {
-		compatible = "jz4725";
-	}
-
-. According to my metric the former is more descriptive and so better.
-
-And then the pwm core could provide parsing of that property (e.g. if
-chip.npwm == 0) which simplifies the driver (and all others using that
-mechanism).
-
-Regarding the question "Do we actually need this?": We don't, but I
-think it would make a nice step to get more descriptive device trees and
-so I consider it an improvement. It would also allow to check a dtb
-because even without the driver you can notice that
-
-	pwms = <&pwm 12 0>;
-
-is invalid if &pwm has "num-pwms = <8>". Drivers that could benefit are
-(at least): hibvt, sun4i, tegra, lpss.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> Sorry this is going in circles.
+>=20
+> Rob
+=
