@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 91/97] gpio: mvebu: only fail on missing clk if pwm is actually to be used
-Date: Wed, 26 Dec 2018 17:35:51 -0500
-Message-ID: <20181226223557.149329-91-sashal@kernel.org>
-References: <20181226223557.149329-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 55/59] gpio: mvebu: only fail on missing clk if pwm is actually to be used
+Date: Wed, 26 Dec 2018 17:38:35 -0500
+Message-ID: <20181226223839.150262-55-sashal@kernel.org>
+References: <20181226223839.150262-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181226223557.149329-1-sashal@kernel.org>
+In-Reply-To: <20181226223839.150262-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
@@ -32,10 +32,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 6e02148c208b..adc768f908f1 100644
+index 45c65f805fd6..be85d4b39e99 100644
 --- a/drivers/gpio/gpio-mvebu.c
 +++ b/drivers/gpio/gpio-mvebu.c
-@@ -773,9 +773,6 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -777,9 +777,6 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  				     "marvell,armada-370-gpio"))
  		return 0;
  
@@ -45,7 +45,7 @@ index 6e02148c208b..adc768f908f1 100644
  	/*
  	 * There are only two sets of PWM configuration registers for
  	 * all the GPIO lines on those SoCs which this driver reserves
-@@ -786,6 +783,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -790,6 +787,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
  	if (!res)
  		return 0;
  
