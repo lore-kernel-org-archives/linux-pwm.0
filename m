@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v9 11/27] pwm: jz4740: Apply configuration atomically
-Date: Thu, 27 Dec 2018 19:13:03 +0100
-Message-ID: <20181227181319.31095-12-paul@crapouillou.net>
+Subject: [PATCH v9 09/27] watchdog: jz4740: Avoid starting watchdog in set_timeout
+Date: Thu, 27 Dec 2018 19:13:01 +0100
+Message-ID: <20181227181319.31095-10-paul@crapouillou.net>
 References: <20181227181319.31095-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181227181319.31095-1-paul@crapouillou.net>
@@ -10,104 +10,56 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-This is cleaner, more future-proof, and incidentally it also fixes the
-PWM resetting its config when stopped/started several times.
+Previously the jz4740_wdt_set_timeout() function was starting the timer
+unconditionally, even if it was stopped when that function was entered.
+
+Now, the timer will be restarted only if it was already running before
+this function is called.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 ---
 
 Notes:
-     v9: New patch
+     v6: New patch
+    
+     v7: No change
 
- drivers/pwm/pwm-jz4740.c | 37 ++++++++++++-------------------------
- 1 file changed, 12 insertions(+), 25 deletions(-)
+     v8: No change
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index a7b134af5e04..b2f910413f81 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -83,17 +83,16 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	jz4740_timer_disable(pwm->hwpwm);
- }
- 
--static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			     int duty_ns, int period_ns)
-+static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    struct pwm_state *state)
+     v9: No change
+
+ drivers/watchdog/jz4740_wdt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
+index 0f54306aee25..45d9495170e5 100644
+--- a/drivers/watchdog/jz4740_wdt.c
++++ b/drivers/watchdog/jz4740_wdt.c
+@@ -64,13 +64,15 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
  {
- 	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
- 	unsigned long long tmp;
- 	unsigned long period, duty;
- 	unsigned int prescaler = 0;
- 	uint16_t ctrl;
--	bool is_enabled;
+ 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+ 	u16 timeout_value = (u16)(drvdata->clk_rate * new_timeout);
++	u32 tcer;
  
--	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
-+	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
- 	do_div(tmp, 1000000000);
- 	period = tmp;
++	regmap_read(drvdata->map, TCU_REG_WDT_TCER, &tcer);
+ 	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
  
-@@ -105,16 +104,14 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (prescaler == 6)
- 		return -EINVAL;
+ 	regmap_write(drvdata->map, TCU_REG_WDT_TDR, timeout_value);
+ 	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
  
--	tmp = (unsigned long long)period * duty_ns;
--	do_div(tmp, period_ns);
-+	tmp = (unsigned long long)period * state->duty_cycle;
-+	do_div(tmp, state->period);
- 	duty = period - tmp;
+-	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, tcer & TCU_WDT_TCER_TCEN);
  
- 	if (duty >= period)
- 		duty = period - 1;
+ 	wdt_dev->timeout = new_timeout;
+ 	return 0;
+@@ -86,6 +88,7 @@ static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
+ 		return ret;
  
--	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
--	if (is_enabled)
--		jz4740_pwm_disable(chip, pwm);
-+	jz4740_pwm_disable(chip, pwm);
+ 	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
  
- 	jz4740_timer_set_count(pwm->hwpwm, 0);
- 	jz4740_timer_set_duty(pwm->hwpwm, duty);
-@@ -125,18 +122,7 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
- 
--	if (is_enabled)
--		jz4740_pwm_enable(chip, pwm);
--
--	return 0;
--}
--
--static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
--		struct pwm_device *pwm, enum pwm_polarity polarity)
--{
--	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->pwm);
--
--	switch (polarity) {
-+	switch (state->polarity) {
- 	case PWM_POLARITY_NORMAL:
- 		ctrl &= ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
- 		break;
-@@ -146,16 +132,17 @@ static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
- 	}
- 
- 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
-+
-+	if (state->enabled)
-+		jz4740_pwm_enable(chip, pwm);
-+
  	return 0;
  }
- 
- static const struct pwm_ops jz4740_pwm_ops = {
- 	.request = jz4740_pwm_request,
- 	.free = jz4740_pwm_free,
--	.config = jz4740_pwm_config,
--	.set_polarity = jz4740_pwm_set_polarity,
--	.enable = jz4740_pwm_enable,
--	.disable = jz4740_pwm_disable,
-+	.apply = jz4740_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
 -- 
 2.11.0
