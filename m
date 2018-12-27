@@ -1,37 +1,69 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v9 00/27] Ingenic TCU patchset v9
-Date: Thu, 27 Dec 2018 19:12:52 +0100
-Message-ID: <20181227181319.31095-1-paul@crapouillou.net>
+Subject: [PATCH v9 01/27] dt-bindings: ingenic: Add DT bindings for TCU clocks
+Date: Thu, 27 Dec 2018 19:12:53 +0100
+Message-ID: <20181227181319.31095-2-paul@crapouillou.net>
+References: <20181227181319.31095-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181227181319.31095-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+This header provides clock numbers for the ingenic,tcu
+DT binding.
 
-This is the v9 of my patchset to add support for the Timer/Counter Unit
-present on Ingenic JZ47xx SoCs.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
+---
 
-Changes from v8 mainly include:
+Notes:
+     v2: Use SPDX identifier for the license
+    
+     v3: No change
+    
+     v4: No change
+    
+     v5: s/JZ47*_/TCU_/ and dropped *_CLK_LAST defines
+    
+     v6: No change
+    
+     v7: No change
 
-- The system timer and clocksource sub-nodes of the ingenic-timer driver
-  are gone. Now, the ingenic-timer will use the (optional) property
-  named "ingenic,pwm-channels-mask" to know which TCU channels are
-  reserved for PWM use.
+     v8: No change
 
-- New patch [11/27] makes the PWM driver implement the .apply callback,
-  which is cleaner and incidentally fixes a long-standing bug.
+     v9: No change
 
-- The patch in V8 that converted the PWM driver to use the regmap and
-  clocks provided by the ingenic-timer driver has been splitted in three
-  patches, [12,13,14/27]. The algorithm in [14/27] has been slightly
-  improved.
+ include/dt-bindings/clock/ingenic,tcu.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 include/dt-bindings/clock/ingenic,tcu.h
 
-- The patch that adds support for the JZ4725B SoC to the PWM driver has
-  been removed from the patchset, as it's been suggested that the core
-  could use a "npwms" device property to override the number of PWMs set
-  in the driver.
-
-Thanks,
--Paul Cercueil
+diff --git a/include/dt-bindings/clock/ingenic,tcu.h b/include/dt-bindings/clock/ingenic,tcu.h
+new file mode 100644
+index 000000000000..d569650a7945
+--- /dev/null
++++ b/include/dt-bindings/clock/ingenic,tcu.h
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * This header provides clock numbers for the ingenic,tcu DT binding.
++ */
++
++#ifndef __DT_BINDINGS_CLOCK_INGENIC_TCU_H__
++#define __DT_BINDINGS_CLOCK_INGENIC_TCU_H__
++
++#define TCU_CLK_TIMER0	0
++#define TCU_CLK_TIMER1	1
++#define TCU_CLK_TIMER2	2
++#define TCU_CLK_TIMER3	3
++#define TCU_CLK_TIMER4	4
++#define TCU_CLK_TIMER5	5
++#define TCU_CLK_TIMER6	6
++#define TCU_CLK_TIMER7	7
++#define TCU_CLK_WDT	8
++#define TCU_CLK_OST	9
++
++#endif /* __DT_BINDINGS_CLOCK_INGENIC_TCU_H__ */
+-- 
+2.11.0
