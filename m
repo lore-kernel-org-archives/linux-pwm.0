@@ -1,59 +1,37 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 55/59] gpio: mvebu: only fail on missing clk if pwm is actually to be used
-Date: Wed, 26 Dec 2018 17:38:35 -0500
-Message-ID: <20181226223839.150262-55-sashal@kernel.org>
-References: <20181226223839.150262-1-sashal@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v9 00/27] Ingenic TCU patchset v9
+Date: Thu, 27 Dec 2018 19:12:52 +0100
+Message-ID: <20181227181319.31095-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181226223839.150262-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Hi,
 
-[ Upstream commit c8da642d41a6811c21177c9994aa7dc35be67d46 ]
+This is the v9 of my patchset to add support for the Timer/Counter Unit
+present on Ingenic JZ47xx SoCs.
 
-The gpio IP on Armada 370 at offset 0x18180 has neither a clk nor pwm
-registers. So there is no need for a clk as the pwm isn't used anyhow.
-So only check for the clk in the presence of the pwm registers. This fixes
-a failure to probe the gpio driver for the above mentioned gpio device.
+Changes from v8 mainly include:
 
-Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpio/gpio-mvebu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+- The system timer and clocksource sub-nodes of the ingenic-timer driver
+  are gone. Now, the ingenic-timer will use the (optional) property
+  named "ingenic,pwm-channels-mask" to know which TCU channels are
+  reserved for PWM use.
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 45c65f805fd6..be85d4b39e99 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -777,9 +777,6 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
- 				     "marvell,armada-370-gpio"))
- 		return 0;
- 
--	if (IS_ERR(mvchip->clk))
--		return PTR_ERR(mvchip->clk);
--
- 	/*
- 	 * There are only two sets of PWM configuration registers for
- 	 * all the GPIO lines on those SoCs which this driver reserves
-@@ -790,6 +787,9 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
- 	if (!res)
- 		return 0;
- 
-+	if (IS_ERR(mvchip->clk))
-+		return PTR_ERR(mvchip->clk);
-+
- 	/*
- 	 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
- 	 * with id 1. Don't allow further GPIO chips to be used for PWM.
--- 
-2.19.1
+- New patch [11/27] makes the PWM driver implement the .apply callback,
+  which is cleaner and incidentally fixes a long-standing bug.
+
+- The patch in V8 that converted the PWM driver to use the regmap and
+  clocks provided by the ingenic-timer driver has been splitted in three
+  patches, [12,13,14/27]. The algorithm in [14/27] has been slightly
+  improved.
+
+- The patch that adds support for the JZ4725B SoC to the PWM driver has
+  been removed from the patchset, as it's been suggested that the core
+  could use a "npwms" device property to override the number of PWMs set
+  in the driver.
+
+Thanks,
+-Paul Cercueil
