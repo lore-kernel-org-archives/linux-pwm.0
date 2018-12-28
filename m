@@ -1,59 +1,58 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v9 06/27] MAINTAINERS: Add myself as maintainer for Ingenic TCU drivers
-Date: Thu, 27 Dec 2018 19:12:58 +0100
-Message-ID: <20181227181319.31095-7-paul@crapouillou.net>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v9 03/27] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Fri, 28 Dec 2018 15:48:53 -0600
+Message-ID: <20181228214853.GA8568@bogus>
 References: <20181227181319.31095-1-paul@crapouillou.net>
+ <20181227181319.31095-4-paul@crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181227181319.31095-1-paul@crapouillou.net>
+Content-Disposition: inline
+In-Reply-To: <20181227181319.31095-4-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add myself as maintainer for the ingenic-timer and ingenic-ost drivers.
+On Thu, 27 Dec 2018 19:12:55 +0100, Paul Cercueil wrote:
+> Add documentation about how to properly use the Ingenic TCU
+> (Timer/Counter Unit) drivers from devicetree.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+> 
+> Notes:
+>      v4: New patch in this series. Corresponds to V2 patches 3-4-5 with
+>          added content.
+>     
+>      v5: - Edited PWM/watchdog DT bindings documentation to point to the new
+>            document.
+>          - Moved main document to
+>            Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>          - Updated documentation to reflect the new devicetree bindings.
+>     
+>      v6: - Removed PWM/watchdog documentation files as asked by upstream
+>          - Removed doc about properties that should be implicit
+>          - Removed doc about ingenic,timer-channel /
+>            ingenic,clocksource-channel as they are gone
+>          - Fix WDT clock name in the binding doc
+>          - Fix lengths of register areas in watchdog/pwm nodes
+>     
+>      v7: No change
+> 
+>      v8: - Fix address of the PWM node
+>          - Added doc about system timer and clocksource children nodes
+> 
+>      v9: - Remove doc about system timer and clocksource children
+>            nodes...
+> 	 - Add doc about ingenic,pwm-channels-mask property
+> 
+>  .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ----
+>  .../devicetree/bindings/timer/ingenic,tcu.txt      | 139 +++++++++++++++++++++
+>  .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 ---
+>  3 files changed, 139 insertions(+), 42 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+>  create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+>  delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
+> 
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
-
-Notes:
-     v2: No change
-    
-     v3: No change
-    
-     v4: No change
-    
-     v5: Update with new files
-    
-     v6: No change
-    
-     v7: No change
-
-     v8: No change
-
-     v9: No change
-
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f3a5c97e3419..da08c2b9f261 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7401,6 +7401,15 @@ L:	linux-mtd@lists.infradead.org
- S:	Maintained
- F:	drivers/mtd/nand/raw/jz4780_*
- 
-+INGENIC TCU driver
-+M:	Paul Cercueil <paul@crapouillou.net>
-+S:	Maintained
-+F:	drivers/clocksource/ingenic-ost.c
-+F:	drivers/clocksource/ingenic-timer.c
-+F:	drivers/clocksource/ingenic-timer.h
-+F:	include/linux/mfd/ingenic-tcu.h
-+F:	include/dt-bindings/clock/ingenic,tcu.h
-+
- INOTIFY
- M:	Jan Kara <jack@suse.cz>
- R:	Amir Goldstein <amir73il@gmail.com>
--- 
-2.11.0
+Reviewed-by: Rob Herring <robh@kernel.org>
