@@ -1,119 +1,219 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v8 6/6] pwm: atmel: add push-pull mode support
-Date: Thu, 3 Jan 2019 13:30:00 +0000
-Message-ID: <1546522081-23659-7-git-send-email-claudiu.beznea@microchip.com>
-References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v8 0/6] extend PWM framework to support PWM modes
+Date: Thu, 3 Jan 2019 13:29:41 +0000
+Message-ID: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: thierry.reding@gmail.com, corbet@lwn.net, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
-Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu.Beznea@microchip.com
+Cc: linux-pwm@vger.kernel.org, Claudiu.Beznea@microchip.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Add support for PWM push-pull mode. This is only supported by SAMA5D2 SoCs.
+Hi,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/pwm/pwm-atmel.c | 40 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 36 insertions(+), 4 deletions(-)
+This series extends PWM framework with PWM modes.
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index b72cacd5dca3..650d475a4c34 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -33,8 +33,11 @@
-=20
- #define PWM_CMR			0x0
- /* Bit field in CMR */
--#define PWM_CMR_CPOL		(1 << 9)
--#define PWM_CMR_UPD_CDTY	(1 << 10)
-+#define PWM_CMR_CPOL		BIT(9)
-+#define PWM_CMR_UPD_CDTY	BIT(10)
-+#define PWM_CMR_DTHI		BIT(17)
-+#define PWM_CMR_DTLI		BIT(18)
-+#define PWM_CMR_PPM		BIT(19)
- #define PWM_CMR_CPRE_MSK	0xF
-=20
- /* The following registers for PWM v1 */
-@@ -219,16 +222,19 @@ static int atmel_pwm_apply(struct pwm_chip *chip, str=
-uct pwm_device *pwm,
- {
- 	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
- 	struct pwm_state cstate;
-+	struct pwm_caps caps;
- 	unsigned long cprd, cdty;
- 	u32 pres, val;
- 	int ret;
-=20
- 	pwm_get_state(pwm, &cstate);
-+	pwm_get_caps(pwm, &caps);
-=20
- 	if (state->enabled) {
- 		if (cstate.enabled &&
- 		    cstate.polarity =3D=3D state->polarity &&
--		    cstate.period =3D=3D state->period) {
-+		    cstate.period =3D=3D state->period &&
-+		    cstate.modebit =3D=3D state->modebit) {
- 			cprd =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
- 						  atmel_pwm->data->regs.period);
- 			atmel_pwm_calculate_cdty(state, cprd, &cdty);
-@@ -263,6 +269,18 @@ static int atmel_pwm_apply(struct pwm_chip *chip, stru=
-ct pwm_device *pwm,
- 			val &=3D ~PWM_CMR_CPOL;
- 		else
- 			val |=3D PWM_CMR_CPOL;
-+
-+		/* PWM mode. */
-+		if (caps.modes_msk & PWM_MODE_BIT(PUSH_PULL)) {
-+			if (state->modebit =3D=3D PWM_MODE_BIT(PUSH_PULL)) {
-+				val |=3D PWM_CMR_PPM | PWM_CMR_DTLI;
-+				val &=3D ~PWM_CMR_DTHI;
-+			} else {
-+				val &=3D ~(PWM_CMR_PPM | PWM_CMR_DTLI |
-+					 PWM_CMR_DTHI);
-+			}
-+		}
-+
- 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
- 		atmel_pwm_set_cprd_cdty(chip, pwm, cprd, cdty);
- 		mutex_lock(&atmel_pwm->isr_lock);
-@@ -319,6 +337,20 @@ static const struct atmel_pwm_data atmel_pwm_data_v2 =
-=3D {
- 	},
- };
-=20
-+static const struct atmel_pwm_data atmel_pwm_data_v3 =3D {
-+	.regs =3D {
-+		.period		=3D PWMV2_CPRD,
-+		.period_upd	=3D PWMV2_CPRDUPD,
-+		.duty		=3D PWMV2_CDTY,
-+		.duty_upd	=3D PWMV2_CDTYUPD,
-+	},
-+	.caps =3D {
-+		.modes_msk =3D PWM_MODE_BIT(NORMAL) |
-+			     PWM_MODE_BIT(COMPLEMENTARY) |
-+			     PWM_MODE_BIT(PUSH_PULL),
-+	},
-+};
-+
- static const struct platform_device_id atmel_pwm_devtypes[] =3D {
- 	{
- 		.name =3D "at91sam9rl-pwm",
-@@ -341,7 +373,7 @@ static const struct of_device_id atmel_pwm_dt_ids[] =3D=
- {
- 		.data =3D &atmel_pwm_data_v2,
- 	}, {
- 		.compatible =3D "atmel,sama5d2-pwm",
--		.data =3D &atmel_pwm_data_v2,
-+		.data =3D &atmel_pwm_data_v3,
- 	}, {
- 		/* sentinel */
- 	},
---=20
+The current patch series add the following PWM modes:
+- PWM mode normal
+- PWM mode complementary
+- PWM mode push-pull
+
+In the following description PWMx_y refers to output y of PWM with ID x.
+
+Normal mode - for PWM channels with one output; output waveforms looks like
+this:
+              __      __      __      __                                         
+    PWMx   __|  |____|  |____|  |____|  |__                                      
+             ^       ^       ^       ^                                           
+
+    Where '^' specifies the beginning of a period.
+
+Since PWMs with more than one output per channel could be used as one
+output PWM the normal mode is the default mode for all PWMs (if not specified
+otherwise).
+
+Complementary mode - for PWM channels with two outputs; output waveforms
+for a PWM channel in complementary mode looks line this:
+              __      __      __      __                                         
+    PWMx_0 __|  |____|  |____|  |____|  |__                                      
+           __    ____    ____    ____    __                                      
+    PWMx_1   |__|    |__|    |__|    |__|                                        
+             ^       ^       ^       ^                                           
+
+    Where '^' specifies the beginning of a period.
+
+Push-pull mode - for PWM channels with two outputs; output waveforms for a
+PWM channel in push-pull mode with normal polarity looks like this:
+              __              __                                                  
+    PWMx_0 __|  |____________|  |__________                                       
+                      __              __                                          
+    PWMx_1 __________|  |____________|  |__                                       
+             ^       ^       ^       ^                                            
+
+    If polarity is inversed:
+           __    ____________    __________                                       
+    PWMx_0   |__|            |__|                                                 
+           __________    ____________    __                                       
+    PWMx_1           |__|            |__|                                         
+             ^       ^       ^       ^                                            
+
+    Where '^' specifies the beginning of a period.
+ 
+The PWM working modes are per PWM channel registered as PWM's capabilities.
+The driver registers itself to PWM core a get_caps() function, in
+struct pwm_ops, that will be used by PWM core to retrieve PWM capabilities.
+If this function is not registered in driver's probe, a default function
+will be used to retrieve PWM capabilities. Currently, the default
+capabilities includes only PWM normal mode.
+
+PWM state has been updated to keep PWM mode. PWM mode could be configured
+via sysfs. pwm_apply_state() will do the preliminary validation for PWM mode
+to be applied.
+
+In sysfs, user could get PWM modes by reading mode file of PWM device:
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# ls -l
+total 0
+-r--r--r-- 1 root root 4096 Oct 11 18:08 capture
+-rw-r--r-- 1 root root 4096 Oct 11 18:14 duty_cycle
+-rw-r--r-- 1 root root 4096 Oct 11 18:11 enable
+-rw-r--r-- 1 root root 4096 Oct 11 18:14 mode
+-rw-r--r-- 1 root root 4096 Oct 11 18:09 period
+-rw-r--r-- 1 root root 4096 Oct 11 18:14 polarity
+drwxr-xr-x 2 root root    0 Oct 11 18:08 power
+-rw-r--r-- 1 root root 4096 Oct 11 18:08 uevent
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+normal complementary [push-pull]
+
+The mode enclosed in bracket is the currently active mode.
+
+The mode could be set, via sysfs, by writing to mode file one of the modes
+displayed at read:
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# echo normal > mode
+root@sama5d2-xplained:/sys/class/pwm/pwmchip0/pwm2# cat mode
+[normal] complementary push-pull 
+
+The PWM push-pull mode could be usefull in applications like half bridge
+converters (see [1], page 2126).
+
+This series also add PWM modes support for Atmel/Microchip SoCs.
+
+Thank you,
+Claudiu Beznea
+
+[1] http://ww1.microchip.com/downloads/en/DeviceDoc/DS60001476B.pdf
+
+Changes in v8:
+- fix kbuild error
+
+Changes in v7:
+- use proper number of patches in cover letter title
+
+Changes in v6:
+- get rid of DT changes;
+- get rid of get_default_caps member of struct pwm_chip;
+- remove struct pwm_chip argument of pwm_get_caps(); caps are retrieved
+  in the context of a PWM device and at this moment the chip should be valid;
+  also, get rid of chip->ops check in pwm_get_caps();
+- rename pwm_mode_get_valid() function to pwm_get_default_modebit();
+- rename mode member of struct pwm_caps to modes_msk;
+- rename pwm_mode_valid() function to pwm_supports_mode() and rename
+  its mode argument to modebit to emphasize what should be passed to it;
+- rename pwm_mode_desc() to pwm_get_mode_name() and avoid returning "invalid"
+  string; pwm_get_mode_name() is called only with a valid modebit;
+- rename mode member of struct pwm_state to modebit to emphasize that it stores
+  a bitmask;
+- use const arguments for pwm_get_default_modebit(), pwm_get_caps(),
+  pwm_supports_mode() and get_caps() member of struct pwm_ops;
+- change return type of pwm_ops::get_caps() to int;
+- rename PWMC_MODE() macro to PWM_MODE_BIT();
+- rename PWMC_MODE_<mode-name>_BIT enum members to PWM_MODE_<mode-name>;
+- remove patches 2/9, 3/9, 4/9 from previous version since they were related
+  to DT changes;
+- use PWMx_y naming in documentation to emphasize it is talked about output
+  y of PWM x;
+- use 1/3 duty factor in waveforms from documentation patches;
+- use '^' to emphasize the beginning of a new period in documentation patches.
+
+Changes in v5:
+- solved kbuild errors by removing dummy functions for case where
+  CONFIG_PWM is not defined; adopted this approach since the removed
+  function are used only when CONFIG_PWM is defined (in PWM core
+  and few drivers from drivers/pwm/ directory)
+
+Changes in v4:
+- removed changes related to pwm_config() as per maintainer proposals
+- added pwm_mode_get_valid() to retrieve a valid PWM mode fror PWM device
+  instead of using BIT(ffs(caps.mode) - 1) and changed drivers to use
+  pwm_mode_get_valid() instead of pwm_get_caps() + BIT(ffs(caps.mode) - 1)
+  (patches 2, 3, 4 from this series)
+- renamed PWM_MODE() macro in PWMC_MODE() to avoid conflicts with
+  pwm-sun4i.c driver ('C' stands for capability)
+- removed pwm_caps_valid() function
+- renamed PWM_DTMODE_COMPLEMENTARY and PWM_DTMODE_PUSH_PULL macros in
+  PWM_MODE_COMPLEMENTARY and PWM_MODE_PUSH_PULL
+
+Changes in v3:
+- removed changes related to only one of_xlate function for all PWM drivers
+- switch to PWM capabilities per PWM channel nor per PWM chip
+- squash documentation and bindings patches as requeted by reviewer
+- introduced PWM_MODE(name) macro and used a bit enum for pwm modes
+- related to DT bindings, used flags cell also for PWM modes
+- updated of_xlate specific functions with "state->mode = mode;"
+  instructions to avoid pwm_apply_state() failures
+- use available modes for PWM channel in pwm_config() by first calling
+  pwm_get_caps() to get caps.modes
+- use loops through available modes in mode_store()/mode_show() and also in
+  of_pwm_xlate_with_flags() instead of "if else" instructions; in this way,
+  the addition of a new mode is independent of this code sections
+- use DTLI=1, DTHI=0 register settings to obtain push-pull mode waveforms
+  for Atmel/Microchip PWM controller.
+
+Changes in v2:
+- remove of_xlate and of_pwm_n_cells and use generic functions to pharse DT
+  inputs; this is done in patches 1, 2, 3, 4, 5, 6, 7 of this series; this will
+  make easy the addition of PWM mode support from DT
+- add PWM mode normal
+- register PWM modes as capabilities of PWM chips at driver probe and, in case
+  driver doesn't provide these capabilities use default ones
+- change the way PWM mode is pharsed via DT by using a new input for pwms
+  binding property
+
+
+Claudiu Beznea (9):
+  pwm: extend PWM framework with PWM modes
+  pwm: clps711x: populate PWM mode in of_xlate function
+  pwm: cros-ec: populate PWM mode in of_xlate function
+  pwm: pxa: populate PWM mode in of_xlate function
+  pwm: add PWM modes
+  pwm: atmel: add pwm capabilities
+  pwm: add push-pull mode support
+  pwm: add documentation for pwm push-pull mode
+  pwm: atmel: add push-pull mode support
+
+ Documentation/devicetree/bindings/pwm/pwm.txt |  11 ++-
+ Documentation/pwm.txt                         |  42 ++++++++-
+ drivers/pwm/core.c                            | 125 +++++++++++++++++++++++++-
+ drivers/pwm/pwm-atmel.c                       | 118 +++++++++++++++++-------
+ drivers/pwm/pwm-clps711x.c                    |  10 ++-
+ drivers/pwm/pwm-cros-ec.c                     |   1 +
+ drivers/pwm/pwm-pxa.c                         |   1 +
+ drivers/pwm/sysfs.c                           |  61 +++++++++++++
+ include/dt-bindings/pwm/pwm.h                 |   2 +
+ include/linux/pwm.h                           |  64 +++++++++++++
+ 10 files changed, 395 insertions(+), 40 deletions(-)
+
+-- 
 2.7.4
