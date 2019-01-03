@@ -1,58 +1,468 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v9 03/27] dt-bindings: Add doc for the Ingenic TCU drivers
-Date: Fri, 28 Dec 2018 15:48:53 -0600
-Message-ID: <20181228214853.GA8568@bogus>
-References: <20181227181319.31095-1-paul@crapouillou.net>
- <20181227181319.31095-4-paul@crapouillou.net>
+From: <Claudiu.Beznea@microchip.com>
+Subject: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
+Date: Thu, 3 Jan 2019 13:29:44 +0000
+Message-ID: <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
+References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181227181319.31095-4-paul@crapouillou.net>
+In-Reply-To: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+To: thierry.reding@gmail.com, corbet@lwn.net, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
+Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 27 Dec 2018 19:12:55 +0100, Paul Cercueil wrote:
-> Add documentation about how to properly use the Ingenic TCU
-> (Timer/Counter Unit) drivers from devicetree.
-> 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
-> 
-> Notes:
->      v4: New patch in this series. Corresponds to V2 patches 3-4-5 with
->          added content.
->     
->      v5: - Edited PWM/watchdog DT bindings documentation to point to the new
->            document.
->          - Moved main document to
->            Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->          - Updated documentation to reflect the new devicetree bindings.
->     
->      v6: - Removed PWM/watchdog documentation files as asked by upstream
->          - Removed doc about properties that should be implicit
->          - Removed doc about ingenic,timer-channel /
->            ingenic,clocksource-channel as they are gone
->          - Fix WDT clock name in the binding doc
->          - Fix lengths of register areas in watchdog/pwm nodes
->     
->      v7: No change
-> 
->      v8: - Fix address of the PWM node
->          - Added doc about system timer and clocksource children nodes
-> 
->      v9: - Remove doc about system timer and clocksource children
->            nodes...
-> 	 - Add doc about ingenic,pwm-channels-mask property
-> 
->  .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ----
->  .../devicetree/bindings/timer/ingenic,tcu.txt      | 139 +++++++++++++++++++++
->  .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 ---
->  3 files changed, 139 insertions(+), 42 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
->  create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
->  delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
-> 
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Add basic PWM modes: normal and complementary. These modes should
+differentiate the single output PWM channels from two outputs PWM
+channels. These modes could be set as follow:
+1. PWM channels with one output per channel:
+- normal mode
+2. PWM channels with two outputs per channel:
+- normal mode
+- complementary mode
+Since users could use a PWM channel with two output as one output PWM
+channel, the PWM normal mode is allowed to be set for PWM channels with
+two outputs; in fact PWM normal mode should be supported by all PWMs.
+
+The PWM capabilities were implemented per PWM channel. Every PWM controller
+will register a function to get PWM capabilities. If this is not explicitly
+set by the driver a default function will be used to retrieve the PWM
+capabilities (in this case the PWM capabilities will contain only PWM
+normal mode). To retrieve capabilities the pwm_get_caps() function could
+be used.
+
+Every PWM channel have associated a mode in the PWM state. Proper
+support was added to get/set PWM mode. Only modes supported by PWM channel
+could be set.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/pwm/core.c  |  91 ++++++++++++++++++++++++++++++++++++++++++++-
+ drivers/pwm/sysfs.c |  61 ++++++++++++++++++++++++++++++
+ include/linux/pwm.h | 104 +++++++++++++++++++++++++++++++++++-------------=
+----
+ 3 files changed, 222 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 1581f6ab1b1f..eb444ee8d486 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -249,6 +249,88 @@ static bool pwm_ops_check(const struct pwm_ops *ops)
+ 	return false;
+ }
+=20
++static int pwm_get_default_caps(struct pwm_caps *caps)
++{
++	static const struct pwm_caps default_caps =3D {
++		.modes_msk =3D PWM_MODE_BIT(NORMAL),
++	};
++
++	if (!caps)
++		return -EINVAL;
++
++	*caps =3D default_caps;
++
++	return 0;
++}
++
++/**
++ * pwm_get_caps() - get PWM capabilities of a PWM device
++ * @pwm: PWM device to get the capabilities for
++ * @caps: returned capabilities
++ *
++ * Returns: 0 on success or a negative error code on failure
++ */
++int pwm_get_caps(const struct pwm_device *pwm, struct pwm_caps *caps)
++{
++	if (!pwm || !caps)
++		return -EINVAL;
++
++	if (pwm->chip->ops->get_caps)
++		return pwm->chip->ops->get_caps(pwm->chip, pwm, caps);
++
++	return pwm_get_default_caps(caps);
++}
++EXPORT_SYMBOL_GPL(pwm_get_caps);
++
++/**
++ * pwm_get_default_modebit() - get the default mode for PWM (as a bit mask=
+)
++ * @pwm: PWM device to get the default mode for
++ *
++ * Returns: the default PWM mode (as a bit mask) for PWM device
++ */
++unsigned long pwm_get_default_modebit(const struct pwm_device *pwm)
++{
++	struct pwm_caps caps;
++
++	if (pwm_get_caps(pwm, &caps))
++		return PWM_MODE_BIT(NORMAL);
++
++	return BIT(ffs(caps.modes_msk) - 1);
++}
++EXPORT_SYMBOL_GPL(pwm_get_default_modebit);
++
++/**
++ * pwm_supports_mode() - check if PWM mode is supported by PWM device
++ * @pwm: PWM device
++ * @modebit: PWM mode bit mask to be checked (see PWM_MODE_BIT())
++ *
++ * Returns: true if PWM mode is supported, false otherwise
++ */
++bool pwm_supports_mode(const struct pwm_device *pwm, unsigned long modebit=
+)
++{
++	struct pwm_caps caps;
++
++	if (!pwm || !modebit)
++		return false;
++
++	if (hweight_long(modebit) !=3D 1 || ffs(modebit) - 1 >=3D PWM_MODE_CNT)
++		return false;
++
++	if (pwm_get_caps(pwm, &caps))
++		return false;
++
++	return !!(caps.modes_msk & modebit);
++}
++EXPORT_SYMBOL_GPL(pwm_supports_mode);
++
++const char *pwm_get_mode_name(unsigned long modebit)
++{
++	if (modebit =3D=3D PWM_MODE_BIT(COMPLEMENTARY))
++		return "complementary";
++
++	return "normal";
++}
++
+ /**
+  * pwmchip_add_with_polarity() - register a new PWM chip
+  * @chip: the PWM chip to add
+@@ -294,6 +376,7 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+ 		pwm->pwm =3D chip->base + i;
+ 		pwm->hwpwm =3D i;
+ 		pwm->state.polarity =3D polarity;
++		pwm->state.modebit =3D pwm_get_default_modebit(pwm);
+=20
+ 		if (chip->ops->get_state)
+ 			chip->ops->get_state(chip, pwm, &pwm->state);
+@@ -469,7 +552,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_=
+state *state)
+ 	int err;
+=20
+ 	if (!pwm || !state || !state->period ||
+-	    state->duty_cycle > state->period)
++	    state->duty_cycle > state->period ||
++	    !pwm_supports_mode(pwm, state->modebit))
+ 		return -EINVAL;
+=20
+ 	if (!memcmp(state, &pwm->state, sizeof(*state)))
+@@ -530,6 +614,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_=
+state *state)
+=20
+ 			pwm->state.enabled =3D state->enabled;
+ 		}
++
++		pwm->state.modebit =3D state->modebit;
+ 	}
+=20
+ 	return 0;
+@@ -579,6 +665,8 @@ int pwm_adjust_config(struct pwm_device *pwm)
+ 	pwm_get_args(pwm, &pargs);
+ 	pwm_get_state(pwm, &state);
+=20
++	state.modebit =3D pwm_get_default_modebit(pwm);
++
+ 	/*
+ 	 * If the current period is zero it means that either the PWM driver
+ 	 * does not support initial state retrieval or the PWM has not yet
+@@ -999,6 +1087,7 @@ static void pwm_dbg_show(struct pwm_chip *chip, struct=
+ seq_file *s)
+ 		seq_printf(s, " duty: %u ns", state.duty_cycle);
+ 		seq_printf(s, " polarity: %s",
+ 			   state.polarity ? "inverse" : "normal");
++		seq_printf(s, " mode: %s", pwm_get_mode_name(state.modebit));
+=20
+ 		seq_puts(s, "\n");
+ 	}
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index ceb233dd6048..7865fbafbeb4 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -223,11 +223,71 @@ static ssize_t capture_show(struct device *child,
+ 	return sprintf(buf, "%u %u\n", result.period, result.duty_cycle);
+ }
+=20
++static ssize_t mode_show(struct device *child,
++			 struct device_attribute *attr,
++			 char *buf)
++{
++	struct pwm_device *pwm =3D child_to_pwm_device(child);
++	struct pwm_state state;
++	unsigned long modebit;
++	enum pwm_mode mode;
++	int len =3D 0;
++
++	pwm_get_state(pwm, &state);
++
++	for (mode =3D PWM_MODE_NORMAL; mode < PWM_MODE_CNT; mode++) {
++		modebit =3D BIT(mode);
++		if (pwm_supports_mode(pwm, modebit)) {
++			if (state.modebit =3D=3D modebit)
++				len +=3D scnprintf(buf + len,
++						 PAGE_SIZE - len, "[%s] ",
++						 pwm_get_mode_name(modebit));
++			else
++				len +=3D scnprintf(buf + len,
++						 PAGE_SIZE - len, "%s ",
++						 pwm_get_mode_name(modebit));
++		}
++	}
++
++	len +=3D scnprintf(buf + len, PAGE_SIZE - len, "\n");
++	return len;
++}
++
++static ssize_t mode_store(struct device *child,
++			  struct device_attribute *attr,
++			  const char *buf, size_t size)
++{
++	struct pwm_export *export =3D child_to_pwm_export(child);
++	struct pwm_device *pwm =3D export->pwm;
++	struct pwm_state state;
++	unsigned long modebit;
++	enum pwm_mode mode;
++	int ret;
++
++	for (mode =3D PWM_MODE_NORMAL; mode < PWM_MODE_CNT; mode++) {
++		modebit =3D BIT(mode);
++		if (sysfs_streq(buf, pwm_get_mode_name(modebit)))
++			break;
++	}
++
++	if (mode =3D=3D PWM_MODE_CNT)
++		return -EINVAL;
++
++	mutex_lock(&export->lock);
++	pwm_get_state(pwm, &state);
++	state.modebit =3D modebit;
++	ret =3D pwm_apply_state(pwm, &state);
++	mutex_unlock(&export->lock);
++
++	return ret ? : size;
++}
++
+ static DEVICE_ATTR_RW(period);
+ static DEVICE_ATTR_RW(duty_cycle);
+ static DEVICE_ATTR_RW(enable);
+ static DEVICE_ATTR_RW(polarity);
+ static DEVICE_ATTR_RO(capture);
++static DEVICE_ATTR_RW(mode);
+=20
+ static struct attribute *pwm_attrs[] =3D {
+ 	&dev_attr_period.attr,
+@@ -235,6 +295,7 @@ static struct attribute *pwm_attrs[] =3D {
+ 	&dev_attr_enable.attr,
+ 	&dev_attr_polarity.attr,
+ 	&dev_attr_capture.attr,
++	&dev_attr_mode.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(pwm);
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index d5199b507d79..3d89343bc405 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -26,6 +26,28 @@ enum pwm_polarity {
+ };
+=20
+ /**
++ * PWM modes capabilities
++ * @PWM_MODE_NORMAL: PWM has one output
++ * @PWM_MODE_COMPLEMENTARY: PWM has 2 outputs with opposite polarities
++ * @PWM_MODE_CNT: PWM modes count
++ */
++enum pwm_mode {
++	PWM_MODE_NORMAL,
++	PWM_MODE_COMPLEMENTARY,
++	PWM_MODE_CNT,
++};
++
++#define PWM_MODE_BIT(name)		BIT(PWM_MODE_##name)
++
++/**
++ * struct pwm_caps - PWM capabilities
++ * @modes_msk: bitmask of supported modes (see PWM_MODE_*)
++ */
++struct pwm_caps {
++	unsigned long modes_msk;
++};
++
++/**
+  * struct pwm_args - board-dependent PWM arguments
+  * @period: reference period
+  * @polarity: reference polarity
+@@ -53,12 +75,14 @@ enum {
+  * @period: PWM period (in nanoseconds)
+  * @duty_cycle: PWM duty cycle (in nanoseconds)
+  * @polarity: PWM polarity
++ * @modebit: PWM mode bit
+  * @enabled: PWM enabled status
+  */
+ struct pwm_state {
+ 	unsigned int period;
+ 	unsigned int duty_cycle;
+ 	enum pwm_polarity polarity;
++	unsigned long modebit;
+ 	bool enabled;
+ };
+=20
+@@ -151,39 +175,6 @@ static inline void pwm_get_args(const struct pwm_devic=
+e *pwm,
+ }
+=20
+ /**
+- * pwm_init_state() - prepare a new state to be applied with pwm_apply_sta=
+te()
+- * @pwm: PWM device
+- * @state: state to fill with the prepared PWM state
+- *
+- * This functions prepares a state that can later be tweaked and applied
+- * to the PWM device with pwm_apply_state(). This is a convenient function
+- * that first retrieves the current PWM state and the replaces the period
+- * and polarity fields with the reference values defined in pwm->args.
+- * Once the function returns, you can adjust the ->enabled and ->duty_cycl=
+e
+- * fields according to your needs before calling pwm_apply_state().
+- *
+- * ->duty_cycle is initially set to zero to avoid cases where the current
+- * ->duty_cycle value exceed the pwm_args->period one, which would trigger
+- * an error if the user calls pwm_apply_state() without adjusting ->duty_c=
+ycle
+- * first.
+- */
+-static inline void pwm_init_state(const struct pwm_device *pwm,
+-				  struct pwm_state *state)
+-{
+-	struct pwm_args args;
+-
+-	/* First get the current state. */
+-	pwm_get_state(pwm, state);
+-
+-	/* Then fill it with the reference config */
+-	pwm_get_args(pwm, &args);
+-
+-	state->period =3D args.period;
+-	state->polarity =3D args.polarity;
+-	state->duty_cycle =3D 0;
+-}
+-
+-/**
+  * pwm_get_relative_duty_cycle() - Get a relative duty cycle value
+  * @state: PWM state to extract the duty cycle from
+  * @scale: target scale of the relative duty cycle
+@@ -254,6 +245,7 @@ pwm_set_relative_duty_cycle(struct pwm_state *state, un=
+signed int duty_cycle,
+  * @get_state: get the current PWM state. This function is only
+  *	       called once per PWM device when the PWM chip is
+  *	       registered.
++ * @get_caps: get PWM capabilities.
+  * @dbg_show: optional routine to show contents in debugfs
+  * @owner: helps prevent removal of modules exporting active PWMs
+  */
+@@ -272,6 +264,8 @@ struct pwm_ops {
+ 		     struct pwm_state *state);
+ 	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  struct pwm_state *state);
++	int (*get_caps)(const struct pwm_chip *chip,
++			const struct pwm_device *pwm, struct pwm_caps *caps);
+ #ifdef CONFIG_DEBUG_FS
+ 	void (*dbg_show)(struct pwm_chip *chip, struct seq_file *s);
+ #endif
+@@ -402,6 +396,10 @@ struct pwm_device *pwm_request_from_chip(struct pwm_ch=
+ip *chip,
+ 					 unsigned int index,
+ 					 const char *label);
+=20
++int pwm_get_caps(const struct pwm_device *pwm, struct pwm_caps *caps);
++bool pwm_supports_mode(const struct pwm_device *pwm, unsigned long modebit=
+);
++unsigned long pwm_get_default_modebit(const struct pwm_device *pwm);
++const char *pwm_get_mode_name(unsigned long modebit);
+ struct pwm_device *of_pwm_xlate_with_flags(struct pwm_chip *pc,
+ 		const struct of_phandle_args *args);
+=20
+@@ -488,6 +486,11 @@ static inline struct pwm_device *pwm_request_from_chip=
+(struct pwm_chip *chip,
+ 	return ERR_PTR(-ENODEV);
+ }
+=20
++static inline unsigned long pwm_get_default_modebit(const struct pwm_devic=
+e *pwm)
++{
++	return 0;
++}
++
+ static inline struct pwm_device *pwm_get(struct device *dev,
+ 					 const char *consumer)
+ {
+@@ -522,6 +525,40 @@ static inline void devm_pwm_put(struct device *dev, st=
+ruct pwm_device *pwm)
+ }
+ #endif
+=20
++/**
++ * pwm_init_state() - prepare a new state to be applied with pwm_apply_sta=
+te()
++ * @pwm: PWM device
++ * @state: state to fill with the prepared PWM state
++ *
++ * This functions prepares a state that can later be tweaked and applied
++ * to the PWM device with pwm_apply_state(). This is a convenient function
++ * that first retrieves the current PWM state and the replaces the period
++ * and polarity fields with the reference values defined in pwm->args.
++ * Once the function returns, you can adjust the ->enabled and ->duty_cycl=
+e
++ * fields according to your needs before calling pwm_apply_state().
++ *
++ * ->duty_cycle is initially set to zero to avoid cases where the current
++ * ->duty_cycle value exceed the pwm_args->period one, which would trigger
++ * an error if the user calls pwm_apply_state() without adjusting ->duty_c=
+ycle
++ * first.
++ */
++static inline void pwm_init_state(const struct pwm_device *pwm,
++				  struct pwm_state *state)
++{
++	struct pwm_args args;
++
++	/* First get the current state. */
++	pwm_get_state(pwm, state);
++
++	/* Then fill it with the reference config */
++	pwm_get_args(pwm, &args);
++
++	state->period =3D args.period;
++	state->polarity =3D args.polarity;
++	state->duty_cycle =3D 0;
++	state->modebit =3D pwm_get_default_modebit(pwm);
++}
++
+ static inline void pwm_apply_args(struct pwm_device *pwm)
+ {
+ 	struct pwm_state state =3D { };
+@@ -550,6 +587,7 @@ static inline void pwm_apply_args(struct pwm_device *pw=
+m)
+ 	state.enabled =3D false;
+ 	state.polarity =3D pwm->args.polarity;
+ 	state.period =3D pwm->args.period;
++	state.modebit =3D pwm_get_default_modebit(pwm);
+=20
+ 	pwm_apply_state(pwm, &state);
+ }
+--=20
+2.7.4
