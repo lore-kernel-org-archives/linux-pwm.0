@@ -1,232 +1,98 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v8 3/6] pwm: atmel: add pwm capabilities
-Date: Thu, 3 Jan 2019 13:29:50 +0000
-Message-ID: <1546522081-23659-4-git-send-email-claudiu.beznea@microchip.com>
-References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: Re: [RFC v2 1/2] pwm: sifive: Add DT documentation for SiFive PWM Controller
+Date: Fri, 4 Jan 2019 10:33:36 +0530
+Message-ID: <CAJ2_jOEy-0DmkzoOwezUf3+gHV3CTu04CqG1tiw5=iX-AO8xZg@mail.gmail.com>
+References: <1544768442-12530-1-git-send-email-yash.shah@sifive.com>
+ <1544768442-12530-2-git-send-email-yash.shah@sifive.com> <20181218172031.GA7272@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
-Content-Language: en-US
+In-Reply-To: <20181218172031.GA7272@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, corbet@lwn.net, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
-Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Claudiu.Beznea@microchip.com
+To: Rob Herring <robh@kernel.org>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+On Tue, Dec 18, 2018 at 10:50 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Fri, Dec 14, 2018 at 11:50:41AM +0530, Yash Shah wrote:
+> > DT documentation for PWM controller added with updated compatible
+> > string.
+> >
+> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> > [Atish: Compatible string update]
+> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> > ---
+> >  .../devicetree/bindings/pwm/pwm-sifive.txt         | 44 ++++++++++++++++++++++
+> >  1 file changed, 44 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> >
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > new file mode 100644
+> > index 0000000..250d8ee
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > @@ -0,0 +1,44 @@
+> > +SiFive PWM controller
+> > +
+> > +Unlike most other PWM controllers, the SiFive PWM controller currently only
+> > +supports one period for all channels in the PWM. This is set globally in DTS.
+> > +The period also has significant restrictions on the values it can achieve,
+> > +which the driver rounds to the nearest achievable frequency.
+> > +
+> > +Required properties:
+> > +- compatible: should be something similar to "sifive,<chip>-pwm" for
+> > +           the PWM as integrated on a particular chip, and
+> > +           "sifive,pwm<version>" for the general PWM IP block
+> > +           programming model. Supported compatible strings are:
+> > +           "sifive,fu540-c000-pwm" for the SiFive PWM v0 as
+> > +           integrated onto the SiFive FU540 chip, and "sifive,pwm0"
+> > +           for the SiFive PWM v0 IP block with no chip integration
+> > +           tweaks.
+>
+> This should reference the common doc Paul has written and not re-explain
+> the versioning scheme again.
 
-Add pwm capabilities for Atmel/Microchip PWM controllers.
+Ok sure.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/pwm/pwm-atmel.c | 86 ++++++++++++++++++++++++++++++++-------------=
-----
- 1 file changed, 57 insertions(+), 29 deletions(-)
+>
+> > +- reg: physical base address and length of the controller's registers
+> > +- clocks: The frequency the controller runs at
+> > +- #pwm-cells: Should be 2.
+> > +  The first cell is the PWM channel number
+> > +  The second cell is the PWM polarity
+> > +- sifive,approx-period: the driver will get as close to this period as it can
+>
+> Needs a unit suffix as defined in property-units.txt
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 530d7dc5f1b5..b72cacd5dca3 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -65,18 +65,23 @@ struct atmel_pwm_registers {
- 	u8 duty_upd;
- };
-=20
-+struct atmel_pwm_data {
-+	struct atmel_pwm_registers regs;
-+	struct pwm_caps caps;
-+};
-+
- struct atmel_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
--	const struct atmel_pwm_registers *regs;
-+	const struct atmel_pwm_data *data;
-=20
- 	unsigned int updated_pwms;
- 	/* ISR is cleared when read, ensure only one thread does that */
- 	struct mutex isr_lock;
- };
-=20
--static inline struct atmel_pwm_chip *to_atmel_pwm_chip(struct pwm_chip *ch=
-ip)
-+static inline struct atmel_pwm_chip *to_atmel_pwm_chip(const struct pwm_ch=
-ip *chip)
- {
- 	return container_of(chip, struct atmel_pwm_chip, chip);
- }
-@@ -150,15 +155,15 @@ static void atmel_pwm_update_cdty(struct pwm_chip *ch=
-ip, struct pwm_device *pwm,
- 	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
- 	u32 val;
-=20
--	if (atmel_pwm->regs->duty_upd =3D=3D
--	    atmel_pwm->regs->period_upd) {
-+	if (atmel_pwm->data->regs.duty_upd =3D=3D
-+	    atmel_pwm->data->regs.period_upd) {
- 		val =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
- 		val &=3D ~PWM_CMR_UPD_CDTY;
- 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
- 	}
-=20
- 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
--			    atmel_pwm->regs->duty_upd, cdty);
-+			    atmel_pwm->data->regs.duty_upd, cdty);
- }
-=20
- static void atmel_pwm_set_cprd_cdty(struct pwm_chip *chip,
-@@ -168,9 +173,9 @@ static void atmel_pwm_set_cprd_cdty(struct pwm_chip *ch=
-ip,
- 	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
-=20
- 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
--			    atmel_pwm->regs->duty, cdty);
-+			    atmel_pwm->data->regs.duty, cdty);
- 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
--			    atmel_pwm->regs->period, cprd);
-+			    atmel_pwm->data->regs.period, cprd);
- }
-=20
- static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pw=
-m,
-@@ -225,7 +230,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struc=
-t pwm_device *pwm,
- 		    cstate.polarity =3D=3D state->polarity &&
- 		    cstate.period =3D=3D state->period) {
- 			cprd =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
--						  atmel_pwm->regs->period);
-+						  atmel_pwm->data->regs.period);
- 			atmel_pwm_calculate_cdty(state, cprd, &cdty);
- 			atmel_pwm_update_cdty(chip, pwm, cdty);
- 			return 0;
-@@ -272,32 +277,55 @@ static int atmel_pwm_apply(struct pwm_chip *chip, str=
-uct pwm_device *pwm,
- 	return 0;
- }
-=20
-+static int atmel_pwm_get_caps(const struct pwm_chip *chip,
-+			      const struct pwm_device *pwm,
-+			      struct pwm_caps *caps)
-+{
-+	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
-+
-+	*caps =3D atmel_pwm->data->caps;
-+
-+	return 0;
-+}
-+
- static const struct pwm_ops atmel_pwm_ops =3D {
- 	.apply =3D atmel_pwm_apply,
-+	.get_caps =3D atmel_pwm_get_caps,
- 	.owner =3D THIS_MODULE,
- };
-=20
--static const struct atmel_pwm_registers atmel_pwm_regs_v1 =3D {
--	.period		=3D PWMV1_CPRD,
--	.period_upd	=3D PWMV1_CUPD,
--	.duty		=3D PWMV1_CDTY,
--	.duty_upd	=3D PWMV1_CUPD,
-+static const struct atmel_pwm_data atmel_pwm_data_v1 =3D {
-+	.regs =3D {
-+		.period		=3D PWMV1_CPRD,
-+		.period_upd	=3D PWMV1_CUPD,
-+		.duty		=3D PWMV1_CDTY,
-+		.duty_upd	=3D PWMV1_CUPD,
-+	},
-+	.caps =3D {
-+		.modes_msk =3D PWM_MODE_BIT(NORMAL),
-+	},
- };
-=20
--static const struct atmel_pwm_registers atmel_pwm_regs_v2 =3D {
--	.period		=3D PWMV2_CPRD,
--	.period_upd	=3D PWMV2_CPRDUPD,
--	.duty		=3D PWMV2_CDTY,
--	.duty_upd	=3D PWMV2_CDTYUPD,
-+static const struct atmel_pwm_data atmel_pwm_data_v2 =3D {
-+	.regs =3D {
-+		.period		=3D PWMV2_CPRD,
-+		.period_upd	=3D PWMV2_CPRDUPD,
-+		.duty		=3D PWMV2_CDTY,
-+		.duty_upd	=3D PWMV2_CDTYUPD,
-+	},
-+	.caps =3D {
-+		.modes_msk =3D PWM_MODE_BIT(NORMAL) |
-+			     PWM_MODE_BIT(COMPLEMENTARY),
-+	},
- };
-=20
- static const struct platform_device_id atmel_pwm_devtypes[] =3D {
- 	{
- 		.name =3D "at91sam9rl-pwm",
--		.driver_data =3D (kernel_ulong_t)&atmel_pwm_regs_v1,
-+		.driver_data =3D (kernel_ulong_t)&atmel_pwm_data_v1,
- 	}, {
- 		.name =3D "sama5d3-pwm",
--		.driver_data =3D (kernel_ulong_t)&atmel_pwm_regs_v2,
-+		.driver_data =3D (kernel_ulong_t)&atmel_pwm_data_v2,
- 	}, {
- 		/* sentinel */
- 	},
-@@ -307,20 +335,20 @@ MODULE_DEVICE_TABLE(platform, atmel_pwm_devtypes);
- static const struct of_device_id atmel_pwm_dt_ids[] =3D {
- 	{
- 		.compatible =3D "atmel,at91sam9rl-pwm",
--		.data =3D &atmel_pwm_regs_v1,
-+		.data =3D &atmel_pwm_data_v1,
- 	}, {
- 		.compatible =3D "atmel,sama5d3-pwm",
--		.data =3D &atmel_pwm_regs_v2,
-+		.data =3D &atmel_pwm_data_v2,
- 	}, {
- 		.compatible =3D "atmel,sama5d2-pwm",
--		.data =3D &atmel_pwm_regs_v2,
-+		.data =3D &atmel_pwm_data_v2,
- 	}, {
- 		/* sentinel */
- 	},
- };
- MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
-=20
--static inline const struct atmel_pwm_registers *
-+static inline const struct atmel_pwm_data *
- atmel_pwm_get_driver_data(struct platform_device *pdev)
- {
- 	const struct platform_device_id *id;
-@@ -330,18 +358,18 @@ atmel_pwm_get_driver_data(struct platform_device *pde=
-v)
-=20
- 	id =3D platform_get_device_id(pdev);
-=20
--	return (struct atmel_pwm_registers *)id->driver_data;
-+	return (struct atmel_pwm_data *)id->driver_data;
- }
-=20
- static int atmel_pwm_probe(struct platform_device *pdev)
- {
--	const struct atmel_pwm_registers *regs;
-+	const struct atmel_pwm_data *data;
- 	struct atmel_pwm_chip *atmel_pwm;
- 	struct resource *res;
- 	int ret;
-=20
--	regs =3D atmel_pwm_get_driver_data(pdev);
--	if (!regs)
-+	data =3D atmel_pwm_get_driver_data(pdev);
-+	if (!data)
- 		return -ENODEV;
-=20
- 	atmel_pwm =3D devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
-@@ -373,7 +401,7 @@ static int atmel_pwm_probe(struct platform_device *pdev=
-)
-=20
- 	atmel_pwm->chip.base =3D -1;
- 	atmel_pwm->chip.npwm =3D 4;
--	atmel_pwm->regs =3D regs;
-+	atmel_pwm->data =3D data;
- 	atmel_pwm->updated_pwms =3D 0;
- 	mutex_init(&atmel_pwm->isr_lock);
-=20
---=20
-2.7.4
+Will be done.
+
+>
+> > +- interrupts: one interrupt per PWM channel
+> > +
+> > +PWM RTL that corresponds to the IP block version numbers can be found
+> > +here:
+> > +
+> > +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
+> > +
+> > +Further information on the format of the IP
+> > +block-specific version numbers can be found in
+> > +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt
+> > +
+> > +Examples:
+> > +
+> > +pwm:  pwm@10020000 {
+> > +     compatible = "sifive,fu540-c000-pwm","sifive,pwm0";
+> > +     reg = <0x0 0x10020000 0x0 0x1000>;
+> > +     clocks = <&tlclk>;
+> > +     interrupt-parent = <&plic>;
+> > +     interrupts = <42 43 44 45>;
+> > +     #pwm-cells = <2>;
+> > +     sifive,approx-period = <1000000>;
+> > +};
+> > --
+> > 1.9.1
+> >
+
+Thanks for the comments!
