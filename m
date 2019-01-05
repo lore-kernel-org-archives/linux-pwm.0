@@ -1,50 +1,122 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v9 13/27] pwm: jz4740: Use clocks from TCU driver
-Date: Sat, 05 Jan 2019 17:52:46 -0300
-Message-ID: <1546721566.29843.0@crapouillou.net>
-References: <20181227181319.31095-1-paul@crapouillou.net>
-        <20181227181319.31095-14-paul@crapouillou.net>
-        <20190105194559.jtwyx7th32saa6qh@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
+Date: Sat, 5 Jan 2019 22:05:22 +0100
+Message-ID: <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
+References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+ <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190105194559.jtwyx7th32saa6qh@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Claudiu.Beznea@microchip.com, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, linux-doc@vger.kernel.org, corbet@lwn.net, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Hello,
 
-On Sat, Jan 5, 2019 at 4:45 PM, Uwe Kleine-K=F6nig=20
-<u.kleine-koenig@pengutronix.de> wrote:
-> Hello,
->=20
-> On Thu, Dec 27, 2018 at 07:13:05PM +0100, Paul Cercueil wrote:
->>  diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->>  index 4ed003bc3d8d..0343f0c1238e 100644
->>  --- a/drivers/pwm/Kconfig
->>  +++ b/drivers/pwm/Kconfig
->>  @@ -202,7 +202,8 @@ config PWM_IMX
->>   config PWM_JZ4740
->>   	tristate "Ingenic JZ47xx PWM support"
->>   	depends on MACH_INGENIC
->>  -	select REGMAP
->>  +	depends on COMMON_CLK
->>  +	select INGENIC_TIMER
->=20
-> Did you drop REGMAP on purpose?
+On Thu, Jan 03, 2019 at 01:29:44PM +0000, Claudiu.Beznea@microchip.com wrot=
+e:
+> From: Claudiu Beznea <claudiu.beznea@microchip.com>
+> =
 
-INGENIC_TIMER selects it, so it's still a dependency but indirectly.
-Should I restore it?
+> Add basic PWM modes: normal and complementary. These modes should
+> differentiate the single output PWM channels from two outputs PWM
+> channels. These modes could be set as follow:
+> 1. PWM channels with one output per channel:
+> - normal mode
+> 2. PWM channels with two outputs per channel:
+> - normal mode
+> - complementary mode
+> Since users could use a PWM channel with two output as one output PWM
+> channel, the PWM normal mode is allowed to be set for PWM channels with
+> two outputs; in fact PWM normal mode should be supported by all PWMs.
 
-> Best regards
-> Uwe
->=20
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=F6nig       =20
->     |
-> Industrial Linux Solutions                 |=20
-> http://www.pengutronix.de/  |
-=
+I still think that my suggestion that I sent in reply to your v5 using
+.alt_duty_cycle and .alt_offset is the better one as it is more generic.
+A word about that from Thierry before putting the mode into the pwm API
+would be great.
+
+I don't repeat what I wrote there assuming you still remember or are
+willing to look it up at
+e.g. https://www.spinics.net/lists/linux-pwm/msg08174.html (in the 2nd half
+of my mail).
+
+Also I think that if the capabilities function is the way forward adding
+support to detect availability of polarity inversion should be
+considered. This would also be an opportunity to split the introduction
+of the capabilities function and the introduction of complementary mode.
+(But my personal preference would be to just let .apply fail when an
+unsupported configuration is requested.)
+
+> +static int pwm_get_default_caps(struct pwm_caps *caps)
+> +{
+> +	static const struct pwm_caps default_caps =3D {
+> +		.modes_msk =3D PWM_MODE_BIT(NORMAL),
+> +	};
+> +
+> +	if (!caps)
+> +		return -EINVAL;
+> +
+> +	*caps =3D default_caps;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * pwm_get_caps() - get PWM capabilities of a PWM device
+> + * @pwm: PWM device to get the capabilities for
+> + * @caps: returned capabilities
+> + *
+> + * Returns: 0 on success or a negative error code on failure
+> + */
+> +int pwm_get_caps(const struct pwm_device *pwm, struct pwm_caps *caps)
+> +{
+> +	if (!pwm || !caps)
+> +		return -EINVAL;
+> +
+> +	if (pwm->chip->ops->get_caps)
+> +		return pwm->chip->ops->get_caps(pwm->chip, pwm, caps);
+> +
+> +	return pwm_get_default_caps(caps);
+
+I'd drop pwm_get_default_caps (unless you introduce some more callers
+later) and fold its implementation into pwm_get_caps.
+
+> +}
+> +EXPORT_SYMBOL_GPL(pwm_get_caps);
+> [...]
+> @@ -53,12 +75,14 @@ enum {
+>   * @period: PWM period (in nanoseconds)
+>   * @duty_cycle: PWM duty cycle (in nanoseconds)
+>   * @polarity: PWM polarity
+> + * @modebit: PWM mode bit
+>   * @enabled: PWM enabled status
+>   */
+>  struct pwm_state {
+>  	unsigned int period;
+>  	unsigned int duty_cycle;
+>  	enum pwm_polarity polarity;
+> +	unsigned long modebit;
+
+I fail to see the upside of storing the mode as 2^mode instead of a
+plain enum pwm_mode. Given that struct pwm_state is visible for pwm
+users a plain pwm_mode would at least be more intuitive.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
