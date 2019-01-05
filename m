@@ -1,56 +1,37 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor1.renesas.com ([210.160.252.171]:55996 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729844AbfAIIWB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Jan 2019 03:22:01 -0500
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Date: Wed,  9 Jan 2019 17:19:06 +0900
-Message-Id: <1547021948-7664-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-References: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Sat, 5 Jan 2019 22:13:37 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] [RFC] Documentation: pwm: rework documentation for the
+ framework
+Message-ID: <20190105211337.4mdejaw7uuoakdzv@pengutronix.de>
+References: <20181120202945.24100-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20181120202945.24100-1-u.kleine-koenig@pengutronix.de>
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH v3 2/4] pwm: rcar: Use "atomic" API on rcar_pwm_resume()
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-To remove legacy API related functions in the future, this patch
-uses "atomic" related function instead. No change in behavior.
+Hello Thierry,
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-rcar.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+I'm still waiting on feedback on this mail. Given there are a few things
+that are not clear to me how they are intended I cannot reply as precise
+as I want to in some reviews.
 
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index e3ab663..652a937 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -316,18 +316,16 @@ static int rcar_pwm_suspend(struct device *dev)
- static int rcar_pwm_resume(struct device *dev)
- {
- 	struct pwm_device *pwm = rcar_pwm_dev_to_pwm_dev(dev);
-+	struct pwm_state state;
- 
- 	if (!test_bit(PWMF_REQUESTED, &pwm->flags))
- 		return 0;
- 
- 	pm_runtime_get_sync(dev);
- 
--	rcar_pwm_config(pwm->chip, pwm, pwm->state.duty_cycle,
--			pwm->state.period);
--	if (pwm_is_enabled(pwm))
--		rcar_pwm_enable(pwm->chip, pwm);
-+	pwm_get_state(pwm, &state);
- 
--	return 0;
-+	return rcar_pwm_apply(pwm->chip, pwm, &state);
- }
- #endif /* CONFIG_PM_SLEEP */
- static SIMPLE_DEV_PM_OPS(rcar_pwm_pm_ops, rcar_pwm_suspend, rcar_pwm_resume);
--- 
-1.9.1
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
