@@ -1,122 +1,108 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
-Date: Sat, 5 Jan 2019 22:05:22 +0100
-Message-ID: <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
-References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
- <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v9 14/27] pwm: jz4740: Improve algorithm of clock
+ calculation
+Date: Sat, 05 Jan 2019 18:05:38 -0300
+Message-ID: <1546722339.30174.0@crapouillou.net>
+References: <20181227181319.31095-1-paul@crapouillou.net>
+        <20181227181319.31095-15-paul@crapouillou.net>
+        <20190105195725.cuxfge6zkpbt3cyk@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Claudiu.Beznea@microchip.com, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, linux-doc@vger.kernel.org, corbet@lwn.net, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190105195725.cuxfge6zkpbt3cyk@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+Hi,
 
-On Thu, Jan 03, 2019 at 01:29:44PM +0000, Claudiu.Beznea@microchip.com wrot=
-e:
-> From: Claudiu Beznea <claudiu.beznea@microchip.com>
-> =
+On Sat, Jan 5, 2019 at 4:57 PM, Uwe Kleine-K=F6nig=20
+<u.kleine-koenig@pengutronix.de> wrote:
+> On Thu, Dec 27, 2018 at 07:13:06PM +0100, Paul Cercueil wrote:
+>>  The previous algorithm hardcoded details about how the TCU clocks=20
+>> work.
+>>  The new algorithm will use clk_round_rate to find the perfect clock=20
+>> rate
+>>  for the PWM channel.
+>>=20
+>>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>>  ---
+>>=20
+>>  Notes:
+>>       v9: New patch
+>>=20
+>>   drivers/pwm/pwm-jz4740.c | 26 +++++++++++++++-----------
+>>   1 file changed, 15 insertions(+), 11 deletions(-)
+>>=20
+>>  diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+>>  index c6136bd4434b..dd80a2cf6528 100644
+>>  --- a/drivers/pwm/pwm-jz4740.c
+>>  +++ b/drivers/pwm/pwm-jz4740.c
+>>  @@ -110,23 +110,27 @@ static int jz4740_pwm_apply(struct pwm_chip=20
+>> *chip, struct pwm_device *pwm,
+>>   	struct jz4740_pwm_chip *jz4740 =3D to_jz4740(pwm->chip);
+>>   	struct clk *clk =3D jz4740->clks[pwm->hwpwm],
+>>   		   *parent_clk =3D clk_get_parent(clk);
+>>  -	unsigned long rate, period, duty;
+>>  +	unsigned long rate, new_rate, period, duty;
+>>   	unsigned long long tmp;
+>>  -	unsigned int prescaler =3D 0;
+>>=20
+>>   	rate =3D clk_get_rate(parent_clk);
+>>  -	tmp =3D (unsigned long long)rate * state->period;
+>>  -	do_div(tmp, 1000000000);
+>>  -	period =3D tmp;
+>>=20
+>>  -	while (period > 0xffff && prescaler < 6) {
+>>  -		period >>=3D 2;
+>>  -		rate >>=3D 2;
+>>  -		++prescaler;
+>>  +	for (;;) {
+>>  +		tmp =3D (unsigned long long)rate * state->period;
+>>  +		do_div(tmp, 1000000000);
+>=20
+> NSEC_PER_SEC?
 
-> Add basic PWM modes: normal and complementary. These modes should
-> differentiate the single output PWM channels from two outputs PWM
-> channels. These modes could be set as follow:
-> 1. PWM channels with one output per channel:
-> - normal mode
-> 2. PWM channels with two outputs per channel:
-> - normal mode
-> - complementary mode
-> Since users could use a PWM channel with two output as one output PWM
-> channel, the PWM normal mode is allowed to be set for PWM channels with
-> two outputs; in fact PWM normal mode should be supported by all PWMs.
+Ok, didn't know about it.
 
-I still think that my suggestion that I sent in reply to your v5 using
-.alt_duty_cycle and .alt_offset is the better one as it is more generic.
-A word about that from Thierry before putting the mode into the pwm API
-would be great.
+>>  +
+>>  +		if (tmp <=3D 0xffff)
+>>  +			break;
+>>  +
+>>  +		new_rate =3D clk_round_rate(clk, rate - 1);
+>>  +
+>>  +		if (new_rate < rate)
+>>  +			rate =3D new_rate;
+>>  +		else
+>>  +			return -EINVAL;
+>=20
+> You are assuming stuff here about the parent clk which isn't=20
+> guaranteed
+> (AFAICT) by the clk framework: If you call clk_round_rate(clk, rate -=20
+> 1)
+> this might well return rate even if the clock could run slower than
+> rate.
 
-I don't repeat what I wrote there assuming you still remember or are
-willing to look it up at
-e.g. https://www.spinics.net/lists/linux-pwm/msg08174.html (in the 2nd half
-of my mail).
+It may not be guaranteed by the clock framework itself, but it is=20
+guaranteed
+to behave like that on this family of SoCs.
 
-Also I think that if the capabilities function is the way forward adding
-support to detect availability of polarity inversion should be
-considered. This would also be an opportunity to split the introduction
-of the capabilities function and the introduction of complementary mode.
-(But my personal preference would be to just let .apply fail when an
-unsupported configuration is requested.)
+> Wouldn't it make sense to start iterating with rate =3D 0xffff * 1e9 /
+> period? Otherwise you get bad configurations if rate is considerable
+> slower than necessary.
 
-> +static int pwm_get_default_caps(struct pwm_caps *caps)
-> +{
-> +	static const struct pwm_caps default_caps =3D {
-> +		.modes_msk =3D PWM_MODE_BIT(NORMAL),
-> +	};
-> +
-> +	if (!caps)
-> +		return -EINVAL;
-> +
-> +	*caps =3D default_caps;
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * pwm_get_caps() - get PWM capabilities of a PWM device
-> + * @pwm: PWM device to get the capabilities for
-> + * @caps: returned capabilities
-> + *
-> + * Returns: 0 on success or a negative error code on failure
-> + */
-> +int pwm_get_caps(const struct pwm_device *pwm, struct pwm_caps *caps)
-> +{
-> +	if (!pwm || !caps)
-> +		return -EINVAL;
-> +
-> +	if (pwm->chip->ops->get_caps)
-> +		return pwm->chip->ops->get_caps(pwm->chip, pwm, caps);
-> +
-> +	return pwm_get_default_caps(caps);
+The algorithm will start with 'rate' being the parent clock's rate,=20
+which
+will always be the highest rate that the child clock will support.
 
-I'd drop pwm_get_default_caps (unless you introduce some more callers
-later) and fold its implementation into pwm_get_caps.
-
-> +}
-> +EXPORT_SYMBOL_GPL(pwm_get_caps);
-> [...]
-> @@ -53,12 +75,14 @@ enum {
->   * @period: PWM period (in nanoseconds)
->   * @duty_cycle: PWM duty cycle (in nanoseconds)
->   * @polarity: PWM polarity
-> + * @modebit: PWM mode bit
->   * @enabled: PWM enabled status
->   */
->  struct pwm_state {
->  	unsigned int period;
->  	unsigned int duty_cycle;
->  	enum pwm_polarity polarity;
-> +	unsigned long modebit;
-
-I fail to see the upside of storing the mode as 2^mode instead of a
-plain enum pwm_mode. Given that struct pwm_state is visible for pwm
-users a plain pwm_mode would at least be more intuitive.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig       =20
+>     |
+> Industrial Linux Solutions                 |=20
+> http://www.pengutronix.de/  |
+=
