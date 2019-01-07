@@ -1,62 +1,84 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v9 14/27] pwm: jz4740: Improve algorithm of clock
- calculation
-Date: Sat, 5 Jan 2019 22:27:11 +0100
-Message-ID: <20190105212711.s765knwwerceytvk@pengutronix.de>
-References: <20181227181319.31095-1-paul@crapouillou.net>
- <20181227181319.31095-15-paul@crapouillou.net>
- <20190105195725.cuxfge6zkpbt3cyk@pengutronix.de>
- <1546722339.30174.0@crapouillou.net>
+From: <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
+Date: Mon, 7 Jan 2019 09:30:55 +0000
+Message-ID: <67e881c5-0ea7-3d2f-5910-534729097d11@microchip.com>
+References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+ <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
+ <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1546722339.30174.0@crapouillou.net>
+In-Reply-To: <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
+Content-Language: en-US
+Content-ID: <BC42B9F668D275479C29E3610322FFF9@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+To: u.kleine-koenig@pengutronix.de, thierry.reding@gmail.com
+Cc: corbet@lwn.net, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Paul,
-
-On Sat, Jan 05, 2019 at 06:05:38PM -0300, Paul Cercueil wrote:
-> On Sat, Jan 5, 2019 at 4:57 PM, Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > You are assuming stuff here about the parent clk which isn't guaranteed
-> > (AFAICT) by the clk framework: If you call clk_round_rate(clk, rate - 1)
-> > this might well return rate even if the clock could run slower than
-> > rate.
-> 
-> It may not be guaranteed by the clock framework itself, but it is guaranteed
-> to behave like that on this family of SoCs.
-
-You shouldn't rely on that. Experience shows that people will start
-copying code to machines where this is not guaranteed. Even if they
-don't copy and only learn from reading this is bad. Also how do you
-guarantee that this won't change in the future making the pwm code break
-without noticing?
-
-If you use an API better don't assume more things given than are
-guaranteed by the API.
-
-Having said that I would consider it sensible to introduce something
-like clk_roundup_rate() and clk_rounddown_rate() which would allow
-calculations like that.
-
-> > Wouldn't it make sense to start iterating with rate = 0xffff * 1e9 /
-> > period? Otherwise you get bad configurations if rate is considerable
-> > slower than necessary.
-> 
-> The algorithm will start with 'rate' being the parent clock's rate, which
-> will always be the highest rate that the child clock will support.
-
-Ah right, I missed that bit.
- 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+DQoNCk9uIDA1LjAxLjIwMTkgMjM6MDUsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBIZWxs
+bywNCj4gDQo+IE9uIFRodSwgSmFuIDAzLCAyMDE5IGF0IDAxOjI5OjQ0UE0gKzAwMDAsIENsYXVk
+aXUuQmV6bmVhQG1pY3JvY2hpcC5jb20gd3JvdGU6DQo+PiBGcm9tOiBDbGF1ZGl1IEJlem5lYSA8
+Y2xhdWRpdS5iZXpuZWFAbWljcm9jaGlwLmNvbT4NCj4+DQo+PiBBZGQgYmFzaWMgUFdNIG1vZGVz
+OiBub3JtYWwgYW5kIGNvbXBsZW1lbnRhcnkuIFRoZXNlIG1vZGVzIHNob3VsZA0KPj4gZGlmZmVy
+ZW50aWF0ZSB0aGUgc2luZ2xlIG91dHB1dCBQV00gY2hhbm5lbHMgZnJvbSB0d28gb3V0cHV0cyBQ
+V00NCj4+IGNoYW5uZWxzLiBUaGVzZSBtb2RlcyBjb3VsZCBiZSBzZXQgYXMgZm9sbG93Og0KPj4g
+MS4gUFdNIGNoYW5uZWxzIHdpdGggb25lIG91dHB1dCBwZXIgY2hhbm5lbDoNCj4+IC0gbm9ybWFs
+IG1vZGUNCj4+IDIuIFBXTSBjaGFubmVscyB3aXRoIHR3byBvdXRwdXRzIHBlciBjaGFubmVsOg0K
+Pj4gLSBub3JtYWwgbW9kZQ0KPj4gLSBjb21wbGVtZW50YXJ5IG1vZGUNCj4+IFNpbmNlIHVzZXJz
+IGNvdWxkIHVzZSBhIFBXTSBjaGFubmVsIHdpdGggdHdvIG91dHB1dCBhcyBvbmUgb3V0cHV0IFBX
+TQ0KPj4gY2hhbm5lbCwgdGhlIFBXTSBub3JtYWwgbW9kZSBpcyBhbGxvd2VkIHRvIGJlIHNldCBm
+b3IgUFdNIGNoYW5uZWxzIHdpdGgNCj4+IHR3byBvdXRwdXRzOyBpbiBmYWN0IFBXTSBub3JtYWwg
+bW9kZSBzaG91bGQgYmUgc3VwcG9ydGVkIGJ5IGFsbCBQV01zLg0KPiANCj4gSSBzdGlsbCB0aGlu
+ayB0aGF0IG15IHN1Z2dlc3Rpb24gdGhhdCBJIHNlbnQgaW4gcmVwbHkgdG8geW91ciB2NSB1c2lu
+Zw0KPiAuYWx0X2R1dHlfY3ljbGUgYW5kIC5hbHRfb2Zmc2V0IGlzIHRoZSBiZXR0ZXIgb25lIGFz
+IGl0IGlzIG1vcmUgZ2VuZXJpYy4NCg0KSSBsaWtlIGl0IGJldHRlciBteSB3YXksIEkgZXhwbGFp
+bmVkIG15c2VsZiB3aHkuDQoNCj4gQSB3b3JkIGFib3V0IHRoYXQgZnJvbSBUaGllcnJ5IGJlZm9y
+ZSBwdXR0aW5nIHRoZSBtb2RlIGludG8gdGhlIHB3bSBBUEkNCj4gd291bGQgYmUgZ3JlYXQuDQoN
+ClllcywgbGV0J3Mgd2FpdCBUaGllcnJ5IGlucHV0cyBvbiB0aGlzLg0KDQo+IA0KPiBJIGRvbid0
+IHJlcGVhdCB3aGF0IEkgd3JvdGUgdGhlcmUgYXNzdW1pbmcgeW91IHN0aWxsIHJlbWVtYmVyIG9y
+IGFyZQ0KPiB3aWxsaW5nIHRvIGxvb2sgaXQgdXAgYXQNCj4gZS5nLiBodHRwczovL3d3dy5zcGlu
+aWNzLm5ldC9saXN0cy9saW51eC1wd20vbXNnMDgxNzQuaHRtbCAoaW4gdGhlIDJuZCBoYWxmDQo+
+IG9mIG15IG1haWwpLg0KDQpZZXMsIEkgcmVtZW1iZXIgaXQuDQoNCj4gDQo+IEFsc28gSSB0aGlu
+ayB0aGF0IGlmIHRoZSBjYXBhYmlsaXRpZXMgZnVuY3Rpb24gaXMgdGhlIHdheSBmb3J3YXJkIGFk
+ZGluZw0KPiBzdXBwb3J0IHRvIGRldGVjdCBhdmFpbGFiaWxpdHkgb2YgcG9sYXJpdHkgaW52ZXJz
+aW9uIHNob3VsZCBiZQ0KPiBjb25zaWRlcmVkLiANCg0KWWVwLCB3aHkgbm90LiBCdXQgaXQgc2hv
+dWxkIGJlIGRvbmUgaW4gYSBkaWZmZXJlbnQgcGF0Y2guIEl0IGlzIG5vdCByZWxhdGVkDQp0byB0
+aGlzIHNlcmllcy4NCg0KVGhpcyB3b3VsZCBhbHNvIGJlIGFuIG9wcG9ydHVuaXR5IHRvIHNwbGl0
+IHRoZSBpbnRyb2R1Y3Rpb24NCj4gb2YgdGhlIGNhcGFiaWxpdGllcyBmdW5jdGlvbiBhbmQgdGhl
+IGludHJvZHVjdGlvbiBvZiBjb21wbGVtZW50YXJ5IG1vZGUuDQo+IChCdXQgbXkgcGVyc29uYWwg
+cHJlZmVyZW5jZSB3b3VsZCBiZSB0byBqdXN0IGxldCAuYXBwbHkgZmFpbCB3aGVuIGFuDQo+IHVu
+c3VwcG9ydGVkIGNvbmZpZ3VyYXRpb24gaXMgcmVxdWVzdGVkLikNCg0KLmFwcGx5IGZhaWxzIHdo
+ZW4gc29tZXRoaW5nIHdyb25nIGlzIHJlcXVlc3RlZC4NCg0KPiANCj4+ICtzdGF0aWMgaW50IHB3
+bV9nZXRfZGVmYXVsdF9jYXBzKHN0cnVjdCBwd21fY2FwcyAqY2FwcykNCj4+ICt7DQo+PiArCXN0
+YXRpYyBjb25zdCBzdHJ1Y3QgcHdtX2NhcHMgZGVmYXVsdF9jYXBzID0gew0KPj4gKwkJLm1vZGVz
+X21zayA9IFBXTV9NT0RFX0JJVChOT1JNQUwpLA0KPj4gKwl9Ow0KPj4gKw0KPj4gKwlpZiAoIWNh
+cHMpDQo+PiArCQlyZXR1cm4gLUVJTlZBTDsNCj4+ICsNCj4+ICsJKmNhcHMgPSBkZWZhdWx0X2Nh
+cHM7DQo+PiArDQo+PiArCXJldHVybiAwOw0KPj4gK30NCj4+ICsNCj4+ICsvKioNCj4+ICsgKiBw
+d21fZ2V0X2NhcHMoKSAtIGdldCBQV00gY2FwYWJpbGl0aWVzIG9mIGEgUFdNIGRldmljZQ0KPj4g
+KyAqIEBwd206IFBXTSBkZXZpY2UgdG8gZ2V0IHRoZSBjYXBhYmlsaXRpZXMgZm9yDQo+PiArICog
+QGNhcHM6IHJldHVybmVkIGNhcGFiaWxpdGllcw0KPj4gKyAqDQo+PiArICogUmV0dXJuczogMCBv
+biBzdWNjZXNzIG9yIGEgbmVnYXRpdmUgZXJyb3IgY29kZSBvbiBmYWlsdXJlDQo+PiArICovDQo+
+PiAraW50IHB3bV9nZXRfY2Fwcyhjb25zdCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLCBzdHJ1Y3Qg
+cHdtX2NhcHMgKmNhcHMpDQo+PiArew0KPj4gKwlpZiAoIXB3bSB8fCAhY2FwcykNCj4+ICsJCXJl
+dHVybiAtRUlOVkFMOw0KPj4gKw0KPj4gKwlpZiAocHdtLT5jaGlwLT5vcHMtPmdldF9jYXBzKQ0K
+Pj4gKwkJcmV0dXJuIHB3bS0+Y2hpcC0+b3BzLT5nZXRfY2Fwcyhwd20tPmNoaXAsIHB3bSwgY2Fw
+cyk7DQo+PiArDQo+PiArCXJldHVybiBwd21fZ2V0X2RlZmF1bHRfY2FwcyhjYXBzKTsNCj4gDQo+
+IEknZCBkcm9wIHB3bV9nZXRfZGVmYXVsdF9jYXBzICh1bmxlc3MgeW91IGludHJvZHVjZSBzb21l
+IG1vcmUgY2FsbGVycw0KPiBsYXRlcikgYW5kIGZvbGQgaXRzIGltcGxlbWVudGF0aW9uIGludG8g
+cHdtX2dldF9jYXBzLg0KDQpJIGRpZCBpdCBhcyBUaGllcnJ5IHByb3Bvc2VkLg0KDQo+IA0KPj4g
+K30NCj4+ICtFWFBPUlRfU1lNQk9MX0dQTChwd21fZ2V0X2NhcHMpOw0KPj4gWy4uLl0NCj4+IEBA
+IC01MywxMiArNzUsMTQgQEAgZW51bSB7DQo+PiAgICogQHBlcmlvZDogUFdNIHBlcmlvZCAoaW4g
+bmFub3NlY29uZHMpDQo+PiAgICogQGR1dHlfY3ljbGU6IFBXTSBkdXR5IGN5Y2xlIChpbiBuYW5v
+c2Vjb25kcykNCj4+ICAgKiBAcG9sYXJpdHk6IFBXTSBwb2xhcml0eQ0KPj4gKyAqIEBtb2RlYml0
+OiBQV00gbW9kZSBiaXQNCj4+ICAgKiBAZW5hYmxlZDogUFdNIGVuYWJsZWQgc3RhdHVzDQo+PiAg
+ICovDQo+PiAgc3RydWN0IHB3bV9zdGF0ZSB7DQo+PiAgCXVuc2lnbmVkIGludCBwZXJpb2Q7DQo+
+PiAgCXVuc2lnbmVkIGludCBkdXR5X2N5Y2xlOw0KPj4gIAllbnVtIHB3bV9wb2xhcml0eSBwb2xh
+cml0eTsNCj4+ICsJdW5zaWduZWQgbG9uZyBtb2RlYml0Ow0KPiANCj4gSSBmYWlsIHRvIHNlZSB0
+aGUgdXBzaWRlIG9mIHN0b3JpbmcgdGhlIG1vZGUgYXMgMl5tb2RlIGluc3RlYWQgb2YgYQ0KPiBw
+bGFpbiBlbnVtIHB3bV9tb2RlLiBHaXZlbiB0aGF0IHN0cnVjdCBwd21fc3RhdGUgaXMgdmlzaWJs
+ZSBmb3IgcHdtDQo+IHVzZXJzIGEgcGxhaW4gcHdtX21vZGUgd291bGQgYXQgbGVhc3QgYmUgbW9y
+ZSBpbnR1aXRpdmUuDQoNClRvIGhhdmUgYWxsIG1vZGVzIHN1cHBvcnRlZCBieSBhIGNvbnRyb2xs
+ZXIgZ3JvdXBlZCBpbiBwd21fY2Fwczo6bW9kZXNfbXNrLg0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMN
+Cj4gVXdlDQo+IA0K
