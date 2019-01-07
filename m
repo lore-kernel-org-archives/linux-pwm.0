@@ -1,8 +1,8 @@
 Return-path: <kernel-bounces@pengutronix.de>
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/4] pwm: don't use memcmp to compare struct state variables
-Date: Mon,  7 Jan 2019 20:49:37 +0100
-Message-Id: <20190107194938.3004-2-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 3/4] pwm: rearrange structures to group members by purpose
+Date: Mon,  7 Jan 2019 20:49:41 +0100
+Message-Id: <20190107194938.3004-4-u.kleine-koenig@pengutronix.de>
 In-Reply-To: <20190107194938.3004-1-u.kleine-koenig@pengutronix.de>
 References: <20190107194938.3004-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
@@ -21,34 +21,99 @@ To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-Given that struct pwm_state is sparse (at least on some platforms)
-variables of this type might represent the same state because all fields
-are pairwise identical but still memcmp returns a difference because some
-of the unused bits are different.
+In pwm_ops there are a few callbacks that are not supposed to be used by
+new drivers. Group them at the end of the structure and add a comment.
 
-To prevent surprises compare member by member instead of the whole occupied
-memory.
+Similarily for struct pwm_chip group the members that drivers shouldn't
+care about at the end and mark them as internal with another comment.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ include/linux/pwm.h | 33 ++++++++++++++++++---------------
+ 1 file changed, 18 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 1581f6ab1b1f..253a459fe0d8 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -472,7 +472,10 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
- 	    state->duty_cycle > state->period)
- 		return -EINVAL;
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 2730725f6d88..cc6ba326cc7a 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -242,11 +242,7 @@ pwm_set_relative_duty_cycle(struct pwm_state *state, unsigned int duty_cycle,
+  * struct pwm_ops - PWM controller operations
+  * @request: optional hook for requesting a PWM
+  * @free: optional hook for freeing a PWM
+- * @config: configure duty cycles and period length for this PWM
+- * @set_polarity: configure the polarity of this PWM
+  * @capture: capture and report PWM signal
+- * @enable: enable PWM output toggling
+- * @disable: disable PWM output toggling
+  * @apply: atomically apply a new PWM config. The state argument
+  *	   should be adjusted with the real hardware config (if the
+  *	   approximate the period or duty_cycle value, state should
+@@ -256,48 +252,55 @@ pwm_set_relative_duty_cycle(struct pwm_state *state, unsigned int duty_cycle,
+  *	       registered.
+  * @dbg_show: optional routine to show contents in debugfs
+  * @owner: helps prevent removal of modules exporting active PWMs
++ * @config: configure duty cycles and period length for this PWM
++ * @set_polarity: configure the polarity of this PWM
++ * @enable: enable PWM output toggling
++ * @disable: disable PWM output toggling
+  */
+ struct pwm_ops {
+ 	int (*request)(struct pwm_chip *chip, struct pwm_device *pwm);
+ 	void (*free)(struct pwm_chip *chip, struct pwm_device *pwm);
+-	int (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
+-		      int duty_ns, int period_ns);
+-	int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
+-			    enum pwm_polarity polarity);
+ 	int (*capture)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		       struct pwm_capture *result, unsigned long timeout);
+-	int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
+-	void (*disable)(struct pwm_chip *chip, struct pwm_device *pwm);
+ 	int (*apply)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		     struct pwm_state *state);
+ 	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  struct pwm_state *state);
+ 	struct module *owner;
++
++	/* Only used by legacy drivers */
++	int (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
++		      int duty_ns, int period_ns);
++	int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
++			    enum pwm_polarity polarity);
++	int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
++	void (*disable)(struct pwm_chip *chip, struct pwm_device *pwm);
+ };
  
--	if (!memcmp(state, &pwm->state, sizeof(*state)))
-+	if (state->period == pwm->state.period &&
-+	    state->duty_cycle == pwm->state.duty_cycle &&
-+	    state->polarity == pwm->state.polarity &&
-+	    state->enabled == pwm->state.enabled)
- 		return 0;
+ /**
+  * struct pwm_chip - abstract a PWM controller
+  * @dev: device providing the PWMs
+- * @list: list node for internal use
+  * @ops: callbacks for this PWM controller
+  * @base: number of first PWM controlled by this chip
+  * @npwm: number of PWMs controlled by this chip
+- * @pwms: array of PWM devices allocated by the framework
+  * @of_xlate: request a PWM device given a device tree PWM specifier
+  * @of_pwm_n_cells: number of cells expected in the device tree PWM specifier
++ * @list: list node for internal use
++ * @pwms: array of PWM devices allocated by the framework
+  */
+ struct pwm_chip {
+ 	struct device *dev;
+-	struct list_head list;
+ 	const struct pwm_ops *ops;
+ 	int base;
+ 	unsigned int npwm;
  
- 	if (pwm->chip->ops->apply) {
+-	struct pwm_device *pwms;
+-
+ 	struct pwm_device * (*of_xlate)(struct pwm_chip *pc,
+ 					const struct of_phandle_args *args);
+ 	unsigned int of_pwm_n_cells;
++
++	/* only used internally by the PWM framework */
++	struct list_head list;
++	struct pwm_device *pwms;
+ };
+ 
+ /**
 -- 
 2.20.1
