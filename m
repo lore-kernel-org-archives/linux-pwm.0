@@ -1,8 +1,10 @@
 Return-path: <kernel-bounces@pengutronix.de>
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] pwm: imx27: only enable the clocks once in .get_state
-Date: Thu, 10 Jan 2019 20:33:53 +0100
-Message-Id: <20190110193353.20767-1-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 1/4] pwm: don't use memcmp to compare struct state variables
+Date: Mon,  7 Jan 2019 20:49:37 +0100
+Message-Id: <20190107194938.3004-2-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20190107194938.3004-1-u.kleine-koenig@pengutronix.de>
+References: <20190107194938.3004-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -16,51 +18,37 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-Currently the function pwm_imx27_get_state() of enables the clocks once
-unconditionally at the start, a second time if the PWM is enabled and
-disables unconditionally at the end.
+Given that struct pwm_state is sparse (at least on some platforms)
+variables of this type might represent the same state because all fields
+are pairwise identical but still memcmp returns a difference because some
+of the unused bits are different.
 
-Simplify that to enable once at the start and disable conditionally at
-the end.
+To prevent surprises compare member by member instead of the whole occupied
+memory.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx27.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/pwm/core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 8997c4c1bd03..4dc2d62c0e1c 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -125,14 +125,10 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 1581f6ab1b1f..253a459fe0d8 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -472,7 +472,10 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
+ 	    state->duty_cycle > state->period)
+ 		return -EINVAL;
  
- 	val = readl(imx->mmio_base + MX3_PWMCR);
+-	if (!memcmp(state, &pwm->state, sizeof(*state)))
++	if (state->period == pwm->state.period &&
++	    state->duty_cycle == pwm->state.duty_cycle &&
++	    state->polarity == pwm->state.polarity &&
++	    state->enabled == pwm->state.enabled)
+ 		return 0;
  
--	if (val & MX3_PWMCR_EN) {
-+	if (val & MX3_PWMCR_EN)
- 		state->enabled = true;
--		ret = pwm_imx27_clk_prepare_enable(chip);
--		if (ret)
--			return;
--	} else {
-+	else
- 		state->enabled = false;
--	}
- 
- 	switch (FIELD_GET(MX3_PWMCR_POUTC, val)) {
- 	case MX3_PWMCR_POUTC_NORMAL:
-@@ -164,7 +160,8 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
- 		state->duty_cycle = 0;
- 	}
- 
--	pwm_imx27_clk_disable_unprepare(chip);
-+	if (!state->enabled)
-+		pwm_imx27_clk_disable_unprepare(chip);
- }
- 
- static void pwm_imx27_sw_reset(struct pwm_chip *chip)
+ 	if (pwm->chip->ops->apply) {
 -- 
 2.20.1
