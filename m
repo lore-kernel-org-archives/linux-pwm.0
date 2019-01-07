@@ -1,9 +1,8 @@
 Return-path: <kernel-bounces@pengutronix.de>
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 2/4] pwm: imx: set drvdata earlier simplifying the end of
- .probe
-Date: Mon,  7 Jan 2019 20:53:50 +0100
-Message-Id: <20190107195352.3149-3-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 3/4] pwm: imx: don't print an error on -EPROBE_DEFER
+Date: Mon,  7 Jan 2019 20:53:51 +0100
+Message-Id: <20190107195352.3149-4-u.kleine-koenig@pengutronix.de>
 In-Reply-To: <20190107195352.3149-1-u.kleine-koenig@pengutronix.de>
 References: <20190107195352.3149-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
@@ -22,47 +21,34 @@ To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-When .probe fails the driver core cares about unsetting drvdata again.
+When getting the peripheral clock fails with -EPROBE_DEFER the driver is
+usually probed again later and emitting an error message is more irritating
+than helpful.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-imx.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 1e90d2b78625..809493d86d22 100644
+index 809493d86d22..10ac039e7ddb 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
-@@ -390,7 +390,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 	const struct imx_pwm_data *data;
- 	struct imx_chip *imx;
- 	struct resource *r;
--	int ret = 0;
+@@ -411,9 +411,12 @@ static int imx_pwm_probe(struct platform_device *pdev)
  
- 	if (!of_id)
- 		return -ENODEV;
-@@ -401,6 +400,8 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 	if (imx == NULL)
- 		return -ENOMEM;
- 
-+	platform_set_drvdata(pdev, imx);
+ 	imx->clk_per = devm_clk_get(&pdev->dev, "per");
+ 	if (IS_ERR(imx->clk_per)) {
+-		dev_err(&pdev->dev, "getting per clock failed with %ld\n",
+-				PTR_ERR(imx->clk_per));
+-		return PTR_ERR(imx->clk_per);
++		int ret = PTR_ERR(imx->clk_per);
 +
- 	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(imx->clk_ipg)) {
- 		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
-@@ -431,12 +432,7 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(imx->mmio_base))
- 		return PTR_ERR(imx->mmio_base);
++		if (ret != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "getting per clock failed (%d)\n",
++				ret);
++		return ret;
+ 	}
  
--	ret = pwmchip_add(&imx->chip);
--	if (ret < 0)
--		return ret;
--
--	platform_set_drvdata(pdev, imx);
--	return 0;
-+	return pwmchip_add(&imx->chip);
- }
- 
- static int imx_pwm_remove(struct platform_device *pdev)
+ 	imx->chip.ops = data->ops;
 -- 
 2.20.1
