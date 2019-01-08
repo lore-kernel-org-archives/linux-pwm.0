@@ -1,98 +1,74 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:39079 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726333AbfAHIWL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Jan 2019 03:22:11 -0500
-MIME-Version: 1.0
+Received: from mail-eopbgr1310092.outbound.protection.outlook.com ([40.107.131.92]:51976
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727295AbfAHJb1 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 8 Jan 2019 04:31:27 -0500
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Tue, 8 Jan 2019 09:30:38 +0000
+Message-ID: <TY2PR01MB4812A3D8A3E8A2938F147E71D88A0@TY2PR01MB4812.jpnprd01.prod.outlook.com>
 References: <1546918094-13960-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1546918094-13960-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1546918094-13960-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 8 Jan 2019 09:21:57 +0100
-Message-ID: <CAMuHMdVZXjFoY7J-1_WfL3xz1cO5XUEi8YnFK9W8gGfMdLDnhw@mail.gmail.com>
+ <CAMuHMdVZXjFoY7J-1_WfL3xz1cO5XUEi8YnFK9W8gGfMdLDnhw@mail.gmail.com>
+In-Reply-To: <CAMuHMdVZXjFoY7J-1_WfL3xz1cO5XUEi8YnFK9W8gGfMdLDnhw@mail.gmail.com>
+Content-Language: ja-JP
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v2 4/4] pwm: rcar: improve calculation of divider
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v2 4/4] pwm: rcar: improve calculation of divider
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-Hi Shimoda-san,
-
-On Tue, Jan 8, 2019 at 4:31 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> The rcar_pwm_get_clock_division() has a loop to calculate the divider,
-> but the value of div should be calculatable without a loop. So,
-> this patch improves it.
->
-> This algorithm is suggested by Uwe Kleine-König and Laurent Pinchart.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
->  drivers/pwm/pwm-rcar.c | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-> index 6dbb70c..0498a93 100644
-> --- a/drivers/pwm/pwm-rcar.c
-> +++ b/drivers/pwm/pwm-rcar.c
-> @@ -8,6 +8,8 @@
->  #include <linux/clk.h>
->  #include <linux/err.h>
->  #include <linux/io.h>
-> +#include <linux/log2.h>
-> +#include <linux/math64.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
->  #include <linux/platform_device.h>
-> @@ -68,19 +70,15 @@ static void rcar_pwm_update(struct rcar_pwm_chip *rp, u32 mask, u32 data,
->  static int rcar_pwm_get_clock_division(struct rcar_pwm_chip *rp, int period_ns)
->  {
->         unsigned long clk_rate = clk_get_rate(rp->clk);
-> -       unsigned long long max; /* max cycle / nanoseconds */
-> -       unsigned int div;
-> +       u64 div, tmp;
->
->         if (clk_rate == 0)
->                 return -EINVAL;
->
-> -       for (div = 0; div <= RCAR_PWM_MAX_DIVISION; div++) {
-> -               max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE *
-> -                       (1 << div);
-> -               do_div(max, clk_rate);
-> -               if (period_ns <= max)
-> -                       break;
-> -       }
-> +       div = NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE;
-
-As we have:
-
-    #define NSEC_PER_SEC    1000000000L
-    #define RCAR_PWM_MAX_CYCLE      1023
-
-NSEC_PER_SEC is 64-bit on arm64, and 32-bit on arm32.
-
-Hence you should use
-
-    div = (u64)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE;
-
-to avoid overflow on arm32.
-
-> +       tmp = (u64)period_ns * clk_rate + div - 1;
-> +       tmp = div64_u64(tmp, div);
-> +       div = ilog2(tmp - 1) + 1;
->
->         return (div <= RCAR_PWM_MAX_DIVISION) ? div : -ERANGE;
->  }
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogVHVlc2Rh
+eSwgSmFudWFyeSA4LCAyMDE5IDU6MjIgUE0NCj4gDQo+IEhpIFNoaW1vZGEtc2FuLA0KPiANCj4g
+T24gVHVlLCBKYW4gOCwgMjAxOSBhdCA0OjMxIEFNIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5b3No
+aWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gVGhlIHJjYXJfcHdtX2dl
+dF9jbG9ja19kaXZpc2lvbigpIGhhcyBhIGxvb3AgdG8gY2FsY3VsYXRlIHRoZSBkaXZpZGVyLA0K
+PiA+IGJ1dCB0aGUgdmFsdWUgb2YgZGl2IHNob3VsZCBiZSBjYWxjdWxhdGFibGUgd2l0aG91dCBh
+IGxvb3AuIFNvLA0KPiA+IHRoaXMgcGF0Y2ggaW1wcm92ZXMgaXQuDQo+ID4NCj4gPiBUaGlzIGFs
+Z29yaXRobSBpcyBzdWdnZXN0ZWQgYnkgVXdlIEtsZWluZS1Lw7ZuaWcgYW5kIExhdXJlbnQgUGlu
+Y2hhcnQuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZb3NoaWhpcm8gU2hpbW9kYSA8eW9zaGlo
+aXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvcHdtL3B3
+bS1yY2FyLmMgfCAxNiArKysrKysrLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA3IGlu
+c2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9wd20vcHdtLXJjYXIuYyBiL2RyaXZlcnMvcHdtL3B3bS1yY2FyLmMNCj4gPiBpbmRleCA2ZGJi
+NzBjLi4wNDk4YTkzIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1yY2FyLmMNCj4g
+PiArKysgYi9kcml2ZXJzL3B3bS9wd20tcmNhci5jDQo+ID4gQEAgLTgsNiArOCw4IEBADQo+ID4g
+ICNpbmNsdWRlIDxsaW51eC9jbGsuaD4NCj4gPiAgI2luY2x1ZGUgPGxpbnV4L2Vyci5oPg0KPiA+
+ICAjaW5jbHVkZSA8bGludXgvaW8uaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L2xvZzIuaD4NCj4g
+PiArI2luY2x1ZGUgPGxpbnV4L21hdGg2NC5oPg0KPiA+ICAjaW5jbHVkZSA8bGludXgvbW9kdWxl
+Lmg+DQo+ID4gICNpbmNsdWRlIDxsaW51eC9vZi5oPg0KPiA+ICAjaW5jbHVkZSA8bGludXgvcGxh
+dGZvcm1fZGV2aWNlLmg+DQo+ID4gQEAgLTY4LDE5ICs3MCwxNSBAQCBzdGF0aWMgdm9pZCByY2Fy
+X3B3bV91cGRhdGUoc3RydWN0IHJjYXJfcHdtX2NoaXAgKnJwLCB1MzIgbWFzaywgdTMyIGRhdGEs
+DQo+ID4gIHN0YXRpYyBpbnQgcmNhcl9wd21fZ2V0X2Nsb2NrX2RpdmlzaW9uKHN0cnVjdCByY2Fy
+X3B3bV9jaGlwICpycCwgaW50IHBlcmlvZF9ucykNCj4gPiAgew0KPiA+ICAgICAgICAgdW5zaWdu
+ZWQgbG9uZyBjbGtfcmF0ZSA9IGNsa19nZXRfcmF0ZShycC0+Y2xrKTsNCj4gPiAtICAgICAgIHVu
+c2lnbmVkIGxvbmcgbG9uZyBtYXg7IC8qIG1heCBjeWNsZSAvIG5hbm9zZWNvbmRzICovDQo+ID4g
+LSAgICAgICB1bnNpZ25lZCBpbnQgZGl2Ow0KPiA+ICsgICAgICAgdTY0IGRpdiwgdG1wOw0KPiA+
+DQo+ID4gICAgICAgICBpZiAoY2xrX3JhdGUgPT0gMCkNCj4gPiAgICAgICAgICAgICAgICAgcmV0
+dXJuIC1FSU5WQUw7DQo+ID4NCj4gPiAtICAgICAgIGZvciAoZGl2ID0gMDsgZGl2IDw9IFJDQVJf
+UFdNX01BWF9ESVZJU0lPTjsgZGl2KyspIHsNCj4gPiAtICAgICAgICAgICAgICAgbWF4ID0gKHVu
+c2lnbmVkIGxvbmcgbG9uZylOU0VDX1BFUl9TRUMgKiBSQ0FSX1BXTV9NQVhfQ1lDTEUgKg0KPiA+
+IC0gICAgICAgICAgICAgICAgICAgICAgICgxIDw8IGRpdik7DQo+ID4gLSAgICAgICAgICAgICAg
+IGRvX2RpdihtYXgsIGNsa19yYXRlKTsNCj4gPiAtICAgICAgICAgICAgICAgaWYgKHBlcmlvZF9u
+cyA8PSBtYXgpDQo+ID4gLSAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7DQo+ID4gLSAgICAg
+ICB9DQo+ID4gKyAgICAgICBkaXYgPSBOU0VDX1BFUl9TRUMgKiBSQ0FSX1BXTV9NQVhfQ1lDTEU7
+DQo+IA0KPiBBcyB3ZSBoYXZlOg0KPiANCj4gICAgICNkZWZpbmUgTlNFQ19QRVJfU0VDICAgIDEw
+MDAwMDAwMDBMDQo+ICAgICAjZGVmaW5lIFJDQVJfUFdNX01BWF9DWUNMRSAgICAgIDEwMjMNCj4g
+DQo+IE5TRUNfUEVSX1NFQyBpcyA2NC1iaXQgb24gYXJtNjQsIGFuZCAzMi1iaXQgb24gYXJtMzIu
+DQo+IA0KPiBIZW5jZSB5b3Ugc2hvdWxkIHVzZQ0KPiANCj4gICAgIGRpdiA9ICh1NjQpTlNFQ19Q
+RVJfU0VDICogUkNBUl9QV01fTUFYX0NZQ0xFOw0KPiANCj4gdG8gYXZvaWQgb3ZlcmZsb3cgb24g
+YXJtMzIuDQoNClRoYW5rIHlvdSBmb3IgdGhlIGNvbW1lbnQhIEknbGwgZml4IHRoaXMuDQoNCkJl
+c3QgcmVnYXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoNCj4gPiArICAgICAgIHRtcCA9ICh1NjQp
+cGVyaW9kX25zICogY2xrX3JhdGUgKyBkaXYgLSAxOw0KPiA+ICsgICAgICAgdG1wID0gZGl2NjRf
+dTY0KHRtcCwgZGl2KTsNCj4gPiArICAgICAgIGRpdiA9IGlsb2cyKHRtcCAtIDEpICsgMTsNCj4g
+Pg0KPiA+ICAgICAgICAgcmV0dXJuIChkaXYgPD0gUkNBUl9QV01fTUFYX0RJVklTSU9OKSA/IGRp
+diA6IC1FUkFOR0U7DQo+ID4gIH0NCj4gDQo+IEdye29ldGplLGVldGluZ31zLA0KPiANCj4gICAg
+ICAgICAgICAgICAgICAgICAgICAgR2VlcnQNCj4gDQo+IC0tDQo+IEdlZXJ0IFV5dHRlcmhvZXZl
+biAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4
+ay5vcmcNCj4gDQo+IEluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVv
+cGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQNCj4gd2hlbiBJJ20gdGFsa2luZyB0byBq
+b3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0
+Lg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzDQo=
