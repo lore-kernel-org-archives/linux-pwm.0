@@ -1,42 +1,79 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:41637 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727030AbfAHDbG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Jan 2019 22:31:06 -0500
+Received: from mail-eopbgr1320137.outbound.protection.outlook.com ([40.107.132.137]:2990
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727592AbfAHIqe (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 8 Jan 2019 03:46:34 -0500
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Date: Tue,  8 Jan 2019 12:28:10 +0900
-Message-Id: <1546918094-13960-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Date: Tue, 8 Jan 2019 08:46:30 +0000
+Message-ID: <TY2PR01MB481233D0989EEA601A584377D88A0@TY2PR01MB4812.jpnprd01.prod.outlook.com>
+References: <1546918094-13960-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1546918094-13960-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <20190108074749.d23mpcr3wscr6s5j@pengutronix.de>
+In-Reply-To: <20190108074749.d23mpcr3wscr6s5j@pengutronix.de>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH v2 0/4] pwm: rcar: Add support "atomic" API and improve calculation
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v2 2/4] pwm: rcar: Use "atomic" API on rcar_pwm_resume()
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
 
-This patch series adds support for PWM "atomic" API and improve
-the clock calculation.
+Hello Uwe,
 
-Changes from v1 [1]:
- - Remove workaround code of output pseudo low level for now because it is
-   rejected on the ML.
- - Add a condition for polarity because the HW doesn't support polarity change
-   in patch 1/4.
- - Improve the clock calculation in patch 4/4.
+> From: Uwe Kleine-Konig, Sent: Tuesday, January 8, 2019 4:48 PM
+> > diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+> > index ba70e83..4987c12 100644
+> > --- a/drivers/pwm/pwm-rcar.c
+> > +++ b/drivers/pwm/pwm-rcar.c
+> > @@ -316,18 +316,16 @@ static int rcar_pwm_suspend(struct device *dev)
+> >  static int rcar_pwm_resume(struct device *dev)
+> >  {
+> >  	struct pwm_device *pwm =3D rcar_pwm_dev_to_pwm_dev(dev);
+> > +	struct pwm_state state;
+> >
+> >  	if (!test_bit(PWMF_REQUESTED, &pwm->flags))
+> >  		return 0;
+> >
+> >  	pm_runtime_get_sync(dev);
+> >
+> > -	rcar_pwm_config(pwm->chip, pwm, pwm->state.duty_cycle,
+> > -			pwm->state.period);
+> > -	if (pwm_is_enabled(pwm))
+> > -		rcar_pwm_enable(pwm->chip, pwm);
+> > +	pwm_get_state(pwm, &state);
+> >
+> > -	return 0;
+> > +	return rcar_pwm_apply(pwm->chip, pwm, &state);
+> >  }
+>=20
+> Orthogonal to this patch I wonder what the intended behaviour for a pwm
+> is on suspend. Should it stop oscilating unconditionally? Or should it
+> only stop if the consumer stops it as part of its own suspend callback?
 
-[1]
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=53193
+I think the second one is better. I checked drivers/video/backlight/pwm_bl.=
+c
+and it is possible to call pwm_apply_state() by the driver after rcar_pwm_s=
+uspend()
+was called. So, I'll fix this as other patch.
 
+> As the patch only reworks and improves the code without a change in
+> behaviour, it is fine for me.
+>=20
+> Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Yoshihiro Shimoda (4):
-  pwm: rcar: Add support "atomic" API
-  pwm: rcar: Use "atomic" API on rcar_pwm_resume()
-  pwm: rcar: remove legacy APIs
-  pwm: rcar: improve calculation of divider
+Thanks!
 
- drivers/pwm/pwm-rcar.c | 99 ++++++++++++++++++++++++--------------------------
- 1 file changed, 48 insertions(+), 51 deletions(-)
+Best regards,
+Yoshihiro Shimoda
 
--- 
-1.9.1
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
+|
