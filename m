@@ -1,163 +1,143 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
+From: <Claudiu.Beznea@microchip.com>
 Subject: Re: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
-Date: Mon, 7 Jan 2019 23:10:40 +0100
-Message-ID: <20190107221040.uos5qlnkjmcayv73@pengutronix.de>
+Date: Tue, 8 Jan 2019 09:21:34 +0000
+Message-ID: <0ef0b4f1-45c3-0280-c1f0-6d499957f74c@microchip.com>
 References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
  <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
  <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
  <67e881c5-0ea7-3d2f-5910-534729097d11@microchip.com>
+ <20190107221040.uos5qlnkjmcayv73@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <67e881c5-0ea7-3d2f-5910-534729097d11@microchip.com>
+In-Reply-To: <20190107221040.uos5qlnkjmcayv73@pengutronix.de>
+Content-Language: en-US
+Content-ID: <7810EE4D285A4345B6FCDE26D44622A1@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu.Beznea@microchip.com
+To: u.kleine-koenig@pengutronix.de
 Cc: thierry.reding@gmail.com, corbet@lwn.net, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Claudiu,
-
-On Mon, Jan 07, 2019 at 09:30:55AM +0000, Claudiu.Beznea@microchip.com wrote:
-> On 05.01.2019 23:05, Uwe Kleine-König wrote:
-> > On Thu, Jan 03, 2019 at 01:29:44PM +0000, Claudiu.Beznea@microchip.com wrote:
-> >> From: Claudiu Beznea <claudiu.beznea@microchip.com>
-> >>
-> >> Add basic PWM modes: normal and complementary. These modes should
-> >> differentiate the single output PWM channels from two outputs PWM
-> >> channels. These modes could be set as follow:
-> >> 1. PWM channels with one output per channel:
-> >> - normal mode
-> >> 2. PWM channels with two outputs per channel:
-> >> - normal mode
-> >> - complementary mode
-> >> Since users could use a PWM channel with two output as one output PWM
-> >> channel, the PWM normal mode is allowed to be set for PWM channels with
-> >> two outputs; in fact PWM normal mode should be supported by all PWMs.
-> > 
-> > I still think that my suggestion that I sent in reply to your v5 using
-> > .alt_duty_cycle and .alt_offset is the better one as it is more generic.
-> 
-> I like it better my way, I explained myself why.
-
-I couldn't really follow your argument though. You seemed to acknowledge
-that using .alt_duty_cycle and .alt_offset is more generic. Then you
-wrote that the push-pull mode is hardware generated on Atmel with some
-implementation details. IMHO these implementation details shouldn't be
-part of the PWM API and atmel's .apply should look as follows:
-
-	if (state->alt_duty_cycle == 0) {
-
-		... configure for normal mode ...
-
-	} else if (state->duty_cycle == state->alt_duty_cycle &&
-	           state->alt_offset == state->period / 2) {
-
-		... configure for push pull mode ...
-
-	} else if (state->duty_cycle + state->alt_duty_cycle == state->period &&
-		   state->alt_offset == state->duty_cycle) {
-
-		... configure for complementary mode ...
-
-	} else {
-		return -EINVAL;
-	}
-
-If it turns out to be a common pattern, we can add helper functions à la
-pwm_is_complementary_mode(state) and
-pwm_set_complementary_mode(state, period, duty_cycle). This allows to
-have a generic way to describe a wide range of wave forms in a uniform
-way in the API (which is good) and each driver implements the parts of
-this range that it can support.
-
-> > I don't repeat what I wrote there assuming you still remember or are
-> > willing to look it up at
-> > e.g. https://www.spinics.net/lists/linux-pwm/msg08174.html (in the 2nd half
-> > of my mail).
-> 
-> Yes, I remember it.
-
-I expected that, my words were more directed to Thierry than you.
- 
-> > Also I think that if the capabilities function is the way forward adding
-> > support to detect availability of polarity inversion should be
-> > considered. 
-> 
-> Yep, why not. But it should be done in a different patch. It is not related
-> to this series.
-
-Yes, given that polarity already exists, this would be a good
-opportunity to introduce the capability function for that and only
-afterwards add the new use case with modes. (But having said this, read
-further as I think that this capability function is a bad idea.)
-
-> > This would also be an opportunity to split the introduction
-> > of the capabilities function and the introduction of complementary mode.
-> > (But my personal preference would be to just let .apply fail when an
-> > unsupported configuration is requested.)
-> 
-> .apply fails when something wrong is requested.
-
-If my controller doesn't support a second output is it "wrong" to
-request complementary mode? I'd say yes. So you have to catch that in
-.apply anyhow and there is little benefit to be able to ask the
-controller if it supports it beforehand.
-
-I don't have a provable statistic at hand, but my feeling is that quite
-some users of the i2c frame work get it wrong to first check the
-capabilities and only then try to use them. This is at least error prone
-and harder to use than the apply function returning an error code.
-And on the driver side the upside is to have all stuff related to which
-wave form can be generated and which cannot is a single place. (Just
-consider "inverted complementary mode". Theoretically this should work
-if your controller supports complementary mode and inverted mode. If you
-now have a driver for a controller that can do both, but not at the same
-time, the separation gets ugly. OK, this is a constructed example, but
-in my experience something like that happens earlier or later.)
-
-> >> [...]
-> >> @@ -53,12 +75,14 @@ enum {
-> >>   * @period: PWM period (in nanoseconds)
-> >>   * @duty_cycle: PWM duty cycle (in nanoseconds)
-> >>   * @polarity: PWM polarity
-> >> + * @modebit: PWM mode bit
-> >>   * @enabled: PWM enabled status
-> >>   */
-> >>  struct pwm_state {
-> >>  	unsigned int period;
-> >>  	unsigned int duty_cycle;
-> >>  	enum pwm_polarity polarity;
-> >> +	unsigned long modebit;
-> > 
-> > I fail to see the upside of storing the mode as 2^mode instead of a
-> > plain enum pwm_mode. Given that struct pwm_state is visible for pwm
-> > users a plain pwm_mode would at least be more intuitive.
-> 
-> To have all modes supported by a controller grouped in pwm_caps::modes_msk.
-
-My question was not about struct pwm_caps::modes_msk but about
-struct pwm_state::modebit. As struct pwm_state has visibility even
-outside of the pwm API (i.e. it is used by consumers) it is beneficial
-to keep that simple. Letting a consumer pass in the mode he wants is
-easier to explain than setting a single bit. Also error checking with a
-plain enum is easier because you just do:
-
-	if (mode >= MODE_CNT)
-		error()
-
-which is easy to grasp. Compare that to
-
-	if (!is_power_of_two(modebit) || modebit >= PWM_MODE_BIT(CNT))
-		error()
-
-(modulo syntactical correctness).
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgVXdlLA0KDQpPbiAwOC4wMS4yMDE5IDAwOjEwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToN
+Cj4gSGVsbG8gQ2xhdWRpdSwNCj4gDQo+IE9uIE1vbiwgSmFuIDA3LCAyMDE5IGF0IDA5OjMwOjU1
+QU0gKzAwMDAsIENsYXVkaXUuQmV6bmVhQG1pY3JvY2hpcC5jb20gd3JvdGU6DQo+PiBPbiAwNS4w
+MS4yMDE5IDIzOjA1LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4+PiBPbiBUaHUsIEphbiAw
+MywgMjAxOSBhdCAwMToyOTo0NFBNICswMDAwLCBDbGF1ZGl1LkJlem5lYUBtaWNyb2NoaXAuY29t
+IHdyb3RlOg0KPj4+PiBGcm9tOiBDbGF1ZGl1IEJlem5lYSA8Y2xhdWRpdS5iZXpuZWFAbWljcm9j
+aGlwLmNvbT4NCj4+Pj4NCj4+Pj4gQWRkIGJhc2ljIFBXTSBtb2Rlczogbm9ybWFsIGFuZCBjb21w
+bGVtZW50YXJ5LiBUaGVzZSBtb2RlcyBzaG91bGQNCj4+Pj4gZGlmZmVyZW50aWF0ZSB0aGUgc2lu
+Z2xlIG91dHB1dCBQV00gY2hhbm5lbHMgZnJvbSB0d28gb3V0cHV0cyBQV00NCj4+Pj4gY2hhbm5l
+bHMuIFRoZXNlIG1vZGVzIGNvdWxkIGJlIHNldCBhcyBmb2xsb3c6DQo+Pj4+IDEuIFBXTSBjaGFu
+bmVscyB3aXRoIG9uZSBvdXRwdXQgcGVyIGNoYW5uZWw6DQo+Pj4+IC0gbm9ybWFsIG1vZGUNCj4+
+Pj4gMi4gUFdNIGNoYW5uZWxzIHdpdGggdHdvIG91dHB1dHMgcGVyIGNoYW5uZWw6DQo+Pj4+IC0g
+bm9ybWFsIG1vZGUNCj4+Pj4gLSBjb21wbGVtZW50YXJ5IG1vZGUNCj4+Pj4gU2luY2UgdXNlcnMg
+Y291bGQgdXNlIGEgUFdNIGNoYW5uZWwgd2l0aCB0d28gb3V0cHV0IGFzIG9uZSBvdXRwdXQgUFdN
+DQo+Pj4+IGNoYW5uZWwsIHRoZSBQV00gbm9ybWFsIG1vZGUgaXMgYWxsb3dlZCB0byBiZSBzZXQg
+Zm9yIFBXTSBjaGFubmVscyB3aXRoDQo+Pj4+IHR3byBvdXRwdXRzOyBpbiBmYWN0IFBXTSBub3Jt
+YWwgbW9kZSBzaG91bGQgYmUgc3VwcG9ydGVkIGJ5IGFsbCBQV01zLg0KPj4+DQo+Pj4gSSBzdGls
+bCB0aGluayB0aGF0IG15IHN1Z2dlc3Rpb24gdGhhdCBJIHNlbnQgaW4gcmVwbHkgdG8geW91ciB2
+NSB1c2luZw0KPj4+IC5hbHRfZHV0eV9jeWNsZSBhbmQgLmFsdF9vZmZzZXQgaXMgdGhlIGJldHRl
+ciBvbmUgYXMgaXQgaXMgbW9yZSBnZW5lcmljLg0KPj4NCj4+IEkgbGlrZSBpdCBiZXR0ZXIgbXkg
+d2F5LCBJIGV4cGxhaW5lZCBteXNlbGYgd2h5Lg0KPiANCj4gSSBjb3VsZG4ndCByZWFsbHkgZm9s
+bG93IHlvdXIgYXJndW1lbnQgdGhvdWdoLiBZb3Ugc2VlbWVkIHRvIGFja25vd2xlZGdlDQo+IHRo
+YXQgdXNpbmcgLmFsdF9kdXR5X2N5Y2xlIGFuZCAuYWx0X29mZnNldCBpcyBtb3JlIGdlbmVyaWMu
+DQoNClRydWUgaXQgaXMgbW9yZSBnZW5lcmljIGluIHRoZSB3YXkgdGhhdCBpdCBnaXZlcyB0aGUg
+cG9zc2liaWxpdHkgdG8NCmNvbmZpZ3VyZSBhbGwga2luZCBvZiB3YXZlZm9ybXMuIEJ1dCBub3Qg
+YWxsIGNvbnRyb2xsZXJzIHN1cHBvcnRzIHRoaXMuDQpUaGUgdXNlIGNhc2Ugb2YgdGhpcyB3b3Vs
+ZCBiZSB0byBoYXZlIGRlYWQtdGltZXMgd2l0aCBhbnkgdmFsdWVzLCByaWdodD8NCg0KPiBUaGVu
+IHlvdQ0KPiB3cm90ZSB0aGF0IHRoZSBwdXNoLXB1bGwgbW9kZSBpcyBoYXJkd2FyZSBnZW5lcmF0
+ZWQgb24gQXRtZWwgd2l0aCBzb21lDQo+IGltcGxlbWVudGF0aW9uIGRldGFpbHMuDQoNClllcywg
+SSB3YW50ZWQgdG8gc2F5IHRoYXQgQXRtZWwgUFdNIGdlbmVyYXRlcyBvbmx5IGEgc2V0IG9mIHdh
+dmVmb3Jtcy4NCg0KPiBJTUhPIHRoZXNlIGltcGxlbWVudGF0aW9uIGRldGFpbHMgc2hvdWxkbid0
+IGJlDQo+IHBhcnQgb2YgdGhlIFBXTSBBUEkgYW5kIGF0bWVsJ3MgLmFwcGx5IHNob3VsZCBsb29r
+IGFzIGZvbGxvd3M6DQo+IA0KPiAJaWYgKHN0YXRlLT5hbHRfZHV0eV9jeWNsZSA9PSAwKSB7DQo+
+IA0KPiAJCS4uLiBjb25maWd1cmUgZm9yIG5vcm1hbCBtb2RlIC4uLg0KPiANCj4gCX0gZWxzZSBp
+ZiAoc3RhdGUtPmR1dHlfY3ljbGUgPT0gc3RhdGUtPmFsdF9kdXR5X2N5Y2xlICYmDQo+IAkgICAg
+ICAgICAgIHN0YXRlLT5hbHRfb2Zmc2V0ID09IHN0YXRlLT5wZXJpb2QgLyAyKSB7DQo+IA0KPiAJ
+CS4uLiBjb25maWd1cmUgZm9yIHB1c2ggcHVsbCBtb2RlIC4uLg0KPiANCj4gCX0gZWxzZSBpZiAo
+c3RhdGUtPmR1dHlfY3ljbGUgKyBzdGF0ZS0+YWx0X2R1dHlfY3ljbGUgPT0gc3RhdGUtPnBlcmlv
+ZCAmJg0KPiAJCSAgIHN0YXRlLT5hbHRfb2Zmc2V0ID09IHN0YXRlLT5kdXR5X2N5Y2xlKSB7DQo+
+IA0KPiAJCS4uLiBjb25maWd1cmUgZm9yIGNvbXBsZW1lbnRhcnkgbW9kZSAuLi4NCj4gDQo+IAl9
+IGVsc2Ugew0KPiAJCXJldHVybiAtRUlOVkFMOw0KPiAJfQ0KDQpJZiBzbywgdGhlIHVzZXIgc2hv
+dWxkIGhhdmUgYmVlbiB0YWtlbiBjYXJlIG9mIHRoZSByZWxhdGlvbnMgYi93IHRoZXNlDQp2YWx1
+ZXMgaW4gb3JkZXIgdG8gY29uZmlndXJlIGEgcHJvcGVyIHdvcmtpbmcgbW9kZS4NCg0KSXQgd291
+bGQgYmUgZ29vZCB0byBoYXZlIFRoaWVycnkncyBpbnB1dHMgb24gdGhlc2UuDQoNCj4gDQo+IElm
+IGl0IHR1cm5zIG91dCB0byBiZSBhIGNvbW1vbiBwYXR0ZXJuLCB3ZSBjYW4gYWRkIGhlbHBlciBm
+dW5jdGlvbnMgw6AgbGENCj4gcHdtX2lzX2NvbXBsZW1lbnRhcnlfbW9kZShzdGF0ZSkgYW5kDQo+
+IHB3bV9zZXRfY29tcGxlbWVudGFyeV9tb2RlKHN0YXRlLCBwZXJpb2QsIGR1dHlfY3ljbGUpLiBU
+aGlzIGFsbG93cyB0bw0KPiBoYXZlIGEgZ2VuZXJpYyB3YXkgdG8gZGVzY3JpYmUgYSB3aWRlIHJh
+bmdlIG9mIHdhdmUgZm9ybXMgaW4gYSB1bmlmb3JtDQo+IHdheSBpbiB0aGUgQVBJICh3aGljaCBp
+cyBnb29kKSBhbmQgZWFjaCBkcml2ZXIgaW1wbGVtZW50cyB0aGUgcGFydHMgb2YNCj4gdGhpcyBy
+YW5nZSB0aGF0IGl0IGNhbiBzdXBwb3J0Lg0KPiANCj4+PiBJIGRvbid0IHJlcGVhdCB3aGF0IEkg
+d3JvdGUgdGhlcmUgYXNzdW1pbmcgeW91IHN0aWxsIHJlbWVtYmVyIG9yIGFyZQ0KPj4+IHdpbGxp
+bmcgdG8gbG9vayBpdCB1cCBhdA0KPj4+IGUuZy4gaHR0cHM6Ly93d3cuc3Bpbmljcy5uZXQvbGlz
+dHMvbGludXgtcHdtL21zZzA4MTc0Lmh0bWwgKGluIHRoZSAybmQgaGFsZg0KPj4+IG9mIG15IG1h
+aWwpLg0KPj4NCj4+IFllcywgSSByZW1lbWJlciBpdC4NCj4gDQo+IEkgZXhwZWN0ZWQgdGhhdCwg
+bXkgd29yZHMgd2VyZSBtb3JlIGRpcmVjdGVkIHRvIFRoaWVycnkgdGhhbiB5b3UuDQo+ICANCj4+
+PiBBbHNvIEkgdGhpbmsgdGhhdCBpZiB0aGUgY2FwYWJpbGl0aWVzIGZ1bmN0aW9uIGlzIHRoZSB3
+YXkgZm9yd2FyZCBhZGRpbmcNCj4+PiBzdXBwb3J0IHRvIGRldGVjdCBhdmFpbGFiaWxpdHkgb2Yg
+cG9sYXJpdHkgaW52ZXJzaW9uIHNob3VsZCBiZQ0KPj4+IGNvbnNpZGVyZWQuIA0KPj4NCj4+IFll
+cCwgd2h5IG5vdC4gQnV0IGl0IHNob3VsZCBiZSBkb25lIGluIGEgZGlmZmVyZW50IHBhdGNoLiBJ
+dCBpcyBub3QgcmVsYXRlZA0KPj4gdG8gdGhpcyBzZXJpZXMuDQo+IA0KPiBZZXMsIGdpdmVuIHRo
+YXQgcG9sYXJpdHkgYWxyZWFkeSBleGlzdHMsIHRoaXMgd291bGQgYmUgYSBnb29kDQo+IG9wcG9y
+dHVuaXR5IHRvIGludHJvZHVjZSB0aGUgY2FwYWJpbGl0eSBmdW5jdGlvbiBmb3IgdGhhdCBhbmQg
+b25seQ0KPiBhZnRlcndhcmRzIGFkZCB0aGUgbmV3IHVzZSBjYXNlIHdpdGggbW9kZXMuIChCdXQg
+aGF2aW5nIHNhaWQgdGhpcywgcmVhZA0KPiBmdXJ0aGVyIGFzIEkgdGhpbmsgdGhhdCB0aGlzIGNh
+cGFiaWxpdHkgZnVuY3Rpb24gaXMgYSBiYWQgaWRlYS4pDQo+IA0KPj4+IFRoaXMgd291bGQgYWxz
+byBiZSBhbiBvcHBvcnR1bml0eSB0byBzcGxpdCB0aGUgaW50cm9kdWN0aW9uDQo+Pj4gb2YgdGhl
+IGNhcGFiaWxpdGllcyBmdW5jdGlvbiBhbmQgdGhlIGludHJvZHVjdGlvbiBvZiBjb21wbGVtZW50
+YXJ5IG1vZGUuDQo+Pj4gKEJ1dCBteSBwZXJzb25hbCBwcmVmZXJlbmNlIHdvdWxkIGJlIHRvIGp1
+c3QgbGV0IC5hcHBseSBmYWlsIHdoZW4gYW4NCj4+PiB1bnN1cHBvcnRlZCBjb25maWd1cmF0aW9u
+IGlzIHJlcXVlc3RlZC4pDQo+Pg0KPj4gLmFwcGx5IGZhaWxzIHdoZW4gc29tZXRoaW5nIHdyb25n
+IGlzIHJlcXVlc3RlZC4NCj4gDQo+IElmIG15IGNvbnRyb2xsZXIgZG9lc24ndCBzdXBwb3J0IGEg
+c2Vjb25kIG91dHB1dCBpcyBpdCAid3JvbmciIHRvDQo+IHJlcXVlc3QgY29tcGxlbWVudGFyeSBt
+b2RlPyBJJ2Qgc2F5IHllcy4gU28geW91IGhhdmUgdG8gY2F0Y2ggdGhhdCBpbg0KPiAuYXBwbHkg
+YW55aG93IGFuZCB0aGVyZSBpcyBsaXR0bGUgYmVuZWZpdCB0byBiZSBhYmxlIHRvIGFzayB0aGUN
+Cj4gY29udHJvbGxlciBpZiBpdCBzdXBwb3J0cyBpdCBiZWZvcmVoYW5kLg0KDQpUaGlzIGlzIGNo
+ZWNrZWQgYnkgcHdtX3N1cHBvcnRzX21vZGUoKSBjYWxsZWQgaW4gcHdtX2FwcGx5X3N0YXRlKCku
+IElmDQpjb250cm9sbGVyIGRvZXNuJ3Qgc3VwcG9ydCB0aGUgbW9kZSwgdGhlIGFwcGx5IHdpbGwg
+ZmFpbC4NCg0KPiANCj4gSSBkb24ndCBoYXZlIGEgcHJvdmFibGUgc3RhdGlzdGljIGF0IGhhbmQs
+IGJ1dCBteSBmZWVsaW5nIGlzIHRoYXQgcXVpdGUNCj4gc29tZSB1c2VycyBvZiB0aGUgaTJjIGZy
+YW1lIHdvcmsgZ2V0IGl0IHdyb25nIHRvIGZpcnN0IGNoZWNrIHRoZQ0KPiBjYXBhYmlsaXRpZXMg
+YW5kIG9ubHkgdGhlbiB0cnkgdG8gdXNlIHRoZW0uIFRoaXMgaXMgYXQgbGVhc3QgZXJyb3IgcHJv
+bmUNCj4gYW5kIGhhcmRlciB0byB1c2UgdGhhbiB0aGUgYXBwbHkgZnVuY3Rpb24gcmV0dXJuaW5n
+IGFuIGVycm9yIGNvZGUuDQo+IEFuZCBvbiB0aGUgZHJpdmVyIHNpZGUgdGhlIHVwc2lkZSBpcyB0
+byBoYXZlIGFsbCBzdHVmZiByZWxhdGVkIHRvIHdoaWNoDQo+IHdhdmUgZm9ybSBjYW4gYmUgZ2Vu
+ZXJhdGVkIGFuZCB3aGljaCBjYW5ub3QgaXMgYSBzaW5nbGUgcGxhY2UuIChKdXN0DQo+IGNvbnNp
+ZGVyICJpbnZlcnRlZCBjb21wbGVtZW50YXJ5IG1vZGUiLiBUaGVvcmV0aWNhbGx5IHRoaXMgc2hv
+dWxkIHdvcmsNCj4gaWYgeW91ciBjb250cm9sbGVyIHN1cHBvcnRzIGNvbXBsZW1lbnRhcnkgbW9k
+ZSBhbmQgaW52ZXJ0ZWQgbW9kZS4gSWYgeW91DQo+IG5vdyBoYXZlIGEgZHJpdmVyIGZvciBhIGNv
+bnRyb2xsZXIgdGhhdCBjYW4gZG8gYm90aCwgYnV0IG5vdCBhdCB0aGUgc2FtZQ0KPiB0aW1lLCB0
+aGUgc2VwYXJhdGlvbiBnZXRzIHVnbHkuIE9LLCB0aGlzIGlzIGEgY29uc3RydWN0ZWQgZXhhbXBs
+ZSwgYnV0DQo+IGluIG15IGV4cGVyaWVuY2Ugc29tZXRoaW5nIGxpa2UgdGhhdCBoYXBwZW5zIGVh
+cmxpZXIgb3IgbGF0ZXIuKQ0KPiANCj4+Pj4gWy4uLl0NCj4+Pj4gQEAgLTUzLDEyICs3NSwxNCBA
+QCBlbnVtIHsNCj4+Pj4gICAqIEBwZXJpb2Q6IFBXTSBwZXJpb2QgKGluIG5hbm9zZWNvbmRzKQ0K
+Pj4+PiAgICogQGR1dHlfY3ljbGU6IFBXTSBkdXR5IGN5Y2xlIChpbiBuYW5vc2Vjb25kcykNCj4+
+Pj4gICAqIEBwb2xhcml0eTogUFdNIHBvbGFyaXR5DQo+Pj4+ICsgKiBAbW9kZWJpdDogUFdNIG1v
+ZGUgYml0DQo+Pj4+ICAgKiBAZW5hYmxlZDogUFdNIGVuYWJsZWQgc3RhdHVzDQo+Pj4+ICAgKi8N
+Cj4+Pj4gIHN0cnVjdCBwd21fc3RhdGUgew0KPj4+PiAgCXVuc2lnbmVkIGludCBwZXJpb2Q7DQo+
+Pj4+ICAJdW5zaWduZWQgaW50IGR1dHlfY3ljbGU7DQo+Pj4+ICAJZW51bSBwd21fcG9sYXJpdHkg
+cG9sYXJpdHk7DQo+Pj4+ICsJdW5zaWduZWQgbG9uZyBtb2RlYml0Ow0KPj4+DQo+Pj4gSSBmYWls
+IHRvIHNlZSB0aGUgdXBzaWRlIG9mIHN0b3JpbmcgdGhlIG1vZGUgYXMgMl5tb2RlIGluc3RlYWQg
+b2YgYQ0KPj4+IHBsYWluIGVudW0gcHdtX21vZGUuIEdpdmVuIHRoYXQgc3RydWN0IHB3bV9zdGF0
+ZSBpcyB2aXNpYmxlIGZvciBwd20NCj4+PiB1c2VycyBhIHBsYWluIHB3bV9tb2RlIHdvdWxkIGF0
+IGxlYXN0IGJlIG1vcmUgaW50dWl0aXZlLg0KPj4NCj4+IFRvIGhhdmUgYWxsIG1vZGVzIHN1cHBv
+cnRlZCBieSBhIGNvbnRyb2xsZXIgZ3JvdXBlZCBpbiBwd21fY2Fwczo6bW9kZXNfbXNrLg0KPiAN
+Cj4gTXkgcXVlc3Rpb24gd2FzIG5vdCBhYm91dCBzdHJ1Y3QgcHdtX2NhcHM6Om1vZGVzX21zayBi
+dXQgYWJvdXQNCj4gc3RydWN0IHB3bV9zdGF0ZTo6bW9kZWJpdC4gQXMgc3RydWN0IHB3bV9zdGF0
+ZSBoYXMgdmlzaWJpbGl0eSBldmVuDQo+IG91dHNpZGUgb2YgdGhlIHB3bSBBUEkgKGkuZS4gaXQg
+aXMgdXNlZCBieSBjb25zdW1lcnMpIGl0IGlzIGJlbmVmaWNpYWwNCj4gdG8ga2VlcCB0aGF0IHNp
+bXBsZS4gTGV0dGluZyBhIGNvbnN1bWVyIHBhc3MgaW4gdGhlIG1vZGUgaGUgd2FudHMgaXMNCj4g
+ZWFzaWVyIHRvIGV4cGxhaW4gdGhhbiBzZXR0aW5nIGEgc2luZ2xlIGJpdC4gQWxzbyBlcnJvciBj
+aGVja2luZyB3aXRoIGENCj4gcGxhaW4gZW51bSBpcyBlYXNpZXIgYmVjYXVzZSB5b3UganVzdCBk
+bzoNCj4gDQo+IAlpZiAobW9kZSA+PSBNT0RFX0NOVCkNCj4gCQllcnJvcigpDQo+IA0KPiB3aGlj
+aCBpcyBlYXN5IHRvIGdyYXNwLiBDb21wYXJlIHRoYXQgdG8NCj4gDQo+IAlpZiAoIWlzX3Bvd2Vy
+X29mX3R3byhtb2RlYml0KSB8fCBtb2RlYml0ID49IFBXTV9NT0RFX0JJVChDTlQpKQ0KPiAJCWVy
+cm9yKCkNCj4gDQo+IChtb2R1bG8gc3ludGFjdGljYWwgY29ycmVjdG5lc3MpLg0KDQpUaGUgcmVh
+c29uIEkgY2hvb3NlIHRvIGhhdmUgaXQgYXMgYml0IHdhcyB0aGUgbWVtY21wKCkgYXQgdGhlIGJl
+Z2lubmluZyBvZg0KcHdtX2FwcGx5X3N0YXRlKCkgYW5kIHRvIGF2b2lkIHN0YXJ0aW5nIGVudW0g
+cHdtX21vZGUgZnJvbSAxIGFuZCB0byBhdm9pZA0KaGF2aW5nIGJpdCAwIG9mIHB3bV9jYXBzOjpt
+b2Rlc19tc2sgdW51c2VkIChpbiB0aGUgZHJpdmVyIEknbSB1c2luZw0KUFdNX01PREVfQklUKCkg
+bWFjcm8gdG8gZmlsbCBpbiB0aGUgZHJpdmVyJ3Mgc3VwcG9ydGVkIG1vZGVzKS4NCg0KVGhhbmsg
+eW91LA0KQ2xhdWRpdSBCZXpuZWENCg0KPiANCj4gQmVzdCByZWdhcmRzDQo+IFV3ZQ0KPiANCg==
