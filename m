@@ -1,80 +1,91 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:32865 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728869AbfAJUEI (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Jan 2019 15:04:08 -0500
-Date: Thu, 10 Jan 2019 21:04:02 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Message-ID: <20190110200402.rusqd4edc6h7coel@pengutronix.de>
-References: <201901110232.L51oPCXW%fengguang.wu@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <201901110232.L51oPCXW%fengguang.wu@intel.com>
+Received: from relmlor2.renesas.com ([210.160.252.172]:5297 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729334AbfAIIWA (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Jan 2019 03:22:00 -0500
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Wed,  9 Jan 2019 17:19:05 +0900
+Message-Id: <1547021948-7664-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [pwm:for-next 7/8] drivers/pwm/pwm-imx27.c:291:25: error:
- 'imx_pwm_dt_ids' undeclared here (not in a function); did you mean
- 'pwm_imx27_dt_ids'?
-To: kbuild test robot <lkp@intel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: kbuild-all@01.org, linux-pwm@vger.kernel.org
+Subject: [PATCH v3 1/4] pwm: rcar: Add support "atomic" API
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Hello,
+This patch adds support for "atomic" API. This behavior differs with
+legacy APIs a little.
 
-On Fri, Jan 11, 2019 at 02:39:31AM +0800, kbuild test robot wrote:
-> First bad commit (maybe !=3D root cause):
->=20
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/li=
-nux-pwm.git for-next
-> head:   41b03ad2e2af3217154c1e6042011073105f28e7
-> commit: 5a309d3800195cd6401c3f7d620c8c7207199237 [7/8] pwm: imx: Split in=
-to two drivers
-> config: arm-allmodconfig (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (Debian 7.2.0-11) 7.2.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbi=
-n/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         git checkout 5a309d3800195cd6401c3f7d620c8c7207199237
->         # save the attached .config to linux build tree
->         GCC_VERSION=3D7.2.0 make.cross ARCH=3Darm=20
->=20
-> All error/warnings (new ones prefixed by >>):
->=20
->    In file included from drivers/pwm/pwm-imx27.c:15:0:
-> >> drivers/pwm/pwm-imx27.c:291:25: error: 'imx_pwm_dt_ids' undeclared her=
-e (not in a function); did you mean 'pwm_imx27_dt_ids'?
+ Legacy APIs:
+  The PWMCNT register will be updated in rcar_pwm_config() even if
+  the PWM state is disabled.
 
-Yes, that's what I meant. This problem doesn't show up when compiling
-this driver as a built-in. :-|
+ Atomic API:
+  The PWMCNT register will be updated in rcar_pwm_apply() only if
+  the PWM state is enabled. Otherwize, if a PWM runs with 30% duty
+  cycles and the pwm_apply_state() is called with state->enabled = 0,
+  ->duty_cycle = 60 and ->period = 100, this is possible to output
+  a 60% duty cycle.
 
-@Thierry: Would you care squash this diff into
-5a309d3800195cd6401c3f7d620c8c7207199237, or do you want to keep your
-tree fast-forwardable? In the latter case I can submit a patch including
-description.
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ drivers/pwm/pwm-rcar.c | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 4dc2d62c0e1c..806130654211 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -286,7 +286,7 @@ static const struct of_device_id pwm_imx27_dt_ids[] =3D=
- {
- 	{ .compatible =3D "fsl,imx27-pwm", },
- 	{ /* sentinel */ }
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index a41812f..e3ab663 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -192,12 +192,49 @@ static void rcar_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	rcar_pwm_update(rp, RCAR_PWMCR_EN0, 0, RCAR_PWMCR);
+ }
+ 
++static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			  struct pwm_state *state)
++{
++	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
++	struct pwm_state cur_state;
++	int div, ret;
++
++	/* This HW/driver only supports normal polarity */
++	pwm_get_state(pwm, &cur_state);
++	if (state->polarity != PWM_POLARITY_NORMAL)
++		return -ENOTSUPP;
++
++	if (!state->enabled) {
++		rcar_pwm_disable(chip, pwm);
++		return 0;
++	}
++
++	div = rcar_pwm_get_clock_division(rp, state->period);
++	if (div < 0)
++		return div;
++
++	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
++
++	ret = rcar_pwm_set_counter(rp, div, state->duty_cycle, state->period);
++	if (!ret)
++		rcar_pwm_set_clock_control(rp, div);
++
++	/* The SYNC should be set to 0 even if rcar_pwm_set_counter failed */
++	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
++
++	if (!ret && state->enabled)
++		ret = rcar_pwm_enable(chip, pwm);
++
++	return ret;
++}
++
+ static const struct pwm_ops rcar_pwm_ops = {
+ 	.request = rcar_pwm_request,
+ 	.free = rcar_pwm_free,
+ 	.config = rcar_pwm_config,
+ 	.enable = rcar_pwm_enable,
+ 	.disable = rcar_pwm_disable,
++	.apply = rcar_pwm_apply,
+ 	.owner = THIS_MODULE,
  };
--MODULE_DEVICE_TABLE(of, imx_pwm_dt_ids);
-+MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
-=20
- static int pwm_imx27_probe(struct platform_device *pdev)
- {
-
-Thanks and sorry for not catching this problem myself.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+ 
+-- 
+1.9.1
