@@ -1,87 +1,69 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
-Date: Wed, 9 Jan 2019 09:02:44 +0000
-Message-ID: <085ac33b-89ee-dcdb-6085-735ae5fa08cb@microchip.com>
-References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
- <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
- <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
- <67e881c5-0ea7-3d2f-5910-534729097d11@microchip.com>
- <20190107221040.uos5qlnkjmcayv73@pengutronix.de>
- <0ef0b4f1-45c3-0280-c1f0-6d499957f74c@microchip.com>
- <20190108220838.amrun6jsa24yeisg@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: Handle pwm with sysfs with recent kernel
+Date: Wed, 9 Jan 2019 10:20:06 +0100
+Message-ID: <20190109092006.35364dwcfiindd7c@pengutronix.de>
+References: <20190108100739.GA9046@arthur-bzh>
+ <20190108222102.hwv5oekspifhj7bh@pengutronix.de>
+ <20190109092531.71cf52c8@karo-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190108220838.amrun6jsa24yeisg@pengutronix.de>
-Content-Language: en-US
-Content-ID: <346409511435DF4D8E17F9C9E23C6E41@namprd11.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: u.kleine-koenig@pengutronix.de
-Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, corbet@lwn.net, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190109092531.71cf52c8@karo-electronics.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>, Arthur LAMBERT <lambertarthur22@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDA5LjAxLjIwMTkgMDA6MDgsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBPbiBU
-dWUsIEphbiAwOCwgMjAxOSBhdCAwOToyMTozNEFNICswMDAwLCBDbGF1ZGl1LkJlem5lYUBtaWNy
-b2NoaXAuY29tIHdyb3RlOg0KPj4gSGkgVXdlLA0KPj4NCj4+IE9uIDA4LjAxLjIwMTkgMDA6MTAs
-IFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPj4+IEhlbGxvIENsYXVkaXUsDQo+Pj4NCj4+PiBP
-biBNb24sIEphbiAwNywgMjAxOSBhdCAwOTozMDo1NUFNICswMDAwLCBDbGF1ZGl1LkJlem5lYUBt
-aWNyb2NoaXAuY29tIHdyb3RlOg0KPj4+PiBPbiAwNS4wMS4yMDE5IDIzOjA1LCBVd2UgS2xlaW5l
-LUvDtm5pZyB3cm90ZToNCj4+Pj4+IE9uIFRodSwgSmFuIDAzLCAyMDE5IGF0IDAxOjI5OjQ0UE0g
-KzAwMDAsIENsYXVkaXUuQmV6bmVhQG1pY3JvY2hpcC5jb20gd3JvdGU6DQo+Pj4+Pj4gRnJvbTog
-Q2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQo+Pj4+Pj4NCj4+
-Pj4+PiBBZGQgYmFzaWMgUFdNIG1vZGVzOiBub3JtYWwgYW5kIGNvbXBsZW1lbnRhcnkuIFRoZXNl
-IG1vZGVzIHNob3VsZA0KPj4+Pj4+IGRpZmZlcmVudGlhdGUgdGhlIHNpbmdsZSBvdXRwdXQgUFdN
-IGNoYW5uZWxzIGZyb20gdHdvIG91dHB1dHMgUFdNDQo+Pj4+Pj4gY2hhbm5lbHMuIFRoZXNlIG1v
-ZGVzIGNvdWxkIGJlIHNldCBhcyBmb2xsb3c6DQo+Pj4+Pj4gMS4gUFdNIGNoYW5uZWxzIHdpdGgg
-b25lIG91dHB1dCBwZXIgY2hhbm5lbDoNCj4+Pj4+PiAtIG5vcm1hbCBtb2RlDQo+Pj4+Pj4gMi4g
-UFdNIGNoYW5uZWxzIHdpdGggdHdvIG91dHB1dHMgcGVyIGNoYW5uZWw6DQo+Pj4+Pj4gLSBub3Jt
-YWwgbW9kZQ0KPj4+Pj4+IC0gY29tcGxlbWVudGFyeSBtb2RlDQo+Pj4+Pj4gU2luY2UgdXNlcnMg
-Y291bGQgdXNlIGEgUFdNIGNoYW5uZWwgd2l0aCB0d28gb3V0cHV0IGFzIG9uZSBvdXRwdXQgUFdN
-DQo+Pj4+Pj4gY2hhbm5lbCwgdGhlIFBXTSBub3JtYWwgbW9kZSBpcyBhbGxvd2VkIHRvIGJlIHNl
-dCBmb3IgUFdNIGNoYW5uZWxzIHdpdGgNCj4+Pj4+PiB0d28gb3V0cHV0czsgaW4gZmFjdCBQV00g
-bm9ybWFsIG1vZGUgc2hvdWxkIGJlIHN1cHBvcnRlZCBieSBhbGwgUFdNcy4NCj4+Pj4+DQo+Pj4+
-PiBJIHN0aWxsIHRoaW5rIHRoYXQgbXkgc3VnZ2VzdGlvbiB0aGF0IEkgc2VudCBpbiByZXBseSB0
-byB5b3VyIHY1IHVzaW5nDQo+Pj4+PiAuYWx0X2R1dHlfY3ljbGUgYW5kIC5hbHRfb2Zmc2V0IGlz
-IHRoZSBiZXR0ZXIgb25lIGFzIGl0IGlzIG1vcmUgZ2VuZXJpYy4NCj4+Pj4NCj4+Pj4gSSBsaWtl
-IGl0IGJldHRlciBteSB3YXksIEkgZXhwbGFpbmVkIG15c2VsZiB3aHkuDQo+Pj4NCj4+PiBJIGNv
-dWxkbid0IHJlYWxseSBmb2xsb3cgeW91ciBhcmd1bWVudCB0aG91Z2guIFlvdSBzZWVtZWQgdG8g
-YWNrbm93bGVkZ2UNCj4+PiB0aGF0IHVzaW5nIC5hbHRfZHV0eV9jeWNsZSBhbmQgLmFsdF9vZmZz
-ZXQgaXMgbW9yZSBnZW5lcmljLg0KPj4NCj4+IFRydWUgaXQgaXMgbW9yZSBnZW5lcmljIGluIHRo
-ZSB3YXkgdGhhdCBpdCBnaXZlcyB0aGUgcG9zc2liaWxpdHkgdG8NCj4+IGNvbmZpZ3VyZSBhbGwg
-a2luZCBvZiB3YXZlZm9ybXMuIEJ1dCBub3QgYWxsIGNvbnRyb2xsZXJzIHN1cHBvcnRzIHRoaXMu
-DQo+PiBUaGUgdXNlIGNhc2Ugb2YgdGhpcyB3b3VsZCBiZSB0byBoYXZlIGRlYWQtdGltZXMgd2l0
-aCBhbnkgdmFsdWVzLCByaWdodD8NCj4gDQo+IFdlbGwsIEkgZGlkbid0IHRhcmdldCB0aGF0LiBU
-aGUgbW9kZWwgSSBzdWdnZXN0ZWQgaXMganVzdCBhIGdlbmVyaWMgc2V0DQo+IG9mIHBhcmFtZXRl
-cnMgdGhhdCBhcmUgYWJsZSB0byBkZXNjcmliZSB0aGUgd2F2ZSBmb3JtcyBmb3IgYWxsIHRocmVl
-DQo+IG1vZGVzIHlvdSBzdWdnZXN0ZWQuIFRoYXQgaXQgYWxsb3dzIHRvIGV4cHJlc3MgZGVhZC10
-aW1lcyBpcyBqdXN0IGEgbmljZQ0KPiBieS1wcm9kdWN0Lg0KPiANCj4+Pj4+IEkgZmFpbCB0byBz
-ZWUgdGhlIHVwc2lkZSBvZiBzdG9yaW5nIHRoZSBtb2RlIGFzIDJebW9kZSBpbnN0ZWFkIG9mIGEN
-Cj4+Pj4+IHBsYWluIGVudW0gcHdtX21vZGUuIEdpdmVuIHRoYXQgc3RydWN0IHB3bV9zdGF0ZSBp
-cyB2aXNpYmxlIGZvciBwd20NCj4+Pj4+IHVzZXJzIGEgcGxhaW4gcHdtX21vZGUgd291bGQgYXQg
-bGVhc3QgYmUgbW9yZSBpbnR1aXRpdmUuDQo+Pj4+DQo+Pj4+IFRvIGhhdmUgYWxsIG1vZGVzIHN1
-cHBvcnRlZCBieSBhIGNvbnRyb2xsZXIgZ3JvdXBlZCBpbiBwd21fY2Fwczo6bW9kZXNfbXNrLg0K
-Pj4+DQo+Pj4gTXkgcXVlc3Rpb24gd2FzIG5vdCBhYm91dCBzdHJ1Y3QgcHdtX2NhcHM6Om1vZGVz
-X21zayBidXQgYWJvdXQNCj4+PiBzdHJ1Y3QgcHdtX3N0YXRlOjptb2RlYml0LiBBcyBzdHJ1Y3Qg
-cHdtX3N0YXRlIGhhcyB2aXNpYmlsaXR5IGV2ZW4NCj4+PiBvdXRzaWRlIG9mIHRoZSBwd20gQVBJ
-IChpLmUuIGl0IGlzIHVzZWQgYnkgY29uc3VtZXJzKSBpdCBpcyBiZW5lZmljaWFsDQo+Pj4gdG8g
-a2VlcCB0aGF0IHNpbXBsZS4gTGV0dGluZyBhIGNvbnN1bWVyIHBhc3MgaW4gdGhlIG1vZGUgaGUg
-d2FudHMgaXMNCj4+PiBlYXNpZXIgdG8gZXhwbGFpbiB0aGFuIHNldHRpbmcgYSBzaW5nbGUgYml0
-LiBBbHNvIGVycm9yIGNoZWNraW5nIHdpdGggYQ0KPj4+IHBsYWluIGVudW0gaXMgZWFzaWVyIGJl
-Y2F1c2UgeW91IGp1c3QgZG86DQo+Pj4NCj4+PiAJaWYgKG1vZGUgPj0gTU9ERV9DTlQpDQo+Pj4g
-CQllcnJvcigpDQo+Pj4NCj4+PiB3aGljaCBpcyBlYXN5IHRvIGdyYXNwLiBDb21wYXJlIHRoYXQg
-dG8NCj4+Pg0KPj4+IAlpZiAoIWlzX3Bvd2VyX29mX3R3byhtb2RlYml0KSB8fCBtb2RlYml0ID49
-IFBXTV9NT0RFX0JJVChDTlQpKQ0KPj4+IAkJZXJyb3IoKQ0KPj4+DQo+Pj4gKG1vZHVsbyBzeW50
-YWN0aWNhbCBjb3JyZWN0bmVzcykuDQo+Pg0KPj4gVGhlIHJlYXNvbiBJIGNob29zZSB0byBoYXZl
-IGl0IGFzIGJpdCB3YXMgdGhlIG1lbWNtcCgpIGF0IHRoZSBiZWdpbm5pbmcgb2YNCj4+IHB3bV9h
-cHBseV9zdGF0ZSgpIGFuZCB0byBhdm9pZCBzdGFydGluZyBlbnVtIHB3bV9tb2RlIGZyb20gMSBh
-bmQgdG8gYXZvaWQNCj4+IGhhdmluZyBiaXQgMCBvZiBwd21fY2Fwczo6bW9kZXNfbXNrIHVudXNl
-ZCAoaW4gdGhlIGRyaXZlciBJJ20gdXNpbmcNCj4+IFBXTV9NT0RFX0JJVCgpIG1hY3JvIHRvIGZp
-bGwgaW4gdGhlIGRyaXZlcidzIHN1cHBvcnRlZCBtb2RlcykuDQo+IA0KPiBEb2VzIHRoYXQgbWVh
-biB5b3UgYXJlIGNvbnZpbmNlZCBieSBteSBhcmd1bWVudD8NCg0KSSBrbm93IHdoYXQgeW91IGFy
-ZSB0YWxraW5nIGFib3V0LiBJIGJhbGFuY2VkIGluIGJldHdlZW4gdGhlc2UgdHdvIHBhdGhzDQp3
-aGlsZSBJIHdyb3RlIHRoZSBjb2RlLiBUaGUgYXBwcm9hY2ggSSBjaG9zZSBsb29rZWQgdG8gbWUg
-dG8gYmUgbW9yZSBlYXN5DQp0byByZWFkLiBOb3csIHNpbmNlIHRoZXJlIGlzIGFub3RoZXIgcGVy
-c29uICh5b3UpIHRoaW5raW5nIHRoZSBvdGhlcg0KYXBwcm9hY2ggaXMgYmVzdCwgSSdtIHRoaW5r
-aW5nIHRvIGNoYW5nZSBpdCBpbiB0aGUgbmV4dCB2ZXJzaW9uLg0KDQpUaGFuayB5b3UsDQpDbGF1
-ZGl1IEJlem5lYQ0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMNCj4gVXdlDQo+IA0K
+Hello,
+
+On Wed, Jan 09, 2019 at 09:25:31AM +0100, Lothar Wa=DFmann wrote:
+> Hi,
+> =
+
+> On Tue, 8 Jan 2019 23:21:02 +0100 Uwe Kleine-K=F6nig wrote:
+> > On Tue, Jan 08, 2019 at 11:07:39AM +0100, Arthur LAMBERT wrote:
+> > > Then I have another issue when I try to enable my pwm :
+> > > =
+
+> > > # ls /sys/class/pwm/
+> > > pwmchip0  pwmchip2  pwmchip4  pwmchip6
+> > > pwmchip1  pwmchip3  pwmchip5  pwmchip7
+> > > # echo 0 > /sys/class/pwm/pwmchip0/export
+> > > # echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+> > > -sh: write error: Invalid argument  =
+
+> > =
+
+> > Just a guess: did you check that /sys/class/pwm/pwmchip0/pwm0/enable
+> > actually exists?
+> > =
+
+> If not, the error message would be 'No such file or directory' rather
+> than "Invalid argument".
+
+Then "Invalid argument" means that either the "1" couldn't be parsed as
+an integer 1 or 0 (no) or that pwm_apply_state returned -EINVAL. What
+type of pwm are we talking about (i.e. which driver is responsible for
+pwmchip0)? Hmm, that machine is an imx6ul, looking at the pwm-imx driver
+there doesn't seem to be a path through the .apply callback that returns
+-EINVAL. Would you care to add a few printk in
+drivers/pwm/sysfs.c:enable_store() that show where the -EINVAL comes
+from?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
