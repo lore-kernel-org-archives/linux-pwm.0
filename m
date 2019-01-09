@@ -1,16 +1,17 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+From: Arthur LAMBERT <lambertarthur22@gmail.com>
 Subject: Re: Handle pwm with sysfs with recent kernel
-Date: Wed, 9 Jan 2019 10:20:06 +0100
-Message-ID: <20190109092006.35364dwcfiindd7c@pengutronix.de>
+Date: Wed, 9 Jan 2019 10:26:51 +0100
+Message-ID: <20190109092651.GA27151@arthur-bzh>
 References: <20190108100739.GA9046@arthur-bzh>
  <20190108222102.hwv5oekspifhj7bh@pengutronix.de>
  <20190109092531.71cf52c8@karo-electronics.de>
+ <20190109092006.35364dwcfiindd7c@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20190109092531.71cf52c8@karo-electronics.de>
+In-Reply-To: <20190109092006.35364dwcfiindd7c@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,50 +21,39 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>, Arthur LAMBERT <lambertarthur22@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+It is an error due to new check from this commit :
 
-On Wed, Jan 09, 2019 at 09:25:31AM +0100, Lothar Wa=DFmann wrote:
-> Hi,
-> =
+[arthur * dreem-linux-4.19] git show ef2bf4997f7da6efa8540d9cf726c44bf2b863af
+commit ef2bf4997f7da6efa8540d9cf726c44bf2b863af
+Author: Brian Norris <briannorris@chromium.org>
+Date:   Fri May 27 09:45:49 2016 -0700
 
-> On Tue, 8 Jan 2019 23:21:02 +0100 Uwe Kleine-K=F6nig wrote:
-> > On Tue, Jan 08, 2019 at 11:07:39AM +0100, Arthur LAMBERT wrote:
-> > > Then I have another issue when I try to enable my pwm :
-> > > =
+    pwm: Improve args checking in pwm_apply_state()
 
-> > > # ls /sys/class/pwm/
-> > > pwmchip0  pwmchip2  pwmchip4  pwmchip6
-> > > pwmchip1  pwmchip3  pwmchip5  pwmchip7
-> > > # echo 0 > /sys/class/pwm/pwmchip0/export
-> > > # echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
-> > > -sh: write error: Invalid argument  =
+    It seems like in the process of refactoring pwm_config() to utilize the
+    newly-introduced pwm_apply_state() API, some args/bounds checking was
+    dropped.
+(...)
 
-> > =
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index dba3843..ed337a8c 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -457,7 +457,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
+ {
+        int err;
 
-> > Just a guess: did you check that /sys/class/pwm/pwmchip0/pwm0/enable
-> > actually exists?
-> > =
+-       if (!pwm)
++       if (!pwm || !state || !state->period ||
++           state->duty_cycle > state->period)
+                return -EINVAL;
 
-> If not, the error message would be 'No such file or directory' rather
-> than "Invalid argument".
+(...)
 
-Then "Invalid argument" means that either the "1" couldn't be parsed as
-an integer 1 or 0 (no) or that pwm_apply_state returned -EINVAL. What
-type of pwm are we talking about (i.e. which driver is responsible for
-pwmchip0)? Hmm, that machine is an imx6ul, looking at the pwm-imx driver
-there doesn't seem to be a path through the .apply callback that returns
--EINVAL. Would you care to add a few printk in
-drivers/pwm/sysfs.c:enable_store() that show where the -EINVAL comes
-from?
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+I guess that I have to configure the period and the duty cycle before
+enabling the pwm to be compatible with this kernek. I will update my
+userspace code.
