@@ -1,71 +1,64 @@
-From: Otto Sabart <ottosabart@seberm.com>
-Subject: [PATCH 1/1] doc: gpio-mvebu: fix broken reference to
- cp110-system-controller0.txt file
-Date: Wed, 9 Jan 2019 20:07:41 +0100
-Message-ID: <8fd140950dd0bb859f9a48d8b25fb919cbb3cc6b.1547059503.git.ottosabart@seberm.com>
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH 1/2] gpio: mvebu: implement get_direction
+Date: Thu, 10 Jan 2019 14:26:21 +0200
+Message-ID: <024cc24efa7b99186750f90c91880b29357d379d.1547123182.git.baruch@tkos.co.il>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4Ckj6UjgE2iN1+kY"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pwm@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>, Sven Auhagen <sven.auhagen@voleatech.de>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, linux-pci@vger.kernel.org, Gregory Clement <gregory.clement@bootlin.com>, linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
+struct gpio_chip documentation recommends to always implement this
+callback function.
 
---4Ckj6UjgE2iN1+kY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A more concrete motivation is to be able (in combination with
+GPIOD_ASIS) to detect whether the bootloader has changed the state of a
+GPIO signal.
 
-The cp110-system-controller0.txt file was renamed to
-cp110-system-controller.txt.
-
-Fixes: 4aa5496980e4 ("dt-bindings: cp110: rename cp110 syscon file")
-Signed-off-by: Otto Sabart <ottosabart@seberm.com>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 ---
- Documentation/devicetree/bindings/gpio/gpio-mvebu.txt | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/gpio/gpio-mvebu.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt b/Docume=
-ntation/devicetree/bindings/gpio/gpio-mvebu.txt
-index 38ca2201e8ae..2e097b57f170 100644
---- a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
-+++ b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
-@@ -14,8 +14,6 @@ Required properties:
-=20
-     "marvell,armada-8k-gpio" should be used for the Armada 7K and 8K
-     SoCs (either from AP or CP), see
--    Documentation/devicetree/bindings/arm/marvell/cp110-system-controller0=
-=2Etxt
--    and
-     Documentation/devicetree/bindings/arm/marvell/ap806-system-controller.=
-txt
-     for specific details about the offset property.
-=20
---=20
-2.17.2
-
-
---4Ckj6UjgE2iN1+kY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEb6VOpv2s03VHGoilgjuumfi+HjwFAlw2Rn4ACgkQgjuumfi+
-Hjxfiw/9Fk7Ox0asGlTrDCjLScq8iEd1p1iAgMz26Ut5NKHWaKqBEGajxQIhQnUN
-utxLjTWH8QDcGItpbzvTYcnKrF+mRhcpDvHZ/O8dhac5ZYA7qcA/106aRB/MSogh
-u3/GeVNokIGUtXi8xepJvm9vmYnhdgqOild8hxc9Frr1x26ORpgPBbWurcf7YFZJ
-SET3fv86kPjPWaLakjT67ULGPhhX5RxJv8M4QllsyLJfvBntrxH5ACMovdTciV8A
-PBEWQQ1gMlD4cCnrvviuG/ySZig0JCG2DcYWaZsp8yOw+zYFExavgSHkoxESFC/P
-1UoVldOmp5QKGOMYfrD4SjysZJnaLhsw/kJVGDwTiHtXc5iYd95Jercp47Vmd8TJ
-u2bkmgEIVlCkAiMjZBuYlxr0HI6kISe55V+FqCtco3q8/ZUQCnUOsL3gkFDMtepq
-2fvD9Lw9Crr3lrcnCZVLJYMAZ8oKxNSQCuMCZjMiHeJyE7T1yNJbK80QruG4tKO1
-k504yGakideglEWAXUJaKuevEBGALwxLBZu+EkMFdBHPGLcbALNcfAIhbdniX6lQ
-o6+XZkHxrU4hxnyZtnFJTucPSQ1oLcCqgEF5PtasXnhCmTWF6wGsc0EN4tWWIq0E
-pWvNLfoaHb4CS4PeDSP04GA63D1A6t7FSH+fHmhswgUS2PpoQ1U=
-=/a7b
------END PGP SIGNATURE-----
-
---4Ckj6UjgE2iN1+kY--
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 7d5c55494ccd..f97ed32b8beb 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -376,6 +376,16 @@ static int mvebu_gpio_direction_output(struct gpio_chip *chip, unsigned int pin,
+ 	return 0;
+ }
+ 
++static int mvebu_gpio_get_direction(struct gpio_chip *chip, unsigned int pin)
++{
++	struct mvebu_gpio_chip *mvchip = gpiochip_get_data(chip);
++	u32 u;
++
++	regmap_read(mvchip->regs, GPIO_IO_CONF_OFF + mvchip->offset, &u);
++
++	return !!(u & BIT(pin));
++}
++
+ static int mvebu_gpio_to_irq(struct gpio_chip *chip, unsigned int pin)
+ {
+ 	struct mvebu_gpio_chip *mvchip = gpiochip_get_data(chip);
+@@ -1130,6 +1140,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
+ 	mvchip->chip.parent = &pdev->dev;
+ 	mvchip->chip.request = gpiochip_generic_request;
+ 	mvchip->chip.free = gpiochip_generic_free;
++	mvchip->chip.get_direction = mvebu_gpio_get_direction;
+ 	mvchip->chip.direction_input = mvebu_gpio_direction_input;
+ 	mvchip->chip.get = mvebu_gpio_get;
+ 	mvchip->chip.direction_output = mvebu_gpio_direction_output;
+-- 
+2.20.1
