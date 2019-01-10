@@ -1,56 +1,66 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor1.renesas.com ([210.160.252.171]:55996 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729844AbfAIIWA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Jan 2019 03:22:00 -0500
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Date: Wed,  9 Jan 2019 17:19:04 +0900
-Message-Id: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Return-path: <kernel-bounces@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] pwm: imx27: only enable the clocks once in .get_state
+Date: Thu, 10 Jan 2019 20:33:53 +0100
+Message-Id: <20190110193353.20767-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Sender: linux-pwm-owner@vger.kernel.org
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH v3 0/4] pwm: rcar: Add support "atomic" API and improve calculation
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-This patch series adds support for PWM "atomic" API and improve
-the clock calculation.
+Currently the function pwm_imx27_get_state() of enables the clocks once
+unconditionally at the start, a second time if the PWM is enabled and
+disables unconditionally at the end.
 
-Changes from v2 [1]:
- - Add Acked-by of Uwe in patch [234]/4.
- - Modify a condition to support normal polarity only.
- - Fix possible to output wrong a duty cycle when disabling in patch 1/4.
- - Fix overflow value on 32-bit arch in patch 4/4.
+Simplify that to enable once at the start and disable conditionally at
+the end.
 
-Changes from v1 [2]:
- - Remove workaround code of output pseudo low level for now because it is
-   rejected on the ML.
- - Add a condition for polarity because the HW doesn't support polarity change
-   in patch 1/4.
- - Improve the clock calculation in patch 4/4.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-imx27.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-[1]
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=63219
-
-Remarks:
-On the email thread of patch 2/4, we discuss about suspend/resume
-handling and I suposed to improve it. However, I need more time
-how to improve it. So, for now, I don't improve it on this patch series.
-
-[2]
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=53193
-
-
-Yoshihiro Shimoda (4):
-  pwm: rcar: Add support "atomic" API
-  pwm: rcar: Use "atomic" API on rcar_pwm_resume()
-  pwm: rcar: remove legacy APIs
-  pwm: rcar: improve calculation of divider
-
- drivers/pwm/pwm-rcar.c | 99 ++++++++++++++++++++++++--------------------------
- 1 file changed, 48 insertions(+), 51 deletions(-)
-
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index 8997c4c1bd03..4dc2d62c0e1c 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -125,14 +125,10 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
+ 
+ 	val = readl(imx->mmio_base + MX3_PWMCR);
+ 
+-	if (val & MX3_PWMCR_EN) {
++	if (val & MX3_PWMCR_EN)
+ 		state->enabled = true;
+-		ret = pwm_imx27_clk_prepare_enable(chip);
+-		if (ret)
+-			return;
+-	} else {
++	else
+ 		state->enabled = false;
+-	}
+ 
+ 	switch (FIELD_GET(MX3_PWMCR_POUTC, val)) {
+ 	case MX3_PWMCR_POUTC_NORMAL:
+@@ -164,7 +160,8 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
+ 		state->duty_cycle = 0;
+ 	}
+ 
+-	pwm_imx27_clk_disable_unprepare(chip);
++	if (!state->enabled)
++		pwm_imx27_clk_disable_unprepare(chip);
+ }
+ 
+ static void pwm_imx27_sw_reset(struct pwm_chip *chip)
 -- 
-1.9.1
+2.20.1
