@@ -1,40 +1,28 @@
-From: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Subject: [PATCH 3/3] ARM: dts: cygnus: Change pwm compatible to new version
-Date: Fri, 11 Jan 2019 10:51:16 +0530
-Message-ID: <1547184076-20521-4-git-send-email-sheetal.tigadoli@broadcom.com>
-References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH 0/2] PWM support for HiFive Unleashed
+Date: Fri, 11 Jan 2019 13:52:42 +0530
+Message-ID: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>, Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com, Yash Shah <yash.shah@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Praveen Kumar B <praveen.b@broadcom.com>
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
 
-Change pwm compatible to new version of pwm-kona
-Add new compatible to check pwm configure status
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
 
-Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
-Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
----
- arch/arm/boot/dts/bcm-cygnus.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  37 ++++
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 246 +++++++++++++++++++++
+ 4 files changed, 294 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
 
-diff --git a/arch/arm/boot/dts/bcm-cygnus.dtsi b/arch/arm/boot/dts/bcm-cygnus.dtsi
-index 253df71..2a433e7 100644
---- a/arch/arm/boot/dts/bcm-cygnus.dtsi
-+++ b/arch/arm/boot/dts/bcm-cygnus.dtsi
-@@ -595,7 +595,7 @@
- 		};
- 
- 		pwm: pwm@180aa500 {
--			compatible = "brcm,kona-pwm";
-+			compatible = "brcm,kona-pwm-v2";
- 			reg = <0x180aa500 0xc4>;
- 			#pwm-cells = <3>;
- 			clocks = <&asiu_clks BCM_CYGNUS_ASIU_PWM_CLK>;
 -- 
 1.9.1
