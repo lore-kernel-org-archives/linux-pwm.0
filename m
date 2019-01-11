@@ -1,85 +1,53 @@
-From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH 2/3] drivers: pwm: pwm-bcm-kona: Add pwm-kona-v2 support
-Date: Fri, 11 Jan 2019 14:51:25 +0100
-Message-ID: <20190111135125.GC1895@lunn.ch>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
+ version pwm-kona
+Date: Fri, 11 Jan 2019 21:48:01 +0100
+Message-ID: <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
 References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <1547184076-20521-3-git-send-email-sheetal.tigadoli@broadcom.com>
+ <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1547184076-20521-3-git-send-email-sheetal.tigadoli@broadcom.com>
+In-Reply-To: <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, linux-pwm@vger.kernel.org, Praveen Kumar B <praveen.b@broadcom.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-arm-kernel@lists.infradead.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Jan 11, 2019 at 10:51:15AM +0530, Sheetal Tigadoli wrote:
+On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
 > From: Praveen Kumar B <praveen.b@broadcom.com>
 > 
-> Add support for new version of pwm-kona.
-> Add support to make PWM changes configured and stable.
+> Add new compatible string for new version of pwm-kona
 > 
 > Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
 > Reviewed-by: Ray Jui <ray.jui@broadcom.com>
 > Reviewed-by: Scott Branden <scott.branden@broadcom.com>
 > Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
 > ---
->  drivers/pwm/pwm-bcm-kona.c | 128 ++++++++++++++++++++++++++++++++++-----------
->  1 file changed, 98 insertions(+), 30 deletions(-)
+>  Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-> index 09a95ae..2b44ad8 100644
-> --- a/drivers/pwm/pwm-bcm-kona.c
-> +++ b/drivers/pwm/pwm-bcm-kona.c
-> @@ -45,30 +45,39 @@
->   *    high or low depending on its state at that exact instant.
->   */
+> diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> index 8eae9fe..d37f697 100644
+> --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+>  This controller has 6 channels.
 >  
-> -#define PWM_CONTROL_OFFSET			(0x00000000)
-> +#define PWM_CONTROL_OFFSET			0x00000000
->  #define PWM_CONTROL_SMOOTH_SHIFT(chan)		(24 + (chan))
->  #define PWM_CONTROL_TYPE_SHIFT(chan)		(16 + (chan))
->  #define PWM_CONTROL_POLARITY_SHIFT(chan)	(8 + (chan))
->  #define PWM_CONTROL_TRIGGER_SHIFT(chan)		(chan)
->  
-> -#define PRESCALE_OFFSET				(0x00000004)
-> +#define PRESCALE_OFFSET				0x00000004
->  #define PRESCALE_SHIFT(chan)			((chan) << 2)
->  #define PRESCALE_MASK(chan)			(0x7 << PRESCALE_SHIFT(chan))
-> -#define PRESCALE_MIN				(0x00000000)
-> -#define PRESCALE_MAX				(0x00000007)
-> +#define PRESCALE_MIN				0x00000000
-> +#define PRESCALE_MAX				0x00000007
+>  Required Properties :
+> -- compatible: should contain "brcm,kona-pwm"
+> +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v2"
 
-Hi Praveen
+Is v2 used on a newer generation of kona SoCs? On i.MX these variants
+are usually named after the first SoC that came with the new variant. Is
+this sensible here, too?
 
-These changes are unrelated to adding support for a new PWM. So
-ideally they should be in a separate patch.
+Best regards
+Uwe
 
-> +static int kona_pwmc_wait_stable(struct pwm_chip *chip, unsigned int chan,
-> +				 unsigned int kona_ver)
-> +{
-> +	struct kona_pwmc *kp = to_kona_pwmc(chip);
-> +	unsigned int value;
-> +	unsigned int count = PWM_MONITOR_TIMEOUT_US * 1000;
-> +
-> +	switch (kona_ver) {
-> +	case KONA_PWM_V1:
-> +		/*
-> +		 * There must be a min 400ns delay between clearing trigger and
-> +		 * settingit. Failing to do this may result in no PWM signal.
-> +		 */
-> +		ndelay(400);
-> +		return 0;
-> +	case KONA_PWM_V2:
-> +		do {
-> +			value = readl(kp->base + PWM_MONITOR_OFFSET);
-> +			if (!(value & (BIT(chan))))
-> +				return 0;
-> +			ndelay(1);
-> +		} while (count--);
-
-You can probably use readl_poll_timeout() here.
-
-    Andrew
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
