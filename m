@@ -1,44 +1,106 @@
-From: Ray Jui <ray.jui@broadcom.com>
-Subject: Re: [PATCH INTERNAL V3 0/3] Add support for PWM Configure and
- stablize for PWM kona
-Date: Fri, 11 Jan 2019 16:00:02 -0800
-Message-ID: <2b177b2c-e7f1-791b-087c-b01d9b81f923@broadcom.com>
-References: <1547183284-19956-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <4678b237-d0df-ef85-182f-759125a5c085@broadcom.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
+ version pwm-kona
+Date: Sat, 12 Jan 2019 16:05:15 +0100
+Message-ID: <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
+References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
+ <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
+ <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
+ <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4678b237-d0df-ef85-182f-759125a5c085@broadcom.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Scott Branden <scott.branden@broadcom.com>
+Cc: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
 
+Hello Scott,
 
-
-On 1/11/2019 3:58 PM, Ray Jui wrote:
-> Please remove 'INTERNAL' in all of your patches and cover letter.
+On Fri, Jan 11, 2019 at 01:28:45PM -0800, Scott Branden wrote:
+> On 2019-01-11 12:48 p.m., Uwe Kleine-König wrote:
+> > On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
+> > > From: Praveen Kumar B <praveen.b@broadcom.com>
+> > > 
+> > > Add new compatible string for new version of pwm-kona
+> > > 
+> > > Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
+> > > Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> > > Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> > > Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+> > > ---
+> > >   Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> > > index 8eae9fe..d37f697 100644
+> > > --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> > > +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> > > @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+> > >   This controller has 6 channels.
+> > >   Required Properties :
+> > > -- compatible: should contain "brcm,kona-pwm"
+> > > +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v2"
+> > Is v2 used on a newer generation of kona SoCs? On i.MX these variants
+> > are usually named after the first SoC that came with the new variant. Is
+> > this sensible here, too?
 > 
+> It doesn't make as much sense here as different revs of the IP block are
+> picked up based on various decisions.
+> 
+> A new SoC could decide to use an old version.
 
-Never mind, saw your next patchset with this issue fixed....
+IMHO this is no reason to not use the name of the oldest SoC with this
+variant. I don't know how the SoC names are in the broadcom family, but
+if they were (in order of age, oldest first):
 
-> On 1/10/2019 9:08 PM, Sheetal Tigadoli wrote:
->> Hi,
->> 	This patchset contain support to make PWM changes configure
->> 	and stablize
->> 	Following are brief changes done
->> 	a. Add support for version2 compatible string
->> 	b. Change PWM config and stablize delay in PWM Kona
->>
->> Praveen Kumar B (3):
->>   dt-bindings: pwm: kona: Add new compatible for new version pwm-kona
->>   drivers: pwm: pwm-bcm-kona: Add pwm-kona-v2 support
->>   ARM: dts: cygnus: Change pwm compatible to new version
->>
->>  .../devicetree/bindings/pwm/brcm,kona-pwm.txt      |   2 +-
->>  arch/arm/boot/dts/bcm-cygnus.dtsi                  |   2 +-
->>  drivers/pwm/pwm-bcm-kona.c                         | 128 ++++++++++++++++-----
->>  3 files changed, 100 insertions(+), 32 deletions(-)
->>
+	ant
+	bear
+	crocodile
+
+and ant and crocodile use the same IP block we would have
+
+a) with v1, v2:
+
+	ant:
+		compatible = "brcm,kona-pwm-v1";
+	bear:
+		compatible = "brcm,kona-pwm-v2";
+	crocodile:
+		compatible = "brcm,kona-pwm-v1";
+
+; and 
+
+b) with the SoC naming:
+
+	ant:
+		compatible = "brcm,kona-ant-pwm";
+	bear:
+		compatible = "brcm,kona-bear-pwm";
+	crocodile:
+		compatible = "brcm,kona-crocodile-pwm", "brcm,kona-ant-pwm";
+
+(If you want, drop "brcm,kona-crocodile-pwm", but keeping it is more
+defensive.) 
+
+I like b) (with "...-crocodile-...") better than a). crocodile using
+"...-ant-..." is not more ugly than crocodile using "...-v1". This is
+also a tad more robust because if broadcom releases kona-dolphin and
+someone finds a minor difference between the IPs used on ant and
+crocodile it depends on the order of these events who gets v3, while
+with the SoC naming the result is clear.
+
+(OK, and given that "brcm,kona-pwm" is already fixed, both approaches
+need slight adaption, but I guess you still get what I meant.)
+
+Best regards
+Uwe
+
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
