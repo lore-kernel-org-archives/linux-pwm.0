@@ -1,106 +1,86 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
- version pwm-kona
-Date: Sat, 12 Jan 2019 16:05:15 +0100
-Message-ID: <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
-References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
- <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
- <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: Re: [PATCH 2/2] PCI: armada8k: don't toggle reset twice
+Date: Sun, 13 Jan 2019 14:38:00 +0200
+Message-ID: <87pnt0vil3.fsf@tarshish>
+References: <024cc24efa7b99186750f90c91880b29357d379d.1547123182.git.baruch@tkos.co.il>
+ <94cd23a60c647020dd87a923684b59255b89f02c.1547123182.git.baruch@tkos.co.il>
+ <20190110125548.GA29612@lunn.ch> <8736q0irwy.fsf@tarshish>
+ <20190110131912.GB29612@lunn.ch> <87zhs8h5ej.fsf@tarshish>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Scott Branden <scott.branden@broadcom.com>
-Cc: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-reply-to: <87zhs8h5ej.fsf@tarshish>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: linux-pwm@vger.kernel.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Sven Auhagen <sven.auhagen@voleatech.de>, Jason Cooper <jason@lakedaemon.net>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-pci@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Bjorn Helgaas <bhelgaas@google.com>, Gregory Clement <gregory.clement@bootlin.com>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Scott,
+Hi Andrew,
 
-On Fri, Jan 11, 2019 at 01:28:45PM -0800, Scott Branden wrote:
-> On 2019-01-11 12:48 p.m., Uwe Kleine-König wrote:
-> > On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
-> > > From: Praveen Kumar B <praveen.b@broadcom.com>
-> > > 
-> > > Add new compatible string for new version of pwm-kona
-> > > 
-> > > Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
-> > > Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-> > > Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-> > > Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-> > > ---
-> > >   Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
-> > > index 8eae9fe..d37f697 100644
-> > > --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
-> > > +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
-> > > @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
-> > >   This controller has 6 channels.
-> > >   Required Properties :
-> > > -- compatible: should contain "brcm,kona-pwm"
-> > > +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v2"
-> > Is v2 used on a newer generation of kona SoCs? On i.MX these variants
-> > are usually named after the first SoC that came with the new variant. Is
-> > this sensible here, too?
-> 
-> It doesn't make as much sense here as different revs of the IP block are
-> picked up based on various decisions.
-> 
-> A new SoC could decide to use an old version.
+On Thu, Jan 10 2019, Baruch Siach wrote:
+> On Thu, Jan 10 2019, Andrew Lunn wrote:
+>>> Sven Auhagen reported the same issue with Intel NIC attached to
+>>> mini-PCIe slots on a custom Armada 8K design.
+>>
+>> O.K. so that suggests the issue is on the Armada side.
+>>
+>>> How would you suggest to investigate this issue?
+>>
+>> I presume reboot works O.K? So it is possible to toggle the reset
+>> multiple times, but reboot must do something additional which makes it
+>> work? Do you have sources for the bootloader?
+>
+> The bootloader is current U-Boot master as BL33 of Marvell provided ATF
+> version 18.12, current latest.
+>
+>> Are there status bits in the comphy about the state of the link? Maybe
+>> comphy needs to be kicked to reestablish the link?
+>
+> Maybe. The U-Boot comphy PCIe initialization routine
+> comphy_pcie_power_up() is long and complex.
+>
+> The ATF code also carries PCIe comphy initialization with this text:
+>
+> https://github.com/MarvellEmbeddedProcessors/atf-marvell/blob/atf-v1.5-armada-18.12/drivers/marvell/comphy/phy-comphy-cp110.c#L1170
+>
+>         /* In Armada 8K DB boards, PCIe initialization can be executed
+>          * only once (PCIe reset performed during chip power on and
+>          * it cannot be executed via GPIO later).
+>          * This means that power on can be executed only once, so let's
+>          * mark if the caller is bootloader or Linux.
+>          * If bootloader -> run power on.
+>          * If Linux -> exit.
+>          *
+>          * TODO: In MacciatoBIN, PCIe reset is connected via GPIO,
+>          * so after GPIO reset is added to Linux Kernel, it can be
+>          * powered-on by Linux.
+>          */
+>         if (!called_from_uboot)
+>                 return ret;
 
-IMHO this is no reason to not use the name of the oldest SoC with this
-variant. I don't know how the SoC names are in the broadcom family, but
-if they were (in order of age, oldest first):
+Another look at this comment made me realize that we need comphy
+initialization support in the kernel for PCIe reset to work correctly.
 
-	ant
-	bear
-	crocodile
+The workaround that this patch proposes will not solve the problem for
+v5.0, since the GPIO get_direction patch will only appear in v5.1.
 
-and ant and crocodile use the same IP block we would have
+So the only viable solution for v5.0 is to revert the gpio reset signal
+patch (commit 3d71746c42).
 
-a) with v1, v2:
+Thanks for your review.
 
-	ant:
-		compatible = "brcm,kona-pwm-v1";
-	bear:
-		compatible = "brcm,kona-pwm-v2";
-	crocodile:
-		compatible = "brcm,kona-pwm-v1";
+baruch
 
-; and 
-
-b) with the SoC naming:
-
-	ant:
-		compatible = "brcm,kona-ant-pwm";
-	bear:
-		compatible = "brcm,kona-bear-pwm";
-	crocodile:
-		compatible = "brcm,kona-crocodile-pwm", "brcm,kona-ant-pwm";
-
-(If you want, drop "brcm,kona-crocodile-pwm", but keeping it is more
-defensive.) 
-
-I like b) (with "...-crocodile-...") better than a). crocodile using
-"...-ant-..." is not more ugly than crocodile using "...-v1". This is
-also a tad more robust because if broadcom releases kona-dolphin and
-someone finds a minor difference between the IPs used on ant and
-crocodile it depends on the order of these events who gets v3, while
-with the SoC naming the result is clear.
-
-(OK, and given that "brcm,kona-pwm" is already fixed, both approaches
-need slight adaption, but I guess you still get what I meant.)
-
-Best regards
-Uwe
-
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+--
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
