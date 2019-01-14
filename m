@@ -1,42 +1,55 @@
-From: Ryder Lee <ryder.lee@mediatek.com>
-Subject: [PATCH 2/5] dt-bindings: pwm: add a property "mediatek,num-pwms"
-Date: Mon, 14 Jan 2019 16:21:21 +0800
-Message-ID: <37e5b296c6e854b918049a548e7c79f26b0e8147.1547453586.git.ryder.lee@mediatek.com>
-References: <0c400cb1899c1afb4c9f021350cdc0c6ca3f6239.1547453586.git.ryder.lee@mediatek.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: imx: Fix undefined symbol
+Date: Mon, 14 Jan 2019 09:55:12 +0100
+Message-ID: <20190114085512.uq3triamuufzknql@pengutronix.de>
+References: <20190114081558.GA7897@embeddedor>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <0c400cb1899c1afb4c9f021350cdc0c6ca3f6239.1547453586.git.ryder.lee@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <20190114081558.GA7897@embeddedor>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Ryder Lee <ryder.lee@mediatek.com>
+To: Thierry Reding <thierry.reding@gmail.com>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-This adds a property "mediatek,num-pwms" in example so that we could
-set the number of PWM channels via device tree.
+On Mon, Jan 14, 2019 at 02:15:58AM -0600, Gustavo A. R. Silva wrote:
+> Fix the following compile error:
+> 
+> drivers/pwm/pwm-imx27.c:292:25: error: 'imx_pwm_dt_ids' undeclared
+> here (not in a function); did you mean 'pwm_imx27_dt_ids'?
+> 
+> Fixes: 5a309d380019 ("pwm: imx: Split into two drivers")
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>  drivers/pwm/pwm-imx27.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+> index 8997c4c1bd03..55666cca4cee 100644
+> --- a/drivers/pwm/pwm-imx27.c
+> +++ b/drivers/pwm/pwm-imx27.c
+> @@ -289,7 +289,7 @@ static const struct of_device_id pwm_imx27_dt_ids[] = {
+>  	{ .compatible = "fsl,imx27-pwm", },
+>  	{ /* sentinel */ }
+>  };
+> -MODULE_DEVICE_TABLE(of, imx_pwm_dt_ids);
+> +MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
 
-Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
----
- Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 2 ++
- 1 file changed, 2 insertions(+)
+The patch is fine, you're at least the fourth person noticing this
+problem (but the first to send an applicable patch). So if Thierry
+doesn't want to squash the fix into the offending commit (which I would
+prefer to not break bisecability), taking this one is the next best
+option.
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 991728c..f9e2d1f 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -20,6 +20,7 @@ Required properties:
-  - pinctrl-names: Must contain a "default" entry.
-  - pinctrl-0: One property must exist for each entry in pinctrl-names.
-    See pinctrl/pinctrl-bindings.txt for details of the property values.
-+ - mediatek,num-pwms: the number of PWM channels.
- 
- Example:
- 	pwm0: pwm@11006000 {
-@@ -37,4 +38,5 @@ Example:
- 			      "pwm3", "pwm4", "pwm5";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pwm0_pins>;
-+		mediatek,num-pwms = <5>;
- 	};
+If so:
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+Best regards and thanks,
+Uwe
+
 -- 
-1.9.1
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
