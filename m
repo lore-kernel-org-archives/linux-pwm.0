@@ -1,13 +1,14 @@
 From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 1/5] pwm: mediatek: add a property "mediatek,num-pwms"
-Date: Mon, 14 Jan 2019 12:16:39 +0100
-Message-ID: <0546d8b6-ac67-d445-677a-ff888edf9646@gmail.com>
+Subject: Re: [PATCH 2/5] dt-bindings: pwm: add a property "mediatek,num-pwms"
+Date: Mon, 14 Jan 2019 12:19:16 +0100
+Message-ID: <1ad9afa2-0306-8a60-eb25-92f8ce100d20@gmail.com>
 References: <0c400cb1899c1afb4c9f021350cdc0c6ca3f6239.1547453586.git.ryder.lee@mediatek.com>
+ <37e5b296c6e854b918049a548e7c79f26b0e8147.1547453586.git.ryder.lee@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <0c400cb1899c1afb4c9f021350cdc0c6ca3f6239.1547453586.git.ryder.lee@mediatek.com>
+In-Reply-To: <37e5b296c6e854b918049a548e7c79f26b0e8147.1547453586.git.ryder.lee@mediatek.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Ryder Lee <ryder.lee@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>
@@ -17,111 +18,33 @@ List-Id: linux-pwm@vger.kernel.org
 
 
 On 14/01/2019 09:21, Ryder Lee wrote:
-> This adds a property "mediatek,num-pwms" to avoid having an endless
-> list of compatibles with no other differences for the same driver.
+> This adds a property "mediatek,num-pwms" in example so that we could
+> set the number of PWM channels via device tree.
 > 
 > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
 > ---
->  drivers/pwm/pwm-mediatek.c | 25 +++++++++++--------------
->  1 file changed, 11 insertions(+), 14 deletions(-)
+>  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index eb6674c..37daa84 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -55,7 +55,6 @@ enum {
->  };
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> index 991728c..f9e2d1f 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> @@ -20,6 +20,7 @@ Required properties:
+>   - pinctrl-names: Must contain a "default" entry.
+>   - pinctrl-0: One property must exist for each entry in pinctrl-names.
+>     See pinctrl/pinctrl-bindings.txt for details of the property values.
+> + - mediatek,num-pwms: the number of PWM channels.
 >  
->  struct mtk_pwm_platform_data {
-> -	unsigned int num_pwms;
->  	bool pwm45_fixup;
->  	bool has_clks;
->  };
-> @@ -226,10 +225,11 @@ static void mtk_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  
->  static int mtk_pwm_probe(struct platform_device *pdev)
->  {
-> +	struct device_node *np = pdev->dev.of_node;
->  	const struct mtk_pwm_platform_data *data;
->  	struct mtk_pwm_chip *pc;
->  	struct resource *res;
-> -	unsigned int i;
-> +	unsigned int i, num_pwms;
->  	int ret;
->  
->  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-> @@ -246,7 +246,13 @@ static int mtk_pwm_probe(struct platform_device *pdev)
->  	if (IS_ERR(pc->regs))
->  		return PTR_ERR(pc->regs);
->  
-> -	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
-> +	ret = of_property_read_u32(np, "mediatek,num-pwms", &num_pwms);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	for (i = 0; i < num_pwms + 2 && pc->soc->has_clks; i++) {
->  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
->  		if (IS_ERR(pc->clks[i])) {
->  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-> @@ -260,7 +266,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
->  	pc->chip.dev = &pdev->dev;
->  	pc->chip.ops = &mtk_pwm_ops;
->  	pc->chip.base = -1;
-> -	pc->chip.npwm = data->num_pwms;
-> +	pc->chip.npwm = num_pwms;
->  
->  	ret = pwmchip_add(&pc->chip);
->  	if (ret < 0) {
-> @@ -279,32 +285,23 @@ static int mtk_pwm_remove(struct platform_device *pdev)
->  }
->  
->  static const struct mtk_pwm_platform_data mt2712_pwm_data = {
-> -	.num_pwms = 8,
-> -	.pwm45_fixup = false,
-> -	.has_clks = true,
-> -};
-> -
-> -static const struct mtk_pwm_platform_data mt7622_pwm_data = {
-> -	.num_pwms = 6,
->  	.pwm45_fixup = false,
->  	.has_clks = true,
->  };
-
-From my point of view that's not perfect. We should make sure that a newer
-kernel does not break with an older device tree and vice versa.
-Just imagine I use some board where u-boot passes the device tree to the kernel,
-I update the kernel and PWM is broken.
-
-So also it is crappy we will need to have the num_pwms variable for the older
-boards.
-Maybe put a switch in the probe function which checks the compatible with a
-comment message saying that this is for legacy device tree, so that no new
-contributer just copys the wrong code.
-
-What do you think?
-Regards,
-Matthias
-
->  
->  static const struct mtk_pwm_platform_data mt7623_pwm_data = {
-> -	.num_pwms = 5,
->  	.pwm45_fixup = true,
->  	.has_clks = true,
->  };
->  
->  static const struct mtk_pwm_platform_data mt7628_pwm_data = {
-> -	.num_pwms = 4,
->  	.pwm45_fixup = true,
->  	.has_clks = false,
->  };
->  
->  static const struct of_device_id mtk_pwm_of_match[] = {
->  	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
-> -	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
-> +	{ .compatible = "mediatek,mt7622-pwm", .data = &mt2712_pwm_data },
->  	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
->  	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
->  	{ },
+>  Example:
+>  	pwm0: pwm@11006000 {
+> @@ -37,4 +38,5 @@ Example:
+>  			      "pwm3", "pwm4", "pwm5";
+>  		pinctrl-names = "default";
+>  		pinctrl-0 = <&pwm0_pins>;
+> +		mediatek,num-pwms = <5>;
+>  	};
 > 
