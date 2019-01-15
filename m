@@ -1,17 +1,16 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/2] pwm: sifive: Add DT documentation for SiFive PWM
- Controller
-Date: Tue, 15 Jan 2019 21:11:49 +0100
-Message-ID: <20190115201149.ghddnf27s5kqephc@pengutronix.de>
+Subject: Re: [PATCH 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Tue, 15 Jan 2019 23:00:46 +0100
+Message-ID: <20190115220046.etgbno6ymsux75dk@pengutronix.de>
 References: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
- <1547194964-16718-2-git-send-email-yash.shah@sifive.com>
+ <1547194964-16718-3-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1547194964-16718-2-git-send-email-yash.shah@sifive.com>
+In-Reply-To: <1547194964-16718-3-git-send-email-yash.shah@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Yash Shah <yash.shah@sifive.com>
 Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
@@ -19,82 +18,384 @@ List-Id: linux-pwm@vger.kernel.org
 
 Hello,
 
-this is v3, right? It is helpful to point this out to ease reviewing.
-
-On Fri, Jan 11, 2019 at 01:52:43PM +0530, Yash Shah wrote:
-> DT documentation for PWM controller added with updated compatible
-> string.
-
-Not sure what was updated here. But assuming this is compared to v2 this
-is not a helpful info in the commit log.
-
+On Fri, Jan 11, 2019 at 01:52:44PM +0530, Yash Shah wrote:
+> Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC.
+> 
 > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> [Atish: Compatible string update]
+> [Atish: Various fixes and code cleanup]
 > Signed-off-by: Atish Patra <atish.patra@wdc.com>
 > Signed-off-by: Yash Shah <yash.shah@sifive.com>
 > ---
->  .../devicetree/bindings/pwm/pwm-sifive.txt         | 37 ++++++++++++++++++++++
->  1 file changed, 37 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+>  drivers/pwm/Kconfig      |  10 ++
+>  drivers/pwm/Makefile     |   1 +
+>  drivers/pwm/pwm-sifive.c | 246 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 257 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-sifive.c
 > 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index a8f47df..3bcaf6a 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -380,6 +380,16 @@ config PWM_SAMSUNG
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-samsung.
+>  
+> +config PWM_SIFIVE
+> +	tristate "SiFive PWM support"
+> +	depends on OF
+> +	depends on COMMON_CLK
+
+I'd say add:
+
+	depends on MACH_SIFIVE || COMPILE_TEST
+
+(I guess "MACH_SIFIVE" is wrong, but I assume you get what I mean.)
+
+> +	help
+> +	  Generic PWM framework driver for SiFive SoCs.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-sifive.
+> +
+>  config PWM_SPEAR
+>  	tristate "STMicroelectronics SPEAr PWM support"
+>  	depends on PLAT_SPEAR
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 9c676a0..30089ca 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_RCAR)		+= pwm-rcar.o
+>  obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
+>  obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
+>  obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+> +obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
+>  obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+>  obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
+>  obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+> diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
 > new file mode 100644
-> index 0000000..e0fc22a
+> index 0000000..7fee809
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> @@ -0,0 +1,37 @@
-> +SiFive PWM controller
-> +
-> +Unlike most other PWM controllers, the SiFive PWM controller currently only
-> +supports one period for all channels in the PWM. This is set globally in DTS.
-> +The period also has significant restrictions on the values it can achieve,
-> +which the driver rounds to the nearest achievable frequency.
-> +
-> +Required properties:
-> +- compatible: Please refer to sifive-blocks-ip-versioning.txt
+> +++ b/drivers/pwm/pwm-sifive.c
+> @@ -0,0 +1,246 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2017-2018 SiFive
+> + * For SiFive's PWM IP block documentation please refer Chapter 14 of
+> + * Reference Manual : https://static.dev.sifive.com/FU540-C000-v1.0.pdf
 
-While the description was too verbose in v2, this is too short. You
-should at least mention something like "sifive,pwmX" and
-"sifive,$cpuname-pwm" (or how ever that scheme works).
+I wonder if such an instance should be only a single PWM instead of
+four. Then you were more flexible with the period lengths (using
+pwmcfg.pwmzerocmp) and could do stuff like inverted and uninverted mode.
 
-> +- reg: physical base address and length of the controller's registers
-> +- clocks: Should contain a clock identifier for the PWM's parent clock.
-> +- #pwm-cells: Should be 2.
-> +  The first cell is the PWM channel number
-> +  The second cell is the PWM polarity
+I didn't understand how the deglitch logic works yet. Currently it is
+not used which might result in four edges in a single period (which is
+bad).
 
-I'd drop these two lines and refer to bindings/pwm/pwm.txt instead.
+> + */
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/slab.h>
+> +
+> +/* Register offsets */
+> +#define REG_PWMCFG		0x0
+> +#define REG_PWMCOUNT		0x8
+> +#define REG_PWMS		0x10
+> +#define REG_PWMCMP0		0x20
 
-> +- sifive,approx-period-ns: the driver will get as close to this period as it can
+I suggest a common prefix for these defines. Something like
+PWM_SIFIVE_
 
-As already said for v2: I'd drop "approx-". 
+> +
+> +/* PWMCFG fields */
+> +#define BIT_PWM_SCALE		0
+> +#define BIT_PWM_STICKY		8
+> +#define BIT_PWM_ZERO_ZMP	9
 
-> +- interrupts: one interrupt per PWM channel
-> +
-> +PWM RTL that corresponds to the IP block version numbers can be found
-> +here:
-> +
-> +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
-> +
-> +Further information on the format of the IP
-> +block-specific version numbers can be found in
-> +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt
-> +
-> +Examples:
-> +
-> +pwm:  pwm@10020000 {
-> +	compatible = "sifive,fu540-c000-pwm","sifive,pwm0";
-> +	reg = <0x0 0x10020000 0x0 0x1000>;
-> +	clocks = <&tlclk>;
-> +	interrupt-parent = <&plic>;
-> +	interrupts = <42 43 44 45>;
-> +	#pwm-cells = <2>;
-> +	sifive,approx-period-ns = <1000000>;
+the manual calls this "pwmzerocmp".
+
+> +#define BIT_PWM_DEGLITCH	10
+> +#define BIT_PWM_EN_ALWAYS	12
+> +#define BIT_PWM_EN_ONCE		13
+> +#define BIT_PWM0_CENTER		16
+> +#define BIT_PWM0_GANG		24
+> +#define BIT_PWM0_IP		28
+
+Also a common prefix please. Something like PWM_SIFIVE_PWMCFG_ seems
+sensible.
+
+> +#define SIZE_PWMCMP		4
+
+Please describe what this constant means. I think this is "ncmp" in the
+reference manual. If so, using PWM_SIFIVE_NCMP as name instead seems
+adequate.
+
+> +#define MASK_PWM_SCALE		0xf
+
+MASK_PWM_SCALE is unused, please drop it.
+
+> +struct sifive_pwm_device {
+> +	struct pwm_chip	chip;
+> +	struct notifier_block notifier;
+> +	struct clk *clk;
+> +	void __iomem *regs;
+> +	unsigned int approx_period;
+> +	unsigned int real_period;
 > +};
-> -- 
-> 1.9.1
-> 
-> 
+
+I'd call this pwm_sifive_ddata. The prefix because the driver is called
+pwm-sifive and ddata because this is driver data and not a device.
+
+> +static inline struct sifive_pwm_device *to_sifive_pwm_chip(struct pwm_chip *c)
+> +{
+> +	return container_of(c, struct sifive_pwm_device, chip);
+> +}
+> +
+> +static void sifive_pwm_get_state(struct pwm_chip *chip, struct pwm_device *dev,
+> +				 struct pwm_state *state)
+
+given that the driver is called pwm-sifive, please use pwm_sifive as
+function prefix.
+
+> +{
+> +	struct sifive_pwm_device *pwm = to_sifive_pwm_chip(chip);
+> +	u32 duty;
+> +
+> +	duty = readl(pwm->regs + REG_PWMCMP0 + dev->hwpwm * SIZE_PWMCMP);
+> +
+> +	state->period = pwm->real_period;
+> +	state->duty_cycle = ((u64)duty * pwm->real_period) >> 16;
+
+In the reference manual this 16 is called "cmpwidth" I think. If I
+understand correctly this might in theory be different from 16, so it
+would be great if this would be at least a cpp symbol for now.
+
+> +	state->polarity = PWM_POLARITY_INVERSED;
+> +	state->enabled = duty > 0;
+> +}
+> +
+> +static int sifive_pwm_apply(struct pwm_chip *chip, struct pwm_device *dev,
+> +			    struct pwm_state *state)
+> +{
+> +	struct sifive_pwm_device *pwm = to_sifive_pwm_chip(chip);
+> +	unsigned int duty_cycle;
+> +	u32 frac;
+> +
+> +	if (state->polarity != PWM_POLARITY_INVERSED)
+> +		return -EINVAL;
+> +
+> +	duty_cycle = state->duty_cycle;
+> +	if (!state->enabled)
+> +		duty_cycle = 0;
+> +
+> +	frac = div_u64((u64)duty_cycle << 16, state->period);
+> +	frac = min(frac, 0xFFFFU);
+
+In the previous review round I asked here:
+
+| Also if real_period is for example 10 ms and the consumer requests
+| duty=12 ms + period=100 ms, the hardware is configured for duty=1.2 ms +
+| period=10 ms, right?
+
+which you confirmed. IMHO this is not acceptable. If the period is
+fixed, you should return -EINVAL (I think) if a different period is
+requested.
+
+> +	writel(frac, pwm->regs + REG_PWMCMP0 + dev->hwpwm * SIZE_PWMCMP);
+
+If you get a constant inactive output with frac=0 and a constant active
+output with frac=0xffff the calculation above seems wrong to me.
+(A value i written to the pwmcmpX register means a duty cycle of
+(i * period / 0xffff). Your calculation assumes a divisor of 0x10000
+however.)
+
+> +
+> +	if (state->enabled)
+> +		sifive_pwm_get_state(chip, dev, state);
+
+@Thierry: Should we bless this correction of state?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct pwm_ops sifive_pwm_ops = {
+> +	.get_state = sifive_pwm_get_state,
+> +	.apply = sifive_pwm_apply,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static struct pwm_device *sifive_pwm_xlate(struct pwm_chip *chip,
+> +					   const struct of_phandle_args *args)
+> +{
+> +	struct sifive_pwm_device *pwm = to_sifive_pwm_chip(chip);
+> +	struct pwm_device *dev;
+> +
+> +	if (args->args[0] >= chip->npwm)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	dev = pwm_request_from_chip(chip, args->args[0], NULL);
+> +	if (IS_ERR(dev))
+> +		return dev;
+> +
+> +	/* The period cannot be changed on a per-PWM basis */
+> +	dev->args.period = pwm->real_period;
+> +	dev->args.polarity = PWM_POLARITY_NORMAL;
+> +	if (args->args[1] & PWM_POLARITY_INVERSED)
+> +		dev->args.polarity = PWM_POLARITY_INVERSED;
+> +
+> +	return dev;
+> +}
+> +
+> +static void sifive_pwm_update_clock(struct sifive_pwm_device *pwm,
+> +				    unsigned long rate)
+> +{
+> +	/* (1 << (16+scale)) * 10^9/rate = real_period */
+> +	unsigned long scale_pow = (pwm->approx_period * (u64)rate) / 1000000000;
+
+NSEC_PER_SEC instead of 1000000000
+
+> +	int scale = clamp(ilog2(scale_pow) - 16, 0, 0xf);
+> +
+> +	writel((1 << BIT_PWM_EN_ALWAYS) | (scale << BIT_PWM_SCALE),
+> +	       pwm->regs + REG_PWMCFG);
+> +
+> +	/* As scale <= 15 the shift operation cannot overflow. */
+> +	pwm->real_period = div64_ul(1000000000ULL << (16 + scale), rate);
+> +	dev_dbg(pwm->chip.dev, "New real_period = %u ns\n", pwm->real_period);
+> +}
+> +
+> +static int sifive_pwm_clock_notifier(struct notifier_block *nb,
+> +				     unsigned long event, void *data)
+> +{
+> +	struct clk_notifier_data *ndata = data;
+> +	struct sifive_pwm_device *pwm =
+> +		container_of(nb, struct sifive_pwm_device, notifier);
+> +
+> +	if (event == POST_RATE_CHANGE)
+> +		sifive_pwm_update_clock(pwm, ndata->new_rate);
+
+Does this need locking? (Maybe not with the current state.)
+
+> +
+> +	return NOTIFY_OK;
+> +}
+> +
+> +static int sifive_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct sifive_pwm_device *pwm;
+> +	struct pwm_chip *chip;
+> +	struct resource *res;
+> +	int ret;
+> +
+> +	pwm = devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	chip = &pwm->chip;
+> +	chip->dev = dev;
+> +	chip->ops = &sifive_pwm_ops;
+> +	chip->of_xlate = sifive_pwm_xlate;
+> +	chip->of_pwm_n_cells = 2;
+> +	chip->base = -1;
+> +	chip->npwm = 4;
+> +
+> +	ret = of_property_read_u32(node, "sifive,approx-period-ns",
+> +				   &pwm->approx_period);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Unable to read sifive,approx-period from DTS\n");
+> +		return ret;
+> +	}
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	pwm->regs = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(pwm->regs)) {
+> +		dev_err(dev, "Unable to map IO resources\n");
+> +		return PTR_ERR(pwm->regs);
+> +	}
+> +
+> +	pwm->clk = devm_clk_get(dev, NULL);
+> +	if (IS_ERR(pwm->clk)) {
+> +		if (PTR_ERR(pwm->clk) != -EPROBE_DEFER)
+> +			dev_err(dev, "Unable to find controller clock\n");
+> +		return PTR_ERR(pwm->clk);
+> +	}
+> +
+> +	ret = clk_prepare_enable(pwm->clk);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable clock for pwm: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Watch for changes to underlying clock frequency */
+> +	pwm->notifier.notifier_call = sifive_pwm_clock_notifier;
+> +	ret = clk_notifier_register(pwm->clk, &pwm->notifier);
+> +	if (ret) {
+> +		dev_err(dev, "failed to register clock notifier: %d\n", ret);
+> +		clk_disable_unprepare(pwm->clk);
+> +		return ret;
+> +	}
+> +
+> +	/* Initialize PWM config */
+> +	sifive_pwm_update_clock(pwm, clk_get_rate(pwm->clk));
+> +
+> +	ret = pwmchip_add(chip);
+> +	if (ret < 0) {
+> +		dev_err(dev, "cannot register PWM: %d\n", ret);
+> +		clk_notifier_unregister(pwm->clk, &pwm->notifier);
+> +		clk_disable_unprepare(pwm->clk);
+> +		return ret;
+> +	}
+
+Can you please use a common error path using goto?
+
+> +	platform_set_drvdata(pdev, pwm);
+> +	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int sifive_pwm_remove(struct platform_device *dev)
+> +{
+> +	struct sifive_pwm_device *pwm = platform_get_drvdata(dev);
+> +	int ret;
+> +
+> +	ret = pwmchip_remove(&pwm->chip);
+> +	clk_notifier_unregister(pwm->clk, &pwm->notifier);
+> +	clk_disable_unprepare(pwm->clk);
+> +	return ret;
+> +}
+> +
+> +static const struct of_device_id sifive_pwm_of_match[] = {
+> +	{ .compatible = "sifive,pwm0" },
+> +	{ .compatible = "sifive,fu540-c000-pwm" },
+
+Do you really need both compatible strings here?
+
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, sifive_pwm_of_match);
+> +
+> +static struct platform_driver sifive_pwm_driver = {
+> +	.probe = sifive_pwm_probe,
+> +	.remove = sifive_pwm_remove,
+> +	.driver = {
+> +		.name = "pwm-sifive",
+> +		.of_match_table = sifive_pwm_of_match,
+> +	},
+> +};
+> +module_platform_driver(sifive_pwm_driver);
+> +
+> +MODULE_DESCRIPTION("SiFive PWM driver");
+> +MODULE_LICENSE("GPL v2");
+
+Best regards
+Uwe
 
 -- 
 Pengutronix e.K.                           | Uwe Kleine-König            |
