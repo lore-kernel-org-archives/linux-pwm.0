@@ -1,7 +1,7 @@
 From: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Subject: [PATCH V2 4/4] ARM: dts: cygnus: Change pwm compatible to new version
-Date: Thu, 17 Jan 2019 01:45:16 +0530
-Message-ID: <1547669716-20070-5-git-send-email-sheetal.tigadoli@broadcom.com>
+Subject: [PATCH V2 1/4] dt-bindings: pwm: kona: Add new compatible for new version pwm-cygnus
+Date: Thu, 17 Jan 2019 01:45:13 +0530
+Message-ID: <1547669716-20070-2-git-send-email-sheetal.tigadoli@broadcom.com>
 References: <1547669716-20070-1-git-send-email-sheetal.tigadoli@broadcom.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1547669716-20070-1-git-send-email-sheetal.tigadoli@broadcom.com>
@@ -12,29 +12,28 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Praveen Kumar B <praveen.b@broadcom.com>
 
-Change pwm compatible to new version pwm-cygnus
-Add new compatible to check pwm configure status
+Add new compatible string for new version pwm-cygnus
 
 Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
 Reviewed-by: Ray Jui <ray.jui@broadcom.com>
 Reviewed-by: Scott Branden <scott.branden@broadcom.com>
 Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
 ---
- arch/arm/boot/dts/bcm-cygnus.dtsi | 2 +-
+ Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm-cygnus.dtsi b/arch/arm/boot/dts/bcm-cygnus.dtsi
-index 253df71..0a0ec5b 100644
---- a/arch/arm/boot/dts/bcm-cygnus.dtsi
-+++ b/arch/arm/boot/dts/bcm-cygnus.dtsi
-@@ -595,7 +595,7 @@
- 		};
+diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+index 8eae9fe..b224142 100644
+--- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+@@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+ This controller has 6 channels.
  
- 		pwm: pwm@180aa500 {
--			compatible = "brcm,kona-pwm";
-+			compatible = "brcm,cygnus-pwm";
- 			reg = <0x180aa500 0xc4>;
- 			#pwm-cells = <3>;
- 			clocks = <&asiu_clks BCM_CYGNUS_ASIU_PWM_CLK>;
+ Required Properties :
+-- compatible: should contain "brcm,kona-pwm"
++- compatible: should contain "brcm,kona-pwm" or "brcm,cygnus-pwm"
+ - reg: physical base address and length of the controller's registers
+ - clocks: phandle + clock specifier pair for the external clock
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a
 -- 
 1.9.1
