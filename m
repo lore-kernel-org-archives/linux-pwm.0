@@ -1,119 +1,130 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
- version pwm-kona
-Date: Tue, 15 Jan 2019 16:14:21 -0800
-Message-ID: <faadc46d-94b5-a32c-79ae-4206fbc26608@broadcom.com>
-References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
- <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
- <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
- <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: Re: [PATCH 1/2] pwm: sifive: Add DT documentation for SiFive PWM Controller
+Date: Wed, 16 Jan 2019 14:51:31 +0530
+Message-ID: <CAJ2_jOGPpwsn=+OU3QcHtGYJ3MFYh9azdALSeWz3-WPXL9vHnw@mail.gmail.com>
+References: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
+ <1547194964-16718-2-git-send-email-yash.shah@sifive.com> <20190115201149.ghddnf27s5kqephc@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
-Content-Language: en-US
+In-Reply-To: <20190115201149.ghddnf27s5kqephc@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Uwe,
+On Wed, Jan 16, 2019 at 1:41 AM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> this is v3, right? It is helpful to point this out to ease reviewing.
 
-On 2019-01-12 7:05 a.m., Uwe Kleine-König wrote:
-> Hello Scott,
->
-> On Fri, Jan 11, 2019 at 01:28:45PM -0800, Scott Branden wrote:
->> On 2019-01-11 12:48 p.m., Uwe Kleine-König wrote:
->>> On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
->>>> From: Praveen Kumar B <praveen.b@broadcom.com>
->>>>
->>>> Add new compatible string for new version of pwm-kona
->>>>
->>>> Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
->>>> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
->>>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
->>>> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
->>>> ---
->>>>    Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
->>>> index 8eae9fe..d37f697 100644
->>>> --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
->>>> +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
->>>> @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
->>>>    This controller has 6 channels.
->>>>    Required Properties :
->>>> -- compatible: should contain "brcm,kona-pwm"
->>>> +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v2"
->>> Is v2 used on a newer generation of kona SoCs? On i.MX these variants
->>> are usually named after the first SoC that came with the new variant. Is
->>> this sensible here, too?
->> It doesn't make as much sense here as different revs of the IP block are
->> picked up based on various decisions.
->>
->> A new SoC could decide to use an old version.
-> IMHO this is no reason to not use the name of the oldest SoC with this
-> variant. I don't know how the SoC names are in the broadcom family, but
-> if they were (in order of age, oldest first):
->
-> 	ant
-> 	bear
-> 	crocodile
->
-> and ant and crocodile use the same IP block we would have
->
-> a) with v1, v2:
->
-> 	ant:
-> 		compatible = "brcm,kona-pwm-v1";
-> 	bear:
-> 		compatible = "brcm,kona-pwm-v2";
-> 	crocodile:
-> 		compatible = "brcm,kona-pwm-v1";
->
-> ; and
->
-> b) with the SoC naming:
->
-> 	ant:
-> 		compatible = "brcm,kona-ant-pwm";
-> 	bear:
-> 		compatible = "brcm,kona-bear-pwm";
-> 	crocodile:
-> 		compatible = "brcm,kona-crocodile-pwm", "brcm,kona-ant-pwm";
->
-> (If you want, drop "brcm,kona-crocodile-pwm", but keeping it is more
-> defensive.)
->
-> I like b) (with "...-crocodile-...") better than a). crocodile using
-> "...-ant-..." is not more ugly than crocodile using "...-v1". This is
-> also a tad more robust because if broadcom releases kona-dolphin and
-> someone finds a minor difference between the IPs used on ant and
-> crocodile it depends on the order of these events who gets v3, while
-> with the SoC naming the result is clear.
->
-> (OK, and given that "brcm,kona-pwm" is already fixed, both approaches
-> need slight adaption, but I guess you still get what I meant.)
-
-Thanks for your thoughts and explanation.
-
-It is unfortunate devicetree has no proper guidelines or documentation on
-
-binding naming.  In the interest of getting this upstream we can name it
-
-"brcm, omega-pwm".  We can drop kona from the binding name as that 
-architecture
-
-is really no more - only IP derived from it is - hence the name kona-v2 
-previously.
+Yes, it is v3. Will take care of this in v4.
 
 >
-> Best regards
-> Uwe
+> On Fri, Jan 11, 2019 at 01:52:43PM +0530, Yash Shah wrote:
+> > DT documentation for PWM controller added with updated compatible
+> > string.
 >
+> Not sure what was updated here. But assuming this is compared to v2 this
+> is not a helpful info in the commit log.
+
+Ok, will remove the 'updated compatible string' part.
+
 >
-Cheers,
-Scott
+> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> > [Atish: Compatible string update]
+> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> > ---
+> >  .../devicetree/bindings/pwm/pwm-sifive.txt         | 37 ++++++++++++++=
+++++++++
+> >  1 file changed, 37 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.tx=
+t
+> >
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Doc=
+umentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > new file mode 100644
+> > index 0000000..e0fc22a
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > @@ -0,0 +1,37 @@
+> > +SiFive PWM controller
+> > +
+> > +Unlike most other PWM controllers, the SiFive PWM controller currently=
+ only
+> > +supports one period for all channels in the PWM. This is set globally =
+in DTS.
+> > +The period also has significant restrictions on the values it can achi=
+eve,
+> > +which the driver rounds to the nearest achievable frequency.
+> > +
+> > +Required properties:
+> > +- compatible: Please refer to sifive-blocks-ip-versioning.txt
+>
+> While the description was too verbose in v2, this is too short. You
+> should at least mention something like "sifive,pwmX" and
+> "sifive,$cpuname-pwm" (or how ever that scheme works).
+
+Will mention the above.
+
+>
+> > +- reg: physical base address and length of the controller's registers
+> > +- clocks: Should contain a clock identifier for the PWM's parent clock=
+.
+> > +- #pwm-cells: Should be 2.
+> > +  The first cell is the PWM channel number
+> > +  The second cell is the PWM polarity
+>
+> I'd drop these two lines and refer to bindings/pwm/pwm.txt instead.
+
+Will be done.
+
+>
+> > +- sifive,approx-period-ns: the driver will get as close to this period=
+ as it can
+>
+> As already said for v2: I'd drop "approx-".
+
+Sure, will be done.
+
+>
+> > +- interrupts: one interrupt per PWM channel
+> > +
+> > +PWM RTL that corresponds to the IP block version numbers can be found
+> > +here:
+> > +
+> > +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/dev=
+ices/pwm
+> > +
+> > +Further information on the format of the IP
+> > +block-specific version numbers can be found in
+> > +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.t=
+xt
+> > +
+> > +Examples:
+> > +
+> > +pwm:  pwm@10020000 {
+> > +     compatible =3D "sifive,fu540-c000-pwm","sifive,pwm0";
+> > +     reg =3D <0x0 0x10020000 0x0 0x1000>;
+> > +     clocks =3D <&tlclk>;
+> > +     interrupt-parent =3D <&plic>;
+> > +     interrupts =3D <42 43 44 45>;
+> > +     #pwm-cells =3D <2>;
+> > +     sifive,approx-period-ns =3D <1000000>;
+> > +};
+> > --
+> > 1.9.1
+> >
+> >
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
+|
+
+Thanks for the comments.
