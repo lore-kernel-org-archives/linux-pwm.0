@@ -1,228 +1,158 @@
-From: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Subject: [PATCH V2 3/4] drivers: pwm: pwm-bcm-kona: Add cygnus-pwm support
-Date: Thu, 17 Jan 2019 01:45:15 +0530
-Message-ID: <1547669716-20070-4-git-send-email-sheetal.tigadoli@broadcom.com>
-References: <1547669716-20070-1-git-send-email-sheetal.tigadoli@broadcom.com>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: Re: [PATCH 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Thu, 17 Jan 2019 12:15:38 +0530
+Message-ID: <CAJ2_jOEuE1Y8G3xnYqa+aA9GSRGmN8xN7fh4nBs0_Yb68Br9bg@mail.gmail.com>
+References: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
+ <1547194964-16718-3-git-send-email-yash.shah@sifive.com> <20190115220046.etgbno6ymsux75dk@pengutronix.de>
+ <CAJ2_jOEuU_=bpbVmdsq7FFEKEm_wHza-h7Hu8QmZ3BgsGgi-ng@mail.gmail.com> <20190116164640.mi3zjbhbhc6k5v7p@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547669716-20070-1-git-send-email-sheetal.tigadoli@broadcom.com>
+In-Reply-To: <20190116164640.mi3zjbhbhc6k5v7p@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>, Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Praveen Kumar B <praveen.b@broadcom.com>
+On Wed, Jan 16, 2019 at 10:16 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> On Wed, Jan 16, 2019 at 04:40:42PM +0530, Yash Shah wrote:
+> > On Wed, Jan 16, 2019 at 3:30 AM Uwe Kleine-K=C3=B6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Fri, Jan 11, 2019 at 01:52:44PM +0530, Yash Shah wrote:
+> > > > Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed=
+ SoC.
+> > > >
+> > > > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> > > > [Atish: Various fixes and code cleanup]
+> > > > Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> > > > Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> > > > ---
+> > > >  drivers/pwm/Kconfig      |  10 ++
+> > > >  drivers/pwm/Makefile     |   1 +
+> > > >  drivers/pwm/pwm-sifive.c | 246 +++++++++++++++++++++++++++++++++++=
+++++++++++++
+> > > >  3 files changed, 257 insertions(+)
+> > > >  create mode 100644 drivers/pwm/pwm-sifive.c
+> > > >
+> > > > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > > > index a8f47df..3bcaf6a 100644
+> > > > --- a/drivers/pwm/Kconfig
+> > > > +++ b/drivers/pwm/Kconfig
+> > > > @@ -380,6 +380,16 @@ config PWM_SAMSUNG
+> > > >         To compile this driver as a module, choose M here: the modu=
+le
+> > > >         will be called pwm-samsung.
+> > > >
+> > > > +config PWM_SIFIVE
+> > > > +     tristate "SiFive PWM support"
+> > > > +     depends on OF
+> > > > +     depends on COMMON_CLK
+> > >
+> > > I'd say add:
+> > >
+> > >         depends on MACH_SIFIVE || COMPILE_TEST
+> > >
+> > > (I guess "MACH_SIFIVE" is wrong, but I assume you get what I mean.)
+> >
+> > As of now, MACH_SIFIVE/ARCH_SIFIVE isn't available.
+> > @Paul, Do you have any comments on this?
+>
+> If this is not going to be available at least protect it by
+>
+>         depends RISCV || COMPILE_TEST
+>
+> > > I wonder if such an instance should be only a single PWM instead of
+> > > four. Then you were more flexible with the period lengths (using
+> > > pwmcfg.pwmzerocmp) and could do stuff like inverted and uninverted mo=
+de.
+> > >
+> > > I didn't understand how the deglitch logic works yet. Currently it is
+> > > not used which might result in four edges in a single period (which i=
+s
+> > > bad).
+> >
+> > I can enable deglitch logic by just setting a bit (BIT_PWM_DEGLITCH) in
+> > REG_PWMCFG. Will do that.
+>
+> This only works for the first pwm output though.
+>
+> > > > +struct sifive_pwm_device {
+> > > > +     struct pwm_chip chip;
+> > > > +     struct notifier_block notifier;
+> > > > +     struct clk *clk;
+> > > > +     void __iomem *regs;
+> > > > +     unsigned int approx_period;
+>
+> When thinking about this a bit more, I think the better approach would
+> be to let the consumer change the period iff there is only one consumer.
+> Then you can drop that approx-period stuff and the result is more
+> flexible. (Having said that I still prefer making the driver provide
+> only a single PWM with the ability to have periods other than powers of
+> two.)
+>
 
-Add support for new version of pwm-cygnus.
-Add support to make PWM changes configured and stable.
+I am not confident about the implementation of the way you are suggesting.
+As of now, I am going to stick with the current implementation.
 
-Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
-Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
----
- drivers/pwm/pwm-bcm-kona.c | 95 ++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 76 insertions(+), 19 deletions(-)
+> > > > +     writel(frac, pwm->regs + REG_PWMCMP0 + dev->hwpwm * SIZE_PWMC=
+MP);
+> > >
+> > > If you get a constant inactive output with frac=3D0 and a constant ac=
+tive
+> > > output with frac=3D0xffff the calculation above seems wrong to me.
+> > > (A value i written to the pwmcmpX register means a duty cycle of
+> > > (i * period / 0xffff). Your calculation assumes a divisor of 0x10000
+> > > however.)
+> >
+> > Not sure if I get you completely. But, if divisor of 0xffff is your con=
+cern then
+> > does the below look ok?
+> >
+> > frac =3D div_u64(((u64)duty_cycle << 16) - duty_cycle, state->period);
+>
+> This works (I think, didn't redo the maths), but I would prefer
+>
+>         frac =3D div_u64((u64)duty_cycle * 0xffff, state->period);
+>
+> for better readability. (Maybe the compiler is even clever enough to see
+> this can be calculated as you suggested.)
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index fe63289..143843f 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -15,6 +15,7 @@
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/ioport.h>
- #include <linux/math64.h>
- #include <linux/module.h>
-@@ -65,10 +66,19 @@
- #define DUTY_CYCLE_HIGH_MIN			(0x00000000)
- #define DUTY_CYCLE_HIGH_MAX			(0x00ffffff)
- 
-+#define PWM_MONITOR_OFFSET			0xb0
-+#define PWM_MONITOR_TIMEOUT_US			5
-+
-+enum kona_pwmc_ver {
-+	KONA_PWM = 1,
-+	CYGNUS_PWM
-+};
-+
- struct kona_pwmc {
- 	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
-+	enum kona_pwmc_ver version;
- };
- 
- static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
-@@ -76,10 +86,36 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
- 	return container_of(_chip, struct kona_pwmc, chip);
- }
- 
-+static int kona_pwmc_wait_stable(struct pwm_chip *chip, unsigned int chan,
-+				 unsigned int kona_ver)
-+{
-+	struct kona_pwmc *kp = to_kona_pwmc(chip);
-+	unsigned int value;
-+
-+	switch (kona_ver) {
-+	case KONA_PWM:
-+		/*
-+		 * There must be a min 400ns delay between clearing trigger and
-+		 * settingit. Failing to do this may result in no PWM signal.
-+		 */
-+		ndelay(400);
-+		return 0;
-+
-+	case CYGNUS_PWM:
-+		return readl_poll_timeout(kp->base + PWM_MONITOR_OFFSET, value,
-+					  !(value & (BIT(chan))), 0,
-+					  PWM_MONITOR_TIMEOUT_US);
-+
-+	default:
-+		return -ENODEV;
-+
-+	}
-+}
-+
- /*
-  * Clear trigger bit but set smooth bit to maintain old output.
-  */
--static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
-+static int kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
- 	unsigned int chan)
- {
- 	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
-@@ -88,14 +124,10 @@ static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
- 	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
- 
--	/*
--	 * There must be a min 400ns delay between clearing trigger and setting
--	 * it. Failing to do this may result in no PWM signal.
--	 */
--	ndelay(400);
-+	return kona_pwmc_wait_stable(&kp->chip, chan, kp->version);
- }
- 
--static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
-+static int kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
- {
- 	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
- 
-@@ -104,8 +136,7 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
- 	value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
- 
--	/* Trigger bit must be held high for at least 400 ns. */
--	ndelay(400);
-+	return kona_pwmc_wait_stable(&kp->chip, chan, kp->version);
- }
- 
- static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -113,8 +144,13 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct kona_pwmc *kp = to_kona_pwmc(chip);
- 	unsigned int chan = pwm->hwpwm;
- 	unsigned int value;
-+	int ret;
- 
--	kona_pwmc_prepare_for_settings(kp, chan);
-+	ret = kona_pwmc_prepare_for_settings(kp, chan);
-+	if (ret < 0) {
-+		dev_err(chip->dev, "failed to prepare pwm settings: %d\n", ret);
-+		return;
-+	}
- 
- 	/* Simulate a disable by configuring for zero duty */
- 	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
-@@ -125,7 +161,11 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	value &= ~PRESCALE_MASK(chan);
- 	writel(value, kp->base + PRESCALE_OFFSET);
- 
--	kona_pwmc_apply_settings(kp, chan);
-+	ret = kona_pwmc_apply_settings(kp, chan);
-+	if (ret < 0) {
-+		dev_err(chip->dev, "failed to apply pwm settings: %d\n", ret);
-+		return;
-+	}
- 
- 	clk_disable_unprepare(kp->clk);
- }
-@@ -188,7 +228,12 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			}
- 		}
- 
--		kona_pwmc_prepare_for_settings(kp, chan);
-+		ret = kona_pwmc_prepare_for_settings(kp, chan);
-+		if (ret < 0) {
-+			dev_err(chip->dev,
-+				"failed to prepare pwm settings: %d\n", ret);
-+			return ret;
-+		}
- 
- 		value = readl(kp->base + PRESCALE_OFFSET);
- 		value &= ~PRESCALE_MASK(chan);
-@@ -208,7 +253,12 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			writel(value, kp->base + PWM_CONTROL_OFFSET);
- 		}
- 
--		kona_pwmc_apply_settings(kp, chan);
-+		ret = kona_pwmc_apply_settings(kp, chan);
-+		if (ret < 0) {
-+			dev_err(chip->dev,
-+				"failed to prepare pwm settings: %d\n", ret);
-+			return ret;
-+		}
- 	} else if (cstate.enabled) {
- 		kona_pwmc_disable(chip, pwm);
- 	}
-@@ -221,14 +271,26 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	.owner = THIS_MODULE,
- };
- 
-+static const struct of_device_id bcm_kona_pwmc_dt[] = {
-+	{ .compatible = "brcm,kona-pwm", .data = (void *)KONA_PWM},
-+	{ .compatible = "brcm,cygnus-pwm", .data = (void *)CYGNUS_PWM},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, bcm_kona_pwmc_dt);
-+
- static int kona_pwmc_probe(struct platform_device *pdev)
- {
- 	struct kona_pwmc *kp;
- 	struct resource *res;
-+	const struct of_device_id *of_id;
- 	unsigned int chan;
- 	unsigned int value = 0;
- 	int ret = 0;
- 
-+	of_id = of_match_node(bcm_kona_pwmc_dt, pdev->dev.of_node);
-+	if (!of_id)
-+		return -ENODEV;
-+
- 	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
- 	if (kp == NULL)
- 		return -ENOMEM;
-@@ -241,6 +303,7 @@ static int kona_pwmc_probe(struct platform_device *pdev)
- 	kp->chip.npwm = 6;
- 	kp->chip.of_xlate = of_pwm_xlate_with_flags;
- 	kp->chip.of_pwm_n_cells = 3;
-+	kp->version = (enum kona_pwmc_ver)of_id->data;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	kp->base = devm_ioremap_resource(&pdev->dev, res);
-@@ -287,12 +350,6 @@ static int kona_pwmc_remove(struct platform_device *pdev)
- 	return pwmchip_remove(&kp->chip);
- }
- 
--static const struct of_device_id bcm_kona_pwmc_dt[] = {
--	{ .compatible = "brcm,kona-pwm" },
--	{ },
--};
--MODULE_DEVICE_TABLE(of, bcm_kona_pwmc_dt);
--
- static struct platform_driver kona_pwmc_driver = {
- 	.driver = {
- 		.name = "bcm-kona-pwm",
--- 
-1.9.1
+Sure, will multiply it with 0xffff for better readability.
+
+>
+> > > > +static int sifive_pwm_clock_notifier(struct notifier_block *nb,
+> > > > +                                  unsigned long event, void *data)
+> > > > +{
+> > > > +     struct clk_notifier_data *ndata =3D data;
+> > > > +     struct sifive_pwm_device *pwm =3D
+> > > > +             container_of(nb, struct sifive_pwm_device, notifier);
+> > > > +
+> > > > +     if (event =3D=3D POST_RATE_CHANGE)
+> > > > +             sifive_pwm_update_clock(pwm, ndata->new_rate);
+> > >
+> > > Does this need locking? (Maybe not with the current state.)
+> >
+> > No. We can add it when required.
+>
+> My thought was, that the clk freq might change while .apply is active.
+> But given that you only configure the relative duty cycle this is
+> independent of the actual clk freq.
+>
+> Best regards
+> Uwe
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
+|
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
