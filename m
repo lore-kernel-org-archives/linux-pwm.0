@@ -1,115 +1,126 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Thu, 17 Jan 2019 08:28:41 +0100
-Message-ID: <20190117072841.e57tilkbrtnifss4@pengutronix.de>
+Date: Thu, 17 Jan 2019 09:19:56 +0100
+Message-ID: <20190117081956.hpj4ewdihpwuoonz@pengutronix.de>
 References: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
  <1547194964-16718-3-git-send-email-yash.shah@sifive.com>
  <20190115220046.etgbno6ymsux75dk@pengutronix.de>
  <CAJ2_jOEuU_=bpbVmdsq7FFEKEm_wHza-h7Hu8QmZ3BgsGgi-ng@mail.gmail.com>
  <20190116164640.mi3zjbhbhc6k5v7p@pengutronix.de>
- <CAJ2_jOEuE1Y8G3xnYqa+aA9GSRGmN8xN7fh4nBs0_Yb68Br9bg@mail.gmail.com>
+ <alpine.DEB.2.21.9999.1901160909540.19681@viisi.sifive.com>
+ <20190116172849.h5qdfa5wc3vaprbn@pengutronix.de>
+ <alpine.DEB.2.21.9999.1901161015400.19681@viisi.sifive.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAJ2_jOEuE1Y8G3xnYqa+aA9GSRGmN8xN7fh4nBs0_Yb68Br9bg@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.21.9999.1901161015400.19681@viisi.sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
+To: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Yash Shah <yash.shah@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+Hello Paul,
 
-On Thu, Jan 17, 2019 at 12:15:38PM +0530, Yash Shah wrote:
-> On Wed, Jan 16, 2019 at 10:16 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> >
-> > Hello,
-> >
-> > On Wed, Jan 16, 2019 at 04:40:42PM +0530, Yash Shah wrote:
-> > > On Wed, Jan 16, 2019 at 3:30 AM Uwe Kleine-König
-> > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > On Fri, Jan 11, 2019 at 01:52:44PM +0530, Yash Shah wrote:
-> > > > > Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC.
-> > > > >
-> > > > > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> > > > > [Atish: Various fixes and code cleanup]
-> > > > > Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> > > > > Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> > > > > ---
-> > > > >  drivers/pwm/Kconfig      |  10 ++
-> > > > >  drivers/pwm/Makefile     |   1 +
-> > > > >  drivers/pwm/pwm-sifive.c | 246 +++++++++++++++++++++++++++++++++++++++++++++++
-> > > > >  3 files changed, 257 insertions(+)
-> > > > >  create mode 100644 drivers/pwm/pwm-sifive.c
-> > > > >
-> > > > > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > > > > index a8f47df..3bcaf6a 100644
-> > > > > --- a/drivers/pwm/Kconfig
-> > > > > +++ b/drivers/pwm/Kconfig
-> > > > > @@ -380,6 +380,16 @@ config PWM_SAMSUNG
-> > > > >         To compile this driver as a module, choose M here: the module
-> > > > >         will be called pwm-samsung.
-> > > > >
-> > > > > +config PWM_SIFIVE
-> > > > > +     tristate "SiFive PWM support"
-> > > > > +     depends on OF
-> > > > > +     depends on COMMON_CLK
-> > > >
-> > > > I'd say add:
-> > > >
-> > > >         depends on MACH_SIFIVE || COMPILE_TEST
-> > > >
-> > > > (I guess "MACH_SIFIVE" is wrong, but I assume you get what I mean.)
-> > >
-> > > As of now, MACH_SIFIVE/ARCH_SIFIVE isn't available.
-> > > @Paul, Do you have any comments on this?
-> >
-> > If this is not going to be available at least protect it by
-> >
-> >         depends RISCV || COMPILE_TEST
-> >
-> > > > I wonder if such an instance should be only a single PWM instead of
-> > > > four. Then you were more flexible with the period lengths (using
-> > > > pwmcfg.pwmzerocmp) and could do stuff like inverted and uninverted mode.
-> > > >
-> > > > I didn't understand how the deglitch logic works yet. Currently it is
-> > > > not used which might result in four edges in a single period (which is
-> > > > bad).
-> > >
-> > > I can enable deglitch logic by just setting a bit (BIT_PWM_DEGLITCH) in
-> > > REG_PWMCFG. Will do that.
-> >
-> > This only works for the first pwm output though.
-
-I mixed this up with pwmzerocmp; deglitch should work on all four
-outputs.
-
-> > > > > +struct sifive_pwm_device {
-> > > > > +     struct pwm_chip chip;
-> > > > > +     struct notifier_block notifier;
-> > > > > +     struct clk *clk;
-> > > > > +     void __iomem *regs;
-> > > > > +     unsigned int approx_period;
-> >
-> > When thinking about this a bit more, I think the better approach would
-> > be to let the consumer change the period iff there is only one consumer.
-> > Then you can drop that approx-period stuff and the result is more
-> > flexible. (Having said that I still prefer making the driver provide
-> > only a single PWM with the ability to have periods other than powers of
-> > two.)
-> >
+On Wed, Jan 16, 2019 at 11:29:35AM -0800, Paul Walmsley wrote:
+> COMPILE_TEST made slightly more sense before the broad availability of 
+> open-source soft cores, SoC integration, and IP; and before powerful, 
+> inexpensive FPGAs and SoCs with FPGA fabrics were common.
 > 
-> I am not confident about the implementation of the way you are suggesting.
-> As of now, I am going to stick with the current implementation.
+> Even back then, COMPILE_TEST was starting to look questionable.  IP blocks 
+> from CPU- and SoC vendor-independent libraries, like DesignWare and the 
+> Cadence IP libraries, were integrated on SoCs across varying CPU 
+> architectures.  (Fortunately, looking at the tree, subsystem maintainers 
+> with DesignWare drivers seem to have largely avoided adding architecture 
+> or SoC-specific Kconfig restrictions there - and thus have also avoided 
+> the need for COMPILE_TEST.)  If an unnecessary architecture Kconfig 
+> dependency was added for a leaf driver, that Kconfig line would either 
+> need to be patched out by hand, or if present, COMPILE_TEST would need to 
+> be enabled.
+> 
+> This was less of a problem then.  There were very few FPGA Linux users, 
+> and they were mostly working on internal proprietary projects. FPGAs that 
+> could run Linux at a reasonable speed, including MMUs and FPUs, were 
+> expensive or were missing good tool support.  So most FPGA Linux 
+> development was restricted to ASIC vendors - the Samsungs, Qualcomms, 
+> NVIDIAs of the world - for prototyping, and those FPGA platforms never 
+> made it outside those companies.
+> 
+> The situation is different now.  The major FPGA vendors have inexpensive 
+> FPGA SoCs with full-featured CPU hard macros.  The development boards can 
+> be quite affordable (< USD 300 for the Xilinx Ultra96).  There are also 
+> now open-source SoC HDL implementations - including MMUs, FPUs, and 
+> peripherals like PWM and UART - for the conventional FPGA market.  These 
+> can run at mid-1990's clock rates - slow by modern standards but still 
+> quite usable.
 
-The idea is to count the users using the .request and .free callbacks.
-Iff there is exactly one, allow changes to period.
+In my eyes it's better to make a driver not possible to enable out of
+the box than offering to enable it while it most probably won't be used.
 
-But please consider moving to an abstraction that only provides a single
-pwm instead.
+People who configure their own kernel and distribution kernel
+maintainers will thank you. (Well ok, they won't notice, so they won't
+actually tell you, but anyhow.) I'm a member of the Debian kernel team
+and I see how many config items there are that are not explicitly
+handled for the various different kernel images. If they were restricted
+using COMPILE_TEST to just be possible to enable on machines where it is
+known (or at least likely) to make sense that would help. Also when I do
+a kernel version bump for a machine with a tailored kernel running (say)
+on an ARM/i.MX SoC, I could more easily be careful about the relevant
+changes when doing oldconfig if I were not asked about a whole bunch of
+drivers that are sure to be irrelevant.
+
+And if someone synthesizes this sifive PWM into an FPGA that is
+connected to an OMAP, changing
+
+	depends RISCV || COMPILE_TEST
+
+to something like
+
+	depends RISCV || MACH_OMAP || COMPILE_TEST
+
+is a relatively low effort. (Or we introduce a symbol that tells that
+the machine has an FPGA and based on that enable the sifive pwm driver.)
+And if a single person comes up saying they need that driver on OMAP
+I happily support such a change.
+
+> So or vendor-specific IP blocks that are unlikely to ever be reused by 
+> anyone else, like the NVIDIA or TI PWM blocks, maybe there's still some 
+> justification for COMPILE_TEST.  But for drivers for open-source, 
+> SoC-independent peripheral IP blocks - or even for proprietary IP blocks 
+> from library vendors like Synopsys or Cadence - like this PWM driver, we 
+> shouldn't add unnecessary architecture, SoC vendor, or COMPILE_TEST 
+> Kconfig dependencies.  They will just force users to patch the kernel or 
+> enable COMPILE_TEST for kernels that are actually meant to run on real 
+> hardware.
+
+I understand that downside. I just think that people who synthesize an
+open source core into their machine and then run Linux on it are very
+likely easily able to patch the Kconfig file to enable the needed
+drivers and tell us. Also if you compare the number of people who hit
+this problem to the number of people to have to decide if they need
+PWM_SIFIVE and don't need it, I guess there will be an at least
+big two-digit factor between them. And as soon as this OMAP machine with
+the FPGA becomes mainstream enough that tutorials pop up in the web that
+give you a copy&paste template to put the sifive pwm into it, I expect
+the dependency is already fixed.
+
+Yes, there is no big harm if you enable this driver and don't need
+it. But there are hundreds of drivers, and together they do hurt.
+Also if you support a "newbie" configuring their first kernel, this is
+much less frightening and gives a much better impression if at least
+most of the presented options matter. Also it is easier to pick your pwm
+driver if it's presented in a list of ten driver than if the list has
+100 items.
+
+There are reasons for both approaches and we need to weight the
+respective interests. In my eyes it's clear which is the better
+approach, but obviously YMMV. So if you choose to not restrict the
+kconfig symbol, at least do it consciously with the arguments for the
+other side in mind. And please also consider that your position is
+subjective because you're a kernel developer and personally don't care
+much if configuring a kernel is difficult to a newcomer.
 
 Best regards
 Uwe
