@@ -1,65 +1,36 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v2] backlight: pwm_bl: Use SIMPLE_DEV_PM_OPS()
-Date: Thu, 17 Jan 2019 16:14:57 +0000
-Message-ID: <20190117161457.34445eml4otivdjk@holly.lan>
-References: <20190116133817.2483-1-shc_work@mail.ru>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] drivers: pwm: pwm-bcm-kona: update macros to remove
+ braces around numbers
+Date: Thu, 17 Jan 2019 20:36:30 +0100
+Message-ID: <20190117193630.vplxcy7agczsmzqo@pengutronix.de>
+References: <1547667682-5095-1-git-send-email-sheetal.tigadoli@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190116133817.2483-1-shc_work@mail.ru>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <1547667682-5095-1-git-send-email-sheetal.tigadoli@broadcom.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCBKYW4gMTYsIDIwMTkgYXQgMDQ6Mzg6MTdQTSArMDMwMCwgQWxleGFuZGVyIFNoaXlh
-biB3cm90ZToKPiBVc2UgdGhlIFNJTVBMRV9ERVZfUE1fT1BTKCkgbWFjcm8gdG8gZGVjbGFyZSB0
-aGUgZHJpdmVyJ3MgcG1fb3BzLgo+IEFzIGEgc2lkZSBlZmZlY3QsIHJlbW92aW5nICNpZmRlZiBD
-T05GSUdfUE1fU0xFRVAgd2lsbCBpbXByb3ZlCj4gY29tcGlsYXRpb24gY292ZXJhZ2UuCgpBZG9w
-dGluZyBTSU1QTEVfREVWX1BNX09QUygpIHJlc3VsdHMgaW4gdGhlIHN1c3BlbmQvcmVzdW1lIGZ1
-bmN0aW9ucwpiZWluZyBjYWxsZWQgZHVyaW5nIGEgZnJlZXplL3RoYXcuIElzIHR1cm5pbmcgb2Zm
-IHRoZSBiYWNrbGlnaHQgZHVyaW5nIGEKZnJlZXplIHJlYWxseSBuZWNlc3Nhcnk/CgoKPiAKPiBT
-aWduZWQtb2ZmLWJ5OiBBbGV4YW5kZXIgU2hpeWFuIDxzaGNfd29ya0BtYWlsLnJ1Pgo+IC0tLQoK
-U3VtbWFyeSBvZiBjaGFuZ2VzIHNpbmNlIHYxIHdvdWxkIGJlIHVzZWZ1bCBoZXJlLiBGb3Igc2lu
-Z2xlIHBhdGNoZXMgeW91CmNhbiB1c2UgZ2l0IGFubm90YXRlIGFuZCB0aGUgY29ycmVzcG9uZGlu
-ZyBhcmd1bWVudCB0byBmb3JtYXQtcGF0Y2ggdG8KaGFuZGxlIHRoZSBjaGFuZ2UgbG9nLgoKCj4g
-IGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIHwgMTYgKysrKy0tLS0tLS0tLS0tLQo+
-ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkKPiAKPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgYi9kcml2ZXJzL3Zp
-ZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+IGluZGV4IGZlYjkwNzYuLmVhZWZkYjAgMTAwNjQ0Cj4g
-LS0tIGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiArKysgYi9kcml2ZXJzL3Zp
-ZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+IEBAIC02NzMsOCArNjczLDcgQEAgc3RhdGljIHZvaWQg
-cHdtX2JhY2tsaWdodF9zaHV0ZG93bihzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ICAJ
-cHdtX2JhY2tsaWdodF9wb3dlcl9vZmYocGIpOwo+ICB9Cj4gIAo+IC0jaWZkZWYgQ09ORklHX1BN
-X1NMRUVQCj4gLXN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9zdXNwZW5kKHN0cnVjdCBkZXZpY2Ug
-KmRldikKPiArc3RhdGljIGludCBfX21heWJlX3VudXNlZCBwd21fYmFja2xpZ2h0X3N1c3BlbmQo
-c3RydWN0IGRldmljZSAqZGV2KQo+ICB7Cj4gIAlzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwg
-PSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsKPiAgCXN0cnVjdCBwd21fYmxfZGF0YSAqcGIgPSBibF9n
-ZXRfZGF0YShibCk7Cj4gQEAgLTY5MCw3ICs2ODksNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGln
-aHRfc3VzcGVuZChzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gIAlyZXR1cm4gMDsKPiAgfQo+ICAKPiAt
-c3RhdGljIGludCBwd21fYmFja2xpZ2h0X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gK3N0
-YXRpYyBpbnQgX19tYXliZV91bnVzZWQgcHdtX2JhY2tsaWdodF9yZXN1bWUoc3RydWN0IGRldmlj
-ZSAqZGV2KQo+ICB7Cj4gIAlzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwgPSBkZXZfZ2V0X2Ry
-dmRhdGEoZGV2KTsKPiAgCj4gQEAgLTY5OCwxNiArNjk3LDkgQEAgc3RhdGljIGludCBwd21fYmFj
-a2xpZ2h0X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gIAo+ICAJcmV0dXJuIDA7Cj4gIH0K
-PiAtI2VuZGlmCj4gIAo+IC1zdGF0aWMgY29uc3Qgc3RydWN0IGRldl9wbV9vcHMgcHdtX2JhY2ts
-aWdodF9wbV9vcHMgPSB7Cj4gLSNpZmRlZiBDT05GSUdfUE1fU0xFRVAKPiAtCS5zdXNwZW5kID0g
-cHdtX2JhY2tsaWdodF9zdXNwZW5kLAo+IC0JLnJlc3VtZSA9IHB3bV9iYWNrbGlnaHRfcmVzdW1l
-LAo+IC0JLnBvd2Vyb2ZmID0gcHdtX2JhY2tsaWdodF9zdXNwZW5kLAo+IC0JLnJlc3RvcmUgPSBw
-d21fYmFja2xpZ2h0X3Jlc3VtZSwKPiAtI2VuZGlmCj4gLX07Cj4gK3N0YXRpYyBTSU1QTEVfREVW
-X1BNX09QUyhwd21fYmFja2xpZ2h0X3BtX29wcywKPiArCQkJIHB3bV9iYWNrbGlnaHRfc3VzcGVu
-ZCwgcHdtX2JhY2tsaWdodF9yZXN1bWUpOwo+ICAKPiAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9k
-cml2ZXIgcHdtX2JhY2tsaWdodF9kcml2ZXIgPSB7Cj4gIAkuZHJpdmVyCQk9IHsKPiAtLSAKPiAy
-LjEwLjIKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-ZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0
-dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+Hello,
+
+I'm sure Thierry doesn't want "drivers:" in the Subject, but usually he
+just fixes up stuff like that while applying, so I expect no reason to
+resend.
+
+On Thu, Jan 17, 2019 at 01:11:22AM +0530, Sheetal Tigadoli wrote:
+> update macros to remove braces around numbers
+> 
+> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
