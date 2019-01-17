@@ -1,53 +1,50 @@
-From: Alexander Shiyan <shc_work@mail.ru>
-Subject: [PATCH v2] backlight: pwm_bl: Use SIMPLE_DEV_PM_OPS()
-Date: Wed, 16 Jan 2019 16:38:17 +0300
-Message-ID: <20190116133817.2483-1-shc_work@mail.ru>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 3/5] arm64: dts: mt7622: add a property
+ "mediatek,num-pwms" for PWM
+Date: Thu, 17 Jan 2019 14:00:43 +0100
+Message-ID: <2edcc5fd-ce60-b585-e0fd-226897a7a34c@gmail.com>
+References: <0c400cb1899c1afb4c9f021350cdc0c6ca3f6239.1547453586.git.ryder.lee@mediatek.com>
+ <b5ed4626a553acb5e3107c6c96e82b674439128f.1547453586.git.ryder.lee@mediatek.com>
+ <20190115200231.drn2rbxu4jxr22yz@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: linux-pwm@vger.kernel.org
-Cc: linux-fbdev@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190115200231.drn2rbxu4jxr22yz@pengutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Ryder Lee <ryder.lee@mediatek.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-VXNlIHRoZSBTSU1QTEVfREVWX1BNX09QUygpIG1hY3JvIHRvIGRlY2xhcmUgdGhlIGRyaXZlcidz
-IHBtX29wcy4KQXMgYSBzaWRlIGVmZmVjdCwgcmVtb3ZpbmcgI2lmZGVmIENPTkZJR19QTV9TTEVF
-UCB3aWxsIGltcHJvdmUKY29tcGlsYXRpb24gY292ZXJhZ2UuCgpTaWduZWQtb2ZmLWJ5OiBBbGV4
-YW5kZXIgU2hpeWFuIDxzaGNfd29ya0BtYWlsLnJ1PgotLS0KIGRyaXZlcnMvdmlkZW8vYmFja2xp
-Z2h0L3B3bV9ibC5jIHwgMTYgKysrKy0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDQgaW5z
-ZXJ0aW9ucygrKSwgMTIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9i
-YWNrbGlnaHQvcHdtX2JsLmMgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwppbmRl
-eCBmZWI5MDc2Li5lYWVmZGIwIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9w
-d21fYmwuYworKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwpAQCAtNjczLDgg
-KzY3Myw3IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfc2h1dGRvd24oc3RydWN0IHBsYXRm
-b3JtX2RldmljZSAqcGRldikKIAlwd21fYmFja2xpZ2h0X3Bvd2VyX29mZihwYik7CiB9CiAKLSNp
-ZmRlZiBDT05GSUdfUE1fU0xFRVAKLXN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9zdXNwZW5kKHN0
-cnVjdCBkZXZpY2UgKmRldikKK3N0YXRpYyBpbnQgX19tYXliZV91bnVzZWQgcHdtX2JhY2tsaWdo
-dF9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikKIHsKIAlzdHJ1Y3QgYmFja2xpZ2h0X2Rldmlj
-ZSAqYmwgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsKIAlzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiID0g
-YmxfZ2V0X2RhdGEoYmwpOwpAQCAtNjkwLDcgKzY4OSw3IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2ts
-aWdodF9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikKIAlyZXR1cm4gMDsKIH0KIAotc3RhdGlj
-IGludCBwd21fYmFja2xpZ2h0X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCitzdGF0aWMgaW50
-IF9fbWF5YmVfdW51c2VkIHB3bV9iYWNrbGlnaHRfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikK
-IHsKIAlzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsK
-IApAQCAtNjk4LDE2ICs2OTcsOSBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcmVzdW1lKHN0
-cnVjdCBkZXZpY2UgKmRldikKIAogCXJldHVybiAwOwogfQotI2VuZGlmCiAKLXN0YXRpYyBjb25z
-dCBzdHJ1Y3QgZGV2X3BtX29wcyBwd21fYmFja2xpZ2h0X3BtX29wcyA9IHsKLSNpZmRlZiBDT05G
-SUdfUE1fU0xFRVAKLQkuc3VzcGVuZCA9IHB3bV9iYWNrbGlnaHRfc3VzcGVuZCwKLQkucmVzdW1l
-ID0gcHdtX2JhY2tsaWdodF9yZXN1bWUsCi0JLnBvd2Vyb2ZmID0gcHdtX2JhY2tsaWdodF9zdXNw
-ZW5kLAotCS5yZXN0b3JlID0gcHdtX2JhY2tsaWdodF9yZXN1bWUsCi0jZW5kaWYKLX07CitzdGF0
-aWMgU0lNUExFX0RFVl9QTV9PUFMocHdtX2JhY2tsaWdodF9wbV9vcHMsCisJCQkgcHdtX2JhY2ts
-aWdodF9zdXNwZW5kLCBwd21fYmFja2xpZ2h0X3Jlc3VtZSk7CiAKIHN0YXRpYyBzdHJ1Y3QgcGxh
-dGZvcm1fZHJpdmVyIHB3bV9iYWNrbGlnaHRfZHJpdmVyID0gewogCS5kcml2ZXIJCT0gewotLSAK
-Mi4xMC4yCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpk
-cmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0
-cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+CgpPbiAxNS8wMS8yMDE5IDIxOjAyLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBIZWxsbywK
+PiAKPiBPbiBNb24sIEphbiAxNCwgMjAxOSBhdCAwNDoyMToyMlBNICswODAwLCBSeWRlciBMZWUg
+d3JvdGU6Cj4+IFRoaXMgYWRkcyBhIHByb3BlcnR5ICJtZWRpYXRlayxudW0tcHdtcyIgZm9yIFBX
+TSBjb250cm9sbGVyLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBSeWRlciBMZWUgPHJ5ZGVyLmxlZUBt
+ZWRpYXRlay5jb20+Cj4+IC0tLQo+PiAgYXJjaC9hcm02NC9ib290L2R0cy9tZWRpYXRlay9tdDc2
+MjIuZHRzaSB8IDEgKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspCj4+Cj4+IGRp
+ZmYgLS1naXQgYS9hcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL210NzYyMi5kdHNpIGIvYXJj
+aC9hcm02NC9ib290L2R0cy9tZWRpYXRlay9tdDc2MjIuZHRzaQo+PiBpbmRleCA4ZmM0YWE3Li5h
+YjAxNmNmIDEwMDY0NAo+PiAtLS0gYS9hcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL210NzYy
+Mi5kdHNpCj4+ICsrKyBiL2FyY2gvYXJtNjQvYm9vdC9kdHMvbWVkaWF0ZWsvbXQ3NjIyLmR0c2kK
+Pj4gQEAgLTQzNiw2ICs0MzYsNyBAQAo+PiAgCQkJIDwmcGVyaWNmZyBDTEtfUEVSSV9QV002X1BE
+PjsKPj4gIAkJY2xvY2stbmFtZXMgPSAidG9wIiwgIm1haW4iLCAicHdtMSIsICJwd20yIiwgInB3
+bTMiLCAicHdtNCIsCj4+ICAJCQkgICAgICAicHdtNSIsICJwd202IjsKPj4gKwkJbWVkaWF0ZWss
+bnVtLXB3bXMgPSA8Nj47Cj4+ICAJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gCj4gQ29uY2VwdHVh
+bGx5IHRoaXMgcGF0Y2ggbXVzdCBnbyBpbiBiZWZvcmUgdGhlIGNoYW5nZSB0byB0aGUgZHJpdmVy
+Lgo+IE90aGVyd2lzZSB0aGUgcHdtcyBhcmUgbm90IHVzYWJsZSB3aXRoIG9ubHkgcGF0Y2ggMSBh
+cHBsaWVkIHdoaWNoIGJyZWFrcwo+IGJpc2VjdGFiaWxpdHkuCj4gCgpUaGUgZHJpdmVyIHNob3Vs
+ZCBoYXZlIGJhY2t3YXJkcyBjb21wYXRpYmlsaXR5IHRvIG9sZGVyIERUcy4gU28gdGhhdCB3b3Vs
+ZCBuZWVkCnRvIGJlIGZpeGVkIGluIHRoZSBkcml2ZXIgbm90IGluIHRoZSBwYXRjaCBvcmRlciBv
+ZiB0aGUgc2VyaWVzLgoKUmVnYXJkcywKTWF0dGhpYXMKCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0Cmxp
+bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
