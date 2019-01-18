@@ -1,25 +1,22 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
+From: Matthias Brugger <matthias.bgg@gmail.com>
 Subject: Re: [PATCH v1 1/5] pwm: mediatek: add a property "mediatek,num-pwms"
-Date: Fri, 18 Jan 2019 09:05:52 +0100
-Message-ID: <20190118080552.ppwgxboh3gt3nasv@pengutronix.de>
+Date: Fri, 18 Jan 2019 09:43:53 +0100
+Message-ID: <c007d399-af86-98d3-94f9-b9762efdc219@gmail.com>
 References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
 In-Reply-To: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ryder Lee <ryder.lee@mediatek.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org
+To: Ryder Lee <ryder.lee@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
 
-just realized another issue while looking up a driver detail ...
 
-On Fri, Jan 18, 2019 at 11:24:41AM +0800, Ryder Lee wrote:
+On 18/01/2019 04:24, Ryder Lee wrote:
 > This adds a property "mediatek,num-pwms" to avoid having an endless
 > list of compatibles with no differences for the same driver.
 > 
@@ -79,6 +76,15 @@ On Fri, Jan 18, 2019 at 11:24:41AM +0800, Ryder Lee wrote:
 > +		/* If no, fallback to use SoC data for backwards compatibility. */
 > +		if (pc->soc->num_pwms) {
 > +			num_pwms = pc->soc->num_pwms;
+
+Maybe that's bike shedding, but I think it would be better to carve out the
+num_pwms from the mtk_pwm_platform_data and check against the compatible here.
+With a expressive comment it will help other driver developers to not start
+adding num_pwms in the platform data in their first attempt.
+
+Regards,
+Matthias
+
 > +		} else {
 > +			dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
 > +			return ret;
@@ -87,17 +93,15 @@ On Fri, Jan 18, 2019 at 11:24:41AM +0800, Ryder Lee wrote:
 > +
 > +	for (i = 0; i < num_pwms + 2 && pc->soc->has_clks; i++) {
 >  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
-
-If a dt contains
-
-	mediatek,num-pwms = <17>;
-
-you're accessing pc->clks[18] which is an out-of-bounds access, so
-better check the limit or allocate the clks array dynamically.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>  		if (IS_ERR(pc->clks[i])) {
+>  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
+> @@ -260,7 +269,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+>  	pc->chip.dev = &pdev->dev;
+>  	pc->chip.ops = &mtk_pwm_ops;
+>  	pc->chip.base = -1;
+> -	pc->chip.npwm = data->num_pwms;
+> +	pc->chip.npwm = num_pwms;
+>  
+>  	ret = pwmchip_add(&pc->chip);
+>  	if (ret < 0) {
+> 
