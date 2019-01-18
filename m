@@ -1,32 +1,30 @@
 From: Ryder Lee <ryder.lee@mediatek.com>
 Subject: Re: [PATCH v1 1/5] pwm: mediatek: add a property "mediatek,num-pwms"
-Date: Fri, 18 Jan 2019 17:42:54 +0800
-Message-ID: <1547804574.8124.6.camel@mtkswgap22>
+Date: Fri, 18 Jan 2019 17:47:33 +0800
+Message-ID: <1547804853.8124.9.camel@mtkswgap22>
 References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
-         <20190118075925.noilab6glzm3cig6@pengutronix.de>
+         <20190118080552.ppwgxboh3gt3nasv@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190118075925.noilab6glzm3cig6@pengutronix.de>
+In-Reply-To: <20190118080552.ppwgxboh3gt3nasv@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 2019-01-18 at 08:59 +0100, Uwe Kleine-König wrote:
+On Fri, 2019-01-18 at 09:05 +0100, Uwe Kleine-König wrote:
 > Hello,
+> 
+> just realized another issue while looking up a driver detail ...
 > 
 > On Fri, Jan 18, 2019 at 11:24:41AM +0800, Ryder Lee wrote:
 > > This adds a property "mediatek,num-pwms" to avoid having an endless
 > > list of compatibles with no differences for the same driver.
 > > 
 > > Thus, the driver should have backwards compatibility to older DTs.
-> 
-> I still think Thierry should bless "num-pwms" without vendor prefix.
-
-Okay.
-
+> > 
 > > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 > > ---
 > > Changes since v1: add some checks for backwards compatibility.
@@ -42,21 +40,8 @@ Okay.
 > >  };
 > >  
 > >  struct mtk_pwm_platform_data {
-> 
-> Unrelated to this patch: This name is bad. This struct is not used as
-> platform_data and so should better be named mtk_pwm_of_data. While at
-> criticizing existing stuff: I'd prefer pwm_mediatek as common prefix to
-> match the filename.
-
-I think we can take care about that in another patch.
-
 > > -	unsigned int num_pwms;
 > > +	unsigned int num_pwms;	/* it should not be used in the future SoCs */
-> 
-> I'd drop this comment in favour of a runtime warning.
-
-Sorry, I can't get you here.
-
 > >  	bool pwm45_fixup;
 > >  	bool has_clks;
 > >  };
@@ -81,12 +66,6 @@ Sorry, I can't get you here.
 > > -		return -EINVAL;
 > > -	pc->soc = data;
 > > +	pc->soc = of_device_get_match_data(&pdev->dev);
-> 
-> This might return NULL which ...
-
-The only way to call probe() is to match an entry in
-mtk_pwm_of_match[], so match cannot be NULL.
-
 > >  
 > >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 > >  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
@@ -99,15 +78,6 @@ mtk_pwm_of_match[], so match cannot be NULL.
 > > +	if (ret < 0) {
 > > +		/* If no, fallback to use SoC data for backwards compatibility. */
 > > +		if (pc->soc->num_pwms) {
-> 
-> ... here then results in a NULL pointer dereference. I think you want
-
-So we have no chance to get a NULL pointer, right?
-
-> 		if (pc->soc)
-> 
-> here.
-> 
 > > +			num_pwms = pc->soc->num_pwms;
 > > +		} else {
 > > +			dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
@@ -117,18 +87,15 @@ So we have no chance to get a NULL pointer, right?
 > > +
 > > +	for (i = 0; i < num_pwms + 2 && pc->soc->has_clks; i++) {
 > >  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
-> >  		if (IS_ERR(pc->clks[i])) {
-> >  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-> > @@ -260,7 +269,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
-> >  	pc->chip.dev = &pdev->dev;
-> >  	pc->chip.ops = &mtk_pwm_ops;
-> >  	pc->chip.base = -1;
-> > -	pc->chip.npwm = data->num_pwms;
-> > +	pc->chip.npwm = num_pwms;
-> >  
-> >  	ret = pwmchip_add(&pc->chip);
-> >  	if (ret < 0) {
 > 
-> Best regards
-> Uwe
+> If a dt contains
 > 
+> 	mediatek,num-pwms = <17>;
+> 
+> you're accessing pc->clks[18] which is an out-of-bounds access, so
+> better check the limit or allocate the clks array dynamically.
+> 
+
+Thanks for the reminder. I will fix it in v2.
+
+Ryder
