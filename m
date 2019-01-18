@@ -1,59 +1,134 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v1 2/5] dt-bindings: pwm: add a property
- "mediatek,num-pwms"
-Date: Fri, 18 Jan 2019 09:44:49 +0100
-Message-ID: <7d387d2a-74f0-c6c7-aa2d-cf9b87579682@gmail.com>
+From: Ryder Lee <ryder.lee@mediatek.com>
+Subject: Re: [PATCH v1 1/5] pwm: mediatek: add a property "mediatek,num-pwms"
+Date: Fri, 18 Jan 2019 17:42:54 +0800
+Message-ID: <1547804574.8124.6.camel@mtkswgap22>
 References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
- <7e1de17a43f2cde73aecd2773e2b3a5fdfd294f3.1547781007.git.ryder.lee@mediatek.com>
+         <20190118075925.noilab6glzm3cig6@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7e1de17a43f2cde73aecd2773e2b3a5fdfd294f3.1547781007.git.ryder.lee@mediatek.com>
-Content-Language: en-US
+In-Reply-To: <20190118075925.noilab6glzm3cig6@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ryder Lee <ryder.lee@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On 18/01/2019 04:24, Ryder Lee wrote:
-> This adds a property "mediatek,num-pwms" in example so that we could
-> set the number of PWM channels via device tree.
+On Fri, 2019-01-18 at 08:59 +0100, Uwe Kleine-König wrote:
+> Hello,
 > 
-> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> ---
-> Changes since v1: add a Reviewed-by tag.
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 2 ++
->  1 file changed, 2 insertions(+)
+> On Fri, Jan 18, 2019 at 11:24:41AM +0800, Ryder Lee wrote:
+> > This adds a property "mediatek,num-pwms" to avoid having an endless
+> > list of compatibles with no differences for the same driver.
+> > 
+> > Thus, the driver should have backwards compatibility to older DTs.
 > 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> index 991728c..f9e2d1f 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> @@ -20,6 +20,7 @@ Required properties:
->   - pinctrl-names: Must contain a "default" entry.
->   - pinctrl-0: One property must exist for each entry in pinctrl-names.
->     See pinctrl/pinctrl-bindings.txt for details of the property values.
-> + - mediatek,num-pwms: the number of PWM channels.
->  
->  Example:
->  	pwm0: pwm@11006000 {
-> @@ -37,4 +38,5 @@ Example:
->  			      "pwm3", "pwm4", "pwm5";
->  		pinctrl-names = "default";
->  		pinctrl-0 = <&pwm0_pins>;
-> +		mediatek,num-pwms = <5>;
->  	};
+> I still think Thierry should bless "num-pwms" without vendor prefix.
+
+Okay.
+
+> > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+> > ---
+> > Changes since v1: add some checks for backwards compatibility.
+> > ---
+> >  drivers/pwm/pwm-mediatek.c | 27 ++++++++++++++++++---------
+> >  1 file changed, 18 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+> > index eb6674c..81b7e5e 100644
+> > --- a/drivers/pwm/pwm-mediatek.c
+> > +++ b/drivers/pwm/pwm-mediatek.c
+> > @@ -55,7 +55,7 @@ enum {
+> >  };
+> >  
+> >  struct mtk_pwm_platform_data {
 > 
+> Unrelated to this patch: This name is bad. This struct is not used as
+> platform_data and so should better be named mtk_pwm_of_data. While at
+> criticizing existing stuff: I'd prefer pwm_mediatek as common prefix to
+> match the filename.
 
-Wasn't there a comment in the last version to use num-pwms instead of
-mediatek,num-pwms?
+I think we can take care about that in another patch.
 
-Uwe I think you requested that.
+> > -	unsigned int num_pwms;
+> > +	unsigned int num_pwms;	/* it should not be used in the future SoCs */
+> 
+> I'd drop this comment in favour of a runtime warning.
 
-Regards,
-Matthias
+Sorry, I can't get you here.
+
+> >  	bool pwm45_fixup;
+> >  	bool has_clks;
+> >  };
+> > @@ -226,27 +226,36 @@ static void mtk_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> >  
+> >  static int mtk_pwm_probe(struct platform_device *pdev)
+> >  {
+> > -	const struct mtk_pwm_platform_data *data;
+> > +	struct device_node *np = pdev->dev.of_node;
+> >  	struct mtk_pwm_chip *pc;
+> >  	struct resource *res;
+> > -	unsigned int i;
+> > +	unsigned int i, num_pwms;
+> >  	int ret;
+> >  
+> >  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+> >  	if (!pc)
+> >  		return -ENOMEM;
+> >  
+> > -	data = of_device_get_match_data(&pdev->dev);
+> > -	if (data == NULL)
+> > -		return -EINVAL;
+> > -	pc->soc = data;
+> > +	pc->soc = of_device_get_match_data(&pdev->dev);
+> 
+> This might return NULL which ...
+
+The only way to call probe() is to match an entry in
+mtk_pwm_of_match[], so match cannot be NULL.
+
+> >  
+> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
+> >  	if (IS_ERR(pc->regs))
+> >  		return PTR_ERR(pc->regs);
+> >  
+> > -	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
+> > +	/* Check if we have set 'num-pwms' in DTs. */
+> > +	ret = of_property_read_u32(np, "mediatek,num-pwms", &num_pwms);
+> > +	if (ret < 0) {
+> > +		/* If no, fallback to use SoC data for backwards compatibility. */
+> > +		if (pc->soc->num_pwms) {
+> 
+> ... here then results in a NULL pointer dereference. I think you want
+
+So we have no chance to get a NULL pointer, right?
+
+> 		if (pc->soc)
+> 
+> here.
+> 
+> > +			num_pwms = pc->soc->num_pwms;
+> > +		} else {
+> > +			dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
+> > +			return ret;
+> > +		}
+> > +	}
+> > +
+> > +	for (i = 0; i < num_pwms + 2 && pc->soc->has_clks; i++) {
+> >  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
+> >  		if (IS_ERR(pc->clks[i])) {
+> >  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
+> > @@ -260,7 +269,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+> >  	pc->chip.dev = &pdev->dev;
+> >  	pc->chip.ops = &mtk_pwm_ops;
+> >  	pc->chip.base = -1;
+> > -	pc->chip.npwm = data->num_pwms;
+> > +	pc->chip.npwm = num_pwms;
+> >  
+> >  	ret = pwmchip_add(&pc->chip);
+> >  	if (ret < 0) {
+> 
+> Best regards
+> Uwe
+> 
