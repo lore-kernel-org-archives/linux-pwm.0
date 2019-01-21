@@ -1,162 +1,40 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Mon, 21 Jan 2019 12:54:55 +0100
-Message-ID: <20190121115455.GJ16756@ulmo>
-References: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
- <1547194964-16718-3-git-send-email-yash.shah@sifive.com>
- <20190115220046.etgbno6ymsux75dk@pengutronix.de>
- <CAJ2_jOEuU_=bpbVmdsq7FFEKEm_wHza-h7Hu8QmZ3BgsGgi-ng@mail.gmail.com>
- <20190116164640.mi3zjbhbhc6k5v7p@pengutronix.de>
- <alpine.DEB.2.21.9999.1901160909540.19681@viisi.sifive.com>
- <20190116172849.h5qdfa5wc3vaprbn@pengutronix.de>
- <alpine.DEB.2.21.9999.1901161015400.19681@viisi.sifive.com>
- <20190117081956.hpj4ewdihpwuoonz@pengutronix.de>
+From: <Claudiu.Beznea@microchip.com>
+Subject: [PATCH 0/4] add support for the new SAM9X60's PWM controller
+Date: Mon, 21 Jan 2019 12:30:45 +0000
+Message-ID: <1548073783-22640-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="HcccYpVZDxQ8hzPO"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190117081956.hpj4ewdihpwuoonz@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Yash Shah <yash.shah@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>
+To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
---HcccYpVZDxQ8hzPO
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series adds support for PWM controller of the new SAM9X60. The differe=
+nce
+b/w this one and the provious AT91SAM9X5 is the counter size (32 bits compa=
+red
+with 16 bits on the previous version) thus, allowing to generate signals wi=
+th
+bigger periods and duty cycles. This series, modifies the driver to take in=
+to
+account per IP counter size by embedding this information into driver's dat=
+a.
 
-On Thu, Jan 17, 2019 at 09:19:56AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Paul,
->=20
-> On Wed, Jan 16, 2019 at 11:29:35AM -0800, Paul Walmsley wrote:
-> > COMPILE_TEST made slightly more sense before the broad availability of=
-=20
-> > open-source soft cores, SoC integration, and IP; and before powerful,=
-=20
-> > inexpensive FPGAs and SoCs with FPGA fabrics were common.
-> >=20
-> > Even back then, COMPILE_TEST was starting to look questionable.  IP blo=
-cks=20
-> > from CPU- and SoC vendor-independent libraries, like DesignWare and the=
-=20
-> > Cadence IP libraries, were integrated on SoCs across varying CPU=20
-> > architectures.  (Fortunately, looking at the tree, subsystem maintainer=
-s=20
-> > with DesignWare drivers seem to have largely avoided adding architectur=
-e=20
-> > or SoC-specific Kconfig restrictions there - and thus have also avoided=
-=20
-> > the need for COMPILE_TEST.)  If an unnecessary architecture Kconfig=20
-> > dependency was added for a leaf driver, that Kconfig line would either=
-=20
-> > need to be patched out by hand, or if present, COMPILE_TEST would need =
-to=20
-> > be enabled.
-> >=20
-> > This was less of a problem then.  There were very few FPGA Linux users,=
-=20
-> > and they were mostly working on internal proprietary projects. FPGAs th=
-at=20
-> > could run Linux at a reasonable speed, including MMUs and FPUs, were=20
-> > expensive or were missing good tool support.  So most FPGA Linux=20
-> > development was restricted to ASIC vendors - the Samsungs, Qualcomms,=
-=20
-> > NVIDIAs of the world - for prototyping, and those FPGA platforms never=
-=20
-> > made it outside those companies.
-> >=20
-> > The situation is different now.  The major FPGA vendors have inexpensiv=
-e=20
-> > FPGA SoCs with full-featured CPU hard macros.  The development boards c=
-an=20
-> > be quite affordable (< USD 300 for the Xilinx Ultra96).  There are also=
-=20
-> > now open-source SoC HDL implementations - including MMUs, FPUs, and=20
-> > peripherals like PWM and UART - for the conventional FPGA market.  Thes=
-e=20
-> > can run at mid-1990's clock rates - slow by modern standards but still=
-=20
-> > quite usable.
->=20
-> In my eyes it's better to make a driver not possible to enable out of
-> the box than offering to enable it while it most probably won't be used.
+Claudiu Beznea (4):
+  pwm: atmel: add struct atmel_pwm_data
+  pwm: atmel: add support for controllers with 32 bit counters
+  pwm: atmel: add support for SAM9X60's PWM controller
+  pwm: atmel: add PWM binding for SAM9X60
 
-This might sound like a good idea in general, but it's also something
-that is pretty much impossible to do. There's just no heuristic that
-would allow you to determine with a sufficient degree of probability
-that a driver won't be needed. Most of the PCI drivers that are
-installed on my workstation aren't used, and I would venture to say
-there are a lot of drivers that aren't used in, say, 95% of
-installations. That doesn't mean that we should somehow make these
-drivers difficult to install, or require someone to patch the kernel
-to build them.
+ .../devicetree/bindings/pwm/atmel-pwm.txt          |   1 +
+ drivers/pwm/pwm-atmel.c                            | 119 ++++++++++++++---=
+----
+ 2 files changed, 81 insertions(+), 39 deletions(-)
 
-> People who configure their own kernel and distribution kernel
-> maintainers will thank you. (Well ok, they won't notice, so they won't
-> actually tell you, but anyhow.) I'm a member of the Debian kernel team
-> and I see how many config items there are that are not explicitly
-> handled for the various different kernel images. If they were restricted
-> using COMPILE_TEST to just be possible to enable on machines where it is
-> known (or at least likely) to make sense that would help. Also when I do
-> a kernel version bump for a machine with a tailored kernel running (say)
-> on an ARM/i.MX SoC, I could more easily be careful about the relevant
-> changes when doing oldconfig if I were not asked about a whole bunch of
-> drivers that are sure to be irrelevant.
-
-I think the important thing here is that the driver is "default n". If
-you're a developer and build your own kernels, you're pretty likely to
-know already if a new kernel that you're installing contains that new
-driver that you've been working on or waiting for. In that case you can
-easily just enable it manually rather than go through make oldconfig and
-wait for it to show up.
-
-As for distribution kernel maintainers, are they really still building a
-lot of different kernels? If so, it sounds like most of the multi-
-platform efforts have been in vain. I would imagine that if, as a
-distribution kernel team, you'd want to carefully evaluate for every
-driver whether or not you'd want to include it. I would also imagine
-that you'd want to provide your users with the most flexible kernel
-possible, so that if they do have a system with an FPGA that you'd make
-it possible for them to use pwm-sifive if they choose to synthesize it.
-
-If you really want to create custom builds tailored to a single chip or
-board, it's going to be a fair amount of work anyway. I've occasionally
-done that in the past and usually just resorted to starting from an
-allnoconfig configuration and then working my way up from there.
-
-As for daily work as a developer, when I transition between kernel
-versions, or from one linux-next to another, I typically end up doing
-the manual equivalent of:
-
-	$ yes '' | make oldconfig
-
-if I know that I'm not interested in any new features. But I also often
-just look at what's new because it's interesting to see what's been
-going on elsewhere.
-
-Thierry
-
---HcccYpVZDxQ8hzPO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxFsw0ACgkQ3SOs138+
-s6GNbg//X2cHx6MggoF4ietANVc9LVW8Bw6/XohO0dLUy5qlwnhnFxt7AhCeczQ/
-RKBciwJzq7iLy6TozjXxVRvtZKUWLmOQ3R6cckDv5NVNl3W+snuEh8w/2JTUArGS
-o9wIM90cpPBIfhfBadz/kxoOqtOBy0FiYokoyaykm+jPbNh2uQzQx0n+LiqHfoV0
-on3t3n9YrjPYHKC9VTpb8hsaFGDi8EhXqxaaXs4DlKboz6ezIYAi5o3ObLhI3aRs
-4fk1T63gWIlwb2qteXGAMdFsJGBzHtALwrZFxJQ1M3GWnyz/JkbCGTvLlsbdNA4V
-HheD38F+geoAaK+j5RdESJw1vWkX1w/GqoN9njwEod8kEfzbhpnPofm0U5WSwkvU
-GFtRzVD1iC2Qn/U3YtiZu3UbFF+LVadBp7lk8vX/mqKsUdYdlA7esgCGOKVmsxNk
-AFm4R+frtEZwf1gG5BVOw3LeZFPGT2Om1wOIawdxbfyGnrQl2dsPuo97jjqcZ90+
-T9F6s1jel/OVnJhWwzCdZi7sf/swwLyeoYn3vd+PWiT2WhRaDMygwg/KtVoY+or8
-1G+AKQSLDbh618/ck/La6VSssIMfwwVdAyD4t9eQtKiR48N6JobgkQwumvyFpllF
-a7zVRytrnwgDFRSkayIJGz+faQRJ68vwePKlxQPH1Sy2POhAdn4=
-=dNnQ
------END PGP SIGNATURE-----
-
---HcccYpVZDxQ8hzPO--
+--=20
+2.7.4
