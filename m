@@ -1,121 +1,70 @@
-From: Ryder Lee <ryder.lee@mediatek.com>
-Subject: Re: [PATCH v1 1/5] pwm: mediatek: add a property "mediatek,num-pwms"
-Date: Sat, 19 Jan 2019 10:54:47 +0800
-Message-ID: <1547866487.14213.10.camel@mtkswgap22>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v1 2/5] dt-bindings: pwm: add a property
+ "mediatek,num-pwms"
+Date: Mon, 21 Jan 2019 09:43:01 +0100
+Message-ID: <20190121084301.s5cx27sbywu2yr3m@pengutronix.de>
 References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
- <c007d399-af86-98d3-94f9-b9762efdc219@gmail.com>
+ <7e1de17a43f2cde73aecd2773e2b3a5fdfd294f3.1547781007.git.ryder.lee@mediatek.com>
+ <7d387d2a-74f0-c6c7-aa2d-cf9b87579682@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <c007d399-af86-98d3-94f9-b9762efdc219@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <7d387d2a-74f0-c6c7-aa2d-cf9b87579682@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Cc: Ryder Lee <ryder.lee@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 2019-01-18 at 09:43 +0100, Matthias Brugger wrote:
+On Fri, Jan 18, 2019 at 09:44:49AM +0100, Matthias Brugger wrote:
+> 
 > 
 > On 18/01/2019 04:24, Ryder Lee wrote:
-> > This adds a property "mediatek,num-pwms" to avoid having an endless
-> > list of compatibles with no differences for the same driver.
-> > 
-> > Thus, the driver should have backwards compatibility to older DTs.
+> > This adds a property "mediatek,num-pwms" in example so that we could
+> > set the number of PWM channels via device tree.
 > > 
 > > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+> > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 > > ---
-> > Changes since v1: add some checks for backwards compatibility.
+> > Changes since v1: add a Reviewed-by tag.
 > > ---
-> >  drivers/pwm/pwm-mediatek.c | 27 ++++++++++++++++++---------
-> >  1 file changed, 18 insertions(+), 9 deletions(-)
+> >  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 2 ++
+> >  1 file changed, 2 insertions(+)
 > > 
-> > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> > index eb6674c..81b7e5e 100644
-> > --- a/drivers/pwm/pwm-mediatek.c
-> > +++ b/drivers/pwm/pwm-mediatek.c
-> > @@ -55,7 +55,7 @@ enum {
-> >  };
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > index 991728c..f9e2d1f 100644
+> > --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > @@ -20,6 +20,7 @@ Required properties:
+> >   - pinctrl-names: Must contain a "default" entry.
+> >   - pinctrl-0: One property must exist for each entry in pinctrl-names.
+> >     See pinctrl/pinctrl-bindings.txt for details of the property values.
+> > + - mediatek,num-pwms: the number of PWM channels.
 > >  
-> >  struct mtk_pwm_platform_data {
-> > -	unsigned int num_pwms;
-> > +	unsigned int num_pwms;	/* it should not be used in the future SoCs */
-> >  	bool pwm45_fixup;
-> >  	bool has_clks;
-> >  };
-> > @@ -226,27 +226,36 @@ static void mtk_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> >  
-> >  static int mtk_pwm_probe(struct platform_device *pdev)
-> >  {
-> > -	const struct mtk_pwm_platform_data *data;
-> > +	struct device_node *np = pdev->dev.of_node;
-> >  	struct mtk_pwm_chip *pc;
-> >  	struct resource *res;
-> > -	unsigned int i;
-> > +	unsigned int i, num_pwms;
-> >  	int ret;
-> >  
-> >  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-> >  	if (!pc)
-> >  		return -ENOMEM;
-> >  
-> > -	data = of_device_get_match_data(&pdev->dev);
-> > -	if (data == NULL)
-> > -		return -EINVAL;
-> > -	pc->soc = data;
-> > +	pc->soc = of_device_get_match_data(&pdev->dev);
-> >  
-> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
-> >  	if (IS_ERR(pc->regs))
-> >  		return PTR_ERR(pc->regs);
-> >  
-> > -	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
-> > +	/* Check if we have set 'num-pwms' in DTs. */
-> > +	ret = of_property_read_u32(np, "mediatek,num-pwms", &num_pwms);
-> > +	if (ret < 0) {
-> > +		/* If no, fallback to use SoC data for backwards compatibility. */
-> > +		if (pc->soc->num_pwms) {
-> > +			num_pwms = pc->soc->num_pwms;
-> 
-> Maybe that's bike shedding, but I think it would be better to carve out the
-> num_pwms from the mtk_pwm_platform_data and check against the compatible here.
-
-I'm not sure how to properly curve it out? I think we still need this
-variable to save the specific value for some legacy SoCs (with older
-DTs).
-
-> With a expressive comment it will help other driver developers to not start
-> adding num_pwms in the platform data in their first attempt.
-
-Definitely.
-
-Ryder
-> 
-> > +		} else {
-> > +			dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-> > +			return ret;
-> > +		}
-> > +	}
-> > +
-> > +	for (i = 0; i < num_pwms + 2 && pc->soc->has_clks; i++) {
-> >  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
-> >  		if (IS_ERR(pc->clks[i])) {
-> >  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-> > @@ -260,7 +269,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
-> >  	pc->chip.dev = &pdev->dev;
-> >  	pc->chip.ops = &mtk_pwm_ops;
-> >  	pc->chip.base = -1;
-> > -	pc->chip.npwm = data->num_pwms;
-> > +	pc->chip.npwm = num_pwms;
-> >  
-> >  	ret = pwmchip_add(&pc->chip);
-> >  	if (ret < 0) {
+> >  Example:
+> >  	pwm0: pwm@11006000 {
+> > @@ -37,4 +38,5 @@ Example:
+> >  			      "pwm3", "pwm4", "pwm5";
+> >  		pinctrl-names = "default";
+> >  		pinctrl-0 = <&pwm0_pins>;
+> > +		mediatek,num-pwms = <5>;
+> >  	};
 > > 
+> 
+> Wasn't there a comment in the last version to use num-pwms instead of
+> mediatek,num-pwms?
+> 
+> Uwe I think you requested that.
+
+I think it is sensible, but it needs Thierry's blessing. Unfortunately
+he seems busy with other stuff and getting feedback from him needs
+patience.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
