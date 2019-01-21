@@ -1,268 +1,187 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V2 3/4] drivers: pwm: pwm-bcm-kona: Add cygnus-pwm support
-Date: Mon, 21 Jan 2019 19:53:53 +0100
-Message-ID: <20190121185353.fam72wk5eeyz3kwy@pengutronix.de>
-References: <1547669716-20070-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <1547669716-20070-4-git-send-email-sheetal.tigadoli@broadcom.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
+ version pwm-kona
+Date: Mon, 21 Jan 2019 17:11:05 -0600
+Message-ID: <20190121231105.GA928@bogus>
+References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
+ <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
+ <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
+ <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
+ <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
+ <faadc46d-94b5-a32c-79ae-4206fbc26608@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1547669716-20070-4-git-send-email-sheetal.tigadoli@broadcom.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
+In-Reply-To: <faadc46d-94b5-a32c-79ae-4206fbc26608@broadcom.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Scott Branden <scott.branden@broadcom.com>
+Cc: linux-pwm@vger.kernel.org, Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, devicetree@vger.kernel.org, Ray Jui <rjui@broadcom.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, bcm-kernel-feedback-list@broadcom.com, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Praveen Kumar B <praveen.b@broadcom.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+On Tue, Jan 15, 2019 at 04:14:21PM -0800, Scott Branden wrote:
+> Hi Uwe,
+> =
 
-On Thu, Jan 17, 2019 at 01:45:15AM +0530, Sheetal Tigadoli wrote:
-> From: Praveen Kumar B <praveen.b@broadcom.com>
-> 
-> Add support for new version of pwm-cygnus.
-> Add support to make PWM changes configured and stable.
-> 
-> Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
-> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-> ---
->  drivers/pwm/pwm-bcm-kona.c | 95 ++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 76 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-> index fe63289..143843f 100644
-> --- a/drivers/pwm/pwm-bcm-kona.c
-> +++ b/drivers/pwm/pwm-bcm-kona.c
-> @@ -15,6 +15,7 @@
->  #include <linux/delay.h>
->  #include <linux/err.h>
->  #include <linux/io.h>
-> +#include <linux/iopoll.h>
->  #include <linux/ioport.h>
->  #include <linux/math64.h>
->  #include <linux/module.h>
-> @@ -65,10 +66,19 @@
->  #define DUTY_CYCLE_HIGH_MIN			(0x00000000)
->  #define DUTY_CYCLE_HIGH_MAX			(0x00ffffff)
->  
-> +#define PWM_MONITOR_OFFSET			0xb0
-> +#define PWM_MONITOR_TIMEOUT_US			5
-> +
-> +enum kona_pwmc_ver {
-> +	KONA_PWM = 1,
-> +	CYGNUS_PWM
-> +};
-> +
->  struct kona_pwmc {
->  	struct pwm_chip chip;
->  	void __iomem *base;
->  	struct clk *clk;
-> +	enum kona_pwmc_ver version;
->  };
->  
->  static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
-> @@ -76,10 +86,36 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
->  	return container_of(_chip, struct kona_pwmc, chip);
->  }
->  
-> +static int kona_pwmc_wait_stable(struct pwm_chip *chip, unsigned int chan,
-> +				 unsigned int kona_ver)
-> +{
-> +	struct kona_pwmc *kp = to_kona_pwmc(chip);
-> +	unsigned int value;
-> +
-> +	switch (kona_ver) {
-> +	case KONA_PWM:
-> +		/*
-> +		 * There must be a min 400ns delay between clearing trigger and
-> +		 * settingit. Failing to do this may result in no PWM signal.
-> +		 */
-> +		ndelay(400);
-> +		return 0;
-> +
-> +	case CYGNUS_PWM:
-> +		return readl_poll_timeout(kp->base + PWM_MONITOR_OFFSET, value,
-> +					  !(value & (BIT(chan))), 0,
-> +					  PWM_MONITOR_TIMEOUT_US);
-> +
-> +	default:
-> +		return -ENODEV;
-> +
-> +	}
-> +}
+> On 2019-01-12 7:05 a.m., Uwe Kleine-K=F6nig wrote:
+> > Hello Scott,
+> > =
 
-This function is the only difference between these two otherwise similar
-implementations. If you do the following instead:
+> > On Fri, Jan 11, 2019 at 01:28:45PM -0800, Scott Branden wrote:
+> > > On 2019-01-11 12:48 p.m., Uwe Kleine-K=F6nig wrote:
+> > > > On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
+> > > > > From: Praveen Kumar B <praveen.b@broadcom.com>
+> > > > > =
 
-	static int kona_pwmc_wait_stable(struct pwm_chip *chip, unsigned int chan)
-	{
-		ndelay(400);
-		return 0;
-	}
+> > > > > Add new compatible string for new version of pwm-kona
+> > > > > =
 
-	static int cygnus_pwmc_wait_stable(struct pwm_chip *chip, unsigned int chan)
-	{
-		return readl_poll_timeout(...);
-	}
+> > > > > Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
+> > > > > Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> > > > > Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> > > > > Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+> > > > > ---
+> > > > >    Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
+> > > > >    1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > =
 
-and then maintain a
+> > > > > diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.=
+txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> > > > > index 8eae9fe..d37f697 100644
+> > > > > --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> > > > > +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+> > > > > @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+> > > > >    This controller has 6 channels.
+> > > > >    Required Properties :
+> > > > > -- compatible: should contain "brcm,kona-pwm"
+> > > > > +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v=
+2"
+> > > > Is v2 used on a newer generation of kona SoCs? On i.MX these varian=
+ts
+> > > > are usually named after the first SoC that came with the new varian=
+t. Is
+> > > > this sensible here, too?
+> > > It doesn't make as much sense here as different revs of the IP block =
+are
+> > > picked up based on various decisions.
+> > > =
 
-	int (*wait_stable)(struct pwm_chip *, unsigned int);
+> > > A new SoC could decide to use an old version.
+> > IMHO this is no reason to not use the name of the oldest SoC with this
+> > variant. I don't know how the SoC names are in the broadcom family, but
+> > if they were (in order of age, oldest first):
+> > =
 
-in struct kona_pwmc that is initialized in .probe you save quite some
-checks for the version.
+> > 	ant
+> > 	bear
+> > 	crocodile
+> > =
 
-> +
->  /*
->   * Clear trigger bit but set smooth bit to maintain old output.
->   */
-> -static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
-> +static int kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
->  	unsigned int chan)
->  {
->  	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
-> @@ -88,14 +124,10 @@ static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
->  	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
->  	writel(value, kp->base + PWM_CONTROL_OFFSET);
->  
-> -	/*
-> -	 * There must be a min 400ns delay between clearing trigger and setting
-> -	 * it. Failing to do this may result in no PWM signal.
-> -	 */
-> -	ndelay(400);
-> +	return kona_pwmc_wait_stable(&kp->chip, chan, kp->version);
->  }
->  
-> -static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
-> +static int kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
->  {
->  	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
->  
-> @@ -104,8 +136,7 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
->  	value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
->  	writel(value, kp->base + PWM_CONTROL_OFFSET);
->  
-> -	/* Trigger bit must be held high for at least 400 ns. */
-> -	ndelay(400);
-> +	return kona_pwmc_wait_stable(&kp->chip, chan, kp->version);
->  }
->  
->  static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> @@ -113,8 +144,13 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	struct kona_pwmc *kp = to_kona_pwmc(chip);
->  	unsigned int chan = pwm->hwpwm;
->  	unsigned int value;
-> +	int ret;
->  
-> -	kona_pwmc_prepare_for_settings(kp, chan);
-> +	ret = kona_pwmc_prepare_for_settings(kp, chan);
-> +	if (ret < 0) {
-> +		dev_err(chip->dev, "failed to prepare pwm settings: %d\n", ret);
-> +		return;
-> +	}
->  
->  	/* Simulate a disable by configuring for zero duty */
->  	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
-> @@ -125,7 +161,11 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	value &= ~PRESCALE_MASK(chan);
->  	writel(value, kp->base + PRESCALE_OFFSET);
->  
-> -	kona_pwmc_apply_settings(kp, chan);
-> +	ret = kona_pwmc_apply_settings(kp, chan);
-> +	if (ret < 0) {
-> +		dev_err(chip->dev, "failed to apply pwm settings: %d\n", ret);
-> +		return;
+> > and ant and crocodile use the same IP block we would have
+> > =
 
-I think it would make sense to change kona_pwmc_disable to return an
-error code and then use that in the callers.
+> > a) with v1, v2:
+> > =
 
-> +	}
->  
->  	clk_disable_unprepare(kp->clk);
->  }
-> @@ -188,7 +228,12 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  			}
->  		}
->  
-> -		kona_pwmc_prepare_for_settings(kp, chan);
-> +		ret = kona_pwmc_prepare_for_settings(kp, chan);
-> +		if (ret < 0) {
-> +			dev_err(chip->dev,
-> +				"failed to prepare pwm settings: %d\n", ret);
-> +			return ret;
-> +		}
->  
->  		value = readl(kp->base + PRESCALE_OFFSET);
->  		value &= ~PRESCALE_MASK(chan);
-> @@ -208,7 +253,12 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  			writel(value, kp->base + PWM_CONTROL_OFFSET);
->  		}
->  
-> -		kona_pwmc_apply_settings(kp, chan);
-> +		ret = kona_pwmc_apply_settings(kp, chan);
-> +		if (ret < 0) {
-> +			dev_err(chip->dev,
-> +				"failed to prepare pwm settings: %d\n", ret);
-> +			return ret;
-> +		}
->  	} else if (cstate.enabled) {
->  		kona_pwmc_disable(chip, pwm);
->  	}
-> @@ -221,14 +271,26 @@ static int kona_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  	.owner = THIS_MODULE,
->  };
->  
-> +static const struct of_device_id bcm_kona_pwmc_dt[] = {
-> +	{ .compatible = "brcm,kona-pwm", .data = (void *)KONA_PWM},
-> +	{ .compatible = "brcm,cygnus-pwm", .data = (void *)CYGNUS_PWM},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, bcm_kona_pwmc_dt);
-> +
->  static int kona_pwmc_probe(struct platform_device *pdev)
->  {
->  	struct kona_pwmc *kp;
->  	struct resource *res;
-> +	const struct of_device_id *of_id;
->  	unsigned int chan;
->  	unsigned int value = 0;
->  	int ret = 0;
->  
-> +	of_id = of_match_node(bcm_kona_pwmc_dt, pdev->dev.of_node);
-> +	if (!of_id)
-> +		return -ENODEV;
-> +
->  	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
->  	if (kp == NULL)
->  		return -ENOMEM;
-> @@ -241,6 +303,7 @@ static int kona_pwmc_probe(struct platform_device *pdev)
->  	kp->chip.npwm = 6;
->  	kp->chip.of_xlate = of_pwm_xlate_with_flags;
->  	kp->chip.of_pwm_n_cells = 3;
-> +	kp->version = (enum kona_pwmc_ver)of_id->data;
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	kp->base = devm_ioremap_resource(&pdev->dev, res);
-> @@ -287,12 +350,6 @@ static int kona_pwmc_remove(struct platform_device *pdev)
->  	return pwmchip_remove(&kp->chip);
->  }
->  
-> -static const struct of_device_id bcm_kona_pwmc_dt[] = {
-> -	{ .compatible = "brcm,kona-pwm" },
-> -	{ },
-> -};
-> -MODULE_DEVICE_TABLE(of, bcm_kona_pwmc_dt);
-> -
->  static struct platform_driver kona_pwmc_driver = {
->  	.driver = {
->  		.name = "bcm-kona-pwm",
+> > 	ant:
+> > 		compatible =3D "brcm,kona-pwm-v1";
+> > 	bear:
+> > 		compatible =3D "brcm,kona-pwm-v2";
+> > 	crocodile:
+> > 		compatible =3D "brcm,kona-pwm-v1";
 
-Best regards
-Uwe
+Version numbers can be fine, but generally only as fallbacks as even the =
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+same IP version can be integrated into an SoC differently.
+
+The other issue with versions is they should be meanful such as =
+
+corresponding to version tags in IP repos. Often, I'd guess anything =
+
+with a 'v1' is just what some s/w person made up. Of course, we only =
+
+can really know that for opensource IP or programmable logic IP.
+
+If you do use versions, document what the versioning scheme is.
+
+> > =
+
+> > ; and
+> > =
+
+> > b) with the SoC naming:
+> > =
+
+> > 	ant:
+> > 		compatible =3D "brcm,kona-ant-pwm";
+> > 	bear:
+> > 		compatible =3D "brcm,kona-bear-pwm";
+> > 	crocodile:
+> > 		compatible =3D "brcm,kona-crocodile-pwm", "brcm,kona-ant-pwm";
+
+This is the recommended practice.
+
+> > =
+
+> > (If you want, drop "brcm,kona-crocodile-pwm", but keeping it is more
+> > defensive.)
+
+Generally, you should have "brcm,kona-crocodile-pwm" in case there's =
+
+some difference found later. Then you can support the bug or feature =
+
+without a DT change.
+
+> > =
+
+> > I like b) (with "...-crocodile-...") better than a). crocodile using
+> > "...-ant-..." is not more ugly than crocodile using "...-v1". This is
+> > also a tad more robust because if broadcom releases kona-dolphin and
+> > someone finds a minor difference between the IPs used on ant and
+> > crocodile it depends on the order of these events who gets v3, while
+> > with the SoC naming the result is clear.
+> > =
+
+> > (OK, and given that "brcm,kona-pwm" is already fixed, both approaches
+> > need slight adaption, but I guess you still get what I meant.)
+> =
+
+> Thanks for your thoughts and explanation.
+> =
+
+> It is unfortunate devicetree has no proper guidelines or documentation on
+> =
+
+> binding naming.=A0 In the interest of getting this upstream we can name it
+
+Surely we've captured that somewhere...
+
+> =
+
+> "brcm, omega-pwm".=A0 We can drop kona from the binding name as that
+> architecture
+> =
+
+> is really no more - only IP derived from it is - hence the name kona-v2
+> previously.
+> =
+
+> > =
+
+> > Best regards
+> > Uwe
+> > =
+
+> > =
+
+> Cheers,
+> Scott
