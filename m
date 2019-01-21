@@ -1,157 +1,162 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Mon, 21 Jan 2019 12:30:39 +0100
-Message-ID: <20190121113039.GI16756@ulmo>
+Date: Mon, 21 Jan 2019 12:54:55 +0100
+Message-ID: <20190121115455.GJ16756@ulmo>
 References: <1547194964-16718-1-git-send-email-yash.shah@sifive.com>
  <1547194964-16718-3-git-send-email-yash.shah@sifive.com>
  <20190115220046.etgbno6ymsux75dk@pengutronix.de>
+ <CAJ2_jOEuU_=bpbVmdsq7FFEKEm_wHza-h7Hu8QmZ3BgsGgi-ng@mail.gmail.com>
+ <20190116164640.mi3zjbhbhc6k5v7p@pengutronix.de>
+ <alpine.DEB.2.21.9999.1901160909540.19681@viisi.sifive.com>
+ <20190116172849.h5qdfa5wc3vaprbn@pengutronix.de>
+ <alpine.DEB.2.21.9999.1901161015400.19681@viisi.sifive.com>
+ <20190117081956.hpj4ewdihpwuoonz@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="MFZs98Tklfu0WsCO"
+        protocol="application/pgp-signature"; boundary="HcccYpVZDxQ8hzPO"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190115220046.etgbno6ymsux75dk@pengutronix.de>
+In-Reply-To: <20190117081956.hpj4ewdihpwuoonz@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Yash Shah <yash.shah@sifive.com>, palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, Yash Shah <yash.shah@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---MFZs98Tklfu0WsCO
+--HcccYpVZDxQ8hzPO
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 15, 2019 at 11:00:46PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
+On Thu, Jan 17, 2019 at 09:19:56AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello Paul,
 >=20
-> On Fri, Jan 11, 2019 at 01:52:44PM +0530, Yash Shah wrote:
-> > Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC.
+> On Wed, Jan 16, 2019 at 11:29:35AM -0800, Paul Walmsley wrote:
+> > COMPILE_TEST made slightly more sense before the broad availability of=
+=20
+> > open-source soft cores, SoC integration, and IP; and before powerful,=
+=20
+> > inexpensive FPGAs and SoCs with FPGA fabrics were common.
 > >=20
-> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> > [Atish: Various fixes and code cleanup]
-> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> > ---
-> >  drivers/pwm/Kconfig      |  10 ++
-> >  drivers/pwm/Makefile     |   1 +
-> >  drivers/pwm/pwm-sifive.c | 246 +++++++++++++++++++++++++++++++++++++++=
-++++++++
-> >  3 files changed, 257 insertions(+)
-> >  create mode 100644 drivers/pwm/pwm-sifive.c
+> > Even back then, COMPILE_TEST was starting to look questionable.  IP blo=
+cks=20
+> > from CPU- and SoC vendor-independent libraries, like DesignWare and the=
+=20
+> > Cadence IP libraries, were integrated on SoCs across varying CPU=20
+> > architectures.  (Fortunately, looking at the tree, subsystem maintainer=
+s=20
+> > with DesignWare drivers seem to have largely avoided adding architectur=
+e=20
+> > or SoC-specific Kconfig restrictions there - and thus have also avoided=
+=20
+> > the need for COMPILE_TEST.)  If an unnecessary architecture Kconfig=20
+> > dependency was added for a leaf driver, that Kconfig line would either=
+=20
+> > need to be patched out by hand, or if present, COMPILE_TEST would need =
+to=20
+> > be enabled.
 > >=20
-> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > index a8f47df..3bcaf6a 100644
-> > --- a/drivers/pwm/Kconfig
-> > +++ b/drivers/pwm/Kconfig
-> > @@ -380,6 +380,16 @@ config PWM_SAMSUNG
-> >  	  To compile this driver as a module, choose M here: the module
-> >  	  will be called pwm-samsung.
-> > =20
-> > +config PWM_SIFIVE
-> > +	tristate "SiFive PWM support"
-> > +	depends on OF
-> > +	depends on COMMON_CLK
+> > This was less of a problem then.  There were very few FPGA Linux users,=
+=20
+> > and they were mostly working on internal proprietary projects. FPGAs th=
+at=20
+> > could run Linux at a reasonable speed, including MMUs and FPUs, were=20
+> > expensive or were missing good tool support.  So most FPGA Linux=20
+> > development was restricted to ASIC vendors - the Samsungs, Qualcomms,=
+=20
+> > NVIDIAs of the world - for prototyping, and those FPGA platforms never=
+=20
+> > made it outside those companies.
+> >=20
+> > The situation is different now.  The major FPGA vendors have inexpensiv=
+e=20
+> > FPGA SoCs with full-featured CPU hard macros.  The development boards c=
+an=20
+> > be quite affordable (< USD 300 for the Xilinx Ultra96).  There are also=
+=20
+> > now open-source SoC HDL implementations - including MMUs, FPUs, and=20
+> > peripherals like PWM and UART - for the conventional FPGA market.  Thes=
+e=20
+> > can run at mid-1990's clock rates - slow by modern standards but still=
+=20
+> > quite usable.
 >=20
-> I'd say add:
->=20
-> 	depends on MACH_SIFIVE || COMPILE_TEST
->=20
-> (I guess "MACH_SIFIVE" is wrong, but I assume you get what I mean.)
->=20
-> > +	help
-> > +	  Generic PWM framework driver for SiFive SoCs.
-> > +
-> > +	  To compile this driver as a module, choose M here: the module
-> > +	  will be called pwm-sifive.
-> > +
-> >  config PWM_SPEAR
-> >  	tristate "STMicroelectronics SPEAr PWM support"
-> >  	depends on PLAT_SPEAR
-> > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> > index 9c676a0..30089ca 100644
-> > --- a/drivers/pwm/Makefile
-> > +++ b/drivers/pwm/Makefile
-> > @@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_RCAR)		+=3D pwm-rcar.o
-> >  obj-$(CONFIG_PWM_RENESAS_TPU)	+=3D pwm-renesas-tpu.o
-> >  obj-$(CONFIG_PWM_ROCKCHIP)	+=3D pwm-rockchip.o
-> >  obj-$(CONFIG_PWM_SAMSUNG)	+=3D pwm-samsung.o
-> > +obj-$(CONFIG_PWM_SIFIVE)	+=3D pwm-sifive.o
-> >  obj-$(CONFIG_PWM_SPEAR)		+=3D pwm-spear.o
-> >  obj-$(CONFIG_PWM_STI)		+=3D pwm-sti.o
-> >  obj-$(CONFIG_PWM_STM32)		+=3D pwm-stm32.o
-> > diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-> > new file mode 100644
-> > index 0000000..7fee809
-> > --- /dev/null
-> > +++ b/drivers/pwm/pwm-sifive.c
-> > @@ -0,0 +1,246 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (C) 2017-2018 SiFive
-> > + * For SiFive's PWM IP block documentation please refer Chapter 14 of
-> > + * Reference Manual : https://static.dev.sifive.com/FU540-C000-v1.0.pdf
->=20
-> I wonder if such an instance should be only a single PWM instead of
-> four. Then you were more flexible with the period lengths (using
-> pwmcfg.pwmzerocmp) and could do stuff like inverted and uninverted mode.
+> In my eyes it's better to make a driver not possible to enable out of
+> the box than offering to enable it while it most probably won't be used.
 
-I thought this IP only allowed a single period for all PWM channels in
-the IP. If so, splitting this into four different devices is going to
-complicate things because you'd have to coordinate between all four as
-to which period is currently set.
+This might sound like a good idea in general, but it's also something
+that is pretty much impossible to do. There's just no heuristic that
+would allow you to determine with a sufficient degree of probability
+that a driver won't be needed. Most of the PCI drivers that are
+installed on my workstation aren't used, and I would venture to say
+there are a lot of drivers that aren't used in, say, 95% of
+installations. That doesn't mean that we should somehow make these
+drivers difficult to install, or require someone to patch the kernel
+to build them.
 
-> > +struct sifive_pwm_device {
-> > +	struct pwm_chip	chip;
-> > +	struct notifier_block notifier;
-> > +	struct clk *clk;
-> > +	void __iomem *regs;
-> > +	unsigned int approx_period;
-> > +	unsigned int real_period;
-> > +};
->=20
-> I'd call this pwm_sifive_ddata. The prefix because the driver is called
-> pwm-sifive and ddata because this is driver data and not a device.
+> People who configure their own kernel and distribution kernel
+> maintainers will thank you. (Well ok, they won't notice, so they won't
+> actually tell you, but anyhow.) I'm a member of the Debian kernel team
+> and I see how many config items there are that are not explicitly
+> handled for the various different kernel images. If they were restricted
+> using COMPILE_TEST to just be possible to enable on machines where it is
+> known (or at least likely) to make sense that would help. Also when I do
+> a kernel version bump for a machine with a tailored kernel running (say)
+> on an ARM/i.MX SoC, I could more easily be careful about the relevant
+> changes when doing oldconfig if I were not asked about a whole bunch of
+> drivers that are sure to be irrelevant.
 
-I don't think there's a need to have an extra suffix. Just call this
-sifive_pwm or pwm_sifive. There's no ambiguity in that name and it's
-short and crisp.
+I think the important thing here is that the driver is "default n". If
+you're a developer and build your own kernels, you're pretty likely to
+know already if a new kernel that you're installing contains that new
+driver that you've been working on or waiting for. In that case you can
+easily just enable it manually rather than go through make oldconfig and
+wait for it to show up.
 
-> > +	if (state->enabled)
-> > +		sifive_pwm_get_state(chip, dev, state);
->=20
-> @Thierry: Should we bless this correction of state?
+As for distribution kernel maintainers, are they really still building a
+lot of different kernels? If so, it sounds like most of the multi-
+platform efforts have been in vain. I would imagine that if, as a
+distribution kernel team, you'd want to carefully evaluate for every
+driver whether or not you'd want to include it. I would also imagine
+that you'd want to provide your users with the most flexible kernel
+possible, so that if they do have a system with an FPGA that you'd make
+it possible for them to use pwm-sifive if they choose to synthesize it.
 
-I'm not sure I understand why this correction is necessary. Is it okay
-to request a state to be applied and when we're not able to set that
-state we just set anything as close as possible? Sounds a bit risky to
-me. What if somebody wants to use this in a case where precision
-matters?
+If you really want to create custom builds tailored to a single chip or
+board, it's going to be a fair amount of work anyway. I've occasionally
+done that in the past and usually just resorted to starting from an
+allnoconfig configuration and then working my way up from there.
 
-Now, if you're saying that there can't be such cases and we should
-support this, then why restrict the state correction to when the PWM is
-enabled? What's wrong with correcting it in either case?
+As for daily work as a developer, when I transition between kernel
+versions, or from one linux-next to another, I typically end up doing
+the manual equivalent of:
+
+	$ yes '' | make oldconfig
+
+if I know that I'm not interested in any new features. But I also often
+just look at what's new because it's interesting to see what's been
+going on elsewhere.
 
 Thierry
 
---MFZs98Tklfu0WsCO
+--HcccYpVZDxQ8hzPO
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxFrVwACgkQ3SOs138+
-s6GDPhAAqq3K+XU1yZmkcnkI1Zx0WumCOVIx3+P1YxoZRny1aaps0RIVvR3FIoFv
-1I0P/4cuDQ1nUHh8ejdmqE/0uT/+bpxxWg3srsjaKkaSM3TutdX4EPk929EP91oJ
-QIXFTxGm3FBeKbd5wdgqC5zLhC3hDowCpH+vyOB+YiW9bn2EBOQwnCwkeRpOAIVG
-q2Er9KwCuKd1wIT+jCvprKOCnwui7ycZ2ycLbxRiBNMwcRBUfSMy6J6dZ0CJKMdD
-uoSS1XWSOmLymi1g5Ibdii+VGxhXssfR9+YKvgdqJ0kkNqUZ8zrbHinNn0zuPSZH
-SJSNZ0QCAOkvgPFTwFR/QV0DnBu/i8pgybpPawLkwA10QAIe4D5vheHI9YgvTxE3
-9GNuFbUR1r52guNBF00ht3Wvxzu8WaoYwIOMhIDUrQJ4QA8c8eq+1GIJwXhvnzOH
-xW93VlukNv+TmgzE60/9a6JgelKFUw0Iu+yYWs7kFq4WAgPiz9E5TiwoitZq4j5/
-81HxqupXIT1jqI0W3JI6ZdVFk6gYEKts2CLIJKu9IIll59T3R8bS+dRdzp3Zm+JY
-xO3+m7Kt97Nnz+e0SakZ64dnQF50QR+hv+Pd5jNPiLFfeU9sVpULG03tph0vg/0Q
-Qn472hhDUD0VP1zBZxBl8DX0H/yOMaqnKHYyzIKN+JwOrJ/HH3A=
-=aoyh
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxFsw0ACgkQ3SOs138+
+s6GNbg//X2cHx6MggoF4ietANVc9LVW8Bw6/XohO0dLUy5qlwnhnFxt7AhCeczQ/
+RKBciwJzq7iLy6TozjXxVRvtZKUWLmOQ3R6cckDv5NVNl3W+snuEh8w/2JTUArGS
+o9wIM90cpPBIfhfBadz/kxoOqtOBy0FiYokoyaykm+jPbNh2uQzQx0n+LiqHfoV0
+on3t3n9YrjPYHKC9VTpb8hsaFGDi8EhXqxaaXs4DlKboz6ezIYAi5o3ObLhI3aRs
+4fk1T63gWIlwb2qteXGAMdFsJGBzHtALwrZFxJQ1M3GWnyz/JkbCGTvLlsbdNA4V
+HheD38F+geoAaK+j5RdESJw1vWkX1w/GqoN9njwEod8kEfzbhpnPofm0U5WSwkvU
+GFtRzVD1iC2Qn/U3YtiZu3UbFF+LVadBp7lk8vX/mqKsUdYdlA7esgCGOKVmsxNk
+AFm4R+frtEZwf1gG5BVOw3LeZFPGT2Om1wOIawdxbfyGnrQl2dsPuo97jjqcZ90+
+T9F6s1jel/OVnJhWwzCdZi7sf/swwLyeoYn3vd+PWiT2WhRaDMygwg/KtVoY+or8
+1G+AKQSLDbh618/ck/La6VSssIMfwwVdAyD4t9eQtKiR48N6JobgkQwumvyFpllF
+a7zVRytrnwgDFRSkayIJGz+faQRJ68vwePKlxQPH1Sy2POhAdn4=
+=dNnQ
 -----END PGP SIGNATURE-----
 
---MFZs98Tklfu0WsCO--
+--HcccYpVZDxQ8hzPO--
