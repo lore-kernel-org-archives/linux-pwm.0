@@ -1,46 +1,148 @@
-From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [PATCH V2] pwm: Add MediaTek MT8183 display PWM driver support
-Date: Tue, 22 Jan 2019 17:37:54 +0800
-Message-ID: <1548149874.27796.3.camel@mszsdaap41>
-References: <20190122090243.27304-1-jitao.shi@mediatek.com>
- <20190122091603.ic46eyf47lu5f6pi@pengutronix.de>
+From: Scott Branden <scott.branden@broadcom.com>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
+ version pwm-kona
+Date: Tue, 22 Jan 2019 12:12:46 -0800
+Message-ID: <9b2dd73d-3a38-3a68-d37c-490811ed80ee@broadcom.com>
+References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
+ <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
+ <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
+ <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
+ <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
+ <faadc46d-94b5-a32c-79ae-4206fbc26608@broadcom.com>
+ <20190121231105.GA928@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190122091603.ic46eyf47lu5f6pi@pengutronix.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, Sean Paul <seanpaul@chromium.org>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Andy Yan <andy.yan@rock-chip>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190121231105.GA928@bogus>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTAxLTIyIGF0IDEwOjE2ICswMTAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90
-ZToKPiBPbiBUdWUsIEphbiAyMiwgMjAxOSBhdCAwNTowMjo0M1BNICswODAwLCBKaXRhbyBTaGkg
-d3JvdGU6Cj4gPiBVc2UgdGhlIG10a19wd21fZGF0YSBzdHJ1Y3Rpb24gdG8gZGVmaW5lIGRpZmZl
-cmVudCByZWdpc3RlcnMKPiA+IGFuZCBhZGQgTVQ4MTgzIHNwZWNpZmljIHJlZ2lzdGVyIG9wZXJh
-dGlvbnMsIHN1Y2ggYXMgTVQ4MTgzCj4gPiBkb2Vzbid0IGhhdmUgY29tbWl0IHJlZ2lzdGVyLCBu
-ZWVkcyB0byBkaXNhYmxlIGRvdWJsZSBidWZmZXIKPiA+IGJlZm9yZSB3cml0aW5nIHJlZ2lzdGVy
-LCBhbmQgbmVlZHMgdG8gc2VsZWN0IGNvbW1pdCBtb2RlCj4gPiBhbmQgdXNlIFBXTV9QRVJJT0Qv
-UFdNX0hJR0hfV0lEVEguCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNoaSA8aml0YW8u
-c2hpQG1lZGlhdGVrLmNvbT4KPiAKPiBUaGVyZSBpcyBubyBkaWZmZXJlbmNlIGNvbXBhcmVkIHRv
-IChpbXBsaWNpdCkgdjEgc2VudCBhIGZldyBtaW51dGVzCj4gZWFybGllciwgcmlnaHQ/IFRoZXJl
-IHdhcyBhbm90aGVyIHBhdGNoIHNlbnQgd2l0aCB0aGUgc2FtZSBTdWJqZWN0IGxhc3QKPiB3ZWVr
-LCBzbyBJIGFzc3VtZSB0aGUgbWFpbCBmcm9tIHRvZGF5IHdpdGhvdXQgInYyIiBpbiB0aGUgU3Vi
-amVjdCB3YXMgYQo+IG1pc3Rha2U/Cj4gCj4gPiAtLS0KPiBBZGRpbmcgYSBwYXJhZ3JhcGggYmVs
-b3cgdGhlIHRyaXBwbGUgZGFzaCB0aGF0IHBvaW50cyBvdXQgd2hhdCB3YXMKPiBjaGFuZ2VkIGNv
-bXBhcmVkIHRvIHRoZSBwcmV2aW91cyBzdWJtaXNzaW9uIGlzIGEgZ29vZCBpZGVhIHRvIGhlbHAK
-PiByZXZpZXdlcnMgdG8gbW9yZSBlYXNpbHkgc2VlIHdoYXQgd2FzIGNoYW5nZWQuIEkgZ3Vlc3Mg
-eW91IG9ubHkgYWRhcHRlZAo+IHRoZSBjb21taXQgbG9nIGFzIGEgcmVhY3Rpb24gdG8gTWF0dGhp
-YXMgQnVyZ2dlcidzIHJldmlldz8KPiAKPiBCZXN0IHJlZ2FyZHMKPiBVd2UKPiAKClllcywgSSBt
-aXNzIHRoZSAiVjIiIGFuZCBmaW5lIHR1bmUgdGhlIGNvbW1pdCBtZXNzYWdlLgoKQmVzdCBSZWdh
-cmRzCkppdGFvCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcK
-aHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+Hi Rob,
+
+On 2019-01-21 3:11 p.m., Rob Herring wrote:
+> On Tue, Jan 15, 2019 at 04:14:21PM -0800, Scott Branden wrote:
+>> Hi Uwe,
+>>
+>> On 2019-01-12 7:05 a.m., Uwe Kleine-König wrote:
+>>> Hello Scott,
+>>>
+>>> On Fri, Jan 11, 2019 at 01:28:45PM -0800, Scott Branden wrote:
+>>>> On 2019-01-11 12:48 p.m., Uwe Kleine-König wrote:
+>>>>> On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
+>>>>>> From: Praveen Kumar B <praveen.b@broadcom.com>
+>>>>>>
+>>>>>> Add new compatible string for new version of pwm-kona
+>>>>>>
+>>>>>> Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
+>>>>>> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+>>>>>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+>>>>>> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+>>>>>> ---
+>>>>>>     Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
+>>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+>>>>>> index 8eae9fe..d37f697 100644
+>>>>>> --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+>>>>>> +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+>>>>>> @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+>>>>>>     This controller has 6 channels.
+>>>>>>     Required Properties :
+>>>>>> -- compatible: should contain "brcm,kona-pwm"
+>>>>>> +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v2"
+>>>>> Is v2 used on a newer generation of kona SoCs? On i.MX these variants
+>>>>> are usually named after the first SoC that came with the new variant. Is
+>>>>> this sensible here, too?
+>>>> It doesn't make as much sense here as different revs of the IP block are
+>>>> picked up based on various decisions.
+>>>>
+>>>> A new SoC could decide to use an old version.
+>>> IMHO this is no reason to not use the name of the oldest SoC with this
+>>> variant. I don't know how the SoC names are in the broadcom family, but
+>>> if they were (in order of age, oldest first):
+>>>
+>>> 	ant
+>>> 	bear
+>>> 	crocodile
+>>>
+>>> and ant and crocodile use the same IP block we would have
+>>>
+>>> a) with v1, v2:
+>>>
+>>> 	ant:
+>>> 		compatible = "brcm,kona-pwm-v1";
+>>> 	bear:
+>>> 		compatible = "brcm,kona-pwm-v2";
+>>> 	crocodile:
+>>> 		compatible = "brcm,kona-pwm-v1";
+> Version numbers can be fine, but generally only as fallbacks as even the
+> same IP version can be integrated into an SoC differently.
+>
+> The other issue with versions is they should be meanful such as
+> corresponding to version tags in IP repos. Often, I'd guess anything
+> with a 'v1' is just what some s/w person made up. Of course, we only
+> can really know that for opensource IP or programmable logic IP.
+>
+> If you do use versions, document what the versioning scheme is.
+>
+>>> ; and
+>>>
+>>> b) with the SoC naming:
+>>>
+>>> 	ant:
+>>> 		compatible = "brcm,kona-ant-pwm";
+>>> 	bear:
+>>> 		compatible = "brcm,kona-bear-pwm";
+>>> 	crocodile:
+>>> 		compatible = "brcm,kona-crocodile-pwm", "brcm,kona-ant-pwm";
+> This is the recommended practice.
+>
+>>> (If you want, drop "brcm,kona-crocodile-pwm", but keeping it is more
+>>> defensive.)
+> Generally, you should have "brcm,kona-crocodile-pwm" in case there's
+> some difference found later. Then you can support the bug or feature
+> without a DT change.
+
+No DT change would be necessary in any case.
+
+A check against the SOC type in the driver without additional DT 
+compatibility strings could be done.
+
+>
+>>> I like b) (with "...-crocodile-...") better than a). crocodile using
+>>> "...-ant-..." is not more ugly than crocodile using "...-v1". This is
+>>> also a tad more robust because if broadcom releases kona-dolphin and
+>>> someone finds a minor difference between the IPs used on ant and
+>>> crocodile it depends on the order of these events who gets v3, while
+>>> with the SoC naming the result is clear.
+>>>
+>>> (OK, and given that "brcm,kona-pwm" is already fixed, both approaches
+>>> need slight adaption, but I guess you still get what I meant.)
+>> Thanks for your thoughts and explanation.
+>>
+>> It is unfortunate devicetree has no proper guidelines or documentation on
+>>
+>> binding naming.  In the interest of getting this upstream we can name it
+> Surely we've captured that somewhere...
+
+Please point me at such documentation.
+
+There is no consistency in kernel drivers from what I have seen.
+
+>
+>> "brcm, omega-pwm".  We can drop kona from the binding name as that
+>> architecture
+>>
+>> is really no more - only IP derived from it is - hence the name kona-v2
+>> previously.
+>>
+>>> Best regards
+>>> Uwe
+>>>
+>>>
+>> Cheers,
+>> Scott
