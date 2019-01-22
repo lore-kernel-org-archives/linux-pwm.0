@@ -1,7 +1,7 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH] pwm: Add MediaTek MT8183 display PWM driver support
-Date: Tue, 22 Jan 2019 16:58:18 +0800
-Message-ID: <20190122085818.76051-1-jitao.shi@mediatek.com>
+Subject: [PATCH V2] pwm: Add MediaTek MT8183 display PWM driver support
+Date: Tue, 22 Jan 2019 17:02:43 +0800
+Message-ID: <20190122090243.27304-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
@@ -42,6 +42,6 @@ dDgxNzNfcHdtX2RhdGF9LAogCXsgLmNvbXBhdGlibGUgPSAibWVkaWF0ZWssbXQ4MTczLWRpc3At
 cHdtIiwgLmRhdGEgPSAmbXQ4MTczX3B3bV9kYXRhfSwKKwl7IC5jb21wYXRpYmxlID0gIm1lZGlh
 dGVrLG10ODE4My1kaXNwLXB3bSIsIC5kYXRhID0gJm10ODE4M19wd21fZGF0YX0sCiAJeyB9CiB9
 OwogTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgbXRrX2Rpc3BfcHdtX29mX21hdGNoKTsKLS0gCjIu
-MjAuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
+MTIuNQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
 LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
 Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
