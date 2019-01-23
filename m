@@ -1,148 +1,307 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH 1/3] dt-bindings: pwm: kona: Add new compatible for new
- version pwm-kona
-Date: Tue, 22 Jan 2019 12:12:46 -0800
-Message-ID: <9b2dd73d-3a38-3a68-d37c-490811ed80ee@broadcom.com>
-References: <1547184076-20521-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <1547184076-20521-2-git-send-email-sheetal.tigadoli@broadcom.com>
- <20190111204801.2ytdeblcai7lg3on@pengutronix.de>
- <f1ec3121-a8e7-a1c0-008a-ea4ae6028157@broadcom.com>
- <20190112150515.i7mwq7rtd62wlifh@pengutronix.de>
- <faadc46d-94b5-a32c-79ae-4206fbc26608@broadcom.com>
- <20190121231105.GA928@bogus>
+From: Mathieu Malaterre <malat@debian.org>
+Subject: Re: [PATCH v8 05/26] clocksource: Add driver for the Ingenic JZ47xx OST
+Date: Wed, 23 Jan 2019 13:58:53 +0100
+Message-ID: <CA+7wUsxNN2SL9_7tDh0DiBAgdUwxd_osgmi=09HP7110Tm0DYQ@mail.gmail.com>
+References: <20181212220922.18759-1-paul@crapouillou.net> <20181212220922.18759-6-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190121231105.GA928@bogus>
-Content-Language: en-US
+In-Reply-To: <20181212220922.18759-6-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Praveen Kumar B <praveen.b@broadcom.com>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Maarten ter Huurne <maarten@treewalker.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Rob,
-
-On 2019-01-21 3:11 p.m., Rob Herring wrote:
-> On Tue, Jan 15, 2019 at 04:14:21PM -0800, Scott Branden wrote:
->> Hi Uwe,
->>
->> On 2019-01-12 7:05 a.m., Uwe Kleine-König wrote:
->>> Hello Scott,
->>>
->>> On Fri, Jan 11, 2019 at 01:28:45PM -0800, Scott Branden wrote:
->>>> On 2019-01-11 12:48 p.m., Uwe Kleine-König wrote:
->>>>> On Fri, Jan 11, 2019 at 10:51:14AM +0530, Sheetal Tigadoli wrote:
->>>>>> From: Praveen Kumar B <praveen.b@broadcom.com>
->>>>>>
->>>>>> Add new compatible string for new version of pwm-kona
->>>>>>
->>>>>> Signed-off-by: Praveen Kumar B <praveen.b@broadcom.com>
->>>>>> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
->>>>>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
->>>>>> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
->>>>>> ---
->>>>>>     Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
->>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
->>>>>> index 8eae9fe..d37f697 100644
->>>>>> --- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
->>>>>> +++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
->>>>>> @@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
->>>>>>     This controller has 6 channels.
->>>>>>     Required Properties :
->>>>>> -- compatible: should contain "brcm,kona-pwm"
->>>>>> +- compatible: should contain "brcm,kona-pwm" or "brcm,kona-pwm-v2"
->>>>> Is v2 used on a newer generation of kona SoCs? On i.MX these variants
->>>>> are usually named after the first SoC that came with the new variant. Is
->>>>> this sensible here, too?
->>>> It doesn't make as much sense here as different revs of the IP block are
->>>> picked up based on various decisions.
->>>>
->>>> A new SoC could decide to use an old version.
->>> IMHO this is no reason to not use the name of the oldest SoC with this
->>> variant. I don't know how the SoC names are in the broadcom family, but
->>> if they were (in order of age, oldest first):
->>>
->>> 	ant
->>> 	bear
->>> 	crocodile
->>>
->>> and ant and crocodile use the same IP block we would have
->>>
->>> a) with v1, v2:
->>>
->>> 	ant:
->>> 		compatible = "brcm,kona-pwm-v1";
->>> 	bear:
->>> 		compatible = "brcm,kona-pwm-v2";
->>> 	crocodile:
->>> 		compatible = "brcm,kona-pwm-v1";
-> Version numbers can be fine, but generally only as fallbacks as even the
-> same IP version can be integrated into an SoC differently.
+On Wed, Dec 12, 2018 at 11:09 PM Paul Cercueil <paul@crapouillou.net> wrote:
 >
-> The other issue with versions is they should be meanful such as
-> corresponding to version tags in IP repos. Often, I'd guess anything
-> with a 'v1' is just what some s/w person made up. Of course, we only
-> can really know that for opensource IP or programmable logic IP.
+> From: Maarten ter Huurne <maarten@treewalker.org>
 >
-> If you do use versions, document what the versioning scheme is.
+> OST is the OS Timer, a 64-bit timer/counter with buffered reading.
 >
->>> ; and
->>>
->>> b) with the SoC naming:
->>>
->>> 	ant:
->>> 		compatible = "brcm,kona-ant-pwm";
->>> 	bear:
->>> 		compatible = "brcm,kona-bear-pwm";
->>> 	crocodile:
->>> 		compatible = "brcm,kona-crocodile-pwm", "brcm,kona-ant-pwm";
-> This is the recommended practice.
+> SoCs before the JZ4770 had (if any) a 32-bit OST; the JZ4770 and
+> JZ4780 have a 64-bit OST.
 >
->>> (If you want, drop "brcm,kona-crocodile-pwm", but keeping it is more
->>> defensive.)
-> Generally, you should have "brcm,kona-crocodile-pwm" in case there's
-> some difference found later. Then you can support the bug or feature
-> without a DT change.
-
-No DT change would be necessary in any case.
-
-A check against the SOC type in the driver without additional DT 
-compatibility strings could be done.
-
+> This driver will register both a clocksource and a sched_clock to the
+> system.
 >
->>> I like b) (with "...-crocodile-...") better than a). crocodile using
->>> "...-ant-..." is not more ugly than crocodile using "...-v1". This is
->>> also a tad more robust because if broadcom releases kona-dolphin and
->>> someone finds a minor difference between the IPs used on ant and
->>> crocodile it depends on the order of these events who gets v3, while
->>> with the SoC naming the result is clear.
->>>
->>> (OK, and given that "brcm,kona-pwm" is already fixed, both approaches
->>> need slight adaption, but I guess you still get what I meant.)
->> Thanks for your thoughts and explanation.
->>
->> It is unfortunate devicetree has no proper guidelines or documentation on
->>
->> binding naming.  In the interest of getting this upstream we can name it
-> Surely we've captured that somewhere...
-
-Please point me at such documentation.
-
-There is no consistency in kernel drivers from what I have seen.
-
+> Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
 >
->> "brcm, omega-pwm".  We can drop kona from the binding name as that
->> architecture
->>
->> is really no more - only IP derived from it is - hence the name kona-v2
->> previously.
->>
->>> Best regards
->>> Uwe
->>>
->>>
->> Cheers,
->> Scott
+> Notes:
+>      v5: New patch
+>
+>      v6: - Get rid of SoC IDs; pass pointer to ingenic_ost_soc_info as
+>            devicetree match data instead.
+>          - Use device_get_match_data() instead of the of_* variant
+>          - Handle error of dev_get_regmap() properly
+>
+>      v7: Fix section mismatch by using builtin_platform_driver_probe()
+>
+>      v8: builtin_platform_driver_probe() does not work anymore in
+>          4.20-rc6? The probe function won't be called. Work around this
+>          for now by using late_initcall.
+>
+>  drivers/clocksource/Kconfig       |   8 ++
+>  drivers/clocksource/Makefile      |   1 +
+>  drivers/clocksource/ingenic-ost.c | 215 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 224 insertions(+)
+>  create mode 100644 drivers/clocksource/ingenic-ost.c
+>
+> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+> index 4e69af15c3e7..e0646878b0de 100644
+> --- a/drivers/clocksource/Kconfig
+> +++ b/drivers/clocksource/Kconfig
+> @@ -648,4 +648,12 @@ config INGENIC_TIMER
+>         help
+>           Support for the timer/counter unit of the Ingenic JZ SoCs.
+>
+> +config INGENIC_OST
+> +       bool "Ingenic JZ47xx Operating System Timer"
+> +       depends on MIPS || COMPILE_TEST
+> +       depends on COMMON_CLK
+> +       select INGENIC_TIMER
+> +       help
+> +         Support for the OS Timer of the Ingenic JZ4770 or similar SoC.
+> +
+>  endmenu
+> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+> index 7c8f790dcf67..7faa8108574a 100644
+> --- a/drivers/clocksource/Makefile
+> +++ b/drivers/clocksource/Makefile
+> @@ -75,6 +75,7 @@ obj-$(CONFIG_ASM9260_TIMER)           += asm9260_timer.o
+>  obj-$(CONFIG_H8300_TMR8)               += h8300_timer8.o
+>  obj-$(CONFIG_H8300_TMR16)              += h8300_timer16.o
+>  obj-$(CONFIG_H8300_TPU)                        += h8300_tpu.o
+> +obj-$(CONFIG_INGENIC_OST)              += ingenic-ost.o
+>  obj-$(CONFIG_INGENIC_TIMER)            += ingenic-timer.o
+>  obj-$(CONFIG_CLKSRC_ST_LPC)            += clksrc_st_lpc.o
+>  obj-$(CONFIG_X86_NUMACHIP)             += numachip.o
+> diff --git a/drivers/clocksource/ingenic-ost.c b/drivers/clocksource/ingenic-ost.c
+> new file mode 100644
+> index 000000000000..cc0fee3efd29
+> --- /dev/null
+> +++ b/drivers/clocksource/ingenic-ost.c
+> @@ -0,0 +1,215 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * JZ47xx SoCs TCU Operating System Timer driver
+> + *
+> + * Copyright (C) 2016 Maarten ter Huurne <maarten@treewalker.org>
+> + * Copyright (C) 2018 Paul Cercueil <paul@crapouillou.net>
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/clocksource.h>
+> +#include <linux/mfd/ingenic-tcu.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/sched_clock.h>
+> +
+> +#include "ingenic-timer.h"
+> +
+> +#define TCU_OST_TCSR_MASK      0xc0
+> +#define TCU_OST_TCSR_CNT_MD    BIT(15)
+> +
+> +#define TCU_OST_CHANNEL                15
+> +
+> +struct ingenic_ost_soc_info {
+> +       bool is64bit;
+> +};
+> +
+> +struct ingenic_ost {
+> +       struct regmap *map;
+> +       struct clk *clk;
+> +
+> +       struct clocksource cs;
+> +};
+> +
+> +static u64 notrace ingenic_ost_read_cntl(void)
+> +{
+> +       /* Bypass the regmap here as we must return as soon as possible */
+> +       return readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
+> +}
+> +
+> +static u64 notrace ingenic_ost_read_cnth(void)
+> +{
+> +       /* Bypass the regmap here as we must return as soon as possible */
+> +       return readl(ingenic_tcu_base + TCU_REG_OST_CNTH);
+> +}
+> +
+> +static u64 notrace ingenic_ost_clocksource_read(struct clocksource *cs)
+> +{
+> +       u32 val1, val2;
+> +       u64 count, recount;
+> +       s64 diff;
+> +
+> +       /*
+> +        * The buffering of the upper 32 bits of the timer prevents wrong
+> +        * results from the bottom 32 bits overflowing due to the timer ticking
+> +        * along. However, it does not prevent wrong results from simultaneous
+> +        * reads of the timer, which could reset the buffer mid-read.
+> +        * Since this kind of wrong read can happen only when the bottom bits
+> +        * overflow, there will be minutes between wrong reads, so if we read
+> +        * twice in succession, at least one of the reads will be correct.
+> +        */
+> +
+> +       /* Bypass the regmap here as we must return as soon as possible */
+> +       val1 = readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
+> +       val2 = readl(ingenic_tcu_base + TCU_REG_OST_CNTHBUF);
+> +       count = (u64)val1 | (u64)val2 << 32;
+> +
+> +       val1 = readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
+> +       val2 = readl(ingenic_tcu_base + TCU_REG_OST_CNTHBUF);
+> +       recount = (u64)val1 | (u64)val2 << 32;
+> +
+> +       /*
+> +        * A wrong read will produce a result that is 1<<32 too high: the bottom
+> +        * part from before overflow and the upper part from after overflow.
+> +        * Therefore, the lower value of the two reads is the correct value.
+> +        */
+> +
+> +       diff = (s64)(recount - count);
+> +       if (unlikely(diff < 0))
+> +               count = recount;
+> +
+> +       return count;
+> +}
+> +
+> +static int __init ingenic_ost_probe(struct platform_device *pdev)
+> +{
+> +       const struct ingenic_ost_soc_info *soc_info;
+> +       struct device *dev = &pdev->dev;
+> +       struct ingenic_ost *ost;
+> +       struct clocksource *cs;
+> +       unsigned long rate, flags;
+> +       int err;
+> +
+> +       soc_info = device_get_match_data(dev);
+> +       if (!soc_info)
+> +               return -EINVAL;
+> +
+> +       ost = devm_kzalloc(dev, sizeof(*ost), GFP_KERNEL);
+> +       if (!ost)
+> +               return -ENOMEM;
+> +
+> +       ost->map = dev_get_regmap(dev->parent, NULL);
+> +       if (!ost->map) {
+> +               dev_err(dev, "regmap not found\n");
+> +               return -EINVAL;
+> +       }
+> +
+> +       ost->clk = devm_clk_get(dev, "ost");
+> +       if (IS_ERR(ost->clk))
+> +               return PTR_ERR(ost->clk);
+> +
+> +       err = clk_prepare_enable(ost->clk);
+> +       if (err)
+> +               return err;
+> +
+> +       /* Clear counter high/low registers */
+> +       if (soc_info->is64bit)
+> +               regmap_write(ost->map, TCU_REG_OST_CNTL, 0);
+> +       regmap_write(ost->map, TCU_REG_OST_CNTH, 0);
+> +
+> +       /* Don't reset counter at compare value. */
+> +       regmap_update_bits(ost->map, TCU_REG_OST_TCSR,
+> +                          TCU_OST_TCSR_MASK, TCU_OST_TCSR_CNT_MD);
+> +
+> +       rate = clk_get_rate(ost->clk);
+> +
+> +       /* Enable OST TCU channel */
+> +       regmap_write(ost->map, TCU_REG_TESR, BIT(TCU_OST_CHANNEL));
+> +
+> +       cs = &ost->cs;
+> +       cs->name        = "ingenic-ost";
+> +       cs->rating      = 320;
+> +       cs->flags       = CLOCK_SOURCE_IS_CONTINUOUS;
+> +
+> +       if (soc_info->is64bit) {
+> +               cs->mask = CLOCKSOURCE_MASK(64);
+> +               cs->read = ingenic_ost_clocksource_read;
+> +       } else {
+> +               cs->mask = CLOCKSOURCE_MASK(32);
+> +               cs->read = (u64 (*)(struct clocksource *))ingenic_ost_read_cnth;
+
+The function is declared as ingenic_ost_read_cnth(void), are you sure
+this is going to work ?
+
+> +       }
+> +
+> +       err = clocksource_register_hz(cs, rate);
+> +       if (err) {
+> +               dev_err(dev, "clocksource registration failed: %d\n", err);
+> +               clk_disable_unprepare(ost->clk);
+> +               return err;
+> +       }
+> +
+> +       /* Cannot register a sched_clock with interrupts on */
+> +       local_irq_save(flags);
+> +       if (soc_info->is64bit)
+> +               sched_clock_register(ingenic_ost_read_cntl, 32, rate);
+> +       else
+> +               sched_clock_register(ingenic_ost_read_cnth, 32, rate);
+> +       local_irq_restore(flags);
+> +
+> +       return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int ingenic_ost_suspend(struct device *dev)
+> +{
+> +       struct ingenic_ost *ost = dev_get_drvdata(dev);
+> +
+> +       clk_disable(ost->clk);
+> +       return 0;
+> +}
+> +
+> +static int ingenic_ost_resume(struct device *dev)
+> +{
+> +       struct ingenic_ost *ost = dev_get_drvdata(dev);
+> +
+> +       return clk_enable(ost->clk);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(ingenic_ost_pm_ops, ingenic_ost_suspend,
+> +                        ingenic_ost_resume);
+> +#define INGENIC_OST_PM_OPS (&ingenic_ost_pm_ops)
+> +#else
+> +#define INGENIC_OST_PM_OPS NULL
+> +#endif /* CONFIG_PM_SUSPEND */
+> +
+> +static const struct ingenic_ost_soc_info jz4725b_ost_soc_info = {
+> +       .is64bit = false,
+> +};
+> +
+> +static const struct ingenic_ost_soc_info jz4770_ost_soc_info = {
+> +       .is64bit = true,
+> +};
+> +
+> +static const struct of_device_id ingenic_ost_of_match[] = {
+> +       { .compatible = "ingenic,jz4725b-ost", .data = &jz4725b_ost_soc_info, },
+> +       { .compatible = "ingenic,jz4770-ost",  .data = &jz4770_ost_soc_info,  },
+> +       { }
+> +};
+> +
+> +static struct platform_driver ingenic_ost_driver = {
+> +       .driver = {
+> +               .name   = "ingenic-ost",
+> +               .pm     = INGENIC_OST_PM_OPS,
+> +               .of_match_table = ingenic_ost_of_match,
+> +       },
+> +};
+> +
+> +/* FIXME: Using device_initcall (or buildin_platform_driver_probe) results
+> + * in the driver not being probed at all. It worked in 4.18...
+> + */
+> +static int __init ingenic_ost_drv_register(void)
+> +{
+> +       return platform_driver_probe(&ingenic_ost_driver,
+> +                                    ingenic_ost_probe);
+> +}
+> +late_initcall(ingenic_ost_drv_register);
+> --
+> 2.11.0
+>
