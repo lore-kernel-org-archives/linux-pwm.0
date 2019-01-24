@@ -1,51 +1,79 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Thu, 24 Jan 2019 11:44:35 +0100
-Message-ID: <20190124104435.e6paqwcuz3hizwnv@pengutronix.de>
-References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
- <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
- <20181212080154.kcfh57mulypwuscu@pengutronix.de>
- <52ed0614-d1f5-81cb-3b17-8eb137967872@ysoft.com>
- <20181212121255.yg6b4pw7qord7ebi@pengutronix.de>
- <4b0356b7-bc7d-a026-ac90-3f0c5754ed29@ysoft.com>
- <20190124092215.zbu62lhxf667rzvs@pengutronix.de>
- <4004896e-34fc-7160-2f21-30280d96f750@ysoft.com>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH v8 05/26] clocksource: Add driver for the Ingenic JZ47xx OST
+Date: Thu, 24 Jan 2019 11:28:07 -0800
+Message-ID: <154835808767.136743.14531363127962557756@swboyd.mtv.corp.google.com>
+References: <20181212220922.18759-1-paul@crapouillou.net> <20181212220922.18759-6-paul@crapouillou.net> <CA+7wUsxNN2SL9_7tDh0DiBAgdUwxd_osgmi=09HP7110Tm0DYQ@mail.gmail.com> <128675a5-7ede-4114-a649-89a536346dc8@roeck-us.net> <1548264353.3173.1@crapouillou.net> <20190123180155.GB9781@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4004896e-34fc-7160-2f21-30280d96f750@ysoft.com>
+In-Reply-To: <20190123180155.GB9781@roeck-us.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+To: Guenter Roeck <linux@roeck-us.net>, Paul Cercueil <paul@crapouillou.net>
+Cc: Mathieu Malaterre <malat@debian.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Maar
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Jan 24, 2019 at 11:12:12AM +0100, Michal Vokáč wrote:
-> On 24.1.2019 10:22, Uwe Kleine-König wrote:
-> > I think it might be beneficial to allow (or require) that disable acts
-> > immediately. But this is not how it used to be and in my discussion with
-> > Thierry (IIRC) he required to complete the currently running period.
-> 
-> I am confused here. IFAIK it always used to be that:
-> 
-> 	pwm_apply_state(pwm, { .enabled = 0 });
-> 
-> immediately stops the PWM with:
-> 
-> 	writel(0, imx->mmio_base + MX3_PWMCR);
-> 
-> regardless of the period (for pwm-imx).
+Quoting Guenter Roeck (2019-01-23 10:01:55)
+> On Wed, Jan 23, 2019 at 02:25:53PM -0300, Paul Cercueil wrote:
+> > Hi,
+> >=20
+> > Le mer. 23 janv. 2019 =C3=83=C2=A0 11:31, Guenter Roeck <linux@roeck-us=
+.net> a =C3=83=C2=A9crit :
+> > >On 1/23/19 4:58 AM, Mathieu Malaterre wrote:
+> > >>On Wed, Dec 12, 2018 at 11:09 PM Paul Cercueil <paul@crapouillou.net>
+> > >>wrote:
+> > >>>
+> > >>>From: Maarten ter Huurne <maarten@treewalker.org>
+> > >>>
+> > >>>OST is the OS Timer, a 64-bit timer/counter with buffered reading.
+> > >>>
+> > >>>SoCs before the JZ4770 had (if any) a 32-bit OST; the JZ4770 and
+> > >>>JZ4780 have a 64-bit OST.
+> > >>>
+> > >>>This driver will register both a clocksource and a sched_clock to the
+> > >>>system.
+> > >>>
+> > >>>Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
+> > >>>Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> > >>>---
+> > >>>
+> > >>>Notes:
+> > >>>      v5: New patch
+> > >>>
+> > >>>      v6: - Get rid of SoC IDs; pass pointer to ingenic_ost_soc_info
+> > >>>as
+> > >>>            devicetree match data instead.
+> > >>>          - Use device_get_match_data() instead of the of_* variant
+> > >>>          - Handle error of dev_get_regmap() properly
+> > >>>
+> > >>>      v7: Fix section mismatch by using
+> > >>>builtin_platform_driver_probe()
+> > >>>
+> > >>>      v8: builtin_platform_driver_probe() does not work anymore in
+> > >>>          4.20-rc6? The probe function won't be called. Work around
+> > >>>this
+> > >>>          for now by using late_initcall.
+> > >>>
+> > >
+> > >Did anyone notice this ? Either something is wrong with the driver, or
+> > >with the kernel core. Hacking around it seems like the worst possible
+> > >"solution".
+> >=20
+> > I can confirm it still happens on 5.0-rc3.
+> >=20
+> > Just to explain what I'm doing:
+> >=20
+> > My ingenic-timer driver probes with builtin_platform_driver_probe (this
+> > works),
+> > and then calls of_platform_populate to probe its children. This driver,
+> > ingenic-ost, is one of them, and will fail to probe with
+> > builtin_platform_driver_probe.
+> >=20
+>=20
+> The big question is _why_ it fails to probe.
+>=20
 
-Then is is a bug since forever (well, or a fact that resulted from the
-intended semantic not being documented and the driver author not caring
-or knowing better).
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Are you sharing the device tree node between a 'normal' platform device
+driver and something more low level DT that marks the device's backing
+DT node as OF_POPULATED early on? That's my only guess why it's not
+working.
