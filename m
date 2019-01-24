@@ -1,79 +1,113 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v8 05/26] clocksource: Add driver for the Ingenic JZ47xx
- OST
-Date: Wed, 23 Jan 2019 10:01:55 -0800
-Message-ID: <20190123180155.GB9781@roeck-us.net>
-References: <20181212220922.18759-1-paul@crapouillou.net>
- <20181212220922.18759-6-paul@crapouillou.net>
- <CA+7wUsxNN2SL9_7tDh0DiBAgdUwxd_osgmi=09HP7110Tm0DYQ@mail.gmail.com>
- <128675a5-7ede-4114-a649-89a536346dc8@roeck-us.net>
- <1548264353.3173.1@crapouillou.net>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: Re: [PATCH v4 1/2] pwm: sifive: Add DT documentation for SiFive PWM Controller
+Date: Thu, 24 Jan 2019 14:28:44 +0530
+Message-ID: <CAJ2_jOFMDkAv44Ck1HNxDQ8mfH=Zi3cxhLugoqBMDcueDw0O3w@mail.gmail.com>
+References: <1548066043-1252-1-git-send-email-yash.shah@sifive.com>
+ <1548066043-1252-2-git-send-email-yash.shah@sifive.com> <20190121145901.GA7547@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1548264353.3173.1@crapouillou.net>
+In-Reply-To: <20190121145901.GA7547@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Mathieu Malaterre <malat@debian.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, od@zcrc.me, Maar
+To: Rob Herring <robh@kernel.org>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Jan 23, 2019 at 02:25:53PM -0300, Paul Cercueil wrote:
-> Hi,
-> 
-> Le mer. 23 janv. 2019 à 11:31, Guenter Roeck <linux@roeck-us.net> a écrit :
-> >On 1/23/19 4:58 AM, Mathieu Malaterre wrote:
-> >>On Wed, Dec 12, 2018 at 11:09 PM Paul Cercueil <paul@crapouillou.net>
-> >>wrote:
-> >>>
-> >>>From: Maarten ter Huurne <maarten@treewalker.org>
-> >>>
-> >>>OST is the OS Timer, a 64-bit timer/counter with buffered reading.
-> >>>
-> >>>SoCs before the JZ4770 had (if any) a 32-bit OST; the JZ4770 and
-> >>>JZ4780 have a 64-bit OST.
-> >>>
-> >>>This driver will register both a clocksource and a sched_clock to the
-> >>>system.
-> >>>
-> >>>Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
-> >>>Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> >>>---
-> >>>
-> >>>Notes:
-> >>>      v5: New patch
-> >>>
-> >>>      v6: - Get rid of SoC IDs; pass pointer to ingenic_ost_soc_info
-> >>>as
-> >>>            devicetree match data instead.
-> >>>          - Use device_get_match_data() instead of the of_* variant
-> >>>          - Handle error of dev_get_regmap() properly
-> >>>
-> >>>      v7: Fix section mismatch by using
-> >>>builtin_platform_driver_probe()
-> >>>
-> >>>      v8: builtin_platform_driver_probe() does not work anymore in
-> >>>          4.20-rc6? The probe function won't be called. Work around
-> >>>this
-> >>>          for now by using late_initcall.
-> >>>
+On Mon, Jan 21, 2019 at 8:29 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, Jan 21, 2019 at 03:50:42PM +0530, Yash Shah wrote:
+> > DT documentation for PWM controller added.
 > >
-> >Did anyone notice this ? Either something is wrong with the driver, or
-> >with the kernel core. Hacking around it seems like the worst possible
-> >"solution".
-> 
-> I can confirm it still happens on 5.0-rc3.
-> 
-> Just to explain what I'm doing:
-> 
-> My ingenic-timer driver probes with builtin_platform_driver_probe (this
-> works),
-> and then calls of_platform_populate to probe its children. This driver,
-> ingenic-ost, is one of them, and will fail to probe with
-> builtin_platform_driver_probe.
-> 
+> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> > [Atish: Compatible string update]
+> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> > ---
+> >  .../devicetree/bindings/pwm/pwm-sifive.txt         | 37 ++++++++++++++++++++++
+> >  1 file changed, 37 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> >
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > new file mode 100644
+> > index 0000000..b207908
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > @@ -0,0 +1,37 @@
+> > +SiFive PWM controller
+> > +
+> > +Unlike most other PWM controllers, the SiFive PWM controller currently only
+> > +supports one period for all channels in the PWM. This is set globally in DTS.
+> > +The period also has significant restrictions on the values it can achieve,
+> > +which the driver rounds to the nearest achievable frequency.
+> > +
+> > +Required properties:
+> > +- compatible: Should be "sifive,pwmX" and "sifive,$socname-pwm".
+>
+> The order here is wrong.
 
-The big question is _why_ it fails to probe.
+Will fix the order.
 
-Guenter
+>
+> You still need to enumeration valid version numbers. Is 'sifive,pwm20'
+> valid?
+
+Yes
+
+>
+> > +  Please refer to sifive-blocks-ip-versioning.txt for details.
+> > +- reg: physical base address and length of the controller's registers
+> > +- clocks: Should contain a clock identifier for the PWM's parent clock.
+> > +- #pwm-cells: Should be 2.
+> > +  Refer to bindings/pwm/pwm.txt for details.
+> > +- sifive,period-ns: the driver will get as close to this period as it can
+> > +- interrupts: one interrupt per PWM channel
+>
+> How many channels? If variable, is the a max number?
+
+Max 4 channels.
+
+>
+> > +
+> > +PWM RTL that corresponds to the IP block version numbers can be found
+> > +here:
+> > +
+> > +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
+>
+> Put this in the description at the top.
+
+Sure.
+
+>
+> > +
+> > +Further information on the format of the IP
+> > +block-specific version numbers can be found in
+> > +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt
+>
+> You already said this.
+
+Will remove redundant info.
+
+>
+> > +
+> > +Examples:
+> > +
+> > +pwm:  pwm@10020000 {
+> > +     compatible = "sifive,fu540-c000-pwm","sifive,pwm0";
+>
+> Space after the ',' needed.
+
+Sure
+
+>
+> > +     reg = <0x0 0x10020000 0x0 0x1000>;
+> > +     clocks = <&tlclk>;
+> > +     interrupt-parent = <&plic>;
+> > +     interrupts = <42 43 44 45>;
+> > +     #pwm-cells = <2>;
+> > +     sifive,period-ns = <1000000>;
+> > +};
+> > --
+> > 1.9.1
+> >
+
+Thanks for the feedback
