@@ -1,113 +1,68 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v4 1/2] pwm: sifive: Add DT documentation for SiFive PWM Controller
-Date: Thu, 24 Jan 2019 14:28:44 +0530
-Message-ID: <CAJ2_jOFMDkAv44Ck1HNxDQ8mfH=Zi3cxhLugoqBMDcueDw0O3w@mail.gmail.com>
-References: <1548066043-1252-1-git-send-email-yash.shah@sifive.com>
- <1548066043-1252-2-git-send-email-yash.shah@sifive.com> <20190121145901.GA7547@bogus>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: Re: [RFC PATCH v4 2/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Thu, 24 Jan 2019 09:54:16 +0100
+Message-ID: <15db833b-37cb-0d80-6ef2-dd1fd4507027@ysoft.com>
+References: <1544616263-82642-1-git-send-email-michal.vokac@ysoft.com>
+ <1544616263-82642-3-git-send-email-michal.vokac@ysoft.com>
+ <20181213085605.j2e76y67srg5qfbc@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190121145901.GA7547@bogus>
+In-Reply-To: <20181213085605.j2e76y67srg5qfbc@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Jan 21, 2019 at 8:29 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Mon, Jan 21, 2019 at 03:50:42PM +0530, Yash Shah wrote:
-> > DT documentation for PWM controller added.
-> >
-> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> > [Atish: Compatible string update]
-> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> > ---
-> >  .../devicetree/bindings/pwm/pwm-sifive.txt         | 37 ++++++++++++++++++++++
-> >  1 file changed, 37 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> > new file mode 100644
-> > index 0000000..b207908
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> > @@ -0,0 +1,37 @@
-> > +SiFive PWM controller
-> > +
-> > +Unlike most other PWM controllers, the SiFive PWM controller currently only
-> > +supports one period for all channels in the PWM. This is set globally in DTS.
-> > +The period also has significant restrictions on the values it can achieve,
-> > +which the driver rounds to the nearest achievable frequency.
-> > +
-> > +Required properties:
-> > +- compatible: Should be "sifive,pwmX" and "sifive,$socname-pwm".
->
-> The order here is wrong.
+On 13.12.2018 09:56, Uwe Kleine-König wrote:
+> On Wed, Dec 12, 2018 at 12:04:51PM +0000, Vokáč Michal wrote:
+>> Normally the PWM output is held LOW when PWM is disabled. This can cause
+>> problems when inverted PWM signal polarity is needed. With this behavior
+>> the connected circuit is fed by 100% duty cycle instead of being shut-off.
+>>
+>> Allow users to define a "pwm" and a "gpio" pinctrl states. The pwm pinctrl
+>> state is selected when PWM is enabled and the gpio pinctrl state is
+>> selected when PWM is disabled. In the gpio state the new pwm-gpios GPIO is
+>> configured as input and the internal pull-up resistor is used to pull the
+>> output level high.
+>>
+>> If all the pinctrl states and the pwm-gpios GPIO are not correctly
+>> specified in DT the PWM work as usual.
+>>
+>> As an example, with this patch a PWM controlled backlight with inversed
+>> signal polarity can be used in full brightness range. Without this patch
+>> the backlight can not be turned off as brightness = 0 disables the PWM
+>> and that in turn set PWM output LOW, that is full brightness.
+>>
+>> Inverted output of the PWM with "default" and with "pwm"+"gpio" pinctrl:
+>>
+>> +--------------+------------+---------------+----------- +-------------+
+>> | After reset  | Bootloader |   PWM probe   |     PWM    |     PWM     |
+>> | 100k pull-up |            |               | enable 30% |   disable   |
+>> +--------------+------------+---------------+------------+-------------+
+>> | pinctrl      |    none    |    default    |   default  |   default   |
+>> | out H   __________________                   __   __                 |
+>> | out L                     \_________________/  \_/  \_/\____________ |
+>> |                                           ^    ^    ^                |
+>> +--------------+------------+---------------+------------+-------------+
+>> | pinctrl      |    none    |      gpio     |     pwm    |     gpio    |
+>> | out H   __________________________________   __   __   _____________ |
+>> | out L                                     \_/  \_/  \_/              |
+>> |                                           ^    ^    ^                |
+>> +----------------------------------------------------------------------+
+> 
+> Just for the record: My last concern against this patch set (that I sent
+> for v3) and v4 of the series criss-crossed. So the problem with the
+> peaks that could happen is still unaddressed.
 
-Will fix the order.
+Hi Uwe et al.
 
->
-> You still need to enumeration valid version numbers. Is 'sifive,pwm20'
-> valid?
+Sorry for the huge delay. I hope we will be able to refresh our
+memories and continue on the discussion. I will react to your
+comments in the appropriate v3 thread. And sorry for this v4.
+I was too fast on the trigger back then..
 
-Yes
-
->
-> > +  Please refer to sifive-blocks-ip-versioning.txt for details.
-> > +- reg: physical base address and length of the controller's registers
-> > +- clocks: Should contain a clock identifier for the PWM's parent clock.
-> > +- #pwm-cells: Should be 2.
-> > +  Refer to bindings/pwm/pwm.txt for details.
-> > +- sifive,period-ns: the driver will get as close to this period as it can
-> > +- interrupts: one interrupt per PWM channel
->
-> How many channels? If variable, is the a max number?
-
-Max 4 channels.
-
->
-> > +
-> > +PWM RTL that corresponds to the IP block version numbers can be found
-> > +here:
-> > +
-> > +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
->
-> Put this in the description at the top.
-
-Sure.
-
->
-> > +
-> > +Further information on the format of the IP
-> > +block-specific version numbers can be found in
-> > +Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt
->
-> You already said this.
-
-Will remove redundant info.
-
->
-> > +
-> > +Examples:
-> > +
-> > +pwm:  pwm@10020000 {
-> > +     compatible = "sifive,fu540-c000-pwm","sifive,pwm0";
->
-> Space after the ',' needed.
-
-Sure
-
->
-> > +     reg = <0x0 0x10020000 0x0 0x1000>;
-> > +     clocks = <&tlclk>;
-> > +     interrupt-parent = <&plic>;
-> > +     interrupts = <42 43 44 45>;
-> > +     #pwm-cells = <2>;
-> > +     sifive,period-ns = <1000000>;
-> > +};
-> > --
-> > 1.9.1
-> >
-
-Thanks for the feedback
+Michal
