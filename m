@@ -1,7 +1,7 @@
 From: Ryder Lee <ryder.lee@mediatek.com>
 Subject: Re: [PATCH v1 1/5] pwm: mediatek: add a property "mediatek,num-pwms"
-Date: Fri, 25 Jan 2019 11:48:36 +0800
-Message-ID: <1548388116.29237.15.camel@mtkswgap22>
+Date: Fri, 25 Jan 2019 11:52:43 +0800
+Message-ID: <1548388363.29237.17.camel@mtkswgap22>
 References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
          <c007d399-af86-98d3-94f9-b9762efdc219@gmail.com>
          <1547866487.14213.10.camel@mtkswgap22>
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190121084948.frpcgg6wkdjxkl7k@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, John Crispin <blogic@openwrt.org>
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, John Crispin <john@phrozen.org>
 Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Sean Wang <sean.wang@kernel.org>, Weijie Gao =?UTF-8?Q?=28=E9=AB=98=E6=83=9F=E6=9D=B0=29?= <Weijie.Gao@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
@@ -122,11 +122,11 @@ dynamically, but I guess MT7628 couldn't work in original code.
 
 In mtk_pwm_config():
 
-	clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]; 
-	....
-	resolution = (u64)NSEC_PER_SEC * 1000;
-	do_div(resolution, clk_get_rate(clk));
-	....
+        clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]; 
+        ....
+        resolution = (u64)NSEC_PER_SEC * 1000;
+        do_div(resolution, clk_get_rate(clk));
+        ....
 
 I think clk should be NULL and resolution is always 0 here. 
 
