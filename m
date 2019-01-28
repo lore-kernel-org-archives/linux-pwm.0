@@ -1,94 +1,84 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 Subject: Re: [PATCH] backlight: pwm_bl: Use gpiod_get_value_cansleep() to get
  initial state
-Date: Mon, 28 Jan 2019 11:38:35 +0100
-Message-ID: <20190128103835.ibgze6vbkk642dkv@flea>
+Date: Mon, 28 Jan 2019 11:05:48 +0000
+Message-ID: <20190128110548.lqjgzxrppmezwtki@holly.lan>
 References: <20190127145054.3770-1-wens@csie.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="7z7natm2nbelfsf6"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
 In-Reply-To: <20190127145054.3770-1-wens@csie.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Chen-Yu Tsai <wens@csie.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-pwm@vger.kernel.org, Maxime Ripard <maxime.ripard@bootlin.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-
---7z7natm2nbelfsf6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sun, Jan 27, 2019 at 10:50:54PM +0800, Chen-Yu Tsai wrote:
-> gpiod_get_value() gives out a warning if access to the underlying gpiochip
-> requires sleeping, which is common for I2C based chips:
->=20
->     WARNING: CPU: 0 PID: 77 at drivers/gpio/gpiolib.c:2500 gpiod_get_valu=
-e+0xd0/0x100
->     Modules linked in:
->     CPU: 0 PID: 77 Comm: kworker/0:2 Not tainted 4.14.0-rc3-00589-gf32897=
-915d48-dirty #90
->     Hardware name: Allwinner sun4i/sun5i Families
->     Workqueue: events deferred_probe_work_func
->     [<c010ec50>] (unwind_backtrace) from [<c010b784>] (show_stack+0x10/0x=
-14)
->     [<c010b784>] (show_stack) from [<c0797224>] (dump_stack+0x88/0x9c)
->     [<c0797224>] (dump_stack) from [<c0125b08>] (__warn+0xe8/0x100)
->     [<c0125b08>] (__warn) from [<c0125bd0>] (warn_slowpath_null+0x20/0x28)
->     [<c0125bd0>] (warn_slowpath_null) from [<c037069c>] (gpiod_get_value+=
-0xd0/0x100)
->     [<c037069c>] (gpiod_get_value) from [<c03778d0>] (pwm_backlight_probe=
-+0x238/0x508)
->     [<c03778d0>] (pwm_backlight_probe) from [<c0411a2c>] (platform_drv_pr=
-obe+0x50/0xac)
->     [<c0411a2c>] (platform_drv_probe) from [<c0410224>] (driver_probe_dev=
-ice+0x238/0x2e8)
->     [<c0410224>] (driver_probe_device) from [<c040e820>] (bus_for_each_dr=
-v+0x44/0x94)
->     [<c040e820>] (bus_for_each_drv) from [<c040ff0c>] (__device_attach+0x=
-b0/0x114)
->     [<c040ff0c>] (__device_attach) from [<c040f4f8>] (bus_probe_device+0x=
-84/0x8c)
->     [<c040f4f8>] (bus_probe_device) from [<c040f944>] (deferred_probe_wor=
-k_func+0x50/0x14c)
->     [<c040f944>] (deferred_probe_work_func) from [<c013be84>] (process_on=
-e_work+0x1ec/0x414)
->     [<c013be84>] (process_one_work) from [<c013ce5c>] (worker_thread+0x2b=
-0/0x5a0)
->     [<c013ce5c>] (worker_thread) from [<c0141908>] (kthread+0x14c/0x154)
->     [<c0141908>] (kthread) from [<c0107ab0>] (ret_from_fork+0x14/0x24)
->=20
-> This was missed in commit 0c9501f823a4 ("backlight: pwm_bl: Handle gpio
-> that can sleep"). The code was then moved to a separate function in
-> commit 7613c922315e ("backlight: pwm_bl: Move the checks for initial power
-> state to a separate function").
->=20
-> The only usage of gpiod_get_value() is during the probe stage, which is
-> safe to sleep in. Switch to gpiod_get_value_cansleep().
->=20
-> Fixes: 0c9501f823a4 ("backlight: pwm_bl: Handle gpio that can sleep")
-> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-
-Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
-
-Maxime
-=20
---=20
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---7z7natm2nbelfsf6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXE7bqgAKCRDj7w1vZxhR
-xfndAP9l8ziOquk7/+im/vyCRkkkx8BUdtaHT/UNrJzybBggygD+KZOftP3cZ5As
-vpNwIM8ohyvw0yMrbuWWkz0rJvxKDA8=
-=tEBo
------END PGP SIGNATURE-----
-
---7z7natm2nbelfsf6--
+T24gU3VuLCBKYW4gMjcsIDIwMTkgYXQgMTA6NTA6NTRQTSArMDgwMCwgQ2hlbi1ZdSBUc2FpIHdy
+b3RlOgo+IGdwaW9kX2dldF92YWx1ZSgpIGdpdmVzIG91dCBhIHdhcm5pbmcgaWYgYWNjZXNzIHRv
+IHRoZSB1bmRlcmx5aW5nIGdwaW9jaGlwCj4gcmVxdWlyZXMgc2xlZXBpbmcsIHdoaWNoIGlzIGNv
+bW1vbiBmb3IgSTJDIGJhc2VkIGNoaXBzOgo+IAo+ICAgICBXQVJOSU5HOiBDUFU6IDAgUElEOiA3
+NyBhdCBkcml2ZXJzL2dwaW8vZ3Bpb2xpYi5jOjI1MDAgZ3Bpb2RfZ2V0X3ZhbHVlKzB4ZDAvMHgx
+MDAKPiAgICAgTW9kdWxlcyBsaW5rZWQgaW46Cj4gICAgIENQVTogMCBQSUQ6IDc3IENvbW06IGt3
+b3JrZXIvMDoyIE5vdCB0YWludGVkIDQuMTQuMC1yYzMtMDA1ODktZ2YzMjg5NzkxNWQ0OC1kaXJ0
+eSAjOTAKPiAgICAgSGFyZHdhcmUgbmFtZTogQWxsd2lubmVyIHN1bjRpL3N1bjVpIEZhbWlsaWVz
+Cj4gICAgIFdvcmtxdWV1ZTogZXZlbnRzIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYwo+ICAgICBb
+PGMwMTBlYzUwPl0gKHVud2luZF9iYWNrdHJhY2UpIGZyb20gWzxjMDEwYjc4ND5dIChzaG93X3N0
+YWNrKzB4MTAvMHgxNCkKPiAgICAgWzxjMDEwYjc4ND5dIChzaG93X3N0YWNrKSBmcm9tIFs8YzA3
+OTcyMjQ+XSAoZHVtcF9zdGFjaysweDg4LzB4OWMpCj4gICAgIFs8YzA3OTcyMjQ+XSAoZHVtcF9z
+dGFjaykgZnJvbSBbPGMwMTI1YjA4Pl0gKF9fd2FybisweGU4LzB4MTAwKQo+ICAgICBbPGMwMTI1
+YjA4Pl0gKF9fd2FybikgZnJvbSBbPGMwMTI1YmQwPl0gKHdhcm5fc2xvd3BhdGhfbnVsbCsweDIw
+LzB4MjgpCj4gICAgIFs8YzAxMjViZDA+XSAod2Fybl9zbG93cGF0aF9udWxsKSBmcm9tIFs8YzAz
+NzA2OWM+XSAoZ3Bpb2RfZ2V0X3ZhbHVlKzB4ZDAvMHgxMDApCj4gICAgIFs8YzAzNzA2OWM+XSAo
+Z3Bpb2RfZ2V0X3ZhbHVlKSBmcm9tIFs8YzAzNzc4ZDA+XSAocHdtX2JhY2tsaWdodF9wcm9iZSsw
+eDIzOC8weDUwOCkKPiAgICAgWzxjMDM3NzhkMD5dIChwd21fYmFja2xpZ2h0X3Byb2JlKSBmcm9t
+IFs8YzA0MTFhMmM+XSAocGxhdGZvcm1fZHJ2X3Byb2JlKzB4NTAvMHhhYykKPiAgICAgWzxjMDQx
+MWEyYz5dIChwbGF0Zm9ybV9kcnZfcHJvYmUpIGZyb20gWzxjMDQxMDIyND5dIChkcml2ZXJfcHJv
+YmVfZGV2aWNlKzB4MjM4LzB4MmU4KQo+ICAgICBbPGMwNDEwMjI0Pl0gKGRyaXZlcl9wcm9iZV9k
+ZXZpY2UpIGZyb20gWzxjMDQwZTgyMD5dIChidXNfZm9yX2VhY2hfZHJ2KzB4NDQvMHg5NCkKPiAg
+ICAgWzxjMDQwZTgyMD5dIChidXNfZm9yX2VhY2hfZHJ2KSBmcm9tIFs8YzA0MGZmMGM+XSAoX19k
+ZXZpY2VfYXR0YWNoKzB4YjAvMHgxMTQpCj4gICAgIFs8YzA0MGZmMGM+XSAoX19kZXZpY2VfYXR0
+YWNoKSBmcm9tIFs8YzA0MGY0Zjg+XSAoYnVzX3Byb2JlX2RldmljZSsweDg0LzB4OGMpCj4gICAg
+IFs8YzA0MGY0Zjg+XSAoYnVzX3Byb2JlX2RldmljZSkgZnJvbSBbPGMwNDBmOTQ0Pl0gKGRlZmVy
+cmVkX3Byb2JlX3dvcmtfZnVuYysweDUwLzB4MTRjKQo+ICAgICBbPGMwNDBmOTQ0Pl0gKGRlZmVy
+cmVkX3Byb2JlX3dvcmtfZnVuYykgZnJvbSBbPGMwMTNiZTg0Pl0gKHByb2Nlc3Nfb25lX3dvcmsr
+MHgxZWMvMHg0MTQpCj4gICAgIFs8YzAxM2JlODQ+XSAocHJvY2Vzc19vbmVfd29yaykgZnJvbSBb
+PGMwMTNjZTVjPl0gKHdvcmtlcl90aHJlYWQrMHgyYjAvMHg1YTApCj4gICAgIFs8YzAxM2NlNWM+
+XSAod29ya2VyX3RocmVhZCkgZnJvbSBbPGMwMTQxOTA4Pl0gKGt0aHJlYWQrMHgxNGMvMHgxNTQp
+Cj4gICAgIFs8YzAxNDE5MDg+XSAoa3RocmVhZCkgZnJvbSBbPGMwMTA3YWIwPl0gKHJldF9mcm9t
+X2ZvcmsrMHgxNC8weDI0KQo+IAo+IFRoaXMgd2FzIG1pc3NlZCBpbiBjb21taXQgMGM5NTAxZjgy
+M2E0ICgiYmFja2xpZ2h0OiBwd21fYmw6IEhhbmRsZSBncGlvCj4gdGhhdCBjYW4gc2xlZXAiKS4g
+VGhlIGNvZGUgd2FzIHRoZW4gbW92ZWQgdG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiBpbgo+IGNvbW1p
+dCA3NjEzYzkyMjMxNWUgKCJiYWNrbGlnaHQ6IHB3bV9ibDogTW92ZSB0aGUgY2hlY2tzIGZvciBp
+bml0aWFsIHBvd2VyCj4gc3RhdGUgdG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiIpLgo+IAo+IFRoZSBv
+bmx5IHVzYWdlIG9mIGdwaW9kX2dldF92YWx1ZSgpIGlzIGR1cmluZyB0aGUgcHJvYmUgc3RhZ2Us
+IHdoaWNoIGlzCj4gc2FmZSB0byBzbGVlcCBpbi4gU3dpdGNoIHRvIGdwaW9kX2dldF92YWx1ZV9j
+YW5zbGVlcCgpLgo+IAo+IEZpeGVzOiAwYzk1MDFmODIzYTQgKCJiYWNrbGlnaHQ6IHB3bV9ibDog
+SGFuZGxlIGdwaW8gdGhhdCBjYW4gc2xlZXAiKQo+IFNpZ25lZC1vZmYtYnk6IENoZW4tWXUgVHNh
+aSA8d2Vuc0Bjc2llLm9yZz4KCgpBY2tlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhv
+bXBzb25AbGluYXJvLm9yZz4KCgpEYW5pZWwuCgo+IC0tLQo+ICBkcml2ZXJzL3ZpZGVvL2JhY2ts
+aWdodC9wd21fYmwuYyB8IDIgKy0KPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAx
+IGRlbGV0aW9uKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
+bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBpbmRleCBmZWI5MDc2
+NGE4MTEuLjUzYjhjZWVhOWJkZSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
+dC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gQEAg
+LTQzNSw3ICs0MzUsNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfaW5pdGlhbF9wb3dlcl9z
+dGF0ZShjb25zdCBzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAJICovCj4gIAo+ICAJLyogaWYg
+dGhlIGVuYWJsZSBHUElPIGlzIGRpc2FibGVkLCBkbyBub3QgZW5hYmxlIHRoZSBiYWNrbGlnaHQg
+Ki8KPiAtCWlmIChwYi0+ZW5hYmxlX2dwaW8gJiYgZ3Bpb2RfZ2V0X3ZhbHVlKHBiLT5lbmFibGVf
+Z3BpbykgPT0gMCkKPiArCWlmIChwYi0+ZW5hYmxlX2dwaW8gJiYgZ3Bpb2RfZ2V0X3ZhbHVlX2Nh
+bnNsZWVwKHBiLT5lbmFibGVfZ3BpbykgPT0gMCkKPiAgCQlyZXR1cm4gRkJfQkxBTktfUE9XRVJE
+T1dOOwo+ICAKPiAgCS8qIFRoZSByZWd1bGF0b3IgaXMgZGlzYWJsZWQsIGRvIG5vdCBlbmFibGUg
+dGhlIGJhY2tsaWdodCAqLwo+IC0tIAo+IDIuMjAuMQo+IApfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
+bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
+bG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
