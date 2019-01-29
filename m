@@ -1,84 +1,71 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: Use gpiod_get_value_cansleep() to get
- initial state
-Date: Mon, 28 Jan 2019 11:05:48 +0000
-Message-ID: <20190128110548.lqjgzxrppmezwtki@holly.lan>
-References: <20190127145054.3770-1-wens@csie.org>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH v5 0/2] PWM support for HiFive Unleashed
+Date: Tue, 29 Jan 2019 17:13:17 +0530
+Message-ID: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190127145054.3770-1-wens@csie.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Chen-Yu Tsai <wens@csie.org>
-Cc: linux-pwm@vger.kernel.org, Maxime Ripard <maxime.ripard@bootlin.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, sachin.ghadi@sifive.com, Yash Shah <yash.shah@sifive.com>, thierry.reding@gmail.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gU3VuLCBKYW4gMjcsIDIwMTkgYXQgMTA6NTA6NTRQTSArMDgwMCwgQ2hlbi1ZdSBUc2FpIHdy
-b3RlOgo+IGdwaW9kX2dldF92YWx1ZSgpIGdpdmVzIG91dCBhIHdhcm5pbmcgaWYgYWNjZXNzIHRv
-IHRoZSB1bmRlcmx5aW5nIGdwaW9jaGlwCj4gcmVxdWlyZXMgc2xlZXBpbmcsIHdoaWNoIGlzIGNv
-bW1vbiBmb3IgSTJDIGJhc2VkIGNoaXBzOgo+IAo+ICAgICBXQVJOSU5HOiBDUFU6IDAgUElEOiA3
-NyBhdCBkcml2ZXJzL2dwaW8vZ3Bpb2xpYi5jOjI1MDAgZ3Bpb2RfZ2V0X3ZhbHVlKzB4ZDAvMHgx
-MDAKPiAgICAgTW9kdWxlcyBsaW5rZWQgaW46Cj4gICAgIENQVTogMCBQSUQ6IDc3IENvbW06IGt3
-b3JrZXIvMDoyIE5vdCB0YWludGVkIDQuMTQuMC1yYzMtMDA1ODktZ2YzMjg5NzkxNWQ0OC1kaXJ0
-eSAjOTAKPiAgICAgSGFyZHdhcmUgbmFtZTogQWxsd2lubmVyIHN1bjRpL3N1bjVpIEZhbWlsaWVz
-Cj4gICAgIFdvcmtxdWV1ZTogZXZlbnRzIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYwo+ICAgICBb
-PGMwMTBlYzUwPl0gKHVud2luZF9iYWNrdHJhY2UpIGZyb20gWzxjMDEwYjc4ND5dIChzaG93X3N0
-YWNrKzB4MTAvMHgxNCkKPiAgICAgWzxjMDEwYjc4ND5dIChzaG93X3N0YWNrKSBmcm9tIFs8YzA3
-OTcyMjQ+XSAoZHVtcF9zdGFjaysweDg4LzB4OWMpCj4gICAgIFs8YzA3OTcyMjQ+XSAoZHVtcF9z
-dGFjaykgZnJvbSBbPGMwMTI1YjA4Pl0gKF9fd2FybisweGU4LzB4MTAwKQo+ICAgICBbPGMwMTI1
-YjA4Pl0gKF9fd2FybikgZnJvbSBbPGMwMTI1YmQwPl0gKHdhcm5fc2xvd3BhdGhfbnVsbCsweDIw
-LzB4MjgpCj4gICAgIFs8YzAxMjViZDA+XSAod2Fybl9zbG93cGF0aF9udWxsKSBmcm9tIFs8YzAz
-NzA2OWM+XSAoZ3Bpb2RfZ2V0X3ZhbHVlKzB4ZDAvMHgxMDApCj4gICAgIFs8YzAzNzA2OWM+XSAo
-Z3Bpb2RfZ2V0X3ZhbHVlKSBmcm9tIFs8YzAzNzc4ZDA+XSAocHdtX2JhY2tsaWdodF9wcm9iZSsw
-eDIzOC8weDUwOCkKPiAgICAgWzxjMDM3NzhkMD5dIChwd21fYmFja2xpZ2h0X3Byb2JlKSBmcm9t
-IFs8YzA0MTFhMmM+XSAocGxhdGZvcm1fZHJ2X3Byb2JlKzB4NTAvMHhhYykKPiAgICAgWzxjMDQx
-MWEyYz5dIChwbGF0Zm9ybV9kcnZfcHJvYmUpIGZyb20gWzxjMDQxMDIyND5dIChkcml2ZXJfcHJv
-YmVfZGV2aWNlKzB4MjM4LzB4MmU4KQo+ICAgICBbPGMwNDEwMjI0Pl0gKGRyaXZlcl9wcm9iZV9k
-ZXZpY2UpIGZyb20gWzxjMDQwZTgyMD5dIChidXNfZm9yX2VhY2hfZHJ2KzB4NDQvMHg5NCkKPiAg
-ICAgWzxjMDQwZTgyMD5dIChidXNfZm9yX2VhY2hfZHJ2KSBmcm9tIFs8YzA0MGZmMGM+XSAoX19k
-ZXZpY2VfYXR0YWNoKzB4YjAvMHgxMTQpCj4gICAgIFs8YzA0MGZmMGM+XSAoX19kZXZpY2VfYXR0
-YWNoKSBmcm9tIFs8YzA0MGY0Zjg+XSAoYnVzX3Byb2JlX2RldmljZSsweDg0LzB4OGMpCj4gICAg
-IFs8YzA0MGY0Zjg+XSAoYnVzX3Byb2JlX2RldmljZSkgZnJvbSBbPGMwNDBmOTQ0Pl0gKGRlZmVy
-cmVkX3Byb2JlX3dvcmtfZnVuYysweDUwLzB4MTRjKQo+ICAgICBbPGMwNDBmOTQ0Pl0gKGRlZmVy
-cmVkX3Byb2JlX3dvcmtfZnVuYykgZnJvbSBbPGMwMTNiZTg0Pl0gKHByb2Nlc3Nfb25lX3dvcmsr
-MHgxZWMvMHg0MTQpCj4gICAgIFs8YzAxM2JlODQ+XSAocHJvY2Vzc19vbmVfd29yaykgZnJvbSBb
-PGMwMTNjZTVjPl0gKHdvcmtlcl90aHJlYWQrMHgyYjAvMHg1YTApCj4gICAgIFs8YzAxM2NlNWM+
-XSAod29ya2VyX3RocmVhZCkgZnJvbSBbPGMwMTQxOTA4Pl0gKGt0aHJlYWQrMHgxNGMvMHgxNTQp
-Cj4gICAgIFs8YzAxNDE5MDg+XSAoa3RocmVhZCkgZnJvbSBbPGMwMTA3YWIwPl0gKHJldF9mcm9t
-X2ZvcmsrMHgxNC8weDI0KQo+IAo+IFRoaXMgd2FzIG1pc3NlZCBpbiBjb21taXQgMGM5NTAxZjgy
-M2E0ICgiYmFja2xpZ2h0OiBwd21fYmw6IEhhbmRsZSBncGlvCj4gdGhhdCBjYW4gc2xlZXAiKS4g
-VGhlIGNvZGUgd2FzIHRoZW4gbW92ZWQgdG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiBpbgo+IGNvbW1p
-dCA3NjEzYzkyMjMxNWUgKCJiYWNrbGlnaHQ6IHB3bV9ibDogTW92ZSB0aGUgY2hlY2tzIGZvciBp
-bml0aWFsIHBvd2VyCj4gc3RhdGUgdG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiIpLgo+IAo+IFRoZSBv
-bmx5IHVzYWdlIG9mIGdwaW9kX2dldF92YWx1ZSgpIGlzIGR1cmluZyB0aGUgcHJvYmUgc3RhZ2Us
-IHdoaWNoIGlzCj4gc2FmZSB0byBzbGVlcCBpbi4gU3dpdGNoIHRvIGdwaW9kX2dldF92YWx1ZV9j
-YW5zbGVlcCgpLgo+IAo+IEZpeGVzOiAwYzk1MDFmODIzYTQgKCJiYWNrbGlnaHQ6IHB3bV9ibDog
-SGFuZGxlIGdwaW8gdGhhdCBjYW4gc2xlZXAiKQo+IFNpZ25lZC1vZmYtYnk6IENoZW4tWXUgVHNh
-aSA8d2Vuc0Bjc2llLm9yZz4KCgpBY2tlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhv
-bXBzb25AbGluYXJvLm9yZz4KCgpEYW5pZWwuCgo+IC0tLQo+ICBkcml2ZXJzL3ZpZGVvL2JhY2ts
-aWdodC9wd21fYmwuYyB8IDIgKy0KPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAx
-IGRlbGV0aW9uKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
-bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBpbmRleCBmZWI5MDc2
-NGE4MTEuLjUzYjhjZWVhOWJkZSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
-dC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gQEAg
-LTQzNSw3ICs0MzUsNyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfaW5pdGlhbF9wb3dlcl9z
-dGF0ZShjb25zdCBzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAJICovCj4gIAo+ICAJLyogaWYg
-dGhlIGVuYWJsZSBHUElPIGlzIGRpc2FibGVkLCBkbyBub3QgZW5hYmxlIHRoZSBiYWNrbGlnaHQg
-Ki8KPiAtCWlmIChwYi0+ZW5hYmxlX2dwaW8gJiYgZ3Bpb2RfZ2V0X3ZhbHVlKHBiLT5lbmFibGVf
-Z3BpbykgPT0gMCkKPiArCWlmIChwYi0+ZW5hYmxlX2dwaW8gJiYgZ3Bpb2RfZ2V0X3ZhbHVlX2Nh
-bnNsZWVwKHBiLT5lbmFibGVfZ3BpbykgPT0gMCkKPiAgCQlyZXR1cm4gRkJfQkxBTktfUE9XRVJE
-T1dOOwo+ICAKPiAgCS8qIFRoZSByZWd1bGF0b3IgaXMgZGlzYWJsZWQsIGRvIG5vdCBlbmFibGUg
-dGhlIGJhY2tsaWdodCAqLwo+IC0tIAo+IDIuMjAuMQo+IApfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
-bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
+
+v5
+- Correct the order of compatible string properties
+- PWM state correction to be done always
+- Other minor fixes based upon feedback on v4
+
+v4
+- Rename the property sifive,approx-period-ns to sifive,period-ns
+- Rename macros with appropriate names
+- Remove unused macros
+- Rename struct sifive_pwm_device to struct pwm_sifive_ddata
+- Rename function prefix as per driver name
+- Set deglitch bit before changing output waveform.
+- Other minor fixes based upon feedback on v3
+
+v3
+- Add a link to the reference manaul
+- Use appropriate apis for division operation
+- Add check for polarity
+- Enable clk before calling clk_get_rate
+- Other minor fixes based upon feedback on v2
+
+V2 changed from V1:
+- Remove inclusion of dt-bindings/pwm/pwm.h
+- Remove artificial alignments
+- Replace ioread32/iowrite32 with readl/writel
+- Remove camelcase
+- Change dev_info to dev_dbg for unnecessary log
+- Correct typo in driver name
+- Remove use of of_match_ptr macro
+- Update the DT compatible strings and Add reference to a common
+  versioning document
+
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
+
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  33 +++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 261 +++++++++++++++++++++
+ 4 files changed, 306 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
+
+-- 
+1.9.1
