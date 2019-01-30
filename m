@@ -1,74 +1,90 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: Use gpiod_get_value_cansleep() to get
- initial state
-Date: Wed, 30 Jan 2019 13:36:05 +0000
-Message-ID: <20190130133605.GI4701@dell>
-References: <20190127145054.3770-1-wens@csie.org>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Wed, 30 Jan 2019 15:42:29 +0100
+Message-ID: <72bad040-05f4-607f-f210-468e46ea3228@ysoft.com>
+References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
+ <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
+ <20181212080154.kcfh57mulypwuscu@pengutronix.de>
+ <52ed0614-d1f5-81cb-3b17-8eb137967872@ysoft.com>
+ <20181212121255.yg6b4pw7qord7ebi@pengutronix.de>
+ <4b0356b7-bc7d-a026-ac90-3f0c5754ed29@ysoft.com>
+ <20190124092215.zbu62lhxf667rzvs@pengutronix.de>
+ <4004896e-34fc-7160-2f21-30280d96f750@ysoft.com>
+ <20190124104435.e6paqwcuz3hizwnv@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190127145054.3770-1-wens@csie.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Chen-Yu Tsai <wens@csie.org>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Maxime Ripard <maxime.ripard@bootlin.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190124104435.e6paqwcuz3hizwnv@pengutronix.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gU3VuLCAyNyBKYW4gMjAxOSwgQ2hlbi1ZdSBUc2FpIHdyb3RlOgoKPiBncGlvZF9nZXRfdmFs
-dWUoKSBnaXZlcyBvdXQgYSB3YXJuaW5nIGlmIGFjY2VzcyB0byB0aGUgdW5kZXJseWluZyBncGlv
-Y2hpcAo+IHJlcXVpcmVzIHNsZWVwaW5nLCB3aGljaCBpcyBjb21tb24gZm9yIEkyQyBiYXNlZCBj
-aGlwczoKPiAKPiAgICAgV0FSTklORzogQ1BVOiAwIFBJRDogNzcgYXQgZHJpdmVycy9ncGlvL2dw
-aW9saWIuYzoyNTAwIGdwaW9kX2dldF92YWx1ZSsweGQwLzB4MTAwCj4gICAgIE1vZHVsZXMgbGlu
-a2VkIGluOgo+ICAgICBDUFU6IDAgUElEOiA3NyBDb21tOiBrd29ya2VyLzA6MiBOb3QgdGFpbnRl
-ZCA0LjE0LjAtcmMzLTAwNTg5LWdmMzI4OTc5MTVkNDgtZGlydHkgIzkwCj4gICAgIEhhcmR3YXJl
-IG5hbWU6IEFsbHdpbm5lciBzdW40aS9zdW41aSBGYW1pbGllcwo+ICAgICBXb3JrcXVldWU6IGV2
-ZW50cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMKPiAgICAgWzxjMDEwZWM1MD5dICh1bndpbmRf
-YmFja3RyYWNlKSBmcm9tIFs8YzAxMGI3ODQ+XSAoc2hvd19zdGFjaysweDEwLzB4MTQpCj4gICAg
-IFs8YzAxMGI3ODQ+XSAoc2hvd19zdGFjaykgZnJvbSBbPGMwNzk3MjI0Pl0gKGR1bXBfc3RhY2sr
-MHg4OC8weDljKQo+ICAgICBbPGMwNzk3MjI0Pl0gKGR1bXBfc3RhY2spIGZyb20gWzxjMDEyNWIw
-OD5dIChfX3dhcm4rMHhlOC8weDEwMCkKPiAgICAgWzxjMDEyNWIwOD5dIChfX3dhcm4pIGZyb20g
-WzxjMDEyNWJkMD5dICh3YXJuX3Nsb3dwYXRoX251bGwrMHgyMC8weDI4KQo+ICAgICBbPGMwMTI1
-YmQwPl0gKHdhcm5fc2xvd3BhdGhfbnVsbCkgZnJvbSBbPGMwMzcwNjljPl0gKGdwaW9kX2dldF92
-YWx1ZSsweGQwLzB4MTAwKQo+ICAgICBbPGMwMzcwNjljPl0gKGdwaW9kX2dldF92YWx1ZSkgZnJv
-bSBbPGMwMzc3OGQwPl0gKHB3bV9iYWNrbGlnaHRfcHJvYmUrMHgyMzgvMHg1MDgpCj4gICAgIFs8
-YzAzNzc4ZDA+XSAocHdtX2JhY2tsaWdodF9wcm9iZSkgZnJvbSBbPGMwNDExYTJjPl0gKHBsYXRm
-b3JtX2Rydl9wcm9iZSsweDUwLzB4YWMpCj4gICAgIFs8YzA0MTFhMmM+XSAocGxhdGZvcm1fZHJ2
-X3Byb2JlKSBmcm9tIFs8YzA0MTAyMjQ+XSAoZHJpdmVyX3Byb2JlX2RldmljZSsweDIzOC8weDJl
-OCkKPiAgICAgWzxjMDQxMDIyND5dIChkcml2ZXJfcHJvYmVfZGV2aWNlKSBmcm9tIFs8YzA0MGU4
-MjA+XSAoYnVzX2Zvcl9lYWNoX2RydisweDQ0LzB4OTQpCj4gICAgIFs8YzA0MGU4MjA+XSAoYnVz
-X2Zvcl9lYWNoX2RydikgZnJvbSBbPGMwNDBmZjBjPl0gKF9fZGV2aWNlX2F0dGFjaCsweGIwLzB4
-MTE0KQo+ICAgICBbPGMwNDBmZjBjPl0gKF9fZGV2aWNlX2F0dGFjaCkgZnJvbSBbPGMwNDBmNGY4
-Pl0gKGJ1c19wcm9iZV9kZXZpY2UrMHg4NC8weDhjKQo+ICAgICBbPGMwNDBmNGY4Pl0gKGJ1c19w
-cm9iZV9kZXZpY2UpIGZyb20gWzxjMDQwZjk0ND5dIChkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMr
-MHg1MC8weDE0YykKPiAgICAgWzxjMDQwZjk0ND5dIChkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMp
-IGZyb20gWzxjMDEzYmU4ND5dIChwcm9jZXNzX29uZV93b3JrKzB4MWVjLzB4NDE0KQo+ICAgICBb
-PGMwMTNiZTg0Pl0gKHByb2Nlc3Nfb25lX3dvcmspIGZyb20gWzxjMDEzY2U1Yz5dICh3b3JrZXJf
-dGhyZWFkKzB4MmIwLzB4NWEwKQo+ICAgICBbPGMwMTNjZTVjPl0gKHdvcmtlcl90aHJlYWQpIGZy
-b20gWzxjMDE0MTkwOD5dIChrdGhyZWFkKzB4MTRjLzB4MTU0KQo+ICAgICBbPGMwMTQxOTA4Pl0g
-KGt0aHJlYWQpIGZyb20gWzxjMDEwN2FiMD5dIChyZXRfZnJvbV9mb3JrKzB4MTQvMHgyNCkKPiAK
-PiBUaGlzIHdhcyBtaXNzZWQgaW4gY29tbWl0IDBjOTUwMWY4MjNhNCAoImJhY2tsaWdodDogcHdt
-X2JsOiBIYW5kbGUgZ3Bpbwo+IHRoYXQgY2FuIHNsZWVwIikuIFRoZSBjb2RlIHdhcyB0aGVuIG1v
-dmVkIHRvIGEgc2VwYXJhdGUgZnVuY3Rpb24gaW4KPiBjb21taXQgNzYxM2M5MjIzMTVlICgiYmFj
-a2xpZ2h0OiBwd21fYmw6IE1vdmUgdGhlIGNoZWNrcyBmb3IgaW5pdGlhbCBwb3dlcgo+IHN0YXRl
-IHRvIGEgc2VwYXJhdGUgZnVuY3Rpb24iKS4KPiAKPiBUaGUgb25seSB1c2FnZSBvZiBncGlvZF9n
-ZXRfdmFsdWUoKSBpcyBkdXJpbmcgdGhlIHByb2JlIHN0YWdlLCB3aGljaCBpcwo+IHNhZmUgdG8g
-c2xlZXAgaW4uIFN3aXRjaCB0byBncGlvZF9nZXRfdmFsdWVfY2Fuc2xlZXAoKS4KPiAKPiBGaXhl
-czogMGM5NTAxZjgyM2E0ICgiYmFja2xpZ2h0OiBwd21fYmw6IEhhbmRsZSBncGlvIHRoYXQgY2Fu
-IHNsZWVwIikKPiBTaWduZWQtb2ZmLWJ5OiBDaGVuLVl1IFRzYWkgPHdlbnNAY3NpZS5vcmc+Cj4g
-LS0tCj4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIHwgMiArLQo+ICAxIGZpbGUg
-Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCkFwcGxpZWQsIHRoYW5rcy4K
-Ci0tIApMZWUgSm9uZXMgW+adjueQvOaWr10KTGluYXJvIFNlcnZpY2VzIFRlY2huaWNhbCBMZWFk
-CkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJlIGZvciBBUk0gU29DcwpGb2xsb3cg
-TGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVs
-QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+On 24.1.2019 11:44, Uwe Kleine-König wrote:
+> On Thu, Jan 24, 2019 at 11:12:12AM +0100, Michal Vokáč wrote:
+>> On 24.1.2019 10:22, Uwe Kleine-König wrote:
+>>> I think it might be beneficial to allow (or require) that disable acts
+>>> immediately. But this is not how it used to be and in my discussion with
+>>> Thierry (IIRC) he required to complete the currently running period.
+>>
+>> I am confused here. IFAIK it always used to be that:
+>>
+>> 	pwm_apply_state(pwm, { .enabled = 0 });
+>>
+>> immediately stops the PWM with:
+>>
+>> 	writel(0, imx->mmio_base + MX3_PWMCR);
+>>
+>> regardless of the period (for pwm-imx).
+> 
+> Then is is a bug since forever (well, or a fact that resulted from the
+> intended semantic not being documented and the driver author not caring
+> or knowing better).
+
+Hi Uwe, I skimmed all the PWM drivers trying to find out how others are
+waiting for the end of a period before disabling PWM.
+
+There is 50 PWM drivers in total and I could find only two drivers that
+do something that resembles waiting for an end of a period:
+
+  - pwm-atmel.c
+    https://elixir.bootlin.com/linux/v5.0-rc3/source/drivers/pwm/pwm-atmel.c#L176
+	
+  - pwm-sun4i.c
+    https://elixir.bootlin.com/linux/v5.0-rc3/source/drivers/pwm/pwm-sun4i.c#L284
+
+I did not delve into that too much but I believe there are some HW
+requirements on those platforms to stop the PWM that way. Others
+simply stop the PWM straight away. So I am confused even more
+and wonder where your requirements came from?
+
+Anyway, as I could not find any real example I tried to solve it
+according to your earlier suggestion. That is configure duty_cycle=0
+and some time later disable PWM.
+
+It generates additional problems. The PWM block has a FIFO with four
+slots. Before adding the sample with duty cycle=0 into the FIFO it
+is wise to wait for a free slot in the FIFO. Then when the sample is
+added it may actually happen that the sample is the fourth in the
+FIFO. So it may take up to four periods until we can disable the PWM.
+These four periods can take up to 16s. Hmmm :(
+
+Reconfigure the period is not an option. According to the TRM, once you
+write new value into the period register, the counter is cleared and
+new period is started. That means you can produce the spikes this way
+as well..
+
+I agree there are bugs in the driver and it is far from providing
+complete support of the i.MX PWM HW. Still, I believe those are totally
+independent problems from the pinctrl stuff and so should not block
+the discussion/inclusion of this series.
+
+I am sorry if this is getting on your nerves Uwe. I am doing my
+best to test all your suggestions and possible solutions to find
+a good compromise. At least I learned a lot from doing all that stuff.
+
+Thank you for your time,
+Michal
