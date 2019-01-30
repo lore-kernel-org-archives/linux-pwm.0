@@ -1,60 +1,74 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v5 1/2] pwm: sifive: Add DT documentation for SiFive PWM
- Controller
-Date: Wed, 30 Jan 2019 09:14:11 +0100
-Message-ID: <20190130081411.5rva7cpwoy2l5qjd@pengutronix.de>
-References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
- <1548762199-7065-2-git-send-email-yash.shah@sifive.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: Use gpiod_get_value_cansleep() to get
+ initial state
+Date: Wed, 30 Jan 2019 13:36:05 +0000
+Message-ID: <20190130133605.GI4701@dell>
+References: <20190127145054.3770-1-wens@csie.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <1548762199-7065-2-git-send-email-yash.shah@sifive.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
+In-Reply-To: <20190127145054.3770-1-wens@csie.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Chen-Yu Tsai <wens@csie.org>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Maxime Ripard <maxime.ripard@bootlin.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Jan 29, 2019 at 05:13:18PM +0530, Yash Shah wrote:
-> DT documentation for PWM controller added.
-> 
-> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> [Atish: Compatible string update]
-> Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> ---
->  .../devicetree/bindings/pwm/pwm-sifive.txt         | 33 ++++++++++++++++++++++
->  1 file changed, 33 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> new file mode 100644
-> index 0000000..8dcb40d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> @@ -0,0 +1,33 @@
-> +SiFive PWM controller
-> +
-> +Unlike most other PWM controllers, the SiFive PWM controller currently only
-> +supports one period for all channels in the PWM. This is set globally in DTS.
-
-You can simply drop this if the first user can set this using the usual
-interface. Don't you like this suggestion that I already made a few
-times now?
-
-Did you consider to make the driver support only a single output with a
-more flexible period setting?
-
-> +The period also has significant restrictions on the values it can achieve,
-> +which the driver rounds to the nearest achievable frequency.
-
-Rounding a period to a frequency sounds wrong.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+T24gU3VuLCAyNyBKYW4gMjAxOSwgQ2hlbi1ZdSBUc2FpIHdyb3RlOgoKPiBncGlvZF9nZXRfdmFs
+dWUoKSBnaXZlcyBvdXQgYSB3YXJuaW5nIGlmIGFjY2VzcyB0byB0aGUgdW5kZXJseWluZyBncGlv
+Y2hpcAo+IHJlcXVpcmVzIHNsZWVwaW5nLCB3aGljaCBpcyBjb21tb24gZm9yIEkyQyBiYXNlZCBj
+aGlwczoKPiAKPiAgICAgV0FSTklORzogQ1BVOiAwIFBJRDogNzcgYXQgZHJpdmVycy9ncGlvL2dw
+aW9saWIuYzoyNTAwIGdwaW9kX2dldF92YWx1ZSsweGQwLzB4MTAwCj4gICAgIE1vZHVsZXMgbGlu
+a2VkIGluOgo+ICAgICBDUFU6IDAgUElEOiA3NyBDb21tOiBrd29ya2VyLzA6MiBOb3QgdGFpbnRl
+ZCA0LjE0LjAtcmMzLTAwNTg5LWdmMzI4OTc5MTVkNDgtZGlydHkgIzkwCj4gICAgIEhhcmR3YXJl
+IG5hbWU6IEFsbHdpbm5lciBzdW40aS9zdW41aSBGYW1pbGllcwo+ICAgICBXb3JrcXVldWU6IGV2
+ZW50cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMKPiAgICAgWzxjMDEwZWM1MD5dICh1bndpbmRf
+YmFja3RyYWNlKSBmcm9tIFs8YzAxMGI3ODQ+XSAoc2hvd19zdGFjaysweDEwLzB4MTQpCj4gICAg
+IFs8YzAxMGI3ODQ+XSAoc2hvd19zdGFjaykgZnJvbSBbPGMwNzk3MjI0Pl0gKGR1bXBfc3RhY2sr
+MHg4OC8weDljKQo+ICAgICBbPGMwNzk3MjI0Pl0gKGR1bXBfc3RhY2spIGZyb20gWzxjMDEyNWIw
+OD5dIChfX3dhcm4rMHhlOC8weDEwMCkKPiAgICAgWzxjMDEyNWIwOD5dIChfX3dhcm4pIGZyb20g
+WzxjMDEyNWJkMD5dICh3YXJuX3Nsb3dwYXRoX251bGwrMHgyMC8weDI4KQo+ICAgICBbPGMwMTI1
+YmQwPl0gKHdhcm5fc2xvd3BhdGhfbnVsbCkgZnJvbSBbPGMwMzcwNjljPl0gKGdwaW9kX2dldF92
+YWx1ZSsweGQwLzB4MTAwKQo+ICAgICBbPGMwMzcwNjljPl0gKGdwaW9kX2dldF92YWx1ZSkgZnJv
+bSBbPGMwMzc3OGQwPl0gKHB3bV9iYWNrbGlnaHRfcHJvYmUrMHgyMzgvMHg1MDgpCj4gICAgIFs8
+YzAzNzc4ZDA+XSAocHdtX2JhY2tsaWdodF9wcm9iZSkgZnJvbSBbPGMwNDExYTJjPl0gKHBsYXRm
+b3JtX2Rydl9wcm9iZSsweDUwLzB4YWMpCj4gICAgIFs8YzA0MTFhMmM+XSAocGxhdGZvcm1fZHJ2
+X3Byb2JlKSBmcm9tIFs8YzA0MTAyMjQ+XSAoZHJpdmVyX3Byb2JlX2RldmljZSsweDIzOC8weDJl
+OCkKPiAgICAgWzxjMDQxMDIyND5dIChkcml2ZXJfcHJvYmVfZGV2aWNlKSBmcm9tIFs8YzA0MGU4
+MjA+XSAoYnVzX2Zvcl9lYWNoX2RydisweDQ0LzB4OTQpCj4gICAgIFs8YzA0MGU4MjA+XSAoYnVz
+X2Zvcl9lYWNoX2RydikgZnJvbSBbPGMwNDBmZjBjPl0gKF9fZGV2aWNlX2F0dGFjaCsweGIwLzB4
+MTE0KQo+ICAgICBbPGMwNDBmZjBjPl0gKF9fZGV2aWNlX2F0dGFjaCkgZnJvbSBbPGMwNDBmNGY4
+Pl0gKGJ1c19wcm9iZV9kZXZpY2UrMHg4NC8weDhjKQo+ICAgICBbPGMwNDBmNGY4Pl0gKGJ1c19w
+cm9iZV9kZXZpY2UpIGZyb20gWzxjMDQwZjk0ND5dIChkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMr
+MHg1MC8weDE0YykKPiAgICAgWzxjMDQwZjk0ND5dIChkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMp
+IGZyb20gWzxjMDEzYmU4ND5dIChwcm9jZXNzX29uZV93b3JrKzB4MWVjLzB4NDE0KQo+ICAgICBb
+PGMwMTNiZTg0Pl0gKHByb2Nlc3Nfb25lX3dvcmspIGZyb20gWzxjMDEzY2U1Yz5dICh3b3JrZXJf
+dGhyZWFkKzB4MmIwLzB4NWEwKQo+ICAgICBbPGMwMTNjZTVjPl0gKHdvcmtlcl90aHJlYWQpIGZy
+b20gWzxjMDE0MTkwOD5dIChrdGhyZWFkKzB4MTRjLzB4MTU0KQo+ICAgICBbPGMwMTQxOTA4Pl0g
+KGt0aHJlYWQpIGZyb20gWzxjMDEwN2FiMD5dIChyZXRfZnJvbV9mb3JrKzB4MTQvMHgyNCkKPiAK
+PiBUaGlzIHdhcyBtaXNzZWQgaW4gY29tbWl0IDBjOTUwMWY4MjNhNCAoImJhY2tsaWdodDogcHdt
+X2JsOiBIYW5kbGUgZ3Bpbwo+IHRoYXQgY2FuIHNsZWVwIikuIFRoZSBjb2RlIHdhcyB0aGVuIG1v
+dmVkIHRvIGEgc2VwYXJhdGUgZnVuY3Rpb24gaW4KPiBjb21taXQgNzYxM2M5MjIzMTVlICgiYmFj
+a2xpZ2h0OiBwd21fYmw6IE1vdmUgdGhlIGNoZWNrcyBmb3IgaW5pdGlhbCBwb3dlcgo+IHN0YXRl
+IHRvIGEgc2VwYXJhdGUgZnVuY3Rpb24iKS4KPiAKPiBUaGUgb25seSB1c2FnZSBvZiBncGlvZF9n
+ZXRfdmFsdWUoKSBpcyBkdXJpbmcgdGhlIHByb2JlIHN0YWdlLCB3aGljaCBpcwo+IHNhZmUgdG8g
+c2xlZXAgaW4uIFN3aXRjaCB0byBncGlvZF9nZXRfdmFsdWVfY2Fuc2xlZXAoKS4KPiAKPiBGaXhl
+czogMGM5NTAxZjgyM2E0ICgiYmFja2xpZ2h0OiBwd21fYmw6IEhhbmRsZSBncGlvIHRoYXQgY2Fu
+IHNsZWVwIikKPiBTaWduZWQtb2ZmLWJ5OiBDaGVuLVl1IFRzYWkgPHdlbnNAY3NpZS5vcmc+Cj4g
+LS0tCj4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIHwgMiArLQo+ICAxIGZpbGUg
+Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCkFwcGxpZWQsIHRoYW5rcy4K
+Ci0tIApMZWUgSm9uZXMgW+adjueQvOaWr10KTGluYXJvIFNlcnZpY2VzIFRlY2huaWNhbCBMZWFk
+CkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJlIGZvciBBUk0gU29DcwpGb2xsb3cg
+TGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVs
+QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
