@@ -1,9 +1,8 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in
- disabled state
-Date: Wed, 30 Jan 2019 16:39:21 +0100
-Message-ID: <20190130153921.met3kipvdsoctjoa@pengutronix.de>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: Re: [RFC PATCH v3 2/2] pwm: imx: Configure output to GPIO in disabled
+ state
+Date: Fri, 1 Feb 2019 16:50:03 +0100
+Message-ID: <cc407ae4-3386-9b12-b2e7-95e3b6ddc722@ysoft.com>
 References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
  <1544103655-104466-3-git-send-email-michal.vokac@ysoft.com>
  <20181212080154.kcfh57mulypwuscu@pengutronix.de>
@@ -14,112 +13,136 @@ References: <1544103655-104466-1-git-send-email-michal.vokac@ysoft.com>
  <4004896e-34fc-7160-2f21-30280d96f750@ysoft.com>
  <20190124104435.e6paqwcuz3hizwnv@pengutronix.de>
  <72bad040-05f4-607f-f210-468e46ea3228@ysoft.com>
+ <20190130153921.met3kipvdsoctjoa@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <72bad040-05f4-607f-f210-468e46ea3228@ysoft.com>
+In-Reply-To: <20190130153921.met3kipvdsoctjoa@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Lukasz Majewski <l.majewski@majess.pl>, Fabio Estevam <fabio.estevam@nxp.com>, =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@karo-electronics.de>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Michal,
+Hi Uwe,
 
-On Wed, Jan 30, 2019 at 03:42:29PM +0100, Michal Vokáč wrote:
-> On 24.1.2019 11:44, Uwe Kleine-König wrote:
-> > On Thu, Jan 24, 2019 at 11:12:12AM +0100, Michal Vokáč wrote:
-> > > On 24.1.2019 10:22, Uwe Kleine-König wrote:
-> > > > I think it might be beneficial to allow (or require) that disable acts
-> > > > immediately. But this is not how it used to be and in my discussion with
-> > > > Thierry (IIRC) he required to complete the currently running period.
-> > > 
-> > > I am confused here. IFAIK it always used to be that:
-> > > 
-> > > 	pwm_apply_state(pwm, { .enabled = 0 });
-> > > 
-> > > immediately stops the PWM with:
-> > > 
-> > > 	writel(0, imx->mmio_base + MX3_PWMCR);
-> > > 
-> > > regardless of the period (for pwm-imx).
-> > 
-> > Then is is a bug since forever (well, or a fact that resulted from the
-> > intended semantic not being documented and the driver author not caring
-> > or knowing better).
+On 30. 01. 19 16:39, Uwe Kleine-König wrote:
+> On Wed, Jan 30, 2019 at 03:42:29PM +0100, Michal Vokáč wrote:
+[...]> There are quite some drivers known (to me) being buggy here. My feeling
+> is that Thierry doesn't share that impression and I think the only
+> reasonable path forward is to first fix the requirements for drivers and
+> when this is done, look at the implementations and fix them or conclude
+> that the requirements are not practical and shift them accordingly.
+
+I can't really comment on this as my experience is limited to the
+i.MX only, but what you say sounds quite reasonable. What I think might
+be a problem is it seems there is not many active members in the "PWM
+community". Namely I think it is you and Thierry. Others are just
+occasional contributors to PWM hw drivers. So it is not going to be an
+easy task to conclude on a new/better/fixed set of requirements.
+  
+>  From my POV the situation is as follows: I suggested a few changes that
+> seemed reasonable to me (e.g.: don't rely on the pin state to be
+> inactive after disable; don't rely on a driver to block in .apply until
+> the new configuration is active; thought about dropping .disable
+> altogether) and Thierry shot them down indicating that he is not willing
+> to change the API and all affected users for only one or a few
+> implementations. My consequence is to be strict about the requirements
+> because that's the only way to show the resulting pain (or see there
+> isn't so much pain).
+
+I remember those discussions. That is why I am worried if this is ever
+going to move forward as the whole issue dates at least back to 2015.
+Fingers crossed!
+
+>> I did not delve into that too much but I believe there are some HW
+>> requirements on those platforms to stop the PWM that way. Others
+>> simply stop the PWM straight away. So I am confused even more
+>> and wonder where your requirements came from?
 > 
-> Hi Uwe, I skimmed all the PWM drivers trying to find out how others are
-> waiting for the end of a period before disabling PWM.
+> I'm aware that many drivers don't adhere to these requirements. IMHO
+> this is related to the poor situation regarding documentation for
+> pwm-driver authors and lack of time for in-deep reviews by Thierry.
+> Never the less: The requirement to complete the currently running period
+> comes from Thierry. There is a patch by me waiting for review that
+> targets improving the documentation and you already have to suffer from
+> my plan to spend some time on pwm-reviews :-)
+
+Yeah, that is unpleasant if there are some requirements coming from
+the maintainer and are not documented. The response times are not
+really good as well. Except from you. That is why I actually welcome
+the fact that you opted to spend your time on pwm reviews!
+
+I looked at the documentation patch you submitted and at least it
+clearly describes some of the questionable situations. Whether
+I like them or not is irrelevant.
+  
+>> Anyway, as I could not find any real example I tried to solve it
+>> according to your earlier suggestion. That is configure duty_cycle=0
+>> and some time later disable PWM.
+>>
+>> It generates additional problems. The PWM block has a FIFO with four
+>> slots. Before adding the sample with duty cycle=0 into the FIFO it
+>> is wise to wait for a free slot in the FIFO. Then when the sample is
+>> added it may actually happen that the sample is the fourth in the
+>> FIFO. So it may take up to four periods until we can disable the PWM.
+>> These four periods can take up to 16s. Hmmm :(
 > 
-> There is 50 PWM drivers in total and I could find only two drivers that
-> do something that resembles waiting for an end of a period:
+> No it cannot. Because if you put a new configuration into the FIFO you
+> have to block until the requested configuration is active, so it must
+> not happen that you hit the FIFO with 4 busy entries. (Unless a user
+> calls pwm_apply_state() in four contexts in parallel, which should not
+> happen. And if it does, we should implement serialization in the
+> pwm-framework such that pwm-drivers doesn't need to care.)
+
+I was describing what the current code does/allows. There is a function
+to check there is a free slot in the FIFO. It returns without blocking
+if there is at least one free slot out of the four. So currently it
+is possible to run this script:
+
+	#!/bin/sh
+	echo 0 > enable	
+	echo 1000000000 > period # 1 second
+	echo 100000000 > duty_cycle # 1. sample, 100ms
+	echo 1 > enable # clears FIFO and writes 1. sample
+	echo 200000000 > duty_cycle # 2. sample, 200ms
+	echo 400000000 > duty_cycle # 3. sample, 400ms
+	echo 800000000 > duty_cycle # 4. sample, 800ms
+
+and the driver does not block on writing the samples 2-4 and I can see
+a pulse train of all the configured samples on a scope. This definitely
+does not call pwm_apply_state() in parallel contexts.
+
+If I attempt to write another sample unless the first period passes
+(when the FIFO is still full) the driver does block for msleep(period_ms)
+and then the new sample is written and I see all 5 samples on the scope.
+The last (fith one) is repeated as expected.
+
+ From what you say here and what I read in your proposed change to the
+documentation you require the driver to always block until the first
+sample is utilized. So effectively shrinking the FIFO from 4 to 1 sample,
+right?
+
+This makes me to think: How we can define a fixed set of requirements
+for (not just) PWM HW drivers and at the same time allow to utilize
+the maximum capabilities of each HW?
+
+>> I agree there are bugs in the driver and it is far from providing
+>> complete support of the i.MX PWM HW. Still, I believe those are totally
+>> independent problems from the pinctrl stuff and so should not block
+>> the discussion/inclusion of this series.
 > 
->  - pwm-atmel.c
->    https://elixir.bootlin.com/linux/v5.0-rc3/source/drivers/pwm/pwm-atmel.c#L176
-> 	
->  - pwm-sun4i.c
->    https://elixir.bootlin.com/linux/v5.0-rc3/source/drivers/pwm/pwm-sun4i.c#L284
+> I think while there are people who care about a driver, the known
+> problems should be addressed before a change is "sneaked" in that makes
+> the contributor happy and care about other stuff.
 
-There are quite some drivers known (to me) being buggy here. My feeling
-is that Thierry doesn't share that impression and I think the only
-reasonable path forward is to first fix the requirements for drivers and
-when this is done, look at the implementations and fix them or conclude
-that the requirements are not practical and shift them accordingly.
+You can argue it is subjective but isn't the fact that the i.MX PWM
+HW has some issues (and people are trying to solve them), a known
+problem as well? I agree that there may be reasons to change priority
+and first change/fix the requirements and then fix the drivers
+accordingly. Unfortunately, even though I would love, I can not really
+help much with that.
 
-From my POV the situation is as follows: I suggested a few changes that
-seemed reasonable to me (e.g.: don't rely on the pin state to be
-inactive after disable; don't rely on a driver to block in .apply until
-the new configuration is active; thought about dropping .disable
-altogether) and Thierry shot them down indicating that he is not willing
-to change the API and all affected users for only one or a few
-implementations. My consequence is to be strict about the requirements
-because that's the only way to show the resulting pain (or see there
-isn't so much pain).
-
-> I did not delve into that too much but I believe there are some HW
-> requirements on those platforms to stop the PWM that way. Others
-> simply stop the PWM straight away. So I am confused even more
-> and wonder where your requirements came from?
-
-I'm aware that many drivers don't adhere to these requirements. IMHO
-this is related to the poor situation regarding documentation for
-pwm-driver authors and lack of time for in-deep reviews by Thierry.
-Never the less: The requirement to complete the currently running period
-comes from Thierry. There is a patch by me waiting for review that
-targets improving the documentation and you already have to suffer from
-my plan to spend some time on pwm-reviews :-)
-
-> Anyway, as I could not find any real example I tried to solve it
-> according to your earlier suggestion. That is configure duty_cycle=0
-> and some time later disable PWM.
-> 
-> It generates additional problems. The PWM block has a FIFO with four
-> slots. Before adding the sample with duty cycle=0 into the FIFO it
-> is wise to wait for a free slot in the FIFO. Then when the sample is
-> added it may actually happen that the sample is the fourth in the
-> FIFO. So it may take up to four periods until we can disable the PWM.
-> These four periods can take up to 16s. Hmmm :(
-
-No it cannot. Because if you put a new configuration into the FIFO you
-have to block until the requested configuration is active, so it must
-not happen that you hit the FIFO with 4 busy entries. (Unless a user
-calls pwm_apply_state() in four contexts in parallel, which should not
-happen. And if it does, we should implement serialization in the
-pwm-framework such that pwm-drivers doesn't need to care.)
-
-> I agree there are bugs in the driver and it is far from providing
-> complete support of the i.MX PWM HW. Still, I believe those are totally
-> independent problems from the pinctrl stuff and so should not block
-> the discussion/inclusion of this series.
-
-I think while there are people who care about a driver, the known
-problems should be addressed before a change is "sneaked" in that makes
-the contributor happy and care about other stuff.
- 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Best regards,
+Michal
