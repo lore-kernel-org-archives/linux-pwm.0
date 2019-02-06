@@ -1,70 +1,106 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH 2/4] pwm: stm32-lp: Add power management support
-Date: Wed, 6 Feb 2019 15:54:50 +0100
-Message-ID: <ddb93754-2734-e4c2-a209-517984c6d814@st.com>
-References: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
- <1549370429-19116-3-git-send-email-fabrice.gasnier@st.com>
- <20190205204732.zrbhgyxnvjbwfyw4@pengutronix.de>
- <20190205222522.GB1372@mithrandir>
- <6584a59b-657d-adc9-fab2-eb1a9baba05d@st.com>
- <20190206085405.pdiwd3c6wjog5hl7@pengutronix.de>
- <20190206125545.GI21676@ulmo>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v5 1/2] pwm: sifive: Add DT documentation for SiFive PWM
+ Controller
+Date: Wed, 6 Feb 2019 16:38:54 +0100
+Message-ID: <20190206153854.52bqbwf2ty2j7rvj@pengutronix.de>
+References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
+ <1548762199-7065-2-git-send-email-yash.shah@sifive.com>
+ <20190130081411.5rva7cpwoy2l5qjd@pengutronix.de>
+ <CAJ2_jOHiJ3X5VYZMCNk2bpvUdDOsrqHJna3HPvtdNQpJB9fxjg@mail.gmail.com>
+ <20190206110730.ogqxncrnblyazgjw@pengutronix.de>
+ <20190206124055.GF21676@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190206125545.GI21676@ulmo>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190206124055.GF21676@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, vilhelm.gray@gmail.com, linux-stm32@st-md-mailman.stormreply.com, Tomasz Duszynski <tduszyns@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Yash Shah <yash.shah@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 2/6/19 1:55 PM, Thierry Reding wrote:
-> On Wed, Feb 06, 2019 at 09:54:05AM +0100, Uwe Kleine-KÃ¶nig wrote:
->> On Wed, Feb 06, 2019 at 09:42:48AM +0100, Fabrice Gasnier wrote:
->>> If you agree with the current approach, I can send a V2 with Tomasz's
->>> suggestion to remove the ifdefs and use __maybe_unused instead.
->>
->> I think the suspend callback should have something like:
->>
->> 	if (is_still_enabled) {
->> 		/*
->> 		 * The consumer didn't stop us, so refuse to suspend.
->> 		 */
->> 		dev_err(dev, "The consumer didn't stop us, so refuse to suspend.\n");
->> 		return -EBUSY;
->> 	}
->>
->> This way there are no bad surprises if the pwm is suspended before its
->> consumer and it's obvious what is missing.
-
-Thierry, Uwe,
-
-When the pwm is suspended before its consumer, the bad surprise is the
-suspend request will fail... I'm not sure a new attempt may be better.
-So, it looks like the only way to have this clean is by implementing the
-device link e.g. via pwm_get() ?
-
+On Wed, Feb 06, 2019 at 01:40:55PM +0100, Thierry Reding wrote:
+> On Wed, Feb 06, 2019 at 12:07:30PM +0100, Uwe Kleine-König wrote:
+> > On Wed, Feb 06, 2019 at 04:18:47PM +0530, Yash Shah wrote:
+> > > On Wed, Jan 30, 2019 at 1:44 PM Uwe Kleine-König
+> > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > >
+> > > > On Tue, Jan 29, 2019 at 05:13:18PM +0530, Yash Shah wrote:
+> > > > > DT documentation for PWM controller added.
+> > > > >
+> > > > > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
+> > > > > [Atish: Compatible string update]
+> > > > > Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> > > > > Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> > > > > ---
+> > > > >  .../devicetree/bindings/pwm/pwm-sifive.txt         | 33 ++++++++++++++++++++++
+> > > > >  1 file changed, 33 insertions(+)
+> > > > >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > > > >
+> > > > > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > > > > new file mode 100644
+> > > > > index 0000000..8dcb40d
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > > > > @@ -0,0 +1,33 @@
+> > > > > +SiFive PWM controller
+> > > > > +
+> > > > > +Unlike most other PWM controllers, the SiFive PWM controller currently only
+> > > > > +supports one period for all channels in the PWM. This is set globally in DTS.
+> > > >
+> > > > You can simply drop this if the first user can set this using the usual
+> > > > interface. Don't you like this suggestion that I already made a few
+> > > > times now?
+> > > >
+> > > > Did you consider to make the driver support only a single output with a
+> > > > more flexible period setting?
+> > > 
+> > > We cannot consider supporting only single output since we have boards that
+> > > use the additional PWM channels to control individual LED brightness
+> > > of a tri-color LED.
+> > > If we go down to one channel, then we can't control the brightness of
+> > > the individual LEDs.
+> > > It will break the use case.
+> > 
+> > OK.
+> > 
+> > > I am considering the below approach, let me know if it's fine by you.
+> > > 
+> > > - Drop the global period property and allow the only first user to change period
+> > > using the usual interface.
+> > > - A note in the binding that all PWMs need to run at the same
+> > > period. If the driver already refuses to apply incompatible periods,
+> > > the users are going to notice that they've got the DT wrong.
+> > > - In driver code, count the users using the .request and .free callbacks.
+> > > Based on this, allow changes to period iff the user count is one.
+> > 
+> > Not sure you need to point this limitation in the binding doc. Other
+> > than that this is fine.
 > 
-> Something that just occurred to me: perhaps as part of pwm_get() we
-> should track where we were being requested from so that we could give
-> hints in situations like this as to where the consumer is that forgot
-> to suspend the PWM.
+> I think it's useful to point this out in the binding documentation since
+> it's something that device tree writers will want to know.
 
-The current approach handles the situation where the consumer forgot to
-suspend the PWM... I can add some warning about that in the suspend
-routine, incl the label.
+OK, we're talking about an FPGA implementation but I still think if the
+dt-author is the first to know about this limitation this is too late.
+The hardware designer must know about that, and they don't look into the
+bindind documentation. The binding documentation should IMHO only
+describe the binding and functional limitiations of the device are out
+of scope.
 
-What do you think? What's the best approach ?
+The binding for the Freescale network interface doesn't describe that it
+only supports 480 MBit/s in its GHz mode, and that's good. The binding
+for i2c devices doesn't describe that a reboot in the middle of a
+transfer might block the bus.
 
-Please advise,
-BR,
-Fabrice
-> 
-> I suppose we already have pwm_device.label to help with this, but
-> perhaps we could improve things if we stored __builtin_return_address
-> during pwm_get() to help users pinpoint where they need to look.
-> 
-> Thierry
-> 
+The target for the binding documentation is to document how a given
+device is described in a device tree. It's not there to duplicate
+information that belongs in the reference manual.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
