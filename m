@@ -1,84 +1,67 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/2] pwm: hibvt: Add hi3559v100 support
-Date: Tue, 12 Feb 2019 15:28:50 +0100
-Message-ID: <20190212142850.iwgi4n6v6oep4oin@pengutronix.de>
-References: <20190212094927.5900-1-m.othacehe@gmail.com>
- <20190212094927.5900-2-m.othacehe@gmail.com>
+From: Sasha Levin via dri-devel <dri-devel@lists.freedesktop.org>
+Subject: [PATCH AUTOSEL 4.19 01/83] backlight: pwm_bl: Fix devicetree parsing
+ with auto-generated brightness tables
+Date: Tue, 12 Feb 2019 21:35:39 -0500
+Message-ID: <20190213023701.20286-1-sashal@kernel.org>
+Reply-To: Sasha Levin <sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190212094927.5900-2-m.othacehe@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mathieu Othacehe <m.othacehe@gmail.com>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>, Heiko Stuebner <heiko.stuebner@bq.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Feb 12, 2019 at 10:49:27AM +0100, Mathieu Othacehe wrote:
-> Add support for hi3559v100-shub-pwm and hisilicon,hi3559v100-pwm
-> platforms. They require a special quirk: pwm has to be enabled again
-> to force duty_cycle refresh.
-> 
-> Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
-> ---
->  drivers/pwm/pwm-hibvt.c | 26 +++++++++++++++++++++++---
->  1 file changed, 23 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-> index 27c107e78d59..bf33aa24433c 100644
-> --- a/drivers/pwm/pwm-hibvt.c
-> +++ b/drivers/pwm/pwm-hibvt.c
-> @@ -49,6 +49,7 @@ struct hibvt_pwm_chip {
->  	struct clk *clk;
->  	void __iomem *base;
->  	struct reset_control *rstc;
-> +	bool quirk_force_enable;
->  };
->  
->  struct hibvt_pwm_soc {
-> @@ -56,6 +57,7 @@ struct hibvt_pwm_soc {
->  };
->  
->  static const struct hibvt_pwm_soc pwm_soc[2] = {
-> +	{ .num_pwms = 2 },
->  	{ .num_pwms = 4 },
->  	{ .num_pwms = 8 },
-
-The members of this struct are used as of-data (in struct
-of_device_id::data below). When looking at the usage:
-
-	{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_soc[1] },
-	{ .compatible = "hisilicon,hi3519v100-pwm", .data = &pwm_soc[2] },
-	{ .compatible = "hisilicon,hi3559v100-shub-pwm", .data = &pwm_soc[2] },
-	{ .compatible = "hisilicon,hi3559v100-pwm", .data = &pwm_soc[0] },
-
-this isn't exactly easy to understand. I would prefer to do it as
-follows:
-
-	static const struct hibvt_pwm_soc hi3516cv300_soc_info = {
-		.num_pwms = 2,
-	};
-	...
-
-	static const struct of_device_id hibvt_pwm_of_match[] = {
-		{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &hi3516cv300_soc_info },
-		...
-	};
-
-Then you could also add a member to hibvt_pwm_soc to signal if that
-force_enable quirk is necessary and would not need to use
-of_device_is_compatible() to determine this. The result is that you have
-a description of all relevant differences in a single place.
-
-@Thierry: Also this is yet another driver instance where a num-pwms
-property would simplify the driver because up to before this patch this
-was the only difference between the different variants.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+RnJvbTogSGVpa28gU3R1ZWJuZXIgPGhlaWtvLnN0dWVibmVyQGJxLmNvbT4KClsgVXBzdHJlYW0g
+Y29tbWl0IDYxMTcwZWU5Mzg2ODg4ZjFlNmY3ZTljYzU4ZThkOWE4YzJhM2MxZGQgXQoKQ29tbWl0
+IDg4YmE5NWJlZGI3OSAoImJhY2tsaWdodDogcHdtX2JsOiBDb21wdXRlIGJyaWdodG5lc3Mgb2Yg
+TEVEIGxpbmVhcmx5CnRvIGh1bWFuIGV5ZSIpIG1hZGUgdGhlIHBhcnNlLWR0IGZ1bmN0aW9uIHJl
+dHVybiBlYXJseSB3aGVuIHVzaW5nIGFuIGF1dG8tCmdlbmVyYXRlZCBicmlnaHRuZXNzLXRhYmxl
+LCBidXQgZGlkbid0IHRha2UgaW50byBhY2NvdW50IHRoYXQgc29tZSBtb3JlCnNldHRpbmdzIHdl
+cmUgaGFuZGxlZCBiZWxvdyB0aGUgYnJpZ2h0bmVzcyBoYW5kbGluZywgbGlrZSBwb3dlci1vbi1k
+ZWxheXMKYW5kIGFsc28gc2V0dGluZyB0aGUgcGRhdGEgZW5hYmxlLWdwaW8gdG8gLUVJTlZBTC4K
+ClRoaXMgc3VyZmFjZXMgZm9yIGV4YW1wbGUgaW4gdGhlIGNhc2Ugb2YgYSBiYWNrbGlnaHQgd2l0
+aG91dCBhbnkKZW5hYmxlLWdwaW8gd2hpY2ggdGhlbiB0cmllcyB0byB1c2UgZ3Bpby0wIGluIGVy
+cm9yLgoKRml4IHRoaXMgYnkgc2ltcGx5IG1vdmluZyB0aGUgdHJhaWxpbmcgc2V0dGluZ3MgYWJv
+dmUgdGhlIGJyaWdodG5lc3MKaGFuZGxpbmcuCgpGaXhlczogODhiYTk1YmVkYjc5ICgiYmFja2xp
+Z2h0OiBwd21fYmw6IENvbXB1dGUgYnJpZ2h0bmVzcyBvZiBMRUQgbGluZWFybHkgdG8gaHVtYW4g
+ZXllIikKU2lnbmVkLW9mZi1ieTogSGVpa28gU3R1ZWJuZXIgPGhlaWtvLnN0dWVibmVyQGJxLmNv
+bT4KQWNrZWQtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+
+ClNpZ25lZC1vZmYtYnk6IExlZSBKb25lcyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+ClNpZ25lZC1v
+ZmYtYnk6IFNhc2hhIExldmluIDxzYXNoYWxAa2VybmVsLm9yZz4KLS0tCiBkcml2ZXJzL3ZpZGVv
+L2JhY2tsaWdodC9wd21fYmwuYyB8IDE5ICsrKysrKysrKystLS0tLS0tLS0KIDEgZmlsZSBjaGFu
+Z2VkLCAxMCBpbnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdt
+X2JsLmMKaW5kZXggYmRmY2MwYTcxZGIxLi42YmRlNTQzNDUyZjIgMTAwNjQ0Ci0tLSBhL2RyaXZl
+cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCisrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0
+L3B3bV9ibC5jCkBAIC0yNjIsNiArMjYyLDE2IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9w
+YXJzZV9kdChzdHJ1Y3QgZGV2aWNlICpkZXYsCiAKIAltZW1zZXQoZGF0YSwgMCwgc2l6ZW9mKCpk
+YXRhKSk7CiAKKwkvKgorCSAqIFRoZXNlIHZhbHVlcyBhcmUgb3B0aW9uYWwgYW5kIHNldCBhcyAw
+IGJ5IGRlZmF1bHQsIHRoZSBvdXQgdmFsdWVzCisJICogYXJlIG1vZGlmaWVkIG9ubHkgaWYgYSB2
+YWxpZCB1MzIgdmFsdWUgY2FuIGJlIGRlY29kZWQuCisJICovCisJb2ZfcHJvcGVydHlfcmVhZF91
+MzIobm9kZSwgInBvc3QtcHdtLW9uLWRlbGF5LW1zIiwKKwkJCSAgICAgJmRhdGEtPnBvc3RfcHdt
+X29uX2RlbGF5KTsKKwlvZl9wcm9wZXJ0eV9yZWFkX3UzMihub2RlLCAicHdtLW9mZi1kZWxheS1t
+cyIsICZkYXRhLT5wd21fb2ZmX2RlbGF5KTsKKworCWRhdGEtPmVuYWJsZV9ncGlvID0gLUVJTlZB
+TDsKKwogCS8qCiAJICogRGV0ZXJtaW5lIHRoZSBudW1iZXIgb2YgYnJpZ2h0bmVzcyBsZXZlbHMs
+IGlmIHRoaXMgcHJvcGVydHkgaXMgbm90CiAJICogc2V0IGEgZGVmYXVsdCB0YWJsZSBvZiBicmln
+aHRuZXNzIGxldmVscyB3aWxsIGJlIHVzZWQuCkBAIC0zNzQsMTUgKzM4NCw2IEBAIHN0YXRpYyBp
+bnQgcHdtX2JhY2tsaWdodF9wYXJzZV9kdChzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJCWRhdGEtPm1h
+eF9icmlnaHRuZXNzLS07CiAJfQogCi0JLyoKLQkgKiBUaGVzZSB2YWx1ZXMgYXJlIG9wdGlvbmFs
+IGFuZCBzZXQgYXMgMCBieSBkZWZhdWx0LCB0aGUgb3V0IHZhbHVlcwotCSAqIGFyZSBtb2RpZmll
+ZCBvbmx5IGlmIGEgdmFsaWQgdTMyIHZhbHVlIGNhbiBiZSBkZWNvZGVkLgotCSAqLwotCW9mX3By
+b3BlcnR5X3JlYWRfdTMyKG5vZGUsICJwb3N0LXB3bS1vbi1kZWxheS1tcyIsCi0JCQkgICAgICZk
+YXRhLT5wb3N0X3B3bV9vbl9kZWxheSk7Ci0Jb2ZfcHJvcGVydHlfcmVhZF91MzIobm9kZSwgInB3
+bS1vZmYtZGVsYXktbXMiLCAmZGF0YS0+cHdtX29mZl9kZWxheSk7Ci0KLQlkYXRhLT5lbmFibGVf
+Z3BpbyA9IC1FSU5WQUw7CiAJcmV0dXJuIDA7CiB9CiAKLS0gCjIuMTkuMQoKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlz
+dApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
