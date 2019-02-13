@@ -1,153 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v5 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Wed, 13 Feb 2019 13:34:05 +0100
-Message-ID: <20190213123405.GD647@ulmo>
+Date: Wed, 13 Feb 2019 13:37:03 +0100
+Message-ID: <20190213123703.GE647@ulmo>
 References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
  <1548762199-7065-3-git-send-email-yash.shah@sifive.com>
  <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
- <CAJ2_jOGYkwb2QSUH1UU_QoGXE5LFoR0XGJmuYfNtYcZXHXyfaA@mail.gmail.com>
- <20190211122954.33thpip3yhtdw5x6@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="EY/WZ/HvNxOox07X"
+        protocol="application/pgp-signature"; boundary="zjcmjzIkjQU2rmur"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190211122954.33thpip3yhtdw5x6@pengutronix.de>
+In-Reply-To: <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Yash Shah <yash.shah@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Yash Shah <yash.shah@sifive.com>, palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---EY/WZ/HvNxOox07X
+--zjcmjzIkjQU2rmur
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 11, 2019 at 01:29:54PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
+On Thu, Feb 07, 2019 at 11:16:57AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
+[...]
+> > diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+[...]
+> > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
+> > +
+> > +	writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 + dev->hwpwm * SIZE_PWMCM=
+P);
+> > +
+> > +	val &=3D ~(1 << PWM_SIFIVE_PWMCFG_DEGLITCH);
+> > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
+> > +
+> > +	pwm_sifive_get_state(chip, dev, state);
 >=20
-> On Mon, Feb 11, 2019 at 04:56:27PM +0530, Yash Shah wrote:
-> > On Thu, Feb 7, 2019 at 3:47 PM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > > On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
-> > > > +struct pwm_sifive_ddata {
-> > > > +     struct pwm_chip chip;
-> > > > +     struct notifier_block notifier;
-> > > > +     struct clk *clk;
-> > > > +     void __iomem *regs;
-> > > > +     unsigned int approx_period;
-> > > > +     unsigned int real_period;
-> > > > +};
-> > > > +
-> > > > +static inline struct pwm_sifive_ddata *to_pwm_sifive_chip(struct p=
-wm_chip *c)
-> > >
-> > > even though this is inlined I would like this to have use the
-> > > pwm_sifive_ prefix, too.
-> >=20
-> > Not sure what exactly you want me to do here.
->=20
-> I want this function to be named something like pwm_sifive_chip_to_ddata.
-> This way it has the common prefix (and is less confusing because
-> to..chip suggests that is converts something to a chip, but the outcome
-> is ...ddata).
+> Thierry: This changes the pwm_state. Is this how this should be done?
 
-We've got plenty of these cast functions that are named to_*(). I would
-argue that naming this one differently is confusing.
-
-Also, I think this may have come from earlier review comments where I
-suggested to name this structure struct pwm_sifive_chip, or just struct
-pwm_sifive.
-
-> > > In a previous review round I had doubts about the calculation of frac
-> > > and I think they were addressed wrongly.
-> > > Looking at the figure at the start of chapter 14.9 in the reference
-> > > manual: They use (different than the driver here) pwmcmp0=3D6 and
-> > > pwmzerocmp=3D1. Then a period is 7 clock cycles long and pwmcmpX must=
- be 7
-> > > (for X > 0) to yield a 100% signal. So pwmcmpX must be greater than or
-> > > equal to the period (in clock cycles).
-> > >
-> > > Here we're using pwmzerocmp=3D0, still the constraint
-> > >
-> > >         pwmcmpX >=3D period
-> > >
-> > > must be true for a 100% cycle. (Right?) With pwmzerocmp=3D0 the perio=
-d is
-> > > 0x10000 clock cycles, so pwmcmpX must be >=3D 0x10000 to yield a 100%
-> > > signal. As this is not possible (pwmcmpX is a 16 bit value that can o=
-nly
-> > > hold up to 0xffff) the output cannot yield 100%.
-> > >
-> > > So I think the most correct implementation here is:
-> > >
-> > >         frac =3D (duty_cycle * (1 << PWM_SIFIVE_CMPWIDTH) + (1 << PWM=
-_SIFIVE_CMPWIDTH) / 2) / period;
-> > >         /* Sorry, we cannot do 100% :-( */
-> > >         frac =3D min(frac, (1 << PWM_SIFIVE_CMPWIDTH) - 1);
-> > >
-> >=20
-> > I will once again go through the specs, if it seems correct I will
-> > implement the above.
->=20
-> I would just test this at runtime. Configure for 100% and check the wave
-> form if it is constant.
->=20
-> > > > +static int pwm_sifive_probe(struct platform_device *pdev)
-> > > > +{
-> > > > [...]
-> > > > +     /* Watch for changes to underlying clock frequency */
-> > > > +     pwm->notifier.notifier_call =3D pwm_sifive_clock_notifier;
-> > > > +     ret =3D clk_notifier_register(pwm->clk, &pwm->notifier);
-> > > > +     if (ret) {
-> > > > +             dev_err(dev, "failed to register clock notifier: %d\n=
-", ret);
-> > > > +             goto disable_clk;
-> > > > +     }
-> > >
-> > > Would it make sense to only enable the clock when the pwm is enabled?
-> > > (If yes, how does the output behave if the clock is disabled while the
-> > > hardware is enabled? I assume the output just freezes at the state wh=
-ere
-> > > it happens to be?)
-> >=20
-> > Yes. Not sure about the behaviour of hardware when the clock is disable=
-d.
-> > The behaviour should be like you said. If there is no strong reason
-> > then we can keep it as it is right now
-> > or else if you want I can make the necessary change.
->=20
-> I would prefer to only have the clock enabled when it is actually used.
-> Note the common pitfall that you cannot disable the clk immediately
-> after configureing the duty cycle to 100% or 0% though because you must
-> only stop the clock when the newly configured parameters are active.
-
-You can also disable the clock if the hardware will still apply the
-configured parameters. This is really only an issue if disabling the
-clock also stops the IP and prevents the configured parameters from
-getting applied.
+Yes, I think that's fine. The PWM state should always reflect the
+current hardware state. If the configuration that we program does not
+reflect the state that was requested, that should be reflected in the
+PWM state.
 
 Thierry
 
---EY/WZ/HvNxOox07X
+--zjcmjzIkjQU2rmur
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxkDr0ACgkQ3SOs138+
-s6EltA//WyOsaTPYD52vSFENAJxCA/Bi4M7vQFZm2jQ2dmZRHBM0ngb1hqW4bGUD
-6g19/elK1xAo6dzN/2WZtoMv8qRNyY2fOd0ifowshDuIa4KWAaQUHehg/HV5bI5W
-dG8/41fiOgq92tZTrTXqOA8VBNyAlUMWv7QeLgMNBRvT1wUTf1AufccfSCFHrEdc
-TGGLOlBUfOD83AFLS9DIT0ZSXvAtJQgq1KvQGVpOgfReqsIkCXxXEOcq3jD2N2Iy
-0STbXSXh7qO4dOfpsfO4mgLJ4+B2XcipE1Soy81DjXpygf1kQQwm6vEF7wW86Gx0
-b0U+9UbiLYrz/WgsgJGPjR/QF8MU3YDKeeq/et14xHfTX+eX2+326+9TFHJoOL8+
-dn4AjVgBXFQ7hNf7LQ1dFZKgMHOSC6MRL98Rc6jN2nRevejQWlAKBLTZIsYR1giV
-4znvMwGOPfDqWmPID9rTLsl0HKStf/WSB1UBJc74DX3ec+cFasVRsC1Y3KU5Q4uZ
-sN//ZNc76p1Yy4+iKCQQCiehFyoT/U/V6gls7G3tN7va3QWcnnf0+I6tNJeLWwLs
-FWjgMeuZ4xAKL+jdAEe9esoRp71C+7eecQPUpRqjUO7ku14se/tbGkmJWgNwbFkL
-ScM23XTQ2CbfbGfwAE8VtIFh7zjfomjZER2PMCoXCUNQlIoJGaA=
-=HKpM
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxkD24ACgkQ3SOs138+
+s6EJYQ/+PKXGl1Os9kb2ygrrqtwNAdMUKWPznwwYxi0Nba1r8Z1Yt3XBPDh8m3lO
+JTqBUX6Cc6ePyQRlyMoMzrD41+OEWW2ueUG6i1VfFZJ3Yx1FyV+qGOjyh1ajfc+b
+s4+8fPXzQ6VHrryvA0bYn8QHk2+DKeQgXTwd8i0FOxazVJ5eaE97aTiqoL5TSW7e
+WpCmTuBj53sRoMO3qnYAJtKi/XElp/so+6gOz6zzz92SKnFVxlb7LskyRO4xVJt0
+csGSkj2GVDnbTRGAfge8u5o/fTLzTI61TpNZSZfufGnpt5YjMG6y9T3lNUh7WSyz
+E8PhNHH3WnFeegmUpj6zu8h+p2gJBa8H8wh6YjipVuUhhVBZVq/5AqYbavtrLlAb
+FLxUcCltLcAaClAoAx9aLYyuq2fvkUjBd9ghNvASrxq9F28fYNCOz38vACpGCExq
+s5rLgsClYTjTOPipRKUj+8vUJoQnjtGV+miQTeD4+MkUJLrOvCvimaVfda+68Phe
+zq3huhk0+etRLAwkKY2MmRi6nJTneESXq8gE0pb+QtMzlWs71Pqa/lqC/MPsAo5E
+IZoh6keN0VBUpxltE8UoGMu6QJXaxTtVtmfOS8dZjT4xKvef40boBdl0jVt6KGMt
+d3RRmQQDGiYwusML2HCpJUY9RcipWOn2oEYbtGxGHm2SM9dg6M4=
+=UK4T
 -----END PGP SIGNATURE-----
 
---EY/WZ/HvNxOox07X--
+--zjcmjzIkjQU2rmur--
