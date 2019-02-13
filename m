@@ -1,320 +1,170 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/2] pwm: hibvt: Add hi3559v100 support
-Date: Wed, 13 Feb 2019 18:23:13 +0100
-Message-ID: <20190213172313.dafgkqq4wyo6zbhc@pengutronix.de>
-References: <20190212094927.5900-1-m.othacehe@gmail.com>
- <20190212094927.5900-2-m.othacehe@gmail.com>
- <20190212142850.iwgi4n6v6oep4oin@pengutronix.de>
- <20190213123002.GC647@ulmo>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v5 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Wed, 13 Feb 2019 18:39:31 +0100
+Message-ID: <20190213173931.bhw74djming5oil6@pengutronix.de>
+References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
+ <1548762199-7065-3-git-send-email-yash.shah@sifive.com>
+ <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
+ <CAJ2_jOGYkwb2QSUH1UU_QoGXE5LFoR0XGJmuYfNtYcZXHXyfaA@mail.gmail.com>
+ <20190211122954.33thpip3yhtdw5x6@pengutronix.de>
+ <20190213123405.GD647@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20190213123002.GC647@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <20190213123405.GD647@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mathieu Othacehe <m.othacehe@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Feb 13, 2019 at 01:30:02PM +0100, Thierry Reding wrote:
-> On Tue, Feb 12, 2019 at 03:28:50PM +0100, Uwe Kleine-König wrote:
-> > On Tue, Feb 12, 2019 at 10:49:27AM +0100, Mathieu Othacehe wrote:
-> > > Add support for hi3559v100-shub-pwm and hisilicon,hi3559v100-pwm
-> > > platforms. They require a special quirk: pwm has to be enabled again
-> > > to force duty_cycle refresh.
-> > > 
-> > > Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
-> > > ---
-> > >  drivers/pwm/pwm-hibvt.c | 26 +++++++++++++++++++++++---
-> > >  1 file changed, 23 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-> > > index 27c107e78d59..bf33aa24433c 100644
-> > > --- a/drivers/pwm/pwm-hibvt.c
-> > > +++ b/drivers/pwm/pwm-hibvt.c
-> > > @@ -49,6 +49,7 @@ struct hibvt_pwm_chip {
-> > >  	struct clk *clk;
-> > >  	void __iomem *base;
-> > >  	struct reset_control *rstc;
-> > > +	bool quirk_force_enable;
-> > >  };
-> > >  
-> > >  struct hibvt_pwm_soc {
-> > > @@ -56,6 +57,7 @@ struct hibvt_pwm_soc {
-> > >  };
-> > >  
-> > >  static const struct hibvt_pwm_soc pwm_soc[2] = {
-> > > +	{ .num_pwms = 2 },
-> > >  	{ .num_pwms = 4 },
-> > >  	{ .num_pwms = 8 },
-> > 
-> > The members of this struct are used as of-data (in struct
-> > of_device_id::data below). When looking at the usage:
-> > 
-> > 	{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_soc[1] },
-> > 	{ .compatible = "hisilicon,hi3519v100-pwm", .data = &pwm_soc[2] },
-> > 	{ .compatible = "hisilicon,hi3559v100-shub-pwm", .data = &pwm_soc[2] },
-> > 	{ .compatible = "hisilicon,hi3559v100-pwm", .data = &pwm_soc[0] },
-> > 
-> > this isn't exactly easy to understand. I would prefer to do it as
-> > follows:
-> > 
-> > 	static const struct hibvt_pwm_soc hi3516cv300_soc_info = {
-> > 		.num_pwms = 2,
-> > 	};
-> > 	...
-> > 
-> > 	static const struct of_device_id hibvt_pwm_of_match[] = {
-> > 		{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &hi3516cv300_soc_info },
-> > 		...
-> > 	};
-> > 
-> > Then you could also add a member to hibvt_pwm_soc to signal if that
-> > force_enable quirk is necessary and would not need to use
-> > of_device_is_compatible() to determine this. The result is that you have
-> > a description of all relevant differences in a single place.
-> > 
-> > @Thierry: Also this is yet another driver instance where a num-pwms
-> > property would simplify the driver because up to before this patch this
-> > was the only difference between the different variants.
-> 
-> We don't need the num-pwms in device tree if it can be derived from the
-> compatible string.
+On Wed, Feb 13, 2019 at 01:34:05PM +0100, Thierry Reding wrote:
+> On Mon, Feb 11, 2019 at 01:29:54PM +0100, Uwe Kleine-K=F6nig wrote:
+> > Hello,
+> > =
 
-Right, this not about a must. It can be done without this property.
-This is just about putting the number of pwms in another place to
-describe the pwm differently. Then you'd put
+> > On Mon, Feb 11, 2019 at 04:56:27PM +0530, Yash Shah wrote:
+> > > On Thu, Feb 7, 2019 at 3:47 PM Uwe Kleine-K=F6nig
+> > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > > On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
+> > > > > +struct pwm_sifive_ddata {
+> > > > > +     struct pwm_chip chip;
+> > > > > +     struct notifier_block notifier;
+> > > > > +     struct clk *clk;
+> > > > > +     void __iomem *regs;
+> > > > > +     unsigned int approx_period;
+> > > > > +     unsigned int real_period;
+> > > > > +};
+> > > > > +
+> > > > > +static inline struct pwm_sifive_ddata *to_pwm_sifive_chip(struct=
+ pwm_chip *c)
+> > > >
+> > > > even though this is inlined I would like this to have use the
+> > > > pwm_sifive_ prefix, too.
+> > > =
 
-	num-pwms = <2>;
+> > > Not sure what exactly you want me to do here.
+> > =
 
-in the device tree and then don't need to bother if which hisilicon SoC
-this is in the driver. Sure, you can implicitly know this using the
-compatible. This is just another shade of gray. If put to an extreme
-you can also claim your machine is completely defined by just
+> > I want this function to be named something like pwm_sifive_chip_to_ddat=
+a.
+> > This way it has the common prefix (and is less confusing because
+> > to..chip suggests that is converts something to a chip, but the outcome
+> > is ...ddata).
+> =
 
-	/ {
-		compatible = "technexion,imx6ul-pico-hobbit";
-	}
+> We've got plenty of these cast functions that are named to_*(). I would
+> argue that naming this one differently is confusing.
 
-and determine all other relevant stuff from the compatible.
+The benefit of consistenly use a common prefix for all functions of a
+driver is that applying a filter when tracing is much easier. Sure, you
+could argue that this function is inlined and too trivial to care about
+in a trace. Recommending to not make any exceptions to the "common
+prefix" rule is easier though than to judge all functions that don't use
+it if it is worth to adhere to the rule or not.
 
-A similar case is the i2c rtc ds1307. This is described in the device
-tree as:
+> Also, I think this may have come from earlier review comments where I
+> suggested to name this structure struct pwm_sifive_chip, or just struct
+> pwm_sifive.
 
-	rtc@68 {
-		compatible = "dallas,ds1307";
-		reg = <0x68>;
-	}
+Even with this argument to_pwm_sifive_chip is a bad name as the driver
+data structure is named neither pwm_sifive_chip nor pwm_sifive.
 
-even though the ds1307 can only ever be used at address 0x68. So you
-could argue there is no good reason to specify the reg property because
-that could be determined from the compatible.
-Still for the sake of a generic way to describe i2c devices it was
-agreed on that it should be there and generic i2c code can benefit from
-it.
+> > > > In a previous review round I had doubts about the calculation of fr=
+ac
+> > > > and I think they were addressed wrongly.
+> > > > Looking at the figure at the start of chapter 14.9 in the reference
+> > > > manual: They use (different than the driver here) pwmcmp0=3D6 and
+> > > > pwmzerocmp=3D1. Then a period is 7 clock cycles long and pwmcmpX mu=
+st be 7
+> > > > (for X > 0) to yield a 100% signal. So pwmcmpX must be greater than=
+ or
+> > > > equal to the period (in clock cycles).
+> > > >
+> > > > Here we're using pwmzerocmp=3D0, still the constraint
+> > > >
+> > > >         pwmcmpX >=3D period
+> > > >
+> > > > must be true for a 100% cycle. (Right?) With pwmzerocmp=3D0 the per=
+iod is
+> > > > 0x10000 clock cycles, so pwmcmpX must be >=3D 0x10000 to yield a 10=
+0%
+> > > > signal. As this is not possible (pwmcmpX is a 16 bit value that can=
+ only
+> > > > hold up to 0xffff) the output cannot yield 100%.
+> > > >
+> > > > So I think the most correct implementation here is:
+> > > >
+> > > >         frac =3D (duty_cycle * (1 << PWM_SIFIVE_CMPWIDTH) + (1 << P=
+WM_SIFIVE_CMPWIDTH) / 2) / period;
+> > > >         /* Sorry, we cannot do 100% :-( */
+> > > >         frac =3D min(frac, (1 << PWM_SIFIVE_CMPWIDTH) - 1);
+> > > >
+> > > =
 
-If we decided to put num-pwms consistenly into the device trees (and we
-would have done so earlier and not have to care to handle old device
-trees) the following patch would be possible:
+> > > I will once again go through the specs, if it seems correct I will
+> > > implement the above.
+> > =
 
-diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-index 27c107e78d59..accc91eba287 100644
---- a/drivers/pwm/pwm-hibvt.c
-+++ b/drivers/pwm/pwm-hibvt.c
-@@ -51,15 +51,6 @@ struct hibvt_pwm_chip {
- 	struct reset_control *rstc;
- };
- 
--struct hibvt_pwm_soc {
--	u32 num_pwms;
--};
--
--static const struct hibvt_pwm_soc pwm_soc[2] = {
--	{ .num_pwms = 4 },
--	{ .num_pwms = 8 },
--};
--
- static inline struct hibvt_pwm_chip *to_hibvt_pwm_chip(struct pwm_chip *chip)
- {
- 	return container_of(chip, struct hibvt_pwm_chip, chip);
-@@ -174,8 +165,6 @@ static const struct pwm_ops hibvt_pwm_ops = {
- 
- static int hibvt_pwm_probe(struct platform_device *pdev)
- {
--	const struct hibvt_pwm_soc *soc =
--				of_device_get_match_data(&pdev->dev);
- 	struct hibvt_pwm_chip *pwm_chip;
- 	struct resource *res;
- 	int ret;
-@@ -195,7 +184,7 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
- 	pwm_chip->chip.ops = &hibvt_pwm_ops;
- 	pwm_chip->chip.dev = &pdev->dev;
- 	pwm_chip->chip.base = -1;
--	pwm_chip->chip.npwm = soc->num_pwms;
-+	pwm_chip->chip.npwm = pwm_get_npwm_from_dt();
- 	pwm_chip->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pwm_chip->chip.of_pwm_n_cells = 3;
- 
-@@ -250,8 +239,8 @@ static int hibvt_pwm_remove(struct platform_device *pdev)
- }
- 
- static const struct of_device_id hibvt_pwm_of_match[] = {
--	{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_soc[0] },
--	{ .compatible = "hisilicon,hi3519v100-pwm", .data = &pwm_soc[1] },
-+	{ .compatible = "hisilicon,hi3516cv300-pwm",  },
-+	{ .compatible = "hisilicon,hi3519v100-pwm", },
- 	{  }
- };
- MODULE_DEVICE_TABLE(of, hibvt_pwm_of_match);
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index eb6674ce995f..f621b6b23150 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -55,7 +55,6 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
- };
- 
- struct mtk_pwm_platform_data {
--	unsigned int num_pwms;
- 	bool pwm45_fixup;
- 	bool has_clks;
- };
-@@ -260,7 +259,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	pc->chip.dev = &pdev->dev;
- 	pc->chip.ops = &mtk_pwm_ops;
- 	pc->chip.base = -1;
--	pc->chip.npwm = data->num_pwms;
-+	pc->chip.npwm = pwm_get_npwm_from_dt();
- 
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
-@@ -279,25 +278,21 @@ static int mtk_pwm_remove(struct platform_device *pdev)
- }
- 
- static const struct mtk_pwm_platform_data mt2712_pwm_data = {
--	.num_pwms = 8,
- 	.pwm45_fixup = false,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7622_pwm_data = {
--	.num_pwms = 6,
- 	.pwm45_fixup = false,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7623_pwm_data = {
--	.num_pwms = 5,
- 	.pwm45_fixup = true,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7628_pwm_data = {
--	.num_pwms = 4,
- 	.pwm45_fixup = true,
- 	.has_clks = false,
- };
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 470d4f71e7eb..7ba3d52430ae 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -73,7 +73,6 @@ static const u32 prescaler_table[] = {
- 
- struct sun4i_pwm_data {
- 	bool has_prescaler_bypass;
--	unsigned int npwm;
- };
- 
- struct sun4i_pwm_chip {
-@@ -314,17 +313,14 @@ static const struct pwm_ops sun4i_pwm_ops = {
- 
- static const struct sun4i_pwm_data sun4i_pwm_dual_nobypass = {
- 	.has_prescaler_bypass = false,
--	.npwm = 2,
- };
- 
- static const struct sun4i_pwm_data sun4i_pwm_dual_bypass = {
- 	.has_prescaler_bypass = true,
--	.npwm = 2,
- };
- 
- static const struct sun4i_pwm_data sun4i_pwm_single_bypass = {
- 	.has_prescaler_bypass = true,
--	.npwm = 1,
- };
- 
- static const struct of_device_id sun4i_pwm_dt_ids[] = {
-@@ -375,7 +371,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
- 	pwm->chip.dev = &pdev->dev;
- 	pwm->chip.ops = &sun4i_pwm_ops;
- 	pwm->chip.base = -1;
--	pwm->chip.npwm = pwm->data->npwm;
-+	pwm->chip.npwm = pwm_get_npwm_from_dt();
- 	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pwm->chip.of_pwm_n_cells = 3;
- 
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 48c4595a0ffc..53bb30e26245 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -40,8 +40,6 @@
- #define PWM_SCALE_SHIFT	0
- 
- struct tegra_pwm_soc {
--	unsigned int num_channels;
--
- 	/* Maximum IP frequency for given SoCs */
- 	unsigned long max_frequency;
- };
-@@ -230,7 +228,7 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- 	pwm->chip.dev = &pdev->dev;
- 	pwm->chip.ops = &tegra_pwm_ops;
- 	pwm->chip.base = -1;
--	pwm->chip.npwm = pwm->soc->num_channels;
-+	pwm->chip.npwm = pwm_get_npwm_from_dt();
- 
- 	ret = pwmchip_add(&pwm->chip);
- 	if (ret < 0) {
-@@ -286,12 +284,10 @@ static int tegra_pwm_resume(struct device *dev)
- #endif
- 
- static const struct tegra_pwm_soc tegra20_pwm_soc = {
--	.num_channels = 4,
- 	.max_frequency = 48000000UL,
- };
- 
- static const struct tegra_pwm_soc tegra186_pwm_soc = {
--	.num_channels = 1,
- 	.max_frequency = 102000000UL,
- };
- 
-together with a generic implementation of the function to get the number
-of pwms from the device tree. This looks like a good change and that's
-why I'm convinced it is sensible to put this into the device trees.
+> > I would just test this at runtime. Configure for 100% and check the wave
+> > form if it is constant.
+> > =
 
-And if you ask me having num-pwms in the device tree like:
+> > > > > +static int pwm_sifive_probe(struct platform_device *pdev)
+> > > > > +{
+> > > > > [...]
+> > > > > +     /* Watch for changes to underlying clock frequency */
+> > > > > +     pwm->notifier.notifier_call =3D pwm_sifive_clock_notifier;
+> > > > > +     ret =3D clk_notifier_register(pwm->clk, &pwm->notifier);
+> > > > > +     if (ret) {
+> > > > > +             dev_err(dev, "failed to register clock notifier: %d=
+\n", ret);
+> > > > > +             goto disable_clk;
+> > > > > +     }
+> > > >
+> > > > Would it make sense to only enable the clock when the pwm is enable=
+d?
+> > > > (If yes, how does the output behave if the clock is disabled while =
+the
+> > > > hardware is enabled? I assume the output just freezes at the state =
+where
+> > > > it happens to be?)
+> > > =
 
-	bls: pwm@1400a000 {
-		compatible = "mediatek,mt2701-disp-pwm";
-		reg = <..>;
-		#pwm-cells = <2>;
-		clocks = <&mmsys CLK_MM_MDP_BLS_26M>, <&mmsys CLK_MM_DISP_BLS>;
-		clock-names = "main", "mm";
-		num-pwms = <8>;
-	}
+> > > Yes. Not sure about the behaviour of hardware when the clock is disab=
+led.
+> > > The behaviour should be like you said. If there is no strong reason
+> > > then we can keep it as it is right now
+> > > or else if you want I can make the necessary change.
+> > =
 
-is also a nice addition because then the author of a machine device tree
-(or a reviewer, or even a generic dtb linter) would easier spot how many
-pwms there are and that
+> > I would prefer to only have the clock enabled when it is actually used.
+> > Note the common pitfall that you cannot disable the clk immediately
+> > after configureing the duty cycle to 100% or 0% though because you must
+> > only stop the clock when the newly configured parameters are active.
+> =
 
-	pwms = <&bls 6 200000>
+> You can also disable the clock if the hardware will still apply the
+> configured parameters.
 
-can be used without looking into the reference manual or the driver.
+I read the pwm part of the reference manual and I'm convinced the
+pitfall I pointed out is relevant here and the hardware will not put the
+pin to the inactive level but just freeze on disable if the document is
+accurate.
 
 Best regards
 Uwe
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
