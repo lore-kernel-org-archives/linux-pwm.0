@@ -1,67 +1,72 @@
-From: Sasha Levin via dri-devel <dri-devel@lists.freedesktop.org>
-Subject: [PATCH AUTOSEL 4.19 01/83] backlight: pwm_bl: Fix devicetree parsing
- with auto-generated brightness tables
-Date: Tue, 12 Feb 2019 21:35:39 -0500
-Message-ID: <20190213023701.20286-1-sashal@kernel.org>
-Reply-To: Sasha Levin <sashal@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>, Heiko Stuebner <heiko.stuebner@bq.com>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH v6 0/2] PWM support for HiFive Unleashed
+Date: Wed, 13 Feb 2019 14:56:16 +0530
+Message-ID: <1550049978-20705-1-git-send-email-yash.shah@sifive.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com, Yash Shah <yash.shah@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogSGVpa28gU3R1ZWJuZXIgPGhlaWtvLnN0dWVibmVyQGJxLmNvbT4KClsgVXBzdHJlYW0g
-Y29tbWl0IDYxMTcwZWU5Mzg2ODg4ZjFlNmY3ZTljYzU4ZThkOWE4YzJhM2MxZGQgXQoKQ29tbWl0
-IDg4YmE5NWJlZGI3OSAoImJhY2tsaWdodDogcHdtX2JsOiBDb21wdXRlIGJyaWdodG5lc3Mgb2Yg
-TEVEIGxpbmVhcmx5CnRvIGh1bWFuIGV5ZSIpIG1hZGUgdGhlIHBhcnNlLWR0IGZ1bmN0aW9uIHJl
-dHVybiBlYXJseSB3aGVuIHVzaW5nIGFuIGF1dG8tCmdlbmVyYXRlZCBicmlnaHRuZXNzLXRhYmxl
-LCBidXQgZGlkbid0IHRha2UgaW50byBhY2NvdW50IHRoYXQgc29tZSBtb3JlCnNldHRpbmdzIHdl
-cmUgaGFuZGxlZCBiZWxvdyB0aGUgYnJpZ2h0bmVzcyBoYW5kbGluZywgbGlrZSBwb3dlci1vbi1k
-ZWxheXMKYW5kIGFsc28gc2V0dGluZyB0aGUgcGRhdGEgZW5hYmxlLWdwaW8gdG8gLUVJTlZBTC4K
-ClRoaXMgc3VyZmFjZXMgZm9yIGV4YW1wbGUgaW4gdGhlIGNhc2Ugb2YgYSBiYWNrbGlnaHQgd2l0
-aG91dCBhbnkKZW5hYmxlLWdwaW8gd2hpY2ggdGhlbiB0cmllcyB0byB1c2UgZ3Bpby0wIGluIGVy
-cm9yLgoKRml4IHRoaXMgYnkgc2ltcGx5IG1vdmluZyB0aGUgdHJhaWxpbmcgc2V0dGluZ3MgYWJv
-dmUgdGhlIGJyaWdodG5lc3MKaGFuZGxpbmcuCgpGaXhlczogODhiYTk1YmVkYjc5ICgiYmFja2xp
-Z2h0OiBwd21fYmw6IENvbXB1dGUgYnJpZ2h0bmVzcyBvZiBMRUQgbGluZWFybHkgdG8gaHVtYW4g
-ZXllIikKU2lnbmVkLW9mZi1ieTogSGVpa28gU3R1ZWJuZXIgPGhlaWtvLnN0dWVibmVyQGJxLmNv
-bT4KQWNrZWQtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+
-ClNpZ25lZC1vZmYtYnk6IExlZSBKb25lcyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+ClNpZ25lZC1v
-ZmYtYnk6IFNhc2hhIExldmluIDxzYXNoYWxAa2VybmVsLm9yZz4KLS0tCiBkcml2ZXJzL3ZpZGVv
-L2JhY2tsaWdodC9wd21fYmwuYyB8IDE5ICsrKysrKysrKystLS0tLS0tLS0KIDEgZmlsZSBjaGFu
-Z2VkLCAxMCBpbnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdt
-X2JsLmMKaW5kZXggYmRmY2MwYTcxZGIxLi42YmRlNTQzNDUyZjIgMTAwNjQ0Ci0tLSBhL2RyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCisrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0
-L3B3bV9ibC5jCkBAIC0yNjIsNiArMjYyLDE2IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9w
-YXJzZV9kdChzdHJ1Y3QgZGV2aWNlICpkZXYsCiAKIAltZW1zZXQoZGF0YSwgMCwgc2l6ZW9mKCpk
-YXRhKSk7CiAKKwkvKgorCSAqIFRoZXNlIHZhbHVlcyBhcmUgb3B0aW9uYWwgYW5kIHNldCBhcyAw
-IGJ5IGRlZmF1bHQsIHRoZSBvdXQgdmFsdWVzCisJICogYXJlIG1vZGlmaWVkIG9ubHkgaWYgYSB2
-YWxpZCB1MzIgdmFsdWUgY2FuIGJlIGRlY29kZWQuCisJICovCisJb2ZfcHJvcGVydHlfcmVhZF91
-MzIobm9kZSwgInBvc3QtcHdtLW9uLWRlbGF5LW1zIiwKKwkJCSAgICAgJmRhdGEtPnBvc3RfcHdt
-X29uX2RlbGF5KTsKKwlvZl9wcm9wZXJ0eV9yZWFkX3UzMihub2RlLCAicHdtLW9mZi1kZWxheS1t
-cyIsICZkYXRhLT5wd21fb2ZmX2RlbGF5KTsKKworCWRhdGEtPmVuYWJsZV9ncGlvID0gLUVJTlZB
-TDsKKwogCS8qCiAJICogRGV0ZXJtaW5lIHRoZSBudW1iZXIgb2YgYnJpZ2h0bmVzcyBsZXZlbHMs
-IGlmIHRoaXMgcHJvcGVydHkgaXMgbm90CiAJICogc2V0IGEgZGVmYXVsdCB0YWJsZSBvZiBicmln
-aHRuZXNzIGxldmVscyB3aWxsIGJlIHVzZWQuCkBAIC0zNzQsMTUgKzM4NCw2IEBAIHN0YXRpYyBp
-bnQgcHdtX2JhY2tsaWdodF9wYXJzZV9kdChzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJCWRhdGEtPm1h
-eF9icmlnaHRuZXNzLS07CiAJfQogCi0JLyoKLQkgKiBUaGVzZSB2YWx1ZXMgYXJlIG9wdGlvbmFs
-IGFuZCBzZXQgYXMgMCBieSBkZWZhdWx0LCB0aGUgb3V0IHZhbHVlcwotCSAqIGFyZSBtb2RpZmll
-ZCBvbmx5IGlmIGEgdmFsaWQgdTMyIHZhbHVlIGNhbiBiZSBkZWNvZGVkLgotCSAqLwotCW9mX3By
-b3BlcnR5X3JlYWRfdTMyKG5vZGUsICJwb3N0LXB3bS1vbi1kZWxheS1tcyIsCi0JCQkgICAgICZk
-YXRhLT5wb3N0X3B3bV9vbl9kZWxheSk7Ci0Jb2ZfcHJvcGVydHlfcmVhZF91MzIobm9kZSwgInB3
-bS1vZmYtZGVsYXktbXMiLCAmZGF0YS0+cHdtX29mZl9kZWxheSk7Ci0KLQlkYXRhLT5lbmFibGVf
-Z3BpbyA9IC1FSU5WQUw7CiAJcmV0dXJuIDA7CiB9CiAKLS0gCjIuMTkuMQoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlz
-dApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0
-b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
+
+v6
+- Remove the global property 'sifive,period-ns'
+- Implement free and request callbacks to maintain user counts.
+- Add user_count member to struct pwm_sifive_ddata
+- Allow period change only if user_count is one
+- Add pwm_sifive_enable function to enable/disable PWM
+- Change calculation logic of frac (in pwm_sifive_apply)
+- Remove state correction
+- Remove pwm_sifive_xlate function
+- Clock to be enabled only when PWM is enabled
+- Other minor fixes
+
+v5
+- Correct the order of compatible string properties
+- PWM state correction to be done always
+- Other minor fixes based upon feedback on v4
+
+v4
+- Rename the property sifive,approx-period-ns to sifive,period-ns
+- Rename macros with appropriate names
+- Remove unused macros
+- Rename struct sifive_pwm_device to struct pwm_sifive_ddata
+- Rename function prefix as per driver name
+- Set deglitch bit before changing output waveform.
+- Other minor fixes based upon feedback on v3
+
+v3
+- Add a link to the reference manaul
+- Use appropriate apis for division operation
+- Add check for polarity
+- Enable clk before calling clk_get_rate
+- Other minor fixes based upon feedback on v2
+
+V2 changed from V1:
+- Remove inclusion of dt-bindings/pwm/pwm.h
+- Remove artificial alignments
+- Replace ioread32/iowrite32 with readl/writel
+- Remove camelcase
+- Change dev_info to dev_dbg for unnecessary log
+- Correct typo in driver name
+- Remove use of of_match_ptr macro
+- Update the DT compatible strings and Add reference to a common
+  versioning document
+
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
+
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  30 ++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 311 +++++++++++++++++++++
+ 4 files changed, 353 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
+
+-- 
+1.9.1
