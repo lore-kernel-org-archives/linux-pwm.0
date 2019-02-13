@@ -1,113 +1,153 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: hibvt: Add hi3559v100 support
-Date: Wed, 13 Feb 2019 13:30:02 +0100
-Message-ID: <20190213123002.GC647@ulmo>
-References: <20190212094927.5900-1-m.othacehe@gmail.com>
- <20190212094927.5900-2-m.othacehe@gmail.com>
- <20190212142850.iwgi4n6v6oep4oin@pengutronix.de>
+Subject: Re: [PATCH v5 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Wed, 13 Feb 2019 13:34:05 +0100
+Message-ID: <20190213123405.GD647@ulmo>
+References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
+ <1548762199-7065-3-git-send-email-yash.shah@sifive.com>
+ <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
+ <CAJ2_jOGYkwb2QSUH1UU_QoGXE5LFoR0XGJmuYfNtYcZXHXyfaA@mail.gmail.com>
+ <20190211122954.33thpip3yhtdw5x6@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="kVXhAStRUZ/+rrGn"
+        protocol="application/pgp-signature"; boundary="EY/WZ/HvNxOox07X"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190212142850.iwgi4n6v6oep4oin@pengutronix.de>
+In-Reply-To: <20190211122954.33thpip3yhtdw5x6@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Mathieu Othacehe <m.othacehe@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Yash Shah <yash.shah@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---kVXhAStRUZ/+rrGn
+--EY/WZ/HvNxOox07X
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 12, 2019 at 03:28:50PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> On Tue, Feb 12, 2019 at 10:49:27AM +0100, Mathieu Othacehe wrote:
-> > Add support for hi3559v100-shub-pwm and hisilicon,hi3559v100-pwm
-> > platforms. They require a special quirk: pwm has to be enabled again
-> > to force duty_cycle refresh.
+On Mon, Feb 11, 2019 at 01:29:54PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello,
+>=20
+> On Mon, Feb 11, 2019 at 04:56:27PM +0530, Yash Shah wrote:
+> > On Thu, Feb 7, 2019 at 3:47 PM Uwe Kleine-K=C3=B6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
+> > > > +struct pwm_sifive_ddata {
+> > > > +     struct pwm_chip chip;
+> > > > +     struct notifier_block notifier;
+> > > > +     struct clk *clk;
+> > > > +     void __iomem *regs;
+> > > > +     unsigned int approx_period;
+> > > > +     unsigned int real_period;
+> > > > +};
+> > > > +
+> > > > +static inline struct pwm_sifive_ddata *to_pwm_sifive_chip(struct p=
+wm_chip *c)
+> > >
+> > > even though this is inlined I would like this to have use the
+> > > pwm_sifive_ prefix, too.
 > >=20
-> > Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
-> > ---
-> >  drivers/pwm/pwm-hibvt.c | 26 +++++++++++++++++++++++---
-> >  1 file changed, 23 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-> > index 27c107e78d59..bf33aa24433c 100644
-> > --- a/drivers/pwm/pwm-hibvt.c
-> > +++ b/drivers/pwm/pwm-hibvt.c
-> > @@ -49,6 +49,7 @@ struct hibvt_pwm_chip {
-> >  	struct clk *clk;
-> >  	void __iomem *base;
-> >  	struct reset_control *rstc;
-> > +	bool quirk_force_enable;
-> >  };
-> > =20
-> >  struct hibvt_pwm_soc {
-> > @@ -56,6 +57,7 @@ struct hibvt_pwm_soc {
-> >  };
-> > =20
-> >  static const struct hibvt_pwm_soc pwm_soc[2] =3D {
-> > +	{ .num_pwms =3D 2 },
-> >  	{ .num_pwms =3D 4 },
-> >  	{ .num_pwms =3D 8 },
+> > Not sure what exactly you want me to do here.
 >=20
-> The members of this struct are used as of-data (in struct
-> of_device_id::data below). When looking at the usage:
->=20
-> 	{ .compatible =3D "hisilicon,hi3516cv300-pwm", .data =3D &pwm_soc[1] },
-> 	{ .compatible =3D "hisilicon,hi3519v100-pwm", .data =3D &pwm_soc[2] },
-> 	{ .compatible =3D "hisilicon,hi3559v100-shub-pwm", .data =3D &pwm_soc[2]=
- },
-> 	{ .compatible =3D "hisilicon,hi3559v100-pwm", .data =3D &pwm_soc[0] },
->=20
-> this isn't exactly easy to understand. I would prefer to do it as
-> follows:
->=20
-> 	static const struct hibvt_pwm_soc hi3516cv300_soc_info =3D {
-> 		.num_pwms =3D 2,
-> 	};
-> 	...
->=20
-> 	static const struct of_device_id hibvt_pwm_of_match[] =3D {
-> 		{ .compatible =3D "hisilicon,hi3516cv300-pwm", .data =3D &hi3516cv300_s=
-oc_info },
-> 		...
-> 	};
->=20
-> Then you could also add a member to hibvt_pwm_soc to signal if that
-> force_enable quirk is necessary and would not need to use
-> of_device_is_compatible() to determine this. The result is that you have
-> a description of all relevant differences in a single place.
->=20
-> @Thierry: Also this is yet another driver instance where a num-pwms
-> property would simplify the driver because up to before this patch this
-> was the only difference between the different variants.
+> I want this function to be named something like pwm_sifive_chip_to_ddata.
+> This way it has the common prefix (and is less confusing because
+> to..chip suggests that is converts something to a chip, but the outcome
+> is ...ddata).
 
-We don't need the num-pwms in device tree if it can be derived from the
-compatible string.
+We've got plenty of these cast functions that are named to_*(). I would
+argue that naming this one differently is confusing.
+
+Also, I think this may have come from earlier review comments where I
+suggested to name this structure struct pwm_sifive_chip, or just struct
+pwm_sifive.
+
+> > > In a previous review round I had doubts about the calculation of frac
+> > > and I think they were addressed wrongly.
+> > > Looking at the figure at the start of chapter 14.9 in the reference
+> > > manual: They use (different than the driver here) pwmcmp0=3D6 and
+> > > pwmzerocmp=3D1. Then a period is 7 clock cycles long and pwmcmpX must=
+ be 7
+> > > (for X > 0) to yield a 100% signal. So pwmcmpX must be greater than or
+> > > equal to the period (in clock cycles).
+> > >
+> > > Here we're using pwmzerocmp=3D0, still the constraint
+> > >
+> > >         pwmcmpX >=3D period
+> > >
+> > > must be true for a 100% cycle. (Right?) With pwmzerocmp=3D0 the perio=
+d is
+> > > 0x10000 clock cycles, so pwmcmpX must be >=3D 0x10000 to yield a 100%
+> > > signal. As this is not possible (pwmcmpX is a 16 bit value that can o=
+nly
+> > > hold up to 0xffff) the output cannot yield 100%.
+> > >
+> > > So I think the most correct implementation here is:
+> > >
+> > >         frac =3D (duty_cycle * (1 << PWM_SIFIVE_CMPWIDTH) + (1 << PWM=
+_SIFIVE_CMPWIDTH) / 2) / period;
+> > >         /* Sorry, we cannot do 100% :-( */
+> > >         frac =3D min(frac, (1 << PWM_SIFIVE_CMPWIDTH) - 1);
+> > >
+> >=20
+> > I will once again go through the specs, if it seems correct I will
+> > implement the above.
+>=20
+> I would just test this at runtime. Configure for 100% and check the wave
+> form if it is constant.
+>=20
+> > > > +static int pwm_sifive_probe(struct platform_device *pdev)
+> > > > +{
+> > > > [...]
+> > > > +     /* Watch for changes to underlying clock frequency */
+> > > > +     pwm->notifier.notifier_call =3D pwm_sifive_clock_notifier;
+> > > > +     ret =3D clk_notifier_register(pwm->clk, &pwm->notifier);
+> > > > +     if (ret) {
+> > > > +             dev_err(dev, "failed to register clock notifier: %d\n=
+", ret);
+> > > > +             goto disable_clk;
+> > > > +     }
+> > >
+> > > Would it make sense to only enable the clock when the pwm is enabled?
+> > > (If yes, how does the output behave if the clock is disabled while the
+> > > hardware is enabled? I assume the output just freezes at the state wh=
+ere
+> > > it happens to be?)
+> >=20
+> > Yes. Not sure about the behaviour of hardware when the clock is disable=
+d.
+> > The behaviour should be like you said. If there is no strong reason
+> > then we can keep it as it is right now
+> > or else if you want I can make the necessary change.
+>=20
+> I would prefer to only have the clock enabled when it is actually used.
+> Note the common pitfall that you cannot disable the clk immediately
+> after configureing the duty cycle to 100% or 0% though because you must
+> only stop the clock when the newly configured parameters are active.
+
+You can also disable the clock if the hardware will still apply the
+configured parameters. This is really only an issue if disabling the
+clock also stops the IP and prevents the configured parameters from
+getting applied.
 
 Thierry
 
---kVXhAStRUZ/+rrGn
+--EY/WZ/HvNxOox07X
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxkDcgACgkQ3SOs138+
-s6FumA//UXRbb4IpLIkxjoOLtrXebSP9Ky4IE3i9sgcBnKi9gOF5vYGNTzD+phlk
-nqyuxFjBZjQ0hEF7FFJYnpk2TdWta7YgNBn94L/rYP9mPWUmAiO2cZjgKrUsqcU5
-bMYYARdcP02FHPQdtyB/mM6cCcnrVCDx1UOI23U+C23dm3T/SwPEqlIFnKiayOeQ
-0HzXG7Gkbj6sSPG+NL+4pZVkFAMdNiAhyVwWWgCFKm09vLkbuzD4w+YMHnA/LAea
-SGUAlgkw2L79ytpDDiEVcqkfccBCrOQktqozG5v2EDjbyDb+aG7aAje0wfqaVKWu
-HeJW+I3TaPeM3I+k8uJ7akUXQAXBRPrjpfYzfavIdIg8j1/YmhZrLGs3tsY6ZDCF
-7SLqCrHa8QHQje+auoHJ1nN22WiHj2Nfrm6QEIIXuXz2FcwAXpvxecAAaheAUSDr
-R/1kHB5Bcf/XmMPv5ixbInHCg5rmDw3l9s+gCRmLzO9oPkFlL7/BZFqYBw7j5Tk5
-w/HVP8MUO2FjouJBbnCopozSyhKsmluI3t8lGxQIEDPU2x9poIB6wlwSuf3+nIUY
-83W4KDT9M9weSSUBv4EZyq7Y4H7m0QtLcVt46a0w2jk7SFqiOT38eOaR6N6ihaaA
-LUThRR9KasBfWMuoz6nvLrczNpkrFNiFh3j4b5TkKWuJYLEnST0=
-=2fgf
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxkDr0ACgkQ3SOs138+
+s6EltA//WyOsaTPYD52vSFENAJxCA/Bi4M7vQFZm2jQ2dmZRHBM0ngb1hqW4bGUD
+6g19/elK1xAo6dzN/2WZtoMv8qRNyY2fOd0ifowshDuIa4KWAaQUHehg/HV5bI5W
+dG8/41fiOgq92tZTrTXqOA8VBNyAlUMWv7QeLgMNBRvT1wUTf1AufccfSCFHrEdc
+TGGLOlBUfOD83AFLS9DIT0ZSXvAtJQgq1KvQGVpOgfReqsIkCXxXEOcq3jD2N2Iy
+0STbXSXh7qO4dOfpsfO4mgLJ4+B2XcipE1Soy81DjXpygf1kQQwm6vEF7wW86Gx0
+b0U+9UbiLYrz/WgsgJGPjR/QF8MU3YDKeeq/et14xHfTX+eX2+326+9TFHJoOL8+
+dn4AjVgBXFQ7hNf7LQ1dFZKgMHOSC6MRL98Rc6jN2nRevejQWlAKBLTZIsYR1giV
+4znvMwGOPfDqWmPID9rTLsl0HKStf/WSB1UBJc74DX3ec+cFasVRsC1Y3KU5Q4uZ
+sN//ZNc76p1Yy4+iKCQQCiehFyoT/U/V6gls7G3tN7va3QWcnnf0+I6tNJeLWwLs
+FWjgMeuZ4xAKL+jdAEe9esoRp71C+7eecQPUpRqjUO7ku14se/tbGkmJWgNwbFkL
+ScM23XTQ2CbfbGfwAE8VtIFh7zjfomjZER2PMCoXCUNQlIoJGaA=
+=HKpM
 -----END PGP SIGNATURE-----
 
---kVXhAStRUZ/+rrGn--
+--EY/WZ/HvNxOox07X--
