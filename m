@@ -1,238 +1,178 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v6 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Thu, 14 Feb 2019 09:34:27 +0100
-Message-ID: <20190214083427.oal3nmcfalqralbk@pengutronix.de>
-References: <1550049978-20705-1-git-send-email-yash.shah@sifive.com>
- <1550049978-20705-3-git-send-email-yash.shah@sifive.com>
- <20190213103459.t5bvemxrb2x6iagm@pengutronix.de>
- <CAJ2_jOH7WaceLVY6KhMmSbwjo3-5tgbiSZYtbRmUxS-4Rf2WLA@mail.gmail.com>
+Subject: Re: [PATCH v8 1/6] pwm: extend PWM framework with PWM modes
+Date: Thu, 14 Feb 2019 10:48:53 +0100
+Message-ID: <20190214094853.zs45m5k27hgtvyxt@pengutronix.de>
+References: <1546522081-23659-1-git-send-email-claudiu.beznea@microchip.com>
+ <1546522081-23659-2-git-send-email-claudiu.beznea@microchip.com>
+ <20190105210522.ho2o2a4gc7r7ijeq@pengutronix.de>
+ <67e881c5-0ea7-3d2f-5910-534729097d11@microchip.com>
+ <20190107221040.uos5qlnkjmcayv73@pengutronix.de>
+ <20190205230125.GE1372@mithrandir>
+ <20190206082432.6imbcuwlxhtsw4s4@pengutronix.de>
+ <de382486-e8da-b000-7846-39fd6710cc89@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAJ2_jOH7WaceLVY6KhMmSbwjo3-5tgbiSZYtbRmUxS-4Rf2WLA@mail.gmail.com>
+In-Reply-To: <de382486-e8da-b000-7846-39fd6710cc89@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
+To: Claudiu.Beznea@microchip.com
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, corbet@lwn.net, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 Hello,
 
-On Thu, Feb 14, 2019 at 01:25:27PM +0530, Yash Shah wrote:
-> On Wed, Feb 13, 2019 at 4:05 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Wed, Feb 13, 2019 at 02:56:18PM +0530, Yash Shah wrote:
-> > > +static int pwm_sifive_enable(struct pwm_chip *chip, struct pwm_device *dev,
-> > > +                          bool enable)
-> > > +{
-> > > +     struct pwm_sifive_ddata *pwm = pwm_sifive_chip_to_ddata(chip);
-> > > +     u32 val;
-> > > +     int ret;
-> > > +
-> > > +     if (enable) {
-> > > +             ret = clk_enable(pwm->clk);
-> > > +             if (ret) {
-> > > +                     dev_err(pwm->chip.dev, "Enable clk failed:%d\n", ret);
-> > > +                     return ret;
-> > > +             }
-> > > +     }
-> > > +
-> > > +     val = readl(pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > +
-> > > +     if (enable)
-> > > +             val |= BIT(PWM_SIFIVE_PWMCFG_EN_ALWAYS);
-> > > +     else
-> > > +             val &= ~BIT(PWM_SIFIVE_PWMCFG_EN_ALWAYS);
-> > > +
-> > > +     writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > +
-> > > +     if (!enable)
-> > > +             clk_disable(pwm->clk);
-> >
-> > A disabled PWM is supposed to output an inactive signal. If the PWM runs
-> > at (near) 100% and you disable it, does it reliably give that inactive
-> > signal after completing the currently running period?
+On Wed, Feb 13, 2019 at 03:38:46PM +0000, Claudiu.Beznea@microchip.com wrote:
+> On 06.02.2019 10:24, Uwe Kleine-König wrote:
+> > On Wed, Feb 06, 2019 at 12:01:26AM +0100, Thierry Reding wrote:
+> >> But I really don't see the point in having consumers jump through hoops
+> >> to set one of the standard modes just to have the driver jump through
+> >> more hoops to determine which mode was meant.
+> > 
+> > I think my approach is more natural and not more complicated at all. In
+> > all modes where this secondary output makes sense both outputs share the
+> > period length. In all modes both outputs have a falling and a raising
+> > edge each. Let's assume we support
+> > 
+> >  - normal mode (one output, secondary (if available) inactive)
+> >  - complementary mode (secondary output is the inverse of primary
+> >    output)
+> >  - push-pull mode (primary output only does every second active phase,
+> >    the secondy output does the ones that are skiped by the primary one)
+> >  - complementary mode with deadtime (like above but there is a pause
+> >    where both signals are inactive at the switch points, so the active
+> >    phase of the secondary output is $deadtime_pre + $deadtime_post
+> >    shorter than the primary output's inactive phase).
+> > 
+> > To describe these modes we need with the approach suggested by Claudiu
+> > the following defines:
+> > 
+> >  enum mode {
+> >  	NORMAL,
+> > 	COMPLEMENTARY,
+> > 	PUSH_PULL
+> > 	PUSH_PULL_WITH_DEADTIME
+
+Here I made a mistake, I should have written about
+COMPLEMENTARY_WITH_DEADTIME, not PUSH_PULL_WITH_DEADTIME. The
+argumentation is analogous however. PUSH_PULL_WITH_DEADTIME is
+completely unintuitive when thinking about the needed parameters, I'll
+skip talking about this.
+ 
+> I see push-pull mode as a particular mode of complementary mode with
+> dead-times equal to a half of a period.
+
+<pedantic>It's not half a period that you need to use as dead-time, but
+period/2 - duty_cycle.</pedantic>
+
+This means that we could model "complementary" and "push pull" (and even
+"push pull with deadtime") if we only had "complementary with deadtime".
+So the latter seems to be the universal we should implement, right?
+(Otherwise a driver for a hardware that is flexible enough to actually
+do it has to implement three or so different ways to yield requested
+waveforms when a single one would be enough.)
+
+The parameters for that are:
+
+	- period length
+	- duty_cycle
+	- pre_deadtime
+	- post_deadtime
+
+. The expressiveness is identical to my suggestion (with alt_duty_cycle
+and alt_offset), just that this uses more artificial and unintuitive
+characteristics of the wave to describe it. (An indication is that you
+got it wrong above, see my pedantic note.)
+
+I'd say only abstract using "modes" if they are really orthonal which
+you seem to agree isn't the case here. In fact we only need a single
+mode that driver authors need to grasp and if there are two or more
+different ways to describe the same waves we're only make it harder for
+them.
+
+The argument "But not all hardware has the flexibility to implement
+all wave forms that are decribable with any of these abstractions."
+isn't really a problem. We already have now the situation with only
+.period, .duty_cycle and .polarity that not all drivers can implement
+everything. So there has to be a mechanism to handle inability to
+implement a given request anyhow.
+
+> I don't get the meaning of push-pull with dead-times, there is already
+> there a deadtime pre, post value equal with 1/2 of period.
+
+FTR: in my argumentation COMPLEMENTARY is just what you defined it to
+be. I.e. it doesn't have deadtimes. But as shown above this doesn't
+really matter. Both COMPLEMENTARY with deadtimes and my suggestion have
+the same expressive power, just use different characteristics to
+describe a wave form. To summarize, requesting the following wave:
+
+
+                     ______                ______
+secondary __________/      \______________/      \____
+             __                    __
+primary   __/  \__________________/  \________________
+            ^                     ^
+A           `--'					.duty_cycle
+B           `-------'      				.alt_offset
+C                   `------'				.alt_duty_cycle
+D              `----'					.pre_dead_time
+E                          `------'			.post_dead_time
+
+You need apart from the period length which is needed for all:
+
+ - With my suggestion you need to pass A, B and C; and
+ - with COMPLEMENTARY and deadtimes you need to provide A, D and E.
+
+Isn't A, B and C the most intuitive set, given that when describing only
+only the primary output you need A and for the secondary output you need
+only C?
+
+Also note that for PUSH_PULL with deadtime the deadtimes might be
+negative. The boundary checks for my approach are:
+
+	0 <= .duty_cycle <= .period (as we already have today)
+	0 <= .alt_duty_cycle <= .period (which is analogous to the above line)
+	0 <= .alt_offset < .period
+
+With COMPLEMENTARY and deadtimes it is harder, as there are conditions
+that have to speak about both .pre_dead_time and .post_dead_time.
+
+> >  struct pwm_state {
+> >  	unsigned int period;
+> > 	unsigned int duty_cycle;
+> > 	enum pwm_polarity polarity;
+> > 	bool enabled;
+> > 	enum mode mode;
+> > 	unsigned int deadtime_pre;
+> > 	unsigned int deadtime_post;
+> >  }
+> > 
+> > This has the following downsides:
+> > 
+> >  - The period in push-pull mode is somehow wrong because the signal
+> >    combination repeats only every 2x $period ns. (I guess this is an
+> >    implementation detail of the atmel hardware that leaks into the API
+> >    here.)
 > 
-> Yes, you are right, it just freezes at that state (100%).
-> What if I set duty cycle = 0 if (!state->enabled) before disabling the PWM?
+> As far as I'm concern of the PWM push-pull mode it is a specific PWM
+> working mode, not related to Atmel, which can be used to drive half-bridge
+> converters.
 
-Then you only need to be sure that the inactive level is already latched
-to the pwmcmpXip output (which should only need one clock cycle if I'm
-not mistaken) before disabling the clock.
+This is not what I meant. The point I wanted to make here is, that I
+would consider it more natural to define the period length of the
+following wave form pair as the time between the two carets, not half of
+it as you suggested in your patch.
 
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *dev,
-> > > +                         struct pwm_state *state)
-> > > +{
-> > > +     struct pwm_sifive_ddata *pwm = pwm_sifive_chip_to_ddata(chip);
-> > > +     unsigned int duty_cycle;
-> > > +     u32 frac, val;
-> > > +     struct pwm_state cur_state;
-> > > +     bool enabled;
-> > > +     int ret;
-> > > +
-> > > +     pwm_get_state(dev, &cur_state);
-> > > +     enabled = cur_state.enabled;
-> > > +
-> > > +     if (state->polarity != PWM_POLARITY_INVERSED)
-> > > +             return -EINVAL;
-> > > +
-> > > +     if (state->period != cur_state.period) {
-> > > +             if (pwm->user_count != 1)
-> > > +                     return -EINVAL;
-> >
-> > I think we need locking here. Consider two pwm users on two CPUs:
-> >
-> >         CPU1                                    CPU2
-> >         pwm_sifive_apply(pwm0, period=A, ...)
-> >          check user_count==1 -> good
-> >          ...                                    pwm1 = pwm_get(...)
-> >          ...                                    pwm_sifive_apply(pwm1, period=B...)
-> >          ...                                      configure based on B
-> >          pwm_sifive_update_clock()
-> 
-> mutex_lock();
->   if (pwm->user_count != 1)
->                   return -EINVAL;
-> mutex_unlock();
-> Something like this?
+                  __                    __
+    _____________/  \__________________/  \_____
+       __                    __
+    __/  \__________________/  \________________
+      ^                     ^
 
-No, the lock needs to protect more. You must at least cover increasing
-and decreasing of user_count and you must hold the lock until the period
-update is completed.
-
-> > Also I wonder if we should change the period if the user requested
-> > enabled=false.
-> 
-> You want me to NOT update period if enabled=false, right?
-
-I don't know for sure. Given that period is shared for all four PWM
-outputs it might be sensible to change it at least in a shadow variable
-and only do it when actually needed. (But maybe we can postpone that as
-it doesn't matter for correctness of the driver.)
-
-The question here is: In the following snippet:
-
-	pwm0 = pwm_get(... the first pwm ...)
-
-	pwm_apply_state(pwm0, { .enabled = true, .period = 4000 });
-	pwm_apply_state(pwm0, { .enabled = false, .period = 8000 });
-
-	pwm1 = pwm_get(... the second pwm ...)
-	pwm_apply_state(pwm1, { .enabled = true, .period = 4000 });
-	pwm_apply_state(pwm0, { .enabled = true, .period = 8000 });
-
-Which of the two last commands should fail?
-
-> > > +             pwm->real_period = state->period;
-> > > +             pwm_sifive_update_clock(pwm, clk_get_rate(pwm->clk));
-> >
-> > If you change from
-> >
-> >         .period = A
-> >         .duty_cycle = B
-> >
-> > to
-> >
-> >         .period = C
-> >         .duty_cycle = D
-> >
-> > the output pin might see a period with
-> >
-> >         .period = C
-> >         .duty_cycle = B
-> >
-> > right? I think this is not fixable, but this needs a prominent comment.
-> 
-> Good point. Is the below comment good enough?
-> /* When changing both duty cycle and period, the old duty cycle might
-> be active with new the period settings for a period */
-
-I'd add some blame on the hardware. Something like:
-
-	/*
-	 * When changing both duty cycle and period, we cannot prevent in
-	 * software that the output might produce a period with mixed
-	 * settings (new period length and old duty cycle).
-	 */
-
-I'd say it makes sense to put this information at the top of the driver
-to have it in a prominent place. Also point out the inability to provide
-100% duty cycle and that the hardware is limited to inverted output.
-Then all limitations are summarized in a single place.
-
-Maybe this mismatch could be made less likely by changing the order of
-the register accesses and a delay depending on pwms and old and new
-settings. But I'd say this is too much for now and can be addressed
-later when and if necessary.
-
-> > > +     }
-> > > +
-> > > +     if (!state->enabled && enabled) {
-> > > +             ret = pwm_sifive_enable(chip, dev, false);
-> > > +             if (ret)
-> > > +                     return ret;
-> > > +             enabled = false;
-> > > +     }
-> > > +
-> > > +     duty_cycle = state->duty_cycle;
-> > > +     frac = div_u64((u64)duty_cycle * (1 << PWM_SIFIVE_CMPWIDTH) +
-> > > +                    (1 << PWM_SIFIVE_CMPWIDTH) / 2, state->period);
-> > > +     /* The hardware cannot generate a 100% duty cycle */
-> >
-> > @Thierry: Do you consider this bad enough that pwm_apply_state should
-> > fail if 100% is requested?
-
-This question is still open.
-
-> > > +     frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
-> > > +
-> > > +     val = readl(pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > +     val |= BIT(PWM_SIFIVE_PWMCFG_DEGLITCH);
-> > > +     writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > +
-> > > +     writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 + dev->hwpwm *
-> > > +            PWM_SIFIVE_SIZE_PWMCMP);
-> > > +
-> > > +     val &= ~BIT(PWM_SIFIVE_PWMCFG_DEGLITCH);
-> >
-> > Doesn't that come too early? I thought the right thing was to keep it
-> > set all the time. With this code I think you might see a duty cycle of
-> > 50 when going from 60 to 40.
-> 
-> We cannot set it all the time.
-> Setting it all the time makes every alternate period to remain high
-> (latched state).
-> As per the manual, it needs to be set when reprogramming and must be
-> cleared afterwards.
-
-I didn't find this in the manual. When looking at Figure 6 and the
-description of pwmdeglitch I have the impression that your statement is
-wrong.
-
-Setting pwmdeglitch only prevents the output from getting low during a
-period, it can only go low when pwms overflows (i.e. the start of a
-period). That's exactly what we want. Where is the misunderstanding?
-
-If however you clear pwmdeglitch after an update, consider the following
-series of events:
-
- - Assume pwmcmpX is 0x4000 and pwms is 0x5000, so pwmcmpXip is high.
- - You set pwmdeglitch and change pwmcmpX to 0x8000 while pwms advanced
-   only little. Then pwmcmpXip remains high.
- - Then you clear pwmdeglitch at say pwms = 0x5020, this makes pwmcmpXip
-   fall which we should prevent.
-
-Also note that when setting pwmdeglitch while configuring pwm0---if it
-really had the behaviour you pointed out---would interfere with the
-maybe running pwm1.
-
-So I'm convinced keeping pwmdeglitch active always is the right thing to
-do.
+That's because then for all wave forms the period of both outputs matches
+the period variable.
 
 Best regards
 Uwe
