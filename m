@@ -1,83 +1,242 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v6 1/2] pwm: sifive: Add DT documentation for SiFive PWM Controller
-Date: Thu, 14 Feb 2019 13:37:59 +0530
-Message-ID: <CAJ2_jOHwk3_5Z1=QD4HZjpWg0mx-RTKzq44gueFZQ2k2OaZOZw@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Thu, 14 Feb 2019 09:34:27 +0100
+Message-ID: <20190214083427.oal3nmcfalqralbk@pengutronix.de>
 References: <1550049978-20705-1-git-send-email-yash.shah@sifive.com>
- <1550049978-20705-2-git-send-email-yash.shah@sifive.com> <20190213203752.GA18326@bogus>
+ <1550049978-20705-3-git-send-email-yash.shah@sifive.com>
+ <20190213103459.t5bvemxrb2x6iagm@pengutronix.de>
+ <CAJ2_jOH7WaceLVY6KhMmSbwjo3-5tgbiSZYtbRmUxS-4Rf2WLA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190213203752.GA18326@bogus>
+Content-Disposition: inline
+In-Reply-To: <CAJ2_jOH7WaceLVY6KhMmSbwjo3-5tgbiSZYtbRmUxS-4Rf2WLA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
+To: Yash Shah <yash.shah@sifive.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Feb 14, 2019 at 2:07 AM Rob Herring <robh@kernel.org> wrote:
->
-> On Wed, Feb 13, 2019 at 02:56:17PM +0530, Yash Shah wrote:
-> > DT documentation for PWM controller added.
+Hello,
+
+On Thu, Feb 14, 2019 at 01:25:27PM +0530, Yash Shah wrote:
+> On Wed, Feb 13, 2019 at 4:05 PM Uwe Kleine-König
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Wed, Feb 13, 2019 at 02:56:18PM +0530, Yash Shah wrote:
+> > > +static int pwm_sifive_enable(struct pwm_chip *chip, struct pwm_device *dev,
+> > > +                          bool enable)
+> > > +{
+> > > +     struct pwm_sifive_ddata *pwm = pwm_sifive_chip_to_ddata(chip);
+> > > +     u32 val;
+> > > +     int ret;
+> > > +
+> > > +     if (enable) {
+> > > +             ret = clk_enable(pwm->clk);
+> > > +             if (ret) {
+> > > +                     dev_err(pwm->chip.dev, "Enable clk failed:%d\n", ret);
+> > > +                     return ret;
+> > > +             }
+> > > +     }
+> > > +
+> > > +     val = readl(pwm->regs + PWM_SIFIVE_PWMCFG);
+> > > +
+> > > +     if (enable)
+> > > +             val |= BIT(PWM_SIFIVE_PWMCFG_EN_ALWAYS);
+> > > +     else
+> > > +             val &= ~BIT(PWM_SIFIVE_PWMCFG_EN_ALWAYS);
+> > > +
+> > > +     writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
+> > > +
+> > > +     if (!enable)
+> > > +             clk_disable(pwm->clk);
 > >
-> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> > [Atish: Compatible string update]
-> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> > ---
-> >  .../devicetree/bindings/pwm/pwm-sifive.txt         | 30 ++++++++++++++++++++++
-> >  1 file changed, 30 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+> > A disabled PWM is supposed to output an inactive signal. If the PWM runs
+> > at (near) 100% and you disable it, does it reliably give that inactive
+> > signal after completing the currently running period?
+> 
+> Yes, you are right, it just freezes at that state (100%).
+> What if I set duty cycle = 0 if (!state->enabled) before disabling the PWM?
+
+Then you only need to be sure that the inactive level is already latched
+to the pwmcmpXip output (which should only need one clock cycle if I'm
+not mistaken) before disabling the clock.
+
+> > > +     return 0;
+> > > +}
+> > > +
+> > > +static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *dev,
+> > > +                         struct pwm_state *state)
+> > > +{
+> > > +     struct pwm_sifive_ddata *pwm = pwm_sifive_chip_to_ddata(chip);
+> > > +     unsigned int duty_cycle;
+> > > +     u32 frac, val;
+> > > +     struct pwm_state cur_state;
+> > > +     bool enabled;
+> > > +     int ret;
+> > > +
+> > > +     pwm_get_state(dev, &cur_state);
+> > > +     enabled = cur_state.enabled;
+> > > +
+> > > +     if (state->polarity != PWM_POLARITY_INVERSED)
+> > > +             return -EINVAL;
+> > > +
+> > > +     if (state->period != cur_state.period) {
+> > > +             if (pwm->user_count != 1)
+> > > +                     return -EINVAL;
 > >
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.txt b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> > new file mode 100644
-> > index 0000000..3b9c64c
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.txt
-> > @@ -0,0 +1,30 @@
-> > +SiFive PWM controller
-> > +
-> > +Unlike most other PWM controllers, the SiFive PWM controller currently only
-> > +supports one period for all channels in the PWM. All PWMs need to run at
-> > +the same period. The period also has significant restrictions on the values
-> > +it can achieve, which the driver rounds to the nearest achievable period.
-> > +PWM RTL that corresponds to the IP block version numbers can be found
-> > +here:
-> > +
-> > +https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
-> > +
-> > +Required properties:
-> > +- compatible: Should be "sifive,$socname-pwm" and "sifive,pwmX".
-> > +  Please refer to sifive-blocks-ip-versioning.txt for details.
->
-> Please specify what soc and IP version are used. Is sifive,pwm10 valid?
-
-Does the below description seem fine?
-
-should be "sifive,<chip>-pwm" and "sifive,pwm<version>".
-Supported compatible strings are:
-"sifive,fu540-c000-pwm" for the SiFive PWM v0 as
-integrated onto the SiFive FU540 chip, and "sifive,pwm0"
-for the SiFive PWM v0 IP block with no chip integration
-tweaks. Please refer to sifive-blocks-ip-versioning.txt for details
-
->
-> > +- reg: physical base address and length of the controller's registers
-> > +- clocks: Should contain a clock identifier for the PWM's parent clock.
-> > +- #pwm-cells: Should be 3. See pwm.txt in this directory
-> > +  for a description of the cell format.
-> > +- interrupts: one interrupt per PWM channel
-> > +
-> > +Examples:
-> > +
-> > +pwm:  pwm@10020000 {
-> > +     compatible = "sifive,fu540-c000-pwm", "sifive,pwm0";
-> > +     reg = <0x0 0x10020000 0x0 0x1000>;
-> > +     clocks = <&tlclk>;
-> > +     interrupt-parent = <&plic>;
-> > +     interrupts = <42 43 44 45>;
-> > +     #pwm-cells = <3>;
-> > +};
-> > --
-> > 1.9.1
+> > I think we need locking here. Consider two pwm users on two CPUs:
 > >
+> >         CPU1                                    CPU2
+> >         pwm_sifive_apply(pwm0, period=A, ...)
+> >          check user_count==1 -> good
+> >          ...                                    pwm1 = pwm_get(...)
+> >          ...                                    pwm_sifive_apply(pwm1, period=B...)
+> >          ...                                      configure based on B
+> >          pwm_sifive_update_clock()
+> 
+> mutex_lock();
+>   if (pwm->user_count != 1)
+>                   return -EINVAL;
+> mutex_unlock();
+> Something like this?
 
-Thanks for the comment
+No, the lock needs to protect more. You must at least cover increasing
+and decreasing of user_count and you must hold the lock until the period
+update is completed.
+
+> > Also I wonder if we should change the period if the user requested
+> > enabled=false.
+> 
+> You want me to NOT update period if enabled=false, right?
+
+I don't know for sure. Given that period is shared for all four PWM
+outputs it might be sensible to change it at least in a shadow variable
+and only do it when actually needed. (But maybe we can postpone that as
+it doesn't matter for correctness of the driver.)
+
+The question here is: In the following snippet:
+
+	pwm0 = pwm_get(... the first pwm ...)
+
+	pwm_apply_state(pwm0, { .enabled = true, .period = 4000 });
+	pwm_apply_state(pwm0, { .enabled = false, .period = 8000 });
+
+	pwm1 = pwm_get(... the second pwm ...)
+	pwm_apply_state(pwm1, { .enabled = true, .period = 4000 });
+	pwm_apply_state(pwm0, { .enabled = true, .period = 8000 });
+
+Which of the two last commands should fail?
+
+> > > +             pwm->real_period = state->period;
+> > > +             pwm_sifive_update_clock(pwm, clk_get_rate(pwm->clk));
+> >
+> > If you change from
+> >
+> >         .period = A
+> >         .duty_cycle = B
+> >
+> > to
+> >
+> >         .period = C
+> >         .duty_cycle = D
+> >
+> > the output pin might see a period with
+> >
+> >         .period = C
+> >         .duty_cycle = B
+> >
+> > right? I think this is not fixable, but this needs a prominent comment.
+> 
+> Good point. Is the below comment good enough?
+> /* When changing both duty cycle and period, the old duty cycle might
+> be active with new the period settings for a period */
+
+I'd add some blame on the hardware. Something like:
+
+	/*
+	 * When changing both duty cycle and period, we cannot prevent in
+	 * software that the output might produce a period with mixed
+	 * settings (new period length and old duty cycle).
+	 */
+
+I'd say it makes sense to put this information at the top of the driver
+to have it in a prominent place. Also point out the inability to provide
+100% duty cycle and that the hardware is limited to inverted output.
+Then all limitations are summarized in a single place.
+
+Maybe this mismatch could be made less likely by changing the order of
+the register accesses and a delay depending on pwms and old and new
+settings. But I'd say this is too much for now and can be addressed
+later when and if necessary.
+
+> > > +     }
+> > > +
+> > > +     if (!state->enabled && enabled) {
+> > > +             ret = pwm_sifive_enable(chip, dev, false);
+> > > +             if (ret)
+> > > +                     return ret;
+> > > +             enabled = false;
+> > > +     }
+> > > +
+> > > +     duty_cycle = state->duty_cycle;
+> > > +     frac = div_u64((u64)duty_cycle * (1 << PWM_SIFIVE_CMPWIDTH) +
+> > > +                    (1 << PWM_SIFIVE_CMPWIDTH) / 2, state->period);
+> > > +     /* The hardware cannot generate a 100% duty cycle */
+> >
+> > @Thierry: Do you consider this bad enough that pwm_apply_state should
+> > fail if 100% is requested?
+
+This question is still open.
+
+> > > +     frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
+> > > +
+> > > +     val = readl(pwm->regs + PWM_SIFIVE_PWMCFG);
+> > > +     val |= BIT(PWM_SIFIVE_PWMCFG_DEGLITCH);
+> > > +     writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
+> > > +
+> > > +     writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 + dev->hwpwm *
+> > > +            PWM_SIFIVE_SIZE_PWMCMP);
+> > > +
+> > > +     val &= ~BIT(PWM_SIFIVE_PWMCFG_DEGLITCH);
+> >
+> > Doesn't that come too early? I thought the right thing was to keep it
+> > set all the time. With this code I think you might see a duty cycle of
+> > 50 when going from 60 to 40.
+> 
+> We cannot set it all the time.
+> Setting it all the time makes every alternate period to remain high
+> (latched state).
+> As per the manual, it needs to be set when reprogramming and must be
+> cleared afterwards.
+
+I didn't find this in the manual. When looking at Figure 6 and the
+description of pwmdeglitch I have the impression that your statement is
+wrong.
+
+Setting pwmdeglitch only prevents the output from getting low during a
+period, it can only go low when pwms overflows (i.e. the start of a
+period). That's exactly what we want. Where is the misunderstanding?
+
+If however you clear pwmdeglitch after an update, consider the following
+series of events:
+
+ - Assume pwmcmpX is 0x4000 and pwms is 0x5000, so pwmcmpXip is high.
+ - You set pwmdeglitch and change pwmcmpX to 0x8000 while pwms advanced
+   only little. Then pwmcmpXip remains high.
+ - Then you clear pwmdeglitch at say pwms = 0x5020, this makes pwmcmpXip
+   fall which we should prevent.
+
+Also note that when setting pwmdeglitch while configuring pwm0---if it
+really had the behaviour you pointed out---would interfere with the
+maybe running pwm1.
+
+So I'm convinced keeping pwmdeglitch active always is the right thing to
+do.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
