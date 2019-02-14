@@ -1,86 +1,184 @@
-From: Nicolas Boichat via dri-devel <dri-devel@lists.freedesktop.org>
-Subject: Re: [PATCH 3/3] drm/mediatek: add mt8183 dsi driver support
-Date: Thu, 14 Feb 2019 13:54:44 +0800
-Message-ID: <CANMq1KBR-CpjAtj6qTEjK8PA2DUW3w_-OP_EyE7uoaojGLoGLg@mail.gmail.com>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: Re: [PATCH 1/3] drm/mediatek: move mipi_dsi_host_register to probe
+Date: Thu, 14 Feb 2019 14:02:21 +0800
+Message-ID: <CANMq1KC+ga-Sjxj6eD51nLmq_54Y-gpJR_8qOLQee5gAy7ypkQ@mail.gmail.com>
 References: <20190214044243.129920-1-jitao.shi@mediatek.com>
- <20190214044243.129920-3-jitao.shi@mediatek.com>
-Reply-To: Nicolas Boichat <drinkcat@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190214044243.129920-3-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190214044243.129920-1-jitao.shi@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Yingjoe Chen <yingjoe.chen@mediatek.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa cheng <cawa.cheng@mediatek.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, Eddie Huang <eddie.huang@mediatek.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstr
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, dri-devel@lists.freedesktop.orglinux-arm Mailing List <linu>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVGh1LCBGZWIgMTQsIDIwMTkgYXQgMTI6NDMgUE0gSml0YW8gU2hpIDxqaXRhby5zaGlAbWVk
-aWF0ZWsuY29tPiB3cm90ZToKPgo+IE1UODE4MyBkc2kgaGFzIHR3byBjaGFuZ2VzIHdpdGggbXQ4
-MTczLgo+IDEuIEFkZCB0aGUgcmVnaXN0ZXIgZG91YmxlIGJ1ZmZlciBjb250cm9sLCBidXQgd2Ug
-bm8gbmVlZCBpdCwgU28gbWFrZQo+ICAgIGl0IGRlZmF1bHQgb2ZmLgoKQ2FuIHlvdSBkZXNjcmli
-ZSBhIGxpdHRsZSBiaXQgbW9yZSB3aGF0IHRoaXMgaXMgYWJvdXQ/IFRoYXQncyBzaGFkb3cKcmVn
-aXN0ZXJzLCByaWdodD8KCj4gMi4gQWRkIHBpY3R1cmUgc2l6ZSBjb250cm9sLgo+Cj4gU2lnbmVk
-LW9mZi1ieTogSml0YW8gU2hpIDxqaXRhby5zaGlAbWVkaWF0ZWsuY29tPgo+IC0tLQo+ICBkcml2
-ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIHwgMjAgKysrKysrKysrKysrKysrKysrKy0K
-PiAgMSBmaWxlIGNoYW5nZWQsIDE5IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPgo+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIGIvZHJpdmVycy9n
-cHUvZHJtL21lZGlhdGVrL210a19kc2kuYwo+IGluZGV4IDgwZGIwMmEyNWNiMC4uMjBjYjUzZjA1
-ZDQyIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiAr
-KysgYi9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gQEAgLTc4LDYgKzc4LDcg
-QEAKPiAgI2RlZmluZSBEU0lfVkJQX05MICAgICAgICAgICAgIDB4MjQKPiAgI2RlZmluZSBEU0lf
-VkZQX05MICAgICAgICAgICAgIDB4MjgKPiAgI2RlZmluZSBEU0lfVkFDVF9OTCAgICAgICAgICAg
-IDB4MkMKPiArI2RlZmluZSBEU0lfU0laRV9DT04gICAgICAgICAgIDB4MzgKPiAgI2RlZmluZSBE
-U0lfSFNBX1dDICAgICAgICAgICAgIDB4NTAKPiAgI2RlZmluZSBEU0lfSEJQX1dDICAgICAgICAg
-ICAgIDB4NTQKPiAgI2RlZmluZSBEU0lfSEZQX1dDICAgICAgICAgICAgIDB4NTgKPiBAQCAtMTMx
-LDcgKzEzMiwxMCBAQAo+ICAjZGVmaW5lIFZNX0NNRF9FTiAgICAgICAgICAgICAgICAgICAgICBC
-SVQoMCkKPiAgI2RlZmluZSBUU19WRlBfRU4gICAgICAgICAgICAgICAgICAgICAgQklUKDUpCj4K
-PiAtI2RlZmluZSBEU0lfQ01EUTAgICAgICAgICAgICAgIDB4MTgwCgpBcyBJIHNhaWQgZWFybGll
-ciwgbW92ZSB0aGlzIHRvIDIvMy4KCj4gKyNkZWZpbmUgRFNJX1NIQURPV19ERUJVRyAgICAgICAw
-eDE5MFUKPiArI2RlZmluZSBGT1JDRV9DT01NSVQgICAgICAgICAgIEJJVCgwKQo+ICsjZGVmaW5l
-IEJZUEFTU19TSEFET1cgICAgICAgICAgQklUKDEpCj4gKwo+ICAjZGVmaW5lIENPTkZJRyAgICAg
-ICAgICAgICAgICAgICAgICAgICAoMHhmZiA8PCAwKQo+ICAjZGVmaW5lIFNIT1JUX1BBQ0tFVCAg
-ICAgICAgICAgICAgICAgICAwCj4gICNkZWZpbmUgTE9OR19QQUNLRVQgICAgICAgICAgICAgICAg
-ICAgIDIKPiBAQCAtMTU4LDYgKzE2Miw3IEBAIHN0cnVjdCBwaHk7Cj4KPiAgc3RydWN0IG10a19k
-c2lfZHJpdmVyX2RhdGEgewo+ICAgICAgICAgY29uc3QgdTMyIHJlZ19jbWRxX29mZjsKPiArICAg
-ICAgIGJvb2wgaGFzX3NpemVfY3RsOwo+ICB9Owo+Cj4gIHN0cnVjdCBtdGtfZHNpIHsKPiBAQCAt
-NDI2LDYgKzQzMSw5IEBAIHN0YXRpYyB2b2lkIG10a19kc2lfY29uZmlnX3Zkb190aW1pbmcoc3Ry
-dWN0IG10a19kc2kgKmRzaSkKPiAgICAgICAgIHdyaXRlbCh2bS0+dmZyb250X3BvcmNoLCBkc2kt
-PnJlZ3MgKyBEU0lfVkZQX05MKTsKPiAgICAgICAgIHdyaXRlbCh2bS0+dmFjdGl2ZSwgZHNpLT5y
-ZWdzICsgRFNJX1ZBQ1RfTkwpOwo+Cj4gKyAgICAgICBpZiAoZHNpLT5kcml2ZXJfZGF0YS0+aGFz
-X3NpemVfY3RsKQo+ICsgICAgICAgICAgICAgICB3cml0ZWwodm0tPnZhY3RpdmUgPDwgMTYgfCB2
-bS0+aGFjdGl2ZSwgZHNpLT5yZWdzICsgRFNJX1NJWkVfQ09OKTsKPiArCj4gICAgICAgICBob3Jp
-em9udGFsX3N5bmNfYWN0aXZlX2J5dGUgPSAodm0tPmhzeW5jX2xlbiAqIGRzaV90bXBfYnVmX2Jw
-cCAtIDEwKTsKPgo+ICAgICAgICAgaWYgKGRzaS0+bW9kZV9mbGFncyAmIE1JUElfRFNJX01PREVf
-VklERU9fU1lOQ19QVUxTRSkKPiBAQCAtNTk1LDYgKzYwMyw5IEBAIHN0YXRpYyBpbnQgbXRrX2Rz
-aV9wb3dlcm9uKHN0cnVjdCBtdGtfZHNpICpkc2kpCj4gICAgICAgICB9Cj4KPiAgICAgICAgIG10
-a19kc2lfZW5hYmxlKGRzaSk7Cj4gKwo+ICsgICAgICAgLyogRFNJIG5vIG5lZWQgdGhpcyBkb3Vi
-bGUgYnVmZmVyLCBkaXNhYmxlIGl0IHdoZW4gd3JpdGluZyByZWdpc3RlciAqLwoKIkRTSSBkb2Vz
-IG5vdCBuZWVkIGRvdWJsZSBidWZmZXJpbmcsIGRpc2FibGUgaXQgd2hlbiB3cml0aW5nIHJlZ2lz
-dGVyIgoKPiArICAgICAgIHdyaXRlbChGT1JDRV9DT01NSVQgfCBCWVBBU1NfU0hBRE9XLCBkc2kt
-PnJlZ3MgKyBEU0lfU0hBRE9XX0RFQlVHKTsKClNvIHlvdSBkbyB0aGlzIG9uIGFsbCBNVCogdmFy
-aWFudHMsIGlzIHRoYXQgb2s/Cgo+ICAgICAgICAgbXRrX2RzaV9yZXNldF9lbmdpbmUoZHNpKTsK
-PiAgICAgICAgIG10a19kc2lfcGh5X3RpbWNvbmZpZyhkc2kpOwo+Cj4gQEAgLTEwOTAsMTEgKzEx
-MDEsMTggQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBtdGtfZHNpX2RyaXZlcl9kYXRhIG10MjcwMV9k
-c2lfZHJpdmVyX2RhdGEgPSB7Cj4gICAgICAgICAucmVnX2NtZHFfb2ZmID0gMHgxODAsCj4gIH07
-Cj4KPiArc3RhdGljIGNvbnN0IHN0cnVjdCBtdGtfZHNpX2RyaXZlcl9kYXRhIG10ODE4M19kc2lf
-ZHJpdmVyX2RhdGEgPSB7Cj4gKyAgICAgICAucmVnX2NtZHFfb2ZmID0gMHgyMDAsCj4gKyAgICAg
-ICAuaGFzX3NpemVfY3RsID0gdHJ1ZSwKPiArfTsKPiArCj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3Qg
-b2ZfZGV2aWNlX2lkIG10a19kc2lfb2ZfbWF0Y2hbXSA9IHsKPiAgICAgICAgIHsgLmNvbXBhdGli
-bGUgPSAibWVkaWF0ZWssbXQyNzAxLWRzaSIsCj4gICAgICAgICAgIC5kYXRhID0gJm10MjcwMV9k
-c2lfZHJpdmVyX2RhdGEgfSwKPiAgICAgICAgIHsgLmNvbXBhdGlibGUgPSAibWVkaWF0ZWssbXQ4
-MTczLWRzaSIsCj4gICAgICAgICAgIC5kYXRhID0gJm10ODE3M19kc2lfZHJpdmVyX2RhdGEgfSwK
-PiArICAgICAgIHsgLmNvbXBhdGlibGUgPSAibWVkaWF0ZWssbXQ4MTgzLWRzaSIsCj4gKyAgICAg
-ICAgIC5kYXRhID0gJm10ODE4M19kc2lfZHJpdmVyX2RhdGEgfSwKPiAgICAgICAgIHsgfSwKPiAg
-fTsKPgo+IC0tCj4gMi4yMC4xCj4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
-ZHJpLWRldmVs
+Just some comments on the error path, I'm not sure about the change itself.
+
+On Thu, Feb 14, 2019 at 12:42 PM Jitao Shi <jitao.shi@mediatek.com> wrote:
+>
+> DSI panel driver need attach function which is inculde in
+> mipi_dsi_host_ops.
+>
+> If mipi_dsi_host_register is not in probe, dsi panel will
+> probe fail or more delay.
+>
+> So move the mipi_dsi_host_register to probe from bind.
+>
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dsi.c | 49 ++++++++++++++++++------------
+>  1 file changed, 30 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> index 27b507eb4a99..93fa255b4aad 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> @@ -1045,12 +1045,6 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+>                 return ret;
+>         }
+>
+> -       ret = mipi_dsi_host_register(&dsi->host);
+> -       if (ret < 0) {
+> -               dev_err(dev, "failed to register DSI host: %d\n", ret);
+> -               goto err_ddp_comp_unregister;
+> -       }
+> -
+>         ret = mtk_dsi_create_conn_enc(drm, dsi);
+>         if (ret) {
+>                 DRM_ERROR("Encoder create failed with %d\n", ret);
+> @@ -1060,8 +1054,6 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+>         return 0;
+>
+>  err_unregister:
+> -       mipi_dsi_host_unregister(&dsi->host);
+> -err_ddp_comp_unregister:
+>         mtk_ddp_comp_unregister(drm, &dsi->ddp_comp);
+>         return ret;
+>  }
+> @@ -1097,31 +1089,37 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+>
+>         dsi->host.ops = &mtk_dsi_ops;
+>         dsi->host.dev = dev;
+> +       dsi->dev = dev;
+> +       ret = mipi_dsi_host_register(&dsi->host);
+> +       if (ret < 0) {
+> +               dev_err(dev, "failed to register DSI host: %d\n", ret);
+> +               return -EPROBE_DEFER;
+
+return ret
+
+> +       }
+>
+>         ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
+>                                           &dsi->panel, &dsi->bridge);
+>         if (ret)
+> -               return ret;
+> +               goto err_unregister_host;
+>
+>         dsi->engine_clk = devm_clk_get(dev, "engine");
+>         if (IS_ERR(dsi->engine_clk)) {
+>                 ret = PTR_ERR(dsi->engine_clk);
+>                 dev_err(dev, "Failed to get engine clock: %d\n", ret);
+> -               return ret;
+> +               goto err_unregister_host;
+>         }
+>
+>         dsi->digital_clk = devm_clk_get(dev, "digital");
+>         if (IS_ERR(dsi->digital_clk)) {
+>                 ret = PTR_ERR(dsi->digital_clk);
+>                 dev_err(dev, "Failed to get digital clock: %d\n", ret);
+> -               return ret;
+> +               goto err_unregister_host;
+>         }
+>
+>         dsi->hs_clk = devm_clk_get(dev, "hs");
+>         if (IS_ERR(dsi->hs_clk)) {
+>                 ret = PTR_ERR(dsi->hs_clk);
+>                 dev_err(dev, "Failed to get hs clock: %d\n", ret);
+> -               return ret;
+> +               goto err_unregister_host;
+>         }
+>
+>         regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> @@ -1129,33 +1127,35 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+>         if (IS_ERR(dsi->regs)) {
+>                 ret = PTR_ERR(dsi->regs);
+>                 dev_err(dev, "Failed to ioremap memory: %d\n", ret);
+> -               return ret;
+> +               goto err_unregister_host;
+>         }
+>
+>         dsi->phy = devm_phy_get(dev, "dphy");
+>         if (IS_ERR(dsi->phy)) {
+>                 ret = PTR_ERR(dsi->phy);
+>                 dev_err(dev, "Failed to get MIPI-DPHY: %d\n", ret);
+> -               return ret;
+> +               goto err_unregister_host;
+>         }
+>
+>         comp_id = mtk_ddp_comp_get_id(dev->of_node, MTK_DSI);
+>         if (comp_id < 0) {
+>                 dev_err(dev, "Failed to identify by alias: %d\n", comp_id);
+> -               return comp_id;
+> +               ret = comp_id;
+> +               goto err_unregister_host;
+>         }
+>
+>         ret = mtk_ddp_comp_init(dev, dev->of_node, &dsi->ddp_comp, comp_id,
+>                                 &mtk_dsi_funcs);
+>         if (ret) {
+>                 dev_err(dev, "Failed to initialize component: %d\n", ret);
+> -               return ret;
+> +               goto err_unregister_host;
+>         }
+>
+>         irq_num = platform_get_irq(pdev, 0);
+>         if (irq_num < 0) {
+>                 dev_err(&pdev->dev, "failed to request dsi irq resource\n");
+> -               return -EPROBE_DEFER;
+> +               ret = -EPROBE_DEFER;
+
+I think you need to do ret = irq_num here, too (and yes, it was
+probably wrong before?)
+
+> +               goto err_unregister_host;
+>         }
+>
+>         irq_set_status_flags(irq_num, IRQ_TYPE_LEVEL_LOW);
+> @@ -1163,14 +1163,25 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+>                                IRQF_TRIGGER_LOW, dev_name(&pdev->dev), dsi);
+>         if (ret) {
+>                 dev_err(&pdev->dev, "failed to request mediatek dsi irq\n");
+> -               return -EPROBE_DEFER;
+> +               ret = -EPROBE_DEFER;
+
+Ditto, I'd not reassign ret.
+
+> +               goto err_unregister_host;
+>         }
+>
+>         init_waitqueue_head(&dsi->irq_wait_queue);
+>
+>         platform_set_drvdata(pdev, dsi);
+>
+> -       return component_add(&pdev->dev, &mtk_dsi_component_ops);
+> +       ret = component_add(&pdev->dev, &mtk_dsi_component_ops);
+> +       if (ret) {
+> +               ret = -EPROBE_DEFER;
+
+Ditto (this one _was_ right before).
+
+> +               goto err_unregister_host;
+> +       }
+> +
+> +       return 0;
+> +
+> +err_unregister_host:
+> +       mipi_dsi_host_unregister(&dsi->host);
+> +       return ret;
+>  }
+>
+>  static int mtk_dsi_remove(struct platform_device *pdev)
+> --
+> 2.20.1
+>
