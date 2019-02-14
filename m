@@ -1,100 +1,121 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH 1/3] drm/mediatek: move mipi_dsi_host_register to probe
-Date: Thu, 14 Feb 2019 12:42:41 +0800
-Message-ID: <20190214044243.129920-1-jitao.shi@mediatek.com>
+Subject: [PATCH 2/3] drm/mediatek: CMDQ reg address of mt8173 is different with mt2701
+Date: Thu, 14 Feb 2019 12:42:42 +0800
+Message-ID: <20190214044243.129920-2-jitao.shi@mediatek.com>
+References: <20190214044243.129920-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190214044243.129920-1-jitao.shi@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, drinkcat@chromium.org
-Cc: stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Sean Paul <seanpaul@chromium.org>
+Cc: Jitao Shi <jitao.shi@mediatek.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediate
 List-Id: linux-pwm@vger.kernel.org
 
-RFNJIHBhbmVsIGRyaXZlciBuZWVkIGF0dGFjaCBmdW5jdGlvbiB3aGljaCBpcyBpbmN1bGRlIGlu
-Cm1pcGlfZHNpX2hvc3Rfb3BzLgoKSWYgbWlwaV9kc2lfaG9zdF9yZWdpc3RlciBpcyBub3QgaW4g
-cHJvYmUsIGRzaSBwYW5lbCB3aWxsCnByb2JlIGZhaWwgb3IgbW9yZSBkZWxheS4KClNvIG1vdmUg
-dGhlIG1pcGlfZHNpX2hvc3RfcmVnaXN0ZXIgdG8gcHJvYmUgZnJvbSBiaW5kLgoKU2lnbmVkLW9m
-Zi1ieTogSml0YW8gU2hpIDxqaXRhby5zaGlAbWVkaWF0ZWsuY29tPgotLS0KIGRyaXZlcnMvZ3B1
-L2RybS9tZWRpYXRlay9tdGtfZHNpLmMgfCA0OSArKysrKysrKysrKysrKysrKystLS0tLS0tLS0t
-LS0KIDEgZmlsZSBjaGFuZ2VkLCAzMCBpbnNlcnRpb25zKCspLCAxOSBkZWxldGlvbnMoLSkKCmRp
-ZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIGIvZHJpdmVycy9n
-cHUvZHJtL21lZGlhdGVrL210a19kc2kuYwppbmRleCAyN2I1MDdlYjRhOTkuLjkzZmEyNTViNGFh
-ZCAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYworKysgYi9k
-cml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCkBAIC0xMDQ1LDEyICsxMDQ1LDYgQEAg
-c3RhdGljIGludCBtdGtfZHNpX2JpbmQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNl
-ICptYXN0ZXIsIHZvaWQgKmRhdGEpCiAJCXJldHVybiByZXQ7CiAJfQogCi0JcmV0ID0gbWlwaV9k
-c2lfaG9zdF9yZWdpc3RlcigmZHNpLT5ob3N0KTsKLQlpZiAocmV0IDwgMCkgewotCQlkZXZfZXJy
-KGRldiwgImZhaWxlZCB0byByZWdpc3RlciBEU0kgaG9zdDogJWRcbiIsIHJldCk7Ci0JCWdvdG8g
-ZXJyX2RkcF9jb21wX3VucmVnaXN0ZXI7Ci0JfQotCiAJcmV0ID0gbXRrX2RzaV9jcmVhdGVfY29u
-bl9lbmMoZHJtLCBkc2kpOwogCWlmIChyZXQpIHsKIAkJRFJNX0VSUk9SKCJFbmNvZGVyIGNyZWF0
-ZSBmYWlsZWQgd2l0aCAlZFxuIiwgcmV0KTsKQEAgLTEwNjAsOCArMTA1NCw2IEBAIHN0YXRpYyBp
-bnQgbXRrX2RzaV9iaW5kKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZSAqbWFzdGVy
-LCB2b2lkICpkYXRhKQogCXJldHVybiAwOwogCiBlcnJfdW5yZWdpc3RlcjoKLQltaXBpX2RzaV9o
-b3N0X3VucmVnaXN0ZXIoJmRzaS0+aG9zdCk7Ci1lcnJfZGRwX2NvbXBfdW5yZWdpc3RlcjoKIAlt
-dGtfZGRwX2NvbXBfdW5yZWdpc3Rlcihkcm0sICZkc2ktPmRkcF9jb21wKTsKIAlyZXR1cm4gcmV0
-OwogfQpAQCAtMTA5NywzMSArMTA4OSwzNyBAQCBzdGF0aWMgaW50IG10a19kc2lfcHJvYmUoc3Ry
-dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKIAogCWRzaS0+aG9zdC5vcHMgPSAmbXRrX2RzaV9v
-cHM7CiAJZHNpLT5ob3N0LmRldiA9IGRldjsKKwlkc2ktPmRldiA9IGRldjsKKwlyZXQgPSBtaXBp
-X2RzaV9ob3N0X3JlZ2lzdGVyKCZkc2ktPmhvc3QpOworCWlmIChyZXQgPCAwKSB7CisJCWRldl9l
-cnIoZGV2LCAiZmFpbGVkIHRvIHJlZ2lzdGVyIERTSSBob3N0OiAlZFxuIiwgcmV0KTsKKwkJcmV0
-dXJuIC1FUFJPQkVfREVGRVI7CisJfQogCiAJcmV0ID0gZHJtX29mX2ZpbmRfcGFuZWxfb3JfYnJp
-ZGdlKGRldi0+b2Zfbm9kZSwgMCwgMCwKIAkJCQkJICAmZHNpLT5wYW5lbCwgJmRzaS0+YnJpZGdl
-KTsKIAlpZiAocmV0KQotCQlyZXR1cm4gcmV0OworCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7
-CiAKIAlkc2ktPmVuZ2luZV9jbGsgPSBkZXZtX2Nsa19nZXQoZGV2LCAiZW5naW5lIik7CiAJaWYg
-KElTX0VSUihkc2ktPmVuZ2luZV9jbGspKSB7CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5lbmdpbmVf
-Y2xrKTsKIAkJZGV2X2VycihkZXYsICJGYWlsZWQgdG8gZ2V0IGVuZ2luZSBjbG9jazogJWRcbiIs
-IHJldCk7Ci0JCXJldHVybiByZXQ7CisJCWdvdG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKIAl9CiAK
-IAlkc2ktPmRpZ2l0YWxfY2xrID0gZGV2bV9jbGtfZ2V0KGRldiwgImRpZ2l0YWwiKTsKIAlpZiAo
-SVNfRVJSKGRzaS0+ZGlnaXRhbF9jbGspKSB7CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5kaWdpdGFs
-X2Nsayk7CiAJCWRldl9lcnIoZGV2LCAiRmFpbGVkIHRvIGdldCBkaWdpdGFsIGNsb2NrOiAlZFxu
-IiwgcmV0KTsKLQkJcmV0dXJuIHJldDsKKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0OwogCX0K
-IAogCWRzaS0+aHNfY2xrID0gZGV2bV9jbGtfZ2V0KGRldiwgImhzIik7CiAJaWYgKElTX0VSUihk
-c2ktPmhzX2NsaykpIHsKIAkJcmV0ID0gUFRSX0VSUihkc2ktPmhzX2Nsayk7CiAJCWRldl9lcnIo
-ZGV2LCAiRmFpbGVkIHRvIGdldCBocyBjbG9jazogJWRcbiIsIHJldCk7Ci0JCXJldHVybiByZXQ7
-CisJCWdvdG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKIAl9CiAKIAlyZWdzID0gcGxhdGZvcm1fZ2V0
-X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCAwKTsKQEAgLTExMjksMzMgKzExMjcsMzUg
-QEAgc3RhdGljIGludCBtdGtfZHNpX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
-CiAJaWYgKElTX0VSUihkc2ktPnJlZ3MpKSB7CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5yZWdzKTsK
-IAkJZGV2X2VycihkZXYsICJGYWlsZWQgdG8gaW9yZW1hcCBtZW1vcnk6ICVkXG4iLCByZXQpOwot
-CQlyZXR1cm4gcmV0OworCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7CiAJfQogCiAJZHNpLT5w
-aHkgPSBkZXZtX3BoeV9nZXQoZGV2LCAiZHBoeSIpOwogCWlmIChJU19FUlIoZHNpLT5waHkpKSB7
-CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5waHkpOwogCQlkZXZfZXJyKGRldiwgIkZhaWxlZCB0byBn
-ZXQgTUlQSS1EUEhZOiAlZFxuIiwgcmV0KTsKLQkJcmV0dXJuIHJldDsKKwkJZ290byBlcnJfdW5y
-ZWdpc3Rlcl9ob3N0OwogCX0KIAogCWNvbXBfaWQgPSBtdGtfZGRwX2NvbXBfZ2V0X2lkKGRldi0+
-b2Zfbm9kZSwgTVRLX0RTSSk7CiAJaWYgKGNvbXBfaWQgPCAwKSB7CiAJCWRldl9lcnIoZGV2LCAi
-RmFpbGVkIHRvIGlkZW50aWZ5IGJ5IGFsaWFzOiAlZFxuIiwgY29tcF9pZCk7Ci0JCXJldHVybiBj
-b21wX2lkOworCQlyZXQgPSBjb21wX2lkOworCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7CiAJ
-fQogCiAJcmV0ID0gbXRrX2RkcF9jb21wX2luaXQoZGV2LCBkZXYtPm9mX25vZGUsICZkc2ktPmRk
-cF9jb21wLCBjb21wX2lkLAogCQkJCSZtdGtfZHNpX2Z1bmNzKTsKIAlpZiAocmV0KSB7CiAJCWRl
-dl9lcnIoZGV2LCAiRmFpbGVkIHRvIGluaXRpYWxpemUgY29tcG9uZW50OiAlZFxuIiwgcmV0KTsK
-LQkJcmV0dXJuIHJldDsKKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0OwogCX0KIAogCWlycV9u
-dW0gPSBwbGF0Zm9ybV9nZXRfaXJxKHBkZXYsIDApOwogCWlmIChpcnFfbnVtIDwgMCkgewogCQlk
-ZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gcmVxdWVzdCBkc2kgaXJxIHJlc291cmNlXG4i
-KTsKLQkJcmV0dXJuIC1FUFJPQkVfREVGRVI7CisJCXJldCA9IC1FUFJPQkVfREVGRVI7CisJCWdv
-dG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKIAl9CiAKIAlpcnFfc2V0X3N0YXR1c19mbGFncyhpcnFf
-bnVtLCBJUlFfVFlQRV9MRVZFTF9MT1cpOwpAQCAtMTE2MywxNCArMTE2MywyNSBAQCBzdGF0aWMg
-aW50IG10a19kc2lfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKIAkJCSAgICAg
-ICBJUlFGX1RSSUdHRVJfTE9XLCBkZXZfbmFtZSgmcGRldi0+ZGV2KSwgZHNpKTsKIAlpZiAocmV0
-KSB7CiAJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IG1lZGlhdGVrIGRz
-aSBpcnFcbiIpOwotCQlyZXR1cm4gLUVQUk9CRV9ERUZFUjsKKwkJcmV0ID0gLUVQUk9CRV9ERUZF
-UjsKKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0OwogCX0KIAogCWluaXRfd2FpdHF1ZXVlX2hl
-YWQoJmRzaS0+aXJxX3dhaXRfcXVldWUpOwogCiAJcGxhdGZvcm1fc2V0X2RydmRhdGEocGRldiwg
-ZHNpKTsKIAotCXJldHVybiBjb21wb25lbnRfYWRkKCZwZGV2LT5kZXYsICZtdGtfZHNpX2NvbXBv
-bmVudF9vcHMpOworCXJldCA9IGNvbXBvbmVudF9hZGQoJnBkZXYtPmRldiwgJm10a19kc2lfY29t
-cG9uZW50X29wcyk7CisJaWYgKHJldCkgeworCQlyZXQgPSAtRVBST0JFX0RFRkVSOworCQlnb3Rv
-IGVycl91bnJlZ2lzdGVyX2hvc3Q7CisJfQorCisJcmV0dXJuIDA7CisKK2Vycl91bnJlZ2lzdGVy
-X2hvc3Q6CisJbWlwaV9kc2lfaG9zdF91bnJlZ2lzdGVyKCZkc2ktPmhvc3QpOworCXJldHVybiBy
-ZXQ7CiB9CiAKIHN0YXRpYyBpbnQgbXRrX2RzaV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZSAqcGRldikKLS0gCjIuMjAuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
-ZHJpLWRldmVs
+Config the different CMDQ reg address in driver data.
+
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 39 ++++++++++++++++++++++++------
+ 1 file changed, 31 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 93fa255b4aad..80db02a25cb0 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -156,6 +156,10 @@
+ 
+ struct phy;
+ 
++struct mtk_dsi_driver_data {
++	const u32 reg_cmdq_off;
++};
++
+ struct mtk_dsi {
+ 	struct mtk_ddp_comp ddp_comp;
+ 	struct device *dev;
+@@ -182,6 +186,7 @@ struct mtk_dsi {
+ 	bool enabled;
+ 	u32 irq_data;
+ 	wait_queue_head_t irq_wait_queue;
++	struct mtk_dsi_driver_data *driver_data;
+ };
+ 
+ static inline struct mtk_dsi *encoder_to_dsi(struct drm_encoder *e)
+@@ -934,6 +939,7 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
+ 	const char *tx_buf = msg->tx_buf;
+ 	u8 config, cmdq_size, cmdq_off, type = msg->type;
+ 	u32 reg_val, cmdq_mask, i;
++	u32 reg_cmdq_off = dsi->driver_data->reg_cmdq_off;
+ 
+ 	if (MTK_DSI_HOST_IS_READ(type))
+ 		config = BTA;
+@@ -953,9 +959,11 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
+ 	}
+ 
+ 	for (i = 0; i < msg->tx_len; i++)
+-		writeb(tx_buf[i], dsi->regs + DSI_CMDQ0 + cmdq_off + i);
++		mtk_dsi_mask(dsi, (reg_cmdq_off + cmdq_off + i) & (~0x3U),
++			     (0xffUL << (((i + cmdq_off) & 3U) * 8U)),
++			     tx_buf[i] << (((i + cmdq_off) & 3U) * 8U));
+ 
+-	mtk_dsi_mask(dsi, DSI_CMDQ0, cmdq_mask, reg_val);
++	mtk_dsi_mask(dsi, reg_cmdq_off, cmdq_mask, reg_val);
+ 	mtk_dsi_mask(dsi, DSI_CMDQ_SIZE, CMDQ_SIZE, cmdq_size);
+ }
+ 
+@@ -1074,10 +1082,27 @@ static const struct component_ops mtk_dsi_component_ops = {
+ 	.unbind = mtk_dsi_unbind,
+ };
+ 
++static const struct mtk_dsi_driver_data mt8173_dsi_driver_data = {
++	.reg_cmdq_off = 0x200,
++};
++
++static const struct mtk_dsi_driver_data mt2701_dsi_driver_data = {
++	.reg_cmdq_off = 0x180,
++};
++
++static const struct of_device_id mtk_dsi_of_match[] = {
++	{ .compatible = "mediatek,mt2701-dsi",
++	  .data = &mt2701_dsi_driver_data },
++	{ .compatible = "mediatek,mt8173-dsi",
++	  .data = &mt8173_dsi_driver_data },
++	{ },
++};
++
+ static int mtk_dsi_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_dsi *dsi;
+ 	struct device *dev = &pdev->dev;
++	const struct of_device_id *of_id;
+ 	struct resource *regs;
+ 	int irq_num;
+ 	int comp_id;
+@@ -1101,6 +1126,10 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_unregister_host;
+ 
++	of_id = of_match_device(mtk_dsi_of_match, &pdev->dev);
++	dsi->driver_data = (struct mtk_dsi_driver_data *)
++			    of_id->data;
++
+ 	dsi->engine_clk = devm_clk_get(dev, "engine");
+ 	if (IS_ERR(dsi->engine_clk)) {
+ 		ret = PTR_ERR(dsi->engine_clk);
+@@ -1194,12 +1223,6 @@ static int mtk_dsi_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static const struct of_device_id mtk_dsi_of_match[] = {
+-	{ .compatible = "mediatek,mt2701-dsi" },
+-	{ .compatible = "mediatek,mt8173-dsi" },
+-	{ },
+-};
+-
+ struct platform_driver mtk_dsi_driver = {
+ 	.probe = mtk_dsi_probe,
+ 	.remove = mtk_dsi_remove,
+-- 
+2.20.1
