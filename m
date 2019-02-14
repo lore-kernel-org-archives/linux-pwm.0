@@ -1,72 +1,107 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v5 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Thu, 14 Feb 2019 16:59:03 +0100
-Message-ID: <20190214155903.7h3b7v3nbhj57uy2@pengutronix.de>
-References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
- <1548762199-7065-3-git-send-email-yash.shah@sifive.com>
- <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
- <20190213123703.GE647@ulmo>
+From: CK Hu <ck.hu@mediatek.com>
+Subject: Re: [PATCH] drm/mediatek: add mt8183 dpi support
+Date: Fri, 15 Feb 2019 00:13:29 +0800
+Message-ID: <1550160809.6862.13.camel@mtksdaap41>
+References: <20190211045059.11821-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20190213123703.GE647@ulmo>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, palmer@sifive.com, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190211045059.11821-1-jitao.shi@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jitao Shi <jitao.shi@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Feb 13, 2019 at 01:37:03PM +0100, Thierry Reding wrote:
-> On Thu, Feb 07, 2019 at 11:16:57AM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
-> [...]
-> > > diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-> [...]
-> > > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > +
-> > > +	writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 + dev->hwpwm * SIZE_PWM=
-CMP);
-> > > +
-> > > +	val &=3D ~(1 << PWM_SIFIVE_PWMCFG_DEGLITCH);
-> > > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > +
-> > > +	pwm_sifive_get_state(chip, dev, state);
-> > =
+Hi, Jitao:
 
-> > Thierry: This changes the pwm_state. Is this how this should be done?
-> =
+On Mon, 2019-02-11 at 12:50 +0800, Jitao Shi wrote:
+> MT8183 sample on rising and falling edge. It can reduce half data io.
+> 
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 62a9d47df948..610c23334047 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -117,6 +117,7 @@ struct mtk_dpi_conf {
+>  	unsigned int (*cal_factor)(int clock);
+>  	u32 reg_h_fre_con;
+>  	bool edge_sel_en;
+> +	bool dual_edge;
+>  };
+>  
+>  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
+> @@ -353,6 +354,13 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
+>  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0, EDGE_SEL_EN);
+>  }
+>  
+> +static void mtk_dpi_enable_dual_edge(struct mtk_dpi *dpi)
+> +{
+> +	mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE,
+> +		     DDR_EN | DDR_4PHASE);
+> +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, EDGE_SEL, EDGE_SEL);
+> +}
 
-> Yes, I think that's fine. The PWM state should always reflect the
-> current hardware state. If the configuration that we program does not
-> reflect the state that was requested, that should be reflected in the
-> PWM state.
+All these register exist in MT8173, if you do the same setting in
+MT8173, could it also sample on rising edge and falling edge?
 
-I'm not sure you blessed what is really done here. If I do:
+Regards,
+CK
 
-	state.duty_cycle =3D state.period;
-	pwm_apply_state(pwm, &state);
-
-the call in question doesn't only result in pwm->state.duty_cycle <
-pwm->state.period, but it also corrects my local state variable (i.e. I
-have state.duty_cycle < state.period afterwards).
-
-Is this what you thought to be fine?
-
-Also note that v6 dropped that call because of my doubts.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> +
+>  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+>  					enum mtk_dpi_out_color_format format)
+>  {
+> @@ -509,6 +517,8 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+>  	mtk_dpi_config_color_format(dpi, dpi->color_format);
+>  	mtk_dpi_config_2n_h_fre(dpi);
+>  	mtk_dpi_config_disable_edge(dpi);
+> +	if (dpi->conf->dual_edge)
+> +		mtk_dpi_enable_dual_edge(dpi);
+>  	mtk_dpi_sw_reset(dpi, false);
+>  
+>  	return 0;
+> @@ -671,6 +681,16 @@ static unsigned int mt2701_calculate_factor(int clock)
+>  		return 2;
+>  }
+>  
+> +static unsigned int mt8183_calculate_factor(int clock)
+> +{
+> +	if (clock <= 27000)
+> +		return 8;
+> +	else if (clock <= 167000)
+> +		return 4;
+> +	else
+> +		return 2;
+> +}
+> +
+>  static const struct mtk_dpi_conf mt8173_conf = {
+>  	.cal_factor = mt8173_calculate_factor,
+>  	.reg_h_fre_con = 0xe0,
+> @@ -682,6 +702,12 @@ static const struct mtk_dpi_conf mt2701_conf = {
+>  	.edge_sel_en = true,
+>  };
+>  
+> +static const struct mtk_dpi_conf mt8183_conf = {
+> +	.cal_factor = mt8183_calculate_factor,
+> +	.reg_h_fre_con = 0xe0,
+> +	.dual_edge = true,
+> +};
+> +
+>  static int mtk_dpi_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -777,6 +803,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
+>  	{ .compatible = "mediatek,mt8173-dpi",
+>  	  .data = &mt8173_conf,
+>  	},
+> +	{ .compatible = "mediatek,mt8183-dpi",
+> +	  .data = &mt8183_conf,
+> +	},
+>  	{ },
+>  };
+>  
