@@ -1,21 +1,19 @@
-From: CK Hu <ck.hu@mediatek.com>
+From: Sean Paul <sean@poorly.run>
 Subject: Re: [PATCH] drm/mediatek: add mt8183 dpi support
-Date: Fri, 15 Feb 2019 00:13:29 +0800
-Message-ID: <1550160809.6862.13.camel@mtksdaap41>
+Date: Thu, 14 Feb 2019 15:41:49 -0500
+Message-ID: <20190214204149.GO114153@art_vandelay>
 References: <20190211045059.11821-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <20190211045059.11821-1-jitao.shi@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.or
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Jitao:
-
-On Mon, 2019-02-11 at 12:50 +0800, Jitao Shi wrote:
+On Mon, Feb 11, 2019 at 12:50:59PM +0800, Jitao Shi wrote:
 > MT8183 sample on rising and falling edge. It can reduce half data io.
 > 
 > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
@@ -45,13 +43,6 @@ On Mon, 2019-02-11 at 12:50 +0800, Jitao Shi wrote:
 > +		     DDR_EN | DDR_4PHASE);
 > +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, EDGE_SEL, EDGE_SEL);
 > +}
-
-All these register exist in MT8173, if you do the same setting in
-MT8173, could it also sample on rising edge and falling edge?
-
-Regards,
-CK
-
 > +
 >  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
 >  					enum mtk_dpi_out_color_format format)
@@ -100,8 +91,21 @@ CK
 >  	  .data = &mt8173_conf,
 >  	},
 > +	{ .compatible = "mediatek,mt8183-dpi",
+
+Do you need to add this compatible value to the dt binding? If you can do as CK
+suggested, maybe you don't need this at all (and mt8183 can use the mt8173
+compatible string in the dt).
+
+Sean
+
 > +	  .data = &mt8183_conf,
 > +	},
 >  	{ },
 >  };
 >  
+> -- 
+> 2.12.5
+> 
+
+-- 
+Sean Paul, Software Engineer, Google / Chromium OS
