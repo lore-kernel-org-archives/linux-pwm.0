@@ -1,97 +1,90 @@
-From: <Claudiu.Beznea@microchip.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v3 3/3] pwm: core: add consumer device link
-Date: Fri, 15 Feb 2019 09:23:48 +0000
-Message-ID: <f6fecafc-3946-9680-c58b-a20aa46e8e71@microchip.com>
+Date: Fri, 15 Feb 2019 11:22:48 +0100
+Message-ID: <20190215102248.i2mggrw74lgs2owq@pengutronix.de>
 References: <1550055012-23348-1-git-send-email-fabrice.gasnier@st.com>
  <1550055012-23348-4-git-send-email-fabrice.gasnier@st.com>
+ <f6fecafc-3946-9680-c58b-a20aa46e8e71@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1550055012-23348-4-git-send-email-fabrice.gasnier@st.com>
-Content-Language: en-US
-Content-ID: <3486EE3314710E4B81615517F5452058@namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <f6fecafc-3946-9680-c58b-a20aa46e8e71@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: fabrice.gasnier@st.com, thierry.reding@gmail.com, robh+dt@kernel.org
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, mcoquelin.stm32@gmail.com, u.kleine-koenig@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
+To: Claudiu.Beznea@microchip.com
+Cc: fabrice.gasnier@st.com, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, mcoquelin.stm32@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDEzLjAyLjIwMTkgMTI6NTAsIEZhYnJpY2UgR2FzbmllciB3cm90ZToNCj4gQWRkIGEg
-ZGV2aWNlIGxpbmsgYmV0d2VlbiB0aGUgUFdNIGNvbnN1bWVyIGFuZCB0aGUgUFdNIHByb3ZpZGVy
-LiBUaGlzDQo+IGVuZm9yY2VzIHRoZSBQV00gdXNlciB0byBnZXQgc3VzcGVuZGVkIGJlZm9yZSB0
-aGUgUFdNIHByb3ZpZGVyLiBJdA0KPiBhbGxvd3MgcHJvcGVyIHN5bmNocm9uaXphdGlvbiBvZiBz
-dXNwZW5kL3Jlc3VtZSBzZXF1ZW5jZXM6IHRoZSBQV00gdXNlcg0KPiBpcyByZXNwb25zaWJsZSBm
-b3IgcHJvcGVybHkgc3RvcHBpbmcgUFdNLCBiZWZvcmUgdGhlIHByb3ZpZGVyIGdldHMNCj4gc3Vz
-cGVuZGVkOiBzZWUgWzFdLiBBZGQgdGhlIGRldmljZSBsaW5rIGluOg0KPiAtIG9mX3B3bV9nZXQo
-KQ0KPiAtIHB3bV9nZXQoKQ0KPiAtIGRldm1fIHZhcmlhbnRzDQo+IGFzIGl0IHJlcXVpcmVzIGEg
-cmVmZXJlbmNlIHRvIHRoZSBkZXZpY2UgZm9yIHRoZSBQV00gY29uc3VtZXIuDQo+IA0KPiBbMV0g
-aHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTkvMi81Lzc3MA0KPiANCj4gU3VnZ2VzdGVkLWJ5OiBU
-aGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPg0KPiBTaWduZWQtb2ZmLWJ5
-OiBGYWJyaWNlIEdhc25pZXIgPGZhYnJpY2UuZ2FzbmllckBzdC5jb20+DQo+IC0tLQ0KPiBDaGFu
-Z2VzIGluIHYzOg0KPiAtIGFkZCBzdHJ1Y3QgZGV2aWNlIHRvIG9mX2dldF9wd20oKSBhcmd1bWVu
-dHMgdG8gaGFuZGxlIGRldmljZSBsaW5rIGZyb20NCj4gICB0aGVyZS4NCj4gLS0tDQo+ICBkcml2
-ZXJzL3B3bS9jb3JlLmMgIHwgMTQgKysrKysrKysrKystLS0NCj4gIGluY2x1ZGUvbGludXgvcHdt
-LmggfCAgNiArKysrLS0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgMTUgaW5zZXJ0aW9ucygrKSwgNSBk
-ZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9jb3JlLmMgYi9kcml2
-ZXJzL3B3bS9jb3JlLmMNCj4gaW5kZXggMTU4MWY2YS4uOGNiNWQ0YmMgMTAwNjQ0DQo+IC0tLSBh
-L2RyaXZlcnMvcHdtL2NvcmUuYw0KPiArKysgYi9kcml2ZXJzL3B3bS9jb3JlLmMNCj4gQEAgLTYz
-OCw2ICs2MzgsNyBAQCBzdGF0aWMgc3RydWN0IHB3bV9jaGlwICpvZl9ub2RlX3RvX3B3bWNoaXAo
-c3RydWN0IGRldmljZV9ub2RlICpucCkNCj4gIA0KPiAgLyoqDQo+ICAgKiBvZl9wd21fZ2V0KCkg
-LSByZXF1ZXN0IGEgUFdNIHZpYSB0aGUgUFdNIGZyYW1ld29yaw0KPiArICogQGRldjogZGV2aWNl
-IGZvciBQV00gY29uc3VtZXINCj4gICAqIEBucDogZGV2aWNlIG5vZGUgdG8gZ2V0IHRoZSBQV00g
-ZnJvbQ0KPiAgICogQGNvbl9pZDogY29uc3VtZXIgbmFtZQ0KPiAgICoNCj4gQEAgLTY1NSw3ICs2
-NTYsOCBAQCBzdGF0aWMgc3RydWN0IHB3bV9jaGlwICpvZl9ub2RlX3RvX3B3bWNoaXAoc3RydWN0
-IGRldmljZV9ub2RlICpucCkNCj4gICAqIFJldHVybnM6IEEgcG9pbnRlciB0byB0aGUgcmVxdWVz
-dGVkIFBXTSBkZXZpY2Ugb3IgYW4gRVJSX1BUUigpLWVuY29kZWQNCj4gICAqIGVycm9yIGNvZGUg
-b24gZmFpbHVyZS4NCj4gICAqLw0KPiAtc3RydWN0IHB3bV9kZXZpY2UgKm9mX3B3bV9nZXQoc3Ry
-dWN0IGRldmljZV9ub2RlICpucCwgY29uc3QgY2hhciAqY29uX2lkKQ0KPiArc3RydWN0IHB3bV9k
-ZXZpY2UgKm9mX3B3bV9nZXQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX25vZGUg
-Km5wLA0KPiArCQkJICAgICAgY29uc3QgY2hhciAqY29uX2lkKQ0KPiAgew0KPiAgCXN0cnVjdCBw
-d21fZGV2aWNlICpwd20gPSBOVUxMOw0KPiAgCXN0cnVjdCBvZl9waGFuZGxlX2FyZ3MgYXJnczsN
-Cj4gQEAgLTY4OSw2ICs2OTEsOSBAQCBzdHJ1Y3QgcHdtX2RldmljZSAqb2ZfcHdtX2dldChzdHJ1
-Y3QgZGV2aWNlX25vZGUgKm5wLCBjb25zdCBjaGFyICpjb25faWQpDQo+ICAJaWYgKElTX0VSUihw
-d20pKQ0KPiAgCQlnb3RvIHB1dDsNCj4gIA0KPiArCWlmICghZGV2aWNlX2xpbmtfYWRkKGRldiwg
-cHdtLT5jaGlwLT5kZXYsIERMX0ZMQUdfQVVUT1JFTU9WRV9DT05TVU1FUikpDQo+ICsJCXByX2Rl
-YnVnKCIlcygpOiBkZXZpY2UgbGluayBub3QgYWRkZWRcbiIsIF9fZnVuY19fKTsNCj4gKw0KDQpK
-dXN0IGFza2luZy4uLiB3aWxsIHRoaXMgbWVjaGFuaXNtIGFsc28gYmUgd29ya2luZyBmb3IgUFdN
-cyByZXF1ZXN0ZWQgdmlhDQpzeXNmcz8gQXQgYSBmaXJzdCBsb29rIGl0IHNlZW1zIG5vdC4NCg0K
-VGhhbmsgeW91LA0KQ2xhdWRpdSBCZXpuZWENCg0KPiAgCS8qDQo+ICAJICogSWYgYSBjb25zdW1l
-ciBuYW1lIHdhcyBub3QgZ2l2ZW4sIHRyeSB0byBsb29rIGl0IHVwIGZyb20gdGhlDQo+ICAJICog
-InB3bS1uYW1lcyIgcHJvcGVydHkgaWYgaXQgZXhpc3RzLiBPdGhlcndpc2UgdXNlIHRoZSBuYW1l
-IG9mDQo+IEBAIC03NzEsNyArNzc2LDcgQEAgc3RydWN0IHB3bV9kZXZpY2UgKnB3bV9nZXQoc3Ry
-dWN0IGRldmljZSAqZGV2LCBjb25zdCBjaGFyICpjb25faWQpDQo+ICANCj4gIAkvKiBsb29rIHVw
-IHZpYSBEVCBmaXJzdCAqLw0KPiAgCWlmIChJU19FTkFCTEVEKENPTkZJR19PRikgJiYgZGV2ICYm
-IGRldi0+b2Zfbm9kZSkNCj4gLQkJcmV0dXJuIG9mX3B3bV9nZXQoZGV2LT5vZl9ub2RlLCBjb25f
-aWQpOw0KPiArCQlyZXR1cm4gb2ZfcHdtX2dldChkZXYsIGRldi0+b2Zfbm9kZSwgY29uX2lkKTsN
-Cj4gIA0KPiAgCS8qDQo+ICAJICogV2UgbG9vayB1cCB0aGUgcHJvdmlkZXIgaW4gdGhlIHN0YXRp
-YyB0YWJsZSB0eXBpY2FsbHkgcHJvdmlkZWQgYnkNCj4gQEAgLTg1MSw2ICs4NTYsOSBAQCBzdHJ1
-Y3QgcHdtX2RldmljZSAqcHdtX2dldChzdHJ1Y3QgZGV2aWNlICpkZXYsIGNvbnN0IGNoYXIgKmNv
-bl9pZCkNCj4gIAlwd20tPmFyZ3MucGVyaW9kID0gY2hvc2VuLT5wZXJpb2Q7DQo+ICAJcHdtLT5h
-cmdzLnBvbGFyaXR5ID0gY2hvc2VuLT5wb2xhcml0eTsNCj4gIA0KPiArCWlmICghZGV2aWNlX2xp
-bmtfYWRkKGRldiwgcHdtLT5jaGlwLT5kZXYsIERMX0ZMQUdfQVVUT1JFTU9WRV9DT05TVU1FUikp
-DQo+ICsJCXByX2RlYnVnKCIlcygpOiBkZXZpY2UgbGluayBub3QgYWRkZWRcbiIsIF9fZnVuY19f
-KTsNCj4gKw0KPiAgCXJldHVybiBwd207DQo+ICB9DQo+ICBFWFBPUlRfU1lNQk9MX0dQTChwd21f
-Z2V0KTsNCj4gQEAgLTkzOSw3ICs5NDcsNyBAQCBzdHJ1Y3QgcHdtX2RldmljZSAqZGV2bV9vZl9w
-d21fZ2V0KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9ub2RlICpucCwNCj4gIAlp
-ZiAoIXB0cikNCj4gIAkJcmV0dXJuIEVSUl9QVFIoLUVOT01FTSk7DQo+ICANCj4gLQlwd20gPSBv
-Zl9wd21fZ2V0KG5wLCBjb25faWQpOw0KPiArCXB3bSA9IG9mX3B3bV9nZXQoZGV2LCBucCwgY29u
-X2lkKTsNCj4gIAlpZiAoIUlTX0VSUihwd20pKSB7DQo+ICAJCSpwdHIgPSBwd207DQo+ICAJCWRl
-dnJlc19hZGQoZGV2LCBwdHIpOw0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9wd20uaCBi
-L2luY2x1ZGUvbGludXgvcHdtLmgNCj4gaW5kZXggZDUxOTliNS4uODk1ZTA3NCAxMDA2NDQNCj4g
-LS0tIGEvaW5jbHVkZS9saW51eC9wd20uaA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L3B3bS5oDQo+
-IEBAIC00MDYsNyArNDA2LDggQEAgc3RydWN0IHB3bV9kZXZpY2UgKm9mX3B3bV94bGF0ZV93aXRo
-X2ZsYWdzKHN0cnVjdCBwd21fY2hpcCAqcGMsDQo+ICAJCWNvbnN0IHN0cnVjdCBvZl9waGFuZGxl
-X2FyZ3MgKmFyZ3MpOw0KPiAgDQo+ICBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtX2dldChzdHJ1Y3Qg
-ZGV2aWNlICpkZXYsIGNvbnN0IGNoYXIgKmNvbl9pZCk7DQo+IC1zdHJ1Y3QgcHdtX2RldmljZSAq
-b2ZfcHdtX2dldChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLCBjb25zdCBjaGFyICpjb25faWQpOw0K
-PiArc3RydWN0IHB3bV9kZXZpY2UgKm9mX3B3bV9nZXQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1
-Y3QgZGV2aWNlX25vZGUgKm5wLA0KPiArCQkJICAgICAgY29uc3QgY2hhciAqY29uX2lkKTsNCj4g
-IHZvaWQgcHdtX3B1dChzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKTsNCj4gIA0KPiAgc3RydWN0IHB3
-bV9kZXZpY2UgKmRldm1fcHdtX2dldChzdHJ1Y3QgZGV2aWNlICpkZXYsIGNvbnN0IGNoYXIgKmNv
-bl9pZCk7DQo+IEBAIC00OTQsNyArNDk1LDggQEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgcHdtX2Rl
-dmljZSAqcHdtX2dldChzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ICAJcmV0dXJuIEVSUl9QVFIoLUVO
-T0RFVik7DQo+ICB9DQo+ICANCj4gLXN0YXRpYyBpbmxpbmUgc3RydWN0IHB3bV9kZXZpY2UgKm9m
-X3B3bV9nZXQoc3RydWN0IGRldmljZV9ub2RlICpucCwNCj4gK3N0YXRpYyBpbmxpbmUgc3RydWN0
-IHB3bV9kZXZpY2UgKm9mX3B3bV9nZXQoc3RydWN0IGRldmljZSAqZGV2LA0KPiArCQkJCQkgICAg
-c3RydWN0IGRldmljZV9ub2RlICpucCwNCj4gIAkJCQkJICAgIGNvbnN0IGNoYXIgKmNvbl9pZCkN
-Cj4gIHsNCj4gIAlyZXR1cm4gRVJSX1BUUigtRU5PREVWKTsNCj4gDQo=
+On Fri, Feb 15, 2019 at 09:23:48AM +0000, Claudiu.Beznea@microchip.com wrote:
+> 
+> 
+> On 13.02.2019 12:50, Fabrice Gasnier wrote:
+> > Add a device link between the PWM consumer and the PWM provider. This
+> > enforces the PWM user to get suspended before the PWM provider. It
+> > allows proper synchronization of suspend/resume sequences: the PWM user
+> > is responsible for properly stopping PWM, before the provider gets
+> > suspended: see [1]. Add the device link in:
+> > - of_pwm_get()
+> > - pwm_get()
+> > - devm_ variants
+> > as it requires a reference to the device for the PWM consumer.
+> > 
+> > [1] https://lkml.org/lkml/2019/2/5/770
+> > 
+> > Suggested-by: Thierry Reding <thierry.reding@gmail.com>
+> > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> > ---
+> > Changes in v3:
+> > - add struct device to of_get_pwm() arguments to handle device link from
+> >   there.
+> > ---
+> >  drivers/pwm/core.c  | 14 +++++++++++---
+> >  include/linux/pwm.h |  6 ++++--
+> >  2 files changed, 15 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> > index 1581f6a..8cb5d4bc 100644
+> > --- a/drivers/pwm/core.c
+> > +++ b/drivers/pwm/core.c
+> > @@ -638,6 +638,7 @@ static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
+> >  
+> >  /**
+> >   * of_pwm_get() - request a PWM via the PWM framework
+> > + * @dev: device for PWM consumer
+> >   * @np: device node to get the PWM from
+> >   * @con_id: consumer name
+> >   *
+> > @@ -655,7 +656,8 @@ static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
+> >   * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
+> >   * error code on failure.
+> >   */
+> > -struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
+> > +struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+> > +			      const char *con_id)
+> >  {
+> >  	struct pwm_device *pwm = NULL;
+> >  	struct of_phandle_args args;
+> > @@ -689,6 +691,9 @@ struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
+> >  	if (IS_ERR(pwm))
+> >  		goto put;
+> >  
+> > +	if (!device_link_add(dev, pwm->chip->dev, DL_FLAG_AUTOREMOVE_CONSUMER))
+> > +		pr_debug("%s(): device link not added\n", __func__);
+> > +
+> 
+> Just asking... will this mechanism also be working for PWMs requested via
+> sysfs? At a first look it seems not.
+
+No, but I would not expect a problem because AFAIU userspace is
+suspended before kernel devices. However as userspace might not notice
+the suspend it probably fails to stop the pwm and so will likely prevent
+the suspend.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
