@@ -1,111 +1,124 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [PATCH 2/3] drm/mediatek: CMDQ reg address of mt8173 is
- different with mt2701
-Date: Sun, 17 Feb 2019 23:17:20 +0800
-Message-ID: <1550416640.5194.33.camel@mszsdaap41>
-References: <20190214044243.129920-1-jitao.shi@mediatek.com>
- <20190214044243.129920-2-jitao.shi@mediatek.com>
- <CANMq1KAua2mEfT81Mos5JyxHwUfVmgi5Se3fTPy9QcXyh23Urg@mail.gmail.com>
+Subject: Re: [PATCH] drm/mediatek: add mt8183 dpi support
+Date: Sun, 17 Feb 2019 23:20:04 +0800
+Message-ID: <1550416804.5194.35.camel@mszsdaap41>
+References: <20190211045059.11821-1-jitao.shi@mediatek.com>
+ <20190214204149.GO114153@art_vandelay>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <CANMq1KAua2mEfT81Mos5JyxHwUfVmgi5Se3fTPy9QcXyh23Urg@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Yingjoe Chen <yingjoe.chen@mediatek.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa cheng <cawa.cheng@mediatek.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, "moderated
- list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, Eddie Huang <eddie.huang@mediatek.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Rahul Sharma <rahul.sharma@samsung.com>, srv_heups
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190214204149.GO114153@art_vandelay>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sean Paul <sean@poorly.run>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Inki Dae <inki.dae@samsung.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTAyLTE0IGF0IDEzOjQ4ICswODAwLCBOaWNvbGFzIEJvaWNoYXQgd3JvdGU6
-Cj4gT24gVGh1LCBGZWIgMTQsIDIwMTkgYXQgMTI6NDIgUE0gSml0YW8gU2hpIDxqaXRhby5zaGlA
-bWVkaWF0ZWsuY29tPiB3cm90ZToKPiA+Cj4gPiBDb25maWcgdGhlIGRpZmZlcmVudCBDTURRIHJl
-ZyBhZGRyZXNzIGluIGRyaXZlciBkYXRhLgo+ID4KPiA+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNo
-aSA8aml0YW8uc2hpQG1lZGlhdGVrLmNvbT4KPiA+IC0tLQo+ID4gIGRyaXZlcnMvZ3B1L2RybS9t
-ZWRpYXRlay9tdGtfZHNpLmMgfCAzOSArKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0KPiA+
-ICAxIGZpbGUgY2hhbmdlZCwgMzEgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKPiA+Cj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYyBiL2RyaXZl
-cnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiA+IGluZGV4IDkzZmEyNTViNGFhZC4uODBk
-YjAyYTI1Y2IwIDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19k
-c2kuYwo+ID4gKysrIGIvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYwo+ID4gQEAg
-LTE1Niw2ICsxNTYsMTAgQEAKPiA+Cj4gPiAgc3RydWN0IHBoeTsKPiA+Cj4gPiArc3RydWN0IG10
-a19kc2lfZHJpdmVyX2RhdGEgewo+ID4gKyAgICAgICBjb25zdCB1MzIgcmVnX2NtZHFfb2ZmOwo+
-ID4gK307Cj4gPiArCj4gPiAgc3RydWN0IG10a19kc2kgewo+ID4gICAgICAgICBzdHJ1Y3QgbXRr
-X2RkcF9jb21wIGRkcF9jb21wOwo+ID4gICAgICAgICBzdHJ1Y3QgZGV2aWNlICpkZXY7Cj4gPiBA
-QCAtMTgyLDYgKzE4Niw3IEBAIHN0cnVjdCBtdGtfZHNpIHsKPiA+ICAgICAgICAgYm9vbCBlbmFi
-bGVkOwo+ID4gICAgICAgICB1MzIgaXJxX2RhdGE7Cj4gPiAgICAgICAgIHdhaXRfcXVldWVfaGVh
-ZF90IGlycV93YWl0X3F1ZXVlOwo+ID4gKyAgICAgICBzdHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0
-YSAqZHJpdmVyX2RhdGE7Cj4gPiAgfTsKPiA+Cj4gPiAgc3RhdGljIGlubGluZSBzdHJ1Y3QgbXRr
-X2RzaSAqZW5jb2Rlcl90b19kc2koc3RydWN0IGRybV9lbmNvZGVyICplKQo+ID4gQEAgLTkzNCw2
-ICs5MzksNyBAQCBzdGF0aWMgdm9pZCBtdGtfZHNpX2NtZHEoc3RydWN0IG10a19kc2kgKmRzaSwg
-Y29uc3Qgc3RydWN0IG1pcGlfZHNpX21zZyAqbXNnKQo+ID4gICAgICAgICBjb25zdCBjaGFyICp0
-eF9idWYgPSBtc2ctPnR4X2J1ZjsKPiA+ICAgICAgICAgdTggY29uZmlnLCBjbWRxX3NpemUsIGNt
-ZHFfb2ZmLCB0eXBlID0gbXNnLT50eXBlOwo+ID4gICAgICAgICB1MzIgcmVnX3ZhbCwgY21kcV9t
-YXNrLCBpOwo+ID4gKyAgICAgICB1MzIgcmVnX2NtZHFfb2ZmID0gZHNpLT5kcml2ZXJfZGF0YS0+
-cmVnX2NtZHFfb2ZmOwo+ID4KPiA+ICAgICAgICAgaWYgKE1US19EU0lfSE9TVF9JU19SRUFEKHR5
-cGUpKQo+ID4gICAgICAgICAgICAgICAgIGNvbmZpZyA9IEJUQTsKPiA+IEBAIC05NTMsOSArOTU5
-LDExIEBAIHN0YXRpYyB2b2lkIG10a19kc2lfY21kcShzdHJ1Y3QgbXRrX2RzaSAqZHNpLCBjb25z
-dCBzdHJ1Y3QgbWlwaV9kc2lfbXNnICptc2cpCj4gPiAgICAgICAgIH0KPiA+Cj4gPiAgICAgICAg
-IGZvciAoaSA9IDA7IGkgPCBtc2ctPnR4X2xlbjsgaSsrKQo+ID4gLSAgICAgICAgICAgICAgIHdy
-aXRlYih0eF9idWZbaV0sIGRzaS0+cmVncyArIERTSV9DTURRMCArIGNtZHFfb2ZmICsgaSk7Cj4g
-PiArICAgICAgICAgICAgICAgbXRrX2RzaV9tYXNrKGRzaSwgKHJlZ19jbWRxX29mZiArIGNtZHFf
-b2ZmICsgaSkgJiAofjB4M1UpLAo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMHhm
-ZlVMIDw8ICgoKGkgKyBjbWRxX29mZikgJiAzVSkgKiA4VSkpLAo+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICB0eF9idWZbaV0gPDwgKCgoaSArIGNtZHFfb2ZmKSAmIDNVKSAqIDhVKSk7
-Cj4gCj4gSSBmb3VuZCB0aGUgd3JpdGViIGNhbGwgX211Y2hfIGNsZWFyZXIgLi4uIEVpdGhlciBz
-d2l0Y2ggYmFjayB0byB0aGF0LAo+IG9yIGNyZWF0ZSBhIG5ldyBtdGtfZGlza19tYXNrX2J5dGUg
-ZnVuY3Rpb24gbWF5YmU/CgpJJ2xsIGZpeCBpdCBuZXh0IHZlcnNpb24uCgo+IAo+ID4KPiA+IC0g
-ICAgICAgbXRrX2RzaV9tYXNrKGRzaSwgRFNJX0NNRFEwLCBjbWRxX21hc2ssIHJlZ192YWwpOwo+
-ID4gKyAgICAgICBtdGtfZHNpX21hc2soZHNpLCByZWdfY21kcV9vZmYsIGNtZHFfbWFzaywgcmVn
-X3ZhbCk7Cj4gCj4gWW91J3JlIHJlbW92aW5nIERTSV9DTURRMCB1c2FnZSBpbiB0aGlzIHBhdGNo
-LCBzbyByZW1vdmUgdGhlICNkZWZpbmUKPiBpbiB0aGlzIHBhdGNoIHRvbyAoaW5zdGVhZCBvZiBk
-b2luZyB0aGF0IGluIDMvMykuCgpJJ2xsIGZpeCBpdCBuZXh0IHZlcnNpb24uCj4gCj4gPiAgICAg
-ICAgIG10a19kc2lfbWFzayhkc2ksIERTSV9DTURRX1NJWkUsIENNRFFfU0laRSwgY21kcV9zaXpl
-KTsKPiA+ICB9Cj4gPgo+ID4gQEAgLTEwNzQsMTAgKzEwODIsMjcgQEAgc3RhdGljIGNvbnN0IHN0
-cnVjdCBjb21wb25lbnRfb3BzIG10a19kc2lfY29tcG9uZW50X29wcyA9IHsKPiA+ICAgICAgICAg
-LnVuYmluZCA9IG10a19kc2lfdW5iaW5kLAo+ID4gIH07Cj4gPgo+ID4gK3N0YXRpYyBjb25zdCBz
-dHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0YSBtdDgxNzNfZHNpX2RyaXZlcl9kYXRhID0gewo+ID4g
-KyAgICAgICAucmVnX2NtZHFfb2ZmID0gMHgyMDAsCj4gPiArfTsKPiA+ICsKPiA+ICtzdGF0aWMg
-Y29uc3Qgc3RydWN0IG10a19kc2lfZHJpdmVyX2RhdGEgbXQyNzAxX2RzaV9kcml2ZXJfZGF0YSA9
-IHsKPiA+ICsgICAgICAgLnJlZ19jbWRxX29mZiA9IDB4MTgwLAo+ID4gK307Cj4gPiArCj4gPiAr
-c3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgbXRrX2RzaV9vZl9tYXRjaFtdID0gewo+
-ID4gKyAgICAgICB7IC5jb21wYXRpYmxlID0gIm1lZGlhdGVrLG10MjcwMS1kc2kiLAo+ID4gKyAg
-ICAgICAgIC5kYXRhID0gJm10MjcwMV9kc2lfZHJpdmVyX2RhdGEgfSwKPiA+ICsgICAgICAgeyAu
-Y29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxNzMtZHNpIiwKPiA+ICsgICAgICAgICAuZGF0YSA9
-ICZtdDgxNzNfZHNpX2RyaXZlcl9kYXRhIH0sCj4gPiArICAgICAgIHsgfSwKPiA+ICt9Owo+ID4g
-Kwo+ID4gIHN0YXRpYyBpbnQgbXRrX2RzaV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpw
-ZGV2KQo+ID4gIHsKPiA+ICAgICAgICAgc3RydWN0IG10a19kc2kgKmRzaTsKPiA+ICAgICAgICAg
-c3RydWN0IGRldmljZSAqZGV2ID0gJnBkZXYtPmRldjsKPiA+ICsgICAgICAgY29uc3Qgc3RydWN0
-IG9mX2RldmljZV9pZCAqb2ZfaWQ7Cj4gPiAgICAgICAgIHN0cnVjdCByZXNvdXJjZSAqcmVnczsK
-PiA+ICAgICAgICAgaW50IGlycV9udW07Cj4gPiAgICAgICAgIGludCBjb21wX2lkOwo+ID4gQEAg
-LTExMDEsNiArMTEyNiwxMCBAQCBzdGF0aWMgaW50IG10a19kc2lfcHJvYmUoc3RydWN0IHBsYXRm
-b3JtX2RldmljZSAqcGRldikKPiA+ICAgICAgICAgaWYgKHJldCkKPiA+ICAgICAgICAgICAgICAg
-ICBnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7Cj4gPgo+ID4gKyAgICAgICBvZl9pZCA9IG9mX21h
-dGNoX2RldmljZShtdGtfZHNpX29mX21hdGNoLCAmcGRldi0+ZGV2KTsKPiA+ICsgICAgICAgZHNp
-LT5kcml2ZXJfZGF0YSA9IChzdHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0YSAqKQo+ID4gKyAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIG9mX2lkLT5kYXRhOwo+IAo+IFRoaXMgZml0cyBpbiA4MCBj
-aGFycy4gQWxzbywgb2ZfaWQtPmRhdGEgaXMgYSB2b2lkKiwgc28gbm8gY2FzdCBuZWVkZWQuCgpJ
-J2xsIGZpeCBpdCBuZXh0IHZlcnNpb24uCgo+IAo+ID4gKwo+ID4gICAgICAgICBkc2ktPmVuZ2lu
-ZV9jbGsgPSBkZXZtX2Nsa19nZXQoZGV2LCAiZW5naW5lIik7Cj4gPiAgICAgICAgIGlmIChJU19F
-UlIoZHNpLT5lbmdpbmVfY2xrKSkgewo+ID4gICAgICAgICAgICAgICAgIHJldCA9IFBUUl9FUlIo
-ZHNpLT5lbmdpbmVfY2xrKTsKPiA+IEBAIC0xMTk0LDEyICsxMjIzLDYgQEAgc3RhdGljIGludCBt
-dGtfZHNpX3JlbW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ID4gICAgICAgICBy
-ZXR1cm4gMDsKPiA+ICB9Cj4gPgo+ID4gLXN0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lk
-IG10a19kc2lfb2ZfbWF0Y2hbXSA9IHsKPiA+IC0gICAgICAgeyAuY29tcGF0aWJsZSA9ICJtZWRp
-YXRlayxtdDI3MDEtZHNpIiB9LAo+ID4gLSAgICAgICB7IC5jb21wYXRpYmxlID0gIm1lZGlhdGVr
-LG10ODE3My1kc2kiIH0sCj4gPiAtICAgICAgIHsgfSwKPiA+IC19Owo+IAo+IEFueSByZWFzb24g
-eW91IG1vdmVkIHRoaXMgdXA/CgpvZl9tYXRjaF9kZXZpY2UgaXMgY2FsbGVkIGJ5IG10a19kc2lf
-cHJvYmUuCgpCZXN0IHJlZ2FyZHMKSml0YW8KPiAKPiA+IC0KPiA+ICBzdHJ1Y3QgcGxhdGZvcm1f
-ZHJpdmVyIG10a19kc2lfZHJpdmVyID0gewo+ID4gICAgICAgICAucHJvYmUgPSBtdGtfZHNpX3By
-b2JlLAo+ID4gICAgICAgICAucmVtb3ZlID0gbXRrX2RzaV9yZW1vdmUsCj4gPiAtLQo+ID4gMi4y
-MC4xCj4gPgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
-dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+On Thu, 2019-02-14 at 15:41 -0500, Sean Paul wrote:
+> On Mon, Feb 11, 2019 at 12:50:59PM +0800, Jitao Shi wrote:
+> > MT8183 sample on rising and falling edge. It can reduce half data io.
+> > 
+> > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> > ---
+> >  drivers/gpu/drm/mediatek/mtk_dpi.c | 29 +++++++++++++++++++++++++++++
+> >  1 file changed, 29 insertions(+)
+> > 
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > index 62a9d47df948..610c23334047 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > @@ -117,6 +117,7 @@ struct mtk_dpi_conf {
+> >  	unsigned int (*cal_factor)(int clock);
+> >  	u32 reg_h_fre_con;
+> >  	bool edge_sel_en;
+> > +	bool dual_edge;
+> >  };
+> >  
+> >  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
+> > @@ -353,6 +354,13 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
+> >  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0, EDGE_SEL_EN);
+> >  }
+> >  
+> > +static void mtk_dpi_enable_dual_edge(struct mtk_dpi *dpi)
+> > +{
+> > +	mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE,
+> > +		     DDR_EN | DDR_4PHASE);
+> > +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, EDGE_SEL, EDGE_SEL);
+> > +}
+> > +
+> >  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+> >  					enum mtk_dpi_out_color_format format)
+> >  {
+> > @@ -509,6 +517,8 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+> >  	mtk_dpi_config_color_format(dpi, dpi->color_format);
+> >  	mtk_dpi_config_2n_h_fre(dpi);
+> >  	mtk_dpi_config_disable_edge(dpi);
+> > +	if (dpi->conf->dual_edge)
+> > +		mtk_dpi_enable_dual_edge(dpi);
+> >  	mtk_dpi_sw_reset(dpi, false);
+> >  
+> >  	return 0;
+> > @@ -671,6 +681,16 @@ static unsigned int mt2701_calculate_factor(int clock)
+> >  		return 2;
+> >  }
+> >  
+> > +static unsigned int mt8183_calculate_factor(int clock)
+> > +{
+> > +	if (clock <= 27000)
+> > +		return 8;
+> > +	else if (clock <= 167000)
+> > +		return 4;
+> > +	else
+> > +		return 2;
+> > +}
+> > +
+> >  static const struct mtk_dpi_conf mt8173_conf = {
+> >  	.cal_factor = mt8173_calculate_factor,
+> >  	.reg_h_fre_con = 0xe0,
+> > @@ -682,6 +702,12 @@ static const struct mtk_dpi_conf mt2701_conf = {
+> >  	.edge_sel_en = true,
+> >  };
+> >  
+> > +static const struct mtk_dpi_conf mt8183_conf = {
+> > +	.cal_factor = mt8183_calculate_factor,
+> > +	.reg_h_fre_con = 0xe0,
+> > +	.dual_edge = true,
+> > +};
+> > +
+> >  static int mtk_dpi_probe(struct platform_device *pdev)
+> >  {
+> >  	struct device *dev = &pdev->dev;
+> > @@ -777,6 +803,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
+> >  	{ .compatible = "mediatek,mt8173-dpi",
+> >  	  .data = &mt8173_conf,
+> >  	},
+> > +	{ .compatible = "mediatek,mt8183-dpi",
+> 
+> Do you need to add this compatible value to the dt binding? If you can do as CK
+> suggested, maybe you don't need this at all (and mt8183 can use the mt8173
+> compatible string in the dt).
+> 
+> Sean
+> 
+
+Yes, CK is right. 
+
+I'll move it to mt8173.
+
+> > +	  .data = &mt8183_conf,
+> > +	},
+> >  	{ },
+> >  };
+> >  
+> > -- 
+> > 2.12.5
+> > 
+> 
