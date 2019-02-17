@@ -1,29 +1,23 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
 Subject: Re: [PATCH] drm/mediatek: add mt8183 dpi support
-Date: Sun, 17 Feb 2019 23:20:04 +0800
-Message-ID: <1550416804.5194.35.camel@mszsdaap41>
+Date: Sun, 17 Feb 2019 23:22:05 +0800
+Message-ID: <1550416925.5194.37.camel@mszsdaap41>
 References: <20190211045059.11821-1-jitao.shi@mediatek.com>
- <20190214204149.GO114153@art_vandelay>
+         <1550160809.6862.13.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190214204149.GO114153@art_vandelay>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sean Paul <sean@poorly.run>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Inki Dae <inki.dae@samsung.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1550160809.6862.13.camel@mtksdaap41>
+Sender: linux-kernel-owner@vger.kernel.org
+To: CK Hu <ck.hu@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 2019-02-14 at 15:41 -0500, Sean Paul wrote:
-> On Mon, Feb 11, 2019 at 12:50:59PM +0800, Jitao Shi wrote:
+On Fri, 2019-02-15 at 00:13 +0800, CK Hu wrote:
+> Hi, Jitao:
+> 
+> On Mon, 2019-02-11 at 12:50 +0800, Jitao Shi wrote:
 > > MT8183 sample on rising and falling edge. It can reduce half data io.
 > > 
 > > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
@@ -53,6 +47,21 @@ On Thu, 2019-02-14 at 15:41 -0500, Sean Paul wrote:
 > > +		     DDR_EN | DDR_4PHASE);
 > > +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, EDGE_SEL, EDGE_SEL);
 > > +}
+> 
+> All these register exist in MT8173, if you do the same setting in
+> MT8173, could it also sample on rising edge and falling edge?
+> 
+> Regards,
+> CK
+> 
+
+I'll fix is next version.
+
+Thanks for your review.
+
+Best Regards.
+Jitao
+
 > > +
 > >  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
 > >  					enum mtk_dpi_out_color_format format)
@@ -101,24 +110,10 @@ On Thu, 2019-02-14 at 15:41 -0500, Sean Paul wrote:
 > >  	  .data = &mt8173_conf,
 > >  	},
 > > +	{ .compatible = "mediatek,mt8183-dpi",
-> 
-> Do you need to add this compatible value to the dt binding? If you can do as CK
-> suggested, maybe you don't need this at all (and mt8183 can use the mt8173
-> compatible string in the dt).
-> 
-> Sean
-> 
-
-Yes, CK is right. 
-
-I'll move it to mt8173.
-
 > > +	  .data = &mt8183_conf,
 > > +	},
 > >  	{ },
 > >  };
 > >  
-> > -- 
-> > 2.12.5
-> > 
+> 
 > 
