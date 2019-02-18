@@ -1,27 +1,26 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v1 5/5] dt-bindings: pwm: update bindings for MT7629 SoC
-Date: Mon, 18 Feb 2019 14:38:31 -0600
-Message-ID: <20190218203831.GA26838@bogus>
-References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
- <e7a59d288a4e23130e0303fec3aeba1f46ed1c26.1547781007.git.ryder.lee@mediatek.com>
+Subject: Re: [PATCH 4/4] pwm: atmel: add PWM binding for SAM9X60
+Date: Mon, 18 Feb 2019 15:12:35 -0600
+Message-ID: <20190218211235.GA17147@bogus>
+References: <1548073783-22640-1-git-send-email-claudiu.beznea@microchip.com>
+ <1548073783-22640-5-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <e7a59d288a4e23130e0303fec3aeba1f46ed1c26.1547781007.git.ryder.lee@mediatek.com>
+In-Reply-To: <1548073783-22640-5-git-send-email-claudiu.beznea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Ryder Lee <ryder.lee@mediatek.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 18 Jan 2019 11:24:45 +0800, Ryder Lee wrote:
-> This updates bindings for MT7629 pwm controller.
+On Mon, 21 Jan 2019 12:31:01 +0000, <Claudiu.Beznea@microchip.com> wrote:
+> From: Claudiu Beznea <claudiu.beznea@microchip.com>
 > 
-> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> Add PWM binding for SAM9X60 SoC.
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 > ---
-> Changes since v1: add a Reviewed-by tag.
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
+>  Documentation/devicetree/bindings/pwm/atmel-pwm.txt | 1 +
 >  1 file changed, 1 insertion(+)
 > 
 
