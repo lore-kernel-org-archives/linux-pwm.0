@@ -1,7 +1,8 @@
 From: Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH 6/8] LS1021A: dtsi: add ftm quad decoder entries
-Date: Mon, 18 Feb 2019 15:03:19 +0100
-Message-ID: <20190218140321.19166-6-patrick.havelange@essensium.com>
+Subject: [PATCH 5/8] iio/counter: add FlexTimer Module Quadrature decoder
+ counter driver
+Date: Mon, 18 Feb 2019 15:03:18 +0100
+Message-ID: <20190218140321.19166-5-patrick.havelange@essensium.com>
 References: <20190218140321.19166-1-patrick.havelange@essensium.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,52 +22,345 @@ To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-
 Cc: Patrick Havelange <patrick.havelange@essensium.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add the 4 Quadrature counters for this board.
+This driver exposes the counter for the quadrature decoder of the
+FlexTimer Module, present in the LS1021A soc.
 
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 ---
- arch/arm/boot/dts/ls1021a.dtsi | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/iio/counter/Kconfig       |  10 +
+ drivers/iio/counter/Makefile      |   1 +
+ drivers/iio/counter/ftm-quaddec.c | 294 ++++++++++++++++++++++++++++++
+ 3 files changed, 305 insertions(+)
+ create mode 100644 drivers/iio/counter/ftm-quaddec.c
 
-diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
-index ed0941292172..0168fb62590a 100644
---- a/arch/arm/boot/dts/ls1021a.dtsi
-+++ b/arch/arm/boot/dts/ls1021a.dtsi
-@@ -433,6 +433,34 @@
- 			status = "disabled";
- 		};
+diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+index bf1e559ad7cd..4641cb2e752a 100644
+--- a/drivers/iio/counter/Kconfig
++++ b/drivers/iio/counter/Kconfig
+@@ -31,4 +31,14 @@ config STM32_LPTIMER_CNT
  
-+		counter0: counter@29d0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29d0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called stm32-lptimer-cnt.
 +
-+		counter1: counter@29e0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29e0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
++config FTM_QUADDEC
++	tristate "Flex Timer Module Quadrature decoder driver"
++	help
++	  Select this option to enable the Flex Timer Quadrature decoder
++	  driver.
 +
-+		counter2: counter@29f0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29f0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
++	  To compile this driver as a module, choose M here: the
++	  module will be called ftm-quaddec.
 +
-+		counter3: counter@2a00000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x2a00000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
+ endmenu
+diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+index 1b9a896eb488..757c1f4196af 100644
+--- a/drivers/iio/counter/Makefile
++++ b/drivers/iio/counter/Makefile
+@@ -6,3 +6,4 @@
+ 
+ obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
+ obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
++obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
+diff --git a/drivers/iio/counter/ftm-quaddec.c b/drivers/iio/counter/ftm-quaddec.c
+new file mode 100644
+index 000000000000..ca7e55a9ab3f
+--- /dev/null
++++ b/drivers/iio/counter/ftm-quaddec.c
+@@ -0,0 +1,294 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Flex Timer Module Quadrature decoder
++ *
++ * This module implements a driver for decoding the FTM quadrature
++ * of ex. a LS1021A
++ */
 +
- 		gpio0: gpio@2300000 {
- 			compatible = "fsl,ls1021a-gpio", "fsl,qoriq-gpio";
- 			reg = <0x0 0x2300000 0x0 0x10000>;
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/err.h>
++#include <linux/device.h>
++#include <linux/platform_device.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
++#include <linux/workqueue.h>
++#include <linux/swait.h>
++#include <linux/sched.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/mutex.h>
++#include <linux/fsl/ftm.h>
++
++struct ftm_quaddec {
++	struct platform_device *pdev;
++	void __iomem *ftm_base;
++	bool big_endian;
++	struct mutex ftm_quaddec_mutex;
++};
++
++#define HASFLAGS(flag, bits) ((flag & bits) ? 1 : 0)
++
++#define DEFAULT_POLL_INTERVAL    100 /* in msec */
++
++static void ftm_read(struct ftm_quaddec *ftm, uint32_t offset, uint32_t *data)
++{
++	if (ftm->big_endian)
++		*data = ioread32be(ftm->ftm_base + offset);
++	else
++		*data = ioread32(ftm->ftm_base + offset);
++}
++
++static void ftm_write(struct ftm_quaddec *ftm, uint32_t offset, uint32_t data)
++{
++	if (ftm->big_endian)
++		iowrite32be(data, ftm->ftm_base + offset);
++	else
++		iowrite32(data, ftm->ftm_base + offset);
++}
++
++/* take mutex
++ * call ftm_clear_write_protection
++ * update settings
++ * call ftm_set_write_protection
++ * release mutex
++ */
++static void ftm_clear_write_protection(struct ftm_quaddec *ftm)
++{
++	uint32_t flag;
++
++	/* First see if it is enabled */
++	ftm_read(ftm, FTM_FMS, &flag);
++
++	if (flag & FTM_FMS_WPEN) {
++		ftm_read(ftm, FTM_MODE, &flag);
++		ftm_write(ftm, FTM_MODE, flag | FTM_MODE_WPDIS);
++	}
++}
++
++static void ftm_set_write_protection(struct ftm_quaddec *ftm)
++{
++	ftm_write(ftm, FTM_FMS, FTM_FMS_WPEN);
++}
++
++static void ftm_reset_counter(struct ftm_quaddec *ftm)
++{
++	/* Reset hardware counter to CNTIN */
++	ftm_write(ftm, FTM_CNT, 0x0);
++}
++
++static void ftm_quaddec_init(struct ftm_quaddec *ftm)
++{
++	ftm_clear_write_protection(ftm);
++
++	/* Do not write in the region from the CNTIN register through the
++	 * PWMLOAD register when FTMEN = 0.
++	 */
++	ftm_write(ftm, FTM_MODE, FTM_MODE_FTMEN); /* enable FTM */
++	ftm_write(ftm, FTM_CNTIN, 0x0000);         /* zero init value */
++	ftm_write(ftm, FTM_MOD, 0xffff);        /* max overflow value */
++	ftm_write(ftm, FTM_CNT, 0x0);           /* reset counter value */
++	ftm_write(ftm, FTM_SC, FTM_SC_PS_1);    /* prescale with x1 */
++	/* Select quad mode */
++	ftm_write(ftm, FTM_QDCTRL, FTM_QDCTRL_QUADEN);
++
++	/* Unused features and reset to default section */
++	ftm_write(ftm, FTM_POL, 0x0);     /* polarity is active high */
++	ftm_write(ftm, FTM_FLTCTRL, 0x0); /* all faults disabled */
++	ftm_write(ftm, FTM_SYNCONF, 0x0); /* disable all sync */
++	ftm_write(ftm, FTM_SYNC, 0xffff);
++
++	/* Lock the FTM */
++	ftm_set_write_protection(ftm);
++}
++
++static int ftm_quaddec_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct ftm_quaddec *ftm = iio_priv(indio_dev);
++	uint32_t counter;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ftm_read(ftm, FTM_CNT, &counter);
++		*val = counter;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static ssize_t ftm_write_reset(struct iio_dev *indio_dev,
++				uintptr_t private,
++				struct iio_chan_spec const *chan,
++				const char *buf, size_t len)
++{
++	struct ftm_quaddec *ftm = iio_priv(indio_dev);
++
++	/* Only "counter reset" is supported for now */
++	if (!sysfs_streq(buf, "0")) {
++		dev_warn(&ftm->pdev->dev, "Reset only accepts '0'\n");
++		return -EINVAL;
++	}
++
++	ftm_reset_counter(ftm);
++
++	return len;
++}
++
++static int ftm_quaddec_get_prescaler(struct iio_dev *indio_dev,
++					const struct iio_chan_spec *chan)
++{
++	struct ftm_quaddec *ftm = iio_priv(indio_dev);
++	uint32_t scflags;
++
++	ftm_read(ftm, FTM_SC, &scflags);
++
++	return scflags & FTM_SC_PS_MASK;
++}
++
++static int ftm_quaddec_set_prescaler(struct iio_dev *indio_dev,
++					const struct iio_chan_spec *chan,
++					unsigned int type)
++{
++	struct ftm_quaddec *ftm = iio_priv(indio_dev);
++
++	uint32_t scflags;
++
++	mutex_lock(&ftm->ftm_quaddec_mutex);
++
++	ftm_read(ftm, FTM_SC, &scflags);
++
++	scflags &= ~FTM_SC_PS_MASK;
++	type &= FTM_SC_PS_MASK; /*just to be 100% sure*/
++
++	scflags |= type;
++
++	/* Write */
++	ftm_clear_write_protection(ftm);
++	ftm_write(ftm, FTM_SC, scflags);
++	ftm_set_write_protection(ftm);
++
++	/* Also resets the counter as it is undefined anyway now */
++	ftm_reset_counter(ftm);
++
++	mutex_unlock(&ftm->ftm_quaddec_mutex);
++	return 0;
++}
++
++static const char * const ftm_quaddec_prescaler[] = {
++	"1", "2", "4", "8", "16", "32", "64", "128"
++};
++
++static const struct iio_enum ftm_quaddec_prescaler_en = {
++	.items = ftm_quaddec_prescaler,
++	.num_items = ARRAY_SIZE(ftm_quaddec_prescaler),
++	.get = ftm_quaddec_get_prescaler,
++	.set = ftm_quaddec_set_prescaler,
++};
++
++static const struct iio_chan_spec_ext_info ftm_quaddec_ext_info[] = {
++	{
++		.name = "reset",
++		.shared = IIO_SEPARATE,
++		.write = ftm_write_reset,
++	},
++	IIO_ENUM("prescaler", IIO_SEPARATE, &ftm_quaddec_prescaler_en),
++	IIO_ENUM_AVAILABLE("prescaler", &ftm_quaddec_prescaler_en),
++	{}
++};
++
++static const struct iio_chan_spec ftm_quaddec_channels = {
++	.type = IIO_COUNT,
++	.channel = 0,
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	.ext_info = ftm_quaddec_ext_info,
++	.indexed = 1,
++};
++
++static const struct iio_info ftm_quaddec_iio_info = {
++	.read_raw = ftm_quaddec_read_raw,
++};
++
++static int ftm_quaddec_probe(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev;
++	struct ftm_quaddec *ftm;
++	int ret;
++
++	struct device_node *node = pdev->dev.of_node;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ftm));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ftm = iio_priv(indio_dev);
++
++	platform_set_drvdata(pdev, ftm);
++
++	ftm->pdev = pdev;
++	ftm->big_endian = of_property_read_bool(node, "big-endian");
++	ftm->ftm_base = of_iomap(node, 0);
++	if (!ftm->ftm_base)
++		return -EINVAL;
++
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->info = &ftm_quaddec_iio_info;
++	indio_dev->num_channels = 1;
++	indio_dev->channels = &ftm_quaddec_channels;
++
++	ftm_quaddec_init(ftm);
++
++	mutex_init(&ftm->ftm_quaddec_mutex);
++
++	ret = devm_iio_device_register(&pdev->dev, indio_dev);
++	if (ret) {
++		mutex_destroy(&ftm->ftm_quaddec_mutex);
++		iounmap(ftm->ftm_base);
++	}
++	return ret;
++}
++
++static int ftm_quaddec_remove(struct platform_device *pdev)
++{
++	struct ftm_quaddec *ftm;
++	struct iio_dev *indio_dev;
++
++	ftm = (struct ftm_quaddec *)platform_get_drvdata(pdev);
++	indio_dev = iio_priv_to_dev(ftm);
++	/* This is needed to remove sysfs entries */
++	devm_iio_device_unregister(&pdev->dev, indio_dev);
++
++	ftm_write(ftm, FTM_MODE, 0);
++
++	iounmap(ftm->ftm_base);
++	mutex_destroy(&ftm->ftm_quaddec_mutex);
++
++	return 0;
++}
++
++static const struct of_device_id ftm_quaddec_match[] = {
++	{ .compatible = "fsl,ftm-quaddec" },
++	{},
++};
++
++static struct platform_driver ftm_quaddec_driver = {
++	.driver = {
++		.name = "ftm-quaddec",
++		.owner = THIS_MODULE,
++		.of_match_table = ftm_quaddec_match,
++	},
++	.probe = ftm_quaddec_probe,
++	.remove = ftm_quaddec_remove,
++};
++
++module_platform_driver(ftm_quaddec_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com");
++MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com");
 -- 
 2.17.1
