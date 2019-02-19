@@ -1,68 +1,75 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/4] pwm: atmel: add support for controllers with 32 bit
- counters
-Date: Tue, 19 Feb 2019 08:42:46 +0100
-Message-ID: <20190219074246.kcdbd5nhf43yw5ax@pengutronix.de>
-References: <1548073783-22640-1-git-send-email-claudiu.beznea@microchip.com>
- <1548073783-22640-3-git-send-email-claudiu.beznea@microchip.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: Re: [PATCH v4 3/3] pwm: core: add consumer device link
+Date: Tue, 19 Feb 2019 09:46:32 +0100
+Message-ID: <53bc3d80-8732-46be-caef-015998c9ad0e@st.com>
+References: <1550139951-25788-1-git-send-email-fabrice.gasnier@st.com>
+ <1550139951-25788-4-git-send-email-fabrice.gasnier@st.com>
+ <20190218172223.lw3e5tn5hzsow6tg@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1548073783-22640-3-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu.Beznea@microchip.com
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190218172223.lw3e5tn5hzsow6tg@pengutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, mcoquelin.stm32@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Claudiu,
-
-On Mon, Jan 21, 2019 at 12:30:53PM +0000, Claudiu.Beznea@microchip.com wrote:
-> From: Claudiu Beznea <claudiu.beznea@microchip.com>
-> 
-> New SAM9X60's PWM controller use 32 bits counters thus it could generate
-> signals with higher period and duty cycles. Update the current driver
-> to work with old controller (that uses 16 bits counters) and with the
-> new SAM9X60's controller.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> ---
->  drivers/pwm/pwm-atmel.c | 38 +++++++++++++++++++++++++++-----------
->  1 file changed, 27 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> index 7e86a5266eb6..44f4a1c9f60b 100644
-> --- a/drivers/pwm/pwm-atmel.c
-> +++ b/drivers/pwm/pwm-atmel.c
-> @@ -48,15 +48,15 @@
->  #define PWMV2_CPRD		0x0C
->  #define PWMV2_CPRDUPD		0x10
->  
-> -/*
-> - * Max value for duty and period
-> - *
-> - * Although the duty and period register is 32 bit,
-> - * however only the LSB 16 bits are significant.
-> - */
-> -#define PWM_MAX_DTY		0xFFFF
-> -#define PWM_MAX_PRD		0xFFFF
-> -#define PRD_MAX_PRES		10
-> +/* Max values for period and prescaler */
-> +
-> +/* Only the LSB 16 bits are significant. */
-> +#define PWM_MAXV1_PRD		0xFFFF
-> +
-> +/* All 32 bits are significant. */
-> +#define PWM_MAXV2_PRD		0xFFFFFFFF
-
-This symbol is unused, so I wonder if the patch really does what the
-commit log promises.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+T24gMi8xOC8xOSA2OjIyIFBNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBIZWxsbywKPiAK
+PiBPbiBUaHUsIEZlYiAxNCwgMjAxOSBhdCAxMToyNTo1MUFNICswMTAwLCBGYWJyaWNlIEdhc25p
+ZXIgd3JvdGU6Cj4+IEFkZCBhIGRldmljZSBsaW5rIGJldHdlZW4gdGhlIFBXTSBjb25zdW1lciBh
+bmQgdGhlIFBXTSBwcm92aWRlci4gVGhpcwo+PiBlbmZvcmNlcyB0aGUgUFdNIHVzZXIgdG8gZ2V0
+IHN1c3BlbmRlZCBiZWZvcmUgdGhlIFBXTSBwcm92aWRlci4gSXQKPj4gYWxsb3dzIHByb3BlciBz
+eW5jaHJvbml6YXRpb24gb2Ygc3VzcGVuZC9yZXN1bWUgc2VxdWVuY2VzOiB0aGUgUFdNIHVzZXIK
+Pj4gaXMgcmVzcG9uc2libGUgZm9yIHByb3Blcmx5IHN0b3BwaW5nIFBXTSwgYmVmb3JlIHRoZSBw
+cm92aWRlciBnZXRzCj4+IHN1c3BlbmRlZDogc2VlIFsxXS4gQWRkIHRoZSBkZXZpY2UgbGluayBp
+bjoKPj4gLSBvZl9wd21fZ2V0KCkKPj4gLSBwd21fZ2V0KCkKPj4gLSBkZXZtXypwd21fZ2V0KCkg
+dmFyaWFudHMKPj4gYXMgaXQgcmVxdWlyZXMgYSByZWZlcmVuY2UgdG8gdGhlIGRldmljZSBmb3Ig
+dGhlIFBXTSBjb25zdW1lci4KPj4KPj4gWzFdIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE5LzIv
+NS83NzAKPj4KPj4gU3VnZ2VzdGVkLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdA
+Z21haWwuY29tPgo+PiBTaWduZWQtb2ZmLWJ5OiBGYWJyaWNlIEdhc25pZXIgPGZhYnJpY2UuZ2Fz
+bmllckBzdC5jb20+Cj4+IC0tLQo+PiBDaGFuZ2VzIGluIHY0Ogo+PiAtIHJld29yayBlcnJvciBo
+YW5kbGluZyBmb2xsb3dpbmcgVGhpZXJyeSdzIGNvbW1lbnRzCj4+IC0gdHVybi9zcGxpdCBwcl9k
+ZWJ1ZygpIGludG8gZGV2X2VycigpL3ByX3dhcm4oKS4KPj4KPj4gQ2hhbmdlcyBpbiB2MzoKPj4g
+LSBhZGQgc3RydWN0IGRldmljZSB0byBvZl9nZXRfcHdtKCkgYXJndW1lbnRzIHRvIGhhbmRsZSBk
+ZXZpY2UgbGluayBmcm9tCj4+ICAgdGhlcmUgYXMgZGlzY3Vzc2VkIHdpdGggVXdlLgo+PiAtLS0K
+Pj4gIGRyaXZlcnMvcHdtL2NvcmUuYyAgfCA1MCArKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKy0tLQo+PiAgaW5jbHVkZS9saW51eC9wd20uaCB8ICA2ICsrKyst
+LQo+PiAgMiBmaWxlcyBjaGFuZ2VkLCA1MSBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQo+
+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vY29yZS5jIGIvZHJpdmVycy9wd20vY29yZS5j
+Cj4+IGluZGV4IDE1ODFmNmEuLjY0ZTEwYTYgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvcHdtL2Nv
+cmUuYwo+PiArKysgYi9kcml2ZXJzL3B3bS9jb3JlLmMKPj4gQEAgLTYzNiw4ICs2MzYsMzUgQEAg
+c3RhdGljIHN0cnVjdCBwd21fY2hpcCAqb2Zfbm9kZV90b19wd21jaGlwKHN0cnVjdCBkZXZpY2Vf
+bm9kZSAqbnApCj4+ICAJcmV0dXJuIEVSUl9QVFIoLUVQUk9CRV9ERUZFUik7Cj4+ICB9Cj4+ICAK
+Pj4gK3N0YXRpYyBzdHJ1Y3QgZGV2aWNlX2xpbmsgKnB3bV9kZXZpY2VfbGlua19hZGQoc3RydWN0
+IGRldmljZSAqZGV2LAo+PiArCQkJCQkgICAgICAgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSkKPj4g
+K3sKPj4gKwlzdHJ1Y3QgZGV2aWNlX2xpbmsgKmRsOwo+PiArCj4+ICsJaWYgKCFkZXYpIHsKPj4g
+KwkJLyoKPj4gKwkJICogTm8gZGV2aWNlIGZvciB0aGUgUFdNIGNvbnN1bWVyIGhhcyBiZWVuIHBy
+b3ZpZGVkLiBJdCBtYXkKPj4gKwkJICogaW1wYWN0IHRoZSBQTSBzZXF1ZW5jZSBvcmRlcmluZzog
+dGhlIFBXTSBzdXBwbGllciBtYXkgZ2V0Cj4+ICsJCSAqIHN1c3BlbmRlZCBiZWZvcmUgdGhlIGNv
+bnN1bWVyLgo+PiArCQkgKi8KPj4gKwkJcHJfd2Fybigibm8gY29uc3VtZXIgZGV2LCBjYW4ndCBj
+cmVhdGUgZGV2aWNlIGxpbmsgdG8gJXNcbiIsCj4+ICsJCQlkZXZfbmFtZShwd20tPmNoaXAtPmRl
+dikpOwo+IAo+IE1heWJlIHVzZSBkZXZfd2Fybihwd20tPmNoaXAtPmRldiwgLi4uKSA/CgpIaSBV
+d2UsCgpJJ20gd29uZGVyaW5nIGEgYml0IGFib3V0IHRoaXM6IEluIHRoaXMgY2FzZSwgdGhlIGNh
+bGxlciB0aGF0IGRvZXNuJ3QKcHJvdmlkZSBhIHN0cnVjdCBkZXZpY2UgKiwgUFdNIHByb3ZpZGVy
+IGlzbid0IHJlc3BvbnNpYmxlIGZvciB0aGF0LiBTbyBJCmp1c3QgaG9wZSB0aGlzIHdvdWxkbid0
+IGJlIG1pc3MtbGVhZGluZyA/Cgo+IAo+PiArCQlyZXR1cm4gTlVMTDsKPj4gKwl9Cj4+ICsKPj4g
+KwlkbCA9IGRldmljZV9saW5rX2FkZChkZXYsIHB3bS0+Y2hpcC0+ZGV2LCBETF9GTEFHX0FVVE9S
+RU1PVkVfQ09OU1VNRVIpOwo+PiArCWlmICghZGwpIHsKPj4gKwkJZGV2X2VycihkZXYsICJmYWls
+ZWQgdG8gY3JlYXRlIGRldmljZSBsaW5rIHRvICVzXG4iLAo+PiArCQkJZGV2X25hbWUocHdtLT5j
+aGlwLT5kZXYpKTsKPj4gKwkJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOwo+IAo+IGJyb2tlbiBp
+bmRlbnRpb24uCgpPb3BzLCBJJ2xsIGZpeCBpdC4KClRoYW5rcywKRmFicmljZQoKPiAKPj4gKwl9
+Cj4+ICsKPj4gKwlyZXR1cm4gZGw7Cj4+ICt9Cj4+ICsKPiAKPiBCZXN0IHJlZ2FyZHMKPiBVd2UK
+PiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4
+LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFk
+Lm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFy
+bS1rZXJuZWwK
