@@ -1,75 +1,95 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v4 3/3] pwm: core: add consumer device link
-Date: Tue, 19 Feb 2019 09:46:32 +0100
-Message-ID: <53bc3d80-8732-46be-caef-015998c9ad0e@st.com>
+Date: Tue, 19 Feb 2019 09:55:16 +0100
+Message-ID: <20190219085516.dz5ux37kdszqkisy@pengutronix.de>
 References: <1550139951-25788-1-git-send-email-fabrice.gasnier@st.com>
  <1550139951-25788-4-git-send-email-fabrice.gasnier@st.com>
  <20190218172223.lw3e5tn5hzsow6tg@pengutronix.de>
+ <53bc3d80-8732-46be-caef-015998c9ad0e@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190218172223.lw3e5tn5hzsow6tg@pengutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, mcoquelin.stm32@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <53bc3d80-8732-46be-caef-015998c9ad0e@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, tduszyns@gmail.com, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMi8xOC8xOSA2OjIyIFBNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBIZWxsbywKPiAK
-PiBPbiBUaHUsIEZlYiAxNCwgMjAxOSBhdCAxMToyNTo1MUFNICswMTAwLCBGYWJyaWNlIEdhc25p
-ZXIgd3JvdGU6Cj4+IEFkZCBhIGRldmljZSBsaW5rIGJldHdlZW4gdGhlIFBXTSBjb25zdW1lciBh
-bmQgdGhlIFBXTSBwcm92aWRlci4gVGhpcwo+PiBlbmZvcmNlcyB0aGUgUFdNIHVzZXIgdG8gZ2V0
-IHN1c3BlbmRlZCBiZWZvcmUgdGhlIFBXTSBwcm92aWRlci4gSXQKPj4gYWxsb3dzIHByb3BlciBz
-eW5jaHJvbml6YXRpb24gb2Ygc3VzcGVuZC9yZXN1bWUgc2VxdWVuY2VzOiB0aGUgUFdNIHVzZXIK
-Pj4gaXMgcmVzcG9uc2libGUgZm9yIHByb3Blcmx5IHN0b3BwaW5nIFBXTSwgYmVmb3JlIHRoZSBw
-cm92aWRlciBnZXRzCj4+IHN1c3BlbmRlZDogc2VlIFsxXS4gQWRkIHRoZSBkZXZpY2UgbGluayBp
-bjoKPj4gLSBvZl9wd21fZ2V0KCkKPj4gLSBwd21fZ2V0KCkKPj4gLSBkZXZtXypwd21fZ2V0KCkg
-dmFyaWFudHMKPj4gYXMgaXQgcmVxdWlyZXMgYSByZWZlcmVuY2UgdG8gdGhlIGRldmljZSBmb3Ig
-dGhlIFBXTSBjb25zdW1lci4KPj4KPj4gWzFdIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE5LzIv
-NS83NzAKPj4KPj4gU3VnZ2VzdGVkLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdA
-Z21haWwuY29tPgo+PiBTaWduZWQtb2ZmLWJ5OiBGYWJyaWNlIEdhc25pZXIgPGZhYnJpY2UuZ2Fz
-bmllckBzdC5jb20+Cj4+IC0tLQo+PiBDaGFuZ2VzIGluIHY0Ogo+PiAtIHJld29yayBlcnJvciBo
-YW5kbGluZyBmb2xsb3dpbmcgVGhpZXJyeSdzIGNvbW1lbnRzCj4+IC0gdHVybi9zcGxpdCBwcl9k
-ZWJ1ZygpIGludG8gZGV2X2VycigpL3ByX3dhcm4oKS4KPj4KPj4gQ2hhbmdlcyBpbiB2MzoKPj4g
-LSBhZGQgc3RydWN0IGRldmljZSB0byBvZl9nZXRfcHdtKCkgYXJndW1lbnRzIHRvIGhhbmRsZSBk
-ZXZpY2UgbGluayBmcm9tCj4+ICAgdGhlcmUgYXMgZGlzY3Vzc2VkIHdpdGggVXdlLgo+PiAtLS0K
-Pj4gIGRyaXZlcnMvcHdtL2NvcmUuYyAgfCA1MCArKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKy0tLQo+PiAgaW5jbHVkZS9saW51eC9wd20uaCB8ICA2ICsrKyst
-LQo+PiAgMiBmaWxlcyBjaGFuZ2VkLCA1MSBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQo+
-Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vY29yZS5jIGIvZHJpdmVycy9wd20vY29yZS5j
-Cj4+IGluZGV4IDE1ODFmNmEuLjY0ZTEwYTYgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvcHdtL2Nv
-cmUuYwo+PiArKysgYi9kcml2ZXJzL3B3bS9jb3JlLmMKPj4gQEAgLTYzNiw4ICs2MzYsMzUgQEAg
-c3RhdGljIHN0cnVjdCBwd21fY2hpcCAqb2Zfbm9kZV90b19wd21jaGlwKHN0cnVjdCBkZXZpY2Vf
-bm9kZSAqbnApCj4+ICAJcmV0dXJuIEVSUl9QVFIoLUVQUk9CRV9ERUZFUik7Cj4+ICB9Cj4+ICAK
-Pj4gK3N0YXRpYyBzdHJ1Y3QgZGV2aWNlX2xpbmsgKnB3bV9kZXZpY2VfbGlua19hZGQoc3RydWN0
-IGRldmljZSAqZGV2LAo+PiArCQkJCQkgICAgICAgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSkKPj4g
-K3sKPj4gKwlzdHJ1Y3QgZGV2aWNlX2xpbmsgKmRsOwo+PiArCj4+ICsJaWYgKCFkZXYpIHsKPj4g
-KwkJLyoKPj4gKwkJICogTm8gZGV2aWNlIGZvciB0aGUgUFdNIGNvbnN1bWVyIGhhcyBiZWVuIHBy
-b3ZpZGVkLiBJdCBtYXkKPj4gKwkJICogaW1wYWN0IHRoZSBQTSBzZXF1ZW5jZSBvcmRlcmluZzog
-dGhlIFBXTSBzdXBwbGllciBtYXkgZ2V0Cj4+ICsJCSAqIHN1c3BlbmRlZCBiZWZvcmUgdGhlIGNv
-bnN1bWVyLgo+PiArCQkgKi8KPj4gKwkJcHJfd2Fybigibm8gY29uc3VtZXIgZGV2LCBjYW4ndCBj
-cmVhdGUgZGV2aWNlIGxpbmsgdG8gJXNcbiIsCj4+ICsJCQlkZXZfbmFtZShwd20tPmNoaXAtPmRl
-dikpOwo+IAo+IE1heWJlIHVzZSBkZXZfd2Fybihwd20tPmNoaXAtPmRldiwgLi4uKSA/CgpIaSBV
-d2UsCgpJJ20gd29uZGVyaW5nIGEgYml0IGFib3V0IHRoaXM6IEluIHRoaXMgY2FzZSwgdGhlIGNh
-bGxlciB0aGF0IGRvZXNuJ3QKcHJvdmlkZSBhIHN0cnVjdCBkZXZpY2UgKiwgUFdNIHByb3ZpZGVy
-IGlzbid0IHJlc3BvbnNpYmxlIGZvciB0aGF0LiBTbyBJCmp1c3QgaG9wZSB0aGlzIHdvdWxkbid0
-IGJlIG1pc3MtbGVhZGluZyA/Cgo+IAo+PiArCQlyZXR1cm4gTlVMTDsKPj4gKwl9Cj4+ICsKPj4g
-KwlkbCA9IGRldmljZV9saW5rX2FkZChkZXYsIHB3bS0+Y2hpcC0+ZGV2LCBETF9GTEFHX0FVVE9S
-RU1PVkVfQ09OU1VNRVIpOwo+PiArCWlmICghZGwpIHsKPj4gKwkJZGV2X2VycihkZXYsICJmYWls
-ZWQgdG8gY3JlYXRlIGRldmljZSBsaW5rIHRvICVzXG4iLAo+PiArCQkJZGV2X25hbWUocHdtLT5j
-aGlwLT5kZXYpKTsKPj4gKwkJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOwo+IAo+IGJyb2tlbiBp
-bmRlbnRpb24uCgpPb3BzLCBJJ2xsIGZpeCBpdC4KClRoYW5rcywKRmFicmljZQoKPiAKPj4gKwl9
-Cj4+ICsKPj4gKwlyZXR1cm4gZGw7Cj4+ICt9Cj4+ICsKPiAKPiBCZXN0IHJlZ2FyZHMKPiBVd2UK
-PiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4
-LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFk
-Lm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFy
-bS1rZXJuZWwK
+On Tue, Feb 19, 2019 at 09:46:32AM +0100, Fabrice Gasnier wrote:
+> On 2/18/19 6:22 PM, Uwe Kleine-König wrote:
+> > Hello,
+> > 
+> > On Thu, Feb 14, 2019 at 11:25:51AM +0100, Fabrice Gasnier wrote:
+> >> Add a device link between the PWM consumer and the PWM provider. This
+> >> enforces the PWM user to get suspended before the PWM provider. It
+> >> allows proper synchronization of suspend/resume sequences: the PWM user
+> >> is responsible for properly stopping PWM, before the provider gets
+> >> suspended: see [1]. Add the device link in:
+> >> - of_pwm_get()
+> >> - pwm_get()
+> >> - devm_*pwm_get() variants
+> >> as it requires a reference to the device for the PWM consumer.
+> >>
+> >> [1] https://lkml.org/lkml/2019/2/5/770
+> >>
+> >> Suggested-by: Thierry Reding <thierry.reding@gmail.com>
+> >> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> >> ---
+> >> Changes in v4:
+> >> - rework error handling following Thierry's comments
+> >> - turn/split pr_debug() into dev_err()/pr_warn().
+> >>
+> >> Changes in v3:
+> >> - add struct device to of_get_pwm() arguments to handle device link from
+> >>   there as discussed with Uwe.
+> >> ---
+> >>  drivers/pwm/core.c  | 50 +++++++++++++++++++++++++++++++++++++++++++++++---
+> >>  include/linux/pwm.h |  6 ++++--
+> >>  2 files changed, 51 insertions(+), 5 deletions(-)
+> >>
+> >> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> >> index 1581f6a..64e10a6 100644
+> >> --- a/drivers/pwm/core.c
+> >> +++ b/drivers/pwm/core.c
+> >> @@ -636,8 +636,35 @@ static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
+> >>  	return ERR_PTR(-EPROBE_DEFER);
+> >>  }
+> >>  
+> >> +static struct device_link *pwm_device_link_add(struct device *dev,
+> >> +					       struct pwm_device *pwm)
+> >> +{
+> >> +	struct device_link *dl;
+> >> +
+> >> +	if (!dev) {
+> >> +		/*
+> >> +		 * No device for the PWM consumer has been provided. It may
+> >> +		 * impact the PM sequence ordering: the PWM supplier may get
+> >> +		 * suspended before the consumer.
+> >> +		 */
+> >> +		pr_warn("no consumer dev, can't create device link to %s\n",
+> >> +			dev_name(pwm->chip->dev));
+> > 
+> > Maybe use dev_warn(pwm->chip->dev, ...) ?
+> 
+> Hi Uwe,
+> 
+> I'm wondering a bit about this: In this case, the caller that doesn't
+> provide a struct device *, PWM provider isn't responsible for that. So I
+> just hope this wouldn't be miss-leading ?
+
+IMHO it's more the wording that might make the message misleading. If
+you use
+
+	dev_warn(pwm->chip->dev, "No consumer device specified to create a device link to\n");
+
+that's completely fine in my eyes.
+ 
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
