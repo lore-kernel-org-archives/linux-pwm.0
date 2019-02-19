@@ -1,88 +1,80 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/4] pwm: atmel: add support for controllers with 32 bit
- counters
-Date: Tue, 19 Feb 2019 10:15:20 +0100
-Message-ID: <20190219091520.4s3hafqxkszmhme2@pengutronix.de>
-References: <1548073783-22640-1-git-send-email-claudiu.beznea@microchip.com>
- <1548073783-22640-3-git-send-email-claudiu.beznea@microchip.com>
- <20190219074246.kcdbd5nhf43yw5ax@pengutronix.de>
- <e08cbcb2-4e37-4a2e-ea79-021a2c7a25d6@microchip.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: Re: [PATCH v4 3/3] pwm: core: add consumer device link
+Date: Tue, 19 Feb 2019 10:54:20 +0100
+Message-ID: <b4f42c35-df0e-8b61-6132-39a453a3b11c@st.com>
+References: <1550139951-25788-1-git-send-email-fabrice.gasnier@st.com>
+ <1550139951-25788-4-git-send-email-fabrice.gasnier@st.com>
+ <20190218172223.lw3e5tn5hzsow6tg@pengutronix.de>
+ <53bc3d80-8732-46be-caef-015998c9ad0e@st.com>
+ <20190219085516.dz5ux37kdszqkisy@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e08cbcb2-4e37-4a2e-ea79-021a2c7a25d6@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu.Beznea@microchip.com
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190219085516.dz5ux37kdszqkisy@pengutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, mcoquelin.stm32@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Feb 19, 2019 at 08:57:04AM +0000, Claudiu.Beznea@microchip.com wrote:
-> 
-> 
-> On 19.02.2019 09:42, Uwe Kleine-König wrote:
-> > Hello Claudiu,
-> > 
-> > On Mon, Jan 21, 2019 at 12:30:53PM +0000, Claudiu.Beznea@microchip.com wrote:
-> >> From: Claudiu Beznea <claudiu.beznea@microchip.com>
-> >>
-> >> New SAM9X60's PWM controller use 32 bits counters thus it could generate
-> >> signals with higher period and duty cycles. Update the current driver
-> >> to work with old controller (that uses 16 bits counters) and with the
-> >> new SAM9X60's controller.
-> >>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> >> ---
-> >>  drivers/pwm/pwm-atmel.c | 38 +++++++++++++++++++++++++++-----------
-> >>  1 file changed, 27 insertions(+), 11 deletions(-)
-> >>
-> >> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> >> index 7e86a5266eb6..44f4a1c9f60b 100644
-> >> --- a/drivers/pwm/pwm-atmel.c
-> >> +++ b/drivers/pwm/pwm-atmel.c
-> >> @@ -48,15 +48,15 @@
-> >>  #define PWMV2_CPRD		0x0C
-> >>  #define PWMV2_CPRDUPD		0x10
-> >>  
-> >> -/*
-> >> - * Max value for duty and period
-> >> - *
-> >> - * Although the duty and period register is 32 bit,
-> >> - * however only the LSB 16 bits are significant.
-> >> - */
-> >> -#define PWM_MAX_DTY		0xFFFF
-> >> -#define PWM_MAX_PRD		0xFFFF
-> >> -#define PRD_MAX_PRES		10
-> >> +/* Max values for period and prescaler */
-> >> +
-> >> +/* Only the LSB 16 bits are significant. */
-> >> +#define PWM_MAXV1_PRD		0xFFFF
-> >> +
-> >> +/* All 32 bits are significant. */
-> >> +#define PWM_MAXV2_PRD		0xFFFFFFFF
-> > 
-> > This symbol is unused, so I wonder if the patch really does what the
-> > commit log promises.
-> 
-> It is only of SAM9X60's PWM. Please check patch 3/4. Maybe I should have
-> been introduced it in there. If you consider it is better to be introduced
-> in patch 3/4 please let me know.
-
-Yeah, I think cpp symbols should be introduced with their first user.
-And then the commit log should read something like:
-
-	New SAM9X60's PWM controller use 32 bits counters thus it could
-	generate signals with higher period and duty cycles compared to
-	the already supported implementations that only have 16 bit
-	counters. Update the driver to handle counter width depending on
-	compatible data. Semantically this is a no-op but it's used in
-	the next patch to add support for SAM9X60.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+T24gMi8xOS8xOSA5OjU1IEFNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBPbiBUdWUsIEZl
+YiAxOSwgMjAxOSBhdCAwOTo0NjozMkFNICswMTAwLCBGYWJyaWNlIEdhc25pZXIgd3JvdGU6Cj4+
+IE9uIDIvMTgvMTkgNjoyMiBQTSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4+PiBIZWxsbywK
+Pj4+Cj4+PiBPbiBUaHUsIEZlYiAxNCwgMjAxOSBhdCAxMToyNTo1MUFNICswMTAwLCBGYWJyaWNl
+IEdhc25pZXIgd3JvdGU6Cj4+Pj4gQWRkIGEgZGV2aWNlIGxpbmsgYmV0d2VlbiB0aGUgUFdNIGNv
+bnN1bWVyIGFuZCB0aGUgUFdNIHByb3ZpZGVyLiBUaGlzCj4+Pj4gZW5mb3JjZXMgdGhlIFBXTSB1
+c2VyIHRvIGdldCBzdXNwZW5kZWQgYmVmb3JlIHRoZSBQV00gcHJvdmlkZXIuIEl0Cj4+Pj4gYWxs
+b3dzIHByb3BlciBzeW5jaHJvbml6YXRpb24gb2Ygc3VzcGVuZC9yZXN1bWUgc2VxdWVuY2VzOiB0
+aGUgUFdNIHVzZXIKPj4+PiBpcyByZXNwb25zaWJsZSBmb3IgcHJvcGVybHkgc3RvcHBpbmcgUFdN
+LCBiZWZvcmUgdGhlIHByb3ZpZGVyIGdldHMKPj4+PiBzdXNwZW5kZWQ6IHNlZSBbMV0uIEFkZCB0
+aGUgZGV2aWNlIGxpbmsgaW46Cj4+Pj4gLSBvZl9wd21fZ2V0KCkKPj4+PiAtIHB3bV9nZXQoKQo+
+Pj4+IC0gZGV2bV8qcHdtX2dldCgpIHZhcmlhbnRzCj4+Pj4gYXMgaXQgcmVxdWlyZXMgYSByZWZl
+cmVuY2UgdG8gdGhlIGRldmljZSBmb3IgdGhlIFBXTSBjb25zdW1lci4KPj4+Pgo+Pj4+IFsxXSBo
+dHRwczovL2xrbWwub3JnL2xrbWwvMjAxOS8yLzUvNzcwCj4+Pj4KPj4+PiBTdWdnZXN0ZWQtYnk6
+IFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+Cj4+Pj4gU2lnbmVkLW9m
+Zi1ieTogRmFicmljZSBHYXNuaWVyIDxmYWJyaWNlLmdhc25pZXJAc3QuY29tPgo+Pj4+IC0tLQo+
+Pj4+IENoYW5nZXMgaW4gdjQ6Cj4+Pj4gLSByZXdvcmsgZXJyb3IgaGFuZGxpbmcgZm9sbG93aW5n
+IFRoaWVycnkncyBjb21tZW50cwo+Pj4+IC0gdHVybi9zcGxpdCBwcl9kZWJ1ZygpIGludG8gZGV2
+X2VycigpL3ByX3dhcm4oKS4KPj4+Pgo+Pj4+IENoYW5nZXMgaW4gdjM6Cj4+Pj4gLSBhZGQgc3Ry
+dWN0IGRldmljZSB0byBvZl9nZXRfcHdtKCkgYXJndW1lbnRzIHRvIGhhbmRsZSBkZXZpY2UgbGlu
+ayBmcm9tCj4+Pj4gICB0aGVyZSBhcyBkaXNjdXNzZWQgd2l0aCBVd2UuCj4+Pj4gLS0tCj4+Pj4g
+IGRyaXZlcnMvcHdtL2NvcmUuYyAgfCA1MCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKy0tLQo+Pj4+ICBpbmNsdWRlL2xpbnV4L3B3bS5oIHwgIDYgKysrKy0t
+Cj4+Pj4gIDIgZmlsZXMgY2hhbmdlZCwgNTEgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkK
+Pj4+Pgo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9jb3JlLmMgYi9kcml2ZXJzL3B3bS9j
+b3JlLmMKPj4+PiBpbmRleCAxNTgxZjZhLi42NGUxMGE2IDEwMDY0NAo+Pj4+IC0tLSBhL2RyaXZl
+cnMvcHdtL2NvcmUuYwo+Pj4+ICsrKyBiL2RyaXZlcnMvcHdtL2NvcmUuYwo+Pj4+IEBAIC02MzYs
+OCArNjM2LDM1IEBAIHN0YXRpYyBzdHJ1Y3QgcHdtX2NoaXAgKm9mX25vZGVfdG9fcHdtY2hpcChz
+dHJ1Y3QgZGV2aWNlX25vZGUgKm5wKQo+Pj4+ICAJcmV0dXJuIEVSUl9QVFIoLUVQUk9CRV9ERUZF
+Uik7Cj4+Pj4gIH0KPj4+PiAgCj4+Pj4gK3N0YXRpYyBzdHJ1Y3QgZGV2aWNlX2xpbmsgKnB3bV9k
+ZXZpY2VfbGlua19hZGQoc3RydWN0IGRldmljZSAqZGV2LAo+Pj4+ICsJCQkJCSAgICAgICBzdHJ1
+Y3QgcHdtX2RldmljZSAqcHdtKQo+Pj4+ICt7Cj4+Pj4gKwlzdHJ1Y3QgZGV2aWNlX2xpbmsgKmRs
+Owo+Pj4+ICsKPj4+PiArCWlmICghZGV2KSB7Cj4+Pj4gKwkJLyoKPj4+PiArCQkgKiBObyBkZXZp
+Y2UgZm9yIHRoZSBQV00gY29uc3VtZXIgaGFzIGJlZW4gcHJvdmlkZWQuIEl0IG1heQo+Pj4+ICsJ
+CSAqIGltcGFjdCB0aGUgUE0gc2VxdWVuY2Ugb3JkZXJpbmc6IHRoZSBQV00gc3VwcGxpZXIgbWF5
+IGdldAo+Pj4+ICsJCSAqIHN1c3BlbmRlZCBiZWZvcmUgdGhlIGNvbnN1bWVyLgo+Pj4+ICsJCSAq
+Lwo+Pj4+ICsJCXByX3dhcm4oIm5vIGNvbnN1bWVyIGRldiwgY2FuJ3QgY3JlYXRlIGRldmljZSBs
+aW5rIHRvICVzXG4iLAo+Pj4+ICsJCQlkZXZfbmFtZShwd20tPmNoaXAtPmRldikpOwo+Pj4KPj4+
+IE1heWJlIHVzZSBkZXZfd2Fybihwd20tPmNoaXAtPmRldiwgLi4uKSA/Cj4+Cj4+IEhpIFV3ZSwK
+Pj4KPj4gSSdtIHdvbmRlcmluZyBhIGJpdCBhYm91dCB0aGlzOiBJbiB0aGlzIGNhc2UsIHRoZSBj
+YWxsZXIgdGhhdCBkb2Vzbid0Cj4+IHByb3ZpZGUgYSBzdHJ1Y3QgZGV2aWNlICosIFBXTSBwcm92
+aWRlciBpc24ndCByZXNwb25zaWJsZSBmb3IgdGhhdC4gU28gSQo+PiBqdXN0IGhvcGUgdGhpcyB3
+b3VsZG4ndCBiZSBtaXNzLWxlYWRpbmcgPwo+IAo+IElNSE8gaXQncyBtb3JlIHRoZSB3b3JkaW5n
+IHRoYXQgbWlnaHQgbWFrZSB0aGUgbWVzc2FnZSBtaXNsZWFkaW5nLiBJZgo+IHlvdSB1c2UKPiAK
+PiAJZGV2X3dhcm4ocHdtLT5jaGlwLT5kZXYsICJObyBjb25zdW1lciBkZXZpY2Ugc3BlY2lmaWVk
+IHRvIGNyZWF0ZSBhIGRldmljZSBsaW5rIHRvXG4iKTsKPiAKPiB0aGF0J3MgY29tcGxldGVseSBm
+aW5lIGluIG15IGV5ZXMuCgpUaGFua3MgZm9yIHRoZSBzdWdnZXN0aW9uLCBJJ2xsIHVwZGF0ZSB0
+aGlzIGFzIHdlbGwgaW4gdjUuCgpCZXN0IHJlZ2FyZHMsCkZhYnJpY2UKPiAgCj4gQmVzdCByZWdh
+cmRzCj4gVXdlCj4gCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3Rz
+LmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5m
+by9saW51eC1hcm0ta2VybmVsCg==
