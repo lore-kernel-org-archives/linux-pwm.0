@@ -1,116 +1,84 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v2 1/1] drm/mediatek: add mt8183 dpi support
-Date: Tue, 19 Feb 2019 12:43:57 +0800
-Message-ID: <1550551437.9232.4.camel@mtksdaap41>
-References: <20190219030645.68321-1-jitao.shi@mediatek.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v1 2/5] dt-bindings: pwm: add a property
+ "mediatek,num-pwms"
+Date: Tue, 19 Feb 2019 08:30:28 +0100
+Message-ID: <20190219073028.eljpo6vlqpgmzcef@pengutronix.de>
+References: <de316385a84e079d3b23891e61c959094b9fa7e5.1547781007.git.ryder.lee@mediatek.com>
+ <7e1de17a43f2cde73aecd2773e2b3a5fdfd294f3.1547781007.git.ryder.lee@mediatek.com>
+ <7d387d2a-74f0-c6c7-aa2d-cf9b87579682@gmail.com>
+ <20190218203658.GA20434@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190219030645.68321-1-jitao.shi@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <20190218203658.GA20434@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
+To: Rob Herring <robh@kernel.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, devicetree@vger.kernel.org, Ryder Lee <ryder.lee@mediatek.com>, linux-pwm@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, Weijie Gao <weijie.gao@mediatek.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Jitao:
-
-On Tue, 2019-02-19 at 11:06 +0800, Jitao Shi wrote:
-> MT8183 samples on rising and falling edge. It can reduce half data
-> io.
-> MT8173 also has those registers. But the hw function is removed.
-> So MT8173 doesn't support DPI dual edge sample and can't use the
-> same setting to mt8183.
+On Mon, Feb 18, 2019 at 02:36:58PM -0600, Rob Herring wrote:
+> On Fri, Jan 18, 2019 at 09:44:49AM +0100, Matthias Brugger wrote:
+> > 
+> > 
+> > On 18/01/2019 04:24, Ryder Lee wrote:
+> > > This adds a property "mediatek,num-pwms" in example so that we could
+> > > set the number of PWM channels via device tree.
+> > > 
+> > > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+> > > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> > > ---
+> > > Changes since v1: add a Reviewed-by tag.
+> > > ---
+> > >  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > > index 991728c..f9e2d1f 100644
+> > > --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > > +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > > @@ -20,6 +20,7 @@ Required properties:
+> > >   - pinctrl-names: Must contain a "default" entry.
+> > >   - pinctrl-0: One property must exist for each entry in pinctrl-names.
+> > >     See pinctrl/pinctrl-bindings.txt for details of the property values.
+> > > + - mediatek,num-pwms: the number of PWM channels.
+> > >  
+> > >  Example:
+> > >  	pwm0: pwm@11006000 {
+> > > @@ -37,4 +38,5 @@ Example:
+> > >  			      "pwm3", "pwm4", "pwm5";
+> > >  		pinctrl-names = "default";
+> > >  		pinctrl-0 = <&pwm0_pins>;
+> > > +		mediatek,num-pwms = <5>;
+> > >  	};
+> > > 
+> > 
+> > Wasn't there a comment in the last version to use num-pwms instead of
+> > mediatek,num-pwms?
+> > 
+> > Uwe I think you requested that.
 > 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dpi.c | 29 +++++++++++++++++++++++++++++
->  1 file changed, 29 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> index 62a9d47df948..610c23334047 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> @@ -117,6 +117,7 @@ struct mtk_dpi_conf {
->  	unsigned int (*cal_factor)(int clock);
->  	u32 reg_h_fre_con;
->  	bool edge_sel_en;
-> +	bool dual_edge;
->  };
->  
->  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
-> @@ -353,6 +354,13 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
->  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0, EDGE_SEL_EN);
->  }
->  
-> +static void mtk_dpi_enable_dual_edge(struct mtk_dpi *dpi)
-> +{
-> +	mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE,
-> +		     DDR_EN | DDR_4PHASE);
-> +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, EDGE_SEL, EDGE_SEL);
-> +}
+> Perhaps, but why is this needed? Typically, this would be implied by the 
+> compatible or the driver doesn't care and we assume 'pwms' properties 
+> are not out of range.
 
-I would like to move dual edge function to an independent patch. Maybe
-some other SoC need dual edge function but it's not mt8183 so it could
-cherry-pick the dual edge part only.
+I think it is sensible to standardize such a property because there are
+a few drivers that support different variants of PWMs that only differ
+in the number of supported pwms. See for example pwm-mediatek and
+pwm-sun4i. I wrote a longer motivation in a mail that is available at
+https://www.spinics.net/lists/linux-pwm/msg08859.html.
 
-> +
->  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
->  					enum mtk_dpi_out_color_format format)
->  {
-> @@ -509,6 +517,8 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
->  	mtk_dpi_config_color_format(dpi, dpi->color_format);
->  	mtk_dpi_config_2n_h_fre(dpi);
->  	mtk_dpi_config_disable_edge(dpi);
-> +	if (dpi->conf->dual_edge)
-> +		mtk_dpi_enable_dual_edge(dpi);
->  	mtk_dpi_sw_reset(dpi, false);
->  
->  	return 0;
-> @@ -671,6 +681,16 @@ static unsigned int mt2701_calculate_factor(int clock)
->  		return 2;
->  }
->  
-> +static unsigned int mt8183_calculate_factor(int clock)
-> +{
-> +	if (clock <= 27000)
-> +		return 8;
-> +	else if (clock <= 167000)
-> +		return 4;
-> +	else
-> +		return 2;
-> +}
-> +
->  static const struct mtk_dpi_conf mt8173_conf = {
->  	.cal_factor = mt8173_calculate_factor,
->  	.reg_h_fre_con = 0xe0,
-> @@ -682,6 +702,12 @@ static const struct mtk_dpi_conf mt2701_conf = {
->  	.edge_sel_en = true,
->  };
->  
-> +static const struct mtk_dpi_conf mt8183_conf = {
-> +	.cal_factor = mt8183_calculate_factor,
-> +	.reg_h_fre_con = 0xe0,
-> +	.dual_edge = true,
-> +};
-> +
->  static int mtk_dpi_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
-> @@ -777,6 +803,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
->  	{ .compatible = "mediatek,mt8173-dpi",
->  	  .data = &mt8173_conf,
->  	},
-> +	{ .compatible = "mediatek,mt8183-dpi",
+The short version is that there are at least four drivers that have to
+solve the same task to determine the number of available pwms from the
+compatible. While this isn't a hard task it seems sensible to me to
+describe this generic property of a piece of hardware that provides PWMs
+in the device tree instead of implementing a table in the driver.
 
-I could not find "mediatek,mt8183-dpi" in binding document, please add
-it.
+Best regards
+Uwe
 
-Regards,
-CK
-
-> +	  .data = &mt8183_conf,
-> +	},
->  	{ },
->  };
->  
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
