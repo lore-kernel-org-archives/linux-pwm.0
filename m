@@ -1,68 +1,45 @@
-From: Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: [PATCH v3 1/3] pwm: hibvt: Use individual struct per of-data.
-Date: Tue, 19 Feb 2019 10:58:06 +0100
-Message-ID: <20190219095808.12059-1-m.othacehe@gmail.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: [PATCH v2 0/4] add support for the new SAM9X60's PWM controller
+Date: Tue, 19 Feb 2019 10:08:50 +0000
+Message-ID: <1550570914-26391-1-git-send-email-claudiu.beznea@microchip.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu Othacehe <m.othacehe@gmail.com>
+To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-Split pwm-soc array in one struct per soc and point to the
-corresponding on in of-data.
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
----
- drivers/pwm/pwm-hibvt.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+This series adds support for PWM controller of the new SAM9X60. The differe=
+nce
+b/w this one and the provious AT91SAM9X5 is the counter size (32 bits compa=
+red
+with 16 bits on the previous version) thus, allowing to generate signals wi=
+th
+bigger periods and duty cycles. This series, modifies the driver to take in=
+to
+account per IP counter size by embedding this information into driver's dat=
+a.
 
-diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-index 27c107e78d59..ffc803818c3c 100644
---- a/drivers/pwm/pwm-hibvt.c
-+++ b/drivers/pwm/pwm-hibvt.c
-@@ -49,15 +49,19 @@ struct hibvt_pwm_chip {
- 	struct clk *clk;
- 	void __iomem *base;
- 	struct reset_control *rstc;
-+	const struct hibvt_pwm_soc *soc;
- };
- 
- struct hibvt_pwm_soc {
- 	u32 num_pwms;
- };
- 
--static const struct hibvt_pwm_soc pwm_soc[2] = {
--	{ .num_pwms = 4 },
--	{ .num_pwms = 8 },
-+static const struct hibvt_pwm_soc hi3516cv300_soc_info = {
-+	.num_pwms = 4,
-+};
-+
-+static const struct hibvt_pwm_soc hi3519v100_soc_info = {
-+	.num_pwms = 8,
- };
- 
- static inline struct hibvt_pwm_chip *to_hibvt_pwm_chip(struct pwm_chip *chip)
-@@ -198,6 +202,7 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
- 	pwm_chip->chip.npwm = soc->num_pwms;
- 	pwm_chip->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pwm_chip->chip.of_pwm_n_cells = 3;
-+	pwm_chip->soc = soc;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pwm_chip->base = devm_ioremap_resource(&pdev->dev, res);
-@@ -250,8 +255,10 @@ static int hibvt_pwm_remove(struct platform_device *pdev)
- }
- 
- static const struct of_device_id hibvt_pwm_of_match[] = {
--	{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_soc[0] },
--	{ .compatible = "hisilicon,hi3519v100-pwm", .data = &pwm_soc[1] },
-+	{ .compatible = "hisilicon,hi3516cv300-pwm",
-+	  .data = &hi3516cv300_soc_info },
-+	{ .compatible = "hisilicon,hi3519v100-pwm",
-+	  .data = &hi3519v100_soc_info },
- 	{  }
- };
- MODULE_DEVICE_TABLE(of, hibvt_pwm_of_match);
--- 
-2.17.1
+Changes in v2:
+- add reviewed-by tag to DT inding patch
+- move PWM_MAXV2_PRD from patch 2/4 in patch 3/4
+- change commit description for patch 3/4
+
+Claudiu Beznea (4):
+  pwm: atmel: add struct atmel_pwm_data
+  pwm: atmel: add support for controllers with 32 bit counters
+  pwm: atmel: add support for SAM9X60's PWM controller
+  pwm: atmel: add PWM binding for SAM9X60
+
+ .../devicetree/bindings/pwm/atmel-pwm.txt          |   1 +
+ drivers/pwm/pwm-atmel.c                            | 119 ++++++++++++++---=
+----
+ 2 files changed, 81 insertions(+), 39 deletions(-)
+
+--=20
+2.7.4
