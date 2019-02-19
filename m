@@ -1,51 +1,36 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH 2/4] pwm: atmel: add support for controllers with 32 bit
- counters
-Date: Tue, 19 Feb 2019 08:57:04 +0000
-Message-ID: <e08cbcb2-4e37-4a2e-ea79-021a2c7a25d6@microchip.com>
-References: <1548073783-22640-1-git-send-email-claudiu.beznea@microchip.com>
- <1548073783-22640-3-git-send-email-claudiu.beznea@microchip.com>
- <20190219074246.kcdbd5nhf43yw5ax@pengutronix.de>
+From: Jitao Shi <jitao.shi@mediatek.com>
+Subject: [PATCH v1 0/2] drm/mediatek: add mipi_tx driver for mt8183
+Date: Tue, 19 Feb 2019 17:14:02 +0800
+Message-ID: <20190219091404.89370-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190219074246.kcdbd5nhf43yw5ax@pengutronix.de>
-Content-Language: en-US
-Content-ID: <8BF9CBF41A5E0F40A8890E8641F34482@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: u.kleine-koenig@pengutronix.de
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Jitao Shi <jitao.shi@mediatek.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediate
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDE5LjAyLjIwMTkgMDk6NDIsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBIZWxs
-byBDbGF1ZGl1LA0KPiANCj4gT24gTW9uLCBKYW4gMjEsIDIwMTkgYXQgMTI6MzA6NTNQTSArMDAw
-MCwgQ2xhdWRpdS5CZXpuZWFAbWljcm9jaGlwLmNvbSB3cm90ZToNCj4+IEZyb206IENsYXVkaXUg
-QmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KPj4NCj4+IE5ldyBTQU05WDYw
-J3MgUFdNIGNvbnRyb2xsZXIgdXNlIDMyIGJpdHMgY291bnRlcnMgdGh1cyBpdCBjb3VsZCBnZW5l
-cmF0ZQ0KPj4gc2lnbmFscyB3aXRoIGhpZ2hlciBwZXJpb2QgYW5kIGR1dHkgY3ljbGVzLiBVcGRh
-dGUgdGhlIGN1cnJlbnQgZHJpdmVyDQo+PiB0byB3b3JrIHdpdGggb2xkIGNvbnRyb2xsZXIgKHRo
-YXQgdXNlcyAxNiBiaXRzIGNvdW50ZXJzKSBhbmQgd2l0aCB0aGUNCj4+IG5ldyBTQU05WDYwJ3Mg
-Y29udHJvbGxlci4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBDbGF1ZGl1IEJlem5lYSA8Y2xhdWRp
-dS5iZXpuZWFAbWljcm9jaGlwLmNvbT4NCj4+IC0tLQ0KPj4gIGRyaXZlcnMvcHdtL3B3bS1hdG1l
-bC5jIHwgMzggKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0NCj4+ICAxIGZp
-bGUgY2hhbmdlZCwgMjcgaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC5jIGIvZHJpdmVycy9wd20vcHdtLWF0bWVs
-LmMNCj4+IGluZGV4IDdlODZhNTI2NmViNi4uNDRmNGExYzlmNjBiIDEwMDY0NA0KPj4gLS0tIGEv
-ZHJpdmVycy9wd20vcHdtLWF0bWVsLmMNCj4+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC5j
-DQo+PiBAQCAtNDgsMTUgKzQ4LDE1IEBADQo+PiAgI2RlZmluZSBQV01WMl9DUFJECQkweDBDDQo+
-PiAgI2RlZmluZSBQV01WMl9DUFJEVVBECQkweDEwDQo+PiAgDQo+PiAtLyoNCj4+IC0gKiBNYXgg
-dmFsdWUgZm9yIGR1dHkgYW5kIHBlcmlvZA0KPj4gLSAqDQo+PiAtICogQWx0aG91Z2ggdGhlIGR1
-dHkgYW5kIHBlcmlvZCByZWdpc3RlciBpcyAzMiBiaXQsDQo+PiAtICogaG93ZXZlciBvbmx5IHRo
-ZSBMU0IgMTYgYml0cyBhcmUgc2lnbmlmaWNhbnQuDQo+PiAtICovDQo+PiAtI2RlZmluZSBQV01f
-TUFYX0RUWQkJMHhGRkZGDQo+PiAtI2RlZmluZSBQV01fTUFYX1BSRAkJMHhGRkZGDQo+PiAtI2Rl
-ZmluZSBQUkRfTUFYX1BSRVMJCTEwDQo+PiArLyogTWF4IHZhbHVlcyBmb3IgcGVyaW9kIGFuZCBw
-cmVzY2FsZXIgKi8NCj4+ICsNCj4+ICsvKiBPbmx5IHRoZSBMU0IgMTYgYml0cyBhcmUgc2lnbmlm
-aWNhbnQuICovDQo+PiArI2RlZmluZSBQV01fTUFYVjFfUFJECQkweEZGRkYNCj4+ICsNCj4+ICsv
-KiBBbGwgMzIgYml0cyBhcmUgc2lnbmlmaWNhbnQuICovDQo+PiArI2RlZmluZSBQV01fTUFYVjJf
-UFJECQkweEZGRkZGRkZGDQo+IA0KPiBUaGlzIHN5bWJvbCBpcyB1bnVzZWQsIHNvIEkgd29uZGVy
-IGlmIHRoZSBwYXRjaCByZWFsbHkgZG9lcyB3aGF0IHRoZQ0KPiBjb21taXQgbG9nIHByb21pc2Vz
-Lg0KDQpJdCBpcyBvbmx5IG9mIFNBTTlYNjAncyBQV00uIFBsZWFzZSBjaGVjayBwYXRjaCAzLzQu
-IE1heWJlIEkgc2hvdWxkIGhhdmUNCmJlZW4gaW50cm9kdWNlZCBpdCBpbiB0aGVyZS4gSWYgeW91
-IGNvbnNpZGVyIGl0IGlzIGJldHRlciB0byBiZSBpbnRyb2R1Y2VkDQppbiBwYXRjaCAzLzQgcGxl
-YXNlIGxldCBtZSBrbm93Lg0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMNCj4gVXdlDQo+IA0K
+MT8183 has different setting to MT8173(exist chip). We add mt8183 mipi_tx driver.
+1) Separate mipi_tx to common part and chip relate part.
+2) Add mt8183 mipi_tx driver
+
+Changes since v0:
+- Separate two independent patches.
+
+Jitao Shi (2):
+  drm/mediatek: separate mipi_tx to different file
+  drm/mediatek: add mipi_tx driver for mt8183
+
+ drivers/gpu/drm/mediatek/Makefile             |   1 +
+ drivers/gpu/drm/mediatek/mtk_mipi_tx.c        | 352 ++----------------
+ drivers/gpu/drm/mediatek/mtk_mipi_tx.h        |  52 +++
+ drivers/gpu/drm/mediatek/mtk_mt8173_mipi_tx.c | 290 +++++++++++++++
+ drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c | 168 +++++++++
+ 5 files changed, 548 insertions(+), 315 deletions(-)
+ create mode 100644 drivers/gpu/drm/mediatek/mtk_mipi_tx.h
+ create mode 100644 drivers/gpu/drm/mediatek/mtk_mt8173_mipi_tx.c
+ create mode 100644 drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c
+
+-- 
+2.20.1
