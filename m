@@ -1,172 +1,60 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [PATCH v1 2/2] drm/mediatek: add mipi_tx driver for mt8183
-Date: Wed, 20 Feb 2019 16:34:18 +0800
-Message-ID: <1550651658.30389.12.camel@mtksdaap41>
-References: <20190219091404.89370-1-jitao.shi@mediatek.com>
- <20190219091404.89370-3-jitao.shi@mediatek.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH v5 0/3] Add PM support to STM32 LP Timer drivers
+Date: Wed, 20 Feb 2019 14:07:45 +0100
+Message-ID: <1550668068-9661-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190219091404.89370-3-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Sean Paul <seanpaul@chromium>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, robh+dt@kernel.org, mcoquelin.stm32@gmail.com, u.kleine-koenig@pengutronix.de, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEppdGFvOgoKT24gVHVlLCAyMDE5LTAyLTE5IGF0IDE3OjE0ICswODAwLCBKaXRhbyBTaGkg
-d3JvdGU6Cj4gVGhpcyBwYXRjaCBhZGQgbXQ4MTgzIG1pcGlfdHggZHJpdmVyLgo+IEFuZCBhbHNv
-IHN1cHBvcnQgb3RoZXIgY2hpcHMgdGhhdCB1c2UgdGhlIHNhbWUgYmluZGluZyBhbmQgZHJpdmVy
-Lgo+IAo+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNoaSA8aml0YW8uc2hpQG1lZGlhdGVrLmNvbT4K
-PiAtLS0KPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19taXBpX3R4LmMgICAgICAgIHwg
-ICAyICsKPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19taXBpX3R4LmggICAgICAgIHwg
-ICAxICsKPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19tdDgxODNfbWlwaV90eC5jIHwg
-MTY4ICsrKysrKysrKysrKysrKysrKwo+ICAzIGZpbGVzIGNoYW5nZWQsIDE3MSBpbnNlcnRpb25z
-KCspCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX210
-ODE4M19taXBpX3R4LmMKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVr
-L210a19taXBpX3R4LmMgYi9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX21pcGlfdHguYwo+
-IGluZGV4IGZhMzYxYzhiZThkNy4uODNmYjc3MTdkMzgzIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMv
-Z3B1L2RybS9tZWRpYXRlay9tdGtfbWlwaV90eC5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL21l
-ZGlhdGVrL210a19taXBpX3R4LmMKPiBAQCAtMTk4LDYgKzE5OCw4IEBAIHN0YXRpYyBjb25zdCBz
-dHJ1Y3Qgb2ZfZGV2aWNlX2lkIG10a19taXBpX3R4X21hdGNoW10gPSB7Cj4gIAkgIC5kYXRhID0g
-Jm10MjcwMV9taXBpdHhfZGF0YSB9LAo+ICAJeyAuY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgx
-NzMtbWlwaS10eCIsCj4gIAkgIC5kYXRhID0gJm10ODE3M19taXBpdHhfZGF0YSB9LAo+ICsJeyAu
-Y29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxODMtbWlwaS10eCIsCgpUaGlzIGNvbXBhdGlibGUg
-c3RyaW5nIGRvZXMgbm90IGV4aXN0IGluIFsxXSwgcGxlYXNlIGFkZCBpdC4KClsxXQpodHRwczov
-L3d3dy5rZXJuZWwub3JnL2RvYy9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvZGlz
-cGxheS9tZWRpYXRlay9tZWRpYXRlayUyQ2RzaS50eHQKCj4gKwkgIC5kYXRhID0gJm10ODE4M19t
-aXBpdHhfZGF0YSB9LAo+ICAJeyB9LAo+ICB9Owo+ICAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9n
-cHUvZHJtL21lZGlhdGVrL210a19taXBpX3R4LmggYi9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsv
-bXRrX21pcGlfdHguaAo+IGluZGV4IDJkN2YwNWIwZDZhNy4uYWY4MzAyM2U4MWNmIDEwMDY0NAo+
-IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfbWlwaV90eC5oCj4gKysrIGIvZHJp
-dmVycy9ncHUvZHJtL21lZGlhdGVrL210a19taXBpX3R4LmgKPiBAQCAtNDcsNSArNDcsNiBAQCB1
-bnNpZ25lZCBsb25nIG10a19taXBpX3R4X3BsbF9yZWNhbGNfcmF0ZShzdHJ1Y3QgY2xrX2h3ICpo
-dywKPiAgCj4gIGV4dGVybiBjb25zdCBzdHJ1Y3QgbXRrX21pcGl0eF9kYXRhIG10MjcwMV9taXBp
-dHhfZGF0YTsKPiAgZXh0ZXJuIGNvbnN0IHN0cnVjdCBtdGtfbWlwaXR4X2RhdGEgbXQ4MTczX21p
-cGl0eF9kYXRhOwo+ICtleHRlcm4gY29uc3Qgc3RydWN0IG10a19taXBpdHhfZGF0YSBtdDgxODNf
-bWlwaXR4X2RhdGE7Cj4gIAo+ICAjZW5kaWYKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJt
-L21lZGlhdGVrL210a19tdDgxODNfbWlwaV90eC5jIGIvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVr
-L210a19tdDgxODNfbWlwaV90eC5jCj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPiBpbmRleCAwMDAw
-MDAwMDAwMDAuLjA3ZjcwYTNjYWQxMwo+IC0tLSAvZGV2L251bGwKPiArKysgYi9kcml2ZXJzL2dw
-dS9kcm0vbWVkaWF0ZWsvbXRrX210ODE4M19taXBpX3R4LmMKPiBAQCAtMCwwICsxLDE2OCBAQAo+
-ICsvKgo+ICsgKiBDb3B5cmlnaHQgKGMpIDIwMTUgTWVkaWFUZWsgSW5jLgoKMjAxOQoKPiArICoK
-PiArICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRl
-IGl0IGFuZC9vciBtb2RpZnkKPiArICogaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2Vu
-ZXJhbCBQdWJsaWMgTGljZW5zZSB2ZXJzaW9uIDIgYXMKPiArICogcHVibGlzaGVkIGJ5IHRoZSBG
-cmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCj4gKyAqCj4gKyAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0
-cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLAo+ICsgKiBidXQgV0lU
-SE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZgo+
-ICsgKiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0Uu
-ICBTZWUgdGhlCj4gKyAqIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFp
-bHMuCj4gKyAqLwoKUGxlYXNlIGZvbGxvdyB0aGUgbGljZW5zZSBydWxlIFsxXS4KClsxXSBodHRw
-czovL3d3dy5rZXJuZWwub3JnL2RvYy9odG1sL3Y0LjIwL3Byb2Nlc3MvbGljZW5zZS1ydWxlcy5o
-dG1sCgo+ICsKPiArI2luY2x1ZGUgIm10a19taXBpX3R4LmgiCj4gKwo+ICsjZGVmaW5lIE1JUElU
-WF9MQU5FX0NPTgkJMHgwMDBjCj4gKyNkZWZpbmUgUkdfRFNJX0NQSFlfVDFEUlZfRU4JQklUKDAp
-Cj4gKyNkZWZpbmUgUkdfRFNJX0FOQV9DS19TRUwJQklUKDEpCj4gKyNkZWZpbmUgUkdfRFNJX1BI
-WV9DS19TRUwJQklUKDIpCj4gKyNkZWZpbmUgUkdfRFNJX0NQSFlfRU4JQklUKDMpCj4gKyNkZWZp
-bmUgUkdfRFNJX1BIWUNLX0lOVl9FTglCSVQoNCkKPiArI2RlZmluZSBSR19EU0lfUFdSMDRfRU4J
-QklUKDUpCj4gKyNkZWZpbmUgUkdfRFNJX0JHX0xQRl9FTglCSVQoNikKPiArI2RlZmluZSBSR19E
-U0lfQkdfQ09SRV9FTglCSVQoNykKPiArI2RlZmluZSBSR19EU0lfUEFEX1RJRUxfU0VMCUJJVCg4
-KQoKQWxpZ25lZCB0byBtdDgxNzNfbWlwaV90eC5jLCBiaXR3aXNlIGRlZmluaXRpb24gd291bGQg
-YWRkIG9uZSBtb3JlCid0YWInLgoKPiArCj4gKyNkZWZpbmUgTUlQSVRYX1BMTF9QV1IJCTB4MDAy
-OAo+ICsjZGVmaW5lIE1JUElUWF9QTExfQ09OMAkJMHgwMDJjCj4gKyNkZWZpbmUgTUlQSVRYX1BM
-TF9DT04xCQkweDAwMzAKPiArI2RlZmluZSBNSVBJVFhfUExMX0NPTjIJCTB4MDAzNAo+ICsjZGVm
-aW5lIE1JUElUWF9QTExfQ09OMwkJMHgwMDM4Cj4gKyNkZWZpbmUgTUlQSVRYX1BMTF9DT040CQkw
-eDAwM2MKPiArI2RlZmluZSBSR19EU0lfUExMX0lCSUFTCSgzIDw8IDEwKQo+ICsKPiArI2RlZmlu
-ZSBNSVBJVFhfRDJfU1dfQ1RMX0VOCTB4MDE0NAo+ICsjZGVmaW5lIE1JUElUWF9EMF9TV19DVExf
-RU4JMHgwMjQ0Cj4gKyNkZWZpbmUgTUlQSVRYX0NLX0NLTU9ERV9FTgkweDAzMjgKPiArI2RlZmlu
-ZSBEU0lfQ0tfQ0tNT0RFX0VOCUJJVCgwKQo+ICsjZGVmaW5lIE1JUElUWF9DS19TV19DVExfRU4J
-MHgwMzQ0Cj4gKyNkZWZpbmUgTUlQSVRYX0QxX1NXX0NUTF9FTgkweDA0NDQKPiArI2RlZmluZSBN
-SVBJVFhfRDNfU1dfQ1RMX0VOCTB4MDU0NAo+ICsjZGVmaW5lIERTSV9TV19DVExfRU4JCUJJVCgw
-KQo+ICsjZGVmaW5lIEFEX0RTSV9QTExfU0RNX1BXUl9PTglCSVQoMCkKPiArI2RlZmluZSBBRF9E
-U0lfUExMX1NETV9JU09fRU4JQklUKDEpCj4gKwo+ICsjZGVmaW5lIFJHX0RTSV9QTExfRU4JCUJJ
-VCg0KQo+ICsjZGVmaW5lIFJHX0RTSV9QTExfUE9TRElWCSgweDcgPDwgOCkKPiArCj4gK3N0YXRp
-YyBpbnQgbXRrX21pcGlfdHhfcGxsX3ByZXBhcmUoc3RydWN0IGNsa19odyAqaHcpCj4gK3sKPiAr
-CXN0cnVjdCBtdGtfbWlwaV90eCAqbWlwaV90eCA9IG10a19taXBpX3R4X2Zyb21fY2xrX2h3KGh3
-KTsKPiArCXVuc2lnbmVkIGludCB0eGRpdiwgdHhkaXYwLCB0eGRpdjE7Cgp0eGRpdjEgaXMgdXNl
-bGVzcywgc28gcmVtb3ZlIGl0LgoKPiArCXU2NCBwY3c7Cj4gKwlpbnQgcmV0Owo+ICsKPiArCWRl
-dl9kYmcobWlwaV90eC0+ZGV2LCAicHJlcGFyZTogJXUgYnBzXG4iLCBtaXBpX3R4LT5kYXRhX3Jh
-dGUpOwo+ICsKPiArCWlmIChtaXBpX3R4LT5kYXRhX3JhdGUgPj0gMjAwMDAwMDAwMCkgewo+ICsJ
-CXR4ZGl2ID0gMTsKPiArCQl0eGRpdjAgPSAwOwo+ICsJCXR4ZGl2MSA9IDA7Cj4gKwl9IGVsc2Ug
-aWYgKG1pcGlfdHgtPmRhdGFfcmF0ZSA+PSAxMDAwMDAwMDAwKSB7Cj4gKwkJdHhkaXYgPSAyOwo+
-ICsJCXR4ZGl2MCA9IDE7Cj4gKwkJdHhkaXYxID0gMDsKPiArCX0gZWxzZSBpZiAobWlwaV90eC0+
-ZGF0YV9yYXRlID49IDUwMDAwMDAwMCkgewo+ICsJCXR4ZGl2ID0gNDsKPiArCQl0eGRpdjAgPSAy
-Owo+ICsJCXR4ZGl2MSA9IDA7Cj4gKwl9IGVsc2UgaWYgKG1pcGlfdHgtPmRhdGFfcmF0ZSA+IDI1
-MDAwMDAwMCkgewo+ICsJCXR4ZGl2ID0gODsKPiArCQl0eGRpdjAgPSAzOwo+ICsJCXR4ZGl2MSA9
-IDA7Cj4gKwl9IGVsc2UgaWYgKG1pcGlfdHgtPmRhdGFfcmF0ZSA+PSAxMjUwMDAwMDApIHsKPiAr
-CQl0eGRpdiA9IDE2Owo+ICsJCXR4ZGl2MCA9IDQ7Cj4gKwkJdHhkaXYxID0gMDsKPiArCX0gZWxz
-ZSB7Cj4gKwkJcmV0dXJuIC1FSU5WQUw7Cj4gKwl9Cj4gKwo+ICsJcmV0ID0gY2xrX3ByZXBhcmVf
-ZW5hYmxlKG1pcGlfdHgtPnJlZl9jbGspOwo+ICsJaWYgKHJldCA8IDApIHsKPiArCQlkZXZfZXJy
-KG1pcGlfdHgtPmRldiwgImNhbid0IG1pcGlfdHggcmVmX2NsayAlZFxuIiwgcmV0KTsKCiJjYW4n
-dCBwcmVwYXJlIGFuZCBlbmFibGUgbWlwaV90eCByZWZfY2xrLi4uCgo+ICsJCXJldHVybiByZXQ7
-Cj4gKwl9Cj4gKwo+ICsJbXRrX21pcGlfdHhfY2xlYXJfYml0cyhtaXBpX3R4LCBNSVBJVFhfUExM
-X0NPTjQsIFJHX0RTSV9QTExfSUJJQVMpOwo+ICsKPiArCW10a19taXBpX3R4X3NldF9iaXRzKG1p
-cGlfdHgsIE1JUElUWF9QTExfUFdSLCBBRF9EU0lfUExMX1NETV9QV1JfT04pOwo+ICsJdXNsZWVw
-X3JhbmdlKDMwLCAxMDApOwo+ICsJbXRrX21pcGlfdHhfY2xlYXJfYml0cyhtaXBpX3R4LCBNSVBJ
-VFhfUExMX1BXUiwgQURfRFNJX1BMTF9TRE1fSVNPX0VOKTsKPiArCXBjdyA9IGRpdl91NjQoKCh1
-NjQpbWlwaV90eC0+ZGF0YV9yYXRlICogdHhkaXYpIDw8IDI0LCAyNjAwMDAwMCk7Cj4gKwl3cml0
-ZWwocGN3LCBtaXBpX3R4LT5yZWdzICsgTUlQSVRYX1BMTF9DT04wKTsKPiArCW10a19taXBpX3R4
-X3VwZGF0ZV9iaXRzKG1pcGlfdHgsIE1JUElUWF9QTExfQ09OMSwgUkdfRFNJX1BMTF9QT1NESVYs
-Cj4gKwkJCQl0eGRpdjAgPDwgOCk7Cj4gKwl1c2xlZXBfcmFuZ2UoMTAwMCwgMjAwMCk7Cj4gKwlt
-dGtfbWlwaV90eF9zZXRfYml0cyhtaXBpX3R4LCBNSVBJVFhfUExMX0NPTjEsIFJHX0RTSV9QTExf
-RU4pOwo+ICsKPiArCXJldHVybiAwOwo+ICt9Cj4gKwo+ICtzdGF0aWMgdm9pZCBtdGtfbWlwaV90
-eF9wbGxfdW5wcmVwYXJlKHN0cnVjdCBjbGtfaHcgKmh3KQo+ICt7Cj4gKwlzdHJ1Y3QgbXRrX21p
-cGlfdHggKm1pcGlfdHggPSBtdGtfbWlwaV90eF9mcm9tX2Nsa19odyhodyk7Cj4gKwo+ICsJZGV2
-X2RiZyhtaXBpX3R4LT5kZXYsICJ1bnByZXBhcmVcbiIpOwo+ICsKPiArCW10a19taXBpX3R4X2Ns
-ZWFyX2JpdHMobWlwaV90eCwgTUlQSVRYX1BMTF9DT04xLCBSR19EU0lfUExMX0VOKTsKPiArCS8q
-IHN0ZXAgMTogU0RNX1JXUl9PTiAvIFNETV9JU09fRU4gKi8KClRoaXMgY29tbWVudCB0byB0aGUg
-Y29kZSBiZWZvcmUgaXQgb3IgYWZ0ZXIgaXQ/Cgo+ICsKPiArCW10a19taXBpX3R4X3NldF9iaXRz
-KG1pcGlfdHgsIE1JUElUWF9QTExfUFdSLCBBRF9EU0lfUExMX1NETV9JU09fRU4pOwo+ICsJbXRr
-X21pcGlfdHhfY2xlYXJfYml0cyhtaXBpX3R4LCBNSVBJVFhfUExMX1BXUiwgQURfRFNJX1BMTF9T
-RE1fUFdSX09OKTsKPiArCWNsa19kaXNhYmxlX3VucHJlcGFyZShtaXBpX3R4LT5yZWZfY2xrKTsK
-PiArfQo+ICsKPiArc3RhdGljIGNvbnN0IHN0cnVjdCBjbGtfb3BzIG10a19taXBpX3R4X3BsbF9v
-cHMgPSB7Cj4gKwkucHJlcGFyZSA9IG10a19taXBpX3R4X3BsbF9wcmVwYXJlLAo+ICsJLnVucHJl
-cGFyZSA9IG10a19taXBpX3R4X3BsbF91bnByZXBhcmUsCj4gKwkucm91bmRfcmF0ZSA9IG10a19t
-aXBpX3R4X3BsbF9yb3VuZF9yYXRlLAo+ICsJLnNldF9yYXRlID0gbXRrX21pcGlfdHhfcGxsX3Nl
-dF9yYXRlLAo+ICsJLnJlY2FsY19yYXRlID0gbXRrX21pcGlfdHhfcGxsX3JlY2FsY19yYXRlLAo+
-ICt9Owo+ICsKPiArc3RhdGljIHZvaWQgbXRrX21pcGlfdHhfcG93ZXJfb25fc2lnbmFsKHN0cnVj
-dCBwaHkgKnBoeSkKPiArewo+ICsJc3RydWN0IG10a19taXBpX3R4ICptaXBpX3R4ID0gcGh5X2dl
-dF9kcnZkYXRhKHBoeSk7Cj4gKwo+ICsJLyogQkdfTFBGX0VOIC8gQkdfQ09SRV9FTiAqLwo+ICsJ
-d3JpdGVsKFJHX0RTSV9QQURfVElFTF9TRUwgfCBSR19EU0lfQkdfQ09SRV9FTiwKPiArCSAgICAg
-ICBtaXBpX3R4LT5yZWdzICsgTUlQSVRYX0xBTkVfQ09OKTsKPiArCXVzbGVlcF9yYW5nZSgzMCwg
-MTAwKTsKPiArCXdyaXRlbChSR19EU0lfQkdfQ09SRV9FTiB8IFJHX0RTSV9CR19MUEZfRU4sCj4g
-KwkgICAgICAgbWlwaV90eC0+cmVncyArIE1JUElUWF9MQU5FX0NPTik7Cj4gKwo+ICsJLyogU3dp
-dGNoIE9GRiBlYWNoIExhbmUgKi8KPiArCW10a19taXBpX3R4X2NsZWFyX2JpdHMobWlwaV90eCwg
-TUlQSVRYX0QwX1NXX0NUTF9FTiwgRFNJX1NXX0NUTF9FTik7Cj4gKwltdGtfbWlwaV90eF9jbGVh
-cl9iaXRzKG1pcGlfdHgsIE1JUElUWF9EMV9TV19DVExfRU4sIERTSV9TV19DVExfRU4pOwo+ICsJ
-bXRrX21pcGlfdHhfY2xlYXJfYml0cyhtaXBpX3R4LCBNSVBJVFhfRDJfU1dfQ1RMX0VOLCBEU0lf
-U1dfQ1RMX0VOKTsKPiArCW10a19taXBpX3R4X2NsZWFyX2JpdHMobWlwaV90eCwgTUlQSVRYX0Qz
-X1NXX0NUTF9FTiwgRFNJX1NXX0NUTF9FTik7Cj4gKwltdGtfbWlwaV90eF9jbGVhcl9iaXRzKG1p
-cGlfdHgsIE1JUElUWF9DS19TV19DVExfRU4sIERTSV9TV19DVExfRU4pOwo+ICsKPiArCW10a19t
-aXBpX3R4X3NldF9iaXRzKG1pcGlfdHgsIE1JUElUWF9DS19DS01PREVfRU4sIERTSV9DS19DS01P
-REVfRU4pOwo+ICt9Cj4gKwo+ICtzdGF0aWMgdm9pZCBtdGtfbWlwaV90eF9wb3dlcl9vZmZfc2ln
-bmFsKHN0cnVjdCBwaHkgKnBoeSkKPiArewo+ICsJc3RydWN0IG10a19taXBpX3R4ICptaXBpX3R4
-ID0gcGh5X2dldF9kcnZkYXRhKHBoeSk7Cj4gKwo+ICsJLyogU3dpdGNoIE9OIGVhY2ggTGFuZSAq
-Lwo+ICsJbXRrX21pcGlfdHhfc2V0X2JpdHMobWlwaV90eCwgTUlQSVRYX0QwX1NXX0NUTF9FTiwg
-RFNJX1NXX0NUTF9FTik7Cj4gKwltdGtfbWlwaV90eF9zZXRfYml0cyhtaXBpX3R4LCBNSVBJVFhf
-RDFfU1dfQ1RMX0VOLCBEU0lfU1dfQ1RMX0VOKTsKPiArCW10a19taXBpX3R4X3NldF9iaXRzKG1p
-cGlfdHgsIE1JUElUWF9EMl9TV19DVExfRU4sIERTSV9TV19DVExfRU4pOwo+ICsJbXRrX21pcGlf
-dHhfc2V0X2JpdHMobWlwaV90eCwgTUlQSVRYX0QzX1NXX0NUTF9FTiwgRFNJX1NXX0NUTF9FTik7
-Cj4gKwltdGtfbWlwaV90eF9zZXRfYml0cyhtaXBpX3R4LCBNSVBJVFhfQ0tfU1dfQ1RMX0VOLCBE
-U0lfU1dfQ1RMX0VOKTsKPiArCj4gKwkvKiBzdGVwIDIgKi8KCkkgd291bGQgbGlrZSB0aGUgY29t
-bWVudCB0byBnaXZlIHNvbWUgaW5mb3JtYXRpb24sIGJ1dCB0aGlzIGNvbW1lbnQgZG9lcwpub3Qg
-c2hvdyBhbnkgaW5mb3JtYXRpb24uIE1ha2UgaXQgbW9yZSBtZWFuaW5nZnVsLCBvdGhlcndpc2Us
-IHJlbW92ZSBpdC4KCj4gKwl3cml0ZWwoUkdfRFNJX1BBRF9USUVMX1NFTCB8IFJHX0RTSV9CR19D
-T1JFX0VOLAo+ICsJICAgICAgIG1pcGlfdHgtPnJlZ3MgKyBNSVBJVFhfTEFORV9DT04pOwo+ICsJ
-d3JpdGVsKFJHX0RTSV9QQURfVElFTF9TRUwsIG1pcGlfdHgtPnJlZ3MgKyBNSVBJVFhfTEFORV9D
-T04pOwo+ICt9Cj4gKwo+ICtjb25zdCBzdHJ1Y3QgbXRrX21pcGl0eF9kYXRhIG10ODE4M19taXBp
-dHhfZGF0YSA9IHsKPiArCS5taXBpX3R4X2Nsa19vcHMgPSAmbXRrX21pcGlfdHhfcGxsX29wcywK
-PiArCS5taXBpX3R4X2VuYWJsZV9zaWduYWwgPSBtdGtfbWlwaV90eF9wb3dlcl9vbl9zaWduYWws
-Cj4gKwkubWlwaV90eF9kaXNhYmxlX3NpZ25hbCA9IG10a19taXBpX3R4X3Bvd2VyX29mZl9zaWdu
-YWwsCj4gK307Cj4gKwoKUmVtb3ZlIHRoZSBsYXRlc3QgYmxhbmsgbGluZS4KClJlZ2FyZHMsCkNL
-CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRl
-dmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8v
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+This patch series adds power management support for STM32 LP Timer:
+- PWM driver
+- Document the pinctrl states for sleep mode
+
+It also adds device link between the PWM consumer and the PWM provider.
+This allows proper sequencing for suspend/resume (e.g. user will likely
+do a pwm_disable() before the PWM provider suspend executes), see [1].
+
+[1] https://lkml.org/lkml/2019/2/5/770
+
+---
+Changes in v5:
+- improve a warning message, fix a style issue.
+
+Changes in v4:
+- improve error handling when adding the PWM consumer device link.
+
+Changes in v3:
+- Move the device_link_add() call to of_pwm_get() as discussed with Uwe.
+
+Changes in v2:
+- Don't disable PWM channel in PWM provider: rather refuse to suspend
+  and report an error as suggested by Uwe and Thierry.
+- Add patch 3/3 to propose device link addition.
+- No updates for STM32 LP Timer IIO driver. Patches can be send separately.
+
+Fabrice Gasnier (3):
+  dt-bindings: pwm-stm32-lp: document pinctrl sleep state
+  pwm: stm32-lp: Add power management support
+  pwm: core: add consumer device link
+
+ .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  9 ++--
+ drivers/pwm/core.c                                 | 50 ++++++++++++++++++++--
+ drivers/pwm/pwm-stm32-lp.c                         | 25 +++++++++++
+ include/linux/pwm.h                                |  6 ++-
+ 4 files changed, 82 insertions(+), 8 deletions(-)
+
+-- 
+2.7.4
