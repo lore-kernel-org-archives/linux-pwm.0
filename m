@@ -1,112 +1,56 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 2/4] pwm: atmel: add support for controllers with 32
- bit counters
-Date: Thu, 21 Feb 2019 21:42:14 +0100
-Message-ID: <20190221204214.krpobz2ezneynht5@pengutronix.de>
+Subject: Re: [PATCH v2 3/4] pwm: atmel: add support for SAM9X60's PWM
+ controller
+Date: Thu, 21 Feb 2019 21:45:04 +0100
+Message-ID: <20190221204503.w2xh4rw6rh4e5rg4@pengutronix.de>
 References: <1550570914-26391-1-git-send-email-claudiu.beznea@microchip.com>
- <1550570914-26391-3-git-send-email-claudiu.beznea@microchip.com>
+ <1550570914-26391-4-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1550570914-26391-3-git-send-email-claudiu.beznea@microchip.com>
+In-Reply-To: <1550570914-26391-4-git-send-email-claudiu.beznea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Claudiu.Beznea@microchip.com
 Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
-
-On Tue, Feb 19, 2019 at 10:08:57AM +0000, Claudiu.Beznea@microchip.com wrote:
+On Tue, Feb 19, 2019 at 10:09:00AM +0000, Claudiu.Beznea@microchip.com wrote:
 > From: Claudiu Beznea <claudiu.beznea@microchip.com>
 > 
-> New SAM9X60's PWM controller use 32 bits counters thus it could generate
-> signals with higher period and duty cycles than the old ones. Prepare the
-> current driver to be able to work with old controllers (that uses 16 bits
-> counters) and with the new SAM9X60's controller, by providing counters
-> information based on compatible.
-
-I'd write:
-
-	The PWM controller of the new SAM9X60 SoC uses 32 bit wide
-	counters compared to 16 bit wide counters in the earlier chips.
-	To support this add a new structure to the compatibles' data
-	that describe the counter width and precision and make use of
-	them instead of the hard coded values.
-
-Other than that the commit looks fine.
-
+> Add support for SAM9X60's PWM controller.
 > 
 > Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 > ---
->  drivers/pwm/pwm-atmel.c | 34 +++++++++++++++++++++++-----------
->  1 file changed, 23 insertions(+), 11 deletions(-)
+>  drivers/pwm/pwm-atmel.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
 > 
 > diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> index 7e86a5266eb6..647d063562db 100644
+> index 647d063562db..229cedb02770 100644
 > --- a/drivers/pwm/pwm-atmel.c
 > +++ b/drivers/pwm/pwm-atmel.c
-> @@ -48,15 +48,11 @@
->  #define PWMV2_CPRD		0x0C
->  #define PWMV2_CPRDUPD		0x10
+> @@ -52,6 +52,8 @@
 >  
-> -/*
-> - * Max value for duty and period
-> - *
-> - * Although the duty and period register is 32 bit,
-> - * however only the LSB 16 bits are significant.
-> - */
-> -#define PWM_MAX_DTY		0xFFFF
-> -#define PWM_MAX_PRD		0xFFFF
-> -#define PRD_MAX_PRES		10
-> +/* Max values for period and prescaler */
-> +
-> +/* Only the LSB 16 bits are significant. */
-> +#define PWM_MAXV1_PRD		0xFFFF
-> +#define PRD_MAXV1_PRES		10
+>  /* Only the LSB 16 bits are significant. */
+>  #define PWM_MAXV1_PRD		0xFFFF
+> +/* All 32 bits are significant. */
+> +#define PWM_MAXV2_PRD		0xFFFFFFFF
+>  #define PRD_MAXV1_PRES		10
 >  
 >  struct atmel_pwm_registers {
->  	u8 period;
-> @@ -65,8 +61,14 @@ struct atmel_pwm_registers {
->  	u8 duty_upd;
+> @@ -311,6 +313,20 @@ static const struct atmel_pwm_data atmel_pwm_data_v2 = {
+>  	},
 >  };
 >  
-> +struct atmel_pwm_config {
-> +	u32 max_period;
-> +	u32 max_pres;
-> +};
-> +
->  struct atmel_pwm_data {
->  	struct atmel_pwm_registers regs;
-> +	struct atmel_pwm_config cfg;
->  };
->  
->  struct atmel_pwm_chip {
-> @@ -125,10 +127,10 @@ static int atmel_pwm_calculate_cprd_and_pres(struct pwm_chip *chip,
->  	cycles *= clk_get_rate(atmel_pwm->clk);
->  	do_div(cycles, NSEC_PER_SEC);
->  
-> -	for (*pres = 0; cycles > PWM_MAX_PRD; cycles >>= 1)
-> +	for (*pres = 0; cycles > atmel_pwm->data->cfg.max_period; cycles >>= 1)
->  		(*pres)++;
+> +static const struct atmel_pwm_data atmel_pwm_data_v3 = {
 
-Orthogonal to this patch, this could be calculated without a loop.
-Something like
+Does it make more sense to call this ..._sam9x60 to match the
+compatible? (If yes, patch 1 should be changed accordingly.)
 
-	pres = roundup_pow_of_two(cycles);
-	if (pres > bitwidth_of_counter_register)
-		pres -= bitwidth_of_counter_register;
-	else
-		pres = 0
-
-(where bitwidth_of_counter_register is 16 for the older PWMs and 32 for
-the new one). Maybe it would make more sense to put 16 into the
-structure describing the PWM then instead of 0xffff (which is easily
-calculated from 16)? If picking this up, you might have to pay
-attention to pick functions that support long long arguments.
-roundup_pow_of_two() doesn't as of now.
+I wonder how the naming of the defines is chosen given that pwm_data_v3
+is the first that needs PWM_MAXV2_PRD. Looks inconsistent.
 
 Best regards
 Uwe
