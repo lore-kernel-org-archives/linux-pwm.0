@@ -1,79 +1,58 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v2 2/4] pwm: atmel: add support for controllers with 32
- bit counters
-Date: Fri, 22 Feb 2019 09:10:15 +0000
-Message-ID: <ae3b5435-721b-4992-34eb-b2d530d298cf@microchip.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 3/4] pwm: atmel: add support for SAM9X60's PWM
+ controller
+Date: Fri, 22 Feb 2019 10:27:53 +0100
+Message-ID: <20190222092753.jv5yzuqiijp4lqys@pengutronix.de>
 References: <1550570914-26391-1-git-send-email-claudiu.beznea@microchip.com>
- <1550570914-26391-3-git-send-email-claudiu.beznea@microchip.com>
- <20190221204214.krpobz2ezneynht5@pengutronix.de>
+ <1550570914-26391-4-git-send-email-claudiu.beznea@microchip.com>
+ <20190221204503.w2xh4rw6rh4e5rg4@pengutronix.de>
+ <12a63031-596c-77a3-f10c-be276d75e82c@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190221204214.krpobz2ezneynht5@pengutronix.de>
-Content-Language: en-US
-Content-ID: <5163EA08293EE449A2457ABB6C4FC362@namprd11.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: u.kleine-koenig@pengutronix.de
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <12a63031-596c-77a3-f10c-be276d75e82c@microchip.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Claudiu.Beznea@microchip.com
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, devicetree@vger.kernel.org, robh+dt@kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDIxLjAyLjIwMTkgMjI6NDIsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBIZWxs
-bywNCj4gDQo+IE9uIFR1ZSwgRmViIDE5LCAyMDE5IGF0IDEwOjA4OjU3QU0gKzAwMDAsIENsYXVk
-aXUuQmV6bmVhQG1pY3JvY2hpcC5jb20gd3JvdGU6DQo+PiBGcm9tOiBDbGF1ZGl1IEJlem5lYSA8
-Y2xhdWRpdS5iZXpuZWFAbWljcm9jaGlwLmNvbT4NCj4+DQo+PiBOZXcgU0FNOVg2MCdzIFBXTSBj
-b250cm9sbGVyIHVzZSAzMiBiaXRzIGNvdW50ZXJzIHRodXMgaXQgY291bGQgZ2VuZXJhdGUNCj4+
-IHNpZ25hbHMgd2l0aCBoaWdoZXIgcGVyaW9kIGFuZCBkdXR5IGN5Y2xlcyB0aGFuIHRoZSBvbGQg
-b25lcy4gUHJlcGFyZSB0aGUNCj4+IGN1cnJlbnQgZHJpdmVyIHRvIGJlIGFibGUgdG8gd29yayB3
-aXRoIG9sZCBjb250cm9sbGVycyAodGhhdCB1c2VzIDE2IGJpdHMNCj4+IGNvdW50ZXJzKSBhbmQg
-d2l0aCB0aGUgbmV3IFNBTTlYNjAncyBjb250cm9sbGVyLCBieSBwcm92aWRpbmcgY291bnRlcnMN
-Cj4+IGluZm9ybWF0aW9uIGJhc2VkIG9uIGNvbXBhdGlibGUuDQo+IA0KPiBJJ2Qgd3JpdGU6DQo+
-IA0KPiAJVGhlIFBXTSBjb250cm9sbGVyIG9mIHRoZSBuZXcgU0FNOVg2MCBTb0MgdXNlcyAzMiBi
-aXQgd2lkZQ0KPiAJY291bnRlcnMgY29tcGFyZWQgdG8gMTYgYml0IHdpZGUgY291bnRlcnMgaW4g
-dGhlIGVhcmxpZXIgY2hpcHMuDQo+IAlUbyBzdXBwb3J0IHRoaXMgYWRkIGEgbmV3IHN0cnVjdHVy
-ZSB0byB0aGUgY29tcGF0aWJsZXMnIGRhdGENCj4gCXRoYXQgZGVzY3JpYmUgdGhlIGNvdW50ZXIg
-d2lkdGggYW5kIHByZWNpc2lvbiBhbmQgbWFrZSB1c2Ugb2YNCj4gCXRoZW0gaW5zdGVhZCBvZiB0
-aGUgaGFyZCBjb2RlZCB2YWx1ZXMuDQo+IA0KPiBPdGhlciB0aGFuIHRoYXQgdGhlIGNvbW1pdCBs
-b29rcyBmaW5lLg0KPiANCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBDbGF1ZGl1IEJlem5lYSA8Y2xh
-dWRpdS5iZXpuZWFAbWljcm9jaGlwLmNvbT4NCj4+IC0tLQ0KPj4gIGRyaXZlcnMvcHdtL3B3bS1h
-dG1lbC5jIHwgMzQgKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLQ0KPj4gIDEgZmls
-ZSBjaGFuZ2VkLCAyMyBpbnNlcnRpb25zKCspLCAxMSBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLWF0bWVsLmMgYi9kcml2ZXJzL3B3bS9wd20tYXRtZWwu
-Yw0KPj4gaW5kZXggN2U4NmE1MjY2ZWI2Li42NDdkMDYzNTYyZGIgMTAwNjQ0DQo+PiAtLS0gYS9k
-cml2ZXJzL3B3bS9wd20tYXRtZWwuYw0KPj4gKysrIGIvZHJpdmVycy9wd20vcHdtLWF0bWVsLmMN
-Cj4+IEBAIC00OCwxNSArNDgsMTEgQEANCj4+ICAjZGVmaW5lIFBXTVYyX0NQUkQJCTB4MEMNCj4+
-ICAjZGVmaW5lIFBXTVYyX0NQUkRVUEQJCTB4MTANCj4+ICANCj4+IC0vKg0KPj4gLSAqIE1heCB2
-YWx1ZSBmb3IgZHV0eSBhbmQgcGVyaW9kDQo+PiAtICoNCj4+IC0gKiBBbHRob3VnaCB0aGUgZHV0
-eSBhbmQgcGVyaW9kIHJlZ2lzdGVyIGlzIDMyIGJpdCwNCj4+IC0gKiBob3dldmVyIG9ubHkgdGhl
-IExTQiAxNiBiaXRzIGFyZSBzaWduaWZpY2FudC4NCj4+IC0gKi8NCj4+IC0jZGVmaW5lIFBXTV9N
-QVhfRFRZCQkweEZGRkYNCj4+IC0jZGVmaW5lIFBXTV9NQVhfUFJECQkweEZGRkYNCj4+IC0jZGVm
-aW5lIFBSRF9NQVhfUFJFUwkJMTANCj4+ICsvKiBNYXggdmFsdWVzIGZvciBwZXJpb2QgYW5kIHBy
-ZXNjYWxlciAqLw0KPj4gKw0KPj4gKy8qIE9ubHkgdGhlIExTQiAxNiBiaXRzIGFyZSBzaWduaWZp
-Y2FudC4gKi8NCj4+ICsjZGVmaW5lIFBXTV9NQVhWMV9QUkQJCTB4RkZGRg0KPj4gKyNkZWZpbmUg
-UFJEX01BWFYxX1BSRVMJCTEwDQo+PiAgDQo+PiAgc3RydWN0IGF0bWVsX3B3bV9yZWdpc3RlcnMg
-ew0KPj4gIAl1OCBwZXJpb2Q7DQo+PiBAQCAtNjUsOCArNjEsMTQgQEAgc3RydWN0IGF0bWVsX3B3
-bV9yZWdpc3RlcnMgew0KPj4gIAl1OCBkdXR5X3VwZDsNCj4+ICB9Ow0KPj4gIA0KPj4gK3N0cnVj
-dCBhdG1lbF9wd21fY29uZmlnIHsNCj4+ICsJdTMyIG1heF9wZXJpb2Q7DQo+PiArCXUzMiBtYXhf
-cHJlczsNCj4+ICt9Ow0KPj4gKw0KPj4gIHN0cnVjdCBhdG1lbF9wd21fZGF0YSB7DQo+PiAgCXN0
-cnVjdCBhdG1lbF9wd21fcmVnaXN0ZXJzIHJlZ3M7DQo+PiArCXN0cnVjdCBhdG1lbF9wd21fY29u
-ZmlnIGNmZzsNCj4+ICB9Ow0KPj4gIA0KPj4gIHN0cnVjdCBhdG1lbF9wd21fY2hpcCB7DQo+PiBA
-QCAtMTI1LDEwICsxMjcsMTAgQEAgc3RhdGljIGludCBhdG1lbF9wd21fY2FsY3VsYXRlX2NwcmRf
-YW5kX3ByZXMoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KPj4gIAljeWNsZXMgKj0gY2xrX2dldF9y
-YXRlKGF0bWVsX3B3bS0+Y2xrKTsNCj4+ICAJZG9fZGl2KGN5Y2xlcywgTlNFQ19QRVJfU0VDKTsN
-Cj4+ICANCj4+IC0JZm9yICgqcHJlcyA9IDA7IGN5Y2xlcyA+IFBXTV9NQVhfUFJEOyBjeWNsZXMg
-Pj49IDEpDQo+PiArCWZvciAoKnByZXMgPSAwOyBjeWNsZXMgPiBhdG1lbF9wd20tPmRhdGEtPmNm
-Zy5tYXhfcGVyaW9kOyBjeWNsZXMgPj49IDEpDQo+PiAgCQkoKnByZXMpKys7DQo+IA0KPiBPcnRo
-b2dvbmFsIHRvIHRoaXMgcGF0Y2gsIHRoaXMgY291bGQgYmUgY2FsY3VsYXRlZCB3aXRob3V0IGEg
-bG9vcC4NCj4gU29tZXRoaW5nIGxpa2UNCj4gDQo+IAlwcmVzID0gcm91bmR1cF9wb3dfb2ZfdHdv
-KGN5Y2xlcyk7DQo+IAlpZiAocHJlcyA+IGJpdHdpZHRoX29mX2NvdW50ZXJfcmVnaXN0ZXIpDQo+
-IAkJcHJlcyAtPSBiaXR3aWR0aF9vZl9jb3VudGVyX3JlZ2lzdGVyOw0KPiAJZWxzZQ0KPiAJCXBy
-ZXMgPSAwDQo+IA0KPiAod2hlcmUgYml0d2lkdGhfb2ZfY291bnRlcl9yZWdpc3RlciBpcyAxNiBm
-b3IgdGhlIG9sZGVyIFBXTXMgYW5kIDMyIGZvcg0KPiB0aGUgbmV3IG9uZSkuIE1heWJlIGl0IHdv
-dWxkIG1ha2UgbW9yZSBzZW5zZSB0byBwdXQgMTYgaW50byB0aGUNCj4gc3RydWN0dXJlIGRlc2Ny
-aWJpbmcgdGhlIFBXTSB0aGVuIGluc3RlYWQgb2YgMHhmZmZmICh3aGljaCBpcyBlYXNpbHkNCj4g
-Y2FsY3VsYXRlZCBmcm9tIDE2KT8gSWYgcGlja2luZyB0aGlzIHVwLCB5b3UgbWlnaHQgaGF2ZSB0
-byBwYXkNCj4gYXR0ZW50aW9uIHRvIHBpY2sgZnVuY3Rpb25zIHRoYXQgc3VwcG9ydCBsb25nIGxv
-bmcgYXJndW1lbnRzLg0KPiByb3VuZHVwX3Bvd19vZl90d28oKSBkb2Vzbid0IGFzIG9mIG5vdy4N
-Cg0KSSB3aWxsIHRha2UgaXQgaW50byBhY2NvdW50IGZvciBmdXR1cmUgcGF0Y2hlcy4NCg0KVGhh
-bmsgeW91LA0KQ2xhdWRpdSBCZXpuZWENCg0KPiANCj4gQmVzdCByZWdhcmRzDQo+IFV3ZQ0KPiAN
-Cg==
+Hello,
+
+On Fri, Feb 22, 2019 at 09:07:57AM +0000, Claudiu.Beznea@microchip.com wrot=
+e:
+> On 21.02.2019 22:45, Uwe Kleine-K=F6nig wrote:
+> > On Tue, Feb 19, 2019 at 10:09:00AM +0000, Claudiu.Beznea@microchip.com =
+wrote:
+> > I wonder how the naming of the defines is chosen given that pwm_data_v3
+> > is the first that needs PWM_MAXV2_PRD. Looks inconsistent.
+> =
+
+> I know... I'm aware of that. The thing is controllers may differ with
+> regards to in-flight duty update and now there is this new difference w/
+> regards to counters size.
+> =
+
+> Renaming the objects of type atmel_pwm_data in something like
+> atmel_pwm_data_<chip-name> as you suggested before would make things clear
+> for you?
+
+Yes. Naming stuff after the first SoC that hat the respective
+feature/quirk/property should be fine.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
