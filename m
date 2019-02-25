@@ -1,118 +1,82 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v3 1/5] pwm: atmel: add struct atmel_pwm_data
-Date: Mon, 25 Feb 2019 16:44:33 +0000
-Message-ID: <1551113039-937-2-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v3 3/5] pwm: atmel: rename objects of type atmel_pwm_data
+Date: Mon, 25 Feb 2019 16:44:41 +0000
+Message-ID: <1551113039-937-4-git-send-email-claudiu.beznea@microchip.com>
 References: <1551113039-937-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1551113039-937-1-git-send-email-claudiu.beznea@microchip.com>
 Content-Language: en-US
-Content-ID: <2EAD1B03EC6BE242B11644AC315A7519@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
 Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNCkFk
-ZCBzdHJ1Y3QgYXRtZWxfcHdtX2RhdGEgdG8gZW1iZWQgZGlmZmVyZW50IHBlciBjb250cm9sbGVy
-IGluZm9ybWF0aW9uLg0KSXQgcHJlcGFyZXMgYWRkaW5nIHN1cHBvcnQgZm9yIGFub3RoZXIgc2lt
-aWxhciBjb250cm9sbGVyIHRoYXQgbmVlZHMNCmFkZGl0aW9uYWwgaW5mb3JtYXRpb24uIEF0IHRo
-aXMgc3RhZ2UsIGVtYmVkIGEgbWVtYmVyIG9mIHR5cGUgc3RydWN0DQphdG1lbF9wd21fcmVnaXN0
-ZXJzIGluIGl0Lg0KDQpTaWduZWQtb2ZmLWJ5OiBDbGF1ZGl1IEJlem5lYSA8Y2xhdWRpdS5iZXpu
-ZWFAbWljcm9jaGlwLmNvbT4NCkFja2VkLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUt
-a29lbmlnQHBlbmd1dHJvbml4LmRlPg0KLS0tDQogZHJpdmVycy9wd20vcHdtLWF0bWVsLmMgfCA2
-NCArKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogMSBm
-aWxlIGNoYW5nZWQsIDM2IGluc2VydGlvbnMoKyksIDI4IGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9wd20vcHdtLWF0bWVsLmMgYi9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYw0K
-aW5kZXggNTMwZDdkYzVmMWI1Li43ZTg2YTUyNjZlYjYgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3B3
-bS9wd20tYXRtZWwuYw0KKysrIGIvZHJpdmVycy9wd20vcHdtLWF0bWVsLmMNCkBAIC02NSwxMSAr
-NjUsMTUgQEAgc3RydWN0IGF0bWVsX3B3bV9yZWdpc3RlcnMgew0KIAl1OCBkdXR5X3VwZDsNCiB9
-Ow0KIA0KK3N0cnVjdCBhdG1lbF9wd21fZGF0YSB7DQorCXN0cnVjdCBhdG1lbF9wd21fcmVnaXN0
-ZXJzIHJlZ3M7DQorfTsNCisNCiBzdHJ1Y3QgYXRtZWxfcHdtX2NoaXAgew0KIAlzdHJ1Y3QgcHdt
-X2NoaXAgY2hpcDsNCiAJc3RydWN0IGNsayAqY2xrOw0KIAl2b2lkIF9faW9tZW0gKmJhc2U7DQot
-CWNvbnN0IHN0cnVjdCBhdG1lbF9wd21fcmVnaXN0ZXJzICpyZWdzOw0KKwljb25zdCBzdHJ1Y3Qg
-YXRtZWxfcHdtX2RhdGEgKmRhdGE7DQogDQogCXVuc2lnbmVkIGludCB1cGRhdGVkX3B3bXM7DQog
-CS8qIElTUiBpcyBjbGVhcmVkIHdoZW4gcmVhZCwgZW5zdXJlIG9ubHkgb25lIHRocmVhZCBkb2Vz
-IHRoYXQgKi8NCkBAIC0xNTAsMTUgKzE1NCwxNSBAQCBzdGF0aWMgdm9pZCBhdG1lbF9wd21fdXBk
-YXRlX2NkdHkoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0K
-IAlzdHJ1Y3QgYXRtZWxfcHdtX2NoaXAgKmF0bWVsX3B3bSA9IHRvX2F0bWVsX3B3bV9jaGlwKGNo
-aXApOw0KIAl1MzIgdmFsOw0KIA0KLQlpZiAoYXRtZWxfcHdtLT5yZWdzLT5kdXR5X3VwZCA9PQ0K
-LQkgICAgYXRtZWxfcHdtLT5yZWdzLT5wZXJpb2RfdXBkKSB7DQorCWlmIChhdG1lbF9wd20tPmRh
-dGEtPnJlZ3MuZHV0eV91cGQgPT0NCisJICAgIGF0bWVsX3B3bS0+ZGF0YS0+cmVncy5wZXJpb2Rf
-dXBkKSB7DQogCQl2YWwgPSBhdG1lbF9wd21fY2hfcmVhZGwoYXRtZWxfcHdtLCBwd20tPmh3cHdt
-LCBQV01fQ01SKTsNCiAJCXZhbCAmPSB+UFdNX0NNUl9VUERfQ0RUWTsNCiAJCWF0bWVsX3B3bV9j
-aF93cml0ZWwoYXRtZWxfcHdtLCBwd20tPmh3cHdtLCBQV01fQ01SLCB2YWwpOw0KIAl9DQogDQog
-CWF0bWVsX3B3bV9jaF93cml0ZWwoYXRtZWxfcHdtLCBwd20tPmh3cHdtLA0KLQkJCSAgICBhdG1l
-bF9wd20tPnJlZ3MtPmR1dHlfdXBkLCBjZHR5KTsNCisJCQkgICAgYXRtZWxfcHdtLT5kYXRhLT5y
-ZWdzLmR1dHlfdXBkLCBjZHR5KTsNCiB9DQogDQogc3RhdGljIHZvaWQgYXRtZWxfcHdtX3NldF9j
-cHJkX2NkdHkoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KQEAgLTE2OCw5ICsxNzIsOSBAQCBzdGF0
-aWMgdm9pZCBhdG1lbF9wd21fc2V0X2NwcmRfY2R0eShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsDQog
-CXN0cnVjdCBhdG1lbF9wd21fY2hpcCAqYXRtZWxfcHdtID0gdG9fYXRtZWxfcHdtX2NoaXAoY2hp
-cCk7DQogDQogCWF0bWVsX3B3bV9jaF93cml0ZWwoYXRtZWxfcHdtLCBwd20tPmh3cHdtLA0KLQkJ
-CSAgICBhdG1lbF9wd20tPnJlZ3MtPmR1dHksIGNkdHkpOw0KKwkJCSAgICBhdG1lbF9wd20tPmRh
-dGEtPnJlZ3MuZHV0eSwgY2R0eSk7DQogCWF0bWVsX3B3bV9jaF93cml0ZWwoYXRtZWxfcHdtLCBw
-d20tPmh3cHdtLA0KLQkJCSAgICBhdG1lbF9wd20tPnJlZ3MtPnBlcmlvZCwgY3ByZCk7DQorCQkJ
-ICAgIGF0bWVsX3B3bS0+ZGF0YS0+cmVncy5wZXJpb2QsIGNwcmQpOw0KIH0NCiANCiBzdGF0aWMg
-dm9pZCBhdG1lbF9wd21fZGlzYWJsZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21f
-ZGV2aWNlICpwd20sDQpAQCAtMjI1LDcgKzIyOSw3IEBAIHN0YXRpYyBpbnQgYXRtZWxfcHdtX2Fw
-cGx5KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCiAJCSAg
-ICBjc3RhdGUucG9sYXJpdHkgPT0gc3RhdGUtPnBvbGFyaXR5ICYmDQogCQkgICAgY3N0YXRlLnBl
-cmlvZCA9PSBzdGF0ZS0+cGVyaW9kKSB7DQogCQkJY3ByZCA9IGF0bWVsX3B3bV9jaF9yZWFkbChh
-dG1lbF9wd20sIHB3bS0+aHdwd20sDQotCQkJCQkJICBhdG1lbF9wd20tPnJlZ3MtPnBlcmlvZCk7
-DQorCQkJCQkJICBhdG1lbF9wd20tPmRhdGEtPnJlZ3MucGVyaW9kKTsNCiAJCQlhdG1lbF9wd21f
-Y2FsY3VsYXRlX2NkdHkoc3RhdGUsIGNwcmQsICZjZHR5KTsNCiAJCQlhdG1lbF9wd21fdXBkYXRl
-X2NkdHkoY2hpcCwgcHdtLCBjZHR5KTsNCiAJCQlyZXR1cm4gMDsNCkBAIC0yNzcsMjcgKzI4MSwz
-MSBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHB3bV9vcHMgYXRtZWxfcHdtX29wcyA9IHsNCiAJLm93
-bmVyID0gVEhJU19NT0RVTEUsDQogfTsNCiANCi1zdGF0aWMgY29uc3Qgc3RydWN0IGF0bWVsX3B3
-bV9yZWdpc3RlcnMgYXRtZWxfcHdtX3JlZ3NfdjEgPSB7DQotCS5wZXJpb2QJCT0gUFdNVjFfQ1BS
-RCwNCi0JLnBlcmlvZF91cGQJPSBQV01WMV9DVVBELA0KLQkuZHV0eQkJPSBQV01WMV9DRFRZLA0K
-LQkuZHV0eV91cGQJPSBQV01WMV9DVVBELA0KK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXRtZWxfcHdt
-X2RhdGEgYXRtZWxfcHdtX2RhdGFfdjEgPSB7DQorCS5yZWdzID0gew0KKwkJLnBlcmlvZAkJPSBQ
-V01WMV9DUFJELA0KKwkJLnBlcmlvZF91cGQJPSBQV01WMV9DVVBELA0KKwkJLmR1dHkJCT0gUFdN
-VjFfQ0RUWSwNCisJCS5kdXR5X3VwZAk9IFBXTVYxX0NVUEQsDQorCX0sDQogfTsNCiANCi1zdGF0
-aWMgY29uc3Qgc3RydWN0IGF0bWVsX3B3bV9yZWdpc3RlcnMgYXRtZWxfcHdtX3JlZ3NfdjIgPSB7
-DQotCS5wZXJpb2QJCT0gUFdNVjJfQ1BSRCwNCi0JLnBlcmlvZF91cGQJPSBQV01WMl9DUFJEVVBE
-LA0KLQkuZHV0eQkJPSBQV01WMl9DRFRZLA0KLQkuZHV0eV91cGQJPSBQV01WMl9DRFRZVVBELA0K
-K3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXRtZWxfcHdtX2RhdGEgYXRtZWxfcHdtX2RhdGFfdjIgPSB7
-DQorCS5yZWdzID0gew0KKwkJLnBlcmlvZAkJPSBQV01WMl9DUFJELA0KKwkJLnBlcmlvZF91cGQJ
-PSBQV01WMl9DUFJEVVBELA0KKwkJLmR1dHkJCT0gUFdNVjJfQ0RUWSwNCisJCS5kdXR5X3VwZAk9
-IFBXTVYyX0NEVFlVUEQsDQorCX0sDQogfTsNCiANCiBzdGF0aWMgY29uc3Qgc3RydWN0IHBsYXRm
-b3JtX2RldmljZV9pZCBhdG1lbF9wd21fZGV2dHlwZXNbXSA9IHsNCiAJew0KIAkJLm5hbWUgPSAi
-YXQ5MXNhbTlybC1wd20iLA0KLQkJLmRyaXZlcl9kYXRhID0gKGtlcm5lbF91bG9uZ190KSZhdG1l
-bF9wd21fcmVnc192MSwNCisJCS5kcml2ZXJfZGF0YSA9IChrZXJuZWxfdWxvbmdfdCkmYXRtZWxf
-cHdtX2RhdGFfdjEsDQogCX0sIHsNCiAJCS5uYW1lID0gInNhbWE1ZDMtcHdtIiwNCi0JCS5kcml2
-ZXJfZGF0YSA9IChrZXJuZWxfdWxvbmdfdCkmYXRtZWxfcHdtX3JlZ3NfdjIsDQorCQkuZHJpdmVy
-X2RhdGEgPSAoa2VybmVsX3Vsb25nX3QpJmF0bWVsX3B3bV9kYXRhX3YyLA0KIAl9LCB7DQogCQkv
-KiBzZW50aW5lbCAqLw0KIAl9LA0KQEAgLTMwNywyMCArMzE1LDIwIEBAIE1PRFVMRV9ERVZJQ0Vf
-VEFCTEUocGxhdGZvcm0sIGF0bWVsX3B3bV9kZXZ0eXBlcyk7DQogc3RhdGljIGNvbnN0IHN0cnVj
-dCBvZl9kZXZpY2VfaWQgYXRtZWxfcHdtX2R0X2lkc1tdID0gew0KIAl7DQogCQkuY29tcGF0aWJs
-ZSA9ICJhdG1lbCxhdDkxc2FtOXJsLXB3bSIsDQotCQkuZGF0YSA9ICZhdG1lbF9wd21fcmVnc192
-MSwNCisJCS5kYXRhID0gJmF0bWVsX3B3bV9kYXRhX3YxLA0KIAl9LCB7DQogCQkuY29tcGF0aWJs
-ZSA9ICJhdG1lbCxzYW1hNWQzLXB3bSIsDQotCQkuZGF0YSA9ICZhdG1lbF9wd21fcmVnc192MiwN
-CisJCS5kYXRhID0gJmF0bWVsX3B3bV9kYXRhX3YyLA0KIAl9LCB7DQogCQkuY29tcGF0aWJsZSA9
-ICJhdG1lbCxzYW1hNWQyLXB3bSIsDQotCQkuZGF0YSA9ICZhdG1lbF9wd21fcmVnc192MiwNCisJ
-CS5kYXRhID0gJmF0bWVsX3B3bV9kYXRhX3YyLA0KIAl9LCB7DQogCQkvKiBzZW50aW5lbCAqLw0K
-IAl9LA0KIH07DQogTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgYXRtZWxfcHdtX2R0X2lkcyk7DQog
-DQotc3RhdGljIGlubGluZSBjb25zdCBzdHJ1Y3QgYXRtZWxfcHdtX3JlZ2lzdGVycyAqDQorc3Rh
-dGljIGlubGluZSBjb25zdCBzdHJ1Y3QgYXRtZWxfcHdtX2RhdGEgKg0KIGF0bWVsX3B3bV9nZXRf
-ZHJpdmVyX2RhdGEoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiB7DQogCWNvbnN0IHN0
-cnVjdCBwbGF0Zm9ybV9kZXZpY2VfaWQgKmlkOw0KQEAgLTMzMCwxOCArMzM4LDE4IEBAIGF0bWVs
-X3B3bV9nZXRfZHJpdmVyX2RhdGEoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiANCiAJ
-aWQgPSBwbGF0Zm9ybV9nZXRfZGV2aWNlX2lkKHBkZXYpOw0KIA0KLQlyZXR1cm4gKHN0cnVjdCBh
-dG1lbF9wd21fcmVnaXN0ZXJzICopaWQtPmRyaXZlcl9kYXRhOw0KKwlyZXR1cm4gKHN0cnVjdCBh
-dG1lbF9wd21fZGF0YSAqKWlkLT5kcml2ZXJfZGF0YTsNCiB9DQogDQogc3RhdGljIGludCBhdG1l
-bF9wd21fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiB7DQotCWNvbnN0IHN0
-cnVjdCBhdG1lbF9wd21fcmVnaXN0ZXJzICpyZWdzOw0KKwljb25zdCBzdHJ1Y3QgYXRtZWxfcHdt
-X2RhdGEgKmRhdGE7DQogCXN0cnVjdCBhdG1lbF9wd21fY2hpcCAqYXRtZWxfcHdtOw0KIAlzdHJ1
-Y3QgcmVzb3VyY2UgKnJlczsNCiAJaW50IHJldDsNCiANCi0JcmVncyA9IGF0bWVsX3B3bV9nZXRf
-ZHJpdmVyX2RhdGEocGRldik7DQotCWlmICghcmVncykNCisJZGF0YSA9IGF0bWVsX3B3bV9nZXRf
-ZHJpdmVyX2RhdGEocGRldik7DQorCWlmICghZGF0YSkNCiAJCXJldHVybiAtRU5PREVWOw0KIA0K
-IAlhdG1lbF9wd20gPSBkZXZtX2t6YWxsb2MoJnBkZXYtPmRldiwgc2l6ZW9mKCphdG1lbF9wd20p
-LCBHRlBfS0VSTkVMKTsNCkBAIC0zNzMsNyArMzgxLDcgQEAgc3RhdGljIGludCBhdG1lbF9wd21f
-cHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiANCiAJYXRtZWxfcHdtLT5jaGlw
-LmJhc2UgPSAtMTsNCiAJYXRtZWxfcHdtLT5jaGlwLm5wd20gPSA0Ow0KLQlhdG1lbF9wd20tPnJl
-Z3MgPSByZWdzOw0KKwlhdG1lbF9wd20tPmRhdGEgPSBkYXRhOw0KIAlhdG1lbF9wd20tPnVwZGF0
-ZWRfcHdtcyA9IDA7DQogCW11dGV4X2luaXQoJmF0bWVsX3B3bS0+aXNyX2xvY2spOw0KIA0KLS0g
-DQoyLjcuNA0KDQo=
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
+
+Rename objects of type atmel_pwm_data to contain chip name instead of
+version number.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/pwm/pwm-atmel.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 647d063562db..4ac899d8008c 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -283,7 +283,7 @@ static const struct pwm_ops atmel_pwm_ops =3D {
+ 	.owner =3D THIS_MODULE,
+ };
+=20
+-static const struct atmel_pwm_data atmel_pwm_data_v1 =3D {
++static const struct atmel_pwm_data atmel_sam9rl_pwm_data =3D {
+ 	.regs =3D {
+ 		.period		=3D PWMV1_CPRD,
+ 		.period_upd	=3D PWMV1_CUPD,
+@@ -297,7 +297,7 @@ static const struct atmel_pwm_data atmel_pwm_data_v1 =
+=3D {
+ 	},
+ };
+=20
+-static const struct atmel_pwm_data atmel_pwm_data_v2 =3D {
++static const struct atmel_pwm_data atmel_sama5_pwm_data =3D {
+ 	.regs =3D {
+ 		.period		=3D PWMV2_CPRD,
+ 		.period_upd	=3D PWMV2_CPRDUPD,
+@@ -314,10 +314,10 @@ static const struct atmel_pwm_data atmel_pwm_data_v2 =
+=3D {
+ static const struct platform_device_id atmel_pwm_devtypes[] =3D {
+ 	{
+ 		.name =3D "at91sam9rl-pwm",
+-		.driver_data =3D (kernel_ulong_t)&atmel_pwm_data_v1,
++		.driver_data =3D (kernel_ulong_t)&atmel_sam9rl_pwm_data,
+ 	}, {
+ 		.name =3D "sama5d3-pwm",
+-		.driver_data =3D (kernel_ulong_t)&atmel_pwm_data_v2,
++		.driver_data =3D (kernel_ulong_t)&atmel_sama5_pwm_data,
+ 	}, {
+ 		/* sentinel */
+ 	},
+@@ -327,13 +327,13 @@ MODULE_DEVICE_TABLE(platform, atmel_pwm_devtypes);
+ static const struct of_device_id atmel_pwm_dt_ids[] =3D {
+ 	{
+ 		.compatible =3D "atmel,at91sam9rl-pwm",
+-		.data =3D &atmel_pwm_data_v1,
++		.data =3D &atmel_sam9rl_pwm_data,
+ 	}, {
+ 		.compatible =3D "atmel,sama5d3-pwm",
+-		.data =3D &atmel_pwm_data_v2,
++		.data =3D &atmel_sama5_pwm_data,
+ 	}, {
+ 		.compatible =3D "atmel,sama5d2-pwm",
+-		.data =3D &atmel_pwm_data_v2,
++		.data =3D &atmel_sama5_pwm_data,
+ 	}, {
+ 		/* sentinel */
+ 	},
+--=20
+2.7.4
