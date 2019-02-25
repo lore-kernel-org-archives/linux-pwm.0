@@ -1,82 +1,29 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v3 3/5] pwm: atmel: rename objects of type atmel_pwm_data
-Date: Mon, 25 Feb 2019 16:44:41 +0000
-Message-ID: <1551113039-937-4-git-send-email-claudiu.beznea@microchip.com>
-References: <1551113039-937-1-git-send-email-claudiu.beznea@microchip.com>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH v8 05/26] clocksource: Add driver for the Ingenic JZ47xx OST
+Date: Mon, 25 Feb 2019 10:05:36 -0800
+Message-ID: <155111793658.191923.2540746255375959460@swboyd.mtv.corp.google.com>
+References: <20181212220922.18759-1-paul@crapouillou.net> <CA+7wUsxNN2SL9_7tDh0DiBAgdUwxd_osgmi=09HP7110Tm0DYQ@mail.gmail.com> <128675a5-7ede-4114-a649-89a536346dc8@roeck-us.net> <1548264353.3173.1@crapouillou.net> <20190123180155.GB9781@roeck-us.net> <154835808767.136743.14531363127962557756@swboyd.mtv.corp.google.com> <1548362788.3881.0@crapouillou.net> <154836998080.136743.17683029101430122926@swboyd.mtv.corp.google.com> <1548370388.3881.2@crapouillou.net> <1550891845.20534.1@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1551113039-937-1-git-send-email-claudiu.beznea@microchip.com>
-Content-Language: en-US
+In-Reply-To: <1550891845.20534.1@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Guenter Roeck <linux@roeck-us.net>, Mathieu Malaterre <malat@debian.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Ezequiel Garcia <ezequiel@collabora.co.uk>, PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-c
 List-Id: linux-pwm@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Quoting Paul Cercueil (2019-02-22 19:17:25)
+> Hi,
+>=20
+> Anything new on this? It still happens on 5.0-rc7.
+> It probes with late_initcall, and not with device_initcall.
+> I have no clue what's going on.
+>=20
 
-Rename objects of type atmel_pwm_data to contain chip name instead of
-version number.
-
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/pwm/pwm-atmel.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 647d063562db..4ac899d8008c 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -283,7 +283,7 @@ static const struct pwm_ops atmel_pwm_ops =3D {
- 	.owner =3D THIS_MODULE,
- };
-=20
--static const struct atmel_pwm_data atmel_pwm_data_v1 =3D {
-+static const struct atmel_pwm_data atmel_sam9rl_pwm_data =3D {
- 	.regs =3D {
- 		.period		=3D PWMV1_CPRD,
- 		.period_upd	=3D PWMV1_CUPD,
-@@ -297,7 +297,7 @@ static const struct atmel_pwm_data atmel_pwm_data_v1 =
-=3D {
- 	},
- };
-=20
--static const struct atmel_pwm_data atmel_pwm_data_v2 =3D {
-+static const struct atmel_pwm_data atmel_sama5_pwm_data =3D {
- 	.regs =3D {
- 		.period		=3D PWMV2_CPRD,
- 		.period_upd	=3D PWMV2_CPRDUPD,
-@@ -314,10 +314,10 @@ static const struct atmel_pwm_data atmel_pwm_data_v2 =
-=3D {
- static const struct platform_device_id atmel_pwm_devtypes[] =3D {
- 	{
- 		.name =3D "at91sam9rl-pwm",
--		.driver_data =3D (kernel_ulong_t)&atmel_pwm_data_v1,
-+		.driver_data =3D (kernel_ulong_t)&atmel_sam9rl_pwm_data,
- 	}, {
- 		.name =3D "sama5d3-pwm",
--		.driver_data =3D (kernel_ulong_t)&atmel_pwm_data_v2,
-+		.driver_data =3D (kernel_ulong_t)&atmel_sama5_pwm_data,
- 	}, {
- 		/* sentinel */
- 	},
-@@ -327,13 +327,13 @@ MODULE_DEVICE_TABLE(platform, atmel_pwm_devtypes);
- static const struct of_device_id atmel_pwm_dt_ids[] =3D {
- 	{
- 		.compatible =3D "atmel,at91sam9rl-pwm",
--		.data =3D &atmel_pwm_data_v1,
-+		.data =3D &atmel_sam9rl_pwm_data,
- 	}, {
- 		.compatible =3D "atmel,sama5d3-pwm",
--		.data =3D &atmel_pwm_data_v2,
-+		.data =3D &atmel_sama5_pwm_data,
- 	}, {
- 		.compatible =3D "atmel,sama5d2-pwm",
--		.data =3D &atmel_pwm_data_v2,
-+		.data =3D &atmel_sama5_pwm_data,
- 	}, {
- 		/* sentinel */
- 	},
---=20
-2.7.4
+I'm not sure what's going on either. You'll probably have to debug when
+the device is created and when it is probed by enabling the debug
+printing in the driver core or by adding in extra debug prints to narrow
+down the problem. For example, add a '#define DEBUG 1' at the top of
+drivers/base/dd.c and see if that helps give some info on what's going
+on with the drivers and devices.
