@@ -1,8 +1,7 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH 4/7] mfd: atmel-hlcdc: add compatible for SAM9X60 HLCD
- controller
-Date: Wed, 27 Feb 2019 16:24:30 +0000
-Message-ID: <1551284609-14594-5-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH 5/7] pwm: atmel-hlcdc: add compatible for SAM9X60 HLCDC's PWM
+Date: Wed, 27 Feb 2019 16:24:35 +0000
+Message-ID: <1551284609-14594-6-git-send-email-claudiu.beznea@microchip.com>
 References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -17,25 +16,27 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Add compatible for SAM9X60 HLCD controller.
+Add compatible string for SAM9X60 HLCDC's PWM.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/mfd/atmel-hlcdc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pwm/pwm-atmel-hlcdc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/mfd/atmel-hlcdc.c b/drivers/mfd/atmel-hlcdc.c
-index e82543bcfdc8..35a9e16f9902 100644
---- a/drivers/mfd/atmel-hlcdc.c
-+++ b/drivers/mfd/atmel-hlcdc.c
-@@ -141,6 +141,7 @@ static const struct of_device_id atmel_hlcdc_match[] =
+diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+index 54c6633d9b5d..331ca0233d9e 100644
+--- a/drivers/pwm/pwm-atmel-hlcdc.c
++++ b/drivers/pwm/pwm-atmel-hlcdc.c
+@@ -246,6 +246,9 @@ static const struct of_device_id atmel_hlcdc_dt_ids[] =
 =3D {
- 	{ .compatible =3D "atmel,sama5d2-hlcdc" },
- 	{ .compatible =3D "atmel,sama5d3-hlcdc" },
- 	{ .compatible =3D "atmel,sama5d4-hlcdc" },
-+	{ .compatible =3D "microchip,sam9x60-hlcdc" },
+ 		.compatible =3D "atmel,sama5d4-hlcdc",
+ 		.data =3D &atmel_hlcdc_pwm_sama5d3_errata,
+ 	},
++	{
++		.compatible =3D "microchip,sam9x60-hlcdc",
++	},
  	{ /* sentinel */ },
  };
- MODULE_DEVICE_TABLE(of, atmel_hlcdc_match);
+ MODULE_DEVICE_TABLE(of, atmel_hlcdc_dt_ids);
 --=20
 2.7.4
