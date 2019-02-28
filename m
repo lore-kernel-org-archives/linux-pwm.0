@@ -1,8 +1,8 @@
 From: Sam Ravnborg <sam@ravnborg.org>
 Subject: Re: [PATCH 1/7] drm: atmel-hlcdc: add config option for clock
  selection
-Date: Thu, 28 Feb 2019 22:25:58 +0100
-Message-ID: <20190228212558.GB30188@ravnborg.org>
+Date: Thu, 28 Feb 2019 22:38:58 +0100
+Message-ID: <20190228213858.GC30188@ravnborg.org>
 References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
  <1551284609-14594-2-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
@@ -16,6 +16,8 @@ Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferr
 List-Id: linux-pwm@vger.kernel.org
 
 Hi Claudiu
+
+One more reply to this patch...
 
 On Wed, Feb 27, 2019 at 04:24:16PM +0000, Claudiu.Beznea@microchip.com wrote:
 > From: Claudiu Beznea <claudiu.beznea@microchip.com>
@@ -42,8 +44,6 @@ On Wed, Feb 27, 2019 at 04:24:16PM +0000, Claudiu.Beznea@microchip.com wrote:
 > +	unsigned int mask = ATMEL_HLCDC_CLKDIV_MASK | ATMEL_HLCDC_CLKPOL;
 > +	unsigned int cfg = 0;
 >  	int div;
-Here cfg and mask has initial values.
-
 >  
 >  	vm.vfront_porch = adj->crtc_vsync_start - adj->crtc_vdisplay;
 > @@ -101,7 +102,10 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
@@ -55,12 +55,63 @@ Here cfg and mask has initial values.
 > +		cfg = ATMEL_HLCDC_CLKSEL;
 > +		mask |= ATMEL_HLCDC_CLKSEL;
 > +	}
-And here mask is bitwise or with ATMEL_HLCDC_CLKSEL - fine.
-But cfg is directly assigned.
-If cfg was bitwise or the ATMEL_HLCDC_CLKSEL value then the code was prepared
-to have extra flags added above these lines.
+Maybe this is just too late to look at code, but I do not get this.
+If the sam9x60 do not support selecting the clk rate then I assume it is either
+fixed to used system clock or 2 x system clock.
 
-Only a small change and no functional difference.
+And we have in the driver code to adjust the "div" value.
+The value of div depends on the CLKSEL configuration, so there must
+be one part of this that is not valid when fixed_clksrc is true.
 
-With or without this change:
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+>  
+>  	prate = 2 * clk_get_rate(crtc->dc->hlcdc->sys_clk);
+>  	mode_rate = adj->crtc_clock * 1000;
+> @@ -132,9 +136,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
+>  
+>  	cfg |= ATMEL_HLCDC_CLKDIV(div);
+
+It is the following code (not visible in this patch I talk about:
+       if (div < 2) {
+                div = 2;
+        } else if (ATMEL_HLCDC_CLKDIV(div) & ~ATMEL_HLCDC_CLKDIV_MASK) {
+                /* The divider ended up too big, try a lower base rate. */
+                cfg &= ~ATMEL_HLCDC_CLKSEL;
+                prate /= 2;
+                div = DIV_ROUND_UP(prate, mode_rate);
+                if (ATMEL_HLCDC_CLKDIV(div) & ~ATMEL_HLCDC_CLKDIV_MASK)
+                        div = ATMEL_HLCDC_CLKDIV_MASK;
+        } else {
+                int div_low = prate / mode_rate;
+
+                if (div_low >= 2 &&
+                    ((prate / div_low - mode_rate) <
+                     10 * (mode_rate - prate / div)))
+                        /*
+                         * At least 10 times better when using a higher
+                         * frequency than requested, instead of a lower.
+                         * So, go with that.
+                         */
+                        div = div_low;
+        }
+
+Am I missing something obvious?
+
+> -	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0),
+> -			   ATMEL_HLCDC_CLKSEL | ATMEL_HLCDC_CLKDIV_MASK |
+> -			   ATMEL_HLCDC_CLKPOL, cfg);
+> +	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0), mask, cfg);
+>  
+>  	cfg = 0;
+>  
+> diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+> index 70bd540d644e..0155efb9c443 100644
+> --- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+> +++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+> @@ -328,6 +328,7 @@ atmel_hlcdc_layer_to_plane(struct atmel_hlcdc_layer *layer)
+>   * @max_hpw: maximum horizontal back/front porch width
+>   * @conflicting_output_formats: true if RGBXXX output formats conflict with
+>   *				each other.
+> + * @fixed_clksrc: true if clock source is fixed
+Be specific here. Tell if "fixed_clksrc == true" equals system clock or 2 x system clock.
+
+	Sam
