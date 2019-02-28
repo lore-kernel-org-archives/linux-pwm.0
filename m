@@ -1,34 +1,34 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH 0/7] add LCD support for SAM9X60
-Date: Thu, 28 Feb 2019 19:21:19 +0100
-Message-ID: <20190228182119.GA28318@ravnborg.org>
-References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH v9 14/27] pwm: jz4740: Improve algorithm of clock calculation
+Date: Thu, 28 Feb 2019 10:42:32 -0800
+Message-ID: <155137935225.16805.10412318501940648799@swboyd.mtv.corp.google.com>
+References: <20181227181319.31095-1-paul@crapouillou.net> <20181227181319.31095-15-paul@crapouillou.net> <20190105195725.cuxfge6zkpbt3cyk@pengutronix.de> <1546722339.30174.0@crapouillou.net> <20190105212711.s765knwwerceytvk@pengutronix.de> <1547129096.16183.0@crapouillou.net> <1550884678.20534.0@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Claudiu.Beznea@microchip.com
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.belloni@bootlin.com, bbrezillon@kernel.org, airlied@linux.ie, Nicolas.Ferre@microchip.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, robh+dt@kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1550884678.20534.0@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>, u.kleine-koenig@pengutronix.de
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Russell King <linux@armlinux.org.uk>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgQ2xhdWRpdQoKT24gV2VkLCBGZWIgMjcsIDIwMTkgYXQgMDQ6MjQ6MTFQTSArMDAwMCwgQ2xh
-dWRpdS5CZXpuZWFAbWljcm9jaGlwLmNvbSB3cm90ZToKPiBGcm9tOiBDbGF1ZGl1IEJlem5lYSA8
-Y2xhdWRpdS5iZXpuZWFAbWljcm9jaGlwLmNvbT4KPiAKPiBIaSwKPiAKPiBUaGVzZSBwYXRjaGVz
-IGFkZHMgc3VwcG9ydCBmb3IgU0FNOVg2MCdzIExDRCBjb250cm9sbGVyLgpDYW4geW91IGVsYWJv
-cmF0ZSBhIGxpdHRsZSBtb3JlIHdoaWNoIGNoaXBzIHRoYXQgYXJlIHJlbGV2YW50LgpUbyBiZSBh
-YmxlIHRvIGxvb2sgaW50byB0aGUgcmlnaHQgZGF0YS1zaGVldCwgd2hpbGUgcmV2aWV3aW5nLgpM
-aW5rIHRvIGRhdGEtc2hlZXQgd291bGQgYmUgbmljZSB0b28uCgpUaGFua3MgaW4gYWR2YW5jZSwK
-CVNhbQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmkt
-ZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6
-Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+Quoting Paul Cercueil (2019-02-22 17:17:58)
+> Bump.
+>=20
+> What should I do here?
+>=20
+
+I thought I replied to the list but maybe it got rejected because my MUA
+is currently failing hard at sending 8-bit mails without
+using quoted printable. Let me remove all non-ascii characters from this
+mail!
+
+If someone has the mail please rebounce it to the list. Otherwise, I
+think I basically said this is OK because clk_round_rate() semantics are
+specifically vague here to allow the implementation to decide how rates
+are rounded (up, down, closest, etc). As long as the whole rate space is
+searched with a +1 or a -1 style of search it should be work. We're not
+going to add round_up() or round_down() APIs as far as I'm concerned,
+and you can look on the list to see previous proposals on that topic to
+get some background on why they aren't liked.
