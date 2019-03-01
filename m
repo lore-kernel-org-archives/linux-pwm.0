@@ -1,53 +1,84 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH 0/7] add LCD support for SAM9X60
-Date: Fri, 1 Mar 2019 10:09:26 +0000
-Message-ID: <9ca1bee4-a2b8-6a0f-2d75-857b9096eabe@microchip.com>
-References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
- <20190228182119.GA28318@ravnborg.org> <20190228205214.GD23094@piout.net>
- <20190228211325.GA30188@ravnborg.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190228211325.GA30188@ravnborg.org>
-Content-Language: en-US
-Content-ID: <FA669EBF19CAF24BBEE2053E638DEB34@namprd11.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: sam@ravnborg.org, alexandre.belloni@bootlin.com
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, bbrezillon@kernel.org, airlied@linux.ie, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, robh+dt@kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, daniel@ffwll.ch, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH v8 0/2] PWM support for HiFive Unleashed
+Date: Fri,  1 Mar 2019 16:23:17 +0530
+Message-ID: <1551437599-29509-1-git-send-email-yash.shah@sifive.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com, Yash Shah <yash.shah@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
 
+v8
+- Typo corrections
+- Remove active_user and related code
+- Do not clear PWM_SIFIVE_PWMCFG_EN_ALWAYS
+- Other minor fixes
 
-On 28.02.2019 23:13, Sam Ravnborg wrote:
-> Hi Alexandre.
-> 
->>>>
->>>> These patches adds support for SAM9X60's LCD controller.
->>> Can you elaborate a little more which chips that are relevant.
->>> To be able to look into the right data-sheet, while reviewing.
->>> Link to data-sheet would be nice too.
->>>
->>
->> sam9x60 is the chip name (i.e. x is not a wildcard). I don't think the
->> datasheet is finished/public yet.
-> 
-> Thanks. I will take a look at the patches but not knowing
-> the specifics of the implementation/IP will makes this less valueable.
+v7
+- Modify description of compatible property in DT documentation
+- Use mutex locks at appropriate places
+- Fix all bad line breaks
+- Allow enabling/disabling PWM only when the user is the only active user
+- Remove Deglitch logic
+- Other minor fixes
 
-At this moment, as Alexandre specified, the datasheet is not published.
+v6
+- Remove the global property 'sifive,period-ns'
+- Implement free and request callbacks to maintain user counts.
+- Add user_count member to struct pwm_sifive_ddata
+- Allow period change only if user_count is one
+- Add pwm_sifive_enable function to enable/disable PWM
+- Change calculation logic of frac (in pwm_sifive_apply)
+- Remove state correction
+- Remove pwm_sifive_xlate function
+- Clock to be enabled only when PWM is enabled
+- Other minor fixes
 
-Thank you,
-Claudiu Beznea
+v5
+- Correct the order of compatible string properties
+- PWM state correction to be done always
+- Other minor fixes based upon feedback on v4
 
-> 
-> 	Sam
-> 
+v4
+- Rename macros with appropriate names
+- Remove unused macros
+- Rename struct sifive_pwm_device to struct pwm_sifive_ddata
+- Rename function prefix as per driver name
+- Other minor fixes based upon feedback on v3
+
+v3
+- Add a link to the reference manaul
+- Use appropriate apis for division operation
+- Add check for polarity
+- Enable clk before calling clk_get_rate
+- Other minor fixes based upon feedback on v2
+
+V2 changed from V1:
+- Remove inclusion of dt-bindings/pwm/pwm.h
+- Remove artificial alignments
+- Replace ioread32/iowrite32 with readl/writel
+- Remove camelcase
+- Change dev_info to dev_dbg for unnecessary log
+- Correct typo in driver name
+- Remove use of of_match_ptr macro
+- Update the DT compatible strings and Add reference to a common
+  versioning document
+
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
+
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  33 ++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 345 +++++++++++++++++++++
+ 4 files changed, 390 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
+
+-- 
+1.9.1
