@@ -1,158 +1,60 @@
 From: <Claudiu.Beznea@microchip.com>
 Subject: Re: [PATCH 1/7] drm: atmel-hlcdc: add config option for clock
  selection
-Date: Fri, 1 Mar 2019 10:06:36 +0000
-Message-ID: <ea061402-6caa-62d0-c445-acdcdf3ab08c@microchip.com>
+Date: Fri, 1 Mar 2019 10:07:02 +0000
+Message-ID: <21942343-5e76-2fa3-b394-c1cef4abd9e1@microchip.com>
 References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
  <1551284609-14594-2-git-send-email-claudiu.beznea@microchip.com>
- <20190228213858.GC30188@ravnborg.org>
+ <20190228212558.GB30188@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190228213858.GC30188@ravnborg.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190228212558.GB30188@ravnborg.org>
 Content-Language: en-US
-Content-ID: <C8E8A2EB2525CA45B563649AE4ABDDB1@namprd11.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-ID: <B9B6F4EEA2C4BE4CA54A991A89A2E622@namprd11.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: sam@ravnborg.org
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.belloni@bootlin.com, bbrezillon@kernel.org, airlied@linux.ie, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, robh+dt@kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, daniel@ffwll.ch, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
+Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On 28.02.2019 23:38, Sam Ravnborg wrote:
-> Hi Claudiu
-> 
-> One more reply to this patch...
-> 
-> On Wed, Feb 27, 2019 at 04:24:16PM +0000, Claudiu.Beznea@microchip.com wrote:
->> From: Claudiu Beznea <claudiu.beznea@microchip.com>
->>
->> SAM9x60 LCD Controller has no option to select clock source as previous
->> controllers have. To be able to use the same driver even for this LCD
->> controller add a config option to know if controller supports this.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
->> ---
->>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c | 12 +++++++-----
->>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h   |  2 ++
->>  2 files changed, 9 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
->> index 8070a558d7b1..17a7a18f6a07 100644
->> --- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
->> +++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
->> @@ -78,7 +78,8 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
->>  	unsigned long mode_rate;
->>  	struct videomode vm;
->>  	unsigned long prate;
->> -	unsigned int cfg;
->> +	unsigned int mask = ATMEL_HLCDC_CLKDIV_MASK | ATMEL_HLCDC_CLKPOL;
->> +	unsigned int cfg = 0;
->>  	int div;
->>  
->>  	vm.vfront_porch = adj->crtc_vsync_start - adj->crtc_vdisplay;
->> @@ -101,7 +102,10 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
->>  		     (adj->crtc_hdisplay - 1) |
->>  		     ((adj->crtc_vdisplay - 1) << 16));
->>  
->> -	cfg = ATMEL_HLCDC_CLKSEL;
->> +	if (!crtc->dc->desc->fixed_clksrc) {
->> +		cfg = ATMEL_HLCDC_CLKSEL;
->> +		mask |= ATMEL_HLCDC_CLKSEL;
->> +	}
-> Maybe this is just too late to look at code, but I do not get this.
-> If the sam9x60 do not support selecting the clk rate then I assume it is either
-> fixed to used system clock or 2 x system clock.
-
-SAM9X60's LCD controller has no support for selecting clock source (and for
-the moment, yes, as Alexandre specified, the datasheet is not public). If
-you look at e.g. SAM9X35 datasheet , chapter 45.7, at LCD Controller
-Configuration Register 0 [1], you will see this CLKSEL bit. On SAM9X60 you
-don't have this option, but you have only one clock source, fixed one. You
-still have the option to divide this clock to get LCD pixel clock using
-CLKDIV field of LCD Controller Configuration Register 0, and the formula is
-the same as in SAM9X35 case: the only difference is that the formula uses
-the fixed clock in case of SAM9X60 apart from SAM9X35 which uses the
-selected clock:
-SAM9X60: LCDPCLK = source clock / (CLKDIV+2)
-SAM9X35: pixel_clock = selected_clock / (CLKDIV + 2).
-
-[1]
-http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11055-32-bit-ARM926EJ-S-Microcontroller-SAM9X35_Datasheet.pdf#G38.1471048
-
-> 
-> And we have in the driver code to adjust the "div" value.
-> The value of div depends on the CLKSEL configuration, so there must
-> be one part of this that is not valid when fixed_clksrc is true.
-
-When fixed_clksrc is true you still have to option to divide the source clock.
-
-I hope I was clear.
-
-> 
->>  
->>  	prate = 2 * clk_get_rate(crtc->dc->hlcdc->sys_clk);
->>  	mode_rate = adj->crtc_clock * 1000;
->> @@ -132,9 +136,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crtc *c)
->>  
->>  	cfg |= ATMEL_HLCDC_CLKDIV(div);
-> 
-> It is the following code (not visible in this patch I talk about:
->        if (div < 2) {
->                 div = 2;
->         } else if (ATMEL_HLCDC_CLKDIV(div) & ~ATMEL_HLCDC_CLKDIV_MASK) {
->                 /* The divider ended up too big, try a lower base rate. */
->                 cfg &= ~ATMEL_HLCDC_CLKSEL;
->                 prate /= 2;
->                 div = DIV_ROUND_UP(prate, mode_rate);
->                 if (ATMEL_HLCDC_CLKDIV(div) & ~ATMEL_HLCDC_CLKDIV_MASK)
->                         div = ATMEL_HLCDC_CLKDIV_MASK;
->         } else {
->                 int div_low = prate / mode_rate;
-> 
->                 if (div_low >= 2 &&
->                     ((prate / div_low - mode_rate) <
->                      10 * (mode_rate - prate / div)))
->                         /*
->                          * At least 10 times better when using a higher
->                          * frequency than requested, instead of a lower.
->                          * So, go with that.
->                          */
->                         div = div_low;
->         }
-> 
-> Am I missing something obvious?
-> 
->> -	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0),
->> -			   ATMEL_HLCDC_CLKSEL | ATMEL_HLCDC_CLKDIV_MASK |
->> -			   ATMEL_HLCDC_CLKPOL, cfg);
->> +	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0), mask, cfg);
->>  
->>  	cfg = 0;
->>  
->> diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
->> index 70bd540d644e..0155efb9c443 100644
->> --- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
->> +++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
->> @@ -328,6 +328,7 @@ atmel_hlcdc_layer_to_plane(struct atmel_hlcdc_layer *layer)
->>   * @max_hpw: maximum horizontal back/front porch width
->>   * @conflicting_output_formats: true if RGBXXX output formats conflict with
->>   *				each other.
->> + * @fixed_clksrc: true if clock source is fixed
-> Be specific here. Tell if "fixed_clksrc == true" equals system clock or 2 x system clock.
-
-In case of SAM9X60, as I specified above, there is no option to select b/w
-MCK and 2xMCK as in case of, e.g. SAM9X35, but only one clock source.
-
-> 
-> 	Sam
-> 
+DQoNCk9uIDI4LjAyLjIwMTkgMjM6MjUsIFNhbSBSYXZuYm9yZyB3cm90ZToNCj4gSGkgQ2xhdWRp
+dQ0KPiANCj4gT24gV2VkLCBGZWIgMjcsIDIwMTkgYXQgMDQ6MjQ6MTZQTSArMDAwMCwgQ2xhdWRp
+dS5CZXpuZWFAbWljcm9jaGlwLmNvbSB3cm90ZToNCj4+IEZyb206IENsYXVkaXUgQmV6bmVhIDxj
+bGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KPj4NCj4+IFNBTTl4NjAgTENEIENvbnRyb2xs
+ZXIgaGFzIG5vIG9wdGlvbiB0byBzZWxlY3QgY2xvY2sgc291cmNlIGFzIHByZXZpb3VzDQo+PiBj
+b250cm9sbGVycyBoYXZlLiBUbyBiZSBhYmxlIHRvIHVzZSB0aGUgc2FtZSBkcml2ZXIgZXZlbiBm
+b3IgdGhpcyBMQ0QNCj4+IGNvbnRyb2xsZXIgYWRkIGEgY29uZmlnIG9wdGlvbiB0byBrbm93IGlm
+IGNvbnRyb2xsZXIgc3VwcG9ydHMgdGhpcy4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBDbGF1ZGl1
+IEJlem5lYSA8Y2xhdWRpdS5iZXpuZWFAbWljcm9jaGlwLmNvbT4NCj4+IC0tLQ0KPj4gIGRyaXZl
+cnMvZ3B1L2RybS9hdG1lbC1obGNkYy9hdG1lbF9obGNkY19jcnRjLmMgfCAxMiArKysrKysrLS0t
+LS0NCj4+ICBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNfZGMuaCAgIHwg
+IDIgKysNCj4+ICAyIGZpbGVzIGNoYW5nZWQsIDkgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMo
+LSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVs
+X2hsY2RjX2NydGMuYyBiL2RyaXZlcnMvZ3B1L2RybS9hdG1lbC1obGNkYy9hdG1lbF9obGNkY19j
+cnRjLmMNCj4+IGluZGV4IDgwNzBhNTU4ZDdiMS4uMTdhN2ExOGY2YTA3IDEwMDY0NA0KPj4gLS0t
+IGEvZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX2NydGMuYw0KPj4gKysr
+IGIvZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX2NydGMuYw0KPj4gQEAg
+LTc4LDcgKzc4LDggQEAgc3RhdGljIHZvaWQgYXRtZWxfaGxjZGNfY3J0Y19tb2RlX3NldF9ub2Zi
+KHN0cnVjdCBkcm1fY3J0YyAqYykNCj4+ICAJdW5zaWduZWQgbG9uZyBtb2RlX3JhdGU7DQo+PiAg
+CXN0cnVjdCB2aWRlb21vZGUgdm07DQo+PiAgCXVuc2lnbmVkIGxvbmcgcHJhdGU7DQo+PiAtCXVu
+c2lnbmVkIGludCBjZmc7DQo+PiArCXVuc2lnbmVkIGludCBtYXNrID0gQVRNRUxfSExDRENfQ0xL
+RElWX01BU0sgfCBBVE1FTF9ITENEQ19DTEtQT0w7DQo+PiArCXVuc2lnbmVkIGludCBjZmcgPSAw
+Ow0KPj4gIAlpbnQgZGl2Ow0KPiBIZXJlIGNmZyBhbmQgbWFzayBoYXMgaW5pdGlhbCB2YWx1ZXMu
+DQo+IA0KPj4gIA0KPj4gIAl2bS52ZnJvbnRfcG9yY2ggPSBhZGotPmNydGNfdnN5bmNfc3RhcnQg
+LSBhZGotPmNydGNfdmRpc3BsYXk7DQo+PiBAQCAtMTAxLDcgKzEwMiwxMCBAQCBzdGF0aWMgdm9p
+ZCBhdG1lbF9obGNkY19jcnRjX21vZGVfc2V0X25vZmIoc3RydWN0IGRybV9jcnRjICpjKQ0KPj4g
+IAkJICAgICAoYWRqLT5jcnRjX2hkaXNwbGF5IC0gMSkgfA0KPj4gIAkJICAgICAoKGFkai0+Y3J0
+Y192ZGlzcGxheSAtIDEpIDw8IDE2KSk7DQo+PiAgDQo+PiAtCWNmZyA9IEFUTUVMX0hMQ0RDX0NM
+S1NFTDsNCj4+ICsJaWYgKCFjcnRjLT5kYy0+ZGVzYy0+Zml4ZWRfY2xrc3JjKSB7DQo+PiArCQlj
+ZmcgPSBBVE1FTF9ITENEQ19DTEtTRUw7DQo+PiArCQltYXNrIHw9IEFUTUVMX0hMQ0RDX0NMS1NF
+TDsNCj4+ICsJfQ0KPiBBbmQgaGVyZSBtYXNrIGlzIGJpdHdpc2Ugb3Igd2l0aCBBVE1FTF9ITENE
+Q19DTEtTRUwgLSBmaW5lLg0KPiBCdXQgY2ZnIGlzIGRpcmVjdGx5IGFzc2lnbmVkLg0KDQpJIGRp
+cmVjdGx5IGFzc2lnbmVkIGl0IGhlcmUgYmVjYXVzZSBpdCB3YXMgdGhlIGZpcnN0IHRpbWUgaXQg
+d2FzIHVzZWQuDQpJIHdpbGwgdXNlIGEgInwiIG9wZXJhdGlvbiBhcyB5b3Ugc3VnZ2VzdCBpbiBu
+ZXh0IHZlcnNpb24uDQoNCj4gSWYgY2ZnIHdhcyBiaXR3aXNlIG9yIHRoZSBBVE1FTF9ITENEQ19D
+TEtTRUwgdmFsdWUgdGhlbiB0aGUgY29kZSB3YXMgcHJlcGFyZWQNCj4gdG8gaGF2ZSBleHRyYSBm
+bGFncyBhZGRlZCBhYm92ZSB0aGVzZSBsaW5lcy4NCj4gDQo+IE9ubHkgYSBzbWFsbCBjaGFuZ2Ug
+YW5kIG5vIGZ1bmN0aW9uYWwgZGlmZmVyZW5jZS4NCj4gDQo+IFdpdGggb3Igd2l0aG91dCB0aGlz
+IGNoYW5nZToNCj4gUmV2aWV3ZWQtYnk6IFNhbSBSYXZuYm9yZyA8c2FtQHJhdm5ib3JnLm9yZz4N
+Cj4gDQo+IA0K
