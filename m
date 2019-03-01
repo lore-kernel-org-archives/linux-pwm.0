@@ -1,102 +1,53 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH 6/7] drm: atmel-hlcdc: enable sys_clk during
- initalization.
-Date: Fri, 1 Mar 2019 10:07:20 +0000
-Message-ID: <6271a811-9e45-f55c-d53b-b9efe4f13ba4@microchip.com>
+Subject: Re: [PATCH 0/7] add LCD support for SAM9X60
+Date: Fri, 1 Mar 2019 10:09:26 +0000
+Message-ID: <9ca1bee4-a2b8-6a0f-2d75-857b9096eabe@microchip.com>
 References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
- <1551284609-14594-7-git-send-email-claudiu.beznea@microchip.com>
- <20190228215519.GE30188@ravnborg.org>
+ <20190228182119.GA28318@ravnborg.org> <20190228205214.GD23094@piout.net>
+ <20190228211325.GA30188@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190228215519.GE30188@ravnborg.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190228211325.GA30188@ravnborg.org>
 Content-Language: en-US
-Content-ID: <F83F0B621C1DBE479232DD4D7F7EE3E7@namprd11.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: sam@ravnborg.org
-Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Sandeep.Sheriker@microchip.com, linux-arm-kernel@lists.infradead.org
+Content-ID: <FA669EBF19CAF24BBEE2053E638DEB34@namprd11.prod.outlook.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: sam@ravnborg.org, alexandre.belloni@bootlin.com
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, bbrezillon@kernel.org, airlied@linux.ie, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, robh+dt@kernel.org, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, daniel@ffwll.ch, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDI4LjAyLjIwMTkgMjM6NTUsIFNhbSBSYXZuYm9yZyB3cm90ZToNCj4gSGkgQ2xhdWRp
-dQ0KPiANCj4gT24gV2VkLCBGZWIgMjcsIDIwMTkgYXQgMDQ6MjQ6NDBQTSArMDAwMCwgQ2xhdWRp
-dS5CZXpuZWFAbWljcm9jaGlwLmNvbSB3cm90ZToNCj4+IEZyb206IFNhbmRlZXAgU2hlcmlrZXIg
-TWFsbGlrYXJqdW4gPHNhbmRlZXBzaGVyaWtlci5tYWxsaWthcmp1bkBtaWNyb2NoaXAuY29tPg0K
-Pj4NCj4+IEZvciBTQU05WDYwIFNvQywgc3lzX2NsayBpcyB0aHJvdWdoIGxjZF9nY2xrIGNsb2Nr
-IHNvdXJjZSBhbmQgdGhpcw0KPj4gbmVlZHMgdG8gYmUgZW5hYmxlZCBiZWZvcmUgZW5hYmxpbmcg
-bGNkX2Nsay4NCj4gDQo+IFdlIGhhdmUgIm93bmVyc2hpcCIgb2YgdGhlIGNsb2NrcyBpbiB0aGUg
-bWZkIGRldmljZS4NCj4gU28gaXQgd291bGQgbWFrZSBtb3JlIHNlbnNlIHRvIGxldCB0aGUgbWZk
-IGRldmljZSBoYW5kbGUNCj4gdGhlIGJhc2UgY2xvY2tzLg0KPiBJbiBvdGhlciB3b3JkcyAtIHdo
-YXQgYWJvdXQgcHVzaGluZyBlbmFibGUgb2YgcGVyaWdoX2NsayBhbmQgc3lzX2NsayB0bw0KPiB0
-aGUgbWZkIGRyaXZlci4NCg0KSSB0aGluayB0aGlzIGNvdWxkIGJlIGFjaGlldmVkLCBidXQgaG93
-IGlzIGJldHRlcj8gVG8gaGF2ZSBpbmRpdmlkdWFsDQpkcml2ZXJzIChpbiB0aGlzIGNhcmUgSSB3
-b3VsZCBzYXksIGNoaWxkIGRyaXZlcnMsIGxpa2UgZS5nLiB0aGlzIGxjZA0KZHJpdmVyKSB0YWtp
-bmcgZGVjaXNpb25zIG9uIHRoZWlyIG93biBmb3IgdGhlaXIgcmVzb3VyY2VzIChldmVuIGlmIHNo
-YXJlZCkNCm9yIHRvIGhhdmUgcGFyZW50cyB0YWtpbmcgZGVjaXNpb25zIGZvciB0aGVtPyBKdXN0
-IGFza2luZy4NCg0KPiANCj4gVGhpcyBtYXkgaGF2ZSB0aGUgbmljZSBzaWRlLWVmZmVjdCB0aGF0
-IHdlIGF2b2lkDQo+IHRoYXQgYm90aCB0aGUgZHJtIGRyaXZlciBhbmQgdGhlIHB3bSBkcml2ZXIg
-ZW5hYmxlL2Rpc2FibGUgdGhlIHBlcmlwaF9jbGsNCj4gYXMgaXQgaXMgdG9kYXkuDQo+IA0KPiBB
-bm90aGVyIGNvbW1lbnQgLSBmaXhlZF9jbGtzcmMgaXMgdXNlZCB0byBkZXRlcm1pbmUgaWYgc3lz
-X2NsayBpcyBlbmFibGVkLg0KPiBCdXQgdGhhdCBmbGFnIGlzIGFib3V0IHRoZSBjbGtzb3VyY2Ug
-c2VsZWN0aW9uLCBhbmQgaXQgaXMganVzdCBhIGNvaW5jaWRlbmNlDQo+IHRoYXQgdGhlIHNhbWUg
-ZmxhZyBjYW4gYmUgdXNlZCBoZXJlLg0KDQpZZXMsIGFncmVlIG9uIHRoaXMsIEkgdG9vayBhZHZh
-bnRhZ2Ugb2YgZml4ZWRfY2xrc3JjIHRvIGFsc28gZW5hYmxlIHRoZQ0Kc3lzX2NsayBiYXNlZCBv
-biBmaXhlZF9jbGtzcmMgdG8gYXZvaWQgaW50cm9kdWNpbmcgYW5vdGhlciBtZW1iZXIgaW4gc3Ry
-dWN0DQphdG1lbF9obGNkY19kY19kZXNjLiBBdCB0aGlzIG1vbWVudCB0aGlzIGlzIHZhbGlkIG9u
-bHkgZm9yIFNBTTlYNjAgYW5kIEkNCndhcyB0aGlua2luZyB0aGF0IGluIGNhc2Ugc29tZSBvdGhl
-ciBzY2VuYXJpbyB3aWxsIGFwcGVhciBJIHdpbGwgZG8gdGhlDQphcHByb3ByaWF0ZSBjaGFuZ2Vz
-Lg0KDQo+IFdoeSB3ZSBjYW5ub3QgYWx3YXlzIGVuYWJsZSBzeXNfY2xrPyBEbyB3ZSBuZWVkIHRv
-IGRvIHRoaXMgb25seQ0KPiBmb3Igc2FtOXg2MD8NCg0KT25seSBTQU05WDYwIHJlcXVpcmVzIHRo
-aXMgZXhwbGljaXRseSBhdCBwcm9iZS4NCg0KPiBJRiB5ZXMsIHRoZW4gYWRkIGEgbmV3IGZhbGcu
-IElmIG5vLCB0aGVuIHNraXAgdGhlIGZsYWcuDQo+IA0KPiAJU2FtDQo+IA0KPiANCj4+DQo+PiBT
-aWduZWQtb2ZmLWJ5OiBTYW5kZWVwIFNoZXJpa2VyIE1hbGxpa2FyanVuIDxzYW5kZWVwc2hlcmlr
-ZXIubWFsbGlrYXJqdW5AbWljcm9jaGlwLmNvbT4NCj4+IFtjbGF1ZGl1LmJlem5lYUBtaWNyb2No
-aXAuY29tOiBhZGQgZml4ZWRfY2xrc3JjIGNoZWNrc10NCj4+IFNpZ25lZC1vZmYtYnk6IENsYXVk
-aXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KPj4gLS0tDQo+PiAgZHJp
-dmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX2RjLmMgfCAxOSArKysrKysrKysr
-KysrKysrKystDQo+PiAgMSBmaWxlIGNoYW5nZWQsIDE4IGluc2VydGlvbnMoKyksIDEgZGVsZXRp
-b24oLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0
-bWVsX2hsY2RjX2RjLmMgYi9kcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNf
-ZGMuYw0KPj4gaW5kZXggMGJlMTNlY2VlZGJhLi44YmY1MWY4NTM3MjEgMTAwNjQ0DQo+PiAtLS0g
-YS9kcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNfZGMuYw0KPj4gKysrIGIv
-ZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX2RjLmMNCj4+IEBAIC02MjUs
-MTAgKzYyNSwxOCBAQCBzdGF0aWMgaW50IGF0bWVsX2hsY2RjX2RjX2xvYWQoc3RydWN0IGRybV9k
-ZXZpY2UgKmRldikNCj4+ICAJZGMtPmhsY2RjID0gZGV2X2dldF9kcnZkYXRhKGRldi0+ZGV2LT5w
-YXJlbnQpOw0KPj4gIAlkZXYtPmRldl9wcml2YXRlID0gZGM7DQo+PiAgDQo+PiArCWlmIChkYy0+
-ZGVzYy0+Zml4ZWRfY2xrc3JjKSB7DQo+PiArCQlyZXQgPSBjbGtfcHJlcGFyZV9lbmFibGUoZGMt
-PmhsY2RjLT5zeXNfY2xrKTsNCj4+ICsJCWlmIChyZXQpIHsNCj4+ICsJCQlkZXZfZXJyKGRldi0+
-ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSBzeXNfY2xrXG4iKTsNCj4+ICsJCQlnb3RvIGVycl9kZXN0
-cm95X3dxOw0KPj4gKwkJfQ0KPj4gKwl9DQo+PiArDQo+PiAgCXJldCA9IGNsa19wcmVwYXJlX2Vu
-YWJsZShkYy0+aGxjZGMtPnBlcmlwaF9jbGspOw0KPj4gIAlpZiAocmV0KSB7DQo+PiAgCQlkZXZf
-ZXJyKGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSBwZXJpcGhfY2xrXG4iKTsNCj4+IC0JCWdv
-dG8gZXJyX2Rlc3Ryb3lfd3E7DQo+PiArCQlnb3RvIGVycl9zeXNfY2xrX2Rpc2FibGU7DQo+PiAg
-CX0NCj4+ICANCj4+ICAJcG1fcnVudGltZV9lbmFibGUoZGV2LT5kZXYpOw0KPj4gQEAgLTY2NCw2
-ICs2NzIsOSBAQCBzdGF0aWMgaW50IGF0bWVsX2hsY2RjX2RjX2xvYWQoc3RydWN0IGRybV9kZXZp
-Y2UgKmRldikNCj4+ICBlcnJfcGVyaXBoX2Nsa19kaXNhYmxlOg0KPj4gIAlwbV9ydW50aW1lX2Rp
-c2FibGUoZGV2LT5kZXYpOw0KPj4gIAljbGtfZGlzYWJsZV91bnByZXBhcmUoZGMtPmhsY2RjLT5w
-ZXJpcGhfY2xrKTsNCj4+ICtlcnJfc3lzX2Nsa19kaXNhYmxlOg0KPj4gKwlpZiAoZGMtPmRlc2Mt
-PmZpeGVkX2Nsa3NyYykNCj4+ICsJCWNsa19kaXNhYmxlX3VucHJlcGFyZShkYy0+aGxjZGMtPnN5
-c19jbGspOw0KPj4gIA0KPj4gIGVycl9kZXN0cm95X3dxOg0KPj4gIAlkZXN0cm95X3dvcmtxdWV1
-ZShkYy0+d3EpOw0KPj4gQEAgLTY4OCw2ICs2OTksOCBAQCBzdGF0aWMgdm9pZCBhdG1lbF9obGNk
-Y19kY191bmxvYWQoc3RydWN0IGRybV9kZXZpY2UgKmRldikNCj4+ICANCj4+ICAJcG1fcnVudGlt
-ZV9kaXNhYmxlKGRldi0+ZGV2KTsNCj4+ICAJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGRjLT5obGNk
-Yy0+cGVyaXBoX2Nsayk7DQo+PiArCWlmIChkYy0+ZGVzYy0+Zml4ZWRfY2xrc3JjKQ0KPj4gKwkJ
-Y2xrX2Rpc2FibGVfdW5wcmVwYXJlKGRjLT5obGNkYy0+c3lzX2Nsayk7DQo+PiAgCWRlc3Ryb3lf
-d29ya3F1ZXVlKGRjLT53cSk7DQo+PiAgfQ0KPj4gIA0KPj4gQEAgLTgwNSw2ICs4MTgsOCBAQCBz
-dGF0aWMgaW50IGF0bWVsX2hsY2RjX2RjX2RybV9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikN
-Cj4+ICAJcmVnbWFwX3JlYWQocmVnbWFwLCBBVE1FTF9ITENEQ19JTVIsICZkYy0+c3VzcGVuZC5p
-bXIpOw0KPj4gIAlyZWdtYXBfd3JpdGUocmVnbWFwLCBBVE1FTF9ITENEQ19JRFIsIGRjLT5zdXNw
-ZW5kLmltcik7DQo+PiAgCWNsa19kaXNhYmxlX3VucHJlcGFyZShkYy0+aGxjZGMtPnBlcmlwaF9j
-bGspOw0KPj4gKwlpZiAoZGMtPmRlc2MtPmZpeGVkX2Nsa3NyYykNCj4+ICsJCWNsa19kaXNhYmxl
-X3VucHJlcGFyZShkYy0+aGxjZGMtPnN5c19jbGspOw0KPj4gIA0KPj4gIAlyZXR1cm4gMDsNCj4+
-ICB9DQo+PiBAQCAtODE0LDYgKzgyOSw4IEBAIHN0YXRpYyBpbnQgYXRtZWxfaGxjZGNfZGNfZHJt
-X3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+PiAgCXN0cnVjdCBkcm1fZGV2aWNlICpkcm1f
-ZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+PiAgCXN0cnVjdCBhdG1lbF9obGNkY19kYyAq
-ZGMgPSBkcm1fZGV2LT5kZXZfcHJpdmF0ZTsNCj4+ICANCj4+ICsJaWYgKGRjLT5kZXNjLT5maXhl
-ZF9jbGtzcmMpDQo+PiArCQljbGtfcHJlcGFyZV9lbmFibGUoZGMtPmhsY2RjLT5zeXNfY2xrKTsN
-Cj4+ICAJY2xrX3ByZXBhcmVfZW5hYmxlKGRjLT5obGNkYy0+cGVyaXBoX2Nsayk7DQo+PiAgCXJl
-Z21hcF93cml0ZShkYy0+aGxjZGMtPnJlZ21hcCwgQVRNRUxfSExDRENfSUVSLCBkYy0+c3VzcGVu
-ZC5pbXIpOw0KPj4gIA0KPj4gLS0gDQo+PiAyLjcuNA0KPj4NCj4+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+PiBkcmktZGV2ZWwgbWFpbGluZyBsaXN0
-DQo+PiBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnDQo+PiBodHRwczovL2xpc3RzLmZy
-ZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA0KPiANCg==
+
+
+On 28.02.2019 23:13, Sam Ravnborg wrote:
+> Hi Alexandre.
+> 
+>>>>
+>>>> These patches adds support for SAM9X60's LCD controller.
+>>> Can you elaborate a little more which chips that are relevant.
+>>> To be able to look into the right data-sheet, while reviewing.
+>>> Link to data-sheet would be nice too.
+>>>
+>>
+>> sam9x60 is the chip name (i.e. x is not a wildcard). I don't think the
+>> datasheet is finished/public yet.
+> 
+> Thanks. I will take a look at the patches but not knowing
+> the specifics of the implementation/IP will makes this less valueable.
+
+At this moment, as Alexandre specified, the datasheet is not published.
+
+Thank you,
+Claudiu Beznea
+
+> 
+> 	Sam
+> 
