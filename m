@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v10 09/27] watchdog: jz4740: Avoid starting watchdog in set_timeout
-Date: Sat,  2 Mar 2019 20:33:55 -0300
-Message-ID: <20190302233413.14813-10-paul@crapouillou.net>
+Subject: [PATCH v10 10/27] watchdog: jz4740: Drop dependency on MACH_JZ47xx, use COMPILE_TEST
+Date: Sat,  2 Mar 2019 20:33:56 -0300
+Message-ID: <20190302233413.14813-11-paul@crapouillou.net>
 References: <20190302233413.14813-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190302233413.14813-1-paul@crapouillou.net>
@@ -10,11 +10,13 @@ To: Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@li
 Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Previously the jz4740_wdt_set_timeout() function was starting the timer
-unconditionally, even if it was stopped when that function was entered.
+Depending on MACH_JZ47xx prevent us from creating a generic kernel that
+works on more than one MIPS board. Instead, we just depend on MIPS being
+set.
 
-Now, the timer will be restarted only if it was already running before
-this function is called.
+On other architectures, this driver can still be built, thanks to
+COMPILE_TEST. This is used by automated tools to find bugs, for
+instance.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Reviewed-by: Guenter Roeck <linux@roeck-us.net>
@@ -23,7 +25,9 @@ Tested-by: Artur Rojek <contact@artur-rojek.eu>
 ---
 
 Notes:
-         v6: New patch
+         v5: New patch
+    
+         v6: No change
     
          v7: No change
     
@@ -33,37 +37,21 @@ Notes:
     
          v10: No change
 
- drivers/watchdog/jz4740_wdt.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/watchdog/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
-index 0f54306aee25..45d9495170e5 100644
---- a/drivers/watchdog/jz4740_wdt.c
-+++ b/drivers/watchdog/jz4740_wdt.c
-@@ -64,13 +64,15 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
- {
- 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
- 	u16 timeout_value = (u16)(drvdata->clk_rate * new_timeout);
-+	u32 tcer;
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index a2a065eefb59..061885fd94ad 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -1516,7 +1516,7 @@ config INDYDOG
  
-+	regmap_read(drvdata->map, TCU_REG_WDT_TCER, &tcer);
- 	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
- 
- 	regmap_write(drvdata->map, TCU_REG_WDT_TDR, timeout_value);
- 	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
- 
--	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCER, tcer & TCU_WDT_TCER_TCEN);
- 
- 	wdt_dev->timeout = new_timeout;
- 	return 0;
-@@ -86,6 +88,7 @@ static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
- 		return ret;
- 
- 	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
- 
- 	return 0;
- }
+ config JZ4740_WDT
+ 	tristate "Ingenic jz4740 SoC hardware watchdog"
+-	depends on MACH_JZ4740 || MACH_JZ4780
++	depends on MIPS || COMPILE_TEST
+ 	depends on COMMON_CLK
+ 	select WATCHDOG_CORE
+ 	select INGENIC_TIMER
 -- 
 2.11.0
