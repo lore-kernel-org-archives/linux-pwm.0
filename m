@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v10 15/27] pwm: jz4740: Allow selection of PWM channels 0 and 1
-Date: Sat,  2 Mar 2019 20:34:01 -0300
-Message-ID: <20190302233413.14813-16-paul@crapouillou.net>
+Subject: [PATCH v10 16/27] pwm: jz4740: Drop dependency on MACH_INGENIC, use COMPILE_TEST
+Date: Sat,  2 Mar 2019 20:34:02 -0300
+Message-ID: <20190302233413.14813-17-paul@crapouillou.net>
 References: <20190302233413.14813-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190302233413.14813-1-paul@crapouillou.net>
@@ -10,47 +10,48 @@ To: Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@li
 Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-The TCU channels 0 and 1 were previously reserved for system tasks, and
-thus unavailable for PWM.
+Depending on MACH_INGENIC prevent us from creating a generic kernel that
+works on more than one MIPS board. Instead, we just depend on MIPS being
+set.
+
+On other architectures, this driver can still be built, thanks to
+COMPILE_TEST. This is used by automated tools to find bugs, for
+instance.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 Tested-by: Mathieu Malaterre <malat@debian.org>
 Tested-by: Artur Rojek <contact@artur-rojek.eu>
 ---
 
 Notes:
-         v6: New patch
+         v5: New patch
+    
+         v6: No change
     
          v7: No change
     
-         v8: ingenic_tcu_[request,release]_channel are dropped. We now use
-             the memory resources provided to the driver to detect whether
-    	 or not we are allowed to use the TCU channel.
+         v8: No change
     
-         v9: Drop previous system. Call a API function provided by the
-             clocksource driver to know if we can use the channel as PWM.
+         v9: No change
     
          v10: No change
 
- drivers/pwm/pwm-jz4740.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index f497388fc818..c914589d547b 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -44,11 +44,7 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	char clk_name[16];
- 	int ret;
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 4e201e970509..0c9b07cb77ff 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -203,7 +203,7 @@ config PWM_IMX
  
--	/*
--	 * Timers 0 and 1 are used for system tasks, so they are unavailable
--	 * for use as PWMs.
--	 */
--	if (pwm->hwpwm < 2)
-+	if (!ingenic_tcu_pwm_can_use_chn(pwm->hwpwm))
- 		return -EBUSY;
- 
- 	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+-	depends on MACH_INGENIC
++	depends on MIPS || COMPILE_TEST
+ 	depends on COMMON_CLK
+ 	select INGENIC_TIMER
+ 	help
 -- 
 2.11.0
