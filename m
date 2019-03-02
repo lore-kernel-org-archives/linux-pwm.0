@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v10 08/27] watchdog: jz4740: Use regmap provided by TCU driver
-Date: Sat,  2 Mar 2019 20:33:54 -0300
-Message-ID: <20190302233413.14813-9-paul@crapouillou.net>
+Subject: [PATCH v10 09/27] watchdog: jz4740: Avoid starting watchdog in set_timeout
+Date: Sat,  2 Mar 2019 20:33:55 -0300
+Message-ID: <20190302233413.14813-10-paul@crapouillou.net>
 References: <20190302233413.14813-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190302233413.14813-1-paul@crapouillou.net>
@@ -10,8 +10,11 @@ To: Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@li
 Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Since we broke the ABI by changing the clock, the driver was also
-updated to use the regmap provided by the TCU driver.
+Previously the jz4740_wdt_set_timeout() function was starting the timer
+unconditionally, even if it was stopped when that function was entered.
+
+Now, the timer will be restarted only if it was already running before
+this function is called.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Reviewed-by: Guenter Roeck <linux@roeck-us.net>
@@ -30,100 +33,37 @@ Notes:
     
          v10: No change
 
- drivers/watchdog/jz4740_wdt.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ drivers/watchdog/jz4740_wdt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/watchdog/jz4740_wdt.c b/drivers/watchdog/jz4740_wdt.c
-index 1d504ecf45e1..0f54306aee25 100644
+index 0f54306aee25..45d9495170e5 100644
 --- a/drivers/watchdog/jz4740_wdt.c
 +++ b/drivers/watchdog/jz4740_wdt.c
-@@ -13,6 +13,7 @@
-  *
-  */
- 
-+#include <linux/mfd/ingenic-tcu.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/types.h>
-@@ -25,10 +26,7 @@
- #include <linux/slab.h>
- #include <linux/err.h>
- #include <linux/of.h>
--
--#define JZ_REG_WDT_TIMER_DATA     0x0
--#define JZ_REG_WDT_COUNTER_ENABLE 0x4
--#define JZ_REG_WDT_TIMER_COUNTER  0x8
-+#include <linux/regmap.h>
- 
- #define DEFAULT_HEARTBEAT 5
- #define MAX_HEARTBEAT     2048
-@@ -48,7 +46,7 @@ MODULE_PARM_DESC(heartbeat,
- 
- struct jz4740_wdt_drvdata {
- 	struct watchdog_device wdt;
--	void __iomem *base;
-+	struct regmap *map;
- 	struct clk *clk;
- 	unsigned long clk_rate;
- };
-@@ -57,7 +55,7 @@ static int jz4740_wdt_ping(struct watchdog_device *wdt_dev)
+@@ -64,13 +64,15 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
  {
  	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
- 
--	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
- 	return 0;
- }
- 
-@@ -67,12 +65,12 @@ static int jz4740_wdt_set_timeout(struct watchdog_device *wdt_dev,
- 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
  	u16 timeout_value = (u16)(drvdata->clk_rate * new_timeout);
++	u32 tcer;
  
--	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
++	regmap_read(drvdata->map, TCU_REG_WDT_TCER, &tcer);
+ 	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
  
--	writew((u16)timeout_value, drvdata->base + JZ_REG_WDT_TIMER_DATA);
--	writew(0x0, drvdata->base + JZ_REG_WDT_TIMER_COUNTER);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TDR, timeout_value);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
+ 	regmap_write(drvdata->map, TCU_REG_WDT_TDR, timeout_value);
+ 	regmap_write(drvdata->map, TCU_REG_WDT_TCNT, 0);
  
--	writeb(0x1, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
+-	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, tcer & TCU_WDT_TCER_TCEN);
  
  	wdt_dev->timeout = new_timeout;
  	return 0;
-@@ -96,7 +94,7 @@ static int jz4740_wdt_stop(struct watchdog_device *wdt_dev)
- {
- 	struct jz4740_wdt_drvdata *drvdata = watchdog_get_drvdata(wdt_dev);
+@@ -86,6 +88,7 @@ static int jz4740_wdt_start(struct watchdog_device *wdt_dev)
+ 		return ret;
  
--	writeb(0x0, drvdata->base + JZ_REG_WDT_COUNTER_ENABLE);
-+	regmap_write(drvdata->map, TCU_REG_WDT_TCER, 0);
- 	clk_disable_unprepare(drvdata->clk);
+ 	jz4740_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
++	regmap_write(drvdata->map, TCU_REG_WDT_TCER, TCU_WDT_TCER_TCEN);
  
  	return 0;
-@@ -138,7 +136,6 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct jz4740_wdt_drvdata *drvdata;
- 	struct watchdog_device *jz4740_wdt;
--	struct resource	*res;
- 	long rate;
- 	int ret;
- 
-@@ -174,10 +171,11 @@ static int jz4740_wdt_probe(struct platform_device *pdev)
- 	watchdog_set_nowayout(jz4740_wdt, nowayout);
- 	watchdog_set_drvdata(jz4740_wdt, drvdata);
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	drvdata->base = devm_ioremap_resource(&pdev->dev, res);
--	if (IS_ERR(drvdata->base))
--		return PTR_ERR(drvdata->base);
-+	drvdata->map = dev_get_regmap(dev->parent, NULL);
-+	if (!drvdata->map) {
-+		dev_err(dev, "regmap not found\n");
-+		return -EINVAL;
-+	}
- 
- 	ret = devm_watchdog_register_device(&pdev->dev, &drvdata->wdt);
- 	if (ret < 0)
+ }
 -- 
 2.11.0
