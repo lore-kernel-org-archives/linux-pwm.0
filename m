@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v10 25/27] MIPS: GCW0: Reduce system timer and clocksource to 750 kHz
-Date: Sat,  2 Mar 2019 20:34:11 -0300
-Message-ID: <20190302233413.14813-26-paul@crapouillou.net>
+Subject: [PATCH v10 26/27] MIPS: GCW0: defconfig: Enable OST, watchdog, PWM drivers
+Date: Sat,  2 Mar 2019 20:34:12 -0300
+Message-ID: <20190302233413.14813-27-paul@crapouillou.net>
 References: <20190302233413.14813-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190302233413.14813-1-paul@crapouillou.net>
@@ -10,7 +10,8 @@ To: Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@li
 Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-The default clock (12 MHz) is too fast for the system timer.
+The OST driver provides a clocksource and sched_clock that are much more
+accurate than the default ones.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Tested-by: Mathieu Malaterre <malat@debian.org>
@@ -20,28 +21,30 @@ Tested-by: Artur Rojek <contact@artur-rojek.eu>
 Notes:
          v8: New patch
     
-         v9: Don't configure clock timer1, as the OS Timer is used as
-             clocksource on this SoC
+         v9: No change
     
-         v10: Revert back to v8 bahaviour. Let the user choose what
-              clocksource should be used.
+         v10: No change
 
- arch/mips/boot/dts/ingenic/gcw0.dts | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/mips/configs/gcw0_defconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/mips/boot/dts/ingenic/gcw0.dts b/arch/mips/boot/dts/ingenic/gcw0.dts
-index 35f0291e8d38..2f26b8a498e9 100644
---- a/arch/mips/boot/dts/ingenic/gcw0.dts
-+++ b/arch/mips/boot/dts/ingenic/gcw0.dts
-@@ -60,3 +60,9 @@
- 	/* The WiFi module is connected to the UHC. */
- 	status = "okay";
- };
-+
-+&tcu {
-+	/* 750 kHz for the system timer and clocksource */
-+	assigned-clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>;
-+	assigned-clock-rates = <750000>, <750000>;
-+};
+diff --git a/arch/mips/configs/gcw0_defconfig b/arch/mips/configs/gcw0_defconfig
+index a3e3eb3c5a8b..7116400e8cbf 100644
+--- a/arch/mips/configs/gcw0_defconfig
++++ b/arch/mips/configs/gcw0_defconfig
+@@ -20,8 +20,13 @@ CONFIG_SERIAL_8250=y
+ # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
+ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_8250_INGENIC=y
++CONFIG_WATCHDOG=y
++CONFIG_JZ4740_WDT=y
+ CONFIG_USB=y
+ CONFIG_USB_OHCI_HCD=y
+ CONFIG_USB_OHCI_HCD_PLATFORM=y
+ CONFIG_NOP_USB_XCEIV=y
++CONFIG_INGENIC_OST=y
++CONFIG_PWM=y
++CONFIG_PWM_JZ4740=y
+ CONFIG_TMPFS=y
 -- 
 2.11.0
