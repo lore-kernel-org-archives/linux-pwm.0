@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v10 18/27] clk: jz4740: Add TCU clock
-Date: Sat,  2 Mar 2019 20:34:04 -0300
-Message-ID: <20190302233413.14813-19-paul@crapouillou.net>
+Subject: [PATCH v10 19/27] MIPS: Kconfig: Select TCU timer driver when MACH_INGENIC is set
+Date: Sat,  2 Mar 2019 20:34:05 -0300
+Message-ID: <20190302233413.14813-20-paul@crapouillou.net>
 References: <20190302233413.14813-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190302233413.14813-1-paul@crapouillou.net>
@@ -10,12 +10,11 @@ To: Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@li
 Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add the missing TCU clock to the list of clocks supplied by the CGU for
-the JZ4740 SoC.
+We cannot boot to userspace (not even initramfs) if the timer driver is
+not present; so it makes sense to enable it unconditionally when
+MACH_INGENIC is set.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Acked-by: Rob Herring <robh@kernel.org>
 Tested-by: Mathieu Malaterre <malat@debian.org>
 Tested-by: Artur Rojek <contact@artur-rojek.eu>
 ---
@@ -33,37 +32,20 @@ Notes:
     
          v10: No change
 
- drivers/clk/ingenic/jz4740-cgu.c       | 6 ++++++
- include/dt-bindings/clock/jz4740-cgu.h | 1 +
- 2 files changed, 7 insertions(+)
+ arch/mips/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/ingenic/jz4740-cgu.c b/drivers/clk/ingenic/jz4740-cgu.c
-index 4479c102e899..d8ac7f2e183a 100644
---- a/drivers/clk/ingenic/jz4740-cgu.c
-+++ b/drivers/clk/ingenic/jz4740-cgu.c
-@@ -211,6 +211,12 @@ static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
- 		.parents = { JZ4740_CLK_EXT, -1, -1, -1 },
- 		.gate = { CGU_REG_CLKGR, 5 },
- 	},
-+
-+	[JZ4740_CLK_TCU] = {
-+		"tcu", CGU_CLK_GATE,
-+		.parents = { JZ4740_CLK_EXT, -1, -1, -1 },
-+		.gate = { CGU_REG_CLKGR, 1 },
-+	},
- };
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index a84c24d894aa..8e27d9983243 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -394,6 +394,7 @@ config MACH_INGENIC
+ 	select BUILTIN_DTB
+ 	select USE_OF
+ 	select LIBFDT
++	select INGENIC_TIMER
  
- static void __init jz4740_cgu_init(struct device_node *np)
-diff --git a/include/dt-bindings/clock/jz4740-cgu.h b/include/dt-bindings/clock/jz4740-cgu.h
-index 6ed83f926ae7..e82d77028581 100644
---- a/include/dt-bindings/clock/jz4740-cgu.h
-+++ b/include/dt-bindings/clock/jz4740-cgu.h
-@@ -34,5 +34,6 @@
- #define JZ4740_CLK_ADC		19
- #define JZ4740_CLK_I2C		20
- #define JZ4740_CLK_AIC		21
-+#define JZ4740_CLK_TCU		22
- 
- #endif /* __DT_BINDINGS_CLOCK_JZ4740_CGU_H__ */
+ config LANTIQ
+ 	bool "Lantiq based platforms"
 -- 
 2.11.0
