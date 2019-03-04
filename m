@@ -1,81 +1,29 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37559 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726328AbfCDLMp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Mar 2019 06:12:45 -0500
-Received: by mail-wr1-f65.google.com with SMTP id w6so5065896wrs.4
-        for <linux-pwm@vger.kernel.org>; Mon, 04 Mar 2019 03:12:44 -0800 (PST)
-From: Thierry Reding <thierry.reding@gmail.com>
-Date: Mon,  4 Mar 2019 12:12:42 +0100
-Message-Id: <20190304111242.6545-1-thierry.reding@gmail.com>
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:14972 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbfCDLqG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Mar 2019 06:46:06 -0500
+From: <Claudiu.Beznea@microchip.com>
+Date: Mon, 4 Mar 2019 11:46:04 +0000
+Message-ID: <0afddc7c-f823-7311-83f8-2881e289c9e0@microchip.com>
+References: <20190304111242.6545-1-thierry.reding@gmail.com>
+In-Reply-To: <20190304111242.6545-1-thierry.reding@gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <45F4BA426C09D84FA9EB880263AE1535@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH] pwm: atmel: Remove useless symbolic definitions
-To: Thierry Reding <thierry.reding@gmail.com>, Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: Re: [PATCH] pwm: atmel: Remove useless symbolic definitions
+To: thierry.reding@gmail.com
 Cc: linux-pwm@vger.kernel.org
 
-The values that these symbols define are only assigned to the per-SoC
-structure where the context is clear, so there's no need for the extra
-symbolic name.
-
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
----
- drivers/pwm/pwm-atmel.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index b1473ed55110..a9fd6f0d408c 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -48,14 +48,6 @@
- #define PWMV2_CPRD		0x0C
- #define PWMV2_CPRDUPD		0x10
- 
--/* Max values for period and prescaler */
--
--/* Only the LSB 16 bits are significant. */
--#define PWM_MAXV1_PRD		0xFFFF
--/* All 32 bits are significant. */
--#define PWM_MAXV2_PRD		0xFFFFFFFF
--#define PRD_MAXV1_PRES		10
--
- struct atmel_pwm_registers {
- 	u8 period;
- 	u8 period_upd;
-@@ -294,8 +286,8 @@ static const struct atmel_pwm_data atmel_sam9rl_pwm_data = {
- 	},
- 	.cfg = {
- 		/* 16 bits to keep period and duty. */
--		.max_period	= PWM_MAXV1_PRD,
--		.max_pres	= PRD_MAXV1_PRES,
-+		.max_period	= 0xffff,
-+		.max_pres	= 10,
- 	},
- };
- 
-@@ -308,8 +300,8 @@ static const struct atmel_pwm_data atmel_sama5_pwm_data = {
- 	},
- 	.cfg = {
- 		/* 16 bits to keep period and duty. */
--		.max_period	= PWM_MAXV1_PRD,
--		.max_pres	= PRD_MAXV1_PRES,
-+		.max_period	= 0xffff,
-+		.max_pres	= 10,
- 	},
- };
- 
-@@ -322,8 +314,8 @@ static const struct atmel_pwm_data mchp_sam9x60_pwm_data = {
- 	},
- 	.cfg = {
- 		/* 32 bits to keep period and duty. */
--		.max_period	= PWM_MAXV2_PRD,
--		.max_pres	= PRD_MAXV1_PRES,
-+		.max_period	= 0xffffffff,
-+		.max_pres	= 10,
- 	},
- };
- 
--- 
-2.20.1
+DQoNCk9uIDA0LjAzLjIwMTkgMTM6MTIsIFRoaWVycnkgUmVkaW5nIHdyb3RlOg0KPiBUaGUgdmFs
+dWVzIHRoYXQgdGhlc2Ugc3ltYm9scyBkZWZpbmUgYXJlIG9ubHkgYXNzaWduZWQgdG8gdGhlIHBl
+ci1Tb0MNCj4gc3RydWN0dXJlIHdoZXJlIHRoZSBjb250ZXh0IGlzIGNsZWFyLCBzbyB0aGVyZSdz
+IG5vIG5lZWQgZm9yIHRoZSBleHRyYQ0KPiBzeW1ib2xpYyBuYW1lLg0KPiANCj4gU2lnbmVkLW9m
+Zi1ieTogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4NCj4gLS0tDQo+
+ICBkcml2ZXJzL3B3bS9wd20tYXRtZWwuYyB8IDIwICsrKysrKy0tLS0tLS0tLS0tLS0tDQo+ICAx
+IGZpbGUgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCAxNCBkZWxldGlvbnMoLSkNCg0KQWNrZWQt
+Ynk6IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0K
