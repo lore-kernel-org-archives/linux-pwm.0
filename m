@@ -1,58 +1,68 @@
-Return-Path: <yellowriver2010@hotmail.com>
-From: Wen Yang <yellowriver2010@hotmail.com>
-Subject: [PATCH] pwm: omap-dmtimer: Add missing put_device()
-Date: Sat, 9 Feb 2019 14:17:12 +0000
-Message-ID: <HK0PR02MB36347CD96866F06ECAB04EC9B26A0@HK0PR02MB3634.apcprd02.prod.outlook.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Mon, 4 Mar 2019 12:23:18 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Message-ID: <20190304112318.GA7617@ulmo>
+References: <20190110193353.20767-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
+Content-Disposition: inline
+In-Reply-To: <20190110193353.20767-1-u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: imx27: only enable the clocks once in .get_state
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Wen Yang <yellowriver2010@hotmail.com>
 
-The of_find_device_by_node() takes a reference to the underlying device
-structure, we should release that reference.
 
-Fixes: b7290cf6ff78 ("pwm: pwm-omap-dmtimer: Adapt driver to utilize dmtime=
-r pdata ops")
-Signed-off-by: Wen Yang <yellowriver2010@hotmail.com>
----
- drivers/pwm/pwm-omap-dmtimer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+--Q68bSM7Ycu6FN28Q
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.=
-c
-index f457986..f7ca52f 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -303,12 +303,15 @@ static int pwm_omap_dmtimer_probe(struct platform_dev=
-ice *pdev)
-=20
- put:
- 	of_node_put(timer);
--	if (ret < 0)
-+	if (ret < 0) {
-+		put_device(&timer_pdev->dev);
- 		return ret;
-+	}
-=20
- 	omap =3D devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
- 	if (!omap) {
- 		pdata->free(dm_timer);
-+		put_device(&timer_pdev->dev);
- 		return -ENOMEM;
- 	}
-=20
-@@ -360,6 +363,8 @@ static int pwm_omap_dmtimer_remove(struct platform_devi=
-ce *pdev)
-=20
- 	omap->pdata->free(omap->dm_timer);
-=20
-+	put_device(&omap->dm_timer_pdev->dev);
-+
- 	mutex_destroy(&omap->mutex);
-=20
- 	return pwmchip_remove(&omap->chip);
---=20
-2.7.4
+On Thu, Jan 10, 2019 at 08:33:53PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Currently the function pwm_imx27_get_state() of enables the clocks once
+> unconditionally at the start, a second time if the PWM is enabled and
+> disables unconditionally at the end.
+>=20
+> Simplify that to enable once at the start and disable conditionally at
+> the end.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/pwm/pwm-imx27.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+
+Applied, thanks.
+
+Thierry
+
+--Q68bSM7Ycu6FN28Q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9CqYACgkQ3SOs138+
+s6HYGBAAhROWTjWBcZio//SmXFcD0EZ3Yjuj+mZxo6/l0Lqq0EIVr8T8lk0J/ZI8
+7cdQqwih1l3HYnCoX3bsNj9C24llTPnvUb3qPkXbSUUtEL16RZN43vLB9ufeprMp
+6PNuput72dAOk4DZrLFrpw+IC8hw6jb7UHAe1pBgujleCSxg93vHGkSwLYtmhSzz
+M4CynkJWwupYqlIl1KPKJk+FoHqbEnn4aUKvUde4EuSlVfDe3eoIteepkV2ZbDzz
+2g2tRlmV5pibmFLBw9Hu4rotqdQDM0jJXLyOkXC//IhBkqWDWSA79BakEsjOtqCe
+p7iqT0mEZ8pQCMMORDYfNjcKVFOw727/MJz/PRbPdUJb9MnM0sCDEerdMtD99onx
+uaTg15xlEWNHLF6hnE1vq9HbCFTdUAJaCc5S32CGa1CQ9q7szTKsOxvAoiLO5rMt
+Xj+lo8Zqusb6zEMuBTxZ5LHOVgfKGR4TpmROWo5Kx16k7q0lAZjTQVJAtmZyeoG6
+BBf24+nOIIKpT5IUXbyEeTChuSkYO+u53voYKbI4akxL80H3J4pYZN6PqHHOYg6a
+GJGVheOUBppB0RRON6501MMIZUJsJHpbqil9G7uQzWnGduIBA7riYPm/mcCt3CkY
+p0elzhO7DXYVbcAaoaaRoVRiWc1Fe3MGdsYbW6LjAoHWfQtK8vc=
+=WEOo
+-----END PGP SIGNATURE-----
+
+--Q68bSM7Ycu6FN28Q--
