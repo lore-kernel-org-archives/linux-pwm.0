@@ -1,63 +1,63 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] drivers: pwm: pwm-bcm-kona: update macros to remove
- braces around numbers
-Date: Mon, 4 Mar 2019 12:27:25 +0100
-Message-ID: <20190304112725.GB7617@ulmo>
-References: <1547667682-5095-1-git-send-email-sheetal.tigadoli@broadcom.com>
+Subject: Re: [PATCH v10 11/27] pwm: jz4740: Apply configuration atomically
+Date: Mon, 4 Mar 2019 12:59:07 +0100
+Message-ID: <20190304115907.GB9040@ulmo>
+References: <20190302233413.14813-1-paul@crapouillou.net>
+ <20190302233413.14813-12-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="l76fUT7nc3MelDdI"
+        protocol="application/pgp-signature"; boundary="qlTNgmc+xy1dBmNv"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1547667682-5095-1-git-send-email-sheetal.tigadoli@broadcom.com>
+In-Reply-To: <20190302233413.14813-12-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---l76fUT7nc3MelDdI
+--qlTNgmc+xy1dBmNv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 17, 2019 at 01:11:22AM +0530, Sheetal Tigadoli wrote:
-> update macros to remove braces around numbers
+On Sat, Mar 02, 2019 at 08:33:57PM -0300, Paul Cercueil wrote:
+> This is cleaner, more future-proof, and incidentally it also fixes the
+> PWM resetting its config when stopped/started several times.
 >=20
-> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Tested-by: Mathieu Malaterre <malat@debian.org>
+> Tested-by: Artur Rojek <contact@artur-rojek.eu>
 > ---
->  drivers/pwm/pwm-bcm-kona.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+>=20
+> Notes:
+>          v9: New patch
+>    =20
+>          v10: No change
+>=20
+>  drivers/pwm/pwm-jz4740.c | 37 ++++++++++++-------------------------
+>  1 file changed, 12 insertions(+), 25 deletions(-)
 
-Applied, thanks.
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-I dropped the "drivers: " prefix and shortened pwm-bcm-kona to bcm-kona
-because PWM is already implied by the "pwm: " prefix. I've also replaced
-the commit message with a real rationale rather than repeating the
-subject.
-
-Please keep this in mind for future patches.
-
-Thierry
-
---l76fUT7nc3MelDdI
+--qlTNgmc+xy1dBmNv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9C50ACgkQ3SOs138+
-s6EL9hAAhKtTMkUPAPy7awGRhP1g8u0EYPLDrMEyywa89xRkDOZDaxZjMnlOGFwU
-oBNBaK1Ibq+dT3C8beWcXXcviRemaMdJiX9zgbwOPpiWMDtl0TfMyDYC5Q3wGYHi
-/RVfQhGl26Z2D96irtXH3dmNzbHib+P1yE2kkEihd1YLwqOdNXvx3+eRMH0bHOpJ
-VcGHlO0JH2OOBjOf6rvsn6W94mHd6wqQl4agnCHIHVq8IPnki0/QgO/rCrvOwDtl
-n3BXqu5bUZs7Vn5jFsLyjO1zbDBw/Ms2SXrtySCJfOUiFiaVbsKElwgN7l5dVj9M
-2m9lJiaJHvOqLATD2IjY9pCHZcvJLMtB7R7zPX6eYlmwpEUCNndR2Dtz5WTGyvQJ
-O0PRWjNldCLJBcLNdGNvDOHXnWQeIvGKXhzr6rcNEB+1X2NLJWv5S7lBqRdaqAnK
-E6QQRByImLIvjYefom3H/aH4dkeEkg0GeeNXoeRn424rEGaNVIL9dlUl56ht6IWX
-n369nH8z+ysmAwEhcaOFx+R2DTfHeKvDb4TrJqHwypZCCyUaIadkTJw8QixkCWIM
-djLSmkTuDsYNz1hh75lImUbcIFAWUlEQthxrAenaZa/PCC1+vnH9hEhgsfnQQBnx
-kNJGuN/EuOUtlRkCuzUo7w7GXLA9ujB/2wwS4qgVCAJ2UI+Ipsk=
-=P3qZ
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9EwsACgkQ3SOs138+
+s6Fifw//f2H2kWj6n++VBIr3qcpgyLlpnGP7IdO8SjFN1SopHRC1vHqhKao7IdRf
+7HfK6sbCuisohUtSedMVcj5aD8fDlf2eUoaLwmErr/RKtQZiOmS7oSsYCFXaWvCf
+YpXCycCtRX00UT0dVAw3uVIftDnYJ1sYJbXBM4SPZC9VmYSBz4UVOy7XoY+HhOBv
+f+4LKs61FYgZmKDY10FWW2Wpq8Tw36Pdh8Szl9f8H8pFc+tgGCue7EaO7JN+TR3d
+ZTSJmxlF0hwzzGbouA7Y1UcLDnZrCZqgkf/SCSpyOqn4JkbaxWUdYwtIUTD9N22Q
+STfBGCCLlfXVEHQkEBvbgk84PwWBlEmPCcs/6ujnJCtD9mBKUJleOnF3aiqOpfCA
+KplgKB+tR+YN866fG+A9JhbbX0JkAwdiCF/DRdJAajqW4gY2pyxkiEC1FwmIe/YM
+vqLqaU7KqqeDso4HHjMbpBiJkznvUszfRJDrkboMygZ9WoMkUCseRJSLKXlyoRLX
+buG5vHVkjJkhhuEL5Af7CguZzNUvTIMrvKd5Zn4/fRdMolj7m5vksQ1V1Wb7qWTI
+G6CvNQO8S8cYwBkKYpXuMYWmsB8agHFnmzr98op8R6toc9/3i8EGOo0kV9V8NxmX
+21KrsQr738C981dGRLoBVJRVlfnSHZgv67Dni+uj2+y2MBElhxk=
+=DBKx
 -----END PGP SIGNATURE-----
 
---l76fUT7nc3MelDdI--
+--qlTNgmc+xy1dBmNv--
