@@ -1,94 +1,106 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39651 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbfCDLO4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Mar 2019 06:14:56 -0500
-Date: Mon, 4 Mar 2019 12:14:51 +0100
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44915 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbfCDLSh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Mar 2019 06:18:37 -0500
+Date: Mon, 4 Mar 2019 12:18:33 +0100
 From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20190304111451.GC5121@ulmo>
+Message-ID: <20190304111833.GD5121@ulmo>
 References: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1547021948-7664-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="XWOWbaMNXpFDWE00"
+        protocol="application/pgp-signature"; boundary="W5WqUoFLvi1M7tJE"
 Content-Disposition: inline
-In-Reply-To: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1547021948-7664-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v3 0/4] pwm: rcar: Add support "atomic" API and improve
- calculation
+Subject: Re: [PATCH v3 2/4] pwm: rcar: Use "atomic" API on rcar_pwm_resume()
 To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 
 
---XWOWbaMNXpFDWE00
-Content-Type: text/plain; charset=us-ascii
+--W5WqUoFLvi1M7tJE
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 09, 2019 at 05:19:04PM +0900, Yoshihiro Shimoda wrote:
-> This patch series adds support for PWM "atomic" API and improve
-> the clock calculation.
+On Wed, Jan 09, 2019 at 05:19:06PM +0900, Yoshihiro Shimoda wrote:
+> To remove legacy API related functions in the future, this patch
+> uses "atomic" related function instead. No change in behavior.
 >=20
-> Changes from v2 [1]:
->  - Add Acked-by of Uwe in patch [234]/4.
->  - Modify a condition to support normal polarity only.
->  - Fix possible to output wrong a duty cycle when disabling in patch 1/4.
->  - Fix overflow value on 32-bit arch in patch 4/4.
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/pwm/pwm-rcar.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 >=20
-> Changes from v1 [2]:
->  - Remove workaround code of output pseudo low level for now because it is
->    rejected on the ML.
->  - Add a condition for polarity because the HW doesn't support polarity c=
-hange
->    in patch 1/4.
->  - Improve the clock calculation in patch 4/4.
->=20
-> [1]
-> https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=3D632=
-19
->=20
-> Remarks:
-> On the email thread of patch 2/4, we discuss about suspend/resume
-> handling and I suposed to improve it. However, I need more time
-> how to improve it. So, for now, I don't improve it on this patch series.
->=20
-> [2]
-> https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=3D531=
-93
->=20
->=20
-> Yoshihiro Shimoda (4):
->   pwm: rcar: Add support "atomic" API
->   pwm: rcar: Use "atomic" API on rcar_pwm_resume()
->   pwm: rcar: remove legacy APIs
->   pwm: rcar: improve calculation of divider
->=20
->  drivers/pwm/pwm-rcar.c | 99 ++++++++++++++++++++++++--------------------=
-------
->  1 file changed, 48 insertions(+), 51 deletions(-)
+> diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+> index e3ab663..652a937 100644
+> --- a/drivers/pwm/pwm-rcar.c
+> +++ b/drivers/pwm/pwm-rcar.c
+> @@ -316,18 +316,16 @@ static int rcar_pwm_suspend(struct device *dev)
+>  static int rcar_pwm_resume(struct device *dev)
+>  {
+>  	struct pwm_device *pwm =3D rcar_pwm_dev_to_pwm_dev(dev);
+> +	struct pwm_state state;
+> =20
+>  	if (!test_bit(PWMF_REQUESTED, &pwm->flags))
+>  		return 0;
+> =20
+>  	pm_runtime_get_sync(dev);
+> =20
+> -	rcar_pwm_config(pwm->chip, pwm, pwm->state.duty_cycle,
+> -			pwm->state.period);
+> -	if (pwm_is_enabled(pwm))
+> -		rcar_pwm_enable(pwm->chip, pwm);
+> +	pwm_get_state(pwm, &state);
+> =20
+> -	return 0;
+> +	return rcar_pwm_apply(pwm->chip, pwm, &state);
+>  }
+>  #endif /* CONFIG_PM_SLEEP */
+>  static SIMPLE_DEV_PM_OPS(rcar_pwm_pm_ops, rcar_pwm_suspend, rcar_pwm_res=
+ume);
 
-Applied, thanks.
+As was recently discussed elsewhere, it should really be up to the
+consumer of PWMs to reinitialize the PWM on resume. However, this is a
+preexisting condition, so let's do it in a follow-up.
+
+Do you have any cases where you really rely on this? Resume ordering
+does not guarantee that the PWM and consumer will be resumed in the
+right order, so you may be enabling the PWM too soon, or too late, by
+doing this in the PWM driver.
+
+There are patches in the works to help with this using device links, but
+I think even with those there will be cases where the consumer will want
+to directly control when the PWM is restored, so you should consider
+moving the driver away from implementing suspend/resume itself.
+
+It'd be interesting to hear if there any cases where things break if you
+simply remove these PM callbacks. If so we should investigate and fix
+them so that these can be removed.
 
 Thierry
 
---XWOWbaMNXpFDWE00
+--W5WqUoFLvi1M7tJE
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9CKsACgkQ3SOs138+
-s6GvXBAAtQ63hJn8VU76YX0xf+hldzGWYzwFe2NrcZVW2zsBo7E93/MS2bDgQUXf
-X5iFiRgNPWaHTpvxumNBHMo4Xl7ZwyMJHFvzFVuIYLr3DQ9otjJnpUxur6XBlMYl
-+ePGcip2cbuEA8lqrhKs1A3H6l8UJ5cJJjy62oWkl0emwe4hVLwI0RwejDIs5pFT
-7tYNwR/hLW0ku2iLcfG6jgmPM+hDAwmBexh8XoyQW9DHFG5XaVF/jDlQ8XWkZNME
-kZ4C7q7mpt3giD9GUJPdSU1nzjkm8PS1O6IkovjCASLMAxCKzBJVEIPNpro0azWe
-v9xvUb8uQxWBu4OxfT4tJSnPoWUkyQMt0V5MMDAoy39gnFCd9mgYTnSlSr3NISvA
-0WNW5mUQxXMqnE57wTcj+ikE6MOiflbxpiPKq9zv6Jwk4xfGRHnIrX4CU+UT9Wp0
-HuoPcOfrEDUED+Yh7cmXCifurj+7tKETARtJqrpaS/Ho+wK3R1fky6cSnwAzxnBJ
-mZ2tcgGl0AGH4afZoOSHkNZPy528Juv6UI7ePq0ERRszPoaHwjBfBdAJ7SgrD3FU
-Pv7RiULroMeSgH9DwVeiznmWDujXxOERDPKrBSqQHzPX0mCFVJj8d+/Gvf6+hDoK
-lwXSfw8jvCy+Q1bgKrUDxh2CRsqkmC9oTSft1YFJ4wyBHNPgzoQ=
-=a31g
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9CYkACgkQ3SOs138+
+s6Ecow/+Lh5YDZ3eCQEcrYBCJoKVl8DrAEh9dZWpXas24wVJq9+r4wYgSjMrtaCx
+UuXC+LgIV0lwbnxYyqNIYkKU9yGocDcvPrabz/FhBk0i2LpE/OduVG+HDygnPkqz
++6RFj4sosbGzeMadxhCwFrz55QO+v49mH4SvSCTiBhitStkQZiSnQHXroFwUNNQK
+GXWRWfDL2VH/CaeKRrf6/tpxsWXOjrr/gDvHQIMvaQOE3zMOaqDf8QrnthEZ5iJn
+v8DxlWOxQrXiZAo8oMMU+W6PSbe3LfEjzxq1E4+sYPIA2b2mCiEs1YVhrT9SId6W
+awJUVT9F8mKZsK6C4mPf/K4cb9k4mrX3NSKpOaucumyZKdZBEnnFoDVNBhx2EM9w
+vmMlxL05qEiXwYbkSRo3ghs7TkX55PDxpjcjqX0QpBI7qNHpd657MHAVQzgh16+S
+wqO48VM/UccuaPZnMgyYTj3F/7r49gHf2NVeDPzBxQ4QWBtdEFxXTtcsXJh6yfrM
+Av60CO29+HxUaJoyBEz2DHXFQWThUyWjKUHOQVqaCS552iHdeL79M6NvDELdGjwf
+CMvJhUHg7/BHfW6nWyvxCgfPYKiva2rSUO+EL1xpk/C2eHjT8pZWGpiSjHvhlTIJ
+nngwBx64GbZlSWeJHSIwdhDkXwyy9vR/jwTGMQQoG/Ra9E9Fcj8=
+=VHQF
 -----END PGP SIGNATURE-----
 
---XWOWbaMNXpFDWE00--
+--W5WqUoFLvi1M7tJE--
