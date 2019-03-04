@@ -1,87 +1,85 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 0/5] add support for the new SAM9X60's PWM controller
-Date: Mon, 4 Mar 2019 11:58:49 +0100
-Message-ID: <20190304105849.GA5121@ulmo>
-References: <1551113039-937-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: Re: [PATCH 5/7] pwm: atmel-hlcdc: add compatible for SAM9X60 HLCDC's
+ PWM
+Date: Mon, 4 Mar 2019 12:05:17 +0100
+Message-ID: <20190304110517.GB5121@ulmo>
+References: <1551284609-14594-1-git-send-email-claudiu.beznea@microchip.com>
+ <1551284609-14594-6-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="J2SCkAp4GZ/dPZZf"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1551113039-937-1-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============1161722519=="
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1551284609-14594-6-git-send-email-claudiu.beznea@microchip.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Claudiu.Beznea@microchip.com
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.belloni@bootlin.com, bbrezillon@kernel.org, airlied@linux.ie, Nicolas.Ferre@microchip.com, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, robh+dt@kernel.org, linux-pwm@vger.kernel.org, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---J2SCkAp4GZ/dPZZf
+--===============1161722519==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="/WwmFnJnmDyWGHa4"
+Content-Disposition: inline
+
+
+--/WwmFnJnmDyWGHa4
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 25, 2019 at 04:44:30PM +0000, Claudiu.Beznea@microchip.com wrot=
+On Wed, Feb 27, 2019 at 04:24:35PM +0000, Claudiu.Beznea@microchip.com wrot=
 e:
 > From: Claudiu Beznea <claudiu.beznea@microchip.com>
 >=20
-> This series adds support for PWM controller of the new SAM9X60. The diffe=
-rence
-> b/w this one and the provious AT91SAM9X5 is the counter size (32 bits com=
-pared
-> with 16 bits on the previous version) thus, allowing to generate signals =
-with
-> bigger periods and duty cycles. This series, modifies the driver to take =
-into
-> account per IP counter size by embedding this information into driver's d=
-ata.
+> Add compatible string for SAM9X60 HLCDC's PWM.
 >=20
-> Changes in v3:
-> - collect Acked-by tags
-> - introduced patch 3/5 which changes the name of objects of type
->   atmel_pwm_data
-> - changed a bit commit message for patches 1/5 and 2/5
-> - use mchp_sam9x60_pwm_data instead of atmel_pwm_data_v3 for SAM9X60
->   compatible data
->=20
-> Changes in v2:
-> - add reviewed-by tag to DT inding patch
-> - move PWM_MAXV2_PRD from patch 2/4 in patch 3/4
-> - change commit description for patch 3/4
->=20
-> Claudiu Beznea (5):
->   pwm: atmel: add struct atmel_pwm_data
->   pwm: atmel: add support for controllers with 32 bit counters
->   pwm: atmel: rename objects of type atmel_pwm_data
->   pwm: atmel: add support for SAM9X60's PWM controller
->   pwm: atmel: add PWM binding for SAM9X60
->=20
->  .../devicetree/bindings/pwm/atmel-pwm.txt          |   1 +
->  drivers/pwm/pwm-atmel.c                            | 117 ++++++++++++++-=
-------
->  2 files changed, 79 insertions(+), 39 deletions(-)
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  drivers/pwm/pwm-atmel-hlcdc.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Applied, thanks.
+I guess it makes more sense for this to go in with the MFD changes
+rather than through the PWM tree, so:
 
-Thierry
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
---J2SCkAp4GZ/dPZZf
+--/WwmFnJnmDyWGHa4
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9BOYACgkQ3SOs138+
-s6FU+A//S48LmAI/PMbxIqvim0FueiPd58rs3d5awKFxYQmsJOUbOZuYE+jlTB6H
-zQkvYuYm1X881bbfPJN3TqhYAE3UeZu/+IOr1UEXrbV2y0Df5FIPCv5OF/YjU3WX
-071mp9UBWAPyTAr72mFP0+sh9wBQV0cvnRKthVd1PdvFKDiSJQLRoPw9s1+Wcjy7
-Q5kU/4+/v0bShwM/yx0IEuwmTUCECs6LQM0y1IPV+iDBwIDCCUNO0/Yn1R+b+vcb
-IaGRp5mB6Lv4Ksl1jjJcgMQO6hWZewFnXIrxXgXnzx2GOxRJs4rKvAhBAG9cICvx
-UxuKlM6biK6/Hr6Sy474jn0toy7hM+Ud3pLFFMd9I/aecd2nTflOXXDy9922/ETf
-1fd4RKk2zTeuOZR684nofLno6uogDKDcAWeeZaADjJowNHH6UTzCazkKCKaYr9Ha
-kvuLEsjvTbttTFvfD7H9RxjMg+EIVGYEYBmJJJ3+5oQ95wcqR+JqLJ5loKN7XsM2
-j01xkwe8jbfE3v5Hu7qdTilorSgEy5hJV11O+RyDEKoGW50ZRCLtFRAj22wNj/0l
-mRjShtoTM42LWaX1rjZrCZnVsvEShEO36ai/Yx/h4Zz9cmd2Eq/WKBxvdHjRiMtP
-/gdKsiMkofCDRgIx8X9P+Mv+qISp2hza4mn4OJxo8n5xcEQu1O0=
-=5rG+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9Bm0ACgkQ3SOs138+
+s6EWQxAAkN1EcQnql995goLfgqGi63WG+AC7uBVsPlv8MeYUyuk5uXHwpZIfL1Yk
+U7vnC6E6EByjVnj18T/faZzqMgUJJlTzmVbPBT9C2D/GW7Hg9Sz6SCIg0tiNYaFY
+uN095C/+FfnAxeqmBtufXU5dQQeYSG1kxs4H6mj6Ypl71Jw0h8fg5PoXpRTM6ZOL
+s8KdHnFgZPFBYg3lioKV6UBrTWnV59YUPPbBChDam7jVv9muKp+VKGct7PRC9f64
+LAfmR82g8dLP1HTv6IkYhLYU6gioCBUPuk3HAMb0MndUF4szMEUOJk4Z/UxMpnzN
+xMcrHiiiEfkzvS9ugK9VAGGnMV63NmtpntaItyBsLvdEairrenqI2ci45QqgrHSu
+IFartnXKU87MrPj2cm6kzR6T0Zv1o/xO3WfCSskU1euKqrRpSxHkYuM30nEP/ro+
+0Fxi2UzOEZenAOgVEQra+Yi+OPXbAW12kdgsNRo7zo9tuvUgXBH1ekJM6okcZNOd
+/kgD3Sacjp9PgDml/jzouuSsfPLITSqYLVQWMIHTn6Wrgl31p0+iv4e2wxRB7dPW
+7iFts1ZqEA1oe6OyFBo7dOoljEcP7Mjjwipl9VUgm8n1lVyauLWUqUdpxtBXJA6/
+MVNpUZvMZ2thGGVEpAvRwbCZ2lF+i3Zi0lWzwao3dnHgHp9hj54=
+=/1Mc
 -----END PGP SIGNATURE-----
 
---J2SCkAp4GZ/dPZZf--
+--/WwmFnJnmDyWGHa4--
+
+--===============1161722519==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
+IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+
+--===============1161722519==--
