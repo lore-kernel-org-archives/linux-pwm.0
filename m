@@ -1,31 +1,30 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v10 14/27] pwm: jz4740: Improve algorithm of clock
- calculation
-Date: Mon, 4 Mar 2019 13:33:13 +0100
-Message-ID: <20190304123313.GF9040@ulmo>
+Subject: Re: [PATCH v10 15/27] pwm: jz4740: Allow selection of PWM channels 0
+ and 1
+Date: Mon, 4 Mar 2019 13:34:56 +0100
+Message-ID: <20190304123456.GG9040@ulmo>
 References: <20190302233413.14813-1-paul@crapouillou.net>
- <20190302233413.14813-15-paul@crapouillou.net>
+ <20190302233413.14813-16-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0rSojgWGcpz+ezC3"
+        protocol="application/pgp-signature"; boundary="UTZ8bGhNySVQ9LYl"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190302233413.14813-15-paul@crapouillou.net>
+In-Reply-To: <20190302233413.14813-16-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Paul Cercueil <paul@crapouillou.net>
 Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---0rSojgWGcpz+ezC3
+--UTZ8bGhNySVQ9LYl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 02, 2019 at 08:34:00PM -0300, Paul Cercueil wrote:
-> The previous algorithm hardcoded details about how the TCU clocks work.
-> The new algorithm will use clk_round_rate to find the perfect clock rate
-> for the PWM channel.
+On Sat, Mar 02, 2019 at 08:34:01PM -0300, Paul Cercueil wrote:
+> The TCU channels 0 and 1 were previously reserved for system tasks, and
+> thus unavailable for PWM.
 >=20
 > Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > Tested-by: Mathieu Malaterre <malat@debian.org>
@@ -33,99 +32,63 @@ On Sat, Mar 02, 2019 at 08:34:00PM -0300, Paul Cercueil wrote:
 > ---
 >=20
 > Notes:
->          v9: New patch
+>          v6: New patch
 >    =20
->         v10: - New algorithm. Instead of starting with the maximum clock =
-rate
->                and using clk_round_rate(rate - 1) to get the next (smalle=
-r)
->     	   clock, we compute the maximum rate we can use before the
->     	   register overflows, and apply it with clk_set_max_rate.
->     	   Then we read the new clock rate and compute the register values
->     	   of the period and duty from that.
->     	 - Use NSEC_PER_SEC instead of magic 1000000000 value
+>          v7: No change
+>    =20
+>          v8: ingenic_tcu_[request,release]_channel are dropped. We now use
+>              the memory resources provided to the driver to detect whether
+>     	 or not we are allowed to use the TCU channel.
+>    =20
+>          v9: Drop previous system. Call a API function provided by the
+>              clocksource driver to know if we can use the channel as PWM.
+>    =20
+>          v10: No change
 >=20
->  drivers/pwm/pwm-jz4740.c | 49 ++++++++++++++++++++++++++++++++----------=
-------
->  1 file changed, 33 insertions(+), 16 deletions(-)
+>  drivers/pwm/pwm-jz4740.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
 >=20
 > diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-> index c6136bd4434b..f497388fc818 100644
+> index f497388fc818..c914589d547b 100644
 > --- a/drivers/pwm/pwm-jz4740.c
 > +++ b/drivers/pwm/pwm-jz4740.c
-> @@ -110,24 +110,45 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, =
-struct pwm_device *pwm,
->  	struct jz4740_pwm_chip *jz4740 =3D to_jz4740(pwm->chip);
->  	struct clk *clk =3D jz4740->clks[pwm->hwpwm],
->  		   *parent_clk =3D clk_get_parent(clk);
-> -	unsigned long rate, period, duty;
-> +	unsigned long rate, parent_rate, period, duty;
->  	unsigned long long tmp;
-> -	unsigned int prescaler =3D 0;
-> +	int ret;
+> @@ -44,11 +44,7 @@ static int jz4740_pwm_request(struct pwm_chip *chip, s=
+truct pwm_device *pwm)
+>  	char clk_name[16];
+>  	int ret;
 > =20
-> -	rate =3D clk_get_rate(parent_clk);
-> -	tmp =3D (unsigned long long)rate * state->period;
-> -	do_div(tmp, 1000000000);
-> -	period =3D tmp;
-> +	parent_rate =3D clk_get_rate(parent_clk);
-> +
-> +	jz4740_pwm_disable(chip, pwm);
-> +
-> +	/* Reset the clock to the maximum rate, and we'll reduce it if needed */
-> +	ret =3D clk_set_rate(clk, parent_rate);
-> +	if (ret)
-> +		return ret;
-> =20
-> -	while (period > 0xffff && prescaler < 6) {
-> -		period >>=3D 2;
-> -		rate >>=3D 2;
-> -		++prescaler;
-> +	/* Limit the clock to a maximum rate that still gives us a period value
-> +	 * which fits in 16 bits.
-> +	 */
+> -	/*
+> -	 * Timers 0 and 1 are used for system tasks, so they are unavailable
+> -	 * for use as PWMs.
+> -	 */
+> -	if (pwm->hwpwm < 2)
+> +	if (!ingenic_tcu_pwm_can_use_chn(pwm->hwpwm))
+>  		return -EBUSY;
 
-Please use proper block-comment style.
-
-> +	tmp =3D 0xffffull * NSEC_PER_SEC;
-> +	do_div(tmp, state->period);
-> +
-> +	ret =3D clk_set_max_rate(clk, tmp);
-> +	if (ret) {
-> +		dev_err(chip->dev, "Unable to set max rate: %i\n", ret);
-> +		return ret;
->  	}
-> =20
-> -	if (prescaler =3D=3D 6)
-> -		return -EINVAL;
-> +	/* Read back the clock rate, as it may have been modified by
-> +	 * clk_set_max_rate()
-> +	 */
-> +	rate =3D clk_get_rate(clk);
-
-That's a pretty neat trick. But also, please use proper block-comment
-style.
+Like I said earlier, I think this would be nicer to take a parameter to
+a struct device * to remove the need for a global variable (at least for
+this particular case).
 
 Thierry
 
---0rSojgWGcpz+ezC3
+--UTZ8bGhNySVQ9LYl
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9GwkACgkQ3SOs138+
-s6GJgBAAnQvMOMCV6VZpxm0xDRxvZpCOPycq+4tWt69b30Ja/bcSGRxP0XHqZWWP
-ndv7LtD9hTbBgHQNtMM1xV3dPhZ190ule9TsEmvWX8CNnU5fHAPLO0OvzNmUC/XZ
-eftV62b3mHRvbZxB/CtFXHz7V+0TLGTG8k9Ft2mgH4Av2FVCjSQxLLL8kLcZs23o
-hAGwFhen0QCnz70R72Biuz0Qr6DbEo1XCDCt5JPLrSuETC7t4VuGc/aLW08helen
-Jc9/rMV93vnhw41TDlEaAeusDPNqLDBM96Nxs2xkuLx3o8AJFOHXx9b7dNzb7HMp
-ywIbbW7e2o61nLkzNQvPPeSFljpxv+Np/x4UJZclyTLwbrcmRICfow1DaR6T1xSY
-XckA95jtqrf1W57GrcxcpkhBRMC2EefFnr/Z6WV2+HYL24lG/rGkqE6GWN1ZFsay
-77rnhZ4xx+z08OcSh4GG+7MPQcrs5iBVm5pXFS42XEfWCZfUkOm7XnqbVsztWiD0
-e20FAbcRj0SG8ul1OZgVPNU2xb9W3iie0Wj9SqxCyH+U2wqnEC2KtgwCmVxGH54M
-5SRabTKLq7leXkoekwZwiQkJrW2g8AJR0rqjwwG/LEPQpHaD4vZGf0+o0Oo0Z7KF
-+X8XaQvWgZDtqmfc/B3Qum+FIPzFZNdVV3IwNwqZjSvsc3j+DIc=
-=zQDM
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9G3AACgkQ3SOs138+
+s6GsoBAAlgsmxh5F3erzL0YSoFLi9YUFWsXW2ac2aWNG727Q8nKu59W9ZYGGimxk
+os1XIwKsey4CI/zaAId1lIc74rTrOBooY5AjWApD9+HjU5xeePuSKTzmQkAs38DV
+ZUCw7icfbeWIaNtSZmXPwxzbQIgyLJkkdO7CXKzTg5Hj1Ty9Fcn7xa850dKLKbpv
+MOlS7msP6FhY8HVDgjt/Wn2yxEoUWPncdZROBwhYH6W3NNXgI6zU++xTgDIYOWHm
+YIlxgo2QUmRGChruJuxtnN8GniJdSnqemBZevLdWFsCOs6hH+HTXTO1Arb0yttGI
+QDKMUfilZ0BnNfoZJ7qopbC2D856bHvkQBvOw5hsTHZqgs/P9TKxDjDRtnBvMMHk
+KPSlscjq2sKR+9BK7FOR1ikkzDVvQpq28yWfw93Fh2yJTvUndk29f+EjLOADg/lE
+UbSU/+7dpS4n2lVv4z4vl3xFBWWUCIW7Rmu0K0UFv9lzY90mI6aEH0qe32lO8lhK
+FIsofG/ifAkNgJI1SiR6IV4KA61mqCMeVs4v6Oaj7sFluz1Izq9SPCaHhmkJY1jC
+YfRgu2GJpnG5dSa2gRwxFIh2HeLvqKBQhIwRQitiSVUJQHwcIKJGqnDgf0SABuea
+fplDG6LMvlKjk6QGXy1jrDhYpaDasxtwV+Ur2I/yc/qlBCd/P1E=
+=ACVI
 -----END PGP SIGNATURE-----
 
---0rSojgWGcpz+ezC3--
+--UTZ8bGhNySVQ9LYl--
