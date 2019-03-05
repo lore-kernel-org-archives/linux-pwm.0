@@ -1,7 +1,8 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v2 2/7] drm: atmel-hlcdc: avoid initializing cfg with zero
-Date: Tue, 5 Mar 2019 10:07:43 +0000
-Message-ID: <1551780434-4580-3-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 3/7] dt-bindings: mfd: add bindings for SAM9X60 HLCD
+ controller
+Date: Tue, 5 Mar 2019 10:07:47 +0000
+Message-ID: <1551780434-4580-4-git-send-email-claudiu.beznea@microchip.com>
 References: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -16,42 +17,25 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Remove cfg initialization with zero and read state with
-drm_crtc_state_to_atmel_hlcdc_crtc_state() so that cfg to be initialized
-with state's output_mode.
+Add new compatible string for the HLCD controller on SAM9X60 SoC.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
 ---
- drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c b/drivers/gpu/d=
-rm/atmel-hlcdc/atmel_hlcdc_crtc.c
-index 957e6d2fb00f..81c50772df05 100644
---- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
-+++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
-@@ -138,7 +138,8 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_c=
-rtc *c)
-=20
- 	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0), mask, cfg);
-=20
--	cfg =3D 0;
-+	state =3D drm_crtc_state_to_atmel_hlcdc_crtc_state(c->state);
-+	cfg =3D state->output_mode << 8;
-=20
- 	if (adj->flags & DRM_MODE_FLAG_NVSYNC)
- 		cfg |=3D ATMEL_HLCDC_VSPOL;
-@@ -146,9 +147,6 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_c=
-rtc *c)
- 	if (adj->flags & DRM_MODE_FLAG_NHSYNC)
- 		cfg |=3D ATMEL_HLCDC_HSPOL;
-=20
--	state =3D drm_crtc_state_to_atmel_hlcdc_crtc_state(c->state);
--	cfg |=3D state->output_mode << 8;
--
- 	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(5),
- 			   ATMEL_HLCDC_HSPOL | ATMEL_HLCDC_VSPOL |
- 			   ATMEL_HLCDC_VSPDLYS | ATMEL_HLCDC_VSPDLYE |
+diff --git a/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt b/Docume=
+ntation/devicetree/bindings/mfd/atmel-hlcdc.txt
+index 3f643ef121ff..5f8880cc757e 100644
+--- a/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
++++ b/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
+@@ -7,6 +7,7 @@ Required properties:
+    "atmel,sama5d2-hlcdc"
+    "atmel,sama5d3-hlcdc"
+    "atmel,sama5d4-hlcdc"
++   "microchip,sam9x60-hlcdc"
+  - reg: base address and size of the HLCDC device registers.
+  - clock-names: the name of the 3 clocks requested by the HLCDC device.
+    Should contain "periph_clk", "sys_clk" and "slow_clk".
 --=20
 2.7.4
