@@ -1,11 +1,14 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v2 0/7] add LCD support for SAM9X60
-Date: Tue, 5 Mar 2019 10:07:34 +0000
-Message-ID: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 1/7] drm: atmel-hlcdc: add config option for clock
+ selection
+Date: Tue, 5 Mar 2019 10:07:38 +0000
+Message-ID: <1551780434-4580-2-git-send-email-claudiu.beznea@microchip.com>
+References: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, thierry.reding@gmail.com
@@ -14,50 +17,80 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Hi,
+SAM9x60 LCD Controller has no option to select clock source as previous
+controllers have. To be able to use the same driver even for this LCD
+controller add a config option to know if controller supports this.
 
-These patches adds support for SAM9X60's LCD controller.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+---
+ drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c | 12 +++++++-----
+ drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h   |  2 ++
+ 2 files changed, 9 insertions(+), 5 deletions(-)
 
-First patches add option to specify if controller clock source is fixed.
-Second patch avoid a variable initialization in atmel_hlcdc_crtc_mode_set_n=
-ofb().
-The 3rd one adds specific bindings for SAM9X60 LCD controller.
-The 4th and 5th add compatibles in the driver.
-The 6th patch enables sys_clk in probe since SAM9X60 needs this.
-Specific support was added also in suspend/resume hooks.
-The work in the 6th patch was done based on support added in 1st patch.
-The 7th patch adds SAM9X60's LCD configuration and enabled it.=20
-
-I kept a big series including PWM, MFD, LCD changes due to shared DT
-bindings. If you prefer, I'm available to send them separately. Please let
-me know.
-
-Thank you,
-Claudiu Beznea
-
-Changes in v2:
-- use "|" operator in patch 1/7 to set ATMEL_HLCDC_CLKSEL on cfg
-- collect Acked-by, Reviewed-by tags
-
-Claudiu Beznea (5):
-  drm: atmel-hlcdc: add config option for clock selection
-  drm: atmel-hlcdc: avoid initializing cfg with zero
-  dt-bindings: mfd: add bindings for SAM9X60 HLCD controller
-  mfd: atmel-hlcdc: add compatible for SAM9X60 HLCD controller
-  pwm: atmel-hlcdc: add compatible for SAM9X60 HLCDC's PWM
-
-Sandeep Sheriker Mallikarjun (2):
-  drm: atmel-hlcdc: enable sys_clk during initalization.
-  drm: atmel-hlcdc: add sam9x60 LCD controller
-
- .../devicetree/bindings/mfd/atmel-hlcdc.txt        |   1 +
- drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c     |  18 ++--
- drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c       | 120 +++++++++++++++++=
-+++-
- drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h       |   2 +
- drivers/mfd/atmel-hlcdc.c                          |   1 +
- drivers/pwm/pwm-atmel-hlcdc.c                      |   3 +
- 6 files changed, 135 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c b/drivers/gpu/d=
+rm/atmel-hlcdc/atmel_hlcdc_crtc.c
+index 8070a558d7b1..957e6d2fb00f 100644
+--- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
++++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
+@@ -78,7 +78,8 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_crt=
+c *c)
+ 	unsigned long mode_rate;
+ 	struct videomode vm;
+ 	unsigned long prate;
+-	unsigned int cfg;
++	unsigned int mask =3D ATMEL_HLCDC_CLKDIV_MASK | ATMEL_HLCDC_CLKPOL;
++	unsigned int cfg =3D 0;
+ 	int div;
+=20
+ 	vm.vfront_porch =3D adj->crtc_vsync_start - adj->crtc_vdisplay;
+@@ -101,7 +102,10 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_=
+crtc *c)
+ 		     (adj->crtc_hdisplay - 1) |
+ 		     ((adj->crtc_vdisplay - 1) << 16));
+=20
+-	cfg =3D ATMEL_HLCDC_CLKSEL;
++	if (!crtc->dc->desc->fixed_clksrc) {
++		cfg |=3D ATMEL_HLCDC_CLKSEL;
++		mask |=3D ATMEL_HLCDC_CLKSEL;
++	}
+=20
+ 	prate =3D 2 * clk_get_rate(crtc->dc->hlcdc->sys_clk);
+ 	mode_rate =3D adj->crtc_clock * 1000;
+@@ -132,9 +136,7 @@ static void atmel_hlcdc_crtc_mode_set_nofb(struct drm_c=
+rtc *c)
+=20
+ 	cfg |=3D ATMEL_HLCDC_CLKDIV(div);
+=20
+-	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0),
+-			   ATMEL_HLCDC_CLKSEL | ATMEL_HLCDC_CLKDIV_MASK |
+-			   ATMEL_HLCDC_CLKPOL, cfg);
++	regmap_update_bits(regmap, ATMEL_HLCDC_CFG(0), mask, cfg);
+=20
+ 	cfg =3D 0;
+=20
+diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h b/drivers/gpu/drm=
+/atmel-hlcdc/atmel_hlcdc_dc.h
+index 70bd540d644e..0155efb9c443 100644
+--- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
++++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+@@ -328,6 +328,7 @@ atmel_hlcdc_layer_to_plane(struct atmel_hlcdc_layer *la=
+yer)
+  * @max_hpw: maximum horizontal back/front porch width
+  * @conflicting_output_formats: true if RGBXXX output formats conflict wit=
+h
+  *				each other.
++ * @fixed_clksrc: true if clock source is fixed
+  * @layers: a layer description table describing available layers
+  * @nlayers: layer description table size
+  */
+@@ -340,6 +341,7 @@ struct atmel_hlcdc_dc_desc {
+ 	int max_vpw;
+ 	int max_hpw;
+ 	bool conflicting_output_formats;
++	bool fixed_clksrc;
+ 	const struct atmel_hlcdc_layer_desc *layers;
+ 	int nlayers;
+ };
 --=20
 2.7.4
