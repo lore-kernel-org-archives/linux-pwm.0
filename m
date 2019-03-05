@@ -1,7 +1,7 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v2 6/7] drm: atmel-hlcdc: enable sys_clk during initalization.
-Date: Tue, 5 Mar 2019 10:08:06 +0000
-Message-ID: <1551780434-4580-7-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 7/7] drm: atmel-hlcdc: add sam9x60 LCD controller
+Date: Tue, 5 Mar 2019 10:08:11 +0000
+Message-ID: <1551780434-4580-8-git-send-email-claudiu.beznea@microchip.com>
 References: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -17,82 +17,140 @@ List-Id: linux-pwm@vger.kernel.org
 From: Sandeep Sheriker Mallikarjun <sandeepsheriker.mallikarjun@microchip.c=
 om>
 
-For SAM9X60 SoC, sys_clk is through lcd_gclk clock source and this
-needs to be enabled before enabling lcd_clk.
+Add the LCD controller for SAM9X60.
 
 Signed-off-by: Sandeep Sheriker Mallikarjun <sandeepsheriker.mallikarjun@mi=
 crochip.com>
-[claudiu.beznea@microchip.com: add fixed_clksrc checks]
+[claudiu.beznea@microchip.com: add fixed_clksrc option to
+ atmel_hlcdc_dc_sam9x60]
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c | 101 +++++++++++++++++++++++=
+++++
+ 1 file changed, 101 insertions(+)
 
 diff --git a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c b/drivers/gpu/drm=
 /atmel-hlcdc/atmel_hlcdc_dc.c
-index 0be13eceedba..8bf51f853721 100644
+index 8bf51f853721..fb2e7646daeb 100644
 --- a/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
 +++ b/drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
-@@ -625,10 +625,18 @@ static int atmel_hlcdc_dc_load(struct drm_device *dev=
-)
- 	dc->hlcdc =3D dev_get_drvdata(dev->dev->parent);
- 	dev->dev_private =3D dc;
-=20
-+	if (dc->desc->fixed_clksrc) {
-+		ret =3D clk_prepare_enable(dc->hlcdc->sys_clk);
-+		if (ret) {
-+			dev_err(dev->dev, "failed to enable sys_clk\n");
-+			goto err_destroy_wq;
-+		}
-+	}
+@@ -364,6 +364,103 @@ static const struct atmel_hlcdc_dc_desc atmel_hlcdc_d=
+c_sama5d4 =3D {
+ 	.nlayers =3D ARRAY_SIZE(atmel_hlcdc_sama5d4_layers),
+ 	.layers =3D atmel_hlcdc_sama5d4_layers,
+ };
 +
- 	ret =3D clk_prepare_enable(dc->hlcdc->periph_clk);
- 	if (ret) {
- 		dev_err(dev->dev, "failed to enable periph_clk\n");
--		goto err_destroy_wq;
-+		goto err_sys_clk_disable;
- 	}
-=20
- 	pm_runtime_enable(dev->dev);
-@@ -664,6 +672,9 @@ static int atmel_hlcdc_dc_load(struct drm_device *dev)
- err_periph_clk_disable:
- 	pm_runtime_disable(dev->dev);
- 	clk_disable_unprepare(dc->hlcdc->periph_clk);
-+err_sys_clk_disable:
-+	if (dc->desc->fixed_clksrc)
-+		clk_disable_unprepare(dc->hlcdc->sys_clk);
-=20
- err_destroy_wq:
- 	destroy_workqueue(dc->wq);
-@@ -688,6 +699,8 @@ static void atmel_hlcdc_dc_unload(struct drm_device *de=
-v)
-=20
- 	pm_runtime_disable(dev->dev);
- 	clk_disable_unprepare(dc->hlcdc->periph_clk);
-+	if (dc->desc->fixed_clksrc)
-+		clk_disable_unprepare(dc->hlcdc->sys_clk);
- 	destroy_workqueue(dc->wq);
- }
-=20
-@@ -805,6 +818,8 @@ static int atmel_hlcdc_dc_drm_suspend(struct device *de=
-v)
- 	regmap_read(regmap, ATMEL_HLCDC_IMR, &dc->suspend.imr);
- 	regmap_write(regmap, ATMEL_HLCDC_IDR, dc->suspend.imr);
- 	clk_disable_unprepare(dc->hlcdc->periph_clk);
-+	if (dc->desc->fixed_clksrc)
-+		clk_disable_unprepare(dc->hlcdc->sys_clk);
-=20
- 	return 0;
- }
-@@ -814,6 +829,8 @@ static int atmel_hlcdc_dc_drm_resume(struct device *dev=
-)
- 	struct drm_device *drm_dev =3D dev_get_drvdata(dev);
- 	struct atmel_hlcdc_dc *dc =3D drm_dev->dev_private;
-=20
-+	if (dc->desc->fixed_clksrc)
-+		clk_prepare_enable(dc->hlcdc->sys_clk);
- 	clk_prepare_enable(dc->hlcdc->periph_clk);
- 	regmap_write(dc->hlcdc->regmap, ATMEL_HLCDC_IER, dc->suspend.imr);
-=20
++static const struct atmel_hlcdc_layer_desc atmel_hlcdc_sam9x60_layers[] =
+=3D {
++	{
++		.name =3D "base",
++		.formats =3D &atmel_hlcdc_plane_rgb_formats,
++		.regs_offset =3D 0x60,
++		.id =3D 0,
++		.type =3D ATMEL_HLCDC_BASE_LAYER,
++		.cfgs_offset =3D 0x2c,
++		.layout =3D {
++			.xstride =3D { 2 },
++			.default_color =3D 3,
++			.general_config =3D 4,
++			.disc_pos =3D 5,
++			.disc_size =3D 6,
++		},
++		.clut_offset =3D 0x600,
++	},
++	{
++		.name =3D "overlay1",
++		.formats =3D &atmel_hlcdc_plane_rgb_formats,
++		.regs_offset =3D 0x160,
++		.id =3D 1,
++		.type =3D ATMEL_HLCDC_OVERLAY_LAYER,
++		.cfgs_offset =3D 0x2c,
++		.layout =3D {
++			.pos =3D 2,
++			.size =3D 3,
++			.xstride =3D { 4 },
++			.pstride =3D { 5 },
++			.default_color =3D 6,
++			.chroma_key =3D 7,
++			.chroma_key_mask =3D 8,
++			.general_config =3D 9,
++		},
++		.clut_offset =3D 0xa00,
++	},
++	{
++		.name =3D "overlay2",
++		.formats =3D &atmel_hlcdc_plane_rgb_formats,
++		.regs_offset =3D 0x260,
++		.id =3D 2,
++		.type =3D ATMEL_HLCDC_OVERLAY_LAYER,
++		.cfgs_offset =3D 0x2c,
++		.layout =3D {
++			.pos =3D 2,
++			.size =3D 3,
++			.xstride =3D { 4 },
++			.pstride =3D { 5 },
++			.default_color =3D 6,
++			.chroma_key =3D 7,
++			.chroma_key_mask =3D 8,
++			.general_config =3D 9,
++		},
++		.clut_offset =3D 0xe00,
++	},
++	{
++		.name =3D "high-end-overlay",
++		.formats =3D &atmel_hlcdc_plane_rgb_and_yuv_formats,
++		.regs_offset =3D 0x360,
++		.id =3D 3,
++		.type =3D ATMEL_HLCDC_OVERLAY_LAYER,
++		.cfgs_offset =3D 0x4c,
++		.layout =3D {
++			.pos =3D 2,
++			.size =3D 3,
++			.memsize =3D 4,
++			.xstride =3D { 5, 7 },
++			.pstride =3D { 6, 8 },
++			.default_color =3D 9,
++			.chroma_key =3D 10,
++			.chroma_key_mask =3D 11,
++			.general_config =3D 12,
++			.scaler_config =3D 13,
++			.phicoeffs =3D {
++				.x =3D 17,
++				.y =3D 33,
++			},
++			.csc =3D 14,
++		},
++		.clut_offset =3D 0x1200,
++	},
++};
++
++static const struct atmel_hlcdc_dc_desc atmel_hlcdc_dc_sam9x60 =3D {
++	.min_width =3D 0,
++	.min_height =3D 0,
++	.max_width =3D 2048,
++	.max_height =3D 2048,
++	.max_spw =3D 0xff,
++	.max_vpw =3D 0xff,
++	.max_hpw =3D 0x3ff,
++	.fixed_clksrc =3D true,
++	.nlayers =3D ARRAY_SIZE(atmel_hlcdc_sam9x60_layers),
++	.layers =3D atmel_hlcdc_sam9x60_layers,
++};
++
+ static const struct of_device_id atmel_hlcdc_of_match[] =3D {
+ 	{
+ 		.compatible =3D "atmel,at91sam9n12-hlcdc",
+@@ -385,6 +482,10 @@ static const struct of_device_id atmel_hlcdc_of_match[=
+] =3D {
+ 		.compatible =3D "atmel,sama5d4-hlcdc",
+ 		.data =3D &atmel_hlcdc_dc_sama5d4,
+ 	},
++	{
++		.compatible =3D "microchip,sam9x60-hlcdc",
++		.data =3D &atmel_hlcdc_dc_sam9x60,
++	},
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, atmel_hlcdc_of_match);
 --=20
 2.7.4
