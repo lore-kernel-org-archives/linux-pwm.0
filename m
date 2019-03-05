@@ -1,8 +1,8 @@
 From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH v2 3/7] dt-bindings: mfd: add bindings for SAM9X60 HLCD
+Subject: [PATCH v2 4/7] mfd: atmel-hlcdc: add compatible for SAM9X60 HLCD
  controller
-Date: Tue, 5 Mar 2019 10:07:47 +0000
-Message-ID: <1551780434-4580-4-git-send-email-claudiu.beznea@microchip.com>
+Date: Tue, 5 Mar 2019 10:07:52 +0000
+Message-ID: <1551780434-4580-5-git-send-email-claudiu.beznea@microchip.com>
 References: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -17,25 +17,25 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Add new compatible string for the HLCD controller on SAM9X60 SoC.
+Add compatible for SAM9X60 HLCD controller.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt | 1 +
+ drivers/mfd/atmel-hlcdc.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt b/Docume=
-ntation/devicetree/bindings/mfd/atmel-hlcdc.txt
-index 3f643ef121ff..5f8880cc757e 100644
---- a/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
-+++ b/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
-@@ -7,6 +7,7 @@ Required properties:
-    "atmel,sama5d2-hlcdc"
-    "atmel,sama5d3-hlcdc"
-    "atmel,sama5d4-hlcdc"
-+   "microchip,sam9x60-hlcdc"
-  - reg: base address and size of the HLCDC device registers.
-  - clock-names: the name of the 3 clocks requested by the HLCDC device.
-    Should contain "periph_clk", "sys_clk" and "slow_clk".
+diff --git a/drivers/mfd/atmel-hlcdc.c b/drivers/mfd/atmel-hlcdc.c
+index e82543bcfdc8..35a9e16f9902 100644
+--- a/drivers/mfd/atmel-hlcdc.c
++++ b/drivers/mfd/atmel-hlcdc.c
+@@ -141,6 +141,7 @@ static const struct of_device_id atmel_hlcdc_match[] =
+=3D {
+ 	{ .compatible =3D "atmel,sama5d2-hlcdc" },
+ 	{ .compatible =3D "atmel,sama5d3-hlcdc" },
+ 	{ .compatible =3D "atmel,sama5d4-hlcdc" },
++	{ .compatible =3D "microchip,sam9x60-hlcdc" },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, atmel_hlcdc_match);
 --=20
 2.7.4
