@@ -1,7 +1,7 @@
 From: Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH v2 4/7] dt-bindings: counter: ftm-quaddec
-Date: Wed,  6 Mar 2019 12:12:05 +0100
-Message-ID: <20190306111208.7454-5-patrick.havelange@essensium.com>
+Subject: [PATCH v2 7/7] LS1021A: dtsi: add ftm quad decoder entries
+Date: Wed,  6 Mar 2019 12:12:08 +0100
+Message-ID: <20190306111208.7454-8-patrick.havelange@essensium.com>
 References: <20190306111208.7454-1-patrick.havelange@essensium.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,41 +12,55 @@ To: William Breathitt Gray <vilhelm.gray@gmail.com>, Rob Herring <robh+dt@kernel
 Cc: Patrick Havelange <patrick.havelange@essensium.com>
 List-Id: linux-pwm@vger.kernel.org
 
-FlexTimer quadrature decoder driver.
+Add the 4 Quadrature counters for this board.
 
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 ---
 Changes v2
-     - None
+ - None
 ---
- .../bindings/counter/ftm-quaddec.txt           | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+ arch/arm/boot/dts/ls1021a.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/counter/ftm-quaddec.txt b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
-new file mode 100644
-index 000000000000..4d18cd722074
---- /dev/null
-+++ b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
-@@ -0,0 +1,18 @@
-+FlexTimer Quadrature decoder counter
-+
-+This driver exposes a simple counter for the quadrature decoder mode.
-+
-+Required properties:
-+- compatible:		Must be "fsl,ftm-quaddec".
-+- reg:			Must be set to the memory region of the flextimer.
-+
-+Optional property:
-+- big-endian:		Access the device registers in big-endian mode.
-+
-+Example:
+diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
+index ed0941292172..0168fb62590a 100644
+--- a/arch/arm/boot/dts/ls1021a.dtsi
++++ b/arch/arm/boot/dts/ls1021a.dtsi
+@@ -433,6 +433,34 @@
+ 			status = "disabled";
+ 		};
+ 
 +		counter0: counter@29d0000 {
 +			compatible = "fsl,ftm-quaddec";
 +			reg = <0x0 0x29d0000 0x0 0x10000>;
 +			big-endian;
 +			status = "disabled";
 +		};
++
++		counter1: counter@29e0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29e0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter2: counter@29f0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29f0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter3: counter@2a00000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x2a00000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
+ 		gpio0: gpio@2300000 {
+ 			compatible = "fsl,ls1021a-gpio", "fsl,qoriq-gpio";
+ 			reg = <0x0 0x2300000 0x0 0x10000>;
 -- 
 2.19.1
