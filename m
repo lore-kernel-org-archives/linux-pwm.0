@@ -1,76 +1,77 @@
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-Subject: Re: [PATCH v2 6/7] counter: ftm-quaddec: Documentation: Add
- specific counter sysfs documentation
-Date: Mon, 11 Mar 2019 12:36:26 +0000
-Message-ID: <20190311123626.00004f70@huawei.com>
-References: <20190306111208.7454-1-patrick.havelange@essensium.com>
-        <20190306111208.7454-7-patrick.havelange@essensium.com>
-        <20190307114216.GB7851@icarus>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v8 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Mon, 11 Mar 2019 14:29:22 +0100
+Message-ID: <20190311132922.iowselp7qvmroiaa@pengutronix.de>
+References: <1551437599-29509-1-git-send-email-yash.shah@sifive.com>
+ <1551437599-29509-3-git-send-email-yash.shah@sifive.com>
+ <20190307152745.kaiv6q4ygf2apmuv@pengutronix.de>
+ <CAJ2_jOFvr=sw7mWR53JbzMJa1jxwjhJSTibCsKYsxrht+PLPWw@mail.gmail.com>
+ <20190308115726.smgooacsr37fmxwg@pengutronix.de>
+ <CAJ2_jOFtg2_MAUYkTQM-=6KE2RN+FMxfEhLjZZfzM0k3A5RQiA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190307114216.GB7851@icarus>
+Content-Disposition: inline
+In-Reply-To: <CAJ2_jOFtg2_MAUYkTQM-=6KE2RN+FMxfEhLjZZfzM0k3A5RQiA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: Patrick Havelange <patrick.havelange@essensium.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Esben Haabendal <esben@haabendal.dk>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Jonathan Cameron <jic23@kernel.org>
+To: Yash Shah <yash.shah@sifive.com>
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 7 Mar 2019 20:42:16 +0900
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+Hello,
 
-> On Wed, Mar 06, 2019 at 12:12:07PM +0100, Patrick Havelange wrote:
-> > This adds documentation for the specific prescaler entry.
-> > 
-> > Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> > ---
-> > Changes v2
-> >  - Add doc for prescaler entry
-> > ---
-> >  .../ABI/testing/sysfs-bus-counter-ftm-quaddec    | 16 ++++++++++++++++
-> >  1 file changed, 16 insertions(+)
-> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-> > 
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec b/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-> > new file mode 100644
-> > index 000000000000..2da629d6d485
-> > --- /dev/null
-> > +++ b/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-> > @@ -0,0 +1,16 @@
-> > +What:		/sys/bus/counter/devices/counterX/countY/prescaler_available
-> > +KernelVersion:	5.1
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Discrete set of available values for the respective Count Y
-> > +		configuration are listed in this file. Values are delimited by
-> > +		newline characters.
-> > +
-> > +What:		/sys/bus/counter/devices/counterX/countY/prescaler
-> > +KernelVersion:	5.1
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Configure the prescaler value associated with Count Y.
-> > +		On the FlexTimer, the counter clock source passes through a
-> > +		prescaler that is a 7-bit counter. This acts like a clock
-> > +		divider.
-> > -- 
-> > 2.19.1  
+On Mon, Mar 11, 2019 at 05:10:17PM +0530, Yash Shah wrote:
+> On Fri, Mar 8, 2019 at 5:27 PM Uwe Kleine-König
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Fri, Mar 08, 2019 at 04:59:36PM +0530, Yash Shah wrote:
+> > > On Thu, Mar 7, 2019 at 8:57 PM Uwe Kleine-König
+> > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > > > +     if (state->period != cur_state.period) {
+> > > >
+> > > > Did you test this with more than one consumer? For sure the following
+> > > > should work:
+> > > >
+> > > >         pwm1 = pwm_get(.. the first ..);
+> > > >         pwm_apply_state(pwm1, { .enabled = true, .period = 10000000, .... });
+> > > >
+> > > >         pwm2 = pwm_get(.. the second ..);
+> > > >         pwm_apply_state(pwm2, { .enabled = true, .period = 10000000, .... });
+> > > >
+> > > > but for the second pwm_apply_state() run state->period is likely not
+> > > > exactly 10000000.
+> > >
+> > > Yes, I have tested multiple consumers using sysfs interface. It is working.
+> >
+> > Can you provide details about your testing here? What is the parent clk
+> > rate? Which settings did you test? Can you confirm my claim that the
+> > above sequence would fail or point out my error in reasoning?
+> >
 > 
-> Hmm, prescalers seem common enough among counter devices to permit these
-> attributes to be listed in the sysfs-bus-counter documentation file.
-> However, I'd like to wait until we get another counter driver for a
-> device with a prescaler before we make that move. From there, we'll have
-> a better vantage point to determine a fitting standard prescaler
-> attribute behavior.
+> I have tested on HiFive Unleashed board using sysfs interface.
+> Parent clk rate is around 512 Mhz.
+> I have tested scenarios as you mentioned above with various period and
+> duty_cycle values.
 > 
-> So for now, we'll keep these attributes documented here in the
-> sysfs-bus-counter-ftm-quaddec file, until the time comes to broach the
-> discussion again.
-Agreed. As long as the definition is sufficiently non-specific so it can be
-moved later.  I'm not sure for example that the docs need to say that it is
-a 7 bit counter. That should be apparent from prescaler_available - or at
-least possible values should be which is all we need to know.
+> After considering your below suggestion,
+>  | To get the result independent of the prior configuration you better use
+>  | the real targeted period length as input instead of the last configured
+>  | approximation
+> I will introduce approx_period feild, which will be used as the
+> targeted period length.
+> Also, in pwm_sifive_get_state, I will make below change
+> - state->period = pwm->real_period;
+> + state->period = pwm->approx_period.
+> So with this change in place, I believe the cur_state.period for the
+> second pwm_apply_state() above (pwm2) will be exactly 10000000
 
-Jonathan
-> 
-> William Breathitt Gray
+I don't understand your intention completely. Just send a new patch
+round, then I will gladly take another look.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
