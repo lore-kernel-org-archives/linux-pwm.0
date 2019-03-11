@@ -1,77 +1,50 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v8 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Mon, 11 Mar 2019 14:29:22 +0100
-Message-ID: <20190311132922.iowselp7qvmroiaa@pengutronix.de>
-References: <1551437599-29509-1-git-send-email-yash.shah@sifive.com>
- <1551437599-29509-3-git-send-email-yash.shah@sifive.com>
- <20190307152745.kaiv6q4ygf2apmuv@pengutronix.de>
- <CAJ2_jOFvr=sw7mWR53JbzMJa1jxwjhJSTibCsKYsxrht+PLPWw@mail.gmail.com>
- <20190308115726.smgooacsr37fmxwg@pengutronix.de>
- <CAJ2_jOFtg2_MAUYkTQM-=6KE2RN+FMxfEhLjZZfzM0k3A5RQiA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Subject: [PATCH 09/42] drivers: gpio: sprd: use devm_platform_ioremap_resource()
+Date: Mon, 11 Mar 2019 19:54:48 +0100
+Message-ID: <1552330521-4276-9-git-send-email-info@metux.net>
+References: <1552330521-4276-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAJ2_jOFtg2_MAUYkTQM-=6KE2RN+FMxfEhLjZZfzM0k3A5RQiA@mail.gmail.com>
+In-Reply-To: <1552330521-4276-1-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
+To: linux-kernel@vger.kernel.org
+Cc: linus.walleij@linaro.org, bgolaszewski@baylibre.com, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com, keguang.zhang@gmail.com, vz@mleia.com, matthias.bgg@gmail.com, thierry.reding@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, robert.jarzmik@free.fr, yamada.masahiro@socionext.com, jun.nie@linaro.org, shawnguo@kernel.org, linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+Use the new helper that wraps the calls to platform_get_resource()
+and devm_ioremap_resource() together.
 
-On Mon, Mar 11, 2019 at 05:10:17PM +0530, Yash Shah wrote:
-> On Fri, Mar 8, 2019 at 5:27 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Fri, Mar 08, 2019 at 04:59:36PM +0530, Yash Shah wrote:
-> > > On Thu, Mar 7, 2019 at 8:57 PM Uwe Kleine-König
-> > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > > +     if (state->period != cur_state.period) {
-> > > >
-> > > > Did you test this with more than one consumer? For sure the following
-> > > > should work:
-> > > >
-> > > >         pwm1 = pwm_get(.. the first ..);
-> > > >         pwm_apply_state(pwm1, { .enabled = true, .period = 10000000, .... });
-> > > >
-> > > >         pwm2 = pwm_get(.. the second ..);
-> > > >         pwm_apply_state(pwm2, { .enabled = true, .period = 10000000, .... });
-> > > >
-> > > > but for the second pwm_apply_state() run state->period is likely not
-> > > > exactly 10000000.
-> > >
-> > > Yes, I have tested multiple consumers using sysfs interface. It is working.
-> >
-> > Can you provide details about your testing here? What is the parent clk
-> > rate? Which settings did you test? Can you confirm my claim that the
-> > above sequence would fail or point out my error in reasoning?
-> >
-> 
-> I have tested on HiFive Unleashed board using sysfs interface.
-> Parent clk rate is around 512 Mhz.
-> I have tested scenarios as you mentioned above with various period and
-> duty_cycle values.
-> 
-> After considering your below suggestion,
->  | To get the result independent of the prior configuration you better use
->  | the real targeted period length as input instead of the last configured
->  | approximation
-> I will introduce approx_period feild, which will be used as the
-> targeted period length.
-> Also, in pwm_sifive_get_state, I will make below change
-> - state->period = pwm->real_period;
-> + state->period = pwm->approx_period.
-> So with this change in place, I believe the cur_state.period for the
-> second pwm_apply_state() above (pwm2) will be exactly 10000000
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+---
+ drivers/gpio/gpio-eic-sprd.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-I don't understand your intention completely. Just send a new patch
-round, then I will gladly take another look.
-
-Best regards
-Uwe
-
+diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
+index f0223ce..c12de87 100644
+--- a/drivers/gpio/gpio-eic-sprd.c
++++ b/drivers/gpio/gpio-eic-sprd.c
+@@ -567,7 +567,6 @@ static int sprd_eic_probe(struct platform_device *pdev)
+ 	const struct sprd_eic_variant_data *pdata;
+ 	struct gpio_irq_chip *irq;
+ 	struct sprd_eic *sprd_eic;
+-	struct resource *res;
+ 	int ret, i;
+ 
+ 	pdata = of_device_get_match_data(&pdev->dev);
+@@ -596,13 +595,9 @@ static int sprd_eic_probe(struct platform_device *pdev)
+ 		 * have one bank EIC, thus base[1] and base[2] can be
+ 		 * optional.
+ 		 */
+-		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+-		if (!res)
+-			continue;
+-
+-		sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
++		sprd_eic->base[i] = devm_platform_ioremap_resource(pdev, 0);
+ 		if (IS_ERR(sprd_eic->base[i]))
+-			return PTR_ERR(sprd_eic->base[i]);
++			continue;
+ 	}
+ 
+ 	sprd_eic->chip.label = sprd_eic_label_name[sprd_eic->type];
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+1.9.1
