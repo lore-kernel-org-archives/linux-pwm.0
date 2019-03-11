@@ -1,50 +1,156 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH 18/42] drivers: gpio: lpc18xx: use
- devm_platform_ioremap_resource()
-Date: Mon, 11 Mar 2019 21:58:09 +0200
-Message-ID: <3a36e19b-05ef-2c0d-ce86-9422d6748b0c@mleia.com>
-References: <1552330521-4276-1-git-send-email-info@metux.net>
- <1552330521-4276-18-git-send-email-info@metux.net>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v10 04/27] clocksource: Add a new timer-ingenic driver
+Date: Mon, 11 Mar 2019 17:52:07 -0300
+Message-ID: <1552337527.24876.0@crapouillou.net>
+References: <20190302233413.14813-1-paul@crapouillou.net>
+        <20190302233413.14813-5-paul@crapouillou.net> <20190304122250.GC9040@ulmo>
+        <1551723186.4932.0@crapouillou.net> <20190308102225.GC22655@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552330521-4276-18-git-send-email-info@metux.net>
-Content-Language: en-US
+In-Reply-To: <20190308102225.GC22655@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
-Cc: linus.walleij@linaro.org, bgolaszewski@baylibre.com, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com, keguang.zhang@gmail.com, matthias.bgg@gmail.com, thierry.reding@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, robert.jarzmik@free.fr, yamada.masahiro@socionext.com, jun.nie@linaro.org, shawnguo@kernel.org, linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 03/11/2019 08:54 PM, Enrico Weigelt, metux IT consult wrote:
-> Use the new helper that wraps the calls to platform_get_resource()
-> and devm_ioremap_resource() together.
-> 
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
-> ---
->  drivers/gpio/gpio-lpc18xx.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gpio/gpio-lpc18xx.c b/drivers/gpio/gpio-lpc18xx.c
-> index d441dba..d711ae0 100644
-> --- a/drivers/gpio/gpio-lpc18xx.c
-> +++ b/drivers/gpio/gpio-lpc18xx.c
-> @@ -340,10 +340,7 @@ static int lpc18xx_gpio_probe(struct platform_device *pdev)
->  	index = of_property_match_string(dev->of_node, "reg-names", "gpio");
->  	if (index < 0) {
->  		/* To support backward compatibility take the first resource */
-> -		struct resource *res;
-> -
-> -		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -		gc->base = devm_ioremap_resource(dev, res);
-> +		gc->base = devm_platform_ioremap_resource(pdev, 0);
->  	} else {
->  		struct resource res;
->  
-> 
+Hi Thierry,
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+Le ven. 8 mars 2019 =E0 7:22, Thierry Reding <thierry.reding@gmail.com>=20
+a =E9crit :
+> On Mon, Mar 04, 2019 at 07:13:05PM +0100, Paul Cercueil wrote:
+>>  Hi Thierry,
+>>=20
+>>  On Mon, Mar 4, 2019 at 1:22 PM, Thierry Reding=20
+>> <thierry.reding@gmail.com>
+>>  wrote:
+>>  > On Sat, Mar 02, 2019 at 08:33:50PM -0300, Paul Cercueil wrote:
+>>  > [...]
+>>  > >  diff --git a/drivers/clocksource/ingenic-timer.c
+>>  > > b/drivers/clocksource/ingenic-timer.c
+> [...]
+>>  > >  +static u64 notrace ingenic_tcu_timer_read(void)
+>>  > >  +{
+>>  > >  +	unsigned int channel =3D ingenic_tcu->cs_channel;
+>>  > >  +	u16 count;
+>>  > >  +
+>>  > >  +	count =3D readw(ingenic_tcu_base + TCU_REG_TCNTc(channel));
+>>  >
+>>  > Can't yo do this via the regmap?
+>>=20
+>>  I could, but for the sched_clock to be precise the function must=20
+>> return
+>>  as fast as possible. That's the rationale behind the use of readw()=20
+>> here.
+>>=20
+>>  That's also the reason why ingenic_tcu_base is global and exported,=20
+>> so
+>>  that the OS Timer driver can use it as well.
+>=20
+> Is the path through the regmap really significantly slower than the
+> direct register access? Anyway, if you need the global anyway, might=20
+> as
+> well use it.
 
---
-Best wishes,
-Vladimir
+About 10% slower.
+
+> [...]
+>>  > >  +	// Register the sched_clock at the very end as there's no=20
+>> way to
+>>  > > undo it
+>>  > >  +	rate =3D clk_get_rate(tcu->cs_clk);
+>>  > >  +	sched_clock_register(ingenic_tcu_timer_read, 16, rate);
+>>  >
+>>  > Oh wow... so you managed to nicely encapsulate everything and now=20
+>> this
+>>  > seems to be the only reason why you need to rely on global=20
+>> variables.
+>>  >
+>>  > That's unfortunate. I suppose we could go and add a void *data=20
+>> parameter
+>>  > to sched_clock_register() and pass that to the read() function.=20
+>> That way
+>>  > you could make this completely independent of global variables,=20
+>> but
+>>  > there are 73 callers of sched_clock_register() and they are=20
+>> spread all
+>>  > over the place, so sounds a bit daunting to me.
+>>=20
+>>  Yes, that's the main reason behind the use of a global variables.
+>>  Is there a way we could introduce another callback, e.g.=20
+>> .read_value(),
+>>  that would receive a void *param? Then the current .read() callback
+>>  can be deprecated and the 73 callers can be migrated later.
+>=20
+> Yeah, I suppose that would be possible. I'll defer to Daniel and=20
+> Thomas
+> on this. They may not consider this important enough.
+>=20
+>>  > >  +
+>>  > >  +	return 0;
+>>  > >  +
+>>  > >  +err_tcu_clocksource_cleanup:
+>>  > >  +	ingenic_tcu_clocksource_cleanup(tcu);
+>>  > >  +err_tcu_clk_cleanup:
+>>  > >  +	ingenic_tcu_clk_cleanup(tcu, np);
+>>  > >  +err_tcu_intc_cleanup:
+>>  > >  +	ingenic_tcu_intc_cleanup(tcu);
+>>  > >  +err_clk_disable:
+>>  > >  +	clk_disable_unprepare(tcu->clk);
+>>  > >  +err_clk_put:
+>>  > >  +	clk_put(tcu->clk);
+>>  > >  +err_free_regmap:
+>>  > >  +	regmap_exit(tcu->map);
+>>  > >  +err_iounmap:
+>>  > >  +	iounmap(base);
+>>  > >  +	release_mem_region(res.start, resource_size(&res));
+>>  > >  +err_free_ingenic_tcu:
+>>  > >  +	kfree(tcu);
+>>  > >  +	return ret;
+>>  > >  +}
+>>  > >  +
+>>  > >  +TIMER_OF_DECLARE(jz4740_tcu_intc,  "ingenic,jz4740-tcu",
+>>  > > ingenic_tcu_init);
+>>  > >  +TIMER_OF_DECLARE(jz4725b_tcu_intc, "ingenic,jz4725b-tcu",
+>>  > > ingenic_tcu_init);
+>>  > >  +TIMER_OF_DECLARE(jz4770_tcu_intc,  "ingenic,jz4770-tcu",
+>>  > > ingenic_tcu_init);
+>>  > >  +
+>>  > >  +
+>>  > >  +static int __init ingenic_tcu_probe(struct platform_device=20
+>> *pdev)
+>>  > >  +{
+>>  > >  +	platform_set_drvdata(pdev, ingenic_tcu);
+>>  >
+>>  > Then there's also this. Oh well... nevermind then.
+>>=20
+>>  The content of ingenic_tcu_platform_init() could be moved inside
+>>  ingenic_tcu_init(). But can we get a hold of the struct device=20
+>> before the
+>>  probe function is called? That would allow to set the drvdata and=20
+>> regmap
+>>  without relying on global state.
+>=20
+> I'm not sure if the driver core is ready at this point. It's likely it
+> isn't, otherwise there'd be no need for TIMER_OF_DECLARE(), really. I
+> also vaguely recall looking into this a few years ago because of some
+> similar work I was but I eventually gave up because I couldn't find a
+> way that would allow both the code to execute early enough and still
+> use the regular driver model.
+>=20
+> Platform device become available at arch_initcall_sync (3s), while the
+> TIMER_OF_DECLARE code runs way earlier than any of the initcalls, so I
+> don't think there's a way to do it. Unless perhaps if the timers can
+> be initialized later. I'm not sure if that's possible, and might not=20
+> be
+> worth it just for the sake of being pedantic.
+>=20
+> Thierry
+
+I think for the time being I can't really go around using the global=20
+variables.
+Hopefully that's something that can be fixed in the future.
+
+-Paul
+=
