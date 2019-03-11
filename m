@@ -1,108 +1,39 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: img: Turn final 'else if' into 'else' in
- img_pwm_config
-Date: Fri, 8 Mar 2019 22:49:31 +0100
-Message-ID: <20190308214931.3uz5cgbtk6h3s25i@pengutronix.de>
-References: <20190307223628.21270-1-natechancellor@gmail.com>
- <20190308085316.7eaynrb746o6xsz7@pengutronix.de>
- <CAKwvOdmA6=_-_uC8PAC8i+-mLA8FN6GOeY544139N2AsA8RbsQ@mail.gmail.com>
- <20190308211852.wnhivsnlwhr4kqn3@pengutronix.de>
- <CAKwvOd=W0MKF_bYtgCOz2hH+RvpZPJawcaBnR2YkcBTP_NZHuA@mail.gmail.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: [PATCH 0/5] Add i.MX7ULP EVK PWM backlight support
+Date: Mon, 11 Mar 2019 07:16:02 +0000
+Message-ID: <1552288273-31028-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAKwvOd=W0MKF_bYtgCOz2hH+RvpZPJawcaBnR2YkcBTP_NZHuA@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Nathan Chancellor <natechancellor@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Mar 08, 2019 at 01:23:41PM -0800, Nick Desaulniers wrote:
-> On Fri, Mar 8, 2019 at 1:18 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> >
-> > On Fri, Mar 08, 2019 at 10:38:11AM -0800, Nick Desaulniers wrote:
-> > > On Fri, Mar 8, 2019 at 12:53 AM Uwe Kleine-König
-> > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > >
-> > > > On Thu, Mar 07, 2019 at 03:36:28PM -0700, Nathan Chancellor wrote:
-> > > > > When building with -Wsometimes-uninitialized, Clang warns:
-> > > > >
-> > > > > drivers/pwm/pwm-img.c:126:13: error: variable 'timebase' is used
-> > > > > uninitialized whenever 'if' condition is false
-> > > > > [-Werror,-Wsometimes-uninitialized]
-> > > > >
-> > > > > The final else if functions as an else; make that explicit so that Clang
-> > > > > understands that timebase cannot be used uninitialized.
-> > > > >
-> > > > > Link: https://github.com/ClangBuiltLinux/linux/issues/400
-> > > > > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> > > > > ---
-> > > > >  drivers/pwm/pwm-img.c | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-> > > > > index 815f5333bb8f..1cc5fbe1e1d3 100644
-> > > > > --- a/drivers/pwm/pwm-img.c
-> > > > > +++ b/drivers/pwm/pwm-img.c
-> > > > > @@ -123,7 +123,7 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> > > > >       } else if (mul <= max_timebase * 512) {
-> > > > >               div = PWM_CTRL_CFG_SUB_DIV0_DIV1;
-> > > > >               timebase = DIV_ROUND_UP(mul, 512);
-> > > > > -     } else if (mul > max_timebase * 512) {
-> > > > > +     } else {
-> > > > >               dev_err(chip->dev,
-> > > > >                       "failed to configure timebase steps/divider value\n");
-> > > > >               return -EINVAL;
-> > > >
-> > > > This can even be simplified further.
-> > > >
-> > > > From the probe function we have:
-> > > >
-> > > >         pwm_chip->max_period_ns = NSEC_PER_SEC * 512 * max_timebase / input_clk_hz
-> > >
-> > > I had trouble verifying `input_clk_hz` in the above.  The divisor is
-> > > `clk_get_rate(pwm->pwm_clk)`, but is it guaranteed to always be
-> > > `input_clk_hz`? If so, where?
-> >
-> > In the probe function it's called "clk_rate". We have:
-> >
-> >         clk_rate = clk_get_rate(pwm->pwm_clk);
-> >         ...
-> >         val = (u64)NSEC_PER_SEC * 512 * pwm->data->max_timebase;
-> >         do_div(val, clk_rate);
-> >         pwm->max_period_ns = val;
-> >
-> > and in img_pwm_config we have:
-> >
-> >         input_clk_hz = clk_get_rate(pwm_chip->pwm_clk);
-> >
-> > I used the name used in img_pwm_config with the intention that my
-> > reasoning is easier to understand, but obviously I failed.
-> >
-> > This by the way highlights another patch opportunity: Unify the names
-> > that the same thing gets the same name in the different functions. This
-> > doesn't only affect "clk_rate" vs "input_clk_hz", but also "pwm_chip"
-> > vs. "pwm".
-> 
-> Sure, those seem like nice little cleanups that will help with
-> maintainability.  Would you mind sending a patch for those, and I'll
-> review? Otherwise Nathan's patch exists and is ready to go.
+i.MX7ULP EVK board has MIPI-DSI display, its backlight is supplied
+by TPM PWM module, this patch set enables i.MX7ULP TPM PWM driver
+support and also add backlight support for MIPI-DSI display.
 
-I don't mind. But I would prefer to get some input from Thierry about
-how to round first. I also wonder if there is a publically available
-manual for this piece of hardware.
+Anson Huang (5):
+  dt-bindings: pwm: Add i.MX TPM PWM binding
+  pwm: Add i.MX TPM PWM driver support
+  ARM: imx_v6_v7_defconfig: Add TPM PWM support by default
+  ARM: dts: imx7ulp: Add pwm0 support
+  ARM: dts: imx7ulp-evk: Add backlight support
 
-Best regards
-Uwe
+ .../devicetree/bindings/pwm/imx-tpm-pwm.txt        |  23 ++
+ arch/arm/boot/dts/imx7ulp-evk.dts                  |  20 ++
+ arch/arm/boot/dts/imx7ulp.dtsi                     |  11 +
+ arch/arm/configs/imx_v6_v7_defconfig               |   1 +
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-imx-tpm.c                          | 277 +++++++++++++++++=
+++++
+ 7 files changed, 342 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/imx-tpm-pwm.txt
+ create mode 100644 drivers/pwm/pwm-imx-tpm.c
 
-
-
-	
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+--=20
+2.7.4
