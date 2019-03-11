@@ -1,118 +1,445 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v8 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Mon, 11 Mar 2019 17:10:17 +0530
-Message-ID: <CAJ2_jOFtg2_MAUYkTQM-=6KE2RN+FMxfEhLjZZfzM0k3A5RQiA@mail.gmail.com>
-References: <1551437599-29509-1-git-send-email-yash.shah@sifive.com>
- <1551437599-29509-3-git-send-email-yash.shah@sifive.com> <20190307152745.kaiv6q4ygf2apmuv@pengutronix.de>
- <CAJ2_jOFvr=sw7mWR53JbzMJa1jxwjhJSTibCsKYsxrht+PLPWw@mail.gmail.com> <20190308115726.smgooacsr37fmxwg@pengutronix.de>
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+Subject: Re: [PATCH v2 5/7] counter: add FlexTimer Module Quadrature decoder
+ counter driver
+Date: Mon, 11 Mar 2019 12:24:04 +0000
+Message-ID: <20190311122404.0000546f@huawei.com>
+References: <20190306111208.7454-1-patrick.havelange@essensium.com>
+        <20190306111208.7454-6-patrick.havelange@essensium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190308115726.smgooacsr37fmxwg@pengutronix.de>
+In-Reply-To: <20190306111208.7454-6-patrick.havelange@essensium.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>, kernel@pengutronix.de
+To: Patrick Havelange <patrick.havelange@essensium.com>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Esben Haabendal <esben@haabendal.dk>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Jonathan Cameron <jic23@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Mar 8, 2019 at 5:27 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> Hello,
->
-> On Fri, Mar 08, 2019 at 04:59:36PM +0530, Yash Shah wrote:
-> > On Thu, Mar 7, 2019 at 8:57 PM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > +static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_devi=
-ce *dev,
-> > > > +                         struct pwm_state *state)
-> > > > +{
-> > > > +     struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chi=
-p);
-> > > > +     unsigned int duty_cycle, x;
-> > > > +     u32 frac;
-> > > > +     struct pwm_state cur_state;
-> > > > +     bool enabled;
-> > > > +     int ret =3D 0;
-> > > > +     unsigned long num;
-> > > > +
-> > > > +     if (state->polarity !=3D PWM_POLARITY_INVERSED)
-> > > > +             return -EINVAL;
-> > > > +
-> > > > +     mutex_lock(&pwm->lock);
-> > > > +     pwm_get_state(dev, &cur_state);
-> > > > +     enabled =3D cur_state.enabled;
-> > > > +
-> > > > +     if (state->period !=3D cur_state.period) {
-> > >
-> > > Did you test this with more than one consumer? For sure the following
-> > > should work:
-> > >
-> > >         pwm1 =3D pwm_get(.. the first ..);
-> > >         pwm_apply_state(pwm1, { .enabled =3D true, .period =3D 100000=
-00, .... });
-> > >
-> > >         pwm2 =3D pwm_get(.. the second ..);
-> > >         pwm_apply_state(pwm2, { .enabled =3D true, .period =3D 100000=
-00, .... });
-> > >
-> > > but for the second pwm_apply_state() run state->period is likely not
-> > > exactly 10000000.
-> >
-> > Yes, I have tested multiple consumers using sysfs interface. It is work=
-ing.
->
-> Can you provide details about your testing here? What is the parent clk
-> rate? Which settings did you test? Can you confirm my claim that the
-> above sequence would fail or point out my error in reasoning?
->
+On Wed, 6 Mar 2019 12:12:06 +0100
+Patrick Havelange <patrick.havelange@essensium.com> wrote:
 
-I have tested on HiFive Unleashed board using sysfs interface.
-Parent clk rate is around 512 Mhz.
-I have tested scenarios as you mentioned above with various period and
-duty_cycle values.
+> This driver exposes the counter for the quadrature decoder of the
+> FlexTimer Module, present in the LS1021A soc.
+> 
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+A few really trivial bits inline to add to William's feedback.
 
-After considering your below suggestion,
- | To get the result independent of the prior configuration you better use
- | the real targeted period length as input instead of the last configured
- | approximation
-I will introduce approx_period feild, which will be used as the
-targeted period length.
-Also, in pwm_sifive_get_state, I will make below change
-- state->period =3D pwm->real_period;
-+ state->period =3D pwm->approx_period.
-So with this change in place, I believe the cur_state.period for the
-second pwm_apply_state() above (pwm2) will be exactly 10000000
+Otherwise I'm happy enough,
 
-> > > > +     x =3D 1U << PWM_SIFIVE_CMPWIDTH;
-> > > > +     num =3D (u64)duty_cycle * x + x / 2;
-> > > > +     frac =3D div_u64(num, state->period);
-> > >
-> > > I don't understand the "+ x / 2" part. Should this better be
-> > > "+ state->period / 2"? Something like
-> >
-> > This eqn is as per your comments against v5 of this patch series.
-> >  frac =3D (duty_cycle * (1 << PWM_SIFIVE_CMPWIDTH) + (1 <<
-> > PWM_SIFIVE_CMPWIDTH) / 2) / period;
->
-> OK, then not only the code is wrong, but also my suggestion was. :-)
->
-> > > #define div_u64_round(a, b) ({typeof(b) __b =3D b; div_u64(a + __b / =
-2, __b)})
-> > >
-> > > would make this less error prone.
->
-> This still stands. It makes it easier to get the code right and makes it
-> easier to understand.
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Sure, will implement this.
+> ---
+> Changes v2
+>  - Rebased on new counter subsystem
+>  - Cleaned up included headers
+>  - Use devm_ioremap()
+>  - Correct order of devm_ and unmanaged resources
+> ---
+>  drivers/counter/Kconfig       |   9 +
+>  drivers/counter/Makefile      |   1 +
+>  drivers/counter/ftm-quaddec.c | 356 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 366 insertions(+)
+>  create mode 100644 drivers/counter/ftm-quaddec.c
+> 
+> diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+> index 87c491a19c63..233ac305d878 100644
+> --- a/drivers/counter/Kconfig
+> +++ b/drivers/counter/Kconfig
+> @@ -48,4 +48,13 @@ config STM32_LPTIMER_CNT
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called stm32-lptimer-cnt.
+>  
+> +config FTM_QUADDEC
+> +	tristate "Flex Timer Module Quadrature decoder driver"
+> +	help
+> +	  Select this option to enable the Flex Timer Quadrature decoder
+> +	  driver.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ftm-quaddec.
+> +
+>  endif # COUNTER
+> diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+> index 5589976d37f8..0c9e622a6bea 100644
+> --- a/drivers/counter/Makefile
+> +++ b/drivers/counter/Makefile
+> @@ -7,3 +7,4 @@ obj-$(CONFIG_COUNTER) += counter.o
+>  obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
+>  obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
+>  obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+> +obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
+> diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
+> new file mode 100644
+> index 000000000000..1bc9e075a386
+> --- /dev/null
+> +++ b/drivers/counter/ftm-quaddec.c
+> @@ -0,0 +1,356 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Flex Timer Module Quadrature decoder
+> + *
+> + * This module implements a driver for decoding the FTM quadrature
+> + * of ex. a LS1021A
+> + */
+> +
+> +#include <linux/fsl/ftm.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/of.h>
+> +#include <linux/io.h>
+> +#include <linux/mutex.h>
+> +#include <linux/counter.h>
+> +
+> +struct ftm_quaddec {
+> +	struct counter_device counter;
+> +	struct platform_device *pdev;
+> +	void __iomem *ftm_base;
+> +	bool big_endian;
+> +	struct mutex ftm_quaddec_mutex;
+> +};
+> +
+> +static void ftm_read(struct ftm_quaddec *ftm, uint32_t offset, uint32_t *data)
+> +{
+> +	if (ftm->big_endian)
+> +		*data = ioread32be(ftm->ftm_base + offset);
+> +	else
+> +		*data = ioread32(ftm->ftm_base + offset);
+> +}
+> +
+> +static void ftm_write(struct ftm_quaddec *ftm, uint32_t offset, uint32_t data)
+> +{
+> +	if (ftm->big_endian)
+> +		iowrite32be(data, ftm->ftm_base + offset);
+> +	else
+> +		iowrite32(data, ftm->ftm_base + offset);
+> +}
+> +
+> +/*
+> + * take mutex
+> + * call ftm_clear_write_protection
+> + * update settings
+> + * call ftm_set_write_protection
+> + * release mutex
+> + */
+> +static void ftm_clear_write_protection(struct ftm_quaddec *ftm)
+> +{
+> +	uint32_t flag;
+> +
+> +	/* First see if it is enabled */
+> +	ftm_read(ftm, FTM_FMS, &flag);
+> +
+> +	if (flag & FTM_FMS_WPEN) {
+> +		ftm_read(ftm, FTM_MODE, &flag);
+> +		ftm_write(ftm, FTM_MODE, flag | FTM_MODE_WPDIS);
+> +	}
+> +}
+> +
+> +static void ftm_set_write_protection(struct ftm_quaddec *ftm)
+> +{
+> +	ftm_write(ftm, FTM_FMS, FTM_FMS_WPEN);
+> +}
+> +
+> +static void ftm_reset_counter(struct ftm_quaddec *ftm)
+> +{
+> +	/* Reset hardware counter to CNTIN */
+> +	ftm_write(ftm, FTM_CNT, 0x0);
+> +}
+> +
+> +static void ftm_quaddec_init(struct ftm_quaddec *ftm)
+> +{
+> +	ftm_clear_write_protection(ftm);
+> +
+> +	/*
+> +	 * Do not write in the region from the CNTIN register through the
+> +	 * PWMLOAD register when FTMEN = 0.
+> +	 */
+> +	ftm_write(ftm, FTM_MODE, FTM_MODE_FTMEN);
+> +	ftm_write(ftm, FTM_CNTIN, 0x0000);
+> +	ftm_write(ftm, FTM_MOD, 0xffff);
+> +	ftm_write(ftm, FTM_CNT, 0x0);
+> +	ftm_write(ftm, FTM_SC, FTM_SC_PS_1);
+> +
+> +	/* Select quad mode */
+> +	ftm_write(ftm, FTM_QDCTRL, FTM_QDCTRL_QUADEN);
+> +
+> +	/* Unused features and reset to default section */
+> +	ftm_write(ftm, FTM_POL, 0x0);
+> +	ftm_write(ftm, FTM_FLTCTRL, 0x0);
+> +	ftm_write(ftm, FTM_SYNCONF, 0x0);
+> +	ftm_write(ftm, FTM_SYNC, 0xffff);
+> +
+> +	/* Lock the FTM */
+> +	ftm_set_write_protection(ftm);
+> +}
+> +
+> +static void ftm_quaddec_disable(struct ftm_quaddec *ftm)
+> +{
+> +	ftm_write(ftm, FTM_MODE, 0);
+> +}
+> +
+> +static int ftm_quaddec_get_prescaler(struct counter_device *counter,
+> +				     struct counter_count *count,
+> +				     size_t *cnt_mode)
+> +{
+> +	struct ftm_quaddec *ftm = counter->priv;
+> +	uint32_t scflags;
+> +
+> +	ftm_read(ftm, FTM_SC, &scflags);
+> +
+> +	*cnt_mode = scflags & FTM_SC_PS_MASK;
 
->
-> Best regards
-> Uwe
->
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
-|
+FIELD_GET and FIELD_PREP are a tidy way of doing these sorts of
+accesses. Helpfully they also save a reviewer having to sanity
+check that the offset is 0 as it is here.
+
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int ftm_quaddec_set_prescaler(struct counter_device *counter,
+> +				     struct counter_count *count,
+> +				     size_t cnt_mode)
+> +{
+> +	struct ftm_quaddec *ftm = counter->priv;
+> +
+> +	uint32_t scflags;
+> +
+> +	mutex_lock(&ftm->ftm_quaddec_mutex);
+> +
+> +	ftm_read(ftm, FTM_SC, &scflags);
+> +
+> +	scflags &= ~FTM_SC_PS_MASK;
+> +	cnt_mode &= FTM_SC_PS_MASK; /*just to be 100% sure*/
+
+nitpick: Comment syntax is /* just to be 100% sure */
+
+> +
+> +	scflags |= cnt_mode;
+> +
+> +	/* Write */
+> +	ftm_clear_write_protection(ftm);
+> +	ftm_write(ftm, FTM_SC, scflags);
+> +	ftm_set_write_protection(ftm);
+> +
+> +	/* Also resets the counter as it is undefined anyway now */
+> +	ftm_reset_counter(ftm);
+> +
+> +	mutex_unlock(&ftm->ftm_quaddec_mutex);
+> +	return 0;
+> +}
+> +
+> +static const char * const ftm_quaddec_prescaler[] = {
+> +	"1", "2", "4", "8", "16", "32", "64", "128"
+> +};
+> +
+> +static struct counter_count_enum_ext ftm_quaddec_prescaler_enum = {
+> +	.items = ftm_quaddec_prescaler,
+> +	.num_items = ARRAY_SIZE(ftm_quaddec_prescaler),
+> +	.get = ftm_quaddec_get_prescaler,
+> +	.set = ftm_quaddec_set_prescaler
+> +};
+> +
+> +enum ftm_quaddec_synapse_action {
+> +	FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES,
+> +};
+> +
+> +static enum counter_synapse_action ftm_quaddec_synapse_actions[] = {
+> +	[FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES] =
+> +	COUNTER_SYNAPSE_ACTION_BOTH_EDGES
+> +};
+> +
+> +enum ftm_quaddec_count_function {
+> +	FTM_QUADDEC_COUNT_ENCODER_MODE_1,
+> +};
+> +
+> +static const enum counter_count_function ftm_quaddec_count_functions[] = {
+> +	[FTM_QUADDEC_COUNT_ENCODER_MODE_1] =
+> +	COUNTER_COUNT_FUNCTION_QUADRATURE_X4
+> +};
+> +
+> +static int ftm_quaddec_count_read(struct counter_device *counter,
+> +				  struct counter_count *count,
+> +				  struct counter_count_read_value *val)
+> +{
+> +	struct ftm_quaddec *const ftm = counter->priv;
+> +	uint32_t cntval;
+> +
+> +	ftm_read(ftm, FTM_CNT, &cntval);
+> +
+> +	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &cntval);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ftm_quaddec_count_write(struct counter_device *counter,
+> +				   struct counter_count *count,
+> +				   struct counter_count_write_value *val)
+> +{
+> +	struct ftm_quaddec *const ftm = counter->priv;
+> +	u32 cnt;
+> +	int err;
+> +
+> +	err = counter_count_write_value_get(&cnt, COUNTER_COUNT_POSITION, val);
+> +	if (err)
+> +		return err;
+> +
+> +	if (cnt != 0) {
+> +		dev_warn(&ftm->pdev->dev, "Can only accept '0' as new counter value\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	ftm_reset_counter(ftm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ftm_quaddec_count_function_get(struct counter_device *counter,
+> +					  struct counter_count *count,
+> +					  size_t *function)
+> +{
+> +	*function = FTM_QUADDEC_COUNT_ENCODER_MODE_1;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ftm_quaddec_action_get(struct counter_device *counter,
+> +				  struct counter_count *count,
+> +				  struct counter_synapse *synapse,
+> +				  size_t *action)
+> +{
+> +	*action = FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct counter_ops ftm_quaddec_cnt_ops = {
+> +	.count_read = ftm_quaddec_count_read,
+> +	.count_write = ftm_quaddec_count_write,
+> +	.function_get = ftm_quaddec_count_function_get,
+> +	.action_get = ftm_quaddec_action_get,
+> +};
+> +
+> +static struct counter_signal ftm_quaddec_signals[] = {
+> +	{
+> +		.id = 0,
+> +		.name = "Channel 1 Quadrature A"
+> +	},
+> +	{
+> +		.id = 1,
+> +		.name = "Channel 1 Quadrature B"
+> +	}
+> +};
+> +
+> +static struct counter_synapse ftm_quaddec_count_synapses[] = {
+> +	{
+> +		.actions_list = ftm_quaddec_synapse_actions,
+> +		.num_actions = ARRAY_SIZE(ftm_quaddec_synapse_actions),
+> +		.signal = &ftm_quaddec_signals[0]
+> +	},
+> +	{
+> +		.actions_list = ftm_quaddec_synapse_actions,
+> +		.num_actions = ARRAY_SIZE(ftm_quaddec_synapse_actions),
+> +		.signal = &ftm_quaddec_signals[1]
+> +	}
+> +};
+> +
+> +static const struct counter_count_ext ftm_quaddec_count_ext[] = {
+> +	COUNTER_COUNT_ENUM("prescaler", &ftm_quaddec_prescaler_enum),
+> +	COUNTER_COUNT_ENUM_AVAILABLE("prescaler", &ftm_quaddec_prescaler_enum),
+> +};
+> +
+> +static struct counter_count ftm_quaddec_counts = {
+> +	.id = 0,
+> +	.name = "Channel 1 Count",
+> +	.functions_list = ftm_quaddec_count_functions,
+> +	.num_functions = ARRAY_SIZE(ftm_quaddec_count_functions),
+> +	.synapses = ftm_quaddec_count_synapses,
+> +	.num_synapses = ARRAY_SIZE(ftm_quaddec_count_synapses),
+> +	.ext = ftm_quaddec_count_ext,
+> +	.num_ext = ARRAY_SIZE(ftm_quaddec_count_ext)
+> +};
+> +
+> +static int ftm_quaddec_probe(struct platform_device *pdev)
+> +{
+> +	struct ftm_quaddec *ftm;
+> +
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct resource *io;
+> +	int ret;
+> +
+> +	ftm = devm_kzalloc(&pdev->dev, sizeof(*ftm), GFP_KERNEL);
+> +	if (!ftm)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, ftm);
+> +
+> +	io = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!io) {
+> +		dev_err(&pdev->dev, "Failed to get memory region\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	ftm->pdev = pdev;
+> +	ftm->big_endian = of_property_read_bool(node, "big-endian");
+> +	ftm->ftm_base = devm_ioremap(&pdev->dev, io->start, resource_size(io));
+> +
+> +	if (!ftm->ftm_base) {
+> +		dev_err(&pdev->dev, "Failed to map memory region\n");
+> +		return -EINVAL;
+> +	}
+> +	ftm->counter.name = dev_name(&pdev->dev);
+> +	ftm->counter.parent = &pdev->dev;
+> +	ftm->counter.ops = &ftm_quaddec_cnt_ops;
+> +	ftm->counter.counts = &ftm_quaddec_counts;
+> +	ftm->counter.num_counts = 1;
+> +	ftm->counter.signals = ftm_quaddec_signals;
+> +	ftm->counter.num_signals = ARRAY_SIZE(ftm_quaddec_signals);
+> +	ftm->counter.priv = ftm;
+> +
+> +	mutex_init(&ftm->ftm_quaddec_mutex);
+> +
+> +	ftm_quaddec_init(ftm);
+> +
+> +	ret = counter_register(&ftm->counter);
+> +	if (ret)
+> +		ftm_quaddec_disable(ftm);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ftm_quaddec_remove(struct platform_device *pdev)
+> +{
+> +	struct ftm_quaddec *ftm = platform_get_drvdata(pdev);
+> +
+> +	counter_unregister(&ftm->counter);
+> +
+> +	ftm_quaddec_disable(ftm);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ftm_quaddec_match[] = {
+> +	{ .compatible = "fsl,ftm-quaddec" },
+> +	{},
+> +};
+> +
+> +static struct platform_driver ftm_quaddec_driver = {
+> +	.driver = {
+> +		.name = "ftm-quaddec",
+> +		.owner = THIS_MODULE,
+No need to set this, the call to __platform_driver_register
+that comes from the module_platform_driver macro below
+will deal with this for you.
+
+> +		.of_match_table = ftm_quaddec_match,
+> +	},
+> +	.probe = ftm_quaddec_probe,
+> +	.remove = ftm_quaddec_remove,
+> +};
+> +
+> +module_platform_driver(ftm_quaddec_driver);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com");
+> +MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com");
