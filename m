@@ -1,63 +1,44 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37674 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725974AbfCDL5W (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Mar 2019 06:57:22 -0500
-Received: by mail-wm1-f68.google.com with SMTP id x10so4388249wmg.2
-        for <linux-pwm@vger.kernel.org>; Mon, 04 Mar 2019 03:57:20 -0800 (PST)
-Date: Mon, 4 Mar 2019 12:57:18 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20190304115718.GA9040@ulmo>
-References: <20190304111242.6545-1-thierry.reding@gmail.com>
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Tue, 12 Mar 2019 10:50:44 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] [RFC] Documentation: pwm: rework documentation for the
+ framework
+Message-ID: <20190312095044.622vsj6i73kqy2d6@pengutronix.de>
+References: <20181120202945.24100-1-u.kleine-koenig@pengutronix.de>
+ <20190105211337.4mdejaw7uuoakdzv@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
-Content-Disposition: inline
-In-Reply-To: <20190304111242.6545-1-thierry.reding@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH] pwm: atmel: Remove useless symbolic definitions
-To: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: linux-pwm@vger.kernel.org
-
-
---0F1p//8PRICkK4MW
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190105211337.4mdejaw7uuoakdzv@pengutronix.de>
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+List-ID: <linux-pwm.vger.kernel.org>
 
-On Mon, Mar 04, 2019 at 12:12:42PM +0100, Thierry Reding wrote:
-> The values that these symbols define are only assigned to the per-SoC
-> structure where the context is clear, so there's no need for the extra
-> symbolic name.
->=20
-> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> ---
->  drivers/pwm/pwm-atmel.c | 20 ++++++--------------
->  1 file changed, 6 insertions(+), 14 deletions(-)
+Hello Thierry,
 
-Applied.
+On Sat, Jan 05, 2019 at 10:13:37PM +0100, Uwe Kleine-K=F6nig wrote:
+> I'm still waiting on feedback on this mail. Given there are a few things
+> that are not clear to me how they are intended I cannot reply as precise
+> as I want to in some reviews.
 
-Thierry
+Further I want to discuss about rounding in the PWM framework to get
+some uniform behaviour from the hardware drivers.  But I procrastinate
+doing that when I cannot even get feedback from you about the easier
+questions that are raised by my documentation patch here.
 
---0F1p//8PRICkK4MW
-Content-Type: application/pgp-signature; name="signature.asc"
+Best regards
+Uwe
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9EpwACgkQ3SOs138+
-s6GrchAAtXV3x8aALHiK17zwiG/WXIlL5oRJFPBZ+SXJr1I92LNA6C4U/uLSZoO1
-HjleZyoZl+53ME4youYBNq2pDoha/5nbXZh8ArLoB1uN9w7bxg5D6IqxE25PyAEm
-4Z9tXUIBC0T9nmMPCguj5+NYAXL1r4TntHmumwn9+OXwftg9+6HUET3D40NUdyD0
-Apb2qA79NnauWY2GxK1Co2CAPLjgsFcSr3B+BCQBGBgPjtTgz1MrN7sxUV6iBiiL
-uVGW1MeQdbBhSgOeh20UkI0VkT7sLUj31JJ9aX6E0/ZUiy3TcRZsgUkZ+LS6zck4
-qeulViQJNuCT/E6HzGiffpQMUMRNP+fuw8oNIaN2qOXS4kM9mqrvwg5cwKaLkgxH
-888bsHQOXjIb0ydQCBQuLfz9Db/NQYOnrkbNOUKW9Xs9nKTGz6pQYIBFU6bVwSbq
-E76A86EjOm8glcKfoA8BpSV3lPjSc0uveAgPtqEd5WZmBTm60/ByGtNV5qxkfuLY
-Vwv1u559XwCYkiK+SWbtB82eoFhBV5rS2Pt1oDTuToQFERyoaWKQkIqhSeSjMqjZ
-FfvV6vO/pzJe65oG6eWgm+9IDJF/6PwKCsD7KKSH20D6cjc3jJBRCoooI/UHum8+
-ZabN20VqEs7i935dNDU8Gg4SO0yIsNSX6iiXrJkuWF1G18zk5ac=
-=UGCB
------END PGP SIGNATURE-----
-
---0F1p//8PRICkK4MW--
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
