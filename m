@@ -1,66 +1,90 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 09/42] drivers: gpio: sprd: use
- devm_platform_ioremap_resource()
-Date: Tue, 12 Mar 2019 09:08:12 +0100
-Message-ID: <38a0ea2f-2324-ab21-b43f-bb3b883c1422@metux.net>
-References: <1552330521-4276-1-git-send-email-info@metux.net>
- <1552330521-4276-9-git-send-email-info@metux.net>
- <CAMz4kuKC5haGbhyVJ4gQ6nMRzdaxJnd3SmeCSM-096p7TAp8cA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH v9 0/2] PWM support for HiFive Unleashed
+Date: Tue, 12 Mar 2019 13:41:27 +0530
+Message-ID: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMz4kuKC5haGbhyVJ4gQ6nMRzdaxJnd3SmeCSM-096p7TAp8cA@mail.gmail.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baolin Wang <baolin.wang@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: LKML <linux-kernel@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, keguang.zhang@gmail.com, vz@mleia.com, matthias.bgg@gmail.com, Thierry Reding <thierry.reding@gmail.com>, Grygorii Strashko <grygorii.strashko@ti.com>, ssantosh@kernel.org, khilman@kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Masahiro Yamada <yamada.masahiro@socionext.com>, jun.nie@linaro.org, shawnguo@kernel.org, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.orgli
+To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com, Yash Shah <yash.shah@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 12.03.19 03:38, Baolin Wang wrote:
-> On Tue, 12 Mar 2019 at 02:55, Enrico Weigelt, metux IT consult
-> <info@metux.net> wrote:
->>
->> Use the new helper that wraps the calls to platform_get_resource()
->> and devm_ioremap_resource() together.
->>
->> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
->> ---
->>  drivers/gpio/gpio-eic-sprd.c | 9 ++-------
->>  1 file changed, 2 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
->> index f0223ce..c12de87 100644
->> --- a/drivers/gpio/gpio-eic-sprd.c
->> +++ b/drivers/gpio/gpio-eic-sprd.c
->> @@ -567,7 +567,6 @@ static int sprd_eic_probe(struct platform_device *pdev)
->>         const struct sprd_eic_variant_data *pdata;
->>         struct gpio_irq_chip *irq;
->>         struct sprd_eic *sprd_eic;
->> -       struct resource *res;
->>         int ret, i;
->>
->>         pdata = of_device_get_match_data(&pdev->dev);
->> @@ -596,13 +595,9 @@ static int sprd_eic_probe(struct platform_device *pdev)
->>                  * have one bank EIC, thus base[1] and base[2] can be
->>                  * optional.
->>                  */
->> -               res = platform_get_resource(pdev, IORESOURCE_MEM, i);
->> -               if (!res)
->> -                       continue;
->> -
->> -               sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
->> +               sprd_eic->base[i] = devm_platform_ioremap_resource(pdev, 0);
-> 
-> This is incorrect, since we can have multiple IO resources, but you
-> only get index 0.
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
 
-ah, right, it has to be i instead of 0. thanks for pointing that out.
+v9
+- Use appropriate bitfield macros
+- Add approx_period in pwm_sifive_ddata struct and related changes
+- Correct the eqn for calculation of frac (in pwm_sifive_apply)
+- Other minor fixes
 
+v8
+- Typo corrections
+- Remove active_user and related code
+- Do not clear PWM_SIFIVE_PWMCFG_EN_ALWAYS
+- Other minor fixes
 
---mtx
+v7
+- Modify description of compatible property in DT documentation
+- Use mutex locks at appropriate places
+- Fix all bad line breaks
+- Allow enabling/disabling PWM only when the user is the only active user
+- Remove Deglitch logic
+- Other minor fixes
+
+v6
+- Remove the global property 'sifive,period-ns'
+- Implement free and request callbacks to maintain user counts.
+- Add user_count member to struct pwm_sifive_ddata
+- Allow period change only if user_count is one
+- Add pwm_sifive_enable function to enable/disable PWM
+- Change calculation logic of frac (in pwm_sifive_apply)
+- Remove state correction
+- Remove pwm_sifive_xlate function
+- Clock to be enabled only when PWM is enabled
+- Other minor fixes
+
+v5
+- Correct the order of compatible string properties
+- PWM state correction to be done always
+- Other minor fixes based upon feedback on v4
+
+v4
+- Rename macros with appropriate names
+- Remove unused macros
+- Rename struct sifive_pwm_device to struct pwm_sifive_ddata
+- Rename function prefix as per driver name
+- Other minor fixes based upon feedback on v3
+
+v3
+- Add a link to the reference manaul
+- Use appropriate apis for division operation
+- Add check for polarity
+- Enable clk before calling clk_get_rate
+- Other minor fixes based upon feedback on v2
+
+V2 changed from V1:
+- Remove inclusion of dt-bindings/pwm/pwm.h
+- Remove artificial alignments
+- Replace ioread32/iowrite32 with readl/writel
+- Remove camelcase
+- Change dev_info to dev_dbg for unnecessary log
+- Correct typo in driver name
+- Remove use of of_match_ptr macro
+- Update the DT compatible strings and Add reference to a common
+  versioning document
+
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
+
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  33 ++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 338 +++++++++++++++++++++
+ 4 files changed, 383 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
 
 -- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+1.9.1
