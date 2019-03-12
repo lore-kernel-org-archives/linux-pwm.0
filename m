@@ -1,52 +1,25 @@
 From: Vignesh Raghavendra <vigneshr@ti.com>
-Subject: [PATCH] pwm: tiehrpwm: Update shadow register for disabling PWMs
-Date: Tue, 12 Mar 2019 14:38:46 +0530
-Message-ID: <20190312090846.29519-1-vigneshr@ti.com>
+Subject: [PATCH 0/2] pwm: tiehrpwm: Enable EHRPWM for AM654 SoCs
+Date: Tue, 12 Mar 2019 14:46:27 +0530
+Message-ID: <20190312091629.31701-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, =?UTF-8?q?Christoph=20Vogtl=C3=A4nder?= <c.vogtlaender@sigma-surface-science.com>, linux-kernel@vger.kernel.org, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Vignesh Raghavendra <vigneshr@ti.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogQ2hyaXN0b3BoIFZvZ3Rsw6RuZGVyIDxjLnZvZ3RsYWVuZGVyQHNpZ21hLXN1cmZhY2Ut
-c2NpZW5jZS5jb20+CgpJdCBtdXN0IGJlIG1hZGUgc3VyZSB0aGF0IGltbWVkaWF0ZSBtb2RlIGlz
-IG5vdCBhbHJlYWR5IHNldCwgd2hlbgptb2RpZnlpbmcgc2hhZG93IHJlZ2lzdGVyIHZhbHVlIGlu
-IGVocnB3bV9wd21fZGlzYWJsZSgpLiBPdGhlcndpc2UKbW9kaWZpY2F0aW9ucyB0byB0aGUgYWN0
-aW9uLXF1YWxpZmllciBjb250aW51b3VzIFMvVyBmb3JjZQpyZWdpc3RlcihBUVNGUkMpIHdpbGwg
-YmUgZG9uZSBpbiB0aGUgYWN0aXZlIHJlZ2lzdGVyLgpUaGlzIG1heSBoYXBwZW4gd2hlbiBib3Ro
-IGNoYW5uZWxzIGFyZSBiZWluZyBkaXNhYmxlZC4gSW4gdGhpcyBjYXNlLApvbmx5IHRoZSBmaXJz
-dCBjaGFubmVsIHN0YXRlIHdpbGwgYmUgcmVjb3JkZWQgYXMgZGlzYWJsZWQgaW4gdGhlIHNoYWRv
-dwpyZWdpc3Rlci4gTGF0ZXIsIHdoZW4gZW5hYmxpbmcgdGhlIGZpcnN0IGNoYW5uZWwgYWdhaW4s
-IHRoZSBzZWNvbmQKY2hhbm5lbCB3b3VsZCBiZSBlbmFibGVkIGFzIHdlbGwuIFNldHRpbmcgUkxE
-Q1NGIHRvIHplcm8sIGZpcnN0LCBlbnN1cmVzCnRoYXQgdGhlIHNoYWRvdyByZWdpc3RlciBpcyB1
-cGRhdGVkIGFzIGRlc2lyZWQuCgpGaXhlczogMzhkYWJkOTFmZjBiICgicHdtOiB0aWVocnB3bTog
-Rml4IGRpc2FibGluZyBvZiBvdXRwdXQgb2YgUFdNcyIpClNpZ25lZC1vZmYtYnk6IENocmlzdG9w
-aCBWb2d0bMOkbmRlciA8Yy52b2d0bGFlbmRlckBzaWdtYS1zdXJmYWNlLXNjaWVuY2UuY29tPgpb
-dmlnbmVzaHJAdGkuY29tOiBJbXByb3ZlIGNvbW1pdCBtZXNzYWdlXQpTaWduZWQtb2ZmLWJ5OiBW
-aWduZXNoIFJhZ2hhdmVuZHJhIDx2aWduZXNockB0aS5jb20+Ci0tLQogZHJpdmVycy9wd20vcHdt
-LXRpZWhycHdtLmMgfCAyICsrCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspCgpkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLXRpZWhycHdtLmMgYi9kcml2ZXJzL3B3bS9wd20tdGll
-aHJwd20uYwppbmRleCBmN2I4YTg2ZmE1YzUuLmFkNGE0MGMwZjI3YyAxMDA2NDQKLS0tIGEvZHJp
-dmVycy9wd20vcHdtLXRpZWhycHdtLmMKKysrIGIvZHJpdmVycy9wd20vcHdtLXRpZWhycHdtLmMK
-QEAgLTM4Miw2ICszODIsOCBAQCBzdGF0aWMgdm9pZCBlaHJwd21fcHdtX2Rpc2FibGUoc3RydWN0
-IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKQogCX0KIAogCS8qIFVwZGF0
-ZSBzaGFkb3cgcmVnaXN0ZXIgZmlyc3QgYmVmb3JlIG1vZGlmeWluZyBhY3RpdmUgcmVnaXN0ZXIg
-Ki8KKwllaHJwd21fbW9kaWZ5KHBjLT5tbWlvX2Jhc2UsIEFRU0ZSQywgQVFTRlJDX1JMRENTRl9N
-QVNLLAorCQkgICAgICBBUVNGUkNfUkxEQ1NGX1pSTyk7CiAJZWhycHdtX21vZGlmeShwYy0+bW1p
-b19iYXNlLCBBUUNTRlJDLCBhcWNzZnJjX21hc2ssIGFxY3NmcmNfdmFsKTsKIAkvKgogCSAqIENo
-YW5nZXMgdG8gaW1tZWRpYXRlIGFjdGlvbiBvbiBBY3Rpb24gUXVhbGlmaWVyLiBUaGlzIHB1dHMK
-LS0gCjIuMjEuMAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
-aW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2xpbnV4LWFybS1rZXJuZWwK
+This series adds support for EHRPWM IP on TI AM654 SoC
+
+Vignesh Raghavendra (2):
+  dt-bindings: pwm: tiehrpwm: Add TI AM654 SoC specific compatible
+  pwm: Kconfig: Enable ehrpwm driver to be compiled for ARCH_K3
+
+ Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 1 +
+ drivers/pwm/Kconfig                                    | 5 ++---
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+-- 
+2.21.0
