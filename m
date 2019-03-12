@@ -1,75 +1,66 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ua1-f68.google.com ([209.85.222.68]:40005 "EHLO
-        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727515AbfCLIis (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Mar 2019 04:38:48 -0400
-MIME-Version: 1.0
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:56941 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725894AbfCLJXF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Mar 2019 05:23:05 -0400
+Date: Tue, 12 Mar 2019 10:23:02 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Message-ID: <20190312092302.2x6zf4imlfsevmkr@pengutronix.de>
 References: <1552360594-21547-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 In-Reply-To: <1552360594-21547-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 12 Mar 2019 09:38:35 +0100
-Message-ID: <CAMuHMdU9sCKnyz=qHKDdP1YHM+qGoZrkYAVJwYcJ5O7c=LHTjA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 Subject: Re: [PATCH] pwm: Avoid deadlock warning when removing PWM device
 To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Phong Hoang <phong.hoang.wz@renesas.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Phong Hoang <phong.hoang.wz@renesas.com>
 
-Hi Shimoda-san,
+On Tue, Mar 12, 2019 at 12:16:34PM +0900, Yoshihiro Shimoda wrote:
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index 1581f6a..2fdd6611 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -311,10 +311,12 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+>  	if (IS_ENABLED(CONFIG_OF))
+>  		of_pwmchip_add(chip);
+> =20
+> -	pwmchip_sysfs_export(chip);
+> -
+>  out:
+>  	mutex_unlock(&pwm_lock);
+> +
+> +	if (!ret)
+> +		pwmchip_sysfs_export(chip);
+> +
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(pwmchip_add_with_polarity);
+> @@ -368,10 +370,12 @@ int pwmchip_remove(struct pwm_chip *chip)
+> =20
+>  	free_pwms(chip);
+> =20
+> -	pwmchip_sysfs_unexport(chip);
+> -
+>  out:
+>  	mutex_unlock(&pwm_lock);
+> +
+> +	if (!ret)
+> +		pwmchip_sysfs_unexport(chip);
+> +
 
-On Tue, Mar 12, 2019 at 4:17 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> From: Phong Hoang <phong.hoang.wz@renesas.com>
->
-> This patch fixes deadlock warning if removing PWM device
-> when CONFIG_PROVE_LOCKING is enabled.
->
-> This issue can be reproceduced by the following steps on
-> the R-Car H3 Salvator-X board if the backlight is disabled:
->
->  # cd /sys/class/pwm/pwmchip0
->  # echo 0 > export
->  # ls
->  device  export  npwm  power  pwm0  subsystem  uevent  unexport
->  # cd device/driver
->  # ls
->  bind  e6e31000.pwm  uevent  unbind
->  # echo e6e31000.pwm > unbind
->
-> [   87.659974] ======================================================
-> [   87.666149] WARNING: possible circular locking dependency detected
-> [   87.672327] 5.0.0 #7 Not tainted
+I wonder if this needs to be done before free_pwms is called. Otherwise
+the pwmchip is already gone and then something is requested via sysfs.
 
-[...]
+Also a comment about why it is important not to unexport while holding
+the lock would be great.
 
-> This warning occurs because pwmchip_remove still keeps pwm_lock
-> when removing sysfs. That's why it leads to that conflict.
-> Hence, this patch unlocks pwm_lock before removing sysfs.
-> Also, pwmchip_sysfs_export() doesn't seem to need the pwm_lock
-> held so that to achieve consistance between export and
-> unexport this patch also modifies it.
->
-> Signed-off-by: Phong Hoang <phong.hoang.wz@renesas.com>
-> [shimoda: revise the commit log and code]
-> Fixes: 76abbdde2d95 ("pwm: Add sysfs interface")
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Tested-by: Hoan Nguyen An <na-hoan@jinso.co.jp>
+Best regards
+Uwe
 
-Thanks for your patch!
-
-Looks good to me: class_find_device() seems to use its own locking in
-the class to protect against concurrent modification.
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
