@@ -1,58 +1,94 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 42/42] drivers: gpio: use devm_platform_ioremap_resource()
-Date: Tue, 12 Mar 2019 12:38:52 +0100
-Message-ID: <20190312113852.GH31026@ulmo>
-References: <1552330521-4276-1-git-send-email-info@metux.net>
- <1552330521-4276-42-git-send-email-info@metux.net>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 2/2] pwm: ensure pwm_apply_state() doesn't modify the
+ state argument
+Date: Tue, 12 Mar 2019 12:42:47 +0100
+Message-ID: <20190312114247.GJ31026@ulmo>
+References: <20190312083537.23748-1-u.kleine-koenig@pengutronix.de>
+ <20190312083537.23748-3-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="fmEUq8M7S0s+Fl0V"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1552330521-4276-42-git-send-email-info@metux.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, bgolaszewski@baylibre.com, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com, keguang.zhang@gmail.com, vz@mleia.com, matthias.bgg@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, robert.jarzmik@free.fr, yamada.masahiro@socionext.com, jun.nie@linaro.org, shawnguo@kernel.org, linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============2295942472798456377=="
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20190312083537.23748-3-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---fmEUq8M7S0s+Fl0V
-Content-Type: text/plain; charset=us-ascii
+--===============2295942472798456377==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="k1BdFSKqAqVdu8k/"
+Content-Disposition: inline
+
+
+--k1BdFSKqAqVdu8k/
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 11, 2019 at 07:55:21PM +0100, Enrico Weigelt, metux IT consult =
-wrote:
-> Use the new helper that wraps the calls to platform_get_resource()
-> and devm_ioremap_resource() together.
->=20
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
-> ---
->  drivers/gpio/gpio-zynq.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+On Tue, Mar 12, 2019 at 09:35:37AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 470d4f71e7eb..52dace9f739e 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+[...]
+> @@ -193,17 +193,11 @@ static int sun4i_pwm_calculate(struct sun4i_pwm_chi=
+p *sun4i_pwm,
+>  	*dty =3D div;
+>  	*prsclr =3D prescaler;
+> =20
+> -	div =3D (u64)pval * NSEC_PER_SEC * *prd;
+> -	state->period =3D DIV_ROUND_CLOSEST_ULL(div, clk_rate);
+> -
+> -	div =3D (u64)pval * NSEC_PER_SEC * *dty;
+> -	state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(div, clk_rate);
+> -
 
-Subject prefix doesn't seem to match for this driver.
+Perhaps split this out into a separate patch like you did for Rockchip?
 
 Thierry
 
---fmEUq8M7S0s+Fl0V
+--k1BdFSKqAqVdu8k/
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlyHmkwACgkQ3SOs138+
-s6Gx6xAAv1mQgIEYsiEOG3auFjK4NyqWTcTVKmRK/0r5f71zWRytjqe4lKn75wI+
-5PytZXa7xc67Qx6cVyqtLsdTBQ0kyShxwlRX4weQpR98ogYazQeEa+uzpDI8ywLa
-xrNmbePWN8RvJPtnksoHn36mNLIRHx5GB7ZdpnM5SpXufT0EH0+jZ5qJcZLmFrVr
-ctvRo3YzlLFsnaETSUOzP3uEEUZoa1cP18ul+36Xl+YBDUGpiXBVgyYvVGj8ZICw
-iq+/HA/MvPMTytFk81aEDMIH+K8mSP5uIXHsLFc/9hB8kb1vT3M70pt3yTdUdIJ6
-cuPcmSNtuLEe6lQm2UnBS7zUNblU5WVR7jz5bqAXDD2hI78PgXP9mZeT4jJyIV+e
-JS4juLof2V2V717jwL1iaJjgsrgetKAzfWV9EovIHiMVTCBQlALrl9hwi3rA/LL4
-0h5Zre1NaZ5OHFy/lM48NCcamK83rfFtfrzT8E1znKgN/AUvOyDbPKuA8gRrt+et
-NQrxijZW3aHPwtnFy4NYRtltYyI7XYNt7rIOSPFtFT40T6CcQRdJlETsFXYutVU/
-FLEyWQYPGSt+KzlPXWb1julgTWuA8n6/n6AgldDEL/wdV8f2SoBLmUtGjJ7NQ547
-B796Pe8juq+0bpjOWveScK46skLniGOrAyjltkR8PTotXq77kzo=
-=GdEd
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlyHmzcACgkQ3SOs138+
+s6En1w/+OtBNSufaD4xXqdVJo7Hc7Qlaf7/f3MI0GNRskdXvbElkwZjfN25P/lv2
+YCXpoKihJbbJWb6fX9P9sfXeuCnat51T0u8XgS9+NddAdm053hBIa+9HIgwhbhJU
+XYTzj4U6nj1T8zHRGpjv82DWJGI6MaTIx/F9nC05V/564YUFCAOlPRwNBFfWCyKt
+aLI7H2UdCWHSg4cmm9j9+6A357832tweijEAXPpNK0j6osb+Crjmz0D9bythr/qg
+UuaA6WwPYo2b4GIie32H0QTFiGEwzO6on8zijIEqQk9wkWF9wnH4PdMUCM0QHnmy
+tNRBsxtUt6WRhxHQq6/JtBImqb0vTI6p3FiyEgi3+nG0HkRpHkiTPAQo/2FjeF0n
+PRncC3gtUlpj5CfkzKBvFMoDGs73CAwwFeWrBv23Zw7lHavZuTwBHfBchKf70wT8
+r9Lk2NBQPfTSkN+2+PyTI6EsO4/kt5euui+rx4nJOofMMRH1Y5rAXie4YO8/bHAO
+4smRwdOctgEYt0+5AZLE9B2AYlHO3qo4jcuwjk1Kp9czlKnOfdAXuc4Qkv9ztMDO
+lXUoU7nvZlfAh+iLeOQDjZXTkU5+/d8mpRLdSoreW/53Ii3apVKlpw9arAE5Tm31
+RKrnq2Ar3RLMiy+u6MNIegx8ZtdqXbfMnr9EIwiR92zzGj0g/8E=
+=/tir
 -----END PGP SIGNATURE-----
 
---fmEUq8M7S0s+Fl0V--
+--k1BdFSKqAqVdu8k/--
+
+
+--===============2295942472798456377==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Linux-rockchip mailing list
+Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+http://lists.infradead.org/mailman/listinfo/linux-rockchip
+
+--===============2295942472798456377==--
