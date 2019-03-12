@@ -1,116 +1,33 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v9 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Tue, 12 Mar 2019 14:17:12 +0100
-Message-ID: <20190312131712.rxiarnthcfrsgdqn@pengutronix.de>
-References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
- <1552378289-27245-3-git-send-email-yash.shah@sifive.com>
- <20190312091739.fhv2hb2ll2eamdsn@pengutronix.de>
- <20190312121218.GM31026@ulmo>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH 16/42] drivers: gpio: janz-ttl: drop unneccessary temp
+ variable dev
+Date: Tue, 12 Mar 2019 16:00:01 +0100
+Message-ID: <a3a56d82-ef94-9c71-2395-ed1a78dc9c26@metux.net>
+References: <1552330521-4276-1-git-send-email-info@metux.net>
+ <1552330521-4276-16-git-send-email-info@metux.net>
+ <539b3cd4-8af3-d6d8-f5a9-2c426a1f0faa@codethink.co.uk>
+ <93ae13c0-da78-0e6a-358f-97e358c11f16@metux.net>
+ <20190312112607.GD31026@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190312121218.GM31026@ulmo>
+In-Reply-To: <20190312112607.GD31026@ulmo>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Yash Shah <yash.shah@sifive.com>, palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
+Cc: Ben Dooks <ben.dooks@codethink.co.uk>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, linus.walleij@linaro.org, bgolaszewski@baylibre.com, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com, keguang.zhang@gmail.com, vz@mleia.com, matthias.bgg@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, robert.jarzmik@free.fr, yamada.masahiro@socionext.com, jun.nie@linaro.org, shawnguo@kernel.org, linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 12, 2019 at 01:12:18PM +0100, Thierry Reding wrote:
-> On Tue, Mar 12, 2019 at 10:17:39AM +0100, Uwe Kleine-König wrote:
-> > Hello,
-> > 
-> > there are just a few minor things left I commented below.
-> > 
-> > On Tue, Mar 12, 2019 at 01:41:29PM +0530, Yash Shah wrote:
-> > > +#define div_u64_round(a, b) \
-> > > +	({typeof(b) __b = b; div_u64((a) + __b / 2, __b); })
-> > 
-> > Parenthesis around b please. I guess I didn't had them in my suggestion
-> > either, sorry for that.
-> 
-> We don't really need the parentheses here, do we? The only operator that
-> has lower priority than the assignment is the comma operator, and that's
-> not going to work in the macro anyway, unless you put it inside a pair
-> of parentheses, in which case, well, you have the parentheses already.
+On 12.03.19 12:26, Thierry Reding wrote:
+> You're not consistent within the series itself. In patch 3 you went the
+> other way and dropped usage of pdev->dev in favour of the local dev
+> variable.
 
-I thought that, too, but using parenthesis just always is a safe bet and
-prevents people stumbling over this and spending time to come to the
-conclusion that it is actually safe without them.
+ups, you got me :O
 
-> > > +static int pwm_sifive_enable(struct pwm_chip *chip, bool enable)
-> > > +{
-> > > +	struct pwm_sifive_ddata *pwm = pwm_sifive_chip_to_ddata(chip);
-> > > +	int ret;
-> > > +
-> > > +	if (enable) {
-> > > +		ret = clk_enable(pwm->clk);
-> > > +		if (ret) {
-> > > +			dev_err(pwm->chip.dev, "Enable clk failed:%d\n", ret);
-> > > +			return ret;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	if (!enable)
-> > > +		clk_disable(pwm->clk);
-> > > +
-> > > +	return 0;
-> > > +}
-> > 
-> > There is only a single caller for this function. I wonder if it is
-> > trivial enough to fold it into pwm_sifive_apply.
-> 
-> I think this is fine. pwm_sifive_apply() is already fairly long at this
-> point, so might as well split things up a little.
-
-I don't have a strong opinion here, so keeping as is is fine for me.
-
-> > There are a few other things that could be improved, but I think they
-> > could be addressed later. For some of these I don't even know what to
-> > suggest, for some Thierry might not agree it is worth fixing:
-> > 
-> >  - rounding
-> >    how to round? When should a request declined, when is rounding ok?
-> >    There is still "if (state->period != pwm->approx_period) return -EBUSY"
-> >    in this driver. This is better than before, but if state-period ==
-> >    pwm->approx_period + 1 the result (if accepted) might be the same as
-> >    without the +1 and so returning -EBUSY for one case and accepting the
-> >    other is strange.
-> 
-> Perhaps a good idea would be to reject a configuration only after we've
-> determined that it is incompatible? If we're really going to end up with
-> the same configuration within a given margin of period or duty cycle and
-> we can't do much about it, there's little point in rejecting such
-> configurations.
-
-It seems we agree here. Is this important enough to delay taking this
-driver further? Currently the driver rejects too broad so if it annoys
-someone this can still be fixed later and there is only little harm
-(assuming correct error handling in the consumers).
-
-> >  - don't call PWM API functions designed for consumers (here: pwm_get_state)
-> 
-> Agreed. The driver can just access pwm_device.state directly.
-
-I wouldn't do this either. IMHO the driver should only look into its
-hardware registers instead of using framework interna (or consumer API
-calls).
-
-> >  - Move div_u64_round to include/linux/math64.h
-> 
-> Looks to me like DIV_ROUND_CLOSEST_ULL() is already pretty much this.
-> The only difference that I can see is that the divisor is 32-bit, but
-> since we pass in state->period, that already works fine.
-
-num (i.e. the divident) should be a u64, but it isn't. This needs
-fixing. But I agree that DIV_ROUND_CLOSEST_ULL should be good enough
-then.
-
-Best regards
-Uwe
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
