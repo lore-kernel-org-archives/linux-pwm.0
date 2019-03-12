@@ -1,104 +1,66 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v5 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Tue, 12 Mar 2019 08:27:28 +0100
-Message-ID: <20190312072728.dy26cg4cateumuug@pengutronix.de>
-References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
- <1548762199-7065-3-git-send-email-yash.shah@sifive.com>
- <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
- <20190213123703.GE647@ulmo>
- <20190214155903.7h3b7v3nbhj57uy2@pengutronix.de>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH 09/42] drivers: gpio: sprd: use
+ devm_platform_ioremap_resource()
+Date: Tue, 12 Mar 2019 09:08:12 +0100
+Message-ID: <38a0ea2f-2324-ab21-b43f-bb3b883c1422@metux.net>
+References: <1552330521-4276-1-git-send-email-info@metux.net>
+ <1552330521-4276-9-git-send-email-info@metux.net>
+ <CAMz4kuKC5haGbhyVJ4gQ6nMRzdaxJnd3SmeCSM-096p7TAp8cA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20190214155903.7h3b7v3nbhj57uy2@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, palmer@sifive.com, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAMz4kuKC5haGbhyVJ4gQ6nMRzdaxJnd3SmeCSM-096p7TAp8cA@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Baolin Wang <baolin.wang@linaro.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: LKML <linux-kernel@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, keguang.zhang@gmail.com, vz@mleia.com, matthias.bgg@gmail.com, Thierry Reding <thierry.reding@gmail.com>, Grygorii Strashko <grygorii.strashko@ti.com>, ssantosh@kernel.org, khilman@kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Masahiro Yamada <yamada.masahiro@socionext.com>, jun.nie@linaro.org, shawnguo@kernel.org, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.orgli
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+On 12.03.19 03:38, Baolin Wang wrote:
+> On Tue, 12 Mar 2019 at 02:55, Enrico Weigelt, metux IT consult
+> <info@metux.net> wrote:
+>>
+>> Use the new helper that wraps the calls to platform_get_resource()
+>> and devm_ioremap_resource() together.
+>>
+>> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+>> ---
+>>  drivers/gpio/gpio-eic-sprd.c | 9 ++-------
+>>  1 file changed, 2 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
+>> index f0223ce..c12de87 100644
+>> --- a/drivers/gpio/gpio-eic-sprd.c
+>> +++ b/drivers/gpio/gpio-eic-sprd.c
+>> @@ -567,7 +567,6 @@ static int sprd_eic_probe(struct platform_device *pdev)
+>>         const struct sprd_eic_variant_data *pdata;
+>>         struct gpio_irq_chip *irq;
+>>         struct sprd_eic *sprd_eic;
+>> -       struct resource *res;
+>>         int ret, i;
+>>
+>>         pdata = of_device_get_match_data(&pdev->dev);
+>> @@ -596,13 +595,9 @@ static int sprd_eic_probe(struct platform_device *pdev)
+>>                  * have one bank EIC, thus base[1] and base[2] can be
+>>                  * optional.
+>>                  */
+>> -               res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+>> -               if (!res)
+>> -                       continue;
+>> -
+>> -               sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
+>> +               sprd_eic->base[i] = devm_platform_ioremap_resource(pdev, 0);
+> 
+> This is incorrect, since we can have multiple IO resources, but you
+> only get index 0.
 
-On Thu, Feb 14, 2019 at 04:59:03PM +0100, Uwe Kleine-K=F6nig wrote:
-> On Wed, Feb 13, 2019 at 01:37:03PM +0100, Thierry Reding wrote:
-> > On Thu, Feb 07, 2019 at 11:16:57AM +0100, Uwe Kleine-K=F6nig wrote:
-> > > On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
-> > [...]
-> > > > diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-> > [...]
-> > > > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > > +
-> > > > +	writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 + dev->hwpwm * SIZE_P=
-WMCMP);
-> > > > +
-> > > > +	val &=3D ~(1 << PWM_SIFIVE_PWMCFG_DEGLITCH);
-> > > > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> > > > +
-> > > > +	pwm_sifive_get_state(chip, dev, state);
-> > > =
+ah, right, it has to be i instead of 0. thanks for pointing that out.
 
-> > > Thierry: This changes the pwm_state. Is this how this should be done?
-> > =
 
-> > Yes, I think that's fine. The PWM state should always reflect the
-> > current hardware state. If the configuration that we program does not
-> > reflect the state that was requested, that should be reflected in the
-> > PWM state.
-> =
+--mtx
 
-> I'm not sure you blessed what is really done here. If I do:
-> =
-
-> 	state.duty_cycle =3D state.period;
-> 	pwm_apply_state(pwm, &state);
-> =
-
-> the call in question doesn't only result in pwm->state.duty_cycle <
-> pwm->state.period, but it also corrects my local state variable (i.e. I
-> have state.duty_cycle < state.period afterwards).
-> =
-
-> Is this what you thought to be fine?
-
-I thought a bit about this and I'm convinced that updating struct
-pwm_device::state is/might be fine, but changing the caller's struct pwm_st=
-ate
-that was passed to pwm_apply_state is not.
-
-Consider a consumer who does:
-
-	#define PERIOD 5000000
-	#define DUTY_LITTLE 10
-	...
-	struct pwm_state state =3D {
-		.period =3D PERIOD,
-		.duty_cycle =3D DUTY_LITTLE,
-		.polarity =3D PWM_POLARITY_NORMAL,
-		.enabled =3D true,
-	};
-
-	pwm_apply_state(mypwm, &state);
-	...
-	state.duty_cycle =3D PERIOD / 2;
-	pwm_apply_state(mypwm, &state);
-
-I think the second request should have state.period =3D 5000000 and not
-some other value (that might only have chosen by the respective driver
-because the first duty cycle was so short).
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
