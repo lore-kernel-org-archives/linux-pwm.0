@@ -1,106 +1,64 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44915 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbfCDLSh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 Mar 2019 06:18:37 -0500
-Date: Mon, 4 Mar 2019 12:18:33 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20190304111833.GD5121@ulmo>
-References: <1547021948-7664-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1547021948-7664-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:40011 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbfCLJuL (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Mar 2019 05:50:11 -0400
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="W5WqUoFLvi1M7tJE"
-Content-Disposition: inline
-In-Reply-To: <1547021948-7664-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1552360594-21547-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <20190312092302.2x6zf4imlfsevmkr@pengutronix.de>
+In-Reply-To: <20190312092302.2x6zf4imlfsevmkr@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 12 Mar 2019 10:49:59 +0100
+Message-ID: <CAMuHMdUYqk6nFAd2TQ_xM9q3bHskpd8vZXJ8DiF3tFwJQLc=tg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v3 2/4] pwm: rcar: Use "atomic" API on rcar_pwm_resume()
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] pwm: Avoid deadlock warning when removing PWM device
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Phong Hoang <phong.hoang.wz@renesas.com>
 
+Hi Uwe,
 
---W5WqUoFLvi1M7tJE
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Mar 12, 2019 at 10:23 AM Uwe Kleine-König
+<u.kleine-koenig@pengutronix.de> wrote:
+> On Tue, Mar 12, 2019 at 12:16:34PM +0900, Yoshihiro Shimoda wrote:
+> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> > index 1581f6a..2fdd6611 100644
+> > --- a/drivers/pwm/core.c
+> > +++ b/drivers/pwm/core.c
 
-On Wed, Jan 09, 2019 at 05:19:06PM +0900, Yoshihiro Shimoda wrote:
-> To remove legacy API related functions in the future, this patch
-> uses "atomic" related function instead. No change in behavior.
->=20
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/pwm/pwm-rcar.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-> index e3ab663..652a937 100644
-> --- a/drivers/pwm/pwm-rcar.c
-> +++ b/drivers/pwm/pwm-rcar.c
-> @@ -316,18 +316,16 @@ static int rcar_pwm_suspend(struct device *dev)
->  static int rcar_pwm_resume(struct device *dev)
->  {
->  	struct pwm_device *pwm =3D rcar_pwm_dev_to_pwm_dev(dev);
-> +	struct pwm_state state;
-> =20
->  	if (!test_bit(PWMF_REQUESTED, &pwm->flags))
->  		return 0;
-> =20
->  	pm_runtime_get_sync(dev);
-> =20
-> -	rcar_pwm_config(pwm->chip, pwm, pwm->state.duty_cycle,
-> -			pwm->state.period);
-> -	if (pwm_is_enabled(pwm))
-> -		rcar_pwm_enable(pwm->chip, pwm);
-> +	pwm_get_state(pwm, &state);
-> =20
-> -	return 0;
-> +	return rcar_pwm_apply(pwm->chip, pwm, &state);
->  }
->  #endif /* CONFIG_PM_SLEEP */
->  static SIMPLE_DEV_PM_OPS(rcar_pwm_pm_ops, rcar_pwm_suspend, rcar_pwm_res=
-ume);
+> > @@ -368,10 +370,12 @@ int pwmchip_remove(struct pwm_chip *chip)
+> >
+> >       free_pwms(chip);
+> >
+> > -     pwmchip_sysfs_unexport(chip);
+> > -
+> >  out:
+> >       mutex_unlock(&pwm_lock);
+> > +
+> > +     if (!ret)
+> > +             pwmchip_sysfs_unexport(chip);
+> > +
+>
+> I wonder if this needs to be done before free_pwms is called. Otherwise
+> the pwmchip is already gone and then something is requested via sysfs.
 
-As was recently discussed elsewhere, it should really be up to the
-consumer of PWMs to reinitialize the PWM on resume. However, this is a
-preexisting condition, so let's do it in a follow-up.
+The chip itself is not freed, only the pwms array inside, which is not needed
+for matching in pwmchip_sysfs_unexport(), right?
 
-Do you have any cases where you really rely on this? Resume ordering
-does not guarantee that the PWM and consumer will be resumed in the
-right order, so you may be enabling the PWM too soon, or too late, by
-doing this in the PWM driver.
+> Also a comment about why it is important not to unexport while holding
+> the lock would be great.
 
-There are patches in the works to help with this using device links, but
-I think even with those there will be cases where the consumer will want
-to directly control when the PWM is restored, so you should consider
-moving the driver away from implementing suspend/resume itself.
+Thanks, good idea!
 
-It'd be interesting to hear if there any cases where things break if you
-simply remove these PM callbacks. If so we should investigate and fix
-them so that these can be removed.
+Gr{oetje,eeting}s,
 
-Thierry
+                        Geert
 
---W5WqUoFLvi1M7tJE
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlx9CYkACgkQ3SOs138+
-s6Ecow/+Lh5YDZ3eCQEcrYBCJoKVl8DrAEh9dZWpXas24wVJq9+r4wYgSjMrtaCx
-UuXC+LgIV0lwbnxYyqNIYkKU9yGocDcvPrabz/FhBk0i2LpE/OduVG+HDygnPkqz
-+6RFj4sosbGzeMadxhCwFrz55QO+v49mH4SvSCTiBhitStkQZiSnQHXroFwUNNQK
-GXWRWfDL2VH/CaeKRrf6/tpxsWXOjrr/gDvHQIMvaQOE3zMOaqDf8QrnthEZ5iJn
-v8DxlWOxQrXiZAo8oMMU+W6PSbe3LfEjzxq1E4+sYPIA2b2mCiEs1YVhrT9SId6W
-awJUVT9F8mKZsK6C4mPf/K4cb9k4mrX3NSKpOaucumyZKdZBEnnFoDVNBhx2EM9w
-vmMlxL05qEiXwYbkSRo3ghs7TkX55PDxpjcjqX0QpBI7qNHpd657MHAVQzgh16+S
-wqO48VM/UccuaPZnMgyYTj3F/7r49gHf2NVeDPzBxQ4QWBtdEFxXTtcsXJh6yfrM
-Av60CO29+HxUaJoyBEz2DHXFQWThUyWjKUHOQVqaCS552iHdeL79M6NvDELdGjwf
-CMvJhUHg7/BHfW6nWyvxCgfPYKiva2rSUO+EL1xpk/C2eHjT8pZWGpiSjHvhlTIJ
-nngwBx64GbZlSWeJHSIwdhDkXwyy9vR/jwTGMQQoG/Ra9E9Fcj8=
-=VHQF
------END PGP SIGNATURE-----
-
---W5WqUoFLvi1M7tJE--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
