@@ -1,112 +1,104 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v8 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Tue, 12 Mar 2019 12:22:38 +0530
-Message-ID: <CAJ2_jOG50Bh0Zu64-htwy+VFy5Bce1Wj5dnMKVEE35C3MEbLPA@mail.gmail.com>
-References: <1551437599-29509-1-git-send-email-yash.shah@sifive.com>
- <1551437599-29509-3-git-send-email-yash.shah@sifive.com> <20190307152745.kaiv6q4ygf2apmuv@pengutronix.de>
- <CAJ2_jOFvr=sw7mWR53JbzMJa1jxwjhJSTibCsKYsxrht+PLPWw@mail.gmail.com>
- <20190308115726.smgooacsr37fmxwg@pengutronix.de> <CAJ2_jOFtg2_MAUYkTQM-=6KE2RN+FMxfEhLjZZfzM0k3A5RQiA@mail.gmail.com>
- <20190311132922.iowselp7qvmroiaa@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v5 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Tue, 12 Mar 2019 08:27:28 +0100
+Message-ID: <20190312072728.dy26cg4cateumuug@pengutronix.de>
+References: <1548762199-7065-1-git-send-email-yash.shah@sifive.com>
+ <1548762199-7065-3-git-send-email-yash.shah@sifive.com>
+ <20190207101657.rfzcq6xdv6ocvubg@pengutronix.de>
+ <20190213123703.GE647@ulmo>
+ <20190214155903.7h3b7v3nbhj57uy2@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190311132922.iowselp7qvmroiaa@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190214155903.7h3b7v3nbhj57uy2@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, palmer@sifive.com, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Mar 11, 2019 at 6:59 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> Hello,
->
-> On Mon, Mar 11, 2019 at 05:10:17PM +0530, Yash Shah wrote:
-> > On Fri, Mar 8, 2019 at 5:27 PM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > > On Fri, Mar 08, 2019 at 04:59:36PM +0530, Yash Shah wrote:
-> > > > On Thu, Mar 7, 2019 at 8:57 PM Uwe Kleine-K=C3=B6nig
-> > > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > > > +     if (state->period !=3D cur_state.period) {
-> > > > >
-> > > > > Did you test this with more than one consumer? For sure the follo=
-wing
-> > > > > should work:
-> > > > >
-> > > > >         pwm1 =3D pwm_get(.. the first ..);
-> > > > >         pwm_apply_state(pwm1, { .enabled =3D true, .period =3D 10=
-000000, .... });
-> > > > >
-> > > > >         pwm2 =3D pwm_get(.. the second ..);
-> > > > >         pwm_apply_state(pwm2, { .enabled =3D true, .period =3D 10=
-000000, .... });
-> > > > >
-> > > > > but for the second pwm_apply_state() run state->period is likely =
-not
-> > > > > exactly 10000000.
-> > > >
-> > > > Yes, I have tested multiple consumers using sysfs interface. It is =
-working.
-> > >
-> > > Can you provide details about your testing here? What is the parent c=
-lk
-> > > rate? Which settings did you test? Can you confirm my claim that the
-> > > above sequence would fail or point out my error in reasoning?
-> > >
-> >
-> > I have tested on HiFive Unleashed board using sysfs interface.
-> > Parent clk rate is around 512 Mhz.
-> > I have tested scenarios as you mentioned above with various period and
-> > duty_cycle values.
-> >
-> > After considering your below suggestion,
-> >  | To get the result independent of the prior configuration you better =
-use
-> >  | the real targeted period length as input instead of the last configu=
-red
-> >  | approximation
-> > I will introduce approx_period feild, which will be used as the
-> > targeted period length.
-> > Also, in pwm_sifive_get_state, I will make below change
-> > - state->period =3D pwm->real_period;
-> > + state->period =3D pwm->approx_period.
-> > So with this change in place, I believe the cur_state.period for the
-> > second pwm_apply_state() above (pwm2) will be exactly 10000000
->
-> I don't understand your intention completely. Just send a new patch
-> round, then I will gladly take another look.
+Hello,
 
-I was planning to go with above-mentioned change but then I realized
-that pwm state should always reflect the current hardware state, so I
-have dropped the above idea.
-Coming back to your concern on
+On Thu, Feb 14, 2019 at 04:59:03PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Wed, Feb 13, 2019 at 01:37:03PM +0100, Thierry Reding wrote:
+> > On Thu, Feb 07, 2019 at 11:16:57AM +0100, Uwe Kleine-K=F6nig wrote:
+> > > On Tue, Jan 29, 2019 at 05:13:19PM +0530, Yash Shah wrote:
+> > [...]
+> > > > diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+> > [...]
+> > > > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
+> > > > +
+> > > > +	writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 + dev->hwpwm * SIZE_P=
+WMCMP);
+> > > > +
+> > > > +	val &=3D ~(1 << PWM_SIFIVE_PWMCFG_DEGLITCH);
+> > > > +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
+> > > > +
+> > > > +	pwm_sifive_get_state(chip, dev, state);
+> > > =
 
- |     if (state->period !=3D cur_state.period) {
+> > > Thierry: This changes the pwm_state. Is this how this should be done?
+> > =
 
-It is not failing for the scenario you mentioned but failing for
-another way around.
+> > Yes, I think that's fine. The PWM state should always reflect the
+> > current hardware state. If the configuration that we program does not
+> > reflect the state that was requested, that should be reflected in the
+> > PWM state.
+> =
 
-         pwm1 =3D pwm_get(.. the first ..);
-         pwm_apply_state(pwm1, { .enabled =3D true, .period =3D 10000000, .=
-... });
+> I'm not sure you blessed what is really done here. If I do:
+> =
 
-         pwm2 =3D pwm_get(.. the second ..);
-         pwm_apply_state(pwm2, { .enabled =3D true, .period =3D 20000000, .=
-... });
+> 	state.duty_cycle =3D state.period;
+> 	pwm_apply_state(pwm, &state);
+> =
 
-The pwm2 should get an error for period mismatch but with v8 patch, it
-is not getting any error.
+> the call in question doesn't only result in pwm->state.duty_cycle <
+> pwm->state.period, but it also corrects my local state variable (i.e. I
+> have state.duty_cycle < state.period afterwards).
+> =
 
-I am sending a v9 patch which has the fix for this.
-With v9 changes, I have tested all scenarios and it is working fine.
+> Is this what you thought to be fine?
 
->
-> Best regards
-> Uwe
->
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
-|
+I thought a bit about this and I'm convinced that updating struct
+pwm_device::state is/might be fine, but changing the caller's struct pwm_st=
+ate
+that was passed to pwm_apply_state is not.
+
+Consider a consumer who does:
+
+	#define PERIOD 5000000
+	#define DUTY_LITTLE 10
+	...
+	struct pwm_state state =3D {
+		.period =3D PERIOD,
+		.duty_cycle =3D DUTY_LITTLE,
+		.polarity =3D PWM_POLARITY_NORMAL,
+		.enabled =3D true,
+	};
+
+	pwm_apply_state(mypwm, &state);
+	...
+	state.duty_cycle =3D PERIOD / 2;
+	pwm_apply_state(mypwm, &state);
+
+I think the second request should have state.period =3D 5000000 and not
+some other value (that might only have chosen by the respective driver
+because the first duty cycle was so short).
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
