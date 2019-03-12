@@ -1,60 +1,30 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH 36/42] drivers: gpio: uniphier: use devm_platform_ioremap_resource()
-Date: Tue, 12 Mar 2019 18:37:02 +0900
-Message-ID: <CAK7LNASPyZVpN2JVT8v6qzXUNfu-dLqcwwSc-eZL+yMyMEFXCg@mail.gmail.com>
-References: <1552330521-4276-1-git-send-email-info@metux.net> <1552330521-4276-36-git-send-email-info@metux.net>
+From: Andreas Schwab <schwab@suse.de>
+Subject: Re: [PATCH v9 0/2] PWM support for HiFive Unleashed
+Date: Tue, 12 Mar 2019 11:14:15 +0100
+Message-ID: <mvmimwotn60.fsf@suse.de>
+References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552330521-4276-36-git-send-email-info@metux.net>
+In-Reply-To: <1552378289-27245-1-git-send-email-yash.shah@sifive.com> (Yash
+        Shah's message of "Tue, 12 Mar 2019 13:41:27 +0530")
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, andrew@aj.id.au, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, hoan@os.amperecomputing.com, orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com, keguang.zhang@gmail.com, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Grygorii Strashko <grygorii.strashko@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Kevin Hilman <khilman@kernel.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Jun Nie <jun.nie@linaro.org>, Shawn Guo <shaw>
+To: Yash Shah <yash.shah@sifive.com>
+Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 12, 2019 at 3:57 AM Enrico Weigelt, metux IT consult
-<info@metux.net> wrote:
->
-> Use the new helper that wraps the calls to platform_get_resource()
-> and devm_ioremap_resource() together.
->
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
-> ---
+On Mär 12 2019, Yash Shah <yash.shah@sifive.com> wrote:
 
+> This patch series adds a PWM driver and DT documentation
+> for HiFive Unleashed board. The patches are mostly based on
+> Wesley's patch.
 
-Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+Heartbeat trigger still doesn't work for me.
 
-
->  drivers/gpio/gpio-uniphier.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-uniphier.c b/drivers/gpio/gpio-uniphier.c
-> index 0f662b2..93cdcc4 100644
-> --- a/drivers/gpio/gpio-uniphier.c
-> +++ b/drivers/gpio/gpio-uniphier.c
-> @@ -346,7 +346,6 @@ static int uniphier_gpio_probe(struct platform_device *pdev)
->         struct uniphier_gpio_priv *priv;
->         struct gpio_chip *chip;
->         struct irq_chip *irq_chip;
-> -       struct resource *regs;
->         unsigned int nregs;
->         u32 ngpios;
->         int ret;
-> @@ -370,8 +369,7 @@ static int uniphier_gpio_probe(struct platform_device *pdev)
->         if (!priv)
->                 return -ENOMEM;
->
-> -       regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -       priv->regs = devm_ioremap_resource(dev, regs);
-> +       priv->regs = devm_platform_ioremap_resource(pdev, 0);
->         if (IS_ERR(priv->regs))
->                 return PTR_ERR(priv->regs);
->
-> --
-> 1.9.1
->
-
+Andreas.
 
 -- 
-Best Regards
-Masahiro Yamada
+Andreas Schwab, SUSE Labs, schwab@suse.de
+GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
+"And now for something completely different."
