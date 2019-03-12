@@ -1,16 +1,11 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Tue, 12 Mar 2019 10:50:44 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] [RFC] Documentation: pwm: rework documentation for the
- framework
-Message-ID: <20190312095044.622vsj6i73kqy2d6@pengutronix.de>
-References: <20181120202945.24100-1-u.kleine-koenig@pengutronix.de>
- <20190105211337.4mdejaw7uuoakdzv@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] pwm: poke users of legacy drivers with a warning
+Date: Tue, 12 Mar 2019 10:42:49 +0100
+Message-Id: <20190312094249.27806-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20190105211337.4mdejaw7uuoakdzv@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -24,21 +19,53 @@ To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-Hello Thierry,
+As it is hard to convert a given driver from the legacy functions
+(.enable, .disable, .config) to the atomic stuff (.apply) without
+testing make users aware that there is something to do with a warning to
+eventually get rid of the legacy drivers.
 
-On Sat, Jan 05, 2019 at 10:13:37PM +0100, Uwe Kleine-K=F6nig wrote:
-> I'm still waiting on feedback on this mail. Given there are a few things
-> that are not clear to me how they are intended I cannot reply as precise
-> as I want to in some reviews.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/core.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-Further I want to discuss about rounding in the PWM framework to get
-some uniform behaviour from the hardware drivers.  But I procrastinate
-doing that when I cannot even get feedback from you about the easier
-questions that are raised by my documentation patch here.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index e547c3217fca..1a871cf8f7ee 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -236,16 +236,20 @@ void *pwm_get_chip_data(struct pwm_device *pwm)
+ }
+ EXPORT_SYMBOL_GPL(pwm_get_chip_data);
+ 
+-static bool pwm_ops_check(const struct pwm_ops *ops)
++static bool pwm_ops_check(const struct pwm_chip *chip)
+ {
+-	/* driver supports legacy, non-atomic operation */
+-	if (ops->config && ops->enable && ops->disable)
+-		return true;
++	const struct pwm_ops *ops = chip->ops;
+ 
+ 	/* driver supports atomic operation */
+ 	if (ops->apply)
+ 		return true;
+ 
++	/* driver supports legacy, non-atomic operation */
++	if (ops->config && ops->enable && ops->disable) {
++		dev_warn(chip->dev, "registering PWM driver with legacy API, driver needs updating");
++		return true;
++	}
++
+ 	return false;
+ }
+ 
+@@ -270,7 +274,7 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+ 	if (!chip || !chip->dev || !chip->ops || !chip->npwm)
+ 		return -EINVAL;
+ 
+-	if (!pwm_ops_check(chip->ops))
++	if (!pwm_ops_check(chip))
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&pwm_lock);
+-- 
+2.20.1
