@@ -1,48 +1,233 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH V2 5/5] ARM: dts: imx7ulp-evk: Add backlight support
-Date: Wed, 13 Mar 2019 07:31:36 +0000
-Message-ID: <1552461970-20813-6-git-send-email-Anson.Huang@nxp.com>
-References: <1552461970-20813-1-git-send-email-Anson.Huang@nxp.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 2/5] pwm: Add i.MX TPM PWM driver support
+Date: Wed, 13 Mar 2019 09:32:26 +0100
+Message-ID: <20190313083226.qgnldzd6pc3arooc@pengutronix.de>
+References: <1552288273-31028-1-git-send-email-Anson.Huang@nxp.com>
+ <1552288273-31028-3-git-send-email-Anson.Huang@nxp.com>
+ <20190311092644.a2x53zgxv2iseqao@pengutronix.de>
+ <AM6PR0402MB391160F820907ABE8ECA4C26F54A0@AM6PR0402MB3911.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552461970-20813-1-git-send-email-Anson.Huang@nxp.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <AM6PR0402MB391160F820907ABE8ECA4C26F54A0@AM6PR0402MB3911.eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>
+To: Anson Huang <anson.huang@nxp.com>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>l
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds i.MX7ULP EVK board MIPI-DSI backlight
-support.
+Hello,
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
-No changes.
----
- arch/arm/boot/dts/imx7ulp-evk.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
+On Wed, Mar 13, 2019 at 07:28:24AM +0000, Anson Huang wrote:
+> > On Mon, Mar 11, 2019 at 07:16:16AM +0000, Anson Huang wrote:
+> > > +
+> > >  config PWM_JZ4740
+> > >  	tristate "Ingenic JZ47xx PWM support"
+> > >  	depends on MACH_INGENIC
+> > > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile index
+> > > 9c676a0..64e036c 100644
+> > > --- a/drivers/pwm/Makefile
+> > > +++ b/drivers/pwm/Makefile
+> > > @@ -18,6 +18,7 @@ obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
+> > >  obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
+> > >  obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+> > >  obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+> > > +obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
+> > >  obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+> > >  obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+> > >  obj-$(CONFIG_PWM_LPC18XX_SCT)	+= pwm-lpc18xx-sct.o
+> > > diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+> > new
+> > > file mode 100644 index 0000000..a53256a
+> > > --- /dev/null
+> > > +++ b/drivers/pwm/pwm-imx-tpm.c
+> > > @@ -0,0 +1,277 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * Copyright 2018-2019 NXP.
+> > > + */
+> > 
+> > Please add a link to the reference manual to the header.
+> 
+> I checked the NXP website, looks like i.MX7ULP reference manual is NOT
+> published yet, should be published very soon.
 
-diff --git a/arch/arm/boot/dts/imx7ulp-evk.dts b/arch/arm/boot/dts/imx7ulp-=
-evk.dts
-index 3f5ea18..f90f2f3 100644
---- a/arch/arm/boot/dts/imx7ulp-evk.dts
-+++ b/arch/arm/boot/dts/imx7ulp-evk.dts
-@@ -22,6 +22,14 @@
- 		reg =3D <0x60000000 0x40000000>;
- 	};
-=20
-+	backlight {
-+		compatible =3D "pwm-backlight";
-+		pwms =3D <&pwm0 1 50000>;
-+		brightness-levels =3D <0 20 25 30 35 40 100>;
-+		default-brightness-level =3D <6>;
-+		status =3D "okay";
-+	};
-+
- 	reg_vsd_3v3: regulator-vsd-3v3 {
- 		compatible =3D "regulator-fixed";
- 		regulator-name =3D "VSD_3V3";
---=20
-2.7.4
+ok.
+
+> > > +#include <linux/bitops.h>
+> > > +#include <linux/clk.h>
+> > > +#include <linux/err.h>
+> > > +#include <linux/io.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/of.h>
+> > > +#include <linux/of_address.h>
+> > > +#include <linux/platform_device.h>
+> > > +#include <linux/pwm.h>
+> > > +#include <linux/slab.h>
+> > > +
+> > > +#define TPM_GLOBAL	0x8
+> > > +#define TPM_SC		0x10
+> > > +#define TPM_CNT		0x14
+> > > +#define TPM_MOD		0x18
+> > > +#define TPM_C0SC	0x20
+> > > +#define TPM_C0V		0x24
+> > > +
+> > > +#define SC_CMOD		3
+> > 
+> > This seems to be an offset, why not defining it as BIT(3) instead?
+> 
+> SC_CMOD field as 2 bits, I will use below in V2 patch set:
+> 
+> #define TPM_SC_CMOD_SHIFT       3
+> #define TPM_SC_CMOD_MASK        (0x3 << TPM_SC_CMOD_SHIFT)
+
+I suggest
+
+	#define PWM_IMX_TPM_SC_CMOD	GENMASK(1, 0)
+
+instead. See include/linux/bitfield.h for details.
+Also note that "TPM" isn't a great prefix given that we have:
+
+	$ git ls-files | grep -c tpm
+	82
+
+. Even though PWM_IMX_TPM is longer I think it's worth the extra bytes.
+Then if you use pwm_imx_tpm als prefix for your function it's obvious
+that they all belong together. For extra credits also adapt the driver
+name to match.
+
+> > > +		ret = clk_prepare_enable(tpm->clk);
+> > > +		if (ret) {
+> > > +			dev_err(chip->dev,
+> > > +				"failed to prepare or enable clk %d\n", ret);
+> > > +			return ret;
+> > > +		}
+> > > +	}
+> > > +
+> > > +	val = readl(tpm->base + TPM_SC);
+> > > +	val &= ~TPM_SC_PS_MASK;
+> > > +	val |= div;
+> > > +	writel(val, tpm->base + TPM_SC);
+> > 
+> > If the unit ran with (say) div == 5 and a high duty cycle before and for the
+> > new configuration you need div == 6 with a low duty cycle, can it happen
+> > here that the output uses the new div value already with the high duty cycle?
+> > If so, this is bad.
+> 
+> As the TPM counter is shared between 2 channels, so I will make this prescale setting
+> to be initialized ONLY once, ONLY first channel will config it, this makes things simple
+> and the other channel should use same prescale value as first channel and ONLY adjust
+> its own duty cycle and polarity etc..
+
+So the two channels have to share the period length? If so please note
+this in the header of the driver like it was done in
+https://www.spinics.net/lists/linux-pwm/msg09149.html (search for
+"Limitations"). You also need some logic to assert that setting the 2nd
+channel doesn't modify the first (if the first is in use).
+
+> > > +	period_cycles = c;
+> > > +	c *= duty_ns;
+> > > +	do_div(c, period_ns);
+> > > +	duty_cycles = c;
+> > > +
+> > > +	writel(period_cycles & TPM_MOD_MOD_MASK, tpm->base +
+> > TPM_MOD);
+> > 
+> > Don't you need to add pwm->hwpwm * TPM_CHn_ADDR_OFFSET to the
+> > register offset here? And if not, I assume this affects the other PWMs
+> > provided by this hardware unit which is bad.
+> 
+> The MOD register is shared between different channels, ONLY 1 register there.
+> This register will be same as SC, ONLY configured ONCE by first channel.
+> 
+> > 
+> > > +	writel(duty_cycles & TPM_MOD_MOD_MASK, tpm->base +
+> > > +	       TPM_C0V + pwm->hwpwm * TPM_CHn_ADDR_OFFSET);
+> > > +
+> > > +	/* if pwm is not enabled, disable clk after setting */
+> > > +	if (!pwm_is_enabled(pwm))
+> > > +		clk_disable_unprepare(tpm->clk);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int tpm_pwm_enable(struct pwm_chip *chip, struct pwm_device
+> > > +*pwm) {
+> > > +	struct tpm_pwm_chip *tpm = to_tpm_pwm_chip(chip);
+> > > +	int ret;
+> > > +	u32 val;
+> > > +
+> > > +	ret = clk_prepare_enable(tpm->clk);
+> > > +	if (ret) {
+> > > +		dev_err(chip->dev,
+> > > +			"failed to prepare or enable clk %d\n", ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	/*
+> > > +	 * To enable a tpm channel, CPWMS = 0, MSnB:MSnA = 0x0,
+> > > +	 * for TPM normal polarity ELSnB:ELSnA = 2b'10,
+> > > +	 * inverse ELSnB:ELSnA = 2b'01
+> > > +	 */
+> > > +	val = readl(tpm->base + TPM_C0SC + pwm->hwpwm * TPM_CHn_ADDR_OFFSET);
+
+You could make it obvious which channels are shared and which have one
+instance per pwm by doing:
+
+	#define PWM_IMX_TPM_C0SC(hwid)	(0x20 + hwid * 4)
+
+> > > +	val |= pwm->state.polarity ? ELSnA : ELSnB;
+> > > +
+> > > +	writel(val, tpm->base + TPM_C0SC + pwm->hwpwm *
+> > > +TPM_CHn_ADDR_OFFSET);
+> > > +
+> > > +	/* start the counter */
+> > > +	val = readl(tpm->base + TPM_SC);
+> > > +	val |= 0x1 << SC_CMOD;
+> > > +	writel(val, tpm->base + TPM_SC);
+> > 
+> > If tpm_pwm_enable is called for the first PWM provided by the hardware,
+> > how does this writel affect the second one?
+> 
+> I will make the TPM counter enabled for every channel enabled, if ONLY disabled
+> when both channels are disabled.
+
+So you have to make sure that:
+
+ - if you disable one channel while the other is still running, just set
+   the duty cycle to zero to not interfere with the other
+ - if you enable one channel while the other is still off/unused, make
+   sure that other channel doesn't start to wiggle.
+
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int tpm_pwm_remove(struct platform_device *pdev) {
+> > > +	struct tpm_pwm_chip *tpm = platform_get_drvdata(pdev);
+> > > +
+> > > +	return pwmchip_remove(&tpm->chip);
+> > > +}
+> > > +
+> > > +static int __maybe_unused tpm_pwm_suspend(struct device *dev) {
+> > > +	struct tpm_pwm_chip *tpm = dev_get_drvdata(dev);
+> > > +
+> > > +	clk_disable_unprepare(tpm->clk);
+> > 
+> > If the PWM is in use, it shouldn't stop on suspend.
+> 
+> I think PWM should be disabled when suspend, if a device is suspended, but PWM
+> is still enabled, we will see backlight is enabled. This is weird. Unless the backlight
+> driver will guarantee that pwm is disabled before suspend?
+
+No, on suspend it's the responsibility of the backlight driver to
+disable the pwm. Otherwise the PWM changes its behaviour without the
+consumer's consent which depending on the purpose of the PWM is bad.
+ 
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
