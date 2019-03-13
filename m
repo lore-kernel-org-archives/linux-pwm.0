@@ -1,154 +1,121 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ua1-f67.google.com ([209.85.222.67]:39534 "EHLO
-        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbfCMJEp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Mar 2019 05:04:45 -0400
-MIME-Version: 1.0
+Received: from mail-eopbgr1310124.outbound.protection.outlook.com ([40.107.131.124]:38730
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727069AbfCMJm0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 13 Mar 2019 05:42:26 -0400
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Wed, 13 Mar 2019 09:40:29 +0000
+Message-ID: <TY2PR01MB4812811163E14910A12799AED84A0@TY2PR01MB4812.jpnprd01.prod.outlook.com>
 References: <1552465792-25340-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1552465792-25340-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 13 Mar 2019 10:04:32 +0100
-Message-ID: <CAMuHMdUZ9eSifsaV9ohpcy-a8cknbGRrBriFWF+Rcv6gmCOdcw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CAMuHMdUZ9eSifsaV9ohpcy-a8cknbGRrBriFWF+Rcv6gmCOdcw@mail.gmail.com>
+In-Reply-To: <CAMuHMdUZ9eSifsaV9ohpcy-a8cknbGRrBriFWF+Rcv6gmCOdcw@mail.gmail.com>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v2] pwm: Fix deadlock warning when removing PWM device
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Phong Hoang <phong.hoang.wz@renesas.com>
+Subject: RE: [PATCH v2] pwm: Fix deadlock warning when removing PWM device
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Phong Hoang <phong.hoang.wz@renesas.com>
 
-Hi Shimoda-san,
-
-On Wed, Mar 13, 2019 at 9:30 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> From: Phong Hoang <phong.hoang.wz@renesas.com>
->
-> This patch fixes deadlock warning if removing PWM device
-> when CONFIG_PROVE_LOCKING is enabled.
->
-> This issue can be reproceduced by the following steps on
-> the R-Car H3 Salvator-X board if the backlight is disabled:
->
->  # cd /sys/class/pwm/pwmchip0
->  # echo 0 > export
->  # ls
->  device  export  npwm  power  pwm0  subsystem  uevent  unexport
->  # cd device/driver
->  # ls
->  bind  e6e31000.pwm  uevent  unbind
->  # echo e6e31000.pwm > unbind
-
-[...]
-
-> The sysfs unexport in pwmchip_remove() is completely asymmetric
-> to what we do in pwmchip_add_with_polarity() and commit 0733424c9ba9
-> ("pwm: Unexport children before chip removal") is a strong indication
-> that this was wrong to begin with. We should just move
-> pwmchip_sysfs_unexport() where it belongs, which is right after
-> pwmchip_sysfs_unexport_children(). In that case, we do not need
-> separate functions anymore either.
->
-> We also really want to remove sysfs irrespective of whether or not
-> the chip will be removed as a result of pwmchip_remove(). We can only
-> assume that the driver will be gone after that, so we shouldn't leave
-> any dangling sysfs files around.
->
-> This warning disappears if we move pwmchip_sysfs_unexport() to
-> the top of pwmchip_remove(), right below pwmchip_sysfs_unexport_children().
-
-Drop the "right below..." part, as pwmchip_sysfs_unexport_children() is gone?
-
-> That way it is also outside of the pwm_lock section, which indeed
-> doesn't seem to be needed.
->
-> Moving the pwmchip_sysfs_export() call outside of that section also
-> seems fine and it'd be perfectly symmetric with pwmchip_remove() again.
->
-> So, this patch fixes them.
->
-> Signed-off-by: Phong Hoang <phong.hoang.wz@renesas.com>
-> [shimoda: revise the commit log and code]
-> Fixes: 76abbdde2d95 ("pwm: Add sysfs interface")
-> Fixes: 0733424c9ba9 ("pwm: Unexport children before chip removal")
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Tested-by: Hoan Nguyen An <na-hoan@jinso.co.jp>
-> ---
->  Changes from v1 (https://patchwork.kernel.org/patch/10848567/):
->  - Change the subject from "Avoid" to "Fix".
->  - Merge pwmchip_sysfs_unexport_children()'s code into
->    pwmchip_sysfs_unexport() and move pwmchip_sysfs_unexport() to
->    the top of pwmchip_remove().
->  - Revise the commit log that is reffered from Therry's comments [1]
->    because it seems very clear to me.
->  - Add Fixes tag about the commit 0733424c9ba9.
->  - I got Geert's Reviewed-by on v1 patch, but I'm not sure
->    I can add the Reviewed-by because v2 patch changes a bit.
->    So, I didn't add the Reviewed-by tag.
-
-Thanks for the update!
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-
-> --- a/drivers/pwm/sysfs.c
-> +++ b/drivers/pwm/sysfs.c
-> @@ -411,36 +411,24 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
->  void pwmchip_sysfs_unexport(struct pwm_chip *chip)
->  {
->         struct device *parent;
-> +       unsigned int i;
->
->         parent = class_find_device(&pwm_class, NULL, chip,
->                                    pwmchip_sysfs_match);
->         if (parent) {
-
-Perhaps "if (!parent) return", like pwmchip_sysfs_unexport_children()
-used to do?
-
-That way the reviewer has less context to store, indentation is
-decreased, and the resulting diff may be smaller.
-
-> +               for (i = 0; i < chip->npwm; i++) {
-> +                       struct pwm_device *pwm = &chip->pwms[i];
-> +
-> +                       if (test_bit(PWMF_EXPORTED, &pwm->flags))
-> +                               pwm_unexport_child(parent, pwm);
-> +               }
-> +
->                 /* for class_find_device() */
->                 put_device(parent);
->                 device_unregister(parent);
->         }
->  }
->
-> -void pwmchip_sysfs_unexport_children(struct pwm_chip *chip)
-> -{
-> -       struct device *parent;
-> -       unsigned int i;
-> -
-> -       parent = class_find_device(&pwm_class, NULL, chip,
-> -                                  pwmchip_sysfs_match);
-> -       if (!parent)
-> -               return;
-> -
-> -       for (i = 0; i < chip->npwm; i++) {
-> -               struct pwm_device *pwm = &chip->pwms[i];
-> -
-> -               if (test_bit(PWMF_EXPORTED, &pwm->flags))
-> -                       pwm_unexport_child(parent, pwm);
-> -       }
-> -
-> -       put_device(parent);
-> -}
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogV2VkbmVz
+ZGF5LCBNYXJjaCAxMywgMjAxOSA2OjA1IFBNDQo+IA0KPiBIaSBTaGltb2RhLXNhbiwNCj4gDQo+
+IE9uIFdlZCwgTWFyIDEzLCAyMDE5IGF0IDk6MzAgQU0gWW9zaGloaXJvIFNoaW1vZGENCj4gPHlv
+c2hpaGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPiB3cm90ZToNCj4gPiBGcm9tOiBQaG9uZyBI
+b2FuZyA8cGhvbmcuaG9hbmcud3pAcmVuZXNhcy5jb20+DQo+ID4NCj4gPiBUaGlzIHBhdGNoIGZp
+eGVzIGRlYWRsb2NrIHdhcm5pbmcgaWYgcmVtb3ZpbmcgUFdNIGRldmljZQ0KPiA+IHdoZW4gQ09O
+RklHX1BST1ZFX0xPQ0tJTkcgaXMgZW5hYmxlZC4NCj4gPg0KPiA+IFRoaXMgaXNzdWUgY2FuIGJl
+IHJlcHJvY2VkdWNlZCBieSB0aGUgZm9sbG93aW5nIHN0ZXBzIG9uDQo+ID4gdGhlIFItQ2FyIEgz
+IFNhbHZhdG9yLVggYm9hcmQgaWYgdGhlIGJhY2tsaWdodCBpcyBkaXNhYmxlZDoNCj4gPg0KPiA+
+ICAjIGNkIC9zeXMvY2xhc3MvcHdtL3B3bWNoaXAwDQo+ID4gICMgZWNobyAwID4gZXhwb3J0DQo+
+ID4gICMgbHMNCj4gPiAgZGV2aWNlICBleHBvcnQgIG5wd20gIHBvd2VyICBwd20wICBzdWJzeXN0
+ZW0gIHVldmVudCAgdW5leHBvcnQNCj4gPiAgIyBjZCBkZXZpY2UvZHJpdmVyDQo+ID4gICMgbHMN
+Cj4gPiAgYmluZCAgZTZlMzEwMDAucHdtICB1ZXZlbnQgIHVuYmluZA0KPiA+ICAjIGVjaG8gZTZl
+MzEwMDAucHdtID4gdW5iaW5kDQo+IA0KPiBbLi4uXQ0KPiANCj4gPiBUaGUgc3lzZnMgdW5leHBv
+cnQgaW4gcHdtY2hpcF9yZW1vdmUoKSBpcyBjb21wbGV0ZWx5IGFzeW1tZXRyaWMNCj4gPiB0byB3
+aGF0IHdlIGRvIGluIHB3bWNoaXBfYWRkX3dpdGhfcG9sYXJpdHkoKSBhbmQgY29tbWl0IDA3MzM0
+MjRjOWJhOQ0KPiA+ICgicHdtOiBVbmV4cG9ydCBjaGlsZHJlbiBiZWZvcmUgY2hpcCByZW1vdmFs
+IikgaXMgYSBzdHJvbmcgaW5kaWNhdGlvbg0KPiA+IHRoYXQgdGhpcyB3YXMgd3JvbmcgdG8gYmVn
+aW4gd2l0aC4gV2Ugc2hvdWxkIGp1c3QgbW92ZQ0KPiA+IHB3bWNoaXBfc3lzZnNfdW5leHBvcnQo
+KSB3aGVyZSBpdCBiZWxvbmdzLCB3aGljaCBpcyByaWdodCBhZnRlcg0KPiA+IHB3bWNoaXBfc3lz
+ZnNfdW5leHBvcnRfY2hpbGRyZW4oKS4gSW4gdGhhdCBjYXNlLCB3ZSBkbyBub3QgbmVlZA0KPiA+
+IHNlcGFyYXRlIGZ1bmN0aW9ucyBhbnltb3JlIGVpdGhlci4NCj4gPg0KPiA+IFdlIGFsc28gcmVh
+bGx5IHdhbnQgdG8gcmVtb3ZlIHN5c2ZzIGlycmVzcGVjdGl2ZSBvZiB3aGV0aGVyIG9yIG5vdA0K
+PiA+IHRoZSBjaGlwIHdpbGwgYmUgcmVtb3ZlZCBhcyBhIHJlc3VsdCBvZiBwd21jaGlwX3JlbW92
+ZSgpLiBXZSBjYW4gb25seQ0KPiA+IGFzc3VtZSB0aGF0IHRoZSBkcml2ZXIgd2lsbCBiZSBnb25l
+IGFmdGVyIHRoYXQsIHNvIHdlIHNob3VsZG4ndCBsZWF2ZQ0KPiA+IGFueSBkYW5nbGluZyBzeXNm
+cyBmaWxlcyBhcm91bmQuDQo+ID4NCj4gPiBUaGlzIHdhcm5pbmcgZGlzYXBwZWFycyBpZiB3ZSBt
+b3ZlIHB3bWNoaXBfc3lzZnNfdW5leHBvcnQoKSB0bw0KPiA+IHRoZSB0b3Agb2YgcHdtY2hpcF9y
+ZW1vdmUoKSwgcmlnaHQgYmVsb3cgcHdtY2hpcF9zeXNmc191bmV4cG9ydF9jaGlsZHJlbigpLg0K
+PiANCj4gRHJvcCB0aGUgInJpZ2h0IGJlbG93Li4uIiBwYXJ0LCBhcyBwd21jaGlwX3N5c2ZzX3Vu
+ZXhwb3J0X2NoaWxkcmVuKCkgaXMgZ29uZT8NCg0KSSBnb3QgaXQuIEknbGwgZml4IHYzIHBhdGNo
+LiAoTWF5YmUgSSdsbCBzdWJtaXQgaXQgdG9tb3Jyb3cgKEphcGFuIHRpbWUgem9uZSkuKQ0KDQo+
+ID4gVGhhdCB3YXkgaXQgaXMgYWxzbyBvdXRzaWRlIG9mIHRoZSBwd21fbG9jayBzZWN0aW9uLCB3
+aGljaCBpbmRlZWQNCj4gPiBkb2Vzbid0IHNlZW0gdG8gYmUgbmVlZGVkLg0KPiA+DQo+ID4gTW92
+aW5nIHRoZSBwd21jaGlwX3N5c2ZzX2V4cG9ydCgpIGNhbGwgb3V0c2lkZSBvZiB0aGF0IHNlY3Rp
+b24gYWxzbw0KPiA+IHNlZW1zIGZpbmUgYW5kIGl0J2QgYmUgcGVyZmVjdGx5IHN5bW1ldHJpYyB3
+aXRoIHB3bWNoaXBfcmVtb3ZlKCkgYWdhaW4uDQo+ID4NCj4gPiBTbywgdGhpcyBwYXRjaCBmaXhl
+cyB0aGVtLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogUGhvbmcgSG9hbmcgPHBob25nLmhvYW5n
+Lnd6QHJlbmVzYXMuY29tPg0KPiA+IFtzaGltb2RhOiByZXZpc2UgdGhlIGNvbW1pdCBsb2cgYW5k
+IGNvZGVdDQo+ID4gRml4ZXM6IDc2YWJiZGRlMmQ5NSAoInB3bTogQWRkIHN5c2ZzIGludGVyZmFj
+ZSIpDQo+ID4gRml4ZXM6IDA3MzM0MjRjOWJhOSAoInB3bTogVW5leHBvcnQgY2hpbGRyZW4gYmVm
+b3JlIGNoaXAgcmVtb3ZhbCIpDQo+ID4gU2lnbmVkLW9mZi1ieTogWW9zaGloaXJvIFNoaW1vZGEg
+PHlvc2hpaGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPg0KPiA+IFRlc3RlZC1ieTogSG9hbiBO
+Z3V5ZW4gQW4gPG5hLWhvYW5Aamluc28uY28uanA+DQo+ID4gLS0tDQo+ID4gIENoYW5nZXMgZnJv
+bSB2MSAoaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wYXRjaC8xMDg0ODU2Ny8pOg0KPiA+
+ICAtIENoYW5nZSB0aGUgc3ViamVjdCBmcm9tICJBdm9pZCIgdG8gIkZpeCIuDQo+ID4gIC0gTWVy
+Z2UgcHdtY2hpcF9zeXNmc191bmV4cG9ydF9jaGlsZHJlbigpJ3MgY29kZSBpbnRvDQo+ID4gICAg
+cHdtY2hpcF9zeXNmc191bmV4cG9ydCgpIGFuZCBtb3ZlIHB3bWNoaXBfc3lzZnNfdW5leHBvcnQo
+KSB0bw0KPiA+ICAgIHRoZSB0b3Agb2YgcHdtY2hpcF9yZW1vdmUoKS4NCj4gPiAgLSBSZXZpc2Ug
+dGhlIGNvbW1pdCBsb2cgdGhhdCBpcyByZWZmZXJlZCBmcm9tIFRoZXJyeSdzIGNvbW1lbnRzIFsx
+XQ0KPiA+ICAgIGJlY2F1c2UgaXQgc2VlbXMgdmVyeSBjbGVhciB0byBtZS4NCj4gPiAgLSBBZGQg
+Rml4ZXMgdGFnIGFib3V0IHRoZSBjb21taXQgMDczMzQyNGM5YmE5Lg0KPiA+ICAtIEkgZ290IEdl
+ZXJ0J3MgUmV2aWV3ZWQtYnkgb24gdjEgcGF0Y2gsIGJ1dCBJJ20gbm90IHN1cmUNCj4gPiAgICBJ
+IGNhbiBhZGQgdGhlIFJldmlld2VkLWJ5IGJlY2F1c2UgdjIgcGF0Y2ggY2hhbmdlcyBhIGJpdC4N
+Cj4gPiAgICBTbywgSSBkaWRuJ3QgYWRkIHRoZSBSZXZpZXdlZC1ieSB0YWcuDQo+IA0KPiBUaGFu
+a3MgZm9yIHRoZSB1cGRhdGUhDQo+IA0KPiBSZXZpZXdlZC1ieTogR2VlcnQgVXl0dGVyaG9ldmVu
+IDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4NCg0KVGhhbmsgeW91IGZvciByZXZpZXchDQoNCj4g
+PiAtLS0gYS9kcml2ZXJzL3B3bS9jb3JlLmMNCj4gPiArKysgYi9kcml2ZXJzL3B3bS9jb3JlLmMN
+Cj4gDQo+ID4gLS0tIGEvZHJpdmVycy9wd20vc3lzZnMuYw0KPiA+ICsrKyBiL2RyaXZlcnMvcHdt
+L3N5c2ZzLmMNCj4gPiBAQCAtNDExLDM2ICs0MTEsMjQgQEAgdm9pZCBwd21jaGlwX3N5c2ZzX2V4
+cG9ydChzdHJ1Y3QgcHdtX2NoaXAgKmNoaXApDQo+ID4gIHZvaWQgcHdtY2hpcF9zeXNmc191bmV4
+cG9ydChzdHJ1Y3QgcHdtX2NoaXAgKmNoaXApDQo+ID4gIHsNCj4gPiAgICAgICAgIHN0cnVjdCBk
+ZXZpY2UgKnBhcmVudDsNCj4gPiArICAgICAgIHVuc2lnbmVkIGludCBpOw0KPiA+DQo+ID4gICAg
+ICAgICBwYXJlbnQgPSBjbGFzc19maW5kX2RldmljZSgmcHdtX2NsYXNzLCBOVUxMLCBjaGlwLA0K
+PiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHdtY2hpcF9zeXNmc19tYXRj
+aCk7DQo+ID4gICAgICAgICBpZiAocGFyZW50KSB7DQo+IA0KPiBQZXJoYXBzICJpZiAoIXBhcmVu
+dCkgcmV0dXJuIiwgbGlrZSBwd21jaGlwX3N5c2ZzX3VuZXhwb3J0X2NoaWxkcmVuKCkNCj4gdXNl
+ZCB0byBkbz8NCj4gDQo+IFRoYXQgd2F5IHRoZSByZXZpZXdlciBoYXMgbGVzcyBjb250ZXh0IHRv
+IHN0b3JlLCBpbmRlbnRhdGlvbiBpcw0KPiBkZWNyZWFzZWQsIGFuZCB0aGUgcmVzdWx0aW5nIGRp
+ZmYgbWF5IGJlIHNtYWxsZXIuDQoNCkkgd2FzIHRoaW5raW5nIHN1Y2ggYSB3YXkuIEFzIHlvdSBz
+YWlkLCB0aGUgcmVzdWx0aW5nIGRpZmYgaXMgc21hbGxlci4NCg0KPCB2MiA+DQogZHJpdmVycy9w
+d20vY29yZS5jICB8IDEwICsrKysrLS0tLS0NCiBkcml2ZXJzL3B3bS9zeXNmcy5jIHwgMjggKysr
+KysrKystLS0tLS0tLS0tLS0tLS0tLS0tLQ0KIGluY2x1ZGUvbGludXgvcHdtLmggfCAgNSAtLS0t
+LQ0KIDMgZmlsZXMgY2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKSwgMzAgZGVsZXRpb25zKC0pDQoN
+CjwgaWYga2VlcGluZyAiaWYgKCFwYXJlbnQpIiA+DQogZHJpdmVycy9wd20vY29yZS5jICB8IDEw
+ICsrKysrLS0tLS0NCiBkcml2ZXJzL3B3bS9zeXNmcy5jIHwgMTQgKy0tLS0tLS0tLS0tLS0NCiBp
+bmNsdWRlL2xpbnV4L3B3bS5oIHwgIDUgLS0tLS0NCiAzIGZpbGVzIGNoYW5nZWQsIDYgaW5zZXJ0
+aW9ucygrKSwgMjMgZGVsZXRpb25zKC0pDQoNCkhvd2V2ZXIsIGlmIHdlIGRvICJnaXQgYW5ub3Rh
+dGUgZHJpdmVycy9wd20vc3lzZnMuYyIgb24gImtlZXBpbmcgaWYgKCFwYXJlbnQpIiBjb2RlLA0K
+dGhlIGNvbW1pdCAwNzMzNDI0YzliYTkgcmVtYWlucyBvbiB0aGUgc3lzZnMuYy4gVGhhdCdzIHdo
+eSBJIGRlY2lkZWQgdGhpcyB2MiBjb2RlLg0KVGhpZXJyeSwgd2hpY2ggY29kZSBkbyB5b3UgcHJl
+ZmVyPyBKRllJLCBJIGFsc28gY29waWVkIGFuZCBwYXN0ZSB0aGUga2VlcGluZw0KaWYgKCFwYXJl
+bnQpIHBhdGNoIGFzIHRoZSBmb2xsb3dpbmcuDQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGlybyBT
+aGltb2RhDQotLS0NCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9zeXNmcy5jIGIvZHJpdmVycy9w
+d20vc3lzZnMuYw0KaW5kZXggY2ViMjMzZC4uMTNkOWJkNSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMv
+cHdtL3N5c2ZzLmMNCisrKyBiL2RyaXZlcnMvcHdtL3N5c2ZzLmMNCkBAIC00MTEsMTkgKzQxMSw2
+IEBAIHZvaWQgcHdtY2hpcF9zeXNmc19leHBvcnQoc3RydWN0IHB3bV9jaGlwICpjaGlwKQ0KIHZv
+aWQgcHdtY2hpcF9zeXNmc191bmV4cG9ydChzdHJ1Y3QgcHdtX2NoaXAgKmNoaXApDQogew0KIAlz
+dHJ1Y3QgZGV2aWNlICpwYXJlbnQ7DQotDQotCXBhcmVudCA9IGNsYXNzX2ZpbmRfZGV2aWNlKCZw
+d21fY2xhc3MsIE5VTEwsIGNoaXAsDQotCQkJCSAgIHB3bWNoaXBfc3lzZnNfbWF0Y2gpOw0KLQlp
+ZiAocGFyZW50KSB7DQotCQkvKiBmb3IgY2xhc3NfZmluZF9kZXZpY2UoKSAqLw0KLQkJcHV0X2Rl
+dmljZShwYXJlbnQpOw0KLQkJZGV2aWNlX3VucmVnaXN0ZXIocGFyZW50KTsNCi0JfQ0KLX0NCi0N
+Ci12b2lkIHB3bWNoaXBfc3lzZnNfdW5leHBvcnRfY2hpbGRyZW4oc3RydWN0IHB3bV9jaGlwICpj
+aGlwKQ0KLXsNCi0Jc3RydWN0IGRldmljZSAqcGFyZW50Ow0KIAl1bnNpZ25lZCBpbnQgaTsNCiAN
+CiAJcGFyZW50ID0gY2xhc3NfZmluZF9kZXZpY2UoJnB3bV9jbGFzcywgTlVMTCwgY2hpcCwNCkBA
+IC00MzksNiArNDI2LDcgQEAgdm9pZCBwd21jaGlwX3N5c2ZzX3VuZXhwb3J0X2NoaWxkcmVuKHN0
+cnVjdCBwd21fY2hpcCAqY2hpcCkNCiAJfQ0KIA0KIAlwdXRfZGV2aWNlKHBhcmVudCk7DQorCWRl
+dmljZV91bnJlZ2lzdGVyKHBhcmVudCk7DQogfQ0KIA0KIHN0YXRpYyBpbnQgX19pbml0IHB3bV9z
+eXNmc19pbml0KHZvaWQpDQoNCg==
