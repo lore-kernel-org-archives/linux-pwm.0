@@ -1,7 +1,7 @@
 From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH V2 4/5] ARM: dts: imx7ulp: Add pwm0 support
-Date: Wed, 13 Mar 2019 07:31:30 +0000
-Message-ID: <1552461970-20813-5-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH V2 5/5] ARM: dts: imx7ulp-evk: Add backlight support
+Date: Wed, 13 Mar 2019 07:31:36 +0000
+Message-ID: <1552461970-20813-6-git-send-email-Anson.Huang@nxp.com>
 References: <1552461970-20813-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -14,71 +14,35 @@ To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" 
 Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add i.MX7ULP EVK board PWM0 support.
+This patch adds i.MX7ULP EVK board MIPI-DSI backlight
+support.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
-Changes since V1:
-	- update the pad config to pull down to make sure when TPM counter is disa=
-bled, PWM
-	  output will be Low.
+No changes.
 ---
- arch/arm/boot/dts/imx7ulp-evk.dts | 12 ++++++++++++
- arch/arm/boot/dts/imx7ulp.dtsi    | 10 ++++++++++
- 2 files changed, 22 insertions(+)
+ arch/arm/boot/dts/imx7ulp-evk.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm/boot/dts/imx7ulp-evk.dts b/arch/arm/boot/dts/imx7ulp-=
 evk.dts
-index a09026a..3f5ea18 100644
+index 3f5ea18..f90f2f3 100644
 --- a/arch/arm/boot/dts/imx7ulp-evk.dts
 +++ b/arch/arm/boot/dts/imx7ulp-evk.dts
-@@ -40,6 +40,12 @@
- 	status =3D "okay";
- };
-=20
-+&pwm0 {
-+	pinctrl-names =3D "default";
-+	pinctrl-0 =3D <&pinctrl_pwm0>;
-+	status =3D "okay";
-+};
-+
- &usdhc0 {
- 	pinctrl-names =3D "default";
- 	pinctrl-0 =3D <&pinctrl_usdhc0>;
-@@ -57,6 +63,12 @@
- 		bias-pull-up;
+@@ -22,6 +22,14 @@
+ 		reg =3D <0x60000000 0x40000000>;
  	};
 =20
-+	pinctrl_pwm0: pwm0grp {
-+		fsl,pins =3D <
-+			IMX7ULP_PAD_PTF2__TPM4_CH1	0x2
-+		>;
++	backlight {
++		compatible =3D "pwm-backlight";
++		pwms =3D <&pwm0 1 50000>;
++		brightness-levels =3D <0 20 25 30 35 40 100>;
++		default-brightness-level =3D <6>;
++		status =3D "okay";
 +	};
 +
- 	pinctrl_usdhc0: usdhc0grp {
- 		fsl,pins =3D <
- 			IMX7ULP_PAD_PTD1__SDHC0_CMD	0x43
-diff --git a/arch/arm/boot/dts/imx7ulp.dtsi b/arch/arm/boot/dts/imx7ulp.dts=
-i
-index fca6e50..6361c4e 100644
---- a/arch/arm/boot/dts/imx7ulp.dtsi
-+++ b/arch/arm/boot/dts/imx7ulp.dtsi
-@@ -124,6 +124,16 @@
- 			status =3D "disabled";
- 		};
-=20
-+		pwm0: pwm@40250000 {
-+			compatible =3D "fsl,imx-tpm-pwm";
-+			reg =3D <0x40250000 0x1000>;
-+			assigned-clocks =3D <&pcc2 IMX7ULP_CLK_LPTPM4>;
-+			assigned-clock-parents =3D <&scg1 IMX7ULP_CLK_SOSC_BUS_CLK>;
-+			clocks =3D <&pcc2 IMX7ULP_CLK_LPTPM4>;
-+			#pwm-cells =3D <2>;
-+			status =3D "disabled";
-+		};
-+
- 		tpm5: tpm@40260000 {
- 			compatible =3D "fsl,imx7ulp-tpm";
- 			reg =3D <0x40260000 0x1000>;
+ 	reg_vsd_3v3: regulator-vsd-3v3 {
+ 		compatible =3D "regulator-fixed";
+ 		regulator-name =3D "VSD_3V3";
 --=20
 2.7.4
