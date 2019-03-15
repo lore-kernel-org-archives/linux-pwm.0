@@ -1,8 +1,7 @@
 From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH V4 3/5] ARM: imx_v6_v7_defconfig: Add TPM PWM support by
- default
-Date: Fri, 15 Mar 2019 00:46:57 +0000
-Message-ID: <1552610505-13568-4-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH V4 5/5] ARM: dts: imx7ulp-evk: Add backlight support
+Date: Fri, 15 Mar 2019 00:47:10 +0000
+Message-ID: <1552610505-13568-6-git-send-email-Anson.Huang@nxp.com>
 References: <1552610505-13568-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -15,28 +14,35 @@ To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" 
 Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Select CONFIG_PWM_IMX_TPM by default to support i.MX7ULP
-TPM PWM.
+This patch adds i.MX7ULP EVK board MIPI-DSI backlight
+support.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
 No changes.
 ---
- arch/arm/configs/imx_v6_v7_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/imx7ulp-evk.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6=
-_v7_defconfig
-index 5586a50..57862c6 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -399,6 +399,7 @@ CONFIG_MPL3115=3Dy
- CONFIG_PWM=3Dy
- CONFIG_PWM_FSL_FTM=3Dy
- CONFIG_PWM_IMX=3Dy
-+CONFIG_PWM_IMX_TPM=3Dy
- CONFIG_NVMEM_IMX_OCOTP=3Dy
- CONFIG_NVMEM_VF610_OCOTP=3Dy
- CONFIG_TEE=3Dy
+diff --git a/arch/arm/boot/dts/imx7ulp-evk.dts b/arch/arm/boot/dts/imx7ulp-=
+evk.dts
+index 3f5ea18..f90f2f3 100644
+--- a/arch/arm/boot/dts/imx7ulp-evk.dts
++++ b/arch/arm/boot/dts/imx7ulp-evk.dts
+@@ -22,6 +22,14 @@
+ 		reg =3D <0x60000000 0x40000000>;
+ 	};
+=20
++	backlight {
++		compatible =3D "pwm-backlight";
++		pwms =3D <&pwm0 1 50000>;
++		brightness-levels =3D <0 20 25 30 35 40 100>;
++		default-brightness-level =3D <6>;
++		status =3D "okay";
++	};
++
+ 	reg_vsd_3v3: regulator-vsd-3v3 {
+ 		compatible =3D "regulator-fixed";
+ 		regulator-name =3D "VSD_3V3";
 --=20
 2.7.4
