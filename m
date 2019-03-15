@@ -1,81 +1,65 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH V4 4/5] ARM: dts: imx7ulp: Add pwm0 support
-Date: Fri, 15 Mar 2019 00:47:04 +0000
-Message-ID: <1552610505-13568-5-git-send-email-Anson.Huang@nxp.com>
-References: <1552610505-13568-1-git-send-email-Anson.Huang@nxp.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 05/42] drivers: gpio: bcm-kona: use
+ devm_platform_ioremap_resource()
+Date: Fri, 15 Mar 2019 09:19:39 +0100
+Message-ID: <20190315081939.zr3vv3a7a6wf7byw@pengutronix.de>
+References: <1552330521-4276-1-git-send-email-info@metux.net>
+ <1552330521-4276-5-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552610505-13568-1-git-send-email-Anson.Huang@nxp.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1552330521-4276-5-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "stefan@agner.ch" <stefan@agner.ch>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, bgolaszewski@baylibre.com, andrew@aj.id.au, f.fainelli@gmail.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, hoan@os.amperecomputing.com, orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com, keguang.zhang@gmail.com, vz@mleia.com, matthias.bgg@gmail.com, thierry.reding@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, robert.jarzmik@free.fr, yamada.masahiro@socionext.com, jun.nie@linaro.org, shawnguo@kernel.org, linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org, kernel@pengutronix.de, Julia Lawall <Julia.Lawall@lip6.fr>
 List-Id: linux-pwm@vger.kernel.org
 
-Add i.MX7ULP EVK board PWM0 support.
+On Mon, Mar 11, 2019 at 07:54:44PM +0100, Enrico Weigelt, metux IT consult wrote:
+> Use the new helper that wraps the calls to platform_get_resource()
+> and devm_ioremap_resource() together.
+> 
+> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+> ---
+>  drivers/gpio/gpio-bcm-kona.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpio/gpio-bcm-kona.c b/drivers/gpio/gpio-bcm-kona.c
+> index c5536a5..9fa6d3a 100644
+> --- a/drivers/gpio/gpio-bcm-kona.c
+> +++ b/drivers/gpio/gpio-bcm-kona.c
+> @@ -568,7 +568,6 @@ static int bcm_kona_gpio_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+>  	const struct of_device_id *match;
+> -	struct resource *res;
+>  	struct bcm_kona_gpio_bank *bank;
+>  	struct bcm_kona_gpio *kona_gpio;
+>  	struct gpio_chip *chip;
+> @@ -618,8 +617,7 @@ static int bcm_kona_gpio_probe(struct platform_device *pdev)
+>  		return -ENXIO;
+>  	}
+>  
+> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	kona_gpio->reg_base = devm_ioremap_resource(dev, res);
+> +	kona_gpio->reg_base = devm_platform_ioremap_resource(pdev, 0);
+>  	if (IS_ERR(kona_gpio->reg_base)) {
+>  		ret = -ENXIO;
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
-No changes.
----
- arch/arm/boot/dts/imx7ulp-evk.dts | 12 ++++++++++++
- arch/arm/boot/dts/imx7ulp.dtsi    | 10 ++++++++++
- 2 files changed, 22 insertions(+)
+This should be
 
-diff --git a/arch/arm/boot/dts/imx7ulp-evk.dts b/arch/arm/boot/dts/imx7ulp-=
-evk.dts
-index a09026a..3f5ea18 100644
---- a/arch/arm/boot/dts/imx7ulp-evk.dts
-+++ b/arch/arm/boot/dts/imx7ulp-evk.dts
-@@ -40,6 +40,12 @@
- 	status =3D "okay";
- };
-=20
-+&pwm0 {
-+	pinctrl-names =3D "default";
-+	pinctrl-0 =3D <&pinctrl_pwm0>;
-+	status =3D "okay";
-+};
-+
- &usdhc0 {
- 	pinctrl-names =3D "default";
- 	pinctrl-0 =3D <&pinctrl_usdhc0>;
-@@ -57,6 +63,12 @@
- 		bias-pull-up;
- 	};
-=20
-+	pinctrl_pwm0: pwm0grp {
-+		fsl,pins =3D <
-+			IMX7ULP_PAD_PTF2__TPM4_CH1	0x2
-+		>;
-+	};
-+
- 	pinctrl_usdhc0: usdhc0grp {
- 		fsl,pins =3D <
- 			IMX7ULP_PAD_PTD1__SDHC0_CMD	0x43
-diff --git a/arch/arm/boot/dts/imx7ulp.dtsi b/arch/arm/boot/dts/imx7ulp.dts=
-i
-index fca6e50..6361c4e 100644
---- a/arch/arm/boot/dts/imx7ulp.dtsi
-+++ b/arch/arm/boot/dts/imx7ulp.dtsi
-@@ -124,6 +124,16 @@
- 			status =3D "disabled";
- 		};
-=20
-+		pwm0: pwm@40250000 {
-+			compatible =3D "fsl,imx-tpm-pwm";
-+			reg =3D <0x40250000 0x1000>;
-+			assigned-clocks =3D <&pcc2 IMX7ULP_CLK_LPTPM4>;
-+			assigned-clock-parents =3D <&scg1 IMX7ULP_CLK_SOSC_BUS_CLK>;
-+			clocks =3D <&pcc2 IMX7ULP_CLK_LPTPM4>;
-+			#pwm-cells =3D <2>;
-+			status =3D "disabled";
-+		};
-+
- 		tpm5: tpm@40260000 {
- 			compatible =3D "fsl,imx7ulp-tpm";
- 			reg =3D <0x40260000 0x1000>;
---=20
-2.7.4
+	ret = PTR_ERR(kona_gpio->reg_base)
+
+, shouldn't it? (If yes, this is orthogonal to this patch, but still
+worth fixing.)
+
+@Julia: Is this something that coccinelle could catch?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
