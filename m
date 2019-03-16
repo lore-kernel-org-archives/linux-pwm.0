@@ -1,56 +1,80 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v9 0/2] PWM support for HiFive Unleashed
-Date: Fri, 15 Mar 2019 17:19:59 +0530
-Message-ID: <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
-References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com> <mvmimwotn60.fsf@suse.de>
+From: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 4/7] dt-bindings: counter: ftm-quaddec
+Date: Sat, 16 Mar 2019 14:21:38 +0000
+Message-ID: <20190316142138.65860d88@archlinux>
+References: <20190306111208.7454-1-patrick.havelange@essensium.com>
+        <20190306111208.7454-5-patrick.havelange@essensium.com>
+        <20190312190952.GA18547@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mvmimwotn60.fsf@suse.de>
+In-Reply-To: <20190312190952.GA18547@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas Schwab <schwab@suse.de>
-Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Patrick Havelange <patrick.havelange@essensium.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Esben Haabendal <esben@haabendal.dk>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 12, 2019 at 3:44 PM Andreas Schwab <schwab@suse.de> wrote:
->
-> On M=C3=A4r 12 2019, Yash Shah <yash.shah@sifive.com> wrote:
->
-> > This patch series adds a PWM driver and DT documentation
-> > for HiFive Unleashed board. The patches are mostly based on
-> > Wesley's patch.
->
-> Heartbeat trigger still doesn't work for me.
+On Tue, 12 Mar 2019 14:09:52 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-You need to make sure the period setting is passed via the
-conventional way in DT file.
-Example:
-pwmleds {
-    compatible =3D "pwm-leds";
-    heartbeat {
-        pwms =3D <&L45 0 10000000 0>;
-        max-brightness =3D <255>;
-        linux,default-trigger =3D "heartbeat";
-    };
-};
+> On Wed, Mar 06, 2019 at 12:12:05PM +0100, Patrick Havelange wrote:
+> > FlexTimer quadrature decoder driver.
+> > 
+> > Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> > Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+> > ---
+> > Changes v2
+> >      - None
+> > ---
+> >  .../bindings/counter/ftm-quaddec.txt           | 18 ++++++++++++++++++
+> >  1 file changed, 18 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/counter/ftm-quaddec.txt b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> > new file mode 100644
+> > index 000000000000..4d18cd722074
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> > @@ -0,0 +1,18 @@
+> > +FlexTimer Quadrature decoder counter
+> > +
+> > +This driver exposes a simple counter for the quadrature decoder mode.  
+> 
+> Seems like this is more a mode of a h/w block than describing a h/w 
+> block. Bindings should do the latter.
+The snag is that we need to dig ourselves out of the hole set by:
+fsl,vf610-ftm-pwm etc.
 
-I have tested on HiFive unleashed board. To modify DT file I performed
-the following steps:
+Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+Documentation/devicetree/bindings/timer/fsl,ftm-timer.txt
+(I'm assuming these are the same IP block).
 
-Use the open-source FSBL from:
-https://github.com/sifive/freedom-u540-c000-bootloader
+Can probably be sorted out though.  One core driver binds against the
+ftm and deals with instantiating the others depending on the configuration
+(note that this mode for instance does make sense in DT as it's
+really reflecting the fact there is a quadrature encoder
+connected to the ftm).
 
-Modify the fsbl/ux00_fsbl.dts file and re-build the fsbl.bin
+Fiddly though :)
 
-Steps for using fsbl.bin in HiFive Unleashed board:
-https://github.com/sifive/freedom-u540-c000-bootloader/issues/9
-
->
-> Andreas.
->
-> --
-> Andreas Schwab, SUSE Labs, schwab@suse.de
-> GPG Key fingerprint =3D 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D=
-7
-> "And now for something completely different."
+J
+> 
+> > +
+> > +Required properties:
+> > +- compatible:		Must be "fsl,ftm-quaddec".
+> > +- reg:			Must be set to the memory region of the flextimer.
+> > +
+> > +Optional property:
+> > +- big-endian:		Access the device registers in big-endian mode.
+> > +
+> > +Example:
+> > +		counter0: counter@29d0000 {
+> > +			compatible = "fsl,ftm-quaddec";
+> > +			reg = <0x0 0x29d0000 0x0 0x10000>;
+> > +			big-endian;
+> > +			status = "disabled";
+> > +		};
+> > -- 
+> > 2.19.1
+> >   
