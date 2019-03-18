@@ -1,65 +1,99 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: RE: [PATCH V5 1/5] dt-bindings: pwm: Add i.MX TPM PWM binding
-Date: Mon, 18 Mar 2019 09:50:01 +0000
-Message-ID: <DB3PR0402MB3916ABEA308378751FE54D21F5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1552894581-3391-1-git-send-email-Anson.Huang@nxp.com>
- <1552894581-3391-2-git-send-email-Anson.Huang@nxp.com>
- <d1f8b006ad56e8ed4e9fb9137148d98b@agner.ch>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v9 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Mon, 18 Mar 2019 10:51:11 +0100
+Message-ID: <20190318095111.GA17565@ulmo>
+References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
+ <1552378289-27245-3-git-send-email-yash.shah@sifive.com>
+ <20190312091739.fhv2hb2ll2eamdsn@pengutronix.de>
+ <20190312121218.GM31026@ulmo>
+ <20190312131712.rxiarnthcfrsgdqn@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d1f8b006ad56e8ed4e9fb9137148d98b@agner.ch>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190312131712.rxiarnthcfrsgdqn@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kerne
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Yash Shah <yash.shah@sifive.com>, palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIFN0ZWZhbg0KDQpCZXN0IFJlZ2FyZHMhDQpBbnNvbiBIdWFuZw0KDQo+IC0tLS0tT3JpZ2lu
-YWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFN0ZWZhbiBBZ25lciBbbWFpbHRvOnN0ZWZhbkBhZ25l
-ci5jaF0NCj4gU2VudDogMjAxOcTqM9TCMTjI1SAxNjoxOQ0KPiBUbzogQW5zb24gSHVhbmcgPGFu
-c29uLmh1YW5nQG54cC5jb20+DQo+IENjOiB0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb207IHJvYmgr
-ZHRAa2VybmVsLm9yZzsgbWFyay5ydXRsYW5kQGFybS5jb207DQo+IHNoYXduZ3VvQGtlcm5lbC5v
-cmc7IHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU7IGtlcm5lbEBwZW5ndXRyb25peC5kZTsNCj4gZmVz
-dGV2YW1AZ21haWwuY29tOyBsaW51eEBhcm1saW51eC5vcmcudWs7IG90YXZpb0Bvc3N5c3RlbXMu
-Y29tLmJyOw0KPiBMZW9uYXJkIENyZXN0ZXogPGxlb25hcmQuY3Jlc3RlekBueHAuY29tPjsgUm9i
-aW4gR29uZw0KPiA8eWliaW4uZ29uZ0BueHAuY29tPjsgamFuLnR1ZXJrQGVtdHJpb24uY29tOyBs
-aW51eC0NCj4gcHdtQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7
-IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtlcm5lbEB2
-Z2VyLmtlcm5lbC5vcmc7IHUua2xlaW5lLQ0KPiBrb2VuaWdAcGVuZ3V0cm9uaXguZGU7IGRsLWxp
-bnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjUgMS81
-XSBkdC1iaW5kaW5nczogcHdtOiBBZGQgaS5NWCBUUE0gUFdNIGJpbmRpbmcNCj4gDQo+IE9uIDE4
-LjAzLjIwMTkgMDg6NDEsIEFuc29uIEh1YW5nIHdyb3RlOg0KPiA+IEFkZCBpLk1YIFRQTShMb3cg
-UG93ZXIgVGltZXIvUHVsc2UgV2lkdGggTW9kdWxhdGlvbiBNb2R1bGUpIFBXTQ0KPiBiaW5kaW5n
-Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogQW5zb24gSHVhbmcgPEFuc29uLkh1YW5nQG54cC5j
-b20+DQo+ID4gLS0tDQo+ID4gTm8gY2hhbmdlcy4NCj4gPiAtLS0NCj4gPiAgRG9jdW1lbnRhdGlv
-bi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtdHBtLXB3bS50eHQgfCAxOQ0KPiA+ICsrKysr
-KysrKysrKysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDE5IGluc2VydGlvbnMoKykNCj4g
-PiAgY3JlYXRlIG1vZGUgMTAwNjQ0DQo+ID4gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL3B3bS9pbXgtdHBtLXB3bS50eHQNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC10cG0tcHdtLnR4dA0KPiA+IGIvRG9jdW1l
-bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtdHBtLXB3bS50eHQNCj4gPiBuZXcg
-ZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLmQ0N2I4ZmINCj4gPiAtLS0gL2Rl
-di9udWxsDQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9p
-bXgtdHBtLXB3bS50eHQNCj4gPiBAQCAtMCwwICsxLDE5IEBADQo+ID4gK0ZyZWVzY2FsZSBpLk1Y
-IFRQTSBQV00gY29udHJvbGxlcg0KPiA+ICsNCj4gPiArUmVxdWlyZWQgcHJvcGVydGllczoNCj4g
-PiArLSBjb21wYXRpYmxlIDogU2hvdWxkIGJlICJmc2wsaW14LXRwbS1wd20iLg0KPiA+ICstIHJl
-ZzogUGh5c2ljYWwgYmFzZSBhZGRyZXNzIGFuZCBsZW5ndGggb2YgdGhlIGNvbnRyb2xsZXIncyBy
-ZWdpc3RlcnMuDQo+ID4gKy0gI3B3bS1jZWxsczogU2hvdWxkIGJlIDIuIFNlZSBwd20udHh0IGlu
-IHRoaXMgZGlyZWN0b3J5IGZvciBhDQo+ID4gZGVzY3JpcHRpb24gb2YgdGhlIGNlbGxzIGZvcm1h
-dC4NCj4gDQo+IEl0IHNlZW1zIHRoYXQgdGhlIGRyaXZlciBzdXBwb3J0cyBwb2xhcml0eS4gQ2Fu
-IHdlIHVzZSAzIGNlbGxzIHNvIHdlIGNhbg0KPiBzcGVjaWZ5IHRoZSBwb2xhcml0eSBpbiB0aGUg
-ZGV2aWNlIHRyZWU/DQo+IA0KPiBBbHNvIHVzZSAzIGNlbGxzIGluIHRoZSBiYXNlIGRldmljZSB0
-cmVlIHRvIGVuYWJsZSBvdGhlciBib2FyZHMgbWFraW5nIHVzZSBvZg0KPiB0aGUgcG9sYXJpdHkg
-KGFyY2gvYXJtL2Jvb3QvZHRzL2lteDd1bHAuZHRzaSkuDQoNCkl0IG1ha2VzIHNlbnNlLCBJIHdp
-bGwgY2hhbmdlIGl0IHRvIDMgY2VsbHMgYW5kIHNwZWNpZnkgdGhlIHBvbGFyaXR5IGluIGJhY2ts
-aWdodCBub2RlLg0KDQpBbnNvbi4NCg0KPiANCj4gLS0NCj4gU3RlZmFuDQo+IA0KPiA+ICstIGNs
-b2NrcyA6IFRoZSBjbG9jayBwcm92aWRlZCBieSB0aGUgU29DIHRvIGRyaXZlIHRoZSBQV00uDQo+
-ID4gKy0gaW50ZXJydXB0czogVGhlIGludGVycnVwdCBmb3IgdGhlIHB3bSBjb250cm9sbGVyLg0K
-PiA+ICsNCj4gPiArRXhhbXBsZToNCj4gPiArDQo+ID4gK3B3bTA6IHRwbUA0MDI1MDAwMCB7DQo+
-ID4gKwljb21wYXRpYmxlID0gImZzbCxpbXgtdHBtLXB3bSI7DQo+ID4gKwlyZWcgPSA8MHg0MDI1
-MDAwMCAweDEwMDA+Ow0KPiA+ICsJYXNzaWduZWQtY2xvY2tzID0gPCZjbGtzIElNWDdVTFBfQ0xL
-X0xQVFBNND47DQo+ID4gKwlhc3NpZ25lZC1jbG9jay1wYXJlbnRzID0gPCZjbGtzIElNWDdVTFBf
-Q0xLX1NPU0NfQlVTX0NMSz47DQo+ID4gKwljbG9ja3MgPSA8JmNsa3MgSU1YN1VMUF9DTEtfTFBU
-UE00PjsNCj4gPiArCSNwd20tY2VsbHMgPSA8Mj47DQo+ID4gK307DQo=
+
+--gKMricLos+KVdGMg
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Mar 12, 2019 at 02:17:12PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> On Tue, Mar 12, 2019 at 01:12:18PM +0100, Thierry Reding wrote:
+> > On Tue, Mar 12, 2019 at 10:17:39AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+[...]
+> > > There are a few other things that could be improved, but I think they
+> > > could be addressed later. For some of these I don't even know what to
+> > > suggest, for some Thierry might not agree it is worth fixing:
+> > >=20
+> > >  - rounding
+> > >    how to round? When should a request declined, when is rounding ok?
+> > >    There is still "if (state->period !=3D pwm->approx_period) return =
+-EBUSY"
+> > >    in this driver. This is better than before, but if state-period =
+=3D=3D
+> > >    pwm->approx_period + 1 the result (if accepted) might be the same =
+as
+> > >    without the +1 and so returning -EBUSY for one case and accepting =
+the
+> > >    other is strange.
+> >=20
+> > Perhaps a good idea would be to reject a configuration only after we've
+> > determined that it is incompatible? If we're really going to end up with
+> > the same configuration within a given margin of period or duty cycle and
+> > we can't do much about it, there's little point in rejecting such
+> > configurations.
+>=20
+> It seems we agree here. Is this important enough to delay taking this
+> driver further? Currently the driver rejects too broad so if it annoys
+> someone this can still be fixed later and there is only little harm
+> (assuming correct error handling in the consumers).
+
+I don't think it has to be a blocker. As you said, we'd be giving users
+more flexibility, not restricting them, so it should be fine to do later
+on.
+
+> > >  - don't call PWM API functions designed for consumers (here: pwm_get=
+_state)
+> >=20
+> > Agreed. The driver can just access pwm_device.state directly.
+>=20
+> I wouldn't do this either. IMHO the driver should only look into its
+> hardware registers instead of using framework interna (or consumer API
+> calls).
+
+The current hardware state is already the software representation of
+what the hardware has programmed. I think it's fair for drivers to make
+use of that in order to avoid having to read back from hardware.
+Especially if reading back from hardware might require switching on the
+module to access registers.
+
+Thierry
+
+--gKMricLos+KVdGMg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlyPagwACgkQ3SOs138+
+s6H2nxAArlQ9omVBBACn60oV5Ix/6fZlOeffFJBYaCFea3XjU38SSI1hS3QM75JQ
+B55cEC2AKQy4vQykZmTBPGWhit09tKv2MXwLMwKRxEXktC/wxNc1MTh7h9MeiH9M
+LJ5iL7wwGjyHlzTTVA5r+lgU2Avg8LdXeex7hgo5rYrDEPu9sDglU7eO7YUKhHX1
+QsTeKgLoFE1Ne38PbMBKA3nA9llcm6rdrhLLzss6Q9+wQQSYuPYToSH/pHWqo3BL
+86JqYuja7EQf26BJMiA5aOdyq56IdMtD286XDV0+VGEiih9WQZbKuhUKMIHSLH9C
+YgN3oPonjvVI6xq1aEHvp1n6sma2vbFKX+nvOeOGmCizRAY/gx/UzC3M44y9JQWO
+o0jKCgtnJr+kYn8GFDqgQBNwhwN9GtQ7Bjv+lXqPIdnCUjxgtzLW1VxsXccz5w9+
+o1SmJOAmBIfV/bnwhZpMiSoSCl3pnm+ohjBh3Qom2nIJxgmkV5xesPB06phijNZS
+ZEzh2hUcpvAr5+tH+WxRysRp7Ee6w0KVzsyrAsezgxth5f78Pw9XRJyPnQy415Pz
+4IlmHDoinYvDcOn0ZL6odF8rirlBqZ7lmOK2av0LRix0XVV02Y8FTZ2LPepHOZSV
+wXcHzBhpezIG65ICYL6SFBDfiIDLzWuaDr9WIRJn0RYu1LxpdGs=
+=X4jv
+-----END PGP SIGNATURE-----
+
+--gKMricLos+KVdGMg--
