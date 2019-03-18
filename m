@@ -1,33 +1,65 @@
-From: Andreas Schwab <schwab@suse.de>
-Subject: Re: [PATCH v9 0/2] PWM support for HiFive Unleashed
-Date: Mon, 18 Mar 2019 10:24:33 +0100
-Message-ID: <mvmbm28r0vi.fsf@suse.de>
-References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
-        <mvmimwotn60.fsf@suse.de>
-        <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH V5 1/5] dt-bindings: pwm: Add i.MX TPM PWM binding
+Date: Mon, 18 Mar 2019 09:50:01 +0000
+Message-ID: <DB3PR0402MB3916ABEA308378751FE54D21F5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1552894581-3391-1-git-send-email-Anson.Huang@nxp.com>
+ <1552894581-3391-2-git-send-email-Anson.Huang@nxp.com>
+ <d1f8b006ad56e8ed4e9fb9137148d98b@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
-        (Yash Shah's message of "Fri, 15 Mar 2019 17:19:59 +0530")
+In-Reply-To: <d1f8b006ad56e8ed4e9fb9137148d98b@agner.ch>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
+To: Stefan Agner <stefan@agner.ch>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kerne
 List-Id: linux-pwm@vger.kernel.org
 
-On Mär 15 2019, Yash Shah <yash.shah@sifive.com> wrote:
-
-> Use the open-source FSBL from:
-> https://github.com/sifive/freedom-u540-c000-bootloader
->
-> Modify the fsbl/ux00_fsbl.dts file and re-build the fsbl.bin
-
-That doesn't even compile.
-
-Andreas.
-
--- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+SGksIFN0ZWZhbg0KDQpCZXN0IFJlZ2FyZHMhDQpBbnNvbiBIdWFuZw0KDQo+IC0tLS0tT3JpZ2lu
+YWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFN0ZWZhbiBBZ25lciBbbWFpbHRvOnN0ZWZhbkBhZ25l
+ci5jaF0NCj4gU2VudDogMjAxOcTqM9TCMTjI1SAxNjoxOQ0KPiBUbzogQW5zb24gSHVhbmcgPGFu
+c29uLmh1YW5nQG54cC5jb20+DQo+IENjOiB0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb207IHJvYmgr
+ZHRAa2VybmVsLm9yZzsgbWFyay5ydXRsYW5kQGFybS5jb207DQo+IHNoYXduZ3VvQGtlcm5lbC5v
+cmc7IHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU7IGtlcm5lbEBwZW5ndXRyb25peC5kZTsNCj4gZmVz
+dGV2YW1AZ21haWwuY29tOyBsaW51eEBhcm1saW51eC5vcmcudWs7IG90YXZpb0Bvc3N5c3RlbXMu
+Y29tLmJyOw0KPiBMZW9uYXJkIENyZXN0ZXogPGxlb25hcmQuY3Jlc3RlekBueHAuY29tPjsgUm9i
+aW4gR29uZw0KPiA8eWliaW4uZ29uZ0BueHAuY29tPjsgamFuLnR1ZXJrQGVtdHJpb24uY29tOyBs
+aW51eC0NCj4gcHdtQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7
+IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtlcm5lbEB2
+Z2VyLmtlcm5lbC5vcmc7IHUua2xlaW5lLQ0KPiBrb2VuaWdAcGVuZ3V0cm9uaXguZGU7IGRsLWxp
+bnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjUgMS81
+XSBkdC1iaW5kaW5nczogcHdtOiBBZGQgaS5NWCBUUE0gUFdNIGJpbmRpbmcNCj4gDQo+IE9uIDE4
+LjAzLjIwMTkgMDg6NDEsIEFuc29uIEh1YW5nIHdyb3RlOg0KPiA+IEFkZCBpLk1YIFRQTShMb3cg
+UG93ZXIgVGltZXIvUHVsc2UgV2lkdGggTW9kdWxhdGlvbiBNb2R1bGUpIFBXTQ0KPiBiaW5kaW5n
+Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogQW5zb24gSHVhbmcgPEFuc29uLkh1YW5nQG54cC5j
+b20+DQo+ID4gLS0tDQo+ID4gTm8gY2hhbmdlcy4NCj4gPiAtLS0NCj4gPiAgRG9jdW1lbnRhdGlv
+bi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtdHBtLXB3bS50eHQgfCAxOQ0KPiA+ICsrKysr
+KysrKysrKysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDE5IGluc2VydGlvbnMoKykNCj4g
+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0DQo+ID4gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL3B3bS9pbXgtdHBtLXB3bS50eHQNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0
+aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC10cG0tcHdtLnR4dA0KPiA+IGIvRG9jdW1l
+bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtdHBtLXB3bS50eHQNCj4gPiBuZXcg
+ZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLmQ0N2I4ZmINCj4gPiAtLS0gL2Rl
+di9udWxsDQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9p
+bXgtdHBtLXB3bS50eHQNCj4gPiBAQCAtMCwwICsxLDE5IEBADQo+ID4gK0ZyZWVzY2FsZSBpLk1Y
+IFRQTSBQV00gY29udHJvbGxlcg0KPiA+ICsNCj4gPiArUmVxdWlyZWQgcHJvcGVydGllczoNCj4g
+PiArLSBjb21wYXRpYmxlIDogU2hvdWxkIGJlICJmc2wsaW14LXRwbS1wd20iLg0KPiA+ICstIHJl
+ZzogUGh5c2ljYWwgYmFzZSBhZGRyZXNzIGFuZCBsZW5ndGggb2YgdGhlIGNvbnRyb2xsZXIncyBy
+ZWdpc3RlcnMuDQo+ID4gKy0gI3B3bS1jZWxsczogU2hvdWxkIGJlIDIuIFNlZSBwd20udHh0IGlu
+IHRoaXMgZGlyZWN0b3J5IGZvciBhDQo+ID4gZGVzY3JpcHRpb24gb2YgdGhlIGNlbGxzIGZvcm1h
+dC4NCj4gDQo+IEl0IHNlZW1zIHRoYXQgdGhlIGRyaXZlciBzdXBwb3J0cyBwb2xhcml0eS4gQ2Fu
+IHdlIHVzZSAzIGNlbGxzIHNvIHdlIGNhbg0KPiBzcGVjaWZ5IHRoZSBwb2xhcml0eSBpbiB0aGUg
+ZGV2aWNlIHRyZWU/DQo+IA0KPiBBbHNvIHVzZSAzIGNlbGxzIGluIHRoZSBiYXNlIGRldmljZSB0
+cmVlIHRvIGVuYWJsZSBvdGhlciBib2FyZHMgbWFraW5nIHVzZSBvZg0KPiB0aGUgcG9sYXJpdHkg
+KGFyY2gvYXJtL2Jvb3QvZHRzL2lteDd1bHAuZHRzaSkuDQoNCkl0IG1ha2VzIHNlbnNlLCBJIHdp
+bGwgY2hhbmdlIGl0IHRvIDMgY2VsbHMgYW5kIHNwZWNpZnkgdGhlIHBvbGFyaXR5IGluIGJhY2ts
+aWdodCBub2RlLg0KDQpBbnNvbi4NCg0KPiANCj4gLS0NCj4gU3RlZmFuDQo+IA0KPiA+ICstIGNs
+b2NrcyA6IFRoZSBjbG9jayBwcm92aWRlZCBieSB0aGUgU29DIHRvIGRyaXZlIHRoZSBQV00uDQo+
+ID4gKy0gaW50ZXJydXB0czogVGhlIGludGVycnVwdCBmb3IgdGhlIHB3bSBjb250cm9sbGVyLg0K
+PiA+ICsNCj4gPiArRXhhbXBsZToNCj4gPiArDQo+ID4gK3B3bTA6IHRwbUA0MDI1MDAwMCB7DQo+
+ID4gKwljb21wYXRpYmxlID0gImZzbCxpbXgtdHBtLXB3bSI7DQo+ID4gKwlyZWcgPSA8MHg0MDI1
+MDAwMCAweDEwMDA+Ow0KPiA+ICsJYXNzaWduZWQtY2xvY2tzID0gPCZjbGtzIElNWDdVTFBfQ0xL
+X0xQVFBNND47DQo+ID4gKwlhc3NpZ25lZC1jbG9jay1wYXJlbnRzID0gPCZjbGtzIElNWDdVTFBf
+Q0xLX1NPU0NfQlVTX0NMSz47DQo+ID4gKwljbG9ja3MgPSA8JmNsa3MgSU1YN1VMUF9DTEtfTFBU
+UE00PjsNCj4gPiArCSNwd20tY2VsbHMgPSA8Mj47DQo+ID4gK307DQo=
