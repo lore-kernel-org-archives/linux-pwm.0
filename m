@@ -1,312 +1,135 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH V5 2/5] pwm: Add i.MX TPM PWM driver support
-Date: Mon, 18 Mar 2019 16:30:51 +0100
-Message-ID: <20190318153051.GA31929@ulmo>
-References: <1552894581-3391-1-git-send-email-Anson.Huang@nxp.com>
- <1552894581-3391-3-git-send-email-Anson.Huang@nxp.com>
- <20190318102740.GE17565@ulmo>
- <DB3PR0402MB39169937B4A02D70FB72FB8DF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH V4 2/5] pwm: Add i.MX TPM PWM driver support
+Date: Mon, 18 Mar 2019 18:25:35 +0100
+Message-ID: <20190318172535.2yxokxwu52yjf6xf@pengutronix.de>
+References: <1552610505-13568-1-git-send-email-Anson.Huang@nxp.com>
+ <1552610505-13568-3-git-send-email-Anson.Huang@nxp.com>
+ <20190315093532.xw5ivfkxrwvrkvix@pengutronix.de>
+ <DB3PR0402MB39161B062231C59842595374F5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+ <20190318080743.xumj6e72bzumszvp@pengutronix.de>
+ <DB3PR0402MB391627A8C741C84A2057E576F5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+ <DB3PR0402MB39161A9884D5768F7280024FF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="W/nzBZO5zC0uMSeA"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <DB3PR0402MB39169937B4A02D70FB72FB8DF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+In-Reply-To: <DB3PR0402MB39161A9884D5768F7280024FF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Anson Huang <anson.huang@nxp.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "stefan@agner.ch" <stefan@agner.ch>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kernel@vger.kernel.org
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "stefan@agner.ch" <stefan@agner.ch>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>l
 List-Id: linux-pwm@vger.kernel.org
 
+Hello,
 
---W/nzBZO5zC0uMSeA
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, Mar 18, 2019 at 02:04:00PM +0000, Anson Huang wrote:
+> > > On Mon, Mar 18, 2019 at 07:41:02AM +0000, Anson Huang wrote:
+> > > > > > +	val &= ~PWM_IMX_TPM_SC_CMOD;
+> > > > > > +	writel(val, tpm->base + PWM_IMX_TPM_SC);
+> > > > >
+> > > > > As this interrupts the output, please only do it if necessary.
+> > > >
+> > > > OK, will do it ONLY when it is enabled previously.
+> > >
+> > > I think you only need to do that when the value actually changes.
+> > 
+> > OK, I will save the period/div count and ONLY do it when the value actually
+> > changes.
+> 
+> After further think, I added below tpm->period to save the current period settings,
+> ONLY when the new period to be set is different from the current period, then the 
+> pwm_imx_tpm_config_counter() is called, so I think no need to care about the value
+> changes, the value is always changed when pwm_imx_tpm_config_counter() is called.
+> 
+>                  if (tpm->user_count != 1 && state->period != tpm->period)
+>                          return -EBUSY;
+>                  ret = pwm_imx_tpm_config_counter(chip, state->period);
+>                  if (ret)
+>                          return ret;
 
-On Mon, Mar 18, 2019 at 11:33:33AM +0000, Anson Huang wrote:
-> Hi, Thierry
->=20
-> Best Regards!
-> Anson Huang
->=20
-> > -----Original Message-----
-> > From: Thierry Reding [mailto:thierry.reding@gmail.com]
-> > Sent: 2019=E5=B9=B43=E6=9C=8818=E6=97=A5 18:28
-> > To: Anson Huang <anson.huang@nxp.com>
-> > Cc: robh+dt@kernel.org; mark.rutland@arm.com; shawnguo@kernel.org;
-> > s.hauer@pengutronix.de; kernel@pengutronix.de; festevam@gmail.com;
-> > linux@armlinux.org.uk; otavio@ossystems.com.br; stefan@agner.ch;
-> > Leonard Crestez <leonard.crestez@nxp.com>; Robin Gong
-> > <yibin.gong@nxp.com>; jan.tuerk@emtrion.com; linux-
-> > pwm@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
-> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org; u.kleine-
-> > koenig@pengutronix.de; dl-linux-imx <linux-imx@nxp.com>
-> > Subject: Re: [PATCH V5 2/5] pwm: Add i.MX TPM PWM driver support
-> >=20
-> > On Mon, Mar 18, 2019 at 07:41:42AM +0000, Anson Huang wrote:
-[...]
-> > > +static void pwm_imx_tpm_config(struct pwm_chip *chip,
-> > > +			       struct pwm_device *pwm,
-> > > +			       u32 period,
-> > > +			       u32 duty_cycle,
-> > > +			       enum pwm_polarity polarity) {
-> > > +	struct imx_tpm_pwm_chip *tpm =3D to_imx_tpm_pwm_chip(chip);
-> > > +	u32 duty_cnt, val;
-> > > +	u64 tmp;
-> > > +
-> > > +	/* set duty counter */
-> > > +	tmp =3D readl(tpm->base + PWM_IMX_TPM_MOD) &
-> > PWM_IMX_TPM_MOD_MOD;
-> > > +	tmp *=3D duty_cycle;
-> > > +	duty_cnt =3D DIV_ROUND_CLOSEST_ULL(tmp, period);
-> > > +	writel(duty_cnt & PWM_IMX_TPM_MOD_MOD,
-> > > +	       tpm->base + PWM_IMX_TPM_CnV(pwm->hwpwm));
-> > > +
-> > > +	/*
-> > > +	 * set polarity (for edge-aligned PWM modes)
-> > > +	 *
-> > > +	 * CPWMS  MSB:MSA  ELSB:ELSA  Mode  Configuration
-> > > +	 * 0	  10	   10	      PWM   High-true pulse
-> > > +	 * 0	  10	   00	      PWM   Reserved
-> > > +	 * 0	  10	   01	      PWM   Low-true pulse
-> > > +	 * 0	  10	   11	      PWM   Reserved
-> > > +	 *
-> > > +	 * High-true pulse: clear output on counter match, set output on
-> > > +	 * counter reload, set output when counter first enabled or paused.
-> > > +	 *
-> > > +	 * Low-true pulse: set output on counter match, clear output on
-> > > +	 * counter reload, clear output when counter first enabled or pause=
-d.
-> > > +	 */
-> > > +
-> > > +	val =3D readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
-> > > +	val &=3D ~(PWM_IMX_TPM_CnSC_ELSB | PWM_IMX_TPM_CnSC_ELSA
-> > |
-> > > +		 PWM_IMX_TPM_CnSC_MSA);
-> > > +	val |=3D PWM_IMX_TPM_CnSC_MSB;
-> > > +	val |=3D (polarity =3D=3D PWM_POLARITY_NORMAL) ?
-> > > +		PWM_IMX_TPM_CnSC_ELSB : PWM_IMX_TPM_CnSC_ELSA;
-> > > +	/*
-> > > +	 * polarity settings will enabled/disable output status
-> > > +	 * immediately, so here ONLY save the config and write
-> > > +	 * it into register when channel is enabled/disabled.
-> > > +	 */
-> > > +	tpm->chn_config[pwm->hwpwm] =3D val;
-> > > +}
-> > > +
-> > > +/*
-> > > + * When a channel's polarity is configured, the polarity settings
-> > > + * will be saved and ONLY write into the register when the channel
-> > > + * is enabled.
-> > > + *
-> > > + * When a channel is disabled, its polarity settings will be saved
-> > > + * and its output will be disabled by clearing polarity settings.
-> > > + *
-> > > + * when a channel is enabled, its polarity settings will be restored
-> >=20
-> > "when" -> "When".
->=20
-> Will fix it.
->=20
-> >=20
-> > > + * and output will be enabled again.
-> > > + */
-> > > +static void pwm_imx_tpm_enable(struct pwm_chip *chip,
-> > > +			       struct pwm_device *pwm,
-> > > +			       bool enable)
-> > > +{
-> > > +	struct imx_tpm_pwm_chip *tpm =3D to_imx_tpm_pwm_chip(chip);
-> > > +	u32 val;
-> > > +
-> > > +	val =3D readl(tpm->base + PWM_IMX_TPM_SC);
-> > > +	if (enable) {
-> > > +		/* restore channel config */
-> > > +		writel(tpm->chn_config[pwm->hwpwm],
-> > > +		       tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
-> > > +
-> > > +		if (++tpm->enable_count =3D=3D 1) {
-> > > +			/* start TPM counter */
-> > > +			val |=3D PWM_IMX_TPM_SC_CMOD_INC_EVERY_CLK;
-> > > +			writel(val, tpm->base + PWM_IMX_TPM_SC);
-> > > +		}
-> > > +	} else {
-> > > +		/* disable channel */
-> > > +		val =3D readl(tpm->base + PWM_IMX_TPM_CnSC(pwm-
-> > >hwpwm));
-> > > +		val &=3D ~(PWM_IMX_TPM_CnSC_MSA |
-> > PWM_IMX_TPM_CnSC_MSB |
-> > > +			 PWM_IMX_TPM_CnSC_ELSB |
-> > PWM_IMX_TPM_CnSC_ELSA);
-> > > +		writel(val, tpm->base + PWM_IMX_TPM_CnSC(pwm-
-> > >hwpwm));
-> > > +
-> > > +		if (--tpm->enable_count =3D=3D 0) {
-> > > +			/* stop TPM counter since all channels are disabled
-> > */
-> > > +			val &=3D ~PWM_IMX_TPM_SC_CMOD;
-> > > +			writel(val, tpm->base + PWM_IMX_TPM_SC);
-> > > +		}
-> > > +	}
-> > > +
-> > > +	/* update channel status */
-> > > +	tpm->chn_status[pwm->hwpwm] =3D enable; }
-> > > +
-> > > +static void pwm_imx_tpm_get_state(struct pwm_chip *chip,
-> > > +				  struct pwm_device *pwm,
-> > > +				  struct pwm_state *state)
-> > > +{
-> > > +	struct imx_tpm_pwm_chip *tpm =3D to_imx_tpm_pwm_chip(chip);
-> > > +	u64 tmp;
-> > > +	u32 val, rate;
-> > > +
-> > > +	/* get period */
-> > > +	rate =3D clk_get_rate(tpm->clk);
-> > > +	tmp =3D readl(tpm->base + PWM_IMX_TPM_MOD);
-> > > +	val =3D readl(tpm->base + PWM_IMX_TPM_SC);
-> > > +	val &=3D PWM_IMX_TPM_SC_PS;
-> > > +	tmp *=3D (1 << val) * NSEC_PER_SEC;
-> > > +	state->period =3D DIV_ROUND_CLOSEST_ULL(tmp, rate);
-> > > +
-> > > +	/* get duty cycle */
-> > > +	tmp =3D readl(tpm->base + PWM_IMX_TPM_CnV(pwm->hwpwm));
-> > > +	tmp *=3D (1 << val) * NSEC_PER_SEC;
-> > > +	state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, rate);
-> > > +
-> > > +	/* get polarity */
-> > > +	val =3D readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
-> > > +	if (val & PWM_IMX_TPM_CnSC_ELSA)
-> > > +		state->polarity =3D PWM_POLARITY_INVERSED;
-> > > +	else
-> > > +		state->polarity =3D PWM_POLARITY_NORMAL;
-> > > +
-> > > +	/* get channel status */
-> > > +	state->enabled =3D tpm->chn_status[pwm->hwpwm] ? true : false; }
-> > > +
-> > > +static int pwm_imx_tpm_apply(struct pwm_chip *chip, struct pwm_device
-> > *pwm,
-> > > +			     struct pwm_state *state)
-> > > +{
-> > > +	struct imx_tpm_pwm_chip *tpm =3D to_imx_tpm_pwm_chip(chip);
-> > > +	struct pwm_state curstate;
-> > > +	int ret;
-> > > +
-> > > +	mutex_lock(&tpm->lock);
-> > > +
-> > > +	pwm_imx_tpm_get_state(chip, pwm, &curstate);
-> > > +
-> > > +	if (state->period !=3D curstate.period) {
-> > > +		/*
-> > > +		 * TPM counter is shared by multiple channels, so
-> > > +		 * prescale and period can NOT be modified when
-> > > +		 * there are multiple channels in use.
-> > > +		 */
-> > > +		if (tpm->user_count !=3D 1)
-> > > +			return -EBUSY;
-> > > +		ret =3D pwm_imx_tpm_config_counter(chip, state->period);
-> > > +		if (ret)
-> > > +			return ret;
-> > > +	}
-> > > +
-> > > +	if (state->enabled =3D=3D false) {
-> > > +		/*
-> > > +		 * if eventually the PWM output is LOW, either
-> > > +		 * duty cycle is 0 or status is disabled, need
-> > > +		 * to make sure the output pin is LOW.
-> > > +		 */
-> > > +		pwm_imx_tpm_config(chip, pwm, state->period,
-> > > +				   0, state->polarity);
-> > > +		if (curstate.enabled)
-> > > +			pwm_imx_tpm_enable(chip, pwm, false);
-> > > +	} else {
-> > > +		pwm_imx_tpm_config(chip, pwm, state->period,
-> > > +				   state->duty_cycle, state->polarity);
-> > > +		if (!curstate.enabled)
-> > > +			pwm_imx_tpm_enable(chip, pwm, true);
-> >=20
-> > Doesn't this mean that you won't be applying changes to the polarity wh=
-ile a
-> > PWM is enabled? That seems wrong. Granted, you may usually not run into
-> > that, but if you can't support it I think you should at least return an=
- error if
-> > you detect that the user wants to change polarity while the PWM is enab=
-led.
->=20
-> I thought below function call already set the polarity? No matter its sta=
-tus is enabled
-> or disabled, the polarity setting will be always applied.
-> =20
-> 		pwm_imx_tpm_config(chip, pwm, state->period,
-> 				   state->duty_cycle, state->polarity);
+This is still not the optimal thing to do. What you really want is:
 
-That's not what it seems to do. In fact there's a comment that explains
-why it doesn't do that. Quoting here:
+	p = round_period_according_to_hw_caps(state->period);
+	if (p != actually_configured_period && tpm->user_count != 1)
+		return -EBUSY;
 
-> > > +	/*
-> > > +	 * polarity settings will enabled/disable output status
-> > > +	 * immediately, so here ONLY save the config and write
-> > > +	 * it into register when channel is enabled/disabled.
-> > > +	 */
-> > > +	tpm->chn_config[pwm->hwpwm] =3D val;
 
-Looks to me like that only stores the value for that register so that it
-can be applied at a later point. Or am I missing something?
+> > > > > > +	/* set duty counter */
+> > > > > > +	tmp = readl(tpm->base + PWM_IMX_TPM_MOD) &
+> > > > > > +PWM_IMX_TPM_MOD_MOD_MASK;
+> > > > >
+> > > > > I recommend storing this value in driver data.
+> > > >
+> > > > NOT quite understand, as we did NOT use it in other places except
+> > > > the get_state, just reading the register once should be OK there.
+> > >
+> > > I had the impression it is used more than once. Will look again in the
+> > > next iteration. But also note that shadowing the value might already
+> > > be beneficial for a single call site as driver data might occupy more
+> > > RAM than necessary anyhow and reading from RAM is faster than from the
+> > > hardware's register.
+> > > Probably this is not a fast path, so not worth the optimisation?!
+> > 
+> > OK, will save it in driver data and avoid accessing register again.
 
-> > > +				ret);
-> > > +	}
-> > > +
-> > > +	return ret;
-> > > +};
-> >=20
-> > Your handling of the clock seems strange here. Basically in the above y=
-ou
-> > always keep the clock on and you only disable it if there are no users =
-and
-> > you're going to suspend.
-> >=20
-> > Why do you need to keep an extra reference count anyway? Or why keep the
-> > clock on all the time? Can't you just do a clk_prepare_enable() every t=
-ime
-> > somebody enables the PWM? The CCF already has built-in reference
-> > counting, so I'm not sure you really need to duplicate that here.
->=20
-> Keeping clock always ON since driver probe is because, many TMP registers'
-> write needs clock to be ON for sync into register hardware, just enable t=
-he clock
-> before writing register and disable the clock immediately does NOT work, =
-unless
-> we keep reading the register value until the register value is what we wa=
-nt to write,
-> but that makes code much more complicated, and the PWM clock normally is =
-=66rom
-> OSC which does NOT consume too much power, so I keep the clock always on =
-and ONLY
-> disable it after suspend.
+please apply some thought before following my advices. If this is not a
+fast path and it hurts readability, don't shadow the register in driver
+data.
 
-Why do you bother with keeping the enable reference count, then? Can't
-you just enable the clock on probe, then on suspend disable it, enable
-it again on resume and on remove you also disable it? Why does it need
-to be dependent on whether there are any active PWMs or not?
+> > > > > > +		/* disable channel */
+> > > > > > +		writel(PWM_IMX_TPM_CnSC_CHF,
+> > > > > > +			tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> > > > >
+> > > > > Clearing CHF doens't disable the channel as I read the manual.
+> > > >
+> > > > This write clears CHF as well as writing other bits 0, to disable
+> > > > the output. Maybe I can explicitly clear MSA/MSB/ELSA/ELSB to avoid
+> > > > confusion.
+> > >
+> > > Ah, I misinterpreted the value written.
+> > >
+> > > > > > +static int pwm_imx_tpm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> > > > > > +			     struct pwm_state *state) {
+> > > > > > +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> > > > > > +	struct pwm_state curstate;
+> > > > > > +	u32 duty_cycle = state->duty_cycle;
+> > > > > > +	int ret;
+> > > > > > +
+> > > > > > +	pwm_imx_tpm_get_state(chip, pwm, &curstate);
+> > > > > > +
+> > > > > > +	mutex_lock(&tpm->lock);
+> > > > >
+> > > > > What should this lock protect? Does it hurt if the state changes
+> > > > > between pwm_imx_tpm_get_state releasing the lock and
+> > > > > pwm_imx_tpm_apply taking it?
+> > > >
+> > > > The idea is to protect the share resourced by multiple channels, but
+> > > > I think I can make the mutex_lock includes get_state and remove the
+> > > > lock in get_state function.
+> > >
+> > > You might need it in .get_state to return a consistent state to the
+> > > caller. In this case just introduce an unlocked variant of .get_state
+> > > to share code between the two functions.
+> > >
+> > > And BTW the question was honest. I'm not entirely sure that you need
+> > > to hold the lock.
+> > 
+> > Agreed, if the different channel configuration ONLY access its own register,
+> > NOT any shared registers, then I think this lock is unnecessary.
+> 
+> Since all the functions in .apply function will need to access registers and these
+> registers are shared by different channels, so I think the lock is necessary. 
 
-Thierry
+I think so, too, but didn't thought it to the end. I can invest some
+time here in the next review round.
 
---W/nzBZO5zC0uMSeA
-Content-Type: application/pgp-signature; name="signature.asc"
+BTW, one thing that I think is missing is, that .apply must only return
+when the newly configured setting is already active.
 
------BEGIN PGP SIGNATURE-----
+Best regards
+Uwe
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlyPuacACgkQ3SOs138+
-s6H9Vw/9EpjiP7x6maJyjU7MldmX3QCsQ4I+HPOaMu4e39mOE/kt2VJG1fIVi3eb
-jRuen2P+uH/cB76It4CUTYrMachZSooKzbwBGlh1Im2CpgYf6/L5TPgocBaLtATq
-JddcM2WGes66e7Ry0lnkCbvKWe4NkMn6Qanbg+jsOSbirRi6bu/3Hi978n3YAvAw
-870E++4OjxeyfAB5HY+n/VZ88jGmsQobELAc9BbtnabUg6Dli6WdWRypbO4h/+9d
-L4G7FxQMPKFFfCg5b40GYi31K5o3YYL4P8H3Q/4yMSP3hUqa9K6y4Y+7c9m6w8yj
-wm1PXGjAeTvb4x1vo4TI8XhZWW9EwZLoQ3vYvE6jxMFNfbEaow1ZVIT/vO9QagOj
-2Zil24HYgffixv3JaPshCGzvEOLZnL6twmbbEBpwLSdKJX6ZGZ0t7gU9J3A9k0w2
-lhOwi87RxWXUFwhd0UL2SwKfwmNuZssURQhBWlEJ61phg+6QmRFMtMG7i/1WV40J
-4MqEfxnZrdaE7X4a/mxJR0y0aZrZyYYqnBB+fXYzITp9qMsDalsnVF9yXoyU/eip
-SobQEOZKhG320OQYpS+YjxKaJIc4mwJJsfZdDM0KzCm2GW8U5ALeBB3vsyYBYjX8
-n6F9Mht40O1u0pxeFO4d+OSrHlJfRisQvdghPWVhWs4Lob4DuOM=
-=psPO
------END PGP SIGNATURE-----
-
---W/nzBZO5zC0uMSeA--
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
