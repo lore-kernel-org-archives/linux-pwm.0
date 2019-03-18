@@ -1,135 +1,42 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V4 2/5] pwm: Add i.MX TPM PWM driver support
-Date: Mon, 18 Mar 2019 18:25:35 +0100
-Message-ID: <20190318172535.2yxokxwu52yjf6xf@pengutronix.de>
-References: <1552610505-13568-1-git-send-email-Anson.Huang@nxp.com>
- <1552610505-13568-3-git-send-email-Anson.Huang@nxp.com>
- <20190315093532.xw5ivfkxrwvrkvix@pengutronix.de>
- <DB3PR0402MB39161B062231C59842595374F5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20190318080743.xumj6e72bzumszvp@pengutronix.de>
- <DB3PR0402MB391627A8C741C84A2057E576F5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <DB3PR0402MB39161A9884D5768F7280024FF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+From: Andreas Schwab <schwab@suse.de>
+Subject: Re: [PATCH v9 0/2] PWM support for HiFive Unleashed
+Date: Mon, 18 Mar 2019 18:26:10 +0100
+Message-ID: <mvm5zsgp00d.fsf@suse.de>
+References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
+        <mvmimwotn60.fsf@suse.de>
+        <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <DB3PR0402MB39161A9884D5768F7280024FF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+In-Reply-To: <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
+        (Yash Shah's message of "Fri, 15 Mar 2019 17:19:59 +0530")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anson Huang <anson.huang@nxp.com>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "stefan@agner.ch" <stefan@agner.ch>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>l
+To: Yash Shah <yash.shah@sifive.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+On MÃ¤r 15 2019, Yash Shah <yash.shah@sifive.com> wrote:
 
-On Mon, Mar 18, 2019 at 02:04:00PM +0000, Anson Huang wrote:
-> > > On Mon, Mar 18, 2019 at 07:41:02AM +0000, Anson Huang wrote:
-> > > > > > +	val &= ~PWM_IMX_TPM_SC_CMOD;
-> > > > > > +	writel(val, tpm->base + PWM_IMX_TPM_SC);
-> > > > >
-> > > > > As this interrupts the output, please only do it if necessary.
-> > > >
-> > > > OK, will do it ONLY when it is enabled previously.
-> > >
-> > > I think you only need to do that when the value actually changes.
-> > 
-> > OK, I will save the period/div count and ONLY do it when the value actually
-> > changes.
-> 
-> After further think, I added below tpm->period to save the current period settings,
-> ONLY when the new period to be set is different from the current period, then the 
-> pwm_imx_tpm_config_counter() is called, so I think no need to care about the value
-> changes, the value is always changed when pwm_imx_tpm_config_counter() is called.
-> 
->                  if (tpm->user_count != 1 && state->period != tpm->period)
->                          return -EBUSY;
->                  ret = pwm_imx_tpm_config_counter(chip, state->period);
->                  if (ret)
->                          return ret;
+> You need to make sure the period setting is passed via the
+> conventional way in DT file.
+> Example:
+> pwmleds {
+>     compatible = "pwm-leds";
+>     heartbeat {
+>         pwms = <&L45 0 10000000 0>;
+>         max-brightness = <255>;
+>         linux,default-trigger = "heartbeat";
+>     };
+> };
 
-This is still not the optimal thing to do. What you really want is:
+I've now managed to build a working FSBL with that change, but that
+didn't change anything.  There is not even a heartbeat option in
+/sys/class/leds/heartbeat/trigger any more.
 
-	p = round_period_according_to_hw_caps(state->period);
-	if (p != actually_configured_period && tpm->user_count != 1)
-		return -EBUSY;
-
-
-> > > > > > +	/* set duty counter */
-> > > > > > +	tmp = readl(tpm->base + PWM_IMX_TPM_MOD) &
-> > > > > > +PWM_IMX_TPM_MOD_MOD_MASK;
-> > > > >
-> > > > > I recommend storing this value in driver data.
-> > > >
-> > > > NOT quite understand, as we did NOT use it in other places except
-> > > > the get_state, just reading the register once should be OK there.
-> > >
-> > > I had the impression it is used more than once. Will look again in the
-> > > next iteration. But also note that shadowing the value might already
-> > > be beneficial for a single call site as driver data might occupy more
-> > > RAM than necessary anyhow and reading from RAM is faster than from the
-> > > hardware's register.
-> > > Probably this is not a fast path, so not worth the optimisation?!
-> > 
-> > OK, will save it in driver data and avoid accessing register again.
-
-please apply some thought before following my advices. If this is not a
-fast path and it hurts readability, don't shadow the register in driver
-data.
-
-> > > > > > +		/* disable channel */
-> > > > > > +		writel(PWM_IMX_TPM_CnSC_CHF,
-> > > > > > +			tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
-> > > > >
-> > > > > Clearing CHF doens't disable the channel as I read the manual.
-> > > >
-> > > > This write clears CHF as well as writing other bits 0, to disable
-> > > > the output. Maybe I can explicitly clear MSA/MSB/ELSA/ELSB to avoid
-> > > > confusion.
-> > >
-> > > Ah, I misinterpreted the value written.
-> > >
-> > > > > > +static int pwm_imx_tpm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> > > > > > +			     struct pwm_state *state) {
-> > > > > > +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
-> > > > > > +	struct pwm_state curstate;
-> > > > > > +	u32 duty_cycle = state->duty_cycle;
-> > > > > > +	int ret;
-> > > > > > +
-> > > > > > +	pwm_imx_tpm_get_state(chip, pwm, &curstate);
-> > > > > > +
-> > > > > > +	mutex_lock(&tpm->lock);
-> > > > >
-> > > > > What should this lock protect? Does it hurt if the state changes
-> > > > > between pwm_imx_tpm_get_state releasing the lock and
-> > > > > pwm_imx_tpm_apply taking it?
-> > > >
-> > > > The idea is to protect the share resourced by multiple channels, but
-> > > > I think I can make the mutex_lock includes get_state and remove the
-> > > > lock in get_state function.
-> > >
-> > > You might need it in .get_state to return a consistent state to the
-> > > caller. In this case just introduce an unlocked variant of .get_state
-> > > to share code between the two functions.
-> > >
-> > > And BTW the question was honest. I'm not entirely sure that you need
-> > > to hold the lock.
-> > 
-> > Agreed, if the different channel configuration ONLY access its own register,
-> > NOT any shared registers, then I think this lock is unnecessary.
-> 
-> Since all the functions in .apply function will need to access registers and these
-> registers are shared by different channels, so I think the lock is necessary. 
-
-I think so, too, but didn't thought it to the end. I can invest some
-time here in the next review round.
-
-BTW, one thing that I think is missing is, that .apply must only return
-when the newly configured setting is already active.
-
-Best regards
-Uwe
+Andreas.
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Andreas Schwab, SUSE Labs, schwab@suse.de
+GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
+"And now for something completely different."
