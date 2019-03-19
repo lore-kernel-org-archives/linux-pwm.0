@@ -1,47 +1,46 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v10 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Tue, 19 Mar 2019 09:09:50 +0100
-Message-ID: <20190319080950.4nsgzvkz5iwbkb24@pengutronix.de>
-References: <1552909634-18757-1-git-send-email-yash.shah@sifive.com>
- <1552909634-18757-3-git-send-email-yash.shah@sifive.com>
- <20190318214640.ob2ldr3tpn2vsfkl@pengutronix.de>
- <CAJ2_jOHqGBB=eej6KkdspTNiCU_uJ8deHN3O=BQmyu=GtrTT7w@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH RESEND V6 0/5] Add i.MX7ULP EVK PWM backlight support
+Date: Tue, 19 Mar 2019 09:14:46 +0100
+Message-ID: <20190319081446.m5eboi4v54er3niv@pengutronix.de>
+References: <1552979097-5814-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <CAJ2_jOHqGBB=eej6KkdspTNiCU_uJ8deHN3O=BQmyu=GtrTT7w@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>, kernel@pengutronix.de
+In-Reply-To: <1552979097-5814-1-git-send-email-Anson.Huang@nxp.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Anson Huang <anson.huang@nxp.com>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Robin Gong <yibin.gong@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "festevam@gmail.com" <festevam@gmail.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "stefan@agner.ch" <stefan@agner.ch>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Leonard Crestez <leonard.crestez@nxp.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm->
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 19, 2019 at 12:52:12PM +0530, Yash Shah wrote:
-> On Tue, Mar 19, 2019 at 3:16 AM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Mon, Mar 18, 2019 at 05:17:14PM +0530, Yash Shah wrote:
-> > > +     val = PWM_SIFIVE_PWMCFG_EN_ALWAYS |
-> > > +           FIELD_PREP(PWM_SIFIVE_PWMCFG_SCALE, scale);
-> > > +     writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-> >
-> > Starting with this write the new period length might be active with the
-> > previous duty cycle. Is this worth a comment? I think the window where
-> > this can actually happen should be made as small as possible, so it
-> > would be great to first calculate both register values and then write
-> > them in two consecutive writels.
-> 
-> The comment for this scenario has already been mentioned under the
-> limitation on top of this driver.
-> Anyway, I will try to implement your suggestion of consecutive writes
+On Tue, Mar 19, 2019 at 07:09:56AM +0000, Anson Huang wrote:
+> i.MX7ULP EVK board has MIPI-DSI display, its backlight is supplied by
+> TPM PWM module, this patch set enables i.MX7ULP TPM PWM driver support
+> and also add backlight support for MIPI-DSI display.
 
-Yeah, the comment at the top is for general information about the
-shortcomings. The comment here would be to say: The problem occurs *here*.
+Given that you actually changed something compared to v6, this is not a
+resend but v7. Also I suggest to practise a bit of patience before
+sending out a new revision to prevent people still looking at the
+previous round. I just gave feedback to the original v6 which you
+obviously didn't address :-|
+
+Also a highlevel changelog for the series (here something like: "Properly
+separate dt changes into soc-specific and machine-specific changes") is
+helpful.
 
 Best regards
 Uwe
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
