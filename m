@@ -1,535 +1,233 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v10 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Mon, 18 Mar 2019 22:46:40 +0100
-Message-ID: <20190318214640.ob2ldr3tpn2vsfkl@pengutronix.de>
-References: <1552909634-18757-1-git-send-email-yash.shah@sifive.com>
- <1552909634-18757-3-git-send-email-yash.shah@sifive.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH V5 2/5] pwm: Add i.MX TPM PWM driver support
+Date: Tue, 19 Mar 2019 00:55:35 +0000
+Message-ID: <DB3PR0402MB39169C2268EE51DB4A3930D3F5400@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1552894581-3391-1-git-send-email-Anson.Huang@nxp.com>
+ <1552894581-3391-3-git-send-email-Anson.Huang@nxp.com>
+ <20190318102740.GE17565@ulmo>
+ <DB3PR0402MB39169937B4A02D70FB72FB8DF5470@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+ <20190318153051.GA31929@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1552909634-18757-3-git-send-email-yash.shah@sifive.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: Yash Shah <yash.shah@sifive.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, palmer@sifive.com, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, robh+dt@kernel.org, kernel@pengutronix.de, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190318153051.GA31929@ulmo>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "stefan@agner.ch" <stefan@agner.ch>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
-
-[I put Thierry into To: because some remaining questions depend on his
-views]
-
-On Mon, Mar 18, 2019 at 05:17:14PM +0530, Yash Shah wrote:
-> Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC.
-> =
-
-> Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> [Atish: Various fixes and code cleanup]
-> Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> ---
->  drivers/pwm/Kconfig      |  11 ++
->  drivers/pwm/Makefile     |   1 +
->  drivers/pwm/pwm-sifive.c | 334 +++++++++++++++++++++++++++++++++++++++++=
-++++++
->  3 files changed, 346 insertions(+)
->  create mode 100644 drivers/pwm/pwm-sifive.c
-> =
-
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index a8f47df..4a61d1a 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -380,6 +380,17 @@ config PWM_SAMSUNG
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-samsung.
->  =
-
-> +config PWM_SIFIVE
-> +	tristate "SiFive PWM support"
-> +	depends on OF
-> +	depends on COMMON_CLK
-> +	depends on RISCV || COMPILE_TEST
-> +	help
-> +	  Generic PWM framework driver for SiFive SoCs.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-sifive.
-> +
->  config PWM_SPEAR
->  	tristate "STMicroelectronics SPEAr PWM support"
->  	depends on PLAT_SPEAR
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 9c676a0..30089ca 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_RCAR)		+=3D pwm-rcar.o
->  obj-$(CONFIG_PWM_RENESAS_TPU)	+=3D pwm-renesas-tpu.o
->  obj-$(CONFIG_PWM_ROCKCHIP)	+=3D pwm-rockchip.o
->  obj-$(CONFIG_PWM_SAMSUNG)	+=3D pwm-samsung.o
-> +obj-$(CONFIG_PWM_SIFIVE)	+=3D pwm-sifive.o
->  obj-$(CONFIG_PWM_SPEAR)		+=3D pwm-spear.o
->  obj-$(CONFIG_PWM_STI)		+=3D pwm-sti.o
->  obj-$(CONFIG_PWM_STM32)		+=3D pwm-stm32.o
-> diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-> new file mode 100644
-> index 0000000..4b4d48e
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-sifive.c
-> @@ -0,0 +1,334 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2017-2018 SiFive
-> + * For SiFive's PWM IP block documentation please refer Chapter 14 of
-> + * Reference Manual : https://static.dev.sifive.com/FU540-C000-v1.0.pdf
-> + *
-> + * Limitations:
-> + * - When changing both duty cycle and period, we cannot prevent in
-> + *   software that the output might produce a period with mixed
-> + *   settings (new period length and old duty cycle).
-> + * - The hardware cannot generate a 100% duty cycle.
-> + * - The hardware generates only inverted output.
-> + */
-> +#include <linux/clk.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/slab.h>
-> +#include <linux/bitfield.h>
-> +
-> +/* Register offsets */
-> +#define PWM_SIFIVE_PWMCFG		0x0
-> +#define PWM_SIFIVE_PWMCOUNT		0x8
-> +#define PWM_SIFIVE_PWMS			0x10
-> +#define PWM_SIFIVE_PWMCMP0		0x20
-> +
-> +/* PWMCFG fields */
-> +#define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
-> +#define PWM_SIFIVE_PWMCFG_STICKY	BIT(8)
-> +#define PWM_SIFIVE_PWMCFG_ZERO_CMP	BIT(9)
-> +#define PWM_SIFIVE_PWMCFG_DEGLITCH	BIT(10)
-> +#define PWM_SIFIVE_PWMCFG_EN_ALWAYS	BIT(12)
-> +#define PWM_SIFIVE_PWMCFG_EN_ONCE	BIT(13)
-> +#define PWM_SIFIVE_PWMCFG_CENTER	BIT(16)
-> +#define PWM_SIFIVE_PWMCFG_GANG		BIT(24)
-> +#define PWM_SIFIVE_PWMCFG_IP		BIT(28)
-> +
-> +/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX regist=
-ers */
-> +#define PWM_SIFIVE_SIZE_PWMCMP		4
-> +#define PWM_SIFIVE_CMPWIDTH		16
-> +#define PWM_SIFIVE_DEFAULT_PERIOD	10000000
-> +
-> +struct pwm_sifive_ddata {
-> +	struct pwm_chip	chip;
-> +	struct mutex lock; /* lock to protect user_count */
-> +	struct notifier_block notifier;
-> +	struct clk *clk;
-> +	void __iomem *regs;
-> +	unsigned int real_period;
-> +	unsigned int approx_period;
-> +	int user_count;
-> +};
-> +
-> +static inline
-> +struct pwm_sifive_ddata *pwm_sifive_chip_to_ddata(struct pwm_chip *c)
-> +{
-> +	return container_of(c, struct pwm_sifive_ddata, chip);
-> +}
-> +
-> +static int pwm_sifive_request(struct pwm_chip *chip, struct pwm_device *=
-dev)
-> +{
-> +	struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> +
-> +	mutex_lock(&pwm->lock);
-> +	pwm->user_count++;
-> +	mutex_unlock(&pwm->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static void pwm_sifive_free(struct pwm_chip *chip, struct pwm_device *de=
-v)
-> +{
-> +	struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> +
-> +	mutex_lock(&pwm->lock);
-> +	pwm->user_count--;
-> +	mutex_unlock(&pwm->lock);
-> +}
-> +
-> +static void pwm_sifive_update_clock(struct pwm_sifive_ddata *pwm,
-> +				    unsigned long rate)
-> +{
-> +	u32 val;
-> +	unsigned long long num;
-> +	/*
-> +	 * The PWM unit is used with pwmzerocmp=3D0, so the only way to modify =
-the
-> +	 * period length is using pwmscale which provides the number of bits the
-> +	 * counter is shifted before being feed to the comparators. A period
-> +	 * lasts (1 << (PWM_SIFIVE_CMPWIDTH + pwmscale)) clock ticks.
-> +	 * (1 << (PWM_SIFIVE_CMPWIDTH + scale)) * 10^9/rate =3D period
-> +	 */
-> +	unsigned long scale_pow =3D
-> +			div64_ul(pwm->approx_period * (u64)rate, NSEC_PER_SEC);
-> +	int scale =3D clamp(ilog2(scale_pow) - PWM_SIFIVE_CMPWIDTH, 0, 0xf);
-
-The situation here is as follows: The actual period length calculates
-as:
-
-	period_length =3D (0x10000 << scale) / rate
-
-Consider a clk rate of 600 MHz, then the driver maps "requested period"
-to "actual period" as follows:
-
-	if requested_period <=3D 218453 ns:
-		// scale =3D 0
-		actual_period =3D 109226 ns
-	else if requested_period <=3D 436906 ns:
-		// scale =3D 1
-		actual_period =3D 218452 ns
-	else if requested_period <=3D 873812 ns:
-		// scale =3D 2
-		actual_period =3D 436904 ns
-	...
-	else if requested_period <=3D 3579139413 ns:
-		// scale =3D 14
-		actual_period =3D 1789569707 ns
-	else:
-		//scale =3D 15
-		actual_period =3D 3579139413 ns
-
-There is an obvious rounding issue: If 218452 ns are requested, we
-should end in the scale =3D 1 case for sure. (Similar issues exist for the
-other cases.)
-
-And then there are cases that are not that clear: What if 218000 ns are
-requested? Where should the line be drawn? Thierry?
-
-And what about long periods? The longest actually supported period
-length is around 3.5 seconds. What if a consumer requests 18 seconds?
-Where should the line be drawn when the driver is supposed to return
--EINVAL (or -ERANGE)? Thierry?
-
-> +	val =3D PWM_SIFIVE_PWMCFG_EN_ALWAYS |
-> +	      FIELD_PREP(PWM_SIFIVE_PWMCFG_SCALE, scale);
-> +	writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
-
-Starting with this write the new period length might be active with the
-previous duty cycle. Is this worth a comment? I think the window where
-this can actually happen should be made as small as possible, so it
-would be great to first calculate both register values and then write
-them in two consecutive writels.
-
-> +	/* As scale <=3D 15 the shift operation cannot overflow. */
-> +	num =3D (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH + scal=
-e);
-> +	pwm->real_period =3D div64_ul(num, rate);
-
-What about rounding here? I'd say use "round closest" instead of "round
-down".
-
-> +	dev_dbg(pwm->chip.dev, "New real_period =3D %u ns\n", pwm->real_period);
-> +}
-> +
-> +static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_devic=
-e *dev,
-> +				 struct pwm_state *state)
-> +{
-> +	struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> +	u32 duty, val;
-> +
-> +	duty =3D readl(pwm->regs + PWM_SIFIVE_PWMCMP0 +
-> +		     dev->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-> +
-> +	state->enabled =3D duty > 0;
-> +
-> +	val =3D readl(pwm->regs + PWM_SIFIVE_PWMCFG);
-> +	if (!(val & PWM_SIFIVE_PWMCFG_EN_ALWAYS))
-> +		state->enabled =3D false;
-> +
-> +	state->period =3D pwm->real_period;
-> +	state->duty_cycle =3D
-> +		(u64)duty * pwm->real_period >> PWM_SIFIVE_CMPWIDTH;
-> +	state->polarity =3D PWM_POLARITY_INVERSED;
-
-If the PWM was configured for { .period =3D 1000000, .duty_cycle =3D
-1000000, .enabled =3D false, ... }, .get_state still returns .duty_cycle =
-=3D
-0. Is this acceptable?
-
-> +}
-> +
-> +static int pwm_sifive_enable(struct pwm_chip *chip, bool enable)
-> +{
-> +	struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> +	int ret;
-> +
-> +	if (enable) {
-> +		ret =3D clk_enable(pwm->clk);
-> +		if (ret) {
-> +			dev_err(pwm->chip.dev, "Enable clk failed:%d\n", ret);
-
-Space after : please. Also applies to the other error strings.
-
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	if (!enable)
-> +		clk_disable(pwm->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *de=
-v,
-> +			    struct pwm_state *state)
-> +{
-> +	struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-
-I think it would be more common to call the struct pwm_device pointer
-"pwm" and the struct pwm_sifive_ddata pointer "ddata".
-"dev" is usually a pointer to a struct device. The other functions need
-the same adaption of course.
-
-> +	unsigned int duty_cycle;
-> +	u32 frac;
-> +	struct pwm_state cur_state;
-> +	bool enabled;
-> +	int ret =3D 0;
-> +	unsigned long long num;
-> +
-> +	if (state->polarity !=3D PWM_POLARITY_INVERSED)
-> +		return -EINVAL;
-> +
-> +	ret =3D clk_enable(pwm->clk);
-> +	if (ret) {
-> +		dev_err(pwm->chip.dev, "Enable clk failed:%d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	mutex_lock(&pwm->lock);
-> +	cur_state =3D dev->state;
-> +	enabled =3D cur_state.enabled;
-> +
-> +	if (state->period !=3D pwm->approx_period) {
-> +		if (pwm->user_count !=3D 1) {
-> +			ret =3D -EBUSY;
-> +			goto exit;
-> +		}
-> +		pwm->approx_period =3D state->period;
-> +		pwm_sifive_update_clock(pwm, clk_get_rate(pwm->clk));
-> +	}
-> +
-> +	duty_cycle =3D state->duty_cycle;
-> +	if (!state->enabled)
-> +		duty_cycle =3D 0;
-> +
-> +	num =3D (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
-> +	frac =3D DIV_ROUND_CLOSEST_ULL(num, state->period);
-> +	/* The hardware cannot generate a 100% duty cycle */
-> +	frac =3D min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
-> +
-> +	writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 +
-> +	       dev->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-
-Here is another rounding question. Given that the period length can only
-be modified by factors of two there are cases where the real period is
-off by a factor of at least 1.4 which has an effect on the duty cycle.
-Consider again an input clk rate of 600 MHz, and:
-
-	.duty_cycle =3D 109226 [ns]
-	.period =3D 152916 [ns]
-
-We either have to go for real period =3D 109226 ns (as is currently
-implemented) or with 218452 ns. Which one should be chosen I already
-asked above. Here the question is (probably depending on the former
-question) how should the actual duty_cycle be calculated?
-
-> +	if (state->enabled !=3D enabled) {
-> +		ret =3D pwm_sifive_enable(chip, state->enabled);
-> +		if (ret)
-> +			goto exit;
-
-This goto is a noop and so can be dropped.
-
-> +	}
-> +
-> +exit:
-> +	clk_disable(pwm->clk);
-> +	mutex_unlock(&pwm->lock);
-> +	return ret;
-> +}
-> +
-> +static const struct pwm_ops pwm_sifive_ops =3D {
-> +	.request =3D pwm_sifive_request,
-> +	.free =3D pwm_sifive_free,
-> +	.get_state =3D pwm_sifive_get_state,
-> +	.apply =3D pwm_sifive_apply,
-> +	.owner =3D THIS_MODULE,
-> +};
-> +
-> +static int pwm_sifive_clock_notifier(struct notifier_block *nb,
-> +				     unsigned long event, void *data)
-> +{
-> +	struct clk_notifier_data *ndata =3D data;
-> +	struct pwm_sifive_ddata *pwm =3D
-> +		container_of(nb, struct pwm_sifive_ddata, notifier);
-> +
-> +	if (event =3D=3D POST_RATE_CHANGE)
-> +		pwm_sifive_update_clock(pwm, ndata->new_rate);
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static int pwm_sifive_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev =3D &pdev->dev;
-> +	struct pwm_sifive_ddata *pwm;
-> +	struct pwm_chip *chip;
-> +	struct resource *res;
-> +	int ret;
-> +
-> +	pwm =3D devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
-> +	if (!pwm)
-> +		return -ENOMEM;
-> +
-> +	mutex_init(&pwm->lock);
-> +	chip =3D &pwm->chip;
-> +	chip->dev =3D dev;
-> +	chip->ops =3D &pwm_sifive_ops;
-> +	chip->of_pwm_n_cells =3D 3;
-> +	chip->base =3D -1;
-> +	chip->npwm =3D 4;
-> +
-> +	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	pwm->regs =3D devm_ioremap_resource(dev, res);
-> +	if (IS_ERR(pwm->regs)) {
-> +		dev_err(dev, "Unable to map IO resources\n");
-> +		return PTR_ERR(pwm->regs);
-> +	}
-> +
-> +	pwm->clk =3D devm_clk_get(dev, NULL);
-> +	if (IS_ERR(pwm->clk)) {
-> +		if (PTR_ERR(pwm->clk) !=3D -EPROBE_DEFER)
-> +			dev_err(dev, "Unable to find controller clock\n");
-> +		return PTR_ERR(pwm->clk);
-> +	}
-> +
-> +	ret =3D clk_prepare_enable(pwm->clk);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable clock for pwm: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Watch for changes to underlying clock frequency */
-> +	pwm->notifier.notifier_call =3D pwm_sifive_clock_notifier;
-> +	ret =3D clk_notifier_register(pwm->clk, &pwm->notifier);
-
-Is it a problem when the notifier is called before pwmchip_add was
-called? Out of interest: Is a real problem addressed here? I.e.: Does
-the input clock actually change in practise? Also note that
-pwm_sifive_clock_notifier only adapts the period but not the duty cycle
-(any more).
-
-Given that a clk rate change affects the output, I wonder if the change
-should be declined if the pwm is running.
-
-> +	if (ret) {
-> +		dev_err(dev, "failed to register clock notifier: %d\n", ret);
-> +		goto disable_clk;
-> +	}
-> +
-> +	/* Initialize PWM */
-> +	pwm->approx_period =3D PWM_SIFIVE_DEFAULT_PERIOD;
-> +	pwm_sifive_update_clock(pwm, clk_get_rate(pwm->clk));
-
-If the bootloader setup a display with a backlight driven by a PWM it
-would be ideal to not modify the already running hardware here.
-
-> +	ret =3D pwmchip_add(chip);
-> +	if (ret < 0) {
-> +		dev_err(dev, "cannot register PWM: %d\n", ret);
-> +		goto unregister_clk;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, pwm);
-> +	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
-> +
-> +	return 0;
-> +
-> +unregister_clk:
-> +	clk_notifier_unregister(pwm->clk, &pwm->notifier);
-> +disable_clk:
-> +	clk_disable_unprepare(pwm->clk);
-> +
-> +	return ret;
-> +}
-> +
-> +static int pwm_sifive_remove(struct platform_device *dev)
-> +{
-> +	struct pwm_sifive_ddata *pwm =3D platform_get_drvdata(dev);
-> +	int ret, ch;
-> +	bool is_enabled =3D false;
-> +
-> +	ret =3D pwmchip_remove(&pwm->chip);
-> +	clk_notifier_unregister(pwm->clk, &pwm->notifier);
-> +
-> +	for (ch =3D 0; ch < pwm->chip.npwm; ch++) {
-> +		if (pwm_is_enabled(&pwm->chip.pwms[ch])) {
-
-Here is another consumer API function call.
-
-> +			is_enabled =3D true;
-> +			break;
-> +		}
-> +	}
-> +	if (is_enabled)
-> +		clk_disable(pwm->clk);
-> +	clk_unprepare(pwm->clk);
-
-I think you're leaking a clk_enable here. The probe function does one
-unconditionally that is never undone.
-
-> +	return ret;
-> +}
-> +
-> +static const struct of_device_id pwm_sifive_of_match[] =3D {
-> +	{ .compatible =3D "sifive,pwm0" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, pwm_sifive_of_match);
-> +
-> +static struct platform_driver pwm_sifive_driver =3D {
-> +	.probe =3D pwm_sifive_probe,
-> +	.remove =3D pwm_sifive_remove,
-> +	.driver =3D {
-> +		.name =3D "pwm-sifive",
-> +		.of_match_table =3D pwm_sifive_of_match,
-> +	},
-> +};
-> +module_platform_driver(pwm_sifive_driver);
-> +
-> +MODULE_DESCRIPTION("SiFive PWM driver");
-> +MODULE_LICENSE("GPL v2");
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGksIFRoaWVycnkNCg0KQmVzdCBSZWdhcmRzIQ0KQW5zb24gSHVhbmcNCg0KPiAtLS0tLU9yaWdp
+bmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBUaGllcnJ5IFJlZGluZyBbbWFpbHRvOnRoaWVycnku
+cmVkaW5nQGdtYWlsLmNvbV0NCj4gU2VudDogMjAxOeW5tDPmnIgxOOaXpSAyMzozMQ0KPiBUbzog
+QW5zb24gSHVhbmcgPGFuc29uLmh1YW5nQG54cC5jb20+DQo+IENjOiByb2JoK2R0QGtlcm5lbC5v
+cmc7IG1hcmsucnV0bGFuZEBhcm0uY29tOyBzaGF3bmd1b0BrZXJuZWwub3JnOw0KPiBzLmhhdWVy
+QHBlbmd1dHJvbml4LmRlOyBrZXJuZWxAcGVuZ3V0cm9uaXguZGU7IGZlc3RldmFtQGdtYWlsLmNv
+bTsNCj4gbGludXhAYXJtbGludXgub3JnLnVrOyBvdGF2aW9Ab3NzeXN0ZW1zLmNvbS5icjsgc3Rl
+ZmFuQGFnbmVyLmNoOw0KPiBMZW9uYXJkIENyZXN0ZXogPGxlb25hcmQuY3Jlc3RlekBueHAuY29t
+PjsgUm9iaW4gR29uZw0KPiA8eWliaW4uZ29uZ0BueHAuY29tPjsgamFuLnR1ZXJrQGVtdHJpb24u
+Y29tOyBsaW51eC0NCj4gcHdtQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5l
+bC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtl
+cm5lbEB2Z2VyLmtlcm5lbC5vcmc7IHUua2xlaW5lLQ0KPiBrb2VuaWdAcGVuZ3V0cm9uaXguZGU7
+IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0gg
+VjUgMi81XSBwd206IEFkZCBpLk1YIFRQTSBQV00gZHJpdmVyIHN1cHBvcnQNCj4gDQo+IE9uIE1v
+biwgTWFyIDE4LCAyMDE5IGF0IDExOjMzOjMzQU0gKzAwMDAsIEFuc29uIEh1YW5nIHdyb3RlOg0K
+PiA+IEhpLCBUaGllcnJ5DQo+ID4NCj4gPiBCZXN0IFJlZ2FyZHMhDQo+ID4gQW5zb24gSHVhbmcN
+Cj4gPg0KPiA+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiA+IEZyb206IFRoaWVy
+cnkgUmVkaW5nIFttYWlsdG86dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tXQ0KPiA+ID4gU2VudDog
+MjAxOeW5tDPmnIgxOOaXpSAxODoyOA0KPiA+ID4gVG86IEFuc29uIEh1YW5nIDxhbnNvbi5odWFu
+Z0BueHAuY29tPg0KPiA+ID4gQ2M6IHJvYmgrZHRAa2VybmVsLm9yZzsgbWFyay5ydXRsYW5kQGFy
+bS5jb207IHNoYXduZ3VvQGtlcm5lbC5vcmc7DQo+ID4gPiBzLmhhdWVyQHBlbmd1dHJvbml4LmRl
+OyBrZXJuZWxAcGVuZ3V0cm9uaXguZGU7IGZlc3RldmFtQGdtYWlsLmNvbTsNCj4gPiA+IGxpbnV4
+QGFybWxpbnV4Lm9yZy51azsgb3RhdmlvQG9zc3lzdGVtcy5jb20uYnI7IHN0ZWZhbkBhZ25lci5j
+aDsNCj4gPiA+IExlb25hcmQgQ3Jlc3RleiA8bGVvbmFyZC5jcmVzdGV6QG54cC5jb20+OyBSb2Jp
+biBHb25nDQo+ID4gPiA8eWliaW4uZ29uZ0BueHAuY29tPjsgamFuLnR1ZXJrQGVtdHJpb24uY29t
+OyBsaW51eC0NCj4gPiA+IHB3bUB2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJu
+ZWwub3JnOyBsaW51eC1hcm0tDQo+ID4gPiBrZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGlu
+dXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgdS5rbGVpbmUtDQo+ID4gPiBrb2VuaWdAcGVuZ3V0
+cm9uaXguZGU7IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+ID4gPiBTdWJqZWN0
+OiBSZTogW1BBVENIIFY1IDIvNV0gcHdtOiBBZGQgaS5NWCBUUE0gUFdNIGRyaXZlciBzdXBwb3J0
+DQo+ID4gPg0KPiA+ID4gT24gTW9uLCBNYXIgMTgsIDIwMTkgYXQgMDc6NDE6NDJBTSArMDAwMCwg
+QW5zb24gSHVhbmcgd3JvdGU6DQo+IFsuLi5dDQo+ID4gPiA+ICtzdGF0aWMgdm9pZCBwd21faW14
+X3RwbV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KPiA+ID4gPiArCQkJICAgICAgIHN0
+cnVjdCBwd21fZGV2aWNlICpwd20sDQo+ID4gPiA+ICsJCQkgICAgICAgdTMyIHBlcmlvZCwNCj4g
+PiA+ID4gKwkJCSAgICAgICB1MzIgZHV0eV9jeWNsZSwNCj4gPiA+ID4gKwkJCSAgICAgICBlbnVt
+IHB3bV9wb2xhcml0eSBwb2xhcml0eSkgew0KPiA+ID4gPiArCXN0cnVjdCBpbXhfdHBtX3B3bV9j
+aGlwICp0cG0gPSB0b19pbXhfdHBtX3B3bV9jaGlwKGNoaXApOw0KPiA+ID4gPiArCXUzMiBkdXR5
+X2NudCwgdmFsOw0KPiA+ID4gPiArCXU2NCB0bXA7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwkvKiBz
+ZXQgZHV0eSBjb3VudGVyICovDQo+ID4gPiA+ICsJdG1wID0gcmVhZGwodHBtLT5iYXNlICsgUFdN
+X0lNWF9UUE1fTU9EKSAmDQo+ID4gPiBQV01fSU1YX1RQTV9NT0RfTU9EOw0KPiA+ID4gPiArCXRt
+cCAqPSBkdXR5X2N5Y2xlOw0KPiA+ID4gPiArCWR1dHlfY250ID0gRElWX1JPVU5EX0NMT1NFU1Rf
+VUxMKHRtcCwgcGVyaW9kKTsNCj4gPiA+ID4gKwl3cml0ZWwoZHV0eV9jbnQgJiBQV01fSU1YX1RQ
+TV9NT0RfTU9ELA0KPiA+ID4gPiArCSAgICAgICB0cG0tPmJhc2UgKyBQV01fSU1YX1RQTV9DblYo
+cHdtLT5od3B3bSkpOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsJLyoNCj4gPiA+ID4gKwkgKiBzZXQg
+cG9sYXJpdHkgKGZvciBlZGdlLWFsaWduZWQgUFdNIG1vZGVzKQ0KPiA+ID4gPiArCSAqDQo+ID4g
+PiA+ICsJICogQ1BXTVMgIE1TQjpNU0EgIEVMU0I6RUxTQSAgTW9kZSAgQ29uZmlndXJhdGlvbg0K
+PiA+ID4gPiArCSAqIDAJICAxMAkgICAxMAkgICAgICBQV00gICBIaWdoLXRydWUgcHVsc2UNCj4g
+PiA+ID4gKwkgKiAwCSAgMTAJICAgMDAJICAgICAgUFdNICAgUmVzZXJ2ZWQNCj4gPiA+ID4gKwkg
+KiAwCSAgMTAJICAgMDEJICAgICAgUFdNICAgTG93LXRydWUgcHVsc2UNCj4gPiA+ID4gKwkgKiAw
+CSAgMTAJICAgMTEJICAgICAgUFdNICAgUmVzZXJ2ZWQNCj4gPiA+ID4gKwkgKg0KPiA+ID4gPiAr
+CSAqIEhpZ2gtdHJ1ZSBwdWxzZTogY2xlYXIgb3V0cHV0IG9uIGNvdW50ZXIgbWF0Y2gsIHNldCBv
+dXRwdXQgb24NCj4gPiA+ID4gKwkgKiBjb3VudGVyIHJlbG9hZCwgc2V0IG91dHB1dCB3aGVuIGNv
+dW50ZXIgZmlyc3QgZW5hYmxlZCBvciBwYXVzZWQuDQo+ID4gPiA+ICsJICoNCj4gPiA+ID4gKwkg
+KiBMb3ctdHJ1ZSBwdWxzZTogc2V0IG91dHB1dCBvbiBjb3VudGVyIG1hdGNoLCBjbGVhciBvdXRw
+dXQgb24NCj4gPiA+ID4gKwkgKiBjb3VudGVyIHJlbG9hZCwgY2xlYXIgb3V0cHV0IHdoZW4gY291
+bnRlciBmaXJzdCBlbmFibGVkIG9yIHBhdXNlZC4NCj4gPiA+ID4gKwkgKi8NCj4gPiA+ID4gKw0K
+PiA+ID4gPiArCXZhbCA9IHJlYWRsKHRwbS0+YmFzZSArIFBXTV9JTVhfVFBNX0NuU0MocHdtLT5o
+d3B3bSkpOw0KPiA+ID4gPiArCXZhbCAmPSB+KFBXTV9JTVhfVFBNX0NuU0NfRUxTQiB8IFBXTV9J
+TVhfVFBNX0NuU0NfRUxTQQ0KPiA+ID4gfA0KPiA+ID4gPiArCQkgUFdNX0lNWF9UUE1fQ25TQ19N
+U0EpOw0KPiA+ID4gPiArCXZhbCB8PSBQV01fSU1YX1RQTV9DblNDX01TQjsNCj4gPiA+ID4gKwl2
+YWwgfD0gKHBvbGFyaXR5ID09IFBXTV9QT0xBUklUWV9OT1JNQUwpID8NCj4gPiA+ID4gKwkJUFdN
+X0lNWF9UUE1fQ25TQ19FTFNCIDogUFdNX0lNWF9UUE1fQ25TQ19FTFNBOw0KPiA+ID4gPiArCS8q
+DQo+ID4gPiA+ICsJICogcG9sYXJpdHkgc2V0dGluZ3Mgd2lsbCBlbmFibGVkL2Rpc2FibGUgb3V0
+cHV0IHN0YXR1cw0KPiA+ID4gPiArCSAqIGltbWVkaWF0ZWx5LCBzbyBoZXJlIE9OTFkgc2F2ZSB0
+aGUgY29uZmlnIGFuZCB3cml0ZQ0KPiA+ID4gPiArCSAqIGl0IGludG8gcmVnaXN0ZXIgd2hlbiBj
+aGFubmVsIGlzIGVuYWJsZWQvZGlzYWJsZWQuDQo+ID4gPiA+ICsJICovDQo+ID4gPiA+ICsJdHBt
+LT5jaG5fY29uZmlnW3B3bS0+aHdwd21dID0gdmFsOyB9DQo+ID4gPiA+ICsNCj4gPiA+ID4gKy8q
+DQo+ID4gPiA+ICsgKiBXaGVuIGEgY2hhbm5lbCdzIHBvbGFyaXR5IGlzIGNvbmZpZ3VyZWQsIHRo
+ZSBwb2xhcml0eSBzZXR0aW5ncw0KPiA+ID4gPiArICogd2lsbCBiZSBzYXZlZCBhbmQgT05MWSB3
+cml0ZSBpbnRvIHRoZSByZWdpc3RlciB3aGVuIHRoZQ0KPiA+ID4gPiArY2hhbm5lbA0KPiA+ID4g
+PiArICogaXMgZW5hYmxlZC4NCj4gPiA+ID4gKyAqDQo+ID4gPiA+ICsgKiBXaGVuIGEgY2hhbm5l
+bCBpcyBkaXNhYmxlZCwgaXRzIHBvbGFyaXR5IHNldHRpbmdzIHdpbGwgYmUNCj4gPiA+ID4gK3Nh
+dmVkDQo+ID4gPiA+ICsgKiBhbmQgaXRzIG91dHB1dCB3aWxsIGJlIGRpc2FibGVkIGJ5IGNsZWFy
+aW5nIHBvbGFyaXR5IHNldHRpbmdzLg0KPiA+ID4gPiArICoNCj4gPiA+ID4gKyAqIHdoZW4gYSBj
+aGFubmVsIGlzIGVuYWJsZWQsIGl0cyBwb2xhcml0eSBzZXR0aW5ncyB3aWxsIGJlDQo+ID4gPiA+
+ICtyZXN0b3JlZA0KPiA+ID4NCj4gPiA+ICJ3aGVuIiAtPiAiV2hlbiIuDQo+ID4NCj4gPiBXaWxs
+IGZpeCBpdC4NCj4gPg0KPiA+ID4NCj4gPiA+ID4gKyAqIGFuZCBvdXRwdXQgd2lsbCBiZSBlbmFi
+bGVkIGFnYWluLg0KPiA+ID4gPiArICovDQo+ID4gPiA+ICtzdGF0aWMgdm9pZCBwd21faW14X3Rw
+bV9lbmFibGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KPiA+ID4gPiArCQkJICAgICAgIHN0cnVj
+dCBwd21fZGV2aWNlICpwd20sDQo+ID4gPiA+ICsJCQkgICAgICAgYm9vbCBlbmFibGUpDQo+ID4g
+PiA+ICt7DQo+ID4gPiA+ICsJc3RydWN0IGlteF90cG1fcHdtX2NoaXAgKnRwbSA9IHRvX2lteF90
+cG1fcHdtX2NoaXAoY2hpcCk7DQo+ID4gPiA+ICsJdTMyIHZhbDsNCj4gPiA+ID4gKw0KPiA+ID4g
+PiArCXZhbCA9IHJlYWRsKHRwbS0+YmFzZSArIFBXTV9JTVhfVFBNX1NDKTsNCj4gPiA+ID4gKwlp
+ZiAoZW5hYmxlKSB7DQo+ID4gPiA+ICsJCS8qIHJlc3RvcmUgY2hhbm5lbCBjb25maWcgKi8NCj4g
+PiA+ID4gKwkJd3JpdGVsKHRwbS0+Y2huX2NvbmZpZ1twd20tPmh3cHdtXSwNCj4gPiA+ID4gKwkJ
+ICAgICAgIHRwbS0+YmFzZSArIFBXTV9JTVhfVFBNX0NuU0MocHdtLT5od3B3bSkpOw0KPiA+ID4g
+PiArDQo+ID4gPiA+ICsJCWlmICgrK3RwbS0+ZW5hYmxlX2NvdW50ID09IDEpIHsNCj4gPiA+ID4g
+KwkJCS8qIHN0YXJ0IFRQTSBjb3VudGVyICovDQo+ID4gPiA+ICsJCQl2YWwgfD0gUFdNX0lNWF9U
+UE1fU0NfQ01PRF9JTkNfRVZFUllfQ0xLOw0KPiA+ID4gPiArCQkJd3JpdGVsKHZhbCwgdHBtLT5i
+YXNlICsgUFdNX0lNWF9UUE1fU0MpOw0KPiA+ID4gPiArCQl9DQo+ID4gPiA+ICsJfSBlbHNlIHsN
+Cj4gPiA+ID4gKwkJLyogZGlzYWJsZSBjaGFubmVsICovDQo+ID4gPiA+ICsJCXZhbCA9IHJlYWRs
+KHRwbS0+YmFzZSArIFBXTV9JTVhfVFBNX0NuU0MocHdtLQ0KPiA+ID4gPmh3cHdtKSk7DQo+ID4g
+PiA+ICsJCXZhbCAmPSB+KFBXTV9JTVhfVFBNX0NuU0NfTVNBIHwNCj4gPiA+IFBXTV9JTVhfVFBN
+X0NuU0NfTVNCIHwNCj4gPiA+ID4gKwkJCSBQV01fSU1YX1RQTV9DblNDX0VMU0IgfA0KPiA+ID4g
+UFdNX0lNWF9UUE1fQ25TQ19FTFNBKTsNCj4gPiA+ID4gKwkJd3JpdGVsKHZhbCwgdHBtLT5iYXNl
+ICsgUFdNX0lNWF9UUE1fQ25TQyhwd20tDQo+ID4gPiA+aHdwd20pKTsNCj4gPiA+ID4gKw0KPiA+
+ID4gPiArCQlpZiAoLS10cG0tPmVuYWJsZV9jb3VudCA9PSAwKSB7DQo+ID4gPiA+ICsJCQkvKiBz
+dG9wIFRQTSBjb3VudGVyIHNpbmNlIGFsbCBjaGFubmVscyBhcmUgZGlzYWJsZWQNCj4gPiA+ICov
+DQo+ID4gPiA+ICsJCQl2YWwgJj0gflBXTV9JTVhfVFBNX1NDX0NNT0Q7DQo+ID4gPiA+ICsJCQl3
+cml0ZWwodmFsLCB0cG0tPmJhc2UgKyBQV01fSU1YX1RQTV9TQyk7DQo+ID4gPiA+ICsJCX0NCj4g
+PiA+ID4gKwl9DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwkvKiB1cGRhdGUgY2hhbm5lbCBzdGF0dXMg
+Ki8NCj4gPiA+ID4gKwl0cG0tPmNobl9zdGF0dXNbcHdtLT5od3B3bV0gPSBlbmFibGU7IH0NCj4g
+PiA+ID4gKw0KPiA+ID4gPiArc3RhdGljIHZvaWQgcHdtX2lteF90cG1fZ2V0X3N0YXRlKHN0cnVj
+dCBwd21fY2hpcCAqY2hpcCwNCj4gPiA+ID4gKwkJCQkgIHN0cnVjdCBwd21fZGV2aWNlICpwd20s
+DQo+ID4gPiA+ICsJCQkJICBzdHJ1Y3QgcHdtX3N0YXRlICpzdGF0ZSkNCj4gPiA+ID4gK3sNCj4g
+PiA+ID4gKwlzdHJ1Y3QgaW14X3RwbV9wd21fY2hpcCAqdHBtID0gdG9faW14X3RwbV9wd21fY2hp
+cChjaGlwKTsNCj4gPiA+ID4gKwl1NjQgdG1wOw0KPiA+ID4gPiArCXUzMiB2YWwsIHJhdGU7DQo+
+ID4gPiA+ICsNCj4gPiA+ID4gKwkvKiBnZXQgcGVyaW9kICovDQo+ID4gPiA+ICsJcmF0ZSA9IGNs
+a19nZXRfcmF0ZSh0cG0tPmNsayk7DQo+ID4gPiA+ICsJdG1wID0gcmVhZGwodHBtLT5iYXNlICsg
+UFdNX0lNWF9UUE1fTU9EKTsNCj4gPiA+ID4gKwl2YWwgPSByZWFkbCh0cG0tPmJhc2UgKyBQV01f
+SU1YX1RQTV9TQyk7DQo+ID4gPiA+ICsJdmFsICY9IFBXTV9JTVhfVFBNX1NDX1BTOw0KPiA+ID4g
+PiArCXRtcCAqPSAoMSA8PCB2YWwpICogTlNFQ19QRVJfU0VDOw0KPiA+ID4gPiArCXN0YXRlLT5w
+ZXJpb2QgPSBESVZfUk9VTkRfQ0xPU0VTVF9VTEwodG1wLCByYXRlKTsNCj4gPiA+ID4gKw0KPiA+
+ID4gPiArCS8qIGdldCBkdXR5IGN5Y2xlICovDQo+ID4gPiA+ICsJdG1wID0gcmVhZGwodHBtLT5i
+YXNlICsgUFdNX0lNWF9UUE1fQ25WKHB3bS0+aHdwd20pKTsNCj4gPiA+ID4gKwl0bXAgKj0gKDEg
+PDwgdmFsKSAqIE5TRUNfUEVSX1NFQzsNCj4gPiA+ID4gKwlzdGF0ZS0+ZHV0eV9jeWNsZSA9IERJ
+Vl9ST1VORF9DTE9TRVNUX1VMTCh0bXAsIHJhdGUpOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsJLyog
+Z2V0IHBvbGFyaXR5ICovDQo+ID4gPiA+ICsJdmFsID0gcmVhZGwodHBtLT5iYXNlICsgUFdNX0lN
+WF9UUE1fQ25TQyhwd20tPmh3cHdtKSk7DQo+ID4gPiA+ICsJaWYgKHZhbCAmIFBXTV9JTVhfVFBN
+X0NuU0NfRUxTQSkNCj4gPiA+ID4gKwkJc3RhdGUtPnBvbGFyaXR5ID0gUFdNX1BPTEFSSVRZX0lO
+VkVSU0VEOw0KPiA+ID4gPiArCWVsc2UNCj4gPiA+ID4gKwkJc3RhdGUtPnBvbGFyaXR5ID0gUFdN
+X1BPTEFSSVRZX05PUk1BTDsNCj4gPiA+ID4gKw0KPiA+ID4gPiArCS8qIGdldCBjaGFubmVsIHN0
+YXR1cyAqLw0KPiA+ID4gPiArCXN0YXRlLT5lbmFibGVkID0gdHBtLT5jaG5fc3RhdHVzW3B3bS0+
+aHdwd21dID8gdHJ1ZSA6IGZhbHNlOyB9DQo+ID4gPiA+ICsNCj4gPiA+ID4gK3N0YXRpYyBpbnQg
+cHdtX2lteF90cG1fYXBwbHkoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QNCj4gPiA+ID4g
+K3B3bV9kZXZpY2UNCj4gPiA+ICpwd20sDQo+ID4gPiA+ICsJCQkgICAgIHN0cnVjdCBwd21fc3Rh
+dGUgKnN0YXRlKQ0KPiA+ID4gPiArew0KPiA+ID4gPiArCXN0cnVjdCBpbXhfdHBtX3B3bV9jaGlw
+ICp0cG0gPSB0b19pbXhfdHBtX3B3bV9jaGlwKGNoaXApOw0KPiA+ID4gPiArCXN0cnVjdCBwd21f
+c3RhdGUgY3Vyc3RhdGU7DQo+ID4gPiA+ICsJaW50IHJldDsNCj4gPiA+ID4gKw0KPiA+ID4gPiAr
+CW11dGV4X2xvY2soJnRwbS0+bG9jayk7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwlwd21faW14X3Rw
+bV9nZXRfc3RhdGUoY2hpcCwgcHdtLCAmY3Vyc3RhdGUpOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsJ
+aWYgKHN0YXRlLT5wZXJpb2QgIT0gY3Vyc3RhdGUucGVyaW9kKSB7DQo+ID4gPiA+ICsJCS8qDQo+
+ID4gPiA+ICsJCSAqIFRQTSBjb3VudGVyIGlzIHNoYXJlZCBieSBtdWx0aXBsZSBjaGFubmVscywg
+c28NCj4gPiA+ID4gKwkJICogcHJlc2NhbGUgYW5kIHBlcmlvZCBjYW4gTk9UIGJlIG1vZGlmaWVk
+IHdoZW4NCj4gPiA+ID4gKwkJICogdGhlcmUgYXJlIG11bHRpcGxlIGNoYW5uZWxzIGluIHVzZS4N
+Cj4gPiA+ID4gKwkJICovDQo+ID4gPiA+ICsJCWlmICh0cG0tPnVzZXJfY291bnQgIT0gMSkNCj4g
+PiA+ID4gKwkJCXJldHVybiAtRUJVU1k7DQo+ID4gPiA+ICsJCXJldCA9IHB3bV9pbXhfdHBtX2Nv
+bmZpZ19jb3VudGVyKGNoaXAsIHN0YXRlLT5wZXJpb2QpOw0KPiA+ID4gPiArCQlpZiAocmV0KQ0K
+PiA+ID4gPiArCQkJcmV0dXJuIHJldDsNCj4gPiA+ID4gKwl9DQo+ID4gPiA+ICsNCj4gPiA+ID4g
+KwlpZiAoc3RhdGUtPmVuYWJsZWQgPT0gZmFsc2UpIHsNCj4gPiA+ID4gKwkJLyoNCj4gPiA+ID4g
+KwkJICogaWYgZXZlbnR1YWxseSB0aGUgUFdNIG91dHB1dCBpcyBMT1csIGVpdGhlcg0KPiA+ID4g
+PiArCQkgKiBkdXR5IGN5Y2xlIGlzIDAgb3Igc3RhdHVzIGlzIGRpc2FibGVkLCBuZWVkDQo+ID4g
+PiA+ICsJCSAqIHRvIG1ha2Ugc3VyZSB0aGUgb3V0cHV0IHBpbiBpcyBMT1cuDQo+ID4gPiA+ICsJ
+CSAqLw0KPiA+ID4gPiArCQlwd21faW14X3RwbV9jb25maWcoY2hpcCwgcHdtLCBzdGF0ZS0+cGVy
+aW9kLA0KPiA+ID4gPiArCQkJCSAgIDAsIHN0YXRlLT5wb2xhcml0eSk7DQo+ID4gPiA+ICsJCWlm
+IChjdXJzdGF0ZS5lbmFibGVkKQ0KPiA+ID4gPiArCQkJcHdtX2lteF90cG1fZW5hYmxlKGNoaXAs
+IHB3bSwgZmFsc2UpOw0KPiA+ID4gPiArCX0gZWxzZSB7DQo+ID4gPiA+ICsJCXB3bV9pbXhfdHBt
+X2NvbmZpZyhjaGlwLCBwd20sIHN0YXRlLT5wZXJpb2QsDQo+ID4gPiA+ICsJCQkJICAgc3RhdGUt
+PmR1dHlfY3ljbGUsIHN0YXRlLT5wb2xhcml0eSk7DQo+ID4gPiA+ICsJCWlmICghY3Vyc3RhdGUu
+ZW5hYmxlZCkNCj4gPiA+ID4gKwkJCXB3bV9pbXhfdHBtX2VuYWJsZShjaGlwLCBwd20sIHRydWUp
+Ow0KPiA+ID4NCj4gPiA+IERvZXNuJ3QgdGhpcyBtZWFuIHRoYXQgeW91IHdvbid0IGJlIGFwcGx5
+aW5nIGNoYW5nZXMgdG8gdGhlIHBvbGFyaXR5DQo+ID4gPiB3aGlsZSBhIFBXTSBpcyBlbmFibGVk
+PyBUaGF0IHNlZW1zIHdyb25nLiBHcmFudGVkLCB5b3UgbWF5IHVzdWFsbHkNCj4gPiA+IG5vdCBy
+dW4gaW50byB0aGF0LCBidXQgaWYgeW91IGNhbid0IHN1cHBvcnQgaXQgSSB0aGluayB5b3Ugc2hv
+dWxkIGF0DQo+ID4gPiBsZWFzdCByZXR1cm4gYW4gZXJyb3IgaWYgeW91IGRldGVjdCB0aGF0IHRo
+ZSB1c2VyIHdhbnRzIHRvIGNoYW5nZSBwb2xhcml0eQ0KPiB3aGlsZSB0aGUgUFdNIGlzIGVuYWJs
+ZWQuDQo+ID4NCj4gPiBJIHRob3VnaHQgYmVsb3cgZnVuY3Rpb24gY2FsbCBhbHJlYWR5IHNldCB0
+aGUgcG9sYXJpdHk/IE5vIG1hdHRlciBpdHMNCj4gPiBzdGF0dXMgaXMgZW5hYmxlZCBvciBkaXNh
+YmxlZCwgdGhlIHBvbGFyaXR5IHNldHRpbmcgd2lsbCBiZSBhbHdheXMgYXBwbGllZC4NCj4gPg0K
+PiA+IAkJcHdtX2lteF90cG1fY29uZmlnKGNoaXAsIHB3bSwgc3RhdGUtPnBlcmlvZCwNCj4gPiAJ
+CQkJICAgc3RhdGUtPmR1dHlfY3ljbGUsIHN0YXRlLT5wb2xhcml0eSk7DQo+IA0KPiBUaGF0J3Mg
+bm90IHdoYXQgaXQgc2VlbXMgdG8gZG8uIEluIGZhY3QgdGhlcmUncyBhIGNvbW1lbnQgdGhhdCBl
+eHBsYWlucyB3aHkgaXQNCj4gZG9lc24ndCBkbyB0aGF0LiBRdW90aW5nIGhlcmU6DQo+IA0KPiA+
+ID4gPiArCS8qDQo+ID4gPiA+ICsJICogcG9sYXJpdHkgc2V0dGluZ3Mgd2lsbCBlbmFibGVkL2Rp
+c2FibGUgb3V0cHV0IHN0YXR1cw0KPiA+ID4gPiArCSAqIGltbWVkaWF0ZWx5LCBzbyBoZXJlIE9O
+TFkgc2F2ZSB0aGUgY29uZmlnIGFuZCB3cml0ZQ0KPiA+ID4gPiArCSAqIGl0IGludG8gcmVnaXN0
+ZXIgd2hlbiBjaGFubmVsIGlzIGVuYWJsZWQvZGlzYWJsZWQuDQo+ID4gPiA+ICsJICovDQo+ID4g
+PiA+ICsJdHBtLT5jaG5fY29uZmlnW3B3bS0+aHdwd21dID0gdmFsOw0KPiANCj4gTG9va3MgdG8g
+bWUgbGlrZSB0aGF0IG9ubHkgc3RvcmVzIHRoZSB2YWx1ZSBmb3IgdGhhdCByZWdpc3RlciBzbyB0
+aGF0IGl0IGNhbiBiZQ0KPiBhcHBsaWVkIGF0IGEgbGF0ZXIgcG9pbnQuIE9yIGFtIEkgbWlzc2lu
+ZyBzb21ldGhpbmc/DQoNClRoZSBjb21tZW50IGlzIHdoYXQgSSBpbnRlbmQgdG8gc2F5LCBzaW5j
+ZSB0aGUgaGFyZHdhcmUgZG9lcyBOT1QgcHJvdmlkZQ0KdGhlIGNoYW5uZWwgZW5hYmxlL2Rpc2Fi
+bGUgZnVuY3Rpb24sIGJ1dCBkaWZmZXJlbnQgcG9sYXJpdHkgc2V0dGluZ3MgY2FuIGFjdCBhcw0K
+Y2hhbm5lbCBlbmFibGUvZGlzYWJsZSwgdGhhdCBpcyB3aHkgSSBzdG9yZSB0aGUgcG9sYXJpdHkg
+c2V0dGluZyBhbmQgT05MWQ0KYXBwbHkgaXQgdG8gdGhlIGhhcmR3YXJlIHdoZW4gdGhlIGNoYW5u
+ZWwgaXMgZW5hYmxlZC4NCg0KDQo+IA0KPiA+ID4gPiArCQkJCXJldCk7DQo+ID4gPiA+ICsJfQ0K
+PiA+ID4gPiArDQo+ID4gPiA+ICsJcmV0dXJuIHJldDsNCj4gPiA+ID4gK307DQo+ID4gPg0KPiA+
+ID4gWW91ciBoYW5kbGluZyBvZiB0aGUgY2xvY2sgc2VlbXMgc3RyYW5nZSBoZXJlLiBCYXNpY2Fs
+bHkgaW4gdGhlDQo+ID4gPiBhYm92ZSB5b3UgYWx3YXlzIGtlZXAgdGhlIGNsb2NrIG9uIGFuZCB5
+b3Ugb25seSBkaXNhYmxlIGl0IGlmIHRoZXJlDQo+ID4gPiBhcmUgbm8gdXNlcnMgYW5kIHlvdSdy
+ZSBnb2luZyB0byBzdXNwZW5kLg0KPiA+ID4NCj4gPiA+IFdoeSBkbyB5b3UgbmVlZCB0byBrZWVw
+IGFuIGV4dHJhIHJlZmVyZW5jZSBjb3VudCBhbnl3YXk/IE9yIHdoeSBrZWVwDQo+ID4gPiB0aGUg
+Y2xvY2sgb24gYWxsIHRoZSB0aW1lPyBDYW4ndCB5b3UganVzdCBkbyBhIGNsa19wcmVwYXJlX2Vu
+YWJsZSgpDQo+ID4gPiBldmVyeSB0aW1lIHNvbWVib2R5IGVuYWJsZXMgdGhlIFBXTT8gVGhlIEND
+RiBhbHJlYWR5IGhhcyBidWlsdC1pbg0KPiA+ID4gcmVmZXJlbmNlIGNvdW50aW5nLCBzbyBJJ20g
+bm90IHN1cmUgeW91IHJlYWxseSBuZWVkIHRvIGR1cGxpY2F0ZSB0aGF0IGhlcmUuDQo+ID4NCj4g
+PiBLZWVwaW5nIGNsb2NrIGFsd2F5cyBPTiBzaW5jZSBkcml2ZXIgcHJvYmUgaXMgYmVjYXVzZSwg
+bWFueSBUTVAgcmVnaXN0ZXJzJw0KPiA+IHdyaXRlIG5lZWRzIGNsb2NrIHRvIGJlIE9OIGZvciBz
+eW5jIGludG8gcmVnaXN0ZXIgaGFyZHdhcmUsIGp1c3QNCj4gPiBlbmFibGUgdGhlIGNsb2NrIGJl
+Zm9yZSB3cml0aW5nIHJlZ2lzdGVyIGFuZCBkaXNhYmxlIHRoZSBjbG9jaw0KPiA+IGltbWVkaWF0
+ZWx5IGRvZXMgTk9UIHdvcmssIHVubGVzcyB3ZSBrZWVwIHJlYWRpbmcgdGhlIHJlZ2lzdGVyIHZh
+bHVlDQo+ID4gdW50aWwgdGhlIHJlZ2lzdGVyIHZhbHVlIGlzIHdoYXQgd2Ugd2FudCB0byB3cml0
+ZSwgYnV0IHRoYXQgbWFrZXMgY29kZQ0KPiA+IG11Y2ggbW9yZSBjb21wbGljYXRlZCwgYW5kIHRo
+ZSBQV00gY2xvY2sgbm9ybWFsbHkgaXMgZnJvbSBPU0Mgd2hpY2gNCj4gPiBkb2VzIE5PVCBjb25z
+dW1lIHRvbyBtdWNoIHBvd2VyLCBzbyBJIGtlZXAgdGhlIGNsb2NrIGFsd2F5cyBvbiBhbmQNCj4g
+T05MWSBkaXNhYmxlIGl0IGFmdGVyIHN1c3BlbmQuDQo+IA0KPiBXaHkgZG8geW91IGJvdGhlciB3
+aXRoIGtlZXBpbmcgdGhlIGVuYWJsZSByZWZlcmVuY2UgY291bnQsIHRoZW4/IENhbid0IHlvdQ0K
+PiBqdXN0IGVuYWJsZSB0aGUgY2xvY2sgb24gcHJvYmUsIHRoZW4gb24gc3VzcGVuZCBkaXNhYmxl
+IGl0LCBlbmFibGUgaXQgYWdhaW4gb24NCj4gcmVzdW1lIGFuZCBvbiByZW1vdmUgeW91IGFsc28g
+ZGlzYWJsZSBpdD8gV2h5IGRvZXMgaXQgbmVlZCB0byBiZQ0KPiBkZXBlbmRlbnQgb24gd2hldGhl
+ciB0aGVyZSBhcmUgYW55IGFjdGl2ZSBQV01zIG9yIG5vdD8NCg0KVGhhdCB3YXMgd2hhdCBJIGRp
+ZCBpbiBwcmV2aW91cyBwYXRjaCB2ZXJzaW9uLCBidXQgSSByZWNlaXZlZCBjb21tZW50cyBzYXlp
+bmcgdGhhdA0KUFdNIGNsb2NrIHNob3VsZCBOT1QgYmUgZGlzYWJsZWQgaWYgaXQgaXMgaW4gdXNl
+LCBhbmQgdGhlIGNoYW5uZWwgZW5hYmxlIGNvdW50IGlzDQppbnRyb2R1Y2VkIGZvciBkZXRlcm1p
+bmUgd2hldGhlciB0byBkaXNhYmxlIHRoZSBzaGFyZWQgSFcgY291bnRlciwgc28gSSBhbHNvIHVz
+ZQ0KdGhlIGNoYW5uZWwgZW5hYmxlIGNvdW50IHRvIGRldGVybWluZSB3aGV0aGVyIHRvIHR1cm4g
+b2ZmIGNsb2NrIGluIHN1c3BlbmQuIEFsdGhvdWdoDQpJIHRoaW5rIGl0IHNob3VsZCBiZSBPSyB0
+byBqdXN0IHR1cm4gb2ZmIGNsb2NrIGluIHN1c3BlbmQgd2l0aG91dCBhbnkgY2hlY2tpbmcsIGlm
+IHRoZXJlIGlzDQphbnkgYWN0aXZlIFBXTSwgdGhlbiB0aGUgdXNlciBzaG91bGQgZml4IGl0LCBh
+cyBJIHRoaW5rIFBXTSBzaG91bGQgYmUgT0ZGIGZvciBzdXNwZW5kLg0KU28geW91IGFsc28gdGhp
+bmsgSSBjYW4gc2tpcCB0aGUgY2hlY2sgZm9yIHRoZSBQV00gYWN0aXZlIGNvdW50IGFuZCBqdXN0
+IGRpc2FibGUgY2xvY2sNCmluIHN1c3BlbmQ/DQoNClRoYW5rcywNCkFuc29uLg0KDQo+IA0KPiBU
+aGllcnJ5DQo=
