@@ -1,562 +1,659 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v10 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Tue, 19 Mar 2019 12:52:12 +0530
-Message-ID: <CAJ2_jOHqGBB=eej6KkdspTNiCU_uJ8deHN3O=BQmyu=GtrTT7w@mail.gmail.com>
-References: <1552909634-18757-1-git-send-email-yash.shah@sifive.com>
- <1552909634-18757-3-git-send-email-yash.shah@sifive.com> <20190318214640.ob2ldr3tpn2vsfkl@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH V6 2/5] pwm: Add i.MX TPM PWM driver support
+Date: Tue, 19 Mar 2019 09:04:00 +0100
+Message-ID: <20190319080400.shcsnsyyjcwijsg3@pengutronix.de>
+References: <1552977898-5590-1-git-send-email-Anson.Huang@nxp.com>
+ <1552977898-5590-3-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190318214640.ob2ldr3tpn2vsfkl@pengutronix.de>
+Content-Disposition: inline
+In-Reply-To: <1552977898-5590-3-git-send-email-Anson.Huang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>, kernel@pengutronix.de
+To: Anson Huang <anson.huang@nxp.com>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>l
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 19, 2019 at 3:16 AM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> Hello,
->
-> [I put Thierry into To: because some remaining questions depend on his
-> views]
->
-> On Mon, Mar 18, 2019 at 05:17:14PM +0530, Yash Shah wrote:
-> > Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC=
-.
-> >
-> > Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-> > [Atish: Various fixes and code cleanup]
-> > Signed-off-by: Atish Patra <atish.patra@wdc.com>
-> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> > ---
-> >  drivers/pwm/Kconfig      |  11 ++
-> >  drivers/pwm/Makefile     |   1 +
-> >  drivers/pwm/pwm-sifive.c | 334 +++++++++++++++++++++++++++++++++++++++=
-++++++++
-> >  3 files changed, 346 insertions(+)
-> >  create mode 100644 drivers/pwm/pwm-sifive.c
-> >
-> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > index a8f47df..4a61d1a 100644
-> > --- a/drivers/pwm/Kconfig
-> > +++ b/drivers/pwm/Kconfig
-> > @@ -380,6 +380,17 @@ config PWM_SAMSUNG
-> >         To compile this driver as a module, choose M here: the module
-> >         will be called pwm-samsung.
-> >
-> > +config PWM_SIFIVE
-> > +     tristate "SiFive PWM support"
-> > +     depends on OF
-> > +     depends on COMMON_CLK
-> > +     depends on RISCV || COMPILE_TEST
-> > +     help
-> > +       Generic PWM framework driver for SiFive SoCs.
-> > +
-> > +       To compile this driver as a module, choose M here: the module
-> > +       will be called pwm-sifive.
-> > +
-> >  config PWM_SPEAR
-> >       tristate "STMicroelectronics SPEAr PWM support"
-> >       depends on PLAT_SPEAR
-> > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> > index 9c676a0..30089ca 100644
-> > --- a/drivers/pwm/Makefile
-> > +++ b/drivers/pwm/Makefile
-> > @@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_RCAR)              +=3D pwm-rcar.o
-> >  obj-$(CONFIG_PWM_RENESAS_TPU)        +=3D pwm-renesas-tpu.o
-> >  obj-$(CONFIG_PWM_ROCKCHIP)   +=3D pwm-rockchip.o
-> >  obj-$(CONFIG_PWM_SAMSUNG)    +=3D pwm-samsung.o
-> > +obj-$(CONFIG_PWM_SIFIVE)     +=3D pwm-sifive.o
-> >  obj-$(CONFIG_PWM_SPEAR)              +=3D pwm-spear.o
-> >  obj-$(CONFIG_PWM_STI)                +=3D pwm-sti.o
-> >  obj-$(CONFIG_PWM_STM32)              +=3D pwm-stm32.o
-> > diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-> > new file mode 100644
-> > index 0000000..4b4d48e
-> > --- /dev/null
-> > +++ b/drivers/pwm/pwm-sifive.c
-> > @@ -0,0 +1,334 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (C) 2017-2018 SiFive
-> > + * For SiFive's PWM IP block documentation please refer Chapter 14 of
-> > + * Reference Manual : https://static.dev.sifive.com/FU540-C000-v1.0.pd=
-f
-> > + *
-> > + * Limitations:
-> > + * - When changing both duty cycle and period, we cannot prevent in
-> > + *   software that the output might produce a period with mixed
-> > + *   settings (new period length and old duty cycle).
-> > + * - The hardware cannot generate a 100% duty cycle.
-> > + * - The hardware generates only inverted output.
-> > + */
-> > +#include <linux/clk.h>
-> > +#include <linux/io.h>
-> > +#include <linux/module.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/pwm.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/bitfield.h>
-> > +
-> > +/* Register offsets */
-> > +#define PWM_SIFIVE_PWMCFG            0x0
-> > +#define PWM_SIFIVE_PWMCOUNT          0x8
-> > +#define PWM_SIFIVE_PWMS                      0x10
-> > +#define PWM_SIFIVE_PWMCMP0           0x20
-> > +
-> > +/* PWMCFG fields */
-> > +#define PWM_SIFIVE_PWMCFG_SCALE              GENMASK(3, 0)
-> > +#define PWM_SIFIVE_PWMCFG_STICKY     BIT(8)
-> > +#define PWM_SIFIVE_PWMCFG_ZERO_CMP   BIT(9)
-> > +#define PWM_SIFIVE_PWMCFG_DEGLITCH   BIT(10)
-> > +#define PWM_SIFIVE_PWMCFG_EN_ALWAYS  BIT(12)
-> > +#define PWM_SIFIVE_PWMCFG_EN_ONCE    BIT(13)
-> > +#define PWM_SIFIVE_PWMCFG_CENTER     BIT(16)
-> > +#define PWM_SIFIVE_PWMCFG_GANG               BIT(24)
-> > +#define PWM_SIFIVE_PWMCFG_IP         BIT(28)
-> > +
-> > +/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX regi=
-sters */
-> > +#define PWM_SIFIVE_SIZE_PWMCMP               4
-> > +#define PWM_SIFIVE_CMPWIDTH          16
-> > +#define PWM_SIFIVE_DEFAULT_PERIOD    10000000
-> > +
-> > +struct pwm_sifive_ddata {
-> > +     struct pwm_chip chip;
-> > +     struct mutex lock; /* lock to protect user_count */
-> > +     struct notifier_block notifier;
-> > +     struct clk *clk;
-> > +     void __iomem *regs;
-> > +     unsigned int real_period;
-> > +     unsigned int approx_period;
-> > +     int user_count;
-> > +};
-> > +
-> > +static inline
-> > +struct pwm_sifive_ddata *pwm_sifive_chip_to_ddata(struct pwm_chip *c)
-> > +{
-> > +     return container_of(c, struct pwm_sifive_ddata, chip);
-> > +}
-> > +
-> > +static int pwm_sifive_request(struct pwm_chip *chip, struct pwm_device=
- *dev)
-> > +{
-> > +     struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> > +
-> > +     mutex_lock(&pwm->lock);
-> > +     pwm->user_count++;
-> > +     mutex_unlock(&pwm->lock);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static void pwm_sifive_free(struct pwm_chip *chip, struct pwm_device *=
-dev)
-> > +{
-> > +     struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> > +
-> > +     mutex_lock(&pwm->lock);
-> > +     pwm->user_count--;
-> > +     mutex_unlock(&pwm->lock);
-> > +}
-> > +
-> > +static void pwm_sifive_update_clock(struct pwm_sifive_ddata *pwm,
-> > +                                 unsigned long rate)
-> > +{
-> > +     u32 val;
-> > +     unsigned long long num;
-> > +     /*
-> > +      * The PWM unit is used with pwmzerocmp=3D0, so the only way to m=
-odify the
-> > +      * period length is using pwmscale which provides the number of b=
-its the
-> > +      * counter is shifted before being feed to the comparators. A per=
-iod
-> > +      * lasts (1 << (PWM_SIFIVE_CMPWIDTH + pwmscale)) clock ticks.
-> > +      * (1 << (PWM_SIFIVE_CMPWIDTH + scale)) * 10^9/rate =3D period
-> > +      */
-> > +     unsigned long scale_pow =3D
-> > +                     div64_ul(pwm->approx_period * (u64)rate, NSEC_PER=
-_SEC);
-> > +     int scale =3D clamp(ilog2(scale_pow) - PWM_SIFIVE_CMPWIDTH, 0, 0x=
-f);
->
-> The situation here is as follows: The actual period length calculates
-> as:
->
->         period_length =3D (0x10000 << scale) / rate
->
-> Consider a clk rate of 600 MHz, then the driver maps "requested period"
-> to "actual period" as follows:
->
->         if requested_period <=3D 218453 ns:
->                 // scale =3D 0
->                 actual_period =3D 109226 ns
->         else if requested_period <=3D 436906 ns:
->                 // scale =3D 1
->                 actual_period =3D 218452 ns
->         else if requested_period <=3D 873812 ns:
->                 // scale =3D 2
->                 actual_period =3D 436904 ns
->         ...
->         else if requested_period <=3D 3579139413 ns:
->                 // scale =3D 14
->                 actual_period =3D 1789569707 ns
->         else:
->                 //scale =3D 15
->                 actual_period =3D 3579139413 ns
->
-> There is an obvious rounding issue: If 218452 ns are requested, we
-> should end in the scale =3D 1 case for sure. (Similar issues exist for th=
-e
-> other cases.)
->
-> And then there are cases that are not that clear: What if 218000 ns are
-> requested? Where should the line be drawn? Thierry?
->
-> And what about long periods? The longest actually supported period
-> length is around 3.5 seconds. What if a consumer requests 18 seconds?
-> Where should the line be drawn when the driver is supposed to return
-> -EINVAL (or -ERANGE)? Thierry?
->
-> > +     val =3D PWM_SIFIVE_PWMCFG_EN_ALWAYS |
-> > +           FIELD_PREP(PWM_SIFIVE_PWMCFG_SCALE, scale);
-> > +     writel(val, pwm->regs + PWM_SIFIVE_PWMCFG);
->
-> Starting with this write the new period length might be active with the
-> previous duty cycle. Is this worth a comment? I think the window where
-> this can actually happen should be made as small as possible, so it
-> would be great to first calculate both register values and then write
-> them in two consecutive writels.
+On Tue, Mar 19, 2019 at 06:50:12AM +0000, Anson Huang wrote:
+> i.MX7ULP has TPM(Low Power Timer/Pulse Width Modulation Module)
+> inside, it can support multiple PWM channels, all the channels
+> share same counter and period setting, but each channel can
+> configure its duty and polarity independently.
+> 
+> There are several TPM modules in i.MX7ULP, the number of channels
+> in TPM modules are different, it can be read from each TPM module's
+> PARAM register.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> ---
+> Changes since V5:
+> 	- improve commit message body;
+> 	- add period round function;
+> 	- use per channel data for saving channel's private data;
+> 	- improve error message output during probe;
+> 	- improve different period settings by different channels' handling;
+> 	- support #pwm-cells 3 cases.
+> ---
+>  drivers/pwm/Kconfig       |  11 ++
+>  drivers/pwm/Makefile      |   1 +
+>  drivers/pwm/pwm-imx-tpm.c | 463 ++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 475 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-imx-tpm.c
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 54f8238..3ea0391 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -210,6 +210,17 @@ config PWM_IMX27
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-imx27.
+>  
+> +config PWM_IMX_TPM
+> +	tristate "i.MX TPM PWM support"
+> +	depends on ARCH_MXC || COMPILE_TEST
+> +	depends on HAVE_CLK && HAS_IOMEM
+> +	help
+> +	  Generic PWM framework driver for i.MX7ULP TPM module, TPM's full
+> +	  name is Low Power Timer/Pulse Width Modulation Module.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-imx-tpm.
+> +
+>  config PWM_JZ4740
+>  	tristate "Ingenic JZ47xx PWM support"
+>  	depends on MACH_INGENIC
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 448825e..c368599 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -19,6 +19,7 @@ obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
+>  obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+>  obj-$(CONFIG_PWM_IMX1)		+= pwm-imx1.o
+>  obj-$(CONFIG_PWM_IMX27)		+= pwm-imx27.o
+> +obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
+>  obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+>  obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+>  obj-$(CONFIG_PWM_LPC18XX_SCT)	+= pwm-lpc18xx-sct.o
+> diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+> new file mode 100644
+> index 0000000..bb6b27e
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-imx-tpm.c
+> @@ -0,0 +1,463 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright 2018-2019 NXP.
+> + *
+> + * Limitations:
+> + * - The TPM counter and period counter are shared between
+> + *   multiple channels, so all channels should use same period
+> + *   settings.
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/log2.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/slab.h>
+> +
+> +#define PWM_IMX_TPM_PARAM	0x4
+> +#define PWM_IMX_TPM_GLOBAL	0x8
+> +#define PWM_IMX_TPM_SC		0x10
+> +#define PWM_IMX_TPM_CNT		0x14
+> +#define PWM_IMX_TPM_MOD		0x18
+> +#define PWM_IMX_TPM_CnSC(n)	(0x20 + (n) * 0x8)
+> +#define PWM_IMX_TPM_CnV(n)	(0x24 + (n) * 0x8)
+> +
+> +#define PWM_IMX_TPM_PARAM_CHAN			GENMASK(7, 0)
+> +
+> +#define PWM_IMX_TPM_SC_PS			GENMASK(2, 0)
+> +#define PWM_IMX_TPM_SC_CMOD			GENMASK(4, 3)
+> +#define PWM_IMX_TPM_SC_CMOD_INC_EVERY_CLK	BIT(3)
+> +#define PWM_IMX_TPM_SC_CPWMS			BIT(5)
+> +
+> +#define PWM_IMX_TPM_CnSC_CHF	BIT(7)
+> +#define PWM_IMX_TPM_CnSC_MSB	BIT(5)
+> +#define PWM_IMX_TPM_CnSC_MSA	BIT(4)
+> +#define PWM_IMX_TPM_CnSC_ELS	GENMASK(3, 2) /* combine ELSA and ELSB as a field */
 
-The comment for this scenario has already been mentioned under the
-limitation on top of this driver.
-Anyway, I will try to implement your suggestion of consecutive writes
+I'd write a more verbose comment here to make this understandable.
+Something like:
 
->
-> > +     /* As scale <=3D 15 the shift operation cannot overflow. */
-> > +     num =3D (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH =
-+ scale);
-> > +     pwm->real_period =3D div64_ul(num, rate);
->
-> What about rounding here? I'd say use "round closest" instead of "round
-> down".
->
-> > +     dev_dbg(pwm->chip.dev, "New real_period =3D %u ns\n", pwm->real_p=
-eriod);
-> > +}
-> > +
-> > +static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_dev=
-ice *dev,
-> > +                              struct pwm_state *state)
-> > +{
-> > +     struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> > +     u32 duty, val;
-> > +
-> > +     duty =3D readl(pwm->regs + PWM_SIFIVE_PWMCMP0 +
-> > +                  dev->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-> > +
-> > +     state->enabled =3D duty > 0;
-> > +
-> > +     val =3D readl(pwm->regs + PWM_SIFIVE_PWMCFG);
-> > +     if (!(val & PWM_SIFIVE_PWMCFG_EN_ALWAYS))
-> > +             state->enabled =3D false;
-> > +
-> > +     state->period =3D pwm->real_period;
-> > +     state->duty_cycle =3D
-> > +             (u64)duty * pwm->real_period >> PWM_SIFIVE_CMPWIDTH;
-> > +     state->polarity =3D PWM_POLARITY_INVERSED;
->
-> If the PWM was configured for { .period =3D 1000000, .duty_cycle =3D
-> 1000000, .enabled =3D false, ... }, .get_state still returns .duty_cycle =
-=3D
-> 0. Is this acceptable?
->
-> > +}
-> > +
-> > +static int pwm_sifive_enable(struct pwm_chip *chip, bool enable)
-> > +{
-> > +     struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
-> > +     int ret;
-> > +
-> > +     if (enable) {
-> > +             ret =3D clk_enable(pwm->clk);
-> > +             if (ret) {
-> > +                     dev_err(pwm->chip.dev, "Enable clk failed:%d\n", =
-ret);
->
-> Space after : please. Also applies to the other error strings.
+/*
+ * The reference manual describes this field as two separate bits. The
+ * samantic of the two bits isn't orthogonal though, so they are treated
+ * together as a 2-bit field here.
+ */
 
-Sure
+> +
+> +#define PWM_IMX_TPM_MOD_MOD	GENMASK(15, 0)
+> +
+> +#define PWM_IMX_TPM_MAX_COUNT		0xffff
 
->
-> > +                     return ret;
-> > +             }
-> > +     }
-> > +
-> > +     if (!enable)
-> > +             clk_disable(pwm->clk);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *=
-dev,
-> > +                         struct pwm_state *state)
-> > +{
-> > +     struct pwm_sifive_ddata *pwm =3D pwm_sifive_chip_to_ddata(chip);
->
-> I think it would be more common to call the struct pwm_device pointer
-> "pwm" and the struct pwm_sifive_ddata pointer "ddata".
-> "dev" is usually a pointer to a struct device. The other functions need
-> the same adaption of course.
+This is just the maximal value for PWM_IMX_TPM_MOD_MOD? If so, this
+should be reflected in the name. Other than that, PWM_IMX_TPM_MOD_MOD
+could be used for that, too.
 
-Ok. Will change that
+> +struct imx_tpm_pwm_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	struct mutex lock;
+> +	u32 user_count;
+> +	u32 enable_count;
+> +	u32 real_period;
+> +};
+> +
+> +struct imx_tpm_pwm_channel {
+> +	u32 config;
+> +	bool status;
+> +};
+> +
+> +static inline struct imx_tpm_pwm_chip *to_imx_tpm_pwm_chip(struct pwm_chip *chip)
+> +{
+> +	return container_of(chip, struct imx_tpm_pwm_chip, chip);
+> +}
+> +
+> +static unsigned int pwm_imx_tpm_round_period(struct pwm_chip *chip,
+> +					     u32 period)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	u32 rate, real_period, prescale, period_count;
+> +	u64 tmp;
+> +
+> +	rate = clk_get_rate(tpm->clk);
+> +	tmp = period;
+> +	tmp *= rate;
+> +	tmp = DIV_ROUND_CLOSEST_ULL(tmp, NSEC_PER_SEC);
 
->
-> > +     unsigned int duty_cycle;
-> > +     u32 frac;
-> > +     struct pwm_state cur_state;
-> > +     bool enabled;
-> > +     int ret =3D 0;
-> > +     unsigned long long num;
-> > +
-> > +     if (state->polarity !=3D PWM_POLARITY_INVERSED)
-> > +             return -EINVAL;
-> > +
-> > +     ret =3D clk_enable(pwm->clk);
-> > +     if (ret) {
-> > +             dev_err(pwm->chip.dev, "Enable clk failed:%d\n", ret);
-> > +             return ret;
-> > +     }
-> > +
-> > +     mutex_lock(&pwm->lock);
-> > +     cur_state =3D dev->state;
-> > +     enabled =3D cur_state.enabled;
-> > +
-> > +     if (state->period !=3D pwm->approx_period) {
-> > +             if (pwm->user_count !=3D 1) {
-> > +                     ret =3D -EBUSY;
-> > +                     goto exit;
-> > +             }
-> > +             pwm->approx_period =3D state->period;
-> > +             pwm_sifive_update_clock(pwm, clk_get_rate(pwm->clk));
-> > +     }
-> > +
-> > +     duty_cycle =3D state->duty_cycle;
-> > +     if (!state->enabled)
-> > +             duty_cycle =3D 0;
-> > +
-> > +     num =3D (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
-> > +     frac =3D DIV_ROUND_CLOSEST_ULL(num, state->period);
-> > +     /* The hardware cannot generate a 100% duty cycle */
-> > +     frac =3D min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
-> > +
-> > +     writel(frac, pwm->regs + PWM_SIFIVE_PWMCMP0 +
-> > +            dev->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
->
-> Here is another rounding question. Given that the period length can only
-> be modified by factors of two there are cases where the real period is
-> off by a factor of at least 1.4 which has an effect on the duty cycle.
-> Consider again an input clk rate of 600 MHz, and:
->
->         .duty_cycle =3D 109226 [ns]
->         .period =3D 152916 [ns]
->
-> We either have to go for real period =3D 109226 ns (as is currently
-> implemented) or with 218452 ns. Which one should be chosen I already
-> asked above. Here the question is (probably depending on the former
-> question) how should the actual duty_cycle be calculated?
->
-> > +     if (state->enabled !=3D enabled) {
-> > +             ret =3D pwm_sifive_enable(chip, state->enabled);
-> > +             if (ret)
-> > +                     goto exit;
->
-> This goto is a noop and so can be dropped.
+The value tmp holds is the time a single counter step takes, right?
+Please give that a better name. Something like clock_unit.
 
-Sure
+> +	if (tmp <= PWM_IMX_TPM_MAX_COUNT) {
+> +		prescale = 0;
+> +	} else {
+> +		prescale = roundup_pow_of_two(tmp /
+> +					      (PWM_IMX_TPM_MAX_COUNT + 1));
 
->
-> > +     }
-> > +
-> > +exit:
-> > +     clk_disable(pwm->clk);
-> > +     mutex_unlock(&pwm->lock);
-> > +     return ret;
-> > +}
-> > +
-> > +static const struct pwm_ops pwm_sifive_ops =3D {
-> > +     .request =3D pwm_sifive_request,
-> > +     .free =3D pwm_sifive_free,
-> > +     .get_state =3D pwm_sifive_get_state,
-> > +     .apply =3D pwm_sifive_apply,
-> > +     .owner =3D THIS_MODULE,
-> > +};
-> > +
-> > +static int pwm_sifive_clock_notifier(struct notifier_block *nb,
-> > +                                  unsigned long event, void *data)
-> > +{
-> > +     struct clk_notifier_data *ndata =3D data;
-> > +     struct pwm_sifive_ddata *pwm =3D
-> > +             container_of(nb, struct pwm_sifive_ddata, notifier);
-> > +
-> > +     if (event =3D=3D POST_RATE_CHANGE)
-> > +             pwm_sifive_update_clock(pwm, ndata->new_rate);
-> > +
-> > +     return NOTIFY_OK;
-> > +}
-> > +
-> > +static int pwm_sifive_probe(struct platform_device *pdev)
-> > +{
-> > +     struct device *dev =3D &pdev->dev;
-> > +     struct pwm_sifive_ddata *pwm;
-> > +     struct pwm_chip *chip;
-> > +     struct resource *res;
-> > +     int ret;
-> > +
-> > +     pwm =3D devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
-> > +     if (!pwm)
-> > +             return -ENOMEM;
-> > +
-> > +     mutex_init(&pwm->lock);
-> > +     chip =3D &pwm->chip;
-> > +     chip->dev =3D dev;
-> > +     chip->ops =3D &pwm_sifive_ops;
-> > +     chip->of_pwm_n_cells =3D 3;
-> > +     chip->base =3D -1;
-> > +     chip->npwm =3D 4;
-> > +
-> > +     res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +     pwm->regs =3D devm_ioremap_resource(dev, res);
-> > +     if (IS_ERR(pwm->regs)) {
-> > +             dev_err(dev, "Unable to map IO resources\n");
-> > +             return PTR_ERR(pwm->regs);
-> > +     }
-> > +
-> > +     pwm->clk =3D devm_clk_get(dev, NULL);
-> > +     if (IS_ERR(pwm->clk)) {
-> > +             if (PTR_ERR(pwm->clk) !=3D -EPROBE_DEFER)
-> > +                     dev_err(dev, "Unable to find controller clock\n")=
-;
-> > +             return PTR_ERR(pwm->clk);
-> > +     }
-> > +
-> > +     ret =3D clk_prepare_enable(pwm->clk);
-> > +     if (ret) {
-> > +             dev_err(dev, "failed to enable clock for pwm: %d\n", ret)=
-;
-> > +             return ret;
-> > +     }
-> > +
-> > +     /* Watch for changes to underlying clock frequency */
-> > +     pwm->notifier.notifier_call =3D pwm_sifive_clock_notifier;
-> > +     ret =3D clk_notifier_register(pwm->clk, &pwm->notifier);
->
-> Is it a problem when the notifier is called before pwmchip_add was
-> called? Out of interest: Is a real problem addressed here? I.e.: Does
-> the input clock actually change in practise? Also note that
-> pwm_sifive_clock_notifier only adapts the period but not the duty cycle
-> (any more).
->
-> Given that a clk rate change affects the output, I wonder if the change
-> should be declined if the pwm is running.
->
-> > +     if (ret) {
-> > +             dev_err(dev, "failed to register clock notifier: %d\n", r=
-et);
-> > +             goto disable_clk;
-> > +     }
-> > +
-> > +     /* Initialize PWM */
-> > +     pwm->approx_period =3D PWM_SIFIVE_DEFAULT_PERIOD;
-> > +     pwm_sifive_update_clock(pwm, clk_get_rate(pwm->clk));
->
-> If the bootloader setup a display with a backlight driven by a PWM it
-> would be ideal to not modify the already running hardware here.
+Do divide a u64 you must not use a plain division. You need div64_ul()
+here.
 
-Ok, will drop this initialization.
+> +		prescale = ilog2(prescale);
 
->
-> > +     ret =3D pwmchip_add(chip);
-> > +     if (ret < 0) {
-> > +             dev_err(dev, "cannot register PWM: %d\n", ret);
-> > +             goto unregister_clk;
-> > +     }
-> > +
-> > +     platform_set_drvdata(pdev, pwm);
-> > +     dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
-> > +
-> > +     return 0;
-> > +
-> > +unregister_clk:
-> > +     clk_notifier_unregister(pwm->clk, &pwm->notifier);
-> > +disable_clk:
-> > +     clk_disable_unprepare(pwm->clk);
-> > +
-> > +     return ret;
-> > +}
-> > +
-> > +static int pwm_sifive_remove(struct platform_device *dev)
-> > +{
-> > +     struct pwm_sifive_ddata *pwm =3D platform_get_drvdata(dev);
-> > +     int ret, ch;
-> > +     bool is_enabled =3D false;
-> > +
-> > +     ret =3D pwmchip_remove(&pwm->chip);
-> > +     clk_notifier_unregister(pwm->clk, &pwm->notifier);
-> > +
-> > +     for (ch =3D 0; ch < pwm->chip.npwm; ch++) {
-> > +             if (pwm_is_enabled(&pwm->chip.pwms[ch])) {
->
-> Here is another consumer API function call.
+This is equivalent to:
 
-Will avoid using it.
+	prescale = roundup_pow_of_two(tmp);
+	prescale = ilog2(prescale) - 16;
 
->
-> > +                     is_enabled =3D true;
-> > +                     break;
-> > +             }
-> > +     }
-> > +     if (is_enabled)
-> > +             clk_disable(pwm->clk);
-> > +     clk_unprepare(pwm->clk);
->
-> I think you're leaking a clk_enable here. The probe function does one
-> unconditionally that is never undone.
+which safes a division. (Of course don't use a plain 16 in your code.)
 
-Will use clk_disable_unprepare instead of clk_unprepare
+> +	}
+> +
+> +	/* if no valid prescale found, use MAX instead */
+> +	if ((!FIELD_FIT(PWM_IMX_TPM_SC_PS, prescale)))
+> +		prescale = PWM_IMX_TPM_SC_PS >> __bf_shf(PWM_IMX_TPM_SC_PS);
 
->
-> > +     return ret;
-> > +}
-> > +
-> > +static const struct of_device_id pwm_sifive_of_match[] =3D {
-> > +     { .compatible =3D "sifive,pwm0" },
-> > +     {},
-> > +};
-> > +MODULE_DEVICE_TABLE(of, pwm_sifive_of_match);
-> > +
-> > +static struct platform_driver pwm_sifive_driver =3D {
-> > +     .probe =3D pwm_sifive_probe,
-> > +     .remove =3D pwm_sifive_remove,
-> > +     .driver =3D {
-> > +             .name =3D "pwm-sifive",
-> > +             .of_match_table =3D pwm_sifive_of_match,
-> > +     },
-> > +};
-> > +module_platform_driver(pwm_sifive_driver);
-> > +
-> > +MODULE_DESCRIPTION("SiFive PWM driver");
-> > +MODULE_LICENSE("GPL v2");
->
-> Best regards
-> Uwe
->
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
-|
+		prescale = FIELD_PREP(PWM_IMX_TPM_SC_PS, PWM_IMX_TPM_SC_PS)
+
+What is the consequence if the calculated prescale isn't valid? I assume
+this yields a greatly different period? If yes, this should result in an
+error.
+
+> +	/* if no valid period count found, use MAX instead */
+> +	period_count = (tmp + ((1 << prescale) >> 1)) >> prescale;
+> +	if (period_count > PWM_IMX_TPM_MOD_MOD)
+> +		period_count = PWM_IMX_TPM_MOD_MOD;
+
+Ditto.
+
+> +	/* calculate real period HW can support */
+> +	tmp = period_count;
+> +	tmp *= (1 << prescale) * NSEC_PER_SEC;
+
+I don't know what the compiler does here, I guess it is a bit easier for
+it to optimise here if you write:
+
+	tmp = (u64)period_count << prescale;
+	tmp *= NSEC_PER_SEC;
+	
+> +	real_period = DIV_ROUND_CLOSEST_ULL(tmp, rate);
+> +
+> +	return real_period;
+> +}
+> +
+> +static void pwm_imx_tpm_config_counter(struct pwm_chip *chip, u32 period)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	u32 val, rate, prescale, saved_cmod;
+> +	u64 tmp;
+> +
+> +	rate = clk_get_rate(tpm->clk);
+> +	tmp = period;
+> +	tmp *= rate;
+> +	tmp = DIV_ROUND_CLOSEST_ULL(tmp, NSEC_PER_SEC);
+> +	if (tmp <= PWM_IMX_TPM_MAX_COUNT) {
+> +		prescale = 0;
+> +	} else {
+> +		prescale = roundup_pow_of_two(tmp /
+> +					      (PWM_IMX_TPM_MAX_COUNT + 1));
+> +		prescale = ilog2(prescale);
+> +	}
+> +
+> +	/* make sure counter is disabled for programming prescale */
+> +	val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +	saved_cmod = FIELD_GET(PWM_IMX_TPM_SC_CMOD, val);
+> +	if (saved_cmod) {
+> +		val &= ~PWM_IMX_TPM_SC_CMOD;
+> +		writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +	}
+> +
+> +	/* set TPM counter prescale */
+> +	val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +	val &= ~PWM_IMX_TPM_SC_PS;
+> +	val |= FIELD_PREP(PWM_IMX_TPM_SC_PS, prescale);
+> +	writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +
+> +	/*
+> +	 * set period count: according to RM, the MOD register is
+> +	 * updated immediately after CMOD[1:0] = 2b'00 above
+> +	 */
+> +	val = (tmp + ((1 << prescale) >> 1)) >> prescale;
+> +	writel(val, tpm->base + PWM_IMX_TPM_MOD);
+> +
+> +	/* restore the clock mode if necessary */
+> +	if (saved_cmod) {
+> +		val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +		val |= FIELD_PREP(PWM_IMX_TPM_SC_CMOD, saved_cmod);
+> +		writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +	}
+> +
+> +	tpm->real_period = period;
+> +}
+> +
+> +static void pwm_imx_tpm_config(struct pwm_chip *chip,
+> +			       struct pwm_device *pwm,
+> +			       u32 period,
+> +			       u32 duty_cycle,
+> +			       enum pwm_polarity polarity)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	struct imx_tpm_pwm_channel *chan = pwm_get_chip_data(pwm);
+> +	u32 val;
+> +	u64 tmp;
+> +
+> +	/* set duty counter */
+> +	tmp = readl(tpm->base + PWM_IMX_TPM_MOD) & PWM_IMX_TPM_MOD_MOD;
+> +	tmp *= duty_cycle;
+> +	val = DIV_ROUND_CLOSEST_ULL(tmp, period);
+> +	writel(val, tpm->base + PWM_IMX_TPM_CnV(pwm->hwpwm));
+> +
+> +	/*
+> +	 * set polarity (for edge-aligned PWM modes)
+> +	 *
+> +	 * ELS[1:0] = 2b10 yields normal polarity behaviour,
+> +	 * ELS[1:0] = 2b01 yields inversed polarity.
+> +	 * The other values are reserved.
+> +	 */
+> +	val = readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +	val &= ~(PWM_IMX_TPM_CnSC_ELS | PWM_IMX_TPM_CnSC_MSA);
+> +	val |= PWM_IMX_TPM_CnSC_MSB;
+> +	val |= (polarity == PWM_POLARITY_NORMAL) ?
+> +		FIELD_PREP(PWM_IMX_TPM_CnSC_ELS, 0x2) :
+> +		FIELD_PREP(PWM_IMX_TPM_CnSC_ELS, 0x1);
+> +	/*
+> +	 * polarity settings will enabled/disable output status
+> +	 * immediately, so here ONLY save the config and write
+> +	 * it into register when channel is enabled/disabled.
+> +	 */
+> +	chan->config = val;
+
+This function's behaviour is strange. It configures the hardware with
+the right the duty_cycle but not the polarity. I cannot imagine that
+this not buggy.
+
+> +}
+> +
+> +/*
+> + * When a channel's polarity is configured, the polarity settings
+> + * will be saved and ONLY write into the register when the channel
+> + * is enabled.
+> + *
+> + * When a channel is disabled, its polarity settings will be saved
+> + * and its output will be disabled by clearing polarity settings.
+> + *
+> + * When a channel is enabled, its polarity settings will be restored
+> + * and output will be enabled again.
+> + */
+> +static void pwm_imx_tpm_enable(struct pwm_chip *chip,
+> +			       struct pwm_device *pwm,
+> +			       bool enable)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	struct imx_tpm_pwm_channel *chan = pwm_get_chip_data(pwm);
+> +	u32 val;
+> +
+> +	val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +	if (enable) {
+> +		/* restore channel config */
+> +		writel(chan->config,
+> +		       tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +
+> +		if (++tpm->enable_count == 1) {
+> +			/* start TPM counter */
+> +			val |= PWM_IMX_TPM_SC_CMOD_INC_EVERY_CLK;
+> +			writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +		}
+> +	} else {
+> +		/* disable channel */
+> +		val = readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +		val &= ~(PWM_IMX_TPM_CnSC_MSA | PWM_IMX_TPM_CnSC_MSB |
+> +			 PWM_IMX_TPM_CnSC_ELS);
+> +		writel(val, tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +
+> +		if (--tpm->enable_count == 0) {
+> +			/* stop TPM counter since all channels are disabled */
+> +			val &= ~PWM_IMX_TPM_SC_CMOD;
+> +			writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +		}
+> +	}
+> +
+> +	/* update channel status */
+> +	chan->status = enable;
+> +}
+> +
+> +static void pwm_imx_tpm_get_state(struct pwm_chip *chip,
+> +				  struct pwm_device *pwm,
+> +				  struct pwm_state *state)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	u32 rate, val;
+> +	u64 tmp;
+> +
+> +	/* get period */
+> +	state->period = tpm->real_period;
+> +
+> +	/* get duty cycle */
+> +	rate = clk_get_rate(tpm->clk);
+> +	val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +	val = FIELD_GET(PWM_IMX_TPM_SC_PS, val);
+> +	tmp = readl(tpm->base + PWM_IMX_TPM_CnV(pwm->hwpwm));
+> +	tmp *= (1 << val) * NSEC_PER_SEC;
+> +	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, rate);
+> +
+> +	/* get polarity */
+> +	val = readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +	if (FIELD_GET(PWM_IMX_TPM_CnSC_ELS, val) == 0x1)
+> +		state->polarity = PWM_POLARITY_INVERSED;
+> +	else if (FIELD_GET(PWM_IMX_TPM_CnSC_ELS, val) == 0x2)
+> +		state->polarity = PWM_POLARITY_NORMAL;
+
+	else ?
+
+> +
+> +	/* get channel status */
+> +	state->enabled = FIELD_GET(PWM_IMX_TPM_CnSC_ELS, val) ? true : false;
+> +}
+> +
+> +static int pwm_imx_tpm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			     struct pwm_state *state)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	struct imx_tpm_pwm_channel *chan = pwm_get_chip_data(pwm);
+> +	u32 p;
+> +
+> +	mutex_lock(&tpm->lock);
+> +
+> +	if (state->period != tpm->real_period) {
+> +		/*
+> +		 * TPM counter is shared by multiple channels, so
+> +		 * prescale and period can NOT be modified when
+> +		 * there are multiple channels in use with different
+> +		 * period settings.
+> +		 */
+> +		p = pwm_imx_tpm_round_period(chip, state->period);
+> +		if (p != tpm->real_period && tpm->user_count != 1)
+> +			return -EBUSY;
+> +		else if (p != tpm->real_period)
+> +			pwm_imx_tpm_config_counter(chip, p);
+> +	}
+
+This looks more complicated than it should be. What about:
+
+	p = pwm_imx_tpm_round_period(chip, state->period);
+
+	if (p != tpm->real_period) {
+		if (tpm->user_count != 1)
+			return -EBUSY;
+
+		pwm_imx_tpm_config_counter(chip, p);
+	}
+
+Another optimisation is possible here as pwm_imx_tpm_round_period and
+pwm_imx_tpm_config_counter do effectively the same calculations: Let
+pwm_imx_tpm_round_period return the respective register values that are
+then just written to the registers instead of recalculating them once
+more.
+
+> +	if (state->enabled == false) {
+> +		/*
+> +		 * if eventually the PWM output is LOW, either
+> +		 * duty cycle is 0 or status is disabled, need
+> +		 * to make sure the output pin is LOW.
+> +		 */
+> +		pwm_imx_tpm_config(chip, pwm, state->period,
+> +				   0, state->polarity);
+> +		if (chan->status == true)
+> +			pwm_imx_tpm_enable(chip, pwm, false);
+> +	} else {
+> +		pwm_imx_tpm_config(chip, pwm, state->period,
+> +				   state->duty_cycle, state->polarity);
+> +		if (chan->status == false)
+> +			pwm_imx_tpm_enable(chip, pwm, true);
+> +	}
+
+This function is really hard to understand. The factors making this
+complicated are:
+
+ - Strange semantic of pwm_imx_tpm_config, IMHO the things done in both
+   pwm_imx_tpm_config and pwm_imx_tpm_enable should be done in a single
+   function.
+ - "status" could better be names "enabled"
+
+IMHO it should look like:
+
+	int my_apply(chip, pwm, state)
+	{
+		ret = my_round_state(state, &hwparams);
+		if (ret)
+			return ret;
+
+		mutex_lock();
+
+		if (usercount > 1 &&
+		    my_hwparams_interfere(current_state, hwparams))
+			ret = -EBUSY;
+			goto out_unlock;
+
+		my_apply_to_hardware(hwparams);
+
+		mutex_unlock();
+	out_unlock:
+
+		return ret;
+	}
+
+> +	mutex_unlock(&tpm->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static int pwm_imx_tpm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	struct imx_tpm_pwm_channel *chan;
+> +
+> +	chan = devm_kzalloc(chip->dev, sizeof(*chan), GFP_KERNEL);
+> +	if (!chan)
+> +		return -ENOMEM;
+> +
+> +	pwm_set_chip_data(pwm, chan);
+> +
+> +	mutex_lock(&tpm->lock);
+> +	tpm->user_count++;
+> +	mutex_unlock(&tpm->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static void pwm_imx_tpm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +
+> +	mutex_lock(&tpm->lock);
+> +	tpm->user_count--;
+> +	mutex_unlock(&tpm->lock);
+> +
+> +	devm_kfree(chip->dev, pwm_get_chip_data(pwm));
+> +	pwm_set_chip_data(pwm, NULL);
+> +}
+> +
+> +static const struct pwm_ops imx_tpm_pwm_ops = {
+> +	.request = pwm_imx_tpm_request,
+> +	.free = pwm_imx_tpm_free,
+> +	.get_state = pwm_imx_tpm_get_state,
+> +	.apply = pwm_imx_tpm_apply,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int pwm_imx_tpm_probe(struct platform_device *pdev)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm;
+> +	int ret;
+> +	u32 val;
+> +
+> +	tpm = devm_kzalloc(&pdev->dev, sizeof(*tpm), GFP_KERNEL);
+> +	if (!tpm)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, tpm);
+> +
+> +	tpm->base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(tpm->base))
+> +		return PTR_ERR(tpm->base);
+> +
+> +	tpm->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(tpm->clk)) {
+> +		ret = PTR_ERR(tpm->clk);
+> +		if (ret != -EPROBE_DEFER)
+> +			dev_err(&pdev->dev,
+> +				"failed to get PWM clock: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = clk_prepare_enable(tpm->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev,
+> +			"failed to prepare or enable clock: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	tpm->chip.dev = &pdev->dev;
+> +	tpm->chip.ops = &imx_tpm_pwm_ops;
+> +	tpm->chip.base = -1;
+> +	tpm->chip.of_xlate = of_pwm_xlate_with_flags;
+> +	tpm->chip.of_pwm_n_cells = 3;
+> +
+> +	/* get number of channels */
+> +	val = readl(tpm->base + PWM_IMX_TPM_PARAM);
+> +	tpm->chip.npwm = FIELD_GET(PWM_IMX_TPM_PARAM_CHAN, val);
+> +
+> +	mutex_init(&tpm->lock);
+> +
+> +	ret = pwmchip_add(&tpm->chip);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+> +		clk_disable_unprepare(tpm->clk);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int pwm_imx_tpm_remove(struct platform_device *pdev)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = platform_get_drvdata(pdev);
+> +	int ret = pwmchip_remove(&tpm->chip);
+> +
+> +	clk_disable_unprepare(tpm->clk);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __maybe_unused pwm_imx_tpm_suspend(struct device *dev)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = dev_get_drvdata(dev);
+> +
+> +	if (tpm->enable_count == 0)
+> +		clk_disable_unprepare(tpm->clk);
+> +
+> +	return 0;
+
+IMHO you should return an error if enable_count isn't 0 to prevent going
+to suspend.
+
+> +}
+> +
+> +static int __maybe_unused pwm_imx_tpm_resume(struct device *dev)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = dev_get_drvdata(dev);
+> +	int ret = 0;
+> +
+> +	if (tpm->enable_count == 0) {
+> +		ret = clk_prepare_enable(tpm->clk);
+> +		if (ret)
+> +			dev_err(dev,
+> +				"failed to prepare or enable clock: %d\n",
+> +				ret);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(imx_tpm_pwm_pm,
+> +			 pwm_imx_tpm_suspend, pwm_imx_tpm_resume);
+> +
+> +static const struct of_device_id imx_tpm_pwm_dt_ids[] = {
+> +	{ .compatible = "fsl,imx-tpm", },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, imx_tpm_pwm_dt_ids);
+> +
+> +static struct platform_driver imx_tpm_pwm_driver = {
+> +	.driver = {
+> +		.name = "imx-tpm-pwm",
+> +		.of_match_table = imx_tpm_pwm_dt_ids,
+> +		.pm = &imx_tpm_pwm_pm,
+> +	},
+> +	.probe	= pwm_imx_tpm_probe,
+> +	.remove = pwm_imx_tpm_remove,
+> +};
+> +module_platform_driver(imx_tpm_pwm_driver);
+> +
+> +MODULE_AUTHOR("Anson Huang <Anson.Huang@nxp.com>");
+> +MODULE_DESCRIPTION("i.MX TPM PWM Driver");
+> +MODULE_LICENSE("GPL v2");
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
