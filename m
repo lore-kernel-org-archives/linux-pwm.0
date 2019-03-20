@@ -1,28 +1,28 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Wed, 20 Mar 2019 10:47:14 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3] pwm: Fix deadlock warning when removing PWM device
-Message-ID: <20190320094714.bwpc4a4q6ghu3rej@pengutronix.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38959 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727008AbfCTLWa (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Mar 2019 07:22:30 -0400
+Date: Wed, 20 Mar 2019 12:22:24 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Message-ID: <20190320112224.GA23838@ulmo>
 References: <1552992008-20218-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
+Content-Disposition: inline
+In-Reply-To: <1552992008-20218-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-pwm-owner@vger.kernel.org
+List-ID: <linux-pwm.vger.kernel.org>
+Subject: Re: [PATCH v3] pwm: Fix deadlock warning when removing PWM device
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Phong Hoang <phong.hoang.wz@renesas.com>
+
+
+--qMm9M+Fa2AknHoGS
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <1552992008-20218-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-renesas-soc@vger.kernel.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, kernel@pengutronix.de, Phong Hoang <phong.hoang.wz@renesas.com>
-List-ID: <linux-pwm.vger.kernel.org>
-
-Hello,
 
 On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 > From: Phong Hoang <phong.hoang.wz@renesas.com>
@@ -196,12 +196,57 @@ S1.x (DT)
 > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 > Tested-by: Hoan Nguyen An <na-hoan@jinso.co.jp>
 > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Changes from v2 (https://patchwork.kernel.org/patch/10850711/)
+>  - Revise the commit log.
+>  - Reduce code diff lines by using if (!parent) condition.
+>  - Add Reviewed-by Geert's tag.
+>=20
+>  Changes from v1 (https://patchwork.kernel.org/patch/10848567/):
+>  - Change the subject from "Avoid" to "Fix".
+>  - Merge pwmchip_sysfs_unexport_children()'s code into
+>    pwmchip_sysfs_unexport() and move pwmchip_sysfs_unexport() to
+>    the top of pwmchip_remove().
+>  - Revise the commit log that is reffered from Therry's comments [1]
+>    because it seems very clear to me.
+>  - Add Fixes tag about the commit 0733424c9ba9.=20
+>  - I got Geert's Reviewed-by on v1 patch, but I'm not sure
+>    I can add the Reviewed-by because v2 patch changes a bit.
+>    So, I didn't add the Reviewed-by tag.
+>=20
+> [1]
+> https://www.mail-archive.com/linux-renesas-soc@vger.kernel.org/msg39167.h=
+tml
+>=20
+>=20
+>=20
+>  drivers/pwm/core.c  | 10 +++++-----
+>  drivers/pwm/sysfs.c | 14 +-------------
+>  include/linux/pwm.h |  5 -----
+>  3 files changed, 6 insertions(+), 23 deletions(-)
 
-Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+Applied, thanks!
 
-Best regards
-Uwe
+Thierry
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+--qMm9M+Fa2AknHoGS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlySImsACgkQ3SOs138+
+s6HALg//S7tVUBJpYvnCC6WwYgtZLair7MH4ODiTIANkpHjh9jftQdGcJeUdfUP7
+wGaF0E3UUs7Or5XCrRnXY2DTEHOSyp745QwBeyjyy6XHPjUM5NBKXqGUVy1emTbj
+tZJ7mgxdOqmPT5KGTxV9nobCqgfcgEV5LKhgs5UDCx0zZRg2V48nBv52Qz3rOjrH
+27LC8X65RGQGy/wVxSxqsMUGH9PpNVBRF+51KZz3/yjV5IIKm44OVZjBh6vMEgJe
+qo8uC5FPynSZEHfYNn0IPjDuw/EFK2jxV3h89aGRg4mo4UcS/neZckWPsyMMHpuZ
+LR57Bgl9xbbf5NBcoEvEmOhR5xNja4Gs4xZGIJTwl3EnGCumlOnUdxQ7sFag1iwA
+mj2+arhzpd5MOy9iY17Mba0xsFozBc5MXdBOspQEvu/b/Jtanuv0sUnNnI1F7D3q
+7I3omc9xbPQHerEwwXOOWuGqtk6zFz2ULnbG3PqwsX41YIaD+RBULBRf9lnkGlic
+i082DZjmEzrAOwt4jqXS0olKwX/p7cUsx6s6B+T6oJIg3QBRrVDIqkF8psC0AB8E
+sHBgoa9rUbBqu/nA4fVYwul3rWXJGfRLoUI/ER61Y9G8MeCkdn28bSN2Sx4K060k
+gA9gzyvaErwfzy3CjO82br9A9NPatLEkf2ia53GjHb+lPXzVy2c=
+=xgfb
+-----END PGP SIGNATURE-----
+
+--qMm9M+Fa2AknHoGS--
