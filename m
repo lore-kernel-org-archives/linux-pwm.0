@@ -1,69 +1,84 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: tiehrpwm: Update shadow register for disabling PWMs
-Date: Wed, 20 Mar 2019 12:31:22 +0100
-Message-ID: <20190320113122.GC23838@ulmo>
-References: <20190312090846.29519-1-vigneshr@ti.com>
+Subject: Re: [PATCH 0/2] pwm: tiehrpwm: Enable EHRPWM for AM654 SoCs
+Date: Wed, 20 Mar 2019 12:33:30 +0100
+Message-ID: <20190320113330.GD23838@ulmo>
+References: <20190312091629.31701-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3siQDZowHQqNOShm"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190312090846.29519-1-vigneshr@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============0723807597936591331=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190312091629.31701-1-vigneshr@ti.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Vignesh Raghavendra <vigneshr@ti.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Christoph =?utf-8?Q?Vogtl=C3=A4nder?= <c.vogtlaender@sigma-surface-science.com>
+Cc: linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---3siQDZowHQqNOShm
-Content-Type: text/plain; charset=utf-8
+--===============0723807597936591331==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="XvKFcGCOAo53UbWW"
+Content-Disposition: inline
+
+
+--XvKFcGCOAo53UbWW
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 12, 2019 at 02:38:46PM +0530, Vignesh Raghavendra wrote:
-> From: Christoph Vogtl=C3=A4nder <c.vogtlaender@sigma-surface-science.com>
+On Tue, Mar 12, 2019 at 02:46:27PM +0530, Vignesh Raghavendra wrote:
+> This series adds support for EHRPWM IP on TI AM654 SoC
 >=20
-> It must be made sure that immediate mode is not already set, when
-> modifying shadow register value in ehrpwm_pwm_disable(). Otherwise
-> modifications to the action-qualifier continuous S/W force
-> register(AQSFRC) will be done in the active register.
-> This may happen when both channels are being disabled. In this case,
-> only the first channel state will be recorded as disabled in the shadow
-> register. Later, when enabling the first channel again, the second
-> channel would be enabled as well. Setting RLDCSF to zero, first, ensures
-> that the shadow register is updated as desired.
+> Vignesh Raghavendra (2):
+>   dt-bindings: pwm: tiehrpwm: Add TI AM654 SoC specific compatible
+>   pwm: Kconfig: Enable ehrpwm driver to be compiled for ARCH_K3
 >=20
-> Fixes: 38dabd91ff0b ("pwm: tiehrpwm: Fix disabling of output of PWMs")
-> Signed-off-by: Christoph Vogtl=C3=A4nder <c.vogtlaender@sigma-surface-sci=
-ence.com>
-> [vigneshr@ti.com: Improve commit message]
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> ---
->  drivers/pwm/pwm-tiehrpwm.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 1 +
+>  drivers/pwm/Kconfig                                    | 5 ++---
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---3siQDZowHQqNOShm
+--XvKFcGCOAo53UbWW
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlySJIoACgkQ3SOs138+
-s6GH9RAAlwIpQi4Gp8VyqL0xxWDtcvhjF+5T/vNJWUudy+Th2MB7bP8ou2KvZ/yZ
-rvhJQXfkwdR61jaa6j2ZH68gbJAILEnbOlDLKgkfsQ16nTLYxJvI4VRy+OxvowKO
-/yx08iYXiHdXpGEhnKWaLMYoBbimE0WE04PoHGhXTBWDsFfP1og/Tgvgps26BQ3j
-Wpz7LrHcSuxTFSCIwDuLGFxv58zYb6wKgAv7DoeptJ3VUlDi6V/i7viHg9MWiq+U
-psPPdHwW+0zhY6y5LxpUozQ9rGaCyRVbMYp1y5SfJUZaHYJcgO8JHO8YTMGqNViX
-vp5wL2K4jE70TlMF8GGQnQYzF+RdDJr0XPXskz7hLzndjx5vre1w5ECilWbvpha6
-aRLnMQpbI9enzX9SdeLH+/5qUrTC7gUO5HO9zaiu606w5SO6PGD/bknbRPO6zH3R
-ilXolsxeLRX5PngnwPbtM1CEG5RAREKYZZHgYog8sEhLDdf2j3M9qRShBOk/3mlJ
-Y3Tmj1Zu1ailuDeICwhKgDIG2DVZ26RquROq3TBnw6h/wVqd8KKLRf4zAzVG+gzx
-0MTakHxT6Y+m2IWawQhpcC7pqLF+uEJwsHnSfr2uLc2ke+idnpXLxklFR8sD9vDM
-cqpkaisS0F+ciKx8QnuPwVPxTAbvSb8R3AA1q/bvEyDllbKQjLs=
-=VRBA
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlySJQoACgkQ3SOs138+
+s6EXAw//cWZX1D6eDRV5bMkyKhYVvcHLOEPwvz27xHnAHwzaq7xMEWmRT4me3Aoa
+MVyuxneuigA4JJO2c8JFlv/8UpgxU+tLtW1BtjB5iEu7yrIlzu7c/fGOaIawkroY
+oPkJefoZrLFHHhIjRtpofKHrQ+5zYPV687IhMzU0fapIdId0Di08yCiFl4BIQxmD
+VrYxYACjqUXMRwW7H/aUunySqSjU2g39TGhD5Ei33kG/HlUZQl9jqKXkWU/Xsvyd
+lEaNfhIgl109oDygVb55T/q7VO3Kt2+B9OLzqPGxAf2z6I+Almylicx+SH+L0nJl
+LqRznCMUyIM/JdJYJHsi/WH3ZNe9olF9yHwIqSX33Tu/HVkdS9coqLfRsFX9AxAG
+oXIE/twkjD+zmet+KQrAWJBgZv704iOQAS5agk2bd637qSrWf900+rDWXtI0GiFR
+rO3x7CZ8obd/Rwr9raKVqZQvJhtUwBiUi+vdyzsDu81NW5+j6tCoGIKL65u8WjiL
+cC3tUfnJFWV+dwyGUI94rA1v3KM4ttLgBJ1WyUCAYVrgzs4TejCZ1c0MAEiD2ufO
+E7RE7dLUTSKAddQsUCY1MXvTG0wGn7VD2X8uGB1Xfr6E5AcKyL0px8XiGdUYYgmx
+QvlOHtFF2JEPhOibrkMKwoxeBHa0aYzr3XZxJR7UP/ulQVtZSGg=
+=D2ki
 -----END PGP SIGNATURE-----
 
---3siQDZowHQqNOShm--
+--XvKFcGCOAo53UbWW--
+
+
+--===============0723807597936591331==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============0723807597936591331==--
