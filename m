@@ -1,31 +1,38 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:46540 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbfCSL7Q (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Mar 2019 07:59:16 -0400
-Date: Tue, 19 Mar 2019 12:59:10 +0100
-From: Simon Horman <horms@verge.net.au>
-Message-ID: <20190319115909.nxnbuzd4avkgtth4@verge.net.au>
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Wed, 20 Mar 2019 10:47:14 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3] pwm: Fix deadlock warning when removing PWM device
+Message-ID: <20190320094714.bwpc4a4q6ghu3rej@pengutronix.de>
 References: <1552992008-20218-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 In-Reply-To: <1552992008-20218-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v3] pwm: Fix deadlock warning when removing PWM device
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
 To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Phong Hoang <phong.hoang.wz@renesas.com>
+Cc: linux-renesas-soc@vger.kernel.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, kernel@pengutronix.de, Phong Hoang <phong.hoang.wz@renesas.com>
+List-ID: <linux-pwm.vger.kernel.org>
+
+Hello,
 
 On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 > From: Phong Hoang <phong.hoang.wz@renesas.com>
-> 
+>=20
 > This patch fixes deadlock warning if removing PWM device
 > when CONFIG_PROVE_LOCKING is enabled.
-> 
+>=20
 > This issue can be reproceduced by the following steps on
 > the R-Car H3 Salvator-X board if the backlight is disabled:
-> 
+>=20
 >  # cd /sys/class/pwm/pwmchip0
 >  # echo 0 > export
 >  # ls
@@ -34,16 +41,20 @@ On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 >  # ls
 >  bind  e6e31000.pwm  uevent  unbind
 >  # echo e6e31000.pwm > unbind
-> 
-> [   87.659974] ======================================================
+>=20
+> [   87.659974] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 > [   87.666149] WARNING: possible circular locking dependency detected
 > [   87.672327] 5.0.0 #7 Not tainted
 > [   87.675549] ------------------------------------------------------
 > [   87.681723] bash/2986 is trying to acquire lock:
-> [   87.686337] 000000005ea0e178 (kn->count#58){++++}, at: kernfs_remove_by_name_ns+0x50/0xa0
+> [   87.686337] 000000005ea0e178 (kn->count#58){++++}, at: kernfs_remove_b=
+y_name_ns+0x50/0xa0
 > [   87.694528]
 > [   87.694528] but task is already holding lock:
-> [   87.700353] 000000006313b17c (pwm_lock){+.+.}, at: pwmchip_remove+0x28/0x13c
+> [   87.700353] 000000006313b17c (pwm_lock){+.+.}, at: pwmchip_remove+0x28=
+/0x13c
 > [   87.707405]
 > [   87.707405] which lock already depends on the new lock.
 > [   87.707405]
@@ -109,14 +120,19 @@ On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 > [   87.953908]  *** DEADLOCK ***
 > [   87.953908]
 > [   87.959821] 4 locks held by bash/2986:
-> [   87.963563]  #0: 00000000ace7bc30 (sb_writers#6){.+.+}, at: vfs_write+0x188/0x19c
-> [   87.971044]  #1: 00000000287991b2 (&of->mutex){+.+.}, at: kernfs_fop_write+0xb4/0x1e8
-> [   87.978872]  #2: 00000000f739d016 (&dev->mutex){....}, at: device_release_driver_internal+0x40/0x21c
-> [   87.988001]  #3: 000000006313b17c (pwm_lock){+.+.}, at: pwmchip_remove+0x28/0x13c
+> [   87.963563]  #0: 00000000ace7bc30 (sb_writers#6){.+.+}, at: vfs_write+=
+0x188/0x19c
+> [   87.971044]  #1: 00000000287991b2 (&of->mutex){+.+.}, at: kernfs_fop_w=
+rite+0xb4/0x1e8
+> [   87.978872]  #2: 00000000f739d016 (&dev->mutex){....}, at: device_rele=
+ase_driver_internal+0x40/0x21c
+> [   87.988001]  #3: 000000006313b17c (pwm_lock){+.+.}, at: pwmchip_remove=
++0x28/0x13c
 > [   87.995481]
 > [   87.995481] stack backtrace:
 > [   87.999836] CPU: 0 PID: 2986 Comm: bash Not tainted 5.0.0 #7
-> [   88.005489] Hardware name: Renesas Salvator-X board based on r8a7795 ES1.x (DT)
+> [   88.005489] Hardware name: Renesas Salvator-X board based on r8a7795 E=
+S1.x (DT)
 > [   88.012791] Call trace:
 > [   88.015235]  dump_backtrace+0x0/0x190
 > [   88.018891]  show_stack+0x14/0x1c
@@ -149,7 +165,7 @@ On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 > [   88.124291]  el0_svc_common+0xd0/0x124
 > [   88.128034]  el0_svc_compat_handler+0x1c/0x24
 > [   88.132384]  el0_svc_compat+0x8/0x18
-> 
+>=20
 > The sysfs unexport in pwmchip_remove() is completely asymmetric
 > to what we do in pwmchip_add_with_polarity() and commit 0733424c9ba9
 > ("pwm: Unexport children before chip removal") is a strong indication
@@ -157,22 +173,22 @@ On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 > pwmchip_sysfs_unexport() where it belongs, which is right after
 > pwmchip_sysfs_unexport_children(). In that case, we do not need
 > separate functions anymore either.
-> 
+>=20
 > We also really want to remove sysfs irrespective of whether or not
 > the chip will be removed as a result of pwmchip_remove(). We can only
 > assume that the driver will be gone after that, so we shouldn't leave
 > any dangling sysfs files around.
-> 
+>=20
 > This warning disappears if we move pwmchip_sysfs_unexport() to
 > the top of pwmchip_remove(), pwmchip_sysfs_unexport_children().
 > That way it is also outside of the pwm_lock section, which indeed
 > doesn't seem to be needed.
-> 
+>=20
 > Moving the pwmchip_sysfs_export() call outside of that section also
 > seems fine and it'd be perfectly symmetric with pwmchip_remove() again.
-> 
+>=20
 > So, this patch fixes them.
-> 
+>=20
 > Signed-off-by: Phong Hoang <phong.hoang.wz@renesas.com>
 > [shimoda: revise the commit log and code]
 > Fixes: 76abbdde2d95 ("pwm: Add sysfs interface")
@@ -181,128 +197,11 @@ On Tue, Mar 19, 2019 at 07:40:08PM +0900, Yoshihiro Shimoda wrote:
 > Tested-by: Hoan Nguyen An <na-hoan@jinso.co.jp>
 > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-> ---
->  Changes from v2 (https://patchwork.kernel.org/patch/10850711/)
->  - Revise the commit log.
->  - Reduce code diff lines by using if (!parent) condition.
->  - Add Reviewed-by Geert's tag.
-> 
->  Changes from v1 (https://patchwork.kernel.org/patch/10848567/):
->  - Change the subject from "Avoid" to "Fix".
->  - Merge pwmchip_sysfs_unexport_children()'s code into
->    pwmchip_sysfs_unexport() and move pwmchip_sysfs_unexport() to
->    the top of pwmchip_remove().
->  - Revise the commit log that is reffered from Therry's comments [1]
->    because it seems very clear to me.
->  - Add Fixes tag about the commit 0733424c9ba9. 
->  - I got Geert's Reviewed-by on v1 patch, but I'm not sure
->    I can add the Reviewed-by because v2 patch changes a bit.
->    So, I didn't add the Reviewed-by tag.
-> 
-> [1]
-> https://www.mail-archive.com/linux-renesas-soc@vger.kernel.org/msg39167.html
-> 
-> 
-> 
->  drivers/pwm/core.c  | 10 +++++-----
->  drivers/pwm/sysfs.c | 14 +-------------
->  include/linux/pwm.h |  5 -----
->  3 files changed, 6 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 1581f6a..c45e571 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -311,10 +311,12 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
->  	if (IS_ENABLED(CONFIG_OF))
->  		of_pwmchip_add(chip);
->  
-> -	pwmchip_sysfs_export(chip);
-> -
->  out:
->  	mutex_unlock(&pwm_lock);
-> +
-> +	if (!ret)
-> +		pwmchip_sysfs_export(chip);
-> +
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(pwmchip_add_with_polarity);
-> @@ -348,7 +350,7 @@ int pwmchip_remove(struct pwm_chip *chip)
->  	unsigned int i;
->  	int ret = 0;
->  
-> -	pwmchip_sysfs_unexport_children(chip);
-> +	pwmchip_sysfs_unexport(chip);
->  
->  	mutex_lock(&pwm_lock);
->  
-> @@ -368,8 +370,6 @@ int pwmchip_remove(struct pwm_chip *chip)
->  
->  	free_pwms(chip);
->  
-> -	pwmchip_sysfs_unexport(chip);
-> -
->  out:
->  	mutex_unlock(&pwm_lock);
->  	return ret;
-> diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-> index ceb233d..13d9bd5 100644
-> --- a/drivers/pwm/sysfs.c
-> +++ b/drivers/pwm/sysfs.c
-> @@ -411,19 +411,6 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
->  void pwmchip_sysfs_unexport(struct pwm_chip *chip)
->  {
->  	struct device *parent;
-> -
-> -	parent = class_find_device(&pwm_class, NULL, chip,
-> -				   pwmchip_sysfs_match);
-> -	if (parent) {
-> -		/* for class_find_device() */
-> -		put_device(parent);
-> -		device_unregister(parent);
-> -	}
-> -}
-> -
-> -void pwmchip_sysfs_unexport_children(struct pwm_chip *chip)
-> -{
-> -	struct device *parent;
->  	unsigned int i;
->  
->  	parent = class_find_device(&pwm_class, NULL, chip,
-> @@ -439,6 +426,7 @@ void pwmchip_sysfs_unexport_children(struct pwm_chip *chip)
->  	}
->  
->  	put_device(parent);
-> +	device_unregister(parent);
->  }
->  
->  static int __init pwm_sysfs_init(void)
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index d5199b5..ea3939f 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -597,7 +597,6 @@ static inline void pwm_remove_table(struct pwm_lookup *table, size_t num)
->  #ifdef CONFIG_PWM_SYSFS
->  void pwmchip_sysfs_export(struct pwm_chip *chip);
->  void pwmchip_sysfs_unexport(struct pwm_chip *chip);
-> -void pwmchip_sysfs_unexport_children(struct pwm_chip *chip);
->  #else
->  static inline void pwmchip_sysfs_export(struct pwm_chip *chip)
->  {
-> @@ -606,10 +605,6 @@ static inline void pwmchip_sysfs_export(struct pwm_chip *chip)
->  static inline void pwmchip_sysfs_unexport(struct pwm_chip *chip)
->  {
->  }
-> -
-> -static inline void pwmchip_sysfs_unexport_children(struct pwm_chip *chip)
-> -{
-> -}
->  #endif /* CONFIG_PWM_SYSFS */
->  
->  #endif /* __LINUX_PWM_H */
-> -- 
-> 2.7.4
-> 
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
