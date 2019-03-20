@@ -1,111 +1,61 @@
-Return-Path: <paul.walmsley@sifive.com>
-Return-Path: <paul.walmsley@sifive.com>
-Subject: Re: [PATCH v9 0/2] PWM support for HiFive Unleashed
-References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
- <mvmimwotn60.fsf@suse.de>
- <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
- <mvm5zsgp00d.fsf@suse.de>
-From: Paul Walmsley <paul.walmsley@sifive.com>
-Message-ID: <19807892-f450-58d8-2e78-34d3954da56f@sifive.com>
-Date: Mon, 18 Mar 2019 16:15:48 -0700
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Wed, 20 Mar 2019 12:34:36 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Message-ID: <20190320113436.GE23838@ulmo>
+References: <20190312092547.24722-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <mvm5zsgp00d.fsf@suse.de>
-Content-Type: multipart/alternative;
- boundary="------------1DDAA2E043AB5BD9F61CDEA9"
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="G6nVm6DDWH/FONJq"
+Content-Disposition: inline
+In-Reply-To: <20190312092547.24722-1-u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: sysfs: fix typo "its" -> "it's"
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, trivial@kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-To: Yash Shah <yash.shah@sifive.com>
-Cc: Andreas Schwab <schwab@suse.de>, Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>
-
-This is a multi-part message in MIME format.
---------------1DDAA2E043AB5BD9F61CDEA9
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-
-Hi Yash
 
 
-On 3/18/19 10:26 AM, Andreas Schwab wrote:
-> On Mär 15 2019, Yash Shah <yash.shah@sifive.com> wrote:
->
->> You need to make sure the period setting is passed via the
->> conventional way in DT file.
->> Example:
->> pwmleds {
->>     compatible = "pwm-leds";
->>     heartbeat {
->>         pwms = <&L45 0 10000000 0>;
->>         max-brightness = <255>;
->>         linux,default-trigger = "heartbeat";
->>     };
->> };
-> I've now managed to build a working FSBL with that change, but that
-> didn't change anything.  There is not even a heartbeat option in
-> /sys/class/leds/heartbeat/trigger any more.
+--G6nVm6DDWH/FONJq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Mar 12, 2019 at 10:25:47AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/pwm/sysfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Could you post a copy of the current DTS file and Kconfig that you're
-using so that Andreas can duplicate your results?
+Applied, thanks.
 
+Thierry
 
-thanks,
+--G6nVm6DDWH/FONJq
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-- Paul
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlySJUwACgkQ3SOs138+
+s6EA0xAArsvlKMEZwQllMFtBVNj6ywEoCPkZhGYwCOt6tMzBsPwNhbKQhgUlwAtn
+CccO4z/xjYeu2bJwSUO5CkckFc25WhdIg1JFXFHR7pQ7Ft3sJoqHXedSKEfydQRm
+iptRXzfOBg7cGbFt8/YkLyrH7KFjDyUkvMBUlT0pn/zgT9amX2iCKfYMkK3zZOdi
+9gyHJSMt4a+8R7FyDoaN2T7HbTJTAxhYTW2viRDOVafjetGUczGlyuIcd/B0jmGy
+r3vhO/RQ+SffwGNiCWEBncptz/MrHhc91Mycf9R6jO4Ugr10RH2u8+Vjfz0u1b7G
+HtqmlA60Pvwn7sH1z693LpzPv1bsUns3JedCpDJyT75pDRHxsafxrSo9pqxgktmb
+S9xEaXtPkWft8iz2HVu5CilRJeG3MCK90z0dWQFflShnHzkqyCtUgRFBNoKQAR4K
+6Z+zBQaAXH4i4pbsK0BLl8we4wXxtYmZfuJr11q1No+jP1N69LGpnyUp6+KyfO08
+NH3UsH/6HfkaXleiaatcKQTqUbCzWW9RDq1foSLOLPaWb1T2JcM3QvwCsAO9/JvZ
+DDWI/D9F/Zg+9oosJv2nkxoRhc7lhHUZ1u85QdQUS45Slh9nRzc2OaWN8fGQ08+I
+W+w94xdyP4PPPV5D0qxdgQmAMldYoglS4zAcIHVEQaf7hueJVps=
+=3Ms9
+-----END PGP SIGNATURE-----
 
-
---------------1DDAA2E043AB5BD9F61CDEA9
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <p>Hi Yash</p>
-    <p><br>
-    </p>
-    <div class="moz-cite-prefix">On 3/18/19 10:26 AM, Andreas Schwab
-      wrote:<br>
-    </div>
-    <blockquote type="cite" cite="mid:mvm5zsgp00d.fsf@suse.de">
-      <pre class="moz-quote-pre" wrap="">On Mär 15 2019, Yash Shah <a class="moz-txt-link-rfc2396E" href="mailto:yash.shah@sifive.com">&lt;yash.shah@sifive.com&gt;</a> wrote:
-
-</pre>
-      <blockquote type="cite">
-        <pre class="moz-quote-pre" wrap="">You need to make sure the period setting is passed via the
-conventional way in DT file.
-Example:
-pwmleds {
-    compatible = "pwm-leds";
-    heartbeat {
-        pwms = &lt;&amp;L45 0 10000000 0&gt;;
-        max-brightness = &lt;255&gt;;
-        linux,default-trigger = "heartbeat";
-    };
-};
-</pre>
-      </blockquote>
-      <pre class="moz-quote-pre" wrap="">
-I've now managed to build a working FSBL with that change, but that
-didn't change anything.  There is not even a heartbeat option in
-/sys/class/leds/heartbeat/trigger any more.
-</pre>
-    </blockquote>
-    <p><br>
-    </p>
-    <p>Could you post a copy of the current DTS file and Kconfig that
-      you're using so that Andreas can duplicate your results?<br>
-    </p>
-    <p><br>
-    </p>
-    <p>thanks,</p>
-    <p><br>
-    </p>
-    <p>- Paul<br>
-    </p>
-  </body>
-</html>
-
---------------1DDAA2E043AB5BD9F61CDEA9--
+--G6nVm6DDWH/FONJq--
