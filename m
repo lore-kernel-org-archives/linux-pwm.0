@@ -1,81 +1,438 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH V8 5/5] ARM: dts: imx7ulp-evk: Add backlight support
-Date: Thu, 21 Mar 2019 00:48:17 +0000
-Message-ID: <1553128960-17923-6-git-send-email-Anson.Huang@nxp.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH V8 2/5] pwm: Add i.MX TPM PWM driver support
+Date: Thu, 21 Mar 2019 10:19:50 +0100
+Message-ID: <20190321091950.tkzem7cbgvtynr5m@pengutronix.de>
 References: <1553128960-17923-1-git-send-email-Anson.Huang@nxp.com>
+ <1553128960-17923-3-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1553128960-17923-1-git-send-email-Anson.Huang@nxp.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1553128960-17923-3-git-send-email-Anson.Huang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>
+To: Anson Huang <anson.huang@nxp.com>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>l
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds i.MX7ULP EVK board MIPI-DSI backlight support.
+Hello,
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
-no changes.
----
- arch/arm/boot/dts/imx7ulp-evk.dts | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+On Thu, Mar 21, 2019 at 12:47:57AM +0000, Anson Huang wrote:
+> i.MX7ULP has TPM(Low Power Timer/Pulse Width Modulation Module)
+> inside, it can support multiple PWM channels, all the channels
+> share same counter and period setting, but each channel can
+> configure its duty and polarity independently.
+> 
+> There are several TPM modules in i.MX7ULP, the number of channels
+> in TPM modules are different, it can be read from each TPM module's
+> PARAM register.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> ---
+> changes since V7:
+> 	- improve prescale computation;
+> 	- improve some register definitions;
+> 	- remove unnecessary check for period count check;
+> 	- improve function parameter to use pointer instead of value;
+> ---
+>  drivers/pwm/Kconfig       |  11 ++
+>  drivers/pwm/Makefile      |   1 +
+>  drivers/pwm/pwm-imx-tpm.c | 435 ++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 447 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-imx-tpm.c
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 54f8238..3ea0391 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -210,6 +210,17 @@ config PWM_IMX27
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-imx27.
+>  
+> +config PWM_IMX_TPM
+> +	tristate "i.MX TPM PWM support"
+> +	depends on ARCH_MXC || COMPILE_TEST
+> +	depends on HAVE_CLK && HAS_IOMEM
+> +	help
+> +	  Generic PWM framework driver for i.MX7ULP TPM module, TPM's full
+> +	  name is Low Power Timer/Pulse Width Modulation Module.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-imx-tpm.
+> +
+>  config PWM_JZ4740
+>  	tristate "Ingenic JZ47xx PWM support"
+>  	depends on MACH_INGENIC
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 448825e..c368599 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -19,6 +19,7 @@ obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
+>  obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+>  obj-$(CONFIG_PWM_IMX1)		+= pwm-imx1.o
+>  obj-$(CONFIG_PWM_IMX27)		+= pwm-imx27.o
+> +obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
+>  obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+>  obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+>  obj-$(CONFIG_PWM_LPC18XX_SCT)	+= pwm-lpc18xx-sct.o
+> diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+> new file mode 100644
+> index 0000000..0efea36
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-imx-tpm.c
+> @@ -0,0 +1,435 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright 2018-2019 NXP.
+> + *
+> + * Limitations:
+> + * - The TPM counter and period counter are shared between
+> + *   multiple channels, so all channels should use same period
+> + *   settings.
 
-diff --git a/arch/arm/boot/dts/imx7ulp-evk.dts b/arch/arm/boot/dts/imx7ulp-=
-evk.dts
-index a09026a..7c44ffa 100644
---- a/arch/arm/boot/dts/imx7ulp-evk.dts
-+++ b/arch/arm/boot/dts/imx7ulp-evk.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
-=20
- #include "imx7ulp.dtsi"
-+#include <dt-bindings/pwm/pwm.h>
-=20
- / {
- 	model =3D "NXP i.MX7ULP EVK";
-@@ -22,6 +23,14 @@
- 		reg =3D <0x60000000 0x40000000>;
- 	};
-=20
-+	backlight {
-+		compatible =3D "pwm-backlight";
-+		pwms =3D <&pwm0 1 50000 0>;
-+		brightness-levels =3D <0 20 25 30 35 40 100>;
-+		default-brightness-level =3D <6>;
-+		status =3D "okay";
-+	};
-+
- 	reg_vsd_3v3: regulator-vsd-3v3 {
- 		compatible =3D "regulator-fixed";
- 		regulator-name =3D "VSD_3V3";
-@@ -40,6 +49,12 @@
- 	status =3D "okay";
- };
-=20
-+&pwm0 {
-+	pinctrl-names =3D "default";
-+	pinctrl-0 =3D <&pinctrl_pwm0>;
-+	status =3D "okay";
-+};
-+
- &usdhc0 {
- 	pinctrl-names =3D "default";
- 	pinctrl-0 =3D <&pinctrl_usdhc0>;
-@@ -57,6 +72,12 @@
- 		bias-pull-up;
- 	};
-=20
-+	pinctrl_pwm0: pwm0grp {
-+		fsl,pins =3D <
-+			IMX7ULP_PAD_PTF2__TPM4_CH1	0x2
-+		>;
-+	};
-+
- 	pinctrl_usdhc0: usdhc0grp {
- 		fsl,pins =3D <
- 			IMX7ULP_PAD_PTD1__SDHC0_CMD	0x43
---=20
-2.7.4
+What about:
+
+ - Not all parameters to change the period length can be changed
+   atomically. The counter must be stopped to change SC.PS.
+
+ - Changes to polarity cannot be latched at the time of the next period
+   start.
+
+?
+
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/log2.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_address.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/slab.h>
+> +
+> +#define PWM_IMX_TPM_PARAM	0x4
+> +#define PWM_IMX_TPM_GLOBAL	0x8
+> +#define PWM_IMX_TPM_SC		0x10
+> +#define PWM_IMX_TPM_CNT		0x14
+> +#define PWM_IMX_TPM_MOD		0x18
+> +#define PWM_IMX_TPM_CnSC(n)	(0x20 + (n) * 0x8)
+> +#define PWM_IMX_TPM_CnV(n)	(0x24 + (n) * 0x8)
+> +
+> +#define PWM_IMX_TPM_PARAM_CHAN			GENMASK(7, 0)
+> +
+> +#define PWM_IMX_TPM_SC_PS			GENMASK(2, 0)
+> +#define PWM_IMX_TPM_SC_CMOD			GENMASK(4, 3)
+> +#define PWM_IMX_TPM_SC_CMOD_INC_EVERY_CLK	FIELD_PREP(PWM_IMX_TPM_SC_CMOD, 1)
+> +#define PWM_IMX_TPM_SC_CPWMS			BIT(5)
+> +
+> +#define PWM_IMX_TPM_CnSC_CHF	BIT(7)
+> +#define PWM_IMX_TPM_CnSC_MSB	BIT(5)
+> +#define PWM_IMX_TPM_CnSC_MSA	BIT(4)
+> +
+> +/*
+> + * The reference manual describes this field as two separate bits. The
+> + * samantic of the two bits isn't orthogonal though, so they are treated
+> + * together as a 2-bit field here.
+> + */
+> +#define PWM_IMX_TPM_CnSC_ELS	GENMASK(3, 2)
+> +#define PWM_IMX_TPM_CnSC_ELS_POLARITY_INVERSED	0x1
+> +#define PWM_IMX_TPM_CnSC_ELS_INVERSED	FIELD_PREP(PWM_IMX_TPM_CnSC_ELS, 1)
+> +#define PWM_IMX_TPM_CnSC_ELS_NORMAL	FIELD_PREP(PWM_IMX_TPM_CnSC_ELS, 2)
+> +
+> +
+> +#define PWM_IMX_TPM_MOD_WIDTH	16
+> +#define PWM_IMX_TPM_MOD_MOD	GENMASK(PWM_IMX_TPM_MOD_WIDTH - 1, 0)
+> +
+> +struct imx_tpm_pwm_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	struct mutex lock;
+> +	u32 user_count;
+> +	u32 enable_count;
+> +	u32 real_period;
+> +};
+> +
+> +struct imx_tpm_pwm_param {
+> +	u8 prescale;
+> +	u32 mod;
+> +};
+> +
+> +static inline struct imx_tpm_pwm_chip *to_imx_tpm_pwm_chip(struct pwm_chip *chip)
+> +{
+> +	return container_of(chip, struct imx_tpm_pwm_chip, chip);
+> +}
+> +
+> +static int pwm_imx_tpm_round_state(struct pwm_chip *chip,
+> +				   struct imx_tpm_pwm_param *p,
+> +				   struct pwm_state *state,
+> +				   struct pwm_state *real_state)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	u32 rate, prescale, period_count, clock_unit;
+> +	u64 tmp;
+> +
+> +	rate = clk_get_rate(tpm->clk);
+> +	tmp = (u64)state->period * rate;
+> +	clock_unit = DIV_ROUND_CLOSEST_ULL(tmp, NSEC_PER_SEC);
+> +	if (clock_unit <= PWM_IMX_TPM_MOD_MOD)
+> +		prescale = 0;
+> +	else
+> +		prescale = ilog2(clock_unit) + 1 - PWM_IMX_TPM_MOD_WIDTH;
+> +
+> +	if ((!FIELD_FIT(PWM_IMX_TPM_SC_PS, prescale)))
+> +		return -ERANGE;
+> +	p->prescale = prescale;
+> +
+> +	period_count = (clock_unit + ((1 << prescale) >> 1)) >> prescale;
+> +	p->mod = period_count;
+> +
+> +	/* calculate real period HW can support */
+> +	tmp = (u64)period_count << prescale;
+> +	tmp *= NSEC_PER_SEC;
+> +	real_state->period = DIV_ROUND_CLOSEST_ULL(tmp, rate);
+> +
+> +	/*
+> +	 * if eventually the PWM output is inactive, either
+> +	 * duty cycle is 0 or status is disabled, need to
+> +	 * make sure the output pin is inactive.
+> +	 */
+> +	if (!state->enabled)
+> +		real_state->duty_cycle = 0;
+> +	else
+> +		real_state->duty_cycle = state->duty_cycle;
+
+You're maybe lying about the duty cycle here. Also it would be more
+consistent to calculate the value to be written into the CnV register
+that defines the duty cycle here.
+
+Regarding the period computation I'm happy with this function. Unless I
+miss something this function is idempotent (i.e. doing
+
+	pwm_imx_tpm_round_state(chip, &p, some_state, &real_state1);
+	pwm_imx_tpm_round_state(chip, &p, &real_state1, &real_state2);
+
+results in real_state1 == real_state2) given that
+clk_get_rate(tpm->clk) < NSEC_PER_SEC.
+
+> +	real_state->polarity = state->polarity;
+> +	real_state->enabled = state->enabled;
+> +
+> +	return 0;
+> +}
+> +
+
+A comment here noting that pwm_imx_tpm_setup_period is supposed to be
+called with the mutex hold would be good here.
+
+> +static void pwm_imx_tpm_setup_period(struct pwm_chip *chip,
+> +				     struct imx_tpm_pwm_param *p)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	u32 val, saved_cmod, cur_prescale;
+> +
+> +	/* make sure counter is disabled for programming prescale */
+
+@Thierry: What is your thought here? IMHO this should only be allowed if
+all affected PWMs are off.
+
+> +	val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +	saved_cmod = FIELD_GET(PWM_IMX_TPM_SC_CMOD, val);
+> +	cur_prescale = FIELD_GET(PWM_IMX_TPM_SC_PS, val);
+> +	if (saved_cmod && cur_prescale != p->prescale) {
+> +		val &= ~PWM_IMX_TPM_SC_CMOD;
+> +		writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +	}
+> +
+> +	/* set TPM counter prescale */
+> +	val &= ~PWM_IMX_TPM_SC_PS;
+> +	val |= FIELD_PREP(PWM_IMX_TPM_SC_PS, p->prescale);
+> +	writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +
+> +	/* restore the clock mode if necessary */
+> +	if (saved_cmod && cur_prescale != p->prescale) {
+> +		val |= FIELD_PREP(PWM_IMX_TPM_SC_CMOD, saved_cmod);
+> +		writel(val, tpm->base + PWM_IMX_TPM_SC);
+> +	}
+> +
+> +	/*
+> +	 * set period count:
+> +	 * according to RM, the MOD register is updated immediately
+> +	 * if CMOD[1:0] = 2b'00. if CMOD[1:0] != 2b'00, then MOD
+> +	 * register is updated according to the CPWMS bit, that is:
+> +	 *
+> +	 * if the selected mode is not CPWM then MOD register is
+> +	 * updated after MOD register was written and the TPM
+> +	 * counter changes from MOD to zero.
+> +	 *
+> +	 * if the selected mode is CPWM then MOD register is updated
+> +	 * after MOD register was written and the TPM counter changes
+> +	 * from MOD to (MOD – 1).
+> +	 */
+> +	writel(p->mod, tpm->base + PWM_IMX_TPM_MOD);
+> +}
+> +
+> +static void pwm_imx_tpm_get_state(struct pwm_chip *chip,
+> +				  struct pwm_device *pwm,
+> +				  struct pwm_state *state)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	u32 rate, val, prescale;
+> +	u64 tmp;
+> +
+> +	/* get period */
+> +	state->period = tpm->real_period;
+> +
+> +	/* get duty cycle */
+> +	rate = clk_get_rate(tpm->clk);
+> +	val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +	prescale = FIELD_GET(PWM_IMX_TPM_SC_PS, val);
+> +	tmp = readl(tpm->base + PWM_IMX_TPM_CnV(pwm->hwpwm));
+> +	tmp = (tmp << prescale) * NSEC_PER_SEC;
+> +	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, rate);
+> +
+> +	/* get polarity */
+> +	val = readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +	if (FIELD_GET(PWM_IMX_TPM_CnSC_ELS, val) ==
+> +	    PWM_IMX_TPM_CnSC_ELS_POLARITY_INVERSED)
+> +		state->polarity = PWM_POLARITY_INVERSED;
+> +	else
+> +		/*
+> +		 * Assume reserved values (2b00 and 2b11) to yield
+> +		 * normal polarity.
+
+Given that this driver writes PWM_IMX_TPM_CnSC_ELS = 2b00 in some
+situations assuming that this results in an constant inactive output,
+this should be recognized here. (Not entirely sure the output is
+inactive because of only PWM_IMX_TPM_CnSC_ELS = 2b00.)
+
+> +		 */
+> +		state->polarity = PWM_POLARITY_NORMAL;
+> +
+> +	/* get channel status */
+> +	state->enabled = FIELD_GET(PWM_IMX_TPM_CnSC_ELS, val) ? true : false;
+> +}
+> +
+> +static void pwm_imx_tpm_apply_hw(struct pwm_chip *chip,
+> +				 struct pwm_device *pwm,
+> +				 struct pwm_state *state)
+
+pwm_imx_tpm_apply_hw is called with the mutex hold. Is this necessary?
+Please either call it without the mutex or annotate the function that
+the caller is supposed to hold it.
+
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	struct pwm_state c;
+> +	u32 val, sc_val;
+> +	u64 tmp;
+> +
+> +	pwm_imx_tpm_get_state(chip, pwm, &c);
+> +
+> +	if (state->duty_cycle != c.duty_cycle) {
+> +		/* set duty counter */
+> +		tmp = readl(tpm->base + PWM_IMX_TPM_MOD) & PWM_IMX_TPM_MOD_MOD;
+> +		tmp *= state->duty_cycle;
+> +		val = DIV_ROUND_CLOSEST_ULL(tmp, state->period);
+> +		writel(val, tpm->base + PWM_IMX_TPM_CnV(pwm->hwpwm));
+
+How does this affect a currently running PWM? Consider it runs at
+duty_cycle=500 + period=1000 and now should change to duty_cycle=700 +
+period=800. Can it happen that we see a or even several periods with
+duty_cycle=700 and period=1000?
+
+> +	}
+> +
+> +	if (state->enabled != c.enabled) {
+
+If the PWM was already on and is changed to another enabled state,
+you're ignoring the (maybe) new polarity here.
+
+> +		/*
+> +		 * set polarity (for edge-aligned PWM modes)
+> +		 *
+> +		 * ELS[1:0] = 2b10 yields normal polarity behaviour,
+> +		 * ELS[1:0] = 2b01 yields inversed polarity.
+> +		 * The other values are reserved.
+> +		 *
+> +		 * polarity settings will enabled/disable output status
+> +		 * immediately, so if the channel is disabled, need to
+> +		 * make sure MSA/MSB/ELS are set to 0 which means channel
+> +		 * disabled.
+> +		 */
+> +		val = readl(tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +		val &= ~(PWM_IMX_TPM_CnSC_ELS | PWM_IMX_TPM_CnSC_MSA |
+> +			 PWM_IMX_TPM_CnSC_MSB);
+> +		sc_val = readl(tpm->base + PWM_IMX_TPM_SC);
+> +		if (state->enabled) {
+> +			val |= PWM_IMX_TPM_CnSC_MSB;
+> +			val |= (state->polarity == PWM_POLARITY_NORMAL) ?
+> +				PWM_IMX_TPM_CnSC_ELS_NORMAL :
+> +				PWM_IMX_TPM_CnSC_ELS_INVERSED;
+> +			if (++tpm->enable_count == 1) {
+> +				/* start TPM counter */
+> +				sc_val |= PWM_IMX_TPM_SC_CMOD_INC_EVERY_CLK;
+> +				writel(sc_val, tpm->base + PWM_IMX_TPM_SC);
+> +			}
+> +		} else {
+> +			if (--tpm->enable_count == 0) {
+> +				/* stop TPM counter */
+> +				sc_val &= ~PWM_IMX_TPM_SC_CMOD;
+> +				writel(sc_val, tpm->base + PWM_IMX_TPM_SC);
+> +			}
+> +		}
+> +		writel(val, tpm->base + PWM_IMX_TPM_CnSC(pwm->hwpwm));
+> +	}
+> +}
+> +
+> +static int pwm_imx_tpm_apply(struct pwm_chip *chip,
+> +			      struct pwm_device *pwm,
+> +			     struct pwm_state *state)
+> +{
+> +	struct imx_tpm_pwm_chip *tpm = to_imx_tpm_pwm_chip(chip);
+> +	struct imx_tpm_pwm_param param;
+> +	struct pwm_state real_state;
+> +	int ret;
+> +
+> +	ret = pwm_imx_tpm_round_state(chip, &param, state, &real_state);
+> +	if (ret)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&tpm->lock);
+> +
+> +	/*
+> +	 * TPM counter is shared by multiple channels, so
+> +	 * prescale and period can NOT be modified when
+> +	 * there are multiple channels in use with different
+> +	 * period settings.
+> +	 */
+> +	if (real_state.period != tpm->real_period) {
+> +		if (tpm->user_count > 1) {
+> +			ret = -EBUSY;
+> +			goto exit;
+> +		}
+> +
+> +		pwm_imx_tpm_setup_period(chip, &param);
+> +		tpm->real_period = real_state.period;
+> +	}
+> +
+> +	pwm_imx_tpm_apply_hw(chip, pwm, &real_state);
+> +
+> +exit:
+> +	mutex_unlock(&tpm->lock);
+
+.apply is supposed to sleep until the newly configured state is active.
+This is missing here, right?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
