@@ -1,89 +1,140 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [BACKPORT 4.14.y 0/8] candidates from spreadtrum 4.14 product kernel
-Date: Fri, 22 Mar 2019 17:17:15 +0100
-Message-ID: <20190322161727.1153278-1-arnd@arndb.de>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 1/1] pwm: meson: use the spin-lock only to protect register
+ modifications
+Date: Sun, 24 Mar 2019 23:02:17 +0100
+Message-ID: <20190324220217.15813-2-martin.blumenstingl@googlemail.com>
+References: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: stable@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Jingoo Han <jingoohan1@gmail.com>, Joao Pinto <Joao.Pinto@synopsys.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Vinayak Holikatti <vinholikatti@gmail.com>, "James E.J. Bottomley" <jejb@linux.vnet.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>linu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com, narmstrong@baylibre.com, jbrunet@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-I took a scripted approach to look at some product kernels for patches
-backported into vendor kernels. This is a set of (mostly) bugfixes I found
-in Spreadtrum's linux-4.14 kernel that are missing in v4.14.107:
+Holding the spin-lock for all of the code in meson_pwm_apply() can
+result in a "BUG: scheduling while atomic". This can happen because
+clk_get_rate() (which is called from meson_pwm_calc()) may sleep.
+Only hold the spin-lock when modifying registers to solve this.
 
-83dc7e3dea76 scsi: ufs: fix wrong command type of UTRD for UFSHCI v2.1
-099a95f3591a PCI: designware-ep: dw_pcie_ep_set_msi() should only set MMC bits
-1cab826b30c6 PCI: designware-ep: Read-only registers need DBI_RO_WR_EN to be writable
-b330104fa76d PCI: endpoint: Use EPC's device in dma_alloc_coherent()/dma_free_coherent()
-36d46cdb43ef rtc: Fix overflow when converting time64_t to rtc_time
-1b5d43cfb697 sched/cpufreq/schedutil: Fix error path mutex unlock
-5fb5caee92ba pwm-backlight: Enable/disable the PWM before/after LCD enable toggle.
-f25a646fbe20 power: supply: charger-manager: Fix incorrect return value
+The reason why we need a spin-lock in the driver is because the
+REG_MISC_AB register is shared between the two channels provided by one
+PWM controller. The only functions where REG_MISC_AB is modified are
+meson_pwm_enable() and meson_pwm_disable() so the register reads/writes
+in there need to be protected by the spin-lock.
 
-Only a small number of patches here, the vendor tree is fairly close to
-mainline. All commits apply cleanly through git-cherry-pick.
+The original code also used the spin-lock to protect the values in
+struct meson_pwm_channel. This could be necessary if two consumers can
+use the same PWM channel. However, PWM core doesn't allow this so we
+don't need to protect the values in struct meson_pwm_channel with a
+lock.
 
-Baolin Wang (2):
-  rtc: Fix overflow when converting time64_t to rtc_time
-  power: supply: charger-manager: Fix incorrect return value
+Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/pwm/pwm-meson.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-Enric Balletbo i Serra (1):
-  pwm-backlight: Enable/disable the PWM before/after LCD enable toggle.
-
-Jules Maselbas (1):
-  sched/cpufreq/schedutil: Fix error path mutex unlock
-
-Kishon Vijay Abraham I (1):
-  PCI: endpoint: Use EPC's device in
-    dma_alloc_coherent()/dma_free_coherent()
-
-Niklas Cassel (2):
-  PCI: designware-ep: dw_pcie_ep_set_msi() should only set MMC bits
-  PCI: designware-ep: Read-only registers need DBI_RO_WR_EN to be
-    writable
-
-kehuanlin (1):
-  scsi: ufs: fix wrong command type of UTRD for UFSHCI v2.1
-
- drivers/pci/dwc/pcie-designware-ep.c   | 12 +++++++++++-
- drivers/pci/dwc/pcie-designware.h      |  1 +
- drivers/pci/endpoint/pci-epc-core.c    | 10 ----------
- drivers/pci/endpoint/pci-epf-core.c    |  4 ++--
- drivers/power/supply/charger-manager.c |  3 +--
- drivers/rtc/rtc-lib.c                  |  6 ++----
- drivers/scsi/ufs/ufshcd.c              | 14 ++++++++------
- drivers/video/backlight/pwm_bl.c       |  9 +++++----
- kernel/sched/cpufreq_schedutil.c       |  3 +--
- 9 files changed, 31 insertions(+), 31 deletions(-)
-
-
-Cc: Jingoo Han <jingoohan1@gmail.com>
-Cc: Joao Pinto <Joao.Pinto@synopsys.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Sebastian Reichel <sre@kernel.org>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Vinayak Holikatti <vinholikatti@gmail.com>
-Cc: "James E.J. Bottomley" <jejb@linux.vnet.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: linux-pci@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-pm@vger.kernel.org
-Cc: linux-rtc@vger.kernel.org
-Cc: linux-scsi@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-fbdev@vger.kernel.org
-
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index c1ed641b3e26..2b03938039b6 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -235,6 +235,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+ {
+ 	u32 value, clk_shift, clk_enable, enable;
+ 	unsigned int offset;
++	unsigned long flags;
+ 
+ 	switch (id) {
+ 	case 0:
+@@ -255,6 +256,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+ 		return;
+ 	}
+ 
++	spin_lock_irqsave(&meson->lock, flags);
++
+ 	value = readl(meson->base + REG_MISC_AB);
+ 	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
+ 	value |= channel->pre_div << clk_shift;
+@@ -267,11 +270,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+ 	value = readl(meson->base + REG_MISC_AB);
+ 	value |= enable;
+ 	writel(value, meson->base + REG_MISC_AB);
++
++	spin_unlock_irqrestore(&meson->lock, flags);
+ }
+ 
+ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
+ {
+ 	u32 value, enable;
++	unsigned long flags;
+ 
+ 	switch (id) {
+ 	case 0:
+@@ -286,9 +292,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
+ 		return;
+ 	}
+ 
++	spin_lock_irqsave(&meson->lock, flags);
++
+ 	value = readl(meson->base + REG_MISC_AB);
+ 	value &= ~enable;
+ 	writel(value, meson->base + REG_MISC_AB);
++
++	spin_unlock_irqrestore(&meson->lock, flags);
+ }
+ 
+ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -296,19 +306,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ {
+ 	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
+ 	struct meson_pwm *meson = to_meson_pwm(chip);
+-	unsigned long flags;
+ 	int err = 0;
+ 
+ 	if (!state)
+ 		return -EINVAL;
+ 
+-	spin_lock_irqsave(&meson->lock, flags);
+-
+ 	if (!state->enabled) {
+ 		meson_pwm_disable(meson, pwm->hwpwm);
+ 		channel->state.enabled = false;
+ 
+-		goto unlock;
++		return 0;
+ 	}
+ 
+ 	if (state->period != channel->state.period ||
+@@ -329,7 +336,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
+ 				     state->duty_cycle, state->period);
+ 		if (err < 0)
+-			goto unlock;
++			return err;
+ 
+ 		channel->state.polarity = state->polarity;
+ 		channel->state.period = state->period;
+@@ -341,9 +348,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		channel->state.enabled = true;
+ 	}
+ 
+-unlock:
+-	spin_unlock_irqrestore(&meson->lock, flags);
+-	return err;
++	return 0;
+ }
+ 
+ static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 -- 
-2.20.0
+2.21.0
