@@ -1,140 +1,52 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 1/1] pwm: meson: use the spin-lock only to protect register
- modifications
-Date: Sun, 24 Mar 2019 23:02:17 +0100
-Message-ID: <20190324220217.15813-2-martin.blumenstingl@googlemail.com>
-References: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/1] pwm: meson: fix scheduling while atomic issue
+Date: Sun, 24 Mar 2019 23:02:16 +0100
+Message-ID: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, narmstrong@baylibre.com, jbrunet@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Holding the spin-lock for all of the code in meson_pwm_apply() can
-result in a "BUG: scheduling while atomic". This can happen because
-clk_get_rate() (which is called from meson_pwm_calc()) may sleep.
-Only hold the spin-lock when modifying registers to solve this.
+Back in January a "BUG: scheduling while atomic" error showed up during
+boot on my Meson8b Odroid-C1 (which uses a PWM regulator as CPU supply).
+The call trace comes down to:
+  __mutex_lock
+  clk_prepare_lock
+  clk_core_get_rate
+  meson_pwm_apply
+  ..
+  dev_pm_opp_set_rate
+  ..
 
-The reason why we need a spin-lock in the driver is because the
-REG_MISC_AB register is shared between the two channels provided by one
-PWM controller. The only functions where REG_MISC_AB is modified are
-meson_pwm_enable() and meson_pwm_disable() so the register reads/writes
-in there need to be protected by the spin-lock.
+Jerome has also seen the same problem but from pwm-leds (instead of a
+pwm-regulator). He posted a patch which replaces the spinlock with a
+mutex. That works. I believe we can optimize this by reducing the time
+where the lock is held - that also allows to keep the spin-lock.
 
-The original code also used the spin-lock to protect the values in
-struct meson_pwm_channel. This could be necessary if two consumers can
-use the same PWM channel. However, PWM core doesn't allow this so we
-don't need to protect the values in struct meson_pwm_channel with a
-lock.
+Analyzing this issue helped me understand the pwm-meson driver better.
+My plan is to send some cleanups (with the goal of re-using more of the
+goodies from the PWM core in the pwm-meson driver) after this single fix
+is merged (they can be found here: [1]).
 
-Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
+Dependencies: none
+
+Target version: please queue this for -fixes so it makes it's way into
+v5.1-rc (so we can get it backported from there, because this issue has
+existed since the pwm-meson driver was introduced).
+
+
+[0] http://lists.infradead.org/pipermail/linux-amlogic/2019-January/009690.html
+[1] https://github.com/xdarklight/linux/commits/meson-pwm-for-5.2-v0
+
+
+Martin Blumenstingl (1):
+  pwm: meson: use the spin-lock only to protect register modifications
+
  drivers/pwm/pwm-meson.c | 21 +++++++++++++--------
  1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index c1ed641b3e26..2b03938039b6 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -235,6 +235,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
- {
- 	u32 value, clk_shift, clk_enable, enable;
- 	unsigned int offset;
-+	unsigned long flags;
- 
- 	switch (id) {
- 	case 0:
-@@ -255,6 +256,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
- 		return;
- 	}
- 
-+	spin_lock_irqsave(&meson->lock, flags);
-+
- 	value = readl(meson->base + REG_MISC_AB);
- 	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
- 	value |= channel->pre_div << clk_shift;
-@@ -267,11 +270,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
- 	value = readl(meson->base + REG_MISC_AB);
- 	value |= enable;
- 	writel(value, meson->base + REG_MISC_AB);
-+
-+	spin_unlock_irqrestore(&meson->lock, flags);
- }
- 
- static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
- {
- 	u32 value, enable;
-+	unsigned long flags;
- 
- 	switch (id) {
- 	case 0:
-@@ -286,9 +292,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
- 		return;
- 	}
- 
-+	spin_lock_irqsave(&meson->lock, flags);
-+
- 	value = readl(meson->base + REG_MISC_AB);
- 	value &= ~enable;
- 	writel(value, meson->base + REG_MISC_AB);
-+
-+	spin_unlock_irqrestore(&meson->lock, flags);
- }
- 
- static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -296,19 +306,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	struct meson_pwm *meson = to_meson_pwm(chip);
--	unsigned long flags;
- 	int err = 0;
- 
- 	if (!state)
- 		return -EINVAL;
- 
--	spin_lock_irqsave(&meson->lock, flags);
--
- 	if (!state->enabled) {
- 		meson_pwm_disable(meson, pwm->hwpwm);
- 		channel->state.enabled = false;
- 
--		goto unlock;
-+		return 0;
- 	}
- 
- 	if (state->period != channel->state.period ||
-@@ -329,7 +336,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
- 				     state->duty_cycle, state->period);
- 		if (err < 0)
--			goto unlock;
-+			return err;
- 
- 		channel->state.polarity = state->polarity;
- 		channel->state.period = state->period;
-@@ -341,9 +348,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		channel->state.enabled = true;
- 	}
- 
--unlock:
--	spin_unlock_irqrestore(&meson->lock, flags);
--	return err;
-+	return 0;
- }
- 
- static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 -- 
 2.21.0
