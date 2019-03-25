@@ -1,405 +1,388 @@
 From: Yash Shah <yash.shah@sifive.com>
-Subject: [PATCH v11 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Mon, 25 Mar 2019 15:42:59 +0530
-Message-ID: <1553508779-9685-3-git-send-email-yash.shah@sifive.com>
-References: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
+Subject: Re: [PATCH v9 0/2] PWM support for HiFive Unleashed
+Date: Mon, 25 Mar 2019 17:13:29 +0530
+Message-ID: <CAJ2_jOFrXcxRS1oYOuYhtuRReTocmPKnoe5GO_3r_B1uAZb+xA@mail.gmail.com>
+References: <1552378289-27245-1-git-send-email-yash.shah@sifive.com>
+ <mvmimwotn60.fsf@suse.de> <CAJ2_jOE3RH9FyFg_NATcLEpHv5y89zdh06Ji2x8n3C_gp-wn6A@mail.gmail.com>
+ <mvm5zsgp00d.fsf@suse.de> <CAJ2_jOHoNnBF2UwU6G1vdvNrJAUJdGL_RncRAOaXMWoS03cagA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
+In-Reply-To: <CAJ2_jOHoNnBF2UwU6G1vdvNrJAUJdGL_RncRAOaXMWoS03cagA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com, Yash Shah <yash.shah@sifive.com>
+To: Andreas Schwab <schwab@suse.de>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Adds a PWM driver for PWM chip present in SiFive's HiFive Unleashed SoC.
+Hi Andreas,
 
-Signed-off-by: Wesley W. Terpstra <wesley@sifive.com>
-[Atish: Various fixes and code cleanup]
-Signed-off-by: Atish Patra <atish.patra@wdc.com>
-Signed-off-by: Yash Shah <yash.shah@sifive.com>
----
- drivers/pwm/Kconfig      |  11 ++
- drivers/pwm/Makefile     |   1 +
- drivers/pwm/pwm-sifive.c | 338 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 350 insertions(+)
- create mode 100644 drivers/pwm/pwm-sifive.c
+On Tue, Mar 19, 2019 at 11:56 AM Yash Shah <yash.shah@sifive.com> wrote:
+>
+> On Mon, Mar 18, 2019 at 10:56 PM Andreas Schwab <schwab@suse.de> wrote:
+> >
+> > On M=C3=A4r 15 2019, Yash Shah <yash.shah@sifive.com> wrote:
+> >
+> > > You need to make sure the period setting is passed via the
+> > > conventional way in DT file.
+> > > Example:
+> > > pwmleds {
+> > >     compatible =3D "pwm-leds";
+> > >     heartbeat {
+> > >         pwms =3D <&L45 0 10000000 0>;
+> > >         max-brightness =3D <255>;
+> > >         linux,default-trigger =3D "heartbeat";
+> > >     };
+> > > };
+> >
+> > I've now managed to build a working FSBL with that change, but that
+> > didn't change anything.  There is not even a heartbeat option in
+> > /sys/class/leds/heartbeat/trigger any more.
+>
+...
+>
+> The above works for me.
+> I just noticed that I have been using pwm-cells =3D 2, instead of 3.
+> Maybe that is the problem here.
+> I will suggest you test it on v11 patch in which I will fix this
+> pwm-cells issue.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index a8f47df..4a61d1a 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -380,6 +380,17 @@ config PWM_SAMSUNG
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-samsung.
- 
-+config PWM_SIFIVE
-+	tristate "SiFive PWM support"
-+	depends on OF
-+	depends on COMMON_CLK
-+	depends on RISCV || COMPILE_TEST
-+	help
-+	  Generic PWM framework driver for SiFive SoCs.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-sifive.
-+
- config PWM_SPEAR
- 	tristate "STMicroelectronics SPEAr PWM support"
- 	depends on PLAT_SPEAR
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 9c676a0..30089ca 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_RCAR)		+= pwm-rcar.o
- obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
- obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
-+obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
- obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
- obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-new file mode 100644
-index 0000000..1921e6ea
---- /dev/null
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -0,0 +1,338 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2017-2018 SiFive
-+ * For SiFive's PWM IP block documentation please refer Chapter 14 of
-+ * Reference Manual : https://static.dev.sifive.com/FU540-C000-v1.0.pdf
-+ *
-+ * Limitations:
-+ * - When changing both duty cycle and period, we cannot prevent in
-+ *   software that the output might produce a period with mixed
-+ *   settings (new period length and old duty cycle).
-+ * - The hardware cannot generate a 100% duty cycle.
-+ * - The hardware generates only inverted output.
-+ */
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/slab.h>
-+#include <linux/bitfield.h>
-+
-+/* Register offsets */
-+#define PWM_SIFIVE_PWMCFG		0x0
-+#define PWM_SIFIVE_PWMCOUNT		0x8
-+#define PWM_SIFIVE_PWMS			0x10
-+#define PWM_SIFIVE_PWMCMP0		0x20
-+
-+/* PWMCFG fields */
-+#define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
-+#define PWM_SIFIVE_PWMCFG_STICKY	BIT(8)
-+#define PWM_SIFIVE_PWMCFG_ZERO_CMP	BIT(9)
-+#define PWM_SIFIVE_PWMCFG_DEGLITCH	BIT(10)
-+#define PWM_SIFIVE_PWMCFG_EN_ALWAYS	BIT(12)
-+#define PWM_SIFIVE_PWMCFG_EN_ONCE	BIT(13)
-+#define PWM_SIFIVE_PWMCFG_CENTER	BIT(16)
-+#define PWM_SIFIVE_PWMCFG_GANG		BIT(24)
-+#define PWM_SIFIVE_PWMCFG_IP		BIT(28)
-+
-+/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX registers */
-+#define PWM_SIFIVE_SIZE_PWMCMP		4
-+#define PWM_SIFIVE_CMPWIDTH		16
-+#define PWM_SIFIVE_DEFAULT_PERIOD	10000000
-+
-+struct pwm_sifive_ddata {
-+	struct pwm_chip	chip;
-+	struct mutex lock; /* lock to protect user_count */
-+	struct notifier_block notifier;
-+	struct clk *clk;
-+	void __iomem *regs;
-+	unsigned int real_period;
-+	unsigned int approx_period;
-+	int user_count;
-+};
-+
-+static inline
-+struct pwm_sifive_ddata *pwm_sifive_chip_to_ddata(struct pwm_chip *c)
-+{
-+	return container_of(c, struct pwm_sifive_ddata, chip);
-+}
-+
-+static int pwm_sifive_request(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
-+
-+	mutex_lock(&ddata->lock);
-+	ddata->user_count++;
-+	mutex_unlock(&ddata->lock);
-+
-+	return 0;
-+}
-+
-+static void pwm_sifive_free(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
-+
-+	mutex_lock(&ddata->lock);
-+	ddata->user_count--;
-+	mutex_unlock(&ddata->lock);
-+}
-+
-+static void pwm_sifive_update_clock(struct pwm_sifive_ddata *ddata,
-+				    unsigned long rate)
-+{
-+	unsigned long long num;
-+	unsigned long scale_pow;
-+	int scale;
-+	u32 val;
-+	/*
-+	 * The PWM unit is used with pwmzerocmp=0, so the only way to modify the
-+	 * period length is using pwmscale which provides the number of bits the
-+	 * counter is shifted before being feed to the comparators. A period
-+	 * lasts (1 << (PWM_SIFIVE_CMPWIDTH + pwmscale)) clock ticks.
-+	 * (1 << (PWM_SIFIVE_CMPWIDTH + scale)) * 10^9/rate = period
-+	 */
-+	scale_pow = div64_ul(ddata->approx_period * (u64)rate, NSEC_PER_SEC);
-+	scale = clamp(ilog2(scale_pow) - PWM_SIFIVE_CMPWIDTH, 0, 0xf);
-+
-+	val = PWM_SIFIVE_PWMCFG_EN_ALWAYS |
-+	      FIELD_PREP(PWM_SIFIVE_PWMCFG_SCALE, scale);
-+	writel(val, ddata->regs + PWM_SIFIVE_PWMCFG);
-+
-+	/* As scale <= 15 the shift operation cannot overflow. */
-+	num = (unsigned long long)NSEC_PER_SEC << (PWM_SIFIVE_CMPWIDTH + scale);
-+	ddata->real_period = div64_ul(num, rate);
-+	dev_dbg(ddata->chip.dev,
-+		"New real_period = %u ns\n", ddata->real_period);
-+}
-+
-+static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+				 struct pwm_state *state)
-+{
-+	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
-+	u32 duty, val;
-+
-+	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP0 +
-+		     pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+
-+	state->enabled = duty > 0;
-+
-+	val = readl(ddata->regs + PWM_SIFIVE_PWMCFG);
-+	if (!(val & PWM_SIFIVE_PWMCFG_EN_ALWAYS))
-+		state->enabled = false;
-+
-+	state->period = ddata->real_period;
-+	state->duty_cycle =
-+		(u64)duty * ddata->real_period >> PWM_SIFIVE_CMPWIDTH;
-+	state->polarity = PWM_POLARITY_INVERSED;
-+}
-+
-+static int pwm_sifive_enable(struct pwm_chip *chip, bool enable)
-+{
-+	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
-+	int ret;
-+
-+	if (enable) {
-+		ret = clk_enable(ddata->clk);
-+		if (ret) {
-+			dev_err(ddata->chip.dev, "Enable clk failed\n");
-+			return ret;
-+		}
-+	}
-+
-+	if (!enable)
-+		clk_disable(ddata->clk);
-+
-+	return 0;
-+}
-+
-+static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    struct pwm_state *state)
-+{
-+	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
-+	struct pwm_state cur_state;
-+	unsigned int duty_cycle;
-+	unsigned long long num;
-+	bool enabled;
-+	int ret = 0;
-+	u32 frac;
-+
-+	if (state->polarity != PWM_POLARITY_INVERSED)
-+		return -EINVAL;
-+
-+	ret = clk_enable(ddata->clk);
-+	if (ret) {
-+		dev_err(ddata->chip.dev, "Enable clk failed\n");
-+		return ret;
-+	}
-+
-+	mutex_lock(&ddata->lock);
-+	cur_state = pwm->state;
-+	enabled = cur_state.enabled;
-+
-+	duty_cycle = state->duty_cycle;
-+	if (!state->enabled)
-+		duty_cycle = 0;
-+
-+	/*
-+	 * The problem of output producing mixed setting as mentioned at top,
-+	 * occurs here. To minimize the window for this problem, we are
-+	 * calculating the register values first and then writing them
-+	 * consecutively
-+	 */
-+	num = (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
-+	frac = DIV_ROUND_CLOSEST_ULL(num, state->period);
-+	/* The hardware cannot generate a 100% duty cycle */
-+	frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
-+
-+	if (state->period != ddata->approx_period) {
-+		if (ddata->user_count != 1) {
-+			ret = -EBUSY;
-+			goto exit;
-+		}
-+		ddata->approx_period = state->period;
-+		pwm_sifive_update_clock(ddata, clk_get_rate(ddata->clk));
-+	}
-+
-+	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP0 +
-+	       pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+
-+	if (state->enabled != enabled)
-+		pwm_sifive_enable(chip, state->enabled);
-+
-+exit:
-+	clk_disable(ddata->clk);
-+	mutex_unlock(&ddata->lock);
-+	return ret;
-+}
-+
-+static const struct pwm_ops pwm_sifive_ops = {
-+	.request = pwm_sifive_request,
-+	.free = pwm_sifive_free,
-+	.get_state = pwm_sifive_get_state,
-+	.apply = pwm_sifive_apply,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int pwm_sifive_clock_notifier(struct notifier_block *nb,
-+				     unsigned long event, void *data)
-+{
-+	struct clk_notifier_data *ndata = data;
-+	struct pwm_sifive_ddata *ddata =
-+		container_of(nb, struct pwm_sifive_ddata, notifier);
-+
-+	if (event == POST_RATE_CHANGE)
-+		pwm_sifive_update_clock(ddata, ndata->new_rate);
-+
-+	return NOTIFY_OK;
-+}
-+
-+static int pwm_sifive_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct pwm_sifive_ddata *ddata;
-+	struct pwm_chip *chip;
-+	struct resource *res;
-+	int ret;
-+
-+	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-+	if (!ddata)
-+		return -ENOMEM;
-+
-+	mutex_init(&ddata->lock);
-+	chip = &ddata->chip;
-+	chip->dev = dev;
-+	chip->ops = &pwm_sifive_ops;
-+	chip->of_xlate = of_pwm_xlate_with_flags;
-+	chip->of_pwm_n_cells = 3;
-+	chip->base = -1;
-+	chip->npwm = 4;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	ddata->regs = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(ddata->regs)) {
-+		dev_err(dev, "Unable to map IO resources\n");
-+		return PTR_ERR(ddata->regs);
-+	}
-+
-+	ddata->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(ddata->clk)) {
-+		if (PTR_ERR(ddata->clk) != -EPROBE_DEFER)
-+			dev_err(dev, "Unable to find controller clock\n");
-+		return PTR_ERR(ddata->clk);
-+	}
-+
-+	ret = clk_prepare_enable(ddata->clk);
-+	if (ret) {
-+		dev_err(dev, "failed to enable clock for pwm: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* Watch for changes to underlying clock frequency */
-+	ddata->notifier.notifier_call = pwm_sifive_clock_notifier;
-+	ret = clk_notifier_register(ddata->clk, &ddata->notifier);
-+	if (ret) {
-+		dev_err(dev, "failed to register clock notifier: %d\n", ret);
-+		goto disable_clk;
-+	}
-+
-+	ret = pwmchip_add(chip);
-+	if (ret < 0) {
-+		dev_err(dev, "cannot register PWM: %d\n", ret);
-+		goto unregister_clk;
-+	}
-+
-+	platform_set_drvdata(pdev, ddata);
-+	dev_dbg(dev, "SiFive PWM chip registered %d PWMs\n", chip->npwm);
-+
-+	return 0;
-+
-+unregister_clk:
-+	clk_notifier_unregister(ddata->clk, &ddata->notifier);
-+disable_clk:
-+	clk_disable_unprepare(ddata->clk);
-+
-+	return ret;
-+}
-+
-+static int pwm_sifive_remove(struct platform_device *dev)
-+{
-+	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
-+	bool is_enabled = false;
-+	struct pwm_device *pwm;
-+	int ret, ch;
-+
-+	ret = pwmchip_remove(&ddata->chip);
-+	clk_notifier_unregister(ddata->clk, &ddata->notifier);
-+
-+	for (ch = 0; ch < ddata->chip.npwm; ch++) {
-+		pwm = &ddata->chip.pwms[ch];
-+		if (pwm->state.enabled) {
-+			is_enabled = true;
-+			break;
-+		}
-+	}
-+	if (is_enabled)
-+		clk_disable(ddata->clk);
-+	clk_disable_unprepare(ddata->clk);
-+	return ret;
-+}
-+
-+static const struct of_device_id pwm_sifive_of_match[] = {
-+	{ .compatible = "sifive,pwm0" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, pwm_sifive_of_match);
-+
-+static struct platform_driver pwm_sifive_driver = {
-+	.probe = pwm_sifive_probe,
-+	.remove = pwm_sifive_remove,
-+	.driver = {
-+		.name = "pwm-sifive",
-+		.of_match_table = pwm_sifive_of_match,
-+	},
-+};
-+module_platform_driver(pwm_sifive_driver);
-+
-+MODULE_DESCRIPTION("SiFive PWM driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.9.1
+I have sent out the v11 patchset, you can test the heartbeat
+application with that patchset.
+You still need to make that DT file modification which you previously
+did, using fsbl.bin
+Just for your reference, I am copying my DT file and kernel config
+which I used for my test.
+The same is available at dev/yashs/pwm_5.0-rc1 branch of
+https://github.com/yashshah7/riscv-linux.git
+
+/dts-v1/;
+
+/*#include <linux/clk/sifive-fu540-prci.h>*/
+#define PRCI_CLK_TLCLK 3
+
+/ {
+#address-cells =3D <2>;
+#size-cells =3D <2>;
+compatible =3D "sifive,fu540-c000";
+
+aliases {
+serial0 =3D &uart0;
+serial1 =3D &uart1;
+};
+
+chosen {
+};
+
+cpus {
+#address-cells =3D <1>;
+#size-cells =3D <0>;
+timebase-frequency =3D <1000000>;
+cpu0: cpu@0 {
+clock-frequency =3D <0>;
+compatible =3D "sifive,u51", "sifive,rocket0", "riscv";
+device_type =3D "cpu";
+i-cache-block-size =3D <64>;
+i-cache-sets =3D <128>;
+i-cache-size =3D <16384>;
+reg =3D <0>;
+riscv,isa =3D "rv64imac";
+status =3D "okay";
+cpu0_intc: interrupt-controller {
+#interrupt-cells =3D <1>;
+compatible =3D "riscv,cpu-intc";
+interrupt-controller;
+};
+};
+cpu1: cpu@1 {
+clock-frequency =3D <0>;
+compatible =3D "sifive,u54-mc", "sifive,rocket0", "riscv";
+d-cache-block-size =3D <64>;
+d-cache-sets =3D <64>;
+d-cache-size =3D <32768>;
+d-tlb-sets =3D <1>;
+d-tlb-size =3D <32>;
+device_type =3D "cpu";
+i-cache-block-size =3D <64>;
+i-cache-sets =3D <64>;
+i-cache-size =3D <32768>;
+i-tlb-sets =3D <1>;
+i-tlb-size =3D <32>;
+mmu-type =3D "riscv,sv39";
+reg =3D <1>;
+riscv,isa =3D "rv64imafdc";
+status =3D "okay";
+tlb-split;
+cpu1_intc: interrupt-controller {
+#interrupt-cells =3D <1>;
+compatible =3D "riscv,cpu-intc";
+interrupt-controller;
+};
+};
+cpu2: cpu@2 {
+clock-frequency =3D <0>;
+compatible =3D "sifive,u54-mc", "sifive,rocket0", "riscv";
+d-cache-block-size =3D <64>;
+d-cache-sets =3D <64>;
+d-cache-size =3D <32768>;
+d-tlb-sets =3D <1>;
+d-tlb-size =3D <32>;
+device_type =3D "cpu";
+i-cache-block-size =3D <64>;
+i-cache-sets =3D <64>;
+i-cache-size =3D <32768>;
+i-tlb-sets =3D <1>;
+i-tlb-size =3D <32>;
+mmu-type =3D "riscv,sv39";
+reg =3D <2>;
+riscv,isa =3D "rv64imafdc";
+status =3D "okay";
+tlb-split;
+cpu2_intc: interrupt-controller {
+#interrupt-cells =3D <1>;
+compatible =3D "riscv,cpu-intc";
+interrupt-controller;
+};
+};
+cpu3: cpu@3 {
+clock-frequency =3D <0>;
+compatible =3D "sifive,u54-mc", "sifive,rocket0", "riscv";
+d-cache-block-size =3D <64>;
+d-cache-sets =3D <64>;
+d-cache-size =3D <32768>;
+d-tlb-sets =3D <1>;
+d-tlb-size =3D <32>;
+device_type =3D "cpu";
+i-cache-block-size =3D <64>;
+i-cache-sets =3D <64>;
+i-cache-size =3D <32768>;
+i-tlb-sets =3D <1>;
+i-tlb-size =3D <32>;
+mmu-type =3D "riscv,sv39";
+reg =3D <3>;
+riscv,isa =3D "rv64imafdc";
+status =3D "okay";
+tlb-split;
+cpu3_intc: interrupt-controller {
+#interrupt-cells =3D <1>;
+compatible =3D "riscv,cpu-intc";
+interrupt-controller;
+};
+};
+cpu4: cpu@4 {
+clock-frequency =3D <0>;
+compatible =3D "sifive,u54-mc", "sifive,rocket0", "riscv";
+d-cache-block-size =3D <64>;
+d-cache-sets =3D <64>;
+d-cache-size =3D <32768>;
+d-tlb-sets =3D <1>;
+d-tlb-size =3D <32>;
+device_type =3D "cpu";
+i-cache-block-size =3D <64>;
+i-cache-sets =3D <64>;
+i-cache-size =3D <32768>;
+i-tlb-sets =3D <1>;
+i-tlb-size =3D <32>;
+mmu-type =3D "riscv,sv39";
+reg =3D <4>;
+riscv,isa =3D "rv64imafdc";
+status =3D "okay";
+tlb-split;
+cpu4_intc: interrupt-controller {
+#interrupt-cells =3D <1>;
+compatible =3D "riscv,cpu-intc";
+interrupt-controller;
+};
+};
+};
+soc {
+#address-cells =3D <2>;
+#size-cells =3D <2>;
+compatible =3D "sifive,fu540-soc", "simple-bus";
+ranges;
+prci: prci@10000000 {
+compatible =3D "sifive,fu540-c000-prci";
+reg =3D <0x0 0x10000000 0x0 0x1000>;
+clocks =3D <&hfclk>, <&rtcclk>;
+#clock-cells =3D <1>;
+};
+uart0: serial@10010000 {
+compatible =3D "sifive,fu540-c000-uart", "sifive,uart0";
+interrupt-parent =3D <&plic0>;
+interrupts =3D <4>;
+reg =3D <0x0 0x10010000 0x0 0x1000>;
+clocks =3D <&prci PRCI_CLK_TLCLK>;
+};
+uart1: serial@10011000 {
+compatible =3D "sifive,fu540-c000-uart", "sifive,uart0";
+interrupt-parent =3D <&plic0>;
+interrupts =3D <5>;
+reg =3D <0x0 0x10011000 0x0 0x1000>;
+clocks =3D <&prci PRCI_CLK_TLCLK>;
+};
+L5: clint@2000000 {
+compatible =3D "riscv,clint0";
+interrupts-extended =3D <
+&cpu0_intc 3 &cpu0_intc 7
+&cpu1_intc 3 &cpu1_intc 7
+&cpu2_intc 3 &cpu2_intc 7
+&cpu3_intc 3 &cpu3_intc 7
+&cpu4_intc 3 &cpu4_intc 7>;
+reg =3D <0x0 0x2000000 0x0 0x10000>;
+                };
+plic0: interrupt-controller@c000000 {
+#interrupt-cells =3D <1>;
+compatible =3D "riscv,plic0";
+interrupt-controller;
+interrupts-extended =3D <
+&cpu0_intc 11
+&cpu1_intc 11 &cpu1_intc 9
+&cpu2_intc 11 &cpu2_intc 9
+&cpu3_intc 11 &cpu3_intc 9
+&cpu4_intc 11 &cpu4_intc 9>;
+reg =3D <0x0 0xc000000 0x0 0x4000000>;
+                        riscv,ndev =3D <53>;
+};
+L45: pwm@10020000 {
+                        compatible =3D "sifive,pwm0";
+                        interrupt-parent =3D <&plic0>;
+                        interrupts =3D <42 43 44 45>;
+                        reg =3D <0x0 0x10020000 0x0 0x1000>;
+                        reg-names =3D "control";
+                        clocks =3D <&prci 3>;
+                        #pwm-cells =3D <3>;
+                };
+                L46: pwm@10021000 {
+                        compatible =3D "sifive,pwm0";
+                        interrupt-parent =3D <&plic0>;
+                        interrupts =3D <46 47 48 49>;
+                        reg =3D <0x0 0x10021000 0x0 0x1000>;
+                        reg-names =3D "control";
+                        clocks =3D <&prci 3>;
+                        #pwm-cells =3D <3>;
+                };
+pwmleds {
+                        compatible =3D "pwm-leds";
+                        heartbeat {
+                                pwms =3D <&L45 0 100000 0>;
+                                max-brightness =3D <255>;
+                                linux,default-trigger =3D "heartbeat";
+                        };
+                        mtd {
+                                pwms =3D <&L45 1 100000 0>;
+                                max-brightness =3D <255>;
+                                linux,default-trigger =3D "mtd";
+                        };
+                        netdev {
+                                pwms =3D <&L45 2 100000 0>;
+                                max-brightness =3D <255>;
+                                linux,default-trigger =3D "netdev";
+                        };
+                        panic {
+                                pwms =3D <&L45 3 100000 0>;
+                                max-brightness =3D <255>;
+                                linux,default-trigger =3D "panic";
+                        };
+};
+};
+};
+
+
+kernel config:
+CONFIG_SYSVIPC=3Dy
+CONFIG_POSIX_MQUEUE=3Dy
+CONFIG_IKCONFIG=3Dy
+CONFIG_IKCONFIG_PROC=3Dy
+CONFIG_CGROUPS=3Dy
+CONFIG_CGROUP_SCHED=3Dy
+CONFIG_CFS_BANDWIDTH=3Dy
+CONFIG_CGROUP_BPF=3Dy
+CONFIG_NAMESPACES=3Dy
+CONFIG_USER_NS=3Dy
+CONFIG_CHECKPOINT_RESTORE=3Dy
+CONFIG_BLK_DEV_INITRD=3Dy
+CONFIG_EXPERT=3Dy
+CONFIG_BPF_SYSCALL=3Dy
+CONFIG_SMP=3Dy
+CONFIG_PCI=3Dy
+CONFIG_PCIE_XILINX=3Dy
+CONFIG_MODULES=3Dy
+CONFIG_MODULE_UNLOAD=3Dy
+CONFIG_NET=3Dy
+CONFIG_PACKET=3Dy
+CONFIG_UNIX=3Dy
+CONFIG_INET=3Dy
+CONFIG_IP_MULTICAST=3Dy
+CONFIG_IP_ADVANCED_ROUTER=3Dy
+CONFIG_IP_PNP=3Dy
+CONFIG_IP_PNP_DHCP=3Dy
+CONFIG_IP_PNP_BOOTP=3Dy
+CONFIG_IP_PNP_RARP=3Dy
+CONFIG_NETLINK_DIAG=3Dy
+CONFIG_DEVTMPFS=3Dy
+CONFIG_BLK_DEV_LOOP=3Dy
+CONFIG_VIRTIO_BLK=3Dy
+CONFIG_BLK_DEV_SD=3Dy
+CONFIG_BLK_DEV_SR=3Dy
+CONFIG_ATA=3Dy
+CONFIG_SATA_AHCI=3Dy
+CONFIG_SATA_AHCI_PLATFORM=3Dy
+CONFIG_NETDEVICES=3Dy
+CONFIG_VIRTIO_NET=3Dy
+CONFIG_MACB=3Dy
+CONFIG_E1000E=3Dy
+CONFIG_R8169=3Dy
+CONFIG_MICROSEMI_PHY=3Dy
+CONFIG_INPUT_MOUSEDEV=3Dy
+CONFIG_SERIAL_8250=3Dy
+CONFIG_SERIAL_8250_CONSOLE=3Dy
+CONFIG_SERIAL_OF_PLATFORM=3Dy
+CONFIG_SERIAL_EARLYCON_RISCV_SBI=3Dy
+CONFIG_SERIAL_SIFIVE=3Dy
+CONFIG_SERIAL_SIFIVE_CONSOLE=3Dy
+CONFIG_HVC_RISCV_SBI=3Dy
+# CONFIG_PTP_1588_CLOCK is not set
+CONFIG_DRM=3Dy
+CONFIG_DRM_RADEON=3Dy
+CONFIG_FRAMEBUFFER_CONSOLE=3Dy
+CONFIG_USB=3Dy
+CONFIG_USB_XHCI_HCD=3Dy
+CONFIG_USB_XHCI_PLATFORM=3Dy
+CONFIG_USB_EHCI_HCD=3Dy
+CONFIG_USB_EHCI_HCD_PLATFORM=3Dy
+CONFIG_USB_OHCI_HCD=3Dy
+CONFIG_USB_OHCI_HCD_PLATFORM=3Dy
+CONFIG_USB_STORAGE=3Dy
+CONFIG_USB_UAS=3Dy
+CONFIG_VIRTIO_MMIO=3Dy
+CONFIG_SIFIVE_PLIC=3Dy
+CONFIG_RAS=3Dy
+CONFIG_EXT4_FS=3Dy
+CONFIG_EXT4_FS_POSIX_ACL=3Dy
+CONFIG_AUTOFS4_FS=3Dy
+CONFIG_MSDOS_FS=3Dy
+CONFIG_VFAT_FS=3Dy
+CONFIG_TMPFS=3Dy
+CONFIG_TMPFS_POSIX_ACL=3Dy
+CONFIG_NFS_FS=3Dy
+CONFIG_NFS_V4=3Dy
+CONFIG_NFS_V4_1=3Dy
+CONFIG_NFS_V4_2=3Dy
+CONFIG_ROOT_NFS=3Dy
+CONFIG_CRYPTO_USER_API_HASH=3Dy
+CONFIG_PRINTK_TIME=3Dy
+# CONFIG_RCU_TRACE is not set
+CONFIG_CMDLINE_BOOL=3Dy
+CONFIG_CMDLINE=3D"console=3DttySIF0,115200 ignore_loglevel debug"
+CONFIG_CLK_SIFIVE=3Dy
+CONFIG_CLK_SIFIVE_FU540_PRCI=3Dy
+
+- Yash
+> >
+> > Andreas.
+> >
+> > --
+> > Andreas Schwab, SUSE Labs, schwab@suse.de
+> > GPG Key fingerprint =3D 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B=
+9D7
+> > "And now for something completely different."
