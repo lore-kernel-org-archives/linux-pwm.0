@@ -1,74 +1,106 @@
-From: Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [PATCH 0/1] pwm: meson: fix scheduling while atomic issue
-Date: Mon, 25 Mar 2019 10:35:12 +0100
-Message-ID: <47e944da1c3b0a11cf46fc5ad5678ba961b9f9d3.camel@baylibre.com>
-References: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH v11 0/2] PWM support for HiFive Unleashed
+Date: Mon, 25 Mar 2019 15:42:57 +0530
+Message-ID: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, thierry.reding@gmail.com, narmstrong@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com, Yash Shah <yash.shah@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, 2019-03-24 at 23:02 +0100, Martin Blumenstingl wrote:
-> Back in January a "BUG: scheduling while atomic" error showed up during
-> boot on my Meson8b Odroid-C1 (which uses a PWM regulator as CPU supply).
-> The call trace comes down to:
->   __mutex_lock
->   clk_prepare_lock
->   clk_core_get_rate
->   meson_pwm_apply
->   ..
->   dev_pm_opp_set_rate
->   ..
-> 
-> Jerome has also seen the same problem but from pwm-leds (instead of a
-> pwm-regulator). He posted a patch which replaces the spinlock with a
-> mutex. That works. I believe we can optimize this by reducing the time
-> where the lock is held - that also allows to keep the spin-lock.
-> 
-> Analyzing this issue helped me understand the pwm-meson driver better.
-> My plan is to send some cleanups (with the goal of re-using more of the
-> goodies from the PWM core in the pwm-meson driver) after this single fix
-> is merged (they can be found here: [1]).
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
 
-Thanks for fixing this Martin.
+This patchset is based on Linux 5.0-rc1 and tested on HiFive Unleashed board
+with additional board related patches needed for testing can be found at
+dev/yashs/pwm_5.0-rc1 branch of:
+https://github.com/yashshah7/riscv-linux.git
+ 
+v11
+- Change naming convention for pwm_device and pwm_sifive_ddata pointers
+- Assign of_pwm_xlate_with_flag() to of_xlate func ptr since this driver
+  use three pwm-cells (Issue reported by Andreas Schwab <schwab@suse.de>
+- Other minor fixes
 
-As for the future enhancement, I'd like to know what you have in mind.
-As I have told you previously, I think the clock bindings of this driver are
-not great.
+v10
+- Use DIV_ROUND_CLOSEST_ULL instead of div_u64_round
+- Change 'num' defination to u64 bit (in pwm_sifive_apply).
+- Remove the usage of pwm_get_state()
 
-The global name of the input clocks are hard coded in this driver and it
-sucks. CCF is evolving to rely less on these global names.
+v9
+- Use appropriate bitfield macros
+- Add approx_period in pwm_sifive_ddata struct and related changes
+- Correct the eqn for calculation of frac (in pwm_sifive_apply)
+- Other minor fixes
 
-In addition, the 'clock' binding should be used to refer to the clock
-'consumed' by the device, not to define a setting (as done now). 'assigned-
-clock' binding can be used for that.
+v8
+- Typo corrections
+- Remove active_user and related code
+- Do not clear PWM_SIFIVE_PWMCFG_EN_ALWAYS
+- Other minor fixes
 
-This would be a significant change in the binding meaning of this driver,
-which probably calls for a v2.
+v7
+- Modify description of compatible property in DT documentation
+- Use mutex locks at appropriate places
+- Fix all bad line breaks
+- Allow enabling/disabling PWM only when the user is the only active user
+- Remove Deglitch logic
+- Other minor fixes
 
-Last, instead of specifying the parent to be used, I think we should come up
-with some code to let the driver pick the most appropriate parent for the period/duty requested.
+v6
+- Remove the global property 'sifive,period-ns'
+- Implement free and request callbacks to maintain user counts.
+- Add user_count member to struct pwm_sifive_ddata
+- Allow period change only if user_count is one
+- Add pwm_sifive_enable function to enable/disable PWM
+- Change calculation logic of frac (in pwm_sifive_apply)
+- Remove state correction
+- Remove pwm_sifive_xlate function
+- Clock to be enabled only when PWM is enabled
+- Other minor fixes
 
-> 
-> Dependencies: none
-> 
-> Target version: please queue this for -fixes so it makes it's way into
-> v5.1-rc (so we can get it backported from there, because this issue has
-> existed since the pwm-meson driver was introduced).
-> 
-> 
-> [0] http://lists.infradead.org/pipermail/linux-amlogic/2019-January/009690.html
-> [1] https://github.com/xdarklight/linux/commits/meson-pwm-for-5.2-v0
-> 
-> 
-> Martin Blumenstingl (1):
->   pwm: meson: use the spin-lock only to protect register modifications
-> 
->  drivers/pwm/pwm-meson.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
-> 
+v5
+- Correct the order of compatible string properties
+- PWM state correction to be done always
+- Other minor fixes based upon feedback on v4
+
+v4
+- Rename macros with appropriate names
+- Remove unused macros
+- Rename struct sifive_pwm_device to struct pwm_sifive_ddata
+- Rename function prefix as per driver name
+- Other minor fixes based upon feedback on v3
+
+v3
+- Add a link to the reference manaul
+- Use appropriate apis for division operation
+- Add check for polarity
+- Enable clk before calling clk_get_rate
+- Other minor fixes based upon feedback on v2
+
+V2 changed from V1:
+- Remove inclusion of dt-bindings/pwm/pwm.h
+- Remove artificial alignments
+- Replace ioread32/iowrite32 with readl/writel
+- Remove camelcase
+- Change dev_info to dev_dbg for unnecessary log
+- Correct typo in driver name
+- Remove use of of_match_ptr macro
+- Update the DT compatible strings and Add reference to a common
+  versioning document
+    
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
+
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  33 ++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 338 +++++++++++++++++++++
+ 4 files changed, 383 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
+
+-- 
+1.9.1
