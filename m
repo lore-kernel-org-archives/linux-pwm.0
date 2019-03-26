@@ -1,119 +1,137 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 0/1] pwm: meson: fix scheduling while atomic issue
-Date: Tue, 26 Mar 2019 11:54:06 +0100
-Message-ID: <20190326105405.p5appmjs2qdygkz3@pengutronix.de>
-References: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
- <20190325084153.l44pzfewcqlkoaoe@pengutronix.de>
- <CAFBinCAn-9oETMKMfSXoJOMBrQyrCFN7AyHG02bQaoxG1px3YA@mail.gmail.com>
- <ec428b82-f7d9-0f14-363c-a40d14ce4414@baylibre.com>
+From: Arnout Vandecappelle <arnout@mind.be>
+Subject: Re: [PATCH v2 4/7] dt-bindings: counter: ftm-quaddec
+Date: Tue, 26 Mar 2019 16:43:03 +0100
+Message-ID: <55b4aaba-a94f-2a9d-c96d-e591877fe075@mind.be>
+References: <20190316142138.65860d88@archlinux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ec428b82-f7d9-0f14-363c-a40d14ce4414@baylibre.com>
+In-Reply-To: <20190316142138.65860d88@archlinux>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, thierry.reding@gmail.com, jbrunet@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Patrick Havelange <patrick.havelange@essensium.com>, Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Esben Haabendal <esben@haabendal.dk>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+ [Full disclosure: I'm a colleague of Patrick.]
 
-On Tue, Mar 26, 2019 at 10:06:31AM +0100, Neil Armstrong wrote:
-> On 25/03/2019 18:41, Martin Blumenstingl wrote:
-> > On Mon, Mar 25, 2019 at 9:41 AM Uwe Kleine-K�nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> >> On Sun, Mar 24, 2019 at 11:02:16PM +0100, Martin Blumenstingl wrote:
-> >>> Back in January a "BUG: scheduling while atomic" error showed up during
-> >>> boot on my Meson8b Odroid-C1 (which uses a PWM regulator as CPU supply).
-> >>> The call trace comes down to:
-> >>>   __mutex_lock
-> >>>   clk_prepare_lock
-> >>>   clk_core_get_rate
-> >>>   meson_pwm_apply
-> >>>   ..
-> >>>   dev_pm_opp_set_rate
-> >>>   ..
-> >>>
-> >>> Jerome has also seen the same problem but from pwm-leds (instead of a
-> >>> pwm-regulator). He posted a patch which replaces the spinlock with a
-> >>> mutex. That works. I believe we can optimize this by reducing the time
-> >>> where the lock is held - that also allows to keep the spin-lock.
-> >>>
-> >>> Analyzing this issue helped me understand the pwm-meson driver better.
-> >>> My plan is to send some cleanups (with the goal of re-using more of the
-> >>> goodies from the PWM core in the pwm-meson driver) after this single fix
-> >>> is merged (they can be found here: [1]).
-> >>
-> >> I didn't look over these in detail, but I see an issue that according
-> >> to the shortlogs isn't addressed: In the .apply callback there is
-> >> (simplified):
-> >>
-> >>         if (!state->enabled) {
-> >>                 meson_pwm_disable(meson, pwm->hwpwm);
-> >>                 return;
-> >>         }
-> >>
-> >> This results in the wrong output after:
-> >>
-> >>         pwm_apply_state(pwm, { .enabled = true, .polarity = PWM_POLARITY_NORMAL, ...});
-> >>         pwm_apply_state(pwm, { .enabled = false, .polarity = PWM_POLARITY_INVERTED, ...});
-> >>
-> >> because the polarity isn't checked.
-> > let me rephrase this to make sure I understand this correctly:
-> > - applying a PWM state with .enabled = true and PWM_POLARITY_NORMAL
-> > will enable the PWM output
-> > - applying a PWM state with .enabled = false and PWM_POLARITY_NORMAL
-> > will disable the PWM output
-> > - applying a PWM state with .enabled = true and PWM_POLARITY_INVERTED
-> > will disable the PWM output
-> > - applying a PWM state with .enabled = false and PWM_POLARITY_INVERTED
-> > will enable the PWM output
+On 2019-03-16 14:21:38, Jonathan Cameron wrote:
+
+> On Tue, 12 Mar 2019 14:09:52 -0500
+> Rob Herring <robh@kernel.org> wrote:
+>
+> > On Wed, Mar 06, 2019 at 12:12:05PM +0100, Patrick Havelange wrote:
+> > > FlexTimer quadrature decoder driver.
+> > > 
+> > > Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> > > Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+> > > ---
+> > > Changes v2
+> > > - None
+> > > ---
+> > > .../bindings/counter/ftm-quaddec.txt           | 18 ++++++++++++++++++
+> > > 1 file changed, 18 insertions(+)
+> > > create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/counter/ftm-quaddec.txt \
+> > > b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt new file mode 100644
+> > > index 000000000000..4d18cd722074
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> > > @@ -0,0 +1,18 @@
+> > > +FlexTimer Quadrature decoder counter
+> > > +
+> > > +This driver exposes a simple counter for the quadrature decoder mode.  
 > > 
-> > in other words: the polarity doesn't only apply to period and
-> > duty_cycle but also to the enabled state.
-> 
-> Sorry I don't understand your point.
-> If the apply state is disable, well we disable the PWM output, I don't see why
-> the polarity changes the enable state.
+> > Seems like this is more a mode of a h/w block than describing a h/w 
+> > block. Bindings should do the latter.
 
-Martin's summary was at least misleading, I didn't understand what he
-meant.
 
-The relevant point is: When the PWM is disabled (either by pwm_disable
-or equivalent by pwm_apply_state(pwm, { .enabled = false, ... })) the
-expectation is that the output becomes "inactive". That means "constant
-low" for a normal PWM and "constant high" for an inverted PWM.
+  As Jonathan writes below, it really is a "hardware mode", since it is tied
+very closely to how the device is wired up.
 
-Then as meson_pwm_apply doesn't check for state->polarity if
-state->enabled == false there is a bug.
+ Basically, the same block can be used for pretty diverse functions: a PWM where
+the pins are output, a counter where the pins are input, or a timer where the
+interrupt or timer value is used purely internally.
 
-> I'd like to point out the architecture of the PWM.
-> The PWM is only a set of Gates, Dividers and Counters.
-> 
-> We achieve a PWM output by calculating a clock that permits us to calculate
-> 2 periods (low and high) and we set the counter to switch after N cycles
-> for the first half period.
-> 
-> We do not have an explicit "polarity" setting, we simply reverse the period
-> cycles (the low length is inversed with the high length).
-> 
-> To apply the dividers and counters, we need to disable the PWM input clock
-> gate, set the dividers and counter and release the input gate.
-> 
-> So yes, we should maybe stop disabling the PWM for a long period of time
-> when we calculate the new settings, it can be fixed easily by calculating
-> the settings and applying in a separate code path.
+ This smells a bit like an MFD, but IMO it really isn't, because only one of the
+functions can be enabled. So indeed, it's more like a mode.
 
-If the hardware supports it the counter should not be stopped---most
-other PWMs in my bubble can at least change the duty cycle as required.
-(That is, complete the currently running period and that without delay
-start a new period with the new settings.)
- 
-Best regards
-Uwe
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> The snag is that we need to dig ourselves out of the hole set by:
+> fsl,vf610-ftm-pwm etc.
+>
+> Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> Documentation/devicetree/bindings/timer/fsl,ftm-timer.txt
+> (I'm assuming these are the same IP block).
+>
+> Can probably be sorted out though.  One core driver binds against the
+> ftm and deals with instantiating the others depending on the configuration
+> (note that this mode for instance does make sense in DT as it's
+> really reflecting the fact there is a quadrature encoder
+> connected to the ftm).
+>
+> Fiddly though :)
+
+
+ The way I see it, there are 3 ways this could be modelled (other than the
+current way: several nodes with the same address).
+
+
+1. The SoC's .dtsi defines a single node, and the compatible string (which would
+be defined by the board .dts) both enables the node and sets the compatible
+string. The .dtsi would also define the static properties of all the different
+functions: some "static" properties, e.g. reg, but also some function
+specific-properties, e.g.#pwm-cells (only for PWM), interrupts (only for timer).
+The driver (selected through compatible) anyway only uses the properties that it
+needs, so it doesn't hurt to have those other-function properties there.
+
+
+2. Like 1, but instead of defining the compatible string in the .dts, use a
+single compatible string for all the different drivers which is set in the
+.dtsi, and add a mode property (to be set in the .dts) to select the driver. The
+selection can be done either by having a top-level driver that calls out to the
+subsystem-specific one based on the mode, or by having each driver bail out of
+its probe function if the mode is not as expected.
+
+
+3. Have a common node that essentially does nothing except occupy the memory
+resource, and sub-nodes for each function. This can again be combined with a
+common driver that does the common resource allocation, or each function driver
+can just look at its parent node to find the resources. A disadvantage of this
+one is that it is possible to enable several functions in the DT, while only one
+can actually work.
+
+
+ Option 3 is what is used for e.g. stm32-lptimer. It also uses an mfd driver to
+model the common part. But possibly it actually allows the different functions
+to operate simultaneously.
+
+
+ Option 3 has the additional disadvantage that it requires changes in existing
+DTs for ftm-pwm and ftm-timer, because some properties are moved one level down.
+Since we need to retain backward compatibility, we'd need to look for those
+properties both in the node itself and in the parent node. In particular, the
+common driver part would be fairly complicated to implement in a backward
+compatible way because it's not enough to do a simple devm_of_platform_populate().
+
+
+ Personally I don't like the common driver part too much. This common driver
+does almost nothing (iomap and clock) and it creates dependencies between
+different drivers. Combined with the backward compatibility problem, I don't see
+much point to it.
+
+
+ I personally like option 2 the most. It's easy to be backward compatible (if
+mode is not set, revert to the current behaviour, i.e. assume that the
+compatible string has encoded the mode and that you're the only driver). It
+doesn't introduce subnodes that have no hardware equivalent. The only messy
+thing about it is that properties belonging to the different modes are mixed
+together in a single node. And also, I don't think this kind of model is
+currently used anywhere else in the kernel.
+
+
+
+ Regards,
+ Arnout
