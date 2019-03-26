@@ -1,82 +1,85 @@
 From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH V10 5/5] ARM: dts: imx7ulp-evk: Add backlight support
-Date: Tue, 26 Mar 2019 06:53:04 +0000
-Message-ID: <1553582817-29519-6-git-send-email-Anson.Huang@nxp.com>
-References: <1553582817-29519-1-git-send-email-Anson.Huang@nxp.com>
+Subject: RE: [PATCH V9 1/5] dt-bindings: pwm: Add i.MX TPM PWM binding
+Date: Tue, 26 Mar 2019 06:53:33 +0000
+Message-ID: <DB3PR0402MB3916C72A8FE827F965627E91F55F0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1553218974-20464-1-git-send-email-Anson.Huang@nxp.com>
+ <1553218974-20464-2-git-send-email-Anson.Huang@nxp.com>
+ <20190325204137.GA19824@bogus>
+ <DB3PR0402MB3916B84081393C46609FD178F55F0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1553582817-29519-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <DB3PR0402MB3916B84081393C46609FD178F55F0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, Robin Gong <yibin.gong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm->
-Cc: dl-linux-imx <linux-imx@nxp.com>
+To: Rob Herring <robh@kernel.org>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kernel@vger
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds i.MX7ULP EVK board MIPI-DSI backlight support.
-
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
-Changes since V9:
-	- update pwm label name accordingly.
----
- arch/arm/boot/dts/imx7ulp-evk.dts | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-
-diff --git a/arch/arm/boot/dts/imx7ulp-evk.dts b/arch/arm/boot/dts/imx7ulp-=
-evk.dts
-index a09026a..94891c7 100644
---- a/arch/arm/boot/dts/imx7ulp-evk.dts
-+++ b/arch/arm/boot/dts/imx7ulp-evk.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
-=20
- #include "imx7ulp.dtsi"
-+#include <dt-bindings/pwm/pwm.h>
-=20
- / {
- 	model =3D "NXP i.MX7ULP EVK";
-@@ -22,6 +23,14 @@
- 		reg =3D <0x60000000 0x40000000>;
- 	};
-=20
-+	backlight {
-+		compatible =3D "pwm-backlight";
-+		pwms =3D <&tpm4 1 50000 0>;
-+		brightness-levels =3D <0 20 25 30 35 40 100>;
-+		default-brightness-level =3D <6>;
-+		status =3D "okay";
-+	};
-+
- 	reg_vsd_3v3: regulator-vsd-3v3 {
- 		compatible =3D "regulator-fixed";
- 		regulator-name =3D "VSD_3V3";
-@@ -40,6 +49,12 @@
- 	status =3D "okay";
- };
-=20
-+&tpm4 {
-+	pinctrl-names =3D "default";
-+	pinctrl-0 =3D <&pinctrl_pwm0>;
-+	status =3D "okay";
-+};
-+
- &usdhc0 {
- 	pinctrl-names =3D "default";
- 	pinctrl-0 =3D <&pinctrl_usdhc0>;
-@@ -57,6 +72,12 @@
- 		bias-pull-up;
- 	};
-=20
-+	pinctrl_pwm0: pwm0grp {
-+		fsl,pins =3D <
-+			IMX7ULP_PAD_PTF2__TPM4_CH1	0x2
-+		>;
-+	};
-+
- 	pinctrl_usdhc0: usdhc0grp {
- 		fsl,pins =3D <
- 			IMX7ULP_PAD_PTD1__SDHC0_CMD	0x43
---=20
-2.7.4
+SGksIFJvYg0KDQpCZXN0IFJlZ2FyZHMhDQpBbnNvbiBIdWFuZw0KDQo+IC0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQo+IEZyb206IEFuc29uIEh1YW5nDQo+IFNlbnQ6IDIwMTnE6jPUwjI2yNUg
+ODo1Ng0KPiBUbzogJ1JvYiBIZXJyaW5nJyA8cm9iaEBrZXJuZWwub3JnPg0KPiBDYzogdGhpZXJy
+eS5yZWRpbmdAZ21haWwuY29tOyBtYXJrLnJ1dGxhbmRAYXJtLmNvbTsNCj4gc2hhd25ndW9Aa2Vy
+bmVsLm9yZzsgcy5oYXVlckBwZW5ndXRyb25peC5kZTsga2VybmVsQHBlbmd1dHJvbml4LmRlOw0K
+PiBmZXN0ZXZhbUBnbWFpbC5jb207IGxpbnV4QGFybWxpbnV4Lm9yZy51azsgc3RlZmFuQGFnbmVy
+LmNoOw0KPiBvdGF2aW9Ab3NzeXN0ZW1zLmNvbS5icjsgTGVvbmFyZCBDcmVzdGV6IDxsZW9uYXJk
+LmNyZXN0ZXpAbnhwLmNvbT47DQo+IFJvYmluIEdvbmcgPHlpYmluLmdvbmdAbnhwLmNvbT47IGph
+bi50dWVya0BlbXRyaW9uLmNvbTsgbGludXgtDQo+IHB3bUB2Z2VyLmtlcm5lbC5vcmc7IGRldmlj
+ZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyB1LmtsZWluZS0NCj4ga29lbmln
+QHBlbmd1dHJvbml4LmRlOyBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPg0KPiBTdWJq
+ZWN0OiBSRTogW1BBVENIIFY5IDEvNV0gZHQtYmluZGluZ3M6IHB3bTogQWRkIGkuTVggVFBNIFBX
+TSBiaW5kaW5nDQo+IA0KPiBIaSwgUm9iDQo+IA0KPiBCZXN0IFJlZ2FyZHMhDQo+IEFuc29uIEh1
+YW5nDQo+IA0KPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gRnJvbTogUm9iIEhl
+cnJpbmcgW21haWx0bzpyb2JoQGtlcm5lbC5vcmddDQo+ID4gU2VudDogMjAxOcTqM9TCMjbI1SA0
+OjQyDQo+ID4gVG86IEFuc29uIEh1YW5nIDxhbnNvbi5odWFuZ0BueHAuY29tPg0KPiA+IENjOiB0
+aGllcnJ5LnJlZGluZ0BnbWFpbC5jb207IG1hcmsucnV0bGFuZEBhcm0uY29tOw0KPiA+IHNoYXdu
+Z3VvQGtlcm5lbC5vcmc7IHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU7IGtlcm5lbEBwZW5ndXRyb25p
+eC5kZTsNCj4gPiBmZXN0ZXZhbUBnbWFpbC5jb207IGxpbnV4QGFybWxpbnV4Lm9yZy51azsgc3Rl
+ZmFuQGFnbmVyLmNoOw0KPiA+IG90YXZpb0Bvc3N5c3RlbXMuY29tLmJyOyBMZW9uYXJkIENyZXN0
+ZXogPGxlb25hcmQuY3Jlc3RlekBueHAuY29tPjsNCj4gPiBSb2JpbiBHb25nIDx5aWJpbi5nb25n
+QG54cC5jb20+OyBqYW4udHVlcmtAZW10cmlvbi5jb207IGxpbnV4LQ0KPiA+IHB3bUB2Z2VyLmtl
+cm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+ID4ga2Vy
+bmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IHUu
+a2xlaW5lLQ0KPiA+IGtvZW5pZ0BwZW5ndXRyb25peC5kZTsgZGwtbGludXgtaW14IDxsaW51eC1p
+bXhAbnhwLmNvbT4NCj4gPiBTdWJqZWN0OiBSZTogW1BBVENIIFY5IDEvNV0gZHQtYmluZGluZ3M6
+IHB3bTogQWRkIGkuTVggVFBNIFBXTSBiaW5kaW5nDQo+ID4NCj4gPiBPbiBGcmksIE1hciAyMiwg
+MjAxOSBhdCAwMTo0ODowNUFNICswMDAwLCBBbnNvbiBIdWFuZyB3cm90ZToNCj4gPiA+IEFkZCBp
+Lk1YIFRQTShMb3cgUG93ZXIgVGltZXIvUHVsc2UgV2lkdGggTW9kdWxhdGlvbiBNb2R1bGUpIFBX
+TQ0KPiA+IGJpbmRpbmcuDQo+ID4gPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogQW5zb24gSHVhbmcg
+PEFuc29uLkh1YW5nQG54cC5jb20+DQo+ID4gPiAtLS0NCj4gPiA+IE5vIGNoYW5nZXMuDQo+ID4N
+Cj4gPiB2OT8gSSBkb24ndCByZWNhbGwgc2VlaW5nIGFueSBwcmV2aW91cyB2ZXJzaW9ucy4NCj4g
+DQo+IEkgY2hlY2tlZCBteSBtYWlsYm94LCB5b3UgYXJlIGluIHRoZSAidG8iIGxpc3QgaW4gZXZl
+cnkgdmVyc2lvbi4gVGhlIGZpcnN0DQo+IHZlcnNpb24ncyBzdWJqZWN0IGlzOg0KPiBbUEFUQ0gg
+MS81XSBkdC1iaW5kaW5nczogcHdtOiBBZGQgaS5NWCBUUE0gUFdNIGJpbmRpbmcuLi4NCj4gDQo+
+ID4NCj4gPiA+IC0tLQ0KPiA+ID4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtdHBt
+LXB3bS50eHQgICAgICAgIHwgMjINCj4gPiArKysrKysrKysrKysrKysrKysrKysrDQo+ID4gPiAg
+MSBmaWxlIGNoYW5nZWQsIDIyIGluc2VydGlvbnMoKykNCj4gPiA+ICBjcmVhdGUgbW9kZSAxMDA2
+NDQNCj4gPiA+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXRwbS1w
+d20udHh0DQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9wd20vaW14LXRwbS1wd20udHh0DQo+ID4gPiBiL0RvY3VtZW50YXRpb24vZGV2
+aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXRwbS1wd20udHh0DQo+ID4gPiBuZXcgZmlsZSBtb2Rl
+IDEwMDY0NA0KPiA+ID4gaW5kZXggMDAwMDAwMC4uOTRmMWFkNQ0KPiA+ID4gLS0tIC9kZXYvbnVs
+bA0KPiA+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgt
+dHBtLXB3bS50eHQNCj4gPiA+IEBAIC0wLDAgKzEsMjIgQEANCj4gPiA+ICtGcmVlc2NhbGUgaS5N
+WCBUUE0gUFdNIGNvbnRyb2xsZXINCj4gPiA+ICsNCj4gPiA+ICtSZXF1aXJlZCBwcm9wZXJ0aWVz
+Og0KPiA+ID4gKy0gY29tcGF0aWJsZSA6IFNob3VsZCBiZSAiZnNsLGlteC10cG0iLg0KPiA+DQo+
+ID4gTmVlZHMgdG8gYmUgU29DIHNwZWNpZmljLg0KPiANCj4gT0ssIHdpbGwgY2hhbmdlIGl0IHRv
+ICJmc2wsaW14N3VscC10cG0iIGluIG5leHQgdmVyc29uLg0KDQpBcyAiIGZzbCxpbXg3dWxwLXRw
+bSAiIGlzIGFscmVhZHkgdXNlZCBmb3IgdGltZXIsIFRQTSBjYW4gd29yayBhcyBhIHRpbWVyDQpv
+ciBQV00sIHNvIEkgaGF2ZSB0byB1c2UgIiBmc2wsaW14N3VscC1wd20iIGluIHRoZSBWMTAgcGF0
+Y2ggSSBqdXN0IHNlbnQuDQoNCkFuc29uLg0KDQo+IA0KPiA+DQo+ID4gPiArLSByZWc6IFBoeXNp
+Y2FsIGJhc2UgYWRkcmVzcyBhbmQgbGVuZ3RoIG9mIHRoZSBjb250cm9sbGVyJ3MgcmVnaXN0ZXJz
+Lg0KPiA+ID4gKy0gI3B3bS1jZWxsczogU2hvdWxkIGJlIDMuIFNlZSBwd20udHh0IGluIHRoaXMg
+ZGlyZWN0b3J5IGZvciBhDQo+ID4gPiArZGVzY3JpcHRpb24NCj4gPiBvZiB0aGUgY2VsbHMgZm9y
+bWF0Lg0KPiA+ID4gKy0gY2xvY2tzIDogVGhlIGNsb2NrIHByb3ZpZGVkIGJ5IHRoZSBTb0MgdG8g
+ZHJpdmUgdGhlIFBXTS4NCj4gPiA+ICstIGludGVycnVwdHM6IFRoZSBpbnRlcnJ1cHQgZm9yIHRo
+ZSBQV00gY29udHJvbGxlci4NCj4gPiA+ICsNCj4gPiA+ICtOb3RlOiBUaGUgVFBNIGNvdW50ZXIg
+YW5kIHBlcmlvZCBjb3VudGVyIGFyZSBzaGFyZWQgYmV0d2Vlbg0KPiA+ID4gK211bHRpcGxlIGNo
+YW5uZWxzLCBzbyBhbGwgY2hhbm5lbHMgc2hvdWxkIHVzZSBzYW1lIHBlcmlvZCBzZXR0aW5nLg0K
+PiA+ID4gKw0KPiA+ID4gK0V4YW1wbGU6DQo+ID4gPiArDQo+ID4gPiArcHdtMDogdHBtQDQwMjUw
+MDAwIHsNCj4gPg0KPiA+IHB3bUAuLi4NCj4gDQo+IEkgZm9yZ290IHRvIHVwZGF0ZSB0aGUgZXhh
+bXBsZSBpbiBEVCBiaW5kaW5nLCBzb3JyeSBmb3IgdGhhdCwgd2lsbCB1cGRhdGUgaXQNCj4gYWNj
+b3JkaW5nIHRvIGJlbG93IGR0cyBub2RlOg0KPiANCj4gICAgICAgICAgICAgICAgICBwd20wOiBw
+d21ANDAyNTAwMDAgew0KPiANCj4gQW5zb24uDQo=
