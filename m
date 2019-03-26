@@ -1,41 +1,76 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V9 1/5] dt-bindings: pwm: Add i.MX TPM PWM binding
-Date: Mon, 25 Mar 2019 21:59:14 +0100
-Message-ID: <20190325205914.4gd5tzfyryvbthea@pengutronix.de>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH V9 1/5] dt-bindings: pwm: Add i.MX TPM PWM binding
+Date: Tue, 26 Mar 2019 00:56:26 +0000
+Message-ID: <DB3PR0402MB3916B84081393C46609FD178F55F0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 References: <1553218974-20464-1-git-send-email-Anson.Huang@nxp.com>
  <1553218974-20464-2-git-send-email-Anson.Huang@nxp.com>
  <20190325204137.GA19824@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20190325204137.GA19824@bogus>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Rob Herring <robh@kernel.org>
-Cc: Anson Huang <anson.huang@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Robin Gong <yibin.gong@nxp.com>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Leonard Crestez <leonard.crestez@nxp.com>, "festevam@gmail.com" <festevam@gmail.com>"linux-arm-kernel@lists.infradead.org" <linux>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Mar 25, 2019 at 03:41:37PM -0500, Rob Herring wrote:
-> On Fri, Mar 22, 2019 at 01:48:05AM +0000, Anson Huang wrote:
-> > Add i.MX TPM(Low Power Timer/Pulse Width Modulation Module) PWM binding.
-> > 
-> > Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> > ---
-> > No changes.
-> 
-> v9? I don't recall seeing any previous versions.
-
-Not sure it actually matters, but you were on Cc: for v7 and v8 at
-least:
-
-https://www.spinics.net/lists/linux-pwm/msg09300.html
-https://www.spinics.net/lists/linux-pwm/msg09321.html
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGksIFJvYg0KDQpCZXN0IFJlZ2FyZHMhDQpBbnNvbiBIdWFuZw0KDQo+IC0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQo+IEZyb206IFJvYiBIZXJyaW5nIFttYWlsdG86cm9iaEBrZXJuZWwub3Jn
+XQ0KPiBTZW50OiAyMDE5xOoz1MIyNsjVIDQ6NDINCj4gVG86IEFuc29uIEh1YW5nIDxhbnNvbi5o
+dWFuZ0BueHAuY29tPg0KPiBDYzogdGhpZXJyeS5yZWRpbmdAZ21haWwuY29tOyBtYXJrLnJ1dGxh
+bmRAYXJtLmNvbTsNCj4gc2hhd25ndW9Aa2VybmVsLm9yZzsgcy5oYXVlckBwZW5ndXRyb25peC5k
+ZTsga2VybmVsQHBlbmd1dHJvbml4LmRlOw0KPiBmZXN0ZXZhbUBnbWFpbC5jb207IGxpbnV4QGFy
+bWxpbnV4Lm9yZy51azsgc3RlZmFuQGFnbmVyLmNoOw0KPiBvdGF2aW9Ab3NzeXN0ZW1zLmNvbS5i
+cjsgTGVvbmFyZCBDcmVzdGV6IDxsZW9uYXJkLmNyZXN0ZXpAbnhwLmNvbT47DQo+IFJvYmluIEdv
+bmcgPHlpYmluLmdvbmdAbnhwLmNvbT47IGphbi50dWVya0BlbXRyaW9uLmNvbTsgbGludXgtDQo+
+IHB3bUB2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1h
+cm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJu
+ZWwub3JnOyB1LmtsZWluZS0NCj4ga29lbmlnQHBlbmd1dHJvbml4LmRlOyBkbC1saW51eC1pbXgg
+PGxpbnV4LWlteEBueHAuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIFY5IDEvNV0gZHQtYmlu
+ZGluZ3M6IHB3bTogQWRkIGkuTVggVFBNIFBXTSBiaW5kaW5nDQo+IA0KPiBPbiBGcmksIE1hciAy
+MiwgMjAxOSBhdCAwMTo0ODowNUFNICswMDAwLCBBbnNvbiBIdWFuZyB3cm90ZToNCj4gPiBBZGQg
+aS5NWCBUUE0oTG93IFBvd2VyIFRpbWVyL1B1bHNlIFdpZHRoIE1vZHVsYXRpb24gTW9kdWxlKSBQ
+V00NCj4gYmluZGluZy4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFuc29uIEh1YW5nIDxBbnNv
+bi5IdWFuZ0BueHAuY29tPg0KPiA+IC0tLQ0KPiA+IE5vIGNoYW5nZXMuDQo+IA0KPiB2OT8gSSBk
+b24ndCByZWNhbGwgc2VlaW5nIGFueSBwcmV2aW91cyB2ZXJzaW9ucy4NCg0KSSBjaGVja2VkIG15
+IG1haWxib3gsIHlvdSBhcmUgaW4gdGhlICJ0byIgbGlzdCBpbiBldmVyeSB2ZXJzaW9uLiBUaGUg
+Zmlyc3QgdmVyc2lvbidzIHN1YmplY3QgaXM6DQpbUEFUQ0ggMS81XSBkdC1iaW5kaW5nczogcHdt
+OiBBZGQgaS5NWCBUUE0gUFdNIGJpbmRpbmcuLi4NCg0KPiANCj4gPiAtLS0NCj4gPiAgLi4uL2Rl
+dmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC10cG0tcHdtLnR4dCAgICAgICAgfCAyMg0KPiArKysr
+KysrKysrKysrKysrKysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyMiBpbnNlcnRpb25zKCsp
+DQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9wd20vaW14LXRwbS1wd20udHh0DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1l
+bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtdHBtLXB3bS50eHQNCj4gPiBiL0Rv
+Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXRwbS1wd20udHh0DQo+ID4g
+bmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gPiBpbmRleCAwMDAwMDAwLi45NGYxYWQ1DQo+ID4gLS0t
+IC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9w
+d20vaW14LXRwbS1wd20udHh0DQo+ID4gQEAgLTAsMCArMSwyMiBAQA0KPiA+ICtGcmVlc2NhbGUg
+aS5NWCBUUE0gUFdNIGNvbnRyb2xsZXINCj4gPiArDQo+ID4gK1JlcXVpcmVkIHByb3BlcnRpZXM6
+DQo+ID4gKy0gY29tcGF0aWJsZSA6IFNob3VsZCBiZSAiZnNsLGlteC10cG0iLg0KPiANCj4gTmVl
+ZHMgdG8gYmUgU29DIHNwZWNpZmljLg0KDQpPSywgd2lsbCBjaGFuZ2UgaXQgdG8gImZzbCxpbXg3
+dWxwLXRwbSIgaW4gbmV4dCB2ZXJzb24uDQoNCj4gDQo+ID4gKy0gcmVnOiBQaHlzaWNhbCBiYXNl
+IGFkZHJlc3MgYW5kIGxlbmd0aCBvZiB0aGUgY29udHJvbGxlcidzIHJlZ2lzdGVycy4NCj4gPiAr
+LSAjcHdtLWNlbGxzOiBTaG91bGQgYmUgMy4gU2VlIHB3bS50eHQgaW4gdGhpcyBkaXJlY3Rvcnkg
+Zm9yIGEgZGVzY3JpcHRpb24NCj4gb2YgdGhlIGNlbGxzIGZvcm1hdC4NCj4gPiArLSBjbG9ja3Mg
+OiBUaGUgY2xvY2sgcHJvdmlkZWQgYnkgdGhlIFNvQyB0byBkcml2ZSB0aGUgUFdNLg0KPiA+ICst
+IGludGVycnVwdHM6IFRoZSBpbnRlcnJ1cHQgZm9yIHRoZSBQV00gY29udHJvbGxlci4NCj4gPiAr
+DQo+ID4gK05vdGU6IFRoZSBUUE0gY291bnRlciBhbmQgcGVyaW9kIGNvdW50ZXIgYXJlIHNoYXJl
+ZCBiZXR3ZWVuIG11bHRpcGxlDQo+ID4gK2NoYW5uZWxzLCBzbyBhbGwgY2hhbm5lbHMgc2hvdWxk
+IHVzZSBzYW1lIHBlcmlvZCBzZXR0aW5nLg0KPiA+ICsNCj4gPiArRXhhbXBsZToNCj4gPiArDQo+
+ID4gK3B3bTA6IHRwbUA0MDI1MDAwMCB7DQo+IA0KPiBwd21ALi4uDQoNCkkgZm9yZ290IHRvIHVw
+ZGF0ZSB0aGUgZXhhbXBsZSBpbiBEVCBiaW5kaW5nLCBzb3JyeSBmb3IgdGhhdCwgd2lsbCB1cGRh
+dGUgaXQgYWNjb3JkaW5nIHRvDQpiZWxvdyBkdHMgbm9kZToNCg0KICAgICAgICAgICAgICAgICBw
+d20wOiBwd21ANDAyNTAwMDAgew0KDQpBbnNvbi4NCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4
+LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
