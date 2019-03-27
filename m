@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v11 19/27] MIPS: Kconfig: Select TCU timer driver when MACH_INGENIC is set
-Date: Thu, 28 Mar 2019 00:16:23 +0100
-Message-ID: <20190327231631.15708-20-paul@crapouillou.net>
+Subject: [PATCH v11 15/27] pwm: jz4740: Allow selection of PWM channels 0 and 1
+Date: Thu, 28 Mar 2019 00:16:19 +0100
+Message-ID: <20190327231631.15708-16-paul@crapouillou.net>
 References: <20190327231631.15708-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190327231631.15708-1-paul@crapouillou.net>
@@ -10,28 +10,32 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thier
 Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-We cannot boot to userspace (not even initramfs) if the timer driver is
-not present; so it makes sense to enable it unconditionally when
-MACH_INGENIC is set.
+The TCU channels 0 and 1 were previously reserved for system tasks, and
+thus unavailable for PWM.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Tested-by: Mathieu Malaterre <malat@debian.org>
 Tested-by: Artur Rojek <contact@artur-rojek.eu>
 ---
- arch/mips/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pwm/pwm-jz4740.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 4a5f5b0ee9a9..eca480d43d93 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -393,6 +393,7 @@ config MACH_INGENIC
- 	select BUILTIN_DTB if MIPS_NO_APPENDED_DTB
- 	select USE_OF
- 	select LIBFDT
-+	select INGENIC_TIMER
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index b55ee879e23d..c874a387c1d9 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -42,11 +42,7 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	char clk_name[16];
+ 	int ret;
  
- config LANTIQ
- 	bool "Lantiq based platforms"
+-	/*
+-	 * Timers 0 and 1 are used for system tasks, so they are unavailable
+-	 * for use as PWMs.
+-	 */
+-	if (pwm->hwpwm < 2)
++	if (!ingenic_tcu_pwm_can_use_chn(chip->dev, pwm->hwpwm))
+ 		return -EBUSY;
+ 
+ 	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
 -- 
 2.11.0
