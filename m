@@ -1,292 +1,229 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v11 05/27] clocksource: Add driver for the Ingenic JZ47xx OST
-Date: Thu, 28 Mar 2019 00:16:09 +0100
-Message-ID: <20190327231631.15708-6-paul@crapouillou.net>
+Subject: [PATCH v11 03/27] dt-bindings: Add doc for the Ingenic TCU drivers
+Date: Thu, 28 Mar 2019 00:16:07 +0100
+Message-ID: <20190327231631.15708-4-paul@crapouillou.net>
 References: <20190327231631.15708-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190327231631.15708-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>
-Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Maarten ter Huurne <maarten@treewalker.org>, Paul Cercueil <paul@crapouillou.net>
+Cc: Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Maarten ter Huurne <maarten@treewalker.org>
+Add documentation about how to properly use the Ingenic TCU
+(Timer/Counter Unit) drivers from devicetree.
 
-OST is the OS Timer, a 64-bit timer/counter with buffered reading.
-
-SoCs before the JZ4770 had (if any) a 32-bit OST; the JZ4770 and
-JZ4780 have a 64-bit OST.
-
-This driver will register both a clocksource and a sched_clock to the
-system.
-
-Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Tested-by: Mathieu Malaterre <malat@debian.org>
 Tested-by: Artur Rojek <contact@artur-rojek.eu>
 ---
- drivers/clocksource/Kconfig       |   8 ++
- drivers/clocksource/Makefile      |   1 +
- drivers/clocksource/ingenic-ost.c | 220 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 229 insertions(+)
- create mode 100644 drivers/clocksource/ingenic-ost.c
+ .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |  25 ----
+ .../devicetree/bindings/timer/ingenic,tcu.txt      | 139 +++++++++++++++++++++
+ .../bindings/watchdog/ingenic,jz4740-wdt.txt       |  17 ---
+ 3 files changed, 139 insertions(+), 42 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+ delete mode 100644 Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index c6fb17233ff2..d58ca614e852 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -655,6 +655,14 @@ config INGENIC_TIMER
- 	help
- 	  Support for the timer/counter unit of the Ingenic JZ SoCs.
- 
-+config INGENIC_OST
-+	bool "Ingenic JZ47xx Operating System Timer"
-+	depends on MIPS || COMPILE_TEST
-+	depends on COMMON_CLK
-+	select INGENIC_TIMER
-+	help
-+	  Support for the OS Timer of the Ingenic JZ4770 or similar SoC.
-+
- config MILBEAUT_TIMER
- 	bool "Milbeaut timer driver" if COMPILE_TEST
- 	depends on OF
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index 0e360da7b74d..b3d304ec7072 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -77,6 +77,7 @@ obj-$(CONFIG_ASM9260_TIMER)		+= asm9260_timer.o
- obj-$(CONFIG_H8300_TMR8)		+= h8300_timer8.o
- obj-$(CONFIG_H8300_TMR16)		+= h8300_timer16.o
- obj-$(CONFIG_H8300_TPU)			+= h8300_tpu.o
-+obj-$(CONFIG_INGENIC_OST)		+= ingenic-ost.o
- obj-$(CONFIG_INGENIC_TIMER)		+= ingenic-timer.o
- obj-$(CONFIG_CLKSRC_ST_LPC)		+= clksrc_st_lpc.o
- obj-$(CONFIG_X86_NUMACHIP)		+= numachip.o
-diff --git a/drivers/clocksource/ingenic-ost.c b/drivers/clocksource/ingenic-ost.c
+diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+deleted file mode 100644
+index 7d9d3f90641b..000000000000
+--- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
++++ /dev/null
+@@ -1,25 +0,0 @@
+-Ingenic JZ47xx PWM Controller
+-=============================
+-
+-Required properties:
+-- compatible: One of:
+-  * "ingenic,jz4740-pwm"
+-  * "ingenic,jz4770-pwm"
+-  * "ingenic,jz4780-pwm"
+-- #pwm-cells: Should be 3. See pwm.txt in this directory for a description
+-  of the cells format.
+-- clocks : phandle to the external clock.
+-- clock-names : Should be "ext".
+-
+-
+-Example:
+-
+-	pwm: pwm@10002000 {
+-		compatible = "ingenic,jz4740-pwm";
+-		reg = <0x10002000 0x1000>;
+-
+-		#pwm-cells = <3>;
+-
+-		clocks = <&ext>;
+-		clock-names = "ext";
+-	};
+diff --git a/Documentation/devicetree/bindings/timer/ingenic,tcu.txt b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
 new file mode 100644
-index 000000000000..66ad328c74cc
+index 000000000000..0a381cf9d286
 --- /dev/null
-+++ b/drivers/clocksource/ingenic-ost.c
-@@ -0,0 +1,220 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * JZ47xx SoCs TCU Operating System Timer driver
-+ *
-+ * Copyright (C) 2016 Maarten ter Huurne <maarten@treewalker.org>
-+ * Copyright (C) 2019 Paul Cercueil <paul@crapouillou.net>
-+ */
++++ b/Documentation/devicetree/bindings/timer/ingenic,tcu.txt
+@@ -0,0 +1,139 @@
++Ingenic JZ47xx SoCs Timer/Counter Unit devicetree bindings
++==========================================================
 +
-+#include <linux/clk.h>
-+#include <linux/clocksource.h>
-+#include <linux/mfd/ingenic-tcu.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm.h>
-+#include <linux/regmap.h>
-+#include <linux/sched_clock.h>
++For a description of the TCU hardware and drivers, have a look at
++Documentation/mips/ingenic-tcu.txt.
 +
-+#include "ingenic-timer.h"
++Required properties:
 +
-+#define TCU_OST_TCSR_MASK	0xffc0
-+#define TCU_OST_TCSR_CNT_MD	BIT(15)
++- compatible: Must be one of:
++  * ingenic,jz4740-tcu
++  * ingenic,jz4725b-tcu
++  * ingenic,jz4770-tcu
++- reg: Should be the offset/length value corresponding to the TCU registers
++- clocks: List of phandle & clock specifiers for clocks external to the TCU.
++  The "pclk", "rtc", "ext" and "tcu" clocks should be provided.
++- clock-names: List of name strings for the external clocks.
++- #clock-cells: Should be <1>;
++  Clock consumers specify this argument to identify a clock. The valid values
++  may be found in <dt-bindings/clock/ingenic,tcu.h>.
++- interrupt-controller : Identifies the node as an interrupt controller
++- #interrupt-cells : Specifies the number of cells needed to encode an
++  interrupt source. The value should be 1.
++- interrupt-parent : phandle of the interrupt controller.
++- interrupts : Specifies the interrupt the controller is connected to.
 +
-+#define TCU_OST_CHANNEL		15
++Optional properties:
 +
-+struct ingenic_ost_soc_info {
-+	bool is64bit;
++- ingenic,pwm-channels-mask: Bitmask of TCU channels reserved for PWM use.
++  Default value is 0xfc.
++
++
++Children nodes
++==========================================================
++
++
++PWM node:
++---------
++
++Required properties:
++
++- compatible: Must be one of:
++  * ingenic,jz4740-pwm
++  * ingenic,jz4725b-pwm
++- #pwm-cells: Should be 3. See ../pwm/pwm.txt for a description of the cell
++  format.
++- clocks: List of phandle & clock specifiers for the TCU clocks.
++- clock-names: List of name strings for the TCU clocks.
++
++
++Watchdog node:
++--------------
++
++Required properties:
++
++- compatible: Must be one of:
++  * ingenic,jz4740-watchdog
++  * ingenic,jz4780-watchdog
++- clocks: phandle to the WDT clock
++- clock-names: should be "wdt"
++
++
++OS Timer node:
++---------
++
++Required properties:
++
++- compatible: Must be one of:
++  * ingenic,jz4725b-ost
++  * ingenic,jz4770-ost
++- clocks: phandle to the OST clock
++- clock-names: should be "ost"
++- interrupts : Specifies the interrupt the OST is connected to.
++
++
++Example
++==========================================================
++
++#include <dt-bindings/clock/jz4770-cgu.h>
++#include <dt-bindings/clock/ingenic,tcu.h>
++
++/ {
++	tcu: timer@10002000 {
++		compatible = "ingenic,jz4770-tcu";
++		reg = <0x10002000 0x1000>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges = <0x0 0x10002000 0x1000>;
++
++		#clock-cells = <1>;
++
++		clocks = <&cgu JZ4770_CLK_RTC
++			  &cgu JZ4770_CLK_EXT
++			  &cgu JZ4770_CLK_PCLK
++			  &cgu JZ4770_CLK_EXT>;
++		clock-names = "rtc", "ext", "pclk", "tcu";
++
++		interrupt-controller;
++		#interrupt-cells = <1>;
++
++		interrupt-parent = <&intc>;
++		interrupts = <27 26 25>;
++
++		watchdog: watchdog@0 {
++			compatible = "ingenic,jz4740-watchdog";
++			reg = <0x0 0xc>;
++
++			clocks = <&tcu TCU_CLK_WDT>;
++			clock-names = "wdt";
++		};
++
++		pwm: pwm@40 {
++			compatible = "ingenic,jz4740-pwm";
++			reg = <0x40 0x80>;
++
++			#pwm-cells = <3>;
++
++			clocks = <&tcu TCU_CLK_TIMER0
++				  &tcu TCU_CLK_TIMER1
++				  &tcu TCU_CLK_TIMER2
++				  &tcu TCU_CLK_TIMER3
++				  &tcu TCU_CLK_TIMER4
++				  &tcu TCU_CLK_TIMER5
++				  &tcu TCU_CLK_TIMER6
++				  &tcu TCU_CLK_TIMER7>;
++			clock-names = "timer0", "timer1", "timer2", "timer3",
++				      "timer4", "timer5", "timer6", "timer7";
++		};
++
++		ost: timer@e0 {
++			compatible = "ingenic,jz4770-ost";
++			reg = <0xe0 0x20>;
++
++			clocks = <&tcu TCU_CLK_OST>;
++			clock-names = "ost";
++
++			interrupts = <15>;
++		};
++	};
 +};
-+
-+struct ingenic_ost {
-+	struct regmap *map;
-+	struct clk *clk;
-+
-+	struct clocksource cs;
-+};
-+
-+static inline struct ingenic_ost *cs_to_ingenic_ost(struct clocksource *cs)
-+{
-+	return container_of(cs, struct ingenic_ost, cs);
-+}
-+
-+static u64 notrace ingenic_ost_read_cntl(void)
-+{
-+	/* Bypass the regmap here as we must return as soon as possible */
-+	return readl(ingenic_tcu_base + TCU_REG_OST_CNTL);
-+}
-+
-+static u64 notrace ingenic_ost_read_cnth(void)
-+{
-+	/* Bypass the regmap here as we must return as soon as possible */
-+	return readl(ingenic_tcu_base + TCU_REG_OST_CNTH);
-+}
-+
-+static u64 notrace ingenic_ost_clocksource_read64(struct clocksource *cs)
-+{
-+	struct ingenic_ost *ost = cs_to_ingenic_ost(cs);
-+	unsigned int val1, val2;
-+	u64 count, recount;
-+	s64 diff;
-+
-+	/*
-+	 * The buffering of the upper 32 bits of the timer prevents wrong
-+	 * results from the bottom 32 bits overflowing due to the timer ticking
-+	 * along. However, it does not prevent wrong results from simultaneous
-+	 * reads of the timer, which could reset the buffer mid-read.
-+	 * Since this kind of wrong read can happen only when the bottom bits
-+	 * overflow, there will be minutes between wrong reads, so if we read
-+	 * twice in succession, at least one of the reads will be correct.
-+	 */
-+	regmap_read(ost->map, TCU_REG_OST_CNTL, &val1);
-+	regmap_read(ost->map, TCU_REG_OST_CNTHBUF, &val2);
-+	count = (u64)val1 | (u64)val2 << 32;
-+
-+	regmap_read(ost->map, TCU_REG_OST_CNTL, &val1);
-+	regmap_read(ost->map, TCU_REG_OST_CNTHBUF, &val2);
-+	recount = (u64)val1 | (u64)val2 << 32;
-+
-+	/*
-+	 * A wrong read will produce a result that is 1<<32 too high: the bottom
-+	 * part from before overflow and the upper part from after overflow.
-+	 * Therefore, the lower value of the two reads is the correct value.
-+	 */
-+	diff = (s64)(recount - count);
-+	if (unlikely(diff < 0))
-+		count = recount;
-+
-+	return count;
-+}
-+
-+static u64 notrace ingenic_ost_clocksource_read32(struct clocksource *cs)
-+{
-+	struct ingenic_ost *ost = cs_to_ingenic_ost(cs);
-+	unsigned int val;
-+
-+	regmap_read(ost->map, TCU_REG_OST_CNTH, &val);
-+
-+	return val;
-+}
-+
-+static int __init ingenic_ost_probe(struct platform_device *pdev)
-+{
-+	const struct ingenic_ost_soc_info *soc_info;
-+	struct device *dev = &pdev->dev;
-+	struct ingenic_ost *ost;
-+	struct clocksource *cs;
-+	unsigned long rate, flags;
-+	int err;
-+
-+	soc_info = device_get_match_data(dev);
-+	if (!soc_info)
-+		return -EINVAL;
-+
-+	ost = devm_kzalloc(dev, sizeof(*ost), GFP_KERNEL);
-+	if (!ost)
-+		return -ENOMEM;
-+
-+	ost->map = dev_get_regmap(dev->parent, NULL);
-+	if (!ost->map) {
-+		dev_err(dev, "regmap not found\n");
-+		return -EINVAL;
-+	}
-+
-+	ost->clk = devm_clk_get(dev, "ost");
-+	if (IS_ERR(ost->clk))
-+		return PTR_ERR(ost->clk);
-+
-+	err = clk_prepare_enable(ost->clk);
-+	if (err)
-+		return err;
-+
-+	/* Clear counter high/low registers */
-+	if (soc_info->is64bit)
-+		regmap_write(ost->map, TCU_REG_OST_CNTL, 0);
-+	regmap_write(ost->map, TCU_REG_OST_CNTH, 0);
-+
-+	/* Don't reset counter at compare value. */
-+	regmap_update_bits(ost->map, TCU_REG_OST_TCSR,
-+			   TCU_OST_TCSR_MASK, TCU_OST_TCSR_CNT_MD);
-+
-+	rate = clk_get_rate(ost->clk);
-+
-+	/* Enable OST TCU channel */
-+	regmap_write(ost->map, TCU_REG_TESR, BIT(TCU_OST_CHANNEL));
-+
-+	cs = &ost->cs;
-+	cs->name	= "ingenic-ost";
-+	cs->rating	= 320;
-+	cs->flags	= CLOCK_SOURCE_IS_CONTINUOUS;
-+
-+	if (soc_info->is64bit) {
-+		cs->mask = CLOCKSOURCE_MASK(64);
-+		cs->read = ingenic_ost_clocksource_read64;
-+	} else {
-+		cs->mask = CLOCKSOURCE_MASK(32);
-+		cs->read = ingenic_ost_clocksource_read32;
-+	}
-+
-+	err = clocksource_register_hz(cs, rate);
-+	if (err) {
-+		dev_err(dev, "clocksource registration failed: %d\n", err);
-+		clk_disable_unprepare(ost->clk);
-+		return err;
-+	}
-+
-+	/* Cannot register a sched_clock with interrupts on */
-+	local_irq_save(flags);
-+	if (soc_info->is64bit)
-+		sched_clock_register(ingenic_ost_read_cntl, 32, rate);
-+	else
-+		sched_clock_register(ingenic_ost_read_cnth, 32, rate);
-+	local_irq_restore(flags);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int ingenic_ost_suspend(struct device *dev)
-+{
-+	struct ingenic_ost *ost = dev_get_drvdata(dev);
-+
-+	clk_disable(ost->clk);
-+
-+	return 0;
-+}
-+
-+static int ingenic_ost_resume(struct device *dev)
-+{
-+	struct ingenic_ost *ost = dev_get_drvdata(dev);
-+
-+	return clk_enable(ost->clk);
-+}
-+
-+static SIMPLE_DEV_PM_OPS(ingenic_ost_pm_ops, ingenic_ost_suspend,
-+			 ingenic_ost_resume);
-+#define INGENIC_OST_PM_OPS (&ingenic_ost_pm_ops)
-+#else
-+#define INGENIC_OST_PM_OPS NULL
-+#endif /* CONFIG_PM_SUSPEND */
-+
-+static const struct ingenic_ost_soc_info jz4725b_ost_soc_info = {
-+	.is64bit = false,
-+};
-+
-+static const struct ingenic_ost_soc_info jz4770_ost_soc_info = {
-+	.is64bit = true,
-+};
-+
-+static const struct of_device_id ingenic_ost_of_match[] = {
-+	{ .compatible = "ingenic,jz4725b-ost", .data = &jz4725b_ost_soc_info, },
-+	{ .compatible = "ingenic,jz4770-ost", .data = &jz4770_ost_soc_info, },
-+	{ }
-+};
-+
-+static struct platform_driver ingenic_ost_driver = {
-+	.driver = {
-+		.name = "ingenic-ost",
-+		.pm = INGENIC_OST_PM_OPS,
-+		.of_match_table = ingenic_ost_of_match,
-+	},
-+};
-+builtin_platform_driver_probe(ingenic_ost_driver, ingenic_ost_probe);
+diff --git a/Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt b/Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
+deleted file mode 100644
+index ce1cb72d5345..000000000000
+--- a/Documentation/devicetree/bindings/watchdog/ingenic,jz4740-wdt.txt
++++ /dev/null
+@@ -1,17 +0,0 @@
+-Ingenic Watchdog Timer (WDT) Controller for JZ4740 & JZ4780
+-
+-Required properties:
+-compatible: "ingenic,jz4740-watchdog" or "ingenic,jz4780-watchdog"
+-reg: Register address and length for watchdog registers
+-clocks: phandle to the RTC clock
+-clock-names: should be "rtc"
+-
+-Example:
+-
+-watchdog: jz4740-watchdog@10002000 {
+-	compatible = "ingenic,jz4740-watchdog";
+-	reg = <0x10002000 0x10>;
+-
+-	clocks = <&cgu JZ4740_CLK_RTC>;
+-	clock-names = "rtc";
+-};
 -- 
 2.11.0
