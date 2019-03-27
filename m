@@ -1,29 +1,84 @@
-From: Andreas Schwab <schwab@suse.de>
-Subject: Re: [PATCH v11 0/2] PWM support for HiFive Unleashed
-Date: Wed, 27 Mar 2019 10:04:25 +0100
-Message-ID: <mvmpnqcsn6u.fsf@suse.de>
-References: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
-        <mvmbm1zueya.fsf@suse.de>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 204/262] backlight: pwm_bl: Use
+ gpiod_get_value_cansleep() to get initial state
+Date: Wed, 27 Mar 2019 14:00:59 -0400
+Message-ID: <20190327180158.10245-204-sashal@kernel.org>
+References: <20190327180158.10245-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mvmbm1zueya.fsf@suse.de> (Andreas Schwab's message of "Mon, 25
-        Mar 2019 16:54:53 +0100")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: palmer@sifive.com, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sachin.ghadi@sifive.com, paul.walmsley@sifive.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190327180158.10245-1-sashal@kernel.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, Chen-Yu Tsai <wens@csie.org>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-I have now found out that the ledtrig modules don't load automatically.
-I would have expected that the linux,default-trigger entries would cause
-the load of the corresponding ledtrig modules.
-
-But there is another problem, that the leds are on by default.
-Shouldn't they be off by default?
-
-Andreas.
-
--- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+RnJvbTogQ2hlbi1ZdSBUc2FpIDx3ZW5zQGNzaWUub3JnPgoKWyBVcHN0cmVhbSBjb21taXQgY2Vj
+MmIxODgzMmUyNmJjODY2YmVmMmJlMjJlZmY0ZTI1YmJjNDAzNCBdCgpncGlvZF9nZXRfdmFsdWUo
+KSBnaXZlcyBvdXQgYSB3YXJuaW5nIGlmIGFjY2VzcyB0byB0aGUgdW5kZXJseWluZyBncGlvY2hp
+cApyZXF1aXJlcyBzbGVlcGluZywgd2hpY2ggaXMgY29tbW9uIGZvciBJMkMgYmFzZWQgY2hpcHM6
+CgogICAgV0FSTklORzogQ1BVOiAwIFBJRDogNzcgYXQgZHJpdmVycy9ncGlvL2dwaW9saWIuYzoy
+NTAwIGdwaW9kX2dldF92YWx1ZSsweGQwLzB4MTAwCiAgICBNb2R1bGVzIGxpbmtlZCBpbjoKICAg
+IENQVTogMCBQSUQ6IDc3IENvbW06IGt3b3JrZXIvMDoyIE5vdCB0YWludGVkIDQuMTQuMC1yYzMt
+MDA1ODktZ2YzMjg5NzkxNWQ0OC1kaXJ0eSAjOTAKICAgIEhhcmR3YXJlIG5hbWU6IEFsbHdpbm5l
+ciBzdW40aS9zdW41aSBGYW1pbGllcwogICAgV29ya3F1ZXVlOiBldmVudHMgZGVmZXJyZWRfcHJv
+YmVfd29ya19mdW5jCiAgICBbPGMwMTBlYzUwPl0gKHVud2luZF9iYWNrdHJhY2UpIGZyb20gWzxj
+MDEwYjc4ND5dIChzaG93X3N0YWNrKzB4MTAvMHgxNCkKICAgIFs8YzAxMGI3ODQ+XSAoc2hvd19z
+dGFjaykgZnJvbSBbPGMwNzk3MjI0Pl0gKGR1bXBfc3RhY2srMHg4OC8weDljKQogICAgWzxjMDc5
+NzIyND5dIChkdW1wX3N0YWNrKSBmcm9tIFs8YzAxMjViMDg+XSAoX193YXJuKzB4ZTgvMHgxMDAp
+CiAgICBbPGMwMTI1YjA4Pl0gKF9fd2FybikgZnJvbSBbPGMwMTI1YmQwPl0gKHdhcm5fc2xvd3Bh
+dGhfbnVsbCsweDIwLzB4MjgpCiAgICBbPGMwMTI1YmQwPl0gKHdhcm5fc2xvd3BhdGhfbnVsbCkg
+ZnJvbSBbPGMwMzcwNjljPl0gKGdwaW9kX2dldF92YWx1ZSsweGQwLzB4MTAwKQogICAgWzxjMDM3
+MDY5Yz5dIChncGlvZF9nZXRfdmFsdWUpIGZyb20gWzxjMDM3NzhkMD5dIChwd21fYmFja2xpZ2h0
+X3Byb2JlKzB4MjM4LzB4NTA4KQogICAgWzxjMDM3NzhkMD5dIChwd21fYmFja2xpZ2h0X3Byb2Jl
+KSBmcm9tIFs8YzA0MTFhMmM+XSAocGxhdGZvcm1fZHJ2X3Byb2JlKzB4NTAvMHhhYykKICAgIFs8
+YzA0MTFhMmM+XSAocGxhdGZvcm1fZHJ2X3Byb2JlKSBmcm9tIFs8YzA0MTAyMjQ+XSAoZHJpdmVy
+X3Byb2JlX2RldmljZSsweDIzOC8weDJlOCkKICAgIFs8YzA0MTAyMjQ+XSAoZHJpdmVyX3Byb2Jl
+X2RldmljZSkgZnJvbSBbPGMwNDBlODIwPl0gKGJ1c19mb3JfZWFjaF9kcnYrMHg0NC8weDk0KQog
+ICAgWzxjMDQwZTgyMD5dIChidXNfZm9yX2VhY2hfZHJ2KSBmcm9tIFs8YzA0MGZmMGM+XSAoX19k
+ZXZpY2VfYXR0YWNoKzB4YjAvMHgxMTQpCiAgICBbPGMwNDBmZjBjPl0gKF9fZGV2aWNlX2F0dGFj
+aCkgZnJvbSBbPGMwNDBmNGY4Pl0gKGJ1c19wcm9iZV9kZXZpY2UrMHg4NC8weDhjKQogICAgWzxj
+MDQwZjRmOD5dIChidXNfcHJvYmVfZGV2aWNlKSBmcm9tIFs8YzA0MGY5NDQ+XSAoZGVmZXJyZWRf
+cHJvYmVfd29ya19mdW5jKzB4NTAvMHgxNGMpCiAgICBbPGMwNDBmOTQ0Pl0gKGRlZmVycmVkX3By
+b2JlX3dvcmtfZnVuYykgZnJvbSBbPGMwMTNiZTg0Pl0gKHByb2Nlc3Nfb25lX3dvcmsrMHgxZWMv
+MHg0MTQpCiAgICBbPGMwMTNiZTg0Pl0gKHByb2Nlc3Nfb25lX3dvcmspIGZyb20gWzxjMDEzY2U1
+Yz5dICh3b3JrZXJfdGhyZWFkKzB4MmIwLzB4NWEwKQogICAgWzxjMDEzY2U1Yz5dICh3b3JrZXJf
+dGhyZWFkKSBmcm9tIFs8YzAxNDE5MDg+XSAoa3RocmVhZCsweDE0Yy8weDE1NCkKICAgIFs8YzAx
+NDE5MDg+XSAoa3RocmVhZCkgZnJvbSBbPGMwMTA3YWIwPl0gKHJldF9mcm9tX2ZvcmsrMHgxNC8w
+eDI0KQoKVGhpcyB3YXMgbWlzc2VkIGluIGNvbW1pdCAwYzk1MDFmODIzYTQgKCJiYWNrbGlnaHQ6
+IHB3bV9ibDogSGFuZGxlIGdwaW8KdGhhdCBjYW4gc2xlZXAiKS4gVGhlIGNvZGUgd2FzIHRoZW4g
+bW92ZWQgdG8gYSBzZXBhcmF0ZSBmdW5jdGlvbiBpbgpjb21taXQgNzYxM2M5MjIzMTVlICgiYmFj
+a2xpZ2h0OiBwd21fYmw6IE1vdmUgdGhlIGNoZWNrcyBmb3IgaW5pdGlhbCBwb3dlcgpzdGF0ZSB0
+byBhIHNlcGFyYXRlIGZ1bmN0aW9uIikuCgpUaGUgb25seSB1c2FnZSBvZiBncGlvZF9nZXRfdmFs
+dWUoKSBpcyBkdXJpbmcgdGhlIHByb2JlIHN0YWdlLCB3aGljaCBpcwpzYWZlIHRvIHNsZWVwIGlu
+LiBTd2l0Y2ggdG8gZ3Bpb2RfZ2V0X3ZhbHVlX2NhbnNsZWVwKCkuCgpGaXhlczogMGM5NTAxZjgy
+M2E0ICgiYmFja2xpZ2h0OiBwd21fYmw6IEhhbmRsZSBncGlvIHRoYXQgY2FuIHNsZWVwIikKU2ln
+bmVkLW9mZi1ieTogQ2hlbi1ZdSBUc2FpIDx3ZW5zQGNzaWUub3JnPgpBY2tlZC1ieTogTWF4aW1l
+IFJpcGFyZCA8bWF4aW1lLnJpcGFyZEBib290bGluLmNvbT4KQWNrZWQtYnk6IERhbmllbCBUaG9t
+cHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+ClNpZ25lZC1vZmYtYnk6IExlZSBKb25l
+cyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+ClNpZ25lZC1vZmYtYnk6IFNhc2hhIExldmluIDxzYXNo
+YWxAa2VybmVsLm9yZz4KLS0tCiBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyB8IDIg
+Ky0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jIGIvZHJpdmVycy92aWRlby9i
+YWNrbGlnaHQvcHdtX2JsLmMKaW5kZXggZmViOTA3NjRhODExLi41M2I4Y2VlYTliZGUgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCisrKyBiL2RyaXZlcnMvdmlk
+ZW8vYmFja2xpZ2h0L3B3bV9ibC5jCkBAIC00MzUsNyArNDM1LDcgQEAgc3RhdGljIGludCBwd21f
+YmFja2xpZ2h0X2luaXRpYWxfcG93ZXJfc3RhdGUoY29uc3Qgc3RydWN0IHB3bV9ibF9kYXRhICpw
+YikKIAkgKi8KIAogCS8qIGlmIHRoZSBlbmFibGUgR1BJTyBpcyBkaXNhYmxlZCwgZG8gbm90IGVu
+YWJsZSB0aGUgYmFja2xpZ2h0ICovCi0JaWYgKHBiLT5lbmFibGVfZ3BpbyAmJiBncGlvZF9nZXRf
+dmFsdWUocGItPmVuYWJsZV9ncGlvKSA9PSAwKQorCWlmIChwYi0+ZW5hYmxlX2dwaW8gJiYgZ3Bp
+b2RfZ2V0X3ZhbHVlX2NhbnNsZWVwKHBiLT5lbmFibGVfZ3BpbykgPT0gMCkKIAkJcmV0dXJuIEZC
+X0JMQU5LX1BPV0VSRE9XTjsKIAogCS8qIFRoZSByZWd1bGF0b3IgaXMgZGlzYWJsZWQsIGRvIG5v
+dCBlbmFibGUgdGhlIGJhY2tsaWdodCAqLwotLSAKMi4xOS4xCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1k
+ZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
