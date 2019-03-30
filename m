@@ -1,78 +1,73 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
- caller of pwm_apply_state()
-Date: Sat, 30 Mar 2019 10:17:42 +0100
-Message-ID: <1707507.TOMHpQGrZ7@phil>
-References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
- <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH 0/1] pwm: meson: fix scheduling while atomic issue
+Date: Sat, 30 Mar 2019 20:29:35 +0100
+Message-ID: <CAFBinCCGWsb+1WHFe6uwrpUYgH4iix0WT8_v_Nj5BhGKRyjiLQ@mail.gmail.com>
+References: <20190324220217.15813-1-martin.blumenstingl@googlemail.com>
+ <20190325084153.l44pzfewcqlkoaoe@pengutronix.de> <CAFBinCAn-9oETMKMfSXoJOMBrQyrCFN7AyHG02bQaoxG1px3YA@mail.gmail.com>
+ <20190325200730.cx73jgxfexz6ybzq@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190312214605.10223-2-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190325200730.cx73jgxfexz6ybzq@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: thierry.reding@gmail.com, Neil Armstrong <narmstrong@baylibre.com>, jbrunet@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Hello Uwe,
 
-[adding two chromeos people, because veyron and gru are quite
-heavy users of the rockchip pwm for both backlight and regulators]
+On Mon, Mar 25, 2019 at 9:07 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+[...]
+> > >  - Does stopping the PWM (i.e. clearing MISC_{A,B}_EN in the MISC_AB
+> > >    register) freeze the output, or is the currently running period
+> > >    completed first? (The latter is the right behaviour.)
+> > I don't know, I would have to measure this with a logic analyzer.
+>
+> In practise you can do this with a multimeter, too. Just do something
+> like:
+>
+>         pwm_apply_state({ .enabled =3D true, .period =3D 5s, .duty_cycle =
+=3D 5s, .polarity =3D PWM_POLARITY_NORMAL });
+>         pwm_apply_state({ .enabled =3D false, .period =3D 5s, .duty_cycle=
+ =3D 5s, .polarity =3D PWM_POLARITY_NORMAL });
+>
+> (assuming the PWM supports periods that long). The expectation is that
+> the last command takes nearly 5 s to complete and while it waits the
+> output is high and on return it's low. If that isn't the case, there is
+> a bug somewhere.
+the longest supported period (using the 24MHz crystal as input, which
+is the slowest input clock and thus gives the longest possible
+duration) is 349514407ns (that's approx. 0.35 seconds). my multimeter
+isn't fast enough to measure this so I'm using my logic analyzer with
+puleseview instead: [0]
 
-Doug, Brian: patchwork patch is here:
-https://patchwork.kernel.org/patch/10851001/
+I added the following code to meson_pwm_request:
+  struct pwm_state enable =3D {
+        .enabled =3D true,
+        .period =3D 349514407U,
+        .duty_cycle =3D 349514407U,
+        .polarity =3D PWM_POLARITY_NORMAL };
+  struct pwm_state disable =3D {
+        .enabled =3D false,
+        .period =3D 349514407U,
+        .duty_cycle =3D 349514407U,
+        .polarity =3D PWM_POLARITY_NORMAL };
+  pwm_apply_state(pwm, &enable);
+  pwm_apply_state(pwm, &disable);
 
-Am Dienstag, 12. M=E4rz 2019, 22:46:03 CET schrieb Uwe Kleine-K=F6nig:
-> The pwm-rockchip driver is one of only two PWM drivers which updates the
-> state for the caller of pwm_apply_state(). This might have surprising
-> results if the caller reuses the values expecting them to still
-> represent the same state. Also note that this feedback was incomplete as
-> the matching struct pwm_device::state wasn't updated and so
-> pwm_get_state still returned the originally requested state.
-> =
+this returns immediately. my logic analyzer doesn't see signal change
+(I'm sampling at 1MHz).
 
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+can you please confirm that my test code and measurement procedure is corre=
+ct?
+if it is then my observation is that disabling the PWM does so
+immediately, without waiting for the current period to complete
 
-I've tested this on both veyron and gru with backlight and pwm regulator
-and at least both still come up, so
-Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 
-But hopefully Doug or Brian could also provide another test-point.
+Regards
+Martin
 
-Heiko
 
-> ---
->  drivers/pwm/pwm-rockchip.c | 6 ------
->  1 file changed, 6 deletions(-)
-> =
-
-> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-> index 4d99d468df09..16186bcd99e0 100644
-> --- a/drivers/pwm/pwm-rockchip.c
-> +++ b/drivers/pwm/pwm-rockchip.c
-> @@ -215,12 +215,6 @@ static int rockchip_pwm_apply(struct pwm_chip *chip,=
- struct pwm_device *pwm,
->  			goto out;
->  	}
->  =
-
-> -	/*
-> -	 * Update the state with the real hardware, which can differ a bit
-> -	 * because of period/duty_cycle approximation.
-> -	 */
-> -	rockchip_pwm_get_state(chip, pwm, state);
-> -
->  out:
->  	clk_disable(pc->pclk);
->  =
-
-> =
+[0] https://sigrok.org/wiki/Lcsoft_Mini_Board
