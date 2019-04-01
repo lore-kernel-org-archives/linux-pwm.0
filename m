@@ -1,56 +1,51 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 0/1] pwm: meson: fix scheduling while atomic issue
-Date: Mon,  1 Apr 2019 19:57:47 +0200
-Message-ID: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/2] pwm: meson: two small bug-fixes
+Date: Mon,  1 Apr 2019 20:18:15 +0200
+Message-ID: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: narmstrong@baylibre.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org, jbrunet@baylibre.com
+Cc: narmstrong@baylibre.com, jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, bichao.zheng@amlogic.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-QmFjayBpbiBKYW51YXJ5IGEgIkJVRzogc2NoZWR1bGluZyB3aGlsZSBhdG9taWMiIGVycm9yIHNo
-b3dlZCB1cCBkdXJpbmcKYm9vdCBvbiBteSBNZXNvbjhiIE9kcm9pZC1DMSAod2hpY2ggdXNlcyBh
-IFBXTSByZWd1bGF0b3IgYXMgQ1BVIHN1cHBseSkuClRoZSBjYWxsIHRyYWNlIGNvbWVzIGRvd24g
-dG86CiAgX19tdXRleF9sb2NrCiAgY2xrX3ByZXBhcmVfbG9jawogIGNsa19jb3JlX2dldF9yYXRl
-CiAgbWVzb25fcHdtX2FwcGx5CiAgLi4KICBkZXZfcG1fb3BwX3NldF9yYXRlCiAgLi4KCkplcm9t
-ZSBoYXMgYWxzbyBzZWVuIHRoZSBzYW1lIHByb2JsZW0gYnV0IGZyb20gcHdtLWxlZHMgKGluc3Rl
-YWQgb2YgYQpwd20tcmVndWxhdG9yKS4gSGUgcG9zdGVkIGEgcGF0Y2ggd2hpY2ggcmVwbGFjZXMg
-dGhlIHNwaW5sb2NrIHdpdGggYQptdXRleC4gVGhhdCB3b3Jrcy4gSSBiZWxpZXZlIHdlIGNhbiBv
-cHRpbWl6ZSB0aGlzIGJ5IHJlZHVjaW5nIHRoZSB0aW1lCndoZXJlIHRoZSBsb2NrIGlzIGhlbGQg
-LSB0aGF0IGFsc28gYWxsb3dzIHRvIGtlZXAgdGhlIHNwaW4tbG9jay4KCkFuYWx5emluZyB0aGlz
-IGlzc3VlIGhlbHBlZCBtZSB1bmRlcnN0YW5kIHRoZSBwd20tbWVzb24gZHJpdmVyIGJldHRlci4K
-TXkgcGxhbiBpcyB0byBzZW5kIHNvbWUgY2xlYW51cHMgYWZ0ZXIgdGhpcyBzaW5nbGUgZml4IGlz
-IG1lcmdlZC4gVGhlCmdvYWwgb2YgdGhlc2UgY2xlYW51cHMgaXMgdG8gcmUtdXNlIG1vcmUgb2Yg
-dGhlIGdvb2RpZXMgZnJvbSB0aGUgUFdNCmNvcmUgaW4gdGhlIHB3bS1tZXNvbiBkcml2ZXIgYXMg
-d2VsbCBhcyB0byBhZGRyZXNzIGlzc3VlcyBzcG90dGVkIGJ5ClV3ZSBLbGVpbmUtS8O2bmlnICh0
-aGVzZSBpc3N1ZXMgdmlvbGF0ZSB0aGUgUFdNIEFQSSwgYnV0IG5vbmUgb2YgdGhlc2UKcmVzdWx0
-IGluIGJyZWFrYWdlIG9mIHRoZSBib2FyZHMvLmR0cyB0aGF0IHdlIGN1cnJlbnRseSBoYXZlKS4g
-VGhlc2UKZm9sbG93LXVwIHBhdGNoZXMgY2FuIGJlIGZvdW5kIGhlcmU6IFsxXS4KCkRlcGVuZGVu
-Y2llczogbm9uZQoKVGFyZ2V0IHZlcnNpb246IHBsZWFzZSBxdWV1ZSB0aGlzIGZvciAtZml4ZXMg
-c28gaXQgbWFrZXMgaXQncyB3YXkgaW50bwp2NS4xLXJjIChzbyB3ZSBjYW4gZ2V0IGl0IGJhY2tw
-b3J0ZWQgZnJvbSB0aGVyZSwgYmVjYXVzZSB0aGlzIGlzc3VlIGhhcwpleGlzdGVkIHNpbmNlIHRo
-ZSBwd20tbWVzb24gZHJpdmVyIHdhcyBpbnRyb2R1Y2VkKS4KCgpjaGFuZ2VzIHNpbmNlIHYxIGF0
-IFsyXToKLSBhZGRlZCBjb21tZW50IGFib3V0IHVzYWdlIG9mIHRoZSBzcGlubG9jayBhcyBzdWdn
-ZXN0ZWQgYnkKICBVd2UgS2xlaW5lLUvDtm5pZyAodGhhbmsgeW91KQotIGNvbGxlY3RlZCBVd2Ug
-S2xlaW5lLUvDtm5pZydzIFJldmlld2VkLWJ5CgoKWzBdIGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQu
-b3JnL3BpcGVybWFpbC9saW51eC1hbWxvZ2ljLzIwMTktSmFudWFyeS8wMDk2OTAuaHRtbApbMV0g
-aHR0cHM6Ly9naXRodWIuY29tL3hkYXJrbGlnaHQvbGludXgvY29tbWl0cy9tZXNvbi1wd20tZm9y
-LTUuMi12MQpbMl0gaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9jb3Zlci8xMDg2Nzc1Ny8K
-CgpNYXJ0aW4gQmx1bWVuc3RpbmdsICgxKToKICBwd206IG1lc29uOiB1c2UgdGhlIHNwaW4tbG9j
-ayBvbmx5IHRvIHByb3RlY3QgcmVnaXN0ZXIgbW9kaWZpY2F0aW9ucwoKIGRyaXZlcnMvcHdtL3B3
-bS1tZXNvbi5jIHwgMjUgKysrKysrKysrKysrKysrKystLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQs
-IDE3IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCgotLSAKMi4yMS4wCgoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
-YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
-aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+This series applies on top of my other fix "pwm: meson: fix scheduling
+while atomic issue" from [0]
+
+The first patch fixes an issue where the maximum possible pre-divider
+(128) could not be used because there was an off-by-one error in the
+code. I discovered this while testing with the longest supported period
+(349514407ns) when running from XTAL. This is verified to work on my
+Meson8b Odroid-C1 board using "pwm_b" on GPIOX_11.
+
+The second patch was suggested by Uwe Kleine-König but was actually
+implemented much earlier (back in mid 2018) by Bichao Zheng from
+Amlogic. This patch fixes changing the duty cycle by relying on the
+hardware to re-start the PWM output (instead of adding an artificial
+"constant LOW" of about 20ms - as measured by Bichao Zheng when
+stopping and re-starting the PWM output from within the driver). I
+tested this fix on my Meson8b Odroid-C1 board which uses a PWM driven
+CPU regulator (DVFS with all supported OPPs is still working fine for
+me, although I couldn't observe any issues before this patch).
+
+I also have some code-improvements queued which I'll send in the next
+days, see [1]
+
+
+[0] https://patchwork.kernel.org/cover/10880419/
+[1] https://github.com/xdarklight/linux/commits/meson-pwm-for-5.2-v1
+
+
+Bichao Zheng (1):
+  pwm: meson: don't disable pwm when setting duty repeatedly
+
+Martin Blumenstingl (1):
+  pwm: meson: consider 128 a valid pre-divider
+
+ drivers/pwm/pwm-meson.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+-- 
+2.21.0
