@@ -1,143 +1,56 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 1/1] pwm: meson: use the spin-lock only to protect register modifications
-Date: Mon,  1 Apr 2019 19:57:48 +0200
-Message-ID: <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
-References: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 0/1] pwm: meson: fix scheduling while atomic issue
+Date: Mon,  1 Apr 2019 19:57:47 +0200
+Message-ID: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: narmstrong@baylibre.com, jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: narmstrong@baylibre.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org, jbrunet@baylibre.com
 List-Id: linux-pwm@vger.kernel.org
 
-Holding the spin-lock for all of the code in meson_pwm_apply() can
-result in a "BUG: scheduling while atomic". This can happen because
-clk_get_rate() (which is called from meson_pwm_calc()) may sleep.
-Only hold the spin-lock when modifying registers to solve this.
-
-The reason why we need a spin-lock in the driver is because the
-REG_MISC_AB register is shared between the two channels provided by one
-PWM controller. The only functions where REG_MISC_AB is modified are
-meson_pwm_enable() and meson_pwm_disable() so the register reads/writes
-in there need to be protected by the spin-lock.
-
-The original code also used the spin-lock to protect the values in
-struct meson_pwm_channel. This could be necessary if two consumers can
-use the same PWM channel. However, PWM core doesn't allow this so we
-don't need to protect the values in struct meson_pwm_channel with a
-lock.
-
-Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-meson.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index c1ed641b3e26..f6e738ad7bd9 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -111,6 +111,10 @@ struct meson_pwm {
- 	const struct meson_pwm_data *data;
- 	void __iomem *base;
- 	u8 inverter_mask;
-+	/*
-+	 * Protects register (write) access to the REG_MISC_AB register
-+	 * that is shared between the two PWMs.
-+	 */
- 	spinlock_t lock;
- };
- 
-@@ -235,6 +239,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
- {
- 	u32 value, clk_shift, clk_enable, enable;
- 	unsigned int offset;
-+	unsigned long flags;
- 
- 	switch (id) {
- 	case 0:
-@@ -255,6 +260,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
- 		return;
- 	}
- 
-+	spin_lock_irqsave(&meson->lock, flags);
-+
- 	value = readl(meson->base + REG_MISC_AB);
- 	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
- 	value |= channel->pre_div << clk_shift;
-@@ -267,11 +274,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
- 	value = readl(meson->base + REG_MISC_AB);
- 	value |= enable;
- 	writel(value, meson->base + REG_MISC_AB);
-+
-+	spin_unlock_irqrestore(&meson->lock, flags);
- }
- 
- static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
- {
- 	u32 value, enable;
-+	unsigned long flags;
- 
- 	switch (id) {
- 	case 0:
-@@ -286,9 +296,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
- 		return;
- 	}
- 
-+	spin_lock_irqsave(&meson->lock, flags);
-+
- 	value = readl(meson->base + REG_MISC_AB);
- 	value &= ~enable;
- 	writel(value, meson->base + REG_MISC_AB);
-+
-+	spin_unlock_irqrestore(&meson->lock, flags);
- }
- 
- static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -296,19 +310,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	struct meson_pwm *meson = to_meson_pwm(chip);
--	unsigned long flags;
- 	int err = 0;
- 
- 	if (!state)
- 		return -EINVAL;
- 
--	spin_lock_irqsave(&meson->lock, flags);
--
- 	if (!state->enabled) {
- 		meson_pwm_disable(meson, pwm->hwpwm);
- 		channel->state.enabled = false;
- 
--		goto unlock;
-+		return 0;
- 	}
- 
- 	if (state->period != channel->state.period ||
-@@ -329,7 +340,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
- 				     state->duty_cycle, state->period);
- 		if (err < 0)
--			goto unlock;
-+			return err;
- 
- 		channel->state.polarity = state->polarity;
- 		channel->state.period = state->period;
-@@ -341,9 +352,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		channel->state.enabled = true;
- 	}
- 
--unlock:
--	spin_unlock_irqrestore(&meson->lock, flags);
--	return err;
-+	return 0;
- }
- 
- static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
--- 
-2.21.0
+QmFjayBpbiBKYW51YXJ5IGEgIkJVRzogc2NoZWR1bGluZyB3aGlsZSBhdG9taWMiIGVycm9yIHNo
+b3dlZCB1cCBkdXJpbmcKYm9vdCBvbiBteSBNZXNvbjhiIE9kcm9pZC1DMSAod2hpY2ggdXNlcyBh
+IFBXTSByZWd1bGF0b3IgYXMgQ1BVIHN1cHBseSkuClRoZSBjYWxsIHRyYWNlIGNvbWVzIGRvd24g
+dG86CiAgX19tdXRleF9sb2NrCiAgY2xrX3ByZXBhcmVfbG9jawogIGNsa19jb3JlX2dldF9yYXRl
+CiAgbWVzb25fcHdtX2FwcGx5CiAgLi4KICBkZXZfcG1fb3BwX3NldF9yYXRlCiAgLi4KCkplcm9t
+ZSBoYXMgYWxzbyBzZWVuIHRoZSBzYW1lIHByb2JsZW0gYnV0IGZyb20gcHdtLWxlZHMgKGluc3Rl
+YWQgb2YgYQpwd20tcmVndWxhdG9yKS4gSGUgcG9zdGVkIGEgcGF0Y2ggd2hpY2ggcmVwbGFjZXMg
+dGhlIHNwaW5sb2NrIHdpdGggYQptdXRleC4gVGhhdCB3b3Jrcy4gSSBiZWxpZXZlIHdlIGNhbiBv
+cHRpbWl6ZSB0aGlzIGJ5IHJlZHVjaW5nIHRoZSB0aW1lCndoZXJlIHRoZSBsb2NrIGlzIGhlbGQg
+LSB0aGF0IGFsc28gYWxsb3dzIHRvIGtlZXAgdGhlIHNwaW4tbG9jay4KCkFuYWx5emluZyB0aGlz
+IGlzc3VlIGhlbHBlZCBtZSB1bmRlcnN0YW5kIHRoZSBwd20tbWVzb24gZHJpdmVyIGJldHRlci4K
+TXkgcGxhbiBpcyB0byBzZW5kIHNvbWUgY2xlYW51cHMgYWZ0ZXIgdGhpcyBzaW5nbGUgZml4IGlz
+IG1lcmdlZC4gVGhlCmdvYWwgb2YgdGhlc2UgY2xlYW51cHMgaXMgdG8gcmUtdXNlIG1vcmUgb2Yg
+dGhlIGdvb2RpZXMgZnJvbSB0aGUgUFdNCmNvcmUgaW4gdGhlIHB3bS1tZXNvbiBkcml2ZXIgYXMg
+d2VsbCBhcyB0byBhZGRyZXNzIGlzc3VlcyBzcG90dGVkIGJ5ClV3ZSBLbGVpbmUtS8O2bmlnICh0
+aGVzZSBpc3N1ZXMgdmlvbGF0ZSB0aGUgUFdNIEFQSSwgYnV0IG5vbmUgb2YgdGhlc2UKcmVzdWx0
+IGluIGJyZWFrYWdlIG9mIHRoZSBib2FyZHMvLmR0cyB0aGF0IHdlIGN1cnJlbnRseSBoYXZlKS4g
+VGhlc2UKZm9sbG93LXVwIHBhdGNoZXMgY2FuIGJlIGZvdW5kIGhlcmU6IFsxXS4KCkRlcGVuZGVu
+Y2llczogbm9uZQoKVGFyZ2V0IHZlcnNpb246IHBsZWFzZSBxdWV1ZSB0aGlzIGZvciAtZml4ZXMg
+c28gaXQgbWFrZXMgaXQncyB3YXkgaW50bwp2NS4xLXJjIChzbyB3ZSBjYW4gZ2V0IGl0IGJhY2tw
+b3J0ZWQgZnJvbSB0aGVyZSwgYmVjYXVzZSB0aGlzIGlzc3VlIGhhcwpleGlzdGVkIHNpbmNlIHRo
+ZSBwd20tbWVzb24gZHJpdmVyIHdhcyBpbnRyb2R1Y2VkKS4KCgpjaGFuZ2VzIHNpbmNlIHYxIGF0
+IFsyXToKLSBhZGRlZCBjb21tZW50IGFib3V0IHVzYWdlIG9mIHRoZSBzcGlubG9jayBhcyBzdWdn
+ZXN0ZWQgYnkKICBVd2UgS2xlaW5lLUvDtm5pZyAodGhhbmsgeW91KQotIGNvbGxlY3RlZCBVd2Ug
+S2xlaW5lLUvDtm5pZydzIFJldmlld2VkLWJ5CgoKWzBdIGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQu
+b3JnL3BpcGVybWFpbC9saW51eC1hbWxvZ2ljLzIwMTktSmFudWFyeS8wMDk2OTAuaHRtbApbMV0g
+aHR0cHM6Ly9naXRodWIuY29tL3hkYXJrbGlnaHQvbGludXgvY29tbWl0cy9tZXNvbi1wd20tZm9y
+LTUuMi12MQpbMl0gaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9jb3Zlci8xMDg2Nzc1Ny8K
+CgpNYXJ0aW4gQmx1bWVuc3RpbmdsICgxKToKICBwd206IG1lc29uOiB1c2UgdGhlIHNwaW4tbG9j
+ayBvbmx5IHRvIHByb3RlY3QgcmVnaXN0ZXIgbW9kaWZpY2F0aW9ucwoKIGRyaXZlcnMvcHdtL3B3
+bS1tZXNvbi5jIHwgMjUgKysrKysrKysrKysrKysrKystLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQs
+IDE3IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCgotLSAKMi4yMS4wCgoKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
+YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
+aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
