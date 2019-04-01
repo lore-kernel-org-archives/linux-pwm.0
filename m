@@ -1,51 +1,46 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 0/2] pwm: meson: two small bug-fixes
-Date: Mon,  1 Apr 2019 20:18:15 +0200
-Message-ID: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 2/2] pwm: meson: don't disable pwm when setting duty repeatedly
+Date: Mon,  1 Apr 2019 20:18:17 +0200
+Message-ID: <20190401181817.11999-3-martin.blumenstingl@googlemail.com>
+References: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
 Cc: narmstrong@baylibre.com, jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, bichao.zheng@amlogic.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This series applies on top of my other fix "pwm: meson: fix scheduling
-while atomic issue" from [0]
+From: Bichao Zheng <bichao.zheng@amlogic.com>
 
-The first patch fixes an issue where the maximum possible pre-divider
-(128) could not be used because there was an off-by-one error in the
-code. I discovered this while testing with the longest supported period
-(349514407ns) when running from XTAL. This is verified to work on my
-Meson8b Odroid-C1 board using "pwm_b" on GPIOX_11.
+There is an abnormally low about 20ms,when setting duty repeatedly.
+Because setting the duty will disable pwm and then enable. Delete
+this operation now.
 
-The second patch was suggested by Uwe Kleine-König but was actually
-implemented much earlier (back in mid 2018) by Bichao Zheng from
-Amlogic. This patch fixes changing the duty cycle by relying on the
-hardware to re-start the PWM output (instead of adding an artificial
-"constant LOW" of about 20ms - as measured by Bichao Zheng when
-stopping and re-starting the PWM output from within the driver). I
-tested this fix on my Meson8b Odroid-C1 board which uses a PWM driven
-CPU regulator (DVFS with all supported OPPs is still working fine for
-me, although I couldn't observe any issues before this patch).
+Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
+Signed-off-by: Bichao Zheng <bichao.zheng@amlogic.com>
+[ Dropped code instead of hiding it behind a comment ]
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/pwm/pwm-meson.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-I also have some code-improvements queued which I'll send in the next
-days, see [1]
-
-
-[0] https://patchwork.kernel.org/cover/10880419/
-[1] https://github.com/xdarklight/linux/commits/meson-pwm-for-5.2-v1
-
-
-Bichao Zheng (1):
-  pwm: meson: don't disable pwm when setting duty repeatedly
-
-Martin Blumenstingl (1):
-  pwm: meson: consider 128 a valid pre-divider
-
- drivers/pwm/pwm-meson.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index 4b708c1fcb1d..e247ab632530 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -325,11 +325,6 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (state->period != channel->state.period ||
+ 	    state->duty_cycle != channel->state.duty_cycle ||
+ 	    state->polarity != channel->state.polarity) {
+-		if (channel->state.enabled) {
+-			meson_pwm_disable(meson, pwm->hwpwm);
+-			channel->state.enabled = false;
+-		}
+-
+ 		if (state->polarity != channel->state.polarity) {
+ 			if (state->polarity == PWM_POLARITY_NORMAL)
+ 				meson->inverter_mask |= BIT(pwm->hwpwm);
 -- 
 2.21.0
