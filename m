@@ -1,16 +1,24 @@
 From: Mukesh Ojha <mojha@codeaurora.org>
 Subject: Re: [PATCH] pwm: imx27: use devm_platform_ioremap_resource() to
  simplify code
-Date: Mon, 1 Apr 2019 13:15:23 +0530
-Message-ID: <3379a7a9-64d4-7892-0f40-3d437a24e0f6@codeaurora.org>
+Date: Mon, 1 Apr 2019 13:30:19 +0530
+Message-ID: <4d10cb49-baf0-dc59-6df2-62174bb06931@codeaurora.org>
 References: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Anson Huang <anson.huang@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
@@ -26,6 +34,7 @@ Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
 
 Cheers,
 -Mukesh
+
 > ---
 >   drivers/pwm/pwm-imx27.c | 4 +---
 >   1 file changed, 1 insertion(+), 3 deletions(-)
