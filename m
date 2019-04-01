@@ -1,49 +1,32 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: [PATCH] pwm: imx27: use devm_platform_ioremap_resource() to simplify
- code
-Date: Mon, 1 Apr 2019 05:24:02 +0000
-Message-ID: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: imx27: use devm_platform_ioremap_resource() to
+ simplify code
+Date: Mon, 1 Apr 2019 09:00:54 +0200
+Message-ID: <20190401070054.ldvhi4ljzhlz2upx@pengutronix.de>
+References: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>
+To: Anson Huang <anson.huang@nxp.com>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Use the new helper devm_platform_ioremap_resource() which wraps the
-platform_get_resource() and devm_ioremap_resource() together, to
-simplify the code.
+On Mon, Apr 01, 2019 at 05:24:02AM +0000, Anson Huang wrote:
+> Use the new helper devm_platform_ioremap_resource() which wraps the
+> platform_get_resource() and devm_ioremap_resource() together, to
+> simplify the code.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
- drivers/pwm/pwm-imx27.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Thanks
+Uwe
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 8061306..434a351 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -291,7 +291,6 @@ MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
- static int pwm_imx27_probe(struct platform_device *pdev)
- {
- 	struct pwm_imx27_chip *imx;
--	struct resource *r;
-=20
- 	imx =3D devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
- 	if (imx =3D=3D NULL)
-@@ -326,8 +325,7 @@ static int pwm_imx27_probe(struct platform_device *pdev=
-)
- 	imx->chip.of_xlate =3D of_pwm_xlate_with_flags;
- 	imx->chip.of_pwm_n_cells =3D 3;
-=20
--	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	imx->mmio_base =3D devm_ioremap_resource(&pdev->dev, r);
-+	imx->mmio_base =3D devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(imx->mmio_base))
- 		return PTR_ERR(imx->mmio_base);
-=20
---=20
-2.7.4
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
