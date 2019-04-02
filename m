@@ -1,7 +1,7 @@
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 14/18] drivers/clocksource: timer-fsl-ftm: use common header for FlexTimer #defines
-Date: Tue,  2 Apr 2019 15:30:49 +0900
-Message-ID: <c82ce954006d9a228c7a6ebb0eabade48bd2c149.1554184734.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 15/18] dt-bindings: counter: ftm-quaddec
+Date: Tue,  2 Apr 2019 15:30:50 +0900
+Message-ID: <c852a16f5828a7e651e710dc95b66a5622a454d0.1554184734.git.vilhelm.gray@gmail.com>
 References: <cover.1554184734.git.vilhelm.gray@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,43 +14,39 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Patrick Havelange <patrick.havelange@essensium.com>
 
-Common #defines have been moved to "linux/fsl/ftm.h". Thus making use of
-this file.
-Also FTM_SC_CLK_SHIFT has been renamed to FTM_SC_CLK_MASK_SHIFT.
+FlexTimer quadrature decoder driver.
 
 Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ .../bindings/counter/ftm-quaddec.txt           | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
 
-diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
-index 846d18daf893..e1c34b2f53a5 100644
---- a/drivers/clocksource/timer-fsl-ftm.c
-+++ b/drivers/clocksource/timer-fsl-ftm.c
-@@ -19,20 +19,9 @@
- #include <linux/of_irq.h>
- #include <linux/sched_clock.h>
- #include <linux/slab.h>
-+#include <linux/fsl/ftm.h>
- 
--#define FTM_SC		0x00
--#define FTM_SC_CLK_SHIFT	3
--#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
--#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
--#define FTM_SC_PS_MASK	0x7
--#define FTM_SC_TOIE	BIT(6)
--#define FTM_SC_TOF	BIT(7)
--
--#define FTM_CNT		0x04
--#define FTM_MOD		0x08
--#define FTM_CNTIN	0x4C
--
--#define FTM_PS_MAX	7
-+#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
- 
- struct ftm_clock_device {
- 	void __iomem *clksrc_base;
+diff --git a/Documentation/devicetree/bindings/counter/ftm-quaddec.txt b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+new file mode 100644
+index 000000000000..4d18cd722074
+--- /dev/null
++++ b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+@@ -0,0 +1,18 @@
++FlexTimer Quadrature decoder counter
++
++This driver exposes a simple counter for the quadrature decoder mode.
++
++Required properties:
++- compatible:		Must be "fsl,ftm-quaddec".
++- reg:			Must be set to the memory region of the flextimer.
++
++Optional property:
++- big-endian:		Access the device registers in big-endian mode.
++
++Example:
++		counter0: counter@29d0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29d0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
 -- 
 2.21.0
