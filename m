@@ -1,7 +1,7 @@
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 17/18] counter: ftm-quaddec: Documentation: Add specific counter sysfs documentation
-Date: Tue,  2 Apr 2019 15:30:52 +0900
-Message-ID: <3273619b1e22d8dbcd0beccd9a887f14a8aa38e0.1554184734.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 18/18] LS1021A: dtsi: add ftm quad decoder entries
+Date: Tue,  2 Apr 2019 15:30:53 +0900
+Message-ID: <58aec84fb201e7ba2e24ff51f8fd1b4261d6b895.1554184734.git.vilhelm.gray@gmail.com>
 References: <cover.1554184734.git.vilhelm.gray@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,36 +14,53 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Patrick Havelange <patrick.havelange@essensium.com>
 
-This adds documentation for the specific prescaler entry.
+Add the 4 Quadrature counters for this board.
 
+Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- .../ABI/testing/sysfs-bus-counter-ftm-quaddec    | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
+ arch/arm/boot/dts/ls1021a.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec b/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-new file mode 100644
-index 000000000000..7d2e7b363467
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-@@ -0,0 +1,16 @@
-+What:		/sys/bus/counter/devices/counterX/countY/prescaler_available
-+KernelVersion:	5.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Discrete set of available values for the respective Count Y
-+		configuration are listed in this file. Values are delimited by
-+		newline characters.
+diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
+index ed0941292172..0168fb62590a 100644
+--- a/arch/arm/boot/dts/ls1021a.dtsi
++++ b/arch/arm/boot/dts/ls1021a.dtsi
+@@ -433,6 +433,34 @@
+ 			status = "disabled";
+ 		};
+ 
++		counter0: counter@29d0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29d0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
 +
-+What:		/sys/bus/counter/devices/counterX/countY/prescaler
-+KernelVersion:	5.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Configure the prescaler value associated with Count Y.
-+		On the FlexTimer, the counter clock source passes through a
-+		prescaler (i.e. a counter). This acts like a clock
-+		divider.
++		counter1: counter@29e0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29e0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter2: counter@29f0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29f0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter3: counter@2a00000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x2a00000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
+ 		gpio0: gpio@2300000 {
+ 			compatible = "fsl,ls1021a-gpio", "fsl,qoriq-gpio";
+ 			reg = <0x0 0x2300000 0x0 0x10000>;
 -- 
 2.21.0
