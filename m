@@ -1,66 +1,26 @@
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 18/18] LS1021A: dtsi: add ftm quad decoder entries
-Date: Tue,  2 Apr 2019 15:30:53 +0900
-Message-ID: <58aec84fb201e7ba2e24ff51f8fd1b4261d6b895.1554184734.git.vilhelm.gray@gmail.com>
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 01/42] drivers: gpio: 74xx-mmio: use devm_platform_ioremap_resource()
+Date: Tue, 2 Apr 2019 15:03:55 +0700
+Message-ID: <CACRpkdYB3eatPJQYv1HKvcqY0uA8xjiHWC-kGtmfqHRD8J=bXQ@mail.gmail.com>
+References: <1552330521-4276-1-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1554184734.git.vilhelm.gray@gmail.com>
+In-Reply-To: <1552330521-4276-1-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jic23@kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org, tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, patrick.havelange@essensium.com, William Breathitt Gray <vilhelm.gray@gmail.com>
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Andrew Jeffery <andrew@aj.id.au>, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Hoan Tran <hoan@os.amperecomputing.com>, Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linaro.org>, Lyra Zhang <zhang.lyra@gmail.com>, Keguang Zhang <keguang.zhang@gmail.com>, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Grygorii Strashko <grygorii.strashko@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Kevin Hilman <khilman@kernel.org>, Robert Jarzmik <robert.j>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Patrick Havelange <patrick.havelange@essensium.com>
+On Tue, Mar 12, 2019 at 1:55 AM Enrico Weigelt, metux IT consult
+<info@metux.net> wrote:
 
-Add the 4 Quadrature counters for this board.
+> Use the new helper that wraps the calls to platform_get_resource()
+> and devm_ioremap_resource() together.
+>
+> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 
-Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- arch/arm/boot/dts/ls1021a.dtsi | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+Patch applied.
 
-diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
-index ed0941292172..0168fb62590a 100644
---- a/arch/arm/boot/dts/ls1021a.dtsi
-+++ b/arch/arm/boot/dts/ls1021a.dtsi
-@@ -433,6 +433,34 @@
- 			status = "disabled";
- 		};
- 
-+		counter0: counter@29d0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29d0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
-+		counter1: counter@29e0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29e0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
-+		counter2: counter@29f0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29f0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
-+		counter3: counter@2a00000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x2a00000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
- 		gpio0: gpio@2300000 {
- 			compatible = "fsl,ls1021a-gpio", "fsl,qoriq-gpio";
- 			reg = <0x0 0x2300000 0x0 0x10000>;
--- 
-2.21.0
+Yours,
+Linus Walleij
