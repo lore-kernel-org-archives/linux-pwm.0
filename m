@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 09/12] clocksource/drivers/tcb_clksrc: Rename the file for consistency
-Date: Wed,  3 Apr 2019 16:11:17 +0200
-Message-ID: <20190403141120.32754-10-alexandre.belloni@bootlin.com>
+Subject: [PATCH 10/12] ARM: configs: at91: unselect PIT
+Date: Wed,  3 Apr 2019 16:11:18 +0200
+Message-ID: <20190403141120.32754-11-alexandre.belloni@bootlin.com>
 References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,32 +12,39 @@ To: Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linux
 Cc: Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
-For the sake of consistency, let's rename the file to a name similar
-to other file names in this directory.
+The PIT is not required anymore to successfully boot and may actually harm
+in case preempt-rt is used because the PIT interrupt is shared.
+Disable it so the TCB clocksource is used.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/clocksource/Makefile                            | 2 +-
- drivers/clocksource/{tcb_clksrc.c => timer-atmel-tcb.c} | 0
- 2 files changed, 1 insertion(+), 1 deletion(-)
- rename drivers/clocksource/{tcb_clksrc.c => timer-atmel-tcb.c} (100%)
+ arch/arm/configs/at91_dt_defconfig | 1 +
+ arch/arm/configs/sama5_defconfig   | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index be6e0fbc7489..923b9b60c909 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -3,7 +3,7 @@ obj-$(CONFIG_TIMER_OF)		+= timer-of.o
- obj-$(CONFIG_TIMER_PROBE)	+= timer-probe.o
- obj-$(CONFIG_ATMEL_PIT)		+= timer-atmel-pit.o
- obj-$(CONFIG_ATMEL_ST)		+= timer-atmel-st.o
--obj-$(CONFIG_ATMEL_TCB_CLKSRC)	+= tcb_clksrc.o
-+obj-$(CONFIG_ATMEL_TCB_CLKSRC)	+= timer-atmel-tcb.o
- obj-$(CONFIG_X86_PM_TIMER)	+= acpi_pm.o
- obj-$(CONFIG_SCx200HR_TIMER)	+= scx200_hrt.o
- obj-$(CONFIG_CS5535_CLOCK_EVENT_SRC)	+= timer-cs5535.o
-diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/timer-atmel-tcb.c
-similarity index 100%
-rename from drivers/clocksource/tcb_clksrc.c
-rename to drivers/clocksource/timer-atmel-tcb.c
+diff --git a/arch/arm/configs/at91_dt_defconfig b/arch/arm/configs/at91_dt_defconfig
+index e4b1be66b3f5..c8876d0ca41a 100644
+--- a/arch/arm/configs/at91_dt_defconfig
++++ b/arch/arm/configs/at91_dt_defconfig
+@@ -19,6 +19,7 @@ CONFIG_ARCH_MULTI_V5=y
+ CONFIG_ARCH_AT91=y
+ CONFIG_SOC_AT91RM9200=y
+ CONFIG_SOC_AT91SAM9=y
++# CONFIG_ATMEL_CLOCKSOURCE_PIT is not set
+ CONFIG_AEABI=y
+ CONFIG_UACCESS_WITH_MEMCPY=y
+ CONFIG_ZBOOT_ROM_TEXT=0x0
+diff --git a/arch/arm/configs/sama5_defconfig b/arch/arm/configs/sama5_defconfig
+index b0026f73083d..10ebc9481f72 100644
+--- a/arch/arm/configs/sama5_defconfig
++++ b/arch/arm/configs/sama5_defconfig
+@@ -20,6 +20,7 @@ CONFIG_ARCH_AT91=y
+ CONFIG_SOC_SAMA5D2=y
+ CONFIG_SOC_SAMA5D3=y
+ CONFIG_SOC_SAMA5D4=y
++# CONFIG_ATMEL_CLOCKSOURCE_PIT is not set
+ CONFIG_AEABI=y
+ CONFIG_UACCESS_WITH_MEMCPY=y
+ CONFIG_ZBOOT_ROM_TEXT=0x0
 -- 
 2.20.1
