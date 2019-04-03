@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 06/12] ARM: at91: Implement clocksource selection
-Date: Wed,  3 Apr 2019 16:11:14 +0200
-Message-ID: <20190403141120.32754-7-alexandre.belloni@bootlin.com>
+Subject: [PATCH 09/12] clocksource/drivers/tcb_clksrc: Rename the file for consistency
+Date: Wed,  3 Apr 2019 16:11:17 +0200
+Message-ID: <20190403141120.32754-10-alexandre.belloni@bootlin.com>
 References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,47 +12,32 @@ To: Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linux
 Cc: Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Allow selecting and unselecting the PIT clocksource driver so it doesn't
-have to be compiled when unused.
+For the sake of consistency, let's rename the file to a name similar
+to other file names in this directory.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- arch/arm/mach-at91/Kconfig | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/clocksource/Makefile                            | 2 +-
+ drivers/clocksource/{tcb_clksrc.c => timer-atmel-tcb.c} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename drivers/clocksource/{tcb_clksrc.c => timer-atmel-tcb.c} (100%)
 
-diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
-index 903f23c309df..da1d97a06c53 100644
---- a/arch/arm/mach-at91/Kconfig
-+++ b/arch/arm/mach-at91/Kconfig
-@@ -107,6 +107,29 @@ config SOC_AT91SAM9
- 	    AT91SAM9X35
- 	    AT91SAM9XE
- 
-+comment "Clocksource driver selection"
-+
-+config ATMEL_CLOCKSOURCE_PIT
-+	bool "Periodic Interval Timer (PIT) support"
-+	depends on SOC_AT91SAM9 || SOC_SAMA5
-+	default SOC_AT91SAM9 || SOC_SAMA5
-+	select ATMEL_PIT
-+	help
-+	  Select this to get a clocksource based on the Atmel Periodic Interval
-+	  Timer. It has a relatively low resolution and the TC Block clocksource
-+	  should be preferred.
-+
-+config ATMEL_CLOCKSOURCE_TCB
-+	bool "Timer Counter Blocks (TCB) support"
-+	default SOC_AT91RM9200 || SOC_AT91SAM9 || SOC_SAMA5
-+	select ATMEL_TCB_CLKSRC
-+	help
-+	  Select this to get a high precision clocksource based on a
-+	  TC block with a 5+ MHz base clock rate.
-+	  On platforms with 16-bit counters, two timer channels are combined
-+	  to make a single 32-bit timer.
-+	  It can also be used as a clock event device supporting oneshot mode.
-+
- config HAVE_AT91_UTMI
- 	bool
- 
+diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+index be6e0fbc7489..923b9b60c909 100644
+--- a/drivers/clocksource/Makefile
++++ b/drivers/clocksource/Makefile
+@@ -3,7 +3,7 @@ obj-$(CONFIG_TIMER_OF)		+= timer-of.o
+ obj-$(CONFIG_TIMER_PROBE)	+= timer-probe.o
+ obj-$(CONFIG_ATMEL_PIT)		+= timer-atmel-pit.o
+ obj-$(CONFIG_ATMEL_ST)		+= timer-atmel-st.o
+-obj-$(CONFIG_ATMEL_TCB_CLKSRC)	+= tcb_clksrc.o
++obj-$(CONFIG_ATMEL_TCB_CLKSRC)	+= timer-atmel-tcb.o
+ obj-$(CONFIG_X86_PM_TIMER)	+= acpi_pm.o
+ obj-$(CONFIG_SCx200HR_TIMER)	+= scx200_hrt.o
+ obj-$(CONFIG_CS5535_CLOCK_EVENT_SRC)	+= timer-cs5535.o
+diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/timer-atmel-tcb.c
+similarity index 100%
+rename from drivers/clocksource/tcb_clksrc.c
+rename to drivers/clocksource/timer-atmel-tcb.c
 -- 
 2.20.1
