@@ -1,148 +1,63 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH v2 1/1] pwm: meson: use the spin-lock only to protect
- register modifications
-Date: Wed, 3 Apr 2019 13:21:24 +0200
-Message-ID: <5d2b4754-749a-bf93-9b7b-a768b5976ecb@baylibre.com>
-References: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
- <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 00/12] clocksource: improve Atmel TCB timer driver
+Date: Wed,  3 Apr 2019 16:11:08 +0200
+Message-ID: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de
+To: Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 01/04/2019 19:57, Martin Blumenstingl wrote:
-> Holding the spin-lock for all of the code in meson_pwm_apply() can
-> result in a "BUG: scheduling while atomic". This can happen because
-> clk_get_rate() (which is called from meson_pwm_calc()) may sleep.
-> Only hold the spin-lock when modifying registers to solve this.
-> 
-> The reason why we need a spin-lock in the driver is because the
-> REG_MISC_AB register is shared between the two channels provided by one
-> PWM controller. The only functions where REG_MISC_AB is modified are
-> meson_pwm_enable() and meson_pwm_disable() so the register reads/writes
-> in there need to be protected by the spin-lock.
-> 
-> The original code also used the spin-lock to protect the values in
-> struct meson_pwm_channel. This could be necessary if two consumers can
-> use the same PWM channel. However, PWM core doesn't allow this so we
-> don't need to protect the values in struct meson_pwm_channel with a
-> lock.
-> 
-> Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/pwm/pwm-meson.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index c1ed641b3e26..f6e738ad7bd9 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -111,6 +111,10 @@ struct meson_pwm {
->  	const struct meson_pwm_data *data;
->  	void __iomem *base;
->  	u8 inverter_mask;
-> +	/*
-> +	 * Protects register (write) access to the REG_MISC_AB register
-> +	 * that is shared between the two PWMs.
-> +	 */
->  	spinlock_t lock;
->  };
->  
-> @@ -235,6 +239,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
->  {
->  	u32 value, clk_shift, clk_enable, enable;
->  	unsigned int offset;
-> +	unsigned long flags;
->  
->  	switch (id) {
->  	case 0:
-> @@ -255,6 +260,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
->  		return;
->  	}
->  
-> +	spin_lock_irqsave(&meson->lock, flags);
-> +
->  	value = readl(meson->base + REG_MISC_AB);
->  	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
->  	value |= channel->pre_div << clk_shift;
-> @@ -267,11 +274,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
->  	value = readl(meson->base + REG_MISC_AB);
->  	value |= enable;
->  	writel(value, meson->base + REG_MISC_AB);
-> +
-> +	spin_unlock_irqrestore(&meson->lock, flags);
->  }
->  
->  static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
->  {
->  	u32 value, enable;
-> +	unsigned long flags;
->  
->  	switch (id) {
->  	case 0:
-> @@ -286,9 +296,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
->  		return;
->  	}
->  
-> +	spin_lock_irqsave(&meson->lock, flags);
-> +
->  	value = readl(meson->base + REG_MISC_AB);
->  	value &= ~enable;
->  	writel(value, meson->base + REG_MISC_AB);
-> +
-> +	spin_unlock_irqrestore(&meson->lock, flags);
->  }
->  
->  static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> @@ -296,19 +310,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  {
->  	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
->  	struct meson_pwm *meson = to_meson_pwm(chip);
-> -	unsigned long flags;
->  	int err = 0;
->  
->  	if (!state)
->  		return -EINVAL;
->  
-> -	spin_lock_irqsave(&meson->lock, flags);
-> -
->  	if (!state->enabled) {
->  		meson_pwm_disable(meson, pwm->hwpwm);
->  		channel->state.enabled = false;
->  
-> -		goto unlock;
-> +		return 0;
->  	}
->  
->  	if (state->period != channel->state.period ||
-> @@ -329,7 +340,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
->  				     state->duty_cycle, state->period);
->  		if (err < 0)
-> -			goto unlock;
-> +			return err;
->  
->  		channel->state.polarity = state->polarity;
->  		channel->state.period = state->period;
-> @@ -341,9 +352,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  		channel->state.enabled = true;
->  	}
->  
-> -unlock:
-> -	spin_unlock_irqrestore(&meson->lock, flags);
-> -	return err;
-> +	return 0;
->  }
->  
->  static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-> 
+Hi,
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+This series immproves the Atmel TCB clocksource driver to address the
+most urgent shortcomings:
+ - the current tcb_clksrc driver is probed too late to be able to be used at
+   boot and we now have SoCs that don't have a PIT. They currently are not able
+   to boot an upstream kernel.
+ - using the PIT doesn't work well with preempt-rt because its interrupt is
+   shared (in particular with the UART) and their interrupt flags are
+   incompatible). This also happen with the threadedirq command line
+   switch.
+ - there is currently no high resolution sched_clock.
+
+The plan is to get those changes upstream as soon as possible as they
+arre fixing real issues that people are facing. There are further
+changes needed on the clocksource driver to try to stop wasting a TCB
+channel.
+the PWM TCB driver will also be changed to actually used the reviewed
+binding and this will allow to get rif of atmel_tclib.
+
+Alexandre Belloni (12):
+  ARM: at91: move SoC specific definitions to SoC folder
+  misc: atmel_tclib: drop AVR32 support
+  misc: atmel_tclib: move definitions to header file
+  clocksource/drivers/tcb_clksrc: stop depending on atmel_tclib
+  clocksource/drivers/tcb_clksrc: Use tcb as sched_clock
+  ARM: at91: Implement clocksource selection
+  clocksource/drivers/tcb_clksrc: move Kconfig option
+  clocksource/drivers/timer-atmel-pit: rework Kconfig option
+  clocksource/drivers/tcb_clksrc: Rename the file for consistency
+  ARM: configs: at91: unselect PIT
+  misc: atmel_tclib: do not probe already used TCBs
+  clocksource/drivers/timer-atmel-tcb: Use ARRAY_SIZE instead of  
+    hardcoded size
+
+ arch/arm/configs/at91_dt_defconfig            |   1 +
+ arch/arm/configs/sama5_defconfig              |   1 +
+ arch/arm/mach-at91/Kconfig                    |  23 ++++
+ drivers/clocksource/Kconfig                   |  12 +-
+ drivers/clocksource/Makefile                  |   2 +-
+ .../{tcb_clksrc.c => timer-atmel-tcb.c}       | 123 ++++++++++++------
+ drivers/misc/Kconfig                          |  24 ----
+ drivers/misc/atmel_tclib.c                    |  37 +-----
+ drivers/pwm/pwm-atmel-tcb.c                   |   2 +-
+ .../atmel_tc.h => soc/at91/atmel_tcb.h}       |  25 +++-
+ 10 files changed, 146 insertions(+), 104 deletions(-)
+ rename drivers/clocksource/{tcb_clksrc.c => timer-atmel-tcb.c} (81%)
+ rename include/{linux/atmel_tc.h => soc/at91/atmel_tcb.h} (95%)
+
+-- 
+2.20.1
