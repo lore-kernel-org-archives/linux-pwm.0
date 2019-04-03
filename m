@@ -1,26 +1,52 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 42/42] drivers: gpio: use devm_platform_ioremap_resource()
-Date: Wed, 3 Apr 2019 10:57:05 +0700
-Message-ID: <CACRpkdZ2de7Z+yhwb_dYfn5ThmuCHtxhgYoOVJtc9mQU4PsSAg@mail.gmail.com>
-References: <1552330521-4276-1-git-send-email-info@metux.net> <1552330521-4276-42-git-send-email-info@metux.net>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH 2/2] pwm: meson: don't disable pwm when setting duty
+ repeatedly
+Date: Wed, 3 Apr 2019 13:19:11 +0200
+Message-ID: <7545ce1e-1e27-ca16-d762-5bf4b833defa@baylibre.com>
+References: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
+ <20190401181817.11999-3-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552330521-4276-42-git-send-email-info@metux.net>
+In-Reply-To: <20190401181817.11999-3-martin.blumenstingl@googlemail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Andrew Jeffery <andrew@aj.id.au>, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Hoan Tran <hoan@os.amperecomputing.com>, Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linaro.org>, Lyra Zhang <zhang.lyra@gmail.com>, Keguang Zhang <keguang.zhang@gmail.com>, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Grygorii Strashko <grygorii.strashko@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Kevin Hilman <khilman@kernel.org>, Robert Jarzmik <robert.j>
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
+Cc: jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, bichao.zheng@amlogic.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 12, 2019 at 1:56 AM Enrico Weigelt, metux IT consult
-<info@metux.net> wrote:
+On 01/04/2019 20:18, Martin Blumenstingl wrote:
+> From: Bichao Zheng <bichao.zheng@amlogic.com>
+> 
+> There is an abnormally low about 20ms,when setting duty repeatedly.
+> Because setting the duty will disable pwm and then enable. Delete
+> this operation now.
+> 
+> Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
+> Signed-off-by: Bichao Zheng <bichao.zheng@amlogic.com>
+> [ Dropped code instead of hiding it behind a comment ]
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  drivers/pwm/pwm-meson.c | 5 -----
+>  1 file changed, 5 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+> index 4b708c1fcb1d..e247ab632530 100644
+> --- a/drivers/pwm/pwm-meson.c
+> +++ b/drivers/pwm/pwm-meson.c
+> @@ -325,11 +325,6 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  	if (state->period != channel->state.period ||
+>  	    state->duty_cycle != channel->state.duty_cycle ||
+>  	    state->polarity != channel->state.polarity) {
+> -		if (channel->state.enabled) {
+> -			meson_pwm_disable(meson, pwm->hwpwm);
+> -			channel->state.enabled = false;
+> -		}
+> -
+>  		if (state->polarity != channel->state.polarity) {
+>  			if (state->polarity == PWM_POLARITY_NORMAL)
+>  				meson->inverter_mask |= BIT(pwm->hwpwm);
+> 
 
-> Use the new helper that wraps the calls to platform_get_resource()
-> and devm_ioremap_resource() together.
->
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
-
-Changed subject to gpio: zynq: and applied.
-
-Yours,
-Linus Walleij
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
