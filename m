@@ -1,56 +1,148 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 1/2] pwm: meson: consider 128 a valid pre-divider
-Date: Wed, 3 Apr 2019 13:19:41 +0200
-Message-ID: <c8b6856c-3d2c-c59a-b3e6-5cfacc44d0e9@baylibre.com>
-References: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
- <20190401181817.11999-2-martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH v2 1/1] pwm: meson: use the spin-lock only to protect
+ register modifications
+Date: Wed, 3 Apr 2019 13:21:24 +0200
+Message-ID: <5d2b4754-749a-bf93-9b7b-a768b5976ecb@baylibre.com>
+References: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
+ <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190401181817.11999-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, bichao.zheng@amlogic.com
+Cc: jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-On 01/04/2019 20:18, Martin Blumenstingl wrote:
-> The pre-divider allows configuring longer PWM periods compared to using
-> the input clock directly. The pre-divider is 7 bit wide, meaning it's
-> maximum value is 128 (the register value is off-by-one: 0x7f or 127).
+On 01/04/2019 19:57, Martin Blumenstingl wrote:
+> Holding the spin-lock for all of the code in meson_pwm_apply() can
+> result in a "BUG: scheduling while atomic". This can happen because
+> clk_get_rate() (which is called from meson_pwm_calc()) may sleep.
+> Only hold the spin-lock when modifying registers to solve this.
 > 
-> Change the loop to also allow for the maximum possible value to be
-> considered valid.
+> The reason why we need a spin-lock in the driver is because the
+> REG_MISC_AB register is shared between the two channels provided by one
+> PWM controller. The only functions where REG_MISC_AB is modified are
+> meson_pwm_enable() and meson_pwm_disable() so the register reads/writes
+> in there need to be protected by the spin-lock.
+> 
+> The original code also used the spin-lock to protect the values in
+> struct meson_pwm_channel. This could be necessary if two consumers can
+> use the same PWM channel. However, PWM core doesn't allow this so we
+> don't need to protect the values in struct meson_pwm_channel with a
+> lock.
 > 
 > Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 > ---
->  drivers/pwm/pwm-meson.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/pwm/pwm-meson.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index f6e738ad7bd9..4b708c1fcb1d 100644
+> index c1ed641b3e26..f6e738ad7bd9 100644
 > --- a/drivers/pwm/pwm-meson.c
 > +++ b/drivers/pwm/pwm-meson.c
-> @@ -188,7 +188,7 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  	do_div(fin_ps, fin_freq);
+> @@ -111,6 +111,10 @@ struct meson_pwm {
+>  	const struct meson_pwm_data *data;
+>  	void __iomem *base;
+>  	u8 inverter_mask;
+> +	/*
+> +	 * Protects register (write) access to the REG_MISC_AB register
+> +	 * that is shared between the two PWMs.
+> +	 */
+>  	spinlock_t lock;
+>  };
 >  
->  	/* Calc pre_div with the period */
-> -	for (pre_div = 0; pre_div < MISC_CLK_DIV_MASK; pre_div++) {
-> +	for (pre_div = 0; pre_div <= MISC_CLK_DIV_MASK; pre_div++) {
->  		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
->  					    fin_ps * (pre_div + 1));
->  		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
-> @@ -197,7 +197,7 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  			break;
+> @@ -235,6 +239,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+>  {
+>  	u32 value, clk_shift, clk_enable, enable;
+>  	unsigned int offset;
+> +	unsigned long flags;
+>  
+>  	switch (id) {
+>  	case 0:
+> @@ -255,6 +260,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+>  		return;
 >  	}
 >  
-> -	if (pre_div == MISC_CLK_DIV_MASK) {
-> +	if (pre_div > MISC_CLK_DIV_MASK) {
->  		dev_err(meson->chip.dev, "unable to get period pre_div\n");
+> +	spin_lock_irqsave(&meson->lock, flags);
+> +
+>  	value = readl(meson->base + REG_MISC_AB);
+>  	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
+>  	value |= channel->pre_div << clk_shift;
+> @@ -267,11 +274,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+>  	value = readl(meson->base + REG_MISC_AB);
+>  	value |= enable;
+>  	writel(value, meson->base + REG_MISC_AB);
+> +
+> +	spin_unlock_irqrestore(&meson->lock, flags);
+>  }
+>  
+>  static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
+>  {
+>  	u32 value, enable;
+> +	unsigned long flags;
+>  
+>  	switch (id) {
+>  	case 0:
+> @@ -286,9 +296,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
+>  		return;
+>  	}
+>  
+> +	spin_lock_irqsave(&meson->lock, flags);
+> +
+>  	value = readl(meson->base + REG_MISC_AB);
+>  	value &= ~enable;
+>  	writel(value, meson->base + REG_MISC_AB);
+> +
+> +	spin_unlock_irqrestore(&meson->lock, flags);
+>  }
+>  
+>  static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> @@ -296,19 +310,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  {
+>  	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
+>  	struct meson_pwm *meson = to_meson_pwm(chip);
+> -	unsigned long flags;
+>  	int err = 0;
+>  
+>  	if (!state)
 >  		return -EINVAL;
+>  
+> -	spin_lock_irqsave(&meson->lock, flags);
+> -
+>  	if (!state->enabled) {
+>  		meson_pwm_disable(meson, pwm->hwpwm);
+>  		channel->state.enabled = false;
+>  
+> -		goto unlock;
+> +		return 0;
 >  	}
+>  
+>  	if (state->period != channel->state.period ||
+> @@ -329,7 +340,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
+>  				     state->duty_cycle, state->period);
+>  		if (err < 0)
+> -			goto unlock;
+> +			return err;
+>  
+>  		channel->state.polarity = state->polarity;
+>  		channel->state.period = state->period;
+> @@ -341,9 +352,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		channel->state.enabled = true;
+>  	}
+>  
+> -unlock:
+> -	spin_unlock_irqrestore(&meson->lock, flags);
+> -	return err;
+> +	return 0;
+>  }
+>  
+>  static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 > 
 
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
