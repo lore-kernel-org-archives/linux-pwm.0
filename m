@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 05/12] clocksource/drivers/tcb_clksrc: Use tcb as sched_clock
-Date: Wed,  3 Apr 2019 16:11:13 +0200
-Message-ID: <20190403141120.32754-6-alexandre.belloni@bootlin.com>
+Subject: [PATCH 07/12] clocksource/drivers/tcb_clksrc: move Kconfig option
+Date: Wed,  3 Apr 2019 16:11:15 +0200
+Message-ID: <20190403141120.32754-8-alexandre.belloni@bootlin.com>
 References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,75 +12,57 @@ To: Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linux
 Cc: Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Now that the driver is registered early enough, use the TCB as the
-sched_clock which is much more accurate than the jiffies implementation.
+Move the ATMEL_TCB_CLKSRC option to drivers/clocksource and make it silent
+if COMPILE_TEST is not selected.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/clocksource/tcb_clksrc.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/clocksource/Kconfig |  7 +++++++
+ drivers/misc/Kconfig        | 14 --------------
+ 2 files changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/tcb_clksrc.c
-index c7eec9808289..10350dffd157 100644
---- a/drivers/clocksource/tcb_clksrc.c
-+++ b/drivers/clocksource/tcb_clksrc.c
-@@ -11,6 +11,7 @@
- #include <linux/io.h>
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
-+#include <linux/sched_clock.h>
- #include <linux/syscore_ops.h>
- #include <soc/at91/atmel_tcb.h>
+diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+index 171502a356aa..e38ef4906e30 100644
+--- a/drivers/clocksource/Kconfig
++++ b/drivers/clocksource/Kconfig
+@@ -410,6 +410,13 @@ config ATMEL_ST
+ 	help
+ 	  Support for the Atmel ST timer.
  
-@@ -114,6 +115,16 @@ static struct clocksource clksrc = {
- 	.resume		= tc_clksrc_resume,
- };
- 
-+static u64 notrace tc_sched_clock_read(void)
-+{
-+	return tc_get_cycles(&clksrc);
-+}
++config ATMEL_TCB_CLKSRC
++	bool "Atmel TC Block timer driver" if COMPILE_TEST
++	depends on HAS_IOMEM
++	select TIMER_OF if OF
++	help
++	  Support for Timer Counter Blocks on Atmel SoCs.
 +
-+static u64 notrace tc_sched_clock_read32(void)
-+{
-+	return tc_get_cycles32(&clksrc);
-+}
-+
- #ifdef CONFIG_GENERIC_CLOCKEVENTS
+ config CLKSRC_EXYNOS_MCT
+ 	bool "Exynos multi core timer driver" if COMPILE_TEST
+ 	depends on ARM || ARM64
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 268a01d3d6f3..c84033909395 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -59,20 +59,6 @@ config ATMEL_TCLIB
+ 	  blocks found on many Atmel processors.  This facilitates using
+ 	  these blocks by different drivers despite processor differences.
  
- struct tc_clkevt_device {
-@@ -327,6 +338,7 @@ static int __init tcb_clksrc_init(struct device_node *node)
- 	struct atmel_tc tc;
- 	struct clk *t0_clk;
- 	const struct of_device_id *match;
-+	u64 (*tc_sched_clock)(void);
- 	int irq;
- 	u32 rate, divided_rate = 0;
- 	int best_divisor_idx = -1;
-@@ -416,6 +428,7 @@ static int __init tcb_clksrc_init(struct device_node *node)
- 		clksrc.read = tc_get_cycles32;
- 		/* setup ony channel 0 */
- 		tcb_setup_single_chan(&tc, best_divisor_idx);
-+		tc_sched_clock = tc_sched_clock_read32;
- 	} else {
- 		/* we have three clocks no matter what the
- 		 * underlying platform supports.
-@@ -427,6 +440,7 @@ static int __init tcb_clksrc_init(struct device_node *node)
- 		}
- 		/* setup both channel 0 & 1 */
- 		tcb_setup_dual_chan(&tc, best_divisor_idx);
-+		tc_sched_clock = tc_sched_clock_read;
- 	}
- 
- 	/* and away we go! */
-@@ -439,6 +453,8 @@ static int __init tcb_clksrc_init(struct device_node *node)
- 	if (ret)
- 		goto err_unregister_clksrc;
- 
-+	sched_clock_register(tc_sched_clock, 32, divided_rate);
-+
- 	return 0;
- 
- err_unregister_clksrc:
+-config ATMEL_TCB_CLKSRC
+-	bool "TC Block Clocksource"
+-	depends on ARCH_AT91
+-	select TIMER_OF if OF
+-	default y
+-	help
+-	  Select this to get a high precision clocksource based on a
+-	  TC block with a 5+ MHz base clock rate.  Two timer channels
+-	  are combined to make a single 32-bit timer.
+-
+-	  When GENERIC_CLOCKEVENTS is defined, the third timer channel
+-	  may be used as a clock event device supporting oneshot mode
+-	  (delays of up to two seconds) based on the 32 KiHz clock.
+-
+ config DUMMY_IRQ
+ 	tristate "Dummy IRQ handler"
+ 	default n
 -- 
 2.20.1
