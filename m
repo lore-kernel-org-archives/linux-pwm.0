@@ -1,15 +1,14 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 2/2] pwm: meson: don't disable pwm when setting duty
- repeatedly
-Date: Wed, 3 Apr 2019 13:19:11 +0200
-Message-ID: <7545ce1e-1e27-ca16-d762-5bf4b833defa@baylibre.com>
+Subject: Re: [PATCH 1/2] pwm: meson: consider 128 a valid pre-divider
+Date: Wed, 3 Apr 2019 13:19:41 +0200
+Message-ID: <c8b6856c-3d2c-c59a-b3e6-5cfacc44d0e9@baylibre.com>
 References: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
- <20190401181817.11999-3-martin.blumenstingl@googlemail.com>
+ <20190401181817.11999-2-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190401181817.11999-3-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190401181817.11999-2-martin.blumenstingl@googlemail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
@@ -17,36 +16,41 @@ Cc: jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vge
 List-Id: linux-pwm@vger.kernel.org
 
 On 01/04/2019 20:18, Martin Blumenstingl wrote:
-> From: Bichao Zheng <bichao.zheng@amlogic.com>
+> The pre-divider allows configuring longer PWM periods compared to using
+> the input clock directly. The pre-divider is 7 bit wide, meaning it's
+> maximum value is 128 (the register value is off-by-one: 0x7f or 127).
 > 
-> There is an abnormally low about 20ms,when setting duty repeatedly.
-> Because setting the duty will disable pwm and then enable. Delete
-> this operation now.
+> Change the loop to also allow for the maximum possible value to be
+> considered valid.
 > 
 > Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
-> Signed-off-by: Bichao Zheng <bichao.zheng@amlogic.com>
-> [ Dropped code instead of hiding it behind a comment ]
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
->  drivers/pwm/pwm-meson.c | 5 -----
->  1 file changed, 5 deletions(-)
+>  drivers/pwm/pwm-meson.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index 4b708c1fcb1d..e247ab632530 100644
+> index f6e738ad7bd9..4b708c1fcb1d 100644
 > --- a/drivers/pwm/pwm-meson.c
 > +++ b/drivers/pwm/pwm-meson.c
-> @@ -325,11 +325,6 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  	if (state->period != channel->state.period ||
->  	    state->duty_cycle != channel->state.duty_cycle ||
->  	    state->polarity != channel->state.polarity) {
-> -		if (channel->state.enabled) {
-> -			meson_pwm_disable(meson, pwm->hwpwm);
-> -			channel->state.enabled = false;
-> -		}
-> -
->  		if (state->polarity != channel->state.polarity) {
->  			if (state->polarity == PWM_POLARITY_NORMAL)
->  				meson->inverter_mask |= BIT(pwm->hwpwm);
+> @@ -188,7 +188,7 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  	do_div(fin_ps, fin_freq);
+>  
+>  	/* Calc pre_div with the period */
+> -	for (pre_div = 0; pre_div < MISC_CLK_DIV_MASK; pre_div++) {
+> +	for (pre_div = 0; pre_div <= MISC_CLK_DIV_MASK; pre_div++) {
+>  		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
+>  					    fin_ps * (pre_div + 1));
+>  		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
+> @@ -197,7 +197,7 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  			break;
+>  	}
+>  
+> -	if (pre_div == MISC_CLK_DIV_MASK) {
+> +	if (pre_div > MISC_CLK_DIV_MASK) {
+>  		dev_err(meson->chip.dev, "unable to get period pre_div\n");
+>  		return -EINVAL;
+>  	}
 > 
 
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
