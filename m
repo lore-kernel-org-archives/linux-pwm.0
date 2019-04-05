@@ -1,27 +1,33 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 01/12] ARM: at91: move SoC specific definitions to SoC folder
-Date: Thu, 4 Apr 2019 00:36:58 +0700
-Message-ID: <CAK8P3a24iWuCdxYmbZHDrFS+m4igPYXNQ0dPRMnx3ngxp00qvw@mail.gmail.com>
-References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
- <20190403141120.32754-2-alexandre.belloni@bootlin.com> <20190403143645.GJ5238@ulmo>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v11 04/27] clocksource: Add a new timer-ingenic driver
+Date: Fri, 5 Apr 2019 22:44:31 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1904052241240.1802@nanos.tec.linutronix.de>
+References: <20190327231631.15708-1-paul@crapouillou.net> <20190327231631.15708-5-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190403143645.GJ5238@ulmo>
+In-Reply-To: <20190327231631.15708-5-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Mathieu Malaterre <malat@debian.org>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-mips@vger.kernel.org, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Apr 3, 2019 at 9:36 PM Thierry Reding <thierry.reding@gmail.com> wrote:
->
-> On Wed, Apr 03, 2019 at 04:11:09PM +0200, Alexandre Belloni wrote:
-> > Move linux/atmel_tc.h to the SoC specific folder include/soc/at91.
-> >
-> > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+On Thu, 28 Mar 2019, Paul Cercueil wrote:
 
->
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> This driver handles the TCU (Timer Counter Unit) present on the Ingenic
+> JZ47xx SoCs, and provides the kernel with a system timer, and optionally
+> with a clocksource and a sched_clock.
+> 
+> It also provides clocks and interrupt handling to client drivers.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Why on earth has a timer driver clock and interrupt chip drivers in it?
+
+We have different subsystems for good reasons. Please split this apart and
+add the support to the appropriate subsystems, clocksource, irqchip, clk
+
+Thanks,
+
+	tglx
+
+
+ 
