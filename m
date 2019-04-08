@@ -1,160 +1,148 @@
-From: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v10 00/18] Introduce the Counter subsystem
-Date: Sun, 7 Apr 2019 15:25:50 +0100
-Message-ID: <20190407152550.451a7f63@archlinux>
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
+ caller of pwm_apply_state()
+Date: Mon, 8 Apr 2019 16:39:14 +0200
+Message-ID: <20190408143914.uucb5dwafq3cnsmk@pengutronix.de>
+References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
+ <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
+ <1707507.TOMHpQGrZ7@phil>
+ <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1554184734.git.vilhelm.gray@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org, tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, patrick.havelange@essensium.com, linux-api@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue,  2 Apr 2019 15:30:35 +0900
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+On Mon, Apr 01, 2019 at 03:45:47PM -0700, Doug Anderson wrote:
+> Hi,
+> =
 
-> Changes in v10:
->   - Fix minor typographical errors in documentation
->   - Merge the FlexTimer Module Quadrature decoder counter driver patches
-> 
-> This revision is functionally identical to the last; changes in this
-> version were made to fix minor typos in the documentation files and also
-> to pull in the new FTM quadrature decoder counter driver.
-> 
-> The Generic Counter API has been and is still in a feature freeze until
-> it is merged into the mainline. The following features will be
-> investigated after the merge: interrupt support for counter devices, and
-> a character device interface for low-latency applications.
+> On Sat, Mar 30, 2019 at 2:17 AM Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
+> >
+> > Hi,
+> >
+> > [adding two chromeos people, because veyron and gru are quite
+> > heavy users of the rockchip pwm for both backlight and regulators]
+> >
+> > Doug, Brian: patchwork patch is here:
+> > https://patchwork.kernel.org/patch/10851001/
+> >
+> > Am Dienstag, 12. M=E4rz 2019, 22:46:03 CET schrieb Uwe Kleine-K=F6nig:
+> > > The pwm-rockchip driver is one of only two PWM drivers which updates =
+the
+> > > state for the caller of pwm_apply_state(). This might have surprising
+> > > results if the caller reuses the values expecting them to still
+> > > represent the same state.
+> =
 
-Hi William / al,
+> It may or may not be surprising, but it is well documented.  Specifically:
+> =
 
-So the question is how to move this forwards?  I'm happy with how it turned
-out and the existing drivers we had in IIO are a lot cleaner under
-the counter subsystem (other than the backwards compatibility for those that
-ever existed in IIO).  For those  not following closely the situation is:
+>  * pwm_apply_state() - atomically apply a new state to a PWM device
+>  * @pwm: PWM device
+>  * @state: new state to apply. This can be adjusted by the PWM driver
+>  *    if the requested config is not achievable, for example,
+>  *    ->duty_cycle and ->period might be approximated.
+> =
 
-1. Counter drivers never really fitted that well in IIO, because IIO is
-focused on an abstraction of individual channels that just doesn't match
-to these devices.  It's just the wrong model. 
+> I don't think your series updates that documentation, right?
+> =
 
-2. William tried hard in earlier proposals to extend IIO to support these
-devices well, but it became so convoluted and involved I advised him that
-we were better off with a separate subsystem.  The amount of code overlap
-between the core IIO support for counters and the reset of IIO was
-become very small and it would have been a maintenance problem for both.
-https://lwn.net/Articles/729363/ gives some of the history
+> =
 
-3. The new subsystem introduced by this series is fairly simple, clean
-and well aligned with the way these devices work. There are (I think)
-4 initial drivers in this series from 4 different authors so it's got
-some practical review that way!
-There are a couple more drivers under development.  Right now, not
-everyone is aware of this work and so we have had a few developers potentially
-waste their time writing IIO drivers (which are then ported to this) rather
-that starting with the counter subsystem.
+> > > Also note that this feedback was incomplete as
+> > > the matching struct pwm_device::state wasn't updated and so
+> > > pwm_get_state still returned the originally requested state.
+> =
 
-So what we are after is more review, or agreement that we can move this
-series forwards.  For now the intent is that the counter subsystem will
-share the linux-iio mailing list etc but I don't think either William
-or I have any particularly strong views on how we actually handle the
-patches.  I'm more than happy to take them through the IIO tree, if that
-works for everyone, particularly Greg as IIO goes through him after me.
-Once it is in a release, the cross dependency is broken and we can think
-about longer term approaches.
+> The framework handles that.  Take a look at pwm_apply_state()?  It does:
+> =
 
-So Greg and others, how do we make progress here?  If there are any obvious
-reviewers not on the CC list, please do draw their attention to this.
+> ---
+> =
 
-Thanks,
+> err =3D pwm->chip->ops->apply(pwm->chip, pwm, state);
+> if (err)
+>     return err;
+> =
 
-Jonathan
+> pwm->state =3D *state;
 
-+CC linux-api as obviously one of the biggest areas for review is the new
-userspace ABI.
+> =
 
-> 
-> Benjamin Gaignard (2):
->   counter: Add STM32 Timer quadrature encoder
->   dt-bindings: counter: Document stm32 quadrature encoder
-> 
-> Fabrice Gasnier (2):
->   counter: stm32-lptimer: add counter device
->   dt-bindings: counter: Adjust dt-bindings for STM32 lptimer move
-> 
-> Patrick Havelange (7):
->   include/fsl: add common FlexTimer #defines in a separate header.
->   drivers/pwm: pwm-fsl-ftm: use common header for FlexTimer #defines
->   drivers/clocksource: timer-fsl-ftm: use common header for FlexTimer
->     #defines
->   dt-bindings: counter: ftm-quaddec
->   counter: add FlexTimer Module Quadrature decoder counter driver
->   counter: ftm-quaddec: Documentation: Add specific counter sysfs
->     documentation
->   LS1021A: dtsi: add ftm quad decoder entries
-> 
-> William Breathitt Gray (7):
->   counter: Introduce the Generic Counter interface
->   counter: Documentation: Add Generic Counter sysfs documentation
->   docs: Add Generic Counter interface documentation
->   iio: 104-quad-8: Update license boilerplate
->   counter: 104-quad-8: Add Generic Counter interface support
->   counter: 104-quad-8: Documentation: Add Generic Counter sysfs
->     documentation
->   iio: counter: Add deprecation markings for IIO Counter attributes
-> 
->  Documentation/ABI/testing/sysfs-bus-counter   |  230 +++
->  .../ABI/testing/sysfs-bus-counter-104-quad-8  |   36 +
->  .../ABI/testing/sysfs-bus-counter-ftm-quaddec |   16 +
->  Documentation/ABI/testing/sysfs-bus-iio       |    8 +
->  .../testing/sysfs-bus-iio-counter-104-quad-8  |   16 +
->  .../bindings/counter/ftm-quaddec.txt          |   18 +
->  .../{iio => }/counter/stm32-lptimer-cnt.txt   |    0
->  .../bindings/counter/stm32-timer-cnt.txt      |   31 +
->  .../devicetree/bindings/mfd/stm32-lptimer.txt |    2 +-
->  .../devicetree/bindings/mfd/stm32-timers.txt  |    7 +
->  Documentation/driver-api/generic-counter.rst  |  342 ++++
->  Documentation/driver-api/index.rst            |    1 +
->  MAINTAINERS                                   |   15 +-
->  arch/arm/boot/dts/ls1021a.dtsi                |   28 +
->  drivers/Kconfig                               |    2 +
->  drivers/Makefile                              |    1 +
->  drivers/clocksource/timer-fsl-ftm.c           |   15 +-
->  drivers/{iio => }/counter/104-quad-8.c        |  782 +++++++-
->  drivers/counter/Kconfig                       |   60 +
->  drivers/counter/Makefile                      |   10 +
->  drivers/counter/counter.c                     | 1567 +++++++++++++++++
->  drivers/counter/ftm-quaddec.c                 |  356 ++++
->  drivers/{iio => }/counter/stm32-lptimer-cnt.c |  361 +++-
->  drivers/counter/stm32-timer-cnt.c             |  390 ++++
->  drivers/iio/Kconfig                           |    1 -
->  drivers/iio/Makefile                          |    1 -
->  drivers/iio/counter/Kconfig                   |   34 -
->  drivers/iio/counter/Makefile                  |    8 -
->  drivers/pwm/pwm-fsl-ftm.c                     |   44 +-
->  include/linux/counter.h                       |  510 ++++++
->  include/linux/counter_enum.h                  |   45 +
->  include/linux/fsl/ftm.h                       |   88 +
->  32 files changed, 4877 insertions(+), 148 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
->  create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
->  rename Documentation/devicetree/bindings/{iio => }/counter/stm32-lptimer-cnt.txt (100%)
->  create mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
->  create mode 100644 Documentation/driver-api/generic-counter.rst
->  rename drivers/{iio => }/counter/104-quad-8.c (44%)
->  create mode 100644 drivers/counter/Kconfig
->  create mode 100644 drivers/counter/Makefile
->  create mode 100644 drivers/counter/counter.c
->  create mode 100644 drivers/counter/ftm-quaddec.c
->  rename drivers/{iio => }/counter/stm32-lptimer-cnt.c (51%)
->  create mode 100644 drivers/counter/stm32-timer-cnt.c
->  delete mode 100644 drivers/iio/counter/Kconfig
->  delete mode 100644 drivers/iio/counter/Makefile
->  create mode 100644 include/linux/counter.h
->  create mode 100644 include/linux/counter_enum.h
->  create mode 100644 include/linux/fsl/ftm.h
-> 
+> ---
+> =
+
+> So I think it wasn't incomplete unless I misunderstood?
+
+You're right, I missed that the updated state was saved.
+
+> > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> >
+> > I've tested this on both veyron and gru with backlight and pwm regulator
+> > and at least both still come up, so
+> > Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+> >
+> > But hopefully Doug or Brian could also provide another test-point.
+> =
+
+> I'd definitely be concerned by this change.  Specifically for the PWM
+> regulator little details about exactly what duty cycle / period you
+> got could be pretty important.
+> =
+
+> I guess the problem here is that pwm_get_state() doesn't actually call
+> into the PWM drivers, it just returns the last state that was applied.
+> How does one get the state?  I guess you could change get_state() to
+> actually call into the PWM driver's get_state if it exists?  ...but
+> your patch set doesn't change that behavior...
+
+My intention here is more to make all drivers behave the same way and
+because only two drivers updated the pwm_state this was the variant I
+removed.
+
+When you say that the caller might actually care about the exact
+parameters I fully agree. In this case however the consumer should be
+able to know the result before actually applying it. So if you do
+
+	pwm_apply_state(pwm, { .period =3D 17, .duty_cycle =3D 12, ...})
+
+and this results in .period =3D 100 and .duty_cycle =3D 0 then probably the
+bad things you want to know about already happend. So my idea is a new
+function pwm_round_state() that does the adaptions to pwm_state without
+applying it to the hardware. After that pwm_apply_state could do the
+following:
+
+	rstate =3D pwm_round_state(pwm, state)
+	pwm.apply(pwm, state)
+	gstate =3D pwm_get_state(pwm)
+
+	if rstate !=3D gstate:
+		warn about problems
+
+But before doing that I think it would be sensible to also fix the rules
+how the round_state callback is supposed to round.
+
+Apart from that I agree that pwm_get_state should return the actually
+implemented configuration.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
