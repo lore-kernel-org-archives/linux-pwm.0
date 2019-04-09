@@ -1,148 +1,72 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v10 02/18] counter: Documentation: Add Generic Counter
- sysfs documentation
-Date: Mon, 8 Apr 2019 23:55:31 +0200
-Message-ID: <20190408215531.GB27592@amd>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: Re: [PATCH v10 01/18] counter: Introduce the Generic Counter
+ interface
+Date: Tue, 9 Apr 2019 13:57:28 +0900
+Message-ID: <20190409045728.GA2842@icarus>
 References: <cover.1554184734.git.vilhelm.gray@gmail.com>
- <bd8362f23b99af938c7bced2104eca29888253b3.1554184734.git.vilhelm.gray@gmail.com>
+ <ad3a8c427a911848373eae1c08e89353ffb6cb6d.1554184734.git.vilhelm.gray@gmail.com>
+ <20190408215515.GA27592@amd>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="JP+T4n/bALQSJXh8"
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <bd8362f23b99af938c7bced2104eca29888253b3.1554184734.git.vilhelm.gray@gmail.com>
+In-Reply-To: <20190408215515.GA27592@amd>
 Sender: linux-kernel-owner@vger.kernel.org
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Pavel Machek <pavel@ucw.cz>
 Cc: gregkh@linuxfoundation.org, jic23@kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org, tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, patrick.havelange@essensium.com, Jonathan Cameron <Jonathan.Cameron@huawei.com>
 List-Id: linux-pwm@vger.kernel.org
 
+On Mon, Apr 08, 2019 at 11:55:15PM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> > +const char *const counter_count_direction_str[2] = {
+> > +	[COUNTER_COUNT_DIRECTION_FORWARD] = "forward",
+> > +	[COUNTER_COUNT_DIRECTION_BACKWARD] = "backward"
+> > +};
+> > +EXPORT_SYMBOL_GPL(counter_count_direction_str);
+> > +
+> > +const char *const counter_count_mode_str[4] = {
+> > +	[COUNTER_COUNT_MODE_NORMAL] = "normal",
+> > +	[COUNTER_COUNT_MODE_RANGE_LIMIT] = "range limit",
+> > +	[COUNTER_COUNT_MODE_NON_RECYCLE] = "non-recycle",
+> > +	[COUNTER_COUNT_MODE_MODULO_N] = "modulo-n"
+> > +};
+> > +EXPORT_SYMBOL_GPL(counter_count_mode_str);
+> 
+> Dunno. Exporting const tables saying "forward" and "backward". Can we
+> ... somehow make it work without need to export this?
+> 
+> -- 
+> (english) http://www.livejournal.com/~pavelmachek
+> (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
 
---JP+T4n/bALQSJXh8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Right now there are only have 4 counter devices supported in this
+patchset, but it is expected that support for a greater variety of
+devices will be added. For these future cases, new count directions will
+be added to match their functionality.
 
-On Tue 2019-04-02 15:30:37, William Breathitt Gray wrote:
-> This patch adds standard documentation for the userspace sysfs
-> attributes of the Generic Counter interface.
->=20
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-counter | 230 ++++++++++++++++++++
->  MAINTAINERS                                 |   1 +
->  2 files changed, 231 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter
->=20
-> diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/=
-ABI/testing/sysfs-bus-counter
-> new file mode 100644
-> index 000000000000..566bd99fe0a5
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-counter
-> @@ -0,0 +1,230 @@
-> +What:		/sys/bus/counter/devices/counterX/countY/count
-> +KernelVersion:	5.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Count data of Count Y represented as a string.
-> +
-> +What:		/sys/bus/counter/devices/counterX/countY/ceiling
-> +KernelVersion:	5.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Count value ceiling for Count Y. This is the upper limit for the
-> +		respective counter.
-> +
-> +What:		/sys/bus/counter/devices/counterX/countY/floor
-> +KernelVersion:	5.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Count value floor for Count Y. This is the lower limit for the
-> +		respective counter.
-> +
-> +What:		/sys/bus/counter/devices/counterX/countY/count_mode
-> +KernelVersion:	5.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Count mode for channel Y. The ceiling and floor values for
-> +		Count Y are used by the count mode where required. The following
-> +		count modes are available:
-> +
-> +		normal:
-> +			Counting is continuous in either direction.
-> +
-> +		range limit:
-> +			An upper or lower limit is set, mimicking limit switches
-> +			in the mechanical counterpart. The upper limit is set to
-> +			the Count Y ceiling value, while the lower limit is set
-> +			to the Count Y floor value. The counter freezes at
-> +			count =3D ceiling when counting up, and at count =3D floor
-> +			when counting down. At either of these limits, the
-> +			counting is resumed only when the count direction is
-> +			reversed.
-> +
-> +		non-recycle:
-> +			The counter is disabled whenever a counter overflow or
-> +			underflow takes place. The counter is re-enabled when a
-> +			new count value is loaded to the counter via a preset
-> +			operation or direct write.
-> +
-> +		modulo-n:
-> +			A count value boundary is set between the Count Y floor
-> +			value and the Count Y ceiling value. The counter is
-> +			reset to the Count Y floor value at count =3D ceiling when
-> +			counting up, while the counter is set to the Count Y
-> +			ceiling value at count =3D floor when counting down; the
-> +			counter does not freeze at the boundary points, but
-> +			counts continuously throughout.
-> +
-> +What:		/sys/bus/counter/devices/counterX/countY/count_mode_available
-> +What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
-> +What:		/sys/bus/counter/devices/counterX/countY/function_available
-> +What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_available
-> +KernelVersion:	5.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Discrete set of available values for the respective Count Y
-> +		configuration are listed in this file. Values are delimited by
-> +		newline characters.
+For example, suppose support for a rotary encoder device is added. These
+type of devices do not move forward/backward but rather rotate. In these
+cases, the following count directions may be added:
 
-Elsewhere in sysfs we do space-separated:
+    [COUNTER_COUNT_DIRECTION_CLOCKWISE] = "clockwise",
+    [COUNTER_COUNT_DIRECTION_COUNTERCLOCKWISE] = "counterclockwise"
 
-pavel@amd:~$ cat /sys/power/state
-freeze mem disk
+Or as another example, suppose support for a two-axis precision
+positioning table is added. These devices support positioning in a
+cartesian coordinate system. In these cases, spatial direction may serve
+as useful count directions:
 
-And we use [] to mark current selection:
+    [COUNTER_COUNT_DIRECTION_NORTH] = "north",
+    [COUNTER_COUNT_DIRECTION_NORTHEAST] = "northeast",
+    [COUNTER_COUNT_DIRECTION_EAST] = "east",
+    [COUNTER_COUNT_DIRECTION_SOUTHEAST] = "southeast",
+    [COUNTER_COUNT_DIRECTION_SOUTH] = "south",
+    [COUNTER_COUNT_DIRECTION_SOUTHWEST] = "southwest",
+    [COUNTER_COUNT_DIRECTION_WEST] = "west",
+    [COUNTER_COUNT_DIRECTION_NORTHWEST] = "northwest"
 
-pavel@amd:~$ cat /sys/class/leds/tpacpi\:\:thinkvantage/trigger
-[none] bluetooth-power rfkill-any rfkill-none kbd-scrolllock
-kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock
-kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock
-kbd-ctrlrlock AC-online BAT0-charging-or-full BAT0-charging BAT0-full
-BAT0-charging-blink-full-solid rfkill0 phy0rx phy0tx phy0assoc
-phy0radio phy0tpt mmc0 timer heartbeat audio-mute audio-micmute
-rfkill1
+A const table is conveinent in these scenarios because support for new
+count directions may be easily added by simple entry into the table.
 
-Note this only works if you have less than PAGE_SIZE of entries... and
-will never have more.
-
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---JP+T4n/bALQSJXh8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlyrw1MACgkQMOfwapXb+vIrJACdGzny2kYErlj2vHsj5g0+nisf
-vFUAn2r0eo4ejc8ifXJmGFrOjikVszOA
-=36BY
------END PGP SIGNATURE-----
-
---JP+T4n/bALQSJXh8--
+William Breathitt Gray
