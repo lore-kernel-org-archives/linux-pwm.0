@@ -1,41 +1,117 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: RE: [EXT] Re: [PATCH V11 5/5] ARM: dts: imx7ulp-evk: Add backlight
- support
-Date: Wed, 10 Apr 2019 02:07:05 +0000
-Message-ID: <DB3PR0402MB3916897ABC422445D50A100BF52E0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1554860547-18237-1-git-send-email-Anson.Huang@nxp.com>
- <1554860547-18237-6-git-send-email-Anson.Huang@nxp.com>
- <CAOMZO5C0oTaaFFVKC=72+5UGMRwvoxJAsBJNsAp5H_16gsXhVA@mail.gmail.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH 03/12] misc: atmel_tclib: move definitions to header file
+Date: Thu, 11 Apr 2019 17:00:26 +0200
+Message-ID: <63e25c2f-2e10-9c6e-9bfa-7b7220377bd8@linaro.org>
+References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
+ <20190403141120.32754-4-alexandre.belloni@bootlin.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5C0oTaaFFVKC=72+5UGMRwvoxJAsBJNsAp5H_16gsXhVA@mail.gmail.com>
+In-Reply-To: <20190403141120.32754-4-alexandre.belloni@bootlin.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEZhYmlvDQoNCkJlc3QgUmVnYXJkcyENCkFuc29uIEh1YW5nDQoNCj4gLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRmFiaW8gRXN0ZXZhbSBbbWFpbHRvOmZlc3RldmFtQGdt
-YWlsLmNvbV0NCj4gU2VudDogMjAxOeW5tDTmnIgxMOaXpSAxMDowMw0KPiBUbzogQW5zb24gSHVh
-bmcgPGFuc29uLmh1YW5nQG54cC5jb20+DQo+IENjOiB0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb207
-IHJvYmgrZHRAa2VybmVsLm9yZzsgbWFyay5ydXRsYW5kQGFybS5jb207DQo+IHNoYXduZ3VvQGtl
-cm5lbC5vcmc7IHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU7IGtlcm5lbEBwZW5ndXRyb25peC5kZTsN
-Cj4gbGludXhAYXJtbGludXgub3JnLnVrOyBzdGVmYW5AYWduZXIuY2g7IG90YXZpb0Bvc3N5c3Rl
-bXMuY29tLmJyOw0KPiBMZW9uYXJkIENyZXN0ZXogPGxlb25hcmQuY3Jlc3RlekBueHAuY29tPjsg
-Um9iaW4gR29uZw0KPiA8eWliaW4uZ29uZ0BueHAuY29tPjsgdS5rbGVpbmUta29lbmlnQHBlbmd1
-dHJvbml4LmRlOyBsaW51eC0NCj4gcHdtQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2Vy
-Lmtlcm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlteA0KPiA8bGludXgtaW14QG54
-cC5jb20+DQo+IFN1YmplY3Q6IFtFWFRdIFJlOiBbUEFUQ0ggVjExIDUvNV0gQVJNOiBkdHM6IGlt
-eDd1bHAtZXZrOiBBZGQgYmFja2xpZ2h0DQo+IHN1cHBvcnQNCj4gDQo+IFdBUk5JTkc6IFRoaXMg
-ZW1haWwgd2FzIGNyZWF0ZWQgb3V0c2lkZSBvZiBOWFAuIERPIE5PVCBDTElDSyBsaW5rcyBvcg0K
-PiBhdHRhY2htZW50cyB1bmxlc3MgeW91IHJlY29nbml6ZSB0aGUgc2VuZGVyIGFuZCBrbm93IHRo
-ZSBjb250ZW50IGlzIHNhZmUuDQo+IA0KPiANCj4gDQo+IE9uIFR1ZSwgQXByIDksIDIwMTkgYXQg
-MTA6NDcgUE0gQW5zb24gSHVhbmcgPGFuc29uLmh1YW5nQG54cC5jb20+DQo+IHdyb3RlOg0KPiAN
-Cj4gPiAgI2luY2x1ZGUgImlteDd1bHAuZHRzaSINCj4gPiArI2luY2x1ZGUgPGR0LWJpbmRpbmdz
-L3B3bS9wd20uaD4NCj4gDQo+IFRoaXMgaW5jbHVzaW9uIGlzIG5vdCBuZWVkZWQgaGVyZSBhcyBQ
-V01fUE9MQVJJVFlfSU5WRVJURUQgaXMgbm90IHVzZWQNCj4gaW4gdGhpcyBkdHMuDQoNClRoYW5r
-cyBmb3IgcmVtaW5kZXIsIEkgd2lsbCByZW1vdmUgaXQgbGF0ZXIuDQoNCkFuc29uLg0KDQo=
+On 03/04/2019 16:11, Alexandre Belloni wrote:
+> Move atmel_tc_divisors and atmel_tcb_dt_ids definitions to the header file
+> so they can be used without using tclib.
+
+Why not kill those structure and use the TIMER_OF_DECLARE with the
+corresponding probe function which will initialize to 16 or 32 counter
+width?
+
+
+
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> ---
+>  drivers/misc/atmel_tclib.c   | 24 ------------------------
+>  include/soc/at91/atmel_tcb.h | 21 ++++++++++++++++++++-
+>  2 files changed, 20 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/misc/atmel_tclib.c b/drivers/misc/atmel_tclib.c
+> index 3af27ce7e514..c79190525862 100644
+> --- a/drivers/misc/atmel_tclib.c
+> +++ b/drivers/misc/atmel_tclib.c
+> @@ -17,10 +17,6 @@
+>   * share individual timers between different drivers.
+>   */
+>  
+> -/* AT91 has these divide MCK */
+> -const u8 atmel_tc_divisors[5] = { 2, 8, 32, 128, 0, };
+> -EXPORT_SYMBOL(atmel_tc_divisors);
+> -
+>  static DEFINE_SPINLOCK(tc_list_lock);
+>  static LIST_HEAD(tc_list);
+>  
+> @@ -72,26 +68,6 @@ void atmel_tc_free(struct atmel_tc *tc)
+>  EXPORT_SYMBOL_GPL(atmel_tc_free);
+>  
+>  #if defined(CONFIG_OF)
+> -static struct atmel_tcb_config tcb_rm9200_config = {
+> -	.counter_width = 16,
+> -};
+> -
+> -static struct atmel_tcb_config tcb_sam9x5_config = {
+> -	.counter_width = 32,
+> -};
+> -
+> -static const struct of_device_id atmel_tcb_dt_ids[] = {
+> -	{
+> -		.compatible = "atmel,at91rm9200-tcb",
+> -		.data = &tcb_rm9200_config,
+> -	}, {
+> -		.compatible = "atmel,at91sam9x5-tcb",
+> -		.data = &tcb_sam9x5_config,
+> -	}, {
+> -		/* sentinel */
+> -	}
+> -};
+> -
+>  MODULE_DEVICE_TABLE(of, atmel_tcb_dt_ids);
+>  #endif
+>  
+> diff --git a/include/soc/at91/atmel_tcb.h b/include/soc/at91/atmel_tcb.h
+> index c3c7200ce151..cb0c5f53cd46 100644
+> --- a/include/soc/at91/atmel_tcb.h
+> +++ b/include/soc/at91/atmel_tcb.h
+> @@ -76,8 +76,27 @@ extern struct atmel_tc *atmel_tc_alloc(unsigned block);
+>  extern void atmel_tc_free(struct atmel_tc *tc);
+>  
+>  /* platform-specific ATMEL_TC_TIMER_CLOCKx divisors (0 means 32KiHz) */
+> -extern const u8 atmel_tc_divisors[5];
+> +static const u8 atmel_tc_divisors[] = { 2, 8, 32, 128, 0, };
+>  
+> +static const struct atmel_tcb_config tcb_rm9200_config = {
+> +	.counter_width = 16,
+> +};
+> +
+> +static const struct atmel_tcb_config tcb_sam9x5_config = {
+> +	.counter_width = 32,
+> +};
+> +
+> +static const struct of_device_id atmel_tcb_dt_ids[] = {
+> +	{
+> +		.compatible = "atmel,at91rm9200-tcb",
+> +		.data = &tcb_rm9200_config,
+> +	}, {
+> +		.compatible = "atmel,at91sam9x5-tcb",
+> +		.data = &tcb_sam9x5_config,
+> +	}, {
+> +		/* sentinel */
+> +	}
+> +};
+>  
+>  /*
+>   * Two registers have block-wide controls.  These are: configuring the three
+> 
+
+
+-- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
