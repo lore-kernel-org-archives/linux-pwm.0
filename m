@@ -1,75 +1,64 @@
 From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH 00/12] clocksource: improve Atmel TCB timer driver
-Date: Thu, 11 Apr 2019 18:34:24 +0200
-Message-ID: <580bf140-1e00-517d-628a-952128ebe4fe@linaro.org>
-References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v2 3/7] drivers/clocksource: timer-fsl-ftm: use common
+ header for FlexTimer #defines
+Date: Thu, 11 Apr 2019 18:40:37 +0200
+Message-ID: <ba80affb-0d9d-8248-f995-788105394bb3@linaro.org>
+References: <20190306111208.7454-1-patrick.havelange@essensium.com>
+ <20190306111208.7454-4-patrick.havelange@essensium.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
+In-Reply-To: <20190306111208.7454-4-patrick.havelange@essensium.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Patrick Havelange <patrick.havelange@essensium.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Esben Haabendal <esben@haabendal.dk>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Jonathan Cameron <jic23@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
-Hi Alexandre,
-
-except the comment for 3/12, the series looks good to me.
-
-
-
-On 03/04/2019 16:11, Alexandre Belloni wrote:
-> Hi,
+On 06/03/2019 12:12, Patrick Havelange wrote:
+> Common #defines have been moved to "linux/fsl/ftm.h". Thus making use of
+> this file.
+> Also FTM_SC_CLK_SHIFT has been renamed to FTM_SC_CLK_MASK_SHIFT.
 > 
-> This series immproves the Atmel TCB clocksource driver to address the
-> most urgent shortcomings:
->  - the current tcb_clksrc driver is probed too late to be able to be used at
->    boot and we now have SoCs that don't have a PIT. They currently are not able
->    to boot an upstream kernel.
->  - using the PIT doesn't work well with preempt-rt because its interrupt is
->    shared (in particular with the UART) and their interrupt flags are
->    incompatible). This also happen with the threadedirq command line
->    switch.
->  - there is currently no high resolution sched_clock.
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+
+> ---
+> Changes v2
+>      - None
+> ---
+>  drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
+>  1 file changed, 2 insertions(+), 13 deletions(-)
 > 
-> The plan is to get those changes upstream as soon as possible as they
-> arre fixing real issues that people are facing. There are further
-> changes needed on the clocksource driver to try to stop wasting a TCB
-> channel.
-> the PWM TCB driver will also be changed to actually used the reviewed
-> binding and this will allow to get rif of atmel_tclib.
-> 
-> Alexandre Belloni (12):
->   ARM: at91: move SoC specific definitions to SoC folder
->   misc: atmel_tclib: drop AVR32 support
->   misc: atmel_tclib: move definitions to header file
->   clocksource/drivers/tcb_clksrc: stop depending on atmel_tclib
->   clocksource/drivers/tcb_clksrc: Use tcb as sched_clock
->   ARM: at91: Implement clocksource selection
->   clocksource/drivers/tcb_clksrc: move Kconfig option
->   clocksource/drivers/timer-atmel-pit: rework Kconfig option
->   clocksource/drivers/tcb_clksrc: Rename the file for consistency
->   ARM: configs: at91: unselect PIT
->   misc: atmel_tclib: do not probe already used TCBs
->   clocksource/drivers/timer-atmel-tcb: Use ARRAY_SIZE instead of  
->     hardcoded size
-> 
->  arch/arm/configs/at91_dt_defconfig            |   1 +
->  arch/arm/configs/sama5_defconfig              |   1 +
->  arch/arm/mach-at91/Kconfig                    |  23 ++++
->  drivers/clocksource/Kconfig                   |  12 +-
->  drivers/clocksource/Makefile                  |   2 +-
->  .../{tcb_clksrc.c => timer-atmel-tcb.c}       | 123 ++++++++++++------
->  drivers/misc/Kconfig                          |  24 ----
->  drivers/misc/atmel_tclib.c                    |  37 +-----
->  drivers/pwm/pwm-atmel-tcb.c                   |   2 +-
->  .../atmel_tc.h => soc/at91/atmel_tcb.h}       |  25 +++-
->  10 files changed, 146 insertions(+), 104 deletions(-)
->  rename drivers/clocksource/{tcb_clksrc.c => timer-atmel-tcb.c} (81%)
->  rename include/{linux/atmel_tc.h => soc/at91/atmel_tcb.h} (95%)
+> diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
+> index 846d18daf893..e1c34b2f53a5 100644
+> --- a/drivers/clocksource/timer-fsl-ftm.c
+> +++ b/drivers/clocksource/timer-fsl-ftm.c
+> @@ -19,20 +19,9 @@
+>  #include <linux/of_irq.h>
+>  #include <linux/sched_clock.h>
+>  #include <linux/slab.h>
+> +#include <linux/fsl/ftm.h>
+>  
+> -#define FTM_SC		0x00
+> -#define FTM_SC_CLK_SHIFT	3
+> -#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
+> -#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
+> -#define FTM_SC_PS_MASK	0x7
+> -#define FTM_SC_TOIE	BIT(6)
+> -#define FTM_SC_TOF	BIT(7)
+> -
+> -#define FTM_CNT		0x04
+> -#define FTM_MOD		0x08
+> -#define FTM_CNTIN	0x4C
+> -
+> -#define FTM_PS_MAX	7
+> +#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
+>  
+>  struct ftm_clock_device {
+>  	void __iomem *clksrc_base;
 > 
 
 
