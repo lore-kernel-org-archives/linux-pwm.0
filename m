@@ -1,29 +1,46 @@
-From: Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH v11 0/2] PWM support for HiFive Unleashed
-Date: Mon, 15 Apr 2019 11:36:51 +0530
-Message-ID: <CAJ2_jOF8RsLWHkcCJzwfpeMN0+G0oqbHto=nBBnpZDNfuQMKOw@mail.gmail.com>
-References: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH 04/12] clocksource/drivers/tcb_clksrc: stop depending on
+ atmel_tclib
+Date: Mon, 15 Apr 2019 16:14:28 +0200
+Message-ID: <20190415141428.GE3578@piout.net>
+References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
+ <20190403141120.32754-5-alexandre.belloni@bootlin.com>
+ <7ce7342d-7fa2-d2b0-621d-2c47a0e5cdba@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, robh+dt@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <7ce7342d-7fa2-d2b0-621d-2c47a0e5cdba@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+On 11/04/2019 18:19:34+0200, Daniel Lezcano wrote:
+> > +	tc.clk[0] = t0_clk;
+> > +	tc.clk[1] = of_clk_get_by_name(node->parent, "t1_clk");
+> > +	if (IS_ERR(tc.clk[1]))
+> > +		tc.clk[1] = t0_clk;
+> > +	tc.clk[2] = of_clk_get_by_name(node->parent, "t2_clk");
+> > +	if (IS_ERR(tc.clk[2]))
+> > +		tc.clk[2] = t0_clk;
+> > +	tc.irq[0] = irq;
+> > +	tc.irq[1] = of_irq_get(node->parent, 1);
+> > +	if (tc.irq[1] <= 0)
+> > +		tc.irq[1] = irq;
+> > +	tc.irq[2] = of_irq_get(node->parent, 2);
+> > +	if (tc.irq[2] <= 0)
+> > +		tc.irq[2] = irq;
+> 
+> Why are clk[1/2] and irq[1/2] defaulting back to t0 in case of error?
+> 
 
-Any comments on this patch series?
-Any more changes are needed or it looks good to be merged upstream?
+This is how the DT binding is madewhen the same IRQ/clk is used for all
+the channels of the TCB, then it is only specified once. Unfortunately,
+this has to be kept to keep backward DT compatibility. Still, I'm
+reworking the irq paring as the driver only needs the irq for channel 2.
 
-- Yash
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
