@@ -1,106 +1,55 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [v2 2/5] drm/mediatek: CMDQ reg address of mt8173 is different
- with mt2701
-Date: Thu, 18 Apr 2019 15:51:03 +0800
-Message-ID: <CANMq1KBpi-O=XMBcc8QKN+2SNDvHaiHdUNX0La_ZuPMWx_tNMg@mail.gmail.com>
-References: <20190416060501.76276-1-jitao.shi@mediatek.com>
- <20190416060501.76276-3-jitao.shi@mediatek.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [RESEND PATCH v5 0/3] Add PM support to STM32 LP Timer drivers
+Date: Thu, 18 Apr 2019 11:37:44 +0200
+Message-ID: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190416060501.76276-3-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa cheng <cawa.cheng@mediatek.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, Sean Paul <seanpaul@chromium.org>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Eddie Huang <eddie.huang@mediatek.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream <srv_heupstream@mediatek.com>, lk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: robh+dt@kernel.org, u.kleine-koenig@pengutronix.de, tduszyns@gmail.com, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCBBcHIgMTYsIDIwMTkgYXQgMjowNSBQTSBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRp
-YXRlay5jb20+IHdyb3RlOgo+Cj4gQ29uZmlnIHRoZSBkaWZmZXJlbnQgQ01EUSByZWcgYWRkcmVz
-cyBpbiBkcml2ZXIgZGF0YS4KPgo+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNoaSA8aml0YW8uc2hp
-QG1lZGlhdGVrLmNvbT4KPiAtLS0KPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2ku
-YyB8IDM5ICsrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwg
-MzAgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIGIvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210
-a19kc2kuYwo+IGluZGV4IDZjNGFjMzdmOTgzZC4uNTczZTZiZWM2ZDM2IDEwMDY0NAo+IC0tLSBh
-L2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiArKysgYi9kcml2ZXJzL2dwdS9k
-cm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gQEAgLTEzMSw3ICsxMzEsNiBAQAo+ICAjZGVmaW5lIFZN
-X0NNRF9FTiAgICAgICAgICAgICAgICAgICAgICBCSVQoMCkKPiAgI2RlZmluZSBUU19WRlBfRU4g
-ICAgICAgICAgICAgICAgICAgICAgQklUKDUpCj4KPiAtI2RlZmluZSBEU0lfQ01EUTAgICAgICAg
-ICAgICAgIDB4MTgwCj4gICNkZWZpbmUgQ09ORklHICAgICAgICAgICAgICAgICAgICAgICAgICgw
-eGZmIDw8IDApCj4gICNkZWZpbmUgU0hPUlRfUEFDS0VUICAgICAgICAgICAgICAgICAgIDAKPiAg
-I2RlZmluZSBMT05HX1BBQ0tFVCAgICAgICAgICAgICAgICAgICAgMgo+IEBAIC0xNTYsNiArMTU1
-LDEwIEBACj4KPiAgc3RydWN0IHBoeTsKPgo+ICtzdHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0YSB7
-Cj4gKyAgICAgICBjb25zdCB1MzIgcmVnX2NtZHFfb2ZmOwo+ICt9Owo+ICsKPiAgc3RydWN0IG10
-a19kc2kgewo+ICAgICAgICAgc3RydWN0IG10a19kZHBfY29tcCBkZHBfY29tcDsKPiAgICAgICAg
-IHN0cnVjdCBkZXZpY2UgKmRldjsKPiBAQCAtMTgyLDYgKzE4NSw3IEBAIHN0cnVjdCBtdGtfZHNp
-IHsKPiAgICAgICAgIGJvb2wgZW5hYmxlZDsKPiAgICAgICAgIHUzMiBpcnFfZGF0YTsKPiAgICAg
-ICAgIHdhaXRfcXVldWVfaGVhZF90IGlycV93YWl0X3F1ZXVlOwo+ICsgICAgICAgc3RydWN0IG10
-a19kc2lfZHJpdmVyX2RhdGEgKmRyaXZlcl9kYXRhOwoKQXMgaGlnaGxpZ2h0ZWQgYnkga2J1aWxk
-LCB5b3UncmUgbWlzc2luZyBhIGNvbnN0IGhlcmUuCgo+ICB9Owo+Cj4gIHN0YXRpYyBpbmxpbmUg
-c3RydWN0IG10a19kc2kgKmVuY29kZXJfdG9fZHNpKHN0cnVjdCBkcm1fZW5jb2RlciAqZSkKPiBA
-QCAtOTM0LDYgKzkzOCw3IEBAIHN0YXRpYyB2b2lkIG10a19kc2lfY21kcShzdHJ1Y3QgbXRrX2Rz
-aSAqZHNpLCBjb25zdCBzdHJ1Y3QgbWlwaV9kc2lfbXNnICptc2cpCj4gICAgICAgICBjb25zdCBj
-aGFyICp0eF9idWYgPSBtc2ctPnR4X2J1ZjsKPiAgICAgICAgIHU4IGNvbmZpZywgY21kcV9zaXpl
-LCBjbWRxX29mZiwgdHlwZSA9IG1zZy0+dHlwZTsKPiAgICAgICAgIHUzMiByZWdfdmFsLCBjbWRx
-X21hc2ssIGk7Cj4gKyAgICAgICB1MzIgcmVnX2NtZHFfb2ZmID0gZHNpLT5kcml2ZXJfZGF0YS0+
-cmVnX2NtZHFfb2ZmOwo+Cj4gICAgICAgICBpZiAoTVRLX0RTSV9IT1NUX0lTX1JFQUQodHlwZSkp
-Cj4gICAgICAgICAgICAgICAgIGNvbmZpZyA9IEJUQTsKPiBAQCAtOTUzLDkgKzk1OCwxMSBAQCBz
-dGF0aWMgdm9pZCBtdGtfZHNpX2NtZHEoc3RydWN0IG10a19kc2kgKmRzaSwgY29uc3Qgc3RydWN0
-IG1pcGlfZHNpX21zZyAqbXNnKQo+ICAgICAgICAgfQo+Cj4gICAgICAgICBmb3IgKGkgPSAwOyBp
-IDwgbXNnLT50eF9sZW47IGkrKykKPiAtICAgICAgICAgICAgICAgd3JpdGViKHR4X2J1ZltpXSwg
-ZHNpLT5yZWdzICsgRFNJX0NNRFEwICsgY21kcV9vZmYgKyBpKTsKPiArICAgICAgICAgICAgICAg
-bXRrX2RzaV9tYXNrKGRzaSwgKHJlZ19jbWRxX29mZiArIGNtZHFfb2ZmICsgaSkgJiAofjB4M1Up
-LAo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDB4ZmZVTCA8PCAoKChpICsgY21kcV9v
-ZmYpICYgM1UpICogOFUpKSwKPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgIHR4X2J1Zltp
-XSA8PCAoKChpICsgY21kcV9vZmYpICYgM1UpICogOFUpKTsKClRoZSB3cml0ZWIgY2FsbCBsb29r
-ZWQgc2lnbmlmaWNhbnRseSBjbGVhbmVyLi4uCgp3cml0ZWIodHhfYnVmW2ldLCBkc2ktPnJlZ3Mg
-KyByZWdfY21kcV9vZmYgKyBjbWRxX29mZiArIGkpOwpzaG91bGQganVzdCB3b3JrLCByaWdodD8K
-Cj4KPiAtICAgICAgIG10a19kc2lfbWFzayhkc2ksIERTSV9DTURRMCwgY21kcV9tYXNrLCByZWdf
-dmFsKTsKPiArICAgICAgIG10a19kc2lfbWFzayhkc2ksIHJlZ19jbWRxX29mZiwgY21kcV9tYXNr
-LCByZWdfdmFsKTsKPiAgICAgICAgIG10a19kc2lfbWFzayhkc2ksIERTSV9DTURRX1NJWkUsIENN
-RFFfU0laRSwgY21kcV9zaXplKTsKPiAgfQo+Cj4gQEAgLTEwNzQsMTAgKzEwODEsMjcgQEAgc3Rh
-dGljIGNvbnN0IHN0cnVjdCBjb21wb25lbnRfb3BzIG10a19kc2lfY29tcG9uZW50X29wcyA9IHsK
-PiAgICAgICAgIC51bmJpbmQgPSBtdGtfZHNpX3VuYmluZCwKPiAgfTsKPgo+ICtzdGF0aWMgY29u
-c3Qgc3RydWN0IG10a19kc2lfZHJpdmVyX2RhdGEgbXQ4MTczX2RzaV9kcml2ZXJfZGF0YSA9IHsK
-PiArICAgICAgIC5yZWdfY21kcV9vZmYgPSAweDIwMCwKPiArfTsKPiArCj4gK3N0YXRpYyBjb25z
-dCBzdHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0YSBtdDI3MDFfZHNpX2RyaXZlcl9kYXRhID0gewo+
-ICsgICAgICAgLnJlZ19jbWRxX29mZiA9IDB4MTgwLAo+ICt9Owo+ICsKPiArc3RhdGljIGNvbnN0
-IHN0cnVjdCBvZl9kZXZpY2VfaWQgbXRrX2RzaV9vZl9tYXRjaFtdID0gewo+ICsgICAgICAgeyAu
-Y29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDI3MDEtZHNpIiwKPiArICAgICAgICAgLmRhdGEgPSAm
-bXQyNzAxX2RzaV9kcml2ZXJfZGF0YSB9LAo+ICsgICAgICAgeyAuY29tcGF0aWJsZSA9ICJtZWRp
-YXRlayxtdDgxNzMtZHNpIiwKPiArICAgICAgICAgLmRhdGEgPSAmbXQ4MTczX2RzaV9kcml2ZXJf
-ZGF0YSB9LAo+ICsgICAgICAgeyB9LAo+ICt9Owo+ICsKPiAgc3RhdGljIGludCBtdGtfZHNpX3By
-b2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gIHsKPiAgICAgICAgIHN0cnVjdCBt
-dGtfZHNpICpkc2k7Cj4gICAgICAgICBzdHJ1Y3QgZGV2aWNlICpkZXYgPSAmcGRldi0+ZGV2Owo+
-ICsgICAgICAgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCAqb2ZfaWQ7Cj4gICAgICAgICBzdHJ1
-Y3QgcmVzb3VyY2UgKnJlZ3M7Cj4gICAgICAgICBpbnQgaXJxX251bTsKPiAgICAgICAgIGludCBj
-b21wX2lkOwo+IEBAIC0xMTAxLDYgKzExMjUsOSBAQCBzdGF0aWMgaW50IG10a19kc2lfcHJvYmUo
-c3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgICAgICAgIGlmIChyZXQpCj4gICAgICAg
-ICAgICAgICAgIGdvdG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKPgo+ICsgICAgICAgb2ZfaWQgPSBv
-Zl9tYXRjaF9kZXZpY2UobXRrX2RzaV9vZl9tYXRjaCwgJnBkZXYtPmRldik7Cj4gKyAgICAgICBk
-c2ktPmRyaXZlcl9kYXRhID0gb2ZfaWQtPmRhdGE7Cj4gKwo+ICAgICAgICAgZHNpLT5lbmdpbmVf
-Y2xrID0gZGV2bV9jbGtfZ2V0KGRldiwgImVuZ2luZSIpOwo+ICAgICAgICAgaWYgKElTX0VSUihk
-c2ktPmVuZ2luZV9jbGspKSB7Cj4gICAgICAgICAgICAgICAgIHJldCA9IFBUUl9FUlIoZHNpLT5l
-bmdpbmVfY2xrKTsKPiBAQCAtMTE5MywxMiArMTIyMCw2IEBAIHN0YXRpYyBpbnQgbXRrX2RzaV9y
-ZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgICAgICAgIHJldHVybiAwOwo+
-ICB9Cj4KPiAtc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgbXRrX2RzaV9vZl9tYXRj
-aFtdID0gewo+IC0gICAgICAgeyAuY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDI3MDEtZHNpIiB9
-LAo+IC0gICAgICAgeyAuY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxNzMtZHNpIiB9LAo+IC0g
-ICAgICAgeyB9LAo+IC19Owo+IC0KPiAgc3RydWN0IHBsYXRmb3JtX2RyaXZlciBtdGtfZHNpX2Ry
-aXZlciA9IHsKPiAgICAgICAgIC5wcm9iZSA9IG10a19kc2lfcHJvYmUsCj4gICAgICAgICAucmVt
-b3ZlID0gbXRrX2RzaV9yZW1vdmUsCj4gLS0KPiAyLjIxLjAKPgo+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gZHJpLWRldmVsIG1haWxpbmcgbGlzdAo+
-IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKPiBodHRwczovL2xpc3RzLmZyZWVkZXNr
-dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbApfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
-bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+This patch series adds power management support for STM32 LP Timer:
+- PWM driver
+- Document the pinctrl states for sleep mode
+
+It also adds device link between the PWM consumer and the PWM provider.
+This allows proper sequencing for suspend/resume (e.g. user will likely
+do a pwm_disable() before the PWM provider suspend executes), see [1].
+
+[1] https://lkml.org/lkml/2019/2/5/770
+
+---
+resend v5:
+- update collected acks
+
+Changes in v5:
+- improve a warning message, fix a style issue.
+
+Changes in v4:
+- improve error handling when adding the PWM consumer device link.
+
+Changes in v3:
+- Move the device_link_add() call to of_pwm_get() as discussed with Uwe.
+
+Changes in v2:
+- Don't disable PWM channel in PWM provider: rather refuse to suspend
+  and report an error as suggested by Uwe and Thierry.
+- Add patch 3/3 to propose device link addition.
+- No updates for STM32 LP Timer IIO driver. Patches can be send separately.
+
+Fabrice Gasnier (3):
+  dt-bindings: pwm-stm32-lp: document pinctrl sleep state
+  pwm: stm32-lp: Add power management support
+  pwm: core: add consumer device link
+
+ .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  9 ++--
+ drivers/pwm/core.c                                 | 50 ++++++++++++++++++++--
+ drivers/pwm/pwm-stm32-lp.c                         | 25 +++++++++++
+ include/linux/pwm.h                                |  6 ++-
+ 4 files changed, 82 insertions(+), 8 deletions(-)
+
+-- 
+2.7.4
