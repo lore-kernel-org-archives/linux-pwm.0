@@ -1,55 +1,61 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RESEND PATCH v5 0/3] Add PM support to STM32 LP Timer drivers
-Date: Thu, 18 Apr 2019 11:37:44 +0200
-Message-ID: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [RESEND PATCH v5 1/3] dt-bindings: pwm-stm32-lp: document pinctrl
+ sleep state
+Date: Thu, 18 Apr 2019 11:37:45 +0200
+Message-ID: <1555580267-29299-2-git-send-email-fabrice.gasnier@st.com>
+References: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: thierry.reding@gmail.com
-Cc: robh+dt@kernel.org, u.kleine-koenig@pengutronix.de, tduszyns@gmail.com, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, tduszyns@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, robh+dt@kernel.org, mcoquelin.stm32@gmail.com, u.kleine-koenig@pengutronix.de, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-This patch series adds power management support for STM32 LP Timer:
-- PWM driver
-- Document the pinctrl states for sleep mode
+Add documentation for pinctrl sleep state on STM32 LPTimer PWM.
 
-It also adds device link between the PWM consumer and the PWM provider.
-This allows proper sequencing for suspend/resume (e.g. user will likely
-do a pwm_disable() before the PWM provider suspend executes), see [1].
-
-[1] https://lkml.org/lkml/2019/2/5/770
-
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-resend v5:
-- update collected acks
+ Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Changes in v5:
-- improve a warning message, fix a style issue.
-
-Changes in v4:
-- improve error handling when adding the PWM consumer device link.
-
-Changes in v3:
-- Move the device_link_add() call to of_pwm_get() as discussed with Uwe.
-
-Changes in v2:
-- Don't disable PWM channel in PWM provider: rather refuse to suspend
-  and report an error as suggested by Uwe and Thierry.
-- Add patch 3/3 to propose device link addition.
-- No updates for STM32 LP Timer IIO driver. Patches can be send separately.
-
-Fabrice Gasnier (3):
-  dt-bindings: pwm-stm32-lp: document pinctrl sleep state
-  pwm: stm32-lp: Add power management support
-  pwm: core: add consumer device link
-
- .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  9 ++--
- drivers/pwm/core.c                                 | 50 ++++++++++++++++++++--
- drivers/pwm/pwm-stm32-lp.c                         | 25 +++++++++++
- include/linux/pwm.h                                |  6 ++-
- 4 files changed, 82 insertions(+), 8 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+index bd23302..6521bc4 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+@@ -11,8 +11,10 @@ Required parameters:
+ 			bindings defined in pwm.txt.
+ 
+ Optional properties:
+-- pinctrl-names: 	Set to "default".
+-- pinctrl-0: 		Phandle pointing to pin configuration node for PWM.
++- pinctrl-names: 	Set to "default". An additional "sleep" state can be
++			defined to set pins in sleep state when in low power.
++- pinctrl-n: 		Phandle(s) pointing to pin configuration node for PWM,
++			respectively for "default" and "sleep" states.
+ 
+ Example:
+ 	timer@40002400 {
+@@ -21,7 +23,8 @@ Example:
+ 		pwm {
+ 			compatible = "st,stm32-pwm-lp";
+ 			#pwm-cells = <3>;
+-			pinctrl-names = "default";
++			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&lppwm1_pins>;
++			pinctrl-1 = <&lppwm1_sleep_pins>;
+ 		};
+ 	};
 -- 
 2.7.4
