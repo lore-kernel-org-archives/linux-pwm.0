@@ -1,71 +1,83 @@
-From: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
- caller of pwm_apply_state()
-Date: Thu, 18 Apr 2019 17:27:05 -0700
-Message-ID: <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA@mail.gmail.com>
-References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
- <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
- <1707507.TOMHpQGrZ7@phil>
- <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA@mail.gmail.com>
- <20190408143914.uucb5dwafq3cnsmk@pengutronix.de>
+From: CK Hu <ck.hu@mediatek.com>
+Subject: Re: [PATCH 1/2] arm64: dts: mt8183: add dsi node
+Date: Fri, 19 Apr 2019 15:36:48 +0800
+Message-ID: <1555659408.7529.0.camel@mtksdaap41>
+References: <20190416085446.84071-1-jitao.shi@mediatek.com>
+ <20190416085446.84071-2-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190408143914.uucb5dwafq3cnsmk-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190416085446.84071-2-jitao.shi@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jitao Shi <jitao.shi@mediatek.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Inki Dae <inki.dae@samsung.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Phi
 List-Id: linux-pwm@vger.kernel.org
 
-SGksCgpJJ20gbm90IHN1cmUgaWYgSSdtIG1pc3JlYWRpbmcgeW91LCBidXQgSSB0aG91Z2h0IEkn
-ZCBhZGQgaGVyZSBiZWZvcmUKdGhpcyBleHBpcmVzIG91dCBvZiBteSBpbmJveDoKCk9uIE1vbiwg
-QXByIDgsIDIwMTkgYXQgNzozOSBBTSBVd2UgS2xlaW5lLUvDtm5pZwo8dS5rbGVpbmUta29lbmln
-QHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPiBNeSBpbnRlbnRpb24gaGVyZSBpcyBtb3JlIHRvIG1h
-a2UgYWxsIGRyaXZlcnMgYmVoYXZlIHRoZSBzYW1lIHdheSBhbmQKPiBiZWNhdXNlIG9ubHkgdHdv
-IGRyaXZlcnMgdXBkYXRlZCB0aGUgcHdtX3N0YXRlIHRoaXMgd2FzIHRoZSB2YXJpYW50IEkKPiBy
-ZW1vdmVkLgoKVG8gYmUgY2xlYXIsIHRoaXMgcGF0Y2ggb24gaXRzIG93biBpcyBwcm9iYWJseSBi
-cmVha2luZyB0aGluZ3MuIEp1c3QKYmVjYXVzZSB0aGUgb3RoZXIgZHJpdmVycyBkb24ndCBpbXBs
-ZW1lbnQgdGhlIGRvY3VtZW50ZWQgYmVoYXZpb3IKZG9lc24ndCBtZWFuIHlvdSBzaG91bGQgYnJl
-YWsgdGhpcyBkcml2ZXIuIE1heWJlIHRoZSBvdGhlcnMganVzdAphcmVuJ3QgdXNlZCBpbiBwcmVj
-aXNlIGVub3VnaCBzY2VuYXJpb3Mgd2hlcmUgdGhpcyBtYXR0ZXJzLgoKPiBXaGVuIHlvdSBzYXkg
-dGhhdCB0aGUgY2FsbGVyIG1pZ2h0IGFjdHVhbGx5IGNhcmUgYWJvdXQgdGhlIGV4YWN0Cj4gcGFy
-YW1ldGVycyBJIGZ1bGx5IGFncmVlLiBJbiB0aGlzIGNhc2UgaG93ZXZlciB0aGUgY29uc3VtZXIg
-c2hvdWxkIGJlCj4gYWJsZSB0byBrbm93IHRoZSByZXN1bHQgYmVmb3JlIGFjdHVhbGx5IGFwcGx5
-aW5nIGl0LiBTbyBpZiB5b3UgZG8KPgo+ICAgICAgICAgcHdtX2FwcGx5X3N0YXRlKHB3bSwgeyAu
-cGVyaW9kID0gMTcsIC5kdXR5X2N5Y2xlID0gMTIsIC4uLn0pCj4KPiBhbmQgdGhpcyByZXN1bHRz
-IGluIC5wZXJpb2QgPSAxMDAgYW5kIC5kdXR5X2N5Y2xlID0gMCB0aGVuIHByb2JhYmx5IHRoZQo+
-IGJhZCB0aGluZ3MgeW91IHdhbnQgdG8ga25vdyBhYm91dCBhbHJlYWR5IGhhcHBlbmQuIFNvIG15
-IGlkZWEgaXMgYSBuZXcKPiBmdW5jdGlvbiBwd21fcm91bmRfc3RhdGUoKSB0aGF0IGRvZXMgdGhl
-IGFkYXB0aW9ucyB0byBwd21fc3RhdGUgd2l0aG91dAo+IGFwcGx5aW5nIGl0IHRvIHRoZSBoYXJk
-d2FyZS4gQWZ0ZXIgdGhhdCBwd21fYXBwbHlfc3RhdGUgY291bGQgZG8gdGhlCj4gZm9sbG93aW5n
-Ogo+Cj4gICAgICAgICByc3RhdGUgPSBwd21fcm91bmRfc3RhdGUocHdtLCBzdGF0ZSkKPiAgICAg
-ICAgIHB3bS5hcHBseShwd20sIHN0YXRlKQo+ICAgICAgICAgZ3N0YXRlID0gcHdtX2dldF9zdGF0
-ZShwd20pCj4KPiAgICAgICAgIGlmIHJzdGF0ZSAhPSBnc3RhdGU6Cj4gICAgICAgICAgICAgICAg
-IHdhcm4gYWJvdXQgcHJvYmxlbXMKCkZvciBvdXIgY2FzZSAod2UncmUgdXNpbmcgdGhpcyB3aXRo
-IHB3bS1yZWd1bGF0b3IpLCBJIGRvbid0IHJlY2FsbCBbKl0Kd2UgbmVlZCB0byBiZSAxMDAlIHBy
-ZWNpc2UgYWJvdXQgdGhlIHBlcmlvZCwgYnV0IHdlIGRvIG5lZWQgdG8gYmUgYXMKcHJlY2lzZSBh
-cyBwb3NzaWJsZSB3aXRoIHRoZSBkdXR5OnBlcmlvZCByYXRpbyAtLSBzbyBvbmNlIHdlIGdldCB0
-aGUKImZlZWRiYWNrIiBmcm9tIHRoZSB1bmRlcmx5aW5nIFBXTSBkcml2ZXIgd2hhdCB0aGUgcmVh
-bCBwZXJpb2Qgd2lsbApiZSwgd2UgYWRqdXN0IHRoZSBkdXR5IGFwcHJvcHJpYXRlbHkuCgpTbyBJ
-IGRvbid0IHNlZSB0aGF0ICJ3YXJuaW5nIiB3b3VsZCByZWFsbHkgaGVscCBmb3IgdGhpcyBwYXJ0
-aWN1bGFyIGNhc2UuCgo+IEJ1dCBiZWZvcmUgZG9pbmcgdGhhdCBJIHRoaW5rIGl0IHdvdWxkIGJl
-IHNlbnNpYmxlIHRvIGFsc28gZml4IHRoZSBydWxlcwo+IGhvdyB0aGUgcm91bmRfc3RhdGUgY2Fs
-bGJhY2sgaXMgc3VwcG9zZWQgdG8gcm91bmQuCgpJJ20gbm90IHF1aXRlIHN1cmUgSSBncm9rIGV4
-YWN0bHkgd2hhdCB5b3UncmUgcGxhbm5pbmcsIGJ1dCBJIHdvdWxkCm11Y2ggYXBwcmVjaWF0ZSBp
-ZiB5b3UgZGlkbid0IGJyZWFrIHRoaW5ncyBvbiB0aGUgd2F5IHRvd2FyZCBmaXhpbmcKdGhlbSA7
-KQoKVGhhbmtzLApCcmlhbgoKWypdIFdvcmtpbmcgb2ZmIGEgc29tZXdoYXQgc3RhbGUgbWVtb3J5
-IGFuZCBhIHJlZnJlc2hlciBwYXNzIG92ZXIgdGhlIGNvZGUuCgo+IEFwYXJ0IGZyb20gdGhhdCBJ
-IGFncmVlIHRoYXQgcHdtX2dldF9zdGF0ZSBzaG91bGQgcmV0dXJuIHRoZSBhY3R1YWxseQo+IGlt
-cGxlbWVudGVkIGNvbmZpZ3VyYXRpb24uCj4KPiBCZXN0IHJlZ2FyZHMKPiBVd2UKCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkxpbnV4LXJvY2tjaGlwIG1h
-aWxpbmcgbGlzdApMaW51eC1yb2NrY2hpcEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0
-cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtcm9ja2NoaXAK
+Hi, Jitao:
+
+On Tue, 2019-04-16 at 16:54 +0800, Jitao Shi wrote:
+> Add dsi and mipitx nodes to the mt8183
+> 
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8183.dtsi | 25 ++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> index b36e37fcdfe3..80929a0e5a6f 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> @@ -353,6 +353,16 @@
+>  			status = "disabled";
+>  		};
+>  
+> +		mipi_tx0: mipi-dphy@11e50000 {
+> +			compatible = "mediatek,mt8183-mipi-tx";
+> +			reg = <0 0x11e50000 0 0x1000>;
+> +			clocks = <&apmixedsys CLK_APMIXED_MIPID0_26M>;
+> +			clock-names = "ref_clk";
+> +			#clock-cells = <0>;
+> +			#phy-cells = <0>;
+> +			clock-output-names = "mipi_tx0_pll";
+> +		};
+> +
+>  		mfgcfg: syscon@13000000 {
+>  			compatible = "mediatek,mt8183-mfgcfg", "syscon";
+>  			reg = <0 0x13000000 0 0x1000>;
+> @@ -365,6 +375,21 @@
+>  			#clock-cells = <1>;
+>  		};
+>  
+> +		dsi0: dsi@14014000 {
+> +			compatible = "mediatek,mt8173-dsi",
+> +				"mediatek,mt8183-dsi";
+
+I think you could directly remove "mediatek,mt8173-dsi".
+
+Regards,
+CK
+
+> +			reg = <0 0x14014000 0 0x1000>;
+> +			interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_LOW>;
+> +			power-domains = <&scpsys MT8183_POWER_DOMAIN_DISP>;
+> +			mediatek,syscon-dsi = <&mmsys 0x140>;
+> +			clocks = <&mmsys CLK_MM_DSI0_MM>,
+> +				<&mmsys CLK_MM_DSI0_IF>,
+> +				<&mipi_tx0>;
+> +			clock-names = "engine", "digital", "hs";
+> +			phys = <&mipi_tx0>;
+> +			phy-names = "dphy";
+> +		};
+> +
+>  		smi_common: smi@14019000 {
+>  			compatible = "mediatek,mt8183-smi-common", "syscon";
+>  			reg = <0 0x14019000 0 0x1000>;
