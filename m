@@ -1,30 +1,30 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 3/4] ARM: ep93xx: move pinctrl interfaces into include/linux/soc
-Date: Tue, 23 Apr 2019 12:41:00 +0200
-Message-ID: <CACRpkdaVYZf5y3gn-DFsDCutovtw+3-qyo7oKw3UABdfXDRYsw@mail.gmail.com>
-References: <20190415192734.935387-1-arnd@arndb.de> <20190415192734.935387-3-arnd@arndb.de>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH v2 0/3] pwm: Add support for Amlogic Meson G12A
+Date: Tue, 23 Apr 2019 15:36:43 +0200
+Message-ID: <20190423133646.5705-1-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190415192734.935387-3-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Hartley Sweeten <hsweeten@visionengravers.com>, Alexander Sverdlin <alexander.sverdlin@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jens Axboe <axboe@kernel.dk>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Olof Johansson <olof@lixom.net>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-ide@vger.kernel.org, Linux Input <linux-input@vger.kernel.org>, linux-pwm@vger.kernel.org, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel@alsa-project.org>
+To: thierry.reding@gmail.com
+Cc: baylibre-upstreaming@groups.io, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Apr 15, 2019 at 9:30 PM Arnd Bergmann <arnd@arndb.de> wrote:
+This adds support for the PWM modules on the Amlogic Meson G12A SoC
+family, including bindings changes and DT nodes.
 
-> ep93xx does not have a proper pinctrl driver, but does things
-> ad-hoc through mach/platform.h, which is also used for setting
-> up the boards.
->
-> To avoid using mach/*.h headers completely, let's move the interfaces
-> into include/linux/soc/. This is far from great, but gets the job
-> done here, without the need for a proper pinctrl driver.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Changes since v1:
+- Add two different AO compatible to distinguish the different clock sources
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Neil Armstrong (3):
+  dt-bindings: pwm: Update bindings for the Meson G12A Family
+  pwm: meson: Add clock source configuration for Meson G12A
+  arm64: dts: meson-g12a: Add PWM nodes
 
-Yours,
-Linus Walleij
+ .../devicetree/bindings/pwm/pwm-meson.txt     |   3 +
+ arch/arm64/boot/dts/amlogic/meson-g12a.dtsi   | 179 ++++++++++++++++++
+ drivers/pwm/pwm-meson.c                       |  30 +++
+ 3 files changed, 212 insertions(+)
+
+-- 
+2.21.0
