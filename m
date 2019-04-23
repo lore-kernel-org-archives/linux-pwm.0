@@ -1,83 +1,109 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [PATCH 1/2] arm64: dts: mt8183: add dsi node
-Date: Fri, 19 Apr 2019 15:36:48 +0800
-Message-ID: <1555659408.7529.0.camel@mtksdaap41>
-References: <20190416085446.84071-1-jitao.shi@mediatek.com>
- <20190416085446.84071-2-jitao.shi@mediatek.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH 2/3] pwm: meson: Add clock source configuration for Meson
+ G12A
+Date: Tue, 23 Apr 2019 11:35:49 +0200
+Message-ID: <dafeb987-b4e2-3830-7efe-dfe7eb1ce309@baylibre.com>
+References: <20190412092337.6941-1-narmstrong@baylibre.com>
+ <20190412092337.6941-3-narmstrong@baylibre.com>
+ <CAFBinCA3iFSW4K8FJN913CcsxM4YFc2Of9Ldpn7230Ss427mMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190416085446.84071-2-jitao.shi@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Inki Dae <inki.dae@samsung.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Phi
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAFBinCA3iFSW4K8FJN913CcsxM4YFc2Of9Ldpn7230Ss427mMA@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, baylibre-upstreaming@groups.io, linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Jitao:
-
-On Tue, 2019-04-16 at 16:54 +0800, Jitao Shi wrote:
-> Add dsi and mipitx nodes to the mt8183
+On 13/04/2019 13:33, Martin Blumenstingl wrote:
+> Hi Neil,
 > 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  arch/arm64/boot/dts/mediatek/mt8183.dtsi | 25 ++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
+> On Fri, Apr 12, 2019 at 11:24 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>>
+>> For PWM controller in the Meson G12A SoC, the EE domain and AO domain
+>> have different clock sources. This patch tries to describe them in the
+>> DT compatible data.
+>>
+>> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+>> ---
+>>  drivers/pwm/pwm-meson.c | 17 +++++++++++++++++
+>>  1 file changed, 17 insertions(+)
+>>
+>> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+>> index 2b03938039b6..46287cc8a0eb 100644
+>> --- a/drivers/pwm/pwm-meson.c
+>> +++ b/drivers/pwm/pwm-meson.c
+>> @@ -434,6 +434,15 @@ static const struct meson_pwm_data pwm_axg_ao_data = {
+>>         .num_parents = ARRAY_SIZE(pwm_axg_ao_parent_names),
+>>  };
+>>
+>> +static const char * const pwm_g12a_ee_parent_names[] = {
+>> +       "xtal", "hdmi_pll", "fclk_div4", "fclk_div3"
+>> +};
+>> +
+>> +static const struct meson_pwm_data pwm_g12a_ee_data = {
+>> +       .parent_names = pwm_g12a_ee_parent_names,
+>> +       .num_parents = ARRAY_SIZE(pwm_g12a_ee_parent_names),
+>> +};
+>> +
+>>  static const struct of_device_id meson_pwm_matches[] = {
+>>         {
+>>                 .compatible = "amlogic,meson8b-pwm",
+>> @@ -455,6 +464,14 @@ static const struct of_device_id meson_pwm_matches[] = {
+>>                 .compatible = "amlogic,meson-axg-ao-pwm",
+>>                 .data = &pwm_axg_ao_data
+>>         },
+>> +       {
+>> +               .compatible = "amlogic,meson-g12a-ee-pwm",
+>> +               .data = &pwm_g12a_ee_data
+>> +       },
+> the PWM part is fine for me
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> index b36e37fcdfe3..80929a0e5a6f 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> @@ -353,6 +353,16 @@
->  			status = "disabled";
->  		};
->  
-> +		mipi_tx0: mipi-dphy@11e50000 {
-> +			compatible = "mediatek,mt8183-mipi-tx";
-> +			reg = <0 0x11e50000 0 0x1000>;
-> +			clocks = <&apmixedsys CLK_APMIXED_MIPID0_26M>;
-> +			clock-names = "ref_clk";
-> +			#clock-cells = <0>;
-> +			#phy-cells = <0>;
-> +			clock-output-names = "mipi_tx0_pll";
-> +		};
-> +
->  		mfgcfg: syscon@13000000 {
->  			compatible = "mediatek,mt8183-mfgcfg", "syscon";
->  			reg = <0 0x13000000 0 0x1000>;
-> @@ -365,6 +375,21 @@
->  			#clock-cells = <1>;
->  		};
->  
-> +		dsi0: dsi@14014000 {
-> +			compatible = "mediatek,mt8173-dsi",
-> +				"mediatek,mt8183-dsi";
+>> +       {
+>> +               .compatible = "amlogic,meson-g12a-ao-pwm",
+>> +               .data = &pwm_axg_ao_data
+>> +       },
+>>         {},
+> but I'm not sure about "amlogic,meson-g12a-ao-pwm":
+> the public S922X datasheet from Hardkernel [0] section 6.6.1.2 "AO
+> Clock Tree" (page 107) mentions two different clock sources for the AO
+> PWMs:
+> - AO PWM A and B has parents xtal, aoclk81, fclk_div4 and fclk_div5
+> (pwm_axg_ao_data has the first two parents swapped)
+> - AO PWM C and D only have xtal and aoclk81 as parents
 
-I think you could directly remove "mediatek,mt8173-dsi".
+You are right, and it's the same on G12A.
 
-Regards,
-CK
+> 
+> regarding the clock parents:
+> I'm not sure whether pwm_axg_ao_data is wrong, G12A is different from
+> G12B or the G12B datasheet is "correct". can you please list what you
+> have tested so far and confirm that the parents you are using are
+> "correct"
 
-> +			reg = <0 0x14014000 0 0x1000>;
-> +			interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_LOW>;
-> +			power-domains = <&scpsys MT8183_POWER_DOMAIN_DISP>;
-> +			mediatek,syscon-dsi = <&mmsys 0x140>;
-> +			clocks = <&mmsys CLK_MM_DSI0_MM>,
-> +				<&mmsys CLK_MM_DSI0_IF>,
-> +				<&mipi_tx0>;
-> +			clock-names = "engine", "digital", "hs";
-> +			phys = <&mipi_tx0>;
-> +			phy-names = "dphy";
-> +		};
-> +
->  		smi_common: smi@14019000 {
->  			compatible = "mediatek,mt8183-smi-common", "syscon";
->  			reg = <0 0x14019000 0 0x1000>;
+You were right, we need 2 different compatibles here...
+
+> 
+> regarding the compatible string "amlogic,meson-g12a-ao-pwm":
+> if there are two different AO PWM modules, should we name it
+> differently, for example by splitting this compatible string into:
+> - "amlogic,meson-g12a-ao-pwm-ab" (with parents: xtal, aoclk81,
+> fclk_div4 and fclk_div5)
+> - "amlogic,meson-g12a-ao-pwm-cd" (with parents: xtal and aoclk81)
+> 
+
+Exact
+
+> 
+> Regards
+> Martin
+> 
+> 
+> [0] https://dn.odroid.com/S922X/ODROID-N2/Datasheet/S922X_Public_Datasheet_V0.2.pdf
+> 
+
+
+Thanks,
+Neil
