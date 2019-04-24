@@ -1,242 +1,50 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH v2 3/3] arm64: dts: meson-g12a: Add PWM nodes
-Date: Tue, 23 Apr 2019 15:36:46 +0200
-Message-ID: <20190423133646.5705-4-narmstrong@baylibre.com>
-References: <20190423133646.5705-1-narmstrong@baylibre.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH V11 0/5] Add i.MX7ULP EVK PWM backlight support
+Date: Wed, 24 Apr 2019 02:59:10 +0000
+Message-ID: <AM6PR0402MB39113C3CA7E1AB8969882B41F53C0@AM6PR0402MB3911.eurprd04.prod.outlook.com>
+References: <1554860547-18237-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190423133646.5705-1-narmstrong@baylibre.com>
+In-Reply-To: <1554860547-18237-1-git-send-email-Anson.Huang@nxp.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: baylibre-upstreaming@groups.io, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-arm-kernel@lists.infradead.org
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This adds the EE and AO PWM nodes and the possible pinctrl settings.
-
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Martin Blumenstingl<martin.blumenstingl@googlemail.com>
----
- arch/arm64/boot/dts/amlogic/meson-g12a.dtsi | 179 ++++++++++++++++++++
- 1 file changed, 179 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi
-index 9f72396ba710..efadd78aa747 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi
-@@ -202,6 +202,94 @@
- 						};
- 					};
- 
-+					pwm_a_pins: pwm-a {
-+						mux {
-+							groups = "pwm_a";
-+							function = "pwm_a";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_b_x7_pins: pwm-b-x7 {
-+						mux {
-+							groups = "pwm_b_x7";
-+							function = "pwm_b";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_b_x19_pins: pwm-b-x19 {
-+						mux {
-+							groups = "pwm_b_x19";
-+							function = "pwm_b";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_c_c_pins: pwm-c-c {
-+						mux {
-+							groups = "pwm_c_c";
-+							function = "pwm_c";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_c_x5_pins: pwm-c-x5 {
-+						mux {
-+							groups = "pwm_c_x5";
-+							function = "pwm_c";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_c_x8_pins: pwm-c-x8 {
-+						mux {
-+							groups = "pwm_c_x8";
-+							function = "pwm_c";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_d_x3_pins: pwm-d-x3 {
-+						mux {
-+							groups = "pwm_d_x3";
-+							function = "pwm_d";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_d_x6_pins: pwm-d-x6 {
-+						mux {
-+							groups = "pwm_d_x6";
-+							function = "pwm_d";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_e_pins: pwm-e {
-+						mux {
-+							groups = "pwm_e";
-+							function = "pwm_e";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_f_x_pins: pwm-f-x {
-+						mux {
-+							groups = "pwm_f_x";
-+							function = "pwm_f";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_f_h_pins: pwm-f-h {
-+						mux {
-+							groups = "pwm_f_h";
-+							function = "pwm_f";
-+							bias-disable;
-+						};
-+					};
-+
- 					uart_a_pins: uart-a {
- 						mux {
- 							groups = "uart_a_tx",
-@@ -418,6 +506,62 @@
- 							bias-disable;
- 						};
- 					};
-+
-+					pwm_ao_a_pins: pwm-ao-a {
-+						mux {
-+							groups = "pwm_ao_a";
-+							function = "pwm_ao_a";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_ao_b_pins: pwm-ao-b {
-+						mux {
-+							groups = "pwm_ao_b";
-+							function = "pwm_ao_b";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_ao_c_4_pins: pwm-ao-c-4 {
-+						mux {
-+							groups = "pwm_ao_c_4";
-+							function = "pwm_ao_c";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_ao_c_6_pins: pwm-ao-c-6 {
-+						mux {
-+							groups = "pwm_ao_c_6";
-+							function = "pwm_ao_c";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_ao_d_5_pins: pwm-ao-d-5 {
-+						mux {
-+							groups = "pwm_ao_d_5";
-+							function = "pwm_ao_d";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_ao_d_10_pins: pwm-ao-d-10 {
-+						mux {
-+							groups = "pwm_ao_d_10";
-+							function = "pwm_ao_d";
-+							bias-disable;
-+						};
-+					};
-+
-+					pwm_ao_d_e_pins: pwm-ao-d-e {
-+						mux {
-+							groups = "pwm_ao_d_e";
-+							function = "pwm_ao_d";
-+							bias-disable;
-+						};
-+					};
- 				};
- 			};
- 
-@@ -445,6 +589,13 @@
- 				status = "disabled";
- 			};
- 
-+			pwm_AO_cd: pwm@2000 {
-+				compatible = "amlogic,meson-g12a-ao-pwm-cd";
-+				reg = <0x0 0x2000 0x0 0x20>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
- 			uart_AO: serial@3000 {
- 				compatible = "amlogic,meson-gx-uart",
- 					     "amlogic,meson-ao-uart";
-@@ -465,6 +616,13 @@
- 				status = "disabled";
- 			};
- 
-+			pwm_AO_ab: pwm@7000 {
-+				compatible = "amlogic,meson-g12a-ao-pwm-ab";
-+				reg = <0x0 0x7000 0x0 0x20>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
- 			saradc: adc@9000 {
- 				compatible = "amlogic,meson-g12a-saradc",
- 					     "amlogic,meson-saradc";
-@@ -533,6 +691,27 @@
- 				#reset-cells = <1>;
- 			};
- 
-+			pwm_ef: pwm@19000 {
-+				compatible = "amlogic,meson-g12a-ee-pwm";
-+				reg = <0x0 0x19000 0x0 0x20>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
-+			pwm_cd: pwm@1a000 {
-+				compatible = "amlogic,meson-g12a-ee-pwm";
-+				reg = <0x0 0x1a000 0x0 0x20>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
-+			pwm_ab: pwm@1b000 {
-+				compatible = "amlogic,meson-g12a-ee-pwm";
-+				reg = <0x0 0x1b000 0x0 0x20>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
- 			clk_msr: clock-measure@18000 {
- 				compatible = "amlogic,meson-g12a-clk-measure";
- 				reg = <0x0 0x18000 0x0 0x10>;
--- 
-2.21.0
+R2VudGxlIHBpbmcuLi4NCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBB
+bnNvbiBIdWFuZw0KPiBTZW50OiBXZWRuZXNkYXksIEFwcmlsIDEwLCAyMDE5IDk6NDcgQU0NCj4g
+VG86IHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbTsgcm9iaCtkdEBrZXJuZWwub3JnOyBtYXJrLnJ1
+dGxhbmRAYXJtLmNvbTsNCj4gc2hhd25ndW9Aa2VybmVsLm9yZzsgcy5oYXVlckBwZW5ndXRyb25p
+eC5kZTsga2VybmVsQHBlbmd1dHJvbml4LmRlOw0KPiBmZXN0ZXZhbUBnbWFpbC5jb207IGxpbnV4
+QGFybWxpbnV4Lm9yZy51azsgc3RlZmFuQGFnbmVyLmNoOw0KPiBvdGF2aW9Ab3NzeXN0ZW1zLmNv
+bS5icjsgTGVvbmFyZCBDcmVzdGV6IDxsZW9uYXJkLmNyZXN0ZXpAbnhwLmNvbT47DQo+IFJvYmlu
+IEdvbmcgPHlpYmluLmdvbmdAbnhwLmNvbT47IHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5k
+ZTsgbGludXgtDQo+IHB3bUB2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwu
+b3JnOyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJu
+ZWxAdmdlci5rZXJuZWwub3JnDQo+IENjOiBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29t
+Pg0KPiBTdWJqZWN0OiBbUEFUQ0ggVjExIDAvNV0gQWRkIGkuTVg3VUxQIEVWSyBQV00gYmFja2xp
+Z2h0IHN1cHBvcnQNCj4gDQo+IGkuTVg3VUxQIEVWSyBib2FyZCBoYXMgTUlQSS1EU0kgZGlzcGxh
+eSwgaXRzIGJhY2tsaWdodCBpcyBzdXBwbGllZCBieSBUUE0NCj4gUFdNIG1vZHVsZSwgdGhpcyBw
+YXRjaCBzZXQgZW5hYmxlcyBpLk1YN1VMUCBUUE0gUFdNIGRyaXZlciBzdXBwb3J0IGFuZA0KPiBh
+bHNvIGFkZCBiYWNrbGlnaHQgc3VwcG9ydCBmb3IgTUlQSS1EU0kgZGlzcGxheS4NCj4gDQo+IENo
+YW5nZXMgc2luY2UgVjEwOg0KPiAJLSBPTkxZIGNoYW5nZSB0aGUgcHdtIGRyaXZlciBwYXRjaC4N
+Cj4gDQo+IEFuc29uIEh1YW5nICg1KToNCj4gICBkdC1iaW5kaW5nczogcHdtOiBBZGQgaS5NWCBU
+UE0gUFdNIGJpbmRpbmcNCj4gICBwd206IEFkZCBpLk1YIFRQTSBQV00gZHJpdmVyIHN1cHBvcnQN
+Cj4gICBBUk06IGlteF92Nl92N19kZWZjb25maWc6IEFkZCBUUE0gUFdNIHN1cHBvcnQgYnkgZGVm
+YXVsdA0KPiAgIEFSTTogZHRzOiBpbXg3dWxwOiBBZGQgdHBtIHB3bSBzdXBwb3J0DQo+ICAgQVJN
+OiBkdHM6IGlteDd1bHAtZXZrOiBBZGQgYmFja2xpZ2h0IHN1cHBvcnQNCj4gDQo+ICAuLi4vZGV2
+aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXRwbS1wd20udHh0ICAgICAgICB8ICAyMiArDQo+ICBh
+cmNoL2FybS9ib290L2R0cy9pbXg3dWxwLWV2ay5kdHMgICAgICAgICAgICAgICAgICB8ICAyMSAr
+DQo+ICBhcmNoL2FybS9ib290L2R0cy9pbXg3dWxwLmR0c2kgICAgICAgICAgICAgICAgICAgICB8
+ICAxMCArDQo+ICBhcmNoL2FybS9jb25maWdzL2lteF92Nl92N19kZWZjb25maWcgICAgICAgICAg
+ICAgICB8ICAgMSArDQo+ICBkcml2ZXJzL3B3bS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAxMSArDQo+ICBkcml2ZXJzL3B3bS9NYWtlZmlsZSAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ICBkcml2ZXJzL3B3bS9wd20taW14LXRwbS5jICAg
+ICAgICAgICAgICAgICAgICAgICAgICB8IDQ0MiArKysrKysrKysrKysrKysrKysrKysNCj4gIDcg
+ZmlsZXMgY2hhbmdlZCwgNTA4IGluc2VydGlvbnMoKykNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBE
+b2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC10cG0tDQo+IHB3bS50eHQN
+Cj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3B3bS9wd20taW14LXRwbS5jDQo+IA0KPiAt
+LQ0KPiAyLjcuNA0KDQo=
