@@ -1,54 +1,27 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v10 00/18] Introduce the Counter subsystem
-Date: Thu, 25 Apr 2019 21:36:24 +0200
-Message-ID: <20190425193624.GA11240@kroah.com>
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
- <20190407152550.451a7f63@archlinux>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 11/12] misc: atmel_tclib: do not probe already used TCBs
+Date: Thu, 25 Apr 2019 22:18:48 +0200
+Message-ID: <20190425201848.GA14659@kroah.com>
+References: <20190403141120.32754-1-alexandre.belloni@bootlin.com>
+ <20190403141120.32754-12-alexandre.belloni@bootlin.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190407152550.451a7f63@archlinux>
+In-Reply-To: <20190403141120.32754-12-alexandre.belloni@bootlin.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: William Breathitt Gray <vilhelm.gray@gmail.com>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org, tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk, linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, patrick.havelange@essensium.com, linux-api@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexander Dahl <ada@thorsis.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, Apr 07, 2019 at 03:25:50PM +0100, Jonathan Cameron wrote:
-> On Tue,  2 Apr 2019 15:30:35 +0900
-> William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+On Wed, Apr 03, 2019 at 04:11:19PM +0200, Alexandre Belloni wrote:
+> The TCBs that have children are using the new (proper) DT bindings and
+> don't need to be handled by tclib.
 > 
-> > Changes in v10:
-> >   - Fix minor typographical errors in documentation
-> >   - Merge the FlexTimer Module Quadrature decoder counter driver patches
-> > 
-> > This revision is functionally identical to the last; changes in this
-> > version were made to fix minor typos in the documentation files and also
-> > to pull in the new FTM quadrature decoder counter driver.
-> > 
-> > The Generic Counter API has been and is still in a feature freeze until
-> > it is merged into the mainline. The following features will be
-> > investigated after the merge: interrupt support for counter devices, and
-> > a character device interface for low-latency applications.
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> ---
+>  drivers/misc/atmel_tclib.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> Hi William / al,
-> 
-> So the question is how to move this forwards?  I'm happy with how it turned
-> out and the existing drivers we had in IIO are a lot cleaner under
-> the counter subsystem (other than the backwards compatibility for those that
-> ever existed in IIO).  For those  not following closely the situation is:
 
-I've now sucked this into my staging-testing branch and if 0-day is fine
-with it, I'll merge it to staging-next in a day or so.  This way you can
-build on it for any iio drivers that might be coming.
-
-I do have reservations about that one sysfs file that is multi-line, and
-I think it will come to bite you in the end over time, so I reserve the
-right to say "I told you so" when that happens...
-
-But, I don't have a better answer for it now, so don't really worry
-about it :)
-
-thanks,
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
