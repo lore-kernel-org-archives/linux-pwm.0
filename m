@@ -1,40 +1,53 @@
-From: <Claudiu.Beznea@microchip.com>
+From: Lee Jones <lee.jones@linaro.org>
 Subject: Re: [PATCH v2 5/7] pwm: atmel-hlcdc: add compatible for SAM9X60
  HLCDC's PWM
-Date: Wed, 24 Apr 2019 08:12:05 +0000
-Message-ID: <bf1cc1b6-3995-320f-90d3-2926ea8a083b@microchip.com>
+Date: Thu, 25 Apr 2019 09:31:32 +0100
+Message-ID: <20190425083132.GD14758@dell>
 References: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
  <1551780434-4580-6-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1551780434-4580-6-git-send-email-claudiu.beznea@microchip.com>
-Content-Language: en-US
-Content-ID: <BAF77C294939664386CB14FD33AA7BA1@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, thierry.reding@gmail.com
-Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org
+To: Claudiu.Beznea@microchip.com
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgTGVlLA0KDQpPbiB2MSBvZiB0aGlzIHNlcmllcyBUaGllcnJ5IHN1Z2dlc3RlZCB0aGF0IHRo
-aXMgcGF0Y2ggd291bGQgYmUgZ29vZCB0bw0KYWxzbyBnbyB0aHJvdWdoIE1GRCB0cmVlLiBXb3Vs
-ZCB5b3UgYmUgYWJsZSB0byBhbHNvIHBpY2sgdGhpcyBwYXRjaD8NCg0KQmVsbG93IGlzIGhpcyBj
-b21tZW50IG9uIHYxIHZlcnNpb24gb2YgdGhpcyBwYXRjaDoNCmh0dHBzOi8vcGF0Y2h3b3JrLm96
-bGFicy5vcmcvcGF0Y2gvMTA0OTAwNi8NCg0KVGhhbmsgeW91LA0KQ2xhdWRpdSBCZXpuZWENCg0K
-T24gMDUuMDMuMjAxOSAxMjowNywgQ2xhdWRpdSBCZXpuZWEgLSBNMTgwNjMgd3JvdGU6DQo+IEZy
-b206IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KPiANCj4g
-QWRkIGNvbXBhdGlibGUgc3RyaW5nIGZvciBTQU05WDYwIEhMQ0RDJ3MgUFdNLg0KPiANCj4gU2ln
-bmVkLW9mZi1ieTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+
-DQo+IEFja2VkLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPg0K
-PiAtLS0NCj4gIGRyaXZlcnMvcHdtL3B3bS1hdG1lbC1obGNkYy5jIHwgMyArKysNCj4gIDEgZmls
-ZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
-bS9wd20tYXRtZWwtaGxjZGMuYyBiL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC1obGNkYy5jDQo+IGlu
-ZGV4IDU0YzY2MzNkOWI1ZC4uMzMxY2EwMjMzZDllIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3B3
-bS9wd20tYXRtZWwtaGxjZGMuYw0KPiArKysgYi9kcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMu
-Yw0KPiBAQCAtMjQ2LDYgKzI0Niw5IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lk
-IGF0bWVsX2hsY2RjX2R0X2lkc1tdID0gew0KPiAgCQkuY29tcGF0aWJsZSA9ICJhdG1lbCxzYW1h
-NWQ0LWhsY2RjIiwNCj4gIAkJLmRhdGEgPSAmYXRtZWxfaGxjZGNfcHdtX3NhbWE1ZDNfZXJyYXRh
-LA0KPiAgCX0sDQo+ICsJew0KPiArCQkuY29tcGF0aWJsZSA9ICJtaWNyb2NoaXAsc2FtOXg2MC1o
-bGNkYyIsDQo+ICsJfSwNCj4gIAl7IC8qIHNlbnRpbmVsICovIH0sDQo+ICB9Ow0KPiAgTU9EVUxF
-X0RFVklDRV9UQUJMRShvZiwgYXRtZWxfaGxjZGNfZHRfaWRzKTsNCj4gDQo=
+On Tue, 05 Mar 2019, Claudiu.Beznea@microchip.com wrote:
+
+> From: Claudiu Beznea <claudiu.beznea@microchip.com>
+> 
+> Add compatible string for SAM9X60 HLCDC's PWM.
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> ---
+>  drivers/pwm/pwm-atmel-hlcdc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+> index 54c6633d9b5d..331ca0233d9e 100644
+> --- a/drivers/pwm/pwm-atmel-hlcdc.c
+> +++ b/drivers/pwm/pwm-atmel-hlcdc.c
+> @@ -246,6 +246,9 @@ static const struct of_device_id atmel_hlcdc_dt_ids[] = {
+>  		.compatible = "atmel,sama5d4-hlcdc",
+>  		.data = &atmel_hlcdc_pwm_sama5d3_errata,
+>  	},
+> +	{
+> +		.compatible = "microchip,sam9x60-hlcdc",
+> +	},
+
+Please make this a single line entry, like the one below.
+
+>  	{ /* sentinel */ },
+>  };
+>  MODULE_DEVICE_TABLE(of, atmel_hlcdc_dt_ids);
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
