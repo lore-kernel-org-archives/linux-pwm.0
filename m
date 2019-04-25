@@ -1,53 +1,48 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v2 5/7] pwm: atmel-hlcdc: add compatible for SAM9X60
- HLCDC's PWM
-Date: Thu, 25 Apr 2019 09:31:32 +0100
-Message-ID: <20190425083132.GD14758@dell>
-References: <1551780434-4580-1-git-send-email-claudiu.beznea@microchip.com>
- <1551780434-4580-6-git-send-email-claudiu.beznea@microchip.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: [PATCH v3 0/6] add LCD support for SAM9X60
+Date: Thu, 25 Apr 2019 12:28:22 +0000
+Message-ID: <1556195285-10687-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1551780434-4580-6-git-send-email-claudiu.beznea@microchip.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu.Beznea@microchip.com
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org
+To: bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com
+Cc: dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 05 Mar 2019, Claudiu.Beznea@microchip.com wrote:
-
-> From: Claudiu Beznea <claudiu.beznea@microchip.com>
-> 
-> Add compatible string for SAM9X60 HLCDC's PWM.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
-> ---
->  drivers/pwm/pwm-atmel-hlcdc.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-> index 54c6633d9b5d..331ca0233d9e 100644
-> --- a/drivers/pwm/pwm-atmel-hlcdc.c
-> +++ b/drivers/pwm/pwm-atmel-hlcdc.c
-> @@ -246,6 +246,9 @@ static const struct of_device_id atmel_hlcdc_dt_ids[] = {
->  		.compatible = "atmel,sama5d4-hlcdc",
->  		.data = &atmel_hlcdc_pwm_sama5d3_errata,
->  	},
-> +	{
-> +		.compatible = "microchip,sam9x60-hlcdc",
-> +	},
-
-Please make this a single line entry, like the one below.
-
->  	{ /* sentinel */ },
->  };
->  MODULE_DEVICE_TABLE(of, atmel_hlcdc_dt_ids);
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+RnJvbTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNCkhp
+LA0KDQpUaGVzZSBwYXRjaGVzIGFkZHMgc3VwcG9ydCBmb3IgU0FNOVg2MCdzIExDRCBjb250cm9s
+bGVyLg0KDQpGaXJzdCBwYXRjaGVzIGFkZCBvcHRpb24gdG8gc3BlY2lmeSBpZiBjb250cm9sbGVy
+IGNsb2NrIHNvdXJjZSBpcyBmaXhlZC4NClNlY29uZCBwYXRjaCBhdm9pZCBhIHZhcmlhYmxlIGlu
+aXRpYWxpemF0aW9uIGluIGF0bWVsX2hsY2RjX2NydGNfbW9kZV9zZXRfbm9mYigpLg0KVGhlIDNy
+ZCBhZGQgY29tcGF0aWJsZXMgaW4gcHdtLWF0bWVsLWhsY2RjIGRyaXZlci4NClRoZSA0dGggcGF0
+Y2ggZW5hYmxlcyBzeXNfY2xrIGluIHByb2JlIHNpbmNlIFNBTTlYNjAgbmVlZHMgdGhpcy4NClNw
+ZWNpZmljIHN1cHBvcnQgd2FzIGFkZGVkIGFsc28gaW4gc3VzcGVuZC9yZXN1bWUgaG9va3MuDQpU
+aGUgNXRoIHBhdGNoIGFkZHMgU0FNOVg2MCdzIExDRCBjb25maWd1cmF0aW9uIGFuZCBlbmFibGVk
+IGl0Lg0KDQpJIHRvb2sgdGhlIGNoYW5nZXMgb2YgdGhpcyBzZXJpZXMgYW5kIGludHJvZHVjZWQg
+YWxzbyBhIGZpeA0KKHRoaXMgaXMgdGhlIDZ0aCBwYXRjaCBpbiB0aGlzIHNlcmllcykgLSBpZiB5
+b3Ugd2FudCB0byBzZW5kIGl0IHNlcGFyYXRlbHkNCkkgd291bGQgZ2xhZGx5IGRvIGl0Lg0KDQpU
+aGFuayB5b3UsDQpDbGF1ZGl1IEJlem5lYQ0KDQpDaGFuZ2VzIGluIHYzOg0KLSBrZWVwIGNvbXBh
+dGlibGUgc3RyaW5nIG9uIHBhdGNoIDMvNiBvbiBhIHNpbmdsZSBsaW5lIChJIGtlZXAgaGVyZSBh
+IHRhYg0KICBpbiBmcm9udCBvZiAiLmNvbXBhdGlibGUiIHRvIGJlIGFsaWduZWQgd2l0aCB0aGUg
+cmVzdCBvZiB0aGUgY29kZSBpbg0KICBhdG1lbF9obGNkY19kdF9pZHNbXSkNCi0gcGF0Y2hlcyA0
+LzcgYW5kIDMvNyBmcm9tIHYyIHdlcmUgYXBwbGllZCBzbyByZW1vdmUgdGhlbSBmcm9tIHRoaXMg
+dmVyc2lvbg0KLSBhZGQgYSBmaXggZm9yIGF0bWVsX2hsY2RjIChwYXRjaCA2LzYpDQoNCkNoYW5n
+ZXMgaW4gdjI6DQotIHVzZSAifCIgb3BlcmF0b3IgaW4gcGF0Y2ggMS83IHRvIHNldCBBVE1FTF9I
+TENEQ19DTEtTRUwgb24gY2ZnDQotIGNvbGxlY3QgQWNrZWQtYnksIFJldmlld2VkLWJ5IHRhZ3MN
+Cg0KQ2xhdWRpdSBCZXpuZWEgKDQpOg0KICBkcm06IGF0bWVsLWhsY2RjOiBhZGQgY29uZmlnIG9w
+dGlvbiBmb3IgY2xvY2sgc2VsZWN0aW9uDQogIGRybTogYXRtZWwtaGxjZGM6IGF2b2lkIGluaXRp
+YWxpemluZyBjZmcgd2l0aCB6ZXJvDQogIHB3bTogYXRtZWwtaGxjZGM6IGFkZCBjb21wYXRpYmxl
+IGZvciBTQU05WDYwIEhMQ0RDJ3MgUFdNDQogIGRybS9hdG1lbC1oY2xjZGM6IHJldmVydCBzaGlm
+dCBieSA4DQoNClNhbmRlZXAgU2hlcmlrZXIgTWFsbGlrYXJqdW4gKDIpOg0KICBkcm06IGF0bWVs
+LWhsY2RjOiBlbmFibGUgc3lzX2NsayBkdXJpbmcgaW5pdGFsaXphdGlvbi4NCiAgZHJtOiBhdG1l
+bC1obGNkYzogYWRkIHNhbTl4NjAgTENEIGNvbnRyb2xsZXINCg0KIGRyaXZlcnMvZ3B1L2RybS9h
+dG1lbC1obGNkYy9hdG1lbF9obGNkY19jcnRjLmMgIHwgIDE4ICsrLS0NCiBkcml2ZXJzL2dwdS9k
+cm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNfZGMuYyAgICB8IDEyMCArKysrKysrKysrKysrKysr
+KysrKysrKy0NCiBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNfZGMuaCAg
+ICB8ICAgMiArDQogZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX3BsYW5l
+LmMgfCAgIDIgKy0NCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYyAgICAgICAgICAgICAg
+ICAgICB8ICAgMSArDQogNSBmaWxlcyBjaGFuZ2VkLCAxMzIgaW5zZXJ0aW9ucygrKSwgMTEgZGVs
+ZXRpb25zKC0pDQoNCi0tIA0KMi43LjQNCg0K
