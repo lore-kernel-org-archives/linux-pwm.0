@@ -1,55 +1,68 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Stephen Boyd <sboyd@kernel.org>
 Subject: Re: [PATCH] clk: Remove CLK_IS_BASIC clk flag
-Date: Fri, 26 Apr 2019 17:26:26 +0200
-Message-ID: <20190426152626.GD19559@ulmo>
-References: <20190425181447.60726-1-sboyd@kernel.org>
+Date: Fri, 26 Apr 2019 10:59:21 -0700
+Message-ID: <155630156131.15276.5014003885761074101@swboyd.mtv.corp.google.com>
+References: <20190425181447.60726-1-sboyd@kernel.org> <20190426152626.GD19559@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3Pql8miugIZX0722"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190425181447.60726-1-sboyd@kernel.org>
+In-Reply-To: <20190426152626.GD19559@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Michael Turquette <mturquette@baylibre.com>, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, Tero Kristo <t-kristo@ti.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, linux-mips@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+Quoting Thierry Reding (2019-04-26 08:26:26)
+> On Thu, Apr 25, 2019 at 11:14:47AM -0700, Stephen Boyd wrote:
+> [...]
+> > base-commit: 9e98c678c2d6ae3a17cb2de55d17f69dddaa231b
+> > prerequisite-patch-id: 6196ca807a15f9f4a67d5e6b8668b4f13442ac15
+> > prerequisite-patch-id: 9532946d1be40c2b20af0591ac4636a4cf3b14dd
+> > prerequisite-patch-id: 4e4a9591f5a4ac0d5a72e694da8fdae8c8dda352
+> > prerequisite-patch-id: bcd75306e64ff866989a978127f6b16f7575d0d3
+>=20
+> Just curious: what are these? I mean, I have a pretty good guess what
+> these are, but how do you use them?
+>=20
 
---3Pql8miugIZX0722
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I'm generating patches with git format-patch --base=3D<commit>. This chain
+shows that the base commit is v5.1-rc1, i.e. 9e98c678c2d6 ("Linux
+5.1-rc1") and then that there are four patches applied on top of that
+commit that have these patch ids. If you were to pass the patches from
+the mailing list through 'git patch-id' you would see these patch ids.
+Or if I had pushed the patches out to linux-next I suppose I could have
+generated with a --base argument pointing to the tip of a 'clk-ti'
+branch.
 
-On Thu, Apr 25, 2019 at 11:14:47AM -0700, Stephen Boyd wrote:
-[...]
-> base-commit: 9e98c678c2d6ae3a17cb2de55d17f69dddaa231b
-> prerequisite-patch-id: 6196ca807a15f9f4a67d5e6b8668b4f13442ac15
-> prerequisite-patch-id: 9532946d1be40c2b20af0591ac4636a4cf3b14dd
-> prerequisite-patch-id: 4e4a9591f5a4ac0d5a72e694da8fdae8c8dda352
-> prerequisite-patch-id: bcd75306e64ff866989a978127f6b16f7575d0d3
+For example, the first patch-id is essentially
+https://lkml.kernel.org/r/1554365467-1325-2-git-send-email-t-kristo@ti.com
+piped to 'git patch-id'. When I do that I get=20
 
-Just curious: what are these? I mean, I have a pretty good guess what
-these are, but how do you use them?
+6196ca807a15f9f4a67d5e6b8668b4f13442ac15 0000000000000000000000000000000000=
+000000
 
-Thierry
+and when I do that to the patch I've applied locally I get:
 
---3Pql8miugIZX0722
-Content-Type: application/pgp-signature; name="signature.asc"
+$ git show b88b5b7182b0 | git patch-id
+6196ca807a15f9f4a67d5e6b8668b4f13442ac15 b88b5b7182b07ebdc1ab692b4fc6a10abf=
+ff208d
 
------BEGIN PGP SIGNATURE-----
+I think there may be a typo in the docs or a bug in git though, because
+when I pass that same patch to 'git patch-id --stable' it produces
+another patch-id.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzDIyEACgkQ3SOs138+
-s6E+3w//QY2u+1dP4U77H2Ps8hLK4fFnok0GiK/ZyE+yaditfEYdCZqS/hh1xG74
-OEKrMRaCAl1A8DyAJJzro7Iqnxgs1N81PPGVzvl5je2hNiN2ODnhtk+mmFuuUBf3
-QwBxhXzVDiCGtrlkBtpnMlRymurRvS+SIuDK6fyzArGjgbaVXREozJ06Q3aytemZ
-gMfT3AZ5laijFVEfd6vtKrK8hJkMHTHDzpN/uDZ5hlZFEoWstRqluQR404vxZr3h
-3rq0Oq5ECOt9go4+ZHnXfO0QwubsRVpuF1O+8U9L8WQsWUKKppmrB0veuvTNoq9W
-m70l8deU/Tn4j7VXu5pyJbREZj7UC2flPgTgPrhonsUSTQo+s28pehxWk0I8jGVp
-xc5Z2Ie+uoKt+SBIchug6Q2TX3jLDyynplLJGcHDsfI0HsB21mW507fGI1odzUTM
-4Nglwx8c+LjynVJGKZI/NbXMOEkMQLUitsrM/tOyyQi0ew4144Hc7i3PVOpX60zE
-dy7mmJEJ+80zaPXqjw5meMFq4v476Z8icKSZbHyUJaSrPdr/8f22s73ocQAhF4re
-/kb+odtUNfV4+V4BN2RX3W4d8jqux9Hwnr2fGfcuRt8VnO7F8t6LUcswka9Umt0k
-h91yTD/BQGste7Fa/Q4Y/4ZZMidnTVnzoLa+sqZaBnX4BUOIz6U=
-=ghXI
------END PGP SIGNATURE-----
+4cf9f89ca61d8002df1494b48fac618c66f6220d 0000000000000000000000000000000000=
+000000
 
---3Pql8miugIZX0722--
+Caption: Something is wrong...
+
+Either way, I'm not really using this so far but I figure it's useful if
+robots want to pick up on this and have a patch-id database for changes
+they've downloaded and tested from the list to figure out where to apply
+patches. I'd like to use it to do something similar so I can properly
+apply patches from the list onto the correct base commit and merge it
+all up. That's a little ways off though because I've yet to start
+working on a tool to do full on patch management via mailing lists.
+Also, I haven't seen anyone else using this git feature yet. Maybe I
+should add some hints in submitting-patches?
