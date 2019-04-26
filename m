@@ -1,11 +1,11 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH] clk: Remove CLK_IS_BASIC clk flag
-Date: Fri, 26 Apr 2019 17:24:58 +0200
-Message-ID: <20190426152458.GC19559@ulmo>
+Date: Fri, 26 Apr 2019 17:26:26 +0200
+Message-ID: <20190426152626.GD19559@ulmo>
 References: <20190425181447.60726-1-sboyd@kernel.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="XMCwj5IQnwKtuyBG"
+        protocol="application/pgp-signature"; boundary="3Pql8miugIZX0722"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20190425181447.60726-1-sboyd@kernel.org>
@@ -15,68 +15,41 @@ Cc: Michael Turquette <mturquette@baylibre.com>, linux-kernel@vger.kernel.org, l
 List-Id: linux-pwm@vger.kernel.org
 
 
---XMCwj5IQnwKtuyBG
+--3Pql8miugIZX0722
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
 On Thu, Apr 25, 2019 at 11:14:47AM -0700, Stephen Boyd wrote:
-> This flag was historically used to indicate that a clk is a "basic" type
-> of clk like a mux, divider, gate, etc. This never turned out to be very
-> useful though because it was hard to cleanly split "basic" clks from
-> other clks in a system. This one flag was a way for type introspection
-> and it just didn't scale. If anything, it was used by the TI clk driver
-> to indicate that a clk_hw wasn't contained in the SoC specific clk
-> structure. We can get rid of this define now that TI is finding those
-> clks a different way.
->=20
-> Cc: Tero Kristo <t-kristo@ti.com>
-> Cc: Ralf Baechle <ralf@linux-mips.org>
-> Cc: Paul Burton <paul.burton@mips.com>
-> Cc: James Hogan <jhogan@kernel.org>
-> Cc: <linux-mips@vger.kernel.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: <linux-pwm@vger.kernel.org>
-> Cc: <linux-amlogic@lists.infradead.org>
-> Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-> ---
->  arch/mips/alchemy/common/clock.c     | 2 +-
->  drivers/clk/clk-composite.c          | 2 +-
->  drivers/clk/clk-divider.c            | 2 +-
->  drivers/clk/clk-fixed-factor.c       | 2 +-
->  drivers/clk/clk-fixed-rate.c         | 2 +-
->  drivers/clk/clk-fractional-divider.c | 2 +-
->  drivers/clk/clk-gate.c               | 2 +-
->  drivers/clk/clk-gpio.c               | 2 +-
->  drivers/clk/clk-mux.c                | 2 +-
->  drivers/clk/clk-pwm.c                | 2 +-
->  drivers/clk/clk.c                    | 1 -
->  drivers/clk/mmp/clk-gate.c           | 2 +-
->  drivers/pwm/pwm-meson.c              | 2 +-
->  include/linux/clk-provider.h         | 2 +-
->  14 files changed, 13 insertions(+), 14 deletions(-)
+[...]
+> base-commit: 9e98c678c2d6ae3a17cb2de55d17f69dddaa231b
+> prerequisite-patch-id: 6196ca807a15f9f4a67d5e6b8668b4f13442ac15
+> prerequisite-patch-id: 9532946d1be40c2b20af0591ac4636a4cf3b14dd
+> prerequisite-patch-id: 4e4a9591f5a4ac0d5a72e694da8fdae8c8dda352
+> prerequisite-patch-id: bcd75306e64ff866989a978127f6b16f7575d0d3
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Just curious: what are these? I mean, I have a pretty good guess what
+these are, but how do you use them?
 
---XMCwj5IQnwKtuyBG
+Thierry
+
+--3Pql8miugIZX0722
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzDIsoACgkQ3SOs138+
-s6EeYw/+ODtlfFBeX5N8+RMkQjbVCHXWEOdXzaRchdA6FG2OsXcE4sKemUaRndwq
-39u//Gfd7+FzbRx1KozJynxMh4X4SZgkz8amg9E5KBMjxviapvni7zPs0iM4DCxU
-QaD9lX+z7SHTjAmGO2Uc9WwOzGn7hKiawSaaWt3feFeycPQ19yz/oK9OT/gMtVh9
-23fYY03Ct7m9jp7q9xfM6/03IO6QzA3ygvStbpHw06rQWVVO94z4RCziJKXEqwRE
-zgqW+2tRCeBH6lx2wi6PHbPYpVvKCV/tGMFwjhDcfKgkWaCq/A3iGyJprnALkJV9
-alCoVZ9RaxddQaxGo+nYI7Tf65j+jKsEZNDFO/rLL7uAsojJdI5SntyKJjZNJU/P
-oELMbraTQV/YJD+CfuzDzCnX+hQ6HxD49TcP2G3hPPYFwfJPNXjTMxztThFghdcU
-zUxEewHp36MCmxrCbB62AlySj013FdvXQPRWsbCK8WoPdAlS9RrDc7Fkq4rIcKvq
-7qAdfSYKyRQDAAp62gjDQJLkGlolGAKGR6vxJTcm7PaH7hfSY87rQLTxbqaZvB4/
-Be/PnMpG+OvwbGpMX6syEMcHVRoJwbJ3YP97GlPfFyQe8lj8gOumdN072Pe1LjsM
-7wC7CgOqybPOzXwmDIXOTQkoVhJAYuxdmfxK3u31WbVhbQKBX34=
-=IL2D
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzDIyEACgkQ3SOs138+
+s6E+3w//QY2u+1dP4U77H2Ps8hLK4fFnok0GiK/ZyE+yaditfEYdCZqS/hh1xG74
+OEKrMRaCAl1A8DyAJJzro7Iqnxgs1N81PPGVzvl5je2hNiN2ODnhtk+mmFuuUBf3
+QwBxhXzVDiCGtrlkBtpnMlRymurRvS+SIuDK6fyzArGjgbaVXREozJ06Q3aytemZ
+gMfT3AZ5laijFVEfd6vtKrK8hJkMHTHDzpN/uDZ5hlZFEoWstRqluQR404vxZr3h
+3rq0Oq5ECOt9go4+ZHnXfO0QwubsRVpuF1O+8U9L8WQsWUKKppmrB0veuvTNoq9W
+m70l8deU/Tn4j7VXu5pyJbREZj7UC2flPgTgPrhonsUSTQo+s28pehxWk0I8jGVp
+xc5Z2Ie+uoKt+SBIchug6Q2TX3jLDyynplLJGcHDsfI0HsB21mW507fGI1odzUTM
+4Nglwx8c+LjynVJGKZI/NbXMOEkMQLUitsrM/tOyyQi0ew4144Hc7i3PVOpX60zE
+dy7mmJEJ+80zaPXqjw5meMFq4v476Z8icKSZbHyUJaSrPdr/8f22s73ocQAhF4re
+/kb+odtUNfV4+V4BN2RX3W4d8jqux9Hwnr2fGfcuRt8VnO7F8t6LUcswka9Umt0k
+h91yTD/BQGste7Fa/Q4Y/4ZZMidnTVnzoLa+sqZaBnX4BUOIz6U=
+=ghXI
 -----END PGP SIGNATURE-----
 
---XMCwj5IQnwKtuyBG--
+--3Pql8miugIZX0722--
