@@ -1,24 +1,52 @@
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v2 2/3] pwm: meson: Add clock source configuration for
- Meson G12A
-Date: Sat, 27 Apr 2019 22:29:21 +0200
-Message-ID: <CAFBinCB9WS650JpuyGyjjOE=LNbChOdhAyb+qJMYWGosyMUa=w@mail.gmail.com>
-References: <20190423133646.5705-1-narmstrong@baylibre.com> <20190423133646.5705-3-narmstrong@baylibre.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH] pwm: imx27: use devm_platform_ioremap_resource() to
+ simplify code
+Date: Sun, 28 Apr 2019 06:29:26 +0000
+Message-ID: <DB3PR0402MB391651B480F380A067FC827CF5380@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
+ <1fae9beb-1dbc-5e62-a39e-57ae5d8e7671@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190423133646.5705-3-narmstrong@baylibre.com>
+In-Reply-To: <1fae9beb-1dbc-5e62-a39e-57ae5d8e7671@codeaurora.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, baylibre-upstreaming@groups.io, linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: Mukesh Ojha <mojha@codeaurora.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Apr 23, 2019 at 3:37 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
->
-> For the PWM controller in the Meson G12A SoC, the EE domain and AO domain
-> have different clock sources. This patch tries to describe them in the
-> DT compatible data. The two AO PWM controller has different clock source,
-> but the first AO controller (A & B) can reuse the AXG parents name.
->
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+UGluZy4uLg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE11a2VzaCBP
+amhhIFttYWlsdG86bW9qaGFAY29kZWF1cm9yYS5vcmddDQo+IFNlbnQ6IE1vbmRheSwgQXByaWwg
+MSwgMjAxOSA0OjAxIFBNDQo+IFRvOiBBbnNvbiBIdWFuZyA8YW5zb24uaHVhbmdAbnhwLmNvbT47
+IHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbTsNCj4gc2hhd25ndW9Aa2VybmVsLm9yZzsgcy5oYXVl
+ckBwZW5ndXRyb25peC5kZTsga2VybmVsQHBlbmd1dHJvbml4LmRlOw0KPiBmZXN0ZXZhbUBnbWFp
+bC5jb207IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxp
+c3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGRs
+LWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHB3
+bTogaW14Mjc6IHVzZSBkZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3VyY2UoKQ0KPiB0byBzaW1w
+bGlmeSBjb2RlDQo+IA0KPiANCj4gT24gNC8xLzIwMTkgMTA6NTQgQU0sIEFuc29uIEh1YW5nIHdy
+b3RlOg0KPiA+IFVzZSB0aGUgbmV3IGhlbHBlciBkZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3Vy
+Y2UoKSB3aGljaCB3cmFwcyB0aGUNCj4gPiBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UoKSBhbmQgZGV2
+bV9pb3JlbWFwX3Jlc291cmNlKCkgdG9nZXRoZXIsIHRvDQo+ID4gc2ltcGxpZnkgdGhlIGNvZGUu
+DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbnNvbiBIdWFuZyA8QW5zb24uSHVhbmdAbnhwLmNv
+bT4NCj4gDQo+IA0KPiBSZXZpZXdlZC1ieTogTXVrZXNoIE9qaGEgPG1vamhhQGNvZGVhdXJvcmEu
+b3JnPg0KPiANCj4gQ2hlZXJzLA0KPiAtTXVrZXNoDQo+IA0KPiA+IC0tLQ0KPiA+ICAgZHJpdmVy
+cy9wd20vcHdtLWlteDI3LmMgfCA0ICstLS0NCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2Vy
+dGlvbigrKSwgMyBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
+bS9wd20taW14MjcuYyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jIGluZGV4DQo+ID4gODA2MTMw
+Ni4uNDM0YTM1MSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3B3bS9wd20taW14MjcuYw0KPiA+
+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jDQo+ID4gQEAgLTI5MSw3ICsyOTEsNiBAQCBN
+T0RVTEVfREVWSUNFX1RBQkxFKG9mLCBwd21faW14MjdfZHRfaWRzKTsNCj4gPiAgIHN0YXRpYyBp
+bnQgcHdtX2lteDI3X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4gICB7
+DQo+ID4gICAJc3RydWN0IHB3bV9pbXgyN19jaGlwICppbXg7DQo+ID4gLQlzdHJ1Y3QgcmVzb3Vy
+Y2UgKnI7DQo+ID4NCj4gPiAgIAlpbXggPSBkZXZtX2t6YWxsb2MoJnBkZXYtPmRldiwgc2l6ZW9m
+KCppbXgpLCBHRlBfS0VSTkVMKTsNCj4gPiAgIAlpZiAoaW14ID09IE5VTEwpDQo+ID4gQEAgLTMy
+Niw4ICszMjUsNyBAQCBzdGF0aWMgaW50IHB3bV9pbXgyN19wcm9iZShzdHJ1Y3QNCj4gcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQ0KPiA+ICAgCWlteC0+Y2hpcC5vZl94bGF0ZSA9IG9mX3B3bV94bGF0
+ZV93aXRoX2ZsYWdzOw0KPiA+ICAgCWlteC0+Y2hpcC5vZl9wd21fbl9jZWxscyA9IDM7DQo+ID4N
+Cj4gPiAtCXIgPSBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UocGRldiwgSU9SRVNPVVJDRV9NRU0sIDAp
+Ow0KPiA+IC0JaW14LT5tbWlvX2Jhc2UgPSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoJnBkZXYtPmRl
+diwgcik7DQo+ID4gKwlpbXgtPm1taW9fYmFzZSA9IGRldm1fcGxhdGZvcm1faW9yZW1hcF9yZXNv
+dXJjZShwZGV2LCAwKTsNCj4gPiAgIAlpZiAoSVNfRVJSKGlteC0+bW1pb19iYXNlKSkNCj4gPiAg
+IAkJcmV0dXJuIFBUUl9FUlIoaW14LT5tbWlvX2Jhc2UpOw0KPiA+DQo=
