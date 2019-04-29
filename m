@@ -1,52 +1,123 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: RE: [PATCH] pwm: imx27: use devm_platform_ioremap_resource() to
- simplify code
-Date: Sun, 28 Apr 2019 06:29:26 +0000
-Message-ID: <DB3PR0402MB391651B480F380A067FC827CF5380@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1554095960-15638-1-git-send-email-Anson.Huang@nxp.com>
- <1fae9beb-1dbc-5e62-a39e-57ae5d8e7671@codeaurora.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
+ caller of pwm_apply_state()
+Date: Mon, 29 Apr 2019 08:56:13 +0200
+Message-ID: <20190429065613.n52uwgys5eugmssd@pengutronix.de>
+References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
+ <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
+ <1707507.TOMHpQGrZ7@phil>
+ <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA@mail.gmail.com>
+ <20190408143914.uucb5dwafq3cnsmk@pengutronix.de>
+ <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1fae9beb-1dbc-5e62-a39e-57ae5d8e7671@codeaurora.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mukesh Ojha <mojha@codeaurora.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-UGluZy4uLg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE11a2VzaCBP
-amhhIFttYWlsdG86bW9qaGFAY29kZWF1cm9yYS5vcmddDQo+IFNlbnQ6IE1vbmRheSwgQXByaWwg
-MSwgMjAxOSA0OjAxIFBNDQo+IFRvOiBBbnNvbiBIdWFuZyA8YW5zb24uaHVhbmdAbnhwLmNvbT47
-IHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbTsNCj4gc2hhd25ndW9Aa2VybmVsLm9yZzsgcy5oYXVl
-ckBwZW5ndXRyb25peC5kZTsga2VybmVsQHBlbmd1dHJvbml4LmRlOw0KPiBmZXN0ZXZhbUBnbWFp
-bC5jb207IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxp
-c3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGRs
-LWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHB3
-bTogaW14Mjc6IHVzZSBkZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3VyY2UoKQ0KPiB0byBzaW1w
-bGlmeSBjb2RlDQo+IA0KPiANCj4gT24gNC8xLzIwMTkgMTA6NTQgQU0sIEFuc29uIEh1YW5nIHdy
-b3RlOg0KPiA+IFVzZSB0aGUgbmV3IGhlbHBlciBkZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3Vy
-Y2UoKSB3aGljaCB3cmFwcyB0aGUNCj4gPiBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UoKSBhbmQgZGV2
-bV9pb3JlbWFwX3Jlc291cmNlKCkgdG9nZXRoZXIsIHRvDQo+ID4gc2ltcGxpZnkgdGhlIGNvZGUu
-DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbnNvbiBIdWFuZyA8QW5zb24uSHVhbmdAbnhwLmNv
-bT4NCj4gDQo+IA0KPiBSZXZpZXdlZC1ieTogTXVrZXNoIE9qaGEgPG1vamhhQGNvZGVhdXJvcmEu
-b3JnPg0KPiANCj4gQ2hlZXJzLA0KPiAtTXVrZXNoDQo+IA0KPiA+IC0tLQ0KPiA+ICAgZHJpdmVy
-cy9wd20vcHdtLWlteDI3LmMgfCA0ICstLS0NCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2Vy
-dGlvbigrKSwgMyBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
-bS9wd20taW14MjcuYyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jIGluZGV4DQo+ID4gODA2MTMw
-Ni4uNDM0YTM1MSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3B3bS9wd20taW14MjcuYw0KPiA+
-ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jDQo+ID4gQEAgLTI5MSw3ICsyOTEsNiBAQCBN
-T0RVTEVfREVWSUNFX1RBQkxFKG9mLCBwd21faW14MjdfZHRfaWRzKTsNCj4gPiAgIHN0YXRpYyBp
-bnQgcHdtX2lteDI3X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4gICB7
-DQo+ID4gICAJc3RydWN0IHB3bV9pbXgyN19jaGlwICppbXg7DQo+ID4gLQlzdHJ1Y3QgcmVzb3Vy
-Y2UgKnI7DQo+ID4NCj4gPiAgIAlpbXggPSBkZXZtX2t6YWxsb2MoJnBkZXYtPmRldiwgc2l6ZW9m
-KCppbXgpLCBHRlBfS0VSTkVMKTsNCj4gPiAgIAlpZiAoaW14ID09IE5VTEwpDQo+ID4gQEAgLTMy
-Niw4ICszMjUsNyBAQCBzdGF0aWMgaW50IHB3bV9pbXgyN19wcm9iZShzdHJ1Y3QNCj4gcGxhdGZv
-cm1fZGV2aWNlICpwZGV2KQ0KPiA+ICAgCWlteC0+Y2hpcC5vZl94bGF0ZSA9IG9mX3B3bV94bGF0
-ZV93aXRoX2ZsYWdzOw0KPiA+ICAgCWlteC0+Y2hpcC5vZl9wd21fbl9jZWxscyA9IDM7DQo+ID4N
-Cj4gPiAtCXIgPSBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UocGRldiwgSU9SRVNPVVJDRV9NRU0sIDAp
-Ow0KPiA+IC0JaW14LT5tbWlvX2Jhc2UgPSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoJnBkZXYtPmRl
-diwgcik7DQo+ID4gKwlpbXgtPm1taW9fYmFzZSA9IGRldm1fcGxhdGZvcm1faW9yZW1hcF9yZXNv
-dXJjZShwZGV2LCAwKTsNCj4gPiAgIAlpZiAoSVNfRVJSKGlteC0+bW1pb19iYXNlKSkNCj4gPiAg
-IAkJcmV0dXJuIFBUUl9FUlIoaW14LT5tbWlvX2Jhc2UpOw0KPiA+DQo=
+On Thu, Apr 18, 2019 at 05:27:05PM -0700, Brian Norris wrote:
+> Hi,
+> =
+
+> I'm not sure if I'm misreading you, but I thought I'd add here before
+> this expires out of my inbox:
+> =
+
+> On Mon, Apr 8, 2019 at 7:39 AM Uwe Kleine-K=F6nig
+> <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
+> > My intention here is more to make all drivers behave the same way and
+> > because only two drivers updated the pwm_state this was the variant I
+> > removed.
+> =
+
+> To be clear, this patch on its own is probably breaking things. Just
+> because the other drivers don't implement the documented behavior
+> doesn't mean you should break this driver. Maybe the others just
+> aren't used in precise enough scenarios where this matters.
+> =
+
+> > When you say that the caller might actually care about the exact
+> > parameters I fully agree. In this case however the consumer should be
+> > able to know the result before actually applying it. So if you do
+> >
+> >         pwm_apply_state(pwm, { .period =3D 17, .duty_cycle =3D 12, ...})
+> >
+> > and this results in .period =3D 100 and .duty_cycle =3D 0 then probably=
+ the
+> > bad things you want to know about already happend. So my idea is a new
+> > function pwm_round_state() that does the adaptions to pwm_state without
+> > applying it to the hardware. After that pwm_apply_state could do the
+> > following:
+> >
+> >         rstate =3D pwm_round_state(pwm, state)
+> >         pwm.apply(pwm, state)
+> >         gstate =3D pwm_get_state(pwm)
+> >
+> >         if rstate !=3D gstate:
+> >                 warn about problems
+> =
+
+> For our case (we're using this with pwm-regulator), I don't recall [*]
+> we need to be 100% precise about the period, but we do need to be as
+> precise as possible with the duty:period ratio -- so once we get the
+> "feedback" from the underlying PWM driver what the real period will
+> be, we adjust the duty appropriately.
+
+I admit that I didn't understood the whole situation and (some) things
+are worse with my patches applied. I still think that changing the
+caller's state variable is bad design, but of course pwm_get_state
+should return the currently implemented configuration.
+
+> So I don't see that "warning" would really help for this particular case.
+> =
+
+> > But before doing that I think it would be sensible to also fix the rules
+> > how the round_state callback is supposed to round.
+> =
+
+> I'm not quite sure I grok exactly what you're planning, but I would
+> much appreciate if you didn't break things on the way toward fixing
+> them ;)
+
+There are currently no rules how the driver should behave for example if
+the consumer requests
+
+	.duty_cycle =3D 10, .period =3D 50
+
+and the hardware can only implement multiples of 3 for both values. The
+obvious candidates are:
+
+ - .duty_cycle =3D 9, .period =3D 51 (round nearest for both)
+ - .duty_cycle =3D 12, .period =3D 51 (round up)
+ - .duty_cycle =3D 9, .period =3D 48 (round down)
+ - .duty_cycle =3D 9, .period =3D 45 (round duty_cycle and keep proportion)
+ - return error (which code?)
+
+And there are some other variants (e.g. round duty_cycle to nearest and
+period in the same direction) that might be sensible.
+
+Also it should be possible to know the result before actually
+configuring the hardware. Otherwise things might already go wrong
+because the driver implements a setting that is too far from the
+requested configuration.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
