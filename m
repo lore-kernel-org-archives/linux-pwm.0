@@ -1,20 +1,22 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
  caller of pwm_apply_state()
-Date: Mon, 29 Apr 2019 14:31:02 +0200
-Message-ID: <20190429123102.7wfcdqusn24g5rm7@pengutronix.de>
+Date: Mon, 29 Apr 2019 15:11:27 +0200
+Message-ID: <20190429131127.x535uhhtputb7zwl@pengutronix.de>
 References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
  <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
  <1707507.TOMHpQGrZ7@phil>
  <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA@mail.gmail.com>
  <20190408143914.uucb5dwafq3cnsmk@pengutronix.de>
- <20190429110354.GB7747@ulmo>
+ <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA@mail.gmail.com>
+ <20190429065613.n52uwgys5eugmssd@pengutronix.de>
+ <20190429111855.GC7747@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190429110354.GB7747@ulmo>
+In-Reply-To: <20190429111855.GC7747@ulmo>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -28,172 +30,167 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 01:03:54PM +0200, Thierry Reding wrote:
-> On Mon, Apr 08, 2019 at 04:39:14PM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Apr 01, 2019 at 03:45:47PM -0700, Doug Anderson wrote:
+On Mon, Apr 29, 2019 at 01:18:55PM +0200, Thierry Reding wrote:
+> On Mon, Apr 29, 2019 at 08:56:13AM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Thu, Apr 18, 2019 at 05:27:05PM -0700, Brian Norris wrote:
 > > > Hi,
 > > > =
 
-> > > On Sat, Mar 30, 2019 at 2:17 AM Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrot=
-e:
+> > > I'm not sure if I'm misreading you, but I thought I'd add here before
+> > > this expires out of my inbox:
+> > > =
+
+> > > On Mon, Apr 8, 2019 at 7:39 AM Uwe Kleine-K=F6nig
+> > > <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
+> > > > My intention here is more to make all drivers behave the same way a=
+nd
+> > > > because only two drivers updated the pwm_state this was the variant=
+ I
+> > > > removed.
+> > > =
+
+> > > To be clear, this patch on its own is probably breaking things. Just
+> > > because the other drivers don't implement the documented behavior
+> > > doesn't mean you should break this driver. Maybe the others just
+> > > aren't used in precise enough scenarios where this matters.
+> > > =
+
+> > > > When you say that the caller might actually care about the exact
+> > > > parameters I fully agree. In this case however the consumer should =
+be
+> > > > able to know the result before actually applying it. So if you do
 > > > >
-> > > > Hi,
+> > > >         pwm_apply_state(pwm, { .period =3D 17, .duty_cycle =3D 12, =
+...})
 > > > >
-> > > > [adding two chromeos people, because veyron and gru are quite
-> > > > heavy users of the rockchip pwm for both backlight and regulators]
+> > > > and this results in .period =3D 100 and .duty_cycle =3D 0 then prob=
+ably the
+> > > > bad things you want to know about already happend. So my idea is a =
+new
+> > > > function pwm_round_state() that does the adaptions to pwm_state wit=
+hout
+> > > > applying it to the hardware. After that pwm_apply_state could do the
+> > > > following:
 > > > >
-> > > > Doug, Brian: patchwork patch is here:
-> > > > https://patchwork.kernel.org/patch/10851001/
+> > > >         rstate =3D pwm_round_state(pwm, state)
+> > > >         pwm.apply(pwm, state)
+> > > >         gstate =3D pwm_get_state(pwm)
 > > > >
-> > > > Am Dienstag, 12. M=E4rz 2019, 22:46:03 CET schrieb Uwe Kleine-K=F6n=
-ig:
-> > > > > The pwm-rockchip driver is one of only two PWM drivers which upda=
-tes the
-> > > > > state for the caller of pwm_apply_state(). This might have surpri=
-sing
-> > > > > results if the caller reuses the values expecting them to still
-> > > > > represent the same state.
+> > > >         if rstate !=3D gstate:
+> > > >                 warn about problems
 > > > =
 
-> > > It may or may not be surprising, but it is well documented.  Specific=
-ally:
-> > > =
-
-> > >  * pwm_apply_state() - atomically apply a new state to a PWM device
-> > >  * @pwm: PWM device
-> > >  * @state: new state to apply. This can be adjusted by the PWM driver
-> > >  *    if the requested config is not achievable, for example,
-> > >  *    ->duty_cycle and ->period might be approximated.
-> > > =
-
-> > > I don't think your series updates that documentation, right?
-> > > =
-
-> > > =
-
-> > > > > Also note that this feedback was incomplete as
-> > > > > the matching struct pwm_device::state wasn't updated and so
-> > > > > pwm_get_state still returned the originally requested state.
-> > > =
-
-> > > The framework handles that.  Take a look at pwm_apply_state()?  It do=
-es:
-> > > =
-
-> > > ---
-> > > =
-
-> > > err =3D pwm->chip->ops->apply(pwm->chip, pwm, state);
-> > > if (err)
-> > >     return err;
-> > > =
-
-> > > pwm->state =3D *state;
+> > > For our case (we're using this with pwm-regulator), I don't recall [*]
+> > > we need to be 100% precise about the period, but we do need to be as
+> > > precise as possible with the duty:period ratio -- so once we get the
+> > > "feedback" from the underlying PWM driver what the real period will
+> > > be, we adjust the duty appropriately.
 > > =
 
+> > I admit that I didn't understood the whole situation and (some) things
+> > are worse with my patches applied. I still think that changing the
+> > caller's state variable is bad design, but of course pwm_get_state
+> > should return the currently implemented configuration.
+> > =
+
+> > > So I don't see that "warning" would really help for this particular c=
+ase.
 > > > =
 
-> > > ---
+> > > > But before doing that I think it would be sensible to also fix the =
+rules
+> > > > how the round_state callback is supposed to round.
 > > > =
 
-> > > So I think it wasn't incomplete unless I misunderstood?
+> > > I'm not quite sure I grok exactly what you're planning, but I would
+> > > much appreciate if you didn't break things on the way toward fixing
+> > > them ;)
 > > =
 
-> > You're right, I missed that the updated state was saved.
+> > There are currently no rules how the driver should behave for example if
+> > the consumer requests
 > > =
 
-> > > > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> > > >
-> > > > I've tested this on both veyron and gru with backlight and pwm regu=
-lator
-> > > > and at least both still come up, so
-> > > > Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> > > >
-> > > > But hopefully Doug or Brian could also provide another test-point.
-> > > =
-
-> > > I'd definitely be concerned by this change.  Specifically for the PWM
-> > > regulator little details about exactly what duty cycle / period you
-> > > got could be pretty important.
-> > > =
-
-> > > I guess the problem here is that pwm_get_state() doesn't actually call
-> > > into the PWM drivers, it just returns the last state that was applied.
-> > > How does one get the state?  I guess you could change get_state() to
-> > > actually call into the PWM driver's get_state if it exists?  ...but
-> > > your patch set doesn't change that behavior...
+> > 	.duty_cycle =3D 10, .period =3D 50
 > > =
 
-> > My intention here is more to make all drivers behave the same way and
-> > because only two drivers updated the pwm_state this was the variant I
-> > removed.
+> > and the hardware can only implement multiples of 3 for both values. The
+> > obvious candidates are:
 > > =
 
-> > When you say that the caller might actually care about the exact
-> > parameters I fully agree. In this case however the consumer should be
-> > able to know the result before actually applying it. So if you do
+> >  - .duty_cycle =3D 9, .period =3D 51 (round nearest for both)
+> >  - .duty_cycle =3D 12, .period =3D 51 (round up)
+> >  - .duty_cycle =3D 9, .period =3D 48 (round down)
+> >  - .duty_cycle =3D 9, .period =3D 45 (round duty_cycle and keep proport=
+ion)
+> >  - return error (which code?)
 > > =
 
-> > 	pwm_apply_state(pwm, { .period =3D 17, .duty_cycle =3D 12, ...})
-> > =
-
-> > and this results in .period =3D 100 and .duty_cycle =3D 0 then probably=
- the
-> > bad things you want to know about already happend. So my idea is a new
-> > function pwm_round_state() that does the adaptions to pwm_state without
-> > applying it to the hardware. After that pwm_apply_state could do the
-> > following:
-> > =
-
-> > 	rstate =3D pwm_round_state(pwm, state)
-> > 	pwm.apply(pwm, state)
-> > 	gstate =3D pwm_get_state(pwm)
-> > =
-
-> > 	if rstate !=3D gstate:
-> > 		warn about problems
+> > And there are some other variants (e.g. round duty_cycle to nearest and
+> > period in the same direction) that might be sensible.
 > =
 
-> I'm not sure this is really useful. I would expect that in most cases
-> where it is necessary to have an exact match between the requested state
-> and the actual state is important, you may not even get to warning about
-> problems because the system may shut down (e.g. the regulator might not
-> be outputting enough power to keep the system stable).
+> The problem is that probably all of the above are valid, though maybe
+> not for all cases. The choice of algorithm probably depends on both the
+> PWM driver and the consumer, so I don't think fixing things to one such
+> algorithm is going to improve anything.
+
+But if you have pwm_round_state (which implements rounding down for
+example) you could easily implement a helper that rounds nearest or up.
+If however each driver rounds the way it prefers coming up with a helper
+for rounding up is considerably harder.
+
+> > Also it should be possible to know the result before actually
+> > configuring the hardware. Otherwise things might already go wrong
+> > because the driver implements a setting that is too far from the
+> > requested configuration.
 > =
 
-> I think it'd be far more useful to give consumers a way to request that
-> the state be applied strictly. I'm not sure how realistic that is,
-> though. Most PWMs have some sort of restrictions, and in most cases this
-> might still be okay. Perhaps some sort of permissible relative deviation
-> factor could be added to give more flexibility?
+> I agree.
+> =
 
-I think in practise this isn't going to work. Consider the case that
-Brian cares about: "we do need to be as precise as possible with the
-duty:period ratio". So if we want 1/5 duty we might request:
+> Perhaps somebody with more experience with pwm-regulator can chime in
+> here, but it sounds to me like if you really want to accurately output a
+> voltage, you may want to hand-tune the duty-cycle/period pairs that are
+> used for pwm-regulator.
 
-	.duty_cycle =3D 100, .period =3D 500
+This might be more ugly than needed because then you have to setup the
+table in dependance of the used PWM. Looking at the pwm-regulator code I
+think the binding is badly worded. The "Duty-Cycle" parameter is used as
+second parameter to pwm_set_relative_duty_cycle (with scale =3D 100). So
+with the regulator defined in the Voltage Table Example of
+Documentation/devicetree/bindings/regulator/pwm-regulator.txt you'd have
+to configure
 
-an are using pwm_set_state_exact(). Now consider this fails. What is the
-next value you should try? It's hard to say without knowing why it
-failed. If however you could do
+	.duty_cycle =3D 2534, .period =3D 8448
+	=
 
-	mystate.duty_cycle =3D 100
-	mystate.period =3D 500
-	pwm_round_state(pwm, &mystate);
+to get 1.056 V.
 
-and after that we have:
+Note that my considerations are not only about pwm-regulators.
 
-	mystate.duty_cycle =3D 99;
-	mystate.period =3D 498;
+Also in general I prefer a suitable and well reviewed algorithm (if
+possible) over a requirement to provide a hand-tuned table of values in
+a machine-specific device tree.
 
-(because pwm_round_state is supposed to round down[1] and the hardware can
-implement multiples of 3 only). Then it is easier to determine the next
-state to try.
+> According to the device tree bindings there's
+> already support for a voltage table mode where an exact duty-cycle to
+> output voltage correspondence is defined. This is as opposed to the
+> continuous voltage mode where the duty cycle is linearly interpolated
+> based on the requested output voltage.
+> =
+
+> pwm-regulator in voltage table mode could run in "strict" mode with zero
+> deviation allowed, on the assumption that duty-cycle values were hand-
+> picked to give the desired results. For continuous voltage mode it
+> probably doesn't matter all that much, since very exact results can't be
+> guaranteed anyway.
+
+I don't understand the last sentence? Why is it impossible to get exact
+results in continuous voltage mode?
 
 Best regards
 Uwe
-
-[1] this isn't fixed yet, but I think it's sensible.
 
 -- =
 
