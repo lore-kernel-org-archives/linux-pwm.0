@@ -1,20 +1,16 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
  caller of pwm_apply_state()
-Date: Mon, 29 Apr 2019 08:56:13 +0200
-Message-ID: <20190429065613.n52uwgys5eugmssd@pengutronix.de>
+Date: Mon, 29 Apr 2019 12:49:02 +0200
+Message-ID: <20190429104902.GA7747@ulmo>
 References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
  <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
  <1707507.TOMHpQGrZ7@phil>
  <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA@mail.gmail.com>
- <20190408143914.uucb5dwafq3cnsmk@pengutronix.de>
- <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="===============1826548295145271282=="
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAD=FV=WZHouhGcxOgNG3006XajJQaAp0uq9WjeKRikQx1ru4TA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -24,100 +20,150 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Apr 18, 2019 at 05:27:05PM -0700, Brian Norris wrote:
+
+--===============1826548295145271282==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="UugvWAfsgieZRqgk"
+Content-Disposition: inline
+
+
+--UugvWAfsgieZRqgk
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Apr 01, 2019 at 03:45:47PM -0700, Doug Anderson wrote:
 > Hi,
-> =
-
-> I'm not sure if I'm misreading you, but I thought I'd add here before
-> this expires out of my inbox:
-> =
-
-> On Mon, Apr 8, 2019 at 7:39 AM Uwe Kleine-K=F6nig
-> <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
-> > My intention here is more to make all drivers behave the same way and
-> > because only two drivers updated the pwm_state this was the variant I
-> > removed.
-> =
-
-> To be clear, this patch on its own is probably breaking things. Just
-> because the other drivers don't implement the documented behavior
-> doesn't mean you should break this driver. Maybe the others just
-> aren't used in precise enough scenarios where this matters.
-> =
-
-> > When you say that the caller might actually care about the exact
-> > parameters I fully agree. In this case however the consumer should be
-> > able to know the result before actually applying it. So if you do
+>=20
+> On Sat, Mar 30, 2019 at 2:17 AM Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
 > >
-> >         pwm_apply_state(pwm, { .period =3D 17, .duty_cycle =3D 12, ...})
+> > Hi,
 > >
-> > and this results in .period =3D 100 and .duty_cycle =3D 0 then probably=
- the
-> > bad things you want to know about already happend. So my idea is a new
-> > function pwm_round_state() that does the adaptions to pwm_state without
-> > applying it to the hardware. After that pwm_apply_state could do the
-> > following:
+> > [adding two chromeos people, because veyron and gru are quite
+> > heavy users of the rockchip pwm for both backlight and regulators]
 > >
-> >         rstate =3D pwm_round_state(pwm, state)
-> >         pwm.apply(pwm, state)
-> >         gstate =3D pwm_get_state(pwm)
+> > Doug, Brian: patchwork patch is here:
+> > https://patchwork.kernel.org/patch/10851001/
 > >
-> >         if rstate !=3D gstate:
-> >                 warn about problems
-> =
+> > Am Dienstag, 12. M=C3=A4rz 2019, 22:46:03 CET schrieb Uwe Kleine-K=C3=
+=B6nig:
+> > > The pwm-rockchip driver is one of only two PWM drivers which updates =
+the
+> > > state for the caller of pwm_apply_state(). This might have surprising
+> > > results if the caller reuses the values expecting them to still
+> > > represent the same state.
+>=20
+> It may or may not be surprising, but it is well documented.  Specifically:
+>=20
+>  * pwm_apply_state() - atomically apply a new state to a PWM device
+>  * @pwm: PWM device
+>  * @state: new state to apply. This can be adjusted by the PWM driver
+>  *    if the requested config is not achievable, for example,
+>  *    ->duty_cycle and ->period might be approximated.
+>=20
+> I don't think your series updates that documentation, right?
 
-> For our case (we're using this with pwm-regulator), I don't recall [*]
-> we need to be 100% precise about the period, but we do need to be as
-> precise as possible with the duty:period ratio -- so once we get the
-> "feedback" from the underlying PWM driver what the real period will
-> be, we adjust the duty appropriately.
+The documentation is arguably ambiguous here, but I don't think this was
+meant as you intepret here. I think the original intent was to give the
+drivers some leeway in how they apply a state. So a driver could for
+example adjust duty_cycle or period if it doesn't support exactly the
+combination requested. However, I don't think it was meant as a
+suggestion that it would report that back to the caller.
 
-I admit that I didn't understood the whole situation and (some) things
-are worse with my patches applied. I still think that changing the
-caller's state variable is bad design, but of course pwm_get_state
-should return the currently implemented configuration.
+This obviously implies that ->apply() is deterministic, so given a state
+it would program the same register values, irrespective of when, or how
+many times that state is applied.
 
-> So I don't see that "warning" would really help for this particular case.
-> =
+> > > Also note that this feedback was incomplete as
+> > > the matching struct pwm_device::state wasn't updated and so
+> > > pwm_get_state still returned the originally requested state.
+>=20
+> The framework handles that.  Take a look at pwm_apply_state()?  It does:
+>=20
+> ---
+>=20
+> err =3D pwm->chip->ops->apply(pwm->chip, pwm, state);
+> if (err)
+>     return err;
+>=20
+> pwm->state =3D *state;
+>=20
+> ---
+>=20
+> So I think it wasn't incomplete unless I misunderstood?
+>=20
+>=20
+> > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> >
+> > I've tested this on both veyron and gru with backlight and pwm regulator
+> > and at least both still come up, so
+> > Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+> >
+> > But hopefully Doug or Brian could also provide another test-point.
+>=20
+> I'd definitely be concerned by this change.  Specifically for the PWM
+> regulator little details about exactly what duty cycle / period you
+> got could be pretty important.
+>=20
+> I guess the problem here is that pwm_get_state() doesn't actually call
+> into the PWM drivers, it just returns the last state that was applied.
+> How does one get the state?  I guess you could change get_state() to
+> actually call into the PWM driver's get_state if it exists?  ...but
+> your patch set doesn't change that behavior...
+>=20
+> For instance, look at pwm_regulator_set_voltage().  The first line
+> there is  pwm_init_state().  That calls into pwm_get_state() which
+> just grabs the cached state.  If the last call to pwm_apply_state()
+> didn't update that then it seems like it'd be bad.
 
-> > But before doing that I think it would be sensible to also fix the rules
-> > how the round_state callback is supposed to round.
-> =
+The whole point of this atomic API is that the cached state would always
+match the hardware state. Given what I said above that doesn't
+necessarily mean that the cached state exactly matches the values that
+were written to hardware.
 
-> I'm not quite sure I grok exactly what you're planning, but I would
-> much appreciate if you didn't break things on the way toward fixing
-> them ;)
+But it does mean that the following is idempotent:
 
-There are currently no rules how the driver should behave for example if
-the consumer requests
+	pwm_get_state(pwm, &state);
+	pwm_apply_state(pwm, &state);
 
-	.duty_cycle =3D 10, .period =3D 50
+Thierry
 
-and the hardware can only implement multiples of 3 for both values. The
-obvious candidates are:
+--UugvWAfsgieZRqgk
+Content-Type: application/pgp-signature; name="signature.asc"
 
- - .duty_cycle =3D 9, .period =3D 51 (round nearest for both)
- - .duty_cycle =3D 12, .period =3D 51 (round up)
- - .duty_cycle =3D 9, .period =3D 48 (round down)
- - .duty_cycle =3D 9, .period =3D 45 (round duty_cycle and keep proportion)
- - return error (which code?)
+-----BEGIN PGP SIGNATURE-----
 
-And there are some other variants (e.g. round duty_cycle to nearest and
-period in the same direction) that might be sensible.
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzG1pkACgkQ3SOs138+
+s6HnJg//Z/zYy3o/pl5f9e9zd0C077CFTp3GxG4oEd2nGUq03avn1tVHcjI55vH5
+9iiOpnBHY+1d5y02FyBbGLB+NozT9WZZuNOss588970p8MTGKbSDbsPy3rS7D37/
+wrqiYCJ66/cwM0nuUZjPwJ8MPcvBf7ZMy9hLT8BbLkQUuLNiB/DYvloQ2szrfiNi
+EKqrGqJGyP2MhUmghedV2FOYSU2nIhjttcT9boTG0N9iezerudTle7yj41qjSnth
++KC/d+Iv8hijy7imo9vXrcK3KYIFuJKSiRU4/G2ompKrfwf4JrMBQ5atvKaJMRbU
+Rkif15K2UuyP8NmFj9/JXorwWY6z2KpmW97YUUpliEbnhPf1p8gQ3oKfXpLhTeDB
+v+0DmLwFtayerbvLNunUURJJ0jz/pWydm4UvnOyW5xn469MbWP1kri2+RVh8HTCb
++SBnYkAyDLgTiuqNcUzTrprLxlny71VdWkrPMkZZ3spAc9MTJ/uLez3P1GVBaZm6
+UzBQ9QHzgOD2kZvfxDMqF6bym2wczRIVgm1qv1CbyO2AF1XjdyxYRAixyuhn932K
+nm8bUUHOlRXBKOpn3kE630pXjbaRhT9SvZj9eHTUxktMdhBwLljl4keLZGtM51eS
+PzX81VFgjbk7R+aCuN5qYTbw11tHM1aoXTkvR2OhWwQiixPF6Ck=
+=iul9
+-----END PGP SIGNATURE-----
 
-Also it should be possible to know the result before actually
-configuring the hardware. Otherwise things might already go wrong
-because the driver implements a setting that is too far from the
-requested configuration.
+--UugvWAfsgieZRqgk--
 
-Best regards
-Uwe
 
--- =
+--===============1826548295145271282==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+_______________________________________________
+Linux-rockchip mailing list
+Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+http://lists.infradead.org/mailman/listinfo/linux-rockchip
+
+--===============1826548295145271282==--
