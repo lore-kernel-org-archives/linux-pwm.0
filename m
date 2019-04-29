@@ -1,8 +1,8 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Subject: Re: [PATCH v2 1/3] pwm: rockchip: Don't update the state for the
  caller of pwm_apply_state()
-Date: Mon, 29 Apr 2019 18:28:47 +0200
-Message-ID: <20190429162847.GE7747@ulmo>
+Date: Mon, 29 Apr 2019 11:04:20 -0700
+Message-ID: <CAD=FV=U71u39ZHkBBfAXVAP=_hY-bAw3L7JdhC=36jkUVxPOmQ@mail.gmail.com>
 References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
  <20190312214605.10223-2-u.kleine-koenig@pengutronix.de>
  <1707507.TOMHpQGrZ7@phil>
@@ -10,12 +10,11 @@ References: <20190312214605.10223-1-u.kleine-koenig@pengutronix.de>
  <20190408143914.uucb5dwafq3cnsmk@pengutronix.de>
  <CA+ASDXO=szekU97iTDK9vqWjT+JtAKeCNTyoY=8aSi5d+v4mkA@mail.gmail.com>
  <20190429065613.n52uwgys5eugmssd@pengutronix.de>
- <20190429111855.GC7747@ulmo>
- <20190429131127.x535uhhtputb7zwl@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0582994242795099779=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190429131127.x535uhhtputb7zwl-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <20190429065613.n52uwgys5eugmssd-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -25,235 +24,88 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Boris Brezillon <boris.brezillon-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============0582994242795099779==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wchHw8dVAp53YPj8"
-Content-Disposition: inline
-
-
---wchHw8dVAp53YPj8
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Apr 29, 2019 at 03:11:27PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> On Mon, Apr 29, 2019 at 01:18:55PM +0200, Thierry Reding wrote:
-> > On Mon, Apr 29, 2019 at 08:56:13AM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > > On Thu, Apr 18, 2019 at 05:27:05PM -0700, Brian Norris wrote:
-> > > > Hi,
-> > > >=20
-> > > > I'm not sure if I'm misreading you, but I thought I'd add here befo=
-re
-> > > > this expires out of my inbox:
-> > > >=20
-> > > > On Mon, Apr 8, 2019 at 7:39 AM Uwe Kleine-K=C3=B6nig
-> > > > <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
-> > > > > My intention here is more to make all drivers behave the same way=
- and
-> > > > > because only two drivers updated the pwm_state this was the varia=
-nt I
-> > > > > removed.
-> > > >=20
-> > > > To be clear, this patch on its own is probably breaking things. Just
-> > > > because the other drivers don't implement the documented behavior
-> > > > doesn't mean you should break this driver. Maybe the others just
-> > > > aren't used in precise enough scenarios where this matters.
-> > > >=20
-> > > > > When you say that the caller might actually care about the exact
-> > > > > parameters I fully agree. In this case however the consumer shoul=
-d be
-> > > > > able to know the result before actually applying it. So if you do
-> > > > >
-> > > > >         pwm_apply_state(pwm, { .period =3D 17, .duty_cycle =3D 12=
-, ...})
-> > > > >
-> > > > > and this results in .period =3D 100 and .duty_cycle =3D 0 then pr=
-obably the
-> > > > > bad things you want to know about already happend. So my idea is =
-a new
-> > > > > function pwm_round_state() that does the adaptions to pwm_state w=
-ithout
-> > > > > applying it to the hardware. After that pwm_apply_state could do =
-the
-> > > > > following:
-> > > > >
-> > > > >         rstate =3D pwm_round_state(pwm, state)
-> > > > >         pwm.apply(pwm, state)
-> > > > >         gstate =3D pwm_get_state(pwm)
-> > > > >
-> > > > >         if rstate !=3D gstate:
-> > > > >                 warn about problems
-> > > >=20
-> > > > For our case (we're using this with pwm-regulator), I don't recall =
-[*]
-> > > > we need to be 100% precise about the period, but we do need to be as
-> > > > precise as possible with the duty:period ratio -- so once we get the
-> > > > "feedback" from the underlying PWM driver what the real period will
-> > > > be, we adjust the duty appropriately.
-> > >=20
-> > > I admit that I didn't understood the whole situation and (some) things
-> > > are worse with my patches applied. I still think that changing the
-> > > caller's state variable is bad design, but of course pwm_get_state
-> > > should return the currently implemented configuration.
-> > >=20
-> > > > So I don't see that "warning" would really help for this particular=
- case.
-> > > >=20
-> > > > > But before doing that I think it would be sensible to also fix th=
-e rules
-> > > > > how the round_state callback is supposed to round.
-> > > >=20
-> > > > I'm not quite sure I grok exactly what you're planning, but I would
-> > > > much appreciate if you didn't break things on the way toward fixing
-> > > > them ;)
-> > >=20
-> > > There are currently no rules how the driver should behave for example=
- if
-> > > the consumer requests
-> > >=20
-> > > 	.duty_cycle =3D 10, .period =3D 50
-> > >=20
-> > > and the hardware can only implement multiples of 3 for both values. T=
-he
-> > > obvious candidates are:
-> > >=20
-> > >  - .duty_cycle =3D 9, .period =3D 51 (round nearest for both)
-> > >  - .duty_cycle =3D 12, .period =3D 51 (round up)
-> > >  - .duty_cycle =3D 9, .period =3D 48 (round down)
-> > >  - .duty_cycle =3D 9, .period =3D 45 (round duty_cycle and keep propo=
-rtion)
-> > >  - return error (which code?)
-> > >=20
-> > > And there are some other variants (e.g. round duty_cycle to nearest a=
-nd
-> > > period in the same direction) that might be sensible.
-> >=20
-> > The problem is that probably all of the above are valid, though maybe
-> > not for all cases. The choice of algorithm probably depends on both the
-> > PWM driver and the consumer, so I don't think fixing things to one such
-> > algorithm is going to improve anything.
->=20
-> But if you have pwm_round_state (which implements rounding down for
-> example) you could easily implement a helper that rounds nearest or up.
-> If however each driver rounds the way it prefers coming up with a helper
-> for rounding up is considerably harder.
-
-pwm_round_state() is fundamentally racy. What if, for example, you have
-two consumers racing to set two PWMs provided by the same controller. If
-you have some dependency between the two PWMs (perhaps they need to
-share the same divider or something like that), then between the time
-where pwm_round_state() returns and pwm_apply_state() is called, the
-results of the pwm_round_state() may no longer be valid.
-
-> > > Also it should be possible to know the result before actually
-> > > configuring the hardware. Otherwise things might already go wrong
-> > > because the driver implements a setting that is too far from the
-> > > requested configuration.
-> >=20
-> > I agree.
-> >=20
-> > Perhaps somebody with more experience with pwm-regulator can chime in
-> > here, but it sounds to me like if you really want to accurately output a
-> > voltage, you may want to hand-tune the duty-cycle/period pairs that are
-> > used for pwm-regulator.
->=20
-> This might be more ugly than needed because then you have to setup the
-> table in dependance of the used PWM.
-
-Well, that's what you have to do anyway. I mean, you can't write one
-voltage table that works for one device and then expect it to work for
-every other device. DT by definition is a board-level definition.
-
-> Looking at the pwm-regulator code I
-> think the binding is badly worded. The "Duty-Cycle" parameter is used as
-> second parameter to pwm_set_relative_duty_cycle (with scale =3D 100). So
-> with the regulator defined in the Voltage Table Example of
-> Documentation/devicetree/bindings/regulator/pwm-regulator.txt you'd have
-> to configure
->=20
-> 	.duty_cycle =3D 2534, .period =3D 8448
-> =09
-> to get 1.056 V.
-
-Hm... indeed. Requiring the duty-cycle to be in percent is not a good
-idea. That's going to lead to rounding one way or another.
-
->=20
-> Note that my considerations are not only about pwm-regulators.
->=20
-> Also in general I prefer a suitable and well reviewed algorithm (if
-> possible) over a requirement to provide a hand-tuned table of values in
-> a machine-specific device tree.
-
-I agree that an algorithm is usually better, but if you can't create an
-algorithm that works, it's usually better to have a hand-coded fallback
-rather than have no working system at all.
-
-> > According to the device tree bindings there's
-> > already support for a voltage table mode where an exact duty-cycle to
-> > output voltage correspondence is defined. This is as opposed to the
-> > continuous voltage mode where the duty cycle is linearly interpolated
-> > based on the requested output voltage.
-> >=20
-> > pwm-regulator in voltage table mode could run in "strict" mode with zero
-> > deviation allowed, on the assumption that duty-cycle values were hand-
-> > picked to give the desired results. For continuous voltage mode it
-> > probably doesn't matter all that much, since very exact results can't be
-> > guaranteed anyway.
->=20
-> I don't understand the last sentence? Why is it impossible to get exact
-> results in continuous voltage mode?
-
-I didn't say it was impossible. I said it can't be guaranteed. There may
-very well be combinations of drivers and consumers where the results
-will be accurate, but there may very well be other combinations where
-the results won't be. So if you don't know the exact combination, you
-can't be sure that the result will be accurate.
-
-Now it seems like both voltage table and continuous modes seem to rely
-on some relative duty cycle setting, in which case there's typically
-going to be rounding in both cases (unless you make the duty cycle range
-large enough to accomodate the whole range from 0 to period.
-
-Thierry
-
---wchHw8dVAp53YPj8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzHJjwACgkQ3SOs138+
-s6F+vg//XwtHr6bwoEWwb8ABsYBxluAwGg26p3zajc0Fk6tr0PdRKO5DcipO+aq8
-1Gh3KwMew85ceeGe93QsRCc64tyG/Geo4UoOtY5ge/wtS9IBtQ3d/9c/zNpN5l8I
-IaSakOqCMySBGZ4DjSe2xmtsTKSVJmc0dPd1ua+tnyblHh3uEXsl8wOrkySnJGUc
-U23bQMj+ua3QfB+4DGNCGJ+CZoYUvmOMhKy/uQDoXU5z8WDOOn4FAAS96oH3vk56
-Hhh9Gon5Zmje4qyccbghBjD5rDH5bk6Re9H/F9HQj15aMbQ79990eJt9nHAkVUG8
-qZ0gagUf6pEEuc7SCVVFm0BVqTUu99GCO1gV2eBYlSw85XgzZqnSmWOL9O5gViE9
-7cK5PSwbByBVxslkeK4TJdpUPTQLRzoWxZLQlJwwEFlBV0sfR8ja2ZKdkR2xCZsJ
-ioy43b09B8Tc6mquFmTfrwbmmxt+G7OSsNKVW+jTkfa5wZiwspJfihFrqewJbIIN
-OiUPGmX9SCkwQvvXHWoue1iDXJlw8SbFaxW/2PSAhMeqNDes4chqRtmFJvOHvXpH
-JYn1mupAhrH9SQuY15qSc0tisgSyJgHyTojwmF/eAPHh7PN25ntoL1Q1Q8qic9XG
-hlw6x7yyM2j/Hjwyndl/dgagg4ZXgIXX9+5KH/p+CMOuShb61sU=
-=8pBY
------END PGP SIGNATURE-----
-
---wchHw8dVAp53YPj8--
-
-
---===============0582994242795099779==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linux-rockchip mailing list
-Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-http://lists.infradead.org/mailman/listinfo/linux-rockchip
-
---===============0582994242795099779==--
+SGksCgpPbiBTdW4sIEFwciAyOCwgMjAxOSBhdCAxMTo1NiBQTSBVd2UgS2xlaW5lLUvDtm5pZwo8
+dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPgo+IE9uIFRodSwgQXByIDE4
+LCAyMDE5IGF0IDA1OjI3OjA1UE0gLTA3MDAsIEJyaWFuIE5vcnJpcyB3cm90ZToKPiA+IEhpLAo+
+ID4KPiA+IEknbSBub3Qgc3VyZSBpZiBJJ20gbWlzcmVhZGluZyB5b3UsIGJ1dCBJIHRob3VnaHQg
+SSdkIGFkZCBoZXJlIGJlZm9yZQo+ID4gdGhpcyBleHBpcmVzIG91dCBvZiBteSBpbmJveDoKPiA+
+Cj4gPiBPbiBNb24sIEFwciA4LCAyMDE5IGF0IDc6MzkgQU0gVXdlIEtsZWluZS1Lw7ZuaWcKPiA+
+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOgo+ID4gPiBNeSBpbnRlbnRp
+b24gaGVyZSBpcyBtb3JlIHRvIG1ha2UgYWxsIGRyaXZlcnMgYmVoYXZlIHRoZSBzYW1lIHdheSBh
+bmQKPiA+ID4gYmVjYXVzZSBvbmx5IHR3byBkcml2ZXJzIHVwZGF0ZWQgdGhlIHB3bV9zdGF0ZSB0
+aGlzIHdhcyB0aGUgdmFyaWFudCBJCj4gPiA+IHJlbW92ZWQuCj4gPgo+ID4gVG8gYmUgY2xlYXIs
+IHRoaXMgcGF0Y2ggb24gaXRzIG93biBpcyBwcm9iYWJseSBicmVha2luZyB0aGluZ3MuIEp1c3QK
+PiA+IGJlY2F1c2UgdGhlIG90aGVyIGRyaXZlcnMgZG9uJ3QgaW1wbGVtZW50IHRoZSBkb2N1bWVu
+dGVkIGJlaGF2aW9yCj4gPiBkb2Vzbid0IG1lYW4geW91IHNob3VsZCBicmVhayB0aGlzIGRyaXZl
+ci4gTWF5YmUgdGhlIG90aGVycyBqdXN0Cj4gPiBhcmVuJ3QgdXNlZCBpbiBwcmVjaXNlIGVub3Vn
+aCBzY2VuYXJpb3Mgd2hlcmUgdGhpcyBtYXR0ZXJzLgo+ID4KPiA+ID4gV2hlbiB5b3Ugc2F5IHRo
+YXQgdGhlIGNhbGxlciBtaWdodCBhY3R1YWxseSBjYXJlIGFib3V0IHRoZSBleGFjdAo+ID4gPiBw
+YXJhbWV0ZXJzIEkgZnVsbHkgYWdyZWUuIEluIHRoaXMgY2FzZSBob3dldmVyIHRoZSBjb25zdW1l
+ciBzaG91bGQgYmUKPiA+ID4gYWJsZSB0byBrbm93IHRoZSByZXN1bHQgYmVmb3JlIGFjdHVhbGx5
+IGFwcGx5aW5nIGl0LiBTbyBpZiB5b3UgZG8KPiA+ID4KPiA+ID4gICAgICAgICBwd21fYXBwbHlf
+c3RhdGUocHdtLCB7IC5wZXJpb2QgPSAxNywgLmR1dHlfY3ljbGUgPSAxMiwgLi4ufSkKPiA+ID4K
+PiA+ID4gYW5kIHRoaXMgcmVzdWx0cyBpbiAucGVyaW9kID0gMTAwIGFuZCAuZHV0eV9jeWNsZSA9
+IDAgdGhlbiBwcm9iYWJseSB0aGUKPiA+ID4gYmFkIHRoaW5ncyB5b3Ugd2FudCB0byBrbm93IGFi
+b3V0IGFscmVhZHkgaGFwcGVuZC4gU28gbXkgaWRlYSBpcyBhIG5ldwo+ID4gPiBmdW5jdGlvbiBw
+d21fcm91bmRfc3RhdGUoKSB0aGF0IGRvZXMgdGhlIGFkYXB0aW9ucyB0byBwd21fc3RhdGUgd2l0
+aG91dAo+ID4gPiBhcHBseWluZyBpdCB0byB0aGUgaGFyZHdhcmUuIEFmdGVyIHRoYXQgcHdtX2Fw
+cGx5X3N0YXRlIGNvdWxkIGRvIHRoZQo+ID4gPiBmb2xsb3dpbmc6Cj4gPiA+Cj4gPiA+ICAgICAg
+ICAgcnN0YXRlID0gcHdtX3JvdW5kX3N0YXRlKHB3bSwgc3RhdGUpCj4gPiA+ICAgICAgICAgcHdt
+LmFwcGx5KHB3bSwgc3RhdGUpCj4gPiA+ICAgICAgICAgZ3N0YXRlID0gcHdtX2dldF9zdGF0ZShw
+d20pCj4gPiA+Cj4gPiA+ICAgICAgICAgaWYgcnN0YXRlICE9IGdzdGF0ZToKPiA+ID4gICAgICAg
+ICAgICAgICAgIHdhcm4gYWJvdXQgcHJvYmxlbXMKPiA+Cj4gPiBGb3Igb3VyIGNhc2UgKHdlJ3Jl
+IHVzaW5nIHRoaXMgd2l0aCBwd20tcmVndWxhdG9yKSwgSSBkb24ndCByZWNhbGwgWypdCj4gPiB3
+ZSBuZWVkIHRvIGJlIDEwMCUgcHJlY2lzZSBhYm91dCB0aGUgcGVyaW9kLCBidXQgd2UgZG8gbmVl
+ZCB0byBiZSBhcwo+ID4gcHJlY2lzZSBhcyBwb3NzaWJsZSB3aXRoIHRoZSBkdXR5OnBlcmlvZCBy
+YXRpbyAtLSBzbyBvbmNlIHdlIGdldCB0aGUKPiA+ICJmZWVkYmFjayIgZnJvbSB0aGUgdW5kZXJs
+eWluZyBQV00gZHJpdmVyIHdoYXQgdGhlIHJlYWwgcGVyaW9kIHdpbGwKPiA+IGJlLCB3ZSBhZGp1
+c3QgdGhlIGR1dHkgYXBwcm9wcmlhdGVseS4KPgo+IEkgYWRtaXQgdGhhdCBJIGRpZG4ndCB1bmRl
+cnN0b29kIHRoZSB3aG9sZSBzaXR1YXRpb24gYW5kIChzb21lKSB0aGluZ3MKPiBhcmUgd29yc2Ug
+d2l0aCBteSBwYXRjaGVzIGFwcGxpZWQuIEkgc3RpbGwgdGhpbmsgdGhhdCBjaGFuZ2luZyB0aGUK
+PiBjYWxsZXIncyBzdGF0ZSB2YXJpYWJsZSBpcyBiYWQgZGVzaWduLCBidXQgb2YgY291cnNlIHB3
+bV9nZXRfc3RhdGUKPiBzaG91bGQgcmV0dXJuIHRoZSBjdXJyZW50bHkgaW1wbGVtZW50ZWQgY29u
+ZmlndXJhdGlvbi4KClJlZ2FyZGxlc3Mgb2YgdGhlIHByb3MgYW5kIGNvbnMgb2YgdGhlIGN1cnJl
+bnQgc2l0dWF0aW9uLCBob3BlZnVsbHkKd2UncmUgaW4gYWdyZWVtZW50IHRoYXQgd2Ugc2hvdWxk
+bid0IGJyZWFrIGV4aXN0aW5nIHVzZXJzPyAgSW4gZ2VuZXJhbApJJ2xsIHByb2JhYmx5IHN0YXkg
+b3V0IG9mIHRoZSBkZWJhdGUgYXMgbG9uZyBhcyB3ZSBlbmQgc29tZXdoZXJlIHRoYXQKcHdtX3Jl
+Z3VsYXRvciBpcyBhYmxlIHRvIHNvbWVob3cga25vdyB0aGUgYWN0dWFsIHN0YXRlIHRoYXQgaXQK
+cHJvZ3JhbW1lZCBpbnRvIHRoZSBoYXJkd2FyZS4KCitCb3JpcyB0b28gaW4gY2FzZSBoZSBoYXMg
+YW55IGNvbW1lbnRzLgoKCj4gPiBTbyBJIGRvbid0IHNlZSB0aGF0ICJ3YXJuaW5nIiB3b3VsZCBy
+ZWFsbHkgaGVscCBmb3IgdGhpcyBwYXJ0aWN1bGFyIGNhc2UuCj4gPgo+ID4gPiBCdXQgYmVmb3Jl
+IGRvaW5nIHRoYXQgSSB0aGluayBpdCB3b3VsZCBiZSBzZW5zaWJsZSB0byBhbHNvIGZpeCB0aGUg
+cnVsZXMKPiA+ID4gaG93IHRoZSByb3VuZF9zdGF0ZSBjYWxsYmFjayBpcyBzdXBwb3NlZCB0byBy
+b3VuZC4KPiA+Cj4gPiBJJ20gbm90IHF1aXRlIHN1cmUgSSBncm9rIGV4YWN0bHkgd2hhdCB5b3Un
+cmUgcGxhbm5pbmcsIGJ1dCBJIHdvdWxkCj4gPiBtdWNoIGFwcHJlY2lhdGUgaWYgeW91IGRpZG4n
+dCBicmVhayB0aGluZ3Mgb24gdGhlIHdheSB0b3dhcmQgZml4aW5nCj4gPiB0aGVtIDspCj4KPiBU
+aGVyZSBhcmUgY3VycmVudGx5IG5vIHJ1bGVzIGhvdyB0aGUgZHJpdmVyIHNob3VsZCBiZWhhdmUg
+Zm9yIGV4YW1wbGUgaWYKPiB0aGUgY29uc3VtZXIgcmVxdWVzdHMKPgo+ICAgICAgICAgLmR1dHlf
+Y3ljbGUgPSAxMCwgLnBlcmlvZCA9IDUwCj4KPiBhbmQgdGhlIGhhcmR3YXJlIGNhbiBvbmx5IGlt
+cGxlbWVudCBtdWx0aXBsZXMgb2YgMyBmb3IgYm90aCB2YWx1ZXMuIFRoZQo+IG9idmlvdXMgY2Fu
+ZGlkYXRlcyBhcmU6Cj4KPiAgLSAuZHV0eV9jeWNsZSA9IDksIC5wZXJpb2QgPSA1MSAocm91bmQg
+bmVhcmVzdCBmb3IgYm90aCkKPiAgLSAuZHV0eV9jeWNsZSA9IDEyLCAucGVyaW9kID0gNTEgKHJv
+dW5kIHVwKQo+ICAtIC5kdXR5X2N5Y2xlID0gOSwgLnBlcmlvZCA9IDQ4IChyb3VuZCBkb3duKQo+
+ICAtIC5kdXR5X2N5Y2xlID0gOSwgLnBlcmlvZCA9IDQ1IChyb3VuZCBkdXR5X2N5Y2xlIGFuZCBr
+ZWVwIHByb3BvcnRpb24pCj4gIC0gcmV0dXJuIGVycm9yICh3aGljaCBjb2RlPykKPgo+IEFuZCB0
+aGVyZSBhcmUgc29tZSBvdGhlciB2YXJpYW50cyAoZS5nLiByb3VuZCBkdXR5X2N5Y2xlIHRvIG5l
+YXJlc3QgYW5kCj4gcGVyaW9kIGluIHRoZSBzYW1lIGRpcmVjdGlvbikgdGhhdCBtaWdodCBiZSBz
+ZW5zaWJsZS4KCkkgd2lsbCBub3RlIHRoYXQgSSBoYWQgdG8gZGVhbCB3aXRoIHNvbWUgb2YgdGhp
+cyByZWNlbnRseSB3aGVuIEkKd2FudGVkIHRvIHRyeSB0byByZXBsaWNhdGUgdGhlIGV4YWN0IHZv
+bHRhZ2UgbGV2ZWxzIGZvciAidmRkX2xvZyIgZnJvbQpkb3duc3RyZWFtIGluIHJrMzI4OC12ZXly
+b24gZGV2aWNlcy4gIFNlZSBjb21taXQgODY0YzJmZWU0ZWU5ICgiQVJNOgpkdHM6IHJvY2tjaGlw
+OiBBZGQgdmRkX2xvZ2ljIHRvIHJrMzI4OC12ZXlyb24iKSBpbiBIZWlrbydzIHRyZWUgKG9yCmp1
+c3QgbG9vayBpbiBsaW51eC1uZXh0KQoKCj4gQWxzbyBpdCBzaG91bGQgYmUgcG9zc2libGUgdG8g
+a25vdyB0aGUgcmVzdWx0IGJlZm9yZSBhY3R1YWxseQo+IGNvbmZpZ3VyaW5nIHRoZSBoYXJkd2Fy
+ZS4gT3RoZXJ3aXNlIHRoaW5ncyBtaWdodCBhbHJlYWR5IGdvIHdyb25nCj4gYmVjYXVzZSB0aGUg
+ZHJpdmVyIGltcGxlbWVudHMgYSBzZXR0aW5nIHRoYXQgaXMgdG9vIGZhciBmcm9tIHRoZQo+IHJl
+cXVlc3RlZCBjb25maWd1cmF0aW9uLgoKTGF0ZXIgaW4gdGhpcyB0aHJlYWQgVGhpZXJyeSBkaWRu
+J3QgbGlrZSB0aGUgInJvdW5kIHJhdGUiIGlkZWEgZHVlIHRvCnJhY2VzLiAgT25lIHdheSB0byBz
+b2x2ZSB0aGF0IGNvdWxkIGJlIHRvIGluZGljYXRlIHRvIHRoZSBQV00KZnJhbWV3b3JrIHdoaWNo
+IGRpcmVjdGlvbiB5b3UnZCBsaWtlIGl0IHRvIGVycm9yIGluOiBhIGhpZ2hlciBkdXR5CmN5Y2xl
+IG9yIGEgbG93ZXIgb25lLgoKCi1Eb3VnCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwpMaW51eC1yb2NrY2hpcCBtYWlsaW5nIGxpc3QKTGludXgtcm9ja2No
+aXBAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2xpbnV4LXJvY2tjaGlwCg==
