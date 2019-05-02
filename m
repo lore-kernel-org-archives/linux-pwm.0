@@ -1,28 +1,39 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/3] dt-bindings: pwm: Update bindings for the Meson
- G12A Family
-Date: Wed, 1 May 2019 15:01:04 -0500
-Message-ID: <20190501200104.GA29281@bogus>
-References: <20190423133646.5705-1-narmstrong@baylibre.com>
- <20190423133646.5705-2-narmstrong@baylibre.com>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: Re: [PATCH v11 0/2] PWM support for HiFive Unleashed
+Date: Thu, 2 May 2019 09:31:16 +0530
+Message-ID: <CAJ2_jOFu-yCZV_A4B48_fLq7h7UA6LUWhgpxr0uuh7vhW9Q8pA@mail.gmail.com>
+References: <1553508779-9685-1-git-send-email-yash.shah@sifive.com>
+ <mvmbm1zueya.fsf@suse.de> <mvmpnqcsn6u.fsf@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190423133646.5705-2-narmstrong@baylibre.com>
+In-Reply-To: <mvmpnqcsn6u.fsf@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: thierry.reding@gmail.com, devicetree@vger.kernel.org, baylibre-upstreaming@groups.io, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Andreas Schwab <schwab@suse.de>
+Cc: Palmer Dabbelt <palmer@sifive.com>, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Sachin Ghadi <sachin.ghadi@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 23 Apr 2019 15:36:44 +0200, Neil Armstrong wrote:
-> Update the doc to explicitly support Meson G12A Family.
-> The 2 first (A & B) AO PWM uses different clock source than the last 2
-> (C & D) AO PWM modules, thus we need to differentiate them.
-> 
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-meson.txt | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+Hi Andreas,
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+On Wed, Mar 27, 2019 at 2:34 PM Andreas Schwab <schwab@suse.de> wrote:
+>
+> I have now found out that the ledtrig modules don't load automatically.
+> I would have expected that the linux,default-trigger entries would cause
+> the load of the corresponding ledtrig modules.
+>
+> But there is another problem, that the leds are on by default.
+> Shouldn't they be off by default?
+
+The PWM default output state is high (When duty cycle is 0), So I
+guess leds will remain on by default.
+
+Are you able to test the PWM driver at your end? or you still facing
+some issues?
+
+>
+> Andreas.
+>
+> --
+> Andreas Schwab, SUSE Labs, schwab@suse.de
+> GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
+> "And now for something completely different."
