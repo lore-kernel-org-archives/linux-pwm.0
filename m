@@ -1,54 +1,32 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v2 5/5] drm/mediatek: add mt8183 dsi driver support
-Date: Wed, 8 May 2019 11:00:34 +0800
-Message-ID: <1557284434.31731.10.camel@mtksdaap41>
-References: <20190416060501.76276-1-jitao.shi@mediatek.com>
-         <20190416060501.76276-6-jitao.shi@mediatek.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND][PATCH v3 0/6] add LCD support for SAM9X60
+Date: Wed, 8 May 2019 07:23:28 +0100
+Message-ID: <20190508062328.GD7627@dell>
+References: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190416060501.76276-6-jitao.shi@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
+To: Claudiu.Beznea@microchip.com
+Cc: bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Jitao:
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c  |  18 ++--
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c    | 120 +++++++++++++++++++++++-
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h    |   2 +
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c |   2 +-
+>  drivers/pwm/pwm-atmel-hlcdc.c                   |   1 +
+>  5 files changed, 132 insertions(+), 11 deletions(-)
 
-On Tue, 2019-04-16 at 14:05 +0800, Jitao Shi wrote:
-> Add mt8183 dsi driver data. Enable size control and
-> reg commit control.
-> 
+Not sure why I am receiving this set.
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Could you please drop me from future submissions.
 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index 458a700ce74c..f0b36ec38e4f 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -1104,11 +1104,19 @@ static const struct mtk_dsi_driver_data mt2701_dsi_driver_data = {
->  	.reg_cmdq_off = 0x180,
->  };
->  
-> +static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
-> +	.reg_cmdq_off = 0x200,
-> +	.has_shadow_ctl = true,
-> +	.has_size_ctl = true,
-> +};
-> +
->  static const struct of_device_id mtk_dsi_of_match[] = {
->  	{ .compatible = "mediatek,mt2701-dsi",
->  	  .data = &mt2701_dsi_driver_data },
->  	{ .compatible = "mediatek,mt8173-dsi",
->  	  .data = &mt8173_dsi_driver_data },
-> +	{ .compatible = "mediatek,mt8183-dsi",
-> +	  .data = &mt8183_dsi_driver_data },
->  	{ },
->  };
->  
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
