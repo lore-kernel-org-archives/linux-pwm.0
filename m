@@ -1,32 +1,36 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: <Claudiu.Beznea@microchip.com>
 Subject: Re: [RESEND][PATCH v3 0/6] add LCD support for SAM9X60
-Date: Wed, 8 May 2019 07:23:28 +0100
-Message-ID: <20190508062328.GD7627@dell>
+Date: Wed, 8 May 2019 08:48:12 +0000
+Message-ID: <d3d3006b-2c5b-6853-24bb-330d539574cf@microchip.com>
 References: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
+ <20190508062328.GD7627@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
+In-Reply-To: <20190508062328.GD7627@dell>
+Content-Language: en-US
+Content-ID: <2E229381D7A6A54F876CA1F7D16DEDA1@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu.Beznea@microchip.com
+To: lee.jones@linaro.org
 Cc: bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c  |  18 ++--
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c    | 120 +++++++++++++++++++++++-
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h    |   2 +
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c |   2 +-
->  drivers/pwm/pwm-atmel-hlcdc.c                   |   1 +
->  5 files changed, 132 insertions(+), 11 deletions(-)
-
-Not sure why I am receiving this set.
-
-Could you please drop me from future submissions.
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+DQoNCk9uIDA4LjA1LjIwMTkgMDk6MjMsIExlZSBKb25lcyB3cm90ZToNCj4gRXh0ZXJuYWwgRS1N
+YWlsDQo+IA0KPiANCj4+ICBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNf
+Y3J0Yy5jICB8ICAxOCArKy0tDQo+PiAgZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVs
+X2hsY2RjX2RjLmMgICAgfCAxMjAgKysrKysrKysrKysrKysrKysrKysrKystDQo+PiAgZHJpdmVy
+cy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX2RjLmggICAgfCAgIDIgKw0KPj4gIGRy
+aXZlcnMvZ3B1L2RybS9hdG1lbC1obGNkYy9hdG1lbF9obGNkY19wbGFuZS5jIHwgICAyICstDQo+
+PiAgZHJpdmVycy9wd20vcHdtLWF0bWVsLWhsY2RjLmMgICAgICAgICAgICAgICAgICAgfCAgIDEg
+Kw0KPj4gIDUgZmlsZXMgY2hhbmdlZCwgMTMyIGluc2VydGlvbnMoKyksIDExIGRlbGV0aW9ucygt
+KQ0KPiANCj4gTm90IHN1cmUgd2h5IEkgYW0gcmVjZWl2aW5nIHRoaXMgc2V0Lg0KDQpUaGllcnJ5
+IHN1Z2dlc3RlZCBpbiB2MSBvZiB0aGlzIHNlcmllcyB0byB0YWtlIHB3bS1hdG1lbC1obGNkYy5j
+IGNoYW5nZXMNCnRob3VnaCBNRkQgdHJlZSBbMV0uIFRoZW4sIGluIHYyIHlvdSBhc2sgbWUgdG8g
+ZG8gdXBkYXRlIGEgYml0IHRoZSBjaGFuZ2VzDQppbiBwd20tYXRtZWwtaGxjZGMuYyBbMl0uIEkg
+c2VuZCBhbGwgdGhlIHBhdGNoZXMgaW4gb25lIHNob3Qgc28gdGhhdCB0aGUNCmNvbnRleHQgdG8g
+YmUgbW9yZSBvYnZpb3VzLiBTb3JyeSBmb3IgdGhlIG5vaXNlLCBpZiBhbnkuDQoNClsxXSBodHRw
+czovL2xvcmUua2VybmVsLm9yZy9sa21sLzIwMTkwMzA0MTEwNTE3LkdCNTEyMUB1bG1vLw0KWzJd
+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAxOTA0MjUwODMxMzIuR0QxNDc1OEBkZWxs
+Lw0KDQo+IENvdWxkIHlvdSBwbGVhc2UgZHJvcCBtZSBmcm9tIGZ1dHVyZSBzdWJtaXNzaW9ucy4N
+Cj4gDQo=
