@@ -1,36 +1,27 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [RESEND][PATCH v3 0/6] add LCD support for SAM9X60
-Date: Wed, 8 May 2019 08:48:12 +0000
-Message-ID: <d3d3006b-2c5b-6853-24bb-330d539574cf@microchip.com>
-References: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
- <20190508062328.GD7627@dell>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH v2 3/3] arm64: dts: meson-g12a: Add PWM nodes
+Date: Wed, 08 May 2019 15:42:10 -0700
+Message-ID: <7h7eb0in5p.fsf@baylibre.com>
+References: <20190423133646.5705-1-narmstrong@baylibre.com> <20190423133646.5705-4-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190508062328.GD7627@dell>
-Content-Language: en-US
-Content-ID: <2E229381D7A6A54F876CA1F7D16DEDA1@namprd11.prod.outlook.com>
+In-Reply-To: <20190423133646.5705-4-narmstrong@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org
-Cc: bbrezillon@kernel.org, airlied@linux.ie, daniel@ffwll.ch, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: baylibre-upstreaming@groups.io, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDA4LjA1LjIwMTkgMDk6MjMsIExlZSBKb25lcyB3cm90ZToNCj4gRXh0ZXJuYWwgRS1N
-YWlsDQo+IA0KPiANCj4+ICBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNf
-Y3J0Yy5jICB8ICAxOCArKy0tDQo+PiAgZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVs
-X2hsY2RjX2RjLmMgICAgfCAxMjAgKysrKysrKysrKysrKysrKysrKysrKystDQo+PiAgZHJpdmVy
-cy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX2RjLmggICAgfCAgIDIgKw0KPj4gIGRy
-aXZlcnMvZ3B1L2RybS9hdG1lbC1obGNkYy9hdG1lbF9obGNkY19wbGFuZS5jIHwgICAyICstDQo+
-PiAgZHJpdmVycy9wd20vcHdtLWF0bWVsLWhsY2RjLmMgICAgICAgICAgICAgICAgICAgfCAgIDEg
-Kw0KPj4gIDUgZmlsZXMgY2hhbmdlZCwgMTMyIGluc2VydGlvbnMoKyksIDExIGRlbGV0aW9ucygt
-KQ0KPiANCj4gTm90IHN1cmUgd2h5IEkgYW0gcmVjZWl2aW5nIHRoaXMgc2V0Lg0KDQpUaGllcnJ5
-IHN1Z2dlc3RlZCBpbiB2MSBvZiB0aGlzIHNlcmllcyB0byB0YWtlIHB3bS1hdG1lbC1obGNkYy5j
-IGNoYW5nZXMNCnRob3VnaCBNRkQgdHJlZSBbMV0uIFRoZW4sIGluIHYyIHlvdSBhc2sgbWUgdG8g
-ZG8gdXBkYXRlIGEgYml0IHRoZSBjaGFuZ2VzDQppbiBwd20tYXRtZWwtaGxjZGMuYyBbMl0uIEkg
-c2VuZCBhbGwgdGhlIHBhdGNoZXMgaW4gb25lIHNob3Qgc28gdGhhdCB0aGUNCmNvbnRleHQgdG8g
-YmUgbW9yZSBvYnZpb3VzLiBTb3JyeSBmb3IgdGhlIG5vaXNlLCBpZiBhbnkuDQoNClsxXSBodHRw
-czovL2xvcmUua2VybmVsLm9yZy9sa21sLzIwMTkwMzA0MTEwNTE3LkdCNTEyMUB1bG1vLw0KWzJd
-IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAxOTA0MjUwODMxMzIuR0QxNDc1OEBkZWxs
-Lw0KDQo+IENvdWxkIHlvdSBwbGVhc2UgZHJvcCBtZSBmcm9tIGZ1dHVyZSBzdWJtaXNzaW9ucy4N
-Cj4gDQo=
+Neil Armstrong <narmstrong@baylibre.com> writes:
+
+> This adds the EE and AO PWM nodes and the possible pinctrl settings.
+>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+> Reviewed-by: Martin Blumenstingl<martin.blumenstingl@googlemail.com>
+
+Since bindings are acked, and there's no build dependency on the driver
+itself, queuing this for v5.3 (branch: v5.3/dt64)
+
+Thanks,
+
+Kevin
