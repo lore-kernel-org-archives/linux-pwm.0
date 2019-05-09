@@ -1,216 +1,69 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.steuer-voss.de ([85.183.69.95]:53048 "EHLO
-        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726808AbfE2MZf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 May 2019 08:25:35 -0400
-From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-Date: Wed, 29 May 2019 14:18:21 +0200
-Message-Id: <254cc03d5467ba7db0f5677646266768e5b24127.1559127603.git.nikolaus.voss@loewensteinmedical.de>
-In-Reply-To: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
-References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
-In-Reply-To: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
-References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Thu, 9 May 2019 17:21:22 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Message-ID: <20190509152122.GE8907@ulmo>
+References: <20190325094934.10221-1-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="684cmtc/Pyvt2LSS"
+Content-Disposition: inline
+In-Reply-To: <20190325094934.10221-1-u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] pwm: clear chip_data in pwm_put
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH 2/3] PWM framework: add support referencing PWMs from ACPI
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>, linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
 
-In analogy to referencing a GPIO using the "gpios" property from ACPI,
-support referencing a PWM using the "pwms" property.
 
-ACPI entries must look like
- Package () {"pwms", Package ()
-     { <PWM device reference>, <PWM index>, <PWM period> [, <PWM flags>]}}
+--684cmtc/Pyvt2LSS
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-In contrast to the DT implementation, only _one_ PWM entry in the "pwms"
-property is supported. As a consequence "pwm-names"-property and
-con_id lookup aren't supported.
+On Mon, Mar 25, 2019 at 10:49:33AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> After a PWM is disposed by its user the per chip data becomes invalid.
+> Clear the data in common code instead of the device drivers to get
+> consistent behaviour. Before this patch only three of nine drivers cleaned
+> up here.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/pwm/core.c        | 1 +
+>  drivers/pwm/pwm-berlin.c  | 1 -
+>  drivers/pwm/pwm-pca9685.c | 1 -
+>  drivers/pwm/pwm-samsung.c | 1 -
+>  4 files changed, 1 insertion(+), 3 deletions(-)
 
-Support for ACPI is added via the firmware-node framework which is an
-abstraction layer on top of ACPI/DT. To keep this patch clean, DT and
-ACPI paths are kept separate. The firmware-node framework could be used
-to unify both paths in a future patch.
+Applied, thanks.
 
-To support leds-pwm driver, an additional method devm_fwnode_pwm_get()
-which supports both ACPI and DT configuration is exported.
+Thierry
 
-Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
----
- drivers/pwm/core.c  | 112 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pwm.h |   9 ++++
- 2 files changed, 121 insertions(+)
+--684cmtc/Pyvt2LSS
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 275b5f399a1a..1d788c05193e 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -6,6 +6,7 @@
-  * Copyright (C) 2011-2012 Avionic Design GmbH
-  */
- 
-+#include <linux/acpi.h>
- #include <linux/module.h>
- #include <linux/pwm.h>
- #include <linux/radix-tree.h>
-@@ -700,6 +701,75 @@ struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
- }
- EXPORT_SYMBOL_GPL(of_pwm_get);
- 
-+static struct pwm_chip *device_to_pwmchip(struct device *dev)
-+{
-+	struct pwm_chip *chip;
-+
-+	mutex_lock(&pwm_lock);
-+
-+	list_for_each_entry(chip, &pwm_chips, list) {
-+		struct acpi_device *adev = ACPI_COMPANION(chip->dev);
-+
-+		if ((chip->dev == dev) || (adev && &adev->dev == dev)) {
-+			mutex_unlock(&pwm_lock);
-+			return chip;
-+		}
-+	}
-+
-+	mutex_unlock(&pwm_lock);
-+
-+	return ERR_PTR(-EPROBE_DEFER);
-+}
-+
-+/**
-+ * acpi_pwm_get() - request a PWM via parsing "pwms" property in ACPI
-+ * @fwnode: firmware node to get the "pwm" property from
-+ *
-+ * Returns the PWM device parsed from the fwnode and index specified in the
-+ * "pwms" property or a negative error-code on failure.
-+ * Values parsed from the device tree are stored in the returned PWM device
-+ * object.
-+ *
-+ * This is analogous to of_pwm_get() except con_id is not yet supported.
-+ * ACPI entries must look like
-+ * Package () {"pwms", Package ()
-+ *     { <PWM device reference>, <PWM index>, <PWM period> [, <PWM flags>]}}
-+ *
-+ * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
-+ * error code on failure.
-+ */
-+struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
-+{
-+	struct fwnode_reference_args args;
-+	struct pwm_chip *chip;
-+	struct pwm_device *pwm = ERR_PTR(-ENODEV);
-+	int ret;
-+
-+	memset(&args, 0, sizeof(args));
-+	ret = __acpi_node_get_property_reference(fwnode, "pwms", 0, 3, &args);
-+
-+	if (!to_acpi_device_node(args.fwnode))
-+		return ERR_PTR(-EINVAL);
-+	if (args.nargs < 2)
-+		return ERR_PTR(-EPROTO);
-+
-+	chip = device_to_pwmchip(&to_acpi_device_node(args.fwnode)->dev);
-+	if (IS_ERR(chip))
-+		return ERR_CAST(chip);
-+
-+	pwm = pwm_request_from_chip(chip, args.args[0], NULL);
-+	if (IS_ERR(pwm))
-+		return pwm;
-+
-+	pwm->args.period = args.args[1];
-+	pwm->args.polarity = PWM_POLARITY_NORMAL;
-+
-+	if (args.nargs > 2 && args.args[2] & PWM_POLARITY_INVERTED)
-+		pwm->args.polarity = PWM_POLARITY_INVERSED;
-+
-+	return pwm;
-+}
-+
- /**
-  * pwm_add_table() - register PWM device consumers
-  * @table: array of consumers to register
-@@ -763,6 +833,10 @@ struct pwm_device *pwm_get(struct device *dev, const char *con_id)
- 	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
- 		return of_pwm_get(dev->of_node, con_id);
- 
-+	/* then lookup via ACPI */
-+	if (dev && is_acpi_node(dev->fwnode))
-+		return acpi_pwm_get(dev->fwnode);
-+
- 	/*
- 	 * We look up the provider in the static table typically provided by
- 	 * board setup code. We first try to lookup the consumer device by
-@@ -942,6 +1016,44 @@ struct pwm_device *devm_of_pwm_get(struct device *dev, struct device_node *np,
- }
- EXPORT_SYMBOL_GPL(devm_of_pwm_get);
- 
-+/**
-+ * devm_fwnode_pwm_get() - request a resource managed PWM from firmware node
-+ * @dev: device for PWM consumer
-+ * @fwnode: firmware node to get the PWM from
-+ * @con_id: consumer name
-+ *
-+ * Returns the PWM device parsed from the firmware node. See of_pwm_get() and
-+ * acpi_pwm_get() for a detailed description.
-+ *
-+ * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
-+ * error code on failure.
-+ */
-+struct pwm_device *devm_fwnode_pwm_get(struct device *dev,
-+				       struct fwnode_handle *fwnode,
-+				       const char *con_id)
-+{
-+	struct pwm_device **ptr, *pwm = ERR_PTR(-ENODEV);
-+
-+	ptr = devres_alloc(devm_pwm_release, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	if (is_of_node(fwnode))
-+		pwm = of_pwm_get(to_of_node(fwnode), con_id);
-+	else if (is_acpi_node(fwnode))
-+		pwm = acpi_pwm_get(fwnode);
-+
-+	if (!IS_ERR(pwm)) {
-+		*ptr = pwm;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
-+	}
-+
-+	return pwm;
-+}
-+EXPORT_SYMBOL_GPL(devm_fwnode_pwm_get);
-+
- static int devm_pwm_match(struct device *dev, void *res, void *data)
- {
- 	struct pwm_device **p = res;
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index eaa5c6e3fc9f..1a635916cdfb 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -411,6 +411,9 @@ void pwm_put(struct pwm_device *pwm);
- struct pwm_device *devm_pwm_get(struct device *dev, const char *con_id);
- struct pwm_device *devm_of_pwm_get(struct device *dev, struct device_node *np,
- 				   const char *con_id);
-+struct pwm_device *devm_fwnode_pwm_get(struct device *dev,
-+				       struct fwnode_handle *fwnode,
-+				       const char *con_id);
- void devm_pwm_put(struct device *dev, struct pwm_device *pwm);
- #else
- static inline struct pwm_device *pwm_request(int pwm_id, const char *label)
-@@ -516,6 +519,12 @@ static inline struct pwm_device *devm_of_pwm_get(struct device *dev,
- 	return ERR_PTR(-ENODEV);
- }
- 
-+static inline struct pwm_device *devm_fwnode_pwm_get(
-+	struct device *dev, struct fwnode_handle *fwnode, const char *con_id)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
- static inline void devm_pwm_put(struct device *dev, struct pwm_device *pwm)
- {
- }
--- 
-2.17.1
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzURXAACgkQ3SOs138+
+s6FeXg//dKvz4PGcniJXYV9iyqHiu7X2qROj/XhXXbai1jZ9B0/z2RnJHThhTkxo
+Uq+Lg6i1KuqwSeQrxpPXffncOVUtIrJ+48kOSIaPumlhL7gYcZOJ5mkrVGhBsNa4
+LZ6RLSXK9MWOX+n/lPB4bYEW3vOe5kw/Vsr1c4gMtmj4XNUmNQ2539ohw/1iD0OM
+JbuqzoQWogP3Op7Sy4dh0o5T3RvoOc5ZPo3vJ5D/sgzjwoaIU6CFRj2Xb6LVB0N0
+dpvGsdjBLMqaNK2qfrs6aJ7qMnOuZokRPUM0yXchNr5eMSBNc2Wh5l6FAyPC12H8
+J/SZgkVwVk+BUiWEg9Rlj/Ar8pSQPgcJ7g820WECzxlNQ+7gdjKQj/tp0WH8wKIJ
+IFY9sZUNGnpvVtSLSFh8uC3EyedYki+NYrezeuyOiMJ3cp4fQ0x6LMKwa9xD+gcM
+CeWTaH8imp9ZHlW2BTk2FpRH63mdg6J8mMT6U6D0fPpvrECo30hH2YRY07rqenjR
+ydMxCZyrkU3pyN3qR+ShuQLk+67MtAooMFcwLVyxr7ROQTxUICrAvaHRZ1eB6VyW
+JdmS9fZ8iGHoyY1fDLDVyKLBXq36UNwKX6Ksi7nWCIWZj4ZGN8oJypbL6KsRAl+5
+BA/e6rnxc1E2t4Esx8RXsgBwnQEpvoC+ysm7ASivj4kJ6yfV2ME=
+=g6Eo
+-----END PGP SIGNATURE-----
+
+--684cmtc/Pyvt2LSS--
