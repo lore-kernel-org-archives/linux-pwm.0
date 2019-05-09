@@ -1,74 +1,84 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 1/1] pwm: meson: use the spin-lock only to protect
- register modifications
-Date: Thu, 9 May 2019 16:52:42 +0200
-Message-ID: <20190509145242.GZ8907@ulmo>
-References: <20190401175748.5376-1-martin.blumenstingl@googlemail.com>
- <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH 0/2] pwm: meson: two small bug-fixes
+Date: Thu, 9 May 2019 16:52:59 +0200
+Message-ID: <20190509145259.GA8907@ulmo>
+References: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="LvlcLv3JjFtLV6y2"
+        protocol="application/pgp-signature"; boundary="sdOeJE8sLwpQaOMV"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190401175748.5376-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190401181817.11999-1-martin.blumenstingl@googlemail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, narmstrong@baylibre.com, jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de
+Cc: linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, narmstrong@baylibre.com, jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, bichao.zheng@amlogic.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---LvlcLv3JjFtLV6y2
+--sdOeJE8sLwpQaOMV
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 01, 2019 at 07:57:48PM +0200, Martin Blumenstingl wrote:
-> Holding the spin-lock for all of the code in meson_pwm_apply() can
-> result in a "BUG: scheduling while atomic". This can happen because
-> clk_get_rate() (which is called from meson_pwm_calc()) may sleep.
-> Only hold the spin-lock when modifying registers to solve this.
+On Mon, Apr 01, 2019 at 08:18:15PM +0200, Martin Blumenstingl wrote:
+> This series applies on top of my other fix "pwm: meson: fix scheduling
+> while atomic issue" from [0]
 >=20
-> The reason why we need a spin-lock in the driver is because the
-> REG_MISC_AB register is shared between the two channels provided by one
-> PWM controller. The only functions where REG_MISC_AB is modified are
-> meson_pwm_enable() and meson_pwm_disable() so the register reads/writes
-> in there need to be protected by the spin-lock.
+> The first patch fixes an issue where the maximum possible pre-divider
+> (128) could not be used because there was an off-by-one error in the
+> code. I discovered this while testing with the longest supported period
+> (349514407ns) when running from XTAL. This is verified to work on my
+> Meson8b Odroid-C1 board using "pwm_b" on GPIOX_11.
 >=20
-> The original code also used the spin-lock to protect the values in
-> struct meson_pwm_channel. This could be necessary if two consumers can
-> use the same PWM channel. However, PWM core doesn't allow this so we
-> don't need to protect the values in struct meson_pwm_channel with a
-> lock.
+> The second patch was suggested by Uwe Kleine-K=C3=B6nig but was actually
+> implemented much earlier (back in mid 2018) by Bichao Zheng from
+> Amlogic. This patch fixes changing the duty cycle by relying on the
+> hardware to re-start the PWM output (instead of adding an artificial
+> "constant LOW" of about 20ms - as measured by Bichao Zheng when
+> stopping and re-starting the PWM output from within the driver). I
+> tested this fix on my Meson8b Odroid-C1 board which uses a PWM driven
+> CPU regulator (DVFS with all supported OPPs is still working fine for
+> me, although I couldn't observe any issues before this patch).
 >=20
-> Fixes: 211ed630753d2f ("pwm: Add support for Meson PWM Controller")
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/pwm/pwm-meson.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
+> I also have some code-improvements queued which I'll send in the next
+> days, see [1]
+>=20
+>=20
+> [0] https://patchwork.kernel.org/cover/10880419/
+> [1] https://github.com/xdarklight/linux/commits/meson-pwm-for-5.2-v1
+>=20
+>=20
+> Bichao Zheng (1):
+>   pwm: meson: don't disable pwm when setting duty repeatedly
+>=20
+> Martin Blumenstingl (1):
+>   pwm: meson: consider 128 a valid pre-divider
+>=20
+>  drivers/pwm/pwm-meson.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
 
-Applied, thanks.
+Both patches applied, thanks.
 
 Thierry
 
---LvlcLv3JjFtLV6y2
+--sdOeJE8sLwpQaOMV
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzUPrkACgkQ3SOs138+
-s6EbQQ//cCrVsIOMfus+LS3hL9db6Yhpor2moT9YI9tTtoyGZjgbCupOilKeMqDu
-jj5vflVwl/AWtW6okavjVj+xaUaUxNxHxm9Nx2yWwDo4fmhZ5BcRhg0O4bfo55eY
-ED1NvERiM9P5TCCsnakPJxc/VVUt9voqU0C7TR6CzxlucTUAn84GtQNhdyMKJV4Y
-3XHr2fYynP3UJbv/WXXSoIO4VPNOHO9/c/FkdPN+51lbum1pxeUXOB4OIqEzSwCh
-Y175JhoOMqt7nKy5AnWWm20IpgEOA7MT4/gZDOkeyVni2FzGeHFeA3w41fwdQnl6
-aM7mClWdYGY5WqDLpe+8GOhTD+LeNxlLsSPoo6H5M+YahDDULYoX2f0QT2U1UiX7
-MFMTjDy2gNWfPdO1y+ynScbFVW6VCuczmOelwMdQdWEf5U7kYxED7zNHDJGmemE8
-tQ0vuLZEDPqctCwACswaDYagHgDBFPD575sqJmf5FvA7aMedjFlNNamfK5t1rB/s
-lrgYobMqhatckbeeMUVBVipxtL6N6MYbfM8pFO1GULGnC5u9q8plRGsB+X0na0in
-gk9+9DAYpQgrkXRsKG0McHbvEWGckogX3FbckxivAj0wRnQwSM/cgswcHGwJs3GR
-ZfJBEEqf8UAEQSQPu+gpHm5py7KWRO/taKr98J4unhGfNzh9mow=
-=HHny
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzUPssACgkQ3SOs138+
+s6HQ2w/5AYGbx7MbLUpSUjsimmVEVGLHZMNi+Ma8lE2mK2HKzvp1nHPQvai/Pob7
+2dnkyZjxB5FhHBJSuh92Wpk7rdLUMEG0mY/BJRkZG5Ne2dt94Jxyz2clVbM950kE
+7YtzMBuPmCWvn8noD9aSyiVqVAeBppUfQhBBWvWaC2byjmXW5YB0ND/yyZH6o33x
+ZS9gH8v6COySx2zNxzWjk3Fx7q8PjqnY2JvKZqpLSoE4rt49YJnUdafeRPDdBOoa
+odBOSmVE8u4NvjLL/lbHgfpX9ITApqBGsfIX9EQZiqsGsD3DFFJff7zuxjMJJLfZ
+cVsvWaTRzQhPxB2CkWQJ/yn8OI0JOPdCXKyZM1sK/apBRj3lEhD6AoYdwlslk4MW
+Qn4mqSf5yWE7i8XnSo9Bb3IvE0U0F9+WSRE9Cf/IeKryeE2SwbIGNbbHrtQNqD4I
+95xa0Ck4ijkwX4N3j1fL+/6VfLG/gRUs7aXUtwfMPyf4ln49hwHvAkFJfWU7fOqm
+zffAQhbmqEeuiGFO9BZGHtTF5l9WzOEhs+aqtupn226xLAAUA5AUUZeypRwswNIM
+x8X91p+Iy/EJdck2vcsLmFgl2CHuSo45bUepmicGOaOc1611ZZMry5fgqSgEn4iI
+pVmuiNeb8uZ//O5v+GG0vdt94+lLwZAwCARg/UHfmPf55T4AMuI=
+=7AFQ
 -----END PGP SIGNATURE-----
 
---LvlcLv3JjFtLV6y2--
+--sdOeJE8sLwpQaOMV--
