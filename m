@@ -1,27 +1,65 @@
-From: Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v2 3/3] arm64: dts: meson-g12a: Add PWM nodes
-Date: Wed, 08 May 2019 15:42:10 -0700
-Message-ID: <7h7eb0in5p.fsf@baylibre.com>
-References: <20190423133646.5705-1-narmstrong@baylibre.com> <20190423133646.5705-4-narmstrong@baylibre.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH V11 0/5] Add i.MX7ULP EVK PWM backlight support
+Date: Thu, 9 May 2019 01:44:53 +0000
+Message-ID: <DB3PR0402MB39166E774B176ADCA82EE46BF5330@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1554860547-18237-1-git-send-email-Anson.Huang@nxp.com>
+ <AM6PR0402MB39113C3CA7E1AB8969882B41F53C0@AM6PR0402MB3911.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190423133646.5705-4-narmstrong@baylibre.com>
+In-Reply-To: <AM6PR0402MB39113C3CA7E1AB8969882B41F53C0@AM6PR0402MB3911.eurprd04.prod.outlook.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: baylibre-upstreaming@groups.io, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "stefan@agner.ch" <stefan@agner.ch>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-arm-kernel@lists.infradead.org
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Neil Armstrong <narmstrong@baylibre.com> writes:
-
-> This adds the EE and AO PWM nodes and the possible pinctrl settings.
->
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> Reviewed-by: Martin Blumenstingl<martin.blumenstingl@googlemail.com>
-
-Since bindings are acked, and there's no build dependency on the driver
-itself, queuing this for v5.3 (branch: v5.3/dt64)
-
-Thanks,
-
-Kevin
+UGluZy4uLg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEFuc29uIEh1
+YW5nDQo+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMjQsIDIwMTkgMTA6NTkgQU0NCj4gVG86IHRo
+aWVycnkucmVkaW5nQGdtYWlsLmNvbTsgcm9iaCtkdEBrZXJuZWwub3JnOyBtYXJrLnJ1dGxhbmRA
+YXJtLmNvbTsNCj4gc2hhd25ndW9Aa2VybmVsLm9yZzsgcy5oYXVlckBwZW5ndXRyb25peC5kZTsg
+a2VybmVsQHBlbmd1dHJvbml4LmRlOw0KPiBmZXN0ZXZhbUBnbWFpbC5jb207IGxpbnV4QGFybWxp
+bnV4Lm9yZy51azsgc3RlZmFuQGFnbmVyLmNoOw0KPiBvdGF2aW9Ab3NzeXN0ZW1zLmNvbS5icjsg
+TGVvbmFyZCBDcmVzdGV6IDxsZW9uYXJkLmNyZXN0ZXpAbnhwLmNvbT47DQo+IFJvYmluIEdvbmcg
+PHlpYmluLmdvbmdAbnhwLmNvbT47IHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZTsgbGlu
+dXgtDQo+IHB3bUB2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBs
+aW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJuZWxAdmdl
+ci5rZXJuZWwub3JnDQo+IENjOiBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPg0KPiBT
+dWJqZWN0OiBSRTogW1BBVENIIFYxMSAwLzVdIEFkZCBpLk1YN1VMUCBFVksgUFdNIGJhY2tsaWdo
+dCBzdXBwb3J0DQo+IA0KPiBHZW50bGUgcGluZy4uLg0KPiANCj4gPiAtLS0tLU9yaWdpbmFsIE1l
+c3NhZ2UtLS0tLQ0KPiA+IEZyb206IEFuc29uIEh1YW5nDQo+ID4gU2VudDogV2VkbmVzZGF5LCBB
+cHJpbCAxMCwgMjAxOSA5OjQ3IEFNDQo+ID4gVG86IHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbTsg
+cm9iaCtkdEBrZXJuZWwub3JnOw0KPiA+IG1hcmsucnV0bGFuZEBhcm0uY29tOyBzaGF3bmd1b0Br
+ZXJuZWwub3JnOyBzLmhhdWVyQHBlbmd1dHJvbml4LmRlOw0KPiA+IGtlcm5lbEBwZW5ndXRyb25p
+eC5kZTsgZmVzdGV2YW1AZ21haWwuY29tOyBsaW51eEBhcm1saW51eC5vcmcudWs7DQo+ID4gc3Rl
+ZmFuQGFnbmVyLmNoOyBvdGF2aW9Ab3NzeXN0ZW1zLmNvbS5icjsgTGVvbmFyZCBDcmVzdGV6DQo+
+ID4gPGxlb25hcmQuY3Jlc3RlekBueHAuY29tPjsgUm9iaW4gR29uZyA8eWliaW4uZ29uZ0BueHAu
+Y29tPjsNCj4gPiB1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU7IGxpbnV4LSBwd21Admdl
+ci5rZXJuZWwub3JnOw0KPiA+IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0t
+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOw0KPiA+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5l
+bC5vcmcNCj4gPiBDYzogZGwtbGludXgtaW14IDxsaW51eC1pbXhAbnhwLmNvbT4NCj4gPiBTdWJq
+ZWN0OiBbUEFUQ0ggVjExIDAvNV0gQWRkIGkuTVg3VUxQIEVWSyBQV00gYmFja2xpZ2h0IHN1cHBv
+cnQNCj4gPg0KPiA+IGkuTVg3VUxQIEVWSyBib2FyZCBoYXMgTUlQSS1EU0kgZGlzcGxheSwgaXRz
+IGJhY2tsaWdodCBpcyBzdXBwbGllZCBieQ0KPiA+IFRQTSBQV00gbW9kdWxlLCB0aGlzIHBhdGNo
+IHNldCBlbmFibGVzIGkuTVg3VUxQIFRQTSBQV00gZHJpdmVyDQo+IHN1cHBvcnQNCj4gPiBhbmQg
+YWxzbyBhZGQgYmFja2xpZ2h0IHN1cHBvcnQgZm9yIE1JUEktRFNJIGRpc3BsYXkuDQo+ID4NCj4g
+PiBDaGFuZ2VzIHNpbmNlIFYxMDoNCj4gPiAJLSBPTkxZIGNoYW5nZSB0aGUgcHdtIGRyaXZlciBw
+YXRjaC4NCj4gPg0KPiA+IEFuc29uIEh1YW5nICg1KToNCj4gPiAgIGR0LWJpbmRpbmdzOiBwd206
+IEFkZCBpLk1YIFRQTSBQV00gYmluZGluZw0KPiA+ICAgcHdtOiBBZGQgaS5NWCBUUE0gUFdNIGRy
+aXZlciBzdXBwb3J0DQo+ID4gICBBUk06IGlteF92Nl92N19kZWZjb25maWc6IEFkZCBUUE0gUFdN
+IHN1cHBvcnQgYnkgZGVmYXVsdA0KPiA+ICAgQVJNOiBkdHM6IGlteDd1bHA6IEFkZCB0cG0gcHdt
+IHN1cHBvcnQNCj4gPiAgIEFSTTogZHRzOiBpbXg3dWxwLWV2azogQWRkIGJhY2tsaWdodCBzdXBw
+b3J0DQo+ID4NCj4gPiAgLi4uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC10cG0tcHdtLnR4
+dCAgICAgICAgfCAgMjIgKw0KPiA+ICBhcmNoL2FybS9ib290L2R0cy9pbXg3dWxwLWV2ay5kdHMg
+ICAgICAgICAgICAgICAgICB8ICAyMSArDQo+ID4gIGFyY2gvYXJtL2Jvb3QvZHRzL2lteDd1bHAu
+ZHRzaSAgICAgICAgICAgICAgICAgICAgIHwgIDEwICsNCj4gPiAgYXJjaC9hcm0vY29uZmlncy9p
+bXhfdjZfdjdfZGVmY29uZmlnICAgICAgICAgICAgICAgfCAgIDEgKw0KPiA+ICBkcml2ZXJzL3B3
+bS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxMSArDQo+ID4gIGRy
+aXZlcnMvcHdtL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAxICsN
+Cj4gPiAgZHJpdmVycy9wd20vcHdtLWlteC10cG0uYyAgICAgICAgICAgICAgICAgICAgICAgICAg
+fCA0NDINCj4gKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDcgZmlsZXMgY2hhbmdlZCwgNTA4
+IGluc2VydGlvbnMoKykNCj4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2
+aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXRwbS0NCj4gPiBwd20udHh0DQo+ID4gIGNyZWF0ZSBt
+b2RlIDEwMDY0NCBkcml2ZXJzL3B3bS9wd20taW14LXRwbS5jDQo+ID4NCj4gPiAtLQ0KPiA+IDIu
+Ny40DQoNCg==
