@@ -1,71 +1,75 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH V12 2/5] pwm: Add i.MX TPM PWM driver support
-Date: Thu, 9 May 2019 17:02:57 +0200
-Message-ID: <20190509150257.GD8907@ulmo>
-References: <1557408252-21281-1-git-send-email-Anson.Huang@nxp.com>
- <1557408252-21281-3-git-send-email-Anson.Huang@nxp.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: Re: [RESEND PATCH v5 0/3] Add PM support to STM32 LP Timer drivers
+Date: Fri, 10 May 2019 09:51:01 +0200
+Message-ID: <45e934af-d677-d7d4-09ea-3ed01872dab6@st.com>
+References: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="h13GW2gLSV2TxsNR"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1557408252-21281-3-git-send-email-Anson.Huang@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anson Huang <anson.huang@nxp.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "otavio@ossystems.com.br" <otavio@ossystems.com.br>, Leonard Crestez <leonard.crestez@nxp.com>, Robin Gong <yibin.gong@nxp.com>, "schnitzeltony@gmail.com" <schnitzeltony@gmail.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "jan.tuerk@emtrion.com" <jan.tuerk@emtrion.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-arm-kernel@lists.infradead.o
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, Loic PALLARDY <loic.pallardy@st.com>, tduszyns@gmail.com, Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, robh+dt@kernel.org, mcoquelin.stm32@gmail.com, u.kleine-koenig@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+On 4/18/19 11:37 AM, Fabrice Gasnier wrote:
+> This patch series adds power management support for STM32 LP Timer:
+> - PWM driver
+> - Document the pinctrl states for sleep mode
+> 
+> It also adds device link between the PWM consumer and the PWM provider.
+> This allows proper sequencing for suspend/resume (e.g. user will likely
+> do a pwm_disable() before the PWM provider suspend executes), see [1].
+> 
+> [1] https://lkml.org/lkml/2019/2/5/770
+> 
 
---h13GW2gLSV2TxsNR
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Thierry,
 
-On Thu, May 09, 2019 at 01:29:29PM +0000, Anson Huang wrote:
-> i.MX7ULP has TPM(Low Power Timer/Pulse Width Modulation Module)
-> inside, it can support multiple PWM channels, all the channels
-> share same counter and period setting, but each channel can
-> configure its duty and polarity independently.
->=20
-> There are several TPM modules in i.MX7ULP, the number of channels
-> in TPM modules are different, it can be read from each TPM module's
-> PARAM register.
->=20
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+Please let me know if you have some more comments on this series. It's
+been under review since quite some time now.
+
+Thanks in advance,
+Best Regards,
+Fabrice
+
 > ---
-> Changes since V11:
-> 	- ONLY add function comment to pwm_imx_tpm_round_state(), no code change.
-> ---
->  drivers/pwm/Kconfig       |  11 ++
->  drivers/pwm/Makefile      |   1 +
->  drivers/pwm/pwm-imx-tpm.c | 448 ++++++++++++++++++++++++++++++++++++++++=
-++++++
->  3 files changed, 460 insertions(+)
->  create mode 100644 drivers/pwm/pwm-imx-tpm.c
-
-Applied, thanks.
-
-Thierry
-
---h13GW2gLSV2TxsNR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzUQSEACgkQ3SOs138+
-s6F/KA//UWmIXrWZOEJNfWpMu2ymqohHv39qDATl8P2EsfvZ2lFAEj+Q7KxyUghE
-VEbkXJksm+A8u8HBj1MKNzbxrc1xodUIWaOVo3/Nj8BY3gt1+yIaiVaEhRvUPaod
-18uhIWkFg2eZAw+3vHRumyHdL/DeYu1ejmvCD3qmeCbW7TPudKPy4DFzpD2zQmYG
-qVKChU8J6SA+jUNsUrAVaKBdSoorWWeImvgZeXWUN6ltRZnua5goJvWU6NSDhe5B
-PPvaJAOBJADlWJ3VmGieueuY4ds2k+XbFzXezgPQZNzFYrCgdMG+A6KCzbt5ZKS+
-3Hh4iSlVKwpvbK6bxOqSqqAi1AkqbGSX3FRLy1/vpm9t+SXrZWpuk/YczuaXkmNi
-PhKmIQGpeuBscTs9geeNY3bstqKouYoJr5KiPrk8AxeBdxxxv6QWJtoAOXr26OqM
-uGkZqYemfYjsfb8fS6Yix4NsXNfDDGU5NpHuzaoBZgbzKHZsCXYB4YYWOzX2vOE/
-7TzVOLSBy/sbjDxjclVrwMvbxz9JU+j//9wn4qU49fqI3IVOq8yOa+D2jZTHOrJN
-v0X6H5YQzDGtOwsPSPQIeCAxXeqvwBCmUsN65AlfVd6NHld4x/yuiXvezOqrobjn
-eVxK3nv9C88dJUO40pmTUBCe5P/rXFQk5NcSffby6hGUbz3UuCA=
-=SEhD
------END PGP SIGNATURE-----
-
---h13GW2gLSV2TxsNR--
+> resend v5:
+> - update collected acks
+> 
+> Changes in v5:
+> - improve a warning message, fix a style issue.
+> 
+> Changes in v4:
+> - improve error handling when adding the PWM consumer device link.
+> 
+> Changes in v3:
+> - Move the device_link_add() call to of_pwm_get() as discussed with Uwe.
+> 
+> Changes in v2:
+> - Don't disable PWM channel in PWM provider: rather refuse to suspend
+>   and report an error as suggested by Uwe and Thierry.
+> - Add patch 3/3 to propose device link addition.
+> - No updates for STM32 LP Timer IIO driver. Patches can be send separately.
+> 
+> Fabrice Gasnier (3):
+>   dt-bindings: pwm-stm32-lp: document pinctrl sleep state
+>   pwm: stm32-lp: Add power management support
+>   pwm: core: add consumer device link
+> 
+>  .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  9 ++--
+>  drivers/pwm/core.c                                 | 50 ++++++++++++++++++++--
+>  drivers/pwm/pwm-stm32-lp.c                         | 25 +++++++++++
+>  include/linux/pwm.h                                |  6 ++-
+>  4 files changed, 82 insertions(+), 8 deletions(-)
+> 
