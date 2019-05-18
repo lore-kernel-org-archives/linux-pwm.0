@@ -1,130 +1,132 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: [PATCH] dt-bindings: pwm: Convert Allwinner PWM to a schema
-Date: Thu, 16 May 2019 14:08:48 +0200
-Message-ID: <20190516120848.25007-1-maxime.ripard@bootlin.com>
+From: Jitao Shi <jitao.shi@mediatek.com>
+Subject: Re: [v2 3/3] drm/mediatek: add mipi_tx driver for mt8183
+Date: Sat, 18 May 2019 15:51:32 +0800
+Message-ID: <1558165892.7681.8.camel@mszsdaap41>
+References: <20190416054217.75387-1-jitao.shi@mediatek.com>
+         <20190416054217.75387-4-jitao.shi@mediatek.com>
+         <1557134258.5345.5.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Maxime Ripard <maxime.ripard@bootlin.com>, linux-pwm@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1557134258.5345.5.camel@mtksdaap41>
+Sender: linux-kernel-owner@vger.kernel.org
+To: CK Hu <ck.hu@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
 List-Id: linux-pwm@vger.kernel.org
 
-The Allwinner SoCs have a PWM controller supported in Linux, with a
-matching Device Tree binding.
+On Mon, 2019-05-06 at 17:17 +0800, CK Hu wrote:
+> Hi, Jitao:
+> 
+> On Tue, 2019-04-16 at 13:42 +0800, Jitao Shi wrote:
+> > This patch add mt8183 mipi_tx driver.
+> > And also support other chips that use the same binding and driver.
+> > 
+> > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> > ---
+> >  drivers/gpu/drm/mediatek/Makefile             |   1 +
+> >  drivers/gpu/drm/mediatek/mtk_mipi_tx.c        |   2 +
+> >  drivers/gpu/drm/mediatek/mtk_mipi_tx.h        |   1 +
+> >  drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c | 154 ++++++++++++++++++
+> >  4 files changed, 158 insertions(+)
+> >  create mode 100644 drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c
+> > 
+> 
+> [snip]
+> 
+> > +
+> > +static int mtk_mipi_tx_pll_prepare(struct clk_hw *hw)
+> > +{
+> > +	struct mtk_mipi_tx *mipi_tx = mtk_mipi_tx_from_clk_hw(hw);
+> > +	unsigned int txdiv, txdiv0;
+> > +	u64 pcw;
+> > +	int ret;
+> > +
+> > +	dev_dbg(mipi_tx->dev, "prepare: %u bps\n", mipi_tx->data_rate);
+> > +
+> > +	if (mipi_tx->data_rate >= 2000000000) {
+> > +		txdiv = 1;
+> > +		txdiv0 = 0;
+> > +	} else if (mipi_tx->data_rate >= 1000000000) {
+> > +		txdiv = 2;
+> > +		txdiv0 = 1;
+> > +	} else if (mipi_tx->data_rate >= 500000000) {
+> > +		txdiv = 4;
+> > +		txdiv0 = 2;
+> > +	} else if (mipi_tx->data_rate > 250000000) {
+> > +		txdiv = 8;
+> > +		txdiv0 = 3;
+> > +	} else if (mipi_tx->data_rate >= 125000000) {
+> > +		txdiv = 16;
+> > +		txdiv0 = 4;
+> > +	} else {
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	ret = clk_prepare_enable(mipi_tx->ref_clk);
+> > +	if (ret < 0) {
+> > +		dev_err(mipi_tx->dev,
+> > +			"can't prepare and enable mipi_tx ref_clk %d\n", ret);
+> > +		return ret;
+> > +	}
+> 
+> You enable the parent clock when prepare this clock here, this behavior
+> looks strange. I think the flow should be:
+> 
+> 1. Parent clock prepare
+> 2. This clock prepare
+> 3. Parent clock enable
+> 4. This clock enable
+> 
+> Maybe you should implement 'enable callback' so that parent clock would
+> be already enabled.
+> 
+> One question is, mipi_tx_pll is used by dsi driver, but I does not see
+> dsi prepare_enable() mipi_tx_pll, how does this work?
+> 
+> Regards,
+> CK
+> 
 
-Now that we have the DT validation in place, let's convert the device tree
-bindings for that controller over to a YAML schemas.
+The mipi_tx can be accessed after clk_prepare_enable(mipi_tx->ref_clk);
 
-Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
----
- .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 57 +++++++++++++++++++
- .../devicetree/bindings/pwm/pwm-sun4i.txt     | 24 --------
- 2 files changed, 57 insertions(+), 24 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+So place the clk_prepare_enable(mipi_tx->ref_clk) before accessing
+mipitx.
 
-diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-new file mode 100644
-index 000000000000..0ac52f83a58c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-@@ -0,0 +1,57 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/allwinner,sun4i-a10-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Allwinner A10 PWM Device Tree Bindings
-+
-+maintainers:
-+  - Chen-Yu Tsai <wens@csie.org>
-+  - Maxime Ripard <maxime.ripard@bootlin.com>
-+
-+properties:
-+  "#pwm-cells":
-+    const: 3
-+
-+  compatible:
-+    oneOf:
-+      - const: allwinner,sun4i-a10-pwm
-+      - const: allwinner,sun5i-a10s-pwm
-+      - const: allwinner,sun5i-a13-pwm
-+      - const: allwinner,sun7i-a20-pwm
-+      - const: allwinner,sun8i-h3-pwm
-+      - items:
-+          - const: allwinner,sun8i-a83t-pwm
-+          - const: allwinner,sun8i-h3-pwm
-+      - items:
-+          - const: allwinner,sun50i-a64-pwm
-+          - const: allwinner,sun5i-a13-pwm
-+      - items:
-+          - const: allwinner,sun50i-h5-pwm
-+          - const: allwinner,sun5i-a13-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - "#pwm-cells"
-+  - compatible
-+  - reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pwm: pwm@1c20e00 {
-+        compatible = "allwinner,sun7i-a20-pwm";
-+        reg = <0x01c20e00 0xc>;
-+        clocks = <&osc24M>;
-+        #pwm-cells = <3>;
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-deleted file mode 100644
-index 2a1affbff45e..000000000000
---- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-+++ /dev/null
-@@ -1,24 +0,0 @@
--Allwinner sun4i and sun7i SoC PWM controller
--
--Required properties:
--  - compatible: should be one of:
--    - "allwinner,sun4i-a10-pwm"
--    - "allwinner,sun5i-a10s-pwm"
--    - "allwinner,sun5i-a13-pwm"
--    - "allwinner,sun7i-a20-pwm"
--    - "allwinner,sun8i-h3-pwm"
--    - "allwinner,sun50i-a64-pwm", "allwinner,sun5i-a13-pwm"
--    - "allwinner,sun50i-h5-pwm", "allwinner,sun5i-a13-pwm"
--  - reg: physical base address and length of the controller's registers
--  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
--    the cells format.
--  - clocks: From common clock binding, handle to the parent clock.
--
--Example:
--
--	pwm: pwm@1c20e00 {
--		compatible = "allwinner,sun7i-a20-pwm";
--		reg = <0x01c20e00 0xc>;
--		clocks = <&osc24M>;
--		#pwm-cells = <3>;
--	};
--- 
-2.21.0
+mipi_tx_pll is enable by mtk_mipi_tx_power_on() in mtk_mip_tx.c.
+clk_prepare_enable(mipi_tx->pll) will enable mipi_tx_pll.
+
+Beset Regards
+Jitao
+
+> > +
+> > +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_CON4, RG_DSI_PLL_IBIAS);
+> > +
+> > +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_PWR_ON);
+> > +	usleep_range(30, 100);
+> > +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_ISO_EN);
+> > +	pcw = div_u64(((u64)mipi_tx->data_rate * txdiv) << 24, 26000000);
+> > +	writel(pcw, mipi_tx->regs + MIPITX_PLL_CON0);
+> > +	mtk_mipi_tx_update_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_POSDIV,
+> > +				txdiv0 << 8);
+> > +	usleep_range(1000, 2000);
+> > +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_EN);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void mtk_mipi_tx_pll_unprepare(struct clk_hw *hw)
+> > +{
+> > +	struct mtk_mipi_tx *mipi_tx = mtk_mipi_tx_from_clk_hw(hw);
+> > +
+> > +	dev_dbg(mipi_tx->dev, "unprepare\n");
+> > +
+> > +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_EN);
+> > +
+> > +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_ISO_EN);
+> > +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_PWR_ON);
+> > +	clk_disable_unprepare(mipi_tx->ref_clk);
+> > +}
+> > +
+> 
+> 
