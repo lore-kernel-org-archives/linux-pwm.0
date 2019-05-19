@@ -1,164 +1,88 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [v2 2/5] drm/mediatek: CMDQ reg address of mt8173 is different
- with mt2701
-Date: Sun, 19 May 2019 17:33:26 +0800
-Message-ID: <1558258406.367.2.camel@mszsdaap41>
+Subject: Re: [v2 1/5] drm/mediatek: move mipi_dsi_host_register to probe
+Date: Sun, 19 May 2019 17:36:28 +0800
+Message-ID: <1558258588.367.5.camel@mszsdaap41>
 References: <20190416060501.76276-1-jitao.shi@mediatek.com>
- <20190416060501.76276-3-jitao.shi@mediatek.com>
- <1557283144.31731.4.camel@mtksdaap41>
+ <20190416060501.76276-2-jitao.shi@mediatek.com>
+ <1557222735.3498.11.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1557283144.31731.4.camel@mtksdaap41>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1557222735.3498.11.camel@mtksdaap41>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: CK Hu <ck.hu@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Inki Dae <inki.dae@samsung.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Phi
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Sean Paul <seanpaul@chromium>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 2019-05-08 at 10:39 +0800, CK Hu wrote:
-> On Tue, 2019-04-16 at 14:04 +0800, Jitao Shi wrote:
-> > Config the different CMDQ reg address in driver data.
-> > 
-> For MT8173, you change reg_cmd_off from 0x180 to 0x200, so this patch is
-> a bug fix. You should add a 'Fixes' tag.
-> 
-> > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> > ---
-> >  drivers/gpu/drm/mediatek/mtk_dsi.c | 39 +++++++++++++++++++++++-------
-> >  1 file changed, 30 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > index 6c4ac37f983d..573e6bec6d36 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > @@ -131,7 +131,6 @@
-> >  #define VM_CMD_EN			BIT(0)
-> >  #define TS_VFP_EN			BIT(5)
-> >  
-> > -#define DSI_CMDQ0		0x180
-> >  #define CONFIG				(0xff << 0)
-> >  #define SHORT_PACKET			0
-> >  #define LONG_PACKET			2
-> > @@ -156,6 +155,10 @@
-> >  
-> >  struct phy;
-> >  
-> > +struct mtk_dsi_driver_data {
-> > +	const u32 reg_cmdq_off;
-> > +};
-> > +
-> >  struct mtk_dsi {
-> >  	struct mtk_ddp_comp ddp_comp;
-> >  	struct device *dev;
-> > @@ -182,6 +185,7 @@ struct mtk_dsi {
-> >  	bool enabled;
-> >  	u32 irq_data;
-> >  	wait_queue_head_t irq_wait_queue;
-> > +	struct mtk_dsi_driver_data *driver_data;
-> >  };
-> >  
-> >  static inline struct mtk_dsi *encoder_to_dsi(struct drm_encoder *e)
-> > @@ -934,6 +938,7 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
-> >  	const char *tx_buf = msg->tx_buf;
-> >  	u8 config, cmdq_size, cmdq_off, type = msg->type;
-> >  	u32 reg_val, cmdq_mask, i;
-> > +	u32 reg_cmdq_off = dsi->driver_data->reg_cmdq_off;
-> >  
-> >  	if (MTK_DSI_HOST_IS_READ(type))
-> >  		config = BTA;
-> > @@ -953,9 +958,11 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
-> >  	}
-> >  
-> >  	for (i = 0; i < msg->tx_len; i++)
-> > -		writeb(tx_buf[i], dsi->regs + DSI_CMDQ0 + cmdq_off + i);
-> > +		mtk_dsi_mask(dsi, (reg_cmdq_off + cmdq_off + i) & (~0x3U),
-> > +			     (0xffUL << (((i + cmdq_off) & 3U) * 8U)),
-> > +			     tx_buf[i] << (((i + cmdq_off) & 3U) * 8U));
-> 
-> You say you would follow Nicolas' suggestion here.
-> 
-
-If i replace mtk_dsi_mask with writeb, i can't get right value from
-registers. I don't know why this.
-
-> >  
-> > -	mtk_dsi_mask(dsi, DSI_CMDQ0, cmdq_mask, reg_val);
-> > +	mtk_dsi_mask(dsi, reg_cmdq_off, cmdq_mask, reg_val);
-> >  	mtk_dsi_mask(dsi, DSI_CMDQ_SIZE, CMDQ_SIZE, cmdq_size);
-> >  }
-> >  
-> > @@ -1074,10 +1081,27 @@ static const struct component_ops mtk_dsi_component_ops = {
-> >  	.unbind = mtk_dsi_unbind,
-> >  };
-> >  
-> > +static const struct mtk_dsi_driver_data mt8173_dsi_driver_data = {
-> > +	.reg_cmdq_off = 0x200,
-> > +};
-> > +
-> > +static const struct mtk_dsi_driver_data mt2701_dsi_driver_data = {
-> > +	.reg_cmdq_off = 0x180,
-> > +};
-> > +
-> > +static const struct of_device_id mtk_dsi_of_match[] = {
-> > +	{ .compatible = "mediatek,mt2701-dsi",
-> > +	  .data = &mt2701_dsi_driver_data },
-> > +	{ .compatible = "mediatek,mt8173-dsi",
-> > +	  .data = &mt8173_dsi_driver_data },
-> > +	{ },
-> > +};
-> > +
-> >  static int mtk_dsi_probe(struct platform_device *pdev)
-> >  {
-> >  	struct mtk_dsi *dsi;
-> >  	struct device *dev = &pdev->dev;
-> > +	const struct of_device_id *of_id;
-> >  	struct resource *regs;
-> >  	int irq_num;
-> >  	int comp_id;
-> > @@ -1101,6 +1125,9 @@ static int mtk_dsi_probe(struct platform_device *pdev)
-> >  	if (ret)
-> >  		goto err_unregister_host;
-> >  
-> > +	of_id = of_match_device(mtk_dsi_of_match, &pdev->dev);
-> > +	dsi->driver_data = of_id->data;
-> 
-> Maybe use of_device_get_match_data() is a more simple way. You could
-> refer to [1].
-> 
-> [1]
-> https://elixir.bootlin.com/linux/v5.1/source/drivers/gpu/drm/mediatek/mtk_disp_ovl.c#L300
-> 
-> Regards,
-> CK
-> 
-
-I'll fix it next version.
-
-> > +
-> >  	dsi->engine_clk = devm_clk_get(dev, "engine");
-> >  	if (IS_ERR(dsi->engine_clk)) {
-> >  		ret = PTR_ERR(dsi->engine_clk);
-> > @@ -1193,12 +1220,6 @@ static int mtk_dsi_remove(struct platform_device *pdev)
-> >  	return 0;
-> >  }
-> >  
-> > -static const struct of_device_id mtk_dsi_of_match[] = {
-> > -	{ .compatible = "mediatek,mt2701-dsi" },
-> > -	{ .compatible = "mediatek,mt8173-dsi" },
-> > -	{ },
-> > -};
-> > -
-> >  struct platform_driver mtk_dsi_driver = {
-> >  	.probe = mtk_dsi_probe,
-> >  	.remove = mtk_dsi_remove,
-> 
-> 
+T24gVHVlLCAyMDE5LTA1LTA3IGF0IDE3OjUyICswODAwLCBDSyBIdSB3cm90ZToKPiBIaSwgSml0
+YW86Cj4gCj4gT24gVHVlLCAyMDE5LTA0LTE2IGF0IDE0OjA0ICswODAwLCBKaXRhbyBTaGkgd3Jv
+dGU6Cj4gPiBEU0kgcGFuZWwgZHJpdmVyIG5lZWQgYXR0YWNoIGZ1bmN0aW9uIHdoaWNoIGlzIGlu
+Y3VsZGUgaW4KPiA+IG1pcGlfZHNpX2hvc3Rfb3BzLgo+ID4gCj4gPiBJZiBtaXBpX2RzaV9ob3N0
+X3JlZ2lzdGVyIGlzIG5vdCBpbiBwcm9iZSwgZHNpIHBhbmVsIHdpbGwKPiA+IHByb2JlIGZhaWwg
+b3IgbW9yZSBkZWxheS4KPiAKPiBJIHRoaW5rIHRoaXMgcGF0Y2gganVzdCBwcmV2ZW50IGRlbGF5
+LCBub3QgdG8gcHJldmVudCBkc2kgcGFuZWwgcHJvYmUKPiBmYWlsLiBJbiBbMV0sIHlvdSBtZW50
+aW9uIG1pcGlfZHNpX2F0dGFjaCgpIGlzIGNhbGxlZCBpbgo+IHBhbmVsX3NpbXBsZV9kc2lfcHJv
+YmUoKSwgYnV0IHBhbmVsX3NpbXBsZV9kc2lfcHJvYmUoKSBpcyB0cmlnZ2VyIGJ5Cj4gbWlwaV9k
+c2lfaG9zdF9yZWdpc3RlcigpLCBzbyB0aGUgcHJvYmUgd291bGQgc3VjY2Vzcy4KPiAKPiBbMV0K
+PiBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90b3J2YWxk
+cy9saW51eC5naXQvdHJlZS9kcml2ZXJzL2dwdS9kcm0vcGFuZWwvcGFuZWwtc2ltcGxlLmM/aD12
+NS4wLXJjNiNuMjk4Nwo+IAo+IAoKWWVzLCB0aGlzIGp1c3QgcHJldmVudCBkZWxheS4KCj4gPiAK
+PiA+IFNvIG1vdmUgdGhlIG1pcGlfZHNpX2hvc3RfcmVnaXN0ZXIgdG8gcHJvYmUgZnJvbSBiaW5k
+Lgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5j
+b20+Cj4gPiAtLS0KPiA+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIHwgNTAg
+KysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDMwIGlu
+c2VydGlvbnMoKyksIDIwIGRlbGV0aW9ucygtKQo+ID4gCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYyBiL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9t
+dGtfZHNpLmMKPiA+IGluZGV4IGIwMGViMmQyZTA4Ni4uNmM0YWMzN2Y5ODNkIDEwMDY0NAo+ID4g
+LS0tIGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYwo+ID4gKysrIGIvZHJpdmVy
+cy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYwo+ID4gQEAgLTEwNDUsMTIgKzEwNDUsNiBAQCBz
+dGF0aWMgaW50IG10a19kc2lfYmluZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2Ug
+Km1hc3Rlciwgdm9pZCAqZGF0YSkKPiA+ICAJCXJldHVybiByZXQ7Cj4gPiAgCX0KPiA+ICAKPiA+
+IC0JcmV0ID0gbWlwaV9kc2lfaG9zdF9yZWdpc3RlcigmZHNpLT5ob3N0KTsKPiA+IC0JaWYgKHJl
+dCA8IDApIHsKPiA+IC0JCWRldl9lcnIoZGV2LCAiZmFpbGVkIHRvIHJlZ2lzdGVyIERTSSBob3N0
+OiAlZFxuIiwgcmV0KTsKPiA+IC0JCWdvdG8gZXJyX2RkcF9jb21wX3VucmVnaXN0ZXI7Cj4gPiAt
+CX0KPiA+IC0KPiA+ICAJcmV0ID0gbXRrX2RzaV9jcmVhdGVfY29ubl9lbmMoZHJtLCBkc2kpOwo+
+ID4gIAlpZiAocmV0KSB7Cj4gPiAgCQlEUk1fRVJST1IoIkVuY29kZXIgY3JlYXRlIGZhaWxlZCB3
+aXRoICVkXG4iLCByZXQpOwo+ID4gQEAgLTEwNjAsOCArMTA1NCw2IEBAIHN0YXRpYyBpbnQgbXRr
+X2RzaV9iaW5kKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZSAqbWFzdGVyLCB2b2lk
+ICpkYXRhKQo+ID4gIAlyZXR1cm4gMDsKPiA+ICAKPiA+ICBlcnJfdW5yZWdpc3RlcjoKPiA+IC0J
+bWlwaV9kc2lfaG9zdF91bnJlZ2lzdGVyKCZkc2ktPmhvc3QpOwo+ID4gLWVycl9kZHBfY29tcF91
+bnJlZ2lzdGVyOgo+ID4gIAltdGtfZGRwX2NvbXBfdW5yZWdpc3Rlcihkcm0sICZkc2ktPmRkcF9j
+b21wKTsKPiA+ICAJcmV0dXJuIHJldDsKPiA+ICB9Cj4gPiBAQCAtMTA5NywzMSArMTA4OSwzNyBA
+QCBzdGF0aWMgaW50IG10a19kc2lfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikK
+PiA+ICAKPiA+ICAJZHNpLT5ob3N0Lm9wcyA9ICZtdGtfZHNpX29wczsKPiA+ICAJZHNpLT5ob3N0
+LmRldiA9IGRldjsKPiA+ICsJZHNpLT5kZXYgPSBkZXY7Cj4gCj4gV2h5IGRvIHRoaXM/Cj4gCj4g
+UmVnYXJkcywKPiBDSwo+IAoKVGhlcmUgYXJlIHNvbWUgZXJyb3IgbWVzc2FnZSByZXF1aXJlIHRo
+aXMgcG93ZXJvbigpLgoKPiA+ICsJcmV0ID0gbWlwaV9kc2lfaG9zdF9yZWdpc3RlcigmZHNpLT5o
+b3N0KTsKPiA+ICsJaWYgKHJldCA8IDApIHsKPiA+ICsJCWRldl9lcnIoZGV2LCAiZmFpbGVkIHRv
+IHJlZ2lzdGVyIERTSSBob3N0OiAlZFxuIiwgcmV0KTsKPiA+ICsJCXJldHVybiByZXQ7Cj4gPiAr
+CX0KPiA+ICAKPiA+ICAJcmV0ID0gZHJtX29mX2ZpbmRfcGFuZWxfb3JfYnJpZGdlKGRldi0+b2Zf
+bm9kZSwgMCwgMCwKPiA+ICAJCQkJCSAgJmRzaS0+cGFuZWwsICZkc2ktPmJyaWRnZSk7Cj4gPiAg
+CWlmIChyZXQpCj4gPiAtCQlyZXR1cm4gcmV0Owo+ID4gKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9o
+b3N0Owo+ID4gIAo+ID4gIAlkc2ktPmVuZ2luZV9jbGsgPSBkZXZtX2Nsa19nZXQoZGV2LCAiZW5n
+aW5lIik7Cj4gPiAgCWlmIChJU19FUlIoZHNpLT5lbmdpbmVfY2xrKSkgewo+ID4gIAkJcmV0ID0g
+UFRSX0VSUihkc2ktPmVuZ2luZV9jbGspOwo+ID4gIAkJZGV2X2VycihkZXYsICJGYWlsZWQgdG8g
+Z2V0IGVuZ2luZSBjbG9jazogJWRcbiIsIHJldCk7Cj4gPiAtCQlyZXR1cm4gcmV0Owo+ID4gKwkJ
+Z290byBlcnJfdW5yZWdpc3Rlcl9ob3N0Owo+ID4gIAl9Cj4gPiAgCj4gPiAgCWRzaS0+ZGlnaXRh
+bF9jbGsgPSBkZXZtX2Nsa19nZXQoZGV2LCAiZGlnaXRhbCIpOwo+ID4gIAlpZiAoSVNfRVJSKGRz
+aS0+ZGlnaXRhbF9jbGspKSB7Cj4gPiAgCQlyZXQgPSBQVFJfRVJSKGRzaS0+ZGlnaXRhbF9jbGsp
+Owo+ID4gIAkJZGV2X2VycihkZXYsICJGYWlsZWQgdG8gZ2V0IGRpZ2l0YWwgY2xvY2s6ICVkXG4i
+LCByZXQpOwo+ID4gLQkJcmV0dXJuIHJldDsKPiA+ICsJCWdvdG8gZXJyX3VucmVnaXN0ZXJfaG9z
+dDsKPiA+ICAJfQo+ID4gIAo+ID4gIAlkc2ktPmhzX2NsayA9IGRldm1fY2xrX2dldChkZXYsICJo
+cyIpOwo+ID4gIAlpZiAoSVNfRVJSKGRzaS0+aHNfY2xrKSkgewo+ID4gIAkJcmV0ID0gUFRSX0VS
+Uihkc2ktPmhzX2Nsayk7Cj4gPiAgCQlkZXZfZXJyKGRldiwgIkZhaWxlZCB0byBnZXQgaHMgY2xv
+Y2s6ICVkXG4iLCByZXQpOwo+ID4gLQkJcmV0dXJuIHJldDsKPiA+ICsJCWdvdG8gZXJyX3VucmVn
+aXN0ZXJfaG9zdDsKPiA+ICAJfQo+ID4gIAo+ID4gIAlyZWdzID0gcGxhdGZvcm1fZ2V0X3Jlc291
+cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCAwKTsKPiAKPiAKPiAKCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRy
+aS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
