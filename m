@@ -1,70 +1,129 @@
 From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v4 2/5] drm/mediatek: dpi dual edge support
-Date: Mon, 20 May 2019 13:56:46 +0800
-Message-ID: <1558331806.7311.26.camel@mtksdaap41>
+Subject: Re: [v4 4/5] drm/mediatek: control dpi pins dpi or gpio mode in on
+ or off
+Date: Mon, 20 May 2019 14:48:29 +0800
+Message-ID: <1558334909.7311.27.camel@mtksdaap41>
 References: <20190518095618.18454-1-jitao.shi@mediatek.com>
- <20190518095618.18454-3-jitao.shi@mediatek.com>
+ <20190518095618.18454-5-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190518095618.18454-3-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190518095618.18454-5-jitao.shi@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Sean Paul <seanpaul@chromium>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Inki Dae <inki.dae@samsung.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Phi
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEppdGFvOgoKT24gU2F0LCAyMDE5LTA1LTE4IGF0IDE3OjU2ICswODAwLCBKaXRhbyBTaGkg
-d3JvdGU6Cj4gRFBJIHNhbXBsZSB0aGUgZGF0YSBib3RoIHJpc2luZyBhbmQgZmFsbGluZyBlZGdl
-Lgo+IEl0IGNhbiByZWR1Y2UgaGFsZiBkYXRhIGlvIHBpbnMuCgpBbGwgdGhlIHJlZ2lzdGVycyB3
-aGljaCB5b3UgY29udHJvbCBpbiB0aGlzIHBhdGNoIGV4aXN0IGluIE1UODE3My4gU28gSQp0aGlu
-ayB0aGlzIGlzIG5vdCBhIFNvQy1sZXZlbCBmZWF0dXJlLiBUaGlzIGZlYXR1cmUgZGVwZW5kcyBv
-biBob3cgbXVjaAppbyBwaW5zIHlvdSB3YW50IHRvIHVzZSBpbiB0aGlzIHBsYXRmb3JtLiBDb3Vs
-ZCB3ZSBnZXQgdGhlIGlvIHBpbnMKaW5mb3JtYXRpb24gZnJvbSBkZXZpY2UgdHJlZSBvciBjYWxs
-aW5nIGFueSBkcml2ZXIncyBhcGkgdG8gZ2V0PyBJZgp0aGVyZSBpcyBubyB3YXkgdG8gZ2V0IHRo
-aXMgaW5mb3JtYXRpb24sIEkgY291bGQganVzdCB0ZW1wb3JhcmlseSBhcHBseQp0aGlzIHBhdGNo
-IGFuZCBuZWVkIHBsYW4gdG8gZml4IHRoaXMgdGVtcG9yYXJ5IHNvbHV0aW9uLgoKUmVnYXJkcywK
-Q0sKCj4gCj4gU2lnbmVkLW9mZi1ieTogSml0YW8gU2hpIDxqaXRhby5zaGlAbWVkaWF0ZWsuY29t
-Pgo+IC0tLQo+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RwaS5jIHwgMTMgKysrKysr
-KysrKysrLQo+ICAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigt
-KQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RwaS5jIGIv
-ZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kcGkuYwo+IGluZGV4IDIyZTY4YTEwMGU3Yi4u
-Y2NlZjNhYzFjNTYwIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtf
-ZHBpLmMKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RwaS5jCj4gQEAgLTEx
-Nyw2ICsxMTcsNyBAQCBzdHJ1Y3QgbXRrX2RwaV9jb25mIHsKPiAgCXVuc2lnbmVkIGludCAoKmNh
-bF9mYWN0b3IpKGludCBjbG9jayk7Cj4gIAl1MzIgcmVnX2hfZnJlX2NvbjsKPiAgCWJvb2wgZWRn
-ZV9zZWxfZW47Cj4gKwlib29sIGR1YWxfZWRnZTsKPiAgfTsKPiAgCj4gIHN0YXRpYyB2b2lkIG10
-a19kcGlfbWFzayhzdHJ1Y3QgbXRrX2RwaSAqZHBpLCB1MzIgb2Zmc2V0LCB1MzIgdmFsLCB1MzIg
-bWFzaykKPiBAQCAtMzUzLDYgKzM1NCwxMyBAQCBzdGF0aWMgdm9pZCBtdGtfZHBpX2NvbmZpZ19k
-aXNhYmxlX2VkZ2Uoc3RydWN0IG10a19kcGkgKmRwaSkKPiAgCQltdGtfZHBpX21hc2soZHBpLCBk
-cGktPmNvbmYtPnJlZ19oX2ZyZV9jb24sIDAsIEVER0VfU0VMX0VOKTsKPiAgfQo+ICAKPiArc3Rh
-dGljIHZvaWQgbXRrX2RwaV9lbmFibGVfZHVhbF9lZGdlKHN0cnVjdCBtdGtfZHBpICpkcGkpCj4g
-K3sKPiArCW10a19kcGlfbWFzayhkcGksIERQSV9ERFJfU0VUVElORywgRERSX0VOIHwgRERSXzRQ
-SEFTRSwKPiArCQkgICAgIEREUl9FTiB8IEREUl80UEhBU0UpOwo+ICsJbXRrX2RwaV9tYXNrKGRw
-aSwgRFBJX09VVFBVVF9TRVRUSU5HLCBFREdFX1NFTCwgRURHRV9TRUwpOwo+ICt9Cj4gKwo+ICBz
-dGF0aWMgdm9pZCBtdGtfZHBpX2NvbmZpZ19jb2xvcl9mb3JtYXQoc3RydWN0IG10a19kcGkgKmRw
-aSwKPiAgCQkJCQllbnVtIG10a19kcGlfb3V0X2NvbG9yX2Zvcm1hdCBmb3JtYXQpCj4gIHsKPiBA
-QCAtNDQ0LDcgKzQ1Miw4IEBAIHN0YXRpYyBpbnQgbXRrX2RwaV9zZXRfZGlzcGxheV9tb2RlKHN0
-cnVjdCBtdGtfZHBpICpkcGksCj4gIAlwbGxfcmF0ZSA9IGNsa19nZXRfcmF0ZShkcGktPnR2ZF9j
-bGspOwo+ICAKPiAgCXZtLnBpeGVsY2xvY2sgPSBwbGxfcmF0ZSAvIGZhY3RvcjsKPiAtCWNsa19z
-ZXRfcmF0ZShkcGktPnBpeGVsX2Nsaywgdm0ucGl4ZWxjbG9jayk7Cj4gKwljbGtfc2V0X3JhdGUo
-ZHBpLT5waXhlbF9jbGssCj4gKwkJICAgICB2bS5waXhlbGNsb2NrICogKGRwaS0+Y29uZi0+ZHVh
-bF9lZGdlID8gMiA6IDEpKTsKPiAgCXZtLnBpeGVsY2xvY2sgPSBjbGtfZ2V0X3JhdGUoZHBpLT5w
-aXhlbF9jbGspOwo+ICAKPiAgCWRldl9kYmcoZHBpLT5kZXYsICJHb3QgIFBMTCAlbHUgSHosIHBp
-eGVsIGNsb2NrICVsdSBIelxuIiwKPiBAQCAtNTA5LDYgKzUxOCw4IEBAIHN0YXRpYyBpbnQgbXRr
-X2RwaV9zZXRfZGlzcGxheV9tb2RlKHN0cnVjdCBtdGtfZHBpICpkcGksCj4gIAltdGtfZHBpX2Nv
-bmZpZ19jb2xvcl9mb3JtYXQoZHBpLCBkcGktPmNvbG9yX2Zvcm1hdCk7Cj4gIAltdGtfZHBpX2Nv
-bmZpZ18ybl9oX2ZyZShkcGkpOwo+ICAJbXRrX2RwaV9jb25maWdfZGlzYWJsZV9lZGdlKGRwaSk7
-Cj4gKwlpZiAoZHBpLT5jb25mLT5kdWFsX2VkZ2UpCj4gKwkJbXRrX2RwaV9lbmFibGVfZHVhbF9l
-ZGdlKGRwaSk7Cj4gIAltdGtfZHBpX3N3X3Jlc2V0KGRwaSwgZmFsc2UpOwo+ICAKPiAgCXJldHVy
-biAwOwoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
-aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
-czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+Hi, Jitao:
+
+On Sat, 2019-05-18 at 17:56 +0800, Jitao Shi wrote:
+> Pull dpi pins low when dpi has nothing to display. Aovid leakage
+> current from some dpi pins (Hsync Vsync DE ... ).
+> 
+> Some chips have dpi pins, but there are some chip don't have pins.
+> So this function is controlled by chips driver data.
+> 
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 35 +++++++++++++++++++++++++++++-
+>  1 file changed, 34 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 77e6e0f99188..0c4ba0a2be27 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -17,10 +17,12 @@
+>  #include <drm/drm_of.h>
+>  #include <linux/kernel.h>
+>  #include <linux/component.h>
+> -#include <linux/platform_device.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/of_gpio.h>
+>  #include <linux/of_graph.h>
+> +#include <linux/pinctrl/consumer.h>
+> +#include <linux/platform_device.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/types.h>
+>  #include <linux/clk.h>
+> @@ -79,6 +81,9 @@ struct mtk_dpi {
+>  	enum mtk_dpi_out_yc_map yc_map;
+>  	enum mtk_dpi_out_bit_num bit_num;
+>  	enum mtk_dpi_out_channel_swap channel_swap;
+> +	struct pinctrl *pinctrl;
+> +	struct pinctrl_state *pins_default;
+> +	struct pinctrl_state *pins_dpi;
+>  	int refcount;
+>  };
+>  
+> @@ -118,6 +123,7 @@ struct mtk_dpi_conf {
+>  	u32 reg_h_fre_con;
+>  	bool edge_sel_en;
+>  	bool dual_edge;
+> +	bool dpi_pin_ctrl;
+>  };
+>  
+>  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
+> @@ -392,6 +398,9 @@ static void mtk_dpi_power_off(struct mtk_dpi *dpi)
+>  	if (--dpi->refcount != 0)
+>  		return;
+>  
+> +	if (dpi->conf->dpi_pin_ctrl)
+> +		pinctrl_select_state(dpi->pinctrl, dpi->pins_default);
+> +
+>  	mtk_dpi_disable(dpi);
+>  	clk_disable_unprepare(dpi->pixel_clk);
+>  	clk_disable_unprepare(dpi->engine_clk);
+> @@ -416,6 +425,9 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
+>  		goto err_pixel;
+>  	}
+>  
+> +	if (dpi->conf->dpi_pin_ctrl)
+> +		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
+> +
+>  	mtk_dpi_enable(dpi);
+>  	return 0;
+>  
+> @@ -724,6 +736,27 @@ static int mtk_dpi_probe(struct platform_device *pdev)
+>  	dpi->dev = dev;
+>  	dpi->conf = (struct mtk_dpi_conf *)of_device_get_match_data(dev);
+>  
+> +	if (dpi->conf->dpi_pin_ctrl) {
+> +		dpi->pinctrl = devm_pinctrl_get(&pdev->dev);
+
+Please describe this in binding document.
+
+Regards,
+CK
+
+> +		if (IS_ERR(dpi->pinctrl)) {
+> +			dev_err(&pdev->dev, "Cannot find pinctrl!\n");
+> +			return PTR_ERR(dpi->pinctrl);
+> +		}
+> +
+> +		dpi->pins_default = pinctrl_lookup_state(dpi->pinctrl,
+> +							 "default");
+> +		if (IS_ERR(dpi->pins_default)) {
+> +			dev_err(&pdev->dev, "Cannot find pinctrl default!\n");
+> +			return PTR_ERR(dpi->pins_default);
+> +		}
+> +
+> +		dpi->pins_dpi = pinctrl_lookup_state(dpi->pinctrl, "dpimode");
+> +		if (IS_ERR(dpi->pins_dpi)) {
+> +			dev_err(&pdev->dev, "Cannot find pinctrl dpimode!\n");
+> +			return PTR_ERR(dpi->pins_dpi);
+> +		}
+> +	}
+> +
+>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	dpi->regs = devm_ioremap_resource(dev, mem);
+>  	if (IS_ERR(dpi->regs)) {
