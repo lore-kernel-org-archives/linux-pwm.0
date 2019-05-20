@@ -1,137 +1,115 @@
 From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v2 1/5] drm/mediatek: move mipi_dsi_host_register to probe
-Date: Mon, 20 May 2019 15:06:28 +0800
-Message-ID: <1558335988.7311.34.camel@mtksdaap41>
-References: <20190416060501.76276-1-jitao.shi@mediatek.com>
-         <20190416060501.76276-2-jitao.shi@mediatek.com>
-         <1557222735.3498.11.camel@mtksdaap41> <1558258588.367.5.camel@mszsdaap41>
+Subject: Re: [v3 1/7] drm/mediatek: move mipi_dsi_host_register to probe
+Date: Mon, 20 May 2019 15:18:23 +0800
+Message-ID: <1558336703.7311.37.camel@mtksdaap41>
+References: <20190519092537.69053-1-jitao.shi@mediatek.com>
+ <20190519092537.69053-2-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1558258588.367.5.camel@mszsdaap41>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190519092537.69053-2-jitao.shi@mediatek.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Sean Paul <seanpaul@chromium>
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, 2019-05-19 at 17:36 +0800, Jitao Shi wrote:
-> On Tue, 2019-05-07 at 17:52 +0800, CK Hu wrote:
-> > Hi, Jitao:
-> > 
-> > On Tue, 2019-04-16 at 14:04 +0800, Jitao Shi wrote:
-> > > DSI panel driver need attach function which is inculde in
-> > > mipi_dsi_host_ops.
-> > > 
-> > > If mipi_dsi_host_register is not in probe, dsi panel will
-> > > probe fail or more delay.
-> > 
-> > I think this patch just prevent delay, not to prevent dsi panel probe
-> > fail. In [1], you mention mipi_dsi_attach() is called in
-> > panel_simple_dsi_probe(), but panel_simple_dsi_probe() is trigger by
-> > mipi_dsi_host_register(), so the probe would success.
-> > 
-> > [1]
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/panel/panel-simple.c?h=v5.0-rc6#n2987
-> > 
-> > 
-> 
-> Yes, this just prevent delay.
-> 
-> > > 
-> > > So move the mipi_dsi_host_register to probe from bind.
-> > > 
-> > > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> > > ---
-> > >  drivers/gpu/drm/mediatek/mtk_dsi.c | 50 ++++++++++++++++++------------
-> > >  1 file changed, 30 insertions(+), 20 deletions(-)
-> > > 
-> > > diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > > index b00eb2d2e086..6c4ac37f983d 100644
-> > > --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > > +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> > > @@ -1045,12 +1045,6 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
-> > >  		return ret;
-> > >  	}
-> > >  
-> > > -	ret = mipi_dsi_host_register(&dsi->host);
-> > > -	if (ret < 0) {
-> > > -		dev_err(dev, "failed to register DSI host: %d\n", ret);
-> > > -		goto err_ddp_comp_unregister;
-> > > -	}
-> > > -
-> > >  	ret = mtk_dsi_create_conn_enc(drm, dsi);
-> > >  	if (ret) {
-> > >  		DRM_ERROR("Encoder create failed with %d\n", ret);
-> > > @@ -1060,8 +1054,6 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
-> > >  	return 0;
-> > >  
-> > >  err_unregister:
-> > > -	mipi_dsi_host_unregister(&dsi->host);
-> > > -err_ddp_comp_unregister:
-> > >  	mtk_ddp_comp_unregister(drm, &dsi->ddp_comp);
-> > >  	return ret;
-> > >  }
-> > > @@ -1097,31 +1089,37 @@ static int mtk_dsi_probe(struct platform_device *pdev)
-> > >  
-> > >  	dsi->host.ops = &mtk_dsi_ops;
-> > >  	dsi->host.dev = dev;
-> > > +	dsi->dev = dev;
-> > 
-> > Why do this?
-> > 
-> > Regards,
-> > CK
-> > 
-> 
-> There are some error message require this poweron().
-
-So this should not be in this patch. This patch is related to the timing
-of mipi_dsi_host_register().
-
-Regards,
-CK
-
-> 
-> > > +	ret = mipi_dsi_host_register(&dsi->host);
-> > > +	if (ret < 0) {
-> > > +		dev_err(dev, "failed to register DSI host: %d\n", ret);
-> > > +		return ret;
-> > > +	}
-> > >  
-> > >  	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
-> > >  					  &dsi->panel, &dsi->bridge);
-> > >  	if (ret)
-> > > -		return ret;
-> > > +		goto err_unregister_host;
-> > >  
-> > >  	dsi->engine_clk = devm_clk_get(dev, "engine");
-> > >  	if (IS_ERR(dsi->engine_clk)) {
-> > >  		ret = PTR_ERR(dsi->engine_clk);
-> > >  		dev_err(dev, "Failed to get engine clock: %d\n", ret);
-> > > -		return ret;
-> > > +		goto err_unregister_host;
-> > >  	}
-> > >  
-> > >  	dsi->digital_clk = devm_clk_get(dev, "digital");
-> > >  	if (IS_ERR(dsi->digital_clk)) {
-> > >  		ret = PTR_ERR(dsi->digital_clk);
-> > >  		dev_err(dev, "Failed to get digital clock: %d\n", ret);
-> > > -		return ret;
-> > > +		goto err_unregister_host;
-> > >  	}
-> > >  
-> > >  	dsi->hs_clk = devm_clk_get(dev, "hs");
-> > >  	if (IS_ERR(dsi->hs_clk)) {
-> > >  		ret = PTR_ERR(dsi->hs_clk);
-> > >  		dev_err(dev, "Failed to get hs clock: %d\n", ret);
-> > > -		return ret;
-> > > +		goto err_unregister_host;
-> > >  	}
-> > >  
-> > >  	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > 
-> > 
-> > 
-> 
-> 
+SGksIEppdGFvOgoKT24gU3VuLCAyMDE5LTA1LTE5IGF0IDE3OjI1ICswODAwLCBKaXRhbyBTaGkg
+d3JvdGU6Cj4gRFNJIHBhbmVsIGRyaXZlciBuZWVkIGF0dGFjaCBmdW5jdGlvbiB3aGljaCBpcyBp
+bmN1bGRlIGluCj4gbWlwaV9kc2lfaG9zdF9vcHMuCj4gCj4gSWYgbWlwaV9kc2lfaG9zdF9yZWdp
+c3RlciBpcyBub3QgaW4gcHJvYmUsIGRzaSBwYW5lbCB3aWxsCj4gcHJvYmUgZmFpbCBvciBtb3Jl
+IGRlbGF5LgoKSW4gWzFdLCB5b3UgaGF2ZSBhZ3JlZWQgdGhpcyBwYXRjaCBqdXN0IGZvciBkZWxh
+eSBub3QgZm9yIHByb2JlIGZhaWwKUmVtb3ZlICdwcm9iZSBmYWlsJy5pbiBjb21taXQgbWVzc2Fn
+ZS4KClsxXQpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9waXBlcm1haWwvbGludXgtbWVkaWF0
+ZWsvMjAxOS1NYXkvMDE5ODM2Lmh0bWwKCj4gCj4gU28gbW92ZSB0aGUgbWlwaV9kc2lfaG9zdF9y
+ZWdpc3RlciB0byBwcm9iZSBmcm9tIGJpbmQuCj4gCj4gU2lnbmVkLW9mZi1ieTogSml0YW8gU2hp
+IDxqaXRhby5zaGlAbWVkaWF0ZWsuY29tPgo+IC0tLQo+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0
+ZWsvbXRrX2RzaS5jIHwgNTAgKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tCj4gIDEgZmls
+ZSBjaGFuZ2VkLCAzMCBpbnNlcnRpb25zKCspLCAyMCBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYyBiL2RyaXZlcnMvZ3B1L2Ry
+bS9tZWRpYXRlay9tdGtfZHNpLmMKPiBpbmRleCBiMDBlYjJkMmUwODYuLjZjNGFjMzdmOTgzZCAx
+MDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gKysrIGIv
+ZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYwo+IEBAIC0xMDQ1LDEyICsxMDQ1LDYg
+QEAgc3RhdGljIGludCBtdGtfZHNpX2JpbmQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2
+aWNlICptYXN0ZXIsIHZvaWQgKmRhdGEpCj4gIAkJcmV0dXJuIHJldDsKPiAgCX0KPiAgCj4gLQly
+ZXQgPSBtaXBpX2RzaV9ob3N0X3JlZ2lzdGVyKCZkc2ktPmhvc3QpOwo+IC0JaWYgKHJldCA8IDAp
+IHsKPiAtCQlkZXZfZXJyKGRldiwgImZhaWxlZCB0byByZWdpc3RlciBEU0kgaG9zdDogJWRcbiIs
+IHJldCk7Cj4gLQkJZ290byBlcnJfZGRwX2NvbXBfdW5yZWdpc3RlcjsKPiAtCX0KPiAtCj4gIAly
+ZXQgPSBtdGtfZHNpX2NyZWF0ZV9jb25uX2VuYyhkcm0sIGRzaSk7Cj4gIAlpZiAocmV0KSB7Cj4g
+IAkJRFJNX0VSUk9SKCJFbmNvZGVyIGNyZWF0ZSBmYWlsZWQgd2l0aCAlZFxuIiwgcmV0KTsKPiBA
+QCAtMTA2MCw4ICsxMDU0LDYgQEAgc3RhdGljIGludCBtdGtfZHNpX2JpbmQoc3RydWN0IGRldmlj
+ZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlICptYXN0ZXIsIHZvaWQgKmRhdGEpCj4gIAlyZXR1cm4gMDsK
+PiAgCj4gIGVycl91bnJlZ2lzdGVyOgo+IC0JbWlwaV9kc2lfaG9zdF91bnJlZ2lzdGVyKCZkc2kt
+Pmhvc3QpOwo+IC1lcnJfZGRwX2NvbXBfdW5yZWdpc3RlcjoKPiAgCW10a19kZHBfY29tcF91bnJl
+Z2lzdGVyKGRybSwgJmRzaS0+ZGRwX2NvbXApOwo+ICAJcmV0dXJuIHJldDsKPiAgfQo+IEBAIC0x
+MDk3LDMxICsxMDg5LDM3IEBAIHN0YXRpYyBpbnQgbXRrX2RzaV9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+ICAKPiAgCWRzaS0+aG9zdC5vcHMgPSAmbXRrX2RzaV9vcHM7Cj4g
+IAlkc2ktPmhvc3QuZGV2ID0gZGV2Owo+ICsJZHNpLT5kZXYgPSBkZXY7CgpUaGlzIGlzIGZvciBk
+ZWJ1ZyBtZXNzYWdlLCBub3QgZm9yIHRoZSB0aW1pbmcgb2YKbWlwaV9kc2lfaG9zdF9yZWdpc3Rl
+cigpLCBzbyBtb3ZlIHRvIGFuIGluZGVwZW5kZW50IHBhdGNoLgoKUmVnYXJkcywKQ0sKCj4gKwly
+ZXQgPSBtaXBpX2RzaV9ob3N0X3JlZ2lzdGVyKCZkc2ktPmhvc3QpOwo+ICsJaWYgKHJldCA8IDAp
+IHsKPiArCQlkZXZfZXJyKGRldiwgImZhaWxlZCB0byByZWdpc3RlciBEU0kgaG9zdDogJWRcbiIs
+IHJldCk7Cj4gKwkJcmV0dXJuIHJldDsKPiArCX0KPiAgCj4gIAlyZXQgPSBkcm1fb2ZfZmluZF9w
+YW5lbF9vcl9icmlkZ2UoZGV2LT5vZl9ub2RlLCAwLCAwLAo+ICAJCQkJCSAgJmRzaS0+cGFuZWws
+ICZkc2ktPmJyaWRnZSk7Cj4gIAlpZiAocmV0KQo+IC0JCXJldHVybiByZXQ7Cj4gKwkJZ290byBl
+cnJfdW5yZWdpc3Rlcl9ob3N0Owo+ICAKPiAgCWRzaS0+ZW5naW5lX2NsayA9IGRldm1fY2xrX2dl
+dChkZXYsICJlbmdpbmUiKTsKPiAgCWlmIChJU19FUlIoZHNpLT5lbmdpbmVfY2xrKSkgewo+ICAJ
+CXJldCA9IFBUUl9FUlIoZHNpLT5lbmdpbmVfY2xrKTsKPiAgCQlkZXZfZXJyKGRldiwgIkZhaWxl
+ZCB0byBnZXQgZW5naW5lIGNsb2NrOiAlZFxuIiwgcmV0KTsKPiAtCQlyZXR1cm4gcmV0Owo+ICsJ
+CWdvdG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKPiAgCX0KPiAgCj4gIAlkc2ktPmRpZ2l0YWxfY2xr
+ID0gZGV2bV9jbGtfZ2V0KGRldiwgImRpZ2l0YWwiKTsKPiAgCWlmIChJU19FUlIoZHNpLT5kaWdp
+dGFsX2NsaykpIHsKPiAgCQlyZXQgPSBQVFJfRVJSKGRzaS0+ZGlnaXRhbF9jbGspOwo+ICAJCWRl
+dl9lcnIoZGV2LCAiRmFpbGVkIHRvIGdldCBkaWdpdGFsIGNsb2NrOiAlZFxuIiwgcmV0KTsKPiAt
+CQlyZXR1cm4gcmV0Owo+ICsJCWdvdG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKPiAgCX0KPiAgCj4g
+IAlkc2ktPmhzX2NsayA9IGRldm1fY2xrX2dldChkZXYsICJocyIpOwo+ICAJaWYgKElTX0VSUihk
+c2ktPmhzX2NsaykpIHsKPiAgCQlyZXQgPSBQVFJfRVJSKGRzaS0+aHNfY2xrKTsKPiAgCQlkZXZf
+ZXJyKGRldiwgIkZhaWxlZCB0byBnZXQgaHMgY2xvY2s6ICVkXG4iLCByZXQpOwo+IC0JCXJldHVy
+biByZXQ7Cj4gKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0Owo+ICAJfQo+ICAKPiAgCXJlZ3Mg
+PSBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UocGRldiwgSU9SRVNPVVJDRV9NRU0sIDApOwo+IEBAIC0x
+MTI5LDMzICsxMTI3LDM1IEBAIHN0YXRpYyBpbnQgbXRrX2RzaV9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+ICAJaWYgKElTX0VSUihkc2ktPnJlZ3MpKSB7Cj4gIAkJcmV0ID0g
+UFRSX0VSUihkc2ktPnJlZ3MpOwo+ICAJCWRldl9lcnIoZGV2LCAiRmFpbGVkIHRvIGlvcmVtYXAg
+bWVtb3J5OiAlZFxuIiwgcmV0KTsKPiAtCQlyZXR1cm4gcmV0Owo+ICsJCWdvdG8gZXJyX3VucmVn
+aXN0ZXJfaG9zdDsKPiAgCX0KPiAgCj4gIAlkc2ktPnBoeSA9IGRldm1fcGh5X2dldChkZXYsICJk
+cGh5Iik7Cj4gIAlpZiAoSVNfRVJSKGRzaS0+cGh5KSkgewo+ICAJCXJldCA9IFBUUl9FUlIoZHNp
+LT5waHkpOwo+ICAJCWRldl9lcnIoZGV2LCAiRmFpbGVkIHRvIGdldCBNSVBJLURQSFk6ICVkXG4i
+LCByZXQpOwo+IC0JCXJldHVybiByZXQ7Cj4gKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0Owo+
+ICAJfQo+ICAKPiAgCWNvbXBfaWQgPSBtdGtfZGRwX2NvbXBfZ2V0X2lkKGRldi0+b2Zfbm9kZSwg
+TVRLX0RTSSk7Cj4gIAlpZiAoY29tcF9pZCA8IDApIHsKPiAgCQlkZXZfZXJyKGRldiwgIkZhaWxl
+ZCB0byBpZGVudGlmeSBieSBhbGlhczogJWRcbiIsIGNvbXBfaWQpOwo+IC0JCXJldHVybiBjb21w
+X2lkOwo+ICsJCXJldCA9IGNvbXBfaWQ7Cj4gKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0Owo+
+ICAJfQo+ICAKPiAgCXJldCA9IG10a19kZHBfY29tcF9pbml0KGRldiwgZGV2LT5vZl9ub2RlLCAm
+ZHNpLT5kZHBfY29tcCwgY29tcF9pZCwKPiAgCQkJCSZtdGtfZHNpX2Z1bmNzKTsKPiAgCWlmIChy
+ZXQpIHsKPiAgCQlkZXZfZXJyKGRldiwgIkZhaWxlZCB0byBpbml0aWFsaXplIGNvbXBvbmVudDog
+JWRcbiIsIHJldCk7Cj4gLQkJcmV0dXJuIHJldDsKPiArCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hv
+c3Q7Cj4gIAl9Cj4gIAo+ICAJaXJxX251bSA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwgMCk7Cj4g
+IAlpZiAoaXJxX251bSA8IDApIHsKPiAtCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8g
+cmVxdWVzdCBkc2kgaXJxIHJlc291cmNlXG4iKTsKPiAtCQlyZXR1cm4gLUVQUk9CRV9ERUZFUjsK
+PiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gZ2V0IGRzaSBpcnFfbnVtOiAlZFxu
+IiwgaXJxX251bSk7Cj4gKwkJcmV0ID0gaXJxX251bTsKPiArCQlnb3RvIGVycl91bnJlZ2lzdGVy
+X2hvc3Q7Cj4gIAl9Cj4gIAo+ICAJaXJxX3NldF9zdGF0dXNfZmxhZ3MoaXJxX251bSwgSVJRX1RZ
+UEVfTEVWRUxfTE9XKTsKPiBAQCAtMTE2MywxNCArMTE2MywyNCBAQCBzdGF0aWMgaW50IG10a19k
+c2lfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgCQkJICAgICAgIElSUUZf
+VFJJR0dFUl9MT1csIGRldl9uYW1lKCZwZGV2LT5kZXYpLCBkc2kpOwo+ICAJaWYgKHJldCkgewo+
+ICAJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byByZXF1ZXN0IG1lZGlhdGVrIGRzaSBp
+cnFcbiIpOwo+IC0JCXJldHVybiAtRVBST0JFX0RFRkVSOwo+ICsJCWdvdG8gZXJyX3VucmVnaXN0
+ZXJfaG9zdDsKPiAgCX0KPiAgCj4gIAlpbml0X3dhaXRxdWV1ZV9oZWFkKCZkc2ktPmlycV93YWl0
+X3F1ZXVlKTsKPiAgCj4gIAlwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBkc2kpOwo+ICAKPiAt
+CXJldHVybiBjb21wb25lbnRfYWRkKCZwZGV2LT5kZXYsICZtdGtfZHNpX2NvbXBvbmVudF9vcHMp
+Owo+ICsJcmV0ID0gY29tcG9uZW50X2FkZCgmcGRldi0+ZGV2LCAmbXRrX2RzaV9jb21wb25lbnRf
+b3BzKTsKPiArCWlmIChyZXQpIHsKPiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8g
+YWRkIGNvbXBvbmVudDogJWRcbiIsIHJldCk7Cj4gKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0
+Owo+ICsJfQo+ICsKPiArCXJldHVybiAwOwo+ICsKPiArZXJyX3VucmVnaXN0ZXJfaG9zdDoKPiAr
+CW1pcGlfZHNpX2hvc3RfdW5yZWdpc3RlcigmZHNpLT5ob3N0KTsKPiArCXJldHVybiByZXQ7Cj4g
+IH0KPiAgCj4gIHN0YXRpYyBpbnQgbXRrX2RzaV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
+ZSAqcGRldikKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcK
+aHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
