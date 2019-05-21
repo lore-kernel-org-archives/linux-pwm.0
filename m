@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 4/5] pwm: jz4740: Drop dependency on MACH_INGENIC
-Date: Tue, 21 May 2019 17:34:14 +0200
-Message-ID: <20190521153415.14703-4-paul@crapouillou.net>
+Subject: [PATCH 5/5] pwm: jz4740: Switch to SPDX license identifier
+Date: Tue, 21 May 2019 17:34:15 +0200
+Message-ID: <20190521153415.14703-5-paul@crapouillou.net>
 References: <20190521153415.14703-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,27 +12,34 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Depending on MACH_INGENIC prevent us from creating a generic kernel that
-works on more than one MIPS board. Instead, we just depend on MIPS being
-set.
+Use a SPDX license identifier instead of a wall of text.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-jz4740.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 1311b54089be..1dfdf2cd533a 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -223,7 +223,7 @@ config PWM_IMX_TPM
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index e73ee72df09d..138b4f596525 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -1,16 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0+
+ /*
+  *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
+  *  JZ4740 platform PWM support
+- *
+- *  This program is free software; you can redistribute it and/or modify it
+- *  under  the terms of the GNU General  Public License as published by the
+- *  Free Software Foundation;  either version 2 of the License, or (at your
+- *  option) any later version.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  675 Mass Ave, Cambridge, MA 02139, USA.
+- *
+  */
  
- config PWM_JZ4740
- 	tristate "Ingenic JZ47xx PWM support"
--	depends on MACH_INGENIC
-+	depends on MIPS
- 	help
- 	  Generic PWM framework driver for Ingenic JZ47xx based
- 	  machines.
+ #include <linux/clk.h>
 -- 
 2.21.0.593.g511ec345e18
