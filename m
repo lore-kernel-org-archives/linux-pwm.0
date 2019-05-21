@@ -1,18 +1,40 @@
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH] pwm: pwm-meson: update with SPDX Licence identifier
-Date: Mon, 20 May 2019 21:18:49 +0200
-Message-ID: <CAFBinCBi_tSMMq9sUuGeTU8-KWDWczwJ=utAv4oARVTNgiDUJw@mail.gmail.com>
-References: <20190520140421.30074-1-narmstrong@baylibre.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 1/5] dt-bindings: Remove unused compatible strings
+Date: Tue, 21 May 2019 17:34:11 +0200
+Message-ID: <20190521153415.14703-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190520140421.30074-1-narmstrong@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, May 20, 2019 at 4:04 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
->
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Right now none of the Ingenic-based boards probe this driver from
+devicetree. This driver defined three compatible strings for the exact
+same behaviour. Before these strings are used, we can remove two of
+them.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+index 7d9d3f90641b..493bec80d59b 100644
+--- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+@@ -2,10 +2,7 @@ Ingenic JZ47xx PWM Controller
+ =============================
+ 
+ Required properties:
+-- compatible: One of:
+-  * "ingenic,jz4740-pwm"
+-  * "ingenic,jz4770-pwm"
+-  * "ingenic,jz4780-pwm"
++- compatible: Should be "ingenic,jz4740-pwm"
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a description
+   of the cells format.
+ - clocks : phandle to the external clock.
+-- 
+2.21.0.593.g511ec345e18
