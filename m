@@ -1,69 +1,104 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Thu, 9 May 2019 17:22:14 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20190509152214.GF8907@ulmo>
-References: <20190325094934.10221-1-u.kleine-koenig@pengutronix.de>
- <20190325094934.10221-2-u.kleine-koenig@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature"; boundary="xkJEvbTYpfqRozZ0"
-Content-Disposition: inline
-In-Reply-To: <20190325094934.10221-2-u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/2] pwm: samsung: don't uses devm-functions in .request
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from www3345.sakura.ne.jp ([49.212.235.55]:46359 "EHLO
+        www3345.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726552AbfEVIG2 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 22 May 2019 04:06:28 -0400
+From: Cao Van Dong <cv-dong@jinso.co.jp>
+Date: Wed, 22 May 2019 17:06:19 +0900
+Message-Id: <1558512379-8858-1-git-send-email-cv-dong@jinso.co.jp>
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: [PATCH] pwm: renesas-tpu: Add suspend/resume function
+To: linux-renesas-soc@vger.kernel.org, thierry.reding@gmail.com, horms+renesas@verge.net.au, geert+renesas@glider.be, broonie@kernel.org, linux-pwm@vger.kernel.org
+Cc: yoshihiro.shimoda.uh@renesas.com, kuninori.morimoto.gx@renesas.com, h-inayoshi@jinso.co.jp, na-hoan@jinso.co.jp, cv-dong@jinso.co.jp
 
+This patch adds suspend/resume function support for Renesas the 16-Bit Timer
+Pulse Unit (TPU) driver. This has been tested on the Salvator-XS board 
+with R-Car M3-N and H3 at renesas-drivers-2019-05-21-v5.2-rc1 tag.
+I expect this to work on other SoCs.
 
---xkJEvbTYpfqRozZ0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Test procedure:
+  - Enable TPU and pin control in DTS.
+  - Make sure switches { SW29-[1-2] are switched off or 
+    SW31-[1-4] are switched off(only for Salvator-xs) }.
+  - Exercise userspace PWM control for pwm[2,3] 
+    of /sys/class/pwm/pwmchip1/ .
+  - Inspect PWM signals on the input side of { CN29-[58,60] 
+    or SW31-[1,2] (only for Salvator-xs) }
+    before and after suspend/resume using an oscilloscope. 
 
-On Mon, Mar 25, 2019 at 10:49:34AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> A call to .request() is always paired by a call to .free() before a given
-> device is disposed. So the simplification that usually is possible when
-> using devm-functions cannot be used here. So use plain kzalloc() and
-> kfree() for improved runtime behaviour and reduced memory footprint.
->=20
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/pwm/pwm-samsung.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Signed-off-by: Cao Van Dong <cv-dong@jinso.co.jp>
+Tested-by: Cao Van Dong <cv-dong@jinso.co.jp>
+---
+ drivers/pwm/pwm-renesas-tpu.c | 49 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-Applied, and dropped the chip->dev parameter while at it to make this
-actually build.
-
-Thanks,
-Thierry
-
---xkJEvbTYpfqRozZ0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzURaYACgkQ3SOs138+
-s6HjBBAAtZemmlMmdjKFa/PdYdYRAqmlWRtuwUgsmS4VWc5pCQNJWulVIQseFMiF
-WSZGKgI6j2b6WDjmZRQuCgd9nV78dXOuL7RQM3RYT2tozDQHSbEkbd/t0Ye+J7yF
-fcpcpgX0Xy29enS7CuAIhAZ0kZryhi3zvHnQO+jdEhU2oaZkTqj7r/dddtS7kT0C
-Z9Uzo4M396PHLRmGcvFiS3xswcRlJfkHANYpnTuTuui9nHVAuWP6zbj18+xGf4XE
-nSvs5GbjdCSL1oFSJ3WUrI5nf1mF1Ct7oNGH9TUPXoT294RaThoNFzBI39OFTRAj
-yUwXPqRrvbp2COCEnetz6D4KZn9vAhLqry+2f6NGmQgLaWfbz2b4OlcN42vWVPvy
-XknnXH5pPW+RW5/BAhv5n1xfJUjQfC7MSXQlX3FQio8l45W6rV39EzHuOEJaJiYP
-xDbzDvzrPAlJaQS+ze8/tB9Ydsys4GsmMAyZB/D9GVGp71+oY7oQmdDVHGSXZGle
-2RYCLnazAkhYa11hFSQ8VjKb8y71hsDVxmvNVOUmlcoMBy7Igo91wId1zQCJySx5
-4+X02jmfFdyjHJHLMCV3nrG8gsfkAT/DldhUisQl8DHJ4QGFSSVLtTLGOQllhz5V
-81T7DCsDQ73NUHx7XqsOLcNrisWC+LqfPzv3TNR/xxR9pC+H/4s=
-=XtqK
------END PGP SIGNATURE-----
-
---xkJEvbTYpfqRozZ0--
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 4a855a2..97b026e 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -366,6 +366,54 @@ static void tpu_pwm_disable(struct pwm_chip *chip, struct pwm_device *_pwm)
+ 	tpu_pwm_timer_stop(pwm);
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
++static struct pwm_device *tpu_pwm_dev_to_pwm_dev(struct device *dev)
++{
++	struct tpu_device *tpu = dev_get_drvdata(dev);
++	struct pwm_chip *chip = &tpu->chip;
++
++	if((pwm_get_chip_data(&chip->pwms[0])) != NULL)
++		return &chip->pwms[0];
++	if((pwm_get_chip_data(&chip->pwms[1])) != NULL)
++		return &chip->pwms[1];
++	if((pwm_get_chip_data(&chip->pwms[2])) != NULL)
++		return &chip->pwms[2];
++	if((pwm_get_chip_data(&chip->pwms[3])) != NULL)
++		return &chip->pwms[3];
++
++	return NULL;
++}
++
++static int tpu_pwm_suspend(struct device *dev)
++{
++	struct pwm_device *pwm = tpu_pwm_dev_to_pwm_dev(dev);
++
++	if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++		return 0;
++
++	pm_runtime_put(dev);
++
++	return 0;
++}
++
++static int tpu_pwm_resume(struct device *dev)
++{
++	struct pwm_device *pwm = tpu_pwm_dev_to_pwm_dev(dev);
++
++	if ((!test_bit(PWMF_REQUESTED, &pwm->flags)) || pwm == NULL)
++		return 0;
++
++	pm_runtime_get_sync(dev);
++
++	/* Restart timer */
++	tpu_pwm_disable(pwm->chip,pwm);
++	tpu_pwm_enable(pwm->chip,pwm);
++
++	return 0;
++}
++#endif /* CONFIG_PM_SLEEP */
++static SIMPLE_DEV_PM_OPS(tpu_pwm_pm_ops, tpu_pwm_suspend, tpu_pwm_resume);
++
+ static const struct pwm_ops tpu_pwm_ops = {
+ 	.request = tpu_pwm_request,
+ 	.free = tpu_pwm_free,
+@@ -459,6 +507,7 @@ static struct platform_driver tpu_driver = {
+ 	.remove		= tpu_remove,
+ 	.driver		= {
+ 		.name	= "renesas-tpu-pwm",
++		.pm		= &tpu_pwm_pm_ops,
+ 		.of_match_table = of_match_ptr(tpu_of_table),
+ 	}
+ };
+-- 
+2.7.4
