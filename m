@@ -1,111 +1,72 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 3/5] pwm: jz4740: Apply configuration atomically
-Date: Tue, 21 May 2019 17:34:13 +0200
-Message-ID: <20190521153415.14703-3-paul@crapouillou.net>
-References: <20190521153415.14703-1-paul@crapouillou.net>
+Subject: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered down
+Date: Wed, 22 May 2019 18:34:28 +0200
+Message-ID: <20190522163428.7078-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190521153415.14703-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-This is cleaner, more future-proof, and incidentally it also fixes the
-PWM resetting its config when stopped/started several times.
+When the driver probes, the PWM pin is automatically configured to its
+default state, which should be the "pwm" function. However, at this
+point we don't know the actual level of the pin, which may be active or
+inactive. As a result, if the driver probes without enabling the
+backlight, the PWM pin might be active, and the backlight would be
+lit way before being officially enabled.
+
+To work around this, if the probe function doesn't enable the backlight,
+the pin is set to its sleep state instead of the default one, until the
+backlight is enabled. When the backlight is disabled, the pin is reset
+to its sleep state.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/pwm/pwm-jz4740.c | 37 ++++++++++++-------------------------
- 1 file changed, 12 insertions(+), 25 deletions(-)
+ drivers/video/backlight/pwm_bl.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index c274136613c8..e73ee72df09d 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -83,17 +83,16 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	jz4740_timer_disable(pwm->hwpwm);
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index fb45f866b923..422f7903b382 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/fb.h>
+ #include <linux/backlight.h>
+@@ -50,6 +51,8 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb)
+ 	struct pwm_state state;
+ 	int err;
+ 
++	pinctrl_pm_select_default_state(pb->dev);
++
+ 	pwm_get_state(pb->pwm, &state);
+ 	if (pb->enabled)
+ 		return;
+@@ -90,6 +93,8 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ 
+ 	regulator_disable(pb->power_supply);
+ 	pb->enabled = false;
++
++	pinctrl_pm_select_sleep_state(pb->dev);
  }
  
--static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			     int duty_ns, int period_ns)
-+static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    struct pwm_state *state)
- {
- 	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
- 	unsigned long long tmp;
- 	unsigned long period, duty;
- 	unsigned int prescaler = 0;
- 	uint16_t ctrl;
--	bool is_enabled;
+ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
+@@ -626,6 +631,10 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	backlight_update_status(bl);
  
--	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
-+	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
- 	do_div(tmp, 1000000000);
- 	period = tmp;
- 
-@@ -105,16 +104,14 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (prescaler == 6)
- 		return -EINVAL;
- 
--	tmp = (unsigned long long)period * duty_ns;
--	do_div(tmp, period_ns);
-+	tmp = (unsigned long long)period * state->duty_cycle;
-+	do_div(tmp, state->period);
- 	duty = period - tmp;
- 
- 	if (duty >= period)
- 		duty = period - 1;
- 
--	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
--	if (is_enabled)
--		jz4740_pwm_disable(chip, pwm);
-+	jz4740_pwm_disable(chip, pwm);
- 
- 	jz4740_timer_set_count(pwm->hwpwm, 0);
- 	jz4740_timer_set_duty(pwm->hwpwm, duty);
-@@ -125,18 +122,7 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
- 
--	if (is_enabled)
--		jz4740_pwm_enable(chip, pwm);
--
--	return 0;
--}
--
--static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
--		struct pwm_device *pwm, enum pwm_polarity polarity)
--{
--	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->pwm);
--
--	switch (polarity) {
-+	switch (state->polarity) {
- 	case PWM_POLARITY_NORMAL:
- 		ctrl &= ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
- 		break;
-@@ -146,16 +132,17 @@ static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
- 	}
- 
- 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+ 	platform_set_drvdata(pdev, bl);
 +
-+	if (state->enabled)
-+		jz4740_pwm_enable(chip, pwm);
++	if (bl->props.power == FB_BLANK_POWERDOWN)
++		pinctrl_pm_select_sleep_state(&pdev->dev);
 +
  	return 0;
- }
  
- static const struct pwm_ops jz4740_pwm_ops = {
- 	.request = jz4740_pwm_request,
- 	.free = jz4740_pwm_free,
--	.config = jz4740_pwm_config,
--	.set_polarity = jz4740_pwm_set_polarity,
--	.enable = jz4740_pwm_enable,
--	.disable = jz4740_pwm_disable,
-+	.apply = jz4740_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
+ err_alloc:
 -- 
 2.21.0.593.g511ec345e18
