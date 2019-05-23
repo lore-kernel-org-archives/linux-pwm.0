@@ -1,72 +1,86 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered down
-Date: Wed, 22 May 2019 18:34:28 +0200
-Message-ID: <20190522163428.7078-1-paul@crapouillou.net>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Subject: Re: [RESEND PATCH v5 0/3] Add PM support to STM32 LP Timer drivers
+Date: Thu, 23 May 2019 11:09:33 +0200
+Message-ID: <CA+M3ks5O9YpZ-4f3x=bFn_LxJu+6i3pu7jsWv_93pe14y8V71w@mail.gmail.com>
+References: <1555580267-29299-1-git-send-email-fabrice.gasnier@st.com> <45e934af-d677-d7d4-09ea-3ed01872dab6@st.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <45e934af-d677-d7d4-09ea-3ed01872dab6@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Alexandre Torgue <alexandre.torgue@st.com>, Loic PALLARDY <loic.pallardy@st.com>, tduszyns@gmail.com, Mark Brown <broonie@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, u.kleine-koenig@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-When the driver probes, the PWM pin is automatically configured to its
-default state, which should be the "pwm" function. However, at this
-point we don't know the actual level of the pin, which may be active or
-inactive. As a result, if the driver probes without enabling the
-backlight, the PWM pin might be active, and the backlight would be
-lit way before being officially enabled.
+Le ven. 10 mai 2019 =C3=A0 09:51, Fabrice Gasnier <fabrice.gasnier@st.com> =
+a =C3=A9crit :
+>
+> On 4/18/19 11:37 AM, Fabrice Gasnier wrote:
+> > This patch series adds power management support for STM32 LP Timer:
+> > - PWM driver
+> > - Document the pinctrl states for sleep mode
+> >
+> > It also adds device link between the PWM consumer and the PWM provider.
+> > This allows proper sequencing for suspend/resume (e.g. user will likely
+> > do a pwm_disable() before the PWM provider suspend executes), see [1].
+> >
+> > [1] https://lkml.org/lkml/2019/2/5/770
+> >
+>
+> Hi Thierry,
+>
+> Please let me know if you have some more comments on this series. It's
+> been under review since quite some time now.
+>
 
-To work around this, if the probe function doesn't enable the backlight,
-the pin is set to its sleep state instead of the default one, until the
-backlight is enabled. When the backlight is disabled, the pin is reset
-to its sleep state.
+Hi Thierry,
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/video/backlight/pwm_bl.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Does something is blocking on this series ?
+How can we progress on it ?
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index fb45f866b923..422f7903b382 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -16,6 +16,7 @@
- #include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/init.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/platform_device.h>
- #include <linux/fb.h>
- #include <linux/backlight.h>
-@@ -50,6 +51,8 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb)
- 	struct pwm_state state;
- 	int err;
- 
-+	pinctrl_pm_select_default_state(pb->dev);
-+
- 	pwm_get_state(pb->pwm, &state);
- 	if (pb->enabled)
- 		return;
-@@ -90,6 +93,8 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- 
- 	regulator_disable(pb->power_supply);
- 	pb->enabled = false;
-+
-+	pinctrl_pm_select_sleep_state(pb->dev);
- }
- 
- static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
-@@ -626,6 +631,10 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	backlight_update_status(bl);
- 
- 	platform_set_drvdata(pdev, bl);
-+
-+	if (bl->props.power == FB_BLANK_POWERDOWN)
-+		pinctrl_pm_select_sleep_state(&pdev->dev);
-+
- 	return 0;
- 
- err_alloc:
--- 
-2.21.0.593.g511ec345e18
+Regards,
+Benjamin
+
+> Thanks in advance,
+> Best Regards,
+> Fabrice
+>
+> > ---
+> > resend v5:
+> > - update collected acks
+> >
+> > Changes in v5:
+> > - improve a warning message, fix a style issue.
+> >
+> > Changes in v4:
+> > - improve error handling when adding the PWM consumer device link.
+> >
+> > Changes in v3:
+> > - Move the device_link_add() call to of_pwm_get() as discussed with Uwe=
+.
+> >
+> > Changes in v2:
+> > - Don't disable PWM channel in PWM provider: rather refuse to suspend
+> >   and report an error as suggested by Uwe and Thierry.
+> > - Add patch 3/3 to propose device link addition.
+> > - No updates for STM32 LP Timer IIO driver. Patches can be send separat=
+ely.
+> >
+> > Fabrice Gasnier (3):
+> >   dt-bindings: pwm-stm32-lp: document pinctrl sleep state
+> >   pwm: stm32-lp: Add power management support
+> >   pwm: core: add consumer device link
+> >
+> >  .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  9 ++--
+> >  drivers/pwm/core.c                                 | 50 ++++++++++++++=
+++++++--
+> >  drivers/pwm/pwm-stm32-lp.c                         | 25 +++++++++++
+> >  include/linux/pwm.h                                |  6 ++-
+> >  4 files changed, 82 insertions(+), 8 deletions(-)
+> >
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
