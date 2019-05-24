@@ -1,71 +1,116 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from www3345.sakura.ne.jp ([49.212.235.55]:35550 "EHLO
+Received: from www3345.sakura.ne.jp ([49.212.235.55]:14298 "EHLO
         www3345.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbfEWFTI (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 May 2019 01:19:08 -0400
-References: <1558575210-28112-1-git-send-email-cv-dong@jinso.co.jp>
- <878suyuejo.wl-kuninori.morimoto.gx@renesas.com>
- <519f8d16-da5e-1904-ec02-ce9331f2b223@jinso.co.jp>
- <877eahvncc.wl-kuninori.morimoto.gx@renesas.com>
+        with ESMTP id S2388065AbfEXA4h (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 May 2019 20:56:37 -0400
 From: Cao Van Dong <cv-dong@jinso.co.jp>
-Message-ID: <810fe28e-366e-5c96-e684-6cc46c3a2270@jinso.co.jp>
-Date: Thu, 23 May 2019 14:19:06 +0900
-MIME-Version: 1.0
-In-Reply-To: <877eahvncc.wl-kuninori.morimoto.gx@renesas.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Date: Fri, 24 May 2019 09:56:29 +0900
+Message-Id: <1558659389-4397-1-git-send-email-cv-dong@jinso.co.jp>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v2] pwm: renesas-tpu: Add suspend/resume function
-To: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Cc: linux-renesas-soc@vger.kernel.org, thierry.reding@gmail.com, horms+renesas@verge.net.au, geert+renesas@glider.be, broonie@kernel.org, linux-pwm@vger.kernel.org, yoshihiro.shimoda.uh@renesas.com, h-inayoshi@jinso.co.jp, na-hoan@jinso.co.jp
+Subject: [PATCH v3] pwm: renesas-tpu: Add suspend/resume function
+To: linux-renesas-soc@vger.kernel.org, thierry.reding@gmail.com, horms+renesas@verge.net.au, geert+renesas@glider.be, broonie@kernel.org, linux-pwm@vger.kernel.org
+Cc: yoshihiro.shimoda.uh@renesas.com, kuninori.morimoto.gx@renesas.com, h-inayoshi@jinso.co.jp, na-hoan@jinso.co.jp, cv-dong@jinso.co.jp
 
-Dear Morimoto-san,
+This patch adds suspend/resume function support for Renesas the 16-Bit Timer
+Pulse Unit (TPU) driver. This has been tested on the Salvator-XS board 
+with R-Car M3-N and H3 at renesas-drivers-2019-05-21-v5.2-rc1 tag.
+I expect this to work on other SoCs.
 
-Thank for your feedback!
+Test procedure:
+  - Enable TPU and pin control in DTS.
+  - Make sure switches { SW29-[1-2] are switched off or 
+    SW31-[1-4] are switched off(only for Salvator-xs) }.
+  - Exercise userspace PWM control for pwm[2,3] 
+    of /sys/class/pwm/pwmchip1/ .
+  - Inspect PWM signals on the input side of { CN29-[58,60] 
+    or SW31-[1,2] (only for Salvator-xs) }
+    before and after suspend/resume using an oscilloscope. 
 
-On 2019/05/23 13:07, Kuninori Morimoto wrote:
-> Hi
->
->>>> +static int tpu_pwm_suspend(struct device *dev)
->>>> +{
->>>> +	struct tpu_device *tpu = dev_get_drvdata(dev);
->>>> +	struct pwm_chip *chip = &tpu->chip;
->>>> +	struct pwm_device *pwm;
->>>> +	int i;
->>>> +
->>>> +	for (i = 0; i <= 3; i++) {
->>>> +		if ((pwm_get_chip_data(&chip->pwms[i])) != NULL) {
->>>> +			pwm = &chip->pwms[i];
->>>> +			if (!test_bit(PWMF_REQUESTED, &pwm->flags))
->>>> +				return 0;
->>>> +		}
->>>> +	}
->>> why 3 ?
->> According to Hardware manual, 16-Bit Timer Pulse Unit (TPU)
->> supports four 16-bit timers for both R-car GEN2 and GEN3.
-> Hmm...
-> You need to use chip->npwm or TPU_CHANNEL_MAX then ?
+Signed-off-by: Cao Van Dong <cv-dong@jinso.co.jp>
+Tested-by: Cao Van Dong <cv-dong@jinso.co.jp>
+Acked-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+---
+Changes v2 -> v3:
+  - Changes '3' -> TPU_CHANNEL_MAX in loop.
+  - Remove pm_runtime_put() function in tpu_pwm_suspend() function.
+---
+Changes v1 -> v2:
+  - Repair the handling code to cover case of using multiple timers.
+---
+ drivers/pwm/pwm-renesas-tpu.c | 53 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-Thank for your opinion!
-I will resubmit v3 to change 3 to TPU_CHANNEL_MAX.
-
->>>> +	pm_runtime_put(dev);
->>>> +
->>>> +	return 0;
->>>> +}
->>> Do we need to call pm_runtime_xxx here ?
->> "pm_runtime_put(dev);" function is called for runtime idle operations.
-> I know.
-> I'm asking do we need to call it here ?
-
-I think we should have it here better.
-
-Thank you,
-Dong
-
-> Thank you for your help !!
-> Best regards
-> ---
-> Kuninori Morimoto
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 4a855a2..cb97252 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -366,6 +366,58 @@ static void tpu_pwm_disable(struct pwm_chip *chip, struct pwm_device *_pwm)
+ 	tpu_pwm_timer_stop(pwm);
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
++static int tpu_pwm_restart_timer(struct pwm_device *pwm)
++{
++	if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++		return 0;
++
++	/* Restart timer */
++	tpu_pwm_disable(pwm->chip,pwm);
++	tpu_pwm_enable(pwm->chip,pwm);
++
++	return 0;
++}
++
++static int tpu_pwm_suspend(struct device *dev)
++{
++	struct tpu_device *tpu = dev_get_drvdata(dev);
++	struct pwm_chip *chip = &tpu->chip;
++	struct pwm_device *pwm;
++	int i;
++
++	for (i = 0; i < TPU_CHANNEL_MAX; i++) {
++		if ((pwm_get_chip_data(&chip->pwms[i])) != NULL) {
++			pwm = &chip->pwms[i];
++			if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++				return 0;
++		}
++	}
++
++	return 0;
++}
++
++static int tpu_pwm_resume(struct device *dev)
++{
++	struct tpu_device *tpu = dev_get_drvdata(dev);
++	struct pwm_chip *chip = &tpu->chip;
++	struct pwm_device *pwm;
++	int i;
++
++	pm_runtime_get_sync(dev);
++
++	for (i = 0; i < TPU_CHANNEL_MAX; i++) {
++		if ((pwm_get_chip_data(&chip->pwms[i])) != NULL) {
++			pwm = &chip->pwms[i];
++			tpu_pwm_restart_timer(pwm);
++		}
++	}
++
++	return 0;
++}
++#endif /* CONFIG_PM_SLEEP */
++static SIMPLE_DEV_PM_OPS(tpu_pwm_pm_ops, tpu_pwm_suspend, tpu_pwm_resume);
++
+ static const struct pwm_ops tpu_pwm_ops = {
+ 	.request = tpu_pwm_request,
+ 	.free = tpu_pwm_free,
+@@ -459,6 +511,7 @@ static struct platform_driver tpu_driver = {
+ 	.remove		= tpu_remove,
+ 	.driver		= {
+ 		.name	= "renesas-tpu-pwm",
++		.pm	= &tpu_pwm_pm_ops,
+ 		.of_match_table = of_match_ptr(tpu_of_table),
+ 	}
+ };
+-- 
+2.7.4
