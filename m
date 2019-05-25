@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 02/14] pwm: meson: use devm_clk_get_optional() to get the input clock
-Date: Sat, 25 May 2019 20:11:21 +0200
-Message-ID: <20190525181133.4875-3-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 04/14] pwm: meson: change MISC_CLK_SEL_WIDTH to MISC_CLK_SEL_MASK
+Date: Sat, 25 May 2019 20:11:23 +0200
+Message-ID: <20190525181133.4875-5-martin.blumenstingl@googlemail.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,39 +12,36 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Simplify the code which fetches the input clock for a PWM channel by
-using devm_clk_get_optional().
-This comes with a small functional change: previously all errors except
-EPROBE_DEFER were ignored. Now all other errors are also treated as
-errors. If no input clock is present devm_clk_get_optional() will return
-NULL instead of an error which matches the behavior of the old code.
+MISC_CLK_SEL_WIDTH is only used in one place where it's converted into
+a bit-mask. Rename and change the macro to be a bit-mask so that
+conversion is not needed anymore. No functional changes intended.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/pwm/pwm-meson.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-meson.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 3fbbc4128ce8..35b38c7201c3 100644
+index c62a3ac924d0..84b28ba0f903 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -474,14 +474,9 @@ static int meson_pwm_init_channels(struct meson_pwm *meson,
+@@ -33,7 +33,7 @@
+ #define MISC_A_CLK_DIV_SHIFT	8
+ #define MISC_B_CLK_SEL_SHIFT	6
+ #define MISC_A_CLK_SEL_SHIFT	4
+-#define MISC_CLK_SEL_WIDTH	2
++#define MISC_CLK_SEL_MASK	0x3
+ #define MISC_B_EN		BIT(1)
+ #define MISC_A_EN		BIT(0)
  
- 		snprintf(name, sizeof(name), "clkin%u", i);
+@@ -463,7 +463,7 @@ static int meson_pwm_init_channels(struct meson_pwm *meson,
  
--		channel->clk_parent = devm_clk_get(dev, name);
--		if (IS_ERR(channel->clk_parent)) {
--			err = PTR_ERR(channel->clk_parent);
--			if (err == -EPROBE_DEFER)
--				return err;
--
--			channel->clk_parent = NULL;
--		}
-+		channel->clk_parent = devm_clk_get_optional(dev, name);
-+		if (IS_ERR(channel->clk_parent))
-+			return PTR_ERR(channel->clk_parent);
- 	}
- 
- 	return 0;
+ 		channel->mux.reg = meson->base + REG_MISC_AB;
+ 		channel->mux.shift = mux_reg_shifts[i];
+-		channel->mux.mask = BIT(MISC_CLK_SEL_WIDTH) - 1;
++		channel->mux.mask = MISC_CLK_SEL_MASK;
+ 		channel->mux.flags = 0;
+ 		channel->mux.lock = &meson->lock;
+ 		channel->mux.table = NULL;
 -- 
 2.21.0
