@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 12/14] pwm: meson: don't cache struct pwm_state internally
-Date: Sat, 25 May 2019 20:11:31 +0200
-Message-ID: <20190525181133.4875-13-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 13/14] pwm: meson: add support PWM_POLARITY_INVERSED when disabling
+Date: Sat, 25 May 2019 20:11:32 +0200
+Message-ID: <20190525181133.4875-14-martin.blumenstingl@googlemail.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,88 +12,66 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM core already caches the "current struct pwm_state" as the
-"current state of the hardware registers" inside struct pwm_device.
+meson_pwm_apply() has to consider the PWM polarity when disabling the
+output.
+With enabled=false and polarity=PWM_POLARITY_NORMAL the output needs to
+be LOW. The driver already supports this.
+With enabled=false and polarity=PWM_POLARITY_INVERSED the output needs
+to be HIGH. Implement this in the driver by internally enabling the
+output with the same settings that we already use for "period == duty".
 
-Drop the struct pwm_state from struct meson_pwm_channel in favour of the
-struct pwm_state in struct pwm_device. While here also drop any checks
-based on the pwm_state because the PWM core already takes care of this.
-
-No functional changes intended.
+This fixes a PWM API violation which expects that the driver honors the
+polarity also for enabled=false. Due to the IP block not supporting this
+natively we only get "an as close as possible" to 100% HIGH signal (in
+my test setup with input clock of 24MHz and measuring the output with a
+logic analyzer at 24MHz sampling rate I got a duty cycle of 99.998475%
+on a Khadas VIM).
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/pwm/pwm-meson.c | 25 +------------------------
- 1 file changed, 1 insertion(+), 24 deletions(-)
+ drivers/pwm/pwm-meson.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 010212166d5d..900d362ec3c9 100644
+index 900d362ec3c9..bb48ba85f756 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -68,8 +68,6 @@ struct meson_pwm_channel {
- 	unsigned int lo;
- 	u8 pre_div;
- 
--	struct pwm_state state;
--
- 	struct clk *clk_parent;
- 	struct clk_mux mux;
- 	struct clk *clk;
-@@ -127,8 +125,6 @@ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 		return err;
- 	}
- 
--	chip->ops->get_state(chip, pwm, &channel->state);
--
- 	return pwm_set_chip_data(pwm, channel);
- }
- 
-@@ -153,10 +149,6 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 	if (state->polarity == PWM_POLARITY_INVERSED)
- 		duty = period - duty;
- 
--	if (period == channel->state.period &&
--	    duty == channel->state.duty_cycle)
--		return 0;
--
- 	fin_freq = clk_get_rate(channel->clk);
- 	if (fin_freq == 0) {
- 		dev_err(meson->chip.dev, "invalid source clock frequency\n");
-@@ -253,7 +245,6 @@ static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
+@@ -245,6 +245,7 @@ static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
  static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  			   struct pwm_state *state)
  {
--	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
++	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
  	struct meson_pwm *meson = to_meson_pwm(chip);
  	int err = 0;
  
-@@ -262,26 +253,12 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -252,7 +253,27 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return -EINVAL;
  
  	if (!state->enabled) {
- 		meson_pwm_disable(meson, pwm);
--		channel->state.enabled = false;
--
--		return 0;
--	}
--
--	if (state->period != channel->state.period ||
--	    state->duty_cycle != channel->state.duty_cycle ||
--	    state->polarity != channel->state.polarity) {
-+	} else {
+-		meson_pwm_disable(meson, pwm);
++		if (state->polarity == PWM_POLARITY_INVERSED) {
++			/*
++			 * This IP block revision doesn't have an "always high"
++			 * setting which we can use for "inverted disabled".
++			 * Instead we achieve this using the same settings
++			 * that we use a pre_div of 0 (to get the shortest
++			 * possible duration for one "count") and
++			 * "period == duty_cycle". This results in a signal
++			 * which is LOW for one "count", while being HIGH for
++			 * the rest of the (so the signal is HIGH for slightly
++			 * less than 100% of the period, but this is the best
++			 * we can achieve).
++			 */
++			channel->pre_div = 0;
++			channel->hi = ~0;
++			channel->lo = 0;
++
++			meson_pwm_enable(meson, pwm);
++		} else {
++			meson_pwm_disable(meson, pwm);
++		}
+ 	} else {
  		err = meson_pwm_calc(meson, pwm, state);
  		if (err < 0)
- 			return err;
- 
--		channel->state.polarity = state->polarity;
--		channel->state.period = state->period;
--		channel->state.duty_cycle = state->duty_cycle;
--	}
--
--	if (state->enabled && !channel->state.enabled) {
- 		meson_pwm_enable(meson, pwm);
--		channel->state.enabled = true;
- 	}
- 
- 	return 0;
 -- 
 2.21.0
