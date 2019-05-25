@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 06/14] pwm: meson: pass struct pwm_device to meson_pwm_calc()
-Date: Sat, 25 May 2019 20:11:25 +0200
-Message-ID: <20190525181133.4875-7-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 01/14] pwm: meson: unify the parameter list of meson_pwm_{enable,disable}
+Date: Sat, 25 May 2019 20:11:20 +0200
+Message-ID: <20190525181133.4875-2-martin.blumenstingl@googlemail.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,50 +12,76 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-meson_pwm_calc() is the last function that accepts a struct
-meson_pwm_channel. meson_pwm_enable(), meson_pwm_disable() and
-meson_pwm_apply() for example are all taking a struct pwm_device as
-parameter. When they need the struct meson_pwm_channel these functions
-simply call pwm_get_chip_data() internally.
+This is a preparation for a future cleanup. Pass struct pwm_device
+instead of passing the individual values required by each function as
+these can be obtained for each struct pwm_device instance.
 
-Make meson_pwm_calc() consistent with the other functions in the
-meson-pwm driver by passing struct pwm_device to it as well. The value
-of the "id" parameter is actually pwm->hwpwm, but the driver never read
-the "id" parameter, which is why there's no replacement for it in the
-new code.
+As a nice side-effect the driver now uses "switch (pwm->hwpwm)"
+everywhere. Before some functions used "switch (id)" while others used
+"switch (pwm->hwpwm)".
 
 No functional changes.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/pwm/pwm-meson.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-meson.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 39ea119add7b..d6eb4d04d5c9 100644
+index 5fef7e925282..3fbbc4128ce8 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -114,10 +114,10 @@ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 		clk_disable_unprepare(channel->clk);
+@@ -183,15 +183,14 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+ 	return 0;
  }
  
--static int meson_pwm_calc(struct meson_pwm *meson,
--			  struct meson_pwm_channel *channel,
-+static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 			  struct pwm_state *state)
+-static void meson_pwm_enable(struct meson_pwm *meson,
+-			     struct meson_pwm_channel *channel,
+-			     unsigned int id)
++static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
  {
 +	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	unsigned int duty, period, pre_div, cnt, duty_cnt;
- 	unsigned long fin_freq = -1;
- 	u64 fin_ps;
-@@ -280,7 +280,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (state->period != channel->state.period ||
- 	    state->duty_cycle != channel->state.duty_cycle ||
- 	    state->polarity != channel->state.polarity) {
--		err = meson_pwm_calc(meson, channel, state);
-+		err = meson_pwm_calc(meson, pwm, state);
- 		if (err < 0)
- 			return err;
+ 	u32 value, clk_shift, clk_enable, enable;
+ 	unsigned int offset;
+ 	unsigned long flags;
+ 
+-	switch (id) {
++	switch (pwm->hwpwm) {
+ 	case 0:
+ 		clk_shift = MISC_A_CLK_DIV_SHIFT;
+ 		clk_enable = MISC_A_CLK_EN;
+@@ -228,12 +227,12 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+ 	spin_unlock_irqrestore(&meson->lock, flags);
+ }
+ 
+-static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
++static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
+ {
+ 	u32 value, enable;
+ 	unsigned long flags;
+ 
+-	switch (id) {
++	switch (pwm->hwpwm) {
+ 	case 0:
+ 		enable = MISC_A_EN;
+ 		break;
+@@ -266,7 +265,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return -EINVAL;
+ 
+ 	if (!state->enabled) {
+-		meson_pwm_disable(meson, pwm->hwpwm);
++		meson_pwm_disable(meson, pwm);
+ 		channel->state.enabled = false;
+ 
+ 		return 0;
+@@ -293,7 +292,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	}
+ 
+ 	if (state->enabled && !channel->state.enabled) {
+-		meson_pwm_enable(meson, channel, pwm->hwpwm);
++		meson_pwm_enable(meson, pwm);
+ 		channel->state.enabled = true;
+ 	}
  
 -- 
 2.21.0
