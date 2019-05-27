@@ -1,149 +1,53 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 10/14] pwm: meson: simplify the calculation of the
- pre-divider and count
-Date: Mon, 27 May 2019 14:37:05 +0200
-Message-ID: <d51106ff-1b1e-b6bd-c17e-df9bb8536c2e@baylibre.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH 04/14] pwm: meson: change MISC_CLK_SEL_WIDTH to MISC_CLK_SEL_MASK
+Date: Mon, 27 May 2019 19:46:43 +0200
+Message-ID: <CAFBinCDXNy4=6U2gsh6vK6WEtJKAdfDGPMrpPJthbp5Rru1hbg@mail.gmail.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
- <20190525181133.4875-11-martin.blumenstingl@googlemail.com>
- <20190526194120.uzuq6ncz5l2z4hfm@pengutronix.de>
+ <20190525181133.4875-5-martin.blumenstingl@googlemail.com> <3b61897a-267b-fd6e-181b-a8c7e47918fb@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190526194120.uzuq6ncz5l2z4hfm@pengutronix.de>
-Content-Language: en-US
+In-Reply-To: <3b61897a-267b-fd6e-181b-a8c7e47918fb@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: kernel@pengutronix.de, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 26/05/2019 21:41, Uwe Kleine-König wrote:
-> On Sat, May 25, 2019 at 08:11:29PM +0200, Martin Blumenstingl wrote:
->> Replace the loop to calculate the pre-divider and count with two
->> separate div64_u64() calculations. This makes the code easier to read
->> and improves the precision.
->>
->> Two example cases:
->> 1) 32.768kHz LPO clock for the SDIO wifi chip on Khadas VIM
->>    clock input: 500MHz (FCLK_DIV4)
->>    period: 30518ns
->>    duty cycle: 15259ns
->> old algorithm: pre_div=0, cnt=15259
->> new algorithm: pre_div=0, cnt=15259
->> (no difference in calculated values)
->>
->> 2) PWM LED on Khadas VIM
->>    clock input: 24MHz (XTAL)
->>    period: 7812500ns
->>    duty cycle: 7812500ns
->> old algorithm: pre_div=2, cnt=62004
->> new algorithm: pre_div=2, cnt=62500
->> Using a scope (24MHz sampling rate) shows the actual difference:
->> - old: 7753000ns, off by -59500ns (0.7616%)
->> - new: 7815000ns, off by +2500ns (0.032%)
->>
->> Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
->> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
->> ---
->>  drivers/pwm/pwm-meson.c | 25 ++++++++++---------------
->>  1 file changed, 10 insertions(+), 15 deletions(-)
->>
->> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
->> index 27915d6475e3..9afa1e5aaebf 100644
->> --- a/drivers/pwm/pwm-meson.c
->> +++ b/drivers/pwm/pwm-meson.c
->> @@ -12,6 +12,7 @@
->>  #include <linux/err.h>
->>  #include <linux/io.h>
->>  #include <linux/kernel.h>
->> +#include <linux/math64.h>
->>  #include <linux/module.h>
->>  #include <linux/of.h>
->>  #include <linux/of_device.h>
->> @@ -145,7 +146,6 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
->>  	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
->>  	unsigned int duty, period, pre_div, cnt, duty_cnt;
->>  	unsigned long fin_freq = -1;
->> -	u64 fin_ps;
->>  
->>  	duty = state->duty_cycle;
->>  	period = state->period;
->> @@ -164,24 +164,19 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
->>  	}
->>  
->>  	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
->> -	fin_ps = (u64)NSEC_PER_SEC * 1000;
->> -	do_div(fin_ps, fin_freq);
->> -
->> -	/* Calc pre_div with the period */
->> -	for (pre_div = 0; pre_div <= MISC_CLK_DIV_MASK; pre_div++) {
->> -		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
->> -					    fin_ps * (pre_div + 1));
->> -		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
->> -			fin_ps, pre_div, cnt);
->> -		if (cnt <= 0xffff)
->> -			break;
->> -	}
->>  
->> +	pre_div = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * 0xffffLL);
->>  	if (pre_div > MISC_CLK_DIV_MASK) {
->>  		dev_err(meson->chip.dev, "unable to get period pre_div\n");
->>  		return -EINVAL;
->>  	}
->>  
->> +	cnt = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * (pre_div + 1));
->> +	if (cnt > 0xffff) {
->> +		dev_err(meson->chip.dev, "unable to get period cnt\n");
->> +		return -EINVAL;
->> +	}
->> +
-> 
-> There is a slight modification in the calculation of pre_div that isn't
-> catched by the examples above.
-> 
-> Before this patch we had:
-> 
-> 	pick smallest pre_div such that
-> 		round_closest(period * 1000 / (round_down(1e12 / fin_freq) * (pre_div + 1)) <= 0xffff
-> 
-> New approach is:
-> 
-> 	pre_div = round_down(fin_freq * period / (1e9 * 0xffff))
-> 
-> An advantage of the new approach is better as it rounds only once and is
-> easier.
-> 
-> Consider fin_freq = 99990001 and period = 655355, then the old algorithm
-> picks pre_div = 1 while the new picks pre_div = 0.
-> 
-> I didn't continue here to check which are the resulting waveforms, I
-> assume they are different though.
-> 
-> As there is currently no definition what is a "better" approximation for
-> a given requested pair (duty_cycle, period) I cannot say if these
-> changes are good or not.
-> 
-> And that's a pity, so I still think there should be a documented
-> definition that lays down how a lowlevel driver should round. Without
-> that a consumer that cares about fine differences can not rely an the
-> abstraction provided by the PWM framework because each low-level driver
-> might behave differently.
-> 
-> @Thierry: So can you please continue the discussion about this topic.
-> The longer this is delayed the more patches are created and submitted
-> that eventually might be wrong which is a waste of developer and
-> reviewer time.
-> 
-> Assuming the people who care about meson don't object after reading this
-> I wouldn't want to stop this patch going in though. So:
-> 
-> 	Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> Best regards
-> Uwe
-> 
+Hi Neil,
 
-I don't have a strong view on this, Martin showed similar or much greater
-accuracy in the 2 principal use cases of the driver, so I'm ok with it.
+On Mon, May 27, 2019 at 2:26 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>
+> On 25/05/2019 20:11, Martin Blumenstingl wrote:
+> > MISC_CLK_SEL_WIDTH is only used in one place where it's converted into
+> > a bit-mask. Rename and change the macro to be a bit-mask so that
+> > conversion is not needed anymore. No functional changes intended.
+> >
+> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > ---
+> >  drivers/pwm/pwm-meson.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+> > index c62a3ac924d0..84b28ba0f903 100644
+> > --- a/drivers/pwm/pwm-meson.c
+> > +++ b/drivers/pwm/pwm-meson.c
+> > @@ -33,7 +33,7 @@
+> >  #define MISC_A_CLK_DIV_SHIFT 8
+> >  #define MISC_B_CLK_SEL_SHIFT 6
+> >  #define MISC_A_CLK_SEL_SHIFT 4
+> > -#define MISC_CLK_SEL_WIDTH   2
+> > +#define MISC_CLK_SEL_MASK    0x3
+>
+> NIT I would have used GENMASK here
+that was my initial idea but I decided against it.
+the variant I came up with was: #define MISC_CLK_SEL_MASK    GENMASK(1, 0)
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+however, the actual offset is either 4 or 6 (depending on the PWM channel)
+and I felt that duplicating the macro would just make it more complicated
+so instead I chose to be consistent with MISC_CLK_DIV_MASK
+
+Let me know if you would like me to change it (then I prefer to update
+MISC_CLK_DIV_MASK as well).
+
+
+Martin
