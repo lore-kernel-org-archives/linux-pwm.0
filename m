@@ -1,15 +1,15 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 08/14] pwm: meson: add the per-channel register offsets
- and bits in a struct
-Date: Mon, 27 May 2019 14:28:09 +0200
-Message-ID: <7d169605-e117-70d4-5c66-47d2f80f4d4e@baylibre.com>
+Subject: Re: [PATCH 09/14] pwm: meson: move pwm_set_chip_data() to
+ meson_pwm_request()
+Date: Mon, 27 May 2019 14:30:37 +0200
+Message-ID: <aa6e6832-6bbc-87d7-9937-b18aec83a2ff@baylibre.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
- <20190525181133.4875-9-martin.blumenstingl@googlemail.com>
+ <20190525181133.4875-10-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190525181133.4875-9-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190525181133.4875-10-martin.blumenstingl@googlemail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
@@ -17,178 +17,81 @@ Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 On 25/05/2019 20:11, Martin Blumenstingl wrote:
-> Introduce struct meson_pwm_channel_data which contains the per-channel
-> offsets for the PWM register and REG_MISC_AB bits. Replace the existing
-> switch (pwm->hwpwm) statements with an access to the new struct.
+> All existing PWM drivers (except pwm-meson and two other ones) call
+> pwm_set_chip_data() from their pwm_ops.request() callback. Now that we
+> can access the struct meson_pwm_channel from struct meson_pwm we can do
+> the same.
 > 
-> This simplifies the code and will make it easier to implement
-> pwm_ops.get_state() because the switch-case which all per-channel
-> registers and offsets (as previously implemented in meson_pwm_enable())
-> doesn't have to be duplicated.
+> Move the call to pwm_set_chip_data() to meson_pwm_request() and drop the
+> custom meson_pwm_add_channels(). This makes the implementation
+> consistent with other drivers and makes it slightly more obvious
+> thatpwm_get_chip_data() cannot be used from pwm_ops.get_state() (because
+> that's called by the PWM core before pwm_ops.request()).
 > 
 > No functional changes intended.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
->  drivers/pwm/pwm-meson.c | 92 ++++++++++++++++-------------------------
->  1 file changed, 35 insertions(+), 57 deletions(-)
+>  drivers/pwm/pwm-meson.c | 22 ++++++++--------------
+>  1 file changed, 8 insertions(+), 14 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index d1718f54ecec..ac7e188155fd 100644
+> index ac7e188155fd..27915d6475e3 100644
 > --- a/drivers/pwm/pwm-meson.c
 > +++ b/drivers/pwm/pwm-meson.c
-> @@ -39,9 +39,27 @@
+> @@ -98,12 +98,16 @@ static inline struct meson_pwm *to_meson_pwm(struct pwm_chip *chip)
 >  
->  #define MESON_NUM_PWMS		2
->  
-> -static const unsigned int mux_reg_shifts[] = {
-> -	MISC_A_CLK_SEL_SHIFT,
-> -	MISC_B_CLK_SEL_SHIFT
-> +static struct meson_pwm_channel_data {
-> +	u8		reg_offset;
-> +	u8		clk_sel_shift;
-> +	u8		clk_div_shift;
-> +	u32		clk_en_mask;
-> +	u32		pwm_en_mask;
-> +} meson_pwm_per_channel_data[MESON_NUM_PWMS] = {
-> +	{
-> +		.reg_offset	= REG_PWM_A,
-> +		.clk_sel_shift	= MISC_A_CLK_SEL_SHIFT,
-> +		.clk_div_shift	= MISC_A_CLK_DIV_SHIFT,
-> +		.clk_en_mask	= MISC_A_CLK_EN,
-> +		.pwm_en_mask	= MISC_A_EN,
-> +	},
-> +	{
-> +		.reg_offset	= REG_PWM_B,
-> +		.clk_sel_shift	= MISC_B_CLK_SEL_SHIFT,
-> +		.clk_div_shift	= MISC_B_CLK_DIV_SHIFT,
-> +		.clk_en_mask	= MISC_B_CLK_EN,
-> +		.pwm_en_mask	= MISC_B_EN,
-> +	}
->  };
->  
->  struct meson_pwm_channel {
-> @@ -194,43 +212,26 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
->  static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
+>  static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 >  {
->  	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
-> -	u32 value, clk_shift, clk_enable, enable;
-> -	unsigned int offset;
-> +	struct meson_pwm_channel_data *channel_data;
->  	unsigned long flags;
-> +	u32 value;
+> -	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
+> +	struct meson_pwm *meson = to_meson_pwm(chip);
+> +	struct meson_pwm_channel *channel;
+>  	struct device *dev = chip->dev;
+>  	int err;
 >  
-> -	switch (pwm->hwpwm) {
-> -	case 0:
-> -		clk_shift = MISC_A_CLK_DIV_SHIFT;
-> -		clk_enable = MISC_A_CLK_EN;
-> -		enable = MISC_A_EN;
-> -		offset = REG_PWM_A;
-> -		break;
+> -	if (!channel)
+> -		return -ENODEV;
+> +	channel = pwm_get_chip_data(pwm);
+> +	if (channel)
+> +		return 0;
+> +
+> +	channel = &meson->channels[pwm->hwpwm];
+>  
+>  	if (channel->clk_parent) {
+>  		err = clk_set_parent(channel->clk, channel->clk_parent);
+> @@ -124,7 +128,7 @@ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+>  
+>  	chip->ops->get_state(chip, pwm, &channel->state);
+>  
+> -	return 0;
+> +	return pwm_set_chip_data(pwm, channel);
+>  }
+>  
+>  static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+> @@ -460,14 +464,6 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
+>  	return 0;
+>  }
+>  
+> -static void meson_pwm_add_channels(struct meson_pwm *meson)
+> -{
+> -	unsigned int i;
 > -
-> -	case 1:
-> -		clk_shift = MISC_B_CLK_DIV_SHIFT;
-> -		clk_enable = MISC_B_CLK_EN;
-> -		enable = MISC_B_EN;
-> -		offset = REG_PWM_B;
-> -		break;
+> -	for (i = 0; i < meson->chip.npwm; i++)
+> -		pwm_set_chip_data(&meson->chip.pwms[i], &meson->channels[i]);
+> -}
 > -
-> -	default:
-> -		return;
-> -	}
-> +	channel_data = &meson_pwm_per_channel_data[pwm->hwpwm];
->  
->  	spin_lock_irqsave(&meson->lock, flags);
->  
->  	value = readl(meson->base + REG_MISC_AB);
-> -	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
-> -	value |= channel->pre_div << clk_shift;
-> -	value |= clk_enable;
-> +	value &= ~(MISC_CLK_DIV_MASK << channel_data->clk_div_shift);
-> +	value |= channel->pre_div << channel_data->clk_div_shift;
-> +	value |= channel_data->clk_en_mask;
->  	writel(value, meson->base + REG_MISC_AB);
->  
->  	value = FIELD_PREP(PWM_HIGH_MASK, channel->hi) |
->  		FIELD_PREP(PWM_LOW_MASK, channel->lo);
-> -	writel(value, meson->base + offset);
-> +	writel(value, meson->base + channel_data->reg_offset);
->  
->  	value = readl(meson->base + REG_MISC_AB);
-> -	value |= enable;
-> +	value |= channel_data->pwm_en_mask;
->  	writel(value, meson->base + REG_MISC_AB);
->  
->  	spin_unlock_irqrestore(&meson->lock, flags);
-> @@ -238,26 +239,13 @@ static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
->  
->  static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
+>  static int meson_pwm_probe(struct platform_device *pdev)
 >  {
-> -	u32 value, enable;
->  	unsigned long flags;
+>  	struct meson_pwm *meson;
+> @@ -503,8 +499,6 @@ static int meson_pwm_probe(struct platform_device *pdev)
+>  		return err;
+>  	}
+>  
+> -	meson_pwm_add_channels(meson);
 > -
-> -	switch (pwm->hwpwm) {
-> -	case 0:
-> -		enable = MISC_A_EN;
-> -		break;
-> -
-> -	case 1:
-> -		enable = MISC_B_EN;
-> -		break;
-> -
-> -	default:
-> -		return;
-> -	}
-> +	u32 value;
+>  	platform_set_drvdata(pdev, meson);
 >  
->  	spin_lock_irqsave(&meson->lock, flags);
->  
->  	value = readl(meson->base + REG_MISC_AB);
-> -	value &= ~enable;
-> +	value &= ~meson_pwm_per_channel_data[pwm->hwpwm].pwm_en_mask;
->  	writel(value, meson->base + REG_MISC_AB);
->  
->  	spin_unlock_irqrestore(&meson->lock, flags);
-> @@ -309,18 +297,7 @@ static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
->  	if (!state)
->  		return;
->  
-> -	switch (pwm->hwpwm) {
-> -	case 0:
-> -		mask = MISC_A_EN;
-> -		break;
-> -
-> -	case 1:
-> -		mask = MISC_B_EN;
-> -		break;
-> -
-> -	default:
-> -		return;
-> -	}
-> +	mask = meson_pwm_per_channel_data[pwm->hwpwm].pwm_en_mask;
->  
->  	value = readl(meson->base + REG_MISC_AB);
->  	state->enabled = (value & mask) != 0;
-> @@ -458,7 +435,8 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
->  		init.num_parents = meson->data->num_parents;
->  
->  		channel->mux.reg = meson->base + REG_MISC_AB;
-> -		channel->mux.shift = mux_reg_shifts[i];
-> +		channel->mux.shift =
-> +				meson_pwm_per_channel_data[i].clk_sel_shift;
->  		channel->mux.mask = MISC_CLK_SEL_MASK;
->  		channel->mux.flags = 0;
->  		channel->mux.lock = &meson->lock;
-> @@ -509,7 +487,7 @@ static int meson_pwm_probe(struct platform_device *pdev)
->  	meson->chip.dev = &pdev->dev;
->  	meson->chip.ops = &meson_pwm_ops;
->  	meson->chip.base = -1;
-> -	meson->chip.npwm = MESON_NUM_PWM;
-> +	meson->chip.npwm = MESON_NUM_PWMS;
->  	meson->chip.of_xlate = of_pwm_xlate_with_flags;
->  	meson->chip.of_pwm_n_cells = 3;
->  
+>  	return 0;
 > 
 
-This looks a little over-engineered, but it's correct :
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
