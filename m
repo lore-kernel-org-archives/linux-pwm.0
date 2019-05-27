@@ -1,15 +1,15 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 02/14] pwm: meson: use devm_clk_get_optional() to get the
- input clock
-Date: Mon, 27 May 2019 14:25:25 +0200
-Message-ID: <b4cfc101-7391-aef2-0f6c-8bdec2044101@baylibre.com>
+Subject: Re: [PATCH 03/14] pwm: meson: use GENMASK and FIELD_PREP for the lo
+ and hi values
+Date: Mon, 27 May 2019 14:25:44 +0200
+Message-ID: <b8e06a75-43a8-78f9-b475-61106906ac3e@baylibre.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
- <20190525181133.4875-3-martin.blumenstingl@googlemail.com>
+ <20190525181133.4875-4-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190525181133.4875-3-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190525181133.4875-4-martin.blumenstingl@googlemail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
@@ -17,40 +17,55 @@ Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 On 25/05/2019 20:11, Martin Blumenstingl wrote:
-> Simplify the code which fetches the input clock for a PWM channel by
-> using devm_clk_get_optional().
-> This comes with a small functional change: previously all errors except
-> EPROBE_DEFER were ignored. Now all other errors are also treated as
-> errors. If no input clock is present devm_clk_get_optional() will return
-> NULL instead of an error which matches the behavior of the old code.
+> meson_pwm_calc() ensures that "lo" is always less than 16 bits wide
+> (otherwise it would overflow into the "hi" part of the REG_PWM_{A,B}
+> register).
+> Use GENMASK and FIELD_PREP for the lo and hi values to make it easier to
+> spot how wide these are internally. Additionally this is a preparation
+> step for the .get_state() implementation where the GENMASK() for lo and
+> hi becomes handy because it can be used with FIELD_GET() to extract the
+> values from the register REG_PWM_{A,B} register.
+> 
+> No functional changes intended.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
->  drivers/pwm/pwm-meson.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
+>  drivers/pwm/pwm-meson.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index 3fbbc4128ce8..35b38c7201c3 100644
+> index 35b38c7201c3..c62a3ac924d0 100644
 > --- a/drivers/pwm/pwm-meson.c
 > +++ b/drivers/pwm/pwm-meson.c
-> @@ -474,14 +474,9 @@ static int meson_pwm_init_channels(struct meson_pwm *meson,
+> @@ -5,6 +5,8 @@
+>   * Copyright (C) 2014 Amlogic, Inc.
+>   */
 >  
->  		snprintf(name, sizeof(name), "clkin%u", i);
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+>  #include <linux/clk.h>
+>  #include <linux/clk-provider.h>
+>  #include <linux/err.h>
+> @@ -20,7 +22,8 @@
 >  
-> -		channel->clk_parent = devm_clk_get(dev, name);
-> -		if (IS_ERR(channel->clk_parent)) {
-> -			err = PTR_ERR(channel->clk_parent);
-> -			if (err == -EPROBE_DEFER)
-> -				return err;
-> -
-> -			channel->clk_parent = NULL;
-> -		}
-> +		channel->clk_parent = devm_clk_get_optional(dev, name);
-> +		if (IS_ERR(channel->clk_parent))
-> +			return PTR_ERR(channel->clk_parent);
->  	}
+>  #define REG_PWM_A		0x0
+>  #define REG_PWM_B		0x4
+> -#define PWM_HIGH_SHIFT		16
+> +#define PWM_LOW_MASK		GENMASK(15, 0)
+> +#define PWM_HIGH_MASK		GENMASK(31, 16)
 >  
->  	return 0;
+>  #define REG_MISC_AB		0x8
+>  #define MISC_B_CLK_EN		BIT(23)
+> @@ -217,7 +220,8 @@ static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
+>  	value |= clk_enable;
+>  	writel(value, meson->base + REG_MISC_AB);
+>  
+> -	value = (channel->hi << PWM_HIGH_SHIFT) | channel->lo;
+> +	value = FIELD_PREP(PWM_HIGH_MASK, channel->hi) |
+> +		FIELD_PREP(PWM_LOW_MASK, channel->lo);
+>  	writel(value, meson->base + offset);
+>  
+>  	value = readl(meson->base + REG_MISC_AB);
 > 
 
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
