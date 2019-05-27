@@ -1,27 +1,31 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH 07/14] pwm: meson: add the meson_pwm_channel data to
- struct meson_pwm
-Date: Mon, 27 May 2019 19:52:49 +0200
-Message-ID: <CAFBinCAYaLd60ABFxEB28p4J7FO1PRaTZ+N6Ak1AnizAKGaxnw@mail.gmail.com>
-References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com> <20190525181133.4875-8-martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH 08/14] pwm: meson: add the per-channel register offsets
+ and bits in a struct
+Date: Mon, 27 May 2019 19:57:28 +0200
+Message-ID: <CAFBinCCyVHAG3yum_ty2dWXGaScafRcNPU-bHjxaKu9kzr8xQA@mail.gmail.com>
+References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
+ <20190525181133.4875-9-martin.blumenstingl@googlemail.com> <7d169605-e117-70d4-5c66-47d2f80f4d4e@baylibre.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190525181133.4875-8-martin.blumenstingl@googlemail.com>
+In-Reply-To: <7d169605-e117-70d4-5c66-47d2f80f4d4e@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Sat, May 25, 2019 at 8:11 PM Martin Blumenstingl
-<martin.blumenstingl@googlemail.com> wrote:
+Hi Neil,
+
+On Mon, May 27, 2019 at 2:28 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
 [...]
-> @@ -509,18 +509,13 @@ static int meson_pwm_probe(struct platform_device *pdev)
->         meson->chip.dev = &pdev->dev;
->         meson->chip.ops = &meson_pwm_ops;
->         meson->chip.base = -1;
-> -       meson->chip.npwm = 2;
-> +       meson->chip.npwm = MESON_NUM_PWM;
-I messed this up during rebase, the macro name is actually MESON_NUM_PWMS
-I'll re-send a fix so these patches can be bisected cleanly (patch 8
-fixes this typo accidentally)
+> This looks a little over-engineered, but it's correct :
+my main motivation was to "not copy the 20 line switch/case statement
+from meson_pwm_enable() to meson_pwm_get_state()"
+I extended the idea that already existed for the "mux_reg_shifts"
+array and made it work for "more than one value"
+
+please speak up if you have another idea in mind, maybe that makes the
+result even better
+
+
+Martin
