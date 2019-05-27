@@ -1,15 +1,15 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 09/14] pwm: meson: move pwm_set_chip_data() to
- meson_pwm_request()
-Date: Mon, 27 May 2019 14:30:37 +0200
-Message-ID: <aa6e6832-6bbc-87d7-9937-b18aec83a2ff@baylibre.com>
+Subject: Re: [PATCH 11/14] pwm: meson: read the full hardware state in
+ meson_pwm_get_state()
+Date: Mon, 27 May 2019 14:31:00 +0200
+Message-ID: <c80dcb3f-13a6-7b9d-a7c6-a81110dcddda@baylibre.com>
 References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
- <20190525181133.4875-10-martin.blumenstingl@googlemail.com>
+ <20190525181133.4875-12-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190525181133.4875-10-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190525181133.4875-12-martin.blumenstingl@googlemail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
@@ -17,81 +17,101 @@ Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 On 25/05/2019 20:11, Martin Blumenstingl wrote:
-> All existing PWM drivers (except pwm-meson and two other ones) call
-> pwm_set_chip_data() from their pwm_ops.request() callback. Now that we
-> can access the struct meson_pwm_channel from struct meson_pwm we can do
-> the same.
+> Update the meson_pwm_get_state() implementation to take care of all
+> information in the registers instead of only reading the "enabled"
+> state.
 > 
-> Move the call to pwm_set_chip_data() to meson_pwm_request() and drop the
-> custom meson_pwm_add_channels(). This makes the implementation
-> consistent with other drivers and makes it slightly more obvious
-> thatpwm_get_chip_data() cannot be used from pwm_ops.get_state() (because
-> that's called by the PWM core before pwm_ops.request()).
+> The PWM output is only enabled if two conditions are met:
+> 1. the per-channel clock is enabled
+> 2. the PWM output is enabled
 > 
-> No functional changes intended.
+> Calculate the PWM period and duty cycle using the reverse formula which
+> we already have in meson_pwm_calc() and update struct pwm_state with the
+> results.
+> 
+> As result of this /sys/kernel/debug/pwm now shows the PWM state set by
+> the bootloader (or firmware) after booting Linux.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
->  drivers/pwm/pwm-meson.c | 22 ++++++++--------------
->  1 file changed, 8 insertions(+), 14 deletions(-)
+>  drivers/pwm/pwm-meson.c | 52 ++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 49 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index ac7e188155fd..27915d6475e3 100644
+> index 9afa1e5aaebf..010212166d5d 100644
 > --- a/drivers/pwm/pwm-meson.c
 > +++ b/drivers/pwm/pwm-meson.c
-> @@ -98,12 +98,16 @@ static inline struct meson_pwm *to_meson_pwm(struct pwm_chip *chip)
+> @@ -287,19 +287,65 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  	return 0;
+>  }
 >  
->  static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
-> -	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
+> +static unsigned int meson_pwm_cnt_to_ns(struct pwm_chip *chip,
+> +					struct pwm_device *pwm, u32 cnt)
+> +{
 > +	struct meson_pwm *meson = to_meson_pwm(chip);
 > +	struct meson_pwm_channel *channel;
->  	struct device *dev = chip->dev;
->  	int err;
->  
-> -	if (!channel)
-> -		return -ENODEV;
-> +	channel = pwm_get_chip_data(pwm);
-> +	if (channel)
+> +	unsigned long fin_freq;
+> +	u32 fin_ns;
+> +
+> +	/* to_meson_pwm() can only be used after .get_state() is called */
+> +	channel = &meson->channels[pwm->hwpwm];
+> +
+> +	fin_freq = clk_get_rate(channel->clk);
+> +	if (fin_freq == 0)
 > +		return 0;
 > +
-> +	channel = &meson->channels[pwm->hwpwm];
->  
->  	if (channel->clk_parent) {
->  		err = clk_set_parent(channel->clk, channel->clk_parent);
-> @@ -124,7 +128,7 @@ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
->  
->  	chip->ops->get_state(chip, pwm, &channel->state);
->  
-> -	return 0;
-> +	return pwm_set_chip_data(pwm, channel);
->  }
->  
->  static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-> @@ -460,14 +464,6 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
->  	return 0;
->  }
->  
-> -static void meson_pwm_add_channels(struct meson_pwm *meson)
-> -{
-> -	unsigned int i;
-> -
-> -	for (i = 0; i < meson->chip.npwm; i++)
-> -		pwm_set_chip_data(&meson->chip.pwms[i], &meson->channels[i]);
-> -}
-> -
->  static int meson_pwm_probe(struct platform_device *pdev)
+> +	fin_ns = div_u64(NSEC_PER_SEC, fin_freq);
+> +
+> +	return cnt * fin_ns * (channel->pre_div + 1);
+> +}
+> +
+>  static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+>  				struct pwm_state *state)
 >  {
->  	struct meson_pwm *meson;
-> @@ -503,8 +499,6 @@ static int meson_pwm_probe(struct platform_device *pdev)
->  		return err;
->  	}
+>  	struct meson_pwm *meson = to_meson_pwm(chip);
+> -	u32 value, mask;
+> +	struct meson_pwm_channel_data *channel_data;
+> +	struct meson_pwm_channel *channel;
+> +	u32 value, tmp;
 >  
-> -	meson_pwm_add_channels(meson);
-> -
->  	platform_set_drvdata(pdev, meson);
+>  	if (!state)
+>  		return;
 >  
->  	return 0;
+> -	mask = meson_pwm_per_channel_data[pwm->hwpwm].pwm_en_mask;
+> +	channel = &meson->channels[pwm->hwpwm];
+> +	channel_data = &meson_pwm_per_channel_data[pwm->hwpwm];
+>  
+>  	value = readl(meson->base + REG_MISC_AB);
+> -	state->enabled = (value & mask) != 0;
+> +
+> +	tmp = channel_data->pwm_en_mask | channel_data->clk_en_mask;
+> +	state->enabled = (value & tmp) == tmp;
+> +
+> +	tmp = value >> channel_data->clk_div_shift;
+> +	channel->pre_div = FIELD_GET(MISC_CLK_DIV_MASK, tmp);
+> +
+> +	value = readl(meson->base + channel_data->reg_offset);
+> +
+> +	channel->lo = FIELD_GET(PWM_LOW_MASK, value);
+> +	channel->hi = FIELD_GET(PWM_HIGH_MASK, value);
+> +
+> +	if (channel->lo == 0) {
+> +		state->period = meson_pwm_cnt_to_ns(chip, pwm, channel->hi);
+> +		state->duty_cycle = state->period;
+> +	} else if (channel->lo >= channel->hi) {
+> +		state->period = meson_pwm_cnt_to_ns(chip, pwm,
+> +						    channel->lo + channel->hi);
+> +		state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm,
+> +							channel->hi);
+> +	} else {
+> +		state->period = 0;
+> +		state->duty_cycle = 0;
+> +	}
+>  }
+>  
+>  static const struct pwm_ops meson_pwm_ops = {
 > 
+
+Thanks for that !!!
 
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
