@@ -1,166 +1,48 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35096 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbfE0ORp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 May 2019 10:17:45 -0400
-Date: Mon, 27 May 2019 16:17:41 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20190527141741.GC7202@ulmo>
+Received: from www3345.sakura.ne.jp ([49.212.235.55]:27853 "EHLO
+        www3345.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727018AbfE1BKm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 May 2019 21:10:42 -0400
 References: <1558923757-9843-1-git-send-email-cv-dong@jinso.co.jp>
+ <20190527141741.GC7202@ulmo>
+From: Cao Van Dong <cv-dong@jinso.co.jp>
+Message-ID: <bbc7a187-d1ad-2ba5-0ee1-e241461faca5@jinso.co.jp>
+Date: Tue, 28 May 2019 10:10:39 +0900
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Clx92ZfkiYIKRjnr"
-Content-Disposition: inline
-In-Reply-To: <1558923757-9843-1-git-send-email-cv-dong@jinso.co.jp>
+In-Reply-To: <20190527141741.GC7202@ulmo>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 Subject: Re: [PATCH v5] pwm: renesas-tpu: Add suspend/resume function
-To: Cao Van Dong <cv-dong@jinso.co.jp>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, geert+renesas@glider.be, broonie@kernel.org, linux-pwm@vger.kernel.org, yoshihiro.shimoda.uh@renesas.com, kuninori.morimoto.gx@renesas.com, h-inayoshi@jinso.co.jp, na-hoan@jinso.co.jp
 
+Dear Thierry-san,
 
---Clx92ZfkiYIKRjnr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank for your feedback!
 
-On Mon, May 27, 2019 at 11:22:37AM +0900, Cao Van Dong wrote:
-> This patch adds suspend/resume function support for Renesas the 16-Bit Ti=
-mer
-> Pulse Unit (TPU) driver. This has been tested on the Salvator-XS board=20
-> with R-Car M3-N and H3 at renesas-drivers-2019-05-21-v5.2-rc1 tag.
-> I expect this to work on other SoCs.
->=20
-> Test procedure:
->   - Enable TPU and pin control in DTS.
->   - Make sure switches { SW29-[1-2] are switched off or=20
->     SW31-[1-4] are switched off(only for Salvator-xs) }.
->   - Exercise userspace PWM control for pwm[2,3]=20
->     of /sys/class/pwm/pwmchip1/ .
->   - Inspect PWM signals on the input side of { CN29-[58,60]=20
->     or SW31-[1,2] (only for Salvator-xs) }
->     before and after suspend/resume using an oscilloscope.=20
->=20
-> Signed-off-by: Cao Van Dong <cv-dong@jinso.co.jp>
-> Tested-by: Cao Van Dong <cv-dong@jinso.co.jp>
-> ---
-> Changes v4 -> v5:
->   - Remove test_bit(PWMF_REQUESTED, &pwm->flags) check.
-> ---
-> Changes v3 -> v4:
->   - Use pwm_is_enabled(pwm) to check channel instead of pwm_get_chip_data=
-(&chip->pwms[i]).
->   - Move tpu_pwm_disable() to tpu_pwm_suspend(), tpu_pwm_enable() to tpu_=
-pwm_resume().
->   - Remove tpu_pwm_restart_timer() function and remove pm_runtime_get_syn=
-c() in tpu_pwm_resume().
-> ---
-> Changes v2 -> v3:
->   - Changes '3' -> TPU_CHANNEL_MAX in loop.
->   - Remove pm_runtime_put() function in tpu_pwm_suspend() function.
-> ---
-> Changes v1 -> v2:
->   - Repair the handling code to cover case of using multiple timers.
-> ---
->  drivers/pwm/pwm-renesas-tpu.c | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
+> This has been discussed before, but this really shouldn't be done in the
+> PWM driver. Consumers should really be reconfiguring the PWM upon resume
+> as appropriate. This is the only way to ensure that everything is
+> resumed in the proper order.
+>
+> Most, if not all, consumers already implement suspend/resume that way.
+> sysfs is the only one that I'm aware of that doesn't.
+>
+> Since you've been using sysfs to test this, things are slightly more
+> complicated (i.e. we don't have a consumer driver in the conventional
+> way). However, you should be able to solve this by implementing
+> dev_pm_ops for the pwm_class.
+>
+> Do you think you could give that a try?
 
-This has been discussed before, but this really shouldn't be done in the
-PWM driver. Consumers should really be reconfiguring the PWM upon resume
-as appropriate. This is the only way to ensure that everything is
-resumed in the proper order.
+I understood the problem. Really this is difficult with me.
+Therefore, I will just stop here.
 
-Most, if not all, consumers already implement suspend/resume that way.
-sysfs is the only one that I'm aware of that doesn't.
+Thank you,
+Dong
 
-Since you've been using sysfs to test this, things are slightly more
-complicated (i.e. we don't have a consumer driver in the conventional
-way). However, you should be able to solve this by implementing
-dev_pm_ops for the pwm_class.
-
-Do you think you could give that a try?
-
-Thierry
-
->=20
-> diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
-> index 4a855a2..86b7da4 100644
-> --- a/drivers/pwm/pwm-renesas-tpu.c
-> +++ b/drivers/pwm/pwm-renesas-tpu.c
-> @@ -366,6 +366,41 @@ static void tpu_pwm_disable(struct pwm_chip *chip, s=
-truct pwm_device *_pwm)
->  	tpu_pwm_timer_stop(pwm);
->  }
-> =20
-> +#ifdef CONFIG_PM_SLEEP
-> +static int tpu_pwm_suspend(struct device *dev)
-> +{
-> +	struct tpu_device *tpu =3D dev_get_drvdata(dev);
-> +	struct pwm_chip *chip =3D &tpu->chip;
-> +	struct pwm_device *pwm;
-> +	int i;
-> +
-> +	for (i =3D 0; i < TPU_CHANNEL_MAX; i++) {
-> +		pwm =3D &chip->pwms[i];
-> +		if (pwm_is_enabled(pwm))
-> +			tpu_pwm_disable(pwm->chip, pwm);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int tpu_pwm_resume(struct device *dev)
-> +{
-> +	struct tpu_device *tpu =3D dev_get_drvdata(dev);
-> +	struct pwm_chip *chip =3D &tpu->chip;
-> +	struct pwm_device *pwm;
-> +	int i;
-> +
-> +	for (i =3D 0; i < TPU_CHANNEL_MAX; i++) {
-> +		pwm =3D &chip->pwms[i];
-> +		if (pwm_is_enabled(pwm))
-> +			tpu_pwm_enable(pwm->chip, pwm);
-> +	}
-> +
-> +	return 0;
-> +}
-> +#endif /* CONFIG_PM_SLEEP */
-> +static SIMPLE_DEV_PM_OPS(tpu_pwm_pm_ops, tpu_pwm_suspend, tpu_pwm_resume=
-);
-> +
->  static const struct pwm_ops tpu_pwm_ops =3D {
->  	.request =3D tpu_pwm_request,
->  	.free =3D tpu_pwm_free,
-> @@ -459,6 +494,7 @@ static struct platform_driver tpu_driver =3D {
->  	.remove		=3D tpu_remove,
->  	.driver		=3D {
->  		.name	=3D "renesas-tpu-pwm",
-> +		.pm	=3D &tpu_pwm_pm_ops,
->  		.of_match_table =3D of_match_ptr(tpu_of_table),
->  	}
->  };
-> --=20
-> 2.7.4
->=20
-
---Clx92ZfkiYIKRjnr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzr8YUACgkQ3SOs138+
-s6EKpQ//foUX46nWEuswTh2M7sX5uGiebanMYMMI6aWotjybyrwd1Qeh/apKuarQ
-K1uts2J7dLzwPi8AuPFXa/J2D8+iw9f6SYW9jH5NPau/X3dYGd7DpU+3BDuTS8AT
-UCZRn10SEY2APW69wYBEqMtN9cXUiU4IKti1xgB1NcpKJQnwo/GKuS4SOyVqR9tr
-kxrJ7ryKtMyDZ35mMMbjlfmFrFvEu4osTO/1S2VJzHql9F1EJVKsXPkABu0TjDaA
-fQdmSvWGWHhZ7gASkOeDsyH22rnYQIMkCB85XGAdRWF0AlAgBKg+6yDghZJDVpt/
-ohZyBH8+aHngnpNK5OtMDmJ0fdMUdOPdWTKcb/a8O/TysLt94o8u3kBISIwxCuu5
-6LltTFKqvSu1E2hLvfEIjTgLRydJf1QAyITrf5y4XcnCdDOxbGvko4CcZk0bqQWR
-quD0fz4X7sotFcMLlQLNNqahp0ptD419ILWuJhCNgGnR6fFFs9yvT2cIpFufdgUN
-PCFWs8jyRg4wB0TvSPXYnRqjAC+TVuoBRz7JCUGbPImyGUYnv6k/prfCMF7ki7ah
-du/4CU2FyCg0dhGPw4tSk3v/EOvZBsyat2XcQo5dPgPnqj20kKUbY8MCTqPjcYzK
-DMNomPmvI1JeoV3eTC0Owc3gdpRMKHH8NItLCPZvatZa1Dh3HJ0=
-=41Rd
------END PGP SIGNATURE-----
-
---Clx92ZfkiYIKRjnr--
+> Thierry
+>
