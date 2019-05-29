@@ -1,89 +1,54 @@
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH 04/14] pwm: meson: change MISC_CLK_SEL_WIDTH to MISC_CLK_SEL_MASK
-Date: Tue, 28 May 2019 20:04:45 +0200
-Message-ID: <CAFBinCCWYf4TJ8GTL3PrHMRfL3=Ma-QrTAGSyAp5OQc0M-67Jg@mail.gmail.com>
-References: <20190525181133.4875-1-martin.blumenstingl@googlemail.com>
- <20190525181133.4875-5-martin.blumenstingl@googlemail.com>
- <3b61897a-267b-fd6e-181b-a8c7e47918fb@baylibre.com> <CAFBinCDXNy4=6U2gsh6vK6WEtJKAdfDGPMrpPJthbp5Rru1hbg@mail.gmail.com>
- <20190527180047.nfsjfqs22coyqmvp@pengutronix.de>
+From: Hsin-Yi Wang <hsinyi@chromium.org>
+Subject: Re: [v3 1/7] drm/mediatek: move mipi_dsi_host_register to probe
+Date: Wed, 29 May 2019 12:19:11 +0800
+Message-ID: <CAJMQK-jST7mtoo-1C-8hU+O4x+_gOF0CuwToPwc=HJe86HDRHA@mail.gmail.com>
+References: <20190519092537.69053-1-jitao.shi@mediatek.com> <20190519092537.69053-2-jitao.shi@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190527180047.nfsjfqs22coyqmvp@pengutronix.de>
+In-Reply-To: <20190519092537.69053-2-jitao.shi@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: Jitao Shi <jitao.shi@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, CK Hu <ck.hu@mediatek.com>, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>, Inki Dae <inki.dae@samsung.com>, linux-mediatek@lists.infradead.org, yingjoe.chen@me
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Uwe,
+On Sun, May 19, 2019 at 9:25 AM Jitao Shi <jitao.shi@mediatek.com> wrote:
 
-On Mon, May 27, 2019 at 8:00 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
+> @@ -1045,12 +1045,6 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+>                 return ret;
+>         }
 >
-> On Mon, May 27, 2019 at 07:46:43PM +0200, Martin Blumenstingl wrote:
-> > Hi Neil,
-> >
-> > On Mon, May 27, 2019 at 2:26 PM Neil Armstrong <narmstrong@baylibre.com=
-> wrote:
-> > >
-> > > On 25/05/2019 20:11, Martin Blumenstingl wrote:
-> > > > MISC_CLK_SEL_WIDTH is only used in one place where it's converted i=
-nto
-> > > > a bit-mask. Rename and change the macro to be a bit-mask so that
-> > > > conversion is not needed anymore. No functional changes intended.
-> > > >
-> > > > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.=
-com>
-> > > > ---
-> > > >  drivers/pwm/pwm-meson.c | 4 ++--
-> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> > > > index c62a3ac924d0..84b28ba0f903 100644
-> > > > --- a/drivers/pwm/pwm-meson.c
-> > > > +++ b/drivers/pwm/pwm-meson.c
-> > > > @@ -33,7 +33,7 @@
-> > > >  #define MISC_A_CLK_DIV_SHIFT 8
-> > > >  #define MISC_B_CLK_SEL_SHIFT 6
-> > > >  #define MISC_A_CLK_SEL_SHIFT 4
-> > > > -#define MISC_CLK_SEL_WIDTH   2
-> > > > +#define MISC_CLK_SEL_MASK    0x3
-> > >
-> > > NIT I would have used GENMASK here
-> > that was my initial idea but I decided against it.
-> > the variant I came up with was: #define MISC_CLK_SEL_MASK    GENMASK(1,=
- 0)
-> >
-> > however, the actual offset is either 4 or 6 (depending on the PWM chann=
-el)
-> > and I felt that duplicating the macro would just make it more complicat=
-ed
-> > so instead I chose to be consistent with MISC_CLK_DIV_MASK
+> -       ret = mipi_dsi_host_register(&dsi->host);
+> -       if (ret < 0) {
+> -               dev_err(dev, "failed to register DSI host: %d\n", ret);
+> -               goto err_ddp_comp_unregister;
+> -       }
+> -
+>         ret = mtk_dsi_create_conn_enc(drm, dsi);
+>         if (ret) {
+>                 DRM_ERROR("Encoder create failed with %d\n", ret);
+> @@ -1060,8 +1054,6 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+>         return 0;
 >
-> An option would be:
+>  err_unregister:
+> -       mipi_dsi_host_unregister(&dsi->host);
+> -err_ddp_comp_unregister:
+>         mtk_ddp_comp_unregister(drm, &dsi->ddp_comp);
+>         return ret;
+>  }
+> @@ -1097,31 +1089,37 @@ static int mtk_dsi_probe(struct platform_device *pdev)
 >
->         #define MISC_CLK_SEL_MASK(hwid)         GENMASK(1 + 4 * (hwid), 0=
- + 4 * (hwid))
+>         dsi->host.ops = &mtk_dsi_ops;
+>         dsi->host.dev = dev;
+> +       dsi->dev = dev;
+> +       ret = mipi_dsi_host_register(&dsi->host);
+> +       if (ret < 0) {
+> +               dev_err(dev, "failed to register DSI host: %d\n", ret);
+> +               return ret;
+> +       }
 >
-> (Note I didn't check a manual to the 4 above is probably wrong.)
-that (or at least something similar) will work
-the catch here is: we use it to initialize the mux clock and the
-common clock framework expects us to set "shift" and "mask", while
-mask starts at bit 0 instead of shift
+Since mipi_dsi_host_register() is moved from .bind to .probe,
+mipi_dsi_host_unregister() should also be moved from .unbind to
+.remove?
 
-this is how the current code is being used at the moment:
-  channel->mux.shift =3D meson_pwm_per_channel_data[i].clk_sel_shift;
-  channel->mux.mask =3D MISC_CLK_SEL_MASK;
-
-so with MISC_CLK_SEL_MASK this would become:
-  channel->mux.shift =3D meson_pwm_per_channel_data[i].clk_sel_shift;
-  channel->mux.mask =3D MISC_CLK_SEL_MASK(i) >> channel->mux.shift;
-
-or we could dynamically determine the "shift" using ffs or friends
-
-my own brain parses the variant from the patch best
-I'm happy to change it though if we can find something "better"
-
-
-Martin
+Thanks
