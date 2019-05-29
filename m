@@ -1,63 +1,149 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:55431 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbfEaMYf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 31 May 2019 08:24:35 -0400
-Date: Fri, 31 May 2019 14:24:34 +0200
-From: Pavel Machek <pavel@ucw.cz>
-Message-ID: <20190531122434.GC3722@amd>
+Received: from mail.steuer-voss.de ([85.183.69.95]:53058 "EHLO
+        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726842AbfE2MZf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 May 2019 08:25:35 -0400
+From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+Date: Wed, 29 May 2019 14:18:22 +0200
+Message-Id: <4f89c4b91cc918302a9d5a7eedfa39259a5583bb.1559127603.git.nikolaus.voss@loewensteinmedical.de>
+In-Reply-To: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
 References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
- <254cc03d5467ba7db0f5677646266768e5b24127.1559127603.git.nikolaus.voss@loewensteinmedical.de>
- <d4e035b7-7419-cb69-9e22-6103d53d5aaf@ti.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="4ZLFUWh1odzi/v6L"
-Content-Disposition: inline
-In-Reply-To: <d4e035b7-7419-cb69-9e22-6103d53d5aaf@ti.com>
+In-Reply-To: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
+References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 2/3] PWM framework: add support referencing PWMs from ACPI
-To: Dan Murphy <dmurphy@ti.com>
-Cc: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: [PATCH 3/3] leds-pwm.c: support ACPI via firmware-node framework
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>, linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
 
+DT specific handling is replaced by firmware-node abstration to support
+ACPI specification of PWM LEDS.
 
---4ZLFUWh1odzi/v6L
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Example ASL:
+Device (PWML)
+{
+    Name (_HID, "PRP0001")
+    Name (_DSD, Package () {
+          ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+          Package () { Package () {"compatible",
+                                    Package () {"pwm-leds"}}}})
 
-Hi!
+    Device (PWL0)
+    {
+        Name (_HID, "PRP0001")
+        Name (_DSD, Package () {
+              ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+              Package () {
+                           Package () {"label", "alarm-led"},
+                           Package () {"pwms", Package ()
+                                       {\_SB_.PCI0.PWM, 0, 600000, 0}},
+                           Package () {"linux,default-state", "off"}}})
+    }
+}
 
-> >+struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
-> static?
-> >+{
-> >+	struct fwnode_reference_args args;
-> >+	struct pwm_chip *chip;
-> >+	struct pwm_device *pwm =3D ERR_PTR(-ENODEV);
-> >+	int ret;
-> >+
-> >+	memset(&args, 0, sizeof(args));
->=20
-> args should be zero'd out when initialized on the stack so this is
-> necessary.
+Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+---
+ drivers/leds/leds-pwm.c | 44 ++++++++++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 18 deletions(-)
 
-What?
-								Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---4ZLFUWh1odzi/v6L
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlzxHQIACgkQMOfwapXb+vKuIQCfW5dIKIOa940BDGi5OVK8pf3K
-ByQAnAsMR3DUm4QgoARft8zBHpwJdHyI
-=i6ur
------END PGP SIGNATURE-----
-
---4ZLFUWh1odzi/v6L--
+diff --git a/drivers/leds/leds-pwm.c b/drivers/leds/leds-pwm.c
+index af08bcdc4fd8..cc717dd6a12c 100644
+--- a/drivers/leds/leds-pwm.c
++++ b/drivers/leds/leds-pwm.c
+@@ -75,7 +75,7 @@ static inline size_t sizeof_pwm_leds_priv(int num_leds)
+ }
+ 
+ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+-		       struct led_pwm *led, struct device_node *child)
++		       struct led_pwm *led, struct fwnode_handle *fwnode)
+ {
+ 	struct led_pwm_data *led_data = &priv->leds[priv->num_leds];
+ 	struct pwm_args pargs;
+@@ -88,8 +88,8 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	led_data->cdev.max_brightness = led->max_brightness;
+ 	led_data->cdev.flags = LED_CORE_SUSPENDRESUME;
+ 
+-	if (child)
+-		led_data->pwm = devm_of_pwm_get(dev, child, NULL);
++	if (fwnode)
++		led_data->pwm = devm_fwnode_pwm_get(dev, fwnode, NULL);
+ 	else
+ 		led_data->pwm = devm_pwm_get(dev, led->name);
+ 	if (IS_ERR(led_data->pwm)) {
+@@ -114,7 +114,8 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	if (!led_data->period && (led->pwm_period_ns > 0))
+ 		led_data->period = led->pwm_period_ns;
+ 
+-	ret = devm_of_led_classdev_register(dev, child, &led_data->cdev);
++	ret = devm_of_led_classdev_register(dev, to_of_node(fwnode),
++					    &led_data->cdev);
+ 	if (ret == 0) {
+ 		priv->num_leds++;
+ 		led_pwm_set(&led_data->cdev, led_data->cdev.brightness);
+@@ -126,27 +127,34 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	return ret;
+ }
+ 
+-static int led_pwm_create_of(struct device *dev, struct led_pwm_priv *priv)
++static int led_pwm_create_fwnode(struct device *dev, struct led_pwm_priv *priv)
+ {
+-	struct device_node *child;
++	struct fwnode_handle *fwnode;
+ 	struct led_pwm led;
+ 	int ret = 0;
+ 
+ 	memset(&led, 0, sizeof(led));
+ 
+-	for_each_child_of_node(dev->of_node, child) {
+-		led.name = of_get_property(child, "label", NULL) ? :
+-			   child->name;
++	device_for_each_child_node(dev, fwnode) {
++		ret = fwnode_property_read_string(fwnode, "label", &led.name);
++		if (ret && is_of_node(fwnode))
++			led.name = to_of_node(fwnode)->name;
++		if (!led.name) {
++			fwnode_handle_put(fwnode);
++			return -EINVAL;
++		}
+ 
+-		led.default_trigger = of_get_property(child,
+-						"linux,default-trigger", NULL);
+-		led.active_low = of_property_read_bool(child, "active-low");
+-		of_property_read_u32(child, "max-brightness",
+-				     &led.max_brightness);
++		fwnode_property_read_string(fwnode, "linux,default-trigger",
++					    &led.default_trigger);
+ 
+-		ret = led_pwm_add(dev, priv, &led, child);
++		led.active_low = fwnode_property_read_bool(fwnode,
++							   "active-low");
++		fwnode_property_read_u32(fwnode, "max-brightness",
++					 &led.max_brightness);
++
++		ret = led_pwm_add(dev, priv, &led, fwnode);
+ 		if (ret) {
+-			of_node_put(child);
++			fwnode_handle_put(fwnode);
+ 			break;
+ 		}
+ 	}
+@@ -164,7 +172,7 @@ static int led_pwm_probe(struct platform_device *pdev)
+ 	if (pdata)
+ 		count = pdata->num_leds;
+ 	else
+-		count = of_get_child_count(pdev->dev.of_node);
++		count = device_get_child_node_count(&pdev->dev);
+ 
+ 	if (!count)
+ 		return -EINVAL;
+@@ -182,7 +190,7 @@ static int led_pwm_probe(struct platform_device *pdev)
+ 				break;
+ 		}
+ 	} else {
+-		ret = led_pwm_create_of(&pdev->dev, priv);
++		ret = led_pwm_create_fwnode(&pdev->dev, priv);
+ 	}
+ 
+ 	if (ret)
+-- 
+2.17.1
