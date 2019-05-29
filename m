@@ -1,62 +1,113 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37599 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726863AbfE2Niz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 May 2019 09:38:55 -0400
-Date: Wed, 29 May 2019 15:38:47 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Message-ID: <20190529133847.GC17223@ulmo>
+Received: from relmlor2.renesas.com ([210.160.252.172]:7651 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725895AbfE2Hw4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 May 2019 03:52:56 -0400
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Wed, 29 May 2019 16:48:01 +0900
+Message-Id: <1559116082-9851-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1559116082-9851-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1559116082-9851-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1559116082-9851-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="B4IIlcmfBL/1gGOG"
-Content-Disposition: inline
-In-Reply-To: <1559116082-9851-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 4/4] pwm: rcar: Remove suspend/resume support
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: [PATCH 3/4] pwm: sysfs: Add suspend/resume support
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
+According to the Documentation/pwm.txt, all PWM consumers should have
+power management. Since this sysfs interface is one of consumers so that
+this patch adds suspend/resume support.
 
---B4IIlcmfBL/1gGOG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ drivers/pwm/sysfs.c | 64 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
-On Wed, May 29, 2019 at 04:48:02PM +0900, Yoshihiro Shimoda wrote:
-> According to the Documentation/pwm.txt, all PWM consumers should
-> implement power management instead of the PWM driver. So, this
-> patch removes suspend/resume support.
->=20
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
->  drivers/pwm/pwm-rcar.c | 39 ---------------------------------------
->  1 file changed, 39 deletions(-)
-
-Yes, I like that very much. =3D)
-
-Thierry
-
---B4IIlcmfBL/1gGOG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlzui2cACgkQ3SOs138+
-s6GxmA/+POUfNHliQaqlcfEfhelIVyhekxNxRXbU+EAM/lAVh2ivDi/xE5UfTRcw
-vwRBet4rcu0U7kMC5k45eMBCnNqtLC8Ilv90EQp30cJpk9iMXMAmEtrvwJSD8Nmq
-XcphkdPV8ZZ4cTIXorAnboVyZ5/jzFqXvkfzIW+9GjjjXyEZaPk1ZVNVzFHJdbYs
-SeTW3Ikhb5HswIPjrwVwp046a/tCrSW12dH5e17jrS+9FLRmN165KGJHmVi8YsN7
-PNWKd87fO69jHgFnM4J+zNcVdWr5Eugk57Ij2awj6kiYFq+PTkTEP6mr11wkbkkU
-iXVkG+6M23v084NincQMX9lDhwzyE+DAo8iw1luFz/uCUprPGv8U1wReYGwbWQsK
-b8DEeOaQdlZkjorEkMfWTgVvFmHsix7ksu1Y24Dp/8MYCfbdy1deP/YHV8BBEBTJ
-TSaRfL3B/bIPAuzugL3gQaSeP1M9JX6DkIvgw3SGEiPTn98fpDLwINjdD2sq2K9y
-XqnHjUtsVHnvhL+wJUFKWls/tBoYtIXyuJzTnVFq5MfI/srqNqnVbuh9Dtr+fgrj
-lWujP0jn/ewiaVnHqGkG1J9DHSRAW2giXMlx1/oj9Y3O2xeCpYHfYHJm9xTHngex
-kRsTENOz7wmIp11h2facbqiK7YACd+Nv1vylYXXpcAosCIpZfQA=
-=mRY/
------END PGP SIGNATURE-----
-
---B4IIlcmfBL/1gGOG--
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 7eb4a13..72dafdd 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -18,6 +18,7 @@ struct pwm_export {
+ 	struct device child;
+ 	struct pwm_device *pwm;
+ 	struct mutex lock;
++	bool enabled_in_suspend;
+ };
+ 
+ static struct pwm_export *child_to_pwm_export(struct device *child)
+@@ -372,10 +373,73 @@ static struct attribute *pwm_chip_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(pwm_chip);
+ 
++static int pwm_class_suspend_resume(struct device *parent, bool suspend)
++{
++	struct pwm_chip *chip = dev_get_drvdata(parent);
++	unsigned int i;
++	int ret = 0;
++
++	for (i = 0; i < chip->npwm; i++) {
++		struct pwm_device *pwm = &chip->pwms[i];
++		struct device *child;
++		struct pwm_export *export;
++		struct pwm_state state;
++
++		if (!test_bit(PWMF_EXPORTED, &pwm->flags))
++			continue;
++
++		child = device_find_child(parent, pwm, pwm_unexport_match);
++		if (!child)
++			goto rollback;
++
++		export = child_to_pwm_export(child);
++		put_device(child);	/* for device_find_child() */
++		if (!export)
++			goto rollback;
++
++		mutex_lock(&export->lock);
++		pwm_get_state(pwm, &state);
++		if (suspend) {
++			if (state.enabled)
++				export->enabled_in_suspend = true;
++			state.enabled = false;
++		} else if (export->enabled_in_suspend) {
++			state.enabled = true;
++			export->enabled_in_suspend = false;
++		}
++		ret = pwm_apply_state(pwm, &state);
++		mutex_unlock(&export->lock);
++		if (ret < 0)
++			goto rollback;
++	}
++
++	return ret;
++
++rollback:
++	/* roll back only when suspend */
++	if (suspend)
++		pwm_class_suspend_resume(parent, false);
++
++	return ret;
++}
++
++static int pwm_class_suspend(struct device *parent)
++{
++	return pwm_class_suspend_resume(parent, true);
++}
++
++static int pwm_class_resume(struct device *parent)
++{
++	return pwm_class_suspend_resume(parent, false);
++}
++
++static SIMPLE_DEV_PM_OPS(pwm_class_pm_ops, pwm_class_suspend, pwm_class_resume);
++
+ static struct class pwm_class = {
+ 	.name = "pwm",
+ 	.owner = THIS_MODULE,
+ 	.dev_groups = pwm_chip_groups,
++	.pm = &pwm_class_pm_ops,
+ };
+ 
+ static int pwmchip_sysfs_match(struct device *parent, const void *data)
+-- 
+2.7.4
