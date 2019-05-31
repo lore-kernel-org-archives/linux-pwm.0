@@ -1,90 +1,68 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:45508 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfEaHek (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 31 May 2019 03:34:40 -0400
-MIME-Version: 1.0
+Received: from mail-eopbgr1400138.outbound.protection.outlook.com ([40.107.140.138]:39264
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726002AbfEaJYu (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 31 May 2019 05:24:50 -0400
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Fri, 31 May 2019 09:24:05 +0000
+Message-ID: <OSAPR01MB3089E0190A76CBB56FBA3932D8190@OSAPR01MB3089.jpnprd01.prod.outlook.com>
 References: <1559211367-25106-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1559211367-25106-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1559211367-25106-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 31 May 2019 09:34:25 +0200
-Message-ID: <CAMuHMdXVVOvoZ4S9LC=RD_8r-XJ6tPt512rONjv8QEK0L=akww@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CAMuHMdXVVOvoZ4S9LC=RD_8r-XJ6tPt512rONjv8QEK0L=akww@mail.gmail.com>
+In-Reply-To: <CAMuHMdXVVOvoZ4S9LC=RD_8r-XJ6tPt512rONjv8QEK0L=akww@mail.gmail.com>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v2 3/4] pwm: sysfs: Add suspend/resume support
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v2 3/4] pwm: sysfs: Add suspend/resume support
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-Hi Shimoda-san,
-
-On Thu, May 30, 2019 at 12:21 PM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> According to the Documentation/pwm.txt, all PWM consumers should have
-> power management. Since this sysfs interface is one of consumers so that
-> this patch adds suspend/resume support.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-Thanks for your patch!
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> --- a/drivers/pwm/sysfs.c
-> +++ b/drivers/pwm/sysfs.c
-
-> @@ -372,10 +373,109 @@ static struct attribute *pwm_chip_attrs[] = {
->  };
->  ATTRIBUTE_GROUPS(pwm_chip);
->
-
-You may want to add a comment "takes export->lock on success" here...
-
-> +static struct pwm_export *pwm_class_get_state(struct device *parent,
-> +                                             struct pwm_device *pwm,
-> +                                             struct pwm_state *state)
-> +{
-> +       struct device *child;
-> +       struct pwm_export *export;
-> +
-> +       if (!test_bit(PWMF_EXPORTED, &pwm->flags))
-> +               return NULL;
-> +
-> +       child = device_find_child(parent, pwm, pwm_unexport_match);
-> +       if (!child)
-> +               return NULL;
-> +
-> +       export = child_to_pwm_export(child);
-> +       put_device(child);      /* for device_find_child() */
-> +
-> +       mutex_lock(&export->lock);
-> +       pwm_get_state(pwm, state);
-> +
-> +       return export;
-> +}
-> +
-> +static int pwm_class_apply_state(struct pwm_export *export,
-> +                                struct pwm_device *pwm,
-> +                                struct pwm_state *state)
-> +{
-> +       int ret = pwm_apply_state(pwm, state);
-> +
-
-... and "release lock taken in pwm_class_get_state()" here.
-
-> +       mutex_unlock(&export->lock);
-> +
-> +       return ret;
-> +}
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogRnJpZGF5
+LCBNYXkgMzEsIDIwMTkgNDozNCBQTQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBPbiBU
+aHUsIE1heSAzMCwgMjAxOSBhdCAxMjoyMSBQTSBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA8eW9zaGlo
+aXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+IHdyb3RlOg0KPiA+IEFjY29yZGluZyB0byB0aGUg
+RG9jdW1lbnRhdGlvbi9wd20udHh0LCBhbGwgUFdNIGNvbnN1bWVycyBzaG91bGQgaGF2ZQ0KPiA+
+IHBvd2VyIG1hbmFnZW1lbnQuIFNpbmNlIHRoaXMgc3lzZnMgaW50ZXJmYWNlIGlzIG9uZSBvZiBj
+b25zdW1lcnMgc28gdGhhdA0KPiA+IHRoaXMgcGF0Y2ggYWRkcyBzdXNwZW5kL3Jlc3VtZSBzdXBw
+b3J0Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogWW9zaGloaXJvIFNoaW1vZGEgPHlvc2hpaGly
+by5zaGltb2RhLnVoQHJlbmVzYXMuY29tPg0KPiANCj4gVGhhbmtzIGZvciB5b3VyIHBhdGNoIQ0K
+PiANCj4gUmV2aWV3ZWQtYnk6IEdlZXJ0IFV5dHRlcmhvZXZlbiA8Z2VlcnQrcmVuZXNhc0BnbGlk
+ZXIuYmU+DQoNClRoYW5rIHlvdSBmb3IgeW91ciByZXZpZXchDQpJJ2xsIGFkZCBjb21tZW50cyB5
+b3UgZGVzY3JpYmVkIG9uIHYzIHBhdGNoLg0KDQpCZXN0IHJlZ2FyZHMsDQpZb3NoaWhpcm8gU2hp
+bW9kYQ0KDQo+ID4gLS0tIGEvZHJpdmVycy9wd20vc3lzZnMuYw0KPiA+ICsrKyBiL2RyaXZlcnMv
+cHdtL3N5c2ZzLmMNCj4gDQo+ID4gQEAgLTM3MiwxMCArMzczLDEwOSBAQCBzdGF0aWMgc3RydWN0
+IGF0dHJpYnV0ZSAqcHdtX2NoaXBfYXR0cnNbXSA9IHsNCj4gPiAgfTsNCj4gPiAgQVRUUklCVVRF
+X0dST1VQUyhwd21fY2hpcCk7DQo+ID4NCj4gDQo+IFlvdSBtYXkgd2FudCB0byBhZGQgYSBjb21t
+ZW50ICJ0YWtlcyBleHBvcnQtPmxvY2sgb24gc3VjY2VzcyIgaGVyZS4uLg0KPiANCj4gPiArc3Rh
+dGljIHN0cnVjdCBwd21fZXhwb3J0ICpwd21fY2xhc3NfZ2V0X3N0YXRlKHN0cnVjdCBkZXZpY2Ug
+KnBhcmVudCwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgc3RydWN0IHB3bV9zdGF0ZSAqc3RhdGUpDQo+ID4gK3sNCj4g
+PiArICAgICAgIHN0cnVjdCBkZXZpY2UgKmNoaWxkOw0KPiA+ICsgICAgICAgc3RydWN0IHB3bV9l
+eHBvcnQgKmV4cG9ydDsNCj4gPiArDQo+ID4gKyAgICAgICBpZiAoIXRlc3RfYml0KFBXTUZfRVhQ
+T1JURUQsICZwd20tPmZsYWdzKSkNCj4gPiArICAgICAgICAgICAgICAgcmV0dXJuIE5VTEw7DQo+
+ID4gKw0KPiA+ICsgICAgICAgY2hpbGQgPSBkZXZpY2VfZmluZF9jaGlsZChwYXJlbnQsIHB3bSwg
+cHdtX3VuZXhwb3J0X21hdGNoKTsNCj4gPiArICAgICAgIGlmICghY2hpbGQpDQo+ID4gKyAgICAg
+ICAgICAgICAgIHJldHVybiBOVUxMOw0KPiA+ICsNCj4gPiArICAgICAgIGV4cG9ydCA9IGNoaWxk
+X3RvX3B3bV9leHBvcnQoY2hpbGQpOw0KPiA+ICsgICAgICAgcHV0X2RldmljZShjaGlsZCk7ICAg
+ICAgLyogZm9yIGRldmljZV9maW5kX2NoaWxkKCkgKi8NCj4gPiArDQo+ID4gKyAgICAgICBtdXRl
+eF9sb2NrKCZleHBvcnQtPmxvY2spOw0KPiA+ICsgICAgICAgcHdtX2dldF9zdGF0ZShwd20sIHN0
+YXRlKTsNCj4gPiArDQo+ID4gKyAgICAgICByZXR1cm4gZXhwb3J0Ow0KPiA+ICt9DQo+ID4gKw0K
+PiA+ICtzdGF0aWMgaW50IHB3bV9jbGFzc19hcHBseV9zdGF0ZShzdHJ1Y3QgcHdtX2V4cG9ydCAq
+ZXhwb3J0LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBwd21f
+ZGV2aWNlICpwd20sDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0
+IHB3bV9zdGF0ZSAqc3RhdGUpDQo+ID4gK3sNCj4gPiArICAgICAgIGludCByZXQgPSBwd21fYXBw
+bHlfc3RhdGUocHdtLCBzdGF0ZSk7DQo+ID4gKw0KPiANCj4gLi4uIGFuZCAicmVsZWFzZSBsb2Nr
+IHRha2VuIGluIHB3bV9jbGFzc19nZXRfc3RhdGUoKSIgaGVyZS4NCj4gDQo+ID4gKyAgICAgICBt
+dXRleF91bmxvY2soJmV4cG9ydC0+bG9jayk7DQo+ID4gKw0KPiA+ICsgICAgICAgcmV0dXJuIHJl
+dDsNCj4gPiArfQ0KPiANCj4gR3J7b2V0amUsZWV0aW5nfXMsDQo+IA0KPiAgICAgICAgICAgICAg
+ICAgICAgICAgICBHZWVydA0KPiANCj4gLS0NCj4gR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJl
+J3MgbG90cyBvZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZw0KPiAN
+Cj4gSW4gcGVyc29uYWwgY29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2Fs
+bCBteXNlbGYgYSBoYWNrZXIuIEJ1dA0KPiB3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3Rz
+IEkganVzdCBzYXkgInByb2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuDQo+ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgLS0gTGludXMgVG9ydmFsZHMNCg==
