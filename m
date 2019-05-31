@@ -1,58 +1,58 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-eopbgr1400103.outbound.protection.outlook.com ([40.107.140.103]:49381
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727198AbfEaJbo (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 31 May 2019 05:31:44 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:26010 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726233AbfEaJ74 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 31 May 2019 05:59:56 -0400
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Date: Fri, 31 May 2019 09:31:39 +0000
-Message-ID: <OSAPR01MB3089B5CCB42A92EA191733DCD8190@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <1559211367-25106-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1559211367-25106-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdVjOuvUyX3QJP-DOmYt3wzt3NOioDfm_CQhyZvOnGgy6Q@mail.gmail.com>
- <OSAPR01MB3089658CD2E8DF789BA7737FD8190@OSAPR01MB3089.jpnprd01.prod.outlook.com>
- <CAMuHMdUkYChEX+uaxqAhHRTDKPST9HZNqOKGTf2kxM0F+_nsxQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdUkYChEX+uaxqAhHRTDKPST9HZNqOKGTf2kxM0F+_nsxQ@mail.gmail.com>
-Content-Language: ja-JP
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+Date: Fri, 31 May 2019 18:54:57 +0900
+Message-Id: <1559296501-30620-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: RE: [PATCH v2 1/4] pwm: Add power management descriptions
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: [PATCH v3 0/4] pwm: add power management on sysfs and switch to SPDX
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogRnJpZGF5
-LCBNYXkgMzEsIDIwMTkgNjoyOSBQTQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBPbiBG
-cmksIE1heSAzMSwgMjAxOSBhdCAxMToyMiBBTSBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA8eW9zaGlo
-aXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+IHdyb3RlOg0KPiA+ID4gT24gVGh1LCBNYXkgMzAs
-IDIwMTkgYXQgMTI6MjEgUE0gWW9zaGloaXJvIFNoaW1vZGENCj4gPiA+IDx5b3NoaWhpcm8uc2hp
-bW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gPiA+IFRoaXMgcGF0Y2ggYWRkcyBwb3dl
-ciBtYW5hZ2VtZW50IGRlc2NyaXB0aW9ucyB0aGF0IGNvbnN1bWVycyBzaG91bGQNCj4gPiA+ID4g
-aW1wbGVtZW50IGl0Lg0KPiA+ID4gPg0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBZb3NoaWhpcm8g
-U2hpbW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+DQo+ID4gPg0KPiA+ID4g
-VGhhbmtzIGZvciB5b3VyIHBhdGNoIQ0KPiA+ID4NCj4gPiA+ID4gLS0tIGEvRG9jdW1lbnRhdGlv
-bi9wd20udHh0DQo+ID4gPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vcHdtLnR4dA0KPiA+ID4NCj4g
-PiA+ID4gQEAgLTE0MSw2ICsxNDUsOSBAQCBUaGUgaW1wbGVtZW50YXRpb24gb2YgLT5nZXRfc3Rh
-dGUoKSAoYSBtZXRob2QgdXNlZCB0byByZXRyaWV2ZSBpbml0aWFsIFBXTQ0KPiA+ID4gPiAgc3Rh
-dGUpIGlzIGFsc28gZW5jb3VyYWdlZCBmb3IgdGhlIHNhbWUgcmVhc29uOiBsZXR0aW5nIHRoZSBQ
-V00gdXNlciBrbm93DQo+ID4gPiA+ICBhYm91dCB0aGUgY3VycmVudCBQV00gc3RhdGUgd291bGQg
-YWxsb3cgaGltIHRvIGF2b2lkIGdsaXRjaGVzLg0KPiA+ID4gPg0KPiA+ID4gPiArRHJpdmVycyBz
-aG91bGQgbm90IGltcGxlbWVudCBhbnkgcG93ZXIgbWFuYWdlbWVudC4gSW4gb3RoZXIgd29yZHMs
-DQo+ID4gPiA+ICtjb25zdW1lcnMgc2hvdWxkIGltcGxlbWVudCBpdCBhcyBkZXNjcmliZWQgYXMg
-dGhlICJVc2luZyBQV01zIiBzZWN0aW9uLg0KPiA+ID4NCj4gPiA+IHMvYXMvaW4vDQo+ID4NCj4g
-PiBTbywgIi4uLiBpbiBkZXNjcmliZWQgYXMgLi4uIiA/DQo+ID4NCj4gPiBJJ20gbm90IGEgbmF0
-aXZlIHNwZWFrZXIsIHNvIHRoYXQgYW55IGNhc2VzIGJlbG93IHNlZW0gbm90IHNvIGRpZmZlcmVu
-dCB0byBtZSA6KQ0KPiA+DQo+ID4gMS4gIi4uLiBhcyBkZXNjcmliZWQgYXMgLi4uIg0KPiA+IDIu
-ICIuLi4gaW4gZGVzY3JpYmVkIGFzIC4uLiINCj4gPiAzLiAiLi4uIGFzIGRlc2NyaWJlZCBpbiAu
-Li4iDQo+ID4gNC4gIi4uLiBpbiBkZXNjcmliZWQgaW4gLi4uIg0KPiANCj4gU29ycnkgZm9yIGJl
-aW5nIHVuY2xlYXI6ICIuLi4gYXMgZGVzY3JpYmVkIGluIC4uLiINCg0KVGhhbmsgeW91IGZvciB0
-aGUgcmVwbHkhIEknbGwgcmV2aXNlIGl0Lg0KDQpCZXN0IHJlZ2FyZHMsDQpZb3NoaWhpcm8gU2hp
-bW9kYQ0KDQo+IEdye29ldGplLGVldGluZ31zLA0KPiANCj4gICAgICAgICAgICAgICAgICAgICAg
-ICAgR2VlcnQNCj4gDQo+IC0tDQo+IEdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMg
-b2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcNCj4gDQo+IEluIHBl
-cnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxm
-IGEgaGFja2VyLiBCdXQNCj4gd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qg
-c2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzDQo=
+This patch series is affected from the following email:
+https://marc.info/?l=linux-renesas-soc&m=155896668906609&w=2
+
+- The patch 1 adds descriptions into Documentation/pwm.txt.
+- The patch 2 is not related to the topic though, switches to
+  SPDX identifier of sysfs.c.
+- The patch 3 adds suspend/resume support into sysfs.c.
+- The patch 4 removes suspend/resume support from pwm-rcar.c.
+
+I'll make for other PWM drivers to remove suspend/resume support
+after this patch series is applied.
+
+Changes from v2 [1]:
+ - Fix typo in the patch 1.
+ - Add comments in the patch 3.
+ - Add Reviewed-by Geert-san on the all patches.
+
+Changes from v1 [2]:
+ - Save pwm_state of suspend instead of own bool value on the patch 3.
+ - Separate functions for suspend and resume on the patch 3.
+ - Remove unnecessary condition of child_to_pwm_export() on the patch 3.
+ - Add helper functions for suspend/resume into sysfs.c on the patch 3.
+ - Add comment about the "roll back" on the patch 3.
+
+[1]
+https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=125103
+
+[2]
+https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=124235
+
+
+Yoshihiro Shimoda (4):
+  pwm: Add power management descriptions
+  pwm: sysfs: Switch to SPDX identifier
+  pwm: sysfs: Add suspend/resume support
+  pwm: rcar: Remove suspend/resume support
+
+ Documentation/pwm.txt  |   7 +++
+ drivers/pwm/pwm-rcar.c |  39 -----------------
+ drivers/pwm/sysfs.c    | 113 ++++++++++++++++++++++++++++++++++++++++++++-----
+ 3 files changed, 110 insertions(+), 49 deletions(-)
+
+-- 
+2.7.4
