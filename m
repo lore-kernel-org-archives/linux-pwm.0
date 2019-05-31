@@ -1,54 +1,53 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34733 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725963AbfEaHUU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 31 May 2019 03:20:20 -0400
-MIME-Version: 1.0
+Received: from mail-eopbgr1400095.outbound.protection.outlook.com ([40.107.140.95]:54583
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726158AbfEaJWI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 31 May 2019 05:22:08 -0400
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Fri, 31 May 2019 09:22:03 +0000
+Message-ID: <OSAPR01MB3089658CD2E8DF789BA7737FD8190@OSAPR01MB3089.jpnprd01.prod.outlook.com>
 References: <1559211367-25106-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1559211367-25106-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1559211367-25106-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 31 May 2019 09:20:06 +0200
-Message-ID: <CAMuHMdVjOuvUyX3QJP-DOmYt3wzt3NOioDfm_CQhyZvOnGgy6Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CAMuHMdVjOuvUyX3QJP-DOmYt3wzt3NOioDfm_CQhyZvOnGgy6Q@mail.gmail.com>
+In-Reply-To: <CAMuHMdVjOuvUyX3QJP-DOmYt3wzt3NOioDfm_CQhyZvOnGgy6Q@mail.gmail.com>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v2 1/4] pwm: Add power management descriptions
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v2 1/4] pwm: Add power management descriptions
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-Hi Shimoda-san,
-
-On Thu, May 30, 2019 at 12:21 PM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> This patch adds power management descriptions that consumers should
-> implement it.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-Thanks for your patch!
-
-> --- a/Documentation/pwm.txt
-> +++ b/Documentation/pwm.txt
-
-> @@ -141,6 +145,9 @@ The implementation of ->get_state() (a method used to retrieve initial PWM
->  state) is also encouraged for the same reason: letting the PWM user know
->  about the current PWM state would allow him to avoid glitches.
->
-> +Drivers should not implement any power management. In other words,
-> +consumers should implement it as described as the "Using PWMs" section.
-
-s/as/in/
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQpUaGFuayB5b3UgZm9yIHlvdXIgcmV2aWV3IQ0KDQo+IEZyb206IEdl
+ZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogRnJpZGF5LCBNYXkgMzEsIDIwMTkgNDoyMCBQTQ0KPiAN
+Cj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBPbiBUaHUsIE1heSAzMCwgMjAxOSBhdCAxMjoyMSBQ
+TSBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+
+IHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggYWRkcyBwb3dlciBtYW5hZ2VtZW50IGRlc2NyaXB0aW9u
+cyB0aGF0IGNvbnN1bWVycyBzaG91bGQNCj4gPiBpbXBsZW1lbnQgaXQuDQo+ID4NCj4gPiBTaWdu
+ZWQtb2ZmLWJ5OiBZb3NoaWhpcm8gU2hpbW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNh
+cy5jb20+DQo+IA0KPiBUaGFua3MgZm9yIHlvdXIgcGF0Y2ghDQo+IA0KPiA+IC0tLSBhL0RvY3Vt
+ZW50YXRpb24vcHdtLnR4dA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vcHdtLnR4dA0KPiANCj4g
+PiBAQCAtMTQxLDYgKzE0NSw5IEBAIFRoZSBpbXBsZW1lbnRhdGlvbiBvZiAtPmdldF9zdGF0ZSgp
+IChhIG1ldGhvZCB1c2VkIHRvIHJldHJpZXZlIGluaXRpYWwgUFdNDQo+ID4gIHN0YXRlKSBpcyBh
+bHNvIGVuY291cmFnZWQgZm9yIHRoZSBzYW1lIHJlYXNvbjogbGV0dGluZyB0aGUgUFdNIHVzZXIg
+a25vdw0KPiA+ICBhYm91dCB0aGUgY3VycmVudCBQV00gc3RhdGUgd291bGQgYWxsb3cgaGltIHRv
+IGF2b2lkIGdsaXRjaGVzLg0KPiA+DQo+ID4gK0RyaXZlcnMgc2hvdWxkIG5vdCBpbXBsZW1lbnQg
+YW55IHBvd2VyIG1hbmFnZW1lbnQuIEluIG90aGVyIHdvcmRzLA0KPiA+ICtjb25zdW1lcnMgc2hv
+dWxkIGltcGxlbWVudCBpdCBhcyBkZXNjcmliZWQgYXMgdGhlICJVc2luZyBQV01zIiBzZWN0aW9u
+Lg0KPiANCj4gcy9hcy9pbi8NCg0KU28sICIuLi4gaW4gZGVzY3JpYmVkIGFzIC4uLiIgPw0KDQpJ
+J20gbm90IGEgbmF0aXZlIHNwZWFrZXIsIHNvIHRoYXQgYW55IGNhc2VzIGJlbG93IHNlZW0gbm90
+IHNvIGRpZmZlcmVudCB0byBtZSA6KQ0KDQoxLiAiLi4uIGFzIGRlc2NyaWJlZCBhcyAuLi4iDQoy
+LiAiLi4uIGluIGRlc2NyaWJlZCBhcyAuLi4iDQozLiAiLi4uIGFzIGRlc2NyaWJlZCBpbiAuLi4i
+DQo0LiAiLi4uIGluIGRlc2NyaWJlZCBpbiAuLi4iDQoNCj4gUmV2aWV3ZWQtYnk6IEdlZXJ0IFV5
+dHRlcmhvZXZlbiA8Z2VlcnQrcmVuZXNhc0BnbGlkZXIuYmU+DQoNClRoYW5rcyENCg0KQmVzdCBy
+ZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1vZGENCg0KPiBHcntvZXRqZSxlZXRpbmd9cywNCj4gDQo+
+ICAgICAgICAgICAgICAgICAgICAgICAgIEdlZXJ0DQo+IA0KPiAtLQ0KPiBHZWVydCBVeXR0ZXJo
+b2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4
+LW02OGsub3JnDQo+IA0KPiBJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2Fs
+IHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0DQo+IHdoZW4gSSdtIHRhbGtpbmcg
+dG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2Ug
+dGhhdC4NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxk
+cw0K
