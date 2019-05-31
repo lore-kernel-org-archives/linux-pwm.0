@@ -1,124 +1,72 @@
 From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [PATCH] drm/mediatek: add dsi module reset driver
-Date: Fri, 31 May 2019 09:50:52 +0800
-Message-ID: <1559267452.9102.0.camel@mtksdaap41>
-References: <20190519111513.73919-1-jitao.shi@mediatek.com>
+Subject: Re: [v3 3/7] drm/mediatek: add dsi reg commit disable control
+Date: Fri, 31 May 2019 11:38:28 +0800
+Message-ID: <1559273908.9102.2.camel@mtksdaap41>
+References: <20190519092537.69053-1-jitao.shi@mediatek.com>
+         <20190519092537.69053-4-jitao.shi@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190519111513.73919-1-jitao.shi@mediatek.com>
+In-Reply-To: <20190519092537.69053-4-jitao.shi@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-media
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel
 List-Id: linux-pwm@vger.kernel.org
 
 Hi, Jitao:
 
-On Sun, 2019-05-19 at 19:15 +0800, Jitao Shi wrote:
-> Reset dsi HW to default when power on. Prevent the setting differet
-> between bootloader and kernel.
+On Sun, 2019-05-19 at 17:25 +0800, Jitao Shi wrote:
+> New DSI IP has shadow register and working reg. The register
+> values are writen to shadow register. And then trigger with
+> commit reg, the register values will be moved working register.
+> 
+> This fucntion is defualt on. But this driver doesn't use this
+> function. So add the disable control.
 > 
 > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
 > ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 35 ++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
+>  drivers/gpu/drm/mediatek/mtk_dsi.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
 > diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index b00eb2d2e086..39ccb34a7c7f 100644
+> index a48db056df6c..fd367985c7fd 100644
 > --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
 > +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -21,10 +21,12 @@
->  #include <linux/component.h>
->  #include <linux/iopoll.h>
->  #include <linux/irq.h>
-> +#include <linux/mfd/syscon.h>
->  #include <linux/of.h>
->  #include <linux/of_platform.h>
->  #include <linux/phy/phy.h>
->  #include <linux/platform_device.h>
-> +#include <linux/regmap.h>
->  #include <video/mipi_display.h>
->  #include <video/videomode.h>
+> @@ -131,6 +131,10 @@
+>  #define VM_CMD_EN			BIT(0)
+>  #define TS_VFP_EN			BIT(5)
 >  
-> @@ -146,6 +148,8 @@
->  #define T_HS_EXIT	7
->  #define T_HS_ZERO	10
->  
-> +#define MMSYS_SW_RST_DSI_B BIT(25)
-> +
->  #define NS_TO_CYCLE(n, c)    ((n) / (c) + (((n) % (c)) ? 1 : 0))
->  
->  #define MTK_DSI_HOST_IS_READ(type) \
-> @@ -165,6 +169,8 @@ struct mtk_dsi {
->  	struct drm_panel *panel;
->  	struct drm_bridge *bridge;
->  	struct phy *phy;
-> +	struct regmap *mmsys_sw_rst_b;
-> +	u32 sw_rst_b;
->  
->  	void __iomem *regs;
->  
-> @@ -238,6 +244,16 @@ static void mtk_dsi_disable(struct mtk_dsi *dsi)
->  	mtk_dsi_mask(dsi, DSI_CON_CTRL, DSI_EN, 0);
->  }
->  
-> +static void mtk_dsi_reset_all(struct mtk_dsi *dsi)
-> +{
-> +	regmap_update_bits(dsi->mmsys_sw_rst_b, dsi->sw_rst_b,
-> +			   MMSYS_SW_RST_DSI_B, ~MMSYS_SW_RST_DSI_B);
-> +	usleep_range(1000, 1100);
-> +
-> +	regmap_update_bits(dsi->mmsys_sw_rst_b, dsi->sw_rst_b,
-> +			   MMSYS_SW_RST_DSI_B, MMSYS_SW_RST_DSI_B);
-> +}
-> +
->  static void mtk_dsi_reset_engine(struct mtk_dsi *dsi)
->  {
->  	mtk_dsi_mask(dsi, DSI_CON_CTRL, DSI_RESET, DSI_RESET);
-> @@ -831,6 +847,8 @@ static int mtk_dsi_create_conn_enc(struct drm_device *drm, struct mtk_dsi *dsi)
->  			goto err_encoder_cleanup;
->  	}
->  
-> +	mtk_dsi_reset_all(dsi);
-> +
->  	return 0;
->  
->  err_encoder_cleanup:
-> @@ -1087,6 +1105,7 @@ static int mtk_dsi_probe(struct platform_device *pdev)
->  	struct mtk_dsi *dsi;
->  	struct device *dev = &pdev->dev;
->  	struct resource *regs;
-> +	struct regmap *regmap;
->  	int irq_num;
->  	int comp_id;
->  	int ret;
-> @@ -1139,6 +1158,22 @@ static int mtk_dsi_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> +	regmap = syscon_regmap_lookup_by_phandle(dev->of_node,
-> +						 "mediatek,syscon-dsi");
+> +#define DSI_SHADOW_DEBUG	0x190U
+> +#define FORCE_COMMIT		BIT(0)
+> +#define BYPASS_SHADOW		BIT(1)
 
-Where is the binding document for "mediatek,syscon-dsi"?
+One more 'tab' for bitwise definition.
 
 Regards,
 CK
 
-> +	ret = of_property_read_u32_index(dev->of_node, "mediatek,syscon-dsi", 1,
-> +					 &dsi->sw_rst_b);
 > +
-> +	if (IS_ERR(regmap))
-> +		ret = PTR_ERR(regmap);
+>  #define CONFIG				(0xff << 0)
+>  #define SHORT_PACKET			0
+>  #define LONG_PACKET			2
+> @@ -157,6 +161,7 @@ struct phy;
+>  
+>  struct mtk_dsi_driver_data {
+>  	const u32 reg_cmdq_off;
+> +	bool has_shadow_ctl;
+>  };
+>  
+>  struct mtk_dsi {
+> @@ -594,6 +599,11 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
+>  	}
+>  
+>  	mtk_dsi_enable(dsi);
 > +
-> +	if (ret) {
-> +		ret = PTR_ERR(regmap);
-> +		dev_err(dev, "Failed to get mmsys registers: %d\n", ret);
-> +		return ret;
-> +	}
+> +	if (dsi->driver_data->has_shadow_ctl)
+> +		writel(FORCE_COMMIT | BYPASS_SHADOW,
+> +		       dsi->regs + DSI_SHADOW_DEBUG);
 > +
-> +	dsi->mmsys_sw_rst_b = regmap;
-> +
->  	comp_id = mtk_ddp_comp_get_id(dev->of_node, MTK_DSI);
->  	if (comp_id < 0) {
->  		dev_err(dev, "Failed to identify by alias: %d\n", comp_id);
+>  	mtk_dsi_reset_engine(dsi);
+>  	mtk_dsi_phy_timconfig(dsi);
+>  
