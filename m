@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 031/141] pwm: meson: Use the spin-lock only to protect register modifications
-Date: Sat,  1 Jun 2019 09:20:07 -0400
-Message-ID: <20190601132158.25821-31-sashal@kernel.org>
-References: <20190601132158.25821-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 037/173] pwm: meson: Use the spin-lock only to protect register modifications
+Date: Sat,  1 Jun 2019 09:17:09 -0400
+Message-ID: <20190601131934.25053-37-sashal@kernel.org>
+References: <20190601131934.25053-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190601132158.25821-1-sashal@kernel.org>
+In-Reply-To: <20190601131934.25053-1-sashal@kernel.org>
 Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Neil Armstrong <narmstrong@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
