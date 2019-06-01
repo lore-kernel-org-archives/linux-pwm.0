@@ -1,44 +1,42 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v3 7/7] drm: mediatek: adjust dsi and mipi_tx probe sequence
-Date: Fri, 31 May 2019 11:40:41 +0800
-Message-ID: <1559274041.9102.3.camel@mtksdaap41>
-References: <20190519092537.69053-1-jitao.shi@mediatek.com>
- <20190519092537.69053-8-jitao.shi@mediatek.com>
+From: YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] pwm: pca9685: Remove set but not used variable 'pwm'
+Date: Sat, 1 Jun 2019 03:57:09 +0000
+Message-ID: <20190601035709.85379-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190519092537.69053-8-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Sean Paul <seanpaul@chromium>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, u.kleine-koenig@pengutronix.de, andriy.shevchenko@linux.intel.com, thesven73@gmail.com
+Cc: YueHaibing <yuehaibing@huawei.com>, linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEppdGFvOgoKT24gU3VuLCAyMDE5LTA1LTE5IGF0IDE3OjI1ICswODAwLCBKaXRhbyBTaGkg
-d3JvdGU6Cj4gbXRrX21pcGlfdHggaXMgdGhlIHBoeSBvZiBtdGtfZHNpLgo+IG10a19kc2kgZ2V0
-IHRoZSBwaHkobXRrX21pcGlfdHgpIGluIHByb2JlKCkuCj4gCj4gU28sICBtdGtfbWlwaV90eCBp
-bml0IHNob3VsZCBiZSBhaGVhZCBvZiBtdGtfZHNpLiBPciBtdGtfZHNpIHdpbGwKPiBkZWZlciB0
-byB3YWl0IG10a19taXBpX3R4IHByb2JlIGRvbmUuCgpSZXZpZXdlZC1ieTogQ0sgSHUgPGNrLmh1
-QG1lZGlhdGVrLmNvbT4KCj4gCj4gU2lnbmVkLW9mZi1ieTogSml0YW8gU2hpIDxqaXRhby5zaGlA
-bWVkaWF0ZWsuY29tPgo+IC0tLQo+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RybV9k
-cnYuYyB8IDIgKy0KPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9u
-KC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHJtX2Ry
-di5jIGIvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kcm1fZHJ2LmMKPiBpbmRleCBjZjU5
-ZWE5YmNjZmQuLjU4M2Q1MzNkOTU3NCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vbWVk
-aWF0ZWsvbXRrX2RybV9kcnYuYwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtf
-ZHJtX2Rydi5jCj4gQEAgLTYzMyw4ICs2MzMsOCBAQCBzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2Ry
-aXZlciAqIGNvbnN0IG10a19kcm1fZHJpdmVyc1tdID0gewo+ICAJJm10a19kaXNwX3JkbWFfZHJp
-dmVyLAo+ICAJJm10a19kcGlfZHJpdmVyLAo+ICAJJm10a19kcm1fcGxhdGZvcm1fZHJpdmVyLAo+
-IC0JJm10a19kc2lfZHJpdmVyLAo+ICAJJm10a19taXBpX3R4X2RyaXZlciwKPiArCSZtdGtfZHNp
-X2RyaXZlciwKPiAgfTsKPiAgCj4gIHN0YXRpYyBpbnQgX19pbml0IG10a19kcm1faW5pdCh2b2lk
-KQoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1k
-ZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczov
-L2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+Fixes gcc '-Wunused-but-set-variable' warning:
+
+drivers/pwm/pwm-pca9685.c: In function 'pca9685_pwm_gpio_free':
+drivers/pwm/pwm-pca9685.c:173:21: warning:
+ variable 'pwm' set but not used [-Wunused-but-set-variable]
+
+It's not used since commit e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/pwm/pwm-pca9685.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 567f5e2771c4..d16215c276bd 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -170,12 +170,10 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+ static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
+ {
+ 	struct pca9685 *pca = gpiochip_get_data(gpio);
+-	struct pwm_device *pwm;
+ 
+ 	pca9685_pwm_gpio_set(gpio, offset, 0);
+ 	pm_runtime_put(pca->chip.dev);
+ 	mutex_lock(&pca->lock);
+-	pwm = &pca->chip.pwms[offset];
+ 	mutex_unlock(&pca->lock);
+ }
