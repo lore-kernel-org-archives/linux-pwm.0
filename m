@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 20/74] pwm: meson: Use the spin-lock only to protect register modifications
-Date: Sat,  1 Jun 2019 09:24:07 -0400
-Message-ID: <20190601132501.27021-20-sashal@kernel.org>
-References: <20190601132501.27021-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 031/141] pwm: meson: Use the spin-lock only to protect register modifications
+Date: Sat,  1 Jun 2019 09:20:07 -0400
+Message-ID: <20190601132158.25821-31-sashal@kernel.org>
+References: <20190601132158.25821-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190601132501.27021-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190601132158.25821-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Neil Armstrong <narmstrong@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
@@ -45,10 +45,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 9d5bd7d5c610b..f58a4867b5194 100644
+index c1ed641b3e266..f6e738ad7bd92 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -110,6 +110,10 @@ struct meson_pwm {
+@@ -111,6 +111,10 @@ struct meson_pwm {
  	const struct meson_pwm_data *data;
  	void __iomem *base;
  	u8 inverter_mask;
@@ -59,7 +59,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  	spinlock_t lock;
  };
  
-@@ -230,6 +234,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+@@ -235,6 +239,7 @@ static void meson_pwm_enable(struct meson_pwm *meson,
  {
  	u32 value, clk_shift, clk_enable, enable;
  	unsigned int offset;
@@ -67,7 +67,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  
  	switch (id) {
  	case 0:
-@@ -250,6 +255,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+@@ -255,6 +260,8 @@ static void meson_pwm_enable(struct meson_pwm *meson,
  		return;
  	}
  
@@ -76,7 +76,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  	value = readl(meson->base + REG_MISC_AB);
  	value &= ~(MISC_CLK_DIV_MASK << clk_shift);
  	value |= channel->pre_div << clk_shift;
-@@ -262,11 +269,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
+@@ -267,11 +274,14 @@ static void meson_pwm_enable(struct meson_pwm *meson,
  	value = readl(meson->base + REG_MISC_AB);
  	value |= enable;
  	writel(value, meson->base + REG_MISC_AB);
@@ -91,7 +91,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  
  	switch (id) {
  	case 0:
-@@ -281,9 +291,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
+@@ -286,9 +296,13 @@ static void meson_pwm_disable(struct meson_pwm *meson, unsigned int id)
  		return;
  	}
  
@@ -105,7 +105,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  }
  
  static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -291,19 +305,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -296,19 +310,16 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  {
  	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
  	struct meson_pwm *meson = to_meson_pwm(chip);
@@ -126,7 +126,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  	}
  
  	if (state->period != channel->state.period ||
-@@ -324,7 +335,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -329,7 +340,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
  				     state->duty_cycle, state->period);
  		if (err < 0)
@@ -135,7 +135,7 @@ index 9d5bd7d5c610b..f58a4867b5194 100644
  
  		channel->state.polarity = state->polarity;
  		channel->state.period = state->period;
-@@ -336,9 +347,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -341,9 +352,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  		channel->state.enabled = true;
  	}
  
