@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.1 040/186] pwm: meson: Use the spin-lock only to protect register modifications
-Date: Sat,  1 Jun 2019 09:14:16 -0400
-Message-ID: <20190601131653.24205-40-sashal@kernel.org>
-References: <20190601131653.24205-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 25/99] pwm: meson: Use the spin-lock only to protect register modifications
+Date: Sat,  1 Jun 2019 09:22:32 -0400
+Message-ID: <20190601132346.26558-25-sashal@kernel.org>
+References: <20190601132346.26558-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190601131653.24205-1-sashal@kernel.org>
+In-Reply-To: <20190601132346.26558-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Neil Armstrong <narmstrong@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
@@ -45,7 +45,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index c1ed641b3e266..f6e738ad7bd92 100644
+index 3540d00425d03..9b79cbc7a7152 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
 @@ -111,6 +111,10 @@ struct meson_pwm {
