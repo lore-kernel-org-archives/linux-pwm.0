@@ -1,15 +1,16 @@
-From: Sean Young <sean@mess.org>
+From: Stefan Wahren <wahrenst@gmx.net>
 Subject: Re: [PATCH] pwm: bcm2835: increase precision of pwm
-Date: Sun, 2 Jun 2019 21:03:18 +0100
-Message-ID: <20190602200318.ymyewngns745m2vx@gofer.mess.org>
+Date: Sun, 2 Jun 2019 22:38:37 +0200
+Message-ID: <83f18bc9-a0d9-8ed9-ea4f-29072358b224@gmx.net>
 References: <20190602102350.zzwmfvlky3mnlqln@gofer.mess.org>
  <0e6eef35-244a-4d52-2d87-e8ff22355f09@gmx.net>
+ <20190602200318.ymyewngns745m2vx@gofer.mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <0e6eef35-244a-4d52-2d87-e8ff22355f09@gmx.net>
+In-Reply-To: <20190602200318.ymyewngns745m2vx@gofer.mess.org>
+Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,42 +20,74 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Stefan Wahren <wahrenst@gmx.net>
+To: Sean Young <sean@mess.org>
 Cc: linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, Andreas Christ <andreas@christ-faesch.ch>, Ray Jui <rjui@broadcom.com>, Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Stefan,
-
-On Sun, Jun 02, 2019 at 06:45:44PM +0200, Stefan Wahren wrote:
-> Am 02.06.19 um 12:23 schrieb Sean Young:
-> > If sending IR with carrier of 455kHz using the pwm-ir-tx driver, the
-> > carrier ends up being 476kHz.
-> >
-> > A carrier of 455kHz has a period of 2198ns, but the arithmetic truncates
-> > this to 2.1ns rather than 2.2ns. So, use DIV_ROUND_CLOSEST() to reduce
-> > rounding errors, and we have a much more accurate carrier of 454.5kHz.
-> >
-> > Reported-by: Andreas Christ <andreas@christ-faesch.ch>
-> > Signed-off-by: Sean Young <sean@mess.org>
-> > ---
-> >  drivers/pwm/pwm-bcm2835.c | 10 ++++++----
-> >  1 file changed, 6 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
-> > index 5652f461d994..edb2387c49a2 100644
-> > --- a/drivers/pwm/pwm-bcm2835.c
-> > +++ b/drivers/pwm/pwm-bcm2835.c
-> > @@ -63,14 +63,14 @@ static int bcm2835_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> >  {
-> >  	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
-> >  	unsigned long rate = clk_get_rate(pc->clk);
-> > -	unsigned long scaler;
-> > +	unsigned int scaler;
-> according to the commit log i wouldn't expect this change. Maybe it's
-> worth to mention.
-
-Yes, you are right, that needs explaining. I am trying to avoid an
-unnecessary 64 bit division. I'll roll a v2.
-
-
-Sean
+SGkgU2VhbiwKCkFtIDAyLjA2LjE5IHVtIDIyOjAzIHNjaHJpZWIgU2VhbiBZb3VuZzoKPiBIaSBT
+dGVmYW4sCj4KPiBPbiBTdW4sIEp1biAwMiwgMjAxOSBhdCAwNjo0NTo0NFBNICswMjAwLCBTdGVm
+YW4gV2FocmVuIHdyb3RlOgo+PiBBbSAwMi4wNi4xOSB1bSAxMjoyMyBzY2hyaWViIFNlYW4gWW91
+bmc6Cj4+PiBJZiBzZW5kaW5nIElSIHdpdGggY2FycmllciBvZiA0NTVrSHogdXNpbmcgdGhlIHB3
+bS1pci10eCBkcml2ZXIsIHRoZQo+Pj4gY2FycmllciBlbmRzIHVwIGJlaW5nIDQ3NmtIei4KPj4+
+Cj4+PiBBIGNhcnJpZXIgb2YgNDU1a0h6IGhhcyBhIHBlcmlvZCBvZiAyMTk4bnMsIGJ1dCB0aGUg
+YXJpdGhtZXRpYyB0cnVuY2F0ZXMKPj4+IHRoaXMgdG8gMi4xbnMgcmF0aGVyIHRoYW4gMi4ybnMu
+IFNvLCB1c2UgRElWX1JPVU5EX0NMT1NFU1QoKSB0byByZWR1Y2UKPj4+IHJvdW5kaW5nIGVycm9y
+cywgYW5kIHdlIGhhdmUgYSBtdWNoIG1vcmUgYWNjdXJhdGUgY2FycmllciBvZiA0NTQuNWtIei4K
+Pj4+Cj4+PiBSZXBvcnRlZC1ieTogQW5kcmVhcyBDaHJpc3QgPGFuZHJlYXNAY2hyaXN0LWZhZXNj
+aC5jaD4KPj4+IFNpZ25lZC1vZmYtYnk6IFNlYW4gWW91bmcgPHNlYW5AbWVzcy5vcmc+Cj4+PiAt
+LS0KPj4+ICBkcml2ZXJzL3B3bS9wd20tYmNtMjgzNS5jIHwgMTAgKysrKysrLS0tLQo+Pj4gIDEg
+ZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1iY20yODM1LmMgYi9kcml2ZXJzL3B3bS9wd20tYmNt
+MjgzNS5jCj4+PiBpbmRleCA1NjUyZjQ2MWQ5OTQuLmVkYjIzODdjNDlhMiAxMDA2NDQKPj4+IC0t
+LSBhL2RyaXZlcnMvcHdtL3B3bS1iY20yODM1LmMKPj4+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1i
+Y20yODM1LmMKPj4+IEBAIC02MywxNCArNjMsMTQgQEAgc3RhdGljIGludCBiY20yODM1X3B3bV9j
+b25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLAo+Pj4g
+IHsKPj4+ICAJc3RydWN0IGJjbTI4MzVfcHdtICpwYyA9IHRvX2JjbTI4MzVfcHdtKGNoaXApOwo+
+Pj4gIAl1bnNpZ25lZCBsb25nIHJhdGUgPSBjbGtfZ2V0X3JhdGUocGMtPmNsayk7Cj4+PiAtCXVu
+c2lnbmVkIGxvbmcgc2NhbGVyOwo+Pj4gKwl1bnNpZ25lZCBpbnQgc2NhbGVyOwo+PiBhY2NvcmRp
+bmcgdG8gdGhlIGNvbW1pdCBsb2cgaSB3b3VsZG4ndCBleHBlY3QgdGhpcyBjaGFuZ2UuIE1heWJl
+IGl0J3MKPj4gd29ydGggdG8gbWVudGlvbi4KPiBZZXMsIHlvdSBhcmUgcmlnaHQsIHRoYXQgbmVl
+ZHMgZXhwbGFpbmluZy4gSSBhbSB0cnlpbmcgdG8gYXZvaWQgYW4KPiB1bm5lY2Vzc2FyeSA2NCBi
+aXQgZGl2aXNpb24uIEknbGwgcm9sbCBhIHYyLgoKb2theSwgYnV0IHBsZWFzZSBnaXZlIHBvdGVu
+dGlhbCByZXZpZXdlciBzb21lIHRpbWUgYW5kIGRvbid0IHBvc3QgVjIgdG9vCnNvb24uCgpJbiBv
+cmRlciB0byByZXByb2R1Y2UgeW91ciByZXN1bHRzIGl0IHdvdWxkIGJlIGhlbHBmdWwgdG8ga25v
+dyB0aGUKcGFyZW50IG9mIHRoZSBwd20gY2xvY2sgKGkgYXNzdW1lIHBsbGRfcGVyKSBhbmQgdGhl
+IGFzc2lnbmVkIGNsb2NrIHJhdGUKb2YgcHdtIGNsb2NrIHdoaWNoIGRpZmZlciBiZXR3ZWVuIGRv
+d24tIGFuZCB1cHN0cmVhbS4gSSdtIG9ubHkKaW50ZXJlc3RlZCwgc28gdGhlcmUgaXMgbm8gbmVl
+ZCB0byBhZGQgdGhpcyB0byB0aGUgY29tbWl0IGxvZy4KCldoaWxlIGxvb2tpbmcgYXQgdGhlIGNv
+ZGUsIGkgbm90aWNlZCBhbm90aGVyIGlzc3VlLiBUaGUgcHdtIGRyaXZlciB3YXMKd3JpdHRlbiBi
+ZWZvcmUgdGhlIGJjbTI4MzUgY2xrIGRyaXZlciBhbmQgdXNlZCBhIGZpeGVkIGNsb2NrLiBOb3cg
+d2l0aCBhCmR5bmFtaWMgY2xvY2sgdGhlIHJhbmdlIGNoZWNrIGZvciBwZXJpb2RfbnMgaXMgd3Jv
+bmcuIEkgdGhpbmsgdGhlIGJlc3QKd2F5IGlzIHRvIGNoZWNrIHRoZSBjYWxjdWxhdGVkIHBlcmlv
+ZCB2YWx1ZSwgd2hpY2ggc2hvdWxkbid0IGJlIHNtYWxsZXIKdGhhbiAyLgoKSSBrbm93IHRoaXMg
+aXMgYSBkaWZmZXJlbnQgaXNzdWUsIGJ1dCB3aGlsZSBhdCB0aGlzIHdlIHNob3VsZCBmaXggdGhh
+dAp0b28gKG15IHVudGVzdGVkIGRyYWZ0IGJlbG93KS4KCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
+bS9wd20tYmNtMjgzNS5jIGIvZHJpdmVycy9wd20vcHdtLWJjbTI4MzUuYwppbmRleCA1NjUyZjQ2
+Li5kNmVlODVmIDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9wd20tYmNtMjgzNS5jCisrKyBiL2Ry
+aXZlcnMvcHdtL3B3bS1iY20yODM1LmMKQEAgLTIxLDcgKzIxLDcgQEAKwqAjZGVmaW5lIFBFUklP
+RCh4KcKgwqDCoCDCoMKgwqAgKCgoeCkgKiAweDEwKSArIDB4MTApCsKgI2RlZmluZSBEVVRZKHgp
+wqDCoMKgIMKgwqDCoCDCoMKgwqAgKCgoeCkgKiAweDEwKSArIDB4MTQpCsKgCi0jZGVmaW5lIE1J
+Tl9QRVJJT0TCoMKgwqAgwqDCoMKgIDEwOMKgwqDCoCDCoMKgwqAgLyogOS4yIE1IeiBtYXguIFBX
+TSBjbG9jayAqLworI2RlZmluZSBQRVJJT0RfTUlOwqDCoMKgIMKgwqDCoCAweDIKwqAKwqBzdHJ1
+Y3QgYmNtMjgzNV9wd20gewrCoMKgwqDCoCBzdHJ1Y3QgcHdtX2NoaXAgY2hpcDsKQEAgLTY0LDYg
+KzY0LDcgQEAgc3RhdGljIGludCBiY20yODM1X3B3bV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpj
+aGlwLApzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLArCoMKgwqDCoCBzdHJ1Y3QgYmNtMjgzNV9wd20g
+KnBjID0gdG9fYmNtMjgzNV9wd20oY2hpcCk7CsKgwqDCoMKgIHVuc2lnbmVkIGxvbmcgcmF0ZSA9
+IGNsa19nZXRfcmF0ZShwYy0+Y2xrKTsKwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBzY2FsZXI7CivC
+oMKgwqAgdTMyIHBlcmlvZDsKwqAKwqDCoMKgwqAgaWYgKCFyYXRlKSB7CsKgwqDCoMKgIMKgwqDC
+oCBkZXZfZXJyKHBjLT5kZXYsICJmYWlsZWQgdG8gZ2V0IGNsb2NrIHJhdGVcbiIpOwpAQCAtNzEs
+MTUgKzcyLDEzIEBAIHN0YXRpYyBpbnQgYmNtMjgzNV9wd21fY29uZmlnKHN0cnVjdCBwd21fY2hp
+cCAqY2hpcCwKc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwKwqDCoMKgwqAgfQrCoArCoMKgwqDCoCBz
+Y2FsZXIgPSBOU0VDX1BFUl9TRUMgLyByYXRlOworwqDCoMKgIHBlcmlvZCA9IHBlcmlvZF9ucyAv
+IHNjYWxlcjsKwqAKLcKgwqDCoCBpZiAocGVyaW9kX25zIDw9IE1JTl9QRVJJT0QpIHsKLcKgwqDC
+oCDCoMKgwqAgZGV2X2VycihwYy0+ZGV2LCAicGVyaW9kICVkIG5vdCBzdXBwb3J0ZWQsIG1pbmlt
+dW0gJWRcbiIsCi3CoMKgwqAgwqDCoMKgIMKgwqDCoCBwZXJpb2RfbnMsIE1JTl9QRVJJT0QpOwor
+wqDCoMKgIGlmIChwZXJpb2QgPCBQRVJJT0RfTUlOKQrCoMKgwqDCoCDCoMKgwqAgcmV0dXJuIC1F
+SU5WQUw7Ci3CoMKgwqAgfQrCoArCoMKgwqDCoCB3cml0ZWwoZHV0eV9ucyAvIHNjYWxlciwgcGMt
+PmJhc2UgKyBEVVRZKHB3bS0+aHdwd20pKTsKLcKgwqDCoCB3cml0ZWwocGVyaW9kX25zIC8gc2Nh
+bGVyLCBwYy0+YmFzZSArIFBFUklPRChwd20tPmh3cHdtKSk7CivCoMKgwqAgd3JpdGVsKHBlcmlv
+ZCwgcGMtPmJhc2UgKyBQRVJJT0QocHdtLT5od3B3bSkpOwrCoArCoMKgwqDCoCByZXR1cm4gMDsK
+wqB9CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
+dXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgt
+YXJtLWtlcm5lbAo=
