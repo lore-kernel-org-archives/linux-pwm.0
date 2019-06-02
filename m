@@ -1,14 +1,14 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+From: Stefan Wahren <wahrenst@gmx.net>
 Subject: Re: [PATCH] pwm: bcm2835: increase precision of pwm
-Date: Sun, 2 Jun 2019 16:35:11 +0200
-Message-ID: <20190602143511.o777ozvxuh5xey7o@pengutronix.de>
+Date: Sun, 2 Jun 2019 18:45:44 +0200
+Message-ID: <0e6eef35-244a-4d52-2d87-e8ff22355f09@gmx.net>
 References: <20190602102350.zzwmfvlky3mnlqln@gofer.mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
 In-Reply-To: <20190602102350.zzwmfvlky3mnlqln@gofer.mess.org>
+Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,28 +18,34 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Stefan Wahren <stefan.wahren@i2se.com>, linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Sean Young <sean@mess.org>, Scott Branden <sbranden@broadcom.com>, Andreas Christ <andreas@christ-faesch.ch>, Ray Jui <rjui@broadcom.com>, Eric Anholt <eric@anholt.net>, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+To: Sean Young <sean@mess.org>, Thierry Reding <thierry.reding@gmail.com>, Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Andreas Christ <andreas@christ-faesch.ch>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Thierry,
+Hi Sean,
 
-On Sun, Jun 02, 2019 at 11:23:50AM +0100, Sean Young wrote:
+Am 02.06.19 um 12:23 schrieb Sean Young:
 > If sending IR with carrier of 455kHz using the pwm-ir-tx driver, the
 > carrier ends up being 476kHz.
-> =
-
+>
 > A carrier of 455kHz has a period of 2198ns, but the arithmetic truncates
 > this to 2.1ns rather than 2.2ns. So, use DIV_ROUND_CLOSEST() to reduce
 > rounding errors, and we have a much more accurate carrier of 454.5kHz.
-
-can we please fix the rules how to round such that not every driver
-invents its own measurement of what is best?
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>
+> Reported-by: Andreas Christ <andreas@christ-faesch.ch>
+> Signed-off-by: Sean Young <sean@mess.org>
+> ---
+>  drivers/pwm/pwm-bcm2835.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+> index 5652f461d994..edb2387c49a2 100644
+> --- a/drivers/pwm/pwm-bcm2835.c
+> +++ b/drivers/pwm/pwm-bcm2835.c
+> @@ -63,14 +63,14 @@ static int bcm2835_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  {
+>  	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
+>  	unsigned long rate = clk_get_rate(pc->clk);
+> -	unsigned long scaler;
+> +	unsigned int scaler;
+according to the commit log i wouldn't expect this change. Maybe it's
+worth to mention.
