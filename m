@@ -1,195 +1,46 @@
-From: Sven Van Asbroeck <thesven73@gmail.com>
-Subject: [PATCH] pwm: pca9685: fix pwm/gpio inter-operation
-Date: Mon,  3 Jun 2019 11:12:23 -0400
-Message-ID: <20190603151223.5311-1-TheSven73@gmail.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH -next] pwm: pca9685: Remove set but not used variable
+ 'pwm'
+Date: Mon, 3 Jun 2019 18:58:58 +0300
+Message-ID: <20190603155858.GF2781@lahna.fi.intel.com>
+References: <20190601035709.85379-1-yuehaibing@huawei.com>
+ <CAGngYiXZM0QUdKE_zDK763J9iDuiKSbmFeTVA1PJ_4WvjntjQQ@mail.gmail.com>
+ <20190601160459.baedo5pp5hsrltzs@pengutronix.de>
+ <CAGngYiUfGGF+PwaT4SE2ZJkrCidc7-QWeuRsPTDwrLL1onm88w@mail.gmail.com>
+ <20190603114029.GC2781@lahna.fi.intel.com>
+ <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, YueHaibing <yuehaibing@huawei.com>, Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-This driver allows pwms to be requested as gpios via gpiolib.
-Obviously, it should not be allowed to request a gpio when its
-corresponding pwm is already requested (and vice versa).
-So it requires some exclusion code.
+On Mon, Jun 03, 2019 at 11:08:06AM -0400, Sven Van Asbroeck wrote:
+> On Mon, Jun 3, 2019 at 7:40 AM Mika Westerberg
+> <mika.westerberg@linux.intel.com> wrote:
+> >
+> > I think you are right. pca9685_pwm_request() should take the mutex as
+> > long as it is requesting PWM.
+> 
+> Yes, but things get hairy because pca9685_pwm_request() will have to
+> give up the mutex when it returns. I cannot see a way to keep holding
+> this mutex while the in-use flag is set by the pwm core ?
 
-Given that the pwm and gpio cores are not synchronized with
-respect to each other, this exclusion code will also require
-proper synchronization.
+Right, I did not notice it's the PWM core that sets the flag.
 
-Such a mechanism was in place, but was inadvertently removed
-by Uwe's clean-up patch.
+> Alternatively, we could set (void *)1 pwm_data inside the pwm_request,
+> wrapped inside the mutex.
+> But then things get 'messy'.
+> 
+> > A flag would probably be easier to understand than the magic we have
+> > now.
+> 
+> I have the feeling that a flag (plus a mutex) would be the clearest and
+> safest way forward. I'll post a patch soon, you guys tell me what you
+> think.
 
-Upon revisiting the synchronization mechanism, we found that
-theoretically, it could allow two threads to successfully
-request conflicting pwms / gpios.
-
-Replace with a bitmap which tracks pwm in-use, plus a mutex.
-As long as pwm and gpio's respective request/free functions
-modify the in-use bitmap while holding the mutex, proper
-synchronization will be guaranteed.
-
-Reported-by: YueHaibing <yuehaibing@huawei.com>
-Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lkml.org/lkml/2019/5/31/963
-Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
----
-
-This approach will also prevent the request of the "all" pwm channel, if any
-other pwm channel is already in use. Is this correct behaviour?
-
- drivers/pwm/pwm-pca9685.c | 64 +++++++++++++++++++++------------------
- 1 file changed, 35 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 567f5e2771c4..f9927cd106d0 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -31,6 +31,7 @@
- #include <linux/slab.h>
- #include <linux/delay.h>
- #include <linux/pm_runtime.h>
-+#include <linux/bitmap.h>
- 
- /*
-  * Because the PCA9685 has only one prescaler per chip, changing the period of
-@@ -85,6 +86,7 @@ struct pca9685 {
- #if IS_ENABLED(CONFIG_GPIOLIB)
- 	struct mutex lock;
- 	struct gpio_chip gpio;
-+	DECLARE_BITMAP(pwms_inuse, PCA9685_MAXCHAN);
- #endif
- };
- 
-@@ -97,48 +99,45 @@ static inline struct pca9685 *to_pca(struct pwm_chip *chip)
- static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
- {
- 	struct pca9685 *pca = gpiochip_get_data(gpio);
--	struct pwm_device *pwm;
- 
- 	mutex_lock(&pca->lock);
- 
--	pwm = &pca->chip.pwms[offset];
--
--	if (pwm->flags & (PWMF_REQUESTED | PWMF_EXPORTED)) {
-+	if (test_and_set_bit(offset, pca->pwms_inuse)) {
- 		mutex_unlock(&pca->lock);
- 		return -EBUSY;
- 	}
- 
--	pwm_set_chip_data(pwm, (void *)1);
--
- 	mutex_unlock(&pca->lock);
- 	pm_runtime_get_sync(pca->chip.dev);
- 	return 0;
- }
- 
--static bool pca9685_pwm_is_gpio(struct pca9685 *pca, struct pwm_device *pwm)
-+static bool
-+pca9685_pwm_test_set_inuse(struct pca9685 *pca, struct pwm_device *pwm)
- {
--	bool is_gpio = false;
-+	bool is_inuse;
- 
- 	mutex_lock(&pca->lock);
-+	/*
-+	 * Check if any of the PWMs are requested and in that case
-+	 * prevent using the "all LEDs" channel.
-+	 */
-+	if (pwm->hwpwm >= PCA9685_MAXCHAN &&
-+			!bitmap_empty(pca->pwms_inuse, PCA9685_MAXCHAN))
-+		is_inuse = true;
-+	else
-+		is_inuse = test_and_set_bit(pwm->hwpwm, pca->pwms_inuse);
-+	mutex_unlock(&pca->lock);
- 
--	if (pwm->hwpwm >= PCA9685_MAXCHAN) {
--		unsigned int i;
--
--		/*
--		 * Check if any of the GPIOs are requested and in that case
--		 * prevent using the "all LEDs" channel.
--		 */
--		for (i = 0; i < pca->gpio.ngpio; i++)
--			if (gpiochip_is_requested(&pca->gpio, i)) {
--				is_gpio = true;
--				break;
--			}
--	} else if (pwm_get_chip_data(pwm)) {
--		is_gpio = true;
--	}
-+	return is_inuse;
-+}
- 
-+static void pca9685_pwm_clear_inuse(struct pca9685 *pca, struct pwm_device *pwm)
-+{
-+	mutex_lock(&pca->lock);
-+	if (pwm->hwpwm < PCA9685_MAXCHAN)
-+		clear_bit(pwm->hwpwm, pca->pwms_inuse);
- 	mutex_unlock(&pca->lock);
--	return is_gpio;
- }
- 
- static int pca9685_pwm_gpio_get(struct gpio_chip *gpio, unsigned int offset)
-@@ -170,12 +169,11 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
- static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
- {
- 	struct pca9685 *pca = gpiochip_get_data(gpio);
--	struct pwm_device *pwm;
- 
-+	mutex_lock(&pca->lock);
- 	pca9685_pwm_gpio_set(gpio, offset, 0);
- 	pm_runtime_put(pca->chip.dev);
--	mutex_lock(&pca->lock);
--	pwm = &pca->chip.pwms[offset];
-+	clear_bit(offset, pca->pwms_inuse);
- 	mutex_unlock(&pca->lock);
- }
- 
-@@ -228,12 +226,17 @@ static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
- 	return devm_gpiochip_add_data(dev, &pca->gpio, pca);
- }
- #else
--static inline bool pca9685_pwm_is_gpio(struct pca9685 *pca,
-+static inline bool pca9685_pwm_test_set_inuse(struct pca9685 *pca,
- 				       struct pwm_device *pwm)
- {
- 	return false;
- }
- 
-+static inline void
-+pca9685_pwm_clear_inuse(struct pca9685 *pca, struct pwm_device *pwm)
-+{
-+}
-+
- static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
- {
- 	return 0;
-@@ -417,7 +420,7 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct pca9685 *pca = to_pca(chip);
- 
--	if (pca9685_pwm_is_gpio(pca, pwm))
-+	if (pca9685_pwm_test_set_inuse(pca, pwm))
- 		return -EBUSY;
- 	pm_runtime_get_sync(chip->dev);
- 
-@@ -426,8 +429,11 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 
- static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
-+	struct pca9685 *pca = to_pca(chip);
-+
- 	pca9685_pwm_disable(chip, pwm);
- 	pm_runtime_put(chip->dev);
-+	pca9685_pwm_clear_inuse(pca, pwm);
- }
- 
- static const struct pwm_ops pca9685_pwm_ops = {
--- 
-2.17.1
+Sounds good thanks!
