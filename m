@@ -1,250 +1,192 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [v3 6/7] drm/mediatek: change the dsi phytiming calculate method
-Date: Mon, 3 Jun 2019 11:14:47 -0700
-Message-ID: <20190603181447.GA6947@roeck-us.net>
-References: <20190519092537.69053-1-jitao.shi@mediatek.com>
- <20190519092537.69053-7-jitao.shi@mediatek.com>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: Re: [v4 6/7] drm/mediatek: change the dsi phytiming calculate method
+Date: Tue, 4 Jun 2019 06:36:38 +0800
+Message-ID: <CANMq1KDoGO=2yursnB8udJkvMG6GwV=qsW7HFAyTsc93dnBBXQ@mail.gmail.com>
+References: <20190601092615.67917-1-jitao.shi@mediatek.com>
+ <20190601092615.67917-7-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190519092537.69053-7-jitao.shi@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190601092615.67917-7-jitao.shi@mediatek.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>, Inki Dae <inki.dae@samsung.com>, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Guenter Roeck <groeck@chromium.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa cheng <cawa.cheng@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Thierry Reding <treding@nvidia.com>, Sean Paul <seanpaul@chromium.org>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Russell King <rmk+kernel@arm.linux.org.uk>, Matthias Brugger <matthias.bgg@gmail.com>, Eddie Huang <eddie.huang@mediatek.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstre
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, May 19, 2019 at 05:25:36PM +0800, Jitao Shi wrote:
-> Change the method of frame rate calc which can get more accurate
-> frame rate.
-> 
-> data rate = pixel_clock * bit_per_pixel / lanes
-> Adjust hfp_wc to adapt the additional phy_data
-> 
-> if MIPI_DSI_MODE_VIDEO_BURST
-> 	hfp_wc = hfp * bpp - data_phy_cycles * lanes - 12 - 6;
-> else
-> 	hfp_wc = hfp * bpp - data_phy_cycles * lanes - 12;
-> 
-> Note:
-> //(2: 1 for sync, 1 for phy idle)
-> data_phy_cycles = T_hs_exit + T_lpx + T_hs_prepare + T_hs_zero + 2;
-> 
-> bpp: bit per pixel
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Tested-by: Ryan Case <ryandcase@chromium.org>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 119 +++++++++++++++++++++--------
->  1 file changed, 86 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index 1165ff944889..3f51b2000c68 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -158,6 +158,25 @@
->  	(type == MIPI_DSI_GENERIC_READ_REQUEST_2_PARAM) || \
->  	(type == MIPI_DSI_DCS_READ))
->  
-> +struct mtk_phy_timing {
-> +	u32 lpx;
-> +	u32 da_hs_prepare;
-> +	u32 da_hs_zero;
-> +	u32 da_hs_trail;
-> +
-> +	u32 ta_go;
-> +	u32 ta_sure;
-> +	u32 ta_get;
-> +	u32 da_hs_exit;
-> +
-> +	u32 clk_hs_zero;
-> +	u32 clk_hs_trail;
-> +
-> +	u32 clk_hs_prepare;
-> +	u32 clk_hs_post;
-> +	u32 clk_hs_exit;
-> +};
-> +
->  struct phy;
->  
->  struct mtk_dsi_driver_data {
-> @@ -182,12 +201,13 @@ struct mtk_dsi {
->  	struct clk *digital_clk;
->  	struct clk *hs_clk;
->  
-> -	u32 data_rate;
-> +	u64 data_rate;
-
-This results in 64-bit divide operations and thus build failures
-with 32-bit builds. More on that below.
-
->  
->  	unsigned long mode_flags;
->  	enum mipi_dsi_pixel_format format;
->  	unsigned int lanes;
->  	struct videomode vm;
-> +	struct mtk_phy_timing phy_timing;
->  	int refcount;
->  	bool enabled;
->  	u32 irq_data;
-> @@ -221,17 +241,39 @@ static void mtk_dsi_phy_timconfig(struct mtk_dsi *dsi)
->  {
->  	u32 timcon0, timcon1, timcon2, timcon3;
->  	u32 ui, cycle_time;
-> +	struct mtk_phy_timing *timing = &dsi->phy_timing;
-> +
-> +	ui = 1000000000 / dsi->data_rate;
-> +	cycle_time = 8000000000 / dsi->data_rate;
-
-This results in 64-bit divide operations. On top of that, 8000000000
-is larger than 0xffffffff, resulting in an integer overflow on 32-bit
-systems; it should be provided as 8000000000ULL. 
-
-> +
-> +	timing->lpx = NS_TO_CYCLE(60, cycle_time);
-> +	timing->da_hs_prepare = NS_TO_CYCLE((40 + 5 * ui), cycle_time);
-> +	timing->da_hs_zero = NS_TO_CYCLE((110 + 6 * ui), cycle_time);
-> +	timing->da_hs_trail = NS_TO_CYCLE(((0x4 * ui) + 80), cycle_time);
-> +
-> +	if (timing->da_hs_zero > timing->da_hs_prepare)
-> +		timing->da_hs_zero -= timing->da_hs_prepare;
-> +
-> +	timing->ta_go = 4 * timing->lpx;
-> +	timing->ta_sure = 3 * timing->lpx / 2;
-> +	timing->ta_get = 5 * timing->lpx;
-> +	timing->da_hs_exit = 2 * timing->lpx;
-> +
-> +	timing->clk_hs_zero = NS_TO_CYCLE(0x150, cycle_time);
-> +	timing->clk_hs_trail = NS_TO_CYCLE(0x64, cycle_time) + 0xa;
->  
-> -	ui = 1000 / dsi->data_rate + 0x01;
-> -	cycle_time = 8000 / dsi->data_rate + 0x01;
-> +	timing->clk_hs_prepare = NS_TO_CYCLE(0x40, cycle_time);
-> +	timing->clk_hs_post = NS_TO_CYCLE(80 + 52 * ui, cycle_time);
-> +	timing->clk_hs_exit = 2 * timing->lpx;
->  
-> -	timcon0 = T_LPX | T_HS_PREP << 8 | T_HS_ZERO << 16 | T_HS_TRAIL << 24;
-> -	timcon1 = 4 * T_LPX | (3 * T_LPX / 2) << 8 | 5 * T_LPX << 16 |
-> -		  T_HS_EXIT << 24;
-> -	timcon2 = ((NS_TO_CYCLE(0x64, cycle_time) + 0xa) << 24) |
-> -		  (NS_TO_CYCLE(0x150, cycle_time) << 16);
-> -	timcon3 = NS_TO_CYCLE(0x40, cycle_time) | (2 * T_LPX) << 16 |
-> -		  NS_TO_CYCLE(80 + 52 * ui, cycle_time) << 8;
-> +	timcon0 = timing->lpx | timing->da_hs_prepare << 8 |
-> +		  timing->da_hs_zero << 16 | timing->da_hs_trail << 24;
-> +	timcon1 = timing->ta_go | timing->ta_sure << 8 |
-> +		  timing->ta_get << 16 | timing->da_hs_exit << 24;
-> +	timcon2 = 1 << 8 | timing->clk_hs_zero << 16 |
-> +		  timing->clk_hs_trail << 24;
-> +	timcon3 = timing->clk_hs_prepare | timing->clk_hs_post << 8 |
-> +		  timing->clk_hs_exit << 16;
->  
->  	writel(timcon0, dsi->regs + DSI_PHY_TIMECON0);
->  	writel(timcon1, dsi->regs + DSI_PHY_TIMECON1);
-> @@ -418,7 +460,8 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
->  	u32 horizontal_sync_active_byte;
->  	u32 horizontal_backporch_byte;
->  	u32 horizontal_frontporch_byte;
-> -	u32 dsi_tmp_buf_bpp;
-> +	u32 dsi_tmp_buf_bpp, data_phy_cycles;
-> +	struct mtk_phy_timing *timing = &dsi->phy_timing;
->  
->  	struct videomode *vm = &dsi->vm;
->  
-> @@ -433,7 +476,8 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
->  	writel(vm->vactive, dsi->regs + DSI_VACT_NL);
->  
->  	if (dsi->driver_data->has_size_ctl)
-> -		writel(vm->vactive << 16 | vm->hactive, dsi->regs + DSI_SIZE_CON);
-> +		writel(vm->vactive << 16 | vm->hactive,
-> +		       dsi->regs + DSI_SIZE_CON);
->  
->  	horizontal_sync_active_byte = (vm->hsync_len * dsi_tmp_buf_bpp - 10);
->  
-> @@ -444,7 +488,34 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
->  		horizontal_backporch_byte = ((vm->hback_porch + vm->hsync_len) *
->  			dsi_tmp_buf_bpp - 10);
->  
-> -	horizontal_frontporch_byte = (vm->hfront_porch * dsi_tmp_buf_bpp - 12);
-> +	data_phy_cycles = timing->lpx + timing->da_hs_prepare +
-> +				  timing->da_hs_zero + timing->da_hs_exit + 2;
-> +
-> +	if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO_BURST) {
-> +		if (vm->hfront_porch * dsi_tmp_buf_bpp >
-> +		    data_phy_cycles * dsi->lanes + 18) {
-> +			horizontal_frontporch_byte = vm->hfront_porch *
-> +						     dsi_tmp_buf_bpp -
-> +						     data_phy_cycles *
-> +						     dsi->lanes - 18;
-> +		} else {
-> +			DRM_WARN("HFP less than d-phy, FPS will under 60Hz\n");
-> +			horizontal_frontporch_byte = vm->hfront_porch *
-> +						     dsi_tmp_buf_bpp;
-> +		}
-> +	} else {
-> +		if (vm->hfront_porch * dsi_tmp_buf_bpp >
-> +		    data_phy_cycles * dsi->lanes + 12) {
-> +			horizontal_frontporch_byte = vm->hfront_porch *
-> +						     dsi_tmp_buf_bpp -
-> +						     data_phy_cycles *
-> +						     dsi->lanes - 12;
-> +		} else {
-> +			DRM_WARN("HFP less than d-phy, FPS will under 60Hz\n");
-> +			horizontal_frontporch_byte = vm->hfront_porch *
-> +						     dsi_tmp_buf_bpp;
-> +		}
-> +	}
->  
->  	writel(horizontal_sync_active_byte, dsi->regs + DSI_HSA_WC);
->  	writel(horizontal_backporch_byte, dsi->regs + DSI_HBP_WC);
-> @@ -544,8 +615,7 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
->  {
->  	struct device *dev = dsi->dev;
->  	int ret;
-> -	u64 pixel_clock, total_bits;
-> -	u32 htotal, htotal_bits, bit_per_pixel, overhead_cycles, overhead_bits;
-> +	u32 bit_per_pixel;
->  
->  	if (++dsi->refcount != 1)
->  		return 0;
-> @@ -564,24 +634,7 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
->  		break;
->  	}
->  
-> -	/**
-> -	 * htotal_time = htotal * byte_per_pixel / num_lanes
-> -	 * overhead_time = lpx + hs_prepare + hs_zero + hs_trail + hs_exit
-> -	 * mipi_ratio = (htotal_time + overhead_time) / htotal_time
-> -	 * data_rate = pixel_clock * bit_per_pixel * mipi_ratio / num_lanes;
-> -	 */
-> -	pixel_clock = dsi->vm.pixelclock;
-> -	htotal = dsi->vm.hactive + dsi->vm.hback_porch + dsi->vm.hfront_porch +
-> -			dsi->vm.hsync_len;
-> -	htotal_bits = htotal * bit_per_pixel;
-> -
-> -	overhead_cycles = T_LPX + T_HS_PREP + T_HS_ZERO + T_HS_TRAIL +
-> -			T_HS_EXIT;
-> -	overhead_bits = overhead_cycles * dsi->lanes * 8;
-> -	total_bits = htotal_bits + overhead_bits;
-> -
-> -	dsi->data_rate = DIV_ROUND_UP_ULL(pixel_clock * total_bits,
-> -					  htotal * dsi->lanes);
-> +	dsi->data_rate = dsi->vm.pixelclock * bit_per_pixel / dsi->lanes;
-
-pixelclock and bit_per_pixel are not u64, and neither is dsi->lanes.
-The above will thus be a 32-bit operation on 32-bit systems, and never
-really assign a true 64-bit value to data_rate. On top of that,
-clk_set_rate() expects an unsigned long argument. Declaring data_rate
-as anything but unsigned long has therefore no value.
-
-Note that the old code took possible overflow conditions due to interim
-results larger than u32 / unsigned long into account. This is no longer
-the case. I don't know if this is a concern, but it might be worth watching
-out for. If it is not a concern because the code is not anymore expected
-to run on 32-bit systems, it should be restricted to 64-bit builds.
-
-Guenter
-
->  
->  	ret = clk_set_rate(dsi->hs_clk, dsi->data_rate);
->  	if (ret < 0) {
+T24gU2F0LCBKdW4gMSwgMjAxOSBhdCA1OjI2IFBNIEppdGFvIFNoaSA8aml0YW8uc2hpQG1lZGlh
+dGVrLmNvbT4gd3JvdGU6Cj4KPiBDaGFuZ2UgdGhlIG1ldGhvZCBvZiBmcmFtZSByYXRlIGNhbGMg
+d2hpY2ggY2FuIGdldCBtb3JlIGFjY3VyYXRlCj4gZnJhbWUgcmF0ZS4KPgo+IGRhdGEgcmF0ZSA9
+IHBpeGVsX2Nsb2NrICogYml0X3Blcl9waXhlbCAvIGxhbmVzCj4gQWRqdXN0IGhmcF93YyB0byBh
+ZGFwdCB0aGUgYWRkaXRpb25hbCBwaHlfZGF0YQo+Cj4gaWYgTUlQSV9EU0lfTU9ERV9WSURFT19C
+VVJTVAo+ICAgICAgICAgaGZwX3djID0gaGZwICogYnBwIC0gZGF0YV9waHlfY3ljbGVzICogbGFu
+ZXMgLSAxMiAtIDY7Cj4gZWxzZQo+ICAgICAgICAgaGZwX3djID0gaGZwICogYnBwIC0gZGF0YV9w
+aHlfY3ljbGVzICogbGFuZXMgLSAxMjsKPgo+IE5vdGU6Cj4gLy8oMjogMSBmb3Igc3luYywgMSBm
+b3IgcGh5IGlkbGUpCj4gZGF0YV9waHlfY3ljbGVzID0gVF9oc19leGl0ICsgVF9scHggKyBUX2hz
+X3ByZXBhcmUgKyBUX2hzX3plcm8gKyAyOwo+Cj4gYnBwOiBiaXQgcGVyIHBpeGVsCj4KPiBTaWdu
+ZWQtb2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5jb20+Cj4gVGVzdGVkLWJ5
+OiBSeWFuIENhc2UgPHJ5YW5kY2FzZUBjaHJvbWl1bS5vcmc+Cj4gLS0tCj4gIGRyaXZlcnMvZ3B1
+L2RybS9tZWRpYXRlay9tdGtfZHNpLmMgfCAxMjIgKysrKysrKysrKysrKysrKysrKystLS0tLS0t
+LS0KPiAgMSBmaWxlIGNoYW5nZWQsIDgzIGluc2VydGlvbnMoKyksIDM5IGRlbGV0aW9ucygtKQo+
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMgYi9kcml2
+ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gaW5kZXggYWJmNmRkZWM1ZGI2Li41NTg3
+MjdjNjBiYTMgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2ku
+Ywo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiBAQCAtMTQ0LDEy
+ICsxNDQsNiBAQAo+ICAjZGVmaW5lIERBVEFfMCAgICAgICAgICAgICAgICAgICAgICAgICAoMHhm
+ZiA8PCAxNikKPiAgI2RlZmluZSBEQVRBXzEgICAgICAgICAgICAgICAgICAgICAgICAgKDB4ZmYg
+PDwgMjQpCj4KPiAtI2RlZmluZSBUX0xQWCAgICAgICAgICA1Cj4gLSNkZWZpbmUgVF9IU19QUkVQ
+ICAgICAgNgo+IC0jZGVmaW5lIFRfSFNfVFJBSUwgICAgIDgKPiAtI2RlZmluZSBUX0hTX0VYSVQg
+ICAgICA3Cj4gLSNkZWZpbmUgVF9IU19aRVJPICAgICAgMTAKPiAtCj4gICNkZWZpbmUgTlNfVE9f
+Q1lDTEUobiwgYykgICAgKChuKSAvIChjKSArICgoKG4pICUgKGMpKSA/IDEgOiAwKSkKPgo+ICAj
+ZGVmaW5lIE1US19EU0lfSE9TVF9JU19SRUFEKHR5cGUpIFwKPiBAQCAtMTU4LDYgKzE1MiwyNSBA
+QAo+ICAgICAgICAgKHR5cGUgPT0gTUlQSV9EU0lfR0VORVJJQ19SRUFEX1JFUVVFU1RfMl9QQVJB
+TSkgfHwgXAo+ICAgICAgICAgKHR5cGUgPT0gTUlQSV9EU0lfRENTX1JFQUQpKQo+Cj4gK3N0cnVj
+dCBtdGtfcGh5X3RpbWluZyB7Cj4gKyAgICAgICB1MzIgbHB4Owo+ICsgICAgICAgdTMyIGRhX2hz
+X3ByZXBhcmU7Cj4gKyAgICAgICB1MzIgZGFfaHNfemVybzsKPiArICAgICAgIHUzMiBkYV9oc190
+cmFpbDsKPiArCj4gKyAgICAgICB1MzIgdGFfZ287Cj4gKyAgICAgICB1MzIgdGFfc3VyZTsKPiAr
+ICAgICAgIHUzMiB0YV9nZXQ7Cj4gKyAgICAgICB1MzIgZGFfaHNfZXhpdDsKPiArCj4gKyAgICAg
+ICB1MzIgY2xrX2hzX3plcm87Cj4gKyAgICAgICB1MzIgY2xrX2hzX3RyYWlsOwo+ICsKPiArICAg
+ICAgIHUzMiBjbGtfaHNfcHJlcGFyZTsKPiArICAgICAgIHUzMiBjbGtfaHNfcG9zdDsKPiArICAg
+ICAgIHUzMiBjbGtfaHNfZXhpdDsKPiArfTsKPiArCj4gIHN0cnVjdCBwaHk7Cj4KPiAgc3RydWN0
+IG10a19kc2lfZHJpdmVyX2RhdGEgewo+IEBAIC0xODIsMTIgKzE5NSwxMyBAQCBzdHJ1Y3QgbXRr
+X2RzaSB7Cj4gICAgICAgICBzdHJ1Y3QgY2xrICpkaWdpdGFsX2NsazsKPiAgICAgICAgIHN0cnVj
+dCBjbGsgKmhzX2NsazsKPgo+IC0gICAgICAgdTMyIGRhdGFfcmF0ZTsKPiArICAgICAgIHU2NCBk
+YXRhX3JhdGU7CgpBcyBoaWdobGlnaHRlZCBpbgpodHRwczovL3BhdGNod29yay5rZXJuZWwub3Jn
+L3BhdGNoLzEwOTQ5MzIzLyMyMjY3MzgyOSwgdGhpcyBjaGFuZ2UKY2F1c2VzIGlzc3VlcyBvbiAz
+Mi1iaXQgcGxhdGZvcm1zLgoKPgo+ICAgICAgICAgdW5zaWduZWQgbG9uZyBtb2RlX2ZsYWdzOwo+
+ICAgICAgICAgZW51bSBtaXBpX2RzaV9waXhlbF9mb3JtYXQgZm9ybWF0Owo+ICAgICAgICAgdW5z
+aWduZWQgaW50IGxhbmVzOwo+ICAgICAgICAgc3RydWN0IHZpZGVvbW9kZSB2bTsKPiArICAgICAg
+IHN0cnVjdCBtdGtfcGh5X3RpbWluZyBwaHlfdGltaW5nOwo+ICAgICAgICAgaW50IHJlZmNvdW50
+Owo+ICAgICAgICAgYm9vbCBlbmFibGVkOwo+ICAgICAgICAgdTMyIGlycV9kYXRhOwo+IEBAIC0y
+MjEsMTcgKzIzNSwzNiBAQCBzdGF0aWMgdm9pZCBtdGtfZHNpX3BoeV90aW1jb25maWcoc3RydWN0
+IG10a19kc2kgKmRzaSkKPiAgewo+ICAgICAgICAgdTMyIHRpbWNvbjAsIHRpbWNvbjEsIHRpbWNv
+bjIsIHRpbWNvbjM7Cj4gICAgICAgICB1MzIgdWksIGN5Y2xlX3RpbWU7Cj4gKyAgICAgICBzdHJ1
+Y3QgbXRrX3BoeV90aW1pbmcgKnRpbWluZyA9ICZkc2ktPnBoeV90aW1pbmc7Cj4gKwo+ICsgICAg
+ICAgdWkgPSAxMDAwMDAwMDAwIC8gZHNpLT5kYXRhX3JhdGU7Cj4gKyAgICAgICBjeWNsZV90aW1l
+ID0gODAwMDAwMDAwMCAvIGRzaS0+ZGF0YV9yYXRlOwo+ICsKPiArICAgICAgIHRpbWluZy0+bHB4
+ID0gTlNfVE9fQ1lDTEUoNjAsIGN5Y2xlX3RpbWUpOwo+ICsgICAgICAgdGltaW5nLT5kYV9oc19w
+cmVwYXJlID0gTlNfVE9fQ1lDTEUoNDAgKyA1ICogdWksIGN5Y2xlX3RpbWUpOwo+ICsgICAgICAg
+dGltaW5nLT5kYV9oc196ZXJvID0gTlNfVE9fQ1lDTEUoMTEwICsgNiAqIHVpLCBjeWNsZV90aW1l
+KTsKPiArICAgICAgIHRpbWluZy0+ZGFfaHNfdHJhaWwgPSBOU19UT19DWUNMRSg4MCArIDQgKiB1
+aSwgY3ljbGVfdGltZSk7Cj4KPiAtICAgICAgIHVpID0gMTAwMCAvIGRzaS0+ZGF0YV9yYXRlICsg
+MHgwMTsKPiAtICAgICAgIGN5Y2xlX3RpbWUgPSA4MDAwIC8gZHNpLT5kYXRhX3JhdGUgKyAweDAx
+Owo+ICsgICAgICAgdGltaW5nLT50YV9nbyA9IDQgKiB0aW1pbmctPmxweDsKPiArICAgICAgIHRp
+bWluZy0+dGFfc3VyZSA9IDMgKiB0aW1pbmctPmxweCAvIDI7Cj4gKyAgICAgICB0aW1pbmctPnRh
+X2dldCA9IDUgKiB0aW1pbmctPmxweDsKPiArICAgICAgIHRpbWluZy0+ZGFfaHNfZXhpdCA9IDIg
+KiB0aW1pbmctPmxweDsKPgo+IC0gICAgICAgdGltY29uMCA9IFRfTFBYIHwgVF9IU19QUkVQIDw8
+IDggfCBUX0hTX1pFUk8gPDwgMTYgfCBUX0hTX1RSQUlMIDw8IDI0Owo+IC0gICAgICAgdGltY29u
+MSA9IDQgKiBUX0xQWCB8ICgzICogVF9MUFggLyAyKSA8PCA4IHwgNSAqIFRfTFBYIDw8IDE2IHwK
+PiAtICAgICAgICAgICAgICAgICBUX0hTX0VYSVQgPDwgMjQ7Cj4gLSAgICAgICB0aW1jb24yID0g
+KChOU19UT19DWUNMRSgweDY0LCBjeWNsZV90aW1lKSArIDB4YSkgPDwgMjQpIHwKPiAtICAgICAg
+ICAgICAgICAgICAoTlNfVE9fQ1lDTEUoMHgxNTAsIGN5Y2xlX3RpbWUpIDw8IDE2KTsKPiAtICAg
+ICAgIHRpbWNvbjMgPSBOU19UT19DWUNMRSgweDQwLCBjeWNsZV90aW1lKSB8ICgyICogVF9MUFgp
+IDw8IDE2IHwKPiAtICAgICAgICAgICAgICAgICBOU19UT19DWUNMRSg4MCArIDUyICogdWksIGN5
+Y2xlX3RpbWUpIDw8IDg7Cj4gKyAgICAgICB0aW1pbmctPmNsa19oc196ZXJvID0gTlNfVE9fQ1lD
+TEUoMzM2LCBjeWNsZV90aW1lKTsKPiArICAgICAgIHRpbWluZy0+Y2xrX2hzX3RyYWlsID0gTlNf
+VE9fQ1lDTEUoMTAwLCBjeWNsZV90aW1lKSArIDEwOwo+ICsKPiArICAgICAgIHRpbWluZy0+Y2xr
+X2hzX3ByZXBhcmUgPSBOU19UT19DWUNMRSg2NCwgY3ljbGVfdGltZSk7Cj4gKyAgICAgICB0aW1p
+bmctPmNsa19oc19wb3N0ID0gTlNfVE9fQ1lDTEUoODAgKyA1MiAqIHVpLCBjeWNsZV90aW1lKTsK
+PiArICAgICAgIHRpbWluZy0+Y2xrX2hzX2V4aXQgPSAyICogdGltaW5nLT5scHg7Cj4gKwo+ICsg
+ICAgICAgdGltY29uMCA9IHRpbWluZy0+bHB4IHwgdGltaW5nLT5kYV9oc19wcmVwYXJlIDw8IDgg
+fAo+ICsgICAgICAgICAgICAgICAgIHRpbWluZy0+ZGFfaHNfemVybyA8PCAxNiB8IHRpbWluZy0+
+ZGFfaHNfdHJhaWwgPDwgMjQ7Cj4gKyAgICAgICB0aW1jb24xID0gdGltaW5nLT50YV9nbyB8IHRp
+bWluZy0+dGFfc3VyZSA8PCA4IHwKPiArICAgICAgICAgICAgICAgICB0aW1pbmctPnRhX2dldCA8
+PCAxNiB8IHRpbWluZy0+ZGFfaHNfZXhpdCA8PCAyNDsKPiArICAgICAgIHRpbWNvbjIgPSAxIDw8
+IDggfCB0aW1pbmctPmNsa19oc196ZXJvIDw8IDE2IHwKPiArICAgICAgICAgICAgICAgICB0aW1p
+bmctPmNsa19oc190cmFpbCA8PCAyNDsKPiArICAgICAgIHRpbWNvbjMgPSB0aW1pbmctPmNsa19o
+c19wcmVwYXJlIHwgdGltaW5nLT5jbGtfaHNfcG9zdCA8PCA4IHwKPiArICAgICAgICAgICAgICAg
+ICB0aW1pbmctPmNsa19oc19leGl0IDw8IDE2Owo+Cj4gICAgICAgICB3cml0ZWwodGltY29uMCwg
+ZHNpLT5yZWdzICsgRFNJX1BIWV9USU1FQ09OMCk7Cj4gICAgICAgICB3cml0ZWwodGltY29uMSwg
+ZHNpLT5yZWdzICsgRFNJX1BIWV9USU1FQ09OMSk7Cj4gQEAgLTQxOCw3ICs0NTEsOCBAQCBzdGF0
+aWMgdm9pZCBtdGtfZHNpX2NvbmZpZ192ZG9fdGltaW5nKHN0cnVjdCBtdGtfZHNpICpkc2kpCj4g
+ICAgICAgICB1MzIgaG9yaXpvbnRhbF9zeW5jX2FjdGl2ZV9ieXRlOwo+ICAgICAgICAgdTMyIGhv
+cml6b250YWxfYmFja3BvcmNoX2J5dGU7Cj4gICAgICAgICB1MzIgaG9yaXpvbnRhbF9mcm9udHBv
+cmNoX2J5dGU7Cj4gLSAgICAgICB1MzIgZHNpX3RtcF9idWZfYnBwOwo+ICsgICAgICAgdTMyIGRz
+aV90bXBfYnVmX2JwcCwgZGF0YV9waHlfY3ljbGVzOwo+ICsgICAgICAgc3RydWN0IG10a19waHlf
+dGltaW5nICp0aW1pbmcgPSAmZHNpLT5waHlfdGltaW5nOwo+Cj4gICAgICAgICBzdHJ1Y3Qgdmlk
+ZW9tb2RlICp2bSA9ICZkc2ktPnZtOwo+Cj4gQEAgLTQzMyw3ICs0NjcsOCBAQCBzdGF0aWMgdm9p
+ZCBtdGtfZHNpX2NvbmZpZ192ZG9fdGltaW5nKHN0cnVjdCBtdGtfZHNpICpkc2kpCj4gICAgICAg
+ICB3cml0ZWwodm0tPnZhY3RpdmUsIGRzaS0+cmVncyArIERTSV9WQUNUX05MKTsKPgo+ICAgICAg
+ICAgaWYgKGRzaS0+ZHJpdmVyX2RhdGEtPmhhc19zaXplX2N0bCkKPiAtICAgICAgICAgICAgICAg
+d3JpdGVsKHZtLT52YWN0aXZlIDw8IDE2IHwgdm0tPmhhY3RpdmUsIGRzaS0+cmVncyArIERTSV9T
+SVpFX0NPTik7Cj4gKyAgICAgICAgICAgICAgIHdyaXRlbCh2bS0+dmFjdGl2ZSA8PCAxNiB8IHZt
+LT5oYWN0aXZlLAo+ICsgICAgICAgICAgICAgICAgICAgICAgZHNpLT5yZWdzICsgRFNJX1NJWkVf
+Q09OKTsKPgo+ICAgICAgICAgaG9yaXpvbnRhbF9zeW5jX2FjdGl2ZV9ieXRlID0gKHZtLT5oc3lu
+Y19sZW4gKiBkc2lfdG1wX2J1Zl9icHAgLSAxMCk7Cj4KPiBAQCAtNDQ0LDcgKzQ3OSwzNCBAQCBz
+dGF0aWMgdm9pZCBtdGtfZHNpX2NvbmZpZ192ZG9fdGltaW5nKHN0cnVjdCBtdGtfZHNpICpkc2kp
+Cj4gICAgICAgICAgICAgICAgIGhvcml6b250YWxfYmFja3BvcmNoX2J5dGUgPSAoKHZtLT5oYmFj
+a19wb3JjaCArIHZtLT5oc3luY19sZW4pICoKPiAgICAgICAgICAgICAgICAgICAgICAgICBkc2lf
+dG1wX2J1Zl9icHAgLSAxMCk7Cj4KPiAtICAgICAgIGhvcml6b250YWxfZnJvbnRwb3JjaF9ieXRl
+ID0gKHZtLT5oZnJvbnRfcG9yY2ggKiBkc2lfdG1wX2J1Zl9icHAgLSAxMik7Cj4gKyAgICAgICBk
+YXRhX3BoeV9jeWNsZXMgPSB0aW1pbmctPmxweCArIHRpbWluZy0+ZGFfaHNfcHJlcGFyZSArCj4g
+KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRpbWluZy0+ZGFfaHNfemVybyArIHRp
+bWluZy0+ZGFfaHNfZXhpdCArIDI7Cj4gKwo+ICsgICAgICAgaWYgKGRzaS0+bW9kZV9mbGFncyAm
+IE1JUElfRFNJX01PREVfVklERU9fQlVSU1QpIHsKPiArICAgICAgICAgICAgICAgaWYgKHZtLT5o
+ZnJvbnRfcG9yY2ggKiBkc2lfdG1wX2J1Zl9icHAgPgo+ICsgICAgICAgICAgICAgICAgICAgZGF0
+YV9waHlfY3ljbGVzICogZHNpLT5sYW5lcyArIDE4KSB7Cj4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgaG9yaXpvbnRhbF9mcm9udHBvcmNoX2J5dGUgPSB2bS0+aGZyb250X3BvcmNoICoKPiArICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRzaV90bXBf
+YnVmX2JwcCAtCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBkYXRhX3BoeV9jeWNsZXMgKgo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgZHNpLT5sYW5lcyAtIDE4Owo+ICsgICAgICAgICAgICAg
+ICB9IGVsc2Ugewo+ICsgICAgICAgICAgICAgICAgICAgICAgIERSTV9XQVJOKCJIRlAgbGVzcyB0
+aGFuIGQtcGh5LCBGUFMgd2lsbCB1bmRlciA2MEh6XG4iKTsKPiArICAgICAgICAgICAgICAgICAg
+ICAgICBob3Jpem9udGFsX2Zyb250cG9yY2hfYnl0ZSA9IHZtLT5oZnJvbnRfcG9yY2ggKgo+ICsg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZHNpX3Rt
+cF9idWZfYnBwOwo+ICsgICAgICAgICAgICAgICB9Cj4gKyAgICAgICB9IGVsc2Ugewo+ICsgICAg
+ICAgICAgICAgICBpZiAodm0tPmhmcm9udF9wb3JjaCAqIGRzaV90bXBfYnVmX2JwcCA+Cj4gKyAg
+ICAgICAgICAgICAgICAgICBkYXRhX3BoeV9jeWNsZXMgKiBkc2ktPmxhbmVzICsgMTIpIHsKPiAr
+ICAgICAgICAgICAgICAgICAgICAgICBob3Jpem9udGFsX2Zyb250cG9yY2hfYnl0ZSA9IHZtLT5o
+ZnJvbnRfcG9yY2ggKgo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgZHNpX3RtcF9idWZfYnBwIC0KPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRhdGFfcGh5X2N5Y2xlcyAqCj4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkc2ktPmxhbmVzIC0g
+MTI7Cj4gKyAgICAgICAgICAgICAgIH0gZWxzZSB7Cj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+RFJNX1dBUk4oIkhGUCBsZXNzIHRoYW4gZC1waHksIEZQUyB3aWxsIHVuZGVyIDYwSHpcbiIpOwo+
+ICsgICAgICAgICAgICAgICAgICAgICAgIGhvcml6b250YWxfZnJvbnRwb3JjaF9ieXRlID0gdm0t
+Pmhmcm9udF9wb3JjaCAqCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBkc2lfdG1wX2J1Zl9icHA7Cj4gKyAgICAgICAgICAgICAgIH0KPiArICAg
+ICAgIH0KPgo+ICAgICAgICAgd3JpdGVsKGhvcml6b250YWxfc3luY19hY3RpdmVfYnl0ZSwgZHNp
+LT5yZWdzICsgRFNJX0hTQV9XQyk7Cj4gICAgICAgICB3cml0ZWwoaG9yaXpvbnRhbF9iYWNrcG9y
+Y2hfYnl0ZSwgZHNpLT5yZWdzICsgRFNJX0hCUF9XQyk7Cj4gQEAgLTU0NCw4ICs2MDYsNyBAQCBz
+dGF0aWMgaW50IG10a19kc2lfcG93ZXJvbihzdHJ1Y3QgbXRrX2RzaSAqZHNpKQo+ICB7Cj4gICAg
+ICAgICBzdHJ1Y3QgZGV2aWNlICpkZXYgPSBkc2ktPmRldjsKPiAgICAgICAgIGludCByZXQ7Cj4g
+LSAgICAgICB1NjQgcGl4ZWxfY2xvY2ssIHRvdGFsX2JpdHM7Cj4gLSAgICAgICB1MzIgaHRvdGFs
+LCBodG90YWxfYml0cywgYml0X3Blcl9waXhlbCwgb3ZlcmhlYWRfY3ljbGVzLCBvdmVyaGVhZF9i
+aXRzOwo+ICsgICAgICAgdTMyIGJpdF9wZXJfcGl4ZWw7Cj4KPiAgICAgICAgIGlmICgrK2RzaS0+
+cmVmY291bnQgIT0gMSkKPiAgICAgICAgICAgICAgICAgcmV0dXJuIDA7Cj4gQEAgLTU2NCwyNCAr
+NjI1LDcgQEAgc3RhdGljIGludCBtdGtfZHNpX3Bvd2Vyb24oc3RydWN0IG10a19kc2kgKmRzaSkK
+PiAgICAgICAgICAgICAgICAgYnJlYWs7Cj4gICAgICAgICB9Cj4KPiAtICAgICAgIC8qKgo+IC0g
+ICAgICAgICogaHRvdGFsX3RpbWUgPSBodG90YWwgKiBieXRlX3Blcl9waXhlbCAvIG51bV9sYW5l
+cwo+IC0gICAgICAgICogb3ZlcmhlYWRfdGltZSA9IGxweCArIGhzX3ByZXBhcmUgKyBoc196ZXJv
+ICsgaHNfdHJhaWwgKyBoc19leGl0Cj4gLSAgICAgICAgKiBtaXBpX3JhdGlvID0gKGh0b3RhbF90
+aW1lICsgb3ZlcmhlYWRfdGltZSkgLyBodG90YWxfdGltZQo+IC0gICAgICAgICogZGF0YV9yYXRl
+ID0gcGl4ZWxfY2xvY2sgKiBiaXRfcGVyX3BpeGVsICogbWlwaV9yYXRpbyAvIG51bV9sYW5lczsK
+PiAtICAgICAgICAqLwo+IC0gICAgICAgcGl4ZWxfY2xvY2sgPSBkc2ktPnZtLnBpeGVsY2xvY2s7
+Cj4gLSAgICAgICBodG90YWwgPSBkc2ktPnZtLmhhY3RpdmUgKyBkc2ktPnZtLmhiYWNrX3BvcmNo
+ICsgZHNpLT52bS5oZnJvbnRfcG9yY2ggKwo+IC0gICAgICAgICAgICAgICAgICAgICAgIGRzaS0+
+dm0uaHN5bmNfbGVuOwo+IC0gICAgICAgaHRvdGFsX2JpdHMgPSBodG90YWwgKiBiaXRfcGVyX3Bp
+eGVsOwo+IC0KPiAtICAgICAgIG92ZXJoZWFkX2N5Y2xlcyA9IFRfTFBYICsgVF9IU19QUkVQICsg
+VF9IU19aRVJPICsgVF9IU19UUkFJTCArCj4gLSAgICAgICAgICAgICAgICAgICAgICAgVF9IU19F
+WElUOwo+IC0gICAgICAgb3ZlcmhlYWRfYml0cyA9IG92ZXJoZWFkX2N5Y2xlcyAqIGRzaS0+bGFu
+ZXMgKiA4Owo+IC0gICAgICAgdG90YWxfYml0cyA9IGh0b3RhbF9iaXRzICsgb3ZlcmhlYWRfYml0
+czsKPiAtCj4gLSAgICAgICBkc2ktPmRhdGFfcmF0ZSA9IERJVl9ST1VORF9VUF9VTEwocGl4ZWxf
+Y2xvY2sgKiB0b3RhbF9iaXRzLAo+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIGh0b3RhbCAqIGRzaS0+bGFuZXMpOwo+ICsgICAgICAgZHNpLT5kYXRhX3JhdGUgPSBk
+c2ktPnZtLnBpeGVsY2xvY2sgKiBiaXRfcGVyX3BpeGVsIC8gZHNpLT5sYW5lczsKPgo+ICAgICAg
+ICAgcmV0ID0gY2xrX3NldF9yYXRlKGRzaS0+aHNfY2xrLCBkc2ktPmRhdGFfcmF0ZSk7Cj4gICAg
+ICAgICBpZiAocmV0IDwgMCkgewo+IC0tCj4gMi4yMS4wCj4KPiBfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IGRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKPiBk
+cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0cy5mcmVlZGVza3Rv
+cC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxA
+bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
+YW4vbGlzdGluZm8vZHJpLWRldmVs
