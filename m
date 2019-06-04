@@ -1,192 +1,217 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [v4 6/7] drm/mediatek: change the dsi phytiming calculate method
-Date: Tue, 4 Jun 2019 06:36:38 +0800
-Message-ID: <CANMq1KDoGO=2yursnB8udJkvMG6GwV=qsW7HFAyTsc93dnBBXQ@mail.gmail.com>
-References: <20190601092615.67917-1-jitao.shi@mediatek.com>
- <20190601092615.67917-7-jitao.shi@mediatek.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH] pwm: pca9685: fix pwm/gpio inter-operation
+Date: Tue, 4 Jun 2019 12:14:25 +0300
+Message-ID: <20190604091425.GL2781@lahna.fi.intel.com>
+References: <20190603151223.5311-1-TheSven73@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190601092615.67917-7-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Guenter Roeck <groeck@chromium.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa cheng <cawa.cheng@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Thierry Reding <treding@nvidia.com>, Sean Paul <seanpaul@chromium.org>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Russell King <rmk+kernel@arm.linux.org.uk>, Matthias Brugger <matthias.bgg@gmail.com>, Eddie Huang <eddie.huang@mediatek.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstre
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190603151223.5311-1-TheSven73@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gU2F0LCBKdW4gMSwgMjAxOSBhdCA1OjI2IFBNIEppdGFvIFNoaSA8aml0YW8uc2hpQG1lZGlh
-dGVrLmNvbT4gd3JvdGU6Cj4KPiBDaGFuZ2UgdGhlIG1ldGhvZCBvZiBmcmFtZSByYXRlIGNhbGMg
-d2hpY2ggY2FuIGdldCBtb3JlIGFjY3VyYXRlCj4gZnJhbWUgcmF0ZS4KPgo+IGRhdGEgcmF0ZSA9
-IHBpeGVsX2Nsb2NrICogYml0X3Blcl9waXhlbCAvIGxhbmVzCj4gQWRqdXN0IGhmcF93YyB0byBh
-ZGFwdCB0aGUgYWRkaXRpb25hbCBwaHlfZGF0YQo+Cj4gaWYgTUlQSV9EU0lfTU9ERV9WSURFT19C
-VVJTVAo+ICAgICAgICAgaGZwX3djID0gaGZwICogYnBwIC0gZGF0YV9waHlfY3ljbGVzICogbGFu
-ZXMgLSAxMiAtIDY7Cj4gZWxzZQo+ICAgICAgICAgaGZwX3djID0gaGZwICogYnBwIC0gZGF0YV9w
-aHlfY3ljbGVzICogbGFuZXMgLSAxMjsKPgo+IE5vdGU6Cj4gLy8oMjogMSBmb3Igc3luYywgMSBm
-b3IgcGh5IGlkbGUpCj4gZGF0YV9waHlfY3ljbGVzID0gVF9oc19leGl0ICsgVF9scHggKyBUX2hz
-X3ByZXBhcmUgKyBUX2hzX3plcm8gKyAyOwo+Cj4gYnBwOiBiaXQgcGVyIHBpeGVsCj4KPiBTaWdu
-ZWQtb2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5jb20+Cj4gVGVzdGVkLWJ5
-OiBSeWFuIENhc2UgPHJ5YW5kY2FzZUBjaHJvbWl1bS5vcmc+Cj4gLS0tCj4gIGRyaXZlcnMvZ3B1
-L2RybS9tZWRpYXRlay9tdGtfZHNpLmMgfCAxMjIgKysrKysrKysrKysrKysrKysrKystLS0tLS0t
-LS0KPiAgMSBmaWxlIGNoYW5nZWQsIDgzIGluc2VydGlvbnMoKyksIDM5IGRlbGV0aW9ucygtKQo+
-Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMgYi9kcml2
-ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gaW5kZXggYWJmNmRkZWM1ZGI2Li41NTg3
-MjdjNjBiYTMgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2ku
-Ywo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiBAQCAtMTQ0LDEy
-ICsxNDQsNiBAQAo+ICAjZGVmaW5lIERBVEFfMCAgICAgICAgICAgICAgICAgICAgICAgICAoMHhm
-ZiA8PCAxNikKPiAgI2RlZmluZSBEQVRBXzEgICAgICAgICAgICAgICAgICAgICAgICAgKDB4ZmYg
-PDwgMjQpCj4KPiAtI2RlZmluZSBUX0xQWCAgICAgICAgICA1Cj4gLSNkZWZpbmUgVF9IU19QUkVQ
-ICAgICAgNgo+IC0jZGVmaW5lIFRfSFNfVFJBSUwgICAgIDgKPiAtI2RlZmluZSBUX0hTX0VYSVQg
-ICAgICA3Cj4gLSNkZWZpbmUgVF9IU19aRVJPICAgICAgMTAKPiAtCj4gICNkZWZpbmUgTlNfVE9f
-Q1lDTEUobiwgYykgICAgKChuKSAvIChjKSArICgoKG4pICUgKGMpKSA/IDEgOiAwKSkKPgo+ICAj
-ZGVmaW5lIE1US19EU0lfSE9TVF9JU19SRUFEKHR5cGUpIFwKPiBAQCAtMTU4LDYgKzE1MiwyNSBA
-QAo+ICAgICAgICAgKHR5cGUgPT0gTUlQSV9EU0lfR0VORVJJQ19SRUFEX1JFUVVFU1RfMl9QQVJB
-TSkgfHwgXAo+ICAgICAgICAgKHR5cGUgPT0gTUlQSV9EU0lfRENTX1JFQUQpKQo+Cj4gK3N0cnVj
-dCBtdGtfcGh5X3RpbWluZyB7Cj4gKyAgICAgICB1MzIgbHB4Owo+ICsgICAgICAgdTMyIGRhX2hz
-X3ByZXBhcmU7Cj4gKyAgICAgICB1MzIgZGFfaHNfemVybzsKPiArICAgICAgIHUzMiBkYV9oc190
-cmFpbDsKPiArCj4gKyAgICAgICB1MzIgdGFfZ287Cj4gKyAgICAgICB1MzIgdGFfc3VyZTsKPiAr
-ICAgICAgIHUzMiB0YV9nZXQ7Cj4gKyAgICAgICB1MzIgZGFfaHNfZXhpdDsKPiArCj4gKyAgICAg
-ICB1MzIgY2xrX2hzX3plcm87Cj4gKyAgICAgICB1MzIgY2xrX2hzX3RyYWlsOwo+ICsKPiArICAg
-ICAgIHUzMiBjbGtfaHNfcHJlcGFyZTsKPiArICAgICAgIHUzMiBjbGtfaHNfcG9zdDsKPiArICAg
-ICAgIHUzMiBjbGtfaHNfZXhpdDsKPiArfTsKPiArCj4gIHN0cnVjdCBwaHk7Cj4KPiAgc3RydWN0
-IG10a19kc2lfZHJpdmVyX2RhdGEgewo+IEBAIC0xODIsMTIgKzE5NSwxMyBAQCBzdHJ1Y3QgbXRr
-X2RzaSB7Cj4gICAgICAgICBzdHJ1Y3QgY2xrICpkaWdpdGFsX2NsazsKPiAgICAgICAgIHN0cnVj
-dCBjbGsgKmhzX2NsazsKPgo+IC0gICAgICAgdTMyIGRhdGFfcmF0ZTsKPiArICAgICAgIHU2NCBk
-YXRhX3JhdGU7CgpBcyBoaWdobGlnaHRlZCBpbgpodHRwczovL3BhdGNod29yay5rZXJuZWwub3Jn
-L3BhdGNoLzEwOTQ5MzIzLyMyMjY3MzgyOSwgdGhpcyBjaGFuZ2UKY2F1c2VzIGlzc3VlcyBvbiAz
-Mi1iaXQgcGxhdGZvcm1zLgoKPgo+ICAgICAgICAgdW5zaWduZWQgbG9uZyBtb2RlX2ZsYWdzOwo+
-ICAgICAgICAgZW51bSBtaXBpX2RzaV9waXhlbF9mb3JtYXQgZm9ybWF0Owo+ICAgICAgICAgdW5z
-aWduZWQgaW50IGxhbmVzOwo+ICAgICAgICAgc3RydWN0IHZpZGVvbW9kZSB2bTsKPiArICAgICAg
-IHN0cnVjdCBtdGtfcGh5X3RpbWluZyBwaHlfdGltaW5nOwo+ICAgICAgICAgaW50IHJlZmNvdW50
-Owo+ICAgICAgICAgYm9vbCBlbmFibGVkOwo+ICAgICAgICAgdTMyIGlycV9kYXRhOwo+IEBAIC0y
-MjEsMTcgKzIzNSwzNiBAQCBzdGF0aWMgdm9pZCBtdGtfZHNpX3BoeV90aW1jb25maWcoc3RydWN0
-IG10a19kc2kgKmRzaSkKPiAgewo+ICAgICAgICAgdTMyIHRpbWNvbjAsIHRpbWNvbjEsIHRpbWNv
-bjIsIHRpbWNvbjM7Cj4gICAgICAgICB1MzIgdWksIGN5Y2xlX3RpbWU7Cj4gKyAgICAgICBzdHJ1
-Y3QgbXRrX3BoeV90aW1pbmcgKnRpbWluZyA9ICZkc2ktPnBoeV90aW1pbmc7Cj4gKwo+ICsgICAg
-ICAgdWkgPSAxMDAwMDAwMDAwIC8gZHNpLT5kYXRhX3JhdGU7Cj4gKyAgICAgICBjeWNsZV90aW1l
-ID0gODAwMDAwMDAwMCAvIGRzaS0+ZGF0YV9yYXRlOwo+ICsKPiArICAgICAgIHRpbWluZy0+bHB4
-ID0gTlNfVE9fQ1lDTEUoNjAsIGN5Y2xlX3RpbWUpOwo+ICsgICAgICAgdGltaW5nLT5kYV9oc19w
-cmVwYXJlID0gTlNfVE9fQ1lDTEUoNDAgKyA1ICogdWksIGN5Y2xlX3RpbWUpOwo+ICsgICAgICAg
-dGltaW5nLT5kYV9oc196ZXJvID0gTlNfVE9fQ1lDTEUoMTEwICsgNiAqIHVpLCBjeWNsZV90aW1l
-KTsKPiArICAgICAgIHRpbWluZy0+ZGFfaHNfdHJhaWwgPSBOU19UT19DWUNMRSg4MCArIDQgKiB1
-aSwgY3ljbGVfdGltZSk7Cj4KPiAtICAgICAgIHVpID0gMTAwMCAvIGRzaS0+ZGF0YV9yYXRlICsg
-MHgwMTsKPiAtICAgICAgIGN5Y2xlX3RpbWUgPSA4MDAwIC8gZHNpLT5kYXRhX3JhdGUgKyAweDAx
-Owo+ICsgICAgICAgdGltaW5nLT50YV9nbyA9IDQgKiB0aW1pbmctPmxweDsKPiArICAgICAgIHRp
-bWluZy0+dGFfc3VyZSA9IDMgKiB0aW1pbmctPmxweCAvIDI7Cj4gKyAgICAgICB0aW1pbmctPnRh
-X2dldCA9IDUgKiB0aW1pbmctPmxweDsKPiArICAgICAgIHRpbWluZy0+ZGFfaHNfZXhpdCA9IDIg
-KiB0aW1pbmctPmxweDsKPgo+IC0gICAgICAgdGltY29uMCA9IFRfTFBYIHwgVF9IU19QUkVQIDw8
-IDggfCBUX0hTX1pFUk8gPDwgMTYgfCBUX0hTX1RSQUlMIDw8IDI0Owo+IC0gICAgICAgdGltY29u
-MSA9IDQgKiBUX0xQWCB8ICgzICogVF9MUFggLyAyKSA8PCA4IHwgNSAqIFRfTFBYIDw8IDE2IHwK
-PiAtICAgICAgICAgICAgICAgICBUX0hTX0VYSVQgPDwgMjQ7Cj4gLSAgICAgICB0aW1jb24yID0g
-KChOU19UT19DWUNMRSgweDY0LCBjeWNsZV90aW1lKSArIDB4YSkgPDwgMjQpIHwKPiAtICAgICAg
-ICAgICAgICAgICAoTlNfVE9fQ1lDTEUoMHgxNTAsIGN5Y2xlX3RpbWUpIDw8IDE2KTsKPiAtICAg
-ICAgIHRpbWNvbjMgPSBOU19UT19DWUNMRSgweDQwLCBjeWNsZV90aW1lKSB8ICgyICogVF9MUFgp
-IDw8IDE2IHwKPiAtICAgICAgICAgICAgICAgICBOU19UT19DWUNMRSg4MCArIDUyICogdWksIGN5
-Y2xlX3RpbWUpIDw8IDg7Cj4gKyAgICAgICB0aW1pbmctPmNsa19oc196ZXJvID0gTlNfVE9fQ1lD
-TEUoMzM2LCBjeWNsZV90aW1lKTsKPiArICAgICAgIHRpbWluZy0+Y2xrX2hzX3RyYWlsID0gTlNf
-VE9fQ1lDTEUoMTAwLCBjeWNsZV90aW1lKSArIDEwOwo+ICsKPiArICAgICAgIHRpbWluZy0+Y2xr
-X2hzX3ByZXBhcmUgPSBOU19UT19DWUNMRSg2NCwgY3ljbGVfdGltZSk7Cj4gKyAgICAgICB0aW1p
-bmctPmNsa19oc19wb3N0ID0gTlNfVE9fQ1lDTEUoODAgKyA1MiAqIHVpLCBjeWNsZV90aW1lKTsK
-PiArICAgICAgIHRpbWluZy0+Y2xrX2hzX2V4aXQgPSAyICogdGltaW5nLT5scHg7Cj4gKwo+ICsg
-ICAgICAgdGltY29uMCA9IHRpbWluZy0+bHB4IHwgdGltaW5nLT5kYV9oc19wcmVwYXJlIDw8IDgg
-fAo+ICsgICAgICAgICAgICAgICAgIHRpbWluZy0+ZGFfaHNfemVybyA8PCAxNiB8IHRpbWluZy0+
-ZGFfaHNfdHJhaWwgPDwgMjQ7Cj4gKyAgICAgICB0aW1jb24xID0gdGltaW5nLT50YV9nbyB8IHRp
-bWluZy0+dGFfc3VyZSA8PCA4IHwKPiArICAgICAgICAgICAgICAgICB0aW1pbmctPnRhX2dldCA8
-PCAxNiB8IHRpbWluZy0+ZGFfaHNfZXhpdCA8PCAyNDsKPiArICAgICAgIHRpbWNvbjIgPSAxIDw8
-IDggfCB0aW1pbmctPmNsa19oc196ZXJvIDw8IDE2IHwKPiArICAgICAgICAgICAgICAgICB0aW1p
-bmctPmNsa19oc190cmFpbCA8PCAyNDsKPiArICAgICAgIHRpbWNvbjMgPSB0aW1pbmctPmNsa19o
-c19wcmVwYXJlIHwgdGltaW5nLT5jbGtfaHNfcG9zdCA8PCA4IHwKPiArICAgICAgICAgICAgICAg
-ICB0aW1pbmctPmNsa19oc19leGl0IDw8IDE2Owo+Cj4gICAgICAgICB3cml0ZWwodGltY29uMCwg
-ZHNpLT5yZWdzICsgRFNJX1BIWV9USU1FQ09OMCk7Cj4gICAgICAgICB3cml0ZWwodGltY29uMSwg
-ZHNpLT5yZWdzICsgRFNJX1BIWV9USU1FQ09OMSk7Cj4gQEAgLTQxOCw3ICs0NTEsOCBAQCBzdGF0
-aWMgdm9pZCBtdGtfZHNpX2NvbmZpZ192ZG9fdGltaW5nKHN0cnVjdCBtdGtfZHNpICpkc2kpCj4g
-ICAgICAgICB1MzIgaG9yaXpvbnRhbF9zeW5jX2FjdGl2ZV9ieXRlOwo+ICAgICAgICAgdTMyIGhv
-cml6b250YWxfYmFja3BvcmNoX2J5dGU7Cj4gICAgICAgICB1MzIgaG9yaXpvbnRhbF9mcm9udHBv
-cmNoX2J5dGU7Cj4gLSAgICAgICB1MzIgZHNpX3RtcF9idWZfYnBwOwo+ICsgICAgICAgdTMyIGRz
-aV90bXBfYnVmX2JwcCwgZGF0YV9waHlfY3ljbGVzOwo+ICsgICAgICAgc3RydWN0IG10a19waHlf
-dGltaW5nICp0aW1pbmcgPSAmZHNpLT5waHlfdGltaW5nOwo+Cj4gICAgICAgICBzdHJ1Y3Qgdmlk
-ZW9tb2RlICp2bSA9ICZkc2ktPnZtOwo+Cj4gQEAgLTQzMyw3ICs0NjcsOCBAQCBzdGF0aWMgdm9p
-ZCBtdGtfZHNpX2NvbmZpZ192ZG9fdGltaW5nKHN0cnVjdCBtdGtfZHNpICpkc2kpCj4gICAgICAg
-ICB3cml0ZWwodm0tPnZhY3RpdmUsIGRzaS0+cmVncyArIERTSV9WQUNUX05MKTsKPgo+ICAgICAg
-ICAgaWYgKGRzaS0+ZHJpdmVyX2RhdGEtPmhhc19zaXplX2N0bCkKPiAtICAgICAgICAgICAgICAg
-d3JpdGVsKHZtLT52YWN0aXZlIDw8IDE2IHwgdm0tPmhhY3RpdmUsIGRzaS0+cmVncyArIERTSV9T
-SVpFX0NPTik7Cj4gKyAgICAgICAgICAgICAgIHdyaXRlbCh2bS0+dmFjdGl2ZSA8PCAxNiB8IHZt
-LT5oYWN0aXZlLAo+ICsgICAgICAgICAgICAgICAgICAgICAgZHNpLT5yZWdzICsgRFNJX1NJWkVf
-Q09OKTsKPgo+ICAgICAgICAgaG9yaXpvbnRhbF9zeW5jX2FjdGl2ZV9ieXRlID0gKHZtLT5oc3lu
-Y19sZW4gKiBkc2lfdG1wX2J1Zl9icHAgLSAxMCk7Cj4KPiBAQCAtNDQ0LDcgKzQ3OSwzNCBAQCBz
-dGF0aWMgdm9pZCBtdGtfZHNpX2NvbmZpZ192ZG9fdGltaW5nKHN0cnVjdCBtdGtfZHNpICpkc2kp
-Cj4gICAgICAgICAgICAgICAgIGhvcml6b250YWxfYmFja3BvcmNoX2J5dGUgPSAoKHZtLT5oYmFj
-a19wb3JjaCArIHZtLT5oc3luY19sZW4pICoKPiAgICAgICAgICAgICAgICAgICAgICAgICBkc2lf
-dG1wX2J1Zl9icHAgLSAxMCk7Cj4KPiAtICAgICAgIGhvcml6b250YWxfZnJvbnRwb3JjaF9ieXRl
-ID0gKHZtLT5oZnJvbnRfcG9yY2ggKiBkc2lfdG1wX2J1Zl9icHAgLSAxMik7Cj4gKyAgICAgICBk
-YXRhX3BoeV9jeWNsZXMgPSB0aW1pbmctPmxweCArIHRpbWluZy0+ZGFfaHNfcHJlcGFyZSArCj4g
-KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRpbWluZy0+ZGFfaHNfemVybyArIHRp
-bWluZy0+ZGFfaHNfZXhpdCArIDI7Cj4gKwo+ICsgICAgICAgaWYgKGRzaS0+bW9kZV9mbGFncyAm
-IE1JUElfRFNJX01PREVfVklERU9fQlVSU1QpIHsKPiArICAgICAgICAgICAgICAgaWYgKHZtLT5o
-ZnJvbnRfcG9yY2ggKiBkc2lfdG1wX2J1Zl9icHAgPgo+ICsgICAgICAgICAgICAgICAgICAgZGF0
-YV9waHlfY3ljbGVzICogZHNpLT5sYW5lcyArIDE4KSB7Cj4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgaG9yaXpvbnRhbF9mcm9udHBvcmNoX2J5dGUgPSB2bS0+aGZyb250X3BvcmNoICoKPiArICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRzaV90bXBf
-YnVmX2JwcCAtCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBkYXRhX3BoeV9jeWNsZXMgKgo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgZHNpLT5sYW5lcyAtIDE4Owo+ICsgICAgICAgICAgICAg
-ICB9IGVsc2Ugewo+ICsgICAgICAgICAgICAgICAgICAgICAgIERSTV9XQVJOKCJIRlAgbGVzcyB0
-aGFuIGQtcGh5LCBGUFMgd2lsbCB1bmRlciA2MEh6XG4iKTsKPiArICAgICAgICAgICAgICAgICAg
-ICAgICBob3Jpem9udGFsX2Zyb250cG9yY2hfYnl0ZSA9IHZtLT5oZnJvbnRfcG9yY2ggKgo+ICsg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZHNpX3Rt
-cF9idWZfYnBwOwo+ICsgICAgICAgICAgICAgICB9Cj4gKyAgICAgICB9IGVsc2Ugewo+ICsgICAg
-ICAgICAgICAgICBpZiAodm0tPmhmcm9udF9wb3JjaCAqIGRzaV90bXBfYnVmX2JwcCA+Cj4gKyAg
-ICAgICAgICAgICAgICAgICBkYXRhX3BoeV9jeWNsZXMgKiBkc2ktPmxhbmVzICsgMTIpIHsKPiAr
-ICAgICAgICAgICAgICAgICAgICAgICBob3Jpem9udGFsX2Zyb250cG9yY2hfYnl0ZSA9IHZtLT5o
-ZnJvbnRfcG9yY2ggKgo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgZHNpX3RtcF9idWZfYnBwIC0KPiArICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRhdGFfcGh5X2N5Y2xlcyAqCj4gKyAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkc2ktPmxhbmVzIC0g
-MTI7Cj4gKyAgICAgICAgICAgICAgIH0gZWxzZSB7Cj4gKyAgICAgICAgICAgICAgICAgICAgICAg
-RFJNX1dBUk4oIkhGUCBsZXNzIHRoYW4gZC1waHksIEZQUyB3aWxsIHVuZGVyIDYwSHpcbiIpOwo+
-ICsgICAgICAgICAgICAgICAgICAgICAgIGhvcml6b250YWxfZnJvbnRwb3JjaF9ieXRlID0gdm0t
-Pmhmcm9udF9wb3JjaCAqCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBkc2lfdG1wX2J1Zl9icHA7Cj4gKyAgICAgICAgICAgICAgIH0KPiArICAg
-ICAgIH0KPgo+ICAgICAgICAgd3JpdGVsKGhvcml6b250YWxfc3luY19hY3RpdmVfYnl0ZSwgZHNp
-LT5yZWdzICsgRFNJX0hTQV9XQyk7Cj4gICAgICAgICB3cml0ZWwoaG9yaXpvbnRhbF9iYWNrcG9y
-Y2hfYnl0ZSwgZHNpLT5yZWdzICsgRFNJX0hCUF9XQyk7Cj4gQEAgLTU0NCw4ICs2MDYsNyBAQCBz
-dGF0aWMgaW50IG10a19kc2lfcG93ZXJvbihzdHJ1Y3QgbXRrX2RzaSAqZHNpKQo+ICB7Cj4gICAg
-ICAgICBzdHJ1Y3QgZGV2aWNlICpkZXYgPSBkc2ktPmRldjsKPiAgICAgICAgIGludCByZXQ7Cj4g
-LSAgICAgICB1NjQgcGl4ZWxfY2xvY2ssIHRvdGFsX2JpdHM7Cj4gLSAgICAgICB1MzIgaHRvdGFs
-LCBodG90YWxfYml0cywgYml0X3Blcl9waXhlbCwgb3ZlcmhlYWRfY3ljbGVzLCBvdmVyaGVhZF9i
-aXRzOwo+ICsgICAgICAgdTMyIGJpdF9wZXJfcGl4ZWw7Cj4KPiAgICAgICAgIGlmICgrK2RzaS0+
-cmVmY291bnQgIT0gMSkKPiAgICAgICAgICAgICAgICAgcmV0dXJuIDA7Cj4gQEAgLTU2NCwyNCAr
-NjI1LDcgQEAgc3RhdGljIGludCBtdGtfZHNpX3Bvd2Vyb24oc3RydWN0IG10a19kc2kgKmRzaSkK
-PiAgICAgICAgICAgICAgICAgYnJlYWs7Cj4gICAgICAgICB9Cj4KPiAtICAgICAgIC8qKgo+IC0g
-ICAgICAgICogaHRvdGFsX3RpbWUgPSBodG90YWwgKiBieXRlX3Blcl9waXhlbCAvIG51bV9sYW5l
-cwo+IC0gICAgICAgICogb3ZlcmhlYWRfdGltZSA9IGxweCArIGhzX3ByZXBhcmUgKyBoc196ZXJv
-ICsgaHNfdHJhaWwgKyBoc19leGl0Cj4gLSAgICAgICAgKiBtaXBpX3JhdGlvID0gKGh0b3RhbF90
-aW1lICsgb3ZlcmhlYWRfdGltZSkgLyBodG90YWxfdGltZQo+IC0gICAgICAgICogZGF0YV9yYXRl
-ID0gcGl4ZWxfY2xvY2sgKiBiaXRfcGVyX3BpeGVsICogbWlwaV9yYXRpbyAvIG51bV9sYW5lczsK
-PiAtICAgICAgICAqLwo+IC0gICAgICAgcGl4ZWxfY2xvY2sgPSBkc2ktPnZtLnBpeGVsY2xvY2s7
-Cj4gLSAgICAgICBodG90YWwgPSBkc2ktPnZtLmhhY3RpdmUgKyBkc2ktPnZtLmhiYWNrX3BvcmNo
-ICsgZHNpLT52bS5oZnJvbnRfcG9yY2ggKwo+IC0gICAgICAgICAgICAgICAgICAgICAgIGRzaS0+
-dm0uaHN5bmNfbGVuOwo+IC0gICAgICAgaHRvdGFsX2JpdHMgPSBodG90YWwgKiBiaXRfcGVyX3Bp
-eGVsOwo+IC0KPiAtICAgICAgIG92ZXJoZWFkX2N5Y2xlcyA9IFRfTFBYICsgVF9IU19QUkVQICsg
-VF9IU19aRVJPICsgVF9IU19UUkFJTCArCj4gLSAgICAgICAgICAgICAgICAgICAgICAgVF9IU19F
-WElUOwo+IC0gICAgICAgb3ZlcmhlYWRfYml0cyA9IG92ZXJoZWFkX2N5Y2xlcyAqIGRzaS0+bGFu
-ZXMgKiA4Owo+IC0gICAgICAgdG90YWxfYml0cyA9IGh0b3RhbF9iaXRzICsgb3ZlcmhlYWRfYml0
-czsKPiAtCj4gLSAgICAgICBkc2ktPmRhdGFfcmF0ZSA9IERJVl9ST1VORF9VUF9VTEwocGl4ZWxf
-Y2xvY2sgKiB0b3RhbF9iaXRzLAo+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIGh0b3RhbCAqIGRzaS0+bGFuZXMpOwo+ICsgICAgICAgZHNpLT5kYXRhX3JhdGUgPSBk
-c2ktPnZtLnBpeGVsY2xvY2sgKiBiaXRfcGVyX3BpeGVsIC8gZHNpLT5sYW5lczsKPgo+ICAgICAg
-ICAgcmV0ID0gY2xrX3NldF9yYXRlKGRzaS0+aHNfY2xrLCBkc2ktPmRhdGFfcmF0ZSk7Cj4gICAg
-ICAgICBpZiAocmV0IDwgMCkgewo+IC0tCj4gMi4yMS4wCj4KPiBfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IGRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKPiBk
-cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0cy5mcmVlZGVza3Rv
-cC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxA
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
-YW4vbGlzdGluZm8vZHJpLWRldmVs
+On Mon, Jun 03, 2019 at 11:12:23AM -0400, Sven Van Asbroeck wrote:
+> This driver allows pwms to be requested as gpios via gpiolib.
+> Obviously, it should not be allowed to request a gpio when its
+> corresponding pwm is already requested (and vice versa).
+> So it requires some exclusion code.
+> 
+> Given that the pwm and gpio cores are not synchronized with
+> respect to each other, this exclusion code will also require
+> proper synchronization.
+> 
+> Such a mechanism was in place, but was inadvertently removed
+> by Uwe's clean-up patch.
+> 
+> Upon revisiting the synchronization mechanism, we found that
+> theoretically, it could allow two threads to successfully
+> request conflicting pwms / gpios.
+> 
+> Replace with a bitmap which tracks pwm in-use, plus a mutex.
+> As long as pwm and gpio's respective request/free functions
+> modify the in-use bitmap while holding the mutex, proper
+> synchronization will be guaranteed.
+> 
+> Reported-by: YueHaibing <yuehaibing@huawei.com>
+> Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> Link: https://lkml.org/lkml/2019/5/31/963
+> Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+> ---
+> 
+> This approach will also prevent the request of the "all" pwm channel, if any
+> other pwm channel is already in use. Is this correct behaviour?
+
+Sounds correct to me.
+
+>  drivers/pwm/pwm-pca9685.c | 64 +++++++++++++++++++++------------------
+>  1 file changed, 35 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+> index 567f5e2771c4..f9927cd106d0 100644
+> --- a/drivers/pwm/pwm-pca9685.c
+> +++ b/drivers/pwm/pwm-pca9685.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/delay.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/bitmap.h>
+>  
+>  /*
+>   * Because the PCA9685 has only one prescaler per chip, changing the period of
+> @@ -85,6 +86,7 @@ struct pca9685 {
+>  #if IS_ENABLED(CONFIG_GPIOLIB)
+>  	struct mutex lock;
+>  	struct gpio_chip gpio;
+> +	DECLARE_BITMAP(pwms_inuse, PCA9685_MAXCHAN);
+>  #endif
+>  };
+>  
+> @@ -97,48 +99,45 @@ static inline struct pca9685 *to_pca(struct pwm_chip *chip)
+>  static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
+>  {
+>  	struct pca9685 *pca = gpiochip_get_data(gpio);
+> -	struct pwm_device *pwm;
+>  
+>  	mutex_lock(&pca->lock);
+>  
+> -	pwm = &pca->chip.pwms[offset];
+> -
+> -	if (pwm->flags & (PWMF_REQUESTED | PWMF_EXPORTED)) {
+> +	if (test_and_set_bit(offset, pca->pwms_inuse)) {
+>  		mutex_unlock(&pca->lock);
+>  		return -EBUSY;
+>  	}
+>  
+> -	pwm_set_chip_data(pwm, (void *)1);
+> -
+>  	mutex_unlock(&pca->lock);
+>  	pm_runtime_get_sync(pca->chip.dev);
+>  	return 0;
+>  }
+>  
+> -static bool pca9685_pwm_is_gpio(struct pca9685 *pca, struct pwm_device *pwm)
+> +static bool
+> +pca9685_pwm_test_set_inuse(struct pca9685 *pca, struct pwm_device *pwm)
+
+Can we call it pca9685_pwm_test_and_set_inuse() following naming of
+test_and_set_bit()?
+
+>  {
+> -	bool is_gpio = false;
+> +	bool is_inuse;
+>  
+>  	mutex_lock(&pca->lock);
+> +	/*
+> +	 * Check if any of the PWMs are requested and in that case
+> +	 * prevent using the "all LEDs" channel.
+> +	 */
+> +	if (pwm->hwpwm >= PCA9685_MAXCHAN &&
+> +			!bitmap_empty(pca->pwms_inuse, PCA9685_MAXCHAN))
+> +		is_inuse = true;
+> +	else
+> +		is_inuse = test_and_set_bit(pwm->hwpwm, pca->pwms_inuse);
+> +	mutex_unlock(&pca->lock);
+>  
+> -	if (pwm->hwpwm >= PCA9685_MAXCHAN) {
+> -		unsigned int i;
+> -
+> -		/*
+> -		 * Check if any of the GPIOs are requested and in that case
+> -		 * prevent using the "all LEDs" channel.
+> -		 */
+> -		for (i = 0; i < pca->gpio.ngpio; i++)
+> -			if (gpiochip_is_requested(&pca->gpio, i)) {
+> -				is_gpio = true;
+> -				break;
+> -			}
+> -	} else if (pwm_get_chip_data(pwm)) {
+> -		is_gpio = true;
+> -	}
+> +	return is_inuse;
+> +}
+>  
+> +static void pca9685_pwm_clear_inuse(struct pca9685 *pca, struct pwm_device *pwm)
+
+I think it might be better if you provide __pca9685_pwm_clear_inuse()
+that does not take the lock and then pca9685_pwm_clear_inuse() that just
+calls the former. Then ->
+
+> +{
+> +	mutex_lock(&pca->lock);
+> +	if (pwm->hwpwm < PCA9685_MAXCHAN)
+> +		clear_bit(pwm->hwpwm, pca->pwms_inuse);
+>  	mutex_unlock(&pca->lock);
+> -	return is_gpio;
+>  }
+>  
+>  static int pca9685_pwm_gpio_get(struct gpio_chip *gpio, unsigned int offset)
+> @@ -170,12 +169,11 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+>  static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
+>  {
+>  	struct pca9685 *pca = gpiochip_get_data(gpio);
+> -	struct pwm_device *pwm;
+>  
+> +	mutex_lock(&pca->lock);
+>  	pca9685_pwm_gpio_set(gpio, offset, 0);
+>  	pm_runtime_put(pca->chip.dev);
+> -	mutex_lock(&pca->lock);
+> -	pwm = &pca->chip.pwms[offset];
+> +	clear_bit(offset, pca->pwms_inuse);
+
+-> you can call
+
+	__pca9685_pwm_clear_inuse()
+
+It feels more "consistent" wrt setting the bit.
+
+>  	mutex_unlock(&pca->lock);
+>  }
+>  
+> @@ -228,12 +226,17 @@ static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
+>  	return devm_gpiochip_add_data(dev, &pca->gpio, pca);
+>  }
+>  #else
+> -static inline bool pca9685_pwm_is_gpio(struct pca9685 *pca,
+> +static inline bool pca9685_pwm_test_set_inuse(struct pca9685 *pca,
+>  				       struct pwm_device *pwm)
+>  {
+>  	return false;
+>  }
+>  
+> +static inline void
+> +pca9685_pwm_clear_inuse(struct pca9685 *pca, struct pwm_device *pwm)
+> +{
+> +}
+> +
+>  static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
+>  {
+>  	return 0;
+> @@ -417,7 +420,7 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+>  	struct pca9685 *pca = to_pca(chip);
+>  
+> -	if (pca9685_pwm_is_gpio(pca, pwm))
+> +	if (pca9685_pwm_test_set_inuse(pca, pwm))
+>  		return -EBUSY;
+>  	pm_runtime_get_sync(chip->dev);
+>  
+> @@ -426,8 +429,11 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+>  
+>  static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+> +	struct pca9685 *pca = to_pca(chip);
+> +
+>  	pca9685_pwm_disable(chip, pwm);
+>  	pm_runtime_put(chip->dev);
+> +	pca9685_pwm_clear_inuse(pca, pwm);
+>  }
+>  
+>  static const struct pwm_ops pca9685_pwm_ops = {
+> -- 
+> 2.17.1
