@@ -1,33 +1,72 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH -next] pwm: pca9685: Remove set but not used variable
- 'pwm'
-Date: Tue, 4 Jun 2019 19:01:57 +0300
-Message-ID: <20190604160157.GL9224@smile.fi.intel.com>
-References: <20190601035709.85379-1-yuehaibing@huawei.com>
- <CAGngYiXZM0QUdKE_zDK763J9iDuiKSbmFeTVA1PJ_4WvjntjQQ@mail.gmail.com>
- <20190601160459.baedo5pp5hsrltzs@pengutronix.de>
- <CAGngYiUfGGF+PwaT4SE2ZJkrCidc7-QWeuRsPTDwrLL1onm88w@mail.gmail.com>
- <20190603114029.GC2781@lahna.fi.intel.com>
- <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: Re: [RESEND][PATCH v3 0/6] add LCD support for SAM9X60
+Date: Tue, 4 Jun 2019 16:18:33 +0000
+Message-ID: <c361b013-2d98-76e3-d30f-cec83000933c@microchip.com>
+References: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
+ <20190507182713.GA16862@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
+In-Reply-To: <20190507182713.GA16862@ravnborg.org>
+Content-Language: en-US
+Content-ID: <4EDBCAD05C24604EBEFA9A6EEF02CDE8@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sven Van Asbroeck <thesven73@gmail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, YueHaibing <yuehaibing@huawei.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: sam@ravnborg.org, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, bbrezillon@kernel.org, airlied@linux.ie, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, daniel@ffwll.ch, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 11:08:06AM -0400, Sven Van Asbroeck wrote:
-> On Mon, Jun 3, 2019 at 7:40 AM Mika Westerberg
-> <mika.westerberg@linux.intel.com> wrote:
-
-> Unfortunately, I no longer have any test hardware. The project that
-> required this chip is long dead.
-
-Anyone in possession of Intel Galileo Gen 2 can test this.
-
--- 
-With Best Regards,
-Andy Shevchenko
+SGkgU2FtLA0KDQpPbiAwNy4wNS4yMDE5IDIxOjI3LCBTYW0gUmF2bmJvcmcgd3JvdGU6DQo+IEV4
+dGVybmFsIEUtTWFpbA0KPiANCj4gDQo+IEhpIFRoaWVycnkuDQo+IA0KPj4gICBwd206IGF0bWVs
+LWhsY2RjOiBhZGQgY29tcGF0aWJsZSBmb3IgU0FNOVg2MCBITENEQydzIFBXTQ0KPiBPSyB0byBh
+ZGQgdGhlICJwd206IGF0bWVsLWhsY2RjOiBhZGQgY29tcGF0aWJsZSBmb3IgU0FNOVg2MCBITENE
+QydzIFBXTSINCj4gcGF0Y2ggdmlhIGRybS1taXNjPw0KPiBUaGVuIHdlIGNhbiBhZGQgYWxsIDYg
+cGF0Y2hlcyBpbiBvbmUgZ28uDQoNClNpbmNlIHdlIGRvbid0IGhhdmUgYW4gYW5zd2VyIGZyb20g
+VGhpZXJyeSB0aWxsIG5vdywgZG8geW91IHRoaW5rIGl0IGNvdWxkDQpiZSBmZWFzaWJsZSB0byB0
+YWtlIHRoZSByZXN0IG9mIHRoZSBwYXRjaGVzIGluIHRoaXMgc2VyaWVzPyBBZnRlciB0aGF0IEkN
+CndpbGwgcmUtc2VuZCB0aGUgUFdNIHBhdGNoIHRvIFBXTSBsaXN0Lg0KDQpUaGFuayB5b3UsDQpD
+bGF1ZGl1IEJlem5lYQ0KDQo+IA0KPiAJU2FtDQo+IA0KPiAoS2VwdCByZW1haW5pbmcgb2YgbWFp
+bCBmb3IgcmVmZXJlbmNlKQ0KPj4NCj4+IEhpLA0KPj4NCj4+IFRoZXNlIHBhdGNoZXMgYWRkcyBz
+dXBwb3J0IGZvciBTQU05WDYwJ3MgTENEIGNvbnRyb2xsZXIuDQo+Pg0KPj4gRmlyc3QgcGF0Y2hl
+cyBhZGQgb3B0aW9uIHRvIHNwZWNpZnkgaWYgY29udHJvbGxlciBjbG9jayBzb3VyY2UgaXMgZml4
+ZWQuDQo+PiBTZWNvbmQgcGF0Y2ggYXZvaWQgYSB2YXJpYWJsZSBpbml0aWFsaXphdGlvbiBpbiBh
+dG1lbF9obGNkY19jcnRjX21vZGVfc2V0X25vZmIoKS4NCj4+IFRoZSAzcmQgYWRkIGNvbXBhdGli
+bGVzIGluIHB3bS1hdG1lbC1obGNkYyBkcml2ZXIuDQo+PiBUaGUgNHRoIHBhdGNoIGVuYWJsZXMg
+c3lzX2NsayBpbiBwcm9iZSBzaW5jZSBTQU05WDYwIG5lZWRzIHRoaXMuDQo+PiBTcGVjaWZpYyBz
+dXBwb3J0IHdhcyBhZGRlZCBhbHNvIGluIHN1c3BlbmQvcmVzdW1lIGhvb2tzLg0KPj4gVGhlIDV0
+aCBwYXRjaCBhZGRzIFNBTTlYNjAncyBMQ0QgY29uZmlndXJhdGlvbiBhbmQgZW5hYmxlZCBpdC4N
+Cj4+DQo+PiBJIHRvb2sgdGhlIGNoYW5nZXMgb2YgdGhpcyBzZXJpZXMgYW5kIGludHJvZHVjZWQg
+YWxzbyBhIGZpeA0KPj4gKHRoaXMgaXMgdGhlIDZ0aCBwYXRjaCBpbiB0aGlzIHNlcmllcykgLSBp
+ZiB5b3Ugd2FudCB0byBzZW5kIGl0IHNlcGFyYXRlbHkNCj4+IEkgd291bGQgZ2xhZGx5IGRvIGl0
+Lg0KPj4NCj4+IEkgcmVzZW5kIHRoaXMgdG8gYWxzbyBpbmNsdWRlIExlZSBKb25lcyBmb3IgcHdt
+LWF0bWVsLWhsY2RjIGNoYW5nZXMuDQo+Pg0KPj4gVGhhbmsgeW91LA0KPj4gQ2xhdWRpdSBCZXpu
+ZWENCj4+DQo+PiBDaGFuZ2VzIGluIHYzOg0KPj4gLSBrZWVwIGNvbXBhdGlibGUgc3RyaW5nIG9u
+IHBhdGNoIDMvNiBvbiBhIHNpbmdsZSBsaW5lIChJIGtlZXAgaGVyZSBhIHRhYg0KPj4gICBpbiBm
+cm9udCBvZiAiLmNvbXBhdGlibGUiIHRvIGJlIGFsaWduZWQgd2l0aCB0aGUgcmVzdCBvZiB0aGUg
+Y29kZSBpbg0KPj4gICBhdG1lbF9obGNkY19kdF9pZHNbXSkNCj4+IC0gcGF0Y2hlcyA0LzcgYW5k
+IDMvNyBmcm9tIHYyIHdlcmUgYXBwbGllZCBzbyByZW1vdmUgdGhlbSBmcm9tIHRoaXMgdmVyc2lv
+bg0KPj4gLSBhZGQgYSBmaXggZm9yIGF0bWVsX2hsY2RjIChwYXRjaCA2LzYpDQo+Pg0KPj4gQ2hh
+bmdlcyBpbiB2MjoNCj4+IC0gdXNlICJ8IiBvcGVyYXRvciBpbiBwYXRjaCAxLzcgdG8gc2V0IEFU
+TUVMX0hMQ0RDX0NMS1NFTCBvbiBjZmcNCj4+IC0gY29sbGVjdCBBY2tlZC1ieSwgUmV2aWV3ZWQt
+YnkgdGFncw0KPj4NCj4+IENsYXVkaXUgQmV6bmVhICg0KToNCj4+ICAgZHJtOiBhdG1lbC1obGNk
+YzogYWRkIGNvbmZpZyBvcHRpb24gZm9yIGNsb2NrIHNlbGVjdGlvbg0KPj4gICBkcm06IGF0bWVs
+LWhsY2RjOiBhdm9pZCBpbml0aWFsaXppbmcgY2ZnIHdpdGggemVybw0KPj4gICBwd206IGF0bWVs
+LWhsY2RjOiBhZGQgY29tcGF0aWJsZSBmb3IgU0FNOVg2MCBITENEQydzIFBXTQ0KPj4gICBkcm0v
+YXRtZWwtaGNsY2RjOiByZXZlcnQgc2hpZnQgYnkgOA0KPj4NCj4+IFNhbmRlZXAgU2hlcmlrZXIg
+TWFsbGlrYXJqdW4gKDIpOg0KPj4gICBkcm06IGF0bWVsLWhsY2RjOiBlbmFibGUgc3lzX2NsayBk
+dXJpbmcgaW5pdGFsaXphdGlvbi4NCj4+ICAgZHJtOiBhdG1lbC1obGNkYzogYWRkIHNhbTl4NjAg
+TENEIGNvbnRyb2xsZXINCj4+DQo+PiAgZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVs
+X2hsY2RjX2NydGMuYyAgfCAgMTggKystLQ0KPj4gIGRyaXZlcnMvZ3B1L2RybS9hdG1lbC1obGNk
+Yy9hdG1lbF9obGNkY19kYy5jICAgIHwgMTIwICsrKysrKysrKysrKysrKysrKysrKysrLQ0KPj4g
+IGRyaXZlcnMvZ3B1L2RybS9hdG1lbC1obGNkYy9hdG1lbF9obGNkY19kYy5oICAgIHwgICAyICsN
+Cj4+ICBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNfcGxhbmUuYyB8ICAg
+MiArLQ0KPj4gIGRyaXZlcnMvcHdtL3B3bS1hdG1lbC1obGNkYy5jICAgICAgICAgICAgICAgICAg
+IHwgICAxICsNCj4+ICA1IGZpbGVzIGNoYW5nZWQsIDEzMiBpbnNlcnRpb25zKCspLCAxMSBkZWxl
+dGlvbnMoLSkNCj4+DQo+PiAtLSANCj4+IDIuNy40DQo+Pg0KPj4gX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4+IGRyaS1kZXZlbCBtYWlsaW5nIGxpc3QN
+Cj4+IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcNCj4+IGh0dHBzOi8vbGlzdHMuZnJl
+ZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsDQo+IA0KPiBfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KPiBsaW51eC1hcm0ta2VybmVs
+IG1haWxpbmcgbGlzdA0KPiBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4g
+aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
+bmVsDQo+IA0KPiANCg==
