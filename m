@@ -1,68 +1,46 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [RESEND][PATCH v3 0/6] add LCD support for SAM9X60
-Date: Wed, 5 Jun 2019 08:43:36 +0000
-Message-ID: <0bf41938-b64c-b505-0a30-0abf4ad72a4b@microchip.com>
-References: <1556195748-11106-1-git-send-email-claudiu.beznea@microchip.com>
- <20190605064948.GI4797@dell>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 06/10] mfd / platform: cros_ec: Reorganize platform and
+ mfd includes
+Date: Wed, 5 Jun 2019 11:02:20 +0100
+Message-ID: <20190605100220.GN2456@sirena.org.uk>
+References: <20190604152019.16100-1-enric.balletbo@collabora.com>
+ <20190604152019.16100-7-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="RnxXMyWEPIZsopkG"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190605064948.GI4797@dell>
-Content-Language: en-US
-Content-ID: <518B9938BFF0F946ADC161C9F98296A0@namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <20190604152019.16100-7-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org
-Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, bbrezillon@kernel.org, airlied@linux.ie, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, daniel@ffwll.ch, linux-arm-kernel@lists.infradead.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, gwendal@chromium.org, Guenter Roeck <groeck@chromium.org>, Benson Leung <bleung@chromium.org>, Lee Jones <lee.jones@linaro.org>, kernel@collabora.com, dtor@chromium.org, Mauro Carvalho Chehab <mchehab@kernel.org>, alsa-devel@alsa-project.org, Alessandro Zummo <a.zummo@towertech.it>, linux-iio@vger.kernel.org, Fabien Lahoudere <fabien.lahoudere@collabora.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-i2c@vger.kernel.org, linux-rtc@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Brian Norris <briannorris@chromium.org>, Chanwoo Choi <cw00.choi@samsung.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Sebastian Reichel <sre@kernel.org>, Rushikesh
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDA1LjA2LjIwMTkgMDk6NDksIExlZSBKb25lcyB3cm90ZToNCj4gRXh0ZXJuYWwgRS1N
-YWlsDQo+IA0KPiANCj4gT24gVGh1LCAyNSBBcHIgMjAxOSwgQ2xhdWRpdS5CZXpuZWFAbWljcm9j
-aGlwLmNvbSB3cm90ZToNCj4gDQo+PiBGcm9tOiBDbGF1ZGl1IEJlem5lYSA8Y2xhdWRpdS5iZXpu
-ZWFAbWljcm9jaGlwLmNvbT4NCj4+DQo+PiBIaSwNCj4+DQo+PiBUaGVzZSBwYXRjaGVzIGFkZHMg
-c3VwcG9ydCBmb3IgU0FNOVg2MCdzIExDRCBjb250cm9sbGVyLg0KPj4NCj4+IEZpcnN0IHBhdGNo
-ZXMgYWRkIG9wdGlvbiB0byBzcGVjaWZ5IGlmIGNvbnRyb2xsZXIgY2xvY2sgc291cmNlIGlzIGZp
-eGVkLg0KPj4gU2Vjb25kIHBhdGNoIGF2b2lkIGEgdmFyaWFibGUgaW5pdGlhbGl6YXRpb24gaW4g
-YXRtZWxfaGxjZGNfY3J0Y19tb2RlX3NldF9ub2ZiKCkuDQo+PiBUaGUgM3JkIGFkZCBjb21wYXRp
-YmxlcyBpbiBwd20tYXRtZWwtaGxjZGMgZHJpdmVyLg0KPj4gVGhlIDR0aCBwYXRjaCBlbmFibGVz
-IHN5c19jbGsgaW4gcHJvYmUgc2luY2UgU0FNOVg2MCBuZWVkcyB0aGlzLg0KPj4gU3BlY2lmaWMg
-c3VwcG9ydCB3YXMgYWRkZWQgYWxzbyBpbiBzdXNwZW5kL3Jlc3VtZSBob29rcy4NCj4+IFRoZSA1
-dGggcGF0Y2ggYWRkcyBTQU05WDYwJ3MgTENEIGNvbmZpZ3VyYXRpb24gYW5kIGVuYWJsZWQgaXQu
-DQo+Pg0KPj4gSSB0b29rIHRoZSBjaGFuZ2VzIG9mIHRoaXMgc2VyaWVzIGFuZCBpbnRyb2R1Y2Vk
-IGFsc28gYSBmaXgNCj4+ICh0aGlzIGlzIHRoZSA2dGggcGF0Y2ggaW4gdGhpcyBzZXJpZXMpIC0g
-aWYgeW91IHdhbnQgdG8gc2VuZCBpdCBzZXBhcmF0ZWx5DQo+PiBJIHdvdWxkIGdsYWRseSBkbyBp
-dC4NCj4+DQo+PiBJIHJlc2VuZCB0aGlzIHRvIGFsc28gaW5jbHVkZSBMZWUgSm9uZXMgZm9yIHB3
-bS1hdG1lbC1obGNkYyBjaGFuZ2VzLg0KPj4NCj4+IFRoYW5rIHlvdSwNCj4+IENsYXVkaXUgQmV6
-bmVhDQo+Pg0KPj4gQ2hhbmdlcyBpbiB2MzoNCj4+IC0ga2VlcCBjb21wYXRpYmxlIHN0cmluZyBv
-biBwYXRjaCAzLzYgb24gYSBzaW5nbGUgbGluZSAoSSBrZWVwIGhlcmUgYSB0YWINCj4+ICAgaW4g
-ZnJvbnQgb2YgIi5jb21wYXRpYmxlIiB0byBiZSBhbGlnbmVkIHdpdGggdGhlIHJlc3Qgb2YgdGhl
-IGNvZGUgaW4NCj4+ICAgYXRtZWxfaGxjZGNfZHRfaWRzW10pDQo+PiAtIHBhdGNoZXMgNC83IGFu
-ZCAzLzcgZnJvbSB2MiB3ZXJlIGFwcGxpZWQgc28gcmVtb3ZlIHRoZW0gZnJvbSB0aGlzIHZlcnNp
-b24NCj4+IC0gYWRkIGEgZml4IGZvciBhdG1lbF9obGNkYyAocGF0Y2ggNi82KQ0KPj4NCj4+IENo
-YW5nZXMgaW4gdjI6DQo+PiAtIHVzZSAifCIgb3BlcmF0b3IgaW4gcGF0Y2ggMS83IHRvIHNldCBB
-VE1FTF9ITENEQ19DTEtTRUwgb24gY2ZnDQo+PiAtIGNvbGxlY3QgQWNrZWQtYnksIFJldmlld2Vk
-LWJ5IHRhZ3MNCj4+DQo+PiBDbGF1ZGl1IEJlem5lYSAoNCk6DQo+PiAgIGRybTogYXRtZWwtaGxj
-ZGM6IGFkZCBjb25maWcgb3B0aW9uIGZvciBjbG9jayBzZWxlY3Rpb24NCj4+ICAgZHJtOiBhdG1l
-bC1obGNkYzogYXZvaWQgaW5pdGlhbGl6aW5nIGNmZyB3aXRoIHplcm8NCj4+ICAgcHdtOiBhdG1l
-bC1obGNkYzogYWRkIGNvbXBhdGlibGUgZm9yIFNBTTlYNjAgSExDREMncyBQV00NCj4+ICAgZHJt
-L2F0bWVsLWhjbGNkYzogcmV2ZXJ0IHNoaWZ0IGJ5IDgNCj4+DQo+PiBTYW5kZWVwIFNoZXJpa2Vy
-IE1hbGxpa2FyanVuICgyKToNCj4+ICAgZHJtOiBhdG1lbC1obGNkYzogZW5hYmxlIHN5c19jbGsg
-ZHVyaW5nIGluaXRhbGl6YXRpb24uDQo+PiAgIGRybTogYXRtZWwtaGxjZGM6IGFkZCBzYW05eDYw
-IExDRCBjb250cm9sbGVyDQo+Pg0KPj4gIGRyaXZlcnMvZ3B1L2RybS9hdG1lbC1obGNkYy9hdG1l
-bF9obGNkY19jcnRjLmMgIHwgIDE4ICsrLS0NCj4+ICBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxj
-ZGMvYXRtZWxfaGxjZGNfZGMuYyAgICB8IDEyMCArKysrKysrKysrKysrKysrKysrKysrKy0NCj4+
-ICBkcml2ZXJzL2dwdS9kcm0vYXRtZWwtaGxjZGMvYXRtZWxfaGxjZGNfZGMuaCAgICB8ICAgMiAr
-DQo+PiAgZHJpdmVycy9ncHUvZHJtL2F0bWVsLWhsY2RjL2F0bWVsX2hsY2RjX3BsYW5lLmMgfCAg
-IDIgKy0NCj4+ICBkcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYyAgICAgICAgICAgICAgICAg
-ICB8ICAgMSArDQo+PiAgNSBmaWxlcyBjaGFuZ2VkLCAxMzIgaW5zZXJ0aW9ucygrKSwgMTEgZGVs
-ZXRpb25zKC0pDQo+IA0KPiBXaHkgaXMgdGhpcyBiZWluZyBzZW50IHRvIG1lPw0KDQpTb3JyeSwg
-eW91IHdlcmUgaW4gdGhlIG9yaWdpbmFsICJ0byIgbGlzdCBkdWUgdG8gY2hhbmdlcyB0aGF0IHlv
-dSBhc2tlZCBmb3INCmluIHYyIG9uIG1mZCBwYXJ0Lg0KDQpUaGllcnJ5IHN1Z2dlc3RlZCBpbiB2
-MSBvZiB0aGlzIHNlcmllcyB0byB0YWtlIHB3bS1hdG1lbC1obGNkYy5jIGNoYW5nZXMNCnRob3Vn
-aCBNRkQgdHJlZSBbMV0uIFRoZW4sIGluIHYyIHlvdSBhc2sgbWUgdG8gZG8gdXBkYXRlIGEgYml0
-IHRoZSBjaGFuZ2VzDQppbiBwd20tYXRtZWwtaGxjZGMuYyBbMl0uDQoNCkFuZCBpbiB0aGlzIHJl
-cGx5IEkgZm9yZ290IHRvIHJlbW92ZSB5b3VyIGVtYWlsIGFzIHlvdSBwcmV2aW91c2x5DQpzdWdn
-ZXN0ZWQuIE15IGJhZCENCg0KVGhhbmsgeW91LA0KQ2xhdWRpdSBCZXpuZWENCg0KWzFdIGh0dHBz
-Oi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAxOTAzMDQxMTA1MTcuR0I1MTIxQHVsbW8vDQpbMl0g
-aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDE5MDQyNTA4MzEzMi5HRDE0NzU4QGRlbGwv
-DQoNCg0KPiANCg==
+
+--RnxXMyWEPIZsopkG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Tue, Jun 04, 2019 at 05:20:15PM +0200, Enric Balletbo i Serra wrote:
+> There is a bit of mess between cros-ec mfd includes and platform
+> includes. For example, we have a linux/mfd/cros_ec.h include that
+> exports the interface implemented in platform/chrome/cros_ec_proto.c. Or
+
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--RnxXMyWEPIZsopkG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlz3kysACgkQJNaLcl1U
+h9BVMAf+I/I3bNW13EZ789wBAFxmn5KXFbH0t6CdJDgbILW9HMsGSKGbJXJRTRDG
+GGeIfMEYK0lv5boeQbArMfoX/kkuVYHVj/71aQVsgC53JIBFFxHS2zEfzrFzgN+R
+sNsvROQYmO1T5gOySrMN+AsqPwnu3CR2LgMPRqsvguCPduIfXzEM3afJQuRh2lAW
+a5Im4U6GQX5cez1MGDHB3/Mk8fH194coSUTUtH134gpeA5LWemALrlDCRsfdSbw2
+G2oeM++LQIDx2VcKfRKWfqvKhC1Ajp5FdiZw6Z7lo6+BXFHKSVupSjKAhtIdT4gj
+RVhPy7IzR78PM8sLvDnqD6CyTHtuXQ==
+=7p/R
+-----END PGP SIGNATURE-----
+
+--RnxXMyWEPIZsopkG--
