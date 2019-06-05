@@ -1,46 +1,33 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 06/10] mfd / platform: cros_ec: Reorganize platform and
- mfd includes
-Date: Wed, 5 Jun 2019 11:02:20 +0100
-Message-ID: <20190605100220.GN2456@sirena.org.uk>
-References: <20190604152019.16100-1-enric.balletbo@collabora.com>
- <20190604152019.16100-7-enric.balletbo@collabora.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: [PATCH] pwm: atmel-hlcdc: add compatible for SAM9X60 HLCDC's PWM
+Date: Wed, 5 Jun 2019 10:25:44 +0000
+Message-ID: <1559730328-22131-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="RnxXMyWEPIZsopkG"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190604152019.16100-7-enric.balletbo@collabora.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org, gwendal@chromium.org, Guenter Roeck <groeck@chromium.org>, Benson Leung <bleung@chromium.org>, Lee Jones <lee.jones@linaro.org>, kernel@collabora.com, dtor@chromium.org, Mauro Carvalho Chehab <mchehab@kernel.org>, alsa-devel@alsa-project.org, Alessandro Zummo <a.zummo@towertech.it>, linux-iio@vger.kernel.org, Fabien Lahoudere <fabien.lahoudere@collabora.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-i2c@vger.kernel.org, linux-rtc@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Brian Norris <briannorris@chromium.org>, Chanwoo Choi <cw00.choi@samsung.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Sebastian Reichel <sre@kernel.org>, Rushikesh
+To: thierry.reding@gmail.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-
---RnxXMyWEPIZsopkG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Tue, Jun 04, 2019 at 05:20:15PM +0200, Enric Balletbo i Serra wrote:
-> There is a bit of mess between cros-ec mfd includes and platform
-> includes. For example, we have a linux/mfd/cros_ec.h include that
-> exports the interface implemented in platform/chrome/cros_ec_proto.c. Or
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---RnxXMyWEPIZsopkG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlz3kysACgkQJNaLcl1U
-h9BVMAf+I/I3bNW13EZ789wBAFxmn5KXFbH0t6CdJDgbILW9HMsGSKGbJXJRTRDG
-GGeIfMEYK0lv5boeQbArMfoX/kkuVYHVj/71aQVsgC53JIBFFxHS2zEfzrFzgN+R
-sNsvROQYmO1T5gOySrMN+AsqPwnu3CR2LgMPRqsvguCPduIfXzEM3afJQuRh2lAW
-a5Im4U6GQX5cez1MGDHB3/Mk8fH194coSUTUtH134gpeA5LWemALrlDCRsfdSbw2
-G2oeM++LQIDx2VcKfRKWfqvKhC1Ajp5FdiZw6Z7lo6+BXFHKSVupSjKAhtIdT4gj
-RVhPy7IzR78PM8sLvDnqD6CyTHtuXQ==
-=7p/R
------END PGP SIGNATURE-----
-
---RnxXMyWEPIZsopkG--
+RnJvbTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNCkFk
+ZCBjb21wYXRpYmxlIHN0cmluZyBmb3IgU0FNOVg2MCBITENEQydzIFBXTS4NCg0KU2lnbmVkLW9m
+Zi1ieTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQpBY2tl
+ZC1ieTogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4NCi0tLQ0KDQpI
+aSBUaGllcnJ5LA0KDQpUaGlzIHBhdGNoIHdhcyBpbml0aWFsbHkgcGFydCBvZiBzZXJpZXMgYXQg
+WzFdLiBUaGUgcmVzdCBvZiB0aGUgcGF0Y2hlcyBpbg0KdGhhdCBzZXJpZXMgd2VyZSB0YWtlbiB0
+aG91Z2ggZHJtLW1pc2MtbmV4dC4gT25seSB0aGlzIG9uZSByZW1haW5lZC4NCg0KWzFdIGh0dHBz
+Oi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMTU1NjE5NTc0OC0xMTEwNi0xLWdpdC1zZW5kLWVtYWls
+LWNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20vDQoNCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwt
+aGxjZGMuYyB8IDEgKw0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KDQpkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9wd20vcHdtLWF0bWVsLWhsY2RjLmMgYi9kcml2ZXJzL3B3bS9wd20tYXRt
+ZWwtaGxjZGMuYw0KaW5kZXggNTRjNjYzM2Q5YjVkLi42YmZiZTFhOTAyZmMgMTAwNjQ0DQotLS0g
+YS9kcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYw0KKysrIGIvZHJpdmVycy9wd20vcHdtLWF0
+bWVsLWhsY2RjLmMNCkBAIC0yNDYsNiArMjQ2LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9k
+ZXZpY2VfaWQgYXRtZWxfaGxjZGNfZHRfaWRzW10gPSB7DQogCQkuY29tcGF0aWJsZSA9ICJhdG1l
+bCxzYW1hNWQ0LWhsY2RjIiwNCiAJCS5kYXRhID0gJmF0bWVsX2hsY2RjX3B3bV9zYW1hNWQzX2Vy
+cmF0YSwNCiAJfSwNCisJewkuY29tcGF0aWJsZSA9ICJtaWNyb2NoaXAsc2FtOXg2MC1obGNkYyIs
+IH0sDQogCXsgLyogc2VudGluZWwgKi8gfSwNCiB9Ow0KIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2Ys
+IGF0bWVsX2hsY2RjX2R0X2lkcyk7DQotLSANCjIuNy40DQoNCg==
