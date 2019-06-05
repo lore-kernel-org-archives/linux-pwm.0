@@ -1,33 +1,42 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: [PATCH] pwm: atmel-hlcdc: add compatible for SAM9X60 HLCDC's PWM
-Date: Wed, 5 Jun 2019 10:25:44 +0000
-Message-ID: <1559730328-22131-1-git-send-email-claudiu.beznea@microchip.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v2] pwm: pca9685: fix pwm/gpio inter-operation
+Date: Wed, 5 Jun 2019 15:53:56 +0300
+Message-ID: <20190605125356.GI2781@lahna.fi.intel.com>
+References: <20190604181345.9107-1-TheSven73@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190604181345.9107-1-TheSven73@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Claudiu.Beznea@microchip.com
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, YueHaibing <yuehaibing@huawei.com>
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNCkFk
-ZCBjb21wYXRpYmxlIHN0cmluZyBmb3IgU0FNOVg2MCBITENEQydzIFBXTS4NCg0KU2lnbmVkLW9m
-Zi1ieTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQpBY2tl
-ZC1ieTogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4NCi0tLQ0KDQpI
-aSBUaGllcnJ5LA0KDQpUaGlzIHBhdGNoIHdhcyBpbml0aWFsbHkgcGFydCBvZiBzZXJpZXMgYXQg
-WzFdLiBUaGUgcmVzdCBvZiB0aGUgcGF0Y2hlcyBpbg0KdGhhdCBzZXJpZXMgd2VyZSB0YWtlbiB0
-aG91Z2ggZHJtLW1pc2MtbmV4dC4gT25seSB0aGlzIG9uZSByZW1haW5lZC4NCg0KWzFdIGh0dHBz
-Oi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMTU1NjE5NTc0OC0xMTEwNi0xLWdpdC1zZW5kLWVtYWls
-LWNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20vDQoNCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwt
-aGxjZGMuYyB8IDEgKw0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KDQpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9wd20vcHdtLWF0bWVsLWhsY2RjLmMgYi9kcml2ZXJzL3B3bS9wd20tYXRt
-ZWwtaGxjZGMuYw0KaW5kZXggNTRjNjYzM2Q5YjVkLi42YmZiZTFhOTAyZmMgMTAwNjQ0DQotLS0g
-YS9kcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYw0KKysrIGIvZHJpdmVycy9wd20vcHdtLWF0
-bWVsLWhsY2RjLmMNCkBAIC0yNDYsNiArMjQ2LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9k
-ZXZpY2VfaWQgYXRtZWxfaGxjZGNfZHRfaWRzW10gPSB7DQogCQkuY29tcGF0aWJsZSA9ICJhdG1l
-bCxzYW1hNWQ0LWhsY2RjIiwNCiAJCS5kYXRhID0gJmF0bWVsX2hsY2RjX3B3bV9zYW1hNWQzX2Vy
-cmF0YSwNCiAJfSwNCisJewkuY29tcGF0aWJsZSA9ICJtaWNyb2NoaXAsc2FtOXg2MC1obGNkYyIs
-IH0sDQogCXsgLyogc2VudGluZWwgKi8gfSwNCiB9Ow0KIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2Ys
-IGF0bWVsX2hsY2RjX2R0X2lkcyk7DQotLSANCjIuNy40DQoNCg==
+On Tue, Jun 04, 2019 at 02:13:45PM -0400, Sven Van Asbroeck wrote:
+> This driver allows pwms to be requested as gpios via gpiolib.
+> Obviously, it should not be allowed to request a gpio when its
+> corresponding pwm is already requested (and vice versa).
+> So it requires some exclusion code.
+> 
+> Given that the pwm and gpio cores are not synchronized with
+> respect to each other, this exclusion code will also require
+> proper synchronization.
+> 
+> Such a mechanism was in place, but was inadvertently removed
+> by Uwe's clean-up patch.
+> 
+> Upon revisiting the synchronization mechanism, we found that
+> theoretically, it could allow two threads to successfully
+> request conflicting pwms / gpios.
+> 
+> Replace with a bitmap which tracks pwm in-use, plus a mutex.
+> As long as pwm and gpio's respective request/free functions
+> modify the in-use bitmap while holding the mutex, proper
+> synchronization will be guaranteed.
+> 
+> Reported-by: YueHaibing <yuehaibing@huawei.com>
+> Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
