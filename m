@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 1/6] dt-bindings: Remove unused compatible strings
-Date: Fri,  7 Jun 2019 17:44:05 +0200
-Message-ID: <20190607154410.10633-2-paul@crapouillou.net>
+Subject: [PATCH v2 2/6] pwm: jz4740: Remove unused devicetree compatible strings
+Date: Fri,  7 Jun 2019 17:44:06 +0200
+Message-ID: <20190607154410.10633-3-paul@crapouillou.net>
 References: <20190607154410.10633-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -23,24 +23,21 @@ Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Notes:
     v2: Rebase on v5.2-rc3
 
- Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/pwm/pwm-jz4740.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-index 7d9d3f90641b..493bec80d59b 100644
---- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
-@@ -2,10 +2,7 @@ Ingenic JZ47xx PWM Controller
- =============================
- 
- Required properties:
--- compatible: One of:
--  * "ingenic,jz4740-pwm"
--  * "ingenic,jz4770-pwm"
--  * "ingenic,jz4780-pwm"
-+- compatible: Should be "ingenic,jz4740-pwm"
- - #pwm-cells: Should be 3. See pwm.txt in this directory for a description
-   of the cells format.
- - clocks : phandle to the external clock.
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index 88a51a40e695..5c8bb6192201 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -184,8 +184,6 @@ static int jz4740_pwm_remove(struct platform_device *pdev)
+ #ifdef CONFIG_OF
+ static const struct of_device_id jz4740_pwm_dt_ids[] = {
+ 	{ .compatible = "ingenic,jz4740-pwm", },
+-	{ .compatible = "ingenic,jz4770-pwm", },
+-	{ .compatible = "ingenic,jz4780-pwm", },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
 -- 
 2.21.0.593.g511ec345e18
