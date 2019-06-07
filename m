@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 4/6] pwm: jz4740: Drop dependency on MACH_INGENIC
-Date: Fri,  7 Jun 2019 17:44:08 +0200
-Message-ID: <20190607154410.10633-5-paul@crapouillou.net>
+Subject: [PATCH v2 6/6] pwm: jz4740: Use __init_or_module and __exit for .probe and .remove
+Date: Fri,  7 Jun 2019 17:44:10 +0200
+Message-ID: <20190607154410.10633-7-paul@crapouillou.net>
 References: <20190607154410.10633-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,31 +12,40 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Depending on MACH_INGENIC prevent us from creating a generic kernel that
-works on more than one MIPS board. Instead, we just depend on MIPS being
-set.
+This allows the probe function to be dropped after the kernel finished
+its initialization, in the case where the driver was not compiled as a
+module.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
 
 Notes:
-    v2: Rebase on v5.2-rc3
+    v2: New patch
 
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-jz4740.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index dff5a93f7daa..26d484e22838 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -224,7 +224,7 @@ config PWM_IMX_TPM
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index f901e8a0d33d..1b5077825721 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -145,7 +145,7 @@ static const struct pwm_ops jz4740_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
  
- config PWM_JZ4740
- 	tristate "Ingenic JZ47xx PWM support"
--	depends on MACH_INGENIC
-+	depends on MIPS
- 	help
- 	  Generic PWM framework driver for Ingenic JZ47xx based
- 	  machines.
+-static int jz4740_pwm_probe(struct platform_device *pdev)
++static int __init_or_module jz4740_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct jz4740_pwm_chip *jz4740;
+ 
+@@ -169,7 +169,7 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
+ 	return pwmchip_add(&jz4740->chip);
+ }
+ 
+-static int jz4740_pwm_remove(struct platform_device *pdev)
++static int __exit jz4740_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct jz4740_pwm_chip *jz4740 = platform_get_drvdata(pdev);
+ 
 -- 
 2.21.0.593.g511ec345e18
