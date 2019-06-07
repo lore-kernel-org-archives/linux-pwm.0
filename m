@@ -1,7 +1,7 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 6/6] pwm: jz4740: Use __init_or_module and __exit for .probe and .remove
-Date: Fri,  7 Jun 2019 17:44:10 +0200
-Message-ID: <20190607154410.10633-7-paul@crapouillou.net>
+Subject: [PATCH v2 5/6] pwm: jz4740: Force TCU2 channels to return to their init level
+Date: Fri,  7 Jun 2019 17:44:09 +0200
+Message-ID: <20190607154410.10633-6-paul@crapouillou.net>
 References: <20190607154410.10633-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,9 +12,10 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-This allows the probe function to be dropped after the kernel finished
-its initialization, in the case where the driver was not compiled as a
-module.
+When the PWM mode of TCU2 channels is disabled, their corresponding pin
+does not always return to its initial level. Force this by using a small
+trick: we set duty > period, which is an invalid configuration for the
+hardware, which then correctly resets the pin to the initial level.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
@@ -22,30 +23,29 @@ Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Notes:
     v2: New patch
 
- drivers/pwm/pwm-jz4740.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-jz4740.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index f901e8a0d33d..1b5077825721 100644
+index 75254360621c..f901e8a0d33d 100644
 --- a/drivers/pwm/pwm-jz4740.c
 +++ b/drivers/pwm/pwm-jz4740.c
-@@ -145,7 +145,7 @@ static const struct pwm_ops jz4740_pwm_ops = {
- 	.owner = THIS_MODULE,
- };
- 
--static int jz4740_pwm_probe(struct platform_device *pdev)
-+static int __init_or_module jz4740_pwm_probe(struct platform_device *pdev)
+@@ -63,7 +63,15 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
  {
- 	struct jz4740_pwm_chip *jz4740;
+ 	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->hwpwm);
  
-@@ -169,7 +169,7 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
- 	return pwmchip_add(&jz4740->chip);
- }
- 
--static int jz4740_pwm_remove(struct platform_device *pdev)
-+static int __exit jz4740_pwm_remove(struct platform_device *pdev)
- {
- 	struct jz4740_pwm_chip *jz4740 = platform_get_drvdata(pdev);
- 
+-	/* Disable PWM output.
++	/*
++	 * Set duty > period. This trick allows the TCU channels in TCU2 mode to
++	 * properly return to their init level.
++	 */
++	jz4740_timer_set_duty(pwm->hwpwm, 0xffff);
++	jz4740_timer_set_period(pwm->hwpwm, 0x0);
++
++	/*
++	 * Disable PWM output.
+ 	 * In TCU2 mode (channel 1/2 on JZ4750+), this must be done before the
+ 	 * counter is stopped, while in TCU1 mode the order does not matter.
+ 	 */
 -- 
 2.21.0.593.g511ec345e18
