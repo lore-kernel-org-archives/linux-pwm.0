@@ -1,21 +1,115 @@
 From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 0/6] PWM JZ4740 fixes and cleanups
-Date: Fri,  7 Jun 2019 17:44:04 +0200
-Message-ID: <20190607154410.10633-1-paul@crapouillou.net>
+Subject: [PATCH v2 3/6] pwm: jz4740: Apply configuration atomically
+Date: Fri,  7 Jun 2019 17:44:07 +0200
+Message-ID: <20190607154410.10633-4-paul@crapouillou.net>
+References: <20190607154410.10633-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190607154410.10633-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
+This is cleaner, more future-proof, and incidentally it also fixes the
+PWM resetting its config when stopped/started several times.
 
-I rebased my patchset on top of v5.2-rc3 since it didn't apply anymore.
-Patches 1-4 are unmodified. The old patch 5 added a SPDX license
-notifier, but somebody else added it in -rc3 apparently, so I dropped
-it. In the meantime I added two more cleanups.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
 
-Cheers
--Paul
+Notes:
+    v2: Rebase on v5.2-rc3
+
+ drivers/pwm/pwm-jz4740.c | 37 ++++++++++++-------------------------
+ 1 file changed, 12 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index 5c8bb6192201..75254360621c 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -74,17 +74,16 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	jz4740_timer_disable(pwm->hwpwm);
+ }
+ 
+-static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+-			     int duty_ns, int period_ns)
++static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			    struct pwm_state *state)
+ {
+ 	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
+ 	unsigned long long tmp;
+ 	unsigned long period, duty;
+ 	unsigned int prescaler = 0;
+ 	uint16_t ctrl;
+-	bool is_enabled;
+ 
+-	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
++	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
+ 	do_div(tmp, 1000000000);
+ 	period = tmp;
+ 
+@@ -96,16 +95,14 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (prescaler == 6)
+ 		return -EINVAL;
+ 
+-	tmp = (unsigned long long)period * duty_ns;
+-	do_div(tmp, period_ns);
++	tmp = (unsigned long long)period * state->duty_cycle;
++	do_div(tmp, state->period);
+ 	duty = period - tmp;
+ 
+ 	if (duty >= period)
+ 		duty = period - 1;
+ 
+-	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
+-	if (is_enabled)
+-		jz4740_pwm_disable(chip, pwm);
++	jz4740_pwm_disable(chip, pwm);
+ 
+ 	jz4740_timer_set_count(pwm->hwpwm, 0);
+ 	jz4740_timer_set_duty(pwm->hwpwm, duty);
+@@ -116,18 +113,7 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+ 
+-	if (is_enabled)
+-		jz4740_pwm_enable(chip, pwm);
+-
+-	return 0;
+-}
+-
+-static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
+-		struct pwm_device *pwm, enum pwm_polarity polarity)
+-{
+-	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->pwm);
+-
+-	switch (polarity) {
++	switch (state->polarity) {
+ 	case PWM_POLARITY_NORMAL:
+ 		ctrl &= ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
+ 		break;
+@@ -137,16 +123,17 @@ static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
+ 	}
+ 
+ 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
++
++	if (state->enabled)
++		jz4740_pwm_enable(chip, pwm);
++
+ 	return 0;
+ }
+ 
+ static const struct pwm_ops jz4740_pwm_ops = {
+ 	.request = jz4740_pwm_request,
+ 	.free = jz4740_pwm_free,
+-	.config = jz4740_pwm_config,
+-	.set_polarity = jz4740_pwm_set_polarity,
+-	.enable = jz4740_pwm_enable,
+-	.disable = jz4740_pwm_disable,
++	.apply = jz4740_pwm_apply,
+ 	.owner = THIS_MODULE,
+ };
+ 
+-- 
+2.21.0.593.g511ec345e18
