@@ -1,77 +1,46 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH] dt-bindings: pwm: Convert Allwinner PWM to a schema
-Date: Fri, 7 Jun 2019 13:18:38 +0200
-Message-ID: <20190607111838.xlx74cvcfhaob3wf@flea>
-References: <20190516120848.25007-1-maxime.ripard@bootlin.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 1/6] dt-bindings: Remove unused compatible strings
+Date: Fri,  7 Jun 2019 17:44:05 +0200
+Message-ID: <20190607154410.10633-2-paul@crapouillou.net>
+References: <20190607154410.10633-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7442821093348605924=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190516120848.25007-1-maxime.ripard@bootlin.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190607154410.10633-1-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
 
+Right now none of the Ingenic-based boards probe this driver from
+devicetree. This driver defined three compatible strings for the exact
+same behaviour. Before these strings are used, we can remove two of
+them.
 
---===============7442821093348605924==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="fsx2qrso5t2rhcip"
-Content-Disposition: inline
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
 
+Notes:
+    v2: Rebase on v5.2-rc3
 
---fsx2qrso5t2rhcip
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+ Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-On Thu, May 16, 2019 at 02:08:48PM +0200, Maxime Ripard wrote:
-> The Allwinner SoCs have a PWM controller supported in Linux, with a
-> matching Device Tree binding.
->
-> Now that we have the DT validation in place, let's convert the device tree
-> bindings for that controller over to a YAML schemas.
->
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-
-Ping?
-
-Maxime
-
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---fsx2qrso5t2rhcip
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXPpIDgAKCRDj7w1vZxhR
-xdluAP41N1Jp3Dwm49Xfan9JPKoR2ntx+N8mCFZ4hxJNzCClgwEA/b+vciuNG8XX
-hSmZYYIlPhekGqLpadsETIfXDVafiAI=
-=BXUr
------END PGP SIGNATURE-----
-
---fsx2qrso5t2rhcip--
-
-
---===============7442821093348605924==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============7442821093348605924==--
+diff --git a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+index 7d9d3f90641b..493bec80d59b 100644
+--- a/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt
+@@ -2,10 +2,7 @@ Ingenic JZ47xx PWM Controller
+ =============================
+ 
+ Required properties:
+-- compatible: One of:
+-  * "ingenic,jz4740-pwm"
+-  * "ingenic,jz4770-pwm"
+-  * "ingenic,jz4780-pwm"
++- compatible: Should be "ingenic,jz4740-pwm"
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a description
+   of the cells format.
+ - clocks : phandle to the external clock.
+-- 
+2.21.0.593.g511ec345e18
