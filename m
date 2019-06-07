@@ -1,86 +1,77 @@
-From: Sven Van Asbroeck <thesven73@gmail.com>
-Subject: Re: [PATCH -next] pwm: pca9685: Remove set but not used variable 'pwm'
-Date: Thu,  6 Jun 2019 11:11:11 -0400
-Message-ID: <20190606151111.14237-1-TheSven73@gmail.com>
-References: <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, YueHaibing <yuehaibing@huawei.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+Subject: Re: [PATCH] dt-bindings: pwm: Convert Allwinner PWM to a schema
+Date: Fri, 7 Jun 2019 13:18:38 +0200
+Message-ID: <20190607111838.xlx74cvcfhaob3wf@flea>
+References: <20190516120848.25007-1-maxime.ripard@bootlin.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============7442821093348605924=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190516120848.25007-1-maxime.ripard@bootlin.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-I was able to test the patch [1] exclusion mechanism without access to actual
-hardware - by giving it a dummy regmap. See patch below.
 
-Test cases (all via sysfs):
-1. verify requested pwm cannot be requested as gpio
-2. verify requested gpio cannot be requested as pwm
-3. verify pwm "all LEDs" cannot be used if pwms/gpios in use
-4. verify pwms/gpios cannot be requested if pwm "all LEDs" in use
+--===============7442821093348605924==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="fsx2qrso5t2rhcip"
+Content-Disposition: inline
 
-All test cases ok.
- Obviously, I could not test multi-threaded correctness.
 
-[1] https://lkml.org/lkml/2019/6/4/1039
+--fsx2qrso5t2rhcip
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
----
- drivers/pwm/pwm-pca9685.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+On Thu, May 16, 2019 at 02:08:48PM +0200, Maxime Ripard wrote:
+> The Allwinner SoCs have a PWM controller supported in Linux, with a
+> matching Device Tree binding.
+>
+> Now that we have the DT validation in place, let's convert the device tree
+> bindings for that controller over to a YAML schemas.
+>
+> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 259fd58812ae..c059da5f86f4 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -83,6 +83,7 @@ struct pca9685 {
- 	struct regmap *regmap;
- 	int duty_ns;
- 	int period_ns;
-+	u8 regs[PCA9685_NUMREGS];
- #if IS_ENABLED(CONFIG_GPIOLIB)
- 	struct mutex lock;
- 	struct gpio_chip gpio;
-@@ -446,11 +447,31 @@ static const struct pwm_ops pca9685_pwm_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static int read_reg_dummy(void *context, unsigned int reg,
-+			unsigned int *val)
-+{
-+	struct pca9685 *pca = context;
-+
-+	*val = pca->regs[reg];
-+	return 0;
-+}
-+
-+static int write_reg_dummy(void *context, unsigned int reg,
-+			 unsigned int val)
-+{
-+	struct pca9685 *pca = context;
-+
-+	pca->regs[reg] = val;
-+	return 0;
-+}
-+
- static const struct regmap_config pca9685_regmap_i2c_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- 	.max_register = PCA9685_NUMREGS,
- 	.cache_type = REGCACHE_NONE,
-+	.reg_read = read_reg_dummy,
-+	.reg_write = write_reg_dummy,
- };
- 
- static int pca9685_pwm_probe(struct i2c_client *client,
-@@ -464,7 +485,8 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 	if (!pca)
- 		return -ENOMEM;
- 
--	pca->regmap = devm_regmap_init_i2c(client, &pca9685_regmap_i2c_config);
-+	pca->regmap = devm_regmap_init(&client->dev, NULL, pca,
-+					&pca9685_regmap_i2c_config);
- 	if (IS_ERR(pca->regmap)) {
- 		ret = PTR_ERR(pca->regmap);
- 		dev_err(&client->dev, "Failed to initialize register map: %d\n",
--- 
-2.17.1
+Ping?
+
+Maxime
+
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--fsx2qrso5t2rhcip
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXPpIDgAKCRDj7w1vZxhR
+xdluAP41N1Jp3Dwm49Xfan9JPKoR2ntx+N8mCFZ4hxJNzCClgwEA/b+vciuNG8XX
+hSmZYYIlPhekGqLpadsETIfXDVafiAI=
+=BXUr
+-----END PGP SIGNATURE-----
+
+--fsx2qrso5t2rhcip--
+
+
+--===============7442821093348605924==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============7442821093348605924==--
