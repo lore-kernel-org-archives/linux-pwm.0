@@ -1,9 +1,10 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 13/14] pwm: meson: add support PWM_POLARITY_INVERSED when disabling
-Date: Sat,  8 Jun 2019 20:06:25 +0200
-Message-ID: <20190608180626.30589-14-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 10/14] pwm: meson: simplify the calculation of the pre-divider and count
+Date: Sat,  8 Jun 2019 20:06:22 +0200
+Message-ID: <20190608180626.30589-11-martin.blumenstingl@googlemail.com>
 References: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
@@ -12,67 +13,111 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-meson_pwm_apply() has to consider the PWM polarity when disabling the
-output.
-With enabled=false and polarity=PWM_POLARITY_NORMAL the output needs to
-be LOW. The driver already supports this.
-With enabled=false and polarity=PWM_POLARITY_INVERSED the output needs
-to be HIGH. Implement this in the driver by internally enabling the
-output with the same settings that we already use for "period == duty".
+Replace the loop to calculate the pre-divider and count with two
+separate div64_u64() calculations. This makes the code easier to read
+and improves the precision.
 
-This fixes a PWM API violation which expects that the driver honors the
-polarity also for enabled=false. Due to the IP block not supporting this
-natively we only get "an as close as possible" to 100% HIGH signal (in
-my test setup with input clock of 24MHz and measuring the output with a
-logic analyzer at 24MHz sampling rate I got a duty cycle of 99.998475%
-on a Khadas VIM).
+Three example cases:
+1) 32.768kHz LPO clock for the SDIO wifi chip on Khadas VIM
+   clock input: 500MHz (FCLK_DIV4)
+   period: 30518ns
+   duty cycle: 15259ns
+old algorithm: pre_div=0, cnt=15259
+new algorithm: pre_div=0, cnt=15259
+(no difference in calculated values)
 
+2) PWM LED on Khadas VIM
+   clock input: 24MHz (XTAL)
+   period: 7812500ns
+   duty cycle: 7812500ns
+old algorithm: pre_div=2, cnt=62004
+new algorithm: pre_div=2, cnt=62500
+Using a scope (24MHz sampling rate) shows the actual difference:
+- old: 7753000ns, off by -59500ns (0.7616%)
+- new: 7815000ns, off by +2500ns (0.032%)
+
+3) Theoretical case where pre_div is different
+   clock input: 24MHz (XTAL)
+   period: 2730624ns
+   duty cycle: 1365312ns
+old algorithm: pre_div=1, cnt=32768
+new algorithm: pre_div=0, cnt=65534
+Using a scope (24MHz sampling rate) shows the actual difference:
+- old: 2731000ns
+- new: 2731000ns
+(my scope is not precise enough to measure the difference if there's
+any)
+
+Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 ---
- drivers/pwm/pwm-meson.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-meson.c | 25 ++++++++++---------------
+ 1 file changed, 10 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 900d362ec3c9..bb48ba85f756 100644
+index 27915d6475e3..9afa1e5aaebf 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -245,6 +245,7 @@ static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
- static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   struct pwm_state *state)
- {
-+	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	struct meson_pwm *meson = to_meson_pwm(chip);
- 	int err = 0;
+@@ -12,6 +12,7 @@
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+@@ -145,7 +146,6 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
+ 	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
+ 	unsigned int duty, period, pre_div, cnt, duty_cnt;
+ 	unsigned long fin_freq = -1;
+-	u64 fin_ps;
  
-@@ -252,7 +253,27 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	duty = state->duty_cycle;
+ 	period = state->period;
+@@ -164,24 +164,19 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
+ 	}
+ 
+ 	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
+-	fin_ps = (u64)NSEC_PER_SEC * 1000;
+-	do_div(fin_ps, fin_freq);
+-
+-	/* Calc pre_div with the period */
+-	for (pre_div = 0; pre_div <= MISC_CLK_DIV_MASK; pre_div++) {
+-		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
+-					    fin_ps * (pre_div + 1));
+-		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
+-			fin_ps, pre_div, cnt);
+-		if (cnt <= 0xffff)
+-			break;
+-	}
+ 
++	pre_div = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * 0xffffLL);
+ 	if (pre_div > MISC_CLK_DIV_MASK) {
+ 		dev_err(meson->chip.dev, "unable to get period pre_div\n");
  		return -EINVAL;
+ 	}
  
- 	if (!state->enabled) {
--		meson_pwm_disable(meson, pwm);
-+		if (state->polarity == PWM_POLARITY_INVERSED) {
-+			/*
-+			 * This IP block revision doesn't have an "always high"
-+			 * setting which we can use for "inverted disabled".
-+			 * Instead we achieve this using the same settings
-+			 * that we use a pre_div of 0 (to get the shortest
-+			 * possible duration for one "count") and
-+			 * "period == duty_cycle". This results in a signal
-+			 * which is LOW for one "count", while being HIGH for
-+			 * the rest of the (so the signal is HIGH for slightly
-+			 * less than 100% of the period, but this is the best
-+			 * we can achieve).
-+			 */
-+			channel->pre_div = 0;
-+			channel->hi = ~0;
-+			channel->lo = 0;
++	cnt = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * (pre_div + 1));
++	if (cnt > 0xffff) {
++		dev_err(meson->chip.dev, "unable to get period cnt\n");
++		return -EINVAL;
++	}
 +
-+			meson_pwm_enable(meson, pwm);
-+		} else {
-+			meson_pwm_disable(meson, pwm);
-+		}
+ 	dev_dbg(meson->chip.dev, "period=%u pre_div=%u cnt=%u\n", period,
+ 		pre_div, cnt);
+ 
+@@ -195,8 +190,8 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
+ 		channel->lo = cnt;
  	} else {
- 		err = meson_pwm_calc(meson, pwm, state);
- 		if (err < 0)
+ 		/* Then check is we can have the duty with the same pre_div */
+-		duty_cnt = DIV_ROUND_CLOSEST_ULL((u64)duty * 1000,
+-						 fin_ps * (pre_div + 1));
++		duty_cnt = div64_u64(fin_freq * (u64)duty,
++				     NSEC_PER_SEC * (pre_div + 1));
+ 		if (duty_cnt > 0xffff) {
+ 			dev_err(meson->chip.dev, "unable to get duty cycle\n");
+ 			return -EINVAL;
 -- 
 2.21.0
