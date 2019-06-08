@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 06/14] pwm: meson: pass struct pwm_device to meson_pwm_calc()
-Date: Sat,  8 Jun 2019 20:06:18 +0200
-Message-ID: <20190608180626.30589-7-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 05/14] pwm: meson: don't duplicate the polarity internally
+Date: Sat,  8 Jun 2019 20:06:17 +0200
+Message-ID: <20190608180626.30589-6-martin.blumenstingl@googlemail.com>
 References: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,51 +12,79 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-meson_pwm_calc() is the last function that accepts a struct
-meson_pwm_channel. meson_pwm_enable(), meson_pwm_disable() and
-meson_pwm_apply() for example are all taking a struct pwm_device as
-parameter. When they need the struct meson_pwm_channel these functions
-simply call pwm_get_chip_data() internally.
+Let meson_pwm_calc() use the polarity from struct pwm_state directly.
+This removes a level of indirection where meson_pwm_apply() first had to
+set a driver-internal inverter mask which was then only used by
+meson_pwm_calc().
 
-Make meson_pwm_calc() consistent with the other functions in the
-meson-pwm driver by passing struct pwm_device to it as well. The value
-of the "id" parameter is actually pwm->hwpwm, but the driver never read
-the "id" parameter, which is why there's no replacement for it in the
-new code.
-
-No functional changes.
+Instead of adding the polarity as parameter to meson_pwm_calc() switch
+to struct pwm_state directly to make it easier to see where the
+parameters are actually coming from.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 ---
- drivers/pwm/pwm-meson.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-meson.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 39ea119add7b..d6eb4d04d5c9 100644
+index 84b28ba0f903..39ea119add7b 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -114,10 +114,10 @@ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 		clk_disable_unprepare(channel->clk);
+@@ -63,7 +63,6 @@ struct meson_pwm {
+ 	struct pwm_chip chip;
+ 	const struct meson_pwm_data *data;
+ 	void __iomem *base;
+-	u8 inverter_mask;
+ 	/*
+ 	 * Protects register (write) access to the REG_MISC_AB register
+ 	 * that is shared between the two PWMs.
+@@ -116,14 +115,17 @@ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
  }
  
--static int meson_pwm_calc(struct meson_pwm *meson,
--			  struct meson_pwm_channel *channel,
-+static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 			  struct pwm_state *state)
+ static int meson_pwm_calc(struct meson_pwm *meson,
+-			  struct meson_pwm_channel *channel, unsigned int id,
+-			  unsigned int duty, unsigned int period)
++			  struct meson_pwm_channel *channel,
++			  struct pwm_state *state)
  {
-+	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	unsigned int duty, period, pre_div, cnt, duty_cnt;
+-	unsigned int pre_div, cnt, duty_cnt;
++	unsigned int duty, period, pre_div, cnt, duty_cnt;
  	unsigned long fin_freq = -1;
  	u64 fin_ps;
-@@ -280,7 +280,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+-	if (~(meson->inverter_mask >> id) & 0x1)
++	duty = state->duty_cycle;
++	period = state->period;
++
++	if (state->polarity == PWM_POLARITY_INVERSED)
+ 		duty = period - duty;
+ 
+ 	if (period == channel->state.period &&
+@@ -278,15 +280,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	if (state->period != channel->state.period ||
  	    state->duty_cycle != channel->state.duty_cycle ||
  	    state->polarity != channel->state.polarity) {
--		err = meson_pwm_calc(meson, channel, state);
-+		err = meson_pwm_calc(meson, pwm, state);
+-		if (state->polarity != channel->state.polarity) {
+-			if (state->polarity == PWM_POLARITY_NORMAL)
+-				meson->inverter_mask |= BIT(pwm->hwpwm);
+-			else
+-				meson->inverter_mask &= ~BIT(pwm->hwpwm);
+-		}
+-
+-		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
+-				     state->duty_cycle, state->period);
++		err = meson_pwm_calc(meson, channel, state);
  		if (err < 0)
  			return err;
  
+@@ -520,7 +514,6 @@ static int meson_pwm_probe(struct platform_device *pdev)
+ 	meson->chip.of_pwm_n_cells = 3;
+ 
+ 	meson->data = of_device_get_match_data(&pdev->dev);
+-	meson->inverter_mask = BIT(meson->chip.npwm) - 1;
+ 
+ 	channels = devm_kcalloc(&pdev->dev, meson->chip.npwm,
+ 				sizeof(*channels), GFP_KERNEL);
 -- 
 2.21.0
