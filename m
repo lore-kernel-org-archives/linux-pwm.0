@@ -1,10 +1,9 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 14/14] pwm: meson: add documentation to the driver
-Date: Sat,  8 Jun 2019 20:06:26 +0200
-Message-ID: <20190608180626.30589-15-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 11/14] pwm: meson: read the full hardware state in meson_pwm_get_state()
+Date: Sat,  8 Jun 2019 20:06:23 +0200
+Message-ID: <20190608180626.30589-12-martin.blumenstingl@googlemail.com>
 References: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
@@ -13,45 +12,99 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add a link to the datasheet and a short summary how the hardware works.
-The goal is to make it easier for other developers to understand why the
-pwm-meson driver is implemented the way it is.
+Update the meson_pwm_get_state() implementation to take care of all
+information in the registers instead of only reading the "enabled"
+state.
 
-Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Co-authored-by: Neil Armstrong <narmstrong@baylibre.com>
+The PWM output is only enabled if two conditions are met:
+1. the per-channel clock is enabled
+2. the PWM output is enabled
+
+Calculate the PWM period and duty cycle using the reverse formula which
+we already have in meson_pwm_calc() and update struct pwm_state with the
+results.
+
+As result of this /sys/kernel/debug/pwm now shows the PWM state set by
+the bootloader (or firmware) after booting Linux.
+
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 ---
- drivers/pwm/pwm-meson.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/pwm/pwm-meson.c | 52 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 49 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index bb48ba85f756..6a978caba483 100644
+index 9afa1e5aaebf..010212166d5d 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -1,5 +1,23 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /*
-+ * PWM controller driver for Amlogic Meson SoCs.
-+ *
-+ * This PWM is only a set of Gates, Dividers and Counters:
-+ * PWM output is achieved by calculating a clock that permits calculating
-+ * two periods (low and high). The counter then has to be set to switch after
-+ * N cycles for the first half period.
-+ * The hardware has no "polarity" setting. This driver reverses the period
-+ * cycles (the low length is inverted with the high length) for
-+ * PWM_POLARITY_INVERSED. This means that .get_state cannot read the polarity
-+ * from the hardware.
-+ * Setting the duty cycle will disable and re-enable the PWM output.
-+ * Disabling the PWM stops the output immediately (without waiting for the
-+ * current period to complete first).
-+ *
-+ * The public S922X datasheet contains some documentation for this PWM
-+ * controller starting on page 1084:
-+ * https://dl.khadas.com/Hardware/VIM2/Datasheet/S912_Datasheet_V0.220170314publicversion-Wesion.pdf
-+ *
-  * Copyright (c) 2016 BayLibre, SAS.
-  * Author: Neil Armstrong <narmstrong@baylibre.com>
-  * Copyright (C) 2014 Amlogic, Inc.
+@@ -287,19 +287,65 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++static unsigned int meson_pwm_cnt_to_ns(struct pwm_chip *chip,
++					struct pwm_device *pwm, u32 cnt)
++{
++	struct meson_pwm *meson = to_meson_pwm(chip);
++	struct meson_pwm_channel *channel;
++	unsigned long fin_freq;
++	u32 fin_ns;
++
++	/* to_meson_pwm() can only be used after .get_state() is called */
++	channel = &meson->channels[pwm->hwpwm];
++
++	fin_freq = clk_get_rate(channel->clk);
++	if (fin_freq == 0)
++		return 0;
++
++	fin_ns = div_u64(NSEC_PER_SEC, fin_freq);
++
++	return cnt * fin_ns * (channel->pre_div + 1);
++}
++
+ static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				struct pwm_state *state)
+ {
+ 	struct meson_pwm *meson = to_meson_pwm(chip);
+-	u32 value, mask;
++	struct meson_pwm_channel_data *channel_data;
++	struct meson_pwm_channel *channel;
++	u32 value, tmp;
+ 
+ 	if (!state)
+ 		return;
+ 
+-	mask = meson_pwm_per_channel_data[pwm->hwpwm].pwm_en_mask;
++	channel = &meson->channels[pwm->hwpwm];
++	channel_data = &meson_pwm_per_channel_data[pwm->hwpwm];
+ 
+ 	value = readl(meson->base + REG_MISC_AB);
+-	state->enabled = (value & mask) != 0;
++
++	tmp = channel_data->pwm_en_mask | channel_data->clk_en_mask;
++	state->enabled = (value & tmp) == tmp;
++
++	tmp = value >> channel_data->clk_div_shift;
++	channel->pre_div = FIELD_GET(MISC_CLK_DIV_MASK, tmp);
++
++	value = readl(meson->base + channel_data->reg_offset);
++
++	channel->lo = FIELD_GET(PWM_LOW_MASK, value);
++	channel->hi = FIELD_GET(PWM_HIGH_MASK, value);
++
++	if (channel->lo == 0) {
++		state->period = meson_pwm_cnt_to_ns(chip, pwm, channel->hi);
++		state->duty_cycle = state->period;
++	} else if (channel->lo >= channel->hi) {
++		state->period = meson_pwm_cnt_to_ns(chip, pwm,
++						    channel->lo + channel->hi);
++		state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm,
++							channel->hi);
++	} else {
++		state->period = 0;
++		state->duty_cycle = 0;
++	}
+ }
+ 
+ static const struct pwm_ops meson_pwm_ops = {
 -- 
 2.21.0
