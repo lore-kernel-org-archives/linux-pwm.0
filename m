@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 05/14] pwm: meson: don't duplicate the polarity internally
-Date: Sat,  8 Jun 2019 20:06:17 +0200
-Message-ID: <20190608180626.30589-6-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 03/14] pwm: meson: use GENMASK and FIELD_PREP for the lo and hi values
+Date: Sat,  8 Jun 2019 20:06:15 +0200
+Message-ID: <20190608180626.30589-4-martin.blumenstingl@googlemail.com>
 References: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,79 +12,55 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: u.kleine-koenig@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Let meson_pwm_calc() use the polarity from struct pwm_state directly.
-This removes a level of indirection where meson_pwm_apply() first had to
-set a driver-internal inverter mask which was then only used by
-meson_pwm_calc().
+meson_pwm_calc() ensures that "lo" is always less than 16 bits wide
+(otherwise it would overflow into the "hi" part of the REG_PWM_{A,B}
+register).
+Use GENMASK and FIELD_PREP for the lo and hi values to make it easier to
+spot how wide these are internally. Additionally this is a preparation
+step for the .get_state() implementation where the GENMASK() for lo and
+hi becomes handy because it can be used with FIELD_GET() to extract the
+values from the register REG_PWM_{A,B} register.
 
-Instead of adding the polarity as parameter to meson_pwm_calc() switch
-to struct pwm_state directly to make it easier to see where the
-parameters are actually coming from.
+No functional changes intended.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 ---
- drivers/pwm/pwm-meson.c | 23 ++++++++---------------
- 1 file changed, 8 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-meson.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 84b28ba0f903..39ea119add7b 100644
+index 35b38c7201c3..c62a3ac924d0 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -63,7 +63,6 @@ struct meson_pwm {
- 	struct pwm_chip chip;
- 	const struct meson_pwm_data *data;
- 	void __iomem *base;
--	u8 inverter_mask;
- 	/*
- 	 * Protects register (write) access to the REG_MISC_AB register
- 	 * that is shared between the two PWMs.
-@@ -116,14 +115,17 @@ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- }
+@@ -5,6 +5,8 @@
+  * Copyright (C) 2014 Amlogic, Inc.
+  */
  
- static int meson_pwm_calc(struct meson_pwm *meson,
--			  struct meson_pwm_channel *channel, unsigned int id,
--			  unsigned int duty, unsigned int period)
-+			  struct meson_pwm_channel *channel,
-+			  struct pwm_state *state)
- {
--	unsigned int pre_div, cnt, duty_cnt;
-+	unsigned int duty, period, pre_div, cnt, duty_cnt;
- 	unsigned long fin_freq = -1;
- 	u64 fin_ps;
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/clk.h>
+ #include <linux/clk-provider.h>
+ #include <linux/err.h>
+@@ -20,7 +22,8 @@
  
--	if (~(meson->inverter_mask >> id) & 0x1)
-+	duty = state->duty_cycle;
-+	period = state->period;
-+
-+	if (state->polarity == PWM_POLARITY_INVERSED)
- 		duty = period - duty;
+ #define REG_PWM_A		0x0
+ #define REG_PWM_B		0x4
+-#define PWM_HIGH_SHIFT		16
++#define PWM_LOW_MASK		GENMASK(15, 0)
++#define PWM_HIGH_MASK		GENMASK(31, 16)
  
- 	if (period == channel->state.period &&
-@@ -278,15 +280,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (state->period != channel->state.period ||
- 	    state->duty_cycle != channel->state.duty_cycle ||
- 	    state->polarity != channel->state.polarity) {
--		if (state->polarity != channel->state.polarity) {
--			if (state->polarity == PWM_POLARITY_NORMAL)
--				meson->inverter_mask |= BIT(pwm->hwpwm);
--			else
--				meson->inverter_mask &= ~BIT(pwm->hwpwm);
--		}
--
--		err = meson_pwm_calc(meson, channel, pwm->hwpwm,
--				     state->duty_cycle, state->period);
-+		err = meson_pwm_calc(meson, channel, state);
- 		if (err < 0)
- 			return err;
+ #define REG_MISC_AB		0x8
+ #define MISC_B_CLK_EN		BIT(23)
+@@ -217,7 +220,8 @@ static void meson_pwm_enable(struct meson_pwm *meson, struct pwm_device *pwm)
+ 	value |= clk_enable;
+ 	writel(value, meson->base + REG_MISC_AB);
  
-@@ -520,7 +514,6 @@ static int meson_pwm_probe(struct platform_device *pdev)
- 	meson->chip.of_pwm_n_cells = 3;
+-	value = (channel->hi << PWM_HIGH_SHIFT) | channel->lo;
++	value = FIELD_PREP(PWM_HIGH_MASK, channel->hi) |
++		FIELD_PREP(PWM_LOW_MASK, channel->lo);
+ 	writel(value, meson->base + offset);
  
- 	meson->data = of_device_get_match_data(&pdev->dev);
--	meson->inverter_mask = BIT(meson->chip.npwm) - 1;
- 
- 	channels = devm_kcalloc(&pdev->dev, meson->chip.npwm,
- 				sizeof(*channels), GFP_KERNEL);
+ 	value = readl(meson->base + REG_MISC_AB);
 -- 
 2.21.0
