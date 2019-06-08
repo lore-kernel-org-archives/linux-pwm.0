@@ -1,115 +1,52 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 3/6] pwm: jz4740: Apply configuration atomically
-Date: Fri,  7 Jun 2019 17:44:07 +0200
-Message-ID: <20190607154410.10633-4-paul@crapouillou.net>
-References: <20190607154410.10633-1-paul@crapouillou.net>
+From: Jitao Shi <jitao.shi@mediatek.com>
+Subject: [1/2] dt-bindngs: display: panel: Add BOE tv101wum-nl6 panel bindings
+Date: Sat, 8 Jun 2019 15:02:29 +0800
+Message-ID: <20190608070230.55381-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190607154410.10633-1-paul@crapouillou.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Sean Paul <seanpaul@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-This is cleaner, more future-proof, and incidentally it also fixes the
-PWM resetting its config when stopped/started several times.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
-
-Notes:
-    v2: Rebase on v5.2-rc3
-
- drivers/pwm/pwm-jz4740.c | 37 ++++++++++++-------------------------
- 1 file changed, 12 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index 5c8bb6192201..75254360621c 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -74,17 +74,16 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	jz4740_timer_disable(pwm->hwpwm);
- }
- 
--static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			     int duty_ns, int period_ns)
-+static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    struct pwm_state *state)
- {
- 	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
- 	unsigned long long tmp;
- 	unsigned long period, duty;
- 	unsigned int prescaler = 0;
- 	uint16_t ctrl;
--	bool is_enabled;
- 
--	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
-+	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
- 	do_div(tmp, 1000000000);
- 	period = tmp;
- 
-@@ -96,16 +95,14 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (prescaler == 6)
- 		return -EINVAL;
- 
--	tmp = (unsigned long long)period * duty_ns;
--	do_div(tmp, period_ns);
-+	tmp = (unsigned long long)period * state->duty_cycle;
-+	do_div(tmp, state->period);
- 	duty = period - tmp;
- 
- 	if (duty >= period)
- 		duty = period - 1;
- 
--	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
--	if (is_enabled)
--		jz4740_pwm_disable(chip, pwm);
-+	jz4740_pwm_disable(chip, pwm);
- 
- 	jz4740_timer_set_count(pwm->hwpwm, 0);
- 	jz4740_timer_set_duty(pwm->hwpwm, duty);
-@@ -116,18 +113,7 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
- 
--	if (is_enabled)
--		jz4740_pwm_enable(chip, pwm);
--
--	return 0;
--}
--
--static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
--		struct pwm_device *pwm, enum pwm_polarity polarity)
--{
--	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->pwm);
--
--	switch (polarity) {
-+	switch (state->polarity) {
- 	case PWM_POLARITY_NORMAL:
- 		ctrl &= ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
- 		break;
-@@ -137,16 +123,17 @@ static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
- 	}
- 
- 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
-+
-+	if (state->enabled)
-+		jz4740_pwm_enable(chip, pwm);
-+
- 	return 0;
- }
- 
- static const struct pwm_ops jz4740_pwm_ops = {
- 	.request = jz4740_pwm_request,
- 	.free = jz4740_pwm_free,
--	.config = jz4740_pwm_config,
--	.set_polarity = jz4740_pwm_set_polarity,
--	.enable = jz4740_pwm_enable,
--	.disable = jz4740_pwm_disable,
-+	.apply = jz4740_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.21.0.593.g511ec345e18
+QWRkIGRvY3VtZW50YXRpb24gZm9yIGJvZSB0djEwMXd1bS1uMTYgcGFuZWwuCgpTaWduZWQtb2Zm
+LWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5jb20+Ci0tLQogLi4uL2Rpc3BsYXkv
+cGFuZWwvYm9lLHR2MTAxd3VtLW5sNi50eHQgICAgICAgIHwgMzQgKysrKysrKysrKysrKysrKysr
+KwogMSBmaWxlIGNoYW5nZWQsIDM0IGluc2VydGlvbnMoKykKIGNyZWF0ZSBtb2RlIDEwMDY0NCBE
+b2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvZGlzcGxheS9wYW5lbC9ib2UsdHYxMDF3
+dW0tbmw2LnR4dAoKZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
+cy9kaXNwbGF5L3BhbmVsL2JvZSx0djEwMXd1bS1ubDYudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZp
+Y2V0cmVlL2JpbmRpbmdzL2Rpc3BsYXkvcGFuZWwvYm9lLHR2MTAxd3VtLW5sNi50eHQKbmV3IGZp
+bGUgbW9kZSAxMDA2NDQKaW5kZXggMDAwMDAwMDAwMDAwLi4yYTg0NzM1ZDc0MmQKLS0tIC9kZXYv
+bnVsbAorKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvZGlzcGxheS9wYW5l
+bC9ib2UsdHYxMDF3dW0tbmw2LnR4dApAQCAtMCwwICsxLDM0IEBACitCb2UgQ29ycG9yYXRpb24g
+MTAuMSIgV1VYR0EgVEZUIExDRCBwYW5lbAorCitSZXF1aXJlZCBwcm9wZXJ0aWVzOgorLSBjb21w
+YXRpYmxlOiBzaG91bGQgYmUgImJvZSx0djEwMXd1bSIKKy0gcmVnOiB0aGUgdmlydHVhbCBjaGFu
+bmVsIG51bWJlciBvZiBhIERTSSBwZXJpcGhlcmFsCistIGVuYWJsZS1ncGlvczogYSBHUElPIHNw
+ZWMgZm9yIHRoZSBlbmFibGUgcGluCistIHBwMTgwMC1zdXBwbHk6IGNvcmUgdm9sdGFnZSBzdXBw
+bHkKKy0gYXZkZC1zdXBwbHk6IAorLSBhdmVlLXN1cHBseTogCistIGJhY2tsaWdodDogcGhhbmRs
+ZSBvZiB0aGUgYmFja2xpZ2h0IGRldmljZSBhdHRhY2hlZCB0byB0aGUgcGFuZWwKKworVGhlIGRl
+dmljZSBub2RlIGNhbiBjb250YWluIG9uZSAncG9ydCcgY2hpbGQgbm9kZSB3aXRoIG9uZSBjaGls
+ZAorJ2VuZHBvaW50JyBub2RlLCBhY2NvcmRpbmcgdG8gdGhlIGJpbmRpbmdzIGRlZmluZWQgaW4K
+K21lZGlhL3ZpZGVvLWludGVyZmFjZXMudHh0LiBUaGlzIG5vZGUgc2hvdWxkIGRlc2NyaWJlIHBh
+bmVsJ3MgdmlkZW8gYnVzLgorCitFeGFtcGxlOgorJmRzaSB7CisJLi4uCisJcGFuZWxAMCB7CisJ
+CWNvbXBhdGlibGUgPSAiYm9lLHR2MTAxd3VtLW5sNiI7CisJCXJlZyA9IDwwPjsKKwkJZW5hYmxl
+LWdwaW9zID0gPCZwaW8gNDUgMD47CisJCWF2ZGQtc3VwcGx5ID0gPCZwcHZhcm5fbGNkPjsKKwkJ
+YXZlZS1zdXBwbHkgPSA8JnBwdmFycF9sY2Q+OworCQlwcDE4MDAtc3VwcGx5ID0gPCZwcDE4MDBf
+bGNkPjsKKwkJYmFja2xpZ2h0ID0gPCZiYWNrbGlnaHRfbGNkMD47CisJCXN0YXR1cyA9ICJva2F5
+IjsKKwkJcG9ydCB7CisJCQlwYW5lbF9pbjogZW5kcG9pbnQgeworCQkJCXJlbW90ZS1lbmRwb2lu
+dCA9IDwmZHNpX291dD47CisJCQl9OworCQl9OworCX07Cit9OwpcIE5vIG5ld2xpbmUgYXQgZW5k
+IG9mIGZpbGUKLS0gCjIuMjEuMAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
+ZHJpLWRldmVs
