@@ -1,82 +1,37 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [1/2] dt-bindings: display: panel: add AUO kd101n80-45na panel
- bindings
-Date: Sun, 9 Jun 2019 12:56:17 +0200
-Message-ID: <20190609105617.GC28935@ravnborg.org>
-References: <20190608112342.64416-1-jitao.shi@mediatek.com>
+Subject: Re: [2/2] drm/panel: support for BOE tv101wum-n16 wuxga dsi video
+ mode panel
+Date: Sun, 9 Jun 2019 13:07:33 +0200
+Message-ID: <20190609110733.GD28935@ravnborg.org>
+References: <20190608070230.55381-1-jitao.shi@mediatek.com>
+ <20190608070230.55381-2-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20190608112342.64416-1-jitao.shi@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <20190608070230.55381-2-jitao.shi@mediatek.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vge
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, yingjoe.chen@mediatek.com, Thierry Reding <treding@nvidia.com>, Sean Paul <seanpaul@chromium.org>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Russell King <rmk+kernel@arm.linux.org.uk>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Andy Yan <andy.yan@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Jitao.
-
-Binding doc for this panel looks good.
-
-With added description for avdd + avee it is:
-
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
-
-On Sat, Jun 08, 2019 at 07:23:41PM +0800, Jitao Shi wrote:
-> Add documentation for auo kd101n80-45na panel.
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  .../display/panel/auo,kd101n80-45na.txt       | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt b/Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt
-> new file mode 100644
-> index 000000000000..7715cf703431
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt
-> @@ -0,0 +1,34 @@
-> +AUO Corporation 10.1" WUXGA TFT LCD panel
-> +
-> +Required properties:
-> +- compatible: should be "auo,kd101n80-45na"
-> +- reg: the virtual channel number of a DSI peripheral
-> +- enable-gpios: a GPIO spec for the enable pin
-> +- pp1800-supply: core voltage supply
-> +- avdd-supply: 
-> +- avee-supply: 
-Descriptions are missing for the 2 x supply.
-
-> +- backlight: phandle of the backlight device attached to the panel
-> +
-> +The device node can contain one 'port' child node with one child
-> +'endpoint' node, according to the bindings defined in
-> +media/video-interfaces.txt. This node should describe panel's video bus.
-> +
-> +Example:
-> +&dsi {
-> +	...
-> +	panel@0 {
-> +		compatible = "auo,kd101n80-45na";
-> +		reg = <0>;
-> +		enable-gpios = <&pio 45 0>;
-> +		avdd-supply = <&ppvarn_lcd>;
-> +		avee-supply = <&ppvarp_lcd>;
-> +		pp1800-supply = <&pp1800_lcd>;
-> +		backlight = <&backlight_lcd0>;
-> +		status = "okay";
-> +		port {
-> +			panel_in: endpoint {
-> +				remote-endpoint = <&dsi_out>;
-> +			};
-> +		};
-> +	};
-> +};
-> -- 
-> 2.21.0
-> 
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+SGkgSml0YW8uCgo+ICsKPiArZW51bSBkc2lfY21kX3R5cGUgewo+ICsJSU5JVF9HRU5FTklDX0NN
+RCwKPiArCUlOSVRfRENTX0NNRCwKPiArCURFTEFZX0NNRCwKPiArfTsKPiArCj4gK3N0cnVjdCBw
+YW5lbF9pbml0X2NtZCB7Cj4gKwllbnVtIGRzaV9jbWRfdHlwZSB0eXBlOwo+ICsJc2l6ZV90IGxl
+bjsKPiArCWNvbnN0IGNoYXIgKmRhdGE7Cj4gK307Cj4gKwo+ICsjZGVmaW5lIF9JTklUX0NNRCgu
+Li4pIHsgXAo+ICsJLnR5cGUgPSBJTklUX0dFTkVOSUNfQ01ELFwKPiArCS5sZW4gPSBzaXplb2Yo
+KGNoYXJbXSl7X19WQV9BUkdTX199KSwgXAo+ICsJLmRhdGEgPSAoY2hhcltdKXtfX1ZBX0FSR1Nf
+X30gfQpUaGlzIG1hY3JvIGlzIG5vdCB1c2VkIC0gc28gYWxsIGNvZGUgYXJvdW5kIElOSVRfR0VO
+RU5JQ19DTUQgY2FuIGJlCmRlbGV0ZWQuCgoJU2FtCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxp
+c3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2RyaS1kZXZlbA==
