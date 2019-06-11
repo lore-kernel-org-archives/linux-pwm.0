@@ -1,70 +1,38 @@
-From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-Subject: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table loads
-Date: Wed, 12 Jun 2019 10:36:06 +0200
-Message-ID: <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-In-Reply-To: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>, linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, nv@vosn.de
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH 02/10] mfd / platform: cros_ec: Move
+ cros-ec core driver out from MFD
+Date: Tue, 11 Jun 2019 10:09:00 -0700
+Message-ID: <20190611170900.GB143729@dtor-ws>
+References: <20190604152019.16100-1-enric.balletbo@collabora.com>
+ <20190604152019.16100-3-enric.balletbo@collabora.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Disposition: inline
+In-Reply-To: <20190604152019.16100-3-enric.balletbo@collabora.com>
+List-Unsubscribe: <https://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <https://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: "Alsa-devel" <alsa-devel-bounces@alsa-project.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: gwendal@chromium.org, Banajit Goswami <bgoswami@codeaurora.org>, Vignesh R <vigneshr@ti.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org, Mark Brown <broonie@kernel.org>, Juergen Fitschen <jfi@ssv-embedded.de>, alsa-devel@alsa-project.org, Stefan Agner <stefan@agner.ch>, Sebastian Reichel <sre@kernel.org>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, linux-i2c@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, Guenter Roeck <groeck@chromium.org>, kernel@collabora.com, dtor@chromium.org, Lars-Peter Clausen <lars@metafoo.de>, Jean Delvare <jdelvare@suse.de>, Jacky Bai <ping.bai@nxp.com>, linux-rtc@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Sean
 List-Id: linux-pwm@vger.kernel.org
 
-If an ACPI SSDT overlay is loaded after built-in tables
-have been loaded e.g. via configfs or efivar_ssdt_load()
-it is necessary to rewalk the namespace to resolve
-references. Without this, relative and absolute paths
-like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
-correctly.
+On Tue, Jun 04, 2019 at 05:20:11PM +0200, Enric Balletbo i Serra wrote:
+> Now, the ChromeOS EC core driver has nothing related to an MFD device, so
+> move that driver from the MFD subsystem to the platform/chrome subsystem.
+> 
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-Make configfs load use the same method as efivar_ssdt_load().
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
 
-Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
----
- drivers/acpi/acpi_configfs.c   |  6 +-----
- drivers/acpi/acpica/tbxfload.c | 11 +++++++++++
- 2 files changed, 12 insertions(+), 5 deletions(-)
+Thanks.
 
-diff --git a/drivers/acpi/acpi_configfs.c b/drivers/acpi/acpi_configfs.c
-index f92033661239..663f0d88f912 100644
---- a/drivers/acpi/acpi_configfs.c
-+++ b/drivers/acpi/acpi_configfs.c
-@@ -56,11 +56,7 @@ static ssize_t acpi_table_aml_write(struct config_item *cfg,
- 	if (!table->header)
- 		return -ENOMEM;
- 
--	ACPI_INFO(("Host-directed Dynamic ACPI Table Load:"));
--	ret = acpi_tb_install_and_load_table(
--			ACPI_PTR_TO_PHYSADDR(table->header),
--			ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE,
--			&table->index);
-+	ret = acpi_load_table(table->header);
- 	if (ret) {
- 		kfree(table->header);
- 		table->header = NULL;
-diff --git a/drivers/acpi/acpica/tbxfload.c b/drivers/acpi/acpica/tbxfload.c
-index 4f30f06a6f78..ef8f8a9f3c9c 100644
---- a/drivers/acpi/acpica/tbxfload.c
-+++ b/drivers/acpi/acpica/tbxfload.c
-@@ -297,6 +297,17 @@ acpi_status acpi_load_table(struct acpi_table_header *table)
- 	status = acpi_tb_install_and_load_table(ACPI_PTR_TO_PHYSADDR(table),
- 						ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL,
- 						FALSE, &table_index);
-+
-+	if (ACPI_SUCCESS(status)) {
-+		/* Complete the initialization/resolution of package objects */
-+
-+		status = acpi_ns_walk_namespace(ACPI_TYPE_PACKAGE,
-+						ACPI_ROOT_OBJECT,
-+						ACPI_UINT32_MAX, 0,
-+						acpi_ns_init_one_package,
-+						NULL, NULL, NULL);
-+	}
-+
- 	return_ACPI_STATUS(status);
- }
- 
 -- 
-2.17.1
+Dmitry
