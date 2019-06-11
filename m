@@ -1,50 +1,124 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v4 5/7] drm/mediatek: add mt8183 dsi driver support
-Date: Tue, 11 Jun 2019 10:37:07 +0800
-Message-ID: <1560220627.32395.1.camel@mtksdaap41>
-References: <20190601092615.67917-1-jitao.shi@mediatek.com>
- <20190601092615.67917-6-jitao.shi@mediatek.com>
+From: Yash Shah <yash.shah@sifive.com>
+Subject: [PATCH v13 0/2] PWM support for HiFive Unleashed
+Date: Tue, 11 Jun 2019 11:14:42 +0530
+Message-ID: <1560231884-15694-1-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190601092615.67917-6-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sean Paul <seanpaul@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de
+Cc: mark.rutland@arm.com, aou@eecs.berkeley.edu, palmer@sifive.com, sachin.ghadi@sifive.com, Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEppdGFvOgoKT24gU2F0LCAyMDE5LTA2LTAxIGF0IDE3OjI2ICswODAwLCBKaXRhbyBTaGkg
-d3JvdGU6Cj4gQWRkIG10ODE4MyBkc2kgZHJpdmVyIGRhdGEuIEVuYWJsZSBzaXplIGNvbnRyb2wg
-YW5kCj4gcmVnIGNvbW1pdCBjb250cm9sLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNoaSA8
-aml0YW8uc2hpQG1lZGlhdGVrLmNvbT4KPiBSZXZpZXdlZC1ieTogQ0sgSHUgPGNrLmh1QG1lZGlh
-dGVrLmNvbT4KPiAtLS0KPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYyB8IDgg
-KysrKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIGIvZHJpdmVycy9ncHUvZHJt
-L21lZGlhdGVrL210a19kc2kuYwo+IGluZGV4IDE4YTE5MjY1NmE4OS4uYWJmNmRkZWM1ZGI2IDEw
-MDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiArKysgYi9k
-cml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gQEAgLTEyMjUsMTEgKzEyMjUsMTkg
-QEAgc3RhdGljIGNvbnN0IHN0cnVjdCBtdGtfZHNpX2RyaXZlcl9kYXRhIG10MjcwMV9kc2lfZHJp
-dmVyX2RhdGEgPSB7Cj4gIAkucmVnX2NtZHFfb2ZmID0gMHgxODAsCj4gIH07Cj4gIAo+ICtzdGF0
-aWMgY29uc3Qgc3RydWN0IG10a19kc2lfZHJpdmVyX2RhdGEgbXQ4MTgzX2RzaV9kcml2ZXJfZGF0
-YSA9IHsKPiArCS5yZWdfY21kcV9vZmYgPSAweDIwMCwKPiArCS5oYXNfc2hhZG93X2N0bCA9IHRy
-dWUsCj4gKwkuaGFzX3NpemVfY3RsID0gdHJ1ZSwKPiArfTsKPiArCj4gIHN0YXRpYyBjb25zdCBz
-dHJ1Y3Qgb2ZfZGV2aWNlX2lkIG10a19kc2lfb2ZfbWF0Y2hbXSA9IHsKPiAgCXsgLmNvbXBhdGli
-bGUgPSAibWVkaWF0ZWssbXQyNzAxLWRzaSIsCj4gIAkgIC5kYXRhID0gJm10MjcwMV9kc2lfZHJp
-dmVyX2RhdGEgfSwKPiAgCXsgLmNvbXBhdGlibGUgPSAibWVkaWF0ZWssbXQ4MTczLWRzaSIsCj4g
-IAkgIC5kYXRhID0gJm10ODE3M19kc2lfZHJpdmVyX2RhdGEgfSwKPiArCXsgLmNvbXBhdGlibGUg
-PSAibWVkaWF0ZWssbXQ4MTgzLWRzaSIsCgpJIGRvZXMgbm90IGZpbmQgIm1lZGlhdGVrLG10ODE4
-My1kc2kiIGluIGJpbmRpbmcgZG9jdW1lbnQsIHNvIHBsZWFzZQpzZW5kIGEgcGF0Y2ggdG8gYWRk
-IHRoaXMgaW4gYmluZGluZyBkb2N1bWVudC4KClJlZ2FyZHMsCkNLCgo+ICsJICAuZGF0YSA9ICZt
-dDgxODNfZHNpX2RyaXZlcl9kYXRhIH0sCj4gIAl7IH0sCj4gIH07Cj4gIAoKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxp
-c3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
-dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+This patch series adds a PWM driver and DT documentation
+for HiFive Unleashed board. The patches are mostly based on
+Wesley's patch.
+
+This patchset is based on Linux v5.2-rc1 and tested on HiFive Unleashed
+board with additional board related patches needed for testing can be
+found at dev/yashs/pwm_v13 branch of:
+https://github.com/yashshah7/riscv-linux.git
+
+v13
+- Rebased onto Mainline v5.2-rc1
+- Correct the order of pwmchip_remove() after clk_disable() in .remove()
+
+v12
+- Rebased onto Mainline v5.1
+
+v11
+- Change naming convention for pwm_device and pwm_sifive_ddata pointers
+- Assign of_pwm_xlate_with_flag() to of_xlate func ptr since this driver
+  use three pwm-cells (Issue reported by Andreas Schwab <schwab@suse.de>
+- Other minor fixes
+
+v10
+- Use DIV_ROUND_CLOSEST_ULL instead of div_u64_round
+- Change 'num' defination to u64 bit (in pwm_sifive_apply).
+- Remove the usage of pwm_get_state()
+
+v9
+- Use appropriate bitfield macros
+- Add approx_period in pwm_sifive_ddata struct and related changes
+- Correct the eqn for calculation of frac (in pwm_sifive_apply)
+- Other minor fixes
+
+v8
+- Typo corrections
+- Remove active_user and related code
+- Do not clear PWM_SIFIVE_PWMCFG_EN_ALWAYS
+- Other minor fixes
+
+v7
+- Modify description of compatible property in DT documentation
+- Use mutex locks at appropriate places
+- Fix all bad line breaks
+- Allow enabling/disabling PWM only when the user is the only active user
+- Remove Deglitch logic
+- Other minor fixes
+
+v6
+- Remove the global property 'sifive,period-ns'
+- Implement free and request callbacks to maintain user counts.
+- Add user_count member to struct pwm_sifive_ddata
+- Allow period change only if user_count is one
+- Add pwm_sifive_enable function to enable/disable PWM
+- Change calculation logic of frac (in pwm_sifive_apply)
+- Remove state correction
+- Remove pwm_sifive_xlate function
+- Clock to be enabled only when PWM is enabled
+- Other minor fixes
+
+v5
+- Correct the order of compatible string properties
+- PWM state correction to be done always
+- Other minor fixes based upon feedback on v4
+
+v4
+- Rename macros with appropriate names
+- Remove unused macros
+- Rename struct sifive_pwm_device to struct pwm_sifive_ddata
+- Rename function prefix as per driver name
+- Other minor fixes based upon feedback on v3
+
+v3
+- Add a link to the reference manaul
+- Use appropriate apis for division operation
+- Add check for polarity
+- Enable clk before calling clk_get_rate
+- Other minor fixes based upon feedback on v2
+
+V2 changed from V1:
+- Remove inclusion of dt-bindings/pwm/pwm.h
+- Remove artificial alignments
+- Replace ioread32/iowrite32 with readl/writel
+- Remove camelcase
+- Change dev_info to dev_dbg for unnecessary log
+- Correct typo in driver name
+- Remove use of of_match_ptr macro
+- Update the DT compatible strings and Add reference to a common
+  versioning document
+
+Yash Shah (2):
+  pwm: sifive: Add DT documentation for SiFive PWM Controller
+  pwm: sifive: Add a driver for SiFive SoC PWM
+
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  33 ++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sifive.c                           | 339 +++++++++++++++++++++
+ 4 files changed, 384 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
+
+-- 
+1.9.1
