@@ -1,57 +1,38 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v13 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
-Date: Tue, 11 Jun 2019 17:25:33 +0200
-Message-ID: <20190611152533.satxxae7dfrovgny@pengutronix.de>
-References: <1560231884-15694-1-git-send-email-yash.shah@sifive.com>
- <1560231884-15694-3-git-send-email-yash.shah@sifive.com>
+Subject: Re: [PATCH v2 01/14] pwm: meson: unify the parameter list of
+ meson_pwm_{enable,disable}
+Date: Tue, 11 Jun 2019 17:29:53 +0200
+Message-ID: <20190611152953.5pitafag62dhk6vu@pengutronix.de>
+References: <20190608180626.30589-1-martin.blumenstingl@googlemail.com>
+ <20190608180626.30589-2-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1560231884-15694-3-git-send-email-yash.shah@sifive.com>
+In-Reply-To: <20190608180626.30589-2-martin.blumenstingl@googlemail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yash Shah <yash.shah@sifive.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, palmer@sifive.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu, sachin.ghadi@sifive.com
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+Hello Martin,
 
-On Tue, Jun 11, 2019 at 11:14:44AM +0530, Yash Shah wrote:
-> [...]
-> +static int pwm_sifive_remove(struct platform_device *dev)
-> +{
-> +	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
-> +	bool is_enabled = false;
-> +	struct pwm_device *pwm;
-> +	int ret, ch;
-> +
-> +	for (ch = 0; ch < ddata->chip.npwm; ch++) {
-> +		pwm = &ddata->chip.pwms[ch];
-> +		if (pwm->state.enabled) {
-> +			is_enabled = true;
-> +			break;
-> +		}
-> +	}
-> +	if (is_enabled)
-> +		clk_disable(ddata->clk);
-> +
-> +	clk_disable_unprepare(ddata->clk);
-> +	ret = pwmchip_remove(&ddata->chip);
-> +	clk_notifier_unregister(ddata->clk, &ddata->notifier);
-> +
-> +	return ret;
-
-I think the return value of a platform driver's remove callback is
-ignored. So usually you should return 0.
-
-Not sure this is worth addressing in a new round, so if noone else has
-something to criticise that justifies a new round, take my
-
-	Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-> +}
+On Sat, Jun 08, 2019 at 08:06:13PM +0200, Martin Blumenstingl wrote:
+> This is a preparation for a future cleanup. Pass struct pwm_device
+> instead of passing the individual values required by each function as
+> these can be obtained for each struct pwm_device instance.
+> 
+> As a nice side-effect the driver now uses "switch (pwm->hwpwm)"
+> everywhere. Before some functions used "switch (id)" while others used
+> "switch (pwm->hwpwm)".
+> 
+> No functional changes.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
 Best regards
 Uwe
