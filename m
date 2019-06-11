@@ -1,61 +1,52 @@
-From: Matthias Kaehlcke <mka@chromium.org>
-Subject: Re: [PATCH 2/2] backlight: pwm_bl: Get number of brightness levels
- for CIE 1931 from the device tree
-Date: Tue, 11 Jun 2019 10:01:23 -0700
-Message-ID: <20190611170123.GD137143@google.com>
-References: <20190610233739.29477-1-mka@chromium.org>
- <20190610233739.29477-2-mka@chromium.org>
- <20190611153314.cj6j6l4kcl4kk4t2@holly.lan>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH 06/10] mfd / platform: cros_ec: Reorganize platform and
+ mfd includes
+Date: Tue, 11 Jun 2019 10:10:30 -0700
+Message-ID: <20190611171030.GC143729@dtor-ws>
+References: <20190604152019.16100-1-enric.balletbo@collabora.com>
+ <20190604152019.16100-7-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190611153314.cj6j6l4kcl4kk4t2@holly.lan>
+In-Reply-To: <20190604152019.16100-7-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, gwendal@chromium.org, Guenter Roeck <groeck@chromium.org>, Benson Leung <bleung@chromium.org>, Lee Jones <lee.jones@linaro.org>, kernel@collabora.com, dtor@chromium.org, Mauro Carvalho Chehab <mchehab@kernel.org>, alsa-devel@alsa-project.org, Alessandro Zummo <a.zummo@towertech.it>, linux-iio@vger.kernel.org, Fabien Lahoudere <fabien.lahoudere@collabora.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-i2c@vger.kernel.org, linux-rtc@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Brian Norris <briannorris@chromium.org>, Chanwoo Choi <cw00.choi@samsung.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Sebastian Reichel <sre@kernel.org>, Rushikesh
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Daniel,
-
-On Tue, Jun 11, 2019 at 04:33:14PM +0100, Daniel Thompson wrote:
-> On Mon, Jun 10, 2019 at 04:37:39PM -0700, Matthias Kaehlcke wrote:
-> > Commit 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
-> > linearly to human eye") uses pwm_period / hweight32(pwm_period) as
-> > as heuristic to determine the number of brightness levels when the DT
-> > doesn't provide a brightness level table. This heuristic is broken
-> > and can result in excessively large brightness tables.
-> > 
-> > Instead of using the heuristic try to retrieve the number of
-> > brightness levels from the device tree (property 'max-brightness'
-> > + 1). If the value is not specified use a default of 256 levels.
+On Tue, Jun 04, 2019 at 05:20:15PM +0200, Enric Balletbo i Serra wrote:
+> There is a bit of mess between cros-ec mfd includes and platform
+> includes. For example, we have a linux/mfd/cros_ec.h include that
+> exports the interface implemented in platform/chrome/cros_ec_proto.c. Or
+> we have a linux/mfd/cros_ec_commands.h file that is non related to the
+> multifunction device (in the sense that is not exporting any function of
+> the mfd device). This causes crossed includes between mfd and
+> platform/chrome subsystems and makes the code difficult to read, apart
+> from creating 'curious' situations where a platform/chrome driver includes
+> a linux/mfd/cros_ec.h file just to get the exported functions that are
+> implemented in another platform/chrome driver.
 > 
-> I'll look at the code tomorrow but why 256?
+> In order to have a better separation on what the cros-ec multifunction
+> driver does and what the cros-ec core provides move and rework the
+> affected includes doing:
 > 
-> To me it feels simultaneously too big for a simple 8-bit PWM and too
-> small for animated backlight effects.
+>  - Move cros_ec_commands.h to include/linux/platform_data/cros_ec_commands.h
+>  - Get rid of the parts that are implemented in the platform/chrome/cros_ec_proto.c
+>    driver from include/linux/mfd/cros_ec.h to a new file
+>    include/linux/platform_data/cros_ec_proto.h
+>  - Update all the drivers with the new includes, so
+>    - Drivers that only need to know about the protocol include
+>      - linux/platform_data/cros_ec_proto.h
+>      - linux/platform_data/cros_ec_commands.h
+>    - Drivers that need to know about the cros-ec mfd device also include
+>      - linux/mfd/cros_ec.h
+> 
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-I agree there is no one-size-fits-it-all default, 256 seemed like a
-possible compromise.
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
 
-> I certainly agree that an override could be useful but I'm not clear why
-> deriving a default based on the period is bogus (and the description is
-> merely concerned about uselessly big tables).
+Thanks.
 
-Maybe it's not necessarily bogus, but the current heuristic that
-counts the number of set bits (hweight()) in the period certainly is.
-
-IIUC the period provides a clue about the PWM resolution, because it
-would be hard/impossible to accomodate the high resolution in shorter
-periods.
-
-> /*
->  * Once we have 4096 levels there's little point going much higher...
->  * neither interactive sliders nor animation benefits from having
->  * more values in the table.
->  */
-> max_brightness = min(DIV_ROUND_UP(period, ffs(period), 4096);
-
-I was also considering something along these lines, but wasn't sure
-if there is indeed a relation between the period and the PWM
-resolution. I take your suggestion as a confirmation :)
+-- 
+Dmitry
