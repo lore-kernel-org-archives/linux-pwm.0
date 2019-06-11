@@ -1,88 +1,86 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH 2/2] backlight: pwm_bl: Get number of brightness levels
- for CIE 1931 from the device tree
-Date: Tue, 11 Jun 2019 12:18:43 +0200
-Message-ID: <20190611101843.GD7526@amd>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: pwm-backlight: Add 'max-brightness'
+ property
+Date: Tue, 11 Jun 2019 12:28:51 +0200
+Message-ID: <20190611102851.GA16611@ulmo>
 References: <20190610233739.29477-1-mka@chromium.org>
- <20190610233739.29477-2-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1014550703=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190610233739.29477-2-mka@chromium.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="5mCyUwZo2JvN/JJP"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190610233739.29477-1-mka@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Douglas Anderson <dianders@chromium.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-fbdev@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>, linux-leds@vger.kernel.org
+Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============1014550703==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jL2BoiuKMElzg3CS"
-Content-Disposition: inline
-
-
---jL2BoiuKMElzg3CS
+--5mCyUwZo2JvN/JJP
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 2019-06-10 16:37:39, Matthias Kaehlcke wrote:
-> Commit 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
-> linearly to human eye") uses pwm_period / hweight32(pwm_period) as
-> as heuristic to determine the number of brightness levels when the DT
-> doesn't provide a brightness level table. This heuristic is broken
-> and can result in excessively large brightness tables.
+On Mon, Jun 10, 2019 at 04:37:38PM -0700, Matthias Kaehlcke wrote:
+> Add an optional 'max-brightness' property, which is used to specify
+> the number of brightness levels (max-brightness + 1) when the node
+> has no 'brightness-levels' table.
 >=20
-> Instead of using the heuristic try to retrieve the number of
-> brightness levels from the device tree (property 'max-brightness'
-> + 1). If the value is not specified use a default of 256 levels.
->=20
-> Fixes: 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linear=
-ly to human eye")
-
-I don't think this one is suitable for stable. I'm pretty sure the
-heuristics works well for many boards, and you just replaced it with
-another heuristics ("256").
-
 > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+>  .../devicetree/bindings/leds/backlight/pwm-backlight.txt       | 3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlig=
+ht.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+> index 64fa2fbd98c9..98f4ba626054 100644
+> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+> @@ -27,6 +27,9 @@ Optional properties:
+>                              resolution pwm duty cycle can be used without
+>                              having to list out every possible value in t=
+he
+>                              brightness-level array.
+> +  - max-brightness: Maximum brightness value. Used to specify the number=
+ of
+> +                    brightness levels (max-brightness + 1) when the node
+> +                    has no 'brightness-levels' table.
 
-Acked-by: Pavel Machek <pavel@ucw.cz>
+Back at the time when these bindings were defined we specifically didn't
+add this because it was deemed impractical. That is, no real hardware is
+actually capable of achieving useful results with a simplified
+description like this.
 
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+Besides, we already have the num-interpolated-steps property which
+should allow you to achieve the same thing:
 
---jL2BoiuKMElzg3CS
+	brightness-levels =3D <0 255>;
+	default-brightness-level =3D <1>;
+	num-interpolated-steps =3D <255>;
+
+Though given the original discussion that we had around how backlight
+hardware behaves, that doesn't seem like a good choice.
+
+Thierry
+
+--5mCyUwZo2JvN/JJP
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iEYEARECAAYFAlz/gAMACgkQMOfwapXb+vIo3ACgh5KFLWPPu5aM3ZOFG5tXtj5k
-Qc4AoJr268a0RVM8on0+DfnTeYriXWab
-=vM3e
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlz/gl4ACgkQ3SOs138+
+s6GSfxAAwY+qUwKq+54LHTg+9GjvcE4Uq0lDCHIfRvxHcE9LkoP6hO+howgYknDN
+8jhc8KUrHT4VgdE3gGokIwPssNaRzeEnGJ82WaIQ0s0PIhD1Vsa0gx81P+fDj4TT
+ByA5QlRiF1aaVDQLBlXDhTTjzl0xL/8/Q+gANrZVezWsDUBBCEwofvEQMoj0MJ+g
+NH+AdOPsjMZnY4QToqzPnEQ2WU3HrLB45MLKm+fxUdgEkN2h80tvjmXr5jgyBnQ1
+/dk8aOxFteV0kyvDJt+ZprHTGFvp43hZ5uvQqTLVZyEiW3pyt4snu1jnv8p9GTEV
+C3lP1/U3Xh+y+1CuZ4RCykHYBh1dr1YFrkbtebcAFFFuAI+qtbdPEym7IDOjKHhb
+o9XwM7j4EOpLyoaWdOE4IbdPMCsoCyZzNQklw1CfS6F+8Ei6qbFUq2302/RTPcZv
+NlgAHTQ0Ngh0rLBW5GaUE/Tb0zb3GksiVAnILi/lk2u+BhFxB8KCK0GgCVHY7I81
+iP+DiCXDciGi6r8+WkdFsz0577IntMoOVPqQ2OliC4snRnp6SJ6fJEAT5zAMB3id
+uc2LsElo8NT7VtTQzq6WRjtS2Yb+AexuVtpZDnwIWqO5U17Sdc9Li1YdV9s/p4eG
+Zbj2CZoWVjHVlv/7Fk4dY/ofFOPPcpgK/Aengy3NmXjIL4DxmcI=
+=qSIX
 -----END PGP SIGNATURE-----
 
---jL2BoiuKMElzg3CS--
-
---===============1014550703==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
-
---===============1014550703==--
+--5mCyUwZo2JvN/JJP--
