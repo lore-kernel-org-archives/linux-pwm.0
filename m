@@ -1,141 +1,50 @@
-From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH 2/2] backlight: pwm_bl: Get number of brightness levels for CIE 1931 from the device tree
-Date: Mon, 10 Jun 2019 16:37:39 -0700
-Message-ID: <20190610233739.29477-2-mka@chromium.org>
-References: <20190610233739.29477-1-mka@chromium.org>
+From: CK Hu <ck.hu@mediatek.com>
+Subject: Re: [v4 5/7] drm/mediatek: add mt8183 dsi driver support
+Date: Tue, 11 Jun 2019 10:37:07 +0800
+Message-ID: <1560220627.32395.1.camel@mtksdaap41>
+References: <20190601092615.67917-1-jitao.shi@mediatek.com>
+ <20190601092615.67917-6-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190610233739.29477-1-mka@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Matthias Kaehlcke <mka@chromium.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190601092615.67917-6-jitao.shi@mediatek.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jitao Shi <jitao.shi@mediatek.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sean Paul <seanpaul@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Commit 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED
-linearly to human eye") uses pwm_period / hweight32(pwm_period) as
-as heuristic to determine the number of brightness levels when the DT
-doesn't provide a brightness level table. This heuristic is broken
-and can result in excessively large brightness tables.
-
-Instead of using the heuristic try to retrieve the number of
-brightness levels from the device tree (property 'max-brightness'
-+ 1). If the value is not specified use a default of 256 levels.
-
-Fixes: 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
- drivers/video/backlight/pwm_bl.c | 59 ++++++++++++--------------------
- 1 file changed, 21 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index fb45f866b923..2913cbe9cfcb 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -194,38 +194,19 @@ int pwm_backlight_brightness_default(struct device *dev,
- 				     struct platform_pwm_backlight_data *data,
- 				     unsigned int period)
- {
--	unsigned int counter = 0;
--	unsigned int i, n;
-+	unsigned int i;
-+	unsigned int nlevels = data->max_brightness + 1;
- 	u64 retval;
- 
--	/*
--	 * Count the number of bits needed to represent the period number. The
--	 * number of bits is used to calculate the number of levels used for the
--	 * brightness-levels table, the purpose of this calculation is have a
--	 * pre-computed table with enough levels to get linear brightness
--	 * perception. The period is divided by the number of bits so for a
--	 * 8-bit PWM we have 255 / 8 = 32 brightness levels or for a 16-bit PWM
--	 * we have 65535 / 16 = 4096 brightness levels.
--	 *
--	 * Note that this method is based on empirical testing on different
--	 * devices with PWM of 8 and 16 bits of resolution.
--	 */
--	n = period;
--	while (n) {
--		counter += n % 2;
--		n >>= 1;
--	}
--
--	data->max_brightness = DIV_ROUND_UP(period, counter);
--	data->levels = devm_kcalloc(dev, data->max_brightness,
-+	data->levels = devm_kcalloc(dev, nlevels,
- 				    sizeof(*data->levels), GFP_KERNEL);
- 	if (!data->levels)
- 		return -ENOMEM;
- 
- 	/* Fill the table using the cie1931 algorithm */
--	for (i = 0; i < data->max_brightness; i++) {
-+	for (i = 0; i < nlevels; i++) {
- 		retval = cie1931((i * PWM_LUMINANCE_SCALE) /
--				 data->max_brightness, PWM_LUMINANCE_SCALE) *
-+				 nlevels, PWM_LUMINANCE_SCALE) *
- 				 period;
- 		retval = DIV_ROUND_CLOSEST_ULL(retval, PWM_LUMINANCE_SCALE);
- 		if (retval > UINT_MAX)
-@@ -233,8 +214,7 @@ int pwm_backlight_brightness_default(struct device *dev,
- 		data->levels[i] = (unsigned int)retval;
- 	}
- 
--	data->dft_brightness = data->max_brightness / 2;
--	data->max_brightness--;
-+	data->dft_brightness = nlevels / 2;
- 
- 	return 0;
- }
-@@ -272,8 +252,13 @@ static int pwm_backlight_parse_dt(struct device *dev,
- 	 * set a default table of brightness levels will be used.
- 	 */
- 	prop = of_find_property(node, "brightness-levels", &length);
--	if (!prop)
-+	if (!prop) {
-+		if (of_property_read_u32(node, "max-brightness",
-+					 &data->max_brightness))
-+			data->max_brightness = 255;
-+
- 		return 0;
-+	}
- 
- 	data->max_brightness = length / sizeof(u32);
- 
-@@ -565,13 +550,10 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 			pb->levels = data->levels;
- 		}
--	} else if (!data->max_brightness) {
-+	} else if (node) {
- 		/*
--		 * If no brightness levels are provided and max_brightness is
--		 * not set, use the default brightness table. For the DT case,
--		 * max_brightness is set to 0 when brightness levels is not
--		 * specified. For the non-DT case, max_brightness is usually
--		 * set to some value.
-+		 * If no brightness levels are provided use the default
-+		 * brightness table.
- 		 */
- 
- 		/* Get the PWM period (in nanoseconds) */
-@@ -591,12 +573,13 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 			pb->levels = data->levels;
- 		}
--	} else {
--		/*
--		 * That only happens for the non-DT case, where platform data
--		 * sets the max_brightness value.
--		 */
-+	} else if (data->max_brightness) {
-+		/* non-DT case, max_brightness value set in platform data. */
- 		pb->scale = data->max_brightness;
-+	} else {
-+		dev_err(&pdev->dev, "max brightness is not specified\n");
-+		ret = -EINVAL;
-+		goto err_alloc;
- 	}
- 
- 	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
--- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
+SGksIEppdGFvOgoKT24gU2F0LCAyMDE5LTA2LTAxIGF0IDE3OjI2ICswODAwLCBKaXRhbyBTaGkg
+d3JvdGU6Cj4gQWRkIG10ODE4MyBkc2kgZHJpdmVyIGRhdGEuIEVuYWJsZSBzaXplIGNvbnRyb2wg
+YW5kCj4gcmVnIGNvbW1pdCBjb250cm9sLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNoaSA8
+aml0YW8uc2hpQG1lZGlhdGVrLmNvbT4KPiBSZXZpZXdlZC1ieTogQ0sgSHUgPGNrLmh1QG1lZGlh
+dGVrLmNvbT4KPiAtLS0KPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYyB8IDgg
+KysrKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jIGIvZHJpdmVycy9ncHUvZHJt
+L21lZGlhdGVrL210a19kc2kuYwo+IGluZGV4IDE4YTE5MjY1NmE4OS4uYWJmNmRkZWM1ZGI2IDEw
+MDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiArKysgYi9k
+cml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gQEAgLTEyMjUsMTEgKzEyMjUsMTkg
+QEAgc3RhdGljIGNvbnN0IHN0cnVjdCBtdGtfZHNpX2RyaXZlcl9kYXRhIG10MjcwMV9kc2lfZHJp
+dmVyX2RhdGEgPSB7Cj4gIAkucmVnX2NtZHFfb2ZmID0gMHgxODAsCj4gIH07Cj4gIAo+ICtzdGF0
+aWMgY29uc3Qgc3RydWN0IG10a19kc2lfZHJpdmVyX2RhdGEgbXQ4MTgzX2RzaV9kcml2ZXJfZGF0
+YSA9IHsKPiArCS5yZWdfY21kcV9vZmYgPSAweDIwMCwKPiArCS5oYXNfc2hhZG93X2N0bCA9IHRy
+dWUsCj4gKwkuaGFzX3NpemVfY3RsID0gdHJ1ZSwKPiArfTsKPiArCj4gIHN0YXRpYyBjb25zdCBz
+dHJ1Y3Qgb2ZfZGV2aWNlX2lkIG10a19kc2lfb2ZfbWF0Y2hbXSA9IHsKPiAgCXsgLmNvbXBhdGli
+bGUgPSAibWVkaWF0ZWssbXQyNzAxLWRzaSIsCj4gIAkgIC5kYXRhID0gJm10MjcwMV9kc2lfZHJp
+dmVyX2RhdGEgfSwKPiAgCXsgLmNvbXBhdGlibGUgPSAibWVkaWF0ZWssbXQ4MTczLWRzaSIsCj4g
+IAkgIC5kYXRhID0gJm10ODE3M19kc2lfZHJpdmVyX2RhdGEgfSwKPiArCXsgLmNvbXBhdGlibGUg
+PSAibWVkaWF0ZWssbXQ4MTgzLWRzaSIsCgpJIGRvZXMgbm90IGZpbmQgIm1lZGlhdGVrLG10ODE4
+My1kc2kiIGluIGJpbmRpbmcgZG9jdW1lbnQsIHNvIHBsZWFzZQpzZW5kIGEgcGF0Y2ggdG8gYWRk
+IHRoaXMgaW4gYmluZGluZyBkb2N1bWVudC4KClJlZ2FyZHMsCkNLCgo+ICsJICAuZGF0YSA9ICZt
+dDgxODNfZHNpX2RyaXZlcl9kYXRhIH0sCj4gIAl7IH0sCj4gIH07Cj4gIAoKCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxp
+c3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
+dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
