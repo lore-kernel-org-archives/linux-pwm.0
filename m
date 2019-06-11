@@ -1,86 +1,61 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: pwm-backlight: Add 'max-brightness'
- property
-Date: Tue, 11 Jun 2019 12:28:51 +0200
-Message-ID: <20190611102851.GA16611@ulmo>
-References: <20190610233739.29477-1-mka@chromium.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v13 2/2] pwm: sifive: Add a driver for SiFive SoC PWM
+Date: Tue, 11 Jun 2019 17:25:33 +0200
+Message-ID: <20190611152533.satxxae7dfrovgny@pengutronix.de>
+References: <1560231884-15694-1-git-send-email-yash.shah@sifive.com>
+ <1560231884-15694-3-git-send-email-yash.shah@sifive.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="5mCyUwZo2JvN/JJP"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190610233739.29477-1-mka@chromium.org>
+In-Reply-To: <1560231884-15694-3-git-send-email-yash.shah@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>
+To: Yash Shah <yash.shah@sifive.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, palmer@sifive.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu, sachin.ghadi@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
+Hello,
 
---5mCyUwZo2JvN/JJP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Jun 11, 2019 at 11:14:44AM +0530, Yash Shah wrote:
+> [...]
+> +static int pwm_sifive_remove(struct platform_device *dev)
+> +{
+> +	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
+> +	bool is_enabled = false;
+> +	struct pwm_device *pwm;
+> +	int ret, ch;
+> +
+> +	for (ch = 0; ch < ddata->chip.npwm; ch++) {
+> +		pwm = &ddata->chip.pwms[ch];
+> +		if (pwm->state.enabled) {
+> +			is_enabled = true;
+> +			break;
+> +		}
+> +	}
+> +	if (is_enabled)
+> +		clk_disable(ddata->clk);
+> +
+> +	clk_disable_unprepare(ddata->clk);
+> +	ret = pwmchip_remove(&ddata->chip);
+> +	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+> +
+> +	return ret;
 
-On Mon, Jun 10, 2019 at 04:37:38PM -0700, Matthias Kaehlcke wrote:
-> Add an optional 'max-brightness' property, which is used to specify
-> the number of brightness levels (max-brightness + 1) when the node
-> has no 'brightness-levels' table.
->=20
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
->  .../devicetree/bindings/leds/backlight/pwm-backlight.txt       | 3 +++
->  1 file changed, 3 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlig=
-ht.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> index 64fa2fbd98c9..98f4ba626054 100644
-> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> @@ -27,6 +27,9 @@ Optional properties:
->                              resolution pwm duty cycle can be used without
->                              having to list out every possible value in t=
-he
->                              brightness-level array.
-> +  - max-brightness: Maximum brightness value. Used to specify the number=
- of
-> +                    brightness levels (max-brightness + 1) when the node
-> +                    has no 'brightness-levels' table.
+I think the return value of a platform driver's remove callback is
+ignored. So usually you should return 0.
 
-Back at the time when these bindings were defined we specifically didn't
-add this because it was deemed impractical. That is, no real hardware is
-actually capable of achieving useful results with a simplified
-description like this.
+Not sure this is worth addressing in a new round, so if noone else has
+something to criticise that justifies a new round, take my
 
-Besides, we already have the num-interpolated-steps property which
-should allow you to achieve the same thing:
+	Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-	brightness-levels =3D <0 255>;
-	default-brightness-level =3D <1>;
-	num-interpolated-steps =3D <255>;
+> +}
 
-Though given the original discussion that we had around how backlight
-hardware behaves, that doesn't seem like a good choice.
+Best regards
+Uwe
 
-Thierry
-
---5mCyUwZo2JvN/JJP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlz/gl4ACgkQ3SOs138+
-s6GSfxAAwY+qUwKq+54LHTg+9GjvcE4Uq0lDCHIfRvxHcE9LkoP6hO+howgYknDN
-8jhc8KUrHT4VgdE3gGokIwPssNaRzeEnGJ82WaIQ0s0PIhD1Vsa0gx81P+fDj4TT
-ByA5QlRiF1aaVDQLBlXDhTTjzl0xL/8/Q+gANrZVezWsDUBBCEwofvEQMoj0MJ+g
-NH+AdOPsjMZnY4QToqzPnEQ2WU3HrLB45MLKm+fxUdgEkN2h80tvjmXr5jgyBnQ1
-/dk8aOxFteV0kyvDJt+ZprHTGFvp43hZ5uvQqTLVZyEiW3pyt4snu1jnv8p9GTEV
-C3lP1/U3Xh+y+1CuZ4RCykHYBh1dr1YFrkbtebcAFFFuAI+qtbdPEym7IDOjKHhb
-o9XwM7j4EOpLyoaWdOE4IbdPMCsoCyZzNQklw1CfS6F+8Ei6qbFUq2302/RTPcZv
-NlgAHTQ0Ngh0rLBW5GaUE/Tb0zb3GksiVAnILi/lk2u+BhFxB8KCK0GgCVHY7I81
-iP+DiCXDciGi6r8+WkdFsz0577IntMoOVPqQ2OliC4snRnp6SJ6fJEAT5zAMB3id
-uc2LsElo8NT7VtTQzq6WRjtS2Yb+AexuVtpZDnwIWqO5U17Sdc9Li1YdV9s/p4eG
-Zbj2CZoWVjHVlv/7Fk4dY/ofFOPPcpgK/Aengy3NmXjIL4DxmcI=
-=qSIX
------END PGP SIGNATURE-----
-
---5mCyUwZo2JvN/JJP--
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
