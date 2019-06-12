@@ -1,71 +1,146 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [1/2] dt-bindngs: display: panel: Add BOE tv101wum-nl6 panel
- bindings
-Date: Tue, 11 Jun 2019 16:40:41 -0600
-Message-ID: <20190611224041.GA407@bogus>
-References: <20190608070230.55381-1-jitao.shi@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+Subject: [PATCH v2 3/3] leds-pwm.c: support ACPI via firmware-node framework
+Date: Wed, 12 Jun 2019 10:36:08 +0200
+Message-ID: <5df196d63671205d6722d21bec0ae5857a6b91eb.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190608070230.55381-1-jitao.shi@mediatek.com>
+In-Reply-To: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+In-Reply-To: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sascha
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>, linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, nv@vosn.de
 List-Id: linux-pwm@vger.kernel.org
 
-On Sat, Jun 08, 2019 at 03:02:29PM +0800, Jitao Shi wrote:
-> Add documentation for boe tv101wum-n16 panel.
+DT specific handling is replaced by firmware-node abstration to support
+ACPI specification of PWM LEDS.
 
-Typo in the subject and checkpatch complains about trailing whitespace.
+Example ASL:
+Device (PWML)
+{
+    Name (_HID, "PRP0001")
+    Name (_DSD, Package () {
+          ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+          Package () { Package () {"compatible",
+                                    Package () {"pwm-leds"}}}})
 
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  .../display/panel/boe,tv101wum-nl6.txt        | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.txt b/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.txt
-> new file mode 100644
-> index 000000000000..2a84735d742d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.txt
-> @@ -0,0 +1,34 @@
-> +Boe Corporation 10.1" WUXGA TFT LCD panel
-> +
-> +Required properties:
-> +- compatible: should be "boe,tv101wum"
-> +- reg: the virtual channel number of a DSI peripheral
-> +- enable-gpios: a GPIO spec for the enable pin
-> +- pp1800-supply: core voltage supply
-> +- avdd-supply: 
-> +- avee-supply: 
-> +- backlight: phandle of the backlight device attached to the panel
-> +
-> +The device node can contain one 'port' child node with one child
-> +'endpoint' node, according to the bindings defined in
-> +media/video-interfaces.txt. This node should describe panel's video bus.
-> +
-> +Example:
-> +&dsi {
-> +	...
-> +	panel@0 {
-> +		compatible = "boe,tv101wum-nl6";
-> +		reg = <0>;
-> +		enable-gpios = <&pio 45 0>;
-> +		avdd-supply = <&ppvarn_lcd>;
-> +		avee-supply = <&ppvarp_lcd>;
-> +		pp1800-supply = <&pp1800_lcd>;
-> +		backlight = <&backlight_lcd0>;
-> +		status = "okay";
-> +		port {
-> +			panel_in: endpoint {
-> +				remote-endpoint = <&dsi_out>;
-> +			};
-> +		};
-> +	};
-> +};
-> \ No newline at end of file
+    Device (PWL0)
+    {
+        Name (_HID, "PRP0001")
+        Name (_DSD, Package () {
+              ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+              Package () {
+                           Package () {"label", "alarm-led"},
+                           Package () {"pwms", Package ()
+                                       {\_SB_.PCI0.PWM, 0, 600000, 0}},
+                           Package () {"linux,default-state", "off"}}})
+    }
+}
 
-Fix this.
+Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+---
+ drivers/leds/leds-pwm.c | 45 ++++++++++++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/leds/leds-pwm.c b/drivers/leds/leds-pwm.c
+index af08bcdc4fd8..3ce4d53c0cc9 100644
+--- a/drivers/leds/leds-pwm.c
++++ b/drivers/leds/leds-pwm.c
+@@ -75,7 +75,7 @@ static inline size_t sizeof_pwm_leds_priv(int num_leds)
+ }
+ 
+ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+-		       struct led_pwm *led, struct device_node *child)
++		       struct led_pwm *led, struct fwnode_handle *fwnode)
+ {
+ 	struct led_pwm_data *led_data = &priv->leds[priv->num_leds];
+ 	struct pwm_args pargs;
+@@ -88,8 +88,8 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	led_data->cdev.max_brightness = led->max_brightness;
+ 	led_data->cdev.flags = LED_CORE_SUSPENDRESUME;
+ 
+-	if (child)
+-		led_data->pwm = devm_of_pwm_get(dev, child, NULL);
++	if (fwnode)
++		led_data->pwm = devm_fwnode_pwm_get(dev, fwnode, NULL);
+ 	else
+ 		led_data->pwm = devm_pwm_get(dev, led->name);
+ 	if (IS_ERR(led_data->pwm)) {
+@@ -114,7 +114,8 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	if (!led_data->period && (led->pwm_period_ns > 0))
+ 		led_data->period = led->pwm_period_ns;
+ 
+-	ret = devm_of_led_classdev_register(dev, child, &led_data->cdev);
++	ret = devm_of_led_classdev_register(dev, to_of_node(fwnode),
++					    &led_data->cdev);
+ 	if (ret == 0) {
+ 		priv->num_leds++;
+ 		led_pwm_set(&led_data->cdev, led_data->cdev.brightness);
+@@ -126,27 +127,35 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	return ret;
+ }
+ 
+-static int led_pwm_create_of(struct device *dev, struct led_pwm_priv *priv)
++static int led_pwm_create_fwnode(struct device *dev, struct led_pwm_priv *priv)
+ {
+-	struct device_node *child;
++	struct fwnode_handle *fwnode;
+ 	struct led_pwm led;
+ 	int ret = 0;
+ 
+ 	memset(&led, 0, sizeof(led));
+ 
+-	for_each_child_of_node(dev->of_node, child) {
+-		led.name = of_get_property(child, "label", NULL) ? :
+-			   child->name;
++	device_for_each_child_node(dev, fwnode) {
++		ret = fwnode_property_read_string(fwnode, "label", &led.name);
++		if (ret && is_of_node(fwnode))
++			led.name = to_of_node(fwnode)->name;
+ 
+-		led.default_trigger = of_get_property(child,
+-						"linux,default-trigger", NULL);
+-		led.active_low = of_property_read_bool(child, "active-low");
+-		of_property_read_u32(child, "max-brightness",
+-				     &led.max_brightness);
++		if (!led.name) {
++			fwnode_handle_put(fwnode);
++			return -EINVAL;
++		}
+ 
+-		ret = led_pwm_add(dev, priv, &led, child);
++		fwnode_property_read_string(fwnode, "linux,default-trigger",
++					    &led.default_trigger);
++
++		led.active_low = fwnode_property_read_bool(fwnode,
++							   "active-low");
++		fwnode_property_read_u32(fwnode, "max-brightness",
++					 &led.max_brightness);
++
++		ret = led_pwm_add(dev, priv, &led, fwnode);
+ 		if (ret) {
+-			of_node_put(child);
++			fwnode_handle_put(fwnode);
+ 			break;
+ 		}
+ 	}
+@@ -164,7 +173,7 @@ static int led_pwm_probe(struct platform_device *pdev)
+ 	if (pdata)
+ 		count = pdata->num_leds;
+ 	else
+-		count = of_get_child_count(pdev->dev.of_node);
++		count = device_get_child_node_count(&pdev->dev);
+ 
+ 	if (!count)
+ 		return -EINVAL;
+@@ -182,7 +191,7 @@ static int led_pwm_probe(struct platform_device *pdev)
+ 				break;
+ 		}
+ 	} else {
+-		ret = led_pwm_create_of(&pdev->dev, priv);
++		ret = led_pwm_create_fwnode(&pdev->dev, priv);
+ 	}
+ 
+ 	if (ret)
+-- 
+2.17.1
