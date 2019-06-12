@@ -1,10 +1,9 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 10/14] pwm: meson: simplify the calculation of the pre-divider and count
-Date: Wed, 12 Jun 2019 21:59:07 +0200
-Message-ID: <20190612195911.4442-11-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 11/14] pwm: meson: read the full hardware state in meson_pwm_get_state()
+Date: Wed, 12 Jun 2019 21:59:08 +0200
+Message-ID: <20190612195911.4442-12-martin.blumenstingl@googlemail.com>
 References: <20190612195911.4442-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190612195911.4442-1-martin.blumenstingl@googlemail.com>
@@ -13,111 +12,99 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, narmstrong@baylibre.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Replace the loop to calculate the pre-divider and count with two
-separate div64_u64() calculations. This makes the code easier to read
-and improves the precision.
+Update the meson_pwm_get_state() implementation to take care of all
+information in the registers instead of only reading the "enabled"
+state.
 
-Three example cases:
-1) 32.768kHz LPO clock for the SDIO wifi chip on Khadas VIM
-   clock input: 500MHz (FCLK_DIV4)
-   period: 30518ns
-   duty cycle: 15259ns
-old algorithm: pre_div=0, cnt=15259
-new algorithm: pre_div=0, cnt=15259
-(no difference in calculated values)
+The PWM output is only enabled if two conditions are met:
+1. the per-channel clock is enabled
+2. the PWM output is enabled
 
-2) PWM LED on Khadas VIM
-   clock input: 24MHz (XTAL)
-   period: 7812500ns
-   duty cycle: 7812500ns
-old algorithm: pre_div=2, cnt=62004
-new algorithm: pre_div=2, cnt=62500
-Using a scope (24MHz sampling rate) shows the actual difference:
-- old: 7753000ns, off by -59500ns (0.7616%)
-- new: 7815000ns, off by +2500ns (0.032%)
+Calculate the PWM period and duty cycle using the reverse formula which
+we already have in meson_pwm_calc() and update struct pwm_state with the
+results.
 
-3) Theoretical case where pre_div is different
-   clock input: 24MHz (XTAL)
-   period: 2730624ns
-   duty cycle: 1365312ns
-old algorithm: pre_div=1, cnt=32768
-new algorithm: pre_div=0, cnt=65534
-Using a scope (24MHz sampling rate) shows the actual difference:
-- old: 2731000ns
-- new: 2731000ns
-(my scope is not precise enough to measure the difference if there's
-any)
+As result of this /sys/kernel/debug/pwm now shows the PWM state set by
+the bootloader (or firmware) after booting Linux.
 
-Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/pwm/pwm-meson.c | 25 ++++++++++---------------
- 1 file changed, 10 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-meson.c | 52 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 49 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 27915d6475e3..9afa1e5aaebf 100644
+index 9afa1e5aaebf..010212166d5d 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -12,6 +12,7 @@
- #include <linux/err.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -145,7 +146,6 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	unsigned int duty, period, pre_div, cnt, duty_cnt;
- 	unsigned long fin_freq = -1;
--	u64 fin_ps;
+@@ -287,19 +287,65 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
  
- 	duty = state->duty_cycle;
- 	period = state->period;
-@@ -164,24 +164,19 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 	}
- 
- 	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
--	fin_ps = (u64)NSEC_PER_SEC * 1000;
--	do_div(fin_ps, fin_freq);
--
--	/* Calc pre_div with the period */
--	for (pre_div = 0; pre_div <= MISC_CLK_DIV_MASK; pre_div++) {
--		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
--					    fin_ps * (pre_div + 1));
--		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
--			fin_ps, pre_div, cnt);
--		if (cnt <= 0xffff)
--			break;
--	}
- 
-+	pre_div = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * 0xffffLL);
- 	if (pre_div > MISC_CLK_DIV_MASK) {
- 		dev_err(meson->chip.dev, "unable to get period pre_div\n");
- 		return -EINVAL;
- 	}
- 
-+	cnt = div64_u64(fin_freq * (u64)period, NSEC_PER_SEC * (pre_div + 1));
-+	if (cnt > 0xffff) {
-+		dev_err(meson->chip.dev, "unable to get period cnt\n");
-+		return -EINVAL;
-+	}
++static unsigned int meson_pwm_cnt_to_ns(struct pwm_chip *chip,
++					struct pwm_device *pwm, u32 cnt)
++{
++	struct meson_pwm *meson = to_meson_pwm(chip);
++	struct meson_pwm_channel *channel;
++	unsigned long fin_freq;
++	u32 fin_ns;
 +
- 	dev_dbg(meson->chip.dev, "period=%u pre_div=%u cnt=%u\n", period,
- 		pre_div, cnt);
++	/* to_meson_pwm() can only be used after .get_state() is called */
++	channel = &meson->channels[pwm->hwpwm];
++
++	fin_freq = clk_get_rate(channel->clk);
++	if (fin_freq == 0)
++		return 0;
++
++	fin_ns = div_u64(NSEC_PER_SEC, fin_freq);
++
++	return cnt * fin_ns * (channel->pre_div + 1);
++}
++
+ static void meson_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				struct pwm_state *state)
+ {
+ 	struct meson_pwm *meson = to_meson_pwm(chip);
+-	u32 value, mask;
++	struct meson_pwm_channel_data *channel_data;
++	struct meson_pwm_channel *channel;
++	u32 value, tmp;
  
-@@ -195,8 +190,8 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
- 		channel->lo = cnt;
- 	} else {
- 		/* Then check is we can have the duty with the same pre_div */
--		duty_cnt = DIV_ROUND_CLOSEST_ULL((u64)duty * 1000,
--						 fin_ps * (pre_div + 1));
-+		duty_cnt = div64_u64(fin_freq * (u64)duty,
-+				     NSEC_PER_SEC * (pre_div + 1));
- 		if (duty_cnt > 0xffff) {
- 			dev_err(meson->chip.dev, "unable to get duty cycle\n");
- 			return -EINVAL;
+ 	if (!state)
+ 		return;
+ 
+-	mask = meson_pwm_per_channel_data[pwm->hwpwm].pwm_en_mask;
++	channel = &meson->channels[pwm->hwpwm];
++	channel_data = &meson_pwm_per_channel_data[pwm->hwpwm];
+ 
+ 	value = readl(meson->base + REG_MISC_AB);
+-	state->enabled = (value & mask) != 0;
++
++	tmp = channel_data->pwm_en_mask | channel_data->clk_en_mask;
++	state->enabled = (value & tmp) == tmp;
++
++	tmp = value >> channel_data->clk_div_shift;
++	channel->pre_div = FIELD_GET(MISC_CLK_DIV_MASK, tmp);
++
++	value = readl(meson->base + channel_data->reg_offset);
++
++	channel->lo = FIELD_GET(PWM_LOW_MASK, value);
++	channel->hi = FIELD_GET(PWM_HIGH_MASK, value);
++
++	if (channel->lo == 0) {
++		state->period = meson_pwm_cnt_to_ns(chip, pwm, channel->hi);
++		state->duty_cycle = state->period;
++	} else if (channel->lo >= channel->hi) {
++		state->period = meson_pwm_cnt_to_ns(chip, pwm,
++						    channel->lo + channel->hi);
++		state->duty_cycle = meson_pwm_cnt_to_ns(chip, pwm,
++							channel->hi);
++	} else {
++		state->period = 0;
++		state->duty_cycle = 0;
++	}
+ }
+ 
+ static const struct pwm_ops meson_pwm_ops = {
 -- 
 2.22.0
