@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 13/14] pwm: meson: add support PWM_POLARITY_INVERSED when disabling
-Date: Wed, 12 Jun 2019 21:59:10 +0200
-Message-ID: <20190612195911.4442-14-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 09/14] pwm: meson: move pwm_set_chip_data() to meson_pwm_request()
+Date: Wed, 12 Jun 2019 21:59:06 +0200
+Message-ID: <20190612195911.4442-10-martin.blumenstingl@googlemail.com>
 References: <20190612195911.4442-1-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,67 +12,81 @@ To: linux-amlogic@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, u.kleine-koenig@pengutronix.de, narmstrong@baylibre.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-meson_pwm_apply() has to consider the PWM polarity when disabling the
-output.
-With enabled=false and polarity=PWM_POLARITY_NORMAL the output needs to
-be LOW. The driver already supports this.
-With enabled=false and polarity=PWM_POLARITY_INVERSED the output needs
-to be HIGH. Implement this in the driver by internally enabling the
-output with the same settings that we already use for "period == duty".
+All existing PWM drivers (except pwm-meson and two other ones) call
+pwm_set_chip_data() from their pwm_ops.request() callback. Now that we
+can access the struct meson_pwm_channel from struct meson_pwm we can do
+the same.
 
-This fixes a PWM API violation which expects that the driver honors the
-polarity also for enabled=false. Due to the IP block not supporting this
-natively we only get "an as close as possible" to 100% HIGH signal (in
-my test setup with input clock of 24MHz and measuring the output with a
-logic analyzer at 24MHz sampling rate I got a duty cycle of 99.998475%
-on a Khadas VIM).
+Move the call to pwm_set_chip_data() to meson_pwm_request() and drop the
+custom meson_pwm_add_channels(). This makes the implementation
+consistent with other drivers and makes it slightly more obvious
+thatpwm_get_chip_data() cannot be used from pwm_ops.get_state() (because
+that's called by the PWM core before pwm_ops.request()).
+
+No functional changes intended.
 
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/pwm/pwm-meson.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-meson.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 900d362ec3c9..bb48ba85f756 100644
+index ac7e188155fd..27915d6475e3 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -245,6 +245,7 @@ static void meson_pwm_disable(struct meson_pwm *meson, struct pwm_device *pwm)
- static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   struct pwm_state *state)
+@@ -98,12 +98,16 @@ static inline struct meson_pwm *to_meson_pwm(struct pwm_chip *chip)
+ 
+ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
  {
-+	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
- 	struct meson_pwm *meson = to_meson_pwm(chip);
- 	int err = 0;
+-	struct meson_pwm_channel *channel = pwm_get_chip_data(pwm);
++	struct meson_pwm *meson = to_meson_pwm(chip);
++	struct meson_pwm_channel *channel;
+ 	struct device *dev = chip->dev;
+ 	int err;
  
-@@ -252,7 +253,27 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return -EINVAL;
- 
- 	if (!state->enabled) {
--		meson_pwm_disable(meson, pwm);
-+		if (state->polarity == PWM_POLARITY_INVERSED) {
-+			/*
-+			 * This IP block revision doesn't have an "always high"
-+			 * setting which we can use for "inverted disabled".
-+			 * Instead we achieve this using the same settings
-+			 * that we use a pre_div of 0 (to get the shortest
-+			 * possible duration for one "count") and
-+			 * "period == duty_cycle". This results in a signal
-+			 * which is LOW for one "count", while being HIGH for
-+			 * the rest of the (so the signal is HIGH for slightly
-+			 * less than 100% of the period, but this is the best
-+			 * we can achieve).
-+			 */
-+			channel->pre_div = 0;
-+			channel->hi = ~0;
-+			channel->lo = 0;
+-	if (!channel)
+-		return -ENODEV;
++	channel = pwm_get_chip_data(pwm);
++	if (channel)
++		return 0;
 +
-+			meson_pwm_enable(meson, pwm);
-+		} else {
-+			meson_pwm_disable(meson, pwm);
-+		}
- 	} else {
- 		err = meson_pwm_calc(meson, pwm, state);
- 		if (err < 0)
++	channel = &meson->channels[pwm->hwpwm];
+ 
+ 	if (channel->clk_parent) {
+ 		err = clk_set_parent(channel->clk, channel->clk_parent);
+@@ -124,7 +128,7 @@ static int meson_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	chip->ops->get_state(chip, pwm, &channel->state);
+ 
+-	return 0;
++	return pwm_set_chip_data(pwm, channel);
+ }
+ 
+ static void meson_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -460,14 +464,6 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
+ 	return 0;
+ }
+ 
+-static void meson_pwm_add_channels(struct meson_pwm *meson)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < meson->chip.npwm; i++)
+-		pwm_set_chip_data(&meson->chip.pwms[i], &meson->channels[i]);
+-}
+-
+ static int meson_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct meson_pwm *meson;
+@@ -503,8 +499,6 @@ static int meson_pwm_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
+-	meson_pwm_add_channels(meson);
+-
+ 	platform_set_drvdata(pdev, meson);
+ 
+ 	return 0;
 -- 
 2.22.0
