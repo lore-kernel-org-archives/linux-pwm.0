@@ -1,81 +1,61 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:46678 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726626AbfEaMqc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 31 May 2019 08:46:32 -0400
-From: Dan Murphy <dmurphy@ti.com>
-References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de>
- <8704391ae3004a6b4dd17975dbcc9e88bd28cf4b.1559127603.git.nikolaus.voss@loewensteinmedical.de>
- <2944848d-d004-6750-b95d-825b1758ff22@ti.com>
-Message-ID: <e5ed5715-2fc0-be77-0cb2-2cae57de4b98@ti.com>
-Date: Fri, 31 May 2019 07:46:18 -0500
+Received: from kirsty.vergenet.net ([202.4.237.240]:41432 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731958AbfFMKE7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Jun 2019 06:04:59 -0400
+Date: Thu, 13 Jun 2019 12:04:54 +0200
+From: Simon Horman <horms@verge.net.au>
+Message-ID: <20190613100453.ythhx3lika5cil4q@verge.net.au>
+References: <1559296501-30620-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1559296501-30620-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
-In-Reply-To: <2944848d-d004-6750-b95d-825b1758ff22@ti.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1559296501-30620-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
-To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] pwm: Add power management descriptions
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 
-Nikolaus
+On Fri, May 31, 2019 at 06:54:58PM +0900, Yoshihiro Shimoda wrote:
+> This patch adds power management descriptions that consumers should
+> implement it.
+> 
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-On 5/30/19 9:42 AM, Dan Murphy wrote:
-> Nikolaus
->
-> On 5/29/19 7:18 AM, Nikolaus Voss wrote:
->> If an ACPI SSDT overlay is loaded after built-in tables
->> have been loaded e.g. via configfs or efivar_ssdt_load()
->> it is necessary to rewalk the namespace to resolve
->> references. Without this, relative and absolute paths
->> like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
->> correctly.
->>
->> Make configfs load use the same method as efivar_ssdt_load().
->>
->> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
->> ---
->>   drivers/acpi/acpi_configfs.c   |  6 +-----
->>   drivers/acpi/acpica/tbxfload.c | 11 +++++++++++
->>   2 files changed, 12 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/acpi/acpi_configfs.c b/drivers/acpi/acpi_configfs.c
->> index f92033661239..663f0d88f912 100644
->> --- a/drivers/acpi/acpi_configfs.c
->> +++ b/drivers/acpi/acpi_configfs.c
->> @@ -56,11 +56,7 @@ static ssize_t acpi_table_aml_write(struct 
->> config_item *cfg,
->>       if (!table->header)
->>           return -ENOMEM;
->>   -    ACPI_INFO(("Host-directed Dynamic ACPI Table Load:"));
->> -    ret = acpi_tb_install_and_load_table(
->> -            ACPI_PTR_TO_PHYSADDR(table->header),
->> -            ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE,
->> -            &table->index);
->> +    ret = acpi_load_table(table->header);
->>       if (ret) {
->>           kfree(table->header);
->>           table->header = NULL;
->> diff --git a/drivers/acpi/acpica/tbxfload.c 
->> b/drivers/acpi/acpica/tbxfload.c
->> index 4f30f06a6f78..61f2d46e52ba 100644
->> --- a/drivers/acpi/acpica/tbxfload.c
->> +++ b/drivers/acpi/acpica/tbxfload.c
->> @@ -297,6 +297,17 @@ acpi_status acpi_load_table(struct 
->> acpi_table_header *table)
->>       status = 
->> acpi_tb_install_and_load_table(ACPI_PTR_TO_PHYSADDR(table),
->>                           ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL,
->>                           FALSE, &table_index);
->> +
->> +    if (!ACPI_FAILURE(status)) {
-> Checkpatch should complain about putting brackets around single 
-> statement if's.
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
 
-Would ACPI_SUCCESS make more sense here?
-
-Dan
-
-<snip>
+> ---
+>  Documentation/pwm.txt | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+> index 8fbf0aa..ab62f1b 100644
+> --- a/Documentation/pwm.txt
+> +++ b/Documentation/pwm.txt
+> @@ -65,6 +65,10 @@ period). struct pwm_args contains 2 fields (period and polarity) and should
+>  be used to set the initial PWM config (usually done in the probe function
+>  of the PWM user). PWM arguments are retrieved with pwm_get_args().
+>  
+> +All consumers should really be reconfiguring the PWM upon resume as
+> +appropriate. This is the only way to ensure that everything is resumed in
+> +the proper order.
+> +
+>  Using PWMs with the sysfs interface
+>  -----------------------------------
+>  
+> @@ -141,6 +145,9 @@ The implementation of ->get_state() (a method used to retrieve initial PWM
+>  state) is also encouraged for the same reason: letting the PWM user know
+>  about the current PWM state would allow him to avoid glitches.
+>  
+> +Drivers should not implement any power management. In other words,
+> +consumers should implement it as described in the "Using PWMs" section.
+> +
+>  Locking
+>  -------
+>  
+> -- 
+> 2.7.4
+> 
