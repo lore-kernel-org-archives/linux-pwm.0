@@ -1,73 +1,52 @@
 From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH 4/4] backlight: pwm_bl: Set scale type for brightness curves specified in the DT
-Date: Thu, 13 Jun 2019 12:43:26 -0700
-Message-ID: <20190613194326.180889-5-mka@chromium.org>
+Subject: [PATCH 3/4] backlight: pwm_bl: Set scale type for CIE 1931 curves
+Date: Thu, 13 Jun 2019 12:43:25 -0700
+Message-ID: <20190613194326.180889-4-mka@chromium.org>
 References: <20190613194326.180889-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 In-Reply-To: <20190613194326.180889-1-mka@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Check if a brightness curve specified in the device tree is linear or
-not and set the corresponding property accordingly. This makes the
-scale type available to userspace via the 'scale' sysfs attribute.
-
-To determine if a curve is linear it is compared to a interpolated linear
-curve between min and max brightness. The curve is considered linear if
-no value deviates more than +/-5% of ${brightness_range} from their
-interpolated value.
-
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
- drivers/video/backlight/pwm_bl.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index f067fe7aa35d..912407b6d67f 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -404,6 +404,26 @@ int pwm_backlight_brightness_default(struct device *dev,
- }
- #endif
- 
-+static bool pwm_backlight_is_linear(struct platform_pwm_backlight_data *data)
-+{
-+	unsigned int nlevels = data->max_brightness + 1;
-+	unsigned int min_val = data->levels[0];
-+	unsigned int max_val = data->levels[nlevels - 1];
-+	unsigned int slope = (100 * (max_val - min_val)) / nlevels;
-+	unsigned int margin = (max_val - min_val) / 20; /* 5% */
-+	int i;
-+
-+	for (i = 1; i < nlevels; i++) {
-+		unsigned int linear_value = min_val + ((i * slope) / 100);
-+		unsigned int delta = abs(linear_value - data->levels[i]);
-+
-+		if (delta > margin)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
- static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
- {
- 	struct device_node *node = pb->dev->of_node;
-@@ -567,6 +587,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 			pb->levels = data->levels;
- 		}
-+
-+		if (pwm_backlight_is_linear(data))
-+			props.scale = BACKLIGHT_SCALE_LINEAR;
-+		else
-+			props.scale = BACKLIGHT_SCALE_NON_LINEAR;
- 	} else if (!data->max_brightness) {
- 		/*
- 		 * If no brightness levels are provided and max_brightness is
--- 
-2.22.0.rc2.383.gf4fbbf30c2-goog
+Rm9yIGJhY2tsaWdodCBjdXJ2ZXMgY2FsY3VsYXRlZCB3aXRoIHRoZSBDSUUgMTkzMSBhbGdvcml0
+aG0gc2V0CnRoZSBicmlnaHRuZXNzIHNjYWxlIHR5cGUgcHJvcGVydHkgYWNjb3JkaW5nbHkuIFRo
+aXMgbWFrZXMgdGhlCnNjYWxlIHR5cGUgYXZhaWxhYmxlIHRvIHVzZXJzcGFjZSB2aWEgdGhlICdz
+Y2FsZScgc3lzZnMgYXR0cmlidXRlLgoKU2lnbmVkLW9mZi1ieTogTWF0dGhpYXMgS2FlaGxja2Ug
+PG1rYUBjaHJvbWl1bS5vcmc+Ci0tLQogZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMg
+fCA1ICsrKystCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0p
+CgpkaWZmIC0tZ2l0IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgYi9kcml2ZXJz
+L3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwppbmRleCBmYjQ1Zjg2NmI5MjMuLmYwNjdmZTdhYTM1
+ZCAxMDA2NDQKLS0tIGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKKysrIGIvZHJp
+dmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKQEAgLTU1Myw2ICs1NTMsOCBAQCBzdGF0aWMg
+aW50IHB3bV9iYWNrbGlnaHRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKIAkJ
+Z290byBlcnJfYWxsb2M7CiAJfQogCisJbWVtc2V0KCZwcm9wcywgMCwgc2l6ZW9mKHN0cnVjdCBi
+YWNrbGlnaHRfcHJvcGVydGllcykpOworCiAJaWYgKGRhdGEtPmxldmVscykgewogCQkvKgogCQkg
+KiBGb3IgdGhlIERUIGNhc2UsIG9ubHkgd2hlbiBicmlnaHRuZXNzIGxldmVscyBpcyBkZWZpbmVk
+CkBAIC01OTEsNiArNTkzLDggQEAgc3RhdGljIGludCBwd21fYmFja2xpZ2h0X3Byb2JlKHN0cnVj
+dCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAKIAkJCXBiLT5sZXZlbHMgPSBkYXRhLT5sZXZlbHM7
+CiAJCX0KKworCQlwcm9wcy5zY2FsZSA9IEJBQ0tMSUdIVF9TQ0FMRV9DSUUxOTMxOwogCX0gZWxz
+ZSB7CiAJCS8qCiAJCSAqIFRoYXQgb25seSBoYXBwZW5zIGZvciB0aGUgbm9uLURUIGNhc2UsIHdo
+ZXJlIHBsYXRmb3JtIGRhdGEKQEAgLTYwMSw3ICs2MDUsNiBAQCBzdGF0aWMgaW50IHB3bV9iYWNr
+bGlnaHRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKIAogCXBiLT5sdGhfYnJp
+Z2h0bmVzcyA9IGRhdGEtPmx0aF9icmlnaHRuZXNzICogKHN0YXRlLnBlcmlvZCAvIHBiLT5zY2Fs
+ZSk7CiAKLQltZW1zZXQoJnByb3BzLCAwLCBzaXplb2Yoc3RydWN0IGJhY2tsaWdodF9wcm9wZXJ0
+aWVzKSk7CiAJcHJvcHMudHlwZSA9IEJBQ0tMSUdIVF9SQVc7CiAJcHJvcHMubWF4X2JyaWdodG5l
+c3MgPSBkYXRhLT5tYXhfYnJpZ2h0bmVzczsKIAlibCA9IGJhY2tsaWdodF9kZXZpY2VfcmVnaXN0
+ZXIoZGV2X25hbWUoJnBkZXYtPmRldiksICZwZGV2LT5kZXYsIHBiLAotLSAKMi4yMi4wLnJjMi4z
+ODMuZ2Y0ZmJiZjMwYzItZ29vZwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
+ZHJpLWRldmVs
