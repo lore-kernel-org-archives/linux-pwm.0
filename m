@@ -1,38 +1,73 @@
 From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH 1/4] MAINTAINERS: Add entry for stable backlight sysfs ABI
- documentation
-Date: Thu, 13 Jun 2019 12:43:23 -0700
-Message-ID: <20190613194326.180889-2-mka@chromium.org>
+Subject: [PATCH 4/4] backlight: pwm_bl: Set scale type for brightness curves specified in the DT
+Date: Thu, 13 Jun 2019 12:43:26 -0700
+Message-ID: <20190613194326.180889-5-mka@chromium.org>
 References: <20190613194326.180889-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190613194326.180889-1-mka@chromium.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-QWRkIGFuIGVudHJ5IGZvciB0aGUgc3RhYmxlIGJhY2tsaWdodCBzeXNmcyBBQkkgdG8gdGhlIE1B
-SU5UQUlORVJTCmZpbGUuCgpTaWduZWQtb2ZmLWJ5OiBNYXR0aGlhcyBLYWVobGNrZSA8bWthQGNo
-cm9taXVtLm9yZz4KLS0tCiBNQUlOVEFJTkVSUyB8IDEgKwogMSBmaWxlIGNoYW5nZWQsIDEgaW5z
-ZXJ0aW9uKCspCgpkaWZmIC0tZ2l0IGEvTUFJTlRBSU5FUlMgYi9NQUlOVEFJTkVSUwppbmRleCA1
-N2Y0OTZjZmY5OTkuLmQ1MWU3NDM0MDg3MCAxMDA2NDQKLS0tIGEvTUFJTlRBSU5FUlMKKysrIGIv
-TUFJTlRBSU5FUlMKQEAgLTI4NTcsNiArMjg1Nyw3IEBAIEY6CWRyaXZlcnMvdmlkZW8vYmFja2xp
-Z2h0LwogRjoJaW5jbHVkZS9saW51eC9iYWNrbGlnaHQuaAogRjoJaW5jbHVkZS9saW51eC9wd21f
-YmFja2xpZ2h0LmgKIEY6CURvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9sZWRzL2Jh
-Y2tsaWdodAorRjoJRG9jdW1lbnRhdGlvbi9BQkkvc3RhYmxlL3N5c2ZzLWNsYXNzLWJhY2tsaWdo
-dAogCiBCQVRNQU4gQURWQU5DRUQKIE06CU1hcmVrIExpbmRuZXIgPG1hcmVrbGluZG5lckBuZW9t
-YWlsYm94LmNoPgotLSAKMi4yMi4wLnJjMi4zODMuZ2Y0ZmJiZjMwYzItZ29vZwoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
-bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+Check if a brightness curve specified in the device tree is linear or
+not and set the corresponding property accordingly. This makes the
+scale type available to userspace via the 'scale' sysfs attribute.
+
+To determine if a curve is linear it is compared to a interpolated linear
+curve between min and max brightness. The curve is considered linear if
+no value deviates more than +/-5% of ${brightness_range} from their
+interpolated value.
+
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
+ drivers/video/backlight/pwm_bl.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index f067fe7aa35d..912407b6d67f 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -404,6 +404,26 @@ int pwm_backlight_brightness_default(struct device *dev,
+ }
+ #endif
+ 
++static bool pwm_backlight_is_linear(struct platform_pwm_backlight_data *data)
++{
++	unsigned int nlevels = data->max_brightness + 1;
++	unsigned int min_val = data->levels[0];
++	unsigned int max_val = data->levels[nlevels - 1];
++	unsigned int slope = (100 * (max_val - min_val)) / nlevels;
++	unsigned int margin = (max_val - min_val) / 20; /* 5% */
++	int i;
++
++	for (i = 1; i < nlevels; i++) {
++		unsigned int linear_value = min_val + ((i * slope) / 100);
++		unsigned int delta = abs(linear_value - data->levels[i]);
++
++		if (delta > margin)
++			return false;
++	}
++
++	return true;
++}
++
+ static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
+ {
+ 	struct device_node *node = pb->dev->of_node;
+@@ -567,6 +587,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 
+ 			pb->levels = data->levels;
+ 		}
++
++		if (pwm_backlight_is_linear(data))
++			props.scale = BACKLIGHT_SCALE_LINEAR;
++		else
++			props.scale = BACKLIGHT_SCALE_NON_LINEAR;
+ 	} else if (!data->max_brightness) {
+ 		/*
+ 		 * If no brightness levels are provided and max_brightness is
+-- 
+2.22.0.rc2.383.gf4fbbf30c2-goog
