@@ -1,52 +1,98 @@
-From: Matthias Kaehlcke <mka@chromium.org>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Subject: Re: [PATCH] backlight: pwm_bl: Fix heuristic to determine number of
  brightness levels
-Date: Thu, 13 Jun 2019 08:43:57 -0700
-Message-ID: <20190613154357.GN137143@google.com>
+Date: Thu, 13 Jun 2019 11:14:55 +0200
+Message-ID: <fd554750-7ec6-73e1-be3a-5bac0749fa0b@collabora.com>
 References: <20190612180003.161966-1-mka@chromium.org>
- <fd554750-7ec6-73e1-be3a-5bac0749fa0b@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <fd554750-7ec6-73e1-be3a-5bac0749fa0b@collabora.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Douglas Anderson <dianders@chromium.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190612180003.161966-1-mka@chromium.org>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVGh1LCBKdW4gMTMsIDIwMTkgYXQgMTE6MTQ6NTVBTSArMDIwMCwgRW5yaWMgQmFsbGV0Ym8g
-aSBTZXJyYSB3cm90ZToKPiBIaSBNYXR0aGlhcywKPiAKPiBPbiAxMi82LzE5IDIwOjAwLCBNYXR0
-aGlhcyBLYWVobGNrZSB3cm90ZToKPiA+IFdpdGggY29tbWl0IDg4YmE5NWJlZGI3OSAoImJhY2ts
-aWdodDogcHdtX2JsOiBDb21wdXRlIGJyaWdodG5lc3Mgb2YKPiA+IExFRCBsaW5lYXJseSB0byBo
-dW1hbiBleWUiKSB0aGUgbnVtYmVyIG9mIHNldCBiaXRzIChha2EgaHdlaWdodCgpKQo+ID4gaW4g
-dGhlIFBXTSBwZXJpb2QgaXMgdXNlZCBpbiB0aGUgaGV1cmlzdGljIHRvIGRldGVybWluZSB0aGUg
-bnVtYmVyCj4gPiBvZiBicmlnaHRuZXNzIGxldmVscywgd2hlbiB0aGUgYnJpZ2h0bmVzcyB0YWJs
-ZSBpc24ndCBzcGVjaWZpZWQgaW4KPiA+IHRoZSBEVC4gVGhlIG51bWJlciBvZiBzZXQgYml0cyBk
-b2Vzbid0IHByb3ZpZGUgYSByZWxpYWJsZSBjbHVlIGFib3V0Cj4gPiB0aGUgbGVuZ3RoIG9mIHRo
-ZSBwZXJpb2QsIGluc3RlYWQgY2hhbmdlIHRoZSBoZXVyaXN0aWMgdG86Cj4gPiAKPiA+ICBubGV2
-ZWxzID0gcGVyaW9kIC8gZmxzKHBlcmlvZCkKPiA+IAo+ID4gQWxzbyBsaW1pdCB0aGUgbWF4aW11
-bSBudW1iZXIgb2YgYnJpZ2h0bmVzcyBsZXZlbHMgdG8gNDA5NiB0byBhdm9pZAo+ID4gZXhjZXNz
-aXZlbHkgbGFyZ2UgdGFibGVzLgo+ID4gCj4gPiBXaXRoIHRoaXMgdGhlIG51bWJlciBvZiBsZXZl
-bHMgaW5jcmVhc2VzIG1vbm90b25pY2FsbHkgd2l0aCB0aGUgUFdNCj4gPiBwZXJpb2QsIHVudGls
-IHRoZSBtYXhpbXVtIG9mIDQwOTYgbGV2ZWxzIGlzIHJlYWNoZWQ6Cj4gPiAKPiA+IHBlcmlvZCAo
-bnMpICAgICMgbGV2ZWxzCj4gPiAKPiA+IDEwMCAgICAJICAgICAgIDE2Cj4gPiA1MDAJICAgICAg
-IDYyCj4gPiAxMDAwCSAgICAgICAxMTEKPiA+IDUwMDAJICAgICAgIDQxNgo+ID4gMTAwMDAJICAg
-ICAgIDc2OQo+ID4gNTAwMDAJICAgICAgIDMzMzMKPiA+IDEwMDAwMAkgICAgICAgNDA5Ngo+ID4g
-Cj4gPiBGaXhlczogODhiYTk1YmVkYjc5ICgiYmFja2xpZ2h0OiBwd21fYmw6IENvbXB1dGUgYnJp
-Z2h0bmVzcyBvZiBMRUQgbGluZWFybHkgdG8gaHVtYW4gZXllIikKPiA+IFNpZ25lZC1vZmYtYnk6
-IE1hdHRoaWFzIEthZWhsY2tlIDxta2FAY2hyb21pdW0ub3JnPgo+IAo+IFRlc3RlZCBvbiBTYW1z
-dW5nIENocm9tZWJvb2sgUGx1cyAoMTYtYml0IHB3bSkKPiAKPiBUZXN0ZWQtYnk6IEVucmljIEJh
-bGxldGJvIGkgU2VycmEgPGVucmljLmJhbGxldGJvQGNvbGxhYm9yYS5jb20+CgpUaGFua3MhCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBt
-YWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
-LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+Hi Matthias,
+
+On 12/6/19 20:00, Matthias Kaehlcke wrote:
+> With commit 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of
+> LED linearly to human eye") the number of set bits (aka hweight())
+> in the PWM period is used in the heuristic to determine the number
+> of brightness levels, when the brightness table isn't specified in
+> the DT. The number of set bits doesn't provide a reliable clue about
+> the length of the period, instead change the heuristic to:
+> 
+>  nlevels = period / fls(period)
+> 
+> Also limit the maximum number of brightness levels to 4096 to avoid
+> excessively large tables.
+> 
+> With this the number of levels increases monotonically with the PWM
+> period, until the maximum of 4096 levels is reached:
+> 
+> period (ns)    # levels
+> 
+> 100    	       16
+> 500	       62
+> 1000	       111
+> 5000	       416
+> 10000	       769
+> 50000	       3333
+> 100000	       4096
+> 
+> Fixes: 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+
+Tested on Samsung Chromebook Plus (16-bit pwm)
+
+Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+
+
+> ---
+>  drivers/video/backlight/pwm_bl.c | 24 ++++++------------------
+>  1 file changed, 6 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index fb45f866b923..0b7152fa24f7 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -194,29 +194,17 @@ int pwm_backlight_brightness_default(struct device *dev,
+>  				     struct platform_pwm_backlight_data *data,
+>  				     unsigned int period)
+>  {
+> -	unsigned int counter = 0;
+> -	unsigned int i, n;
+> +	unsigned int i;
+>  	u64 retval;
+>  
+>  	/*
+> -	 * Count the number of bits needed to represent the period number. The
+> -	 * number of bits is used to calculate the number of levels used for the
+> -	 * brightness-levels table, the purpose of this calculation is have a
+> -	 * pre-computed table with enough levels to get linear brightness
+> -	 * perception. The period is divided by the number of bits so for a
+> -	 * 8-bit PWM we have 255 / 8 = 32 brightness levels or for a 16-bit PWM
+> -	 * we have 65535 / 16 = 4096 brightness levels.
+> -	 *
+> -	 * Note that this method is based on empirical testing on different
+> -	 * devices with PWM of 8 and 16 bits of resolution.
+> +	 * Once we have 4096 levels there's little point going much higher...
+> +	 * neither interactive sliders nor animation benefits from having
+> +	 * more values in the table.
+>  	 */
+> -	n = period;
+> -	while (n) {
+> -		counter += n % 2;
+> -		n >>= 1;
+> -	}
+> +	data->max_brightness =
+> +		min((int)DIV_ROUND_UP(period, fls(period)), 4096);
+>  
+> -	data->max_brightness = DIV_ROUND_UP(period, counter);
+>  	data->levels = devm_kcalloc(dev, data->max_brightness,
+>  				    sizeof(*data->levels), GFP_KERNEL);
+>  	if (!data->levels)
+> 
