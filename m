@@ -1,85 +1,81 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table loads
-Date: Fri, 14 Jun 2019 11:12:53 +0200
-Message-ID: <CAJZ5v0jqxWs=PPik-TCDqQiyxCSyRP7HTue1WsdWP9e-nik2eA@mail.gmail.com>
-References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de> <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+Subject: Re: [PATCH] dt-bindings: pwm: Convert Allwinner PWM to a schema
+Date: Fri, 14 Jun 2019 11:14:33 +0200
+Message-ID: <20190614091433.xac42w3n7cx7buh6@flea>
+References: <20190516120848.25007-1-maxime.ripard@bootlin.com>
+ <20190607111838.xlx74cvcfhaob3wf@flea>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>, linux-leds@vger.kernel.org, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, nv@vosn.de
+Content-Type: multipart/mixed; boundary="===============0724703540117316312=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190607111838.xlx74cvcfhaob3wf@flea>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 10:36 AM Nikolaus Voss
-<nikolaus.voss@loewensteinmedical.de> wrote:
->
-> If an ACPI SSDT overlay is loaded after built-in tables
-> have been loaded e.g. via configfs or efivar_ssdt_load()
-> it is necessary to rewalk the namespace to resolve
-> references. Without this, relative and absolute paths
-> like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
-> correctly.
->
-> Make configfs load use the same method as efivar_ssdt_load().
->
-> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
 
-This is fine by me, so
+--===============0724703540117316312==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="2ulork7hxmrmxe3s"
+Content-Disposition: inline
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Or if you want me to take this patch (without the other two in the
-series), please let me know.
+--2ulork7hxmrmxe3s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-As for the other two patches, someone else needs to review them for
-you as I'm not particularly familiar with the PWM subsystem.
+On Fri, Jun 07, 2019 at 01:18:38PM +0200, Maxime Ripard wrote:
+> On Thu, May 16, 2019 at 02:08:48PM +0200, Maxime Ripard wrote:
+> > The Allwinner SoCs have a PWM controller supported in Linux, with a
+> > matching Device Tree binding.
+> >
+> > Now that we have the DT validation in place, let's convert the device tree
+> > bindings for that controller over to a YAML schemas.
+> >
+> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+>
+> Ping?
 
-> ---
->  drivers/acpi/acpi_configfs.c   |  6 +-----
->  drivers/acpi/acpica/tbxfload.c | 11 +++++++++++
->  2 files changed, 12 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/acpi/acpi_configfs.c b/drivers/acpi/acpi_configfs.c
-> index f92033661239..663f0d88f912 100644
-> --- a/drivers/acpi/acpi_configfs.c
-> +++ b/drivers/acpi/acpi_configfs.c
-> @@ -56,11 +56,7 @@ static ssize_t acpi_table_aml_write(struct config_item *cfg,
->         if (!table->header)
->                 return -ENOMEM;
->
-> -       ACPI_INFO(("Host-directed Dynamic ACPI Table Load:"));
-> -       ret = acpi_tb_install_and_load_table(
-> -                       ACPI_PTR_TO_PHYSADDR(table->header),
-> -                       ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE,
-> -                       &table->index);
-> +       ret = acpi_load_table(table->header);
->         if (ret) {
->                 kfree(table->header);
->                 table->header = NULL;
-> diff --git a/drivers/acpi/acpica/tbxfload.c b/drivers/acpi/acpica/tbxfload.c
-> index 4f30f06a6f78..ef8f8a9f3c9c 100644
-> --- a/drivers/acpi/acpica/tbxfload.c
-> +++ b/drivers/acpi/acpica/tbxfload.c
-> @@ -297,6 +297,17 @@ acpi_status acpi_load_table(struct acpi_table_header *table)
->         status = acpi_tb_install_and_load_table(ACPI_PTR_TO_PHYSADDR(table),
->                                                 ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL,
->                                                 FALSE, &table_index);
-> +
-> +       if (ACPI_SUCCESS(status)) {
-> +               /* Complete the initialization/resolution of package objects */
-> +
-> +               status = acpi_ns_walk_namespace(ACPI_TYPE_PACKAGE,
-> +                                               ACPI_ROOT_OBJECT,
-> +                                               ACPI_UINT32_MAX, 0,
-> +                                               acpi_ns_init_one_package,
-> +                                               NULL, NULL, NULL);
-> +       }
-> +
->         return_ACPI_STATUS(status);
->  }
->
-> --
-> 2.17.1
->
+Anyone? Should I just go ahead and merge it through the sunxi tree?
+
+Maxime
+
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--2ulork7hxmrmxe3s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXQNleQAKCRDj7w1vZxhR
+xbjNAP9u2gIWLx6Xy6i2Tdwxun/a8yx08d/HSPLSI34w6E8USAD9H4mszsZNc+Uo
+kU9HDUDOJN7I1BDXvlp8F8tUft9QOAE=
+=aqsN
+-----END PGP SIGNATURE-----
+
+--2ulork7hxmrmxe3s--
+
+
+--===============0724703540117316312==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============0724703540117316312==--
