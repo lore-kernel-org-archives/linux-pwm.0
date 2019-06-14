@@ -1,81 +1,47 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH] dt-bindings: pwm: Convert Allwinner PWM to a schema
-Date: Fri, 14 Jun 2019 11:14:33 +0200
-Message-ID: <20190614091433.xac42w3n7cx7buh6@flea>
-References: <20190516120848.25007-1-maxime.ripard@bootlin.com>
- <20190607111838.xlx74cvcfhaob3wf@flea>
+From: Nikolaus Voss <nv@vosn.de>
+Subject: Re: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
+ loads
+Date: Fri, 14 Jun 2019 11:25:58 +0200 (CEST)
+Message-ID: <alpine.DEB.2.20.1906141114490.6579@fox.voss.local>
+References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de> <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de> <CAJZ5v0jqxWs=PPik-TCDqQiyxCSyRP7HTue1WsdWP9e-nik2eA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0724703540117316312=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190607111838.xlx74cvcfhaob3wf@flea>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAJZ5v0jqxWs=PPik-TCDqQiyxCSyRP7HTue1WsdWP9e-nik2eA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>, linux-leds@vger.kernel.org, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Rafael,
 
---===============0724703540117316312==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="2ulork7hxmrmxe3s"
-Content-Disposition: inline
-
-
---2ulork7hxmrmxe3s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, Jun 07, 2019 at 01:18:38PM +0200, Maxime Ripard wrote:
-> On Thu, May 16, 2019 at 02:08:48PM +0200, Maxime Ripard wrote:
-> > The Allwinner SoCs have a PWM controller supported in Linux, with a
-> > matching Device Tree binding.
-> >
-> > Now that we have the DT validation in place, let's convert the device tree
-> > bindings for that controller over to a YAML schemas.
-> >
-> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+On Fri, 14 Jun 2019, Rafael J. Wysocki wrote:
+> On Wed, Jun 12, 2019 at 10:36 AM Nikolaus Voss
+> <nikolaus.voss@loewensteinmedical.de> wrote:
+>>
+>> If an ACPI SSDT overlay is loaded after built-in tables
+>> have been loaded e.g. via configfs or efivar_ssdt_load()
+>> it is necessary to rewalk the namespace to resolve
+>> references. Without this, relative and absolute paths
+>> like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
+>> correctly.
+>>
+>> Make configfs load use the same method as efivar_ssdt_load().
+>>
+>> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
 >
-> Ping?
+> This is fine by me, so
+>
+> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> Or if you want me to take this patch (without the other two in the
+> series), please let me know.
 
-Anyone? Should I just go ahead and merge it through the sunxi tree?
+thanks. I think it would be the best if you take up this patch as it is an 
+independent topic. In retrospect it wasn't a good idea to put it into this 
+series.
 
-Maxime
+Kind regards,
+Niko
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---2ulork7hxmrmxe3s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXQNleQAKCRDj7w1vZxhR
-xbjNAP9u2gIWLx6Xy6i2Tdwxun/a8yx08d/HSPLSI34w6E8USAD9H4mszsZNc+Uo
-kU9HDUDOJN7I1BDXvlp8F8tUft9QOAE=
-=aqsN
------END PGP SIGNATURE-----
-
---2ulork7hxmrmxe3s--
-
-
---===============0724703540117316312==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============0724703540117316312==--
+[...]
