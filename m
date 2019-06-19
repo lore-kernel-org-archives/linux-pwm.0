@@ -1,53 +1,31 @@
-From: Nikolaus Voss <nv@vosn.de>
-Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
- loads
-Date: Wed, 19 Jun 2019 11:31:01 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1906191123400.34742@fox.voss.local>
-References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de> <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de> <CAJZ5v0jqxWs=PPik-TCDqQiyxCSyRP7HTue1WsdWP9e-nik2eA@mail.gmail.com>
- <alpine.DEB.2.20.1906141114490.6579@fox.voss.local> <94F2FBAB4432B54E8AACC7DFDE6C92E3B95EFB26@ORSMSX110.amr.corp.intel.com> <alpine.DEB.2.20.1906170746150.12344@fox.voss.local> <94F2FBAB4432B54E8AACC7DFDE6C92E3B95F9EC6@ORSMSX110.amr.corp.intel.com>
- <alpine.DEB.2.20.1906181030240.24846@fox.voss.local>    <94F2FBAB4432B54E8AACC7DFDE6C92E3B95FB0BA@ORSMSX110.amr.corp.intel.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH 0/5] Add missing pwm-cells to STM32 timers PWM
+Date: Wed, 19 Jun 2019 11:52:00 +0200
+Message-ID: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <94F2FBAB4432B54E8AACC7DFDE6C92E3B95FB0BA@ORSMSX110.amr.corp.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Moore, Robert" <robert.moore@intel.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "Schmauss, Erik" <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, nikolaus.voss@loewensteinmedical.de
+To: thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com
+Cc: mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Bob,
+This series adds missing generic 3-cells PWM to STM32 timers dt-bindings,
+PWM driver, and the relevant dtsi files for STM32F4, STM32F7 and STM32MP1.
 
-On Tue, 18 Jun 2019, Moore, Robert wrote:
->
->
->> -----Original Message-----
->> From: Moore, Robert
->> Sent: Tuesday, June 18, 2019 1:25 PM
->> To: 'Nikolaus Voss' <nv@vosn.de>
->> Cc: 'Rafael J. Wysocki' <rafael@kernel.org>; 'Rafael J. Wysocki'
->> <rjw@rjwysocki.net>; 'Len Brown' <lenb@kernel.org>; Schmauss, Erik
->> <erik.schmauss@intel.com>; 'Jacek Anaszewski'
->> <jacek.anaszewski@gmail.com>; 'Pavel Machek' <pavel@ucw.cz>; 'Dan
->> Murphy' <dmurphy@ti.com>; 'Thierry Reding' <thierry.reding@gmail.com>;
->> 'ACPI Devel Maling List' <linux-acpi@vger.kernel.org>; 'open list:ACPI
->> COMPONENT ARCHITECTURE (ACPICA)' <devel@acpica.org>; 'linux-
->> leds@vger.kernel.org' <linux-leds@vger.kernel.org>; 'Linux PWM List'
->> <linux-pwm@vger.kernel.org>; 'Linux Kernel Mailing List' <linux-
->> kernel@vger.kernel.org>
->> Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
->> loads
->>
->> If it is in fact the AcpiLoadTable interface that is incorrect, that of
->> course is different. I'll check that out next.
->>
-> [Moore, Robert]
->
-> Yes, this is the issue, not specifically the Load() operator, but the 
-> AcpiLoadTable interface only.
+Fabrice Gasnier (5):
+  dt-bindings: pwm-stm32: add #pwm-cells
+  pwm: stm32: use 3 cells ->of_xlate()
+  ARM: dts: stm32: add pwm cells to stm32mp157c
+  ARM: dts: stm32: add pwm cells to stm32f429
+  ARM: dts: stm32: add pwm cells to stm32f746
 
-thanks for checking this out. So what is the conclusion? Is my fix 
-of AcpiLoadTable() sufficient or do we need a different solution?
+ Documentation/devicetree/bindings/pwm/pwm-stm32.txt |  3 +++
+ arch/arm/boot/dts/stm32f429.dtsi                    | 12 ++++++++++++
+ arch/arm/boot/dts/stm32f746.dtsi                    | 12 ++++++++++++
+ arch/arm/boot/dts/stm32mp157c.dtsi                  | 12 ++++++++++++
+ drivers/pwm/pwm-stm32.c                             |  2 ++
+ 5 files changed, 41 insertions(+)
 
-Niko
-
-[...]
+-- 
+2.7.4
