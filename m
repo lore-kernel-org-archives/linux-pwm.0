@@ -1,47 +1,68 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH 1/5] dt-bindings: pwm-stm32: add #pwm-cells
-Date: Wed, 19 Jun 2019 11:52:01 +0200
-Message-ID: <1560937925-8990-2-git-send-email-fabrice.gasnier@st.com>
-References: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
+From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Subject: Re: [PATCH v1 12/22] docs: driver-api: add .rst files from the main
+ dir
+Date: Wed, 19 Jun 2019 07:22:18 -0300
+Message-ID: <20190619072218.4437f891@coco.lan>
+References: <cover.1560890771.git.mchehab+samsung@kernel.org>
+ <b0d24e805d5368719cc64e8104d64ee9b5b89dd0.1560890772.git.mchehab+samsung@kernel.org>
+ <CAKMK7uGM1aZz9yg1kYM8w2gw_cS6Eaynmar-uVurXjK5t6WouQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com
-Cc: mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <CAKMK7uGM1aZz9yg1kYM8w2gw_cS6Eaynmar-uVurXjK5t6WouQ@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: Kernel Hardening <kernel-hardening@lists.openwall.com>, Farhan Ali <alifm@linux.ibm.com>, Will Deacon <will.deacon@arm.com>, dri-devel <dri-devel@lists.freedesktop.org>, Jaroslav Kysela <perex@perex.cz>, Evgeniy Polyakov <zbr@ioremap.net>, "open list:GENERIC INCLUDE/A..." <linux-arch@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Halil Pasic <pasic@linux.ibm.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>, Guenter Roeck <linux@roeck-us.net>, Ohad Ben-Cohen <ohad@wizery.com>, Marc Zyngier <marc.zyngier@arm.com>, Boqun Feng <boqun.feng@gmail.com>, Nicholas Piggin <npiggin@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Sean Paul <sean@poorly.run>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-wireless@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>l
 List-Id: linux-pwm@vger.kernel.org
 
-STM32 Timers support generic 3 cells PWM bindings to encode PWM number,
-period and polarity as defined in pwm.txt.
-
-Fixes: cd9a99c2f8e8 ("dt-bindings: pwm: Add STM32 bindings")
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-index 3e6d550..a8690bf 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-@@ -8,6 +8,8 @@ Required parameters:
- - pinctrl-names: 	Set to "default".
- - pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
- 			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
-+- #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
-+			bindings defined in pwm.txt.
- 
- Optional parameters:
- - st,breakinput:	One or two <index level filter> to describe break input configurations.
-@@ -28,6 +30,7 @@ Example:
- 
- 		pwm {
- 			compatible = "st,stm32-pwm";
-+			#pwm-cells = <3>;
- 			pinctrl-0	= <&pwm1_pins>;
- 			pinctrl-names	= "default";
- 			st,breakinput = <0 1 5>;
--- 
-2.7.4
+SGkgRGFuaWVsLAoKRW0gV2VkLCAxOSBKdW4gMjAxOSAxMTowNTo1NyArMDIwMApEYW5pZWwgVmV0
+dGVyIDxkYW5pZWxAZmZ3bGwuY2g+IGVzY3JldmV1OgoKPiBPbiBUdWUsIEp1biAxOCwgMjAxOSBh
+dCAxMDo1NSBQTSBNYXVybyBDYXJ2YWxobyBDaGVoYWIKPiA8bWNoZWhhYitzYW1zdW5nQGtlcm5l
+bC5vcmc+IHdyb3RlOgo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZ3B1L2RybS1tbS5y
+c3QgYi9Eb2N1bWVudGF0aW9uL2dwdS9kcm0tbW0ucnN0Cj4gPiBpbmRleCBmYTMwZGZjZmMzYzgu
+LmIwZjk0OGQ4NzMzYiAxMDA2NDQKPiA+IC0tLSBhL0RvY3VtZW50YXRpb24vZ3B1L2RybS1tbS5y
+c3QKPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZ3B1L2RybS1tbS5yc3QKPiA+IEBAIC0zMjAsNyAr
+MzIwLDcgQEAgc3RydWN0IDpjOnR5cGU6YHN0cnVjdCBmaWxlX29wZXJhdGlvbnMgPGZpbGVfb3Bl
+cmF0aW9ucz5gIGdldF91bm1hcHBlZF9hcmVhCj4gPiAgZmllbGQgd2l0aCBhIHBvaW50ZXIgb24g
+OmM6ZnVuYzpgZHJtX2dlbV9jbWFfZ2V0X3VubWFwcGVkX2FyZWFgLgo+ID4KPiA+ICBNb3JlIGRl
+dGFpbGVkIGluZm9ybWF0aW9uIGFib3V0IGdldF91bm1hcHBlZF9hcmVhIGNhbiBiZSBmb3VuZCBp
+bgo+ID4gLURvY3VtZW50YXRpb24vbm9tbXUtbW1hcC5yc3QKPiA+ICtEb2N1bWVudGF0aW9uL2Ry
+aXZlci1hcGkvbm9tbXUtbW1hcC5yc3QgIAo+IAo+IFJhbmRvbSBkcml2ZS1ieSBjb21tZW50OiBD
+b3VsZCB3ZSBjb252ZXJ0IHRoZXNlIGludG8gaHlwZXJsaW5rcyB3aXRoaW4KPiBzcGhpbnggc29t
+ZWhvdywgd2l0aG91dCBtYWtpbmcgdGhlbSBsZXNzIHVzZWZ1bCBhcyByYXcgZmlsZSByZWZlcmVu
+Y2VzCj4gKHdpdGggdmltIEkgY2FuIGp1c3QgdHlwZSAnZ2YnIGFuZCBpdCB3b3JrcywgZW1hY3Mg
+cHJvYmFibHkgdGhlIHNhbWUpLgo+IC1EYW5pZWwKClNob3J0IGFuc3dlcjogSSBkb24ndCBrbm93
+IGhvdyB2aW0vZW1hY3Mgd291bGQgcmVjb2duaXplIFNwaGlueCB0YWdzLgoKVGhlcmUgYXJlIHR3
+byB3YXlzIG9mIGRvaW5nIGh5cGVybGlua3MgdG8gbG9jYWwgZmlsZXMuIFRoZSBmaXJzdCBvbmUg
+aXMgdG8gCmFkZCBhIGxhYmVsIGF0IHRoZSBvdGhlciBmaWxlIGFuZCB1c2UgYSByZWZlcmVuY2Ug
+dG8gc3VjaCBsYWJlbCwgZS4gZy4gYXQKbm9tbXUtbW1hcC5yc3QsIHlvdSB3b3VsZCBhZGQgYSBs
+YWJlbCBsaWtlOgoKCS4uIF9kcm1fbm9tbXUtbW1hcDoKCmF0IHRoZSBiZWdpbm5pbmcgb2YgdGhl
+IGZpbGUuCgpUaGVuLCBhdCBkcm0tbW0ucnN0LCB5b3Ugd291bGQgdXNlIDpyZWY6YGRybV9ub21t
+dS1tbWFwYCAodGhlcmUgYXJlIGEKZmV3IG90aGVyIGFsdGVybmF0aXZlIHRhZ3MgdGhhdCB3b3Vs
+ZCB3b3JrIHRoZSBzYW1lIHdheSkuCgpUaGUgYWR2YW50YWdlIGlzIHRoYXQgeW91IGNvdWxkIG1v
+dmUvcmVuYW1lIGRvY3VtZW50cyBhbnl0aW1lLCB3aXRob3V0Cm5lZWRpbmcgdG8gdGFrZSBjYXJl
+IG9mIGl0LgoKUGVyaGFwcyBpdCBjb3VsZCBiZSBwb3NzaWJsZSBhIHRvb2wgbGlrZSBjc2NvcGUg
+dG8gcGFyc2UgdGhvc2UgaW4Kb3JkZXIgdG8gcHJvdmlkZSBzdWNoIGF1dG9tYXRpb24gZm9yIFNw
+aGlueC4gSSBkdW5uby4KCi0KClRoZSBvdGhlciB3YXkgaXMgdG8gdXNlOgoKCTpkb2M6YG5vbW11
+LW1tYXAucnN0YCAoaWYgYm90aCBmaWxlcyBhcmUgYXQgdGhlIHNhbWUgZGlyKQoKVGhlIDpkb2M6
+IHBhdGggaXMgdGhlIGN1cnJlbnQgZGlyZWN0b3J5LiBTbywgaWYgYSBmaWxlIGF0LCBsZXQncyBz
+YXksCkRvY3VtZW50YXRpb24vZ3B1IHdhbnRzIHRvIHJlZmVyIGFub3RoZXIgZmlsZSBhdCBkcml2
+ZXItYXBpLCBpdCB3b3VsZApuZWVkIHRvIHdyaXRlIGl0IGFzOgoKCTpkb2M6YC4uL2RyaXZlci1h
+cGkvbm9tbXUtbW1hcC5yc3RgCgpJJ20gbm90IHN1cmUgaWYgdmltL2VtYWNzIHJlY29nbml6ZXMg
+dGhpcyBzeW50YXgsIHRob3VnaC4KClBlcmhhcHMgdGhpcyB0YWcgY291bGQgYmUgdXNlZCBhczoK
+Cgk6ZG9jOmBEb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvbm9tbXUtbW1hcC5yc3QgPC4uL2RyaXZl
+ci1hcGkvbm9tbXUtbWFwLnJzdGAKCkJ1dCB0aGF0IGxvb2tzIHRvbyB1Z2x5IHRvIG15IHRhc3Rl
+LgoKLQoKT24gdGhpcyBjb252ZXJzaW9uLCBJIG9wdGVkIHRvIG5vdCB0b3VjaCB0aGlzLiBXZSBt
+YXkgY29uc2lkZXIgdHJ5aW5nCnRvIHJlcGxhY2UgdGhvc2UgCgoKVGhhbmtzLApNYXVybwpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFp
+bGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
+cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
