@@ -1,34 +1,47 @@
-From: Benjamin GAIGNARD <benjamin.gaignard@st.com>
-Subject: Re: [PATCH 2/5] pwm: stm32: use 3 cells ->of_xlate()
-Date: Wed, 19 Jun 2019 11:42:22 +0000
-Message-ID: <c583094f-2429-d5f1-09df-fff54ab33af1@st.com>
-References: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
- <1560937925-8990-3-git-send-email-fabrice.gasnier@st.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v1 12/22] docs: driver-api: add .rst files from the main
+ dir
+Date: Wed, 19 Jun 2019 13:43:56 +0200
+Message-ID: <20190619114356.GP3419@hirez.programming.kicks-ass.net>
+References: <cover.1560890771.git.mchehab+samsung@kernel.org>
+ <b0d24e805d5368719cc64e8104d64ee9b5b89dd0.1560890772.git.mchehab+samsung@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1560937925-8990-3-git-send-email-fabrice.gasnier@st.com>
-Content-Language: en-US
-Content-ID: <25284ABC327AEA4991DCD1504D64AD22@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice GASNIER <fabrice.gasnier@st.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Alexandre TORGUE <alexandre.torgue@st.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <b0d24e805d5368719cc64e8104d64ee9b5b89dd0.1560890772.git.mchehab+samsung@kernel.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc: kernel-hardening@lists.openwall.com, Farhan Ali <alifm@linux.ibm.com>, Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org, Jaroslav Kysela <perex@perex.cz>, Evgeniy Polyakov <zbr@ioremap.net>, linux-arch@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>, Halil Pasic <pasic@linux.ibm.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>, Guenter Roeck <linux@roeck-us.net>, Ohad Ben-Cohen <ohad@wizery.com>, Marc Zyngier <marc.zyngier@arm.com>, Boqun Feng <boqun.feng@gmail.com>, Nicholas Piggin <npiggin@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Sean Paul <sean@poorly.run>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, linux-fbdev@vger.kernel.org, Linux Doc Mailing List <linux-doc@vger>
 List-Id: linux-pwm@vger.kernel.org
 
-DQpPbiA2LzE5LzE5IDExOjUyIEFNLCBGYWJyaWNlIEdhc25pZXIgd3JvdGU6DQo+IFNUTTMyIFRp
-bWVycyBzdXBwb3J0IGdlbmVyaWMgMyBjZWxscyBQV00gdG8gZW5jb2RlIFBXTSBudW1iZXIsIHBl
-cmlvZCBhbmQNCj4gcG9sYXJpdHkuDQo+DQo+IEZpeGVzOiA3ZWRmNzM2OTIwNWIgKCJwd206IEFk
-ZCBkcml2ZXIgZm9yIFNUTTMyIHBsYWZ0b3JtIikNClJldmlld2VkLWJ5OiBCZW5qYW1pbiBHYWln
-bmFyZCA8YmVuamFtaW4uZ2FpZ25hcmRAc3QuY29tPg0KPg0KPiBTaWduZWQtb2ZmLWJ5OiBGYWJy
-aWNlIEdhc25pZXIgPGZhYnJpY2UuZ2FzbmllckBzdC5jb20+DQo+IC0tLQ0KPiAgIGRyaXZlcnMv
-cHdtL3B3bS1zdG0zMi5jIHwgMiArKw0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMo
-KykNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jIGIvZHJpdmVycy9w
-d20vcHdtLXN0bTMyLmMNCj4gaW5kZXggNGY4NDI1NS4uNzQwZTJkZSAxMDA2NDQNCj4gLS0tIGEv
-ZHJpdmVycy9wd20vcHdtLXN0bTMyLmMNCj4gKysrIGIvZHJpdmVycy9wd20vcHdtLXN0bTMyLmMN
-Cj4gQEAgLTYwOCw2ICs2MDgsOCBAQCBzdGF0aWMgaW50IHN0bTMyX3B3bV9wcm9iZShzdHJ1Y3Qg
-cGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgIAlwcml2LT5yZWdtYXAgPSBkZGF0YS0+cmVnbWFw
-Ow0KPiAgIAlwcml2LT5jbGsgPSBkZGF0YS0+Y2xrOw0KPiAgIAlwcml2LT5tYXhfYXJyID0gZGRh
-dGEtPm1heF9hcnI7DQo+ICsJcHJpdi0+Y2hpcC5vZl94bGF0ZSA9IG9mX3B3bV94bGF0ZV93aXRo
-X2ZsYWdzOw0KPiArCXByaXYtPmNoaXAub2ZfcHdtX25fY2VsbHMgPSAzOw0KPiAgIA0KPiAgIAlp
-ZiAoIXByaXYtPnJlZ21hcCB8fCAhcHJpdi0+Y2xrKQ0KPiAgIAkJcmV0dXJuIC1FSU5WQUw7
+T24gVHVlLCBKdW4gMTgsIDIwMTkgYXQgMDU6NTM6MTdQTSAtMDMwMCwgTWF1cm8gQ2FydmFsaG8g
+Q2hlaGFiIHdyb3RlOgoKPiAgLi4uL3sgPT4gZHJpdmVyLWFwaX0vYXRvbWljX2JpdG9wcy5yc3Qg
+ICAgICAgIHwgIDIgLQoKVGhhdCdzIGEgLnR4dCBmaWxlLCBiaWcgZmF0IE5BSyBmb3IgbWFraW5n
+IGl0IGFuIHJzdC4KCj4gIC4uLi97ID0+IGRyaXZlci1hcGl9L2Z1dGV4LXJlcXVldWUtcGkucnN0
+ICAgICB8ICAyIC0KCj4gIC4uLi97ID0+IGRyaXZlci1hcGl9L2djYy1wbHVnaW5zLnJzdCAgICAg
+ICAgICB8ICAyIC0KCj4gIERvY3VtZW50YXRpb24veyA9PiBkcml2ZXItYXBpfS9rcHJvYmVzLnJz
+dCAgICB8ICAyIC0KPiAgLi4uL3sgPT4gZHJpdmVyLWFwaX0vcGVyY3B1LXJ3LXNlbWFwaG9yZS5y
+c3QgIHwgIDIgLQoKTW9yZSBOQUsgZm9yIHJzdCBjb252ZXJzaW9uCgo+ICBEb2N1bWVudGF0aW9u
+L3sgPT4gZHJpdmVyLWFwaX0vcGktZnV0ZXgucnN0ICAgfCAgMiAtCj4gIC4uLi97ID0+IGRyaXZl
+ci1hcGl9L3ByZWVtcHQtbG9ja2luZy5yc3QgICAgICB8ICAyIC0KCj4gIERvY3VtZW50YXRpb24v
+eyA9PiBkcml2ZXItYXBpfS9yYnRyZWUucnN0ICAgICB8ICAyIC0KCj4gIC4uLi97ID0+IGRyaXZl
+ci1hcGl9L3JvYnVzdC1mdXRleC1BQkkucnN0ICAgICB8ICAyIC0KPiAgLi4uL3sgPT4gZHJpdmVy
+LWFwaX0vcm9idXN0LWZ1dGV4ZXMucnN0ICAgICAgIHwgIDIgLQoKPiAgLi4uL3sgPT4gZHJpdmVy
+LWFwaX0vc3BlY3VsYXRpb24ucnN0ICAgICAgICAgIHwgIDggKy0tCj4gIC4uLi97ID0+IGRyaXZl
+ci1hcGl9L3N0YXRpYy1rZXlzLnJzdCAgICAgICAgICB8ICAyIC0KCj4gIC4uLi97ID0+IGRyaXZl
+ci1hcGl9L3RoaXNfY3B1X29wcy5yc3QgICAgICAgICB8ICAyIC0KCj4gIERvY3VtZW50YXRpb24v
+bG9ja2luZy9ydC1tdXRleC5yc3QgICAgICAgICAgICB8ICAyICstCgpOQUsuIE5vbmUgb2YgdGhl
+IGFib3ZlIGhhdmUgYW55dGhpbmcgdG8gZG8gd2l0aCBkcml2ZXItYXBpLgoKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlz
+dApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
