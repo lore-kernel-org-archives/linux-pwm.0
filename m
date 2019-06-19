@@ -1,49 +1,137 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] backlight: pwm_bl: convert to use SPDX identifier
-Date: Wed, 19 Jun 2019 16:59:27 +0300
-Message-ID: <20190619135927.29745-1-andriy.shevchenko@linux.intel.com>
+From: "Moore, Robert" <robert.moore@intel.com>
+Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
+ loads
+Date: Wed, 19 Jun 2019 15:59:33 +0000
+Message-ID: <94F2FBAB4432B54E8AACC7DFDE6C92E3B95FC28D@ORSMSX110.amr.corp.intel.com>
+References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+ <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+ <CAJZ5v0jqxWs=PPik-TCDqQiyxCSyRP7HTue1WsdWP9e-nik2eA@mail.gmail.com>
+ <alpine.DEB.2.20.1906141114490.6579@fox.voss.local>
+ <94F2FBAB4432B54E8AACC7DFDE6C92E3B95EFB26@ORSMSX110.amr.corp.intel.com>
+ <alpine.DEB.2.20.1906170746150.12344@fox.voss.local>
+ <94F2FBAB4432B54E8AACC7DFDE6C92E3B95F9EC6@ORSMSX110.amr.corp.intel.com>
+ <alpine.DEB.2.20.1906181030240.24846@fox.voss.local>
+    <94F2FBAB4432B54E8AACC7DFDE6C92E3B95FB0BA@ORSMSX110.amr.corp.intel.com>
+ <alpine.DEB.2.20.1906191123400.34742@fox.voss.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.20.1906191123400.34742@fox.voss.local>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nikolaus Voss <nv@vosn.de>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "Schmauss, Erik" <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "nikolaus.voss@loewensteinmedical.de" <nikolaus.voss@loewensteinmedical.de>
 List-Id: linux-pwm@vger.kernel.org
 
-UmVkdWNlIHNpemUgb2YgZHVwbGljYXRlZCBjb21tZW50cyBieSBzd2l0Y2hpbmcgdG8gdXNlIFNQ
-RFggaWRlbnRpZmllci4KCk5vIGZ1bmN0aW9uYWwgY2hhbmdlLgoKV2hpbGUgaGVyZSwgY29ycmVj
-dCBNT0RVTEVfTElDRU5TRSgpIHN0cmluZyB0byBiZSBhbGlnbmVkIHdpdGggbGljZW5zZSB0ZXh0
-LgoKU2lnbmVkLW9mZi1ieTogQW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51
-eC5pbnRlbC5jb20+Ci0tLQogZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCAxMSAr
-KystLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMo
-LSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCmluZGV4IGZiNDVmODY2YjkyMy4uMWY3ZjhkNWMw
-YmYxIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYworKysgYi9k
-cml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwpAQCAtMSwxMyArMSw4IEBACisvLyBTUERY
-LUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMAogLyoKLSAqIGxpbnV4L2RyaXZlcnMvdmlkZW8v
-YmFja2xpZ2h0L3B3bV9ibC5jCi0gKgotICogc2ltcGxlIFBXTSBiYXNlZCBiYWNrbGlnaHQgY29u
-dHJvbCwgYm9hcmQgY29kZSBoYXMgdG8gc2V0dXAKKyAqIFNpbXBsZSBQV00gYmFzZWQgYmFja2xp
-Z2h0IGNvbnRyb2wsIGJvYXJkIGNvZGUgaGFzIHRvIHNldHVwCiAgKiAxKSBwaW4gY29uZmlndXJh
-dGlvbiBzbyBQV00gd2F2ZWZvcm1zIGNhbiBvdXRwdXQKICAqIDIpIHBsYXRmb3JtX2RhdGEgYmVp
-bmcgY29ycmVjdGx5IGNvbmZpZ3VyZWQKLSAqCi0gKiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0
-d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeQotICogaXQgdW5kZXIg
-dGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSB2ZXJzaW9uIDIgYXMK
-LSAqIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLgogICovCiAKICNp
-bmNsdWRlIDxsaW51eC9kZWxheS5oPgpAQCAtNzA4LDUgKzcwMyw1IEBAIHN0YXRpYyBzdHJ1Y3Qg
-cGxhdGZvcm1fZHJpdmVyIHB3bV9iYWNrbGlnaHRfZHJpdmVyID0gewogbW9kdWxlX3BsYXRmb3Jt
-X2RyaXZlcihwd21fYmFja2xpZ2h0X2RyaXZlcik7CiAKIE1PRFVMRV9ERVNDUklQVElPTigiUFdN
-IGJhc2VkIEJhY2tsaWdodCBEcml2ZXIiKTsKLU1PRFVMRV9MSUNFTlNFKCJHUEwiKTsKK01PRFVM
-RV9MSUNFTlNFKCJHUEwgdjIiKTsKIE1PRFVMRV9BTElBUygicGxhdGZvcm06cHdtLWJhY2tsaWdo
-dCIpOwotLSAKMi4yMC4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3Rv
-cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmkt
-ZGV2ZWw=
+
+
+> -----Original Message-----
+> From: Nikolaus Voss [mailto:nv@vosn.de]
+> Sent: Wednesday, June 19, 2019 2:31 AM
+> To: Moore, Robert <robert.moore@intel.com>
+> Cc: Rafael J. Wysocki <rafael@kernel.org>; Rafael J. Wysocki
+> <rjw@rjwysocki.net>; Len Brown <lenb@kernel.org>; Schmauss, Erik
+> <erik.schmauss@intel.com>; Jacek Anaszewski
+> <jacek.anaszewski@gmail.com>; Pavel Machek <pavel@ucw.cz>; Dan Murphy
+> <dmurphy@ti.com>; Thierry Reding <thierry.reding@gmail.com>; ACPI Devel
+> Maling List <linux-acpi@vger.kernel.org>; open list:ACPI COMPONENT
+> ARCHITECTURE (ACPICA) <devel@acpica.org>; linux-leds@vger.kernel.org;
+> Linux PWM List <linux-pwm@vger.kernel.org>; Linux Kernel Mailing List
+> <linux-kernel@vger.kernel.org>; nikolaus.voss@loewensteinmedical.de
+> Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
+> loads
+> 
+> Hi Bob,
+> 
+> On Tue, 18 Jun 2019, Moore, Robert wrote:
+> >
+> >
+> >> -----Original Message-----
+> >> From: Moore, Robert
+> >> Sent: Tuesday, June 18, 2019 1:25 PM
+> >> To: 'Nikolaus Voss' <nv@vosn.de>
+> >> Cc: 'Rafael J. Wysocki' <rafael@kernel.org>; 'Rafael J. Wysocki'
+> >> <rjw@rjwysocki.net>; 'Len Brown' <lenb@kernel.org>; Schmauss, Erik
+> >> <erik.schmauss@intel.com>; 'Jacek Anaszewski'
+> >> <jacek.anaszewski@gmail.com>; 'Pavel Machek' <pavel@ucw.cz>; 'Dan
+> >> Murphy' <dmurphy@ti.com>; 'Thierry Reding'
+> >> <thierry.reding@gmail.com>; 'ACPI Devel Maling List'
+> >> <linux-acpi@vger.kernel.org>; 'open list:ACPI COMPONENT ARCHITECTURE
+> >> (ACPICA)' <devel@acpica.org>; 'linux- leds@vger.kernel.org' <linux-
+> leds@vger.kernel.org>; 'Linux PWM List'
+> >> <linux-pwm@vger.kernel.org>; 'Linux Kernel Mailing List' <linux-
+> >> kernel@vger.kernel.org>
+> >> Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed
+> >> table loads
+> >>
+> >> If it is in fact the AcpiLoadTable interface that is incorrect, that
+> >> of course is different. I'll check that out next.
+> >>
+> > [Moore, Robert]
+> >
+> > Yes, this is the issue, not specifically the Load() operator, but the
+> > AcpiLoadTable interface only.
+> 
+> thanks for checking this out. So what is the conclusion? Is my fix of
+> AcpiLoadTable() sufficient or do we need a different solution?
+> 
+> Niko
+> 
+
+
+Your change is in the correct area. We want to do something like this, however:
+
+diff --git a/source/components/executer/exconfig.c b/source/components/executer/exconfig.c
+index 84a058ada..eba1a6d28 100644
+--- a/source/components/executer/exconfig.c
++++ b/source/components/executer/exconfig.c
+@@ -342,10 +342,9 @@ AcpiExLoadTableOp (
+         return_ACPI_STATUS (Status);
+     }
+ 
+-    /* Complete the initialization/resolution of package objects */
++    /* Complete the initialization/resolution of new objects */
+ 
+-    Status = AcpiNsWalkNamespace (ACPI_TYPE_PACKAGE, ACPI_ROOT_OBJECT,
+-        ACPI_UINT32_MAX, 0, AcpiNsInitOnePackage, NULL, NULL, NULL);
++    AcpiNsInitializeObjects ();
+ 
+     /* Parameter Data (optional) */
+ 
+@@ -620,10 +619,11 @@ AcpiExLoadOp (
+         return_ACPI_STATUS (Status);
+     }
+ 
+-    /* Complete the initialization/resolution of package objects */
++    /* Complete the initialization/resolution of new objects */
+ 
+-    Status = AcpiNsWalkNamespace (ACPI_TYPE_PACKAGE, ACPI_ROOT_OBJECT,
+-        ACPI_UINT32_MAX, 0, AcpiNsInitOnePackage, NULL, NULL, NULL);
++    AcpiExExitInterpreter ();
++    AcpiNsInitializeObjects ();
++    AcpiExEnterInterpreter ();
+ 
+     /* Store the DdbHandle into the Target operand */
+ 
+diff --git a/source/components/tables/tbxfload.c b/source/components/tables/tbxfload.c
+index 217d54bf0..1e17db6c8 100644
+--- a/source/components/tables/tbxfload.c
++++ b/source/components/tables/tbxfload.c
+@@ -479,6 +479,13 @@ AcpiLoadTable (
+     ACPI_INFO (("Host-directed Dynamic ACPI Table Load:"));
+     Status = AcpiTbInstallAndLoadTable (ACPI_PTR_TO_PHYSADDR (Table),
+         ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL, FALSE, &TableIndex);
++    if (ACPI_SUCCESS (Status))
++    {
++        /* Complete the initialization/resolution of new objects */
++
++        AcpiNsInitializeObjects ();
++    }
++
+     return_ACPI_STATUS (Status);
+ }
+
+
+
+> [...]
