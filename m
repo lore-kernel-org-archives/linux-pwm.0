@@ -1,65 +1,53 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: Re: [PATCH 3/4] backlight: pwm_bl: Set scale type for CIE 1931 curves
-Date: Wed, 19 Jun 2019 11:17:07 +0200
-Message-ID: <3ef89251-146c-c4e4-91c8-19ae855824ac@collabora.com>
-References: <20190613194326.180889-1-mka@chromium.org>
- <20190613194326.180889-4-mka@chromium.org>
+From: Nikolaus Voss <nv@vosn.de>
+Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
+ loads
+Date: Wed, 19 Jun 2019 11:31:01 +0200 (CEST)
+Message-ID: <alpine.DEB.2.20.1906191123400.34742@fox.voss.local>
+References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de> <e2a4ddfd93a904b50b7ccc074e00e14dc4661963.1560327219.git.nikolaus.voss@loewensteinmedical.de> <CAJZ5v0jqxWs=PPik-TCDqQiyxCSyRP7HTue1WsdWP9e-nik2eA@mail.gmail.com>
+ <alpine.DEB.2.20.1906141114490.6579@fox.voss.local> <94F2FBAB4432B54E8AACC7DFDE6C92E3B95EFB26@ORSMSX110.amr.corp.intel.com> <alpine.DEB.2.20.1906170746150.12344@fox.voss.local> <94F2FBAB4432B54E8AACC7DFDE6C92E3B95F9EC6@ORSMSX110.amr.corp.intel.com>
+ <alpine.DEB.2.20.1906181030240.24846@fox.voss.local>    <94F2FBAB4432B54E8AACC7DFDE6C92E3B95FB0BA@ORSMSX110.amr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190613194326.180889-4-mka@chromium.org>
-Content-Language: en-GB
+In-Reply-To: <94F2FBAB4432B54E8AACC7DFDE6C92E3B95FB0BA@ORSMSX110.amr.corp.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
+To: "Moore, Robert" <robert.moore@intel.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "Schmauss, Erik" <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, nikolaus.voss@loewensteinmedical.de
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Matthias,
+Hi Bob,
 
-On 13/6/19 21:43, Matthias Kaehlcke wrote:
-> For backlight curves calculated with the CIE 1931 algorithm set
-> the brightness scale type property accordingly. This makes the
-> scale type available to userspace via the 'scale' sysfs attribute.
-> 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+On Tue, 18 Jun 2019, Moore, Robert wrote:
+>
+>
+>> -----Original Message-----
+>> From: Moore, Robert
+>> Sent: Tuesday, June 18, 2019 1:25 PM
+>> To: 'Nikolaus Voss' <nv@vosn.de>
+>> Cc: 'Rafael J. Wysocki' <rafael@kernel.org>; 'Rafael J. Wysocki'
+>> <rjw@rjwysocki.net>; 'Len Brown' <lenb@kernel.org>; Schmauss, Erik
+>> <erik.schmauss@intel.com>; 'Jacek Anaszewski'
+>> <jacek.anaszewski@gmail.com>; 'Pavel Machek' <pavel@ucw.cz>; 'Dan
+>> Murphy' <dmurphy@ti.com>; 'Thierry Reding' <thierry.reding@gmail.com>;
+>> 'ACPI Devel Maling List' <linux-acpi@vger.kernel.org>; 'open list:ACPI
+>> COMPONENT ARCHITECTURE (ACPICA)' <devel@acpica.org>; 'linux-
+>> leds@vger.kernel.org' <linux-leds@vger.kernel.org>; 'Linux PWM List'
+>> <linux-pwm@vger.kernel.org>; 'Linux Kernel Mailing List' <linux-
+>> kernel@vger.kernel.org>
+>> Subject: RE: [PATCH v2 1/3] ACPI: Resolve objects on host-directed table
+>> loads
+>>
+>> If it is in fact the AcpiLoadTable interface that is incorrect, that of
+>> course is different. I'll check that out next.
+>>
+> [Moore, Robert]
+>
+> Yes, this is the issue, not specifically the Load() operator, but the 
+> AcpiLoadTable interface only.
 
-Tested on Samsung Chromebook Plus which uses the CIE 1931 algorithm.
+thanks for checking this out. So what is the conclusion? Is my fix 
+of AcpiLoadTable() sufficient or do we need a different solution?
 
-Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Niko
 
-> ---
->  drivers/video/backlight/pwm_bl.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index fb45f866b923..f067fe7aa35d 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -553,6 +553,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  		goto err_alloc;
->  	}
->  
-> +	memset(&props, 0, sizeof(struct backlight_properties));
-> +
->  	if (data->levels) {
->  		/*
->  		 * For the DT case, only when brightness levels is defined
-> @@ -591,6 +593,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  
->  			pb->levels = data->levels;
->  		}
-> +
-> +		props.scale = BACKLIGHT_SCALE_CIE1931;
->  	} else {
->  		/*
->  		 * That only happens for the non-DT case, where platform data
-> @@ -601,7 +605,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  
->  	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
->  
-> -	memset(&props, 0, sizeof(struct backlight_properties));
->  	props.type = BACKLIGHT_RAW;
->  	props.max_brightness = data->max_brightness;
->  	bl = backlight_device_register(dev_name(&pdev->dev), &pdev->dev, pb,
-> 
+[...]
