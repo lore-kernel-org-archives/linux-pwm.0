@@ -1,7 +1,7 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH 5/5] ARM: dts: stm32: add pwm cells to stm32f746
-Date: Wed, 19 Jun 2019 11:52:05 +0200
-Message-ID: <1560937925-8990-6-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 1/5] dt-bindings: pwm-stm32: add #pwm-cells
+Date: Wed, 19 Jun 2019 11:52:01 +0200
+Message-ID: <1560937925-8990-2-git-send-email-fabrice.gasnier@st.com>
 References: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,116 +12,36 @@ To: thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com
 Cc: mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-STM32 Timers support generic 3 cells PWM to encode PWM number, period and
-polarity.
+STM32 Timers support generic 3 cells PWM bindings to encode PWM number,
+period and polarity as defined in pwm.txt.
 
-Fixes: 9bd7b77af8e4 ("ARM: dts: stm32: add Timers driver for stm32f746
-MCU")
+Fixes: cd9a99c2f8e8 ("dt-bindings: pwm: Add STM32 bindings")
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- arch/arm/boot/dts/stm32f746.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32f746.dtsi b/arch/arm/boot/dts/stm32f746.dtsi
-index a25b700..d26f93f 100644
---- a/arch/arm/boot/dts/stm32f746.dtsi
-+++ b/arch/arm/boot/dts/stm32f746.dtsi
-@@ -94,6 +94,7 @@
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+index 3e6d550..a8690bf 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+@@ -8,6 +8,8 @@ Required parameters:
+ - pinctrl-names: 	Set to "default".
+ - pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
+ 			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
++- #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
++			bindings defined in pwm.txt.
  
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
+ Optional parameters:
+ - st,breakinput:	One or two <index level filter> to describe break input configurations.
+@@ -28,6 +30,7 @@ Example:
  
-@@ -123,6 +124,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -152,6 +154,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -180,6 +183,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -249,6 +253,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -270,6 +275,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 		};
-@@ -285,6 +291,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 		};
-@@ -419,6 +426,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -440,6 +448,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -512,6 +521,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -533,6 +543,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 		};
-@@ -548,6 +559,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 		};
+ 		pwm {
+ 			compatible = "st,stm32-pwm";
++			#pwm-cells = <3>;
+ 			pinctrl-0	= <&pwm1_pins>;
+ 			pinctrl-names	= "default";
+ 			st,breakinput = <0 1 5>;
 -- 
 2.7.4
