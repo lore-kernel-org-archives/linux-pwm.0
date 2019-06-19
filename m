@@ -1,7 +1,7 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH 3/5] ARM: dts: stm32: add pwm cells to stm32mp157c
-Date: Wed, 19 Jun 2019 11:52:03 +0200
-Message-ID: <1560937925-8990-4-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 4/5] ARM: dts: stm32: add pwm cells to stm32f429
+Date: Wed, 19 Jun 2019 11:52:04 +0200
+Message-ID: <1560937925-8990-5-git-send-email-fabrice.gasnier@st.com>
 References: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -15,18 +15,19 @@ List-Id: linux-pwm@vger.kernel.org
 STM32 Timers support generic 3 cells PWM to encode PWM number, period and
 polarity.
 
-Fixes: 61fc211c484d ("ARM: dts: stm32: add timers support to stm32mp157c")
+Fixes: c0e14fc712d9 ("ARM: dts: stm32: add Timers driver for stm32f429
+MCU")
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- arch/arm/boot/dts/stm32mp157c.dtsi | 12 ++++++++++++
+ arch/arm/boot/dts/stm32f429.dtsi | 12 ++++++++++++
  1 file changed, 12 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-index 2afeee6..215dc95 100644
---- a/arch/arm/boot/dts/stm32mp157c.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-@@ -133,6 +133,7 @@
+diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
+index 4a49544..5c8a826 100644
+--- a/arch/arm/boot/dts/stm32f429.dtsi
++++ b/arch/arm/boot/dts/stm32f429.dtsi
+@@ -112,6 +112,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -34,7 +35,7 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -161,6 +162,7 @@
+@@ -141,6 +142,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -42,7 +43,7 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -187,6 +189,7 @@
+@@ -170,6 +172,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -50,7 +51,7 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -215,6 +218,7 @@
+@@ -198,6 +201,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -58,7 +59,7 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -272,6 +276,7 @@
+@@ -267,6 +271,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -66,7 +67,23 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -293,6 +298,7 @@
+@@ -288,6 +293,7 @@
+ 
+ 			pwm {
+ 				compatible = "st,stm32-pwm";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -303,6 +309,7 @@
+ 
+ 			pwm {
+ 				compatible = "st,stm32-pwm";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -448,6 +455,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -74,7 +91,7 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -314,6 +320,7 @@
+@@ -469,6 +477,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -82,7 +99,7 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -545,6 +552,7 @@
+@@ -602,6 +611,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
@@ -90,37 +107,21 @@ index 2afeee6..215dc95 100644
  				status = "disabled";
  			};
  
-@@ -575,6 +583,7 @@
+@@ -623,6 +633,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
 +				#pwm-cells = <3>;
  				status = "disabled";
  			};
- 
-@@ -637,6 +646,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -661,6 +671,7 @@
+ 		};
+@@ -638,6 +649,7 @@
  
  			pwm {
  				compatible = "st,stm32-pwm";
 +				#pwm-cells = <3>;
  				status = "disabled";
  			};
- 			timer@15 {
-@@ -684,6 +695,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
+ 		};
 -- 
 2.7.4
