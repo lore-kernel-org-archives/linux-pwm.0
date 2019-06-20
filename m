@@ -1,61 +1,119 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:41432 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731958AbfFMKE7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Jun 2019 06:04:59 -0400
-Date: Thu, 13 Jun 2019 12:04:54 +0200
-From: Simon Horman <horms@verge.net.au>
-Message-ID: <20190613100453.ythhx3lika5cil4q@verge.net.au>
-References: <1559296501-30620-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1559296501-30620-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Received: from mga04.intel.com ([192.55.52.120]:61835 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726072AbfFTKIC (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 20 Jun 2019 06:08:02 -0400
+Date: Thu, 20 Jun 2019 13:07:59 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Message-ID: <20190620100759.GR9224@smile.fi.intel.com>
+References: <20190620092443.4854-1-mika.westerberg@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1559296501-30620-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20190620092443.4854-1-mika.westerberg@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v3 1/4] pwm: Add power management descriptions
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] pwm: lpss: Convert to use SPDX identifier
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-On Fri, May 31, 2019 at 06:54:58PM +0900, Yoshihiro Shimoda wrote:
-> This patch adds power management descriptions that consumers should
-> implement it.
+On Thu, Jun 20, 2019 at 12:24:43PM +0300, Mika Westerberg wrote:
+> This gets rid of the license boilerplate duplicated in each file.
 > 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> No functional changes intended.
 
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
+> 
+> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 > ---
->  Documentation/pwm.txt | 7 +++++++
->  1 file changed, 7 insertions(+)
+>  drivers/pwm/pwm-lpss-pci.c      | 5 +----
+>  drivers/pwm/pwm-lpss-platform.c | 5 +----
+>  drivers/pwm/pwm-lpss.c          | 5 +----
+>  drivers/pwm/pwm-lpss.h          | 5 +----
+>  4 files changed, 4 insertions(+), 16 deletions(-)
 > 
-> diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-> index 8fbf0aa..ab62f1b 100644
-> --- a/Documentation/pwm.txt
-> +++ b/Documentation/pwm.txt
-> @@ -65,6 +65,10 @@ period). struct pwm_args contains 2 fields (period and polarity) and should
->  be used to set the initial PWM config (usually done in the probe function
->  of the PWM user). PWM arguments are retrieved with pwm_get_args().
+> diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
+> index c1527cb645be..5e47d9bccf22 100644
+> --- a/drivers/pwm/pwm-lpss-pci.c
+> +++ b/drivers/pwm/pwm-lpss-pci.c
+> @@ -1,13 +1,10 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Intel Low Power Subsystem PWM controller PCI driver
+>   *
+>   * Copyright (C) 2014, Intel Corporation
+>   *
+>   * Derived from the original pwm-lpss.c
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+>   */
 >  
-> +All consumers should really be reconfiguring the PWM upon resume as
-> +appropriate. This is the only way to ensure that everything is resumed in
-> +the proper order.
-> +
->  Using PWMs with the sysfs interface
->  -----------------------------------
+>  #include <linux/kernel.h>
+> diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
+> index 757230e1f575..ce77539a0855 100644
+> --- a/drivers/pwm/pwm-lpss-platform.c
+> +++ b/drivers/pwm/pwm-lpss-platform.c
+> @@ -1,13 +1,10 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Intel Low Power Subsystem PWM controller driver
+>   *
+>   * Copyright (C) 2014, Intel Corporation
+>   *
+>   * Derived from the original pwm-lpss.c
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+>   */
 >  
-> @@ -141,6 +145,9 @@ The implementation of ->get_state() (a method used to retrieve initial PWM
->  state) is also encouraged for the same reason: letting the PWM user know
->  about the current PWM state would allow him to avoid glitches.
+>  #include <linux/acpi.h>
+> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+> index 2ac3a2aa9e53..9a1b25926956 100644
+> --- a/drivers/pwm/pwm-lpss.c
+> +++ b/drivers/pwm/pwm-lpss.c
+> @@ -1,3 +1,4 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Intel Low Power Subsystem PWM controller driver
+>   *
+> @@ -7,10 +8,6 @@
+>   * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+>   * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
+>   * Author: Alan Cox <alan@linux.intel.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+>   */
 >  
-> +Drivers should not implement any power management. In other words,
-> +consumers should implement it as described in the "Using PWMs" section.
-> +
->  Locking
->  -------
+>  #include <linux/delay.h>
+> diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+> index 3236be835bd9..f47dede100f8 100644
+> --- a/drivers/pwm/pwm-lpss.h
+> +++ b/drivers/pwm/pwm-lpss.h
+> @@ -1,13 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * Intel Low Power Subsystem PWM controller driver
+>   *
+>   * Copyright (C) 2014, Intel Corporation
+>   *
+>   * Derived from the original pwm-lpss.c
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+>   */
 >  
+>  #ifndef __PWM_LPSS_H
 > -- 
-> 2.7.4
+> 2.20.1
 > 
+
+-- 
+With Best Regards,
+Andy Shevchenko
