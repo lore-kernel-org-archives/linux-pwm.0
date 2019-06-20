@@ -1,54 +1,60 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v1] backlight: pwm_bl: convert to use SPDX identifier
-Date: Thu, 20 Jun 2019 15:14:50 +0100
-Message-ID: <a0644417-0870-6af2-8604-89e08fd2035e@linaro.org>
-References: <20190619135927.29745-1-andriy.shevchenko@linux.intel.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH] pwm: meson: fix the G12A AO clock parents order
+Date: Thu, 20 Jun 2019 16:46:55 +0200
+Message-ID: <20190620144655.2142-1-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190619135927.29745-1-andriy.shevchenko@linux.intel.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, dri-devel@lists.freedesktop.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, martin.blumenstingl@googlemail.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMTkvMDYvMjAxOSAxNDo1OSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+IFJlZHVjZSBzaXpl
-IG9mIGR1cGxpY2F0ZWQgY29tbWVudHMgYnkgc3dpdGNoaW5nIHRvIHVzZSBTUERYIGlkZW50aWZp
-ZXIuCj4gCj4gTm8gZnVuY3Rpb25hbCBjaGFuZ2UuCj4gCj4gV2hpbGUgaGVyZSwgY29ycmVjdCBN
-T0RVTEVfTElDRU5TRSgpIHN0cmluZyB0byBiZSBhbGlnbmVkIHdpdGggbGljZW5zZSB0ZXh0Lgo+
-IAo+IFNpZ25lZC1vZmYtYnk6IEFuZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGlu
-dXguaW50ZWwuY29tPgoKQWNrZWQtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29u
-QGxpbmFyby5vcmc+CgoKPiAtLS0KPiAgIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5j
-IHwgMTEgKysrLS0tLS0tLS0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDgg
-ZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
-bV9ibC5jIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiBpbmRleCBmYjQ1Zjg2
-NmI5MjMuLjFmN2Y4ZDVjMGJmMSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdo
-dC9wd21fYmwuYwo+ICsrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gQEAg
-LTEsMTMgKzEsOCBAQAo+ICsvLyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMAo+ICAg
-LyoKPiAtICogbGludXgvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiAtICoKPiAt
-ICogc2ltcGxlIFBXTSBiYXNlZCBiYWNrbGlnaHQgY29udHJvbCwgYm9hcmQgY29kZSBoYXMgdG8g
-c2V0dXAKPiArICogU2ltcGxlIFBXTSBiYXNlZCBiYWNrbGlnaHQgY29udHJvbCwgYm9hcmQgY29k
-ZSBoYXMgdG8gc2V0dXAKPiAgICAqIDEpIHBpbiBjb25maWd1cmF0aW9uIHNvIFBXTSB3YXZlZm9y
-bXMgY2FuIG91dHB1dAo+ICAgICogMikgcGxhdGZvcm1fZGF0YSBiZWluZyBjb3JyZWN0bHkgY29u
-ZmlndXJlZAo+IC0gKgo+IC0gKiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNh
-biByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeQo+IC0gKiBpdCB1bmRlciB0aGUgdGVybXMg
-b2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcwo+IC0gKiBwdWJs
-aXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4KPiAgICAqLwo+ICAgCj4gICAj
-aW5jbHVkZSA8bGludXgvZGVsYXkuaD4KPiBAQCAtNzA4LDUgKzcwMyw1IEBAIHN0YXRpYyBzdHJ1
-Y3QgcGxhdGZvcm1fZHJpdmVyIHB3bV9iYWNrbGlnaHRfZHJpdmVyID0gewo+ICAgbW9kdWxlX3Bs
-YXRmb3JtX2RyaXZlcihwd21fYmFja2xpZ2h0X2RyaXZlcik7Cj4gICAKPiAgIE1PRFVMRV9ERVND
-UklQVElPTigiUFdNIGJhc2VkIEJhY2tsaWdodCBEcml2ZXIiKTsKPiAtTU9EVUxFX0xJQ0VOU0Uo
-IkdQTCIpOwo+ICtNT0RVTEVfTElDRU5TRSgiR1BMIHYyIik7Cj4gICBNT0RVTEVfQUxJQVMoInBs
-YXRmb3JtOnB3bS1iYWNrbGlnaHQiKTsKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3Rz
-LmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2RyaS1kZXZlbA==
+The Amlogic G12A and G12B Documentation is wrong, the AO xtal and clk81
+clock source order is reversed, and validated when adding DVFS support by
+using the PWM AO D output to control the CPU supply voltage.
+
+The vendor tree also uses the reversed xtal and clk81 order at [1].
+
+[1] https://github.com/hardkernel/linux/blob/odroidn2-4.9.y/drivers/amlogic/pwm/pwm_meson.c#L462
+
+Fixes: f41efceb46e6 ("pwm: meson: Add clock source configuration for Meson G12A")
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/pwm/pwm-meson.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index 5e65b042c240..e15d045947bb 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -453,8 +453,17 @@ static const struct meson_pwm_data pwm_axg_ao_data = {
+ 	.num_parents = ARRAY_SIZE(pwm_axg_ao_parent_names),
+ };
+ 
++static const char * const pwm_g12a_ao_ab_parent_names[] = {
++	"xtal", "aoclk81", "fclk_div4", "fclk_div5"
++};
++
++static const struct meson_pwm_data pwm_g12a_ao_ab_data = {
++	.parent_names = pwm_g12a_ao_ab_parent_names,
++	.num_parents = ARRAY_SIZE(pwm_g12a_ao_ab_parent_names),
++};
++
+ static const char * const pwm_g12a_ao_cd_parent_names[] = {
+-	"aoclk81", "xtal",
++	"xtal", "aoclk81",
+ };
+ 
+ static const struct meson_pwm_data pwm_g12a_ao_cd_data = {
+@@ -498,7 +507,7 @@ static const struct of_device_id meson_pwm_matches[] = {
+ 	},
+ 	{
+ 		.compatible = "amlogic,meson-g12a-ao-pwm-ab",
+-		.data = &pwm_axg_ao_data
++		.data = &pwm_g12a_ao_ab_data
+ 	},
+ 	{
+ 		.compatible = "amlogic,meson-g12a-ao-pwm-cd",
+-- 
+2.21.0
