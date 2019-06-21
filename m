@@ -1,72 +1,70 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v2 3/3] leds-pwm.c: support ACPI via firmware-node
- framework
-Date: Fri, 21 Jun 2019 13:01:28 +0200
-Message-ID: <20190621110128.GD24145@amd>
-References: <cover.1560327219.git.nikolaus.voss@loewensteinmedical.de>
- <5df196d63671205d6722d21bec0ae5857a6b91eb.1560327219.git.nikolaus.voss@loewensteinmedical.de>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered
+ down
+Date: Fri, 21 Jun 2019 13:41:45 +0100
+Message-ID: <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
+References: <20190522163428.7078-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="3Pql8miugIZX0722"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5df196d63671205d6722d21bec0ae5857a6b91eb.1560327219.git.nikolaus.voss@loewensteinmedical.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Robert Moore <robert.moore@intel.com>, Erik Schmauss <erik.schmauss@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, linux-acpi@vger.kernel.org, devel@acpica.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, nv@vosn.de
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190522163428.7078-1-paul@crapouillou.net>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, od@zcrc.me, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
-
---3Pql8miugIZX0722
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed 2019-06-12 10:36:08, Nikolaus Voss wrote:
-> DT specific handling is replaced by firmware-node abstration to support
-> ACPI specification of PWM LEDS.
->=20
-> Example ASL:
-> Device (PWML)
-> {
->     Name (_HID, "PRP0001")
->     Name (_DSD, Package () {
->           ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->           Package () { Package () {"compatible",
->                                     Package () {"pwm-leds"}}}})
->=20
->     Device (PWL0)
->     {
->         Name (_HID, "PRP0001")
->         Name (_DSD, Package () {
->               ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->               Package () {
->                            Package () {"label", "alarm-led"},
->                            Package () {"pwms", Package ()
->                                        {\_SB_.PCI0.PWM, 0, 600000, 0}},
->                            Package () {"linux,default-state", "off"}}})
->     }
-> }
->=20
-> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-
-Acked-by: Pavel Machek <pavel@ucw.cz>
-
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---3Pql8miugIZX0722
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAl0MuQgACgkQMOfwapXb+vLdfQCdEXpSEGq2qMko5kRPf//HXH7j
-GnMAoKHopDvN/1Q+REF1JJVm1jCtatXO
-=4BB0
------END PGP SIGNATURE-----
-
---3Pql8miugIZX0722--
+T24gMjIvMDUvMjAxOSAxNzozNCwgUGF1bCBDZXJjdWVpbCB3cm90ZToKPiBXaGVuIHRoZSBkcml2
+ZXIgcHJvYmVzLCB0aGUgUFdNIHBpbiBpcyBhdXRvbWF0aWNhbGx5IGNvbmZpZ3VyZWQgdG8gaXRz
+Cj4gZGVmYXVsdCBzdGF0ZSwgd2hpY2ggc2hvdWxkIGJlIHRoZSAicHdtIiBmdW5jdGlvbi4KCkF0
+IHdoaWNoIHBvaW50IGluIHRoZSBwcm9iZS4uLiBhbmQgYnkgd2hvPwoKPiBIb3dldmVyLCBhdCB0
+aGlzCj4gcG9pbnQgd2UgZG9uJ3Qga25vdyB0aGUgYWN0dWFsIGxldmVsIG9mIHRoZSBwaW4sIHdo
+aWNoIG1heSBiZSBhY3RpdmUgb3IKPiBpbmFjdGl2ZS4gQXMgYSByZXN1bHQsIGlmIHRoZSBkcml2
+ZXIgcHJvYmVzIHdpdGhvdXQgZW5hYmxpbmcgdGhlCj4gYmFja2xpZ2h0LCB0aGUgUFdNIHBpbiBt
+aWdodCBiZSBhY3RpdmUsIGFuZCB0aGUgYmFja2xpZ2h0IHdvdWxkIGJlCj4gbGl0IHdheSBiZWZv
+cmUgYmVpbmcgb2ZmaWNpYWxseSBlbmFibGVkLgo+IAo+IFRvIHdvcmsgYXJvdW5kIHRoaXMsIGlm
+IHRoZSBwcm9iZSBmdW5jdGlvbiBkb2Vzbid0IGVuYWJsZSB0aGUgYmFja2xpZ2h0LAo+IHRoZSBw
+aW4gaXMgc2V0IHRvIGl0cyBzbGVlcCBzdGF0ZSBpbnN0ZWFkIG9mIHRoZSBkZWZhdWx0IG9uZSwg
+dW50aWwgdGhlCj4gYmFja2xpZ2h0IGlzIGVuYWJsZWQuIFdoZW5rIHRoZSBiYWNrbGlnaHQgaXMg
+ZGlzYWJsZWQsIHRoZSBwaW4gaXMgcmVzZXQKPiB0byBpdHMgc2xlZXAgc3RhdGUuCkRvZXNuJ3Qg
+dGhpcyB3b3JrYXJvdW5kIHJlc3VsdCBpbiBhIGJhY2tsaWdodCBmbGFzaCBiZXR3ZWVuIHdoYXRl
+dmVyIAplbmFibGVzIGl0IGFuZCB0aGUgbmV3IGNvZGUgdHVybmluZyBpdCBvZmYgYWdhaW4/Cgo+
+IAo+IFNpZ25lZC1vZmYtYnk6IFBhdWwgQ2VyY3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PiA+
+IC0tLQo+ICAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCA5ICsrKysrKysrKwo+
+ICAgMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
+bV9ibC5jCj4gaW5kZXggZmI0NWY4NjZiOTIzLi40MjJmNzkwM2IzODIgMTAwNjQ0Cj4gLS0tIGEv
+ZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiArKysgYi9kcml2ZXJzL3ZpZGVvL2Jh
+Y2tsaWdodC9wd21fYmwuYwo+IEBAIC0xNiw2ICsxNiw3IEBACj4gICAjaW5jbHVkZSA8bGludXgv
+bW9kdWxlLmg+Cj4gICAjaW5jbHVkZSA8bGludXgva2VybmVsLmg+Cj4gICAjaW5jbHVkZSA8bGlu
+dXgvaW5pdC5oPgo+ICsjaW5jbHVkZSA8bGludXgvcGluY3RybC9jb25zdW1lci5oPgo+ICAgI2lu
+Y2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPgo+ICAgI2luY2x1ZGUgPGxpbnV4L2ZiLmg+
+Cj4gICAjaW5jbHVkZSA8bGludXgvYmFja2xpZ2h0Lmg+Cj4gQEAgLTUwLDYgKzUxLDggQEAgc3Rh
+dGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+
+ICAgCXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7Cj4gICAJaW50IGVycjsKPiAgIAo+ICsJcGluY3Ry
+bF9wbV9zZWxlY3RfZGVmYXVsdF9zdGF0ZShwYi0+ZGV2KTsKPiArCj4gICAJcHdtX2dldF9zdGF0
+ZShwYi0+cHdtLCAmc3RhdGUpOwo+ICAgCWlmIChwYi0+ZW5hYmxlZCkKPiAgIAkJcmV0dXJuOwo+
+IEBAIC05MCw2ICs5Myw4IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0
+cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gICAKPiAgIAlyZWd1bGF0b3JfZGlzYWJsZShwYi0+cG93
+ZXJfc3VwcGx5KTsKPiAgIAlwYi0+ZW5hYmxlZCA9IGZhbHNlOwo+ICsKPiArCXBpbmN0cmxfcG1f
+c2VsZWN0X3NsZWVwX3N0YXRlKHBiLT5kZXYpOwo+ICAgfQo+ICAgCj4gICBzdGF0aWMgaW50IGNv
+bXB1dGVfZHV0eV9jeWNsZShzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykK
+PiBAQCAtNjI2LDYgKzYzMSwxMCBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcHJvYmUoc3Ry
+dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgIAliYWNrbGlnaHRfdXBkYXRlX3N0YXR1cyhi
+bCk7Cj4gICAKPiAgIAlwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBibCk7Cj4gKwo+ICsJaWYg
+KGJsLT5wcm9wcy5wb3dlciA9PSBGQl9CTEFOS19QT1dFUkRPV04pCj4gKwkJcGluY3RybF9wbV9z
+ZWxlY3Rfc2xlZXBfc3RhdGUoJnBkZXYtPmRldik7CgpEaWRuJ3QgYmFja2xpZ2h0X3VwZGF0ZV9z
+dGF0dXMoYmwpIGFscmVhZHkgZG8gdGhpcz8KCgpEYW5pZWwuCgoKPiArCj4gICAJcmV0dXJuIDA7
+Cj4gICAKPiAgIGVycl9hbGxvYzoKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZy
+ZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2RyaS1kZXZlbA==
