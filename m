@@ -1,70 +1,100 @@
 From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered
- down
-Date: Fri, 21 Jun 2019 13:41:45 +0100
-Message-ID: <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
-References: <20190522163428.7078-1-paul@crapouillou.net>
+Subject: Re: [PATCH] backlight: pwm_bl: Fix heuristic to determine number of
+ brightness levels
+Date: Fri, 21 Jun 2019 13:49:32 +0100
+Message-ID: <bf229b34-2b76-90f7-3e48-102f473b3b52@linaro.org>
+References: <20190612180003.161966-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190522163428.7078-1-paul@crapouillou.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190612180003.161966-1-mka@chromium.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, od@zcrc.me, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMjIvMDUvMjAxOSAxNzozNCwgUGF1bCBDZXJjdWVpbCB3cm90ZToKPiBXaGVuIHRoZSBkcml2
-ZXIgcHJvYmVzLCB0aGUgUFdNIHBpbiBpcyBhdXRvbWF0aWNhbGx5IGNvbmZpZ3VyZWQgdG8gaXRz
-Cj4gZGVmYXVsdCBzdGF0ZSwgd2hpY2ggc2hvdWxkIGJlIHRoZSAicHdtIiBmdW5jdGlvbi4KCkF0
-IHdoaWNoIHBvaW50IGluIHRoZSBwcm9iZS4uLiBhbmQgYnkgd2hvPwoKPiBIb3dldmVyLCBhdCB0
-aGlzCj4gcG9pbnQgd2UgZG9uJ3Qga25vdyB0aGUgYWN0dWFsIGxldmVsIG9mIHRoZSBwaW4sIHdo
-aWNoIG1heSBiZSBhY3RpdmUgb3IKPiBpbmFjdGl2ZS4gQXMgYSByZXN1bHQsIGlmIHRoZSBkcml2
-ZXIgcHJvYmVzIHdpdGhvdXQgZW5hYmxpbmcgdGhlCj4gYmFja2xpZ2h0LCB0aGUgUFdNIHBpbiBt
-aWdodCBiZSBhY3RpdmUsIGFuZCB0aGUgYmFja2xpZ2h0IHdvdWxkIGJlCj4gbGl0IHdheSBiZWZv
-cmUgYmVpbmcgb2ZmaWNpYWxseSBlbmFibGVkLgo+IAo+IFRvIHdvcmsgYXJvdW5kIHRoaXMsIGlm
-IHRoZSBwcm9iZSBmdW5jdGlvbiBkb2Vzbid0IGVuYWJsZSB0aGUgYmFja2xpZ2h0LAo+IHRoZSBw
-aW4gaXMgc2V0IHRvIGl0cyBzbGVlcCBzdGF0ZSBpbnN0ZWFkIG9mIHRoZSBkZWZhdWx0IG9uZSwg
-dW50aWwgdGhlCj4gYmFja2xpZ2h0IGlzIGVuYWJsZWQuIFdoZW5rIHRoZSBiYWNrbGlnaHQgaXMg
-ZGlzYWJsZWQsIHRoZSBwaW4gaXMgcmVzZXQKPiB0byBpdHMgc2xlZXAgc3RhdGUuCkRvZXNuJ3Qg
-dGhpcyB3b3JrYXJvdW5kIHJlc3VsdCBpbiBhIGJhY2tsaWdodCBmbGFzaCBiZXR3ZWVuIHdoYXRl
-dmVyIAplbmFibGVzIGl0IGFuZCB0aGUgbmV3IGNvZGUgdHVybmluZyBpdCBvZmYgYWdhaW4/Cgo+
-IAo+IFNpZ25lZC1vZmYtYnk6IFBhdWwgQ2VyY3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PiA+
-IC0tLQo+ICAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMgfCA5ICsrKysrKysrKwo+
-ICAgMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
-bV9ibC5jCj4gaW5kZXggZmI0NWY4NjZiOTIzLi40MjJmNzkwM2IzODIgMTAwNjQ0Cj4gLS0tIGEv
-ZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiArKysgYi9kcml2ZXJzL3ZpZGVvL2Jh
-Y2tsaWdodC9wd21fYmwuYwo+IEBAIC0xNiw2ICsxNiw3IEBACj4gICAjaW5jbHVkZSA8bGludXgv
-bW9kdWxlLmg+Cj4gICAjaW5jbHVkZSA8bGludXgva2VybmVsLmg+Cj4gICAjaW5jbHVkZSA8bGlu
-dXgvaW5pdC5oPgo+ICsjaW5jbHVkZSA8bGludXgvcGluY3RybC9jb25zdW1lci5oPgo+ICAgI2lu
-Y2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPgo+ICAgI2luY2x1ZGUgPGxpbnV4L2ZiLmg+
-Cj4gICAjaW5jbHVkZSA8bGludXgvYmFja2xpZ2h0Lmg+Cj4gQEAgLTUwLDYgKzUxLDggQEAgc3Rh
-dGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+
-ICAgCXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7Cj4gICAJaW50IGVycjsKPiAgIAo+ICsJcGluY3Ry
-bF9wbV9zZWxlY3RfZGVmYXVsdF9zdGF0ZShwYi0+ZGV2KTsKPiArCj4gICAJcHdtX2dldF9zdGF0
-ZShwYi0+cHdtLCAmc3RhdGUpOwo+ICAgCWlmIChwYi0+ZW5hYmxlZCkKPiAgIAkJcmV0dXJuOwo+
-IEBAIC05MCw2ICs5Myw4IEBAIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0
-cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gICAKPiAgIAlyZWd1bGF0b3JfZGlzYWJsZShwYi0+cG93
-ZXJfc3VwcGx5KTsKPiAgIAlwYi0+ZW5hYmxlZCA9IGZhbHNlOwo+ICsKPiArCXBpbmN0cmxfcG1f
-c2VsZWN0X3NsZWVwX3N0YXRlKHBiLT5kZXYpOwo+ICAgfQo+ICAgCj4gICBzdGF0aWMgaW50IGNv
-bXB1dGVfZHV0eV9jeWNsZShzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiLCBpbnQgYnJpZ2h0bmVzcykK
-PiBAQCAtNjI2LDYgKzYzMSwxMCBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcHJvYmUoc3Ry
-dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgIAliYWNrbGlnaHRfdXBkYXRlX3N0YXR1cyhi
-bCk7Cj4gICAKPiAgIAlwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBibCk7Cj4gKwo+ICsJaWYg
-KGJsLT5wcm9wcy5wb3dlciA9PSBGQl9CTEFOS19QT1dFUkRPV04pCj4gKwkJcGluY3RybF9wbV9z
-ZWxlY3Rfc2xlZXBfc3RhdGUoJnBkZXYtPmRldik7CgpEaWRuJ3QgYmFja2xpZ2h0X3VwZGF0ZV9z
-dGF0dXMoYmwpIGFscmVhZHkgZG8gdGhpcz8KCgpEYW5pZWwuCgoKPiArCj4gICAJcmV0dXJuIDA7
-Cj4gICAKPiAgIGVycl9hbGxvYzoKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZy
-ZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2RyaS1kZXZlbA==
+On 12/06/2019 19:00, Matthias Kaehlcke wrote:
+> With commit 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of
+> LED linearly to human eye") the number of set bits (aka hweight())
+> in the PWM period is used in the heuristic to determine the number
+> of brightness levels, when the brightness table isn't specified in
+> the DT. The number of set bits doesn't provide a reliable clue about
+> the length of the period, instead change the heuristic to:
+> 
+>   nlevels = period / fls(period)
+> 
+> Also limit the maximum number of brightness levels to 4096 to avoid
+> excessively large tables.
+> 
+> With this the number of levels increases monotonically with the PWM
+> period, until the maximum of 4096 levels is reached:
+> 
+> period (ns)    # levels
+> 
+> 100    	       16
+> 500	       62
+> 1000	       111
+> 5000	       416
+> 10000	       769
+> 50000	       3333
+> 100000	       4096
+> 
+> Fixes: 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+
+As I understand it we can't determine the PWM quantization without 
+actually programming it so the table could still be oversized after this 
+patch (e.g. multiple entries end up with same physical brightness) but 
+since it should always be monotonic and the table size will cap out at a 
+sane value then:
+
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+
+> ---
+>   drivers/video/backlight/pwm_bl.c | 24 ++++++------------------
+>   1 file changed, 6 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index fb45f866b923..0b7152fa24f7 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -194,29 +194,17 @@ int pwm_backlight_brightness_default(struct device *dev,
+>   				     struct platform_pwm_backlight_data *data,
+>   				     unsigned int period)
+>   {
+> -	unsigned int counter = 0;
+> -	unsigned int i, n;
+> +	unsigned int i;
+>   	u64 retval;
+>   
+>   	/*
+> -	 * Count the number of bits needed to represent the period number. The
+> -	 * number of bits is used to calculate the number of levels used for the
+> -	 * brightness-levels table, the purpose of this calculation is have a
+> -	 * pre-computed table with enough levels to get linear brightness
+> -	 * perception. The period is divided by the number of bits so for a
+> -	 * 8-bit PWM we have 255 / 8 = 32 brightness levels or for a 16-bit PWM
+> -	 * we have 65535 / 16 = 4096 brightness levels.
+> -	 *
+> -	 * Note that this method is based on empirical testing on different
+> -	 * devices with PWM of 8 and 16 bits of resolution.
+> +	 * Once we have 4096 levels there's little point going much higher...
+> +	 * neither interactive sliders nor animation benefits from having
+> +	 * more values in the table.
+>   	 */
+> -	n = period;
+> -	while (n) {
+> -		counter += n % 2;
+> -		n >>= 1;
+> -	}
+> +	data->max_brightness =
+> +		min((int)DIV_ROUND_UP(period, fls(period)), 4096);
+>   
+> -	data->max_brightness = DIV_ROUND_UP(period, counter);
+>   	data->levels = devm_kcalloc(dev, data->max_brightness,
+>   				    sizeof(*data->levels), GFP_KERNEL);
+>   	if (!data->levels)
+> 
