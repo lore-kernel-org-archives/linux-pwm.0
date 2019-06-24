@@ -1,69 +1,41 @@
 From: Matthias Kaehlcke <mka@chromium.org>
-Subject: Re: [PATCH 4/4] backlight: pwm_bl: Set scale type for brightness
- curves specified in the DT
-Date: Mon, 24 Jun 2019 11:54:08 -0700
-Message-ID: <20190624185408.GB137143@google.com>
-References: <20190613194326.180889-1-mka@chromium.org>
- <20190613194326.180889-5-mka@chromium.org>
- <9ea1bb40-95a6-7a67-a8a6-ecc77a70e547@linaro.org>
+Subject: [PATCH v2 0/4] backlight: Expose brightness curve type through sysfs
+Date: Mon, 24 Jun 2019 13:31:09 -0700
+Message-ID: <20190624203114.93277-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9ea1bb40-95a6-7a67-a8a6-ecc77a70e547@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Daniel,
+Backlight brightness curves can have different shapes. The two main
+types are linear and non-linear curves. The human eye doesn't
+perceive linearly increasing/decreasing brightness as linear (see
+also 88ba95bedb79 "backlight: pwm_bl: Compute brightness of LED
+linearly to human eye"), hence many backlights use non-linear (often
+logarithmic) brightness curves. The type of curve is currently opaque
+to userspace, so userspace often relies on more or less reliable
+heuristics (like the number of brightness levels) to decide whether
+to treat a backlight device as linear or non-linear.
 
-On Fri, Jun 21, 2019 at 02:10:19PM +0100, Daniel Thompson wrote:
-> On 13/06/2019 20:43, Matthias Kaehlcke wrote:
-> > Check if a brightness curve specified in the device tree is linear or
-> > not and set the corresponding property accordingly. This makes the
-> > scale type available to userspace via the 'scale' sysfs attribute.
-> > 
-> > To determine if a curve is linear it is compared to a interpolated linear
-> > curve between min and max brightness. The curve is considered linear if
-> > no value deviates more than +/-5% of ${brightness_range} from their
-> > interpolated value.
-> > 
-> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> > ---
-> >   drivers/video/backlight/pwm_bl.c | 25 +++++++++++++++++++++++++
-> >   1 file changed, 25 insertions(+)
-> > 
-> > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> > index f067fe7aa35d..912407b6d67f 100644
-> > --- a/drivers/video/backlight/pwm_bl.c
-> > +++ b/drivers/video/backlight/pwm_bl.c
-> > @@ -404,6 +404,26 @@ int pwm_backlight_brightness_default(struct device *dev,
-> >   }
-> >   #endif
-> > +static bool pwm_backlight_is_linear(struct platform_pwm_backlight_data *data)
-> > +{
-> > +	unsigned int nlevels = data->max_brightness + 1;
-> > +	unsigned int min_val = data->levels[0];
-> > +	unsigned int max_val = data->levels[nlevels - 1];
-> > +	unsigned int slope = (100 * (max_val - min_val)) / nlevels;
-> 
-> Why 100 (rather than a power of 2)?
+Export the type of the brightness curve via a new sysfs attribute.
 
-I guess it came from the decimal part of my brain, I can change it to
-128 ;-)
+Matthias Kaehlcke (4):
+  MAINTAINERS: Add entry for stable backlight sysfs ABI documentation
+  backlight: Expose brightness curve type through sysfs
+  backlight: pwm_bl: Set scale type for CIE 1931 curves
+  backlight: pwm_bl: Set scale type for brightness curves specified in
+    the DT
 
-> It would also be good to have a comment here saying what the maximum
-> quantization error is. Doesn't have to be over complex just mentioning
-> something like the following (assuming you agree that its true ;-) ):
-> 
->   Multiplying by XXX means that even in pathalogical cases such as
->   (max_val - min_val) == nlevels then the error at max_val is less than
->   1%.
+ .../ABI/testing/sysfs-class-backlight         | 32 +++++++++++++++++
+ MAINTAINERS                                   |  2 ++
+ drivers/video/backlight/backlight.c           | 21 +++++++++++
+ drivers/video/backlight/pwm_bl.c              | 35 ++++++++++++++++++-
+ include/linux/backlight.h                     | 10 ++++++
+ 5 files changed, 99 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-backlight
 
-Sounds good, thanks for the suggestion!
-
-> With a suitable comment in the fixed point code:
-> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-
-Thanks
+-- 
+2.22.0.410.gd8fdbe21b5-goog
