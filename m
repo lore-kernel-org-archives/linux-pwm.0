@@ -1,7 +1,7 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: [v2 1/2] dt-bindings: display: panel: add auo kd101n80-45na panel bindings
-Date: Mon, 24 Jun 2019 16:00:00 +0800
-Message-ID: <20190624080001.67222-2-jitao.shi@mediatek.com>
+Subject: [v2 2/2] drm/panel: support for auo,kd101n80-45na wuxga dsi video mode panel
+Date: Mon, 24 Jun 2019 16:00:01 +0800
+Message-ID: <20190624080001.67222-3-jitao.shi@mediatek.com>
 References: <20190624080001.67222-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -10,57 +10,83 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190624080001.67222-1-jitao.shi@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Jitao Shi <jitao.shi@mediatek.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu
+Cc: Jitao Shi <jitao.shi@mediatek.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediate
 List-Id: linux-pwm@vger.kernel.org
 
-Add documentation for auo kd101n80-45na panel.
+Auo,kd101n80-45na's connector is same as boe,tv101wum-nl6.
+The most codes can be reuse.
+So auo,kd101n80-45na and boe,tv101wum-nl6 use one driver file.
+Add the different parts in driver data.
 
 Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
 ---
- .../display/panel/auo,kd101n80-45na.txt       | 34 +++++++++++++++++++
- 1 file changed, 34 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt
+ .../gpu/drm/panel/panel-boe-tv101wum-nl6.c    | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt b/Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt
-new file mode 100644
-index 000000000000..994c2a13f942
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/panel/auo,kd101n80-45na.txt
-@@ -0,0 +1,34 @@
-+AUO Corporation 10.1" WUXGA TFT LCD panel
-+
-+Required properties:
-+- compatible: should be "auo,kd101n80-45na"
-+- reg: the virtual channel number of a DSI peripheral
-+- enable-gpios: a GPIO spec for the enable pin
-+- pp1800-supply: core voltage supply
-+- avdd-supply: phandle of the regulator that provides positive voltage
-+- avee-supply: phandle of the regulator that provides negative voltage
-+- backlight: phandle of the backlight device attached to the panel
-+
-+The device node can contain one 'port' child node with one child
-+'endpoint' node, according to the bindings defined in
-+media/video-interfaces.txt. This node should describe panel's video bus.
-+
-+Example:
-+&dsi {
-+	...
-+	panel@0 {
-+		compatible = "auo,kd101n80-45na";
-+		reg = <0>;
-+		enable-gpios = <&pio 45 0>;
-+		avdd-supply = <&ppvarn_lcd>;
-+		avee-supply = <&ppvarp_lcd>;
-+		pp1800-supply = <&pp1800_lcd>;
-+		backlight = <&backlight_lcd0>;
-+		status = "okay";
-+		port {
-+			panel_in: endpoint {
-+				remote-endpoint = <&dsi_out>;
-+			};
-+		};
-+	};
+diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+index 6e06c8506623..d1ee43cfcbe2 100644
+--- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
++++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+@@ -372,6 +372,15 @@ static const struct panel_init_cmd boe_init_cmd[] = {
+ 	{},
+ };
+ 
++static const struct panel_init_cmd auo_init_cmd[] = {
++	_INIT_DELAY_CMD(24),
++	_INIT_DCS_CMD(0x11),
++	_INIT_DELAY_CMD(120),
++	_INIT_DCS_CMD(0x29),
++	_INIT_DELAY_CMD(120),
++	{},
 +};
++
+ static inline struct boe_panel *to_boe_panel(struct drm_panel *panel)
+ {
+ 	return container_of(panel, struct boe_panel, base);
+@@ -572,6 +581,34 @@ static const struct panel_desc boe_tv101wum_nl6_desc = {
+ 	.init_cmds = boe_init_cmd,
+ };
+ 
++static const struct drm_display_mode auo_default_mode = {
++	.clock = 157000,
++	.hdisplay = 1200,
++	.hsync_start = 1200 + 80,
++	.hsync_end = 1200 + 80 + 24,
++	.htotal = 1200 + 80 + 24 + 36,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 16,
++	.vsync_end = 1920 + 16 + 4,
++	.vtotal = 1920 + 16 + 4 + 16,
++	.vrefresh = 60,
++	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
++};
++
++static const struct panel_desc auo_kd101n80_45na_desc = {
++	.modes = &auo_default_mode,
++	.bpc = 8,
++	.size = {
++		.width = 216,
++		.height = 135,
++	},
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
++		      MIPI_DSI_MODE_LPM,
++	.init_cmds = auo_init_cmd,
++};
++
+ static int boe_panel_get_modes(struct drm_panel *panel)
+ {
+ 	struct boe_panel *boe = to_boe_panel(panel);
+@@ -695,6 +732,9 @@ static const struct of_device_id boe_of_match[] = {
+ 	{ .compatible = "boe,tv101wum-nl6",
+ 	  .data = &boe_tv101wum_nl6_desc
+ 	},
++	{ .compatible = "auo,kd101n80-45na",
++	  .data = &auo_kd101n80_45na_desc
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, boe_of_match);
 -- 
 2.21.0
