@@ -1,191 +1,123 @@
-From: Paul Cercueil <paul@crapouillou.net>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered
  down
-Date: Mon, 24 Jun 2019 16:39:46 +0200
-Message-ID: <1561387186.20436.1@crapouillou.net>
+Date: Mon, 24 Jun 2019 16:46:28 +0100
+Message-ID: <20190624154628.rq7ykltms7ovhawx@holly.lan>
 References: <20190522163428.7078-1-paul@crapouillou.net>
-        <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
-        <20190621135608.GB11839@ulmo>
+ <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
+ <20190621135608.GB11839@ulmo>
+ <20190624112844.fmwbfpdxjkst3u7r@holly.lan>
+ <1561386717.20436.0@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190621135608.GB11839@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, od@zcrc.me, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <1561386717.20436.0@crapouillou.net>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, od@zcrc.me, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-Le ven. 21 juin 2019 =E0 15:56, Thierry Reding=20
-<thierry.reding@gmail.com> a =E9crit :
-> On Fri, Jun 21, 2019 at 01:41:45PM +0100, Daniel Thompson wrote:
->>  On 22/05/2019 17:34, Paul Cercueil wrote:
->>  > When the driver probes, the PWM pin is automatically configured=20
->> to its
->>  > default state, which should be the "pwm" function.
->>=20
->>  At which point in the probe... and by who?
->=20
-> The driver core will select the "default" state of a device right=20
-> before
-> calling the driver's probe, see:
->=20
-> 	drivers/base/pinctrl.c: pinctrl_bind_pins()
->=20
-> which is called from:
->=20
-> 	drivers/base/dd.c: really_probe()
->=20
->>  > However, at this
->>  > point we don't know the actual level of the pin, which may be=20
->> active or
->>  > inactive. As a result, if the driver probes without enabling the
->>  > backlight, the PWM pin might be active, and the backlight would be
->>  > lit way before being officially enabled.
->>  >
->>  > To work around this, if the probe function doesn't enable the=20
->> backlight,
->>  > the pin is set to its sleep state instead of the default one,=20
->> until the
->>  > backlight is enabled. Whenk the backlight is disabled, the pin is=20
->> reset
->>  > to its sleep state.
->>  Doesn't this workaround result in a backlight flash between=20
->> whatever enables
->>  it and the new code turning it off again?
->=20
-> Yeah, I think it would. I guess if you're very careful on how you set=20
-> up
-> the device tree you might be able to work around it. Besides the=20
-> default
-> and idle standard pinctrl states, there's also the "init" state. The
-> core will select that instead of the default state if available.=20
-> However
-> there's also pinctrl_init_done() which will try again to switch to the
-> default state after probe has finished and the driver didn't switch=20
-> away
-> from the init state.
->=20
-> So you could presumably set up the device tree such that you have=20
-> three
-> states defined: "default" would be the one where the PWM pin is=20
-> active,
-> "idle" would be used when backlight is off (PWM pin inactive) and then
-> another "init" state that would be the same as "idle" to be used=20
-> during
-> probe. During probe the driver could then switch to the "idle" state=20
-> so
-> that the pin shouldn't glitch.
-
-That's exactly what I'm doing, yes (with the minor difference that your
-"idle" state is my "sleep" state).
-
-> I'm not sure this would actually work because I think the way that
-> pinctrl handles states both "init" and "idle" would be the same=20
-> pointer
-> values and therefore pinctrl_init_done() would think the driver didn't
-> change away from the "init" state because it is the same pointer value
-> as the "idle" state that the driver selected. One way to work around
-> that would be to duplicate the "idle" state definition and associate=20
-> one
-> instance of it with the "idle" state and the other with the "init"
-> state. At that point both states should be different (different=20
-> pointer
-> values) and we'd get the init state selected automatically before=20
-> probe,
-> select "idle" during probe and then the core will leave it alone.=20
-> That's
-> of course ugly because we duplicate the pinctrl state in DT, but=20
-> perhaps
-> it's the least ugly solution.
-
-That works perfectly on my side. I didn't have to duplicate the states=20
-in DT.
-
-> Adding Linus for visibility. Perhaps he can share some insight.
->=20
-> On that note, I'm wondering if perhaps it'd make sense for pinctrl to
-> support some mode where a device would start out in idle mode. That=20
-> is,
-> where pinctrl_bind_pins() would select the "idle" mode as the default
-> before probe. With something like that we could easily support this
-> use-case without glitching.
-
-You'd still need the driver to switch back between "default" and "idle"
-states, and switching to the "idle" state in the probe is a one-liner,
-so probably not worth the trouble, unless I don't understand the whole
-picture.
-
-Thanks,
--Paul
-
-> I suppose yet another variant would be for the PWM backlight to not=20
-> use
-> any of the standard pinctrl states at all. Instead it could just=20
-> define
-> custom states, say "active" and "inactive". Looking at the code that
-> would prevent pinctrl_bind_pins() from doing anything with pinctrl
-> states and given the driver exact control over when each of the states
-> will be selected. That's somewhat suboptimal because we can't make use
-> of the pinctrl PM helpers and it'd require more boilerplate.
->=20
-> Thierry
->=20
->>  > Signed-off-by: Paul Cercueil <paul@crapouillou.net> > ---
->>  >   drivers/video/backlight/pwm_bl.c | 9 +++++++++
->>  >   1 file changed, 9 insertions(+)
->>  >
->>  > diff --git a/drivers/video/backlight/pwm_bl.c=20
->> b/drivers/video/backlight/pwm_bl.c
->>  > index fb45f866b923..422f7903b382 100644
->>  > --- a/drivers/video/backlight/pwm_bl.c
->>  > +++ b/drivers/video/backlight/pwm_bl.c
->>  > @@ -16,6 +16,7 @@
->>  >   #include <linux/module.h>
->>  >   #include <linux/kernel.h>
->>  >   #include <linux/init.h>
->>  > +#include <linux/pinctrl/consumer.h>
->>  >   #include <linux/platform_device.h>
->>  >   #include <linux/fb.h>
->>  >   #include <linux/backlight.h>
->>  > @@ -50,6 +51,8 @@ static void pwm_backlight_power_on(struct=20
->> pwm_bl_data *pb)
->>  >   	struct pwm_state state;
->>  >   	int err;
->>  > +	pinctrl_pm_select_default_state(pb->dev);
->>  > +
->>  >   	pwm_get_state(pb->pwm, &state);
->>  >   	if (pb->enabled)
->>  >   		return;
->>  > @@ -90,6 +93,8 @@ static void pwm_backlight_power_off(struct=20
->> pwm_bl_data *pb)
->>  >   	regulator_disable(pb->power_supply);
->>  >   	pb->enabled =3D false;
->>  > +
->>  > +	pinctrl_pm_select_sleep_state(pb->dev);
->>  >   }
->>  >   static int compute_duty_cycle(struct pwm_bl_data *pb, int=20
->> brightness)
->>  > @@ -626,6 +631,10 @@ static int pwm_backlight_probe(struct=20
->> platform_device *pdev)
->>  >   	backlight_update_status(bl);
->>  >   	platform_set_drvdata(pdev, bl);
->>  > +
->>  > +	if (bl->props.power =3D=3D FB_BLANK_POWERDOWN)
->>  > +		pinctrl_pm_select_sleep_state(&pdev->dev);
->>=20
->>  Didn't backlight_update_status(bl) already do this?
->>=20
->>=20
->>  Daniel.
->>=20
->>=20
->>  > +
->>  >   	return 0;
->>  >   err_alloc:
->>  >
->>=20
-
-=
+T24gTW9uLCBKdW4gMjQsIDIwMTkgYXQgMDQ6MzE6NTdQTSArMDIwMCwgUGF1bCBDZXJjdWVpbCB3
+cm90ZToKPiAKPiAKPiBMZSBsdW4uIDI0IGp1aW4gMjAxOSDDoCAxMzoyOCwgRGFuaWVsIFRob21w
+c29uIDxkYW5pZWwudGhvbXBzb25AbGluYXJvLm9yZz4gYQo+IMOpY3JpdCA6Cj4gPiBPbiBGcmks
+IEp1biAyMSwgMjAxOSBhdCAwMzo1NjowOFBNICswMjAwLCBUaGllcnJ5IFJlZGluZyB3cm90ZToK
+PiA+ID4gIE9uIEZyaSwgSnVuIDIxLCAyMDE5IGF0IDAxOjQxOjQ1UE0gKzAxMDAsIERhbmllbCBU
+aG9tcHNvbiB3cm90ZToKPiA+ID4gID4gT24gMjIvMDUvMjAxOSAxNzozNCwgUGF1bCBDZXJjdWVp
+bCB3cm90ZToKPiA+ID4gID4gPiBXaGVuIHRoZSBkcml2ZXIgcHJvYmVzLCB0aGUgUFdNIHBpbiBp
+cyBhdXRvbWF0aWNhbGx5IGNvbmZpZ3VyZWQKPiA+ID4gdG8gaXRzCj4gPiA+ICA+ID4gZGVmYXVs
+dCBzdGF0ZSwgd2hpY2ggc2hvdWxkIGJlIHRoZSAicHdtIiBmdW5jdGlvbi4KPiA+ID4gID4KPiA+
+ID4gID4gQXQgd2hpY2ggcG9pbnQgaW4gdGhlIHByb2JlLi4uIGFuZCBieSB3aG8/Cj4gPiA+IAo+
+ID4gPiAgVGhlIGRyaXZlciBjb3JlIHdpbGwgc2VsZWN0IHRoZSAiZGVmYXVsdCIgc3RhdGUgb2Yg
+YSBkZXZpY2UgcmlnaHQKPiA+ID4gYmVmb3JlCj4gPiA+ICBjYWxsaW5nIHRoZSBkcml2ZXIncyBw
+cm9iZSwgc2VlOgo+ID4gPiAKPiA+ID4gIAlkcml2ZXJzL2Jhc2UvcGluY3RybC5jOiBwaW5jdHJs
+X2JpbmRfcGlucygpCj4gPiA+IAo+ID4gPiAgd2hpY2ggaXMgY2FsbGVkIGZyb206Cj4gPiA+IAo+
+ID4gPiAgCWRyaXZlcnMvYmFzZS9kZC5jOiByZWFsbHlfcHJvYmUoKQo+ID4gPiAKPiA+IAo+ID4g
+VGhhbmtzLiBJIGFzc3VtZWQgaXQgd291bGQgYmUgc29tZXRoaW5nIGxpa2UgdGhhdC4uLiBhbHRo
+b3VnaCBnaXZlbgo+ID4gcHdtLWJhY2tsaWdodCBpcyBlc3NlbnRpYWxseSBhIHdyYXBwZXIgZHJp
+dmVyIHJvdW5kIGEgUFdNIEkgd29uZGVyZWQgd2h5Cj4gPiB0aGUgcGluY3RybCB3YXMgb24gdGhl
+IGJhY2tsaWdodCBub2RlIChyYXRoZXIgdGhhbiB0aGUgUFdNIG5vZGUpLgo+ID4gCj4gPiBMb29r
+aW5nIGF0IHRoZSBEVHMgaW4gdGhlIHVwc3RyZWFtIGtlcm5lbCBpdCBsb29rcyBsaWtlIH4yMCUg
+b2YgdGhlCj4gPiBiYWNrbGlnaHQgZHJpdmVycyBoYXZlIHBpbmN0cmwgb24gdGhlIGJhY2tsaWdo
+dCBub2RlLiBPdGhlcnMgcHJlc3VtYWJsZQo+ID4gaGF2ZSBub25lIG9yIGhhdmUgaXQgb24gdGhl
+IFBXTSBub2RlIChhbmQgaXQgbG9va3MgbGlrZSBzdXBwb3J0IGZvcgo+ID4gc2xlZXBpbmcgdGhl
+IHBpbnMgaXMgKnZlcnkqIHJhcmUgYW1vdW5nIHRoZSBQV00gZHJpdmVycykuCj4gCj4gSWYgeW91
+ciBQV00gZHJpdmVyIGhhcyBtb3JlIHRoYW4gb25lIGNoYW5uZWwgYW5kIGhhcyB0aGUgcGluY3Ry
+bCBub2RlLCB5b3UKPiBjYW5ub3QgZmluZS10dW5lIHRoZSBzdGF0ZSBvZiBpbmRpdmlkdWFsIHBp
+bnMuIFRoZXkgYWxsIHNoYXJlIHRoZSBzYW1lCj4gc3RhdGUuCgpHb29kIHBvaW50LiBUaGFua3Mu
+CgoKPiA+ID4gID4gPiBIb3dldmVyLCBhdCB0aGlzCj4gPiA+ICA+ID4gcG9pbnQgd2UgZG9uJ3Qg
+a25vdyB0aGUgYWN0dWFsIGxldmVsIG9mIHRoZSBwaW4sIHdoaWNoIG1heSBiZQo+ID4gPiBhY3Rp
+dmUgb3IKPiA+ID4gID4gPiBpbmFjdGl2ZS4gQXMgYSByZXN1bHQsIGlmIHRoZSBkcml2ZXIgcHJv
+YmVzIHdpdGhvdXQgZW5hYmxpbmcgdGhlCj4gPiA+ICA+ID4gYmFja2xpZ2h0LCB0aGUgUFdNIHBp
+biBtaWdodCBiZSBhY3RpdmUsIGFuZCB0aGUgYmFja2xpZ2h0IHdvdWxkCj4gPiA+IGJlCj4gPiA+
+ICA+ID4gbGl0IHdheSBiZWZvcmUgYmVpbmcgb2ZmaWNpYWxseSBlbmFibGVkLgo+ID4gPiAgPiA+
+Cj4gPiA+ICA+ID4gVG8gd29yayBhcm91bmQgdGhpcywgaWYgdGhlIHByb2JlIGZ1bmN0aW9uIGRv
+ZXNuJ3QgZW5hYmxlIHRoZQo+ID4gPiBiYWNrbGlnaHQsCj4gPiA+ICA+ID4gdGhlIHBpbiBpcyBz
+ZXQgdG8gaXRzIHNsZWVwIHN0YXRlIGluc3RlYWQgb2YgdGhlIGRlZmF1bHQgb25lLAo+ID4gPiB1
+bnRpbCB0aGUKPiA+ID4gID4gPiBiYWNrbGlnaHQgaXMgZW5hYmxlZC4gV2hlbmsgdGhlIGJhY2ts
+aWdodCBpcyBkaXNhYmxlZCwgdGhlIHBpbgo+ID4gPiBpcyByZXNldAo+ID4gPiAgPiA+IHRvIGl0
+cyBzbGVlcCBzdGF0ZS4KPiA+ID4gID4gRG9lc24ndCB0aGlzIHdvcmthcm91bmQgcmVzdWx0IGlu
+IGEgYmFja2xpZ2h0IGZsYXNoIGJldHdlZW4KPiA+ID4gd2hhdGV2ZXIgZW5hYmxlcwo+ID4gPiAg
+PiBpdCBhbmQgdGhlIG5ldyBjb2RlIHR1cm5pbmcgaXQgb2ZmIGFnYWluPwo+ID4gPiAKPiA+ID4g
+IFllYWgsIEkgdGhpbmsgaXQgd291bGQuIEkgZ3Vlc3MgaWYgeW91J3JlIHZlcnkgY2FyZWZ1bCBv
+biBob3cgeW91Cj4gPiA+IHNldCB1cAo+ID4gPiAgdGhlIGRldmljZSB0cmVlIHlvdSBtaWdodCBi
+ZSBhYmxlIHRvIHdvcmsgYXJvdW5kIGl0LiBCZXNpZGVzIHRoZQo+ID4gPiBkZWZhdWx0Cj4gPiA+
+ICBhbmQgaWRsZSBzdGFuZGFyZCBwaW5jdHJsIHN0YXRlcywgdGhlcmUncyBhbHNvIHRoZSAiaW5p
+dCIgc3RhdGUuIFRoZQo+ID4gPiAgY29yZSB3aWxsIHNlbGVjdCB0aGF0IGluc3RlYWQgb2YgdGhl
+IGRlZmF1bHQgc3RhdGUgaWYgYXZhaWxhYmxlLgo+ID4gPiBIb3dldmVyCj4gPiA+ICB0aGVyZSdz
+IGFsc28gcGluY3RybF9pbml0X2RvbmUoKSB3aGljaCB3aWxsIHRyeSBhZ2FpbiB0byBzd2l0Y2gg
+dG8KPiA+ID4gdGhlCj4gPiA+ICBkZWZhdWx0IHN0YXRlIGFmdGVyIHByb2JlIGhhcyBmaW5pc2hl
+ZCBhbmQgdGhlIGRyaXZlciBkaWRuJ3Qgc3dpdGNoCj4gPiA+IGF3YXkKPiA+ID4gIGZyb20gdGhl
+IGluaXQgc3RhdGUuCj4gPiA+IAo+ID4gPiAgU28geW91IGNvdWxkIHByZXN1bWFibHkgc2V0IHVw
+IHRoZSBkZXZpY2UgdHJlZSBzdWNoIHRoYXQgeW91IGhhdmUKPiA+ID4gdGhyZWUKPiA+ID4gIHN0
+YXRlcyBkZWZpbmVkOiAiZGVmYXVsdCIgd291bGQgYmUgdGhlIG9uZSB3aGVyZSB0aGUgUFdNIHBp
+biBpcwo+ID4gPiBhY3RpdmUsCj4gPiA+ICAiaWRsZSIgd291bGQgYmUgdXNlZCB3aGVuIGJhY2ts
+aWdodCBpcyBvZmYgKFBXTSBwaW4gaW5hY3RpdmUpIGFuZAo+ID4gPiB0aGVuCj4gPiA+ICBhbm90
+aGVyICJpbml0IiBzdGF0ZSB0aGF0IHdvdWxkIGJlIHRoZSBzYW1lIGFzICJpZGxlIiB0byBiZSB1
+c2VkCj4gPiA+IGR1cmluZwo+ID4gPiAgcHJvYmUuIER1cmluZyBwcm9iZSB0aGUgZHJpdmVyIGNv
+dWxkIHRoZW4gc3dpdGNoIHRvIHRoZSAiaWRsZSIKPiA+ID4gc3RhdGUgc28KPiA+ID4gIHRoYXQg
+dGhlIHBpbiBzaG91bGRuJ3QgZ2xpdGNoLgo+ID4gPiAKPiA+ID4gIEknbSBub3Qgc3VyZSB0aGlz
+IHdvdWxkIGFjdHVhbGx5IHdvcmsgYmVjYXVzZSBJIHRoaW5rIHRoZSB3YXkgdGhhdAo+ID4gPiAg
+cGluY3RybCBoYW5kbGVzIHN0YXRlcyBib3RoICJpbml0IiBhbmQgImlkbGUiIHdvdWxkIGJlIHRo
+ZSBzYW1lCj4gPiA+IHBvaW50ZXIKPiA+ID4gIHZhbHVlcyBhbmQgdGhlcmVmb3JlIHBpbmN0cmxf
+aW5pdF9kb25lKCkgd291bGQgdGhpbmsgdGhlIGRyaXZlcgo+ID4gPiBkaWRuJ3QKPiA+ID4gIGNo
+YW5nZSBhd2F5IGZyb20gdGhlICJpbml0IiBzdGF0ZSBiZWNhdXNlIGl0IGlzIHRoZSBzYW1lIHBv
+aW50ZXIKPiA+ID4gdmFsdWUKPiA+ID4gIGFzIHRoZSAiaWRsZSIgc3RhdGUgdGhhdCB0aGUgZHJp
+dmVyIHNlbGVjdGVkLiBPbmUgd2F5IHRvIHdvcmsgYXJvdW5kCj4gPiA+ICB0aGF0IHdvdWxkIGJl
+IHRvIGR1cGxpY2F0ZSB0aGUgImlkbGUiIHN0YXRlIGRlZmluaXRpb24gYW5kCj4gPiA+IGFzc29j
+aWF0ZSBvbmUKPiA+ID4gIGluc3RhbmNlIG9mIGl0IHdpdGggdGhlICJpZGxlIiBzdGF0ZSBhbmQg
+dGhlIG90aGVyIHdpdGggdGhlICJpbml0Igo+ID4gPiAgc3RhdGUuIEF0IHRoYXQgcG9pbnQgYm90
+aCBzdGF0ZXMgc2hvdWxkIGJlIGRpZmZlcmVudCAoZGlmZmVyZW50Cj4gPiA+IHBvaW50ZXIKPiA+
+ID4gIHZhbHVlcykgYW5kIHdlJ2QgZ2V0IHRoZSBpbml0IHN0YXRlIHNlbGVjdGVkIGF1dG9tYXRp
+Y2FsbHkgYmVmb3JlCj4gPiA+IHByb2JlLAo+ID4gPiAgc2VsZWN0ICJpZGxlIiBkdXJpbmcgcHJv
+YmUgYW5kIHRoZW4gdGhlIGNvcmUgd2lsbCBsZWF2ZSBpdCBhbG9uZS4KPiA+ID4gVGhhdCdzCj4g
+PiA+ICBvZiBjb3Vyc2UgdWdseSBiZWNhdXNlIHdlIGR1cGxpY2F0ZSB0aGUgcGluY3RybCBzdGF0
+ZSBpbiBEVCwgYnV0Cj4gPiA+IHBlcmhhcHMKPiA+ID4gIGl0J3MgdGhlIGxlYXN0IHVnbHkgc29s
+dXRpb24uCj4gPiA+ICBBZGRpbmcgTGludXMgZm9yIHZpc2liaWxpdHkuIFBlcmhhcHMgaGUgY2Fu
+IHNoYXJlIHNvbWUgaW5zaWdodC4KPiA+IAo+ID4gVG8gYmUgaG9uZXN0IEknbSBoYXBweSB0byBz
+dW1tYXJpemUgaW4gbXkgaGVhZCBhcyAiaWYgaXQgZmxhc2hlcyB0aGVuCj4gPiBpdCdzIG5vdAo+
+ID4gYSBwd21fYmwuYydzIHByb2JsZW0iIDstKS4KPiAKPiBJdCBkb2VzIG5vdCBmbGFzaC4gQnV0
+IHRoZSBiYWNrbGlnaHQgbGl0cyB3YXkgdG9vIGVhcmx5LCBzbyB3ZSBoYXZlIGEgMS0yCj4gc2Vj
+b25kcwo+IG9mICJ3aGl0ZSBzY3JlZW4iIGJlZm9yZSB0aGUgcGFuZWwgZHJpdmVyIHN0YXJ0cy4K
+ClRoYXQncyB0aGUgY3VycmVudCBiZWhhdmlvdXIuCgpXaGF0IEkgb3JpZ2luYWwgYXNrZWQgYWJv
+dXQgaXMgd2hldGhlciBhIHBhbmVsIHRoYXQgd2FzIGRhcmsgYmVmb3JlIHRoZQpkcml2ZXIgcHJv
+YmVzIGNvdWxkIGVuZCB1cCBmbGFzaGluZyBhZnRlciB0aGUgcGF0Y2ggYmVjYXVzZSBpdCBpcwph
+Y3RpdmF0ZWQgcHJlLXByb2JlIGFuZCBvbmx5IGdvZXMgdG8gc2xlZXAgYWZ0ZXJ3YXJkcy4KCkFu
+eWhvdyBJIGdvdCBhbiBhbnN3ZXI7IGlmIGl0IGZsYXNoZXMgYWZ0ZXIgdGhlIHBhdGNoIHRoZW4g
+dGhlIHByb2JsZW0KZG9lcyBub3Qgb3JpZ2luYXRlIGluIHB3bV9ibC5jIGFuZCBpcyBsaWtlbHkg
+YSBwcm9ibGVtIHdpdGggdGhlIGhhbmRsaW5nCm9mIHRoZSBwaW5jdHJsIGlkZWwgc3RhdGUgKGku
+ZS4gcHJvYmFibHkgRFQgbWlzY29uZmlndXJhdGlvbikKClNvIEkgdGhpbmsgdGhhdCBqdXN0IGxl
+YXZlcyBteSBjb21tZW50IGFib3V0IHRoZSBzcHVyaW91cyBzbGVlcCBpbiB0aGUKcHJvYmUgZnVu
+Y3Rpb24uCgoKRGFuaWVsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3Rv
+cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmkt
+ZGV2ZWw=
