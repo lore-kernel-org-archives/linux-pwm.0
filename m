@@ -1,84 +1,74 @@
-From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v2 4/4] backlight: pwm_bl: Set scale type for brightness curves specified in the DT
-Date: Mon, 24 Jun 2019 13:31:13 -0700
-Message-ID: <20190624203114.93277-5-mka@chromium.org>
-References: <20190624203114.93277-1-mka@chromium.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered down
+Date: Tue, 25 Jun 2019 00:02:02 +0200
+Message-ID: <CACRpkdY4xgtYVto8fM-TSGWbDEsJpj=Fx2zXHPaZTJ6m1JuWQw@mail.gmail.com>
+References: <20190522163428.7078-1-paul@crapouillou.net> <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
+ <20190621135608.GB11839@ulmo>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190624203114.93277-1-mka@chromium.org>
+In-Reply-To: <20190621135608.GB11839@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>, Paul Cercueil <paul@crapouillou.net>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, od@zcrc.me, linux-pwm@vger.kernel.org, "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, linux-fbdev@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Check if a brightness curve specified in the device tree is linear or
-not and set the corresponding property accordingly. This makes the
-scale type available to userspace via the 'scale' sysfs attribute.
+On Fri, Jun 21, 2019 at 3:56 PM Thierry Reding <thierry.reding@gmail.com> wrote:
 
-To determine if a curve is linear it is compared to a interpolated linear
-curve between min and max brightness. The curve is considered linear if
-no value deviates more than +/-5% of ${brightness_range} from their
-interpolated value.
+> I'm not sure this would actually work because I think the way that
+> pinctrl handles states both "init" and "idle" would be the same pointer
+> values and therefore pinctrl_init_done() would think the driver didn't
+> change away from the "init" state because it is the same pointer value
+> as the "idle" state that the driver selected.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
----
-Changes in v2:
-- use 128 (power of two) instead of 100 as factor for the slope
-- add comment about max quantization error
-- added Daniel's 'Acked-by' tag
----
- drivers/video/backlight/pwm_bl.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Right.
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index f067fe7aa35d..2297fb4af49d 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -404,6 +404,31 @@ int pwm_backlight_brightness_default(struct device *dev,
- }
- #endif
- 
-+static bool pwm_backlight_is_linear(struct platform_pwm_backlight_data *data)
-+{
-+	unsigned int nlevels = data->max_brightness + 1;
-+	unsigned int min_val = data->levels[0];
-+	unsigned int max_val = data->levels[nlevels - 1];
-+	/*
-+	 * Multiplying by 128 means that even in pathological cases such
-+	 * as (max_val - min_val) == nlevels the error at max_val is less
-+	 * than 1%.
-+	 */
-+	unsigned int slope = (128 * (max_val - min_val)) / nlevels;
-+	unsigned int margin = (max_val - min_val) / 20; /* 5% */
-+	int i;
-+
-+	for (i = 1; i < nlevels; i++) {
-+		unsigned int linear_value = min_val + ((i * slope) / 128);
-+		unsigned int delta = abs(linear_value - data->levels[i]);
-+
-+		if (delta > margin)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
- static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
- {
- 	struct device_node *node = pb->dev->of_node;
-@@ -567,6 +592,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 			pb->levels = data->levels;
- 		}
-+
-+		if (pwm_backlight_is_linear(data))
-+			props.scale = BACKLIGHT_SCALE_LINEAR;
-+		else
-+			props.scale = BACKLIGHT_SCALE_NON_LINEAR;
- 	} else if (!data->max_brightness) {
- 		/*
- 		 * If no brightness levels are provided and max_brightness is
--- 
-2.22.0.410.gd8fdbe21b5-goog
+> One way to work around
+> that would be to duplicate the "idle" state definition and associate one
+> instance of it with the "idle" state and the other with the "init"
+> state. At that point both states should be different (different pointer
+> values) and we'd get the init state selected automatically before probe,
+> select "idle" during probe and then the core will leave it alone. That's
+> of course ugly because we duplicate the pinctrl state in DT, but perhaps
+> it's the least ugly solution.
+
+If something needs special mockery and is not generic, I'd just
+come up with whatever string PWM needs, like
+"pwm-idle", "pwm-sleep", "pwm-init" etc instead of
+complicating the stuff done before probe(). These states are
+only handled there to make probe() simple in simple cases.
+
+> Adding Linus for visibility. Perhaps he can share some insight.
+
+I think Paul hashed it out. Or will.
+
+> On that note, I'm wondering if perhaps it'd make sense for pinctrl to
+> support some mode where a device would start out in idle mode. That is,
+> where pinctrl_bind_pins() would select the "idle" mode as the default
+> before probe. With something like that we could easily support this
+> use-case without glitching.
+
+I would say the driver can come up with whatever state it need for
+that and handle it explicitly. When there are so many of them that
+it warrants growing the device core, we can move it into
+drivers/base/pinctrl.c. But no upfront design.
+
+> I suppose yet another variant would be for the PWM backlight to not use
+> any of the standard pinctrl states at all. Instead it could just define
+> custom states, say "active" and "inactive".
+
+I would suggest doing that.
+
+> Looking at the code that
+> would prevent pinctrl_bind_pins() from doing anything with pinctrl
+> states and given the driver exact control over when each of the states
+> will be selected. That's somewhat suboptimal because we can't make use
+> of the pinctrl PM helpers and it'd require more boilerplate.
+
+The helpers are just for the dirt-simple cases anyway.
+At one point one developer thought that the "default" set up
+before probe would be the only thing any system would ever
+want to do with pin control. It seems like not.
+
+Yours,
+Linus Walleij
