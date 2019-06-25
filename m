@@ -1,14 +1,17 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered
  down
-Date: Tue, 25 Jun 2019 11:58:21 +0200
-Message-ID: <20190625095821.GD1516@ulmo>
+Date: Tue, 25 Jun 2019 21:19:50 +0200
+Message-ID: <20190625191950.2rvvputus4uavyjn@pengutronix.de>
 References: <20190522163428.7078-1-paul@crapouillou.net>
  <20190625074220.ckj7e7gwbszwknaa@pengutronix.de>
+ <20190625095821.GD1516@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1360809117=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190625074220.ckj7e7gwbszwknaa@pengutronix.de>
+Content-Disposition: inline
+In-Reply-To: <20190625095821.GD1516@ulmo>
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -18,173 +21,94 @@ List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, od@zcrc.me, kernel@pengutronix.de, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============1360809117==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="MAH+hnPXVZWQ5cD/"
-Content-Disposition: inline
-
-
---MAH+hnPXVZWQ5cD/
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jun 25, 2019 at 09:42:20AM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> On Wed, May 22, 2019 at 06:34:28PM +0200, Paul Cercueil wrote:
-> > When the driver probes, the PWM pin is automatically configured to its
-> > default state, which should be the "pwm" function. However, at this
-> > point we don't know the actual level of the pin, which may be active or
-> > inactive. As a result, if the driver probes without enabling the
-> > backlight, the PWM pin might be active, and the backlight would be
-> > lit way before being officially enabled.
->=20
-> I'm not sure I understand the problem completely here. Let me try to
-> summarize the problem you solve here:
->=20
-> The backlight device's default pinctrl contains the PWM function of the
-> PWM pin. As the PWM is (or at least might be) in an undefined state the
-> default pinctrl should only be switched to when it's clear if the
-> backlight should be on or off.
->=20
-> So you use the "init"-pinctrl to keep the PWM pin in some (undriven?)
-> state and by switching to "sleep" you prevent "default" getting active.
->=20
-> Did I get this right? If not, please correct me.
->=20
-> What is the PWM pin configured to in "init" in your case? Is the pinctrl
-> just empty? Or is it a gpio-mode (together with a gpio-hog)?
->=20
-> My thoughts to this is are:
->=20
->  a) This is a general problem that applies (I think) to most if not all
->     PWM consumers. If the PWM drives a motor, or makes your mobile
->     vibrate, or drives an LED, or a clk, the PWM shouldn't start
->     to do something before its consumer is ready.
-
-Yes, it shouldn't start before it is explicitly told to do so by the
-consumer. One exception is if the PWM was already set up by firmware
-to run. So I think in general terms we always want the PWM to remain
-in the current state upon probe.
-
-The atomic PWM API was designed with that in mind. The original use-
-case was to allow seamlessly taking over from a PWM regulator. In order
-to do so, the driver needs to be able to read back the hardware state
-and *not* initialize the PWM to some default state.
-
-I think that same approach can be extended to backlights. The driver's
-probe needs to determine what the current state of the backlight is and
-preferable not touch it. And that basically propagates all the way to
-the display driver, which ultimately needs to determine whether or not
-the display configuration (including the backlight) is enabled.
-
->  b) Thierry made it quite clear[1] that the PWM pin should be configured
->     in a pinctrl of the pwm device, not the backlight (or more general:
->     the consumer) device.
->=20
-> While I don't entirely agree with b) I think that even a) alone
-> justifies to think a bit more about the problem and preferably come up
-> with a solution that helps other consumers, too. Ideally if the
-> bootloader sets up the PWM to do something sensible, probing the
-> lowlevel PWM driver and the consumer driver should not interfere with
-> the bootloader's intention until the situation reaches a controlled
-> state. (I.e. if the backlight was left on by the bootloader to show a
-> nice logo, it should not flicker until a userspace program takes over
-> the display device.)
-
-Yes, exactly that.
-
-> A PWM is special in contrast to other devices as its intended behaviour
-> is only fixed once a consumer is present. Without a consumer it is
-> unknown if the PWM is inverted or not. And so the common approach that
-> pinctrl is setup by the device core only doesn't work without drawbacks
-> for PWMs.
-
-Actually I don't think PWMs are special in this regard. A GPIO, for
-example, can also be active-low or active-high, and without a consumer
-there's not enough context to determine which one it should be.
-
-So this is really a more general problem. Whenever you want to take over
-some bootloader configuration, basically all of your OS drivers have to
-be taught to handle it properly, which usually means not touching any
-hardware at probe time, preferably reading back the current hardware
-state and "apply the delta" once the consumer says so.
-
-Thierry
-
-> So if a PWM driver is probing and the PWM hardware already runs at say
-> constant one, some instance must define if the pin is supposed to be
-> configured in its "default" or "sleep" pinctrl. IMHO this isn't possible
-> in general without knowing the polarity of the PWM. (And even if it were
-> known that the polarity is inversed, it might be hard to say if your
-> PWM's hardware doesn't implement a disabled state and has to simulate
-> that using a 0% duty cycle.)
->=20
-> Another thing that complicates the matter is that at least pwm-imx27 has
-> the annoying property that disabling it (in hardware) drives the pin low
-> irrespective of the configured polarity. So if you want this type of
-> device to behave properly on disable, it must first drive a 0% duty
-> cycle, then switch the pinctrl state and only then disable the hardware.
-> This rules out that the lowlevel driver is unaware of the pinctrl stuff
-> which would be nice (or an inverted PWM won't be disabled in hardware or
-> you need an ugly sequence of callbacks to disable glitch-free). Also if
-> there is no sleep state, you better don't disable an inversed pwm-imx27
-> at all (in hardware)? (Alternatively we could drop the (undocumented)
-> guarantee that a disabled PWM results in the pin staying in its idle
-> level.)
->=20
-> What are the ways out? I think that if we go and apply your patch, we
-> should at least write some documentation with the details to provide some
-> "standard" way to solve similar problems.
->=20
-> Also it might be a good idea to let a PWM know if it is inverted or not
-> such that even without the presence of a consumer it can determine if
-> the hardware is active or not at probe time (in most cases at least).
->=20
-> Best regards
-> Uwe
->=20
-> [1] https://www.spinics.net/lists/linux-pwm/msg08246.html
->=20
-> --=20
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-
---MAH+hnPXVZWQ5cD/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl0R8DsACgkQ3SOs138+
-s6G4SA/9G/RR8wadIG+NTTjQjNlcqNQAxMww/G0ZY3WkofecUPpDWm6oRHkBPqQW
-2nZeOKQBmiisMDXvXTCEljq/i+3dtHxsPlGtEHdCsnBsf6YVE67UGx3F1q6jwGLn
-SUxgcwxmtnV395YKmgF2QR90m+HsVynAm4rYI9CoAXwVBrsStbH71KVW1h3H6sSU
-EJUJ+ZcmWoidjKu6hNlUzfXPEkOnB9gLQTSOzHadng+4Wd9MARX7z4nDIalaobDS
-hNWVEBf0telxb5HZyBJRYx9QAuzBO+UJrbn6Gcy2NuFON4KCfqwF/ftfgBbEgt4A
-xDKs/HzcjfXkFYkPaughMYpbxMECP6yRg66GBs6poDIhMtGTNDdPXzSatAvwiCtT
-Htu0PMzBljY6445V+gHNgmHK1P86SiLc+xW99V9TWl5yFAjJkMLV9j4v1OfGLnPh
-LO4tzlltQp+Gkfv3zIYfAN78azC4pICOwbTUscwnD5oWoRpTEPJosIeHMY/7tpTs
-YC1KeT9pGd8BuVYd8F+sIMe8LDqAJ95gqsEc1KQTLH+BQjkRk3udpxZd2KuJ0doj
-d2ugvpgPy6r2o7PviB1DZlP1Fh7qAQiSQYDtCGGjipY1Esm7YcAjRo9RQF6aB+io
-2N0M1K5VYxwD0TosVnTPqKtQ+sFUPiysL1CCuXnx5Ux4+DvQfos=
-=lyNf
------END PGP SIGNATURE-----
-
---MAH+hnPXVZWQ5cD/--
-
---===============1360809117==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
-
---===============1360809117==--
+T24gVHVlLCBKdW4gMjUsIDIwMTkgYXQgMTE6NTg6MjFBTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcg
+d3JvdGU6Cj4gT24gVHVlLCBKdW4gMjUsIDIwMTkgYXQgMDk6NDI6MjBBTSArMDIwMCwgVXdlIEts
+ZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gPiBPbiBXZWQsIE1heSAyMiwgMjAxOSBhdCAwNjozNDoyOFBN
+ICswMjAwLCBQYXVsIENlcmN1ZWlsIHdyb3RlOgo+ID4gPiBXaGVuIHRoZSBkcml2ZXIgcHJvYmVz
+LCB0aGUgUFdNIHBpbiBpcyBhdXRvbWF0aWNhbGx5IGNvbmZpZ3VyZWQgdG8gaXRzCj4gPiA+IGRl
+ZmF1bHQgc3RhdGUsIHdoaWNoIHNob3VsZCBiZSB0aGUgInB3bSIgZnVuY3Rpb24uIEhvd2V2ZXIs
+IGF0IHRoaXMKPiA+ID4gcG9pbnQgd2UgZG9uJ3Qga25vdyB0aGUgYWN0dWFsIGxldmVsIG9mIHRo
+ZSBwaW4sIHdoaWNoIG1heSBiZSBhY3RpdmUgb3IKPiA+ID4gaW5hY3RpdmUuIEFzIGEgcmVzdWx0
+LCBpZiB0aGUgZHJpdmVyIHByb2JlcyB3aXRob3V0IGVuYWJsaW5nIHRoZQo+ID4gPiBiYWNrbGln
+aHQsIHRoZSBQV00gcGluIG1pZ2h0IGJlIGFjdGl2ZSwgYW5kIHRoZSBiYWNrbGlnaHQgd291bGQg
+YmUKPiA+ID4gbGl0IHdheSBiZWZvcmUgYmVpbmcgb2ZmaWNpYWxseSBlbmFibGVkLgo+ID4gCj4g
+PiBJJ20gbm90IHN1cmUgSSB1bmRlcnN0YW5kIHRoZSBwcm9ibGVtIGNvbXBsZXRlbHkgaGVyZS4g
+TGV0IG1lIHRyeSB0bwo+ID4gc3VtbWFyaXplIHRoZSBwcm9ibGVtIHlvdSBzb2x2ZSBoZXJlOgo+
+ID4gCj4gPiBUaGUgYmFja2xpZ2h0IGRldmljZSdzIGRlZmF1bHQgcGluY3RybCBjb250YWlucyB0
+aGUgUFdNIGZ1bmN0aW9uIG9mIHRoZQo+ID4gUFdNIHBpbi4gQXMgdGhlIFBXTSBpcyAob3IgYXQg
+bGVhc3QgbWlnaHQgYmUpIGluIGFuIHVuZGVmaW5lZCBzdGF0ZSB0aGUKPiA+IGRlZmF1bHQgcGlu
+Y3RybCBzaG91bGQgb25seSBiZSBzd2l0Y2hlZCB0byB3aGVuIGl0J3MgY2xlYXIgaWYgdGhlCj4g
+PiBiYWNrbGlnaHQgc2hvdWxkIGJlIG9uIG9yIG9mZi4KPiA+IAo+ID4gU28geW91IHVzZSB0aGUg
+ImluaXQiLXBpbmN0cmwgdG8ga2VlcCB0aGUgUFdNIHBpbiBpbiBzb21lICh1bmRyaXZlbj8pCj4g
+PiBzdGF0ZSBhbmQgYnkgc3dpdGNoaW5nIHRvICJzbGVlcCIgeW91IHByZXZlbnQgImRlZmF1bHQi
+IGdldHRpbmcgYWN0aXZlLgo+ID4gCj4gPiBEaWQgSSBnZXQgdGhpcyByaWdodD8gSWYgbm90LCBw
+bGVhc2UgY29ycmVjdCBtZS4KPiA+IAo+ID4gV2hhdCBpcyB0aGUgUFdNIHBpbiBjb25maWd1cmVk
+IHRvIGluICJpbml0IiBpbiB5b3VyIGNhc2U/IElzIHRoZSBwaW5jdHJsCj4gPiBqdXN0IGVtcHR5
+PyBPciBpcyBpdCBhIGdwaW8tbW9kZSAodG9nZXRoZXIgd2l0aCBhIGdwaW8taG9nKT8KPiA+IAo+
+ID4gTXkgdGhvdWdodHMgdG8gdGhpcyBpcyBhcmU6Cj4gPiAKPiA+ICBhKSBUaGlzIGlzIGEgZ2Vu
+ZXJhbCBwcm9ibGVtIHRoYXQgYXBwbGllcyAoSSB0aGluaykgdG8gbW9zdCBpZiBub3QgYWxsCj4g
+PiAgICAgUFdNIGNvbnN1bWVycy4gSWYgdGhlIFBXTSBkcml2ZXMgYSBtb3Rvciwgb3IgbWFrZXMg
+eW91ciBtb2JpbGUKPiA+ICAgICB2aWJyYXRlLCBvciBkcml2ZXMgYW4gTEVELCBvciBhIGNsaywg
+dGhlIFBXTSBzaG91bGRuJ3Qgc3RhcnQKPiA+ICAgICB0byBkbyBzb21ldGhpbmcgYmVmb3JlIGl0
+cyBjb25zdW1lciBpcyByZWFkeS4KPiAKPiBZZXMsIGl0IHNob3VsZG4ndCBzdGFydCBiZWZvcmUg
+aXQgaXMgZXhwbGljaXRseSB0b2xkIHRvIGRvIHNvIGJ5IHRoZQo+IGNvbnN1bWVyLiBPbmUgZXhj
+ZXB0aW9uIGlzIGlmIHRoZSBQV00gd2FzIGFscmVhZHkgc2V0IHVwIGJ5IGZpcm13YXJlCj4gdG8g
+cnVuLiBTbyBJIHRoaW5rIGluIGdlbmVyYWwgdGVybXMgd2UgYWx3YXlzIHdhbnQgdGhlIFBXTSB0
+byByZW1haW4KPiBpbiB0aGUgY3VycmVudCBzdGF0ZSB1cG9uIHByb2JlLgoKSW4gdGhlIGVuZCB0
+aGlzIG1lYW5zIHRoYXQgYWxzbyBwaW5tdXhpbmcgc2hvdWxkIG5vdCBiZSB0b3VjaGVkIHdoZW4g
+dGhlClBXTSBkZXZpY2UgcHJvYmVzLgoKPiBUaGUgYXRvbWljIFBXTSBBUEkgd2FzIGRlc2lnbmVk
+IHdpdGggdGhhdCBpbiBtaW5kLiBUaGUgb3JpZ2luYWwgdXNlLQo+IGNhc2Ugd2FzIHRvIGFsbG93
+IHNlYW1sZXNzbHkgdGFraW5nIG92ZXIgZnJvbSBhIFBXTSByZWd1bGF0b3IuIEluIG9yZGVyCj4g
+dG8gZG8gc28sIHRoZSBkcml2ZXIgbmVlZHMgdG8gYmUgYWJsZSB0byByZWFkIGJhY2sgdGhlIGhh
+cmR3YXJlIHN0YXRlCj4gYW5kICpub3QqIGluaXRpYWxpemUgdGhlIFBXTSB0byBzb21lIGRlZmF1
+bHQgc3RhdGUuCj4gCj4gSSB0aGluayB0aGF0IHNhbWUgYXBwcm9hY2ggY2FuIGJlIGV4dGVuZGVk
+IHRvIGJhY2tsaWdodHMuIFRoZSBkcml2ZXIncwo+IHByb2JlIG5lZWRzIHRvIGRldGVybWluZSB3
+aGF0IHRoZSBjdXJyZW50IHN0YXRlIG9mIHRoZSBiYWNrbGlnaHQgaXMgYW5kCj4gcHJlZmVyYWJs
+ZSBub3QgdG91Y2ggaXQuIEFuZCB0aGF0IGJhc2ljYWxseSBwcm9wYWdhdGVzIGFsbCB0aGUgd2F5
+IHRvCj4gdGhlIGRpc3BsYXkgZHJpdmVyLCB3aGljaCB1bHRpbWF0ZWx5IG5lZWRzIHRvIGRldGVy
+bWluZSB3aGV0aGVyIG9yIG5vdAo+IHRoZSBkaXNwbGF5IGNvbmZpZ3VyYXRpb24gKGluY2x1ZGlu
+ZyB0aGUgYmFja2xpZ2h0KSBpcyBlbmFibGVkLgoKQXJlIHlvdSBhbWJpdGlvdXMgZW5vdWdoIHRv
+IGhhbmRsZSBjYXNlcyBsaWtlOiBQV00gaXMgcnVubmluZyAobWF5YmUKYmVjYXVzZSBpdCBjYW5u
+b3QgYmUgZGlzYWJsZWQpLCBidXQgdGhlIHBpbiBpcyBtdXhlZCB0byBhbiAidW5jb25uZWN0ZWQi
+CmNvbmZpZ3VyYXRpb24gc3VjaCB0aGF0IHRoZSBwaW4gZG9lc24ndCBvc2NpbGxhdGU/IEluIHRo
+aXMgY2FzZSB5b3UnZApuZWVkIGFuIGluc3BlY3Rpb24gZnVuY3Rpb24gZm9yIHBpbm11eGluZy4K
+Cj4gPiAgYikgVGhpZXJyeSBtYWRlIGl0IHF1aXRlIGNsZWFyWzFdIHRoYXQgdGhlIFBXTSBwaW4g
+c2hvdWxkIGJlIGNvbmZpZ3VyZWQKPiA+ICAgICBpbiBhIHBpbmN0cmwgb2YgdGhlIHB3bSBkZXZp
+Y2UsIG5vdCB0aGUgYmFja2xpZ2h0IChvciBtb3JlIGdlbmVyYWw6Cj4gPiAgICAgdGhlIGNvbnN1
+bWVyKSBkZXZpY2UuCj4gPiAKPiA+IFdoaWxlIEkgZG9uJ3QgZW50aXJlbHkgYWdyZWUgd2l0aCBi
+KSBJIHRoaW5rIHRoYXQgZXZlbiBhKSBhbG9uZQo+ID4ganVzdGlmaWVzIHRvIHRoaW5rIGEgYml0
+IG1vcmUgYWJvdXQgdGhlIHByb2JsZW0gYW5kIHByZWZlcmFibHkgY29tZSB1cAo+ID4gd2l0aCBh
+IHNvbHV0aW9uIHRoYXQgaGVscHMgb3RoZXIgY29uc3VtZXJzLCB0b28uIElkZWFsbHkgaWYgdGhl
+Cj4gPiBib290bG9hZGVyIHNldHMgdXAgdGhlIFBXTSB0byBkbyBzb21ldGhpbmcgc2Vuc2libGUs
+IHByb2JpbmcgdGhlCj4gPiBsb3dsZXZlbCBQV00gZHJpdmVyIGFuZCB0aGUgY29uc3VtZXIgZHJp
+dmVyIHNob3VsZCBub3QgaW50ZXJmZXJlIHdpdGgKPiA+IHRoZSBib290bG9hZGVyJ3MgaW50ZW50
+aW9uIHVudGlsIHRoZSBzaXR1YXRpb24gcmVhY2hlcyBhIGNvbnRyb2xsZWQKPiA+IHN0YXRlLiAo
+SS5lLiBpZiB0aGUgYmFja2xpZ2h0IHdhcyBsZWZ0IG9uIGJ5IHRoZSBib290bG9hZGVyIHRvIHNo
+b3cgYQo+ID4gbmljZSBsb2dvLCBpdCBzaG91bGQgbm90IGZsaWNrZXIgdW50aWwgYSB1c2Vyc3Bh
+Y2UgcHJvZ3JhbSB0YWtlcyBvdmVyCj4gPiB0aGUgZGlzcGxheSBkZXZpY2UuKQo+IAo+IFllcywg
+ZXhhY3RseSB0aGF0Lgo+IAo+ID4gQSBQV00gaXMgc3BlY2lhbCBpbiBjb250cmFzdCB0byBvdGhl
+ciBkZXZpY2VzIGFzIGl0cyBpbnRlbmRlZCBiZWhhdmlvdXIKPiA+IGlzIG9ubHkgZml4ZWQgb25j
+ZSBhIGNvbnN1bWVyIGlzIHByZXNlbnQuIFdpdGhvdXQgYSBjb25zdW1lciBpdCBpcwo+ID4gdW5r
+bm93biBpZiB0aGUgUFdNIGlzIGludmVydGVkIG9yIG5vdC4gQW5kIHNvIHRoZSBjb21tb24gYXBw
+cm9hY2ggdGhhdAo+ID4gcGluY3RybCBpcyBzZXR1cCBieSB0aGUgZGV2aWNlIGNvcmUgb25seSBk
+b2Vzbid0IHdvcmsgd2l0aG91dCBkcmF3YmFja3MKPiA+IGZvciBQV01zLgo+IAo+IEFjdHVhbGx5
+IEkgZG9uJ3QgdGhpbmsgUFdNcyBhcmUgc3BlY2lhbCBpbiB0aGlzIHJlZ2FyZC4gQSBHUElPLCBm
+b3IKPiBleGFtcGxlLCBjYW4gYWxzbyBiZSBhY3RpdmUtbG93IG9yIGFjdGl2ZS1oaWdoLCBhbmQg
+d2l0aG91dCBhIGNvbnN1bWVyCj4gdGhlcmUncyBub3QgZW5vdWdoIGNvbnRleHQgdG8gZGV0ZXJt
+aW5lIHdoaWNoIG9uZSBpdCBzaG91bGQgYmUuCgpSaWdodCwgUFdNcyBhcmUgbW9yZSBzaW1pbGFy
+IHRvIEdQSU9zIHRoYW4gdG8gKHNheSkgYmFja2xpZ2h0IGRldmljZXMuCldpdGggeW91ciByZXF1
+ZXN0IHRvIGNvbmZpZ3VyZSB0aGUgcGlubXV4IGZvciBhIFBXTSBwaW4gd2l0aCB0aGUgUFdNCmRl
+dmljZSBpbnN0ZWFkIG9mIGl0cyBjb25zdW1lciB5b3UncmUgbWFraW5nIHNvbWUgdGhpbmdzIG1v
+cmUgZGlmZmljdWx0LgpGb3IgR1BJT3MgaXQncyBxdWl0ZSBjb21tb24gdGhhdCB0aGV5IGFyZSBt
+dXhlZCBmcm9tIHRoZWlyIGNvbnN1bWVyCmJlY2F1c2UgdGhlcmUgdGhlIHNhbWUgcHJvYmxlbXMg
+YXJlIHByZXNlbnQuCgpCZXN0IHJlZ2FyZHMKVXdlCgotLSAKUGVuZ3V0cm9uaXggZS5LLiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHwgVXdlIEtsZWluZS1Lw7ZuaWcgICAgICAgICAgICB8Cklu
+ZHVzdHJpYWwgTGludXggU29sdXRpb25zICAgICAgICAgICAgICAgICB8IGh0dHA6Ly93d3cucGVu
+Z3V0cm9uaXguZGUvICB8Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9w
+Lm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1k
+ZXZlbA==
