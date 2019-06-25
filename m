@@ -1,8 +1,8 @@
 Return-Path: <enric.balletbo@collabora.com>
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v3 03/11] mfd / platform: cros_ec: Miscellaneous character device to talk with the EC
-Date: Tue, 25 Jun 2019 11:38:11 +0200
-Message-Id: <20190625093819.10190-4-enric.balletbo@collabora.com>
+Subject: [PATCH v3 04/11] mfd: cros_ec: Switch to use the new cros-ec-chardev driver
+Date: Tue, 25 Jun 2019 11:38:12 +0200
+Message-Id: <20190625093819.10190-5-enric.balletbo@collabora.com>
 In-Reply-To: <20190625093819.10190-1-enric.balletbo@collabora.com>
 References: <20190625093819.10190-1-enric.balletbo@collabora.com>
 MIME-Version: 1.0
@@ -11,408 +11,367 @@ List-ID: <linux-pwm.vger.kernel.org>
 To: linux-kernel@vger.kernel.org
 Cc: Jonathan Corbet <corbet@lwn.net>, Russell King <linux@armlinux.org.uk>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Guenter Roeck <groeck@chromium.org>, gwendal@chromium.org, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Lee Jones <lee.jones@linaro.org>, Sebastian Reichel <sre@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Cheng-Yi Chiang <cychiang@chromium.org>, Patrick Lai <plai@codeaurora.org>, Banajit Goswami <bgoswami@codeaurora.org>, Tony Lindgren <tony@atomide.com>, Wolfram Sang <wsa@the-dreams.de>, Neil Armstrong <narmstrong@baylibre.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-input@vger.kernel.org, linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, linux-media@vger.kernel.org, linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org, alsa-devel@alsa-project.org, kernel@collabora.com
 
-That's a driver to talk with the ChromeOS Embedded Controller via a
-miscellaneous character device, it creates an entry in /dev for every
-instance and implements basic file operations for communicating with the
-Embedded Controller with an userspace application. The API is moved to
-the uapi folder, which is supposed to contain the user space API of the
-kernel.
-
-Note that this will replace current character device interface
-implemented in the cros-ec-dev driver in the MFD subsystem. The idea is
-to move all the functionality that extends the bounds of what MFD was
-designed to platform/chrome subsystem.
+With the purpose of remove the things that far extends the bounds of
+what a MFD was designed to do, instantiate the new platform misc
+cros-ec-chardev driver and get rid of all the unneeded code. After this
+patch the misc chardev driver is a sub-device of the MFD, and all the
+new file operations should be implemented there.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Tested-by: Gwendal Grignou <gwendal@chromium.org>
 ---
 
-Changes in v3:
-- Fix 'linux/mfd/cros_ec.h' is not exported (reported by lkp)
+Changes in v3: None
+Changes in v2: None
 
-Changes in v2:
-- Remove the list, and the lock, as are not needed (Greg Kroah-Hartman)
-- Remove dev_info in probe, anyway we will see the chardev or not if the
-  probe fails (Greg Kroah-Hartman)
+ drivers/mfd/cros_ec_dev.c   | 219 +-----------------------------------
+ include/linux/mfd/cros_ec.h |   2 -
+ 2 files changed, 5 insertions(+), 216 deletions(-)
 
- Documentation/ioctl/ioctl-number.txt          |   2 +-
- drivers/mfd/cros_ec_dev.c                     |   4 +-
- drivers/platform/chrome/Kconfig               |  11 +
- drivers/platform/chrome/Makefile              |   1 +
- drivers/platform/chrome/cros_ec_chardev.c     | 253 ++++++++++++++++++
- .../uapi/linux/cros_ec_chardev.h              |  21 +-
- 6 files changed, 273 insertions(+), 19 deletions(-)
- create mode 100644 drivers/platform/chrome/cros_ec_chardev.c
- rename drivers/mfd/cros_ec_dev.h => include/uapi/linux/cros_ec_chardev.h (50%)
-
-diff --git a/Documentation/ioctl/ioctl-number.txt b/Documentation/ioctl/ioctl-number.txt
-index c9558146ac58..8bd7907ee36d 100644
---- a/Documentation/ioctl/ioctl-number.txt
-+++ b/Documentation/ioctl/ioctl-number.txt
-@@ -340,7 +340,7 @@ Code  Seq#(hex)	Include File		Comments
- 0xDD	00-3F	ZFCP device driver	see drivers/s390/scsi/
- 					<mailto:aherrman@de.ibm.com>
- 0xE5	00-3F	linux/fuse.h
--0xEC	00-01	drivers/platform/chrome/cros_ec_dev.h	ChromeOS EC driver
-+0xEC	00-01	include/uapi/linux/cros_ec_chardev.h	ChromeOS EC driver
- 0xF3	00-3F	drivers/usb/misc/sisusbvga/sisusb.h	sisfb (in development)
- 					<mailto:thomas@winischhofer.net>
- 0xF4	00-1F	video/mbxfb.h		mbxfb
 diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
-index d992365472b8..16962d4e27c0 100644
+index 16962d4e27c0..d465bcde9fc4 100644
 --- a/drivers/mfd/cros_ec_dev.c
 +++ b/drivers/mfd/cros_ec_dev.c
-@@ -19,6 +19,8 @@
+@@ -17,7 +17,6 @@
+  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
  
- #include <linux/fs.h>
+-#include <linux/fs.h>
  #include <linux/mfd/core.h>
-+#include <linux/mfd/cros_ec.h>
-+#include <linux/mfd/cros_ec_commands.h>
- #include <linux/module.h>
+ #include <linux/mfd/cros_ec.h>
+ #include <linux/mfd/cros_ec_commands.h>
+@@ -25,68 +24,15 @@
  #include <linux/mod_devicetable.h>
  #include <linux/of_platform.h>
-@@ -27,7 +29,7 @@
+ #include <linux/platform_device.h>
+-#include <linux/pm.h>
  #include <linux/slab.h>
- #include <linux/uaccess.h>
- 
--#include "cros_ec_dev.h"
-+#include <uapi/linux/cros_ec_chardev.h>
+-#include <linux/uaccess.h>
+-
+-#include <uapi/linux/cros_ec_chardev.h>
  
  #define DRV_NAME "cros-ec-dev"
  
-diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
-index 1e7a10500b3f..221e709358c0 100644
---- a/drivers/platform/chrome/Kconfig
-+++ b/drivers/platform/chrome/Kconfig
-@@ -133,6 +133,17 @@ config CROS_KBD_LED_BACKLIGHT
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called cros_kbd_led_backlight.
+-/* Device variables */
+-#define CROS_MAX_DEV 128
+-static int ec_major;
+-
+ static struct class cros_class = {
+ 	.owner          = THIS_MODULE,
+ 	.name           = "chromeos",
+ };
  
-+config CROS_EC_CHARDEV
-+	tristate "ChromeOS EC miscdevice"
-+	depends on MFD_CROS_EC_CHARDEV
-+	default MFD_CROS_EC_CHARDEV
-+	help
-+	  This driver adds file operations support to talk with the
-+	  ChromeOS EC from userspace via a character device.
+-/* Basic communication */
+-static int ec_get_version(struct cros_ec_dev *ec, char *str, int maxlen)
+-{
+-	struct ec_response_get_version *resp;
+-	static const char * const current_image_name[] = {
+-		"unknown", "read-only", "read-write", "invalid",
+-	};
+-	struct cros_ec_command *msg;
+-	int ret;
+-
+-	msg = kmalloc(sizeof(*msg) + sizeof(*resp), GFP_KERNEL);
+-	if (!msg)
+-		return -ENOMEM;
+-
+-	msg->version = 0;
+-	msg->command = EC_CMD_GET_VERSION + ec->cmd_offset;
+-	msg->insize = sizeof(*resp);
+-	msg->outsize = 0;
+-
+-	ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
+-	if (ret < 0)
+-		goto exit;
+-
+-	if (msg->result != EC_RES_SUCCESS) {
+-		snprintf(str, maxlen,
+-			 "%s\nUnknown EC version: EC returned %d\n",
+-			 CROS_EC_DEV_VERSION, msg->result);
+-		ret = -EINVAL;
+-		goto exit;
+-	}
+-
+-	resp = (struct ec_response_get_version *)msg->data;
+-	if (resp->current_image >= ARRAY_SIZE(current_image_name))
+-		resp->current_image = 3; /* invalid */
+-
+-	snprintf(str, maxlen, "%s\n%s\n%s\n%s\n", CROS_EC_DEV_VERSION,
+-		 resp->version_string_ro, resp->version_string_rw,
+-		 current_image_name[resp->current_image]);
+-
+-	ret = 0;
+-exit:
+-	kfree(msg);
+-	return ret;
+-}
+-
+ static int cros_ec_check_features(struct cros_ec_dev *ec, int feature)
+ {
+ 	struct cros_ec_command *msg;
+@@ -122,142 +68,6 @@ static int cros_ec_check_features(struct cros_ec_dev *ec, int feature)
+ 	return ec->features[feature / 32] & EC_FEATURE_MASK_0(feature);
+ }
+ 
+-/* Device file ops */
+-static int ec_device_open(struct inode *inode, struct file *filp)
+-{
+-	struct cros_ec_dev *ec = container_of(inode->i_cdev,
+-					      struct cros_ec_dev, cdev);
+-	filp->private_data = ec;
+-	nonseekable_open(inode, filp);
+-	return 0;
+-}
+-
+-static int ec_device_release(struct inode *inode, struct file *filp)
+-{
+-	return 0;
+-}
+-
+-static ssize_t ec_device_read(struct file *filp, char __user *buffer,
+-			      size_t length, loff_t *offset)
+-{
+-	struct cros_ec_dev *ec = filp->private_data;
+-	char msg[sizeof(struct ec_response_get_version) +
+-		 sizeof(CROS_EC_DEV_VERSION)];
+-	size_t count;
+-	int ret;
+-
+-	if (*offset != 0)
+-		return 0;
+-
+-	ret = ec_get_version(ec, msg, sizeof(msg));
+-	if (ret)
+-		return ret;
+-
+-	count = min(length, strlen(msg));
+-
+-	if (copy_to_user(buffer, msg, count))
+-		return -EFAULT;
+-
+-	*offset = count;
+-	return count;
+-}
+-
+-/* Ioctls */
+-static long ec_device_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
+-{
+-	long ret;
+-	struct cros_ec_command u_cmd;
+-	struct cros_ec_command *s_cmd;
+-
+-	if (copy_from_user(&u_cmd, arg, sizeof(u_cmd)))
+-		return -EFAULT;
+-
+-	if ((u_cmd.outsize > EC_MAX_MSG_BYTES) ||
+-	    (u_cmd.insize > EC_MAX_MSG_BYTES))
+-		return -EINVAL;
+-
+-	s_cmd = kmalloc(sizeof(*s_cmd) + max(u_cmd.outsize, u_cmd.insize),
+-			GFP_KERNEL);
+-	if (!s_cmd)
+-		return -ENOMEM;
+-
+-	if (copy_from_user(s_cmd, arg, sizeof(*s_cmd) + u_cmd.outsize)) {
+-		ret = -EFAULT;
+-		goto exit;
+-	}
+-
+-	if (u_cmd.outsize != s_cmd->outsize ||
+-	    u_cmd.insize != s_cmd->insize) {
+-		ret = -EINVAL;
+-		goto exit;
+-	}
+-
+-	s_cmd->command += ec->cmd_offset;
+-	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
+-	/* Only copy data to userland if data was received. */
+-	if (ret < 0)
+-		goto exit;
+-
+-	if (copy_to_user(arg, s_cmd, sizeof(*s_cmd) + s_cmd->insize))
+-		ret = -EFAULT;
+-exit:
+-	kfree(s_cmd);
+-	return ret;
+-}
+-
+-static long ec_device_ioctl_readmem(struct cros_ec_dev *ec, void __user *arg)
+-{
+-	struct cros_ec_device *ec_dev = ec->ec_dev;
+-	struct cros_ec_readmem s_mem = { };
+-	long num;
+-
+-	/* Not every platform supports direct reads */
+-	if (!ec_dev->cmd_readmem)
+-		return -ENOTTY;
+-
+-	if (copy_from_user(&s_mem, arg, sizeof(s_mem)))
+-		return -EFAULT;
+-
+-	num = ec_dev->cmd_readmem(ec_dev, s_mem.offset, s_mem.bytes,
+-				  s_mem.buffer);
+-	if (num <= 0)
+-		return num;
+-
+-	if (copy_to_user((void __user *)arg, &s_mem, sizeof(s_mem)))
+-		return -EFAULT;
+-
+-	return num;
+-}
+-
+-static long ec_device_ioctl(struct file *filp, unsigned int cmd,
+-			    unsigned long arg)
+-{
+-	struct cros_ec_dev *ec = filp->private_data;
+-
+-	if (_IOC_TYPE(cmd) != CROS_EC_DEV_IOC)
+-		return -ENOTTY;
+-
+-	switch (cmd) {
+-	case CROS_EC_DEV_IOCXCMD:
+-		return ec_device_ioctl_xcmd(ec, (void __user *)arg);
+-	case CROS_EC_DEV_IOCRDMEM:
+-		return ec_device_ioctl_readmem(ec, (void __user *)arg);
+-	}
+-
+-	return -ENOTTY;
+-}
+-
+-/* Module initialization */
+-static const struct file_operations fops = {
+-	.open = ec_device_open,
+-	.release = ec_device_release,
+-	.read = ec_device_read,
+-	.unlocked_ioctl = ec_device_ioctl,
+-#ifdef CONFIG_COMPAT
+-	.compat_ioctl = ec_device_ioctl,
+-#endif
+-};
+-
+ static void cros_ec_class_release(struct device *dev)
+ {
+ 	kfree(to_cros_ec_dev(dev));
+@@ -399,6 +209,7 @@ static const struct mfd_cell cros_usbpd_charger_cells[] = {
+ };
+ 
+ static const struct mfd_cell cros_ec_platform_cells[] = {
++	{ .name = "cros-ec-chardev" },
+ 	{ .name = "cros-ec-debugfs" },
+ 	{ .name = "cros-ec-lightbar" },
+ 	{ .name = "cros-ec-sysfs" },
+@@ -426,7 +237,6 @@ static int ec_device_probe(struct platform_device *pdev)
+ 	ec->features[0] = -1U; /* Not cached yet */
+ 	ec->features[1] = -1U; /* Not cached yet */
+ 	device_initialize(&ec->class_dev);
+-	cdev_init(&ec->cdev, &fops);
+ 
+ 	/* Check whether this is actually a Fingerprint MCU rather than an EC */
+ 	if (cros_ec_check_features(ec, EC_FEATURE_FINGERPRINT)) {
+@@ -463,10 +273,7 @@ static int ec_device_probe(struct platform_device *pdev)
+ 
+ 	/*
+ 	 * Add the class device
+-	 * Link to the character device for creating the /dev entry
+-	 * in devtmpfs.
+ 	 */
+-	ec->class_dev.devt = MKDEV(ec_major, pdev->id);
+ 	ec->class_dev.class = &cros_class;
+ 	ec->class_dev.parent = dev;
+ 	ec->class_dev.release = cros_ec_class_release;
+@@ -477,6 +284,10 @@ static int ec_device_probe(struct platform_device *pdev)
+ 		goto failed;
+ 	}
+ 
++	retval = device_add(&ec->class_dev);
++	if (retval)
++		goto failed;
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called cros_ec_chardev.
-+
- config CROS_EC_LIGHTBAR
- 	tristate "Chromebook Pixel's lightbar support"
- 	depends on MFD_CROS_EC_CHARDEV
-diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
-index f69e0be98bd6..e6758e967ac5 100644
---- a/drivers/platform/chrome/Makefile
-+++ b/drivers/platform/chrome/Makefile
-@@ -15,6 +15,7 @@ cros_ec_lpcs-$(CONFIG_CROS_EC_LPC_MEC)	+= cros_ec_lpc_mec.o
- obj-$(CONFIG_CROS_EC_LPC)		+= cros_ec_lpcs.o
- obj-$(CONFIG_CROS_EC_PROTO)		+= cros_ec_proto.o cros_ec_trace.o
- obj-$(CONFIG_CROS_KBD_LED_BACKLIGHT)	+= cros_kbd_led_backlight.o
-+obj-$(CONFIG_CROS_EC_CHARDEV)		+= cros_ec_chardev.o
- obj-$(CONFIG_CROS_EC_LIGHTBAR)		+= cros_ec_lightbar.o
- obj-$(CONFIG_CROS_EC_VBC)		+= cros_ec_vbc.o
- obj-$(CONFIG_CROS_EC_DEBUGFS)		+= cros_ec_debugfs.o
-diff --git a/drivers/platform/chrome/cros_ec_chardev.c b/drivers/platform/chrome/cros_ec_chardev.c
-new file mode 100644
-index 000000000000..ce77839b0dcb
---- /dev/null
-+++ b/drivers/platform/chrome/cros_ec_chardev.c
-@@ -0,0 +1,253 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Miscellaneous character driver for ChromeOS Embedded Controller
-+ *
-+ * Copyright 2014 Google, Inc.
-+ * Copyright 2019 Google LLC
-+ *
-+ * This file is a rework and part of the code is ported from
-+ * drivers/mfd/cros_ec_dev.c that was originally written by
-+ * Bill Richardson.
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/device.h>
-+#include <linux/fs.h>
-+#include <linux/mfd/cros_ec.h>
-+#include <linux/mfd/cros_ec_commands.h>
-+#include <linux/miscdevice.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/uaccess.h>
-+
-+#include <uapi/linux/cros_ec_chardev.h>
-+
-+#define DRV_NAME		"cros-ec-chardev"
-+
-+struct chardev_data {
-+	struct cros_ec_dev *ec_dev;
-+	struct miscdevice misc;
-+};
-+
-+static int ec_get_version(struct cros_ec_dev *ec, char *str, int maxlen)
-+{
-+	static const char * const current_image_name[] = {
-+		"unknown", "read-only", "read-write", "invalid",
-+	};
-+	struct ec_response_get_version *resp;
-+	struct cros_ec_command *msg;
-+	int ret;
-+
-+	msg = kzalloc(sizeof(*msg) + sizeof(*resp), GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	msg->command = EC_CMD_GET_VERSION + ec->cmd_offset;
-+	msg->insize = sizeof(*resp);
-+
-+	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
-+	if (ret < 0) {
-+		snprintf(str, maxlen,
-+			 "Unknown EC version, returned error: %d\n",
-+			 msg->result);
-+		goto exit;
-+	}
-+
-+	resp = (struct ec_response_get_version *)msg->data;
-+	if (resp->current_image >= ARRAY_SIZE(current_image_name))
-+		resp->current_image = 3; /* invalid */
-+
-+	snprintf(str, maxlen, "%s\n%s\n%s\n",
-+		 resp->version_string_ro,
-+		 resp->version_string_rw,
-+		 current_image_name[resp->current_image]);
-+
-+	ret = 0;
-+exit:
-+	kfree(msg);
-+	return ret;
-+}
-+
-+/*
-+ * Device file ops
-+ */
-+static int cros_ec_chardev_open(struct inode *inode, struct file *filp)
-+{
-+	struct miscdevice *mdev = filp->private_data;
-+	struct cros_ec_dev *ec_dev = dev_get_drvdata(mdev->parent);
-+
-+	filp->private_data = ec_dev;
-+	nonseekable_open(inode, filp);
-+
-+	return 0;
-+}
-+
-+static ssize_t cros_ec_chardev_read(struct file *filp, char __user *buffer,
-+				     size_t length, loff_t *offset)
-+{
-+	char msg[sizeof(struct ec_response_get_version) +
-+		 sizeof(CROS_EC_DEV_VERSION)];
-+	struct cros_ec_dev *ec = filp->private_data;
-+	size_t count;
-+	int ret;
-+
-+	if (*offset != 0)
-+		return 0;
-+
-+	ret = ec_get_version(ec, msg, sizeof(msg));
-+	if (ret)
-+		return ret;
-+
-+	count = min(length, strlen(msg));
-+
-+	if (copy_to_user(buffer, msg, count))
-+		return -EFAULT;
-+
-+	*offset = count;
-+	return count;
-+}
-+
-+/*
-+ * Ioctls
-+ */
-+static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
-+{
-+	struct cros_ec_command *s_cmd;
-+	struct cros_ec_command u_cmd;
-+	long ret;
-+
-+	if (copy_from_user(&u_cmd, arg, sizeof(u_cmd)))
-+		return -EFAULT;
-+
-+	if (u_cmd.outsize > EC_MAX_MSG_BYTES ||
-+	    u_cmd.insize > EC_MAX_MSG_BYTES)
-+		return -EINVAL;
-+
-+	s_cmd = kmalloc(sizeof(*s_cmd) + max(u_cmd.outsize, u_cmd.insize),
-+			GFP_KERNEL);
-+	if (!s_cmd)
-+		return -ENOMEM;
-+
-+	if (copy_from_user(s_cmd, arg, sizeof(*s_cmd) + u_cmd.outsize)) {
-+		ret = -EFAULT;
-+		goto exit;
-+	}
-+
-+	if (u_cmd.outsize != s_cmd->outsize ||
-+	    u_cmd.insize != s_cmd->insize) {
-+		ret = -EINVAL;
-+		goto exit;
-+	}
-+
-+	s_cmd->command += ec->cmd_offset;
-+	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
-+	/* Only copy data to userland if data was received. */
-+	if (ret < 0)
-+		goto exit;
-+
-+	if (copy_to_user(arg, s_cmd, sizeof(*s_cmd) + s_cmd->insize))
-+		ret = -EFAULT;
-+exit:
-+	kfree(s_cmd);
-+	return ret;
-+}
-+
-+static long cros_ec_chardev_ioctl_readmem(struct cros_ec_dev *ec,
-+					   void __user *arg)
-+{
-+	struct cros_ec_device *ec_dev = ec->ec_dev;
-+	struct cros_ec_readmem s_mem = { };
-+	long num;
-+
-+	/* Not every platform supports direct reads */
-+	if (!ec_dev->cmd_readmem)
-+		return -ENOTTY;
-+
-+	if (copy_from_user(&s_mem, arg, sizeof(s_mem)))
-+		return -EFAULT;
-+
-+	num = ec_dev->cmd_readmem(ec_dev, s_mem.offset, s_mem.bytes,
-+				  s_mem.buffer);
-+	if (num <= 0)
-+		return num;
-+
-+	if (copy_to_user((void __user *)arg, &s_mem, sizeof(s_mem)))
-+		return -EFAULT;
-+
-+	return num;
-+}
-+
-+static long cros_ec_chardev_ioctl(struct file *filp, unsigned int cmd,
-+				   unsigned long arg)
-+{
-+	struct cros_ec_dev *ec = filp->private_data;
-+
-+	if (_IOC_TYPE(cmd) != CROS_EC_DEV_IOC)
-+		return -ENOTTY;
-+
-+	switch (cmd) {
-+	case CROS_EC_DEV_IOCXCMD:
-+		return cros_ec_chardev_ioctl_xcmd(ec, (void __user *)arg);
-+	case CROS_EC_DEV_IOCRDMEM:
-+		return cros_ec_chardev_ioctl_readmem(ec, (void __user *)arg);
-+	}
-+
-+	return -ENOTTY;
-+}
-+
-+static const struct file_operations chardev_fops = {
-+	.open		= cros_ec_chardev_open,
-+	.read		= cros_ec_chardev_read,
-+	.unlocked_ioctl	= cros_ec_chardev_ioctl,
-+#ifdef CONFIG_COMPAT
-+	.compat_ioctl	= cros_ec_chardev_ioctl,
-+#endif
-+};
-+
-+static int cros_ec_chardev_probe(struct platform_device *pdev)
-+{
-+	struct cros_ec_dev *ec_dev = dev_get_drvdata(pdev->dev.parent);
-+	struct cros_ec_platform *ec_platform = dev_get_platdata(ec_dev->dev);
-+	struct chardev_data *data;
-+
-+	/* Create a char device: we want to create it anew */
-+	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->ec_dev = ec_dev;
-+	data->misc.minor = MISC_DYNAMIC_MINOR;
-+	data->misc.fops = &chardev_fops;
-+	data->misc.name = ec_platform->ec_name;
-+	data->misc.parent = pdev->dev.parent;
-+
-+	dev_set_drvdata(&pdev->dev, data);
-+
-+	return misc_register(&data->misc);
-+}
-+
-+static int cros_ec_chardev_remove(struct platform_device *pdev)
-+{
-+	struct chardev_data *data = dev_get_drvdata(&pdev->dev);
-+
-+	misc_deregister(&data->misc);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver cros_ec_chardev_driver = {
-+	.driver = {
-+		.name = DRV_NAME,
-+	},
-+	.probe = cros_ec_chardev_probe,
-+	.remove = cros_ec_chardev_remove,
-+};
-+
-+module_platform_driver(cros_ec_chardev_driver);
-+
-+MODULE_ALIAS("platform:" DRV_NAME);
-+MODULE_AUTHOR("Enric Balletbo i Serra <enric.balletbo@collabora.com>");
-+MODULE_DESCRIPTION("ChromeOS EC Miscellaneous Character Driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/mfd/cros_ec_dev.h b/include/uapi/linux/cros_ec_chardev.h
-similarity index 50%
-rename from drivers/mfd/cros_ec_dev.h
-rename to include/uapi/linux/cros_ec_chardev.h
-index ec750433455a..8aceb4ac8ec5 100644
---- a/drivers/mfd/cros_ec_dev.h
-+++ b/include/uapi/linux/cros_ec_chardev.h
-@@ -1,28 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
- /*
-- * cros_ec_dev - expose the Chrome OS Embedded Controller to userspace
-+ * ChromeOS EC device interface.
-  *
-  * Copyright (C) 2014 Google, Inc.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ 	/* check whether this EC is a sensor hub. */
+ 	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
+ 		cros_ec_sensors_register(ec);
+@@ -517,13 +328,6 @@ static int ec_device_probe(struct platform_device *pdev)
+ 				retval);
+ 	}
+ 
+-	/* We can now add the sysfs class, we know which parameter to show */
+-	retval = cdev_device_add(&ec->cdev, &ec->class_dev);
+-	if (retval) {
+-		dev_err(dev, "cdev_device_add failed => %d\n", retval);
+-		goto failed;
+-	}
+-
+ 	retval = mfd_add_devices(ec->dev, PLATFORM_DEVID_AUTO,
+ 				 cros_ec_platform_cells,
+ 				 ARRAY_SIZE(cros_ec_platform_cells),
+@@ -557,7 +361,6 @@ static int ec_device_remove(struct platform_device *pdev)
+ 	struct cros_ec_dev *ec = dev_get_drvdata(&pdev->dev);
+ 
+ 	mfd_remove_devices(ec->dev);
+-	cdev_del(&ec->cdev);
+ 	device_unregister(&ec->class_dev);
+ 	return 0;
+ }
+@@ -580,7 +383,6 @@ static struct platform_driver cros_ec_dev_driver = {
+ static int __init cros_ec_dev_init(void)
+ {
+ 	int ret;
+-	dev_t dev = 0;
+ 
+ 	ret  = class_register(&cros_class);
+ 	if (ret) {
+@@ -588,14 +390,6 @@ static int __init cros_ec_dev_init(void)
+ 		return ret;
+ 	}
+ 
+-	/* Get a range of minor numbers (starting with 0) to work with */
+-	ret = alloc_chrdev_region(&dev, 0, CROS_MAX_DEV, CROS_EC_DEV_NAME);
+-	if (ret < 0) {
+-		pr_err(CROS_EC_DEV_NAME ": alloc_chrdev_region() failed\n");
+-		goto failed_chrdevreg;
+-	}
+-	ec_major = MAJOR(dev);
+-
+ 	/* Register the driver */
+ 	ret = platform_driver_register(&cros_ec_dev_driver);
+ 	if (ret < 0) {
+@@ -605,8 +399,6 @@ static int __init cros_ec_dev_init(void)
+ 	return 0;
+ 
+ failed_devreg:
+-	unregister_chrdev_region(MKDEV(ec_major, 0), CROS_MAX_DEV);
+-failed_chrdevreg:
+ 	class_unregister(&cros_class);
+ 	return ret;
+ }
+@@ -614,7 +406,6 @@ static int __init cros_ec_dev_init(void)
+ static void __exit cros_ec_dev_exit(void)
+ {
+ 	platform_driver_unregister(&cros_ec_dev_driver);
+-	unregister_chrdev(ec_major, CROS_EC_DEV_NAME);
+ 	class_unregister(&cros_class);
+ }
+ 
+diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
+index 95513d4f9a21..2a1372d167b9 100644
+--- a/include/linux/mfd/cros_ec.h
++++ b/include/linux/mfd/cros_ec.h
+@@ -198,7 +198,6 @@ struct cros_ec_debugfs;
+ /**
+  * struct cros_ec_dev - ChromeOS EC device entry point.
+  * @class_dev: Device structure used in sysfs.
+- * @cdev: Character device structure in /dev.
+  * @ec_dev: cros_ec_device structure to talk to the physical device.
+  * @dev: Pointer to the platform device.
+  * @debug_info: cros_ec_debugfs structure for debugging information.
+@@ -208,7 +207,6 @@ struct cros_ec_debugfs;
   */
- 
--#ifndef _CROS_EC_DEV_H_
--#define _CROS_EC_DEV_H_
-+#ifndef _UAPI_LINUX_CROS_EC_DEV_H_
-+#define _UAPI_LINUX_CROS_EC_DEV_H_
- 
- #include <linux/ioctl.h>
- #include <linux/types.h>
--#include <linux/mfd/cros_ec.h>
- 
- #define CROS_EC_DEV_VERSION "1.0.0"
- 
+ struct cros_ec_dev {
+ 	struct device class_dev;
+-	struct cdev cdev;
+ 	struct cros_ec_device *ec_dev;
+ 	struct device *dev;
+ 	struct cros_ec_debugfs *debug_info;
 -- 
 2.20.1
