@@ -1,104 +1,111 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered
  down
-Date: Tue, 25 Jun 2019 09:42:20 +0200
-Message-ID: <20190625074220.ckj7e7gwbszwknaa@pengutronix.de>
+Date: Tue, 25 Jun 2019 11:38:39 +0200
+Message-ID: <20190625093839.GB1516@ulmo>
 References: <20190522163428.7078-1-paul@crapouillou.net>
+ <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
+ <20190621135608.GB11839@ulmo>
+ <20190624112844.fmwbfpdxjkst3u7r@holly.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="0eh6TmSyL6TZE2Uz"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190522163428.7078-1-paul@crapouillou.net>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, od@zcrc.me, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <20190624112844.fmwbfpdxjkst3u7r@holly.lan>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Paul Cercueil <paul@crapouillou.net>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, od@zcrc.me, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCBNYXkgMjIsIDIwMTkgYXQgMDY6MzQ6MjhQTSArMDIwMCwgUGF1bCBDZXJjdWVpbCB3
-cm90ZToKPiBXaGVuIHRoZSBkcml2ZXIgcHJvYmVzLCB0aGUgUFdNIHBpbiBpcyBhdXRvbWF0aWNh
-bGx5IGNvbmZpZ3VyZWQgdG8gaXRzCj4gZGVmYXVsdCBzdGF0ZSwgd2hpY2ggc2hvdWxkIGJlIHRo
-ZSAicHdtIiBmdW5jdGlvbi4gSG93ZXZlciwgYXQgdGhpcwo+IHBvaW50IHdlIGRvbid0IGtub3cg
-dGhlIGFjdHVhbCBsZXZlbCBvZiB0aGUgcGluLCB3aGljaCBtYXkgYmUgYWN0aXZlIG9yCj4gaW5h
-Y3RpdmUuIEFzIGEgcmVzdWx0LCBpZiB0aGUgZHJpdmVyIHByb2JlcyB3aXRob3V0IGVuYWJsaW5n
-IHRoZQo+IGJhY2tsaWdodCwgdGhlIFBXTSBwaW4gbWlnaHQgYmUgYWN0aXZlLCBhbmQgdGhlIGJh
-Y2tsaWdodCB3b3VsZCBiZQo+IGxpdCB3YXkgYmVmb3JlIGJlaW5nIG9mZmljaWFsbHkgZW5hYmxl
-ZC4KCkknbSBub3Qgc3VyZSBJIHVuZGVyc3RhbmQgdGhlIHByb2JsZW0gY29tcGxldGVseSBoZXJl
-LiBMZXQgbWUgdHJ5IHRvCnN1bW1hcml6ZSB0aGUgcHJvYmxlbSB5b3Ugc29sdmUgaGVyZToKClRo
-ZSBiYWNrbGlnaHQgZGV2aWNlJ3MgZGVmYXVsdCBwaW5jdHJsIGNvbnRhaW5zIHRoZSBQV00gZnVu
-Y3Rpb24gb2YgdGhlClBXTSBwaW4uIEFzIHRoZSBQV00gaXMgKG9yIGF0IGxlYXN0IG1pZ2h0IGJl
-KSBpbiBhbiB1bmRlZmluZWQgc3RhdGUgdGhlCmRlZmF1bHQgcGluY3RybCBzaG91bGQgb25seSBi
-ZSBzd2l0Y2hlZCB0byB3aGVuIGl0J3MgY2xlYXIgaWYgdGhlCmJhY2tsaWdodCBzaG91bGQgYmUg
-b24gb3Igb2ZmLgoKU28geW91IHVzZSB0aGUgImluaXQiLXBpbmN0cmwgdG8ga2VlcCB0aGUgUFdN
-IHBpbiBpbiBzb21lICh1bmRyaXZlbj8pCnN0YXRlIGFuZCBieSBzd2l0Y2hpbmcgdG8gInNsZWVw
-IiB5b3UgcHJldmVudCAiZGVmYXVsdCIgZ2V0dGluZyBhY3RpdmUuCgpEaWQgSSBnZXQgdGhpcyBy
-aWdodD8gSWYgbm90LCBwbGVhc2UgY29ycmVjdCBtZS4KCldoYXQgaXMgdGhlIFBXTSBwaW4gY29u
-ZmlndXJlZCB0byBpbiAiaW5pdCIgaW4geW91ciBjYXNlPyBJcyB0aGUgcGluY3RybApqdXN0IGVt
-cHR5PyBPciBpcyBpdCBhIGdwaW8tbW9kZSAodG9nZXRoZXIgd2l0aCBhIGdwaW8taG9nKT8KCk15
-IHRob3VnaHRzIHRvIHRoaXMgaXMgYXJlOgoKIGEpIFRoaXMgaXMgYSBnZW5lcmFsIHByb2JsZW0g
-dGhhdCBhcHBsaWVzIChJIHRoaW5rKSB0byBtb3N0IGlmIG5vdCBhbGwKICAgIFBXTSBjb25zdW1l
-cnMuIElmIHRoZSBQV00gZHJpdmVzIGEgbW90b3IsIG9yIG1ha2VzIHlvdXIgbW9iaWxlCiAgICB2
-aWJyYXRlLCBvciBkcml2ZXMgYW4gTEVELCBvciBhIGNsaywgdGhlIFBXTSBzaG91bGRuJ3Qgc3Rh
-cnQKICAgIHRvIGRvIHNvbWV0aGluZyBiZWZvcmUgaXRzIGNvbnN1bWVyIGlzIHJlYWR5LgoKIGIp
-IFRoaWVycnkgbWFkZSBpdCBxdWl0ZSBjbGVhclsxXSB0aGF0IHRoZSBQV00gcGluIHNob3VsZCBi
-ZSBjb25maWd1cmVkCiAgICBpbiBhIHBpbmN0cmwgb2YgdGhlIHB3bSBkZXZpY2UsIG5vdCB0aGUg
-YmFja2xpZ2h0IChvciBtb3JlIGdlbmVyYWw6CiAgICB0aGUgY29uc3VtZXIpIGRldmljZS4KCldo
-aWxlIEkgZG9uJ3QgZW50aXJlbHkgYWdyZWUgd2l0aCBiKSBJIHRoaW5rIHRoYXQgZXZlbiBhKSBh
-bG9uZQpqdXN0aWZpZXMgdG8gdGhpbmsgYSBiaXQgbW9yZSBhYm91dCB0aGUgcHJvYmxlbSBhbmQg
-cHJlZmVyYWJseSBjb21lIHVwCndpdGggYSBzb2x1dGlvbiB0aGF0IGhlbHBzIG90aGVyIGNvbnN1
-bWVycywgdG9vLiBJZGVhbGx5IGlmIHRoZQpib290bG9hZGVyIHNldHMgdXAgdGhlIFBXTSB0byBk
-byBzb21ldGhpbmcgc2Vuc2libGUsIHByb2JpbmcgdGhlCmxvd2xldmVsIFBXTSBkcml2ZXIgYW5k
-IHRoZSBjb25zdW1lciBkcml2ZXIgc2hvdWxkIG5vdCBpbnRlcmZlcmUgd2l0aAp0aGUgYm9vdGxv
-YWRlcidzIGludGVudGlvbiB1bnRpbCB0aGUgc2l0dWF0aW9uIHJlYWNoZXMgYSBjb250cm9sbGVk
-CnN0YXRlLiAoSS5lLiBpZiB0aGUgYmFja2xpZ2h0IHdhcyBsZWZ0IG9uIGJ5IHRoZSBib290bG9h
-ZGVyIHRvIHNob3cgYQpuaWNlIGxvZ28sIGl0IHNob3VsZCBub3QgZmxpY2tlciB1bnRpbCBhIHVz
-ZXJzcGFjZSBwcm9ncmFtIHRha2VzIG92ZXIKdGhlIGRpc3BsYXkgZGV2aWNlLikKCkEgUFdNIGlz
-IHNwZWNpYWwgaW4gY29udHJhc3QgdG8gb3RoZXIgZGV2aWNlcyBhcyBpdHMgaW50ZW5kZWQgYmVo
-YXZpb3VyCmlzIG9ubHkgZml4ZWQgb25jZSBhIGNvbnN1bWVyIGlzIHByZXNlbnQuIFdpdGhvdXQg
-YSBjb25zdW1lciBpdCBpcwp1bmtub3duIGlmIHRoZSBQV00gaXMgaW52ZXJ0ZWQgb3Igbm90LiBB
-bmQgc28gdGhlIGNvbW1vbiBhcHByb2FjaCB0aGF0CnBpbmN0cmwgaXMgc2V0dXAgYnkgdGhlIGRl
-dmljZSBjb3JlIG9ubHkgZG9lc24ndCB3b3JrIHdpdGhvdXQgZHJhd2JhY2tzCmZvciBQV01zLgoK
-U28gaWYgYSBQV00gZHJpdmVyIGlzIHByb2JpbmcgYW5kIHRoZSBQV00gaGFyZHdhcmUgYWxyZWFk
-eSBydW5zIGF0IHNheQpjb25zdGFudCBvbmUsIHNvbWUgaW5zdGFuY2UgbXVzdCBkZWZpbmUgaWYg
-dGhlIHBpbiBpcyBzdXBwb3NlZCB0byBiZQpjb25maWd1cmVkIGluIGl0cyAiZGVmYXVsdCIgb3Ig
-InNsZWVwIiBwaW5jdHJsLiBJTUhPIHRoaXMgaXNuJ3QgcG9zc2libGUKaW4gZ2VuZXJhbCB3aXRo
-b3V0IGtub3dpbmcgdGhlIHBvbGFyaXR5IG9mIHRoZSBQV00uIChBbmQgZXZlbiBpZiBpdCB3ZXJl
-Cmtub3duIHRoYXQgdGhlIHBvbGFyaXR5IGlzIGludmVyc2VkLCBpdCBtaWdodCBiZSBoYXJkIHRv
-IHNheSBpZiB5b3VyClBXTSdzIGhhcmR3YXJlIGRvZXNuJ3QgaW1wbGVtZW50IGEgZGlzYWJsZWQg
-c3RhdGUgYW5kIGhhcyB0byBzaW11bGF0ZQp0aGF0IHVzaW5nIGEgMCUgZHV0eSBjeWNsZS4pCgpB
-bm90aGVyIHRoaW5nIHRoYXQgY29tcGxpY2F0ZXMgdGhlIG1hdHRlciBpcyB0aGF0IGF0IGxlYXN0
-IHB3bS1pbXgyNyBoYXMKdGhlIGFubm95aW5nIHByb3BlcnR5IHRoYXQgZGlzYWJsaW5nIGl0IChp
-biBoYXJkd2FyZSkgZHJpdmVzIHRoZSBwaW4gbG93CmlycmVzcGVjdGl2ZSBvZiB0aGUgY29uZmln
-dXJlZCBwb2xhcml0eS4gU28gaWYgeW91IHdhbnQgdGhpcyB0eXBlIG9mCmRldmljZSB0byBiZWhh
-dmUgcHJvcGVybHkgb24gZGlzYWJsZSwgaXQgbXVzdCBmaXJzdCBkcml2ZSBhIDAlIGR1dHkKY3lj
-bGUsIHRoZW4gc3dpdGNoIHRoZSBwaW5jdHJsIHN0YXRlIGFuZCBvbmx5IHRoZW4gZGlzYWJsZSB0
-aGUgaGFyZHdhcmUuClRoaXMgcnVsZXMgb3V0IHRoYXQgdGhlIGxvd2xldmVsIGRyaXZlciBpcyB1
-bmF3YXJlIG9mIHRoZSBwaW5jdHJsIHN0dWZmCndoaWNoIHdvdWxkIGJlIG5pY2UgKG9yIGFuIGlu
-dmVydGVkIFBXTSB3b24ndCBiZSBkaXNhYmxlZCBpbiBoYXJkd2FyZSBvcgp5b3UgbmVlZCBhbiB1
-Z2x5IHNlcXVlbmNlIG9mIGNhbGxiYWNrcyB0byBkaXNhYmxlIGdsaXRjaC1mcmVlKS4gQWxzbyBp
-Zgp0aGVyZSBpcyBubyBzbGVlcCBzdGF0ZSwgeW91IGJldHRlciBkb24ndCBkaXNhYmxlIGFuIGlu
-dmVyc2VkIHB3bS1pbXgyNwphdCBhbGwgKGluIGhhcmR3YXJlKT8gKEFsdGVybmF0aXZlbHkgd2Ug
-Y291bGQgZHJvcCB0aGUgKHVuZG9jdW1lbnRlZCkKZ3VhcmFudGVlIHRoYXQgYSBkaXNhYmxlZCBQ
-V00gcmVzdWx0cyBpbiB0aGUgcGluIHN0YXlpbmcgaW4gaXRzIGlkbGUKbGV2ZWwuKQoKV2hhdCBh
-cmUgdGhlIHdheXMgb3V0PyBJIHRoaW5rIHRoYXQgaWYgd2UgZ28gYW5kIGFwcGx5IHlvdXIgcGF0
-Y2gsIHdlCnNob3VsZCBhdCBsZWFzdCB3cml0ZSBzb21lIGRvY3VtZW50YXRpb24gd2l0aCB0aGUg
-ZGV0YWlscyB0byBwcm92aWRlIHNvbWUKInN0YW5kYXJkIiB3YXkgdG8gc29sdmUgc2ltaWxhciBw
-cm9ibGVtcy4KCkFsc28gaXQgbWlnaHQgYmUgYSBnb29kIGlkZWEgdG8gbGV0IGEgUFdNIGtub3cg
-aWYgaXQgaXMgaW52ZXJ0ZWQgb3Igbm90CnN1Y2ggdGhhdCBldmVuIHdpdGhvdXQgdGhlIHByZXNl
-bmNlIG9mIGEgY29uc3VtZXIgaXQgY2FuIGRldGVybWluZSBpZgp0aGUgaGFyZHdhcmUgaXMgYWN0
-aXZlIG9yIG5vdCBhdCBwcm9iZSB0aW1lIChpbiBtb3N0IGNhc2VzIGF0IGxlYXN0KS4KCkJlc3Qg
-cmVnYXJkcwpVd2UKClsxXSBodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9saW51eC1wd20v
-bXNnMDgyNDYuaHRtbAoKLS0gClBlbmd1dHJvbml4IGUuSy4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICB8IFV3ZSBLbGVpbmUtS8O2bmlnICAgICAgICAgICAgfApJbmR1c3RyaWFsIExpbnV4IFNv
-bHV0aW9ucyAgICAgICAgICAgICAgICAgfCBodHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyAgfApf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwg
-bWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0
-cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+
+--0eh6TmSyL6TZE2Uz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jun 24, 2019 at 12:28:44PM +0100, Daniel Thompson wrote:
+> On Fri, Jun 21, 2019 at 03:56:08PM +0200, Thierry Reding wrote:
+> > On Fri, Jun 21, 2019 at 01:41:45PM +0100, Daniel Thompson wrote:
+> > > On 22/05/2019 17:34, Paul Cercueil wrote:
+> > > > When the driver probes, the PWM pin is automatically configured to =
+its
+> > > > default state, which should be the "pwm" function.
+> > >=20
+> > > At which point in the probe... and by who?
+> >=20
+> > The driver core will select the "default" state of a device right before
+> > calling the driver's probe, see:
+> >=20
+> > 	drivers/base/pinctrl.c: pinctrl_bind_pins()
+> >=20
+> > which is called from:
+> >=20
+> > 	drivers/base/dd.c: really_probe()
+> >=20
+>=20
+> Thanks. I assumed it would be something like that... although given
+> pwm-backlight is essentially a wrapper driver round a PWM I wondered why
+> the pinctrl was on the backlight node (rather than the PWM node).
+
+I agree with this. We're defining the pin control state for the PWM pin,
+so in my opinion it should be the PWM driver that controls it.
+
+One reason why I think this is important is if we ever end up with a
+device that requires pins from two different controllers to be
+configured at runtime, then how would we model that? Since pin control
+states cannot be aggregated, so you'd have to have multiple "default"
+states, each for the pins that they control.
+
+On the other hand if we associate the pin control states with each of
+the resources that need those states, then when those resources are
+controlled, they will automatically know how to deal with the states.
+The top-level device (i.e. backlight) doesn't need to concern itself
+with those details.
+
+> Looking at the DTs in the upstream kernel it looks like ~20% of the
+> backlight drivers have pinctrl on the backlight node. Others presumable
+> have none or have it on the PWM node (and it looks like support for
+> sleeping the pins is *very* rare amoung the PWM drivers).
+
+I suspect that that's mostly a sign of our device trees and kernel
+subsystems still maturing. For example, I think it's fairly rare for a
+device to seamlessly take over the display configuration from the
+bootloader. Most of the time you'll just see things go black (that's
+actually one of the better cases) when the kernel takes over and then
+the backlight will come up again at some point.
+
+Taking over the bootloader's display configuration is pretty hard and
+there are numerous pieces to the puzzle (need to make sure clocks and
+power supplies are not automatically disabled after the initcalls,
+display drivers need to know how to read out hardware, claim whatever
+memory region the bootloader was using for a bootsplash, backlight is
+supposed to remain enabled if the bootloader turned it on, ...).
+
+I don't think the fact that PWM drivers don't support this implies that
+hardware doesn't support it. I think we've just never needed it before
+because we get away with it.
+
+Thierry
+
+--0eh6TmSyL6TZE2Uz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl0R650ACgkQ3SOs138+
+s6FApw//X6YPIMSBehRgeG/YYLTIA2NFvbDmGSL7AndIcj/QTu4qHzVehMDRtQOn
+wgw+SF/yRrqGryLdFI7EdfslMS++FvPSwtowwRt1BWGog372Q63Zgl0o147klX2/
+iXcoF7eBV9x9Ied+XVqjLs3Ag0BQAX9AV0MRnXmBz3IOicg3bU8n03xcyZCDAWvc
+w95lmRGM9z+iP2I3W73i+4+3hj6jgUztZsopwa0t56Bp8q0dcqX9Bm6ap+pcxAmX
+MPFcogA6k8Qj075yujpCCzY6Y3z4ZV2MRyIhA0f3PZnFl37+liS3gnDqdq5PXNXN
++DVhI5rgB7ZOi1MSkPRgHbtn2XkOZ+ct1QW1dvd/Na4CuVny67/CfvshUOd7y+y9
+I9QPlEvlNGvBHtEbFGEAjF4VOH3j7moN48CK41hxkLBlcuQJ6s5MBGxNQaRK0UC2
++QLrVgsQriv+NnzaLKEiGlBIJMRZjaRYYTpywXDI9nuiEEBPNppXbzyAamIZbcup
+nJapCAsSaO1h4WnmP0Alo0hjyW6kQx9aCoWWAySeUfVkeGPK6Ogqgteda+ob5qjc
+h20T6YzAa0Mky7j52RUPdHCxu7q6dRrNS5viGqyBSzyvkSZgYN3Fkys3x4dnLl/x
+McVvQdPQ51Os3ftQ3u03yRFdPJ34ZVV/kFy7Y7G0XSM9gEroD1I=
+=pSQv
+-----END PGP SIGNATURE-----
+
+--0eh6TmSyL6TZE2Uz--
