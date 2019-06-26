@@ -1,37 +1,78 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v1] backlight: pwm_bl: convert to use SPDX identifier
-Date: Wed, 26 Jun 2019 11:56:36 +0100
-Message-ID: <20190626105636.GO21119@dell>
-References: <20190619135927.29745-1-andriy.shevchenko@linux.intel.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v2 2/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Wed, 26 Jun 2019 16:56:11 +0200
+Message-ID: <20190626145611.GA22348@xo-6d-61-c0.localdomain>
+References: <20190624203114.93277-1-mka@chromium.org>
+ <20190624203114.93277-3-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190619135927.29745-1-andriy.shevchenko@linux.intel.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>
+In-Reply-To: <20190624203114.93277-3-mka@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Kaehlcke <mka@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCAxOSBKdW4gMjAxOSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgoKPiBSZWR1Y2Ugc2l6
-ZSBvZiBkdXBsaWNhdGVkIGNvbW1lbnRzIGJ5IHN3aXRjaGluZyB0byB1c2UgU1BEWCBpZGVudGlm
-aWVyLgo+IAo+IE5vIGZ1bmN0aW9uYWwgY2hhbmdlLgo+IAo+IFdoaWxlIGhlcmUsIGNvcnJlY3Qg
-TU9EVUxFX0xJQ0VOU0UoKSBzdHJpbmcgdG8gYmUgYWxpZ25lZCB3aXRoIGxpY2Vuc2UgdGV4dC4K
-PiAKPiBTaWduZWQtb2ZmLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxp
-bnV4LmludGVsLmNvbT4KPiAtLS0KPiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMg
-fCAxMSArKystLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCA4IGRl
-bGV0aW9ucygtKQoKQXBwbGllZCwgdGhhbmtzLgoKLS0gCkxlZSBKb25lcyBb5p2O55C85pavXQpM
-aW5hcm8gU2VydmljZXMgVGVjaG5pY2FsIExlYWQKTGluYXJvLm9yZyDilIIgT3BlbiBzb3VyY2Ug
-c29mdHdhcmUgZm9yIEFSTSBTb0NzCkZvbGxvdyBMaW5hcm86IEZhY2Vib29rIHwgVHdpdHRlciB8
-IEJsb2cKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
-LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
-Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+Hi!
+
+> Export the type of the brightness curve via the new sysfs attribute
+> 'scale'. The value of the attribute may be a simple string like
+> 'linear' or 'non-linear', or a composite string similar to
+> 'compatible' strings of the device tree. A composite string consists
+> of different elements separated by commas, starting with the
+> most-detailed description and ending with the least-detailed one. An
+> example for a composite string is "cie-1931,perceptual,non-linear"
+> This brightness curve was generated with the CIE 1931 algorithm, it
+> is perceptually linear, but not actually linear in terms of the
+> emitted light. If userspace doesn't know about 'cie-1931' or
+> 'perceptual' it should at least be able to interpret the 'non-linear'
+> part.
+
+I'm not sure the comma-separated thing is a good idea. If it is, it should 
+go to the Documentation, not to changelog.
+
+> +What:		/sys/class/backlight/<backlight>/scale
+> +Date:		June 2019
+> +KernelVersion:	5.4
+> +Contact:	Daniel Thompson <daniel.thompson@linaro.org>
+> +Description:
+> +		Description of the scale of the brightness curve. The
+> +		description consists of one or more elements separated by
+> +		commas, from the most detailed to the least detailed
+> +		description.
+> +
+> +		Possible values are:
+> +
+> +		unknown
+> +		  The scale of the brightness curve is unknown.
+> +
+> +		linear
+> +		  The brightness changes linearly in terms of the emitted
+> +		  light, changes are perceived as non-linear by the human eye.
+> +
+> +		non-linear
+> +		  The brightness changes non-linearly in terms of the emitted
+> +		  light, changes might be perceived as linear by the human eye.
+
+non-linear is not too useful as described.
+
+> +		perceptual,non-linear
+> +		  The brightness changes non-linearly in terms of the emitted
+> +		  light, changes should be perceived as linear by the human eye.
+> +
+> +		cie-1931,perceptual,non-linear
+> +		  The brightness curve was calculated with the CIE 1931
+> +		  algorithm. Brightness changes non-linearly in terms of the
+> +		  emitted light, changes should be perceived as linear by the
+> +		  human eye.
+
+Is it useful to know difference between perceptual, and cie-1931?
+
+Would it be useful to export absolute values in some well-known units?
+
+If I'm in dark room, I may want 100mW/m^2 of backlight... And it would
+be nice if I could set same backlight intensity on all my devices easily.
+
+								Pavel
