@@ -1,119 +1,116 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:61835 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726072AbfFTKIC (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 20 Jun 2019 06:08:02 -0400
-Date: Thu, 20 Jun 2019 13:07:59 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Message-ID: <20190620100759.GR9224@smile.fi.intel.com>
-References: <20190620092443.4854-1-mika.westerberg@linux.intel.com>
+Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:49037
+        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725876AbfFZInr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Jun 2019 04:43:47 -0400
+Date: Wed, 26 Jun 2019 10:43:43 +0200 (CEST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+Message-ID: <alpine.DEB.2.21.1906261042400.2523@hadrien>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190620092443.4854-1-mika.westerberg@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH] pwm: lpss: Convert to use SPDX identifier
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Subject: [pwm:for-next 36/37] drivers/pwm/pwm-fsl-ftm.c:324:3-9: preceding
+ lock on line 305 (fwd)
+To: Patrick Havelange <patrick.havelange@essensium.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kbuild-all@01.org
 
-On Thu, Jun 20, 2019 at 12:24:43PM +0300, Mika Westerberg wrote:
-> This gets rid of the license boilerplate duplicated in each file.
-> 
-> No functional changes intended.
+Hello,
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+It seems like there may be missing unlocks on lines 324 and 328.
 
-> 
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> ---
->  drivers/pwm/pwm-lpss-pci.c      | 5 +----
->  drivers/pwm/pwm-lpss-platform.c | 5 +----
->  drivers/pwm/pwm-lpss.c          | 5 +----
->  drivers/pwm/pwm-lpss.h          | 5 +----
->  4 files changed, 4 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-> index c1527cb645be..5e47d9bccf22 100644
-> --- a/drivers/pwm/pwm-lpss-pci.c
-> +++ b/drivers/pwm/pwm-lpss-pci.c
-> @@ -1,13 +1,10 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Intel Low Power Subsystem PWM controller PCI driver
->   *
->   * Copyright (C) 2014, Intel Corporation
->   *
->   * Derived from the original pwm-lpss.c
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
->   */
->  
->  #include <linux/kernel.h>
-> diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-> index 757230e1f575..ce77539a0855 100644
-> --- a/drivers/pwm/pwm-lpss-platform.c
-> +++ b/drivers/pwm/pwm-lpss-platform.c
-> @@ -1,13 +1,10 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Intel Low Power Subsystem PWM controller driver
->   *
->   * Copyright (C) 2014, Intel Corporation
->   *
->   * Derived from the original pwm-lpss.c
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
->   */
->  
->  #include <linux/acpi.h>
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> index 2ac3a2aa9e53..9a1b25926956 100644
-> --- a/drivers/pwm/pwm-lpss.c
-> +++ b/drivers/pwm/pwm-lpss.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Intel Low Power Subsystem PWM controller driver
->   *
-> @@ -7,10 +8,6 @@
->   * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
->   * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
->   * Author: Alan Cox <alan@linux.intel.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
->   */
->  
->  #include <linux/delay.h>
-> diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-> index 3236be835bd9..f47dede100f8 100644
-> --- a/drivers/pwm/pwm-lpss.h
-> +++ b/drivers/pwm/pwm-lpss.h
-> @@ -1,13 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
->  /*
->   * Intel Low Power Subsystem PWM controller driver
->   *
->   * Copyright (C) 2014, Intel Corporation
->   *
->   * Derived from the original pwm-lpss.c
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
->   */
->  
->  #ifndef __PWM_LPSS_H
-> -- 
-> 2.20.1
-> 
+julia
 
--- 
-With Best Regards,
-Andy Shevchenko
+---------- Forwarded message ----------
+Date: Wed, 26 Jun 2019 12:23:38 +0800
+From: kbuild test robot <lkp@intel.com>
+To: kbuild@01.org
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Subject: [pwm:for-next 36/37] drivers/pwm/pwm-fsl-ftm.c:324:3-9: preceding lock
+    on line 305
+
+CC: kbuild-all@01.org
+CC: linux-pwm@vger.kernel.org
+TO: Patrick Havelange <patrick.havelange@essensium.com>
+CC: Thierry Reding <thierry.reding@gmail.com>
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git for-next
+head:   cb8338e4fe3a8278cee91f666d2155a0ce1dd82f
+commit: c9aad8a921c23054dc10e783829fe6ee86826101 [36/37] pwm: fsl-ftm: More relaxed permissions for updating period
+:::::: branch date: 9 hours ago
+:::::: commit date: 9 hours ago
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Julia Lawall <julia.lawall@lip6.fr>
+
+>> drivers/pwm/pwm-fsl-ftm.c:324:3-9: preceding lock on line 305
+   drivers/pwm/pwm-fsl-ftm.c:328:3-9: preceding lock on line 305
+
+# https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git/commit/?id=c9aad8a921c23054dc10e783829fe6ee86826101
+git remote add pwm https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
+git remote update pwm
+git checkout c9aad8a921c23054dc10e783829fe6ee86826101
+vim +324 drivers/pwm/pwm-fsl-ftm.c
+
+b505183b Xiubo Li          2014-02-27  288
+c9aad8a9 Patrick Havelange 2019-06-12  289  static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+c9aad8a9 Patrick Havelange 2019-06-12  290  			 struct pwm_state *newstate)
+b505183b Xiubo Li          2014-02-27  291  {
+b505183b Xiubo Li          2014-02-27  292  	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+c9aad8a9 Patrick Havelange 2019-06-12  293  	struct pwm_state *oldstate = &pwm->state;
+c9aad8a9 Patrick Havelange 2019-06-12  294  	int ret = 0;
+b505183b Xiubo Li          2014-02-27  295
+c9aad8a9 Patrick Havelange 2019-06-12  296  	/*
+c9aad8a9 Patrick Havelange 2019-06-12  297  	 * oldstate to newstate : action
+c9aad8a9 Patrick Havelange 2019-06-12  298  	 *
+c9aad8a9 Patrick Havelange 2019-06-12  299  	 * disabled to disabled : ignore
+c9aad8a9 Patrick Havelange 2019-06-12  300  	 * enabled to disabled : disable
+c9aad8a9 Patrick Havelange 2019-06-12  301  	 * enabled to enabled : update settings
+c9aad8a9 Patrick Havelange 2019-06-12  302  	 * disabled to enabled : update settings + enable
+c9aad8a9 Patrick Havelange 2019-06-12  303  	 */
+b505183b Xiubo Li          2014-02-27  304
+c9aad8a9 Patrick Havelange 2019-06-12 @305  	mutex_lock(&fpc->lock);
+b505183b Xiubo Li          2014-02-27  306
+c9aad8a9 Patrick Havelange 2019-06-12  307  	if (!newstate->enabled) {
+c9aad8a9 Patrick Havelange 2019-06-12  308  		if (oldstate->enabled) {
+c9aad8a9 Patrick Havelange 2019-06-12  309  			regmap_update_bits(fpc->regmap, FTM_OUTMASK,
+c9aad8a9 Patrick Havelange 2019-06-12  310  					   BIT(pwm->hwpwm), BIT(pwm->hwpwm));
+c9aad8a9 Patrick Havelange 2019-06-12  311  			clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
+c9aad8a9 Patrick Havelange 2019-06-12  312  			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
+c9aad8a9 Patrick Havelange 2019-06-12  313  		}
+c9aad8a9 Patrick Havelange 2019-06-12  314  		goto end_mutex;
+b505183b Xiubo Li          2014-02-27  315  	}
+b505183b Xiubo Li          2014-02-27  316
+c9aad8a9 Patrick Havelange 2019-06-12  317  	ret = fsl_pwm_apply_config(fpc, pwm, newstate);
+c9aad8a9 Patrick Havelange 2019-06-12  318  	if (ret)
+c9aad8a9 Patrick Havelange 2019-06-12  319  		goto end_mutex;
+c9aad8a9 Patrick Havelange 2019-06-12  320  	/* check if need to enable */
+c9aad8a9 Patrick Havelange 2019-06-12  321  	if (!oldstate->enabled) {
+c9aad8a9 Patrick Havelange 2019-06-12  322  		ret = clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
+b505183b Xiubo Li          2014-02-27  323  		if (ret)
+b505183b Xiubo Li          2014-02-27 @324  			return ret;
+b505183b Xiubo Li          2014-02-27  325  		ret = clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
+b505183b Xiubo Li          2014-02-27  326  		if (ret) {
+c9aad8a9 Patrick Havelange 2019-06-12  327  			clk_disable_unprepare(fpc->clk[fpc->period.clk_select]);
+b505183b Xiubo Li          2014-02-27  328  			return ret;
+b505183b Xiubo Li          2014-02-27  329  		}
+c9aad8a9 Patrick Havelange 2019-06-12  330  		regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
+c9aad8a9 Patrick Havelange 2019-06-12  331  				   0);
+b505183b Xiubo Li          2014-02-27  332  	}
+b505183b Xiubo Li          2014-02-27  333
+c9aad8a9 Patrick Havelange 2019-06-12  334  end_mutex:
+b505183b Xiubo Li          2014-02-27  335  	mutex_unlock(&fpc->lock);
+b505183b Xiubo Li          2014-02-27  336  	return ret;
+b505183b Xiubo Li          2014-02-27  337  }
+b505183b Xiubo Li          2014-02-27  338
+
+:::::: The code at line 324 was first introduced by commit
+:::::: b505183b5117ce149c65ae62f8c00e889acafa69 pwm: Add Freescale FTM PWM driver support
+
+:::::: TO: Xiubo Li <Li.Xiubo@freescale.com>
+:::::: CC: Thierry Reding <thierry.reding@gmail.com>
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
