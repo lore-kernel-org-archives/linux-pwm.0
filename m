@@ -1,108 +1,73 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [v3 4/4] drm/panel: support for auo, kd101n80-45na wuxga dsi
- video mode panel
-Date: Wed, 26 Jun 2019 09:26:28 +0200
-Message-ID: <20190626072628.GC14541@ravnborg.org>
-References: <20190626025400.109567-1-jitao.shi@mediatek.com>
- <20190626025400.109567-5-jitao.shi@mediatek.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] backlight: pwm_bl: Set pin to sleep state when powered
+ down
+Date: Wed, 26 Jun 2019 10:58:27 +0200
+Message-ID: <20190626085827.fija4kfzb5uhwosi@pengutronix.de>
+References: <20190522163428.7078-1-paul@crapouillou.net>
+ <5b0f8bb3-e7b0-52c1-1f2f-9709992b76fc@linaro.org>
+ <20190621135608.GB11839@ulmo>
+ <20190624112844.fmwbfpdxjkst3u7r@holly.lan>
+ <20190625093839.GB1516@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20190626025400.109567-5-jitao.shi@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vge
+In-Reply-To: <20190625093839.GB1516@ulmo>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, od@zcrc.me, kernel@pengutronix.de, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 10:54:00AM +0800, Jitao Shi wrote:
-> Auo,kd101n80-45na's connector is same as boe,tv101wum-nl6.
-> The most codes can be reuse.
-> So auo,kd101n80-45na and boe,tv101wum-nl6 use one driver file.
-> Add the different parts in driver data.
-
-Very nice consolidation.
-Have you considered another filename that better tell this is a driver
-for different types of displays?
-
-And the Kconfig text needs some adjustment to tell this driver now
-supports an extra type of display.
-
-	Sam
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  .../gpu/drm/panel/panel-boe-tv101wum-nl6.c    | 39 +++++++++++++++++++
->  1 file changed, 39 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-> index 30d1f53dcbaf..6ff49f900cd2 100644
-> --- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-> +++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-> @@ -372,6 +372,15 @@ static const struct panel_init_cmd boe_init_cmd[] = {
->  	{},
->  };
->  
-> +static const struct panel_init_cmd auo_init_cmd[] = {
-> +	_INIT_DELAY_CMD(24),
-> +	_INIT_DCS_CMD(0x11),
-> +	_INIT_DELAY_CMD(120),
-> +	_INIT_DCS_CMD(0x29),
-> +	_INIT_DELAY_CMD(120),
-> +	{},
-> +};
-> +
->  static inline struct boe_panel *to_boe_panel(struct drm_panel *panel)
->  {
->  	return container_of(panel, struct boe_panel, base);
-> @@ -571,6 +580,33 @@ static const struct panel_desc boe_tv101wum_nl6_desc = {
->  	.init_cmds = boe_init_cmd,
->  };
->  
-> +static const struct drm_display_mode auo_default_mode = {
-> +	.clock = 157000,
-> +	.hdisplay = 1200,
-> +	.hsync_start = 1200 + 80,
-> +	.hsync_end = 1200 + 80 + 24,
-> +	.htotal = 1200 + 80 + 24 + 36,
-> +	.vdisplay = 1920,
-> +	.vsync_start = 1920 + 16,
-> +	.vsync_end = 1920 + 16 + 4,
-> +	.vtotal = 1920 + 16 + 4 + 16,
-> +	.vrefresh = 60,
-> +};
-> +
-> +static const struct panel_desc auo_kd101n80_45na_desc = {
-> +	.modes = &auo_default_mode,
-> +	.bpc = 8,
-> +	.size = {
-> +		.width = 135,
-> +		.height = 216,
-> +	},
-> +	.lanes = 4,
-> +	.format = MIPI_DSI_FMT_RGB888,
-> +	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
-> +		      MIPI_DSI_MODE_LPM,
-> +	.init_cmds = auo_init_cmd,
-> +};
-> +
->  static int boe_panel_get_modes(struct drm_panel *panel)
->  {
->  	struct boe_panel *boe = to_boe_panel(panel);
-> @@ -694,6 +730,9 @@ static const struct of_device_id boe_of_match[] = {
->  	{ .compatible = "boe,tv101wum-nl6",
->  	  .data = &boe_tv101wum_nl6_desc
->  	},
-> +	{ .compatible = "auo,kd101n80-45na",
-> +	  .data = &auo_kd101n80_45na_desc
-> +	},
->  	{ /* sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(of, boe_of_match);
-> -- 
-> 2.21.0
-> 
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+T24gVHVlLCBKdW4gMjUsIDIwMTkgYXQgMTE6Mzg6MzlBTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcg
+d3JvdGU6Cj4gT24gTW9uLCBKdW4gMjQsIDIwMTkgYXQgMTI6Mjg6NDRQTSArMDEwMCwgRGFuaWVs
+IFRob21wc29uIHdyb3RlOgo+ID4gWy4uLl0gYWx0aG91Z2ggZ2l2ZW4gcHdtLWJhY2tsaWdodCBp
+cyBlc3NlbnRpYWxseSBhIHdyYXBwZXIgZHJpdmVyCj4gPiByb3VuZCBhIFBXTSBJIHdvbmRlcmVk
+IHdoeSB0aGUgcGluY3RybCB3YXMgb24gdGhlIGJhY2tsaWdodCBub2RlCj4gPiAocmF0aGVyIHRo
+YW4gdGhlIFBXTSBub2RlKS4KPiAKPiBJIGFncmVlIHdpdGggdGhpcy4gV2UncmUgZGVmaW5pbmcg
+dGhlIHBpbiBjb250cm9sIHN0YXRlIGZvciB0aGUgUFdNIHBpbiwKPiBzbyBpbiBteSBvcGluaW9u
+IGl0IHNob3VsZCBiZSB0aGUgUFdNIGRyaXZlciB0aGF0IGNvbnRyb2xzIGl0Lgo+IAo+IE9uZSBy
+ZWFzb24gd2h5IEkgdGhpbmsgdGhpcyBpcyBpbXBvcnRhbnQgaXMgaWYgd2UgZXZlciBlbmQgdXAg
+d2l0aCBhCj4gZGV2aWNlIHRoYXQgcmVxdWlyZXMgcGlucyBmcm9tIHR3byBkaWZmZXJlbnQgY29u
+dHJvbGxlcnMgdG8gYmUKPiBjb25maWd1cmVkIGF0IHJ1bnRpbWUsIHRoZW4gaG93IHdvdWxkIHdl
+IG1vZGVsIHRoYXQ/IFNpbmNlIHBpbiBjb250cm9sCj4gc3RhdGVzIGNhbm5vdCBiZSBhZ2dyZWdh
+dGVkLCBzbyB5b3UnZCBoYXZlIHRvIGhhdmUgbXVsdGlwbGUgImRlZmF1bHQiCj4gc3RhdGVzLCBl
+YWNoIGZvciB0aGUgcGlucyB0aGF0IHRoZXkgY29udHJvbC4KCkkgdGhvdWdodCB5b3UgY2FuIGRv
+OgoKCXBpbmN0cmwtbmFtZXMgPSAiZGVmYXVsdCI7CglwaW5jdHJsLTAgPSA8JnBpbmN0cmxfaW5f
+Zmlyc3RfcGluY29udHJvbGxlcj4sIDwmcGluY3RybF9pbl9hbm90aGVyX2NvbnRyb2xsZXI+OwoK
+aWYgdHdvIChvciBtb3JlKSBjb250cm9sbGVycyBhcmUgaW52b2x2ZWQuCiAKPiBPbiB0aGUgb3Ro
+ZXIgaGFuZCBpZiB3ZSBhc3NvY2lhdGUgdGhlIHBpbiBjb250cm9sIHN0YXRlcyB3aXRoIGVhY2gg
+b2YKPiB0aGUgcmVzb3VyY2VzIHRoYXQgbmVlZCB0aG9zZSBzdGF0ZXMsIHRoZW4gd2hlbiB0aG9z
+ZSByZXNvdXJjZXMgYXJlCj4gY29udHJvbGxlZCwgdGhleSB3aWxsIGF1dG9tYXRpY2FsbHkga25v
+dyBob3cgdG8gZGVhbCB3aXRoIHRoZSBzdGF0ZXMuCj4gVGhlIHRvcC1sZXZlbCBkZXZpY2UgKGku
+ZS4gYmFja2xpZ2h0KSBkb2Vzbid0IG5lZWQgdG8gY29uY2VybiBpdHNlbGYKPiB3aXRoIHRob3Nl
+IGRldGFpbHMuCgpTbyB0aGUgb3B0aW9ucyBhcmU6CgogYSkgcHV0ICJhY3RpdmUiIGFuZCAiaW5h
+Y3RpdmUiIHBpbmN0cmxzIGludG8gdGhlIHB3bS1ub2RlLCBhbmQgbm90aGluZwogICAgcmVsYXRl
+ZCB0byB0aGUgaW52b2x2ZWQgUFdNIHBpbnMgaW4gdGhlIGNvbnN1bWVyCgogYikgcHV0IHRoZSBQ
+V00gcGluIGNvbmZpZyBpbiB0aGUgY29uc3VtZXIncyAiZGVmYXVsdCIgcGluY3RybCAoYW5kCiAg
+ICBtYXliZSBsZWF2ZSBpdCBvdXQgaW50ICJpbml0IiBpZiB5b3Ugd2FudCBzbW9vdGggdGFraW5n
+IG92ZXIpLgoKKE9yIG1heWJlIHVzZSAiZW5hYmxlZCIgYW5kICJkaXNhYmxlZCIgaW4gYSkgdG8g
+bWF0Y2ggdGhlIHB3bV9zdGF0ZXMKLmVuYWJsZWQ/KQoKVGhlIGFkdmFudGFnZXMgSSBzZWUgaW4g
+Yikgb3ZlciBhKSBhcmU6CgogLSAiZGVmYXVsdCIgYW5kICJpbml0IiBhcmUgYSBrbm93biBwaW5j
+dHJsIGNvbmNlcHQgdGhhdCBtb3N0IHBlb3BsZQogICBzaG91bGQgaGF2ZSB1bmRlcnN0b29kLgoK
+IC0gWW91IGhhdmUgYWxsIHBpbmN0cmwgY29uZmlnIGZvciB0aGUgYmFja2xpZ2h0IGluIGEgc2lu
+Z2xlIHBsYWNlLgoKIC0gbm9uZSBvZiB0aGUgaW52b2x2ZWQgZHJpdmVyIG11c3QgZXhwbGljaXRs
+eSBoYW5kbGUgcGluY3RybCBzdHVmZgoKWW91IHByZXN1bWUgdGhhdCBiKSBiZWluZyBjb21tb25s
+eSBkb25lIGlzIGEgc2lnbiBvZiAib3VyIGRldmljZSB0cmVlcwphbmQga2VybmVsIHN1YnN5c3Rl
+bXMgc3RpbGwgbWF0dXJpbmciLiBCdXQgbWF5YmUgaXQncyBvbmx5IHRoYXQgdGhlCmNhcGFiaWxp
+dGllcyBwcm92aWRlZCBieSBwaW5jdHJsIHN1YnN5c3RlbSB3aXRob3V0IGV4dHJhIGVmZm9ydCBp
+cyBnb29kCmVub3VnaD8KCkJlc3QgcmVnYXJkcwpVd2UKCi0tIApQZW5ndXRyb25peCBlLksuICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfCBVd2UgS2xlaW5lLUvDtm5pZyAgICAgICAgICAgIHwK
+SW5kdXN0cmlhbCBMaW51eCBTb2x1dGlvbnMgICAgICAgICAgICAgICAgIHwgaHR0cDovL3d3dy5w
+ZW5ndXRyb25peC5kZS8gIHwKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
+LWRldmVs
