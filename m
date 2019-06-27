@@ -1,119 +1,57 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: [v5 1/7] drm/mediatek: move mipi_dsi_host_register to probe
-Date: Thu, 27 Jun 2019 16:01:09 +0800
-Message-ID: <20190627080116.40264-2-jitao.shi@mediatek.com>
+Subject: [v5 4/7] drm/mediatek: add frame size control
+Date: Thu, 27 Jun 2019 16:01:12 +0800
+Message-ID: <20190627080116.40264-5-jitao.shi@mediatek.com>
 References: <20190627080116.40264-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190627080116.40264-1-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark
- Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: stonea168@163.com, dri-devel@lists.freedesktop.org, Andy Yan <andy.yan@rock-chips.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Sean Paul <seanpaul@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Jitao Shi <jitao.shi@mediatek.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu
 List-Id: linux-pwm@vger.kernel.org
 
-RFNJIHBhbmVsIGRyaXZlciBuZWVkIGF0dGFjaCBmdW5jdGlvbiB3aGljaCBpcyBpbmN1bGRlIGlu
-Cm1pcGlfZHNpX2hvc3Rfb3BzLgoKSWYgbWlwaV9kc2lfaG9zdF9yZWdpc3RlciBpcyBub3QgaW4g
-cHJvYmUsIGRzaSBwYW5lbCB3aWxsCnByb2JlIG1vcmUgZGVsYXkuCgpTbyBtb3ZlIHRoZSBtaXBp
-X2RzaV9ob3N0X3JlZ2lzdGVyIHRvIHByb2JlIGZyb20gYmluZC4KClNpZ25lZC1vZmYtYnk6IEpp
-dGFvIFNoaSA8aml0YW8uc2hpQG1lZGlhdGVrLmNvbT4KUmV2aWV3ZWQtYnk6IENLIEh1IDxjay5o
-dUBtZWRpYXRlay5jb20+Ci0tLQogZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kc2kuYyB8
-IDUzICsrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMxIGlu
-c2VydGlvbnMoKyksIDIyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2Ry
-bS9tZWRpYXRlay9tdGtfZHNpLmMgYi9kcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5j
-CmluZGV4IGIwMGViMmQyZTA4Ni4uNTk1YjNiMDQ3YzdiIDEwMDY0NAotLS0gYS9kcml2ZXJzL2dw
-dS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCisrKyBiL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9t
-dGtfZHNpLmMKQEAgLTUyOCw3ICs1MjgsNyBAQCBzdGF0aWMgczMyIG10a19kc2lfc3dpdGNoX3Rv
-X2NtZF9tb2RlKHN0cnVjdCBtdGtfZHNpICpkc2ksIHU4IGlycV9mbGFnLCB1MzIgdCkKIAogc3Rh
-dGljIGludCBtdGtfZHNpX3Bvd2Vyb24oc3RydWN0IG10a19kc2kgKmRzaSkKIHsKLQlzdHJ1Y3Qg
-ZGV2aWNlICpkZXYgPSBkc2ktPmRldjsKKwlzdHJ1Y3QgZGV2aWNlICpkZXYgPSBkc2ktPi0+aG9z
-dC5kZXY7CiAJaW50IHJldDsKIAl1NjQgcGl4ZWxfY2xvY2ssIHRvdGFsX2JpdHM7CiAJdTMyIGh0
-b3RhbCwgaHRvdGFsX2JpdHMsIGJpdF9wZXJfcGl4ZWwsIG92ZXJoZWFkX2N5Y2xlcywgb3Zlcmhl
-YWRfYml0czsKQEAgLTEwNDUsMTIgKzEwNDUsNiBAQCBzdGF0aWMgaW50IG10a19kc2lfYmluZChz
-dHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2UgKm1hc3Rlciwgdm9pZCAqZGF0YSkKIAkJ
-cmV0dXJuIHJldDsKIAl9CiAKLQlyZXQgPSBtaXBpX2RzaV9ob3N0X3JlZ2lzdGVyKCZkc2ktPmhv
-c3QpOwotCWlmIChyZXQgPCAwKSB7Ci0JCWRldl9lcnIoZGV2LCAiZmFpbGVkIHRvIHJlZ2lzdGVy
-IERTSSBob3N0OiAlZFxuIiwgcmV0KTsKLQkJZ290byBlcnJfZGRwX2NvbXBfdW5yZWdpc3RlcjsK
-LQl9Ci0KIAlyZXQgPSBtdGtfZHNpX2NyZWF0ZV9jb25uX2VuYyhkcm0sIGRzaSk7CiAJaWYgKHJl
-dCkgewogCQlEUk1fRVJST1IoIkVuY29kZXIgY3JlYXRlIGZhaWxlZCB3aXRoICVkXG4iLCByZXQp
-OwpAQCAtMTA2MCw4ICsxMDU0LDYgQEAgc3RhdGljIGludCBtdGtfZHNpX2JpbmQoc3RydWN0IGRl
-dmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlICptYXN0ZXIsIHZvaWQgKmRhdGEpCiAJcmV0dXJuIDA7
-CiAKIGVycl91bnJlZ2lzdGVyOgotCW1pcGlfZHNpX2hvc3RfdW5yZWdpc3RlcigmZHNpLT5ob3N0
-KTsKLWVycl9kZHBfY29tcF91bnJlZ2lzdGVyOgogCW10a19kZHBfY29tcF91bnJlZ2lzdGVyKGRy
-bSwgJmRzaS0+ZGRwX2NvbXApOwogCXJldHVybiByZXQ7CiB9CkBAIC0xMDczLDcgKzEwNjUsNiBA
-QCBzdGF0aWMgdm9pZCBtdGtfZHNpX3VuYmluZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBk
-ZXZpY2UgKm1hc3RlciwKIAlzdHJ1Y3QgbXRrX2RzaSAqZHNpID0gZGV2X2dldF9kcnZkYXRhKGRl
-dik7CiAKIAltdGtfZHNpX2Rlc3Ryb3lfY29ubl9lbmMoZHNpKTsKLQltaXBpX2RzaV9ob3N0X3Vu
-cmVnaXN0ZXIoJmRzaS0+aG9zdCk7CiAJbXRrX2RkcF9jb21wX3VucmVnaXN0ZXIoZHJtLCAmZHNp
-LT5kZHBfY29tcCk7CiB9CiAKQEAgLTEwOTcsMzEgKzEwODgsMzYgQEAgc3RhdGljIGludCBtdGtf
-ZHNpX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAKIAlkc2ktPmhvc3Qub3Bz
-ID0gJm10a19kc2lfb3BzOwogCWRzaS0+aG9zdC5kZXYgPSBkZXY7CisJcmV0ID0gbWlwaV9kc2lf
-aG9zdF9yZWdpc3RlcigmZHNpLT5ob3N0KTsKKwlpZiAocmV0IDwgMCkgeworCQlkZXZfZXJyKGRl
-diwgImZhaWxlZCB0byByZWdpc3RlciBEU0kgaG9zdDogJWRcbiIsIHJldCk7CisJCXJldHVybiBy
-ZXQ7CisJfQogCiAJcmV0ID0gZHJtX29mX2ZpbmRfcGFuZWxfb3JfYnJpZGdlKGRldi0+b2Zfbm9k
-ZSwgMCwgMCwKIAkJCQkJICAmZHNpLT5wYW5lbCwgJmRzaS0+YnJpZGdlKTsKIAlpZiAocmV0KQot
-CQlyZXR1cm4gcmV0OworCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7CiAKIAlkc2ktPmVuZ2lu
-ZV9jbGsgPSBkZXZtX2Nsa19nZXQoZGV2LCAiZW5naW5lIik7CiAJaWYgKElTX0VSUihkc2ktPmVu
-Z2luZV9jbGspKSB7CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5lbmdpbmVfY2xrKTsKIAkJZGV2X2Vy
-cihkZXYsICJGYWlsZWQgdG8gZ2V0IGVuZ2luZSBjbG9jazogJWRcbiIsIHJldCk7Ci0JCXJldHVy
-biByZXQ7CisJCWdvdG8gZXJyX3VucmVnaXN0ZXJfaG9zdDsKIAl9CiAKIAlkc2ktPmRpZ2l0YWxf
-Y2xrID0gZGV2bV9jbGtfZ2V0KGRldiwgImRpZ2l0YWwiKTsKIAlpZiAoSVNfRVJSKGRzaS0+ZGln
-aXRhbF9jbGspKSB7CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5kaWdpdGFsX2Nsayk7CiAJCWRldl9l
-cnIoZGV2LCAiRmFpbGVkIHRvIGdldCBkaWdpdGFsIGNsb2NrOiAlZFxuIiwgcmV0KTsKLQkJcmV0
-dXJuIHJldDsKKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0OwogCX0KIAogCWRzaS0+aHNfY2xr
-ID0gZGV2bV9jbGtfZ2V0KGRldiwgImhzIik7CiAJaWYgKElTX0VSUihkc2ktPmhzX2NsaykpIHsK
-IAkJcmV0ID0gUFRSX0VSUihkc2ktPmhzX2Nsayk7CiAJCWRldl9lcnIoZGV2LCAiRmFpbGVkIHRv
-IGdldCBocyBjbG9jazogJWRcbiIsIHJldCk7Ci0JCXJldHVybiByZXQ7CisJCWdvdG8gZXJyX3Vu
-cmVnaXN0ZXJfaG9zdDsKIAl9CiAKIAlyZWdzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYs
-IElPUkVTT1VSQ0VfTUVNLCAwKTsKQEAgLTExMjksMzMgKzExMjUsMzUgQEAgc3RhdGljIGludCBt
-dGtfZHNpX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAJaWYgKElTX0VSUihk
-c2ktPnJlZ3MpKSB7CiAJCXJldCA9IFBUUl9FUlIoZHNpLT5yZWdzKTsKIAkJZGV2X2VycihkZXYs
-ICJGYWlsZWQgdG8gaW9yZW1hcCBtZW1vcnk6ICVkXG4iLCByZXQpOwotCQlyZXR1cm4gcmV0Owor
-CQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7CiAJfQogCiAJZHNpLT5waHkgPSBkZXZtX3BoeV9n
-ZXQoZGV2LCAiZHBoeSIpOwogCWlmIChJU19FUlIoZHNpLT5waHkpKSB7CiAJCXJldCA9IFBUUl9F
-UlIoZHNpLT5waHkpOwogCQlkZXZfZXJyKGRldiwgIkZhaWxlZCB0byBnZXQgTUlQSS1EUEhZOiAl
-ZFxuIiwgcmV0KTsKLQkJcmV0dXJuIHJldDsKKwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0Owog
-CX0KIAogCWNvbXBfaWQgPSBtdGtfZGRwX2NvbXBfZ2V0X2lkKGRldi0+b2Zfbm9kZSwgTVRLX0RT
-SSk7CiAJaWYgKGNvbXBfaWQgPCAwKSB7CiAJCWRldl9lcnIoZGV2LCAiRmFpbGVkIHRvIGlkZW50
-aWZ5IGJ5IGFsaWFzOiAlZFxuIiwgY29tcF9pZCk7Ci0JCXJldHVybiBjb21wX2lkOworCQlyZXQg
-PSBjb21wX2lkOworCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7CiAJfQogCiAJcmV0ID0gbXRr
-X2RkcF9jb21wX2luaXQoZGV2LCBkZXYtPm9mX25vZGUsICZkc2ktPmRkcF9jb21wLCBjb21wX2lk
-LAogCQkJCSZtdGtfZHNpX2Z1bmNzKTsKIAlpZiAocmV0KSB7CiAJCWRldl9lcnIoZGV2LCAiRmFp
-bGVkIHRvIGluaXRpYWxpemUgY29tcG9uZW50OiAlZFxuIiwgcmV0KTsKLQkJcmV0dXJuIHJldDsK
-KwkJZ290byBlcnJfdW5yZWdpc3Rlcl9ob3N0OwogCX0KIAogCWlycV9udW0gPSBwbGF0Zm9ybV9n
-ZXRfaXJxKHBkZXYsIDApOwogCWlmIChpcnFfbnVtIDwgMCkgewotCQlkZXZfZXJyKCZwZGV2LT5k
-ZXYsICJmYWlsZWQgdG8gcmVxdWVzdCBkc2kgaXJxIHJlc291cmNlXG4iKTsKLQkJcmV0dXJuIC1F
-UFJPQkVfREVGRVI7CisJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byBnZXQgZHNpIGly
-cV9udW06ICVkXG4iLCBpcnFfbnVtKTsKKwkJcmV0ID0gaXJxX251bTsKKwkJZ290byBlcnJfdW5y
-ZWdpc3Rlcl9ob3N0OwogCX0KIAogCWlycV9zZXRfc3RhdHVzX2ZsYWdzKGlycV9udW0sIElSUV9U
-WVBFX0xFVkVMX0xPVyk7CkBAIC0xMTYzLDE0ICsxMTYxLDI0IEBAIHN0YXRpYyBpbnQgbXRrX2Rz
-aV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogCQkJICAgICAgIElSUUZfVFJJ
-R0dFUl9MT1csIGRldl9uYW1lKCZwZGV2LT5kZXYpLCBkc2kpOwogCWlmIChyZXQpIHsKIAkJZGV2
-X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIHJlcXVlc3QgbWVkaWF0ZWsgZHNpIGlycVxuIik7
-Ci0JCXJldHVybiAtRVBST0JFX0RFRkVSOworCQlnb3RvIGVycl91bnJlZ2lzdGVyX2hvc3Q7CiAJ
-fQogCiAJaW5pdF93YWl0cXVldWVfaGVhZCgmZHNpLT5pcnFfd2FpdF9xdWV1ZSk7CiAKIAlwbGF0
-Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBkc2kpOwogCi0JcmV0dXJuIGNvbXBvbmVudF9hZGQoJnBk
-ZXYtPmRldiwgJm10a19kc2lfY29tcG9uZW50X29wcyk7CisJcmV0ID0gY29tcG9uZW50X2FkZCgm
-cGRldi0+ZGV2LCAmbXRrX2RzaV9jb21wb25lbnRfb3BzKTsKKwlpZiAocmV0KSB7CisJCWRldl9l
-cnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byBhZGQgY29tcG9uZW50OiAlZFxuIiwgcmV0KTsKKwkJ
-Z290byBlcnJfdW5yZWdpc3Rlcl9ob3N0OworCX0KKworCXJldHVybiAwOworCitlcnJfdW5yZWdp
-c3Rlcl9ob3N0OgorCW1pcGlfZHNpX2hvc3RfdW5yZWdpc3RlcigmZHNpLT5ob3N0KTsKKwlyZXR1
-cm4gcmV0OwogfQogCiBzdGF0aWMgaW50IG10a19kc2lfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9k
-ZXZpY2UgKnBkZXYpCkBAIC0xMTc5LDYgKzExODcsNyBAQCBzdGF0aWMgaW50IG10a19kc2lfcmVt
-b3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAKIAltdGtfb3V0cHV0X2RzaV9kaXNh
-YmxlKGRzaSk7CiAJY29tcG9uZW50X2RlbCgmcGRldi0+ZGV2LCAmbXRrX2RzaV9jb21wb25lbnRf
-b3BzKTsKKwltaXBpX2RzaV9ob3N0X3VucmVnaXN0ZXIoJmRzaS0+aG9zdCk7CiAKIAlyZXR1cm4g
-MDsKIH0KLS0gCjIuMjEuMAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
-b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
-LWRldmVs
+Our new DSI chip has frame size control.
+So add the driver data to control for different chips.
+
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 6b6550926db6..45e331055842 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -78,6 +78,7 @@
+ #define DSI_VBP_NL		0x24
+ #define DSI_VFP_NL		0x28
+ #define DSI_VACT_NL		0x2C
++#define DSI_SIZE_CON		0x38
+ #define DSI_HSA_WC		0x50
+ #define DSI_HBP_WC		0x54
+ #define DSI_HFP_WC		0x58
+@@ -162,6 +163,7 @@ struct phy;
+ struct mtk_dsi_driver_data {
+ 	const u32 reg_cmdq_off;
+ 	bool has_shadow_ctl;
++	bool has_size_ctl;
+ };
+ 
+ struct mtk_dsi {
+@@ -430,6 +432,10 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
+ 	writel(vm->vfront_porch, dsi->regs + DSI_VFP_NL);
+ 	writel(vm->vactive, dsi->regs + DSI_VACT_NL);
+ 
++	if (dsi->driver_data->has_size_ctl)
++		writel(vm->vactive << 16 | vm->hactive,
++		       dsi->regs + DSI_SIZE_CON);
++
+ 	horizontal_sync_active_byte = (vm->hsync_len * dsi_tmp_buf_bpp - 10);
+ 
+ 	if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
+-- 
+2.21.0
