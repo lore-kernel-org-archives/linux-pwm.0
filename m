@@ -1,102 +1,124 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v2 2/4] backlight: Expose brightness curve type through
- sysfs
-Date: Fri, 28 Jun 2019 09:34:52 +0100
-Message-ID: <20190628083452.tlgcylwo34lxi4s6@holly.lan>
-References: <20190624203114.93277-1-mka@chromium.org>
- <20190624203114.93277-3-mka@chromium.org>
- <20190626145611.GA22348@xo-6d-61-c0.localdomain>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v5.3-rc1
+Date: Fri, 28 Jun 2019 14:00:02 +0200
+Message-ID: <20190628120002.19597-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190626145611.GA22348@xo-6d-61-c0.localdomain>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Pavel Machek <pavel@ucw.cz>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCBKdW4gMjYsIDIwMTkgYXQgMDQ6NTY6MTFQTSArMDIwMCwgUGF2ZWwgTWFjaGVrIHdy
-b3RlOgo+IEhpIQo+IAo+ID4gRXhwb3J0IHRoZSB0eXBlIG9mIHRoZSBicmlnaHRuZXNzIGN1cnZl
-IHZpYSB0aGUgbmV3IHN5c2ZzIGF0dHJpYnV0ZQo+ID4gJ3NjYWxlJy4gVGhlIHZhbHVlIG9mIHRo
-ZSBhdHRyaWJ1dGUgbWF5IGJlIGEgc2ltcGxlIHN0cmluZyBsaWtlCj4gPiAnbGluZWFyJyBvciAn
-bm9uLWxpbmVhcicsIG9yIGEgY29tcG9zaXRlIHN0cmluZyBzaW1pbGFyIHRvCj4gPiAnY29tcGF0
-aWJsZScgc3RyaW5ncyBvZiB0aGUgZGV2aWNlIHRyZWUuIEEgY29tcG9zaXRlIHN0cmluZyBjb25z
-aXN0cwo+ID4gb2YgZGlmZmVyZW50IGVsZW1lbnRzIHNlcGFyYXRlZCBieSBjb21tYXMsIHN0YXJ0
-aW5nIHdpdGggdGhlCj4gPiBtb3N0LWRldGFpbGVkIGRlc2NyaXB0aW9uIGFuZCBlbmRpbmcgd2l0
-aCB0aGUgbGVhc3QtZGV0YWlsZWQgb25lLiBBbgo+ID4gZXhhbXBsZSBmb3IgYSBjb21wb3NpdGUg
-c3RyaW5nIGlzICJjaWUtMTkzMSxwZXJjZXB0dWFsLG5vbi1saW5lYXIiCj4gPiBUaGlzIGJyaWdo
-dG5lc3MgY3VydmUgd2FzIGdlbmVyYXRlZCB3aXRoIHRoZSBDSUUgMTkzMSBhbGdvcml0aG0sIGl0
-Cj4gPiBpcyBwZXJjZXB0dWFsbHkgbGluZWFyLCBidXQgbm90IGFjdHVhbGx5IGxpbmVhciBpbiB0
-ZXJtcyBvZiB0aGUKPiA+IGVtaXR0ZWQgbGlnaHQuIElmIHVzZXJzcGFjZSBkb2Vzbid0IGtub3cg
-YWJvdXQgJ2NpZS0xOTMxJyBvcgo+ID4gJ3BlcmNlcHR1YWwnIGl0IHNob3VsZCBhdCBsZWFzdCBi
-ZSBhYmxlIHRvIGludGVycHJldCB0aGUgJ25vbi1saW5lYXInCj4gPiBwYXJ0Lgo+IAo+IEknbSBu
-b3Qgc3VyZSB0aGUgY29tbWEtc2VwYXJhdGVkIHRoaW5nIGlzIGEgZ29vZCBpZGVhLiBJZiBpdCBp
-cywgaXQgc2hvdWxkIAo+IGdvIHRvIHRoZSBEb2N1bWVudGF0aW9uLCBub3QgdG8gY2hhbmdlbG9n
-LgoKU28gSSB2aWV3ZWQgdGhlIGNvbW1hLXNlcGFyYXRlZCB0aGluZyBhcyBhbGxvdyB1cyB0byBk
-ZXNjcmliZSBmYWN0cyBhYm91dAp0aGUgc2NhbGUgdXNlZC4KCkluIHBhcnRpY3VsYXIgSSBzdXNw
-ZWN0IHRoYXQgc29tZSBjb250cm9sbGVycyB3aWxsIGJlIG5vbi1saW5lYXIgKmFuZCoKbm9uLXBl
-cmNlcHR1YWwgYW5kIHRoYXQgc29tZSB1c2Vyc3BhY2VzLCBwYXJ0aWN1bGFybHkgdGhvc2UgdGhh
-dCBhbmltYXRlCmJhY2tsaWdodCBjaGFuZ2VzLCBtYXkgY2FyZSBlbm91Z2ggYWJvdXQgdGhlIGRp
-ZmZlcmVuY2UgdG8gYXNrIHVzIHRvIGFkZAphbm90aGVyIGZhY3QgdG8gdGhlIHNldCB0aGF0IGRl
-c2NyaWJlcyB0aGF0IHNjYWxlLgoKSGF2aW5nIHNhaWQgdGhhdCBJIGRvIHNoYXJlIHlvdXIgY29u
-Y2VybiB0aGF0IHRoZSBjb21tYS1zZXBhcmF0ZWQgbGlzdAppcyBvdmVyZW5naW5lZXJlZCBhbmQg
-dGhhdCBhbGwgdXNlcnNwYWNlcyB3aWxsIGVuZCB1cCBpbXBsZW1lbnRpbmcKc29tZXRoaW5nIGxp
-a2U6CgppZiAoc3Ryc3RyKCJub24tbGluZWFyIiwgc2NhbGUpIHsKICBtb2RlID0gUEVSQ0VQVFVB
-TDsKfSBlbHNlIGlmIChzdHJzdHIoInVua25vd24iLCBzY2FsZSkgewogIG1vZGUgPSB1c2VfZXhp
-c3RpbmdfaHVlcmlzdGljKCk7Cn0gZWxzZSB7CiAgbW9kZSA9IExJTkVBUjsKfQoKCj4gPiArV2hh
-dDoJCS9zeXMvY2xhc3MvYmFja2xpZ2h0LzxiYWNrbGlnaHQ+L3NjYWxlCj4gPiArRGF0ZToJCUp1
-bmUgMjAxOQo+ID4gK0tlcm5lbFZlcnNpb246CTUuNAo+ID4gK0NvbnRhY3Q6CURhbmllbCBUaG9t
-cHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+Cj4gPiArRGVzY3JpcHRpb246Cj4gPiAr
-CQlEZXNjcmlwdGlvbiBvZiB0aGUgc2NhbGUgb2YgdGhlIGJyaWdodG5lc3MgY3VydmUuIFRoZQo+
-ID4gKwkJZGVzY3JpcHRpb24gY29uc2lzdHMgb2Ygb25lIG9yIG1vcmUgZWxlbWVudHMgc2VwYXJh
-dGVkIGJ5Cj4gPiArCQljb21tYXMsIGZyb20gdGhlIG1vc3QgZGV0YWlsZWQgdG8gdGhlIGxlYXN0
-IGRldGFpbGVkCj4gPiArCQlkZXNjcmlwdGlvbi4KPiA+ICsKPiA+ICsJCVBvc3NpYmxlIHZhbHVl
-cyBhcmU6Cj4gPiArCj4gPiArCQl1bmtub3duCj4gPiArCQkgIFRoZSBzY2FsZSBvZiB0aGUgYnJp
-Z2h0bmVzcyBjdXJ2ZSBpcyB1bmtub3duLgo+ID4gKwo+ID4gKwkJbGluZWFyCj4gPiArCQkgIFRo
-ZSBicmlnaHRuZXNzIGNoYW5nZXMgbGluZWFybHkgaW4gdGVybXMgb2YgdGhlIGVtaXR0ZWQKPiA+
-ICsJCSAgbGlnaHQsIGNoYW5nZXMgYXJlIHBlcmNlaXZlZCBhcyBub24tbGluZWFyIGJ5IHRoZSBo
-dW1hbiBleWUuCj4gPiArCj4gPiArCQlub24tbGluZWFyCj4gPiArCQkgIFRoZSBicmlnaHRuZXNz
-IGNoYW5nZXMgbm9uLWxpbmVhcmx5IGluIHRlcm1zIG9mIHRoZSBlbWl0dGVkCj4gPiArCQkgIGxp
-Z2h0LCBjaGFuZ2VzIG1pZ2h0IGJlIHBlcmNlaXZlZCBhcyBsaW5lYXIgYnkgdGhlIGh1bWFuIGV5
-ZS4KPiAKPiBub24tbGluZWFyIGlzIG5vdCB0b28gdXNlZnVsIGFzIGRlc2NyaWJlZC4KCkFncmVl
-LgoKVGhlIGlkZWEgaXMgdGhhdCBhbGxvd3MgYSB1c2Vyc3BhY2Ugd2l0aCBzaW1wbGUgYmFja2xp
-Z2h0IG5lZWRzIHRvCnNpbXBsZSBtYXAgdGhlIGJyaWdodG5lc3MgcHJvcGVydHkgZGlyZWN0bHkg
-dG8gYSBzbGlkZXIgdXNpbmcgdGhlCmFwcHJvYWNoIGFib3ZlIHdpdGhvdXQgd29ycnlpbmcgYWJv
-dXQgcGVyY2VwdHVhbCBvciAocG9zc2libGUgZnV0dXJlKQpsb2dhcml0aG1pYyBzY2FsZXMuIFN1
-Y2ggYW4gYXBwcm9hY2ggd29uJ3QgYmUgcGVyZmVjdCBidXQgaXQKcHJvYmFibHkgd29uJ3QgZmVl
-bCBob3JyaWJsZSBmb3IgdGhlIHVzZXIgZWl0aGVyLgoKQXJndWFibHkgdGhlIGRlc2NyaXB0aW9u
-cyBzaG91bGQgbW92ZSBhd2F5IGZyb20gdGhlIHJhdyBmYWN0dWFsCmFwcHJvYWNoIGFuZCBkZXNj
-cmliZSB3aGF0IGFkdmlzZSB0aGUga2VybmVsIG9mIG9mZmVyaW5nIHRoZQp1c2Vyc3BhY2UuCgoK
-PiA+ICsJCXBlcmNlcHR1YWwsbm9uLWxpbmVhcgo+ID4gKwkJICBUaGUgYnJpZ2h0bmVzcyBjaGFu
-Z2VzIG5vbi1saW5lYXJseSBpbiB0ZXJtcyBvZiB0aGUgZW1pdHRlZAo+ID4gKwkJICBsaWdodCwg
-Y2hhbmdlcyBzaG91bGQgYmUgcGVyY2VpdmVkIGFzIGxpbmVhciBieSB0aGUgaHVtYW4gZXllLgo+
-ID4gKwo+ID4gKwkJY2llLTE5MzEscGVyY2VwdHVhbCxub24tbGluZWFyCj4gPiArCQkgIFRoZSBi
-cmlnaHRuZXNzIGN1cnZlIHdhcyBjYWxjdWxhdGVkIHdpdGggdGhlIENJRSAxOTMxCj4gPiArCQkg
-IGFsZ29yaXRobS4gQnJpZ2h0bmVzcyBjaGFuZ2VzIG5vbi1saW5lYXJseSBpbiB0ZXJtcyBvZiB0
-aGUKPiA+ICsJCSAgZW1pdHRlZCBsaWdodCwgY2hhbmdlcyBzaG91bGQgYmUgcGVyY2VpdmVkIGFz
-IGxpbmVhciBieSB0aGUKPiA+ICsJCSAgaHVtYW4gZXllLgo+IAo+IElzIGl0IHVzZWZ1bCB0byBr
-bm93IGRpZmZlcmVuY2UgYmV0d2VlbiBwZXJjZXB0dWFsLCBhbmQgY2llLTE5MzE/CgpEZXBlbmRz
-IGhvdyBhc3NlcnRpdmUgdGhlIHVzZXJzcGFjZXMgYXJlIQoKSWYgdGhleSBmb2xsb3cgdGhlICJm
-aXgga2VybmVsIGJ1Z3MgaW4gdGhlIGtlcm5lbCIgbWFudHJhIHJhdGhlciB0aGFuCmltcGxlbWVu
-dCB3b3JrYXJvdW5kcyBhbmQgaGV1cmlzdGljcyB0aGVuIEkgc3VzcGVjdCBpdCB3b3VsZCBub3Qg
-YmUgdXNlZAptdWNoLgoKCj4gV291bGQgaXQgYmUgdXNlZnVsIHRvIGV4cG9ydCBhYnNvbHV0ZSB2
-YWx1ZXMgaW4gc29tZSB3ZWxsLWtub3duIHVuaXRzPwo+IAo+IElmIEknbSBpbiBkYXJrIHJvb20s
-IEkgbWF5IHdhbnQgMTAwbVcvbV4yIG9mIGJhY2tsaWdodC4uLiBBbmQgaXQgd291bGQKPiBiZSBu
-aWNlIGlmIEkgY291bGQgc2V0IHNhbWUgYmFja2xpZ2h0IGludGVuc2l0eSBvbiBhbGwgbXkgZGV2
-aWNlcwo+IGVhc2lseS4KCkknbSBhIGxpdHRsZSBzY2VwdGljYWwgdGhhdCB3ZSBjb3VsZCBjYWxp
-YnJhdGUgYW4gYWJzb2x1dGUgc2NhbGUgb24KZW5vdWdoIGRldmljZXMgZm9yIHN1Y2ggYSBwcm9w
-ZXJ0eSB0byBiZSB1c2VmdWwuIEkgdGhpbmsgaXQgd291bGQgYmUKInVua25vd24iIG9uIGFsbW9z
-dCBldmVyeSBzeXN0ZW0uCgoKRGFuaWVsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5m
-cmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0
-aW5mby9kcmktZGV2ZWw=
+Hi Linus,
+
+The following changes since commit a188339ca5a396acc588e5851ed7e19f66b0ebd9:
+
+  Linux 5.2-rc1 (2019-05-19 15:47:09 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.3-rc1
+
+for you to fetch changes up to 3d25025ce9c2f364ea4ee76f1461c8714b9c0b6d:
+
+  pwm: fsl-ftm: Make sure to unlock mutex on failure (2019-06-26 11:39:25 +0200)
+
+I'm sending this out early for this cycle because I have travel plans
+that will likely intersect with the merge window.
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v5.3-rc1
+
+This set of changes contains a new driver for SiFive SoCs as well as
+enhancements to the core (device links are used to track dependencies
+between PWM providers and consumers, support for PWM controllers via
+ACPI, sysfs will now suspend/resume PWMs that it has claimed) and
+various existing drivers.
+
+----------------------------------------------------------------
+Claudiu Beznea (1):
+      pwm: atmel-hlcdc: Add compatible for SAM9X60 HLCDC's PWM
+
+Fabrice Gasnier (5):
+      dt-bindings: pwm: stm32-lp: Document pin control sleep state
+      pwm: stm32-lp: Add power management support
+      pwm: Add consumer device link
+      dt-bindings: pwm: stm32: Add #pwm-cells
+      pwm: stm32: Use 3 cells ->of_xlate()
+
+Martin Blumenstingl (14):
+      pwm: meson: Unify the parameter list of meson_pwm_{enable, disable}
+      pwm: meson: Use devm_clk_get_optional() to get the input clock
+      pwm: meson: Use GENMASK and FIELD_PREP for the lo and hi values
+      pwm: meson: Change MISC_CLK_SEL_WIDTH to MISC_CLK_SEL_MASK
+      pwm: meson: Don't duplicate the polarity internally
+      pwm: meson: Pass struct pwm_device to meson_pwm_calc()
+      pwm: meson: Add the meson_pwm_channel data to struct meson_pwm
+      pwm: meson: Add the per-channel register offsets and bits in a struct
+      pwm: meson: Move pwm_set_chip_data() to meson_pwm_request()
+      pwm: meson: Simplify the calculation of the pre-divider and count
+      pwm: meson: Read the full hardware state in meson_pwm_get_state()
+      pwm: meson: Don't cache struct pwm_state internally
+      pwm: meson: Add support PWM_POLARITY_INVERSED when disabling
+      pwm: meson: Add documentation to the driver
+
+Neil Armstrong (2):
+      pwm: meson: Update with SPDX Licence identifier
+      pwm: meson: Fix the G12A AO clock parents order
+
+Nikolaus Voss (2):
+      pwm: Add support referencing PWMs from ACPI
+      leds: pwm: Support ACPI via firmware-node framework
+
+Patrick Havelange (2):
+      pwm: fsl-ftm: More relaxed permissions for updating period
+      pwm: fsl-ftm: Use write protection for prescaler & polarity
+
+Paul Cercueil (4):
+      dt-bindings: pwm: jz47xx: Remove unused compatible strings
+      pwm: jz4740: Remove unused devicetree compatible strings
+      pwm: jz4740: Apply configuration atomically
+      pwm: jz4740: Force TCU2 channels to return to their init level
+
+Sean Young (1):
+      pwm: bcm2835: Improve precision of PWM
+
+Thierry Reding (1):
+      pwm: fsl-ftm: Make sure to unlock mutex on failure
+
+Yash Shah (2):
+      pwm: sifive: Add DT documentation for SiFive PWM Controller
+      pwm: sifive: Add a driver for SiFive SoC PWM
+
+Yoshihiro Shimoda (3):
+      pwm: Add power management descriptions
+      pwm: sysfs: Add suspend/resume support
+      pwm: rcar: Remove suspend/resume support
+
+ .../devicetree/bindings/pwm/ingenic,jz47xx-pwm.txt |   5 +-
+ .../devicetree/bindings/pwm/pwm-sifive.txt         |  33 ++
+ .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |   9 +-
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |   3 +
+ Documentation/pwm.txt                              |   7 +
+ drivers/leds/leds-pwm.c                            |  45 ++-
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/core.c                                 | 172 ++++++++-
+ drivers/pwm/pwm-atmel-hlcdc.c                      |   1 +
+ drivers/pwm/pwm-bcm2835.c                          |   8 +-
+ drivers/pwm/pwm-fsl-ftm.c                          | 383 ++++++++++----------
+ drivers/pwm/pwm-jz4740.c                           |  49 ++-
+ drivers/pwm/pwm-meson.c                            | 386 ++++++++++-----------
+ drivers/pwm/pwm-rcar.c                             |  39 ---
+ drivers/pwm/pwm-sifive.c                           | 339 ++++++++++++++++++
+ drivers/pwm/pwm-stm32-lp.c                         |  25 ++
+ drivers/pwm/pwm-stm32.c                            |   2 +
+ drivers/pwm/sysfs.c                                | 102 ++++++
+ include/linux/pwm.h                                |  16 +-
+ 20 files changed, 1154 insertions(+), 482 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sifive.txt
+ create mode 100644 drivers/pwm/pwm-sifive.c
