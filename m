@@ -1,72 +1,102 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v2 4/4] backlight: pwm_bl: Set scale type for brightness
- curves specified in the DT
-Date: Fri, 28 Jun 2019 10:18:06 +0200
-Message-ID: <20190628081806.GA31375@amd>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH v2 2/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Fri, 28 Jun 2019 09:34:52 +0100
+Message-ID: <20190628083452.tlgcylwo34lxi4s6@holly.lan>
 References: <20190624203114.93277-1-mka@chromium.org>
- <20190624203114.93277-5-mka@chromium.org>
- <20190626145617.GB22348@xo-6d-61-c0.localdomain>
- <20190628075516.dwev7fxz7kmox2i2@holly.lan>
+ <20190624203114.93277-3-mka@chromium.org>
+ <20190626145611.GA22348@xo-6d-61-c0.localdomain>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20190628075516.dwev7fxz7kmox2i2@holly.lan>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
+In-Reply-To: <20190626145611.GA22348@xo-6d-61-c0.localdomain>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Pavel Machek <pavel@ucw.cz>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
---gKMricLos+KVdGMg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri 2019-06-28 08:55:16, Daniel Thompson wrote:
-> On Wed, Jun 26, 2019 at 04:56:18PM +0200, Pavel Machek wrote:
-> > On Mon 2019-06-24 13:31:13, Matthias Kaehlcke wrote:
-> > > Check if a brightness curve specified in the device tree is linear or
-> > > not and set the corresponding property accordingly. This makes the
-> > > scale type available to userspace via the 'scale' sysfs attribute.
-> > >=20
-> > > To determine if a curve is linear it is compared to a interpolated li=
-near
-> > > curve between min and max brightness. The curve is considered linear =
-if
-> > > no value deviates more than +/-5% of ${brightness_range} from their
-> > > interpolated value.
-> >=20
-> > I don't think this works. Some hardware does takes brightness in percep=
-tual units,
-> > converting it in the LED controller.
->=20
-> This check is exclusive to PWM backlights so I'd like to double check
-> that you are thinking specifically of hardware that takes it's signal
-> from the PWM and works in perceptual units?
-
-I missed that details. Taking PWM input then converting it to
-perceptual units would indeed be strange.
-
-Sorry,
-									Pavel
-
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---gKMricLos+KVdGMg
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAl0VzT4ACgkQMOfwapXb+vJHvwCfXWJZfJ+NpPdPg9PEDds9PM6A
-2PkAoKvMuJ+sLPxMlK+cBeBefsVNKEOi
-=vu5D
------END PGP SIGNATURE-----
-
---gKMricLos+KVdGMg--
+T24gV2VkLCBKdW4gMjYsIDIwMTkgYXQgMDQ6NTY6MTFQTSArMDIwMCwgUGF2ZWwgTWFjaGVrIHdy
+b3RlOgo+IEhpIQo+IAo+ID4gRXhwb3J0IHRoZSB0eXBlIG9mIHRoZSBicmlnaHRuZXNzIGN1cnZl
+IHZpYSB0aGUgbmV3IHN5c2ZzIGF0dHJpYnV0ZQo+ID4gJ3NjYWxlJy4gVGhlIHZhbHVlIG9mIHRo
+ZSBhdHRyaWJ1dGUgbWF5IGJlIGEgc2ltcGxlIHN0cmluZyBsaWtlCj4gPiAnbGluZWFyJyBvciAn
+bm9uLWxpbmVhcicsIG9yIGEgY29tcG9zaXRlIHN0cmluZyBzaW1pbGFyIHRvCj4gPiAnY29tcGF0
+aWJsZScgc3RyaW5ncyBvZiB0aGUgZGV2aWNlIHRyZWUuIEEgY29tcG9zaXRlIHN0cmluZyBjb25z
+aXN0cwo+ID4gb2YgZGlmZmVyZW50IGVsZW1lbnRzIHNlcGFyYXRlZCBieSBjb21tYXMsIHN0YXJ0
+aW5nIHdpdGggdGhlCj4gPiBtb3N0LWRldGFpbGVkIGRlc2NyaXB0aW9uIGFuZCBlbmRpbmcgd2l0
+aCB0aGUgbGVhc3QtZGV0YWlsZWQgb25lLiBBbgo+ID4gZXhhbXBsZSBmb3IgYSBjb21wb3NpdGUg
+c3RyaW5nIGlzICJjaWUtMTkzMSxwZXJjZXB0dWFsLG5vbi1saW5lYXIiCj4gPiBUaGlzIGJyaWdo
+dG5lc3MgY3VydmUgd2FzIGdlbmVyYXRlZCB3aXRoIHRoZSBDSUUgMTkzMSBhbGdvcml0aG0sIGl0
+Cj4gPiBpcyBwZXJjZXB0dWFsbHkgbGluZWFyLCBidXQgbm90IGFjdHVhbGx5IGxpbmVhciBpbiB0
+ZXJtcyBvZiB0aGUKPiA+IGVtaXR0ZWQgbGlnaHQuIElmIHVzZXJzcGFjZSBkb2Vzbid0IGtub3cg
+YWJvdXQgJ2NpZS0xOTMxJyBvcgo+ID4gJ3BlcmNlcHR1YWwnIGl0IHNob3VsZCBhdCBsZWFzdCBi
+ZSBhYmxlIHRvIGludGVycHJldCB0aGUgJ25vbi1saW5lYXInCj4gPiBwYXJ0Lgo+IAo+IEknbSBu
+b3Qgc3VyZSB0aGUgY29tbWEtc2VwYXJhdGVkIHRoaW5nIGlzIGEgZ29vZCBpZGVhLiBJZiBpdCBp
+cywgaXQgc2hvdWxkIAo+IGdvIHRvIHRoZSBEb2N1bWVudGF0aW9uLCBub3QgdG8gY2hhbmdlbG9n
+LgoKU28gSSB2aWV3ZWQgdGhlIGNvbW1hLXNlcGFyYXRlZCB0aGluZyBhcyBhbGxvdyB1cyB0byBk
+ZXNjcmliZSBmYWN0cyBhYm91dAp0aGUgc2NhbGUgdXNlZC4KCkluIHBhcnRpY3VsYXIgSSBzdXNw
+ZWN0IHRoYXQgc29tZSBjb250cm9sbGVycyB3aWxsIGJlIG5vbi1saW5lYXIgKmFuZCoKbm9uLXBl
+cmNlcHR1YWwgYW5kIHRoYXQgc29tZSB1c2Vyc3BhY2VzLCBwYXJ0aWN1bGFybHkgdGhvc2UgdGhh
+dCBhbmltYXRlCmJhY2tsaWdodCBjaGFuZ2VzLCBtYXkgY2FyZSBlbm91Z2ggYWJvdXQgdGhlIGRp
+ZmZlcmVuY2UgdG8gYXNrIHVzIHRvIGFkZAphbm90aGVyIGZhY3QgdG8gdGhlIHNldCB0aGF0IGRl
+c2NyaWJlcyB0aGF0IHNjYWxlLgoKSGF2aW5nIHNhaWQgdGhhdCBJIGRvIHNoYXJlIHlvdXIgY29u
+Y2VybiB0aGF0IHRoZSBjb21tYS1zZXBhcmF0ZWQgbGlzdAppcyBvdmVyZW5naW5lZXJlZCBhbmQg
+dGhhdCBhbGwgdXNlcnNwYWNlcyB3aWxsIGVuZCB1cCBpbXBsZW1lbnRpbmcKc29tZXRoaW5nIGxp
+a2U6CgppZiAoc3Ryc3RyKCJub24tbGluZWFyIiwgc2NhbGUpIHsKICBtb2RlID0gUEVSQ0VQVFVB
+TDsKfSBlbHNlIGlmIChzdHJzdHIoInVua25vd24iLCBzY2FsZSkgewogIG1vZGUgPSB1c2VfZXhp
+c3RpbmdfaHVlcmlzdGljKCk7Cn0gZWxzZSB7CiAgbW9kZSA9IExJTkVBUjsKfQoKCj4gPiArV2hh
+dDoJCS9zeXMvY2xhc3MvYmFja2xpZ2h0LzxiYWNrbGlnaHQ+L3NjYWxlCj4gPiArRGF0ZToJCUp1
+bmUgMjAxOQo+ID4gK0tlcm5lbFZlcnNpb246CTUuNAo+ID4gK0NvbnRhY3Q6CURhbmllbCBUaG9t
+cHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+Cj4gPiArRGVzY3JpcHRpb246Cj4gPiAr
+CQlEZXNjcmlwdGlvbiBvZiB0aGUgc2NhbGUgb2YgdGhlIGJyaWdodG5lc3MgY3VydmUuIFRoZQo+
+ID4gKwkJZGVzY3JpcHRpb24gY29uc2lzdHMgb2Ygb25lIG9yIG1vcmUgZWxlbWVudHMgc2VwYXJh
+dGVkIGJ5Cj4gPiArCQljb21tYXMsIGZyb20gdGhlIG1vc3QgZGV0YWlsZWQgdG8gdGhlIGxlYXN0
+IGRldGFpbGVkCj4gPiArCQlkZXNjcmlwdGlvbi4KPiA+ICsKPiA+ICsJCVBvc3NpYmxlIHZhbHVl
+cyBhcmU6Cj4gPiArCj4gPiArCQl1bmtub3duCj4gPiArCQkgIFRoZSBzY2FsZSBvZiB0aGUgYnJp
+Z2h0bmVzcyBjdXJ2ZSBpcyB1bmtub3duLgo+ID4gKwo+ID4gKwkJbGluZWFyCj4gPiArCQkgIFRo
+ZSBicmlnaHRuZXNzIGNoYW5nZXMgbGluZWFybHkgaW4gdGVybXMgb2YgdGhlIGVtaXR0ZWQKPiA+
+ICsJCSAgbGlnaHQsIGNoYW5nZXMgYXJlIHBlcmNlaXZlZCBhcyBub24tbGluZWFyIGJ5IHRoZSBo
+dW1hbiBleWUuCj4gPiArCj4gPiArCQlub24tbGluZWFyCj4gPiArCQkgIFRoZSBicmlnaHRuZXNz
+IGNoYW5nZXMgbm9uLWxpbmVhcmx5IGluIHRlcm1zIG9mIHRoZSBlbWl0dGVkCj4gPiArCQkgIGxp
+Z2h0LCBjaGFuZ2VzIG1pZ2h0IGJlIHBlcmNlaXZlZCBhcyBsaW5lYXIgYnkgdGhlIGh1bWFuIGV5
+ZS4KPiAKPiBub24tbGluZWFyIGlzIG5vdCB0b28gdXNlZnVsIGFzIGRlc2NyaWJlZC4KCkFncmVl
+LgoKVGhlIGlkZWEgaXMgdGhhdCBhbGxvd3MgYSB1c2Vyc3BhY2Ugd2l0aCBzaW1wbGUgYmFja2xp
+Z2h0IG5lZWRzIHRvCnNpbXBsZSBtYXAgdGhlIGJyaWdodG5lc3MgcHJvcGVydHkgZGlyZWN0bHkg
+dG8gYSBzbGlkZXIgdXNpbmcgdGhlCmFwcHJvYWNoIGFib3ZlIHdpdGhvdXQgd29ycnlpbmcgYWJv
+dXQgcGVyY2VwdHVhbCBvciAocG9zc2libGUgZnV0dXJlKQpsb2dhcml0aG1pYyBzY2FsZXMuIFN1
+Y2ggYW4gYXBwcm9hY2ggd29uJ3QgYmUgcGVyZmVjdCBidXQgaXQKcHJvYmFibHkgd29uJ3QgZmVl
+bCBob3JyaWJsZSBmb3IgdGhlIHVzZXIgZWl0aGVyLgoKQXJndWFibHkgdGhlIGRlc2NyaXB0aW9u
+cyBzaG91bGQgbW92ZSBhd2F5IGZyb20gdGhlIHJhdyBmYWN0dWFsCmFwcHJvYWNoIGFuZCBkZXNj
+cmliZSB3aGF0IGFkdmlzZSB0aGUga2VybmVsIG9mIG9mZmVyaW5nIHRoZQp1c2Vyc3BhY2UuCgoK
+PiA+ICsJCXBlcmNlcHR1YWwsbm9uLWxpbmVhcgo+ID4gKwkJICBUaGUgYnJpZ2h0bmVzcyBjaGFu
+Z2VzIG5vbi1saW5lYXJseSBpbiB0ZXJtcyBvZiB0aGUgZW1pdHRlZAo+ID4gKwkJICBsaWdodCwg
+Y2hhbmdlcyBzaG91bGQgYmUgcGVyY2VpdmVkIGFzIGxpbmVhciBieSB0aGUgaHVtYW4gZXllLgo+
+ID4gKwo+ID4gKwkJY2llLTE5MzEscGVyY2VwdHVhbCxub24tbGluZWFyCj4gPiArCQkgIFRoZSBi
+cmlnaHRuZXNzIGN1cnZlIHdhcyBjYWxjdWxhdGVkIHdpdGggdGhlIENJRSAxOTMxCj4gPiArCQkg
+IGFsZ29yaXRobS4gQnJpZ2h0bmVzcyBjaGFuZ2VzIG5vbi1saW5lYXJseSBpbiB0ZXJtcyBvZiB0
+aGUKPiA+ICsJCSAgZW1pdHRlZCBsaWdodCwgY2hhbmdlcyBzaG91bGQgYmUgcGVyY2VpdmVkIGFz
+IGxpbmVhciBieSB0aGUKPiA+ICsJCSAgaHVtYW4gZXllLgo+IAo+IElzIGl0IHVzZWZ1bCB0byBr
+bm93IGRpZmZlcmVuY2UgYmV0d2VlbiBwZXJjZXB0dWFsLCBhbmQgY2llLTE5MzE/CgpEZXBlbmRz
+IGhvdyBhc3NlcnRpdmUgdGhlIHVzZXJzcGFjZXMgYXJlIQoKSWYgdGhleSBmb2xsb3cgdGhlICJm
+aXgga2VybmVsIGJ1Z3MgaW4gdGhlIGtlcm5lbCIgbWFudHJhIHJhdGhlciB0aGFuCmltcGxlbWVu
+dCB3b3JrYXJvdW5kcyBhbmQgaGV1cmlzdGljcyB0aGVuIEkgc3VzcGVjdCBpdCB3b3VsZCBub3Qg
+YmUgdXNlZAptdWNoLgoKCj4gV291bGQgaXQgYmUgdXNlZnVsIHRvIGV4cG9ydCBhYnNvbHV0ZSB2
+YWx1ZXMgaW4gc29tZSB3ZWxsLWtub3duIHVuaXRzPwo+IAo+IElmIEknbSBpbiBkYXJrIHJvb20s
+IEkgbWF5IHdhbnQgMTAwbVcvbV4yIG9mIGJhY2tsaWdodC4uLiBBbmQgaXQgd291bGQKPiBiZSBu
+aWNlIGlmIEkgY291bGQgc2V0IHNhbWUgYmFja2xpZ2h0IGludGVuc2l0eSBvbiBhbGwgbXkgZGV2
+aWNlcwo+IGVhc2lseS4KCkknbSBhIGxpdHRsZSBzY2VwdGljYWwgdGhhdCB3ZSBjb3VsZCBjYWxp
+YnJhdGUgYW4gYWJzb2x1dGUgc2NhbGUgb24KZW5vdWdoIGRldmljZXMgZm9yIHN1Y2ggYSBwcm9w
+ZXJ0eSB0byBiZSB1c2VmdWwuIEkgdGhpbmsgaXQgd291bGQgYmUKInVua25vd24iIG9uIGFsbW9z
+dCBldmVyeSBzeXN0ZW0uCgoKRGFuaWVsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5m
+cmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0
+aW5mby9kcmktZGV2ZWw=
