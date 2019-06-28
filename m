@@ -1,289 +1,73 @@
 From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [v5 3/3] drm/mediatek: add mipi_tx driver for mt8183
-Date: Fri, 28 Jun 2019 09:52:17 +0800
-Message-ID: <1561686737.29330.6.camel@mtksdaap41>
+Subject: Re: [v5 2/3] drm/mediatek: separate mipi_tx to different file
+Date: Fri, 28 Jun 2019 10:02:51 +0800
+Message-ID: <1561687371.29330.11.camel@mtksdaap41>
 References: <20190627025901.28418-1-jitao.shi@mediatek.com>
-         <20190627025901.28418-4-jitao.shi@mediatek.com>
+ <20190627025901.28418-3-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190627025901.28418-4-jitao.shi@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190627025901.28418-3-jitao.shi@mediatek.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-media
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sean Paul <seanpaul@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Jitao:
-
-On Thu, 2019-06-27 at 10:59 +0800, Jitao Shi wrote:
-> This patch add mt8183 mipi_tx driver.
-> And also support other chips that use the same binding and driver.
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/Makefile             |   1 +
->  drivers/gpu/drm/mediatek/mtk_mipi_tx.c        |   2 +
->  drivers/gpu/drm/mediatek/mtk_mipi_tx.h        |   1 +
->  drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c | 181 ++++++++++++++++++
->  4 files changed, 185 insertions(+)
->  create mode 100644 drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c
-> 
-> diff --git a/drivers/gpu/drm/mediatek/Makefile b/drivers/gpu/drm/mediatek/Makefile
-> index 2c8de1f5a5ee..8067a4be8311 100644
-> --- a/drivers/gpu/drm/mediatek/Makefile
-> +++ b/drivers/gpu/drm/mediatek/Makefile
-> @@ -13,6 +13,7 @@ mediatek-drm-y := mtk_disp_color.o \
->  		  mtk_dsi.o \
->  		  mtk_mipi_tx.o \
->  		  mtk_mt8173_mipi_tx.o \
-> +		  mtk_mt8183_mipi_tx.o \
->  		  mtk_dpi.o
->  
->  obj-$(CONFIG_DRM_MEDIATEK) += mediatek-drm.o
-> diff --git a/drivers/gpu/drm/mediatek/mtk_mipi_tx.c b/drivers/gpu/drm/mediatek/mtk_mipi_tx.c
-> index cdc68b88cefd..ab0fbfba5572 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_mipi_tx.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_mipi_tx.c
-> @@ -182,6 +182,8 @@ static const struct of_device_id mtk_mipi_tx_match[] = {
->  	  .data = &mt2701_mipitx_data },
->  	{ .compatible = "mediatek,mt8173-mipi-tx",
->  	  .data = &mt8173_mipitx_data },
-> +	{ .compatible = "mediatek,mt8183-mipi-tx",
-> +	  .data = &mt8183_mipitx_data },
->  	{ },
->  };
->  
-> diff --git a/drivers/gpu/drm/mediatek/mtk_mipi_tx.h b/drivers/gpu/drm/mediatek/mtk_mipi_tx.h
-> index 660726924992..3fd24563952e 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_mipi_tx.h
-> +++ b/drivers/gpu/drm/mediatek/mtk_mipi_tx.h
-> @@ -45,5 +45,6 @@ unsigned long mtk_mipi_tx_pll_recalc_rate(struct clk_hw *hw,
->  
->  extern const struct mtk_mipitx_data mt2701_mipitx_data;
->  extern const struct mtk_mipitx_data mt8173_mipitx_data;
-> +extern const struct mtk_mipitx_data mt8183_mipitx_data;
->  
->  #endif
-> diff --git a/drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c b/drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c
-> new file mode 100644
-> index 000000000000..7758bc95555c
-> --- /dev/null
-> +++ b/drivers/gpu/drm/mediatek/mtk_mt8183_mipi_tx.c
-> @@ -0,0 +1,181 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2019 MediaTek Inc.
-> + * Author: jitao.shi <jitao.shi@mediatek.com>
-> + */
-> +
-> +#include "mtk_mipi_tx.h"
-> +
-> +#define MIPITX_LANE_CON		0x000c
-> +#define RG_DSI_CPHY_T1DRV_EN		BIT(0)
-> +#define RG_DSI_ANA_CK_SEL		BIT(1)
-> +#define RG_DSI_PHY_CK_SEL		BIT(2)
-> +#define RG_DSI_CPHY_EN			BIT(3)
-> +#define RG_DSI_PHYCK_INV_EN		BIT(4)
-> +#define RG_DSI_PWR04_EN			BIT(5)
-> +#define RG_DSI_BG_LPF_EN		BIT(6)
-> +#define RG_DSI_BG_CORE_EN		BIT(7)
-> +#define RG_DSI_PAD_TIEL_SEL		BIT(8)
-> +
-> +#define MIPITX_PLL_PWR	0x0028
-> +#define MIPITX_PLL_CON0	0x002c
-> +#define MIPITX_PLL_CON1	0x0030
-> +#define MIPITX_PLL_CON2	0x0034
-> +#define MIPITX_PLL_CON3	0x0038
-> +#define MIPITX_PLL_CON4	0x003c
-> +#define RG_DSI_PLL_IBIAS		(3 << 10)
-> +
-> +#define MIPITX_D2_SW_CTL_EN	0x0144
-> +#define MIPITX_D0_SW_CTL_EN	0x0244
-> +#define MIPITX_CK_CKMODE_EN	0x0328
-> +#define DSI_CK_CKMODE_EN		BIT(0)
-> +#define MIPITX_CK_SW_CTL_EN	0x0344
-> +#define MIPITX_D1_SW_CTL_EN	0x0444
-> +#define MIPITX_D3_SW_CTL_EN	0x0544
-> +#define DSI_SW_CTL_EN			BIT(0)
-> +#define AD_DSI_PLL_SDM_PWR_ON		BIT(0)
-> +#define AD_DSI_PLL_SDM_ISO_EN		BIT(1)
-> +
-> +#define RG_DSI_PLL_EN			BIT(4)
-> +#define RG_DSI_PLL_POSDIV		(0x7 << 8)
-> +
-> +static int mtk_mipi_tx_pll_prepare(struct clk_hw *hw)
-> +{
-> +	struct mtk_mipi_tx *mipi_tx = mtk_mipi_tx_from_clk_hw(hw);
-> +	int ret = 0;
-> +
-> +	ret = clk_prepare(mipi_tx->ref_clk);
-
-In mtk_mipi_tx_power_on(), it calls
-
-clk_prepare_enable(mipi_tx->pll);
-
-This function break into
-
-clk_prepare(mipi_tx->pll);
-
-and
-
-clk_enable(mipi_tx->pll);
-
-
-In clk_prepare(), it would finally call into clk_core_prepare() [1], and
-you could see
-
-		ret = clk_core_prepare(core->parent);
-
-		if (core->ops->prepare)
-			ret = core->ops->prepare(core->hw);
-
-This mean, before this clock is prepare, ccf would prepare its parent
-clock, so you need not to prepare parent clock in this clock's prepare
-callback function.
-
-[1]
-https://elixir.bootlin.com/linux/v5.2-rc6/source/drivers/clk/clk.c#L836
-
-> +	if (ret < 0)
-> +		dev_err(mipi_tx->dev,
-> +			"can't prepare mipi_tx ref_clk %d\n", ret);
-> +
-> +	return ret;
-> +}
-> +
-> +static int mtk_mipi_tx_pll_enable(struct clk_hw *hw)
-> +{
-> +	struct mtk_mipi_tx *mipi_tx = mtk_mipi_tx_from_clk_hw(hw);
-> +	unsigned int txdiv, txdiv0;
-> +	u64 pcw;
-> +	int ret;
-> +
-> +	dev_dbg(mipi_tx->dev, "enable: %u bps\n", mipi_tx->data_rate);
-> +
-> +	if (mipi_tx->data_rate >= 2000000000) {
-> +		txdiv = 1;
-> +		txdiv0 = 0;
-> +	} else if (mipi_tx->data_rate >= 1000000000) {
-> +		txdiv = 2;
-> +		txdiv0 = 1;
-> +	} else if (mipi_tx->data_rate >= 500000000) {
-> +		txdiv = 4;
-> +		txdiv0 = 2;
-> +	} else if (mipi_tx->data_rate > 250000000) {
-> +		txdiv = 8;
-> +		txdiv0 = 3;
-> +	} else if (mipi_tx->data_rate >= 125000000) {
-> +		txdiv = 16;
-> +		txdiv0 = 4;
-> +	} else {
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = clk_enable(mipi_tx->ref_clk);
-
-Ditto.
-
-Regards,
-CK
-
-> +	if (ret < 0) {
-> +		dev_err(mipi_tx->dev,
-> +			"can't enable mipi_tx ref_clk %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_CON4, RG_DSI_PLL_IBIAS);
-> +
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_PWR_ON);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_EN);
-> +	udelay(1);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_ISO_EN);
-> +	pcw = div_u64(((u64)mipi_tx->data_rate * txdiv) << 24, 26000000);
-> +	writel(pcw, mipi_tx->regs + MIPITX_PLL_CON0);
-> +	mtk_mipi_tx_update_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_POSDIV,
-> +				txdiv0 << 8);
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_EN);
-> +
-> +	return 0;
-> +}
-> +
-> +static void mtk_mipi_tx_pll_unprepare(struct clk_hw *hw)
-> +{
-> +	struct mtk_mipi_tx *mipi_tx = mtk_mipi_tx_from_clk_hw(hw);
-> +
-> +	clk_unprepare(mipi_tx->ref_clk);
-> +}
-> +
-> +static void mtk_mipi_tx_pll_disable(struct clk_hw *hw)
-> +{
-> +	struct mtk_mipi_tx *mipi_tx = mtk_mipi_tx_from_clk_hw(hw);
-> +
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_CON1, RG_DSI_PLL_EN);
-> +
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_ISO_EN);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_PLL_PWR, AD_DSI_PLL_SDM_PWR_ON);
-> +	clk_disable(mipi_tx->ref_clk);
-> +}
-> +
-> +static long mtk_mipi_tx_pll_round_rate(struct clk_hw *hw, unsigned long rate,
-> +				       unsigned long *prate)
-> +{
-> +	return clamp_val(rate, 50000000, 1600000000);
-> +}
-> +
-> +static const struct clk_ops mtk_mipi_tx_pll_ops = {
-> +	.prepare = mtk_mipi_tx_pll_prepare,
-> +	.enable = mtk_mipi_tx_pll_enable,
-> +	.unprepare = mtk_mipi_tx_pll_unprepare,
-> +	.disable = mtk_mipi_tx_pll_disable,
-> +	.round_rate = mtk_mipi_tx_pll_round_rate,
-> +	.set_rate = mtk_mipi_tx_pll_set_rate,
-> +	.recalc_rate = mtk_mipi_tx_pll_recalc_rate,
-> +};
-> +
-> +static void mtk_mipi_tx_power_on_signal(struct phy *phy)
-> +{
-> +	struct mtk_mipi_tx *mipi_tx = phy_get_drvdata(phy);
-> +
-> +	/* BG_LPF_EN / BG_CORE_EN */
-> +	writel(RG_DSI_PAD_TIEL_SEL | RG_DSI_BG_CORE_EN,
-> +	       mipi_tx->regs + MIPITX_LANE_CON);
-> +	usleep_range(30, 100);
-> +	writel(RG_DSI_BG_CORE_EN | RG_DSI_BG_LPF_EN,
-> +	       mipi_tx->regs + MIPITX_LANE_CON);
-> +
-> +	/* Switch OFF each Lane */
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_D0_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_D1_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_D2_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_D3_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_clear_bits(mipi_tx, MIPITX_CK_SW_CTL_EN, DSI_SW_CTL_EN);
-> +
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_CK_CKMODE_EN, DSI_CK_CKMODE_EN);
-> +}
-> +
-> +static void mtk_mipi_tx_power_off_signal(struct phy *phy)
-> +{
-> +	struct mtk_mipi_tx *mipi_tx = phy_get_drvdata(phy);
-> +
-> +	/* Switch ON each Lane */
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_D0_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_D1_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_D2_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_D3_SW_CTL_EN, DSI_SW_CTL_EN);
-> +	mtk_mipi_tx_set_bits(mipi_tx, MIPITX_CK_SW_CTL_EN, DSI_SW_CTL_EN);
-> +
-> +	writel(RG_DSI_PAD_TIEL_SEL | RG_DSI_BG_CORE_EN,
-> +	       mipi_tx->regs + MIPITX_LANE_CON);
-> +	writel(RG_DSI_PAD_TIEL_SEL, mipi_tx->regs + MIPITX_LANE_CON);
-> +}
-> +
-> +const struct mtk_mipitx_data mt8183_mipitx_data = {
-> +	.mipi_tx_clk_ops = &mtk_mipi_tx_pll_ops,
-> +	.mipi_tx_enable_signal = mtk_mipi_tx_power_on_signal,
-> +	.mipi_tx_disable_signal = mtk_mipi_tx_power_off_signal,
-> +};
-> +
+SGksIEppdGFvOgoKT24gVGh1LCAyMDE5LTA2LTI3IGF0IDEwOjU5ICswODAwLCBKaXRhbyBTaGkg
+d3JvdGU6Cj4gRGlmZmVyZW50IElDIGhhcyBkaWZmZXJlbnQgbWlwaV90eCBzZXR0aW5nIG9mIGRz
+aS4KPiBUaGlzIHBhdGNoIHNlcGFyYXRlcyB0aGUgbWlwaV90eCBoYXJkd2FyZSByZWxhdGUgcGFy
+dCBmb3IgbXQ4MTczLgo+IAo+IFNpZ25lZC1vZmYtYnk6IEppdGFvIFNoaSA8aml0YW8uc2hpQG1l
+ZGlhdGVrLmNvbT4KPiBSZXZpZXdlZC1ieTogQ0sgSHUgPGNrLmh1QG1lZGlhdGVrLmNvbT4KPiAt
+LS0KPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL01ha2VmaWxlICAgICAgICAgICAgIHwgICAx
+ICsKPiAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19taXBpX3R4LmMgICAgICAgIHwgMzQz
+ICsrLS0tLS0tLS0tLS0tLS0tLQo+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX21pcGlf
+dHguaCAgICAgICAgfCAgNDkgKysrCj4gIGRyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfbXQ4
+MTczX21pcGlfdHguYyB8IDI4OSArKysrKysrKysrKysrKysKPiAgNCBmaWxlcyBjaGFuZ2VkLCAz
+NjMgaW5zZXJ0aW9ucygrKSwgMzE5IGRlbGV0aW9ucygtKQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQg
+ZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19taXBpX3R4LmgKPiAgY3JlYXRlIG1vZGUgMTAw
+NjQ0IGRyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfbXQ4MTczX21pcGlfdHguYwo+IAoKW3Nu
+aXBdCgo+IEBAIC0zOTEsMTAgKzEwMSw4IEBAIHN0YXRpYyBpbnQgbXRrX21pcGlfdHhfcHJvYmUo
+c3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgCXN0cnVjdCBkZXZpY2UgKmRldiA9ICZw
+ZGV2LT5kZXY7Cj4gIAlzdHJ1Y3QgbXRrX21pcGlfdHggKm1pcGlfdHg7Cj4gIAlzdHJ1Y3QgcmVz
+b3VyY2UgKm1lbTsKPiAtCXN0cnVjdCBjbGsgKnJlZl9jbGs7Cj4gIAljb25zdCBjaGFyICpyZWZf
+Y2xrX25hbWU7Cj4gIAlzdHJ1Y3QgY2xrX2luaXRfZGF0YSBjbGtfaW5pdCA9IHsKPiAtCQkub3Bz
+ID0gJm10a19taXBpX3R4X3BsbF9vcHMsCj4gIAkJLm51bV9wYXJlbnRzID0gMSwKPiAgCQkucGFy
+ZW50X25hbWVzID0gKGNvbnN0IGNoYXIgKiBjb25zdCAqKSZyZWZfY2xrX25hbWUsCj4gIAkJLmZs
+YWdzID0gQ0xLX1NFVF9SQVRFX0dBVEUsCj4gQEAgLTQwOCw2ICsxMTYsNyBAQCBzdGF0aWMgaW50
+IG10a19taXBpX3R4X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gIAkJcmV0
+dXJuIC1FTk9NRU07Cj4gIAo+ICAJbWlwaV90eC0+ZHJpdmVyX2RhdGEgPSBvZl9kZXZpY2VfZ2V0
+X21hdGNoX2RhdGEoZGV2KTsKPiArCj4gIAltZW0gPSBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UocGRl
+diwgSU9SRVNPVVJDRV9NRU0sIDApOwo+ICAJbWlwaV90eC0+cmVncyA9IGRldm1faW9yZW1hcF9y
+ZXNvdXJjZShkZXYsIG1lbSk7Cj4gIAlpZiAoSVNfRVJSKG1pcGlfdHgtPnJlZ3MpKSB7Cj4gQEAg
+LTQxNiwxMyArMTI1LDE0IEBAIHN0YXRpYyBpbnQgbXRrX21pcGlfdHhfcHJvYmUoc3RydWN0IHBs
+YXRmb3JtX2RldmljZSAqcGRldikKPiAgCQlyZXR1cm4gcmV0Owo+ICAJfQo+ICAKPiAtCXJlZl9j
+bGsgPSBkZXZtX2Nsa19nZXQoZGV2LCBOVUxMKTsKPiAtCWlmIChJU19FUlIocmVmX2NsaykpIHsK
+PiAtCQlyZXQgPSBQVFJfRVJSKHJlZl9jbGspOwo+ICsJbWlwaV90eC0+cmVmX2NsayA9IGRldm1f
+Y2xrX2dldChkZXYsIE5VTEwpOwoKSSB0aGluayB5b3UgbmVlZCBub3QgdG8ga2VlcCByZWZfY2xr
+IGluIGRyaXZlciBwcml2YXRlIGRhdGEgYmVjYXVzZSB5b3UKd291bGQgbm90IHVzZSBpdCBhbnkg
+bW9yZS4KClJlZ2FyZHMsCkNLCgo+ICsJaWYgKElTX0VSUihtaXBpX3R4LT5yZWZfY2xrKSkgewo+
+ICsJCXJldCA9IFBUUl9FUlIobWlwaV90eC0+cmVmX2Nsayk7Cj4gIAkJZGV2X2VycihkZXYsICJG
+YWlsZWQgdG8gZ2V0IHJlZmVyZW5jZSBjbG9jazogJWRcbiIsIHJldCk7Cj4gIAkJcmV0dXJuIHJl
+dDsKPiAgCX0KPiAtCXJlZl9jbGtfbmFtZSA9IF9fY2xrX2dldF9uYW1lKHJlZl9jbGspOwo+ICsK
+PiArCXJlZl9jbGtfbmFtZSA9IF9fY2xrX2dldF9uYW1lKG1pcGlfdHgtPnJlZl9jbGspOwo+ICAK
+PiAgCXJldCA9IG9mX3Byb3BlcnR5X3JlYWRfc3RyaW5nKGRldi0+b2Zfbm9kZSwgImNsb2NrLW91
+dHB1dC1uYW1lcyIsCj4gIAkJCQkgICAgICAmY2xrX2luaXQubmFtZSk7Cj4gQEAgLTQzMSw2ICsx
+NDEsOCBAQCBzdGF0aWMgaW50IG10a19taXBpX3R4X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpCj4gIAkJcmV0dXJuIHJldDsKPiAgCX0KPiAgCj4gKwljbGtfaW5pdC5vcHMgPSBt
+aXBpX3R4LT5kcml2ZXJfZGF0YS0+bWlwaV90eF9jbGtfb3BzOwo+ICsKPiAgCW1pcGlfdHgtPnBs
+bF9ody5pbml0ID0gJmNsa19pbml0Owo+ICAJbWlwaV90eC0+cGxsID0gZGV2bV9jbGtfcmVnaXN0
+ZXIoZGV2LCAmbWlwaV90eC0+cGxsX2h3KTsKPiAgCWlmIChJU19FUlIobWlwaV90eC0+cGxsKSkg
+ewo+IEBAIC00NjUsMjAgKzE3NywxMiBAQCBzdGF0aWMgaW50IG10a19taXBpX3R4X3JlbW92ZShz
+dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ICAJcmV0dXJuIDA7Cj4gIH0KPiAgCgoKCgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwg
+bWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
