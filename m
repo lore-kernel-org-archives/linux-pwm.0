@@ -1,57 +1,53 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Fri, 26 Jul 2019 11:39:12 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 4/4] [RFC] Documentation: pwm: rework documentation for
- the framework
-Message-ID: <20190726093912.q6m6syroot2eqie6@pengutronix.de>
-References: <20190107194938.3004-1-u.kleine-koenig@pengutronix.de>
- <20190107194938.3004-5-u.kleine-koenig@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20190107194938.3004-5-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Return-Path: <>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH RFC 0/7] treewide: modify sh-pfc and add support pwm duty zero
+Date: Mon,  8 Jul 2019 18:07:41 +0900
+Message-Id: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 List-ID: <linux-pwm.vger.kernel.org>
+To: linus.walleij@linaro.org, geert+renesas@glider.be, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Hello Thierry,
+This patch series modifies pinctrl/sh-pfc and pwm drivers. Since the R-Car
+SoCs PWM Timer cannot output duty zero, the Salvator-X[S] board cannot
+output max_brightness. This patch series can support it.
 
-On Mon, Jan 07, 2019 at 08:49:43PM +0100, Uwe Kleine-K=F6nig wrote:
-> This is a draft for an in my eyes improved documentation describing
-> consumers, providers and backend drivers of the PWM framework.
->=20
-> The bigger changes include:
->=20
->  - sysfs description is split into a separate document (otherwise unchang=
-ed)
->  - Only the new style functions and callbacks are described; the legacy
->    stuff is just mentioned shortly in a dedicated paragraph.
->  - The expectations for the different callbacks (most importantly .apply)
->    are mentioned explicitly.
->=20
-> There is a gap in the documentation because I didn't understand the
-> .capture callback. There is no documentation about it, just two drivers
-> implementing it. I guess it is about measuring an input signal, so it see=
-ms
-> to be misplaced in the PWM framework which otherwise is just about an
-> output pin.
+I'm not sure whether pinctrl subsystem and sh-pfc driver allows
+to change the pin configuration automatically by .gpio_disable_free(),
+so that I marked "RFC" on this patch series.
 
-I'm still waiting for feedback here. AFAICT there is nothing that should
-be controversial as I intended to just describe the status quo.
+< log file >
+ # cd /sys/class/backlight/backlight
+ # echo 1 > brightness
+ # cat /sys/kernel/debug/pinctrl/e60060000.pin-controller-sh-pfc/pinmux-pins |\
+   grep -w 71
+ pin 71 (GP_2_7): e6e31000.pwm (GPIO UNCLAIMED) function pwm1 group pwm1_a
 
-Best regards
-Uwe
+ # echo 6 > brightness
+ # cat /sys/kernel/debug/pinctrl/e60060000.pin-controller-sh-pfc/pinmux-pins |\
+   grep -w 71
+ pin 71 (GP_2_7): e6e31000.pwm e6052000.gpio:459 function pwm1 group pwm1_a
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+ # echo 1 > brightness
+ # cat /sys/kernel/debug/pinctrl/e60060000.pin-controller-sh-pfc/pinmux-pins |\
+   grep -w 71
+ pin 71 (GP_2_7): e6e31000.pwm (GPIO UNCLAIMED) function pwm1 group pwm1_a
+
+
+Yoshihiro Shimoda (7):
+  pinctrl: sh-pfc: add new flags into struct sh_pfc_pin_config
+  pinctrl: sh-pfc: remove incomplete flag "cfg->type"
+  pinctrl: sh-pfc: Rollback to mux if requires when the gpio is freed
+  dt-bindings: pwm: rcar: Add specific gpios property to output duty
+    zero
+  pwm: rcar: remove a redundant condition in rcar_pwm_apply()
+  pwm: rcar: Add gpio support to output duty zero
+  arm64: dts: renesas: salvator-common: add gpio property into pwm1
+
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  3 ++
+ arch/arm64/boot/dts/renesas/salvator-common.dtsi   |  1 +
+ drivers/pinctrl/sh-pfc/pinctrl.c                   | 44 +++++++++++-----------
+ drivers/pwm/pwm-rcar.c                             | 36 +++++++++++++++++-
+ 4 files changed, 60 insertions(+), 24 deletions(-)
+
+-- 
+2.7.4
