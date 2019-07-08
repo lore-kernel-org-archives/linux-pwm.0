@@ -1,35 +1,122 @@
 Return-Path: <>
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH RFC 4/7] dt-bindings: pwm: rcar: Add specific gpios property to output duty zero
-Date: Mon,  8 Jul 2019 18:07:45 +0900
-Message-Id: <1562576868-8124-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH RFC 2/7] pinctrl: sh-pfc: remove incomplete flag "cfg->type"
+Date: Mon,  8 Jul 2019 18:07:43 +0900
+Message-Id: <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 In-Reply-To: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linus.walleij@linaro.org, geert+renesas@glider.be, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
 Cc: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-The R-Car SoCs PWM Timer cannot output duty zero. So, this patch
-adds a specific gpio property to output it.
+The old commit c58d9c1b26e3 ("sh-pfc: Implement generic pinconf
+support") broke the cfg->type flag to PINMUX_TYPE_FUNCTION because
+sh_pfc_pinconf_set() didn't call sh_pfc_reconfig_pin().
+Now if we fix the cfg->type condition, it gets worse because:
+ - Some drivers might be deferred so that .set_mux() will be called
+   multiple times.
+ - In such the case, the sh-pfc driver returns -EBUSY even if
+   the group is the same, and then that driver fails to probe.
+
+Since the pinctrl subsystem already has such conditions according
+to @set_mux and @gpio_request_enable, this patch just remove
+the incomplete flag from sh-pfc/pinctrl.c.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pinctrl/sh-pfc/pinctrl.c | 26 --------------------------
+ 1 file changed, 26 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-index fbd6a4f..6acaaeb 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-+++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-@@ -26,6 +26,9 @@ Required Properties:
- - pinctrl-0: phandle, referring to a default pin configuration node.
- - pinctrl-names: Set to "default".
+diff --git a/drivers/pinctrl/sh-pfc/pinctrl.c b/drivers/pinctrl/sh-pfc/pinctrl.c
+index 157b257..7e5aca2 100644
+--- a/drivers/pinctrl/sh-pfc/pinctrl.c
++++ b/drivers/pinctrl/sh-pfc/pinctrl.c
+@@ -26,7 +26,6 @@
+ #include "../pinconf.h"
  
-+Optional properties:
-+- renesas,duty-zero-gpios: Specify GPIO for outputting duty zero.
-+
- Example: R8A7743 (RZ/G1M) PWM Timer node
+ struct sh_pfc_pin_config {
+-	u32 type;
+ 	bool mux_set;
+ 	bool gpio_enabled;
+ };
+@@ -354,16 +353,6 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
+ 	spin_lock_irqsave(&pfc->lock, flags);
  
- 	pwm0: pwm@e6e30000 {
+ 	for (i = 0; i < grp->nr_pins; ++i) {
+-		int idx = sh_pfc_get_pin_index(pfc, grp->pins[i]);
+-		struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
+-
+-		if (cfg->type != PINMUX_TYPE_NONE) {
+-			ret = -EBUSY;
+-			goto done;
+-		}
+-	}
+-
+-	for (i = 0; i < grp->nr_pins; ++i) {
+ 		ret = sh_pfc_config_mux(pfc, grp->mux[i], PINMUX_TYPE_FUNCTION);
+ 		if (ret < 0)
+ 			goto done;
+@@ -395,14 +384,6 @@ static int sh_pfc_gpio_request_enable(struct pinctrl_dev *pctldev,
+ 
+ 	spin_lock_irqsave(&pfc->lock, flags);
+ 
+-	if (cfg->type != PINMUX_TYPE_NONE) {
+-		dev_err(pfc->dev,
+-			"Pin %u is busy, can't configure it as GPIO.\n",
+-			offset);
+-		ret = -EBUSY;
+-		goto done;
+-	}
+-
+ 	if (!pfc->gpio) {
+ 		/* If GPIOs are handled externally the pin mux type need to be
+ 		 * set to GPIO here.
+@@ -414,7 +395,6 @@ static int sh_pfc_gpio_request_enable(struct pinctrl_dev *pctldev,
+ 			goto done;
+ 	}
+ 
+-	cfg->type = PINMUX_TYPE_GPIO;
+ 	cfg->gpio_enabled = true;
+ 
+ 	ret = 0;
+@@ -436,7 +416,6 @@ static void sh_pfc_gpio_disable_free(struct pinctrl_dev *pctldev,
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&pfc->lock, flags);
+-	cfg->type = PINMUX_TYPE_NONE;
+ 	cfg->gpio_enabled = false;
+ 	spin_unlock_irqrestore(&pfc->lock, flags);
+ }
+@@ -450,7 +429,6 @@ static int sh_pfc_gpio_set_direction(struct pinctrl_dev *pctldev,
+ 	int new_type = input ? PINMUX_TYPE_INPUT : PINMUX_TYPE_OUTPUT;
+ 	int idx = sh_pfc_get_pin_index(pfc, offset);
+ 	const struct sh_pfc_pin *pin = &pfc->info->pins[idx];
+-	struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
+ 	unsigned long flags;
+ 	unsigned int dir;
+ 	int ret;
+@@ -470,8 +448,6 @@ static int sh_pfc_gpio_set_direction(struct pinctrl_dev *pctldev,
+ 	if (ret < 0)
+ 		goto done;
+ 
+-	cfg->type = new_type;
+-
+ done:
+ 	spin_unlock_irqrestore(&pfc->lock, flags);
+ 	return ret;
+@@ -794,13 +770,11 @@ static int sh_pfc_map_pins(struct sh_pfc *pfc, struct sh_pfc_pinctrl *pmx)
+ 
+ 	for (i = 0; i < pfc->info->nr_pins; ++i) {
+ 		const struct sh_pfc_pin *info = &pfc->info->pins[i];
+-		struct sh_pfc_pin_config *cfg = &pmx->configs[i];
+ 		struct pinctrl_pin_desc *pin = &pmx->pins[i];
+ 
+ 		/* If the pin number is equal to -1 all pins are considered */
+ 		pin->number = info->pin != (u16)-1 ? info->pin : i;
+ 		pin->name = info->name;
+-		cfg->type = PINMUX_TYPE_NONE;
+ 	}
+ 
+ 	return 0;
 -- 
 2.7.4
