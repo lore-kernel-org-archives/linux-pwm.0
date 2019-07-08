@@ -1,34 +1,105 @@
 Return-Path: <>
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH RFC 5/7] pwm: rcar: remove a redundant condition in rcar_pwm_apply()
-Date: Mon,  8 Jul 2019 18:07:46 +0900
-Message-Id: <1562576868-8124-6-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH RFC 6/7] pwm: rcar: Add gpio support to output duty zero
+Date: Mon,  8 Jul 2019 18:07:47 +0900
+Message-Id: <1562576868-8124-7-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 In-Reply-To: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linus.walleij@linaro.org, geert+renesas@glider.be, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
 Cc: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Since the rcar_pwm_apply() has already check whehter state->enabled
-is not set or not, this patch removes a redundant condition.
+The R-Car SoCs PWM Timer cannot output duty zero. So, this patch
+adds gpio support to output it.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/pwm/pwm-rcar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-rcar.c | 36 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 34 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 5b2b8ec..c8cd43f 100644
+index c8cd43f..1c19a8b 100644
 --- a/drivers/pwm/pwm-rcar.c
 +++ b/drivers/pwm/pwm-rcar.c
-@@ -187,7 +187,7 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/clk.h>
+ #include <linux/err.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/io.h>
+ #include <linux/log2.h>
+ #include <linux/math64.h>
+@@ -38,6 +39,7 @@ struct rcar_pwm_chip {
+ 	struct pwm_chip chip;
+ 	void __iomem *base;
+ 	struct clk *clk;
++	struct gpio_desc *gpio;
+ };
+ 
+ static inline struct rcar_pwm_chip *to_rcar_pwm_chip(struct pwm_chip *chip)
+@@ -119,8 +121,11 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
+ 	ph = tmp & RCAR_PWMCNT_PH0_MASK;
+ 
+ 	/* Avoid prohibited setting */
+-	if (cyc == 0 || ph == 0)
++	if (cyc == 0)
+ 		return -EINVAL;
++	/* Try to use GPIO to output duty zero */
++	if (ph == 0)
++		return -EAGAIN;
+ 
+ 	rcar_pwm_write(rp, cyc | ph, RCAR_PWMCNT);
+ 
+@@ -157,6 +162,28 @@ static void rcar_pwm_disable(struct rcar_pwm_chip *rp)
+ 	rcar_pwm_update(rp, RCAR_PWMCR_EN0, 0, RCAR_PWMCR);
+ }
+ 
++static int rcar_pwm_gpiod_get(struct rcar_pwm_chip *rp)
++{
++	if (rp->gpio)
++		return 0;
++
++	rp->gpio = gpiod_get(rp->chip.dev, "renesas,duty-zero", GPIOD_OUT_LOW);
++	if (!IS_ERR(rp->gpio))
++		return 0;
++
++	rp->gpio = NULL;
++	return -EINVAL;
++}
++
++static void rcar_pwm_gpiod_put(struct rcar_pwm_chip *rp)
++{
++	if (!rp->gpio)
++		return;
++
++	gpiod_put(rp->gpio);
++	rp->gpio = NULL;
++}
++
+ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  struct pwm_state *state)
+ {
+@@ -171,6 +198,7 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	if (!state->enabled) {
+ 		rcar_pwm_disable(rp);
++		rcar_pwm_gpiod_put(rp);
+ 		return 0;
+ 	}
+ 
+@@ -187,8 +215,12 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	/* The SYNC should be set to 0 even if rcar_pwm_set_counter failed */
  	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
  
--	if (!ret && state->enabled)
-+	if (!ret)
+-	if (!ret)
++	if (!ret) {
  		ret = rcar_pwm_enable(rp);
++		rcar_pwm_gpiod_put(rp);
++	} else if (ret == -EAGAIN) {
++		ret = rcar_pwm_gpiod_get(rp);
++	}
  
  	return ret;
+ }
 -- 
 2.7.4
