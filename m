@@ -1,7 +1,7 @@
 From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v3 3/4] backlight: pwm_bl: Set scale type for CIE 1931 curves
-Date: Tue,  9 Jul 2019 12:00:06 -0700
-Message-ID: <20190709190007.91260-4-mka@chromium.org>
+Subject: [PATCH v3 4/4] backlight: pwm_bl: Set scale type for brightness curves specified in the DT
+Date: Tue,  9 Jul 2019 12:00:07 -0700
+Message-ID: <20190709190007.91260-5-mka@chromium.org>
 References: <20190709190007.91260-1-mka@chromium.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,55 +12,76 @@ To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>,
 Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-For backlight curves calculated with the CIE 1931 algorithm set
-the brightness scale type to non-linear. This makes the scale type
-available to userspace via the 'scale' sysfs attribute.
+Check if a brightness curve specified in the device tree is linear or
+not and set the corresponding property accordingly. This makes the
+scale type available to userspace via the 'scale' sysfs attribute.
+
+To determine if a curve is linear it is compared to a interpolated linear
+curve between min and max brightness. The curve is considered linear if
+no value deviates more than +/-5% of ${brightness_range} from their
+interpolated value.
 
 Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
 ---
 Changes in v3:
-- mark scale as non-linear instead of using the CIE1931 type which
-  has been removed
-- updated commit message
+- none
 
 Changes in v2:
-- added Enric's 'Tested-by' tag
+- use 128 (power of two) instead of 100 as factor for the slope
+- add comment about max quantization error
 - added Daniel's 'Acked-by' tag
 ---
- drivers/video/backlight/pwm_bl.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/video/backlight/pwm_bl.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
 diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index fb45f866b923..7c6dfc4a601d 100644
+index 7c6dfc4a601d..fef98beb8b7e 100644
 --- a/drivers/video/backlight/pwm_bl.c
 +++ b/drivers/video/backlight/pwm_bl.c
-@@ -553,6 +553,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		goto err_alloc;
- 	}
+@@ -404,6 +404,31 @@ int pwm_backlight_brightness_default(struct device *dev,
+ }
+ #endif
  
-+	memset(&props, 0, sizeof(struct backlight_properties));
++static bool pwm_backlight_is_linear(struct platform_pwm_backlight_data *data)
++{
++	unsigned int nlevels = data->max_brightness + 1;
++	unsigned int min_val = data->levels[0];
++	unsigned int max_val = data->levels[nlevels - 1];
++	/*
++	 * Multiplying by 128 means that even in pathological cases such
++	 * as (max_val - min_val) == nlevels the error at max_val is less
++	 * than 1%.
++	 */
++	unsigned int slope = (128 * (max_val - min_val)) / nlevels;
++	unsigned int margin = (max_val - min_val) / 20; /* 5% */
++	int i;
 +
- 	if (data->levels) {
- 		/*
- 		 * For the DT case, only when brightness levels is defined
-@@ -591,6 +593,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
++	for (i = 1; i < nlevels; i++) {
++		unsigned int linear_value = min_val + ((i * slope) / 128);
++		unsigned int delta = abs(linear_value - data->levels[i]);
++
++		if (delta > margin)
++			return false;
++	}
++
++	return true;
++}
++
+ static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
+ {
+ 	struct device_node *node = pb->dev->of_node;
+@@ -567,6 +592,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
  
  			pb->levels = data->levels;
  		}
 +
-+		props.scale = BACKLIGHT_SCALE_NON_LINEAR;
- 	} else {
++		if (pwm_backlight_is_linear(data))
++			props.scale = BACKLIGHT_SCALE_LINEAR;
++		else
++			props.scale = BACKLIGHT_SCALE_NON_LINEAR;
+ 	} else if (!data->max_brightness) {
  		/*
- 		 * That only happens for the non-DT case, where platform data
-@@ -601,7 +605,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
- 
--	memset(&props, 0, sizeof(struct backlight_properties));
- 	props.type = BACKLIGHT_RAW;
- 	props.max_brightness = data->max_brightness;
- 	bl = backlight_device_register(dev_name(&pdev->dev), &pdev->dev, pb,
+ 		 * If no brightness levels are provided and max_brightness is
 -- 
 2.22.0.410.gd8fdbe21b5-goog
