@@ -1,87 +1,125 @@
 From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v3 4/4] backlight: pwm_bl: Set scale type for brightness curves specified in the DT
-Date: Tue,  9 Jul 2019 12:00:07 -0700
-Message-ID: <20190709190007.91260-5-mka@chromium.org>
+Subject: [PATCH v3 2/4] backlight: Expose brightness curve type through sysfs
+Date: Tue,  9 Jul 2019 12:00:05 -0700
+Message-ID: <20190709190007.91260-3-mka@chromium.org>
 References: <20190709190007.91260-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 In-Reply-To: <20190709190007.91260-1-mka@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Check if a brightness curve specified in the device tree is linear or
-not and set the corresponding property accordingly. This makes the
-scale type available to userspace via the 'scale' sysfs attribute.
-
-To determine if a curve is linear it is compared to a interpolated linear
-curve between min and max brightness. The curve is considered linear if
-no value deviates more than +/-5% of ${brightness_range} from their
-interpolated value.
-
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
----
-Changes in v3:
-- none
-
-Changes in v2:
-- use 128 (power of two) instead of 100 as factor for the slope
-- add comment about max quantization error
-- added Daniel's 'Acked-by' tag
----
- drivers/video/backlight/pwm_bl.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 7c6dfc4a601d..fef98beb8b7e 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -404,6 +404,31 @@ int pwm_backlight_brightness_default(struct device *dev,
- }
- #endif
- 
-+static bool pwm_backlight_is_linear(struct platform_pwm_backlight_data *data)
-+{
-+	unsigned int nlevels = data->max_brightness + 1;
-+	unsigned int min_val = data->levels[0];
-+	unsigned int max_val = data->levels[nlevels - 1];
-+	/*
-+	 * Multiplying by 128 means that even in pathological cases such
-+	 * as (max_val - min_val) == nlevels the error at max_val is less
-+	 * than 1%.
-+	 */
-+	unsigned int slope = (128 * (max_val - min_val)) / nlevels;
-+	unsigned int margin = (max_val - min_val) / 20; /* 5% */
-+	int i;
-+
-+	for (i = 1; i < nlevels; i++) {
-+		unsigned int linear_value = min_val + ((i * slope) / 128);
-+		unsigned int delta = abs(linear_value - data->levels[i]);
-+
-+		if (delta > margin)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
- static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
- {
- 	struct device_node *node = pb->dev->of_node;
-@@ -567,6 +592,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 			pb->levels = data->levels;
- 		}
-+
-+		if (pwm_backlight_is_linear(data))
-+			props.scale = BACKLIGHT_SCALE_LINEAR;
-+		else
-+			props.scale = BACKLIGHT_SCALE_NON_LINEAR;
- 	} else if (!data->max_brightness) {
- 		/*
- 		 * If no brightness levels are provided and max_brightness is
--- 
-2.22.0.410.gd8fdbe21b5-goog
+QmFja2xpZ2h0IGJyaWdodG5lc3MgY3VydmVzIGNhbiBoYXZlIGRpZmZlcmVudCBzaGFwZXMuIFRo
+ZSB0d28gbWFpbgp0eXBlcyBhcmUgbGluZWFyIGFuZCBub24tbGluZWFyIGN1cnZlcy4gVGhlIGh1
+bWFuIGV5ZSBkb2Vzbid0CnBlcmNlaXZlIGxpbmVhcmx5IGluY3JlYXNpbmcvZGVjcmVhc2luZyBi
+cmlnaHRuZXNzIGFzIGxpbmVhciAoc2VlCmFsc28gODhiYTk1YmVkYjc5ICJiYWNrbGlnaHQ6IHB3
+bV9ibDogQ29tcHV0ZSBicmlnaHRuZXNzIG9mIExFRApsaW5lYXJseSB0byBodW1hbiBleWUiKSwg
+aGVuY2UgbWFueSBiYWNrbGlnaHRzIHVzZSBub24tbGluZWFyIChvZnRlbgpsb2dhcml0aG1pYykg
+YnJpZ2h0bmVzcyBjdXJ2ZXMuIFRoZSB0eXBlIG9mIGN1cnZlIGN1cnJlbnRseSBpcyBvcGFxdWUK
+dG8gdXNlcnNwYWNlLCBzbyB1c2Vyc3BhY2Ugb2Z0ZW4gdXNlcyBtb3JlIG9yIGxlc3MgcmVsaWFi
+bGUgaGV1cmlzdGljcwoobGlrZSB0aGUgbnVtYmVyIG9mIGJyaWdodG5lc3MgbGV2ZWxzKSB0byBk
+ZWNpZGUgd2hldGhlciB0byB0cmVhdCBhCmJhY2tsaWdodCBkZXZpY2UgYXMgbGluZWFyIG9yIG5v
+bi1saW5lYXIuCgpFeHBvcnQgdGhlIHR5cGUgb2YgdGhlIGJyaWdodG5lc3MgY3VydmUgdmlhIHRo
+ZSBuZXcgc3lzZnMgYXR0cmlidXRlCidzY2FsZScuIFRoZSB2YWx1ZSBvZiB0aGUgYXR0cmlidXRl
+IGNhbiBiZSAnbGluZWFyJywgJ25vbi1saW5lYXInIG9yCid1bmtub3duJy4gRm9yIGRldmljZXMg
+dGhhdCBkb24ndCBwcm92aWRlIGluZm9ybWF0aW9uIGFib3V0IHRoZSBzY2FsZQpvZiB0aGVpciBi
+cmlnaHRuZXNzIGN1cnZlIHRoZSB2YWx1ZSBvZiB0aGUgJ3NjYWxlJyBhdHRyaWJ1dGUgaXMgJ3Vu
+a25vd24nLgoKU2lnbmVkLW9mZi1ieTogTWF0dGhpYXMgS2FlaGxja2UgPG1rYUBjaHJvbWl1bS5v
+cmc+Ci0tLQpGZWVsIGZyZWUgdG8gc3VnZ2VzdCBpbXByb3ZlbWVudHMgaW4gdGhlIGRvY3VtZW50
+YXRpb24gOikKCkNoYW5nZXMgaW4gdjM6Ci0gcmVtb3ZlZCBjb21wb3NpdGUgc3RyaW5ncywgb25s
+eSBrZWVwICdsaW5lYXInLCAnbm9uLWxpbmVhcicgYW5kCiAgJ3Vua25vd24nCi0gdXBkYXRlZCBz
+eXNmcyBhdHRyaWJ1dGUgZG9jdW1lbnRhdGlvbgotIHVwZGF0ZWQgY29tbWl0IG1lc3NhZ2UKCkNo
+YW5nZXMgaW4gdjI6Ci0gY2hhbmdlZCBvcmRlciBvZiBicmlnaHRuZXNzIHNjYWxlIGVudW1zLCBl
+eHBsaWNpdGx5IG1ha2UgJ3Vua25vd24nIHplcm8KLSBtaW5vciB1cGRhdGUgb2YgY29tbWl0IG1l
+c3NhZ2UKLSBkZWxldGVkIGV4Y2VzcyBibGFuayBsaW5lIGFmdGVyICdiYWNrbGlnaHRfc2NhbGVf
+dHlwZXMnCi0gcy9jdXJ2ZXMvY3VydmUvIGluIHN5c2ZzIGRvYwotLS0KIC4uLi9BQkkvdGVzdGlu
+Zy9zeXNmcy1jbGFzcy1iYWNrbGlnaHQgICAgICAgICB8IDI2ICsrKysrKysrKysrKysrKysrKysK
+IE1BSU5UQUlORVJTICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxICsKIGRy
+aXZlcnMvdmlkZW8vYmFja2xpZ2h0L2JhY2tsaWdodC5jICAgICAgICAgICB8IDE5ICsrKysrKysr
+KysrKysrCiBpbmNsdWRlL2xpbnV4L2JhY2tsaWdodC5oICAgICAgICAgICAgICAgICAgICAgfCAg
+OCArKysrKysKIDQgZmlsZXMgY2hhbmdlZCwgNTQgaW5zZXJ0aW9ucygrKQogY3JlYXRlIG1vZGUg
+MTAwNjQ0IERvY3VtZW50YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtY2xhc3MtYmFja2xpZ2h0Cgpk
+aWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9BQkkvdGVzdGluZy9zeXNmcy1jbGFzcy1iYWNrbGln
+aHQgYi9Eb2N1bWVudGF0aW9uL0FCSS90ZXN0aW5nL3N5c2ZzLWNsYXNzLWJhY2tsaWdodApuZXcg
+ZmlsZSBtb2RlIDEwMDY0NAppbmRleCAwMDAwMDAwMDAwMDAuLjNhYjE3NWEzZjVjYgotLS0gL2Rl
+di9udWxsCisrKyBiL0RvY3VtZW50YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtY2xhc3MtYmFja2xp
+Z2h0CkBAIC0wLDAgKzEsMjYgQEAKK1doYXQ6CQkvc3lzL2NsYXNzL2JhY2tsaWdodC88YmFja2xp
+Z2h0Pi9zY2FsZQorRGF0ZToJCUp1bHkgMjAxOQorS2VybmVsVmVyc2lvbjoJNS40CitDb250YWN0
+OglEYW5pZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPgorRGVzY3JpcHRp
+b246CisJCURlc2NyaXB0aW9uIG9mIHRoZSBzY2FsZSBvZiB0aGUgYnJpZ2h0bmVzcyBjdXJ2ZS4K
+KworCQlUaGUgaHVtYW4gZXllIHNlbnNlcyBicmlnaHRuZXNzIGFwcHJveGltYXRlbHkgbG9nYXJp
+dGhtaWNhbGx5LAorCQloZW5jZSBsaW5lYXIgY2hhbmdlcyBpbiBicmlnaHRuZXNzIGFyZSBwZXJj
+ZWl2ZWQgYXMgYmVpbmcKKwkJbm9uLWxpbmVhci4gVG8gYWNoaWV2ZSBhIGxpbmVhciBwZXJjZXB0
+aW9uIG9mIGJyaWdodG5lc3MgY2hhbmdlcworCQljb250cm9scyBsaWtlIHNsaWRlcnMgbmVlZCB0
+byBhcHBseSBhIGxvZ2FyaXRobWljIG1hcHBpbmcgZm9yCisJCWJhY2tsaWdodHMgd2l0aCBhIGxp
+bmVhciBicmlnaHRuZXNzIGN1cnZlLgorCisJCVBvc3NpYmxlIHZhbHVlcyBvZiB0aGUgYXR0cmli
+dXRlIGFyZToKKworCQl1bmtub3duCisJCSAgVGhlIHNjYWxlIG9mIHRoZSBicmlnaHRuZXNzIGN1
+cnZlIGlzIHVua25vd24uCisKKwkJbGluZWFyCisJCSAgVGhlIGJyaWdodG5lc3MgY2hhbmdlcyBs
+aW5lYXJseSB3aXRoIGVhY2ggc3RlcC4gQnJpZ2h0bmVzcworCQkgIGNvbnRyb2xzIHNob3VsZCBh
+cHBseSBhIGxvZ2FyaXRobWljIG1hcHBpbmcgZm9yIGEgbGluZWFyCisJCSAgcGVyY2VwdGlvbi4K
+KworCQlub24tbGluZWFyCisJCSAgVGhlIGJyaWdodG5lc3MgY2hhbmdlcyBub24tbGluZWFybHkg
+d2l0aCBlYWNoIHN0ZXAuIEJyaWdodG5lc3MKKwkJICBjb250cm9scyBzaG91bGQgdXNlIGEgbGlu
+ZWFyIG1hcHBpbmcgZm9yIGEgbGluZWFyIHBlcmNlcHRpb24uCmRpZmYgLS1naXQgYS9NQUlOVEFJ
+TkVSUyBiL01BSU5UQUlORVJTCmluZGV4IGQ1MWU3NDM0MDg3MC4uYzQ2ODEyNTEwYmE1IDEwMDY0
+NAotLS0gYS9NQUlOVEFJTkVSUworKysgYi9NQUlOVEFJTkVSUwpAQCAtMjg1OCw2ICsyODU4LDcg
+QEAgRjoJaW5jbHVkZS9saW51eC9iYWNrbGlnaHQuaAogRjoJaW5jbHVkZS9saW51eC9wd21fYmFj
+a2xpZ2h0LmgKIEY6CURvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9sZWRzL2JhY2ts
+aWdodAogRjoJRG9jdW1lbnRhdGlvbi9BQkkvc3RhYmxlL3N5c2ZzLWNsYXNzLWJhY2tsaWdodAor
+RjoJRG9jdW1lbnRhdGlvbi9BQkkvdGVzdGluZy9zeXNmcy1jbGFzcy1iYWNrbGlnaHQKIAogQkFU
+TUFOIEFEVkFOQ0VECiBNOglNYXJlayBMaW5kbmVyIDxtYXJla2xpbmRuZXJAbmVvbWFpbGJveC5j
+aD4KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L2JhY2tsaWdodC5jIGIvZHJp
+dmVycy92aWRlby9iYWNrbGlnaHQvYmFja2xpZ2h0LmMKaW5kZXggMWVmOGI2ZmQ2MmFjLi4yNzdh
+YmM3NmM4M2EgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L2JhY2tsaWdodC5j
+CisrKyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L2JhY2tsaWdodC5jCkBAIC0zMiw2ICszMiwx
+MiBAQCBzdGF0aWMgY29uc3QgY2hhciAqY29uc3QgYmFja2xpZ2h0X3R5cGVzW10gPSB7CiAJW0JB
+Q0tMSUdIVF9GSVJNV0FSRV0gPSAiZmlybXdhcmUiLAogfTsKIAorc3RhdGljIGNvbnN0IGNoYXIg
+KmNvbnN0IGJhY2tsaWdodF9zY2FsZV90eXBlc1tdID0geworCVtCQUNLTElHSFRfU0NBTEVfVU5L
+Tk9XTl0JPSAidW5rbm93biIsCisJW0JBQ0tMSUdIVF9TQ0FMRV9MSU5FQVJdCT0gImxpbmVhciIs
+CisJW0JBQ0tMSUdIVF9TQ0FMRV9OT05fTElORUFSXQk9ICJub24tbGluZWFyIiwKK307CisKICNp
+ZiBkZWZpbmVkKENPTkZJR19GQikgfHwgKGRlZmluZWQoQ09ORklHX0ZCX01PRFVMRSkgJiYgXAog
+CQkJICAgZGVmaW5lZChDT05GSUdfQkFDS0xJR0hUX0NMQVNTX0RFVklDRV9NT0RVTEUpKQogLyog
+VGhpcyBjYWxsYmFjayBnZXRzIGNhbGxlZCB3aGVuIHNvbWV0aGluZyBpbXBvcnRhbnQgaGFwcGVu
+cyBpbnNpZGUgYQpAQCAtMjQ2LDYgKzI1MiwxOCBAQCBzdGF0aWMgc3NpemVfdCBhY3R1YWxfYnJp
+Z2h0bmVzc19zaG93KHN0cnVjdCBkZXZpY2UgKmRldiwKIH0KIHN0YXRpYyBERVZJQ0VfQVRUUl9S
+TyhhY3R1YWxfYnJpZ2h0bmVzcyk7CiAKK3N0YXRpYyBzc2l6ZV90IHNjYWxlX3Nob3coc3RydWN0
+IGRldmljZSAqZGV2LAorCQlzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY2hhciAqYnVm
+KQoreworCXN0cnVjdCBiYWNrbGlnaHRfZGV2aWNlICpiZCA9IHRvX2JhY2tsaWdodF9kZXZpY2Uo
+ZGV2KTsKKworCWlmIChXQVJOX09OKGJkLT5wcm9wcy5zY2FsZSA+IEJBQ0tMSUdIVF9TQ0FMRV9O
+T05fTElORUFSKSkKKwkJcmV0dXJuIHNwcmludGYoYnVmLCAidW5rbm93blxuIik7CisKKwlyZXR1
+cm4gc3ByaW50ZihidWYsICIlc1xuIiwgYmFja2xpZ2h0X3NjYWxlX3R5cGVzW2JkLT5wcm9wcy5z
+Y2FsZV0pOworfQorc3RhdGljIERFVklDRV9BVFRSX1JPKHNjYWxlKTsKKwogc3RhdGljIHN0cnVj
+dCBjbGFzcyAqYmFja2xpZ2h0X2NsYXNzOwogCiAjaWZkZWYgQ09ORklHX1BNX1NMRUVQCkBAIC0y
+OTIsNiArMzEwLDcgQEAgc3RhdGljIHN0cnVjdCBhdHRyaWJ1dGUgKmJsX2RldmljZV9hdHRyc1td
+ID0gewogCSZkZXZfYXR0cl9icmlnaHRuZXNzLmF0dHIsCiAJJmRldl9hdHRyX2FjdHVhbF9icmln
+aHRuZXNzLmF0dHIsCiAJJmRldl9hdHRyX21heF9icmlnaHRuZXNzLmF0dHIsCisJJmRldl9hdHRy
+X3NjYWxlLmF0dHIsCiAJJmRldl9hdHRyX3R5cGUuYXR0ciwKIAlOVUxMLAogfTsKZGlmZiAtLWdp
+dCBhL2luY2x1ZGUvbGludXgvYmFja2xpZ2h0LmggYi9pbmNsdWRlL2xpbnV4L2JhY2tsaWdodC5o
+CmluZGV4IDBiNTg5NzQ0NmRjYS4uYzdkNmIyZThjM2I1IDEwMDY0NAotLS0gYS9pbmNsdWRlL2xp
+bnV4L2JhY2tsaWdodC5oCisrKyBiL2luY2x1ZGUvbGludXgvYmFja2xpZ2h0LmgKQEAgLTQ2LDYg
+KzQ2LDEyIEBAIGVudW0gYmFja2xpZ2h0X25vdGlmaWNhdGlvbiB7CiAJQkFDS0xJR0hUX1VOUkVH
+SVNURVJFRCwKIH07CiAKK2VudW0gYmFja2xpZ2h0X3NjYWxlIHsKKwlCQUNLTElHSFRfU0NBTEVf
+VU5LTk9XTiA9IDAsCisJQkFDS0xJR0hUX1NDQUxFX0xJTkVBUiwKKwlCQUNLTElHSFRfU0NBTEVf
+Tk9OX0xJTkVBUiwKK307CisKIHN0cnVjdCBiYWNrbGlnaHRfZGV2aWNlOwogc3RydWN0IGZiX2lu
+Zm87CiAKQEAgLTgwLDYgKzg2LDggQEAgc3RydWN0IGJhY2tsaWdodF9wcm9wZXJ0aWVzIHsKIAll
+bnVtIGJhY2tsaWdodF90eXBlIHR5cGU7CiAJLyogRmxhZ3MgdXNlZCB0byBzaWduYWwgZHJpdmVy
+cyBvZiBzdGF0ZSBjaGFuZ2VzICovCiAJdW5zaWduZWQgaW50IHN0YXRlOworCS8qIFR5cGUgb2Yg
+dGhlIGJyaWdodG5lc3Mgc2NhbGUgKGxpbmVhciwgbm9uLWxpbmVhciwgLi4uKSAqLworCWVudW0g
+YmFja2xpZ2h0X3NjYWxlIHNjYWxlOwogCiAjZGVmaW5lIEJMX0NPUkVfU1VTUEVOREVECSgxIDw8
+IDApCS8qIGJhY2tsaWdodCBpcyBzdXNwZW5kZWQgKi8KICNkZWZpbmUgQkxfQ09SRV9GQkJMQU5L
+CQkoMSA8PCAxKQkvKiBiYWNrbGlnaHQgaXMgdW5kZXIgYW4gZmIgYmxhbmsgZXZlbnQgKi8KLS0g
+CjIuMjIuMC40MTAuZ2Q4ZmRiZTIxYjUtZ29vZwoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4v
+bGlzdGluZm8vZHJpLWRldmVs
