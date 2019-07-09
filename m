@@ -1,41 +1,43 @@
 From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v3 0/4] backlight: Expose brightness curve type through sysfs
-Date: Tue,  9 Jul 2019 12:00:03 -0700
-Message-ID: <20190709190007.91260-1-mka@chromium.org>
+Subject: [PATCH v3 1/4] MAINTAINERS: Add entry for stable backlight sysfs ABI documentation
+Date: Tue,  9 Jul 2019 12:00:04 -0700
+Message-ID: <20190709190007.91260-2-mka@chromium.org>
+References: <20190709190007.91260-1-mka@chromium.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190709190007.91260-1-mka@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Matthias Kaehlcke <mka@chromium.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Backlight brightness curves can have different shapes. The two main
-types are linear and non-linear curves. The human eye doesn't
-perceive linearly increasing/decreasing brightness as linear (see
-also 88ba95bedb79 "backlight: pwm_bl: Compute brightness of LED
-linearly to human eye"), hence many backlights use non-linear (often
-logarithmic) brightness curves. The type of curve is currently opaque
-to userspace, so userspace often relies on more or less reliable
-heuristics (like the number of brightness levels) to decide whether
-to treat a backlight device as linear or non-linear.
+Add an entry for the stable backlight sysfs ABI to the MAINTAINERS
+file.
 
-Export the type of the brightness curve via a new sysfs attribute.
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+Changes in v3:
+- none
 
-Matthias Kaehlcke (4):
-  MAINTAINERS: Add entry for stable backlight sysfs ABI documentation
-  backlight: Expose brightness curve type through sysfs
-  backlight: pwm_bl: Set scale type for CIE 1931 curves
-  backlight: pwm_bl: Set scale type for brightness curves specified in
-    the DT
+Changes in v2:
+- added Daniel's 'Acked-by' tag
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
- .../ABI/testing/sysfs-class-backlight         | 26 ++++++++++++++
- MAINTAINERS                                   |  2 ++
- drivers/video/backlight/backlight.c           | 19 ++++++++++
- drivers/video/backlight/pwm_bl.c              | 35 ++++++++++++++++++-
- include/linux/backlight.h                     |  8 +++++
- 5 files changed, 89 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-backlight
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 57f496cff999..d51e74340870 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2857,6 +2857,7 @@ F:	drivers/video/backlight/
+ F:	include/linux/backlight.h
+ F:	include/linux/pwm_backlight.h
+ F:	Documentation/devicetree/bindings/leds/backlight
++F:	Documentation/ABI/stable/sysfs-class-backlight
+ 
+ BATMAN ADVANCED
+ M:	Marek Lindner <mareklindner@neomailbox.ch>
 -- 
 2.22.0.410.gd8fdbe21b5-goog
