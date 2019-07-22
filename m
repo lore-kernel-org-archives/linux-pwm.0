@@ -1,70 +1,49 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 3/6] pwm: jz4740: Apply configuration atomically
-Date: Mon, 22 Jul 2019 21:34:56 +0200
-Message-ID: <20190722193456.h4hfte5cczucermd@pengutronix.de>
-References: <20190607154410.10633-1-paul@crapouillou.net>
- <20190607154410.10633-4-paul@crapouillou.net>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v3 0/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Mon, 22 Jul 2019 16:59:26 -0700
+Message-ID: <20190722235926.GA250418@google.com>
+References: <20190709190007.91260-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190607154410.10633-4-paul@crapouillou.net>
+In-Reply-To: <20190709190007.91260-1-mka@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Paul,
+On Tue, Jul 09, 2019 at 12:00:03PM -0700, Matthias Kaehlcke wrote:
+> Backlight brightness curves can have different shapes. The two main
+> types are linear and non-linear curves. The human eye doesn't
+> perceive linearly increasing/decreasing brightness as linear (see
+> also 88ba95bedb79 "backlight: pwm_bl: Compute brightness of LED
+> linearly to human eye"), hence many backlights use non-linear (often
+> logarithmic) brightness curves. The type of curve is currently opaque
+> to userspace, so userspace often relies on more or less reliable
+> heuristics (like the number of brightness levels) to decide whether
+> to treat a backlight device as linear or non-linear.
+> 
+> Export the type of the brightness curve via a new sysfs attribute.
+> 
+> Matthias Kaehlcke (4):
+>   MAINTAINERS: Add entry for stable backlight sysfs ABI documentation
+>   backlight: Expose brightness curve type through sysfs
+>   backlight: pwm_bl: Set scale type for CIE 1931 curves
+>   backlight: pwm_bl: Set scale type for brightness curves specified in
+>     the DT
+> 
+>  .../ABI/testing/sysfs-class-backlight         | 26 ++++++++++++++
+>  MAINTAINERS                                   |  2 ++
+>  drivers/video/backlight/backlight.c           | 19 ++++++++++
+>  drivers/video/backlight/pwm_bl.c              | 35 ++++++++++++++++++-
+>  include/linux/backlight.h                     |  8 +++++
+>  5 files changed, 89 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-class-backlight
 
-On Fri, Jun 07, 2019 at 05:44:07PM +0200, Paul Cercueil wrote:
-> -static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> -			     int duty_ns, int period_ns)
-> +static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			    struct pwm_state *state)
->  {
->  	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
->  	unsigned long long tmp;
->  	unsigned long period, duty;
->  	unsigned int prescaler = 0;
->  	uint16_t ctrl;
-> -	bool is_enabled;
->  
-> -	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
-> +	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
->  	do_div(tmp, 1000000000);
->  	period = tmp;
->  
-> @@ -96,16 +95,14 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  	if (prescaler == 6)
->  		return -EINVAL;
->  
-> -	tmp = (unsigned long long)period * duty_ns;
-> -	do_div(tmp, period_ns);
-> +	tmp = (unsigned long long)period * state->duty_cycle;
-> +	do_div(tmp, state->period);
->  	duty = period - tmp;
->  
->  	if (duty >= period)
->  		duty = period - 1;
->  
-> -	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
-> -	if (is_enabled)
-> -		jz4740_pwm_disable(chip, pwm);
-> +	jz4740_pwm_disable(chip, pwm);
+ping, any comments on v3?
 
-I assume this stops the PWM. Does this complete the currently running
-period? How does the PWM behave then? (Does it still drive the output?
-If so, on which level?)
+Thanks
 
->  
->  	jz4740_timer_set_count(pwm->hwpwm, 0);
->  	jz4740_timer_set_duty(pwm->hwpwm, duty);
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Matthias
