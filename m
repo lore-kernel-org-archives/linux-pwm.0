@@ -1,36 +1,30 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [v3 3/4] dt-bindings: display: panel: add auo kd101n80-45na
- panel bindings
-Date: Mon, 22 Jul 2019 11:39:36 -0600
-Message-ID: <20190722173936.GA26950@bogus>
-References: <20190626025400.109567-1-jitao.shi@mediatek.com>
- <20190626025400.109567-4-jitao.shi@mediatek.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: sifive: remove redundant dev_err message
+Date: Mon, 22 Jul 2019 21:11:08 +0200
+Message-ID: <20190722191107.2t4pupuq54pnwanh@pengutronix.de>
+References: <1563436271-31356-1-git-send-email-dingxiang@cmss.chinamobile.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190626025400.109567-4-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Sam Ravnborg <sam@ravnborg.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Jitao Shi <jitao.shi@mediatek.com>, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sean Paul <seanpaul@chromium>
+In-Reply-To: <1563436271-31356-1-git-send-email-dingxiang@cmss.chinamobile.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ding Xiang <dingxiang@cmss.chinamobile.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCAyNiBKdW4gMjAxOSAxMDo1Mzo1OSArMDgwMCwgSml0YW8gU2hpIHdyb3RlOgo+IEFk
-ZCBkb2N1bWVudGF0aW9uIGZvciBhdW8ga2QxMDFuODAtNDVuYSBwYW5lbC4KPiAKPiBTaWduZWQt
-b2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5jb20+Cj4gUmV2aWV3ZWQtYnk6
-IFNhbSBSYXZuYm9yZyA8c2FtQHJhdm5ib3JnLm9yZz4KPiAtLS0KPiAgLi4uL2Rpc3BsYXkvcGFu
-ZWwvYXVvLGtkMTAxbjgwLTQ1bmEudHh0ICAgICAgIHwgMzQgKysrKysrKysrKysrKysrKysrKwo+
-ICAxIGZpbGUgY2hhbmdlZCwgMzQgaW5zZXJ0aW9ucygrKQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQg
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2Rpc3BsYXkvcGFuZWwvYXVvLGtkMTAx
-bjgwLTQ1bmEudHh0Cj4gCgpSZXZpZXdlZC1ieTogUm9iIEhlcnJpbmcgPHJvYmhAa2VybmVsLm9y
-Zz4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRl
-dmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8v
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+On Thu, Jul 18, 2019 at 03:51:11PM +0800, Ding Xiang wrote:
+> devm_ioremap_resource already contains error message, so remove
+> the redundant dev_err message
+> 
+> Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
