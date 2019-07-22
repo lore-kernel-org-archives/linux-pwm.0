@@ -1,23 +1,66 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [v3 1/4] dt-bindngs: display: panel: Add BOE tv101wum-n16 panel
- bindings
-Date: Mon, 22 Jul 2019 21:11:55 +0200
-Message-ID: <20190722191155.jc2z5bvayjwpe4bz@pengutronix.de>
-References: <20190626025400.109567-1-jitao.shi@mediatek.com>
- <20190626025400.109567-2-jitao.shi@mediatek.com>
+Subject: Re: [PATCH v2 3/6] pwm: jz4740: Apply configuration atomically
+Date: Mon, 22 Jul 2019 21:34:56 +0200
+Message-ID: <20190722193456.h4hfte5cczucermd@pengutronix.de>
+References: <20190607154410.10633-1-paul@crapouillou.net>
+ <20190607154410.10633-4-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190626025400.109567-2-jitao.shi@mediatek.com>
+In-Reply-To: <20190607154410.10633-4-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.o
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-$Subject ~= s/bindngs/bindings/
+Hello Paul,
+
+On Fri, Jun 07, 2019 at 05:44:07PM +0200, Paul Cercueil wrote:
+> -static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> -			     int duty_ns, int period_ns)
+> +static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			    struct pwm_state *state)
+>  {
+>  	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
+>  	unsigned long long tmp;
+>  	unsigned long period, duty;
+>  	unsigned int prescaler = 0;
+>  	uint16_t ctrl;
+> -	bool is_enabled;
+>  
+> -	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * period_ns;
+> +	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
+>  	do_div(tmp, 1000000000);
+>  	period = tmp;
+>  
+> @@ -96,16 +95,14 @@ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  	if (prescaler == 6)
+>  		return -EINVAL;
+>  
+> -	tmp = (unsigned long long)period * duty_ns;
+> -	do_div(tmp, period_ns);
+> +	tmp = (unsigned long long)period * state->duty_cycle;
+> +	do_div(tmp, state->period);
+>  	duty = period - tmp;
+>  
+>  	if (duty >= period)
+>  		duty = period - 1;
+>  
+> -	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
+> -	if (is_enabled)
+> -		jz4740_pwm_disable(chip, pwm);
+> +	jz4740_pwm_disable(chip, pwm);
+
+I assume this stops the PWM. Does this complete the currently running
+period? How does the PWM behave then? (Does it still drive the output?
+If so, on which level?)
+
+>  
+>  	jz4740_timer_set_count(pwm->hwpwm, 0);
+>  	jz4740_timer_set_duty(pwm->hwpwm, duty);
 
 Best regards
 Uwe
