@@ -1,48 +1,64 @@
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: Re: [PATCH 0/4] new driver for TI eQEP
-Date: Thu, 25 Jul 2019 21:40:37 +0900
-Message-ID: <20190725124037.GA4802@icarus>
-References: <20190722154538.5314-1-david@lechnology.com>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v3 0/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Thu, 25 Jul 2019 10:17:26 -0700
+Message-ID: <20190725171726.GD250418@google.com>
+References: <20190709190007.91260-1-mka@chromium.org>
+ <20190722235926.GA250418@google.com> <20190725111541.GA23883@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20190722154538.5314-1-david@lechnology.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Lechner <david@lechnology.com>
-Cc: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+In-Reply-To: <20190725111541.GA23883@dell>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Douglas Anderson <dianders@chromium.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 10:45:34AM -0500, David Lechner wrote:
-> This series adds device tree bindings and a new counter driver for the Texas
-> Instruments Enhanced Quadrature Encoder Pulse (eQEP).
-> 
-> As mentioned in one of the commit messages, to start with, the driver only
-> supports reading the current counter value and setting the min/max values.
-> Other features can be added on an as-needed basis.
-> 
-> The only other feature I am interested in is adding is getting time data in
-> order to calculate the rotational speed of a motor. However, there probably
-> needs to be a higher level discussion of how this can fit into the counter
-> subsystem in general first.
-
-I believe exposing some sort of time data has merit. Quadrature counter
-devices in particular are commonly used for position tracking of
-automation systems, and such systems would benefit from velocity/speed
-information. So let's try to introduce that sort of functionality in this
-driver if possible.
-
-First, let's discuss your specific use case and requirements, and hopefully we
-can generalize it enough to be of use for future drivers. From your description,
-it sounds like you're attaching some sort of rotary encoder to the eQEP device.
-Is that correct? What sort of time data are you hoping to use; does the eQEP
-device provide a clock value, or would you be grabbing a timestamp from the
-system?
-
-I'm not sure yet if it would make sense to expose rotational speed directly as
-an attribute. If we were to expose just the count value and timestamp since the
-last read, that should be enough for a user to compute the delta and derive
-speed. I'll think more about this since some devices may simplify that case if
-the hardware is able to compute the speed for us.
-
-William Breathitt Gray
+T24gVGh1LCBKdWwgMjUsIDIwMTkgYXQgMTI6MTU6NDFQTSArMDEwMCwgTGVlIEpvbmVzIHdyb3Rl
+Ogo+IE9uIE1vbiwgMjIgSnVsIDIwMTksIE1hdHRoaWFzIEthZWhsY2tlIHdyb3RlOgo+IAo+ID4g
+T24gVHVlLCBKdWwgMDksIDIwMTkgYXQgMTI6MDA6MDNQTSAtMDcwMCwgTWF0dGhpYXMgS2FlaGxj
+a2Ugd3JvdGU6Cj4gPiA+IEJhY2tsaWdodCBicmlnaHRuZXNzIGN1cnZlcyBjYW4gaGF2ZSBkaWZm
+ZXJlbnQgc2hhcGVzLiBUaGUgdHdvIG1haW4KPiA+ID4gdHlwZXMgYXJlIGxpbmVhciBhbmQgbm9u
+LWxpbmVhciBjdXJ2ZXMuIFRoZSBodW1hbiBleWUgZG9lc24ndAo+ID4gPiBwZXJjZWl2ZSBsaW5l
+YXJseSBpbmNyZWFzaW5nL2RlY3JlYXNpbmcgYnJpZ2h0bmVzcyBhcyBsaW5lYXIgKHNlZQo+ID4g
+PiBhbHNvIDg4YmE5NWJlZGI3OSAiYmFja2xpZ2h0OiBwd21fYmw6IENvbXB1dGUgYnJpZ2h0bmVz
+cyBvZiBMRUQKPiA+ID4gbGluZWFybHkgdG8gaHVtYW4gZXllIiksIGhlbmNlIG1hbnkgYmFja2xp
+Z2h0cyB1c2Ugbm9uLWxpbmVhciAob2Z0ZW4KPiA+ID4gbG9nYXJpdGhtaWMpIGJyaWdodG5lc3Mg
+Y3VydmVzLiBUaGUgdHlwZSBvZiBjdXJ2ZSBpcyBjdXJyZW50bHkgb3BhcXVlCj4gPiA+IHRvIHVz
+ZXJzcGFjZSwgc28gdXNlcnNwYWNlIG9mdGVuIHJlbGllcyBvbiBtb3JlIG9yIGxlc3MgcmVsaWFi
+bGUKPiA+ID4gaGV1cmlzdGljcyAobGlrZSB0aGUgbnVtYmVyIG9mIGJyaWdodG5lc3MgbGV2ZWxz
+KSB0byBkZWNpZGUgd2hldGhlcgo+ID4gPiB0byB0cmVhdCBhIGJhY2tsaWdodCBkZXZpY2UgYXMg
+bGluZWFyIG9yIG5vbi1saW5lYXIuCj4gPiA+IAo+ID4gPiBFeHBvcnQgdGhlIHR5cGUgb2YgdGhl
+IGJyaWdodG5lc3MgY3VydmUgdmlhIGEgbmV3IHN5c2ZzIGF0dHJpYnV0ZS4KPiA+ID4gCj4gPiA+
+IE1hdHRoaWFzIEthZWhsY2tlICg0KToKPiA+ID4gICBNQUlOVEFJTkVSUzogQWRkIGVudHJ5IGZv
+ciBzdGFibGUgYmFja2xpZ2h0IHN5c2ZzIEFCSSBkb2N1bWVudGF0aW9uCj4gPiA+ICAgYmFja2xp
+Z2h0OiBFeHBvc2UgYnJpZ2h0bmVzcyBjdXJ2ZSB0eXBlIHRocm91Z2ggc3lzZnMKPiA+ID4gICBi
+YWNrbGlnaHQ6IHB3bV9ibDogU2V0IHNjYWxlIHR5cGUgZm9yIENJRSAxOTMxIGN1cnZlcwo+ID4g
+PiAgIGJhY2tsaWdodDogcHdtX2JsOiBTZXQgc2NhbGUgdHlwZSBmb3IgYnJpZ2h0bmVzcyBjdXJ2
+ZXMgc3BlY2lmaWVkIGluCj4gPiA+ICAgICB0aGUgRFQKPiA+ID4gCj4gPiA+ICAuLi4vQUJJL3Rl
+c3Rpbmcvc3lzZnMtY2xhc3MtYmFja2xpZ2h0ICAgICAgICAgfCAyNiArKysrKysrKysrKysrKwo+
+ID4gPiAgTUFJTlRBSU5FUlMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIg
+KysKPiA+ID4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L2JhY2tsaWdodC5jICAgICAgICAgICB8
+IDE5ICsrKysrKysrKysKPiA+ID4gIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jICAg
+ICAgICAgICAgICB8IDM1ICsrKysrKysrKysrKysrKysrKy0KPiA+ID4gIGluY2x1ZGUvbGludXgv
+YmFja2xpZ2h0LmggICAgICAgICAgICAgICAgICAgICB8ICA4ICsrKysrCj4gPiA+ICA1IGZpbGVz
+IGNoYW5nZWQsIDg5IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPiA+ID4gIGNyZWF0ZSBt
+b2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL0FCSS90ZXN0aW5nL3N5c2ZzLWNsYXNzLWJhY2tsaWdo
+dAo+ID4gCj4gPiBwaW5nLCBhbnkgY29tbWVudHMgb24gdjM/Cj4gCj4gTG9va3MgbGlrZSBQQVRD
+SCAyLzQgc3RpbGwgbmVlZHMgc2VlaW5nIHRvLgoKVGhlIHBhdGNoIGN1cnJlbnRseSBkb2Vzbid0
+IGhhdmUgYW55IGNvbW1lbnRzLgoKRG8geW91IHNlZSBhbnkgc3BlY2lmaWMgdGhpbmdzIHRoYXQg
+bmVlZCBpbXByb3ZlbWVudD8gSWYgc28sIGNvdWxkIHlvdQpjb21tZW50IG9uIHRoZSBwYXRjaD8K
+ClRoYW5rcwoKTWF0dGhpYXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
+LWRldmVs
