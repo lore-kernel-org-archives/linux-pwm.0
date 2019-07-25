@@ -1,68 +1,57 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 3/6] pwm: jz4740: Apply configuration atomically
-Date: Wed, 24 Jul 2019 08:47:45 +0200
-Message-ID: <20190724064745.7ghecdpg3gmxsiim@pengutronix.de>
-References: <20190607154410.10633-1-paul@crapouillou.net>
- <20190607154410.10633-4-paul@crapouillou.net>
- <20190722193456.h4hfte5cczucermd@pengutronix.de>
- <1563914800.1918.0@crapouillou.net>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v3 0/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Thu, 25 Jul 2019 12:15:41 +0100
+Message-ID: <20190725111541.GA23883@dell>
+References: <20190709190007.91260-1-mka@chromium.org>
+ <20190722235926.GA250418@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1563914800.1918.0@crapouillou.net>
+In-Reply-To: <20190722235926.GA250418@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+To: Matthias Kaehlcke <mka@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Paul,
+On Mon, 22 Jul 2019, Matthias Kaehlcke wrote:
 
-On Tue, Jul 23, 2019 at 04:46:40PM -0400, Paul Cercueil wrote:
-> Le lun. 22 juil. 2019 ‡ 15:34, Uwe =?iso-8859-1?q?Kleine-K=F6nig?=
-> <u.kleine-koenig@pengutronix.de> a Ècrit :
-> > On Fri, Jun 07, 2019 at 05:44:07PM +0200, Paul Cercueil wrote:
-> > >  -	is_enabled = jz4740_timer_is_enabled(pwm->hwpwm);
-> > >  -	if (is_enabled)
-> > >  -		jz4740_pwm_disable(chip, pwm);
-> > >  +	jz4740_pwm_disable(chip, pwm);
+> On Tue, Jul 09, 2019 at 12:00:03PM -0700, Matthias Kaehlcke wrote:
+> > Backlight brightness curves can have different shapes. The two main
+> > types are linear and non-linear curves. The human eye doesn't
+> > perceive linearly increasing/decreasing brightness as linear (see
+> > also 88ba95bedb79 "backlight: pwm_bl: Compute brightness of LED
+> > linearly to human eye"), hence many backlights use non-linear (often
+> > logarithmic) brightness curves. The type of curve is currently opaque
+> > to userspace, so userspace often relies on more or less reliable
+> > heuristics (like the number of brightness levels) to decide whether
+> > to treat a backlight device as linear or non-linear.
 > > 
-> > I assume this stops the PWM. Does this complete the currently running
-> > period? How does the PWM behave then? (Does it still drive the output?
-> > If so, on which level?)
+> > Export the type of the brightness curve via a new sysfs attribute.
+> > 
+> > Matthias Kaehlcke (4):
+> >   MAINTAINERS: Add entry for stable backlight sysfs ABI documentation
+> >   backlight: Expose brightness curve type through sysfs
+> >   backlight: pwm_bl: Set scale type for CIE 1931 curves
+> >   backlight: pwm_bl: Set scale type for brightness curves specified in
+> >     the DT
+> > 
+> >  .../ABI/testing/sysfs-class-backlight         | 26 ++++++++++++++
+> >  MAINTAINERS                                   |  2 ++
+> >  drivers/video/backlight/backlight.c           | 19 ++++++++++
+> >  drivers/video/backlight/pwm_bl.c              | 35 ++++++++++++++++++-
+> >  include/linux/backlight.h                     |  8 +++++
+> >  5 files changed, 89 insertions(+), 1 deletion(-)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-class-backlight
 > 
-> Some PWM channels work in one mode "TCU1" and others work in "TCU2". The
-> mode in which channels work depends on the version of the SoC.
-> 
-> When stopped, the pins of TCU1 channels will be driven to the inactive
-> level (which depends on the polarity). It is unknown whether or not the
-> currently running period is completed. We set a bit to configure for
-> "abrupt shutdown", so I expect that it's not, but somebody would need
-> to hook up a logic analyzer to see what's the exact behaviour with
-> and without that bit.
+> ping, any comments on v3?
 
-This might be done even without a logic analyzer. Just do something
-like:
-
-	pwm_apply_state(pwm, { .enabled = 1, .period = 5s })
-	pwm_apply_state(pwm, { .enabled = 1, .period = 5s, .duty = 5s })
-
-and if that takes less then 5s the period is not completed.
-
-And note that "abrupt shutdown" is a bug.
-
-> TCU2 channels on the other hand will stop in the middle of a period,
-> leaving the pin hanging at whatever level it was before the stop.
-> That's the rationale behind the trick in commit 6580fd173070 ("pwm:
-> jz4740: Force TCU2 channels to return to their init level").
-
-Strange, but ok.
-
-Best regards
-Uwe
+Looks like PATCH 2/4 still needs seeing to.
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-Kˆnig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Lee Jones [ÊùéÁêºÊñØ]
+Linaro Services Technical Lead
+Linaro.org ‚îÇ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
