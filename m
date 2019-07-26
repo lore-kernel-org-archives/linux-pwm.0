@@ -1,13 +1,16 @@
 Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] pwm: jz4740: document known limitations
-Date: Tue, 30 Jul 2019 14:32:29 +0200
-Message-Id: <20190730123229.31839-1-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <1564435163.6633.4@crapouillou.net>
-References: <1564435163.6633.4@crapouillou.net>
+Date: Fri, 26 Jul 2019 11:39:12 +0200
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 4/4] [RFC] Documentation: pwm: rework documentation for
+ the framework
+Message-ID: <20190726093912.q6m6syroot2eqie6@pengutronix.de>
+References: <20190107194938.3004-1-u.kleine-koenig@pengutronix.de>
+ <20190107194938.3004-5-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190107194938.3004-5-u.kleine-koenig@pengutronix.de>
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -17,49 +20,38 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>, Paul Cercueil <paul@crapouillou.net>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
-The jz4740 PMW implementation doesn't fulfill the (up to now
-insufficiently documented) requirements of the PWM API. At least
-document them in the driver.
+Hello Thierry,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-I intended to also add a Link to the reference manual, Paul suggested to
-use https://zcrc.me/~paul/jz_docs/ in December last year, but this
-stopped to work.
+On Mon, Jan 07, 2019 at 08:49:43PM +0100, Uwe Kleine-K=F6nig wrote:
+> This is a draft for an in my eyes improved documentation describing
+> consumers, providers and backend drivers of the PWM framework.
+>=20
+> The bigger changes include:
+>=20
+>  - sysfs description is split into a separate document (otherwise unchang=
+ed)
+>  - Only the new style functions and callbacks are described; the legacy
+>    stuff is just mentioned shortly in a dedicated paragraph.
+>  - The expectations for the different callbacks (most importantly .apply)
+>    are mentioned explicitly.
+>=20
+> There is a gap in the documentation because I didn't understand the
+> .capture callback. There is no documentation about it, just two drivers
+> implementing it. I guess it is about measuring an input signal, so it see=
+ms
+> to be misplaced in the PWM framework which otherwise is just about an
+> output pin.
 
-The second item is something I noticed when reading through the manual,
-but it's not confirmed in practise. A test that this is indeed the case
-could be done by configuring a long period (say 5s) and a (in
-comparison) small duty-cycle (say 1s). If the pwm output isn't active
-when the call returns I'd consider this proven.
-
-@Paul: would you mind doing this test?
+I'm still waiting for feedback here. AFAICT there is nothing that should
+be controversial as I intended to just describe the status quo.
 
 Best regards
 Uwe
 
- drivers/pwm/pwm-jz4740.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index f901e8a0d33d..9d444d012f92 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -2,6 +2,11 @@
- /*
-  *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
-  *  JZ4740 platform PWM support
-+ *
-+ * Limitations:
-+ * - The .apply callback doesn't complete the currently running period before
-+ *   reconfiguring the hardware.
-+ * - Each period starts with the inactive part.
-  */
- 
- #include <linux/clk.h>
--- 
-2.20.1
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
