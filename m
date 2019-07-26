@@ -1,108 +1,81 @@
-From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Subject: [PATCH 2/6] pwm: sun4i: Add a quirk for reset line
-Date: Fri, 26 Jul 2019 20:40:41 +0200
-Message-ID: <20190726184045.14669-3-jernej.skrabec@siol.net>
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Subject: [PATCH 1/6] dt-bindings: pwm: allwinner: Add H6 PWM description
+Date: Fri, 26 Jul 2019 20:40:40 +0200
+Message-ID: <20190726184045.14669-2-jernej.skrabec@siol.net>
 References: <20190726184045.14669-1-jernej.skrabec@siol.net>
-Reply-To: jernej.skrabec-gGgVlfcn5nU@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDQNBWPU7YERBPES5XUQKGQEDQACVRA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20190726184045.14669-1-jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190726184045.14669-1-jernej.skrabec@siol.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com, mripard@kernel.org, wens@csie.org
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-H6 PWM core needs deasserted reset line in order to work.
+H6 PWM block is basically the same as A20 PWM, except that it also has
+bus clock and reset line which needs to be handled accordingly.
 
-Add a quirk for it.
+Expand Allwinner PWM binding with H6 PWM specifics.
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 ---
- drivers/pwm/pwm-sun4i.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 36 ++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index de78c824bbfd..1b7be8fbde86 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -16,6 +16,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/pwm.h>
-+#include <linux/reset.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/time.h>
-@@ -72,12 +73,14 @@ static const u32 prescaler_table[] = {
- 
- struct sun4i_pwm_data {
- 	bool has_prescaler_bypass;
-+	bool has_reset;
- 	unsigned int npwm;
- };
- 
- struct sun4i_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clk;
-+	struct reset_control *rst;
- 	void __iomem *base;
- 	spinlock_t ctrl_lock;
- 	const struct sun4i_pwm_data *data;
-@@ -371,6 +374,14 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pwm->clk))
- 		return PTR_ERR(pwm->clk);
- 
-+	if (pwm->data->has_reset) {
-+		pwm->rst = devm_reset_control_get(&pdev->dev, NULL);
-+		if (IS_ERR(pwm->rst))
-+			return PTR_ERR(pwm->rst);
+diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pw=
+m.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.ya=
+ml
+index 0ac52f83a58c..deca5d81802f 100644
+--- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
+@@ -30,13 +30,47 @@ properties:
+       - items:
+           - const: allwinner,sun50i-h5-pwm
+           - const: allwinner,sun5i-a13-pwm
++      - const: allwinner,sun50i-h6-pwm
+=20
+   reg:
+     maxItems: 1
+=20
+-  clocks:
++  # Even though it only applies to subschemas under the conditionals,
++  # not listing them here will trigger a warning because of the
++  # additionalsProperties set to false.
++  clocks: true
++  clock-names: true
++  resets:
+     maxItems: 1
+=20
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: allwinner,sun50i-h6-pwm
 +
-+		reset_control_deassert(pwm->rst);
-+	}
++    then:
++      properties:
++        clocks:
++          items:
++            - description: Module Clock
++            - description: Bus Clock
 +
- 	pwm->chip.dev = &pdev->dev;
- 	pwm->chip.ops = &sun4i_pwm_ops;
- 	pwm->chip.base = -1;
-@@ -383,19 +394,31 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
- 	ret = pwmchip_add(&pwm->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
--		return ret;
-+		goto err_pwm_add;
- 	}
- 
- 	platform_set_drvdata(pdev, pwm);
- 
- 	return 0;
++        clock-names:
++          items:
++            - const: pwm
++            - const: bus
 +
-+err_pwm_add:
-+	reset_control_assert(pwm->rst);
++      required:
++        - clock-names
++        - resets
 +
-+	return ret;
- }
- 
- static int sun4i_pwm_remove(struct platform_device *pdev)
- {
- 	struct sun4i_pwm_chip *pwm = platform_get_drvdata(pdev);
-+	int ret;
++    else:
++      properties:
++        clocks:
++          maxItems: 1
 +
-+	ret = pwmchip_remove(&pwm->chip);
-+	if (ret)
-+		return ret;
- 
--	return pwmchip_remove(&pwm->chip);
-+	reset_control_assert(pwm->rst);
-+
-+	return 0;
- }
- 
- static struct platform_driver sun4i_pwm_driver = {
--- 
+ required:
+   - "#pwm-cells"
+   - compatible
+--=20
 2.22.0
