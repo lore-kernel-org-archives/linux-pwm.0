@@ -1,13 +1,12 @@
 From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Subject: [PATCH 5/6] pwm: sun4i: Add support to output source
- clock directly
-Date: Fri, 26 Jul 2019 20:40:44 +0200
-Message-ID: <20190726184045.14669-6-jernej.skrabec@siol.net>
+Subject: [PATCH 3/6] pwm: sun4i: Add a quirk for bus clock
+Date: Fri, 26 Jul 2019 20:40:42 +0200
+Message-ID: <20190726184045.14669-4-jernej.skrabec@siol.net>
 References: <20190726184045.14669-1-jernej.skrabec@siol.net>
 Reply-To: jernej.skrabec-gGgVlfcn5nU@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDQNBWPU7YERBQ4S5XUQKGQEDDCD6TY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDQNBWPU7YERBPUS5XUQKGQEE7EPRTQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20190726184045.14669-1-jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -20,83 +19,68 @@ To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mripard-DgEjT+Ai2ygd
 Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-PWM core has an option to bypass whole logic and output unchanged source
-clock as PWM output. This is achieved by enabling bypass bit.
+H6 PWM core needs bus clock to be enabled in order to work.
 
-Note that when bypass is enabled, no other setting has any meaning, not
-even enable bit.
-
-This mode of operation is needed to achieve high enough frequency to
-serve as clock source for AC200 chip, which is integrated into same
-package as H6 SoC.
+Add a quirk for it.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 31 ++++++++++++++++++++++++++++++-
- 1 file changed, 30 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-sun4i.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 9e0eca79ff88..848cff26f385 100644
+index 1b7be8fbde86..7d3ac3f2dc3f 100644
 --- a/drivers/pwm/pwm-sun4i.c
 +++ b/drivers/pwm/pwm-sun4i.c
-@@ -120,6 +120,19 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip,
+@@ -72,6 +72,7 @@ static const u32 prescaler_table[] = {
+ };
  
- 	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+ struct sun4i_pwm_data {
++	bool has_bus_clock;
+ 	bool has_prescaler_bypass;
+ 	bool has_reset;
+ 	unsigned int npwm;
+@@ -79,6 +80,7 @@ struct sun4i_pwm_data {
  
-+	/*
-+	 * PWM chapter in H6 manual has a diagram which explains that if bypass
-+	 * bit is set, no other setting has any meaning. Even more, experiment
-+	 * proved that also enable bit is ignored in this case.
-+	 */
-+	if (val & BIT_CH(PWM_BYPASS, pwm->hwpwm)) {
-+		state->period = DIV_ROUND_CLOSEST_ULL(NSEC_PER_SEC, clk_rate);
-+		state->duty_cycle = state->period / 2;
-+		state->polarity = PWM_POLARITY_NORMAL;
-+		state->enabled = true;
-+		return;
+ struct sun4i_pwm_chip {
+ 	struct pwm_chip chip;
++	struct clk *bus_clk;
+ 	struct clk *clk;
+ 	struct reset_control *rst;
+ 	void __iomem *base;
+@@ -382,6 +384,16 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 		reset_control_deassert(pwm->rst);
+ 	}
+ 
++	if (pwm->data->has_bus_clock) {
++		pwm->bus_clk = devm_clk_get(&pdev->dev, "bus");
++		if (IS_ERR(pwm->bus_clk)) {
++			ret = PTR_ERR(pwm->bus_clk);
++			goto err_bus;
++		}
++
++		clk_prepare_enable(pwm->bus_clk);
 +	}
 +
- 	if ((PWM_REG_PRESCAL(val, pwm->hwpwm) == PWM_PRESCAL_MASK) &&
- 	    sun4i_pwm->data->has_prescaler_bypass)
- 		prescaler = 1;
-@@ -211,7 +224,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
- 	struct pwm_state cstate;
--	u32 ctrl;
-+	u32 ctrl, clk_rate;
-+	bool bypass;
- 	int ret;
- 	unsigned int delay_us;
- 	unsigned long now;
-@@ -226,6 +240,16 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		}
- 	}
+ 	pwm->chip.dev = &pdev->dev;
+ 	pwm->chip.ops = &sun4i_pwm_ops;
+ 	pwm->chip.base = -1;
+@@ -402,6 +414,8 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	return 0;
  
-+	/*
-+	 * Although it would make much more sense to check for bypass in
-+	 * sun4i_pwm_calculate(), value of bypass bit also depends on "enabled".
-+	 * Period is allowed to be rounded up or down.
-+	 */
-+	clk_rate = clk_get_rate(sun4i_pwm->clk);
-+	bypass = (state->period == NSEC_PER_SEC / clk_rate ||
-+		 state->period == DIV_ROUND_UP(NSEC_PER_SEC, clk_rate)) &&
-+		 state->enabled;
-+
- 	spin_lock(&sun4i_pwm->ctrl_lock);
- 	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+ err_pwm_add:
++	clk_disable_unprepare(pwm->bus_clk);
++err_bus:
+ 	reset_control_assert(pwm->rst);
  
-@@ -273,6 +297,11 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		ctrl &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
- 	}
+ 	return ret;
+@@ -416,6 +430,7 @@ static int sun4i_pwm_remove(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
-+	if (bypass)
-+		ctrl |= BIT_CH(PWM_BYPASS, pwm->hwpwm);
-+	else
-+		ctrl &= ~BIT_CH(PWM_BYPASS, pwm->hwpwm);
-+
- 	sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
++	clk_disable_unprepare(pwm->bus_clk);
+ 	reset_control_assert(pwm->rst);
  
- 	spin_unlock(&sun4i_pwm->ctrl_lock);
+ 	return 0;
 -- 
 2.22.0
