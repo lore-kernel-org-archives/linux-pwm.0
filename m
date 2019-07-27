@@ -1,51 +1,45 @@
-From: Jernej Skrabec <jernej.skrabec@siol.net>
-Subject: [PATCH 6/6] arm64: dts: allwinner: h6: Add PWM node
-Date: Fri, 26 Jul 2019 20:40:45 +0200
-Message-ID: <20190726184045.14669-7-jernej.skrabec@siol.net>
-References: <20190726184045.14669-1-jernej.skrabec@siol.net>
+From: Wang Xiayang <xywang.sjtu@sjtu.edu.cn>
+Subject: [PATCH] pwm: avoid disabling clk twice
+Date: Sat, 27 Jul 2019 15:09:16 +0800
+Message-ID: <20190727070916.2960-1-xywang.sjtu@sjtu.edu.cn>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190726184045.14669-1-jernej.skrabec@siol.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, mripard@kernel.org, wens@csie.org
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+Cc: linux-pwm@vger.kernel.org, Wang Xiayang <xywang.sjtu@sjtu.edu.cn>, palmer@sifive.com, thierry.reding@gmail.com, paul.walmsley@sifive.com, linux-riscv@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Allwinner H6 PWM is similar to that in A20 except that it has additional
-bus clock and reset line.
+Similar to commit 63fd4b94b948 ("serial: imx: fix error handling
+in console_setup"), as ddata->clk has been explicitly disabled two
+lines above, it should avoid being disabled for the second time.
+clk_unprepare() suits here better.
 
-Note that first PWM channel is connected to output pin and second
-channel is used internally, as a clock source to AC200 co-packaged chip.
-This means that any combination of these two channels can be used and
-thus it doesn't make sense to add pinctrl nodes at this point.
-
-Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+Signed-off-by: Wang Xiayang <xywang.sjtu@sjtu.edu.cn>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/pwm/pwm-sifive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/bo=
-ot/dts/allwinner/sun50i-h6.dtsi
-index e8bed58e7246..c1abd805cfdc 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -229,6 +229,16 @@
- 			status =3D "disabled";
- 		};
-=20
-+		pwm: pwm@300a000 {
-+			compatible =3D "allwinner,sun50i-h6-pwm";
-+			reg =3D <0x0300a000 0x400>;
-+			clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
-+			clock-names =3D "pwm", "bus";
-+			resets =3D <&ccu RST_BUS_PWM>;
-+			#pwm-cells =3D <3>;
-+			status =3D "disabled";
-+		};
-+
- 		pio: pinctrl@300b000 {
- 			compatible =3D "allwinner,sun50i-h6-pinctrl";
- 			reg =3D <0x0300b000 0x400>;
---=20
-2.22.0
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index a7c107f19e66..00f6fab5bd3b 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -312,7 +312,7 @@ static int pwm_sifive_remove(struct platform_device *dev)
+ 	if (is_enabled)
+ 		clk_disable(ddata->clk);
+ 
+-	clk_disable_unprepare(ddata->clk);
++	clk_unprepare(ddata->clk);
+ 	ret = pwmchip_remove(&ddata->chip);
+ 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+ 
+-- 
+2.11.0
