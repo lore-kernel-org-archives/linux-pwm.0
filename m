@@ -1,122 +1,49 @@
-Return-Path: <>
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH RFC 2/7] pinctrl: sh-pfc: remove incomplete flag "cfg->type"
-Date: Mon,  8 Jul 2019 18:07:43 +0900
-Message-Id: <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:35430 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726180AbfG1XC1 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 28 Jul 2019 19:02:27 -0400
+Received: by mail-lf1-f67.google.com with SMTP id p197so40673255lfa.2
+        for <linux-pwm@vger.kernel.org>; Sun, 28 Jul 2019 16:02:26 -0700 (PDT)
+MIME-Version: 1.0
 References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 29 Jul 2019 01:02:14 +0200
+Message-ID: <CACRpkdZqTaA04bja16xh338JiwoSqFpH_2rV95FaF7YhawQzMg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: linus.walleij@linaro.org, geert+renesas@glider.be, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH RFC 2/7] pinctrl: sh-pfc: remove incomplete flag "cfg->type"
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-The old commit c58d9c1b26e3 ("sh-pfc: Implement generic pinconf
-support") broke the cfg->type flag to PINMUX_TYPE_FUNCTION because
-sh_pfc_pinconf_set() didn't call sh_pfc_reconfig_pin().
-Now if we fix the cfg->type condition, it gets worse because:
- - Some drivers might be deferred so that .set_mux() will be called
-   multiple times.
- - In such the case, the sh-pfc driver returns -EBUSY even if
-   the group is the same, and then that driver fails to probe.
+On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
 
-Since the pinctrl subsystem already has such conditions according
-to @set_mux and @gpio_request_enable, this patch just remove
-the incomplete flag from sh-pfc/pinctrl.c.
+> The old commit c58d9c1b26e3 ("sh-pfc: Implement generic pinconf
+> support") broke the cfg->type flag to PINMUX_TYPE_FUNCTION because
+> sh_pfc_pinconf_set() didn't call sh_pfc_reconfig_pin().
+> Now if we fix the cfg->type condition, it gets worse because:
+>  - Some drivers might be deferred so that .set_mux() will be called
+>    multiple times.
+>  - In such the case, the sh-pfc driver returns -EBUSY even if
+>    the group is the same, and then that driver fails to probe.
+>
+> Since the pinctrl subsystem already has such conditions according
+> to @set_mux and @gpio_request_enable, this patch just remove
+> the incomplete flag from sh-pfc/pinctrl.c.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- drivers/pinctrl/sh-pfc/pinctrl.c | 26 --------------------------
- 1 file changed, 26 deletions(-)
+This looks like it should have a Fixes: tag as well.
 
-diff --git a/drivers/pinctrl/sh-pfc/pinctrl.c b/drivers/pinctrl/sh-pfc/pinctrl.c
-index 157b257..7e5aca2 100644
---- a/drivers/pinctrl/sh-pfc/pinctrl.c
-+++ b/drivers/pinctrl/sh-pfc/pinctrl.c
-@@ -26,7 +26,6 @@
- #include "../pinconf.h"
- 
- struct sh_pfc_pin_config {
--	u32 type;
- 	bool mux_set;
- 	bool gpio_enabled;
- };
-@@ -354,16 +353,6 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
- 	spin_lock_irqsave(&pfc->lock, flags);
- 
- 	for (i = 0; i < grp->nr_pins; ++i) {
--		int idx = sh_pfc_get_pin_index(pfc, grp->pins[i]);
--		struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
--
--		if (cfg->type != PINMUX_TYPE_NONE) {
--			ret = -EBUSY;
--			goto done;
--		}
--	}
--
--	for (i = 0; i < grp->nr_pins; ++i) {
- 		ret = sh_pfc_config_mux(pfc, grp->mux[i], PINMUX_TYPE_FUNCTION);
- 		if (ret < 0)
- 			goto done;
-@@ -395,14 +384,6 @@ static int sh_pfc_gpio_request_enable(struct pinctrl_dev *pctldev,
- 
- 	spin_lock_irqsave(&pfc->lock, flags);
- 
--	if (cfg->type != PINMUX_TYPE_NONE) {
--		dev_err(pfc->dev,
--			"Pin %u is busy, can't configure it as GPIO.\n",
--			offset);
--		ret = -EBUSY;
--		goto done;
--	}
--
- 	if (!pfc->gpio) {
- 		/* If GPIOs are handled externally the pin mux type need to be
- 		 * set to GPIO here.
-@@ -414,7 +395,6 @@ static int sh_pfc_gpio_request_enable(struct pinctrl_dev *pctldev,
- 			goto done;
- 	}
- 
--	cfg->type = PINMUX_TYPE_GPIO;
- 	cfg->gpio_enabled = true;
- 
- 	ret = 0;
-@@ -436,7 +416,6 @@ static void sh_pfc_gpio_disable_free(struct pinctrl_dev *pctldev,
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&pfc->lock, flags);
--	cfg->type = PINMUX_TYPE_NONE;
- 	cfg->gpio_enabled = false;
- 	spin_unlock_irqrestore(&pfc->lock, flags);
- }
-@@ -450,7 +429,6 @@ static int sh_pfc_gpio_set_direction(struct pinctrl_dev *pctldev,
- 	int new_type = input ? PINMUX_TYPE_INPUT : PINMUX_TYPE_OUTPUT;
- 	int idx = sh_pfc_get_pin_index(pfc, offset);
- 	const struct sh_pfc_pin *pin = &pfc->info->pins[idx];
--	struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
- 	unsigned long flags;
- 	unsigned int dir;
- 	int ret;
-@@ -470,8 +448,6 @@ static int sh_pfc_gpio_set_direction(struct pinctrl_dev *pctldev,
- 	if (ret < 0)
- 		goto done;
- 
--	cfg->type = new_type;
--
- done:
- 	spin_unlock_irqrestore(&pfc->lock, flags);
- 	return ret;
-@@ -794,13 +770,11 @@ static int sh_pfc_map_pins(struct sh_pfc *pfc, struct sh_pfc_pinctrl *pmx)
- 
- 	for (i = 0; i < pfc->info->nr_pins; ++i) {
- 		const struct sh_pfc_pin *info = &pfc->info->pins[i];
--		struct sh_pfc_pin_config *cfg = &pmx->configs[i];
- 		struct pinctrl_pin_desc *pin = &pmx->pins[i];
- 
- 		/* If the pin number is equal to -1 all pins are considered */
- 		pin->number = info->pin != (u16)-1 ? info->pin : i;
- 		pin->name = info->name;
--		cfg->type = PINMUX_TYPE_NONE;
- 	}
- 
- 	return 0;
--- 
-2.7.4
+Geert will decide what to do with this.
+
+Can all the pinctrl patches be applied independently of the other
+changes so Geert can apply and send me those patches in his pull
+requests?
+
+Yours,
+Linus Walleij
