@@ -1,83 +1,91 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH 3/6] pwm: sun4i: Add a quirk for bus clock
-Date: Mon, 29 Jul 2019 21:04:04 +0200
-Message-ID: <20190729190404.rnxw2aihmciafy6c@pengutronix.de>
-References: <20190726184045.14669-1-jernej.skrabec@siol.net>
- <20190726184045.14669-4-jernej.skrabec@siol.net>
- <20190729063825.wxfky6nswcru26g7@pengutronix.de>
- <4022372.WfP88Fa4Lu@jernej-laptop>
- <20190729161435.5bnj3ikocsyep4dd@pengutronix.de>
- <20190729164516.yxfgj2zd3d5ii4c4@flea.home>
-Reply-To: u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 3/6] pwm: jz4740: Apply configuration atomically
+Date: Mon, 29 Jul 2019 17:19:23 -0400
+Message-ID: <1564435163.6633.4@crapouillou.net>
+References: <20190607154410.10633-1-paul@crapouillou.net>
+        <20190607154410.10633-4-paul@crapouillou.net>
+        <20190722193456.h4hfte5cczucermd@pengutronix.de>
+        <1563914800.1918.0@crapouillou.net>
+        <20190724064745.7ghecdpg3gmxsiim@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCX3TTWUQMPRBKEG7XUQKGQEISGHJWI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20190729164516.yxfgj2zd3d5ii4c4-YififvaboMKzQB+pC5nmwQ@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190724064745.7ghecdpg3gmxsiim@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, od@zcrc.me, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Maxime,
+Hi Uwe,
 
-On Mon, Jul 29, 2019 at 06:45:16PM +0200, Maxime Ripard wrote:
-> On Mon, Jul 29, 2019 at 06:14:35PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > Then maybe something like the following?:
-> >
-> > 	busclk =3D devm_clk_get_optional(..., "bus");
-> > 	modclk =3D devm_clk_get_optional(..., "mod");
-> >
-> > 	/*
-> > 	 * old dtbs might have a single clock but no clock names. Fall
-> > 	 * back to this for compatibility reasons.
-> > 	 */
-> > 	if (!modclk) {
-> > 		modclk =3D devm_clk_get(..., NULL);
-> > 	}
+
+Le mer. 24 juil. 2019 =E0 2:47, Uwe =3D?iso-8859-1?q?Kleine-K=3DF6nig?=3D=20
+<u.kleine-koenig@pengutronix.de> a =E9crit :
+> Hello Paul,
 >=20
-> Again, there's nothing optional about these clocks. You need a
-> particular set of clocks for a given generation, and a separate set of
-> them on another generation of SoCs.
+> On Tue, Jul 23, 2019 at 04:46:40PM -0400, Paul Cercueil wrote:
+>>  Le lun. 22 juil. 2019 =E0 15:34, Uwe =3D?iso-8859-1?q?Kleine-K=3DF6nig?=
+=3D
+>>  <u.kleine-koenig@pengutronix.de> a =E9crit :
+>>  > On Fri, Jun 07, 2019 at 05:44:07PM +0200, Paul Cercueil wrote:
+>>  > >  -	is_enabled =3D jz4740_timer_is_enabled(pwm->hwpwm);
+>>  > >  -	if (is_enabled)
+>>  > >  -		jz4740_pwm_disable(chip, pwm);
+>>  > >  +	jz4740_pwm_disable(chip, pwm);
+>>  >
+>>  > I assume this stops the PWM. Does this complete the currently=20
+>> running
+>>  > period? How does the PWM behave then? (Does it still drive the=20
+>> output?
+>>  > If so, on which level?)
+>>=20
+>>  Some PWM channels work in one mode "TCU1" and others work in=20
+>> "TCU2". The
+>>  mode in which channels work depends on the version of the SoC.
+>>=20
+>>  When stopped, the pins of TCU1 channels will be driven to the=20
+>> inactive
+>>  level (which depends on the polarity). It is unknown whether or not=20
+>> the
+>>  currently running period is completed. We set a bit to configure for
+>>  "abrupt shutdown", so I expect that it's not, but somebody would=20
+>> need
+>>  to hook up a logic analyzer to see what's the exact behaviour with
+>>  and without that bit.
+>=20
+> This might be done even without a logic analyzer. Just do something
+> like:
+>=20
+> 	pwm_apply_state(pwm, { .enabled =3D 1, .period =3D 5s })
+> 	pwm_apply_state(pwm, { .enabled =3D 1, .period =3D 5s, .duty =3D 5s })
+>=20
+> and if that takes less then 5s the period is not completed.
+>=20
+> And note that "abrupt shutdown" is a bug.
 
-It depends on the way how "optional" is understood. The semantic of
-"optional" as it is used and implemented by devm_clk_get_optional (and
-gpiod_get_optional and devm_reset_control_get_optional) is different
-than yours when saying "on H6 the clock is not optional". If it was
-about the "it doesn't matter if it's taken care of or not" semantic you
-seem to mean the function would be useless and no driver would need to
-actually use it. In the sense of the functions listed above "optional"
-means: Some devices need it, others don't. Using this semantic the "bus"
-clock is optional.
+I remember you asked that already in an older patchset.
+The result of this test is that the period is never completed,
+independently of the "abrupt shutdown" bit.
 
-> It really isn't about DT validation. We're really making sure that the
-> device can be operational. It's as much of a validation step than
-> making sure we have mapped registers (reg), or an interrupt if we had
-> any.
+Cheers,
+-Paul
 
-Do you agree with Jernej in the other end of this thread? If so I don't
-think that repeating the same arguments here is sensible. Please read
-what I wrote there.
 
-Best regards
-Uwe
+>>  TCU2 channels on the other hand will stop in the middle of a period,
+>>  leaving the pin hanging at whatever level it was before the stop.
+>>  That's the rationale behind the trick in commit 6580fd173070 ("pwm:
+>>  jz4740: Force TCU2 channels to return to their init level").
+>=20
+> Strange, but ok.
+>=20
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig       =20
+>     |
+> Industrial Linux Solutions                 |=20
+> http://www.pengutronix.de/  |
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-
---=20
-You received this message because you are subscribed to the Google Groups "=
-linux-sunxi" group.
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20190729190404.rnxw2aihmciafy6c%40pengutronix.de.
+=
