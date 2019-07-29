@@ -1,41 +1,59 @@
-From: Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH 0/5] Add missing pwm-cells to STM32 timers PWM
-Date: Mon, 29 Jul 2019 09:22:09 +0200
-Message-ID: <542bd9ed-a93f-fdcc-5dc9-ccaed8a50097@st.com>
-References: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
+From: Wang Xiayang <xywang.sjtu@sjtu.edu.cn>
+Subject: Re: [PATCH] pwm: avoid disabling clk twice
+Date: Mon, 29 Jul 2019 15:35:14 +0800 (CST)
+Message-ID: <310108829.9436429.1564385714781.JavaMail.zimbra@sjtu.edu.cn>
+References: <20190727070916.2960-1-xywang.sjtu@sjtu.edu.cn>
+ <20190729062548.4pio5sfuxfwwxecr@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1560937925-8990-1-git-send-email-fabrice.gasnier@st.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, thierry.reding@gmail.com, robh+dt@kernel.org
-Cc: mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190729062548.4pio5sfuxfwwxecr@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, palmer <palmer@sifive.com>, Yash Shah <yash.shah@sifive.com>, thierry reding <thierry.reding@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv <linux-riscv@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Fabrice
-
-On 6/19/19 11:52 AM, Fabrice Gasnier wrote:
-> This series adds missing generic 3-cells PWM to STM32 timers dt-bindings,
-> PWM driver, and the relevant dtsi files for STM32F4, STM32F7 and STM32MP1.
-> 
-> Fabrice Gasnier (5):
->    dt-bindings: pwm-stm32: add #pwm-cells
->    pwm: stm32: use 3 cells ->of_xlate()
->    ARM: dts: stm32: add pwm cells to stm32mp157c
->    ARM: dts: stm32: add pwm cells to stm32f429
->    ARM: dts: stm32: add pwm cells to stm32f746
-> 
->   Documentation/devicetree/bindings/pwm/pwm-stm32.txt |  3 +++
->   arch/arm/boot/dts/stm32f429.dtsi                    | 12 ++++++++++++
->   arch/arm/boot/dts/stm32f746.dtsi                    | 12 ++++++++++++
->   arch/arm/boot/dts/stm32mp157c.dtsi                  | 12 ++++++++++++
->   drivers/pwm/pwm-stm32.c                             |  2 ++
->   5 files changed, 41 insertions(+)
-> 
-
-DT patches applied on stm32-next.
-
-regards
-Alex
+CgotLS0tLSBPbiBKdWwgMjksIDIwMTksIGF0IDI6MjUgUE0sIFV3ZSBLbGVpbmUtS8O2bmlnIHUu
+a2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZSB3cm90ZToKCj4gSGVsbG8sCj4gCj4gT24gU2F0
+LCBKdWwgMjcsIDIwMTkgYXQgMDM6MDk6MTZQTSArMDgwMCwgV2FuZyBYaWF5YW5nIHdyb3RlOgo+
+PiBTaW1pbGFyIHRvIGNvbW1pdCA2M2ZkNGI5NGI5NDggKCJzZXJpYWw6IGlteDogZml4IGVycm9y
+IGhhbmRsaW5nCj4+IGluIGNvbnNvbGVfc2V0dXAiKSwgYXMgZGRhdGEtPmNsayBoYXMgYmVlbiBl
+eHBsaWNpdGx5IGRpc2FibGVkIHR3bwo+PiBsaW5lcyBhYm92ZSwgaXQgc2hvdWxkIGF2b2lkIGJl
+aW5nIGRpc2FibGVkIGZvciB0aGUgc2Vjb25kIHRpbWUuCj4+IGNsa191bnByZXBhcmUoKSBzdWl0
+cyBoZXJlIGJldHRlci4KPj4gCj4+IFNpZ25lZC1vZmYtYnk6IFdhbmcgWGlheWFuZyA8eHl3YW5n
+LnNqdHVAc2p0dS5lZHUuY24+Cj4+IC0tLQo+PiAgZHJpdmVycy9wd20vcHdtLXNpZml2ZS5jIHwg
+MiArLQo+PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCj4+
+IAo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLXNpZml2ZS5jIGIvZHJpdmVycy9wd20v
+cHdtLXNpZml2ZS5jCj4+IGluZGV4IGE3YzEwN2YxOWU2Ni4uMDBmNmZhYjViZDNiIDEwMDY0NAo+
+PiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tc2lmaXZlLmMKPj4gKysrIGIvZHJpdmVycy9wd20vcHdt
+LXNpZml2ZS5jCj4+IEBAIC0zMTIsNyArMzEyLDcgQEAgc3RhdGljIGludCBwd21fc2lmaXZlX3Jl
+bW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpkZXYpCj4+ICAJaWYgKGlzX2VuYWJsZWQpCj4+
+ICAJCWNsa19kaXNhYmxlKGRkYXRhLT5jbGspOwo+PiAgCj4+IC0JY2xrX2Rpc2FibGVfdW5wcmVw
+YXJlKGRkYXRhLT5jbGspOwo+PiArCWNsa191bnByZXBhcmUoZGRhdGEtPmNsayk7Cj4+ICAJcmV0
+ID0gcHdtY2hpcF9yZW1vdmUoJmRkYXRhLT5jaGlwKTsKPj4gIAljbGtfbm90aWZpZXJfdW5yZWdp
+c3RlcihkZGF0YS0+Y2xrLCAmZGRhdGEtPm5vdGlmaWVyKTsKPiAKPiBJIHRoaW5rIHRoaXMgcGF0
+Y2ggaXMgd3JvbmcuCj4gCj4gQWZ0ZXIgYSBzdWNjZXNzZnVsbCBjYWxsIHRvIC5wcm9iZSB0aGUg
+Y2xvY2sgaXMgbGVmdCBwcmVwYXJlZCBhbmQKPiBlbmFibGVkLiBUaGlzIGlzIHVuZG9uZSBpbiB0
+aGUgdW5jb25kaXRpb25hbCBjYWxsIHRvCj4gY2xrX2Rpc2FibGVfdW5wcmVwYXJlIHRoYXQgeW91
+IHJlbW92ZWQuCgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciBwb2ludGluZyBvdXQgdGhlIGlzc3Vl
+LiBJIGRpZCBtaXNzIHRoZSBub3JtYWwgcGF0aDooCgo+IFRoZXJlIGlzIGhvd2V2ZXIgc3RpbGwg
+YSBwcm9ibGVtOiBJZiBMaW51eCBpcyBzdGFydGVkIHdpdGggdGhlIHB3bQo+IGVuYWJsZWQgKHN1
+Y2ggdGhhdCAuZ2V0X3N0YXRlIHJldHVybnMgc3RhdGUtPmVuYWJsZWQgPSB0cnVlKSB0aGVuCj4g
+ZGlzYWJsaW5nIHRoZSBwd20gaGFzIG9uZSBjbGtfZGlzYWJsZSB0b28gbXVjaC4KPiAKClRoZXJl
+IGlzIGFub3RoZXIgcGF0aCBvZiBkb3VibGUtZGlzYWJsaW5nOiBwd21fc2lmaXZlX2VuYWJsZSgp
+IG1heSBkaXNhYmxlCmRkYXRhLT5jbGsgYXMgcmVxdWlyZWQgYnkgdGhlICdlbmFibGUnIGZsYWcu
+CnB3bV9zaWZpdmVfYXBwbHkoKSBjYWxscyBpdCBhbmQgcGFzc2VzIHRoZSBmbGFnLiBIb3dldmVy
+LCB0aGVyZSBpcwphIGNsa19kaXNhYmxlKGRkYXRhLT5jbGspIGp1c3QgYmVsb3cgaW52b2tpbmcg
+cHdtX3NpZml2ZV9lbmFibGUoKQppbiBwd21fc2lmaXZlX2FwcGx5KCkuCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1yaXNjdiBtYWlsaW5nIGxp
+c3QKbGludXgtcmlzY3ZAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJpc2N2Cg==
