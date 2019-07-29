@@ -1,15 +1,15 @@
 From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Subject: Re: [PATCH 3/6] pwm: sun4i: Add a quirk for bus clock
-Date: Mon, 29 Jul 2019 17:48:36 +0200
-Message-ID: <4022372.WfP88Fa4Lu@jernej-laptop>
-References: <20190726184045.14669-1-jernej.skrabec@siol.net> <20190726184045.14669-4-jernej.skrabec@siol.net> <20190729063825.wxfky6nswcru26g7@pengutronix.de>
+Subject: Re: [PATCH 4/6] pwm: sun4i: Add support for H6 PWM
+Date: Mon, 29 Jul 2019 17:55:52 +0200
+Message-ID: <223488703.0I5IR7NXoI@jernej-laptop>
+References: <20190726184045.14669-1-jernej.skrabec@siol.net> <20190726184045.14669-5-jernej.skrabec@siol.net> <20190729064030.7uenld2kbof45zti@pengutronix.de>
 Reply-To: jernej.skrabec-gGgVlfcn5nU@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBDQNBWPU7YERBWFK7TUQKGQE7CEEPHQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDQNBWPU7YERBC5O7TUQKGQEVTJFZCI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20190729063825.wxfky6nswcru26g7-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <20190729064030.7uenld2kbof45zti-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -22,81 +22,80 @@ List-Id: linux-pwm@vger.kernel.org
 
 Hi Uwe,
 
-Dne ponedeljek, 29. julij 2019 ob 08:38:25 CEST je Uwe Kleine-K=C3=B6nig=20
+Dne ponedeljek, 29. julij 2019 ob 08:40:30 CEST je Uwe Kleine-K=C3=B6nig=20
 napisal(a):
-> Hello,
->=20
-> On Fri, Jul 26, 2019 at 08:40:42PM +0200, Jernej Skrabec wrote:
-> > H6 PWM core needs bus clock to be enabled in order to work.
+> On Fri, Jul 26, 2019 at 08:40:43PM +0200, Jernej Skrabec wrote:
+> > Now that sun4i PWM driver supports deasserting reset line and enabling
+> > bus clock, support for H6 PWM can be added.
 > >=20
-> > Add a quirk for it.
+> > Note that while H6 PWM has two channels, only first one is wired to
+> > output pin. Second channel is used as a clock source to companion AC200
+> > chip which is bundled into same package.
 > >=20
 > > Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 > > ---
 > >=20
-> >  drivers/pwm/pwm-sun4i.c | 15 +++++++++++++++
-> >  1 file changed, 15 insertions(+)
+> >  drivers/pwm/pwm-sun4i.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
 > >=20
 > > diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> > index 1b7be8fbde86..7d3ac3f2dc3f 100644
+> > index 7d3ac3f2dc3f..9e0eca79ff88 100644
 > > --- a/drivers/pwm/pwm-sun4i.c
 > > +++ b/drivers/pwm/pwm-sun4i.c
-> > @@ -72,6 +72,7 @@ static const u32 prescaler_table[] =3D {
-> >=20
+> > @@ -331,6 +331,13 @@ static const struct sun4i_pwm_data
+> > sun4i_pwm_single_bypass =3D {>=20
+> >  	.npwm =3D 1,
+> > =20
 > >  };
+> >=20
+> > +static const struct sun4i_pwm_data sun50i_pwm_dual_bypass_clk_rst =3D =
+{
+> > +	.has_bus_clock =3D true,
+> > +	.has_prescaler_bypass =3D true,
+> > +	.has_reset =3D true,
+> > +	.npwm =3D 2,
+> > +};
+> > +
+> >=20
+> >  static const struct of_device_id sun4i_pwm_dt_ids[] =3D {
 > > =20
-> >  struct sun4i_pwm_data {
-> >=20
-> > +	bool has_bus_clock;
-> >=20
-> >  	bool has_prescaler_bypass;
-> >  	bool has_reset;
-> >  	unsigned int npwm;
-> >=20
-> > @@ -79,6 +80,7 @@ struct sun4i_pwm_data {
-> >=20
-> >  struct sun4i_pwm_chip {
-> > =20
-> >  	struct pwm_chip chip;
-> >=20
-> > +	struct clk *bus_clk;
-> >=20
-> >  	struct clk *clk;
-> >  	struct reset_control *rst;
-> >  	void __iomem *base;
-> >=20
-> > @@ -382,6 +384,16 @@ static int sun4i_pwm_probe(struct platform_device
-> > *pdev)>=20
-> >  		reset_control_deassert(pwm->rst);
+> >  	{
 > >  =09
-> >  	}
+> >  		.compatible =3D "allwinner,sun4i-a10-pwm",
 > >=20
-> > +	if (pwm->data->has_bus_clock) {
-> > +		pwm->bus_clk =3D devm_clk_get(&pdev->dev, "bus");
+> > @@ -347,6 +354,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[]=
+ =3D
+> > {
+> >=20
+> >  	}, {
+> >  =09
+> >  		.compatible =3D "allwinner,sun8i-h3-pwm",
+> >  		.data =3D &sun4i_pwm_single_bypass,
+> >=20
+> > +	}, {
+> > +		.compatible =3D "allwinner,sun50i-h6-pwm",
+> > +		.data =3D &sun50i_pwm_dual_bypass_clk_rst,
 >=20
-> Similar to my suggestion in patch 2: I'd use devm_clk_get_optional() and
-> drop struct sun4i_pwm_data::has_bus_clock.
+> If you follow my suggestion for the two previous patches, you can just
+> use:
+>=20
+> 	compatible =3D "allwinner,sun50i-h6-pwm", "allwinner,sun5i-a10s-pwm";
+>=20
+> and drop this patch.
 
-This one is not so simple. This patch has incorrect logic. Correct logic wo=
-uld=20
-be to use "devm_clk_get(&pdev->dev, NULL)" for variants without bus clock a=
-s=20
-it is done already and "devm_clk_get(&pdev->dev, "bus")" and=20
-"devm_clk_get(&pdev->dev, "mod")" for variants with bus clock.
+Maxime found out that it's not compatible with A10s due to difference in by=
+pass=20
+bit, but yes, I know what you mean.
 
-You see, DT nodes for other variants don't have clock-names property at all=
-.=20
-If it would be specified, it would be "mod". So, DT nodes for other variant=
-s=20
-have "mod" clock specified on first place (the only one), while H6 DT node =
-will=20
-have "mod" clock specified on second place (see one of e-mails from Maxime)=
-, so=20
-"NULL" can't be used instead of "mod" in both cases.
-
-So I would say quirk is beneficial to know if you have to look up clocks by=
+Since H6 requires reset line and bus clock to be specified, it's not compat=
+ible=20
+from DT binding side. New yaml based binding must somehow know that in orde=
+r=20
+to be able to validate DT node, so it needs standalone compatible. However,=
 =20
-name or you just take first clock specified.
+depending on conclusions of other discussions, this new compatible can be=
+=20
+associated with already available quirks structure or have it's own.
 
 Best regards,
 Jernej
@@ -104,6 +103,12 @@ Jernej
 >=20
 > Best regards
 > Uwe
+>=20
+> >  	}, {
+> >  =09
+> >  		/* sentinel */
+> >  =09
+> >  	},
 
 
 
@@ -114,4 +119,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/4022372.WfP88Fa4Lu%40jernej-laptop.
+/linux-sunxi/223488703.0I5IR7NXoI%40jernej-laptop.
