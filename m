@@ -1,62 +1,71 @@
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Subject: Re: [PATCH 1/4] dt-bindings: counter: new bindings for TI eQEP
-Date: Sat, 27 Jul 2019 20:48:36 +0100
-Message-ID: <20190727204836.1514265d@archlinux>
-References: <20190722154538.5314-1-david@lechnology.com>
-        <20190722154538.5314-2-david@lechnology.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: avoid disabling clk twice
+Date: Mon, 29 Jul 2019 08:25:48 +0200
+Message-ID: <20190729062548.4pio5sfuxfwwxecr@pengutronix.de>
+References: <20190727070916.2960-1-xywang.sjtu@sjtu.edu.cn>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190722154538.5314-2-david@lechnology.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Lechner <david@lechnology.com>
-Cc: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?B?QmVub8OudA==?= Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190727070916.2960-1-xywang.sjtu@sjtu.edu.cn>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Wang Xiayang <xywang.sjtu@sjtu.edu.cn>, Yash Shah <yash.shah@sifive.com>
+Cc: linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, thierry.reding@gmail.com, palmer@sifive.com, paul.walmsley@sifive.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 22 Jul 2019 10:45:35 -0500
-David Lechner <david@lechnology.com> wrote:
+Hello,
 
-> This documents device tree binding for the Texas Instruments Enhanced
-> Quadrature Encoder Pulse (eQEP) Module found in various TI SoCs.
-> 
-> Signed-off-by: David Lechner <david@lechnology.com>
+On Sat, Jul 27, 2019 at 03:09:16PM +0800, Wang Xiayang wrote:
+> Similar to commit 63fd4b94b948 ("serial: imx: fix error handling
+> in console_setup"), as ddata->clk has been explicitly disabled two
+> lines above, it should avoid being disabled for the second time.
+> clk_unprepare() suits here better.
+> =
 
-Up to William given it is a counter binding, (unless Rob overrules)
-but new bindings are generally preferred as yaml.
-
-Content looks fine to me.
-
-Thanks,
-
-Jonathan
-
+> Signed-off-by: Wang Xiayang <xywang.sjtu@sjtu.edu.cn>
 > ---
->  .../devicetree/bindings/counter/ti-eqep.txt    | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/counter/ti-eqep.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/counter/ti-eqep.txt b/Documentation/devicetree/bindings/counter/ti-eqep.txt
-> new file mode 100644
-> index 000000000000..fbcebc2c2cc2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/counter/ti-eqep.txt
-> @@ -0,0 +1,18 @@
-> +Texas Instruments Enhanced Quadrature Encoder Pulse (eQEP) Module
-> +
-> +Required properties:
-> +- compatible:		Must be "ti,am3352-eqep".
-> +- reg:			Physical base address and size of the registers map.
-> +- clocks:		Handle to the PWM's functional clock.
-> +- clock-names:		Must be "fck".
-> +- interrupts:		Handle to the eQEP event interrupt
-> +
-> +Example:
-> +
-> +	eqep0: eqep@180 {
-> +		compatible = "ti,am3352-eqep";
-> +		reg = <0x180 0x80>;
-> +		clocks = <&l4ls_gclk>;
-> +		clock-names = "fck";
-> +		interrupts = <79>;
-> +	};
+>  drivers/pwm/pwm-sifive.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> =
+
+> diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+> index a7c107f19e66..00f6fab5bd3b 100644
+> --- a/drivers/pwm/pwm-sifive.c
+> +++ b/drivers/pwm/pwm-sifive.c
+> @@ -312,7 +312,7 @@ static int pwm_sifive_remove(struct platform_device *=
+dev)
+>  	if (is_enabled)
+>  		clk_disable(ddata->clk);
+>  =
+
+> -	clk_disable_unprepare(ddata->clk);
+> +	clk_unprepare(ddata->clk);
+>  	ret =3D pwmchip_remove(&ddata->chip);
+>  	clk_notifier_unregister(ddata->clk, &ddata->notifier);
+
+I think this patch is wrong.
+
+After a successfull call to .probe the clock is left prepared and
+enabled. This is undone in the unconditional call to
+clk_disable_unprepare that you removed.
+
+There is however still a problem: If Linux is started with the pwm
+enabled (such that .get_state returns state->enabled =3D true) then
+disabling the pwm has one clk_disable too much.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
