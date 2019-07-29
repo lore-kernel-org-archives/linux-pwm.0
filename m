@@ -1,59 +1,66 @@
-From: Wang Xiayang <xywang.sjtu@sjtu.edu.cn>
-Subject: Re: [PATCH] pwm: avoid disabling clk twice
-Date: Mon, 29 Jul 2019 15:35:14 +0800 (CST)
-Message-ID: <310108829.9436429.1564385714781.JavaMail.zimbra@sjtu.edu.cn>
-References: <20190727070916.2960-1-xywang.sjtu@sjtu.edu.cn>
- <20190729062548.4pio5sfuxfwwxecr@pengutronix.de>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 2/6] pwm: sun4i: Add a quirk for reset line
+Date: Mon, 29 Jul 2019 12:18:58 +0200
+Message-ID: <1564395538.7633.7.camel@pengutronix.de>
+References: <20190726184045.14669-1-jernej.skrabec@siol.net>
+         <20190726184045.14669-3-jernej.skrabec@siol.net>
+         <20190729063630.rn325whatfnc3m7n@pengutronix.de>
+         <CAGb2v65KOpivHQNkg+R2=D=ejCJYnPdVcyHJZW-GJCR8j0Yk0g@mail.gmail.com>
+         <20190729071218.bukw7vxilqy523k3@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190729062548.4pio5sfuxfwwxecr@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, palmer <palmer@sifive.com>, Yash Shah <yash.shah@sifive.com>, thierry reding <thierry.reding@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190729071218.bukw7vxilqy523k3@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Chen-Yu Tsai <wens@csie.org>
+Cc: Jernej Skrabec <jernej.skrabec@siol.net>, Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <mripard@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-sunxi <linux-sunxi@googlegroups.com>
 List-Id: linux-pwm@vger.kernel.org
 
-CgotLS0tLSBPbiBKdWwgMjksIDIwMTksIGF0IDI6MjUgUE0sIFV3ZSBLbGVpbmUtS8O2bmlnIHUu
-a2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZSB3cm90ZToKCj4gSGVsbG8sCj4gCj4gT24gU2F0
-LCBKdWwgMjcsIDIwMTkgYXQgMDM6MDk6MTZQTSArMDgwMCwgV2FuZyBYaWF5YW5nIHdyb3RlOgo+
-PiBTaW1pbGFyIHRvIGNvbW1pdCA2M2ZkNGI5NGI5NDggKCJzZXJpYWw6IGlteDogZml4IGVycm9y
-IGhhbmRsaW5nCj4+IGluIGNvbnNvbGVfc2V0dXAiKSwgYXMgZGRhdGEtPmNsayBoYXMgYmVlbiBl
-eHBsaWNpdGx5IGRpc2FibGVkIHR3bwo+PiBsaW5lcyBhYm92ZSwgaXQgc2hvdWxkIGF2b2lkIGJl
-aW5nIGRpc2FibGVkIGZvciB0aGUgc2Vjb25kIHRpbWUuCj4+IGNsa191bnByZXBhcmUoKSBzdWl0
-cyBoZXJlIGJldHRlci4KPj4gCj4+IFNpZ25lZC1vZmYtYnk6IFdhbmcgWGlheWFuZyA8eHl3YW5n
-LnNqdHVAc2p0dS5lZHUuY24+Cj4+IC0tLQo+PiAgZHJpdmVycy9wd20vcHdtLXNpZml2ZS5jIHwg
-MiArLQo+PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCj4+
-IAo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLXNpZml2ZS5jIGIvZHJpdmVycy9wd20v
-cHdtLXNpZml2ZS5jCj4+IGluZGV4IGE3YzEwN2YxOWU2Ni4uMDBmNmZhYjViZDNiIDEwMDY0NAo+
-PiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tc2lmaXZlLmMKPj4gKysrIGIvZHJpdmVycy9wd20vcHdt
-LXNpZml2ZS5jCj4+IEBAIC0zMTIsNyArMzEyLDcgQEAgc3RhdGljIGludCBwd21fc2lmaXZlX3Jl
-bW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpkZXYpCj4+ICAJaWYgKGlzX2VuYWJsZWQpCj4+
-ICAJCWNsa19kaXNhYmxlKGRkYXRhLT5jbGspOwo+PiAgCj4+IC0JY2xrX2Rpc2FibGVfdW5wcmVw
-YXJlKGRkYXRhLT5jbGspOwo+PiArCWNsa191bnByZXBhcmUoZGRhdGEtPmNsayk7Cj4+ICAJcmV0
-ID0gcHdtY2hpcF9yZW1vdmUoJmRkYXRhLT5jaGlwKTsKPj4gIAljbGtfbm90aWZpZXJfdW5yZWdp
-c3RlcihkZGF0YS0+Y2xrLCAmZGRhdGEtPm5vdGlmaWVyKTsKPiAKPiBJIHRoaW5rIHRoaXMgcGF0
-Y2ggaXMgd3JvbmcuCj4gCj4gQWZ0ZXIgYSBzdWNjZXNzZnVsbCBjYWxsIHRvIC5wcm9iZSB0aGUg
-Y2xvY2sgaXMgbGVmdCBwcmVwYXJlZCBhbmQKPiBlbmFibGVkLiBUaGlzIGlzIHVuZG9uZSBpbiB0
-aGUgdW5jb25kaXRpb25hbCBjYWxsIHRvCj4gY2xrX2Rpc2FibGVfdW5wcmVwYXJlIHRoYXQgeW91
-IHJlbW92ZWQuCgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciBwb2ludGluZyBvdXQgdGhlIGlzc3Vl
-LiBJIGRpZCBtaXNzIHRoZSBub3JtYWwgcGF0aDooCgo+IFRoZXJlIGlzIGhvd2V2ZXIgc3RpbGwg
-YSBwcm9ibGVtOiBJZiBMaW51eCBpcyBzdGFydGVkIHdpdGggdGhlIHB3bQo+IGVuYWJsZWQgKHN1
-Y2ggdGhhdCAuZ2V0X3N0YXRlIHJldHVybnMgc3RhdGUtPmVuYWJsZWQgPSB0cnVlKSB0aGVuCj4g
-ZGlzYWJsaW5nIHRoZSBwd20gaGFzIG9uZSBjbGtfZGlzYWJsZSB0b28gbXVjaC4KPiAKClRoZXJl
-IGlzIGFub3RoZXIgcGF0aCBvZiBkb3VibGUtZGlzYWJsaW5nOiBwd21fc2lmaXZlX2VuYWJsZSgp
-IG1heSBkaXNhYmxlCmRkYXRhLT5jbGsgYXMgcmVxdWlyZWQgYnkgdGhlICdlbmFibGUnIGZsYWcu
-CnB3bV9zaWZpdmVfYXBwbHkoKSBjYWxscyBpdCBhbmQgcGFzc2VzIHRoZSBmbGFnLiBIb3dldmVy
-LCB0aGVyZSBpcwphIGNsa19kaXNhYmxlKGRkYXRhLT5jbGspIGp1c3QgYmVsb3cgaW52b2tpbmcg
-cHdtX3NpZml2ZV9lbmFibGUoKQppbiBwd21fc2lmaXZlX2FwcGx5KCkuCgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1yaXNjdiBtYWlsaW5nIGxp
-c3QKbGludXgtcmlzY3ZAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJpc2N2Cg==
+Hi,
+
+On Mon, 2019-07-29 at 09:12 +0200, Uwe Kleine-König wrote:
+> Hello,
+> 
+> On Mon, Jul 29, 2019 at 02:43:23PM +0800, Chen-Yu Tsai wrote:
+> > On Mon, Jul 29, 2019 at 2:36 PM Uwe Kleine-König
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Fri, Jul 26, 2019 at 08:40:41PM +0200, Jernej Skrabec wrote:
+> > > > @@ -371,6 +374,14 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+> > > >       if (IS_ERR(pwm->clk))
+> > > >               return PTR_ERR(pwm->clk);
+> > > > 
+> > > > +     if (pwm->data->has_reset) {
+> > > > +             pwm->rst = devm_reset_control_get(&pdev->dev, NULL);
+> > > > +             if (IS_ERR(pwm->rst))
+> > > > +                     return PTR_ERR(pwm->rst);
+> > > > +
+> > > > +             reset_control_deassert(pwm->rst);
+> > > > +     }
+> > > > +
+> > > 
+> > > I wonder why there is a need to track if a given chip needs a reset
+> > > line. I'd just use devm_reset_control_get_optional() and drop the
+> > > .has_reset member in struct sun4i_pwm_data.
+> > 
+> > Because it's not optional for this platform, i.e. it won't work if
+> > the reset control (or clk, in the next patch) is somehow missing from
+> > the device tree.
+> 
+> If the device tree is wrong it is considered ok that the driver doesn't
+> behave correctly. So this is not a problem you need (or should) care
+> about.
+
+I agree with this. Catching missing DT properties and other device tree
+validation is not the job of device drivers. The _optional request
+variants were introduced to simplify drivers that require the reset line
+on some platforms and not on others.
+
+I would ask to explicitly state whether the driver needs full control
+over the moment of (de)assertion of the reset signal, or whether the
+only requirement is that the reset signal stays deasserted while the PWM
+driver is active, by using devm_reset_control_get_optional_exclusive or
+devm_reset_control_get_optional_shared to request the reset control.
+
+regards
+Philipp
