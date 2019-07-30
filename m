@@ -1,79 +1,65 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga12.intel.com ([192.55.52.136]:35661 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727698AbfG3QIl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 30 Jul 2019 12:08:41 -0400
-Date: Tue, 30 Jul 2019 19:08:37 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Message-ID: <20190730160837.GU23480@smile.fi.intel.com>
-References: <20190730154848.5164-1-hdegoede@redhat.com>
+Return-path: <kernel-bounces@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] pwm: jz4740: document known limitations
+Date: Tue, 30 Jul 2019 14:32:29 +0200
+Message-Id: <20190730123229.31839-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <1564435163.6633.4@crapouillou.net>
+References: <1564435163.6633.4@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190730154848.5164-1-hdegoede@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>, Paul Cercueil <paul@crapouillou.net>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 5.3 regression fix] pwm: Fallback to the static
- lookup-list when acpi_pwm_get fails
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, youling257@gmail.com, Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
 
-On Tue, Jul 30, 2019 at 05:48:48PM +0200, Hans de Goede wrote:
-> Commit 4a6ef8e37c4d ("pwm: Add support referencing PWMs from ACPI")
-> made pwm_get unconditionally return the acpi_pwm_get return value if
-> the device passed to pwm_get has an ACPI fwnode.
-> 
-> But even if the passed in device has an ACPI fwnode, it does not
-> necessarily have the necessary ACPI package defining its pwm bindings,
-> especially since the binding / API of this ACPI package has only been
-> introduced very recently.
-> 
-> Up until now X86/ACPI devices which use a separate pwm controller for
-> controlling their LCD screen's backlight brightness have been relying
-> on the static lookup-list to get their pwm.
-> 
-> pwm_get unconditionally returning the acpi_pwm_get return value breaks
-> this, breaking backlight control on these devices.
-> 
-> This commit fixes this by making pwm_get fall back to the static
-> lookup-list if acpi_pwm_get returns -ENOENT.
-> 
+The jz4740 PMW implementation doesn't fulfill the (up to now
+insufficiently documented) requirements of the PWM API. At least
+document them in the driver.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+I intended to also add a Link to the reference manual, Paul suggested to
+use https://zcrc.me/~paul/jz_docs/ in December last year, but this
+stopped to work.
 
-Perhaps, we may switch to swnode API instead of lookup tables in the future?
+The second item is something I noticed when reading through the manual,
+but it's not confirmed in practise. A test that this is indeed the case
+could be done by configuring a long period (say 5s) and a (in
+comparison) small duty-cycle (say 1s). If the pwm output isn't active
+when the call returns I'd consider this proven.
 
-> BugLink: https://bugs.freedesktop.org/show_bug.cgi?id=96571
-> Reported-by: youling257@gmail.com
-> Fixes: 4a6ef8e37c4d ("pwm: Add support referencing PWMs from ACPI")
-> Cc: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->  drivers/pwm/core.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index c3ab07ab31a9..8edfac17364e 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -882,8 +882,11 @@ struct pwm_device *pwm_get(struct device *dev, const char *con_id)
->  		return of_pwm_get(dev, dev->of_node, con_id);
->  
->  	/* then lookup via ACPI */
-> -	if (dev && is_acpi_node(dev->fwnode))
-> -		return acpi_pwm_get(dev->fwnode);
-> +	if (dev && is_acpi_node(dev->fwnode)) {
-> +		pwm = acpi_pwm_get(dev->fwnode);
-> +		if (!IS_ERR(pwm) || PTR_ERR(pwm) != -ENOENT)
-> +			return pwm;
-> +	}
->  
->  	/*
->  	 * We look up the provider in the static table typically provided by
-> -- 
-> 2.21.0
-> 
+@Paul: would you mind doing this test?
 
+Best regards
+Uwe
+
+ drivers/pwm/pwm-jz4740.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index f901e8a0d33d..9d444d012f92 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -2,6 +2,11 @@
+ /*
+  *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
+  *  JZ4740 platform PWM support
++ *
++ * Limitations:
++ * - The .apply callback doesn't complete the currently running period before
++ *   reconfiguring the hardware.
++ * - Each period starts with the inactive part.
+  */
+ 
+ #include <linux/clk.h>
 -- 
-With Best Regards,
-Andy Shevchenko
+2.20.1
