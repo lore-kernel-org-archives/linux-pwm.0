@@ -1,71 +1,40 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:34026 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732206AbfHFItq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Aug 2019 04:49:46 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:36237 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730068AbfHFJXx (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Aug 2019 05:23:53 -0400
 MIME-Version: 1.0
 References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CACRpkdZqTaA04bja16xh338JiwoSqFpH_2rV95FaF7YhawQzMg@mail.gmail.com> <TYAPR01MB4544031C6A027A3690FFFB77D8DD0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYAPR01MB4544031C6A027A3690FFFB77D8DD0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+In-Reply-To: <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 6 Aug 2019 10:49:33 +0200
-Message-ID: <CAMuHMdUqDsMA_uZ+Sen15kgue8DoQee0vd4qmUXmFX+cRT11EA@mail.gmail.com>
+Date: Tue, 6 Aug 2019 11:23:41 +0200
+Message-ID: <CAMuHMdVcAw_ApKMmrV7DaoJBGUZ1GzW3kmxnsTn72FtCGWhXPA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 Subject: Re: [PATCH RFC 2/7] pinctrl: sh-pfc: remove incomplete flag "cfg->type"
 To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
 Hi Shimoda-san,
 
-On Mon, Jul 29, 2019 at 7:16 AM Yoshihiro Shimoda
+On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
 <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > From: Linus Walleij, Sent: Monday, July 29, 2019 8:02 AM
-> >
-> > On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
-> > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> >
-> > > The old commit c58d9c1b26e3 ("sh-pfc: Implement generic pinconf
-> > > support") broke the cfg->type flag to PINMUX_TYPE_FUNCTION because
-> > > sh_pfc_pinconf_set() didn't call sh_pfc_reconfig_pin().
-> > > Now if we fix the cfg->type condition, it gets worse because:
-> > >  - Some drivers might be deferred so that .set_mux() will be called
-> > >    multiple times.
-> > >  - In such the case, the sh-pfc driver returns -EBUSY even if
-> > >    the group is the same, and then that driver fails to probe.
-> > >
-> > > Since the pinctrl subsystem already has such conditions according
-> > > to @set_mux and @gpio_request_enable, this patch just remove
-> > > the incomplete flag from sh-pfc/pinctrl.c.
-> > >
-> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> >
-> > This looks like it should have a Fixes: tag as well.
+> The old commit c58d9c1b26e3 ("sh-pfc: Implement generic pinconf
+> support") broke the cfg->type flag to PINMUX_TYPE_FUNCTION because
+> sh_pfc_pinconf_set() didn't call sh_pfc_reconfig_pin().
+> Now if we fix the cfg->type condition, it gets worse because:
+>  - Some drivers might be deferred so that .set_mux() will be called
+>    multiple times.
+>  - In such the case, the sh-pfc driver returns -EBUSY even if
+>    the group is the same, and then that driver fails to probe.
 >
-> I got it. The Fixes tag should be:
->
-> Fixes: c58d9c1b26e3 ("sh-pfc: Implement generic pinconf support")
+> Since the pinctrl subsystem already has such conditions according
+> to @set_mux and @gpio_request_enable, this patch just remove
+> the incomplete flag from sh-pfc/pinctrl.c.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> > Geert will decide what to do with this.
->
-> I got it.
->
-> > Can all the pinctrl patches be applied independently of the other
-> > changes so Geert can apply and send me those patches in his pull
-> > requests?
->
-> The pinctrl patches (1/7 through 3/7) can be applied on next-20190726
-> so I think Geert can apply these patches into his repo.
-
-Looks mostly OK to me (I have some comments on 3/7).
-I'll apply it to my local tree, so it will receive some testing on all
-boards I have.
-
-Thanks!
+Do we need to set sh_pfc_pinmux_ops.strict = true?
 
 Gr{oetje,eeting}s,
 
