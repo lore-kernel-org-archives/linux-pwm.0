@@ -1,42 +1,79 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Tue, 20 Aug 2019 23:10:50 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH RFC] pwm: add debug knob to help driver authors
-Message-ID: <20190820211050.daadlefdrexuesin@pengutronix.de>
-References: <20190815093839.23710-1-u.kleine-koenig@pengutronix.de>
- <1566314668.3030.16.camel@pengutronix.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:34026 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732206AbfHFItq (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Aug 2019 04:49:46 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <1566314668.3030.16.camel@pengutronix.de>
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>, kernel@pengutronix.de, Baolin Wang <baolin.wang@linaro.org>
+References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <CACRpkdZqTaA04bja16xh338JiwoSqFpH_2rV95FaF7YhawQzMg@mail.gmail.com> <TYAPR01MB4544031C6A027A3690FFFB77D8DD0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYAPR01MB4544031C6A027A3690FFFB77D8DD0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 6 Aug 2019 10:49:33 +0200
+Message-ID: <CAMuHMdUqDsMA_uZ+Sen15kgue8DoQee0vd4qmUXmFX+cRT11EA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: Re: [PATCH RFC 2/7] pinctrl: sh-pfc: remove incomplete flag "cfg->type"
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-Hello Philipp,
+Hi Shimoda-san,
 
-On Tue, Aug 20, 2019 at 05:24:28PM +0200, Philipp Zabel wrote:
-> I have two suggestions below:
->=20
-> [...]
+On Mon, Jul 29, 2019 at 7:16 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> > From: Linus Walleij, Sent: Monday, July 29, 2019 8:02 AM
+> >
+> > On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
+> > <yoshihiro.shimoda.uh@renesas.com> wrote:
+> >
+> > > The old commit c58d9c1b26e3 ("sh-pfc: Implement generic pinconf
+> > > support") broke the cfg->type flag to PINMUX_TYPE_FUNCTION because
+> > > sh_pfc_pinconf_set() didn't call sh_pfc_reconfig_pin().
+> > > Now if we fix the cfg->type condition, it gets worse because:
+> > >  - Some drivers might be deferred so that .set_mux() will be called
+> > >    multiple times.
+> > >  - In such the case, the sh-pfc driver returns -EBUSY even if
+> > >    the group is the same, and then that driver fails to probe.
+> > >
+> > > Since the pinctrl subsystem already has such conditions according
+> > > to @set_mux and @gpio_request_enable, this patch just remove
+> > > the incomplete flag from sh-pfc/pinctrl.c.
+> > >
+> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> >
+> > This looks like it should have a Fixes: tag as well.
+>
+> I got it. The Fixes tag should be:
+>
+> Fixes: c58d9c1b26e3 ("sh-pfc: Implement generic pinconf support")
 
-Good ideas. I will address them in a v2. But I'd like to wait for some
-feedback by Thierry first to not spend time and energy in stuff that
-won't get applied in the end.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Best regards
-Uwe
+> > Geert will decide what to do with this.
+>
+> I got it.
+>
+> > Can all the pinctrl patches be applied independently of the other
+> > changes so Geert can apply and send me those patches in his pull
+> > requests?
+>
+> The pinctrl patches (1/7 through 3/7) can be applied on next-20190726
+> so I think Geert can apply these patches into his repo.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Looks mostly OK to me (I have some comments on 3/7).
+I'll apply it to my local tree, so it will receive some testing on all
+boards I have.
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
