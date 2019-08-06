@@ -1,105 +1,38 @@
-Return-Path: <>
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH RFC 6/7] pwm: rcar: Add gpio support to output duty zero
-Date: Mon,  8 Jul 2019 18:07:47 +0900
-Message-Id: <1562576868-8124-7-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:35151 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728845AbfHFIqk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Aug 2019 04:46:40 -0400
+MIME-Version: 1.0
 References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1562576868-8124-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1562576868-8124-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 6 Aug 2019 10:46:27 +0200
+Message-ID: <CAMuHMdW-65G6CNKL5fY_dZ=UScgJsdmHzi+Qd9hs4qYqPnHJZg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: linus.walleij@linaro.org, geert+renesas@glider.be, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH RFC 1/7] pinctrl: sh-pfc: add new flags into struct sh_pfc_pin_config
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-The R-Car SoCs PWM Timer cannot output duty zero. So, this patch
-adds gpio support to output it.
+On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> To clean/modify the code up later, this patch just adds new flags
+> "mux_set" and "gpio_enabled" into the struct sh_pfc_pin_config.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- drivers/pwm/pwm-rcar.c | 36 ++++++++++++++++++++++++++++++++++--
- 1 file changed, 34 insertions(+), 2 deletions(-)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index c8cd43f..1c19a8b 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/clk.h>
- #include <linux/err.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/io.h>
- #include <linux/log2.h>
- #include <linux/math64.h>
-@@ -38,6 +39,7 @@ struct rcar_pwm_chip {
- 	struct pwm_chip chip;
- 	void __iomem *base;
- 	struct clk *clk;
-+	struct gpio_desc *gpio;
- };
- 
- static inline struct rcar_pwm_chip *to_rcar_pwm_chip(struct pwm_chip *chip)
-@@ -119,8 +121,11 @@ static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
- 	ph = tmp & RCAR_PWMCNT_PH0_MASK;
- 
- 	/* Avoid prohibited setting */
--	if (cyc == 0 || ph == 0)
-+	if (cyc == 0)
- 		return -EINVAL;
-+	/* Try to use GPIO to output duty zero */
-+	if (ph == 0)
-+		return -EAGAIN;
- 
- 	rcar_pwm_write(rp, cyc | ph, RCAR_PWMCNT);
- 
-@@ -157,6 +162,28 @@ static void rcar_pwm_disable(struct rcar_pwm_chip *rp)
- 	rcar_pwm_update(rp, RCAR_PWMCR_EN0, 0, RCAR_PWMCR);
- }
- 
-+static int rcar_pwm_gpiod_get(struct rcar_pwm_chip *rp)
-+{
-+	if (rp->gpio)
-+		return 0;
-+
-+	rp->gpio = gpiod_get(rp->chip.dev, "renesas,duty-zero", GPIOD_OUT_LOW);
-+	if (!IS_ERR(rp->gpio))
-+		return 0;
-+
-+	rp->gpio = NULL;
-+	return -EINVAL;
-+}
-+
-+static void rcar_pwm_gpiod_put(struct rcar_pwm_chip *rp)
-+{
-+	if (!rp->gpio)
-+		return;
-+
-+	gpiod_put(rp->gpio);
-+	rp->gpio = NULL;
-+}
-+
- static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			  struct pwm_state *state)
- {
-@@ -171,6 +198,7 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	if (!state->enabled) {
- 		rcar_pwm_disable(rp);
-+		rcar_pwm_gpiod_put(rp);
- 		return 0;
- 	}
- 
-@@ -187,8 +215,12 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* The SYNC should be set to 0 even if rcar_pwm_set_counter failed */
- 	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
- 
--	if (!ret)
-+	if (!ret) {
- 		ret = rcar_pwm_enable(rp);
-+		rcar_pwm_gpiod_put(rp);
-+	} else if (ret == -EAGAIN) {
-+		ret = rcar_pwm_gpiod_get(rp);
-+	}
- 
- 	return ret;
- }
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.7.4
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
