@@ -1,112 +1,118 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:44463 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730068AbfHFJDA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Aug 2019 05:03:00 -0400
-MIME-Version: 1.0
+Received: from mail-eopbgr1400108.outbound.protection.outlook.com ([40.107.140.108]:22208
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726783AbfHFLia (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 6 Aug 2019 07:38:30 -0400
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Tue, 6 Aug 2019 11:38:25 +0000
+Message-ID: <OSBPR01MB4536870EEEE634B06199722ED8D50@OSBPR01MB4536.jpnprd01.prod.outlook.com>
 References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1562576868-8124-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1562576868-8124-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 6 Aug 2019 11:02:47 +0200
-Message-ID: <CAMuHMdUAVGbvn0D=UkqhY6RpO70MR-4GBC8i931a+fV9f6+njg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+ <CAMuHMdUAVGbvn0D=UkqhY6RpO70MR-4GBC8i931a+fV9f6+njg@mail.gmail.com>
+In-Reply-To: <CAMuHMdUAVGbvn0D=UkqhY6RpO70MR-4GBC8i931a+fV9f6+njg@mail.gmail.com>
+Content-Language: ja-JP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH RFC 3/7] pinctrl: sh-pfc: Rollback to mux if requires when
+Subject: RE: [PATCH RFC 3/7] pinctrl: sh-pfc: Rollback to mux if requires when
  the gpio is freed
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Linus Walleij <linus.walleij@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-Hi Shimoda-san,
-
-On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> R-Car PWM controller requires the gpio to output zero duty,
-> this patch allows to roll it back from gpio to mux when the gpio
-> is freed.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-Thanks for your patch!
-
-> --- a/drivers/pinctrl/sh-pfc/pinctrl.c
-> +++ b/drivers/pinctrl/sh-pfc/pinctrl.c
-> @@ -26,6 +26,7 @@
->  #include "../pinconf.h"
->
->  struct sh_pfc_pin_config {
-> +       unsigned int mux_mark;
-
-Due to padding, adding this field will increase memory consumption by
-6 bytes per pin.
-Probably sh_pfc_pin_group.{pins,mux} should be changed from unsigned int
-to u16, but that's out of scope for this patch.
-
->         bool mux_set;
->         bool gpio_enabled;
->  };
-> @@ -353,6 +354,15 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
->         spin_lock_irqsave(&pfc->lock, flags);
->
->         for (i = 0; i < grp->nr_pins; ++i) {
-> +               int idx = sh_pfc_get_pin_index(pfc, grp->pins[i]);
-> +               struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
-> +
-> +               /*
-> +                * This doesn't assume the order which gpios are enabled
-> +                * and then mux is set.
-
-I'm sorry, I don't understand what you mean?
-Can you please reword or elaborate?
-
-> +                */
-> +               WARN_ON(cfg->gpio_enabled);
-
-Can this actually happen?
-Should this cause a failure instead?
-
-> +
->                 ret = sh_pfc_config_mux(pfc, grp->mux[i], PINMUX_TYPE_FUNCTION);
->                 if (ret < 0)
->                         goto done;
-> @@ -364,6 +374,7 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
->                 struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
->
->                 cfg->mux_set = true;
-> +               cfg->mux_mark = grp->mux[i];
->         }
->
->  done:
-> @@ -417,6 +428,9 @@ static void sh_pfc_gpio_disable_free(struct pinctrl_dev *pctldev,
->
->         spin_lock_irqsave(&pfc->lock, flags);
->         cfg->gpio_enabled = false;
-> +       /* If mux is already set, this configure it here */
-
-configures
-
-> +       if (cfg->mux_set)
-> +               sh_pfc_config_mux(pfc, cfg->mux_mark, PINMUX_TYPE_FUNCTION);
-
-Have you considered the case where more than one pin of a pinmux group
-was used as a GPIO? In that case sh_pfc_gpio_disable_free() will be called
-multiple times, possibly with the same mux_mark.
-
-I don't think this will cause issues, though.
-
->         spin_unlock_irqrestore(&pfc->lock, flags);
->  }
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQpUaGFuayB5b3UgZm9yIHlvdXIgcmV2aWV3IQ0KDQo+IEZyb206IEdl
+ZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogVHVlc2RheSwgQXVndXN0IDYsIDIwMTkgNjowMyBQTQ0K
+PiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBPbiBNb24sIEp1bCA4LCAyMDE5IGF0IDExOjA4
+IEFNIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNv
+bT4gd3JvdGU6DQo+ID4gUi1DYXIgUFdNIGNvbnRyb2xsZXIgcmVxdWlyZXMgdGhlIGdwaW8gdG8g
+b3V0cHV0IHplcm8gZHV0eSwNCj4gPiB0aGlzIHBhdGNoIGFsbG93cyB0byByb2xsIGl0IGJhY2sg
+ZnJvbSBncGlvIHRvIG11eCB3aGVuIHRoZSBncGlvDQo+ID4gaXMgZnJlZWQuDQo+ID4NCj4gPiBT
+aWduZWQtb2ZmLWJ5OiBZb3NoaWhpcm8gU2hpbW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVu
+ZXNhcy5jb20+DQo+IA0KPiBUaGFua3MgZm9yIHlvdXIgcGF0Y2ghDQo+IA0KPiA+IC0tLSBhL2Ry
+aXZlcnMvcGluY3RybC9zaC1wZmMvcGluY3RybC5jDQo+ID4gKysrIGIvZHJpdmVycy9waW5jdHJs
+L3NoLXBmYy9waW5jdHJsLmMNCj4gPiBAQCAtMjYsNiArMjYsNyBAQA0KPiA+ICAjaW5jbHVkZSAi
+Li4vcGluY29uZi5oIg0KPiA+DQo+ID4gIHN0cnVjdCBzaF9wZmNfcGluX2NvbmZpZyB7DQo+ID4g
+KyAgICAgICB1bnNpZ25lZCBpbnQgbXV4X21hcms7DQo+IA0KPiBEdWUgdG8gcGFkZGluZywgYWRk
+aW5nIHRoaXMgZmllbGQgd2lsbCBpbmNyZWFzZSBtZW1vcnkgY29uc3VtcHRpb24gYnkNCj4gNiBi
+eXRlcyBwZXIgcGluLg0KDQpJIHNlZS4NCg0KPiBQcm9iYWJseSBzaF9wZmNfcGluX2dyb3VwLntw
+aW5zLG11eH0gc2hvdWxkIGJlIGNoYW5nZWQgZnJvbSB1bnNpZ25lZCBpbnQNCj4gdG8gdTE2LCBi
+dXQgdGhhdCdzIG91dCBvZiBzY29wZSBmb3IgdGhpcyBwYXRjaC4NCg0KSSBnb3QgaXQuDQoNCj4g
+PiAgICAgICAgIGJvb2wgbXV4X3NldDsNCj4gPiAgICAgICAgIGJvb2wgZ3Bpb19lbmFibGVkOw0K
+PiA+ICB9Ow0KPiA+IEBAIC0zNTMsNiArMzU0LDE1IEBAIHN0YXRpYyBpbnQgc2hfcGZjX2Z1bmNf
+c2V0X211eChzdHJ1Y3QgcGluY3RybF9kZXYgKnBjdGxkZXYsIHVuc2lnbmVkIHNlbGVjdG9yLA0K
+PiA+ICAgICAgICAgc3Bpbl9sb2NrX2lycXNhdmUoJnBmYy0+bG9jaywgZmxhZ3MpOw0KPiA+DQo+
+ID4gICAgICAgICBmb3IgKGkgPSAwOyBpIDwgZ3JwLT5ucl9waW5zOyArK2kpIHsNCj4gPiArICAg
+ICAgICAgICAgICAgaW50IGlkeCA9IHNoX3BmY19nZXRfcGluX2luZGV4KHBmYywgZ3JwLT5waW5z
+W2ldKTsNCj4gPiArICAgICAgICAgICAgICAgc3RydWN0IHNoX3BmY19waW5fY29uZmlnICpjZmcg
+PSAmcG14LT5jb25maWdzW2lkeF07DQo+ID4gKw0KPiA+ICsgICAgICAgICAgICAgICAvKg0KPiA+
+ICsgICAgICAgICAgICAgICAgKiBUaGlzIGRvZXNuJ3QgYXNzdW1lIHRoZSBvcmRlciB3aGljaCBn
+cGlvcyBhcmUgZW5hYmxlZA0KPiA+ICsgICAgICAgICAgICAgICAgKiBhbmQgdGhlbiBtdXggaXMg
+c2V0Lg0KPiANCj4gSSdtIHNvcnJ5LCBJIGRvbid0IHVuZGVyc3RhbmQgd2hhdCB5b3UgbWVhbj8N
+Cj4gQ2FuIHlvdSBwbGVhc2UgcmV3b3JkIG9yIGVsYWJvcmF0ZT8NCg0KSSB3YXMgYWxzbyBkaWZm
+aWN1bHQgdG8gcmVtZW1iZXIgd2hhdCBJIG1lYW50Li4uDQpBbnl3YXksIHRoaXMgbWVhbnQsDQog
+MSkgaWYgYSBkZXZpY2UgaGFzIHRoZSBkZWZhdWx0IHBpbmN0cmwtMCBwcm9wZXJ0eSwgdGhlIHNl
+dF9tdXgoKSBvcHMgaXMgY2FsbGVkDQogICAgYmVmb3JlIHRoZSBkZXZpY2UgZHJpdmVyJ3MgcHJv
+YmUoKSBmdW5jdGlvbiBpcyBjYWxsZWQgYnkgcGluY3RybF9iaW5kX3BpbnMoKSBmaXJzdCwNCiAy
+KSBzbyB0aGF0IGFueSBkZXZpY2UgZHJpdmVycyBjYW5ub3QgY2FsbCBncGlvZF9nZXQoKSBiZWZv
+cmUgdGhlIDEpLg0KDQpIb3dldmVyLCB0aGlzIGNvbW1lbnRzIGRvbid0IGNvdmVyIGFuIGltYmFs
+YW5jZSBwaW5jdHJsL2dwaW8gaGFuZGxpbmcuDQpGb3IgZXhhbXBsZSAoYXMgcHNldWRvKToNCiAt
+IFNDSUYgZHJpdmVyIHVzZXMgU0NJRjIgcGluY3RybCwNCiAtIGJ1dCwgSU9NTVUgZHJpdmVyIGdl
+dHMgdGhlIFNDSUYyIHBpbnMgYmVmb3JlIFNDSUYgZHJpdmVyIGlzIHByb2JlZC4NCg0KU28sIEkn
+ZCBsaWtlIHRvIHJldmlzZSB0aGUgY29tbWVudHMgYXMgZm9sbG93aW5nLiBXaGF0IGRvIHlvdSB0
+aGluaz8NCg0KLS0NClRoaXMgZHJpdmVyIGNhbm5vdCBtYW5hZ2UgYm90aCBncGlvIGFuZCBtdXgg
+d2hlbiB0aGUgZ3BpbyBwaW4NCmlzIGFscmVhZHkgZW5hYmxlZC4gU28sIHRoaXMgZnVuY3Rpb24g
+ZmFpbGVkLg0KLS0NCg0KPiA+ICsgICAgICAgICAgICAgICAgKi8NCj4gPiArICAgICAgICAgICAg
+ICAgV0FSTl9PTihjZmctPmdwaW9fZW5hYmxlZCk7DQo+IA0KPiBDYW4gdGhpcyBhY3R1YWxseSBo
+YXBwZW4/DQoNClRoaXMgY2Fubm90IGhhcHBlbiBhY3R1YWxseS4NCg0KPiBTaG91bGQgdGhpcyBj
+YXVzZSBhIGZhaWx1cmUgaW5zdGVhZD8NCg0KSSB0aGluayBzby4NCg0KPiA+ICsNCj4gPiAgICAg
+ICAgICAgICAgICAgcmV0ID0gc2hfcGZjX2NvbmZpZ19tdXgocGZjLCBncnAtPm11eFtpXSwgUElO
+TVVYX1RZUEVfRlVOQ1RJT04pOw0KPiA+ICAgICAgICAgICAgICAgICBpZiAocmV0IDwgMCkNCj4g
+PiAgICAgICAgICAgICAgICAgICAgICAgICBnb3RvIGRvbmU7DQo+ID4gQEAgLTM2NCw2ICszNzQs
+NyBAQCBzdGF0aWMgaW50IHNoX3BmY19mdW5jX3NldF9tdXgoc3RydWN0IHBpbmN0cmxfZGV2ICpw
+Y3RsZGV2LCB1bnNpZ25lZCBzZWxlY3RvciwNCj4gPiAgICAgICAgICAgICAgICAgc3RydWN0IHNo
+X3BmY19waW5fY29uZmlnICpjZmcgPSAmcG14LT5jb25maWdzW2lkeF07DQo+ID4NCj4gPiAgICAg
+ICAgICAgICAgICAgY2ZnLT5tdXhfc2V0ID0gdHJ1ZTsNCj4gPiArICAgICAgICAgICAgICAgY2Zn
+LT5tdXhfbWFyayA9IGdycC0+bXV4W2ldOw0KPiA+ICAgICAgICAgfQ0KPiA+DQo+ID4gIGRvbmU6
+DQo+ID4gQEAgLTQxNyw2ICs0MjgsOSBAQCBzdGF0aWMgdm9pZCBzaF9wZmNfZ3Bpb19kaXNhYmxl
+X2ZyZWUoc3RydWN0IHBpbmN0cmxfZGV2ICpwY3RsZGV2LA0KPiA+DQo+ID4gICAgICAgICBzcGlu
+X2xvY2tfaXJxc2F2ZSgmcGZjLT5sb2NrLCBmbGFncyk7DQo+ID4gICAgICAgICBjZmctPmdwaW9f
+ZW5hYmxlZCA9IGZhbHNlOw0KPiA+ICsgICAgICAgLyogSWYgbXV4IGlzIGFscmVhZHkgc2V0LCB0
+aGlzIGNvbmZpZ3VyZSBpdCBoZXJlICovDQo+IA0KPiBjb25maWd1cmVzDQoNCk9vcHMhIEknbGwg
+Zml4IGl0Lg0KDQo+ID4gKyAgICAgICBpZiAoY2ZnLT5tdXhfc2V0KQ0KPiA+ICsgICAgICAgICAg
+ICAgICBzaF9wZmNfY29uZmlnX211eChwZmMsIGNmZy0+bXV4X21hcmssIFBJTk1VWF9UWVBFX0ZV
+TkNUSU9OKTsNCj4gDQo+IEhhdmUgeW91IGNvbnNpZGVyZWQgdGhlIGNhc2Ugd2hlcmUgbW9yZSB0
+aGFuIG9uZSBwaW4gb2YgYSBwaW5tdXggZ3JvdXANCj4gd2FzIHVzZWQgYXMgYSBHUElPPyBJbiB0
+aGF0IGNhc2Ugc2hfcGZjX2dwaW9fZGlzYWJsZV9mcmVlKCkgd2lsbCBiZSBjYWxsZWQNCj4gbXVs
+dGlwbGUgdGltZXMsIHBvc3NpYmx5IHdpdGggdGhlIHNhbWUgbXV4X21hcmsuDQoNCkkgaGF2ZW4n
+dCBjb25zaWRlcmVkIHRoZSBjYXNlLiBCdXQsIGFib3V0IHRoZSBtdXhfbWFyaywgSSBjaGVja2Vk
+IHRoZSB2YWx1ZXMgYW5kIHRoZW4NCnRoZXkgYXJlIG5vdCB0aGUgc2FtZS4NCg0KRm9yIGV4YW1w
+bGUgKGRlYnVnIHByaW50ayBwYXRjaCk6DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9waW5jdHJsL3No
+LXBmYy9waW5jdHJsLmMgYi9kcml2ZXJzL3BpbmN0cmwvc2gtcGZjL3BpbmN0cmwuYw0KaW5kZXgg
+YmMyOTA2Ni4uZmRhYzcxYiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvcGluY3RybC9zaC1wZmMvcGlu
+Y3RybC5jDQorKysgYi9kcml2ZXJzL3BpbmN0cmwvc2gtcGZjL3BpbmN0cmwuYw0KQEAgLTM0OSw3
+ICszNDksNyBAQCBzdGF0aWMgaW50IHNoX3BmY19mdW5jX3NldF9tdXgoc3RydWN0IHBpbmN0cmxf
+ZGV2ICpwY3RsZGV2LCB1bnNpZ25lZCBzZWxlY3RvciwNCiAJdW5zaWduZWQgaW50IGk7DQogCWlu
+dCByZXQgPSAwOw0KIA0KLQlkZXZfZGJnKHBjdGxkZXYtPmRldiwgIkNvbmZpZ3VyaW5nIHBpbiBn
+cm91cCAlc1xuIiwgZ3JwLT5uYW1lKTsNCisJZGV2X2luZm8ocGN0bGRldi0+ZGV2LCAiQ29uZmln
+dXJpbmcgcGluIGdyb3VwICVzXG4iLCBncnAtPm5hbWUpOw0KIA0KIAlzcGluX2xvY2tfaXJxc2F2
+ZSgmcGZjLT5sb2NrLCBmbGFncyk7DQogDQpAQCAtMzc1LDYgKzM3NSw3IEBAIHN0YXRpYyBpbnQg
+c2hfcGZjX2Z1bmNfc2V0X211eChzdHJ1Y3QgcGluY3RybF9kZXYgKnBjdGxkZXYsIHVuc2lnbmVk
+IHNlbGVjdG9yLA0KIA0KIAkJY2ZnLT5tdXhfc2V0ID0gdHJ1ZTsNCiAJCWNmZy0+bXV4X21hcmsg
+PSBncnAtPm11eFtpXTsNCisJCWRldl9pbmZvKHBjdGxkZXYtPmRldiwgIiVkOiAleFxuIiwgaSwg
+Y2ZnLT5tdXhfbWFyayk7DQogCX0NCiANCiBkb25lOg0KLS0gDQoyLjcuNA0KDQpGb3IgZXhhbXBs
+ZSAobG9nKToNClsgICAgMC40OTc2NDddIHNoLXBmYyBlNjA2MDAwMC5waW4tY29udHJvbGxlcjog
+Q29uZmlndXJpbmcgcGluIGdyb3VwIHNjaWYyX2RhdGFfYQ0KWyAgICAwLjQ5NzcxMV0gc2gtcGZj
+IGU2MDYwMDAwLnBpbi1jb250cm9sbGVyOiAwOiA3N2INClsgICAgMC40OTc3MTVdIHNoLXBmYyBl
+NjA2MDAwMC5waW4tY29udHJvbGxlcjogMTogNzYwDQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGly
+byBTaGltb2RhDQoNCj4gSSBkb24ndCB0aGluayB0aGlzIHdpbGwgY2F1c2UgaXNzdWVzLCB0aG91
+Z2guDQo+IA0KPiA+ICAgICAgICAgc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcGZjLT5sb2NrLCBm
+bGFncyk7DQo+ID4gIH0NCj4gDQo+IFRoYW5rcyENCj4gDQo+IEdye29ldGplLGVldGluZ31zLA0K
+PiANCj4gICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQNCj4gDQo+IC0tDQo+IEdlZXJ0IFV5
+dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRA
+bGludXgtbTY4ay5vcmcNCj4gDQo+IEluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNo
+bmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQNCj4gd2hlbiBJJ20gdGFs
+a2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcg
+bGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRv
+cnZhbGRzDQo=
