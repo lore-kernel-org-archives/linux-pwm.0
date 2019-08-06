@@ -1,52 +1,112 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-eopbgr1410125.outbound.protection.outlook.com ([40.107.141.125]:17248
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726036AbfHFLtB (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 6 Aug 2019 07:49:01 -0400
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Date: Tue, 6 Aug 2019 11:48:57 +0000
-Message-ID: <OSBPR01MB45363201E328DF9C15D2833FD8D50@OSBPR01MB4536.jpnprd01.prod.outlook.com>
-References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1562576868-8124-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdVcAw_ApKMmrV7DaoJBGUZ1GzW3kmxnsTn72FtCGWhXPA@mail.gmail.com>
-In-Reply-To: <CAMuHMdVcAw_ApKMmrV7DaoJBGUZ1GzW3kmxnsTn72FtCGWhXPA@mail.gmail.com>
-Content-Language: ja-JP
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:44463 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730068AbfHFJDA (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Aug 2019 05:03:00 -0400
 MIME-Version: 1.0
+References: <1562576868-8124-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1562576868-8124-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1562576868-8124-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 6 Aug 2019 11:02:47 +0200
+Message-ID: <CAMuHMdUAVGbvn0D=UkqhY6RpO70MR-4GBC8i931a+fV9f6+njg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: RE: [PATCH RFC 2/7] pinctrl: sh-pfc: remove incomplete flag
- "cfg->type"
-To: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH RFC 3/7] pinctrl: sh-pfc: Rollback to mux if requires when
+ the gpio is freed
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Cc: Linus Walleij <linus.walleij@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogVHVlc2Rh
-eSwgQXVndXN0IDYsIDIwMTkgNjoyNCBQTQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0KPiBP
-biBNb24sIEp1bCA4LCAyMDE5IGF0IDExOjA4IEFNIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5b3No
-aWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gVGhlIG9sZCBjb21taXQg
-YzU4ZDljMWIyNmUzICgic2gtcGZjOiBJbXBsZW1lbnQgZ2VuZXJpYyBwaW5jb25mDQo+ID4gc3Vw
-cG9ydCIpIGJyb2tlIHRoZSBjZmctPnR5cGUgZmxhZyB0byBQSU5NVVhfVFlQRV9GVU5DVElPTiBi
-ZWNhdXNlDQo+ID4gc2hfcGZjX3BpbmNvbmZfc2V0KCkgZGlkbid0IGNhbGwgc2hfcGZjX3JlY29u
-ZmlnX3BpbigpLg0KPiA+IE5vdyBpZiB3ZSBmaXggdGhlIGNmZy0+dHlwZSBjb25kaXRpb24sIGl0
-IGdldHMgd29yc2UgYmVjYXVzZToNCj4gPiAgLSBTb21lIGRyaXZlcnMgbWlnaHQgYmUgZGVmZXJy
-ZWQgc28gdGhhdCAuc2V0X211eCgpIHdpbGwgYmUgY2FsbGVkDQo+ID4gICAgbXVsdGlwbGUgdGlt
-ZXMuDQo+ID4gIC0gSW4gc3VjaCB0aGUgY2FzZSwgdGhlIHNoLXBmYyBkcml2ZXIgcmV0dXJucyAt
-RUJVU1kgZXZlbiBpZg0KPiA+ICAgIHRoZSBncm91cCBpcyB0aGUgc2FtZSwgYW5kIHRoZW4gdGhh
-dCBkcml2ZXIgZmFpbHMgdG8gcHJvYmUuDQo+ID4NCj4gPiBTaW5jZSB0aGUgcGluY3RybCBzdWJz
-eXN0ZW0gYWxyZWFkeSBoYXMgc3VjaCBjb25kaXRpb25zIGFjY29yZGluZw0KPiA+IHRvIEBzZXRf
-bXV4IGFuZCBAZ3Bpb19yZXF1ZXN0X2VuYWJsZSwgdGhpcyBwYXRjaCBqdXN0IHJlbW92ZQ0KPiA+
-IHRoZSBpbmNvbXBsZXRlIGZsYWcgZnJvbSBzaC1wZmMvcGluY3RybC5jLg0KPiANCj4gRG8gd2Ug
-bmVlZCB0byBzZXQgc2hfcGZjX3Bpbm11eF9vcHMuc3RyaWN0ID0gdHJ1ZT8NCg0KSWYgdGhlIC5z
-dHJpY3QgPSB0cnVlLCB0aGUgZmluYWwgcHdtIHBhdGNoIG9uIHRoaXMgc2VyaWVzIGZhaWxlZCB3
-aXRoIHRoZSBmb2xsb3dpbmcgZXJyb3I6DQoNClsgICAxMS40NTM3MTZdIHNoLXBmYyBlNjA2MDAw
-MC5waW4tY29udHJvbGxlcjogcGluIEdQXzJfNyBhbHJlYWR5IHJlcXVlc3RlZCBieSBlNmUzMTAw
-MC5wd207IGNhbm5vdCBjbGFpbSBmb3IgZTYwNTIwMDAuZ3Bpbzo0NTkNCg0KQmVzdCByZWdhcmRz
-LA0KWW9zaGloaXJvIFNoaW1vZGENCg0KPiBHcntvZXRqZSxlZXRpbmd9cywNCj4gDQo+ICAgICAg
-ICAgICAgICAgICAgICAgICAgIEdlZXJ0DQo+IA0KPiAtLQ0KPiBHZWVydCBVeXR0ZXJob2V2ZW4g
-LS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsu
-b3JnDQo+IA0KPiBJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3Bs
-ZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0DQo+IHdoZW4gSSdtIHRhbGtpbmcgdG8gam91
-cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4N
-Cj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcw0K
+Hi Shimoda-san,
+
+On Mon, Jul 8, 2019 at 11:08 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> R-Car PWM controller requires the gpio to output zero duty,
+> this patch allows to roll it back from gpio to mux when the gpio
+> is freed.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Thanks for your patch!
+
+> --- a/drivers/pinctrl/sh-pfc/pinctrl.c
+> +++ b/drivers/pinctrl/sh-pfc/pinctrl.c
+> @@ -26,6 +26,7 @@
+>  #include "../pinconf.h"
+>
+>  struct sh_pfc_pin_config {
+> +       unsigned int mux_mark;
+
+Due to padding, adding this field will increase memory consumption by
+6 bytes per pin.
+Probably sh_pfc_pin_group.{pins,mux} should be changed from unsigned int
+to u16, but that's out of scope for this patch.
+
+>         bool mux_set;
+>         bool gpio_enabled;
+>  };
+> @@ -353,6 +354,15 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
+>         spin_lock_irqsave(&pfc->lock, flags);
+>
+>         for (i = 0; i < grp->nr_pins; ++i) {
+> +               int idx = sh_pfc_get_pin_index(pfc, grp->pins[i]);
+> +               struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
+> +
+> +               /*
+> +                * This doesn't assume the order which gpios are enabled
+> +                * and then mux is set.
+
+I'm sorry, I don't understand what you mean?
+Can you please reword or elaborate?
+
+> +                */
+> +               WARN_ON(cfg->gpio_enabled);
+
+Can this actually happen?
+Should this cause a failure instead?
+
+> +
+>                 ret = sh_pfc_config_mux(pfc, grp->mux[i], PINMUX_TYPE_FUNCTION);
+>                 if (ret < 0)
+>                         goto done;
+> @@ -364,6 +374,7 @@ static int sh_pfc_func_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
+>                 struct sh_pfc_pin_config *cfg = &pmx->configs[idx];
+>
+>                 cfg->mux_set = true;
+> +               cfg->mux_mark = grp->mux[i];
+>         }
+>
+>  done:
+> @@ -417,6 +428,9 @@ static void sh_pfc_gpio_disable_free(struct pinctrl_dev *pctldev,
+>
+>         spin_lock_irqsave(&pfc->lock, flags);
+>         cfg->gpio_enabled = false;
+> +       /* If mux is already set, this configure it here */
+
+configures
+
+> +       if (cfg->mux_set)
+> +               sh_pfc_config_mux(pfc, cfg->mux_mark, PINMUX_TYPE_FUNCTION);
+
+Have you considered the case where more than one pin of a pinmux group
+was used as a GPIO? In that case sh_pfc_gpio_disable_free() will be called
+multiple times, possibly with the same mux_mark.
+
+I don't think this will cause issues, though.
+
+>         spin_unlock_irqrestore(&pfc->lock, flags);
+>  }
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
