@@ -1,7 +1,7 @@
 Return-path: <kernel-bounces@pengutronix.de>
-Date: Wed, 07 Aug 2019 15:53:55 +0200
+Date: Wed, 07 Aug 2019 15:42:31 +0200
 From: Paul Cercueil <paul@crapouillou.net>
-Message-Id: <1565186035.1834.1@crapouillou.net>
+Message-Id: <1565185351.1834.0@crapouillou.net>
 In-Reply-To: <20190730123229.31839-1-u.kleine-koenig@pengutronix.de>
 References: <1564435163.6633.4@crapouillou.net>
  <20190730123229.31839-1-u.kleine-koenig@pengutronix.de>
@@ -31,9 +31,6 @@ Le mar. 30 juil. 2019 =E0 14:32, Uwe =3D?iso-8859-1?q?Kleine-K=3DF6nig?=3D=20
 > document them in the driver.
 >=20
 > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-
 > ---
 > I intended to also add a Link to the reference manual, Paul suggested=20
 > to
@@ -49,7 +46,21 @@ Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 > when the call returns I'd consider this proven.
 >=20
 > @Paul: would you mind doing this test?
->=20
+
+You're correct. I configured it for 4s period and 2s duty. After=20
+enabling the
+PWM, it stays LOW for two seconds then switches HIGH for two seconds.
+
+That can be corrected, though, by inverting the configured polarity=20
+when the
+PWM is running and set "period - duty" as the duty value. I can make a=20
+patch
+for that.
+
+Cheers,
+-Paul
+
+
 > Best regards
 > Uwe
 >=20
