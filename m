@@ -1,45 +1,41 @@
-From: David Lechner <david@lechnology.com>
-Subject: Re: [PATCH v2 3/5] counter: new TI eQEP driver
-Date: Wed, 7 Aug 2019 14:49:08 -0500
-Message-ID: <73c4b228-e3d0-ecb0-21b7-6101587481b3@lechnology.com>
-References: <20190807194023.15318-1-david@lechnology.com>
- <20190807194023.15318-4-david@lechnology.com>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Wed, 7 Aug 2019 13:15:28 -0700
+Message-ID: <20190807201528.GO250418@google.com>
+References: <20190709190007.91260-1-mka@chromium.org>
+ <20190709190007.91260-3-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190807194023.15318-4-david@lechnology.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190709190007.91260-3-mka@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 8/7/19 2:40 PM, David Lechner wrote:
-> diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-> index 2967d0a9ff91..7eeb310f0cda 100644
-> --- a/drivers/counter/Kconfig
-> +++ b/drivers/counter/Kconfig
-> @@ -49,6 +49,18 @@ config STM32_LPTIMER_CNT
->   	  To compile this driver as a module, choose M here: the
->   	  module will be called stm32-lptimer-cnt.
->   
-> +config TI_EQEP
-> +	tristate "TI eQEP counter driver"
-> +	depends on (SOC_AM33XX || COMPILE_TEST)
-> +	select PWM
+On Tue, Jul 09, 2019 at 12:00:05PM -0700, Matthias Kaehlcke wrote:
+> Backlight brightness curves can have different shapes. The two main
+> types are linear and non-linear curves. The human eye doesn't
+> perceive linearly increasing/decreasing brightness as linear (see
+> also 88ba95bedb79 "backlight: pwm_bl: Compute brightness of LED
+> linearly to human eye"), hence many backlights use non-linear (often
+> logarithmic) brightness curves. The type of curve currently is opaque
+> to userspace, so userspace often uses more or less reliable heuristics
+> (like the number of brightness levels) to decide whether to treat a
+> backlight device as linear or non-linear.
+> 
+> Export the type of the brightness curve via the new sysfs attribute
+> 'scale'. The value of the attribute can be 'linear', 'non-linear' or
+> 'unknown'. For devices that don't provide information about the scale
+> of their brightness curve the value of the 'scale' attribute is 'unknown'.
+> 
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 
-oops, missed removing `select PWM`. This line is no longer needed with
-patch 1/5.
+Daniel (et al): do you have any more comments on this patch/series or
+is it ready to land?
 
-> +	select REGMAP_MMIO
-> +	help
-> +	  Select this option to enable the Texas Instruments Enhanced Quadrature
-> +	  Encoder Pulse (eQEP) counter driver.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ti-eqep.
-> +
->   config FTM_QUADDEC
->   	tristate "Flex Timer Module Quadrature decoder driver"
->   	depends on HAS_IOMEM && OF
+Thanks
+
+Matthias
