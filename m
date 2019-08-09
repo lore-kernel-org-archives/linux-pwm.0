@@ -1,517 +1,228 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: Re: [PATCH 2/2] pwm: sprd: Add Spreadtrum PWM support
-Date: Fri, 9 Aug 2019 18:06:21 +0800
-Message-ID: <CAMz4kuLQsrBWjta1s=ZRPgxUd0_+_f-GbJV138tccuMLg2XCLA@mail.gmail.com>
-References: <6a38a3655bc8100764d85cb04dea5c2546a311e1.1565168564.git.baolin.wang@linaro.org>
- <40127356a1acd1f2ff1be1d8a120b305a4e17af4.1565168564.git.baolin.wang@linaro.org>
- <20190809091013.vguj4wty7qiab64t@pengutronix.de>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 1/7] pwm: jz4740: Obtain regmap from parent node
+Date: Fri,  9 Aug 2019 14:30:25 +0200
+Message-ID: <20190809123031.24219-2-paul@crapouillou.net>
+References: <20190809123031.24219-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190809091013.vguj4wty7qiab64t@pengutronix.de>
+In-Reply-To: <20190809123031.24219-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, Vincent Guittot <vincent.guittot@linaro.org>, linux-pwm@vger.kernel.org, DTML <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, kernel@pengutronix.de
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 List-Id: linux-pwm@vger.kernel.org
 
- Hi Uwe,
+The TCU registers are shared between a handful of drivers, accessing
+them through the same regmap.
 
-On Fri, 9 Aug 2019 at 17:10, Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> On Thu, Aug 08, 2019 at 04:59:39PM +0800, Baolin Wang wrote:
-> > From: Neo Hou <neo.hou@unisoc.com>
-> >
-> > This patch adds the Spreadtrum PWM support, which provides maximum 4
-> > channels.
-> >
-> > Signed-off-by: Neo Hou <neo.hou@unisoc.com>
-> > Co-developed-by: Baolin Wang <baolin.wang@linaro.org>
-> > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-> > ---
-> >  drivers/pwm/Kconfig    |   10 ++
-> >  drivers/pwm/Makefile   |    1 +
-> >  drivers/pwm/pwm-sprd.c |  311 ++++++++++++++++++++++++++++++++++++++++=
-++++++++
-> >  3 files changed, 322 insertions(+)
-> >  create mode 100644 drivers/pwm/pwm-sprd.c
-> >
-> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > index a7e5751..4963b4d 100644
-> > --- a/drivers/pwm/Kconfig
-> > +++ b/drivers/pwm/Kconfig
-> > @@ -423,6 +423,16 @@ config PWM_SPEAR
-> >         To compile this driver as a module, choose M here: the module
-> >         will be called pwm-spear.
-> >
-> > +config PWM_SPRD
-> > +     tristate "Spreadtrum PWM support"
-> > +     depends on ARCH_SPRD || COMPILE_TEST
->
-> I think you need
->
->         depends on HAS_IOMEM
+While this driver is devicetree-compatible, it is never (as of now)
+probed from devicetree, so this change does not introduce a ABI problem
+with current devicetree files.
 
-OK.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Tested-by: Mathieu Malaterre <malat@debian.org>
+Tested-by: Artur Rojek <contact@artur-rojek.eu>
+---
+ drivers/pwm/Kconfig      |  1 +
+ drivers/pwm/pwm-jz4740.c | 80 ++++++++++++++++++++++++++--------------
+ 2 files changed, 53 insertions(+), 28 deletions(-)
 
->
-> > +     help
-> > +       Generic PWM framework driver for the PWM controller on
-> > +       Spreadtrum SoCs.
-> > +
-> > +       To compile this driver as a module, choose M here: the module
-> > +       will be called pwm-sprd.
-> > +
-> >  config PWM_STI
-> >       tristate "STiH4xx PWM support"
-> >       depends on ARCH_STI
-> > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> > index 76b555b..26326ad 100644
-> > --- a/drivers/pwm/Makefile
-> > +++ b/drivers/pwm/Makefile
-> > @@ -41,6 +41,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)  +=3D pwm-rockchip.o
-> >  obj-$(CONFIG_PWM_SAMSUNG)    +=3D pwm-samsung.o
-> >  obj-$(CONFIG_PWM_SIFIVE)     +=3D pwm-sifive.o
-> >  obj-$(CONFIG_PWM_SPEAR)              +=3D pwm-spear.o
-> > +obj-$(CONFIG_PWM_SPRD)               +=3D pwm-sprd.o
-> >  obj-$(CONFIG_PWM_STI)                +=3D pwm-sti.o
-> >  obj-$(CONFIG_PWM_STM32)              +=3D pwm-stm32.o
-> >  obj-$(CONFIG_PWM_STM32_LP)   +=3D pwm-stm32-lp.o
-> > diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
-> > new file mode 100644
-> > index 0000000..f6fc793
-> > --- /dev/null
-> > +++ b/drivers/pwm/pwm-sprd.c
-> > @@ -0,0 +1,311 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (C) 2019 Spreadtrum Communications Inc.
->
-> If there is a publicly available reference manual available, please add
-> a link to it here.
-
-Sure.
-
->
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/err.h>
-> > +#include <linux/io.h>
-> > +#include <linux/math64.h>
-> > +#include <linux/module.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/pwm.h>
-> > +
-> > +#define SPRD_PWM_PRESCALE    0x0
-> > +#define SPRD_PWM_MOD         0x4
-> > +#define SPRD_PWM_DUTY                0x8
-> > +#define SPRD_PWM_DIV         0xc
-> > +#define SPRD_PWM_PAT_LOW     0x10
-> > +#define SPRD_PWM_PAT_HIGH    0x14
-> > +#define SPRD_PWM_ENABLE              0x18
-> > +
-> > +#define SPRD_PWM_MOD_MAX     GENMASK(7, 0)
-> > +#define SPRD_PWM_REG_MSK     GENMASK(15, 0)
-> > +#define SPRD_PWM_ENABLE_BIT  BIT(0)
-> > +
-> > +#define SPRD_PWM_NUM         4
-> > +#define SPRD_PWM_REGS_SHIFT  5
-> > +#define SPRD_PWM_NUM_CLKS    2
-> > +#define SPRD_PWM_DEFAULT_CLK 26000000UL
-> > +
-> > +struct sprd_pwm_chn {
-> > +     struct clk_bulk_data clks[SPRD_PWM_NUM_CLKS];
-> > +     unsigned long clk_rate;
-> > +     bool clk_enabled;
-> > +};
-> > +
-> > +struct sprd_pwm_chip {
-> > +     void __iomem *base;
-> > +     struct device *dev;
-> > +     struct pwm_chip chip;
-> > +     int num_pwms;
-> > +     struct sprd_pwm_chn chn[SPRD_PWM_NUM];
-> > +};
-> > +
-> > +/* list of clocks required by PWM channels */
-> > +static const char * const sprd_pwm_clks[] =3D {
-> > +     "enable0", "pwm0",
-> > +     "enable1", "pwm1",
-> > +     "enable2", "pwm2",
-> > +     "enable3", "pwm3",
-> > +};
-> > +
-> > +static u32 sprd_pwm_read(struct sprd_pwm_chip *chip, u32 num, u32 reg)
->
-> num is the channel id here? Then maybe "hwid" or "chanid" would be a
-> better name. Or pass struct pwm_chip only?
-
-Yes, will change to 'hwid'.
-
->
-> Please (if you keep sprd_pwm_chip) rename chip to spc which is the name
-> used in other places for structures of this type. "chip" is for struct
-> pwm_chip.
-
-Yes, sure.
-
->
-> > +{
-> > +     u32 offset =3D reg + (num << SPRD_PWM_REGS_SHIFT);
-> > +
-> > +     return readl_relaxed(chip->base + offset);
-> > +}
-> > +
-> > +static void sprd_pwm_write(struct sprd_pwm_chip *chip, u32 num,
-> > +                        u32 reg, u32 val)
-> > +{
-> > +     u32 offset =3D reg + (num << SPRD_PWM_REGS_SHIFT);
-> > +
-> > +     writel_relaxed(val, chip->base + offset);
-> > +}
-> > +
-> > +static int sprd_pwm_config(struct pwm_chip *chip, struct pwm_device *p=
-wm,
-> > +                        int duty_ns, int period_ns)
->
-> Please implement .apply() instead of .config(), .enable() and
-> .disable().
-
-OK.
-
->
-> > +{
-> > +     struct sprd_pwm_chip *spc =3D
-> > +             container_of(chip, struct sprd_pwm_chip, chip);
-> > +     struct sprd_pwm_chn *chn =3D &spc->chn[pwm->hwpwm];
-> > +     u64 div, tmp;
-> > +     u32 prescale, duty;
-> > +     int ret;
-> > +
-> > +     /*
-> > +      * NOTE: the clocks to PWM channel has to be enabled first before
-> > +      * writing to the registers.
-> > +      */
-> > +     if (!chn->clk_enabled) {
-> > +             ret =3D clk_bulk_prepare_enable(SPRD_PWM_NUM_CLKS, chn->c=
-lks);
->
-> Do you really need to enable all 8 clocks to configure a single channel?
-
-We have 4 channels, and each channel use 2 clocks, so here only enable
-2 clocks, see SPRD_PWM_NUM_CLKS.
-
->
-> > +             if (ret) {
-> > +                     dev_err(spc->dev, "failed to enable pwm%u clock\n=
-",
-> > +                             pwm->hwpwm);
-> > +                     return ret;
-> > +             }
-> > +
-> > +             chn->clk_enabled =3D true;
-> > +     }
-> > +
-> > +     duty =3D duty_ns * SPRD_PWM_MOD_MAX / period_ns;
->
-> @Baolin: until we're there that there are framework requirements how to
-> round, please document at least how you do it here. Also describing the
-> underlying concepts would be good for the driver reader.
->
-> Something like:
->
-> /*
->  * The hardware provides a counter that is feed by the source clock.
->  * The period length is (PRESCALE + 1) * MOD counter steps.
->  * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
->  *
->  * To keep the maths simple we're always using MOD =3D MOD_MAX.
->  * The value for PRESCALE is selected such that the resulting period
->  * gets the maximal length not bigger than the requested one with the
->  * given settings (MOD =3D MOD_MAX and input clock).
->  */
-
-Yes, totally agree with you. I will add some documentation for our
-controller's setting.
-
->
-> @Thierry: having a framework guideline here would be good. Or still
-> better a guideline and a debug setting that notices drivers stepping out
-> of line.
->
-> I assume using MOD =3D 0 is forbidden?
->
-> > +     /*
-> > +      * According to the datasheet, the period_ns calculation formula
-> > +      * should be:
-> > +      * period_ns =3D 10^9 * (prescale + 1) * mod / clk_rate
-> > +      *
-> > +      * Then we can get the prescale formula:
-> > +      * prescale =3D (period_ns * clk_rate) / (10^9 * mod) -1
-> > +      */
-> > +     tmp =3D chn->clk_rate * period_ns;
-> > +     div =3D 1000000000ULL * SPRD_PWM_MOD_MAX;
->
-> Please use NSEC_PER_SEC instead of 1000000000ULL.
-
-Sure.
-
->
-> > +     prescale =3D div64_u64(tmp, div) - 1;
->
-> If tmp is smaller than div you end up with prescale =3D 0xffffffff which
-> should be catched. What if prescale > 0xffff?
-
-Usually we can not meet this case, but you are right, the prescale has
-a limit according to the register definition. So will add a validation
-here.
-
->
-> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_MOD, SPRD_PWM_MOD_MAX);
-> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_DUTY, duty);
->
-> You're losing precision here as you always use SPRD_PWM_MOD_MAX, right?
-> (Just for my understanding, if this simpler approach is good enough
-> here that's fine.)
-
-Yes, SPRD_PWM_MOD_MAX is good enough.
-
->
-> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PAT_LOW, SPRD_PWM_REG_MS=
-K);
-> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PAT_HIGH, SPRD_PWM_REG_M=
-SK);
->
-> Please describe these two registers in a short comment.
-
-Sure.
-
->
-> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PRESCALE, prescale);
->
-> Is the configuration here atomic in the sense that the write of DUTY
-> above only gets effective when PRESCALE is written? If not, please add
-
-Yes.
-
-> a describing paragraph at the top of the driver similar to what is
-> written in pwm-sifive.c. When the PWM is already running before, how
-> does a configuration change effects the output? Is the currently running
-> period completed?
-
-Anyway, I'll add some comments to explain how it works.
-
->
-> > +static void sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_devic=
-e *pwm,
-> > +                            struct pwm_state *state)
-> > +{
-> > +     struct sprd_pwm_chip *spc =3D
-> > +             container_of(chip, struct sprd_pwm_chip, chip);
-> > +     struct sprd_pwm_chn *chn =3D &spc->chn[pwm->hwpwm];
-> > +     u32 enabled, duty, prescale;
-> > +     u64 tmp;
-> > +     int ret;
-> > +
-> > +     ret =3D clk_bulk_prepare_enable(SPRD_PWM_NUM_CLKS, chn->clks);
-> > +     if (ret) {
-> > +             dev_err(spc->dev, "failed to enable pwm%u clocks\n",
-> > +                     pwm->hwpwm);
-> > +             return;
-> > +     }
-> > +
-> > +     chn->clk_enabled =3D true;
-> > +
-> > +     duty =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_DUTY) & SPRD_PWM=
-_REG_MSK;
-> > +     prescale =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRESCALE) & =
-SPRD_PWM_REG_MSK;
-> > +     enabled =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_ENABLE) & SPR=
-D_PWM_ENABLE_BIT;
-> > +
-> > +     /*
-> > +      * According to the datasheet, the period_ns and duty_ns calculat=
-ion
-> > +      * formula should be:
-> > +      * period_ns =3D 10^9 * (prescale + 1) * mod / clk_rate
-> > +      * duty_ns =3D 10^9 * (prescale + 1) * duty / clk_rate
-> > +      */
-> > +     tmp =3D (prescale + 1) * 1000000000ULL * SPRD_PWM_MOD_MAX;
-> > +     state->period =3D div64_u64(tmp, chn->clk_rate);
->
-> This is not idempotent. If you apply the configuration that is returned
-> here this shouldn't result in a reconfiguration.
-
-Since we may configure the  PWM in bootloader, so in kernel part we
-should get current PWM state to avoid reconfiguration if state
-configuration are same.
-
->
-> > +     tmp =3D (prescale + 1) * 1000000000ULL * duty;
-> > +     state->duty_cycle =3D div64_u64(tmp, chn->clk_rate);
-> > +
-> > +     state->enabled =3D !!enabled;
-> > +
-> > +     /* Disable PWM clocks if the PWM channel is not in enable state. =
-*/
-> > +     if (!enabled) {
-> > +             clk_bulk_disable_unprepare(SPRD_PWM_NUM_CLKS, chn->clks);
-> > +             chn->clk_enabled =3D false;
-> > +     }
-> > +}
-> > +
-> > +static const struct pwm_ops sprd_pwm_ops =3D {
-> > +     .config =3D sprd_pwm_config,
-> > +     .enable =3D sprd_pwm_enable,
-> > +     .disable =3D sprd_pwm_disable,
-> > +     .get_state =3D sprd_pwm_get_state,
-> > +     .owner =3D THIS_MODULE,
-> > +};
-> > +
-> > +static int sprd_pwm_clk_init(struct sprd_pwm_chip *spc)
-> > +{
-> > +     struct clk *clk_parent, *clk_pwm;
-> > +     int ret, i, clk_index =3D 0;
-> > +
-> > +     clk_parent =3D devm_clk_get(spc->dev, "source");
-> > +     if (IS_ERR(clk_parent)) {
-> > +             dev_err(spc->dev, "failed to get source clock\n");
-> > +             return PTR_ERR(clk_parent);
-> > +     }
-> > +
-> > +     for (i =3D 0; i < SPRD_PWM_NUM; i++) {
-> > +             struct sprd_pwm_chn *chn =3D &spc->chn[i];
-> > +             int j;
-> > +
-> > +             for (j =3D 0; j < SPRD_PWM_NUM_CLKS; ++j)
-> > +                     chn->clks[j].id =3D sprd_pwm_clks[clk_index++];
-> > +
-> > +             ret =3D devm_clk_bulk_get(spc->dev, SPRD_PWM_NUM_CLKS, ch=
-n->clks);
-> > +             if (ret) {
-> > +                     if (ret =3D=3D -ENOENT)
-> > +                             break;
->
-> devm_clk_bulk_get_optional ? I'm sure you don't want to get all 8 clocks
-> 8 times.
-
-This is not optional, each channel has 2 required clocks, and we have
-4 channels. (SPRD_PWM_NUM_CLKS =3D=3D 2)
-
->
-> > +
-> > +                     dev_err(spc->dev, "failed to get channel clocks\n=
-");
-> > +                     return ret;
-> > +             }
-> > +
-> > +             clk_pwm =3D chn->clks[1].clk;
->
-> This 1 looks suspicious. Are you using all clocks provided in the dtb at
-> all? You're not using i in the loop at all, this doesn't look right.
-
-Like I said above, each channel has 2 clocks: enable clock and pwm
-clock, the 2nd clock of each channel's bulk clocks is the pwm clock,
-which is used to set the source clock. I know this's not easy to read,
-so do you have any good suggestion?
-
->
-> > +             if (!clk_set_parent(clk_pwm, clk_parent))
-> > +                     chn->clk_rate =3D clk_get_rate(clk_pwm);
-> > +             else
-> > +                     chn->clk_rate =3D SPRD_PWM_DEFAULT_CLK;
->
-> I don't know all the clock framework details, but I think there are
-> better ways to ensure that a given clock is used as parent for another
-> given clock. Please read the chapter about "Assigned clock parents and
-> rates" in the clock bindings and check if this could be used for the
-> purpose here and so simplify the driver.
-
-Actually there are many other drivers set the parent clock like this,
-and we want a default clock if failed to set the parent clock.
-
->
-> > +     }
-> > +
-> > +     if (!i) {
-> > +             dev_err(spc->dev, "no availbale PWM channels\n");
->
-> s/availbale/available/
-
-Sure.
-
->
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     spc->num_pwms =3D i;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int sprd_pwm_probe(struct platform_device *pdev)
-> > +{
-> > +     struct sprd_pwm_chip *spc;
-> > +     int ret;
-> > +
-> > +     spc =3D devm_kzalloc(&pdev->dev, sizeof(*spc), GFP_KERNEL);
-> > +     if (!spc)
-> > +             return -ENOMEM;
-> > +
-> > +     spc->base =3D devm_platform_ioremap_resource(pdev, 0);
-> > +     if (IS_ERR(spc->base))
-> > +             return PTR_ERR(spc->base);
-> > +
-> > +     spc->dev =3D &pdev->dev;
-> > +     ret =3D sprd_pwm_clk_init(spc);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     spc->chip.dev =3D &pdev->dev;
-> > +     spc->chip.ops =3D &sprd_pwm_ops;
-> > +     spc->chip.base =3D -1;
-> > +     spc->chip.npwm =3D spc->num_pwms;
-> > +
-> > +     ret =3D pwmchip_add(&spc->chip);
-> > +     if (ret) {
-> > +             dev_err(&pdev->dev, "failed to add PWM chip\n");
-> > +             return ret;
-> > +     }
-> > +
-> > +     platform_set_drvdata(pdev, spc);
->
-> If you do this earlier you can simplify the last part of the driver to:
->
->         ret =3D pwmchip_add(&spc->chip);
->         if (ret)
->                 dev_err(&pdev->dev, "failed to add PWM chip\n");
->
->         return ret;
-
-OK.
-
->
-> > +     return 0;
-> > +}
-> > +
-> > +static int sprd_pwm_remove(struct platform_device *pdev)
-> > +{
-> > +     struct sprd_pwm_chip *spc =3D platform_get_drvdata(pdev);
-> > +     int i;
-> > +
-> > +     for (i =3D 0; i < spc->num_pwms; i++)
-> > +             pwm_disable(&spc->chip.pwms[i]);
->
-> This is wrong. You must not call pwm_disable here. It's the consumer's
-> responsibility to disable the hardware.
-
-Emm, I saw some drivers did like this, like pwm-spear.c.
-Could you elaborate on what's the problem if the driver issues pwm_disable?
-
-Very appreciated for your comments.
-
---=20
-Baolin Wang
-Best Regards
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index a7e57516959e..cc4df0ec978a 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -225,6 +225,7 @@ config PWM_IMX_TPM
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+ 	depends on MACH_INGENIC
++	select MFD_SYSCON
+ 	help
+ 	  Generic PWM framework driver for Ingenic JZ47xx based
+ 	  machines.
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index f901e8a0d33d..7aea5e0c6e18 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -8,18 +8,20 @@
+ #include <linux/err.h>
+ #include <linux/gpio.h>
+ #include <linux/kernel.h>
++#include <linux/mfd/ingenic-tcu.h>
++#include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
+-
+-#include <asm/mach-jz4740/timer.h>
++#include <linux/regmap.h>
+ 
+ #define NUM_PWM 8
+ 
+ struct jz4740_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
++	struct regmap *map;
+ };
+ 
+ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
+@@ -29,6 +31,8 @@ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
+ 
+ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
++
+ 	/*
+ 	 * Timers 0 and 1 are used for system tasks, so they are unavailable
+ 	 * for use as PWMs.
+@@ -36,50 +40,53 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (pwm->hwpwm < 2)
+ 		return -EBUSY;
+ 
+-	jz4740_timer_start(pwm->hwpwm);
++	regmap_write(jz->map, TCU_REG_TSCR, BIT(pwm->hwpwm));
+ 
+ 	return 0;
+ }
+ 
+ static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	jz4740_timer_set_ctrl(pwm->hwpwm, 0);
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
+ 
+-	jz4740_timer_stop(pwm->hwpwm);
++	regmap_write(jz->map, TCU_REG_TSCR, BIT(pwm->hwpwm));
+ }
+ 
+ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->pwm);
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
++
++	/* Enable PWM output */
++	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PWM_EN, TCU_TCSR_PWM_EN);
+ 
+-	ctrl |= JZ_TIMER_CTRL_PWM_ENABLE;
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+-	jz4740_timer_enable(pwm->hwpwm);
++	/* Start counter */
++	regmap_write(jz->map, TCU_REG_TESR, BIT(pwm->hwpwm));
+ 
+ 	return 0;
+ }
+ 
+ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->hwpwm);
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
+ 
+ 	/*
+ 	 * Set duty > period. This trick allows the TCU channels in TCU2 mode to
+ 	 * properly return to their init level.
+ 	 */
+-	jz4740_timer_set_duty(pwm->hwpwm, 0xffff);
+-	jz4740_timer_set_period(pwm->hwpwm, 0x0);
++	regmap_write(jz->map, TCU_REG_TDHRc(pwm->hwpwm), 0xffff);
++	regmap_write(jz->map, TCU_REG_TDFRc(pwm->hwpwm), 0x0);
+ 
+ 	/*
+ 	 * Disable PWM output.
+ 	 * In TCU2 mode (channel 1/2 on JZ4750+), this must be done before the
+ 	 * counter is stopped, while in TCU1 mode the order does not matter.
+ 	 */
+-	ctrl &= ~JZ_TIMER_CTRL_PWM_ENABLE;
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
++	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PWM_EN, 0);
+ 
+ 	/* Stop counter */
+-	jz4740_timer_disable(pwm->hwpwm);
++	regmap_write(jz->map, TCU_REG_TECR, BIT(pwm->hwpwm));
+ }
+ 
+ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -89,7 +96,6 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long long tmp;
+ 	unsigned long period, duty;
+ 	unsigned int prescaler = 0;
+-	uint16_t ctrl;
+ 
+ 	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
+ 	do_div(tmp, 1000000000);
+@@ -112,26 +118,37 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	jz4740_pwm_disable(chip, pwm);
+ 
+-	jz4740_timer_set_count(pwm->hwpwm, 0);
+-	jz4740_timer_set_duty(pwm->hwpwm, duty);
+-	jz4740_timer_set_period(pwm->hwpwm, period);
++	/* Set abrupt shutdown */
++	regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PWM_SD, TCU_TCSR_PWM_SD);
++
++	/* Set clock prescale */
++	regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PRESCALE_MASK,
++			   prescaler << TCU_TCSR_PRESCALE_LSB);
++
++	/* Reset counter to 0 */
++	regmap_write(jz4740->map, TCU_REG_TCNTc(pwm->hwpwm), 0);
+ 
+-	ctrl = JZ_TIMER_CTRL_PRESCALER(prescaler) | JZ_TIMER_CTRL_SRC_EXT |
+-		JZ_TIMER_CTRL_PWM_ABBRUPT_SHUTDOWN;
++	/* Set duty */
++	regmap_write(jz4740->map, TCU_REG_TDHRc(pwm->hwpwm), duty);
+ 
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
++	/* Set period */
++	regmap_write(jz4740->map, TCU_REG_TDFRc(pwm->hwpwm), period);
+ 
++	/* Set polarity */
+ 	switch (state->polarity) {
+ 	case PWM_POLARITY_NORMAL:
+-		ctrl &= ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
++		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++				   TCU_TCSR_PWM_INITL_HIGH, 0);
+ 		break;
+ 	case PWM_POLARITY_INVERSED:
+-		ctrl |= JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
++		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++				   TCU_TCSR_PWM_INITL_HIGH,
++				   TCU_TCSR_PWM_INITL_HIGH);
+ 		break;
+ 	}
+ 
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+-
+ 	if (state->enabled)
+ 		jz4740_pwm_enable(chip, pwm);
+ 
+@@ -148,8 +165,9 @@ static const struct pwm_ops jz4740_pwm_ops = {
+ static int jz4740_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct jz4740_pwm_chip *jz4740;
++	struct device *dev = &pdev->dev;
+ 
+-	jz4740 = devm_kzalloc(&pdev->dev, sizeof(*jz4740), GFP_KERNEL);
++	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
+ 	if (!jz4740)
+ 		return -ENOMEM;
+ 
+@@ -157,7 +175,13 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(jz4740->clk))
+ 		return PTR_ERR(jz4740->clk);
+ 
+-	jz4740->chip.dev = &pdev->dev;
++	jz4740->map = device_node_to_regmap(dev->parent->of_node);
++	if (!jz4740->map) {
++		dev_err(dev, "regmap not found\n");
++		return -EINVAL;
++	}
++
++	jz4740->chip.dev = dev;
+ 	jz4740->chip.ops = &jz4740_pwm_ops;
+ 	jz4740->chip.npwm = NUM_PWM;
+ 	jz4740->chip.base = -1;
+-- 
+2.21.0.593.g511ec345e18
