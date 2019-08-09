@@ -1,24 +1,54 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [GIT PULL] pwm: Fixes for v5.3-rc4
-Date: Fri, 09 Aug 2019 16:35:10 +0000
-Message-ID: <156536851085.6429.6086666407903295936.pr-tracker-bot@kernel.org>
-References: <20190809134848.18297-1-thierry.reding@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 3/7] pwm: jz4740: Drop dependency on MACH_INGENIC
+Date: Fri, 9 Aug 2019 18:41:43 +0200
+Message-ID: <20190809164143.2p573g7wlx43hero@pengutronix.de>
+References: <20190809123031.24219-1-paul@crapouillou.net>
+ <20190809123031.24219-4-paul@crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190809134848.18297-1-thierry.reding@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20190809123031.24219-4-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The pull request you sent on Fri,  9 Aug 2019 15:48:48 +0200:
+On Fri, Aug 09, 2019 at 02:30:27PM +0200, Paul Cercueil wrote:
+> Depending on MACH_INGENIC prevent us from creating a generic kernel that
+> works on more than one MIPS board. Instead, we just depend on MIPS being
+> set.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  drivers/pwm/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index d2557c6fcf65..82a75e0b72e5 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -224,7 +224,7 @@ config PWM_IMX_TPM
+>  
+>  config PWM_JZ4740
+>  	tristate "Ingenic JZ47xx PWM support"
+> -	depends on MACH_INGENIC
+> +	depends on MIPS
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.3-rc4
+If this isn't actually useful on MIPS without MACH_INGENIC this is
+better expressed using:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c808f2ad8fcddb856ce42901cd5b4f06f9da9184
+	depends on MIPS
+	depends on MACH_INGENIC || COMPILE_TEST
 
-Thank you!
+This way some configuring a mips kernel without INGENIC isn't bothered
+by this question.
+
+Best regards
+Uwe
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
