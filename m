@@ -1,63 +1,38 @@
-From: David Lechner <david@lechnology.com>
-Subject: Re: [PATCH v2 3/5] counter: new TI eQEP driver
-Date: Sun, 11 Aug 2019 14:15:14 -0500
-Message-ID: <aa307094-c205-4e68-b21f-73d27f9ee257@lechnology.com>
-References: <20190807194023.15318-1-david@lechnology.com>
- <20190807194023.15318-4-david@lechnology.com>
- <20190811102345.1af5c23c@archlinux>
+From: Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v4 0/4] Add drivers for auo, kd101n80-45na and boe,
+ tv101wum-nl6 panels
+Date: Sun, 11 Aug 2019 23:11:18 +0200
+Message-ID: <20190811211118.GA23636@ravnborg.org>
+References: <20190811091001.49555-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190811102345.1af5c23c@archlinux>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jonathan Cameron <jic23@kernel.org>, linux-omap@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20190811091001.49555-1-jitao.shi@mediatek.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jitao Shi <jitao.shi@mediatek.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, yingjoe.chen@mediatek.com, Thierry Reding <treding@nvidia.com>, Sean Paul <seanpaul@chromium.org>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Russell King <rmk+kernel@arm.linux.org.uk>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Andy Yan <andy.yan@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 8/11/19 4:23 AM, Jonathan Cameron wrote:
-> On Wed,  7 Aug 2019 14:40:21 -0500
-> David Lechner <david@lechnology.com> wrote:
->> +
->> +	pm_runtime_enable(dev);
->> +	pm_runtime_get(dev);
-> I'm a little confused on the flow here.
-> 
-> pm_runtime_enable turns on runtime pm in general.
-> 
-> pm_runtime_get basically calls runtime_resume to ensrue the
-> device has power.
-> 
->> +
->> +	return devm_counter_register(dev, &priv->counter);
-> 
-> This registers the userspace interfaces and exposes the device.
-> 
->> +}
->> +
->> +static int ti_eqep_remove(struct platform_device *pdev)
->> +{
->> +	struct device *dev = &pdev->dev;
->> +
->> +	pm_runtime_put(dev),
->> +	pm_runtime_disable(dev);
-> 
-> pm_runtime_put notifies the system that the device is idle
-> (and hence potentially turns it off).
-> 
-> Not good if the counter is still registered.
-> 
-> I'm assuming the presence of runtime pm at all is to interact
-> with a parent driver and hence stop that turning off if this
-> driver is probed?  That's probably fine, but add a few comments
-> to make it clear that this driver itself doesn't really do
-> runtime pm at all.
-> 
-
-To be honest, despite reading the runtime PM docs more than once,
-I still don't feel like I have a good grasp on how it is supposed
-to work. I just know that we get a crash if it is omitted because
-the IP block is not powered on.
-
-I will fix the ordering in _remove() and add a comment in v3.
+SGkgSml0YW8uCgo+ICAuLi4vZGlzcGxheS9wYW5lbC9hdW8sa2QxMDFuODAtNDVuYS50eHQgICAg
+ICAgfCAgMzQgKwo+ICAuLi4vZGlzcGxheS9wYW5lbC9ib2UsdHYxMDF3dW0tbmw2LnR4dCAgICAg
+ICAgfCAgMzQgKwoKcGFuZWwgYmluZGluZ3MgYXJlIGluIHRoZSBwcm9jZXNzIG9mIGJlaW5nIG1p
+Z3JhdGVkIHRvIHRoZSBuZXcKbWV0YS1zY2hlbWEgZm9ybWF0LgpUaGVyZWZvcmUgbmV3IGJpbmRp
+bmdzIHNob3VsZCBwcmVmZXJhYmx5IGFsc28gZm9sbG93IHRoZSBuZXcgZm9ybWF0LgoKQ2FuIHlv
+dSBwbGVhc2UgbG9vayBpbnRvIHRoaXMuCkluIHVwc3RyZWFtIGFuZCBkcm0tbWlzYy1uZXh0IHRo
+ZXJlIGlzIGFscmVhZHkgc29tZSBleGFtcGxlcy4KCk5vdGU6IEl0IGlzIG5vdCBhIGhhcmQgcnVs
+ZSB0aGF0IG5ldyBiaW5kaW5ncyBzaGFsbCBiZSBpbgp0aGUgbmV3IG1ldGEtc2NoZW1hIGZvcm1h
+dCAoLnlhbWwgZXh0ZW5zaW9uKSwgYnV0IGFzIHRoaXMgaXMKYmVzdCBwcmFjdGljZSBub3cgaXQg
+aXMgcHJlZmVycmVkLgpTYW1lIGdvZXMgZm9yIGRpc3BsYXkgYmluZGluZ3MgYnR3LgoKCVNhbQpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwg
+bWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
