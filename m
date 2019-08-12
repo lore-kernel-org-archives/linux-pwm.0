@@ -1,8 +1,8 @@
 From: Rob Herring <robh@kernel.org>
 Subject: Re: [PATCH v5 1/4] dt-bindings: display: mediatek: update dpi
   supported chips
-Date: Mon, 12 Aug 2019 15:49:33 -0600
-Message-ID: <20190812214933.GA5954@bogus>
+Date: Mon, 12 Aug 2019 15:51:03 -0600
+Message-ID: <20190812215103.GB5954@bogus>
 References: <20190807060257.57007-1-jitao.shi@mediatek.com>
  <20190807060257.57007-2-jitao.shi@mediatek.com>
 Mime-Version: 1.0
@@ -23,30 +23,8 @@ On Wed, Aug 07, 2019 at 02:02:54PM +0800, Jitao Shi wrote:
 > ---
 >  .../bindings/display/mediatek/mediatek,dpi.txt        | 11 +++++++++++
 >  1 file changed, 11 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.txt
-> index b6a7e7397b8b..cd6a1469c8b7 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.txt
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.txt
-> @@ -7,6 +7,7 @@ output bus.
->  
->  Required properties:
->  - compatible: "mediatek,<chip>-dpi"
-> +  the supported chips are mt2701 , mt8173 and mt8183.
->  - reg: Physical base address and length of the controller's registers
->  - interrupts: The interrupt signal from the function block.
->  - clocks: device clocks
-> @@ -16,6 +17,11 @@ Required properties:
->    Documentation/devicetree/bindings/graph.txt. This port should be connected
->    to the input port of an attached HDMI or LVDS encoder chip.
->  
-> +Optional properties:
-> +- dpi_pin_mode_swap: Swap the pin mode between dpi mode and gpio mode.
-> +- pinctrl-names: Contain "gpiomode" and "dpimode".
-> +- dpi_dual_edge: Control the RGB 24bit data on 12 pins or 24 pins.
 
-Nothing about this in the commit msg...
-
-The dpi* properties need vendor prefixes and use '-' rather than '_'.
+And run a current get_maintainers.pl. Your DT maintainer list is out of 
+date by years.
 
 Rob
