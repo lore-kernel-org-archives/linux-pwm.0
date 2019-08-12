@@ -1,85 +1,213 @@
-From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [PATCH v6 2/7] drm/mediatek: fixes CMDQ reg address of mt8173
- is different with mt2701
-Date: Mon, 12 Aug 2019 16:40:41 +0800
-Message-ID: <1565599241.3510.0.camel@mtksdaap41>
-References: <20190811104008.53372-1-jitao.shi@mediatek.com>
- <20190811104008.53372-3-jitao.shi@mediatek.com>
+From: Baolin Wang <baolin.wang@linaro.org>
+Subject: Re: [PATCH 2/2] pwm: sprd: Add Spreadtrum PWM support
+Date: Mon, 12 Aug 2019 17:11:56 +0800
+Message-ID: <CAMz4kuJA81ZP6Kc63dPV1jEn1ah=jow6tQBfO=UDCcTzSf3y-A@mail.gmail.com>
+References: <6a38a3655bc8100764d85cb04dea5c2546a311e1.1565168564.git.baolin.wang@linaro.org>
+ <40127356a1acd1f2ff1be1d8a120b305a4e17af4.1565168564.git.baolin.wang@linaro.org>
+ <20190809091013.vguj4wty7qiab64t@pengutronix.de> <CAMz4kuLQsrBWjta1s=ZRPgxUd0_+_f-GbJV138tccuMLg2XCLA@mail.gmail.com>
+ <20190809144124.3as3rtctlywxkudr@pengutronix.de> <CAMz4ku+o6dCyxhR3-5yM+zr2nBpTQG5A8Pbnxpo7yRciwPbv3Q@mail.gmail.com>
+ <20190812083556.dvprpwv6mjy3cjae@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190811104008.53372-3-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sean Paul <seanpaul@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190812083556.dvprpwv6mjy3cjae@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, Vincent Guittot <vincent.guittot@linaro.org>, linux-pwm@vger.kernel.org, DTML <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEppdGFvOgoKT24gU3VuLCAyMDE5LTA4LTExIGF0IDE4OjQwICswODAwLCBKaXRhbyBTaGkg
-d3JvdGU6Cj4gQ29uZmlnIHRoZSBkaWZmZXJlbnQgQ01EUSByZWcgYWRkcmVzcyBpbiBkcml2ZXIg
-ZGF0YS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5j
-b20+Cj4gLS0tCj4gIGRyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMgfCAyOSArKysr
-KysrKysrKysrKysrKysrKysrKystLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgMjQgaW5zZXJ0aW9u
-cygrKSwgNSBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21l
-ZGlhdGVrL210a19kc2kuYyBiL2RyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHNpLmMKPiBp
-bmRleCA1MmI0OWRhZWVkOWYuLmFjOGU4MGUzNzlmNyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dw
-dS9kcm0vbWVkaWF0ZWsvbXRrX2RzaS5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL21lZGlhdGVr
-L210a19kc2kuYwo+IEBAIC0xMjMsNyArMTIzLDYgQEAKPiAgI2RlZmluZSBWTV9DTURfRU4JCQlC
-SVQoMCkKPiAgI2RlZmluZSBUU19WRlBfRU4JCQlCSVQoNSkKPiAgCj4gLSNkZWZpbmUgRFNJX0NN
-RFEwCQkweDE4MAo+ICAjZGVmaW5lIENPTkZJRwkJCQkoMHhmZiA8PCAwKQo+ICAjZGVmaW5lIFNI
-T1JUX1BBQ0tFVAkJCTAKPiAgI2RlZmluZSBMT05HX1BBQ0tFVAkJCTIKPiBAQCAtMTQ4LDYgKzE0
-NywxMCBAQAo+ICAKPiAgc3RydWN0IHBoeTsKPiAgCj4gK3N0cnVjdCBtdGtfZHNpX2RyaXZlcl9k
-YXRhIHsKPiArCWNvbnN0IHUzMiByZWdfY21kcV9vZmY7Cj4gK307Cj4gKwo+ICBzdHJ1Y3QgbXRr
-X2RzaSB7Cj4gIAlzdHJ1Y3QgbXRrX2RkcF9jb21wIGRkcF9jb21wOwo+ICAJc3RydWN0IGRldmlj
-ZSAqZGV2Owo+IEBAIC0xNzQsNiArMTc3LDcgQEAgc3RydWN0IG10a19kc2kgewo+ICAJYm9vbCBl
-bmFibGVkOwo+ICAJdTMyIGlycV9kYXRhOwo+ICAJd2FpdF9xdWV1ZV9oZWFkX3QgaXJxX3dhaXRf
-cXVldWU7Cj4gKwljb25zdCBzdHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0YSAqZHJpdmVyX2RhdGE7
-Cj4gIH07Cj4gIAo+ICBzdGF0aWMgaW5saW5lIHN0cnVjdCBtdGtfZHNpICplbmNvZGVyX3RvX2Rz
-aShzdHJ1Y3QgZHJtX2VuY29kZXIgKmUpCj4gQEAgLTkzNiw2ICs5NDAsNyBAQCBzdGF0aWMgdm9p
-ZCBtdGtfZHNpX2NtZHEoc3RydWN0IG10a19kc2kgKmRzaSwgY29uc3Qgc3RydWN0IG1pcGlfZHNp
-X21zZyAqbXNnKQo+ICAJY29uc3QgY2hhciAqdHhfYnVmID0gbXNnLT50eF9idWY7Cj4gIAl1OCBj
-b25maWcsIGNtZHFfc2l6ZSwgY21kcV9vZmYsIHR5cGUgPSBtc2ctPnR5cGU7Cj4gIAl1MzIgcmVn
-X3ZhbCwgY21kcV9tYXNrLCBpOwo+ICsJdTMyIHJlZ19jbWRxX29mZiA9IGRzaS0+ZHJpdmVyX2Rh
-dGEtPnJlZ19jbWRxX29mZjsKPiAgCj4gIAlpZiAoTVRLX0RTSV9IT1NUX0lTX1JFQUQodHlwZSkp
-Cj4gIAkJY29uZmlnID0gQlRBOwo+IEBAIC05NTUsOSArOTYwLDExIEBAIHN0YXRpYyB2b2lkIG10
-a19kc2lfY21kcShzdHJ1Y3QgbXRrX2RzaSAqZHNpLCBjb25zdCBzdHJ1Y3QgbWlwaV9kc2lfbXNn
-ICptc2cpCj4gIAl9Cj4gIAo+ICAJZm9yIChpID0gMDsgaSA8IG1zZy0+dHhfbGVuOyBpKyspCj4g
-LQkJd3JpdGViKHR4X2J1ZltpXSwgZHNpLT5yZWdzICsgRFNJX0NNRFEwICsgY21kcV9vZmYgKyBp
-KTsKPiArCQltdGtfZHNpX21hc2soZHNpLCAocmVnX2NtZHFfb2ZmICsgY21kcV9vZmYgKyBpKSAm
-ICh+MHgzVSksCj4gKwkJCSAgICAgKDB4ZmZVTCA8PCAoKChpICsgY21kcV9vZmYpICYgM1UpICog
-OFUpKSwKPiArCQkJICAgICB0eF9idWZbaV0gPDwgKCgoaSArIGNtZHFfb2ZmKSAmIDNVKSAqIDhV
-KSk7CgpJZiB3cml0ZWIoKSBoYXMgdGhlIHNhbWUgcHJvYmxlbSBpbiBNVDI3MDEsIEkgdGhpbmsg
-d2UgbmVlZCBhIHBhdGNoIHRoYXQKanVzdCBjaGFuZ2Ugd3JpdGViKCkgdG8gbXRrX2RzaV9tYXNr
-KCksIGFuZCB0aGVuIGEgcGF0Y2ggdG8gZml4IENNRFEgcmVnCmFkZHJlc3Mgb2YgTVQ4MTczLiBT
-byBicmVhayB0aGlzIHBhdGNoIGludG8gdHdvIHBhdGNoZXMuCgpSZWdhcmRzLApDSwoKPiAgCj4g
-LQltdGtfZHNpX21hc2soZHNpLCBEU0lfQ01EUTAsIGNtZHFfbWFzaywgcmVnX3ZhbCk7Cj4gKwlt
-dGtfZHNpX21hc2soZHNpLCByZWdfY21kcV9vZmYsIGNtZHFfbWFzaywgcmVnX3ZhbCk7Cj4gIAlt
-dGtfZHNpX21hc2soZHNpLCBEU0lfQ01EUV9TSVpFLCBDTURRX1NJWkUsIGNtZHFfc2l6ZSk7Cj4g
-IH0KPiAgCj4gQEAgLTExMDEsNiArMTEwOCw4IEBAIHN0YXRpYyBpbnQgbXRrX2RzaV9wcm9iZShz
-dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ICAJaWYgKHJldCkKPiAgCQlnb3RvIGVycl91
-bnJlZ2lzdGVyX2hvc3Q7Cj4gIAo+ICsJZHNpLT5kcml2ZXJfZGF0YSA9IG9mX2RldmljZV9nZXRf
-bWF0Y2hfZGF0YShkZXYpOwo+ICsKPiAgCWRzaS0+ZW5naW5lX2NsayA9IGRldm1fY2xrX2dldChk
-ZXYsICJlbmdpbmUiKTsKPiAgCWlmIChJU19FUlIoZHNpLT5lbmdpbmVfY2xrKSkgewo+ICAJCXJl
-dCA9IFBUUl9FUlIoZHNpLT5lbmdpbmVfY2xrKTsKPiBAQCAtMTE5NCw5ICsxMjAzLDE5IEBAIHN0
-YXRpYyBpbnQgbXRrX2RzaV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAg
-CXJldHVybiAwOwo+ICB9Cj4gIAo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IG10a19kc2lfZHJpdmVy
-X2RhdGEgbXQ4MTczX2RzaV9kcml2ZXJfZGF0YSA9IHsKPiArCS5yZWdfY21kcV9vZmYgPSAweDIw
-MCwKPiArfTsKPiArCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgbXRrX2RzaV9kcml2ZXJfZGF0YSBt
-dDI3MDFfZHNpX2RyaXZlcl9kYXRhID0gewo+ICsJLnJlZ19jbWRxX29mZiA9IDB4MTgwLAo+ICt9
-Owo+ICsKPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgbXRrX2RzaV9vZl9tYXRj
-aFtdID0gewo+IC0JeyAuY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDI3MDEtZHNpIiB9LAo+IC0J
-eyAuY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxNzMtZHNpIiB9LAo+ICsJeyAuY29tcGF0aWJs
-ZSA9ICJtZWRpYXRlayxtdDI3MDEtZHNpIiwKPiArCSAgLmRhdGEgPSAmbXQyNzAxX2RzaV9kcml2
-ZXJfZGF0YSB9LAo+ICsJeyAuY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxNzMtZHNpIiwKPiAr
-CSAgLmRhdGEgPSAmbXQ4MTczX2RzaV9kcml2ZXJfZGF0YSB9LAo+ICAJeyB9LAo+ICB9Owo+ICAK
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2
-ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9s
-aXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+Hi Uwe,
+
+On Mon, 12 Aug 2019 at 16:36, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello Baolin,
+>
+> On Mon, Aug 12, 2019 at 03:29:07PM +0800, Baolin Wang wrote:
+> > Hi Uwe,
+> >
+> > On Fri, 9 Aug 2019 at 22:41, Uwe Kleine-K=C3=B6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Fri, Aug 09, 2019 at 06:06:21PM +0800, Baolin Wang wrote:
+> > > > On Fri, 9 Aug 2019 at 17:10, Uwe Kleine-K=C3=B6nig
+> > > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > > > On Thu, Aug 08, 2019 at 04:59:39PM +0800, Baolin Wang wrote:
+> > > > > > +static void sprd_pwm_get_state(struct pwm_chip *chip, struct p=
+wm_device *pwm,
+> > > > > > +                            struct pwm_state *state)
+> > > > > > +{
+> > > > > > +     struct sprd_pwm_chip *spc =3D
+> > > > > > +             container_of(chip, struct sprd_pwm_chip, chip);
+> > > > > > +     struct sprd_pwm_chn *chn =3D &spc->chn[pwm->hwpwm];
+> > > > > > +     u32 enabled, duty, prescale;
+> > > > > > +     u64 tmp;
+> > > > > > +     int ret;
+> > > > > > +
+> > > > > > +     ret =3D clk_bulk_prepare_enable(SPRD_PWM_NUM_CLKS, chn->c=
+lks);
+> > > > > > +     if (ret) {
+> > > > > > +             dev_err(spc->dev, "failed to enable pwm%u clocks\=
+n",
+> > > > > > +                     pwm->hwpwm);
+> > > > > > +             return;
+> > > > > > +     }
+> > > > > > +
+> > > > > > +     chn->clk_enabled =3D true;
+> > > > > > +
+> > > > > > +     duty =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_DUTY) & =
+SPRD_PWM_REG_MSK;
+> > > > > > +     prescale =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRES=
+CALE) & SPRD_PWM_REG_MSK;
+> > > > > > +     enabled =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_ENABL=
+E) & SPRD_PWM_ENABLE_BIT;
+> > > > > > +
+> > > > > > +     /*
+> > > > > > +      * According to the datasheet, the period_ns and duty_ns =
+calculation
+> > > > > > +      * formula should be:
+> > > > > > +      * period_ns =3D 10^9 * (prescale + 1) * mod / clk_rate
+> > > > > > +      * duty_ns =3D 10^9 * (prescale + 1) * duty / clk_rate
+> > > > > > +      */
+> > > > > > +     tmp =3D (prescale + 1) * 1000000000ULL * SPRD_PWM_MOD_MAX=
+;
+> > > > > > +     state->period =3D div64_u64(tmp, chn->clk_rate);
+> > > > >
+> > > > > This is not idempotent. If you apply the configuration that is re=
+turned
+> > > > > here this shouldn't result in a reconfiguration.
+> > > >
+> > > > Since we may configure the  PWM in bootloader, so in kernel part we
+> > > > should get current PWM state to avoid reconfiguration if state
+> > > > configuration are same.
+> > >
+> > > This is also important as some consumers might do something like:
+> > >
+> > >         state =3D pwm_get_state(mypwm)
+> > >         if (something):
+> > >                 state->duty =3D 0
+> > >         else:
+> > >                 state->duty =3D state->period / 2
+> > >         pwm_set_state(mypwm, state)
+> > >
+> > > and then period shouldn't get smaller in each step.
+> > > (This won't happen as of now because the PWM framework caches the las=
+t
+> > > state that was set and returns this for pwm_get_state. Still getting
+> > > this right would be good.)
+> >
+> > I understood your concern, but the period can be configured in
+> > bootloader, we have no software things to save the accurate period.
+>
+> I don't understand what you're saying here. The bootloader configuring
+> the hardware is a usual use-case. That's why we have the .get_state
+> callback in the first place.
+
+Ah, sorry for confusing. I think I get your point now with below explanatio=
+n.
+
+>
+> > Moreover I think I can change to use DIV_ROUND_CLOSET_ULL to keep the
+> > accuracy.
+>
+> DIV_ROUND_CLOSEST_ULL still doesn't match what the apply callback uses.
+> With the lack of an official statement from the maintainer I'd prefer
+> .apply to round down and implement .get_state such that
+>
+>         pwm_apply(pwm, pwm_get_state(pwm))
+>
+> is a no-op.
+
+OK.
+
+>
+> > > > > > +
+> > > > > > +                     dev_err(spc->dev, "failed to get channel =
+clocks\n");
+> > > > > > +                     return ret;
+> > > > > > +             }
+> > > > > > +
+> > > > > > +             clk_pwm =3D chn->clks[1].clk;
+> > > > >
+> > > > > This 1 looks suspicious. Are you using all clocks provided in the=
+ dtb at
+> > > > > all? You're not using i in the loop at all, this doesn't look rig=
+ht.
+> > > >
+> > > > Like I said above, each channel has 2 clocks: enable clock and pwm
+> > > > clock, the 2nd clock of each channel's bulk clocks is the pwm clock=
+,
+> > > > which is used to set the source clock. I know this's not easy to re=
+ad,
+> > > > so do you have any good suggestion?
+> > >
+> > > Not sure this is easily possible to rework to make this clearer.
+> > >
+> > > Do these clks have different uses? e.g. one to enable register access
+> > > and the other to enable the pwm output? If so just using
+> >
+> > Yes.
+>
+> So assuming one of the clocks is for operation of the output and the
+> other for accessing the registers, the latter can be disabled at the end
+
+Right.
+
+> of each callback?
+
+We can not disable the latter one when using the PWM channel, we must
+enable the pwm-enable clock, then enable pwm-output clock to make PWM
+work. When disabling PWM channel, we should disable the pwm-output
+clock, then pwm-enable clock.
+
+>
+> > > devm_clk_bulk_get isn't the right thing because you should be able kn=
+ow
+> > > if clks[0] or clks[1] is the one you need to enable the output (or
+> > > register access).
+> >
+> > We've fixed the clock order in bulk clocks by the array
+> > 'sprd_pwm_clks', maybe I should define one readable macro instead of
+> > magic number.
+>
+> ack.
+>
+> > > > > > +             if (!clk_set_parent(clk_pwm, clk_parent))
+> > > > > > +                     chn->clk_rate =3D clk_get_rate(clk_pwm);
+> > > > > > +             else
+> > > > > > +                     chn->clk_rate =3D SPRD_PWM_DEFAULT_CLK;
+> > > > >
+> > > > > I don't know all the clock framework details, but I think there a=
+re
+> > > > > better ways to ensure that a given clock is used as parent for an=
+other
+> > > > > given clock. Please read the chapter about "Assigned clock parent=
+s and
+> > > > > rates" in the clock bindings and check if this could be used for =
+the
+> > > > > purpose here and so simplify the driver.
+> > > >
+> > > > Actually there are many other drivers set the parent clock like thi=
+s,
+> > > > and we want a default clock if failed to set the parent clock.
+> > >
+> > > These might be older than the clk framework capabilities, or the
+> > > reviewers didn't pay attention to this detail; both shouldn't be a
+> > > reason to not make it better here.
+> >
+> > The clock framework supplies 'assigned-clocks' and
+> > 'assigned-clock-parents' properties to set parent, but for our case we
+> > still want to set a default clock rate if failed to set parent when
+> > met some abnormal things.
+>
+> Without understanding the complete problem I'd say this is out of the
+> area the driver should care about.
+
+Fair enough, I will try to use 'assigned-clocks' and
+'assigned-clock-parents' to simplify the code.
+
+Thanks.
+
+--=20
+Baolin Wang
+Best Regards
