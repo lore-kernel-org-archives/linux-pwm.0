@@ -1,385 +1,167 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: [PATCH v2 2/2] pwm: sprd: Add Spreadtrum PWM support
-Date: Tue, 13 Aug 2019 21:46:41 +0800
-Message-ID: <4f6e3110b4d7e0a2f7ab317bba98a933de12e5da.1565703607.git.baolin.wang@linaro.org>
-References: <f9d2c7cb01cbf31bf75c4160611fa1d37d99f355.1565703607.git.baolin.wang@linaro.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 4/7] pwm: jz4740: Improve algorithm of clock calculation
+Date: Tue, 13 Aug 2019 16:09:03 +0200
+Message-ID: <20190813140903.rdwy7p3mhwetmlnt@pengutronix.de>
+References: <20190809170551.u4ybilf5ay2rsvnn@pengutronix.de>
+ <1565370885.2091.2@crapouillou.net>
+ <20190812061520.lwzk3us4ginwwxov@pengutronix.de>
+ <1565642590.2007.1@crapouillou.net>
+ <20190812214838.e5hyhnlcyykjfvsb@pengutronix.de>
+ <1565648183.2007.3@crapouillou.net>
+ <20190813052726.g37upws5rlvrszc4@pengutronix.de>
+ <1565694066.1856.1@crapouillou.net>
+ <20190813123331.m4ttfhcgt6wyrcfi@pengutronix.de>
+ <1565700448.1856.2@crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f9d2c7cb01cbf31bf75c4160611fa1d37d99f355.1565703607.git.baolin.wang@linaro.org>
-In-Reply-To: <f9d2c7cb01cbf31bf75c4160611fa1d37d99f355.1565703607.git.baolin.wang@linaro.org>
-References: <f9d2c7cb01cbf31bf75c4160611fa1d37d99f355.1565703607.git.baolin.wang@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <1565700448.1856.2@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org
-Cc: u.kleine-koenig@pengutronix.de, mark.rutland@arm.com, orsonzhai@gmail.com, zhang.lyra@gmail.com, baolin.wang@linaro.org, vincent.guittot@linaro.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>, Stephen Boyd <sboyd@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds the Spreadtrum PWM support, which provides maximum 4
-channels.
+Hello Paul,
 
-Signed-off-by: Neo Hou <neo.hou@unisoc.com>
-Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
----
-Changes from v1:
- - Add depending on HAS_IOMEM.
- - Rename parameters' names.
- - Implement .apply() instead of .config(), .enable() and .disable().
- - Use NSEC_PER_SEC instead of 1000000000ULL.
- - Add some comments to make code more readable.
- - Remove some redundant operation.
- - Use standard clock properties to set clock parent.
- - Other coding style optimization.
----
- drivers/pwm/Kconfig    |   11 ++
- drivers/pwm/Makefile   |    1 +
- drivers/pwm/pwm-sprd.c |  307 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 319 insertions(+)
- create mode 100644 drivers/pwm/pwm-sprd.c
+On Tue, Aug 13, 2019 at 02:47:28PM +0200, Paul Cercueil wrote:
+> Le mar. 13 août 2019 à 14:33, Uwe Kleine-König a écrit :
+> > On Tue, Aug 13, 2019 at 01:01:06PM +0200, Paul Cercueil wrote:
+> > > Well, you said that I shouln't rely on the fact that clk_round_rate() will
+> > > round down. That completely defeats the previous algorithm. So please tell
+> > > me how to use it correctly, because I don't see it.
+> > 
+> > Using clk_round_rate correctly without additional knowledge is hard. If
+> > you assume at least some sane behaviour you'd still have to call it
+> > multiple times. Assuming maxrate is the maximal rate you can handle
+> > without overflowing your PWM registers you have to do:
+> > 
+> > 	rate = maxrate;
+> > 	rounded_rate = clk_round_rate(clk, rate);
+> > 	while (rounded_rate > rate) {
+> > 		if (rate < rounded_rate - rate) {
+> > 			/*
+> > 			 * clk doesn't support a rate smaller than
+> > 			 * maxrate (or the round_rate callback doesn't
+> > 			 * round consistently).
+> > 			 */
+> > 			 return -ESOMETHING;
+> > 		}
+> > 		rate = rate - (rounded_rate - rate)
+> > 		rounded_rate = clk_round_rate(clk, rate);
+> > 	}
+> > 
+> > 	return rate;
+> > 
+> > Probably it would be sensible to put that in a function provided by the
+> > clk framework (maybe call it clk_round_rate_down and maybe with
+> > additional checks).
+> 
+> clk_round_rate_down() has been refused multiple times in the past for
+> reasons that Stephen can explain.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index a7e5751..31dfc88 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -423,6 +423,17 @@ config PWM_SPEAR
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-spear.
+I'd be really interested in these reasons as I think the clk framework
+should make it easy to solve common tasks related to clocks. And finding
+out the biggest supported rate not bigger than a given maxrate is
+something I consider such a common task.
+
+The first hit I found when searching was
+https://lkml.org/lkml/2010/7/14/260 . In there Stephen suggested that
+clk_round_rate with the current semantic is hardly useful and suggested
+clk_round_rate_up() and clk_round_rate_down() himself.
  
-+config PWM_SPRD
-+	tristate "Spreadtrum PWM support"
-+	depends on ARCH_SPRD || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	help
-+	  Generic PWM framework driver for the PWM controller on
-+	  Spreadtrum SoCs.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-sprd.
-+
- config PWM_STI
- 	tristate "STiH4xx PWM support"
- 	depends on ARCH_STI
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 76b555b..26326ad 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -41,6 +41,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
- obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
-+obj-$(CONFIG_PWM_SPRD)		+= pwm-sprd.o
- obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
- obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
- obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
-diff --git a/drivers/pwm/pwm-sprd.c b/drivers/pwm/pwm-sprd.c
-new file mode 100644
-index 0000000..067e711
---- /dev/null
-+++ b/drivers/pwm/pwm-sprd.c
-@@ -0,0 +1,307 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2019 Spreadtrum Communications Inc.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/math64.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+
-+#define SPRD_PWM_PRESCALE	0x0
-+#define SPRD_PWM_MOD		0x4
-+#define SPRD_PWM_DUTY		0x8
-+#define SPRD_PWM_ENABLE		0x18
-+
-+#define SPRD_PWM_MOD_MAX	GENMASK(7, 0)
-+#define SPRD_PWM_DUTY_MSK	GENMASK(15, 0)
-+#define SPRD_PWM_PRESCALE_MSK	GENMASK(7, 0)
-+#define SPRD_PWM_ENABLE_BIT	BIT(0)
-+
-+#define SPRD_PWM_NUM		4
-+#define SPRD_PWM_REGS_SHIFT	5
-+#define SPRD_PWM_NUM_CLKS	2
-+#define SPRD_PWM_OUTPUT_CLK	1
-+
-+struct sprd_pwm_chn {
-+	struct clk_bulk_data clks[SPRD_PWM_NUM_CLKS];
-+	u32 clk_rate;
-+};
-+
-+struct sprd_pwm_chip {
-+	void __iomem *base;
-+	struct device *dev;
-+	struct pwm_chip chip;
-+	int num_pwms;
-+	struct sprd_pwm_chn chn[SPRD_PWM_NUM];
-+};
-+
-+/*
-+ * The list of clocks required by PWM channels, and each channel has 2 clocks:
-+ * enable clock and pwm clock.
-+ */
-+static const char * const sprd_pwm_clks[] = {
-+	"enable0", "pwm0",
-+	"enable1", "pwm1",
-+	"enable2", "pwm2",
-+	"enable3", "pwm3",
-+};
-+
-+static u32 sprd_pwm_read(struct sprd_pwm_chip *spc, u32 hwid, u32 reg)
-+{
-+	u32 offset = reg + (hwid << SPRD_PWM_REGS_SHIFT);
-+
-+	return readl_relaxed(spc->base + offset);
-+}
-+
-+static void sprd_pwm_write(struct sprd_pwm_chip *spc, u32 hwid,
-+			   u32 reg, u32 val)
-+{
-+	u32 offset = reg + (hwid << SPRD_PWM_REGS_SHIFT);
-+
-+	writel_relaxed(val, spc->base + offset);
-+}
-+
-+static void sprd_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+			       struct pwm_state *state)
-+{
-+	struct sprd_pwm_chip *spc =
-+		container_of(chip, struct sprd_pwm_chip, chip);
-+	struct sprd_pwm_chn *chn = &spc->chn[pwm->hwpwm];
-+	u32 val, duty, prescale;
-+	u64 tmp;
-+	int ret;
-+
-+	/*
-+	 * The clocks to PWM channel has to be enabled first before
-+	 * reading to the registers.
-+	 */
-+	ret = clk_bulk_prepare_enable(SPRD_PWM_NUM_CLKS, chn->clks);
-+	if (ret) {
-+		dev_err(spc->dev, "failed to enable pwm%u clocks\n",
-+			pwm->hwpwm);
-+		return;
-+	}
-+
-+	val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_ENABLE);
-+	if (val & SPRD_PWM_ENABLE_BIT)
-+		state->enabled = true;
-+	else
-+		state->enabled = false;
-+
-+	/*
-+	 * The hardware provides a counter that is feed by the source clock.
-+	 * The period length is (PRESCALE + 1) * MOD counter steps.
-+	 * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
-+	 * Thus the period_ns and duty_ns calculation formula should be:
-+	 * period_ns = NSEC_PER_SEC * (prescale + 1) * mod / clk_rate
-+	 * duty_ns = NSEC_PER_SEC * (prescale + 1) * duty / clk_rate
-+	 */
-+	val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRESCALE);
-+	prescale = val & SPRD_PWM_PRESCALE_MSK;
-+	tmp = (prescale + 1) * NSEC_PER_SEC * SPRD_PWM_MOD_MAX;
-+	state->period = DIV_ROUND_CLOSEST_ULL(tmp, chn->clk_rate);
-+
-+	val = sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_DUTY);
-+	duty = val & SPRD_PWM_DUTY_MSK;
-+	tmp = (prescale + 1) * NSEC_PER_SEC * duty;
-+	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, chn->clk_rate);
-+
-+	/* Disable PWM clocks if the PWM channel is not in enable state. */
-+	if (!state->enabled)
-+		clk_bulk_disable_unprepare(SPRD_PWM_NUM_CLKS, chn->clks);
-+}
-+
-+static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_device *pwm,
-+			   int duty_ns, int period_ns)
-+{
-+	struct sprd_pwm_chn *chn = &spc->chn[pwm->hwpwm];
-+	u64 div, tmp;
-+	u32 prescale, duty;
-+
-+	/*
-+	 * The hardware provides a counter that is feed by the source clock.
-+	 * The period length is (PRESCALE + 1) * MOD counter steps.
-+	 * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
-+	 *
-+	 * To keep the maths simple we're always using MOD = SPRD_PWM_MOD_MAX.
-+	 * The value for PRESCALE is selected such that the resulting period
-+	 * gets the maximal length not bigger than the requested one with the
-+	 * given settings (MOD = SPRD_PWM_MOD_MAX and input clock).
-+	 */
-+	duty = duty_ns * SPRD_PWM_MOD_MAX / period_ns;
-+
-+	tmp = (u64)chn->clk_rate * period_ns;
-+	div = NSEC_PER_SEC * SPRD_PWM_MOD_MAX;
-+	prescale = div64_u64(tmp, div) - 1;
-+	if (prescale > SPRD_PWM_PRESCALE_MSK)
-+		prescale = SPRD_PWM_PRESCALE_MSK;
-+
-+	/*
-+	 * Note: The MOD must be configured before DUTY, and the hardware can
-+	 * ensure current running period is completed before changing a new
-+	 * configuration to avoid mixed settings.
-+	 */
-+	sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_MOD, SPRD_PWM_MOD_MAX);
-+	sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_DUTY, duty);
-+	sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PRESCALE, prescale);
-+
-+	return 0;
-+}
-+
-+static int sprd_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			  struct pwm_state *state)
-+{
-+	struct sprd_pwm_chip *spc =
-+		container_of(chip, struct sprd_pwm_chip, chip);
-+	struct sprd_pwm_chn *chn = &spc->chn[pwm->hwpwm];
-+	struct pwm_state cstate;
-+	int ret;
-+
-+	pwm_get_state(pwm, &cstate);
-+
-+	if (state->enabled) {
-+		if (!cstate.enabled) {
-+			/*
-+			 * The clocks to PWM channel has to be enabled first
-+			 * before writing to the registers.
-+			 */
-+			ret = clk_bulk_prepare_enable(SPRD_PWM_NUM_CLKS,
-+						      chn->clks);
-+			if (ret) {
-+				dev_err(spc->dev,
-+					"failed to enable pwm%u clocks\n",
-+					pwm->hwpwm);
-+				return ret;
-+			}
-+		}
-+
-+		if (state->period != cstate.period ||
-+		    state->duty_cycle != cstate.duty_cycle) {
-+			ret = sprd_pwm_config(spc, pwm, state->duty_cycle,
-+					      state->period);
-+			if (ret)
-+				return ret;
-+		}
-+
-+		sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_ENABLE, 1);
-+	} else if (cstate.enabled) {
-+		sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_ENABLE, 0);
-+
-+		clk_bulk_disable_unprepare(SPRD_PWM_NUM_CLKS, chn->clks);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops sprd_pwm_ops = {
-+	.apply = sprd_pwm_apply,
-+	.get_state = sprd_pwm_get_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int sprd_pwm_clk_init(struct sprd_pwm_chip *spc)
-+{
-+	struct clk *clk_pwm;
-+	int ret, i, clk_index = 0;
-+
-+	for (i = 0; i < SPRD_PWM_NUM; i++) {
-+		struct sprd_pwm_chn *chn = &spc->chn[i];
-+		int j;
-+
-+		for (j = 0; j < SPRD_PWM_NUM_CLKS; ++j)
-+			chn->clks[j].id = sprd_pwm_clks[clk_index++];
-+
-+		ret = devm_clk_bulk_get(spc->dev, SPRD_PWM_NUM_CLKS, chn->clks);
-+		if (ret) {
-+			if (ret == -ENOENT)
-+				break;
-+
-+			dev_err(spc->dev, "failed to get channel clocks\n");
-+			return ret;
-+		}
-+
-+		clk_pwm = chn->clks[SPRD_PWM_OUTPUT_CLK].clk;
-+		chn->clk_rate = clk_get_rate(clk_pwm);
-+	}
-+
-+	if (!i) {
-+		dev_err(spc->dev, "no available PWM channels\n");
-+		return -EINVAL;
-+	}
-+
-+	spc->num_pwms = i;
-+
-+	return 0;
-+}
-+
-+static int sprd_pwm_probe(struct platform_device *pdev)
-+{
-+	struct sprd_pwm_chip *spc;
-+	int ret;
-+
-+	spc = devm_kzalloc(&pdev->dev, sizeof(*spc), GFP_KERNEL);
-+	if (!spc)
-+		return -ENOMEM;
-+
-+	spc->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(spc->base))
-+		return PTR_ERR(spc->base);
-+
-+	spc->dev = &pdev->dev;
-+	platform_set_drvdata(pdev, spc);
-+
-+	ret = sprd_pwm_clk_init(spc);
-+	if (ret)
-+		return ret;
-+
-+	spc->chip.dev = &pdev->dev;
-+	spc->chip.ops = &sprd_pwm_ops;
-+	spc->chip.base = -1;
-+	spc->chip.npwm = spc->num_pwms;
-+
-+	ret = pwmchip_add(&spc->chip);
-+	if (ret)
-+		dev_err(&pdev->dev, "failed to add PWM chip\n");
-+
-+	return ret;
-+}
-+
-+static int sprd_pwm_remove(struct platform_device *pdev)
-+{
-+	struct sprd_pwm_chip *spc = platform_get_drvdata(pdev);
-+	int ret, i;
-+
-+	ret = pwmchip_remove(&spc->chip);
-+
-+	for (i = 0; i < spc->num_pwms; i++) {
-+		struct sprd_pwm_chn *chn = &spc->chn[i];
-+
-+		clk_bulk_disable_unprepare(SPRD_PWM_NUM_CLKS, chn->clks);
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id sprd_pwm_of_match[] = {
-+	{ .compatible = "sprd,ums512-pwm", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, sprd_pwm_of_match);
-+
-+static struct platform_driver sprd_pwm_driver = {
-+	.driver = {
-+		.name = "sprd-pwm",
-+		.of_match_table = sprd_pwm_of_match,
-+	},
-+	.probe = sprd_pwm_probe,
-+	.remove = sprd_pwm_remove,
-+};
-+
-+module_platform_driver(sprd_pwm_driver);
-+
-+MODULE_DESCRIPTION("Spreadtrum PWM Driver");
-+MODULE_LICENSE("GPL v2");
+> > >  I came up with a much smarter alternative, that doesn't rely on the rounding
+> > >  method of clk_round_rate, and which is better overall (no loop needed). It
+> > >  sounds to me like you're bashing the code without making the effort to
+> > >  understand what it does.
+> > > 
+> > >  Thierry called it a "neat trick"
+> > >  (https://patchwork.kernel.org/patch/10836879/) so it cannot be as bad as you
+> > >  say.
+> > 
+> > Either that or Thierry failed to see the downside. The obvious downside
+> > is that once you set the period to something long (and so the clk was
+> > limited to a small frequency) you never make the clock any faster
+> > afterwards.
+> 
+> Read the algorithm again.
+
+I indeed missed a call to clk_set_rate(clk, parent_rate). I thought I
+grepped for clk_set_rate before claiming the code was broken. Sorry.
+
+So I think the code works indeed, but it feels like abusing
+clk_set_max_rate. So I'd like to see some words from Stephen about this
+procedure.
+
+Also I think this is kind of inelegant to set the maximal rate twice. At
+least call clk_set_max_rate only once please.
+
+> > > > > > >  E.g. if at a rate of 12 MHz your computed hardware value for the period
+> > > > > > >  is 0xf000, then at a rate of 24 MHz it won't fit in 16 bits. So the clock
+> > > > > > >  rate must be reduced to the highest possible that will still give you a
+> > > > > > >  < 16-bit value.
+> > > > > > >
+> > > > > > >  We always want the highest possible clock rate that works, for the sake of
+> > > > > > >  precision.
+> > > > > >
+> > > > > > This is dubious; but ok to keep the driver simple. (Consider a PWM that
+> > > > > > can run at i MHz for i in [1, .. 30]. If a period of 120 ns and a duty
+> > > > > > cycle of 40 ns is requested you can get an exact match with 25 MHz, but
+> > > > > > not with 30 MHz.)
+> > > > >
+> > > > > The clock rate is actually (parent_rate >> (2 * x) )
+> > > > > for x = 0, 1, 2, ...
+> > > > >
+> > > > > So if your parent_rate is 30 MHz the next valid one is 7.5 MHz, and the
+> > > > > next one is 1.875 MHz. It'd be very unlikely that you get a better match at
+> > > > > a lower clock.
+> > > >
+> > > > If the smaller freqs are all dividers of the fastest that's fine. Please
+> > > > note in a code comment that you're assuming this.
+> > > 
+> > >  No, I am not assuming this. The current driver just picks the highest clock
+> > >  rate that works. We're not changing the behaviour here.
+> > 
+> > But you hide it behind clk API functions that don't guarantee this
+> > behaviour. And even if it works for you it might not for the next person
+> > who copies your code to support another hardware.
+> 
+> Again, I'm not *trying* to guarantee this behaviour.
+
+I didn't request you should guarantee this behaviour. I want you to make
+it obvious for readers of your code that you rely on something that
+isn't guaranteed. That your code works today isn't a good enough excuse.
+There are various examples like these. If you want a few:
+
+ - printf("string: %s\n", NULL); works fine with glibc, but segfaults on
+   other libcs.
+ - setenv("MYVAR", NULL) used to work (and was equivalent to
+   setenv("MYVAR", "")) but that was never guaranteed. Then at some
+   point of time it started to segfault.
+ - Look into commits like a4435febd4c0f14b25159dca249ecf91301c7c76. This
+   used to work fine until compilers were changed to optimize more
+   aggressively.
+
+Now if you use a clk and know that all rates smaller than the requested
+one are divisors of the fast one and your code only works (here: is
+optimal) when this condition is given, you're walking on thin ice just
+because this fact it's not guaranteed.
+The least you can do is to add a code comment to make people aware who
+debug the breakage or copy your code.
+
+I admit this wasn't optimal already before, but at least the logic was
+in the same code and not hidden behind the clk API.
+
+Please do people who review or copy your code the favour to document the
+assumptions you're relying on. And if it's only to save some time for
+someone who stumbles over your code who knows the clk API and starts
+thinking about improving the driver.
+
+Best regards
+Uwe
+
 -- 
-1.7.9.5
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
