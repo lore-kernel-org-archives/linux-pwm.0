@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v2 4/10] dt-bindings: pwm: add a property "num-pwms"
-Date: Wed, 14 Aug 2019 18:43:34 +0800
-Message-ID: <4107497fa8564032cac49e70680a9aa7bbb312eb.1548313019.git.ryder.lee@mediatek.com>
+Subject: [PATCH v2 6/10] arm: dts: mt7623: add a property "num-pwms" for PWM node
+Date: Wed, 14 Aug 2019 18:43:36 +0800
+Message-ID: <448f0a5ba4d98651195b6dc5850ac6426e5b511c.1548313019.git.ryder.lee@mediatek.com>
 References: <621e49c01b943edb6ddac9182f34719eb0727f01.1548313019.git.ryder.lee@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,48 +14,27 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Ryder Lee <ryder.lee@mediatek.com>
 
-This adds a property "num-pwms" in example so that we could
-specify the number of PWM channels via device tree.
+This adds a property "num-pwms" for PWM controller.
 
 Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 ---
-Changes since v2:
-- use num-pwms instead of mediatek,num-pwms.
-- modify the description of clocks to make it simple.
-
-Changes since v1:
-- add a Reviewed-by tag.
+Changes since v2: use num-pwms instead of mediatek,num-pwms.
 ---
- Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/mt7623.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 991728c..ea95b49 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -14,12 +14,12 @@ Required properties:
-                 has no clocks
-    - "top": the top clock generator
-    - "main": clock used by the PWM core
--   - "pwm1-8": the eight per PWM clocks for mt2712
--   - "pwm1-6": the six per PWM clocks for mt7622
--   - "pwm1-5": the five per PWM clocks for mt7623
-+   - "pwm1-N": the PWM clocks for each channel
-+   where N starting from 1 to the maximum number of PWM channels
-  - pinctrl-names: Must contain a "default" entry.
-  - pinctrl-0: One property must exist for each entry in pinctrl-names.
-    See pinctrl/pinctrl-bindings.txt for details of the property values.
-+ - num-pwms: the number of PWM channels.
- 
- Example:
- 	pwm0: pwm@11006000 {
-@@ -37,4 +37,5 @@ Example:
+diff --git a/arch/arm/boot/dts/mt7623.dtsi b/arch/arm/boot/dts/mt7623.dtsi
+index 98f1159..68cbd36 100644
+--- a/arch/arm/boot/dts/mt7623.dtsi
++++ b/arch/arm/boot/dts/mt7623.dtsi
+@@ -443,6 +443,7 @@
+ 			 <&pericfg CLK_PERI_PWM5>;
+ 		clock-names = "top", "main", "pwm1", "pwm2",
  			      "pwm3", "pwm4", "pwm5";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pwm0_pins>;
 +		num-pwms = <5>;
+ 		status = "disabled";
  	};
+ 
 -- 
 1.9.1
