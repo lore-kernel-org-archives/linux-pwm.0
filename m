@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v2 8/10] pwm: mediatek: add new property and fix mt7628 pwm
-Date: Wed, 14 Aug 2019 18:43:38 +0800
-Message-ID: <1565779497-23621-1-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v2 10/10] arm: dts: mediatek: add mt7629 pwm support
+Date: Wed, 14 Aug 2019 18:43:40 +0800
+Message-ID: <1565779497-23621-3-git-send-email-sam.shih@mediatek.com>
 References: <621e49c01b943edb6ddac9182f34719eb0727f01.1548313019.git.ryder.lee@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,62 +14,59 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: sam shih <sam.shih@mediatek.com>
 
-This fix mt7628 pwm during configure from userspace. The SoC
-is legacy MIPS and has no complex clock tree. This patch add property
-clock-frequency to the SoC specific data and legacy MIPS SoC need to
-configure it in DT. This property is use for period calculation.
+This adds pwm support for MT7629.
 
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
 ---
- drivers/pwm/pwm-mediatek.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/mt7629.dtsi | 14 ++++++++++++++
+ drivers/pwm/pwm-mediatek.c    |  7 +++++++
+ 2 files changed, 21 insertions(+)
 
+diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
+index 9608bc2ccb3f..352df8d61788 100644
+--- a/arch/arm/boot/dts/mt7629.dtsi
++++ b/arch/arm/boot/dts/mt7629.dtsi
+@@ -241,6 +241,18 @@
+ 			status = "disabled";
+ 		};
+ 
++		pwm: pwm@11006000 {
++			compatible = "mediatek,mt7629-pwm";
++			reg = <0 0x11006000 0 0x1000>;
++			interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_PWM_SEL>,
++				 <&pericfg CLK_PERI_PWM_PD>,
++				 <&pericfg CLK_PERI_PWM1_PD>;
++			clock-names = "top", "main", "pwm1";
++			num-pwms = <1>;
++			status = "disabled";
++		};
++
+ 		i2c: i2c@11007000 {
+ 			compatible = "mediatek,mt7629-i2c",
+ 				     "mediatek,mt2712-i2c";
 diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index d696df7a58fa..922a7543a2b1 100644
+index 922a7543a2b1..d2352ca7792e 100644
 --- a/drivers/pwm/pwm-mediatek.c
 +++ b/drivers/pwm/pwm-mediatek.c
-@@ -53,6 +53,7 @@ struct pwm_mediatek_chip {
- 	struct clk *clk_top;
- 	struct clk *clk_main;
- 	struct clk **clk_pwms;
-+	unsigned int clock_frequency;
- 	const struct pwm_mediatek_of_data *soc;
+@@ -327,11 +327,18 @@ static const struct pwm_mediatek_of_data mt7628_pwm_data = {
+ 	.has_clks = false,
  };
  
-@@ -139,7 +140,10 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	/* Using resolution in picosecond gets accuracy higher */
- 	resolution = (u64)NSEC_PER_SEC * 1000;
--	do_div(resolution, clk_get_rate(clk));
-+	if (pc->soc->has_clks)
-+		do_div(resolution, clk_get_rate(clk));
-+	else
-+		do_div(resolution, pc->clock_frequency);
- 
- 	cnt_period = DIV_ROUND_CLOSEST_ULL((u64)period_ns * 1000, resolution);
- 	while (cnt_period > 8191) {
-@@ -216,6 +220,7 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 	struct pwm_mediatek_chip *pc;
- 	struct resource *res;
- 	unsigned int npwms;
-+	unsigned int clock_frequency;
- 	int ret;
- 
- 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-@@ -265,6 +270,14 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 			if (IS_ERR(pc->clk_pwms[i]))
- 				return PTR_ERR(pc->clk_pwms[i]);
- 		}
-+	} else {
-+		ret = of_property_read_u32(np, "clock-frequency",
-+						&clock_frequency);
-+		if (ret < 0) {
-+			dev_err(&pdev->dev, "failed to get clock_frequency\n");
-+			return ret;
-+		}
-+		pc->clock_frequency = clock_frequency;
- 	}
- 
- 	platform_set_drvdata(pdev, pc);
++static const struct pwm_mediatek_of_data mt7629_pwm_data = {
++	.fallback_npwms = 1,
++	.pwm45_fixup = false,
++	.has_clks = true,
++};
++
+ static const struct of_device_id pwm_mediatek_of_match[] = {
+ 	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
+ 	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
+ 	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
+ 	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
++	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, pwm_mediatek_of_match);
 -- 
 2.17.1
