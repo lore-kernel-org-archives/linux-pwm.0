@@ -1,14 +1,14 @@
 From: Ryder Lee <ryder.lee@mediatek.com>
-Subject: Re: [PATCH v2 10/10] arm: dts: mediatek: add mt7629 pwm support
-Date: Wed, 14 Aug 2019 19:47:43 +0800
-Message-ID: <1565783263.7006.3.camel@mtkswgap22>
+Subject: Re: [PATCH v2 9/10] dt-bindings: pwm: update bindings for MT7628 SoC
+Date: Wed, 14 Aug 2019 19:52:23 +0800
+Message-ID: <1565783543.7006.8.camel@mtkswgap22>
 References: <621e49c01b943edb6ddac9182f34719eb0727f01.1548313019.git.ryder.lee@mediatek.com>
-         <1565779497-23621-3-git-send-email-sam.shih@mediatek.com>
+         <1565779497-23621-2-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1565779497-23621-3-git-send-email-sam.shih@mediatek.com>
+In-Reply-To: <1565779497-23621-2-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sam Shih <sam.shih@mediatek.com>
 Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
@@ -17,65 +17,44 @@ List-Id: linux-pwm@vger.kernel.org
 On Wed, 2019-08-14 at 18:43 +0800, Sam Shih wrote:
 > From: sam shih <sam.shih@mediatek.com>
 > 
-> This adds pwm support for MT7629.
+> This updates bindings for MT7628 pwm controller.
 > 
 > Signed-off-by: Sam Shih <sam.shih@mediatek.com>
 > ---
->  arch/arm/boot/dts/mt7629.dtsi | 14 ++++++++++++++
->  drivers/pwm/pwm-mediatek.c    |  7 +++++++
->  2 files changed, 21 insertions(+)
+>  .../devicetree/bindings/pwm/pwm-mediatek.txt       | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> index c7bd5633d1eb..9d2d893a07ff 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> @@ -21,6 +21,8 @@ Required properties:
+>   - pinctrl-0: One property must exist for each entry in pinctrl-names.
+>     See pinctrl/pinctrl-bindings.txt for details of the property values.
+>   - num-pwms: the number of PWM channels.
+> + - clock-frequency: fix clock frequency, this is an optional property, only use in MT7628 SoC
+> +                    for period calculation. This SoC has no complex clock tree.
 
-Split dts and driver into different patches.
- 
-> diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
-> index 9608bc2ccb3f..352df8d61788 100644
-> --- a/arch/arm/boot/dts/mt7629.dtsi
-> +++ b/arch/arm/boot/dts/mt7629.dtsi
-> @@ -241,6 +241,18 @@
->  			status = "disabled";
->  		};
->  
-> +		pwm: pwm@11006000 {
-> +			compatible = "mediatek,mt7629-pwm";
-> +			reg = <0 0x11006000 0 0x1000>;
-> +			interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&topckgen CLK_TOP_PWM_SEL>,
-> +				 <&pericfg CLK_PERI_PWM_PD>,
-> +				 <&pericfg CLK_PERI_PWM1_PD>;
-> +			clock-names = "top", "main", "pwm1";
-> +			num-pwms = <1>;
-> +			status = "disabled";
-> +		};
-> +
->  		i2c: i2c@11007000 {
->  			compatible = "mediatek,mt7629-i2c",
->  				     "mediatek,mt2712-i2c";
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index 922a7543a2b1..d2352ca7792e 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -327,11 +327,18 @@ static const struct pwm_mediatek_of_data mt7628_pwm_data = {
->  	.has_clks = false,
->  };
->  
-> +static const struct pwm_mediatek_of_data mt7629_pwm_data = {
-> +	.fallback_npwms = 1,
-> +	.pwm45_fixup = false,
-> +	.has_clks = true,
-> +};
-> +
->  static const struct of_device_id pwm_mediatek_of_match[] = {
->  	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
->  	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
->  	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
->  	{ .compatible = "mediatek,mt7628-pwm", .data = &mt7628_pwm_data },
-> +	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(of, pwm_mediatek_of_match);
+Optional properties:
 
-It's odd. You fallback to use mt7622 compatible here: 
-[PATCH v2 7/10] dt-bindings: pwm: update bindings for MT7629 SoC.
+- clock-frequency: ...
 
+>  Example:
+>  	pwm0: pwm@11006000 {
+> @@ -40,3 +42,13 @@ Example:
+>  		pinctrl-0 = <&pwm0_pins>;
+>  		num-pwms = <5>;
+>  	};
 
-Ryder
+Add a blank here
+
+> +MT7628 Example:
+> +	pwm: pwm@5000 {
+> +		compatible = "mediatek,mt7628-pwm";
+> +		reg = <0x5000 0x1000>;
+> +		#pwm-cells = <2>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pwm0_pins>, <&pwm1_pins>;
+> +		num-pwms = <4>;
+> +		clock-frequency = <100000>;
+> +	};
