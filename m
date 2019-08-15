@@ -1,40 +1,58 @@
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: Re: [PATCH v2 3/5] counter: new TI eQEP driver
-Date: Thu, 15 Aug 2019 21:37:58 +0900
-Message-ID: <20190815123758.GA646493@icarus>
-References: <20190807194023.15318-1-david@lechnology.com>
- <20190807194023.15318-4-david@lechnology.com>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+Subject: [PATCH 2/3] pwm: atmel: use a constant for maximum prescale value
+Date: Thu, 15 Aug 2019 23:41:32 +0200
+Message-ID: <20190815214133.11134-2-uwe@kleine-koenig.org>
+References: <20190815214133.11134-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190807194023.15318-4-david@lechnology.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Lechner <david@lechnology.com>
-Cc: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190815214133.11134-1-uwe@kleine-koenig.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Claudiu Beznea <claudiu.beznea@microchip.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 02:40:21PM -0500, David Lechner wrote:
-> +static struct counter_synapse ti_eqep_position_synapses[] = {
-> +	{
-> +		.action		= TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES,
-> +		.actions_list	= ti_eqep_position_synapse_actions,
-> +		.num_actions	= ARRAY_SIZE(ti_eqep_position_synapse_actions),
-> +		.signal		= &ti_eqep_signals[TI_EQEP_SIGNAL_QEPA],
-> +	},
-> +	{
-> +		.action		= TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES,
-> +		.actions_list	= ti_eqep_position_synapse_actions,
-> +		.num_actions	= ARRAY_SIZE(ti_eqep_position_synapse_actions),
-> +		.signal		= &ti_eqep_signals[TI_EQEP_SIGNAL_QEPB],
-> +	},
-> +};
-
-Hi David,
-
-Just a minor suggestion for your v3: you don't need to initialize
-"action" here since it'll be automatically updated in the core
-counter_action_show function to the value returned by your action_get
-callback function. So you can safely delete those two ".action =" lines.
-
-William Breathitt Gray
+VGhlIG1heGltYWwgcHJlc2NhbGUgdmFsdWUgaXMgMTAgZm9yIGFsbCBzdXBwb3J0ZWQgdmFyaWFu
+dHMuIFNvIGRyb3AgdGhlCm1lbWJlciBpbiB0aGUgdmFyaWFudCBkZXNjcmlwdGlvbiBhbmQgaW50
+cm9kdWNlIGEgZ2xvYmFsIGNvbnN0YW50IGluc3RlYWQuCgpUaGlzIHJlZHVjZXMgdGhlIHNpemUg
+b2YgdGhlIHZhcmlhbnQgZGVzY3JpcHRpb25zIGFuZCB0aGUgLmFwcGx5KCkgY2FsbGJhY2sKY2Fu
+IGJlIGNvbXBpbGVkIGEgYml0IG1vcmUgZWZmZWN0aXZlbHkuCgpTaWduZWQtb2ZmLWJ5OiBVd2Ug
+S2xlaW5lLUvDtm5pZyA8dXdlQGtsZWluZS1rb2VuaWcub3JnPgotLS0KIGRyaXZlcnMvcHdtL3B3
+bS1hdG1lbC5jIHwgOCArKystLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwg
+NSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYyBiL2Ry
+aXZlcnMvcHdtL3B3bS1hdG1lbC5jCmluZGV4IGFjM2Q3YTIwMGI5ZS4uZDdhNmQzMmI1Nzc0IDEw
+MDY0NAotLS0gYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYworKysgYi9kcml2ZXJzL3B3bS9wd20t
+YXRtZWwuYwpAQCAtNTAsNiArNTAsOCBAQAogI2RlZmluZSBQV01WMl9DUFJECQkweDBDCiAjZGVm
+aW5lIFBXTVYyX0NQUkRVUEQJCTB4MTAKIAorI2RlZmluZSBQV01fTUFYX1BSRVMJCTEwCisKIHN0
+cnVjdCBhdG1lbF9wd21fcmVnaXN0ZXJzIHsKIAl1OCBwZXJpb2Q7CiAJdTggcGVyaW9kX3VwZDsK
+QEAgLTU5LDcgKzYxLDYgQEAgc3RydWN0IGF0bWVsX3B3bV9yZWdpc3RlcnMgewogCiBzdHJ1Y3Qg
+YXRtZWxfcHdtX2NvbmZpZyB7CiAJdTMyIG1heF9wZXJpb2Q7Ci0JdTMyIG1heF9wcmVzOwogfTsK
+IAogc3RydWN0IGF0bWVsX3B3bV9kYXRhIHsKQEAgLTEyNiw3ICsxMjcsNyBAQCBzdGF0aWMgaW50
+IGF0bWVsX3B3bV9jYWxjdWxhdGVfY3ByZF9hbmRfcHJlcyhzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAs
+CiAJZm9yICgqcHJlcyA9IDA7IGN5Y2xlcyA+IGF0bWVsX3B3bS0+ZGF0YS0+Y2ZnLm1heF9wZXJp
+b2Q7IGN5Y2xlcyA+Pj0gMSkKIAkJKCpwcmVzKSsrOwogCi0JaWYgKCpwcmVzID4gYXRtZWxfcHdt
+LT5kYXRhLT5jZmcubWF4X3ByZXMpIHsKKwlpZiAoKnByZXMgPiBQV01fTUFYX1BSRVMpIHsKIAkJ
+ZGV2X2VycihjaGlwLT5kZXYsICJwcmVzIGV4Y2VlZHMgdGhlIG1heGltdW0gdmFsdWVcbiIpOwog
+CQlyZXR1cm4gLUVJTlZBTDsKIAl9CkBAIC0yODksNyArMjkwLDYgQEAgc3RhdGljIGNvbnN0IHN0
+cnVjdCBhdG1lbF9wd21fZGF0YSBhdG1lbF9zYW05cmxfcHdtX2RhdGEgPSB7CiAJLmNmZyA9IHsK
+IAkJLyogMTYgYml0cyB0byBrZWVwIHBlcmlvZCBhbmQgZHV0eS4gKi8KIAkJLm1heF9wZXJpb2QJ
+PSAweGZmZmYsCi0JCS5tYXhfcHJlcwk9IDEwLAogCX0sCiB9OwogCkBAIC0zMDMsNyArMzAzLDYg
+QEAgc3RhdGljIGNvbnN0IHN0cnVjdCBhdG1lbF9wd21fZGF0YSBhdG1lbF9zYW1hNV9wd21fZGF0
+YSA9IHsKIAkuY2ZnID0gewogCQkvKiAxNiBiaXRzIHRvIGtlZXAgcGVyaW9kIGFuZCBkdXR5LiAq
+LwogCQkubWF4X3BlcmlvZAk9IDB4ZmZmZiwKLQkJLm1heF9wcmVzCT0gMTAsCiAJfSwKIH07CiAK
+QEAgLTMxNyw3ICszMTYsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGF0bWVsX3B3bV9kYXRhIG1j
+aHBfc2FtOXg2MF9wd21fZGF0YSA9IHsKIAkuY2ZnID0gewogCQkvKiAzMiBiaXRzIHRvIGtlZXAg
+cGVyaW9kIGFuZCBkdXR5LiAqLwogCQkubWF4X3BlcmlvZAk9IDB4ZmZmZmZmZmYsCi0JCS5tYXhf
+cHJlcwk9IDEwLAogCX0sCiB9OwogCi0tIAoyLjIwLjEKCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdAps
+aW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVh
+ZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
