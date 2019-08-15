@@ -1,125 +1,136 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.steuer-voss.de ([85.183.69.95]:54502 "EHLO
-        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727021AbfHPL53 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 16 Aug 2019 07:57:29 -0400
-Date: Fri, 16 Aug 2019 13:57:26 +0200 (CEST)
-From: Nikolaus Voss <nv@vosn.de>
-In-Reply-To: <CF6A88132359CE47947DB4C6E1709ED53C61A211@ORSMSX122.amr.corp.intel.com>
-Message-ID: <alpine.DEB.2.20.1908161345590.41303@fox.voss.local>
-References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de> <8704391ae3004a6b4dd17975dbcc9e88bd28cf4b.1559127603.git.nikolaus.voss@loewensteinmedical.de> <20190814185055.GZ30120@smile.fi.intel.com>
- <CF6A88132359CE47947DB4C6E1709ED53C61A211@ORSMSX122.amr.corp.intel.com>
+Return-path: <kernel-bounces@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH RFC] pwm: add debug knob to help driver authors
+Date: Thu, 15 Aug 2019 11:38:39 +0200
+Message-Id: <20190815093839.23710-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>, kernel@pengutronix.de, Baolin Wang <baolin.wang@linaro.org>
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: RE: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
-To: "Schmauss, Erik" <erik.schmauss@intel.com>
-Cc: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "Moore, Robert" <robert.moore@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, nikolaus.voss@loewensteinmedical.de
 
-On Wed, 14 Aug 2019, Schmauss, Erik wrote:
->
->
->> -----Original Message-----
->> From: Shevchenko, Andriy
->> Sent: Wednesday, August 14, 2019 11:51 AM
->> To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
->> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>; Len Brown <lenb@kernel.org>;
->> Moore, Robert <robert.moore@intel.com>; Schmauss, Erik
->> <erik.schmauss@intel.com>; Jacek Anaszewski <jacek.anaszewski@gmail.com>;
->> Pavel Machek <pavel@ucw.cz>; Dan Murphy <dmurphy@ti.com>; Thierry
->> Reding <thierry.reding@gmail.com>; linux-acpi@vger.kernel.org;
->> devel@acpica.org; linux-leds@vger.kernel.org; linux-pwm@vger.kernel.org
->> Subject: Re: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
->>
->> On Wed, May 29, 2019 at 02:18:20PM +0200, Nikolaus Voss wrote:
->>> If an ACPI SSDT overlay is loaded after built-in tables have been
->>> loaded e.g. via configfs or efivar_ssdt_load() it is necessary to
->>> rewalk the namespace to resolve references. Without this, relative and
->>> absolute paths like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
->>> correctly.
->>>
->>> Make configfs load use the same method as efivar_ssdt_load().
->>
->> This patch brought a regression (bisect log below).
->> Now I'm unable to unload the table which was working before.
->>
->> Reverting (manual, due to ACPICA changes) helps.
->>
->> Please, consider to revert for this cycle, or fix. I will be glad to test any
->> proposed fix.
->
-> We submitted a patch (d1fb5b2f623b1af5a0d2a83d205df1b61f430dc6)
-> in response to this suggestion and I was not aware that this had been applied.
->
-> Rafael, please revert at least the ACPICA portion of this patch.
+This patch adds some additional checks to the pwm core that help getting
+the details right. The check about rounding isn't approved yet, but I
+consider that sensible as it helps consistency when all drivers round in
+the same direction. The other checks are in line with what I understood
+are the intended requirements.
 
-As I see it, my ACPICA change is not part of 5.3-rc1 any more. Reverting 
-my fix is part of the patch above 
-(d1fb5b2f623b1af5a0d2a83d205df1b61f430dc6) which is already applied.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Hello,
 
-Nevertheless, what is new, is that acpi_ns_initialize_objects() is called 
-in acpi_load_table(). This is necessary to resolve the references in the 
-newly loaded table. Maybe this prevents the table from being unloaded?
+this patch is only compile tested up to now but still I think it adds
+useful diagnostics for driver authors that helps even more than an exact
+documentation. Feedback welcome.
 
-Niko
+Best regards
+Uwe
 
->
-> Thanks,
-> Erik
->>
->>
->> git bisect start
->> # good: [0ecfebd2b52404ae0c54a878c872bb93363ada36] Linux 5.2 git bisect
->> good 0ecfebd2b52404ae0c54a878c872bb93363ada36
->> # bad: [5f9e832c137075045d15cd6899ab0505cfb2ca4b] Linus 5.3-rc1 git
->> bisect bad 5f9e832c137075045d15cd6899ab0505cfb2ca4b
->> # bad: [e786741ff1b52769b044b7f4407f39cd13ee5d2d] Merge tag 'staging-
->> 5.3-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging
->> git bisect bad e786741ff1b52769b044b7f4407f39cd13ee5d2d
->> # bad: [8f6ccf6159aed1f04c6d179f61f6fb2691261e84] Merge tag 'clone3-v5.3'
->> of git://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux
->> git bisect bad 8f6ccf6159aed1f04c6d179f61f6fb2691261e84
->> # good: [ed63b9c873601ca113da5c7b1745e3946493e9f3] Merge tag
->> 'media/v5.3-1' of git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-
->> media
->> git bisect good ed63b9c873601ca113da5c7b1745e3946493e9f3
->> # bad: [4b4704520d97b74e045154fc3b844b73ae4e7ebd] Merge tag 'acpi-5.3-
->> rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
->> git bisect bad 4b4704520d97b74e045154fc3b844b73ae4e7ebd
->> # good: [e3303268f9cfa4eb7c2217df471417d4327109fd] ASoC: soc-core: don't
->> use soc_find_component() at snd_soc_find_dai() git bisect good
->> e3303268f9cfa4eb7c2217df471417d4327109fd
->> # good: [3c53c6255d598db7084c5c3d7553d7200e857818] Merge tag 'asoc-
->> v5.3' of https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound into for-
->> linus git bisect good 3c53c6255d598db7084c5c3d7553d7200e857818
->> # good: [4cdd5f9186bbe80306e76f11da7ecb0b9720433c] Merge tag 'sound-
->> 5.3-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound
->> git bisect good 4cdd5f9186bbe80306e76f11da7ecb0b9720433c
->> # good: [13b06b78c772d64e2207e4a5a5329856fe2bf241] Merge branches
->> 'pm-opp', 'pm-misc', 'pm-avs' and 'pm-tools'
->> git bisect good 13b06b78c772d64e2207e4a5a5329856fe2bf241
->> # good: [cf2d213e49fdf47e4c10dc629a3659e0026a54b8] Merge tag 'pm-5.3-
->> rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
->> git bisect good cf2d213e49fdf47e4c10dc629a3659e0026a54b8
->> # bad: [02a93f35f57fe5d4d1bac0ac8496884235e2fd2e] ACPICA: Update
->> version to 20190703 git bisect bad
->> 02a93f35f57fe5d4d1bac0ac8496884235e2fd2e
->> # bad: [d4ca763eed3bcc227f220beb11ff4eb2fa548755] Merge ACPI tables
->> handling changes for v5.3.
->> git bisect bad d4ca763eed3bcc227f220beb11ff4eb2fa548755
->> # bad: [d06c47e3dd07fdf3f07e8fc45f2ce655e9b295c5] ACPI: configfs: Resolve
->> objects on host-directed table loads git bisect bad
->> d06c47e3dd07fdf3f07e8fc45f2ce655e9b295c5
->> # good: [c78fea61f0c1f8568fbbb36ac3d1e1c85a903ae4] ACPI: tables: Allow
->> BGRT to be overridden git bisect good
->> c78fea61f0c1f8568fbbb36ac3d1e1c85a903ae4
->> # first bad commit: [d06c47e3dd07fdf3f07e8fc45f2ce655e9b295c5] ACPI:
->> configfs: Resolve objects on host-directed table loads
->>
->> --
->> With Best Regards,
->> Andy Shevchenko
->>
->
->
+ drivers/pwm/Kconfig |  8 +++++++
+ drivers/pwm/core.c  | 56 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+)
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index a7e57516959e..76105cfd581d 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -33,6 +33,14 @@ config PWM_SYSFS
+ 	bool
+ 	default y if SYSFS
+ 
++config PWM_DEBUG
++	bool "Additional checks for correctness of lowlevel drivers"
++	help
++	  This option enables some additional checks to help lowlevel driver
++	  authors to get their callbacks implemented correctly.
++	  It is expected to introduce some runtime overhead and diagnostic
++	  output to the kernel log, so only enable while working on a driver.
++
+ config PWM_AB8500
+ 	tristate "AB8500 PWM support"
+ 	depends on AB8500_CORE && ARCH_U8500
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 8edfac17364e..6ce341a4574d 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -467,12 +467,68 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
+ 		return 0;
+ 
+ 	if (pwm->chip->ops->apply) {
++		struct pwm_state state_pre = *state;
++
+ 		err = pwm->chip->ops->apply(pwm->chip, pwm, state);
+ 		if (err)
+ 			return err;
+ 
++		if (IS_ENABLED(CONFIG_PWM_DEBUG)) {
++			if (pwm->chip->ops->get_state) {
++				struct pwm_state state_post = { 0, };
++
++				pwm->chip->ops->get_state(pwm->chip, pwm, &state_post);
++
++				if (state_post.period != state->period ||
++				    state_post.duty_cycle != state->duty_cycle ||
++				    state_post.polarity != state->polarity ||
++				    state_post.enabled != state->enabled) {
++
++					dev_warn(pwm->chip->dev,
++						 ".apply is supposed to modify the pwm_state parameter to match the actual output.\n");
++				}
++
++				if (state_pre.polarity == state_post.polarity &&
++				    state_pre.enabled &&
++				    (state_pre.period > state_post.period ||
++				     state_pre.duty_cycle > state_post.period)) {
++
++					dev_warn(pwm->chip->dev,
++						 ".apply is supposed to round down both period and duty_cycle.\n");
++
++				}
++
++				*state = state_post;
++
++				/* reapply state_post and check it is unmodified */
++				err = pwm->chip->ops->apply(pwm->chip, pwm, state);
++				if (err) {
++					dev_err(pwm->chip->dev,
++						 "failed to reapply the current setting\n");
++					return err;
++				}
++
++				if (state_post.period != state->period ||
++				    state_post.duty_cycle != state->duty_cycle ||
++				    state_post.polarity != state->polarity ||
++				    state_post.enabled != state->enabled) {
++					dev_warn(pwm->chip->dev,
++						 "applying the settings that .get_state returned yields changes\n");
++				}
++
++			} else {
++				dev_warn(pwm->chip->dev,
++					 "Please update the driver to provide .get_state()\n");
++			}
++		}
++
+ 		pwm->state = *state;
+ 	} else {
++		if (IS_ENABLED(CONFIG_PWM_DEBUG)) {
++			dev_warn(pwm->chip->dev,
++				 "Please update the driver to provide .apply() instead of .config()\n");
++		}
++
+ 		/*
+ 		 * FIXME: restore the initial state in case of error.
+ 		 */
+-- 
+2.20.1
