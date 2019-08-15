@@ -1,190 +1,235 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 4/7] pwm: jz4740: Improve algorithm of clock calculation
-Date: Wed, 14 Aug 2019 19:32:18 +0200
-Message-ID: <20190814173218.zhg4se3pppano5m3@pengutronix.de>
-References: <20190812061520.lwzk3us4ginwwxov@pengutronix.de>
- <1565642590.2007.1@crapouillou.net>
- <20190812214838.e5hyhnlcyykjfvsb@pengutronix.de>
- <1565648183.2007.3@crapouillou.net>
- <20190813052726.g37upws5rlvrszc4@pengutronix.de>
- <1565694066.1856.1@crapouillou.net>
- <20190813123331.m4ttfhcgt6wyrcfi@pengutronix.de>
- <1565700448.1856.2@crapouillou.net>
- <20190813140903.rdwy7p3mhwetmlnt@pengutronix.de>
- <1565799035.1984.0@crapouillou.net>
+From: Baolin Wang <baolin.wang@linaro.org>
+Subject: Re: [PATCH v3 2/2] pwm: sprd: Add Spreadtrum PWM support
+Date: Thu, 15 Aug 2019 11:34:27 +0800
+Message-ID: <CAMz4kuLiS=cGTA=uEi9ABOVAOb1M0Pcd2a_xU5VsdLo1DGd0Hg@mail.gmail.com>
+References: <65a34dd943b0260bfe45ec76dcf414a67e5d8343.1565785291.git.baolin.wang@linaro.org>
+ <446eb284a096a1fd8998765669b1c9a2f78d7d22.1565785291.git.baolin.wang@linaro.org>
+ <20190814150304.x44lalde3cwp67ge@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1565799035.1984.0@crapouillou.net>
+In-Reply-To: <20190814150304.x44lalde3cwp67ge@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Stephen Boyd <sboyd@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, Vincent Guittot <vincent.guittot@linaro.org>, linux-pwm@vger.kernel.org, DTML <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Paul,
+Hi Uwe,
 
-On Wed, Aug 14, 2019 at 06:10:35PM +0200, Paul Cercueil wrote:
-> Le mar. 13 août 2019 à 16:09, Uwe =?iso-8859-1?q?Kleine-K=F6nig?= a écrit :
-> > On Tue, Aug 13, 2019 at 02:47:28PM +0200, Paul Cercueil wrote:
-> > > Le mar. 13 août 2019 à 14:33, Uwe Kleine-König a écrit :
-> > > > On Tue, Aug 13, 2019 at 01:01:06PM +0200, Paul Cercueil wrote:
-> > > > > Well, you said that I shouln't rely on the fact that clk_round_rate() will
-> > > > > round down. That completely defeats the previous algorithm. So please tell
-> > > > > me how to use it correctly, because I don't see it.
-> > > >
-> > > > Using clk_round_rate correctly without additional knowledge is hard. If
-> > > > you assume at least some sane behaviour you'd still have to call it
-> > > > multiple times. Assuming maxrate is the maximal rate you can handle
-> > > > without overflowing your PWM registers you have to do:
-> > > >
-> > > > 	rate = maxrate;
-> > > > 	rounded_rate = clk_round_rate(clk, rate);
-> > > > 	while (rounded_rate > rate) {
-> > > > 		if (rate < rounded_rate - rate) {
-> > > > 			/*
-> > > > 			 * clk doesn't support a rate smaller than
-> > > > 			 * maxrate (or the round_rate callback doesn't
-> > > > 			 * round consistently).
-> > > > 			 */
-> > > > 			 return -ESOMETHING;
-> > > > 		}
-> > > > 		rate = rate - (rounded_rate - rate)
-> > > > 		rounded_rate = clk_round_rate(clk, rate);
-> > > > 	}
-> > > >
-> > > > 	return rate;
-> > > >
-> > > > Probably it would be sensible to put that in a function provided by the
-> > > > clk framework (maybe call it clk_round_rate_down and maybe with
-> > > > additional checks).
-> > > 
-> > >  clk_round_rate_down() has been refused multiple times in the past for
-> > >  reasons that Stephen can explain.
-> > 
-> > I'd be really interested in these reasons as I think the clk framework
-> > should make it easy to solve common tasks related to clocks. And finding
-> > out the biggest supported rate not bigger than a given maxrate is
-> > something I consider such a common task.
-> > 
-> > The first hit I found when searching was
-> > https://lkml.org/lkml/2010/7/14/260 . In there Stephen suggested that
-> > clk_round_rate with the current semantic is hardly useful and suggested
-> > clk_round_rate_up() and clk_round_rate_down() himself.
-> 
-> That's from 2010, though.
+On Wed, 14 Aug 2019 at 23:03, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> On Wed, Aug 14, 2019 at 08:46:11PM +0800, Baolin Wang wrote:
 
-If you have a better link please tell me.
+> > +
+> > +     /*
+> > +      * The hardware provides a counter that is feed by the source clo=
+ck.
+> > +      * The period length is (PRESCALE + 1) * MOD counter steps.
+> > +      * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
+> > +      * Thus the period_ns and duty_ns calculation formula should be:
+> > +      * period_ns =3D NSEC_PER_SEC * (prescale + 1) * mod / clk_rate
+> > +      * duty_ns =3D NSEC_PER_SEC * (prescale + 1) * duty / clk_rate
+> > +      */
+> > +     val =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRESCALE);
+> > +     prescale =3D val & SPRD_PWM_PRESCALE_MSK;
+> > +     tmp =3D (prescale + 1) * NSEC_PER_SEC * SPRD_PWM_MOD_MAX;
+> > +     state->period =3D DIV_ROUND_CLOSEST_ULL(tmp, chn->clk_rate);
+> > +
+> > +     val =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_DUTY);
+> > +     duty =3D val & SPRD_PWM_DUTY_MSK;
+> > +     tmp =3D (prescale + 1) * NSEC_PER_SEC * duty;
+> > +     state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, chn->clk_rate);
+> > +
+> > +     /* Disable PWM clocks if the PWM channel is not in enable state. =
+*/
+> > +     if (!state->enabled)
+> > +             clk_bulk_disable_unprepare(SPRD_PWM_CHN_CLKS_NUM, chn->cl=
+ks);
+> > +}
+> > +
+> > +static int sprd_pwm_config(struct sprd_pwm_chip *spc, struct pwm_devic=
+e *pwm,
+> > +                        int duty_ns, int period_ns)
+> > +{
+> > +     struct sprd_pwm_chn *chn =3D &spc->chn[pwm->hwpwm];
+> > +     u32 prescale, duty;
+> > +     u64 tmp;
+> > +
+> > +     /*
+> > +      * The hardware provides a counter that is feed by the source clo=
+ck.
+> > +      * The period length is (PRESCALE + 1) * MOD counter steps.
+> > +      * The duty cycle length is (PRESCALE + 1) * DUTY counter steps.
+> > +      *
+> > +      * To keep the maths simple we're always using MOD =3D SPRD_PWM_M=
+OD_MAX.
+>
+> Did you spend some thoughts about how wrong your period can get because
+> of that "lazyness"?
+>
+> Let's assume a clk rate of 100/3 MHz. Then the available period lengths
+> are:
+>
+>         PRESCALE =3D  0  ->  period =3D   7.65 =C2=B5s
+>         PRESCALE =3D  1  ->  period =3D  15.30 =C2=B5s
+>         ...
+>         PRESCALE =3D 17  ->  period =3D 137.70 =C2=B5s
+>         PRESCALE =3D 18  ->  period =3D 145.35 =C2=B5s
+>
+> So the error can be up to (nearly) 7.65 =C2=B5s (or in general
 
-> I agree that clk_round_rate_up() and clk_round_rate_down() should exist.
-> Even if they return -ENOSYS if it's not implemented for a given clock
-> controller.
+Yes, but for our use case (pwm backlight), the precision can meet our
+requirement. Moreover, we usually do not change the period, just
+adjust the duty to change the back light.
 
-ack.
+> 255 / clk_rate) because if 145.34 =C2=B5s is requested you configure
+> PRESCALE =3D 17 and so yield a period of 137.70 =C2=B5s. If however you'd=
+ pick
 
-> > > > > I came up with a much smarter alternative, that doesn't rely on the rounding
-> > > > > method of clk_round_rate, and which is better overall (no loop needed). It
-> > > > > sounds to me like you're bashing the code without making the effort to
-> > > > > understand what it does.
-> > > > >
-> > > > > Thierry called it a "neat trick"
-> > > > > (https://patchwork.kernel.org/patch/10836879/) so it cannot be as bad as you
-> > > > > say.
-> > > >
-> > > > Either that or Thierry failed to see the downside. The obvious downside
-> > > > is that once you set the period to something long (and so the clk was
-> > > > limited to a small frequency) you never make the clock any faster
-> > > > afterwards.
-> > >
-> > >  Read the algorithm again.
-> > 
-> > I indeed missed a call to clk_set_rate(clk, parent_rate). I thought I
-> > grepped for clk_set_rate before claiming the code was broken. Sorry.
-> > 
-> > So I think the code works indeed, but it feels like abusing
-> > clk_set_max_rate. So I'd like to see some words from Stephen about this
-> > procedure.
-> > 
-> > Also I think this is kind of inelegant to set the maximal rate twice. At
-> > least call clk_set_max_rate only once please.
-> 
-> Ok. I can do that.
+I did not get you here, if period is 145.34, we still get the
+corresponding PRESCALE =3D 18 by below formula:
 
-I would still prefer to hear from Stephen about this approach. It seems
-wrong to have two different ways to achieve the same goal and my
-impression is that clk_round_rate is the function designed for this use
-case.
- 
-> > > > > > > > > E.g. if at a rate of 12 MHz your computed hardware value for the period
-> > > > > > > > > is 0xf000, then at a rate of 24 MHz it won't fit in 16 bits. So the clock
-> > > > > > > > > rate must be reduced to the highest possible that will still give you a
-> > > > > > > > > < 16-bit value.
-> > > > > > > > >
-> > > > > > > > > We always want the highest possible clock rate that works, for the sake of
-> > > > > > > > > precision.
-> > > > > > > >
-> > > > > > > > This is dubious; but ok to keep the driver simple.> (Consider a PWM that
-> > > > > > > > can run at i MHz for i in [1, .. 30]. If a period of 120 ns and a duty
-> > > > > > > > cycle of 40 ns is requested you can get an exact match with 25 MHz, but
-> > > > > > > > not with 30 MHz.)
-> > > > > > >
-> > > > > > > The clock rate is actually (parent_rate >> (2 * x) )
-> > > > > > > for x = 0, 1, 2, ...
-> > > > > > >
-> > > > > > > So if your parent_rate is 30 MHz the next valid one is 7.5 MHz, and the
-> > > > > > > next one is 1.875 MHz. It'd be very unlikely that you get a better match at
-> > > > > > > a lower clock.
-> > > > > >
-> > > > > > If the smaller freqs are all dividers of the fastest that's fine. Please
-> > > > > > note in a code comment that you're assuming this.
-> > > > >
-> > > > >  No, I am not assuming this. The current driver just picks the highest clock
-> > > > >  rate that works. We're not changing the behaviour here.
-> > > >
-> > > > But you hide it behind clk API functions that don't guarantee this
-> > > > behaviour. And even if it works for you it might not for the next person
-> > > > who copies your code to support another hardware.
-> > > 
-> > >  Again, I'm not *trying* to guarantee this behaviour.
-> > 
-> > I didn't request you should guarantee this behaviour. I want you to make
-> > it obvious for readers of your code that you rely on something that
-> > isn't guaranteed. That your code works today isn't a good enough excuse.
-> > There are various examples like these. If you want a few:
-> > 
-> >  - printf("string: %s\n", NULL); works fine with glibc, but segfaults on
-> >    other libcs.
-> >  - setenv("MYVAR", NULL) used to work (and was equivalent to
-> >    setenv("MYVAR", "")) but that was never guaranteed. Then at some
-> >    point of time it started to segfault.
-> >  - Look into commits like a4435febd4c0f14b25159dca249ecf91301c7c76. This
-> >    used to work fine until compilers were changed to optimize more
-> >    aggressively.
-> > 
-> > Now if you use a clk and know that all rates smaller than the requested
-> > one are divisors of the fast one and your code only works (here: is
-> > optimal) when this condition is given, you're walking on thin ice just
-> > because this fact it's not guaranteed.
-> > The least you can do is to add a code comment to make people aware who
-> > debug the breakage or copy your code.
-> 
-> If I was assuming something, it's not that the requested clock rates are
-> always integer dividers of the parent rate - but rather that the difference
-> in precision between two possible clock rates (even non-integer-dividers) is
-> so tiny that we just don't care.
+tmp =3D (u64)chn->clk_rate * period_ns;
+do_div(tmp, NSEC_PER_SEC);
+prescale =3D DIV_ROUND_CLOSEST_ULL(tmp, SPRD_PWM_MOD_MAX) - 1;
 
-I'm more exacting here. If you are asked for X and can provide X - 2 you
-shouldn't provide X - 12. Depending on the use case the consumer is happy
-about every bit of accuracy they can get. So if you deliberately provide
-X - 12 because it is easier to do and good enough for you, at least
-document this laziness to not waste other people's time more than
-necessary.
+> PRESCALE =3D 18 and MOD =3D 254 you get a period of 144.78 =C2=B5s and so=
+ the
+> error is only 0.56 =C2=B5s which is a factor of 13 better.
+>
+> Hmm.
+>
+> > +      * The value for PRESCALE is selected such that the resulting per=
+iod
+> > +      * gets the maximal length not bigger than the requested one with=
+ the
+> > +      * given settings (MOD =3D SPRD_PWM_MOD_MAX and input clock).
+> > +      */
+> > +     duty =3D duty_ns * SPRD_PWM_MOD_MAX / period_ns;
+>
+> I wonder if you loose some precision here as you use period_ns but might
+> actually implement a shorter period.
+>
+> Quick example, again consider clk_rate =3D 100 / 3 MHz,
+> period_ns =3D 145340, duty_ns =3D 72670. Then you end up with
+>
+>         PRESCALE =3D 17
+>         MOD =3D 255
+>         DUTY =3D 127
 
-Best regards
-Uwe
+Incorrect, we will get PRESCALE =3D 18,  MOD =3D 255, DUTY =3D 127.
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> That corresponds to period_ns =3D 137700, duty_ns =3D 68580. With DUTY =
+=3D 134
+> you get 72360 ns which is still smaller than the requested 72670 ns.
+
+Incorrect, with DUTY =3D 134 (PRESCALE =3D 18  ->  period =3D 145.35 =C2=B5=
+s),
+duty_ns =3D 76380ns
+
+> (But then again it is not obvious which of the two is the "better"
+> approximation because Thierry doesn't seem to see the necessity to
+> discuss or define a policy here.)
+
+Like I said, this is the simple calculation formula which can meet our
+requirement (we limit our DUTY value can only be 0 - 254).
+duty =3D duty_ns * SPRD_PWM_MOD_MAX / period_ns;
+
+>
+> (And to pick up the thoughts about not using SPRD_PWM_MOD_MAX
+> unconditionally, you could also use
+>
+>         PRESCALE =3D 18
+>         MOD =3D 254
+>         DUTY =3D 127
+>
+> yielding period_ns =3D 144780 and duty_ns =3D 72390. Summary:
+>
+>         Request:                 72670 / 145340
+>         your result:             68580 / 137700
+>         also possible:           72390 / 144780
+>
+> Judge yourself.)
+>
+> > +     tmp =3D (u64)chn->clk_rate * period_ns;
+> > +     do_div(tmp, NSEC_PER_SEC);
+> > +     prescale =3D DIV_ROUND_CLOSEST_ULL(tmp, SPRD_PWM_MOD_MAX) - 1;
+>
+> Now that you use DIV_ROUND_CLOSEST_ULL the comment is wrong because you
+> might provide a period bigger than the requested one. Also you divide
+
+Again, that's the precision can meet our requirement.
+
+> twice instead of once before. (I don't know what architecture your SoC
+> uses, but compared to a multiplication a division is usually expensive.)
+> Also the math is more complicated now as you have a round-down div and a
+> round-closest div.
+>
+> My preference for how to fix that is to restore the behaviour of v2 that
+> matches the comment and adapt .get_state() instead.
+
+Using DIV_ROUND_CLOSEST_ULL can get a same prescale which matches with
+.get_state().
+
+>
+> For .get_state() this should then be:
+>
+>         val =3D sprd_pwm_read(spc, pwm->hwpwm, SPRD_PWM_PRESCALE);
+>         prescale =3D FIELD_GET(SPRD_PWM_PRESCALE_MSK, val);
+>
+>         tmp =3D (prescale + 1) * NSEC_PER_SEC * SPRD_PWM_MOD_MAX;
+>         state->period =3D DIV_ROUND_UP_ULL(tmp, chn->clk_rate);
+>
+> > +     if (prescale > SPRD_PWM_PRESCALE_MSK)
+> > +             prescale =3D SPRD_PWM_PRESCALE_MSK;
+> > +
+> > +     /*
+> > +      * Note: Writing DUTY triggers the hardware to actually apply the
+> > +      * values written to MOD and DUTY to the output, so must keep wri=
+ting
+> > +      * DUTY last.
+> > +      *
+> > +      * The hardware can ensures that current running period is comple=
+ted
+> > +      * before changing a new configuration to avoid mixed settings.
+>
+> I'm not a native English speaker, but I would write:
+>
+>         * The hardware ensures that currently running period is
+>         * completed before changing to the new configuration to avoid
+>         * mixed settings.
+
+Sure
+
+>
+> Does this mechanism also apply to PRESCALE? If yes, please include it in
+
+Yes.
+
+> your description. If not there is still a possibility for a wrong
+> period.
+>
+> > +      */
+> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_PRESCALE, prescale);
+> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_MOD, SPRD_PWM_MOD_MAX);
+> > +     sprd_pwm_write(spc, pwm->hwpwm, SPRD_PWM_DUTY, duty);
+> > +
+> > +     return 0;
+> > +}
+>
+> Best regards
+> Uwe
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
+|
+
+
+
+--=20
+Baolin Wang
+Best Regards
