@@ -1,173 +1,132 @@
-From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v3 2/10] pwm: mediatek: allocate the clks array dynamically
-Date: Fri, 16 Aug 2019 15:21:20 +0800
-Message-ID: <1565940088-845-3-git-send-email-sam.shih@mediatek.com>
+From: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v3 1/10] pwm: mediatek: add a property "num-pwms"
+Date: Fri, 16 Aug 2019 15:21:19 +0800
+Message-ID: <1565940088-845-2-git-send-email-sam.shih@mediatek.com>
 References: <1565940088-845-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1565940088-845-1-git-send-email-sam.shih@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1565940088-845-1-git-send-email-sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Ryder Lee <ryder.lee@mediatek.com>
+From: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Instead of using fixed size of arrays, allocate the memory for them
-based on the information we get from the chips.
+This adds a property "num-pwms" to avoid having an endless
+list of compatibles with no differences for the same driver.
 
-Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+Signed-off-by: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/pwm/pwm-mediatek.c | 76 +++++++++++++++++++-------------------
- 1 file changed, 39 insertions(+), 37 deletions(-)
+ drivers/pwm/pwm-mediatek.c | 35 ++++++++++++++++++++++-------------
+ 1 file changed, 22 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index f9d67fb66adb..47585b68483d 100644
+index eb6674ce995f..f9d67fb66adb 100644
 --- a/drivers/pwm/pwm-mediatek.c
 +++ b/drivers/pwm/pwm-mediatek.c
-@@ -35,25 +35,6 @@
- 
- #define PWM_CLK_DIV_MAX		7
- 
--enum {
--	MTK_CLK_MAIN = 0,
--	MTK_CLK_TOP,
--	MTK_CLK_PWM1,
--	MTK_CLK_PWM2,
--	MTK_CLK_PWM3,
--	MTK_CLK_PWM4,
--	MTK_CLK_PWM5,
--	MTK_CLK_PWM6,
--	MTK_CLK_PWM7,
--	MTK_CLK_PWM8,
--	MTK_CLK_MAX,
--};
--
--static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
--	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5", "pwm6", "pwm7",
--	"pwm8"
--};
--
- struct mtk_pwm_platform_data {
- 	unsigned int fallback_npwms;
- 	bool pwm45_fixup;
-@@ -64,12 +45,16 @@ struct mtk_pwm_platform_data {
-  * struct mtk_pwm_chip - struct representing PWM chip
-  * @chip: linux PWM chip representation
-  * @regs: base address of PWM chip
-- * @clks: list of clocks
-+ * @clk_top: the top clock generator
-+ * @clk_main: the clock used by PWM core
-+ * @clk_pwms: the clock used by each PWM channel
-  */
- struct mtk_pwm_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
--	struct clk *clks[MTK_CLK_MAX];
-+	struct clk *clk_top;
-+	struct clk *clk_main;
-+	struct clk **clk_pwms;
- 	const struct mtk_pwm_platform_data *soc;
+@@ -55,7 +55,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
  };
  
-@@ -90,24 +75,24 @@ static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	if (!pc->soc->has_clks)
- 		return 0;
+ struct mtk_pwm_platform_data {
+-	unsigned int num_pwms;
++	unsigned int fallback_npwms;
+ 	bool pwm45_fixup;
+ 	bool has_clks;
+ };
+@@ -226,27 +226,36 @@ static const struct pwm_ops mtk_pwm_ops = {
  
--	ret = clk_prepare_enable(pc->clks[MTK_CLK_TOP]);
-+	ret = clk_prepare_enable(pc->clk_top);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = clk_prepare_enable(pc->clks[MTK_CLK_MAIN]);
-+	ret = clk_prepare_enable(pc->clk_main);
- 	if (ret < 0)
- 		goto disable_clk_top;
- 
--	ret = clk_prepare_enable(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
-+	ret = clk_prepare_enable(pc->clk_pwms[pwm->hwpwm]);
- 	if (ret < 0)
- 		goto disable_clk_main;
- 
- 	return 0;
- 
- disable_clk_main:
--	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
-+	clk_disable_unprepare(pc->clk_main);
- disable_clk_top:
--	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
-+	clk_disable_unprepare(pc->clk_top);
- 
- 	return ret;
- }
-@@ -119,9 +104,9 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	if (!pc->soc->has_clks)
- 		return;
- 
--	clk_disable_unprepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
--	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
--	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
-+	clk_disable_unprepare(pc->clk_pwms[pwm->hwpwm]);
-+	clk_disable_unprepare(pc->clk_main);
-+	clk_disable_unprepare(pc->clk_top);
- }
- 
- static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
-@@ -141,7 +126,7 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			  int duty_ns, int period_ns)
+ static int mtk_pwm_probe(struct platform_device *pdev)
  {
- 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
--	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
-+	struct clk *clk = pc->soc->has_clks ? pc->clk_pwms[pwm->hwpwm] : NULL;
- 	u32 clkdiv = 0, cnt_period, cnt_duty, reg_width = PWMDWIDTH,
- 	    reg_thres = PWMTHRES;
- 	u64 resolution;
-@@ -229,7 +214,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	struct device_node *np = pdev->dev.of_node;
+-	const struct mtk_pwm_platform_data *data;
++	struct device_node *np = pdev->dev.of_node;
  	struct mtk_pwm_chip *pc;
  	struct resource *res;
--	unsigned int i, npwms;
-+	unsigned int npwms;
+-	unsigned int i;
++	unsigned int i, npwms;
  	int ret;
  
  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-@@ -255,12 +240,29 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 		}
- 	}
+ 	if (!pc)
+ 		return -ENOMEM;
  
--	for (i = 0; i < npwms + 2 && pc->soc->has_clks; i++) {
--		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
--		if (IS_ERR(pc->clks[i])) {
--			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
--				mtk_pwm_clk_name[i], PTR_ERR(pc->clks[i]));
--			return PTR_ERR(pc->clks[i]);
-+	if (pc->soc->has_clks) {
-+		int i;
-+
-+		pc->clk_pwms = devm_kcalloc(&pdev->dev, npwms,
-+					    sizeof(*pc->clk_pwms), GFP_KERNEL);
-+		if (!pc->clk_pwms)
-+			return -ENOMEM;
-+
-+		pc->clk_top = devm_clk_get(&pdev->dev, "top");
-+		if (IS_ERR(pc->clk_top))
-+			return PTR_ERR(pc->clk_top);
-+
-+		pc->clk_main = devm_clk_get(&pdev->dev, "main");
-+		if (IS_ERR(pc->clk_main))
-+			return PTR_ERR(pc->clk_main);
-+
-+		for (i = 0; i < npwms; i++) {
-+			char name[8];
-+
-+			snprintf(name, sizeof(name), "pwm%d", i + 1);
-+			pc->clk_pwms[i] = devm_clk_get(&pdev->dev, name);
-+			if (IS_ERR(pc->clk_pwms[i]))
-+				return PTR_ERR(pc->clk_pwms[i]);
- 		}
- 	}
+-	data = of_device_get_match_data(&pdev->dev);
+-	if (data == NULL)
+-		return -EINVAL;
+-	pc->soc = data;
++	pc->soc = of_device_get_match_data(&pdev->dev);
  
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(pc->regs))
+ 		return PTR_ERR(pc->regs);
+ 
+-	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
++	ret = of_property_read_u32(np, "num-pwms", &npwms);
++	if (ret < 0) {
++		/* It's deprecated, we should specify num_pwms via DT now. */
++		if (pc->soc->fallback_npwms) {
++			npwms = pc->soc->fallback_npwms;
++			dev_warn(&pdev->dev, "DT is outdated, please update it\n");
++		} else {
++			dev_err(&pdev->dev, "failed to get number of PWMs\n");
++			return ret;
++		}
++	}
++
++	for (i = 0; i < npwms + 2 && pc->soc->has_clks; i++) {
+ 		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
+ 		if (IS_ERR(pc->clks[i])) {
+ 			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
+@@ -260,7 +269,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &mtk_pwm_ops;
+ 	pc->chip.base = -1;
+-	pc->chip.npwm = data->num_pwms;
++	pc->chip.npwm = npwms;
+ 
+ 	ret = pwmchip_add(&pc->chip);
+ 	if (ret < 0) {
+@@ -279,25 +288,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
+ }
+ 
+ static const struct mtk_pwm_platform_data mt2712_pwm_data = {
+-	.num_pwms = 8,
++	.fallback_npwms = 8,
+ 	.pwm45_fixup = false,
+ 	.has_clks = true,
+ };
+ 
+ static const struct mtk_pwm_platform_data mt7622_pwm_data = {
+-	.num_pwms = 6,
++	.fallback_npwms = 6,
+ 	.pwm45_fixup = false,
+ 	.has_clks = true,
+ };
+ 
+ static const struct mtk_pwm_platform_data mt7623_pwm_data = {
+-	.num_pwms = 5,
++	.fallback_npwms = 5,
+ 	.pwm45_fixup = true,
+ 	.has_clks = true,
+ };
+ 
+ static const struct mtk_pwm_platform_data mt7628_pwm_data = {
+-	.num_pwms = 4,
++	.fallback_npwms = 4,
+ 	.pwm45_fixup = true,
+ 	.has_clks = false,
+ };
 -- 
 2.17.1
