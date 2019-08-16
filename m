@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v3 8/10] pwm: mediatek: add new property and fix mt7628 pwm
-Date: Fri, 16 Aug 2019 15:21:26 +0800
-Message-ID: <1565940088-845-9-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v3 6/10] arm: dts: mt7623: add a property "num-pwms" for PWM node
+Date: Fri, 16 Aug 2019 15:21:24 +0800
+Message-ID: <1565940088-845-7-git-send-email-sam.shih@mediatek.com>
 References: <1565940088-845-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,67 +9,30 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1565940088-845-1-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, sam shih <sam.shih@mediatek.com>
+Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: sam shih <sam.shih@mediatek.com>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-This fix mt7628 pwm during configure from userspace. The SoC
-is legacy MIPS and has no complex clock tree. This patch add property
-clock-frequency to the SoC specific data and legacy MIPS SoC need to
-configure it in DT. This property is use for period calculation.
+This adds a property "num-pwms" for PWM controller.
 
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
 ---
- drivers/pwm/pwm-mediatek.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/mt7623.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index d696df7a58fa..922a7543a2b1 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -53,6 +53,7 @@ struct pwm_mediatek_chip {
- 	struct clk *clk_top;
- 	struct clk *clk_main;
- 	struct clk **clk_pwms;
-+	unsigned int clk_freq;
- 	const struct pwm_mediatek_of_data *soc;
- };
+diff --git a/arch/arm/boot/dts/mt7623.dtsi b/arch/arm/boot/dts/mt7623.dtsi
+index a79f0b6c3429..208e0d19a575 100644
+--- a/arch/arm/boot/dts/mt7623.dtsi
++++ b/arch/arm/boot/dts/mt7623.dtsi
+@@ -452,6 +452,7 @@
+ 			 <&pericfg CLK_PERI_PWM5>;
+ 		clock-names = "top", "main", "pwm1", "pwm2",
+ 			      "pwm3", "pwm4", "pwm5";
++		num-pwms = <5>;
+ 		status = "disabled";
+ 	};
  
-@@ -139,7 +140,10 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	/* Using resolution in picosecond gets accuracy higher */
- 	resolution = (u64)NSEC_PER_SEC * 1000;
--	do_div(resolution, clk_get_rate(clk));
-+	if (pc->soc->has_clks)
-+		do_div(resolution, clk_get_rate(clk));
-+	else
-+		do_div(resolution, pc->clk_freq);
- 
- 	cnt_period = DIV_ROUND_CLOSEST_ULL((u64)period_ns * 1000, resolution);
- 	while (cnt_period > 8191) {
-@@ -216,6 +220,7 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 	struct pwm_mediatek_chip *pc;
- 	struct resource *res;
- 	unsigned int npwms;
-+	unsigned int clk_freq;
- 	int ret;
- 
- 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-@@ -265,6 +270,14 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
- 			if (IS_ERR(pc->clk_pwms[i]))
- 				return PTR_ERR(pc->clk_pwms[i]);
- 		}
-+	} else {
-+		ret = of_property_read_u32(np, "clock-frequency",
-+						&clk_freq);
-+		if (ret < 0) {
-+			dev_err(&pdev->dev, "failed to get clk_freq\n");
-+			return ret;
-+		}
-+		pc->clk_freq = clk_freq;
- 	}
- 
- 	platform_set_drvdata(pdev, pc);
 -- 
 2.17.1
