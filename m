@@ -1,79 +1,65 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
- sysfs
-Date: Fri, 16 Aug 2019 21:47:54 +0200
-Message-ID: <20190816194754.ldzjqy2yjonfvaat@pengutronix.de>
-References: <20190709190007.91260-1-mka@chromium.org>
- <20190709190007.91260-3-mka@chromium.org>
- <20190816165148.7keg45fmlndr22fl@pengutronix.de>
- <20190816175157.GT250418@google.com>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH 4/3] pwm: atmel: document known weaknesses of both
+ hardware and software
+Date: Fri, 16 Aug 2019 22:43:57 +0200
+Message-ID: <20190816204357.GG3545@piout.net>
+References: <20190815214133.11134-1-uwe@kleine-koenig.org>
+ <20190816093748.11769-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20190816175157.GT250418@google.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Douglas Anderson <dianders@chromium.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <20190816093748.11769-1-uwe@kleine-koenig.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
+Cc: linux-pwm@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, Thierry Reding <thierry.reding@gmail.com>, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpLCBBdWcgMTYsIDIwMTkgYXQgMTA6NTE6NTdBTSAtMDcwMCwgTWF0dGhpYXMgS2FlaGxj
-a2Ugd3JvdGU6Cj4gSGkgVXdlLAo+IAo+IE9uIEZyaSwgQXVnIDE2LCAyMDE5IGF0IDA2OjUxOjQ4
-UE0gKzAyMDAsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOgo+ID4gT24gVHVlLCBKdWwgMDksIDIw
-MTkgYXQgMTI6MDA6MDVQTSAtMDcwMCwgTWF0dGhpYXMgS2FlaGxja2Ugd3JvdGU6Cj4gPiA+IEJh
-Y2tsaWdodCBicmlnaHRuZXNzIGN1cnZlcyBjYW4gaGF2ZSBkaWZmZXJlbnQgc2hhcGVzLiBUaGUg
-dHdvIG1haW4KPiA+ID4gdHlwZXMgYXJlIGxpbmVhciBhbmQgbm9uLWxpbmVhciBjdXJ2ZXMuIFRo
-ZSBodW1hbiBleWUgZG9lc24ndAo+ID4gPiBwZXJjZWl2ZSBsaW5lYXJseSBpbmNyZWFzaW5nL2Rl
-Y3JlYXNpbmcgYnJpZ2h0bmVzcyBhcyBsaW5lYXIgKHNlZQo+ID4gPiBhbHNvIDg4YmE5NWJlZGI3
-OSAiYmFja2xpZ2h0OiBwd21fYmw6IENvbXB1dGUgYnJpZ2h0bmVzcyBvZiBMRUQKPiA+ID4gbGlu
-ZWFybHkgdG8gaHVtYW4gZXllIiksIGhlbmNlIG1hbnkgYmFja2xpZ2h0cyB1c2Ugbm9uLWxpbmVh
-ciAob2Z0ZW4KPiA+ID4gbG9nYXJpdGhtaWMpIGJyaWdodG5lc3MgY3VydmVzLiBUaGUgdHlwZSBv
-ZiBjdXJ2ZSBjdXJyZW50bHkgaXMgb3BhcXVlCj4gPiA+IHRvIHVzZXJzcGFjZSwgc28gdXNlcnNw
-YWNlIG9mdGVuIHVzZXMgbW9yZSBvciBsZXNzIHJlbGlhYmxlIGhldXJpc3RpY3MKPiA+ID4gKGxp
-a2UgdGhlIG51bWJlciBvZiBicmlnaHRuZXNzIGxldmVscykgdG8gZGVjaWRlIHdoZXRoZXIgdG8g
-dHJlYXQgYQo+ID4gPiBiYWNrbGlnaHQgZGV2aWNlIGFzIGxpbmVhciBvciBub24tbGluZWFyLgo+
-ID4gPiAKPiA+ID4gRXhwb3J0IHRoZSB0eXBlIG9mIHRoZSBicmlnaHRuZXNzIGN1cnZlIHZpYSB0
-aGUgbmV3IHN5c2ZzIGF0dHJpYnV0ZQo+ID4gPiAnc2NhbGUnLiBUaGUgdmFsdWUgb2YgdGhlIGF0
-dHJpYnV0ZSBjYW4gYmUgJ2xpbmVhcicsICdub24tbGluZWFyJyBvcgo+ID4gPiAndW5rbm93bicu
-IEZvciBkZXZpY2VzIHRoYXQgZG9uJ3QgcHJvdmlkZSBpbmZvcm1hdGlvbiBhYm91dCB0aGUgc2Nh
-bGUKPiA+ID4gb2YgdGhlaXIgYnJpZ2h0bmVzcyBjdXJ2ZSB0aGUgdmFsdWUgb2YgdGhlICdzY2Fs
-ZScgYXR0cmlidXRlIGlzICd1bmtub3duJy4KPiA+ID4gCj4gPiA+IFNpZ25lZC1vZmYtYnk6IE1h
-dHRoaWFzIEthZWhsY2tlIDxta2FAY2hyb21pdW0ub3JnPgo+ID4gCj4gPiBJIHdvbmRlciB3aGF0
-IGtpbmQgb2YgcHJvYmxlbSB5b3UgYXJlIHNvbHZpbmcgaGVyZS4gQ2FuIHlvdSBkZXNjcmliZQo+
-ID4gdGhhdCBpbiBhIGZldyB3b3Jkcz8KPiAKPiBUaGUgaHVtYW4gZXllIHBlcmNlaXZlcyBicmln
-aHRuZXNzIGluIGEgbG9nYXJpdGhtaWMgbWFubmVyLiBGb3IKPiBiYWNrbGlnaHRzIHdpdGggYSBs
-aW5lYXIgYnJpZ2h0bmVzcyBjdXJ2ZSBicmlnaHRuZXNzIGNvbnRyb2xzIGxpa2UKPiBzbGlkZXJz
-IG5lZWQgdG8gdXNlIGEgbWFwcGluZyB0byBhY2hpZXZlIGEgYmVoYXZpb3IgdGhhdCBpcyBwZXJj
-ZWl2ZWQKPiBhcyBsaW5lYXItaXNoIChtb3JlIGRldGFpbHM6IGh0dHA6Ly93d3cucGF0aHdheWxp
-Z2h0aW5nLmNvbS9wcm9kdWN0cy9kb3dubG9hZHMvYnJvY2h1cmUvdGVjaG5pY2FsX21hdGVyaWFs
-c18xNDY2Nzk3MDQ0X0xpbmVhcit2cytMb2dhcml0aG1pYytEaW1taW5nK1doaXRlK1BhcGVyLnBk
-ZikKPiAKPiBBcyBvZiBub3cgdXNlcnNwYWNlIGRvZXNuJ3QgaGF2ZSBpbmZvcm1hdGlvbiBhYm91
-dCB0aGUgdHlwZSBvZiB0aGUKPiBicmlnaHRuZXNzIGN1cnZlLCBhbmQgb2Z0ZW4gdXNlcyBoZXVy
-aXN0aWNzIHRvIG1ha2UgYSBndWVzcywgd2hpY2ggbWF5Cj4gYmUgcmlnaHQgbW9zdCBvZiB0aGUg
-dGltZSwgYnV0IG5vdCBhbHdheXMuIFRoZSBuZXcgYXR0cmlidXRlIGVsaW1pbmF0ZXMKPiB0aGUg
-bmVlZCB0byBndWVzcy4KClRoaXMgaXMgYWJvdXQgYmFja2xpZ2h0cyByaWdodD8gU28gdGhlIGtl
-cm5lbCBwcm92aWRlcyB0byB1c2Vyc3BhY2UgYW4KaW50ZXJ2YWwgWzAsIHhdIGZvciBzb21lIHgg
-YW5kIGRlcGVuZGluZyBvbiB0aGUgcGh5c2ljcyBvZiB0aGUgdGhlCmJhY2tsaWdodCBjb25maWd1
-cmluZyB4LzIgKHByb2JhYmx5PykgZWl0aGVyIG1lYW5zIDUwJSBtZWFzdXJlZCBsaWdodCBvcgo1
-MCUgcGVyY2VpdmVkIGxpZ2h0LCByaWdodD8KCkkgd29uZGVyIGlmIGl0IHdvdWxkIGJlIHBvc3Np
-YmxlIGluc3RlYWQgb2YgZ2l2aW5nIGRpZmZlcmVudCBiYWNrbGlnaHQKaW1wbGVtZW50YXRpb25z
-IHRoZSBmcmVlZG9tIHRvIHVzZSBlaXRoZXIgbGluZWFyIG9yIGxvZ2FyaXRobWljIChvcgpxdWFk
-cmF0aWM/KSBzY2FsaW5nIGFuZCB0ZWxsIHVzZXJzcGFjZSB3aGljaCBvZiB0aGUgb3B0aW9ucyB3
-ZXJlIHBpY2tlZApyZXF1aXJlIHRoZSBkcml2ZXJzIHRvIHByb3ZpZGUgYSAoc2F5KSBsaW5lYXIg
-c2NhbGluZyBhbmQgdGhlbiB1c2Vyc3BhY2UKd291bGRuJ3QgbmVlZCB0byBjYXJlIGFib3V0IHRo
-ZSBleGFjdCBwaHlzaWNzLgoKQmVzdCByZWdhcmRzClV3ZQoKLS0gClBlbmd1dHJvbml4IGUuSy4g
-ICAgICAgICAgICAgICAgICAgICAgICAgICB8IFV3ZSBLbGVpbmUtS8O2bmlnICAgICAgICAgICAg
-fApJbmR1c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAgICAgICAgICAgICAgICAgfCBodHRwOi8vd3d3
-LnBlbmd1dHJvbml4LmRlLyAgfApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9k
-cmktZGV2ZWw=
+On 16/08/2019 11:37:48+0200, Uwe Kleine-K=F6nig wrote:
+> Signed-off-by: Uwe Kleine-K=F6nig <uwe@kleine-koenig.org>
+> ---
+>  drivers/pwm/pwm-atmel.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> =
+
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 42fe7bc043a8..1ddb93db9627 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -7,6 +7,16 @@
+>   *
+>   * Reference manual for "atmel,at91sam9rl-pwm":
+>   *   http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11032-32-bit-=
+ARM926EJ-S-Microcontroller-SAM9G25_Datasheet.pdf
+> + *
+> + * Limitations:
+> + * - Periods start with the inactive level.
+> + * - Hardware has to be stopped in general to update settings.
+> + *
+> + * Software bugs/possible improvements:
+> + * - When atmel_pwm_apply() is called with state->enabled=3Dfalse a chan=
+ge in
+> + *   state->polarity isn't honored.
+> + * - Instead of sleeping to wait for a completed period, the interrupt
+> + *   functionality could be used.
+
+This is definitively not trivial to do right. The main reason it is not
+done so is that reading PWM_ISR will clear all the bits so it is
+necessary to be very careful to avoid race conditions. I'm not sure it
+is worth the effort.
+
+
+-- =
+
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
