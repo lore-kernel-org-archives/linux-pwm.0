@@ -1,15 +1,17 @@
-From: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>
+From: <Claudiu.Beznea@microchip.com>
 Subject: Re: [PATCH 4/3] pwm: atmel: document known weaknesses of both
  hardware and software
-Date: Mon, 19 Aug 2019 10:10:49 +0200
-Message-ID: <76d5c0b8-09d1-cf64-2d83-4982cd517f70@kleine-koenig.org>
+Date: Mon, 19 Aug 2019 09:26:04 +0000
+Message-ID: <0a389abe-15ef-0e63-109f-2db4cb36f4b9@microchip.com>
 References: <20190815214133.11134-1-uwe@kleine-koenig.org>
  <20190816093748.11769-1-uwe@kleine-koenig.org>
- <20190816204357.GG3545@piout.net>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4185649363601058837=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190816204357.GG3545@piout.net>
+In-Reply-To: <20190816093748.11769-1-uwe@kleine-koenig.org>
+Content-Language: en-US
+Content-ID: <ED9A3A50549A4D46B13CE83539DBA31A@namprd11.prod.outlook.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,120 +21,45 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: linux-pwm@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, Thierry Reding <thierry.reding@gmail.com>, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-arm-kernel@lists.infradead.org
+To: uwe@kleine-koenig.org, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============4185649363601058837==
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR"
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR
-Content-Type: multipart/mixed; boundary="3UC7z54i9bPgQE5FgMPA5CLo4ZpV8QPUw";
- protected-headers="v1"
-From: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>,
- Thierry Reding <thierry.reding@gmail.com>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Ludovic Desroches <ludovic.desroches@microchip.com>,
- linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
-Message-ID: <76d5c0b8-09d1-cf64-2d83-4982cd517f70@kleine-koenig.org>
-Subject: Re: [PATCH 4/3] pwm: atmel: document known weaknesses of both
- hardware and software
-References: <20190815214133.11134-1-uwe@kleine-koenig.org>
- <20190816093748.11769-1-uwe@kleine-koenig.org>
- <20190816204357.GG3545@piout.net>
-In-Reply-To: <20190816204357.GG3545@piout.net>
-
---3UC7z54i9bPgQE5FgMPA5CLo4ZpV8QPUw
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-
-Hello Alexandre,
-
-On 8/16/19 10:43 PM, Alexandre Belloni wrote:
-> On 16/08/2019 11:37:48+0200, Uwe Kleine-K=C3=B6nig wrote:
->> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
->> ---
->>  drivers/pwm/pwm-atmel.c | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
->>
->> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
->> index 42fe7bc043a8..1ddb93db9627 100644
->> --- a/drivers/pwm/pwm-atmel.c
->> +++ b/drivers/pwm/pwm-atmel.c
->> @@ -7,6 +7,16 @@
->>   *
->>   * Reference manual for "atmel,at91sam9rl-pwm":
->>   *   http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11032-32-b=
-it-ARM926EJ-S-Microcontroller-SAM9G25_Datasheet.pdf
->> + *
->> + * Limitations:
->> + * - Periods start with the inactive level.
->> + * - Hardware has to be stopped in general to update settings.
->> + *
->> + * Software bugs/possible improvements:
->> + * - When atmel_pwm_apply() is called with state->enabled=3Dfalse a c=
-hange in
->> + *   state->polarity isn't honored.
->> + * - Instead of sleeping to wait for a completed period, the interrup=
-t
->> + *   functionality could be used.
->=20
-> This is definitively not trivial to do right. The main reason it is not=
-
-> done so is that reading PWM_ISR will clear all the bits so it is
-> necessary to be very careful to avoid race conditions. I'm not sure it
-> is worth the effort.
-
-I didn't intend to claim it is easy or even that it should be
-implemented. This was just what I noticed while reading through driver
-and manual. I thought it was a good idea to document that in case
-someone finds time and motivation to work on this driver.
-
-The first issue pointed out should however be easy to fix and IMHO is a
-real bug. (Though it's a corner case that hardly ever triggers.)
-
-Best regards
-Uwe
-
-
---3UC7z54i9bPgQE5FgMPA5CLo4ZpV8QPUw--
-
---OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl1aWYkACgkQwfwUeK3K
-7AlurAf/a9MA8BEhjxTtNdjaiBDLgxuDM125yu6jAG+S73XOyxuuKe63dP/VmLq1
-GQZ0+IEz5kdH2/j2U8AK4cAFCSpIh+jzplPGXgeYvU0H2XMwqRH/Qz5r4ODB/p2u
-AvxnMFT76BoMoC55WaZWwgSYeurlND9MRTUrqmDQgY6MumNFjhw38lA8y82rIGoU
-+wZfQJkobSTvkb3UxwOuF5y2hcO2CSePEwIIWyqA9wXwYGFY25Mq19tC2ZlPbQ9q
-5w0QSGl3CsbATmlEF/DW0HrmtUOXQ5rxcAm5Sg1YOjgeeXB9zzo2Zr4z6Wy0R9OV
-vqL0Ang1RALihm9Mb+ImbI1DWQuxQg==
-=nAxw
------END PGP SIGNATURE-----
-
---OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR--
-
-
---===============4185649363601058837==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============4185649363601058837==--
+DQoNCk9uIDE2LjA4LjIwMTkgMTI6MzcsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBFeHRl
+cm5hbCBFLU1haWwNCj4gDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8
+dXdlQGtsZWluZS1rb2VuaWcub3JnPg0KPiAtLS0NCj4gIGRyaXZlcnMvcHdtL3B3bS1hdG1lbC5j
+IHwgMTAgKysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDEwIGluc2VydGlvbnMoKykNCj4g
+DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYyBiL2RyaXZlcnMvcHdtL3B3
+bS1hdG1lbC5jDQo+IGluZGV4IDQyZmU3YmMwNDNhOC4uMWRkYjkzZGI5NjI3IDEwMDY0NA0KPiAt
+LS0gYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYw0KPiArKysgYi9kcml2ZXJzL3B3bS9wd20tYXRt
+ZWwuYw0KPiBAQCAtNyw2ICs3LDE2IEBADQo+ICAgKg0KPiAgICogUmVmZXJlbmNlIG1hbnVhbCBm
+b3IgImF0bWVsLGF0OTFzYW05cmwtcHdtIjoNCj4gICAqICAgaHR0cDovL3d3MS5taWNyb2NoaXAu
+Y29tL2Rvd25sb2Fkcy9lbi9EZXZpY2VEb2MvQXRtZWwtMTEwMzItMzItYml0LUFSTTkyNkVKLVMt
+TWljcm9jb250cm9sbGVyLVNBTTlHMjVfRGF0YXNoZWV0LnBkZg0KPiArICoNCj4gKyAqIExpbWl0
+YXRpb25zOg0KPiArICogLSBQZXJpb2RzIHN0YXJ0IHdpdGggdGhlIGluYWN0aXZlIGxldmVsLg0K
+DQpBcmUgeW91IHRhbGtpbmcgaGVyZSBhYm91dCB0aGUgbm9ybWFsIHBvbGFyaXR5IChmcm9tIGRv
+Y3VtZW50YXRpb246IEJ5DQpkZWZpbml0aW9uLCBub3JtYWwgcG9sYXJpdHkgY2hhcmFjdGVyaXpl
+cyBhIHNpZ25hbCBzdGFydHMgaGlnaCBmb3IgdGhlDQpkdXJhdGlvbiBvZiB0aGUgZHV0eSBjeWNs
+ZSBhbmQgZ29lcyBsb3cgZm9yIHRoZSByZW1haW5kZXIgb2YgdGhlIHBlcmlvZC4pDQoNCklmIHll
+cywgdGhpcyBzaG91bGQgYmUgc29sdmVkIGJ5IHBsYXlpbmcgd2l0aCBDUE9MIGJpdCBvZiBDTVIu
+DQoNCj4gKyAqIC0gSGFyZHdhcmUgaGFzIHRvIGJlIHN0b3BwZWQgaW4gZ2VuZXJhbCB0byB1cGRh
+dGUgc2V0dGluZ3MuDQoNClNhbWE1ZDIgaGFzIGR1dHkgY3ljbGUgdGhhdCBjb3VsZCBiZSB1cGRh
+dGVkIG9uIHRoZSBmbHkuDQoNCj4gKyAqDQo+ICsgKiBTb2Z0d2FyZSBidWdzL3Bvc3NpYmxlIGlt
+cHJvdmVtZW50czoNCj4gKyAqIC0gV2hlbiBhdG1lbF9wd21fYXBwbHkoKSBpcyBjYWxsZWQgd2l0
+aCBzdGF0ZS0+ZW5hYmxlZD1mYWxzZSBhIGNoYW5nZSBpbg0KPiArICogICBzdGF0ZS0+cG9sYXJp
+dHkgaXNuJ3QgaG9ub3JlZC4NCg0KSSBrbm93IHRoYXQgd2hlbiBjb25maWd1cmluZyBhIFBXTSBv
+bmUgc2hvdWxkIGdldCB0aGUgY3VycmVudCBzdGF0ZSBvZiB0aGUNClBXTSwgY2hhbmdlIGl0LCB0
+aGVuIHBhc3MgaXQgdG8gdGhlIGRyaXZlciB2aWEgcHdtX2FwcGx5X3N0YXRlKCkuIEluIGNhc2UN
+Cm9uZSB3b3VsZCBjYWxsIHRoZSBwd21fYXBwbHlfc3RhdGUoKSB3aXRoIHN0YXRlLT5lbmFibGVk
+ID0gZmFsc2UgdGhlIHN0YXRlDQp3b3VsZCBiZSBzdG9yZWQgaW4gUFdNIHNwZWNpZmljIG9iamVj
+dCAob2YgdHlwZSBzdHJ1Y3QgcHdtX2RldmljZSkuIE9uIHRoZQ0KbmV4dCBhcHBseSwgd2l0aCBl
+bmFibGVkID0gdHJ1ZSwgYWxsIHRoZSBQV00gcGFyYW1ldGVycyB3b3VsZCBiZSBhY3R1YWxseQ0K
+YXBwbGllZCB0byBoYXJkd2FyZS4gU28sIHVudGlsIGVuYWJsZT10cnVlIHRoZSBQV00gc3RhdGUg
+d291bGQgb25seSBiZQ0KY2FjaGVkIGJ5IFBXTSBjb3JlIHNwZWNpZmljIG9iamVjdHMgKGluIHB3
+bV9hcHBseV9zdGF0ZSgpKS4NCg0KPiArICogLSBJbnN0ZWFkIG9mIHNsZWVwaW5nIHRvIHdhaXQg
+Zm9yIGEgY29tcGxldGVkIHBlcmlvZCwgdGhlIGludGVycnVwdA0KPiArICogICBmdW5jdGlvbmFs
+aXR5IGNvdWxkIGJlIHVzZWQuDQo+ICAgKi8NCj4gIA0KPiAgI2luY2x1ZGUgPGxpbnV4L2Nsay5o
+Pg0KPiANCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxp
+bnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
+ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
+LWFybS1rZXJuZWwK
