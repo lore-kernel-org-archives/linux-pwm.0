@@ -1,78 +1,157 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
  sysfs
-Date: Mon, 19 Aug 2019 11:02:41 +0100
-Message-ID: <20190819100241.5pctjxmsq6crlale@holly.lan>
+Date: Mon, 19 Aug 2019 12:21:27 +0200
+Message-ID: <20190819102127.wqudnbngottjakf5@pengutronix.de>
 References: <20190709190007.91260-1-mka@chromium.org>
  <20190709190007.91260-3-mka@chromium.org>
- <20190807201528.GO250418@google.com>
- <510f6d8a-71a0-fa6e-33ea-c4a4bfa96607@linaro.org>
- <20190816175317.GU250418@google.com>
+ <20190816165148.7keg45fmlndr22fl@pengutronix.de>
+ <20190816175157.GT250418@google.com>
+ <20190816194754.ldzjqy2yjonfvaat@pengutronix.de>
+ <20190816211051.GV250418@google.com>
+ <20190819054628.asw3cxp46w3rpml7@pengutronix.de>
+ <20190819095037.h3gig3quyhnzshm7@holly.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20190816175317.GU250418@google.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
+In-Reply-To: <20190819095037.h3gig3quyhnzshm7@holly.lan>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, kernel@pengutronix.de, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Aug 16, 2019 at 10:53:17AM -0700, Matthias Kaehlcke wrote:
-> On Fri, Aug 16, 2019 at 04:54:18PM +0100, Daniel Thompson wrote:
-> > On 07/08/2019 21:15, Matthias Kaehlcke wrote:
-> > > On Tue, Jul 09, 2019 at 12:00:05PM -0700, Matthias Kaehlcke wrote:
-> > > > Backlight brightness curves can have different shapes. The two main
-> > > > types are linear and non-linear curves. The human eye doesn't
-> > > > perceive linearly increasing/decreasing brightness as linear (see
-> > > > also 88ba95bedb79 "backlight: pwm_bl: Compute brightness of LED
-> > > > linearly to human eye"), hence many backlights use non-linear (often
-> > > > logarithmic) brightness curves. The type of curve currently is opaque
-> > > > to userspace, so userspace often uses more or less reliable heuristics
-> > > > (like the number of brightness levels) to decide whether to treat a
-> > > > backlight device as linear or non-linear.
-> > > > 
-> > > > Export the type of the brightness curve via the new sysfs attribute
-> > > > 'scale'. The value of the attribute can be 'linear', 'non-linear' or
-> > > > 'unknown'. For devices that don't provide information about the scale
-> > > > of their brightness curve the value of the 'scale' attribute is 'unknown'.
-> > > > 
-> > > > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> > > 
-> > > Daniel (et al): do you have any more comments on this patch/series or
-> > > is it ready to land?
-> > 
-> > I decided to leave it for a long while for others to review since I'm still
-> > a tiny bit uneasy about the linear/non-linear terminology.
-> > 
-> > However that's my only concern, its fairly minor and I've dragged by feet
-> > for more then long enough, so:
-> > Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-> 
-> Thanks!
-> 
-> If you or someone else has another suggestion for the terminology that
-> we can all agree on I'm happy to change it.
-
-As you will see in my reply to Uwe. The term I tend to adopt when I want
-to be precise about userspace behaviour is "perceptual" (e.g. that a
-backlight can be mapped directly to a slider and it will feel right).
-
-However that raises its own concerns: mostly about what is perceptual
-enough.
-
-Clear the automatic brightness curve support in the PWM driver is
-perceptual.
-
-To be honest I suspect that in most cases a true logarithmic curve (given a
-sane exponent) would be perceptual enough. In other words it will feel
-comfortable with a direct mapped slider and using it for animation
-won't be too bad.
-
-However when we get right down to it *that* is the information that is
-actually most useful to userspace: explicit confirmation that the scale
-can be mapped directly to a slider. I think it also aligned better with
-Uwe's feedback (e.g. to start working towards having a preferred scale).
-
-
-Daniel.
+SGVsbG8gRGFuaWVsLAoKT24gTW9uLCBBdWcgMTksIDIwMTkgYXQgMTA6NTA6MzdBTSArMDEwMCwg
+RGFuaWVsIFRob21wc29uIHdyb3RlOgo+IE9uIE1vbiwgQXVnIDE5LCAyMDE5IGF0IDA3OjQ2OjI4
+QU0gKzAyMDAsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOgo+ID4gSGVsbG8gTWF0dGhpYXMsCj4g
+PiAKPiA+IE9uIEZyaSwgQXVnIDE2LCAyMDE5IGF0IDAyOjEwOjUxUE0gLTA3MDAsIE1hdHRoaWFz
+IEthZWhsY2tlIHdyb3RlOgo+ID4gPiBPbiBGcmksIEF1ZyAxNiwgMjAxOSBhdCAwOTo0Nzo1NFBN
+ICswMjAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiA+ID4gPiBPbiBGcmksIEF1ZyAxNiwg
+MjAxOSBhdCAxMDo1MTo1N0FNIC0wNzAwLCBNYXR0aGlhcyBLYWVobGNrZSB3cm90ZToKPiA+ID4g
+PiA+IEhpIFV3ZSwKPiA+ID4gPiA+IAo+ID4gPiA+ID4gT24gRnJpLCBBdWcgMTYsIDIwMTkgYXQg
+MDY6NTE6NDhQTSArMDIwMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gPiA+ID4gPiA+IE9u
+IFR1ZSwgSnVsIDA5LCAyMDE5IGF0IDEyOjAwOjA1UE0gLTA3MDAsIE1hdHRoaWFzIEthZWhsY2tl
+IHdyb3RlOgo+ID4gPiA+ID4gPiA+IEJhY2tsaWdodCBicmlnaHRuZXNzIGN1cnZlcyBjYW4gaGF2
+ZSBkaWZmZXJlbnQgc2hhcGVzLiBUaGUgdHdvIG1haW4KPiA+ID4gPiA+ID4gPiB0eXBlcyBhcmUg
+bGluZWFyIGFuZCBub24tbGluZWFyIGN1cnZlcy4gVGhlIGh1bWFuIGV5ZSBkb2Vzbid0Cj4gPiA+
+ID4gPiA+ID4gcGVyY2VpdmUgbGluZWFybHkgaW5jcmVhc2luZy9kZWNyZWFzaW5nIGJyaWdodG5l
+c3MgYXMgbGluZWFyIChzZWUKPiA+ID4gPiA+ID4gPiBhbHNvIDg4YmE5NWJlZGI3OSAiYmFja2xp
+Z2h0OiBwd21fYmw6IENvbXB1dGUgYnJpZ2h0bmVzcyBvZiBMRUQKPiA+ID4gPiA+ID4gPiBsaW5l
+YXJseSB0byBodW1hbiBleWUiKSwgaGVuY2UgbWFueSBiYWNrbGlnaHRzIHVzZSBub24tbGluZWFy
+IChvZnRlbgo+ID4gPiA+ID4gPiA+IGxvZ2FyaXRobWljKSBicmlnaHRuZXNzIGN1cnZlcy4gVGhl
+IHR5cGUgb2YgY3VydmUgY3VycmVudGx5IGlzIG9wYXF1ZQo+ID4gPiA+ID4gPiA+IHRvIHVzZXJz
+cGFjZSwgc28gdXNlcnNwYWNlIG9mdGVuIHVzZXMgbW9yZSBvciBsZXNzIHJlbGlhYmxlIGhldXJp
+c3RpY3MKPiA+ID4gPiA+ID4gPiAobGlrZSB0aGUgbnVtYmVyIG9mIGJyaWdodG5lc3MgbGV2ZWxz
+KSB0byBkZWNpZGUgd2hldGhlciB0byB0cmVhdCBhCj4gPiA+ID4gPiA+ID4gYmFja2xpZ2h0IGRl
+dmljZSBhcyBsaW5lYXIgb3Igbm9uLWxpbmVhci4KPiA+ID4gPiA+ID4gPiAKPiA+ID4gPiA+ID4g
+PiBFeHBvcnQgdGhlIHR5cGUgb2YgdGhlIGJyaWdodG5lc3MgY3VydmUgdmlhIHRoZSBuZXcgc3lz
+ZnMgYXR0cmlidXRlCj4gPiA+ID4gPiA+ID4gJ3NjYWxlJy4gVGhlIHZhbHVlIG9mIHRoZSBhdHRy
+aWJ1dGUgY2FuIGJlICdsaW5lYXInLCAnbm9uLWxpbmVhcicgb3IKPiA+ID4gPiA+ID4gPiAndW5r
+bm93bicuIEZvciBkZXZpY2VzIHRoYXQgZG9uJ3QgcHJvdmlkZSBpbmZvcm1hdGlvbiBhYm91dCB0
+aGUgc2NhbGUKPiA+ID4gPiA+ID4gPiBvZiB0aGVpciBicmlnaHRuZXNzIGN1cnZlIHRoZSB2YWx1
+ZSBvZiB0aGUgJ3NjYWxlJyBhdHRyaWJ1dGUgaXMgJ3Vua25vd24nLgo+ID4gPiA+ID4gPiA+IAo+
+ID4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IE1hdHRoaWFzIEthZWhsY2tlIDxta2FAY2hyb21p
+dW0ub3JnPgo+ID4gPiA+ID4gPiAKPiA+ID4gPiA+ID4gSSB3b25kZXIgd2hhdCBraW5kIG9mIHBy
+b2JsZW0geW91IGFyZSBzb2x2aW5nIGhlcmUuIENhbiB5b3UgZGVzY3JpYmUKPiA+ID4gPiA+ID4g
+dGhhdCBpbiBhIGZldyB3b3Jkcz8KPiA+ID4gPiA+IAo+ID4gPiA+ID4gVGhlIGh1bWFuIGV5ZSBw
+ZXJjZWl2ZXMgYnJpZ2h0bmVzcyBpbiBhIGxvZ2FyaXRobWljIG1hbm5lci4gRm9yCj4gPiA+ID4g
+PiBiYWNrbGlnaHRzIHdpdGggYSBsaW5lYXIgYnJpZ2h0bmVzcyBjdXJ2ZSBicmlnaHRuZXNzIGNv
+bnRyb2xzIGxpa2UKPiA+ID4gPiA+IHNsaWRlcnMgbmVlZCB0byB1c2UgYSBtYXBwaW5nIHRvIGFj
+aGlldmUgYSBiZWhhdmlvciB0aGF0IGlzIHBlcmNlaXZlZAo+ID4gPiA+ID4gYXMgbGluZWFyLWlz
+aCAobW9yZSBkZXRhaWxzOiBodHRwOi8vd3d3LnBhdGh3YXlsaWdodGluZy5jb20vcHJvZHVjdHMv
+ZG93bmxvYWRzL2Jyb2NodXJlL3RlY2huaWNhbF9tYXRlcmlhbHNfMTQ2Njc5NzA0NF9MaW5lYXIr
+dnMrTG9nYXJpdGhtaWMrRGltbWluZytXaGl0ZStQYXBlci5wZGYpCj4gPiA+ID4gPiAKPiA+ID4g
+PiA+IEFzIG9mIG5vdyB1c2Vyc3BhY2UgZG9lc24ndCBoYXZlIGluZm9ybWF0aW9uIGFib3V0IHRo
+ZSB0eXBlIG9mIHRoZQo+ID4gPiA+ID4gYnJpZ2h0bmVzcyBjdXJ2ZSwgYW5kIG9mdGVuIHVzZXMg
+aGV1cmlzdGljcyB0byBtYWtlIGEgZ3Vlc3MsIHdoaWNoIG1heQo+ID4gPiA+ID4gYmUgcmlnaHQg
+bW9zdCBvZiB0aGUgdGltZSwgYnV0IG5vdCBhbHdheXMuIFRoZSBuZXcgYXR0cmlidXRlIGVsaW1p
+bmF0ZXMKPiA+ID4gPiA+IHRoZSBuZWVkIHRvIGd1ZXNzLgo+ID4gPiA+IAo+ID4gPiA+IFRoaXMg
+aXMgYWJvdXQgYmFja2xpZ2h0cyByaWdodD8gU28gdGhlIGtlcm5lbCBwcm92aWRlcyB0byB1c2Vy
+c3BhY2UgYW4KPiA+ID4gPiBpbnRlcnZhbCBbMCwgeF0gZm9yIHNvbWUgeCBhbmQgZGVwZW5kaW5n
+IG9uIHRoZSBwaHlzaWNzIG9mIHRoZSB0aGUKPiA+ID4gPiBiYWNrbGlnaHQgY29uZmlndXJpbmcg
+eC8yIChwcm9iYWJseT8pIGVpdGhlciBtZWFucyA1MCUgbWVhc3VyZWQgbGlnaHQgb3IKPiA+ID4g
+PiA1MCUgcGVyY2VpdmVkIGxpZ2h0LCByaWdodD8KPiA+ID4gCj4gPiA+IGNvcnJlY3QKPiA+ID4g
+Cj4gPiA+ID4gSSB3b25kZXIgaWYgaXQgd291bGQgYmUgcG9zc2libGUgaW5zdGVhZCBvZiBnaXZp
+bmcgZGlmZmVyZW50IGJhY2tsaWdodAo+ID4gPiA+IGltcGxlbWVudGF0aW9ucyB0aGUgZnJlZWRv
+bSB0byB1c2UgZWl0aGVyIGxpbmVhciBvciBsb2dhcml0aG1pYyAob3IKPiA+ID4gPiBxdWFkcmF0
+aWM/KSBzY2FsaW5nIGFuZCB0ZWxsIHVzZXJzcGFjZSB3aGljaCBvZiB0aGUgb3B0aW9ucyB3ZXJl
+IHBpY2tlZAo+ID4gPiA+IHJlcXVpcmUgdGhlIGRyaXZlcnMgdG8gcHJvdmlkZSBhIChzYXkpIGxp
+bmVhciBzY2FsaW5nIGFuZCB0aGVuIHVzZXJzcGFjZQo+ID4gPiA+IHdvdWxkbid0IG5lZWQgdG8g
+Y2FyZSBhYm91dCB0aGUgZXhhY3QgcGh5c2ljcy4KPiA+ID4gCj4gPiA+IEluIGFuIGlkZWFsIHdv
+cmxkIHRoZSBiYWNrbGlnaHQgaW50ZXJmYWNlIHdvdWxkIGJlIGNvbnNpc3RlbnQgYXMgeW91Cj4g
+PiA+IHN1Z2dlc3QsIGhvd2V2ZXIgdGhlcmUgYXJlIHBsZW50eSBvZiBleGlzdGluZyBkZXZpY2Vz
+IHdoaWNoIHVzZSB0aGUKPiA+ID4gJ290aGVyJyBzY2FsaW5nIChyZWdhcmRsZXNzIG9mIHdoaWNo
+IGlzIGNob3NlbiBhcyB0aGUgJ2NvcnJlY3QnCj4gPiA+IG9uZSkuIFVzZXJzcGFjZSBzdGlsbCBo
+YXMgdG8gZGVhbCB3aXRoIHRoZXNlLiBBbmQgY2hhbmdpbmcgcHJldmlvdXNseQo+ID4gPiAnbG9n
+YXJpdGhtaWMnIGRyaXZlcnMgdG8gbGluZWFyIChvciB2aWNldmVyc2EpIG1heSAnYnJlYWsnIHVz
+ZXJzcGFjZSwKPiA+ID4gd2hlbiBpdCBrZWVwcyB1c2luZyBpdHMgJ29sZCcgc2NhbGluZywgd2hp
+Y2ggbm93IGlzbid0IGNvcnJlY3QgYW55bW9yZS4KPiA+IAo+ID4gSXQgbWlnaHQgYmUgc3ViamVj
+dGl2ZSwgb3IgbWF5YmUgSSdtIGp1c3QgdG9vIG9wdGltaXN0aWMsIGJ1dCBJIHRoaW5rIGlmCj4g
+PiB0aGVyZSB3YXMgbm8gcG9saWN5IGJlZm9yZSBhYm91dCB0aGUgbWVhbmluZyBvZgo+ID4gCj4g
+PiAJZWNobyAxNyA+IGJyaWdodG5lc3MKPiA+IAo+ID4gb3RoZXIgdGhhbiAiYnJpZ2h0ZXIgdGhh
+biBsb3dlciB2YWx1ZXMgYW5kIGRhcmtlciB0aGFuIGhpZ2hlciBvbmVzIgo+ID4gaW50cm9kdWNp
+bmcgKHNheSkgdGhlIHNjYWxlIGlzIGludGVuZGVkIHRvIHJlcHJlc2VudCBhIGxpbmVhciBicmln
+aHRuZXNzCj4gPiBjdXJ2ZSBpcyBvay4KPiA+IAo+ID4gVW5sZXNzIHVzZXJzcGFjZSBqdW1wcyB0
+aHJvdWdoIGhvb3BzIGFuZCB0cmllcyB0byBpZGVudGlmeSB0aGUgYWN0dWFsCj4gPiBkZXZpY2Ug
+aXQgaXMgcnVubmluZyBvbiBpdCBpcyB3cm9uZyBvbiBzb21lIG1hY2hpbmVzIGFueWhvdyBhbmQg
+d2UncmUKPiA+IG9ubHkgc2hpZnRpbmcgdGhlIHNldCBvZiBhZmZlY3RlZCBtYWNoaW5lcyB3aXRo
+IGEgdGlnaHRlciBwb2xpY3kgKHVudGlsCj4gPiB0aGF0IHVzZXJzcGFjZSBhcHBsaWNhdGlvbiBp
+cyBmaXhlZCkuCj4gCj4gSSBiZWxpZXZlIHRoYXQgdGhlcmUgYXJlIHR3byBjb21tb24gYXBwcm9h
+Y2hlcyBieSB1c2Vyc3BhY2UgYXQgcHJlc2VudDoKPiAKPiAxLiBBc3N1bWUgdGhlIHNjYWxlIGlz
+IHBlcmNlcHR1YWwgYW5kIHdlIGNhbiBkaXJlY3RseSBtYXAgYSBzbGlkZXIKPiAgICB0byB0aGUg
+YmFja2xpZ2h0IHZhbHVlLiBUaGlzIGlzIGNvbW1vbiBzaW1wbHkgYmVjYXVzZSBtb3N0IEFDUEkK
+PiAgICBiYWNrbGlnaHRzIGFyZSBwZXJjZXB0dWFsIGFuZCB0aGVyZWZvcmUgd2hlbiB0ZXN0ZWQg
+aW4gYSBsYXB0b3AKPiAgICBpdCB3b3JrcyBPSy4KPiAKPiAyLiBBc3N1bWUgdGhhdCBpcyBtYXgg
+YnJpZ2h0bmVzcyBpcyBzbWFsbCAoZS5nLiBBQ1BJKSB0aGVuIHRoZQo+ICAgIHNjYWxlIGlzIHBl
+cmNlcHR1YWwgYW5kIGlmIHRoZSBtYXggYnJpZ2h0bmVzcyBpcyBsYXJnZSAoZS5nLgo+ICAgIGEg
+UFdNKSB0aGVuIHRoZSBzY2FsZSBpcyBsaW5lYXIgYW5kIGFwcGx5IGEgY29ycmVjdGlvbgo+ICAg
+IGZ1bmN0aW9uIGJldHdlZW4gdGhlIHNsaWRlciBhbmQgdGhlIGNvbnRyb2wuCj4gCj4gVGhhdCBo
+aXN0b3JpYyBiYWdnYWdlIG1ha2VzIGlzIGRpZmZjdWx0IHRvICJqdXN0IGRlZmluZSBhIHN0YW5k
+YXJkaXplZAo+IHNjYWxlIi4uLiBlc3BlY2lhbGx5IGdpdmVuIHRoYXQgaWYgd2Ugc2VsZWN0ZWQg
+YSBzdGFuZGFyZGl6ZWQgc2NhbGUgd2UKPiB3b3VsZCBwcm9iYWJseSB3YW50IGEgcGVyY2VwdHVh
+bCBzY2FsZSB3aXRoIGxvdHMgb2Ygc3RlcHMgKGUuZy4gYnJlYWsKPiB0aGUgaGV1cmlzdGljKS4K
+CldpdGggInBlcmNlcHR1YWwiIHlvdSBtZWFuIHRoYXQgbG9nYXJpdGhtaWMgc3R1ZmYsIHJpZ2h0
+PwoKSSB3b3VsZCB0ZW5kIHRvIGdvIGZvciBsaW5lYXIgYmVjYXVzZSB0aGlzIGlzIGVhc2lseSBt
+ZWFzdXJlYWJsZSBhbmQKYWxzbyBpcyBzdHJhaWdodCBmb3J3YXJkIHRvIGltcGxlbWVudCBpbiB0
+aGUgdXN1YWwgY2FzZXMgKGF0dGVudGlvbjogSQphc3N1bWUgdGhhdCAidXN1YWwiIG1lYW5zIHNv
+bWV0aGluZyBsaWtlIFBXTSBhbmQgSSBkb24ndCBrbm93IG11Y2ggYWJvdXQKdGhlIHBoeXNpY3Mg
+b2YgYmFja2xpZ2h0cyBidXQganVzdCBhc3N1bWUgdGhhdCBhIFBXTSB3aWxsIGNyZWF0ZSBhCmxp
+bmVhciBtYXBwaW5nKS4KCj4gPiBBbmQgdGhlIGJpZyB1cHNpZGUgaXMgdGhhdCBpbiB0aGUgZW5k
+IChpLmUuIHdoZW4gYWxsIGtlcm5lbCBkcml2ZXJzIGFuZAo+ID4gdXNlcnNwYWNlIGFwcGxpY2F0
+aW9ucyBhcmUgYWRhcHRlZCB0byBwcm92aWRlL2NvbnN1bWUgdGhlICJjb3JyZWN0Igo+ID4gY3Vy
+dmUpIHRoZSByZXN1bHQgaXMgc2ltcGxlci4KPiAKPiBNeSB2aWV3IGlzIHRoYXQgdGhpcyBjb252
+ZXJnZW5jZSB3aWxsIGV2ZW50dWFsbHkgYmUgYWNoaWV2ZWQgYnV0IGl0IHdpbGwKPiBoYXBwZW4g
+dGhyb3VnaCB0aGUgb2Jzb2xlc2NlbmNlIG9mIHRoZSBiYWNrbGlnaHQgc3lzZnMgaW50ZXJmYWNl
+LiBUaGUKPiBzeXNmcyBpbnRlcmZhY2UgaGFzIG90aGVyIGZsYXdzLCBpbiBwYXJ0aWN1bGFyIG5v
+IGludGVncmF0aW9uIHdpdGggdGhlCj4gRFJNIGNvbm5lY3RvciBBUEkuCj4gCj4gVGh1cyBJIHdv
+dWxkIGV4cGVjdCBhbiBhbHRlcm5hdGl2ZSBpbnRlcmZhY2UgdG8gZW1lcmdlLCBtb3N0IGxpa2Vs
+eSBhcwo+IHBhcnQgb2YgdGhlIERSTSBjb25uZWN0b3IgQVBJLiBJJ2QgZXhwZWN0IHN1Y2ggYSBu
+ZXcgQVBJIHRvIGEKPiBwZXJjZXB0dWFsIHNjYWxlIGFuZCB0byBoYXZlIGEgZml4ZWQgbWF4IGJy
+aWdodG5lc3Mgd2l0aCBlbm91Z2gKPiBzdGVwcyB0byBzdXBwb3J0IGFuaW1hdGVkIGJhY2tsaWdo
+dCBlZmZlY3RzIChJSVJDIDAuLjEwMCBoYXMgYmVlbgo+IHByb3Bvc2VkIGluIHRoZSBwYXN0KSAK
+ClRoZW4gd29yayBvbiB0aGUgbmV3IHN0dWZmIGluc3RlYWQgb2YgbWFraW5nIHRoZSBvbGQgc3R1
+ZmYgKHRoYXQgaXMKaW50ZW5kZWQgdG8gZGllKSBoYXJkZXIgdG8gdXNlIGNvcnJlY3RseT8KCj4g
+SW4gdGhlIG1lYW4gdGltZSBnZXR0aW5nIHRoZSBleGlzdGluZyBjb2xsZWN0aW9uIG9mIGJhY2ts
+aWdodCBkcml2ZXJzCj4gbWFya2VkIHVwIGFzIGxpbmVhci9sb2dhcml0aG1pYy9ldGMgd2lsbCBl
+YXNlIHRoZSBpbnRyb2R1Y3Rpb24gb2YgdGhhdAo+IEFQSSBiZWNhdXNlLCB3aXRoaW4gdGhlIGtl
+cm5lbCwgd2UgbWlnaHQgaGF2ZSBnYXRoZXJlZCBlbm91Z2gga25vd2xlZGdlCj4gdG8gaGF2ZSBz
+b21lIGhvcGUgb2YgY29ycmVjdGx5IG1hcHBpbmcgZWFjaCBiYWNrbGlnaHQgb250byBhCj4gc3Rh
+bmRhcmRpemVkIHNjYWxlLgoKSXQgd291bGQgYmUgZW5vdWdoIHRvIGRvIHRoaXMgaW4gYSBjb2Rl
+IGNvbW1lbnQgdGhlbi4gVGhhdCB3b3VsZCBjb21lCndpdGhvdXQgdGhlIG5lZWQgdG8gYWRhcHQg
+dGhlIG9sZCB1c2Vyc3BhY2UgQVBJLiBBbHNvIHdoZW4gdGhlIG9sZApzb2x1dGlvbiB3b3JrcyBh
+dCA5NSUgaW5zdGVhZCBvZiA5MCUgYmVmb3JlLCBpdCB3aWxsIHJlc2lzdCBoYXJkZXIgdG8KZHlp
+bmcuCgpCZXN0IHJlZ2FyZHMKVXdlCgotLSAKUGVuZ3V0cm9uaXggZS5LLiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHwgVXdlIEtsZWluZS1Lw7ZuaWcgICAgICAgICAgICB8CkluZHVzdHJpYWwg
+TGludXggU29sdXRpb25zICAgICAgICAgICAgICAgICB8IGh0dHA6Ly93d3cucGVuZ3V0cm9uaXgu
+ZGUvICB8Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
+aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
+czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
