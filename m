@@ -1,56 +1,51 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-eopbgr1410097.outbound.protection.outlook.com ([40.107.141.97]:38533
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725946AbfHSGQe (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 19 Aug 2019 02:16:34 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:50319 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726584AbfHSGVr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 19 Aug 2019 02:21:47 -0400
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Date: Mon, 19 Aug 2019 06:16:29 +0000
-Message-ID: <TYAPR01MB45440E2AE2618955F27E9632D8A80@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <1565246333-2185-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <b528827c-1744-901e-b795-ddd1aaf828d3@cogentembedded.com>
- <20190809091047.2hrlt245ssjoztfn@pengutronix.de>
-In-Reply-To: <20190809091047.2hrlt245ssjoztfn@pengutronix.de>
-Content-Language: ja-JP
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Mon, 19 Aug 2019 15:20:12 +0900
+Message-Id: <1566195612-11614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: RE: [PATCH v2] pwm: rcar: remove a redundant condition in
- rcar_pwm_apply()
-To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Subject: [PATCH v3] pwm: rcar: remove a redundant condition in rcar_pwm_apply()
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Hello!
+Since the rcar_pwm_apply() has already checked whether state->enabled
+is set or not, this patch removes a redundant condition.
 
-Thank you for your review! And, I'm sorry for the delayed response because =
-I had a vacation.
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Changes from v2:
+ - Revise some typos in the commit log.
+https://patchwork.kernel.org/patch/11083353/
 
-> From: Uwe Kleine-Konig, Sent: Friday, August 9, 2019 6:11 PM
->=20
-> On Thu, Aug 08, 2019 at 12:55:40PM +0300, Sergei Shtylyov wrote:
-> > Hello!
-> >
-> > On 08.08.2019 9:38, Yoshihiro Shimoda wrote:
-> >
-> > > Since the rcar_pwm_apply() has already check whehter state->enabled
-> >
-> >    Checked?
->=20
-> and "whether"
+Changes from v1:
+ - Spin-off this independent patch (5/7).
+ - Add Geert and Uwe's Reviewed-by.
+https://patchwork.kernel.org/patch/11034743/
 
-I'll revise it.
+ drivers/pwm/pwm-rcar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-Yoshihiro Shimoda
-
-> Best regards
-> Uwe
->=20
->=20
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
-  |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  =
-|
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 5b2b8ec..c8cd43f 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -187,7 +187,7 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	/* The SYNC should be set to 0 even if rcar_pwm_set_counter failed */
+ 	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
+ 
+-	if (!ret && state->enabled)
++	if (!ret)
+ 		ret = rcar_pwm_enable(rp);
+ 
+ 	return ret;
+-- 
+2.7.4
