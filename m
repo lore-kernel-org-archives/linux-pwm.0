@@ -1,107 +1,138 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
- sysfs
-Date: Mon, 19 Aug 2019 07:46:28 +0200
-Message-ID: <20190819054628.asw3cxp46w3rpml7@pengutronix.de>
-References: <20190709190007.91260-1-mka@chromium.org>
- <20190709190007.91260-3-mka@chromium.org>
- <20190816165148.7keg45fmlndr22fl@pengutronix.de>
- <20190816175157.GT250418@google.com>
- <20190816194754.ldzjqy2yjonfvaat@pengutronix.de>
- <20190816211051.GV250418@google.com>
+From: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>
+Subject: Re: [PATCH 4/3] pwm: atmel: document known weaknesses of both
+ hardware and software
+Date: Mon, 19 Aug 2019 10:10:49 +0200
+Message-ID: <76d5c0b8-09d1-cf64-2d83-4982cd517f70@kleine-koenig.org>
+References: <20190815214133.11134-1-uwe@kleine-koenig.org>
+ <20190816093748.11769-1-uwe@kleine-koenig.org>
+ <20190816204357.GG3545@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190816211051.GV250418@google.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Douglas Anderson <dianders@chromium.org>, kernel@pengutronix.de, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: multipart/mixed; boundary="===============4185649363601058837=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190816204357.GG3545@piout.net>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: linux-pwm@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, Thierry Reding <thierry.reding@gmail.com>, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGVsbG8gTWF0dGhpYXMsCgpPbiBGcmksIEF1ZyAxNiwgMjAxOSBhdCAwMjoxMDo1MVBNIC0wNzAw
-LCBNYXR0aGlhcyBLYWVobGNrZSB3cm90ZToKPiBPbiBGcmksIEF1ZyAxNiwgMjAxOSBhdCAwOTo0
-Nzo1NFBNICswMjAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiA+IE9uIEZyaSwgQXVnIDE2
-LCAyMDE5IGF0IDEwOjUxOjU3QU0gLTA3MDAsIE1hdHRoaWFzIEthZWhsY2tlIHdyb3RlOgo+ID4g
-PiBIaSBVd2UsCj4gPiA+IAo+ID4gPiBPbiBGcmksIEF1ZyAxNiwgMjAxOSBhdCAwNjo1MTo0OFBN
-ICswMjAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiA+ID4gPiBPbiBUdWUsIEp1bCAwOSwg
-MjAxOSBhdCAxMjowMDowNVBNIC0wNzAwLCBNYXR0aGlhcyBLYWVobGNrZSB3cm90ZToKPiA+ID4g
-PiA+IEJhY2tsaWdodCBicmlnaHRuZXNzIGN1cnZlcyBjYW4gaGF2ZSBkaWZmZXJlbnQgc2hhcGVz
-LiBUaGUgdHdvIG1haW4KPiA+ID4gPiA+IHR5cGVzIGFyZSBsaW5lYXIgYW5kIG5vbi1saW5lYXIg
-Y3VydmVzLiBUaGUgaHVtYW4gZXllIGRvZXNuJ3QKPiA+ID4gPiA+IHBlcmNlaXZlIGxpbmVhcmx5
-IGluY3JlYXNpbmcvZGVjcmVhc2luZyBicmlnaHRuZXNzIGFzIGxpbmVhciAoc2VlCj4gPiA+ID4g
-PiBhbHNvIDg4YmE5NWJlZGI3OSAiYmFja2xpZ2h0OiBwd21fYmw6IENvbXB1dGUgYnJpZ2h0bmVz
-cyBvZiBMRUQKPiA+ID4gPiA+IGxpbmVhcmx5IHRvIGh1bWFuIGV5ZSIpLCBoZW5jZSBtYW55IGJh
-Y2tsaWdodHMgdXNlIG5vbi1saW5lYXIgKG9mdGVuCj4gPiA+ID4gPiBsb2dhcml0aG1pYykgYnJp
-Z2h0bmVzcyBjdXJ2ZXMuIFRoZSB0eXBlIG9mIGN1cnZlIGN1cnJlbnRseSBpcyBvcGFxdWUKPiA+
-ID4gPiA+IHRvIHVzZXJzcGFjZSwgc28gdXNlcnNwYWNlIG9mdGVuIHVzZXMgbW9yZSBvciBsZXNz
-IHJlbGlhYmxlIGhldXJpc3RpY3MKPiA+ID4gPiA+IChsaWtlIHRoZSBudW1iZXIgb2YgYnJpZ2h0
-bmVzcyBsZXZlbHMpIHRvIGRlY2lkZSB3aGV0aGVyIHRvIHRyZWF0IGEKPiA+ID4gPiA+IGJhY2ts
-aWdodCBkZXZpY2UgYXMgbGluZWFyIG9yIG5vbi1saW5lYXIuCj4gPiA+ID4gPiAKPiA+ID4gPiA+
-IEV4cG9ydCB0aGUgdHlwZSBvZiB0aGUgYnJpZ2h0bmVzcyBjdXJ2ZSB2aWEgdGhlIG5ldyBzeXNm
-cyBhdHRyaWJ1dGUKPiA+ID4gPiA+ICdzY2FsZScuIFRoZSB2YWx1ZSBvZiB0aGUgYXR0cmlidXRl
-IGNhbiBiZSAnbGluZWFyJywgJ25vbi1saW5lYXInIG9yCj4gPiA+ID4gPiAndW5rbm93bicuIEZv
-ciBkZXZpY2VzIHRoYXQgZG9uJ3QgcHJvdmlkZSBpbmZvcm1hdGlvbiBhYm91dCB0aGUgc2NhbGUK
-PiA+ID4gPiA+IG9mIHRoZWlyIGJyaWdodG5lc3MgY3VydmUgdGhlIHZhbHVlIG9mIHRoZSAnc2Nh
-bGUnIGF0dHJpYnV0ZSBpcyAndW5rbm93bicuCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFNpZ25lZC1v
-ZmYtYnk6IE1hdHRoaWFzIEthZWhsY2tlIDxta2FAY2hyb21pdW0ub3JnPgo+ID4gPiA+IAo+ID4g
-PiA+IEkgd29uZGVyIHdoYXQga2luZCBvZiBwcm9ibGVtIHlvdSBhcmUgc29sdmluZyBoZXJlLiBD
-YW4geW91IGRlc2NyaWJlCj4gPiA+ID4gdGhhdCBpbiBhIGZldyB3b3Jkcz8KPiA+ID4gCj4gPiA+
-IFRoZSBodW1hbiBleWUgcGVyY2VpdmVzIGJyaWdodG5lc3MgaW4gYSBsb2dhcml0aG1pYyBtYW5u
-ZXIuIEZvcgo+ID4gPiBiYWNrbGlnaHRzIHdpdGggYSBsaW5lYXIgYnJpZ2h0bmVzcyBjdXJ2ZSBi
-cmlnaHRuZXNzIGNvbnRyb2xzIGxpa2UKPiA+ID4gc2xpZGVycyBuZWVkIHRvIHVzZSBhIG1hcHBp
-bmcgdG8gYWNoaWV2ZSBhIGJlaGF2aW9yIHRoYXQgaXMgcGVyY2VpdmVkCj4gPiA+IGFzIGxpbmVh
-ci1pc2ggKG1vcmUgZGV0YWlsczogaHR0cDovL3d3dy5wYXRod2F5bGlnaHRpbmcuY29tL3Byb2R1
-Y3RzL2Rvd25sb2Fkcy9icm9jaHVyZS90ZWNobmljYWxfbWF0ZXJpYWxzXzE0NjY3OTcwNDRfTGlu
-ZWFyK3ZzK0xvZ2FyaXRobWljK0RpbW1pbmcrV2hpdGUrUGFwZXIucGRmKQo+ID4gPiAKPiA+ID4g
-QXMgb2Ygbm93IHVzZXJzcGFjZSBkb2Vzbid0IGhhdmUgaW5mb3JtYXRpb24gYWJvdXQgdGhlIHR5
-cGUgb2YgdGhlCj4gPiA+IGJyaWdodG5lc3MgY3VydmUsIGFuZCBvZnRlbiB1c2VzIGhldXJpc3Rp
-Y3MgdG8gbWFrZSBhIGd1ZXNzLCB3aGljaCBtYXkKPiA+ID4gYmUgcmlnaHQgbW9zdCBvZiB0aGUg
-dGltZSwgYnV0IG5vdCBhbHdheXMuIFRoZSBuZXcgYXR0cmlidXRlIGVsaW1pbmF0ZXMKPiA+ID4g
-dGhlIG5lZWQgdG8gZ3Vlc3MuCj4gPiAKPiA+IFRoaXMgaXMgYWJvdXQgYmFja2xpZ2h0cyByaWdo
-dD8gU28gdGhlIGtlcm5lbCBwcm92aWRlcyB0byB1c2Vyc3BhY2UgYW4KPiA+IGludGVydmFsIFsw
-LCB4XSBmb3Igc29tZSB4IGFuZCBkZXBlbmRpbmcgb24gdGhlIHBoeXNpY3Mgb2YgdGhlIHRoZQo+
-ID4gYmFja2xpZ2h0IGNvbmZpZ3VyaW5nIHgvMiAocHJvYmFibHk/KSBlaXRoZXIgbWVhbnMgNTAl
-IG1lYXN1cmVkIGxpZ2h0IG9yCj4gPiA1MCUgcGVyY2VpdmVkIGxpZ2h0LCByaWdodD8KPiAKPiBj
-b3JyZWN0Cj4gCj4gPiBJIHdvbmRlciBpZiBpdCB3b3VsZCBiZSBwb3NzaWJsZSBpbnN0ZWFkIG9m
-IGdpdmluZyBkaWZmZXJlbnQgYmFja2xpZ2h0Cj4gPiBpbXBsZW1lbnRhdGlvbnMgdGhlIGZyZWVk
-b20gdG8gdXNlIGVpdGhlciBsaW5lYXIgb3IgbG9nYXJpdGhtaWMgKG9yCj4gPiBxdWFkcmF0aWM/
-KSBzY2FsaW5nIGFuZCB0ZWxsIHVzZXJzcGFjZSB3aGljaCBvZiB0aGUgb3B0aW9ucyB3ZXJlIHBp
-Y2tlZAo+ID4gcmVxdWlyZSB0aGUgZHJpdmVycyB0byBwcm92aWRlIGEgKHNheSkgbGluZWFyIHNj
-YWxpbmcgYW5kIHRoZW4gdXNlcnNwYWNlCj4gPiB3b3VsZG4ndCBuZWVkIHRvIGNhcmUgYWJvdXQg
-dGhlIGV4YWN0IHBoeXNpY3MuCj4gCj4gSW4gYW4gaWRlYWwgd29ybGQgdGhlIGJhY2tsaWdodCBp
-bnRlcmZhY2Ugd291bGQgYmUgY29uc2lzdGVudCBhcyB5b3UKPiBzdWdnZXN0LCBob3dldmVyIHRo
-ZXJlIGFyZSBwbGVudHkgb2YgZXhpc3RpbmcgZGV2aWNlcyB3aGljaCB1c2UgdGhlCj4gJ290aGVy
-JyBzY2FsaW5nIChyZWdhcmRsZXNzIG9mIHdoaWNoIGlzIGNob3NlbiBhcyB0aGUgJ2NvcnJlY3Qn
-Cj4gb25lKS4gVXNlcnNwYWNlIHN0aWxsIGhhcyB0byBkZWFsIHdpdGggdGhlc2UuIEFuZCBjaGFu
-Z2luZyBwcmV2aW91c2x5Cj4gJ2xvZ2FyaXRobWljJyBkcml2ZXJzIHRvIGxpbmVhciAob3Igdmlj
-ZXZlcnNhKSBtYXkgJ2JyZWFrJyB1c2Vyc3BhY2UsCj4gd2hlbiBpdCBrZWVwcyB1c2luZyBpdHMg
-J29sZCcgc2NhbGluZywgd2hpY2ggbm93IGlzbid0IGNvcnJlY3QgYW55bW9yZS4KCkl0IG1pZ2h0
-IGJlIHN1YmplY3RpdmUsIG9yIG1heWJlIEknbSBqdXN0IHRvbyBvcHRpbWlzdGljLCBidXQgSSB0
-aGluayBpZgp0aGVyZSB3YXMgbm8gcG9saWN5IGJlZm9yZSBhYm91dCB0aGUgbWVhbmluZyBvZgoK
-CWVjaG8gMTcgPiBicmlnaHRuZXNzCgpvdGhlciB0aGFuICJicmlnaHRlciB0aGFuIGxvd2VyIHZh
-bHVlcyBhbmQgZGFya2VyIHRoYW4gaGlnaGVyIG9uZXMiCmludHJvZHVjaW5nIChzYXkpIHRoZSBz
-Y2FsZSBpcyBpbnRlbmRlZCB0byByZXByZXNlbnQgYSBsaW5lYXIgYnJpZ2h0bmVzcwpjdXJ2ZSBp
-cyBvay4KClVubGVzcyB1c2Vyc3BhY2UganVtcHMgdGhyb3VnaCBob29wcyBhbmQgdHJpZXMgdG8g
-aWRlbnRpZnkgdGhlIGFjdHVhbApkZXZpY2UgaXQgaXMgcnVubmluZyBvbiBpdCBpcyB3cm9uZyBv
-biBzb21lIG1hY2hpbmVzIGFueWhvdyBhbmQgd2UncmUKb25seSBzaGlmdGluZyB0aGUgc2V0IG9m
-IGFmZmVjdGVkIG1hY2hpbmVzIHdpdGggYSB0aWdodGVyIHBvbGljeSAodW50aWwKdGhhdCB1c2Vy
-c3BhY2UgYXBwbGljYXRpb24gaXMgZml4ZWQpLgoKQW5kIHRoZSBiaWcgdXBzaWRlIGlzIHRoYXQg
-aW4gdGhlIGVuZCAoaS5lLiB3aGVuIGFsbCBrZXJuZWwgZHJpdmVycyBhbmQKdXNlcnNwYWNlIGFw
-cGxpY2F0aW9ucyBhcmUgYWRhcHRlZCB0byBwcm92aWRlL2NvbnN1bWUgdGhlICJjb3JyZWN0Igpj
-dXJ2ZSkgdGhlIHJlc3VsdCBpcyBzaW1wbGVyLgoKSnVzdCBteSAwLjAy4oKsClV3ZQoKLS0gClBl
-bmd1dHJvbml4IGUuSy4gICAgICAgICAgICAgICAgICAgICAgICAgICB8IFV3ZSBLbGVpbmUtS8O2
-bmlnICAgICAgICAgICAgfApJbmR1c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAgICAgICAgICAgICAg
-ICAgfCBodHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyAgfApfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
-bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--===============4185649363601058837==
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR
+Content-Type: multipart/mixed; boundary="3UC7z54i9bPgQE5FgMPA5CLo4ZpV8QPUw";
+ protected-headers="v1"
+From: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Claudiu Beznea <claudiu.beznea@microchip.com>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Ludovic Desroches <ludovic.desroches@microchip.com>,
+ linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+Message-ID: <76d5c0b8-09d1-cf64-2d83-4982cd517f70@kleine-koenig.org>
+Subject: Re: [PATCH 4/3] pwm: atmel: document known weaknesses of both
+ hardware and software
+References: <20190815214133.11134-1-uwe@kleine-koenig.org>
+ <20190816093748.11769-1-uwe@kleine-koenig.org>
+ <20190816204357.GG3545@piout.net>
+In-Reply-To: <20190816204357.GG3545@piout.net>
+
+--3UC7z54i9bPgQE5FgMPA5CLo4ZpV8QPUw
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+
+Hello Alexandre,
+
+On 8/16/19 10:43 PM, Alexandre Belloni wrote:
+> On 16/08/2019 11:37:48+0200, Uwe Kleine-K=C3=B6nig wrote:
+>> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
+>> ---
+>>  drivers/pwm/pwm-atmel.c | 10 ++++++++++
+>>  1 file changed, 10 insertions(+)
+>>
+>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+>> index 42fe7bc043a8..1ddb93db9627 100644
+>> --- a/drivers/pwm/pwm-atmel.c
+>> +++ b/drivers/pwm/pwm-atmel.c
+>> @@ -7,6 +7,16 @@
+>>   *
+>>   * Reference manual for "atmel,at91sam9rl-pwm":
+>>   *   http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11032-32-b=
+it-ARM926EJ-S-Microcontroller-SAM9G25_Datasheet.pdf
+>> + *
+>> + * Limitations:
+>> + * - Periods start with the inactive level.
+>> + * - Hardware has to be stopped in general to update settings.
+>> + *
+>> + * Software bugs/possible improvements:
+>> + * - When atmel_pwm_apply() is called with state->enabled=3Dfalse a c=
+hange in
+>> + *   state->polarity isn't honored.
+>> + * - Instead of sleeping to wait for a completed period, the interrup=
+t
+>> + *   functionality could be used.
+>=20
+> This is definitively not trivial to do right. The main reason it is not=
+
+> done so is that reading PWM_ISR will clear all the bits so it is
+> necessary to be very careful to avoid race conditions. I'm not sure it
+> is worth the effort.
+
+I didn't intend to claim it is easy or even that it should be
+implemented. This was just what I noticed while reading through driver
+and manual. I thought it was a good idea to document that in case
+someone finds time and motivation to work on this driver.
+
+The first issue pointed out should however be easy to fix and IMHO is a
+real bug. (Though it's a corner case that hardly ever triggers.)
+
+Best regards
+Uwe
+
+
+--3UC7z54i9bPgQE5FgMPA5CLo4ZpV8QPUw--
+
+--OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl1aWYkACgkQwfwUeK3K
+7AlurAf/a9MA8BEhjxTtNdjaiBDLgxuDM125yu6jAG+S73XOyxuuKe63dP/VmLq1
+GQZ0+IEz5kdH2/j2U8AK4cAFCSpIh+jzplPGXgeYvU0H2XMwqRH/Qz5r4ODB/p2u
+AvxnMFT76BoMoC55WaZWwgSYeurlND9MRTUrqmDQgY6MumNFjhw38lA8y82rIGoU
++wZfQJkobSTvkb3UxwOuF5y2hcO2CSePEwIIWyqA9wXwYGFY25Mq19tC2ZlPbQ9q
+5w0QSGl3CsbATmlEF/DW0HrmtUOXQ5rxcAm5Sg1YOjgeeXB9zzo2Zr4z6Wy0R9OV
+vqL0Ang1RALihm9Mb+ImbI1DWQuxQg==
+=nAxw
+-----END PGP SIGNATURE-----
+
+--OpzLNV15XLyGK7w6j36LK6zLUuPvZ42iR--
+
+
+--===============4185649363601058837==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============4185649363601058837==--
