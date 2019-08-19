@@ -1,148 +1,90 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 4/3] pwm: atmel: document known weaknesses of both
- hardware and software
-Date: Mon, 19 Aug 2019 17:20:35 +0200
-Message-ID: <20190819152035.lkemndmypcehb2a2@pengutronix.de>
-References: <20190815214133.11134-1-uwe@kleine-koenig.org>
- <20190816093748.11769-1-uwe@kleine-koenig.org>
- <0a389abe-15ef-0e63-109f-2db4cb36f4b9@microchip.com>
- <20190819104617.kujgwthxtjy6cssa@pengutronix.de>
- <3029467b-be14-d78b-5580-8bd3842d86e2@microchip.com>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Mon, 19 Aug 2019 11:50:49 -0700
+Message-ID: <20190819185049.GZ250418@google.com>
+References: <20190709190007.91260-1-mka@chromium.org>
+ <20190709190007.91260-3-mka@chromium.org>
+ <20190807201528.GO250418@google.com>
+ <510f6d8a-71a0-fa6e-33ea-c4a4bfa96607@linaro.org>
+ <20190816175317.GU250418@google.com>
+ <20190819100241.5pctjxmsq6crlale@holly.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <3029467b-be14-d78b-5580-8bd3842d86e2@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Claudiu.Beznea@microchip.com
-Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190819100241.5pctjxmsq6crlale@holly.lan>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Claudiu,
-
-On Mon, Aug 19, 2019 at 12:28:59PM +0000, Claudiu.Beznea@microchip.com wrot=
-e:
-> On 19.08.2019 13:46, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Aug 19, 2019 at 09:26:04AM +0000, Claudiu.Beznea@microchip.com =
-wrote:
-> >> On 16.08.2019 12:37, Uwe Kleine-K=F6nig wrote:
-> >>> Signed-off-by: Uwe Kleine-K=F6nig <uwe@kleine-koenig.org>
-> >>> ---
-> >>>  drivers/pwm/pwm-atmel.c | 10 ++++++++++
-> >>>  1 file changed, 10 insertions(+)
-> >>>
-> >>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> >>> index 42fe7bc043a8..1ddb93db9627 100644
-> >>> --- a/drivers/pwm/pwm-atmel.c
-> >>> +++ b/drivers/pwm/pwm-atmel.c
-> >>> @@ -7,6 +7,16 @@
-> >>>   *
-> >>>   * Reference manual for "atmel,at91sam9rl-pwm":
-> >>>   *   http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11032-32-=
-bit-ARM926EJ-S-Microcontroller-SAM9G25_Datasheet.pdf
-> >>> + *
-> >>> + * Limitations:
-> >>> + * - Periods start with the inactive level.
-> >>
-> >> Are you talking here about the normal polarity (from documentation: By
-> >> definition, normal polarity characterizes a signal starts high for the
-> >> duration of the duty cycle and goes low for the remainder of the perio=
-d.)
-> > =
-
-> > When .polarity =3D PWM_POLARITY_NORMAL is passed to atmel_pwm_apply() t=
-he
-> > drivers sets PWM_CMR_CPOL=3D0 which according to the datasheet (linked
-> > above) means: "The output waveform starts at a low level."
-> > =
-
-> > So maybe just the logic has to be inverted there,
-> =
-
-> Agree.
-> =
-
-> > but then maybe the
-> > output gets active instead of inactive when the PWM is disabled.
-> =
-
-> Yes, this would happen. Playing again with CPOL when disabling may be a
-> solution.
-
-Alternatively you could argue that it would be more sensible to drop the
-requirement for a certain output level on disable. You would have my
-support here.
-
-> > (Which in my book is ok, but it's Thierry's opinion that counts here.)
-> > =
-
-> >> If yes, this should be solved by playing with CPOL bit of CMR.
-> >>
-> >>> + * - Hardware has to be stopped in general to update settings.
-> >>
-> >> Sama5d2 has duty cycle that could be updated on the fly.
-> > =
-
-> > There is some functionality in the 9G25, too. I didn't understand it
-> > completely but maybe it only helps updating one of period or duty cycle.
-> >  =
-
-> >>> + *
-> >>> + * Software bugs/possible improvements:
-> >>> + * - When atmel_pwm_apply() is called with state->enabled=3Dfalse a =
-change in
-> >>> + *   state->polarity isn't honored.
-> >>
-> >> I know that when configuring a PWM one should get the current state of=
- the
-> >> PWM, change it, then pass it to the driver via pwm_apply_state().
-> > =
-
-> > That seems to be a common pattern at least. IMHO letting the consumer
-> > just configure the state that should be used should be fine, too.>
-> >> In case one would call the pwm_apply_state() with state->enabled =3D
-> >> false the state would be stored in PWM specific object (of type struct
-> >> pwm_device). On the next apply, with enabled =3D true, all the PWM
-> >> parameters would be actually applied to hardware. So, until
-> >> enable=3Dtrue the PWM state would only be cached by PWM core specific
-> >> objects (in pwm_apply_state()).
-> > =
-
-> > I fail to follow what you mean here. If a PWM runs with (say) normal
-> > polarity and you call pwm_apply_state(mypwm, { .polarity =3D
-> > PWM_POLARITY_INVERSED, .enabled =3D false, }); the apply callback of the
-> > lowlevel driver is called and supposed to configure the output to yield
-> > a constant high.
-> =
-
-> Ok, I see it now. I'll put it on my queue.
-
-See above. The atmel driver is just part of my quest to get a general
-picture what the common PWM implementation does. Thierry argued that it
-is natural that a PWM drives the inactive level on disable.
-
-I'd say that it would be more natural to not demand a certain level
-because a) IMHO there are enough implementations that differ here and b)
-consumers could just configure for duty_cycle=3D0 if they care.
-
-In the case of the imx driver we could just put aside the discussions
-about how we atomically switch the output to a GPIO to provide the
-needed level. In case of the atmel driver you'd just invert polarity and
-be done.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgRGFuaWVsLAoKT24gTW9uLCBBdWcgMTksIDIwMTkgYXQgMTE6MDI6NDFBTSArMDEwMCwgRGFu
+aWVsIFRob21wc29uIHdyb3RlOgo+IE9uIEZyaSwgQXVnIDE2LCAyMDE5IGF0IDEwOjUzOjE3QU0g
+LTA3MDAsIE1hdHRoaWFzIEthZWhsY2tlIHdyb3RlOgo+ID4gT24gRnJpLCBBdWcgMTYsIDIwMTkg
+YXQgMDQ6NTQ6MThQTSArMDEwMCwgRGFuaWVsIFRob21wc29uIHdyb3RlOgo+ID4gPiBPbiAwNy8w
+OC8yMDE5IDIxOjE1LCBNYXR0aGlhcyBLYWVobGNrZSB3cm90ZToKPiA+ID4gPiBPbiBUdWUsIEp1
+bCAwOSwgMjAxOSBhdCAxMjowMDowNVBNIC0wNzAwLCBNYXR0aGlhcyBLYWVobGNrZSB3cm90ZToK
+PiA+ID4gPiA+IEJhY2tsaWdodCBicmlnaHRuZXNzIGN1cnZlcyBjYW4gaGF2ZSBkaWZmZXJlbnQg
+c2hhcGVzLiBUaGUgdHdvIG1haW4KPiA+ID4gPiA+IHR5cGVzIGFyZSBsaW5lYXIgYW5kIG5vbi1s
+aW5lYXIgY3VydmVzLiBUaGUgaHVtYW4gZXllIGRvZXNuJ3QKPiA+ID4gPiA+IHBlcmNlaXZlIGxp
+bmVhcmx5IGluY3JlYXNpbmcvZGVjcmVhc2luZyBicmlnaHRuZXNzIGFzIGxpbmVhciAoc2VlCj4g
+PiA+ID4gPiBhbHNvIDg4YmE5NWJlZGI3OSAiYmFja2xpZ2h0OiBwd21fYmw6IENvbXB1dGUgYnJp
+Z2h0bmVzcyBvZiBMRUQKPiA+ID4gPiA+IGxpbmVhcmx5IHRvIGh1bWFuIGV5ZSIpLCBoZW5jZSBt
+YW55IGJhY2tsaWdodHMgdXNlIG5vbi1saW5lYXIgKG9mdGVuCj4gPiA+ID4gPiBsb2dhcml0aG1p
+YykgYnJpZ2h0bmVzcyBjdXJ2ZXMuIFRoZSB0eXBlIG9mIGN1cnZlIGN1cnJlbnRseSBpcyBvcGFx
+dWUKPiA+ID4gPiA+IHRvIHVzZXJzcGFjZSwgc28gdXNlcnNwYWNlIG9mdGVuIHVzZXMgbW9yZSBv
+ciBsZXNzIHJlbGlhYmxlIGhldXJpc3RpY3MKPiA+ID4gPiA+IChsaWtlIHRoZSBudW1iZXIgb2Yg
+YnJpZ2h0bmVzcyBsZXZlbHMpIHRvIGRlY2lkZSB3aGV0aGVyIHRvIHRyZWF0IGEKPiA+ID4gPiA+
+IGJhY2tsaWdodCBkZXZpY2UgYXMgbGluZWFyIG9yIG5vbi1saW5lYXIuCj4gPiA+ID4gPiAKPiA+
+ID4gPiA+IEV4cG9ydCB0aGUgdHlwZSBvZiB0aGUgYnJpZ2h0bmVzcyBjdXJ2ZSB2aWEgdGhlIG5l
+dyBzeXNmcyBhdHRyaWJ1dGUKPiA+ID4gPiA+ICdzY2FsZScuIFRoZSB2YWx1ZSBvZiB0aGUgYXR0
+cmlidXRlIGNhbiBiZSAnbGluZWFyJywgJ25vbi1saW5lYXInIG9yCj4gPiA+ID4gPiAndW5rbm93
+bicuIEZvciBkZXZpY2VzIHRoYXQgZG9uJ3QgcHJvdmlkZSBpbmZvcm1hdGlvbiBhYm91dCB0aGUg
+c2NhbGUKPiA+ID4gPiA+IG9mIHRoZWlyIGJyaWdodG5lc3MgY3VydmUgdGhlIHZhbHVlIG9mIHRo
+ZSAnc2NhbGUnIGF0dHJpYnV0ZSBpcyAndW5rbm93bicuCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFNp
+Z25lZC1vZmYtYnk6IE1hdHRoaWFzIEthZWhsY2tlIDxta2FAY2hyb21pdW0ub3JnPgo+ID4gPiA+
+IAo+ID4gPiA+IERhbmllbCAoZXQgYWwpOiBkbyB5b3UgaGF2ZSBhbnkgbW9yZSBjb21tZW50cyBv
+biB0aGlzIHBhdGNoL3NlcmllcyBvcgo+ID4gPiA+IGlzIGl0IHJlYWR5IHRvIGxhbmQ/Cj4gPiA+
+IAo+ID4gPiBJIGRlY2lkZWQgdG8gbGVhdmUgaXQgZm9yIGEgbG9uZyB3aGlsZSBmb3Igb3RoZXJz
+IHRvIHJldmlldyBzaW5jZSBJJ20gc3RpbGwKPiA+ID4gYSB0aW55IGJpdCB1bmVhc3kgYWJvdXQg
+dGhlIGxpbmVhci9ub24tbGluZWFyIHRlcm1pbm9sb2d5Lgo+ID4gPiAKPiA+ID4gSG93ZXZlciB0
+aGF0J3MgbXkgb25seSBjb25jZXJuLCBpdHMgZmFpcmx5IG1pbm9yIGFuZCBJJ3ZlIGRyYWdnZWQg
+YnkgZmVldAo+ID4gPiBmb3IgbW9yZSB0aGVuIGxvbmcgZW5vdWdoLCBzbzoKPiA+ID4gUmV2aWV3
+ZWQtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+Cj4gPiAK
+PiA+IFRoYW5rcyEKPiA+IAo+ID4gSWYgeW91IG9yIHNvbWVvbmUgZWxzZSBoYXMgYW5vdGhlciBz
+dWdnZXN0aW9uIGZvciB0aGUgdGVybWlub2xvZ3kgdGhhdAo+ID4gd2UgY2FuIGFsbCBhZ3JlZSBv
+biBJJ20gaGFwcHkgdG8gY2hhbmdlIGl0Lgo+IAo+IEFzIHlvdSB3aWxsIHNlZSBpbiBteSByZXBs
+eSB0byBVd2UuIFRoZSB0ZXJtIEkgdGVuZCB0byBhZG9wdCB3aGVuIEkgd2FudAo+IHRvIGJlIHBy
+ZWNpc2UgYWJvdXQgdXNlcnNwYWNlIGJlaGF2aW91ciBpcyAicGVyY2VwdHVhbCIgKGUuZy4gdGhh
+dCBhCj4gYmFja2xpZ2h0IGNhbiBiZSBtYXBwZWQgZGlyZWN0bHkgdG8gYSBzbGlkZXIgYW5kIGl0
+IHdpbGwgZmVlbCByaWdodCkuCj4gCj4gSG93ZXZlciB0aGF0IHJhaXNlcyBpdHMgb3duIGNvbmNl
+cm5zOiBtb3N0bHkgYWJvdXQgd2hhdCBpcyBwZXJjZXB0dWFsCj4gZW5vdWdoLgo+IAo+IENsZWFy
+IHRoZSBhdXRvbWF0aWMgYnJpZ2h0bmVzcyBjdXJ2ZSBzdXBwb3J0IGluIHRoZSBQV00gZHJpdmVy
+IGlzCj4gcGVyY2VwdHVhbC4KPiAKPiBUbyBiZSBob25lc3QgSSBzdXNwZWN0IHRoYXQgaW4gbW9z
+dCBjYXNlcyBhIHRydWUgbG9nYXJpdGhtaWMgY3VydmUgKGdpdmVuIGEKPiBzYW5lIGV4cG9uZW50
+KSB3b3VsZCBiZSBwZXJjZXB0dWFsIGVub3VnaC4gSW4gb3RoZXIgd29yZHMgaXQgd2lsbCBmZWVs
+Cj4gY29tZm9ydGFibGUgd2l0aCBhIGRpcmVjdCBtYXBwZWQgc2xpZGVyIGFuZCB1c2luZyBpdCBm
+b3IgYW5pbWF0aW9uCj4gd29uJ3QgYmUgdG9vIGJhZC4KPiAKPiBIb3dldmVyIHdoZW4gd2UgZ2V0
+IHJpZ2h0IGRvd24gdG8gaXQgKnRoYXQqIGlzIHRoZSBpbmZvcm1hdGlvbiB0aGF0IGlzCj4gYWN0
+dWFsbHkgbW9zdCB1c2VmdWwgdG8gdXNlcnNwYWNlOiBleHBsaWNpdCBjb25maXJtYXRpb24gdGhh
+dCB0aGUgc2NhbGUKPiBjYW4gYmUgbWFwcGVkIGRpcmVjdGx5IHRvIGEgc2xpZGVyLiBJIHRoaW5r
+IGl0IGFsc28gYWxpZ25lZCBiZXR0ZXIgd2l0aAo+IFV3ZSdzIGZlZWRiYWNrIChlLmcuIHRvIHN0
+YXJ0IHdvcmtpbmcgdG93YXJkcyBoYXZpbmcgYSBwcmVmZXJyZWQgc2NhbGUpLgoKSUlVQyB0aGUg
+Y29uY2x1c2lvbiBpcyB0aGF0IHRoZXJlIGlzIG5vIG5lZWQgZm9yIGEgc3RyaW5nIGF0dHJpYnV0
+ZQpiZWNhdXNlIHdlIG9ubHkgbmVlZCB0byBkaXN0aW5ndWlzaCBiZXR3ZWVuICdwZXJjZXB0dWFs
+JyBhbmQKJ25vbi1wZXJjZXB0dWFsJy4gSWYgdGhhdCBpcyBjb3JyZWN0LCBkbyB5b3UgaGF2ZSBh
+bnkgcHJlZmVyZW5jZSBmb3IKdGhlIGF0dHJpYnV0ZSBuYW1lICgncGVyY2VwdHVhbF9zY2FsZScs
+ICdwZXJjZXB0dWFsJywgLi4uKT8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
+ZHJpLWRldmVs
