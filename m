@@ -1,55 +1,26 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v4 4/10] pwm: mediatek: use pwm_mediatek as common prefix
-Date: Tue, 20 Aug 2019 07:55:36 +0200
-Message-ID: <20190820055536.xode62n3gk37ikqv@pengutronix.de>
-References: <1566265225-27452-1-git-send-email-sam.shih@mediatek.com>
- <1566265225-27452-5-git-send-email-sam.shih@mediatek.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH] pwm: mxs: use devm_platform_ioremap_resource() to
+ simplify code
+Date: Tue, 20 Aug 2019 05:56:40 +0000
+Message-ID: <DB3PR0402MB3916423A6E334EDD4C06B884F5AB0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <20190718013205.24919-1-Anson.Huang@nxp.com>
+ <AM0PR04MB42116F0753C9C6A619A2D8EC80C80@AM0PR04MB4211.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1566265225-27452-5-git-send-email-sam.shih@mediatek.com>
+In-Reply-To: <AM0PR04MB42116F0753C9C6A619A2D8EC80C80@AM0PR04MB4211.eurprd04.prod.outlook.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sam Shih <sam.shih@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+To: Aisheng Dong <aisheng.dong@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 09:40:19AM +0800, Sam Shih wrote:
-> From: sam shih <sam.shih@mediatek.com>
-> 
-> Use pwm_mediatek as common prefix to match the filename.
-> No functional change intended.
-> 
-> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> ---
->  drivers/pwm/pwm-mediatek.c | 117 ++++++++++++++++++-------------------
->  1 file changed, 58 insertions(+), 59 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index a70b69a975c1..d85761ad5283 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -1,12 +1,10 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
-> - * Mediatek Pulse Width Modulator driver
-> + * MediaTek Pulse Width Modulator driver
->   *
->   * Copyright (C) 2015 John Crispin <blogic@openwrt.org>
->   * Copyright (C) 2017 Zhi Mao <zhi.mao@mediatek.com>
->   *
-> - * This file is licensed under the terms of the GNU General Public
-> - * License version 2. This program is licensed "as is" without any
-> - * warranty of any kind, whether express or implied.
-
-The license stuff is a separate change.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+R2VudGxlIHBpbmcuLi4NCg0KPiA+IEZyb206IEFuc29uLkh1YW5nQG54cC5jb20gPEFuc29uLkh1
+YW5nQG54cC5jb20+DQo+ID4gU2VudDogVGh1cnNkYXksIEp1bHkgMTgsIDIwMTkgOTozMiBBTQ0K
+PiA+DQo+ID4gVXNlIHRoZSBuZXcgaGVscGVyIGRldm1fcGxhdGZvcm1faW9yZW1hcF9yZXNvdXJj
+ZSgpIHdoaWNoIHdyYXBzIHRoZQ0KPiA+IHBsYXRmb3JtX2dldF9yZXNvdXJjZSgpIGFuZCBkZXZt
+X2lvcmVtYXBfcmVzb3VyY2UoKSB0b2dldGhlciwgdG8NCj4gPiBzaW1wbGlmeSB0aGUgY29kZS4N
+Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFuc29uIEh1YW5nIDxBbnNvbi5IdWFuZ0BueHAuY29t
+Pg0KPiANCj4gUmV2aWV3ZWQtYnk6IERvbmcgQWlzaGVuZyA8YWlzaGVuZy5kb25nQG54cC5jb20+
+DQo+IA0KPiBSZWdhcmRzDQo+IEFpc2hlbmcNCg==
