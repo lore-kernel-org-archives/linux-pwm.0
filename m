@@ -1,26 +1,36 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: RE: [PATCH] pwm: mxs: use devm_platform_ioremap_resource() to
- simplify code
-Date: Tue, 20 Aug 2019 05:56:40 +0000
-Message-ID: <DB3PR0402MB3916423A6E334EDD4C06B884F5AB0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <20190718013205.24919-1-Anson.Huang@nxp.com>
- <AM0PR04MB42116F0753C9C6A619A2D8EC80C80@AM0PR04MB4211.eurprd04.prod.outlook.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4 5/10] dt-bindings: pwm: add a property "num-pwms"
+Date: Tue, 20 Aug 2019 07:56:35 +0200
+Message-ID: <20190820055635.xru4utnkkvkvsv7l@pengutronix.de>
+References: <1566265225-27452-1-git-send-email-sam.shih@mediatek.com>
+ <1566265225-27452-6-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AM0PR04MB42116F0753C9C6A619A2D8EC80C80@AM0PR04MB4211.eurprd04.prod.outlook.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1566265225-27452-6-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Aisheng Dong <aisheng.dong@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>
+To: Sam Shih <sam.shih@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-R2VudGxlIHBpbmcuLi4NCg0KPiA+IEZyb206IEFuc29uLkh1YW5nQG54cC5jb20gPEFuc29uLkh1
-YW5nQG54cC5jb20+DQo+ID4gU2VudDogVGh1cnNkYXksIEp1bHkgMTgsIDIwMTkgOTozMiBBTQ0K
-PiA+DQo+ID4gVXNlIHRoZSBuZXcgaGVscGVyIGRldm1fcGxhdGZvcm1faW9yZW1hcF9yZXNvdXJj
-ZSgpIHdoaWNoIHdyYXBzIHRoZQ0KPiA+IHBsYXRmb3JtX2dldF9yZXNvdXJjZSgpIGFuZCBkZXZt
-X2lvcmVtYXBfcmVzb3VyY2UoKSB0b2dldGhlciwgdG8NCj4gPiBzaW1wbGlmeSB0aGUgY29kZS4N
-Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFuc29uIEh1YW5nIDxBbnNvbi5IdWFuZ0BueHAuY29t
-Pg0KPiANCj4gUmV2aWV3ZWQtYnk6IERvbmcgQWlzaGVuZyA8YWlzaGVuZy5kb25nQG54cC5jb20+
-DQo+IA0KPiBSZWdhcmRzDQo+IEFpc2hlbmcNCg==
+On Tue, Aug 20, 2019 at 09:40:20AM +0800, Sam Shih wrote:
+> From: Ryder Lee <ryder.lee@mediatek.com>
+> 
+> This adds a property "num-pwms" in example so that we could
+> specify the number of PWM channels via device tree.
+> 
+> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
