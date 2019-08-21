@@ -1,94 +1,26 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
- sysfs
-Date: Wed, 21 Aug 2019 15:16:17 +0100
-Message-ID: <20190821141617.e5avfbyvooddixcd@holly.lan>
-References: <20190709190007.91260-1-mka@chromium.org>
- <20190709190007.91260-3-mka@chromium.org>
- <20190816165148.7keg45fmlndr22fl@pengutronix.de>
- <20190816175157.GT250418@google.com>
- <20190816194754.ldzjqy2yjonfvaat@pengutronix.de>
- <20190816211051.GV250418@google.com>
- <20190819054628.asw3cxp46w3rpml7@pengutronix.de>
- <20190819095037.h3gig3quyhnzshm7@holly.lan>
- <CAKMK7uEJptKgoAwTO+OuN0HrBiMMG21w0QAdgD=pHBLoKLi38Q@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: pwm: pwm-mediatek: Add documentation
+ for MT8516
+Date: Wed, 21 Aug 2019 13:53:53 -0500
+Message-ID: <20190821185353.GA29669@bogus>
+References: <20190805125848.15751-1-fparent@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAKMK7uEJptKgoAwTO+OuN0HrBiMMG21w0QAdgD=pHBLoKLi38Q@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Daniel Vetter <daniel@ffwll.ch>
-Cc: linux-pwm <linux-pwm@vger.kernel.org>, Linux Fbdev development list <linux-fbdev@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Douglas Anderson <dianders@chromium.org>, Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <20190805125848.15751-1-fparent@baylibre.com>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, matthias.bgg@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Fabien Parent <fparent@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCBBdWcgMjAsIDIwMTkgYXQgMDQ6NDk6MjFQTSArMDIwMCwgRGFuaWVsIFZldHRlciB3
-cm90ZToKPiBPbiBNb24sIEF1ZyAxOSwgMjAxOSBhdCAxMTo1MCBBTSBEYW5pZWwgVGhvbXBzb24K
-PiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+IHdyb3RlOgo+ID4gT24gTW9uLCBBdWcgMTks
-IDIwMTkgYXQgMDc6NDY6MjhBTSArMDIwMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gPiA+
-IEFuZCB0aGUgYmlnIHVwc2lkZSBpcyB0aGF0IGluIHRoZSBlbmQgKGkuZS4gd2hlbiBhbGwga2Vy
-bmVsIGRyaXZlcnMgYW5kCj4gPiA+IHVzZXJzcGFjZSBhcHBsaWNhdGlvbnMgYXJlIGFkYXB0ZWQg
-dG8gcHJvdmlkZS9jb25zdW1lIHRoZSAiY29ycmVjdCIKPiA+ID4gY3VydmUpIHRoZSByZXN1bHQg
-aXMgc2ltcGxlci4KPiA+Cj4gPiBNeSB2aWV3IGlzIHRoYXQgdGhpcyBjb252ZXJnZW5jZSB3aWxs
-IGV2ZW50dWFsbHkgYmUgYWNoaWV2ZWQgYnV0IGl0IHdpbGwKPiA+IGhhcHBlbiB0aHJvdWdoIHRo
-ZSBvYnNvbGVzY2VuY2Ugb2YgdGhlIGJhY2tsaWdodCBzeXNmcyBpbnRlcmZhY2UuIFRoZQo+ID4g
-c3lzZnMgaW50ZXJmYWNlIGhhcyBvdGhlciBmbGF3cywgaW4gcGFydGljdWxhciBubyBpbnRlZ3Jh
-dGlvbiB3aXRoIHRoZQo+ID4gRFJNIGNvbm5lY3RvciBBUEkuCj4gPgo+ID4gVGh1cyBJIHdvdWxk
-IGV4cGVjdCBhbiBhbHRlcm5hdGl2ZSBpbnRlcmZhY2UgdG8gZW1lcmdlLCBtb3N0IGxpa2VseSBh
-cwo+ID4gcGFydCBvZiB0aGUgRFJNIGNvbm5lY3RvciBBUEkuIEknZCBleHBlY3Qgc3VjaCBhIG5l
-dyBBUEkgdG8gYQo+ID4gcGVyY2VwdHVhbCBzY2FsZSBhbmQgdG8gaGF2ZSBhIGZpeGVkIG1heCBi
-cmlnaHRuZXNzIHdpdGggZW5vdWdoCj4gPiBzdGVwcyB0byBzdXBwb3J0IGFuaW1hdGVkIGJhY2ts
-aWdodCBlZmZlY3RzIChJSVJDIDAuLjEwMCBoYXMgYmVlbgo+ID4gcHJvcG9zZWQgaW4gdGhlIHBh
-c3QpCj4gPgo+ID4gSW4gdGhlIG1lYW4gdGltZSBnZXR0aW5nIHRoZSBleGlzdGluZyBjb2xsZWN0
-aW9uIG9mIGJhY2tsaWdodCBkcml2ZXJzCj4gPiBtYXJrZWQgdXAgYXMgbGluZWFyL2xvZ2FyaXRo
-bWljL2V0YyB3aWxsIGVhc2UgdGhlIGludHJvZHVjdGlvbiBvZiB0aGF0Cj4gPiBBUEkgYmVjYXVz
-ZSwgd2l0aGluIHRoZSBrZXJuZWwsIHdlIG1pZ2h0IGhhdmUgZ2F0aGVyZWQgZW5vdWdoIGtub3ds
-ZWRnZQo+ID4gdG8gaGF2ZSBzb21lIGhvcGUgb2YgY29ycmVjdGx5IG1hcHBpbmcgZWFjaCBiYWNr
-bGlnaHQgb250byBhCj4gPiBzdGFuZGFyZGl6ZWQgc2NhbGUuCj4gCj4gSW4gY2FzZSBwZW9wbGUg
-d29uZGVyIHdoeSB0aGUgZHJtIGNvbm5lY3RvciBiYXNlZCBiYWNrbGlnaHQgaW50ZXJmYWNlCj4g
-aGFzbid0IGhhcHBlbmVkIGFnZXMgYWdvLCBzb21lIG1vcmUgY29udGV4dDoKPiAKPiAtIHVzZXJz
-cGFjZSAod2VsbCBsaWJiYWNrbGlnaHQpIHNlbGVjdHMgdGhlIHJpZ2h0IGJhY2tsaWdodCwgdXNp
-bmcKPiBzb21lIHByaW9yaXR5IHNlYXJjaC4gUGx1cyBibGFja2xpc3RzIGluIGRyaXZlcnMgdG8g
-bWFrZSBzdXJlIHRoZXkncmUKPiBub3Qgb3ZlcnJpZGluZyB0aGUgcmVhbCBiYWNrbGlnaHQgZHJp
-dmVyIChlLmcuIGFjcGkgaGFzIGhpZ2hlcgo+IHByaW9yaXR5IGluIGxpYmJhY2tsaWdodCwgYnV0
-IG9uIG1vZGVybiBzeXN0ZW0gaXQncyBub3QgdGhlIGJhY2tsaWdodAo+IGRyaXZlciB5b3Ugd2Fu
-dC4gSWYgd2UgbW92ZSB0aGF0IGludG8gdGhlIGtlcm5lbCBpdCdzIGdvaW5nIHRvIGJlCj4gc29t
-ZXdoYXQgYSBtZXNzLCBzaW5jZSBkZWZhY3RvIHlvdSBuZXZlciBrbm93IHdoZW4gbG9hZGluZyBp
-cyBjb21wbGV0ZQo+IGFuZCB5b3UgYWN0dWFsbHkgaGF2ZSB0aGUgcmlnaHQgYmFja2xpZ2h0IGRy
-aXZlci4KPiAKPiBUaGlzIGlzbid0IGEgcHJvYmxlbSBvbiBEVCBwbGF0Zm9ybXMsIGJ1dCByZWFs
-bHkganVzdCBmb3IgeDg2L2FjcGkKPiBwbGF0Zm9ybXMuIEJ1dCBpZiB3ZSBkb24ndCBmaXggdGhl
-bSwgdGhlbiB1c2Vyc3BhY2UgYWRvcHRpb24gb2YgdGhlc2UKPiBuZXcgaW50ZXJmYWNlcyB3aWxs
-IGxpa2VseSBiZSB0b28gbG93IHRvIG1hdHRlci4KPiAKPiAtIHNlY29uZCBpc3N1ZSBpcyB0aGF0
-IHJpZ2h0IG5vdyB0aGUga21zIGNsaWVudCBpcyBzdXBwb3NlZCB0byBoYW5kbGUKPiBiYWNrbGln
-aHQgYXJvdW5kIG1vZGVzZXQsIGxpa2UgZmJkZXYgZG9lcyB0aHJvdWdoIHRoZSBmYiBub3RpZmll
-ci4KPiBFeGNlcHQgZm9yIGRyaXZlcnMgd2hpY2ggZG8gaGFuZGxlIHRoZSBiYWNrbGlnaHQgYWNy
-b3NzIG1vZGVzZXRzLCBidXQKPiBtYXliZSBub3QgdGhlIHJpZ2h0IGJhY2tsaWdodC4gSWYgd2Ug
-bW92ZSB0aGUgYmFja2xpZ2h0IGludGVyZmFjZSB0bwo+IGRybSBjb25uZWN0b3JzIHRoZW4gdGhl
-IHJpZ2h0IHRoaW5nIHdvdWxkIGJlIGZvciB0aGUgZHJtIGRyaXZlciB0bwo+IGhhbmRsZSBiYWNr
-bGlnaHQgZW5hYmxlL2Rpc2FibGUgYWNyb3NzIG1vZGVzZXRzLiBCdXQgdG8gbWFrZSB0aGF0Cj4g
-d29yaywgdXNlcnNwYWNlIG5lZWRzIHRvIHN0b3AgdG91Y2hpbmcgaXQgKG90aGVyd2lzZSB1c2Vy
-c3BhY2UgZmlyc3QKPiBkaXNhYmxlcywgdGhlbiB0aGUga2VybmVsIGFuZCB0aGVuIG9uIHJlc3Rv
-cmUgdGhlIHR3byBmaWdodCBhbmQKPiB1c3VhbGx5IGJsYWNrIHNjcmVlbiB3aW5zKSwgYW5kIHRo
-YXQncyBhIGJpdCBhIHRyaWNreSB1YXBpIHByb2JsZW0gb2YKPiBub3QgYnJlYWtpbmcgZXhpc3Rp
-bmcgdXNlcnNwYWNlLgo+IAo+IC0gZmluYWxseSB0aGVyZSdzIHNvbWUgdXNlcnNwYWNlIHdoaWNo
-IGFzc3VtZXMgdGhlIGxvd2VzdCBiYWNrbGlnaHQKPiBzZXR0aW5nIGlzIGFjdHVhbGx5IG9mZiwg
-YW5kIHVzZXMgdGhhdCB0byBkbyBmYXN0IG1vZGVzZXRzLiBUaGlzCj4gZG9lc24ndCB3b3JrIG9u
-IG1vc3QgQUNQSSBiYWNrbGlnaHRzLCBzbyBJIHRoaW5rIHRoYXQgcHJvYmxlbSBpc24ndAo+IHdp
-ZGVzcHJlYWQuCj4gCj4gQW55d2F5IGZyb20gd2F0Y2hpbmcgZnJvbSBhZmFyLCBJIHRoaW5rIHRo
-aXMgY2xhcmlmaWNhdGlvbiBvbiB3aGF0IHRoZQo+IGJhY2tsaWdodCBzY2FsZSBtZWFucyBpbnRl
-cm5hbGx5IHNob3VsZCBhdCBsZWFzdCBoZWxwIHVzIHNvbWV3aGF0IGluCj4gdGhlIGxvbmcgdGVy
-bS4gQnV0IHRoZSBsb25nIHRlcm0gc29sdXRpb24gaXRzZWxmIG5lZWRzIHNvbWVvbmUgd2l0aAo+
-IHdheSB0b28gbXVjaCB0aW1lIEkgZmVhciwgc28gbGV0cyBub3QgaG9sZCB1cCBhbnl0aGluZyBv
-biB0aGF0LgoKVGhhbmtzIGZvciBzaGFyaW5nIHlvdXIgdmlld3Mgb24gdGhpcy4KCgpEYW5pZWwu
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZl
-bCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xp
-c3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+On Mon,  5 Aug 2019 14:58:47 +0200, Fabien Parent wrote:
+> Add the device-tree documentation for the PWM IP on the MediaTek
+> MT8516 SoCs.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+
+Reviewed-by: Rob Herring <robh@kernel.org>
