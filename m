@@ -1,10 +1,11 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v5 06/13] pwm: mediatek: update license and switch to SPDX tag
-Date: Thu, 22 Aug 2019 14:58:36 +0800
-Message-ID: <1566457123-20791-7-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v5 07/13] dt-bindings: pwm: add a property "num-pwms"
+Date: Thu, 22 Aug 2019 14:58:37 +0800
+Message-ID: <1566457123-20791-8-git-send-email-sam.shih@mediatek.com>
 References: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -12,45 +13,51 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matth
 Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add SPDX identifiers to pwm-mediatek.c
-Update license to GNU General Public License v2.0
+From: Ryder Lee <ryder.lee@mediatek.com>
+
+This adds a property "num-pwms" in example so that we could
+specify the number of PWM channels via device tree.
 
 Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
 Changes since v5:
-- Follow reviewers's comments
-The license stuff is a separate change
+- Add an Acked-by tag
+- This file is original v4 patch 5/10
+(https://patchwork.kernel.org/patch/11102577/)
 
-Change-Id: I8f1ff6daa76727ed203db8dc608509f1cd3b1144
+Change-Id: I429048afeffa96f3f14533910efe242f88776043
 ---
- drivers/pwm/pwm-mediatek.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index 0938beb1a3cb..290536a92a80 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -1,12 +1,10 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-- * Mediatek Pulse Width Modulator driver
-+ * MediaTek Pulse Width Modulator driver
-  *
-  * Copyright (C) 2015 John Crispin <blogic@openwrt.org>
-  * Copyright (C) 2017 Zhi Mao <zhi.mao@mediatek.com>
-  *
-- * This file is licensed under the terms of the GNU General Public
-- * License version 2. This program is licensed "as is" without any
-- * warranty of any kind, whether express or implied.
-  */
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+index 991728cb46cb..ea95b490a913 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+@@ -14,12 +14,12 @@ Required properties:
+                 has no clocks
+    - "top": the top clock generator
+    - "main": clock used by the PWM core
+-   - "pwm1-8": the eight per PWM clocks for mt2712
+-   - "pwm1-6": the six per PWM clocks for mt7622
+-   - "pwm1-5": the five per PWM clocks for mt7623
++   - "pwm1-N": the PWM clocks for each channel
++   where N starting from 1 to the maximum number of PWM channels
+  - pinctrl-names: Must contain a "default" entry.
+  - pinctrl-0: One property must exist for each entry in pinctrl-names.
+    See pinctrl/pinctrl-bindings.txt for details of the property values.
++ - num-pwms: the number of PWM channels.
  
- #include <linux/err.h>
-@@ -359,4 +357,4 @@ static struct platform_driver pwm_mediatek_driver = {
- module_platform_driver(pwm_mediatek_driver);
- 
- MODULE_AUTHOR("John Crispin <blogic@openwrt.org>");
--MODULE_LICENSE("GPL");
-+MODULE_LICENSE("GPL v2");
+ Example:
+ 	pwm0: pwm@11006000 {
+@@ -37,4 +37,5 @@ Example:
+ 			      "pwm3", "pwm4", "pwm5";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pwm0_pins>;
++		num-pwms = <5>;
+ 	};
 -- 
 2.17.1
