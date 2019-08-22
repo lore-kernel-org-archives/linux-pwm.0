@@ -1,50 +1,46 @@
-From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v5 13/13] arm: dts: mediatek: add mt7629 pwm support
-Date: Thu, 22 Aug 2019 14:58:43 +0800
-Message-ID: <1566457123-20791-14-git-send-email-sam.shih@mediatek.com>
+From: Yingjoe Chen <yingjoe.chen@mediatek.com>
+Subject: Re: [PATCH v5 08/13] dt-bindings: pwm: update bindings for MT7628
+ SoC
+Date: Thu, 22 Aug 2019 16:12:20 +0800
+Message-ID: <1566461540.16302.4.camel@mtksdaap41>
 References: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
+         <1566457123-20791-9-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
+In-Reply-To: <1566457123-20791-9-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
+To: Sam Shih <sam.shih@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Ryder Lee <ryder.lee@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, John Crispin <john@phrozen.org>
 List-Id: linux-pwm@vger.kernel.org
 
-This adds pwm support for MT7629.
+On Thu, 2019-08-22 at 14:58 +0800, Sam Shih wrote:
+> This updates bindings for MT7628 pwm controller.
+> 
+> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> index ea95b490a913..93980e3da261 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> @@ -21,6 +21,10 @@ Required properties:
+>     See pinctrl/pinctrl-bindings.txt for details of the property values.
+>   - num-pwms: the number of PWM channels.
+> +
+> + Optional properties:
+> + - clock-frequency: fix clock frequency, this is only used in MT7628 SoC
+> +                    for period calculation. This SoC has no complex clock tree.
 
-Signed-off-by: Sam Shih <sam.shih@mediatek.com>
----
- arch/arm/boot/dts/mt7629.dtsi | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+I'm sorry if this has been discussed before. 
 
-diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
-index 9608bc2ccb3f..493be9a9453b 100644
---- a/arch/arm/boot/dts/mt7629.dtsi
-+++ b/arch/arm/boot/dts/mt7629.dtsi
-@@ -241,6 +241,22 @@
- 			status = "disabled";
- 		};
- 
-+		pwm: pwm@11006000 {
-+			compatible = "mediatek,mt7629-pwm",
-+				     "mediatek,mt7622-pwm";
-+			reg = <0 0x11006000 0 0x1000>;
-+			interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&topckgen CLK_TOP_PWM_SEL>,
-+				 <&pericfg CLK_PERI_PWM_PD>,
-+				 <&pericfg CLK_PERI_PWM1_PD>;
-+			clock-names = "top", "main", "pwm1";
-+			assigned-clocks = <&topckgen CLK_TOP_PWM_SEL>;
-+			assigned-clock-parents =
-+					<&topckgen CLK_TOP_UNIVPLL2_D4>;
-+			num-pwms = <1>;
-+			status = "disabled";
-+		};
-+
- 		i2c: i2c@11007000 {
- 			compatible = "mediatek,mt7629-i2c",
- 				     "mediatek,mt2712-i2c";
--- 
-2.17.1
+Would it be simpler if you just provide a fixed-clock as clock in device
+tree? This way you don't need this optional properties and don't need to
+special handle it in driver code. 
+
+After all, the hw is still connected to a simple clock tree.
+
+Joe.C
