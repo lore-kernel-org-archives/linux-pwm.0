@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v5 11/13] dt-bindings: pwm: update bindings for MT7629 SoC
-Date: Thu, 22 Aug 2019 14:58:41 +0800
-Message-ID: <1566457123-20791-12-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v5 12/13] pwm: mediatek: remove a property "has-clock"
+Date: Thu, 22 Aug 2019 14:58:42 +0800
+Message-ID: <1566457123-20791-13-git-send-email-sam.shih@mediatek.com>
 References: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,37 +12,119 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matth
 Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Ryder Lee <ryder.lee@mediatek.com>
+Due to we added clock-frequency property to fix
+mt7628 pwm during configure from userspace.
+We can alos use this property to determine whether
+the complex clock tree exists in the SoC or not.
+So we can safety remove has-clock property in the
+driver specific data.
 
-This updates bindings for MT7629 pwm controller.
-
-This patch is the same as
-https://patchwork.kernel.org/patch/10769381/
-and it has a Reviewed-by tag in v1
-
-Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 ---
-Changes since v1:
-- add a Reviewed-by tag
+ drivers/pwm/pwm-mediatek.c | 26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
-Change-Id: Id9f0bd0b9aaa8748fcf6b0bfb2c6214d50b5ffa4
----
- Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 93980e3da261..e11cb0d93929 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -6,6 +6,7 @@ Required properties:
-    - "mediatek,mt7622-pwm": found on mt7622 SoC.
-    - "mediatek,mt7623-pwm": found on mt7623 SoC.
-    - "mediatek,mt7628-pwm": found on mt7628 SoC.
-+   - "mediatek,mt7629-pwm", "mediatek,mt7622-pwm": found on mt7629 SoC.
-  - reg: physical base address and length of the controller's registers.
-  - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
-    the cell format.
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index 290536a92a80..96f592595063 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -35,7 +35,6 @@
+ struct pwm_mediatek_of_data {
+ 	unsigned int fallback_npwms;
+ 	bool pwm45_fixup;
+-	bool has_clks;
+ };
+ 
+ /**
+@@ -73,7 +72,7 @@ static int pwm_mediatek_clk_enable(struct pwm_chip *chip,
+ 	struct pwm_mediatek_chip *pc = to_pwm_mediatek_chip(chip);
+ 	int ret;
+ 
+-	if (!pc->soc->has_clks)
++	if (pc->clk_freq)
+ 		return 0;
+ 
+ 	ret = clk_prepare_enable(pc->clk_top);
+@@ -103,7 +102,7 @@ static void pwm_mediatek_clk_disable(struct pwm_chip *chip,
+ {
+ 	struct pwm_mediatek_chip *pc = to_pwm_mediatek_chip(chip);
+ 
+-	if (!pc->soc->has_clks)
++	if (pc->clk_freq)
+ 		return;
+ 
+ 	clk_disable_unprepare(pc->clk_pwms[pwm->hwpwm]);
+@@ -134,10 +133,10 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	u64 resolution;
+ 	int ret;
+ 
+-	if (pc->soc->has_clks)
+-		clk_freq = clk_get_rate(pc->clk_pwms[pwm->hwpwm]);
+-	else
++	if (pc->clk_freq)
+ 		clk_freq = pc->clk_freq;
++	else
++		clk_freq = clk_get_rate(pc->clk_pwms[pwm->hwpwm]);
+ 
+ 	ret = pwm_mediatek_clk_enable(chip, pwm);
+ 	if (ret < 0)
+@@ -222,6 +221,7 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 	struct pwm_mediatek_chip *pc;
+ 	struct resource *res;
+ 	unsigned int npwms;
++	unsigned int clk_freq;
+ 	int ret;
+ 
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+@@ -247,7 +247,8 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	if (pc->soc->has_clks) {
++	ret = of_property_read_u32(np, "clock-frequency", &clk_freq);
++	if (ret < 0) {
+ 		int i;
+ 
+ 		pc->clk_pwms = devm_kcalloc(&pdev->dev, npwms,
+@@ -280,13 +281,6 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 			}
+ 		}
+ 	} else {
+-		unsigned int clk_freq;
+-
+-		ret = of_property_read_u32(np, "clock-frequency", &clk_freq);
+-		if (ret < 0) {
+-			dev_err(&pdev->dev, "failed to get clock_frequency\n");
+-			return ret;
+-		}
+ 		pc->clk_freq = clk_freq;
+ 	}
+ 
+@@ -316,25 +310,21 @@ static int pwm_mediatek_remove(struct platform_device *pdev)
+ static const struct pwm_mediatek_of_data mt2712_pwm_data = {
+ 	.fallback_npwms = 8,
+ 	.pwm45_fixup = false,
+-	.has_clks = true,
+ };
+ 
+ static const struct pwm_mediatek_of_data mt7622_pwm_data = {
+ 	.fallback_npwms = 6,
+ 	.pwm45_fixup = false,
+-	.has_clks = true,
+ };
+ 
+ static const struct pwm_mediatek_of_data mt7623_pwm_data = {
+ 	.fallback_npwms = 5,
+ 	.pwm45_fixup = true,
+-	.has_clks = true,
+ };
+ 
+ static const struct pwm_mediatek_of_data mt7628_pwm_data = {
+ 	.fallback_npwms = 4,
+ 	.pwm45_fixup = true,
+-	.has_clks = false,
+ };
+ 
+ static const struct of_device_id pwm_mediatek_of_match[] = {
 -- 
 2.17.1
