@@ -1,15 +1,16 @@
-From: Stefan Wahren <wahrenst@gmx.net>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH 0/3] pwm: bcm2835: Minor fixes
-Date: Sat, 24 Aug 2019 12:05:00 +0200
-Message-ID: <22f8e65b-2d65-84e7-de50-ba6538a84292@gmx.net>
+Date: Sat, 24 Aug 2019 12:56:14 +0200
+Message-ID: <20190824105614.wpkvqqxjey6umhrs@pengutronix.de>
 References: <1566630445-4599-1-git-send-email-wahrenst@gmx.net>
  <20190824092553.j4rjpzaz4m6yaa5t@pengutronix.de>
+ <22f8e65b-2d65-84e7-de50-ba6538a84292@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190824092553.j4rjpzaz4m6yaa5t@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <22f8e65b-2d65-84e7-de50-ba6538a84292@gmx.net>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,70 +20,61 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+To: Stefan Wahren <wahrenst@gmx.net>
 Cc: linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>, Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgVXdlLAoKQW0gMjQuMDguMTkgdW0gMTE6MjUgc2NocmllYiBVd2UgS2xlaW5lLUvDtm5pZzoK
-PiBIZWxsbyBTdGVmYW4sCj4KPiBPbiBTYXQsIEF1ZyAyNCwgMjAxOSBhdCAwOTowNzoyMkFNICsw
-MjAwLCBTdGVmYW4gV2FocmVuIHdyb3RlOgo+PiBUaGlzIHNtYWxsIHBhdGNoIHNlcmllcyBjb250
-YWlucyBtaW5vciBmaXhlcyBmb3IgY2xvY2sgaGFuZGxpbmcgYW5kIHRoZQo+PiBwZXJpb2QgcmFu
-Z2UgY2hlY2suCj4gSSdkIGxpa2UgdG8gdW5kZXJzdGFuZCB0aGUgdmFyaW91cyBkaWZmZXJlbnQg
-dXNlY2FzZXMgb2YgUFdNcy4gVGhlCj4gaW4ta2VybmVsIGNvbnN1bWVycyBhcmUga2luZCBvZiBv
-YnZpb3VzLCBidXQgc3lzZnMgdXNlcnMgYXJlIG5vdC4gSXQKPiBzZWVtcyB5b3UgYXJlIG9uZSBv
-ZiB0aGUgbGF0dGVyLgo+Cj4gV291bGQgeW91IG1pbmQgc2hhcmluZyB3aGF0IHlvdSBjb250cm9s
-IHVzaW5nIHRoZSBQV00/Cm5vdCByZWFsbHkgYSBQV00gdXNlciB3aXRoIEJDTTI4MzUuIEl0J3Mg
-bW9yZSB0aGUgbW90aXZhdGlvbiBhcyBhCnBsYXRmb3JtIG1haW50YWluZXIgdG8ga2VlcCB0aGUg
-ZHJpdmVycyBpbiBzaGFwZS4gQXQgd29yayB3ZSBhcmUgdXNpbmcKc3lzZnMgaW50ZXJmYWNlIGZv
-ciB1c2VyIGFwcGxpY2F0aW9ucyB0byBjb250cm9sIHZlbnRpbGF0aW9uICh2aWEgaHdtb24KaW50
-ZXJmYWNlKSBhbmQgRVYgY2hhcmdpbmcgKElFQyA2MTg1MSkgd2l0aCBhIGRpZmZlcmVudCBTb0Mu
-Cj4gIERvZXMgaXQgYm90aGVyCj4geW91IHRoYXQgdGhlIHN5c2ZzIGludGVyZmFjZSBkb2Vzbid0
-IGFsbG93IGF0b21pYyBjb25maWd1cmF0aW9uPwpUbyBiZSBob25lc3Qgbm90IHJlYWxseSwgYnV0
-IGkgdGhpbmsgYSBsb3Qgb2YgdXNlciBjb3VsZCBiZW5lZml0IGFuZAptaWdodCBzdG9wIHVzaW5n
-IGhhY2t5IFB5dGhvbiBzY3JpcHRzIHdoaWNoIG1hbmlwdWxhdGUgdGhlIHJlZ2lzdGVycwpkaXJl
-Y3RseS4KPgo+IEFzc3VtaW5nIHlvdSBoYXZlIHNvbWUgaW50ZXJlc3QgaW4gdGhpcyBkcml2ZXI6
-IEl0IHN0aWxsIHVzZXMgdGhlIGxlZ2FjeQo+IHN0dWZmIGltcGxlbWVudGluZyAuY29uZmlnLCAu
-ZW5hYmxlLCAuZGlzYWJsZSwgLnNldF9wb2xhcml0eS4gQXJlIHlvdQo+IHdpbGxpbmcgdG8gdGVz
-dCAob3IgZXZlbiBpbXBsZW1lbnQpIGEgc3dpdGNoIHRvIC5hcHBseSBpbnN0ZWFkPwpZZXMsIGRl
-ZmluaXRlbHkuIFRoaXMgaXMgb25lIG9mIG15IG5ldmVyIGVuZGluZyBUT0RPIGxpc3QgWzFdLiBC
-dXQgaQp3b3VsZCBiZSBzdXByaXNlZCB0aGF0IHlvdSB3b250IGhhdmUgYWNjZXNzIHRvIGEgUmFz
-cGJlcnJ5IFBpLgo+Cj4gSnVzdCBmcm9tIGEgcXVpY2sgbG9jayBpbnRvIHRoZSBkcml2ZXIgSSB3
-b25kZXIgYSBmZXcgdGhpbmdzLCBtYXliZSB5b3UKPiBjYW4gc2hlZCBzb21lIGxpZ2h0IGhlcmUu
-IElmIHRoZXJlIGlzIHB1YmxpY2x5IGF2YWlsYWJsZSBkb2N1bWVuYXRpb24KPiBmb3IgdGhpcyBw
-aWVjZSBvZiBoYXJkd2FyZSwgZmVlbCBmcmVlIHRvIHBvaW50IHRoaXMgb3V0LCB0aGVuIEkgbWln
-aHQgYmUKPiBhYmxlIHRvIHdvcmsgb3V0IHNvbWUgb2YgdGhlIGFuc3dlcnMgbXlzZWxmLgpGb3J0
-dW5hdGVseSB5ZXMgWzJdCj4KPiBUaGUgb3ZlcmFsbCAoYW5kIGNvbW1vbikgZGVzaWduIG9mIHRo
-ZSBQV00gaXMgYW4gaW5wdXQgY2xrLCBhIGNvdW50ZXIsIGEKPiBkdXR5IGFuZCBhIHBlcmlvZCBy
-ZWdpc3Rlci4KPgo+IFRoZSBzbGlnaHRseSBzaW1wbGlmaWVkIGxvZ2ljIGluIC5jb25maWcgaXM6
-Cj4KPiAJc2NhbGVyID0gRElWX1JPVU5EX0NMT1NFU1QoTlNFQ19QRVJfU0VDLCByYXRlKTsKPiAJ
-d3JpdGVsKERJVl9ST1VORF9DTE9TRVNUKGR1dHlfbnMsIHNjYWxlciksIFBXTV9EVVRZKTsKPiAJ
-d3JpdGVsKERJVl9ST1VORF9DTE9TRVNUKHBlcmlvZF9ucywgc2NhbGVyKSwgUFdNX1BFUklPRCk7
-Cj4KPiBUaGlzIGlzIGxvb3NpbmcgcHJlY2lzaW9uIHdoaWxlIHRoZSBjYWxjdWxhdGlvbiBjb3Vs
-ZCBiZSBjaGVhcGVyIChpbiBDUFUKPiBjeWNsZXMpIGFuZCBtb3JlIGV4YWN0IHdoZW4gdXNpbmc6
-Cj4KPiAJd3JpdGVsKERJVl9ST1VORF9DTE9TRVNUKGR1dHlfbnMgKiByYXRlLCBOU0VDX1BFUl9T
-RUMpLCBQV01fRFVUWSk7Cj4gCXdyaXRlbChESVZfUk9VTkRfQ0xPU0VTVChwZXJpb2RfbnMgKiBy
-YXRlLCBOU0VDX1BFUl9TRUMpLCBQV01fUEVSSU9EKTsKPgo+IFRoaXMgaXMgb25seSB0d28gZGl2
-aXNpb25zIGluc3RlYWQgb2YgdGhyZWUuIEFuZCBhc3N1bWluZyBhIHJhdGUgb2YgOS4yCj4gTUh6
-IGFuZCBhIHJlcXVlc3Qgb2YgZHV0eV9ucyA9IDQ5OTk0NSwgcGVyaW9kX25zID0gOTk5ODkxIHRo
-ZSBvcmlnaW5hbAo+IGNhbGN1bGF0aW9uIHlpZWxkcwo+Cj4gCURVVFkgPSA0NTg3Cj4gCVBFUklP
-RCA9IDkxNzMKPgo+IAlyZWFsX2R1dHlfbnMgPSA0OTg1ODYuOTU2NTIxNzM5MTQKPiAJcmVhbF9w
-ZXJpb2RfbnMgPSA5OTcwNjUuMjE3MzkxMzA0Mwo+Cj4gCWVycm9yX2R1dHlfbnMgPSAxMzU4LjA0
-MzQ3ODI2MDg2NDUKPiAJZXJyb3JfcGVyaW9kX25zID0gMjgyNS43ODI2MDg2OTU2Nzc1Cj4KPiBX
-aXRoIG15IHN1Z2dlc3Rpb24geW91J2QgZ2V0Cj4KPiAJRFVUWSA9IDQ1OTkKPiAJUEVSSU9EID0g
-OTE5OQo+Cj4gCXJlYWxfZHV0eV9ucyA9IDQ5OTg5MS4zMDQzNDc4MjYxCj4gCXJlYWxfcGVyaW9k
-X25zID0gOTk5ODkxLjMwNDM0NzgyNgo+Cj4gCWVycm9yX2R1dHlfbnMgPSA1My42OTU2NTIxNzM4
-OTAyNwo+IAllcnJvcl9wZXJpb2RfbnMgPSAtMC4zMDQzNDc4MjYwNTE1MjU3Nwo+Cj4gKEJ1dCBo
-YXZpbmcgc2FpZCB0aGlzLCBJJ2QgcHJlZmVyIHRvIHVzZSByb3VuZGluZyBkb3duIGluc3RlYWQg
-b2YKPiByb3VuZGluZyBjbG9zZXN0KS4KPgo+IEFsc28gSSB3b25kZXIgaWYgcmVwcm9ncmFtbWlu
-ZyB0aGUgaGFyZHdhcmUgY29tcGxldGVzIHRoZSBjdXJyZW50bHkKPiBydW5uaW5nIHBlcmlvZCBh
-bmQgaG93IHRoZSBoYXJkd2FyZSBiZWhhdmVzIG9uIGRpc2FibGUuIChJbiB0aGUgbGF0dGVyCj4g
-Y2FzZSBJJ20gaW50ZXJlc3RlZCBpbiAiRG9lcyBpdCBjb21wbGV0ZSB0aGUgcnVubmluZyBwZXJp
-b2Q/IiBhbmQgIldoaWNoCj4gc3RhdGUgZG9lcyB0aGUgb3V0cHV0IHN0b3AgaW4/IikKCkkgbmVl
-ZCB0byBtYWtlIGxvZ2ljIGFuYWx5emVyIHRyYWNlcyB0byBtYWtlIGFueSBzdGF0ZW1lbnQuCgpU
-aGFua3MKClsxXSAtIGh0dHBzOi8vZ2l0aHViLmNvbS9sYXRlZ29vZGJ5ZS9ycGktemVyby9pc3N1
-ZXMvMTYKClsyXSAtCmh0dHBzOi8vd3d3LnJhc3BiZXJyeXBpLm9yZy9hcHAvdXBsb2Fkcy8yMDEy
-LzAyL0JDTTI4MzUtQVJNLVBlcmlwaGVyYWxzLnBkZgoKPgo+IEJlc3QgcmVnYXJkcwo+IFV3ZQo+
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1h
-cm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5v
-cmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0t
-a2VybmVsCg==
+Hello Stefan,
+
+On Sat, Aug 24, 2019 at 12:05:00PM +0200, Stefan Wahren wrote:
+> Am 24.08.19 um 11:25 schrieb Uwe Kleine-K=F6nig:
+> > Hello Stefan,
+> >
+> > On Sat, Aug 24, 2019 at 09:07:22AM +0200, Stefan Wahren wrote:
+> >> This small patch series contains minor fixes for clock handling and the
+> >> period range check.
+> >
+> > I'd like to understand the various different usecases of PWMs. The
+> > in-kernel consumers are kind of obvious, but sysfs users are not. It
+> > seems you are one of the latter.
+> >
+> > Would you mind sharing what you control using the PWM?
+> =
+
+> not really a PWM user with BCM2835. It's more the motivation as a
+> platform maintainer to keep the drivers in shape. At work we are using
+> sysfs interface for user applications to control ventilation (via hwmon
+> interface) and EV charging (IEC 61851) with a different SoC.
+
+I don't understand how you use the sysfs interface and still interact
+with the hwmon interface. Other than that, thanks for sharing.
+
+
+> > Assuming you have some interest in this driver: It still uses the legacy
+> > stuff implementing .config, .enable, .disable, .set_polarity. Are you
+> > willing to test (or even implement) a switch to .apply instead?
+> =
+
+> Yes, definitely. This is one of my never ending TODO list [1]. But i
+> would be suprised that you wont have access to a Raspberry Pi.
+
+So be surprised :-)
+
+> > Just from a quick lock into the driver I wonder a few things, maybe you
+> > can shed some light here. If there is publicly available documenation
+> > for this piece of hardware, feel free to point this out, then I might be
+> > able to work out some of the answers myself.
+> =
+
+> Fortunately yes [2]
+
+Care to add a link to this document in the driver for others to easily
+find it?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
