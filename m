@@ -1,11 +1,12 @@
 From: Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH V2 2/3] pwm: bcm2835: fix period_ns range check
-Date: Sat, 24 Aug 2019 16:09:47 +0200
-Message-ID: <1566655788-24949-3-git-send-email-wahrenst@gmx.net>
+Subject: [PATCH V2 3/3] pwm: bcm2835: suppress error message during deferred
+ probe
+Date: Sat, 24 Aug 2019 16:09:48 +0200
+Message-ID: <1566655788-24949-4-git-send-email-wahrenst@gmx.net>
 References: <1566655788-24949-1-git-send-email-wahrenst@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1566655788-24949-1-git-send-email-wahrenst@gmx.net>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -21,35 +22,30 @@ To: Thierry Reding <thierry.reding@gmail.com>, Eric Anholt <eric@anholt.net>, Fl
 Cc: linux-pwm@vger.kernel.org, Stefan Wahren <wahrenst@gmx.net>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlIHJhbmdlIGNoZWNrIGZvciBwZXJpb2RfbnMgd2FzIHdyaXR0ZW4gdW5kZXIgYXNzdW1wdGlv
-biBvZiBhIGZpeGVkClBXTSBjbG9jay4gV2l0aCBjbGstYmNtMjgzNSBkcml2ZXIgdGhlIFBXTSBj
-bG9jayBpcyBhIGR5bmFtaWMgb25lLgpTbyBmaXggdGhpcyBieSBkb2luZyB0aGUgcmFuZ2UgY2hl
-Y2sgb24gdGhlIHBlcmlvZCByZWdpc3RlciB2YWx1ZS4KClNpZ25lZC1vZmYtYnk6IFN0ZWZhbiBX
-YWhyZW4gPHdhaHJlbnN0QGdteC5uZXQ+CkFja2VkLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5r
-bGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgotLS0KIGRyaXZlcnMvcHdtL3B3bS1iY20yODM1
-LmMgfCA5ICsrKysrLS0tLQogMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgNCBkZWxl
-dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYmNtMjgzNS5jIGIvZHJpdmVy
-cy9wd20vcHdtLWJjbTI4MzUuYwppbmRleCA1Mjc2MzA2Li4yYzgyMzg2IDEwMDY0NAotLS0gYS9k
-cml2ZXJzL3B3bS9wd20tYmNtMjgzNS5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1iY20yODM1LmMK
-QEAgLTIxLDcgKzIxLDcgQEAKICNkZWZpbmUgUEVSSU9EKHgpCQkoKCh4KSAqIDB4MTApICsgMHgx
-MCkKICNkZWZpbmUgRFVUWSh4KQkJCSgoKHgpICogMHgxMCkgKyAweDE0KQoKLSNkZWZpbmUgTUlO
-X1BFUklPRAkJMTA4CQkvKiA5LjIgTUh6IG1heC4gUFdNIGNsb2NrICovCisjZGVmaW5lIFBFUklP
-RF9NSU4JCTB4MgoKIHN0cnVjdCBiY20yODM1X3B3bSB7CiAJc3RydWN0IHB3bV9jaGlwIGNoaXA7
-CkBAIC02NCw2ICs2NCw3IEBAIHN0YXRpYyBpbnQgYmNtMjgzNV9wd21fY29uZmlnKHN0cnVjdCBw
-d21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwKIAlzdHJ1Y3QgYmNtMjgzNV9w
-d20gKnBjID0gdG9fYmNtMjgzNV9wd20oY2hpcCk7CiAJdW5zaWduZWQgbG9uZyByYXRlID0gY2xr
-X2dldF9yYXRlKHBjLT5jbGspOwogCXVuc2lnbmVkIGxvbmcgc2NhbGVyOworCXUzMiBwZXJpb2Q7
-CgogCWlmICghcmF0ZSkgewogCQlkZXZfZXJyKHBjLT5kZXYsICJmYWlsZWQgdG8gZ2V0IGNsb2Nr
-IHJhdGVcbiIpOwpAQCAtNzEsMTQgKzcyLDE0IEBAIHN0YXRpYyBpbnQgYmNtMjgzNV9wd21fY29u
-ZmlnKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwKIAl9Cgog
-CXNjYWxlciA9IERJVl9ST1VORF9DTE9TRVNUKE5TRUNfUEVSX1NFQywgcmF0ZSk7CisJcGVyaW9k
-ID0gRElWX1JPVU5EX0NMT1NFU1QocGVyaW9kX25zLCBzY2FsZXIpOwoKLQlpZiAocGVyaW9kX25z
-IDw9IE1JTl9QRVJJT0QpCisJaWYgKHBlcmlvZCA8IFBFUklPRF9NSU4pCiAJCXJldHVybiAtRUlO
-VkFMOwoKIAl3cml0ZWwoRElWX1JPVU5EX0NMT1NFU1QoZHV0eV9ucywgc2NhbGVyKSwKIAkgICAg
-ICAgcGMtPmJhc2UgKyBEVVRZKHB3bS0+aHdwd20pKTsKLQl3cml0ZWwoRElWX1JPVU5EX0NMT1NF
-U1QocGVyaW9kX25zLCBzY2FsZXIpLAotCSAgICAgICBwYy0+YmFzZSArIFBFUklPRChwd20tPmh3
-cHdtKSk7CisJd3JpdGVsKHBlcmlvZCwgcGMtPmJhc2UgKyBQRVJJT0QocHdtLT5od3B3bSkpOwoK
-IAlyZXR1cm4gMDsKIH0KLS0KMi43LjQKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0t
-a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+This suppresses error messages in case the PWM clock isn't ready yet.
+
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+---
+ drivers/pwm/pwm-bcm2835.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+index 2c82386..91e24f0 100644
+--- a/drivers/pwm/pwm-bcm2835.c
++++ b/drivers/pwm/pwm-bcm2835.c
+@@ -153,8 +153,11 @@ static int bcm2835_pwm_probe(struct platform_device *pdev)
+
+ 	pc->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pc->clk)) {
+-		dev_err(&pdev->dev, "clock not found: %ld\n", PTR_ERR(pc->clk));
+-		return PTR_ERR(pc->clk);
++		ret = PTR_ERR(pc->clk);
++		if (ret != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "clock not found: %d\n", ret);
++
++		return ret;
+ 	}
+
+ 	ret = clk_prepare_enable(pc->clk);
+--
+2.7.4
