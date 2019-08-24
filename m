@@ -1,40 +1,56 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V2 3/3] pwm: bcm2835: suppress error message during
- deferred probe
-Date: Sat, 24 Aug 2019 17:13:59 +0200
-Message-ID: <20190824151359.p43543prfadjmudf@pengutronix.de>
-References: <1566655788-24949-1-git-send-email-wahrenst@gmx.net>
- <1566655788-24949-4-git-send-email-wahrenst@gmx.net>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
+Subject: [PATCH v3 0/6] pwm: ensure pwm_apply_state() doesn't modify the state
+ argument
+Date: Sat, 24 Aug 2019 17:37:01 +0200
+Message-ID: <20190824153707.13746-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1566655788-24949-4-git-send-email-wahrenst@gmx.net>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Stefan Wahren <wahrenst@gmx.net>
-Cc: linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>, Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Sat, Aug 24, 2019 at 04:09:48PM +0200, Stefan Wahren wrote:
-> This suppresses error messages in case the PWM clock isn't ready yet.
-> =
-
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Thanks
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGVsbG8sCgp0aGlzIHNlcmllcyBldmVudHVhbGx5IGNoYW5nZXMgdGhlIHByb3RvdHlwZSBvZiBw
+d21fYXBwbHlfc3RhdGUgdG8gdGFrZQphIGNvbnN0IHN0cnVjdCBwd21fc3RhdGUgKiwgc2VlIHRo
+ZSBsYXN0IHBhdGNoIGZvciBhIHJhdGlvbmFsZS4KCkNoYW5nZXMgc2luY2UgdjIgYXBhcnQgZnJv
+bSByZWJhc2luZyBhbmQgc28gY292ZXJpbmcgYSBmZXcgbW9yZSBkcml2ZXJzCmlzIG1haW5seSBh
+ZGRyZXNzaW5nIHRoZSBjb25jZXJuIHRoYXQgYWZ0ZXIgc3RhdGUgd2FzIHJvdW5kZWQgYW5kCmFw
+cGxpZWQgYXQgbGVhc3QgcHdtX2dldF9zdGF0ZSBzaG91bGQgcmV0dXJuIHRoZSByb3VuZGVkIHZh
+bHVlcy4gU2VlCnBhdGNoIDIuCgpVd2UgS2xlaW5lLUvDtm5pZyAoNik6CiAgcHdtOiBpbnRyb2R1
+Y2UgbG9jYWwgc3RydWN0IHB3bV9jaGlwIGluIHB3bV9hcHBseV9zdGF0ZSgpCiAgcHdtOiBsZXQg
+cHdtX2dldF9zdGF0ZSgpIHJldHVybiB0aGUgbGFzdCBpbXBsZW1lbnRlZCBzdGF0ZQogIHB3bTog
+cm9ja2NoaXA6IERvbid0IHVwZGF0ZSB0aGUgc3RhdGUgZm9yIHRoZSBjYWxsZXIgb2YKICAgIHB3
+bV9hcHBseV9zdGF0ZSgpCiAgcHdtOiBzdW40aTogRG9uJ3QgdXBkYXRlIHRoZSBzdGF0ZSBmb3Ig
+dGhlIGNhbGxlciBvZiBwd21fYXBwbHlfc3RhdGUoKQogIHB3bTogZnNsLWZ0bTogRG9uJ3QgdXBk
+YXRlIHRoZSBzdGF0ZSBmb3IgdGhlIGNhbGxlciBvZgogICAgcHdtX2FwcGx5X3N0YXRlKCkKICBw
+d206IGVuc3VyZSBwd21fYXBwbHlfc3RhdGUoKSBkb2Vzbid0IG1vZGlmeSB0aGUgc3RhdGUgYXJn
+dW1lbnQKCiBkcml2ZXJzL3B3bS9jb3JlLmMgICAgICAgICAgICB8IDM5ICsrKysrKysrKysrKysr
+KysrKysrKy0tLS0tLS0tLS0tLS0tCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYyB8ICAy
+ICstCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwuYyAgICAgICB8ICAyICstCiBkcml2ZXJzL3B3bS9w
+d20tYmNtLWlwcm9jLmMgICB8ICAyICstCiBkcml2ZXJzL3B3bS9wd20tY3Jvcy1lYy5jICAgICB8
+ICAyICstCiBkcml2ZXJzL3B3bS9wd20tZnNsLWZ0bS5jICAgICB8ICA4ICsrLS0tLS0KIGRyaXZl
+cnMvcHdtL3B3bS1oaWJ2dC5jICAgICAgIHwgIDIgKy0KIGRyaXZlcnMvcHdtL3B3bS1pbXgtdHBt
+LmMgICAgIHwgIDQgKystLQogZHJpdmVycy9wd20vcHdtLWlteDI3LmMgICAgICAgfCAgMiArLQog
+ZHJpdmVycy9wd20vcHdtLWp6NDc0MC5jICAgICAgfCAgMiArLQogZHJpdmVycy9wd20vcHdtLWxw
+c3MuYyAgICAgICAgfCAgMiArLQogZHJpdmVycy9wd20vcHdtLW1lc29uLmMgICAgICAgfCAgNCAr
+Ky0tCiBkcml2ZXJzL3B3bS9wd20tcmNhci5jICAgICAgICB8ICAyICstCiBkcml2ZXJzL3B3bS9w
+d20tcm9ja2NoaXAuYyAgICB8IDEwICsrLS0tLS0tLQogZHJpdmVycy9wd20vcHdtLXNpZml2ZS5j
+ICAgICAgfCAgMiArLQogZHJpdmVycy9wd20vcHdtLXN0bTMyLWxwLmMgICAgfCAgMiArLQogZHJp
+dmVycy9wd20vcHdtLXN0bTMyLmMgICAgICAgfCAgNCArKy0tCiBkcml2ZXJzL3B3bS9wd20tc3Vu
+NGkuYyAgICAgICB8IDEwICsrLS0tLS0tLQogZHJpdmVycy9wd20vcHdtLXp4LmMgICAgICAgICAg
+fCAgMiArLQogaW5jbHVkZS9saW51eC9wd20uaCAgICAgICAgICAgfCAgNCArKy0tCiAyMCBmaWxl
+cyBjaGFuZ2VkLCA0OSBpbnNlcnRpb25zKCspLCA1OCBkZWxldGlvbnMoLSkKCi0tIAoyLjIwLjEK
+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eC1y
+b2NrY2hpcCBtYWlsaW5nIGxpc3QKTGludXgtcm9ja2NoaXBAbGlzdHMuaW5mcmFkZWFkLm9yZwpo
+dHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJvY2tjaGlw
+Cg==
