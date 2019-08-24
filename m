@@ -1,14 +1,17 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-Subject: [PATCH v2 3/6] pwm: atmel: replace loop in prescale calculation by
- ad-hoc calculation
-Date: Sat, 24 Aug 2019 02:10:38 +0200
-Message-ID: <20190824001041.11007-4-uwe@kleine-koenig.org>
-References: <20190824001041.11007-1-uwe@kleine-koenig.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: mxs: use devm_platform_ioremap_resource() to
+ simplify code
+Date: Sat, 24 Aug 2019 02:26:34 +0200
+Message-ID: <20190824002634.nfrhof3kpsrcc742@pengutronix.de>
+References: <20190718013205.24919-1-Anson.Huang@nxp.com>
+ <AM0PR04MB42116F0753C9C6A619A2D8EC80C80@AM0PR04MB4211.eurprd04.prod.outlook.com>
+ <DB3PR0402MB3916423A6E334EDD4C06B884F5AB0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190824001041.11007-1-uwe@kleine-koenig.org>
+Content-Disposition: inline
+In-Reply-To: <DB3PR0402MB3916423A6E334EDD4C06B884F5AB0@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,52 +21,40 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Claudiu Beznea <claudiu.beznea@microchip.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-arm-kernel@lists.infradead.org
+To: Anson Huang <anson.huang@nxp.com>
+Cc: Aisheng Dong <aisheng.dong@nxp.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlIGNhbGN1bGF0ZWQgdmFsdWVzIGFyZSB0aGUgc2FtZSB3aXRoIHRoZSBtb2RpZmllZCBhbGdv
-cml0aG0uIFRoZSBvbmx5CmRpZmZlcmVuY2UgaXMgdGhhdCB0aGUgY2FsY3VsYXRpb24gaXMgYSBi
-aXQgbW9yZSBlZmZpY2llbnQuCgpBY2tlZC1ieTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6
-bmVhQG1pY3JvY2hpcC5jb20+ClNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1d2VA
-a2xlaW5lLWtvZW5pZy5vcmc+Ci0tLQpDaGFuZ2VzIHNpbmNlIChpbXBsaWNpdCkgdjEgc2VudCB3
-aXRoIE1lc3NhZ2UtSWQ6CjIwMTkwODE1MjE0MTMzLjExMTM0LTMtdXdlQGtsZWluZS1rb2VuaWcu
-b3JnCgogLSBBZGRlZCBDbGF1ZGl1J3MgQWNrCgogZHJpdmVycy9wd20vcHdtLWF0bWVsLmMgfCAy
-NCArKysrKysrKysrKysrKysrKy0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRpb25z
-KCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC5j
-IGIvZHJpdmVycy9wd20vcHdtLWF0bWVsLmMKaW5kZXggZjQ5N2Y4NDc3MWYwLi4zNzg2YWI5ZGI1
-Y2YgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC5jCisrKyBiL2RyaXZlcnMvcHdt
-L3B3bS1hdG1lbC5jCkBAIC02MCw3ICs2MCw3IEBAIHN0cnVjdCBhdG1lbF9wd21fcmVnaXN0ZXJz
-IHsKIH07CiAKIHN0cnVjdCBhdG1lbF9wd21fY29uZmlnIHsKLQl1MzIgbWF4X3BlcmlvZDsKKwl1
-MzIgcGVyaW9kX2JpdHM7CiB9OwogCiBzdHJ1Y3QgYXRtZWxfcHdtX2RhdGEgewpAQCAtMTE5LDE3
-ICsxMTksMjcgQEAgc3RhdGljIGludCBhdG1lbF9wd21fY2FsY3VsYXRlX2NwcmRfYW5kX3ByZXMo
-c3RydWN0IHB3bV9jaGlwICpjaGlwLAogewogCXN0cnVjdCBhdG1lbF9wd21fY2hpcCAqYXRtZWxf
-cHdtID0gdG9fYXRtZWxfcHdtX2NoaXAoY2hpcCk7CiAJdW5zaWduZWQgbG9uZyBsb25nIGN5Y2xl
-cyA9IHN0YXRlLT5wZXJpb2Q7CisJaW50IHNoaWZ0OwogCiAJLyogQ2FsY3VsYXRlIHRoZSBwZXJp
-b2QgY3ljbGVzIGFuZCBwcmVzY2FsZSB2YWx1ZSAqLwogCWN5Y2xlcyAqPSBjbGtfZ2V0X3JhdGUo
-YXRtZWxfcHdtLT5jbGspOwogCWRvX2RpdihjeWNsZXMsIE5TRUNfUEVSX1NFQyk7CiAKLQlmb3Ig
-KCpwcmVzID0gMDsgY3ljbGVzID4gYXRtZWxfcHdtLT5kYXRhLT5jZmcubWF4X3BlcmlvZDsgY3lj
-bGVzID4+PSAxKQotCQkoKnByZXMpKys7CisJLyoKKwkgKiBUaGUgcmVnaXN0ZXIgZm9yIHRoZSBw
-ZXJpb2QgbGVuZ3RoIGlzIGNmZy5wZXJpb2RfYml0cyBiaXRzIHdpZGUuCisJICogU28gZm9yIGVh
-Y2ggYml0IHRoZSBudW1iZXIgb2YgY2xvY2sgY3ljbGVzIGlzIHdpZGVyIGRpdmlkZSB0aGUgaW5w
-dXQKKwkgKiBjbG9jayBmcmVxdWVuY3kgYnkgdHdvIHVzaW5nIHByZXMgYW5kIHNoaWZ0IGNwcmQg
-YWNjb3JkaW5nbHkuCisJICovCisJc2hpZnQgPSBmbHMoY3ljbGVzKSAtIGF0bWVsX3B3bS0+ZGF0
-YS0+Y2ZnLnBlcmlvZF9iaXRzOwogCi0JaWYgKCpwcmVzID4gUFdNX01BWF9QUkVTKSB7CisJaWYg
-KHNoaWZ0ID4gUFdNX01BWF9QUkVTKSB7CiAJCWRldl9lcnIoY2hpcC0+ZGV2LCAicHJlcyBleGNl
-ZWRzIHRoZSBtYXhpbXVtIHZhbHVlXG4iKTsKIAkJcmV0dXJuIC1FSU5WQUw7CisJfSBlbHNlIGlm
-IChzaGlmdCA+IDApIHsKKwkJKnByZXMgPSBzaGlmdDsKKwkJY3ljbGVzID4+PSAqcHJlczsKKwl9
-IGVsc2UgeworCQkqcHJlcyA9IDA7CiAJfQogCiAJKmNwcmQgPSBjeWNsZXM7CkBAIC0yODksNyAr
-Mjk5LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBhdG1lbF9wd21fZGF0YSBhdG1lbF9zYW05cmxf
-cHdtX2RhdGEgPSB7CiAJfSwKIAkuY2ZnID0gewogCQkvKiAxNiBiaXRzIHRvIGtlZXAgcGVyaW9k
-IGFuZCBkdXR5LiAqLwotCQkubWF4X3BlcmlvZAk9IDB4ZmZmZiwKKwkJLnBlcmlvZF9iaXRzCT0g
-MTYsCiAJfSwKIH07CiAKQEAgLTMwMiw3ICszMTIsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGF0
-bWVsX3B3bV9kYXRhIGF0bWVsX3NhbWE1X3B3bV9kYXRhID0gewogCX0sCiAJLmNmZyA9IHsKIAkJ
-LyogMTYgYml0cyB0byBrZWVwIHBlcmlvZCBhbmQgZHV0eS4gKi8KLQkJLm1heF9wZXJpb2QJPSAw
-eGZmZmYsCisJCS5wZXJpb2RfYml0cwk9IDE2LAogCX0sCiB9OwogCkBAIC0zMTUsNyArMzI1LDcg
-QEAgc3RhdGljIGNvbnN0IHN0cnVjdCBhdG1lbF9wd21fZGF0YSBtY2hwX3NhbTl4NjBfcHdtX2Rh
-dGEgPSB7CiAJfSwKIAkuY2ZnID0gewogCQkvKiAzMiBiaXRzIHRvIGtlZXAgcGVyaW9kIGFuZCBk
-dXR5LiAqLwotCQkubWF4X3BlcmlvZAk9IDB4ZmZmZmZmZmYsCisJCS5wZXJpb2RfYml0cwk9IDMy
-LAogCX0sCiB9OwogCi0tIAoyLjIwLjEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0t
-a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+Hello,
+
+On Tue, Aug 20, 2019 at 05:56:40AM +0000, Anson Huang wrote:
+> Gentle ping...
+
+My impression[1] is that Thierry collects patches in bulk once or twice
+per release cycle. The last two such bulks were between 5.2-rc6 and
+5.2-rc7 and in the 5.2 merge window. So given we're at v5.3-rc5 now I
+expect some action soon :-)
+
+> > > From: Anson.Huang@nxp.com <Anson.Huang@nxp.com>
+> > > Sent: Thursday, July 18, 2019 9:32 AM
+> > >
+> > > Use the new helper devm_platform_ioremap_resource() which wraps the
+> > > platform_get_resource() and devm_ioremap_resource() together, to
+> > > simplify the code.
+> > >
+> > > Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> > =
+
+> > Reviewed-by: Dong Aisheng <aisheng.dong@nxp.com>
+
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+[1] from git log --committer=3DThierry --format=3D%ci drivers/pwm | cut -d\=
+  -f1 | uniq -c
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
