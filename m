@@ -1,17 +1,16 @@
-From: Stefan Wahren <wahrenst@gmx.net>
-Subject: Re: [PATCH 0/3] pwm: bcm2835: Minor fixes
-Date: Sat, 24 Aug 2019 16:17:56 +0200
-Message-ID: <c6d26f19-a9ef-1c64-b8e2-94b7a4f93487@gmx.net>
-References: <1566630445-4599-1-git-send-email-wahrenst@gmx.net>
- <20190824092553.j4rjpzaz4m6yaa5t@pengutronix.de>
- <22f8e65b-2d65-84e7-de50-ba6538a84292@gmx.net>
- <20190824105614.wpkvqqxjey6umhrs@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH V2 3/3] pwm: bcm2835: suppress error message during
+ deferred probe
+Date: Sat, 24 Aug 2019 17:13:59 +0200
+Message-ID: <20190824151359.p43543prfadjmudf@pengutronix.de>
+References: <1566655788-24949-1-git-send-email-wahrenst@gmx.net>
+ <1566655788-24949-4-git-send-email-wahrenst@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190824105614.wpkvqqxjey6umhrs@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1566655788-24949-4-git-send-email-wahrenst@gmx.net>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,46 +20,21 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+To: Stefan Wahren <wahrenst@gmx.net>
 Cc: linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>, Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgVXdlLAoKQW0gMjQuMDguMTkgdW0gMTI6NTYgc2NocmllYiBVd2UgS2xlaW5lLUvDtm5pZzoK
-PiBIZWxsbyBTdGVmYW4sCj4KPiBPbiBTYXQsIEF1ZyAyNCwgMjAxOSBhdCAxMjowNTowMFBNICsw
-MjAwLCBTdGVmYW4gV2FocmVuIHdyb3RlOgo+PiBBbSAyNC4wOC4xOSB1bSAxMToyNSBzY2hyaWVi
-IFV3ZSBLbGVpbmUtS8O2bmlnOgo+Pj4gSGVsbG8gU3RlZmFuLAo+Pj4KPj4+IE9uIFNhdCwgQXVn
-IDI0LCAyMDE5IGF0IDA5OjA3OjIyQU0gKzAyMDAsIFN0ZWZhbiBXYWhyZW4gd3JvdGU6Cj4+Pj4g
-VGhpcyBzbWFsbCBwYXRjaCBzZXJpZXMgY29udGFpbnMgbWlub3IgZml4ZXMgZm9yIGNsb2NrIGhh
-bmRsaW5nIGFuZCB0aGUKPj4+PiBwZXJpb2QgcmFuZ2UgY2hlY2suCj4+PiBJJ2QgbGlrZSB0byB1
-bmRlcnN0YW5kIHRoZSB2YXJpb3VzIGRpZmZlcmVudCB1c2VjYXNlcyBvZiBQV01zLiBUaGUKPj4+
-IGluLWtlcm5lbCBjb25zdW1lcnMgYXJlIGtpbmQgb2Ygb2J2aW91cywgYnV0IHN5c2ZzIHVzZXJz
-IGFyZSBub3QuIEl0Cj4+PiBzZWVtcyB5b3UgYXJlIG9uZSBvZiB0aGUgbGF0dGVyLgo+Pj4KPj4+
-IFdvdWxkIHlvdSBtaW5kIHNoYXJpbmcgd2hhdCB5b3UgY29udHJvbCB1c2luZyB0aGUgUFdNPwo+
-PiBub3QgcmVhbGx5IGEgUFdNIHVzZXIgd2l0aCBCQ00yODM1LiBJdCdzIG1vcmUgdGhlIG1vdGl2
-YXRpb24gYXMgYQo+PiBwbGF0Zm9ybSBtYWludGFpbmVyIHRvIGtlZXAgdGhlIGRyaXZlcnMgaW4g
-c2hhcGUuIEF0IHdvcmsgd2UgYXJlIHVzaW5nCj4+IHN5c2ZzIGludGVyZmFjZSBmb3IgdXNlciBh
-cHBsaWNhdGlvbnMgdG8gY29udHJvbCB2ZW50aWxhdGlvbiAodmlhIGh3bW9uCj4+IGludGVyZmFj
-ZSkgYW5kIEVWIGNoYXJnaW5nIChJRUMgNjE4NTEpIHdpdGggYSBkaWZmZXJlbnQgU29DLgo+IEkg
-ZG9uJ3QgdW5kZXJzdGFuZCBob3cgeW91IHVzZSB0aGUgc3lzZnMgaW50ZXJmYWNlIGFuZCBzdGls
-bCBpbnRlcmFjdAo+IHdpdGggdGhlIGh3bW9uIGludGVyZmFjZS4gT3RoZXIgdGhhbiB0aGF0LCB0
-aGFua3MgZm9yIHNoYXJpbmcuCkkgbWVhbnQgdGhlIGh3bW9uIHN5c2ZzIGludGVyZmFjZS4gU3Vy
-ZSB1c2luZyB3aXRoIHB3bSBzeXNmcyBpbiBwYXJhbGxlbAppc24ndCBwb3NzaWJsZS4KPgo+Cj4+
-PiBBc3N1bWluZyB5b3UgaGF2ZSBzb21lIGludGVyZXN0IGluIHRoaXMgZHJpdmVyOiBJdCBzdGls
-bCB1c2VzIHRoZSBsZWdhY3kKPj4+IHN0dWZmIGltcGxlbWVudGluZyAuY29uZmlnLCAuZW5hYmxl
-LCAuZGlzYWJsZSwgLnNldF9wb2xhcml0eS4gQXJlIHlvdQo+Pj4gd2lsbGluZyB0byB0ZXN0IChv
-ciBldmVuIGltcGxlbWVudCkgYSBzd2l0Y2ggdG8gLmFwcGx5IGluc3RlYWQ/Cj4+IFllcywgZGVm
-aW5pdGVseS4gVGhpcyBpcyBvbmUgb2YgbXkgbmV2ZXIgZW5kaW5nIFRPRE8gbGlzdCBbMV0uIEJ1
-dCBpCj4+IHdvdWxkIGJlIHN1cHJpc2VkIHRoYXQgeW91IHdvbnQgaGF2ZSBhY2Nlc3MgdG8gYSBS
-YXNwYmVycnkgUGkuCj4gU28gYmUgc3VycHJpc2VkIDotKQo+Cj4+PiBKdXN0IGZyb20gYSBxdWlj
-ayBsb2NrIGludG8gdGhlIGRyaXZlciBJIHdvbmRlciBhIGZldyB0aGluZ3MsIG1heWJlIHlvdQo+
-Pj4gY2FuIHNoZWQgc29tZSBsaWdodCBoZXJlLiBJZiB0aGVyZSBpcyBwdWJsaWNseSBhdmFpbGFi
-bGUgZG9jdW1lbmF0aW9uCj4+PiBmb3IgdGhpcyBwaWVjZSBvZiBoYXJkd2FyZSwgZmVlbCBmcmVl
-IHRvIHBvaW50IHRoaXMgb3V0LCB0aGVuIEkgbWlnaHQgYmUKPj4+IGFibGUgdG8gd29yayBvdXQg
-c29tZSBvZiB0aGUgYW5zd2VycyBteXNlbGYuCj4+IEZvcnR1bmF0ZWx5IHllcyBbMl0KPiBDYXJl
-IHRvIGFkZCBhIGxpbmsgdG8gdGhpcyBkb2N1bWVudCBpbiB0aGUgZHJpdmVyIGZvciBvdGhlcnMg
-dG8gZWFzaWx5Cj4gZmluZCBpdD8KSSBkb24ndCB0aGluayBpdCdzIG5lY2Vzc2FyeS4gVGhpcyBk
-b2N1bWVudCBpcyBlYXN5IHRvIGZpbmQgdmlhICJiY20yODM1CmRhdGFzaGVldCIuCj4KPiBCZXN0
-IHJlZ2FyZHMKPiBVd2UKPgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
-aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
-dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Sat, Aug 24, 2019 at 04:09:48PM +0200, Stefan Wahren wrote:
+> This suppresses error messages in case the PWM clock isn't ready yet.
+> =
+
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
