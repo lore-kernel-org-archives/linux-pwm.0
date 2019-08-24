@@ -1,7 +1,7 @@
 From: Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH 3/3] pwm: bcm2835: suppress error message during deferred probe
-Date: Sat, 24 Aug 2019 09:07:25 +0200
-Message-ID: <1566630445-4599-4-git-send-email-wahrenst@gmx.net>
+Subject: [PATCH 1/3] pwm: bcm2835: suppress error message for invalid period_ns
+Date: Sat, 24 Aug 2019 09:07:23 +0200
+Message-ID: <1566630445-4599-2-git-send-email-wahrenst@gmx.net>
 References: <1566630445-4599-1-git-send-email-wahrenst@gmx.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,28 +21,30 @@ To: Thierry Reding <thierry.reding@gmail.com>, Eric Anholt <eric@anholt.net>, Fl
 Cc: linux-pwm@vger.kernel.org, Stefan Wahren <wahrenst@gmx.net>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-This suppresses error messages in case the PWM clock isn't ready yet.
+The PWM config can be triggered via sysfs, so we better suppress the
+error message in case of an invalid period to avoid kernel log spamming.
 
 Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 ---
- drivers/pwm/pwm-bcm2835.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-bcm2835.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
-index 2c82386..ce362be 100644
+index f6fe0b9..5276306 100644
 --- a/drivers/pwm/pwm-bcm2835.c
 +++ b/drivers/pwm/pwm-bcm2835.c
-@@ -153,7 +153,10 @@ static int bcm2835_pwm_probe(struct platform_device *pdev)
+@@ -72,11 +72,8 @@ static int bcm2835_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
- 	pc->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(pc->clk)) {
--		dev_err(&pdev->dev, "clock not found: %ld\n", PTR_ERR(pc->clk));
-+		if (PTR_ERR(pc->clk) != -EPROBE_DEFER) {
-+			dev_err(&pdev->dev, "clock not found: %ld\n",
-+				PTR_ERR(pc->clk));
-+		}
- 		return PTR_ERR(pc->clk);
- 	}
+ 	scaler = DIV_ROUND_CLOSEST(NSEC_PER_SEC, rate);
 
+-	if (period_ns <= MIN_PERIOD) {
+-		dev_err(pc->dev, "period %d not supported, minimum %d\n",
+-			period_ns, MIN_PERIOD);
++	if (period_ns <= MIN_PERIOD)
+ 		return -EINVAL;
+-	}
+
+ 	writel(DIV_ROUND_CLOSEST(duty_ns, scaler),
+ 	       pc->base + DUTY(pwm->hwpwm));
 --
 2.7.4
