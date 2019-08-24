@@ -1,16 +1,14 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 0/3] pwm: bcm2835: Minor fixes
-Date: Sat, 24 Aug 2019 12:56:14 +0200
-Message-ID: <20190824105614.wpkvqqxjey6umhrs@pengutronix.de>
-References: <1566630445-4599-1-git-send-email-wahrenst@gmx.net>
- <20190824092553.j4rjpzaz4m6yaa5t@pengutronix.de>
- <22f8e65b-2d65-84e7-de50-ba6538a84292@gmx.net>
+From: Stefan Wahren <wahrenst@gmx.net>
+Subject: [PATCH V2 1/3] pwm: bcm2835: suppress error message for invalid
+ period_ns
+Date: Sat, 24 Aug 2019 16:09:46 +0200
+Message-ID: <1566655788-24949-2-git-send-email-wahrenst@gmx.net>
+References: <1566655788-24949-1-git-send-email-wahrenst@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <22f8e65b-2d65-84e7-de50-ba6538a84292@gmx.net>
+In-Reply-To: <1566655788-24949-1-git-send-email-wahrenst@gmx.net>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,61 +18,27 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Stefan Wahren <wahrenst@gmx.net>
-Cc: linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>, Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
+Cc: linux-pwm@vger.kernel.org, Stefan Wahren <wahrenst@gmx.net>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Stefan,
-
-On Sat, Aug 24, 2019 at 12:05:00PM +0200, Stefan Wahren wrote:
-> Am 24.08.19 um 11:25 schrieb Uwe Kleine-K=F6nig:
-> > Hello Stefan,
-> >
-> > On Sat, Aug 24, 2019 at 09:07:22AM +0200, Stefan Wahren wrote:
-> >> This small patch series contains minor fixes for clock handling and the
-> >> period range check.
-> >
-> > I'd like to understand the various different usecases of PWMs. The
-> > in-kernel consumers are kind of obvious, but sysfs users are not. It
-> > seems you are one of the latter.
-> >
-> > Would you mind sharing what you control using the PWM?
-> =
-
-> not really a PWM user with BCM2835. It's more the motivation as a
-> platform maintainer to keep the drivers in shape. At work we are using
-> sysfs interface for user applications to control ventilation (via hwmon
-> interface) and EV charging (IEC 61851) with a different SoC.
-
-I don't understand how you use the sysfs interface and still interact
-with the hwmon interface. Other than that, thanks for sharing.
-
-
-> > Assuming you have some interest in this driver: It still uses the legacy
-> > stuff implementing .config, .enable, .disable, .set_polarity. Are you
-> > willing to test (or even implement) a switch to .apply instead?
-> =
-
-> Yes, definitely. This is one of my never ending TODO list [1]. But i
-> would be suprised that you wont have access to a Raspberry Pi.
-
-So be surprised :-)
-
-> > Just from a quick lock into the driver I wonder a few things, maybe you
-> > can shed some light here. If there is publicly available documenation
-> > for this piece of hardware, feel free to point this out, then I might be
-> > able to work out some of the answers myself.
-> =
-
-> Fortunately yes [2]
-
-Care to add a link to this document in the driver for others to easily
-find it?
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+VGhlIFBXTSBjb25maWcgY2FuIGJlIHRyaWdnZXJlZCB2aWEgc3lzZnMsIHNvIHdlIGJldHRlciBz
+dXBwcmVzcyB0aGUKZXJyb3IgbWVzc2FnZSBpbiBjYXNlIG9mIGFuIGludmFsaWQgcGVyaW9kIHRv
+IGF2b2lkIGtlcm5lbCBsb2cgc3BhbW1pbmcuCgpTaWduZWQtb2ZmLWJ5OiBTdGVmYW4gV2FocmVu
+IDx3YWhyZW5zdEBnbXgubmV0PgpBY2tlZC1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5l
+LWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0tCiBkcml2ZXJzL3B3bS9wd20tYmNtMjgzNS5jIHwg
+NSArLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCA0IGRlbGV0aW9ucygtKQoK
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1iY20yODM1LmMgYi9kcml2ZXJzL3B3bS9wd20t
+YmNtMjgzNS5jCmluZGV4IGY2ZmUwYjkuLjUyNzYzMDYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdt
+L3B3bS1iY20yODM1LmMKKysrIGIvZHJpdmVycy9wd20vcHdtLWJjbTI4MzUuYwpAQCAtNzIsMTEg
+KzcyLDggQEAgc3RhdGljIGludCBiY20yODM1X3B3bV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpj
+aGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLAoKIAlzY2FsZXIgPSBESVZfUk9VTkRfQ0xPU0VT
+VChOU0VDX1BFUl9TRUMsIHJhdGUpOwoKLQlpZiAocGVyaW9kX25zIDw9IE1JTl9QRVJJT0QpIHsK
+LQkJZGV2X2VycihwYy0+ZGV2LCAicGVyaW9kICVkIG5vdCBzdXBwb3J0ZWQsIG1pbmltdW0gJWRc
+biIsCi0JCQlwZXJpb2RfbnMsIE1JTl9QRVJJT0QpOworCWlmIChwZXJpb2RfbnMgPD0gTUlOX1BF
+UklPRCkKIAkJcmV0dXJuIC1FSU5WQUw7Ci0JfQoKIAl3cml0ZWwoRElWX1JPVU5EX0NMT1NFU1Qo
+ZHV0eV9ucywgc2NhbGVyKSwKIAkgICAgICAgcGMtPmJhc2UgKyBEVVRZKHB3bS0+aHdwd20pKTsK
+LS0KMi43LjQKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmlu
+ZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9s
+aW51eC1hcm0ta2VybmVsCg==
