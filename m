@@ -1,47 +1,33 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
- sysfs
-Date: Tue, 27 Aug 2019 10:44:59 +0100
-Message-ID: <20190827094459.GB4804@dell>
-References: <20190709190007.91260-1-mka@chromium.org>
- <20190709190007.91260-3-mka@chromium.org>
- <20190807201528.GO250418@google.com>
- <510f6d8a-71a0-fa6e-33ea-c4a4bfa96607@linaro.org>
- <20190816175317.GU250418@google.com>
- <20190819100241.5pctjxmsq6crlale@holly.lan>
- <20190819185049.GZ250418@google.com>
- <20190820135617.64urowbu2kwdynib@holly.lan>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: pwm: sprd: Add Spreadtrum PWM
+ documentation
+Date: Tue, 27 Aug 2019 11:20:18 -0500
+Message-ID: <20190827162018.GA11135@bogus>
+References: <65a34dd943b0260bfe45ec76dcf414a67e5d8343.1565785291.git.baolin.wang@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190820135617.64urowbu2kwdynib@holly.lan>
+In-Reply-To: <65a34dd943b0260bfe45ec76dcf414a67e5d8343.1565785291.git.baolin.wang@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, u.kleine-koenig@pengutronix.de, mark.rutland@arm.com, orsonzhai@gmail.com, zhang.lyra@gmail.com, baolin.wang@linaro.org, vincent.guittot@linaro.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-[...]
-
-> > IIUC the conclusion is that there is no need for a string attribute
-> > because we only need to distinguish between 'perceptual' and
-> > 'non-perceptual'. If that is correct, do you have any preference for
-> > the attribute name ('perceptual_scale', 'perceptual', ...)?
+On Wed, 14 Aug 2019 20:46:10 +0800, Baolin Wang wrote:
+> Add Spreadtrum PWM controller documentation.
 > 
-> More a summary than a conclusion! There is a reason I have left a bit or
-> space for others to comment on this over the last month (and a bit).
+> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> ---
+> Changes from v2:
+>  - Fix some typos.
+>  - Move assigned-clocks to be optional.
 > 
-> To be clear my Reviewed-by: means that I believe that the kernel is better
-> with "non-linear/linear/unknown" than without it and that I am comfortable
-> the API isn't likely to be a millstone for us.
+> Changes from v1:
+>  - Use assigned-clock-parents and assigned-clocks to set PWM clock parent.
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-sprd.txt |   40 ++++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sprd.txt
 > 
-> Lee, Jingoo: Either of you care to offer $0.02
 
-No, not really.  Happy to leave it to your good judgement.
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Reviewed-by: Rob Herring <robh@kernel.org>
