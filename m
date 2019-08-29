@@ -1,88 +1,78 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v2 6/6] pwm: atmel: implement .get_state()
-Date: Wed, 28 Aug 2019 10:26:18 +0000
-Message-ID: <8da4ef26-872f-beaf-b5cb-9d8cb93a2ce9@microchip.com>
-References: <20190824001041.11007-1-uwe@kleine-koenig.org>
- <20190824001041.11007-7-uwe@kleine-koenig.org>
+From: Sam Shih <sam.shih@mediatek.com>
+Subject: [PATCH v6 0/11] Add mt7629 and fix mt7628 pwm
+Date: Thu, 29 Aug 2019 13:39:09 +0800
+Message-ID: <1567057160-552-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190824001041.11007-7-uwe@kleine-koenig.org>
-Content-Language: en-US
-Content-ID: <F5B7CFECC7B0094FB3579B1E4A09AC42@namprd11.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: uwe@kleine-koenig.org, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDI0LjA4LjIwMTkgMDM6MTAsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBFeHRl
-cm5hbCBFLU1haWwNCj4gDQo+IA0KPiBUaGlzIGZ1bmN0aW9uIHJlYWRzIGJhY2sgdGhlIGNvbmZp
-Z3VyZWQgcGFyYW1ldGVycyBmcm9tIHRoZSBoYXJkd2FyZS4gQXMNCj4gLmFwcGx5IHJvdW5kcyBk
-b3duIChtb3N0bHkpIEknbSByb3VuZGluZyB1cCBpbiAuZ2V0X3N0YXRlKCkgdG8gYWNoaWV2ZQ0K
-PiB0aGF0IGFwcGx5aW5nIGEgc3RhdGUganVzdCByZWFkIGZyb20gaGFyZHdhcmUgaXMgYSBuby1v
-cC4NCg0KU2luY2UgdGhpcyByZWFkIGlzIG9ubHkgYXQgcHJvYmluZywgYXQgbGVhc3QgZm9yIHRo
-ZSBtb21lbnQsIGFuZCwgYXMgZmFyIGFzDQpJIHJlbWVtYmVyLCB0aGUgaWRlYSB3LyAuZ2V0X3N0
-YXRlIHdhcyB0byByZWZsZWN0IGluIExpbnV4IHRoZSBzdGF0ZXMgb2YNClBXTXMgdGhhdCB3ZXJl
-IHNldHVwIGJlZm9yZSBMaW51eCB0YWtlcyBjb250cm9sIChlLmcuIFBXTXMgc2V0dXAgaW4NCmJv
-b3Rsb2FkZXJzKSBJIHRoaW5rIGl0IHdvdWxkIG5vIHByb2JsZW0gaWYgaXQgd291bGQgYmUgbm8t
-b3BzIGluIHRoaXMNCnNjZW5hcmlvLiBJbiBjYXNlIG9mIHJ1bi10aW1lIHN0YXRlIHJldHJpZXZh
-bCwgcHdtX2dldF9zdGF0ZSgpIHNob3VsZCBiZQ0KZW5vdWdoLiBJZiBvbmUgd291bGQgZ2V0IHRo
-ZSBzdGF0ZSBwcmV2aW91c2x5IHNhdmVkIHcvIHRoaXMgLmdldF9zdGF0ZSBBUEkNCmhlL3NoZSB3
-b3VsZCBjaGFuZ2UgaXQsIHRoZW4gaXQgd291bGQgYXBwbHkgdGhlIGNoYW5nZXMgdG8gdGhlIGhh
-cmR3YXJlLiBObw0KY2hhbmdlcyBvZiBQV00gc3RhdGUgd291bGQgYmUgYW55d2F5IHNraXBwZWQg
-ZnJvbSB0aGUgYmVnaW5uaW5nLCBpbg0KcHdtX2FwcGx5X3N0YXRlKCkgYnkgdGhpcyBjb2RlOg0K
-DQogICAgICAgIGlmIChzdGF0ZS0+cGVyaW9kID09IHB3bS0+c3RhdGUucGVyaW9kICYmDQogICAg
-ICAgICAgICBzdGF0ZS0+ZHV0eV9jeWNsZSA9PSBwd20tPnN0YXRlLmR1dHlfY3ljbGUgJiYNCgkg
-ICAgc3RhdGUtPnBvbGFyaXR5ID09IHB3bS0+c3RhdGUucG9sYXJpdHkgJiYNCiAgICAgICAgICAg
-IHN0YXRlLT5lbmFibGVkID09IHB3bS0+c3RhdGUuZW5hYmxlZCkNCgkJcmV0dXJuIDA7DQoNCkJ1
-dCBtYXliZSBJJ20gbWlzc2luZyBzb21ldGhpbmcuDQoNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFV3
-ZSBLbGVpbmUtS8O2bmlnIDx1d2VAa2xlaW5lLWtvZW5pZy5vcmc+DQo+IC0tLQ0KPiBOZXcgaW4g
-djINCj4gDQo+ICBkcml2ZXJzL3B3bS9wd20tYXRtZWwuYyB8IDM5ICsrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDM5IGluc2VydGlvbnMo
-KykNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYyBiL2RyaXZlcnMv
-cHdtL3B3bS1hdG1lbC5jDQo+IGluZGV4IDE1MmMyYjdkZDZkZi4uZjc4ODUwMWFiNmNhIDEwMDY0
-NA0KPiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYw0KPiArKysgYi9kcml2ZXJzL3B3bS9w
-d20tYXRtZWwuYw0KPiBAQCAtMjk1LDggKzI5NSw0NyBAQCBzdGF0aWMgaW50IGF0bWVsX3B3bV9h
-cHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQo+ICAJ
-cmV0dXJuIDA7DQo+ICB9DQo+ICANCj4gK3N0YXRpYyB2b2lkIGF0bWVsX3B3bV9nZXRfc3RhdGUo
-c3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KPiArCQkJCXN0
-cnVjdCBwd21fc3RhdGUgKnN0YXRlKQ0KPiArew0KPiArCXN0cnVjdCBhdG1lbF9wd21fY2hpcCAq
-YXRtZWxfcHdtID0gdG9fYXRtZWxfcHdtX2NoaXAoY2hpcCk7DQo+ICsJdTMyIHNyLCBjbXI7DQo+
-ICsNCj4gKwlzciA9IGF0bWVsX3B3bV9yZWFkbChhdG1lbF9wd20sIFBXTV9TUik7DQo+ICsJY21y
-ID0gYXRtZWxfcHdtX2NoX3JlYWRsKGF0bWVsX3B3bSwgcHdtLT5od3B3bSwgUFdNX0NNUik7DQo+
-ICsNCj4gKwlpZiAoc3IgJiAoMSA8PCBwd20tPmh3cHdtKSkgew0KPiArCQl1bnNpZ25lZCBsb25n
-IHJhdGUgPSBjbGtfZ2V0X3JhdGUoYXRtZWxfcHdtLT5jbGspOw0KPiArCQl1MzIgY2R0eSwgY3By
-ZCwgcHJlczsgDQoNClRoZXJlIGlzIGEgd2hpdGVzcGFjZSBhdCB0aGUgZW5kIG9mIHRoaXMgbGlu
-ZS4NCg0KPiArCQl1NjQgdG1wOw0KPiArDQo+ICsJCXByZXMgPSBjbXIgJiBQV01fQ01SX0NQUkVf
-TVNLOw0KPiArDQo+ICsJCWNwcmQgPSBhdG1lbF9wd21fY2hfcmVhZGwoYXRtZWxfcHdtLCBwd20t
-Pmh3cHdtLCBhdG1lbF9wd20tPmRhdGEtPnJlZ3MucGVyaW9kKTsNCg0KSWYgdGhpcyBpcyBwb3Nz
-aWJsZSwgcGxlYXNlIHRyeSB0byBrZWVwIGl0IGF0IDgwIGNoYXJzIHBlciBsaW5lLiBJbiBteQ0K
-b3BpbmlvbiB0aGlzIHN0aWxsIGxvb2tzIGdvb2Q6DQoJCWNwcmQgPSBhdG1lbF9wd21fY2hfcmVh
-ZGwoYXRtZWxfcHdtLCBwd20tPmh3cHdtLA0KCQkJCQkgIGF0bWVsX3B3bS0+ZGF0YS0+cmVncy5w
-ZXJpb2QpOw0KDQo+ICsJCXRtcCA9ICh1NjQpY3ByZCAqIE5TRUNfUEVSX1NFQzsNCj4gKwkJdG1w
-IDw8PSBwcmVzOw0KPiArCQlzdGF0ZS0+cGVyaW9kID0gRElWNjRfVTY0X1JPVU5EX1VQKHRtcCwg
-cmF0ZSk7DQo+ICsNCj4gKwkJY2R0eSA9IGF0bWVsX3B3bV9jaF9yZWFkbChhdG1lbF9wd20sIHB3
-bS0+aHdwd20sIGF0bWVsX3B3bS0+ZGF0YS0+cmVncy5kdXR5KTsNCg0KRGl0dG8uDQoNCj4gKwkJ
-dG1wID0gKHU2NCljZHR5ICogTlNFQ19QRVJfU0VDOw0KPiArCQl0bXAgPDw9IHByZXM7DQo+ICsJ
-CXN0YXRlLT5kdXR5X2N5Y2xlID0gRElWNjRfVTY0X1JPVU5EX1VQKHRtcCwgcmF0ZSk7DQo+ICsN
-Cj4gKwkJc3RhdGUtPmVuYWJsZWQgPSB0cnVlOw0KPiArCX0gZWxzZSB7DQo+ICsJCXN0YXRlLT5l
-bmFibGVkID0gZmFsc2U7DQo+ICsJfQ0KPiArDQo+ICsJaWYgKGNtciAmIFBXTV9DTVJfQ1BPTCkN
-Cj4gKwkJc3RhdGUtPnBvbGFyaXR5ID0gUFdNX1BPTEFSSVRZX0lOVkVSU0VEOw0KPiArCWVsc2UN
-Cj4gKwkJc3RhdGUtPnBvbGFyaXR5ID0gUFdNX1BPTEFSSVRZX05PUk1BTDsNCj4gKw0KPiArfQ0K
-PiArDQo+ICBzdGF0aWMgY29uc3Qgc3RydWN0IHB3bV9vcHMgYXRtZWxfcHdtX29wcyA9IHsNCj4g
-IAkuYXBwbHkgPSBhdG1lbF9wd21fYXBwbHksDQo+ICsJLmdldF9zdGF0ZSA9IGF0bWVsX3B3bV9n
-ZXRfc3RhdGUsDQo+ICAJLm93bmVyID0gVEhJU19NT0RVTEUsDQo+ICB9Ow0KDQpPdGhlciB0aGFu
-IHRoZSBtaW5vciB0aGluZ3MgYWJvdmUsDQpBY2tlZC1ieTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVk
-aXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNCj4gIA0KPiANCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0
-CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFk
-ZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Changes since v6:
+  1. Due to we can use fixed-clock in DT
+     We removed has_clks and fixed-clock properties 
+
+Changes since v5:
+- Follow reviewer's comments:
+  1. the license stuff is a separate change
+  2. split fix mt7628 pwm into a single patch
+  3. to ensure to not use mtk_pwm_clk_name[10] 
+     (After dynamic allocate clock array patch, 
+      this is no need to check)
+  4. Use clock-frequency property to replace 
+     the use of has_clks
+
+Changes since v4:
+- Follow reviewer's comments (v3: pwm: mediatek: add a property "num-pwms")
+  Move the changes of droping the check for of_device_get_match_data
+  returning non-NULL to next patch
+- Follow reviewers's comments 
+  (v3: pwm: mediatek: allocate the clks array dynamically)
+  1. use pc->soc->has_clks to check clocks exist or not.
+  2. Add error message when probe() unable to get clks
+- Fixes bug when SoC is old mips which has no complex clock tree.
+if clocks not exist, use the new property from DT to apply period 
+calculation; otherwise, use clk_get_rate to get clock frequency and 
+apply period calculation.
+
+Changes since v3:
+- add a new property "clock-frequency" and fix mt7628 pwm
+- add mt7629 pwm support
+
+Changes since v2:
+- use num-pwms instead of mediatek,num-pwms.
+- rename the member from num_pwms to fallback_num_pwms to make it 
+  more obvious that it doesn't represent the actually used value.
+- add a dev_warn and a expressive comment to help other developers 
+  to not start adding num_pwms in the compatible_data.
+
+Changes since v1:
+- add some checks for backwards compatibility.
+
+
+Ryder Lee (5):
+  pwm: mediatek: add a property "num-pwms"
+  dt-bindings: pwm: add a property "num-pwms"
+  arm64: dts: mt7622: add a property "num-pwms" for PWM
+  arm: dts: mt7623: add a property "num-pwms" for PWM
+  dt-bindings: pwm: update bindings for MT7629 SoC
+
+Sam Shih (6):
+  pwm: mediatek: droping the check for of_device_get_match_data
+  pwm: mediatek: remove a property "has-clks"
+  pwm: mediatek: allocate the clks array dynamically
+  pwm: mediatek: use pwm_mediatek as common prefix
+  pwm: mediatek: update license and switch to SPDX tag
+  arm: dts: mediatek: add mt7629 pwm support
+
+ .../devicetree/bindings/pwm/pwm-mediatek.txt  |   8 +-
+ arch/arm/boot/dts/mt7623.dtsi                 |   1 +
+ arch/arm64/boot/dts/mediatek/mt7622.dtsi      |   1 +
+ drivers/pwm/pwm-mediatek.c                    | 245 +++++++++---------
+ arch/arm/boot/dts/mt7629.dtsi                 | 16 ++++++++++++++++
+ 5 files changed, 149 insertions(+), 122 deletions(-)
+
+-- 
+2.17.1
