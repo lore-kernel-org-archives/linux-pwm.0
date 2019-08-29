@@ -1,50 +1,59 @@
-From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v6 11/11] arm: dts: mediatek: add mt7629 pwm support
-Date: Thu, 29 Aug 2019 13:39:20 +0800
-Message-ID: <1567057160-552-12-git-send-email-sam.shih@mediatek.com>
-References: <1567057160-552-1-git-send-email-sam.shih@mediatek.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH v3 2/4] backlight: Expose brightness curve type through
+ sysfs
+Date: Thu, 29 Aug 2019 15:09:05 +0100
+Message-ID: <20190829140905.wkv2pwzmhhfyzan4@holly.lan>
+References: <20190709190007.91260-1-mka@chromium.org>
+ <20190709190007.91260-3-mka@chromium.org>
+ <20190807201528.GO250418@google.com>
+ <510f6d8a-71a0-fa6e-33ea-c4a4bfa96607@linaro.org>
+ <20190816175317.GU250418@google.com>
+ <20190819100241.5pctjxmsq6crlale@holly.lan>
+ <20190819185049.GZ250418@google.com>
+ <20190820135617.64urowbu2kwdynib@holly.lan>
+ <20190827094459.GB4804@dell>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1567057160-552-1-git-send-email-sam.shih@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <20190827094459.GB4804@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Matthias Kaehlcke <mka@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Douglas Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>, Pavel Machek <pavel@ucw.cz>, Jacek Anaszewski <jacek.anaszewski@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This adds pwm support for MT7629.
+On Tue, Aug 27, 2019 at 10:44:59AM +0100, Lee Jones wrote:
+> [...]
+> 
+> > > IIUC the conclusion is that there is no need for a string attribute
+> > > because we only need to distinguish between 'perceptual' and
+> > > 'non-perceptual'. If that is correct, do you have any preference for
+> > > the attribute name ('perceptual_scale', 'perceptual', ...)?
+> > 
+> > More a summary than a conclusion! There is a reason I have left a bit or
+> > space for others to comment on this over the last month (and a bit).
+> > 
+> > To be clear my Reviewed-by: means that I believe that the kernel is better
+> > with "non-linear/linear/unknown" than without it and that I am comfortable
+> > the API isn't likely to be a millstone for us.
+> > 
+> > Lee, Jingoo: Either of you care to offer $0.02
+> 
+> No, not really.  Happy to leave it to your good judgement.
 
-Signed-off-by: Sam Shih <sam.shih@mediatek.com>
----
- arch/arm/boot/dts/mt7629.dtsi | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+In that case... the patch has my reviewed-by and although the concerns
+raised in the associated threads have merit I don't think they are
+enough to stop the patch.
 
-diff --git a/arch/arm/boot/dts/mt7629.dtsi b/arch/arm/boot/dts/mt7629.dtsi
-index 9608bc2ccb3f..493be9a9453b 100644
---- a/arch/arm/boot/dts/mt7629.dtsi
-+++ b/arch/arm/boot/dts/mt7629.dtsi
-@@ -241,6 +241,22 @@
- 			status = "disabled";
- 		};
- 
-+		pwm: pwm@11006000 {
-+			compatible = "mediatek,mt7629-pwm",
-+				     "mediatek,mt7622-pwm";
-+			reg = <0 0x11006000 0 0x1000>;
-+			interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&topckgen CLK_TOP_PWM_SEL>,
-+				 <&pericfg CLK_PERI_PWM_PD>,
-+				 <&pericfg CLK_PERI_PWM1_PD>;
-+			clock-names = "top", "main", "pwm1";
-+			assigned-clocks = <&topckgen CLK_TOP_PWM_SEL>;
-+			assigned-clock-parents =
-+					<&topckgen CLK_TOP_UNIVPLL2_D4>;
-+			num-pwms = <1>;
-+			status = "disabled";
-+		};
-+
- 		i2c: i2c@11007000 {
- 			compatible = "mediatek,mt7629-i2c",
- 				     "mediatek,mt2712-i2c";
--- 
-2.17.1
+Please merge.
+
+
+Daniel.
+
+> 
+> -- 
+> Lee Jones [李琼斯]
+> Linaro Services Technical Lead
+> Linaro.org │ Open source software for ARM SoCs
+> Follow Linaro: Facebook | Twitter | Blog
