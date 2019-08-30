@@ -1,81 +1,65 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [RESEND, PATCH v7 0/11] Add mt7629 and fix mt7628 pwm
-Date: Fri, 30 Aug 2019 11:57:06 +0800
-Message-ID: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v7 02/11] pwm: mediatek: droping the check for of_device_get_match_data
+Date: Fri, 30 Aug 2019 11:57:08 +0800
+Message-ID: <1567137437-10041-3-git-send-email-sam.shih@mediatek.com>
+References: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
 Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Changes since v7:
-  1. PATCH v7 10/11: Add a missed Reviewed-by tag
+This patch drop the check for of_device_get_match_data.
+Due to the only way call driver probe is compatible match.
+The .data pointer which point to the SoC specify data is
+directly set by driver, and it should not be NULL in our case.
+We can safety remove the check for of_device_get_match_data.
 
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Used:
+https://patchwork.kernel.org/patch/11096905/
 Changes since v6:
-  1. Due to we can use fixed-clock in DT
-     We removed has_clks and fixed-clock properties 
-
-Changes since v5:
-- Follow reviewer's comments:
-  1. the license stuff is a separate change
-  2. split fix mt7628 pwm into a single patch
-  3. to ensure to not use mtk_pwm_clk_name[10] 
-     (After dynamic allocate clock array patch, 
-      this is no need to check)
-  4. Use clock-frequency property to replace 
-     the use of has_clks
+Add an Acked-by tag
 
 Changes since v4:
-- Follow reviewer's comments (v3: pwm: mediatek: add a property "num-pwms")
-  Move the changes of droping the check for of_device_get_match_data
-  returning non-NULL to next patch
-- Follow reviewers's comments 
-  (v3: pwm: mediatek: allocate the clks array dynamically)
-  1. use pc->soc->has_clks to check clocks exist or not.
-  2. Add error message when probe() unable to get clks
-- Fixes bug when SoC is old mips which has no complex clock tree.
-if clocks not exist, use the new property from DT to apply period 
-calculation; otherwise, use clk_get_rate to get clock frequency and 
-apply period calculation.
+Follow reviewer's comments:
+Move the changes of droping the check for of_device_get_match_data
+returning non-NULL to this patch
 
-Changes since v3:
-- add a new property "clock-frequency" and fix mt7628 pwm
-- add mt7629 pwm support
+---
+ drivers/pwm/pwm-mediatek.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Changes since v2:
-- use num-pwms instead of mediatek,num-pwms.
-- rename the member from num_pwms to fallback_num_pwms to make it 
-  more obvious that it doesn't represent the actually used value.
-- add a dev_warn and a expressive comment to help other developers 
-  to not start adding num_pwms in the compatible_data.
-
-Changes since v1:
-- add some checks for backwards compatibility.
-
-
-Ryder Lee (5):
-  pwm: mediatek: add a property "num-pwms"
-  dt-bindings: pwm: add a property "num-pwms"
-  arm64: dts: mt7622: add a property "num-pwms" for PWM
-  arm: dts: mt7623: add a property "num-pwms" for PWM
-  dt-bindings: pwm: update bindings for MT7629 SoC
-
-Sam Shih (6):
-  pwm: mediatek: droping the check for of_device_get_match_data
-  pwm: mediatek: remove a property "has-clks"
-  pwm: mediatek: allocate the clks array dynamically
-  pwm: mediatek: use pwm_mediatek as common prefix
-  pwm: mediatek: update license and switch to SPDX tag
-  arm: dts: mediatek: add mt7629 pwm support
-
- .../devicetree/bindings/pwm/pwm-mediatek.txt  |   8 +-
- arch/arm/boot/dts/mt7623.dtsi                 |   1 +
- arch/arm64/boot/dts/mediatek/mt7622.dtsi      |   1 +
- drivers/pwm/pwm-mediatek.c                    | 245 +++++++++---------
- arch/arm/boot/dts/mt7629.dtsi                 | 16 ++++++++++++++++
- 5 files changed, 149 insertions(+), 122 deletions(-)
-
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index e214f4f57107..ebd62629e3fe 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -226,7 +226,6 @@ static const struct pwm_ops mtk_pwm_ops = {
+ 
+ static int mtk_pwm_probe(struct platform_device *pdev)
+ {
+-	const struct mtk_pwm_platform_data *data;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct mtk_pwm_chip *pc;
+ 	struct resource *res;
+@@ -237,10 +236,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 	if (!pc)
+ 		return -ENOMEM;
+ 
+-	data = of_device_get_match_data(&pdev->dev);
+-	if (data == NULL)
+-		return -EINVAL;
+-	pc->soc = data;
++	pc->soc = of_device_get_match_data(&pdev->dev);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
 -- 
 2.17.1
