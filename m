@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v7 0/11] Add mt7629 and fix mt7628 pwm
-Date: Fri, 30 Aug 2019 11:49:25 +0800
-Message-ID: <1567136976-9351-1-git-send-email-sam.shih@mediatek.com>
+Subject: [RESEND PATCH v7 0/11] Add mt7629 and fix mt7628 pwm
+Date: Fri, 30 Aug 2019 11:50:49 +0800
+Message-ID: <1567137060-9402-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
