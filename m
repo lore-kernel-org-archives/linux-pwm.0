@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v7 01/11] pwm: mediatek: add a property "num-pwms"
-Date: Fri, 30 Aug 2019 11:57:07 +0800
-Message-ID: <1567137437-10041-2-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v7 04/11] pwm: mediatek: allocate the clks array dynamically
+Date: Fri, 30 Aug 2019 11:57:10 +0800
+Message-ID: <1567137437-10041-5-git-send-email-sam.shih@mediatek.com>
 References: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -13,121 +13,184 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matth
 Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Ryder Lee <ryder.lee@mediatek.com>
+Instead of using fixed size of arrays, allocate the memory for them
+based on the information we get from the DT.
 
-This adds a property "num-pwms" to avoid having an endless
-list of compatibles with no differences for the same driver.
+Also remove the check for num_pwms, due to dynamically allocate pwm
+should not cause array index out of bound.
 
 Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
 Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
 Changes since v6:
-Add a Reviewed-by tag
+- Add a Reviewed-by tag
 
 Changes since v5:
-Check num-pwms value is no more than MTK_CLK_MAX - 2 (MAIN + TOP)
+- Follow reviewers's comments
+Make the changes of allocate the clks array dynamically as a single patch
 
 Changes since v4:
-Follow reviewer's comments:
-Move the changes of droping the check for of_device_get_match_data returning non-NULL to next patch
-
+- Follow reviewers's comments
+1. use pc->soc->has_clks to check clocks exist or not.
+2. Add error message when probe() unable to get clks
+- Fixes bug when SoC is old mips which has no complex clock tree.
+if clocks not exist, use the new property from DT to apply period caculation;
+otherwise, use clk_get_rate to get clock frequency and apply period caculation.
 
 ---
- drivers/pwm/pwm-mediatek.c | 36 ++++++++++++++++++++++++++++--------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-mediatek.c | 84 +++++++++++++++++++-------------------
+ 1 file changed, 42 insertions(+), 42 deletions(-)
 
 diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index eb6674ce995f..e214f4f57107 100644
+index 07e843aeddb1..71bfab7e2e19 100644
 --- a/drivers/pwm/pwm-mediatek.c
 +++ b/drivers/pwm/pwm-mediatek.c
-@@ -55,7 +55,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
+@@ -35,25 +35,6 @@
+ 
+ #define PWM_CLK_DIV_MAX		7
+ 
+-enum {
+-	MTK_CLK_MAIN = 0,
+-	MTK_CLK_TOP,
+-	MTK_CLK_PWM1,
+-	MTK_CLK_PWM2,
+-	MTK_CLK_PWM3,
+-	MTK_CLK_PWM4,
+-	MTK_CLK_PWM5,
+-	MTK_CLK_PWM6,
+-	MTK_CLK_PWM7,
+-	MTK_CLK_PWM8,
+-	MTK_CLK_MAX,
+-};
+-
+-static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
+-	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5", "pwm6", "pwm7",
+-	"pwm8"
+-};
+-
+ struct mtk_pwm_platform_data {
+ 	unsigned int fallback_npwms;
+ 	bool pwm45_fixup;
+@@ -63,12 +44,17 @@ struct mtk_pwm_platform_data {
+  * struct mtk_pwm_chip - struct representing PWM chip
+  * @chip: linux PWM chip representation
+  * @regs: base address of PWM chip
+- * @clks: list of clocks
++ * @clk_top: the top clock generator
++ * @clk_main: the clock used by PWM core
++ * @clk_pwms: the clock used by each PWM channel
++ * @clk_freq: the fix clock frequency of legacy MIPS SoC
+  */
+ struct mtk_pwm_chip {
+ 	struct pwm_chip chip;
+ 	void __iomem *regs;
+-	struct clk *clks[MTK_CLK_MAX];
++	struct clk *clk_top;
++	struct clk *clk_main;
++	struct clk **clk_pwms;
+ 	const struct mtk_pwm_platform_data *soc;
  };
  
- struct mtk_pwm_platform_data {
--	unsigned int num_pwms;
-+	unsigned int fallback_npwms;
- 	bool pwm45_fixup;
- 	bool has_clks;
- };
-@@ -227,9 +227,10 @@ static const struct pwm_ops mtk_pwm_ops = {
- static int mtk_pwm_probe(struct platform_device *pdev)
+@@ -86,24 +72,24 @@ static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+ 	int ret;
+ 
+-	ret = clk_prepare_enable(pc->clks[MTK_CLK_TOP]);
++	ret = clk_prepare_enable(pc->clk_top);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = clk_prepare_enable(pc->clks[MTK_CLK_MAIN]);
++	ret = clk_prepare_enable(pc->clk_main);
+ 	if (ret < 0)
+ 		goto disable_clk_top;
+ 
+-	ret = clk_prepare_enable(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
++	ret = clk_prepare_enable(pc->clk_pwms[pwm->hwpwm]);
+ 	if (ret < 0)
+ 		goto disable_clk_main;
+ 
+ 	return 0;
+ 
+ disable_clk_main:
+-	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
++	clk_disable_unprepare(pc->clk_main);
+ disable_clk_top:
+-	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
++	clk_disable_unprepare(pc->clk_top);
+ 
+ 	return ret;
+ }
+@@ -112,9 +98,9 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
  {
- 	const struct mtk_pwm_platform_data *data;
-+	struct device_node *np = pdev->dev.of_node;
+ 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+ 
+-	clk_disable_unprepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+-	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
+-	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
++	clk_disable_unprepare(pc->clk_pwms[pwm->hwpwm]);
++	clk_disable_unprepare(pc->clk_main);
++	clk_disable_unprepare(pc->clk_top);
+ }
+ 
+ static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
+@@ -222,7 +208,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
  	struct mtk_pwm_chip *pc;
  	struct resource *res;
--	unsigned int i;
-+	unsigned int i, npwms;
+-	unsigned int i, npwms;
++	unsigned int npwms;
  	int ret;
  
  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-@@ -246,7 +247,26 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pc->regs))
- 		return PTR_ERR(pc->regs);
+@@ -248,21 +234,35 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 		}
+ 	}
  
--	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
-+	ret = of_property_read_u32(np, "num-pwms", &npwms);
-+	if (ret < 0) {
-+		/* It's deprecated, we should specify num_pwms via DT now. */
-+		if (pc->soc->fallback_npwms) {
-+			npwms = pc->soc->fallback_npwms;
-+			dev_warn(&pdev->dev, "DT is outdated, please update it\n");
-+		} else {
-+			dev_err(&pdev->dev, "failed to get number of PWMs\n");
-+			return ret;
-+		}
+-	/* MAIN + TOP + NPWM < MTK_CLK_MAX */
+-	if ((npwms + 2) > MTK_CLK_MAX) {
+-		dev_warn(&pdev->dev, "number of PWMs is larger than %d\n",
+-			 MTK_CLK_MAX - 2);
+-		npwms = MTK_CLK_MAX - 2;
++	int i;
++
++	pc->clk_pwms = devm_kcalloc(&pdev->dev, npwms,
++				    sizeof(*pc->clk_pwms), GFP_KERNEL);
++	if (!pc->clk_pwms)
++		return -ENOMEM;
++
++	pc->clk_top = devm_clk_get(&pdev->dev, "top");
++	if (IS_ERR(pc->clk_top)) {
++		dev_err(&pdev->dev, "clock: top fail: %ld\n",
++			PTR_ERR(pc->clk_top));
++		return PTR_ERR(pc->clk_top);
 +	}
 +
-+	/* MAIN + TOP + NPWM < MTK_CLK_MAX */
-+	if ((npwms + 2) > MTK_CLK_MAX) {
-+		dev_warn(&pdev->dev, "number of PWMs is larger than %d\n",
-+			 MTK_CLK_MAX - 2);
-+		npwms = MTK_CLK_MAX - 2;
-+	}
-+
-+	for (i = 0; i < npwms + 2 && pc->soc->has_clks; i++) {
- 		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
- 		if (IS_ERR(pc->clks[i])) {
++	pc->clk_main = devm_clk_get(&pdev->dev, "main");
++	if (IS_ERR(pc->clk_main)) {
++		dev_err(&pdev->dev, "clock: main fail: %ld\n",
++			PTR_ERR(pc->clk_main));
++		return PTR_ERR(pc->clk_main);
+ 	}
++	for (i = 0; i < npwms; i++) {
++		char name[8];
+ 
+-	for (i = 0; i < npwms + 2 ; i++) {
+-		pc->clks[i] = devm_clk_get(&pdev->dev,
+-					  mtk_pwm_clk_name[i]);
+-		if (IS_ERR(pc->clks[i])) {
++		snprintf(name, sizeof(name), "pwm%d", i + 1);
++		pc->clk_pwms[i] = devm_clk_get(&pdev->dev, name);
++		if (IS_ERR(pc->clk_pwms[i])) {
  			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-@@ -260,7 +280,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	pc->chip.dev = &pdev->dev;
- 	pc->chip.ops = &mtk_pwm_ops;
- 	pc->chip.base = -1;
--	pc->chip.npwm = data->num_pwms;
-+	pc->chip.npwm = npwms;
+-				mtk_pwm_clk_name[i],
+-				PTR_ERR(pc->clks[i]));
+-			return PTR_ERR(pc->clks[i]);
++				name, PTR_ERR(pc->clk_pwms[i]));
++			return PTR_ERR(pc->clk_pwms[i]);
+ 		}
+ 	}
  
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
-@@ -279,25 +299,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
- }
- 
- static const struct mtk_pwm_platform_data mt2712_pwm_data = {
--	.num_pwms = 8,
-+	.fallback_npwms = 8,
- 	.pwm45_fixup = false,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7622_pwm_data = {
--	.num_pwms = 6,
-+	.fallback_npwms = 6,
- 	.pwm45_fixup = false,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7623_pwm_data = {
--	.num_pwms = 5,
-+	.fallback_npwms = 5,
- 	.pwm45_fixup = true,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7628_pwm_data = {
--	.num_pwms = 4,
-+	.fallback_npwms = 4,
- 	.pwm45_fixup = true,
- 	.has_clks = false,
- };
 -- 
 2.17.1
