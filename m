@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
 Subject: [RESEND PATCH v7 0/11] Add mt7629 and fix mt7628 pwm
-Date: Fri, 30 Aug 2019 11:50:49 +0800
-Message-ID: <1567137060-9402-1-git-send-email-sam.shih@mediatek.com>
+Date: Fri, 30 Aug 2019 11:53:16 +0800
+Message-ID: <1567137207-9827-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -9,6 +9,9 @@ Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
 Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
+
+Changes since v7:
+  1. PATCH v7 10/100: Add a missed Reviewed-by tag back
 
 Changes since v6:
   1. Due to we can use fixed-clock in DT
