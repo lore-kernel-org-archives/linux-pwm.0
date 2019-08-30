@@ -1,15 +1,15 @@
-From: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v3 5/6] pwm: fsl-ftm: Don't update the state for the
- caller of pwm_apply_state()
-Date: Fri, 30 Aug 2019 10:39:16 -0700
-Message-ID: <CAD=FV=X8kVU_zr69aKe-+GkAQh-tDwVf8tFogKve3s5O5ndF-g@mail.gmail.com>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v3 2/6] pwm: let pwm_get_state() return the last
+ implemented state
+Date: Fri, 30 Aug 2019 19:48:35 +0200
+Message-ID: <5802279.ETANMDGNFP@phil>
 References: <20190824153707.13746-1-uwe@kleine-koenig.org>
- <20190824153707.13746-6-uwe@kleine-koenig.org>
+ <20190824153707.13746-3-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190824153707.13746-6-uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
+In-Reply-To: <20190824153707.13746-3-uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -19,21 +19,119 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
-Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGksCgpPbiBTYXQsIEF1ZyAyNCwgMjAxOSBhdCA4OjM3IEFNIFV3ZSBLbGVpbmUtS8O2bmlnIDx1
-d2VAa2xlaW5lLWtvZW5pZy5vcmc+IHdyb3RlOgo+Cj4gVGhlIHB3bS1mc2wtZnRtIGRyaXZlciBp
-cyBvbmUgb2Ygb25seSB0aHJlZSBQV00gZHJpdmVycyB3aGljaCB1cGRhdGVzCj4gdGhlIHN0YXRl
-IGZvciB0aGUgY2FsbGVyIG9mIHB3bV9hcHBseV9zdGF0ZSgpLiBUaGlzIG1pZ2h0IGhhdmUKPiBz
-dXJwcmlzaW5nIHJlc3VsdHMgaWYgdGhlIGNhbGxlciByZXVzZXMgdGhlIHZhbHVlcyBleHBlY3Rp
-bmcgdGhlbSB0bwo+IHN0aWxsIHJlcHJlc2VudCB0aGUgc2FtZSBzdGF0ZS4KPgo+IFNpZ25lZC1v
-ZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1d2VAa2xlaW5lLWtvZW5pZy5vcmc+Cj4gLS0tCj4g
-IGRyaXZlcnMvcHdtL3B3bS1mc2wtZnRtLmMgfCA0IC0tLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDQg
-ZGVsZXRpb25zKC0pCgpQcmVzdW1hYmx5IHRoaXMgcGF0Y2ggY291bGQgYnJlYWsgc29tZXRoaW5n
-IHNpbmNlIHRoZSBwd20tZnNsLWZ0bQpkcml2ZXIgZG9lc24ndCBhcHBlYXIgdG8gaW1wbGVtZW50
-IHRoZSBnZXRfc3RhdGUoKSBmdW5jdGlvbi4gIC4uLm9yCmRpZCBJIG1pc3MgaXQ/CgotRG91ZwoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXgtcm9j
-a2NoaXAgbWFpbGluZyBsaXN0CkxpbnV4LXJvY2tjaGlwQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0
-cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1yb2NrY2hpcAo=
+Am Samstag, 24. August 2019, 17:37:03 CEST schrieb Uwe Kleine-K=F6nig:
+> When pwm_apply_state() is called the lowlevel driver usually has to
+> apply some rounding because the hardware doesn't support nanosecond
+> resolution. So let pwm_get_state() return the actually implemented state
+> instead of the last applied one if possible.
+> =
+
+> Signed-off-by: Uwe Kleine-K=F6nig <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
+
+With this applied, the display brightness on my rk3399-gru-scarlet gets
+inverted. Now it's very bright on level 1 and very dim on the max level.
+
+According to the debugfs, the inverted state changes:
+
+OLD STATE:
+----------
+root@localhost:~# cat /debug/pwm
+platform/ff420030.pwm, 1 PWM device
+ pwm-0   (ppvar-bigcpu-pwm    ): requested enabled period: 3334 ns duty: 33=
+1 ns polarity: normal
+
+platform/ff420020.pwm, 1 PWM device
+ pwm-0   (ppvar-litcpu-pwm    ): requested enabled period: 3334 ns duty: 41=
+4 ns polarity: normal
+
+platform/ff420010.pwm, 1 PWM device
+ pwm-0   (backlight           ): requested enabled period: 999996 ns duty: =
+941148 ns polarity: normal
+
+platform/ff420000.pwm, 1 PWM device
+ pwm-0   (ppvar-gpu-pwm       ): requested enabled period: 3334 ns duty: 33=
+34 ns polarity: normal
+
+NEW STATE:
+----------
+root@localhost:~# cat /debug/pwm =
+
+platform/ff420030.pwm, 1 PWM device
+ pwm-0   (ppvar-bigcpu-pwm    ): requested enabled period: 3334 ns duty: 33=
+1 ns polarity: normal
+
+platform/ff420020.pwm, 1 PWM device
+ pwm-0   (ppvar-litcpu-pwm    ): requested enabled period: 3334 ns duty: 41=
+4 ns polarity: normal
+
+platform/ff420010.pwm, 1 PWM device
+ pwm-0   (backlight           ): requested enabled period: 999996 ns duty: =
+941148 ns polarity: inverse
+
+platform/ff420000.pwm, 1 PWM device
+ pwm-0   (ppvar-gpu-pwm       ): requested enabled period: 3334 ns duty: 33=
+34 ns polarity: normal
+
+
+And the reason is below.
+
+> ---
+>  drivers/pwm/core.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> =
+
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index 72347ca4a647..92333b89bf02 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -473,7 +473,14 @@ int pwm_apply_state(struct pwm_device *pwm, struct p=
+wm_state *state)
+>  		if (err)
+>  			return err;
+>  =
+
+> -		pwm->state =3D *state;
+> +		/*
+> +		 * .apply might have to round some values in *state, if possible
+> +		 * read the actually implemented value back.
+> +		 */
+> +		if (chip->ops->get_state)
+> +			chip->ops->get_state(chip, pwm, &pwm->state);
+> +		else
+> +			pwm->state =3D *state;
+
+This should probably become
+>-		pwm->state =3D *state;
+> +
+> +		/*
+> +		 * .apply might have to round some values in *state, if possible
+> +		 * read the actually implemented value back.
+> +		 */
+> +		if (chip->ops->get_state)
+> +			chip->ops->get_state(chip, pwm, &pwm->state);
+
+so always initialize the state to the provided one and then let the driver
+override values?
+
+The inversion case stems from the Rockchip pwm driver (wrongly?) only
+setting the polarity field when actually inverted, so here the polarity fie=
+ld
+probably never actually got set at all.
+
+But while we should probably fix the rockchip driver to set polarity all the
+time, this is still being true for possible future state-fields, which also
+wouldn't get initialzed from all drivers, which might need an adaption
+first?
+
+
+Heiko
+
+
+>  	} else {
+>  		/*
+>  		 * FIXME: restore the initial state in case of error.
+> =
