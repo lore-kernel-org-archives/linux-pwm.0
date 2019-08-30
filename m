@@ -1,11 +1,10 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v7 07/11] dt-bindings: pwm: pwm-mediatek: add a property "num-pwms"
-Date: Fri, 30 Aug 2019 11:57:13 +0800
-Message-ID: <1567137437-10041-8-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v7 08/11] arm64: dts: mt7622: add a property "num-pwms" for PWM
+Date: Fri, 30 Aug 2019 11:57:14 +0800
+Message-ID: <1567137437-10041-9-git-send-email-sam.shih@mediatek.com>
 References: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -15,52 +14,25 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Ryder Lee <ryder.lee@mediatek.com>
 
-This adds a property "num-pwms" in example so that we could
-specify the number of PWM channels via device tree.
+This adds a property "num-pwms" for PWM controller.
 
 Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
-Changes since v6:
-Follow reviewers's comments:
-- The subject should indicate this is for Mediatek
+ arch/arm64/boot/dts/mediatek/mt7622.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v5:
-- Add an Acked-by tag
-- This file is original v4 patch 5/10
-(https://patchwork.kernel.org/patch/11102577/)
-
----
- Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 991728cb46cb..ea95b490a913 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -14,12 +14,12 @@ Required properties:
-                 has no clocks
-    - "top": the top clock generator
-    - "main": clock used by the PWM core
--   - "pwm1-8": the eight per PWM clocks for mt2712
--   - "pwm1-6": the six per PWM clocks for mt7622
--   - "pwm1-5": the five per PWM clocks for mt7623
-+   - "pwm1-N": the PWM clocks for each channel
-+   where N starting from 1 to the maximum number of PWM channels
-  - pinctrl-names: Must contain a "default" entry.
-  - pinctrl-0: One property must exist for each entry in pinctrl-names.
-    See pinctrl/pinctrl-bindings.txt for details of the property values.
-+ - num-pwms: the number of PWM channels.
- 
- Example:
- 	pwm0: pwm@11006000 {
-@@ -37,4 +37,5 @@ Example:
- 			      "pwm3", "pwm4", "pwm5";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pwm0_pins>;
-+		num-pwms = <5>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
+index d1e13d340e26..9a043938881f 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
+@@ -439,6 +439,7 @@
+ 			 <&pericfg CLK_PERI_PWM6_PD>;
+ 		clock-names = "top", "main", "pwm1", "pwm2", "pwm3", "pwm4",
+ 			      "pwm5", "pwm6";
++		num-pwms = <6>;
+ 		status = "disabled";
  	};
+ 
 -- 
 2.17.1
