@@ -1,17 +1,17 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v3 5/6] pwm: fsl-ftm: Don't update the state for the
- caller of pwm_apply_state()
-Date: Mon, 2 Sep 2019 16:27:09 +0200
-Message-ID: <20190902142709.wxrjsfzorozgeiuh@pengutronix.de>
+Subject: Re: [PATCH v3 2/6] pwm: let pwm_get_state() return the last
+ implemented state
+Date: Mon, 2 Sep 2019 16:32:31 +0200
+Message-ID: <20190902143231.k2ugpv2oemceaequ@pengutronix.de>
 References: <20190824153707.13746-1-uwe@kleine-koenig.org>
- <20190824153707.13746-6-uwe@kleine-koenig.org>
- <CAD=FV=X8kVU_zr69aKe-+GkAQh-tDwVf8tFogKve3s5O5ndF-g@mail.gmail.com>
+ <20190824153707.13746-3-uwe@kleine-koenig.org>
+ <5802279.ETANMDGNFP@phil>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAD=FV=X8kVU_zr69aKe-+GkAQh-tDwVf8tFogKve3s5O5ndF-g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <5802279.ETANMDGNFP@phil>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -21,39 +21,140 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 10:39:16AM -0700, Doug Anderson wrote:
-> Hi,
-> =
+On Fri, Aug 30, 2019 at 07:48:35PM +0200, Heiko Stuebner wrote:
+> Am Samstag, 24. August 2019, 17:37:03 CEST schrieb Uwe Kleine-K=F6nig:
+> > When pwm_apply_state() is called the lowlevel driver usually has to
+> > apply some rounding because the hardware doesn't support nanosecond
+> > resolution. So let pwm_get_state() return the actually implemented state
+> > instead of the last applied one if possible.
+> > =
 
-> On Sat, Aug 24, 2019 at 8:37 AM Uwe Kleine-K=F6nig <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org=
-> wrote:
-> >
-> > The pwm-fsl-ftm driver is one of only three PWM drivers which updates
-> > the state for the caller of pwm_apply_state(). This might have
-> > surprising results if the caller reuses the values expecting them to
-> > still represent the same state.
-> >
 > > Signed-off-by: Uwe Kleine-K=F6nig <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
-> > ---
-> >  drivers/pwm/pwm-fsl-ftm.c | 4 ----
-> >  1 file changed, 4 deletions(-)
 > =
 
-> Presumably this patch could break something since the pwm-fsl-ftm
-> driver doesn't appear to implement the get_state() function.  ...or
-> did I miss it?
+> With this applied, the display brightness on my rk3399-gru-scarlet gets
+> inverted. Now it's very bright on level 1 and very dim on the max level.
+> =
 
-I don't expect breakage. We have more than 50 pwm drivers and only three
-of them made use of adapting the passed state. So unless you do
-something special with the PWM (i.e. more than backlight, LED or fan
-control) I don't think a consumer might care. But it might well be that
-I miss something so feel free to prove me wrong.
+> According to the debugfs, the inverted state changes:
+> =
 
-Best regards
+> OLD STATE:
+> ----------
+> root@localhost:~# cat /debug/pwm
+> platform/ff420030.pwm, 1 PWM device
+>  pwm-0   (ppvar-bigcpu-pwm    ): requested enabled period: 3334 ns duty: =
+331 ns polarity: normal
+> =
+
+> platform/ff420020.pwm, 1 PWM device
+>  pwm-0   (ppvar-litcpu-pwm    ): requested enabled period: 3334 ns duty: =
+414 ns polarity: normal
+> =
+
+> platform/ff420010.pwm, 1 PWM device
+>  pwm-0   (backlight           ): requested enabled period: 999996 ns duty=
+: 941148 ns polarity: normal
+> =
+
+> platform/ff420000.pwm, 1 PWM device
+>  pwm-0   (ppvar-gpu-pwm       ): requested enabled period: 3334 ns duty: =
+3334 ns polarity: normal
+> =
+
+> NEW STATE:
+> ----------
+> root@localhost:~# cat /debug/pwm =
+
+> platform/ff420030.pwm, 1 PWM device
+>  pwm-0   (ppvar-bigcpu-pwm    ): requested enabled period: 3334 ns duty: =
+331 ns polarity: normal
+> =
+
+> platform/ff420020.pwm, 1 PWM device
+>  pwm-0   (ppvar-litcpu-pwm    ): requested enabled period: 3334 ns duty: =
+414 ns polarity: normal
+> =
+
+> platform/ff420010.pwm, 1 PWM device
+>  pwm-0   (backlight           ): requested enabled period: 999996 ns duty=
+: 941148 ns polarity: inverse
+> =
+
+> platform/ff420000.pwm, 1 PWM device
+>  pwm-0   (ppvar-gpu-pwm       ): requested enabled period: 3334 ns duty: =
+3334 ns polarity: normal
+> =
+
+> =
+
+> And the reason is below.
+> =
+
+> > ---
+> >  drivers/pwm/core.c | 9 ++++++++-
+> >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > =
+
+> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> > index 72347ca4a647..92333b89bf02 100644
+> > --- a/drivers/pwm/core.c
+> > +++ b/drivers/pwm/core.c
+> > @@ -473,7 +473,14 @@ int pwm_apply_state(struct pwm_device *pwm, struct=
+ pwm_state *state)
+> >  		if (err)
+> >  			return err;
+> >  =
+
+> > -		pwm->state =3D *state;
+> > +		/*
+> > +		 * .apply might have to round some values in *state, if possible
+> > +		 * read the actually implemented value back.
+> > +		 */
+> > +		if (chip->ops->get_state)
+> > +			chip->ops->get_state(chip, pwm, &pwm->state);
+> > +		else
+> > +			pwm->state =3D *state;
+> =
+
+> This should probably become
+> >-		pwm->state =3D *state;
+> > +
+> > +		/*
+> > +		 * .apply might have to round some values in *state, if possible
+> > +		 * read the actually implemented value back.
+> > +		 */
+> > +		if (chip->ops->get_state)
+> > +			chip->ops->get_state(chip, pwm, &pwm->state);
+> =
+
+> so always initialize the state to the provided one and then let the driver
+> override values?
+
+This feels wrong. There is another thread that adds a developer knob
+that emits some warnings. Catching this kind of error with it would be a
+good idea IMHO.
+
+> The inversion case stems from the Rockchip pwm driver (wrongly?) only
+> setting the polarity field when actually inverted, so here the polarity f=
+ield
+> probably never actually got set at all.
+> =
+
+> But while we should probably fix the rockchip driver to set polarity all =
+the
+> time, this is still being true for possible future state-fields, which al=
+so
+> wouldn't get initialzed from all drivers, which might need an adaption
+> first?
+
+Actually I would prefer that all drivers do it right and rely on this.
+
+Thanks for testing
 Uwe
 
 -- =
