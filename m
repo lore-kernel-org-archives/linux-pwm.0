@@ -1,31 +1,37 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v7 07/11] dt-bindings: pwm: pwm-mediatek: add a property
- "num-pwms"
-Date: Mon, 2 Sep 2019 15:43:37 +0100
-Message-ID: <20190902144337.GA25200@bogus>
-References: <1567137437-10041-1-git-send-email-sam.shih@mediatek.com>
- <1567137437-10041-8-git-send-email-sam.shih@mediatek.com>
+Subject: Re: [PATCH v3 2/6] dt-bindings: counter: new bindings for TI eQEP
+Date: Mon, 2 Sep 2019 16:02:38 +0100
+Message-ID: <20190902150238.GA30757@bogus>
+References: <20190901225827.12301-1-david@lechnology.com>
+ <20190901225827.12301-3-david@lechnology.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1567137437-10041-8-git-send-email-sam.shih@mediatek.com>
+In-Reply-To: <20190901225827.12301-3-david@lechnology.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sam Shih <sam.shih@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+Cc: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, David Lechner <david@lechnology.com>, Mark Rutland <mark.rutland@arm.com>, =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 11:57:13AM +0800, Sam Shih wrote:
-> From: Ryder Lee <ryder.lee@mediatek.com>
+On Sun,  1 Sep 2019 17:58:23 -0500, David Lechner wrote:
+> This documents device tree binding for the Texas Instruments Enhanced
+> Quadrature Encoder Pulse (eQEP) Module found in various TI SoCs.
 > 
-> This adds a property "num-pwms" in example so that we could
-> specify the number of PWM channels via device tree.
-
-Please respond to my questions on v5.
-
+> Signed-off-by: David Lechner <david@lechnology.com>
+> ---
 > 
-> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> v3 changes:
+> - fixed style issues
+> - fixed generic node name
+> - (was suggested to drop descriptions since there is only one interrupt and one
+>   clock, but I opted to keep them anyway)
+> v2 changes:
+> - convert to .yaml format
+> - rename clock to "sysclkout"
+> 
+>  .../devicetree/bindings/counter/ti-eqep.yaml  | 50 +++++++++++++++++++
+>  1 file changed, 50 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/counter/ti-eqep.yaml
+> 
+
+Reviewed-by: Rob Herring <robh@kernel.org>
