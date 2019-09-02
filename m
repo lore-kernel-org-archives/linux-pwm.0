@@ -1,35 +1,62 @@
-From: David Lechner <david@lechnology.com>
-Subject: Re: [PATCH v3 0/6] counter: new TI eQEP driver
-Date: Mon, 2 Sep 2019 09:17:40 -0500
-Message-ID: <68ce4c1a-5098-f6b8-e318-1d86d91a3206@lechnology.com>
-References: <20190901225827.12301-1-david@lechnology.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v3 5/6] pwm: fsl-ftm: Don't update the state for the
+ caller of pwm_apply_state()
+Date: Mon, 2 Sep 2019 16:27:09 +0200
+Message-ID: <20190902142709.wxrjsfzorozgeiuh@pengutronix.de>
+References: <20190824153707.13746-1-uwe@kleine-koenig.org>
+ <20190824153707.13746-6-uwe@kleine-koenig.org>
+ <CAD=FV=X8kVU_zr69aKe-+GkAQh-tDwVf8tFogKve3s5O5ndF-g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190901225827.12301-1-david@lechnology.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=X8kVU_zr69aKe-+GkAQh-tDwVf8tFogKve3s5O5ndF-g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 9/1/19 5:58 PM, David Lechner wrote:
-> This series adds device tree bindings and a new counter driver for the Texas
-> Instruments Enhanced Quadrature Encoder Pulse (eQEP).
-> 
+On Fri, Aug 30, 2019 at 10:39:16AM -0700, Doug Anderson wrote:
+> Hi,
+> =
 
-...
+> On Sat, Aug 24, 2019 at 8:37 AM Uwe Kleine-K=F6nig <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org=
+> wrote:
+> >
+> > The pwm-fsl-ftm driver is one of only three PWM drivers which updates
+> > the state for the caller of pwm_apply_state(). This might have
+> > surprising results if the caller reuses the values expecting them to
+> > still represent the same state.
+> >
+> > Signed-off-by: Uwe Kleine-K=F6nig <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
+> > ---
+> >  drivers/pwm/pwm-fsl-ftm.c | 4 ----
+> >  1 file changed, 4 deletions(-)
+> =
 
-> David Lechner (6):
->    bus/ti-pwmss: move TI PWMSS driver from PWM to bus subsystem
->    dt-bindings: counter: new bindings for TI eQEP
->    counter: new TI eQEP driver
->    ARM: dts: am33xx: Add nodes for eQEP
->    ARM: dts: am335x-boneblue: Enable eQEP
->    ARM: dts: am335x-boneblue: Use of am335x-osd335x-common.dtsi
-> 
+> Presumably this patch could break something since the pwm-fsl-ftm
+> driver doesn't appear to implement the get_state() function.  ...or
+> did I miss it?
 
-In case anyone notices, this series only has 5 patches, not 6. "ARM: dts:
-am335x-boneblue: Use of am335x-osd335x-common.dtsi" is unrelated and was
-submitted separately.
+I don't expect breakage. We have more than 50 pwm drivers and only three
+of them made use of adapting the passed state. So unless you do
+something special with the PWM (i.e. more than backlight, LED or fan
+control) I don't think a consumer might care. But it might well be that
+I miss something so feel free to prove me wrong.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
