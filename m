@@ -1,92 +1,88 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v5 07/13] dt-bindings: pwm: add a property "num-pwms"
-Date: Mon, 2 Sep 2019 18:04:45 +0200
-Message-ID: <20190902160445.fitoa65t4ndzjq6v@pengutronix.de>
-References: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
- <1566457123-20791-8-git-send-email-sam.shih@mediatek.com>
- <20190827183924.GA24178@bogus>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 6/6] pwm: atmel: implement .get_state()
+Date: Mon, 2 Sep 2019 22:06:05 +0200
+Message-ID: <20190902200605.2tipkzh3n7ylehku@pengutronix.de>
+References: <20190824001041.11007-1-uwe@kleine-koenig.org>
+ <20190824001041.11007-7-uwe@kleine-koenig.org>
+ <8da4ef26-872f-beaf-b5cb-9d8cb93a2ce9@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20190827183924.GA24178@bogus>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Sam Shih <sam.shih@mediatek.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+In-Reply-To: <8da4ef26-872f-beaf-b5cb-9d8cb93a2ce9@microchip.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Claudiu.Beznea@microchip.com
+Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 01:39:24PM -0500, Rob Herring wrote:
-> On Thu, Aug 22, 2019 at 02:58:37PM +0800, Sam Shih wrote:
-> > From: Ryder Lee <ryder.lee@mediatek.com>
-> 
-> The subject should indicate this is for Mediatek.
-> 
-> > 
-> > This adds a property "num-pwms" in example so that we could
-> > specify the number of PWM channels via device tree.
-> > 
-> > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-> > Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> > Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Changes since v5:
-> > - Add an Acked-by tag
-> > - This file is original v4 patch 5/10
-> > (https://patchwork.kernel.org/patch/11102577/)
-> > 
-> > Change-Id: I429048afeffa96f3f14533910efe242f88776043
-> > ---
-> >  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 7 ++++---
-> >  1 file changed, 4 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> > index 991728cb46cb..ea95b490a913 100644
-> > --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-> > @@ -14,12 +14,12 @@ Required properties:
-> >                  has no clocks
-> >     - "top": the top clock generator
-> >     - "main": clock used by the PWM core
-> > -   - "pwm1-8": the eight per PWM clocks for mt2712
-> > -   - "pwm1-6": the six per PWM clocks for mt7622
-> > -   - "pwm1-5": the five per PWM clocks for mt7623
-> > +   - "pwm1-N": the PWM clocks for each channel
-> > +   where N starting from 1 to the maximum number of PWM channels
-> 
-> Once converted to schema, you are going to be back to listing them out.
-> 
-> >   - pinctrl-names: Must contain a "default" entry.
-> >   - pinctrl-0: One property must exist for each entry in pinctrl-names.
-> >     See pinctrl/pinctrl-bindings.txt for details of the property values.
-> > + - num-pwms: the number of PWM channels.
-> 
-> You can't add new required properties without breaking compatibility. 
-> 
-> You already have to imply the number of channels from the compatible (or 
-> number of clocks) and you have to keep doing so to maintain 
-> compatibility, so why not just keep doing that for new chips?
+Hello Claudiu,
 
-This was a suggestion by me. The driver still handles compatibility
-(i.e. falls back to the number of PWMs that was implied by the
-compatible before). Given that there are various drivers that all solve
-the same problem (i.e. different variants with different number of PWMs)
-I thought it would be a good idea to introduce a property in the device
-tree that specifies this number.
+On Wed, Aug 28, 2019 at 10:26:18AM +0000, Claudiu.Beznea@microchip.com wrot=
+e:
+> On 24.08.2019 03:10, Uwe Kleine-K=F6nig wrote:
+> > External E-Mail
+> > This function reads back the configured parameters from the hardware. As
+> > .apply rounds down (mostly) I'm rounding up in .get_state() to achieve
+> > that applying a state just read from hardware is a no-op.
+> =
 
-Only for newly introduced compatibles the num-pwms property is really
-required. Differentiating the ones that need it and the ones that don't
-seems over-engineered to me.
+> Since this read is only at probing, at least for the moment, and, as far =
+as
 
-(BTW, using the number of clks doesn't really work because there are
-also some variants without clocks. It is still under discussion if in
-this case dummy-clocks should be provided IIRC.)
+Yes, up to now .get_state() is only called at probing time. There is a
+patch series (by me) on the list that changes that. (Though I'm not
+entirely sure this is a good idea. Will comment my doubts in that thread
+later.)
+
+> I remember, the idea w/ .get_state was to reflect in Linux the states of
+> PWMs that were setup before Linux takes control (e.g. PWMs setup in
+> bootloaders) I think it would no problem if it would be no-ops in this
+> scenario.
+
+IMHO it should be a no-op.
+
+> In case of run-time state retrieval, pwm_get_state() should be
+> enough. If one would get the state previously saved w/ this .get_state API
+> he/she would change it, then it would apply the changes to the hardware. =
+No
+> changes of PWM state would be anyway skipped from the beginning, in
+> pwm_apply_state() by this code:
+> =
+
+>         if (state->period =3D=3D pwm->state.period &&
+>             state->duty_cycle =3D=3D pwm->state.duty_cycle &&
+> 	    state->polarity =3D=3D pwm->state.polarity &&
+>             state->enabled =3D=3D pwm->state.enabled)
+> 		return 0;
+> =
+
+> But maybe I'm missing something.
+
+There is a problem I want to solve generally, not only for the atmel driver.
+
+For example I consider it "expected" that
+
+	s1 =3D pwm_get_state(pwm)
+	pwm_apply_state(pwm, s2)
+	pwm_apply_state(pwm, s1)
+
+ends in the same configuration as it started. For that it is necessary
+(even for the atmel driver with the guard you pointed out above) to
+round up in .get_state if .apply rounds down.
 
 Best regards
 Uwe
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
