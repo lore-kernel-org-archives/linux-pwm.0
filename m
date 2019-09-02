@@ -1,89 +1,39 @@
-From: David Lechner <david@lechnology.com>
-Subject: [PATCH v3 2/6] dt-bindings: counter: new bindings for TI eQEP
-Date: Sun,  1 Sep 2019 17:58:23 -0500
-Message-ID: <20190901225827.12301-3-david@lechnology.com>
-References: <20190901225827.12301-1-david@lechnology.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190901225827.12301-1-david@lechnology.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org
-Cc: David Lechner <david@lechnology.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v3 1/4] MAINTAINERS: Add entry for stable backlight sysfs
+ ABI documentation
+Date: Mon, 2 Sep 2019 10:41:25 +0100
+Message-ID: <20190902094125.GL32232@dell>
+References: <20190709190007.91260-1-mka@chromium.org>
+ <20190709190007.91260-2-mka@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20190709190007.91260-2-mka@chromium.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Matthias Kaehlcke <mka@chromium.org>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Douglas Anderson <dianders@chromium.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This documents device tree binding for the Texas Instruments Enhanced
-Quadrature Encoder Pulse (eQEP) Module found in various TI SoCs.
-
-Signed-off-by: David Lechner <david@lechnology.com>
----
-
-v3 changes:
-- fixed style issues
-- fixed generic node name
-- (was suggested to drop descriptions since there is only one interrupt and one
-  clock, but I opted to keep them anyway)
-v2 changes:
-- convert to .yaml format
-- rename clock to "sysclkout"
-
- .../devicetree/bindings/counter/ti-eqep.yaml  | 50 +++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/counter/ti-eqep.yaml
-
-diff --git a/Documentation/devicetree/bindings/counter/ti-eqep.yaml b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-new file mode 100644
-index 000000000000..85f1ff83afe7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/counter/ti-eqep.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Texas Instruments Enhanced Quadrature Encoder Pulse (eQEP) Module
-+
-+maintainers:
-+  - David Lechner <david@lechnology.com>
-+
-+properties:
-+  compatible:
-+    const: ti,am3352-eqep
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description: The eQEP event interrupt
-+    maxItems: 1
-+
-+  clocks:
-+    description: The clock that determines the SYSCLKOUT rate for the eQEP
-+      peripheral.
-+    maxItems: 1
-+
-+  clock-names:
-+    const: sysclkout
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    eqep0: counter@180 {
-+        compatible = "ti,am3352-eqep";
-+        reg = <0x180 0x80>;
-+        clocks = <&l4ls_gclk>;
-+        clock-names = "sysclkout";
-+        interrupts = <79>;
-+    };
-+
-+...
--- 
-2.17.1
+T24gVHVlLCAwOSBKdWwgMjAxOSwgTWF0dGhpYXMgS2FlaGxja2Ugd3JvdGU6Cgo+IEFkZCBhbiBl
+bnRyeSBmb3IgdGhlIHN0YWJsZSBiYWNrbGlnaHQgc3lzZnMgQUJJIHRvIHRoZSBNQUlOVEFJTkVS
+Uwo+IGZpbGUuCj4gCj4gU2lnbmVkLW9mZi1ieTogTWF0dGhpYXMgS2FlaGxja2UgPG1rYUBjaHJv
+bWl1bS5vcmc+Cj4gQWNrZWQtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxp
+bmFyby5vcmc+Cj4gLS0tCj4gQ2hhbmdlcyBpbiB2MzoKPiAtIG5vbmUKPiAKPiBDaGFuZ2VzIGlu
+IHYyOgo+IC0gYWRkZWQgRGFuaWVsJ3MgJ0Fja2VkLWJ5JyB0YWcKPiAtLS0KPiAgTUFJTlRBSU5F
+UlMgfCAxICsKPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspCgpBcHBsaWVkLCB0aGFu
+a3MuCgotLSAKTGVlIEpvbmVzIFvmnY7nkLzmlq9dCkxpbmFybyBTZXJ2aWNlcyBUZWNobmljYWwg
+TGVhZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9s
+bG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1k
+ZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
