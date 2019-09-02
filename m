@@ -1,70 +1,92 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 1/6] bus/ti-pwmss: move TI PWMSS driver from PWM to
- bus subsystem
-Date: Mon, 2 Sep 2019 17:02:45 +0200
-Message-ID: <20190902150245.GE1445@ulmo>
-References: <20190901225827.12301-1-david@lechnology.com>
- <20190901225827.12301-2-david@lechnology.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v5 07/13] dt-bindings: pwm: add a property "num-pwms"
+Date: Mon, 2 Sep 2019 18:04:45 +0200
+Message-ID: <20190902160445.fitoa65t4ndzjq6v@pengutronix.de>
+References: <1566457123-20791-1-git-send-email-sam.shih@mediatek.com>
+ <1566457123-20791-8-git-send-email-sam.shih@mediatek.com>
+ <20190827183924.GA24178@bogus>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Lb0e7rgc7IsuDeGj"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190901225827.12301-2-david@lechnology.com>
+In-Reply-To: <20190827183924.GA24178@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Lechner <david@lechnology.com>
-Cc: linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Sam Shih <sam.shih@mediatek.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, Aug 27, 2019 at 01:39:24PM -0500, Rob Herring wrote:
+> On Thu, Aug 22, 2019 at 02:58:37PM +0800, Sam Shih wrote:
+> > From: Ryder Lee <ryder.lee@mediatek.com>
+> 
+> The subject should indicate this is for Mediatek.
+> 
+> > 
+> > This adds a property "num-pwms" in example so that we could
+> > specify the number of PWM channels via device tree.
+> > 
+> > Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+> > Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> > Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > ---
+> > Changes since v5:
+> > - Add an Acked-by tag
+> > - This file is original v4 patch 5/10
+> > (https://patchwork.kernel.org/patch/11102577/)
+> > 
+> > Change-Id: I429048afeffa96f3f14533910efe242f88776043
+> > ---
+> >  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 7 ++++---
+> >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > index 991728cb46cb..ea95b490a913 100644
+> > --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+> > @@ -14,12 +14,12 @@ Required properties:
+> >                  has no clocks
+> >     - "top": the top clock generator
+> >     - "main": clock used by the PWM core
+> > -   - "pwm1-8": the eight per PWM clocks for mt2712
+> > -   - "pwm1-6": the six per PWM clocks for mt7622
+> > -   - "pwm1-5": the five per PWM clocks for mt7623
+> > +   - "pwm1-N": the PWM clocks for each channel
+> > +   where N starting from 1 to the maximum number of PWM channels
+> 
+> Once converted to schema, you are going to be back to listing them out.
+> 
+> >   - pinctrl-names: Must contain a "default" entry.
+> >   - pinctrl-0: One property must exist for each entry in pinctrl-names.
+> >     See pinctrl/pinctrl-bindings.txt for details of the property values.
+> > + - num-pwms: the number of PWM channels.
+> 
+> You can't add new required properties without breaking compatibility. 
+> 
+> You already have to imply the number of channels from the compatible (or 
+> number of clocks) and you have to keep doing so to maintain 
+> compatibility, so why not just keep doing that for new chips?
 
---Lb0e7rgc7IsuDeGj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This was a suggestion by me. The driver still handles compatibility
+(i.e. falls back to the number of PWMs that was implied by the
+compatible before). Given that there are various drivers that all solve
+the same problem (i.e. different variants with different number of PWMs)
+I thought it would be a good idea to introduce a property in the device
+tree that specifies this number.
 
-On Sun, Sep 01, 2019 at 05:58:22PM -0500, David Lechner wrote:
-> The TI PWMSS driver is a simple bus driver for providing power
-> power management for the PWM peripherals on TI AM33xx SoCs, namely
-> eCAP, eHRPWM and eQEP. The eQEP is a counter rather than a PWM, so
-> it does not make sense to have the bus driver in the PWM subsystem
-> since the PWMSS is not exclusive to PWM devices.
->=20
-> Signed-off-by: David Lechner <david@lechnology.com>
-> ---
->=20
-> v3 changes:
-> - none
-> v2 changes:
-> - new patch
->=20
->  drivers/bus/Kconfig                           | 9 +++++++++
->  drivers/bus/Makefile                          | 1 +
->  drivers/{pwm/pwm-tipwmss.c =3D> bus/ti-pwmss.c} | 0
->  drivers/pwm/Kconfig                           | 9 ---------
->  drivers/pwm/Makefile                          | 1 -
->  5 files changed, 10 insertions(+), 10 deletions(-)
->  rename drivers/{pwm/pwm-tipwmss.c =3D> bus/ti-pwmss.c} (100%)
+Only for newly introduced compatibles the num-pwms property is really
+required. Differentiating the ones that need it and the ones that don't
+seems over-engineered to me.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+(BTW, using the number of clks doesn't really work because there are
+also some variants without clocks. It is still under discussion if in
+this case dummy-clocks should be provided IIRC.)
 
---Lb0e7rgc7IsuDeGj
-Content-Type: application/pgp-signature; name="signature.asc"
+Best regards
+Uwe
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl1tLxUACgkQ3SOs138+
-s6Ex9g//T+ZKzUz859zn7FRpj13m+ndi84IulhyCYr54G2sXpuiLxVOo9q9WVI/v
-QNkuu8KOb1W91FXpJudcY4eagg0PoJtE0/8u2kO7PX9QNe5vMoUbIm0j/CrMJH1O
-3RJEfArqrHlRIfWxik5gkAnbVMvkhTrEv+zVUZyNAQFNua8qw1mTCSDac+iX7QLH
-/zubXqDPaDP/FCq/avt+hB4Rlzywv6G6GFzs4boUjwXN814RsVTdf2XBz8Hx+So2
-a3o0Qtht/NVcO5p1/UM/Ps9JChuTHB0gy7/pOe2sx3ayQ7Nd/wgcUsaVkwOlQ02z
-emSxOqYCLze1rHba6O1iqJb3QwKKVaIFfswfH2xSy94gSCZZmExukdDfVRunfQcS
-YO//p3px8p8wdxUR3E6CwgylIo8QlQthMLEywC3BZkVR29W/bE7301GfDEw4MmQa
-kT+GmJF4Fh1Zp7WYMsD4peV71pEAvycWO56CS83uSOSJ0kF0gGG6f9SFuIqD/lYj
-Zn+ODFy5c3VEbSfOIUBtKy+IFG5lhYhjXHc9SfPXAtk/5Mybv2/NI9hP8PtKbRRN
-q/wfXpZ/S/C+rRJ00HkO8druk8zMfts87+q5XUMg/Sr3OixDQvW4qT4T2bKUzRBB
-bCA5jRYdMVnX2eAdrMNsZY2ZQL+/3YF3B2j5R8ZmWTIP1AI2xsQ=
-=6nvw
------END PGP SIGNATURE-----
-
---Lb0e7rgc7IsuDeGj--
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
