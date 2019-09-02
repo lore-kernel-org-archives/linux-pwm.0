@@ -1,83 +1,65 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 6/6] pwm: atmel: implement .get_state()
-Date: Mon, 2 Sep 2019 22:06:05 +0200
-Message-ID: <20190902200605.2tipkzh3n7ylehku@pengutronix.de>
-References: <20190824001041.11007-1-uwe@kleine-koenig.org>
- <20190824001041.11007-7-uwe@kleine-koenig.org>
- <8da4ef26-872f-beaf-b5cb-9d8cb93a2ce9@microchip.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v3 0/6] pwm: ensure pwm_apply_state() doesn't modify the
+ state argument
+Date: Mon, 2 Sep 2019 22:19:05 +0200
+Message-ID: <20190902201905.kyduxnehcjfzitrc@pengutronix.de>
+References: <20190824153707.13746-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <8da4ef26-872f-beaf-b5cb-9d8cb93a2ce9@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Claudiu.Beznea@microchip.com
-Cc: linux-pwm@vger.kernel.org, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190824153707.13746-1-uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Claudiu,
-
-On Wed, Aug 28, 2019 at 10:26:18AM +0000, Claudiu.Beznea@microchip.com wrot=
-e:
-> On 24.08.2019 03:10, Uwe Kleine-K=F6nig wrote:
-> > External E-Mail
-> > This function reads back the configured parameters from the hardware. As
-> > .apply rounds down (mostly) I'm rounding up in .get_state() to achieve
-> > that applying a state just read from hardware is a no-op.
+On Sat, Aug 24, 2019 at 05:37:01PM +0200, Uwe Kleine-K=F6nig wrote:
+> Hello,
 > =
 
-> Since this read is only at probing, at least for the moment, and, as far =
-as
-
-Yes, up to now .get_state() is only called at probing time. There is a
-patch series (by me) on the list that changes that. (Though I'm not
-entirely sure this is a good idea. Will comment my doubts in that thread
-later.)
-
-> I remember, the idea w/ .get_state was to reflect in Linux the states of
-> PWMs that were setup before Linux takes control (e.g. PWMs setup in
-> bootloaders) I think it would no problem if it would be no-ops in this
-> scenario.
-
-IMHO it should be a no-op.
-
-> In case of run-time state retrieval, pwm_get_state() should be
-> enough. If one would get the state previously saved w/ this .get_state API
-> he/she would change it, then it would apply the changes to the hardware. =
-No
-> changes of PWM state would be anyway skipped from the beginning, in
-> pwm_apply_state() by this code:
+> this series eventually changes the prototype of pwm_apply_state to take
+> a const struct pwm_state *, see the last patch for a rationale.
 > =
 
->         if (state->period =3D=3D pwm->state.period &&
->             state->duty_cycle =3D=3D pwm->state.duty_cycle &&
-> 	    state->polarity =3D=3D pwm->state.polarity &&
->             state->enabled =3D=3D pwm->state.enabled)
-> 		return 0;
-> =
+> Changes since v2 apart from rebasing and so covering a few more drivers
+> is mainly addressing the concern that after state was rounded and
+> applied at least pwm_get_state should return the rounded values. See
+> patch 2.
 
-> But maybe I'm missing something.
+I thought a bit on this series and there is a question about it.
+Depending on what is considered the right answer for it, this series
+might have to change.
 
-There is a problem I want to solve generally, not only for the atmel driver.
+The key question is:
 
-For example I consider it "expected" that
+  - Is pwm_get_state() supposed to return
+    a) the last requested configuration; or
+    b) the last actually implemented configuration?
 
-	s1 =3D pwm_get_state(pwm)
-	pwm_apply_state(pwm, s2)
-	pwm_apply_state(pwm, s1)
+(If the difference is unclear: consider a PWM that can only implement
+the following periods:
 
-ends in the same configuration as it started. For that it is necessary
-(even for the atmel driver with the guard you pointed out above) to
-round up in .get_state if .apply rounds down.
+	1 ms, 2 ms, 3 ms, 4 ms, 5 ms, 6 ms, ...
+
+and a consumer requested 4.2 ms. Should pwm_get_state() return .period =3D 4
+ms (assuming this was picked) or 4.2 ms?)
+
+As of v5.3-rc5 it depends on the backend driver. For most of them 4.2 ms
+is returned. My series tries to push it to return 4 ms instead. (But
+this only works for backends that implement the .get_state() callback.
+And it gets more complicated as the drivers are not free of surprises.)
+
+Maybe we need functions for both answers?
 
 Best regards
 Uwe
