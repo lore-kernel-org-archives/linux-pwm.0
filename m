@@ -1,163 +1,41 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v3 2/6] pwm: let pwm_get_state() return the last
- implemented state
-Date: Mon, 2 Sep 2019 16:32:31 +0200
-Message-ID: <20190902143231.k2ugpv2oemceaequ@pengutronix.de>
-References: <20190824153707.13746-1-uwe@kleine-koenig.org>
- <20190824153707.13746-3-uwe@kleine-koenig.org>
- <5802279.ETANMDGNFP@phil>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+Subject: [PATCH] pwm: rockchip: set polarity unconditionally in .get_state()
+Date: Mon,  2 Sep 2019 16:39:41 +0200
+Message-ID: <20190902143941.10631-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <5802279.ETANMDGNFP@phil>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Patrick Havelange <patrick.havelange-buIOx9BAs4sybS5Ee8rs3A@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Heiko Stuebner <heiko@sntech.de>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 07:48:35PM +0200, Heiko Stuebner wrote:
-> Am Samstag, 24. August 2019, 17:37:03 CEST schrieb Uwe Kleine-K=F6nig:
-> > When pwm_apply_state() is called the lowlevel driver usually has to
-> > apply some rounding because the hardware doesn't support nanosecond
-> > resolution. So let pwm_get_state() return the actually implemented state
-> > instead of the last applied one if possible.
-> > =
-
-> > Signed-off-by: Uwe Kleine-K=F6nig <uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org>
-> =
-
-> With this applied, the display brightness on my rk3399-gru-scarlet gets
-> inverted. Now it's very bright on level 1 and very dim on the max level.
-> =
-
-> According to the debugfs, the inverted state changes:
-> =
-
-> OLD STATE:
-> ----------
-> root@localhost:~# cat /debug/pwm
-> platform/ff420030.pwm, 1 PWM device
->  pwm-0   (ppvar-bigcpu-pwm    ): requested enabled period: 3334 ns duty: =
-331 ns polarity: normal
-> =
-
-> platform/ff420020.pwm, 1 PWM device
->  pwm-0   (ppvar-litcpu-pwm    ): requested enabled period: 3334 ns duty: =
-414 ns polarity: normal
-> =
-
-> platform/ff420010.pwm, 1 PWM device
->  pwm-0   (backlight           ): requested enabled period: 999996 ns duty=
-: 941148 ns polarity: normal
-> =
-
-> platform/ff420000.pwm, 1 PWM device
->  pwm-0   (ppvar-gpu-pwm       ): requested enabled period: 3334 ns duty: =
-3334 ns polarity: normal
-> =
-
-> NEW STATE:
-> ----------
-> root@localhost:~# cat /debug/pwm =
-
-> platform/ff420030.pwm, 1 PWM device
->  pwm-0   (ppvar-bigcpu-pwm    ): requested enabled period: 3334 ns duty: =
-331 ns polarity: normal
-> =
-
-> platform/ff420020.pwm, 1 PWM device
->  pwm-0   (ppvar-litcpu-pwm    ): requested enabled period: 3334 ns duty: =
-414 ns polarity: normal
-> =
-
-> platform/ff420010.pwm, 1 PWM device
->  pwm-0   (backlight           ): requested enabled period: 999996 ns duty=
-: 941148 ns polarity: inverse
-> =
-
-> platform/ff420000.pwm, 1 PWM device
->  pwm-0   (ppvar-gpu-pwm       ): requested enabled period: 3334 ns duty: =
-3334 ns polarity: normal
-> =
-
-> =
-
-> And the reason is below.
-> =
-
-> > ---
-> >  drivers/pwm/core.c | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> > =
-
-> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > index 72347ca4a647..92333b89bf02 100644
-> > --- a/drivers/pwm/core.c
-> > +++ b/drivers/pwm/core.c
-> > @@ -473,7 +473,14 @@ int pwm_apply_state(struct pwm_device *pwm, struct=
- pwm_state *state)
-> >  		if (err)
-> >  			return err;
-> >  =
-
-> > -		pwm->state =3D *state;
-> > +		/*
-> > +		 * .apply might have to round some values in *state, if possible
-> > +		 * read the actually implemented value back.
-> > +		 */
-> > +		if (chip->ops->get_state)
-> > +			chip->ops->get_state(chip, pwm, &pwm->state);
-> > +		else
-> > +			pwm->state =3D *state;
-> =
-
-> This should probably become
-> >-		pwm->state =3D *state;
-> > +
-> > +		/*
-> > +		 * .apply might have to round some values in *state, if possible
-> > +		 * read the actually implemented value back.
-> > +		 */
-> > +		if (chip->ops->get_state)
-> > +			chip->ops->get_state(chip, pwm, &pwm->state);
-> =
-
-> so always initialize the state to the provided one and then let the driver
-> override values?
-
-This feels wrong. There is another thread that adds a developer knob
-that emits some warnings. Catching this kind of error with it would be a
-good idea IMHO.
-
-> The inversion case stems from the Rockchip pwm driver (wrongly?) only
-> setting the polarity field when actually inverted, so here the polarity f=
-ield
-> probably never actually got set at all.
-> =
-
-> But while we should probably fix the rockchip driver to set polarity all =
-the
-> time, this is still being true for possible future state-fields, which al=
-so
-> wouldn't get initialzed from all drivers, which might need an adaption
-> first?
-
-Actually I would prefer that all drivers do it right and rely on this.
-
-Thanks for testing
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+RG9uJ3QgcmVseSBvbiAqc3RhdGUgYmVpbmcgemVybyBpbml0aWFsaXplZCBhbmQgUFdNX1BPTEFS
+SVRZX05PUk1BTApiZWluZyB6ZXJvLiBTbyBhbHdheXMgYXNzaWduIC5wb2xhcml0eS4KClNpZ25l
+ZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1d2VAa2xlaW5lLWtvZW5pZy5vcmc+Ci0tLQog
+ZHJpdmVycy9wd20vcHdtLXJvY2tjaGlwLmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwg
+NCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdt
+L3B3bS1yb2NrY2hpcC5jIGIvZHJpdmVycy9wd20vcHdtLXJvY2tjaGlwLmMKaW5kZXggNTFiOTZj
+YjdkZDI1Li44ZWIyZGI1OTc0MWQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1yb2NrY2hp
+cC5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1yb2NrY2hpcC5jCkBAIC05MCwxMCArOTAsMTAgQEAg
+c3RhdGljIHZvaWQgcm9ja2NoaXBfcHdtX2dldF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAs
+CiAJCXN0YXRlLT5lbmFibGVkID0gKCh2YWwgJiBlbmFibGVfY29uZikgPT0gZW5hYmxlX2NvbmYp
+ID8KIAkJCQkgdHJ1ZSA6IGZhbHNlOwogCi0JaWYgKHBjLT5kYXRhLT5zdXBwb3J0c19wb2xhcml0
+eSkgewotCQlpZiAoISh2YWwgJiBQV01fRFVUWV9QT1NJVElWRSkpCi0JCQlzdGF0ZS0+cG9sYXJp
+dHkgPSBQV01fUE9MQVJJVFlfSU5WRVJTRUQ7Ci0JfQorCWlmIChwYy0+ZGF0YS0+c3VwcG9ydHNf
+cG9sYXJpdHkgJiYgISh2YWwgJiBQV01fRFVUWV9QT1NJVElWRSkpCisJCXN0YXRlLT5wb2xhcml0
+eSA9IFBXTV9QT0xBUklUWV9JTlZFUlNFRDsKKwllbHNlCisJCXN0YXRlLT5wb2xhcml0eSA9IFBX
+TV9QT0xBUklUWV9OT1JNQUw7CiAKIAljbGtfZGlzYWJsZShwYy0+cGNsayk7CiB9Ci0tIAoyLjIz
+LjAKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
+eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
+ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
+cm0ta2VybmVsCg==
