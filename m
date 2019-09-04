@@ -1,46 +1,76 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:51054 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727883AbfH3S2e (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 30 Aug 2019 14:28:34 -0400
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date: Fri, 30 Aug 2019 21:28:30 +0300
-Message-Id: <20190830182830.81627-1-andriy.shevchenko@linux.intel.com>
+Received: from mail.steuer-voss.de ([85.183.69.95]:37734 "EHLO
+        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726061AbfIDHUH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Sep 2019 03:20:07 -0400
+Date: Wed, 4 Sep 2019 09:20:03 +0200 (CEST)
+From: Nikolaus Voss <nv@vosn.de>
+In-Reply-To: <20190830145348.GM2680@smile.fi.intel.com>
+Message-ID: <alpine.DEB.2.20.1909040913230.15999@fox.voss.local>
+References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de> <8704391ae3004a6b4dd17975dbcc9e88bd28cf4b.1559127603.git.nikolaus.voss@loewensteinmedical.de> <20190814185055.GZ30120@smile.fi.intel.com> <CF6A88132359CE47947DB4C6E1709ED53C61A211@ORSMSX122.amr.corp.intel.com>
+ <alpine.DEB.2.20.1908161345590.41303@fox.voss.local> <20190830145348.GM2680@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH v2] pwm: pca9685: Fix regression for GPIO use
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
+To: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
+Cc: "Schmauss, Erik" <erik.schmauss@intel.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "Moore, Robert" <robert.moore@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-The commit e926b12c611c ("pwm: Clear chip_data in pwm_put()") breaks GPIO usage
-by actually removing a crucial call to pwm_set_chip_data(), which is being used
-as a flag to understand the mode (GPIO vs. PWM) in which pin is currently
-working. Now, if once I requested GPIO, I may not be able to free and request
-it again.
+Andy,
 
-Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: drop leftovers in Fixes tag
- drivers/pwm/pwm-pca9685.c | 1 +
- 1 file changed, 1 insertion(+)
+On Fri, 30 Aug 2019, Shevchenko, Andriy wrote:
+> On Fri, Aug 16, 2019 at 01:57:26PM +0200, Nikolaus Voss wrote:
+>> On Wed, 14 Aug 2019, Schmauss, Erik wrote:
+>>>> -----Original Message-----
+>>>> From: Shevchenko, Andriy
+>>>> Sent: Wednesday, August 14, 2019 11:51 AM
+>>>> To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+>>>> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>; Len Brown <lenb@kernel.org>;
+>>>> Moore, Robert <robert.moore@intel.com>; Schmauss, Erik
+>>>> <erik.schmauss@intel.com>; Jacek Anaszewski <jacek.anaszewski@gmail.com>;
+>>>> Pavel Machek <pavel@ucw.cz>; Dan Murphy <dmurphy@ti.com>; Thierry
+>>>> Reding <thierry.reding@gmail.com>; linux-acpi@vger.kernel.org;
+>>>> devel@acpica.org; linux-leds@vger.kernel.org; linux-pwm@vger.kernel.org
+>>>> Subject: Re: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
+>>>>
+>>>> On Wed, May 29, 2019 at 02:18:20PM +0200, Nikolaus Voss wrote:
+>>>>> If an ACPI SSDT overlay is loaded after built-in tables have been
+>>>>> loaded e.g. via configfs or efivar_ssdt_load() it is necessary to
+>>>>> rewalk the namespace to resolve references. Without this, relative and
+>>>>> absolute paths like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
+>>>>> correctly.
+>>>>>
+>>>>> Make configfs load use the same method as efivar_ssdt_load().
+>>>>
+>>>> This patch brought a regression (bisect log below).
+>>>> Now I'm unable to unload the table which was working before.
+>>>>
+>>>> Reverting (manual, due to ACPICA changes) helps.
+>>>>
+>>>> Please, consider to revert for this cycle, or fix. I will be glad to test any
+>>>> proposed fix.
+>>>
+>>> We submitted a patch (d1fb5b2f623b1af5a0d2a83d205df1b61f430dc6)
+>>> in response to this suggestion and I was not aware that this had been applied.
+>>>
+>>> Rafael, please revert at least the ACPICA portion of this patch.
+>>
+>> As I see it, my ACPICA change is not part of 5.3-rc1 any more. Reverting my
+>> fix is part of the patch above (d1fb5b2f623b1af5a0d2a83d205df1b61f430dc6)
+>> which is already applied.
+>>
+>> Nevertheless, what is new, is that acpi_ns_initialize_objects() is called in
+>> acpi_load_table(). This is necessary to resolve the references in the newly
+>> loaded table. Maybe this prevents the table from being unloaded?
+>
+> So, can we do something about it? It's a regression.
+>
+> Rafael, Nikolaus?
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 168684b02ebc..7cdec56ab3ec 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -165,6 +165,7 @@ static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
- 	pm_runtime_put(pca->chip.dev);
- 	mutex_lock(&pca->lock);
- 	pwm = &pca->chip.pwms[offset];
-+	pwm_set_chip_data(pwm, NULL);
- 	mutex_unlock(&pca->lock);
- }
- 
--- 
-2.23.0.rc1
+can you describe how you unload the table (from userspace?). I cannot 
+reproduce this regression. I was not aware of any working interface for 
+unloading ACPI tables, I ended up in kexec'ing the kernel for my tests 
+each time I had to unload a table.
+
+Niko
