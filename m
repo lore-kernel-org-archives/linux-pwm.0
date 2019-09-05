@@ -1,57 +1,68 @@
 From: CK Hu <ck.hu@mediatek.com>
-Subject: Re: [PATCH v6 0/3] Support mipitx for mt8183
-Date: Thu, 5 Sep 2019 10:38:20 +0800
-Message-ID: <1567651100.13330.1.camel@mtksdaap41>
-References: <20190807084645.63738-1-jitao.shi@mediatek.com>
+Subject: Re: [PATCH v6 0/7] Support dsi for mt8183
+Date: Thu, 5 Sep 2019 10:41:39 +0800
+Message-ID: <1567651299.13330.4.camel@mtksdaap41>
+References: <20190811104008.53372-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190807084645.63738-1-jitao.shi@mediatek.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190811104008.53372-1-jitao.shi@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Jitao Shi <jitao.shi@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>, stonea168@163.com, dri-devel@lists.freedesktop.org, yingjoe.chen@mediatek.com, Ajay Kumar <ajaykumar.rs@samsung.com>, Vincent Palatin <vpalatin@chromium.org>, cawa.cheng@mediatek.com, Russell King <rmk+kernel@arm.linux.org.uk>, Thierry Reding <treding@nvidia.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Andy Yan <andy.yan@rock-chips.com>, Matthias Brugger <matthias.bgg@gmail.com>, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, Rahul Sharma <rahul.sharma@samsung.com>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, Sean Paul <seanpaul@chromium.org>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <treding@nvidia.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, Inki Dae <inki.dae@samsung.com>, Rahul Sharma <rahul.sharma@samsung.com>, Sean Paul <seanpaul@chromium.org>, Vincent Palatin <vpalatin@chromium.org>, Andy Yan <andy.yan@rock-chips.com>, Philipp Zabel <p.zabel@pengutronix.de>, Russell King <rmk+kernel@arm.linux.org.uk>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org, linux-media
 List-Id: linux-pwm@vger.kernel.org
 
-SGksIEppdGFvOgoKRm9yIHRoaXMgc2VyaWVzLCBhcHBsaWVkIHRvIG1lZGlhdGVrLWRybS1uZXh0
-LTUuNSBbMV0sIHRoYW5rcy4KClsxXQpodHRwczovL2dpdGh1Yi5jb20vY2todS1tZWRpYXRlay9s
-aW51eC5naXQtdGFncy9jb21taXRzL21lZGlhdGVrLWRybS1uZXh0LTUuNQoKUmVnYXJkcywKQ0sK
-Ck9uIFdlZCwgMjAxOS0wOC0wNyBhdCAxNjo0NiArMDgwMCwgSml0YW8gU2hpIHdyb3RlOgo+IENo
-YW5nZSBzaW5jZSB2NToKPiAgLSByZW1vdmUgbWlwaV90eC0+cmVmX2Nsawo+ICAtIHJlbW92ZSBt
-dDgxODMgcGxsIHByZXBhcmUgdW5wcmVwYXJlCj4gCj4gQ2hhbmdlIHNpbmNlIHY0Ogo+ICAtIGZp
-bmUgdHVuZSB0aGUgbWlwaV90eC0+cmVmX2NsayBhbmQgbWlwaV90eC0+cGxsIHNlcXVlbmNlCj4g
-ICAgMS4gUHJlcGFyZSBtaXBpX3R4LT5yZWZfY2xrCj4gICAgMi4gUHJlcGFyZSBtaXBpX3R4LT5w
-bGwKPiAgICAzLiBFbmFibGUgbWlwaV90eC0+cmVmX2Nsawo+ICAgIDQuIEVuYWJsZSBtaXBpX3R4
-LT5wbGwKPiAKPiBDaGFuZ2VzIHNpbmNlIHYzOgo+ICAtIHR1cm4gb2ZmIFBMTCBiZWZvcmUgc2V0
-dGluZyBQTEwgcGFyYW1ldGVycy4KPiAKPiBDaGFuZ2VzIHNpbmNlIHYyOgo+ICAtIHVwZGF0ZSBB
-Y2tlZC1ieTogUm9iIEhlcnJpbmcgPHJvYmhAa2VybmVsLm9yZz4KPiAgLSB1cGRhdGUgbXQ4MTgz
-IG1heCBiaXQgcmF0ZSBzdXBwb3J0Cj4gCj4gQ2hhbmdlcyBzaW5jZSB2MToKPiAgLSB1cGRhdGUg
-ZHQtYmluZGluZ3MgZG9jdW1lbnQgZm9yIG10ODE4MyBtaXBpdHguCj4gIC0gcmVtb3ZlIG10a19t
-aXBpdHhfY2xrX2dldF9vcHMgYW5kIGFzc2lnbiBjbGtfb3BzIGluIHByb2JlLgo+ICAtIGZpeCB0
-aGUgbGluY2VuY2UKPiAgLSByZW1vdmUgdHhkaXYxIGZyb20gbXRrX21pcGlfdHhfcGxsX3ByZXBh
-cmUKPiAKPiBKaXRhbyBTaGkgKDMpOgo+ICAgZHQtYmluZGluZ3M6IGRpc3BsYXk6IG1lZGlhdGVr
-OiB1cGRhdGUgZHNpIHN1cHBvcnRlZCBjaGlwcwo+ICAgZHJtL21lZGlhdGVrOiBzZXBhcmF0ZSBt
-aXBpX3R4IHRvIGRpZmZlcmVudCBmaWxlCj4gICBkcm0vbWVkaWF0ZWs6IGFkZCBtaXBpX3R4IGRy
-aXZlciBmb3IgbXQ4MTgzCj4gCj4gIC4uLi9kaXNwbGF5L21lZGlhdGVrL21lZGlhdGVrLGRzaS50
-eHQgICAgICAgICB8ICAgNCArLQo+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvTWFrZWZpbGUg
-ICAgICAgICAgICAgfCAgIDIgKwo+ICBkcml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX21pcGlf
-dHguYyAgICAgICAgfCAzMzggKystLS0tLS0tLS0tLS0tLS0tCj4gIGRyaXZlcnMvZ3B1L2RybS9t
-ZWRpYXRlay9tdGtfbWlwaV90eC5oICAgICAgICB8ICA0OSArKysKPiAgZHJpdmVycy9ncHUvZHJt
-L21lZGlhdGVrL210a19tdDgxNzNfbWlwaV90eC5jIHwgMjg5ICsrKysrKysrKysrKysrKwo+ICBk
-cml2ZXJzL2dwdS9kcm0vbWVkaWF0ZWsvbXRrX210ODE4M19taXBpX3R4LmMgfCAxNTAgKysrKysr
-KysKPiAgNiBmaWxlcyBjaGFuZ2VkLCA1MTUgaW5zZXJ0aW9ucygrKSwgMzE3IGRlbGV0aW9ucygt
-KQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19taXBp
-X3R4LmgKPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtf
-bXQ4MTczX21pcGlfdHguYwo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9ncHUvZHJtL21l
-ZGlhdGVrL210a19tdDgxODNfbWlwaV90eC5jCj4gCgoKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxA
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
-YW4vbGlzdGluZm8vZHJpLWRldmVs
+Hi, Jitao:
+
+For this series, applied to mediatek-drm-next-5.5 [1], and I break
+"[v6,2/7] drm/mediatek: fixes CMDQ reg address of mt8173 is different
+with mt2701" into two patches, thanks.
+
+[1]
+https://github.com/ckhu-mediatek/linux.git-tags/commits/mediatek-drm-next-5.5
+
+Regards,
+CK
+
+
+On Sun, 2019-08-11 at 18:40 +0800, Jitao Shi wrote:
+> Change since v5:
+>  - fine tune dphy timing.
+> 
+> Change since v4:
+>  - move mipi_dsi_host_unregiter() to .remove()
+>  - fine tune add frame size control coding style
+>  - change the data type of data_rate as u32, and add DIV_ROUND_UP_ULL
+>  - use div_u64 when 8000000000ULL / dsi->data_rate.
+> 
+> Changes since v3
+>  - add one more 'tab' for bitwise define.
+>  - add Tested-by: Ryan Case <ryandcase@chromium.org>
+> 	and Reviewed-by: CK Hu <ck.hu@mediatek.com>.
+>  - remove compare da_hs_zero to da_hs_prepare.
+> 
+> Changes since v2:
+>  - change the video timing calc method
+>  - fine the dsi and mipitx init sequence
+>  - fine tune commit msg
+> 
+> Changes since v1:
+>  - separate frame size and reg commit control independent patches.
+>  - fix some return values in probe
+>  - remove DSI_CMDW0 in "CMDQ reg address of mt8173 is different with mt2701" 
+> 
+> Jitao Shi (7):
+>   drm/mediatek: move mipi_dsi_host_register to probe
+>   drm/mediatek: fixes CMDQ reg address of mt8173 is different with
+>     mt2701
+>   drm/mediatek: add dsi reg commit disable control
+>   drm/mediatek: add frame size control
+>   drm/mediatek: add mt8183 dsi driver support
+>   drm/mediatek: change the dsi phytiming calculate method
+>   drm: mediatek: adjust dsi and mipi_tx probe sequence
+> 
+>  drivers/gpu/drm/mediatek/mtk_drm_drv.c |   2 +-
+>  drivers/gpu/drm/mediatek/mtk_dsi.c     | 224 ++++++++++++++++++-------
+>  2 files changed, 161 insertions(+), 65 deletions(-)
+> 
