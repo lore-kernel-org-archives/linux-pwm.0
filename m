@@ -1,38 +1,54 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v3 0/6] counter: new TI eQEP driver
-Date: Thu, 5 Sep 2019 07:10:53 -0700
-Message-ID: <20190905141053.GU52127@atomide.com>
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Subject: Re: [PATCH v3 1/6] bus/ti-pwmss: move TI PWMSS driver from PWM to
+ bus subsystem
+Date: Sun, 8 Sep 2019 12:15:24 +0100
+Message-ID: <20190908121524.49b4874d@archlinux>
 References: <20190901225827.12301-1-david@lechnology.com>
- <20190905133721.GA728346@icarus>
+        <20190901225827.12301-2-david@lechnology.com>
+        <20190902150245.GE1445@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190905133721.GA728346@icarus>
+In-Reply-To: <20190902150245.GE1445@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: David Lechner <david@lechnology.com>, Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?B?QmVub8OudA==?= Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-* William Breathitt Gray <vilhelm.gray@gmail.com> [190905 13:38]:
-> On Sun, Sep 01, 2019 at 05:58:21PM -0500, David Lechner wrote:
-> > This series adds device tree bindings and a new counter driver for the Texas
-> > Instruments Enhanced Quadrature Encoder Pulse (eQEP).
+On Mon, 2 Sep 2019 17:02:45 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Sun, Sep 01, 2019 at 05:58:22PM -0500, David Lechner wrote:
+> > The TI PWMSS driver is a simple bus driver for providing power
+> > power management for the PWM peripherals on TI AM33xx SoCs, namely
+> > eCAP, eHRPWM and eQEP. The eQEP is a counter rather than a PWM, so
+> > it does not make sense to have the bus driver in the PWM subsystem
+> > since the PWMSS is not exclusive to PWM devices.
 > > 
-> > As mentioned in one of the commit messages, to start with, the driver only
-> > supports reading the current counter value and setting the min/max values.
-> > Other features can be added as the counter subsystem gains support for them.
-...
-
-> I'm satisfied with this version of the patchset.
+> > Signed-off-by: David Lechner <david@lechnology.com>
+> > ---
+> > 
+> > v3 changes:
+> > - none
+> > v2 changes:
+> > - new patch
+> > 
+> >  drivers/bus/Kconfig                           | 9 +++++++++
+> >  drivers/bus/Makefile                          | 1 +
+> >  drivers/{pwm/pwm-tipwmss.c => bus/ti-pwmss.c} | 0
+> >  drivers/pwm/Kconfig                           | 9 ---------
+> >  drivers/pwm/Makefile                          | 1 -
+> >  5 files changed, 10 insertions(+), 10 deletions(-)
+> >  rename drivers/{pwm/pwm-tipwmss.c => bus/ti-pwmss.c} (100%)  
 > 
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> 
-> Jonathan, if you have no objections please pick up this up so that it
-> can make it to the 5.4 merge window coming in soon. Alternatively, I can
-> merge it into my repository instead and hold it for a while longer
-> there, if you prefer that route.
+> Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
-Looks good to me too:
+Do we need an immutable branch for these precursor patches to the
+driver addition? It's not going to make 5.4 via my tree as cutting it
+too fine so we'll be in the position of holding these in a non obvious
+tree for a whole cycle. 
 
-Acked-by: Tony Lindgren <tony@atomide.com>
+Thanks,
+
+Jonathan
