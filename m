@@ -1,166 +1,264 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC PATCH 2/2] dt-bindings: pwm: Convert Samsung PWM bindings
- to json-schema
-Date: Fri, 13 Sep 2019 15:36:24 +0100
-Message-ID: <20190912175001.GA29884@bogus>
-References: <20190909183436.9045-1-krzk@kernel.org>
- <20190909183436.9045-2-krzk@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: [PATCH 1/2] pwm: Add different PWM output types support
+Date: Fri, 13 Sep 2019 15:57:43 -0700
+Message-ID: <1568415464-20267-1-git-send-email-gurus@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190909183436.9045-2-krzk@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Maciej Falkowski <m.falkowski@samsung.com>, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-leds@vger.kernel.org, linux-clk@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, kernel-team@android.com, Mark Salyzyn <salyzyn@google.com>, Sandeep Patil <sspatil@google.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Fenglin Wu <fenglinw@codeaurora.org>, Guru Das Srinagesh <gurus@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Sep 09, 2019 at 08:34:36PM +0200, Krzysztof Kozlowski wrote:
-> Convert Samsung PWM (S3C, S5P and Exynos SoCs) bindings to DT schema
-> format using json-schema.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../devicetree/bindings/pwm/pwm-samsung.txt   |  51 --------
->  .../devicetree/bindings/pwm/pwm-samsung.yaml  | 111 ++++++++++++++++++
->  2 files changed, 111 insertions(+), 51 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-samsung.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+From: Fenglin Wu <fenglinw@codeaurora.org>
 
+Normally, PWM channel has fixed output until software request to change
+its settings. There are some PWM devices which their outputs could be
+changed autonomously according to a predefined pattern programmed in
+hardware. Add pwm_output_type enum type to identify these two different
+PWM types and add relevant helper functions to set and get PWM output
+types and pattern.
 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-> new file mode 100644
-> index 000000000000..90fb467bcdd5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-> @@ -0,0 +1,111 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/pwm-samsung.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Samsung SoC PWM timers
-> +
-> +maintainers:
-> +  - Thierry Reding <thierry.reding@gmail.com>
-> +  - Krzysztof Kozlowski <krzk@kernel.org>
-> +
-> +description: |+
-> +  Samsung SoCs contain PWM timer blocks which can be used for system clock source
-> +  and clock event timers, as well as to drive SoC outputs with PWM signal. Each
-> +  PWM timer block provides 5 PWM channels (not all of them can drive physical
-> +  outputs - see SoC and board manual).
-> +
-> +  Be aware that the clocksource driver supports only uniprocessor systems.
-> +
-> +allOf:
-> +  - $ref: pwm.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - samsung,s3c2410-pwm             # 16-bit, S3C24xx
-> +      - samsung,s3c6400-pwm             # 32-bit, S3C64xx
-> +      - samsung,s5p6440-pwm             # 32-bit, S5P64x0
-> +      - samsung,s5pc100-pwm             # 32-bit, S5PC100, S5PV210, Exynos4210 rev0 SoCs
-> +      - samsung,exynos4210-pwm          # 32-bit, Exynos
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    minItems: 1
-> +    maxItems: 3
-> +
-> +  clock-names:
-> +    description: |
-> +      Should contain all following required clock names:
-> +      - "timers" - PWM base clock used to generate PWM signals,
-> +      and any subset of following optional clock names:
-> +      - "pwm-tclk0" - first external PWM clock source,
-> +      - "pwm-tclk1" - second external PWM clock source.
-> +      Note that not all IP variants allow using all external clock sources.
-> +      Refer to SoC documentation to learn which clock source configurations
-> +      are available.
-> +    oneOf:
-> +      - items:
-> +        - const: "timers"
-> +      - items:
-> +        - const: "timers"
-> +        - const: "pwm-tclk0"
-> +      - items:
-> +        - const: "timers"
-> +        - const: "pwm-tclk1"
-> +      - items:
-> +        - const: "timers"
-> +        - const: "pwm-tclk0"
-> +        - const: "pwm-tclk1"
-> +
-> +  interrupts:
-> +    description:
-> +      One interrupt per timer, starting at timer 0.
-> +    minItems: 1
-> +    maxItems: 5
-> +
-> +  "#pwm-cells":
-> +    description:
-> +      The only third cell flag supported by this binding
-> +      is PWM_POLARITY_INVERTED.
-> +    const: 3
-> +
-> +  samsung,pwm-outputs:
-> +    description:
-> +      A list of PWM channels used as PWM outputs on particular platform.
-> +      It is an array of up to 5 elements being indices of PWM channels
-> +      (from 0 to 4), the order does not matter.
-> +    # TODO: Values should not repeat
+Change-Id: Ia1f914a45ab4f4dd7be037a395eeb89d0e65a80e
+Signed-off-by: Fenglin Wu <fenglinw@codeaurora.org>
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+---
+ drivers/pwm/core.c  | 26 ++++++++++++++++++++
+ drivers/pwm/sysfs.c | 50 ++++++++++++++++++++++++++++++++++++++
+ include/linux/pwm.h | 70 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 146 insertions(+)
 
-uniqueItems: true
-
-Though it looks like we have to enable that keyword. (As silently 
-ignoring unknown keywords (such as typos) is 'feature' of json-schema, 
-we explicitly list keywords we use.)
-
-> +    allOf:
-> +      - $ref: /schemas/types.yaml#/definitions/uint32-array
-> +      # FIXME: min/max limit of items does not work
-> +      - items:
-> +          minItems: 1
-> +          maxItems: 5
-> +      - items:
-> +          minimum: 0
-> +          maximum: 4
-
-I think you want:
-
-minItems: 1
-maxItems: 2
-items:
-  minimum: 0
-  maximum: 4
-
-> +
-> +required:
-> +  - clocks
-> +  - clock-names
-> +  - compatible
-> +  - interrupts
-> +  - "#pwm-cells"
-> +  - reg
-> +
-> +examples:
-> +  - |
-> +    pwm@7f006000 {
-> +      compatible = "samsung,s3c6400-pwm";
-> +      reg = <0x7f006000 0x1000>;
-> +      interrupt-parent = <&vic0>;
-> +      interrupts = <23>, <24>, <25>, <27>, <28>;
-> +      clocks = <&clock 67>;
-> +      clock-names = "timers";
-> +      samsung,pwm-outputs = <0>, <1>;
-> +      #pwm-cells = <3>;
-> +    };
-> -- 
-> 2.17.1
-> 
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 8edfac1..960a451 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -282,6 +282,7 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+ 		pwm->pwm = chip->base + i;
+ 		pwm->hwpwm = i;
+ 		pwm->state.polarity = polarity;
++		pwm->state.output_type = PWM_OUTPUT_FIXED;
+ 
+ 		if (chip->ops->get_state)
+ 			chip->ops->get_state(chip, pwm, &pwm->state);
+@@ -498,6 +499,31 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
+ 			pwm->state.polarity = state->polarity;
+ 		}
+ 
++		if (state->output_type != pwm->state.output_type) {
++			if (!pwm->chip->ops->set_output_type)
++				return -ENOTSUPP;
++
++			err = pwm->chip->ops->set_output_type(pwm->chip, pwm,
++						state->output_type);
++			if (err)
++				return err;
++
++			pwm->state.output_type = state->output_type;
++		}
++
++		if (state->output_pattern != pwm->state.output_pattern &&
++				state->output_pattern != NULL) {
++			if (!pwm->chip->ops->set_output_pattern)
++				return -ENOTSUPP;
++
++			err = pwm->chip->ops->set_output_pattern(pwm->chip,
++					pwm, state->output_pattern);
++			if (err)
++				return err;
++
++			pwm->state.output_pattern = state->output_pattern;
++		}
++
+ 		if (state->period != pwm->state.period ||
+ 		    state->duty_cycle != pwm->state.duty_cycle) {
+ 			err = pwm->chip->ops->config(pwm->chip, pwm,
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 2389b86..ab703f2 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -215,11 +215,60 @@ static ssize_t capture_show(struct device *child,
+ 	return sprintf(buf, "%u %u\n", result.period, result.duty_cycle);
+ }
+ 
++static ssize_t output_type_show(struct device *child,
++			     struct device_attribute *attr,
++			     char *buf)
++{
++	const struct pwm_device *pwm = child_to_pwm_device(child);
++	const char *output_type = "unknown";
++	struct pwm_state state;
++
++	pwm_get_state(pwm, &state);
++	switch (state.output_type) {
++	case PWM_OUTPUT_FIXED:
++		output_type = "fixed";
++		break;
++	case PWM_OUTPUT_MODULATED:
++		output_type = "modulated";
++		break;
++	default:
++		break;
++	}
++
++	return snprintf(buf, PAGE_SIZE, "%s\n", output_type);
++}
++
++static ssize_t output_type_store(struct device *child,
++			      struct device_attribute *attr,
++			      const char *buf, size_t size)
++{
++	struct pwm_export *export = child_to_pwm_export(child);
++	struct pwm_device *pwm = export->pwm;
++	struct pwm_state state;
++	int ret = -EINVAL;
++
++	mutex_lock(&export->lock);
++	pwm_get_state(pwm, &state);
++	if (sysfs_streq(buf, "fixed"))
++		state.output_type = PWM_OUTPUT_FIXED;
++	else if (sysfs_streq(buf, "modulated"))
++		state.output_type = PWM_OUTPUT_MODULATED;
++	else
++		goto unlock;
++
++	ret = pwm_apply_state(pwm, &state);
++unlock:
++	mutex_unlock(&export->lock);
++
++	return ret ? : size;
++}
++
+ static DEVICE_ATTR_RW(period);
+ static DEVICE_ATTR_RW(duty_cycle);
+ static DEVICE_ATTR_RW(enable);
+ static DEVICE_ATTR_RW(polarity);
+ static DEVICE_ATTR_RO(capture);
++static DEVICE_ATTR_RW(output_type);
+ 
+ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_period.attr,
+@@ -227,6 +276,7 @@ static ssize_t capture_show(struct device *child,
+ 	&dev_attr_enable.attr,
+ 	&dev_attr_polarity.attr,
+ 	&dev_attr_capture.attr,
++	&dev_attr_output_type.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(pwm);
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 24632a7..416f08e 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -48,6 +48,29 @@ enum {
+ 	PWMF_EXPORTED = 1 << 1,
+ };
+ 
++/**
++ * enum pwm_output_type - output type of the PWM signal
++ * @PWM_OUTPUT_FIXED: PWM output is fixed until a change request
++ * @PWM_OUTPUT_MODULATED: PWM output is modulated in hardware
++ * autonomously with a predefined pattern
++ */
++enum pwm_output_type {
++	PWM_OUTPUT_FIXED = 1 << 0,
++	PWM_OUTPUT_MODULATED = 1 << 1,
++};
++
++/**
++ * struct pwm_output_pattern - PWM duty pattern for MODULATED duty type
++ * @duty_pattern: PWM duty cycles in the pattern for duty modulation
++ * @num_entries: number of entries in the pattern
++ * @cycles_per_duty: number of PWM period cycles an entry stays at
++ */
++struct pwm_output_pattern {
++	unsigned int *duty_pattern;
++	unsigned int num_entries;
++	unsigned int cycles_per_duty;
++};
++
+ /*
+  * struct pwm_state - state of a PWM channel
+  * @period: PWM period (in nanoseconds)
+@@ -59,6 +82,8 @@ struct pwm_state {
+ 	unsigned int period;
+ 	unsigned int duty_cycle;
+ 	enum pwm_polarity polarity;
++	enum pwm_output_type output_type;
++	struct pwm_output_pattern *output_pattern;
+ 	bool enabled;
+ };
+ 
+@@ -144,6 +169,26 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
+ 	return state.polarity;
+ }
+ 
++static inline enum pwm_output_type pwm_get_output_type(
++		const struct pwm_device *pwm)
++{
++	struct pwm_state state;
++
++	pwm_get_state(pwm, &state);
++
++	return state.output_type;
++}
++
++static inline struct pwm_output_pattern *pwm_get_output_pattern(
++				struct pwm_device *pwm)
++{
++	struct pwm_state state;
++
++	pwm_get_state(pwm, &state);
++
++	return pwm->state.output_pattern ?: NULL;
++}
++
+ static inline void pwm_get_args(const struct pwm_device *pwm,
+ 				struct pwm_args *args)
+ {
+@@ -250,6 +295,9 @@ static inline void pwm_init_state(const struct pwm_device *pwm,
+  * @get_state: get the current PWM state. This function is only
+  *	       called once per PWM device when the PWM chip is
+  *	       registered.
++ * @get_output_type_supported: get the supported output type
++ * @set_output_type: set PWM output type
++ * @set_output_pattern: set the pattern for the modulated output
+  * @owner: helps prevent removal of modules exporting active PWMs
+  * @config: configure duty cycles and period length for this PWM
+  * @set_polarity: configure the polarity of this PWM
+@@ -265,6 +313,13 @@ struct pwm_ops {
+ 		     struct pwm_state *state);
+ 	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  struct pwm_state *state);
++	int (*get_output_type_supported)(struct pwm_chip *chip,
++			struct pwm_device *pwm);
++	int (*set_output_type)(struct pwm_chip *chip, struct pwm_device *pwm,
++			enum pwm_output_type output_type);
++	int (*set_output_pattern)(struct pwm_chip *chip,
++			struct pwm_device *pwm,
++			struct pwm_output_pattern *output_pattern);
+ 	struct module *owner;
+ 
+ 	/* Only used by legacy drivers */
+@@ -320,6 +375,21 @@ struct pwm_capture {
+ int pwm_adjust_config(struct pwm_device *pwm);
+ 
+ /**
++ * pwm_output_type_support()
++ * @pwm: PWM device
++ *
++ * Returns:  output types supported by the PWM device
++ */
++static inline int pwm_get_output_type_supported(struct pwm_device *pwm)
++{
++	if (pwm->chip->ops->get_output_type_supported != NULL)
++		return pwm->chip->ops->get_output_type_supported(pwm->chip,
++				pwm);
++	else
++		return PWM_OUTPUT_FIXED;
++}
++
++/**
+  * pwm_config() - change a PWM device configuration
+  * @pwm: PWM device
+  * @duty_ns: "on" time (in nanoseconds)
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
