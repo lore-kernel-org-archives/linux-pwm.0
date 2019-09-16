@@ -1,76 +1,54 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.steuer-voss.de ([85.183.69.95]:37734 "EHLO
-        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726061AbfIDHUH (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Sep 2019 03:20:07 -0400
-Date: Wed, 4 Sep 2019 09:20:03 +0200 (CEST)
-From: Nikolaus Voss <nv@vosn.de>
-In-Reply-To: <20190830145348.GM2680@smile.fi.intel.com>
-Message-ID: <alpine.DEB.2.20.1909040913230.15999@fox.voss.local>
-References: <cover.1559127603.git.nikolaus.voss@loewensteinmedical.de> <8704391ae3004a6b4dd17975dbcc9e88bd28cf4b.1559127603.git.nikolaus.voss@loewensteinmedical.de> <20190814185055.GZ30120@smile.fi.intel.com> <CF6A88132359CE47947DB4C6E1709ED53C61A211@ORSMSX122.amr.corp.intel.com>
- <alpine.DEB.2.20.1908161345590.41303@fox.voss.local> <20190830145348.GM2680@smile.fi.intel.com>
+Return-path: <kernel-bounces@pengutronix.de>
+Date: Mon, 16 Sep 2019 15:05:47 +0200
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Offer to co-maintain drivers/pwm [Was: Re: [PATCH] PWM: drop legacy
+ wrapper for changing polarity]
+Message-ID: <20190916130547.xflkrm7dwgnec7dx@pengutronix.de>
+References: <20181015082152.5900-1-u.kleine-koenig@pengutronix.de>
+ <20181104211945.ychhco6vrmuf6jtc@pengutronix.de>
+ <20181120165758.pwprvrhzpftkghap@pengutronix.de>
+ <20181130085942.epcatcj3zeegprz6@pengutronix.de>
+ <20181206092057.avcew6a33l3lo7kk@pengutronix.de>
+ <20181211212658.vxxci7npev2dnjou@pengutronix.de>
+ <20181212102547.GN15092@ulmo>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20181212102547.GN15092@ulmo>
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
-To: "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
-Cc: "Schmauss, Erik" <erik.schmauss@intel.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, "Moore, Robert" <robert.moore@intel.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-Andy,
+Hello Thierry,
 
-On Fri, 30 Aug 2019, Shevchenko, Andriy wrote:
-> On Fri, Aug 16, 2019 at 01:57:26PM +0200, Nikolaus Voss wrote:
->> On Wed, 14 Aug 2019, Schmauss, Erik wrote:
->>>> -----Original Message-----
->>>> From: Shevchenko, Andriy
->>>> Sent: Wednesday, August 14, 2019 11:51 AM
->>>> To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
->>>> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>; Len Brown <lenb@kernel.org>;
->>>> Moore, Robert <robert.moore@intel.com>; Schmauss, Erik
->>>> <erik.schmauss@intel.com>; Jacek Anaszewski <jacek.anaszewski@gmail.com>;
->>>> Pavel Machek <pavel@ucw.cz>; Dan Murphy <dmurphy@ti.com>; Thierry
->>>> Reding <thierry.reding@gmail.com>; linux-acpi@vger.kernel.org;
->>>> devel@acpica.org; linux-leds@vger.kernel.org; linux-pwm@vger.kernel.org
->>>> Subject: Re: [PATCH 1/3] ACPI: Resolve objects on host-directed table loads
->>>>
->>>> On Wed, May 29, 2019 at 02:18:20PM +0200, Nikolaus Voss wrote:
->>>>> If an ACPI SSDT overlay is loaded after built-in tables have been
->>>>> loaded e.g. via configfs or efivar_ssdt_load() it is necessary to
->>>>> rewalk the namespace to resolve references. Without this, relative and
->>>>> absolute paths like ^PCI0.SBUS or \_SB.PCI0.SBUS are not resolved
->>>>> correctly.
->>>>>
->>>>> Make configfs load use the same method as efivar_ssdt_load().
->>>>
->>>> This patch brought a regression (bisect log below).
->>>> Now I'm unable to unload the table which was working before.
->>>>
->>>> Reverting (manual, due to ACPICA changes) helps.
->>>>
->>>> Please, consider to revert for this cycle, or fix. I will be glad to test any
->>>> proposed fix.
->>>
->>> We submitted a patch (d1fb5b2f623b1af5a0d2a83d205df1b61f430dc6)
->>> in response to this suggestion and I was not aware that this had been applied.
->>>
->>> Rafael, please revert at least the ACPICA portion of this patch.
->>
->> As I see it, my ACPICA change is not part of 5.3-rc1 any more. Reverting my
->> fix is part of the patch above (d1fb5b2f623b1af5a0d2a83d205df1b61f430dc6)
->> which is already applied.
->>
->> Nevertheless, what is new, is that acpi_ns_initialize_objects() is called in
->> acpi_load_table(). This is necessary to resolve the references in the newly
->> loaded table. Maybe this prevents the table from being unloaded?
->
-> So, can we do something about it? It's a regression.
->
-> Rafael, Nikolaus?
+On Wed, Dec 12, 2018 at 11:25:47AM +0100, Thierry Reding wrote:
+> I certainly wouldn't mind a little help. Reviewing patches will
+> definitely help move things along.
 
-can you describe how you unload the table (from userspace?). I cannot 
-reproduce this regression. I was not aware of any working interface for 
-unloading ACPI tables, I ended up in kexec'ing the kernel for my tests 
-each time I had to unload a table.
+I'm a bit frustrated with the state of the list of open patches. There
+were little feedback from you on the list since July, during this time
+https://patchwork.ozlabs.org/project/linux-pwm/list/ grew by ~1.5 pages
+and there are still topics that I want to bring forward that depend on
+you to cooperate. As I spend quite some time reviewing patches here, I
+wonder if you'd be willing to give me maintainer-status for the pwm
+patchwork to update the state on the various patches there. If you want
+I can also add me to the MAINTAINERS file (as reviewer or maintainer --
+whatever you consider sensible). I'd also like to have pwm patches
+applied in a more expeditious way and expose them in next.
 
-Niko
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
