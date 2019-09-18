@@ -1,47 +1,151 @@
-From: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v8 08/11] arm64: dts: mt7622: add a property "num-pwms" for PWM
-Date: Wed, 18 Sep 2019 17:28:56 +0800
-Message-ID: <1568798939-16038-9-git-send-email-sam.shih@mediatek.com>
-References: <1568798939-16038-1-git-send-email-sam.shih@mediatek.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [RFC PATCH 2/2] dt-bindings: pwm: Convert Samsung PWM bindings to json-schema
+Date: Wed, 18 Sep 2019 13:53:56 +0200
+Message-ID: <CAJKOXPeGMZhCNkKa73gE42baJUim3QtQiV_fRm=j7xL9bb1nFw@mail.gmail.com>
+References: <20190909183436.9045-1-krzk@kernel.org> <20190909183436.9045-2-krzk@kernel.org>
+ <20190912175001.GA29884@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <1568798939-16038-1-git-send-email-sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190912175001.GA29884@bogus>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Maciej Falkowski <m.falkowski@samsung.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linux-leds@vger.kernel.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+On Fri, 13 Sep 2019 at 16:36, Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, Sep 09, 2019 at 08:34:36PM +0200, Krzysztof Kozlowski wrote:
+> > Convert Samsung PWM (S3C, S5P and Exynos SoCs) bindings to DT schema
+> > format using json-schema.
+> >
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > ---
+> >  .../devicetree/bindings/pwm/pwm-samsung.txt   |  51 --------
+> >  .../devicetree/bindings/pwm/pwm-samsung.yaml  | 111 ++++++++++++++++++
+> >  2 files changed, 111 insertions(+), 51 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-samsung.txt
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+>
+>
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+> > new file mode 100644
+> > index 000000000000..90fb467bcdd5
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+> > @@ -0,0 +1,111 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/pwm/pwm-samsung.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Samsung SoC PWM timers
+> > +
+> > +maintainers:
+> > +  - Thierry Reding <thierry.reding@gmail.com>
+> > +  - Krzysztof Kozlowski <krzk@kernel.org>
+> > +
+> > +description: |+
+> > +  Samsung SoCs contain PWM timer blocks which can be used for system clock source
+> > +  and clock event timers, as well as to drive SoC outputs with PWM signal. Each
+> > +  PWM timer block provides 5 PWM channels (not all of them can drive physical
+> > +  outputs - see SoC and board manual).
+> > +
+> > +  Be aware that the clocksource driver supports only uniprocessor systems.
+> > +
+> > +allOf:
+> > +  - $ref: pwm.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - samsung,s3c2410-pwm             # 16-bit, S3C24xx
+> > +      - samsung,s3c6400-pwm             # 32-bit, S3C64xx
+> > +      - samsung,s5p6440-pwm             # 32-bit, S5P64x0
+> > +      - samsung,s5pc100-pwm             # 32-bit, S5PC100, S5PV210, Exynos4210 rev0 SoCs
+> > +      - samsung,exynos4210-pwm          # 32-bit, Exynos
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    minItems: 1
+> > +    maxItems: 3
+> > +
+> > +  clock-names:
+> > +    description: |
+> > +      Should contain all following required clock names:
+> > +      - "timers" - PWM base clock used to generate PWM signals,
+> > +      and any subset of following optional clock names:
+> > +      - "pwm-tclk0" - first external PWM clock source,
+> > +      - "pwm-tclk1" - second external PWM clock source.
+> > +      Note that not all IP variants allow using all external clock sources.
+> > +      Refer to SoC documentation to learn which clock source configurations
+> > +      are available.
+> > +    oneOf:
+> > +      - items:
+> > +        - const: "timers"
+> > +      - items:
+> > +        - const: "timers"
+> > +        - const: "pwm-tclk0"
+> > +      - items:
+> > +        - const: "timers"
+> > +        - const: "pwm-tclk1"
+> > +      - items:
+> > +        - const: "timers"
+> > +        - const: "pwm-tclk0"
+> > +        - const: "pwm-tclk1"
+> > +
+> > +  interrupts:
+> > +    description:
+> > +      One interrupt per timer, starting at timer 0.
+> > +    minItems: 1
+> > +    maxItems: 5
+> > +
+> > +  "#pwm-cells":
+> > +    description:
+> > +      The only third cell flag supported by this binding
+> > +      is PWM_POLARITY_INVERTED.
+> > +    const: 3
+> > +
+> > +  samsung,pwm-outputs:
+> > +    description:
+> > +      A list of PWM channels used as PWM outputs on particular platform.
+> > +      It is an array of up to 5 elements being indices of PWM channels
+> > +      (from 0 to 4), the order does not matter.
+> > +    # TODO: Values should not repeat
+>
+> uniqueItems: true
+>
+> Though it looks like we have to enable that keyword. (As silently
+> ignoring unknown keywords (such as typos) is 'feature' of json-schema,
+> we explicitly list keywords we use.)
 
-This adds a property "num-pwms" for PWM controller.
+This works fine.
 
-Signed-off-by: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Signed-off-by: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- arch/arm64/boot/dts/mediatek/mt7622.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+>
+> > +    allOf:
+> > +      - $ref: /schemas/types.yaml#/definitions/uint32-array
+> > +      # FIXME: min/max limit of items does not work
+> > +      - items:
+> > +          minItems: 1
+> > +          maxItems: 5
+> > +      - items:
+> > +          minimum: 0
+> > +          maximum: 4
+>
+> I think you want:
+>
+> minItems: 1
+> maxItems: 2
+> items:
+>   minimum: 0
+>   maximum: 4
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-index d1e13d340e26..9a043938881f 100644
---- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-@@ -439,6 +439,7 @@
- 			 <&pericfg CLK_PERI_PWM6_PD>;
- 		clock-names = "top", "main", "pwm1", "pwm2", "pwm3", "pwm4",
- 			      "pwm5", "pwm6";
-+		num-pwms = <6>;
- 		status = "disabled";
- 	};
- 
--- 
-2.17.1
+This not. However I figured out it is not needed. Since these are
+unique values from 0 to 4, then the size of array cannot be longer
+than 5 or shorter than 1.
+
+Best regards,
+Krzysztof
