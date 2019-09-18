@@ -1,12 +1,11 @@
 From: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v8 07/11] dt-bindings: pwm: pwm-mediatek: add a property
- "num-pwms"
-Date: Wed, 18 Sep 2019 17:28:55 +0800
-Message-ID: <1568798939-16038-8-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v8 10/11] dt-bindings: pwm: update bindings for MT7629 SoC
+Date: Wed, 18 Sep 2019 17:28:58 +0800
+Message-ID: <1568798939-16038-11-git-send-email-sam.shih@mediatek.com>
 References: <1568798939-16038-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 In-Reply-To: <1568798939-16038-1-git-send-email-sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
@@ -22,39 +21,36 @@ To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland 
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogUnlkZXIgTGVlIDxyeWRlci5sZWVAbWVkaWF0ZWsuY29tPgoKVGhpcyBhZGRzIGEgcHJv
-cGVydHkgIm51bS1wd21zIiBpbiBleGFtcGxlIHNvIHRoYXQgd2UgY291bGQKc3BlY2lmeSB0aGUg
-bnVtYmVyIG9mIFBXTSBjaGFubmVscyB2aWEgZGV2aWNlIHRyZWUuCgpTaWduZWQtb2ZmLWJ5OiBS
-eWRlciBMZWUgPHJ5ZGVyLmxlZUBtZWRpYXRlay5jb20+ClNpZ25lZC1vZmYtYnk6IFNhbSBTaGlo
-IDxzYW0uc2hpaEBtZWRpYXRlay5jb20+ClJldmlld2VkLWJ5OiBNYXR0aGlhcyBCcnVnZ2VyIDxt
-YXR0aGlhcy5iZ2dAZ21haWwuY29tPgpBY2tlZC1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xl
-aW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0tCkNoYW5nZXMgc2luY2UgdjY6CkZvbGxvdyBy
-ZXZpZXdlcnMncyBjb21tZW50czoKLSBUaGUgc3ViamVjdCBzaG91bGQgaW5kaWNhdGUgdGhpcyBp
-cyBmb3IgTWVkaWF0ZWsKCkNoYW5nZXMgc2luY2UgdjU6Ci0gQWRkIGFuIEFja2VkLWJ5IHRhZwot
-IFRoaXMgZmlsZSBpcyBvcmlnaW5hbCB2NCBwYXRjaCA1LzEwCihodHRwczovL3BhdGNod29yay5r
-ZXJuZWwub3JnL3BhdGNoLzExMTAyNTc3LykKCi0tLQogRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
-L2JpbmRpbmdzL3B3bS9wd20tbWVkaWF0ZWsudHh0IHwgNyArKysrLS0tCiAxIGZpbGUgY2hhbmdl
-ZCwgNCBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcHdtLW1lZGlhdGVrLnR4dCBiL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcHdtLW1lZGlhdGVrLnR4dAppbmRleCA5OTE3
-MjhjYjQ2Y2IuLmVhOTViNDkwYTkxMyAxMDA2NDQKLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0
-cmVlL2JpbmRpbmdzL3B3bS9wd20tbWVkaWF0ZWsudHh0CisrKyBiL0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9wd20vcHdtLW1lZGlhdGVrLnR4dApAQCAtMTQsMTIgKzE0LDEyIEBA
-IFJlcXVpcmVkIHByb3BlcnRpZXM6CiAgICAgICAgICAgICAgICAgaGFzIG5vIGNsb2NrcwogICAg
-LSAidG9wIjogdGhlIHRvcCBjbG9jayBnZW5lcmF0b3IKICAgIC0gIm1haW4iOiBjbG9jayB1c2Vk
-IGJ5IHRoZSBQV00gY29yZQotICAgLSAicHdtMS04IjogdGhlIGVpZ2h0IHBlciBQV00gY2xvY2tz
-IGZvciBtdDI3MTIKLSAgIC0gInB3bTEtNiI6IHRoZSBzaXggcGVyIFBXTSBjbG9ja3MgZm9yIG10
-NzYyMgotICAgLSAicHdtMS01IjogdGhlIGZpdmUgcGVyIFBXTSBjbG9ja3MgZm9yIG10NzYyMwor
-ICAgLSAicHdtMS1OIjogdGhlIFBXTSBjbG9ja3MgZm9yIGVhY2ggY2hhbm5lbAorICAgd2hlcmUg
-TiBzdGFydGluZyBmcm9tIDEgdG8gdGhlIG1heGltdW0gbnVtYmVyIG9mIFBXTSBjaGFubmVscwog
-IC0gcGluY3RybC1uYW1lczogTXVzdCBjb250YWluIGEgImRlZmF1bHQiIGVudHJ5LgogIC0gcGlu
-Y3RybC0wOiBPbmUgcHJvcGVydHkgbXVzdCBleGlzdCBmb3IgZWFjaCBlbnRyeSBpbiBwaW5jdHJs
-LW5hbWVzLgogICAgU2VlIHBpbmN0cmwvcGluY3RybC1iaW5kaW5ncy50eHQgZm9yIGRldGFpbHMg
-b2YgdGhlIHByb3BlcnR5IHZhbHVlcy4KKyAtIG51bS1wd21zOiB0aGUgbnVtYmVyIG9mIFBXTSBj
-aGFubmVscy4KIAogRXhhbXBsZToKIAlwd20wOiBwd21AMTEwMDYwMDAgewpAQCAtMzcsNCArMzcs
-NSBAQCBFeGFtcGxlOgogCQkJICAgICAgInB3bTMiLCAicHdtNCIsICJwd201IjsKIAkJcGluY3Ry
-bC1uYW1lcyA9ICJkZWZhdWx0IjsKIAkJcGluY3RybC0wID0gPCZwd20wX3BpbnM+OworCQludW0t
-cHdtcyA9IDw1PjsKIAl9OwotLSAKMi4xNy4xCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KTGludXgtbWVkaWF0ZWsgbWFpbGluZyBsaXN0CkxpbnV4LW1l
-ZGlhdGVrQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9saW51eC1tZWRpYXRlawo=
+From: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+
+This updates bindings for MT7629 pwm controller.
+
+Signed-off-by: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Reviewed-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+Changes since v7:
+- add a missed Reviewed-by tag back from v1:
+https://patchwork.kernel.org/patch/10769381/
+Changes since v1:
+- add a Reviewed-by tag
+
+---
+ Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+index ea95b490a913..c7bd5633d1eb 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+@@ -6,6 +6,7 @@ Required properties:
+    - "mediatek,mt7622-pwm": found on mt7622 SoC.
+    - "mediatek,mt7623-pwm": found on mt7623 SoC.
+    - "mediatek,mt7628-pwm": found on mt7628 SoC.
++   - "mediatek,mt7629-pwm", "mediatek,mt7622-pwm": found on mt7629 SoC.
+  - reg: physical base address and length of the controller's registers.
+  - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+    the cell format.
+-- 
+2.17.1
