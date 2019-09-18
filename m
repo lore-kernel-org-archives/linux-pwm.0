@@ -1,155 +1,174 @@
 From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v2 3/8] dt-bindings: sram: Convert Samsung Exynos SYSRAM bindings to json-schema
-Date: Wed, 18 Sep 2019 19:31:36 +0200
-Message-ID: <20190918173141.4314-3-krzk@kernel.org>
+Subject: [PATCH v2 4/8] dt-bindings: memory-controllers: Convert Samsung
+ Exynos SROM bindings to json-schema
+Date: Wed, 18 Sep 2019 19:31:37 +0200
+Message-ID: <20190918173141.4314-4-krzk@kernel.org>
 References: <20190918173141.4314-1-krzk@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 In-Reply-To: <20190918173141.4314-1-krzk@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Matt Mackall <mpm@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-riscv@lists.infradead.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Matt Mackall <mpm@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-riscv@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com, linux-crypto@vger.kernel.org, linux-watchdog@vger.kernel.org
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Convert Samsung Exynos SYSRAM bindings to DT schema format using
-json-schema.
-
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-
----
-
-TODO:
-The node naming should be probably fixed (sysram->sram)
-
-Changes since v1:
-1. Indent example with four spaces (more readable).
----
- .../devicetree/bindings/sram/samsung-sram.txt | 38 ------------
- .../bindings/sram/samsung-sram.yaml           | 58 +++++++++++++++++++
- MAINTAINERS                                   |  2 +-
- 3 files changed, 59 insertions(+), 39 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/sram/samsung-sram.txt
- create mode 100644 Documentation/devicetree/bindings/sram/samsung-sram.yaml
-
-diff --git a/Documentation/devicetree/bindings/sram/samsung-sram.txt b/Documentation/devicetree/bindings/sram/samsung-sram.txt
-deleted file mode 100644
-index 61a9bbed303d..000000000000
---- a/Documentation/devicetree/bindings/sram/samsung-sram.txt
-+++ /dev/null
-@@ -1,38 +0,0 @@
--Samsung Exynos SYSRAM for SMP bringup:
--------------------------------------
--
--Samsung SMP-capable Exynos SoCs use part of the SYSRAM for the bringup
--of the secondary cores. Once the core gets powered up it executes the
--code that is residing at some specific location of the SYSRAM.
--
--Therefore reserved section sub-nodes have to be added to the mmio-sram
--declaration. These nodes are of two types depending upon secure or
--non-secure execution environment.
--
--Required sub-node properties:
--- compatible : depending upon boot mode, should be
--		"samsung,exynos4210-sysram" : for Secure SYSRAM
--		"samsung,exynos4210-sysram-ns" : for Non-secure SYSRAM
--
--The rest of the properties should follow the generic mmio-sram discription
--found in Documentation/devicetree/bindings/sram/sram.txt
--
--Example:
--
--	sysram@2020000 {
--		compatible = "mmio-sram";
--		reg = <0x02020000 0x54000>;
--		#address-cells = <1>;
--		#size-cells = <1>;
--		ranges = <0 0x02020000 0x54000>;
--
--		smp-sysram@0 {
--			compatible = "samsung,exynos4210-sysram";
--			reg = <0x0 0x1000>;
--		};
--
--		smp-sysram@53000 {
--			compatible = "samsung,exynos4210-sysram-ns";
--			reg = <0x53000 0x1000>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/sram/samsung-sram.yaml b/Documentation/devicetree/bindings/sram/samsung-sram.yaml
-new file mode 100644
-index 000000000000..f49b3b58eb5c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sram/samsung-sram.yaml
-@@ -0,0 +1,58 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sram/samsung-sram.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Samsung Exynos SoC SYSRAM for SMP bringup
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzk@kernel.org>
-+
-+description: |+
-+  Samsung SMP-capable Exynos SoCs use part of the SYSRAM for the bringup
-+  of the secondary cores. Once the core gets powered up it executes the
-+  code that is residing at some specific location of the SYSRAM.
-+
-+  Therefore reserved section sub-nodes have to be added to the mmio-sram
-+  declaration. These nodes are of two types depending upon secure or
-+  non-secure execution environment.
-+
-+allOf:
-+  - $ref: "sram.yaml#"
-+
-+properties:
-+  $nodename:
-+    pattern: "^sysram(@.*)?"
-+
-+patternProperties:
-+  "^([a-z]*-)?sysram@[a-f0-9]$":
-+    type: object
-+
-+    properties:
-+      compatible:
-+        description:
-+          Depending upon boot mode
-+        enum:
-+          - samsung,exynos4210-sysram                 # for Secure SYSRAM
-+          - samsung,exynos4210-sysram-ns              # for Non-secure SYSRAM
-+
-+examples:
-+  - |
-+    sysram@2020000 {
-+        compatible = "mmio-sram";
-+        reg = <0x02020000 0x54000>;
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        ranges = <0 0x02020000 0x54000>;
-+
-+        smp-sysram@0 {
-+            compatible = "samsung,exynos4210-sysram";
-+            reg = <0x0 0x1000>;
-+        };
-+
-+        smp-sysram@53000 {
-+            compatible = "samsung,exynos4210-sysram-ns";
-+            reg = <0x53000 0x1000>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9cec4494b9a8..c49d35dce088 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2225,7 +2225,7 @@ F:	drivers/soc/samsung/
- F:	include/linux/soc/samsung/
- F:	Documentation/arm/samsung/
- F:	Documentation/devicetree/bindings/arm/samsung/
--F:	Documentation/devicetree/bindings/sram/samsung-sram.txt
-+F:	Documentation/devicetree/bindings/sram/samsung-sram.yaml
- F:	Documentation/devicetree/bindings/power/pd-samsung.txt
- N:	exynos
- 
--- 
-2.17.1
+Q29udmVydCBTYW1zdW5nIEV4eW5vcyBTUk9NIGNvbnRyb2xsZXIgYmluZGluZ3MgdG8gRFQgc2No
+ZW1hIGZvcm1hdAp1c2luZyBqc29uLXNjaGVtYS4KClNpZ25lZC1vZmYtYnk6IEtyenlzenRvZiBL
+b3psb3dza2kgPGtyemtAa2VybmVsLm9yZz4KCi0tLQoKQ2hhbmdlcyBzaW5jZSB2MToKMS4gSW5k
+ZW50IGV4YW1wbGUgd2l0aCBmb3VyIHNwYWNlcyAobW9yZSByZWFkYWJsZSksCjIuIFNwbGl0IGV4
+YW1wbGVzIGludG8gdHdvLAozLiBGaXggcGF0dGVybiBmb3Igc3Vibm9kZSBuYW1lLAo0LiBSZW1v
+dmUgY2hlY2tzIGZvciAjYWRkcmVzcy1jZWxscy1yYW5nZXMtI3NpemUtY2VsbHMsCjUuIEFkZCAi
+YWRkaXRpb25hbFByb3BlcnRpZXMiIHNvIHRoZSB3cm9uZ2x5IG5hbWVkIHN1Ym5vZGVzIHdvdWxk
+IGJlCiAgIG1hdGNoZWQuCi0tLQogLi4uL21lbW9yeS1jb250cm9sbGVycy9leHlub3Mtc3JvbS50
+eHQgICAgICAgIHwgIDc5IC0tLS0tLS0tLS0tCiAuLi4vbWVtb3J5LWNvbnRyb2xsZXJzL2V4eW5v
+cy1zcm9tLnlhbWwgICAgICAgfCAxMjggKysrKysrKysrKysrKysrKysrCiAyIGZpbGVzIGNoYW5n
+ZWQsIDEyOCBpbnNlcnRpb25zKCspLCA3OSBkZWxldGlvbnMoLSkKIGRlbGV0ZSBtb2RlIDEwMDY0
+NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWVtb3J5LWNvbnRyb2xsZXJzL2V4
+eW5vcy1zcm9tLnR4dAogY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9tZW1vcnktY29udHJvbGxlcnMvZXh5bm9zLXNyb20ueWFtbAoKZGlmZiAtLWdp
+dCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9tZW1vcnktY29udHJvbGxlcnMv
+ZXh5bm9zLXNyb20udHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21lbW9y
+eS1jb250cm9sbGVycy9leHlub3Mtc3JvbS50eHQKZGVsZXRlZCBmaWxlIG1vZGUgMTAwNjQ0Cmlu
+ZGV4IGY2MzNiNWQwZjhjYS4uMDAwMDAwMDAwMDAwCi0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNl
+dHJlZS9iaW5kaW5ncy9tZW1vcnktY29udHJvbGxlcnMvZXh5bm9zLXNyb20udHh0CisrKyAvZGV2
+L251bGwKQEAgLTEsNzkgKzAsMCBAQAotU0FNU1VORyBFeHlub3MgU29DcyBTUk9NIENvbnRyb2xs
+ZXIgZHJpdmVyLgotCi1SZXF1aXJlZCBwcm9wZXJ0aWVzOgotLSBjb21wYXRpYmxlIDogU2hvdWxk
+IGNvbnRhaW4gInNhbXN1bmcsZXh5bm9zNDIxMC1zcm9tIi4KLQotLSByZWc6IG9mZnNldCBhbmQg
+bGVuZ3RoIG9mIHRoZSByZWdpc3RlciBzZXQKLQotT3B0aW9uYWwgcHJvcGVydGllczoKLVRoZSBT
+Uk9NIGNvbnRyb2xsZXIgY2FuIGJlIHVzZWQgdG8gYXR0YWNoIGV4dGVybmFsIHBlcmlwaGVyYWxz
+LiBJbiB0aGlzIGNhc2UKLWV4dHJhIHByb3BlcnRpZXMsIGRlc2NyaWJpbmcgdGhlIGJ1cyBiZWhp
+bmQgaXQsIHNob3VsZCBiZSBzcGVjaWZpZWQgYXMgYmVsb3c6Ci0KLS0gI2FkZHJlc3MtY2VsbHM6
+IE11c3QgYmUgc2V0IHRvIDIgdG8gYWxsb3cgZGV2aWNlIGFkZHJlc3MgdHJhbnNsYXRpb24uCi0J
+CSAgQWRkcmVzcyBpcyBzcGVjaWZpZWQgYXMgKGJhbmsjLCBvZmZzZXQpLgotCi0tICNzaXplLWNl
+bGxzOiBNdXN0IGJlIHNldCB0byAxIHRvIGFsbG93IGRldmljZSBzaXplIHBhc3NpbmcKLQotLSBy
+YW5nZXM6IE11c3QgYmUgc2V0IHVwIHRvIHJlZmxlY3QgdGhlIG1lbW9yeSBsYXlvdXQgd2l0aCBm
+b3VyIGludGVnZXIgdmFsdWVzCi0JICBwZXIgYmFuazoKLQkJPGJhbmstbnVtYmVyPiAwIDxwYXJl
+bnQgYWRkcmVzcyBvZiBiYW5rPiA8c2l6ZT4KLQotU3ViLW5vZGVzOgotVGhlIGFjdHVhbCBkZXZp
+Y2Ugbm9kZXMgc2hvdWxkIGJlIGFkZGVkIGFzIHN1Ym5vZGVzIHRvIHRoZSBTUk9NYyBub2RlLiBU
+aGVzZQotc3Vibm9kZXMsIGluIGFkZGl0aW9uIHRvIHJlZ3VsYXIgZGV2aWNlIHNwZWNpZmljYXRp
+b24sIHNob3VsZCBjb250YWluIHRoZSBmb2xsb3dpbmcKLXByb3BlcnRpZXMsIGRlc2NyaWJpbmcg
+Y29uZmlndXJhdGlvbiBvZiB0aGUgcmVsZXZhbnQgU1JPTSBiYW5rOgotCi1SZXF1aXJlZCBwcm9w
+ZXJ0aWVzOgotLSByZWc6IGJhbmsgbnVtYmVyLCBiYXNlIGFkZHJlc3MgKHJlbGF0aXZlIHRvIHN0
+YXJ0IG9mIHRoZSBiYW5rKSBhbmQgc2l6ZSBvZgotICAgICAgIHRoZSBtZW1vcnkgbWFwcGVkIGZv
+ciB0aGUgZGV2aWNlLiBOb3RlIHRoYXQgYmFzZSBhZGRyZXNzIHdpbGwgYmUKLSAgICAgICB0eXBp
+Y2FsbHkgMCBhcyB0aGlzIGlzIHRoZSBzdGFydCBvZiB0aGUgYmFuay4KLQotLSBzYW1zdW5nLHNy
+b20tdGltaW5nIDogYXJyYXkgb2YgNiBpbnRlZ2Vycywgc3BlY2lmeWluZyBiYW5rIHRpbWluZ3Mg
+aW4gdGhlCi0gICAgICAgICAgICAgICAgICAgICAgICBmb2xsb3dpbmcgb3JkZXI6IFRhY3AsIFRj
+YWgsIFRjb2gsIFRhY2MsIFRjb3MsIFRhY3MuCi0gICAgICAgICAgICAgICAgICAgICAgICBFYWNo
+IHZhbHVlIGlzIHNwZWNpZmllZCBpbiBjeWNsZXMgYW5kIGhhcyB0aGUgZm9sbG93aW5nCi0gICAg
+ICAgICAgICAgICAgICAgICAgICBtZWFuaW5nIGFuZCB2YWxpZCByYW5nZToKLSAgICAgICAgICAg
+ICAgICAgICAgICAgIFRhY3AgOiBQYWdlIG1vZGUgYWNjZXNzIGN5Y2xlIGF0IFBhZ2UgbW9kZSAo
+MCAtIDE1KQotICAgICAgICAgICAgICAgICAgICAgICAgVGNhaCA6IEFkZHJlc3MgaG9sZGluZyB0
+aW1lIGFmdGVyIENTbiAoMCAtIDE1KQotICAgICAgICAgICAgICAgICAgICAgICAgVGNvaCA6IENo
+aXAgc2VsZWN0aW9uIGhvbGQgb24gT0VuICgwIC0gMTUpCi0gICAgICAgICAgICAgICAgICAgICAg
+ICBUYWNjIDogQWNjZXNzIGN5Y2xlICgwIC0gMzEsIHRoZSBhY3R1YWwgdGltZSBpcyBOICsgMSkK
+LSAgICAgICAgICAgICAgICAgICAgICAgIFRjb3MgOiBDaGlwIHNlbGVjdGlvbiBzZXQtdXAgYmVm
+b3JlIE9FbiAoMCAtIDE1KQotICAgICAgICAgICAgICAgICAgICAgICAgVGFjcyA6IEFkZHJlc3Mg
+c2V0LXVwIGJlZm9yZSBDU24gKDAgLSAxNSkKLQotT3B0aW9uYWwgcHJvcGVydGllczoKLS0gcmVn
+LWlvLXdpZHRoIDogZGF0YSB3aWR0aCBpbiBieXRlcyAoMSBvciAyKS4gSWYgb21pdHRlZCwgZGVm
+YXVsdCBvZiAxIGlzIHVzZWQuCi0KLS0gc2Ftc3VuZyxzcm9tLXBhZ2UtbW9kZSA6IGlmIHBhZ2Ug
+bW9kZSBpcyBzZXQsIDQgZGF0YSBwYWdlIG1vZGUgd2lsbCBiZSBjb25maWd1cmVkLAotCQkJICAg
+ZWxzZSBub3JtYWwgKDEgZGF0YSkgcGFnZSBtb2RlIHdpbGwgYmUgc2V0LgotCi1FeGFtcGxlOiBi
+YXNpYyBkZWZpbml0aW9uLCBubyBiYW5rcyBhcmUgY29uZmlndXJlZAotCW1lbW9yeS1jb250cm9s
+bGVyQDEyNTcwMDAwIHsKLQkJY29tcGF0aWJsZSA9ICJzYW1zdW5nLGV4eW5vczQyMTAtc3JvbSI7
+Ci0JCXJlZyA9IDwweDEyNTcwMDAwIDB4MTQ+OwotCX07Ci0KLUV4YW1wbGU6IFNST01jIHdpdGgg
+U01TQzkxMXggZXRoZXJuZXQgY2hpcCBvbiBiYW5rIDMKLQltZW1vcnktY29udHJvbGxlckAxMjU3
+MDAwMCB7Ci0JCSNhZGRyZXNzLWNlbGxzID0gPDI+OwotCQkjc2l6ZS1jZWxscyA9IDwxPjsKLQkJ
+cmFuZ2VzID0gPDAgMCAweDA0MDAwMDAwIDB4MjAwMDAgICAvLyBCYW5rMAotCQkJICAxIDAgMHgw
+NTAwMDAwMCAweDIwMDAwICAgLy8gQmFuazEKLQkJCSAgMiAwIDB4MDYwMDAwMDAgMHgyMDAwMCAg
+IC8vIEJhbmsyCi0JCQkgIDMgMCAweDA3MDAwMDAwIDB4MjAwMDA+OyAvLyBCYW5rMwotCi0JCWNv
+bXBhdGlibGUgPSAic2Ftc3VuZyxleHlub3M0MjEwLXNyb20iOwotCQlyZWcgPSA8MHgxMjU3MDAw
+MCAweDE0PjsKLQotCQlldGhlcm5ldEAzLDAgewotCQkJY29tcGF0aWJsZSA9ICJzbXNjLGxhbjkx
+MTUiOwotCQkJcmVnID0gPDMgMCAweDEwMDAwPjsJICAgLy8gQmFuayAzLCBvZmZzZXQgPSAwCi0J
+CQlwaHktbW9kZSA9ICJtaWkiOwotCQkJaW50ZXJydXB0LXBhcmVudCA9IDwmZ3B4MD47Ci0JCQlp
+bnRlcnJ1cHRzID0gPDUgOD47Ci0JCQlyZWctaW8td2lkdGggPSA8Mj47Ci0JCQlzbXNjLGlycS1w
+dXNoLXB1bGw7Ci0JCQlzbXNjLGZvcmNlLWludGVybmFsLXBoeTsKLQotCQkJc2Ftc3VuZyxzcm9t
+LXBhZ2UtbW9kZTsKLQkJCXNhbXN1bmcsc3JvbS10aW1pbmcgPSA8OSAxMiAxIDkgMSAxPjsKLQkJ
+fTsKLQl9OwpkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21l
+bW9yeS1jb250cm9sbGVycy9leHlub3Mtc3JvbS55YW1sIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0
+cmVlL2JpbmRpbmdzL21lbW9yeS1jb250cm9sbGVycy9leHlub3Mtc3JvbS55YW1sCm5ldyBmaWxl
+IG1vZGUgMTAwNjQ0CmluZGV4IDAwMDAwMDAwMDAwMC4uY2RmZTNmN2YwZWE5Ci0tLSAvZGV2L251
+bGwKKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21lbW9yeS1jb250cm9s
+bGVycy9leHlub3Mtc3JvbS55YW1sCkBAIC0wLDAgKzEsMTI4IEBACisjIFNQRFgtTGljZW5zZS1J
+ZGVudGlmaWVyOiBHUEwtMi4wCislWUFNTCAxLjIKKy0tLQorJGlkOiBodHRwOi8vZGV2aWNldHJl
+ZS5vcmcvc2NoZW1hcy9tZW1vcnktY29udHJvbGxlcnMvZXh5bm9zLXNyb20ueWFtbCMKKyRzY2hl
+bWE6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9tZXRhLXNjaGVtYXMvY29yZS55YW1sIworCit0aXRs
+ZTogU2Ftc3VuZyBFeHlub3MgU29DIFNST00gQ29udHJvbGxlciBkcml2ZXIKKworbWFpbnRhaW5l
+cnM6CisgIC0gS3J6eXN6dG9mIEtvemxvd3NraSA8a3J6a0BrZXJuZWwub3JnPgorCitkZXNjcmlw
+dGlvbjogfCsKKyAgVGhlIFNST00gY29udHJvbGxlciBjYW4gYmUgdXNlZCB0byBhdHRhY2ggZXh0
+ZXJuYWwgcGVyaXBoZXJhbHMuIEluIHRoaXMgY2FzZQorICBleHRyYSBwcm9wZXJ0aWVzLCBkZXNj
+cmliaW5nIHRoZSBidXMgYmVoaW5kIGl0LCBzaG91bGQgYmUgc3BlY2lmaWVkLgorCitwcm9wZXJ0
+aWVzOgorICBjb21wYXRpYmxlOgorICAgIGl0ZW1zOgorICAgICAgLSBjb25zdDogc2Ftc3VuZyxl
+eHlub3M0MjEwLXNyb20KKworICByZWc6CisgICAgbWF4SXRlbXM6IDEKKworICAiI2FkZHJlc3Mt
+Y2VsbHMiOgorICAgIGNvbnN0OiAyCisKKyAgIiNzaXplLWNlbGxzIjoKKyAgICBjb25zdDogMQor
+CisgIHJhbmdlczoKKyAgICBkZXNjcmlwdGlvbjogfAorICAgICAgUmVmbGVjdHMgdGhlIG1lbW9y
+eSBsYXlvdXQgd2l0aCBmb3VyIGludGVnZXIgdmFsdWVzIHBlciBiYW5rLiBGb3JtYXQ6CisgICAg
+ICA8YmFuay1udW1iZXI+IDAgPHBhcmVudCBhZGRyZXNzIG9mIGJhbms+IDxzaXplPgorICAgICAg
+VXAgdG8gZm91ciBiYW5rcyBhcmUgc3VwcG9ydGVkLgorCitwYXR0ZXJuUHJvcGVydGllczoKKyAg
+Il4uKkBbMC0zXSxbYS1mMC05XSskIjoKKyAgICB0eXBlOiBvYmplY3QKKyAgICBkZXNjcmlwdGlv
+bjoKKyAgICAgIFRoZSBhY3R1YWwgZGV2aWNlIG5vZGVzIHNob3VsZCBiZSBhZGRlZCBhcyBzdWJu
+b2RlcyB0byB0aGUgU1JPTWMgbm9kZS4KKyAgICAgIFRoZXNlIHN1Ym5vZGVzLCBpbiBhZGRpdGlv
+biB0byByZWd1bGFyIGRldmljZSBzcGVjaWZpY2F0aW9uLCBzaG91bGQKKyAgICAgIGNvbnRhaW4g
+dGhlIGZvbGxvd2luZyBwcm9wZXJ0aWVzLCBkZXNjcmliaW5nIGNvbmZpZ3VyYXRpb24KKyAgICAg
+IG9mIHRoZSByZWxldmFudCBTUk9NIGJhbmsuCisKKyAgICBwcm9wZXJ0aWVzOgorICAgICAgcmVn
+OgorICAgICAgICBkZXNjcmlwdGlvbjoKKyAgICAgICAgICBCYW5rIG51bWJlciwgYmFzZSBhZGRy
+ZXNzIChyZWxhdGl2ZSB0byBzdGFydCBvZiB0aGUgYmFuaykgYW5kIHNpemUKKyAgICAgICAgICBv
+ZiB0aGUgbWVtb3J5IG1hcHBlZCBmb3IgdGhlIGRldmljZS4gTm90ZSB0aGF0IGJhc2UgYWRkcmVz
+cyB3aWxsIGJlCisgICAgICAgICAgdHlwaWNhbGx5IDAgYXMgdGhpcyBpcyB0aGUgc3RhcnQgb2Yg
+dGhlIGJhbmsuCisgICAgICAgIG1heEl0ZW1zOiAxCisKKyAgICAgIHJlZy1pby13aWR0aDoKKyAg
+ICAgICAgYWxsT2Y6CisgICAgICAgICAgLSAkcmVmOiAvc2NoZW1hcy90eXBlcy55YW1sIy9kZWZp
+bml0aW9ucy91aW50MzIKKyAgICAgICAgICAtIGVudW06IFsxLCAyXQorICAgICAgICBkZXNjcmlw
+dGlvbjoKKyAgICAgICAgICBEYXRhIHdpZHRoIGluIGJ5dGVzICgxIG9yIDIpLiBJZiBvbWl0dGVk
+LCBkZWZhdWx0IG9mIDEgaXMgdXNlZC4KKworICAgICAgc2Ftc3VuZyxzcm9tLXBhZ2UtbW9kZToK
+KyAgICAgICAgZGVzY3JpcHRpb246CisgICAgICAgICAgSWYgcGFnZSBtb2RlIGlzIHNldCwgNCBk
+YXRhIHBhZ2UgbW9kZSB3aWxsIGJlIGNvbmZpZ3VyZWQsCisgICAgICAgICAgZWxzZSBub3JtYWwg
+KDEgZGF0YSkgcGFnZSBtb2RlIHdpbGwgYmUgc2V0LgorICAgICAgICB0eXBlOiBib29sZWFuCisK
+KyAgICAgIHNhbXN1bmcsc3JvbS10aW1pbmc6CisgICAgICAgIGFsbE9mOgorICAgICAgICAgIC0g
+JHJlZjogL3NjaGVtYXMvdHlwZXMueWFtbCMvZGVmaW5pdGlvbnMvdWludDMyLWFycmF5CisgICAg
+ICAgICAgLSBpdGVtczoKKyAgICAgICAgICAgICAgbWluSXRlbXM6IDYKKyAgICAgICAgICAgICAg
+bWF4SXRlbXM6IDYKKyAgICAgICAgZGVzY3JpcHRpb246IHwKKyAgICAgICAgICBBcnJheSBvZiA2
+IGludGVnZXJzLCBzcGVjaWZ5aW5nIGJhbmsgdGltaW5ncyBpbiB0aGUgZm9sbG93aW5nIG9yZGVy
+OgorICAgICAgICAgIFRhY3AsIFRjYWgsIFRjb2gsIFRhY2MsIFRjb3MsIFRhY3MuCisgICAgICAg
+ICAgRWFjaCB2YWx1ZSBpcyBzcGVjaWZpZWQgaW4gY3ljbGVzIGFuZCBoYXMgdGhlIGZvbGxvd2lu
+ZyBtZWFuaW5nCisgICAgICAgICAgYW5kIHZhbGlkIHJhbmdlOgorICAgICAgICAgIFRhY3A6IFBh
+Z2UgbW9kZSBhY2Nlc3MgY3ljbGUgYXQgUGFnZSBtb2RlICgwIC0gMTUpCisgICAgICAgICAgVGNh
+aDogQWRkcmVzcyBob2xkaW5nIHRpbWUgYWZ0ZXIgQ1NuICgwIC0gMTUpCisgICAgICAgICAgVGNv
+aDogQ2hpcCBzZWxlY3Rpb24gaG9sZCBvbiBPRW4gKDAgLSAxNSkKKyAgICAgICAgICBUYWNjOiBB
+Y2Nlc3MgY3ljbGUgKDAgLSAzMSwgdGhlIGFjdHVhbCB0aW1lIGlzIE4gKyAxKQorICAgICAgICAg
+IFRjb3M6IENoaXAgc2VsZWN0aW9uIHNldC11cCBiZWZvcmUgT0VuICgwIC0gMTUpCisgICAgICAg
+ICAgVGFjczogQWRkcmVzcyBzZXQtdXAgYmVmb3JlIENTbiAoMCAtIDE1KQorCisgICAgcmVxdWly
+ZWQ6CisgICAgICAtIHJlZworICAgICAgLSBzYW1zdW5nLHNyb20tdGltaW5nCisKK3JlcXVpcmVk
+OgorICAtIGNvbXBhdGlibGUKKyAgLSByZWcKKworYWRkaXRpb25hbFByb3BlcnRpZXM6IGZhbHNl
+CisKK2V4YW1wbGVzOgorICAtIHwKKyAgICAvLyBFeGFtcGxlOiBiYXNpYyBkZWZpbml0aW9uLCBu
+byBiYW5rcyBhcmUgY29uZmlndXJlZAorICAgIG1lbW9yeS1jb250cm9sbGVyQDEyNTYwMDAwIHsK
+KyAgICAgICAgY29tcGF0aWJsZSA9ICJzYW1zdW5nLGV4eW5vczQyMTAtc3JvbSI7CisgICAgICAg
+IHJlZyA9IDwweDEyNTYwMDAwIDB4MTQ+OworICAgIH07CisKKyAgLSB8CisgICAgLy8gRXhhbXBs
+ZTogU1JPTWMgd2l0aCBTTVNDOTExeCBldGhlcm5ldCBjaGlwIG9uIGJhbmsgMworICAgIG1lbW9y
+eS1jb250cm9sbGVyQDEyNTcwMDAwIHsKKyAgICAgICAgI2FkZHJlc3MtY2VsbHMgPSA8Mj47Cisg
+ICAgICAgICNzaXplLWNlbGxzID0gPDE+OworICAgICAgICByYW5nZXMgPSA8MCAwIDB4MDQwMDAw
+MDAgMHgyMDAwMCAgIC8vIEJhbmswCisgICAgICAgICAgICAgICAgICAxIDAgMHgwNTAwMDAwMCAw
+eDIwMDAwICAgLy8gQmFuazEKKyAgICAgICAgICAgICAgICAgIDIgMCAweDA2MDAwMDAwIDB4MjAw
+MDAgICAvLyBCYW5rMgorICAgICAgICAgICAgICAgICAgMyAwIDB4MDcwMDAwMDAgMHgyMDAwMD47
+IC8vIEJhbmszCisKKyAgICAgICAgY29tcGF0aWJsZSA9ICJzYW1zdW5nLGV4eW5vczQyMTAtc3Jv
+bSI7CisgICAgICAgIHJlZyA9IDwweDEyNTcwMDAwIDB4MTQ+OworCisgICAgICAgIGV0aGVybmV0
+QDMsMCB7CisgICAgICAgICAgICBjb21wYXRpYmxlID0gInNtc2MsbGFuOTExNSI7CisgICAgICAg
+ICAgICByZWcgPSA8MyAwIDB4MTAwMDA+OyAgICAgLy8gQmFuayAzLCBvZmZzZXQgPSAwCisgICAg
+ICAgICAgICBwaHktbW9kZSA9ICJtaWkiOworICAgICAgICAgICAgaW50ZXJydXB0LXBhcmVudCA9
+IDwmZ3B4MD47CisgICAgICAgICAgICBpbnRlcnJ1cHRzID0gPDUgOD47CisgICAgICAgICAgICBy
+ZWctaW8td2lkdGggPSA8Mj47CisgICAgICAgICAgICBzbXNjLGlycS1wdXNoLXB1bGw7CisgICAg
+ICAgICAgICBzbXNjLGZvcmNlLWludGVybmFsLXBoeTsKKworICAgICAgICAgICAgc2Ftc3VuZyxz
+cm9tLXBhZ2UtbW9kZTsKKyAgICAgICAgICAgIHNhbXN1bmcsc3JvbS10aW1pbmcgPSA8OSAxMiAx
+IDkgMSAxPjsKKyAgICAgICAgfTsKKyAgICB9OwotLSAKMi4xNy4xCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRy
+aS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
