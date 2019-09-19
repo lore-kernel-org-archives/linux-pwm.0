@@ -1,57 +1,78 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2] pwm: stm32-lp: add check in case requested period
- cannot be achieved
-Date: Wed, 18 Sep 2019 20:40:39 +0200
-Message-ID: <20190918184039.27dtd3zguawijsqo@pengutronix.de>
-References: <1568818461-19995-1-git-send-email-fabrice.gasnier@st.com>
+From: <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v2] pwm: atmel: Remove platform_device_id and use only dt
+ bindings
+Date: Thu, 19 Sep 2019 07:47:27 +0000
+Message-ID: <e3a8f56f-7471-ac84-c266-1ee446531212@microchip.com>
+References: <20190918145716.32022-1-kamel.bouhara@bootlin.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1568818461-19995-1-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <20190918145716.32022-1-kamel.bouhara@bootlin.com>
+Content-Language: en-US
+Content-ID: <E43012DF0B66B14781E1C204C02EE893@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: thierry.reding@gmail.com, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+To: kamel.bouhara@bootlin.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, gregory.clement@bootlin.com, thomas.petazzoni@bootlin.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 04:54:21PM +0200, Fabrice Gasnier wrote:
-> LPTimer can use a 32KHz clock for counting. It depends on clock tree
-> configuration. In such a case, PWM output frequency range is limited.
-> Although unlikely, nothing prevents user from requesting a PWM frequency
-> above counting clock (32KHz for instance):
-> - This causes (prd - 1) = 0xffff to be written in ARR register later in
-> the apply() routine.
-> This results in badly configured PWM period (and also duty_cycle).
-> Add a check to report an error is such a case.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-If you are interested to improve the driver further, there are a few
-things that I would welcome to see fixed in a tested patch:
-
- - duty calculation uses requested instead of implemented period.
- - stm32_pwm_lp_apply calls pwm_get_state
- - Calculation of prd could be done without a loop
- - A hint about relevant documentation in the driver's header would be
-   great
- - Documentation about behaviour of the hardware is missing:
-   - Does the hardware complete the currently running period when
-     STM32_LPTIM_CR is cleared?
-   - Does the output stop in the inactive output level when the PWM is
-     stopped?
- - clk_get_rate might be called without the clock being enabled.
- - The driver does:
-
- 	ret = regmap_write(priv->regmap, STM32_LPTIM_CMP, prd - (1 + dty));
-
-   That looks wrong. (Consider dty == prd.)
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+DQoNCk9uIDE4LjA5LjIwMTkgMTc6NTcsIEthbWVsIEJvdWhhcmEgd3JvdGU6DQo+IFNpbmNlIGNv
+bW1pdCAyNjIwMjg3M2JiNTEgKCJhdnIzMjogcmVtb3ZlIHN1cHBvcnQgZm9yIEFWUjMyDQo+IGFy
+Y2hpdGVjdHVyZSIpIHRoZXJlIGlzIG5vIG1vcmUgdXNlciBvZiBwbGF0Zm9ybV9kZXZpY2VfaWQg
+YW5kIHdlDQo+IHNob3VsZCBvbmx5IHVzZSBkdCBiaW5kaW5ncw0KPiANCj4gU2lnbmVkLW9mZi1i
+eTogS2FtZWwgQm91aGFyYSA8a2FtZWwuYm91aGFyYUBib290bGluLmNvbT4NCg0KQWNrZWQtYnk6
+IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KDQo+IC0tLQ0K
+PiBDaGFuZ2Vsb2c6DQo+ICB2MS0+djINCj4gIA0KPiAgLSBSZW1vdmUgd2hvbGUgZnVuY3Rpb24g
+YXRtZWxfcHdtX2dldF9kcml2ZXJfZGF0YSBhbmQgY2FsbA0KPiAgb2ZfZGV2aWNlX2dldF9tYXRj
+aF9kYXRhIGZyb20gYXRtZWxfcHdtX3Byb2JlDQo+IA0KPiAgZHJpdmVycy9wd20vS2NvbmZpZyAg
+ICAgfCAgMiArLQ0KPiAgZHJpdmVycy9wd20vcHdtLWF0bWVsLmMgfCAzNSArKystLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAgMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMo
+KyksIDMzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL0tjb25m
+aWcgYi9kcml2ZXJzL3B3bS9LY29uZmlnDQo+IGluZGV4IGE3ZTU3NTE2OTU5ZS4uYjUxZmIxYTMz
+YWEyIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3B3bS9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMv
+cHdtL0tjb25maWcNCj4gQEAgLTQ0LDcgKzQ0LDcgQEAgY29uZmlnIFBXTV9BQjg1MDANCj4gIA0K
+PiAgY29uZmlnIFBXTV9BVE1FTA0KPiAgCXRyaXN0YXRlICJBdG1lbCBQV00gc3VwcG9ydCINCj4g
+LQlkZXBlbmRzIG9uIEFSQ0hfQVQ5MQ0KPiArCWRlcGVuZHMgb24gQVJDSF9BVDkxICYmIE9GDQo+
+ICAJaGVscA0KPiAgCSAgR2VuZXJpYyBQV00gZnJhbWV3b3JrIGRyaXZlciBmb3IgQXRtZWwgU29D
+Lg0KPiAgDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYyBiL2RyaXZlcnMv
+cHdtL3B3bS1hdG1lbC5jDQo+IGluZGV4IGU1ZTFlYWYzNzJmYS4uZjdjZjBhODZhMzdjIDEwMDY0
+NA0KPiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYw0KPiArKysgYi9kcml2ZXJzL3B3bS9w
+d20tYXRtZWwuYw0KPiBAQCAtMzE4LDE5ICszMTgsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGF0
+bWVsX3B3bV9kYXRhIG1jaHBfc2FtOXg2MF9wd21fZGF0YSA9IHsNCj4gIAl9LA0KPiAgfTsNCj4g
+IA0KPiAtc3RhdGljIGNvbnN0IHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2VfaWQgYXRtZWxfcHdtX2Rl
+dnR5cGVzW10gPSB7DQo+IC0Jew0KPiAtCQkubmFtZSA9ICJhdDkxc2FtOXJsLXB3bSIsDQo+IC0J
+CS5kcml2ZXJfZGF0YSA9IChrZXJuZWxfdWxvbmdfdCkmYXRtZWxfc2FtOXJsX3B3bV9kYXRhLA0K
+PiAtCX0sIHsNCj4gLQkJLm5hbWUgPSAic2FtYTVkMy1wd20iLA0KPiAtCQkuZHJpdmVyX2RhdGEg
+PSAoa2VybmVsX3Vsb25nX3QpJmF0bWVsX3NhbWE1X3B3bV9kYXRhLA0KPiAtCX0sIHsNCj4gLQkJ
+Lyogc2VudGluZWwgKi8NCj4gLQl9LA0KPiAtfTsNCj4gLU1PRFVMRV9ERVZJQ0VfVEFCTEUocGxh
+dGZvcm0sIGF0bWVsX3B3bV9kZXZ0eXBlcyk7DQo+IC0NCj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3Qg
+b2ZfZGV2aWNlX2lkIGF0bWVsX3B3bV9kdF9pZHNbXSA9IHsNCj4gIAl7DQo+ICAJCS5jb21wYXRp
+YmxlID0gImF0bWVsLGF0OTFzYW05cmwtcHdtIiwNCj4gQEAgLTM1MCwxOSArMzM3LDYgQEAgc3Rh
+dGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYXRtZWxfcHdtX2R0X2lkc1tdID0gew0KPiAg
+fTsNCj4gIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGF0bWVsX3B3bV9kdF9pZHMpOw0KPiAgDQo+
+IC1zdGF0aWMgaW5saW5lIGNvbnN0IHN0cnVjdCBhdG1lbF9wd21fZGF0YSAqDQo+IC1hdG1lbF9w
+d21fZ2V0X2RyaXZlcl9kYXRhKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+IC17DQo+
+IC0JY29uc3Qgc3RydWN0IHBsYXRmb3JtX2RldmljZV9pZCAqaWQ7DQo+IC0NCj4gLQlpZiAocGRl
+di0+ZGV2Lm9mX25vZGUpDQo+IC0JCXJldHVybiBvZl9kZXZpY2VfZ2V0X21hdGNoX2RhdGEoJnBk
+ZXYtPmRldik7DQo+IC0NCj4gLQlpZCA9IHBsYXRmb3JtX2dldF9kZXZpY2VfaWQocGRldik7DQo+
+IC0NCj4gLQlyZXR1cm4gKHN0cnVjdCBhdG1lbF9wd21fZGF0YSAqKWlkLT5kcml2ZXJfZGF0YTsN
+Cj4gLX0NCj4gLQ0KPiAgc3RhdGljIGludCBhdG1lbF9wd21fcHJvYmUoc3RydWN0IHBsYXRmb3Jt
+X2RldmljZSAqcGRldikNCj4gIHsNCj4gIAljb25zdCBzdHJ1Y3QgYXRtZWxfcHdtX2RhdGEgKmRh
+dGE7DQo+IEBAIC0zNzAsNyArMzQ0LDcgQEAgc3RhdGljIGludCBhdG1lbF9wd21fcHJvYmUoc3Ry
+dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gIAlzdHJ1Y3QgcmVzb3VyY2UgKnJlczsNCj4g
+IAlpbnQgcmV0Ow0KPiAgDQo+IC0JZGF0YSA9IGF0bWVsX3B3bV9nZXRfZHJpdmVyX2RhdGEocGRl
+dik7DQo+ICsJZGF0YSA9IG9mX2RldmljZV9nZXRfbWF0Y2hfZGF0YSgmcGRldi0+ZGV2KTsNCj4g
+IAlpZiAoIWRhdGEpDQo+ICAJCXJldHVybiAtRU5PREVWOw0KPiAgDQo+IEBAIC0zOTYsMTAgKzM3
+MCw4IEBAIHN0YXRpYyBpbnQgYXRtZWxfcHdtX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2Ug
+KnBkZXYpDQo+ICAJYXRtZWxfcHdtLT5jaGlwLmRldiA9ICZwZGV2LT5kZXY7DQo+ICAJYXRtZWxf
+cHdtLT5jaGlwLm9wcyA9ICZhdG1lbF9wd21fb3BzOw0KPiAgDQo+IC0JaWYgKHBkZXYtPmRldi5v
+Zl9ub2RlKSB7DQo+IC0JCWF0bWVsX3B3bS0+Y2hpcC5vZl94bGF0ZSA9IG9mX3B3bV94bGF0ZV93
+aXRoX2ZsYWdzOw0KPiAtCQlhdG1lbF9wd20tPmNoaXAub2ZfcHdtX25fY2VsbHMgPSAzOw0KPiAt
+CX0NCj4gKwlhdG1lbF9wd20tPmNoaXAub2ZfeGxhdGUgPSBvZl9wd21feGxhdGVfd2l0aF9mbGFn
+czsNCj4gKwlhdG1lbF9wd20tPmNoaXAub2ZfcHdtX25fY2VsbHMgPSAzOw0KPiAgDQo+ICAJYXRt
+ZWxfcHdtLT5jaGlwLmJhc2UgPSAtMTsNCj4gIAlhdG1lbF9wd20tPmNoaXAubnB3bSA9IDQ7DQo+
+IEBAIC00MzcsNyArNDA5LDYgQEAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgYXRtZWxf
+cHdtX2RyaXZlciA9IHsNCj4gIAkJLm5hbWUgPSAiYXRtZWwtcHdtIiwNCj4gIAkJLm9mX21hdGNo
+X3RhYmxlID0gb2ZfbWF0Y2hfcHRyKGF0bWVsX3B3bV9kdF9pZHMpLA0KPiAgCX0sDQo+IC0JLmlk
+X3RhYmxlID0gYXRtZWxfcHdtX2RldnR5cGVzLA0KPiAgCS5wcm9iZSA9IGF0bWVsX3B3bV9wcm9i
+ZSwNCj4gIAkucmVtb3ZlID0gYXRtZWxfcHdtX3JlbW92ZSwNCj4gIH07DQo+IA0K
