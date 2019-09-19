@@ -1,11 +1,10 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v9 07/11] dt-bindings: pwm: pwm-mediatek: add a property "num-pwms"
-Date: Fri, 20 Sep 2019 06:49:07 +0800
-Message-ID: <1568933351-8584-8-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v9 10/11] dt-bindings: pwm: update bindings for MT7629 SoC
+Date: Fri, 20 Sep 2019 06:49:10 +0800
+Message-ID: <1568933351-8584-11-git-send-email-sam.shih@mediatek.com>
 References: <1568933351-8584-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1568933351-8584-1-git-send-email-sam.shih@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -15,52 +14,34 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Ryder Lee <ryder.lee@mediatek.com>
 
-This adds a property "num-pwms" in example so that we could
-specify the number of PWM channels via device tree.
+This updates bindings for MT7629 pwm controller.
 
 Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
-Changes since v6:
-Follow reviewers's comments:
-- The subject should indicate this is for Mediatek
-
-Changes since v5:
-- Add an Acked-by tag
-- This file is original v4 patch 5/10
-(https://patchwork.kernel.org/patch/11102577/)
+Changes since v7:
+- add a missed Reviewed-by tag back from v1:
+https://patchwork.kernel.org/patch/10769381/
+Changes since v1:
+- add a Reviewed-by tag
 
 ---
- Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 991728cb46cb..ea95b490a913 100644
+index ea95b490a913..c7bd5633d1eb 100644
 --- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
 +++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -14,12 +14,12 @@ Required properties:
-                 has no clocks
-    - "top": the top clock generator
-    - "main": clock used by the PWM core
--   - "pwm1-8": the eight per PWM clocks for mt2712
--   - "pwm1-6": the six per PWM clocks for mt7622
--   - "pwm1-5": the five per PWM clocks for mt7623
-+   - "pwm1-N": the PWM clocks for each channel
-+   where N starting from 1 to the maximum number of PWM channels
-  - pinctrl-names: Must contain a "default" entry.
-  - pinctrl-0: One property must exist for each entry in pinctrl-names.
-    See pinctrl/pinctrl-bindings.txt for details of the property values.
-+ - num-pwms: the number of PWM channels.
- 
- Example:
- 	pwm0: pwm@11006000 {
-@@ -37,4 +37,5 @@ Example:
- 			      "pwm3", "pwm4", "pwm5";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pwm0_pins>;
-+		num-pwms = <5>;
- 	};
+@@ -6,6 +6,7 @@ Required properties:
+    - "mediatek,mt7622-pwm": found on mt7622 SoC.
+    - "mediatek,mt7623-pwm": found on mt7623 SoC.
+    - "mediatek,mt7628-pwm": found on mt7628 SoC.
++   - "mediatek,mt7629-pwm", "mediatek,mt7622-pwm": found on mt7629 SoC.
+  - reg: physical base address and length of the controller's registers.
+  - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+    the cell format.
 -- 
 2.17.1
