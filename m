@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v9 08/11] arm64: dts: mt7622: add a property "num-pwms" for PWM
-Date: Fri, 20 Sep 2019 06:49:08 +0800
-Message-ID: <1568933351-8584-9-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v9 09/11] arm: dts: mt7623: add a property "num-pwms" for PWM
+Date: Fri, 20 Sep 2019 06:49:09 +0800
+Message-ID: <1568933351-8584-10-git-send-email-sam.shih@mediatek.com>
 References: <1568933351-8584-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -28,18 +28,18 @@ This adds a property "num-pwms" for PWM controller.
 Signed-off-by: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Sam Shih <sam.shih-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- arch/arm64/boot/dts/mediatek/mt7622.dtsi | 1 +
+ arch/arm/boot/dts/mt7623.dtsi | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-index d1e13d340e26..9a043938881f 100644
---- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-@@ -439,6 +439,7 @@
- 			 <&pericfg CLK_PERI_PWM6_PD>;
- 		clock-names = "top", "main", "pwm1", "pwm2", "pwm3", "pwm4",
- 			      "pwm5", "pwm6";
-+		num-pwms = <6>;
+diff --git a/arch/arm/boot/dts/mt7623.dtsi b/arch/arm/boot/dts/mt7623.dtsi
+index a79f0b6c3429..208e0d19a575 100644
+--- a/arch/arm/boot/dts/mt7623.dtsi
++++ b/arch/arm/boot/dts/mt7623.dtsi
+@@ -452,6 +452,7 @@
+ 			 <&pericfg CLK_PERI_PWM5>;
+ 		clock-names = "top", "main", "pwm1", "pwm2",
+ 			      "pwm3", "pwm4", "pwm5";
++		num-pwms = <5>;
  		status = "disabled";
  	};
  
