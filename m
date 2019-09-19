@@ -1,7 +1,7 @@
 From: Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH v9 01/11] pwm: mediatek: add a property "num-pwms"
-Date: Fri, 20 Sep 2019 06:49:01 +0800
-Message-ID: <1568933351-8584-2-git-send-email-sam.shih@mediatek.com>
+Subject: [PATCH v9 02/11] pwm: mediatek: droping the check for of_device_get_match_data
+Date: Fri, 20 Sep 2019 06:49:02 +0800
+Message-ID: <1568933351-8584-3-git-send-email-sam.shih@mediatek.com>
 References: <1568933351-8584-1-git-send-email-sam.shih@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -13,121 +13,53 @@ To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matth
 Cc: Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, Sam Shih <sam.shih@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Ryder Lee <ryder.lee@mediatek.com>
-
-This adds a property "num-pwms" to avoid having an endless
-list of compatibles with no differences for the same driver.
+This patch drop the check for of_device_get_match_data.
+Due to the only way call driver probe is compatible match.
+The .data pointer which point to the SoC specify data is
+directly set by driver, and it should not be NULL in our case.
+We can safety remove the check for of_device_get_match_data.
 
 Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
+Used:
+https://patchwork.kernel.org/patch/11096905/
 Changes since v6:
-Add a Reviewed-by tag
-
-Changes since v5:
-Check num-pwms value is no more than MTK_CLK_MAX - 2 (MAIN + TOP)
+Add an Acked-by tag
 
 Changes since v4:
 Follow reviewer's comments:
-Move the changes of droping the check for of_device_get_match_data returning non-NULL to next patch
-
+Move the changes of droping the check for of_device_get_match_data
+returning non-NULL to this patch
 
 ---
- drivers/pwm/pwm-mediatek.c | 36 ++++++++++++++++++++++++++++--------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-mediatek.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index eb6674ce995f..e214f4f57107 100644
+index e214f4f57107..ebd62629e3fe 100644
 --- a/drivers/pwm/pwm-mediatek.c
 +++ b/drivers/pwm/pwm-mediatek.c
-@@ -55,7 +55,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
- };
+@@ -226,7 +226,6 @@ static const struct pwm_ops mtk_pwm_ops = {
  
- struct mtk_pwm_platform_data {
--	unsigned int num_pwms;
-+	unsigned int fallback_npwms;
- 	bool pwm45_fixup;
- 	bool has_clks;
- };
-@@ -227,9 +227,10 @@ static const struct pwm_ops mtk_pwm_ops = {
  static int mtk_pwm_probe(struct platform_device *pdev)
  {
- 	const struct mtk_pwm_platform_data *data;
-+	struct device_node *np = pdev->dev.of_node;
+-	const struct mtk_pwm_platform_data *data;
+ 	struct device_node *np = pdev->dev.of_node;
  	struct mtk_pwm_chip *pc;
  	struct resource *res;
--	unsigned int i;
-+	unsigned int i, npwms;
- 	int ret;
+@@ -237,10 +236,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 	if (!pc)
+ 		return -ENOMEM;
  
- 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-@@ -246,7 +247,26 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pc->regs))
- 		return PTR_ERR(pc->regs);
+-	data = of_device_get_match_data(&pdev->dev);
+-	if (data == NULL)
+-		return -EINVAL;
+-	pc->soc = data;
++	pc->soc = of_device_get_match_data(&pdev->dev);
  
--	for (i = 0; i < data->num_pwms + 2 && pc->soc->has_clks; i++) {
-+	ret = of_property_read_u32(np, "num-pwms", &npwms);
-+	if (ret < 0) {
-+		/* It's deprecated, we should specify num_pwms via DT now. */
-+		if (pc->soc->fallback_npwms) {
-+			npwms = pc->soc->fallback_npwms;
-+			dev_warn(&pdev->dev, "DT is outdated, please update it\n");
-+		} else {
-+			dev_err(&pdev->dev, "failed to get number of PWMs\n");
-+			return ret;
-+		}
-+	}
-+
-+	/* MAIN + TOP + NPWM < MTK_CLK_MAX */
-+	if ((npwms + 2) > MTK_CLK_MAX) {
-+		dev_warn(&pdev->dev, "number of PWMs is larger than %d\n",
-+			 MTK_CLK_MAX - 2);
-+		npwms = MTK_CLK_MAX - 2;
-+	}
-+
-+	for (i = 0; i < npwms + 2 && pc->soc->has_clks; i++) {
- 		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
- 		if (IS_ERR(pc->clks[i])) {
- 			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-@@ -260,7 +280,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	pc->chip.dev = &pdev->dev;
- 	pc->chip.ops = &mtk_pwm_ops;
- 	pc->chip.base = -1;
--	pc->chip.npwm = data->num_pwms;
-+	pc->chip.npwm = npwms;
- 
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
-@@ -279,25 +299,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
- }
- 
- static const struct mtk_pwm_platform_data mt2712_pwm_data = {
--	.num_pwms = 8,
-+	.fallback_npwms = 8,
- 	.pwm45_fixup = false,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7622_pwm_data = {
--	.num_pwms = 6,
-+	.fallback_npwms = 6,
- 	.pwm45_fixup = false,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7623_pwm_data = {
--	.num_pwms = 5,
-+	.fallback_npwms = 5,
- 	.pwm45_fixup = true,
- 	.has_clks = true,
- };
- 
- static const struct mtk_pwm_platform_data mt7628_pwm_data = {
--	.num_pwms = 4,
-+	.fallback_npwms = 4,
- 	.pwm45_fixup = true,
- 	.has_clks = false,
- };
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
 -- 
 2.17.1
