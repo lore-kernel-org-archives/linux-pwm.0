@@ -1,78 +1,56 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v2] pwm: atmel: Remove platform_device_id and use only dt
- bindings
-Date: Thu, 19 Sep 2019 07:47:27 +0000
-Message-ID: <e3a8f56f-7471-ac84-c266-1ee446531212@microchip.com>
-References: <20190918145716.32022-1-kamel.bouhara@bootlin.com>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH] pwm: rockchip: simplify rockchip_pwm_get_state()
+Date: Thu, 19 Sep 2019 11:17:27 +0200
+Message-ID: <20190919091728.24756-1-linux@rasmusvillemoes.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190918145716.32022-1-kamel.bouhara@bootlin.com>
-Content-Language: en-US
-Content-ID: <E43012DF0B66B14781E1C204C02EE893@namprd11.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: kamel.bouhara@bootlin.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-arm-kernel@lists.infradead.org, gregory.clement@bootlin.com, thomas.petazzoni@bootlin.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Heiko Stuebner <heiko@sntech.de>
+Cc: linux-pwm@vger.kernel.org, Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, David Wu <david.wu@rock-chips.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDE4LjA5LjIwMTkgMTc6NTcsIEthbWVsIEJvdWhhcmEgd3JvdGU6DQo+IFNpbmNlIGNv
-bW1pdCAyNjIwMjg3M2JiNTEgKCJhdnIzMjogcmVtb3ZlIHN1cHBvcnQgZm9yIEFWUjMyDQo+IGFy
-Y2hpdGVjdHVyZSIpIHRoZXJlIGlzIG5vIG1vcmUgdXNlciBvZiBwbGF0Zm9ybV9kZXZpY2VfaWQg
-YW5kIHdlDQo+IHNob3VsZCBvbmx5IHVzZSBkdCBiaW5kaW5ncw0KPiANCj4gU2lnbmVkLW9mZi1i
-eTogS2FtZWwgQm91aGFyYSA8a2FtZWwuYm91aGFyYUBib290bGluLmNvbT4NCg0KQWNrZWQtYnk6
-IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KDQo+IC0tLQ0K
-PiBDaGFuZ2Vsb2c6DQo+ICB2MS0+djINCj4gIA0KPiAgLSBSZW1vdmUgd2hvbGUgZnVuY3Rpb24g
-YXRtZWxfcHdtX2dldF9kcml2ZXJfZGF0YSBhbmQgY2FsbA0KPiAgb2ZfZGV2aWNlX2dldF9tYXRj
-aF9kYXRhIGZyb20gYXRtZWxfcHdtX3Byb2JlDQo+IA0KPiAgZHJpdmVycy9wd20vS2NvbmZpZyAg
-ICAgfCAgMiArLQ0KPiAgZHJpdmVycy9wd20vcHdtLWF0bWVsLmMgfCAzNSArKystLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAgMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMo
-KyksIDMzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL0tjb25m
-aWcgYi9kcml2ZXJzL3B3bS9LY29uZmlnDQo+IGluZGV4IGE3ZTU3NTE2OTU5ZS4uYjUxZmIxYTMz
-YWEyIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3B3bS9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMv
-cHdtL0tjb25maWcNCj4gQEAgLTQ0LDcgKzQ0LDcgQEAgY29uZmlnIFBXTV9BQjg1MDANCj4gIA0K
-PiAgY29uZmlnIFBXTV9BVE1FTA0KPiAgCXRyaXN0YXRlICJBdG1lbCBQV00gc3VwcG9ydCINCj4g
-LQlkZXBlbmRzIG9uIEFSQ0hfQVQ5MQ0KPiArCWRlcGVuZHMgb24gQVJDSF9BVDkxICYmIE9GDQo+
-ICAJaGVscA0KPiAgCSAgR2VuZXJpYyBQV00gZnJhbWV3b3JrIGRyaXZlciBmb3IgQXRtZWwgU29D
-Lg0KPiAgDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYyBiL2RyaXZlcnMv
-cHdtL3B3bS1hdG1lbC5jDQo+IGluZGV4IGU1ZTFlYWYzNzJmYS4uZjdjZjBhODZhMzdjIDEwMDY0
-NA0KPiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tYXRtZWwuYw0KPiArKysgYi9kcml2ZXJzL3B3bS9w
-d20tYXRtZWwuYw0KPiBAQCAtMzE4LDE5ICszMTgsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGF0
-bWVsX3B3bV9kYXRhIG1jaHBfc2FtOXg2MF9wd21fZGF0YSA9IHsNCj4gIAl9LA0KPiAgfTsNCj4g
-IA0KPiAtc3RhdGljIGNvbnN0IHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2VfaWQgYXRtZWxfcHdtX2Rl
-dnR5cGVzW10gPSB7DQo+IC0Jew0KPiAtCQkubmFtZSA9ICJhdDkxc2FtOXJsLXB3bSIsDQo+IC0J
-CS5kcml2ZXJfZGF0YSA9IChrZXJuZWxfdWxvbmdfdCkmYXRtZWxfc2FtOXJsX3B3bV9kYXRhLA0K
-PiAtCX0sIHsNCj4gLQkJLm5hbWUgPSAic2FtYTVkMy1wd20iLA0KPiAtCQkuZHJpdmVyX2RhdGEg
-PSAoa2VybmVsX3Vsb25nX3QpJmF0bWVsX3NhbWE1X3B3bV9kYXRhLA0KPiAtCX0sIHsNCj4gLQkJ
-Lyogc2VudGluZWwgKi8NCj4gLQl9LA0KPiAtfTsNCj4gLU1PRFVMRV9ERVZJQ0VfVEFCTEUocGxh
-dGZvcm0sIGF0bWVsX3B3bV9kZXZ0eXBlcyk7DQo+IC0NCj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3Qg
-b2ZfZGV2aWNlX2lkIGF0bWVsX3B3bV9kdF9pZHNbXSA9IHsNCj4gIAl7DQo+ICAJCS5jb21wYXRp
-YmxlID0gImF0bWVsLGF0OTFzYW05cmwtcHdtIiwNCj4gQEAgLTM1MCwxOSArMzM3LDYgQEAgc3Rh
-dGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYXRtZWxfcHdtX2R0X2lkc1tdID0gew0KPiAg
-fTsNCj4gIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGF0bWVsX3B3bV9kdF9pZHMpOw0KPiAgDQo+
-IC1zdGF0aWMgaW5saW5lIGNvbnN0IHN0cnVjdCBhdG1lbF9wd21fZGF0YSAqDQo+IC1hdG1lbF9w
-d21fZ2V0X2RyaXZlcl9kYXRhKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+IC17DQo+
-IC0JY29uc3Qgc3RydWN0IHBsYXRmb3JtX2RldmljZV9pZCAqaWQ7DQo+IC0NCj4gLQlpZiAocGRl
-di0+ZGV2Lm9mX25vZGUpDQo+IC0JCXJldHVybiBvZl9kZXZpY2VfZ2V0X21hdGNoX2RhdGEoJnBk
-ZXYtPmRldik7DQo+IC0NCj4gLQlpZCA9IHBsYXRmb3JtX2dldF9kZXZpY2VfaWQocGRldik7DQo+
-IC0NCj4gLQlyZXR1cm4gKHN0cnVjdCBhdG1lbF9wd21fZGF0YSAqKWlkLT5kcml2ZXJfZGF0YTsN
-Cj4gLX0NCj4gLQ0KPiAgc3RhdGljIGludCBhdG1lbF9wd21fcHJvYmUoc3RydWN0IHBsYXRmb3Jt
-X2RldmljZSAqcGRldikNCj4gIHsNCj4gIAljb25zdCBzdHJ1Y3QgYXRtZWxfcHdtX2RhdGEgKmRh
-dGE7DQo+IEBAIC0zNzAsNyArMzQ0LDcgQEAgc3RhdGljIGludCBhdG1lbF9wd21fcHJvYmUoc3Ry
-dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gIAlzdHJ1Y3QgcmVzb3VyY2UgKnJlczsNCj4g
-IAlpbnQgcmV0Ow0KPiAgDQo+IC0JZGF0YSA9IGF0bWVsX3B3bV9nZXRfZHJpdmVyX2RhdGEocGRl
-dik7DQo+ICsJZGF0YSA9IG9mX2RldmljZV9nZXRfbWF0Y2hfZGF0YSgmcGRldi0+ZGV2KTsNCj4g
-IAlpZiAoIWRhdGEpDQo+ICAJCXJldHVybiAtRU5PREVWOw0KPiAgDQo+IEBAIC0zOTYsMTAgKzM3
-MCw4IEBAIHN0YXRpYyBpbnQgYXRtZWxfcHdtX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2Ug
-KnBkZXYpDQo+ICAJYXRtZWxfcHdtLT5jaGlwLmRldiA9ICZwZGV2LT5kZXY7DQo+ICAJYXRtZWxf
-cHdtLT5jaGlwLm9wcyA9ICZhdG1lbF9wd21fb3BzOw0KPiAgDQo+IC0JaWYgKHBkZXYtPmRldi5v
-Zl9ub2RlKSB7DQo+IC0JCWF0bWVsX3B3bS0+Y2hpcC5vZl94bGF0ZSA9IG9mX3B3bV94bGF0ZV93
-aXRoX2ZsYWdzOw0KPiAtCQlhdG1lbF9wd20tPmNoaXAub2ZfcHdtX25fY2VsbHMgPSAzOw0KPiAt
-CX0NCj4gKwlhdG1lbF9wd20tPmNoaXAub2ZfeGxhdGUgPSBvZl9wd21feGxhdGVfd2l0aF9mbGFn
-czsNCj4gKwlhdG1lbF9wd20tPmNoaXAub2ZfcHdtX25fY2VsbHMgPSAzOw0KPiAgDQo+ICAJYXRt
-ZWxfcHdtLT5jaGlwLmJhc2UgPSAtMTsNCj4gIAlhdG1lbF9wd20tPmNoaXAubnB3bSA9IDQ7DQo+
-IEBAIC00MzcsNyArNDA5LDYgQEAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgYXRtZWxf
-cHdtX2RyaXZlciA9IHsNCj4gIAkJLm5hbWUgPSAiYXRtZWwtcHdtIiwNCj4gIAkJLm9mX21hdGNo
-X3RhYmxlID0gb2ZfbWF0Y2hfcHRyKGF0bWVsX3B3bV9kdF9pZHMpLA0KPiAgCX0sDQo+IC0JLmlk
-X3RhYmxlID0gYXRtZWxfcHdtX2RldnR5cGVzLA0KPiAgCS5wcm9iZSA9IGF0bWVsX3B3bV9wcm9i
-ZSwNCj4gIAkucmVtb3ZlID0gYXRtZWxfcHdtX3JlbW92ZSwNCj4gIH07DQo+IA0K
+The way state->enabled is computed is rather convoluted and hard to
+read - both branches of the if() actually do the exact same thing. So
+remove the if(), and further simplify "<boolean condition> ? true :
+false" to "<boolean condition>".
+
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+I stumbled on this while trying to understand how the pwm subsystem
+works. This patch is a semantic no-op, but it's also possible that,
+say, the first branch simply contains a "double negative" so either
+the != should be == or the "false : true" should be "true : false".
+
+ drivers/pwm/pwm-rockchip.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 51b96cb7dd25..54c6399e3f00 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -83,12 +83,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
+ 	state->duty_cycle =  DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
+ 
+ 	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
+-	if (pc->data->supports_polarity)
+-		state->enabled = ((val & enable_conf) != enable_conf) ?
+-				 false : true;
+-	else
+-		state->enabled = ((val & enable_conf) == enable_conf) ?
+-				 true : false;
++	state->enabled = ((val & enable_conf) == enable_conf);
+ 
+ 	if (pc->data->supports_polarity) {
+ 		if (!(val & PWM_DUTY_POSITIVE))
+-- 
+2.20.1
