@@ -1,54 +1,59 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 3/4] pwm: mxs: add support for inverse polarity
-Date: Mon, 23 Sep 2019 10:54:14 +0200
-Message-ID: <20190923085414.6d3gbby6gglpjsfe@pengutronix.de>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: Re: [PATCH 1/4] pwm: mxs: implement ->apply
+Date: Mon, 23 Sep 2019 11:04:39 +0200
+Message-ID: <a6407644-0b5b-ba46-9435-0d14be9066a5@rasmusvillemoes.dk>
 References: <20190923081348.6843-1-linux@rasmusvillemoes.dk>
- <20190923081348.6843-4-linux@rasmusvillemoes.dk>
- <20190923082735.tzxyhvjlnztsxhsc@pengutronix.de>
- <d2b29144-3de8-4561-3292-49db7e697aca@rasmusvillemoes.dk>
+ <20190923081348.6843-2-linux@rasmusvillemoes.dk>
+ <20190923082459.huqpbz5eseonkscv@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <d2b29144-3de8-4561-3292-49db7e697aca@rasmusvillemoes.dk>
+In-Reply-To: <20190923082459.huqpbz5eseonkscv@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 10:45:56AM +0200, Rasmus Villemoes wrote:
-> On 23/09/2019 10.27, Uwe Kleine-König wrote:
-> > On Mon, Sep 23, 2019 at 10:13:47AM +0200, Rasmus Villemoes wrote:
-> >>
-> >>  
-> >> +	pol_bits = state->polarity == PWM_POLARITY_NORMAL ?
-> >> +		PERIOD_POLARITY_NORMAL : PERIOD_POLARITY_INVERSE;
-> >> +
-> >>  	writel(duty_cycles << 16,
-> >>  	       mxs->base + PWM_ACTIVE0 + pwm->hwpwm * 0x20);
-> >> -	writel(PERIOD_PERIOD(period_cycles) | PERIOD_POLARITY_NORMAL | PERIOD_CDIV(div),
-> >> +	writel(PERIOD_PERIOD(period_cycles) | pol_bits | PERIOD_CDIV(div),
-> > 
-> > When will this affect the output? Only on the next start of a period, or
-> > immediatly? Can it happen that this results in a mixed output (i.e. a
-> > period that has already the new duty cycle from the line above but not
-> > the new polarity (or period)?
+On 23/09/2019 10.24, Uwe Kleine-König wrote:
+> Hello Rasmus,
 > 
-> The data sheet says "Also, when the user reprograms the channel in this
-> manner, the new register values will not take effect until the beginning
-> of a new output period. This eliminates the potential for output
-> glitches that could occur if the registers were updated while the
-> channel was enabled and in the middle of a cycle.". So I think this
-> should be ok. "this manner" refers to the registers being written in the
-> proper order (first ACTIVEn, then PERIODn).
+> On Mon, Sep 23, 2019 at 10:13:45AM +0200, Rasmus Villemoes wrote:
+>> In preparation for supporting setting the polarity, switch the driver
+>> to support the ->apply method.
+>>
+> 
+> Maybe it would be easier to review when converting from .config +
+> .enable + .disable to .apply in a single step. (Note this "maybe" is
+> honest, I'm not entirely sure.)
 
-OK. IMHO this is worth a code comment.
+I tried to make .apply do exactly what the old sequence of calls from
+the core to the individual methods would do, and for that it seemed a
+little easier to keep the old methods around - but yes, I do need to be
+more careful than that to provide the atomicity guarantee that the
+legacy methods did not. It's also much easier to squash than to split,
+so for now I'll leave them separate - if somebody prefers them squashed,
+I'll do that.
 
-Best regards
-Uwe
+> There is a bug: If the PWM is running at (say) period=100ms, duty=0ms
+> and we call
+> pwm_apply_state(pwm, { .enabled = false, duty=100000, period=1000000 });
+> the output might get high which it should not.
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Ah, yes. So I suppose that if we're changing from enabled to disabled,
+we should simply disable it in the CTRL register before changing the
+duty/period.
+
+> Also there is a bug already in .config: You are not supposed to call
+> clk_get_rate if the clk might be off.
+
+Interesting, I didn't know that. So the prepare_enable logic needs to be
+moved before we start computing the period/duty cycles. Do you know why
+it has apparently worked so far? I would have thought such a rule would
+be enforced by the clock framework, or at least produced a warning.
+
+Thanks for the fast review. I'll wait a day or two to see if there are
+other comments before sending out a v2.
+
+Rasmus
