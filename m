@@ -1,78 +1,62 @@
-From: David Laight <David.Laight@ACULAB.COM>
+From: Anson Huang <anson.huang@nxp.com>
 Subject: RE: [PATCH] pwm: pwm-imx27: Use 'dev' instead of dereferencing it
  repeatedly
-Date: Tue, 24 Sep 2019 09:46:20 +0000
-Message-ID: <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
+Date: Tue, 24 Sep 2019 10:03:18 +0000
+Message-ID: <DB3PR0402MB3916FFD66797DAC0AB1110D8F5840@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 References: <1569315593-769-1-git-send-email-Anson.Huang@nxp.com>
+ <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1569315593-769-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: 'Anson Huang' <Anson.Huang@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: "Linux-imx@nxp.com" <Linux-imx@nxp.com>
+To: David Laight <David.Laight@ACULAB.COM>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Anson Huang
-> Sent: 24 September 2019 10:00
-> Add helper variable dev = &pdev->dev to simply the code.
-> 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> ---
->  drivers/pwm/pwm-imx27.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-> index 434a351..3afee29 100644
-> --- a/drivers/pwm/pwm-imx27.c
-> +++ b/drivers/pwm/pwm-imx27.c
-> @@ -290,27 +290,28 @@ MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
-> 
->  static int pwm_imx27_probe(struct platform_device *pdev)
->  {
-> +	struct device *dev = &pdev->dev;
->  	struct pwm_imx27_chip *imx;
-> 
-> -	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
-> +	imx = devm_kzalloc(dev, sizeof(*imx), GFP_KERNEL);
->  	if (imx == NULL)
->  		return -ENOMEM;
-> 
->  	platform_set_drvdata(pdev, imx);
-> 
-> -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
-> +	imx->clk_ipg = devm_clk_get(dev, "ipg");
->  	if (IS_ERR(imx->clk_ipg)) {
-> -		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
-> +		dev_err(dev, "getting ipg clock failed with %ld\n",
->  				PTR_ERR(imx->clk_ipg));
->  		return PTR_ERR(imx->clk_ipg);
->  	}
-> 
-> -	imx->clk_per = devm_clk_get(&pdev->dev, "per");
-> +	imx->clk_per = devm_clk_get(dev, "per");
->  	if (IS_ERR(imx->clk_per)) {
->  		int ret = PTR_ERR(imx->clk_per);
-> 
->  		if (ret != -EPROBE_DEFER)
-> -			dev_err(&pdev->dev,
-> +			dev_err(dev,
->  				"failed to get peripheral clock: %d\n",
->  				ret);
-
-Hopefully the compiler will optimise this back otherwise you've added another
-local variable which may cause spilling to stack.
-For a setup function it probably doesn't matter, but in general it might
-have a small negative performance impact.
-
-In any case this doesn't shorten any lines enough to remove line-wrap
-and using &pdev->dev is really one less variable to mentally track
-when reading the code.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+SGksIERhdmlkDQoNCj4gU3ViamVjdDogUkU6IFtQQVRDSF0gcHdtOiBwd20taW14Mjc6IFVzZSAn
+ZGV2JyBpbnN0ZWFkIG9mIGRlcmVmZXJlbmNpbmcgaXQNCj4gcmVwZWF0ZWRseQ0KPiANCj4gRnJv
+bTogQW5zb24gSHVhbmcNCj4gPiBTZW50OiAyNCBTZXB0ZW1iZXIgMjAxOSAxMDowMA0KPiA+IEFk
+ZCBoZWxwZXIgdmFyaWFibGUgZGV2ID0gJnBkZXYtPmRldiB0byBzaW1wbHkgdGhlIGNvZGUuDQo+
+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbnNvbiBIdWFuZyA8QW5zb24uSHVhbmdAbnhwLmNvbT4N
+Cj4gPiAtLS0NCj4gPiAgZHJpdmVycy9wd20vcHdtLWlteDI3LmMgfCAxMyArKysrKysrLS0tLS0t
+DQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+
+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLWlteDI3LmMgYi9kcml2ZXJzL3B3
+bS9wd20taW14MjcuYyBpbmRleA0KPiA+IDQzNGEzNTEuLjNhZmVlMjkgMTAwNjQ0DQo+ID4gLS0t
+IGEvZHJpdmVycy9wd20vcHdtLWlteDI3LmMNCj4gPiArKysgYi9kcml2ZXJzL3B3bS9wd20taW14
+MjcuYw0KPiA+IEBAIC0yOTAsMjcgKzI5MCwyOCBAQCBNT0RVTEVfREVWSUNFX1RBQkxFKG9mLA0K
+PiBwd21faW14MjdfZHRfaWRzKTsNCj4gPg0KPiA+ICBzdGF0aWMgaW50IHB3bV9pbXgyN19wcm9i
+ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KSAgew0KPiA+ICsJc3RydWN0IGRldmljZSAq
+ZGV2ID0gJnBkZXYtPmRldjsNCj4gPiAgCXN0cnVjdCBwd21faW14MjdfY2hpcCAqaW14Ow0KPiA+
+DQo+ID4gLQlpbXggPSBkZXZtX2t6YWxsb2MoJnBkZXYtPmRldiwgc2l6ZW9mKCppbXgpLCBHRlBf
+S0VSTkVMKTsNCj4gPiArCWlteCA9IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigqaW14KSwgR0ZQ
+X0tFUk5FTCk7DQo+ID4gIAlpZiAoaW14ID09IE5VTEwpDQo+ID4gIAkJcmV0dXJuIC1FTk9NRU07
+DQo+ID4NCj4gPiAgCXBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIGlteCk7DQo+ID4NCj4gPiAt
+CWlteC0+Y2xrX2lwZyA9IGRldm1fY2xrX2dldCgmcGRldi0+ZGV2LCAiaXBnIik7DQo+ID4gKwlp
+bXgtPmNsa19pcGcgPSBkZXZtX2Nsa19nZXQoZGV2LCAiaXBnIik7DQo+ID4gIAlpZiAoSVNfRVJS
+KGlteC0+Y2xrX2lwZykpIHsNCj4gPiAtCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJnZXR0aW5nIGlw
+ZyBjbG9jayBmYWlsZWQgd2l0aCAlbGRcbiIsDQo+ID4gKwkJZGV2X2VycihkZXYsICJnZXR0aW5n
+IGlwZyBjbG9jayBmYWlsZWQgd2l0aCAlbGRcbiIsDQo+ID4gIAkJCQlQVFJfRVJSKGlteC0+Y2xr
+X2lwZykpOw0KPiA+ICAJCXJldHVybiBQVFJfRVJSKGlteC0+Y2xrX2lwZyk7DQo+ID4gIAl9DQo+
+ID4NCj4gPiAtCWlteC0+Y2xrX3BlciA9IGRldm1fY2xrX2dldCgmcGRldi0+ZGV2LCAicGVyIik7
+DQo+ID4gKwlpbXgtPmNsa19wZXIgPSBkZXZtX2Nsa19nZXQoZGV2LCAicGVyIik7DQo+ID4gIAlp
+ZiAoSVNfRVJSKGlteC0+Y2xrX3BlcikpIHsNCj4gPiAgCQlpbnQgcmV0ID0gUFRSX0VSUihpbXgt
+PmNsa19wZXIpOw0KPiA+DQo+ID4gIAkJaWYgKHJldCAhPSAtRVBST0JFX0RFRkVSKQ0KPiA+IC0J
+CQlkZXZfZXJyKCZwZGV2LT5kZXYsDQo+ID4gKwkJCWRldl9lcnIoZGV2LA0KPiA+ICAJCQkJImZh
+aWxlZCB0byBnZXQgcGVyaXBoZXJhbCBjbG9jazogJWRcbiIsDQo+ID4gIAkJCQlyZXQpOw0KPiAN
+Cj4gSG9wZWZ1bGx5IHRoZSBjb21waWxlciB3aWxsIG9wdGltaXNlIHRoaXMgYmFjayBvdGhlcndp
+c2UgeW91J3ZlIGFkZGVkDQo+IGFub3RoZXIgbG9jYWwgdmFyaWFibGUgd2hpY2ggbWF5IGNhdXNl
+IHNwaWxsaW5nIHRvIHN0YWNrLg0KPiBGb3IgYSBzZXR1cCBmdW5jdGlvbiBpdCBwcm9iYWJseSBk
+b2Vzbid0IG1hdHRlciwgYnV0IGluIGdlbmVyYWwgaXQgbWlnaHQgaGF2ZSBhDQo+IHNtYWxsIG5l
+Z2F0aXZlIHBlcmZvcm1hbmNlIGltcGFjdC4NCj4gDQo+IEluIGFueSBjYXNlIHRoaXMgZG9lc24n
+dCBzaG9ydGVuIGFueSBsaW5lcyBlbm91Z2ggdG8gcmVtb3ZlIGxpbmUtd3JhcCBhbmQNCj4gdXNp
+bmcgJnBkZXYtPmRldiBpcyByZWFsbHkgb25lIGxlc3MgdmFyaWFibGUgdG8gbWVudGFsbHkgdHJh
+Y2sgd2hlbiByZWFkaW5nDQo+IHRoZSBjb2RlLg0KDQpEbyB3ZSBrbm93IHdoaWNoIGNvbXBpbGVy
+IHdpbGwgb3B0aW1pemUgdGhpcz8gSSBzYXcgbWFueSBvZiB0aGUgcGF0Y2hlcyBkb2luZw0KdGhp
+cyB0byBhdm9pZCBhIGxvdCBvZiBkZXJlZmVyZW5jZSwgSSB1bmRlcnN0YW5kIGl0IGRvZXMgTk9U
+IHNhdmUgbGluZXMsIGJ1dCBteSBpbnRlbnRpb24NCmlzIHRvIGF2b2lkIGRlcmVmZXJlbmNlIHdo
+aWNoIG1pZ2h0IHNhdmUgc29tZSBpbnN0cnVjdGlvbnMuDQoNCkkgdGhvdWdodCBzYXZpbmcgaW5z
+dHJ1Y3Rpb25zIGlzIG1vcmUgaW1wb3J0YW50LiBTbyBub3cgdGhlcmUgYXJlIGRpZmZlcmVudCBv
+cGluaW9uIGFib3V0DQpkb2luZyB0aGlzPw0KDQpBbnNvbiANCg==
