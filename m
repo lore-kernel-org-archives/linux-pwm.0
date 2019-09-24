@@ -1,74 +1,56 @@
 From: Anson Huang <Anson.Huang@nxp.com>
-Subject: [PATCH] pwm: pwm-imx-tpm: Use 'dev' instead of dereferencing it repeatedly
-Date: Tue, 24 Sep 2019 17:01:07 +0800
-Message-ID: <1569315667-1525-1-git-send-email-Anson.Huang@nxp.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH 1/2] pwm: pwm-mxs: use devm_platform_ioremap_resource() to
+ simplify code
+Date: Tue, 24 Sep 2019 17:42:48 +0800
+Message-ID: <1569318169-12327-1-git-send-email-Anson.Huang@nxp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: thierry.reding@gmail.com, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: Linux-imx@nxp.com
 List-Id: linux-pwm@vger.kernel.org
 
-Add helper variable dev = &pdev->dev to simply the code.
+Use the new helper devm_platform_ioremap_resource() which wraps the
+platform_get_resource() and devm_ioremap_resource() together, to
+simplify the code.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
- drivers/pwm/pwm-imx-tpm.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+	- This is a resend version of patch: https://patchwork.kernel.org/patch/11048365/
+---
+ drivers/pwm/pwm-mxs.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
-index e8385c1..4385801 100644
---- a/drivers/pwm/pwm-imx-tpm.c
-+++ b/drivers/pwm/pwm-imx-tpm.c
-@@ -337,11 +337,12 @@ static const struct pwm_ops imx_tpm_pwm_ops = {
- 
- static int pwm_imx_tpm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index 04c0f6b..b14376b 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -126,15 +126,13 @@ static int mxs_pwm_probe(struct platform_device *pdev)
  {
-+	struct device *dev = &pdev->dev;
- 	struct imx_tpm_pwm_chip *tpm;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct mxs_pwm_chip *mxs;
+-	struct resource *res;
  	int ret;
- 	u32 val;
  
--	tpm = devm_kzalloc(&pdev->dev, sizeof(*tpm), GFP_KERNEL);
-+	tpm = devm_kzalloc(dev, sizeof(*tpm), GFP_KERNEL);
- 	if (!tpm)
+ 	mxs = devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
+ 	if (!mxs)
  		return -ENOMEM;
  
-@@ -351,23 +352,23 @@ static int pwm_imx_tpm_probe(struct platform_device *pdev)
- 	if (IS_ERR(tpm->base))
- 		return PTR_ERR(tpm->base);
- 
--	tpm->clk = devm_clk_get(&pdev->dev, NULL);
-+	tpm->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(tpm->clk)) {
- 		ret = PTR_ERR(tpm->clk);
- 		if (ret != -EPROBE_DEFER)
--			dev_err(&pdev->dev,
-+			dev_err(dev,
- 				"failed to get PWM clock: %d\n", ret);
- 		return ret;
- 	}
- 
- 	ret = clk_prepare_enable(tpm->clk);
- 	if (ret) {
--		dev_err(&pdev->dev,
-+		dev_err(dev,
- 			"failed to prepare or enable clock: %d\n", ret);
- 		return ret;
- 	}
- 
--	tpm->chip.dev = &pdev->dev;
-+	tpm->chip.dev = dev;
- 	tpm->chip.ops = &imx_tpm_pwm_ops;
- 	tpm->chip.base = -1;
- 	tpm->chip.of_xlate = of_pwm_xlate_with_flags;
-@@ -381,7 +382,7 @@ static int pwm_imx_tpm_probe(struct platform_device *pdev)
- 
- 	ret = pwmchip_add(&tpm->chip);
- 	if (ret) {
--		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
-+		dev_err(dev, "failed to add PWM chip: %d\n", ret);
- 		clk_disable_unprepare(tpm->clk);
- 	}
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	mxs->base = devm_ioremap_resource(&pdev->dev, res);
++	mxs->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(mxs->base))
+ 		return PTR_ERR(mxs->base);
  
 -- 
 2.7.4
