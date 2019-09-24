@@ -1,68 +1,78 @@
-From: Anson Huang <Anson.Huang@nxp.com>
-Subject: [PATCH 2/2] pwm: pwm-mxs: Use 'dev' instead of dereferencing it repeatedly
-Date: Tue, 24 Sep 2019 17:42:49 +0800
-Message-ID: <1569318169-12327-2-git-send-email-Anson.Huang@nxp.com>
-References: <1569318169-12327-1-git-send-email-Anson.Huang@nxp.com>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH] pwm: pwm-imx27: Use 'dev' instead of dereferencing it
+ repeatedly
+Date: Tue, 24 Sep 2019 09:46:20 +0000
+Message-ID: <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
+References: <1569315593-769-1-git-send-email-Anson.Huang@nxp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1569318169-12327-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <1569315593-769-1-git-send-email-Anson.Huang@nxp.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: Linux-imx@nxp.com
+To: 'Anson Huang' <Anson.Huang@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "Linux-imx@nxp.com" <Linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add helper variable dev = &pdev->dev to simply the code.
+From: Anson Huang
+> Sent: 24 September 2019 10:00
+> Add helper variable dev = &pdev->dev to simply the code.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> ---
+>  drivers/pwm/pwm-imx27.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+> index 434a351..3afee29 100644
+> --- a/drivers/pwm/pwm-imx27.c
+> +++ b/drivers/pwm/pwm-imx27.c
+> @@ -290,27 +290,28 @@ MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
+> 
+>  static int pwm_imx27_probe(struct platform_device *pdev)
+>  {
+> +	struct device *dev = &pdev->dev;
+>  	struct pwm_imx27_chip *imx;
+> 
+> -	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
+> +	imx = devm_kzalloc(dev, sizeof(*imx), GFP_KERNEL);
+>  	if (imx == NULL)
+>  		return -ENOMEM;
+> 
+>  	platform_set_drvdata(pdev, imx);
+> 
+> -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+> +	imx->clk_ipg = devm_clk_get(dev, "ipg");
+>  	if (IS_ERR(imx->clk_ipg)) {
+> -		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
+> +		dev_err(dev, "getting ipg clock failed with %ld\n",
+>  				PTR_ERR(imx->clk_ipg));
+>  		return PTR_ERR(imx->clk_ipg);
+>  	}
+> 
+> -	imx->clk_per = devm_clk_get(&pdev->dev, "per");
+> +	imx->clk_per = devm_clk_get(dev, "per");
+>  	if (IS_ERR(imx->clk_per)) {
+>  		int ret = PTR_ERR(imx->clk_per);
+> 
+>  		if (ret != -EPROBE_DEFER)
+> -			dev_err(&pdev->dev,
+> +			dev_err(dev,
+>  				"failed to get peripheral clock: %d\n",
+>  				ret);
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
----
- drivers/pwm/pwm-mxs.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Hopefully the compiler will optimise this back otherwise you've added another
+local variable which may cause spilling to stack.
+For a setup function it probably doesn't matter, but in general it might
+have a small negative performance impact.
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index b14376b..6255ffc 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -124,11 +124,12 @@ static const struct pwm_ops mxs_pwm_ops = {
- 
- static int mxs_pwm_probe(struct platform_device *pdev)
- {
--	struct device_node *np = pdev->dev.of_node;
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
- 	struct mxs_pwm_chip *mxs;
- 	int ret;
- 
--	mxs = devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
-+	mxs = devm_kzalloc(dev, sizeof(*mxs), GFP_KERNEL);
- 	if (!mxs)
- 		return -ENOMEM;
- 
-@@ -136,23 +137,23 @@ static int mxs_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(mxs->base))
- 		return PTR_ERR(mxs->base);
- 
--	mxs->clk = devm_clk_get(&pdev->dev, NULL);
-+	mxs->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(mxs->clk))
- 		return PTR_ERR(mxs->clk);
- 
--	mxs->chip.dev = &pdev->dev;
-+	mxs->chip.dev = dev;
- 	mxs->chip.ops = &mxs_pwm_ops;
- 	mxs->chip.base = -1;
- 
- 	ret = of_property_read_u32(np, "fsl,pwm-number", &mxs->chip.npwm);
- 	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-+		dev_err(dev, "failed to get pwm number: %d\n", ret);
- 		return ret;
- 	}
- 
- 	ret = pwmchip_add(&mxs->chip);
- 	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
-+		dev_err(dev, "failed to add pwm chip %d\n", ret);
- 		return ret;
- 	}
- 
--- 
-2.7.4
+In any case this doesn't shorten any lines enough to remove line-wrap
+and using &pdev->dev is really one less variable to mentally track
+when reading the code.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
