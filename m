@@ -1,92 +1,91 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] pwm: pwm-mxs: use devm_platform_ioremap_resource()
- to simplify code
-Date: Tue, 24 Sep 2019 13:02:48 +0200
-Message-ID: <20190924110248.GF14924@ulmo>
-References: <1569318169-12327-1-git-send-email-Anson.Huang@nxp.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH] pwm: pwm-imx27: Use 'dev' instead of dereferencing it
+ repeatedly
+Date: Wed, 25 Sep 2019 02:36:16 +0000
+Message-ID: <DB3PR0402MB3916A7A0C79C10B82B304BAAF5870@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1569315593-769-1-git-send-email-Anson.Huang@nxp.com>
+ <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
+ <DB3PR0402MB3916FFD66797DAC0AB1110D8F5840@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+ <37b2481ac9094f27bf21325e2770abdb@AcuMS.aculab.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="cz6wLo+OExbGG7q/"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1569318169-12327-1-git-send-email-Anson.Huang@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anson Huang <Anson.Huang@nxp.com>
-Cc: shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Linux-imx@nxp.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <37b2481ac9094f27bf21325e2770abdb@AcuMS.aculab.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: David Laight <David.Laight@ACULAB.COM>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi, David
 
---cz6wLo+OExbGG7q/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Subject: RE: [PATCH] pwm: pwm-imx27: Use 'dev' instead of dereferencing it
+> repeatedly
+> 
+> From: Anson Huang
+> > Sent: 24 September 2019 11:03
+> > Hi, David
+> >
+> > > Subject: RE: [PATCH] pwm: pwm-imx27: Use 'dev' instead of
+> > > dereferencing it repeatedly
+> > >
+> > > From: Anson Huang
+> > > > Sent: 24 September 2019 10:00
+> > > > Add helper variable dev = &pdev->dev to simply the code.
+> > > >
+> ...
+> > > >  static int pwm_imx27_probe(struct platform_device *pdev)  {
+> > > > +	struct device *dev = &pdev->dev;
+> > > >  	struct pwm_imx27_chip *imx;
+> > > >
+> > > > -	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
+> > > > +	imx = devm_kzalloc(dev, sizeof(*imx), GFP_KERNEL);
+> ...
+> > > Hopefully the compiler will optimise this back otherwise you've
+> > > added another local variable which may cause spilling to stack.
+> > > For a setup function it probably doesn't matter, but in general it
+> > > might have a small negative performance impact.
+> > >
+> > > In any case this doesn't shorten any lines enough to remove
+> > > line-wrap and using &pdev->dev is really one less variable to
+> > > mentally track when reading the code.
+> >
+> > Do we know which compiler will optimize this? I saw many of the
+> > patches doing this to avoid a lot of dereference, I understand it does
+> > NOT save lines, but my intention is to avoid dereference which might save
+> some instructions.
+> >
+> > I thought saving instructions is more important. So now there are
+> > different opinion about doing this?
+> 
+> Remember &pdev->dev is just 'pdev + constant'.
+> Assuming 'pdev' is held in a callee saved register (which you want it to be)
+> then to access
+> dev->foo the compiler can remember the constant and use an offset from
+> dev->'pdev' instead of
+> an extra 'dev' variable.
+> On most modern ABI the first function call arguments are passed in registers.
+> So an add  instruction (probably lea) can be used to add the constant offset
+> at the same time as the value is moved into the argument register.
+> 
+> However your extra variable could easily get spilled out to the stack.
+> So you get an extra memory read rather than (at most) an extra 'add'
+> instruction.
+> 
+> Even if pdev->dev were a pointer, repeatedly reading it from pdev->dev
+> could easily generate better code than having an extra variable that would
+> mean the value was repeatedly read from the stack.
 
-On Tue, Sep 24, 2019 at 05:42:48PM +0800, Anson Huang wrote:
-> Use the new helper devm_platform_ioremap_resource() which wraps the
-> platform_get_resource() and devm_ioremap_resource() together, to
-> simplify the code.
->=20
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> ---
-> 	- This is a resend version of patch: https://patchwork.kernel.org/patch/=
-11048365/
-> ---
->  drivers/pwm/pwm-mxs.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+Thanks for detail education about it, please ignore these patches.
 
-When you do resend patches, please make sure to include an Reviewed-by
-or Acked-by tags that you get.
-
-In this case that's not necessary since I had already applied the other
-patch.
-
-Thierry
-
->=20
-> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-> index 04c0f6b..b14376b 100644
-> --- a/drivers/pwm/pwm-mxs.c
-> +++ b/drivers/pwm/pwm-mxs.c
-> @@ -126,15 +126,13 @@ static int mxs_pwm_probe(struct platform_device *pd=
-ev)
->  {
->  	struct device_node *np =3D pdev->dev.of_node;
->  	struct mxs_pwm_chip *mxs;
-> -	struct resource *res;
->  	int ret;
-> =20
->  	mxs =3D devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
->  	if (!mxs)
->  		return -ENOMEM;
-> =20
-> -	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	mxs->base =3D devm_ioremap_resource(&pdev->dev, res);
-> +	mxs->base =3D devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(mxs->base))
->  		return PTR_ERR(mxs->base);
-> =20
-> --=20
-> 2.7.4
->=20
-
---cz6wLo+OExbGG7q/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2J99gACgkQ3SOs138+
-s6GQAhAArhAUpmU0pjAl8qc9eLxwkVNYkfxSagID+AR2KE1BW29cp1kDA5Mkg2/s
-dy4eDAwIjvNSh0l8rlFrUmZ2Mxa5kOkHwEcfnHxNf6sps28wd2TseR0oIs/Nka4p
-F8PDHqh7ukLOuJpLCt4H2oC2BkmXLq18w7fneryX8TMfg/KgrOqLDyuUIxUP7OzW
-HKfgz6u1IfDH6U/1ehn601t6MJBNjenqFIJsiEVqUbynIBRqE4Ss7+QAxGQ2jrAu
-A4NnolWe05xJjLeRqXGmD71fkHZHjyyN1sRggpsOOXCWkqcAZP0/wWq25PI055jv
-eFZ/WjvqMfEVXCvxqR1iLmr/cgIsCpTrW8kzbyVbIjcWaw6fQtKdPOnEx0TQIC4v
-GgDmVIMnjxhG82CSr9LBQ1hpQL6hDQJKltYSkQPZ8WwO2ISY0xmjCcvm1+FMG2ak
-QjROGJw7JGoKQ46sD5/iYlEnGaEQTqVKCsTwb8kWGbQswKMxMmdd9cBImxTJxrua
-ta2PsGUDKC18XSbw+bzh4EDJ1wYr4kOca2rWYbO9ubKXTsEkM4iiDIN9zrEhbmIH
-L+CIlM03DnQq++a3DQsTS3/XpLAHVynaID9sa7nzcadb0ex6Twno+WP7weo/xySH
-Q6S0fwoqdI8yJgN2SMmI/xePpnp7CDmRJ0pmXRx1GbJnfbsZbrI=
-=h/nA
------END PGP SIGNATURE-----
-
---cz6wLo+OExbGG7q/--
+Thanks,
+Anson
