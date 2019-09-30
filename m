@@ -1,24 +1,47 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [GIT PULL] pwm: Changes for v5.4-rc1
-Date: Fri, 27 Sep 2019 19:25:24 +0000
-Message-ID: <156961232440.19941.3044215477937173311.pr-tracker-bot@kernel.org>
-References: <20190927163104.1456471-1-thierry.reding@gmail.com>
+From: Sam Shih <sam.shih@mediatek.com>
+Subject: Re: [PATCH v10 08/12] pwm: mediatek: Add MT7629 compatible string
+Date: Mon, 30 Sep 2019 16:51:08 +0800
+Message-ID: <1569833468.32131.4.camel@mtksdccf07>
+References: <1569421957-20765-1-git-send-email-sam.shih@mediatek.com>
+         <1569421957-20765-9-git-send-email-sam.shih@mediatek.com>
+         <20190927112831.GA1171568@ulmo>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190927163104.1456471-1-thierry.reding@gmail.com>
+In-Reply-To: <20190927112831.GA1171568@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Ryder Lee <ryder.lee@mediatek.com>, John Crispin <john@phrozen.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-The pull request you sent on Fri, 27 Sep 2019 18:31:04 +0200:
+Hi,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.4-rc1
+On Fri, 2019-09-27 at 13:28 +0200, Thierry Reding wrote:
+> On Wed, Sep 25, 2019 at 10:32:33PM +0800, Sam Shih wrote:
+> > This adds pwm support for MT7629, and separate mt7629 compatible string
+> > from mt7622
+> > 
+> > Signed-off-by: Sam Shih <sam.shih@mediatek.com>
+> > ---
+> >  drivers/pwm/pwm-mediatek.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> 
+> I picked this patch up and made some minor adjustments to make it build
+> without the num_pwms patches. With that I don't think there's anything
+> left from this series that you need.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e37e3bc7e265d05d00f14079767537699cf6bd46
+Yes, I think the driver should work once dtsi updated.
+("[v10,12/12] arm: dts: mediatek: add mt7629 pwm support")
 
-Thank you!
+But, due to we use comaptible string separately for every SoC now,
+The comaptible string in dt-bindings should be "mediatek,mt7629-pwm".
+I think we should use "[v10,11/12] dt-bindings: pwm: update bindings 
+for MT7629" to replace commit 1c00ad6ebf36aa3b0fa598a48b8ae59782be4121,
+Or maybe we need a little modification like this ?
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt ...
+- - "mediatek,mt7629-pwm", "mediatek,mt7622-pwm": found on mt7629 SoC.
++ - "mediatek,mt7629-pwm": found on mt7629 SoC.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+Thanks,
+Regards, Sam
