@@ -1,253 +1,206 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH 2/2] pwm: stm32: add power management support
-Date: Tue, 1 Oct 2019 15:48:52 +0200
-Message-ID: <f0fd1926-9fca-99c5-4a54-99252b865bc6@st.com>
-References: <1569857951-20007-1-git-send-email-fabrice.gasnier@st.com>
- <1569857951-20007-3-git-send-email-fabrice.gasnier@st.com>
- <20191001070450.4zogfryzo7a5ssbd@pengutronix.de>
- <3c6e551b-98a2-a418-c4ee-002077e46f31@st.com>
- <20191001095119.ws36f7liwgvbokem@pengutronix.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/8] dt-bindings: sram: Convert SRAM bindings to
+ json-schema
+Date: Tue, 1 Oct 2019 09:00:03 -0500
+Message-ID: <20191001140003.GA31344@bogus>
+References: <20190918173141.4314-1-krzk@kernel.org>
+ <20190918173141.4314-2-krzk@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191001095119.ws36f7liwgvbokem@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190918173141.4314-2-krzk@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com, mark.rutland@arm.com, mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Matt Mackall <mpm@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-riscv@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 10/1/19 11:51 AM, Uwe Kleine-König wrote:
-> Hello Fabrice,
-> 
-> On Tue, Oct 01, 2019 at 10:18:31AM +0200, Fabrice Gasnier wrote:
->> On 10/1/19 9:04 AM, Uwe Kleine-König wrote:
->>> On Mon, Sep 30, 2019 at 05:39:11PM +0200, Fabrice Gasnier wrote:
->>>> Add suspend/resume PM sleep ops. When going to low power, enforce the PWM
->>>> channel isn't active. Let the PWM consumers disable it during their own
->>>> suspend sequence, see [1]. So, perform a check here, and handle the
->>>> pinctrl states. Also restore the break inputs upon resume, as registers
->>>> content may be lost when going to low power mode.
->>>>
->>>> [1] https://lkml.org/lkml/2019/2/5/770
->>>>
->>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->>>> ---
->>>>  drivers/pwm/pwm-stm32.c | 82 +++++++++++++++++++++++++++++++++++++------------
->>>>  1 file changed, 62 insertions(+), 20 deletions(-)
->>>>
->>>> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
->>>> index 740e2de..9bcd73a 100644
->>>> --- a/drivers/pwm/pwm-stm32.c
->>>> +++ b/drivers/pwm/pwm-stm32.c
->>>> @@ -12,6 +12,7 @@
->>>>  #include <linux/mfd/stm32-timers.h>
->>>>  #include <linux/module.h>
->>>>  #include <linux/of.h>
->>>> +#include <linux/pinctrl/consumer.h>
->>>>  #include <linux/platform_device.h>
->>>>  #include <linux/pwm.h>
->>>>  
->>>> @@ -19,6 +20,12 @@
->>>>  #define CCMR_CHANNEL_MASK  0xFF
->>>>  #define MAX_BREAKINPUT 2
->>>>  
->>>> +struct stm32_breakinput {
->>>> +	u32 index;
->>>> +	u32 level;
->>>> +	u32 filter;
->>>> +};
->>>> +
->>>>  struct stm32_pwm {
->>>>  	struct pwm_chip chip;
->>>>  	struct mutex lock; /* protect pwm config/enable */
->>>> @@ -26,15 +33,11 @@ struct stm32_pwm {
->>>>  	struct regmap *regmap;
->>>>  	u32 max_arr;
->>>>  	bool have_complementary_output;
->>>> +	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
->>>> +	unsigned int nbreakinput;
->>>>  	u32 capture[4] ____cacheline_aligned; /* DMA'able buffer */
->>>>  };
->>>>  
->>>> -struct stm32_breakinput {
->>>> -	u32 index;
->>>> -	u32 level;
->>>> -	u32 filter;
->>>> -};
->>>> -
->>>>  static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
->>>>  {
->>>>  	return container_of(chip, struct stm32_pwm, chip);
->>>> @@ -512,15 +515,27 @@ static int stm32_pwm_set_breakinput(struct stm32_pwm *priv,
->>>>  	return (bdtr & bke) ? 0 : -EINVAL;
->>>>  }
->>>>  
->>>> -static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
->>>> +static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv)
->>>> +{
->>>> +	int i, ret = 0;
->>>> +
->>>> +	for (i = 0; i < priv->nbreakinput && !ret; i++) {
->>>> +		ret = stm32_pwm_set_breakinput(priv,
->>>> +					       priv->breakinput[i].index,
->>>> +					       priv->breakinput[i].level,
->>>> +					       priv->breakinput[i].filter);
->>>> +	}
->>>> +
->>>> +	return ret;
->>>> +}
->>>
->>> Can you explain what the effect of this function is? This is something
->>> that is lost during suspend?
->>
->> Yes, that's what I explain in the commit message: ...registers content
->> may be lost when going to low power mode.
->> Do you think I need to rephrase ?
-> 
-> Ah, right I missed it in the commit log. It might be worth adding that
-> to a code comment. Also having the purpose of this function described
-> would be great. Does it configure some electrical characteristics? Or
-> has it to do with pinmuxing? Why is an input relevant for a PWM?
+On Wed, Sep 18, 2019 at 07:31:35PM +0200, Krzysztof Kozlowski wrote:
+> Convert generic mmio-sram bindings to DT schema format using
+> json-schema.
 
-Hi Uwe,
-
-I'll add a comment in the suspend routine to mention the need to restore
-breakinput registers that may have been lost in low power.
-
-Regarding the purpose of the break feature, maybe I can enhance comment
-bellow (e.g. Because "st,breakinput" parameter is optional...) to
-something like:
-
-/*
- * Some timer instances can have BRK input pins (e.g. basically a fault
- * pin from the output power stage). The break feature allow a safe shut
- * down of the PWM outputs to a predefined state.
- * Because "st,breakinput" parameter is optional do not make probe
- * failed if it doesn't exist. Note the pinctrl handle must be inline
- * with "st,breakinput" property.
- */
-
-FYI, the feature is described in Application note AN4277, "Using STM32
-device PWM shut-down features..."
-
-Would it answer your concern here? But I think this should be done in a
-separate patch (not related to PM support).
+I've been slow getting to this because I started on the same thing...
 
 > 
->>> I wonder why the patch is so big. There are some rearrangements that
->>> should have no effect and I think it would be beneficial for
->>> reviewability to split this patch in a patch that only does the
->>> restructuring and than on top of that add the PM stuff.
->>
->> I can split this to ease the review.
->>>
->>>> +
->>>> +static int stm32_pwm_probe_breakinputs(struct stm32_pwm *priv,
->>>>  				       struct device_node *np)
->>>>  {
->>>> -	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
->>>> -	int nb, ret, i, array_size;
->>>> +	int nb, ret, array_size;
->>>>  
->>>>  	nb = of_property_count_elems_of_size(np, "st,breakinput",
->>>>  					     sizeof(struct stm32_breakinput));
->>>> -
->>>>  	/*
->>>>  	 * Because "st,breakinput" parameter is optional do not make probe
->>>>  	 * failed if it doesn't exist.
->>>> @@ -531,20 +546,14 @@ static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
->>>>  	if (nb > MAX_BREAKINPUT)
->>>>  		return -EINVAL;
->>>>  
->>>> +	priv->nbreakinput = nb;
->>>>  	array_size = nb * sizeof(struct stm32_breakinput) / sizeof(u32);
->>>>  	ret = of_property_read_u32_array(np, "st,breakinput",
->>>> -					 (u32 *)breakinput, array_size);
->>>> +					 (u32 *)priv->breakinput, array_size);
->>>>  	if (ret)
->>>>  		return ret;
->>>>  
->>>> -	for (i = 0; i < nb && !ret; i++) {
->>>> -		ret = stm32_pwm_set_breakinput(priv,
->>>> -					       breakinput[i].index,
->>>> -					       breakinput[i].level,
->>>> -					       breakinput[i].filter);
->>>> -	}
->>>> -
->>>> -	return ret;
->>>> +	return stm32_pwm_apply_breakinputs(priv);
->>>>  }
->>>>  
->>>>  static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
->>>> @@ -614,7 +623,7 @@ static int stm32_pwm_probe(struct platform_device *pdev)
->>>>  	if (!priv->regmap || !priv->clk)
->>>>  		return -EINVAL;
->>>>  
->>>> -	ret = stm32_pwm_apply_breakinputs(priv, np);
->>>> +	ret = stm32_pwm_probe_breakinputs(priv, np);
->>>>  	if (ret)
->>>>  		return ret;
->>>>  
->>>> @@ -647,6 +656,38 @@ static int stm32_pwm_remove(struct platform_device *pdev)
->>>>  	return 0;
->>>>  }
->>>>  
->>>> +static int __maybe_unused stm32_pwm_suspend(struct device *dev)
->>>> +{
->>>> +	struct stm32_pwm *priv = dev_get_drvdata(dev);
->>>> +	struct pwm_state state;
->>>> +	unsigned int i;
->>>> +
->>>> +	for (i = 0; i < priv->chip.npwm; i++) {
->>>> +		pwm_get_state(&priv->chip.pwms[i], &state);
->>>
->>> pwm_get_state is a function designed to be used by PWM consumers. I
->>> would prefer to check the hardware registers here instead.
->>
->> It's also useful for PWM provider: This PWM driver is part of a MFD that
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 > 
-> I don't doubt "useful". But still you should only call it if you called
-> pwm_get (or a similar function) to get a PWM handle.
+> ---
 > 
->> also take care of IIO trigger (can be used simultaneously). Simply
->> reading a register doesn't tell us that the timer is used/configured as
->> a PWM here. That's the reason to use this helper to read pwm->state.
-> 
-> How can the pwm driver be bound and the hardware not be used a PWM?
-> 
->> Do you wish I add a comment to clarify this here ?
-> 
-> No, I wish you inspect the hardware to determine what you need to know :-)
+> Changes since v1:
+> 1. Indent example with four spaces (more readable).
+> ---
+>  .../devicetree/bindings/sram/sram.txt         |  80 ----------
+>  .../devicetree/bindings/sram/sram.yaml        | 138 ++++++++++++++++++
+>  2 files changed, 138 insertions(+), 80 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/sram/sram.txt
+>  create mode 100644 Documentation/devicetree/bindings/sram/sram.yaml
 
-Ok, finally I found out the "active_channels()" routine does the job
-(e.g. read CCER register), and is already used for that purpose (check
-for active channels).
-I'll use it in v2.
+> diff --git a/Documentation/devicetree/bindings/sram/sram.yaml b/Documentation/devicetree/bindings/sram/sram.yaml
+> new file mode 100644
+> index 000000000000..8d9d6ce494b2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/sram/sram.yaml
+> @@ -0,0 +1,138 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/sram/sram.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Generic on-chip SRAM
+> +
+> +maintainers:
+> +  - FIXME <who@should.it.be>
 
-Thanks,
-Fabrice
+You can put me.
 
-> 
->>> What if there is no consumer and the PWM just happens to be enabled by
->>> the bootloader? Or is this too minor an issue to be worth consideration?
->>
->> That's the purpose of returning -EBUSY: "PWM should not stop if the PWM
->> user didn't call pwm_disable()" ... "to avoid situation where the PWM is
->> actually suspended before the user". This has been enforced in later
->> series with the device_link_add(). See our previous discussions here:
->> https://lkml.org/lkml/2019/2/5/770
->> So, I guess this would point exactly a lack for a PWM user to manage it
->> after the boot stage, in the kernel.
->>
->> Could you please clarify, provide an example here ?
-> 
-> This is something different than I asked for. Not having a consumer
-> isn't an error. Still the pwm might be running (for a good reason or
-> not). (This is more a question that affects how a driver should behave
-> in general, it is not specific to the stm32 driver here.)
-> 
-> Best regards
-> Uwe
+> +
+> +description: |+
+> +  Simple IO memory regions to be managed by the genalloc API.
+> +
+> +  Each child of the sram node specifies a region of reserved memory. Each
+> +  child node should use a 'reg' property to specify a specific range of
+> +  reserved memory.
+> +
+> +  Following the generic-names recommended practice, node names should
+> +  reflect the purpose of the node. Unit address (@<address>) should be
+> +  appended to the name.
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^sram(@.*)?"
+> +
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - mmio-sram
+> +          - atmel,sama5d2-securam
+
+I was trying to go down the path of putting all the compatibles for 
+various SRAM bindings here, but I ran into some issues. I need to 
+revisit as I've forgotten the exact issue.
+
+This would need to be a 'contains' if this is going to work for others.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  "#address-cells":
+> +    description: Should use the same values as the root node.
+> +
+> +  "#size-cells":
+> +    description: Should use the same values as the root node.
+
+I defined both of these to be 1 as 4GB of SRAM should be enough for a 
+while. We can debate 1 or 2 cells vs. 1, but there's no reason it has to 
+be the same as the root (unless we're failing to do address 
+translation).
+
+> +
+> +  ranges:
+> +    description:
+> +      Should translate from local addresses within the sram to bus addresses.
+> +
+> +  no-memory-wc:
+> +    description:
+> +      The flag indicating, that SRAM memory region has not to be remapped
+> +      as write combining. WC is used by default.
+> +    type: boolean
+> +
+> +  # TODO: additionalProperties: false
+> +
+> +patternProperties:
+> +  "^([a-z]*-)?sram@[a-f0-9]$":
+> +    type: object
+> +    description:
+> +      Each child of the sram node specifies a region of reserved memory.
+> +    properties:
+> +      reg:
+> +        description:
+> +          IO mem address range, relative to the SRAM range.
+
+maxItems: 1
+
+> +
+> +      compatible:
+> +        $ref: /schemas/types.yaml#/definitions/string
+> +        description:
+> +          Should contain a vendor specific string in the form
+> +          <vendor>,[<device>-]<usage>
+> +
+> +      pool:
+> +        description:
+> +          Indicates that the particular reserved SRAM area is addressable
+> +          and in use by another device or devices.
+> +        type: boolean
+> +
+> +      export:
+> +        description:
+> +          Indicates that the reserved SRAM area may be accessed outside
+> +          of the kernel, e.g. by bootloader or userspace.
+> +        type: boolean
+> +
+> +      protect-exec:
+> +        description: |
+> +          Same as 'pool' above but with the additional constraint that code
+> +          will be run from the region and that the memory is maintained as
+> +          read-only, executable during code execution. NOTE: This region must
+> +          be page aligned on start and end in order to properly allow
+> +          manipulation of the page attributes.
+> +        type: boolean
+> +
+> +      label:
+> +        $ref: /schemas/types.yaml#/definitions/string
+
+Already has a type definition.
+
+> +        description:
+> +          The name for the reserved partition, if omitted, the label is taken
+> +          from the node name excluding the unit address.
+> +
+> +      clocks:
+> +        description:
+> +          A list of phandle and clock specifier pair that controls the
+> +          single SRAM clock.
+> +
+> +      # TODO: additionalProperties: false
+> +
+> +    required:
+> +      - reg
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#address-cells"
+> +  - "#size-cells"
+> +  - ranges
+> +
+> +examples:
+> +  - |
+> +    sram: sram@5c000000 {
+> +        compatible = "mmio-sram";
+> +        reg = <0x5c000000 0x40000>; /* 256 KiB SRAM at address 0x5c000000 */
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        ranges = <0 0x5c000000 0x40000>;
+> +
+> +        smp-sram@100 {
+> +            compatible = "socvendor,smp-sram";
+> +            reg = <0x100 0x50>;
+> +        };
+> +
+> +        device-sram@1000 {
+> +            reg = <0x1000 0x1000>;
+> +            pool;
+> +        };
+> +
+> +        exported@20000 {
+> +            reg = <0x20000 0x20000>;
+> +            export;
+> +        };
+> +    };
+> -- 
+> 2.17.1
 > 
