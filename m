@@ -1,138 +1,221 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH 2/2] pwm: stm32: add power management support
-Date: Tue, 1 Oct 2019 10:18:31 +0200
-Message-ID: <3c6e551b-98a2-a418-c4ee-002077e46f31@st.com>
+Date: Tue, 1 Oct 2019 11:51:19 +0200
+Message-ID: <20191001095119.ws36f7liwgvbokem@pengutronix.de>
 References: <1569857951-20007-1-git-send-email-fabrice.gasnier@st.com>
  <1569857951-20007-3-git-send-email-fabrice.gasnier@st.com>
  <20191001070450.4zogfryzo7a5ssbd@pengutronix.de>
+ <3c6e551b-98a2-a418-c4ee-002077e46f31@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191001070450.4zogfryzo7a5ssbd@pengutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, mcoquelin.stm32@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <3c6e551b-98a2-a418-c4ee-002077e46f31@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com, mark.rutland@arm.com, mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMTAvMS8xOSA5OjA0IEFNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBIZWxsbyBGYWJy
-aWNlLAo+IAo+IE9uIE1vbiwgU2VwIDMwLCAyMDE5IGF0IDA1OjM5OjExUE0gKzAyMDAsIEZhYnJp
-Y2UgR2FzbmllciB3cm90ZToKPj4gQWRkIHN1c3BlbmQvcmVzdW1lIFBNIHNsZWVwIG9wcy4gV2hl
-biBnb2luZyB0byBsb3cgcG93ZXIsIGVuZm9yY2UgdGhlIFBXTQo+PiBjaGFubmVsIGlzbid0IGFj
-dGl2ZS4gTGV0IHRoZSBQV00gY29uc3VtZXJzIGRpc2FibGUgaXQgZHVyaW5nIHRoZWlyIG93bgo+
-PiBzdXNwZW5kIHNlcXVlbmNlLCBzZWUgWzFdLiBTbywgcGVyZm9ybSBhIGNoZWNrIGhlcmUsIGFu
-ZCBoYW5kbGUgdGhlCj4+IHBpbmN0cmwgc3RhdGVzLiBBbHNvIHJlc3RvcmUgdGhlIGJyZWFrIGlu
-cHV0cyB1cG9uIHJlc3VtZSwgYXMgcmVnaXN0ZXJzCj4+IGNvbnRlbnQgbWF5IGJlIGxvc3Qgd2hl
-biBnb2luZyB0byBsb3cgcG93ZXIgbW9kZS4KPj4KPj4gWzFdIGh0dHBzOi8vbGttbC5vcmcvbGtt
-bC8yMDE5LzIvNS83NzAKPj4KPj4gU2lnbmVkLW9mZi1ieTogRmFicmljZSBHYXNuaWVyIDxmYWJy
-aWNlLmdhc25pZXJAc3QuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvcHdtL3B3bS1zdG0zMi5jIHwg
-ODIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLQo+PiAg
-MSBmaWxlIGNoYW5nZWQsIDYyIGluc2VydGlvbnMoKyksIDIwIGRlbGV0aW9ucygtKQo+Pgo+PiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLXN0bTMyLmMgYi9kcml2ZXJzL3B3bS9wd20tc3Rt
-MzIuYwo+PiBpbmRleCA3NDBlMmRlLi45YmNkNzNhIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3B3
-bS9wd20tc3RtMzIuYwo+PiArKysgYi9kcml2ZXJzL3B3bS9wd20tc3RtMzIuYwo+PiBAQCAtMTIs
-NiArMTIsNyBAQAo+PiAgI2luY2x1ZGUgPGxpbnV4L21mZC9zdG0zMi10aW1lcnMuaD4KPj4gICNp
-bmNsdWRlIDxsaW51eC9tb2R1bGUuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9vZi5oPgo+PiArI2lu
-Y2x1ZGUgPGxpbnV4L3BpbmN0cmwvY29uc3VtZXIuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9wbGF0
-Zm9ybV9kZXZpY2UuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9wd20uaD4KPj4gIAo+PiBAQCAtMTks
-NiArMjAsMTIgQEAKPj4gICNkZWZpbmUgQ0NNUl9DSEFOTkVMX01BU0sgIDB4RkYKPj4gICNkZWZp
-bmUgTUFYX0JSRUFLSU5QVVQgMgo+PiAgCj4+ICtzdHJ1Y3Qgc3RtMzJfYnJlYWtpbnB1dCB7Cj4+
-ICsJdTMyIGluZGV4Owo+PiArCXUzMiBsZXZlbDsKPj4gKwl1MzIgZmlsdGVyOwo+PiArfTsKPj4g
-Kwo+PiAgc3RydWN0IHN0bTMyX3B3bSB7Cj4+ICAJc3RydWN0IHB3bV9jaGlwIGNoaXA7Cj4+ICAJ
-c3RydWN0IG11dGV4IGxvY2s7IC8qIHByb3RlY3QgcHdtIGNvbmZpZy9lbmFibGUgKi8KPj4gQEAg
-LTI2LDE1ICszMywxMSBAQCBzdHJ1Y3Qgc3RtMzJfcHdtIHsKPj4gIAlzdHJ1Y3QgcmVnbWFwICpy
-ZWdtYXA7Cj4+ICAJdTMyIG1heF9hcnI7Cj4+ICAJYm9vbCBoYXZlX2NvbXBsZW1lbnRhcnlfb3V0
-cHV0Owo+PiArCXN0cnVjdCBzdG0zMl9icmVha2lucHV0IGJyZWFraW5wdXRbTUFYX0JSRUFLSU5Q
-VVRdOwo+PiArCXVuc2lnbmVkIGludCBuYnJlYWtpbnB1dDsKPj4gIAl1MzIgY2FwdHVyZVs0XSBf
-X19fY2FjaGVsaW5lX2FsaWduZWQ7IC8qIERNQSdhYmxlIGJ1ZmZlciAqLwo+PiAgfTsKPj4gIAo+
-PiAtc3RydWN0IHN0bTMyX2JyZWFraW5wdXQgewo+PiAtCXUzMiBpbmRleDsKPj4gLQl1MzIgbGV2
-ZWw7Cj4+IC0JdTMyIGZpbHRlcjsKPj4gLX07Cj4+IC0KPj4gIHN0YXRpYyBpbmxpbmUgc3RydWN0
-IHN0bTMyX3B3bSAqdG9fc3RtMzJfcHdtX2RldihzdHJ1Y3QgcHdtX2NoaXAgKmNoaXApCj4+ICB7
-Cj4+ICAJcmV0dXJuIGNvbnRhaW5lcl9vZihjaGlwLCBzdHJ1Y3Qgc3RtMzJfcHdtLCBjaGlwKTsK
-Pj4gQEAgLTUxMiwxNSArNTE1LDI3IEBAIHN0YXRpYyBpbnQgc3RtMzJfcHdtX3NldF9icmVha2lu
-cHV0KHN0cnVjdCBzdG0zMl9wd20gKnByaXYsCj4+ICAJcmV0dXJuIChiZHRyICYgYmtlKSA/IDAg
-OiAtRUlOVkFMOwo+PiAgfQo+PiAgCj4+IC1zdGF0aWMgaW50IHN0bTMyX3B3bV9hcHBseV9icmVh
-a2lucHV0cyhzdHJ1Y3Qgc3RtMzJfcHdtICpwcml2LAo+PiArc3RhdGljIGludCBzdG0zMl9wd21f
-YXBwbHlfYnJlYWtpbnB1dHMoc3RydWN0IHN0bTMyX3B3bSAqcHJpdikKPj4gK3sKPj4gKwlpbnQg
-aSwgcmV0ID0gMDsKPj4gKwo+PiArCWZvciAoaSA9IDA7IGkgPCBwcml2LT5uYnJlYWtpbnB1dCAm
-JiAhcmV0OyBpKyspIHsKPj4gKwkJcmV0ID0gc3RtMzJfcHdtX3NldF9icmVha2lucHV0KHByaXYs
-Cj4+ICsJCQkJCSAgICAgICBwcml2LT5icmVha2lucHV0W2ldLmluZGV4LAo+PiArCQkJCQkgICAg
-ICAgcHJpdi0+YnJlYWtpbnB1dFtpXS5sZXZlbCwKPj4gKwkJCQkJICAgICAgIHByaXYtPmJyZWFr
-aW5wdXRbaV0uZmlsdGVyKTsKPj4gKwl9Cj4+ICsKPj4gKwlyZXR1cm4gcmV0Owo+PiArfQo+IAo+
-IENhbiB5b3UgZXhwbGFpbiB3aGF0IHRoZSBlZmZlY3Qgb2YgdGhpcyBmdW5jdGlvbiBpcz8gVGhp
-cyBpcyBzb21ldGhpbmcKPiB0aGF0IGlzIGxvc3QgZHVyaW5nIHN1c3BlbmQ/CgpIaSBVd2UsCgpZ
-ZXMsIHRoYXQncyB3aGF0IEkgZXhwbGFpbiBpbiB0aGUgY29tbWl0IG1lc3NhZ2U6IC4uLnJlZ2lz
-dGVycyBjb250ZW50Cm1heSBiZSBsb3N0IHdoZW4gZ29pbmcgdG8gbG93IHBvd2VyIG1vZGUuCkRv
-IHlvdSB0aGluayBJIG5lZWQgdG8gcmVwaHJhc2UgPwoKPiAKPiBJIHdvbmRlciB3aHkgdGhlIHBh
-dGNoIGlzIHNvIGJpZy4gVGhlcmUgYXJlIHNvbWUgcmVhcnJhbmdlbWVudHMgdGhhdAo+IHNob3Vs
-ZCBoYXZlIG5vIGVmZmVjdCBhbmQgSSB0aGluayBpdCB3b3VsZCBiZSBiZW5lZmljaWFsIGZvcgo+
-IHJldmlld2FiaWxpdHkgdG8gc3BsaXQgdGhpcyBwYXRjaCBpbiBhIHBhdGNoIHRoYXQgb25seSBk
-b2VzIHRoZQo+IHJlc3RydWN0dXJpbmcgYW5kIHRoYW4gb24gdG9wIG9mIHRoYXQgYWRkIHRoZSBQ
-TSBzdHVmZi4KCkkgY2FuIHNwbGl0IHRoaXMgdG8gZWFzZSB0aGUgcmV2aWV3Lgo+IAo+PiArCj4+
-ICtzdGF0aWMgaW50IHN0bTMyX3B3bV9wcm9iZV9icmVha2lucHV0cyhzdHJ1Y3Qgc3RtMzJfcHdt
-ICpwcml2LAo+PiAgCQkJCSAgICAgICBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wKQo+PiAgewo+PiAt
-CXN0cnVjdCBzdG0zMl9icmVha2lucHV0IGJyZWFraW5wdXRbTUFYX0JSRUFLSU5QVVRdOwo+PiAt
-CWludCBuYiwgcmV0LCBpLCBhcnJheV9zaXplOwo+PiArCWludCBuYiwgcmV0LCBhcnJheV9zaXpl
-Owo+PiAgCj4+ICAJbmIgPSBvZl9wcm9wZXJ0eV9jb3VudF9lbGVtc19vZl9zaXplKG5wLCAic3Qs
-YnJlYWtpbnB1dCIsCj4+ICAJCQkJCSAgICAgc2l6ZW9mKHN0cnVjdCBzdG0zMl9icmVha2lucHV0
-KSk7Cj4+IC0KPj4gIAkvKgo+PiAgCSAqIEJlY2F1c2UgInN0LGJyZWFraW5wdXQiIHBhcmFtZXRl
-ciBpcyBvcHRpb25hbCBkbyBub3QgbWFrZSBwcm9iZQo+PiAgCSAqIGZhaWxlZCBpZiBpdCBkb2Vz
-bid0IGV4aXN0Lgo+PiBAQCAtNTMxLDIwICs1NDYsMTQgQEAgc3RhdGljIGludCBzdG0zMl9wd21f
-YXBwbHlfYnJlYWtpbnB1dHMoc3RydWN0IHN0bTMyX3B3bSAqcHJpdiwKPj4gIAlpZiAobmIgPiBN
-QVhfQlJFQUtJTlBVVCkKPj4gIAkJcmV0dXJuIC1FSU5WQUw7Cj4+ICAKPj4gKwlwcml2LT5uYnJl
-YWtpbnB1dCA9IG5iOwo+PiAgCWFycmF5X3NpemUgPSBuYiAqIHNpemVvZihzdHJ1Y3Qgc3RtMzJf
-YnJlYWtpbnB1dCkgLyBzaXplb2YodTMyKTsKPj4gIAlyZXQgPSBvZl9wcm9wZXJ0eV9yZWFkX3Uz
-Ml9hcnJheShucCwgInN0LGJyZWFraW5wdXQiLAo+PiAtCQkJCQkgKHUzMiAqKWJyZWFraW5wdXQs
-IGFycmF5X3NpemUpOwo+PiArCQkJCQkgKHUzMiAqKXByaXYtPmJyZWFraW5wdXQsIGFycmF5X3Np
-emUpOwo+PiAgCWlmIChyZXQpCj4+ICAJCXJldHVybiByZXQ7Cj4+ICAKPj4gLQlmb3IgKGkgPSAw
-OyBpIDwgbmIgJiYgIXJldDsgaSsrKSB7Cj4+IC0JCXJldCA9IHN0bTMyX3B3bV9zZXRfYnJlYWtp
-bnB1dChwcml2LAo+PiAtCQkJCQkgICAgICAgYnJlYWtpbnB1dFtpXS5pbmRleCwKPj4gLQkJCQkJ
-ICAgICAgIGJyZWFraW5wdXRbaV0ubGV2ZWwsCj4+IC0JCQkJCSAgICAgICBicmVha2lucHV0W2ld
-LmZpbHRlcik7Cj4+IC0JfQo+PiAtCj4+IC0JcmV0dXJuIHJldDsKPj4gKwlyZXR1cm4gc3RtMzJf
-cHdtX2FwcGx5X2JyZWFraW5wdXRzKHByaXYpOwo+PiAgfQo+PiAgCj4+ICBzdGF0aWMgdm9pZCBz
-dG0zMl9wd21fZGV0ZWN0X2NvbXBsZW1lbnRhcnkoc3RydWN0IHN0bTMyX3B3bSAqcHJpdikKPj4g
-QEAgLTYxNCw3ICs2MjMsNyBAQCBzdGF0aWMgaW50IHN0bTMyX3B3bV9wcm9iZShzdHJ1Y3QgcGxh
-dGZvcm1fZGV2aWNlICpwZGV2KQo+PiAgCWlmICghcHJpdi0+cmVnbWFwIHx8ICFwcml2LT5jbGsp
-Cj4+ICAJCXJldHVybiAtRUlOVkFMOwo+PiAgCj4+IC0JcmV0ID0gc3RtMzJfcHdtX2FwcGx5X2Jy
-ZWFraW5wdXRzKHByaXYsIG5wKTsKPj4gKwlyZXQgPSBzdG0zMl9wd21fcHJvYmVfYnJlYWtpbnB1
-dHMocHJpdiwgbnApOwo+PiAgCWlmIChyZXQpCj4+ICAJCXJldHVybiByZXQ7Cj4+ICAKPj4gQEAg
-LTY0Nyw2ICs2NTYsMzggQEAgc3RhdGljIGludCBzdG0zMl9wd21fcmVtb3ZlKHN0cnVjdCBwbGF0
-Zm9ybV9kZXZpY2UgKnBkZXYpCj4+ICAJcmV0dXJuIDA7Cj4+ICB9Cj4+ICAKPj4gK3N0YXRpYyBp
-bnQgX19tYXliZV91bnVzZWQgc3RtMzJfcHdtX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2KQo+
-PiArewo+PiArCXN0cnVjdCBzdG0zMl9wd20gKnByaXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsK
-Pj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHN0YXRlOwo+PiArCXVuc2lnbmVkIGludCBpOwo+PiArCj4+
-ICsJZm9yIChpID0gMDsgaSA8IHByaXYtPmNoaXAubnB3bTsgaSsrKSB7Cj4+ICsJCXB3bV9nZXRf
-c3RhdGUoJnByaXYtPmNoaXAucHdtc1tpXSwgJnN0YXRlKTsKPiAKPiBwd21fZ2V0X3N0YXRlIGlz
-IGEgZnVuY3Rpb24gZGVzaWduZWQgdG8gYmUgdXNlZCBieSBQV00gY29uc3VtZXJzLiBJCj4gd291
-bGQgcHJlZmVyIHRvIGNoZWNrIHRoZSBoYXJkd2FyZSByZWdpc3RlcnMgaGVyZSBpbnN0ZWFkLgoK
-SXQncyBhbHNvIHVzZWZ1bCBmb3IgUFdNIHByb3ZpZGVyOiBUaGlzIFBXTSBkcml2ZXIgaXMgcGFy
-dCBvZiBhIE1GRCB0aGF0CmFsc28gdGFrZSBjYXJlIG9mIElJTyB0cmlnZ2VyIChjYW4gYmUgdXNl
-ZCBzaW11bHRhbmVvdXNseSkuIFNpbXBseQpyZWFkaW5nIGEgcmVnaXN0ZXIgZG9lc24ndCB0ZWxs
-IHVzIHRoYXQgdGhlIHRpbWVyIGlzIHVzZWQvY29uZmlndXJlZCBhcwphIFBXTSBoZXJlLiBUaGF0
-J3MgdGhlIHJlYXNvbiB0byB1c2UgdGhpcyBoZWxwZXIgdG8gcmVhZCBwd20tPnN0YXRlLgoKRG8g
-eW91IHdpc2ggSSBhZGQgYSBjb21tZW50IHRvIGNsYXJpZnkgdGhpcyBoZXJlID8KCj4gCj4gV2hh
-dCBpZiB0aGVyZSBpcyBubyBjb25zdW1lciBhbmQgdGhlIFBXTSBqdXN0IGhhcHBlbnMgdG8gYmUg
-ZW5hYmxlZCBieQo+IHRoZSBib290bG9hZGVyPyBPciBpcyB0aGlzIHRvbyBtaW5vciBhbiBpc3N1
-ZSB0byBiZSB3b3J0aCBjb25zaWRlcmF0aW9uPwoKVGhhdCdzIHRoZSBwdXJwb3NlIG9mIHJldHVy
-bmluZyAtRUJVU1k6ICJQV00gc2hvdWxkIG5vdCBzdG9wIGlmIHRoZSBQV00KdXNlciBkaWRuJ3Qg
-Y2FsbCBwd21fZGlzYWJsZSgpIiAuLi4gInRvIGF2b2lkIHNpdHVhdGlvbiB3aGVyZSB0aGUgUFdN
-IGlzCmFjdHVhbGx5IHN1c3BlbmRlZCBiZWZvcmUgdGhlIHVzZXIiLiBUaGlzIGhhcyBiZWVuIGVu
-Zm9yY2VkIGluIGxhdGVyCnNlcmllcyB3aXRoIHRoZSBkZXZpY2VfbGlua19hZGQoKS4gU2VlIG91
-ciBwcmV2aW91cyBkaXNjdXNzaW9ucyBoZXJlOgpodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOS8y
-LzUvNzcwClNvLCBJIGd1ZXNzIHRoaXMgd291bGQgcG9pbnQgZXhhY3RseSBhIGxhY2sgZm9yIGEg
-UFdNIHVzZXIgdG8gbWFuYWdlIGl0CmFmdGVyIHRoZSBib290IHN0YWdlLCBpbiB0aGUga2VybmVs
-LgoKQ291bGQgeW91IHBsZWFzZSBjbGFyaWZ5LCBwcm92aWRlIGFuIGV4YW1wbGUgaGVyZSA/CgpU
-aGFua3MgZm9yIHJldmlld2luZywKQlIsCkZhYnJpY2UKCj4gCj4gQmVzdCByZWdhcmRzCj4gVXdl
-Cj4gCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
-eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
-ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
-cm0ta2VybmVsCg==
+Hello Fabrice,
+
+On Tue, Oct 01, 2019 at 10:18:31AM +0200, Fabrice Gasnier wrote:
+> On 10/1/19 9:04 AM, Uwe Kleine-König wrote:
+> > On Mon, Sep 30, 2019 at 05:39:11PM +0200, Fabrice Gasnier wrote:
+> >> Add suspend/resume PM sleep ops. When going to low power, enforce the PWM
+> >> channel isn't active. Let the PWM consumers disable it during their own
+> >> suspend sequence, see [1]. So, perform a check here, and handle the
+> >> pinctrl states. Also restore the break inputs upon resume, as registers
+> >> content may be lost when going to low power mode.
+> >>
+> >> [1] https://lkml.org/lkml/2019/2/5/770
+> >>
+> >> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> >> ---
+> >>  drivers/pwm/pwm-stm32.c | 82 +++++++++++++++++++++++++++++++++++++------------
+> >>  1 file changed, 62 insertions(+), 20 deletions(-)
+> >>
+> >> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+> >> index 740e2de..9bcd73a 100644
+> >> --- a/drivers/pwm/pwm-stm32.c
+> >> +++ b/drivers/pwm/pwm-stm32.c
+> >> @@ -12,6 +12,7 @@
+> >>  #include <linux/mfd/stm32-timers.h>
+> >>  #include <linux/module.h>
+> >>  #include <linux/of.h>
+> >> +#include <linux/pinctrl/consumer.h>
+> >>  #include <linux/platform_device.h>
+> >>  #include <linux/pwm.h>
+> >>  
+> >> @@ -19,6 +20,12 @@
+> >>  #define CCMR_CHANNEL_MASK  0xFF
+> >>  #define MAX_BREAKINPUT 2
+> >>  
+> >> +struct stm32_breakinput {
+> >> +	u32 index;
+> >> +	u32 level;
+> >> +	u32 filter;
+> >> +};
+> >> +
+> >>  struct stm32_pwm {
+> >>  	struct pwm_chip chip;
+> >>  	struct mutex lock; /* protect pwm config/enable */
+> >> @@ -26,15 +33,11 @@ struct stm32_pwm {
+> >>  	struct regmap *regmap;
+> >>  	u32 max_arr;
+> >>  	bool have_complementary_output;
+> >> +	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
+> >> +	unsigned int nbreakinput;
+> >>  	u32 capture[4] ____cacheline_aligned; /* DMA'able buffer */
+> >>  };
+> >>  
+> >> -struct stm32_breakinput {
+> >> -	u32 index;
+> >> -	u32 level;
+> >> -	u32 filter;
+> >> -};
+> >> -
+> >>  static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
+> >>  {
+> >>  	return container_of(chip, struct stm32_pwm, chip);
+> >> @@ -512,15 +515,27 @@ static int stm32_pwm_set_breakinput(struct stm32_pwm *priv,
+> >>  	return (bdtr & bke) ? 0 : -EINVAL;
+> >>  }
+> >>  
+> >> -static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
+> >> +static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv)
+> >> +{
+> >> +	int i, ret = 0;
+> >> +
+> >> +	for (i = 0; i < priv->nbreakinput && !ret; i++) {
+> >> +		ret = stm32_pwm_set_breakinput(priv,
+> >> +					       priv->breakinput[i].index,
+> >> +					       priv->breakinput[i].level,
+> >> +					       priv->breakinput[i].filter);
+> >> +	}
+> >> +
+> >> +	return ret;
+> >> +}
+> > 
+> > Can you explain what the effect of this function is? This is something
+> > that is lost during suspend?
+> 
+> Yes, that's what I explain in the commit message: ...registers content
+> may be lost when going to low power mode.
+> Do you think I need to rephrase ?
+
+Ah, right I missed it in the commit log. It might be worth adding that
+to a code comment. Also having the purpose of this function described
+would be great. Does it configure some electrical characteristics? Or
+has it to do with pinmuxing? Why is an input relevant for a PWM?
+
+> > I wonder why the patch is so big. There are some rearrangements that
+> > should have no effect and I think it would be beneficial for
+> > reviewability to split this patch in a patch that only does the
+> > restructuring and than on top of that add the PM stuff.
+> 
+> I can split this to ease the review.
+> > 
+> >> +
+> >> +static int stm32_pwm_probe_breakinputs(struct stm32_pwm *priv,
+> >>  				       struct device_node *np)
+> >>  {
+> >> -	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
+> >> -	int nb, ret, i, array_size;
+> >> +	int nb, ret, array_size;
+> >>  
+> >>  	nb = of_property_count_elems_of_size(np, "st,breakinput",
+> >>  					     sizeof(struct stm32_breakinput));
+> >> -
+> >>  	/*
+> >>  	 * Because "st,breakinput" parameter is optional do not make probe
+> >>  	 * failed if it doesn't exist.
+> >> @@ -531,20 +546,14 @@ static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
+> >>  	if (nb > MAX_BREAKINPUT)
+> >>  		return -EINVAL;
+> >>  
+> >> +	priv->nbreakinput = nb;
+> >>  	array_size = nb * sizeof(struct stm32_breakinput) / sizeof(u32);
+> >>  	ret = of_property_read_u32_array(np, "st,breakinput",
+> >> -					 (u32 *)breakinput, array_size);
+> >> +					 (u32 *)priv->breakinput, array_size);
+> >>  	if (ret)
+> >>  		return ret;
+> >>  
+> >> -	for (i = 0; i < nb && !ret; i++) {
+> >> -		ret = stm32_pwm_set_breakinput(priv,
+> >> -					       breakinput[i].index,
+> >> -					       breakinput[i].level,
+> >> -					       breakinput[i].filter);
+> >> -	}
+> >> -
+> >> -	return ret;
+> >> +	return stm32_pwm_apply_breakinputs(priv);
+> >>  }
+> >>  
+> >>  static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
+> >> @@ -614,7 +623,7 @@ static int stm32_pwm_probe(struct platform_device *pdev)
+> >>  	if (!priv->regmap || !priv->clk)
+> >>  		return -EINVAL;
+> >>  
+> >> -	ret = stm32_pwm_apply_breakinputs(priv, np);
+> >> +	ret = stm32_pwm_probe_breakinputs(priv, np);
+> >>  	if (ret)
+> >>  		return ret;
+> >>  
+> >> @@ -647,6 +656,38 @@ static int stm32_pwm_remove(struct platform_device *pdev)
+> >>  	return 0;
+> >>  }
+> >>  
+> >> +static int __maybe_unused stm32_pwm_suspend(struct device *dev)
+> >> +{
+> >> +	struct stm32_pwm *priv = dev_get_drvdata(dev);
+> >> +	struct pwm_state state;
+> >> +	unsigned int i;
+> >> +
+> >> +	for (i = 0; i < priv->chip.npwm; i++) {
+> >> +		pwm_get_state(&priv->chip.pwms[i], &state);
+> > 
+> > pwm_get_state is a function designed to be used by PWM consumers. I
+> > would prefer to check the hardware registers here instead.
+> 
+> It's also useful for PWM provider: This PWM driver is part of a MFD that
+
+I don't doubt "useful". But still you should only call it if you called
+pwm_get (or a similar function) to get a PWM handle.
+
+> also take care of IIO trigger (can be used simultaneously). Simply
+> reading a register doesn't tell us that the timer is used/configured as
+> a PWM here. That's the reason to use this helper to read pwm->state.
+
+How can the pwm driver be bound and the hardware not be used a PWM?
+
+> Do you wish I add a comment to clarify this here ?
+
+No, I wish you inspect the hardware to determine what you need to know :-)
+
+> > What if there is no consumer and the PWM just happens to be enabled by
+> > the bootloader? Or is this too minor an issue to be worth consideration?
+> 
+> That's the purpose of returning -EBUSY: "PWM should not stop if the PWM
+> user didn't call pwm_disable()" ... "to avoid situation where the PWM is
+> actually suspended before the user". This has been enforced in later
+> series with the device_link_add(). See our previous discussions here:
+> https://lkml.org/lkml/2019/2/5/770
+> So, I guess this would point exactly a lack for a PWM user to manage it
+> after the boot stage, in the kernel.
+> 
+> Could you please clarify, provide an example here ?
+
+This is something different than I asked for. Not having a consumer
+isn't an error. Still the pwm might be running (for a good reason or
+not). (This is more a question that affects how a driver should behave
+in general, it is not specific to the stm32 driver here.)
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
