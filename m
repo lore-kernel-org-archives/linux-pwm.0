@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 13/29] pwm: stm32-lp: Add check in case requested period cannot be achieved
-Date: Tue,  1 Oct 2019 12:44:07 -0400
-Message-ID: <20191001164423.16406-13-sashal@kernel.org>
-References: <20191001164423.16406-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 23/63] pwm: stm32-lp: Add check in case requested period cannot be achieved
+Date: Tue,  1 Oct 2019 12:40:45 -0400
+Message-ID: <20191001164125.15398-23-sashal@kernel.org>
+References: <20191001164125.15398-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191001164423.16406-1-sashal@kernel.org>
+In-Reply-To: <20191001164125.15398-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
@@ -35,10 +35,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index 9793b296108ff..3f2e4ef695d75 100644
+index 0059b24cfdc3c..28e1f64134763 100644
 --- a/drivers/pwm/pwm-stm32-lp.c
 +++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -59,6 +59,12 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -58,6 +58,12 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	/* Calculate the period and prescaler value */
  	div = (unsigned long long)clk_get_rate(priv->clk) * state->period;
  	do_div(div, NSEC_PER_SEC);
