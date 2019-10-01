@@ -1,55 +1,45 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.3 25/71] pwm: stm32-lp: Add check in case requested period cannot be achieved
-Date: Tue,  1 Oct 2019 12:38:35 -0400
-Message-ID: <20191001163922.14735-25-sashal@kernel.org>
-References: <20191001163922.14735-1-sashal@kernel.org>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] backlight: pwm_bl: Don't assign levels table repeatedly
+Date: Tue,  1 Oct 2019 16:29:24 -0700
+Message-ID: <20191001162835.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191001163922.14735-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-
-[ Upstream commit c91e3234c6035baf5a79763cb4fcd5d23ce75c2b ]
-
-LPTimer can use a 32KHz clock for counting. It depends on clock tree
-configuration. In such a case, PWM output frequency range is limited.
-Although unlikely, nothing prevents user from requesting a PWM frequency
-above counting clock (32KHz for instance):
-- This causes (prd - 1) = 0xffff to be written in ARR register later in
-the apply() routine.
-This results in badly configured PWM period (and also duty_cycle).
-Add a check to report an error is such a case.
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pwm/pwm-stm32-lp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index 2211a642066db..97a9afa191ee0 100644
---- a/drivers/pwm/pwm-stm32-lp.c
-+++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -59,6 +59,12 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* Calculate the period and prescaler value */
- 	div = (unsigned long long)clk_get_rate(priv->clk) * state->period;
- 	do_div(div, NSEC_PER_SEC);
-+	if (!div) {
-+		/* Clock is too slow to achieve requested period. */
-+		dev_dbg(priv->chip.dev, "Can't reach %u ns\n",	state->period);
-+		return -EINVAL;
-+	}
-+
- 	prd = div;
- 	while (div > STM32_LPTIM_MAX_ARR) {
- 		presc++;
--- 
-2.20.1
+cHdtX2JhY2tsaWdodF9wcm9iZSgpIHJlLWFzc2lnbnMgcGItPmxldmVscyBmb3IgZXZlcnkgYnJp
+Z2h0bmVzcwpsZXZlbC4gVGhpcyBpcyBub3QgbmVlZGVkIGFuZCB3YXMgbGlrZWx5IG5vdCBpbnRl
+bmRlZCwgc2luY2UKbmVpdGhlciBzaWRlIG9mIHRoZSBhc3NpZ25tZW50IGNoYW5nZXMgZHVyaW5n
+IHRoZSBsb29wLiBBc3NpZ24KdGhlIGZpZWxkIG9ubHkgb25jZS4KClNpZ25lZC1vZmYtYnk6IE1h
+dHRoaWFzIEthZWhsY2tlIDxta2FAY2hyb21pdW0ub3JnPgotLS0KCiBkcml2ZXJzL3ZpZGVvL2Jh
+Y2tsaWdodC9wd21fYmwuYyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygr
+KSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9w
+d21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCmluZGV4IDc0NmVlYmM0
+MTFkZi4uOTU5NDM2YjllOTJiIDEwMDY0NAotLS0gYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9w
+d21fYmwuYworKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwpAQCAtNTY0LDYg
+KzU2NCw4IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1f
+ZGV2aWNlICpwZGV2KQogCW1lbXNldCgmcHJvcHMsIDAsIHNpemVvZihzdHJ1Y3QgYmFja2xpZ2h0
+X3Byb3BlcnRpZXMpKTsKIAogCWlmIChkYXRhLT5sZXZlbHMpIHsKKwkJcGItPmxldmVscyA9IGRh
+dGEtPmxldmVsczsKKwogCQkvKgogCQkgKiBGb3IgdGhlIERUIGNhc2UsIG9ubHkgd2hlbiBicmln
+aHRuZXNzIGxldmVscyBpcyBkZWZpbmVkCiAJCSAqIGRhdGEtPmxldmVscyBpcyBmaWxsZWQuIEZv
+ciB0aGUgbm9uLURUIGNhc2UsIGRhdGEtPmxldmVscwpAQCAtNTcyLDggKzU3NCw2IEBAIHN0YXRp
+YyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQog
+CQlmb3IgKGkgPSAwOyBpIDw9IGRhdGEtPm1heF9icmlnaHRuZXNzOyBpKyspIHsKIAkJCWlmIChk
+YXRhLT5sZXZlbHNbaV0gPiBwYi0+c2NhbGUpCiAJCQkJcGItPnNjYWxlID0gZGF0YS0+bGV2ZWxz
+W2ldOwotCi0JCQlwYi0+bGV2ZWxzID0gZGF0YS0+bGV2ZWxzOwogCQl9CiAKIAkJaWYgKHB3bV9i
+YWNrbGlnaHRfaXNfbGluZWFyKGRhdGEpKQotLSAKMi4yMy4wLjQ0NC5nMThlZWI1YTI2NS1nb29n
+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2
+ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9s
+aXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
