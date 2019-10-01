@@ -1,33 +1,38 @@
-Return-path: <sboyd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20191002164047.14499-1-krzk@kernel.org>
-References: <20191002164047.14499-1-krzk@kernel.org>
-From: Stephen Boyd <sboyd@kernel.org>
-Date: Thu, 03 Oct 2019 11:15:59 -0700
-Message-Id: <20191003181600.7D6F22070B@mail.kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: pwm: Convert PWM bindings to json-schema
-To: u.kleine-koenig@pengutronix.de, Krzysztof Kozlowski <krzk@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com, linux-tegra@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from relmlor2.renesas.com ([210.160.252.172]:48037 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725821AbfJAMDG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Oct 2019 08:03:06 -0400
+From: Biju Das <biju.das@bp.renesas.com>
+Date: Tue,  1 Oct 2019 13:02:40 +0100
+Message-Id: <1569931360-17196-1-git-send-email-biju.das@bp.renesas.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: [PATCH] dt-bindings: pwm: rcar: Add r8a774b1 support
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: Biju Das <biju.das@bp.renesas.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Chris Paterson <Chris.Paterson2@renesas.com>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
 
-Quoting Krzysztof Kozlowski (2019-10-02 09:40:46)
-> Convert generic PWM bindings to DT schema format using json-schema.  The
-> consumer bindings are split to separate file.
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
->=20
-> ---
->=20
-> Changes since v2:
-> 1. Change also pwm-sprd.txt
->=20
-> Changes since v1:
-> 1. Indent example with four spaces (more readable),
-> 2. Change pattern for pwm nodes,
-> 3. Remove $ref from #cells.
-> ---
->  .../devicetree/bindings/clock/pwm-clock.txt   |  2 +-
+Document RZ/G2N (R8A774B1) SoC bindings.
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Biju Das <biju.das@bp.renesas.com>
+---
+This patch depend on
+https://patchwork.kernel.org/patch/11154813/
+---
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
+index 0976cfd..272a4df 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
+@@ -18,6 +18,7 @@ properties:
+           - renesas,pwm-r8a7745   # RZ/G1E
+           - renesas,pwm-r8a77470  # RZ/G1C
+           - renesas,pwm-r8a774a1  # RZ/G2M
++          - renesas,pwm-r8a774b1  # RZ/G2N
+           - renesas,pwm-r8a774c0  # RZ/G2E
+           - renesas,pwm-r8a7778   # R-Car M1A
+           - renesas,pwm-r8a7779   # R-Car H1
+-- 
+2.7.4
