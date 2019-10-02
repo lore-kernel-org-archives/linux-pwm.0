@@ -1,58 +1,38 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: Don't assign levels table repeatedly
-Date: Wed, 2 Oct 2019 11:07:37 +0100
-Message-ID: <20191002100737.orm5ghpnw6oe6b3r@holly.lan>
-References: <20191001162835.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH] pwm: sun4i: redundant assignment to variable pval
+Date: Wed,  2 Oct 2019 11:08:44 +0100
+Message-ID: <20191002100844.10490-1-colin.king@canonical.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191001162835.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Oct 01, 2019 at 04:29:24PM -0700, Matthias Kaehlcke wrote:
-> pwm_backlight_probe() re-assigns pb->levels for every brightness
-> level. This is not needed and was likely not intended, since
-> neither side of the assignment changes during the loop. Assign
-> the field only once.
-> 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+From: Colin Ian King <colin.king@canonical.com>
 
-Makes sense but this should probably be dropping the curly braces too.
+Variable pval is being assigned a value that is never read. The
+assignment is redundant and hence can be removed.
 
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/pwm/pwm-sun4i.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Daniel.
-
-> ---
-> 
->  drivers/video/backlight/pwm_bl.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index 746eebc411df..959436b9e92b 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -564,6 +564,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  	memset(&props, 0, sizeof(struct backlight_properties));
->  
->  	if (data->levels) {
-> +		pb->levels = data->levels;
-> +
->  		/*
->  		 * For the DT case, only when brightness levels is defined
->  		 * data->levels is filled. For the non-DT case, data->levels
-> @@ -572,8 +574,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  		for (i = 0; i <= data->max_brightness; i++) {
->  			if (data->levels[i] > pb->scale)
->  				pb->scale = data->levels[i];
-> -
-> -			pb->levels = data->levels;
->  		}
->  
->  		if (pwm_backlight_is_linear(data))
-> -- 
-> 2.23.0.444.g18eeb5a265-goog
-> 
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 6f5840a1a82d..53970d4ba695 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -156,7 +156,6 @@ static int sun4i_pwm_calculate(struct sun4i_pwm_chip *sun4i_pwm,
+ 	if (sun4i_pwm->data->has_prescaler_bypass) {
+ 		/* First, test without any prescaler when available */
+ 		prescaler = PWM_PRESCAL_MASK;
+-		pval = 1;
+ 		/*
+ 		 * When not using any prescaler, the clock period in nanoseconds
+ 		 * is not an integer so round it half up instead of
+-- 
+2.20.1
