@@ -1,93 +1,58 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: pwm-imx27: Use 'dev' instead of dereferencing it
- repeatedly
-Date: Wed, 2 Oct 2019 09:33:19 +0200
-Message-ID: <20191002073319.tv55olneh6i6x4ir@pengutronix.de>
-References: <1569315593-769-1-git-send-email-Anson.Huang@nxp.com>
- <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: Don't assign levels table repeatedly
+Date: Wed, 2 Oct 2019 11:07:37 +0100
+Message-ID: <20191002100737.orm5ghpnw6oe6b3r@holly.lan>
+References: <20191001162835.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6cfb1595992b46dc884731555e6f0334@AcuMS.aculab.com>
+In-Reply-To: <20191001162835.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Laight <David.Laight@ACULAB.COM>
-Cc: 'Anson Huang' <Anson.Huang@nxp.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Linux-imx@nxp.com" <Linux-imx@nxp.com>
+To: Matthias Kaehlcke <mka@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Sep 24, 2019 at 09:46:20AM +0000, David Laight wrote:
-> From: Anson Huang
-> > Sent: 24 September 2019 10:00
-> > Add helper variable dev = &pdev->dev to simply the code.
-> > 
-> > Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> > ---
-> >  drivers/pwm/pwm-imx27.c | 13 +++++++------
-> >  1 file changed, 7 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-> > index 434a351..3afee29 100644
-> > --- a/drivers/pwm/pwm-imx27.c
-> > +++ b/drivers/pwm/pwm-imx27.c
-> > @@ -290,27 +290,28 @@ MODULE_DEVICE_TABLE(of, pwm_imx27_dt_ids);
-> > 
-> >  static int pwm_imx27_probe(struct platform_device *pdev)
-> >  {
-> > +	struct device *dev = &pdev->dev;
-> >  	struct pwm_imx27_chip *imx;
-> > 
-> > -	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
-> > +	imx = devm_kzalloc(dev, sizeof(*imx), GFP_KERNEL);
-> >  	if (imx == NULL)
-> >  		return -ENOMEM;
-> > 
-> >  	platform_set_drvdata(pdev, imx);
-> > 
-> > -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
-> > +	imx->clk_ipg = devm_clk_get(dev, "ipg");
-> >  	if (IS_ERR(imx->clk_ipg)) {
-> > -		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
-> > +		dev_err(dev, "getting ipg clock failed with %ld\n",
-> >  				PTR_ERR(imx->clk_ipg));
-> >  		return PTR_ERR(imx->clk_ipg);
-> >  	}
-> > 
-> > -	imx->clk_per = devm_clk_get(&pdev->dev, "per");
-> > +	imx->clk_per = devm_clk_get(dev, "per");
-> >  	if (IS_ERR(imx->clk_per)) {
-> >  		int ret = PTR_ERR(imx->clk_per);
-> > 
-> >  		if (ret != -EPROBE_DEFER)
-> > -			dev_err(&pdev->dev,
-> > +			dev_err(dev,
-> >  				"failed to get peripheral clock: %d\n",
-> >  				ret);
+On Tue, Oct 01, 2019 at 04:29:24PM -0700, Matthias Kaehlcke wrote:
+> pwm_backlight_probe() re-assigns pb->levels for every brightness
+> level. This is not needed and was likely not intended, since
+> neither side of the assignment changes during the loop. Assign
+> the field only once.
 > 
-> Hopefully the compiler will optimise this back otherwise you've added another
-> local variable which may cause spilling to stack.
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 
-I wonder that in reply to this comment nobody actually tried. I just did
-that and applying the patch doesn't change the resulting binary. (Tested
-with gcc 7.3.1).
+Makes sense but this should probably be dropping the curly braces too.
 
-> For a setup function it probably doesn't matter, but in general it might
-> have a small negative performance impact.
+
+Daniel.
+
+> ---
 > 
-> In any case this doesn't shorten any lines enough to remove line-wrap
-> and using &pdev->dev is really one less variable to mentally track
-> when reading the code.
-
-On the other hand having a variable named "dev" is so usual that I
-personally slightly prefer using it instead of &pdev->dev. So I think
-(given there is no effect on the compiled result) this is really just
-about personal taste and so to actually switch from one preference to
-the other needs a better justification IMHO.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>  drivers/video/backlight/pwm_bl.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index 746eebc411df..959436b9e92b 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -564,6 +564,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	memset(&props, 0, sizeof(struct backlight_properties));
+>  
+>  	if (data->levels) {
+> +		pb->levels = data->levels;
+> +
+>  		/*
+>  		 * For the DT case, only when brightness levels is defined
+>  		 * data->levels is filled. For the non-DT case, data->levels
+> @@ -572,8 +574,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  		for (i = 0; i <= data->max_brightness; i++) {
+>  			if (data->levels[i] > pb->scale)
+>  				pb->scale = data->levels[i];
+> -
+> -			pb->levels = data->levels;
+>  		}
+>  
+>  		if (pwm_backlight_is_linear(data))
+> -- 
+> 2.23.0.444.g18eeb5a265-goog
+> 
