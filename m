@@ -1,48 +1,33 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Wed, 2 Oct 2019 09:35:47 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH RFC] pwm: add debug knob to help driver authors
-Message-ID: <20191002073547.kst4pql7nflqpacg@pengutronix.de>
-References: <20190815093839.23710-1-u.kleine-koenig@pengutronix.de>
+Return-path: <sboyd@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20190815093839.23710-1-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>, kernel@pengutronix.de, Baolin Wang <baolin.wang@linaro.org>
+In-Reply-To: <20191002164047.14499-1-krzk@kernel.org>
+References: <20191002164047.14499-1-krzk@kernel.org>
+From: Stephen Boyd <sboyd@kernel.org>
+Date: Thu, 03 Oct 2019 11:15:59 -0700
+Message-Id: <20191003181600.7D6F22070B@mail.kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: pwm: Convert PWM bindings to json-schema
+To: u.kleine-koenig@pengutronix.de, Krzysztof Kozlowski <krzk@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com, linux-tegra@vger.kernel.org
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
 List-ID: <linux-pwm.vger.kernel.org>
 
-Hello Thierry,
-
-On Thu, Aug 15, 2019 at 11:38:39AM +0200, Uwe Kleine-K=F6nig wrote:
-> This patch adds some additional checks to the pwm core that help getting
-> the details right. The check about rounding isn't approved yet, but I
-> consider that sensible as it helps consistency when all drivers round in
-> the same direction. The other checks are in line with what I understood
-> are the intended requirements.
+Quoting Krzysztof Kozlowski (2019-10-02 09:40:46)
+> Convert generic PWM bindings to DT schema format using json-schema.  The
+> consumer bindings are split to separate file.
 >=20
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+>=20
 > ---
-> this patch is only compile tested up to now but still I think it adds
-> useful diagnostics for driver authors that helps even more than an exact
-> documentation. Feedback welcome.
+>=20
+> Changes since v2:
+> 1. Change also pwm-sprd.txt
+>=20
+> Changes since v1:
+> 1. Indent example with four spaces (more readable),
+> 2. Change pattern for pwm nodes,
+> 3. Remove $ref from #cells.
+> ---
+>  .../devicetree/bindings/clock/pwm-clock.txt   |  2 +-
 
-do you consider the idea here worthwile? If so I'd update the patch to
-current mainline and address the feedback I got so far.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Acked-by: Stephen Boyd <sboyd@kernel.org>
