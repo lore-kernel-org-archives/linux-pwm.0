@@ -1,57 +1,38 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v2] backlight: pwm_bl: Don't assign levels table repeatedly
-Date: Thu, 3 Oct 2019 11:02:06 +0100
-Message-ID: <20191003100206.ws35dbgifjwjicuv@holly.lan>
-References: <20191002095541.v2.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] backlight: pwm_bl: Add missing curly branches in else branch
+Date: Thu,  3 Oct 2019 14:35:02 -0700
+Message-ID: <20191003213502.102110-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20191002095541.v2.1.I4f2ede1f55ddd1c72b0303b7fd7f73a782fa33e5@changeid>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Matthias Kaehlcke <mka@chromium.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCBPY3QgMDIsIDIwMTkgYXQgMDk6NTY6MDFBTSAtMDcwMCwgTWF0dGhpYXMgS2FlaGxj
-a2Ugd3JvdGU6Cj4gcHdtX2JhY2tsaWdodF9wcm9iZSgpIHJlLWFzc2lnbnMgcGItPmxldmVscyBm
-b3IgZXZlcnkgYnJpZ2h0bmVzcwo+IGxldmVsLiBUaGlzIGlzIG5vdCBuZWVkZWQgYW5kIHdhcyBs
-aWtlbHkgbm90IGludGVuZGVkLCBzaW5jZQo+IG5laXRoZXIgc2lkZSBvZiB0aGUgYXNzaWdubWVu
-dCBjaGFuZ2VzIGR1cmluZyB0aGUgbG9vcC4gQXNzaWduCj4gdGhlIGZpZWxkIG9ubHkgb25jZS4K
-PiAKPiBTaWduZWQtb2ZmLWJ5OiBNYXR0aGlhcyBLYWVobGNrZSA8bWthQGNocm9taXVtLm9yZz4K
-ClJldmlld2VkLWJ5OiBEYW5pZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3Jn
-PgoKPiAtLS0KPiAKPiBDaGFuZ2VzIGluIHYyOgo+IC0gcmVtb3ZlZCBjdXJseSBicmFjZXMgZnJv
-bSBmb3IgbG9vcAo+IAo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyB8IDcgKysr
-LS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQo+
-IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZl
-cnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5jCj4gaW5kZXggNzQ2ZWViYzQxMWRmLi4wNWQzYjM4
-MDI2NTggMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiAr
-KysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+IEBAIC01NjQsMTggKzU2NCwx
-NyBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZSAqcGRldikKPiAgCW1lbXNldCgmcHJvcHMsIDAsIHNpemVvZihzdHJ1Y3QgYmFja2xpZ2h0X3By
-b3BlcnRpZXMpKTsKPiAgCj4gIAlpZiAoZGF0YS0+bGV2ZWxzKSB7Cj4gKwkJcGItPmxldmVscyA9
-IGRhdGEtPmxldmVsczsKPiArCj4gIAkJLyoKPiAgCQkgKiBGb3IgdGhlIERUIGNhc2UsIG9ubHkg
-d2hlbiBicmlnaHRuZXNzIGxldmVscyBpcyBkZWZpbmVkCj4gIAkJICogZGF0YS0+bGV2ZWxzIGlz
-IGZpbGxlZC4gRm9yIHRoZSBub24tRFQgY2FzZSwgZGF0YS0+bGV2ZWxzCj4gIAkJICogY2FuIGNv
-bWUgZnJvbSBwbGF0Zm9ybSBkYXRhLCBob3dldmVyIGlzIG5vdCB1c3VhbC4KPiAgCQkgKi8KPiAt
-CQlmb3IgKGkgPSAwOyBpIDw9IGRhdGEtPm1heF9icmlnaHRuZXNzOyBpKyspIHsKPiArCQlmb3Ig
-KGkgPSAwOyBpIDw9IGRhdGEtPm1heF9icmlnaHRuZXNzOyBpKyspCj4gIAkJCWlmIChkYXRhLT5s
-ZXZlbHNbaV0gPiBwYi0+c2NhbGUpCj4gIAkJCQlwYi0+c2NhbGUgPSBkYXRhLT5sZXZlbHNbaV07
-Cj4gIAo+IC0JCQlwYi0+bGV2ZWxzID0gZGF0YS0+bGV2ZWxzOwo+IC0JCX0KPiAtCj4gIAkJaWYg
-KHB3bV9iYWNrbGlnaHRfaXNfbGluZWFyKGRhdGEpKQo+ICAJCQlwcm9wcy5zY2FsZSA9IEJBQ0tM
-SUdIVF9TQ0FMRV9MSU5FQVI7Cj4gIAkJZWxzZQo+IC0tIAo+IDIuMjMuMC40NDQuZzE4ZWViNWEy
-NjUtZ29vZwo+IAo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCj4gZHJpLWRldmVsIG1haWxpbmcgbGlzdAo+IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3Rv
-cC5vcmcKPiBodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2Ry
-aS1kZXZlbApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpk
-cmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0
-cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+Add curly braces to an 'else' branch in pwm_backlight_update_status()
+to match the corresponding 'if' branch.
+
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
+
+ drivers/video/backlight/pwm_bl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 746eebc411df..130abff2705f 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -125,8 +125,9 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+ 		state.duty_cycle = compute_duty_cycle(pb, brightness);
+ 		pwm_apply_state(pb->pwm, &state);
+ 		pwm_backlight_power_on(pb);
+-	} else
++	} else {
+ 		pwm_backlight_power_off(pb);
++	}
+ 
+ 	if (pb->notify_after)
+ 		pb->notify_after(pb->dev, brightness);
+-- 
+2.23.0.444.g18eeb5a265-goog
