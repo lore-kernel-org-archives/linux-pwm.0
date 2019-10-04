@@ -1,113 +1,68 @@
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v2 2/6] pwm: mxs: remove legacy methods
-Date: Fri,  4 Oct 2019 15:32:03 +0200
-Message-ID: <20191004133207.6663-3-linux@rasmusvillemoes.dk>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 5/6] pwm: mxs: avoid a division in mxs_pwm_apply()
+Date: Fri, 4 Oct 2019 16:08:34 +0200
+Message-ID: <20191004140834.4idddyohf52ha4ao@pengutronix.de>
 References: <20191004133207.6663-1-linux@rasmusvillemoes.dk>
+ <20191004133207.6663-6-linux@rasmusvillemoes.dk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191004133207.6663-1-linux@rasmusvillemoes.dk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
-Cc: devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20191004133207.6663-6-linux@rasmusvillemoes.dk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Since we now have ->apply, these are no longer relevant.
+On Fri, Oct 04, 2019 at 03:32:06PM +0200, Rasmus Villemoes wrote:
+> Since the divisor is not a compile-time constant (unless gcc somehow
+> decided to unroll the loop PERIOD_CDIV_MAX times), this does a
+> somewhat expensive 32/32 division. Replace that with a right shift.
+> =
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/pwm/pwm-mxs.c | 77 -------------------------------------------
- 1 file changed, 77 deletions(-)
+> We still have a 64/32 division just below, but at least in that
+> case the divisor is compile-time constant.
+> =
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index 10efd3de0bb3..5a6835e18fc6 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -110,85 +110,8 @@ static int mxs_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	return 0;
- }
- 
--static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			  int duty_ns, int period_ns)
--{
--	struct mxs_pwm_chip *mxs = to_mxs_pwm_chip(chip);
--	int ret, div = 0;
--	unsigned int period_cycles, duty_cycles;
--	unsigned long rate;
--	unsigned long long c;
--
--	rate = clk_get_rate(mxs->clk);
--	while (1) {
--		c = rate / cdiv[div];
--		c = c * period_ns;
--		do_div(c, 1000000000);
--		if (c < PERIOD_PERIOD_MAX)
--			break;
--		div++;
--		if (div >= PERIOD_CDIV_MAX)
--			return -EINVAL;
--	}
--
--	period_cycles = c;
--	c *= duty_ns;
--	do_div(c, period_ns);
--	duty_cycles = c;
--
--	/*
--	 * If the PWM channel is disabled, make sure to turn on the clock
--	 * before writing the register. Otherwise, keep it enabled.
--	 */
--	if (!pwm_is_enabled(pwm)) {
--		ret = clk_prepare_enable(mxs->clk);
--		if (ret)
--			return ret;
--	}
--
--	writel(duty_cycles << 16,
--			mxs->base + PWM_ACTIVE0 + pwm->hwpwm * 0x20);
--	writel(PERIOD_PERIOD(period_cycles) | PERIOD_ACTIVE_HIGH |
--	       PERIOD_INACTIVE_LOW | PERIOD_CDIV(div),
--			mxs->base + PWM_PERIOD0 + pwm->hwpwm * 0x20);
--
--	/*
--	 * If the PWM is not enabled, turn the clock off again to save power.
--	 */
--	if (!pwm_is_enabled(pwm))
--		clk_disable_unprepare(mxs->clk);
--
--	return 0;
--}
--
--static int mxs_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct mxs_pwm_chip *mxs = to_mxs_pwm_chip(chip);
--	int ret;
--
--	ret = clk_prepare_enable(mxs->clk);
--	if (ret)
--		return ret;
--
--	writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + SET);
--
--	return 0;
--}
--
--static void mxs_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct mxs_pwm_chip *mxs = to_mxs_pwm_chip(chip);
--
--	writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + CLR);
--
--	clk_disable_unprepare(mxs->clk);
--}
--
- static const struct pwm_ops mxs_pwm_ops = {
- 	.apply = mxs_pwm_apply,
--	.config = mxs_pwm_config,
--	.enable = mxs_pwm_enable,
--	.disable = mxs_pwm_disable,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.20.1
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+
+> ---
+>  drivers/pwm/pwm-mxs.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> =
+
+> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+> index 57562221c439..f2e57fcf8f8b 100644
+> --- a/drivers/pwm/pwm-mxs.c
+> +++ b/drivers/pwm/pwm-mxs.c
+> @@ -33,8 +33,8 @@
+>  #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
+>  #define  PERIOD_CDIV_MAX	8
+>  =
+
+> -static const unsigned int cdiv[PERIOD_CDIV_MAX] =3D {
+> -	1, 2, 4, 8, 16, 64, 256, 1024
+> +static const u8 cdiv_shift[PERIOD_CDIV_MAX] =3D {
+> +	0, 1, 2, 3, 4, 6, 8, 10
+
+One small nitpick: I would like to see this name have a mxs_pwm_ prefix.
+But even without this change:
+
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
