@@ -1,43 +1,50 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH v2 0/3] Add PM support to STM32 Timer PWM
-Date: Fri, 4 Oct 2019 14:53:50 +0200
-Message-ID: <1570193633-6600-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH v2 1/3] dt-bindings: pwm-stm32: document pinctrl sleep state
+Date: Fri, 4 Oct 2019 14:53:51 +0200
+Message-ID: <1570193633-6600-2-git-send-email-fabrice.gasnier@st.com>
+References: <1570193633-6600-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1570193633-6600-1-git-send-email-fabrice.gasnier@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, robh+dt@kernel.org, u.kleine-koenig@pengutronix.de
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Cc: alexandre.torgue@st.com, mark.rutland@arm.com, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
 List-Id: linux-pwm@vger.kernel.org
 
-This patch series adds power management support for STM32 Timer PWM:
-- Document the pinctrl sleep state for STM32 Timer PWM
-- STM32 Timer PWM driver
+Add documentation for pinctrl sleep state that can be used by
+STM32 timers PWM.
 
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-Changes in v2:
-Follow Uwe suggestions/remarks:
-- Add a precursor patch to ease reviewing
-- Use registers read instead of pwm_get_state
-- Add a comment to mention registers content may be lost in low power mode
+ Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Fabrice Gasnier (3):
-  dt-bindings: pwm-stm32: document pinctrl sleep state
-  pwm: stm32: split breakinput apply routine to ease PM support
-  pwm: stm32: add power management support
-
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  8 +-
- drivers/pwm/pwm-stm32.c                            | 86 +++++++++++++++++-----
- 2 files changed, 71 insertions(+), 23 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+index a8690bf..f1620c1 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+@@ -5,8 +5,9 @@ See ../mfd/stm32-timers.txt for details about the parent node.
+ 
+ Required parameters:
+ - compatible:		Must be "st,stm32-pwm".
+-- pinctrl-names: 	Set to "default".
+-- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
++- pinctrl-names: 	Set to "default". An additional "sleep" state can be
++			defined to set pins in sleep state when in low power.
++- pinctrl-n: 		List of phandles pointing to pin configuration nodes for PWM module.
+ 			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+ - #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
+ 			bindings defined in pwm.txt.
+@@ -32,7 +33,8 @@ Example:
+ 			compatible = "st,stm32-pwm";
+ 			#pwm-cells = <3>;
+ 			pinctrl-0	= <&pwm1_pins>;
+-			pinctrl-names	= "default";
++			pinctrl-1	= <&pwm1_sleep_pins>;
++			pinctrl-names	= "default", "sleep";
+ 			st,breakinput = <0 1 5>;
+ 		};
+ 	};
 -- 
 2.7.4
