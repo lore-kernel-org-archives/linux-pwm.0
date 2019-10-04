@@ -1,47 +1,43 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: Add missing curly branches in else
- branch
-Date: Fri, 4 Oct 2019 10:53:19 +0100
-Message-ID: <20191004095319.dkcjemag65xgsmp5@holly.lan>
-References: <20191003213502.102110-1-mka@chromium.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH v2 0/3] Add PM support to STM32 Timer PWM
+Date: Fri, 4 Oct 2019 14:53:50 +0200
+Message-ID: <1570193633-6600-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191003213502.102110-1-mka@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, u.kleine-koenig@pengutronix.de
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Oct 03, 2019 at 02:35:02PM -0700, Matthias Kaehlcke wrote:
-> Add curly braces to an 'else' branch in pwm_backlight_update_status()
-> to match the corresponding 'if' branch.
-> 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+This patch series adds power management support for STM32 Timer PWM:
+- Document the pinctrl sleep state for STM32 Timer PWM
+- STM32 Timer PWM driver
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+Changes in v2:
+Follow Uwe suggestions/remarks:
+- Add a precursor patch to ease reviewing
+- Use registers read instead of pwm_get_state
+- Add a comment to mention registers content may be lost in low power mode
 
-> ---
-> 
->  drivers/video/backlight/pwm_bl.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index 746eebc411df..130abff2705f 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -125,8 +125,9 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
->  		state.duty_cycle = compute_duty_cycle(pb, brightness);
->  		pwm_apply_state(pb->pwm, &state);
->  		pwm_backlight_power_on(pb);
-> -	} else
-> +	} else {
->  		pwm_backlight_power_off(pb);
-> +	}
->  
->  	if (pb->notify_after)
->  		pb->notify_after(pb->dev, brightness);
-> -- 
-> 2.23.0.444.g18eeb5a265-goog
-> 
+Fabrice Gasnier (3):
+  dt-bindings: pwm-stm32: document pinctrl sleep state
+  pwm: stm32: split breakinput apply routine to ease PM support
+  pwm: stm32: add power management support
+
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |  8 +-
+ drivers/pwm/pwm-stm32.c                            | 86 +++++++++++++++++-----
+ 2 files changed, 71 insertions(+), 23 deletions(-)
+
+-- 
+2.7.4
