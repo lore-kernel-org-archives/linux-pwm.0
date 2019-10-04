@@ -1,38 +1,50 @@
-From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH] backlight: pwm_bl: Add missing curly branches in else branch
-Date: Thu,  3 Oct 2019 14:35:02 -0700
-Message-ID: <20191003213502.102110-1-mka@chromium.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Yizhuo <yzhai003@ucr.edu>
+Subject: [PATCH] pwm: stm32: Fix the usage of uninitialized variable in stm32_pwm_config()
+Date: Thu,  3 Oct 2019 21:46:49 -0700
+Message-ID: <20191004044649.2405-1-yzhai003@ucr.edu>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Matthias Kaehlcke <mka@chromium.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc: Yizhuo <yzhai003@ucr.edu>, Fabrice Gasnier <fabrice.gasnier@st.com>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, linux-pwm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add curly braces to an 'else' branch in pwm_backlight_update_status()
-to match the corresponding 'if' branch.
+Inside function stm32_pwm_config(), variable "psc" and " arr"
+could be uninitialized if regmap_read() returns -EINVALs.
+However, they are used later in the if statement to decide
+the return value which is potentially unsafe.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+The same case happens in function stm32_pwm_detect_channels()
+with variable "ccer", but we cannot just return -EINVAL because
+the error code is not acceptable by the caller. Aslo, the variable
+"ccer" in functionstm32_pwm_detect_complementary() could also be
+uninitialized, since stm32_pwm_detect_complementary() returns void,
+the patch is not easy.
+
+Signed-off-by: Yizhuo <yzhai003@ucr.edu>
 ---
+ drivers/pwm/pwm-stm32.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
- drivers/video/backlight/pwm_bl.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 746eebc411df..130abff2705f 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -125,8 +125,9 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
- 		state.duty_cycle = compute_duty_cycle(pb, brightness);
- 		pwm_apply_state(pb->pwm, &state);
- 		pwm_backlight_power_on(pb);
--	} else
-+	} else {
- 		pwm_backlight_power_off(pb);
-+	}
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+index 359b08596d9e..22c54df52977 100644
+--- a/drivers/pwm/pwm-stm32.c
++++ b/drivers/pwm/pwm-stm32.c
+@@ -346,9 +346,15 @@ static int stm32_pwm_config(struct stm32_pwm *priv, int ch,
+ 	 */
+ 	if (active_channels(priv) & ~(1 << ch * 4)) {
+ 		u32 psc, arr;
++		int ret;
  
- 	if (pb->notify_after)
- 		pb->notify_after(pb->dev, brightness);
+-		regmap_read(priv->regmap, TIM_PSC, &psc);
+-		regmap_read(priv->regmap, TIM_ARR, &arr);
++		ret = regmap_read(priv->regmap, TIM_PSC, &psc);
++		if (ret)
++			return ret;
++
++		ret = regmap_read(priv->regmap, TIM_ARR, &arr);
++		if (ret)
++			return ret;
+ 
+ 		if ((psc != prescaler) || (arr != prd - 1))
+ 			return -EBUSY;
 -- 
-2.23.0.444.g18eeb5a265-goog
+2.17.1
