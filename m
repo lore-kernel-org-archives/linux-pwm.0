@@ -1,48 +1,73 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH v2 6/6] pwm: update comment on struct pwm_ops::apply
-Date: Sun, 6 Oct 2019 22:00:19 -0700
-Message-ID: <CAOCOHw7TXj2zr7qoown0rM=W0dns4n1o+9gOHr_8=vebzH=bMw@mail.gmail.com>
-References: <20191004133207.6663-1-linux@rasmusvillemoes.dk> <20191004133207.6663-7-linux@rasmusvillemoes.dk>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH 1/5] backlight: pwm_bl: fix cie1913 comments and constant
+Date: Mon, 7 Oct 2019 16:08:38 +0100
+Message-ID: <20191007150838.3qbrten34ln6ufo4@holly.lan>
+References: <20190919140620.32407-1-linux@rasmusvillemoes.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191004133207.6663-7-linux@rasmusvillemoes.dk>
+Content-Disposition: inline
+In-Reply-To: <20190919140620.32407-1-linux@rasmusvillemoes.dk>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, devicetree <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Oct 4, 2019 at 6:33 AM Rasmus Villemoes
-<linux@rasmusvillemoes.dk> wrote:
->
-> Commit 71523d1812ac (pwm: Ensure pwm_apply_state() doesn't modify the
-> state argument) updated the kernel-doc for pwm_apply_state(), but not
-> for the ->apply callback in the pwm_ops struct.
->
+On Thu, Sep 19, 2019 at 04:06:16PM +0200, Rasmus Villemoes wrote:
+> The "break-even" point for the two formulas is L==8, which is also
+> what the code actually implements. [Incidentally, at that point one
+> has Y=0.008856, not 0.08856].
+> 
+> Moreover, all the sources I can find say the linear factor is 903.3
+> rather than 902.3, which makes sense since then the formulas agree at
+> L==8, both yielding the 0.008856 figure to four significant digits.
+
+Indeed. Interestingly the following doc (with a high search rank in
+Google) has exactly this inconsistency and uses different values at
+different times:
+http://www.photonstophotos.net/GeneralTopics/Exposure/Psychometric_Lightness_and_Gamma.htm
+
+> 
 > Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
 > ---
->  include/linux/pwm.h | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index b2c9c460947d..0ef808d925bb 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -243,10 +243,7 @@ pwm_set_relative_duty_cycle(struct pwm_state *state, unsigned int duty_cycle,
->   * @request: optional hook for requesting a PWM
->   * @free: optional hook for freeing a PWM
->   * @capture: capture and report PWM signal
-> - * @apply: atomically apply a new PWM config. The state argument
-> - *        should be adjusted with the real hardware config (if the
-> - *        approximate the period or duty_cycle value, state should
-> - *        reflect it)
-> + * @apply: atomically apply a new PWM config
->   * @get_state: get the current PWM state. This function is only
->   *            called once per PWM device when the PWM chip is
->   *            registered.
-> --
+>  drivers/video/backlight/pwm_bl.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index 2201b8c78641..be36be1cacb7 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -155,8 +155,8 @@ static const struct backlight_ops pwm_backlight_ops = {
+>   *
+>   * The CIE 1931 lightness formula is what actually describes how we perceive
+>   * light:
+> - *          Y = (L* / 902.3)           if L* ≤ 0.08856
+> - *          Y = ((L* + 16) / 116)^3    if L* > 0.08856
+> + *          Y = (L* / 903.3)           if L* ≤ 8
+> + *          Y = ((L* + 16) / 116)^3    if L* > 8
+>   *
+>   * Where Y is the luminance, the amount of light coming out of the screen, and
+>   * is a number between 0.0 and 1.0; and L* is the lightness, how bright a human
+> @@ -169,9 +169,15 @@ static u64 cie1931(unsigned int lightness, unsigned int scale)
+>  {
+>  	u64 retval;
+>  
+> +	/*
+> +	 * @lightness is given as a number between 0 and 1, expressed
+> +	 * as a fixed-point number in scale @scale. Convert to a
+> +	 * percentage, still expressed as a fixed-point number, so the
+> +	 * above formulas can be applied.
+> +	 */
+>  	lightness *= 100;
+>  	if (lightness <= (8 * scale)) {
+> -		retval = DIV_ROUND_CLOSEST_ULL(lightness * 10, 9023);
+> +		retval = DIV_ROUND_CLOSEST_ULL(lightness * 10, 9033);
+>  	} else {
+>  		retval = int_pow((lightness + (16 * scale)) / 116, 3);
+>  		retval = DIV_ROUND_CLOSEST_ULL(retval, (scale * scale));
+> -- 
 > 2.20.1
->
