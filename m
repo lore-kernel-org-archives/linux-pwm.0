@@ -1,66 +1,104 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH 3/5] backlight: pwm_bl: drop use of int_pow()
-Date: Tue, 8 Oct 2019 11:43:11 +0100
-Message-ID: <20191008104311.s4k5syr7gd7tb55w@holly.lan>
-References: <20190919140620.32407-1-linux@rasmusvillemoes.dk>
- <20190919140620.32407-3-linux@rasmusvillemoes.dk>
- <20191007152800.3nhbf7h7knumriz4@holly.lan>
- <5f19e307-29c4-f077-568d-b2bd6ae74608@rasmusvillemoes.dk>
- <20191008093145.kgx6ytkbycmmkist@holly.lan>
- <9bf6baf9-46be-771c-7e26-527b117c998a@rasmusvillemoes.dk>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: [PATCH] pwm: cros-ec: Let cros_ec_pwm_get_state() return the last applied state
+Date: Tue,  8 Oct 2019 12:54:17 +0200
+Message-ID: <20191008105417.16132-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <9bf6baf9-46be-771c-7e26-527b117c998a@rasmusvillemoes.dk>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, thierry.reding@gmail.com
+Cc: heiko@sntech.de, dianders@chromium.org, mka@chromium.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, groeck@chromium.org, kernel@collabora.com, bleung@chromium.org, linux-pwm@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCBPY3QgMDgsIDIwMTkgYXQgMTI6MDI6MDdQTSArMDIwMCwgUmFzbXVzIFZpbGxlbW9l
-cyB3cm90ZToKPiBPbiAwOC8xMC8yMDE5IDExLjMxLCBEYW5pZWwgVGhvbXBzb24gd3JvdGU6Cj4g
-PiBPbiBNb24sIE9jdCAwNywgMjAxOSBhdCAwODo0MzozMVBNICswMjAwLCBSYXNtdXMgVmlsbGVt
-b2VzIHdyb3RlOgo+ID4+IE9uIDA3LzEwLzIwMTkgMTcuMjgsIERhbmllbCBUaG9tcHNvbiB3cm90
-ZToKPiA+Pj4gT24gVGh1LCBTZXAgMTksIDIwMTkgYXQgMDQ6MDY6MThQTSArMDIwMCwgUmFzbXVz
-IFZpbGxlbW9lcyB3cm90ZToKPiA+Pj4KPiA+Pj4gSXQgZmVlbHMgbGlrZSB0aGVyZSBpcyBzb21l
-IHJhdGlvbmFsZSBtaXNzaW5nIGluIHRoZSBkZXNjcmlwdGlvbiBoZXJlLgo+ID4+Pgo+ID4+Cj4g
-Pj4gQXBhcnQgZnJvbSB0aGUgZnVuY3Rpb24gY2FsbCBvdmVyaGVhZCAoYW5kIHJlc3VsdGluZyBy
-ZWdpc3RlciBwcmVzc3VyZQo+ID4+IGV0Yy4pLCB1c2luZyBpbnRfcG93IGlzIGxlc3MgZWZmaWNp
-ZW50IChmb3IgYW4gZXhwb25lbnQgb2YgMywgaXQgZW5kcyB1cAo+ID4+IGRvaW5nIGZvdXIgNjR4
-NjQgbXVsdGlwbGljYXRpb25zIGluc3RlYWQgb2YganVzdCB0d28pLiBCdXQgZmVlbCBmcmVlIHRv
-Cj4gPj4gZHJvcCBpdCwgSSdtIG5vdCBnb2luZyB0byBwdXJzdWUgaXQgZnVydGhlciAtIGl0IGp1
-c3Qgc2VlbWVkIGxpa2UgYQo+ID4+IHNlbnNpYmxlIHRoaW5nIHRvIGRvIHdoaWxlIEkgd2FzIG9w
-dGltaXppbmcgdGhlIGNvZGUgYW55d2F5Lgo+ID4+Cj4gPj4gW0F0IHRoZSB0aW1lIEkgd3JvdGUg
-dGhlIHBhdGNoLCB0aGlzIHdhcyBhbHNvIHRoZSBvbmx5IHVzZXIgb2YgaW50X3Bvdwo+ID4+IGlu
-IHRoZSB0cmVlLCBzbyBpdCBhbHNvIGFsbG93ZWQgcmVtb3ZpbmcgaW50X3BvdyBhbHRvZ2V0aGVy
-Ll0KPiA+IAo+ID4gVG8gYmUgaG9uZXN0IHRoZSBjaGFuZ2UgaXMgZmluZSBidXQgdGhlIHBhdGNo
-IGRlc2NyaXB0aW9uIGRvZXNuJ3QgbWFrZQo+ID4gc2Vuc2UgaWYgdGhlIG9ubHkgY3VycmVudCBw
-dXJwb3NlIG9mIHRoZSBwYXRjaCBpcyBhcyBhIG9wdGltaXphdGlvbi4KPiAKPiBBZ3JlZWQuIERv
-IHlvdSB3YW50IG1lIHRvIHJlc2VuZCB0aGUgc2VyaWVzIHdpdGggcGF0Y2ggMyB1cGRhdGVkIHRv
-IHJlYWQKPiAKPiAiRm9yIGEgZml4ZWQgc21hbGwgZXhwb25lbnQgb2YgMywgaXQgaXMgbW9yZSBl
-ZmZpY2llbnQgdG8gc2ltcGx5IHVzZSB0d28KPiBleHBsaWNpdCBtdWx0aXBsaWNhdGlvbnMgcmF0
-aGVyIHRoYW4gY2FsbGluZyB0aGUgaW50X3BvdygpIGxpYnJhcnkKPiBmdW5jdGlvbjogQXNpZGUg
-ZnJvbSB0aGUgZnVuY3Rpb24gY2FsbCBvdmVyaGVhZCwgaXRzIGltcGxlbWVudGF0aW9uCj4gdXNp
-bmcgcmVwZWF0ZWQgc3F1YXJpbmcgbWVhbnMgaXQgZW5kcyB1cCBkb2luZyBmb3VyIDY0eDY0IG11
-bHRpcGxpY2F0aW9ucy4iCj4gCj4gKGFuZCBvYnZpb3VzbHkgcGF0Y2ggNSBkcm9wcGVkKT8KClll
-cywgcGxlYXNlLgoKV2hlbiB5b3UgcmVzZW5kIHlvdSBjYW4gYWRkIG15IFItQjogdG8gYWxsIHBh
-dGNoZXM6CgpSZXZpZXdlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGlu
-YXJvLm9yZz4KCgpEYW5pZWwuCgoKUFMgRG9uJ3QgbWluZCBlaXRoZXIgd2F5IGJ1dCBJIHdvbmRl
-cmVkIHRoZSBmb2xsb3dpbmcgaXMgY2xlYXJlciB0aGFuCiAgIHRoZSBzbGlnaHRseSBmdW5reSBt
-dWx0aXBseS1hbmQtYXNzaWduIGV4cHJlc3Npb24gKHdoaWNoIGlzbid0IHdyb25nCiAgIGJ1dCBp
-c24ndCB2ZXJ5IGNvbW1vbiBlaXRoZXIgc28gbXkgYnJhaW4gd29uJ3Qgc3BlZWQgcmVhZCBpdCk6
-CgoJCXJldHZhbCA9IERJVl9ST1VORF9DTE9TRVNUX1VMTChyZXR2YWwgKiByZXR2YWwgKiByZXR2
-YWwsCgkJIAkJCSAgICAgICBzY2FsZSAqIHNjYWxlKTsKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxA
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
-YW4vbGlzdGluZm8vZHJpLWRldmVs
+For the cros-ec-pwm, "disabled" is the same as "duty cycle == 0", and is
+not possible to program a duty cycle while the device is disabled. However,
+the PWM API allows us to configure the "duty cycle" while the device is
+"disabled". But now, pwm_get_state() is returning the real hardware state
+instead of the last applied state, and this change of behavior, broke
+the display on my rk3399-gru-kevin and doesn't turn on anymore.
+
+Commit 01ccf903edd6 ("pwm: Let pwm_get_state() return the last implemented
+state") introduced this change of behavior. And, assuming that this is
+the right to do, workaround this problem for the cros-ec-pwm driver by
+reverting the mentioned commit at the lowlevel driver.
+
+With that patch applied pwm_get_state() will return only the programmed
+hardware duty cycle value if the PWM is enabled. When is disabled, will
+return the last applied duty_cycle value instead. That's not ideal, but
+definetely is better than don't implement .get_state().
+
+Fixes: 01ccf903edd6 ("pwm: Let pwm_get_state() return the last implemented state")
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
+
+ drivers/pwm/pwm-cros-ec.c | 32 ++++++++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+index 89497448d217..f750a3cf0c6c 100644
+--- a/drivers/pwm/pwm-cros-ec.c
++++ b/drivers/pwm/pwm-cros-ec.c
+@@ -18,11 +18,13 @@
+  * @dev: Device node
+  * @ec: Pointer to EC device
+  * @chip: PWM controller chip
++ * @state: Holds the last state applied
+  */
+ struct cros_ec_pwm_device {
+ 	struct device *dev;
+ 	struct cros_ec_device *ec;
+ 	struct pwm_chip chip;
++	struct pwm_state state;
+ };
+ 
+ static inline struct cros_ec_pwm_device *pwm_to_cros_ec_pwm(struct pwm_chip *c)
+@@ -102,6 +104,9 @@ static int cros_ec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (state->period != EC_PWM_MAX_DUTY)
+ 		return -EINVAL;
+ 
++	/* Store the new state */
++	ec_pwm->state = *state;
++
+ 	/*
+ 	 * EC doesn't separate the concept of duty cycle and enabled, but
+ 	 * kernel does. Translate.
+@@ -117,17 +122,28 @@ static void cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct cros_ec_pwm_device *ec_pwm = pwm_to_cros_ec_pwm(chip);
+ 	int ret;
+ 
+-	ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
+-	if (ret < 0) {
+-		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
+-		return;
++	/*
++	 * As there is no way for this hardware to separate the concept of
++	 * duty cycle and enabled, but the PWM API does, let return the last
++	 * applied state when the PWM is disabled and only return the real
++	 * hardware value when the PWM is enabled. Otherwise, a user of this
++	 * driver, can get confused because won't be able to program a duty
++	 * cycle while the PWM is disabled.
++	 */
++	state->enabled = ec_pwm->state.enabled;
++	if (state->enabled) {
++		ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
++		if (ret < 0) {
++			dev_err(chip->dev, "error getting initial duty: %d\n",
++				ret);
++			return;
++		}
++		state->duty_cycle = ret;
++	} else {
++		state->duty_cycle = ec_pwm->state.duty_cycle;
+ 	}
+ 
+-	state->enabled = (ret > 0);
+ 	state->period = EC_PWM_MAX_DUTY;
+-
+-	/* Note that "disabled" and "duty cycle == 0" are treated the same */
+-	state->duty_cycle = ret;
+ }
+ 
+ static struct pwm_device *
+-- 
+2.20.1
