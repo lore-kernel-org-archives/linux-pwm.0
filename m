@@ -1,54 +1,37 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH] pwm: stm32: add comment to better describe breakinput feature
-Date: Tue, 8 Oct 2019 13:41:27 +0200
-Message-ID: <1570534887-26181-1-git-send-email-fabrice.gasnier@st.com>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH v2 0/4] backlight: pwm_bl: optimizations and small fix for cie1913
+Date: Tue,  8 Oct 2019 14:03:23 +0200
+Message-ID: <20191008120327.24208-1-linux@rasmusvillemoes.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
-Cc: linux-pwm@vger.kernel.org, alexandre.torgue@st.com, linux-kernel@vger.kernel.org, fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 List-Id: linux-pwm@vger.kernel.org
 
-Add a comment to better describe the purpose of breakinput feature that
-can be found on some STM32 timer instances. Briefly comment on the
-characteristics of this input for PWM, and pinmuxing as suggested in [1].
+These patches optimize the cie1913() implementation by using fewer 64
+bit divisions and multiplications. It also contains a minor fix for
+the linear constant used.
 
-[1] https://lkml.org/lkml/2019/10/1/207
+v2:
+- Drop patch 5.
+- Fix thinko in patch 4, otherwise no code change.
+- Better changelog in patch 3.
+- Add Daniel's Reviewed-By to the four patches.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- drivers/pwm/pwm-stm32.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+Daniel, I took the liberty of adding your R-B to patch 4 despite
+changing it a little to fix a thinko - I should add 1<<31 and not
+1<<15. Please tell me if that was inappropriate.
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index 359b085..6406ebb 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -522,8 +522,14 @@ static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
- 					     sizeof(struct stm32_breakinput));
- 
- 	/*
-+	 * Some timer instances can have BRK input pins (e.g. basically a fault
-+	 * pin from the output power stage). The break feature allows a safe
-+	 * shut-down of the PWM outputs to a predefined state. Further details
-+	 * are available in application note AN4277, "Using STM32 device PWM
-+	 * shut-down features..."
- 	 * Because "st,breakinput" parameter is optional do not make probe
--	 * failed if it doesn't exist.
-+	 * failed if it doesn't exist. The pinctrl handle must hold the BRK
-+	 * pin(s) when using "st,breakinput" property.
- 	 */
- 	if (nb <= 0)
- 		return 0;
+Rasmus Villemoes (4):
+  backlight: pwm_bl: fix cie1913 comments and constant
+  backlight: pwm_bl: eliminate a 64/32 division
+  backlight: pwm_bl: drop use of int_pow()
+  backlight: pwm_bl: switch to power-of-2 base for fixed-point math
+
+ drivers/video/backlight/pwm_bl.c | 29 +++++++++++++++++++----------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
+
 -- 
-2.7.4
+2.20.1
