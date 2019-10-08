@@ -1,7 +1,7 @@
 From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v2 2/4] backlight: pwm_bl: eliminate a 64/32 division
-Date: Tue,  8 Oct 2019 14:03:25 +0200
-Message-ID: <20191008120327.24208-3-linux@rasmusvillemoes.dk>
+Subject: [PATCH v2 3/4] backlight: pwm_bl: drop use of int_pow()
+Date: Tue,  8 Oct 2019 14:03:26 +0200
+Message-ID: <20191008120327.24208-4-linux@rasmusvillemoes.dk>
 References: <20191008120327.24208-1-linux@rasmusvillemoes.dk>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,28 +12,31 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-lightness*1000 is nowhere near overflowing 32 bits, so we can just use
-an ordinary 32/32 division, which is much cheaper than the 64/32 done
-via do_div().
+For a fixed small exponent of 3, it is more efficient to simply use
+two explicit multiplications rather than calling the int_pow() library
+function: Aside from the function call overhead, its implementation
+using repeated squaring means it ends up doing four 64x64
+multiplications.
 
 Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- drivers/video/backlight/pwm_bl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/backlight/pwm_bl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index cc44a02e95c7..672c5e7cfcd1 100644
+index 672c5e7cfcd1..273d3fb628a0 100644
 --- a/drivers/video/backlight/pwm_bl.c
 +++ b/drivers/video/backlight/pwm_bl.c
-@@ -177,7 +177,7 @@ static u64 cie1931(unsigned int lightness, unsigned int scale)
- 	 */
- 	lightness *= 100;
+@@ -179,7 +179,8 @@ static u64 cie1931(unsigned int lightness, unsigned int scale)
  	if (lightness <= (8 * scale)) {
--		retval = DIV_ROUND_CLOSEST_ULL(lightness * 10, 9033);
-+		retval = DIV_ROUND_CLOSEST(lightness * 10, 9033);
+ 		retval = DIV_ROUND_CLOSEST(lightness * 10, 9033);
  	} else {
- 		retval = int_pow((lightness + (16 * scale)) / 116, 3);
+-		retval = int_pow((lightness + (16 * scale)) / 116, 3);
++		retval = (lightness + (16 * scale)) / 116;
++		retval *= retval * retval;
  		retval = DIV_ROUND_CLOSEST_ULL(retval, (scale * scale));
+ 	}
+ 
 -- 
 2.20.1
