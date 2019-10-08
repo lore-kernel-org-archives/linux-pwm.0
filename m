@@ -1,50 +1,66 @@
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 Subject: Re: [PATCH 3/5] backlight: pwm_bl: drop use of int_pow()
-Date: Tue, 8 Oct 2019 12:02:07 +0200
-Message-ID: <9bf6baf9-46be-771c-7e26-527b117c998a@rasmusvillemoes.dk>
+Date: Tue, 8 Oct 2019 11:43:11 +0100
+Message-ID: <20191008104311.s4k5syr7gd7tb55w@holly.lan>
 References: <20190919140620.32407-1-linux@rasmusvillemoes.dk>
  <20190919140620.32407-3-linux@rasmusvillemoes.dk>
  <20191007152800.3nhbf7h7knumriz4@holly.lan>
  <5f19e307-29c4-f077-568d-b2bd6ae74608@rasmusvillemoes.dk>
  <20191008093145.kgx6ytkbycmmkist@holly.lan>
+ <9bf6baf9-46be-771c-7e26-527b117c998a@rasmusvillemoes.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191008093145.kgx6ytkbycmmkist@holly.lan>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <9bf6baf9-46be-771c-7e26-527b117c998a@rasmusvillemoes.dk>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 08/10/2019 11.31, Daniel Thompson wrote:
-> On Mon, Oct 07, 2019 at 08:43:31PM +0200, Rasmus Villemoes wrote:
->> On 07/10/2019 17.28, Daniel Thompson wrote:
->>> On Thu, Sep 19, 2019 at 04:06:18PM +0200, Rasmus Villemoes wrote:
->>>
->>> It feels like there is some rationale missing in the description here.
->>>
->>
->> Apart from the function call overhead (and resulting register pressure
->> etc.), using int_pow is less efficient (for an exponent of 3, it ends up
->> doing four 64x64 multiplications instead of just two). But feel free to
->> drop it, I'm not going to pursue it further - it just seemed like a
->> sensible thing to do while I was optimizing the code anyway.
->>
->> [At the time I wrote the patch, this was also the only user of int_pow
->> in the tree, so it also allowed removing int_pow altogether.]
-> 
-> To be honest the change is fine but the patch description doesn't make
-> sense if the only current purpose of the patch is as a optimization.
-
-Agreed. Do you want me to resend the series with patch 3 updated to read
-
-"For a fixed small exponent of 3, it is more efficient to simply use two
-explicit multiplications rather than calling the int_pow() library
-function: Aside from the function call overhead, its implementation
-using repeated squaring means it ends up doing four 64x64 multiplications."
-
-(and obviously patch 5 dropped)?
-
-Rasmus
+T24gVHVlLCBPY3QgMDgsIDIwMTkgYXQgMTI6MDI6MDdQTSArMDIwMCwgUmFzbXVzIFZpbGxlbW9l
+cyB3cm90ZToKPiBPbiAwOC8xMC8yMDE5IDExLjMxLCBEYW5pZWwgVGhvbXBzb24gd3JvdGU6Cj4g
+PiBPbiBNb24sIE9jdCAwNywgMjAxOSBhdCAwODo0MzozMVBNICswMjAwLCBSYXNtdXMgVmlsbGVt
+b2VzIHdyb3RlOgo+ID4+IE9uIDA3LzEwLzIwMTkgMTcuMjgsIERhbmllbCBUaG9tcHNvbiB3cm90
+ZToKPiA+Pj4gT24gVGh1LCBTZXAgMTksIDIwMTkgYXQgMDQ6MDY6MThQTSArMDIwMCwgUmFzbXVz
+IFZpbGxlbW9lcyB3cm90ZToKPiA+Pj4KPiA+Pj4gSXQgZmVlbHMgbGlrZSB0aGVyZSBpcyBzb21l
+IHJhdGlvbmFsZSBtaXNzaW5nIGluIHRoZSBkZXNjcmlwdGlvbiBoZXJlLgo+ID4+Pgo+ID4+Cj4g
+Pj4gQXBhcnQgZnJvbSB0aGUgZnVuY3Rpb24gY2FsbCBvdmVyaGVhZCAoYW5kIHJlc3VsdGluZyBy
+ZWdpc3RlciBwcmVzc3VyZQo+ID4+IGV0Yy4pLCB1c2luZyBpbnRfcG93IGlzIGxlc3MgZWZmaWNp
+ZW50IChmb3IgYW4gZXhwb25lbnQgb2YgMywgaXQgZW5kcyB1cAo+ID4+IGRvaW5nIGZvdXIgNjR4
+NjQgbXVsdGlwbGljYXRpb25zIGluc3RlYWQgb2YganVzdCB0d28pLiBCdXQgZmVlbCBmcmVlIHRv
+Cj4gPj4gZHJvcCBpdCwgSSdtIG5vdCBnb2luZyB0byBwdXJzdWUgaXQgZnVydGhlciAtIGl0IGp1
+c3Qgc2VlbWVkIGxpa2UgYQo+ID4+IHNlbnNpYmxlIHRoaW5nIHRvIGRvIHdoaWxlIEkgd2FzIG9w
+dGltaXppbmcgdGhlIGNvZGUgYW55d2F5Lgo+ID4+Cj4gPj4gW0F0IHRoZSB0aW1lIEkgd3JvdGUg
+dGhlIHBhdGNoLCB0aGlzIHdhcyBhbHNvIHRoZSBvbmx5IHVzZXIgb2YgaW50X3Bvdwo+ID4+IGlu
+IHRoZSB0cmVlLCBzbyBpdCBhbHNvIGFsbG93ZWQgcmVtb3ZpbmcgaW50X3BvdyBhbHRvZ2V0aGVy
+Ll0KPiA+IAo+ID4gVG8gYmUgaG9uZXN0IHRoZSBjaGFuZ2UgaXMgZmluZSBidXQgdGhlIHBhdGNo
+IGRlc2NyaXB0aW9uIGRvZXNuJ3QgbWFrZQo+ID4gc2Vuc2UgaWYgdGhlIG9ubHkgY3VycmVudCBw
+dXJwb3NlIG9mIHRoZSBwYXRjaCBpcyBhcyBhIG9wdGltaXphdGlvbi4KPiAKPiBBZ3JlZWQuIERv
+IHlvdSB3YW50IG1lIHRvIHJlc2VuZCB0aGUgc2VyaWVzIHdpdGggcGF0Y2ggMyB1cGRhdGVkIHRv
+IHJlYWQKPiAKPiAiRm9yIGEgZml4ZWQgc21hbGwgZXhwb25lbnQgb2YgMywgaXQgaXMgbW9yZSBl
+ZmZpY2llbnQgdG8gc2ltcGx5IHVzZSB0d28KPiBleHBsaWNpdCBtdWx0aXBsaWNhdGlvbnMgcmF0
+aGVyIHRoYW4gY2FsbGluZyB0aGUgaW50X3BvdygpIGxpYnJhcnkKPiBmdW5jdGlvbjogQXNpZGUg
+ZnJvbSB0aGUgZnVuY3Rpb24gY2FsbCBvdmVyaGVhZCwgaXRzIGltcGxlbWVudGF0aW9uCj4gdXNp
+bmcgcmVwZWF0ZWQgc3F1YXJpbmcgbWVhbnMgaXQgZW5kcyB1cCBkb2luZyBmb3VyIDY0eDY0IG11
+bHRpcGxpY2F0aW9ucy4iCj4gCj4gKGFuZCBvYnZpb3VzbHkgcGF0Y2ggNSBkcm9wcGVkKT8KClll
+cywgcGxlYXNlLgoKV2hlbiB5b3UgcmVzZW5kIHlvdSBjYW4gYWRkIG15IFItQjogdG8gYWxsIHBh
+dGNoZXM6CgpSZXZpZXdlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGlu
+YXJvLm9yZz4KCgpEYW5pZWwuCgoKUFMgRG9uJ3QgbWluZCBlaXRoZXIgd2F5IGJ1dCBJIHdvbmRl
+cmVkIHRoZSBmb2xsb3dpbmcgaXMgY2xlYXJlciB0aGFuCiAgIHRoZSBzbGlnaHRseSBmdW5reSBt
+dWx0aXBseS1hbmQtYXNzaWduIGV4cHJlc3Npb24gKHdoaWNoIGlzbid0IHdyb25nCiAgIGJ1dCBp
+c24ndCB2ZXJ5IGNvbW1vbiBlaXRoZXIgc28gbXkgYnJhaW4gd29uJ3Qgc3BlZWQgcmVhZCBpdCk6
+CgoJCXJldHZhbCA9IERJVl9ST1VORF9DTE9TRVNUX1VMTChyZXR2YWwgKiByZXR2YWwgKiByZXR2
+YWwsCgkJIAkJCSAgICAgICBzY2FsZSAqIHNjYWxlKTsKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxA
+bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
+YW4vbGlzdGluZm8vZHJpLWRldmVs
