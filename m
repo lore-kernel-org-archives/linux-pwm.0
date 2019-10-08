@@ -1,85 +1,116 @@
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v2 4/4] backlight: pwm_bl: switch to power-of-2 base for fixed-point math
-Date: Tue,  8 Oct 2019 14:03:27 +0200
-Message-ID: <20191008120327.24208-5-linux@rasmusvillemoes.dk>
-References: <20191008120327.24208-1-linux@rasmusvillemoes.dk>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: cros-ec: Let cros_ec_pwm_get_state() return the
+ last applied state
+Date: Tue, 8 Oct 2019 16:34:32 +0200
+Message-ID: <20191008143432.pbhcqamd6f4qwbqn@pengutronix.de>
+References: <20191008105417.16132-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191008120327.24208-1-linux@rasmusvillemoes.dk>
+Content-Disposition: inline
+In-Reply-To: <20191008105417.16132-1-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, thierry.reding@gmail.com, heiko@sntech.de, dianders@chromium.org, mka@chromium.org, groeck@chromium.org, kernel@collabora.com, bleung@chromium.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Using a power-of-2 instead of power-of-10 base makes the computations
-much cheaper. 2^16 is safe; retval never becomes more than 2^48 +
-2^32/2. On a 32 bit platform, the very expensive 64/32 division at the
-end of cie1931() instead becomes essentially free (a shift by 32 is
-just a register rename).
+Hello Enric,
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/video/backlight/pwm_bl.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+On Tue, Oct 08, 2019 at 12:54:17PM +0200, Enric Balletbo i Serra wrote:
+> @@ -117,17 +122,28 @@ static void cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+>  	struct cros_ec_pwm_device *ec_pwm = pwm_to_cros_ec_pwm(chip);
+>  	int ret;
+>  
+> -	ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
+> -	if (ret < 0) {
+> -		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
+> -		return;
+> +	/*
+> +	 * As there is no way for this hardware to separate the concept of
+> +	 * duty cycle and enabled, but the PWM API does, let return the last
+> +	 * applied state when the PWM is disabled and only return the real
+> +	 * hardware value when the PWM is enabled. Otherwise, a user of this
+> +	 * driver, can get confused because won't be able to program a duty
+> +	 * cycle while the PWM is disabled.
+> +	 */
+> +	state->enabled = ec_pwm->state.enabled;
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 273d3fb628a0..a99c2210c935 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -148,7 +148,8 @@ static const struct backlight_ops pwm_backlight_ops = {
- };
- 
- #ifdef CONFIG_OF
--#define PWM_LUMINANCE_SCALE	10000 /* luminance scale */
-+#define PWM_LUMINANCE_SHIFT	16
-+#define PWM_LUMINANCE_SCALE	(1 << PWM_LUMINANCE_SHIFT) /* luminance scale */
- 
- /*
-  * CIE lightness to PWM conversion.
-@@ -165,23 +166,25 @@ static const struct backlight_ops pwm_backlight_ops = {
-  * The following function does the fixed point maths needed to implement the
-  * above formula.
-  */
--static u64 cie1931(unsigned int lightness, unsigned int scale)
-+static u64 cie1931(unsigned int lightness)
- {
- 	u64 retval;
- 
- 	/*
- 	 * @lightness is given as a number between 0 and 1, expressed
--	 * as a fixed-point number in scale @scale. Convert to a
--	 * percentage, still expressed as a fixed-point number, so the
--	 * above formulas can be applied.
-+	 * as a fixed-point number in scale
-+	 * PWM_LUMINANCE_SCALE. Convert to a percentage, still
-+	 * expressed as a fixed-point number, so the above formulas
-+	 * can be applied.
- 	 */
- 	lightness *= 100;
--	if (lightness <= (8 * scale)) {
-+	if (lightness <= (8 * PWM_LUMINANCE_SCALE)) {
- 		retval = DIV_ROUND_CLOSEST(lightness * 10, 9033);
- 	} else {
--		retval = (lightness + (16 * scale)) / 116;
-+		retval = (lightness + (16 * PWM_LUMINANCE_SCALE)) / 116;
- 		retval *= retval * retval;
--		retval = DIV_ROUND_CLOSEST_ULL(retval, (scale * scale));
-+		retval += 1ULL << (2*PWM_LUMINANCE_SHIFT - 1);
-+		retval >>= 2*PWM_LUMINANCE_SHIFT;
- 	}
- 
- 	return retval;
-@@ -215,8 +218,7 @@ int pwm_backlight_brightness_default(struct device *dev,
- 	/* Fill the table using the cie1931 algorithm */
- 	for (i = 0; i < data->max_brightness; i++) {
- 		retval = cie1931((i * PWM_LUMINANCE_SCALE) /
--				 data->max_brightness, PWM_LUMINANCE_SCALE) *
--				 period;
-+				 data->max_brightness) * period;
- 		retval = DIV_ROUND_CLOSEST_ULL(retval, PWM_LUMINANCE_SCALE);
- 		if (retval > UINT_MAX)
- 			return -EINVAL;
+> +	if (state->enabled) {
+
+As part of registration of the pwm .get_state is called. In this case
+.apply wasn't called before and so state->enabled is probably 0. So this
+breaks reporting the initial state ...
+
+> +		ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
+> +		if (ret < 0) {
+> +			dev_err(chip->dev, "error getting initial duty: %d\n",
+> +				ret);
+> +			return;
+> +		}
+> +		state->duty_cycle = ret;
+> +	} else {
+> +		state->duty_cycle = ec_pwm->state.duty_cycle;
+>  	}
+>  
+> -	state->enabled = (ret > 0);
+>  	state->period = EC_PWM_MAX_DUTY;
+> -
+> -	/* Note that "disabled" and "duty cycle == 0" are treated the same */
+> -	state->duty_cycle = ret;
+
+A few thoughts to your approach here ...:
+
+ - Would it make sense to only store duty_cycle and enabled in the
+   driver struct?
+
+ - Which driver is the consumer of your pwm? If I understand correctly
+   the following sequence is the bad one:
+
+	state.period = P;
+	state.duty_cycle = D;
+	state.enabled = 0;
+   	pwm_apply_state(pwm, &state);
+
+	...
+
+	pwm_get_state(pwm, &state);
+	state.enabled = 1;
+   	pwm_apply_state(pwm, &state);
+
+   Before my patch there was an implicit promise in the PWM framework
+   that the last pwm_apply_state has .duty_cycle = D (and .period = P).
+   Is this worthwile, or should we instead declare this as
+   non-guaranteed and fix the caller?
+
+ - If this is a more or less common property that hardware doesn't know
+   the concept of "disabled" maybe it would make sense to drop this from
+   the PWM framework, too. (This is a question that I discussed some
+   time ago already with Thierry, but without an result. The key
+   question is: What is the difference between "disabled" and
+   "duty_cycle = 0" in general and does any consumer care about it.)
+
+ - A softer variant of the above: Should pwm_get_state() anticipate that
+   with .enabled = 0 the duty_cycle (and maybe also period) is
+   unreliable and cache that for callers?
+
+Unrelated to the patch in question I noticed that the cros-ec-pwm driver
+doesn't handle polarity. We need
+
+	state->polarity = PWM_POLARITY_NORMAL;
+
+in cros_ec_pwm_get_state() and
+
+	if (state->polarity != PWM_POLARITY_NORMAL)
+		return -ERANGE;
+
+in cros_ec_pwm_apply(). (Not sure -ERANGE is the right value, I think
+there is no global rule in force that tells the right value though.)
+
+Best regards
+Uwe
+
 -- 
-2.20.1
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
