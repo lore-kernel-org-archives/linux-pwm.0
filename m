@@ -1,231 +1,67 @@
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: Re: [PATCH] pwm: cros-ec: Let cros_ec_pwm_get_state() return the last
- applied state
-Date: Wed, 9 Oct 2019 11:27:13 +0200
-Message-ID: <53b7d02b-1a2d-11da-fdd0-5378f360d876@collabora.com>
-References: <20191008105417.16132-1-enric.balletbo@collabora.com>
- <20191008143432.pbhcqamd6f4qwbqn@pengutronix.de>
- <4f009344-242e-19a7-6872-2c55df086044@collabora.com>
- <20191008203137.s22clq6v2om5ktio@pengutronix.de>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: Re: [PATCH] pwm: stm32: add comment to better describe breakinput
+ feature
+Date: Wed, 9 Oct 2019 11:51:05 +0200
+Message-ID: <5c05893b-e938-4db8-e33a-803b1a498f97@st.com>
+References: <1570534887-26181-1-git-send-email-fabrice.gasnier@st.com>
+ <20191008144531.pjt525xuz7n5a3hq@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191008203137.s22clq6v2om5ktio@pengutronix.de>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20191008144531.pjt525xuz7n5a3hq@pengutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-kernel@vger.kernel.org, thierry.reding@gmail.com, heiko@sntech.de, dianders@chromium.org, mka@chromium.org, groeck@chromium.org, kernel@collabora.com, bleung@chromium.org, linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, alexandre.torgue@st.com, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Uwe,
-
-Adding Daniel and Lee to the discussion ...
-
-
-On 8/10/19 22:31, Uwe Kleine-König wrote:
-> On Tue, Oct 08, 2019 at 06:33:15PM +0200, Enric Balletbo i Serra wrote:
->> Hi Uwe,
->>
->> Thanks for the quick reply.
->>
->> On 8/10/19 16:34, Uwe Kleine-König wrote:
->>> Hello Enric,
->>>
->>> On Tue, Oct 08, 2019 at 12:54:17PM +0200, Enric Balletbo i Serra wrote:
->>>> @@ -117,17 +122,28 @@ static void cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
->>>>  	struct cros_ec_pwm_device *ec_pwm = pwm_to_cros_ec_pwm(chip);
->>>>  	int ret;
->>>>  
->>>> -	ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
->>>> -	if (ret < 0) {
->>>> -		dev_err(chip->dev, "error getting initial duty: %d\n", ret);
->>>> -		return;
->>>> +	/*
->>>> +	 * As there is no way for this hardware to separate the concept of
->>>> +	 * duty cycle and enabled, but the PWM API does, let return the last
->>>> +	 * applied state when the PWM is disabled and only return the real
->>>> +	 * hardware value when the PWM is enabled. Otherwise, a user of this
->>>> +	 * driver, can get confused because won't be able to program a duty
->>>> +	 * cycle while the PWM is disabled.
->>>> +	 */
->>>> +	state->enabled = ec_pwm->state.enabled;
->>>
->>>> +	if (state->enabled) {
->>>
->>> As part of registration of the pwm .get_state is called. In this case
->>> .apply wasn't called before and so state->enabled is probably 0. So this
->>> breaks reporting the initial state ...
->>>
->>>> +		ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
->>>> +		if (ret < 0) {
->>>> +			dev_err(chip->dev, "error getting initial duty: %d\n",
->>>> +				ret);
->>>> +			return;
->>>> +		}
->>>> +		state->duty_cycle = ret;
->>>> +	} else {
->>>> +		state->duty_cycle = ec_pwm->state.duty_cycle;
->>>>  	}
->>>>  
->>>> -	state->enabled = (ret > 0);
->>>>  	state->period = EC_PWM_MAX_DUTY;
->>>> -
->>>> -	/* Note that "disabled" and "duty cycle == 0" are treated the same */
->>>> -	state->duty_cycle = ret;
->>>
->>> A few thoughts to your approach here ...:
->>>
->>>  - Would it make sense to only store duty_cycle and enabled in the
->>>    driver struct?
->>>
->>
->> Yes, in fact, my first approach (that I didn't send) was only storing enabled
->> and duty cycle. For some reason I ended storing the full pwm_state struct, but I
->> guess is not really needed.
->>
->>
->>>  - Which driver is the consumer of your pwm? If I understand correctly
->>>    the following sequence is the bad one:
->>>
->>
->> The consumer is the pwm_bl driver. Actually I'n trying to identify
->> other consumers.
-> 
-
-So far, the pwm_bl driver is the only consumer of cros-ec-pwm.
-
-> Ah, I see why I missed to identify the problem back when I checked this
-> driver. The problem is not that .duty_cycle isn't set but there .enabled
-> isn't set. So maybe we just want:
-> 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index 2201b8c78641..0468c6ee4448 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -123,6 +123,7 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
->         if (brightness > 0) {
->                 pwm_get_state(pb->pwm, &state);
->                 state.duty_cycle = compute_duty_cycle(pb, brightness);
-> +               state.enabled = true;
->                 pwm_apply_state(pb->pwm, &state);
->                 pwm_backlight_power_on(pb);
->         } else
-> 
-> ? On a side note: It's IMHO strange that pwm_backlight_power_on
-> reconfigures the PWM once more.
-> 
-
-Looking again to the pwm_bl code, now, I am not sure this is correct (although
-it probably solves the problem for me).
-
-Current behaviour is:
-
-* If brightness > 0 and pwm_bl is disabled
-
-   pwm_get_state(pb->pwm, &state);
-   state.duty_cycle = compute_duty_cycle(pb, brightness);
-   pwm_apply_state(pb->pwm, &state);
-   pwm_backlight_power_on(pb);
-      regulator_enable(pb->power_supply);
-      state.enabled = true;
-      pwm_apply_state(pb->pwm, &state);
-
-* If brightness > 0 and pwm_bl is already enabled
-
-   pwm_get_state(pb->pwm, &state);
-   state.duty_cycle = compute_duty_cycle(pb, brightness);
-   pwm_apply_state(pb->pwm, &state);
-
-The sequence:'first' set duty_cycle and 'second' enable the PWM makes some kind
-of sense because there is a regulator_enable in the middle of the power on sequence.
-
-To work for me I need to submit state.enabled && state.duty_cycle atomically. So
-I thin that solving the problem at lowlevel driver (aka cros-ec-pwm) makes more
-sense. At the end, is really a problem of the lowlevel driver, and the PWM
-framework is enough flexible which is fine.
-
-Note: I did a quick look at different PWM drivers that implement .get_state()
-and looks like the cros-ec-pwm is the only driver that has this restriction.
-
->>> 	state.period = P;
->>> 	state.duty_cycle = D;
->>> 	state.enabled = 0;
->>>    	pwm_apply_state(pwm, &state);
->>>
->>> 	...
->>>
->>> 	pwm_get_state(pwm, &state);
->>> 	state.enabled = 1;
->>>    	pwm_apply_state(pwm, &state);
->>>
->>
->> Yes that's the sequence.
->>
->>>    Before my patch there was an implicit promise in the PWM framework
->>>    that the last pwm_apply_state has .duty_cycle = D (and .period = P).
->>>    Is this worthwile, or should we instead declare this as
->>>    non-guaranteed and fix the caller?
->>>
->>
->> pwm_bl is compliant with this, the problem in the pwm-cros-ec driver is when you
->> set the duty_cycle but enable is 0.
-> 
-> pwm_bl *relies* on this behaviour. The question is: Is this a valid
-> assumption to rely on (for consumers) resp. to guarantee (for the PWM
-> framework)? I'm not sure it is because each PWM that doesn't know the
-> concept of "disabled" (not sure how many there are) needs some effort to
-> simulate it (by caching duty_cycle and period on disable).
-> 
-> Dropping this promise and fix pwm_bl (and maybe other consumers that
-> rely on it) is my preferred solution.
->  
->>>  - If this is a more or less common property that hardware doesn't know
->>>    the concept of "disabled" maybe it would make sense to drop this from
->>>    the PWM framework, too. (This is a question that I discussed some
->>>    time ago already with Thierry, but without an result. The key
->>>    question is: What is the difference between "disabled" and
->>>    "duty_cycle = 0" in general and does any consumer care about it.)
->>>
->>
->> Good question, I don't really know all consumer requirements, but AFAIK, usually
->> when you want to program duty_cycle to 0 you also want to disable the PWM.
-> 
-> Note that hardware designers are "creative" and "disable the PWM" has
-> different semantics for different PWMs. Some PWMs just stop the output
-> at the level that it happens to be in, some stop in the inactive level,
-> some stop at 0, some stop driving the pin. Currently the intended
-> semantic of a disabled PWM is that it drives the inactive level (but it
-> might be smart and stop driving if there is a pull in the right
-> direction). I see no benefit of this semantic as it can also be
-> accomplished by setting .duty_cycle = 0, .period = $something_small.
-> Thierry doesn't agree and I fail to understand his reasoning.
-> 
->> At least for the backlight case doesn't make sense program first the
->> duty_cycle and then enable the PWM, is implicit, if duty_cycle is 0
->> the PWM is disabled, if duty_cycle > 0 the PWM is enabled.
-> 
-> Yeah, that's my conclusion of above, too. After all the pwm_apply_state
-> function is there for being able to go from one state to each other
-> state with a single function call.
-> 
-
-Looking at the code again cahnged my point of view on this, see my comment above.
-
->>>  - A softer variant of the above: Should pwm_get_state() anticipate that
->>>    with .enabled = 0 the duty_cycle (and maybe also period) is
->>>    unreliable and cache that for callers?
->>
->> Sorry, when you say pwm_get_state(), you mean the core call or the lowlevel
->> driver call?
-> 
-> The suggestion is to do what you do in the driver (i.e. remember
-> duty_cycle and in the general case also period) in the framework
-> instead and fix the problem for all lowlevel drivers that behave similar
-> to the implementation in question. i.e. don't rely on .duty_cycle and
-> .period having a sensible value after .get_state() if the PWM is off.
-> This is IMHO the second best option.
-> 
-> Best regards
-> Uwe
-> 
+T24gMTAvOC8xOSA0OjQ1IFBNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBPbiBUdWUsIE9j
+dCAwOCwgMjAxOSBhdCAwMTo0MToyN1BNICswMjAwLCBGYWJyaWNlIEdhc25pZXIgd3JvdGU6Cj4+
+IEFkZCBhIGNvbW1lbnQgdG8gYmV0dGVyIGRlc2NyaWJlIHRoZSBwdXJwb3NlIG9mIGJyZWFraW5w
+dXQgZmVhdHVyZSB0aGF0Cj4+IGNhbiBiZSBmb3VuZCBvbiBzb21lIFNUTTMyIHRpbWVyIGluc3Rh
+bmNlcy4gQnJpZWZseSBjb21tZW50IG9uIHRoZQo+PiBjaGFyYWN0ZXJpc3RpY3Mgb2YgdGhpcyBp
+bnB1dCBmb3IgUFdNLCBhbmQgcGlubXV4aW5nIGFzIHN1Z2dlc3RlZCBpbiBbMV0uCj4+Cj4+IFsx
+XSBodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOS8xMC8xLzIwNwo+Pgo+PiBTaWduZWQtb2ZmLWJ5
+OiBGYWJyaWNlIEdhc25pZXIgPGZhYnJpY2UuZ2FzbmllckBzdC5jb20+Cj4+IC0tLQo+PiAgZHJp
+dmVycy9wd20vcHdtLXN0bTMyLmMgfCA4ICsrKysrKystCj4+ICAxIGZpbGUgY2hhbmdlZCwgNyBp
+bnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
+bS9wd20tc3RtMzIuYyBiL2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jCj4+IGluZGV4IDM1OWIwODUu
+LjY0MDZlYmIgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jCj4+ICsrKyBi
+L2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jCj4+IEBAIC01MjIsOCArNTIyLDE0IEBAIHN0YXRpYyBp
+bnQgc3RtMzJfcHdtX2FwcGx5X2JyZWFraW5wdXRzKHN0cnVjdCBzdG0zMl9wd20gKnByaXYsCj4+
+ICAJCQkJCSAgICAgc2l6ZW9mKHN0cnVjdCBzdG0zMl9icmVha2lucHV0KSk7Cj4+ICAKPj4gIAkv
+Kgo+PiArCSAqIFNvbWUgdGltZXIgaW5zdGFuY2VzIGNhbiBoYXZlIEJSSyBpbnB1dCBwaW5zIChl
+LmcuIGJhc2ljYWxseSBhIGZhdWx0Cj4+ICsJICogcGluIGZyb20gdGhlIG91dHB1dCBwb3dlciBz
+dGFnZSkuIFRoZSBicmVhayBmZWF0dXJlIGFsbG93cyBhIHNhZmUKPj4gKwkgKiBzaHV0LWRvd24g
+b2YgdGhlIFBXTSBvdXRwdXRzIHRvIGEgcHJlZGVmaW5lZCBzdGF0ZS4gRnVydGhlciBkZXRhaWxz
+Cj4+ICsJICogYXJlIGF2YWlsYWJsZSBpbiBhcHBsaWNhdGlvbiBub3RlIEFONDI3NywgIlVzaW5n
+IFNUTTMyIGRldmljZSBQV00KPj4gKwkgKiBzaHV0LWRvd24gZmVhdHVyZXMuLi4iCj4gCj4gV2l0
+aG91dCBoYXZpbmcgcmVhZCB0aGUgYXBwbGljYXRpb24gbm90ZSBJIGRvbid0IHVuZGVyc3RhbmQg
+dGhlIHB1cnBvc2UuCj4gTm90IHN1cmUgaWYgdGhpcyBzaG91bGQgYmUgYSBzaG93IHN0b3BwZXIg
+dGhvdWdoLgoKSGkgVXdlLAoKSSBjYW4gcmVwaHJhc2UgdGhpcy4gRG8geW91IHRoaW5rIHRoZSBi
+ZWxsb3cgY29tbWVudCB3b3VsZCBiZSBtb3JlCnJlbGV2YW50IGFuZCBlYXN5IHRvIHVuZGVyc3Rh
+bmQgPwoKLyoKICogVGhlIGJyZWFrIGZlYXR1cmUgYWxsb3dzIGEgc2FmZSBzaHV0LWRvd24gb2Yg
+dGhlIFBXTSBvdXRwdXRzLgogKiBJdCdzIGJhc2VkIG9uIHRoZSBCUksgZXZlbnQgc2lnbmFsIGRl
+ZmluZWQgaW4gdGhlIGR0LWJpbmRpbmdzCiAqIGJ5IDxpbmRleCBsZXZlbCBmaWx0ZXI+IHZhbHVl
+cy4KICogQmVjYXVzZSAic3QsYnJlYWtpbnB1dCIgcGFyYW1ldGVyIGlzIG9wdGlvbmFsIGRvIG5v
+dCBtYWtlIHByb2JlCiAqIGZhaWxlZCBpZiBpdCBkb2Vzbid0IGV4aXN0LgogKi8KCj4gCj4+ICAJ
+ICogQmVjYXVzZSAic3QsYnJlYWtpbnB1dCIgcGFyYW1ldGVyIGlzIG9wdGlvbmFsIGRvIG5vdCBt
+YWtlIHByb2JlCj4+IC0JICogZmFpbGVkIGlmIGl0IGRvZXNuJ3QgZXhpc3QuCj4+ICsJICogZmFp
+bGVkIGlmIGl0IGRvZXNuJ3QgZXhpc3QuIFRoZSBwaW5jdHJsIGhhbmRsZSBtdXN0IGhvbGQgdGhl
+IEJSSwo+PiArCSAqIHBpbihzKSB3aGVuIHVzaW5nICJzdCxicmVha2lucHV0IiBwcm9wZXJ0eS4K
+PiAKPiBJcyB0aGlzIGEgY29tbWVudCB0aGF0IGhhcyBhIGJldHRlciBwbGFjZSBpbiB0aGUgYmlu
+ZGluZyBkb2M/CgpZb3UncmUgcmlnaHQsIHRoaXMgaXMgdW5uZWVkZWQgaGVyZS4gSSdsbCByZW1v
+dmUgdGhpcy4KClBsZWFzZSBhZHZpc2UsCkJSLApGYWJyaWNlCgo+IAo+IEJlc3QgcmVnYXJkcwo+
+IFV3ZQo+IAo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
+bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
+bGludXgtYXJtLWtlcm5lbAo=
