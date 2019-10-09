@@ -1,67 +1,91 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH] pwm: stm32: add comment to better describe breakinput
- feature
-Date: Wed, 9 Oct 2019 11:51:05 +0200
-Message-ID: <5c05893b-e938-4db8-e33a-803b1a498f97@st.com>
-References: <1570534887-26181-1-git-send-email-fabrice.gasnier@st.com>
- <20191008144531.pjt525xuz7n5a3hq@pengutronix.de>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH] pwm: cros-ec: Let cros_ec_pwm_get_state() return the
+ last applied state
+Date: Wed, 9 Oct 2019 10:56:35 +0100
+Message-ID: <20191009095635.yysr33lnwldicyng@holly.lan>
+References: <20191008105417.16132-1-enric.balletbo@collabora.com>
+ <20191008143432.pbhcqamd6f4qwbqn@pengutronix.de>
+ <4f009344-242e-19a7-6872-2c55df086044@collabora.com>
+ <20191008203137.s22clq6v2om5ktio@pengutronix.de>
+ <53b7d02b-1a2d-11da-fdd0-5378f360d876@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191008144531.pjt525xuz7n5a3hq@pengutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, alexandre.torgue@st.com, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <53b7d02b-1a2d-11da-fdd0-5378f360d876@collabora.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, heiko@sntech.de, dianders@chromium.org, mka@chromium.org, groeck@chromium.org, kernel@collabora.com, bleung@chromium.org, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMTAvOC8xOSA0OjQ1IFBNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBPbiBUdWUsIE9j
-dCAwOCwgMjAxOSBhdCAwMTo0MToyN1BNICswMjAwLCBGYWJyaWNlIEdhc25pZXIgd3JvdGU6Cj4+
-IEFkZCBhIGNvbW1lbnQgdG8gYmV0dGVyIGRlc2NyaWJlIHRoZSBwdXJwb3NlIG9mIGJyZWFraW5w
-dXQgZmVhdHVyZSB0aGF0Cj4+IGNhbiBiZSBmb3VuZCBvbiBzb21lIFNUTTMyIHRpbWVyIGluc3Rh
-bmNlcy4gQnJpZWZseSBjb21tZW50IG9uIHRoZQo+PiBjaGFyYWN0ZXJpc3RpY3Mgb2YgdGhpcyBp
-bnB1dCBmb3IgUFdNLCBhbmQgcGlubXV4aW5nIGFzIHN1Z2dlc3RlZCBpbiBbMV0uCj4+Cj4+IFsx
-XSBodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOS8xMC8xLzIwNwo+Pgo+PiBTaWduZWQtb2ZmLWJ5
-OiBGYWJyaWNlIEdhc25pZXIgPGZhYnJpY2UuZ2FzbmllckBzdC5jb20+Cj4+IC0tLQo+PiAgZHJp
-dmVycy9wd20vcHdtLXN0bTMyLmMgfCA4ICsrKysrKystCj4+ICAxIGZpbGUgY2hhbmdlZCwgNyBp
-bnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3
-bS9wd20tc3RtMzIuYyBiL2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jCj4+IGluZGV4IDM1OWIwODUu
-LjY0MDZlYmIgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jCj4+ICsrKyBi
-L2RyaXZlcnMvcHdtL3B3bS1zdG0zMi5jCj4+IEBAIC01MjIsOCArNTIyLDE0IEBAIHN0YXRpYyBp
-bnQgc3RtMzJfcHdtX2FwcGx5X2JyZWFraW5wdXRzKHN0cnVjdCBzdG0zMl9wd20gKnByaXYsCj4+
-ICAJCQkJCSAgICAgc2l6ZW9mKHN0cnVjdCBzdG0zMl9icmVha2lucHV0KSk7Cj4+ICAKPj4gIAkv
-Kgo+PiArCSAqIFNvbWUgdGltZXIgaW5zdGFuY2VzIGNhbiBoYXZlIEJSSyBpbnB1dCBwaW5zIChl
-LmcuIGJhc2ljYWxseSBhIGZhdWx0Cj4+ICsJICogcGluIGZyb20gdGhlIG91dHB1dCBwb3dlciBz
-dGFnZSkuIFRoZSBicmVhayBmZWF0dXJlIGFsbG93cyBhIHNhZmUKPj4gKwkgKiBzaHV0LWRvd24g
-b2YgdGhlIFBXTSBvdXRwdXRzIHRvIGEgcHJlZGVmaW5lZCBzdGF0ZS4gRnVydGhlciBkZXRhaWxz
-Cj4+ICsJICogYXJlIGF2YWlsYWJsZSBpbiBhcHBsaWNhdGlvbiBub3RlIEFONDI3NywgIlVzaW5n
-IFNUTTMyIGRldmljZSBQV00KPj4gKwkgKiBzaHV0LWRvd24gZmVhdHVyZXMuLi4iCj4gCj4gV2l0
-aG91dCBoYXZpbmcgcmVhZCB0aGUgYXBwbGljYXRpb24gbm90ZSBJIGRvbid0IHVuZGVyc3RhbmQg
-dGhlIHB1cnBvc2UuCj4gTm90IHN1cmUgaWYgdGhpcyBzaG91bGQgYmUgYSBzaG93IHN0b3BwZXIg
-dGhvdWdoLgoKSGkgVXdlLAoKSSBjYW4gcmVwaHJhc2UgdGhpcy4gRG8geW91IHRoaW5rIHRoZSBi
-ZWxsb3cgY29tbWVudCB3b3VsZCBiZSBtb3JlCnJlbGV2YW50IGFuZCBlYXN5IHRvIHVuZGVyc3Rh
-bmQgPwoKLyoKICogVGhlIGJyZWFrIGZlYXR1cmUgYWxsb3dzIGEgc2FmZSBzaHV0LWRvd24gb2Yg
-dGhlIFBXTSBvdXRwdXRzLgogKiBJdCdzIGJhc2VkIG9uIHRoZSBCUksgZXZlbnQgc2lnbmFsIGRl
-ZmluZWQgaW4gdGhlIGR0LWJpbmRpbmdzCiAqIGJ5IDxpbmRleCBsZXZlbCBmaWx0ZXI+IHZhbHVl
-cy4KICogQmVjYXVzZSAic3QsYnJlYWtpbnB1dCIgcGFyYW1ldGVyIGlzIG9wdGlvbmFsIGRvIG5v
-dCBtYWtlIHByb2JlCiAqIGZhaWxlZCBpZiBpdCBkb2Vzbid0IGV4aXN0LgogKi8KCj4gCj4+ICAJ
-ICogQmVjYXVzZSAic3QsYnJlYWtpbnB1dCIgcGFyYW1ldGVyIGlzIG9wdGlvbmFsIGRvIG5vdCBt
-YWtlIHByb2JlCj4+IC0JICogZmFpbGVkIGlmIGl0IGRvZXNuJ3QgZXhpc3QuCj4+ICsJICogZmFp
-bGVkIGlmIGl0IGRvZXNuJ3QgZXhpc3QuIFRoZSBwaW5jdHJsIGhhbmRsZSBtdXN0IGhvbGQgdGhl
-IEJSSwo+PiArCSAqIHBpbihzKSB3aGVuIHVzaW5nICJzdCxicmVha2lucHV0IiBwcm9wZXJ0eS4K
-PiAKPiBJcyB0aGlzIGEgY29tbWVudCB0aGF0IGhhcyBhIGJldHRlciBwbGFjZSBpbiB0aGUgYmlu
-ZGluZyBkb2M/CgpZb3UncmUgcmlnaHQsIHRoaXMgaXMgdW5uZWVkZWQgaGVyZS4gSSdsbCByZW1v
-dmUgdGhpcy4KClBsZWFzZSBhZHZpc2UsCkJSLApGYWJyaWNlCgo+IAo+IEJlc3QgcmVnYXJkcwo+
-IFV3ZQo+IAo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
-bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
-bGludXgtYXJtLWtlcm5lbAo=
+On Wed, Oct 09, 2019 at 11:27:13AM +0200, Enric Balletbo i Serra wrote:
+> Hi Uwe,
+> 
+> Adding Daniel and Lee to the discussion ...
+
+Thanks!
+
+> On 8/10/19 22:31, Uwe Kleine-König wrote:
+> > On Tue, Oct 08, 2019 at 06:33:15PM +0200, Enric Balletbo i Serra wrote:
+> >>> A few thoughts to your approach here ...:
+> >>>
+> >>>  - Would it make sense to only store duty_cycle and enabled in the
+> >>>    driver struct?
+> >>>
+> >>
+> >> Yes, in fact, my first approach (that I didn't send) was only storing enabled
+> >> and duty cycle. For some reason I ended storing the full pwm_state struct, but I
+> >> guess is not really needed.
+> >>
+> >>
+> >>>  - Which driver is the consumer of your pwm? If I understand correctly
+> >>>    the following sequence is the bad one:
+> >>>
+> >>
+> >> The consumer is the pwm_bl driver. Actually I'n trying to identify
+> >> other consumers.
+> > 
+> 
+> So far, the pwm_bl driver is the only consumer of cros-ec-pwm.
+> 
+> > Ah, I see why I missed to identify the problem back when I checked this
+> > driver. The problem is not that .duty_cycle isn't set but there .enabled
+> > isn't set. So maybe we just want:
+> > 
+> > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> > index 2201b8c78641..0468c6ee4448 100644
+> > --- a/drivers/video/backlight/pwm_bl.c
+> > +++ b/drivers/video/backlight/pwm_bl.c
+> > @@ -123,6 +123,7 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+> >         if (brightness > 0) {
+> >                 pwm_get_state(pb->pwm, &state);
+> >                 state.duty_cycle = compute_duty_cycle(pb, brightness);
+> > +               state.enabled = true;
+> >                 pwm_apply_state(pb->pwm, &state);
+> >                 pwm_backlight_power_on(pb);
+> >         } else
+> > 
+> > ? On a side note: It's IMHO strange that pwm_backlight_power_on
+> > reconfigures the PWM once more.
+> > 
+> 
+> Looking again to the pwm_bl code, now, I am not sure this is correct (although
+> it probably solves the problem for me).
+
+Looking at the pwm_bl code I wouldn't accept the above as it is but I'd
+almost certainly accept a patch to pwm_bl to move the PWM enable/disable
+out of both the power on/off functions so the duty-cycle/enable or
+disable can happen in one go within the update_status function. I don't
+think such a change would interfere with the power and enable sequencing
+needed by panels and it would therefore be a nice continuation of the
+work to convert over to the pwm_apply_state() API.
+
+None of the above has anything to do with what is right or wrong for
+the PWM API evolution. Of course, if this thread does conclude that it
+is OK the duty cycle of a disabled PWM to be retained for some drivers
+and not others then I'd hope to see some WARN_ON()s added to the PWM
+framework to help bring problems to the surface with all drivers.
+
+
+Daniel.
