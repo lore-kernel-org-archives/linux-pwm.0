@@ -1,63 +1,51 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Date: Tue, 15 Oct 2019 16:23:59 +0200
-Message-ID: <20191015142359.GA1101003@ulmo>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: Re: [PATCH] gpio: pca953x: Add Maxim MAX7313 PWM support
+Date: Tue, 15 Oct 2019 16:30:55 +0200
+Message-ID: <20191015163055.0d8f44e5@xps13>
+References: <20191014124803.13661-1-miquel.raynal@bootlin.com>
+        <CAHp75Vc4vnNVKc+Q_TY8DpwV4rLZYGm2MvGBC7r67XjmtNoskQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
+In-Reply-To: <CAHp75Vc4vnNVKc+Q_TY8DpwV4rLZYGm2MvGBC7r67XjmtNoskQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sangbeom Kim <sbkim73@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Liam Girdwood <lgirdwood@gmail.com>, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linus.walleij@linaro.org, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>, Sascha Hauer <s.hauer@pengutronix.de>, =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Bartlomi
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Andy,
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for the feedback.
 
-On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-[...]
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index e3a2518503ed..8eb738cac0c7 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -394,7 +394,7 @@ config PWM_ROCKCHIP
-> =20
->  config PWM_SAMSUNG
->  	tristate "Samsung PWM support"
-> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  	help
->  	  Generic PWM framework driver for Samsung.
-> =20
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote on Mon, 14 Oct 2019
+20:59:01 +0300:
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> On Mon, Oct 14, 2019 at 4:09 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > The MAX7313 chip is fully compatible with the PCA9535 on its basic
+> > functions but can also manage the intensity on each of its ports with
+> > PWM. Each output is independent and may be tuned with 16 values (4
+> > bits per output). The period is always 32kHz, only the duty-cycle may
+> > be changed. One can use any output as GPIO or PWM.  
+> 
+> Can we rather not contaminate driver with this?
+> 
+> Just register a separate PWM driver and export its functionality to
+> GPIO, or other way around (in the latter case we actually have PCA8685
+> which provides a GPIO fgunctionality).
+> 
 
---d6Gm4EdcadzBjdND
-Content-Type: application/pgp-signature; name="signature.asc"
+I understand your concern but I am not sure to understand which
+solution you have in mind. In the former case, could you explain a bit
+more what you are thinking about? Would linking the PWM support with
+the GPIO driver (code would be located in another .c file) work for
+you? Or maybe you would prefer an MFD on top of the GPIO driver?
 
------BEGIN PGP SIGNATURE-----
+As for the later case, I am not willing to re-implement GPIO support in
+an alternate driver for an already supported chip, it is too much work
+for the time I can spend on it.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2l1n0ACgkQ3SOs138+
-s6Eb7xAAsZ9JZaeRn7IjUZs/yz8zD5TWoNpojsmj6Kzf947MW5cgaZEJei22skVy
-3Kv1ogZu1N2WO2L7v//P9waAgCs0EuHgeRkT+UgsW2AapaShdkNmMh0tgJNWGFLm
-JwwGVB6rfjuBVYQgICBlfKzPdA9KDQNlxJPJmE3lC2kAQ5KWtsWHJIuWpk3zruQK
-rZyp33ecFy4Xa+Sxue8CTgyUoHv+t7fhjtpAn/NgMJGy4WGi5lfn8S9bkb9uULHD
-cZY4hv+EPC/GAaMQJ6HX9BwGnY1l+Mh8K7uH323OWAMQUqNAgKYuGvhUYSCtLPB1
-WNdTjM1kkz93c1pLaikNdKtO3NhqrmXD+fKwmEF7xCQqEfBvPznq4ipHb4MHJEih
-YLw8CGBBCX51LOghEJsYi0dMhvWdq4WFJcmXCcjWBYygVWkbvwkdCZSOTdeyI3GE
-QTTlWslD1YDL7FuwCYPLBpldFi1JT8hFwP8oK3VTSxmpd4j8mjDKsMHpHtzzTGe/
-6Le5t6ewz0rvR5ZFAnZB04VlIFV+l+Zx3e3Bxaqc2h/I6u1yagTZuPSknB7FJRPs
-ic4Qr6sfKbK7LMuIIohElzhuVHcEeIfZ3NYAkWh7t9sqefIRrJUcDcPkz3sQ/8Vn
-ChkBlbp/IuPwYuSPNI9nf7EW5vFjV7aTYZFXI7mj5M3kK5suvsU=
-=4m87
------END PGP SIGNATURE-----
 
---d6Gm4EdcadzBjdND--
+Thanks,
+Miquèl
