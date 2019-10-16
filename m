@@ -1,193 +1,177 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 2/3] pwm: stm32: split breakinput apply routine to
- ease PM support
-Date: Wed, 16 Oct 2019 09:03:22 +0200
-Message-ID: <20191016070322.GB1296874@ulmo>
+Subject: Re: [PATCH v2 3/3] pwm: stm32: add power management support
+Date: Wed, 16 Oct 2019 09:06:35 +0200
+Message-ID: <20191016070635.GC1296874@ulmo>
 References: <1570193633-6600-1-git-send-email-fabrice.gasnier@st.com>
- <1570193633-6600-3-git-send-email-fabrice.gasnier@st.com>
+ <1570193633-6600-4-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Yylu36WmvOXNoKYn"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1570193633-6600-3-git-send-email-fabrice.gasnier@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============5870743600026654597=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1570193633-6600-4-git-send-email-fabrice.gasnier@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: robh+dt@kernel.org, u.kleine-koenig@pengutronix.de, alexandre.torgue@st.com, mark.rutland@arm.com, mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@st.com, linux-stm32@st-md-mailman.stormreply.com
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, mcoquelin.stm32@gmail.com, u.kleine-koenig@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---Yylu36WmvOXNoKYn
+--===============5870743600026654597==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="QRj9sO5tAVLaXnSD"
+Content-Disposition: inline
+
+
+--QRj9sO5tAVLaXnSD
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 04, 2019 at 02:53:52PM +0200, Fabrice Gasnier wrote:
-> Split breakinput routine that configures STM32 timers 'break' safety
-> feature upon probe, into two routines:
-> - stm32_pwm_apply_breakinputs() sets all the break inputs into registers.
-> - stm32_pwm_probe_breakinputs() probes the device tree break input settin=
-gs
->   before calling stm32_pwm_apply_breakinputs()
+On Fri, Oct 04, 2019 at 02:53:53PM +0200, Fabrice Gasnier wrote:
+> Add suspend/resume PM sleep ops. When going to low power, enforce the PWM
+> channel isn't active. Let the PWM consumers disable it during their own
+> suspend sequence, see [1]. So, perform a check here, and handle the
+> pinctrl states. Also restore the break inputs upon resume, as registers
+> content may be lost when going to low power mode.
 >=20
-> This is a precursor patch to ease PM support. Registers content may get
-> lost during low power. So, break input settings applied upon probe need
-> to be restored upon resume (e.g. by calling stm32_pwm_apply_breakinputs()=
-).
+> [1] https://lkml.org/lkml/2019/2/5/770
 >=20
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 > ---
->  drivers/pwm/pwm-stm32.c | 48 ++++++++++++++++++++++++++++---------------=
------
->  1 file changed, 28 insertions(+), 20 deletions(-)
+> Changes in v2:
+> Follow Uwe suggestions/remarks:
+> - Add a precursor patch to ease reviewing
+> - Use registers read instead of pwm_get_state
+> - Add a comment to mention registers content may be lost in low power mode
+> ---
+>  drivers/pwm/pwm-stm32.c | 38 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 38 insertions(+)
 
-Applied, thanks. I've made some minor changes, mostly for consistency
-with other drivers and the PWM core. See below.
+Applied, thanks. I made two minor changes, though, see below.
 
+>=20
 > diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-> index 359b085..cf8658c 100644
+> index cf8658c..546b661 100644
 > --- a/drivers/pwm/pwm-stm32.c
 > +++ b/drivers/pwm/pwm-stm32.c
-> @@ -19,6 +19,12 @@
->  #define CCMR_CHANNEL_MASK  0xFF
->  #define MAX_BREAKINPUT 2
+> @@ -12,6 +12,7 @@
+>  #include <linux/mfd/stm32-timers.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+> +#include <linux/pinctrl/consumer.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pwm.h>
 > =20
-> +struct stm32_breakinput {
-> +	u32 index;
-> +	u32 level;
-> +	u32 filter;
-> +};
-> +
->  struct stm32_pwm {
->  	struct pwm_chip chip;
->  	struct mutex lock; /* protect pwm config/enable */
-> @@ -26,15 +32,11 @@ struct stm32_pwm {
->  	struct regmap *regmap;
->  	u32 max_arr;
->  	bool have_complementary_output;
-> +	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
-> +	unsigned int nbreakinput;
-
-I changed these to breakinputs and num_breakinputs since they are
-slightly more consistent with the naming elsewhere in PWM.
-
->  	u32 capture[4] ____cacheline_aligned; /* DMA'able buffer */
->  };
-> =20
-> -struct stm32_breakinput {
-> -	u32 index;
-> -	u32 level;
-> -	u32 filter;
-> -};
-> -
->  static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
->  {
->  	return container_of(chip, struct stm32_pwm, chip);
-> @@ -512,15 +514,27 @@ static int stm32_pwm_set_breakinput(struct stm32_pw=
-m *priv,
->  	return (bdtr & bke) ? 0 : -EINVAL;
+> @@ -655,6 +656,42 @@ static int stm32_pwm_remove(struct platform_device *=
+pdev)
+>  	return 0;
 >  }
 > =20
-> -static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
-> +static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv)
+> +static int __maybe_unused stm32_pwm_suspend(struct device *dev)
 > +{
-> +	int i, ret =3D 0;
+> +	struct stm32_pwm *priv =3D dev_get_drvdata(dev);
+> +	unsigned int ch;
 
-Made i unsigned int.
+I renamed this to just "i", which is more idiomatic for loop variables.
+The function is small enough not to need to differentiate between loop
+variables.
 
+> +	u32 ccer, mask;
 > +
-> +	for (i =3D 0; i < priv->nbreakinput && !ret; i++) {
-> +		ret =3D stm32_pwm_set_breakinput(priv,
-> +					       priv->breakinput[i].index,
-> +					       priv->breakinput[i].level,
-> +					       priv->breakinput[i].filter);
-> +	}
-
-I thought this was a little odd, so I changed it to explicitly check the
-value of ret and return on error.
-
+> +	/* Look for active channels */
+> +	ccer =3D active_channels(priv);
 > +
-> +	return ret;
+> +	for (ch =3D 0; ch < priv->chip.npwm; ch++) {
+> +		mask =3D TIM_CCER_CC1E << (ch * 4);
+> +		if (ccer & mask) {
+> +			dev_err(dev, "The consumer didn't stop us (%s)\n",
+> +				priv->chip.pwms[ch].label);
 
-And then this became "return 0;"
+Changed this to:
 
-> +}
-> +
-> +static int stm32_pwm_probe_breakinputs(struct stm32_pwm *priv,
->  				       struct device_node *np)
->  {
-> -	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
-> -	int nb, ret, i, array_size;
-> +	int nb, ret, array_size;
-> =20
->  	nb =3D of_property_count_elems_of_size(np, "st,breakinput",
->  					     sizeof(struct stm32_breakinput));
-> -
+	"PWM %u still in use by consumer %s\n", i, priv->chip.pwms[i].label
 
-Dropped this since it made the code look cluttered.
+I think that might help clarify which PWM is still enabled in case the
+consumers don't set a label.
 
 Thierry
 
->  	/*
->  	 * Because "st,breakinput" parameter is optional do not make probe
->  	 * failed if it doesn't exist.
-> @@ -531,20 +545,14 @@ static int stm32_pwm_apply_breakinputs(struct stm32=
-_pwm *priv,
->  	if (nb > MAX_BREAKINPUT)
->  		return -EINVAL;
-> =20
-> +	priv->nbreakinput =3D nb;
->  	array_size =3D nb * sizeof(struct stm32_breakinput) / sizeof(u32);
->  	ret =3D of_property_read_u32_array(np, "st,breakinput",
-> -					 (u32 *)breakinput, array_size);
-> +					 (u32 *)priv->breakinput, array_size);
->  	if (ret)
->  		return ret;
-> =20
-> -	for (i =3D 0; i < nb && !ret; i++) {
-> -		ret =3D stm32_pwm_set_breakinput(priv,
-> -					       breakinput[i].index,
-> -					       breakinput[i].level,
-> -					       breakinput[i].filter);
-> -	}
-> -
-> -	return ret;
+> +			return -EBUSY;
+> +		}
+> +	}
+> +
+> +	return pinctrl_pm_select_sleep_state(dev);
+> +}
+> +
+> +static int __maybe_unused stm32_pwm_resume(struct device *dev)
+> +{
+> +	struct stm32_pwm *priv =3D dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	ret =3D pinctrl_pm_select_default_state(dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* restore breakinput registers that may have been lost in low power */
 > +	return stm32_pwm_apply_breakinputs(priv);
->  }
-> =20
->  static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
-> @@ -614,7 +622,7 @@ static int stm32_pwm_probe(struct platform_device *pd=
-ev)
->  	if (!priv->regmap || !priv->clk)
->  		return -EINVAL;
-> =20
-> -	ret =3D stm32_pwm_apply_breakinputs(priv, np);
-> +	ret =3D stm32_pwm_probe_breakinputs(priv, np);
->  	if (ret)
->  		return ret;
-> =20
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(stm32_pwm_pm_ops, stm32_pwm_suspend, stm32_pwm_=
+resume);
+> +
+>  static const struct of_device_id stm32_pwm_of_match[] =3D {
+>  	{ .compatible =3D "st,stm32-pwm",	},
+>  	{ /* end node */ },
+> @@ -667,6 +704,7 @@ static struct platform_driver stm32_pwm_driver =3D {
+>  	.driver	=3D {
+>  		.name =3D "stm32-pwm",
+>  		.of_match_table =3D stm32_pwm_of_match,
+> +		.pm =3D &stm32_pwm_pm_ops,
+>  	},
+>  };
+>  module_platform_driver(stm32_pwm_driver);
 > --=20
 > 2.7.4
 >=20
 
---Yylu36WmvOXNoKYn
+--QRj9sO5tAVLaXnSD
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2mwLoACgkQ3SOs138+
-s6GHWBAAwHNWDi4qqGce8HzLiOPsZ7PV4JSn64OsoS8PfEcGLWagSsNg3JN4vG8S
-Hl49Do93zxuquA7pQlxxphQZNfbg4scYnEWZdGN9NPI+HVUiWXxKyKG++k9ZJMR4
-KRVmugkh/Qo+sQOAi5qgafxtj42xMnyGj0jp9FNLJ/ZiYAyTabxPalVbLoEOliPX
-X3QXW/o9RCcqam/n8vyEj+rsAJj9vdctQJl2q20n3AYH/G6Ku1xbr5htG3aWhWG0
-YyvuHEYsTOqo/08TIdbajpkcPzMGh1AjvXwZ6EcNCuM2mGimxv1MH6oWbXyhMO9d
-6u2PP3ttwkni+ogoLaYzN7+7/elSNtP10DfThPDvp2SfS4RTOQ/MwJ3DP8+lbNbD
-p27zLHY5SE3cSZV8RqXlGQ+IlIPThwG66HJNuLzsfbXCon6OXdzd/sw0s3j8tDwq
-V5JEstiS3EDg9mHX7CBH1GWtNm5gYhxMwcWJ5x56yLF/oiHGb+S0MBRjAVjLid9y
-JcmXdks8bCk5BieAkfYmhX6Pa3DVHjMrn+DTWfCb/P+J29woIodOkxwVu7IZdWw/
-katw5Q+2qtuJsXxmgNUsxVABsaZk7Q9KPo1LNbiz4TsCvttRmRNptxSfC2Je6otM
-TSj7eq8zzUcx6GdYGkC6snh+GbHMHn/DyMj+FhmTPdECcsDmiYM=
-=ibpm
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2mwXsACgkQ3SOs138+
+s6GqmQ//aMbyiuKupfEKiM3NlzeTFHoXGDg+k4W+S9nTP9R1XcCo+LUn9otYurGO
+f44vih/M5jOuxA1RJ3w3Ji1fFOLD4/QXpTCN1nf+E1U0E/wo8HuPjpPJsZGj3vEJ
+YeLxDNmpVe/VID1GKuyACOChqCI0dSvMmZYqbKMSSRhUVNmfja/FnubM6iCQ8xzY
+qqUDkr4R1OCc4EjB9h5L+uBb+vy6iwGxEIZZNuMn3khiVvNTZpiI0D5qGLC0eVLM
+3pDe6BTs/B7sI6OgQ2EJjqne9CbYXT3j/ANty3k4NcPXnMZ2nJT+8anoczxo2ZwB
+zyA5SzMctvcCHNpqrbAZLuOPERTA//X8BisEzJ9YRC1WjKuvJ9ykyXWWtcEnYdyr
+JeS6NNslrxDC1Fl4mrJV4rEJqm01giH2Pz1J0+8FAYYiga9QYQoYqjjxos6NSxde
+PcruGHt6xLWd647jwNGDrrG1G8gz+7xUEVpyHD8xSVXsNZ41Rst3WSkmwmu0vr4Y
+S7y5ylK/O9SW9p3yhyVuQPCc0rk/Mgln4BnOj8jq0FQDNVFosnC0eKX3tI8/CWlB
+Mpe9Rc7W4v3Hr7GBXoNqbNx4Uudfg7exBCc0pk2LFrobvyyjy+1vmKPtW6HnH4k3
+S6h+dAMVH0QFmOimR8+QXtzTSUQ3ik96+Na4q+C44ozzuX/EBNs=
+=+BC6
 -----END PGP SIGNATURE-----
 
---Yylu36WmvOXNoKYn--
+--QRj9sO5tAVLaXnSD--
+
+
+--===============5870743600026654597==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============5870743600026654597==--
