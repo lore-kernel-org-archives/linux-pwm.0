@@ -1,38 +1,67 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:56861 "EHLO
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:56091 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727859AbfJPIdE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Oct 2019 04:33:04 -0400
-Date: Wed, 16 Oct 2019 10:33:01 +0200
+        with ESMTP id S1726092AbfJPI0P (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Oct 2019 04:26:15 -0400
+Date: Wed, 16 Oct 2019 10:26:12 +0200
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Message-ID: <20191016083301.63okdbunkq2slevu@pengutronix.de>
+Message-ID: <20191016082612.fwpig3pup6bor5cn@pengutronix.de>
 References: <20191016073842.1300297-1-thierry.reding@gmail.com>
+ <20191016073842.1300297-2-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20191016073842.1300297-1-thierry.reding@gmail.com>
+In-Reply-To: <20191016073842.1300297-2-thierry.reding@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 0/3] pwm: stm32: Minor cleanups
+Subject: Re: [PATCH 1/3] pwm: stm32: Remove clutter from ternary operator
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pwm@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 09:38:39AM +0200, Thierry Reding wrote:
-> Hi,
+On Wed, Oct 16, 2019 at 09:38:40AM +0200, Thierry Reding wrote:
+> Remove usage of the ternary operator to assign values for register
+> fields. This removes clutter and improves readability.
 >=20
-> Looking at Fabrice's STM32 patches I noticed that we're now passing the
-> breakinput values (u32) into a function via int parameters. The easiest
-> way to fix this inconsistency is by just passing a pointer to the break
-> input structure. There's some preparatory work here that makes the code
-> slightly more readable, in my opinion, but it's really marginal, so I'm
-> not terribly thrilled by this series in retrospect.
+> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+> ---
+>  drivers/pwm/pwm-stm32.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
 >=20
-> If nobody else thinks this is a big improvement I'll just scrap it.
+> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+> index 9430b4cd383f..b12fb11b7a55 100644
+> --- a/drivers/pwm/pwm-stm32.c
+> +++ b/drivers/pwm/pwm-stm32.c
+> @@ -493,11 +493,19 @@ static const struct pwm_ops stm32pwm_ops =3D {
+>  static int stm32_pwm_set_breakinput(struct stm32_pwm *priv,
+>  				    int index, int level, int filter)
+>  {
+> -	u32 bke =3D (index =3D=3D 0) ? TIM_BDTR_BKE : TIM_BDTR_BK2E;
+> -	int shift =3D (index =3D=3D 0) ? TIM_BDTR_BKF_SHIFT : TIM_BDTR_BK2F_SHI=
+FT;
+> -	u32 mask =3D (index =3D=3D 0) ? TIM_BDTR_BKE | TIM_BDTR_BKP | TIM_BDTR_=
+BKF
+> -				: TIM_BDTR_BK2E | TIM_BDTR_BK2P | TIM_BDTR_BK2F;
+> -	u32 bdtr =3D bke;
+> +	u32 bke, shift, mask, bdtr;
+> +
+> +	if (index =3D=3D 0) {
+> +		bke =3D TIM_BDTR_BKE;
+> +		shift =3D TIM_BDTR_BKF_SHIFT;
+> +		mask =3D TIM_BDTR_BKE | TIM_BDTR_BKP | TIM_BDTR_BKF;
+> +	} else {
+> +		bke =3D TIM_BDTR_BK2E;
+> +		shift =3D TIM_BDTR_BK2F_SHIFT;
+> +		mask =3D TIM_BDTR_BK2E | TIM_BDTR_BK2P | TIM_BDTR_BK2F;
+> +	}
+> +
+> +	bdtr =3D bke;
 
-I like it. Together with my suggestion to add parameters to the register
-offsets I think it's worth the effort.
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Is index always in {0, 1}? Maybe a comment or a check about that would
+be helpful. (-> separate patch I think).
 
 Best regards
 Uwe
