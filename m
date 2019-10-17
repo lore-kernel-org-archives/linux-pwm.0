@@ -1,28 +1,61 @@
-From: Adam Ford <aford173@gmail.com>
-Subject: pwm_bl on i.MX6Q broken on 5.4-RC1+
-Date: Wed, 16 Oct 2019 14:55:54 -0500
-Message-ID: <CAHCN7xJSz+QhOb4vE6b67jh5jnSOHnw79EyX8RW91TqPkD__Lw@mail.gmail.com>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH 1/1] pwm: Convert period and duty cycle to u64
+Date: Wed, 16 Oct 2019 23:02:47 -0700
+Message-ID: <20191017060247.GA12487@codeaurora.org>
+References: <1571191899-6150-1-git-send-email-gurus@codeaurora.org>
+ <1571191899-6150-2-git-send-email-gurus@codeaurora.org>
+ <20191016101539.GC1303817@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191016101539.GC1303817@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>, arm-soc <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, kernel-team@android.com, Mark Salyzyn <salyzyn@google.com>, Sandeep Patil <sspatil@google.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-I have an i.MX6Q with an LCD and PWM controlled backlight.  On 5.4-RC1
-through the current master (16 Oct 2019), the backlight does not come
-on by default.  I can get it come on by manually setting the
-brightness, but any video activity seems to blank the screen again
-until I change the brightness again.
+On Wed, Oct 16, 2019 at 12:15:39PM +0200, Thierry Reding wrote:
+> On Tue, Oct 15, 2019 at 07:11:39PM -0700, Guru Das Srinagesh wrote:
+> > Because period and duty cycle are defined as ints with units of
+> > nanoseconds, the maximum time duration that can be set is limited to
+> > ~2.147 seconds. Change their definitions to u64 so that higher durations
+> > may be set.
+> > 
+> > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> > ---
+> >  drivers/pwm/core.c  |  4 ++--
+> >  drivers/pwm/sysfs.c | 10 +++++-----
+> >  include/linux/pwm.h | 16 ++++++++--------
+> >  3 files changed, 15 insertions(+), 15 deletions(-)
+> 
+> Actually, we can't do that without further preparatory work. The reason
+> is that consumers use the period and duty_cycle members in computations
+> of their own, which lead to errors such as this:
+> 
+> 	armv7l-unknown-linux-gnueabihf-ld: drivers/video/backlight/pwm_bl.o: in function `pwm_backlight_probe':
+> 	pwm_bl.c:(.text+0x3b0): undefined reference to `__aeabi_uldivmod'
+> 
+> So I think we need to audit all consumers carefully and make sure that
+> they use do_div() where necessary to avoid such errors.
+> 
+> Thierry
 
-I bisected the patch to 01ccf903edd6 ("pwm: Let pwm_get_state() return
-the last implemented state")
+Hi Thierry,
 
-If I revert this patch on 5.4-rc3, the issue goes away.
+I would like to try doing the preparatory work by fixing the errors seen
+in consumers so that this u64 patch may be applied without issues.
 
-I was hoping someone might have a suggestion on how to fix it to play
-nicely with the iMX6Q PWM or revert if no solution can be found.
+Before sending the patch, I tried "make"-ing for arm, arm64 and i386
+architectures to check for compilation/linking errors and encountered
+none. I see that the above error arises from using a cross-compiler for
+arm v7, which I haven't tried yet.
 
-thank you,
+Could you please provide details of the compile tests that you run at
+your end? I could then try to reproduce the errors you see in the
+consumer drivers and fix them. Please do share any other ideas or
+suggestions you may have in this regard.
 
-adam
+Thank you.
+
+Guru Das.
