@@ -1,8 +1,8 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Adam Ford <aford173@gmail.com>
 Subject: Re: [PATCH] backlight: pwm_bl: configure pwm only once per backlight
  toggle
-Date: Thu, 17 Oct 2019 17:14:37 +0200
-Message-ID: <20191017151437.GA85210@ulmo>
+Date: Thu, 17 Oct 2019 12:07:21 -0500
+Message-ID: <CAHCN7xJduG9yxAhuW6D1_kpd5=p7LhO_YCWjVxcCoW5bmSEJGQ@mail.gmail.com>
 References: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
  <c89925bd-857d-874f-b74f-c5700d4c9fbd@ysoft.com>
  <20191017101116.3d5okxmto5coecad@pengutronix.de>
@@ -10,10 +10,12 @@ References: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
  <20191017120917.fcb7x4fq4tbl2iat@pengutronix.de>
  <20191017125932.GB3768303@ulmo>
  <aa73b430-527c-8066-ad9c-edab62a05fc9@ysoft.com>
+ <20191017151437.GA85210@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1257088160=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <aa73b430-527c-8066-ad9c-edab62a05fc9@ysoft.com>
+In-Reply-To: <20191017151437.GA85210@ulmo>
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -23,506 +25,342 @@ List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, kernel@pengutronix.de, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>, Adam Ford <aford173@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, Sascha Hauer <kernel@pengutronix.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============1257088160==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
-Content-Disposition: inline
-
-
---+HP7ph2BbKc20aGI
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Oct 17, 2019 at 03:58:25PM +0200, Michal Vok=C3=A1=C4=8D wrote:
-> On 17. 10. 19 14:59, Thierry Reding wrote:
-> > On Thu, Oct 17, 2019 at 02:09:17PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > > On Thu, Oct 17, 2019 at 01:11:31PM +0200, Thierry Reding wrote:
-> > > > On Thu, Oct 17, 2019 at 12:11:16PM +0200, Uwe Kleine-K=C3=B6nig wro=
-te:
-> > > > > On Thu, Oct 17, 2019 at 11:48:08AM +0200, Michal Vok=C3=A1=C4=8D =
-wrote:
-> > > > > > On 17. 10. 19 10:10, Uwe Kleine-K=C3=B6nig wrote:
-> > > > > > > A previous change in the pwm core (namely 01ccf903edd6 ("pwm:=
- Let
-> > > > > > > pwm_get_state() return the last implemented state")) changed =
-the
-> > > > > > > semantic of pwm_get_state() and disclosed an (as it seems) co=
-mmon
-> > > > > > > problem in lowlevel PWM drivers. By not relying on the period=
- and duty
-> > > > > > > cycle being retrievable from a disabled PWM this type of prob=
-lem is
-> > > > > > > worked around.
-> > > > > > >=20
-> > > > > > > Apart from this issue only calling the pwm_get_state/pwm_appl=
-y_state
-> > > > > > > combo once is also more effective.
-> > > > > > >=20
-> > > > > > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutr=
-onix.de>
-> > > > > > > ---
-> > > > > > > Hello,
-> > > > > > >=20
-> > > > > > > There are now two reports about 01ccf903edd6 breaking a backl=
-ight. As
-> > > > > > > far as I understand the problem this is a combination of the =
-backend pwm
-> > > > > > > driver yielding surprising results and the pwm-bl driver doin=
-g things
-> > > > > > > more complicated than necessary.
-> > > > > > >=20
-> > > > > > > So I guess this patch works around these problems. Still it w=
-ould be
-> > > > > > > interesting to find out the details in the imx driver that tr=
-iggers the
-> > > > > > > problem. So Adam, can you please instrument the pwm-imx27 dri=
-ver to
-> > > > > > > print *state at the beginning of pwm_imx27_apply() and the en=
-d of
-> > > > > > > pwm_imx27_get_state() and provide the results?
-> > > > > > >=20
-> > > > > > > Note I only compile tested this change.
-> > > > > >=20
-> > > > > > Hi Uwe,
-> > > > > > I was just about to respond to the "pwm_bl on i.MX6Q broken on =
-5.4-RC1+"
-> > > > > > thread that I have a similar problem when you submitted this pa=
-tch.
-> > > > > >=20
-> > > > > > So here are my few cents:
-> > > > > >=20
-> > > > > > My setup is as follows:
-> > > > > >   - imx6dl-yapp4-draco with i.MX6Solo
-> > > > > >   - backlight is controlled with inverted PWM signal
-> > > > > >   - max brightness level =3D 32, default brightness level set t=
-o 32 in DT.
-> > > > > >=20
-> > > > > > 1. Almost correct backlight behavior before 01ccf903edd6 ("pwm:=
- Let
-> > > > > >     pwm_get_state() return the last implemented state):
-> > > > > >=20
-> > > > > >   - System boots to userspace and backlight is enabled all the =
-time from
-> > > > > >     power up.
-> > > > > >=20
-> > > > > >     $ dmesg | grep state
-> > > > > >     [    1.763381] get state end: -1811360608, enabled: 0
-> > > > >=20
-> > > > > What is -1811360608? When I wrote "print *state" above, I thought=
- about
-> > > > > something like:
-> > > > >=20
-> > > > > 	pr_info("%s: period: %u, duty: %u, polarity: %d, enabled: %d",
-> > > > > 		__func__, state->period, state->duty_cycle, state->polarity, st=
-ate->enabled);
-> > > > >=20
-> > > > > A quick look into drivers/pwm/pwm-imx27.c shows that this is anot=
-her
-> > > > > driver that yields duty_cycle =3D 0 when the hardware is off.
-> > > >=20
-> > > > It seems to me like the best recourse to fix this for now would be =
-to
-> > > > patch up the drivers that return 0 when the hardware is off by cach=
-ing
-> > > > the currently configured duty cycle.
-> > > >=20
-> > > > How about the patch below?
-> > > >=20
-> > > > Thierry
-> > > >=20
-> > > > --- >8 ---
-> > > >  From 15a52a7f1b910804fabd74a5882befd3f9d6bb37 Mon Sep 17 00:00:00 =
-2001
-> > > > From: Thierry Reding <thierry.reding@gmail.com>
-> > > > Date: Thu, 17 Oct 2019 12:56:00 +0200
-> > > > Subject: [PATCH] pwm: imx27: Cache duty cycle register value
-> > > >=20
-> > > > The hardware register containing the duty cycle value cannot be acc=
-essed
-> > > > when the PWM is disabled. This causes the ->get_state() callback to=
- read
-> > > > back a duty cycle value of 0, which can confuse consumer drivers.
-> > > >=20
-> > > > Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> > > > ---
-> > > >   drivers/pwm/pwm-imx27.c | 31 ++++++++++++++++++++++++-------
-> > > >   1 file changed, 24 insertions(+), 7 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-> > > > index ae11d8577f18..4113d5cd4c62 100644
-> > > > --- a/drivers/pwm/pwm-imx27.c
-> > > > +++ b/drivers/pwm/pwm-imx27.c
-> > > > @@ -85,6 +85,13 @@ struct pwm_imx27_chip {
-> > > >   	struct clk	*clk_per;
-> > > >   	void __iomem	*mmio_base;
-> > > >   	struct pwm_chip	chip;
-> > > > +
-> > > > +	/*
-> > > > +	 * The driver cannot read the current duty cycle from the hardwar=
-e if
-> > > > +	 * the hardware is disabled. Cache the last programmed duty cycle
-> > > > +	 * value to return in that case.
-> > > > +	 */
-> > > > +	unsigned int duty_cycle;
-> > > >   };
-> > > >   #define to_pwm_imx27_chip(chip)	container_of(chip, struct pwm_imx=
-27_chip, chip)
-> > > > @@ -155,14 +162,17 @@ static void pwm_imx27_get_state(struct pwm_ch=
-ip *chip,
-> > > >   	tmp =3D NSEC_PER_SEC * (u64)(period + 2);
-> > > >   	state->period =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
-> > > > -	/* PWMSAR can be read only if PWM is enabled */
-> > > > -	if (state->enabled) {
-> > > > +	/*
-> > > > +	 * PWMSAR can be read only if PWM is enabled. If the PWM is disab=
-led,
-> > > > +	 * use the cached value.
-> > > > +	 */
-> > > > +	if (state->enabled)
-> > > >   		val =3D readl(imx->mmio_base + MX3_PWMSAR);
-> > > > -		tmp =3D NSEC_PER_SEC * (u64)(val);
-> > > > -		state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
-> > > > -	} else {
-> > > > -		state->duty_cycle =3D 0;
-> > > > -	}
-> > > > +	else
-> > > > +		val =3D imx->duty_cycle;
-> > > > +
-> > > > +	tmp =3D NSEC_PER_SEC * (u64)(val);
-> > > > +	state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
-> > > >   	if (!state->enabled)
-> > > >   		pwm_imx27_clk_disable_unprepare(chip);
-> > > > @@ -261,6 +271,13 @@ static int pwm_imx27_apply(struct pwm_chip *ch=
-ip, struct pwm_device *pwm,
-> > > >   		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-> > > >   		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-> > > > +		/*
-> > > > +		 * Store the duty cycle for future reference in cases where
-> > > > +		 * the MX3_PWMSAR register can't be read (i.e. when the PWM
-> > > > +		 * is disabled).
-> > > > +		 */
-> > > > +		imx->duty_cycle =3D duty_cycles;
-> > > > +
-> > >=20
-> > > I wonder if it would be more sensible to do this in the pwm core
-> > > instead. Currently there are two drivers known with this problem. I
-> > > wouldn't be surprised if there were more.
-> >=20
-> > I've inspected all the drivers and didn't spot any beyond cros-ec and
-> > i.MX that have this problem. There's also no good way to do this in the
-> > core, because the core doesn't know whether or not the driver is capable
-> > of returning the correct duty cycle on hardare readout. So the core
-> > would have to rely on state->duty_cycle that is passed in, but then the
-> > offending commit becomes useless because the whole point was to return
-> > the state as written to hardware (rather than the software state which
-> > was being returned before that patch).
-> >=20
-> > > If we want to move clients to not rely on .period and .duty_cycle for=
- a
-> > > disabled PWM (do we?) a single change in the core is also beneficial
-> > > compared to fixing several lowlevel drivers.
-> >=20
-> > These are really two orthogonal problems. We don't currently consider
-> > enabled =3D 0 to be equivalent to duty_cycle =3D 0 at an API level. I'm=
- not
-> > prepared to do that at this point in the release cycle either.
-> >=20
-> > What this here has shown is that we have at least two drivers that don't
-> > behave the way they are supposed to according to the API and they break
-> > consumers. If they break for pwm-backlight, it's possible that they will
-> > break for other consumers as well. So the right thing to do is fix the
-> > two drivers that are broken.
-> >=20
-> > After -rc1 we no longer experiment. Instead we clean up the messes we've
-> > made. We can revisit the other points once mainline is fixed.
->=20
-> Hi Thierry,
-> I just tried your patch with v5.4-rc3 with this result:
->=20
-> root@hydraco:~# dmesg | grep pwm_
-> [    1.772089] pwm_imx27_get_state: period: 992970, duty: 0, polarity: 0,=
- enabled: 0
-> [    4.938759] pwm_imx27_apply: period: 500000, duty: 0, polarity: 1, ena=
-bled: 0
-> [    4.947431] pwm_imx27_get_state: period: 992970, duty: 0, polarity: 0,=
- enabled: 0
-
-Okay... this is interesting. If I understand correctly, that first line
-here is where the initial hardware readout happens. The second one is
-the first time when the backlight is configured, so it sets period and
-polarity. But then for some reason when we read out after that to read
-what state was written... we see that actually nothing was written at
-all.
-
-And we can see why in pwm_imx27_apply(): If the PWM is not enabled, we
-don't actually program any of the registers, so it's not a surprise that
-things fall apart.
-
-> [    4.956484] pwm_imx27_apply: period: 992970, duty: 992970, polarity: 0=
-, enabled: 0
-> [    4.965473] pwm_imx27_get_state: period: 992970, duty: 0, polarity: 0,=
- enabled: 0
-> [    4.974410] pwm_imx27_apply: period: 992970, duty: 0, polarity: 0, ena=
-bled: 1
-> [    4.988617] pwm_imx27_get_state: period: 992970, duty: 0, polarity: 0,=
- enabled: 1
->=20
-> Backlight is on with full brightness at this stage.
->=20
-> root@hydraco:/sys/class/backlight/backlight# cat brightness
-> 32
->=20
-> root@hydraco:/sys/class/backlight/backlight# echo 32 > brightness
-> [  153.386391] pwm_imx27_apply: period: 992970, duty: 992970, polarity: 0=
-, enabled: 1
-> [  153.398311] pwm_imx27_get_state: period: 992970, duty: 992970, polarit=
-y: 0, enabled: 1
->=20
-> Backlight goes down.
->=20
-> root@hydraco:/sys/class/backlight/backlight# echo 1 > brightness
-> [  168.506261] pwm_imx27_apply: period: 992970, duty: 15576, polarity: 0,=
- enabled: 1
-> [  168.518064] pwm_imx27_get_state: period: 992970, duty: 15576, polarity=
-: 0, enabled: 1
->=20
-> Backlight goes up to almost full brightness.
->=20
-> root@hydraco:/sys/class/backlight/backlight# echo 0 > brightness
-> [  177.496265] pwm_imx27_apply: period: 992970, duty: 0, polarity: 0, ena=
-bled: 0
-> [  177.507602] pwm_imx27_get_state: period: 496485, duty: 7788, polarity:=
- 0, enabled: 0
->=20
-> Backlight goes up to full brightness.
->=20
-> So your patch does not solve my issue.
->=20
-> The main problem I see is incorrect polarity setting. In my DT
-> the pwm-backlight consumer requests PWM_POLARITY_INVERTED and
-> period 500000ns. Though after reset the PWM HW registers are
-> configured to normal polarity. This initial setting is read out
-> and used by the consumer instead of the DT configuration.
-
-So the problem with the i.MX driver is that it doesn't actually write
-the full state to the hardware and therefore the patch that caused these
-things to break reads back an incomplete state. So we've basically got
-two options: 1) make sure the hardware state is fully written or 2) make
-sure that we return the cached state.
-
-I think 2) doesn't really make sense because it is conflicts with the
-purpose of the ->get_state() callback. The only time where we should be
-returning cached data is if the hardware registers don't contain the
-information (as in the case of the cros-ec driver) or if we can't access
-it for other reasons (such as in the case of i.MX's duty cycle).
-
-Does the attached patch help with your issue? The idea is to always
-write the full state to the hardware, even if period and duty cycle are
-unused when the PWM is disabled. That's really the kind of contract that
-we have added with the offending patch in the core.
-
-It looks like all other drivers handle this more or less correctly, so
-if we only need to fix up cros-ec and i.MX this seems like a realistic
-way to fix things up. If other drivers are problematic in this regard,
-we should probably revert and then fix the drivers before we can apply
-that patch again.
-
-Thierry
-
---- >8 ---
-=46rom 7040f0038e04a1caa6dda5b6f675a9fdee0271f4 Mon Sep 17 00:00:00 2001
-=46rom: Thierry Reding <thierry.reding@gmail.com>
-Date: Thu, 17 Oct 2019 17:11:41 +0200
-Subject: [PATCH] pwm: imx27: Unconditionally write state to hardware
-
-The i.MX driver currently uses a shortcut and doesn't write all of the
-state through to the hardware when the PWM is disabled. This causes an
-inconsistent state to be read back by consumers with the result of them
-malfunctioning.
-
-Fix this by always writing the full state through to the hardware
-registers so that the correct state can always be read back.
-
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
----
- drivers/pwm/pwm-imx27.c | 120 ++++++++++++++++++++--------------------
- 1 file changed, 59 insertions(+), 61 deletions(-)
-
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 4113d5cd4c62..59d8b1289808 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -230,70 +230,68 @@ static int pwm_imx27_apply(struct pwm_chip *chip, str=
-uct pwm_device *pwm,
-=20
- 	pwm_get_state(pwm, &cstate);
-=20
--	if (state->enabled) {
--		c =3D clk_get_rate(imx->clk_per);
--		c *=3D state->period;
--
--		do_div(c, 1000000000);
--		period_cycles =3D c;
--
--		prescale =3D period_cycles / 0x10000 + 1;
--
--		period_cycles /=3D prescale;
--		c =3D (unsigned long long)period_cycles * state->duty_cycle;
--		do_div(c, state->period);
--		duty_cycles =3D c;
--
--		/*
--		 * according to imx pwm RM, the real period value should be
--		 * PERIOD value in PWMPR plus 2.
--		 */
--		if (period_cycles > 2)
--			period_cycles -=3D 2;
--		else
--			period_cycles =3D 0;
--
--		/*
--		 * Wait for a free FIFO slot if the PWM is already enabled, and
--		 * flush the FIFO if the PWM was disabled and is about to be
--		 * enabled.
--		 */
--		if (cstate.enabled) {
--			pwm_imx27_wait_fifo_slot(chip, pwm);
--		} else {
--			ret =3D pwm_imx27_clk_prepare_enable(chip);
--			if (ret)
--				return ret;
--
--			pwm_imx27_sw_reset(chip);
--		}
--
--		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
--		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
--
--		/*
--		 * Store the duty cycle for future reference in cases where
--		 * the MX3_PWMSAR register can't be read (i.e. when the PWM
--		 * is disabled).
--		 */
--		imx->duty_cycle =3D duty_cycles;
--
--		cr =3D MX3_PWMCR_PRESCALER_SET(prescale) |
--		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
--		     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
--		     MX3_PWMCR_DBGEN | MX3_PWMCR_EN;
--
--		if (state->polarity =3D=3D PWM_POLARITY_INVERSED)
--			cr |=3D FIELD_PREP(MX3_PWMCR_POUTC,
--					MX3_PWMCR_POUTC_INVERTED);
--
--		writel(cr, imx->mmio_base + MX3_PWMCR);
--	} else if (cstate.enabled) {
--		writel(0, imx->mmio_base + MX3_PWMCR);
-+	c =3D clk_get_rate(imx->clk_per);
-+	c *=3D state->period;
-=20
--		pwm_imx27_clk_disable_unprepare(chip);
-+	do_div(c, 1000000000);
-+	period_cycles =3D c;
-+
-+	prescale =3D period_cycles / 0x10000 + 1;
-+
-+	period_cycles /=3D prescale;
-+	c =3D (unsigned long long)period_cycles * state->duty_cycle;
-+	do_div(c, state->period);
-+	duty_cycles =3D c;
-+
-+	/*
-+	 * according to imx pwm RM, the real period value should be PERIOD
-+	 * value in PWMPR plus 2.
-+	 */
-+	if (period_cycles > 2)
-+		period_cycles -=3D 2;
-+	else
-+		period_cycles =3D 0;
-+
-+	/*
-+	 * Wait for a free FIFO slot if the PWM is already enabled, and flush
-+	 * the FIFO if the PWM was disabled and is about to be enabled.
-+	 */
-+	if (cstate.enabled) {
-+		pwm_imx27_wait_fifo_slot(chip, pwm);
-+	} else {
-+		ret =3D pwm_imx27_clk_prepare_enable(chip);
-+		if (ret)
-+			return ret;
-+
-+		pwm_imx27_sw_reset(chip);
- 	}
-=20
-+	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-+	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-+
-+	/*
-+	 * Store the duty cycle for future reference in cases where the
-+	 * MX3_PWMSAR register can't be read (i.e. when the PWM is disabled).
-+	 */
-+	imx->duty_cycle =3D duty_cycles;
-+
-+	cr =3D MX3_PWMCR_PRESCALER_SET(prescale) |
-+	     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-+	     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
-+	     MX3_PWMCR_DBGEN;
-+
-+	if (state->polarity =3D=3D PWM_POLARITY_INVERSED)
-+		cr |=3D FIELD_PREP(MX3_PWMCR_POUTC,
-+				MX3_PWMCR_POUTC_INVERTED);
-+
-+	if (state->enabled)
-+		cr |=3D MX3_PWMCR_EN;
-+
-+	writel(cr, imx->mmio_base + MX3_PWMCR);
-+
-+	if (!state->enabled && cstate.enabled)
-+		pwm_imx27_clk_disable_unprepare(chip);
-+
- 	return 0;
- }
-=20
---=20
-2.23.0
-
-
---+HP7ph2BbKc20aGI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2ohVsACgkQ3SOs138+
-s6FpvRAAkq94lA82A66VI4GvRzZn9p0Iek4pxFpcu4CIPhWg+L3cbDc0VVZpnFa1
-1tMBJwTHU5eFrLh5izAoRpG/LTWmN8IVn5ymta+XVEUd6Zcu18xECzYKTyIHPvma
-XNogNVa+HbgvyrtOm6juOHWJ2P04m6UnAoa0n1HuPJhTjmIzZXwH+yjocfq3FnDc
-lgjfL0/4fA5K/gZUtJVW5Zh+TT6+gD3lMVqq6ExzMqRv3QnNu42s+xczCyFZLFrB
-/fZ4A/INvXEacuJYG7+Vnuf5GwFV9f75oUxznbGAtnR3g1qgn+/A71ArzZBK6Ml+
-SVg+osgrv1BBGCDaxixx3OZgI+V0mmsnmx+SnWG0+b0n9mYFgFLKv5mGl3oey36p
-cp6P+rU6njOu7x+KFKtWqW5u3P4SeEyFTlxEQJfAepMRJKYCDis3MEVfZ6GBaDXB
-UAUyUh6V8u1smbdq2JSk0Vhn3/p1J6bHPpAP3Of6FBH4c3jMGhKov1IYaaT/SZPs
-Ta5UnPTTgduR4MpjpkfSXyqmq92bGghCl5cWZyA/8BId/E3p9YkVjSklUKSKkIQd
-YlN2K2gWThA/VPgtKTVW46DFOXlRAiZQxnKIo02fuJQGLOndoTZqYb3ZPmVDeUeG
-1KSMeJpmb2hT8mrBqF4AGIxdqjmlYvmOf+lcgw5G4vNhBkw01ew=
-=rMCP
------END PGP SIGNATURE-----
-
---+HP7ph2BbKc20aGI--
-
---===============1257088160==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
-
---===============1257088160==--
+T24gVGh1LCBPY3QgMTcsIDIwMTkgYXQgMTA6MTQgQU0gVGhpZXJyeSBSZWRpbmcKPHRoaWVycnku
+cmVkaW5nQGdtYWlsLmNvbT4gd3JvdGU6Cj4KPiBPbiBUaHUsIE9jdCAxNywgMjAxOSBhdCAwMzo1
+ODoyNVBNICswMjAwLCBNaWNoYWwgVm9rw6HEjSB3cm90ZToKPiA+IE9uIDE3LiAxMC4gMTkgMTQ6
+NTksIFRoaWVycnkgUmVkaW5nIHdyb3RlOgo+ID4gPiBPbiBUaHUsIE9jdCAxNywgMjAxOSBhdCAw
+MjowOToxN1BNICswMjAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiA+ID4gPiBPbiBUaHUs
+IE9jdCAxNywgMjAxOSBhdCAwMToxMTozMVBNICswMjAwLCBUaGllcnJ5IFJlZGluZyB3cm90ZToK
+PiA+ID4gPiA+IE9uIFRodSwgT2N0IDE3LCAyMDE5IGF0IDEyOjExOjE2UE0gKzAyMDAsIFV3ZSBL
+bGVpbmUtS8O2bmlnIHdyb3RlOgo+ID4gPiA+ID4gPiBPbiBUaHUsIE9jdCAxNywgMjAxOSBhdCAx
+MTo0ODowOEFNICswMjAwLCBNaWNoYWwgVm9rw6HEjSB3cm90ZToKPiA+ID4gPiA+ID4gPiBPbiAx
+Ny4gMTAuIDE5IDEwOjEwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiA+ID4gPiA+ID4gPiA+
+IEEgcHJldmlvdXMgY2hhbmdlIGluIHRoZSBwd20gY29yZSAobmFtZWx5IDAxY2NmOTAzZWRkNiAo
+InB3bTogTGV0Cj4gPiA+ID4gPiA+ID4gPiBwd21fZ2V0X3N0YXRlKCkgcmV0dXJuIHRoZSBsYXN0
+IGltcGxlbWVudGVkIHN0YXRlIikpIGNoYW5nZWQgdGhlCj4gPiA+ID4gPiA+ID4gPiBzZW1hbnRp
+YyBvZiBwd21fZ2V0X3N0YXRlKCkgYW5kIGRpc2Nsb3NlZCBhbiAoYXMgaXQgc2VlbXMpIGNvbW1v
+bgo+ID4gPiA+ID4gPiA+ID4gcHJvYmxlbSBpbiBsb3dsZXZlbCBQV00gZHJpdmVycy4gQnkgbm90
+IHJlbHlpbmcgb24gdGhlIHBlcmlvZCBhbmQgZHV0eQo+ID4gPiA+ID4gPiA+ID4gY3ljbGUgYmVp
+bmcgcmV0cmlldmFibGUgZnJvbSBhIGRpc2FibGVkIFBXTSB0aGlzIHR5cGUgb2YgcHJvYmxlbSBp
+cwo+ID4gPiA+ID4gPiA+ID4gd29ya2VkIGFyb3VuZC4KPiA+ID4gPiA+ID4gPiA+Cj4gPiA+ID4g
+PiA+ID4gPiBBcGFydCBmcm9tIHRoaXMgaXNzdWUgb25seSBjYWxsaW5nIHRoZSBwd21fZ2V0X3N0
+YXRlL3B3bV9hcHBseV9zdGF0ZQo+ID4gPiA+ID4gPiA+ID4gY29tYm8gb25jZSBpcyBhbHNvIG1v
+cmUgZWZmZWN0aXZlLgo+ID4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gPiA+IFNpZ25lZC1vZmYt
+Ynk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Cj4g
+PiA+ID4gPiA+ID4gPiAtLS0KPiA+ID4gPiA+ID4gPiA+IEhlbGxvLAo+ID4gPiA+ID4gPiA+ID4K
+PiA+ID4gPiA+ID4gPiA+IFRoZXJlIGFyZSBub3cgdHdvIHJlcG9ydHMgYWJvdXQgMDFjY2Y5MDNl
+ZGQ2IGJyZWFraW5nIGEgYmFja2xpZ2h0LiBBcwo+ID4gPiA+ID4gPiA+ID4gZmFyIGFzIEkgdW5k
+ZXJzdGFuZCB0aGUgcHJvYmxlbSB0aGlzIGlzIGEgY29tYmluYXRpb24gb2YgdGhlIGJhY2tlbmQg
+cHdtCj4gPiA+ID4gPiA+ID4gPiBkcml2ZXIgeWllbGRpbmcgc3VycHJpc2luZyByZXN1bHRzIGFu
+ZCB0aGUgcHdtLWJsIGRyaXZlciBkb2luZyB0aGluZ3MKPiA+ID4gPiA+ID4gPiA+IG1vcmUgY29t
+cGxpY2F0ZWQgdGhhbiBuZWNlc3NhcnkuCj4gPiA+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+ID4g
+U28gSSBndWVzcyB0aGlzIHBhdGNoIHdvcmtzIGFyb3VuZCB0aGVzZSBwcm9ibGVtcy4gU3RpbGwg
+aXQgd291bGQgYmUKPiA+ID4gPiA+ID4gPiA+IGludGVyZXN0aW5nIHRvIGZpbmQgb3V0IHRoZSBk
+ZXRhaWxzIGluIHRoZSBpbXggZHJpdmVyIHRoYXQgdHJpZ2dlcnMgdGhlCj4gPiA+ID4gPiA+ID4g
+PiBwcm9ibGVtLiBTbyBBZGFtLCBjYW4geW91IHBsZWFzZSBpbnN0cnVtZW50IHRoZSBwd20taW14
+MjcgZHJpdmVyIHRvCj4gPiA+ID4gPiA+ID4gPiBwcmludCAqc3RhdGUgYXQgdGhlIGJlZ2lubmlu
+ZyBvZiBwd21faW14MjdfYXBwbHkoKSBhbmQgdGhlIGVuZCBvZgo+ID4gPiA+ID4gPiA+ID4gcHdt
+X2lteDI3X2dldF9zdGF0ZSgpIGFuZCBwcm92aWRlIHRoZSByZXN1bHRzPwo+ID4gPiA+ID4gPiA+
+ID4KPiA+ID4gPiA+ID4gPiA+IE5vdGUgSSBvbmx5IGNvbXBpbGUgdGVzdGVkIHRoaXMgY2hhbmdl
+Lgo+ID4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+ID4gSGkgVXdlLAo+ID4gPiA+ID4gPiA+IEkgd2Fz
+IGp1c3QgYWJvdXQgdG8gcmVzcG9uZCB0byB0aGUgInB3bV9ibCBvbiBpLk1YNlEgYnJva2VuIG9u
+IDUuNC1SQzErIgo+ID4gPiA+ID4gPiA+IHRocmVhZCB0aGF0IEkgaGF2ZSBhIHNpbWlsYXIgcHJv
+YmxlbSB3aGVuIHlvdSBzdWJtaXR0ZWQgdGhpcyBwYXRjaC4KPiA+ID4gPiA+ID4gPgo+ID4gPiA+
+ID4gPiA+IFNvIGhlcmUgYXJlIG15IGZldyBjZW50czoKPiA+ID4gPiA+ID4gPgo+ID4gPiA+ID4g
+PiA+IE15IHNldHVwIGlzIGFzIGZvbGxvd3M6Cj4gPiA+ID4gPiA+ID4gICAtIGlteDZkbC15YXBw
+NC1kcmFjbyB3aXRoIGkuTVg2U29sbwo+ID4gPiA+ID4gPiA+ICAgLSBiYWNrbGlnaHQgaXMgY29u
+dHJvbGxlZCB3aXRoIGludmVydGVkIFBXTSBzaWduYWwKPiA+ID4gPiA+ID4gPiAgIC0gbWF4IGJy
+aWdodG5lc3MgbGV2ZWwgPSAzMiwgZGVmYXVsdCBicmlnaHRuZXNzIGxldmVsIHNldCB0byAzMiBp
+biBEVC4KPiA+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+IDEuIEFsbW9zdCBjb3JyZWN0IGJhY2ts
+aWdodCBiZWhhdmlvciBiZWZvcmUgMDFjY2Y5MDNlZGQ2ICgicHdtOiBMZXQKPiA+ID4gPiA+ID4g
+PiAgICAgcHdtX2dldF9zdGF0ZSgpIHJldHVybiB0aGUgbGFzdCBpbXBsZW1lbnRlZCBzdGF0ZSk6
+Cj4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gPiAgIC0gU3lzdGVtIGJvb3RzIHRvIHVzZXJzcGFj
+ZSBhbmQgYmFja2xpZ2h0IGlzIGVuYWJsZWQgYWxsIHRoZSB0aW1lIGZyb20KPiA+ID4gPiA+ID4g
+PiAgICAgcG93ZXIgdXAuCj4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gPiAgICAgJCBkbWVzZyB8
+IGdyZXAgc3RhdGUKPiA+ID4gPiA+ID4gPiAgICAgWyAgICAxLjc2MzM4MV0gZ2V0IHN0YXRlIGVu
+ZDogLTE4MTEzNjA2MDgsIGVuYWJsZWQ6IDAKPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gV2hhdCBp
+cyAtMTgxMTM2MDYwOD8gV2hlbiBJIHdyb3RlICJwcmludCAqc3RhdGUiIGFib3ZlLCBJIHRob3Vn
+aHQgYWJvdXQKPiA+ID4gPiA+ID4gc29tZXRoaW5nIGxpa2U6Cj4gPiA+ID4gPiA+Cj4gPiA+ID4g
+PiA+ICAgICAgIHByX2luZm8oIiVzOiBwZXJpb2Q6ICV1LCBkdXR5OiAldSwgcG9sYXJpdHk6ICVk
+LCBlbmFibGVkOiAlZCIsCj4gPiA+ID4gPiA+ICAgICAgICAgICAgICAgX19mdW5jX18sIHN0YXRl
+LT5wZXJpb2QsIHN0YXRlLT5kdXR5X2N5Y2xlLCBzdGF0ZS0+cG9sYXJpdHksIHN0YXRlLT5lbmFi
+bGVkKTsKPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gQSBxdWljayBsb29rIGludG8gZHJpdmVycy9w
+d20vcHdtLWlteDI3LmMgc2hvd3MgdGhhdCB0aGlzIGlzIGFub3RoZXIKPiA+ID4gPiA+ID4gZHJp
+dmVyIHRoYXQgeWllbGRzIGR1dHlfY3ljbGUgPSAwIHdoZW4gdGhlIGhhcmR3YXJlIGlzIG9mZi4K
+PiA+ID4gPiA+Cj4gPiA+ID4gPiBJdCBzZWVtcyB0byBtZSBsaWtlIHRoZSBiZXN0IHJlY291cnNl
+IHRvIGZpeCB0aGlzIGZvciBub3cgd291bGQgYmUgdG8KPiA+ID4gPiA+IHBhdGNoIHVwIHRoZSBk
+cml2ZXJzIHRoYXQgcmV0dXJuIDAgd2hlbiB0aGUgaGFyZHdhcmUgaXMgb2ZmIGJ5IGNhY2hpbmcK
+PiA+ID4gPiA+IHRoZSBjdXJyZW50bHkgY29uZmlndXJlZCBkdXR5IGN5Y2xlLgo+ID4gPiA+ID4K
+PiA+ID4gPiA+IEhvdyBhYm91dCB0aGUgcGF0Y2ggYmVsb3c/Cj4gPiA+ID4gPgo+ID4gPiA+ID4g
+VGhpZXJyeQo+ID4gPiA+ID4KPiA+ID4gPiA+IC0tLSA+OCAtLS0KPiA+ID4gPiA+ICBGcm9tIDE1
+YTUyYTdmMWI5MTA4MDRmYWJkNzRhNTg4MmJlZmQzZjlkNmJiMzcgTW9uIFNlcCAxNyAwMDowMDow
+MCAyMDAxCj4gPiA+ID4gPiBGcm9tOiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21h
+aWwuY29tPgo+ID4gPiA+ID4gRGF0ZTogVGh1LCAxNyBPY3QgMjAxOSAxMjo1NjowMCArMDIwMAo+
+ID4gPiA+ID4gU3ViamVjdDogW1BBVENIXSBwd206IGlteDI3OiBDYWNoZSBkdXR5IGN5Y2xlIHJl
+Z2lzdGVyIHZhbHVlCj4gPiA+ID4gPgo+ID4gPiA+ID4gVGhlIGhhcmR3YXJlIHJlZ2lzdGVyIGNv
+bnRhaW5pbmcgdGhlIGR1dHkgY3ljbGUgdmFsdWUgY2Fubm90IGJlIGFjY2Vzc2VkCj4gPiA+ID4g
+PiB3aGVuIHRoZSBQV00gaXMgZGlzYWJsZWQuIFRoaXMgY2F1c2VzIHRoZSAtPmdldF9zdGF0ZSgp
+IGNhbGxiYWNrIHRvIHJlYWQKPiA+ID4gPiA+IGJhY2sgYSBkdXR5IGN5Y2xlIHZhbHVlIG9mIDAs
+IHdoaWNoIGNhbiBjb25mdXNlIGNvbnN1bWVyIGRyaXZlcnMuCj4gPiA+ID4gPgo+ID4gPiA+ID4g
+U2lnbmVkLW9mZi1ieTogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4K
+PiA+ID4gPiA+IC0tLQo+ID4gPiA+ID4gICBkcml2ZXJzL3B3bS9wd20taW14MjcuYyB8IDMxICsr
+KysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0KPiA+ID4gPiA+ICAgMSBmaWxlIGNoYW5nZWQs
+IDI0IGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pCj4gPiA+ID4gPgo+ID4gPiA+ID4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jIGIvZHJpdmVycy9wd20vcHdtLWlteDI3
+LmMKPiA+ID4gPiA+IGluZGV4IGFlMTFkODU3N2YxOC4uNDExM2Q1Y2Q0YzYyIDEwMDY0NAo+ID4g
+PiA+ID4gLS0tIGEvZHJpdmVycy9wd20vcHdtLWlteDI3LmMKPiA+ID4gPiA+ICsrKyBiL2RyaXZl
+cnMvcHdtL3B3bS1pbXgyNy5jCj4gPiA+ID4gPiBAQCAtODUsNiArODUsMTMgQEAgc3RydWN0IHB3
+bV9pbXgyN19jaGlwIHsKPiA+ID4gPiA+ICAgICAgICAgc3RydWN0IGNsayAgICAgICpjbGtfcGVy
+Owo+ID4gPiA+ID4gICAgICAgICB2b2lkIF9faW9tZW0gICAgKm1taW9fYmFzZTsKPiA+ID4gPiA+
+ICAgICAgICAgc3RydWN0IHB3bV9jaGlwIGNoaXA7Cj4gPiA+ID4gPiArCj4gPiA+ID4gPiArICAg
+ICAgIC8qCj4gPiA+ID4gPiArICAgICAgICAqIFRoZSBkcml2ZXIgY2Fubm90IHJlYWQgdGhlIGN1
+cnJlbnQgZHV0eSBjeWNsZSBmcm9tIHRoZSBoYXJkd2FyZSBpZgo+ID4gPiA+ID4gKyAgICAgICAg
+KiB0aGUgaGFyZHdhcmUgaXMgZGlzYWJsZWQuIENhY2hlIHRoZSBsYXN0IHByb2dyYW1tZWQgZHV0
+eSBjeWNsZQo+ID4gPiA+ID4gKyAgICAgICAgKiB2YWx1ZSB0byByZXR1cm4gaW4gdGhhdCBjYXNl
+Lgo+ID4gPiA+ID4gKyAgICAgICAgKi8KPiA+ID4gPiA+ICsgICAgICAgdW5zaWduZWQgaW50IGR1
+dHlfY3ljbGU7Cj4gPiA+ID4gPiAgIH07Cj4gPiA+ID4gPiAgICNkZWZpbmUgdG9fcHdtX2lteDI3
+X2NoaXAoY2hpcCkgICAgICAgY29udGFpbmVyX29mKGNoaXAsIHN0cnVjdCBwd21faW14MjdfY2hp
+cCwgY2hpcCkKPiA+ID4gPiA+IEBAIC0xNTUsMTQgKzE2MiwxNyBAQCBzdGF0aWMgdm9pZCBwd21f
+aW14MjdfZ2V0X3N0YXRlKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwKPiA+ID4gPiA+ICAgICAgICAg
+dG1wID0gTlNFQ19QRVJfU0VDICogKHU2NCkocGVyaW9kICsgMik7Cj4gPiA+ID4gPiAgICAgICAg
+IHN0YXRlLT5wZXJpb2QgPSBESVZfUk9VTkRfQ0xPU0VTVF9VTEwodG1wLCBwd21fY2xrKTsKPiA+
+ID4gPiA+IC0gICAgICAgLyogUFdNU0FSIGNhbiBiZSByZWFkIG9ubHkgaWYgUFdNIGlzIGVuYWJs
+ZWQgKi8KPiA+ID4gPiA+IC0gICAgICAgaWYgKHN0YXRlLT5lbmFibGVkKSB7Cj4gPiA+ID4gPiAr
+ICAgICAgIC8qCj4gPiA+ID4gPiArICAgICAgICAqIFBXTVNBUiBjYW4gYmUgcmVhZCBvbmx5IGlm
+IFBXTSBpcyBlbmFibGVkLiBJZiB0aGUgUFdNIGlzIGRpc2FibGVkLAo+ID4gPiA+ID4gKyAgICAg
+ICAgKiB1c2UgdGhlIGNhY2hlZCB2YWx1ZS4KPiA+ID4gPiA+ICsgICAgICAgICovCj4gPiA+ID4g
+PiArICAgICAgIGlmIChzdGF0ZS0+ZW5hYmxlZCkKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICB2
+YWwgPSByZWFkbChpbXgtPm1taW9fYmFzZSArIE1YM19QV01TQVIpOwo+ID4gPiA+ID4gLSAgICAg
+ICAgICAgICAgIHRtcCA9IE5TRUNfUEVSX1NFQyAqICh1NjQpKHZhbCk7Cj4gPiA+ID4gPiAtICAg
+ICAgICAgICAgICAgc3RhdGUtPmR1dHlfY3ljbGUgPSBESVZfUk9VTkRfQ0xPU0VTVF9VTEwodG1w
+LCBwd21fY2xrKTsKPiA+ID4gPiA+IC0gICAgICAgfSBlbHNlIHsKPiA+ID4gPiA+IC0gICAgICAg
+ICAgICAgICBzdGF0ZS0+ZHV0eV9jeWNsZSA9IDA7Cj4gPiA+ID4gPiAtICAgICAgIH0KPiA+ID4g
+PiA+ICsgICAgICAgZWxzZQo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgIHZhbCA9IGlteC0+ZHV0
+eV9jeWNsZTsKPiA+ID4gPiA+ICsKPiA+ID4gPiA+ICsgICAgICAgdG1wID0gTlNFQ19QRVJfU0VD
+ICogKHU2NCkodmFsKTsKPiA+ID4gPiA+ICsgICAgICAgc3RhdGUtPmR1dHlfY3ljbGUgPSBESVZf
+Uk9VTkRfQ0xPU0VTVF9VTEwodG1wLCBwd21fY2xrKTsKPiA+ID4gPiA+ICAgICAgICAgaWYgKCFz
+dGF0ZS0+ZW5hYmxlZCkKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICBwd21faW14MjdfY2xrX2Rp
+c2FibGVfdW5wcmVwYXJlKGNoaXApOwo+ID4gPiA+ID4gQEAgLTI2MSw2ICsyNzEsMTMgQEAgc3Rh
+dGljIGludCBwd21faW14MjdfYXBwbHkoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdt
+X2RldmljZSAqcHdtLAo+ID4gPiA+ID4gICAgICAgICAgICAgICAgIHdyaXRlbChkdXR5X2N5Y2xl
+cywgaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNU0FSKTsKPiA+ID4gPiA+ICAgICAgICAgICAgICAg
+ICB3cml0ZWwocGVyaW9kX2N5Y2xlcywgaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNUFIpOwo+ID4g
+PiA+ID4gKyAgICAgICAgICAgICAgIC8qCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICogU3Rv
+cmUgdGhlIGR1dHkgY3ljbGUgZm9yIGZ1dHVyZSByZWZlcmVuY2UgaW4gY2FzZXMgd2hlcmUKPiA+
+ID4gPiA+ICsgICAgICAgICAgICAgICAgKiB0aGUgTVgzX1BXTVNBUiByZWdpc3RlciBjYW4ndCBi
+ZSByZWFkIChpLmUuIHdoZW4gdGhlIFBXTQo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAqIGlz
+IGRpc2FibGVkKS4KPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAgKi8KPiA+ID4gPiA+ICsgICAg
+ICAgICAgICAgICBpbXgtPmR1dHlfY3ljbGUgPSBkdXR5X2N5Y2xlczsKPiA+ID4gPiA+ICsKPiA+
+ID4gPgo+ID4gPiA+IEkgd29uZGVyIGlmIGl0IHdvdWxkIGJlIG1vcmUgc2Vuc2libGUgdG8gZG8g
+dGhpcyBpbiB0aGUgcHdtIGNvcmUKPiA+ID4gPiBpbnN0ZWFkLiBDdXJyZW50bHkgdGhlcmUgYXJl
+IHR3byBkcml2ZXJzIGtub3duIHdpdGggdGhpcyBwcm9ibGVtLiBJCj4gPiA+ID4gd291bGRuJ3Qg
+YmUgc3VycHJpc2VkIGlmIHRoZXJlIHdlcmUgbW9yZS4KPiA+ID4KPiA+ID4gSSd2ZSBpbnNwZWN0
+ZWQgYWxsIHRoZSBkcml2ZXJzIGFuZCBkaWRuJ3Qgc3BvdCBhbnkgYmV5b25kIGNyb3MtZWMgYW5k
+Cj4gPiA+IGkuTVggdGhhdCBoYXZlIHRoaXMgcHJvYmxlbS4gVGhlcmUncyBhbHNvIG5vIGdvb2Qg
+d2F5IHRvIGRvIHRoaXMgaW4gdGhlCj4gPiA+IGNvcmUsIGJlY2F1c2UgdGhlIGNvcmUgZG9lc24n
+dCBrbm93IHdoZXRoZXIgb3Igbm90IHRoZSBkcml2ZXIgaXMgY2FwYWJsZQo+ID4gPiBvZiByZXR1
+cm5pbmcgdGhlIGNvcnJlY3QgZHV0eSBjeWNsZSBvbiBoYXJkYXJlIHJlYWRvdXQuIFNvIHRoZSBj
+b3JlCj4gPiA+IHdvdWxkIGhhdmUgdG8gcmVseSBvbiBzdGF0ZS0+ZHV0eV9jeWNsZSB0aGF0IGlz
+IHBhc3NlZCBpbiwgYnV0IHRoZW4gdGhlCj4gPiA+IG9mZmVuZGluZyBjb21taXQgYmVjb21lcyB1
+c2VsZXNzIGJlY2F1c2UgdGhlIHdob2xlIHBvaW50IHdhcyB0byByZXR1cm4KPiA+ID4gdGhlIHN0
+YXRlIGFzIHdyaXR0ZW4gdG8gaGFyZHdhcmUgKHJhdGhlciB0aGFuIHRoZSBzb2Z0d2FyZSBzdGF0
+ZSB3aGljaAo+ID4gPiB3YXMgYmVpbmcgcmV0dXJuZWQgYmVmb3JlIHRoYXQgcGF0Y2gpLgo+ID4g
+Pgo+ID4gPiA+IElmIHdlIHdhbnQgdG8gbW92ZSBjbGllbnRzIHRvIG5vdCByZWx5IG9uIC5wZXJp
+b2QgYW5kIC5kdXR5X2N5Y2xlIGZvciBhCj4gPiA+ID4gZGlzYWJsZWQgUFdNIChkbyB3ZT8pIGEg
+c2luZ2xlIGNoYW5nZSBpbiB0aGUgY29yZSBpcyBhbHNvIGJlbmVmaWNpYWwKPiA+ID4gPiBjb21w
+YXJlZCB0byBmaXhpbmcgc2V2ZXJhbCBsb3dsZXZlbCBkcml2ZXJzLgo+ID4gPgo+ID4gPiBUaGVz
+ZSBhcmUgcmVhbGx5IHR3byBvcnRob2dvbmFsIHByb2JsZW1zLiBXZSBkb24ndCBjdXJyZW50bHkg
+Y29uc2lkZXIKPiA+ID4gZW5hYmxlZCA9IDAgdG8gYmUgZXF1aXZhbGVudCB0byBkdXR5X2N5Y2xl
+ID0gMCBhdCBhbiBBUEkgbGV2ZWwuIEknbSBub3QKPiA+ID4gcHJlcGFyZWQgdG8gZG8gdGhhdCBh
+dCB0aGlzIHBvaW50IGluIHRoZSByZWxlYXNlIGN5Y2xlIGVpdGhlci4KPiA+ID4KPiA+ID4gV2hh
+dCB0aGlzIGhlcmUgaGFzIHNob3duIGlzIHRoYXQgd2UgaGF2ZSBhdCBsZWFzdCB0d28gZHJpdmVy
+cyB0aGF0IGRvbid0Cj4gPiA+IGJlaGF2ZSB0aGUgd2F5IHRoZXkgYXJlIHN1cHBvc2VkIHRvIGFj
+Y29yZGluZyB0byB0aGUgQVBJIGFuZCB0aGV5IGJyZWFrCj4gPiA+IGNvbnN1bWVycy4gSWYgdGhl
+eSBicmVhayBmb3IgcHdtLWJhY2tsaWdodCwgaXQncyBwb3NzaWJsZSB0aGF0IHRoZXkgd2lsbAo+
+ID4gPiBicmVhayBmb3Igb3RoZXIgY29uc3VtZXJzIGFzIHdlbGwuIFNvIHRoZSByaWdodCB0aGlu
+ZyB0byBkbyBpcyBmaXggdGhlCj4gPiA+IHR3byBkcml2ZXJzIHRoYXQgYXJlIGJyb2tlbi4KPiA+
+ID4KPiA+ID4gQWZ0ZXIgLXJjMSB3ZSBubyBsb25nZXIgZXhwZXJpbWVudC4gSW5zdGVhZCB3ZSBj
+bGVhbiB1cCB0aGUgbWVzc2VzIHdlJ3ZlCj4gPiA+IG1hZGUuIFdlIGNhbiByZXZpc2l0IHRoZSBv
+dGhlciBwb2ludHMgb25jZSBtYWlubGluZSBpcyBmaXhlZC4KPiA+Cj4gPiBIaSBUaGllcnJ5LAo+
+ID4gSSBqdXN0IHRyaWVkIHlvdXIgcGF0Y2ggd2l0aCB2NS40LXJjMyB3aXRoIHRoaXMgcmVzdWx0
+Ogo+ID4KPiA+IHJvb3RAaHlkcmFjbzp+IyBkbWVzZyB8IGdyZXAgcHdtXwo+ID4gWyAgICAxLjc3
+MjA4OV0gcHdtX2lteDI3X2dldF9zdGF0ZTogcGVyaW9kOiA5OTI5NzAsIGR1dHk6IDAsIHBvbGFy
+aXR5OiAwLCBlbmFibGVkOiAwCj4gPiBbICAgIDQuOTM4NzU5XSBwd21faW14MjdfYXBwbHk6IHBl
+cmlvZDogNTAwMDAwLCBkdXR5OiAwLCBwb2xhcml0eTogMSwgZW5hYmxlZDogMAo+ID4gWyAgICA0
+Ljk0NzQzMV0gcHdtX2lteDI3X2dldF9zdGF0ZTogcGVyaW9kOiA5OTI5NzAsIGR1dHk6IDAsIHBv
+bGFyaXR5OiAwLCBlbmFibGVkOiAwCj4KPiBPa2F5Li4uIHRoaXMgaXMgaW50ZXJlc3RpbmcuIElm
+IEkgdW5kZXJzdGFuZCBjb3JyZWN0bHksIHRoYXQgZmlyc3QgbGluZQo+IGhlcmUgaXMgd2hlcmUg
+dGhlIGluaXRpYWwgaGFyZHdhcmUgcmVhZG91dCBoYXBwZW5zLiBUaGUgc2Vjb25kIG9uZSBpcwo+
+IHRoZSBmaXJzdCB0aW1lIHdoZW4gdGhlIGJhY2tsaWdodCBpcyBjb25maWd1cmVkLCBzbyBpdCBz
+ZXRzIHBlcmlvZCBhbmQKPiBwb2xhcml0eS4gQnV0IHRoZW4gZm9yIHNvbWUgcmVhc29uIHdoZW4g
+d2UgcmVhZCBvdXQgYWZ0ZXIgdGhhdCB0byByZWFkCj4gd2hhdCBzdGF0ZSB3YXMgd3JpdHRlbi4u
+LiB3ZSBzZWUgdGhhdCBhY3R1YWxseSBub3RoaW5nIHdhcyB3cml0dGVuIGF0Cj4gYWxsLgo+Cj4g
+QW5kIHdlIGNhbiBzZWUgd2h5IGluIHB3bV9pbXgyN19hcHBseSgpOiBJZiB0aGUgUFdNIGlzIG5v
+dCBlbmFibGVkLCB3ZQo+IGRvbid0IGFjdHVhbGx5IHByb2dyYW0gYW55IG9mIHRoZSByZWdpc3Rl
+cnMsIHNvIGl0J3Mgbm90IGEgc3VycHJpc2UgdGhhdAo+IHRoaW5ncyBmYWxsIGFwYXJ0Lgo+Cj4g
+PiBbICAgIDQuOTU2NDg0XSBwd21faW14MjdfYXBwbHk6IHBlcmlvZDogOTkyOTcwLCBkdXR5OiA5
+OTI5NzAsIHBvbGFyaXR5OiAwLCBlbmFibGVkOiAwCj4gPiBbICAgIDQuOTY1NDczXSBwd21faW14
+MjdfZ2V0X3N0YXRlOiBwZXJpb2Q6IDk5Mjk3MCwgZHV0eTogMCwgcG9sYXJpdHk6IDAsIGVuYWJs
+ZWQ6IDAKPiA+IFsgICAgNC45NzQ0MTBdIHB3bV9pbXgyN19hcHBseTogcGVyaW9kOiA5OTI5NzAs
+IGR1dHk6IDAsIHBvbGFyaXR5OiAwLCBlbmFibGVkOiAxCj4gPiBbICAgIDQuOTg4NjE3XSBwd21f
+aW14MjdfZ2V0X3N0YXRlOiBwZXJpb2Q6IDk5Mjk3MCwgZHV0eTogMCwgcG9sYXJpdHk6IDAsIGVu
+YWJsZWQ6IDEKPiA+Cj4gPiBCYWNrbGlnaHQgaXMgb24gd2l0aCBmdWxsIGJyaWdodG5lc3MgYXQg
+dGhpcyBzdGFnZS4KPiA+Cj4gPiByb290QGh5ZHJhY286L3N5cy9jbGFzcy9iYWNrbGlnaHQvYmFj
+a2xpZ2h0IyBjYXQgYnJpZ2h0bmVzcwo+ID4gMzIKPiA+Cj4gPiByb290QGh5ZHJhY286L3N5cy9j
+bGFzcy9iYWNrbGlnaHQvYmFja2xpZ2h0IyBlY2hvIDMyID4gYnJpZ2h0bmVzcwo+ID4gWyAgMTUz
+LjM4NjM5MV0gcHdtX2lteDI3X2FwcGx5OiBwZXJpb2Q6IDk5Mjk3MCwgZHV0eTogOTkyOTcwLCBw
+b2xhcml0eTogMCwgZW5hYmxlZDogMQo+ID4gWyAgMTUzLjM5ODMxMV0gcHdtX2lteDI3X2dldF9z
+dGF0ZTogcGVyaW9kOiA5OTI5NzAsIGR1dHk6IDk5Mjk3MCwgcG9sYXJpdHk6IDAsIGVuYWJsZWQ6
+IDEKPiA+Cj4gPiBCYWNrbGlnaHQgZ29lcyBkb3duLgo+ID4KPiA+IHJvb3RAaHlkcmFjbzovc3lz
+L2NsYXNzL2JhY2tsaWdodC9iYWNrbGlnaHQjIGVjaG8gMSA+IGJyaWdodG5lc3MKPiA+IFsgIDE2
+OC41MDYyNjFdIHB3bV9pbXgyN19hcHBseTogcGVyaW9kOiA5OTI5NzAsIGR1dHk6IDE1NTc2LCBw
+b2xhcml0eTogMCwgZW5hYmxlZDogMQo+ID4gWyAgMTY4LjUxODA2NF0gcHdtX2lteDI3X2dldF9z
+dGF0ZTogcGVyaW9kOiA5OTI5NzAsIGR1dHk6IDE1NTc2LCBwb2xhcml0eTogMCwgZW5hYmxlZDog
+MQo+ID4KPiA+IEJhY2tsaWdodCBnb2VzIHVwIHRvIGFsbW9zdCBmdWxsIGJyaWdodG5lc3MuCj4g
+Pgo+ID4gcm9vdEBoeWRyYWNvOi9zeXMvY2xhc3MvYmFja2xpZ2h0L2JhY2tsaWdodCMgZWNobyAw
+ID4gYnJpZ2h0bmVzcwo+ID4gWyAgMTc3LjQ5NjI2NV0gcHdtX2lteDI3X2FwcGx5OiBwZXJpb2Q6
+IDk5Mjk3MCwgZHV0eTogMCwgcG9sYXJpdHk6IDAsIGVuYWJsZWQ6IDAKPiA+IFsgIDE3Ny41MDc2
+MDJdIHB3bV9pbXgyN19nZXRfc3RhdGU6IHBlcmlvZDogNDk2NDg1LCBkdXR5OiA3Nzg4LCBwb2xh
+cml0eTogMCwgZW5hYmxlZDogMAo+ID4KPiA+IEJhY2tsaWdodCBnb2VzIHVwIHRvIGZ1bGwgYnJp
+Z2h0bmVzcy4KPiA+Cj4gPiBTbyB5b3VyIHBhdGNoIGRvZXMgbm90IHNvbHZlIG15IGlzc3VlLgo+
+ID4KPiA+IFRoZSBtYWluIHByb2JsZW0gSSBzZWUgaXMgaW5jb3JyZWN0IHBvbGFyaXR5IHNldHRp
+bmcuIEluIG15IERUCj4gPiB0aGUgcHdtLWJhY2tsaWdodCBjb25zdW1lciByZXF1ZXN0cyBQV01f
+UE9MQVJJVFlfSU5WRVJURUQgYW5kCj4gPiBwZXJpb2QgNTAwMDAwbnMuIFRob3VnaCBhZnRlciBy
+ZXNldCB0aGUgUFdNIEhXIHJlZ2lzdGVycyBhcmUKPiA+IGNvbmZpZ3VyZWQgdG8gbm9ybWFsIHBv
+bGFyaXR5LiBUaGlzIGluaXRpYWwgc2V0dGluZyBpcyByZWFkIG91dAo+ID4gYW5kIHVzZWQgYnkg
+dGhlIGNvbnN1bWVyIGluc3RlYWQgb2YgdGhlIERUIGNvbmZpZ3VyYXRpb24uCj4KPiBTbyB0aGUg
+cHJvYmxlbSB3aXRoIHRoZSBpLk1YIGRyaXZlciBpcyB0aGF0IGl0IGRvZXNuJ3QgYWN0dWFsbHkg
+d3JpdGUKPiB0aGUgZnVsbCBzdGF0ZSB0byB0aGUgaGFyZHdhcmUgYW5kIHRoZXJlZm9yZSB0aGUg
+cGF0Y2ggdGhhdCBjYXVzZWQgdGhlc2UKPiB0aGluZ3MgdG8gYnJlYWsgcmVhZHMgYmFjayBhbiBp
+bmNvbXBsZXRlIHN0YXRlLiBTbyB3ZSd2ZSBiYXNpY2FsbHkgZ290Cj4gdHdvIG9wdGlvbnM6IDEp
+IG1ha2Ugc3VyZSB0aGUgaGFyZHdhcmUgc3RhdGUgaXMgZnVsbHkgd3JpdHRlbiBvciAyKSBtYWtl
+Cj4gc3VyZSB0aGF0IHdlIHJldHVybiB0aGUgY2FjaGVkIHN0YXRlLgo+Cj4gSSB0aGluayAyKSBk
+b2Vzbid0IHJlYWxseSBtYWtlIHNlbnNlIGJlY2F1c2UgaXQgaXMgY29uZmxpY3RzIHdpdGggdGhl
+Cj4gcHVycG9zZSBvZiB0aGUgLT5nZXRfc3RhdGUoKSBjYWxsYmFjay4gVGhlIG9ubHkgdGltZSB3
+aGVyZSB3ZSBzaG91bGQgYmUKPiByZXR1cm5pbmcgY2FjaGVkIGRhdGEgaXMgaWYgdGhlIGhhcmR3
+YXJlIHJlZ2lzdGVycyBkb24ndCBjb250YWluIHRoZQo+IGluZm9ybWF0aW9uIChhcyBpbiB0aGUg
+Y2FzZSBvZiB0aGUgY3Jvcy1lYyBkcml2ZXIpIG9yIGlmIHdlIGNhbid0IGFjY2Vzcwo+IGl0IGZv
+ciBvdGhlciByZWFzb25zIChzdWNoIGFzIGluIHRoZSBjYXNlIG9mIGkuTVgncyBkdXR5IGN5Y2xl
+KS4KPgo+IERvZXMgdGhlIGF0dGFjaGVkIHBhdGNoIGhlbHAgd2l0aCB5b3VyIGlzc3VlPyBUaGUg
+aWRlYSBpcyB0byBhbHdheXMKPiB3cml0ZSB0aGUgZnVsbCBzdGF0ZSB0byB0aGUgaGFyZHdhcmUs
+IGV2ZW4gaWYgcGVyaW9kIGFuZCBkdXR5IGN5Y2xlIGFyZQo+IHVudXNlZCB3aGVuIHRoZSBQV00g
+aXMgZGlzYWJsZWQuIFRoYXQncyByZWFsbHkgdGhlIGtpbmQgb2YgY29udHJhY3QgdGhhdAo+IHdl
+IGhhdmUgYWRkZWQgd2l0aCB0aGUgb2ZmZW5kaW5nIHBhdGNoIGluIHRoZSBjb3JlLgo+Cj4gSXQg
+bG9va3MgbGlrZSBhbGwgb3RoZXIgZHJpdmVycyBoYW5kbGUgdGhpcyBtb3JlIG9yIGxlc3MgY29y
+cmVjdGx5LCBzbwo+IGlmIHdlIG9ubHkgbmVlZCB0byBmaXggdXAgY3Jvcy1lYyBhbmQgaS5NWCB0
+aGlzIHNlZW1zIGxpa2UgYSByZWFsaXN0aWMKPiB3YXkgdG8gZml4IHRoaW5ncyB1cC4gSWYgb3Ro
+ZXIgZHJpdmVycyBhcmUgcHJvYmxlbWF0aWMgaW4gdGhpcyByZWdhcmQsCj4gd2Ugc2hvdWxkIHBy
+b2JhYmx5IHJldmVydCBhbmQgdGhlbiBmaXggdGhlIGRyaXZlcnMgYmVmb3JlIHdlIGNhbiBhcHBs
+eQo+IHRoYXQgcGF0Y2ggYWdhaW4uCgpUaGlzIHBhdGNoIGNvbWJpbmVkIHdpdGggeW91ciBwcmV2
+aW91cyBwYXRjaCBhcHBlYXJzIHRvIGhhdmUgd29ya2VkLgpJZiB5b3UgZW5kIHVwIHNlbmRpbmcg
+YSBwYXRjaCBzZXJpZXMgdG8gZml4IHRoaXMsIGdvIGFoZWFkIGFuZCBhZGQKClRlc3RlZC1ieTog
+QWRhbSBGb3JkIDxhZm9yZDE3M0BnbWFpbC5jb20+ICNpbXg2cS1sb2dpY3BkCgpUaGFuayB5b3UK
+CmFkYW0KPgo+IFRoaWVycnkKPgo+IC0tLSA+OCAtLS0KPiBGcm9tIDcwNDBmMDAzOGUwNGExY2Fh
+NmRkYTViNmY2NzVhOWZkZWUwMjcxZjQgTW9uIFNlcCAxNyAwMDowMDowMCAyMDAxCj4gRnJvbTog
+VGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KPiBEYXRlOiBUaHUsIDE3
+IE9jdCAyMDE5IDE3OjExOjQxICswMjAwCj4gU3ViamVjdDogW1BBVENIXSBwd206IGlteDI3OiBV
+bmNvbmRpdGlvbmFsbHkgd3JpdGUgc3RhdGUgdG8gaGFyZHdhcmUKPgo+IFRoZSBpLk1YIGRyaXZl
+ciBjdXJyZW50bHkgdXNlcyBhIHNob3J0Y3V0IGFuZCBkb2Vzbid0IHdyaXRlIGFsbCBvZiB0aGUK
+PiBzdGF0ZSB0aHJvdWdoIHRvIHRoZSBoYXJkd2FyZSB3aGVuIHRoZSBQV00gaXMgZGlzYWJsZWQu
+IFRoaXMgY2F1c2VzIGFuCj4gaW5jb25zaXN0ZW50IHN0YXRlIHRvIGJlIHJlYWQgYmFjayBieSBj
+b25zdW1lcnMgd2l0aCB0aGUgcmVzdWx0IG9mIHRoZW0KPiBtYWxmdW5jdGlvbmluZy4KPgo+IEZp
+eCB0aGlzIGJ5IGFsd2F5cyB3cml0aW5nIHRoZSBmdWxsIHN0YXRlIHRocm91Z2ggdG8gdGhlIGhh
+cmR3YXJlCj4gcmVnaXN0ZXJzIHNvIHRoYXQgdGhlIGNvcnJlY3Qgc3RhdGUgY2FuIGFsd2F5cyBi
+ZSByZWFkIGJhY2suCj4KPiBTaWduZWQtb2ZmLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5y
+ZWRpbmdAZ21haWwuY29tPgo+IC0tLQo+ICBkcml2ZXJzL3B3bS9wd20taW14MjcuYyB8IDEyMCAr
+KysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gIDEgZmlsZSBjaGFuZ2Vk
+LCA1OSBpbnNlcnRpb25zKCspLCA2MSBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL3B3bS9wd20taW14MjcuYyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jCj4gaW5kZXggNDEx
+M2Q1Y2Q0YzYyLi41OWQ4YjEyODk4MDggMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9wd20vcHdtLWlt
+eDI3LmMKPiArKysgYi9kcml2ZXJzL3B3bS9wd20taW14MjcuYwo+IEBAIC0yMzAsNzAgKzIzMCw2
+OCBAQCBzdGF0aWMgaW50IHB3bV9pbXgyN19hcHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0
+cnVjdCBwd21fZGV2aWNlICpwd20sCj4KPiAgICAgICAgIHB3bV9nZXRfc3RhdGUocHdtLCAmY3N0
+YXRlKTsKPgo+IC0gICAgICAgaWYgKHN0YXRlLT5lbmFibGVkKSB7Cj4gLSAgICAgICAgICAgICAg
+IGMgPSBjbGtfZ2V0X3JhdGUoaW14LT5jbGtfcGVyKTsKPiAtICAgICAgICAgICAgICAgYyAqPSBz
+dGF0ZS0+cGVyaW9kOwo+IC0KPiAtICAgICAgICAgICAgICAgZG9fZGl2KGMsIDEwMDAwMDAwMDAp
+Owo+IC0gICAgICAgICAgICAgICBwZXJpb2RfY3ljbGVzID0gYzsKPiAtCj4gLSAgICAgICAgICAg
+ICAgIHByZXNjYWxlID0gcGVyaW9kX2N5Y2xlcyAvIDB4MTAwMDAgKyAxOwo+IC0KPiAtICAgICAg
+ICAgICAgICAgcGVyaW9kX2N5Y2xlcyAvPSBwcmVzY2FsZTsKPiAtICAgICAgICAgICAgICAgYyA9
+ICh1bnNpZ25lZCBsb25nIGxvbmcpcGVyaW9kX2N5Y2xlcyAqIHN0YXRlLT5kdXR5X2N5Y2xlOwo+
+IC0gICAgICAgICAgICAgICBkb19kaXYoYywgc3RhdGUtPnBlcmlvZCk7Cj4gLSAgICAgICAgICAg
+ICAgIGR1dHlfY3ljbGVzID0gYzsKPiAtCj4gLSAgICAgICAgICAgICAgIC8qCj4gLSAgICAgICAg
+ICAgICAgICAqIGFjY29yZGluZyB0byBpbXggcHdtIFJNLCB0aGUgcmVhbCBwZXJpb2QgdmFsdWUg
+c2hvdWxkIGJlCj4gLSAgICAgICAgICAgICAgICAqIFBFUklPRCB2YWx1ZSBpbiBQV01QUiBwbHVz
+IDIuCj4gLSAgICAgICAgICAgICAgICAqLwo+IC0gICAgICAgICAgICAgICBpZiAocGVyaW9kX2N5
+Y2xlcyA+IDIpCj4gLSAgICAgICAgICAgICAgICAgICAgICAgcGVyaW9kX2N5Y2xlcyAtPSAyOwo+
+IC0gICAgICAgICAgICAgICBlbHNlCj4gLSAgICAgICAgICAgICAgICAgICAgICAgcGVyaW9kX2N5
+Y2xlcyA9IDA7Cj4gLQo+IC0gICAgICAgICAgICAgICAvKgo+IC0gICAgICAgICAgICAgICAgKiBX
+YWl0IGZvciBhIGZyZWUgRklGTyBzbG90IGlmIHRoZSBQV00gaXMgYWxyZWFkeSBlbmFibGVkLCBh
+bmQKPiAtICAgICAgICAgICAgICAgICogZmx1c2ggdGhlIEZJRk8gaWYgdGhlIFBXTSB3YXMgZGlz
+YWJsZWQgYW5kIGlzIGFib3V0IHRvIGJlCj4gLSAgICAgICAgICAgICAgICAqIGVuYWJsZWQuCj4g
+LSAgICAgICAgICAgICAgICAqLwo+IC0gICAgICAgICAgICAgICBpZiAoY3N0YXRlLmVuYWJsZWQp
+IHsKPiAtICAgICAgICAgICAgICAgICAgICAgICBwd21faW14Mjdfd2FpdF9maWZvX3Nsb3QoY2hp
+cCwgcHdtKTsKPiAtICAgICAgICAgICAgICAgfSBlbHNlIHsKPiAtICAgICAgICAgICAgICAgICAg
+ICAgICByZXQgPSBwd21faW14MjdfY2xrX3ByZXBhcmVfZW5hYmxlKGNoaXApOwo+IC0gICAgICAg
+ICAgICAgICAgICAgICAgIGlmIChyZXQpCj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICByZXR1cm4gcmV0Owo+IC0KPiAtICAgICAgICAgICAgICAgICAgICAgICBwd21faW14Mjdfc3df
+cmVzZXQoY2hpcCk7Cj4gLSAgICAgICAgICAgICAgIH0KPiAtCj4gLSAgICAgICAgICAgICAgIHdy
+aXRlbChkdXR5X2N5Y2xlcywgaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNU0FSKTsKPiAtICAgICAg
+ICAgICAgICAgd3JpdGVsKHBlcmlvZF9jeWNsZXMsIGlteC0+bW1pb19iYXNlICsgTVgzX1BXTVBS
+KTsKPiAtCj4gLSAgICAgICAgICAgICAgIC8qCj4gLSAgICAgICAgICAgICAgICAqIFN0b3JlIHRo
+ZSBkdXR5IGN5Y2xlIGZvciBmdXR1cmUgcmVmZXJlbmNlIGluIGNhc2VzIHdoZXJlCj4gLSAgICAg
+ICAgICAgICAgICAqIHRoZSBNWDNfUFdNU0FSIHJlZ2lzdGVyIGNhbid0IGJlIHJlYWQgKGkuZS4g
+d2hlbiB0aGUgUFdNCj4gLSAgICAgICAgICAgICAgICAqIGlzIGRpc2FibGVkKS4KPiAtICAgICAg
+ICAgICAgICAgICovCj4gLSAgICAgICAgICAgICAgIGlteC0+ZHV0eV9jeWNsZSA9IGR1dHlfY3lj
+bGVzOwo+IC0KPiAtICAgICAgICAgICAgICAgY3IgPSBNWDNfUFdNQ1JfUFJFU0NBTEVSX1NFVChw
+cmVzY2FsZSkgfAo+IC0gICAgICAgICAgICAgICAgICAgIE1YM19QV01DUl9TVE9QRU4gfCBNWDNf
+UFdNQ1JfRE9aRU4gfCBNWDNfUFdNQ1JfV0FJVEVOIHwKPiAtICAgICAgICAgICAgICAgICAgICBG
+SUVMRF9QUkVQKE1YM19QV01DUl9DTEtTUkMsIE1YM19QV01DUl9DTEtTUkNfSVBHX0hJR0gpIHwK
+PiAtICAgICAgICAgICAgICAgICAgICBNWDNfUFdNQ1JfREJHRU4gfCBNWDNfUFdNQ1JfRU47Cj4g
+LQo+IC0gICAgICAgICAgICAgICBpZiAoc3RhdGUtPnBvbGFyaXR5ID09IFBXTV9QT0xBUklUWV9J
+TlZFUlNFRCkKPiAtICAgICAgICAgICAgICAgICAgICAgICBjciB8PSBGSUVMRF9QUkVQKE1YM19Q
+V01DUl9QT1VUQywKPiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTVgz
+X1BXTUNSX1BPVVRDX0lOVkVSVEVEKTsKPiAtCj4gLSAgICAgICAgICAgICAgIHdyaXRlbChjciwg
+aW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNQ1IpOwo+IC0gICAgICAgfSBlbHNlIGlmIChjc3RhdGUu
+ZW5hYmxlZCkgewo+IC0gICAgICAgICAgICAgICB3cml0ZWwoMCwgaW14LT5tbWlvX2Jhc2UgKyBN
+WDNfUFdNQ1IpOwo+ICsgICAgICAgYyA9IGNsa19nZXRfcmF0ZShpbXgtPmNsa19wZXIpOwo+ICsg
+ICAgICAgYyAqPSBzdGF0ZS0+cGVyaW9kOwo+Cj4gLSAgICAgICAgICAgICAgIHB3bV9pbXgyN19j
+bGtfZGlzYWJsZV91bnByZXBhcmUoY2hpcCk7Cj4gKyAgICAgICBkb19kaXYoYywgMTAwMDAwMDAw
+MCk7Cj4gKyAgICAgICBwZXJpb2RfY3ljbGVzID0gYzsKPiArCj4gKyAgICAgICBwcmVzY2FsZSA9
+IHBlcmlvZF9jeWNsZXMgLyAweDEwMDAwICsgMTsKPiArCj4gKyAgICAgICBwZXJpb2RfY3ljbGVz
+IC89IHByZXNjYWxlOwo+ICsgICAgICAgYyA9ICh1bnNpZ25lZCBsb25nIGxvbmcpcGVyaW9kX2N5
+Y2xlcyAqIHN0YXRlLT5kdXR5X2N5Y2xlOwo+ICsgICAgICAgZG9fZGl2KGMsIHN0YXRlLT5wZXJp
+b2QpOwo+ICsgICAgICAgZHV0eV9jeWNsZXMgPSBjOwo+ICsKPiArICAgICAgIC8qCj4gKyAgICAg
+ICAgKiBhY2NvcmRpbmcgdG8gaW14IHB3bSBSTSwgdGhlIHJlYWwgcGVyaW9kIHZhbHVlIHNob3Vs
+ZCBiZSBQRVJJT0QKPiArICAgICAgICAqIHZhbHVlIGluIFBXTVBSIHBsdXMgMi4KPiArICAgICAg
+ICAqLwo+ICsgICAgICAgaWYgKHBlcmlvZF9jeWNsZXMgPiAyKQo+ICsgICAgICAgICAgICAgICBw
+ZXJpb2RfY3ljbGVzIC09IDI7Cj4gKyAgICAgICBlbHNlCj4gKyAgICAgICAgICAgICAgIHBlcmlv
+ZF9jeWNsZXMgPSAwOwo+ICsKPiArICAgICAgIC8qCj4gKyAgICAgICAgKiBXYWl0IGZvciBhIGZy
+ZWUgRklGTyBzbG90IGlmIHRoZSBQV00gaXMgYWxyZWFkeSBlbmFibGVkLCBhbmQgZmx1c2gKPiAr
+ICAgICAgICAqIHRoZSBGSUZPIGlmIHRoZSBQV00gd2FzIGRpc2FibGVkIGFuZCBpcyBhYm91dCB0
+byBiZSBlbmFibGVkLgo+ICsgICAgICAgICovCj4gKyAgICAgICBpZiAoY3N0YXRlLmVuYWJsZWQp
+IHsKPiArICAgICAgICAgICAgICAgcHdtX2lteDI3X3dhaXRfZmlmb19zbG90KGNoaXAsIHB3bSk7
+Cj4gKyAgICAgICB9IGVsc2Ugewo+ICsgICAgICAgICAgICAgICByZXQgPSBwd21faW14MjdfY2xr
+X3ByZXBhcmVfZW5hYmxlKGNoaXApOwo+ICsgICAgICAgICAgICAgICBpZiAocmV0KQo+ICsgICAg
+ICAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7Cj4gKwo+ICsgICAgICAgICAgICAgICBwd21f
+aW14Mjdfc3dfcmVzZXQoY2hpcCk7Cj4gICAgICAgICB9Cj4KPiArICAgICAgIHdyaXRlbChkdXR5
+X2N5Y2xlcywgaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNU0FSKTsKPiArICAgICAgIHdyaXRlbChw
+ZXJpb2RfY3ljbGVzLCBpbXgtPm1taW9fYmFzZSArIE1YM19QV01QUik7Cj4gKwo+ICsgICAgICAg
+LyoKPiArICAgICAgICAqIFN0b3JlIHRoZSBkdXR5IGN5Y2xlIGZvciBmdXR1cmUgcmVmZXJlbmNl
+IGluIGNhc2VzIHdoZXJlIHRoZQo+ICsgICAgICAgICogTVgzX1BXTVNBUiByZWdpc3RlciBjYW4n
+dCBiZSByZWFkIChpLmUuIHdoZW4gdGhlIFBXTSBpcyBkaXNhYmxlZCkuCj4gKyAgICAgICAgKi8K
+PiArICAgICAgIGlteC0+ZHV0eV9jeWNsZSA9IGR1dHlfY3ljbGVzOwo+ICsKPiArICAgICAgIGNy
+ID0gTVgzX1BXTUNSX1BSRVNDQUxFUl9TRVQocHJlc2NhbGUpIHwKPiArICAgICAgICAgICAgTVgz
+X1BXTUNSX1NUT1BFTiB8IE1YM19QV01DUl9ET1pFTiB8IE1YM19QV01DUl9XQUlURU4gfAo+ICsg
+ICAgICAgICAgICBGSUVMRF9QUkVQKE1YM19QV01DUl9DTEtTUkMsIE1YM19QV01DUl9DTEtTUkNf
+SVBHX0hJR0gpIHwKPiArICAgICAgICAgICAgTVgzX1BXTUNSX0RCR0VOOwo+ICsKPiArICAgICAg
+IGlmIChzdGF0ZS0+cG9sYXJpdHkgPT0gUFdNX1BPTEFSSVRZX0lOVkVSU0VEKQo+ICsgICAgICAg
+ICAgICAgICBjciB8PSBGSUVMRF9QUkVQKE1YM19QV01DUl9QT1VUQywKPiArICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIE1YM19QV01DUl9QT1VUQ19JTlZFUlRFRCk7Cj4gKwo+ICsgICAg
+ICAgaWYgKHN0YXRlLT5lbmFibGVkKQo+ICsgICAgICAgICAgICAgICBjciB8PSBNWDNfUFdNQ1Jf
+RU47Cj4gKwo+ICsgICAgICAgd3JpdGVsKGNyLCBpbXgtPm1taW9fYmFzZSArIE1YM19QV01DUik7
+Cj4gKwo+ICsgICAgICAgaWYgKCFzdGF0ZS0+ZW5hYmxlZCAmJiBjc3RhdGUuZW5hYmxlZCkKPiAr
+ICAgICAgICAgICAgICAgcHdtX2lteDI3X2Nsa19kaXNhYmxlX3VucHJlcGFyZShjaGlwKTsKPiAr
+Cj4gICAgICAgICByZXR1cm4gMDsKPiAgfQo+Cj4gLS0KPiAyLjIzLjAKPgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0
+CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3Rv
+cC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
