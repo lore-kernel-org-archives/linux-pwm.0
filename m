@@ -1,138 +1,219 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/1] pwm: Convert period and duty cycle to u64
-Date: Thu, 17 Oct 2019 12:43:13 +0200
-Message-ID: <20191017104313.GA3122066@ulmo>
-References: <1571191899-6150-1-git-send-email-gurus@codeaurora.org>
- <1571191899-6150-2-git-send-email-gurus@codeaurora.org>
- <20191016101539.GC1303817@ulmo>
- <20191017060247.GA12487@codeaurora.org>
+Subject: Re: [PATCH] backlight: pwm_bl: configure pwm only once per backlight
+ toggle
+Date: Thu, 17 Oct 2019 13:11:31 +0200
+Message-ID: <20191017111131.GB3122066@ulmo>
+References: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
+ <c89925bd-857d-874f-b74f-c5700d4c9fbd@ysoft.com>
+ <20191017101116.3d5okxmto5coecad@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="rwEMma7ioTxnRzrJ"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191017060247.GA12487@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, kernel-team@android.com, Mark Salyzyn <salyzyn@google.com>, Sandeep Patil <sspatil@google.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============1448861735=="
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20191017101116.3d5okxmto5coecad@pengutronix.de>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, kernel@pengutronix.de, Jingoo Han <jingoohan1@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Adam Ford <aford173@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---rwEMma7ioTxnRzrJ
-Content-Type: text/plain; charset=us-ascii
+--===============1448861735==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="hQiwHBbRI9kgIhsi"
+Content-Disposition: inline
+
+
+--hQiwHBbRI9kgIhsi
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 16, 2019 at 11:02:47PM -0700, Guru Das Srinagesh wrote:
-> On Wed, Oct 16, 2019 at 12:15:39PM +0200, Thierry Reding wrote:
-> > On Tue, Oct 15, 2019 at 07:11:39PM -0700, Guru Das Srinagesh wrote:
-> > > Because period and duty cycle are defined as ints with units of
-> > > nanoseconds, the maximum time duration that can be set is limited to
-> > > ~2.147 seconds. Change their definitions to u64 so that higher durati=
-ons
-> > > may be set.
+On Thu, Oct 17, 2019 at 12:11:16PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> On Thu, Oct 17, 2019 at 11:48:08AM +0200, Michal Vok=C3=A1=C4=8D wrote:
+> > On 17. 10. 19 10:10, Uwe Kleine-K=C3=B6nig wrote:
+> > > A previous change in the pwm core (namely 01ccf903edd6 ("pwm: Let
+> > > pwm_get_state() return the last implemented state")) changed the
+> > > semantic of pwm_get_state() and disclosed an (as it seems) common
+> > > problem in lowlevel PWM drivers. By not relying on the period and duty
+> > > cycle being retrievable from a disabled PWM this type of problem is
+> > > worked around.
 > > >=20
-> > > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> > > Apart from this issue only calling the pwm_get_state/pwm_apply_state
+> > > combo once is also more effective.
+> > >=20
+> > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 > > > ---
-> > >  drivers/pwm/core.c  |  4 ++--
-> > >  drivers/pwm/sysfs.c | 10 +++++-----
-> > >  include/linux/pwm.h | 16 ++++++++--------
-> > >  3 files changed, 15 insertions(+), 15 deletions(-)
+> > > Hello,
+> > >=20
+> > > There are now two reports about 01ccf903edd6 breaking a backlight. As
+> > > far as I understand the problem this is a combination of the backend =
+pwm
+> > > driver yielding surprising results and the pwm-bl driver doing things
+> > > more complicated than necessary.
+> > >=20
+> > > So I guess this patch works around these problems. Still it would be
+> > > interesting to find out the details in the imx driver that triggers t=
+he
+> > > problem. So Adam, can you please instrument the pwm-imx27 driver to
+> > > print *state at the beginning of pwm_imx27_apply() and the end of
+> > > pwm_imx27_get_state() and provide the results?
+> > >=20
+> > > Note I only compile tested this change.
 > >=20
-> > Actually, we can't do that without further preparatory work. The reason
-> > is that consumers use the period and duty_cycle members in computations
-> > of their own, which lead to errors such as this:
+> > Hi Uwe,
+> > I was just about to respond to the "pwm_bl on i.MX6Q broken on 5.4-RC1+"
+> > thread that I have a similar problem when you submitted this patch.
 > >=20
-> > 	armv7l-unknown-linux-gnueabihf-ld: drivers/video/backlight/pwm_bl.o: i=
-n function `pwm_backlight_probe':
-> > 	pwm_bl.c:(.text+0x3b0): undefined reference to `__aeabi_uldivmod'
+> > So here are my few cents:
 > >=20
-> > So I think we need to audit all consumers carefully and make sure that
-> > they use do_div() where necessary to avoid such errors.
+> > My setup is as follows:
+> >  - imx6dl-yapp4-draco with i.MX6Solo
+> >  - backlight is controlled with inverted PWM signal
+> >  - max brightness level =3D 32, default brightness level set to 32 in D=
+T.
 > >=20
-> > Thierry
+> > 1. Almost correct backlight behavior before 01ccf903edd6 ("pwm: Let
+> >    pwm_get_state() return the last implemented state):
+> >=20
+> >  - System boots to userspace and backlight is enabled all the time from
+> >    power up.
+> >=20
+> >    $ dmesg | grep state
+> >    [    1.763381] get state end: -1811360608, enabled: 0
 >=20
-> Hi Thierry,
+> What is -1811360608? When I wrote "print *state" above, I thought about
+> something like:
 >=20
-> I would like to try doing the preparatory work by fixing the errors seen
-> in consumers so that this u64 patch may be applied without issues.
+> 	pr_info("%s: period: %u, duty: %u, polarity: %d, enabled: %d",
+> 		__func__, state->period, state->duty_cycle, state->polarity, state->ena=
+bled);
 >=20
-> Before sending the patch, I tried "make"-ing for arm, arm64 and i386
-> architectures to check for compilation/linking errors and encountered
-> none. I see that the above error arises from using a cross-compiler for
-> arm v7, which I haven't tried yet.
->=20
-> Could you please provide details of the compile tests that you run at
-> your end? I could then try to reproduce the errors you see in the
-> consumer drivers and fix them. Please do share any other ideas or
-> suggestions you may have in this regard.
+> A quick look into drivers/pwm/pwm-imx27.c shows that this is another
+> driver that yields duty_cycle =3D 0 when the hardware is off.
 
-I keep a set of scripts in the pwm/ subdirectory of the following
-repository:
+It seems to me like the best recourse to fix this for now would be to
+patch up the drivers that return 0 when the hardware is off by caching
+the currently configured duty cycle.
 
-	https://github.com/thierryreding/scripts
-
-Typically what I do is run:
-
-	$ /path/to/scripts.git/pwm/build --jobs 13 --color
-
-That requires a bit of setup for the cross-compilers. I have the
-following in my ~/.cross-compile file:
-
-	path: $HOME/pbs-stage1/bin:$HOME/toolchain/avr32/bin:$HOME/toolchain/unico=
-re32/bin
-	arm: armv7l-unknown-linux-gnueabihf-
-	arm64: aarch64-unknown-linux-gnu-
-	avr32: avr32-
-	blackfin: bfin-unknown-elf-
-	mips: mips-linux-gnu-
-	unicore32: unicore32-linux-
-	riscv: riscv64-linux-gnu-
-	x86:
-	x86_64:
-
-The blackfin and unicore32 builds are expected to fail because the
-blackfin architecture was removed and there's no recent enough kernel
-publicly available for unicore32.
-
-The last two entries in .cross-compile indicate that builds are native,
-so regular gcc from the build system will be used.
-
-Most of these compilers I've built from scratch using pbs-stage1:
-
-	https://github.com/thierryreding/pbs-stage1
-
-Note that I don't guarantee that that build system works for anyone but
-myself, but I'd be happy to hear feedback if you decide to use it. That
-said, you can probably find prebuilt toolchains for all of the above in
-a number of locations, like:
-
-	https://mirrors.edge.kernel.org/pub/tools/crosstool/
-
-or:
-
-	https://toolchains.bootlin.com/
+How about the patch below?
 
 Thierry
 
---rwEMma7ioTxnRzrJ
+--- >8 ---
+=46rom 15a52a7f1b910804fabd74a5882befd3f9d6bb37 Mon Sep 17 00:00:00 2001
+=46rom: Thierry Reding <thierry.reding@gmail.com>
+Date: Thu, 17 Oct 2019 12:56:00 +0200
+Subject: [PATCH] pwm: imx27: Cache duty cycle register value
+
+The hardware register containing the duty cycle value cannot be accessed
+when the PWM is disabled. This causes the ->get_state() callback to read
+back a duty cycle value of 0, which can confuse consumer drivers.
+
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+---
+ drivers/pwm/pwm-imx27.c | 31 ++++++++++++++++++++++++-------
+ 1 file changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index ae11d8577f18..4113d5cd4c62 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -85,6 +85,13 @@ struct pwm_imx27_chip {
+ 	struct clk	*clk_per;
+ 	void __iomem	*mmio_base;
+ 	struct pwm_chip	chip;
++
++	/*
++	 * The driver cannot read the current duty cycle from the hardware if
++	 * the hardware is disabled. Cache the last programmed duty cycle
++	 * value to return in that case.
++	 */
++	unsigned int duty_cycle;
+ };
+=20
+ #define to_pwm_imx27_chip(chip)	container_of(chip, struct pwm_imx27_chip, =
+chip)
+@@ -155,14 +162,17 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
+ 	tmp =3D NSEC_PER_SEC * (u64)(period + 2);
+ 	state->period =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+=20
+-	/* PWMSAR can be read only if PWM is enabled */
+-	if (state->enabled) {
++	/*
++	 * PWMSAR can be read only if PWM is enabled. If the PWM is disabled,
++	 * use the cached value.
++	 */
++	if (state->enabled)
+ 		val =3D readl(imx->mmio_base + MX3_PWMSAR);
+-		tmp =3D NSEC_PER_SEC * (u64)(val);
+-		state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+-	} else {
+-		state->duty_cycle =3D 0;
+-	}
++	else
++		val =3D imx->duty_cycle;
++
++	tmp =3D NSEC_PER_SEC * (u64)(val);
++	state->duty_cycle =3D DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+=20
+ 	if (!state->enabled)
+ 		pwm_imx27_clk_disable_unprepare(chip);
+@@ -261,6 +271,13 @@ static int pwm_imx27_apply(struct pwm_chip *chip, stru=
+ct pwm_device *pwm,
+ 		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+ 		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+=20
++		/*
++		 * Store the duty cycle for future reference in cases where
++		 * the MX3_PWMSAR register can't be read (i.e. when the PWM
++		 * is disabled).
++		 */
++		imx->duty_cycle =3D duty_cycles;
++
+ 		cr =3D MX3_PWMCR_PRESCALER_SET(prescale) |
+ 		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
+ 		     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
+--=20
+2.23.0
+
+
+--hQiwHBbRI9kgIhsi
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2oRb4ACgkQ3SOs138+
-s6Eubg//QRlhY2yWMvDbi5TV86IHTijMq1mWsuyUNHqqIur8iqDzT8pyJfV13YP/
-5CwTfBxc1LzYGzRq4woVEZiffrazudhVsjS0jA1ElxSRJX7RLG40KxVuGYH2fkCq
-MU0kn0wZEIPCpAVyMr1/g8KQLc9QmGBcL5sPB2wUpKRsAmL3nSyZIiNtJkEM2d5g
-w2V+YFN1ISY+gqp45f2v1jWWn+hSz6v1xzCyBIoaE80SPQ0aiU261ma/bARrUSzQ
-MNFvpyBf8Fbc9PsWKq/cU3qEj7EDK9kFkZp8EqwBnr+tDCIDCxLLdGIt25q8mIQT
-Gzgu2wO6NHcCH3wrKDzPiZUulwtiQ6XJfC+p7+77F3/SNSKFL2jL+cnc7P19F/Ub
-W1KhCuraOjZvuSqS+hpiUUfKOw//gl2fsYcyEVgxT7xIKGflI9dcFWLB1tPe9LZP
-vD2CXMsz5lsNV+hZN8gtFKt2A3LR902tovfYPqhbm2wy0oOakExbQGZPDWgN36iX
-rgy7v+YDUj8MOSRowGmESniRIlYG7WfS063B/E+TASTfQonJ5UVZSc1oyKcWCh8Q
-WkUHY3qW0SUqC4JrBOpyRJMAgYHVWuLI7vj8VcyyckwhqU3B3hkJO0KcQT4Vo8kY
-YF7GsDp55zzoH563Tm3stx+uurmrA749F5QU5IZ6rZFe1itXaVQ=
-=g7bs
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2oTGAACgkQ3SOs138+
+s6ErwRAAqDNujr5rVterfUV5MOpCMJiGtVSWik2J4qpL+Sz0dMupM5exBLxllNkO
+18mgYX5ioHsCvKjW1bEaqivlvpig65n33OBuq3/TT0XxXZd7pQNWckf8vngK7xIo
+MSlKUGyDekWVVt7zocpTpVWoVpV5bXAZ1MTcQCrbKkUsvgE/TU5R4vdXgXX/qd1I
+7QNygG/tj2rjHVfIQaG2RnOf8sEof4NHBR+GrLR9IVMfQjGW0eVqJ4Vjqc4P/JIj
+dvKptasZHRZvuN7zpywh1Jt5x4/GSr9Bhctfv1YwyrJs0HBrGyMsHDgRBVn02Wux
+P395+fNsA554ih7iS4uE8eiqX/TTeRZw2cUgAptzlZsQgAJIIU18ziLkA4xyqSbV
+NQz8AXcpDQGr5iYyxEwc2Z4GohO5wGaGP+yryUhrRnYvw38gejzYQKe7D87c2WnF
+653wEbBWeX3OJQWjYY3MorS22TpSX1R4/xPC+AhS25Japo8JJPOihRwqWGt3JTec
+NpqUyihBg23rnlgkjN68z5iaXtWqtonug4VKExySDZqW8Reg6eITMoEyWHoJ54mx
+C+EKCBSnKNVEmMoAeIavscOrUWuxtNo5NUmHIbOxLL3vaiK330JrUSEkNjVPBEmF
+HKuzBeOHKtBYhgXW7IxyXmvpSPGyTjsmyT3rOXDxn9dZIKasHuI=
+=GrXG
 -----END PGP SIGNATURE-----
 
---rwEMma7ioTxnRzrJ--
+--hQiwHBbRI9kgIhsi--
+
+--===============1448861735==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
+IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+
+--===============1448861735==--
