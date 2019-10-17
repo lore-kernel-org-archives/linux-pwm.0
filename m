@@ -1,72 +1,165 @@
-From: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v3 1/6] bus/ti-pwmss: move TI PWMSS driver from PWM to
- bus subsystem
-Date: Thu, 17 Oct 2019 21:58:01 +0100
-Message-ID: <20191017215751.7d05170c@archlinux>
-References: <20190901225827.12301-1-david@lechnology.com>
-        <20190901225827.12301-2-david@lechnology.com>
-        <20190902150245.GE1445@ulmo>
-        <20190908121524.49b4874d@archlinux>
-        <20190908194447.GM52127@atomide.com>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: Re: [PATCH] backlight: pwm_bl: configure pwm only once per backlight
+ toggle
+Date: Thu, 17 Oct 2019 11:48:08 +0200
+Message-ID: <c89925bd-857d-874f-b74f-c5700d4c9fbd@ysoft.com>
+References: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190908194447.GM52127@atomide.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org, linux-omap@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, =?UTF-8?B?QmVub8OudA==?= Cousson <bcousson@baylibre.com>, William Breathitt Gray <vilhelm.gray@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Adam Ford <aford173@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, dri-devel@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, 8 Sep 2019 12:44:48 -0700
-Tony Lindgren <tony@atomide.com> wrote:
-
-> * Jonathan Cameron <jic23@jic23.retrosnub.co.uk> [190908 11:16]:
-> > On Mon, 2 Sep 2019 17:02:45 +0200
-> > Thierry Reding <thierry.reding@gmail.com> wrote:
-> >   
-> > > On Sun, Sep 01, 2019 at 05:58:22PM -0500, David Lechner wrote:  
-> > > > The TI PWMSS driver is a simple bus driver for providing power
-> > > > power management for the PWM peripherals on TI AM33xx SoCs, namely
-> > > > eCAP, eHRPWM and eQEP. The eQEP is a counter rather than a PWM, so
-> > > > it does not make sense to have the bus driver in the PWM subsystem
-> > > > since the PWMSS is not exclusive to PWM devices.
-> > > > 
-> > > > Signed-off-by: David Lechner <david@lechnology.com>
-> > > > ---
-> > > > 
-> > > > v3 changes:
-> > > > - none
-> > > > v2 changes:
-> > > > - new patch
-> > > > 
-> > > >  drivers/bus/Kconfig                           | 9 +++++++++
-> > > >  drivers/bus/Makefile                          | 1 +
-> > > >  drivers/{pwm/pwm-tipwmss.c => bus/ti-pwmss.c} | 0
-> > > >  drivers/pwm/Kconfig                           | 9 ---------
-> > > >  drivers/pwm/Makefile                          | 1 -
-> > > >  5 files changed, 10 insertions(+), 10 deletions(-)
-> > > >  rename drivers/{pwm/pwm-tipwmss.c => bus/ti-pwmss.c} (100%)    
-> > > 
-> > > Acked-by: Thierry Reding <thierry.reding@gmail.com>  
-> > 
-> > Do we need an immutable branch for these precursor patches to the
-> > driver addition? It's not going to make 5.4 via my tree as cutting it
-> > too fine so we'll be in the position of holding these in a non obvious
-> > tree for a whole cycle.   
-> 
-> Sure an immutable branch would be nice in case of unlikely
-> dts file conflicts. And yeah no need to try to rush to v5.4.
-> 
-> Regards,
-> 
-> Tony
-immutable branch created based on 5.4-rc1 at:
-https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=ib-ti-eqep-5.4-rc1
-
-I'll pull it into IIO in a few minutes as have one more of these
-to do at the same time.  Includes patches 1-4 of this series.
-
-Thanks,
-
-Jonathan
+T24gMTcuIDEwLiAxOSAxMDoxMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gQSBwcmV2aW91
+cyBjaGFuZ2UgaW4gdGhlIHB3bSBjb3JlIChuYW1lbHkgMDFjY2Y5MDNlZGQ2ICgicHdtOiBMZXQK
+PiBwd21fZ2V0X3N0YXRlKCkgcmV0dXJuIHRoZSBsYXN0IGltcGxlbWVudGVkIHN0YXRlIikpIGNo
+YW5nZWQgdGhlCj4gc2VtYW50aWMgb2YgcHdtX2dldF9zdGF0ZSgpIGFuZCBkaXNjbG9zZWQgYW4g
+KGFzIGl0IHNlZW1zKSBjb21tb24KPiBwcm9ibGVtIGluIGxvd2xldmVsIFBXTSBkcml2ZXJzLiBC
+eSBub3QgcmVseWluZyBvbiB0aGUgcGVyaW9kIGFuZCBkdXR5Cj4gY3ljbGUgYmVpbmcgcmV0cmll
+dmFibGUgZnJvbSBhIGRpc2FibGVkIFBXTSB0aGlzIHR5cGUgb2YgcHJvYmxlbSBpcwo+IHdvcmtl
+ZCBhcm91bmQuCj4gCj4gQXBhcnQgZnJvbSB0aGlzIGlzc3VlIG9ubHkgY2FsbGluZyB0aGUgcHdt
+X2dldF9zdGF0ZS9wd21fYXBwbHlfc3RhdGUKPiBjb21ibyBvbmNlIGlzIGFsc28gbW9yZSBlZmZl
+Y3RpdmUuCj4gCj4gU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtv
+ZW5pZ0BwZW5ndXRyb25peC5kZT4KPiAtLS0KPiBIZWxsbywKPiAKPiBUaGVyZSBhcmUgbm93IHR3
+byByZXBvcnRzIGFib3V0IDAxY2NmOTAzZWRkNiBicmVha2luZyBhIGJhY2tsaWdodC4gQXMKPiBm
+YXIgYXMgSSB1bmRlcnN0YW5kIHRoZSBwcm9ibGVtIHRoaXMgaXMgYSBjb21iaW5hdGlvbiBvZiB0
+aGUgYmFja2VuZCBwd20KPiBkcml2ZXIgeWllbGRpbmcgc3VycHJpc2luZyByZXN1bHRzIGFuZCB0
+aGUgcHdtLWJsIGRyaXZlciBkb2luZyB0aGluZ3MKPiBtb3JlIGNvbXBsaWNhdGVkIHRoYW4gbmVj
+ZXNzYXJ5Lgo+IAo+IFNvIEkgZ3Vlc3MgdGhpcyBwYXRjaCB3b3JrcyBhcm91bmQgdGhlc2UgcHJv
+YmxlbXMuIFN0aWxsIGl0IHdvdWxkIGJlCj4gaW50ZXJlc3RpbmcgdG8gZmluZCBvdXQgdGhlIGRl
+dGFpbHMgaW4gdGhlIGlteCBkcml2ZXIgdGhhdCB0cmlnZ2VycyB0aGUKPiBwcm9ibGVtLiBTbyBB
+ZGFtLCBjYW4geW91IHBsZWFzZSBpbnN0cnVtZW50IHRoZSBwd20taW14MjcgZHJpdmVyIHRvCj4g
+cHJpbnQgKnN0YXRlIGF0IHRoZSBiZWdpbm5pbmcgb2YgcHdtX2lteDI3X2FwcGx5KCkgYW5kIHRo
+ZSBlbmQgb2YKPiBwd21faW14MjdfZ2V0X3N0YXRlKCkgYW5kIHByb3ZpZGUgdGhlIHJlc3VsdHM/
+Cj4gCj4gTm90ZSBJIG9ubHkgY29tcGlsZSB0ZXN0ZWQgdGhpcyBjaGFuZ2UuCgpIaSBVd2UsCkkg
+d2FzIGp1c3QgYWJvdXQgdG8gcmVzcG9uZCB0byB0aGUgInB3bV9ibCBvbiBpLk1YNlEgYnJva2Vu
+IG9uIDUuNC1SQzErIgp0aHJlYWQgdGhhdCBJIGhhdmUgYSBzaW1pbGFyIHByb2JsZW0gd2hlbiB5
+b3Ugc3VibWl0dGVkIHRoaXMgcGF0Y2guCgpTbyBoZXJlIGFyZSBteSBmZXcgY2VudHM6CgpNeSBz
+ZXR1cCBpcyBhcyBmb2xsb3dzOgogIC0gaW14NmRsLXlhcHA0LWRyYWNvIHdpdGggaS5NWDZTb2xv
+CiAgLSBiYWNrbGlnaHQgaXMgY29udHJvbGxlZCB3aXRoIGludmVydGVkIFBXTSBzaWduYWwKICAt
+IG1heCBicmlnaHRuZXNzIGxldmVsID0gMzIsIGRlZmF1bHQgYnJpZ2h0bmVzcyBsZXZlbCBzZXQg
+dG8gMzIgaW4gRFQuCgoxLiBBbG1vc3QgY29ycmVjdCBiYWNrbGlnaHQgYmVoYXZpb3IgYmVmb3Jl
+IDAxY2NmOTAzZWRkNiAoInB3bTogTGV0CiAgICBwd21fZ2V0X3N0YXRlKCkgcmV0dXJuIHRoZSBs
+YXN0IGltcGxlbWVudGVkIHN0YXRlKToKCiAgLSBTeXN0ZW0gYm9vdHMgdG8gdXNlcnNwYWNlIGFu
+ZCBiYWNrbGlnaHQgaXMgZW5hYmxlZCBhbGwgdGhlIHRpbWUgZnJvbQogICAgcG93ZXIgdXAuCgog
+ICAgJCBkbWVzZyB8IGdyZXAgc3RhdGUKICAgIFsgICAgMS43NjMzODFdIGdldCBzdGF0ZSBlbmQ6
+IC0xODExMzYwNjA4LCBlbmFibGVkOiAwCiAgICBbICAgIDQuOTM5NjU4XSBhcHBseSBzdGF0ZSBz
+dGFydDogLTE3OTc5OTczMDgsIGVuYWJsZWQ6IDAKICAgIFsgICAgNC45NDY0MzddIGFwcGx5IHN0
+YXRlIHN0YXJ0OiAtMTc5Nzk5NzQzNiwgZW5hYmxlZDogMAogICAgWyAgICA0Ljk1MjkzNl0gYXBw
+bHkgc3RhdGUgc3RhcnQ6IC0xNzk3OTk3NDIwLCBlbmFibGVkOiAxCgogIC0gJCBjYXQgYnJpZ2h0
+bmVzcwogICAgMzIKCiAgLSAkIGVjaG8gMzIgPiBicmlnaHRuZXNzICMgbm90aGluZyBoYXBwZW5z
+LCBtYXguIGJyaWdodG5lc3MKCiAgLSAkIGVjaG8gMSA+IGJyaWdodG5lc3MgIyBiYWNrbGlnaHQg
+Z29lcyBkb3duIHRvIGxvd2VzdCBsZXZlbAogICAgWyAgIDU5Ljg3NjU2MV0gYXBwbHkgc3RhdGUg
+c3RhcnQ6IC0xNzExMjc2NjM2LCBlbmFibGVkOiAxCgogIC0gJCBlY2hvIDAgPiBicmlnaHRuZXNz
+ICMgYmFja2xpZ2h0IGdvZXMgdXAgdG8gbWF4LiBsZXZlbCwgdGhpcyBpcwogICAgICAgICAgICAg
+ICAgICAgICAgICAgICMgcHJvYmxlbSBvZiB0aGUgaW52ZXJ0ZWQgUFdNIG9uIGkuTVggd2UgYXR0
+ZW1wdGVkCiAgICAgICAgICAgICAgICAgICAgICAgICAgIyB0byBzb2x2ZSBzb21lIHRpbWUgYWdv
+LgogICAgWyAgMTAyLjQ1NjU4Ml0gYXBwbHkgc3RhdGUgc3RhcnQ6IC0xNzExMjc2NzAwLCBlbmFi
+bGVkOiAwCiAgIAoyLiBCYWNrbGlnaHQgYmVoYXZpb3Igb24gdjUuNC1yYzM6CgogIC0gU3lzdGVt
+IGJvb3RzIHRvIHVzZXJzcGFjZSBhbmQgYmFja2xpZ2h0IGlzIGVuYWJsZWQgYWxsIHRoZSB0aW1l
+IGZyb20KICAgIHBvd2VyIHVwLgoKICAtICQgZG1lc2cgfCBncmVwIHN0YXRlCiAgICBbICAgIDEu
+NzczMDU2XSBnZXQgc3RhdGUgZW5kOiAtMTgxMTMxOTUyMCwgZW5hYmxlZDogMAogICAgWyAgICA0
+Ljk5NDAwM10gYXBwbHkgc3RhdGUgc3RhcnQ6IC0xNzk3OTQ4MTYwLCBlbmFibGVkOiAwCiAgICBb
+ICAgIDUuMDAwNjE3XSBnZXQgc3RhdGUgZW5kOiAtMTgxMTMxOTUyMCwgZW5hYmxlZDogMAogICAg
+WyAgICA1LjAwNjk1MF0gYXBwbHkgc3RhdGUgc3RhcnQ6IC0xNzk3OTQ4MjkyLCBlbmFibGVkOiAw
+CiAgICBbICAgIDUuMDEzNDQ2XSBnZXQgc3RhdGUgZW5kOiAtMTgxMTMxOTUyMCwgZW5hYmxlZDog
+MAogICAgWyAgICA1LjAxOTYwMl0gYXBwbHkgc3RhdGUgc3RhcnQ6IC0xNzk3OTQ4Mjc2LCBlbmFi
+bGVkOiAxCiAgICBbICAgIDUuMDI3NTM2XSBnZXQgc3RhdGUgZW5kOiAtMTgxMTMxOTUyMCwgZW5h
+YmxlZDogMQoKICAtICQgY2F0IGJyaWdodG5lc3MKICAgIDMyCgogIC0gJCBlY2hvIDMyID4gYnJp
+Z2h0bmVzcyAjIGJhY2tsaWdodCBnb2VzIGRvd24KICAgIFsgIDE4OS45NTY3NTZdIGFwcGx5IHN0
+YXRlIHN0YXJ0OiAtMTcxMTkyMzgwNCwgZW5hYmxlZDogMQogICAgWyAgMTg5Ljk2NTkwN10gZ2V0
+IHN0YXRlIGVuZDogLTE4MTEzMTk1MjAsIGVuYWJsZWQ6IDEKCiAgLSAkIGVjaG8gMSA+IGJyaWdo
+dG5lc3MgIyBiYWNrbGlnaHQgZ29lcyB1cCB0byBoaWdoIGxldmVsCiAgICBbICA0NjQuMTM2NjMz
+XSBhcHBseSBzdGF0ZSBzdGFydDogLTE3MTE5MjM4MDQsIGVuYWJsZWQ6IDEKICAgIFsgIDQ2NC4x
+NDU2MjVdIGdldCBzdGF0ZSBlbmQ6IC0xODExMzE5NTIwLCBlbmFibGVkOiAxCgogIC0gJCBlY2hv
+IDAgPiBicmlnaHRuZXNzICMgYmFja2xpZ2h0IGdvZXMgdXAgdG8gaGlnaGVzdCBsZXZlbAogICAg
+WyAgNTI3LjEzNjY0MF0gYXBwbHkgc3RhdGUgc3RhcnQ6IC0xNzExOTIzODY4LCBlbmFibGVkOiAw
+CiAgICBbICA1MjcuMTQ1NTM4XSBnZXQgc3RhdGUgZW5kOiAtMTgxMTMxOTUyMCwgZW5hYmxlZDog
+MAoKU28gdGhlIGJlaGF2aW9yIGlzIGNsZWFybHkgaW52ZXJ0ZWQgdG8gaG93IGl0IHdvcmtlZCBw
+cmlvciB0byAwMWNjZjkwM2VkZDYKd2l0aCB0aGUgd2VpcmQgZXhjZXB0aW9uIHRoYXQgdGhlIGlu
+aXRpYWwgYnJpZ2h0bmVzcyBsZXZlbCAzMiBpcwpub3QgYXBwbGllZC4KCjMuIEJhY2tsaWdodCBi
+ZWhhdmlvciBvbiB2NS40LXJjMyArIHRoaXMgcGF0Y2g6CgogIC0gU3lzdGVtIGJvb3RzIHdpdGgg
+YmFja2xpZ2h0IGVuYWJsZWQuIEluIHRoZSBtaWRkbGUgb2Yga2VybmVsIGJvb3QKICAgIGJhY2ts
+aWdodCBpcyBkaXNhYmxlZC4KCiAgLSAkIGRtZXNnIHwgZ3JlcCBzdGF0ZQogICAgWyAgICAxLjc3
+MzIzM10gZ2V0IHN0YXRlIGVuZDogLTE4MTEzMTk1MjAsIGVuYWJsZWQ6IDAKICAgIFsgICAgNS4w
+MDI3NTNdIGFwcGx5IHN0YXRlIHN0YXJ0OiAtMTc5Nzk0ODE2MCwgZW5hYmxlZDogMAogICAgWyAg
+ICA1LjAwOTM5N10gZ2V0IHN0YXRlIGVuZDogLTE4MTEzMTk1MjAsIGVuYWJsZWQ6IDAKICAgIFsg
+ICAgNS4wMTU2NTJdIGFwcGx5IHN0YXRlIHN0YXJ0OiAtMTc5Nzk0ODI3NiwgZW5hYmxlZDogMQog
+ICAgWyAgICA1LjAyNjY4Ml0gZ2V0IHN0YXRlIGVuZDogLTE4MTEzMTk1MjAsIGVuYWJsZWQ6IDEK
+CiAgLSAkIGNhdCBicmlnaHRuZXNzCiAgICAzMgoKICAtICQgZWNobyAzMiA+IGJyaWdodG5lc3Mg
+IyBub3RoaW5nIGhhcHBlbnMsIGJhY2tsaWdodCBpcyBkb3duCgogIC0gJCBlY2hvIDEgPiBicmln
+aHRuZXNzICMgYmFja2xpZ2h0IGdvZXMgdG8gaGlnaCBsZXZlbAogICAgWyAgMzA1LjM3NzI3NF0g
+YXBwbHkgc3RhdGUgc3RhcnQ6IC0xNzExOTE1NTk2LCBlbmFibGVkOiAxCiAgICBbICAzMDUuMzg2
+Mzc0XSBnZXQgc3RhdGUgZW5kOiAtMTgxMTMxOTUyMCwgZW5hYmxlZDogMQoKICAtICQgZWNobyAw
+ID4gYnJpZ2h0bmVzcyAjIGJhY2tsaWdodCBnb2VzIHRvIG1heCBicmlnaHRuZXNzCiAgICBbICAz
+NjIuNjM3Mjk3XSBhcHBseSBzdGF0ZSBzdGFydDogLTE3MTE5MTU1OTYsIGVuYWJsZWQ6IDAKICAg
+IFsgIDM2Mi42NDYzMjVdIGdldCBzdGF0ZSBlbmQ6IC0xODExMzE5NTIwLCBlbmFibGVkOiAwCgpT
+YW1lIGJlaGF2aW9yIGFzICgyKSBidXQgdGhlIGRlZmF1bHQgc3RhdGUgZnJvbSBEVCBpcyBhcHBh
+cmVudGx5IGFwcGxpZWQuCgpJIG9ubHkgZGlkIHRoaXMgZXhwZXJpbWVudHMuIEkgZGlkIG5vdCBk
+ZWx2ZSBpbnRvIHRoZSBjb2RlIHRvIHRyYWNrIHdoYXQgaXMKZ29pbmcgb24gaW4gdGhlcmUgeWV0
+LgoKSG9wZWZ1bGx5IHRoaXMgaGVscHMgeW91IGEgYml0IGFuZCBmZWVsIGZyZWUgdG8gcmVxdWVz
+dCBvdGhlciBleHBlcmltZW50cywKTWljaGFsCgo+ICAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQv
+cHdtX2JsLmMgfCAzNCArKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+ICAgMSBmaWxl
+IGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDIyIGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFj
+a2xpZ2h0L3B3bV9ibC5jCj4gaW5kZXggNzQ2ZWViYzQxMWRmLi5kZGViZDYyYjM5NzggMTAwNjQ0
+Cj4gLS0tIGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiArKysgYi9kcml2ZXJz
+L3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYwo+IEBAIC00MiwxMCArNDIsOCBAQCBzdHJ1Y3QgcHdt
+X2JsX2RhdGEgewo+ICAgCj4gICBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0
+cnVjdCBwd21fYmxfZGF0YSAqcGIpCj4gICB7Cj4gLQlzdHJ1Y3QgcHdtX3N0YXRlIHN0YXRlOwo+
+ICAgCWludCBlcnI7Cj4gICAKPiAtCXB3bV9nZXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiAg
+IAlpZiAocGItPmVuYWJsZWQpCj4gICAJCXJldHVybjsKPiAgIAo+IEBAIC01Myw5ICs1MSw2IEBA
+IHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb24oc3RydWN0IHB3bV9ibF9kYXRhICpw
+YikKPiAgIAlpZiAoZXJyIDwgMCkKPiAgIAkJZGV2X2VycihwYi0+ZGV2LCAiZmFpbGVkIHRvIGVu
+YWJsZSBwb3dlciBzdXBwbHlcbiIpOwo+ICAgCj4gLQlzdGF0ZS5lbmFibGVkID0gdHJ1ZTsKPiAt
+CXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+IC0KPiAgIAlpZiAocGItPnBvc3Rf
+cHdtX29uX2RlbGF5KQo+ICAgCQltc2xlZXAocGItPnBvc3RfcHdtX29uX2RlbGF5KTsKPiAgIAo+
+IEBAIC02Nyw0MCArNjIsMjcgQEAgc3RhdGljIHZvaWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihz
+dHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAgCj4gICBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0
+X3Bvd2VyX29mZihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQo+ICAgewo+IC0Jc3RydWN0IHB3bV9z
+dGF0ZSBzdGF0ZTsKPiAtCj4gLQlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gLQlp
+ZiAoIXBiLT5lbmFibGVkKQo+IC0JCXJldHVybjsKPiAtCj4gICAJaWYgKHBiLT5lbmFibGVfZ3Bp
+bykKPiAgIAkJZ3Bpb2Rfc2V0X3ZhbHVlX2NhbnNsZWVwKHBiLT5lbmFibGVfZ3BpbywgMCk7Cj4g
+ICAKPiAgIAlpZiAocGItPnB3bV9vZmZfZGVsYXkpCj4gICAJCW1zbGVlcChwYi0+cHdtX29mZl9k
+ZWxheSk7Cj4gICAKPiAtCXN0YXRlLmVuYWJsZWQgPSBmYWxzZTsKPiAtCXN0YXRlLmR1dHlfY3lj
+bGUgPSAwOwo+IC0JcHdtX2FwcGx5X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7Cj4gLQo+ICAgCXJl
+Z3VsYXRvcl9kaXNhYmxlKHBiLT5wb3dlcl9zdXBwbHkpOwo+ICAgCXBiLT5lbmFibGVkID0gZmFs
+c2U7Cj4gICB9Cj4gICAKPiAtc3RhdGljIGludCBjb21wdXRlX2R1dHlfY3ljbGUoc3RydWN0IHB3
+bV9ibF9kYXRhICpwYiwgaW50IGJyaWdodG5lc3MpCj4gK3N0YXRpYyBpbnQgY29tcHV0ZV9kdXR5
+X2N5Y2xlKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRuZXNzLCBzdHJ1Y3QgcHdt
+X3N0YXRlICpzdGF0ZSkKPiAgIHsKPiAgIAl1bnNpZ25lZCBpbnQgbHRoID0gcGItPmx0aF9icmln
+aHRuZXNzOwo+IC0Jc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKPiAgIAl1NjQgZHV0eV9jeWNsZTsK
+PiAgIAo+IC0JcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+IC0KPiAgIAlpZiAocGIt
+PmxldmVscykKPiAgIAkJZHV0eV9jeWNsZSA9IHBiLT5sZXZlbHNbYnJpZ2h0bmVzc107Cj4gICAJ
+ZWxzZQo+ICAgCQlkdXR5X2N5Y2xlID0gYnJpZ2h0bmVzczsKPiAgIAo+IC0JZHV0eV9jeWNsZSAq
+PSBzdGF0ZS5wZXJpb2QgLSBsdGg7Cj4gKwlkdXR5X2N5Y2xlICo9IHN0YXRlLT5wZXJpb2QgLSBs
+dGg7Cj4gICAJZG9fZGl2KGR1dHlfY3ljbGUsIHBiLT5zY2FsZSk7Cj4gICAKPiAgIAlyZXR1cm4g
+ZHV0eV9jeWNsZSArIGx0aDsKPiBAQCAtMTIyLDEyICsxMDQsMjAgQEAgc3RhdGljIGludCBwd21f
+YmFja2xpZ2h0X3VwZGF0ZV9zdGF0dXMoc3RydWN0IGJhY2tsaWdodF9kZXZpY2UgKmJsKQo+ICAg
+Cj4gICAJaWYgKGJyaWdodG5lc3MgPiAwKSB7Cj4gICAJCXB3bV9nZXRfc3RhdGUocGItPnB3bSwg
+JnN0YXRlKTsKPiAtCQlzdGF0ZS5kdXR5X2N5Y2xlID0gY29tcHV0ZV9kdXR5X2N5Y2xlKHBiLCBi
+cmlnaHRuZXNzKTsKPiArCQlzdGF0ZS5kdXR5X2N5Y2xlID0gY29tcHV0ZV9kdXR5X2N5Y2xlKHBi
+LCBicmlnaHRuZXNzLCAmc3RhdGUpOwo+ICsJCXN0YXRlLmVuYWJsZWQgPSB0cnVlOwo+ICAgCQlw
+d21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKPiArCj4gICAJCXB3bV9iYWNrbGlnaHRf
+cG93ZXJfb24ocGIpOwo+IC0JfSBlbHNlCj4gKwl9IGVsc2Ugewo+ICAgCQlwd21fYmFja2xpZ2h0
+X3Bvd2VyX29mZihwYik7Cj4gICAKPiArCQlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0ZSk7
+Cj4gKwkJc3RhdGUuZW5hYmxlZCA9IGZhbHNlOwo+ICsJCXN0YXRlLmR1dHlfY3ljbGUgPSAwOwo+
+ICsJCXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwo+ICsJfQo+ICsKPiAgIAlpZiAo
+cGItPm5vdGlmeV9hZnRlcikKPiAgIAkJcGItPm5vdGlmeV9hZnRlcihwYi0+ZGV2LCBicmlnaHRu
+ZXNzKTsKPiAgIAo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRl
+dmVs
