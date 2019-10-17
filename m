@@ -1,75 +1,138 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] backlight: pwm_bl: configure pwm only once per backlight
- toggle
-Date: Thu, 17 Oct 2019 12:11:16 +0200
-Message-ID: <20191017101116.3d5okxmto5coecad@pengutronix.de>
-References: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
- <c89925bd-857d-874f-b74f-c5700d4c9fbd@ysoft.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/1] pwm: Convert period and duty cycle to u64
+Date: Thu, 17 Oct 2019 12:43:13 +0200
+Message-ID: <20191017104313.GA3122066@ulmo>
+References: <1571191899-6150-1-git-send-email-gurus@codeaurora.org>
+ <1571191899-6150-2-git-send-email-gurus@codeaurora.org>
+ <20191016101539.GC1303817@ulmo>
+ <20191017060247.GA12487@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="rwEMma7ioTxnRzrJ"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c89925bd-857d-874f-b74f-c5700d4c9fbd@ysoft.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc: linux-pwm@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Adam Ford <aford173@gmail.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Jingoo Han <jingoohan1@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <20191017060247.GA12487@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-pwm@vger.kernel.org, kernel-team@android.com, Mark Salyzyn <salyzyn@google.com>, Sandeep Patil <sspatil@google.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVGh1LCBPY3QgMTcsIDIwMTkgYXQgMTE6NDg6MDhBTSArMDIwMCwgTWljaGFsIFZva8OhxI0g
-d3JvdGU6Cj4gT24gMTcuIDEwLiAxOSAxMDoxMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4g
-PiBBIHByZXZpb3VzIGNoYW5nZSBpbiB0aGUgcHdtIGNvcmUgKG5hbWVseSAwMWNjZjkwM2VkZDYg
-KCJwd206IExldAo+ID4gcHdtX2dldF9zdGF0ZSgpIHJldHVybiB0aGUgbGFzdCBpbXBsZW1lbnRl
-ZCBzdGF0ZSIpKSBjaGFuZ2VkIHRoZQo+ID4gc2VtYW50aWMgb2YgcHdtX2dldF9zdGF0ZSgpIGFu
-ZCBkaXNjbG9zZWQgYW4gKGFzIGl0IHNlZW1zKSBjb21tb24KPiA+IHByb2JsZW0gaW4gbG93bGV2
-ZWwgUFdNIGRyaXZlcnMuIEJ5IG5vdCByZWx5aW5nIG9uIHRoZSBwZXJpb2QgYW5kIGR1dHkKPiA+
-IGN5Y2xlIGJlaW5nIHJldHJpZXZhYmxlIGZyb20gYSBkaXNhYmxlZCBQV00gdGhpcyB0eXBlIG9m
-IHByb2JsZW0gaXMKPiA+IHdvcmtlZCBhcm91bmQuCj4gPiAKPiA+IEFwYXJ0IGZyb20gdGhpcyBp
-c3N1ZSBvbmx5IGNhbGxpbmcgdGhlIHB3bV9nZXRfc3RhdGUvcHdtX2FwcGx5X3N0YXRlCj4gPiBj
-b21ibyBvbmNlIGlzIGFsc28gbW9yZSBlZmZlY3RpdmUuCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6
-IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Cj4gPiAt
-LS0KPiA+IEhlbGxvLAo+ID4gCj4gPiBUaGVyZSBhcmUgbm93IHR3byByZXBvcnRzIGFib3V0IDAx
-Y2NmOTAzZWRkNiBicmVha2luZyBhIGJhY2tsaWdodC4gQXMKPiA+IGZhciBhcyBJIHVuZGVyc3Rh
-bmQgdGhlIHByb2JsZW0gdGhpcyBpcyBhIGNvbWJpbmF0aW9uIG9mIHRoZSBiYWNrZW5kIHB3bQo+
-ID4gZHJpdmVyIHlpZWxkaW5nIHN1cnByaXNpbmcgcmVzdWx0cyBhbmQgdGhlIHB3bS1ibCBkcml2
-ZXIgZG9pbmcgdGhpbmdzCj4gPiBtb3JlIGNvbXBsaWNhdGVkIHRoYW4gbmVjZXNzYXJ5Lgo+ID4g
-Cj4gPiBTbyBJIGd1ZXNzIHRoaXMgcGF0Y2ggd29ya3MgYXJvdW5kIHRoZXNlIHByb2JsZW1zLiBT
-dGlsbCBpdCB3b3VsZCBiZQo+ID4gaW50ZXJlc3RpbmcgdG8gZmluZCBvdXQgdGhlIGRldGFpbHMg
-aW4gdGhlIGlteCBkcml2ZXIgdGhhdCB0cmlnZ2VycyB0aGUKPiA+IHByb2JsZW0uIFNvIEFkYW0s
-IGNhbiB5b3UgcGxlYXNlIGluc3RydW1lbnQgdGhlIHB3bS1pbXgyNyBkcml2ZXIgdG8KPiA+IHBy
-aW50ICpzdGF0ZSBhdCB0aGUgYmVnaW5uaW5nIG9mIHB3bV9pbXgyN19hcHBseSgpIGFuZCB0aGUg
-ZW5kIG9mCj4gPiBwd21faW14MjdfZ2V0X3N0YXRlKCkgYW5kIHByb3ZpZGUgdGhlIHJlc3VsdHM/
-Cj4gPiAKPiA+IE5vdGUgSSBvbmx5IGNvbXBpbGUgdGVzdGVkIHRoaXMgY2hhbmdlLgo+IAo+IEhp
-IFV3ZSwKPiBJIHdhcyBqdXN0IGFib3V0IHRvIHJlc3BvbmQgdG8gdGhlICJwd21fYmwgb24gaS5N
-WDZRIGJyb2tlbiBvbiA1LjQtUkMxKyIKPiB0aHJlYWQgdGhhdCBJIGhhdmUgYSBzaW1pbGFyIHBy
-b2JsZW0gd2hlbiB5b3Ugc3VibWl0dGVkIHRoaXMgcGF0Y2guCj4gCj4gU28gaGVyZSBhcmUgbXkg
-ZmV3IGNlbnRzOgo+IAo+IE15IHNldHVwIGlzIGFzIGZvbGxvd3M6Cj4gIC0gaW14NmRsLXlhcHA0
-LWRyYWNvIHdpdGggaS5NWDZTb2xvCj4gIC0gYmFja2xpZ2h0IGlzIGNvbnRyb2xsZWQgd2l0aCBp
-bnZlcnRlZCBQV00gc2lnbmFsCj4gIC0gbWF4IGJyaWdodG5lc3MgbGV2ZWwgPSAzMiwgZGVmYXVs
-dCBicmlnaHRuZXNzIGxldmVsIHNldCB0byAzMiBpbiBEVC4KPiAKPiAxLiBBbG1vc3QgY29ycmVj
-dCBiYWNrbGlnaHQgYmVoYXZpb3IgYmVmb3JlIDAxY2NmOTAzZWRkNiAoInB3bTogTGV0Cj4gICAg
-cHdtX2dldF9zdGF0ZSgpIHJldHVybiB0aGUgbGFzdCBpbXBsZW1lbnRlZCBzdGF0ZSk6Cj4gCj4g
-IC0gU3lzdGVtIGJvb3RzIHRvIHVzZXJzcGFjZSBhbmQgYmFja2xpZ2h0IGlzIGVuYWJsZWQgYWxs
-IHRoZSB0aW1lIGZyb20KPiAgICBwb3dlciB1cC4KPiAKPiAgICAkIGRtZXNnIHwgZ3JlcCBzdGF0
-ZQo+ICAgIFsgICAgMS43NjMzODFdIGdldCBzdGF0ZSBlbmQ6IC0xODExMzYwNjA4LCBlbmFibGVk
-OiAwCgpXaGF0IGlzIC0xODExMzYwNjA4PyBXaGVuIEkgd3JvdGUgInByaW50ICpzdGF0ZSIgYWJv
-dmUsIEkgdGhvdWdodCBhYm91dApzb21ldGhpbmcgbGlrZToKCglwcl9pbmZvKCIlczogcGVyaW9k
-OiAldSwgZHV0eTogJXUsIHBvbGFyaXR5OiAlZCwgZW5hYmxlZDogJWQiLAoJCV9fZnVuY19fLCBz
-dGF0ZS0+cGVyaW9kLCBzdGF0ZS0+ZHV0eV9jeWNsZSwgc3RhdGUtPnBvbGFyaXR5LCBzdGF0ZS0+
-ZW5hYmxlZCk7CgpBIHF1aWNrIGxvb2sgaW50byBkcml2ZXJzL3B3bS9wd20taW14MjcuYyBzaG93
-cyB0aGF0IHRoaXMgaXMgYW5vdGhlcgpkcml2ZXIgdGhhdCB5aWVsZHMgZHV0eV9jeWNsZSA9IDAg
-d2hlbiB0aGUgaGFyZHdhcmUgaXMgb2ZmLgoKQmVzdCByZWdhcmRzClV3ZQoKLS0gClBlbmd1dHJv
-bml4IGUuSy4gICAgICAgICAgICAgICAgICAgICAgICAgICB8IFV3ZSBLbGVpbmUtS8O2bmlnICAg
-ICAgICAgICAgfApJbmR1c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAgICAgICAgICAgICAgICAgfCBo
-dHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyAgfApfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
-cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9kcmktZGV2ZWw=
+
+--rwEMma7ioTxnRzrJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Oct 16, 2019 at 11:02:47PM -0700, Guru Das Srinagesh wrote:
+> On Wed, Oct 16, 2019 at 12:15:39PM +0200, Thierry Reding wrote:
+> > On Tue, Oct 15, 2019 at 07:11:39PM -0700, Guru Das Srinagesh wrote:
+> > > Because period and duty cycle are defined as ints with units of
+> > > nanoseconds, the maximum time duration that can be set is limited to
+> > > ~2.147 seconds. Change their definitions to u64 so that higher durati=
+ons
+> > > may be set.
+> > >=20
+> > > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> > > ---
+> > >  drivers/pwm/core.c  |  4 ++--
+> > >  drivers/pwm/sysfs.c | 10 +++++-----
+> > >  include/linux/pwm.h | 16 ++++++++--------
+> > >  3 files changed, 15 insertions(+), 15 deletions(-)
+> >=20
+> > Actually, we can't do that without further preparatory work. The reason
+> > is that consumers use the period and duty_cycle members in computations
+> > of their own, which lead to errors such as this:
+> >=20
+> > 	armv7l-unknown-linux-gnueabihf-ld: drivers/video/backlight/pwm_bl.o: i=
+n function `pwm_backlight_probe':
+> > 	pwm_bl.c:(.text+0x3b0): undefined reference to `__aeabi_uldivmod'
+> >=20
+> > So I think we need to audit all consumers carefully and make sure that
+> > they use do_div() where necessary to avoid such errors.
+> >=20
+> > Thierry
+>=20
+> Hi Thierry,
+>=20
+> I would like to try doing the preparatory work by fixing the errors seen
+> in consumers so that this u64 patch may be applied without issues.
+>=20
+> Before sending the patch, I tried "make"-ing for arm, arm64 and i386
+> architectures to check for compilation/linking errors and encountered
+> none. I see that the above error arises from using a cross-compiler for
+> arm v7, which I haven't tried yet.
+>=20
+> Could you please provide details of the compile tests that you run at
+> your end? I could then try to reproduce the errors you see in the
+> consumer drivers and fix them. Please do share any other ideas or
+> suggestions you may have in this regard.
+
+I keep a set of scripts in the pwm/ subdirectory of the following
+repository:
+
+	https://github.com/thierryreding/scripts
+
+Typically what I do is run:
+
+	$ /path/to/scripts.git/pwm/build --jobs 13 --color
+
+That requires a bit of setup for the cross-compilers. I have the
+following in my ~/.cross-compile file:
+
+	path: $HOME/pbs-stage1/bin:$HOME/toolchain/avr32/bin:$HOME/toolchain/unico=
+re32/bin
+	arm: armv7l-unknown-linux-gnueabihf-
+	arm64: aarch64-unknown-linux-gnu-
+	avr32: avr32-
+	blackfin: bfin-unknown-elf-
+	mips: mips-linux-gnu-
+	unicore32: unicore32-linux-
+	riscv: riscv64-linux-gnu-
+	x86:
+	x86_64:
+
+The blackfin and unicore32 builds are expected to fail because the
+blackfin architecture was removed and there's no recent enough kernel
+publicly available for unicore32.
+
+The last two entries in .cross-compile indicate that builds are native,
+so regular gcc from the build system will be used.
+
+Most of these compilers I've built from scratch using pbs-stage1:
+
+	https://github.com/thierryreding/pbs-stage1
+
+Note that I don't guarantee that that build system works for anyone but
+myself, but I'd be happy to hear feedback if you decide to use it. That
+said, you can probably find prebuilt toolchains for all of the above in
+a number of locations, like:
+
+	https://mirrors.edge.kernel.org/pub/tools/crosstool/
+
+or:
+
+	https://toolchains.bootlin.com/
+
+Thierry
+
+--rwEMma7ioTxnRzrJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2oRb4ACgkQ3SOs138+
+s6Eubg//QRlhY2yWMvDbi5TV86IHTijMq1mWsuyUNHqqIur8iqDzT8pyJfV13YP/
+5CwTfBxc1LzYGzRq4woVEZiffrazudhVsjS0jA1ElxSRJX7RLG40KxVuGYH2fkCq
+MU0kn0wZEIPCpAVyMr1/g8KQLc9QmGBcL5sPB2wUpKRsAmL3nSyZIiNtJkEM2d5g
+w2V+YFN1ISY+gqp45f2v1jWWn+hSz6v1xzCyBIoaE80SPQ0aiU261ma/bARrUSzQ
+MNFvpyBf8Fbc9PsWKq/cU3qEj7EDK9kFkZp8EqwBnr+tDCIDCxLLdGIt25q8mIQT
+Gzgu2wO6NHcCH3wrKDzPiZUulwtiQ6XJfC+p7+77F3/SNSKFL2jL+cnc7P19F/Ub
+W1KhCuraOjZvuSqS+hpiUUfKOw//gl2fsYcyEVgxT7xIKGflI9dcFWLB1tPe9LZP
+vD2CXMsz5lsNV+hZN8gtFKt2A3LR902tovfYPqhbm2wy0oOakExbQGZPDWgN36iX
+rgy7v+YDUj8MOSRowGmESniRIlYG7WfS063B/E+TASTfQonJ5UVZSc1oyKcWCh8Q
+WkUHY3qW0SUqC4JrBOpyRJMAgYHVWuLI7vj8VcyyckwhqU3B3hkJO0KcQT4Vo8kY
+YF7GsDp55zzoH563Tm3stx+uurmrA749F5QU5IZ6rZFe1itXaVQ=
+=g7bs
+-----END PGP SIGNATURE-----
+
+--rwEMma7ioTxnRzrJ--
