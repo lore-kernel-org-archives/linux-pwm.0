@@ -1,61 +1,89 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH 1/1] pwm: Convert period and duty cycle to u64
-Date: Wed, 16 Oct 2019 23:02:47 -0700
-Message-ID: <20191017060247.GA12487@codeaurora.org>
-References: <1571191899-6150-1-git-send-email-gurus@codeaurora.org>
- <1571191899-6150-2-git-send-email-gurus@codeaurora.org>
- <20191016101539.GC1303817@ulmo>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] backlight: pwm_bl: configure pwm only once per backlight
+ toggle
+Date: Thu, 17 Oct 2019 10:10:59 +0200
+Message-ID: <20191017081059.31761-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191016101539.GC1303817@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, kernel-team@android.com, Mark Salyzyn <salyzyn@google.com>, Sandeep Patil <sspatil@google.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Adam Ford <aford173@gmail.com>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, dri-devel@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Oct 16, 2019 at 12:15:39PM +0200, Thierry Reding wrote:
-> On Tue, Oct 15, 2019 at 07:11:39PM -0700, Guru Das Srinagesh wrote:
-> > Because period and duty cycle are defined as ints with units of
-> > nanoseconds, the maximum time duration that can be set is limited to
-> > ~2.147 seconds. Change their definitions to u64 so that higher durations
-> > may be set.
-> > 
-> > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-> > ---
-> >  drivers/pwm/core.c  |  4 ++--
-> >  drivers/pwm/sysfs.c | 10 +++++-----
-> >  include/linux/pwm.h | 16 ++++++++--------
-> >  3 files changed, 15 insertions(+), 15 deletions(-)
-> 
-> Actually, we can't do that without further preparatory work. The reason
-> is that consumers use the period and duty_cycle members in computations
-> of their own, which lead to errors such as this:
-> 
-> 	armv7l-unknown-linux-gnueabihf-ld: drivers/video/backlight/pwm_bl.o: in function `pwm_backlight_probe':
-> 	pwm_bl.c:(.text+0x3b0): undefined reference to `__aeabi_uldivmod'
-> 
-> So I think we need to audit all consumers carefully and make sure that
-> they use do_div() where necessary to avoid such errors.
-> 
-> Thierry
-
-Hi Thierry,
-
-I would like to try doing the preparatory work by fixing the errors seen
-in consumers so that this u64 patch may be applied without issues.
-
-Before sending the patch, I tried "make"-ing for arm, arm64 and i386
-architectures to check for compilation/linking errors and encountered
-none. I see that the above error arises from using a cross-compiler for
-arm v7, which I haven't tried yet.
-
-Could you please provide details of the compile tests that you run at
-your end? I could then try to reproduce the errors you see in the
-consumer drivers and fix them. Please do share any other ideas or
-suggestions you may have in this regard.
-
-Thank you.
-
-Guru Das.
+QSBwcmV2aW91cyBjaGFuZ2UgaW4gdGhlIHB3bSBjb3JlIChuYW1lbHkgMDFjY2Y5MDNlZGQ2ICgi
+cHdtOiBMZXQKcHdtX2dldF9zdGF0ZSgpIHJldHVybiB0aGUgbGFzdCBpbXBsZW1lbnRlZCBzdGF0
+ZSIpKSBjaGFuZ2VkIHRoZQpzZW1hbnRpYyBvZiBwd21fZ2V0X3N0YXRlKCkgYW5kIGRpc2Nsb3Nl
+ZCBhbiAoYXMgaXQgc2VlbXMpIGNvbW1vbgpwcm9ibGVtIGluIGxvd2xldmVsIFBXTSBkcml2ZXJz
+LiBCeSBub3QgcmVseWluZyBvbiB0aGUgcGVyaW9kIGFuZCBkdXR5CmN5Y2xlIGJlaW5nIHJldHJp
+ZXZhYmxlIGZyb20gYSBkaXNhYmxlZCBQV00gdGhpcyB0eXBlIG9mIHByb2JsZW0gaXMKd29ya2Vk
+IGFyb3VuZC4KCkFwYXJ0IGZyb20gdGhpcyBpc3N1ZSBvbmx5IGNhbGxpbmcgdGhlIHB3bV9nZXRf
+c3RhdGUvcHdtX2FwcGx5X3N0YXRlCmNvbWJvIG9uY2UgaXMgYWxzbyBtb3JlIGVmZmVjdGl2ZS4K
+ClNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0
+cm9uaXguZGU+Ci0tLQpIZWxsbywKClRoZXJlIGFyZSBub3cgdHdvIHJlcG9ydHMgYWJvdXQgMDFj
+Y2Y5MDNlZGQ2IGJyZWFraW5nIGEgYmFja2xpZ2h0LiBBcwpmYXIgYXMgSSB1bmRlcnN0YW5kIHRo
+ZSBwcm9ibGVtIHRoaXMgaXMgYSBjb21iaW5hdGlvbiBvZiB0aGUgYmFja2VuZCBwd20KZHJpdmVy
+IHlpZWxkaW5nIHN1cnByaXNpbmcgcmVzdWx0cyBhbmQgdGhlIHB3bS1ibCBkcml2ZXIgZG9pbmcg
+dGhpbmdzCm1vcmUgY29tcGxpY2F0ZWQgdGhhbiBuZWNlc3NhcnkuCgpTbyBJIGd1ZXNzIHRoaXMg
+cGF0Y2ggd29ya3MgYXJvdW5kIHRoZXNlIHByb2JsZW1zLiBTdGlsbCBpdCB3b3VsZCBiZQppbnRl
+cmVzdGluZyB0byBmaW5kIG91dCB0aGUgZGV0YWlscyBpbiB0aGUgaW14IGRyaXZlciB0aGF0IHRy
+aWdnZXJzIHRoZQpwcm9ibGVtLiBTbyBBZGFtLCBjYW4geW91IHBsZWFzZSBpbnN0cnVtZW50IHRo
+ZSBwd20taW14MjcgZHJpdmVyIHRvCnByaW50ICpzdGF0ZSBhdCB0aGUgYmVnaW5uaW5nIG9mIHB3
+bV9pbXgyN19hcHBseSgpIGFuZCB0aGUgZW5kIG9mCnB3bV9pbXgyN19nZXRfc3RhdGUoKSBhbmQg
+cHJvdmlkZSB0aGUgcmVzdWx0cz8KCk5vdGUgSSBvbmx5IGNvbXBpbGUgdGVzdGVkIHRoaXMgY2hh
+bmdlLgoKQmVzdCByZWdhcmRzClV3ZQoKIGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5j
+IHwgMzQgKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAx
+MiBpbnNlcnRpb25zKCspLCAyMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3Zp
+ZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3bV9ibC5j
+CmluZGV4IDc0NmVlYmM0MTFkZi4uZGRlYmQ2MmIzOTc4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3Zp
+ZGVvL2JhY2tsaWdodC9wd21fYmwuYworKysgYi9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21f
+YmwuYwpAQCAtNDIsMTAgKzQyLDggQEAgc3RydWN0IHB3bV9ibF9kYXRhIHsKIAogc3RhdGljIHZv
+aWQgcHdtX2JhY2tsaWdodF9wb3dlcl9vbihzdHJ1Y3QgcHdtX2JsX2RhdGEgKnBiKQogewotCXN0
+cnVjdCBwd21fc3RhdGUgc3RhdGU7CiAJaW50IGVycjsKIAotCXB3bV9nZXRfc3RhdGUocGItPnB3
+bSwgJnN0YXRlKTsKIAlpZiAocGItPmVuYWJsZWQpCiAJCXJldHVybjsKIApAQCAtNTMsOSArNTEs
+NiBAQCBzdGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0cnVjdCBwd21fYmxfZGF0
+YSAqcGIpCiAJaWYgKGVyciA8IDApCiAJCWRldl9lcnIocGItPmRldiwgImZhaWxlZCB0byBlbmFi
+bGUgcG93ZXIgc3VwcGx5XG4iKTsKIAotCXN0YXRlLmVuYWJsZWQgPSB0cnVlOwotCXB3bV9hcHBs
+eV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwotCiAJaWYgKHBiLT5wb3N0X3B3bV9vbl9kZWxheSkK
+IAkJbXNsZWVwKHBiLT5wb3N0X3B3bV9vbl9kZWxheSk7CiAKQEAgLTY3LDQwICs2MiwyNyBAQCBz
+dGF0aWMgdm9pZCBwd21fYmFja2xpZ2h0X3Bvd2VyX29uKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIp
+CiAKIHN0YXRpYyB2b2lkIHB3bV9iYWNrbGlnaHRfcG93ZXJfb2ZmKHN0cnVjdCBwd21fYmxfZGF0
+YSAqcGIpCiB7Ci0Jc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsKLQotCXB3bV9nZXRfc3RhdGUocGIt
+PnB3bSwgJnN0YXRlKTsKLQlpZiAoIXBiLT5lbmFibGVkKQotCQlyZXR1cm47Ci0KIAlpZiAocGIt
+PmVuYWJsZV9ncGlvKQogCQlncGlvZF9zZXRfdmFsdWVfY2Fuc2xlZXAocGItPmVuYWJsZV9ncGlv
+LCAwKTsKIAogCWlmIChwYi0+cHdtX29mZl9kZWxheSkKIAkJbXNsZWVwKHBiLT5wd21fb2ZmX2Rl
+bGF5KTsKIAotCXN0YXRlLmVuYWJsZWQgPSBmYWxzZTsKLQlzdGF0ZS5kdXR5X2N5Y2xlID0gMDsK
+LQlwd21fYXBwbHlfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKLQogCXJlZ3VsYXRvcl9kaXNhYmxl
+KHBiLT5wb3dlcl9zdXBwbHkpOwogCXBiLT5lbmFibGVkID0gZmFsc2U7CiB9CiAKLXN0YXRpYyBp
+bnQgY29tcHV0ZV9kdXR5X2N5Y2xlKHN0cnVjdCBwd21fYmxfZGF0YSAqcGIsIGludCBicmlnaHRu
+ZXNzKQorc3RhdGljIGludCBjb21wdXRlX2R1dHlfY3ljbGUoc3RydWN0IHB3bV9ibF9kYXRhICpw
+YiwgaW50IGJyaWdodG5lc3MsIHN0cnVjdCBwd21fc3RhdGUgKnN0YXRlKQogewogCXVuc2lnbmVk
+IGludCBsdGggPSBwYi0+bHRoX2JyaWdodG5lc3M7Ci0Jc3RydWN0IHB3bV9zdGF0ZSBzdGF0ZTsK
+IAl1NjQgZHV0eV9jeWNsZTsKIAotCXB3bV9nZXRfc3RhdGUocGItPnB3bSwgJnN0YXRlKTsKLQog
+CWlmIChwYi0+bGV2ZWxzKQogCQlkdXR5X2N5Y2xlID0gcGItPmxldmVsc1ticmlnaHRuZXNzXTsK
+IAllbHNlCiAJCWR1dHlfY3ljbGUgPSBicmlnaHRuZXNzOwogCi0JZHV0eV9jeWNsZSAqPSBzdGF0
+ZS5wZXJpb2QgLSBsdGg7CisJZHV0eV9jeWNsZSAqPSBzdGF0ZS0+cGVyaW9kIC0gbHRoOwogCWRv
+X2RpdihkdXR5X2N5Y2xlLCBwYi0+c2NhbGUpOwogCiAJcmV0dXJuIGR1dHlfY3ljbGUgKyBsdGg7
+CkBAIC0xMjIsMTIgKzEwNCwyMCBAQCBzdGF0aWMgaW50IHB3bV9iYWNrbGlnaHRfdXBkYXRlX3N0
+YXR1cyhzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqYmwpCiAKIAlpZiAoYnJpZ2h0bmVzcyA+IDAp
+IHsKIAkJcHdtX2dldF9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOwotCQlzdGF0ZS5kdXR5X2N5Y2xl
+ID0gY29tcHV0ZV9kdXR5X2N5Y2xlKHBiLCBicmlnaHRuZXNzKTsKKwkJc3RhdGUuZHV0eV9jeWNs
+ZSA9IGNvbXB1dGVfZHV0eV9jeWNsZShwYiwgYnJpZ2h0bmVzcywgJnN0YXRlKTsKKwkJc3RhdGUu
+ZW5hYmxlZCA9IHRydWU7CiAJCXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOworCiAJ
+CXB3bV9iYWNrbGlnaHRfcG93ZXJfb24ocGIpOwotCX0gZWxzZQorCX0gZWxzZSB7CiAJCXB3bV9i
+YWNrbGlnaHRfcG93ZXJfb2ZmKHBiKTsKIAorCQlwd21fZ2V0X3N0YXRlKHBiLT5wd20sICZzdGF0
+ZSk7CisJCXN0YXRlLmVuYWJsZWQgPSBmYWxzZTsKKwkJc3RhdGUuZHV0eV9jeWNsZSA9IDA7CisJ
+CXB3bV9hcHBseV9zdGF0ZShwYi0+cHdtLCAmc3RhdGUpOworCX0KKwogCWlmIChwYi0+bm90aWZ5
+X2FmdGVyKQogCQlwYi0+bm90aWZ5X2FmdGVyKHBiLT5kZXYsIGJyaWdodG5lc3MpOwogCi0tIAoy
+LjIzLjAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
+aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
+czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
