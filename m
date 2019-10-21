@@ -1,143 +1,101 @@
-Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] pwm: implement tracing for .get_state() and .apply_state()
-Date: Thu, 24 Oct 2019 10:08:29 +0200
-Message-Id: <20191024080829.16783-1-u.kleine-koenig@pengutronix.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from uho.ysoft.cz ([81.19.3.130]:51622 "EHLO uho.ysoft.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728134AbfJUNqc (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 21 Oct 2019 09:46:32 -0400
+References: <20191021105739.1357629-1-thierry.reding@gmail.com>
+ <20191021105739.1357629-3-thierry.reding@gmail.com>
+From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Message-ID: <5e6c86a1-932c-77ce-3501-f03d03e4c963@ysoft.com>
+Date: Mon, 21 Oct 2019 15:46:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20191021105739.1357629-3-thierry.reding@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Ingo Molnar <mingo@redhat.com>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: Re: [PATCH 3/4] pwm: imx27: Cache duty cycle register value
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org, Adam Ford <aford173@gmail.com>
 
-This allows to log all calls to the driver's lowlevel functions which
-simplifies debugging in some cases.
++Adam
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
+On 21. 10. 19 12:57, Thierry Reding wrote:
+> The hardware register containing the duty cycle value cannot be accessed
+> when the PWM is disabled. This causes the ->get_state() callback to read
+> back a duty cycle value of 0, which can confuse consumer drivers.
 
-I didn't add a trace call to .get_state added in 
-01ccf903edd6 ("pwm: Let pwm_get_state() return the last implemented state")
-in the expectation that this will be reverted very soon anyhow and
-addint it there would only complicate reverting (or applying this
-patch).
+Me and Adam Ford already tested the patches [3/4] and [4/4] and gave ours
+Tested-by tags in the previous thread but do not see those here.
+I re-tested these again and have no issues.
 
-Best regards
-Uwe
+Tested-by: Michal Vokáč <michal.vokac@ysoft.com>
 
- drivers/pwm/core.c         |  9 +++++-
- include/trace/events/pwm.h | 58 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+), 1 deletion(-)
- create mode 100644 include/trace/events/pwm.h
+Thank you Thierry,
+Michal
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 6ad51aa60c03..7af8e5200d1d 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -20,6 +20,9 @@
- 
- #include <dt-bindings/pwm/pwm.h>
- 
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/pwm.h>
-+
- #define MAX_PWMS 1024
- 
- static DEFINE_MUTEX(pwm_lookup_lock);
-@@ -283,8 +286,10 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
- 		pwm->hwpwm = i;
- 		pwm->state.polarity = polarity;
- 
--		if (chip->ops->get_state)
-+		if (chip->ops->get_state) {
- 			chip->ops->get_state(chip, pwm, &pwm->state);
-+			trace_pwm_get(pwm, &pwm->state);
-+		}
- 
- 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
- 	}
-@@ -472,6 +477,8 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
- 		if (err)
- 			return err;
- 
-+		trace_pwm_apply(pwm, state);
-+
- 		/*
- 		 * .apply might have to round some values in *state, if possible
- 		 * read the actually implemented value back.
-diff --git a/include/trace/events/pwm.h b/include/trace/events/pwm.h
-new file mode 100644
-index 000000000000..cf243de41cc8
---- /dev/null
-+++ b/include/trace/events/pwm.h
-@@ -0,0 +1,58 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM pwm
-+
-+#if !defined(_TRACE_PWM_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_PWM_H
-+
-+#include <linux/pwm.h>
-+#include <linux/tracepoint.h>
-+
-+DECLARE_EVENT_CLASS(pwm,
-+
-+	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state),
-+
-+	TP_ARGS(pwm, state),
-+
-+	TP_STRUCT__entry(
-+		__field(struct pwm_device *, pwm)
-+		__field(u64, period)
-+		__field(u64, duty_cycle)
-+		__field(enum pwm_polarity, polarity)
-+		__field(bool, enabled)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->pwm = pwm;
-+		__entry->period = state->period;
-+		__entry->duty_cycle = state->duty_cycle;
-+		__entry->polarity = state->polarity;
-+		__entry->enabled = state->enabled;
-+	),
-+
-+	TP_printk("%p: period=%llu duty_cycle=%llu polarity=%d enabled=%d",
-+		  __entry->pwm, __entry->period, __entry->duty_cycle,
-+		  __entry->polarity, __entry->enabled)
-+
-+);
-+
-+DEFINE_EVENT(pwm, pwm_apply,
-+
-+	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state),
-+
-+	TP_ARGS(pwm, state)
-+
-+);
-+
-+DEFINE_EVENT(pwm, pwm_get,
-+
-+	TP_PROTO(struct pwm_device *pwm, const struct pwm_state *state),
-+
-+	TP_ARGS(pwm, state)
-+
-+);
-+
-+#endif /* _TRACE_PWM_H */
-+
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
--- 
-2.23.0
+
+> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+> ---
+>   drivers/pwm/pwm-imx27.c | 31 ++++++++++++++++++++++++-------
+>   1 file changed, 24 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+> index ae11d8577f18..4113d5cd4c62 100644
+> --- a/drivers/pwm/pwm-imx27.c
+> +++ b/drivers/pwm/pwm-imx27.c
+> @@ -85,6 +85,13 @@ struct pwm_imx27_chip {
+>   	struct clk	*clk_per;
+>   	void __iomem	*mmio_base;
+>   	struct pwm_chip	chip;
+> +
+> +	/*
+> +	 * The driver cannot read the current duty cycle from the hardware if
+> +	 * the hardware is disabled. Cache the last programmed duty cycle
+> +	 * value to return in that case.
+> +	 */
+> +	unsigned int duty_cycle;
+>   };
+>   
+>   #define to_pwm_imx27_chip(chip)	container_of(chip, struct pwm_imx27_chip, chip)
+> @@ -155,14 +162,17 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
+>   	tmp = NSEC_PER_SEC * (u64)(period + 2);
+>   	state->period = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+>   
+> -	/* PWMSAR can be read only if PWM is enabled */
+> -	if (state->enabled) {
+> +	/*
+> +	 * PWMSAR can be read only if PWM is enabled. If the PWM is disabled,
+> +	 * use the cached value.
+> +	 */
+> +	if (state->enabled)
+>   		val = readl(imx->mmio_base + MX3_PWMSAR);
+> -		tmp = NSEC_PER_SEC * (u64)(val);
+> -		state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+> -	} else {
+> -		state->duty_cycle = 0;
+> -	}
+> +	else
+> +		val = imx->duty_cycle;
+> +
+> +	tmp = NSEC_PER_SEC * (u64)(val);
+> +	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+>   
+>   	if (!state->enabled)
+>   		pwm_imx27_clk_disable_unprepare(chip);
+> @@ -261,6 +271,13 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>   		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+>   		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+>   
+> +		/*
+> +		 * Store the duty cycle for future reference in cases where
+> +		 * the MX3_PWMSAR register can't be read (i.e. when the PWM
+> +		 * is disabled).
+> +		 */
+> +		imx->duty_cycle = duty_cycles;
+> +
+>   		cr = MX3_PWMCR_PRESCALER_SET(prescale) |
+>   		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
+>   		     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
+> 
