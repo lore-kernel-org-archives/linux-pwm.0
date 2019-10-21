@@ -1,111 +1,298 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:38203 "EHLO
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50531 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728943AbfJUVZp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Oct 2019 17:25:45 -0400
-Date: Mon, 21 Oct 2019 23:25:43 +0200
+        with ESMTP id S1726480AbfJUHek (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Oct 2019 03:34:40 -0400
+Date: Mon, 21 Oct 2019 09:34:19 +0200
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
-Message-ID: <20191021212543.d24sh4pfofqpmuu4@pengutronix.de>
-References: <20191021105830.1357795-1-thierry.reding@gmail.com>
- <20191021111847.c5j4qycyqy5wmynh@pengutronix.de>
- <20191021141721.GA1476994@ulmo>
+Message-ID: <20191021073419.27r4xjqpz2wswerj@pengutronix.de>
+References: <1571631083-4962-1-git-send-email-jeff@labundy.com>
+ <1571631083-4962-6-git-send-email-jeff@labundy.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20191021141721.GA1476994@ulmo>
+In-Reply-To: <1571631083-4962-6-git-send-email-jeff@labundy.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH] Revert "pwm: Let pwm_get_state() return the last
- implemented state"
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 5/8] pwm: Add support for Azoteq IQS620A PWM generator
+To: Jeff LaBundy <jeff@labundy.com>
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com, jdelvare@suse.com, linux@roeck-us.net, thierry.reding@gmail.com, jic23@kernel.org, devicetree@vger.kernel.org, linux-input@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
 
-On Mon, Oct 21, 2019 at 04:17:21PM +0200, Thierry Reding wrote:
-> On Mon, Oct 21, 2019 at 01:18:47PM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Oct 21, 2019 at 12:58:30PM +0200, Thierry Reding wrote:
-> > > It turns out that commit 01ccf903edd6 ("pwm: Let pwm_get_state() retu=
-rn
-> > > the last implemented state") causes backlight failures on a number of
-> > > boards. The reason is that some of the drivers do not write the full
-> > > state through to the hardware registers, which means that ->get_state=
-()
-> > > subsequently does not return the correct state. Consumers which rely =
-on
-> > > pwm_get_state() returning the current state will therefore get confus=
-ed
-> > > and subsequently try to program a bad state.
-> > >=20
-> > > Before this change can be made, existing drivers need to be more
-> > > carefully audited and fixed to behave as the framework expects. Until
-> > > then, keep the original behaviour of returning the software state that
-> > > was applied rather than reading the state back from hardware.
-> >=20
-> > I would really prefer to fix that in the framework instead. This is
+Hello Jeff,
+
+On Sun, Oct 20, 2019 at 11:11:20PM -0500, Jeff LaBundy wrote:
+> This patch adds support for the Azoteq IQS620A, capable of generating
+> a 1-kHz PWM output with duty cycle between 0.4% and 100% (inclusive).
 >=20
-> There's nothing to fix in the framework. The framework isn't broken, the
-> drivers are.
-
-The drivers behave in a way that result in unexpected behaviour for
-consumers. There are several ways to fix this, adapting the drivers to
-the consumer's expectations is only one of them.
-
-> > something that affects several drivers (cros-ec, imx27, atmel, imx-tpm,
-> > lpss, meson, sifive, sprd and stm32-lp). This is im my eyes really
-> > sufficient to justify a framework wide solution instead of adapting
-> > several drivers in a way that doesn't affect the values programmed to
-> > hardware.
+> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+> ---
+>  drivers/pwm/Kconfig       |  10 +++
+>  drivers/pwm/Makefile      |   1 +
+>  drivers/pwm/pwm-iqs620a.c | 167 ++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 178 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-iqs620a.c
 >=20
-> Can you come up with a proposal for how to want to implement this in the
-> framework?
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index e3a2518..712445e 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -222,6 +222,16 @@ config PWM_IMX_TPM
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-imx-tpm.
+> =20
+> +config PWM_IQS620A
+> +	tristate "Azoteq IQS620A PWM support"
+> +	depends on MFD_IQS62X
 
-My preferred solution is to make consumers not expect that
-pwm_get_state() keeps .duty_cycle and .period for disabled PWMs. For
-that consumers must be moved away from the idiom:
+This is only a runtime dependency if I'm not mistaken, so it would be
+great to have
 
-	pwm_get_state(mypwm, &state);
-	state.enabled =3D true;
-	pwm_apply_state(mypwm, &state);
+	depends on MFD_IQS62X || COMPILE_TEST
+	depends on REGMAP
 
-IMHO it is very artificial from a lowlevel driver's POV to differentiate
-between
+here.
 
-	.period =3D 1000000, .duty_cycle =3D 50000, .enabled =3D false
+> +	help
+> +	  Generic PWM framework driver for the Azoteq IQS620A multi-function
+> +	  sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called pwm-iqs620a.
+> +
+>  config PWM_JZ4740
+>  	tristate "Ingenic JZ47xx PWM support"
+>  	depends on MACH_INGENIC
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 26326ad..27c9bfa 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_PWM_IMG)		+=3D pwm-img.o
+>  obj-$(CONFIG_PWM_IMX1)		+=3D pwm-imx1.o
+>  obj-$(CONFIG_PWM_IMX27)		+=3D pwm-imx27.o
+>  obj-$(CONFIG_PWM_IMX_TPM)	+=3D pwm-imx-tpm.o
+> +obj-$(CONFIG_PWM_IQS620A)	+=3D pwm-iqs620a.o
+>  obj-$(CONFIG_PWM_JZ4740)	+=3D pwm-jz4740.o
+>  obj-$(CONFIG_PWM_LP3943)	+=3D pwm-lp3943.o
+>  obj-$(CONFIG_PWM_LPC18XX_SCT)	+=3D pwm-lpc18xx-sct.o
+> diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
+> new file mode 100644
+> index 0000000..6451eb1
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-iqs620a.c
+> @@ -0,0 +1,167 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Azoteq IQS620A PWM Generator
+> + *
+> + * Copyright (C) 2019
+> + * Author: Jeff LaBundy <jeff@labundy.com>
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/iqs62x.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/slab.h>
+> +
+> +#define IQS620_PWR_SETTINGS			0xD2
+> +#define IQS620_PWR_SETTINGS_PWM_OUT		BIT(7)
+> +
+> +#define IQS620_PWM_DUTY_CYCLE			0xD8
+> +
+> +#define IQS620_PWM_PERIOD_NS			1000000
+> +
+> +struct iqs620_pwm_private {
+> +	struct iqs62x_core *iqs62x;
+> +	struct pwm_chip chip;
+> +	struct notifier_block notifier;
+> +	bool ready;
 
-and
+This is always true, so you can drop it.
 
-	.period =3D 100, .duty_cycle =3D 0, .enabled =3D false
+> +};
+> +
+> +static int iqs620_pwm_apply(struct pwm_chip *chip, struct pwm_device *pw=
+m,
+> +			    struct pwm_state *state)
 
-because the respective expected behaviour is completely identical (apart
-from the requirement under discussion). So I'd do something like:
+Since
 
-	if (!state->enabled) {
-		state->period =3D 1;
-		state->duty_cycle =3D 0;
-	}
+	71523d1812ac ("pwm: Ensure pwm_apply_state() doesn't modify the state argu=
+ment")
 
-after calling the driver's .get_state callback once all in-tree
-consumers are converted to provide a uniform behaviour to consumers.
+this isn't the right prototype.
 
-The next best solution is to cache the values for .period and
-.duty_cycle for disabled PWMs only. But the ugly detail then is that
-pwm_get_state() sometimes returns actually implemented values and
-sometimes requested values. (The same holds true for the approach to
-make lowlevel drivers cache these values.)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	struct iqs62x_core *iqs62x;
+> +	int error;
+> +	int duty_calc =3D state->duty_cycle * 256 / IQS620_PWM_PERIOD_NS - 1;
+> +	u8 duty_clamp =3D clamp(duty_calc, 0, 0xFF);
+> +
+> +	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
+> +	iqs62x =3D iqs620_pwm->iqs62x;
+> +
+> +	error =3D regmap_write(iqs62x->map, IQS620_PWM_DUTY_CYCLE, duty_clamp);
+> +	if (error)
+> +		return error;
+> +
+> +	state->period =3D IQS620_PWM_PERIOD_NS;
+> +	state->duty_cycle =3D (duty_clamp + 1) * IQS620_PWM_PERIOD_NS / 256;
 
-So it makes probably more sense to introduce two new functions
+This suggests that if the value in the IQS620_PWM_DUTY_CYCLE is 0 the
+duty cycle is 1/256 ms with a period of 1 ms and the output cannot be
+constant inactive. If this is right please add a paragraph in the
+driver's comment at the top:
 
-	pwm_get_applied_state()
-	pwm_get_implemented_state()
+	* Limitations:
+	* - The hardware cannot generate a 0% duty cycle
 
-with the first having the semantic of pwm_get_state() before
-01ccf903edd6 and the latter of after 01ccf903edd6. Then today's users of
-pwm_get_state can be converted to the right of these two. But I'm not
-convinced this is a good idea now. Maybe we should first clean up the
-already started stuff (like converting lowlevel drivers and consumers to
-the atomic API). Maybe renaming pwm_get_state to pwm_get_applied_state
-is something that is easy enough to justify already today?
+(Please stick to this format, other drivers use it, too.)
+
+How does the hardware behave on changes? For example you're first
+committing the duty cycle and then on/off. Can it happen that between
+
+	pwm_apply_state(pwm, { .duty_cycle =3D 3900, .period =3D 1000000, .enabled=
+ =3D true)
+	...
+	pwm_apply_state(pwm, { .duty_cycle =3D 1000000, .period =3D 1000000, .enab=
+led =3D false)
+
+the output is active for longer than 4 =B5s because the iqs620_pwm_apply
+function is preempted between the two register writes and so we already
+have .duty_cycle =3D 1000000 but still .enabled =3D true in the hardware?
+
+Does a change complete the currently running period? Does disabling
+complete the currently running period? If so, does regmap_update_bits
+block until the new setting is active?
+
+The .apply function fails to check for .pwm_polarity. You want something
+like:
+
+	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+		return -ENOTSUPP;
+
+(That's what pwm-rcar and the core (in the absence of .set_polarity for
+old-style drivers) are using. @Thierry: It would be great to fix the
+vaule that should be returned in this case. pwm-lpss and sifive use
+-EINVAL.)
+
+> +	return regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
+> +				  IQS620_PWR_SETTINGS_PWM_OUT,
+> +				  state->enabled ? 0xFF : 0);
+> +}
+> +
+> +static int iqs620_pwm_notifier(struct notifier_block *notifier,
+> +			       unsigned long event_flags, void *context)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	struct pwm_state state;
+> +	int error;
+> +
+> +	iqs620_pwm =3D container_of(notifier, struct iqs620_pwm_private,
+> +				  notifier);
+> +
+> +	if (!iqs620_pwm->ready || !(event_flags & BIT(IQS62X_EVENT_SYS_RESET)))
+> +		return NOTIFY_DONE;
+> +
+> +	pwm_get_state(&iqs620_pwm->chip.pwms[0], &state);
+> +
+> +	error =3D iqs620_pwm_apply(&iqs620_pwm->chip,
+> +				 &iqs620_pwm->chip.pwms[0], &state);
+> +	if (error) {
+> +		dev_err(iqs620_pwm->chip.dev,
+> +			"Failed to re-initialize device: %d\n", error);
+> +		return NOTIFY_BAD;
+> +	}
+> +
+> +	return NOTIFY_OK;
+
+So the PWM can loose it's state sometimes? When does that happen?
+
+> +}
+> +
+> +static void iqs620_pwm_notifier_unregister(void *context)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm =3D context;
+> +	int error;
+> +
+> +	error =3D blocking_notifier_chain_unregister(&iqs620_pwm->iqs62x->nh,
+> +						   &iqs620_pwm->notifier);
+> +	if (error)
+> +		dev_err(iqs620_pwm->chip.dev,
+> +			"Failed to unregister notifier: %d\n", error);
+> +}
+> +
+> +static const struct pwm_ops iqs620_pwm_ops =3D {
+> +	.apply	=3D iqs620_pwm_apply,
+
+Please implement a .get_state callback.
+
+> +	.owner	=3D THIS_MODULE,
+> +};
+> +
+> +static int iqs620_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	int error;
+> +
+> +	iqs620_pwm =3D devm_kzalloc(&pdev->dev, sizeof(*iqs620_pwm), GFP_KERNEL=
+);
+> +	if (!iqs620_pwm)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, iqs620_pwm);
+> +	iqs620_pwm->iqs62x =3D dev_get_drvdata(pdev->dev.parent);
+> +
+> +	iqs620_pwm->chip.dev =3D &pdev->dev;
+> +	iqs620_pwm->chip.ops =3D &iqs620_pwm_ops;
+> +	iqs620_pwm->chip.base =3D -1;
+> +	iqs620_pwm->chip.npwm =3D 1;
+> +
+> +	iqs620_pwm->notifier.notifier_call =3D iqs620_pwm_notifier;
+> +	error =3D blocking_notifier_chain_register(&iqs620_pwm->iqs62x->nh,
+> +						 &iqs620_pwm->notifier);
+> +	if (error) {
+> +		dev_err(&pdev->dev, "Failed to register notifier: %d\n", error);
+> +		return error;
+> +	}
+> +
+> +	error =3D devm_add_action_or_reset(&pdev->dev,
+> +					 iqs620_pwm_notifier_unregister,
+> +					 iqs620_pwm);
+
+I wonder if this is safe. If in iqs620_pwm_notifier_unregister()
+unregistering of the notifier goes wrong (not sure when this can happen)
+the memory behind iqs620_pwm goes away. Then later iqs620_pwm_notifier
+might be called trying to use *iqs620_pwm ...
+
+> +	if (error) {
+> +		dev_err(&pdev->dev, "Failed to add action: %d\n", error);
+> +		return error;
+> [...]
+>=20
+> +static struct platform_driver iqs620_pwm_platform_driver =3D {
+> +	.driver =3D {
+> +		.name	=3D IQS620_DRV_NAME_PWM,
+> +	},
+> +	.probe		=3D iqs620_pwm_probe,
+> +	.remove		=3D iqs620_pwm_remove,
+> +};
+
+I'm not a big fan of aligning the =3D in struct initializers. The downside
+is that if you later add
+
+	.prevent_deferred_probe =3D true,
+
+you either have to touch all (otherwise unrelated) lines to realign
+which adds churn, or the structure is only partially aligned which looks
+ugly. That's why I stick to a single space before the =3D.
 
 Best regards
 Uwe
