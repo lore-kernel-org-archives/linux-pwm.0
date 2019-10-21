@@ -1,50 +1,56 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37358 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729266AbfJaSmV (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Oct 2019 14:42:21 -0400
-Date: Thu, 31 Oct 2019 11:42:14 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Message-ID: <20191031184214.GL57214@dtor-ws>
-References: <1571631083-4962-1-git-send-email-jeff@labundy.com>
- <1571631083-4962-3-git-send-email-jeff@labundy.com>
- <20191031134410.GB5700@dell>
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37205 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727058AbfJUK5n (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Oct 2019 06:57:43 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f22so12290399wmc.2
+        for <linux-pwm@vger.kernel.org>; Mon, 21 Oct 2019 03:57:42 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+Date: Mon, 21 Oct 2019 12:57:36 +0200
+Message-Id: <20191021105739.1357629-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191031134410.GB5700@dell>
+Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 2/8] mfd: Add support for Azoteq IQS620A/621/622/624/625
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Jeff LaBundy <jeff@labundy.com>, jdelvare@suse.com, linux@roeck-us.net, thierry.reding@gmail.com, jic23@kernel.org, devicetree@vger.kernel.org, linux-input@vger.kernel.org, linux-hwmon@vger.kernel.org, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
+Subject: [PATCH 1/4] pwm: Read initial hardware state at request time
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 01:44:10PM +0000, Lee Jones wrote:
-> On Sun, 20 Oct 2019, Jeff LaBundy wrote:
-> > + * Author: Jeff LaBundy <jeff@labundy.com>
-> > + *
-> > + * These devices rely on application-specific register settings and calibration
-> > + * data developed in and exported from a suite of GUIs offered by the vendor. A
-> > + * separate tool converts the GUIs' ASCII-based output into a standard firmware
-> > + * file parsed by the driver.
-> 
-> This troubles me somewhat. So here we take a C header file which is
-> the output of a vendor supplied configuration tool, convert it to a
-> bespoke file format using a Python script authored by yourself, which
-> we masquerade as Linux firmware in order to set-up the hardware.
-> 
-> Is that correct?
-> 
-> What is preventing a very naughty person from providing their own
-> register map (firmware) in order to read/write unsuitable registers
-> from kernel context for their own gains; simply by swapping out a file
-> contained in userspace?
+The PWM core doesn't need to know about the hardware state of a PWM
+unless there is a user for it. Defer initial hardware readout until
+a PWM is requested.
 
-How is it different from, let's say, Intel WiFi firmware that you load
-into the kernel and then into the card every time you boot up your
-laptop?
+As a side-effect, this allows the ->get_state() callback to rely on
+per-PWM data.
 
-Thanks.
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+---
+ drivers/pwm/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index f877e77d9184..e067873c6cc5 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -114,6 +114,9 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
+ 		}
+ 	}
+ 
++	if (pwm->chip->ops->get_state)
++		pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
++
+ 	set_bit(PWMF_REQUESTED, &pwm->flags);
+ 	pwm->label = label;
+ 
+@@ -283,9 +286,6 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+ 		pwm->hwpwm = i;
+ 		pwm->state.polarity = polarity;
+ 
+-		if (chip->ops->get_state)
+-			chip->ops->get_state(chip, pwm, &pwm->state);
+-
+ 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+ 	}
+ 
 -- 
-Dmitry
+2.23.0
