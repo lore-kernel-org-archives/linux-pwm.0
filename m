@@ -1,69 +1,88 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:35914 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728096AbfJUNq0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Oct 2019 09:46:26 -0400
-References: <20191021105739.1357629-1-thierry.reding@gmail.com>
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <121ab7d5-831c-5298-c747-b231e1e361ba@collabora.com>
-Date: Mon, 21 Oct 2019 15:46:22 +0200
-MIME-Version: 1.0
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40311 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727058AbfJUK5s (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Oct 2019 06:57:48 -0400
+Received: by mail-wm1-f67.google.com with SMTP id b24so12278731wmj.5
+        for <linux-pwm@vger.kernel.org>; Mon, 21 Oct 2019 03:57:46 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+Date: Mon, 21 Oct 2019 12:57:38 +0200
+Message-Id: <20191021105739.1357629-3-thierry.reding@gmail.com>
 In-Reply-To: <20191021105739.1357629-1-thierry.reding@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20191021105739.1357629-1-thierry.reding@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH 1/4] pwm: Read initial hardware state at request time
+Subject: [PATCH 3/4] pwm: imx27: Cache duty cycle register value
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org
 
-Hi,
+The hardware register containing the duty cycle value cannot be accessed
+when the PWM is disabled. This causes the ->get_state() callback to read
+back a duty cycle value of 0, which can confuse consumer drivers.
 
-On 21/10/19 12:57, Thierry Reding wrote:
-> The PWM core doesn't need to know about the hardware state of a PWM
-> unless there is a user for it. Defer initial hardware readout until
-> a PWM is requested.
-> 
-> As a side-effect, this allows the ->get_state() callback to rely on
-> per-PWM data.
-> 
-> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+---
+ drivers/pwm/pwm-imx27.c | 31 ++++++++++++++++++++++++-------
+ 1 file changed, 24 insertions(+), 7 deletions(-)
 
-Tested on top of 5.4.0-rc4 with 2/4 applied this patch fixes the NULL pointer
-dereference as expected. So,
-
-Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-
-Thanks,
- Enric
-
-> ---
->  drivers/pwm/core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index f877e77d9184..e067873c6cc5 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -114,6 +114,9 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
->  		}
->  	}
->  
-> +	if (pwm->chip->ops->get_state)
-> +		pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
-> +
->  	set_bit(PWMF_REQUESTED, &pwm->flags);
->  	pwm->label = label;
->  
-> @@ -283,9 +286,6 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
->  		pwm->hwpwm = i;
->  		pwm->state.polarity = polarity;
->  
-> -		if (chip->ops->get_state)
-> -			chip->ops->get_state(chip, pwm, &pwm->state);
-> -
->  		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
->  	}
->  
-> 
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index ae11d8577f18..4113d5cd4c62 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -85,6 +85,13 @@ struct pwm_imx27_chip {
+ 	struct clk	*clk_per;
+ 	void __iomem	*mmio_base;
+ 	struct pwm_chip	chip;
++
++	/*
++	 * The driver cannot read the current duty cycle from the hardware if
++	 * the hardware is disabled. Cache the last programmed duty cycle
++	 * value to return in that case.
++	 */
++	unsigned int duty_cycle;
+ };
+ 
+ #define to_pwm_imx27_chip(chip)	container_of(chip, struct pwm_imx27_chip, chip)
+@@ -155,14 +162,17 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
+ 	tmp = NSEC_PER_SEC * (u64)(period + 2);
+ 	state->period = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+ 
+-	/* PWMSAR can be read only if PWM is enabled */
+-	if (state->enabled) {
++	/*
++	 * PWMSAR can be read only if PWM is enabled. If the PWM is disabled,
++	 * use the cached value.
++	 */
++	if (state->enabled)
+ 		val = readl(imx->mmio_base + MX3_PWMSAR);
+-		tmp = NSEC_PER_SEC * (u64)(val);
+-		state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+-	} else {
+-		state->duty_cycle = 0;
+-	}
++	else
++		val = imx->duty_cycle;
++
++	tmp = NSEC_PER_SEC * (u64)(val);
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, pwm_clk);
+ 
+ 	if (!state->enabled)
+ 		pwm_imx27_clk_disable_unprepare(chip);
+@@ -261,6 +271,13 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+ 		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+ 
++		/*
++		 * Store the duty cycle for future reference in cases where
++		 * the MX3_PWMSAR register can't be read (i.e. when the PWM
++		 * is disabled).
++		 */
++		imx->duty_cycle = duty_cycles;
++
+ 		cr = MX3_PWMCR_PRESCALER_SET(prescale) |
+ 		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
+ 		     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
+-- 
+2.23.0
