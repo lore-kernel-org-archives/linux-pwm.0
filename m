@@ -1,66 +1,51 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from uho.ysoft.cz ([81.19.3.130]:52650 "EHLO uho.ysoft.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728696AbfJUNzf (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 21 Oct 2019 09:55:35 -0400
-References: <20191021105830.1357795-1-thierry.reding@gmail.com>
-From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
-Message-ID: <35885da4-4172-4d1f-a05e-d094669535c9@ysoft.com>
-Date: Mon, 21 Oct 2019 15:55:34 +0200
+Return-path: <kernel-bounces@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 1/2] pwm: rcar: Drop useless call to pwm_get_state
+Date: Thu, 24 Oct 2019 09:14:09 +0200
+Message-Id: <20191024071410.30620-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20191021105830.1357795-1-thierry.reding@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Sender: linux-pwm-owner@vger.kernel.org
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH] Revert "pwm: Let pwm_get_state() return the last
- implemented state"
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org
 
-On 21. 10. 19 12:58, Thierry Reding wrote:
-> It turns out that commit 01ccf903edd6 ("pwm: Let pwm_get_state() return
-> the last implemented state") causes backlight failures on a number of
-> boards. The reason is that some of the drivers do not write the full
-> state through to the hardware registers, which means that ->get_state()
-> subsequently does not return the correct state. Consumers which rely on
-> pwm_get_state() returning the current state will therefore get confused
-> and subsequently try to program a bad state.
-> 
-> Before this change can be made, existing drivers need to be more
-> carefully audited and fixed to behave as the framework expects. Until
-> then, keep the original behaviour of returning the software state that
-> was applied rather than reading the state back from hardware.
+pwm_get_state has no side effects and the resulting pwm_state is unused.
+So drop the call to pwm_get_state and the local variable from
+rcar_pwm_apply().
 
-Backlight on our imx6dl-yapp4-draco board works fine again when
-this is reverted.
+The call was introduced in commit 7f68ce8287d3 ("pwm: rcar: Add support
+"atomic" API") and already then was useless.
 
-Tested-by: Michal Vokáč <michal.vokac@ysoft.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-rcar.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> ---
->   drivers/pwm/core.c | 9 +--------
->   1 file changed, 1 insertion(+), 8 deletions(-)
-> 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 6ad51aa60c03..f877e77d9184 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -472,14 +472,7 @@ int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
->   		if (err)
->   			return err;
->   
-> -		/*
-> -		 * .apply might have to round some values in *state, if possible
-> -		 * read the actually implemented value back.
-> -		 */
-> -		if (chip->ops->get_state)
-> -			chip->ops->get_state(chip, pwm, &pwm->state);
-> -		else
-> -			pwm->state = *state;
-> +		pwm->state = *state;
->   	} else {
->   		/*
->   		 * FIXME: restore the initial state in case of error.
-> 
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 852eb2347954..6fac8eb98d54 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -161,11 +161,9 @@ static int rcar_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			  const struct pwm_state *state)
+ {
+ 	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
+-	struct pwm_state cur_state;
+ 	int div, ret;
+ 
+ 	/* This HW/driver only supports normal polarity */
+-	pwm_get_state(pwm, &cur_state);
+ 	if (state->polarity != PWM_POLARITY_NORMAL)
+ 		return -ENOTSUPP;
+ 
+-- 
+2.23.0
