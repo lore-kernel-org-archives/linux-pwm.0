@@ -1,26 +1,50 @@
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v2 1/4] backlight: pwm_bl: fix cie1913 comments and
- constant
-Date: Wed, 23 Oct 2019 22:21:40 +0200
-Message-ID: <d716cb92-4d72-f661-2ef9-2771846569e8@rasmusvillemoes.dk>
-References: <20191008120327.24208-1-linux@rasmusvillemoes.dk>
- <20191008120327.24208-2-linux@rasmusvillemoes.dk>
- <20191014072710.GE4545@dell>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 0/6] Updates for the atmel PWM driver
+Date: Thu, 24 Oct 2019 09:30:07 +0200
+Message-ID: <20191024073007.n7tlxhoxk3yvdtly@pengutronix.de>
+References: <20190824001041.11007-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191014072710.GE4545@dell>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190824001041.11007-1-uwe@kleine-koenig.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 14/10/2019 09.27, Lee Jones wrote:
+Hello Thierry,
 
-> Applied, thanks.
+On Sat, Aug 24, 2019 at 02:10:35AM +0200, Uwe Kleine-K=F6nig wrote:
+> this is v2 of my series to update the atmel PWM driver. (Implicit) v1
+> was sent on Aug 15, starting with Message-Id:
+> 20190815214133.11134-1-uwe@kleine-koenig.org.
+> =
 
-I'm not seeing the series in next-20191023, should it be there?
+> I updated the patches from the feedback I got in v1, see the individual
+> patches for the details.
 
-Rasmus
+This patch series is marked "Superseeded" in patchwork[1] but AFAIC this
+is the most recent version of this series.
+
+Can you please reconsider applying this series?
+
+Best regards
+Uwe
+
+[1] https://patchwork.ozlabs.org/project/linux-pwm/list/?series=3D127096&st=
+ate=3D*
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
