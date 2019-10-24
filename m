@@ -1,13 +1,15 @@
 Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 2/2] pwm: rcar: Document inability to set duty_cycle = 0
-Date: Thu, 24 Oct 2019 09:14:10 +0200
-Message-Id: <20191024071410.30620-2-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20191024071410.30620-1-u.kleine-koenig@pengutronix.de>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Thu, 24 Oct 2019 07:20:40 +0000
+Message-ID: <TYAPR01MB454494C4434DC0B38AD3E7F7D86A0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
 References: <20191024071410.30620-1-u.kleine-koenig@pengutronix.de>
-MIME-Version: 1.0
+ <20191024071410.30620-2-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20191024071410.30620-2-u.kleine-koenig@pengutronix.de>
+Content-Language: ja-JP
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: RE: [PATCH 2/2] pwm: rcar: Document inability to set duty_cycle = 0
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -17,32 +19,16 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-ID: <linux-pwm.vger.kernel.org>
 
-When .apply is called with state->duty_cycle = 0 the duty_ns parameter
-to rcar_pwm_set_counter() is 0 which results in ph being 0 and
-rcar_pwm_set_counter() returning -EINVAL.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-rcar.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 6fac8eb98d54..2685577b6dd4 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -3,6 +3,9 @@
-  * R-Car PWM Timer driver
-  *
-  * Copyright (C) 2015 Renesas Electronics Corporation
-+ *
-+ * Limitations:
-+ * - The hardware cannot generate a 0% duty cycle.
-  */
- 
- #include <linux/clk.h>
--- 
-2.23.0
+SGkgVXdlLA0KDQo+IEZyb206IFV3ZSBLbGVpbmUtS29uaWcsIFNlbnQ6IFRodXJzZGF5LCBPY3Rv
+YmVyIDI0LCAyMDE5IDQ6MTQgUE0NCj4gDQo+IFdoZW4gLmFwcGx5IGlzIGNhbGxlZCB3aXRoIHN0
+YXRlLT5kdXR5X2N5Y2xlID0gMCB0aGUgZHV0eV9ucyBwYXJhbWV0ZXINCj4gdG8gcmNhcl9wd21f
+c2V0X2NvdW50ZXIoKSBpcyAwIHdoaWNoIHJlc3VsdHMgaW4gcGggYmVpbmcgMCBhbmQNCj4gcmNh
+cl9wd21fc2V0X2NvdW50ZXIoKSByZXR1cm5pbmcgLUVJTlZBTC4NCj4gDQo+IFNpZ25lZC1vZmYt
+Ynk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+DQoN
+ClRoYW5rIHlvdSBmb3IgdGhlIHBhdGNoIQ0KDQpSZXZpZXdlZC1ieTogWW9zaGloaXJvIFNoaW1v
+ZGEgPHlvc2hpaGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPg0KDQpCZXN0IHJlZ2FyZHMsDQpZ
+b3NoaWhpcm8gU2hpbW9kYQ0KDQo=
