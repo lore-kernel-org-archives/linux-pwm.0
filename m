@@ -1,15 +1,11 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: bcm-iproc: prevent unloading the driver module
- while in use
-Date: Thu, 24 Oct 2019 09:36:07 +0200
-Message-ID: <20191024073607.fs33i2rztfjqmvfj@pengutronix.de>
-References: <20191017192218.9042-1-u.kleine-koenig@pengutronix.de>
+From: Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH 0/4] Convert STM32 Timer mdf bindings to yaml
+Date: Thu, 31 Oct 2019 13:30:36 +0100
+Message-ID: <20191031123040.26316-1-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20191017192218.9042-1-u.kleine-koenig@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,29 +15,39 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, fabrice.gasnier@st.com, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, benjamin.gaignard@st.com
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+This series converts STM32 Timer mfd bindings to json-schema.
+The original binding split between all the subnode remains the same
+that why subnode bindings are converted first and then included in
+the mfd binding.
 
-On Thu, Oct 17, 2019 at 09:22:18PM +0200, Uwe Kleine-K=F6nig wrote:
-> The owner member of struct pwm_ops must be set to THIS_MODULE to
-> increase the reference count of the module such that the module cannot
-> be removed while its code is in use.
-> =
+Benjamin Gaignard (4):
+  dt-bindings: counter: Convert stm32 counter bindings to json-schema
+  dt-bindings: iio: timer: Convert stm32 IIO trigger bindings to
+    json-schema
+  dt-bindings: pwm: Convert stm32 pwm bindings to json-schema
+  dt-bindings: mfd: Convert stm32 timers bindings to json-schema
 
-> Fixes: daa5abc41c80 ("pwm: Add support for Broadcom iProc PWM controller")
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+ .../bindings/counter/st,stm32-timer-cnt.yaml       | 38 +++++++++
+ .../bindings/counter/stm32-timer-cnt.txt           | 31 --------
+ .../bindings/iio/timer/st,stm32-timer-trigger.yaml | 44 +++++++++++
+ .../bindings/iio/timer/stm32-timer-trigger.txt     | 25 ------
+ .../devicetree/bindings/mfd/st,stm32-timers.yaml   | 91 ++++++++++++++++++++++
+ .../devicetree/bindings/mfd/stm32-timers.txt       | 73 -----------------
+ .../devicetree/bindings/pwm/pwm-stm32.txt          | 38 ---------
+ .../devicetree/bindings/pwm/st,stm32-pwm.yaml      | 51 ++++++++++++
+ 8 files changed, 224 insertions(+), 167 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/counter/st,stm32-timer-cnt.yaml
+ delete mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigger.yaml
+ delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/st,stm32-pwm.yaml
 
-Assuming you will send another PR to Linus for 5.4 with the revert of
-01ccf903edd65f6421612321648fa5a7f4b7cb10 I suggest to add this patch,
-too.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+-- 
+2.15.0
