@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH v2 6/7] arm64: dts: allwinner: h6: Add PWM node
-Date: Sun,  3 Nov 2019 21:33:33 +0100
-Message-ID: <20191103203334.10539-7-peron.clem@gmail.com>
+Subject: [PATCH v2 3/7] pwm: sun4i: Add an optional probe for bus clock
+Date: Sun,  3 Nov 2019 21:33:30 +0100
+Message-ID: <20191103203334.10539-4-peron.clem@gmail.com>
 References: <20191103203334.10539-1-peron.clem@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -15,40 +15,91 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec@siol.net>
 
-Allwinner H6 PWM is similar to that in A20 except that it has additional
-bus clock and reset line.
+H6 PWM core needs bus clock to be enabled in order to work.
 
-Note that first PWM channel is connected to output pin and second
-channel is used internally, as a clock source to AC200 co-packaged chip.
-This means that any combination of these two channels can be used and
-thus it doesn't make sense to add pinctrl nodes at this point.
+Add an optional probe for it and a fallback for previous
+bindings without name on module clock.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 Signed-off-by: Clément Péron <peron.clem@gmail.com>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/pwm/pwm-sun4i.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-index 0d5ea19336a1..b0d9ee1ead13 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -222,6 +222,16 @@
- 			status = "disabled";
- 		};
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index d194b8ebdb00..b5e7ac364f59 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -78,6 +78,7 @@ struct sun4i_pwm_data {
  
-+		pwm: pwm@300a000 {
-+			compatible = "allwinner,sun50i-h6-pwm";
-+			reg = <0x0300a000 0x400>;
-+			clocks = <&osc24M>, <&ccu CLK_BUS_PWM>;
-+			clock-names = "mod", "bus";
-+			resets = <&ccu RST_BUS_PWM>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
+ struct sun4i_pwm_chip {
+ 	struct pwm_chip chip;
++	struct clk *bus_clk;
+ 	struct clk *clk;
+ 	struct reset_control *rst;
+ 	void __iomem *base;
+@@ -367,6 +368,31 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pwm->clk))
+ 		return PTR_ERR(pwm->clk);
+ 
++	/* Get all clocks and reset line */
++	pwm->clk = devm_clk_get_optional(&pdev->dev, "mod");
++	if (IS_ERR(pwm->clk)) {
++		dev_err(&pdev->dev, "get clock failed %ld\n",
++			PTR_ERR(pwm->clk));
++		return PTR_ERR(pwm->clk);
++	}
 +
- 		pio: pinctrl@300b000 {
- 			compatible = "allwinner,sun50i-h6-pinctrl";
- 			reg = <0x0300b000 0x400>;
++	/* Fallback for old dtbs with a single clock and no name */
++	if (!pwm->clk) {
++		pwm->clk = devm_clk_get(&pdev->dev, NULL);
++		if (IS_ERR(pwm->clk)) {
++			dev_err(&pdev->dev, "get clock failed %ld\n",
++				PTR_ERR(pwm->clk));
++			return PTR_ERR(pwm->clk);
++		}
++	}
++
++	pwm->bus_clk = devm_clk_get_optional(&pdev->dev, "bus");
++	if (IS_ERR(pwm->bus_clk)) {
++		dev_err(&pdev->dev, "get bus_clock failed %ld\n",
++			PTR_ERR(pwm->bus_clk));
++		return PTR_ERR(pwm->bus_clk);
++	}
++
+ 	pwm->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
+ 	if (IS_ERR(pwm->rst)) {
+ 		if (PTR_ERR(pwm->rst) == -EPROBE_DEFER)
+@@ -381,6 +407,13 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	/* Enable bus clock */
++	ret = clk_prepare_enable(pwm->bus_clk);
++	if (ret) {
++		dev_err(&pdev->dev, "Cannot prepare_enable bus_clk\n");
++		goto err_bus;
++	}
++
+ 	pwm->chip.dev = &pdev->dev;
+ 	pwm->chip.ops = &sun4i_pwm_ops;
+ 	pwm->chip.base = -1;
+@@ -401,6 +434,8 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_pwm_add:
++	clk_disable_unprepare(pwm->bus_clk);
++err_bus:
+ 	reset_control_assert(pwm->rst);
+ 
+ 	return ret;
+@@ -415,6 +450,7 @@ static int sun4i_pwm_remove(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	clk_disable_unprepare(pwm->bus_clk);
+ 	reset_control_assert(pwm->rst);
+ 
+ 	return 0;
 -- 
 2.20.1
