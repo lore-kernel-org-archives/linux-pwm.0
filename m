@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH v2 4/7] pwm: sun4i: Add support to output source clock directly
-Date: Sun,  3 Nov 2019 21:33:31 +0100
-Message-ID: <20191103203334.10539-5-peron.clem@gmail.com>
+Subject: [PATCH v2 6/7] arm64: dts: allwinner: h6: Add PWM node
+Date: Sun,  3 Nov 2019 21:33:33 +0100
+Message-ID: <20191103203334.10539-7-peron.clem@gmail.com>
 References: <20191103203334.10539-1-peron.clem@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -15,106 +15,40 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec@siol.net>
 
-PWM core has an option to bypass whole logic and output unchanged source
-clock as PWM output. This is achieved by enabling bypass bit.
+Allwinner H6 PWM is similar to that in A20 except that it has additional
+bus clock and reset line.
 
-Note that when bypass is enabled, no other setting has any meaning, not
-even enable bit.
-
-This mode of operation is needed to achieve high enough frequency to
-serve as clock source for AC200 chip, which is integrated into same
-package as H6 SoC.
+Note that first PWM channel is connected to output pin and second
+channel is used internally, as a clock source to AC200 co-packaged chip.
+This means that any combination of these two channels can be used and
+thus it doesn't make sense to add pinctrl nodes at this point.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 Signed-off-by: Clément Péron <peron.clem@gmail.com>
 ---
- drivers/pwm/pwm-sun4i.c | 39 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index b5e7ac364f59..2441574674d9 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -3,6 +3,10 @@
-  * Driver for Allwinner sun4i Pulse Width Modulation Controller
-  *
-  * Copyright (C) 2014 Alexandre Belloni <alexandre.belloni@free-electrons.com>
-+ *
-+ * Limitations:
-+ * - When outputing the source clock directly, the PWM logic will be bypassed
-+ *   and the currently running period is not guaranted to be completed
-  */
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+index 0d5ea19336a1..b0d9ee1ead13 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -222,6 +222,16 @@
+ 			status = "disabled";
+ 		};
  
- #include <linux/bitops.h>
-@@ -73,6 +77,7 @@ static const u32 prescaler_table[] = {
- 
- struct sun4i_pwm_data {
- 	bool has_prescaler_bypass;
-+	bool has_direct_mod_clk_output;
- 	unsigned int npwm;
- };
- 
-@@ -118,6 +123,20 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip,
- 
- 	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 
-+	/*
-+	 * PWM chapter in H6 manual has a diagram which explains that if bypass
-+	 * bit is set, no other setting has any meaning. Even more, experiment
-+	 * proved that also enable bit is ignored in this case.
-+	 */
-+	if ((val & BIT_CH(PWM_BYPASS, pwm->hwpwm)) &&
-+	    data->has_direct_mod_clk_output) {
-+		state->period = DIV_ROUND_CLOSEST_ULL(NSEC_PER_SEC, clk_rate);
-+		state->duty_cycle = state->period / 2;
-+		state->polarity = PWM_POLARITY_NORMAL;
-+		state->enabled = true;
-+		return;
-+	}
++		pwm: pwm@300a000 {
++			compatible = "allwinner,sun50i-h6-pwm";
++			reg = <0x0300a000 0x400>;
++			clocks = <&osc24M>, <&ccu CLK_BUS_PWM>;
++			clock-names = "mod", "bus";
++			resets = <&ccu RST_BUS_PWM>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
 +
- 	if ((PWM_REG_PRESCAL(val, pwm->hwpwm) == PWM_PRESCAL_MASK) &&
- 	    sun4i_pwm->data->has_prescaler_bypass)
- 		prescaler = 1;
-@@ -203,7 +222,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
- 	struct pwm_state cstate;
--	u32 ctrl;
-+	u32 ctrl, clk_rate;
-+	bool bypass;
- 	int ret;
- 	unsigned int delay_us;
- 	unsigned long now;
-@@ -218,6 +238,16 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		}
- 	}
- 
-+	/*
-+	 * Although it would make much more sense to check for bypass in
-+	 * sun4i_pwm_calculate(), value of bypass bit also depends on "enabled".
-+	 * Period is allowed to be rounded up or down.
-+	 */
-+	clk_rate = clk_get_rate(sun4i_pwm->clk);
-+	bypass = ((state->period * clk_rate >= NSEC_PER_SEC &&
-+		   state->period * clk_rate < NSEC_PER_SEC + clk_rate) &&
-+		  state->enabled);
-+
- 	spin_lock(&sun4i_pwm->ctrl_lock);
- 	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 
-@@ -265,6 +295,13 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		ctrl &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
- 	}
- 
-+	if (sun4i_pwm->data->has_direct_mod_clk_output) {
-+		if (bypass)
-+			ctrl |= BIT_CH(PWM_BYPASS, pwm->hwpwm);
-+		else
-+			ctrl &= ~BIT_CH(PWM_BYPASS, pwm->hwpwm);
-+	}
-+
- 	sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
- 
- 	spin_unlock(&sun4i_pwm->ctrl_lock);
+ 		pio: pinctrl@300b000 {
+ 			compatible = "allwinner,sun50i-h6-pinctrl";
+ 			reg = <0x0300b000 0x400>;
 -- 
 2.20.1
