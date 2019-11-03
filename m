@@ -1,128 +1,97 @@
-From: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
- bindings to json-schema
-Date: Sun, 3 Nov 2019 11:08:41 +0000
-Message-ID: <20191103110841.3ad3ecfb@archlinux>
-References: <20191031123040.26316-1-benjamin.gaignard@st.com>
-        <20191031123040.26316-3-benjamin.gaignard@st.com>
+From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+Subject: [PATCH v2 1/7] dt-bindings: pwm: allwinner: Add H6 PWM description
+Date: Sun,  3 Nov 2019 21:33:28 +0100
+Message-ID: <20191103203334.10539-2-peron.clem@gmail.com>
+References: <20191103203334.10539-1-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191031123040.26316-3-benjamin.gaignard@st.com>
+In-Reply-To: <20191103203334.10539-1-peron.clem@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@st.com>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, fabrice.gasnier@st.com, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, devicetree@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?=27Uwe=20Kleine-K=C3=B6nig=27?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jernej Skrabec <jernej.skrabec@siol.net>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 31 Oct 2019 13:30:38 +0100
-Benjamin Gaignard <benjamin.gaignard@st.com> wrote:
+From: Jernej Skrabec <jernej.skrabec@siol.net>
 
-> Convert the STM32 IIO trigger binding to DT schema format using json-schema
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-I'm far from great on these as still haven't taken the time I should to learn
-the yaml syntax properly.  A few comments inline however based mostly on this
-doesn't quite look like other ones I've seen recently.
+H6 PWM block is basically the same as A20 PWM, except that it also has
+bus clock and reset line which needs to be handled accordingly.
 
-Thanks,
+Expand Allwinner PWM binding with H6 PWM specifics.
 
-Jonathan
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+Signed-off-by: Clément Péron <peron.clem@gmail.com>
+---
+ .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 45 ++++++++++++++++++-
+ 1 file changed, 44 insertions(+), 1 deletion(-)
 
-> ---
->  .../bindings/iio/timer/st,stm32-timer-trigger.yaml | 44 ++++++++++++++++++++++
->  .../bindings/iio/timer/stm32-timer-trigger.txt     | 25 ------------
->  2 files changed, 44 insertions(+), 25 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigger.yaml
->  delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigger.yaml b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigger.yaml
-> new file mode 100644
-> index 000000000000..1c8c8b55e8cd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigger.yaml
-> @@ -0,0 +1,44 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/timer/st,stm32-timer-trigger.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: STMicroelectronics STM32 Timers IIO timer bindings
-> +
-> +maintainers:
-> +  - Benjamin Gaignard <benjamin.gaignard@st.com>
-> +  - Fabrice Gasnier <fabrice.gasnier@st.com>
-> +
-> +properties:
-> +  $nodemane:
-
-nodename?
-
-> +    pattern: "^timer@[0-9]+$"
-> +    type: object
-> +
-> +    description:
-> +      must be a sub-node of an STM32 Timer device tree node
-> +
-> +    properties:
-> +      compatible:
-> +        oneOf:
-
-enum is I think preferred for these.
-
-> +          - const: st,stm32-timer-trigger
-> +          - const: st,stm32h7-timer-trigger
-> +            
-> +      reg: true
-
-Normally some info for what the reg value is..
-
-> +
-> +    required:
-> +      - compatible
-> +      - reg
-> +
-> +examples:
-> +  - |
-> +    timers2: timer@40000000 {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      timer@0 {
-> +        compatible = "st,stm32-timer-trigger";
-> +        reg = <0>;
-> +      };
-> +    };
-> +    
-> +...
-> diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-> deleted file mode 100644
-> index b8e8c769d434..000000000000
-> --- a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-> +++ /dev/null
-> @@ -1,25 +0,0 @@
-> -STMicroelectronics STM32 Timers IIO timer bindings
-> -
-> -Must be a sub-node of an STM32 Timers device tree node.
-> -See ../mfd/stm32-timers.txt for details about the parent node.
-> -
-> -Required parameters:
-> -- compatible:	Must be one of:
-> -		"st,stm32-timer-trigger"
-> -		"st,stm32h7-timer-trigger"
-> -- reg:		Identify trigger hardware block.
-> -
-> -Example:
-> -	timers@40010000 {
-> -		#address-cells = <1>;
-> -		#size-cells = <0>;
-> -		compatible = "st,stm32-timers";
-> -		reg = <0x40010000 0x400>;
-> -		clocks = <&rcc 0 160>;
-> -		clock-names = "int";
-> -
-> -		timer@0 {
-> -			compatible = "st,stm32-timer-trigger";
-> -			reg = <0>;
-> -		};
-> -	};
+diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
+index 0ac52f83a58c..bf36ea509f31 100644
+--- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
+@@ -30,13 +30,46 @@ properties:
+       - items:
+           - const: allwinner,sun50i-h5-pwm
+           - const: allwinner,sun5i-a13-pwm
++      - const: allwinner,sun50i-h6-pwm
+ 
+   reg:
+     maxItems: 1
+ 
+-  clocks:
++  # Even though it only applies to subschemas under the conditionals,
++  # not listing them here will trigger a warning because of the
++  # additionalsProperties set to false.
++  clocks: true
++  clock-names: true
++  resets:
+     maxItems: 1
+ 
++  if:
++    properties:
++      compatible:
++        contains:
++          const: allwinner,sun50i-h6-pwm
++
++  then:
++    properties:
++      clocks:
++        items:
++          - description: Module Clock
++          - description: Bus Clock
++
++      clock-names:
++        items:
++          - const: mod
++          - const: bus
++
++    required:
++      - clock-names
++      - resets
++
++  else:
++    properties:
++      clocks:
++        maxItems: 1
++
+ required:
+   - "#pwm-cells"
+   - compatible
+@@ -54,4 +87,14 @@ examples:
+         #pwm-cells = <3>;
+     };
+ 
++  - |
++    pwm@300a000 {
++      compatible = "allwinner,sun50i-h6-pwm";
++      reg = <0x0300a000 0x400>;
++      clocks = <&osc24M>, <&ccu CLK_BUS_PWM>;
++      clock-names = "mod", "bus";
++      resets = <&ccu RST_BUS_PWM>;
++      #pwm-cells = <3>;
++    };
++
+ ...
+-- 
+2.20.1
