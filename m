@@ -1,38 +1,152 @@
-From: "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-Subject: Re: [PATCH 00/62] Add definition for GPIO direction
-Date: Tue, 5 Nov 2019 10:54:06 +0000
-Message-ID: <98b0fcbae31f548d42264c91b1b853d71167607c.camel@fi.rohmeurope.com>
-References: <cover.1572875541.git.matti.vaittinen@fi.rohmeurope.com>
+From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
+Subject: Re: [PATCH v2 1/7] dt-bindings: pwm: allwinner: Add H6 PWM description
+Date: Tue, 5 Nov 2019 13:34:37 +0100
+Message-ID: <CAJiuCcc7sQvuPX+FTErXS+_RzUDvbDrB3Z5EX9wE_2EZaex0qw@mail.gmail.com>
+References: <20191103203334.10539-1-peron.clem@gmail.com> <20191103203334.10539-2-peron.clem@gmail.com>
+ <20191104080359.6kjugbt3yi63ywhb@pengutronix.de> <20191105111134.GG3876@gilmour.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <cover.1572875541.git.matti.vaittinen@fi.rohmeurope.com>
-Content-Language: de-DE
-Content-ID: <25949A246E0DB248848B1397A8FF864E@de.rohmeurope.com>
-List-Unsubscribe: <https://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <https://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: "Alsa-devel" <alsa-devel-bounces@alsa-project.org>
-To: "mazziesaccount@gmail.com" <mazziesaccount@gmail.com>
-Cc: "semi.malinen@ge.com" <semi.malinen@ge.com>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>, "david.daney@cavium.com" <david.daney@cavium.com>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>, "ptyser@xes-inc.com" <ptyser@xes-inc.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "marek.behun@nic.cz" <marek.behun@nic.cz>, "festevam@gmail.com" <festevam@gmail.com>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, "marek.vasut+renesas@gmail.com" <marek.vasut+renesas@gmail.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "khilman@kernel.org" <khilman@kernel.org>, michal.sime
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191105111134.GG3876@gilmour.lan>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Maxime Ripard <mripard@kernel.org>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, Jernej Skrabec <jernej.skrabec@siol.net>, Pengutronix Kernel Team <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Maxime,
 
-On Tue, 2019-11-05 at 12:09 +0200, Matti Vaittinen wrote:
-> The patch series adds definitions for GPIO line directions.
+On Tue, 5 Nov 2019 at 12:11, Maxime Ripard <mripard@kernel.org> wrote:
+>
+> Hi Clement, Uwe,
+>
+> On Mon, Nov 04, 2019 at 09:03:59AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> > On Sun, Nov 03, 2019 at 09:33:28PM +0100, Cl=C3=A9ment P=C3=A9ron wrote=
+:
+> > > From: Jernej Skrabec <jernej.skrabec@siol.net>
+> > >
+> > > H6 PWM block is basically the same as A20 PWM, except that it also ha=
+s
+> > > bus clock and reset line which needs to be handled accordingly.
+> > >
+> > > Expand Allwinner PWM binding with H6 PWM specifics.
+> > >
+> > > Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+> > > Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
+> > > ---
+> > >  .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 45 +++++++++++++++++=
++-
+> > >  1 file changed, 44 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a1=
+0-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.=
+yaml
+> > > index 0ac52f83a58c..bf36ea509f31 100644
+> > > --- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.y=
+aml
+> > > +++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.y=
+aml
+> > > @@ -30,13 +30,46 @@ properties:
+> > >        - items:
+> > >            - const: allwinner,sun50i-h5-pwm
+> > >            - const: allwinner,sun5i-a13-pwm
+> > > +      - const: allwinner,sun50i-h6-pwm
+> > >
+> > >    reg:
+> > >      maxItems: 1
+> > >
+> > > -  clocks:
+> > > +  # Even though it only applies to subschemas under the conditionals=
+,
+> > > +  # not listing them here will trigger a warning because of the
+> > > +  # additionalsProperties set to false.
+> > > +  clocks: true
+> > > +  clock-names: true
+> > > +  resets:
+> > >      maxItems: 1
+> > >
+> > > +  if:
+> > > +    properties:
+> > > +      compatible:
+> > > +        contains:
+> > > +          const: allwinner,sun50i-h6-pwm
+> > > +
+> > > +  then:
+> > > +    properties:
+> > > +      clocks:
+> > > +        items:
+> > > +          - description: Module Clock
+> > > +          - description: Bus Clock
+> > > +
+> > > +      clock-names:
+> > > +        items:
+> > > +          - const: mod
+> > > +          - const: bus
+> > > +
+> > > +    required:
+> > > +      - clock-names
+> > > +      - resets
+> > > +
+> > > +  else:
+> > > +    properties:
+> > > +      clocks:
+> > > +        maxItems: 1
+> > > +
+> >
+> > I guess this hunk says "If this is a allwinner,sun50i-h6-pwm, a mod and
+> > bus clock is required.", right?
+> >
+> > I wonder if it is sensible to require a clock-names property in the els=
+e
+> > branch, too. This would make it obvious if the clock there corresponds
+> > to the "mod" or the "bus" clock on H6. (I guess it's "mod".)
+>
+> This can be done a bit differently and could address your concerns
+>
+> Something like
+>
+> properties:
+>   ...
+>
+>   clocks:
+>     minItems: 1
+>     maxItems: 2
+>     items:
+>       - description: Bus Clock
+>       - description: Module Clock
+>
+> required:
+>   - clocks
+>
+> if:
+>   ...
+>
+> then:
+>   properties:
+>     clocks:
+>       maxItems: 2
 
-Argh. Sorry peeps. My new cool patch script messed up the message-id
-header causing the messages to not be nicely grouped in one thread.
-Patches are now all scattered around your (in)boxes :/
+Here we should set minItems to 2 right ?
+so Max =3D Min =3D 2
 
-I won't resend the series unless requested though - sending 62 mails is
-not fun - receiving them may be even less fun... 
+Regards,
+Cl=C3=A9ment
 
-Sorry once more
---Matti
+>
+>     clocks-names:
+>       items:
+>         - const: mod
+>         - const: bus
+>
+>     required:
+>       - clock-names
+>
+> else:
+>   properties:
+>     clocks:
+>       maxItems: 1
+>
+> That way, the definition of the order and which clock is which is
+> pretty obvious in both cases, and we don't get any weird warnings.
+>
+> Maxime
