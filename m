@@ -1,53 +1,138 @@
-From: "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
-Subject: Re: [PATCH 00/62] Add definition for GPIO direction
-Date: Tue, 5 Nov 2019 15:06:42 +0000
-Message-ID: <be58a14237f8195f00a459e8b06876fe37d1b836.camel@fi.rohmeurope.com>
-References: <cover.1572875541.git.matti.vaittinen@fi.rohmeurope.com>
- <20191105122042.GO32742@smile.fi.intel.com>
- <4e6fa62d7022c7b1426477a150a93c899725f5b0.camel@fi.rohmeurope.com>
- <20191105131038.duol3rwwkbuvgvwv@pengutronix.de>
- <938a5ec7b41ae9ce7b0de83764d6b774cfdaa781.camel@fi.rohmeurope.com>
- <20191105133604.d2xcasxw7pwzwvh7@pengutronix.de>
- <a967c764d135ab0f96f6b1df62ac91426c935b44.camel@fi.rohmeurope.com>
- <20191105145946.2ye6ujvqzn2d6fqd@pengutronix.de>
+From: Maxime Ripard <mripard@kernel.org>
+Subject: Re: [PATCH v2 1/7] dt-bindings: pwm: allwinner: Add H6 PWM
+ description
+Date: Tue, 5 Nov 2019 18:32:08 +0100
+Message-ID: <20191105173208.GA46143@gilmour.lan>
+References: <20191103203334.10539-1-peron.clem@gmail.com>
+ <20191103203334.10539-2-peron.clem@gmail.com>
+ <20191104080359.6kjugbt3yi63ywhb@pengutronix.de>
+ <20191105111134.GG3876@gilmour.lan>
+ <CAJiuCcc7sQvuPX+FTErXS+_RzUDvbDrB3Z5EX9wE_2EZaex0qw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <20191105145946.2ye6ujvqzn2d6fqd@pengutronix.de>
-Content-Language: de-DE
-Content-ID: <6D5D437184F57F40A974F8CC692726E2@de.rohmeurope.com>
-List-Unsubscribe: <https://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <https://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: "Alsa-devel" <alsa-devel-bounces@alsa-project.org>
-To: "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
-Cc: "semi.malinen@ge.com" <semi.malinen@ge.com>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>, "david.daney@cavium.com" <david.daney@cavium.com>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>, "ptyser@xes-inc.com" <ptyser@xes-inc.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "marek.behun@nic.cz" <marek.behun@nic.cz>, "festevam@gmail.com" <festevam@gmail.com>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, "marek.vasut+renesas@gmail.com" <marek.vasut+renesas@gmail.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "khilman@kernel.org" <khilman@kernel.org>, michal.sime
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAJiuCcc7sQvuPX+FTErXS+_RzUDvbDrB3Z5EX9wE_2EZaex0qw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, Jernej Skrabec <jernej.skrabec@siol.net>, Pengutronix Kernel Team <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-DQpPbiBUdWUsIDIwMTktMTEtMDUgYXQgMTU6NTkgKzAxMDAsIFV3ZSBLbGVpbmUtS8O2bmlnIHdy
-b3RlOg0KPiBIZWxsbyBNYXR0aSwNCj4gDQo+IE9uIFR1ZSwgTm92IDA1LCAyMDE5IGF0IDAyOjAw
-OjAyUE0gKzAwMDAsIFZhaXR0aW5lbiwgTWF0dGkgd3JvdGU6DQo+ID4gT24gVHVlLCAyMDE5LTEx
-LTA1IGF0IDE0OjM2ICswMTAwLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToNCj4gPiBUaGFua3Mg
-VXdlISBUaGF0IHdhcyBraW5kISBJJ20gb24gRmVkb3JhIGJ1dCBJIGd1ZXNzIEkgY2FuIGZpbmQg
-dGhlDQo+ID4gbXVsdGlhcmNoIGJpbnV0aWxzIDopIEknbGwgdHJ5IHRoYXQgdG9tb3Jyb3cgd2hl
-biBJJ20gYmFjayBhdCB0aGUNCj4gPiBvZmZpY2UuIExldCdzIHNlZSB3aGF0IGtpbmQgb2YgcmVz
-dWx0cyBJIGNhbiBnZXQgZnJvbSBpdC4NCj4gPiANCj4gPiBVbmZvcnR1bmF0ZWx5IGJ1bmNoIG9m
-IHRoZSBHUElPcyBkZXBlbmQgb24geDg2IC0gc28gSSBuZWVkIHRvIHNlZQ0KPiA+IHdoYXQNCj4g
-PiBJIGNhbiBjb21waWxlIGluIHdpdGggZGVjZW50IGVmZm9ydC4gRm9yIG15IGNvbXBpbGUgdGVz
-dCBJIGp1c3QNCj4gPiBoYWNrZWQNCj4gPiB0aGUgTWFrZWZpbGUgdG8gZm9yY2UgYWxsIGluIGFu
-ZCBhZGRlZCBzb21lIGR1bW15IG1hY3JvcyB0byBmaXggZmV3DQo+ID4gbWlzc2luZyBmdW5jdGlv
-bnMgOnwgQnV0IEkgZ3Vlc3MgSSBjYW4gZ2V0IHNvbWUgcmVzdWx0cy4NCj4gDQo+IEVuYWJsZSBD
-T05GSUdfQ09NUElMRV9URVNUIGFuZCB0aGVuIHlvdSBzaG91bGQgYmUgYWJsZSB0byBjb21waWxl
-DQo+IG1vc3QNCj4gZHJpdmVycyBhbHNvIG9uIHRoZSB3cm9uZyBhcmNoaXRlY3R1cmUuDQoNClJp
-Z2h0LiBUaGF0IHdhcyB0aGUgZmlyc3QgdGhpbmcgSSB0cmllZCBvdXQuIFVuZm9ydHVuYXRlbHkg
-YnVuY2ggb2YgdGhlDQpncGlvLWRyaXZlcnMgd29uJ3QgY2FyZSBhYm91dCBDT05GSUdfQ09NUElM
-RV9URVNULiBUaGFua3MgYW55d2F5cyA6KQ0KDQpCciwNCglNYXR0aQ0KX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KQWxzYS1kZXZlbCBtYWlsaW5nIGxpc3QK
-QWxzYS1kZXZlbEBhbHNhLXByb2plY3Qub3JnCmh0dHBzOi8vbWFpbG1hbi5hbHNhLXByb2plY3Qu
-b3JnL21haWxtYW4vbGlzdGluZm8vYWxzYS1kZXZlbAo=
+On Tue, Nov 05, 2019 at 01:34:37PM +0100, Cl=E9ment P=E9ron wrote:
+> On Tue, 5 Nov 2019 at 12:11, Maxime Ripard <mripard@kernel.org> wrote:
+> >
+> > Hi Clement, Uwe,
+> >
+> > On Mon, Nov 04, 2019 at 09:03:59AM +0100, Uwe Kleine-K=F6nig wrote:
+> > > On Sun, Nov 03, 2019 at 09:33:28PM +0100, Cl=E9ment P=E9ron wrote:
+> > > > From: Jernej Skrabec <jernej.skrabec@siol.net>
+> > > >
+> > > > H6 PWM block is basically the same as A20 PWM, except that it also =
+has
+> > > > bus clock and reset line which needs to be handled accordingly.
+> > > >
+> > > > Expand Allwinner PWM binding with H6 PWM specifics.
+> > > >
+> > > > Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+> > > > Signed-off-by: Cl=E9ment P=E9ron <peron.clem@gmail.com>
+> > > > ---
+> > > >  .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 45 +++++++++++++++=
++++-
+> > > >  1 file changed, 44 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-=
+a10-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pw=
+m.yaml
+> > > > index 0ac52f83a58c..bf36ea509f31 100644
+> > > > --- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm=
+=2Eyaml
+> > > > +++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm=
+=2Eyaml
+> > > > @@ -30,13 +30,46 @@ properties:
+> > > >        - items:
+> > > >            - const: allwinner,sun50i-h5-pwm
+> > > >            - const: allwinner,sun5i-a13-pwm
+> > > > +      - const: allwinner,sun50i-h6-pwm
+> > > >
+> > > >    reg:
+> > > >      maxItems: 1
+> > > >
+> > > > -  clocks:
+> > > > +  # Even though it only applies to subschemas under the conditiona=
+ls,
+> > > > +  # not listing them here will trigger a warning because of the
+> > > > +  # additionalsProperties set to false.
+> > > > +  clocks: true
+> > > > +  clock-names: true
+> > > > +  resets:
+> > > >      maxItems: 1
+> > > >
+> > > > +  if:
+> > > > +    properties:
+> > > > +      compatible:
+> > > > +        contains:
+> > > > +          const: allwinner,sun50i-h6-pwm
+> > > > +
+> > > > +  then:
+> > > > +    properties:
+> > > > +      clocks:
+> > > > +        items:
+> > > > +          - description: Module Clock
+> > > > +          - description: Bus Clock
+> > > > +
+> > > > +      clock-names:
+> > > > +        items:
+> > > > +          - const: mod
+> > > > +          - const: bus
+> > > > +
+> > > > +    required:
+> > > > +      - clock-names
+> > > > +      - resets
+> > > > +
+> > > > +  else:
+> > > > +    properties:
+> > > > +      clocks:
+> > > > +        maxItems: 1
+> > > > +
+> > >
+> > > I guess this hunk says "If this is a allwinner,sun50i-h6-pwm, a mod a=
+nd
+> > > bus clock is required.", right?
+> > >
+> > > I wonder if it is sensible to require a clock-names property in the e=
+lse
+> > > branch, too. This would make it obvious if the clock there corresponds
+> > > to the "mod" or the "bus" clock on H6. (I guess it's "mod".)
+> >
+> > This can be done a bit differently and could address your concerns
+> >
+> > Something like
+> >
+> > properties:
+> >   ...
+> >
+> >   clocks:
+> >     minItems: 1
+> >     maxItems: 2
+> >     items:
+> >       - description: Bus Clock
+> >       - description: Module Clock
+> >
+> > required:
+> >   - clocks
+> >
+> > if:
+> >   ...
+> >
+> > then:
+> >   properties:
+> >     clocks:
+> >       maxItems: 2
+>
+> Here we should set minItems to 2 right ?
+> so Max =3D Min =3D 2
+
+It's done automatically by the tooling when the other is missing.
+
+Maxime
