@@ -1,162 +1,55 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
- bindings to json-schema
-Date: Tue, 5 Nov 2019 11:07:16 +0100
-Message-ID: <CA+M3ks5sZ6wwV-V+HCLC8OLdeLqrxK0Ga-pXTsdktQErbMOk4g@mail.gmail.com>
-References: <20191031123040.26316-1-benjamin.gaignard@st.com>
- <20191031123040.26316-3-benjamin.gaignard@st.com> <20191103110841.3ad3ecfb@archlinux>
+From: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Subject: [PATCH 26/62] gpio: gpio-mvebu: Use new GPIO_LINE_DIRECTION
+Date: Tue, 5 Nov 2019 12:24:27 +0200
+Message-ID: <dc06a640f92c4b6c1ae68f5b3156130a6b8fac1f.1572945830.git.matti.vaittinen@fi.rohmeurope.com>
+References: <cover.1572945830.git.matti.vaittinen@fi.rohmeurope.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191103110841.3ad3ecfb@archlinux>
+Content-Disposition: inline
+In-Reply-To: <cover.1572945830.git.matti.vaittinen@fi.rohmeurope.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Benjamin Gaignard <benjamin.gaignard@st.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Alexandre Torgue <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-iio@vger.kernel.org, u.kleine-koenig@pengutronix.de, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Fabrice Gasnier <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, linux-stm32@st-md-mailman.stormreply.com, Linux ARM <linux-arm-kernel@lists.infradead.org>
+To: matti.vaittinen@fi.rohmeurope.com, mazziesaccount@gmail.com
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Le dim. 3 nov. 2019 =C3=A0 12:08, Jonathan Cameron <jic23@kernel.org> a =C3=
-=A9crit :
->
-> On Thu, 31 Oct 2019 13:30:38 +0100
-> Benjamin Gaignard <benjamin.gaignard@st.com> wrote:
->
-> > Convert the STM32 IIO trigger binding to DT schema format using json-sc=
-hema
-> >
-> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> I'm far from great on these as still haven't taken the time I should to l=
-earn
-> the yaml syntax properly.  A few comments inline however based mostly on =
-this
-> doesn't quite look like other ones I've seen recently.
->
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  .../bindings/iio/timer/st,stm32-timer-trigger.yaml | 44 ++++++++++++++=
-++++++++
-> >  .../bindings/iio/timer/stm32-timer-trigger.txt     | 25 ------------
-> >  2 files changed, 44 insertions(+), 25 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/timer/st,stm3=
-2-timer-trigger.yaml
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-t=
-imer-trigger.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/timer/st,stm32-timer=
--trigger.yaml b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-=
-trigger.yaml
-> > new file mode 100644
-> > index 000000000000..1c8c8b55e8cd
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigge=
-r.yaml
-> > @@ -0,0 +1,44 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/timer/st,stm32-timer-trigger.ya=
-ml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: STMicroelectronics STM32 Timers IIO timer bindings
-> > +
-> > +maintainers:
-> > +  - Benjamin Gaignard <benjamin.gaignard@st.com>
-> > +  - Fabrice Gasnier <fabrice.gasnier@st.com>
-> > +
-> > +properties:
-> > +  $nodemane:
->
-> nodename?
+It's hard for occasional GPIO code reader/writer to know if values 0/1
+equal to IN or OUT. Use defined GPIO_LINE_DIRECTION_IN and
+GPIO_LINE_DIRECTION_OUT to help them out.
 
-That will be in v2
+Signed-off-by: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+---
+ drivers/gpio/gpio-mvebu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
->
-> > +    pattern: "^timer@[0-9]+$"
-> > +    type: object
-> > +
-> > +    description:
-> > +      must be a sub-node of an STM32 Timer device tree node
-> > +
-> > +    properties:
-> > +      compatible:
-> > +        oneOf:
->
-> enum is I think preferred for these.
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 6c0687694341..9b2adf0ef880 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -384,7 +384,10 @@ static int mvebu_gpio_get_direction(struct gpio_chip *chip, unsigned int pin)
+ 
+ 	regmap_read(mvchip->regs, GPIO_IO_CONF_OFF + mvchip->offset, &u);
+ 
+-	return !!(u & BIT(pin));
++	if (u & BIT(pin))
++		return GPIO_LINE_DIRECTION_IN;
++
++	return GPIO_LINE_DIRECTION_OUT;
+ }
+ 
+ static int mvebu_gpio_to_irq(struct gpio_chip *chip, unsigned int pin)
+-- 
+2.21.0
 
-as you like it will be in v2
 
->
-> > +          - const: st,stm32-timer-trigger
-> > +          - const: st,stm32h7-timer-trigger
-> > +
-> > +      reg: true
->
-> Normally some info for what the reg value is..
-I can't put "description" on this field because the syntax doesn't allow it=
-.
-I will add a comment in v2 to explain what reg is.
+-- 
+Matti Vaittinen, Linux device drivers
+ROHM Semiconductors, Finland SWDC
+Kiviharjunlenkki 1E
+90220 OULU
+FINLAND
 
-Thanks for your review.
-Benjamin
->
-> > +
-> > +    required:
-> > +      - compatible
-> > +      - reg
-> > +
-> > +examples:
-> > +  - |
-> > +    timers2: timer@40000000 {
-> > +      #address-cells =3D <1>;
-> > +      #size-cells =3D <0>;
-> > +      timer@0 {
-> > +        compatible =3D "st,stm32-timer-trigger";
-> > +        reg =3D <0>;
-> > +      };
-> > +    };
-> > +
-> > +...
-> > diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-tr=
-igger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger=
-.txt
-> > deleted file mode 100644
-> > index b8e8c769d434..000000000000
-> > --- a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.t=
-xt
-> > +++ /dev/null
-> > @@ -1,25 +0,0 @@
-> > -STMicroelectronics STM32 Timers IIO timer bindings
-> > -
-> > -Must be a sub-node of an STM32 Timers device tree node.
-> > -See ../mfd/stm32-timers.txt for details about the parent node.
-> > -
-> > -Required parameters:
-> > -- compatible:        Must be one of:
-> > -             "st,stm32-timer-trigger"
-> > -             "st,stm32h7-timer-trigger"
-> > -- reg:               Identify trigger hardware block.
-> > -
-> > -Example:
-> > -     timers@40010000 {
-> > -             #address-cells =3D <1>;
-> > -             #size-cells =3D <0>;
-> > -             compatible =3D "st,stm32-timers";
-> > -             reg =3D <0x40010000 0x400>;
-> > -             clocks =3D <&rcc 0 160>;
-> > -             clock-names =3D "int";
-> > -
-> > -             timer@0 {
-> > -                     compatible =3D "st,stm32-timer-trigger";
-> > -                     reg =3D <0>;
-> > -             };
-> > -     };
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+~~~ "I don't think so," said Rene Descartes. Just then he vanished ~~~
+Simon says - in Latin please.
+~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
+Thanks to Simon Glass for the translation =] 
