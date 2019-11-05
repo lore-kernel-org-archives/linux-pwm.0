@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH v3 4/7] pwm: sun4i: Add support to output source clock directly
-Date: Tue,  5 Nov 2019 14:14:53 +0100
-Message-ID: <20191105131456.32400-5-peron.clem@gmail.com>
+Subject: [PATCH v3 2/7] pwm: sun4i: Add an optional probe for reset line
+Date: Tue,  5 Nov 2019 14:14:51 +0100
+Message-ID: <20191105131456.32400-3-peron.clem@gmail.com>
 References: <20191105131456.32400-1-peron.clem@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -15,105 +15,91 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec@siol.net>
 
-PWM core has an option to bypass whole logic and output unchanged source
-clock as PWM output. This is achieved by enabling bypass bit.
+H6 PWM core needs deasserted reset line in order to work.
 
-Note that when bypass is enabled, no other setting has any meaning, not
-even enable bit.
-
-This mode of operation is needed to achieve high enough frequency to
-serve as clock source for AC200 chip which is integrated into same
-package as H6 SoC.
+Add an optional probe for it.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
 Signed-off-by: Clément Péron <peron.clem@gmail.com>
 ---
- drivers/pwm/pwm-sun4i.c | 38 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 37 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-sun4i.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 54e19fa56a4e..810abf47c261 100644
+index 6f5840a1a82d..9ba83769a478 100644
 --- a/drivers/pwm/pwm-sun4i.c
 +++ b/drivers/pwm/pwm-sun4i.c
-@@ -3,6 +3,10 @@
-  * Driver for Allwinner sun4i Pulse Width Modulation Controller
-  *
-  * Copyright (C) 2014 Alexandre Belloni <alexandre.belloni@free-electrons.com>
-+ *
-+ * Limitations:
-+ * - When outputing the source clock directly, the PWM logic will be bypassed
-+ *   and the currently running period is not guaranteed to be completed
-  */
+@@ -16,6 +16,7 @@
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
++#include <linux/reset.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/time.h>
+@@ -78,6 +79,7 @@ struct sun4i_pwm_data {
+ struct sun4i_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
++	struct reset_control *rst;
+ 	void __iomem *base;
+ 	spinlock_t ctrl_lock;
+ 	const struct sun4i_pwm_data *data;
+@@ -365,6 +367,21 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pwm->clk))
+ 		return PTR_ERR(pwm->clk);
  
- #include <linux/bitops.h>
-@@ -73,6 +77,7 @@ static const u32 prescaler_table[] = {
- 
- struct sun4i_pwm_data {
- 	bool has_prescaler_bypass;
-+	bool has_direct_mod_clk_output;
- 	unsigned int npwm;
- };
- 
-@@ -118,6 +123,20 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip,
- 
- 	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 
-+	/*
-+	 * PWM chapter in H6 manual has a diagram which explains that if bypass
-+	 * bit is set, no other setting has any meaning. Even more, experiment
-+	 * proved that also enable bit is ignored in this case.
-+	 */
-+	if ((val & BIT_CH(PWM_BYPASS, pwm->hwpwm)) &&
-+	    sun4i_pwm->data->has_direct_mod_clk_output) {
-+		state->period = DIV_ROUND_UP_ULL(NSEC_PER_SEC, clk_rate);
-+		state->duty_cycle = state->period / 2;
-+		state->polarity = PWM_POLARITY_NORMAL;
-+		state->enabled = true;
-+		return;
++	pwm->rst = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
++	if (IS_ERR(pwm->rst)) {
++		if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "get reset failed %ld\n",
++				PTR_ERR(pwm->rst));
++		return PTR_ERR(pwm->rst);
 +	}
 +
- 	if ((PWM_REG_PRESCAL(val, pwm->hwpwm) == PWM_PRESCAL_MASK) &&
- 	    sun4i_pwm->data->has_prescaler_bypass)
- 		prescaler = 1;
-@@ -203,7 +222,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++	/* Deassert reset */
++	ret = reset_control_deassert(pwm->rst);
++	if (ret) {
++		dev_err(&pdev->dev, "Cannot deassert reset control\n");
++		return ret;
++	}
++
+ 	pwm->chip.dev = &pdev->dev;
+ 	pwm->chip.ops = &sun4i_pwm_ops;
+ 	pwm->chip.base = -1;
+@@ -377,19 +394,31 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	ret = pwmchip_add(&pwm->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+-		return ret;
++		goto err_pwm_add;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, pwm);
+ 
+ 	return 0;
++
++err_pwm_add:
++	reset_control_assert(pwm->rst);
++
++	return ret;
+ }
+ 
+ static int sun4i_pwm_remove(struct platform_device *pdev)
  {
- 	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
- 	struct pwm_state cstate;
--	u32 ctrl;
-+	u32 ctrl, clk_rate;
-+	bool bypass;
- 	int ret;
- 	unsigned int delay_us;
- 	unsigned long now;
-@@ -218,6 +238,15 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		}
- 	}
- 
-+	/*
-+	 * Although it would make much more sense to check for bypass in
-+	 * sun4i_pwm_calculate(), value of bypass bit also depends on "enabled".
-+	 */
-+	clk_rate = clk_get_rate(sun4i_pwm->clk);
-+	bypass = state->enabled &&
-+		 (state->period * clk_rate >= NSEC_PER_SEC) &&
-+		 (state->duty_cycle * 2 == state->period);
+ 	struct sun4i_pwm_chip *pwm = platform_get_drvdata(pdev);
++	int ret;
 +
- 	spin_lock(&sun4i_pwm->ctrl_lock);
- 	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 
-@@ -265,6 +294,13 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		ctrl &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
- 	}
- 
-+	if (sun4i_pwm->data->has_direct_mod_clk_output) {
-+		if (bypass)
-+			ctrl |= BIT_CH(PWM_BYPASS, pwm->hwpwm);
-+		else
-+			ctrl &= ~BIT_CH(PWM_BYPASS, pwm->hwpwm);
-+	}
++	ret = pwmchip_remove(&pwm->chip);
++	if (ret)
++		return ret;
 +
- 	sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
++	reset_control_assert(pwm->rst);
  
- 	spin_unlock(&sun4i_pwm->ctrl_lock);
+-	return pwmchip_remove(&pwm->chip);
++	return 0;
+ }
+ 
+ static struct platform_driver sun4i_pwm_driver = {
 -- 
 2.20.1
