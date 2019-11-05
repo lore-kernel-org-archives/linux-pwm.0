@@ -1,40 +1,91 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 5/7] pwm: sun4i: Add support for H6 PWM
-Date: Tue, 5 Nov 2019 15:57:48 +0100
-Message-ID: <20191105145748.6l4ke7zxlt6mibmk@pengutronix.de>
-References: <20191105131456.32400-1-peron.clem@gmail.com>
- <20191105131456.32400-6-peron.clem@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 00/62] Add definition for GPIO direction
+Date: Tue, 5 Nov 2019 14:40:26 +0100
+Message-ID: <20191105134026.vl6h6kghuzmslptx@pengutronix.de>
+References: <cover.1572875541.git.matti.vaittinen@fi.rohmeurope.com>
+ <20191105122042.GO32742@smile.fi.intel.com>
+ <4e6fa62d7022c7b1426477a150a93c899725f5b0.camel@fi.rohmeurope.com>
+ <20191105131038.duol3rwwkbuvgvwv@pengutronix.de>
+ <20191105133025.GR32742@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <alsa-devel-bounces@alsa-project.org>
 Content-Disposition: inline
-In-Reply-To: <20191105131456.32400-6-peron.clem@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <pza@pengutronix.de>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jernej Skrabec <jernej.skrabec@siol.net>
+In-Reply-To: <20191105133025.GR32742@smile.fi.intel.com>
+List-Unsubscribe: <https://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <https://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: "Alsa-devel" <alsa-devel-bounces@alsa-project.org>
+To: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+Cc: "semi.malinen@ge.com" <semi.malinen@ge.com>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>, "david.daney@cavium.com" <david.daney@cavium.com>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, "ptyser@xes-inc.com" <ptyser@xes-inc.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "marek.behun@nic.cz" <marek.behun@nic.cz>, "festevam@gmail.com" <festevam@gmail.com>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, "marek.vasut+renesas@gmail.com" <marek.vasut+renesas@gmail.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "khilman@kernel.org" <khilman@kernel.org>, "michal.simek@xilinx.com" <michal.simek@xilinx.com>, "jonathanh@nvidia.com" <jonathan>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 02:14:54PM +0100, Clément Péron wrote:
-> From: Jernej Skrabec <jernej.skrabec@siol.net>
-> 
-> Now that sun4i PWM driver supports deasserting reset line and enabling
-> bus clock, support for H6 PWM can be added.
-> 
-> Note that while H6 PWM has two channels, only first one is wired to
-> output pin. Second channel is used as a clock source to companion AC200
-> chip which is bundled into same package.
-> 
-> Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
-> Signed-off-by: Clément Péron <peron.clem@gmail.com>
+On Tue, Nov 05, 2019 at 03:30:25PM +0200, andriy.shevchenko@linux.intel.com=
+ wrote:
+> On Tue, Nov 05, 2019 at 02:10:38PM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Tue, Nov 05, 2019 at 12:54:55PM +0000, Vaittinen, Matti wrote:
+> > > On Tue, 2019-11-05 at 14:20 +0200, Andy Shevchenko wrote:
+> > > > I would also like to see bloat-o-meter statistics before and after
+> > > > your patch.
+> > > > My guts tell me that the result will be not in the favour of yours
+> > > > solution.
+> > > =
 
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > Can you please tell me what type of stats you hope to see? I can try
+> > > generating what you are after. The cover letter contained typical +/-
+> > > change stats from git and summary:
+> > > =
 
-Thanks
+> > > 62 files changed, 228 insertions(+), 104 deletions(-)
+> > =
+
+> > I guess he wants to see
+> > =
+
+> > 	scripts/bloat-o-meter vmlinuz.old vmlinuz
+> =
+
+> Yes, but be sure you have compiled them all and build them all in.
+> Otherwise you might get wrong result.
+> =
+
+> > . I would expect a 0 there. I didn't look in detail, but in general I
+> > like the idea to give 0 and 1 a symbolic name.
+> =
+
+> I'll will be fine with that if and only if maintainers are okay. For now,
+> I don't like the idea to trade bad for worse.
+
+I don't see you concern.
+
+	int somefunction(...)
+	{
+		return 1;
+	}
+
+is definitively worse than
+
+	int somefunction(...)
+	{
+		return GPIO_LINE_DIRECTION_IN;
+	}
+
+and after cpp had its go on the source the compiler sees the exact same
+thing, so I don't expect any size changes. The only change is that to
+write (or understand) the above code, you have to know that 1
+corresponds to GPIO input (or was it output?) while in the later
+function it is obvious that we're talking about an input.
+
+Best regards
 Uwe
 
+-- =
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | http://www.pengutronix.de/  |
