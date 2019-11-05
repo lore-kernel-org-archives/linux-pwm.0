@@ -1,100 +1,80 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH v3 1/7] dt-bindings: pwm: allwinner: Add H6 PWM description
-Date: Tue,  5 Nov 2019 14:14:50 +0100
-Message-ID: <20191105131456.32400-2-peron.clem@gmail.com>
-References: <20191105131456.32400-1-peron.clem@gmail.com>
+Subject: [PATCH v3 0/7] Add support for H6 PWM
+Date: Tue,  5 Nov 2019 14:14:49 +0100
+Message-ID: <20191105131456.32400-1-peron.clem@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191105131456.32400-1-peron.clem@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?=27Uwe=20Kleine-K=C3=B6nig=27?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <pza@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jernej Skrabec <jernej.skrabec@siol.net>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@siol.net>
+Hi,
 
-H6 PWM block is basically the same as A20 PWM, except that it also has
-bus clock and reset line which needs to be handled accordingly.
+This is a rework of Jernej's previous work[1] taking account all the
+previous remarks.
 
-Expand Allwinner PWM binding with H6 PWM specifics.
+Bindings is still strict but probe in the driver are now optionnals.
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
-Signed-off-by: Clément Péron <peron.clem@gmail.com>
----
- .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
+If someone could confirm that the PWM is not broken, as my board
+doesn't output it.
 
-diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-index 0ac52f83a58c..9fc32c1d94b4 100644
---- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-@@ -30,13 +30,50 @@ properties:
-       - items:
-           - const: allwinner,sun50i-h5-pwm
-           - const: allwinner,sun5i-a13-pwm
-+      - const: allwinner,sun50i-h6-pwm
- 
-   reg:
-     maxItems: 1
- 
-   clocks:
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      - description: Bus Clock
-+      - description: Module Clock
-+
-+  # Even though it only applies to subschemas under the conditionals,
-+  # not listing them here will trigger a warning because of the
-+  # additionalsProperties set to false.
-+  clock-names: true
-+  resets:
-     maxItems: 1
- 
-+  if:
-+    properties:
-+      compatible:
-+        contains:
-+          const: allwinner,sun50i-h6-pwm
-+
-+  then:
-+    properties:
-+      clocks:
-+        minItems: 2
-+
-+      clock-names:
-+        items:
-+          - const: mod
-+          - const: bus
-+
-+    required:
-+      - clock-names
-+      - resets
-+
-+  else:
-+    properties:
-+      clocks:
-+        maxItems: 1
-+
- required:
-   - "#pwm-cells"
-   - compatible
-@@ -54,4 +91,14 @@ examples:
-         #pwm-cells = <3>;
-     };
- 
-+  - |
-+    pwm@300a000 {
-+      compatible = "allwinner,sun50i-h6-pwm";
-+      reg = <0x0300a000 0x400>;
-+      clocks = <&osc24M>, <&ccu CLK_BUS_PWM>;
-+      clock-names = "mod", "bus";
-+      resets = <&ccu RST_BUS_PWM>;
-+      #pwm-cells = <3>;
-+    };
-+
- ...
+I didn't add the acked-tags as there are big changes.
+
+Thanks,
+Clément
+
+Jernej's cover:
+Allwinner H6 SoC has PWM core which is basically the same as that found
+in A20, it's just depends on additional bus clock and reset line.
+
+This series adds support for it and extends PWM driver functionality in
+a way that it's now possible to bypass whole core and output PWM source
+clock directly as a PWM signal. This functionality is needed by AC200
+chip, which is bundled in same physical package as H6 SoC, to serve as a
+clock source of 24 MHz. AC200 clock input pin is bonded internally to
+the second PWM channel.
+
+I would be grateful if anyone can test this patch series for any kind of
+regression on other SoCs.
+
+[1]: https://patchwork.kernel.org/cover/11061737/
+
+Changes in v3:
+ - Documentation update to allow one clock without name
+ - Change reset optional to shared
+ - If reset probe failed return an error
+ - Remove old clock probe
+ - Update bypass enabled formula
+
+Changes in v2:
+ - Remove allOf in Documentation
+ - Add H6 example in Documentation
+ - Change clock name from "pwm" to "mod"
+ - Change reset quirk to optional probe
+ - Change bus_clock quirk to optional probe
+ - Add limitation comment about mod_clk_output
+ - Add quirk for mod_clk_output
+ - Change bypass formula
+
+Clément Péron (1):
+  [DO NOT MERGE] arm64: allwinner: h6: enable Beelink GS1 PWM
+
+Jernej Skrabec (6):
+  dt-bindings: pwm: allwinner: Add H6 PWM description
+  pwm: sun4i: Add an optional probe for reset line
+  pwm: sun4i: Add an optional probe for bus clock
+  pwm: sun4i: Add support to output source clock directly
+  pwm: sun4i: Add support for H6 PWM
+  arm64: dts: allwinner: h6: Add PWM node
+
+ .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml |  47 +++++++
+ .../dts/allwinner/sun50i-h6-beelink-gs1.dts   |   4 +
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  |  10 ++
+ drivers/pwm/pwm-sun4i.c                       | 125 +++++++++++++++++-
+ 4 files changed, 181 insertions(+), 5 deletions(-)
+
 -- 
 2.20.1
