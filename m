@@ -1,20 +1,18 @@
 From: Benjamin GAIGNARD <benjamin.gaignard@st.com>
-Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
- bindings to json-schema
-Date: Wed, 6 Nov 2019 19:51:56 +0000
-Message-ID: <d0196570-9140-c775-742c-89092056e651@st.com>
+Subject: Re: [PATCH 4/4] dt-bindings: mfd: Convert stm32 timers bindings to
+ json-schema
+Date: Wed, 6 Nov 2019 19:57:06 +0000
+Message-ID: <41c43d09-9371-8b23-a3dd-e43f5df5c5bc@st.com>
 References: <20191031123040.26316-1-benjamin.gaignard@st.com>
- <20191031123040.26316-3-benjamin.gaignard@st.com>
- <20191103110841.3ad3ecfb@archlinux>
- <CA+M3ks5sZ6wwV-V+HCLC8OLdeLqrxK0Ga-pXTsdktQErbMOk4g@mail.gmail.com>
- <20191106040657.GA5294@bogus>
+ <20191031123040.26316-5-benjamin.gaignard@st.com>
+ <20191106041518.GC5294@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191106040657.GA5294@bogus>
+In-Reply-To: <20191106041518.GC5294@bogus>
 Content-Language: en-US
-Content-ID: <24C3780FC5D0044A86C0AFBAA270E024@st.com>
+Content-ID: <1FEAA25580E4C446BBC3EF2B74C20D0E@st.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -24,64 +22,145 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>, Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Alexandre TORGUE <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Fabrice GASNIER <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, Jonathan Cameron <jic23@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lars@metafoo.de" <lars@metafoo.de>, Alexandre TORGUE <alexandre.torgue@st.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "knaack.h@gmx.de" <knaack.h@gmx.de>, Fabrice GASNIER <fabrice.gasnier@st.com>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, "jic23@kernel.org" <jic23@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-DQpPbiAxMS82LzE5IDU6MDYgQU0sIFJvYiBIZXJyaW5nIHdyb3RlOg0KPiBPbiBUdWUsIE5vdiAw
-NSwgMjAxOSBhdCAxMTowNzoxNkFNICswMTAwLCBCZW5qYW1pbiBHYWlnbmFyZCB3cm90ZToNCj4+
-IExlIGRpbS4gMyBub3YuIDIwMTkgw6AgMTI6MDgsIEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtl
-cm5lbC5vcmc+IGEgw6ljcml0IDoNCj4+PiBPbiBUaHUsIDMxIE9jdCAyMDE5IDEzOjMwOjM4ICsw
-MTAwDQo+Pj4gQmVuamFtaW4gR2FpZ25hcmQgPGJlbmphbWluLmdhaWduYXJkQHN0LmNvbT4gd3Jv
-dGU6DQo+Pj4NCj4+Pj4gQ29udmVydCB0aGUgU1RNMzIgSUlPIHRyaWdnZXIgYmluZGluZyB0byBE
-VCBzY2hlbWEgZm9ybWF0IHVzaW5nIGpzb24tc2NoZW1hDQo+Pj4+DQo+Pj4+IFNpZ25lZC1vZmYt
-Ynk6IEJlbmphbWluIEdhaWduYXJkIDxiZW5qYW1pbi5nYWlnbmFyZEBzdC5jb20+DQo+Pj4gSSdt
-IGZhciBmcm9tIGdyZWF0IG9uIHRoZXNlIGFzIHN0aWxsIGhhdmVuJ3QgdGFrZW4gdGhlIHRpbWUg
-SSBzaG91bGQgdG8gbGVhcm4NCj4+PiB0aGUgeWFtbCBzeW50YXggcHJvcGVybHkuICBBIGZldyBj
-b21tZW50cyBpbmxpbmUgaG93ZXZlciBiYXNlZCBtb3N0bHkgb24gdGhpcw0KPj4+IGRvZXNuJ3Qg
-cXVpdGUgbG9vayBsaWtlIG90aGVyIG9uZXMgSSd2ZSBzZWVuIHJlY2VudGx5Lg0KPj4+DQo+Pj4g
-VGhhbmtzLA0KPj4+DQo+Pj4gSm9uYXRoYW4NCj4+Pg0KPj4+PiAtLS0NCj4+Pj4gICAuLi4vYmlu
-ZGluZ3MvaWlvL3RpbWVyL3N0LHN0bTMyLXRpbWVyLXRyaWdnZXIueWFtbCB8IDQ0ICsrKysrKysr
-KysrKysrKysrKysrKysNCj4+Pj4gICAuLi4vYmluZGluZ3MvaWlvL3RpbWVyL3N0bTMyLXRpbWVy
-LXRyaWdnZXIudHh0ICAgICB8IDI1IC0tLS0tLS0tLS0tLQ0KPj4+PiAgIDIgZmlsZXMgY2hhbmdl
-ZCwgNDQgaW5zZXJ0aW9ucygrKSwgMjUgZGVsZXRpb25zKC0pDQo+Pj4+ICAgY3JlYXRlIG1vZGUg
-MTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vdGltZXIvc3Qsc3Rt
-MzItdGltZXItdHJpZ2dlci55YW1sDQo+Pj4+ICAgZGVsZXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci50
-eHQNCj4+Pj4NCj4+Pj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5k
-aW5ncy9paW8vdGltZXIvc3Qsc3RtMzItdGltZXItdHJpZ2dlci55YW1sIGIvRG9jdW1lbnRhdGlv
-bi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby90aW1lci9zdCxzdG0zMi10aW1lci10cmlnZ2VyLnlh
-bWwNCj4+Pj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4+Pj4gaW5kZXggMDAwMDAwMDAwMDAwLi4x
-YzhjOGI1NWU4Y2QNCj4+Pj4gLS0tIC9kZXYvbnVsbA0KPj4+PiArKysgYi9Eb2N1bWVudGF0aW9u
-L2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3RpbWVyL3N0LHN0bTMyLXRpbWVyLXRyaWdnZXIueWFt
-bA0KPj4+PiBAQCAtMCwwICsxLDQ0IEBADQo+Pj4+ICsjIFNQRFgtTGljZW5zZS1JZGVudGlmaWVy
-OiAoR1BMLTIuMC1vbmx5IE9SIEJTRC0yLUNsYXVzZSkNCj4+Pj4gKyVZQU1MIDEuMg0KPj4+PiAr
-LS0tDQo+Pj4+ICskaWQ6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9zY2hlbWFzL2lpby90aW1lci9z
-dCxzdG0zMi10aW1lci10cmlnZ2VyLnlhbWwjDQo+Pj4+ICskc2NoZW1hOiBodHRwOi8vZGV2aWNl
-dHJlZS5vcmcvbWV0YS1zY2hlbWFzL2NvcmUueWFtbCMNCj4+Pj4gKw0KPj4+PiArdGl0bGU6IFNU
-TWljcm9lbGVjdHJvbmljcyBTVE0zMiBUaW1lcnMgSUlPIHRpbWVyIGJpbmRpbmdzDQo+Pj4+ICsN
-Cj4+Pj4gK21haW50YWluZXJzOg0KPj4+PiArICAtIEJlbmphbWluIEdhaWduYXJkIDxiZW5qYW1p
-bi5nYWlnbmFyZEBzdC5jb20+DQo+Pj4+ICsgIC0gRmFicmljZSBHYXNuaWVyIDxmYWJyaWNlLmdh
-c25pZXJAc3QuY29tPg0KPj4+PiArDQo+Pj4+ICtwcm9wZXJ0aWVzOg0KPj4+PiArICAkbm9kZW1h
-bmU6DQo+Pj4gbm9kZW5hbWU/DQo+PiBUaGF0IHdpbGwgYmUgaW4gdjINCj4gTm8sICRub2RlbmFt
-ZSBpcyBjb3JyZWN0LiBUaGUgJyQnIHNpZ25pZmllcyBzb21ldGhpbmcgd2UgZ2VuZXJhdGUgYW5k
-DQo+IGFkZCBpbi4gSU9XLCBub3QgYSByZWFsIHByb3BlcnR5LiBJIGd1ZXNzIHdlIGNvdWxkIGhh
-dmUgdXNlZCAnbmFtZScgaGVyZQ0KPiBhbmQgc3R1Y2sgd2l0aCB0cmFkaXRpb25hbCBPcGVuRmly
-bXdhcmUuDQpsZXQncyBnbyBmb3IgJG5hbWUNCj4+Pj4gKyAgICBwYXR0ZXJuOiAiXnRpbWVyQFsw
-LTldKyQiDQo+Pj4+ICsgICAgdHlwZTogb2JqZWN0DQo+Pj4+ICsNCj4+Pj4gKyAgICBkZXNjcmlw
-dGlvbjoNCj4+Pj4gKyAgICAgIG11c3QgYmUgYSBzdWItbm9kZSBvZiBhbiBTVE0zMiBUaW1lciBk
-ZXZpY2UgdHJlZSBub2RlDQo+Pj4+ICsNCj4+Pj4gKyAgICBwcm9wZXJ0aWVzOg0KPj4+PiArICAg
-ICAgY29tcGF0aWJsZToNCj4+Pj4gKyAgICAgICAgb25lT2Y6DQo+Pj4gZW51bSBpcyBJIHRoaW5r
-IHByZWZlcnJlZCBmb3IgdGhlc2UuDQo+PiBhcyB5b3UgbGlrZSBpdCB3aWxsIGJlIGluIHYyDQo+
-Pg0KPj4+PiArICAgICAgICAgIC0gY29uc3Q6IHN0LHN0bTMyLXRpbWVyLXRyaWdnZXINCj4+Pj4g
-KyAgICAgICAgICAtIGNvbnN0OiBzdCxzdG0zMmg3LXRpbWVyLXRyaWdnZXINCj4+Pj4gKw0KPj4+
-PiArICAgICAgcmVnOiB0cnVlDQo+Pj4gTm9ybWFsbHkgc29tZSBpbmZvIGZvciB3aGF0IHRoZSBy
-ZWcgdmFsdWUgaXMuLg0KPj4gSSBjYW4ndCBwdXQgImRlc2NyaXB0aW9uIiBvbiB0aGlzIGZpZWxk
-IGJlY2F1c2UgdGhlIHN5bnRheCBkb2Vzbid0IGFsbG93IGl0Lg0KPj4gSSB3aWxsIGFkZCBhIGNv
-bW1lbnQgaW4gdjIgdG8gZXhwbGFpbiB3aGF0IHJlZyBpcy4NCj4gaXRlbXM6DQo+ICAgIC0gbWF4
-aW11bTogPG1heCB0aW1lciBudW1iZXI+DQoNCnJlZyBpcyBhbiBpbmRleCBmcm9tIDAgdXAgdG8g
-WCwgSSB3aWxsIHRyeSB3aXRoIHlvdXIgc3ludGF4Lg0KDQpUaGFua3MsDQoNCkJlbmphbWluDQoN
-Cj4NCj4gUm9iCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5m
-cmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xp
-bnV4LWFybS1rZXJuZWwK
+
+On 11/6/19 5:15 AM, Rob Herring wrote:
+> On Thu, Oct 31, 2019 at 01:30:40PM +0100, Benjamin Gaignard wrote:
+>> Convert the STM32 timers binding to DT schema format using json-schema
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> ---
+>>   .../devicetree/bindings/mfd/st,stm32-timers.yaml   | 91 ++++++++++++++++++++++
+>>   .../devicetree/bindings/mfd/stm32-timers.txt       | 73 -----------------
+>>   2 files changed, 91 insertions(+), 73 deletions(-)
+>>   create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+>>   delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+>> new file mode 100644
+>> index 000000000000..3f0a65fb2bc0
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+>> @@ -0,0 +1,91 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/mfd/st,stm32-timers.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: STMicroelectronics STM32 Timers bindings
+>> +
+>> +description: |
+>> +  This hardware block provides 3 types of timer along with PWM functionality: \
+> Don't need the \
+ok
+>
+>> +    - advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable \
+>> +      prescaler, break input feature, PWM outputs and complementary PWM ouputs channels. \
+>> +    - general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a \
+>> +      programmable prescaler and PWM outputs.\
+>> +    - basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
+>> +
+>> +maintainers:
+>> +  - Benjamin Gaignard <benjamin.gaignard@st.com>
+>> +  - Fabrice Gasnier <fabrice.gasnier@st.com>
+>> +
+>> +allOf:
+>> +  - $ref: "../pwm/st,stm32-pwm.yaml#"
+>> +  - $ref: "../iio/timer/st,stm32-timer-trigger.yaml#"
+>> +  - $ref: "../counter/st,stm32-timer-cnt.yaml#"
+> This works, but I prefer the child node names be listed under properties
+> here with a ref:
+>
+> counter:
+>    $ref: "../counter/st,stm32-timer-cnt.yaml#"
+If I wrote everything in one file I guess what won't be needed anymore
+>
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: st,stm32-timers
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  clock-names:
+>> +    items:
+>> +      - const: int
+>> +
+>> +  reset:
+>> +    maxItems: 1
+>> +
+>> +  dmas: true
+> How many?
+
+from 0 up to 8, but I don't know the syntax for that. minItems = 0 isn't 
+accepted.
+
+Any hints for me ?
+
+>
+>> +
+>> +  dma-names: true
+> What are the names?
+
+it could be ch1 ... ch8, "trig" or "up" in any order.
+
+Again I haven't be able to find a syntax that allow to list the names 
+and use them in any orders.
+
+Benjamin
+
+>
+>> +
+>> +  "#address-cells":
+>> +    const: 1
+>> +
+>> +  "#size-cells":
+>> +    const: 0
+>> +
+>> +required:
+>> +  - "#address-cells"
+>> +  - "#size-cells"
+>> +  - compatible
+>> +  - reg
+>> +  - clocks
+>> +  - clock-names
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/clock/stm32mp1-clks.h>
+>> +    timers2: timer@40000000 {
+>> +      #address-cells = <1>;
+>> +      #size-cells = <0>;
+>> +      compatible = "st,stm32-timers";
+>> +      reg = <0x40000000 0x400>;
+>> +      clocks = <&rcc TIM2_K>;
+>> +      clock-names = "int";
+>> +      dmas = <&dmamux1 18 0x400 0x1>,
+>> +             <&dmamux1 19 0x400 0x1>,
+>> +             <&dmamux1 20 0x400 0x1>,
+>> +             <&dmamux1 21 0x400 0x1>,
+>> +             <&dmamux1 22 0x400 0x1>;
+>> +      dma-names = "ch1", "ch2", "ch3", "ch4", "up";
+>> +      pwm {
+>> +        compatible = "st,stm32-pwm";
+>> +        #pwm-cells = <3>;
+>> +        st,breakinput = <0 1 5>;
+>> +      };
+>> +      timer@0 {
+>> +        compatible = "st,stm32-timer-trigger";
+>> +        reg = <0>;
+>> +      };
+>> +      counter {
+>> +        compatible = "st,stm32-timer-counter";
+>> +      };
+>> +    };
+>> +
+>> +...
