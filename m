@@ -1,122 +1,91 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 4/4] dt-bindings: mfd: Convert stm32 timers bindings to json-schema
-Date: Wed, 6 Nov 2019 17:33:05 -0600
-Message-ID: <CAL_Jsq+eFew_8ULDOwL5GXUDxLRB9e+b+ZsMdWLKUO8i9Lk7AQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
+ bindings to json-schema
+Date: Wed, 6 Nov 2019 17:35:20 -0600
+Message-ID: <CAL_Jsq+b_e1MbXx6918+iKfrTgqoozxOZ2rEYgogChZDWR_+iQ@mail.gmail.com>
 References: <20191031123040.26316-1-benjamin.gaignard@st.com>
- <20191031123040.26316-5-benjamin.gaignard@st.com> <20191106041518.GC5294@bogus>
- <41c43d09-9371-8b23-a3dd-e43f5df5c5bc@st.com>
+ <20191031123040.26316-3-benjamin.gaignard@st.com> <20191103110841.3ad3ecfb@archlinux>
+ <CA+M3ks5sZ6wwV-V+HCLC8OLdeLqrxK0Ga-pXTsdktQErbMOk4g@mail.gmail.com>
+ <20191106040657.GA5294@bogus> <d0196570-9140-c775-742c-89092056e651@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <41c43d09-9371-8b23-a3dd-e43f5df5c5bc@st.com>
+In-Reply-To: <d0196570-9140-c775-742c-89092056e651@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Benjamin GAIGNARD <benjamin.gaignard@st.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Fabrice GASNIER <fabrice.gasnier@st.com>, "jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel
+Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Alexandre TORGUE <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Fabrice GASNIER <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormrepl>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Nov 6, 2019 at 1:57 PM Benjamin GAIGNARD
+On Wed, Nov 6, 2019 at 1:52 PM Benjamin GAIGNARD
 <benjamin.gaignard@st.com> wrote:
 >
 >
-> On 11/6/19 5:15 AM, Rob Herring wrote:
-> > On Thu, Oct 31, 2019 at 01:30:40PM +0100, Benjamin Gaignard wrote:
-> >> Convert the STM32 timers binding to DT schema format using json-schema
-> >>
-> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> >> ---
-> >>   .../devicetree/bindings/mfd/st,stm32-timers.yaml   | 91 ++++++++++++++++++++++
-> >>   .../devicetree/bindings/mfd/stm32-timers.txt       | 73 -----------------
-> >>   2 files changed, 91 insertions(+), 73 deletions(-)
-> >>   create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
-> >>   delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
-> >> new file mode 100644
-> >> index 000000000000..3f0a65fb2bc0
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
-> >> @@ -0,0 +1,91 @@
-> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >> +%YAML 1.2
-> >> +---
-> >> +$id: http://devicetree.org/schemas/mfd/st,stm32-timers.yaml#
-> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >> +
-> >> +title: STMicroelectronics STM32 Timers bindings
-> >> +
-> >> +description: |
-> >> +  This hardware block provides 3 types of timer along with PWM functionality: \
-> > Don't need the \
-> ok
-> >
-> >> +    - advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable \
-> >> +      prescaler, break input feature, PWM outputs and complementary PWM ouputs channels. \
-> >> +    - general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a \
-> >> +      programmable prescaler and PWM outputs.\
-> >> +    - basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
-> >> +
-> >> +maintainers:
-> >> +  - Benjamin Gaignard <benjamin.gaignard@st.com>
-> >> +  - Fabrice Gasnier <fabrice.gasnier@st.com>
-> >> +
-> >> +allOf:
-> >> +  - $ref: "../pwm/st,stm32-pwm.yaml#"
-> >> +  - $ref: "../iio/timer/st,stm32-timer-trigger.yaml#"
-> >> +  - $ref: "../counter/st,stm32-timer-cnt.yaml#"
-> > This works, but I prefer the child node names be listed under properties
-> > here with a ref:
-> >
-> > counter:
-> >    $ref: "../counter/st,stm32-timer-cnt.yaml#"
-> If I wrote everything in one file I guess what won't be needed anymore
-> >
-> >> +
-> >> +properties:
-> >> +  compatible:
-> >> +    const: st,stm32-timers
-> >> +
-> >> +  reg:
-> >> +    maxItems: 1
-> >> +
-> >> +  clocks:
-> >> +    maxItems: 1
-> >> +
-> >> +  clock-names:
-> >> +    items:
-> >> +      - const: int
-> >> +
-> >> +  reset:
-> >> +    maxItems: 1
-> >> +
-> >> +  dmas: true
-> > How many?
->
-> from 0 up to 8, but I don't know the syntax for that. minItems = 0 isn't
-> accepted.
->
-> Any hints for me ?
+> On 11/6/19 5:06 AM, Rob Herring wrote:
+> > On Tue, Nov 05, 2019 at 11:07:16AM +0100, Benjamin Gaignard wrote:
+> >> Le dim. 3 nov. 2019 =C3=A0 12:08, Jonathan Cameron <jic23@kernel.org> =
+a =C3=A9crit :
+> >>> On Thu, 31 Oct 2019 13:30:38 +0100
+> >>> Benjamin Gaignard <benjamin.gaignard@st.com> wrote:
+> >>>
+> >>>> Convert the STM32 IIO trigger binding to DT schema format using json=
+-schema
+> >>>>
+> >>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> >>> I'm far from great on these as still haven't taken the time I should =
+to learn
+> >>> the yaml syntax properly.  A few comments inline however based mostly=
+ on this
+> >>> doesn't quite look like other ones I've seen recently.
+> >>>
+> >>> Thanks,
+> >>>
+> >>> Jonathan
+> >>>
+> >>>> ---
+> >>>>   .../bindings/iio/timer/st,stm32-timer-trigger.yaml | 44 ++++++++++=
+++++++++++++
+> >>>>   .../bindings/iio/timer/stm32-timer-trigger.txt     | 25 ----------=
+--
+> >>>>   2 files changed, 44 insertions(+), 25 deletions(-)
+> >>>>   create mode 100644 Documentation/devicetree/bindings/iio/timer/st,=
+stm32-timer-trigger.yaml
+> >>>>   delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm=
+32-timer-trigger.txt
+> >>>>
+> >>>> diff --git a/Documentation/devicetree/bindings/iio/timer/st,stm32-ti=
+mer-trigger.yaml b/Documentation/devicetree/bindings/iio/timer/st,stm32-tim=
+er-trigger.yaml
+> >>>> new file mode 100644
+> >>>> index 000000000000..1c8c8b55e8cd
+> >>>> --- /dev/null
+> >>>> +++ b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-tri=
+gger.yaml
+> >>>> @@ -0,0 +1,44 @@
+> >>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >>>> +%YAML 1.2
+> >>>> +---
+> >>>> +$id: http://devicetree.org/schemas/iio/timer/st,stm32-timer-trigger=
+.yaml#
+> >>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>>> +
+> >>>> +title: STMicroelectronics STM32 Timers IIO timer bindings
+> >>>> +
+> >>>> +maintainers:
+> >>>> +  - Benjamin Gaignard <benjamin.gaignard@st.com>
+> >>>> +  - Fabrice Gasnier <fabrice.gasnier@st.com>
+> >>>> +
+> >>>> +properties:
+> >>>> +  $nodemane:
+> >>> nodename?
+> >> That will be in v2
+> > No, $nodename is correct. The '$' signifies something we generate and
+> > add in. IOW, not a real property. I guess we could have used 'name' her=
+e
+> > and stuck with traditional OpenFirmware.
+> let's go for $name
 
-0 is not accepted because the property is never 0 items. 0 is not
-present. So just:
-
-minItems: 1
-maxItems: 8
-
-
-> >> +
-> >> +  dma-names: true
-> > What are the names?
->
-> it could be ch1 ... ch8, "trig" or "up" in any order.
-
-Why does it need to be in any order? Normally we don't want to have that.
-
->
-> Again I haven't be able to find a syntax that allow to list the names
-> and use them in any orders.
-
-dma-names:
-  items:
-    enum: [ ch1, ch2, ..., trig, up ]
+No, $nodename is correct. You don't have a choice. That is what the
+tooling generates.
 
 Rob
