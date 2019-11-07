@@ -1,91 +1,81 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
- bindings to json-schema
-Date: Wed, 6 Nov 2019 17:35:20 -0600
-Message-ID: <CAL_Jsq+b_e1MbXx6918+iKfrTgqoozxOZ2rEYgogChZDWR_+iQ@mail.gmail.com>
-References: <20191031123040.26316-1-benjamin.gaignard@st.com>
- <20191031123040.26316-3-benjamin.gaignard@st.com> <20191103110841.3ad3ecfb@archlinux>
- <CA+M3ks5sZ6wwV-V+HCLC8OLdeLqrxK0Ga-pXTsdktQErbMOk4g@mail.gmail.com>
- <20191106040657.GA5294@bogus> <d0196570-9140-c775-742c-89092056e651@st.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 4/7] pwm: sun4i: Add support to output source clock
+ directly
+Date: Thu, 7 Nov 2019 07:51:18 +0100
+Message-ID: <20191107065118.j4s5cghj4ark7sql@pengutronix.de>
+References: <20191105131456.32400-1-peron.clem@gmail.com>
+ <20191105131456.32400-5-peron.clem@gmail.com>
+ <20191105145659.ffezqntodsys4phn@pengutronix.de>
+ <CAJiuCcdXr3y0oe19ZNaiQoN7Y39p54p8LjQjXfjHbTH8tbnrpw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d0196570-9140-c775-742c-89092056e651@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin GAIGNARD <benjamin.gaignard@st.com>
-Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Alexandre TORGUE <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Fabrice GASNIER <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormrepl>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <CAJiuCcdXr3y0oe19ZNaiQoN7Y39p54p8LjQjXfjHbTH8tbnrpw@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Jernej Skrabec <jernej.skrabec@siol.net>, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, Maxime Ripard <mripard@kernel.org>, Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, Philipp Zabel <pza@pengutronix.de>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Nov 6, 2019 at 1:52 PM Benjamin GAIGNARD
-<benjamin.gaignard@st.com> wrote:
->
->
-> On 11/6/19 5:06 AM, Rob Herring wrote:
-> > On Tue, Nov 05, 2019 at 11:07:16AM +0100, Benjamin Gaignard wrote:
-> >> Le dim. 3 nov. 2019 =C3=A0 12:08, Jonathan Cameron <jic23@kernel.org> =
-a =C3=A9crit :
-> >>> On Thu, 31 Oct 2019 13:30:38 +0100
-> >>> Benjamin Gaignard <benjamin.gaignard@st.com> wrote:
-> >>>
-> >>>> Convert the STM32 IIO trigger binding to DT schema format using json=
--schema
-> >>>>
-> >>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> >>> I'm far from great on these as still haven't taken the time I should =
-to learn
-> >>> the yaml syntax properly.  A few comments inline however based mostly=
- on this
-> >>> doesn't quite look like other ones I've seen recently.
-> >>>
-> >>> Thanks,
-> >>>
-> >>> Jonathan
-> >>>
-> >>>> ---
-> >>>>   .../bindings/iio/timer/st,stm32-timer-trigger.yaml | 44 ++++++++++=
-++++++++++++
-> >>>>   .../bindings/iio/timer/stm32-timer-trigger.txt     | 25 ----------=
---
-> >>>>   2 files changed, 44 insertions(+), 25 deletions(-)
-> >>>>   create mode 100644 Documentation/devicetree/bindings/iio/timer/st,=
-stm32-timer-trigger.yaml
-> >>>>   delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm=
-32-timer-trigger.txt
-> >>>>
-> >>>> diff --git a/Documentation/devicetree/bindings/iio/timer/st,stm32-ti=
-mer-trigger.yaml b/Documentation/devicetree/bindings/iio/timer/st,stm32-tim=
-er-trigger.yaml
-> >>>> new file mode 100644
-> >>>> index 000000000000..1c8c8b55e8cd
-> >>>> --- /dev/null
-> >>>> +++ b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-tri=
-gger.yaml
-> >>>> @@ -0,0 +1,44 @@
-> >>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >>>> +%YAML 1.2
-> >>>> +---
-> >>>> +$id: http://devicetree.org/schemas/iio/timer/st,stm32-timer-trigger=
-.yaml#
-> >>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >>>> +
-> >>>> +title: STMicroelectronics STM32 Timers IIO timer bindings
-> >>>> +
-> >>>> +maintainers:
-> >>>> +  - Benjamin Gaignard <benjamin.gaignard@st.com>
-> >>>> +  - Fabrice Gasnier <fabrice.gasnier@st.com>
-> >>>> +
-> >>>> +properties:
-> >>>> +  $nodemane:
-> >>> nodename?
-> >> That will be in v2
-> > No, $nodename is correct. The '$' signifies something we generate and
-> > add in. IOW, not a real property. I guess we could have used 'name' her=
-e
-> > and stuck with traditional OpenFirmware.
-> let's go for $name
+Hello Cl=E9ment,
 
-No, $nodename is correct. You don't have a choice. That is what the
-tooling generates.
+On Wed, Nov 06, 2019 at 10:24:39PM +0100, Cl=E9ment P=E9ron wrote:
+> On Tue, 5 Nov 2019 at 15:57, Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Tue, Nov 05, 2019 at 02:14:53PM +0100, Cl=E9ment P=E9ron wrote:
+> > > +     bypass =3D state->enabled &&
+> > > +              (state->period * clk_rate >=3D NSEC_PER_SEC) &&
+> >
+> > This is too coarse. With state->period =3D 1000000 this is fulfilled
+> > (unless the multiplication overflows).
+> =
 
-Rob
+> Sorry, misunderstood the previous mail
+> =
+
+> What about something like this ?
+> ((state->period - 1) * clk_rate <=3D NSEC_PER_SEC) &&
+> ((state->period + 1) * clk_rate >=3D NSEC_PER_SEC) &&
+>  ((state->duty_cycle - 1) * 2 <=3D state->period) &&
+>  ((state->duty_cycle + 1) * 2 >=3D state->period);
+> =
+
+> We are sure that the user is looking for a PWM around the OSC with a
+> 50% duty cycle ?
+
+This again is too strict. The general policy to fulfill a request is:
+
+ 1) provide the longest possible period not bigger than requested
+ 2) provide the longest possible duty cycle not bigger than requested
+ 3) if possible complete the currently running period before switching
+    and don't return to the user before the new setting is active.
+    Document the behaviour prominently because the code (usually)
+    doesn't allow to understand the hardware's features here.
+ 4) A disabled PWM should output the inactive level
+
+And then there is a corner case: If the user requests .duty_cycle =3D 0,
+.enabled =3D 1 it is ok to provide .enabled =3D 0 iff otherwise 0% isn't
+possible.
+
+So the right check for bypass is:
+
+  state->period * clk_rate >=3D NSEC_PER_SEC &&
+  state->period * clk_rate < whatevercanbereachedwithoutbypass &&
+  state->duty_cycle * clk_rate * 2 >=3D NSEC_PER_SEC
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
