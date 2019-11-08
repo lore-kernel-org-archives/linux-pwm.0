@@ -1,70 +1,42 @@
-From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 6/7] arm64: dts: allwinner: h6: Add PWM node
-Date: Fri,  8 Nov 2019 09:45:16 +0100
-Message-ID: <20191108084517.21617-7-peron.clem@gmail.com>
-References: <20191108084517.21617-1-peron.clem@gmail.com>
-Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Fixes for v5.4-rc7
+Date: Fri,  8 Nov 2019 18:42:20 +0100
+Message-ID: <20191108174220.3384630-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBLGWSTXAKGQEN62PHFQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20191108084517.21617-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <pza-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Hi Linus,
 
-Allwinner H6 PWM is similar to that in A20 except that it has additional
-bus clock and reset line.
+The following changes since commit 40a6b9a00930fd6b59aa2eb6135abc2efe5440c3:
 
-Note that first PWM channel is connected to output pin and second
-channel is used internally, as a clock source to AC200 co-packaged chip.
-This means that any combination of these two channels can be used and
-thus it doesn't make sense to add pinctrl nodes at this point.
+  Revert "pwm: Let pwm_get_state() return the last implemented state" (2019-10-21 16:48:52 +0200)
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+are available in the Git repository at:
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot=
-/dts/allwinner/sun50i-h6.dtsi
-index 0d5ea19336a1..b0d9ee1ead13 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -222,6 +222,16 @@
- 			status =3D "disabled";
- 		};
-=20
-+		pwm: pwm@300a000 {
-+			compatible =3D "allwinner,sun50i-h6-pwm";
-+			reg =3D <0x0300a000 0x400>;
-+			clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
-+			clock-names =3D "mod", "bus";
-+			resets =3D <&ccu RST_BUS_PWM>;
-+			#pwm-cells =3D <3>;
-+			status =3D "disabled";
-+		};
-+
- 		pio: pinctrl@300b000 {
- 			compatible =3D "allwinner,sun50i-h6-pinctrl";
- 			reg =3D <0x0300b000 0x400>;
---=20
-2.20.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.4-rc7
 
---=20
-You received this message because you are subscribed to the Google Groups "=
-linux-sunxi" group.
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191108084517.21617-7-peron.clem%40gmail.com.
+for you to fetch changes up to 24906a41eecb73d51974ade0847c21e429beec60:
+
+  pwm: bcm-iproc: Prevent unloading the driver module while in use (2019-11-08 18:38:06 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Fixes for v5.4-rc7
+
+Here's one more fix to keep a reference to the driver's module as long
+as there are users of the PWM exposed by the driver.
+
+----------------------------------------------------------------
+Uwe Kleine-König (1):
+      pwm: bcm-iproc: Prevent unloading the driver module while in use
+
+ drivers/pwm/pwm-bcm-iproc.c | 1 +
+ 1 file changed, 1 insertion(+)
