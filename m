@@ -1,13 +1,14 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 1/7] dt-bindings: pwm: allwinner: Add H6 PWM description
-Date: Fri,  8 Nov 2019 09:45:11 +0100
-Message-ID: <20191108084517.21617-2-peron.clem@gmail.com>
+Subject: [PATCH v4 3/7] pwm: sun4i: Add an optional probe for
+ bus clock
+Date: Fri,  8 Nov 2019 09:45:13 +0100
+Message-ID: <20191108084517.21617-4-peron.clem@gmail.com>
 References: <20191108084517.21617-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBKGWSTXAKGQEURXHU3A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBKWWSTXAKGQE55VNL2I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191108084517.21617-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -22,89 +23,109 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-H6 PWM block is basically the same as A20 PWM, except that it also has
-bus clock and reset line which needs to be handled accordingly.
+H6 PWM core needs bus clock to be enabled in order to work.
 
-Expand Allwinner PWM binding with H6 PWM specifics.
+Add an optional probe for it and a fallback for previous
+bindings without name on module clock.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ drivers/pwm/pwm-sun4i.c | 48 +++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 46 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.=
-yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-index 0ac52f83a58c..1bae446febbb 100644
---- a/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml
-@@ -30,13 +30,51 @@ properties:
-       - items:
-           - const: allwinner,sun50i-h5-pwm
-           - const: allwinner,sun5i-a13-pwm
-+      - const: allwinner,sun50i-h6-pwm
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 2b9a2a78591f..a10022d6c0fd 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -78,6 +78,7 @@ struct sun4i_pwm_data {
 =20
-   reg:
-     maxItems: 1
+ struct sun4i_pwm_chip {
+ 	struct pwm_chip chip;
++	struct clk *bus_clk;
+ 	struct clk *clk;
+ 	struct reset_control *rst;
+ 	void __iomem *base;
+@@ -363,9 +364,38 @@ static int sun4i_pwm_probe(struct platform_device *pde=
+v)
+ 	if (IS_ERR(pwm->base))
+ 		return PTR_ERR(pwm->base);
 =20
-   clocks:
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      - description: Module Clock
-+      - description: Bus Clock
+-	pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
+-	if (IS_ERR(pwm->clk))
++	/* Get all clocks and reset line */
++	pwm->clk =3D devm_clk_get_optional(&pdev->dev, "mod");
++	if (IS_ERR(pwm->clk)) {
++		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
++			dev_err(&pdev->dev, "get clock failed %pe\n",
++				pwm->clk);
+ 		return PTR_ERR(pwm->clk);
++	}
 +
-+  # Even though it only applies to subschemas under the conditionals,
-+  # not listing them here will trigger a warning because of the
-+  # additionalsProperties set to false.
-+  clock-names: true
++	/*
++	 * Fallback for old dtbs with a single clock and no name.
++	 * If a parent has a clock-name called "mod" whereas the
++	 * current node is unnamed the clock reference will be
++	 * incorrectly obtained and will not go into this fallback.
++	 */
++	if (!pwm->clk) {
++		pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
++		if (IS_ERR(pwm->clk)) {
++			if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
++				dev_err(&pdev->dev, "get clock failed %pe\n",
++					pwm->clk);
++			return PTR_ERR(pwm->clk);
++		}
++	}
 +
-+  resets:
-     maxItems: 1
++	pwm->bus_clk =3D devm_clk_get_optional(&pdev->dev, "bus");
++	if (IS_ERR(pwm->bus_clk)) {
++		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
++			dev_err(&pdev->dev, "get bus_clock failed %pe\n",
++				pwm->bus_clk);
++		return PTR_ERR(pwm->bus_clk);
++	}
 =20
-+  if:
-+    properties:
-+      compatible:
-+        contains:
-+          const: allwinner,sun50i-h6-pwm
-+
-+  then:
-+    properties:
-+      clocks:
-+        maxItems: 2
-+
-+      clock-names:
-+        items:
-+          - const: mod
-+          - const: bus
-+
-+    required:
-+      - clock-names
-+      - resets
-+
-+  else:
-+    properties:
-+      clocks:
-+        maxItems: 1
-+
- required:
-   - "#pwm-cells"
-   - compatible
-@@ -54,4 +92,14 @@ examples:
-         #pwm-cells =3D <3>;
-     };
+ 	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
+ 	if (IS_ERR(pwm->rst)) {
+@@ -382,6 +412,17 @@ static int sun4i_pwm_probe(struct platform_device *pde=
+v)
+ 		return ret;
+ 	}
 =20
-+  - |
-+    pwm@300a000 {
-+      compatible =3D "allwinner,sun50i-h6-pwm";
-+      reg =3D <0x0300a000 0x400>;
-+      clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
-+      clock-names =3D "mod", "bus";
-+      resets =3D <&ccu RST_BUS_PWM>;
-+      #pwm-cells =3D <3>;
-+    };
++	/*
++	 * We're keeping the bus clock on for the sake of simplicity.
++	 * Actually it only needs to be on for hardware register
++	 * accesses.
++	 */
++	ret =3D clk_prepare_enable(pwm->bus_clk);
++	if (ret) {
++		dev_err(&pdev->dev, "Cannot prepare and enable bus_clk\n");
++		goto err_bus;
++	}
 +
- ...
+ 	pwm->chip.dev =3D &pdev->dev;
+ 	pwm->chip.ops =3D &sun4i_pwm_ops;
+ 	pwm->chip.base =3D -1;
+@@ -402,6 +443,8 @@ static int sun4i_pwm_probe(struct platform_device *pdev=
+)
+ 	return 0;
+=20
+ err_pwm_add:
++	clk_disable_unprepare(pwm->bus_clk);
++err_bus:
+ 	reset_control_assert(pwm->rst);
+=20
+ 	return ret;
+@@ -416,6 +459,7 @@ static int sun4i_pwm_remove(struct platform_device *pde=
+v)
+ 	if (ret)
+ 		return ret;
+=20
++	clk_disable_unprepare(pwm->bus_clk);
+ 	reset_control_assert(pwm->rst);
+=20
+ 	return 0;
 --=20
 2.20.1
 
@@ -114,4 +135,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191108084517.21617-2-peron.clem%40gmail.com.
+/linux-sunxi/20191108084517.21617-4-peron.clem%40gmail.com.
