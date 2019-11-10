@@ -1,82 +1,400 @@
 From: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
- bindings to json-schema
-Date: Sat, 9 Nov 2019 12:43:01 +0000
-Message-ID: <20191109124301.5ffda04b@archlinux>
-References: <20191031123040.26316-1-benjamin.gaignard@st.com>
- <20191031123040.26316-3-benjamin.gaignard@st.com>
- <20191103110841.3ad3ecfb@archlinux>
- <CA+M3ks5sZ6wwV-V+HCLC8OLdeLqrxK0Ga-pXTsdktQErbMOk4g@mail.gmail.com>
- <20191106040657.GA5294@bogus>
- <d0196570-9140-c775-742c-89092056e651@st.com>
- <CAL_Jsq+b_e1MbXx6918+iKfrTgqoozxOZ2rEYgogChZDWR_+iQ@mail.gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: mfd: Convert stm32 timers bindings to
+ json-schema
+Date: Sun, 10 Nov 2019 15:58:33 +0000
+Message-ID: <20191110155833.444d4a2e@archlinux>
+References: <20191107191425.22273-1-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAL_Jsq+b_e1MbXx6918+iKfrTgqoozxOZ2rEYgogChZDWR_+iQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Benjamin GAIGNARD <benjamin.gaignard@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Fabrice GASNIER <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Alexandre TORGUE <alexandre.torgue@st.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191107191425.22273-1-benjamin.gaignard@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Benjamin Gaignard <benjamin.gaignard@st.com>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, fabrice.gasnier@st.com, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, devicetree@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gV2VkLCA2IE5vdiAyMDE5IDE3OjM1OjIwIC0wNjAwClJvYiBIZXJyaW5nIDxyb2JoQGtlcm5l
-bC5vcmc+IHdyb3RlOgoKPiBPbiBXZWQsIE5vdiA2LCAyMDE5IGF0IDE6NTIgUE0gQmVuamFtaW4g
-R0FJR05BUkQKPiA8YmVuamFtaW4uZ2FpZ25hcmRAc3QuY29tPiB3cm90ZToKPiA+Cj4gPgo+ID4g
-T24gMTEvNi8xOSA1OjA2IEFNLCBSb2IgSGVycmluZyB3cm90ZTogIAo+ID4gPiBPbiBUdWUsIE5v
-diAwNSwgMjAxOSBhdCAxMTowNzoxNkFNICswMTAwLCBCZW5qYW1pbiBHYWlnbmFyZCB3cm90ZTog
-IAo+ID4gPj4gTGUgZGltLiAzIG5vdi4gMjAxOSDDoCAxMjowOCwgSm9uYXRoYW4gQ2FtZXJvbiA8
-amljMjNAa2VybmVsLm9yZz4gYSDDqWNyaXQgOiAgCj4gPiA+Pj4gT24gVGh1LCAzMSBPY3QgMjAx
-OSAxMzozMDozOCArMDEwMAo+ID4gPj4+IEJlbmphbWluIEdhaWduYXJkIDxiZW5qYW1pbi5nYWln
-bmFyZEBzdC5jb20+IHdyb3RlOgo+ID4gPj4+ICAKPiA+ID4+Pj4gQ29udmVydCB0aGUgU1RNMzIg
-SUlPIHRyaWdnZXIgYmluZGluZyB0byBEVCBzY2hlbWEgZm9ybWF0IHVzaW5nIGpzb24tc2NoZW1h
-Cj4gPiA+Pj4+Cj4gPiA+Pj4+IFNpZ25lZC1vZmYtYnk6IEJlbmphbWluIEdhaWduYXJkIDxiZW5q
-YW1pbi5nYWlnbmFyZEBzdC5jb20+ICAKPiA+ID4+PiBJJ20gZmFyIGZyb20gZ3JlYXQgb24gdGhl
-c2UgYXMgc3RpbGwgaGF2ZW4ndCB0YWtlbiB0aGUgdGltZSBJIHNob3VsZCB0byBsZWFybgo+ID4g
-Pj4+IHRoZSB5YW1sIHN5bnRheCBwcm9wZXJseS4gIEEgZmV3IGNvbW1lbnRzIGlubGluZSBob3dl
-dmVyIGJhc2VkIG1vc3RseSBvbiB0aGlzCj4gPiA+Pj4gZG9lc24ndCBxdWl0ZSBsb29rIGxpa2Ug
-b3RoZXIgb25lcyBJJ3ZlIHNlZW4gcmVjZW50bHkuCj4gPiA+Pj4KPiA+ID4+PiBUaGFua3MsCj4g
-PiA+Pj4KPiA+ID4+PiBKb25hdGhhbgo+ID4gPj4+ICAKPiA+ID4+Pj4gLS0tCj4gPiA+Pj4+ICAg
-Li4uL2JpbmRpbmdzL2lpby90aW1lci9zdCxzdG0zMi10aW1lci10cmlnZ2VyLnlhbWwgfCA0NCAr
-KysrKysrKysrKysrKysrKysrKysrCj4gPiA+Pj4+ICAgLi4uL2JpbmRpbmdzL2lpby90aW1lci9z
-dG0zMi10aW1lci10cmlnZ2VyLnR4dCAgICAgfCAyNSAtLS0tLS0tLS0tLS0KPiA+ID4+Pj4gICAy
-IGZpbGVzIGNoYW5nZWQsIDQ0IGluc2VydGlvbnMoKyksIDI1IGRlbGV0aW9ucygtKQo+ID4gPj4+
-PiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
-aWlvL3RpbWVyL3N0LHN0bTMyLXRpbWVyLXRyaWdnZXIueWFtbAo+ID4gPj4+PiAgIGRlbGV0ZSBt
-b2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3RpbWVyL3N0
-bTMyLXRpbWVyLXRyaWdnZXIudHh0Cj4gPiA+Pj4+Cj4gPiA+Pj4+IGRpZmYgLS1naXQgYS9Eb2N1
-bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3RpbWVyL3N0LHN0bTMyLXRpbWVyLXRy
-aWdnZXIueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vdGltZXIv
-c3Qsc3RtMzItdGltZXItdHJpZ2dlci55YW1sCj4gPiA+Pj4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0
-Cj4gPiA+Pj4+IGluZGV4IDAwMDAwMDAwMDAwMC4uMWM4YzhiNTVlOGNkCj4gPiA+Pj4+IC0tLSAv
-ZGV2L251bGwKPiA+ID4+Pj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L2lpby90aW1lci9zdCxzdG0zMi10aW1lci10cmlnZ2VyLnlhbWwKPiA+ID4+Pj4gQEAgLTAsMCAr
-MSw0NCBAQAo+ID4gPj4+PiArIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogKEdQTC0yLjAtb25s
-eSBPUiBCU0QtMi1DbGF1c2UpCj4gPiA+Pj4+ICslWUFNTCAxLjIKPiA+ID4+Pj4gKy0tLQo+ID4g
-Pj4+PiArJGlkOiBodHRwOi8vZGV2aWNldHJlZS5vcmcvc2NoZW1hcy9paW8vdGltZXIvc3Qsc3Rt
-MzItdGltZXItdHJpZ2dlci55YW1sIwo+ID4gPj4+PiArJHNjaGVtYTogaHR0cDovL2RldmljZXRy
-ZWUub3JnL21ldGEtc2NoZW1hcy9jb3JlLnlhbWwjCj4gPiA+Pj4+ICsKPiA+ID4+Pj4gK3RpdGxl
-OiBTVE1pY3JvZWxlY3Ryb25pY3MgU1RNMzIgVGltZXJzIElJTyB0aW1lciBiaW5kaW5ncwo+ID4g
-Pj4+PiArCj4gPiA+Pj4+ICttYWludGFpbmVyczoKPiA+ID4+Pj4gKyAgLSBCZW5qYW1pbiBHYWln
-bmFyZCA8YmVuamFtaW4uZ2FpZ25hcmRAc3QuY29tPgo+ID4gPj4+PiArICAtIEZhYnJpY2UgR2Fz
-bmllciA8ZmFicmljZS5nYXNuaWVyQHN0LmNvbT4KPiA+ID4+Pj4gKwo+ID4gPj4+PiArcHJvcGVy
-dGllczoKPiA+ID4+Pj4gKyAgJG5vZGVtYW5lOiAgCj4gPiA+Pj4gbm9kZW5hbWU/ICAKPiA+ID4+
-IFRoYXQgd2lsbCBiZSBpbiB2MiAgCj4gPiA+IE5vLCAkbm9kZW5hbWUgaXMgY29ycmVjdC4gVGhl
-ICckJyBzaWduaWZpZXMgc29tZXRoaW5nIHdlIGdlbmVyYXRlIGFuZAo+ID4gPiBhZGQgaW4uIElP
-Vywgbm90IGEgcmVhbCBwcm9wZXJ0eS4gSSBndWVzcyB3ZSBjb3VsZCBoYXZlIHVzZWQgJ25hbWUn
-IGhlcmUKPiA+ID4gYW5kIHN0dWNrIHdpdGggdHJhZGl0aW9uYWwgT3BlbkZpcm13YXJlLiAgCj4g
-PiBsZXQncyBnbyBmb3IgJG5hbWUgIAo+IAo+IE5vLCAkbm9kZW5hbWUgaXMgY29ycmVjdC4gWW91
-IGRvbid0IGhhdmUgYSBjaG9pY2UuIFRoYXQgaXMgd2hhdCB0aGUKPiB0b29saW5nIGdlbmVyYXRl
-cy4KClNvcnJ5IGFsbCwgSSBjYXVzZWQgY29uZnVzaW9uIGhlcmUuICBXYXMganVzdCB0cnlpbmcg
-dG8gcG9pbnQgb3V0IHRoZSB0eXBvIQokbm9kZV9tX2FuZQoKOikKCj4gCj4gUm9iCgoKX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5l
-bCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6
-Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Thu, 7 Nov 2019 20:14:25 +0100
+Benjamin Gaignard <benjamin.gaignard@st.com> wrote:
+
+> Convert the STM32 timers binding to DT schema format using json-schema
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+As a total non expert on this, looks sane to me.
+
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+> version 2:
+> - merge all (mfd, iio, pwm, counter) bindings in one file
+> - fix typo and trailing spaces
+> - rework dmas and dma-names properties to allow schemas like:
+>   ch1 , ch2, ch4
+>   ch2, up, com
+> - use patternProperties to describe timer subnode
+> - improve st,breakinput property definition to be able to check the values
+>   inside de tuple
+>  .../bindings/counter/stm32-timer-cnt.txt           |  31 -----
+>  .../bindings/iio/timer/stm32-timer-trigger.txt     |  25 ----
+>  .../devicetree/bindings/mfd/st,stm32-timers.yaml   | 155 +++++++++++++++++++++
+>  .../devicetree/bindings/mfd/stm32-timers.txt       |  73 ----------
+>  .../devicetree/bindings/pwm/pwm-stm32.txt          |  38 -----
+>  5 files changed, 155 insertions(+), 167 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+>  delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt b/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+> deleted file mode 100644
+> index c52fcdd4bf6c..000000000000
+> --- a/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+> +++ /dev/null
+> @@ -1,31 +0,0 @@
+> -STMicroelectronics STM32 Timer quadrature encoder
+> -
+> -STM32 Timer provides quadrature encoder to detect
+> -angular position and direction of rotary elements,
+> -from IN1 and IN2 input signals.
+> -
+> -Must be a sub-node of an STM32 Timer device tree node.
+> -See ../mfd/stm32-timers.txt for details about the parent node.
+> -
+> -Required properties:
+> -- compatible:		Must be "st,stm32-timer-counter".
+> -- pinctrl-names: 	Set to "default".
+> -- pinctrl-0: 		List of phandles pointing to pin configuration nodes,
+> -			to set CH1/CH2 pins in mode of operation for STM32
+> -			Timer input on external pin.
+> -
+> -Example:
+> -	timers@40010000 {
+> -		#address-cells = <1>;
+> -		#size-cells = <0>;
+> -		compatible = "st,stm32-timers";
+> -		reg = <0x40010000 0x400>;
+> -		clocks = <&rcc 0 160>;
+> -		clock-names = "int";
+> -
+> -		counter {
+> -			compatible = "st,stm32-timer-counter";
+> -			pinctrl-names = "default";
+> -			pinctrl-0 = <&tim1_in_pins>;
+> -		};
+> -	};
+> diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+> deleted file mode 100644
+> index b8e8c769d434..000000000000
+> --- a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+> +++ /dev/null
+> @@ -1,25 +0,0 @@
+> -STMicroelectronics STM32 Timers IIO timer bindings
+> -
+> -Must be a sub-node of an STM32 Timers device tree node.
+> -See ../mfd/stm32-timers.txt for details about the parent node.
+> -
+> -Required parameters:
+> -- compatible:	Must be one of:
+> -		"st,stm32-timer-trigger"
+> -		"st,stm32h7-timer-trigger"
+> -- reg:		Identify trigger hardware block.
+> -
+> -Example:
+> -	timers@40010000 {
+> -		#address-cells = <1>;
+> -		#size-cells = <0>;
+> -		compatible = "st,stm32-timers";
+> -		reg = <0x40010000 0x400>;
+> -		clocks = <&rcc 0 160>;
+> -		clock-names = "int";
+> -
+> -		timer@0 {
+> -			compatible = "st,stm32-timer-trigger";
+> -			reg = <0>;
+> -		};
+> -	};
+> diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+> new file mode 100644
+> index 000000000000..e8bd80038fa9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+> @@ -0,0 +1,155 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mfd/st,stm32-timers.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: STMicroelectronics STM32 Timers bindings
+> +
+> +description: |
+> +  This hardware block provides 3 types of timer along with PWM functionality:
+> +    - advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
+> +      prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
+> +    - general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
+> +      programmable prescaler and PWM outputs.
+> +    - basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
+> +
+> +maintainers:
+> +  - Benjamin Gaignard <benjamin.gaignard@st.com>
+> +  - Fabrice Gasnier <fabrice.gasnier@st.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: st,stm32-timers
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    items:
+> +      - const: int
+> +
+> +  reset:
+> +    maxItems: 1
+> +
+> +  dmas:
+> +    minItems: 1
+> +    maxItems: 7
+> +
+> +  dma-names:
+> +    items:
+> +      - enum: [ ch1, ch2, ch3, ch4, up, trig, com ]
+> +    minItems: 1
+> +    maxItems: 7
+> +    additionalItems: true
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +  pwm:
+> +    type: object
+> +
+> +    properties:
+> +      compatible:
+> +        const: st,stm32-pwm
+> +
+> +      "#pwm-cells":
+> +        const: 3
+> +
+> +      st,breakinput:
+> +        description: |
+> +          One or two <index level filter> to describe break input configurations.
+> +
+> +        allOf:
+> +          - $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +          - items:
+> +              items:
+> +                - description: |
+> +                    "index" indicates on which break input (0 or 1) the configuration should be applied.
+> +                  enum: [ 0 , 1]
+> +                - description: |
+> +                    "level" gives the active level (0=low or 1=high) of the input signal for this configuration
+> +                  enum: [ 0, 1 ]
+> +                - description: |
+> +                    "filter" gives the filtering value (up to 15) to be applied.
+> +                  maximum: 15
+> +
+> +    required:
+> +      - "#pwm-cells"
+> +      - compatible
+> +
+> +patternProperties:
+> +  "^timer@[0-9]+$":
+> +    type: object
+> +
+> +    properties:
+> +      compatible:
+> +        enum:
+> +          - st,stm32-timer-trigger
+> +          - st,stm32h7-timer-trigger
+> +
+> +      reg:
+> +        maxItems: 1
+> +        description: identify trigger hardware block.
+> +
+> +    required:
+> +      - compatible
+> +      - reg
+> +
+> +  counter:
+> +    type: object
+> +
+> +    properties:
+> +      compatible:
+> +        const: st,stm32-timer-counter
+> +
+> +    required:
+> +      - compatible
+> +
+> +required:
+> +  - "#address-cells"
+> +  - "#size-cells"
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/stm32mp1-clks.h>
+> +    timers2: timers@40000000 {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      compatible = "st,stm32-timers";
+> +      reg = <0x40000000 0x400>;
+> +      clocks = <&rcc TIM2_K>;
+> +      clock-names = "int";
+> +      dmas = <&dmamux1 18 0x400 0x1>,
+> +             <&dmamux1 19 0x400 0x1>,
+> +             <&dmamux1 20 0x400 0x1>,
+> +             <&dmamux1 21 0x400 0x1>,
+> +             <&dmamux1 22 0x400 0x1>;
+> +      dma-names = "ch1", "ch2", "ch3", "ch4", "up";
+> +      pwm {
+> +        compatible = "st,stm32-pwm";
+> +        #pwm-cells = <3>;
+> +        st,breakinput = <0 1 5>;
+> +      };
+> +      timer@0 {
+> +        compatible = "st,stm32-timer-trigger";
+> +        reg = <0>;
+> +      };
+> +      counter {
+> +        compatible = "st,stm32-timer-counter";
+> +      };
+> +    };
+> +
+> +...
+> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+> deleted file mode 100644
+> index 15c3b87f51d9..000000000000
+> --- a/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+> +++ /dev/null
+> @@ -1,73 +0,0 @@
+> -STM32 Timers driver bindings
+> -
+> -This IP provides 3 types of timer along with PWM functionality:
+> -- advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
+> -  prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
+> -- general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
+> -  programmable prescaler and PWM outputs.
+> -- basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
+> -
+> -Required parameters:
+> -- compatible: must be "st,stm32-timers"
+> -
+> -- reg:			Physical base address and length of the controller's
+> -			registers.
+> -- clock-names:		Set to "int".
+> -- clocks: 		Phandle to the clock used by the timer module.
+> -			For Clk properties, please refer to ../clock/clock-bindings.txt
+> -
+> -Optional parameters:
+> -- resets:		Phandle to the parent reset controller.
+> -			See ../reset/st,stm32-rcc.txt
+> -- dmas:			List of phandle to dma channels that can be used for
+> -			this timer instance. There may be up to 7 dma channels.
+> -- dma-names:		List of dma names. Must match 'dmas' property. Valid
+> -			names are: "ch1", "ch2", "ch3", "ch4", "up", "trig",
+> -			"com".
+> -
+> -Optional subnodes:
+> -- pwm:			See ../pwm/pwm-stm32.txt
+> -- timer:		See ../iio/timer/stm32-timer-trigger.txt
+> -- counter:		See ../counter/stm32-timer-cnt.txt
+> -
+> -Example:
+> -	timers@40010000 {
+> -		#address-cells = <1>;
+> -		#size-cells = <0>;
+> -		compatible = "st,stm32-timers";
+> -		reg = <0x40010000 0x400>;
+> -		clocks = <&rcc 0 160>;
+> -		clock-names = "int";
+> -
+> -		pwm {
+> -			compatible = "st,stm32-pwm";
+> -			pinctrl-0	= <&pwm1_pins>;
+> -			pinctrl-names	= "default";
+> -		};
+> -
+> -		timer@0 {
+> -			compatible = "st,stm32-timer-trigger";
+> -			reg = <0>;
+> -		};
+> -
+> -		counter {
+> -			compatible = "st,stm32-timer-counter";
+> -			pinctrl-names = "default";
+> -			pinctrl-0 = <&tim1_in_pins>;
+> -		};
+> -	};
+> -
+> -Example with all dmas:
+> -	timer@40010000 {
+> -		...
+> -		dmas = <&dmamux1 11 0x400 0x0>,
+> -		       <&dmamux1 12 0x400 0x0>,
+> -		       <&dmamux1 13 0x400 0x0>,
+> -		       <&dmamux1 14 0x400 0x0>,
+> -		       <&dmamux1 15 0x400 0x0>,
+> -		       <&dmamux1 16 0x400 0x0>,
+> -		       <&dmamux1 17 0x400 0x0>;
+> -		dma-names = "ch1", "ch2", "ch3", "ch4", "up", "trig", "com";
+> -		...
+> -		child nodes...
+> -	};
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> deleted file mode 100644
+> index a8690bfa5e1f..000000000000
+> --- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> +++ /dev/null
+> @@ -1,38 +0,0 @@
+> -STMicroelectronics STM32 Timers PWM bindings
+> -
+> -Must be a sub-node of an STM32 Timers device tree node.
+> -See ../mfd/stm32-timers.txt for details about the parent node.
+> -
+> -Required parameters:
+> -- compatible:		Must be "st,stm32-pwm".
+> -- pinctrl-names: 	Set to "default".
+> -- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
+> -			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+> -- #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
+> -			bindings defined in pwm.txt.
+> -
+> -Optional parameters:
+> -- st,breakinput:	One or two <index level filter> to describe break input configurations.
+> -			"index" indicates on which break input (0 or 1) the configuration
+> -			should be applied.
+> -			"level" gives the active level (0=low or 1=high) of the input signal
+> -			for this configuration.
+> -			"filter" gives the filtering value to be applied.
+> -
+> -Example:
+> -	timers@40010000 {
+> -		#address-cells = <1>;
+> -		#size-cells = <0>;
+> -		compatible = "st,stm32-timers";
+> -		reg = <0x40010000 0x400>;
+> -		clocks = <&rcc 0 160>;
+> -		clock-names = "int";
+> -
+> -		pwm {
+> -			compatible = "st,stm32-pwm";
+> -			#pwm-cells = <3>;
+> -			pinctrl-0	= <&pwm1_pins>;
+> -			pinctrl-names	= "default";
+> -			st,breakinput = <0 1 5>;
+> -		};
+> -	};
