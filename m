@@ -1,11 +1,12 @@
 Return-path: <kernel-bounces@pengutronix.de>
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/4] pwm: omap-dmtimer: remove pwmchip in .remove before
- making it unfunctional
-Date: Mon, 11 Nov 2019 10:03:54 +0100
-Message-Id: <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20191111071952.6pbswbboqreen6im@pengutronix.de>
+Subject: [PATCH 3/4] pwm: omap-dmtimer: put_device() after
+ of_find_device_by_node()
+Date: Mon, 11 Nov 2019 10:03:56 +0100
+Message-Id: <20191111090357.13903-3-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
 References: <20191111071952.6pbswbboqreen6im@pengutronix.de>
+ <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -22,40 +23,88 @@ To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, Neil Brown <neilb@suse.de>, kernel-janitors@vger.kernel.org, kernel@pengutronix.de, Markus Elfring <elfring@users.sourceforge.net>
 List-ID: <linux-pwm.vger.kernel.org>
 
-In the old code (e.g.) mutex_destroy() was called before
-pwmchip_remove(). Between these two calls it is possible that a pwm
-callback is used which tries to grab the mutex.
+This was found by coccicheck:
 
+	drivers/pwm/pwm-omap-dmtimer.c:304:2-8: ERROR: missing put_device;
+	call of_find_device_by_node on line 255, but without a corresponding
+	object release within this function.
+
+Reported-by: Markus Elfring <elfring@users.sourceforge.net>
 Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-omap-dmtimer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-omap-dmtimer.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index 00772fc53490..bdf94c78655f 100644
+index e36fcad668a6..88a3c5690fea 100644
 --- a/drivers/pwm/pwm-omap-dmtimer.c
 +++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -351,6 +351,11 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
- {
- 	struct pwm_omap_dmtimer_chip *omap = platform_get_drvdata(pdev);
-+	int ret;
+@@ -256,7 +256,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ 	if (!timer_pdev) {
+ 		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
+ 		ret = -ENODEV;
+-		goto put;
++		goto err_find_timer_pdev;
+ 	}
+ 
+ 	timer_pdata = dev_get_platdata(&timer_pdev->dev);
+@@ -264,7 +264,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ 		dev_dbg(&pdev->dev,
+ 			 "dmtimer pdata structure NULL, deferring probe\n");
+ 		ret = -EPROBE_DEFER;
+-		goto put;
++		goto err_platdata;
+ 	}
+ 
+ 	pdata = timer_pdata->timer_ops;
+@@ -283,19 +283,19 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ 	    !pdata->write_counter) {
+ 		dev_err(&pdev->dev, "Incomplete dmtimer pdata structure\n");
+ 		ret = -EINVAL;
+-		goto put;
++		goto err_platdata;
+ 	}
+ 
+ 	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
+ 		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
+ 		ret = -ENODEV;
+-		goto put;
++		goto err_timer_property;
+ 	}
+ 
+ 	dm_timer = pdata->request_by_node(timer);
+ 	if (!dm_timer) {
+ 		ret = -EPROBE_DEFER;
+-		goto put;
++		goto err_request_timer;
+ 	}
+ 
+ 	omap = devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
+@@ -352,7 +352,14 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ err_alloc_omap:
+ 
+ 	pdata->free(dm_timer);
+-put:
++err_request_timer:
 +
-+	ret = pwmchip_remove(&omap->chip);
-+	if (ret)
-+		return ret;
++err_timer_property:
++err_platdata:
++
++	put_device(&timer_pdev->dev);
++err_find_timer_pdev:
++
+ 	of_node_put(timer);
  
- 	if (pm_runtime_active(&omap->dm_timer_pdev->dev))
- 		omap->pdata->stop(omap->dm_timer);
-@@ -359,7 +364,7 @@ static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
+ 	return ret;
+@@ -372,6 +379,8 @@ static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
  
+ 	omap->pdata->free(omap->dm_timer);
+ 
++	put_device(&omap->dm_timer_pdev->dev);
++
  	mutex_destroy(&omap->mutex);
  
--	return pwmchip_remove(&omap->chip);
-+	return 0;
- }
- 
- static const struct of_device_id pwm_omap_dmtimer_of_match[] = {
+ 	return 0;
 -- 
 2.23.0
