@@ -1,29 +1,40 @@
-From: Markus Elfring <Markus.Elfring@web.de>
-Subject: Re: [PATCH 4/4] pwm: omap-dmtimer: Allow compiling with COMPILE_TEST
-Date: Mon, 11 Nov 2019 14:47:48 +0100
-Message-ID: <f01b3443-9dcc-6485-4a05-a658d93326da@web.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [0/4] pwm: omap-dmtimer: Software improvements
+Date: Mon, 11 Nov 2019 20:57:12 +0100
+Message-ID: <20191111195712.mmk7f23cjson6e6x@pengutronix.de>
 References: <20191111071952.6pbswbboqreen6im@pengutronix.de>
  <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
- <20191111090357.13903-4-u.kleine-koenig@pengutronix.de>
+ <20191111091606.qf7gj5gln3khfnsl@pengutronix.de>
+ <3672014f-14f2-7568-8258-bc472f3b9ae1@web.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191111090357.13903-4-u.kleine-koenig@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <3672014f-14f2-7568-8258-bc472f3b9ae1@web.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Neil Brown <neilb@suse.de>, Neil Armstrong <narmstrong@baylibre.com>, kernel@pengutronix.de, kernel-janitors@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: Markus Elfring <Markus.Elfring@web.de>
+Cc: linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, Neil Brown <neilb@suse.de>, kernel-janitors@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-> The dependency on OMAP_DM_TIMER is only a runtime dependency. Also
-> OMAP_DM_TIMER cannot be enabled without ARCH_OMAP being enabled.
+On Mon, Nov 11, 2019 at 02:28:52PM +0100, Markus Elfring wrote:
+> > I created a cover letter but failed to send it together with the series
+> > :-|
+> 
+> Did you omit the address “linux-kernel@vger.kernel.org” from
+> the recipient list intentionally?
 
-Will a more =E2=80=9Cimperative mood=E2=80=9D become relevant also for thi=
-s change description?
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
-cumentation/process/submitting-patches.rst?id=3D31f4f5b495a62c9a8b15b1c358=
-1acd5efeb9af8c#n151
+Yes, even though it's documented to Cc: all patches there, there is IMHO
+little use. If there is a dedicated mailing list, not adding lkml is
+fine for all maintainers I interacted with in the last few years.
 
-Regards,
-Markus
+The volume on lkml is that high that sending all patches there only adds
+noise.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
