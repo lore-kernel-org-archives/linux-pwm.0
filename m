@@ -1,169 +1,61 @@
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33500 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727058AbfJUK5w (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Oct 2019 06:57:52 -0400
-Received: by mail-wr1-f65.google.com with SMTP id s1so4655732wro.0
-        for <linux-pwm@vger.kernel.org>; Mon, 21 Oct 2019 03:57:48 -0700 (PDT)
-From: Thierry Reding <thierry.reding@gmail.com>
-Date: Mon, 21 Oct 2019 12:57:39 +0200
-Message-Id: <20191021105739.1357629-4-thierry.reding@gmail.com>
-In-Reply-To: <20191021105739.1357629-1-thierry.reding@gmail.com>
-References: <20191021105739.1357629-1-thierry.reding@gmail.com>
+Return-path: <kernel-bounces@pengutronix.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 1/4] pwm: omap-dmtimer: remove pwmchip in .remove before
+ making it unfunctional
+Date: Mon, 11 Nov 2019 10:03:54 +0100
+Message-Id: <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20191111071952.6pbswbboqreen6im@pengutronix.de>
+References: <20191111071952.6pbswbboqreen6im@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Sender: linux-pwm-owner@vger.kernel.org
-List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH 4/4] pwm: imx27: Unconditionally write state to hardware
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-pwm@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, Neil Brown <neilb@suse.de>, kernel-janitors@vger.kernel.org, kernel@pengutronix.de, Markus Elfring <elfring@users.sourceforge.net>
+List-ID: <linux-pwm.vger.kernel.org>
 
-The i.MX driver currently uses a shortcut and doesn't write all of the
-state through to the hardware when the PWM is disabled. This causes an
-inconsistent state to be read back by consumers with the result of them
-malfunctioning.
+In the old code (e.g.) mutex_destroy() was called before
+pwmchip_remove(). Between these two calls it is possible that a pwm
+callback is used which tries to grab the mutex.
 
-Fix this by always writing the full state through to the hardware
-registers so that the correct state can always be read back.
-
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx27.c | 120 ++++++++++++++++++++--------------------
- 1 file changed, 59 insertions(+), 61 deletions(-)
+ drivers/pwm/pwm-omap-dmtimer.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 4113d5cd4c62..59d8b1289808 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -230,70 +230,68 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+index 00772fc53490..bdf94c78655f 100644
+--- a/drivers/pwm/pwm-omap-dmtimer.c
++++ b/drivers/pwm/pwm-omap-dmtimer.c
+@@ -351,6 +351,11 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
+ {
+ 	struct pwm_omap_dmtimer_chip *omap = platform_get_drvdata(pdev);
++	int ret;
++
++	ret = pwmchip_remove(&omap->chip);
++	if (ret)
++		return ret;
  
- 	pwm_get_state(pwm, &cstate);
+ 	if (pm_runtime_active(&omap->dm_timer_pdev->dev))
+ 		omap->pdata->stop(omap->dm_timer);
+@@ -359,7 +364,7 @@ static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
  
--	if (state->enabled) {
--		c = clk_get_rate(imx->clk_per);
--		c *= state->period;
--
--		do_div(c, 1000000000);
--		period_cycles = c;
--
--		prescale = period_cycles / 0x10000 + 1;
--
--		period_cycles /= prescale;
--		c = (unsigned long long)period_cycles * state->duty_cycle;
--		do_div(c, state->period);
--		duty_cycles = c;
--
--		/*
--		 * according to imx pwm RM, the real period value should be
--		 * PERIOD value in PWMPR plus 2.
--		 */
--		if (period_cycles > 2)
--			period_cycles -= 2;
--		else
--			period_cycles = 0;
--
--		/*
--		 * Wait for a free FIFO slot if the PWM is already enabled, and
--		 * flush the FIFO if the PWM was disabled and is about to be
--		 * enabled.
--		 */
--		if (cstate.enabled) {
--			pwm_imx27_wait_fifo_slot(chip, pwm);
--		} else {
--			ret = pwm_imx27_clk_prepare_enable(chip);
--			if (ret)
--				return ret;
--
--			pwm_imx27_sw_reset(chip);
--		}
--
--		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
--		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
--
--		/*
--		 * Store the duty cycle for future reference in cases where
--		 * the MX3_PWMSAR register can't be read (i.e. when the PWM
--		 * is disabled).
--		 */
--		imx->duty_cycle = duty_cycles;
--
--		cr = MX3_PWMCR_PRESCALER_SET(prescale) |
--		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
--		     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
--		     MX3_PWMCR_DBGEN | MX3_PWMCR_EN;
--
--		if (state->polarity == PWM_POLARITY_INVERSED)
--			cr |= FIELD_PREP(MX3_PWMCR_POUTC,
--					MX3_PWMCR_POUTC_INVERTED);
--
--		writel(cr, imx->mmio_base + MX3_PWMCR);
--	} else if (cstate.enabled) {
--		writel(0, imx->mmio_base + MX3_PWMCR);
-+	c = clk_get_rate(imx->clk_per);
-+	c *= state->period;
+ 	mutex_destroy(&omap->mutex);
  
--		pwm_imx27_clk_disable_unprepare(chip);
-+	do_div(c, 1000000000);
-+	period_cycles = c;
-+
-+	prescale = period_cycles / 0x10000 + 1;
-+
-+	period_cycles /= prescale;
-+	c = (unsigned long long)period_cycles * state->duty_cycle;
-+	do_div(c, state->period);
-+	duty_cycles = c;
-+
-+	/*
-+	 * according to imx pwm RM, the real period value should be PERIOD
-+	 * value in PWMPR plus 2.
-+	 */
-+	if (period_cycles > 2)
-+		period_cycles -= 2;
-+	else
-+		period_cycles = 0;
-+
-+	/*
-+	 * Wait for a free FIFO slot if the PWM is already enabled, and flush
-+	 * the FIFO if the PWM was disabled and is about to be enabled.
-+	 */
-+	if (cstate.enabled) {
-+		pwm_imx27_wait_fifo_slot(chip, pwm);
-+	} else {
-+		ret = pwm_imx27_clk_prepare_enable(chip);
-+		if (ret)
-+			return ret;
-+
-+		pwm_imx27_sw_reset(chip);
- 	}
- 
-+	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-+	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-+
-+	/*
-+	 * Store the duty cycle for future reference in cases where the
-+	 * MX3_PWMSAR register can't be read (i.e. when the PWM is disabled).
-+	 */
-+	imx->duty_cycle = duty_cycles;
-+
-+	cr = MX3_PWMCR_PRESCALER_SET(prescale) |
-+	     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-+	     FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
-+	     MX3_PWMCR_DBGEN;
-+
-+	if (state->polarity == PWM_POLARITY_INVERSED)
-+		cr |= FIELD_PREP(MX3_PWMCR_POUTC,
-+				MX3_PWMCR_POUTC_INVERTED);
-+
-+	if (state->enabled)
-+		cr |= MX3_PWMCR_EN;
-+
-+	writel(cr, imx->mmio_base + MX3_PWMCR);
-+
-+	if (!state->enabled && cstate.enabled)
-+		pwm_imx27_clk_disable_unprepare(chip);
-+
- 	return 0;
+-	return pwmchip_remove(&omap->chip);
++	return 0;
  }
  
+ static const struct of_device_id pwm_omap_dmtimer_of_match[] = {
 -- 
 2.23.0
