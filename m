@@ -1,7 +1,7 @@
 From: Markus Elfring <Markus.Elfring@web.de>
 Subject: Re: [PATCH 4/4] pwm: omap-dmtimer: Allow compiling with COMPILE_TEST
 Date: Mon, 11 Nov 2019 14:47:48 +0100
-Message-ID: <7edadbe3-1f79-91ce-fafa-f3ad78c22c2c@web.de>
+Message-ID: <f01b3443-9dcc-6485-4a05-a658d93326da@web.de>
 References: <20191111071952.6pbswbboqreen6im@pengutronix.de>
  <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
  <20191111090357.13903-4-u.kleine-koenig@pengutronix.de>
