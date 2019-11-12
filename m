@@ -1,37 +1,33 @@
-From: Markus Elfring <Markus.Elfring@web.de>
-Subject: Re: [3/4] pwm: omap-dmtimer: put_device() after
- of_find_device_by_node()
-Date: Tue, 12 Nov 2019 08:40:13 +0100
-Message-ID: <8f3c4829-8634-74f8-20c4-b63c01ba526e@web.de>
-References: <20191111071952.6pbswbboqreen6im@pengutronix.de>
- <20191111090357.13903-1-u.kleine-koenig@pengutronix.de>
- <20191111090357.13903-3-u.kleine-koenig@pengutronix.de>
- <812c95a0-7eb6-7ad6-16fa-c9e8339ff213@web.de>
- <20191111200907.vclloogaiu3mqxsn@pengutronix.de>
- <d4c63704-8c4c-c1c8-ab97-ce9701cf2da4@web.de>
- <20191111214619.whp2obgbrgb75a7k@pengutronix.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4 1/7] dt-bindings: pwm: allwinner: Add H6 PWM
+ description
+Date: Tue, 12 Nov 2019 13:31:33 -0600
+Message-ID: <20191112193133.GA27088@bogus>
+References: <20191108084517.21617-1-peron.clem@gmail.com>
+ <20191108084517.21617-2-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191111214619.whp2obgbrgb75a7k@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20191108084517.21617-2-peron.clem@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
-Cc: Neil Armstrong <narmstrong@baylibre.com>, Neil Brown <neilb@suse.de>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, kernel-janitors@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <pza@pengutronix.de>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com, Jernej Skrabec <jernej.skrabec@siol.net>, =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
->> Would you like to mention any actions in the commit message explicitly?
->
-> I don't understand your question,
+On Fri,  8 Nov 2019 09:45:11 +0100, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= wrote:
+> From: Jernej Skrabec <jernej.skrabec@siol.net>
+> 
+> H6 PWM block is basically the same as A20 PWM, except that it also has
+> bus clock and reset line which needs to be handled accordingly.
+> 
+> Expand Allwinner PWM binding with H6 PWM specifics.
+> 
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+> Signed-off-by: Clément Péron <peron.clem@gmail.com>
+> ---
+>  .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+> 
 
-I hope that remaining communication difficulties will be resolved better.
-
-
-> but I assume the answer is "No, I want to keep the commit log as is".
-
-I suggest to take another look at the relevance of the corresponding
-Linux development documentation then.
-
-Regards,
-Markus
+Reviewed-by: Rob Herring <robh@kernel.org>
