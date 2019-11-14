@@ -1,17 +1,17 @@
 From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 3/7] pwm: sun4i: Add an optional probe
- for bus clock
-Date: Thu, 14 Nov 2019 23:36:16 +0100
-Message-ID: <CAJiuCccqyPbxRLjv1NRy6eukMnma8OUJGKvVHHDSKwybNJgKrg@mail.gmail.com>
-References: <20191108084517.21617-1-peron.clem@gmail.com> <20191108084517.21617-4-peron.clem@gmail.com>
- <20191113083524.aqtf2ed4ltuiazjg@pengutronix.de>
+Subject: Re: [PATCH v4 4/7] pwm: sun4i: Add support to output
+ source clock directly
+Date: Thu, 14 Nov 2019 23:47:00 +0100
+Message-ID: <CAJiuCceYg7WC=peHYeC=eE-HOsKH_SdsKyWwkWY5VpeY+uzaKA@mail.gmail.com>
+References: <20191108084517.21617-1-peron.clem@gmail.com> <20191108084517.21617-5-peron.clem@gmail.com>
+ <20191113085858.76rad3vpszknu4cp@pengutronix.de>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBB3NNW7XAKGQEP5HKSSI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBB4NSW7XAKGQEL7R3RII-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20191113083524.aqtf2ed4ltuiazjg-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <20191113085858.76rad3vpszknu4cp-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -24,131 +24,129 @@ List-Id: linux-pwm@vger.kernel.org
 
 Hi Uwe,
 
-On Wed, 13 Nov 2019 at 09:35, Uwe Kleine-K=C3=B6nig
+On Wed, 13 Nov 2019 at 09:58, Uwe Kleine-K=C3=B6nig
 <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
 >
-> On Fri, Nov 08, 2019 at 09:45:13AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
+> On Fri, Nov 08, 2019 at 09:45:14AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
 > > From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 > >
-> > H6 PWM core needs bus clock to be enabled in order to work.
+> > PWM core has an option to bypass whole logic and output unchanged sourc=
+e
+> > clock as PWM output. This is achieved by enabling bypass bit.
 > >
-> > Add an optional probe for it and a fallback for previous
-> > bindings without name on module clock.
+> > Note that when bypass is enabled, no other setting has any meaning, not
+> > even enable bit.
+> >
+> > This mode of operation is needed to achieve high enough frequency to
+> > serve as clock source for AC200 chip which is integrated into same
+> > package as H6 SoC.
 > >
 > > Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 > > Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > > ---
-> >  drivers/pwm/pwm-sun4i.c | 48 +++++++++++++++++++++++++++++++++++++++--
-> >  1 file changed, 46 insertions(+), 2 deletions(-)
+> >  drivers/pwm/pwm-sun4i.c | 44 +++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 44 insertions(+)
 > >
 > > diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> > index 2b9a2a78591f..a10022d6c0fd 100644
+> > index a10022d6c0fd..9cc928ab47bc 100644
 > > --- a/drivers/pwm/pwm-sun4i.c
 > > +++ b/drivers/pwm/pwm-sun4i.c
-> > @@ -78,6 +78,7 @@ struct sun4i_pwm_data {
+> > @@ -3,6 +3,10 @@
+> >   * Driver for Allwinner sun4i Pulse Width Modulation Controller
+> >   *
+> >   * Copyright (C) 2014 Alexandre Belloni <alexandre.belloni@free-electr=
+ons.com>
+> > + *
+> > + * Limitations:
+> > + * - When outputing the source clock directly, the PWM logic will be b=
+ypassed
+> > + *   and the currently running period is not guaranteed to be complete=
+d
+> >   */
 > >
-> >  struct sun4i_pwm_chip {
-> >       struct pwm_chip chip;
-> > +     struct clk *bus_clk;
-> >       struct clk *clk;
-> >       struct reset_control *rst;
-> >       void __iomem *base;
-> > @@ -363,9 +364,38 @@ static int sun4i_pwm_probe(struct platform_device =
-*pdev)
-> >       if (IS_ERR(pwm->base))
-> >               return PTR_ERR(pwm->base);
+> >  #include <linux/bitops.h>
+> > @@ -73,6 +77,7 @@ static const u32 prescaler_table[] =3D {
 > >
-> > -     pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
-> > -     if (IS_ERR(pwm->clk))
-> > +     /* Get all clocks and reset line */
-> > +     pwm->clk =3D devm_clk_get_optional(&pdev->dev, "mod");
-> > +     if (IS_ERR(pwm->clk)) {
-> > +             if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-> > +                     dev_err(&pdev->dev, "get clock failed %pe\n",
-> > +                             pwm->clk);
-> >               return PTR_ERR(pwm->clk);
-> > +     }
-> > +
+> >  struct sun4i_pwm_data {
+> >       bool has_prescaler_bypass;
+> > +     bool has_direct_mod_clk_output;
+> >       unsigned int npwm;
+> >  };
+> >
+> > @@ -118,6 +123,20 @@ static void sun4i_pwm_get_state(struct pwm_chip *c=
+hip,
+> >
+> >       val =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> >
 > > +     /*
-> > +      * Fallback for old dtbs with a single clock and no name.
-> > +      * If a parent has a clock-name called "mod" whereas the
-> > +      * current node is unnamed the clock reference will be
-> > +      * incorrectly obtained and will not go into this fallback.
->
-> For me "old dtbs" suggests that today a device tree should have a "mod"
-> clock. Is this true also for machines other than H6? And I'd put the
-> comment before the acquisition of the "mod" clock. Something like:
-
-Agree to remove the "old dtbs" but specifying the SoC instead
-of the reason is less clear for me.
-
-I would prefer to have something like this:
-
-A clock is explicitly called "mod" when several clocks are referenced.
-However, when only one clock is declared this one is unamed.
-So we request "mod" first (and ignore the corner case that a parent
-provides a "mod" clock)
-and if this is not found we fall back to the first clock of the PWM.
-
-What do you think?
-
->
->         /*
->          * A clock called "mod" is only required on H6 (for now) and on
->          * other SoCs we expect an unnamed clock. So we request "mod"
->          * first (and ignore the corner case that a parent provides a
->          * "mod" clock) and if this is not found we fall back to the
->          * first clock of the PWM.
->          */
->
+> > +      * PWM chapter in H6 manual has a diagram which explains that if =
+bypass
+> > +      * bit is set, no other setting has any meaning. Even more, exper=
+iment
+> > +      * proved that also enable bit is ignored in this case.
 > > +      */
-> > +     if (!pwm->clk) {
-> > +             pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
-> > +             if (IS_ERR(pwm->clk)) {
-> > +                     if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-> > +                             dev_err(&pdev->dev, "get clock failed %pe=
-\n",
-> > +                                     pwm->clk);
-> > +                     return PTR_ERR(pwm->clk);
-> > +             }
+> > +     if ((val & BIT_CH(PWM_BYPASS, pwm->hwpwm)) &&
+> > +         sun4i_pwm->data->has_direct_mod_clk_output) {
+> > +             state->period =3D DIV_ROUND_UP_ULL(NSEC_PER_SEC, clk_rate=
+);
+> > +             state->duty_cycle =3D DIV_ROUND_UP_ULL(state->period, 2);
+>
+> I first thought you're losing precision here by reusing state->period
+> here, but with a divisor of 2 everything is fine.
+>
+> > +             state->polarity =3D PWM_POLARITY_NORMAL;
+> > +             state->enabled =3D true;
+> > +             return;
 > > +     }
 > > +
-> > +     pwm->bus_clk =3D devm_clk_get_optional(&pdev->dev, "bus");
-> > +     if (IS_ERR(pwm->bus_clk)) {
-> > +             if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-> > +                     dev_err(&pdev->dev, "get bus_clock failed %pe\n",
-> > +                             pwm->bus_clk);
-> > +             return PTR_ERR(pwm->bus_clk);
-> > +     }
-> >
-> >       pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, N=
-ULL);
-> >       if (IS_ERR(pwm->rst)) {
-> > @@ -382,6 +412,17 @@ static int sun4i_pwm_probe(struct platform_device =
-*pdev)
-> >               return ret;
+> >       if ((PWM_REG_PRESCAL(val, pwm->hwpwm) =3D=3D PWM_PRESCAL_MASK) &&
+> >           sun4i_pwm->data->has_prescaler_bypass)
+> >               prescaler =3D 1;
+> > @@ -204,6 +223,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, s=
+truct pwm_device *pwm,
+> >       struct sun4i_pwm_chip *sun4i_pwm =3D to_sun4i_pwm_chip(chip);
+> >       struct pwm_state cstate;
+> >       u32 ctrl;
+> > +     bool bypass =3D false;
+> >       int ret;
+> >       unsigned int delay_us;
+> >       unsigned long now;
+> > @@ -218,9 +238,24 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+> >               }
 > >       }
 > >
 > > +     /*
-> > +      * We're keeping the bus clock on for the sake of simplicity.
-> > +      * Actually it only needs to be on for hardware register
-> > +      * accesses.
-> > +      */
-> > +     ret =3D clk_prepare_enable(pwm->bus_clk);
-> > +     if (ret) {
-> > +             dev_err(&pdev->dev, "Cannot prepare and enable bus_clk\n"=
-);
-> > +             goto err_bus;
-> > +     }
-> > +
+> > +      * Although it would make much more sense to check for bypass in
+> > +      * sun4i_pwm_calculate(), value of bypass bit also depends on "en=
+abled".
 >
-> Would it make sense to split this patch into "Prefer "mod" clock to
-> (unnamed) clock" and "Introduce optional bus clock"?
+> I don't understand this reasoning. sun4i_pwm_calculate knows about
+> .enabled and also sun4i_pwm->data->has_direct_mod_clk_output. Maybe just
+> add a bool *bypass as parameter and move the logic there?
 
-Yes I will do in v5,
+I asked myself the same question, however the sun4i_pwm_calculate is
+only called when period or duty_cycle is updated not when state is
+toggled between disabled / enabled.
+
+Should we also call it when the state is switched to enabled ?
 
 Regards,
 Cl=C3=A9ment
+
+>
+> > +      */
+> > +     if (state->enabled) {
+> > +             u32 clk_rate =3D clk_get_rate(sun4i_pwm->clk);
+> > +             bypass =3D (state->period * clk_rate >=3D NSEC_PER_SEC) &=
+&
+> > +                      (state->period * clk_rate < 2 * NSEC_PER_SEC) &&
+> > +                      (state->duty_cycle * clk_rate * 2 >=3D NSEC_PER_=
+SEC);
+> > +     }
+> > +
+>
+> This looks right now.
 >
 > Best regards
 > Uwe
@@ -165,5 +163,5 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/CAJiuCccqyPbxRLjv1NRy6eukMnma8OUJGKvVHHDSKwybNJgKrg%40mail.gma=
-il.com.
+/linux-sunxi/CAJiuCceYg7WC%3DpeHYeC%3DeE-HOsKH_SdsKyWwkWY5VpeY%2BuzaKA%40ma=
+il.gmail.com.
