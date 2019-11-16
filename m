@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 024/150] pwm: lpss: Only set update bit if we are actually changing the settings
-Date: Sat, 16 Nov 2019 10:45:22 -0500
-Message-ID: <20191116154729.9573-24-sashal@kernel.org>
-References: <20191116154729.9573-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 042/237] pwm: lpss: Only set update bit if we are actually changing the settings
+Date: Sat, 16 Nov 2019 10:37:57 -0500
+Message-ID: <20191116154113.7417-42-sashal@kernel.org>
+References: <20191116154113.7417-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
+In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
