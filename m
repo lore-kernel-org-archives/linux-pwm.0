@@ -1,104 +1,208 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 042/237] pwm: lpss: Only set update bit if we are actually changing the settings
-Date: Sat, 16 Nov 2019 10:37:57 -0500
-Message-ID: <20191116154113.7417-42-sashal@kernel.org>
-References: <20191116154113.7417-1-sashal@kernel.org>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 2/3] pwm: jz4740: Obtain regmap from parent node
+Date: Sat, 16 Nov 2019 18:36:12 +0100
+Message-ID: <20191116173613.72647-3-paul@crapouillou.net>
+References: <20191116173613.72647-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
+In-Reply-To: <20191116173613.72647-1-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+The TCU registers are shared between a handful of drivers, accessing
+them through the same regmap.
 
-[ Upstream commit 2153bbc12f77fb2203276befc0f0dddbfb023bb1 ]
+While this driver is devicetree-compatible, it is never (as of now)
+probed from devicetree, so this change does not introduce a ABI problem
+with current devicetree files.
 
-According to the datasheet the update bit must be set if the on-time-div
-or the base-unit changes.
-
-Now that we properly order device resume on Cherry Trail so that the GFX0
-_PS0 method no longer exits with an error, we end up with a sequence of
-events where we are writing the same values twice in a row.
-
-First the _PS0 method restores the duty cycle of 0% the GPU driver set
-on suspend and then the GPU driver first updates just the enabled bit in
-the pwm_state from 0 to 1, causing us to write the same values again,
-before restoring the pre-suspend duty-cycle in a separate pwm_apply call.
-
-When writing the update bit the second time, without changing any of
-the values the update bit clears immediately / instantly, instead of
-staying 1 for a while as usual. After this the next setting of the update
-bit seems to be ignored, causing the restoring of the pre-suspend
-duty-cycle to not get applied. This makes the backlight come up with
-a 0% dutycycle after suspend/resume.
-
-Any further brightness changes after this do work.
-
-This commit moves the setting of the update bit into pwm_lpss_prepare()
-and only sets the bit if we have actually changed any of the values.
-
-This avoids the setting of the update bit the second time we configure
-the PWM to 0% dutycycle, this fixes the backlight coming up with 0%
-duty-cycle after a suspend/resume.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Tested-by: Mathieu Malaterre <malat@debian.org>
+Tested-by: Artur Rojek <contact@artur-rojek.eu>
 ---
- drivers/pwm/pwm-lpss.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 4721a264bac25..1e69c1c9ec096 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -97,7 +97,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	unsigned long long on_time_div;
- 	unsigned long c = lpwm->info->clk_rate, base_unit_range;
- 	unsigned long long base_unit, freq = NSEC_PER_SEC;
--	u32 ctrl;
-+	u32 orig_ctrl, ctrl;
+Notes:
+    v2: This patch is now after the patch introducing TCU clocks, so the code
+        changed a bit.
+
+ drivers/pwm/Kconfig      |  1 +
+ drivers/pwm/pwm-jz4740.c | 70 ++++++++++++++++++++++++++--------------
+ 2 files changed, 46 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index e998e5cb01b0..b6cbfb97e85f 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -226,6 +226,7 @@ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+ 	depends on MACH_INGENIC
+ 	depends on COMMON_CLK
++	select MFD_SYSCON
+ 	help
+ 	  Generic PWM framework driver for Ingenic JZ47xx based
+ 	  machines.
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index fd83644f9323..a5368b98652d 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -13,17 +13,19 @@
+ #include <linux/err.h>
+ #include <linux/gpio.h>
+ #include <linux/kernel.h>
++#include <linux/mfd/ingenic-tcu.h>
++#include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
+-
+-#include <asm/mach-jz4740/timer.h>
++#include <linux/regmap.h>
  
- 	do_div(freq, period_ns);
+ #define NUM_PWM 8
  
-@@ -114,13 +114,17 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	do_div(on_time_div, period_ns);
- 	on_time_div = 255ULL - on_time_div;
+ struct jz4740_pwm_chip {
+ 	struct pwm_chip chip;
++	struct regmap *map;
+ };
  
--	ctrl = pwm_lpss_read(pwm);
-+	orig_ctrl = ctrl = pwm_lpss_read(pwm);
- 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
- 	ctrl &= ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
- 	base_unit &= base_unit_range;
- 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
--	pwm_lpss_write(pwm, ctrl);
+ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
+@@ -64,9 +66,10 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
+ 	struct clk *clk = pwm_get_chip_data(pwm);
+ 
+-	jz4740_timer_set_ctrl(pwm->hwpwm, 0);
++	regmap_write(jz->map, TCU_REG_TCSRc(pwm->hwpwm), 0);
+ 
+ 	clk_disable_unprepare(clk);
+ 	clk_put(clk);
+@@ -74,36 +77,39 @@ static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->pwm);
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
+ 
+-	ctrl |= JZ_TIMER_CTRL_PWM_ENABLE;
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+-	jz4740_timer_enable(pwm->hwpwm);
++	/* Enable PWM output */
++	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PWM_EN, TCU_TCSR_PWM_EN);
 +
-+	if (orig_ctrl != ctrl) {
-+		pwm_lpss_write(pwm, ctrl);
-+		pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
-+	}
++	/* Start counter */
++	regmap_write(jz->map, TCU_REG_TESR, BIT(pwm->hwpwm));
+ 
+ 	return 0;
  }
  
- static inline void pwm_lpss_cond_enable(struct pwm_device *pwm, bool cond)
-@@ -144,7 +148,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 				return ret;
- 			}
- 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
--			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
- 			pwm_lpss_cond_enable(pwm, lpwm->info->bypass == false);
- 			ret = pwm_lpss_wait_for_update(pwm);
- 			if (ret) {
-@@ -157,7 +160,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			if (ret)
- 				return ret;
- 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
--			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
- 			return pwm_lpss_wait_for_update(pwm);
- 		}
- 	} else if (pwm_is_enabled(pwm)) {
+ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->hwpwm);
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
+ 
+ 	/*
+ 	 * Set duty > period. This trick allows the TCU channels in TCU2 mode to
+ 	 * properly return to their init level.
+ 	 */
+-	jz4740_timer_set_duty(pwm->hwpwm, 0xffff);
+-	jz4740_timer_set_period(pwm->hwpwm, 0x0);
++	regmap_write(jz->map, TCU_REG_TDHRc(pwm->hwpwm), 0xffff);
++	regmap_write(jz->map, TCU_REG_TDFRc(pwm->hwpwm), 0x0);
+ 
+ 	/*
+ 	 * Disable PWM output.
+ 	 * In TCU2 mode (channel 1/2 on JZ4750+), this must be done before the
+ 	 * counter is stopped, while in TCU1 mode the order does not matter.
+ 	 */
+-	ctrl &= ~JZ_TIMER_CTRL_PWM_ENABLE;
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
++	regmap_update_bits(jz->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PWM_EN, 0);
+ 
+ 	/* Stop counter */
+-	jz4740_timer_disable(pwm->hwpwm);
++	regmap_write(jz->map, TCU_REG_TECR, BIT(pwm->hwpwm));
+ }
+ 
+ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -115,7 +121,6 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long rate, period, duty;
+ 	unsigned long long tmp;
+ 	unsigned int prescaler = 0;
+-	uint16_t ctrl;
+ 
+ 	rate = clk_get_rate(parent_clk);
+ 	tmp = (unsigned long long)rate * state->period;
+@@ -142,24 +147,32 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	clk_set_rate(clk, rate);
+ 
+-	jz4740_timer_set_count(pwm->hwpwm, 0);
+-	jz4740_timer_set_duty(pwm->hwpwm, duty);
+-	jz4740_timer_set_period(pwm->hwpwm, period);
++	/* Reset counter to 0 */
++	regmap_write(jz4740->map, TCU_REG_TCNTc(pwm->hwpwm), 0);
++
++	/* Set duty */
++	regmap_write(jz4740->map, TCU_REG_TDHRc(pwm->hwpwm), duty);
+ 
+-	ctrl = jz4740_timer_get_ctrl(pwm->hwpwm);
+-	ctrl |= JZ_TIMER_CTRL_PWM_ABBRUPT_SHUTDOWN;
++	/* Set period */
++	regmap_write(jz4740->map, TCU_REG_TDFRc(pwm->hwpwm), period);
+ 
++	/* Set abrupt shutdown */
++	regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++			   TCU_TCSR_PWM_SD, TCU_TCSR_PWM_SD);
++
++	/* Set polarity */
+ 	switch (state->polarity) {
+ 	case PWM_POLARITY_NORMAL:
+-		ctrl &= ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
++		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++				   TCU_TCSR_PWM_INITL_HIGH, 0);
+ 		break;
+ 	case PWM_POLARITY_INVERSED:
+-		ctrl |= JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
++		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
++				   TCU_TCSR_PWM_INITL_HIGH,
++				   TCU_TCSR_PWM_INITL_HIGH);
+ 		break;
+ 	}
+ 
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+-
+ 	if (state->enabled)
+ 		jz4740_pwm_enable(chip, pwm);
+ 
+@@ -176,12 +189,19 @@ static const struct pwm_ops jz4740_pwm_ops = {
+ static int jz4740_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct jz4740_pwm_chip *jz4740;
++	struct device *dev = &pdev->dev;
+ 
+-	jz4740 = devm_kzalloc(&pdev->dev, sizeof(*jz4740), GFP_KERNEL);
++	jz4740 = devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
+ 	if (!jz4740)
+ 		return -ENOMEM;
+ 
+-	jz4740->chip.dev = &pdev->dev;
++	jz4740->map = device_node_to_regmap(dev->parent->of_node);
++	if (!jz4740->map) {
++		dev_err(dev, "regmap not found\n");
++		return -EINVAL;
++	}
++
++	jz4740->chip.dev = dev;
+ 	jz4740->chip.ops = &jz4740_pwm_ops;
+ 	jz4740->chip.npwm = NUM_PWM;
+ 	jz4740->chip.base = -1;
 -- 
-2.20.1
+2.24.0
