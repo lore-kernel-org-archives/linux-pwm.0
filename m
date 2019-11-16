@@ -1,46 +1,104 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v3 0/1] Convert period and duty cycle to u64
-Date: Fri, 15 Nov 2019 13:02:31 -0800
-Message-ID: <cover.1573851299.git.gurus@codeaurora.org>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 024/150] pwm: lpss: Only set update bit if we are actually changing the settings
+Date: Sat, 16 Nov 2019 10:45:22 -0500
+Message-ID: <20191116154729.9573-24-sashal@kernel.org>
+References: <20191116154729.9573-1-sashal@kernel.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, kernel-team@android.com, Mark Salyzyn <salyzyn@google.com>, Sandeep Patil <sspatil@google.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Reworked the change pushed upstream earlier [1] so as to not add an extension
-to an obsolete API. With this change, pwm_ops->apply() can be used to set
-pwm_state parameters as usual.
+From: Hans de Goede <hdegoede@redhat.com>
 
-[1] https://lore.kernel.org/lkml/20190916140048.GB7488@ulmo/
+[ Upstream commit 2153bbc12f77fb2203276befc0f0dddbfb023bb1 ]
 
-Changes from v1:
-  - Fixed compilation errors seen when compiling for different archs.
+According to the datasheet the update bit must be set if the on-time-div
+or the base-unit changes.
 
-Changes from v2:
-  - Fixed %u -> %llu in a dev_dbg in pwm-stm32-lp.c, thanks to kbuild test robot
-  - Added a couple of fixes to pwm-imx-tpm.c and pwm-sifive.c
+Now that we properly order device resume on Cherry Trail so that the GFX0
+_PS0 method no longer exits with an error, we end up with a sequence of
+events where we are writing the same values twice in a row.
 
-Guru Das Srinagesh (1):
-  pwm: Convert period and duty cycle to u64
+First the _PS0 method restores the duty cycle of 0% the GPU driver set
+on suspend and then the GPU driver first updates just the enabled bit in
+the pwm_state from 0 to 1, causing us to write the same values again,
+before restoring the pre-suspend duty-cycle in a separate pwm_apply call.
 
- drivers/clk/clk-pwm.c                      |  2 +-
- drivers/gpu/drm/i915/display/intel_panel.c |  2 +-
- drivers/hwmon/pwm-fan.c                    |  2 +-
- drivers/media/rc/ir-rx51.c                 |  3 ++-
- drivers/pwm/core.c                         |  4 ++--
- drivers/pwm/pwm-clps711x.c                 |  2 +-
- drivers/pwm/pwm-imx-tpm.c                  |  2 +-
- drivers/pwm/pwm-imx27.c                    |  5 ++---
- drivers/pwm/pwm-sifive.c                   |  2 +-
- drivers/pwm/pwm-sti.c                      |  4 ++--
- drivers/pwm/pwm-stm32-lp.c                 |  2 +-
- drivers/pwm/pwm-sun4i.c                    |  2 +-
- drivers/pwm/sysfs.c                        | 10 +++++-----
- drivers/video/backlight/pwm_bl.c           |  3 ++-
- include/linux/pwm.h                        | 16 ++++++++--------
- 15 files changed, 31 insertions(+), 30 deletions(-)
+When writing the update bit the second time, without changing any of
+the values the update bit clears immediately / instantly, instead of
+staying 1 for a while as usual. After this the next setting of the update
+bit seems to be ignored, causing the restoring of the pre-suspend
+duty-cycle to not get applied. This makes the backlight come up with
+a 0% dutycycle after suspend/resume.
 
+Any further brightness changes after this do work.
+
+This commit moves the setting of the update bit into pwm_lpss_prepare()
+and only sets the bit if we have actually changed any of the values.
+
+This avoids the setting of the update bit the second time we configure
+the PWM to 0% dutycycle, this fixes the backlight coming up with 0%
+duty-cycle after a suspend/resume.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pwm/pwm-lpss.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 4721a264bac25..1e69c1c9ec096 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -97,7 +97,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	unsigned long long on_time_div;
+ 	unsigned long c = lpwm->info->clk_rate, base_unit_range;
+ 	unsigned long long base_unit, freq = NSEC_PER_SEC;
+-	u32 ctrl;
++	u32 orig_ctrl, ctrl;
+ 
+ 	do_div(freq, period_ns);
+ 
+@@ -114,13 +114,17 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	do_div(on_time_div, period_ns);
+ 	on_time_div = 255ULL - on_time_div;
+ 
+-	ctrl = pwm_lpss_read(pwm);
++	orig_ctrl = ctrl = pwm_lpss_read(pwm);
+ 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
+ 	ctrl &= ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
+ 	base_unit &= base_unit_range;
+ 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+ 	ctrl |= on_time_div;
+-	pwm_lpss_write(pwm, ctrl);
++
++	if (orig_ctrl != ctrl) {
++		pwm_lpss_write(pwm, ctrl);
++		pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
++	}
+ }
+ 
+ static inline void pwm_lpss_cond_enable(struct pwm_device *pwm, bool cond)
+@@ -144,7 +148,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				return ret;
+ 			}
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
+ 			pwm_lpss_cond_enable(pwm, lpwm->info->bypass == false);
+ 			ret = pwm_lpss_wait_for_update(pwm);
+ 			if (ret) {
+@@ -157,7 +160,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			if (ret)
+ 				return ret;
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
+ 			return pwm_lpss_wait_for_update(pwm);
+ 		}
+ 	} else if (pwm_is_enabled(pwm)) {
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.20.1
