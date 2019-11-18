@@ -1,70 +1,324 @@
-From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v5 7/8] arm64: dts: allwinner: h6: Add PWM node
-Date: Mon, 18 Nov 2019 10:37:26 +0100
-Message-ID: <20191118093727.21899-8-peron.clem@gmail.com>
-References: <20191118093727.21899-1-peron.clem@gmail.com>
-Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v2] dt-bindings: mfd: Convert stm32 low power timers bindings
+ to json-schema
+Date: Mon, 18 Nov 2019 10:48:42 +0100
+Message-ID: <20191118094842.20171-1-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBB3OMZHXAKGQE2CMR2TA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20191118093727.21899-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <pza-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: fabrice.gasnier@st.com, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
+Cc: devicetree@vger.kernel.org, Benjamin Gaignard <benjamin.gaignard@st.com>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Convert the STM32 low power timers binding to DT schema format using json-schema
 
-Allwinner H6 PWM is similar to that in A20 except that it has additional
-bus clock and reset line.
-
-Note that first PWM channel is connected to output pin and second
-channel is used internally, as a clock source to AC200 co-packaged chip.
-This means that any combination of these two channels can be used and
-thus it doesn't make sense to add pinctrl nodes at this point.
-
-Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+changes in version 2:
+- improve counter function description
+- set reg maximum to 2 instead of 3
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot=
-/dts/allwinner/sun50i-h6.dtsi
-index 29824081b43b..6d4bde488f15 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -245,6 +245,16 @@
- 			status =3D "disabled";
- 		};
-=20
-+		pwm: pwm@300a000 {
-+			compatible =3D "allwinner,sun50i-h6-pwm";
-+			reg =3D <0x0300a000 0x400>;
-+			clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
-+			clock-names =3D "mod", "bus";
-+			resets =3D <&ccu RST_BUS_PWM>;
-+			#pwm-cells =3D <3>;
-+			status =3D "disabled";
-+		};
+ .../bindings/counter/stm32-lptimer-cnt.txt         |  29 -----
+ .../bindings/iio/timer/stm32-lptimer-trigger.txt   |  23 ----
+ .../devicetree/bindings/mfd/st,stm32-lptimer.yaml  | 120 +++++++++++++++++++++
+ .../devicetree/bindings/mfd/stm32-lptimer.txt      |  48 ---------
+ .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  30 ------
+ 5 files changed, 120 insertions(+), 130 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/counter/stm32-lptimer-cnt.txt
+ delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+
+diff --git a/Documentation/devicetree/bindings/counter/stm32-lptimer-cnt.txt b/Documentation/devicetree/bindings/counter/stm32-lptimer-cnt.txt
+deleted file mode 100644
+index e90bc47f752a..000000000000
+--- a/Documentation/devicetree/bindings/counter/stm32-lptimer-cnt.txt
++++ /dev/null
+@@ -1,29 +0,0 @@
+-STMicroelectronics STM32 Low-Power Timer quadrature encoder and counter
+-
+-STM32 Low-Power Timer provides several counter modes. It can be used as:
+-- quadrature encoder to detect angular position and direction of rotary
+-  elements, from IN1 and IN2 input signals.
+-- simple counter from IN1 input signal.
+-
+-Must be a sub-node of an STM32 Low-Power Timer device tree node.
+-See ../mfd/stm32-lptimer.txt for details about the parent node.
+-
+-Required properties:
+-- compatible:		Must be "st,stm32-lptimer-counter".
+-- pinctrl-names: 	Set to "default". An additional "sleep" state can be
+-			defined to set pins in sleep state.
+-- pinctrl-n: 		List of phandles pointing to pin configuration nodes,
+-			to set IN1/IN2 pins in mode of operation for Low-Power
+-			Timer input on external pin.
+-
+-Example:
+-	timer@40002400 {
+-		compatible = "st,stm32-lptimer";
+-		...
+-		counter {
+-			compatible = "st,stm32-lptimer-counter";
+-			pinctrl-names = "default", "sleep";
+-			pinctrl-0 = <&lptim1_in_pins>;
+-			pinctrl-1 = <&lptim1_sleep_in_pins>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+deleted file mode 100644
+index 85e6806b17d7..000000000000
+--- a/Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
++++ /dev/null
+@@ -1,23 +0,0 @@
+-STMicroelectronics STM32 Low-Power Timer Trigger
+-
+-STM32 Low-Power Timer provides trigger source (LPTIM output) that can be used
+-by STM32 internal ADC and/or DAC.
+-
+-Must be a sub-node of an STM32 Low-Power Timer device tree node.
+-See ../mfd/stm32-lptimer.txt for details about the parent node.
+-
+-Required properties:
+-- compatible:		Must be "st,stm32-lptimer-trigger".
+-- reg:			Identify trigger hardware block. Must be 0, 1 or 2
+-			respectively for lptimer1, lptimer2 or lptimer3
+-			trigger output.
+-
+-Example:
+-	timer@40002400 {
+-		compatible = "st,stm32-lptimer";
+-		...
+-		trigger@0 {
+-			compatible = "st,stm32-lptimer-trigger";
+-			reg = <0>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+new file mode 100644
+index 000000000000..1a4cc5f3fb33
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+@@ -0,0 +1,120 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/st,stm32-lptimer.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 		pio: pinctrl@300b000 {
- 			compatible =3D "allwinner,sun50i-h6-pinctrl";
- 			reg =3D <0x0300b000 0x400>;
---=20
-2.20.1
-
---=20
-You received this message because you are subscribed to the Google Groups "=
-linux-sunxi" group.
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191118093727.21899-8-peron.clem%40gmail.com.
++title: STMicroelectronics STM32 Low-Power Timers bindings
++
++description: |
++  The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
++  functions
++   - PWM output (with programmable prescaler, configurable polarity)
++   - Trigger source for STM32 ADC/DAC (LPTIM_OUT)
++   - Several counter modes:
++     - quadrature encoder to detect angular position and direction of rotary
++       elements, from IN1 and IN2 input signals.
++     - simple counter from IN1 input signal.
++
++maintainers:
++  - Fabrice Gasnier <fabrice.gasnier@st.com>
++
++properties:
++  compatible:
++    const: st,stm32-lptimer
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: mux
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  pwm:
++    type: object
++
++    properties:
++      compatible:
++        const: st,stm32-pwm-lp
++
++      "#pwm-cells":
++        const: 3
++
++    required:
++      - "#pwm-cells"
++      - compatible
++
++patternProperties:
++  "^trigger@[0-9]+$":
++    type: object
++
++    properties:
++      compatible:
++        const: st,stm32-lptimer-trigger
++
++      reg:
++        description: Identify trigger hardware block.
++        items:
++         minimum: 0
++         maximum: 2
++
++    required:
++      - compatible
++      - reg
++
++  counter:
++    type: object
++
++    properties:
++      compatible:
++        const: st,stm32-lptimer-counter
++
++    required:
++      - compatible
++
++required:
++  - "#address-cells"
++  - "#size-cells"
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/stm32mp1-clks.h>
++    timer@40002400 {
++      compatible = "st,stm32-lptimer";
++      reg = <0x40002400 0x400>;
++      clocks = <&timer_clk>;
++      clock-names = "mux";
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      pwm {
++        compatible = "st,stm32-pwm-lp";
++        #pwm-cells = <3>;
++      };
++
++      trigger@0 {
++        compatible = "st,stm32-lptimer-trigger";
++        reg = <0>;
++      };
++
++      counter {
++        compatible = "st,stm32-lptimer-counter";
++      };
++    };
++
++...
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+deleted file mode 100644
+index fb54e4dad5b3..000000000000
+--- a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
++++ /dev/null
+@@ -1,48 +0,0 @@
+-STMicroelectronics STM32 Low-Power Timer
+-
+-The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
+-functions:
+-- PWM output (with programmable prescaler, configurable polarity)
+-- Quadrature encoder, counter
+-- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
+-
+-Required properties:
+-- compatible:		Must be "st,stm32-lptimer".
+-- reg:			Offset and length of the device's register set.
+-- clocks:		Phandle to the clock used by the LP Timer module.
+-- clock-names:		Must be "mux".
+-- #address-cells:	Should be '<1>'.
+-- #size-cells:		Should be '<0>'.
+-
+-Optional subnodes:
+-- pwm:			See ../pwm/pwm-stm32-lp.txt
+-- counter:		See ../counter/stm32-lptimer-cnt.txt
+-- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
+-
+-Example:
+-
+-	timer@40002400 {
+-		compatible = "st,stm32-lptimer";
+-		reg = <0x40002400 0x400>;
+-		clocks = <&timer_clk>;
+-		clock-names = "mux";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		pwm {
+-			compatible = "st,stm32-pwm-lp";
+-			pinctrl-names = "default";
+-			pinctrl-0 = <&lppwm1_pins>;
+-		};
+-
+-		trigger@0 {
+-			compatible = "st,stm32-lptimer-trigger";
+-			reg = <0>;
+-		};
+-
+-		counter {
+-			compatible = "st,stm32-lptimer-counter";
+-			pinctrl-names = "default";
+-			pinctrl-0 = <&lptim1_in_pins>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+deleted file mode 100644
+index 6521bc44a74e..000000000000
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
++++ /dev/null
+@@ -1,30 +0,0 @@
+-STMicroelectronics STM32 Low-Power Timer PWM
+-
+-STM32 Low-Power Timer provides single channel PWM.
+-
+-Must be a sub-node of an STM32 Low-Power Timer device tree node.
+-See ../mfd/stm32-lptimer.txt for details about the parent node.
+-
+-Required parameters:
+-- compatible:		Must be "st,stm32-pwm-lp".
+-- #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
+-			bindings defined in pwm.txt.
+-
+-Optional properties:
+-- pinctrl-names: 	Set to "default". An additional "sleep" state can be
+-			defined to set pins in sleep state when in low power.
+-- pinctrl-n: 		Phandle(s) pointing to pin configuration node for PWM,
+-			respectively for "default" and "sleep" states.
+-
+-Example:
+-	timer@40002400 {
+-		compatible = "st,stm32-lptimer";
+-		...
+-		pwm {
+-			compatible = "st,stm32-pwm-lp";
+-			#pwm-cells = <3>;
+-			pinctrl-names = "default", "sleep";
+-			pinctrl-0 = <&lppwm1_pins>;
+-			pinctrl-1 = <&lppwm1_sleep_pins>;
+-		};
+-	};
+-- 
+2.15.0
