@@ -1,13 +1,14 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 3/8] pwm: sun4i: Prefer "mod" clock to unnamed
-Date: Mon, 18 Nov 2019 12:00:29 +0100
-Message-ID: <20191118110034.19444-4-peron.clem@gmail.com>
+Subject: [PATCH v6 8/8] [DO NOT MERGE] arm64: allwinner: h6:
+ enable Beelink GS1 PWM
+Date: Mon, 18 Nov 2019 12:00:34 +0100
+Message-ID: <20191118110034.19444-9-peron.clem@gmail.com>
 References: <20191118110034.19444-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBWXTZHXAKGQEJ6GWRSQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBXXTZHXAKGQEGTKN4MY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191118110034.19444-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -20,59 +21,27 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?U
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-New device tree bindings called the source clock of the module
-"mod" when several clocks are defined.
-
-Try to get a clock called "mod" if nothing is found try to get
-an unnamed clock.
-
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 29 +++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index c17935805690..6d97fef4ed43 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -362,9 +362,34 @@ static int sun4i_pwm_probe(struct platform_device *pde=
-v)
- 	if (IS_ERR(pwm->base))
- 		return PTR_ERR(pwm->base);
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts b/arch=
+/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
+index f335f7482a73..cf684bc7374d 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
+@@ -136,6 +136,10 @@
+ 	vcc-pg-supply =3D <&reg_aldo1>;
+ };
 =20
--	pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(pwm->clk))
-+	/*
-+	 * All hardware variants need a source clock that is divided and
-+	 * then feeds the counter that defines the output wave form. In the
-+	 * device tree this clock is either unnamed or called "mod".
-+	 * Some variants (e.g. H6) need another clock to access the
-+	 * hardware registers; this is called "bus".
-+	 * So we request "mod" first (and ignore the corner case that a
-+	 * parent provides a "mod" clock while the right one would be the
-+	 * unnamed one of the PWM device) and if this is not found we fall
-+	 * back to the first clock of the PWM.
-+	 */
-+	pwm->clk =3D devm_clk_get_optional(&pdev->dev, "mod");
-+	if (IS_ERR(pwm->clk)) {
-+		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "get mod clock failed %pe\n",
-+				pwm->clk);
- 		return PTR_ERR(pwm->clk);
-+	}
++&pwm {
++	status =3D "okay";
++};
 +
-+	if (!pwm->clk) {
-+		pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
-+		if (IS_ERR(pwm->clk)) {
-+			if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+				dev_err(&pdev->dev, "get unnamed clock failed %pe\n",
-+					pwm->clk);
-+			return PTR_ERR(pwm->clk);
-+		}
-+	}
+ &r_i2c {
+ 	status =3D "okay";
 =20
- 	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
- 	if (IS_ERR(pwm->rst)) {
 --=20
 2.20.1
 
@@ -82,4 +51,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191118110034.19444-4-peron.clem%40gmail.com.
+/linux-sunxi/20191118110034.19444-9-peron.clem%40gmail.com.
