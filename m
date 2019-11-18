@@ -1,13 +1,13 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v5 6/8] pwm: sun4i: Add support for H6 PWM
-Date: Mon, 18 Nov 2019 10:37:25 +0100
-Message-ID: <20191118093727.21899-7-peron.clem@gmail.com>
+Subject: [PATCH v5 7/8] arm64: dts: allwinner: h6: Add PWM node
+Date: Mon, 18 Nov 2019 10:37:26 +0100
+Message-ID: <20191118093727.21899-8-peron.clem@gmail.com>
 References: <20191118093727.21899-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBB3GMZHXAKGQEN3Q3SII-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBB3OMZHXAKGQE2CMR2TA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191118093727.21899-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -22,49 +22,42 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-Now that sun4i PWM driver supports deasserting reset line and enabling
-bus clock, support for H6 PWM can be added.
+Allwinner H6 PWM is similar to that in A20 except that it has additional
+bus clock and reset line.
 
-Note that while H6 PWM has two channels, only first one is wired to
-output pin. Second channel is used as a clock source to companion AC200
-chip which is bundled into same package.
+Note that first PWM channel is connected to output pin and second
+channel is used internally, as a clock source to AC200 co-packaged chip.
+This means that any combination of these two channels can be used and
+thus it doesn't make sense to add pinctrl nodes at this point.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index b64250b7e2be..8d6699659db7 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -358,6 +358,12 @@ static const struct sun4i_pwm_data sun4i_pwm_single_by=
-pass =3D {
- 	.npwm =3D 1,
- };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot=
+/dts/allwinner/sun50i-h6.dtsi
+index 29824081b43b..6d4bde488f15 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -245,6 +245,16 @@
+ 			status =3D "disabled";
+ 		};
 =20
-+static const struct sun4i_pwm_data sun50i_h6_pwm_data =3D {
-+	.has_prescaler_bypass =3D true,
-+	.has_direct_mod_clk_output =3D true,
-+	.npwm =3D 2,
-+};
++		pwm: pwm@300a000 {
++			compatible =3D "allwinner,sun50i-h6-pwm";
++			reg =3D <0x0300a000 0x400>;
++			clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
++			clock-names =3D "mod", "bus";
++			resets =3D <&ccu RST_BUS_PWM>;
++			#pwm-cells =3D <3>;
++			status =3D "disabled";
++		};
 +
- static const struct of_device_id sun4i_pwm_dt_ids[] =3D {
- 	{
- 		.compatible =3D "allwinner,sun4i-a10-pwm",
-@@ -374,6 +380,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] =3D=
- {
- 	}, {
- 		.compatible =3D "allwinner,sun8i-h3-pwm",
- 		.data =3D &sun4i_pwm_single_bypass,
-+	}, {
-+		.compatible =3D "allwinner,sun50i-h6-pwm",
-+		.data =3D &sun50i_h6_pwm_data,
- 	}, {
- 		/* sentinel */
- 	},
+ 		pio: pinctrl@300b000 {
+ 			compatible =3D "allwinner,sun50i-h6-pinctrl";
+ 			reg =3D <0x0300b000 0x400>;
 --=20
 2.20.1
 
@@ -74,4 +67,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191118093727.21899-7-peron.clem%40gmail.com.
+/linux-sunxi/20191118093727.21899-8-peron.clem%40gmail.com.
