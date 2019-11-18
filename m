@@ -1,52 +1,217 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v5 4/8] pwm: sun4i: Add an optional probe
- for bus clock
-Date: Mon, 18 Nov 2019 10:51:25 +0100
-Message-ID: <20191118095125.cbbrhatrgqshc2r2@pengutronix.de>
-References: <20191118093727.21899-1-peron.clem@gmail.com>
- <20191118093727.21899-5-peron.clem@gmail.com>
-Reply-To: u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 1/3] pwm: jz4740: Use clocks from TCU driver
+Date: Mon, 18 Nov 2019 11:55:56 +0100
+Message-ID: <1574074556.3.0@crapouillou.net>
+References: <20191116173613.72647-1-paul@crapouillou.net>
+        <20191116173613.72647-2-paul@crapouillou.net>
+        <20191117202028.4chgjv2kulyyq2eu@pengutronix.de>
+        <1574031523.3.0@crapouillou.net>
+        <20191118071538.46egokrswvjxdvfp@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCX3TTWUQMPRBJWTZHXAKGQEYWTTJCY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20191118093727.21899-5-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <pza-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191118071538.46egokrswvjxdvfp@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 10:37:23AM +0100, Cl=C3=A9ment P=C3=A9ron wrote:
-> From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Hi Uwe,
+
+
+Le lun., nov. 18, 2019 at 08:15, Uwe Kleine-K=F6nig=20
+<u.kleine-koenig@pengutronix.de> a =E9crit :
+> Hello Paul,
 >=20
-> H6 PWM core needs bus clock to be enabled in order to work.
+> On Sun, Nov 17, 2019 at 11:58:43PM +0100, Paul Cercueil wrote:
+>>  Le dim., nov. 17, 2019 at 21:20, Uwe Kleine-K=F6nig
+>>  <u.kleine-koenig@pengutronix.de> a =E9crit :
+>>  > On Sat, Nov 16, 2019 at 06:36:11PM +0100, Paul Cercueil wrote:
+>>  > >  The ingenic-timer "TCU" driver provides us with clocks, that=20
+>> can be
+>>  > >  (un)gated, reparented or reclocked from devicetree, instead of=20
+>> having
+>>  > >  these settings hardcoded in this driver.
+>>  > >
+>>  > >  While this driver is devicetree-compatible, it is never (as of=20
+>> now)
+>>  > >  probed from devicetree, so this change does not introduce a=20
+>> ABI problem
+>>  > >  with current devicetree files.
+>>  > >
+>>  > >  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>>  > >  Tested-by: Mathieu Malaterre <malat@debian.org>
+>>  > >  Tested-by: Artur Rojek <contact@artur-rojek.eu>
+>>  > >  ---
+>>  > >
+>>  > >  Notes:
+>>  > >      v2: This patch is now before the patch introducing regmap,=20
+>> so
+>>  > > the code
+>>  > >          has changed a bit.
+>>  > >
+>>  > >   drivers/pwm/Kconfig      |  1 +
+>>  > >   drivers/pwm/pwm-jz4740.c | 45=20
+>> ++++++++++++++++++++++++++++------------
+>>  > >   2 files changed, 33 insertions(+), 13 deletions(-)
+>>  > >
+>>  > >  diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+>>  > >  index e3a2518503ed..e998e5cb01b0 100644
+>>  > >  --- a/drivers/pwm/Kconfig
+>>  > >  +++ b/drivers/pwm/Kconfig
+>>  > >  @@ -225,6 +225,7 @@ config PWM_IMX_TPM
+>>  > >   config PWM_JZ4740
+>>  > >   	tristate "Ingenic JZ47xx PWM support"
+>>  > >   	depends on MACH_INGENIC
+>>  > >  +	depends on COMMON_CLK
+>>  > >   	help
+>>  > >   	  Generic PWM framework driver for Ingenic JZ47xx based
+>>  > >   	  machines.
+>>  > >  diff --git a/drivers/pwm/pwm-jz4740.c=20
+>> b/drivers/pwm/pwm-jz4740.c
+>>  > >  index 9d78cc21cb12..fd83644f9323 100644
+>>  > >  --- a/drivers/pwm/pwm-jz4740.c
+>>  > >  +++ b/drivers/pwm/pwm-jz4740.c
+>>  > >  @@ -24,7 +24,6 @@
+>>  > >
+>>  > >   struct jz4740_pwm_chip {
+>>  > >   	struct pwm_chip chip;
+>>  > >  -	struct clk *clk;
+>>  >
+>>  > What is the motivation to go away from this approach to store the=20
+>> clock?
+>>=20
+>>  It's actually not the same clock. Instead of obtaining "ext" clock=20
+>> from the
+>>  probe, we obtain "timerX" clocks (X being the PWM channel) from the=20
+>> request
+>>  callback.
 >=20
-> Add an optional probe for it and a fallback for previous
-> bindings without name on module clock.
+> Before you used driver data and container_of to get it, now you used
+> pwm_set_chip_data. I wondered why you changed the approach to store
+> data. That the actual data is different now is another thing (and
+> obviously ok).
 
-This paragraph doesn't belong in this patch's description.
+Thierry suggested it: https://lkml.org/lkml/2019/3/4/486
 
-The code changes look fine to me.
+>=20
+>>  > >   };
+>>  > >
+>>  > >   static inline struct jz4740_pwm_chip *to_jz4740(struct=20
+>> pwm_chip *chip)
+>>  > >  @@ -34,6 +33,11 @@ static inline struct jz4740_pwm_chip=20
+>> *to_jz4740(struct pwm_chip *chip)
+>>  > >
+>>  > >   static int jz4740_pwm_request(struct pwm_chip *chip, struct=20
+>> pwm_device *pwm)
+>>  > >   {
+>>  > >  +	struct jz4740_pwm_chip *jz =3D to_jz4740(chip);
+>>  > >  +	struct clk *clk;
+>>  > >  +	char clk_name[16];
+>>  > >  +	int ret;
+>>  > >  +
+>>  > >   	/*
+>>  > >   	 * Timers 0 and 1 are used for system tasks, so they are=20
+>> unavailable
+>>  > >   	 * for use as PWMs.
+>>  > >  @@ -41,16 +45,31 @@ static int jz4740_pwm_request(struct=20
+>> pwm_chip *chip, struct pwm_device *pwm)
+>>  > >   	if (pwm->hwpwm < 2)
+>>  > >   		return -EBUSY;
+>>  > >
+>>  > >  -	jz4740_timer_start(pwm->hwpwm);
+>>  > >  +	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
+>>  > >  +
+>>  > >  +	clk =3D clk_get(chip->dev, clk_name);
+>>  > >  +	if (IS_ERR(clk))
+>>  >
+>>  > 		if (PTR_ERR(clk) !=3D -EPROBE_DEFER)
+>>  > 			dev_err(chip->dev, "Failed to get clock: %pe\n", clk);
+>>=20
+>>  Never heard about that %pe. Will do that.
+>=20
+> Yeah, that's new and IMHO quite nice.
+>=20
+>>  > >  +		return PTR_ERR(clk);
+>>  > >  +
+>>  > >  +	ret =3D clk_prepare_enable(clk);
+>>  > >  +	if (ret) {
+>>  > >  +		clk_put(clk);
+>>  > >  +		return ret;
+>>  > >  +	}
+>>  > >  +
+>>  > >  +	pwm_set_chip_data(pwm, clk);
+>>  > >
+>>  > >   	return 0;
+>>  > >   }
+>>  > >
+>>  > >   static void jz4740_pwm_free(struct pwm_chip *chip, struct=20
+>> pwm_device *pwm)
+>>  > >   {
+>>  > >  +	struct clk *clk =3D pwm_get_chip_data(pwm);
+>>  > >  +
+>>  > >   	jz4740_timer_set_ctrl(pwm->hwpwm, 0);
+>>  >
+>>  > What is the purpose of this call? I would have expected that all=20
+>> these
+>>  > would go away when converting to the clk stuff?!
+>>=20
+>>  Some go away in patch [1/3] as they are clock-related, this one=20
+>> will go away
+>>  in patch [2/3] when the driver is converted to use regmap.
+>=20
+> I'd like to understand what it does. Judging from the name I expect=20
+> this
+> is somehow related to the clock stuff and so I wonder if the=20
+> conversion
+> to the clk API is as complete as it should be.
 
-Best regards
-Uwe
+It clears the PWM channel's CTRL register. That's the register used for=20
+instance to enable the PWM function of a TCU channel.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+>=20
+>>  > >  -	jz4740_timer_stop(pwm->hwpwm);
+>>  > >  +	clk_disable_unprepare(clk);
+>>  > >  +	clk_put(clk);
+>>  > >   }
+>>  > >
+>>  > >   static int jz4740_pwm_enable(struct pwm_chip *chip, struct=20
+>> pwm_device *pwm)
+>>  > >  @@ -91,17 +110,21 @@ static int jz4740_pwm_apply(struct=20
+>> pwm_chip *chip, struct pwm_device *pwm,
+>>  > >   			    const struct pwm_state *state)
+>>  > >   {
+>>  > >   	struct jz4740_pwm_chip *jz4740 =3D to_jz4740(pwm->chip);
+>>  > >  +	struct clk *clk =3D pwm_get_chip_data(pwm),
+>>  > >  +		   *parent_clk =3D clk_get_parent(clk);
+>>  > >  +	unsigned long rate, period, duty;
+>>  > >   	unsigned long long tmp;
+>>  > >  -	unsigned long period, duty;
+>>  > >   	unsigned int prescaler =3D 0;
+>>  > >   	uint16_t ctrl;
+>>  > >
+>>  > >  -	tmp =3D (unsigned long long)clk_get_rate(jz4740->clk) *=20
+>> state->period;
+>>  > >  +	rate =3D clk_get_rate(parent_clk);
+>>  >
+>>  > Why is it the parent's rate that is relevant here?
+>>=20
+>>  We calculate the divider to be used for the "timerX" clock, so we=20
+>> need to
+>>  know the parent clock.
+>=20
+> Then the approach here is wrong. You should not assume anything about
+> the internal details of the clock, that's the task of the clock=20
+> driver.
+> As a consumer of the clock just request a rate (or use clk_round_rate=20
+> to
+> find a good setting first) and use that.
 
---=20
-You received this message because you are subscribed to the Google Groups "=
-linux-sunxi" group.
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191118095125.cbbrhatrgqshc2r2%40pengutronix.de.
+Totally agreed. I wanted to do that, but you were fighting tooth and=20
+nails against my patch "Improve algorithm of clock calculation",=20
+remember?
+
+-Paul
+
+=
