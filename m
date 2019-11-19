@@ -1,13 +1,14 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 6/8] pwm: sun4i: Add support for H6 PWM
-Date: Tue, 19 Nov 2019 18:53:17 +0100
-Message-ID: <20191119175319.16561-7-peron.clem@gmail.com>
+Subject: [PATCH v7 4/8] pwm: sun4i: Add an optional probe for
+ bus clock
+Date: Tue, 19 Nov 2019 18:53:15 +0100
+Message-ID: <20191119175319.16561-5-peron.clem@gmail.com>
 References: <20191119175319.16561-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBGOY2DXAKGQEWB5OSII-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBGGY2DXAKGQEAIMGJVQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191119175319.16561-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -22,49 +23,81 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-Now that sun4i PWM driver supports deasserting reset line and enabling
-bus clock, support for H6 PWM can be added.
+H6 PWM core needs bus clock to be enabled in order to work.
 
-Note that while H6 PWM has two channels, only first one is wired to
-output pin. Second channel is used as a clock source to companion AC200
-chip which is bundled into same package.
+Add an optional probe for it.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
-Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/pwm/pwm-sun4i.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index a1d8851b18f0..640f6349e36f 100644
+index 6d97fef4ed43..ce83d479ba0e 100644
 --- a/drivers/pwm/pwm-sun4i.c
 +++ b/drivers/pwm/pwm-sun4i.c
-@@ -358,6 +358,12 @@ static const struct sun4i_pwm_data sun4i_pwm_single_by=
-pass =3D {
- 	.npwm =3D 1,
- };
+@@ -78,6 +78,7 @@ struct sun4i_pwm_data {
 =20
-+static const struct sun4i_pwm_data sun50i_h6_pwm_data =3D {
-+	.has_prescaler_bypass =3D true,
-+	.has_direct_mod_clk_output =3D true,
-+	.npwm =3D 2,
-+};
+ struct sun4i_pwm_chip {
+ 	struct pwm_chip chip;
++	struct clk *bus_clk;
+ 	struct clk *clk;
+ 	struct reset_control *rst;
+ 	void __iomem *base;
+@@ -391,6 +392,14 @@ static int sun4i_pwm_probe(struct platform_device *pde=
+v)
+ 		}
+ 	}
+=20
++	pwm->bus_clk =3D devm_clk_get_optional(&pdev->dev, "bus");
++	if (IS_ERR(pwm->bus_clk)) {
++		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
++			dev_err(&pdev->dev, "get bus clock failed %pe\n",
++				pwm->bus_clk);
++		return PTR_ERR(pwm->bus_clk);
++	}
 +
- static const struct of_device_id sun4i_pwm_dt_ids[] =3D {
- 	{
- 		.compatible =3D "allwinner,sun4i-a10-pwm",
-@@ -374,6 +380,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] =3D=
- {
- 	}, {
- 		.compatible =3D "allwinner,sun8i-h3-pwm",
- 		.data =3D &sun4i_pwm_single_bypass,
-+	}, {
-+		.compatible =3D "allwinner,sun50i-h6-pwm",
-+		.data =3D &sun50i_h6_pwm_data,
- 	}, {
- 		/* sentinel */
- 	},
+ 	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
+ 	if (IS_ERR(pwm->rst)) {
+ 		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
+@@ -406,6 +415,16 @@ static int sun4i_pwm_probe(struct platform_device *pde=
+v)
+ 		return ret;
+ 	}
+=20
++	/*
++	 * We're keeping the bus clock on for the sake of simplicity.
++	 * Actually it only needs to be on for hardware register accesses.
++	 */
++	ret =3D clk_prepare_enable(pwm->bus_clk);
++	if (ret) {
++		dev_err(&pdev->dev, "Cannot prepare and enable bus_clk\n");
++		goto err_bus;
++	}
++
+ 	pwm->chip.dev =3D &pdev->dev;
+ 	pwm->chip.ops =3D &sun4i_pwm_ops;
+ 	pwm->chip.base =3D -1;
+@@ -426,6 +445,8 @@ static int sun4i_pwm_probe(struct platform_device *pdev=
+)
+ 	return 0;
+=20
+ err_pwm_add:
++	clk_disable_unprepare(pwm->bus_clk);
++err_bus:
+ 	reset_control_assert(pwm->rst);
+=20
+ 	return ret;
+@@ -440,6 +461,7 @@ static int sun4i_pwm_remove(struct platform_device *pde=
+v)
+ 	if (ret)
+ 		return ret;
+=20
++	clk_disable_unprepare(pwm->bus_clk);
+ 	reset_control_assert(pwm->rst);
+=20
+ 	return 0;
 --=20
 2.20.1
 
@@ -74,4 +107,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191119175319.16561-7-peron.clem%40gmail.com.
+/linux-sunxi/20191119175319.16561-5-peron.clem%40gmail.com.
