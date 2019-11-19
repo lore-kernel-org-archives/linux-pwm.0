@@ -1,13 +1,14 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 7/8] arm64: dts: allwinner: h6: Add PWM node
-Date: Tue, 19 Nov 2019 18:53:18 +0100
-Message-ID: <20191119175319.16561-8-peron.clem@gmail.com>
+Subject: [PATCH v7 2/8] pwm: sun4i: Add an optional probe for
+ reset line
+Date: Tue, 19 Nov 2019 18:53:13 +0100
+Message-ID: <20191119175319.16561-3-peron.clem@gmail.com>
 References: <20191119175319.16561-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBG6Y2DXAKGQEMBQQJNI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBF6Y2DXAKGQEDIYJFDY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191119175319.16561-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -22,42 +23,95 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-Allwinner H6 PWM is similar to that in A20 except that it has additional
-bus clock and reset line.
+H6 PWM core needs deasserted reset line in order to work.
 
-Note that first PWM channel is connected to output pin and second
-channel is used internally, as a clock source to AC200 co-packaged chip.
-This means that any combination of these two channels can be used and
-thus it doesn't make sense to add pinctrl nodes at this point.
+Add an optional probe for it.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/pwm/pwm-sun4i.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot=
-/dts/allwinner/sun50i-h6.dtsi
-index 29824081b43b..6d4bde488f15 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
-@@ -245,6 +245,16 @@
- 			status =3D "disabled";
- 		};
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 581d23287333..c17935805690 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -16,6 +16,7 @@
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
++#include <linux/reset.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/time.h>
+@@ -78,6 +79,7 @@ struct sun4i_pwm_data {
+ struct sun4i_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
++	struct reset_control *rst;
+ 	void __iomem *base;
+ 	spinlock_t ctrl_lock;
+ 	const struct sun4i_pwm_data *data;
+@@ -364,6 +366,21 @@ static int sun4i_pwm_probe(struct platform_device *pde=
+v)
+ 	if (IS_ERR(pwm->clk))
+ 		return PTR_ERR(pwm->clk);
 =20
-+		pwm: pwm@300a000 {
-+			compatible =3D "allwinner,sun50i-h6-pwm";
-+			reg =3D <0x0300a000 0x400>;
-+			clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
-+			clock-names =3D "mod", "bus";
-+			resets =3D <&ccu RST_BUS_PWM>;
-+			#pwm-cells =3D <3>;
-+			status =3D "disabled";
-+		};
++	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
++	if (IS_ERR(pwm->rst)) {
++		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
++			dev_err(&pdev->dev, "get reset failed %pe\n",
++				pwm->rst);
++		return PTR_ERR(pwm->rst);
++	}
 +
- 		pio: pinctrl@300b000 {
- 			compatible =3D "allwinner,sun50i-h6-pinctrl";
- 			reg =3D <0x0300b000 0x400>;
++	/* Deassert reset */
++	ret =3D reset_control_deassert(pwm->rst);
++	if (ret) {
++		dev_err(&pdev->dev, "Cannot deassert reset control\n");
++		return ret;
++	}
++
+ 	pwm->chip.dev =3D &pdev->dev;
+ 	pwm->chip.ops =3D &sun4i_pwm_ops;
+ 	pwm->chip.base =3D -1;
+@@ -376,19 +393,31 @@ static int sun4i_pwm_probe(struct platform_device *pd=
+ev)
+ 	ret =3D pwmchip_add(&pwm->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
+-		return ret;
++		goto err_pwm_add;
+ 	}
+=20
+ 	platform_set_drvdata(pdev, pwm);
+=20
+ 	return 0;
++
++err_pwm_add:
++	reset_control_assert(pwm->rst);
++
++	return ret;
+ }
+=20
+ static int sun4i_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct sun4i_pwm_chip *pwm =3D platform_get_drvdata(pdev);
++	int ret;
++
++	ret =3D pwmchip_remove(&pwm->chip);
++	if (ret)
++		return ret;
++
++	reset_control_assert(pwm->rst);
+=20
+-	return pwmchip_remove(&pwm->chip);
++	return 0;
+ }
+=20
+ static struct platform_driver sun4i_pwm_driver =3D {
 --=20
 2.20.1
 
@@ -67,4 +121,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191119175319.16561-8-peron.clem%40gmail.com.
+/linux-sunxi/20191119175319.16561-3-peron.clem%40gmail.com.
