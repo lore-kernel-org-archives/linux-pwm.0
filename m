@@ -1,13 +1,15 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 0/8] Add support for H6 PWM
-Date: Tue, 19 Nov 2019 18:53:11 +0100
-Message-ID: <20191119175319.16561-1-peron.clem@gmail.com>
+Subject: [PATCH v7 6/8] pwm: sun4i: Add support for H6 PWM
+Date: Tue, 19 Nov 2019 18:53:17 +0100
+Message-ID: <20191119175319.16561-7-peron.clem@gmail.com>
+References: <20191119175319.16561-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBFWY2DXAKGQE34D3HYQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBGOY2DXAKGQEWB5OSII-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20191119175319.16561-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -15,94 +17,54 @@ List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto
 List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/linux-sunxi/subscribe>
 To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <pza-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-This is a rework of Jernej's previous work[1] taking account all the
-previous remarks.
+Now that sun4i PWM driver supports deasserting reset line and enabling
+bus clock, support for H6 PWM can be added.
 
-Bindings is still strict but probe in the driver are now optionnals.
+Note that while H6 PWM has two channels, only first one is wired to
+output pin. Second channel is used as a clock source to companion AC200
+chip which is bundled into same package.
 
-If someone could confirm that the PWM is not broken, as my board
-doesn't output it.
+Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
+Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/pwm/pwm-sun4i.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-I didn't add the acked-tags as there are big changes.
-
-Thanks,
-Cl=C3=A9ment
-
-Jernej's cover:
-Allwinner H6 SoC has PWM core which is basically the same as that found
-in A20, it's just depends on additional bus clock and reset line.
-
-This series adds support for it and extends PWM driver functionality in
-a way that it's now possible to bypass whole core and output PWM source
-clock directly as a PWM signal. This functionality is needed by AC200
-chip, which is bundled in same physical package as H6 SoC, to serve as a
-clock source of 24 MHz. AC200 clock input pin is bonded internally to
-the second PWM channel.
-
-I would be grateful if anyone can test this patch series for any kind of
-regression on other SoCs.
-
-[1]: https://patchwork.kernel.org/cover/11061737/
-
-Changes in v7:
- - Fix indent in Yaml bindings
-
-Changes in v6:
- - Update git commit log
- - Distinguish error message=20
-
-Changes in v5:
- - Move bypass calculation to pwm_calculate
- - Split mod_clock fallback from bus_clk probe   =20
- - Update comment
- - Move my SoB after acked-by/reviewed-by
-
-Changes in v4:
- - item description in correct order and add a blank line
- - use %pe for printing PTR_ERR
- - don't print error when it's an EPROBE_DEFER
- - change output clock bypass formula to match PWM policy
-
-Changes in v3:
- - Documentation update to allow one clock without name
- - Change reset optional to shared
- - If reset probe failed return an error
- - Remove old clock probe
- - Update bypass enabled formula
-
-Changes in v2:
- - Remove allOf in Documentation
- - Add H6 example in Documentation
- - Change clock name from "pwm" to "mod"
- - Change reset quirk to optional probe
- - Change bus_clock quirk to optional probe
- - Add limitation comment about mod_clk_output
- - Add quirk for mod_clk_output
- - Change bypass formula
-
-Cl=C3=A9ment P=C3=A9ron (2):
-  pwm: sun4i: Prefer "mod" clock to unnamed
-  [DO NOT MERGE] arm64: allwinner: h6: enable Beelink GS1 PWM
-
-Jernej Skrabec (6):
-  dt-bindings: pwm: allwinner: Add H6 PWM description
-  pwm: sun4i: Add an optional probe for reset line
-  pwm: sun4i: Add an optional probe for bus clock
-  pwm: sun4i: Add support to output source clock directly
-  pwm: sun4i: Add support for H6 PWM
-  arm64: dts: allwinner: h6: Add PWM node
-
- .../bindings/pwm/allwinner,sun4i-a10-pwm.yaml |  48 +++++
- .../dts/allwinner/sun50i-h6-beelink-gs1.dts   |   4 +
- arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  |  10 +
- drivers/pwm/pwm-sun4i.c                       | 185 +++++++++++++++---
- 4 files changed, 215 insertions(+), 32 deletions(-)
-
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index a1d8851b18f0..640f6349e36f 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -358,6 +358,12 @@ static const struct sun4i_pwm_data sun4i_pwm_single_by=
+pass =3D {
+ 	.npwm =3D 1,
+ };
+=20
++static const struct sun4i_pwm_data sun50i_h6_pwm_data =3D {
++	.has_prescaler_bypass =3D true,
++	.has_direct_mod_clk_output =3D true,
++	.npwm =3D 2,
++};
++
+ static const struct of_device_id sun4i_pwm_dt_ids[] =3D {
+ 	{
+ 		.compatible =3D "allwinner,sun4i-a10-pwm",
+@@ -374,6 +380,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] =3D=
+ {
+ 	}, {
+ 		.compatible =3D "allwinner,sun8i-h3-pwm",
+ 		.data =3D &sun4i_pwm_single_bypass,
++	}, {
++		.compatible =3D "allwinner,sun50i-h6-pwm",
++		.data =3D &sun50i_h6_pwm_data,
+ 	}, {
+ 		/* sentinel */
+ 	},
 --=20
 2.20.1
 
@@ -112,4 +74,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191119175319.16561-1-peron.clem%40gmail.com.
+/linux-sunxi/20191119175319.16561-7-peron.clem%40gmail.com.
