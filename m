@@ -1,13 +1,13 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 3/8] pwm: sun4i: Prefer "mod" clock to unnamed
-Date: Tue, 19 Nov 2019 18:53:14 +0100
-Message-ID: <20191119175319.16561-4-peron.clem@gmail.com>
+Subject: [PATCH v7 7/8] arm64: dts: allwinner: h6: Add PWM node
+Date: Tue, 19 Nov 2019 18:53:18 +0100
+Message-ID: <20191119175319.16561-8-peron.clem@gmail.com>
 References: <20191119175319.16561-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBF6Y2DXAKGQEDIYJFDY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBG6Y2DXAKGQEMBQQJNI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191119175319.16561-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -17,62 +17,47 @@ List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto
 List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/linux-sunxi/subscribe>
 To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <pza-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-New device tree bindings called the source clock of the module
-"mod" when several clocks are defined.
+From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-Try to get a clock called "mod" if nothing is found try to get
-an unnamed clock.
+Allwinner H6 PWM is similar to that in A20 except that it has additional
+bus clock and reset line.
 
+Note that first PWM channel is connected to output pin and second
+channel is used internally, as a clock source to AC200 co-packaged chip.
+This means that any combination of these two channels can be used and
+thus it doesn't make sense to add pinctrl nodes at this point.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 29 +++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index c17935805690..6d97fef4ed43 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -362,9 +362,34 @@ static int sun4i_pwm_probe(struct platform_device *pde=
-v)
- 	if (IS_ERR(pwm->base))
- 		return PTR_ERR(pwm->base);
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot=
+/dts/allwinner/sun50i-h6.dtsi
+index 29824081b43b..6d4bde488f15 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -245,6 +245,16 @@
+ 			status =3D "disabled";
+ 		};
 =20
--	pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(pwm->clk))
-+	/*
-+	 * All hardware variants need a source clock that is divided and
-+	 * then feeds the counter that defines the output wave form. In the
-+	 * device tree this clock is either unnamed or called "mod".
-+	 * Some variants (e.g. H6) need another clock to access the
-+	 * hardware registers; this is called "bus".
-+	 * So we request "mod" first (and ignore the corner case that a
-+	 * parent provides a "mod" clock while the right one would be the
-+	 * unnamed one of the PWM device) and if this is not found we fall
-+	 * back to the first clock of the PWM.
-+	 */
-+	pwm->clk =3D devm_clk_get_optional(&pdev->dev, "mod");
-+	if (IS_ERR(pwm->clk)) {
-+		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "get mod clock failed %pe\n",
-+				pwm->clk);
- 		return PTR_ERR(pwm->clk);
-+	}
++		pwm: pwm@300a000 {
++			compatible =3D "allwinner,sun50i-h6-pwm";
++			reg =3D <0x0300a000 0x400>;
++			clocks =3D <&osc24M>, <&ccu CLK_BUS_PWM>;
++			clock-names =3D "mod", "bus";
++			resets =3D <&ccu RST_BUS_PWM>;
++			#pwm-cells =3D <3>;
++			status =3D "disabled";
++		};
 +
-+	if (!pwm->clk) {
-+		pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
-+		if (IS_ERR(pwm->clk)) {
-+			if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+				dev_err(&pdev->dev, "get unnamed clock failed %pe\n",
-+					pwm->clk);
-+			return PTR_ERR(pwm->clk);
-+		}
-+	}
-=20
- 	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
- 	if (IS_ERR(pwm->rst)) {
+ 		pio: pinctrl@300b000 {
+ 			compatible =3D "allwinner,sun50i-h6-pinctrl";
+ 			reg =3D <0x0300b000 0x400>;
 --=20
 2.20.1
 
@@ -82,4 +67,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191119175319.16561-4-peron.clem%40gmail.com.
+/linux-sunxi/20191119175319.16561-8-peron.clem%40gmail.com.
