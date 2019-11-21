@@ -1,14 +1,14 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v8 3/6] pwm: sun4i: Add an optional probe for
- bus clock
-Date: Thu, 21 Nov 2019 20:58:59 +0100
-Message-ID: <20191121195902.6906-4-peron.clem@gmail.com>
+Subject: [PATCH v8 5/6] pwm: sun4i: Add support to output source
+ clock directly
+Date: Thu, 21 Nov 2019 20:59:01 +0100
+Message-ID: <20191121195902.6906-6-peron.clem@gmail.com>
 References: <20191121195902.6906-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBE6Z3PXAKGQEG7NT54Y-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBFGZ3PXAKGQERIWQF7I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20191121195902.6906-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -23,82 +23,136 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 
-H6 PWM core needs bus clock to be enabled in order to work.
+PWM core has an option to bypass whole logic and output unchanged source
+clock as PWM output. This is achieved by enabling bypass bit.
 
-Add an optional probe for it.
+Note that when bypass is enabled, no other setting has any meaning, not
+even enable bit.
+
+This mode of operation is needed to achieve high enough frequency to
+serve as clock source for AC200 chip which is integrated into same
+package as H6 SoC.
 
 Signed-off-by: Jernej Skrabec <jernej.skrabec-gGgVlfcn5nU@public.gmane.org>
 Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/pwm/pwm-sun4i.c | 48 +++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 46 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 369990ae7d09..66befd8d6f9c 100644
+index 1fa2057419fb..0fe9c680d6d0 100644
 --- a/drivers/pwm/pwm-sun4i.c
 +++ b/drivers/pwm/pwm-sun4i.c
-@@ -78,6 +78,7 @@ struct sun4i_pwm_data {
+@@ -3,6 +3,10 @@
+  * Driver for Allwinner sun4i Pulse Width Modulation Controller
+  *
+  * Copyright (C) 2014 Alexandre Belloni <alexandre.belloni@free-electrons.=
+com>
++ *
++ * Limitations:
++ * - When outputing the source clock directly, the PWM logic will be bypas=
+sed
++ *   and the currently running period is not guaranteed to be completed
+  */
 =20
- struct sun4i_pwm_chip {
- 	struct pwm_chip chip;
-+	struct clk *bus_clk;
- 	struct clk *clk;
- 	struct reset_control *rst;
- 	void __iomem *base;
-@@ -391,6 +392,14 @@ static int sun4i_pwm_probe(struct platform_device *pde=
-v)
- 		}
- 	}
+ #include <linux/bitops.h>
+@@ -73,6 +77,7 @@ static const u32 prescaler_table[] =3D {
 =20
-+	pwm->bus_clk =3D devm_clk_get_optional(&pdev->dev, "bus");
-+	if (IS_ERR(pwm->bus_clk)) {
-+		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "get bus clock failed %pe\n",
-+				pwm->bus_clk);
-+		return PTR_ERR(pwm->bus_clk);
-+	}
-+
- 	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
- 	if (IS_ERR(pwm->rst)) {
- 		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-@@ -407,6 +416,17 @@ static int sun4i_pwm_probe(struct platform_device *pde=
-v)
- 		return ret;
- 	}
+ struct sun4i_pwm_data {
+ 	bool has_prescaler_bypass;
++	bool has_direct_mod_clk_output;
+ 	unsigned int npwm;
+ };
+=20
+@@ -118,6 +123,20 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip,
+=20
+ 	val =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
 =20
 +	/*
-+	 * We're keeping the bus clock on for the sake of simplicity.
-+	 * Actually it only needs to be on for hardware register accesses.
++	 * PWM chapter in H6 manual has a diagram which explains that if bypass
++	 * bit is set, no other setting has any meaning. Even more, experiment
++	 * proved that also enable bit is ignored in this case.
 +	 */
-+	ret =3D clk_prepare_enable(pwm->bus_clk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Cannot prepare and enable bus_clk %d\n",
-+			ret);
-+		goto err_bus;
++	if ((val & BIT_CH(PWM_BYPASS, pwm->hwpwm)) &&
++	    sun4i_pwm->data->has_direct_mod_clk_output) {
++		state->period =3D DIV_ROUND_UP_ULL(NSEC_PER_SEC, clk_rate);
++		state->duty_cycle =3D DIV_ROUND_UP_ULL(state->period, 2);
++		state->polarity =3D PWM_POLARITY_NORMAL;
++		state->enabled =3D true;
++		return;
 +	}
 +
- 	pwm->chip.dev =3D &pdev->dev;
- 	pwm->chip.ops =3D &sun4i_pwm_ops;
- 	pwm->chip.base =3D -1;
-@@ -427,6 +447,8 @@ static int sun4i_pwm_probe(struct platform_device *pdev=
-)
- 	return 0;
+ 	if ((PWM_REG_PRESCAL(val, pwm->hwpwm) =3D=3D PWM_PRESCAL_MASK) &&
+ 	    sun4i_pwm->data->has_prescaler_bypass)
+ 		prescaler =3D 1;
+@@ -149,13 +168,24 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip=
+,
 =20
- err_pwm_add:
-+	clk_disable_unprepare(pwm->bus_clk);
-+err_bus:
- 	reset_control_assert(pwm->rst);
+ static int sun4i_pwm_calculate(struct sun4i_pwm_chip *sun4i_pwm,
+ 			       const struct pwm_state *state,
+-			       u32 *dty, u32 *prd, unsigned int *prsclr)
++			       u32 *dty, u32 *prd, unsigned int *prsclr,
++			       bool *bypass)
+ {
+ 	u64 clk_rate, div =3D 0;
+ 	unsigned int pval, prescaler =3D 0;
 =20
- 	return ret;
-@@ -441,6 +463,7 @@ static int sun4i_pwm_remove(struct platform_device *pde=
-v)
- 	if (ret)
+ 	clk_rate =3D clk_get_rate(sun4i_pwm->clk);
+=20
++	*bypass =3D sun4i_pwm->data->has_direct_mod_clk_output &&
++		  state->enabled &&
++		  (state->period * clk_rate >=3D NSEC_PER_SEC) &&
++		  (state->period * clk_rate < 2 * NSEC_PER_SEC) &&
++		  (state->duty_cycle * clk_rate * 2 >=3D NSEC_PER_SEC);
++
++	/* Skip calculation of other parameters if we bypass them */
++	if (*bypass)
++		return 0;
++
+ 	if (sun4i_pwm->data->has_prescaler_bypass) {
+ 		/* First, test without any prescaler when available */
+ 		prescaler =3D PWM_PRESCAL_MASK;
+@@ -206,6 +236,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struc=
+t pwm_device *pwm,
+ 	int ret;
+ 	unsigned int delay_us, prescaler;
+ 	unsigned long now;
++	bool bypass;
+=20
+ 	pwm_get_state(pwm, &cstate);
+=20
+@@ -220,7 +251,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struc=
+t pwm_device *pwm,
+ 	spin_lock(&sun4i_pwm->ctrl_lock);
+ 	ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+=20
+-	ret =3D sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &prescaler)=
+;
++	ret =3D sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &prescaler,
++				  &bypass);
+ 	if (ret) {
+ 		dev_err(chip->dev, "period exceeds the maximum value\n");
+ 		spin_unlock(&sun4i_pwm->ctrl_lock);
+@@ -229,6 +261,18 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, stru=
+ct pwm_device *pwm,
  		return ret;
+ 	}
 =20
-+	clk_disable_unprepare(pwm->bus_clk);
- 	reset_control_assert(pwm->rst);
-=20
- 	return 0;
++	if (sun4i_pwm->data->has_direct_mod_clk_output) {
++		if (bypass) {
++			ctrl |=3D BIT_CH(PWM_BYPASS, pwm->hwpwm);
++			/* We can skip other parameter */
++			sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
++			spin_unlock(&sun4i_pwm->ctrl_lock);
++			return 0;
++		} else {
++			ctrl &=3D ~BIT_CH(PWM_BYPASS, pwm->hwpwm);
++		}
++	}
++
+ 	if (PWM_REG_PRESCAL(ctrl, pwm->hwpwm) !=3D prescaler) {
+ 		/* Prescaler changed, the clock has to be gated */
+ 		ctrl &=3D ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
 --=20
 2.20.1
 
@@ -108,4 +162,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191121195902.6906-4-peron.clem%40gmail.com.
+/linux-sunxi/20191121195902.6906-6-peron.clem%40gmail.com.
