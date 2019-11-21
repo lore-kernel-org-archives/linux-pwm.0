@@ -1,40 +1,50 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2] dt-bindings: mfd: Convert stm32 low power timers
- bindings to json-schema
-Date: Wed, 20 Nov 2019 12:09:55 -0600
-Message-ID: <20191120180955.GA22823@bogus>
-References: <20191118094842.20171-1-benjamin.gaignard@st.com>
+From: Maxime Ripard <maxime@cerno.tech>
+Subject: Re: [PATCH v7 0/8] Add support for H6 PWM
+Date: Thu, 21 Nov 2019 08:24:08 +0100
+Message-ID: <20191121072408.GE4345@gilmour.lan>
+References: <20191119175319.16561-1-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="cnZewGtz8xdCmwBG"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20191118094842.20171-1-benjamin.gaignard@st.com>
+In-Reply-To: <20191119175319.16561-1-peron.clem@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: fabrice.gasnier@st.com, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, devicetree@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, Benjamin Gaignard <benjamin.gaignard@st.com>
+To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <pza@pengutronix.de>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 18 Nov 2019 10:48:42 +0100, Benjamin Gaignard wrote:
-> Convert the STM32 low power timers binding to DT schema format using json-schema
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> ---
-> changes in version 2:
-> - improve counter function description
-> - set reg maximum to 2 instead of 3
-> 
->  .../bindings/counter/stm32-lptimer-cnt.txt         |  29 -----
->  .../bindings/iio/timer/stm32-lptimer-trigger.txt   |  23 ----
->  .../devicetree/bindings/mfd/st,stm32-lptimer.yaml  | 120 +++++++++++++++++++++
->  .../devicetree/bindings/mfd/stm32-lptimer.txt      |  48 ---------
->  .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  30 ------
->  5 files changed, 120 insertions(+), 130 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/counter/stm32-lptimer-cnt.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
->  delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
->  delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
-> 
 
-Applied, thanks.
+--cnZewGtz8xdCmwBG
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Rob
+On Tue, Nov 19, 2019 at 06:53:11PM +0100, Cl=E9ment P=E9ron wrote:
+> Hi,
+>
+> This is a rework of Jernej's previous work[1] taking account all the
+> previous remarks.
+>
+> Bindings is still strict but probe in the driver are now optionnals.
+>
+> If someone could confirm that the PWM is not broken, as my board
+> doesn't output it.
+>
+> I didn't add the acked-tags as there are big changes.
+
+Applied 1 and 7 for 5.6, thanks!
+Maxime
+
+--cnZewGtz8xdCmwBG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXdY7mAAKCRDj7w1vZxhR
+xTFOAQDiMAy9dHGZ7PpP701iv2RrsZe3P6MNSle9BJ2doLno4AEAtUYireLcQZ83
+bb4k15ybFyplkNifvIeEgxnolldKeAE=
+=atTd
+-----END PGP SIGNATURE-----
+
+--cnZewGtz8xdCmwBG--
