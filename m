@@ -1,13 +1,16 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v9 0/6] Add support for H6 PWM
-Date: Sun, 24 Nov 2019 18:29:02 +0100
-Message-ID: <20191124172908.10804-1-peron.clem@gmail.com>
+Subject: [PATCH v9 4/6] pwm: sun4i: Always calculate params when
+ applying new parameters
+Date: Sun, 24 Nov 2019 18:29:06 +0100
+Message-ID: <20191124172908.10804-5-peron.clem@gmail.com>
+References: <20191124172908.10804-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBGH45LXAKGQEDH4DP7Q-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBIH45LXAKGQEEIUTDWI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20191124172908.10804-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -18,94 +21,101 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?U
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Bypass mode will require to be re-calculated when the pwm state
+is changed.
 
-This is a rework of Jernej's previous work[1] taking account all the
-previous remarks.
+Remove the condition so pwm_sun4i_calculate is always called.
 
-Bindings is still strict but probe in the driver are now optionnals.
+Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/pwm/pwm-sun4i.c | 52 ++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 29 deletions(-)
 
-If someone could confirm that the PWM is not broken, as my board
-doesn't output it.
-
-Thanks,
-Cl=C3=A9ment
-
-Jernej's cover:
-Allwinner H6 SoC has PWM core which is basically the same as that found
-in A20, it's just depends on additional bus clock and reset line.
-
-This series adds support for it and extends PWM driver functionality in
-a way that it's now possible to bypass whole core and output PWM source
-clock directly as a PWM signal. This functionality is needed by AC200
-chip, which is bundled in same physical package as H6 SoC, to serve as a
-clock source of 24 MHz. AC200 clock input pin is bonded internally to
-the second PWM channel.
-
-I would be grateful if anyone can test this patch series for any kind of
-regression on other SoCs.
-
-[1]: https://patchwork.kernel.org/cover/11061737/
-
-Changes in v9:
- - print error code in error message
- - no capital letter to keep coherency
-
-Changes in v8:
- - Display error return code
- - split commit
- - bypass is false if unsupported
- - return instead of goto
-
-Changes in v7:
- - Fix indent in Yaml bindings
-
-Changes in v6:
- - Update git commit log
- - Distinguish error message
-
-Changes in v5:
- - Move bypass calculation to pwm_calculate
- - Split mod_clock fallback from bus_clk probe  =20
- - Update comment
- - Move my SoB after acked-by/reviewed-by
-
-Changes in v4:
- - item description in correct order and add a blank line
- - use %pe for printing PTR_ERR
- - don't print error when it's an EPROBE_DEFER
- - change output clock bypass formula to match PWM policy
-
-Changes in v3:
- - Documentation update to allow one clock without name
- - Change reset optional to shared
- - If reset probe failed return an error
- - Remove old clock probe
- - Update bypass enabled formula
-
-Changes in v2:
- - Remove allOf in Documentation
- - Add H6 example in Documentation
- - Change clock name from "pwm" to "mod"
- - Change reset quirk to optional probe
- - Change bus_clock quirk to optional probe
- - Add limitation comment about mod_clk_output
- - Add quirk for mod_clk_output
- - Change bypass formula
-
-Cl=C3=A9ment P=C3=A9ron (2):
-  pwm: sun4i: Prefer "mod" clock to unnamed
-  pwm: sun4i: Always calculate params when applying new parameters
-
-Jernej Skrabec (4):
-  pwm: sun4i: Add an optional probe for reset line
-  pwm: sun4i: Add an optional probe for bus clock
-  pwm: sun4i: Add support to output source clock directly
-  pwm: sun4i: Add support for H6 PWM
-
- drivers/pwm/pwm-sun4i.c | 187 +++++++++++++++++++++++++++++++++-------
- 1 file changed, 156 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index a6727dd89e28..e369b5a398f4 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -202,9 +202,9 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struc=
+t pwm_device *pwm,
+ {
+ 	struct sun4i_pwm_chip *sun4i_pwm =3D to_sun4i_pwm_chip(chip);
+ 	struct pwm_state cstate;
+-	u32 ctrl;
++	u32 ctrl, duty, period, val;
+ 	int ret;
+-	unsigned int delay_us;
++	unsigned int delay_us, prescaler;
+ 	unsigned long now;
+=20
+ 	pwm_get_state(pwm, &cstate);
+@@ -220,43 +220,37 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, str=
+uct pwm_device *pwm,
+ 	spin_lock(&sun4i_pwm->ctrl_lock);
+ 	ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+=20
+-	if ((cstate.period !=3D state->period) ||
+-	    (cstate.duty_cycle !=3D state->duty_cycle)) {
+-		u32 period, duty, val;
+-		unsigned int prescaler;
+-
+-		ret =3D sun4i_pwm_calculate(sun4i_pwm, state,
+-					  &duty, &period, &prescaler);
+-		if (ret) {
+-			dev_err(chip->dev, "period exceeds the maximum value\n");
+-			spin_unlock(&sun4i_pwm->ctrl_lock);
+-			if (!cstate.enabled)
+-				clk_disable_unprepare(sun4i_pwm->clk);
+-			return ret;
+-		}
+-
+-		if (PWM_REG_PRESCAL(ctrl, pwm->hwpwm) !=3D prescaler) {
+-			/* Prescaler changed, the clock has to be gated */
+-			ctrl &=3D ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+-			sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
++	ret =3D sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &prescaler)=
+;
++	if (ret) {
++		dev_err(chip->dev, "period exceeds the maximum value\n");
++		spin_unlock(&sun4i_pwm->ctrl_lock);
++		if (!cstate.enabled)
++			clk_disable_unprepare(sun4i_pwm->clk);
++		return ret;
++	}
+=20
+-			ctrl &=3D ~BIT_CH(PWM_PRESCAL_MASK, pwm->hwpwm);
+-			ctrl |=3D BIT_CH(prescaler, pwm->hwpwm);
+-		}
++	if (PWM_REG_PRESCAL(ctrl, pwm->hwpwm) !=3D prescaler) {
++		/* Prescaler changed, the clock has to be gated */
++		ctrl &=3D ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
++		sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
+=20
+-		val =3D (duty & PWM_DTY_MASK) | PWM_PRD(period);
+-		sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
+-		sun4i_pwm->next_period[pwm->hwpwm] =3D jiffies +
+-			usecs_to_jiffies(cstate.period / 1000 + 1);
+-		sun4i_pwm->needs_delay[pwm->hwpwm] =3D true;
++		ctrl &=3D ~BIT_CH(PWM_PRESCAL_MASK, pwm->hwpwm);
++		ctrl |=3D BIT_CH(prescaler, pwm->hwpwm);
+ 	}
+=20
++	val =3D (duty & PWM_DTY_MASK) | PWM_PRD(period);
++	sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
++	sun4i_pwm->next_period[pwm->hwpwm] =3D jiffies +
++		usecs_to_jiffies(cstate.period / 1000 + 1);
++	sun4i_pwm->needs_delay[pwm->hwpwm] =3D true;
++
+ 	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+ 		ctrl &=3D ~BIT_CH(PWM_ACT_STATE, pwm->hwpwm);
+ 	else
+ 		ctrl |=3D BIT_CH(PWM_ACT_STATE, pwm->hwpwm);
+=20
+ 	ctrl |=3D BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
++
+ 	if (state->enabled) {
+ 		ctrl |=3D BIT_CH(PWM_EN, pwm->hwpwm);
+ 	} else if (!sun4i_pwm->needs_delay[pwm->hwpwm]) {
 --=20
 2.20.1
 
@@ -115,4 +125,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191124172908.10804-1-peron.clem%40gmail.com.
+/linux-sunxi/20191124172908.10804-5-peron.clem%40gmail.com.
