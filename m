@@ -1,15 +1,13 @@
 From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v9 2/6] pwm: sun4i: Prefer "mod" clock to unnamed
-Date: Sun, 24 Nov 2019 18:29:04 +0100
-Message-ID: <20191124172908.10804-3-peron.clem@gmail.com>
-References: <20191124172908.10804-1-peron.clem@gmail.com>
+Subject: [PATCH v9 0/6] Add support for H6 PWM
+Date: Sun, 24 Nov 2019 18:29:02 +0100
+Message-ID: <20191124172908.10804-1-peron.clem@gmail.com>
 Reply-To: peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCELXIX7UICBBHH45LXAKGQEBNIBRZA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCELXIX7UICBBGH45LXAKGQEDH4DP7Q-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20191124172908.10804-1-peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -20,60 +18,94 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?U
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-New device tree bindings called the source clock of the module
-"mod" when several clocks are defined.
+Hi,
 
-Try to get a clock called "mod" if nothing is found try to get
-an unnamed clock.
+This is a rework of Jernej's previous work[1] taking account all the
+previous remarks.
 
-Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/pwm/pwm-sun4i.c | 29 +++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+Bindings is still strict but probe in the driver are now optionnals.
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 487899d4cc3f..80026167044b 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -362,9 +362,34 @@ static int sun4i_pwm_probe(struct platform_device *pde=
-v)
- 	if (IS_ERR(pwm->base))
- 		return PTR_ERR(pwm->base);
-=20
--	pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(pwm->clk))
-+	/*
-+	 * All hardware variants need a source clock that is divided and
-+	 * then feeds the counter that defines the output wave form. In the
-+	 * device tree this clock is either unnamed or called "mod".
-+	 * Some variants (e.g. H6) need another clock to access the
-+	 * hardware registers; this is called "bus".
-+	 * So we request "mod" first (and ignore the corner case that a
-+	 * parent provides a "mod" clock while the right one would be the
-+	 * unnamed one of the PWM device) and if this is not found we fall
-+	 * back to the first clock of the PWM.
-+	 */
-+	pwm->clk =3D devm_clk_get_optional(&pdev->dev, "mod");
-+	if (IS_ERR(pwm->clk)) {
-+		if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "get mod clock failed %pe\n",
-+				pwm->clk);
- 		return PTR_ERR(pwm->clk);
-+	}
-+
-+	if (!pwm->clk) {
-+		pwm->clk =3D devm_clk_get(&pdev->dev, NULL);
-+		if (IS_ERR(pwm->clk)) {
-+			if (PTR_ERR(pwm->rst) !=3D -EPROBE_DEFER)
-+				dev_err(&pdev->dev, "get unnamed clock failed %pe\n",
-+					pwm->clk);
-+			return PTR_ERR(pwm->clk);
-+		}
-+	}
-=20
- 	pwm->rst =3D devm_reset_control_get_optional_shared(&pdev->dev, NULL);
- 	if (IS_ERR(pwm->rst)) {
+If someone could confirm that the PWM is not broken, as my board
+doesn't output it.
+
+Thanks,
+Cl=C3=A9ment
+
+Jernej's cover:
+Allwinner H6 SoC has PWM core which is basically the same as that found
+in A20, it's just depends on additional bus clock and reset line.
+
+This series adds support for it and extends PWM driver functionality in
+a way that it's now possible to bypass whole core and output PWM source
+clock directly as a PWM signal. This functionality is needed by AC200
+chip, which is bundled in same physical package as H6 SoC, to serve as a
+clock source of 24 MHz. AC200 clock input pin is bonded internally to
+the second PWM channel.
+
+I would be grateful if anyone can test this patch series for any kind of
+regression on other SoCs.
+
+[1]: https://patchwork.kernel.org/cover/11061737/
+
+Changes in v9:
+ - print error code in error message
+ - no capital letter to keep coherency
+
+Changes in v8:
+ - Display error return code
+ - split commit
+ - bypass is false if unsupported
+ - return instead of goto
+
+Changes in v7:
+ - Fix indent in Yaml bindings
+
+Changes in v6:
+ - Update git commit log
+ - Distinguish error message
+
+Changes in v5:
+ - Move bypass calculation to pwm_calculate
+ - Split mod_clock fallback from bus_clk probe  =20
+ - Update comment
+ - Move my SoB after acked-by/reviewed-by
+
+Changes in v4:
+ - item description in correct order and add a blank line
+ - use %pe for printing PTR_ERR
+ - don't print error when it's an EPROBE_DEFER
+ - change output clock bypass formula to match PWM policy
+
+Changes in v3:
+ - Documentation update to allow one clock without name
+ - Change reset optional to shared
+ - If reset probe failed return an error
+ - Remove old clock probe
+ - Update bypass enabled formula
+
+Changes in v2:
+ - Remove allOf in Documentation
+ - Add H6 example in Documentation
+ - Change clock name from "pwm" to "mod"
+ - Change reset quirk to optional probe
+ - Change bus_clock quirk to optional probe
+ - Add limitation comment about mod_clk_output
+ - Add quirk for mod_clk_output
+ - Change bypass formula
+
+Cl=C3=A9ment P=C3=A9ron (2):
+  pwm: sun4i: Prefer "mod" clock to unnamed
+  pwm: sun4i: Always calculate params when applying new parameters
+
+Jernej Skrabec (4):
+  pwm: sun4i: Add an optional probe for reset line
+  pwm: sun4i: Add an optional probe for bus clock
+  pwm: sun4i: Add support to output source clock directly
+  pwm: sun4i: Add support for H6 PWM
+
+ drivers/pwm/pwm-sun4i.c | 187 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 156 insertions(+), 31 deletions(-)
+
 --=20
 2.20.1
 
@@ -83,4 +115,4 @@ linux-sunxi" group.
 To unsubscribe from this group and stop receiving emails from it, send an e=
 mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 To view this discussion on the web, visit https://groups.google.com/d/msgid=
-/linux-sunxi/20191124172908.10804-3-peron.clem%40gmail.com.
+/linux-sunxi/20191124172908.10804-1-peron.clem%40gmail.com.
