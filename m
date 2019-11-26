@@ -1,294 +1,187 @@
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v3] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Tue, 26 Nov 2019 09:51:56 +0100
-Message-ID: <20191126095156.292c03af@xps13>
+Date: Tue, 26 Nov 2019 11:49:20 +0100
+Message-ID: <20191126104920.rjlgfwetz2ov3u44@pengutronix.de>
 References: <20191122113230.16486-1-miquel.raynal@bootlin.com>
-        <20191125203849.fxvg74xrzp6rxahy@pengutronix.de>
+ <20191125203849.fxvg74xrzp6rxahy@pengutronix.de>
+ <20191126095156.292c03af@xps13>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191125203849.fxvg74xrzp6rxahy@pengutronix.de>
+Content-Disposition: inline
+In-Reply-To: <20191126095156.292c03af@xps13>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>
+To: Miquel Raynal <miquel.raynal@bootlin.com>
 Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Uwe,
+Hallo Miquel,
 
+On Tue, Nov 26, 2019 at 09:51:56AM +0100, Miquel Raynal wrote:
+> > Also when switching from 0% to 50% you could prevent a glitch by
+> > sticking to an unset blink phase 0 bit.
+> 
+> You mean, when turning off the PWM, I should first change the intensity
+> to 50%, then blink the phase, then change the intensity to 100%?
+> (reversed logic when intensity > 0).
 
-> > +/*
-> > + * For a given PWM channel, when the blink phase 0 bit is set, the intensity
-> > + * range is only [1/16;16/16]. With this range, a static low output is
-> > + * physically not possible. When the blink phase 0 bit is cleared, the intensity
-> > + * range is [15/16;0/16] which then allows a static low output but not a static
-> > + * high output.
-> > + *
-> > + * In this driver we choose to set the blink phase 0 bit by default, hence we
-> > + * can slide from a low output to a fully high output without glitch. However,
-> > + * the only way to get a static low output is by clearing the blink phase 0 bit,
-> > + * and by changing the intensity value to its maximum (as, at this moment,
-> > + * intensity is reversed). There is no way to atomically flip the register *and*
-> > + * change the PWM value at the same time so this will produce a small glitch.
-> > + */
-> > +static int max7313_pwm_set_state(struct pca953x_chip *chip,
-> > +				 struct pwm_device *pwm_device,
-> > +				 unsigned int duty_cycle)  
-> 
-> I'd like to see a better name than "duty_cycle" here. In the comment
-> above you call it "intensity" which is more clear IMHO.
-> 
-> > +{
-> > +	struct max7313_pwm_data *data = pwm_get_chip_data(pwm_device);
-> > +	struct gpio_desc *desc = data->desc;
-> > +	int ret;
-> > +
-> > +	/* A null duty_cycle will invert the phase */
-> > +	ret = gpiod_direction_output(desc, duty_cycle);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Maximize the low time in case of static low state */
-> > +	if (!duty_cycle)
-> > +		duty_cycle = PWM_DC_STATES;
-> > +
-> > +	return max7313_pwm_set_intensity(chip, pwm_device->hwpwm, duty_cycle);  
-> 
-> Thierry already commented that the call to gpiod_direction_output is a
-> bit strange. What about:
-> 
-> 	if (intensity) {
-> 		gpiod_direction_output(desc, 1);
-> 		max7313_pwm_set_intensity(chip, pwm_device->hwpwm, intensity - 1)
-> 	} else {
-> 		gpiod_direction_output(desc, 0);
-> 		max7313_pwm_set_intensity(chip, pwm_device->hwpwm, 15);
-> 	}
+No, that's not what I meant. Your hardware seems to have two different
+"modes". One where you can set the intensity between 0 and 15/16, and
+another where the intensity is between 1/16 and 16/16, right? Switching
+between these two results in a glitch and you use the first mode only
+for intensity 0 and the second for the rest. If now you have to go from
+0 to 8/16 your driver does a mode switch while this isn't necessary.
 
-I'm fine with that.
+I also wonder if a glitch can at least be made less likely, even when
+going from 0% to 100%. You claimed that changing intensity was glitch
+free (i.e. the currently running period is completed before the changed
+setting has an effect). Does this hold also for changing the blink
+phase?
 
+> > > +	/* Disable the internal oscillator if no channel is in use */
+> > > +	if (!pwm->count) {
+> > > +		mutex_lock(&chip->i2c_lock);
+> > > +		regmap_write_bits(chip->regmap, MAX7313_MASTER,
+> > > +				  PWM_INTENSITY_MASK << PWM_BITS_PER_REG, 0);
+> > > +		mutex_unlock(&chip->i2c_lock);
+> > > +	}  
+> > 
+> > What happens to the output pin when the oscillator gets disabled?
 > 
-> Also when switching from 0% to 50% you could prevent a glitch by
-> sticking to an unset blink phase 0 bit.
+> If .free does not modify the output, then disabling the oscillator
+> will force a static state if that was not already the case. I suppose
+> that's not what you want. Why one would free a pin if it stills need to
+> blink?
 
-You mean, when turning off the PWM, I should first change the intensity
-to 50%, then blink the phase, then change the intensity to 100%?
-(reversed logic when intensity > 0).
+It's the consumer who is supposed to stop the PWM before freeing it.
+Then better do the oscillator stop when pwm_apply_state(pwm, {...
+.enabled = false }) is called (and the other PWMs are off, too).
 
-If the intensity was already low, this will produce a glitch in any
-case, right? Same if the user changes the intensity from 0 to 15%, that
-will bright at 50%.
+> If I am not allowed to disable the oscillator it means energy
+> consumption will stay high for no reason as long as one PWM has been
+> enabled, ever.
+> 
+> > 
+> > > +	mutex_unlock(&pwm->count_lock);
+> > > +
+> > > +	gpiochip_free_own_desc(data->desc);
+> > > +}
+> > > +
+> > > +static int max7313_pwm_apply(struct pwm_chip *pwm_chip,
+> > > +			     struct pwm_device *pwm_device,
+> > > +			     const struct pwm_state *state)
+> > > +{
+> > > +	struct max7313_pwm_data *data = pwm_get_chip_data(pwm_device);
+> > > +	struct max7313_pwm *pwm = to_max7313_pwm(pwm_chip);
+> > > +	struct pca953x_chip *chip = to_pca953x(pwm);
+> > > +	unsigned int duty_cycle;
+> > > +
+> > > +	if (state->period != PWM_PERIOD_NS ||
+> > > +	    state->polarity != PWM_POLARITY_NORMAL)
+> > > +		return -EINVAL;  
+> > 
+> > The check for period is too strong. Anything bigger than PWM_PERIOD_NS
+> > is acceptable, too. (The policy I'd like to see is: Provide the biggest
+> > period possible not bigger than the requested policy.)
+> 
+> I don't understand, what is this parameter supposed to mean? the period
+> cannot be changed, it is ruled by an internal oscillator. In this case
+> any period bigger than the actual period cannot be physically achieved.
+> If we derive ratios with a bigger period than possible, why not
+> allowing it for lower periods too?
 
-Do you think it is worth adding such logic?
+Yes, I understood that the period is fixed for your PWM. However
+consider a consumer who would prefer a different period. If you decline
+all requests unless state->period == PWM_PERIOD_NS the consumer has no
+guide to determine that unless all periods are tested. If however asking
+for period = 2s results in getting 31.25 ms this allows the consumer to
+assume that no period setting between 2s and 31.25 ms is possible. And
+so the usual policy to implement is as stated in my previous mail.
 
-> 
-> > +}
-> > +
-> > +static int max7313_pwm_request(struct pwm_chip *pwm_chip,
-> > +			       struct pwm_device *pwm_device)
-> > +{
-> > +	struct max7313_pwm *pwm = to_max7313_pwm(pwm_chip);
-> > +	struct pca953x_chip *chip = to_pca953x(pwm);
-> > +	struct max7313_pwm_data *data;
-> > +	struct gpio_desc *desc;
-> > +	int ret;
-> > +
-> > +	desc = gpiochip_request_own_desc(&chip->gpio_chip, pwm_device->hwpwm,
-> > +					 "max7313-pwm", GPIO_ACTIVE_HIGH,
-> > +					 GPIOD_OUT_LOW);
-> > +	if (IS_ERR(desc)) {
-> > +		dev_err(&chip->client->dev,
-> > +			"pin already in use (probably as GPIO)\n");
-> > +		return PTR_ERR(desc);
-> > +	}
-> > +
-> > +	data = devm_kzalloc(&chip->client->dev, sizeof(*data), GFP_KERNEL);
-> > +	if (!data)
-> > +		return -ENOMEM;
-> > +
-> > +	data->desc = desc;
-> > +	pwm_set_chip_data(pwm_device, data);
-> > +
-> > +	ret = max7313_pwm_set_state(chip, pwm_device, 0);
-> > +	if (ret) {
-> > +		dev_err(&chip->client->dev, "cannot set PWM default state\n");  
-> 
-> Would be good to include the error code here. I suggest to use
-> 
-> 	dev_err(&chip->client->dev, "cannot set PWM default state: %pe\n",
-> 		ERR_PTR(ret));
-> 
-> Ditto for the error message above when gpiochip_request_own_desc fails.
-> 
-> If I'm not mistaken this already initializes the PWM, however .request
-> isn't supposed to do that. The output state should be unmodified to
-> allow to take over an already initialized PWM from the boot loader.
+(Of course for we'd need something like pwm_round_state() to effectively
+find a good request without actually modifying the hardware state. That
+is on my todo list.)
 
-Ok, I'll get rid of that call.
+> > > +	data->enabled = state->enabled;
+> > > +	data->duty_cycle = state->duty_cycle;  
+> > 
+> > Storing these is only to let .get_state yield the last set values,
+> > right?
+> 
+> I can't guess the duty_cycle/enabled state just by reading the
+> hardware. For instance, I cannot represent a "40% duty with PWM
+> disabled". Reading the hardware will not be able to know if the PWM
+> is enabled or not and the duty_cycle will be read as 0.
 
-> 
-> > +		goto free_gpiod;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Set master intensity to the maximum level to let individual outputs
-> > +	 * the greatest flexibility range. Also enables the internal oscillator.
-> > +	 */
-> > +	mutex_lock(&pwm->count_lock);
-> > +	if (!pwm->count) {
-> > +		mutex_lock(&chip->i2c_lock);
-> > +		ret = regmap_write_bits(chip->regmap, MAX7313_MASTER,
-> > +					PWM_INTENSITY_MASK << PWM_BITS_PER_REG,
-> > +					PWM_INTENSITY_MASK << PWM_BITS_PER_REG);
-> > +		mutex_unlock(&chip->i2c_lock);
-> > +	}
-> > +
-> > +	if (!ret)
-> > +		pwm->count++;
-> > +
-> > +	mutex_unlock(&pwm->count_lock);
-> > +
-> > +	if (ret)
-> > +		goto free_gpiod;
-> > +
-> > +	return 0;
-> > +
-> > +free_gpiod:
-> > +	gpiochip_free_own_desc(data->desc);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static void max7313_pwm_free(struct pwm_chip *pwm_chip,
-> > +			     struct pwm_device *pwm_device)
-> > +{
-> > +	struct max7313_pwm_data *data = pwm_get_chip_data(pwm_device);
-> > +	struct max7313_pwm *pwm = to_max7313_pwm(pwm_chip);
-> > +	struct pca953x_chip *chip = to_pca953x(pwm);
-> > +
-> > +	max7313_pwm_set_state(chip, pwm_device, 0);  
-> 
-> As .request above also .free is not supposed to modify the output.
-> 
-> > +	mutex_lock(&pwm->count_lock);
-> > +
-> > +	pwm->count--;
-> > +
-> > +	/* Disable the internal oscillator if no channel is in use */
-> > +	if (!pwm->count) {
-> > +		mutex_lock(&chip->i2c_lock);
-> > +		regmap_write_bits(chip->regmap, MAX7313_MASTER,
-> > +				  PWM_INTENSITY_MASK << PWM_BITS_PER_REG, 0);
-> > +		mutex_unlock(&chip->i2c_lock);
-> > +	}  
-> 
-> What happens to the output pin when the oscillator gets disabled?
+I interpret that as a "yes". IMHO it's a misconcept that a PWM driver
+has to remember the duty cycle (and period) with enabled=false even
+though this has no influence on the actual output in that state. I'd
+like to get rid of .enabled in struct pwm_state completely, but Thierry
+doesn't agree.
 
-If .free does not modify the output, then disabling the oscillator
-will force a static state if that was not already the case. I suppose
-that's not what you want. Why one would free a pin if it stills need to
-blink?
-
-If I am not allowed to disable the oscillator it means energy
-consumption will stay high for no reason as long as one PWM has been
-enabled, ever.
-
+> > > +	if (!state->enabled || !state->duty_cycle)
+> > > +		duty_cycle = 0;
+> > > +	else
+> > > +		/* Convert the duty-cycle to be in the [1;16] range */
+> > > +		duty_cycle = DIV_ROUND_DOWN_ULL(state->duty_cycle,
+> > > +						PWM_OFFSET_NS);
+> > > +
+> > > +	/* The hardware is supposedly glitch-free */
+> > > +	return max7313_pwm_set_state(chip, pwm_device, duty_cycle);
+> > > +}
+> > > +
+> > > +static void max7313_pwm_get_state(struct pwm_chip *pwm_chip,
+> > > +				  struct pwm_device *pwm_device,
+> > > +				  struct pwm_state *state)
+> > > +{
+> > > +	struct max7313_pwm_data *data = pwm_get_chip_data(pwm_device);
+> > > +	struct max7313_pwm *pwm = to_max7313_pwm(pwm_chip);
+> > > +	struct pca953x_chip *chip = to_pca953x(pwm);
+> > > +	u8 duty_cycle;
+> > > +
+> > > +	state->period = PWM_PERIOD_NS;
+> > > +	state->polarity = PWM_POLARITY_NORMAL;
+> > > +
+> > > +	if (!data)
+> > > +		return;
+> > > +
+> > > +	state->enabled = data->enabled;  
+> > 
+> > data->enabled is not initialized from hardware in .probe, so currently
+> > .get doesn't provide anything useful for the initial call. :-|
 > 
-> > +	mutex_unlock(&pwm->count_lock);
-> > +
-> > +	gpiochip_free_own_desc(data->desc);
-> > +}
-> > +
-> > +static int max7313_pwm_apply(struct pwm_chip *pwm_chip,
-> > +			     struct pwm_device *pwm_device,
-> > +			     const struct pwm_state *state)
-> > +{
-> > +	struct max7313_pwm_data *data = pwm_get_chip_data(pwm_device);
-> > +	struct max7313_pwm *pwm = to_max7313_pwm(pwm_chip);
-> > +	struct pca953x_chip *chip = to_pca953x(pwm);
-> > +	unsigned int duty_cycle;
-> > +
-> > +	if (state->period != PWM_PERIOD_NS ||
-> > +	    state->polarity != PWM_POLARITY_NORMAL)
-> > +		return -EINVAL;  
-> 
-> The check for period is too strong. Anything bigger than PWM_PERIOD_NS
-> is acceptable, too. (The policy I'd like to see is: Provide the biggest
-> period possible not bigger than the requested policy.)
+> 'enabled' only has a software meaning here, so it will return false at
+> the first call as the structure is initially zeroed. Then it will
+> provide the last state of the boolean. This IP has no "enable/disable"
+> feature so I don't know how to handle this in a better way.
 
-I don't understand, what is this parameter supposed to mean? the period
-cannot be changed, it is ruled by an internal oscillator. In this case
-any period bigger than the actual period cannot be physically achieved.
-If we derive ratios with a bigger period than possible, why not
-allowing it for lower periods too?
+When we'd get rid of struct pwm_state::enabled this would be clearer,
+right? As this driver will be another instance that will hopefully help
+me convincing Thierry in the end, can you please add a comment somewhere
+at the top like this?:
 
-> 
-> > +	data->enabled = state->enabled;
-> > +	data->duty_cycle = state->duty_cycle;  
-> 
-> Storing these is only to let .get_state yield the last set values,
-> right?
+/*
+ * Limitations:
+ * - Period fixed to 31.25 ms
+ * - Only supports normal polarity
+ * - Doesn't support a disabled state
+ * - Some glitches cannot be prevented
+ */
 
-I can't guess the duty_cycle/enabled state just by reading the
-hardware. For instance, I cannot represent a "40% duty with PWM
-disabled". Reading the hardware will not be able to know if the PWM
-is enabled or not and the duty_cycle will be read as 0.
+(The idea is that a command like
 
-> 
-> > +	if (!state->enabled || !state->duty_cycle)
-> > +		duty_cycle = 0;
-> > +	else
-> > +		/* Convert the duty-cycle to be in the [1;16] range */
-> > +		duty_cycle = DIV_ROUND_DOWN_ULL(state->duty_cycle,
-> > +						PWM_OFFSET_NS);
-> > +
-> > +	/* The hardware is supposedly glitch-free */
-> > +	return max7313_pwm_set_state(chip, pwm_device, duty_cycle);
-> > +}
-> > +
-> > +static void max7313_pwm_get_state(struct pwm_chip *pwm_chip,
-> > +				  struct pwm_device *pwm_device,
-> > +				  struct pwm_state *state)
-> > +{
-> > +	struct max7313_pwm_data *data = pwm_get_chip_data(pwm_device);
-> > +	struct max7313_pwm *pwm = to_max7313_pwm(pwm_chip);
-> > +	struct pca953x_chip *chip = to_pca953x(pwm);
-> > +	u8 duty_cycle;
-> > +
-> > +	state->period = PWM_PERIOD_NS;
-> > +	state->polarity = PWM_POLARITY_NORMAL;
-> > +
-> > +	if (!data)
-> > +		return;
-> > +
-> > +	state->enabled = data->enabled;  
-> 
-> data->enabled is not initialized from hardware in .probe, so currently
-> .get doesn't provide anything useful for the initial call. :-|
+	for f in drivers/pwm/pwm-*.c ; do echo $f; sed -rn '/^ \* Limitation/,/^ \*\/?$/p' $f ; done
 
-'enabled' only has a software meaning here, so it will return false at
-the first call as the structure is initially zeroed. Then it will
-provide the last state of the boolean. This IP has no "enable/disable"
-feature so I don't know how to handle this in a better way.
+gives some nice overview about common limitations.)
 
-> > +	if (!state->enabled) {
-> > +		state->duty_cycle = data->duty_cycle;
-> > +	} else {
-> > +		duty_cycle = max7313_pwm_get_intensity(chip, pwm_device->hwpwm);
-> > +		state->duty_cycle = duty_cycle * PWM_OFFSET_NS;  
-> 
-> if the hardware is configured with blink phase 0 bit unset the returned
-> value is wrong, isn't it?
+But also today you should check the hardware state and if duty_cycle is
+greater than 0 don't report the PWM as disabled.
 
-True, I'll correct.
+Best regards
+Uwe
 
-> 
-> > +	}
-> > +};  
-> 
-> Best regards
-> Uwe
-> 
-
-Thanks,
-MiquÃ¨l
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
