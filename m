@@ -1,66 +1,173 @@
-From: walter harms <wharms@bfs.de>
-Subject: Re: [PATCH] pwm: sun4i: Narrow scope of local variable
-Date: Thu, 05 Dec 2019 09:37:55 +0100
-Message-ID: <5DE8C1E3.4080204@bfs.de>
-References: <20191002101624.gljyf7g4nia2rcbx@pengutronix.de>
- <20191205072404.6858-1-u.kleine-koenig@pengutronix.de>
-Reply-To: wharms@bfs.de
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [GIT PULL] pwm: Changes for v5.5-rc1
+Date: Thu, 5 Dec 2019 09:41:02 +0100
+Message-ID: <20191205084102.GA1401169@ulmo>
+References: <20191205061044.1006766-1-thierry.reding@gmail.com>
+ <20191205075958.jrz3xuthyh7wv6uu@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191205072404.6858-1-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Dan Carpenter <dan.carpenter@oracle.com>, kernel@pengutronix.de, Colin King <colin.king@canonical.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191205075958.jrz3xuthyh7wv6uu@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-CgpBbSAwNS4xMi4yMDE5IDA4OjI0LCBzY2hyaWViIFV3ZSBLbGVpbmUtS8O2bmlnOgo+IFRoZSB2
-YXJpYWJsZSBwdmFsIGlzIG9ubHkgdXNlZCBpbiBhIHNpbmdsZSBibG9jayBpbiB0aGUgZnVuY3Rp
-b24KPiBzdW40aV9wd21fY2FsY3VsYXRlKCkuIFNvIGRlY2xhcmUgaXQgaW4gYSBtb3JlIGxvY2Fs
-IHNjb3BlIHRvIHNpbXBsaWZ5Cj4gdGhlIGZ1bmN0aW9uIGZvciBodW1hbnMgYW5kIGNvbXBpbGVy
-cy4KPiAKPiBXaGlsZSB0aGUgZGlmZnN0YXQgZm9yIHRoaXMgcGF0Y2ggaXMgbmVnYXRpdmUgZm9y
-IHRoaXMgcGF0Y2ggSSBzdGlsbAo+IHRoaW5nIHRoZSBhZHZhbnRhZ2Ugb2YgaGF2aW5nIGEgbmFy
-cm93ZXIgc2NvcGUgaXMgYmVuZWZpY2lhbC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5l
-LUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgo+IC0tLQo+IEhlbGxvLAo+
-IAo+IGZvciB0aGUgcGF0Y2ggdGhhdCBiZWNhbWUKPiAKPiAJMWI5OGFkM2IzYmU5ICgicHdtOiBz
-dW40aTogRHJvcCByZWR1bmRhbnQgYXNzaWdubWVudCB0byB2YXJpYWJsZSBwdmFsIikKPiAKPiAo
-YW5kIHdoaWNoIHlpZWxkZWQgdGhlIHNpdHVhdGlvbiB0aGF0IHB2YWwgaXMgb25seSB1c2VkIGlu
-IHRoaXMgc2luZ2xlCj4gYmxvY2spIEkgc3VnZ2VzdGVkIHRvIGRvIHRoaXMgY2hhbmdlLiBUaGlz
-IHdhcyBpZ25vcmVkIGhvd2V2ZXIgYnkgYm90aAo+IENvbGluIGFuZCBUaGllcnJ5IHdpdGhvdXQg
-Y29tbWVudC4gU28gSSBzdWdnZXN0IHRoZSBjaGFuZ2UgaGVyZQo+IHNlcGFyYXRlbHkuCj4gCj4g
-QmVzdCByZWdhcmRzCj4gVXdlCj4gCj4gIGRyaXZlcnMvcHdtL3B3bS1zdW40aS5jIHwgNCArKyst
-Cj4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPiAKPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLXN1bjRpLmMgYi9kcml2ZXJzL3B3bS9wd20tc3Vu
-NGkuYwo+IGluZGV4IDU4MWQyMzI4NzMzMy4uODkxOWU2YWI3NTc3IDEwMDY0NAo+IC0tLSBhL2Ry
-aXZlcnMvcHdtL3B3bS1zdW40aS5jCj4gKysrIGIvZHJpdmVycy9wd20vcHdtLXN1bjRpLmMKPiBA
-QCAtMTQ5LDcgKzE0OSw3IEBAIHN0YXRpYyBpbnQgc3VuNGlfcHdtX2NhbGN1bGF0ZShzdHJ1Y3Qg
-c3VuNGlfcHdtX2NoaXAgKnN1bjRpX3B3bSwKPiAgCQkJICAgICAgIHUzMiAqZHR5LCB1MzIgKnBy
-ZCwgdW5zaWduZWQgaW50ICpwcnNjbHIpCj4gIHsKPiAgCXU2NCBjbGtfcmF0ZSwgZGl2ID0gMDsK
-PiAtCXVuc2lnbmVkIGludCBwdmFsLCBwcmVzY2FsZXIgPSAwOwo+ICsJdW5zaWduZWQgaW50IHBy
-ZXNjYWxlciA9IDA7Cj4gIAo+ICAJY2xrX3JhdGUgPSBjbGtfZ2V0X3JhdGUoc3VuNGlfcHdtLT5j
-bGspOwo+ICAKPiBAQCAtMTcwLDYgKzE3MCw4IEBAIHN0YXRpYyBpbnQgc3VuNGlfcHdtX2NhbGN1
-bGF0ZShzdHJ1Y3Qgc3VuNGlfcHdtX2NoaXAgKnN1bjRpX3B3bSwKPiAgCWlmIChwcmVzY2FsZXIg
-PT0gMCkgewo+ICAJCS8qIEdvIHVwIGZyb20gdGhlIGZpcnN0IGRpdmlkZXIgKi8KPiAgCQlmb3Ig
-KHByZXNjYWxlciA9IDA7IHByZXNjYWxlciA8IFBXTV9QUkVTQ0FMX01BU0s7IHByZXNjYWxlcisr
-KSB7Cj4gKwkJCXVuc2lnbmVkIGludCBwdmFsOwo+ICsKPiAgCQkJaWYgKCFwcmVzY2FsZXJfdGFi
-bGVbcHJlc2NhbGVyXSkKPiAgCQkJCWNvbnRpbnVlOwo+ICAJCQlwdmFsID0gcHJlc2NhbGVyX3Rh
-YmxlW3ByZXNjYWxlcl07CgoKbml0IHBpY2tpbmc6CkRvaW5nIHRoZSBhc3NpZ25tZW50IGZpcnN0
-IHdvdWxkIHJlbW92ZSB0aGUgb25seSB1c2UKb2YgcHJlc2NhbGVyX3RhYmxlW3ByZXNjYWxlcl0u
-Cgp1bnNpZ25lZCBpbnQgcHZhbCA9IHByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdOwppZiAoICEg
-cHZhbCApCiAgY29udGludWU7CgppZiB5b3UgZmVlbCBhZHZlbnR1cmVzIHlvdSBjb3VsZCBhbHNv
-IHJlcGxhY2UgdGhlIGZvcigpIGZvciBhIHdoaWxlKCkKc2luY2Ugd2Uga25vdyB0aGF0IHByZXNj
-YWxlciA9PSAwLgoKd2hpbGUgKCBwcmVzY2FsZXIgPCBQV01fUFJFU0NBTF9NQVNLICkKewp1bnNp
-Z25lZCBpbnQgcHZhbCA9IHByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXIrK107Ci4uLi4KCgpqbTJj
-LAoKIHdoCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
-aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
-ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
-eC1hcm0ta2VybmVsCg==
+
+--h31gzZEtNLTqOjlF
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Dec 05, 2019 at 08:59:58AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello Thierry,
+>=20
+> On Thu, Dec 05, 2019 at 07:10:44AM +0100, Thierry Reding wrote:
+> > The following changes since commit 40a6b9a00930fd6b59aa2eb6135abc2efe54=
+40c3:
+> >=20
+> >   Revert "pwm: Let pwm_get_state() return the last implemented state" (=
+2019-10-21 16:48:52 +0200)
+> >=20
+> > are available in the Git repository at:
+> >=20
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pw=
+m.git tags/pwm/for-5.5-rc1
+> >=20
+> > for you to fetch changes up to f5ff2628867b9c7cb4abb6c6a5a7eea079dad4b6:
+> >=20
+> >   pwm: imx27: Unconditionally write state to hardware (2019-10-21 16:58=
+:09 +0200)
+> >=20
+> > Thanks,
+> > Thierry
+> >=20
+> > ----------------------------------------------------------------
+> > pwm: Changes for v5.5-rc1
+> >=20
+> > Various changes and minor fixes across a couple of drivers.
+> >=20
+> > ----------------------------------------------------------------
+> > Colin Ian King (1):
+> >       pwm: sun4i: Drop redundant assignment to variable pval
+> >=20
+> > Fabrice Gasnier (3):
+> >       dt-bindings: pwm-stm32: Document pinctrl sleep state
+> >       pwm: stm32: Split breakinput apply routine to ease PM support
+> >       pwm: stm32: Add power management support
+> >=20
+> > Ondrej Jirman (1):
+> >       pwm: sun4i: Fix incorrect calculation of duty_cycle/period
+> >=20
+> > Rasmus Villemoes (1):
+> >       pwm: Update comment on struct pwm_ops::apply
+> >=20
+> > Thierry Reding (8):
+> >       dt-bindings: pwm: mediatek: Remove gratuitous compatible string f=
+or MT7629
+> >       pwm: stm32: Validate breakinput data from DT
+> >       pwm: stm32: Remove clutter from ternary operator
+> >       pwm: stm32: Pass breakinput instead of its values
+> >       pwm: Read initial hardware state at request time
+> >       pwm: cros-ec: Cache duty cycle value
+> >       pwm: imx27: Cache duty cycle register value
+> >       pwm: imx27: Unconditionally write state to hardware
+>=20
+> It's a bit of a surprise for me that you included the three last patches
+> as last minute changes. I'm not sure if I oppose them, but they were not
+> in next (as of next-20191205) and I would really like to have some time
+> for patches (that are not obvious fixes of course) there before they go
+> into a pull request. And if it's only to get some transparency.
+> (But in this case I had the impression that the discussion isn't over
+> yet, your last mail in the thread said: "I'm not sure yet about the
+> remainder of the series. Depending on what we decide to do about drivers
+> that can't (or don't want to) write all state through to the hardware,
+> patches 2-4 may become moot." in October which made me expect there is
+> still something to come, at least a statement before the fact. Still
+> more as also several further drivers are affected (according to my
+> research described in
+> https://patchwork.ozlabs.org/patch/1178351/#2282269).)
+
+Yes, the last four patches weren't meant to be in this pull request.
+That's what I get for trying to squeeze this in before coffee.
+
+Linus, please ignore this one, I'll send out a new pull request shortly.
+
+> In return there are a few patches I would really have liked to be seen
+> here:
+>=20
+>  - The series "Updates for the atmel PWM driver" that didn't get any
+>    response from you since August although it got some acks from the
+>    atmel guys.
+>    (https://patchwork.ozlabs.org/project/linux-pwm/list/?series=3D127096&=
+state=3D*,
+>    This is marked Superseeded for reasons unknown to me that I asked
+>    about in October.)
+
+I usually mark patches as superseeded when there are new revisions. It
+looks like I might have marked these accidentally since I can't see any
+new versions of that series. I'll pick those up after v5.5-rc1.
+
+>  - The series starting with "pwm: rcar: Drop useless call to
+>    pwm_get_state" from October which got reviews by a renesas guy.
+>    (https://patchwork.ozlabs.org/patch/1182649/,
+>    https://patchwork.ozlabs.org/patch/1182648/,
+>    Patchwork didn't identify this as a series, so listing the patches
+>    individually.)
+
+I missed those. Please do ping me if I haven't reviewed or applied
+patches after a week or so to remind me. Sometimes my inbox fills up so
+quickly that some patches get lost.
+
+>  - The patch "pwm: implement tracing for .get_state() and
+>    .apply_state()" that got an review by Steven Rostedt.
+>    (https://patchwork.ozlabs.org/patch/1182679/)
+
+Review for this came in after v5.4-rc7, so I didn't consider it for
+v5.5. I'll pick it up after v5.5-rc1.
+
+>  - The series starting with "pwm: omap-dmtimer: remove pwmchip in
+>    .remove before making it unfunctional" from November which IMHO is
+>    simple and contains two fixes
+>    (https://patchwork.ozlabs.org/project/linux-pwm/list/?series=3D142030)
+
+Same here.
+
+> And I'm still waiting for feedback on
+>=20
+>  - "Documentation: pwm: rework documentation for the framework" (since
+>    January)
+
+Please resend this, I can't find it in my inbox.
+
+>  - "pwm: add debug knob to help driver authors" (since August)
+
+My recollection is that this flagged a bunch of issues right out of the
+box, so I'm hesitant to apply it without wider concensus that we want
+this, or some effort to address the issues that this flags.
+
+Thierry
+
+--h31gzZEtNLTqOjlF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl3owpwACgkQ3SOs138+
+s6GHeBAAsAz/gYJgOXhz46xFjLokhH3BUTmnAU9b4d2N9hEfKzls+oDfM4VkrVHh
+CnT1Yq+XlRFlDF3YisgjVeWAT6mG1D5JuX0kHFHheFqJwiZKkJAJ4hvmbuQ3xfBt
+1JbBWZIeccZaVpjVA8miXYbrkg+gRPiSTXr/wEJVSohQ/2badkWxqnscBxRLxG+F
+ANi8Z4mxlSziamQXKp+iOmupD86kNVWTJw/0Qj4lqnqXX6g/YS/gQ3cR18PtLNWl
+shznDtCcINHpID7dfTzTSwPgQKcBsbU+hwCJuowBUBeSOPPgnQaKa1/AO0i/aWvJ
+YkI5iJS5Vcv06hf71PTWnfKJxrv2kALCKWEWrNBiaPR8vTZIeHQcHwCThnlY3egc
+7ullgghT0j6Ezb3I9mEt27ZDxlwYNkxNaEuWdKK8Y6p/UyF2+S6EAkeBOnJltJGl
+0BisLy5ogquAgKzwUfHZAJAE7zKLcWPqby1denDoHC/UtnzdRD7tmkPsSzPADppR
+0BaDnFaJCK/BQEMMMuTrFHW4IfZRWdgcHrW/cd1z68DE/jFhAdDJkCszUs+rFKz8
+cTFVzzal92pNHhnirkmSZl4A/gGtapdeL58XxaRse5gUrdGpiCRxmE+b+m+qVFDG
+NNtSP0aVTK0n9ohLj6ni7ZB+qHj+F26Pb910xT648S2Bn6/6Ta8=
+=w9TY
+-----END PGP SIGNATURE-----
+
+--h31gzZEtNLTqOjlF--
