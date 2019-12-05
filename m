@@ -1,173 +1,64 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [GIT PULL] pwm: Changes for v5.5-rc1
-Date: Thu, 5 Dec 2019 09:41:02 +0100
-Message-ID: <20191205084102.GA1401169@ulmo>
+Subject: [GIT PULL v2] pwm: Changes for v5.5-rc1
+Date: Thu,  5 Dec 2019 09:42:03 +0100
+Message-ID: <20191205084203.1411690-1-thierry.reding@gmail.com>
 References: <20191205061044.1006766-1-thierry.reding@gmail.com>
- <20191205075958.jrz3xuthyh7wv6uu@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191205075958.jrz3xuthyh7wv6uu@pengutronix.de>
+In-Reply-To: <20191205061044.1006766-1-thierry.reding@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Linus,
 
---h31gzZEtNLTqOjlF
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit 40a6b9a00930fd6b59aa2eb6135abc2efe5440c3:
 
-On Thu, Dec 05, 2019 at 08:59:58AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Thierry,
->=20
-> On Thu, Dec 05, 2019 at 07:10:44AM +0100, Thierry Reding wrote:
-> > The following changes since commit 40a6b9a00930fd6b59aa2eb6135abc2efe54=
-40c3:
-> >=20
-> >   Revert "pwm: Let pwm_get_state() return the last implemented state" (=
-2019-10-21 16:48:52 +0200)
-> >=20
-> > are available in the Git repository at:
-> >=20
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pw=
-m.git tags/pwm/for-5.5-rc1
-> >=20
-> > for you to fetch changes up to f5ff2628867b9c7cb4abb6c6a5a7eea079dad4b6:
-> >=20
-> >   pwm: imx27: Unconditionally write state to hardware (2019-10-21 16:58=
-:09 +0200)
-> >=20
-> > Thanks,
-> > Thierry
-> >=20
-> > ----------------------------------------------------------------
-> > pwm: Changes for v5.5-rc1
-> >=20
-> > Various changes and minor fixes across a couple of drivers.
-> >=20
-> > ----------------------------------------------------------------
-> > Colin Ian King (1):
-> >       pwm: sun4i: Drop redundant assignment to variable pval
-> >=20
-> > Fabrice Gasnier (3):
-> >       dt-bindings: pwm-stm32: Document pinctrl sleep state
-> >       pwm: stm32: Split breakinput apply routine to ease PM support
-> >       pwm: stm32: Add power management support
-> >=20
-> > Ondrej Jirman (1):
-> >       pwm: sun4i: Fix incorrect calculation of duty_cycle/period
-> >=20
-> > Rasmus Villemoes (1):
-> >       pwm: Update comment on struct pwm_ops::apply
-> >=20
-> > Thierry Reding (8):
-> >       dt-bindings: pwm: mediatek: Remove gratuitous compatible string f=
-or MT7629
-> >       pwm: stm32: Validate breakinput data from DT
-> >       pwm: stm32: Remove clutter from ternary operator
-> >       pwm: stm32: Pass breakinput instead of its values
-> >       pwm: Read initial hardware state at request time
-> >       pwm: cros-ec: Cache duty cycle value
-> >       pwm: imx27: Cache duty cycle register value
-> >       pwm: imx27: Unconditionally write state to hardware
->=20
-> It's a bit of a surprise for me that you included the three last patches
-> as last minute changes. I'm not sure if I oppose them, but they were not
-> in next (as of next-20191205) and I would really like to have some time
-> for patches (that are not obvious fixes of course) there before they go
-> into a pull request. And if it's only to get some transparency.
-> (But in this case I had the impression that the discussion isn't over
-> yet, your last mail in the thread said: "I'm not sure yet about the
-> remainder of the series. Depending on what we decide to do about drivers
-> that can't (or don't want to) write all state through to the hardware,
-> patches 2-4 may become moot." in October which made me expect there is
-> still something to come, at least a statement before the fact. Still
-> more as also several further drivers are affected (according to my
-> research described in
-> https://patchwork.ozlabs.org/patch/1178351/#2282269).)
+  Revert "pwm: Let pwm_get_state() return the last implemented state" (2019-10-21 16:48:52 +0200)
 
-Yes, the last four patches weren't meant to be in this pull request.
-That's what I get for trying to squeeze this in before coffee.
+are available in the Git repository at:
 
-Linus, please ignore this one, I'll send out a new pull request shortly.
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.5-rc1
 
-> In return there are a few patches I would really have liked to be seen
-> here:
->=20
->  - The series "Updates for the atmel PWM driver" that didn't get any
->    response from you since August although it got some acks from the
->    atmel guys.
->    (https://patchwork.ozlabs.org/project/linux-pwm/list/?series=3D127096&=
-state=3D*,
->    This is marked Superseeded for reasons unknown to me that I asked
->    about in October.)
+for you to fetch changes up to 9e1b4999a1693d67cc87a887057d8012c28fb12b:
 
-I usually mark patches as superseeded when there are new revisions. It
-looks like I might have marked these accidentally since I can't see any
-new versions of that series. I'll pick those up after v5.5-rc1.
+  pwm: stm32: Pass breakinput instead of its values (2019-10-21 16:50:05 +0200)
 
->  - The series starting with "pwm: rcar: Drop useless call to
->    pwm_get_state" from October which got reviews by a renesas guy.
->    (https://patchwork.ozlabs.org/patch/1182649/,
->    https://patchwork.ozlabs.org/patch/1182648/,
->    Patchwork didn't identify this as a series, so listing the patches
->    individually.)
-
-I missed those. Please do ping me if I haven't reviewed or applied
-patches after a week or so to remind me. Sometimes my inbox fills up so
-quickly that some patches get lost.
-
->  - The patch "pwm: implement tracing for .get_state() and
->    .apply_state()" that got an review by Steven Rostedt.
->    (https://patchwork.ozlabs.org/patch/1182679/)
-
-Review for this came in after v5.4-rc7, so I didn't consider it for
-v5.5. I'll pick it up after v5.5-rc1.
-
->  - The series starting with "pwm: omap-dmtimer: remove pwmchip in
->    .remove before making it unfunctional" from November which IMHO is
->    simple and contains two fixes
->    (https://patchwork.ozlabs.org/project/linux-pwm/list/?series=3D142030)
-
-Same here.
-
-> And I'm still waiting for feedback on
->=20
->  - "Documentation: pwm: rework documentation for the framework" (since
->    January)
-
-Please resend this, I can't find it in my inbox.
-
->  - "pwm: add debug knob to help driver authors" (since August)
-
-My recollection is that this flagged a bunch of issues right out of the
-box, so I'm hesitant to apply it without wider concensus that we want
-this, or some effort to address the issues that this flags.
-
+Thanks,
 Thierry
 
---h31gzZEtNLTqOjlF
-Content-Type: application/pgp-signature; name="signature.asc"
+----------------------------------------------------------------
+pwm: Changes for v5.5-rc1
 
------BEGIN PGP SIGNATURE-----
+Various changes and minor fixes across a couple of drivers.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl3owpwACgkQ3SOs138+
-s6GHeBAAsAz/gYJgOXhz46xFjLokhH3BUTmnAU9b4d2N9hEfKzls+oDfM4VkrVHh
-CnT1Yq+XlRFlDF3YisgjVeWAT6mG1D5JuX0kHFHheFqJwiZKkJAJ4hvmbuQ3xfBt
-1JbBWZIeccZaVpjVA8miXYbrkg+gRPiSTXr/wEJVSohQ/2badkWxqnscBxRLxG+F
-ANi8Z4mxlSziamQXKp+iOmupD86kNVWTJw/0Qj4lqnqXX6g/YS/gQ3cR18PtLNWl
-shznDtCcINHpID7dfTzTSwPgQKcBsbU+hwCJuowBUBeSOPPgnQaKa1/AO0i/aWvJ
-YkI5iJS5Vcv06hf71PTWnfKJxrv2kALCKWEWrNBiaPR8vTZIeHQcHwCThnlY3egc
-7ullgghT0j6Ezb3I9mEt27ZDxlwYNkxNaEuWdKK8Y6p/UyF2+S6EAkeBOnJltJGl
-0BisLy5ogquAgKzwUfHZAJAE7zKLcWPqby1denDoHC/UtnzdRD7tmkPsSzPADppR
-0BaDnFaJCK/BQEMMMuTrFHW4IfZRWdgcHrW/cd1z68DE/jFhAdDJkCszUs+rFKz8
-cTFVzzal92pNHhnirkmSZl4A/gGtapdeL58XxaRse5gUrdGpiCRxmE+b+m+qVFDG
-NNtSP0aVTK0n9ohLj6ni7ZB+qHj+F26Pb910xT648S2Bn6/6Ta8=
-=w9TY
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+Colin Ian King (1):
+      pwm: sun4i: Drop redundant assignment to variable pval
 
---h31gzZEtNLTqOjlF--
+Fabrice Gasnier (3):
+      dt-bindings: pwm-stm32: Document pinctrl sleep state
+      pwm: stm32: Split breakinput apply routine to ease PM support
+      pwm: stm32: Add power management support
+
+Ondrej Jirman (1):
+      pwm: sun4i: Fix incorrect calculation of duty_cycle/period
+
+Rasmus Villemoes (1):
+      pwm: Update comment on struct pwm_ops::apply
+
+Thierry Reding (4):
+      dt-bindings: pwm: mediatek: Remove gratuitous compatible string for MT7629
+      pwm: stm32: Validate breakinput data from DT
+      pwm: stm32: Remove clutter from ternary operator
+      pwm: stm32: Pass breakinput instead of its values
+
+ .../devicetree/bindings/pwm/pwm-mediatek.txt       |   2 +-
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |   8 +-
+ drivers/pwm/pwm-stm32.c                            | 112 +++++++++++++++------
+ drivers/pwm/pwm-sun4i.c                            |   5 +-
+ include/linux/mfd/stm32-timers.h                   |  12 +--
+ include/linux/pwm.h                                |   5 +-
+ 6 files changed, 95 insertions(+), 49 deletions(-)
