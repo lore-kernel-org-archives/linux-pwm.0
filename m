@@ -1,68 +1,152 @@
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH v2 1/2] gpio: mvebu: use platform_irq_count
-Date: Thu, 5 Dec 2019 10:22:53 +0100
-Message-ID: <CAMpxmJU-WK1aXK3M_q12E_u8+wwEimuonmjFa7Hm3Z6Dp7DP_g@mail.gmail.com>
-References: <1575433106-16171-1-git-send-email-peng.fan@nxp.com>
- <20191204072422.vfo3mrrcaav75jv4@pengutronix.de> <CAMpxmJUAk5Y3mX_irTjwveaii8W=coaG0w2aWvFXUEXqHxpArQ@mail.gmail.com>
- <20191204184754.5oj2xoem2v3544rx@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [GIT PULL] pwm: Changes for v5.5-rc1
+Date: Thu, 5 Dec 2019 11:05:35 +0100
+Message-ID: <20191205100535.y7avzoswkxe43py7@pengutronix.de>
+References: <20191205061044.1006766-1-thierry.reding@gmail.com>
+ <20191205075958.jrz3xuthyh7wv6uu@pengutronix.de>
+ <20191205084102.GA1401169@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191204184754.5oj2xoem2v3544rx@pengutronix.de>
+Content-Disposition: inline
+In-Reply-To: <20191205084102.GA1401169@ulmo>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Peng Fan <peng.fan@nxp.com>, "rjui@broadcom.com" <rjui@broadcom.com>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "sbranden@broadcom.com" <sbranden@broadcom.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh@kernel.org" <robh@kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, dl-linux-imx <linux-imx@nxp.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alice Guo <alice.guo@nxp.com>, Sascha Hauer <kernel@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-=C5=9Br., 4 gru 2019 o 19:47 Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> napisa=C5=82(a):
->
-> On Wed, Dec 04, 2019 at 05:33:04PM +0100, Bartosz Golaszewski wrote:
-> > =C5=9Br., 4 gru 2019 o 08:24 Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> napisa=C5=82(a):
-> > >
-> > > On Wed, Dec 04, 2019 at 04:20:41AM +0000, Peng Fan wrote:
-> > > > From: Peng Fan <peng.fan@nxp.com>
-> > > >
-> > > > platform_irq_count() is the more generic way (independent of
-> > > > device trees) to determine the count of available interrupts. So
-> > > > use this instead.
-> > > >
-> > > > As platform_irq_count() might return an error code (which
-> > > > of_irq_count doesn't) some additional handling is necessary.
-> > > >
-> > > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> > > Reviewed-and-Commit-Log-Provided-by: Uwe Kleine-K=C3=B6nig <u.kleine-=
-koenig@pengutronix.de>
-> >
-> > This is not a valid tag, but I take it as Suggested-by and Reviewed-by.=
- :)
->
-> If you care about the validity of such tags, I suggest you take a look
-> at the output of
->
->         $ git rev-list v4.0..v5.4 | while read rev; do git cat-file commi=
-t $rev; done | sed -n 's/ *\(.*-by\):.*/\1/p' | sort | uniq -c | sort -n
->
-> (which finds all tags used between 4.0 and 5.4 with its usage count).
->
-> A few of the tags (admittedly with low usage count :-) included there are=
-:
->
->   Badly-reviewed-by
->   Bonus-points-awarded-by
->   Compile-tested and Reviewed-by
->   Enthusiastically-Acked-by
->   Mea-culpa-by
->   \o/-by
->   Brown-paper-bag-by
->
-> Best regards
-> Uwe
+Hello Thierry,
 
-I am well aware of this and there has been a discussion on LKML some
-time ago (I can no longer find it though) about introducing stricter
-rules for tags. I don't remember the outcome either though.
+On Thu, Dec 05, 2019 at 09:41:02AM +0100, Thierry Reding wrote:
+> On Thu, Dec 05, 2019 at 08:59:58AM +0100, Uwe Kleine-König wrote:
+> > On Thu, Dec 05, 2019 at 07:10:44AM +0100, Thierry Reding wrote:
+> > > The following changes since commit 40a6b9a00930fd6b59aa2eb6135abc2efe5440c3:
+> > > 
+> > >   Revert "pwm: Let pwm_get_state() return the last implemented state" (2019-10-21 16:48:52 +0200)
+> > > 
+> > > are available in the Git repository at:
+> > > 
+> > >   git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.5-rc1
+> > > 
+> > > for you to fetch changes up to f5ff2628867b9c7cb4abb6c6a5a7eea079dad4b6:
+> > > 
+> > >   pwm: imx27: Unconditionally write state to hardware (2019-10-21 16:58:09 +0200)
+> > > 
+> > > Thanks,
+> > > Thierry
+> > > 
+> > > ----------------------------------------------------------------
+> > > pwm: Changes for v5.5-rc1
+> > > 
+> > > Various changes and minor fixes across a couple of drivers.
+> > > 
+> > > ----------------------------------------------------------------
+> > > Colin Ian King (1):
+> > >       pwm: sun4i: Drop redundant assignment to variable pval
+> > > 
+> > > Fabrice Gasnier (3):
+> > >       dt-bindings: pwm-stm32: Document pinctrl sleep state
+> > >       pwm: stm32: Split breakinput apply routine to ease PM support
+> > >       pwm: stm32: Add power management support
+> > > 
+> > > Ondrej Jirman (1):
+> > >       pwm: sun4i: Fix incorrect calculation of duty_cycle/period
+> > > 
+> > > Rasmus Villemoes (1):
+> > >       pwm: Update comment on struct pwm_ops::apply
+> > > 
+> > > Thierry Reding (8):
+> > >       dt-bindings: pwm: mediatek: Remove gratuitous compatible string for MT7629
+> > >       pwm: stm32: Validate breakinput data from DT
+> > >       pwm: stm32: Remove clutter from ternary operator
+> > >       pwm: stm32: Pass breakinput instead of its values
+> > >       pwm: Read initial hardware state at request time
+> > >       pwm: cros-ec: Cache duty cycle value
+> > >       pwm: imx27: Cache duty cycle register value
+> > >       pwm: imx27: Unconditionally write state to hardware
+> > 
+> > It's a bit of a surprise for me that you included the three last patches
+> > as last minute changes. I'm not sure if I oppose them, but they were not
+> > in next (as of next-20191205) and I would really like to have some time
+> > for patches (that are not obvious fixes of course) there before they go
+> > into a pull request. And if it's only to get some transparency.
+> > (But in this case I had the impression that the discussion isn't over
+> > yet, your last mail in the thread said: "I'm not sure yet about the
+> > remainder of the series. Depending on what we decide to do about drivers
+> > that can't (or don't want to) write all state through to the hardware,
+> > patches 2-4 may become moot." in October which made me expect there is
+> > still something to come, at least a statement before the fact. Still
+> > more as also several further drivers are affected (according to my
+> > research described in
+> > https://patchwork.ozlabs.org/patch/1178351/#2282269).)
+> 
+> Yes, the last four patches weren't meant to be in this pull request.
+> That's what I get for trying to squeeze this in before coffee.
 
-Bart
+Ah right, it's four patches, not three. (I thought I saw "pwm: Read
+initial hardware state at request time" in next.)
+
+> Please do ping me if I haven't reviewed or applied patches after a
+> week or so to remind me. Sometimes my inbox fills up so quickly that
+> some patches get lost.
+
+ok.
+
+> >  - The patch "pwm: implement tracing for .get_state() and
+> >    .apply_state()" that got an review by Steven Rostedt.
+> >    (https://patchwork.ozlabs.org/patch/1182679/)
+> 
+> Review for this came in after v5.4-rc7, so I didn't consider it for
+> v5.5. I'll pick it up after v5.5-rc1.
+
+I got Steven's mail on Oct 24 which is the week between -rc4 and -rc5,
+but ok, I won't argue.
+> 
+> >  - The series starting with "pwm: omap-dmtimer: remove pwmchip in
+> >    .remove before making it unfunctional" from November which IMHO is
+> >    simple and contains two fixes
+> >    (https://patchwork.ozlabs.org/project/linux-pwm/list/?series=142030)
+> 
+> Same here.
+
+Does "after v5.5-rc1" mean "for v5.5" or "for v5.6-rc1". I agree that
+the tracing stuff is merge window material (very useful though in my
+eyes) while the omap-dmtimer series (at least the first 3 of 4 patches)
+is about fixes.
+
+> > And I'm still waiting for feedback on
+> > 
+> >  - "Documentation: pwm: rework documentation for the framework" (since
+> >    January)
+> 
+> Please resend this, I can't find it in my inbox.
+
+:-|, given that I sent this already twice, pinged several times
+(https://patchwork.ozlabs.org/patch/1021566/,
+https://patchwork.ozlabs.org/patch/1000709/) and also asked at least
+once before in a mail where I pinged several patches using a list.
+
+> >  - "pwm: add debug knob to help driver authors" (since August)
+> 
+> My recollection is that this flagged a bunch of issues right out of the
+> box, so I'm hesitant to apply it without wider concensus that we want
+> this, or some effort to address the issues that this flags.
+
+I didn't want you to apply it. That it is not ready for that is out of
+the question. I assume the patch doesn't apply anymore and needs work
+for sure. The last mail in the respective thread had a single paragraph:
+
+	do you consider the idea here worthwile? If so I'd update the
+	patch to current mainline and address the feedback I got so far.
+
+This is still interesting, as I don't want to spend my time working on
+an idea that is then turned down in the end for conceptual reasons.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
