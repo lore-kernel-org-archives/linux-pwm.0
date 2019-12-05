@@ -1,55 +1,63 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Wed, 13 Nov 2019 14:43:09 -0500
-From: Steven Rostedt <rostedt@goodmis.org>
-Message-ID: <20191113144309.54b19011@gandalf.local.home>
-In-Reply-To: <20191024080829.16783-1-u.kleine-koenig@pengutronix.de>
-References: <20191024080829.16783-1-u.kleine-koenig@pengutronix.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:35315 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbfLEHMQ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Dec 2019 02:12:16 -0500
+Date: Thu, 5 Dec 2019 08:12:13 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Message-ID: <20191205071213.5ahi474skoz6y35p@pengutronix.de>
+References: <20191021105739.1357629-1-thierry.reding@gmail.com>
+ <20191021105739.1357629-2-thierry.reding@gmail.com>
+ <041c05b7-f558-0249-0450-305dfa2697a9@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] pwm: implement tracing for .get_state() and .apply_state()
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Ingo Molnar <mingo@redhat.com>, kernel@pengutronix.de
+In-Reply-To: <041c05b7-f558-0249-0450-305dfa2697a9@collabora.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: Re: [PATCH 2/4] pwm: cros-ec: Cache duty cycle value
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-On Thu, 24 Oct 2019 10:08:29 +0200
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
+Hello Enric,
 
-> This allows to log all calls to the driver's lowlevel functions which
-> simplifies debugging in some cases.
+On Mon, Oct 21, 2019 at 03:48:59PM +0200, Enric Balletbo i Serra wrote:
+> On 21/10/19 12:57, Thierry Reding wrote:
+> >  static const struct pwm_ops cros_ec_pwm_ops =3D {
+> > +	.request =3D cros_ec_pwm_request,
+> > +	.free =3D cros_ec_pwm_free,
 >=20
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
-> Hello,
->=20
-> I didn't add a trace call to .get_state added in=20
-> 01ccf903edd6 ("pwm: Let pwm_get_state() return the last implemented state=
-")
-> in the expectation that this will be reverted very soon anyhow and
-> addint it there would only complicate reverting (or applying this
-> patch).
->=20
-> Best regards
-> Uwe
->=20
->  drivers/pwm/core.c         |  9 +++++-
->  include/trace/events/pwm.h | 58 ++++++++++++++++++++++++++++++++++++++
->  2 files changed, 66 insertions(+), 1 deletion(-)
->  create mode 100644 include/trace/events/pwm.h
->=20
->
+> nit: Align using tabs for readability.
 
-=46rom the tracing point of view:
+My personal opinion here is that not aligning is saner in the long run.
+For me at least it doesn't disturb readability, and once you have
 
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+	.request	=3D cros_ec_pwm_request,
+	.free		=3D cros_ec_pwm_free,
+	.get_state	=3D cros_ec_pwm_get_state,
+	.apply		=3D cros_ec_pwm_apply,
+	.owner		=3D THIS_MODULE,
 
--- Steve
+and want to set a new member with a long name, fixing the unrelated
+lines adds churn and not fixing them looks as ugly as it does with mixed
+styling. So I prefer to go with "<space>=3D<space>" from the start.
+
+> >  	.get_state	=3D cros_ec_pwm_get_state,
+> >  	.apply		=3D cros_ec_pwm_apply,
+> >  	.owner		=3D THIS_MODULE,
+
+But given that the already existing members are already using some
+indention following this style seems right.
+
+@Thierry: You didn't pick up this in your pull request. Should it stay
+as it is now with the mixed style to not add churn, or should we fix to
+something uniform?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
