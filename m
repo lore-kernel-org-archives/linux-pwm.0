@@ -1,25 +1,33 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [GIT PULL v2] pwm: Changes for v5.5-rc1
-Date: Thu, 05 Dec 2019 20:45:26 +0000
-Message-ID: <157557872627.26858.5063056354735423757.pr-tracker-bot@kernel.org>
-References: <20191205061044.1006766-1-thierry.reding@gmail.com>
- <20191205084203.1411690-1-thierry.reding@gmail.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH] pwm: bcm2835: Allow building for ARCH_BRCMSTB
+Date: Mon,  9 Dec 2019 15:25:03 -0800
+Message-ID: <20191209232503.7252-1-f.fainelli@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191205084203.1411690-1-thierry.reding@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: bcm-kernel-feedback-list@broadcom.com, wahrenst@gmx.net, Florian Fainelli <f.fainelli@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The pull request you sent on Thu,  5 Dec 2019 09:42:03 +0100:
+BCM7211 is supported using ARCH_BRCMSTB and uses this PWM controller
+driver, make it possible to build it.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.5-rc1
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d9e48dc2a71a836f17d1febbedb31470f957edb4
-
-Thank you!
-
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index bd21655c37a6..0bb8a40c8d6c 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -100,7 +100,7 @@ config PWM_BCM_KONA
+ 
+ config PWM_BCM2835
+ 	tristate "BCM2835 PWM support"
+-	depends on ARCH_BCM2835
++	depends on ARCH_BCM2835 || ARCH_BRCMSTB
+ 	help
+ 	  PWM framework driver for BCM2835 controller (Raspberry Pi)
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.17.1
