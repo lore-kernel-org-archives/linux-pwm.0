@@ -1,13 +1,15 @@
 Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 2/2] docs: pwm: rework documentation for the framework
-Date: Mon,  9 Dec 2019 22:32:33 +0100
-Message-Id: <20191209213233.29574-2-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20191209213233.29574-1-u.kleine-koenig@pengutronix.de>
-References: <20191209213233.29574-1-u.kleine-koenig@pengutronix.de>
+Date: Mon, 9 Dec 2019 08:32:06 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 4/7] pwm: Add support for Azoteq IQS620A PWM generator
+Message-ID: <20191209073206.6pftsak5v25jdepz@pengutronix.de>
+References: <1575851866-18919-1-git-send-email-jeff@labundy.com>
+ <1575851866-18919-5-git-send-email-jeff@labundy.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1575851866-18919-5-git-send-email-jeff@labundy.com>
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
 List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
@@ -17,247 +19,308 @@ List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>,
  <mailto:kernel-request@pengutronix.de?subject=subscribe>
 Errors-To: kernel-bounces@pengutronix.de
 Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+To: Jeff LaBundy <jeff@labundy.com>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lars@metafoo.de" <lars@metafoo.de>, kernel@pengutronix.de, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>
 List-ID: <linux-pwm.vger.kernel.org>
 
-Rewrite most of the documentation to have the focus on the atomic API
-and mention the legacy stuff only shortly.
+On Mon, Dec 09, 2019 at 12:38:36AM +0000, Jeff LaBundy wrote:
+> This patch adds support for the Azoteq IQS620A, capable of generating
+> a 1-kHz PWM output with duty cycle between 0.4% and 100% (inclusive).
+>=20
+> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+> ---
+> Changes in v2:
+>   - Merged 'Copyright' and 'Author' lines into one in introductory commen=
+ts
+>   - Added 'Limitations' section to introductory comments
+>   - Replaced 'error' with 'ret' throughout
+>   - Added const qualifier to state argument of iqs620_pwm_apply and remov=
+ed all
+>     modifications to the variable's contents
+>   - Updated iqs620_pwm_apply to return -ENOTSUPP or -EINVAL if the reques=
+ted
+>     polarity is inverted or the requested period is below 1 ms, respectiv=
+ely
+>   - Updated iqs620_pwm_apply to disable the PWM output if duty cycle is z=
+ero
+>   - Added iqs620_pwm_get_state
+>   - Eliminated tabbed alignment of pwm_ops and platform_driver struct mem=
+bers
+>   - Moved notifier unregistration to already present iqs620_pwm_remove, w=
+hich
+>     eliminated the need for a device-managed action and ready flag
+>   - Added a comment in iqs620_pwm_probe to explain the order of operations
+>   - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
+>=20
+>  drivers/pwm/Kconfig       |  10 +++
+>  drivers/pwm/Makefile      |   1 +
+>  drivers/pwm/pwm-iqs620a.c | 206 ++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 217 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-iqs620a.c
+>=20
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index bd21655..60bcf6c 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -222,6 +222,16 @@ config PWM_IMX_TPM
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-imx-tpm.
+>=20
+> +config PWM_IQS620A
+> +	tristate "Azoteq IQS620A PWM support"
+> +	depends on MFD_IQS62X || COMPILE_TEST
+> +	help
+> +	  Generic PWM framework driver for the Azoteq IQS620A multi-function
+> +	  sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called pwm-iqs620a.
+> +
+>  config PWM_JZ4740
+>  	tristate "Ingenic JZ47xx PWM support"
+>  	depends on MACH_INGENIC
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 9a47507..a59c710 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_PWM_IMG)		+=3D pwm-img.o
+>  obj-$(CONFIG_PWM_IMX1)		+=3D pwm-imx1.o
+>  obj-$(CONFIG_PWM_IMX27)		+=3D pwm-imx27.o
+>  obj-$(CONFIG_PWM_IMX_TPM)	+=3D pwm-imx-tpm.o
+> +obj-$(CONFIG_PWM_IQS620A)	+=3D pwm-iqs620a.o
+>  obj-$(CONFIG_PWM_JZ4740)	+=3D pwm-jz4740.o
+>  obj-$(CONFIG_PWM_LP3943)	+=3D pwm-lp3943.o
+>  obj-$(CONFIG_PWM_LPC18XX_SCT)	+=3D pwm-lpc18xx-sct.o
+> diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
+> new file mode 100644
+> index 0000000..1ea11b9
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-iqs620a.c
+> @@ -0,0 +1,206 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Azoteq IQS620A PWM Generator
+> + *
+> + * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
+> + *
+> + * Limitations:
+> + * - The period is not guaranteed to run to completion when the duty cyc=
+le is
+> + *   changed or the output is disabled.
 
-The paragraphs about Locking and Helpers is dropped as they mostly
-describe development outlooks which didn't happen yet (since the promise
-to fix stuff "soon" was introduced in 2011).
+Do you know more details here? "not guaranteed" means that the new
+period starts immediately when duty_cycle or the enabled bit is written?
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
+> + * - The period is fixed to 1 ms.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/iqs62x.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/slab.h>
+> +
+> +#define IQS620_PWR_SETTINGS			0xD2
+> +#define IQS620_PWR_SETTINGS_PWM_OUT		BIT(7)
+> +
+> +#define IQS620_PWM_DUTY_CYCLE			0xD8
+> +
+> +#define IQS620_PWM_PERIOD_NS			1000000
+> +
+> +struct iqs620_pwm_private {
+> +	struct iqs62x_core *iqs62x;
+> +	struct pwm_chip chip;
+> +	struct notifier_block notifier;
+> +};
+> +
+> +static int iqs620_pwm_apply(struct pwm_chip *chip, struct pwm_device *pw=
+m,
+> +			    const struct pwm_state *state)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	struct iqs62x_core *iqs62x;
+> +	unsigned int pwm_out =3D 0;
+> +	int duty_scale, ret;
+> +
+> +	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+> +		return -ENOTSUPP;
+> +
+> +	if (state->period < IQS620_PWM_PERIOD_NS)
+> +		return -EINVAL;
+> +
+> +	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
+> +	iqs62x =3D iqs620_pwm->iqs62x;
+> +
+> +	duty_scale =3D DIV_ROUND_CLOSEST(state->duty_cycle * 256,
+> +				       IQS620_PWM_PERIOD_NS);
+> +
+> +	if (duty_scale) {
+> +		ret =3D regmap_write(iqs62x->map, IQS620_PWM_DUTY_CYCLE,
+> +				   min(duty_scale - 1, 0xFF));
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (state->enabled)
+> +			pwm_out =3D IQS620_PWR_SETTINGS_PWM_OUT;
+> +	}
+> +
+> +	return regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
+> +				  IQS620_PWR_SETTINGS_PWM_OUT, pwm_out);
 
-I hand-edited this patch to hopefully make it easier to review. Note that
-once applied it is shown a bit more compact and thus harder to see the
-actual differences.
+A comment explaining the semantic here would be good. I assume
+IQS620_PWM_DUTY_CYCLE takes a value between 0 and 255 and the resulting
+duty cycle is:
+
+	(IQS620_PWM_DUTY_CYCLE + 1) / 256 * 1 ms
+
+.
+
+If this is right, please use:
+
+	duty_scale =3D (state->duty_cycle * 256) / IQS620_PWM_PERIOD_NS
+
+Also, when the hardware is running at
+
+	.enabled =3D 1, .duty_cycle =3D 1/256 ms, .period =3D 1ms
+
+and you reconfigure to
+
+	.enabled =3D 0, .duty_cycle =3D 1ms, .period =3D 1ms
+
+the output might be active for > 1/256 ms if the process is preempted
+between writing IQS620_PWM_DUTY_CYCLE and IQS620_PWR_SETTINGS_PWM_OUT.
+
+> +}
+> +
+> +static void iqs620_pwm_get_state(struct pwm_chip *chip, struct pwm_devic=
+e *pwm,
+> +				 struct pwm_state *state)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	struct iqs62x_core *iqs62x;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
+> +	iqs62x =3D iqs620_pwm->iqs62x;
+> +
+> +	ret =3D regmap_read(iqs62x->map, IQS620_PWR_SETTINGS, &val);
+> +	if (ret)
+> +		goto err_out;
+> +	state->enabled =3D val & IQS620_PWR_SETTINGS_PWM_OUT;
+> +
+> +	ret =3D regmap_read(iqs62x->map, IQS620_PWM_DUTY_CYCLE, &val);
+> +	if (ret)
+> +		goto err_out;
+> +	state->duty_cycle =3D DIV_ROUND_CLOSEST((val + 1) * IQS620_PWM_PERIOD_N=
+S,
+> +					      256);
+
+Please round up.
+
+> +	state->period =3D IQS620_PWM_PERIOD_NS;
+> +
+> +err_out:
+> +	if (ret)
+> +		dev_err(iqs620_pwm->chip.dev, "Failed to get state: %d\n", ret);
+> +}
+> +
+> +static int iqs620_pwm_notifier(struct notifier_block *notifier,
+> +			       unsigned long event_flags, void *context)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	struct pwm_state state;
+> +	int ret;
+> +
+> +	if (!(event_flags & BIT(IQS62X_EVENT_SYS_RESET)))
+> +		return NOTIFY_DONE;
+> +
+> +	iqs620_pwm =3D container_of(notifier, struct iqs620_pwm_private,
+> +				  notifier);
+> +	pwm_get_state(&iqs620_pwm->chip.pwms[0], &state);
+
+Please don't call pwm API functions in callbacks. I assume you rely on
+pwm_get_state returning the previously set state and that
+iqs620_pwm_get_state isn't called. Please use pwm->state for that.
+
+> +	ret =3D iqs620_pwm_apply(&iqs620_pwm->chip,
+> +			       &iqs620_pwm->chip.pwms[0], &state);
+> +	if (ret) {
+> +		dev_err(iqs620_pwm->chip.dev,
+> +			"Failed to re-initialize device: %d\n", ret);
+> +		return NOTIFY_BAD;
+> +	}
+> +
+> +	return NOTIFY_OK;
+> +}
+> +
+> +static const struct pwm_ops iqs620_pwm_ops =3D {
+> +	.apply =3D iqs620_pwm_apply,
+> +	.get_state =3D iqs620_pwm_get_state,
+> +	.owner =3D THIS_MODULE,
+> +};
+> +
+> +static int iqs620_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct iqs620_pwm_private *iqs620_pwm;
+> +	int ret1, ret2;
+> +
+> +	iqs620_pwm =3D devm_kzalloc(&pdev->dev, sizeof(*iqs620_pwm), GFP_KERNEL=
+);
+> +	if (!iqs620_pwm)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, iqs620_pwm);
+> +	iqs620_pwm->iqs62x =3D dev_get_drvdata(pdev->dev.parent);
+> +
+> +	iqs620_pwm->chip.dev =3D &pdev->dev;
+> +	iqs620_pwm->chip.ops =3D &iqs620_pwm_ops;
+> +	iqs620_pwm->chip.base =3D -1;
+> +	iqs620_pwm->chip.npwm =3D 1;
+> +
+> +	ret1 =3D pwmchip_add(&iqs620_pwm->chip);
+> +	if (ret1) {
+> +		dev_err(&pdev->dev, "Failed to add device: %d\n", ret1);
+> +		return ret1;
+> +	}
+> +
+> +	/*
+> +	 * Since iqs620_pwm_notifier uses iqs620_pwm->chip.pwms[], the notifier
+> +	 * is not registered until pwmchip_add (which allocates that array) has
+> +	 * been called. If registration fails, the newly added device has to be
+> +	 * removed because the driver fails to probe and iqs620_pwm_remove will
+> +	 * never be called.
+> +	 */
+> +	iqs620_pwm->notifier.notifier_call =3D iqs620_pwm_notifier;
+> +	ret1 =3D blocking_notifier_chain_register(&iqs620_pwm->iqs62x->nh,
+> +						&iqs620_pwm->notifier);
+> +	if (ret1) {
+> +		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret1);
+> +
+> +		ret2 =3D pwmchip_remove(&iqs620_pwm->chip);
+> +		if (ret2) {
+> +			dev_err(&pdev->dev, "Failed to remove device: %d\n",
+> +				ret2);
+> +			return ret2;
+
+This exitpoint is bad. The PWM driver is active but the module gets
+unloaded. I liked the approach from v1 better.
+
+ret2 could be local to this block.
+
+> +		}
+> +	}
+> +
+> +	return ret1;
+> +}
 
 Best regards
 Uwe
 
- Documentation/driver-api/pwm.rst | 171 ++++++++++++++++---------------
- 1 file changed, 86 insertions(+), 85 deletions(-)
-
-diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
-index 8f31bcdbb631..bab9f34aa1e4 100644
---- a/Documentation/driver-api/pwm.rst
-+++ b/Documentation/driver-api/pwm.rst
-@@ -11,110 +11,111 @@ found as discrete devices on SoCs which have no fixed purpose. It's
- up to the board designer to connect them to LEDs or fans. To provide
- this kind of flexibility the generic PWM API exists.
- 
--Identifying PWMs
------------------
--
--Users of the legacy PWM API use unique IDs to refer to PWM devices.
--
--Instead of referring to a PWM device via its unique ID, board setup code
--should instead register a static mapping that can be used to match PWM
--consumers to providers, as given in the following example::
--
--	static struct pwm_lookup board_pwm_lookup[] = {
--		PWM_LOOKUP("tegra-pwm", 0, "pwm-backlight", NULL,
--			   50000, PWM_POLARITY_NORMAL),
--	};
--
--	static void __init board_init(void)
--	{
--		...
--		pwm_add_table(board_pwm_lookup, ARRAY_SIZE(board_pwm_lookup));
--		...
--	}
--
--Using PWMs
------------
--
--Legacy users can request a PWM device using pwm_request() and free it
--after usage with pwm_free().
--
--New users should use the pwm_get() function and pass to it the consumer
--device or a consumer name. pwm_put() is used to free the PWM device. Managed
--variants of these functions, devm_pwm_get() and devm_pwm_put(), also exist.
--
--After being requested, a PWM has to be configured using::
--
--	int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state);
--
--This API controls both the PWM period/duty_cycle config and the
--enable/disable state.
--
--The pwm_config(), pwm_enable() and pwm_disable() functions are just wrappers
--around pwm_apply_state() and should not be used if the user wants to change
--several parameter at once. For example, if you see pwm_config() and
--pwm_{enable,disable}() calls in the same function, this probably means you
--should switch to pwm_apply_state().
--
--The PWM user API also allows one to query the PWM state with pwm_get_state().
--
--In addition to the PWM state, the PWM API also exposes PWM arguments, which
--are the reference PWM config one should use on this PWM.
--PWM arguments are usually platform-specific and allows the PWM user to only
--care about dutycycle relatively to the full period (like, duty = 50% of the
--period). struct pwm_args contains 2 fields (period and polarity) and should
--be used to set the initial PWM config (usually done in the probe function
--of the PWM user). PWM arguments are retrieved with pwm_get_args().
--
--All consumers should really be reconfiguring the PWM upon resume as
--appropriate. This is the only way to ensure that everything is resumed in
--the proper order.
-+PWM consumers
-+-------------
-+
-+A driver (e.g. for a backlight or a fan) first needs to "get" a PWM device
-+using the function pwm_get() or devm_pwm_get().
-+These return an opaque handle to a certain hardware PWM that can be used to
-+configure the respective PWM. The relevant function is
-+
-+	int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state);
-+
-+This API controls both the PWM period/duty_cycle config, polarity and the
-+enable/disable state. The usual way to use pwm_apply_state() is in combination
-+with pwm_get_state() like:
-+
-+	pwm_get_state(pwm, &state);
-+	state.duty_cycle = 0;
-+	pwm_apply_state(pwm, &state);
-+
-+When the PWM isn't needed any more, drop the handle using pwm_put() after
-+disabling the PWM.
-+
-+All consumers should really be reconfiguring the PWM upon resume as
-+appropriate. This is the only way to ensure that everything is resumed in
-+the proper order.
-+
-+PWM providers
-+-------------
-+
-+There are two canonical ways to provide one or several PWMs: device tree and
-+board code.
-+
-+For the former it is enough to register a PWM chip using pwmchip_add() with the
-+pwm_chip's .dev member pointing to the providing device. pwm_get then yields
-+references to this chip when the device passed to pwm_get has pwm handles
-+according to Documentation/devicetree/bindings/pwm/pwm.txt.
-+
-+In board code you can register a pwm lookup table that is then used to satisfy
-+pwm_get requests by consumers. See the documentation of pwm_add_table() for
-+details.
- 
--Implementing a PWM driver
---------------------------
--
--Currently there are two ways to implement pwm drivers. Traditionally
--there only has been the barebone API meaning that each driver has
--to implement the pwm_*() functions itself. This means that it's impossible
--to have multiple PWM drivers in the system. For this reason it's mandatory
--for new drivers to use the generic PWM framework.
--
--A new PWM controller/chip can be added using pwmchip_add() and removed
--again with pwmchip_remove(). pwmchip_add() takes a filled in struct
--pwm_chip as argument which provides a description of the PWM chip, the
--number of PWM devices provided by the chip and the chip-specific
--implementation of the supported PWM operations to the framework.
--
--When implementing polarity support in a PWM driver, make sure to respect the
--signal conventions in the PWM framework. By definition, normal polarity
--characterizes a signal starts high for the duration of the duty cycle and
--goes low for the remainder of the period. Conversely, a signal with inversed
--polarity starts low for the duration of the duty cycle and goes high for the
--remainder of the period.
--
--Drivers are encouraged to implement ->apply() instead of the legacy
--->enable(), ->disable() and ->config() methods. Doing that should provide
--atomicity in the PWM config workflow, which is required when the PWM controls
--a critical device (like a regulator).
--
--The implementation of ->get_state() (a method used to retrieve initial PWM
--state) is also encouraged for the same reason: letting the PWM user know
--about the current PWM state would allow him to avoid glitches.
-+PWM implementers
-+----------------
-+
-+The main task a pwm hardware driver has to complete is to provide a struct
-+pwm_chip and register it using pwmchip_add().
-+
-+The following members have to be provided:
-+
-+ - .dev: Pointer to the device that provides the PWMs
-+ - .ops: Callbacks for hardware access. The only function callback that is
-+   required is .apply which is the back-end for pwm_apply_state(). See below
-+   for more details.
-+ - .base: integer ID of the first pwm provided by this chip. Usually you want
-+   to pass a negative number here, then this ID is allocated dynamically. Apart
-+   from legacy usage the base has only internal semantics providing a unique
-+   identification for each PWM. (Note this is only a hint and might be modified
-+   on registration.)
-+ - .npwm: number of PWMs provided by this chip.
-+
-+Optionally you can provide a function callback .of_xlate that is used for
-+device tree lookups. If not provided of_pwm_simple_xlate() is used implementing
-+the lookup as described in the generic pwm dt binding.
- 
- Drivers should not implement any power management. In other words,
- consumers should implement it as described in the "Using PWMs" section.
- 
-+The .ops structure allows to define the following callbacks:
-+
-+ - .request: Optional function that is called on pwm_get(). When this function
-+   returns a non-zero value this results in pwm_get() failing.
-+ - .free: Counterpart to .request called from pwm_put().
-+ - .apply: depending on the passed state the following behaviour is expected to
-+   be implemented:
-+
-+   All state changes should only be effective after the currently running
-+   period (if any) is completed. For a disabled pwm they can and should be
-+   effective immediately.
-+
-+   If state->enabled is false, the values state->period and state->duty_cycle
-+   are ignored and the output must be ensured to be inactive (that is
-+   constant low if state->polarity == PWM_POLARITY_NORMAL, or constant high if
-+   state->polarity == PWM_POLARITY_INVERSED).
-+
-+   If state->enabled is true, the output must be configured to run in periods of
-+   length state->period nanoseconds. For each period the output should be active
-+   (i.e. high if state->polarity == PWM_POLARITY_NORMAL, low otherwise) during
-+   the first state->duty_cycle nanoseconds of each period and inactive for the
-+   rest of it.
-+
-+   When the .apply callback returns to the caller the newly configured state
-+   should already be active.
-+
-+   .apply is the only place where the output wave is supposed to be changed. All
-+   other functions should not modify the configured state.
-+
-+ - .get_state: Optional function that should read the configuration from the
-+   hardware and fill the provided state variable accordingly.
-+ - .owner should be initialized to THIS_MODULE.
--Locking
---------
--
--The PWM core list manipulations are protected by a mutex, so pwm_request()
--and pwm_free() may not be called from an atomic context. Currently the
--PWM core does not enforce any locking to pwm_enable(), pwm_disable() and
--pwm_config(), so the calling context is currently driver specific. This
--is an issue derived from the former barebone API and should be fixed soon.
- 
--Helpers
---------
--
--Currently a PWM can only be configured with period_ns and duty_ns. For several
--use cases freq_hz and duty_percent might be better. Instead of calculating
--this in your driver please consider adding appropriate helpers to the framework.
-+Legacy Usage
-+------------
-+
-+The PWM API evolved in the past and not all users are converted yet. To get
-+hands on a PWM device you might see code using pwm_request (and pwm_free to
-+dispose it). Also for the different configuration possibilities there used to be
-+pwm_config/pwm_enable/pwm_disable. struct pwm_ops still contains the matching
-+callbacks that are still used if provided. New usage of all these functions is
-+discouraged.
--- 
-2.24.0
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
