@@ -1,152 +1,97 @@
-Return-path: <kernel-bounces@pengutronix.de>
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH 1/2] docs: pwm split out pwm-sysfs description from the
- generic pwm documentation
-Date: Mon,  9 Dec 2019 22:32:32 +0100
-Message-Id: <20191209213233.29574-1-u.kleine-koenig@pengutronix.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-mw2nam12on2065.outbound.protection.outlook.com ([40.107.244.65]:11831
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726596AbfLIAig (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 8 Dec 2019 19:38:36 -0500
+From: Jeff LaBundy <jeff@labundy.com>
+Date: Mon, 9 Dec 2019 00:38:31 +0000
+Message-ID: <1575851866-18919-1-git-send-email-jeff@labundy.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
+Subject: [PATCH v2 0/7] Add support for Azoteq IQS620A/621/622/624/625
+To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jeff LaBundy <jeff@labundy.com>
 
-The two are related but still disjoint enough to justify two documents.
+This series adds support for the Azoteq IQS620A, IQS621, IQS622, IQS624 and
+IQS625 multi-function sensors. Each device integrates numerous sensing tech=
+-
+nologies in a single package.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- Documentation/driver-api/index.rst     |  1 +
- Documentation/driver-api/pwm-sysfs.rst | 44 +++++++++++++++++++++++++
- Documentation/driver-api/pwm.rst       | 45 --------------------------
- 3 files changed, 45 insertions(+), 45 deletions(-)
- create mode 100644 Documentation/driver-api/pwm-sysfs.rst
+A multi-function device (MFD) driver supports core functions common to all
+devices, including device identification, firmware, interrupt handling and
+runtime power management. The MFD driver is also responsible for adding all
+product-specific sub-devices.
 
-diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-index 0ebe205efd0c..3e0230df2d64 100644
---- a/Documentation/driver-api/index.rst
-+++ b/Documentation/driver-api/index.rst
-@@ -91,6 +91,7 @@ available subsections can be seen below.
-    phy/index
-    pti_intel_mid
-    pwm
-+   pwm-sysfs
-    rfkill
-    serial/index
-    sm501
-diff --git a/Documentation/driver-api/pwm-sysfs.rst b/Documentation/driver-api/pwm-sysfs.rst
-new file mode 100644
-index 000000000000..e7da67940648
---- /dev/null
-+++ b/Documentation/driver-api/pwm-sysfs.rst
-@@ -0,0 +1,44 @@
-+Using PWMs with the sysfs interface
-+-----------------------------------
-+
-+If CONFIG_SYSFS is enabled in your kernel configuration a simple sysfs
-+interface is provided to use the PWMs from userspace. It is exposed at
-+/sys/class/pwm/. Each probed PWM controller/chip will be exported as
-+pwmchipN, where N is the base of the PWM chip. Inside the directory you
-+will find:
-+
-+  npwm
-+    The number of PWM channels this chip supports (read-only).
-+
-+  export
-+    Exports a PWM channel for use with sysfs (write-only).
-+
-+  unexport
-+   Unexports a PWM channel from sysfs (write-only).
-+
-+The PWM channels are numbered using a per-chip index from 0 to npwm-1.
-+
-+When a PWM channel is exported a pwmX directory will be created in the
-+pwmchipN directory it is associated with, where X is the number of the
-+channel that was exported. The following properties will then be available:
-+
-+  period
-+    The total period of the PWM signal (read/write).
-+    Value is in nanoseconds and is the sum of the active and inactive
-+    time of the PWM.
-+
-+  duty_cycle
-+    The active time of the PWM signal (read/write).
-+    Value is in nanoseconds and must be less than the period.
-+
-+  polarity
-+    Changes the polarity of the PWM signal (read/write).
-+    Writes to this property only work if the PWM chip supports changing
-+    the polarity. The polarity can only be changed if the PWM is not
-+    enabled. Value is the string "normal" or "inversed".
-+
-+  enable
-+    Enable/disable the PWM signal (read/write).
-+
-+	- 0 - disabled
-+	- 1 - enabled
-diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
-index ab62f1bb0366..8f31bcdbb631 100644
---- a/Documentation/driver-api/pwm.rst
-+++ b/Documentation/driver-api/pwm.rst
-@@ -69,51 +69,6 @@ All consumers should really be reconfiguring the PWM upon resume as
- appropriate. This is the only way to ensure that everything is resumed in
- the proper order.
- 
--Using PWMs with the sysfs interface
-------------------------------------
--
--If CONFIG_SYSFS is enabled in your kernel configuration a simple sysfs
--interface is provided to use the PWMs from userspace. It is exposed at
--/sys/class/pwm/. Each probed PWM controller/chip will be exported as
--pwmchipN, where N is the base of the PWM chip. Inside the directory you
--will find:
--
--  npwm
--    The number of PWM channels this chip supports (read-only).
--
--  export
--    Exports a PWM channel for use with sysfs (write-only).
--
--  unexport
--   Unexports a PWM channel from sysfs (write-only).
--
--The PWM channels are numbered using a per-chip index from 0 to npwm-1.
--
--When a PWM channel is exported a pwmX directory will be created in the
--pwmchipN directory it is associated with, where X is the number of the
--channel that was exported. The following properties will then be available:
--
--  period
--    The total period of the PWM signal (read/write).
--    Value is in nanoseconds and is the sum of the active and inactive
--    time of the PWM.
--
--  duty_cycle
--    The active time of the PWM signal (read/write).
--    Value is in nanoseconds and must be less than the period.
--
--  polarity
--    Changes the polarity of the PWM signal (read/write).
--    Writes to this property only work if the PWM chip supports changing
--    the polarity. The polarity can only be changed if the PWM is not
--    enabled. Value is the string "normal" or "inversed".
--
--  enable
--    Enable/disable the PWM signal (read/write).
--
--	- 0 - disabled
--	- 1 - enabled
--
- Implementing a PWM driver
- -------------------------
- 
--- 
-2.24.0
+Each device supports self-capacitive, Hall-effect, and (in some cases) mutu=
+al-
+inductive sensing. These functions represent keys or switches and are suppo=
+rted
+by an input driver that covers all five devices. An assortment of pwm and i=
+io
+drivers supports device-specific functions including ambient light and angu=
+lar
+position sensing.
+
+This series was tested using the following development hardware: IQS620AEV0=
+4,
+IQS621EV04, IQS622EV04 and IQS624/5EV04.
+
+Jeff LaBundy (7):
+  dt-bindings: Add bindings for Azoteq IQS620A/621/622/624/625
+  mfd: Add support for Azoteq IQS620A/621/622/624/625
+  input: keyboard: Add support for Azoteq IQS620A/621/622/624/625
+  pwm: Add support for Azoteq IQS620A PWM generator
+  iio: temperature: Add support for Azoteq IQS620AT temperature sensor
+  iio: light: Add support for Azoteq IQS621/622 ambient light sensors
+  iio: position: Add support for Azoteq IQS624/625 angle sensors
+
+ .../devicetree/bindings/input/iqs62x-keys.yaml     | 126 ++++
+ Documentation/devicetree/bindings/mfd/iqs62x.yaml  | 177 ++++++
+ .../devicetree/bindings/pwm/iqs620a-pwm.yaml       |  30 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/light/Kconfig                          |  10 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/iqs621-als.c                     | 614 +++++++++++++++++=
++++
+ drivers/iio/position/Kconfig                       |  19 +
+ drivers/iio/position/Makefile                      |   7 +
+ drivers/iio/position/iqs624-pos.c                  | 284 +++++++++
+ drivers/iio/temperature/Kconfig                    |  10 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/iqs620at-temp.c            |  97 ++++
+ drivers/input/keyboard/Kconfig                     |  10 +
+ drivers/input/keyboard/Makefile                    |   1 +
+ drivers/input/keyboard/iqs62x-keys.c               | 340 +++++++++++
+ drivers/mfd/Kconfig                                |  13 +
+ drivers/mfd/Makefile                               |   3 +
+ drivers/mfd/iqs62x-core.c                          | 639 +++++++++++++++++=
+++++
+ drivers/mfd/iqs62x-tables.c                        | 438 ++++++++++++++
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-iqs620a.c                          | 206 +++++++
+ include/linux/mfd/iqs62x.h                         | 146 +++++
+ 25 files changed, 3185 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/iqs62x-keys.yam=
+l
+ create mode 100644 Documentation/devicetree/bindings/mfd/iqs62x.yaml
+ create mode 100644 Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml
+ create mode 100644 drivers/iio/light/iqs621-als.c
+ create mode 100644 drivers/iio/position/Kconfig
+ create mode 100644 drivers/iio/position/Makefile
+ create mode 100644 drivers/iio/position/iqs624-pos.c
+ create mode 100644 drivers/iio/temperature/iqs620at-temp.c
+ create mode 100644 drivers/input/keyboard/iqs62x-keys.c
+ create mode 100644 drivers/mfd/iqs62x-core.c
+ create mode 100644 drivers/mfd/iqs62x-tables.c
+ create mode 100644 drivers/pwm/pwm-iqs620a.c
+ create mode 100644 include/linux/mfd/iqs62x.h
+
+--
+2.7.4
