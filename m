@@ -1,732 +1,460 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726130AbfLOQrS (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 15 Dec 2019 11:47:18 -0500
-Date: Sun, 15 Dec 2019 16:47:11 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <20191215164711.0bd0241d@archlinux>
-In-Reply-To: <1575851866-18919-7-git-send-email-jeff@labundy.com>
+Received: from mail-mw2nam12on2065.outbound.protection.outlook.com ([40.107.244.65]:11831
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726654AbfLIAin (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 8 Dec 2019 19:38:43 -0500
+From: Jeff LaBundy <jeff@labundy.com>
+Date: Mon, 9 Dec 2019 00:38:32 +0000
+Message-ID: <1575851866-18919-2-git-send-email-jeff@labundy.com>
 References: <1575851866-18919-1-git-send-email-jeff@labundy.com>
-        <1575851866-18919-7-git-send-email-jeff@labundy.com>
+In-Reply-To: <1575851866-18919-1-git-send-email-jeff@labundy.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: Re: [PATCH v2 6/7] iio: light: Add support for Azoteq IQS621/622
- ambient light sensors
-To: Jeff LaBundy <jeff@labundy.com>
-Cc: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>
+Subject: [PATCH v2 1/7] dt-bindings: Add bindings for Azoteq
+ IQS620A/621/622/624/625
+To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jeff LaBundy <jeff@labundy.com>
 
-On Mon, 9 Dec 2019 00:38:39 +0000
-Jeff LaBundy <jeff@labundy.com> wrote:
+This patch adds device tree bindings for the Azoteq IQS620A, IQS621,
+IQS622, IQS624 and IQS625 multi-function sensors.
 
-> This patch adds support for the Azoteq IQS621 and IQS622 ambient light
-> sensors, both of which can report a four-bit representation of ambient
-> light intensity.
-> 
-> The IQS621 can additionally report illuminace directly in units of lux,
-> while the IQS622 can report a four-bit representation of infrared light
-> intensity. Furthermore, the IQS622 can report a unitless measurement of
-> a target's proximity to the device.
-> 
-> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-looks good to me.
+A total of three bindings are presented (one MFD and two child nodes);
+they are submitted as a single patch because the child node bindings
+have no meaning in the absence of the MFD binding.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+---
+Changes in v2:
+  - Removed "prox" child node and moved "keys" and "pwm" child nodes to the=
+ir
+    own bindings
+  - Replaced linux,fw-file property with more common firmware-name property
+  - Converted all bindings to YAML
 
-Nice little driver :)
+ .../devicetree/bindings/input/iqs62x-keys.yaml     | 126 +++++++++++++++
+ Documentation/devicetree/bindings/mfd/iqs62x.yaml  | 177 +++++++++++++++++=
+++++
+ .../devicetree/bindings/pwm/iqs620a-pwm.yaml       |  30 ++++
+ 3 files changed, 333 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/iqs62x-keys.yam=
+l
+ create mode 100644 Documentation/devicetree/bindings/mfd/iqs62x.yaml
+ create mode 100644 Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml
 
-Jonathan
-
-> ---
-> Changes in v2:
->   - Merged 'Copyright' and 'Author' lines into one in introductory comments
->   - Replaced 'error' with 'ret' throughout
->   - Merged support for the closely related IQS622 (formerly represented by
->     a separate iio/proximity driver)
->   - Added support for unitless ambient light intensity (IQS621 and IQS622)
->     and infrared light intensity (IQS622 only)
->   - Moved the read of IQS621_ALS_FLAGS to iqs621_als_write_event_config to
->     account for the fact that IQS621_ALS_FLAGS may have changed in between
->     having first been read in iqs621_als_init and the time at which events
->     are enabled, thereby eliminating the need to call iqs621_als_init from
->     iqs621_als_probe
->   - Refactored the logic in iqs621_als_notifier and added a lock to safely
->     evaluate variables that may change in response to user action
->   - Added locks to iqs621_als_read_event_config/value to account for cases in
->     which the corresponding hardware state is in the process of being updated
->   - Refactored the logic in iqs621_als_read/write_event_value and removed all
->     #defines that could instead be represented by simple math
->   - Based the decision whether to select the IQS622 IR touch vs. proximity
->     threshold on the single proximity threshold written by user space, and
->     added a comment to describe the difference between either threshold
->   - Replaced IIO_CHAN_INFO_RAW with IIO_CHAN_INFO_PROCESSED for the IIO_LIGHT
->     channel (IQS621 only)
->   - Removed devm_add_action_or_reset failure message
->   - Eliminated tabbed alignment of platform_driver struct members
->   - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
-> 
->  drivers/iio/light/Kconfig      |  10 +
->  drivers/iio/light/Makefile     |   1 +
->  drivers/iio/light/iqs621-als.c | 614 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 625 insertions(+)
->  create mode 100644 drivers/iio/light/iqs621-als.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 9968f98..baf7958b 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -173,6 +173,16 @@ config GP2AP020A00F
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called gp2ap020a00f.
-> 
-> +config IQS621_ALS
-> +	tristate "Azoteq IQS621/622 ambient light sensors"
-> +	depends on MFD_IQS62X || COMPILE_TEST
-> +	help
-> +	  Say Y here if you want to build support for the Azoteq IQS621
-> +	  and IQS622 ambient light sensors.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called iqs621-als.
-> +
->  config SENSORS_ISL29018
->  	tristate "Intersil 29018 light and proximity sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index c98d1ce..988e8f4 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -21,6 +21,7 @@ obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
->  obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
-> +obj-$(CONFIG_IQS621_ALS)	+= iqs621-als.o
->  obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
->  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->  obj-$(CONFIG_ISL29125)		+= isl29125.o
-> diff --git a/drivers/iio/light/iqs621-als.c b/drivers/iio/light/iqs621-als.c
-> new file mode 100644
-> index 0000000..a4dd718
-> --- /dev/null
-> +++ b/drivers/iio/light/iqs621-als.c
-> @@ -0,0 +1,614 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * Azoteq IQS621/622 Ambient Light Sensors
-> + *
-> + * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/iio/events.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/iqs62x.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/notifier.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
-> +#define IQS621_ALS_FLAGS_LIGHT			BIT(7)
-> +#define IQS621_ALS_FLAGS_RANGE			GENMASK(3, 0)
-> +
-> +#define IQS621_ALS_UI_OUT			0x17
-> +
-> +#define IQS621_ALS_THRESH_DARK			0x80
-> +#define IQS621_ALS_THRESH_LIGHT			0x81
-> +
-> +#define IQS622_IR_RANGE				0x15
-> +#define IQS622_IR_FLAGS				0x16
-> +#define IQS622_IR_FLAGS_TOUCH			BIT(1)
-> +#define IQS622_IR_FLAGS_PROX			BIT(0)
-> +
-> +#define IQS622_IR_UI_OUT			0x17
-> +
-> +#define IQS622_IR_THRESH_PROX			0x91
-> +#define IQS622_IR_THRESH_TOUCH			0x92
-> +
-> +struct iqs621_als_private {
-> +	struct iqs62x_core *iqs62x;
-> +	struct notifier_block notifier;
-> +	struct mutex lock;
-> +	bool light_en;
-> +	bool range_en;
-> +	bool prox_en;
-> +	u8 als_flags;
-> +	u8 ir_flags_mask;
-> +	u8 ir_flags;
-> +	u8 thresh_light;
-> +	u8 thresh_dark;
-> +	u8 thresh_prox;
-> +};
-> +
-> +static int iqs621_als_init(struct iqs621_als_private *iqs621_als)
-> +{
-> +	struct iqs62x_core *iqs62x = iqs621_als->iqs62x;
-> +	unsigned int event_mask = 0;
-> +	int ret;
-> +
-> +	switch (iqs621_als->ir_flags_mask) {
-> +	case IQS622_IR_FLAGS_TOUCH:
-> +		ret = regmap_write(iqs62x->map, IQS622_IR_THRESH_TOUCH,
-> +				   iqs621_als->thresh_prox);
-> +		break;
-> +
-> +	case IQS622_IR_FLAGS_PROX:
-> +		ret = regmap_write(iqs62x->map, IQS622_IR_THRESH_PROX,
-> +				   iqs621_als->thresh_prox);
-> +		break;
-> +
-> +	default:
-> +		ret = regmap_write(iqs62x->map, IQS621_ALS_THRESH_LIGHT,
-> +				   iqs621_als->thresh_light);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_write(iqs62x->map, IQS621_ALS_THRESH_DARK,
-> +				   iqs621_als->thresh_dark);
-> +	}
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (iqs621_als->light_en || iqs621_als->range_en)
-> +		event_mask |= iqs62x->dev_desc->als_mask;
-> +
-> +	if (iqs621_als->prox_en)
-> +		event_mask |= iqs62x->dev_desc->ir_mask;
-> +
-> +	return regmap_update_bits(iqs62x->map, IQS620_GLBL_EVENT_MASK,
-> +				  event_mask, 0);
-> +}
-> +
-> +static int iqs621_als_notifier(struct notifier_block *notifier,
-> +			       unsigned long event_flags, void *context)
-> +{
-> +	struct iqs62x_event_data *event_data = context;
-> +	struct iqs621_als_private *iqs621_als;
-> +	struct iio_dev *indio_dev;
-> +	bool light_new, light_old;
-> +	bool prox_new, prox_old;
-> +	u8 range_new, range_old;
-> +	s64 timestamp;
-> +	int ret;
-> +
-> +	iqs621_als = container_of(notifier, struct iqs621_als_private,
-> +				  notifier);
-> +	indio_dev = iio_priv_to_dev(iqs621_als);
-> +	timestamp = iio_get_time_ns(indio_dev);
-> +
-> +	mutex_lock(&iqs621_als->lock);
-> +
-> +	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
-> +		ret = iqs621_als_init(iqs621_als);
-> +		if (ret) {
-> +			dev_err(indio_dev->dev.parent,
-> +				"Failed to re-initialize device: %d\n", ret);
-> +			ret = NOTIFY_BAD;
-> +		} else {
-> +			ret = NOTIFY_OK;
-> +		}
-> +
-> +		goto err_mutex;
-> +	}
-> +
-> +	if (!iqs621_als->light_en && !iqs621_als->range_en &&
-> +	    !iqs621_als->prox_en) {
-> +		ret = NOTIFY_DONE;
-> +		goto err_mutex;
-> +	}
-> +
-> +	/* IQS621 only */
-> +	light_new = event_data->als_flags & IQS621_ALS_FLAGS_LIGHT;
-> +	light_old = iqs621_als->als_flags & IQS621_ALS_FLAGS_LIGHT;
-> +
-> +	if (iqs621_als->light_en && light_new && !light_old)
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_RISING),
-> +			       timestamp);
-> +	else if (iqs621_als->light_en && !light_new && light_old)
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_FALLING),
-> +			       timestamp);
-> +
-> +	/* IQS621 and IQS622 */
-> +	range_new = event_data->als_flags & IQS621_ALS_FLAGS_RANGE;
-> +	range_old = iqs621_als->als_flags & IQS621_ALS_FLAGS_RANGE;
-> +
-> +	if (iqs621_als->range_en && (range_new > range_old))
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
-> +						    IIO_EV_TYPE_CHANGE,
-> +						    IIO_EV_DIR_RISING),
-> +			       timestamp);
-> +	else if (iqs621_als->range_en && (range_new < range_old))
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
-> +						    IIO_EV_TYPE_CHANGE,
-> +						    IIO_EV_DIR_FALLING),
-> +			       timestamp);
-> +
-> +	/* IQS622 only */
-> +	prox_new = event_data->ir_flags & iqs621_als->ir_flags_mask;
-> +	prox_old = iqs621_als->ir_flags & iqs621_als->ir_flags_mask;
-> +
-> +	if (iqs621_als->prox_en && prox_new && !prox_old)
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_RISING),
-> +			       timestamp);
-> +	else if (iqs621_als->prox_en && !prox_new && prox_old)
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_FALLING),
-> +			       timestamp);
-> +
-> +	iqs621_als->als_flags = event_data->als_flags;
-> +	iqs621_als->ir_flags = event_data->ir_flags;
-> +	ret = NOTIFY_OK;
-> +
-> +err_mutex:
-> +	mutex_unlock(&iqs621_als->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static void iqs621_als_notifier_unregister(void *context)
-> +{
-> +	struct iqs621_als_private *iqs621_als = context;
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(iqs621_als);
-> +	int ret;
-> +
-> +	ret = blocking_notifier_chain_unregister(&iqs621_als->iqs62x->nh,
-> +						 &iqs621_als->notifier);
-> +	if (ret)
-> +		dev_err(indio_dev->dev.parent,
-> +			"Failed to unregister notifier: %d\n", ret);
-> +}
-> +
-> +static int iqs621_als_read_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int *val, int *val2, long mask)
-> +{
-> +	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
-> +	struct iqs62x_core *iqs62x = iqs621_als->iqs62x;
-> +	int ret;
-> +	__le16 val_buf;
-> +
-> +	switch (chan->type) {
-> +	case IIO_INTENSITY:
-> +		ret = regmap_read(iqs62x->map, chan->address, val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val &= IQS621_ALS_FLAGS_RANGE;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_PROXIMITY:
-> +	case IIO_LIGHT:
-> +		ret = regmap_raw_read(iqs62x->map, chan->address, &val_buf,
-> +				      sizeof(val_buf));
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = le16_to_cpu(val_buf);
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int iqs621_als_read_event_config(struct iio_dev *indio_dev,
-> +					const struct iio_chan_spec *chan,
-> +					enum iio_event_type type,
-> +					enum iio_event_direction dir)
-> +{
-> +	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&iqs621_als->lock);
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		ret = iqs621_als->light_en;
-> +		break;
-> +
-> +	case IIO_INTENSITY:
-> +		ret = iqs621_als->range_en;
-> +		break;
-> +
-> +	case IIO_PROXIMITY:
-> +		ret = iqs621_als->prox_en;
-> +		break;
-> +
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	mutex_unlock(&iqs621_als->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int iqs621_als_write_event_config(struct iio_dev *indio_dev,
-> +					 const struct iio_chan_spec *chan,
-> +					 enum iio_event_type type,
-> +					 enum iio_event_direction dir,
-> +					 int state)
-> +{
-> +	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
-> +	struct iqs62x_core *iqs62x = iqs621_als->iqs62x;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	mutex_lock(&iqs621_als->lock);
-> +
-> +	ret = regmap_read(iqs62x->map, iqs62x->dev_desc->als_flags, &val);
-> +	if (ret)
-> +		goto err_mutex;
-> +	iqs621_als->als_flags = val;
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		ret = regmap_update_bits(iqs62x->map, IQS620_GLBL_EVENT_MASK,
-> +					 iqs62x->dev_desc->als_mask,
-> +					 iqs621_als->range_en | state ? 0 :
-> +									0xFF);
-> +		if (!ret)
-> +			iqs621_als->light_en = state;
-> +		break;
-> +
-> +	case IIO_INTENSITY:
-> +		ret = regmap_update_bits(iqs62x->map, IQS620_GLBL_EVENT_MASK,
-> +					 iqs62x->dev_desc->als_mask,
-> +					 iqs621_als->light_en | state ? 0 :
-> +									0xFF);
-> +		if (!ret)
-> +			iqs621_als->range_en = state;
-> +		break;
-> +
-> +	case IIO_PROXIMITY:
-> +		ret = regmap_read(iqs62x->map, IQS622_IR_FLAGS, &val);
-> +		if (ret)
-> +			goto err_mutex;
-> +		iqs621_als->ir_flags = val;
-> +
-> +		ret = regmap_update_bits(iqs62x->map, IQS620_GLBL_EVENT_MASK,
-> +					 iqs62x->dev_desc->ir_mask,
-> +					 state ? 0 : 0xFF);
-> +		if (!ret)
-> +			iqs621_als->prox_en = state;
-> +		break;
-> +
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +err_mutex:
-> +	mutex_unlock(&iqs621_als->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int iqs621_als_read_event_value(struct iio_dev *indio_dev,
-> +				       const struct iio_chan_spec *chan,
-> +				       enum iio_event_type type,
-> +				       enum iio_event_direction dir,
-> +				       enum iio_event_info info,
-> +				       int *val, int *val2)
-> +{
-> +	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
-> +	int ret = IIO_VAL_INT;
-> +
-> +	mutex_lock(&iqs621_als->lock);
-> +
-> +	switch (dir) {
-> +	case IIO_EV_DIR_RISING:
-> +		*val = iqs621_als->thresh_light * 16;
-> +		break;
-> +
-> +	case IIO_EV_DIR_FALLING:
-> +		*val = iqs621_als->thresh_dark * 4;
-> +		break;
-> +
-> +	case IIO_EV_DIR_EITHER:
-> +		if (iqs621_als->ir_flags_mask == IQS622_IR_FLAGS_TOUCH)
-> +			*val = iqs621_als->thresh_prox * 4;
-> +		else
-> +			*val = iqs621_als->thresh_prox;
-> +		break;
-> +
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	mutex_unlock(&iqs621_als->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
-> +					const struct iio_chan_spec *chan,
-> +					enum iio_event_type type,
-> +					enum iio_event_direction dir,
-> +					enum iio_event_info info,
-> +					int val, int val2)
-> +{
-> +	struct iqs621_als_private *iqs621_als = iio_priv(indio_dev);
-> +	struct iqs62x_core *iqs62x = iqs621_als->iqs62x;
-> +	unsigned int thresh_reg, thresh_val;
-> +	u8 ir_flags_mask, *thresh_cache;
-> +	int ret = -EINVAL;
-> +
-> +	mutex_lock(&iqs621_als->lock);
-> +
-> +	switch (dir) {
-> +	case IIO_EV_DIR_RISING:
-> +		thresh_reg = IQS621_ALS_THRESH_LIGHT;
-> +		thresh_val = val / 16;
-> +
-> +		thresh_cache = &iqs621_als->thresh_light;
-> +		ir_flags_mask = 0;
-> +		break;
-> +
-> +	case IIO_EV_DIR_FALLING:
-> +		thresh_reg = IQS621_ALS_THRESH_DARK;
-> +		thresh_val = val / 4;
-> +
-> +		thresh_cache = &iqs621_als->thresh_dark;
-> +		ir_flags_mask = 0;
-> +		break;
-> +
-> +	case IIO_EV_DIR_EITHER:
-> +		/*
-> +		 * The IQS622 supports two detection thresholds, both measured
-> +		 * in the same arbitrary units reported by read_raw: proximity
-> +		 * (0 through 255 in steps of 1), and touch (0 through 1020 in
-> +		 * steps of 4).
-> +		 *
-> +		 * Based on the single detection threshold chosen by the user,
-> +		 * select the hardware threshold that gives the best trade-off
-> +		 * between range and resolution.
-> +		 *
-> +		 * By default, the close-range (but coarse) touch threshold is
-> +		 * chosen during probe.
-> +		 */
-> +		switch (val) {
-> +		case 0 ... 255:
-> +			thresh_reg = IQS622_IR_THRESH_PROX;
-> +			thresh_val = val;
-> +
-> +			ir_flags_mask = IQS622_IR_FLAGS_PROX;
-> +			break;
-> +
-> +		case 256 ... 1020:
-> +			thresh_reg = IQS622_IR_THRESH_TOUCH;
-> +			thresh_val = val / 4;
-> +
-> +			ir_flags_mask = IQS622_IR_FLAGS_TOUCH;
-> +			break;
-> +
-> +		default:
-> +			goto err_mutex;
-> +		}
-> +
-> +		thresh_cache = &iqs621_als->thresh_prox;
-> +		break;
-> +
-> +	default:
-> +		goto err_mutex;
-> +	}
-> +
-> +	if (thresh_val > 0xFF)
-> +		goto err_mutex;
-> +
-> +	ret = regmap_write(iqs62x->map, thresh_reg, thresh_val);
-> +	if (ret)
-> +		goto err_mutex;
-> +
-> +	*thresh_cache = thresh_val;
-> +	iqs621_als->ir_flags_mask = ir_flags_mask;
-> +
-> +err_mutex:
-> +	mutex_unlock(&iqs621_als->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info iqs621_als_info = {
-> +	.read_raw = &iqs621_als_read_raw,
-> +	.read_event_config = iqs621_als_read_event_config,
-> +	.write_event_config = iqs621_als_write_event_config,
-> +	.read_event_value = iqs621_als_read_event_value,
-> +	.write_event_value = iqs621_als_write_event_value,
-> +};
-> +
-> +static const struct iio_event_spec iqs621_als_range_events[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_CHANGE,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +};
-> +
-> +static const struct iio_event_spec iqs621_als_light_events[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec iqs621_als_channels[] = {
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.address = IQS621_ALS_FLAGS,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.event_spec = iqs621_als_range_events,
-> +		.num_event_specs = ARRAY_SIZE(iqs621_als_range_events),
-> +	},
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.address = IQS621_ALS_UI_OUT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.event_spec = iqs621_als_light_events,
-> +		.num_event_specs = ARRAY_SIZE(iqs621_als_light_events),
-> +	},
-> +};
-> +
-> +static const struct iio_event_spec iqs622_als_prox_events[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
-> +				 BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec iqs622_als_channels[] = {
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.channel2 = IIO_MOD_LIGHT_BOTH,
-> +		.address = IQS622_ALS_FLAGS,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.event_spec = iqs621_als_range_events,
-> +		.num_event_specs = ARRAY_SIZE(iqs621_als_range_events),
-> +		.modified = true,
-> +	},
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.channel2 = IIO_MOD_LIGHT_IR,
-> +		.address = IQS622_IR_RANGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.modified = true,
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.address = IQS622_IR_UI_OUT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.event_spec = iqs622_als_prox_events,
-> +		.num_event_specs = ARRAY_SIZE(iqs622_als_prox_events),
-> +	},
-> +};
-> +
-> +static int iqs621_als_probe(struct platform_device *pdev)
-> +{
-> +	struct iqs62x_core *iqs62x = dev_get_drvdata(pdev->dev.parent);
-> +	struct iqs621_als_private *iqs621_als;
-> +	struct iio_dev *indio_dev;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*iqs621_als));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	iqs621_als = iio_priv(indio_dev);
-> +	iqs621_als->iqs62x = iqs62x;
-> +
-> +	if (iqs62x->dev_desc->prod_num == IQS622_PROD_NUM) {
-> +		ret = regmap_read(iqs62x->map, IQS622_IR_THRESH_TOUCH, &val);
-> +		if (ret)
-> +			return ret;
-> +		iqs621_als->thresh_prox = val;
-> +		iqs621_als->ir_flags_mask = IQS622_IR_FLAGS_TOUCH;
-> +
-> +		indio_dev->channels = iqs622_als_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(iqs622_als_channels);
-> +	} else {
-> +		ret = regmap_read(iqs62x->map, IQS621_ALS_THRESH_LIGHT, &val);
-> +		if (ret)
-> +			return ret;
-> +		iqs621_als->thresh_light = val;
-> +
-> +		ret = regmap_read(iqs62x->map, IQS621_ALS_THRESH_DARK, &val);
-> +		if (ret)
-> +			return ret;
-> +		iqs621_als->thresh_dark = val;
-> +
-> +		indio_dev->channels = iqs621_als_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(iqs621_als_channels);
-> +	}
-> +
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = iqs62x->dev_desc->dev_name;
-> +	indio_dev->info = &iqs621_als_info;
-> +
-> +	mutex_init(&iqs621_als->lock);
-> +
-> +	iqs621_als->notifier.notifier_call = iqs621_als_notifier;
-> +	ret = blocking_notifier_chain_register(&iqs621_als->iqs62x->nh,
-> +					       &iqs621_als->notifier);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&pdev->dev,
-> +				       iqs621_als_notifier_unregister,
-> +				       iqs621_als);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&pdev->dev, indio_dev);
-> +}
-> +
-> +static struct platform_driver iqs621_als_platform_driver = {
-> +	.driver = {
-> +		.name = IQS621_DRV_NAME_ALS,
-> +	},
-> +	.probe = iqs621_als_probe,
-> +};
-> +module_platform_driver(iqs621_als_platform_driver);
-> +
-> +MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
-> +MODULE_DESCRIPTION("Azoteq IQS621/622 Ambient Light Sensors");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("platform:" IQS621_DRV_NAME_ALS);
-> --
-> 2.7.4
-> 
+diff --git a/Documentation/devicetree/bindings/input/iqs62x-keys.yaml b/Doc=
+umentation/devicetree/bindings/input/iqs62x-keys.yaml
+new file mode 100644
+index 0000000..e9b54e0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/iqs62x-keys.yaml
+@@ -0,0 +1,126 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/iqs62x-keys.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Azoteq IQS620A/621/622/624/625 Keys and Switches
++
++maintainers:
++  - Jeff LaBundy <jeff@labundy.com>
++
++description: |
++  The Azoteq IQS620A, IQS621, IQS622, IQS624 and IQS625 multi-function sen=
+sors
++  feature a variety of self-capacitive, mutual-inductive and Hall-effect s=
+ens-
++  ing capabilities that can facilitate a variety of contactless key and sw=
+itch
++  applications.
++
++  These functions are collectively represented by a "keys" child node from=
+ the
++  parent MFD driver. See Documentation/devicetree/bindings/mfd/iqs62x.yaml=
+ for
++  further details and examples. Sensor hardware configuration (self-capaci=
+tive
++  vs. mutual-inductive, etc.) is selected based on the device's firmware.
++
++properties:
++  compatible:
++    enum:
++      - azoteq,iqs620a-keys
++      - azoteq,iqs621-keys
++      - azoteq,iqs622-keys
++      - azoteq,iqs624-keys
++      - azoteq,iqs625-keys
++
++  linux,keycodes:
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/uint32-array
++      - minItems: 1
++        maxItems: 16
++    description: |
++      Specifies the numeric keycodes associated with each available touch =
+or
++      proximity event according to the following table. An 'x' indicates t=
+he
++      event is supported for a given device. Specify 0 for unused events.
++
++      --------------------------------------------------------------------=
+-----
++      | #  | Event              | IQS620A | IQS621 | IQS622 | IQS624 | IQS=
+625 |
++      --------------------------------------------------------------------=
+-----
++      | 0  | CH0 Touch          |    x    |    x   |    x   |    x   |    =
+x   |
++      |    | Antenna 1 Touch*   |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 1  | CH0 Proximity      |    x    |    x   |    x   |    x   |    =
+x   |
++      |    | Antenna 1 Prox.*   |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 2  | CH1 Touch          |    x    |    x   |    x   |    x   |    =
+x   |
++      |    | Ant. 1 Deep Touch* |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 3  | CH1 Proximity      |    x    |    x   |    x   |    x   |    =
+x   |
++      --------------------------------------------------------------------=
+-----
++      | 4  | CH2 Touch          |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 5  | CH2 Proximity      |    x    |        |        |        |    =
+    |
++      |    | Antenna 2 Prox.*   |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 6  | Metal (+) Touch**  |    x    |    x   |        |        |    =
+    |
++      |    | Ant. 2 Deep Touch* |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 7  | Metal (+) Prox.**  |    x    |    x   |        |        |    =
+    |
++      |    | Antenna 2 Touch*   |    x    |        |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 8  | Metal (-) Touch**  |    x    |    x   |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 9  | Metal (-) Prox.**  |    x    |    x   |        |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 10 | SAR Active***      |    x    |        |    x   |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 11 | SAR Quick Rel.***  |    x    |        |    x   |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 12 | SAR Movement***    |    x    |        |    x   |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 13 | SAR Filter Halt*** |    x    |        |    x   |        |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 14 | Wheel Up           |         |        |        |    x   |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      | 15 | Wheel Down         |         |        |        |    x   |    =
+    |
++      --------------------------------------------------------------------=
+-----
++      *   Two-channel SAR. Replaces CH0-2 plus metal touch and proximity e=
+vents
++          if enabled via firmware.
++      **  "+" and "-" refer to the polarity of a channel's delta (LTA - co=
+unts),
++          where "LTA" is defined as the channel's long-term average.
++      *** One-channel SAR. Replaces CH0-2 touch and proximity events if en=
+abled
++          via firmware.
++
++required:
++  - compatible
++  - linux,keycodes
++
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - azoteq,iqs620a-keys
++          - azoteq,iqs621-keys
++          - azoteq,iqs622-keys
++then:
++  patternProperties:
++    "^hall-switch-(north|south)$":
++      type: object
++      description:
++        Represents north/south-field Hall-effect sensor touch or proximity
++        events. Note that north/south-field orientation is reversed on the
++        IQS620AXzCSR device due to its flip-chip package.
++
++      properties:
++        linux,code:
++          $ref: /schemas/types.yaml#/definitions/uint32
++          description: Numeric switch code associated with the event.
++
++        azoteq,use-prox:
++          $ref: /schemas/types.yaml#/definitions/flag
++          description:
++            If present, specifies that Hall-effect sensor reporting should
++            use the device's wide-range proximity threshold instead of its
++            close-range touch threshold (default).
++
++      required:
++        - linux,code
++
++...
+diff --git a/Documentation/devicetree/bindings/mfd/iqs62x.yaml b/Documentat=
+ion/devicetree/bindings/mfd/iqs62x.yaml
+new file mode 100644
+index 0000000..24e6004
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/iqs62x.yaml
+@@ -0,0 +1,177 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/iqs62x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Azoteq IQS620A/621/622/624/625 Multi-Function Sensors
++
++maintainers:
++  - Jeff LaBundy <jeff@labundy.com>
++
++description: |
++  The Azoteq IQS620A, IQS621, IQS622, IQS624 and IQS625 multi-function sen=
+sors
++  integrate multiple sensing technologies in a single package.
++
++  Link to data sheets: https://www.azoteq.com/
++
++properties:
++  compatible:
++    enum:
++      - azoteq,iqs620a
++      - azoteq,iqs621
++      - azoteq,iqs622
++      - azoteq,iqs624
++      - azoteq,iqs625
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  firmware-name:
++    $ref: /schemas/types.yaml#/definitions/string
++    description:
++      Specifies the name of the calibration and configuration file selecte=
+d by
++      the driver. If this property is omitted, the name is chosen based on=
+ the
++      device name with ".bin" as the extension (e.g. iqs620a.bin for IQS62=
+0A).
++
++  keys:
++    $ref: ../input/iqs62x-keys.yaml
++
++  pwm:
++    $ref: ../pwm/iqs620a-pwm.yaml
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++examples:
++  - |
++    /*
++     * Dual capacitive buttons with additional "air button," unipolar lid
++     * switch and panel-mounted LED.
++     */
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++            #address-cells =3D <1>;
++            #size-cells =3D <0>;
++
++            iqs620a@44 {
++                    compatible =3D "azoteq,iqs620a";
++                    reg =3D <0x44>;
++                    interrupt-parent =3D <&gpio>;
++                    interrupts =3D <17 IRQ_TYPE_LEVEL_LOW>;
++
++                    keys {
++                            compatible =3D "azoteq,iqs620a-keys";
++
++                            linux,keycodes =3D <KEY_SELECT>,
++                                             <KEY_MENU>,
++                                             <KEY_OK>,
++                                             <KEY_MENU>;
++
++                            hall-switch-south {
++                                    linux,code =3D <SW_LID>;
++                                    azoteq,use-prox;
++                            };
++                    };
++
++                    iqs620a_pwm: pwm {
++                            compatible =3D "azoteq,iqs620a-pwm";
++                            #pwm-cells =3D <2>;
++                    };
++            };
++    };
++
++    pwmleds {
++            compatible =3D "pwm-leds";
++
++            panel {
++                    pwms =3D <&iqs620a_pwm 0 1000000>;
++                    max-brightness =3D <255>;
++            };
++    };
++
++  - |
++    /* Single inductive button with bipolar dock/tablet-mode switch. */
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++            #address-cells =3D <1>;
++            #size-cells =3D <0>;
++
++            iqs620a@44 {
++                    compatible =3D "azoteq,iqs620a";
++                    reg =3D <0x44>;
++                    interrupt-parent =3D <&gpio>;
++                    interrupts =3D <17 IRQ_TYPE_LEVEL_LOW>;
++
++                    firmware-name =3D "iqs620a_coil.bin";
++
++                    keys {
++                            compatible =3D "azoteq,iqs620a-keys";
++
++                            linux,keycodes =3D <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <KEY_MUTE>;
++
++                            hall-switch-north {
++                                    linux,code =3D <SW_DOCK>;
++                            };
++
++                            hall-switch-south {
++                                    linux,code =3D <SW_TABLET_MODE>;
++                            };
++                    };
++            };
++    };
++
++  - |
++    /* Dual capacitive buttons with volume knob. */
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++            #address-cells =3D <1>;
++            #size-cells =3D <0>;
++
++            iqs624@44 {
++                    compatible =3D "azoteq,iqs624";
++                    reg =3D <0x44>;
++                    interrupt-parent =3D <&gpio>;
++                    interrupts =3D <17 IRQ_TYPE_LEVEL_LOW>;
++
++                    keys {
++                            compatible =3D "azoteq,iqs624-keys";
++
++                            linux,keycodes =3D <BTN_0>,
++                                             <0>,
++                                             <BTN_1>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <0>,
++                                             <KEY_VOLUMEUP>,
++                                             <KEY_VOLUMEDOWN>;
++                    };
++            };
++    };
++
++...
+diff --git a/Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml b/Docum=
+entation/devicetree/bindings/pwm/iqs620a-pwm.yaml
+new file mode 100644
+index 0000000..6b7aaef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml
+@@ -0,0 +1,30 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/iqs620a-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Azoteq IQS620A PWM Generator
++
++maintainers:
++  - Jeff LaBundy <jeff@labundy.com>
++
++description: |
++  The Azoteq IQS620A multi-function sensor generates a fixed-frequency PWM
++  output represented by a "pwm" child node from the parent MFD driver. See
++  Documentation/devicetree/bindings/mfd/iqs62x.yaml for further details as
++  well as an example.
++
++properties:
++  compatible:
++    enum:
++      - azoteq,iqs620a-pwm
++
++  "#pwm-cells":
++    const: 2
++
++required:
++  - compatible
++  - "#pwm-cells"
++
++...
+--
+2.7.4
