@@ -1,57 +1,174 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2] pwm: sun4i: Narrow scope of local variable
-Date: Tue, 10 Dec 2019 11:24:44 +0100
-Message-ID: <20191210102444.26594-1-u.kleine-koenig@pengutronix.de>
-References: <20191210101229.rvqelc2hanisd2cp@pengutronix.de>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v3 1/3] pwm: jz4740: Use clocks from TCU driver
+Date: Tue, 10 Dec 2019 16:27:32 +0100
+Message-ID: <20191210152734.39588-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191210101229.rvqelc2hanisd2cp@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Colin King <colin.king@canonical.com>, Thierry Reding <thierry.reding@gmail.com>, Walter Harms <wharms@bfs.de>
-Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Dan Carpenter <dan.carpenter@oracle.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlIHZhcmlhYmxlIHB2YWwgaXMgb25seSB1c2VkIGluIGEgc2luZ2xlIGJsb2NrIGluIHRoZSBm
-dW5jdGlvbgpzdW40aV9wd21fY2FsY3VsYXRlKCkuIFNvIGRlY2xhcmUgaXQgaW4gYSBtb3JlIGxv
-Y2FsIHNjb3BlIHRvIHNpbXBsaWZ5CnRoZSBmdW5jdGlvbiBmb3IgaHVtYW5zIGFuZCBjb21waWxl
-cnMuCgpXaGlsZSBhdCBpdCBhbHNvIHNpbXBsaWZ5IGFzc2lnbm1lbnQgdG8gcHZhbC4KCldoaWxl
-IHRoZSBkaWZmc3RhdCBmb3IgdGhpcyBwYXRjaCBpcyBuZWdhdGl2ZSBmb3IgdGhpcyBwYXRjaCBJ
-IHN0aWxsCnRoaW5nIHRoZSBhZHZhbnRhZ2Ugb2YgaGF2aW5nIGEgbmFycm93ZXIgc2NvcGUgaXMg
-YmVuZWZpY2lhbC4KCkluIG15IGNvbXBpbGVyIC8gLmNvbmZpZyBzZXR1cCAoZ2NjIDguMi4xLCBh
-cm0vaW14X3Y2X3Y3X2RlZmNvbmZpZyArCkNPTVBJTEVfVEVTVCArIFBXTV9TVU40SSkgdGhpcyBj
-aGFuZ2UgZG9lc24ndCByZXN1bHQgaW4gYW55IGJpbmFyeQpjaGFuZ2VzLgoKU2lnbmVkLW9mZi1i
-eTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0t
-CkhlbGxvLAoKY2hhbmdlcyBzaW5jZSAoaW1wbGljaXQpIHYxOgoKIC0gYWxzbyBzaW1wbGlmeSBh
-c3NpZ25tZW50IHRvIHB2YWwgYXMgc3VnZ2VzdGVkIGJ5IFdhbHRlcgogLSB2ZXJpZnkgdGhlIHBh
-dGNoIGRvZXNuJ3QgaW50cm9kdWNlIGJpbmFyeSBjaGFuZ2VzCgpCZXN0IHJlZ2FyZHMKVXdlCgog
-ZHJpdmVycy9wd20vcHdtLXN1bjRpLmMgfCA4ICsrKysrLS0tCiAxIGZpbGUgY2hhbmdlZCwgNSBp
-bnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3
-bS1zdW40aS5jIGIvZHJpdmVycy9wd20vcHdtLXN1bjRpLmMKaW5kZXggMWZhMjA1NzQxOWZiLi40
-Zjc3ZWJjOGFlNjkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jCisrKyBiL2Ry
-aXZlcnMvcHdtL3B3bS1zdW40aS5jCkBAIC0xNTIsNyArMTUyLDcgQEAgc3RhdGljIGludCBzdW40
-aV9wd21fY2FsY3VsYXRlKHN0cnVjdCBzdW40aV9wd21fY2hpcCAqc3VuNGlfcHdtLAogCQkJICAg
-ICAgIHUzMiAqZHR5LCB1MzIgKnByZCwgdW5zaWduZWQgaW50ICpwcnNjbHIpCiB7CiAJdTY0IGNs
-a19yYXRlLCBkaXYgPSAwOwotCXVuc2lnbmVkIGludCBwdmFsLCBwcmVzY2FsZXIgPSAwOworCXVu
-c2lnbmVkIGludCBwcmVzY2FsZXIgPSAwOwogCiAJY2xrX3JhdGUgPSBjbGtfZ2V0X3JhdGUoc3Vu
-NGlfcHdtLT5jbGspOwogCkBAIC0xNzMsOSArMTczLDExIEBAIHN0YXRpYyBpbnQgc3VuNGlfcHdt
-X2NhbGN1bGF0ZShzdHJ1Y3Qgc3VuNGlfcHdtX2NoaXAgKnN1bjRpX3B3bSwKIAlpZiAocHJlc2Nh
-bGVyID09IDApIHsKIAkJLyogR28gdXAgZnJvbSB0aGUgZmlyc3QgZGl2aWRlciAqLwogCQlmb3Ig
-KHByZXNjYWxlciA9IDA7IHByZXNjYWxlciA8IFBXTV9QUkVTQ0FMX01BU0s7IHByZXNjYWxlcisr
-KSB7CisJCQl1bnNpZ25lZCBpbnQgcHZhbCA9IHByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdOwor
-Ci0JCQlpZiAoIXByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdKQorCQkJaWYgKCFwdmFsKQogCQkJ
-CWNvbnRpbnVlOwotCQkJcHZhbCA9IHByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdOworCiAJCQlk
-aXYgPSBjbGtfcmF0ZTsKIAkJCWRvX2RpdihkaXYsIHB2YWwpOwogCQkJZGl2ID0gZGl2ICogc3Rh
-dGUtPnBlcmlvZDsKLS0gCjIuMjQuMAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+The ingenic-timer "TCU" driver provides us with clocks, that can be
+(un)gated, reparented or reclocked from devicetree, instead of having
+these settings hardcoded in this driver.
+
+Each PWM channel's clk pointer is stored in PWM chip data to keep
+the code simple. The calls to arch-specific timer code is replaced with
+standard clock API calls to start and stop each channel's clock.
+
+While this driver is devicetree-compatible, it is never (as of now)
+probed from devicetree, so this change does not introduce a ABI problem
+with current devicetree files.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Tested-by: Mathieu Malaterre <malat@debian.org>
+Tested-by: Artur Rojek <contact@artur-rojek.eu>
+---
+
+Notes:
+    v2: This patch is now before the patch introducing regmap, so the code
+    	has changed a bit.
+    v3: - Use %pe printf specifier to print error
+    	- Update commit message
+    	- Removed call to jz4740_timer_set_ctrl() in jz4740_pwm_free() which
+    	  was reseting the clock's parent.
+
+ drivers/pwm/Kconfig      |  1 +
+ drivers/pwm/pwm-jz4740.c | 53 +++++++++++++++++++++++++++++-----------
+ 2 files changed, 40 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index bd21655c37a6..15d3816341f3 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -225,6 +225,7 @@ config PWM_IMX_TPM
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+ 	depends on MACH_INGENIC
++	depends on COMMON_CLK
+ 	help
+ 	  Generic PWM framework driver for Ingenic JZ47xx based
+ 	  machines.
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index 9d78cc21cb12..ee50ac5fabb6 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -24,7 +24,6 @@
+ 
+ struct jz4740_pwm_chip {
+ 	struct pwm_chip chip;
+-	struct clk *clk;
+ };
+ 
+ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
+@@ -34,6 +33,11 @@ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
+ 
+ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
++	struct jz4740_pwm_chip *jz = to_jz4740(chip);
++	struct clk *clk;
++	char clk_name[16];
++	int ret;
++
+ 	/*
+ 	 * Timers 0 and 1 are used for system tasks, so they are unavailable
+ 	 * for use as PWMs.
+@@ -41,16 +45,32 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (pwm->hwpwm < 2)
+ 		return -EBUSY;
+ 
+-	jz4740_timer_start(pwm->hwpwm);
++	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
++
++	clk = clk_get(chip->dev, clk_name);
++	if (IS_ERR(clk)) {
++		if (PTR_ERR(clk) != -EPROBE_DEFER)
++			dev_err(chip->dev, "Failed to get clock: %pe", clk);
++		return PTR_ERR(clk);
++	}
++
++	ret = clk_prepare_enable(clk);
++	if (ret) {
++		clk_put(clk);
++		return ret;
++	}
++
++	pwm_set_chip_data(pwm, clk);
+ 
+ 	return 0;
+ }
+ 
+ static void jz4740_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+-	jz4740_timer_set_ctrl(pwm->hwpwm, 0);
++	struct clk *clk = pwm_get_chip_data(pwm);
+ 
+-	jz4740_timer_stop(pwm->hwpwm);
++	clk_disable_unprepare(clk);
++	clk_put(clk);
+ }
+ 
+ static int jz4740_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -91,17 +111,22 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			    const struct pwm_state *state)
+ {
+ 	struct jz4740_pwm_chip *jz4740 = to_jz4740(pwm->chip);
++	struct clk *clk = pwm_get_chip_data(pwm),
++		   *parent_clk = clk_get_parent(clk);
++	unsigned long rate, period, duty;
+ 	unsigned long long tmp;
+-	unsigned long period, duty;
+ 	unsigned int prescaler = 0;
+ 	uint16_t ctrl;
++	int err;
+ 
+-	tmp = (unsigned long long)clk_get_rate(jz4740->clk) * state->period;
++	rate = clk_get_rate(parent_clk);
++	tmp = (unsigned long long)rate * state->period;
+ 	do_div(tmp, 1000000000);
+ 	period = tmp;
+ 
+ 	while (period > 0xffff && prescaler < 6) {
+ 		period >>= 2;
++		rate >>= 2;
+ 		++prescaler;
+ 	}
+ 
+@@ -117,14 +142,18 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	jz4740_pwm_disable(chip, pwm);
+ 
++	err = clk_set_rate(clk, rate);
++	if (err) {
++		dev_err(chip->dev, "Unable to set rate: %d", err);
++		return err;
++	}
++
+ 	jz4740_timer_set_count(pwm->hwpwm, 0);
+ 	jz4740_timer_set_duty(pwm->hwpwm, duty);
+ 	jz4740_timer_set_period(pwm->hwpwm, period);
+ 
+-	ctrl = JZ_TIMER_CTRL_PRESCALER(prescaler) | JZ_TIMER_CTRL_SRC_EXT |
+-		JZ_TIMER_CTRL_PWM_ABBRUPT_SHUTDOWN;
+-
+-	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
++	ctrl = jz4740_timer_get_ctrl(pwm->hwpwm);
++	ctrl |= JZ_TIMER_CTRL_PWM_ABBRUPT_SHUTDOWN;
+ 
+ 	switch (state->polarity) {
+ 	case PWM_POLARITY_NORMAL:
+@@ -158,10 +187,6 @@ static int jz4740_pwm_probe(struct platform_device *pdev)
+ 	if (!jz4740)
+ 		return -ENOMEM;
+ 
+-	jz4740->clk = devm_clk_get(&pdev->dev, "ext");
+-	if (IS_ERR(jz4740->clk))
+-		return PTR_ERR(jz4740->clk);
+-
+ 	jz4740->chip.dev = &pdev->dev;
+ 	jz4740->chip.ops = &jz4740_pwm_ops;
+ 	jz4740->chip.npwm = NUM_PWM;
+-- 
+2.24.0
