@@ -1,16 +1,13 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: sun4i: Narrow scope of local variable
-Date: Tue, 10 Dec 2019 11:12:29 +0100
-Message-ID: <20191210101229.rvqelc2hanisd2cp@pengutronix.de>
-References: <20191002101624.gljyf7g4nia2rcbx@pengutronix.de>
- <20191205072404.6858-1-u.kleine-koenig@pengutronix.de>
- <5DE8C1E3.4080204@bfs.de>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2] pwm: sun4i: Narrow scope of local variable
+Date: Tue, 10 Dec 2019 11:24:44 +0100
+Message-ID: <20191210102444.26594-1-u.kleine-koenig@pengutronix.de>
+References: <20191210101229.rvqelc2hanisd2cp@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <5DE8C1E3.4080204@bfs.de>
+In-Reply-To: <20191210101229.rvqelc2hanisd2cp@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,52 +17,41 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: walter harms <wharms@bfs.de>
-Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Dan Carpenter <dan.carpenter@oracle.com>, kernel@pengutronix.de, Colin King <colin.king@canonical.com>, linux-arm-kernel@lists.infradead.org
+To: Colin King <colin.king@canonical.com>, Thierry Reding <thierry.reding@gmail.com>, Walter Harms <wharms@bfs.de>
+Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Dan Carpenter <dan.carpenter@oracle.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Walter,
-
-On Thu, Dec 05, 2019 at 09:37:55AM +0100, walter harms wrote:
-> Am 05.12.2019 08:24, schrieb Uwe Kleine-K=F6nig:
-> > +			unsigned int pval;
-> > +
-> >  			if (!prescaler_table[prescaler])
-> >  				continue;
-> >  			pval =3D prescaler_table[prescaler];
-> =
-
-> =
-
-> nit picking:
-> Doing the assignment first would remove the only use
-> of prescaler_table[prescaler].
-
-nit picking: it would be reduced to a single use?!
-
-> unsigned int pval =3D prescaler_table[prescaler];
-> if ( ! pval )
->   continue;
-
-Right, will send a v2 with that.
-
-> if you feel adventures you could also replace the for() for a while()
-> since we know that prescaler =3D=3D 0.
-> =
-
-> while ( prescaler < PWM_PRESCAL_MASK )
-> {
-> unsigned int pval =3D prescaler_table[prescaler++];
-> ....
-
-That however has some side effects as prescaler is used after leaving
-the loop.
-
-Best regards
-Uwe
-
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+VGhlIHZhcmlhYmxlIHB2YWwgaXMgb25seSB1c2VkIGluIGEgc2luZ2xlIGJsb2NrIGluIHRoZSBm
+dW5jdGlvbgpzdW40aV9wd21fY2FsY3VsYXRlKCkuIFNvIGRlY2xhcmUgaXQgaW4gYSBtb3JlIGxv
+Y2FsIHNjb3BlIHRvIHNpbXBsaWZ5CnRoZSBmdW5jdGlvbiBmb3IgaHVtYW5zIGFuZCBjb21waWxl
+cnMuCgpXaGlsZSBhdCBpdCBhbHNvIHNpbXBsaWZ5IGFzc2lnbm1lbnQgdG8gcHZhbC4KCldoaWxl
+IHRoZSBkaWZmc3RhdCBmb3IgdGhpcyBwYXRjaCBpcyBuZWdhdGl2ZSBmb3IgdGhpcyBwYXRjaCBJ
+IHN0aWxsCnRoaW5nIHRoZSBhZHZhbnRhZ2Ugb2YgaGF2aW5nIGEgbmFycm93ZXIgc2NvcGUgaXMg
+YmVuZWZpY2lhbC4KCkluIG15IGNvbXBpbGVyIC8gLmNvbmZpZyBzZXR1cCAoZ2NjIDguMi4xLCBh
+cm0vaW14X3Y2X3Y3X2RlZmNvbmZpZyArCkNPTVBJTEVfVEVTVCArIFBXTV9TVU40SSkgdGhpcyBj
+aGFuZ2UgZG9lc24ndCByZXN1bHQgaW4gYW55IGJpbmFyeQpjaGFuZ2VzLgoKU2lnbmVkLW9mZi1i
+eTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0t
+CkhlbGxvLAoKY2hhbmdlcyBzaW5jZSAoaW1wbGljaXQpIHYxOgoKIC0gYWxzbyBzaW1wbGlmeSBh
+c3NpZ25tZW50IHRvIHB2YWwgYXMgc3VnZ2VzdGVkIGJ5IFdhbHRlcgogLSB2ZXJpZnkgdGhlIHBh
+dGNoIGRvZXNuJ3QgaW50cm9kdWNlIGJpbmFyeSBjaGFuZ2VzCgpCZXN0IHJlZ2FyZHMKVXdlCgog
+ZHJpdmVycy9wd20vcHdtLXN1bjRpLmMgfCA4ICsrKysrLS0tCiAxIGZpbGUgY2hhbmdlZCwgNSBp
+bnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3
+bS1zdW40aS5jIGIvZHJpdmVycy9wd20vcHdtLXN1bjRpLmMKaW5kZXggMWZhMjA1NzQxOWZiLi40
+Zjc3ZWJjOGFlNjkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jCisrKyBiL2Ry
+aXZlcnMvcHdtL3B3bS1zdW40aS5jCkBAIC0xNTIsNyArMTUyLDcgQEAgc3RhdGljIGludCBzdW40
+aV9wd21fY2FsY3VsYXRlKHN0cnVjdCBzdW40aV9wd21fY2hpcCAqc3VuNGlfcHdtLAogCQkJICAg
+ICAgIHUzMiAqZHR5LCB1MzIgKnByZCwgdW5zaWduZWQgaW50ICpwcnNjbHIpCiB7CiAJdTY0IGNs
+a19yYXRlLCBkaXYgPSAwOwotCXVuc2lnbmVkIGludCBwdmFsLCBwcmVzY2FsZXIgPSAwOworCXVu
+c2lnbmVkIGludCBwcmVzY2FsZXIgPSAwOwogCiAJY2xrX3JhdGUgPSBjbGtfZ2V0X3JhdGUoc3Vu
+NGlfcHdtLT5jbGspOwogCkBAIC0xNzMsOSArMTczLDExIEBAIHN0YXRpYyBpbnQgc3VuNGlfcHdt
+X2NhbGN1bGF0ZShzdHJ1Y3Qgc3VuNGlfcHdtX2NoaXAgKnN1bjRpX3B3bSwKIAlpZiAocHJlc2Nh
+bGVyID09IDApIHsKIAkJLyogR28gdXAgZnJvbSB0aGUgZmlyc3QgZGl2aWRlciAqLwogCQlmb3Ig
+KHByZXNjYWxlciA9IDA7IHByZXNjYWxlciA8IFBXTV9QUkVTQ0FMX01BU0s7IHByZXNjYWxlcisr
+KSB7CisJCQl1bnNpZ25lZCBpbnQgcHZhbCA9IHByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdOwor
+Ci0JCQlpZiAoIXByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdKQorCQkJaWYgKCFwdmFsKQogCQkJ
+CWNvbnRpbnVlOwotCQkJcHZhbCA9IHByZXNjYWxlcl90YWJsZVtwcmVzY2FsZXJdOworCiAJCQlk
+aXYgPSBjbGtfcmF0ZTsKIAkJCWRvX2RpdihkaXYsIHB2YWwpOwogCQkJZGl2ID0gZGl2ICogc3Rh
+dGUtPnBlcmlvZDsKLS0gCjIuMjQuMAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1r
+ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
