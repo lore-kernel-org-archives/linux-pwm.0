@@ -1,48 +1,71 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: bcm2835: Allow building for ARCH_BRCMSTB
-Date: Tue, 10 Dec 2019 07:52:29 +0100
-Message-ID: <20191210065229.hopmnq5qlwtl7gzw@pengutronix.de>
-References: <20191209232503.7252-1-f.fainelli@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: sun4i: Narrow scope of local variable
+Date: Tue, 10 Dec 2019 11:12:29 +0100
+Message-ID: <20191210101229.rvqelc2hanisd2cp@pengutronix.de>
+References: <20191002101624.gljyf7g4nia2rcbx@pengutronix.de>
+ <20191205072404.6858-1-u.kleine-koenig@pengutronix.de>
+ <5DE8C1E3.4080204@bfs.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20191209232503.7252-1-f.fainelli@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, wahrenst@gmx.net, Thierry Reding <thierry.reding@gmail.com>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
+In-Reply-To: <5DE8C1E3.4080204@bfs.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: walter harms <wharms@bfs.de>
+Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Dan Carpenter <dan.carpenter@oracle.com>, kernel@pengutronix.de, Colin King <colin.king@canonical.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 03:25:03PM -0800, Florian Fainelli wrote:
-> BCM7211 is supported using ARCH_BRCMSTB and uses this PWM controller
-> driver, make it possible to build it.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index bd21655c37a6..0bb8a40c8d6c 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -100,7 +100,7 @@ config PWM_BCM_KONA
->  
->  config PWM_BCM2835
->  	tristate "BCM2835 PWM support"
-> -	depends on ARCH_BCM2835
-> +	depends on ARCH_BCM2835 || ARCH_BRCMSTB
+Hello Walter,
 
-It would be nice to allow this driver to be compiled with COMPILE_TEST,
-too. But also without this:
+On Thu, Dec 05, 2019 at 09:37:55AM +0100, walter harms wrote:
+> Am 05.12.2019 08:24, schrieb Uwe Kleine-K=F6nig:
+> > +			unsigned int pval;
+> > +
+> >  			if (!prescaler_table[prescaler])
+> >  				continue;
+> >  			pval =3D prescaler_table[prescaler];
+> =
 
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> =
+
+> nit picking:
+> Doing the assignment first would remove the only use
+> of prescaler_table[prescaler].
+
+nit picking: it would be reduced to a single use?!
+
+> unsigned int pval =3D prescaler_table[prescaler];
+> if ( ! pval )
+>   continue;
+
+Right, will send a v2 with that.
+
+> if you feel adventures you could also replace the for() for a while()
+> since we know that prescaler =3D=3D 0.
+> =
+
+> while ( prescaler < PWM_PRESCAL_MASK )
+> {
+> unsigned int pval =3D prescaler_table[prescaler++];
+> ....
+
+That however has some side effects as prescaler is used after leaving
+the loop.
 
 Best regards
 Uwe
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
