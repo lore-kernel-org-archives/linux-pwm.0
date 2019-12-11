@@ -1,70 +1,93 @@
-From: Maxime Ripard <maxime@cerno.tech>
-Subject: Re: [PATCH] dt-bindings: pwm: allwinner: Fix missing header in H6
- example
-Date: Wed, 11 Dec 2019 10:20:16 +0100
-Message-ID: <20191211092016.2hhjw6mn7iefupql@gilmour.lan>
-References: <20191210174710.10649-1-peron.clem@gmail.com>
- <20191211080633.a6yzwbxi7fcmislp@gilmour.lan>
- <CAGb2v66mWgDKyZEWVVYqq5McOaYmiY0PSP7iXE8TBtVZv03u1Q@mail.gmail.com>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH v3 2/2] gpio: bcm-kona: use platform_irq_count
+Date: Wed, 11 Dec 2019 10:30:33 +0100
+Message-ID: <CAMpxmJWMSnTB6JF8vOCmQzE3swWhbx8uwNEzU=qf49L26QCDPQ@mail.gmail.com>
+References: <1575451330-11112-1-git-send-email-peng.fan@nxp.com>
+ <1575451330-11112-2-git-send-email-peng.fan@nxp.com> <20191204100925.sjp6cztozlm5qm6y@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tt72ar2obv6t5rpi"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAGb2v66mWgDKyZEWVVYqq5McOaYmiY0PSP7iXE8TBtVZv03u1Q@mail.gmail.com>
+In-Reply-To: <20191204100925.sjp6cztozlm5qm6y@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Chen-Yu Tsai <wens@csie.org>
-Cc: =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>, Rob Herring <robh@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Peng Fan <peng.fan@nxp.com>, "rjui@broadcom.com" <rjui@broadcom.com>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "sbranden@broadcom.com" <sbranden@broadcom.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh@kernel.org" <robh@kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, dl-linux-imx <linux-imx@nxp.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-
---tt72ar2obv6t5rpi
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Dec 11, 2019 at 04:33:19PM +0800, Chen-Yu Tsai wrote:
-> On Wed, Dec 11, 2019 at 4:06 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> >
-> > On Tue, Dec 10, 2019 at 06:47:10PM +0100, Cl=E9ment P=E9ron wrote:
-> > > Latest linux-next doesn't build due to the following error:
-> > >
-> > > Error: Documentation/devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.=
-example.dts:35.37-38
-> > > syntax error
-> > > FATAL ERROR: Unable to parse input tree
-> > > make[1]: *** [Documentation/devicetree/bindings/pwm/allwinner,sun4i-a=
-10-pwm.example.dt.yaml]
-> > > Error 1
-> > >
-> > > This is due to missing header in the device-tree yaml example.
-> > >
-> > > Fix this by adding the missing headers.
-> > >
-> > > Fixes: 4ee929b3f08e ("dt-bindings: pwm: allwinner: Add H6 PWM descrip=
-tion")
-> > > Reported-by: Rob Herring <robh+dt@kernel.org>
-> > > Signed-off-by: Cl=E9ment P=E9ron <peron.clem@gmail.com>
-> >
-> > Applied, thanks!
-> > Maxime
+=C5=9Br., 4 gru 2019 o 11:09 Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> napisa=C5=82(a):
 >
-> Maybe squash it instead? :)
+> On Wed, Dec 04, 2019 at 09:24:39AM +0000, Peng Fan wrote:
+> > From: Peng Fan <peng.fan@nxp.com>
+> >
+> > platform_irq_count() is the more generic way (independent of
+> > device trees) to determine the count of available interrupts. So
+> > use this instead.
+> >
+> > As platform_irq_count() might return an error code (which
+> > of_irq_count doesn't) some additional handling is necessary.
+> >
+> > Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> > ---
+> >
+> > V3:
+> >  Use %pe
+>
+> Great. Note that with %pe there is a dependency on commit 57f5677e535b
+> ("printf: add support for printing symbolic error names") which was
+> applied during the current merge window.
+>
 
-Indeed, I just did.
+Why would %pe be better in this case? The function returned an int -
+why convert it to a pointer?
 
-Thanks!
-Maxime
+Bart
 
---tt72ar2obv6t5rpi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXfC00AAKCRDj7w1vZxhR
-xaW5AQD69VlsGmpCynvOIn/zNXum5pWnY3SEEbx2GLYyZPdLZQD/TXS6GjJD2+MJ
-MiEEHgbac/j7/sn/oCxDjRN5XAUaoQg=
-=9JT0
------END PGP SIGNATURE-----
-
---tt72ar2obv6t5rpi--
+> > V2:
+> >  Update commit log, and add err handling
+> >  Not tested, just code inspection
+> >
+> >
+> >  drivers/gpio/gpio-bcm-kona.c | 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/gpio/gpio-bcm-kona.c b/drivers/gpio/gpio-bcm-kona.=
+c
+> > index 4122683eb1f9..baee8c3f06ad 100644
+> > --- a/drivers/gpio/gpio-bcm-kona.c
+> > +++ b/drivers/gpio/gpio-bcm-kona.c
+> > @@ -19,7 +19,6 @@
+> >  #include <linux/io.h>
+> >  #include <linux/gpio/driver.h>
+> >  #include <linux/of_device.h>
+> > -#include <linux/of_irq.h>
+> >  #include <linux/init.h>
+> >  #include <linux/irqdomain.h>
+> >  #include <linux/irqchip/chained_irq.h>
+> > @@ -586,11 +585,18 @@ static int bcm_kona_gpio_probe(struct platform_de=
+vice *pdev)
+> >
+> >       kona_gpio->gpio_chip =3D template_chip;
+> >       chip =3D &kona_gpio->gpio_chip;
+> > -     kona_gpio->num_bank =3D of_irq_count(dev->of_node);
+> > -     if (kona_gpio->num_bank =3D=3D 0) {
+> > +     ret =3D platform_irq_count(pdev);
+> > +     if (!ret) {
+> >               dev_err(dev, "Couldn't determine # GPIO banks\n");
+> >               return -ENOENT;
+> > +     } else if (ret < 0) {
+> > +             if (ret !=3D -EPROBE_DEFER)
+> > +                     dev_err(dev, "Couldn't determine GPIO banks: (%pe=
+)\n",
+> > +                             ERR_PTR(ret));
+>
+> I'd say drop either the colon or the parenthesis.
+>
+> Best regards
+> Uwe
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
