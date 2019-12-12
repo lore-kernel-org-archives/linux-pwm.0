@@ -1,31 +1,30 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v4] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Thu, 12 Dec 2019 16:26:41 +0100
-Message-ID: <CACRpkdZt25zK3WD9qZdJ=Aeq9YbcavJPVOX=kt8qWLdH1dHckA@mail.gmail.com>
-References: <20191129191023.2209-1-miquel.raynal@bootlin.com>
+Subject: Re: [PATCH 1/2] gpio: mvebu: use platform_irq_count
+Date: Thu, 12 Dec 2019 16:29:19 +0100
+Message-ID: <CACRpkdaTLVNXd+-j_gkOfKnTk02XaZiMA_XxUeM0_4zZ_F-=ug@mail.gmail.com>
+References: <1575352925-17271-1-git-send-email-peng.fan@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191129191023.2209-1-miquel.raynal@bootlin.com>
+In-Reply-To: <1575352925-17271-1-git-send-email-peng.fan@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+To: Peng Fan <peng.fan@nxp.com>
+Cc: "rjui@broadcom.com" <rjui@broadcom.com>, "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "sbranden@broadcom.com" <sbranden@broadcom.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh@kernel.org" <robh@kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, dl-linux-imx <linux-imx@nxp.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alice Guo <alice.guo@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Nov 29, 2019 at 8:10 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Tue, Dec 3, 2019 at 7:04 AM Peng Fan <peng.fan@nxp.com> wrote:
 
-> The MAX7313 chip is fully compatible with the PCA9535 on its basic
-> functions but can also manage the intensity on each of its ports with
-> PWM. Each output is independent and may be tuned with 16 values (4
-> bits per output). The period is always 32kHz, only the duty-cycle may
-> be changed. One can use any output as GPIO or PWM.
+> From: Peng Fan <peng.fan@nxp.com>
 >
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> Use platform_irq_count to replace of_irq_count
+>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 > ---
 >
-> Changes in v4:
+> V1:
+>  Code inspection, not tested
 
-I'm fine to merge this v4 if I get Thierry's ACK on it.
+Patch applied.
 
 Yours,
 Linus Walleij
