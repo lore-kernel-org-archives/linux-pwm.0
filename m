@@ -1,47 +1,42 @@
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH 1/2] gpio: mvebu: use platform_irq_count
-Date: Thu, 12 Dec 2019 17:08:38 +0100
-Message-ID: <CAMpxmJX73eufsaXzFjkb2S9Adztv7PqDEhBSDHfmbB_+VGrXEw@mail.gmail.com>
-References: <1575352925-17271-1-git-send-email-peng.fan@nxp.com>
- <CACRpkdaTLVNXd+-j_gkOfKnTk02XaZiMA_XxUeM0_4zZ_F-=ug@mail.gmail.com> <CACRpkdYjCnx46kOuWXMZFme3emm1TugqjQPDctakOppAeCZvZg@mail.gmail.com>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: pwm: fix nodename pattern
+Date: Thu, 12 Dec 2019 13:07:28 -0600
+Message-ID: <CAL_JsqLboOKoJ0SjjS_AFkibdHzVo4tK3Z2xSUxVNBrdt5UEsQ@mail.gmail.com>
+References: <20191211150021.20125-1-benjamin.gaignard@st.com>
+ <CAL_JsqJKWoX_kY2kSieOA-wXO5xKtDbhXPMCjg-d4FHHEvOmHg@mail.gmail.com> <60921a82-9241-9c6e-0a17-0bd93dc52978@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdYjCnx46kOuWXMZFme3emm1TugqjQPDctakOppAeCZvZg@mail.gmail.com>
+In-Reply-To: <60921a82-9241-9c6e-0a17-0bd93dc52978@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Peng Fan <peng.fan@nxp.com>, "rjui@broadcom.com" <rjui@broadcom.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "sbranden@broadcom.com" <sbranden@broadcom.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "robh@kernel.org" <robh@kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, dl-linux-imx <linux-imx@nxp.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alice Guo <alice.guo@nxp.com>
+To: Benjamin GAIGNARD <benjamin.gaignard@st.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-czw., 12 gru 2019 o 16:31 Linus Walleij <linus.walleij@linaro.org> napisa=
-=C5=82(a):
+On Thu, Dec 12, 2019 at 2:16 AM Benjamin GAIGNARD
+<benjamin.gaignard@st.com> wrote:
 >
-> On Thu, Dec 12, 2019 at 4:29 PM Linus Walleij <linus.walleij@linaro.org> =
-wrote:
-> >
-> > On Tue, Dec 3, 2019 at 7:04 AM Peng Fan <peng.fan@nxp.com> wrote:
-> >
-> > > From: Peng Fan <peng.fan@nxp.com>
-> > >
-> > > Use platform_irq_count to replace of_irq_count
-> > >
-> > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> > > ---
-> > >
-> > > V1:
-> > >  Code inspection, not tested
-> >
-> > Patch applied.
 >
-> Oops dropped again now that I see there are comments on
-> 2/2 that warrants a v2 of this as well.
+> On 12/11/19 8:52 PM, Rob Herring wrote:
+> > On Wed, Dec 11, 2019 at 9:00 AM Benjamin Gaignard
+> > <benjamin.gaignard@st.com> wrote:
+> >> Typical pwm nodes should be named pwm@xxx.
+> >> The pattern shouldn't match nodes named pwm-xxx to avoid
+> >> conflicts with pinmux or pwm-fan nodes.
+> > It only matches pwm-$(a-hex-number), not any string, so that shouldn't
+> > be a problem. This is needed for things like GPIO based devices (not
+> > just PWMs) which don't have any address.
+> >
+> > Pinmux nodes are going to need to adopt some sort of standard pattern
+> > we can match on.
+> I have push a patch to stop using '@' and '_' in pinmux groups names:
+> https://lore.kernel.org/patchwork/patch/1162591/
+> It remove the warnings when compiling the devicetre with W=12 but pwm.yaml
+> complain because pwm pinmux is named pwm-1.
 >
-> Yours,
-> Linus Walleij
+> How can I solve these issues at the same time ?
 
-Linus,
+Name the nodes *-pins or *-pins-[0-9]. You're probably going to need
+some pattern anyways when you do a pinmux schema.
 
-FYI I picked up v3 of this series into my tree.
-
-Bart
+Rob
