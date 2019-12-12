@@ -1,49 +1,46 @@
-From: Rob Herring <robh+dt@kernel.org>
+From: Benjamin GAIGNARD <benjamin.gaignard@st.com>
 Subject: Re: [PATCH] dt-bindings: pwm: fix nodename pattern
-Date: Wed, 11 Dec 2019 13:52:48 -0600
-Message-ID: <CAL_JsqJKWoX_kY2kSieOA-wXO5xKtDbhXPMCjg-d4FHHEvOmHg@mail.gmail.com>
+Date: Thu, 12 Dec 2019 08:16:47 +0000
+Message-ID: <60921a82-9241-9c6e-0a17-0bd93dc52978@st.com>
 References: <20191211150021.20125-1-benjamin.gaignard@st.com>
+ <CAL_JsqJKWoX_kY2kSieOA-wXO5xKtDbhXPMCjg-d4FHHEvOmHg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191211150021.20125-1-benjamin.gaignard@st.com>
+In-Reply-To: <CAL_JsqJKWoX_kY2kSieOA-wXO5xKtDbhXPMCjg-d4FHHEvOmHg@mail.gmail.com>
+Content-Language: en-US
+Content-ID: <F6BB0E9CA0FA9F408718F9859B2DA2E8@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@st.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Linux PWM List <linux-pwm@vger.kernel.org>, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 9:00 AM Benjamin Gaignard
-<benjamin.gaignard@st.com> wrote:
->
-> Typical pwm nodes should be named pwm@xxx.
-> The pattern shouldn't match nodes named pwm-xxx to avoid
-> conflicts with pinmux or pwm-fan nodes.
-
-It only matches pwm-$(a-hex-number), not any string, so that shouldn't
-be a problem. This is needed for things like GPIO based devices (not
-just PWMs) which don't have any address.
-
-Pinmux nodes are going to need to adopt some sort of standard pattern
-we can match on.
-
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm.yaml b/Documentation/devicetree/bindings/pwm/pwm.yaml
-> index fa4f9de92090..29b86886c282 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm.yaml
-> @@ -11,7 +11,7 @@ maintainers:
->
->  properties:
->    $nodename:
-> -    pattern: "^pwm(@.*|-[0-9a-f])*$"
-> +    pattern: "^pwm(@.*[0-9a-f])*$"
->
->    "#pwm-cells":
->      description:
-> --
-> 2.15.0
->
+DQpPbiAxMi8xMS8xOSA4OjUyIFBNLCBSb2IgSGVycmluZyB3cm90ZToNCj4gT24gV2VkLCBEZWMg
+MTEsIDIwMTkgYXQgOTowMCBBTSBCZW5qYW1pbiBHYWlnbmFyZA0KPiA8YmVuamFtaW4uZ2FpZ25h
+cmRAc3QuY29tPiB3cm90ZToNCj4+IFR5cGljYWwgcHdtIG5vZGVzIHNob3VsZCBiZSBuYW1lZCBw
+d21AeHh4Lg0KPj4gVGhlIHBhdHRlcm4gc2hvdWxkbid0IG1hdGNoIG5vZGVzIG5hbWVkIHB3bS14
+eHggdG8gYXZvaWQNCj4+IGNvbmZsaWN0cyB3aXRoIHBpbm11eCBvciBwd20tZmFuIG5vZGVzLg0K
+PiBJdCBvbmx5IG1hdGNoZXMgcHdtLSQoYS1oZXgtbnVtYmVyKSwgbm90IGFueSBzdHJpbmcsIHNv
+IHRoYXQgc2hvdWxkbid0DQo+IGJlIGEgcHJvYmxlbS4gVGhpcyBpcyBuZWVkZWQgZm9yIHRoaW5n
+cyBsaWtlIEdQSU8gYmFzZWQgZGV2aWNlcyAobm90DQo+IGp1c3QgUFdNcykgd2hpY2ggZG9uJ3Qg
+aGF2ZSBhbnkgYWRkcmVzcy4NCj4NCj4gUGlubXV4IG5vZGVzIGFyZSBnb2luZyB0byBuZWVkIHRv
+IGFkb3B0IHNvbWUgc29ydCBvZiBzdGFuZGFyZCBwYXR0ZXJuDQo+IHdlIGNhbiBtYXRjaCBvbi4N
+CkkgaGF2ZSBwdXNoIGEgcGF0Y2ggdG8gc3RvcCB1c2luZyAnQCcgYW5kICdfJyBpbiBwaW5tdXgg
+Z3JvdXBzIG5hbWVzOg0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvcGF0Y2h3b3JrL3BhdGNoLzEx
+NjI1OTEvDQpJdCByZW1vdmUgdGhlIHdhcm5pbmdzIHdoZW4gY29tcGlsaW5nIHRoZSBkZXZpY2V0
+cmUgd2l0aCBXPTEyIGJ1dCBwd20ueWFtbA0KY29tcGxhaW4gYmVjYXVzZSBwd20gcGlubXV4IGlz
+IG5hbWVkIHB3bS0xLg0KDQpIb3cgY2FuIEkgc29sdmUgdGhlc2UgaXNzdWVzIGF0IHRoZSBzYW1l
+IHRpbWUgPw0KDQpCZW5qYW1pbg0KDQo+DQo+PiBTaWduZWQtb2ZmLWJ5OiBCZW5qYW1pbiBHYWln
+bmFyZCA8YmVuamFtaW4uZ2FpZ25hcmRAc3QuY29tPg0KPj4gLS0tDQo+PiAgIERvY3VtZW50YXRp
+b24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcHdtLnlhbWwgfCAyICstDQo+PiAgIDEgZmlsZSBj
+aGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPj4NCj4+IGRpZmYgLS1naXQg
+YS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3B3bS55YW1sIGIvRG9jdW1l
+bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9wd20ueWFtbA0KPj4gaW5kZXggZmE0Zjlk
+ZTkyMDkwLi4yOWI4Njg4NmMyODIgMTAwNjQ0DQo+PiAtLS0gYS9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvcHdtL3B3bS55YW1sDQo+PiArKysgYi9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvcHdtL3B3bS55YW1sDQo+PiBAQCAtMTEsNyArMTEsNyBAQCBtYWludGFp
+bmVyczoNCj4+DQo+PiAgIHByb3BlcnRpZXM6DQo+PiAgICAgJG5vZGVuYW1lOg0KPj4gLSAgICBw
+YXR0ZXJuOiAiXnB3bShALip8LVswLTlhLWZdKSokIg0KPj4gKyAgICBwYXR0ZXJuOiAiXnB3bShA
+LipbMC05YS1mXSkqJCINCj4+DQo+PiAgICAgIiNwd20tY2VsbHMiOg0KPj4gICAgICAgZGVzY3Jp
+cHRpb246DQo+PiAtLQ0KPj4gMi4xNS4wDQo+Pg==
