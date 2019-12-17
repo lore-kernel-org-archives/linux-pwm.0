@@ -1,43 +1,52 @@
-From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH v3 2/2] pwm: keep the trigger register after pwm setting.
-Date: Tue, 17 Dec 2019 11:04:38 +0800
-Message-ID: <20191217030438.26657-3-jitao.shi@mediatek.com>
+From: Chen-Yu Tsai <wens@kernel.org>
+Subject: Re: [PATCH v3 0/2] clocks don't disable when pwm_mtk_disp suspend
+Date: Tue, 17 Dec 2019 11:26:02 +0800
+Message-ID: <CAGb2v65v+W3-fNwiC_0uN2RpFUBRu3iL2t+OaGHLjVHHWFJVwQ@mail.gmail.com>
 References: <20191217030438.26657-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191217030438.26657-1-jitao.shi@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, CK Hu <ck.hu@mediatek.com>
-Cc: linux-mediatek@lists.infradead.org, sj.huang@mediatek.com, Jitao Shi <jitao.shi@mediatek.com>
+To: Jitao Shi <jitao.shi@mediatek.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, CK Hu <ck.hu@mediatek.com>, sj.huang@mediatek.com, "moderated list:ARM/Mediatek SoC..." <linux-mediatek@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-TW92ZSB0aGUgdHJpZ2dlciBhZnRlciBwd20gc2V0dGluZyB0byBhdm9pZCB0aGUgcHdtIHdyb25n
-IHNpZ25hbA0Kb3V0cHV0Lg0KDQpSZW1vdmUgdGhlIHJlZ2lzdCBlbmFibGUgdHJpZ2dlciBzZXR0
-aW5nIGluIHByb2JlLg0KTW92ZSB0aGUgdHJpZ2dlciB0byBlbmQgb2YgbXRrX2Rpc3BfcHdtX2Nv
-bmZpZygpLg0KDQpTaWduZWQtb2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5j
-b20+DQotLS0NCiBkcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYyB8IDIwICsrKysrKystLS0tLS0t
-LS0tLS0tDQogMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25zKC0p
-DQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYyBiL2RyaXZlcnMvcHdt
-L3B3bS1tdGstZGlzcC5jDQppbmRleCBjN2IxNGFjYzkzMTYuLmMxYWFlNWI1NjkzYiAxMDA2NDQN
-Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jDQorKysgYi9kcml2ZXJzL3B3bS9wd20t
-bXRrLWRpc3AuYw0KQEAgLTEyMiw2ICsxMjIsMTMgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21f
-Y29uZmlnKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCiAJ
-CW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+Y29tbWl0LA0KIAkJCQkJ
-IG1kcC0+ZGF0YS0+Y29tbWl0X21hc2ssDQogCQkJCQkgMHgwKTsNCisJfSBlbHNlIHsNCisJCW10
-a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+YmxzX2RlYnVnLA0KKwkJCQkJ
-IG1kcC0+ZGF0YS0+YmxzX2RlYnVnX21hc2ssDQorCQkJCQkgbWRwLT5kYXRhLT5ibHNfZGVidWdf
-bWFzayk7DQorCQltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmNvbjAs
-DQorCQkJCQkgbWRwLT5kYXRhLT5jb24wX3NlbCwNCisJCQkJCSBtZHAtPmRhdGEtPmNvbjBfc2Vs
-KTsNCiAJfQ0KIA0KIAljbGtfZGlzYWJsZV91bnByZXBhcmUobWRwLT5jbGtfbW0pOw0KQEAgLTIw
-NywxOSArMjE0LDYgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21fcHJvYmUoc3RydWN0IHBsYXRm
-b3JtX2RldmljZSAqcGRldikNCiANCiAJcGxhdGZvcm1fc2V0X2RydmRhdGEocGRldiwgbWRwKTsN
-CiANCi0JLyoNCi0JICogRm9yIE1UMjcwMSwgZGlzYWJsZSBkb3VibGUgYnVmZmVyIGJlZm9yZSB3
-cml0aW5nIHJlZ2lzdGVyDQotCSAqIGFuZCBzZWxlY3QgbWFudWFsIG1vZGUgYW5kIHVzZSBQV01f
-UEVSSU9EL1BXTV9ISUdIX1dJRFRILg0KLQkgKi8NCi0JaWYgKCFtZHAtPmRhdGEtPmhhc19jb21t
-aXQpIHsNCi0JCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+YmxzX2Rl
-YnVnLA0KLQkJCQkJIG1kcC0+ZGF0YS0+YmxzX2RlYnVnX21hc2ssDQotCQkJCQkgbWRwLT5kYXRh
-LT5ibHNfZGVidWdfbWFzayk7DQotCQltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBtZHAt
-PmRhdGEtPmNvbjAsDQotCQkJCQkgbWRwLT5kYXRhLT5jb24wX3NlbCwNCi0JCQkJCSBtZHAtPmRh
-dGEtPmNvbjBfc2VsKTsNCi0JfQ0KLQ0KIAlyZXR1cm4gMDsNCiB9DQogDQotLSANCjIuMjEuMA0K
+Hi,
+
+On Tue, Dec 17, 2019 at 11:08 AM Jitao Shi <jitao.shi@mediatek.com> wrote:
+>
+> Changes since to v2:
+>  - Edit commit msg.
+>
+> Changes since to v1:
+>  - Edit commit msg.
+>  - Remove the register trigger in probe.
+>  - Rebase to v5.5-rc1.
+>
+> Changes in patches:
+>  - match pwm_mtk_disp clock when suspend/resume
+>  - trigger pwm_mtk_disp reg working after config
+>
+> Jitao Shi (2):
+>   pwm: fix pwm clocks not poweroff when disable pwm
+>   pwm: keep the trigger register after pwm setting.
+
+Please add appropriate tags to your patches. These are not generic pwm
+patches, but are specific to one driver.
+
+Consider the prefix: "pwm: mtk-disp: " so others can filter out the
+noise without looking at the content.
+
+ChenYu
+
+>
+>  drivers/pwm/pwm-mtk-disp.c | 63 ++++++++++++--------------------------
+>  1 file changed, 19 insertions(+), 44 deletions(-)
+>
+> --
+> 2.21.0
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
