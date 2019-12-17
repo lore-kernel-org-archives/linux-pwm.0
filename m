@@ -1,68 +1,25 @@
 From: Jitao Shi <jitao.shi@mediatek.com>
-Subject: Re: [PATCH v3 0/2] clocks don't disable when pwm_mtk_disp suspend
-Date: Tue, 17 Dec 2019 11:56:28 +0800
-Message-ID: <1576554988.19567.3.camel@mszsdaap41>
-References: <20191217030438.26657-1-jitao.shi@mediatek.com>
- <CAGb2v65v+W3-fNwiC_0uN2RpFUBRu3iL2t+OaGHLjVHHWFJVwQ@mail.gmail.com>
+Subject: [PATCH v4 0/2] clocks aren't disable when pwm_mtk_disp suspend
+Date: Tue, 17 Dec 2019 12:02:35 +0800
+Message-ID: <20191217040237.28238-1-jitao.shi@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAGb2v65v+W3-fNwiC_0uN2RpFUBRu3iL2t+OaGHLjVHHWFJVwQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Chen-Yu Tsai <wens@kernel.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, CK Hu <ck.hu@mediatek.com>, sj.huang@mediatek.com, Thierry Reding <thierry.reding@gmail.com>, "moderated list:ARM/Mediatek SoC..." <linux-mediatek@lists.infradead.org>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, CK Hu <ck.hu@mediatek.com>
+Cc: linux-mediatek@lists.infradead.org, sj.huang@mediatek.com, Jitao Shi <jitao.shi@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 2019-12-17 at 11:26 +0800, Chen-Yu Tsai wrote:
-> Hi,
-> 
-> On Tue, Dec 17, 2019 at 11:08 AM Jitao Shi <jitao.shi@mediatek.com> wrote:
-> >
-> > Changes since to v2:
-> >  - Edit commit msg.
-> >
-> > Changes since to v1:
-> >  - Edit commit msg.
-> >  - Remove the register trigger in probe.
-> >  - Rebase to v5.5-rc1.
-> >
-> > Changes in patches:
-> >  - match pwm_mtk_disp clock when suspend/resume
-> >  - trigger pwm_mtk_disp reg working after config
-> >
-> > Jitao Shi (2):
-> >   pwm: fix pwm clocks not poweroff when disable pwm
-> >   pwm: keep the trigger register after pwm setting.
-> 
-> Please add appropriate tags to your patches. These are not generic pwm
-> patches, but are specific to one driver.
-> 
-> Consider the prefix: "pwm: mtk-disp: " so others can filter out the
-> noise without looking at the content.
-> 
-> ChenYu
-
-OK. I'll fix this prefix.
-
-Best Regards
-Jitao
-> 
-> >
-> >  drivers/pwm/pwm-mtk-disp.c | 63 ++++++++++++--------------------------
-> >  1 file changed, 19 insertions(+), 44 deletions(-)
-> >
-> > --
-> > 2.21.0
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Q2hhbmdlcyBzaW5jZSB0byB2MzoNCiAtIEFkZCBwcmVmaXggInB3bTogbXRrX2Rpc3AiIGluIGNv
+bW1pdCBtc2cgdGl0bGUuDQoNCkNoYW5nZXMgc2luY2UgdG8gdjI6DQogLSBFZGl0IGNvbW1pdCBt
+c2cuDQoNCkNoYW5nZXMgc2luY2UgdG8gdjE6DQogLSBFZGl0IGNvbW1pdCBtc2cuDQogLSBSZW1v
+dmUgdGhlIHJlZ2lzdGVyIHRyaWdnZXIgaW4gcHJvYmUuDQogLSBSZWJhc2UgdG8gdjUuNS1yYzEu
+DQoNCkNoYW5nZXMgaW4gcGF0Y2hlczoNCiAtIG1hdGNoIHB3bV9tdGtfZGlzcCBjbG9jayB3aGVu
+IHN1c3BlbmQvcmVzdW1lDQogLSB0cmlnZ2VyIHB3bV9tdGtfZGlzcCByZWcgd29ya2luZyBhZnRl
+ciBjb25maWcNCg0KSml0YW8gU2hpICgyKToNCiAgcHdtOiBtdGtfZGlzcDogZml4IHB3bSBjbG9j
+a3Mgbm90IHBvd2Vyb2ZmIHdoZW4gZGlzYWJsZSBwd20NCiAgcHdtOiBtdGtfZGlzcDoga2VlcCB0
+aGUgdHJpZ2dlciByZWdpc3RlciBhZnRlciBwd20gc2V0dGluZy4NCg0KIGRyaXZlcnMvcHdtL3B3
+bS1tdGstZGlzcC5jIHwgNjMgKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0N
+CiAxIGZpbGUgY2hhbmdlZCwgMTkgaW5zZXJ0aW9ucygrKSwgNDQgZGVsZXRpb25zKC0pDQoNCi0t
+IA0KMi4yMS4wDQo=
