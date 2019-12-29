@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 24/32] pwm: vt8500: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:06:02 +0000
-Message-ID: <20191229080610.7597-24-tiny.windzz@gmail.com>
+Subject: [PATCH 26/32] pwm: mtk-disp: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:06:04 +0000
+Message-ID: <20191229080610.7597-26-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-vt8500.c | 4 +---
+ drivers/pwm/pwm-mtk-disp.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index 11d45e56a923..6e36851a22bb 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -193,7 +193,6 @@ MODULE_DEVICE_TABLE(of, vt8500_pwm_dt_ids);
- static int vt8500_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
+index 83b8be0209b7..87c6b4bc5d43 100644
+--- a/drivers/pwm/pwm-mtk-disp.c
++++ b/drivers/pwm/pwm-mtk-disp.c
+@@ -172,7 +172,6 @@ static const struct pwm_ops mtk_disp_pwm_ops = {
+ static int mtk_disp_pwm_probe(struct platform_device *pdev)
  {
- 	struct vt8500_chip *chip;
+ 	struct mtk_disp_pwm *mdp;
 -	struct resource *r;
- 	struct device_node *np = pdev->dev.of_node;
  	int ret;
  
-@@ -219,8 +218,7 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(chip->clk);
- 	}
+ 	mdp = devm_kzalloc(&pdev->dev, sizeof(*mdp), GFP_KERNEL);
+@@ -181,8 +180,7 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
+ 
+ 	mdp->data = of_device_get_match_data(&pdev->dev);
  
 -	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	chip->base = devm_ioremap_resource(&pdev->dev, r);
-+	chip->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(chip->base))
- 		return PTR_ERR(chip->base);
+-	mdp->base = devm_ioremap_resource(&pdev->dev, r);
++	mdp->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(mdp->base))
+ 		return PTR_ERR(mdp->base);
  
 -- 
 2.17.1
