@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 11/32] pwm: spear: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:49 +0000
-Message-ID: <20191229080610.7597-11-tiny.windzz@gmail.com>
+Subject: [PATCH 10/32] pwm: zx: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:48 +0000
+Message-ID: <20191229080610.7597-10-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-spear.c | 4 +---
+ drivers/pwm/pwm-zx.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
-index 6c6b44fd3f43..f63b54aae1b4 100644
---- a/drivers/pwm/pwm-spear.c
-+++ b/drivers/pwm/pwm-spear.c
-@@ -174,7 +174,6 @@ static int spear_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-zx.c b/drivers/pwm/pwm-zx.c
+index e2c21cc34a96..0f5e8919b034 100644
+--- a/drivers/pwm/pwm-zx.c
++++ b/drivers/pwm/pwm-zx.c
+@@ -196,7 +196,6 @@ static const struct pwm_ops zx_pwm_ops = {
+ static int zx_pwm_probe(struct platform_device *pdev)
  {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct spear_pwm_chip *pc;
--	struct resource *r;
+ 	struct zx_pwm_chip *zpc;
+-	struct resource *res;
+ 	unsigned int i;
  	int ret;
- 	u32 val;
  
-@@ -182,8 +181,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
- 	if (!pc)
+@@ -204,8 +203,7 @@ static int zx_pwm_probe(struct platform_device *pdev)
+ 	if (!zpc)
  		return -ENOMEM;
  
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	pc->mmio_base = devm_ioremap_resource(&pdev->dev, r);
-+	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->mmio_base))
- 		return PTR_ERR(pc->mmio_base);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	zpc->base = devm_ioremap_resource(&pdev->dev, res);
++	zpc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(zpc->base))
+ 		return PTR_ERR(zpc->base);
  
 -- 
 2.17.1
