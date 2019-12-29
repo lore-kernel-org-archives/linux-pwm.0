@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 23/32] pwm: berlin: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:06:01 +0000
-Message-ID: <20191229080610.7597-23-tiny.windzz@gmail.com>
+Subject: [PATCH 21/32] pwm: tiecap: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:59 +0000
+Message-ID: <20191229080610.7597-21-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,29 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-berlin.c | 4 +---
+ drivers/pwm/pwm-tiecap.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-index b91c477cc84b..fe405289e582 100644
---- a/drivers/pwm/pwm-berlin.c
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -186,15 +186,13 @@ MODULE_DEVICE_TABLE(of, berlin_pwm_match);
- static int berlin_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+index ab38c8203b79..3a9885cce386 100644
+--- a/drivers/pwm/pwm-tiecap.c
++++ b/drivers/pwm/pwm-tiecap.c
+@@ -196,7 +196,6 @@ static int ecap_pwm_probe(struct platform_device *pdev)
  {
- 	struct berlin_pwm_chip *pwm;
--	struct resource *res;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct ecap_pwm_chip *pc;
+-	struct resource *r;
+ 	struct clk *clk;
  	int ret;
  
- 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
- 	if (!pwm)
- 		return -ENOMEM;
+@@ -230,8 +229,7 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+ 	pc->chip.base = -1;
+ 	pc->chip.npwm = 1;
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	pwm->base = devm_ioremap_resource(&pdev->dev, res);
-+	pwm->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pwm->base))
- 		return PTR_ERR(pwm->base);
+-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	pc->mmio_base = devm_ioremap_resource(&pdev->dev, r);
++	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->mmio_base))
+ 		return PTR_ERR(pc->mmio_base);
  
 -- 
 2.17.1
