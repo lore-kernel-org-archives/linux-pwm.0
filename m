@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 02/32] pwm: fsl-ftm: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:40 +0000
-Message-ID: <20191229080610.7597-2-tiny.windzz@gmail.com>
+Subject: [PATCH 03/32] pwm: rcar: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:41 +0000
+Message-ID: <20191229080610.7597-3-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,29 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-fsl-ftm.c | 4 +---
+ drivers/pwm/pwm-rcar.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index 59272a920479..2a6801226aba 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -399,7 +399,6 @@ static const struct regmap_config fsl_pwm_regmap_config = {
- static int fsl_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 852eb2347954..7bd67f69db84 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -203,15 +203,13 @@ static const struct pwm_ops rcar_pwm_ops = {
+ static int rcar_pwm_probe(struct platform_device *pdev)
  {
- 	struct fsl_pwm_chip *fpc;
+ 	struct rcar_pwm_chip *rcar_pwm;
 -	struct resource *res;
- 	void __iomem *base;
  	int ret;
  
-@@ -412,8 +411,7 @@ static int fsl_pwm_probe(struct platform_device *pdev)
- 	fpc->soc = of_device_get_match_data(&pdev->dev);
- 	fpc->chip.dev = &pdev->dev;
+ 	rcar_pwm = devm_kzalloc(&pdev->dev, sizeof(*rcar_pwm), GFP_KERNEL);
+ 	if (rcar_pwm == NULL)
+ 		return -ENOMEM;
  
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	base = devm_ioremap_resource(&pdev->dev, res);
-+	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+-	rcar_pwm->base = devm_ioremap_resource(&pdev->dev, res);
++	rcar_pwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(rcar_pwm->base))
+ 		return PTR_ERR(rcar_pwm->base);
  
 -- 
 2.17.1
