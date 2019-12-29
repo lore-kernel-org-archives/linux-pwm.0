@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 29/32] pwm: lpc18xx-sct: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:06:07 +0000
-Message-ID: <20191229080610.7597-29-tiny.windzz@gmail.com>
+Subject: [PATCH 31/32] pwm: sifive: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:06:09 +0000
+Message-ID: <20191229080610.7597-31-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-lpc18xx-sct.c | 4 +---
+ drivers/pwm/pwm-sifive.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 5ff11145c1a3..dc5133bec3e7 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -325,7 +325,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- {
- 	struct lpc18xx_pwm_chip *lpc18xx_pwm;
- 	struct pwm_device *pwm;
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index cc63f9baa481..cb9134d7197b 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -232,7 +232,6 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct pwm_sifive_ddata *ddata;
+ 	struct pwm_chip *chip;
 -	struct resource *res;
- 	int ret, i;
- 	u64 val;
+ 	int ret;
  
-@@ -336,8 +335,7 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 
- 	lpc18xx_pwm->dev = &pdev->dev;
+ 	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
+@@ -248,8 +247,7 @@ static int pwm_sifive_probe(struct platform_device *pdev)
+ 	chip->base = -1;
+ 	chip->npwm = 4;
  
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	lpc18xx_pwm->base = devm_ioremap_resource(&pdev->dev, res);
-+	lpc18xx_pwm->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(lpc18xx_pwm->base))
- 		return PTR_ERR(lpc18xx_pwm->base);
+-	ddata->regs = devm_ioremap_resource(dev, res);
++	ddata->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(ddata->regs))
+ 		return PTR_ERR(ddata->regs);
  
 -- 
 2.17.1
