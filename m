@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 18/32] pwm: tiehrpwm: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:56 +0000
-Message-ID: <20191229080610.7597-18-tiny.windzz@gmail.com>
+Subject: [PATCH 12/32] pwm: bcm-kona: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:50 +0000
+Message-ID: <20191229080610.7597-12-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-tiehrpwm.c | 4 +---
+ drivers/pwm/pwm-bcm-kona.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-index 7b4c770ce9d6..3a1313caa5fe 100644
---- a/drivers/pwm/pwm-tiehrpwm.c
-+++ b/drivers/pwm/pwm-tiehrpwm.c
-@@ -421,7 +421,6 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index 81da91df2529..aa451987733b 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -259,7 +259,6 @@ static const struct pwm_ops kona_pwm_ops = {
+ static int kona_pwmc_probe(struct platform_device *pdev)
  {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct ehrpwm_pwm_chip *pc;
--	struct resource *r;
- 	struct clk *clk;
- 	int ret;
+ 	struct kona_pwmc *kp;
+-	struct resource *res;
+ 	unsigned int chan;
+ 	unsigned int value = 0;
+ 	int ret = 0;
+@@ -277,8 +276,7 @@ static int kona_pwmc_probe(struct platform_device *pdev)
+ 	kp->chip.of_xlate = of_pwm_xlate_with_flags;
+ 	kp->chip.of_pwm_n_cells = 3;
  
-@@ -455,8 +454,7 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
- 	pc->chip.base = -1;
- 	pc->chip.npwm = NUM_PWM_CHANNEL;
- 
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	pc->mmio_base = devm_ioremap_resource(&pdev->dev, r);
-+	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->mmio_base))
- 		return PTR_ERR(pc->mmio_base);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	kp->base = devm_ioremap_resource(&pdev->dev, res);
++	kp->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(kp->base))
+ 		return PTR_ERR(kp->base);
  
 -- 
 2.17.1
