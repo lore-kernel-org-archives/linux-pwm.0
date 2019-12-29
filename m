@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 31/32] pwm: sifive: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:06:09 +0000
-Message-ID: <20191229080610.7597-31-tiny.windzz@gmail.com>
+Subject: [PATCH 32/32] pwm: atmel: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:06:10 +0000
+Message-ID: <20191229080610.7597-32-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-sifive.c | 4 +---
+ drivers/pwm/pwm-atmel.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index cc63f9baa481..cb9134d7197b 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -232,7 +232,6 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct pwm_sifive_ddata *ddata;
- 	struct pwm_chip *chip;
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 9ba733467e26..86cc5ccaa46c 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -340,7 +340,6 @@ MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
+ static int atmel_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct atmel_pwm_chip *atmel_pwm;
 -	struct resource *res;
  	int ret;
  
- 	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-@@ -248,8 +247,7 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 	chip->base = -1;
- 	chip->npwm = 4;
+ 	atmel_pwm = devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
+@@ -351,8 +350,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 	atmel_pwm->data = of_device_get_match_data(&pdev->dev);
+ 	atmel_pwm->updated_pwms = 0;
  
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ddata->regs = devm_ioremap_resource(dev, res);
-+	ddata->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(ddata->regs))
- 		return PTR_ERR(ddata->regs);
+-	atmel_pwm->base = devm_ioremap_resource(&pdev->dev, res);
++	atmel_pwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(atmel_pwm->base))
+ 		return PTR_ERR(atmel_pwm->base);
  
 -- 
 2.17.1
