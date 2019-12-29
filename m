@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 28/32] pwm: img: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:06:06 +0000
-Message-ID: <20191229080610.7597-28-tiny.windzz@gmail.com>
+Subject: [PATCH 30/32] pwm: hibvt: do some cleanup
+Date: Sun, 29 Dec 2019 08:06:08 +0000
+Message-ID: <20191229080610.7597-30-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -11,33 +11,38 @@ Cc: Yangtao Li <tiny.windzz@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
 Use devm_platform_ioremap_resource() to simplify code.
+'i' and 'ret' are variables of the same type and there is no
+need to use two lines.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-img.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/pwm/pwm-hibvt.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index c9e57bd109fb..e9b25440b808 100644
---- a/drivers/pwm/pwm-img.c
-+++ b/drivers/pwm/pwm-img.c
-@@ -238,7 +238,6 @@ static int img_pwm_probe(struct platform_device *pdev)
- 	int ret;
- 	u64 val;
- 	unsigned long clk_rate;
+diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
+index ad205fdad372..a1900d0a872e 100644
+--- a/drivers/pwm/pwm-hibvt.c
++++ b/drivers/pwm/pwm-hibvt.c
+@@ -190,9 +190,7 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
+ 	const struct hibvt_pwm_soc *soc =
+ 				of_device_get_match_data(&pdev->dev);
+ 	struct hibvt_pwm_chip *pwm_chip;
 -	struct resource *res;
- 	struct img_pwm_chip *pwm;
- 	const struct of_device_id *of_dev_id;
+-	int ret;
+-	int i;
++	int ret, i;
  
-@@ -248,8 +247,7 @@ static int img_pwm_probe(struct platform_device *pdev)
- 
- 	pwm->dev = &pdev->dev;
+ 	pwm_chip = devm_kzalloc(&pdev->dev, sizeof(*pwm_chip), GFP_KERNEL);
+ 	if (pwm_chip == NULL)
+@@ -213,8 +211,7 @@ static int hibvt_pwm_probe(struct platform_device *pdev)
+ 	pwm_chip->chip.of_pwm_n_cells = 3;
+ 	pwm_chip->soc = soc;
  
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	pwm->base = devm_ioremap_resource(&pdev->dev, res);
-+	pwm->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pwm->base))
- 		return PTR_ERR(pwm->base);
+-	pwm_chip->base = devm_ioremap_resource(&pdev->dev, res);
++	pwm_chip->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pwm_chip->base))
+ 		return PTR_ERR(pwm_chip->base);
  
 -- 
 2.17.1
