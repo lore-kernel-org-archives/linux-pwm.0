@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 14/32] pwm: meson: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:52 +0000
-Message-ID: <20191229080610.7597-14-tiny.windzz@gmail.com>
+Subject: [PATCH 15/32] pwm: rockchip: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:53 +0000
+Message-ID: <20191229080610.7597-15-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,29 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-meson.c | 4 +---
+ drivers/pwm/pwm-rockchip.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 6245bbdb6e6c..62fc79092038 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -537,15 +537,13 @@ static int meson_pwm_init_channels(struct meson_pwm *meson)
- static int meson_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 73352e6fbccb..f0549b82338d 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -292,7 +292,6 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
  {
- 	struct meson_pwm *meson;
--	struct resource *regs;
- 	int err;
+ 	const struct of_device_id *id;
+ 	struct rockchip_pwm_chip *pc;
+-	struct resource *r;
+ 	int ret, count;
  
- 	meson = devm_kzalloc(&pdev->dev, sizeof(*meson), GFP_KERNEL);
- 	if (!meson)
+ 	id = of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
+@@ -303,8 +302,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	if (!pc)
  		return -ENOMEM;
  
--	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	meson->base = devm_ioremap_resource(&pdev->dev, regs);
-+	meson->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(meson->base))
- 		return PTR_ERR(meson->base);
+-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	pc->base = devm_ioremap_resource(&pdev->dev, r);
++	pc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->base))
+ 		return PTR_ERR(pc->base);
  
 -- 
 2.17.1
