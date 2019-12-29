@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 19/32] pwm: puv3: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:57 +0000
-Message-ID: <20191229080610.7597-19-tiny.windzz@gmail.com>
+Subject: [PATCH 22/32] pwm: bcm2835: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:06:00 +0000
+Message-ID: <20191229080610.7597-22-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-puv3.c | 4 +---
+ drivers/pwm/pwm-bcm2835.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-puv3.c b/drivers/pwm/pwm-puv3.c
-index 9d0bd87a425e..2367dad7cf95 100644
---- a/drivers/pwm/pwm-puv3.c
-+++ b/drivers/pwm/pwm-puv3.c
-@@ -100,7 +100,6 @@ static const struct pwm_ops puv3_pwm_ops = {
- static int pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+index 91e24f01b54e..9923cd2f069e 100644
+--- a/drivers/pwm/pwm-bcm2835.c
++++ b/drivers/pwm/pwm-bcm2835.c
+@@ -137,7 +137,6 @@ static const struct pwm_ops bcm2835_pwm_ops = {
+ static int bcm2835_pwm_probe(struct platform_device *pdev)
  {
- 	struct puv3_pwm_chip *puv3;
--	struct resource *r;
+ 	struct bcm2835_pwm *pc;
+-	struct resource *res;
  	int ret;
  
- 	puv3 = devm_kzalloc(&pdev->dev, sizeof(*puv3), GFP_KERNEL);
-@@ -111,8 +110,7 @@ static int pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(puv3->clk))
- 		return PTR_ERR(puv3->clk);
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+@@ -146,8 +145,7 @@ static int bcm2835_pwm_probe(struct platform_device *pdev)
  
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	puv3->base = devm_ioremap_resource(&pdev->dev, r);
-+	puv3->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(puv3->base))
- 		return PTR_ERR(puv3->base);
+ 	pc->dev = &pdev->dev;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	pc->base = devm_ioremap_resource(&pdev->dev, res);
++	pc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->base))
+ 		return PTR_ERR(pc->base);
  
 -- 
 2.17.1
