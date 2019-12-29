@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 16/32] pwm: bcm-iproc: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:54 +0000
-Message-ID: <20191229080610.7597-16-tiny.windzz@gmail.com>
+Subject: [PATCH 07/32] pwm: mediatek: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:45 +0000
+Message-ID: <20191229080610.7597-7-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-bcm-iproc.c | 4 +---
+ drivers/pwm/pwm-mediatek.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
-index 1f829edd8ee7..52860df7d9b7 100644
---- a/drivers/pwm/pwm-bcm-iproc.c
-+++ b/drivers/pwm/pwm-bcm-iproc.c
-@@ -193,7 +193,6 @@ static const struct pwm_ops iproc_pwm_ops = {
- static int iproc_pwmc_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index b94e0d09c300..e4a715d3860c 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -207,7 +207,6 @@ static const struct pwm_ops pwm_mediatek_ops = {
+ static int pwm_mediatek_probe(struct platform_device *pdev)
  {
- 	struct iproc_pwmc *ip;
+ 	struct pwm_mediatek_chip *pc;
 -	struct resource *res;
  	unsigned int i;
- 	u32 value;
  	int ret;
-@@ -211,8 +210,7 @@ static int iproc_pwmc_probe(struct platform_device *pdev)
- 	ip->chip.of_xlate = of_pwm_xlate_with_flags;
- 	ip->chip.of_pwm_n_cells = 3;
+ 
+@@ -217,8 +216,7 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 
+ 	pc->soc = of_device_get_match_data(&pdev->dev);
  
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ip->base = devm_ioremap_resource(&pdev->dev, res);
-+	ip->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(ip->base))
- 		return PTR_ERR(ip->base);
+-	pc->regs = devm_ioremap_resource(&pdev->dev, res);
++	pc->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pc->regs))
+ 		return PTR_ERR(pc->regs);
  
 -- 
 2.17.1
