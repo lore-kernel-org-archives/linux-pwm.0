@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 15/32] pwm: rockchip: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:05:53 +0000
-Message-ID: <20191229080610.7597-15-tiny.windzz@gmail.com>
+Subject: [PATCH 17/32] pwm: samsung: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:05:55 +0000
+Message-ID: <20191229080610.7597-17-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,30 +14,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-rockchip.c | 4 +---
+ drivers/pwm/pwm-samsung.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index 73352e6fbccb..f0549b82338d 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -292,7 +292,6 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index 87a886f7dc2f..645d0066ff0a 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -510,7 +510,6 @@ static int pwm_samsung_probe(struct platform_device *pdev)
  {
- 	const struct of_device_id *id;
- 	struct rockchip_pwm_chip *pc;
--	struct resource *r;
- 	int ret, count;
+ 	struct device *dev = &pdev->dev;
+ 	struct samsung_pwm_chip *chip;
+-	struct resource *res;
+ 	unsigned int chan;
+ 	int ret;
  
- 	id = of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
-@@ -303,8 +302,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	if (!pc)
- 		return -ENOMEM;
+@@ -541,8 +540,7 @@ static int pwm_samsung_probe(struct platform_device *pdev)
+ 							sizeof(chip->variant));
+ 	}
  
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	pc->base = devm_ioremap_resource(&pdev->dev, r);
-+	pc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(pc->base))
- 		return PTR_ERR(pc->base);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	chip->base = devm_ioremap_resource(&pdev->dev, res);
++	chip->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(chip->base))
+ 		return PTR_ERR(chip->base);
  
 -- 
 2.17.1
