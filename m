@@ -1,7 +1,7 @@
 From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 27/32] pwm: clps711x: convert to devm_platform_ioremap_resource
-Date: Sun, 29 Dec 2019 08:06:05 +0000
-Message-ID: <20191229080610.7597-27-tiny.windzz@gmail.com>
+Subject: [PATCH 23/32] pwm: berlin: convert to devm_platform_ioremap_resource
+Date: Sun, 29 Dec 2019 08:06:01 +0000
+Message-ID: <20191229080610.7597-23-tiny.windzz@gmail.com>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20191229080610.7597-1-tiny.windzz@gmail.com>
@@ -14,28 +14,29 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/pwm/pwm-clps711x.c | 4 +---
+ drivers/pwm/pwm-berlin.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-index 924d39a797cf..e69a5877cec6 100644
---- a/drivers/pwm/pwm-clps711x.c
-+++ b/drivers/pwm/pwm-clps711x.c
-@@ -113,14 +113,12 @@ static struct pwm_device *clps711x_pwm_xlate(struct pwm_chip *chip,
- static int clps711x_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
+index b91c477cc84b..fe405289e582 100644
+--- a/drivers/pwm/pwm-berlin.c
++++ b/drivers/pwm/pwm-berlin.c
+@@ -186,15 +186,13 @@ MODULE_DEVICE_TABLE(of, berlin_pwm_match);
+ static int berlin_pwm_probe(struct platform_device *pdev)
  {
- 	struct clps711x_chip *priv;
+ 	struct berlin_pwm_chip *pwm;
 -	struct resource *res;
+ 	int ret;
  
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
+ 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+ 	if (!pwm)
  		return -ENOMEM;
  
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	priv->pmpcon = devm_ioremap_resource(&pdev->dev, res);
-+	priv->pmpcon = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(priv->pmpcon))
- 		return PTR_ERR(priv->pmpcon);
+-	pwm->base = devm_ioremap_resource(&pdev->dev, res);
++	pwm->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pwm->base))
+ 		return PTR_ERR(pwm->base);
  
 -- 
 2.17.1
