@@ -1,42 +1,209 @@
-From: <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH 32/32] pwm: atmel: convert to
- devm_platform_ioremap_resource
-Date: Mon, 6 Jan 2020 10:32:36 +0000
-Message-ID: <5aef0df7-ab3a-fe81-3cd4-a81c08841a00@microchip.com>
-References: <20191229080610.7597-1-tiny.windzz@gmail.com>
- <20191229080610.7597-32-tiny.windzz@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: Re: [PATCH v4] gpio: pca953x: Add Maxim MAX7313 PWM support
+Date: Mon, 6 Jan 2020 14:44:37 +0100
+Message-ID: <20200106144437.615698c1@xps13>
+References: <20191129191023.2209-1-miquel.raynal@bootlin.com>
+        <CAHp75VeJNZWz_Cv=dozAwt74OBu8TgyYe5bNU3sHreRMdqxR8A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191229080610.7597-32-tiny.windzz@gmail.com>
-Content-Language: en-US
-Content-ID: <C0B3595014DD3C41BDEC06FF974DF51B@namprd11.prod.outlook.com>
+In-Reply-To: <CAHp75VeJNZWz_Cv=dozAwt74OBu8TgyYe5bNU3sHreRMdqxR8A@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: tiny.windzz@gmail.com, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, f.fainelli@gmail.com, nsaenzjulienne@suse.de, shc_work@mail.ru, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, matthias.bgg@gmail.com, heiko@sntech.de, palmer@dabbelt.com, paul.walmsley@sifive.com, mripard@kernel.org, wens@csie.org, jonathanh@nvidia.com, linux@prisktech.co.nz, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 List-Id: linux-pwm@vger.kernel.org
 
-DQoNCk9uIDI5LjEyLjIwMTkgMTA6MDYsIFlhbmd0YW8gTGkgd3JvdGU6DQo+IFVzZSBkZXZtX3Bs
-YXRmb3JtX2lvcmVtYXBfcmVzb3VyY2UoKSB0byBzaW1wbGlmeSBjb2RlLg0KPiANCj4gU2lnbmVk
-LW9mZi1ieTogWWFuZ3RhbyBMaSA8dGlueS53aW5kenpAZ21haWwuY29tPg0KDQpBY2tlZC1ieTog
-Q2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNCj4gLS0tDQo+
-ICBkcml2ZXJzL3B3bS9wd20tYXRtZWwuYyB8IDQgKy0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDEg
-aW5zZXJ0aW9uKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-cHdtL3B3bS1hdG1lbC5jIGIvZHJpdmVycy9wd20vcHdtLWF0bWVsLmMNCj4gaW5kZXggOWJhNzMz
-NDY3ZTI2Li44NmNjNWNjYWE0NmMgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1hdG1l
-bC5jDQo+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC5jDQo+IEBAIC0zNDAsNyArMzQwLDYg
-QEAgTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgYXRtZWxfcHdtX2R0X2lkcyk7DQo+ICBzdGF0aWMg
-aW50IGF0bWVsX3B3bV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgew0K
-PiAgICAgICAgIHN0cnVjdCBhdG1lbF9wd21fY2hpcCAqYXRtZWxfcHdtOw0KPiAtICAgICAgIHN0
-cnVjdCByZXNvdXJjZSAqcmVzOw0KPiAgICAgICAgIGludCByZXQ7DQo+IA0KPiAgICAgICAgIGF0
-bWVsX3B3bSA9IGRldm1fa3phbGxvYygmcGRldi0+ZGV2LCBzaXplb2YoKmF0bWVsX3B3bSksIEdG
-UF9LRVJORUwpOw0KPiBAQCAtMzUxLDggKzM1MCw3IEBAIHN0YXRpYyBpbnQgYXRtZWxfcHdtX3By
-b2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICAgICAgICAgYXRtZWxfcHdtLT5k
-YXRhID0gb2ZfZGV2aWNlX2dldF9tYXRjaF9kYXRhKCZwZGV2LT5kZXYpOw0KPiAgICAgICAgIGF0
-bWVsX3B3bS0+dXBkYXRlZF9wd21zID0gMDsNCj4gDQo+IC0gICAgICAgcmVzID0gcGxhdGZvcm1f
-Z2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCAwKTsNCj4gLSAgICAgICBhdG1lbF9w
-d20tPmJhc2UgPSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoJnBkZXYtPmRldiwgcmVzKTsNCj4gKyAg
-ICAgICBhdG1lbF9wd20tPmJhc2UgPSBkZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3VyY2UocGRl
-diwgMCk7DQo+ICAgICAgICAgaWYgKElTX0VSUihhdG1lbF9wd20tPmJhc2UpKQ0KPiAgICAgICAg
-ICAgICAgICAgcmV0dXJuIFBUUl9FUlIoYXRtZWxfcHdtLT5iYXNlKTsNCj4gDQo+IC0tDQo+IDIu
-MTcuMQ0KPiANCj4g
+Hi Andy,
+
+> >  #define PCA_INT                        BIT(8)
+> >  #define PCA_PCAL               BIT(9)  
+> 
+> > +#define MAX_PWM                        BIT(10)  
+> 
+> Use same prefix.
+
+I am not sure it is relevant here, I think showing the specificity of
+the MAXIM PWM is okay.
+
+> 
+> ...
+> 
+> > +#define PWM_MAX_COUNT 16
+> > +#define PWM_PER_REG 2  
+> 
+> > +#define PWM_BITS_PER_REG (8 / PWM_PER_REG)  
+> 
+> Can we simple put 4 here?
+> 
+
+Fine
+
+> ...
+> 
+> > +#define PWM_INTENSITY_MASK GENMASK(PWM_BITS_PER_REG - 1, 0)  
+> 
+> Please use plain numbers for the GENMASK() arguments.
+
+Ok
+
+> 
+> ...
+> 
+> > +struct max7313_pwm_data {
+> > +       struct gpio_desc *desc;
+> > +};  
+> 
+> Are you plan to extend this? Can we directly use struct gpio_desc pointer?
+
+I'm not a fan of this method at all, I think it is better practice to
+keep a container in this case, which can be easily extended when needed.
+
+> 
+> ...
+> 
+> > +       if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE &&
+> > +           chip->driver_data & MAX_PWM) {  
+> 
+> Can't we simple check only for a flag for now?
+
+I don't get it. You just want the driver_data & MAX_PWM check?
+
+> 
+> > +               if (reg >= MAX7313_MASTER &&
+> > +                   reg < (MAX7313_INTENSITY + bank_sz))
+> > +                       return true;
+> > +       }  
+> 
+> ...
+> 
+> > +       if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE &&
+> > +           chip->driver_data & MAX_PWM) {
+> > +               if (reg >= MAX7313_MASTER &&
+> > +                   reg < (MAX7313_INTENSITY + bank_sz))
+> > +                       return true;
+> > +       }  
+> 
+> This is a duplicate from above. Need a helper?
+
+Perhaps!
+
+> 
+> ...
+> 
+> > +/*
+> > + * Max7313 PWM specific methods
+> > + *
+> > + * Limitations:
+> > + * - Does not support a disabled state
+> > + * - Period fixed to 31.25ms
+> > + * - Only supports normal polarity
+> > + * - Some glitches cannot be prevented
+> > + */  
+> 
+> Can we have below in a separate file and attach it to the gpio-pca953x
+> code iff CONFIG_PWM != n?
+
+I'll check, why not.
+
+> 
+> ...
+> 
+> > +       mutex_lock(&pca_chip->i2c_lock);  
+> 
+> > +       regmap_read(pca_chip->regmap, reg, &val);  
+> 
+> No error check?
+> 
+> > +       mutex_unlock(&pca_chip->i2c_lock);  
+> 
+> ...
+> 
+> > +       if (shift)  
+> 
+> Redundant.
+
+Ok
+
+> 
+> > +               val >>= shift;  
+> 
+> ...
+> 
+> > +       mutex_lock(&pca_chip->i2c_lock);
+> > +       regmap_read(pca_chip->regmap, reg, &output);
+> > +       mutex_unlock(&pca_chip->i2c_lock);  
+> 
+> No error check?
+> 
+> ...
+> 
+> > +       mutex_lock(&pca_chip->i2c_lock);
+> > +       regmap_read(pca_chip->regmap, reg, &output);
+> > +       mutex_unlock(&pca_chip->i2c_lock);  
+> 
+> No error check?
+> 
+> ...
+> 
+> > +static int max7313_pwm_request(struct pwm_chip *chip,
+> > +                              struct pwm_device *pwm)
+> > +{
+> > +       struct max7313_pwm *max_pwm = to_max7313_pwm(chip);
+> > +       struct pca953x_chip *pca_chip = to_pca953x(max_pwm);
+> > +       struct max7313_pwm_data *data;
+> > +       struct gpio_desc *desc;
+> > +
+> > +       desc = gpiochip_request_own_desc(&pca_chip->gpio_chip, pwm->hwpwm,
+> > +                                        "max7313-pwm", GPIO_ACTIVE_HIGH, 0);
+> > +       if (IS_ERR(desc)) {  
+> 
+> > +               dev_err(&pca_chip->client->dev,  
+> 
+> Can't we get to struct device easily?
+> If it's possible maybe we could move next line to this one?
+
+I'll try.
+
+> 
+> > +                       "pin already in use (probably as GPIO): %ld\n",
+> > +                       PTR_ERR(desc));
+> > +               return PTR_ERR(desc);
+> > +       }  
+> 
+> > +       return 0;
+> > +}  
+> 
+> ...
+> 
+> > +       if (intensity)
+> > +               set_bit(pwm->hwpwm, max_pwm->active_pwm);
+> > +       else
+> > +               clear_bit(pwm->hwpwm, max_pwm->active_pwm);  
+> 
+> assign_bit()
+
+Nice!
+
+> 
+> By the way, do you really need it to be atomic? Perhaps __asign_bit()?
+
+Maybe not, indeed.
+
+> 
+> ...
+> 
+> > +       active = bitmap_weight(max_pwm->active_pwm, PWM_MAX_COUNT);  
+> 
+> > +       if (!active)  
+> 
+> In this case more readable will be active == 0 since you compare this
+> to the exact value.
+> 
+
+"if (!active)" is read "if not active" which is IMHO very descriptive!
+
+I'll correct most of your comments and send a v5.
+
+Thanks,
+Miquèl
