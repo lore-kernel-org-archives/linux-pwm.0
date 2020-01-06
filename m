@@ -1,12 +1,12 @@
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn7nam10on2049.outbound.protection.outlook.com ([40.107.92.49]:37536
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+Received: from mail-eopbgr750070.outbound.protection.outlook.com ([40.107.75.70]:6116
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726526AbgAFAsF (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 5 Jan 2020 19:48:05 -0500
+        id S1726526AbgAFAsX (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 5 Jan 2020 19:48:23 -0500
 From: Jeff LaBundy <jeff@labundy.com>
-Date: Mon, 6 Jan 2020 00:48:00 +0000
-Message-ID: <1578271620-2159-2-git-send-email-jeff@labundy.com>
+Date: Mon, 6 Jan 2020 00:48:06 +0000
+Message-ID: <1578271620-2159-8-git-send-email-jeff@labundy.com>
 References: <1578271620-2159-1-git-send-email-jeff@labundy.com>
 In-Reply-To: <1578271620-2159-1-git-send-email-jeff@labundy.com>
 Content-Language: en-US
@@ -15,468 +15,408 @@ Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH v3 1/7] dt-bindings: Add bindings for Azoteq
- IQS620A/621/622/624/625
+Subject: [PATCH v3 7/7] iio: position: Add support for Azoteq IQS624/625 angle
+ sensors
 To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jeff LaBundy <jeff@labundy.com>
 
-This patch adds device tree bindings for the Azoteq IQS620A, IQS621,
-IQS622, IQS624 and IQS625 multi-function sensors.
+This patch adds support for the Azoteq IQS624 and IQS625 angular position
+sensors, capable of reporting the angle of a rotating shaft down to 1 and
+10 degrees of accuracy, respectively.
 
-A total of three bindings are presented (one MFD and two child nodes);
-they are submitted as a single patch because the child node bindings
-have no meaning in the absence of the MFD binding.
+This patch also introduces a home for linear and angular position sensors.
+Unlike resolvers, they are typically contactless and use the Hall effect.
 
 Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
 Changes in v3:
-  - Specified 'additionalProperties: false' within the parent MFD node and =
-all
-    child nodes ("keys", "hall-switch-north/south" and "pwm")
-  - Defined the "hall-switch-north/south" child nodes unconditionally and t=
-hen
-    inverted the subsequent if/then to filter them from devices for which t=
-hat
-    functionality is unavailable
   - Added Reviewed-by trailer
 
 Changes in v2:
-  - Removed "prox" child node and moved "keys" and "pwm" child nodes to the=
-ir
-    own bindings
-  - Replaced linux,fw-file property with more common firmware-name property
-  - Converted all bindings to YAML
+  - Merged 'Copyright' and 'Author' lines into one in introductory comments
+  - Replaced 'error' with 'ret' throughout
+  - Added iqs624_pos_angle_en and iqs624_pos_angle_get to remove duplicate
+    logic previously used throughout
+  - Refactored the logic in iqs624_pos_notifier and added a lock to safely
+    evaluate variables that may change in response to user action
+  - Refactored the logic in iqs624_pos_read_raw
+  - Added a lock to iqs624_pos_read_event_config to account for cases in wh=
+ich
+    the corresponding hardware state is in the process of being updated
+  - Refactored the logic in iqs624_pos_write_event_config and read the init=
+ial
+    angle in case it changed since having first been read in iqs624_pos_ini=
+t
+  - Removed iqs624_pos_init as its logic has since been absorbed elsewhere
+  - Removed devm_add_action_or_reset failure message
+  - Eliminated tabbed alignment of platform_driver struct members
+  - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
 
- .../devicetree/bindings/input/iqs62x-keys.yaml     | 132 +++++++++++++++
- Documentation/devicetree/bindings/mfd/iqs62x.yaml  | 179 +++++++++++++++++=
+ drivers/iio/Kconfig               |   1 +
+ drivers/iio/Makefile              |   1 +
+ drivers/iio/position/Kconfig      |  19 +++
+ drivers/iio/position/Makefile     |   7 +
+ drivers/iio/position/iqs624-pos.c | 284 ++++++++++++++++++++++++++++++++++=
 ++++
- .../devicetree/bindings/pwm/iqs620a-pwm.yaml       |  32 ++++
- 3 files changed, 343 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/iqs62x-keys.yam=
-l
- create mode 100644 Documentation/devicetree/bindings/mfd/iqs62x.yaml
- create mode 100644 Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml
+ 5 files changed, 312 insertions(+)
+ create mode 100644 drivers/iio/position/Kconfig
+ create mode 100644 drivers/iio/position/Makefile
+ create mode 100644 drivers/iio/position/iqs624-pos.c
 
-diff --git a/Documentation/devicetree/bindings/input/iqs62x-keys.yaml b/Doc=
-umentation/devicetree/bindings/input/iqs62x-keys.yaml
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 5bd5185..d5c073a 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -88,6 +88,7 @@ source "drivers/iio/orientation/Kconfig"
+ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+ endif #IIO_TRIGGER
++source "drivers/iio/position/Kconfig"
+ source "drivers/iio/potentiometer/Kconfig"
+ source "drivers/iio/potentiostat/Kconfig"
+ source "drivers/iio/pressure/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index bff682a..1712011 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -31,6 +31,7 @@ obj-y +=3D light/
+ obj-y +=3D magnetometer/
+ obj-y +=3D multiplexer/
+ obj-y +=3D orientation/
++obj-y +=3D position/
+ obj-y +=3D potentiometer/
+ obj-y +=3D potentiostat/
+ obj-y +=3D pressure/
+diff --git a/drivers/iio/position/Kconfig b/drivers/iio/position/Kconfig
 new file mode 100644
-index 0000000..5625c22
+index 0000000..eda67f0
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/input/iqs62x-keys.yaml
-@@ -0,0 +1,132 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/input/iqs62x-keys.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/position/Kconfig
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Linear and angular position sensors
++#
++# When adding new entries keep the list in alphabetical order
 +
-+title: Azoteq IQS620A/621/622/624/625 Keys and Switches
++menu "Linear and angular position sensors"
 +
-+maintainers:
-+  - Jeff LaBundy <jeff@labundy.com>
++config IQS624_POS
++	tristate "Azoteq IQS624/625 angular position sensors"
++	depends on MFD_IQS62X || COMPILE_TEST
++	help
++	  Say Y here if you want to build support for the Azoteq IQS624
++	  and IQS625 angular position sensors.
 +
-+description: |
-+  The Azoteq IQS620A, IQS621, IQS622, IQS624 and IQS625 multi-function sen=
-sors
-+  feature a variety of self-capacitive, mutual-inductive and Hall-effect s=
-ens-
-+  ing capabilities that can facilitate a variety of contactless key and sw=
-itch
-+  applications.
++	  To compile this driver as a module, choose M here: the module
++	  will be called iqs624-pos.
 +
-+  These functions are collectively represented by a "keys" child node from=
- the
-+  parent MFD driver. See Documentation/devicetree/bindings/mfd/iqs62x.yaml=
- for
-+  further details and examples. Sensor hardware configuration (self-capaci=
-tive
-+  vs. mutual-inductive, etc.) is selected based on the device's firmware.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - azoteq,iqs620a-keys
-+      - azoteq,iqs621-keys
-+      - azoteq,iqs622-keys
-+      - azoteq,iqs624-keys
-+      - azoteq,iqs625-keys
-+
-+  linux,keycodes:
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint32-array
-+      - minItems: 1
-+        maxItems: 16
-+    description: |
-+      Specifies the numeric keycodes associated with each available touch =
-or
-+      proximity event according to the following table. An 'x' indicates t=
-he
-+      event is supported for a given device. Specify 0 for unused events.
-+
-+      --------------------------------------------------------------------=
------
-+      | #  | Event              | IQS620A | IQS621 | IQS622 | IQS624 | IQS=
-625 |
-+      --------------------------------------------------------------------=
------
-+      | 0  | CH0 Touch          |    x    |    x   |    x   |    x   |    =
-x   |
-+      |    | Antenna 1 Touch*   |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 1  | CH0 Proximity      |    x    |    x   |    x   |    x   |    =
-x   |
-+      |    | Antenna 1 Prox.*   |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 2  | CH1 Touch          |    x    |    x   |    x   |    x   |    =
-x   |
-+      |    | Ant. 1 Deep Touch* |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 3  | CH1 Proximity      |    x    |    x   |    x   |    x   |    =
-x   |
-+      --------------------------------------------------------------------=
------
-+      | 4  | CH2 Touch          |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 5  | CH2 Proximity      |    x    |        |        |        |    =
-    |
-+      |    | Antenna 2 Prox.*   |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 6  | Metal (+) Touch**  |    x    |    x   |        |        |    =
-    |
-+      |    | Ant. 2 Deep Touch* |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 7  | Metal (+) Prox.**  |    x    |    x   |        |        |    =
-    |
-+      |    | Antenna 2 Touch*   |    x    |        |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 8  | Metal (-) Touch**  |    x    |    x   |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 9  | Metal (-) Prox.**  |    x    |    x   |        |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 10 | SAR Active***      |    x    |        |    x   |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 11 | SAR Quick Rel.***  |    x    |        |    x   |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 12 | SAR Movement***    |    x    |        |    x   |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 13 | SAR Filter Halt*** |    x    |        |    x   |        |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 14 | Wheel Up           |         |        |        |    x   |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      | 15 | Wheel Down         |         |        |        |    x   |    =
-    |
-+      --------------------------------------------------------------------=
------
-+      *   Two-channel SAR. Replaces CH0-2 plus metal touch and proximity e=
-vents
-+          if enabled via firmware.
-+      **  "+" and "-" refer to the polarity of a channel's delta (LTA - co=
-unts),
-+          where "LTA" is defined as the channel's long-term average.
-+      *** One-channel SAR. Replaces CH0-2 touch and proximity events if en=
-abled
-+          via firmware.
-+
-+patternProperties:
-+  "^hall-switch-(north|south)$":
-+    type: object
-+    description:
-+      Represents north/south-field Hall-effect sensor touch or proximity
-+      events. Note that north/south-field orientation is reversed on the
-+      IQS620AXzCSR device due to its flip-chip package.
-+
-+    properties:
-+      linux,code:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: Numeric switch code associated with the event.
-+
-+      azoteq,use-prox:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          If present, specifies that Hall-effect sensor reporting should
-+          use the device's wide-range proximity threshold instead of its
-+          close-range touch threshold (default).
-+
-+    required:
-+      - linux,code
-+
-+    additionalProperties: false
-+
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - azoteq,iqs624-keys
-+          - azoteq,iqs625-keys
-+then:
-+  patternProperties:
-+    "^hall-switch-(north|south)$": false
-+
-+required:
-+  - compatible
-+  - linux,keycodes
-+
-+additionalProperties: false
-+
-+...
-diff --git a/Documentation/devicetree/bindings/mfd/iqs62x.yaml b/Documentat=
-ion/devicetree/bindings/mfd/iqs62x.yaml
++endmenu
+diff --git a/drivers/iio/position/Makefile b/drivers/iio/position/Makefile
 new file mode 100644
-index 0000000..46b7272
+index 0000000..3cbe7a7
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/iqs62x.yaml
-@@ -0,0 +1,179 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/iqs62x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/position/Makefile
+@@ -0,0 +1,7 @@
++#
++# Makefile for IIO linear and angular position sensors
++#
 +
-+title: Azoteq IQS620A/621/622/624/625 Multi-Function Sensors
++# When adding new entries keep the list in alphabetical order
 +
-+maintainers:
-+  - Jeff LaBundy <jeff@labundy.com>
-+
-+description: |
-+  The Azoteq IQS620A, IQS621, IQS622, IQS624 and IQS625 multi-function sen=
-sors
-+  integrate multiple sensing technologies in a single package.
-+
-+  Link to data sheets: https://www.azoteq.com/
-+
-+properties:
-+  compatible:
-+    enum:
-+      - azoteq,iqs620a
-+      - azoteq,iqs621
-+      - azoteq,iqs622
-+      - azoteq,iqs624
-+      - azoteq,iqs625
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  firmware-name:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description:
-+      Specifies the name of the calibration and configuration file selecte=
-d by
-+      the driver. If this property is omitted, the name is chosen based on=
- the
-+      device name with ".bin" as the extension (e.g. iqs620a.bin for IQS62=
-0A).
-+
-+  keys:
-+    $ref: ../input/iqs62x-keys.yaml
-+
-+  pwm:
-+    $ref: ../pwm/iqs620a-pwm.yaml
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    /*
-+     * Dual capacitive buttons with additional "air button," unipolar lid
-+     * switch and panel-mounted LED.
-+     */
-+    #include <dt-bindings/input/input.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+            #address-cells =3D <1>;
-+            #size-cells =3D <0>;
-+
-+            iqs620a@44 {
-+                    compatible =3D "azoteq,iqs620a";
-+                    reg =3D <0x44>;
-+                    interrupt-parent =3D <&gpio>;
-+                    interrupts =3D <17 IRQ_TYPE_LEVEL_LOW>;
-+
-+                    keys {
-+                            compatible =3D "azoteq,iqs620a-keys";
-+
-+                            linux,keycodes =3D <KEY_SELECT>,
-+                                             <KEY_MENU>,
-+                                             <KEY_OK>,
-+                                             <KEY_MENU>;
-+
-+                            hall-switch-south {
-+                                    linux,code =3D <SW_LID>;
-+                                    azoteq,use-prox;
-+                            };
-+                    };
-+
-+                    iqs620a_pwm: pwm {
-+                            compatible =3D "azoteq,iqs620a-pwm";
-+                            #pwm-cells =3D <2>;
-+                    };
-+            };
-+    };
-+
-+    pwmleds {
-+            compatible =3D "pwm-leds";
-+
-+            panel {
-+                    pwms =3D <&iqs620a_pwm 0 1000000>;
-+                    max-brightness =3D <255>;
-+            };
-+    };
-+
-+  - |
-+    /* Single inductive button with bipolar dock/tablet-mode switch. */
-+    #include <dt-bindings/input/input.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+            #address-cells =3D <1>;
-+            #size-cells =3D <0>;
-+
-+            iqs620a@44 {
-+                    compatible =3D "azoteq,iqs620a";
-+                    reg =3D <0x44>;
-+                    interrupt-parent =3D <&gpio>;
-+                    interrupts =3D <17 IRQ_TYPE_LEVEL_LOW>;
-+
-+                    firmware-name =3D "iqs620a_coil.bin";
-+
-+                    keys {
-+                            compatible =3D "azoteq,iqs620a-keys";
-+
-+                            linux,keycodes =3D <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <KEY_MUTE>;
-+
-+                            hall-switch-north {
-+                                    linux,code =3D <SW_DOCK>;
-+                            };
-+
-+                            hall-switch-south {
-+                                    linux,code =3D <SW_TABLET_MODE>;
-+                            };
-+                    };
-+            };
-+    };
-+
-+  - |
-+    /* Dual capacitive buttons with volume knob. */
-+    #include <dt-bindings/input/input.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+            #address-cells =3D <1>;
-+            #size-cells =3D <0>;
-+
-+            iqs624@44 {
-+                    compatible =3D "azoteq,iqs624";
-+                    reg =3D <0x44>;
-+                    interrupt-parent =3D <&gpio>;
-+                    interrupts =3D <17 IRQ_TYPE_LEVEL_LOW>;
-+
-+                    keys {
-+                            compatible =3D "azoteq,iqs624-keys";
-+
-+                            linux,keycodes =3D <BTN_0>,
-+                                             <0>,
-+                                             <BTN_1>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <0>,
-+                                             <KEY_VOLUMEUP>,
-+                                             <KEY_VOLUMEDOWN>;
-+                    };
-+            };
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml b/Docum=
-entation/devicetree/bindings/pwm/iqs620a-pwm.yaml
++obj-$(CONFIG_IQS624_POS)	+=3D iqs624-pos.o
+diff --git a/drivers/iio/position/iqs624-pos.c b/drivers/iio/position/iqs62=
+4-pos.c
 new file mode 100644
-index 0000000..1d7c27b
+index 0000000..af629bf5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml
-@@ -0,0 +1,32 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/iqs620a-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/position/iqs624-pos.c
+@@ -0,0 +1,284 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Azoteq IQS624/625 Angular Position Sensors
++ *
++ * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
++ */
 +
-+title: Azoteq IQS620A PWM Generator
++#include <linux/device.h>
++#include <linux/iio/events.h>
++#include <linux/iio/iio.h>
++#include <linux/kernel.h>
++#include <linux/mfd/iqs62x.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/notifier.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
 +
-+maintainers:
-+  - Jeff LaBundy <jeff@labundy.com>
++#define IQS624_POS_DEG_OUT			0x16
 +
-+description: |
-+  The Azoteq IQS620A multi-function sensor generates a fixed-frequency PWM
-+  output represented by a "pwm" child node from the parent MFD driver. See
-+  Documentation/devicetree/bindings/mfd/iqs62x.yaml for further details as
-+  well as an example.
++#define IQS624_POS_SCALE1			(314159 / 180)
++#define IQS624_POS_SCALE2			100000
 +
-+properties:
-+  compatible:
-+    enum:
-+      - azoteq,iqs620a-pwm
++struct iqs624_pos_private {
++	struct iqs62x_core *iqs62x;
++	struct notifier_block notifier;
++	struct mutex lock;
++	bool angle_en;
++	u16 angle;
++};
 +
-+  "#pwm-cells":
-+    const: 2
++static int iqs624_pos_angle_en(struct iqs62x_core *iqs62x, bool angle_en)
++{
++	unsigned int event_mask =3D IQS624_HALL_UI_WHL_EVENT;
 +
-+required:
-+  - compatible
-+  - "#pwm-cells"
++	/*
++	 * The IQS625 reports angular position in the form of coarse intervals,
++	 * so only interval change events are unmasked. Conversely, the IQS624
++	 * reports angular position down to one degree of resolution, so wheel
++	 * movement events are unmasked instead.
++	 */
++	if (iqs62x->dev_desc->prod_num =3D=3D IQS625_PROD_NUM)
++		event_mask =3D IQS624_HALL_UI_INT_EVENT;
 +
-+additionalProperties: false
++	return regmap_update_bits(iqs62x->map, IQS624_HALL_UI, event_mask,
++				  angle_en ? 0 : 0xFF);
++}
 +
-+...
++static int iqs624_pos_notifier(struct notifier_block *notifier,
++			       unsigned long event_flags, void *context)
++{
++	struct iqs62x_event_data *event_data =3D context;
++	struct iqs624_pos_private *iqs624_pos;
++	struct iqs62x_core *iqs62x;
++	struct iio_dev *indio_dev;
++	u16 angle =3D event_data->ui_data;
++	s64 timestamp;
++	int ret;
++
++	iqs624_pos =3D container_of(notifier, struct iqs624_pos_private,
++				  notifier);
++	indio_dev =3D iio_priv_to_dev(iqs624_pos);
++	timestamp =3D iio_get_time_ns(indio_dev);
++
++	iqs62x =3D iqs624_pos->iqs62x;
++	if (iqs62x->dev_desc->prod_num =3D=3D IQS625_PROD_NUM)
++		angle =3D event_data->interval;
++
++	mutex_lock(&iqs624_pos->lock);
++
++	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
++		ret =3D iqs624_pos_angle_en(iqs62x, iqs624_pos->angle_en);
++		if (ret) {
++			dev_err(indio_dev->dev.parent,
++				"Failed to re-initialize device: %d\n", ret);
++			ret =3D NOTIFY_BAD;
++		} else {
++			ret =3D NOTIFY_OK;
++		}
++	} else if (iqs624_pos->angle_en && (angle !=3D iqs624_pos->angle)) {
++		iio_push_event(indio_dev,
++			       IIO_UNMOD_EVENT_CODE(IIO_ANGL, 0,
++						    IIO_EV_TYPE_CHANGE,
++						    IIO_EV_DIR_NONE),
++			       timestamp);
++
++		iqs624_pos->angle =3D angle;
++		ret =3D NOTIFY_OK;
++	} else {
++		ret =3D NOTIFY_DONE;
++	}
++
++	mutex_unlock(&iqs624_pos->lock);
++
++	return ret;
++}
++
++static void iqs624_pos_notifier_unregister(void *context)
++{
++	struct iqs624_pos_private *iqs624_pos =3D context;
++	struct iio_dev *indio_dev =3D iio_priv_to_dev(iqs624_pos);
++	int ret;
++
++	ret =3D blocking_notifier_chain_unregister(&iqs624_pos->iqs62x->nh,
++						 &iqs624_pos->notifier);
++	if (ret)
++		dev_err(indio_dev->dev.parent,
++			"Failed to unregister notifier: %d\n", ret);
++}
++
++static int iqs624_pos_angle_get(struct iqs62x_core *iqs62x, unsigned int *=
+val)
++{
++	int ret;
++	__le16 val_buf;
++
++	if (iqs62x->dev_desc->prod_num =3D=3D IQS625_PROD_NUM)
++		return regmap_read(iqs62x->map, iqs62x->dev_desc->interval,
++				   val);
++
++	ret =3D regmap_raw_read(iqs62x->map, IQS624_POS_DEG_OUT, &val_buf,
++			      sizeof(val_buf));
++	if (ret)
++		return ret;
++
++	*val =3D le16_to_cpu(val_buf);
++
++	return 0;
++}
++
++static int iqs624_pos_read_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int *val, int *val2, long mask)
++{
++	struct iqs624_pos_private *iqs624_pos =3D iio_priv(indio_dev);
++	struct iqs62x_core *iqs62x =3D iqs624_pos->iqs62x;
++	unsigned int scale =3D 1;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret =3D iqs624_pos_angle_get(iqs62x, val);
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		if (iqs62x->dev_desc->prod_num =3D=3D IQS625_PROD_NUM) {
++			ret =3D regmap_read(iqs62x->map, IQS624_INTERVAL_DIV,
++					  &scale);
++			if (ret)
++				return ret;
++		}
++
++		*val =3D scale * IQS624_POS_SCALE1;
++		*val2 =3D IQS624_POS_SCALE2;
++		return IIO_VAL_FRACTIONAL;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int iqs624_pos_read_event_config(struct iio_dev *indio_dev,
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir)
++{
++	struct iqs624_pos_private *iqs624_pos =3D iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&iqs624_pos->lock);
++	ret =3D iqs624_pos->angle_en;
++	mutex_unlock(&iqs624_pos->lock);
++
++	return ret;
++}
++
++static int iqs624_pos_write_event_config(struct iio_dev *indio_dev,
++					 const struct iio_chan_spec *chan,
++					 enum iio_event_type type,
++					 enum iio_event_direction dir,
++					 int state)
++{
++	struct iqs624_pos_private *iqs624_pos =3D iio_priv(indio_dev);
++	struct iqs62x_core *iqs62x =3D iqs624_pos->iqs62x;
++	unsigned int val;
++	int ret;
++
++	mutex_lock(&iqs624_pos->lock);
++
++	ret =3D iqs624_pos_angle_get(iqs62x, &val);
++	if (ret)
++		goto err_mutex;
++
++	ret =3D iqs624_pos_angle_en(iqs62x, state);
++	if (ret)
++		goto err_mutex;
++
++	iqs624_pos->angle =3D val;
++	iqs624_pos->angle_en =3D state;
++
++err_mutex:
++	mutex_unlock(&iqs624_pos->lock);
++
++	return ret;
++}
++
++static const struct iio_info iqs624_pos_info =3D {
++	.read_raw =3D &iqs624_pos_read_raw,
++	.read_event_config =3D iqs624_pos_read_event_config,
++	.write_event_config =3D iqs624_pos_write_event_config,
++};
++
++static const struct iio_event_spec iqs624_pos_events[] =3D {
++	{
++		.type =3D IIO_EV_TYPE_CHANGE,
++		.dir =3D IIO_EV_DIR_NONE,
++		.mask_separate =3D BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++static const struct iio_chan_spec iqs624_pos_channels[] =3D {
++	{
++		.type =3D IIO_ANGL,
++		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.event_spec =3D iqs624_pos_events,
++		.num_event_specs =3D ARRAY_SIZE(iqs624_pos_events),
++	},
++};
++
++static int iqs624_pos_probe(struct platform_device *pdev)
++{
++	struct iqs62x_core *iqs62x =3D dev_get_drvdata(pdev->dev.parent);
++	struct iqs624_pos_private *iqs624_pos;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev =3D devm_iio_device_alloc(&pdev->dev, sizeof(*iqs624_pos));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	iqs624_pos =3D iio_priv(indio_dev);
++	iqs624_pos->iqs62x =3D iqs62x;
++
++	indio_dev->modes =3D INDIO_DIRECT_MODE;
++	indio_dev->dev.parent =3D &pdev->dev;
++	indio_dev->channels =3D iqs624_pos_channels;
++	indio_dev->num_channels =3D ARRAY_SIZE(iqs624_pos_channels);
++	indio_dev->name =3D iqs62x->dev_desc->dev_name;
++	indio_dev->info =3D &iqs624_pos_info;
++
++	mutex_init(&iqs624_pos->lock);
++
++	iqs624_pos->notifier.notifier_call =3D iqs624_pos_notifier;
++	ret =3D blocking_notifier_chain_register(&iqs624_pos->iqs62x->nh,
++					       &iqs624_pos->notifier);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret);
++		return ret;
++	}
++
++	ret =3D devm_add_action_or_reset(&pdev->dev,
++				       iqs624_pos_notifier_unregister,
++				       iqs624_pos);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(&pdev->dev, indio_dev);
++}
++
++static struct platform_driver iqs624_pos_platform_driver =3D {
++	.driver =3D {
++		.name =3D IQS624_DRV_NAME_POS,
++	},
++	.probe =3D iqs624_pos_probe,
++};
++module_platform_driver(iqs624_pos_platform_driver);
++
++MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
++MODULE_DESCRIPTION("Azoteq IQS624/625 Angular Position Sensors");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:" IQS624_DRV_NAME_POS);
 --
 2.7.4
