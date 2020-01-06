@@ -2,11 +2,11 @@ Return-path: <linux-pwm-owner@vger.kernel.org>
 Received: from mail-bn7nam10on2068.outbound.protection.outlook.com ([40.107.92.68]:6166
         "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726526AbgAFAsl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 5 Jan 2020 19:48:41 -0500
+        id S1726526AbgAFAso (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 5 Jan 2020 19:48:44 -0500
 From: Jeff LaBundy <jeff@labundy.com>
-Date: Mon, 6 Jan 2020 00:48:02 +0000
-Message-ID: <1578271620-2159-4-git-send-email-jeff@labundy.com>
+Date: Mon, 6 Jan 2020 00:48:03 +0000
+Message-ID: <1578271620-2159-6-git-send-email-jeff@labundy.com>
 References: <1578271620-2159-1-git-send-email-jeff@labundy.com>
 In-Reply-To: <1578271620-2159-1-git-send-email-jeff@labundy.com>
 Content-Language: en-US
@@ -15,415 +15,173 @@ Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-Subject: [PATCH v3 3/7] input: keyboard: Add support for Azoteq
- IQS620A/621/622/624/625
+Subject: [PATCH v3 5/7] iio: temperature: Add support for Azoteq IQS620AT
+ temperature sensor
 To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jeff LaBundy <jeff@labundy.com>
 
-This patch adds key and switch support for the Azoteq IQS620A,
-IQS621, IQS622, IQS624 and IQS625 multi-function sensors.
+This patch adds support for the Azoteq IQS620AT temperature sensor,
+capable of reporting its absolute die temperature.
 
 Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
 Changes in v3:
-  - None
+  - Added Reviewed-by trailer
 
 Changes in v2:
+  - Moved the driver from hwmon to iio
   - Merged 'Copyright' and 'Author' lines into one in introductory comments
   - Replaced 'error' with 'ret' throughout
-  - Updated iqs62x_keys_parse_prop to use unified device property interface
-  - Clarified the comment in iqs62x_keys_notifier to state that wheel up or
-    down events elicit an emulated release cycle
   - Eliminated tabbed alignment of platform_driver struct members
+  - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
 
- drivers/input/keyboard/Kconfig       |  10 ++
- drivers/input/keyboard/Makefile      |   1 +
- drivers/input/keyboard/iqs62x-keys.c | 340 +++++++++++++++++++++++++++++++=
+ drivers/iio/temperature/Kconfig         | 10 ++++
+ drivers/iio/temperature/Makefile        |  1 +
+ drivers/iio/temperature/iqs620at-temp.c | 97 +++++++++++++++++++++++++++++=
 ++++
- 3 files changed, 351 insertions(+)
- create mode 100644 drivers/input/keyboard/iqs62x-keys.c
+ 3 files changed, 108 insertions(+)
+ create mode 100644 drivers/iio/temperature/iqs620at-temp.c
 
-diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfi=
-g
-index 4706ff0..28de965 100644
---- a/drivers/input/keyboard/Kconfig
-+++ b/drivers/input/keyboard/Kconfig
-@@ -663,6 +663,16 @@ config KEYBOARD_IPAQ_MICRO
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ipaq-micro-keys.
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kcon=
+fig
+index e1ccb40..f1f2a14 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -4,6 +4,16 @@
+ #
+ menu "Temperature sensors"
 
-+config KEYBOARD_IQS62X
-+	tristate "Azoteq IQS620A/621/622/624/625 keys and switches"
-+	depends on MFD_IQS62X
++config IQS620AT_TEMP
++	tristate "Azoteq IQS620AT temperature sensor"
++	depends on MFD_IQS62X || COMPILE_TEST
 +	help
-+	  Say Y here to enable key and switch support for the Azoteq IQS620A,
-+	  IQS621, IQS622, IQS624 and IQS625 multi-function sensors.
++	  Say Y here if you want to build support for the Azoteq IQS620AT
++	  temperature sensor.
 +
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called iqs62x-keys.
++	  To compile this driver as a module, choose M here: the module
++	  will be called iqs620at-temp.
 +
- config KEYBOARD_OMAP
- 	tristate "TI OMAP keypad support"
- 	depends on ARCH_OMAP1
-diff --git a/drivers/input/keyboard/Makefile b/drivers/input/keyboard/Makef=
-ile
-index f5b1752..1d689fd 100644
---- a/drivers/input/keyboard/Makefile
-+++ b/drivers/input/keyboard/Makefile
-@@ -28,6 +28,7 @@ obj-$(CONFIG_KEYBOARD_TCA8418)		+=3D tca8418_keypad.o
- obj-$(CONFIG_KEYBOARD_HIL)		+=3D hil_kbd.o
- obj-$(CONFIG_KEYBOARD_HIL_OLD)		+=3D hilkbd.o
- obj-$(CONFIG_KEYBOARD_IPAQ_MICRO)	+=3D ipaq-micro-keys.o
-+obj-$(CONFIG_KEYBOARD_IQS62X)		+=3D iqs62x-keys.o
- obj-$(CONFIG_KEYBOARD_IMX)		+=3D imx_keypad.o
- obj-$(CONFIG_KEYBOARD_IMX_SC_KEY)	+=3D imx_sc_key.o
- obj-$(CONFIG_KEYBOARD_HP6XX)		+=3D jornada680_kbd.o
-diff --git a/drivers/input/keyboard/iqs62x-keys.c b/drivers/input/keyboard/=
-iqs62x-keys.c
+ config LTC2983
+ 	tristate "Analog Devices Multi-Sensor Digital Temperature Measurement Sys=
+tem"
+ 	depends on SPI
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Mak=
+efile
+index d6b850b..90c1131 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -3,6 +3,7 @@
+ # Makefile for industrial I/O temperature drivers
+ #
+
++obj-$(CONFIG_IQS620AT_TEMP) +=3D iqs620at-temp.o
+ obj-$(CONFIG_LTC2983) +=3D ltc2983.o
+ obj-$(CONFIG_HID_SENSOR_TEMP) +=3D hid-sensor-temperature.o
+ obj-$(CONFIG_MAXIM_THERMOCOUPLE) +=3D maxim_thermocouple.o
+diff --git a/drivers/iio/temperature/iqs620at-temp.c b/drivers/iio/temperat=
+ure/iqs620at-temp.c
 new file mode 100644
-index 0000000..b477334
+index 0000000..d20cb6ad
 --- /dev/null
-+++ b/drivers/input/keyboard/iqs62x-keys.c
-@@ -0,0 +1,340 @@
++++ b/drivers/iio/temperature/iqs620at-temp.c
+@@ -0,0 +1,97 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
-+ * Azoteq IQS620A/621/622/624/625 Keys and Switches
++ * Azoteq IQS620AT Temperature Sensor
 + *
 + * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
 + */
 +
 +#include <linux/device.h>
-+#include <linux/input.h>
++#include <linux/iio/iio.h>
 +#include <linux/kernel.h>
 +#include <linux/mfd/iqs62x.h>
 +#include <linux/module.h>
-+#include <linux/notifier.h>
 +#include <linux/platform_device.h>
-+#include <linux/property.h>
 +#include <linux/regmap.h>
-+#include <linux/slab.h>
 +
-+enum {
-+	IQS62X_SW_HALL_N,
-+	IQS62X_SW_HALL_S,
-+};
++#define IQS620_TEMP_UI_OUT			0x1A
 +
-+static const char * const iqs62x_switch_names[] =3D {
-+	[IQS62X_SW_HALL_N] =3D "hall-switch-north",
-+	[IQS62X_SW_HALL_S] =3D "hall-switch-south",
-+};
++#define IQS620_TEMP_SCALE			1000
++#define IQS620_TEMP_OFFSET			(-100)
 +
-+struct iqs62x_switch_desc {
-+	enum iqs62x_event_flag flag;
-+	unsigned int code;
-+	bool enabled;
-+};
-+
-+struct iqs62x_keys_private {
-+	struct iqs62x_core *iqs62x;
-+	struct input_dev *input;
-+	struct notifier_block notifier;
-+	struct iqs62x_switch_desc switches[ARRAY_SIZE(iqs62x_switch_names)];
-+	unsigned int keycode[IQS62X_NUM_KEYS];
-+	unsigned int keycodemax;
-+	u8 interval;
-+};
-+
-+static int iqs62x_keys_parse_prop(struct platform_device *pdev,
-+				  struct iqs62x_keys_private *iqs62x_keys)
++static int iqs620_temp_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
 +{
-+	struct fwnode_handle *child;
-+	unsigned int val;
-+	int ret, i;
++	struct iqs62x_core *iqs62x =3D iio_device_get_drvdata(indio_dev);
++	int ret;
++	__le16 val_buf;
 +
-+	ret =3D device_property_read_u32_array(&pdev->dev, "linux,keycodes",
-+					     NULL, 0);
-+	if (ret > IQS62X_NUM_KEYS) {
-+		dev_err(&pdev->dev, "Too many keycodes present\n");
-+		return -EINVAL;
-+	} else if (ret < 0) {
-+		dev_err(&pdev->dev, "Failed to count keycodes: %d\n", ret);
-+		return ret;
-+	}
-+	iqs62x_keys->keycodemax =3D ret;
-+
-+	ret =3D device_property_read_u32_array(&pdev->dev, "linux,keycodes",
-+					     iqs62x_keys->keycode,
-+					     iqs62x_keys->keycodemax);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to read keycodes: %d\n", ret);
-+		return ret;
-+	}
-+
-+	for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++) {
-+		child =3D device_get_named_child_node(&pdev->dev,
-+						    iqs62x_switch_names[i]);
-+		if (!child)
-+			continue;
-+
-+		ret =3D fwnode_property_read_u32(child, "linux,code", &val);
-+		if (ret) {
-+			dev_err(&pdev->dev, "Failed to read switch code: %d\n",
-+				ret);
-+			return ret;
-+		}
-+		iqs62x_keys->switches[i].code =3D val;
-+		iqs62x_keys->switches[i].enabled =3D true;
-+
-+		if (fwnode_property_present(child, "azoteq,use-prox"))
-+			iqs62x_keys->switches[i].flag =3D (i =3D=3D IQS62X_SW_HALL_N ?
-+							 IQS62X_EVENT_HALL_N_P :
-+							 IQS62X_EVENT_HALL_S_P);
-+		else
-+			iqs62x_keys->switches[i].flag =3D (i =3D=3D IQS62X_SW_HALL_N ?
-+							 IQS62X_EVENT_HALL_N_T :
-+							 IQS62X_EVENT_HALL_S_T);
-+	}
-+
-+	return 0;
-+}
-+
-+static int iqs62x_keys_init(struct iqs62x_keys_private *iqs62x_keys)
-+{
-+	struct iqs62x_core *iqs62x =3D iqs62x_keys->iqs62x;
-+	enum iqs62x_event_flag flag;
-+	unsigned int event_mask_reg;
-+	unsigned int event_mask =3D 0;
-+	unsigned int val;
-+	int ret, i;
-+
-+	switch (iqs62x->dev_desc->prod_num) {
-+	case IQS620_PROD_NUM:
-+	case IQS621_PROD_NUM:
-+	case IQS622_PROD_NUM:
-+		event_mask_reg =3D IQS620_GLBL_EVENT_MASK;
-+
-+		/*
-+		 * Discreet button, hysteresis and SAR UI flags represent keys
-+		 * and are unmasked if mapped to a valid keycode.
-+		 */
-+		for (i =3D 0; i < iqs62x_keys->keycodemax; i++) {
-+			if (iqs62x_keys->keycode[i] =3D=3D KEY_RESERVED)
-+				continue;
-+
-+			if (iqs62x_events[i].reg =3D=3D IQS62X_EVENT_PROX)
-+				event_mask |=3D iqs62x->dev_desc->prox_mask;
-+			else if (iqs62x_events[i].reg =3D=3D IQS62X_EVENT_HYST)
-+				event_mask |=3D (iqs62x->dev_desc->hyst_mask |
-+					       iqs62x->dev_desc->sar_mask);
-+		}
-+
-+		ret =3D regmap_read(iqs62x->map, iqs62x->dev_desc->hall_flags,
-+				  &val);
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret =3D regmap_raw_read(iqs62x->map, IQS620_TEMP_UI_OUT, &val_buf,
++				      sizeof(val_buf));
 +		if (ret)
 +			return ret;
 +
-+		/*
-+		 * Hall UI flags represent switches and are unmasked if their
-+		 * corresponding child nodes are present.
-+		 */
-+		for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++) {
-+			if (!(iqs62x_keys->switches[i].enabled))
-+				continue;
++		*val =3D le16_to_cpu(val_buf);
++		return IIO_VAL_INT;
 +
-+			flag =3D iqs62x_keys->switches[i].flag;
++	case IIO_CHAN_INFO_SCALE:
++		*val =3D IQS620_TEMP_SCALE;
++		return IIO_VAL_INT;
 +
-+			if (iqs62x_events[flag].reg !=3D IQS62X_EVENT_HALL)
-+				continue;
-+
-+			event_mask |=3D iqs62x->dev_desc->hall_mask;
-+
-+			input_report_switch(iqs62x_keys->input,
-+					    iqs62x_keys->switches[i].code,
-+					    (val & iqs62x_events[flag].mask) =3D=3D
-+					    iqs62x_events[flag].val);
-+		}
-+
-+		input_sync(iqs62x_keys->input);
-+		break;
-+
-+	case IQS624_PROD_NUM:
-+		event_mask_reg =3D IQS624_HALL_UI;
-+
-+		/*
-+		 * Interval change events represent keys and are unmasked if
-+		 * either wheel movement flag is mapped to a valid keycode.
-+		 */
-+		if (iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_UP] !=3D KEY_RESERVED)
-+			event_mask |=3D IQS624_HALL_UI_INT_EVENT;
-+
-+		if (iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_DN] !=3D KEY_RESERVED)
-+			event_mask |=3D IQS624_HALL_UI_INT_EVENT;
-+
-+		ret =3D regmap_read(iqs62x->map, iqs62x->dev_desc->interval,
-+				  &val);
-+		if (ret)
-+			return ret;
-+
-+		iqs62x_keys->interval =3D val;
-+		break;
++	case IIO_CHAN_INFO_OFFSET:
++		*val =3D IQS620_TEMP_OFFSET;
++		return IIO_VAL_INT;
 +
 +	default:
-+		return 0;
++		return -EINVAL;
 +	}
-+
-+	return regmap_update_bits(iqs62x->map, event_mask_reg, event_mask, 0);
 +}
 +
-+static int iqs62x_keys_notifier(struct notifier_block *notifier,
-+				unsigned long event_flags, void *context)
-+{
-+	struct iqs62x_event_data *event_data =3D context;
-+	struct iqs62x_keys_private *iqs62x_keys;
-+	int ret, i;
++static const struct iio_info iqs620_temp_info =3D {
++	.read_raw =3D &iqs620_temp_read_raw,
++};
 +
-+	iqs62x_keys =3D container_of(notifier, struct iqs62x_keys_private,
-+				   notifier);
++static const struct iio_chan_spec iqs620_temp_channels[] =3D {
++	{
++		.type =3D IIO_TEMP,
++		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OFFSET),
++	},
++};
 +
-+	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
-+		ret =3D iqs62x_keys_init(iqs62x_keys);
-+		if (ret) {
-+			dev_err(iqs62x_keys->input->dev.parent,
-+				"Failed to re-initialize device: %d\n", ret);
-+			return NOTIFY_BAD;
-+		}
-+
-+		return NOTIFY_OK;
-+	}
-+
-+	for (i =3D 0; i < iqs62x_keys->keycodemax; i++) {
-+		if (iqs62x_events[i].reg =3D=3D IQS62X_EVENT_WHEEL &&
-+		    event_data->interval =3D=3D iqs62x_keys->interval)
-+			continue;
-+
-+		input_report_key(iqs62x_keys->input, iqs62x_keys->keycode[i],
-+				 event_flags & BIT(i));
-+	}
-+
-+	for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++)
-+		if (iqs62x_keys->switches[i].enabled)
-+			input_report_switch(iqs62x_keys->input,
-+					    iqs62x_keys->switches[i].code,
-+					    event_flags &
-+					    BIT(iqs62x_keys->switches[i].flag));
-+
-+	input_sync(iqs62x_keys->input);
-+
-+	if (event_data->interval =3D=3D iqs62x_keys->interval)
-+		return NOTIFY_OK;
-+
-+	/*
-+	 * Each frame contains at most one wheel event (up or down), in which
-+	 * case a complementary release cycle is emulated.
-+	 */
-+	if (event_flags & BIT(IQS62X_EVENT_WHEEL_UP)) {
-+		input_report_key(iqs62x_keys->input,
-+				 iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_UP],
-+				 0);
-+		input_sync(iqs62x_keys->input);
-+	} else if (event_flags & BIT(IQS62X_EVENT_WHEEL_DN)) {
-+		input_report_key(iqs62x_keys->input,
-+				 iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_DN],
-+				 0);
-+		input_sync(iqs62x_keys->input);
-+	}
-+
-+	iqs62x_keys->interval =3D event_data->interval;
-+
-+	return NOTIFY_OK;
-+}
-+
-+static int iqs62x_keys_probe(struct platform_device *pdev)
++static int iqs620_temp_probe(struct platform_device *pdev)
 +{
 +	struct iqs62x_core *iqs62x =3D dev_get_drvdata(pdev->dev.parent);
-+	struct iqs62x_keys_private *iqs62x_keys;
-+	struct input_dev *input;
-+	int ret, i;
++	struct iio_dev *indio_dev;
 +
-+	iqs62x_keys =3D devm_kzalloc(&pdev->dev, sizeof(*iqs62x_keys),
-+				   GFP_KERNEL);
-+	if (!iqs62x_keys)
++	indio_dev =3D devm_iio_device_alloc(&pdev->dev, 0);
++	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	platform_set_drvdata(pdev, iqs62x_keys);
++	iio_device_set_drvdata(indio_dev, iqs62x);
 +
-+	ret =3D iqs62x_keys_parse_prop(pdev, iqs62x_keys);
-+	if (ret)
-+		return ret;
++	indio_dev->modes =3D INDIO_DIRECT_MODE;
++	indio_dev->dev.parent =3D &pdev->dev;
++	indio_dev->channels =3D iqs620_temp_channels;
++	indio_dev->num_channels =3D ARRAY_SIZE(iqs620_temp_channels);
++	indio_dev->name =3D iqs62x->dev_desc->dev_name;
++	indio_dev->info =3D &iqs620_temp_info;
 +
-+	input =3D devm_input_allocate_device(&pdev->dev);
-+	if (!input)
-+		return -ENOMEM;
-+
-+	input->keycodemax =3D iqs62x_keys->keycodemax;
-+	input->keycode =3D iqs62x_keys->keycode;
-+	input->keycodesize =3D sizeof(*iqs62x_keys->keycode);
-+
-+	input->name =3D iqs62x->dev_desc->dev_name;
-+	input->id.bustype =3D BUS_I2C;
-+
-+	__set_bit(EV_KEY, input->evbit);
-+
-+	for (i =3D 0; i < iqs62x_keys->keycodemax; i++)
-+		__set_bit(iqs62x_keys->keycode[i], input->keybit);
-+
-+	__clear_bit(KEY_RESERVED, input->keybit);
-+
-+	for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++)
-+		if (iqs62x_keys->switches[i].enabled) {
-+			__set_bit(EV_SW, input->evbit);
-+			__set_bit(iqs62x_keys->switches[i].code, input->swbit);
-+		}
-+
-+	iqs62x_keys->iqs62x =3D iqs62x;
-+	iqs62x_keys->input =3D input;
-+
-+	ret =3D iqs62x_keys_init(iqs62x_keys);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to initialize device: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret =3D input_register_device(iqs62x_keys->input);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to register device: %d\n", ret);
-+		return ret;
-+	}
-+
-+	iqs62x_keys->notifier.notifier_call =3D iqs62x_keys_notifier;
-+	ret =3D blocking_notifier_chain_register(&iqs62x_keys->iqs62x->nh,
-+					       &iqs62x_keys->notifier);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret);
-+
-+	return ret;
++	return devm_iio_device_register(&pdev->dev, indio_dev);
 +}
 +
-+static int iqs62x_keys_remove(struct platform_device *pdev)
-+{
-+	struct iqs62x_keys_private *iqs62x_keys =3D platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret =3D blocking_notifier_chain_unregister(&iqs62x_keys->iqs62x->nh,
-+						 &iqs62x_keys->notifier);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to unregister notifier: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver iqs62x_keys_platform_driver =3D {
++static struct platform_driver iqs620_temp_platform_driver =3D {
 +	.driver =3D {
-+		.name =3D IQS62X_DRV_NAME_KEYS,
++		.name =3D IQS620_DRV_NAME_TEMP,
 +	},
-+	.probe =3D iqs62x_keys_probe,
-+	.remove =3D iqs62x_keys_remove,
++	.probe =3D iqs620_temp_probe,
 +};
-+module_platform_driver(iqs62x_keys_platform_driver);
++module_platform_driver(iqs620_temp_platform_driver);
 +
 +MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
-+MODULE_DESCRIPTION("Azoteq IQS620A/621/622/624/625 Keys and Switches");
++MODULE_DESCRIPTION("Azoteq IQS620AT Temperature Sensor");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:" IQS62X_DRV_NAME_KEYS);
++MODULE_ALIAS("platform:" IQS620_DRV_NAME_TEMP);
 --
 2.7.4
