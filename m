@@ -1,77 +1,95 @@
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH 25/32] pwm: brcmstb: convert to
- devm_platform_ioremap_resource
-Date: Tue, 07 Jan 2020 11:54:53 +0100
-Message-ID: <9fde9b416b281648e99b3ce430229e89c5b1a653.camel@suse.de>
-References: <20191229080610.7597-1-tiny.windzz@gmail.com>
-         <20191229080610.7597-25-tiny.windzz@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 2/2] pwm: Enable compile testing for some of drivers
+Date: Tue, 7 Jan 2020 12:03:59 +0100
+Message-ID: <20200107110359.GA32423@pi3>
+References: <20191230172113.17222-1-krzk@kernel.org>
+ <20191230172113.17222-2-krzk@kernel.org>
+ <20200107072645.ko247bwhh3ibdu73@pengutronix.de>
+ <20200107082539.GA31827@pi3>
+ <20200107104234.wq74fska3szrg4ii@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-PicWM6Keq9fqFpxdhA9f"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191229080610.7597-25-tiny.windzz@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20200107104234.wq74fska3szrg4ii@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yangtao Li <tiny.windzz@gmail.com>, claudiu.beznea@microchip.com, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, f.fainelli@gmail.com, shc_work@mail.ru, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, matthias.bgg@gmail.com, heiko@sntech.de, palmer@dabbelt.com, paul.walmsley@sifive.com, mripard@kernel.org, wens@csie.org, jonathanh@nvidia.com, linux@prisktech.co.nz, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-riscv@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com, linux-tegra@vger.kernel.org, kernel@pengutronix.de, Richard Weinberger <richard@nod.at>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, Jan 07, 2020 at 11:42:34AM +0100, Uwe Kleine-König wrote:
+> > I guess other solution would be to add stubs for few clk functions...
+> > 
+> > > Also HAS_IOMEM is a typical requirement, but I tested with an ARCH=um
+> > > config (which does't have HAS_IOMEM) and they all compile fine.
+> > 
+> > Because of !HAS_IOMEM, since some time ARCH=um does not support
+> > COMPILE_TEST. Therefore HAS_IOMEM dependency is not needed for compile
+> > testing (and for regular build it is selected by ARCH).
+> 
+> Hehe, I didn't notice because for testing I just dropped the "depends on
+> ..." lines in Kconfig instead of adding "|| COMPILE_TEST" :-) Still they
+> compile fine on UML.
+> 
+> Ah, since bc083a64b6c0 ("init/Kconfig: make COMPILE_TEST depend on
+> !UML") == v4.8-rc1~52^2~83 COMPILE_TEST cannot be enabled on UML, but
+> later 1bcbfbfdeb00 ("um: add dummy ioremap and iounmap functions")
+> == v4.13-rc1~8^2~6 UM got a dummy implementation. So maybe we could
+> revert bc083a64b6c0 today? (And if not, a comment about why near the
+> "depends on !UML" in init/Kconfig would be great.)
+> 
+> Orthogonal to that, I wonder if depending on HAS_IOMEM is right even
+> though the compile testers won't notice it missing. Or should HAS_IOMEM
+> be dropped?
 
---=-PicWM6Keq9fqFpxdhA9f
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I think yes, it can be dropped, but this would require:
+1. Fixing any dependencies on HAS_IOMEM, e.g.:
+    WARNING: unmet direct dependencies detected for MFD_SYSCON
+      Depends on [n]: HAS_IOMEM [=n]
+      Selected by [y]:
+      - PHY_DA8XX_USB [=y] && (ARCH_DAVINCI_DA8XX || COMPILE_TEST [=y])
 
-On Sun, 2019-12-29 at 08:06 +0000, Yangtao Li wrote:
-> Use devm_platform_ioremap_resource() to simplify code.
->=20
-> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-> ---
+2. Checking if all of stubs are implemented (not only IOMEM but maybe
+   DMA as well). Also 1bcbfbfdeb00 brought only few stubs. Still we
+   need devm_ioremap_resource() and others.
 
-Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Quick test shows mentioned "unmet direct dependencies" and:
+    phy-pxa-usb.c:(.text+0x2f5): undefined reference to `devm_ioremap_resource'
+    dma-iommu.c:(.text+0x179): undefined reference to `dma_pgprot'
 
-Thanks!
+> 
+> > > > @@ -318,7 +319,7 @@ config PWM_MEDIATEK
+> > > >  
+> > > >  config PWM_MXS
+> > > >  	tristate "Freescale MXS PWM support"
+> > > > -	depends on ARCH_MXS && OF
+> > > > +	depends on (ARCH_MXS && OF) || COMPILE_TEST
+> > > >  	select STMP_DEVICE
+> > > >  	help
+> > > >  	  Generic PWM framework driver for Freescale MXS.
+> > > > @@ -328,7 +329,8 @@ config PWM_MXS
+> > > >  
+> > > >  config PWM_OMAP_DMTIMER
+> > > >  	tristate "OMAP Dual-Mode Timer PWM support"
+> > > > -	depends on OF && ARCH_OMAP && OMAP_DM_TIMER
+> > > > +	depends on (ARCH_OMAP && OMAP_DM_TIMER) || COMPILE_TEST
+> > > > +	depends on OF
+> > > 
+> > > I'm surprised that OF isn't required for PWM_MXS but is is for
+> > > PWM_OMAP_DMTIMER. pwm-mxs compiles without CONFIG_OF, didn't test
+> > > pwm-omap-dmtimer.
+> > 
+> > Since some time !OF has all necessary stubs so OF is actually needed
+> > only for binding, not compiling.
+> 
+> That doesn't explain why you handle PWM_MXS and PWM_OMAP_DMTIMER
+> differently though.
 
->  drivers/pwm/pwm-brcmstb.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
-> index fea612c45f20..8b66f9d2f589 100644
-> --- a/drivers/pwm/pwm-brcmstb.c
-> +++ b/drivers/pwm/pwm-brcmstb.c
-> @@ -234,7 +234,6 @@ MODULE_DEVICE_TABLE(of, brcmstb_pwm_of_match);
->  static int brcmstb_pwm_probe(struct platform_device *pdev)
->  {
->  	struct brcmstb_pwm *p;
-> -	struct resource *res;
->  	int ret;
-> =20
->  	p =3D devm_kzalloc(&pdev->dev, sizeof(*p), GFP_KERNEL);
-> @@ -262,8 +261,7 @@ static int brcmstb_pwm_probe(struct platform_device *=
-pdev)
->  	p->chip.base =3D -1;
->  	p->chip.npwm =3D 2;
-> =20
-> -	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	p->base =3D devm_ioremap_resource(&pdev->dev, res);
-> +	p->base =3D devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(p->base)) {
->  		ret =3D PTR_ERR(p->base);
->  		goto out_clk;
+You're right, I missed this. None of them require OF for building so
+separate "depends on OF" makes sense only for readability of this.  Let
+me send v2 to make it similar to PWM_MXS.
 
 
---=-PicWM6Keq9fqFpxdhA9f
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl4UY30ACgkQlfZmHno8
-x/7/aAf7BW2itFl3TLtG03hnquQwqo+DGR4GEFXlXS0y7tCwQNw/r7LWRi5SHWqI
-Fq6j3OYwhEhv1zZNfDN+lUmZdX10MHKOrnk6wdu89kgT1ebWaQ2Pwf6TCqZtwWia
-y/2eh5++1G9168GQTuyG3BjaSaVFwwVKe4+gbtIMc6RPU9xWbQSC6LsIq+a66EvW
-3sXdIQJUp0WcQuFcnQhD9OUgVRZedCRpu7rj7Tezr5Ks+lL91fItKsOwdSKyTfWh
-ZLbQ3yaz45FUSkZVP9388WNvi2lUIEn2VaX9QX3PrmhyKlwlyhfioTTj47wDotkU
-KLQMm16Gyns5z+15tvGm5+m8oZ61FA==
-=Sn4O
------END PGP SIGNATURE-----
-
---=-PicWM6Keq9fqFpxdhA9f--
+Best regards,
+Krzysztof
