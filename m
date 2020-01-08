@@ -1,80 +1,78 @@
-From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
-Subject: Re: [PATCH v9 0/6] Add support for H6 PWM
-Date: Wed, 8 Jan 2020 11:40:21 +0100
-Message-ID: <CAJiuCce_zg_E99EKbQa3aQ1fjziB4Ead9p6J8F0wYWk2_VcFZg@mail.gmail.com>
-References: <20191124172908.10804-1-peron.clem@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 0/6] pwm: mxs: add support for setting polarity via DT
+Date: Wed, 8 Jan 2020 13:41:29 +0100
+Message-ID: <20200108124129.GC1993114@ulmo>
+References: <20191004133207.6663-1-linux@rasmusvillemoes.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191124172908.10804-1-peron.clem@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <mripard@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-sunxi <linux-sunxi@googlegroups.com>, Philipp Zabel <pza@pengutronix.de>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="s9fJI615cBHmzTOP"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191004133207.6663-1-linux@rasmusvillemoes.dk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgVXdlLCBUaGllcnJ5LAoKT24gU3VuLCAyNCBOb3YgMjAxOSBhdCAxODoyOSwgQ2zDqW1lbnQg
-UMOpcm9uIDxwZXJvbi5jbGVtQGdtYWlsLmNvbT4gd3JvdGU6Cj4KPiBIaSwKPgo+IFRoaXMgaXMg
-YSByZXdvcmsgb2YgSmVybmVqJ3MgcHJldmlvdXMgd29ya1sxXSB0YWtpbmcgYWNjb3VudCBhbGwg
-dGhlCj4gcHJldmlvdXMgcmVtYXJrcy4KCklzIHRoaXMgc2VyaWVzIG9rIGZvciB5b3U/CkZZSSB0
-aGUgZGV2aWNlLXRyZWUgYmluZGluZ3MgaXMgbWVyZ2VkIGluIHN1bnhpLW5leHQuCgpUaGFua3Ms
-CkNsZW1lbnQKCj4KPiBCaW5kaW5ncyBpcyBzdGlsbCBzdHJpY3QgYnV0IHByb2JlIGluIHRoZSBk
-cml2ZXIgYXJlIG5vdyBvcHRpb25uYWxzLgo+Cj4gSWYgc29tZW9uZSBjb3VsZCBjb25maXJtIHRo
-YXQgdGhlIFBXTSBpcyBub3QgYnJva2VuLCBhcyBteSBib2FyZAo+IGRvZXNuJ3Qgb3V0cHV0IGl0
-Lgo+Cj4gVGhhbmtzLAo+IENsw6ltZW50Cj4KPiBKZXJuZWoncyBjb3ZlcjoKPiBBbGx3aW5uZXIg
-SDYgU29DIGhhcyBQV00gY29yZSB3aGljaCBpcyBiYXNpY2FsbHkgdGhlIHNhbWUgYXMgdGhhdCBm
-b3VuZAo+IGluIEEyMCwgaXQncyBqdXN0IGRlcGVuZHMgb24gYWRkaXRpb25hbCBidXMgY2xvY2sg
-YW5kIHJlc2V0IGxpbmUuCj4KPiBUaGlzIHNlcmllcyBhZGRzIHN1cHBvcnQgZm9yIGl0IGFuZCBl
-eHRlbmRzIFBXTSBkcml2ZXIgZnVuY3Rpb25hbGl0eSBpbgo+IGEgd2F5IHRoYXQgaXQncyBub3cg
-cG9zc2libGUgdG8gYnlwYXNzIHdob2xlIGNvcmUgYW5kIG91dHB1dCBQV00gc291cmNlCj4gY2xv
-Y2sgZGlyZWN0bHkgYXMgYSBQV00gc2lnbmFsLiBUaGlzIGZ1bmN0aW9uYWxpdHkgaXMgbmVlZGVk
-IGJ5IEFDMjAwCj4gY2hpcCwgd2hpY2ggaXMgYnVuZGxlZCBpbiBzYW1lIHBoeXNpY2FsIHBhY2th
-Z2UgYXMgSDYgU29DLCB0byBzZXJ2ZSBhcyBhCj4gY2xvY2sgc291cmNlIG9mIDI0IE1Iei4gQUMy
-MDAgY2xvY2sgaW5wdXQgcGluIGlzIGJvbmRlZCBpbnRlcm5hbGx5IHRvCj4gdGhlIHNlY29uZCBQ
-V00gY2hhbm5lbC4KPgo+IEkgd291bGQgYmUgZ3JhdGVmdWwgaWYgYW55b25lIGNhbiB0ZXN0IHRo
-aXMgcGF0Y2ggc2VyaWVzIGZvciBhbnkga2luZCBvZgo+IHJlZ3Jlc3Npb24gb24gb3RoZXIgU29D
-cy4KPgo+IFsxXTogaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9jb3Zlci8xMTA2MTczNy8K
-Pgo+IENoYW5nZXMgaW4gdjk6Cj4gIC0gcHJpbnQgZXJyb3IgY29kZSBpbiBlcnJvciBtZXNzYWdl
-Cj4gIC0gbm8gY2FwaXRhbCBsZXR0ZXIgdG8ga2VlcCBjb2hlcmVuY3kKPgo+IENoYW5nZXMgaW4g
-djg6Cj4gIC0gRGlzcGxheSBlcnJvciByZXR1cm4gY29kZQo+ICAtIHNwbGl0IGNvbW1pdAo+ICAt
-IGJ5cGFzcyBpcyBmYWxzZSBpZiB1bnN1cHBvcnRlZAo+ICAtIHJldHVybiBpbnN0ZWFkIG9mIGdv
-dG8KPgo+IENoYW5nZXMgaW4gdjc6Cj4gIC0gRml4IGluZGVudCBpbiBZYW1sIGJpbmRpbmdzCj4K
-PiBDaGFuZ2VzIGluIHY2Ogo+ICAtIFVwZGF0ZSBnaXQgY29tbWl0IGxvZwo+ICAtIERpc3Rpbmd1
-aXNoIGVycm9yIG1lc3NhZ2UKPgo+IENoYW5nZXMgaW4gdjU6Cj4gIC0gTW92ZSBieXBhc3MgY2Fs
-Y3VsYXRpb24gdG8gcHdtX2NhbGN1bGF0ZQo+ICAtIFNwbGl0IG1vZF9jbG9jayBmYWxsYmFjayBm
-cm9tIGJ1c19jbGsgcHJvYmUKPiAgLSBVcGRhdGUgY29tbWVudAo+ICAtIE1vdmUgbXkgU29CIGFm
-dGVyIGFja2VkLWJ5L3Jldmlld2VkLWJ5Cj4KPiBDaGFuZ2VzIGluIHY0Ogo+ICAtIGl0ZW0gZGVz
-Y3JpcHRpb24gaW4gY29ycmVjdCBvcmRlciBhbmQgYWRkIGEgYmxhbmsgbGluZQo+ICAtIHVzZSAl
-cGUgZm9yIHByaW50aW5nIFBUUl9FUlIKPiAgLSBkb24ndCBwcmludCBlcnJvciB3aGVuIGl0J3Mg
-YW4gRVBST0JFX0RFRkVSCj4gIC0gY2hhbmdlIG91dHB1dCBjbG9jayBieXBhc3MgZm9ybXVsYSB0
-byBtYXRjaCBQV00gcG9saWN5Cj4KPiBDaGFuZ2VzIGluIHYzOgo+ICAtIERvY3VtZW50YXRpb24g
-dXBkYXRlIHRvIGFsbG93IG9uZSBjbG9jayB3aXRob3V0IG5hbWUKPiAgLSBDaGFuZ2UgcmVzZXQg
-b3B0aW9uYWwgdG8gc2hhcmVkCj4gIC0gSWYgcmVzZXQgcHJvYmUgZmFpbGVkIHJldHVybiBhbiBl
-cnJvcgo+ICAtIFJlbW92ZSBvbGQgY2xvY2sgcHJvYmUKPiAgLSBVcGRhdGUgYnlwYXNzIGVuYWJs
-ZWQgZm9ybXVsYQo+Cj4gQ2hhbmdlcyBpbiB2MjoKPiAgLSBSZW1vdmUgYWxsT2YgaW4gRG9jdW1l
-bnRhdGlvbgo+ICAtIEFkZCBINiBleGFtcGxlIGluIERvY3VtZW50YXRpb24KPiAgLSBDaGFuZ2Ug
-Y2xvY2sgbmFtZSBmcm9tICJwd20iIHRvICJtb2QiCj4gIC0gQ2hhbmdlIHJlc2V0IHF1aXJrIHRv
-IG9wdGlvbmFsIHByb2JlCj4gIC0gQ2hhbmdlIGJ1c19jbG9jayBxdWlyayB0byBvcHRpb25hbCBw
-cm9iZQo+ICAtIEFkZCBsaW1pdGF0aW9uIGNvbW1lbnQgYWJvdXQgbW9kX2Nsa19vdXRwdXQKPiAg
-LSBBZGQgcXVpcmsgZm9yIG1vZF9jbGtfb3V0cHV0Cj4gIC0gQ2hhbmdlIGJ5cGFzcyBmb3JtdWxh
-Cj4KPiBDbMOpbWVudCBQw6lyb24gKDIpOgo+ICAgcHdtOiBzdW40aTogUHJlZmVyICJtb2QiIGNs
-b2NrIHRvIHVubmFtZWQKPiAgIHB3bTogc3VuNGk6IEFsd2F5cyBjYWxjdWxhdGUgcGFyYW1zIHdo
-ZW4gYXBwbHlpbmcgbmV3IHBhcmFtZXRlcnMKPgo+IEplcm5laiBTa3JhYmVjICg0KToKPiAgIHB3
-bTogc3VuNGk6IEFkZCBhbiBvcHRpb25hbCBwcm9iZSBmb3IgcmVzZXQgbGluZQo+ICAgcHdtOiBz
-dW40aTogQWRkIGFuIG9wdGlvbmFsIHByb2JlIGZvciBidXMgY2xvY2sKPiAgIHB3bTogc3VuNGk6
-IEFkZCBzdXBwb3J0IHRvIG91dHB1dCBzb3VyY2UgY2xvY2sgZGlyZWN0bHkKPiAgIHB3bTogc3Vu
-NGk6IEFkZCBzdXBwb3J0IGZvciBINiBQV00KPgo+ICBkcml2ZXJzL3B3bS9wd20tc3VuNGkuYyB8
-IDE4NyArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tCj4gIDEgZmlsZSBj
-aGFuZ2VkLCAxNTYgaW5zZXJ0aW9ucygrKSwgMzEgZGVsZXRpb25zKC0pCj4KPiAtLQo+IDIuMjAu
-MQo+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
-eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
-ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
-cm0ta2VybmVsCg==
+
+--s9fJI615cBHmzTOP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Oct 04, 2019 at 03:32:01PM +0200, Rasmus Villemoes wrote:
+> This series adds support for setting the polarity via DT to the
+> pwm-mxs driver.
+>=20
+> The DT binding is updated, but I'm not touching the existing .dts or
+> .dtsi files - it seems that the same was done for bcm2835 in commits
+> 46421d9d8e802e570dfa4d793a4938d2642ec7a7 and
+> 8a88b2a2017d1e7e80db53080baff591fd454722, while
+> arch/arm/boot/dts/bcm283x.dtsi still has #pwm-cells =3D <2>.
+>=20
+> v2:
+> - Rebase to v5.4-rc1
+> - Address comments from Uwe.
+> - Add Rob's ack to patch 4.
+> - New patches 5 and 6. The last one is independent of the others, but
+>   I stumbled on this when rebasing and found the signature had
+>   changed.
+>=20
+> Rasmus Villemoes (6):
+>   pwm: mxs: implement ->apply
+>   pwm: mxs: remove legacy methods
+>   pwm: mxs: add support for inverse polarity
+>   dt-bindings: pwm: mxs-pwm: Increase #pwm-cells
+>   pwm: mxs: avoid a division in mxs_pwm_apply()
+>   pwm: update comment on struct pwm_ops::apply
+>=20
+>  .../devicetree/bindings/pwm/mxs-pwm.txt       |   4 +-
+>  drivers/pwm/pwm-mxs.c                         | 101 +++++++++---------
+>  include/linux/pwm.h                           |   5 +-
+>  3 files changed, 53 insertions(+), 57 deletions(-)
+
+Applied, thanks.
+
+Thierry
+
+--s9fJI615cBHmzTOP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl4VzfcACgkQ3SOs138+
+s6Faow//TMKnlzQDSD5P+wcJ27rYXmJrVrrfo/2vFp2FVtLXqOjDk6c0uR9m8Qiq
+oiSIc70R+qNva7QrmlgDZpbIVnSD+ziImsh04Zr9fH8N+pdWda26aqYkGjPUutXU
+7Rh02JTyvOqBK7W9qEu2c7xrlUdKzadeeeQSxijqqAyHFSsG5wfNmZK6qeTlB0y/
+q0tWwa4YyVfDhjkAWUvKUhw5nPfv/AKO2zStCMv8jIuSJ62w5ahypLBs2A3adZJY
+npSKMvPIFzyVOaHdWs3+rmJJzbujKtqMKsQ7RyE6rBRaectlLeHSonDFSjMFtO0t
+BKcikgTpmwUEVDzMh0l+uNGm3cAcIjIfRQ7cpigyQEc+dntXNQfRKh8y+x3pWeDc
+gssO+6ftEcLgnBSy13djxqNf2xzzqzgv0a/nTzBG2OUfGL85VQTfocP2SN+2yYmV
+X4NQckVF2qs8nSQtJCdLhYGUQQMJzJ+KLd0RDRms35E2QiawYii/KvUz+oqN06WP
+Wt4h4SWFZ0PVsaq9EeW74DJ1iPvHgDoFWg2y+WGlKO1F3nNQcH15lQdqWuL8i0NP
+quf8OKsUUEGTfImySK2ql7pzk2ouy1Sup7wZs8bz7almHoP0KOgFVST9jb1VZRIl
+2CQY1FTNqQVTWKcERuxOn6HVMVAnGBLuGWah7wr04iziCVoiY/w=
+=4ETa
+-----END PGP SIGNATURE-----
+
+--s9fJI615cBHmzTOP--
