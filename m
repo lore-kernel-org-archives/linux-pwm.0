@@ -1,12 +1,12 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/6] Updates for the atmel PWM driver
-Date: Wed, 8 Jan 2020 14:00:26 +0100
-Message-ID: <20200108130026.GE1993114@ulmo>
-References: <20190824001041.11007-1-uwe@kleine-koenig.org>
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] pwm: sun4i: Fix inconsistent IS_ERR and PTR_ERR
+Date: Thu, 9 Jan 2020 01:27:35 -0600
+Message-ID: <20200109072735.GA22886@embeddedor>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0413883696728615855=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190824001041.11007-1-uwe@kleine-koenig.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+Content-Disposition: inline
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,86 +15,54 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-arm-kernel@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>, Jernej Skrabec <jernej.skrabec@siol.net>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 List-Id: linux-pwm@vger.kernel.org
 
+Fix inconsistent IS_ERR and PTR_ERR in sun4i_pwm_probe().
 
---===============0413883696728615855==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="7LkOrbQMr4cezO2T"
-Content-Disposition: inline
+The proper pointers to be passed as arguments are pwm->clk and pwm->bus_clk.
 
+This bug was detected with the help of Coccinelle.
 
---7LkOrbQMr4cezO2T
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: b8d74644f34a ("pwm: sun4i: Prefer "mod" clock to unnamed")
+Fixes: 5b090b430d75 ("pwm: sun4i: Add an optional probe for bus clock")
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/pwm/pwm-sun4i.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On Sat, Aug 24, 2019 at 02:10:35AM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
->=20
-> this is v2 of my series to update the atmel PWM driver. (Implicit) v1
-> was sent on Aug 15, starting with Message-Id:
-> 20190815214133.11134-1-uwe@kleine-koenig.org.
->=20
-> I updated the patches from the feedback I got in v1, see the individual
-> patches for the details.
->=20
-> Best regards
-> Uwe
->=20
-> Uwe Kleine-K=C3=B6nig (6):
->   pwm: atmel: Add a hint where to find hardware documentation
->   pwm: atmel: use a constant for maximum prescale value
->   pwm: atmel: replace loop in prescale calculation by ad-hoc calculation
->   pwm: atmel: document known weaknesses of both hardware and software
->   pwm: atmel: use atmel_pwm_writel in atmel_pwm_ch_writel; ditto for
->     readl
->   pwm: atmel: implement .get_state()
->=20
->  drivers/pwm/pwm-atmel.c | 86 ++++++++++++++++++++++++++++++++++-------
->  1 file changed, 73 insertions(+), 13 deletions(-)
-
-There were two patches in this that were not reviewed or acked, but they
-seem trivial enough, so I've just applied the whole series.
-
-Thanks,
-Thierry
-
---7LkOrbQMr4cezO2T
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl4V0mgACgkQ3SOs138+
-s6GwPxAAi8QbyZuxjXTyrcwXhceTZn1UkH51OaRD7myFIQ8A/sanP7QV2f4jKug8
-TbrVlK9dpSj96Ne9UfXBW3+5+JvNpVshrqsc/IcIq6i+honBrJz9upJMKxt0+YRB
-wNMO5dM/XEzr93hAilRGrzW/63rPsqkP/Vj14Gf3lOo/qW9WoCbWx+3/1bupYwm2
-2ih1zLbDrR6d8PZ2mFkTl7WRXqOVcTpk/pyauBy2R/sq+7iK92lL4dugjlgtLO/W
-mwW1g/hswT2D0FQ7QYBgApRUIsKsaSjjcLairZFTTmYvYvGSzyAsSbWPkQfMrh/T
-qmMrL6TP49Ba0Ce1X7sff1hIeGsMMuhveg1viKbXDwPV0pvuT0ANejXHoPsW0Dum
-6iB9xNSGyYupsbFq+Wn2LXO6dkVNCAsMVoMnxTzgAMvxoxQ7erpktjOKl5vi2dna
-MHid3SqGo4kdRmGyKbGPATocpC/+A4f5fqx36Wo2sixGFpfsZhfoh2uXB9jo2bNx
-b1zVcUfHxjzckt3QJPgYALNtkv5cYqbfE5nayz2m14oJDzYd8LCBloEsqak3+RMm
-I4xoip1+vrA8c9qF30qHJTz4ef9s0sVB25GPd/rtOEduWvRm2rAPRmpij2u326su
-N4tqKheeJJ8vscS8j+9t+WYdAOVFECuCO6YHC9wikPuZ+o6PoPA=
-=opLK
------END PGP SIGNATURE-----
-
---7LkOrbQMr4cezO2T--
-
-
---===============0413883696728615855==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============0413883696728615855==--
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 1afd41ebd3fd..a805c347ee84 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -423,7 +423,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	 */
+ 	pwm->clk = devm_clk_get_optional(&pdev->dev, "mod");
+ 	if (IS_ERR(pwm->clk)) {
+-		if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++		if (PTR_ERR(pwm->clk) != -EPROBE_DEFER)
+ 			dev_err(&pdev->dev, "get mod clock failed %pe\n",
+ 				pwm->clk);
+ 		return PTR_ERR(pwm->clk);
+@@ -432,7 +432,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	if (!pwm->clk) {
+ 		pwm->clk = devm_clk_get(&pdev->dev, NULL);
+ 		if (IS_ERR(pwm->clk)) {
+-			if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++			if (PTR_ERR(pwm->clk) != -EPROBE_DEFER)
+ 				dev_err(&pdev->dev, "get unnamed clock failed %pe\n",
+ 					pwm->clk);
+ 			return PTR_ERR(pwm->clk);
+@@ -441,7 +441,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 
+ 	pwm->bus_clk = devm_clk_get_optional(&pdev->dev, "bus");
+ 	if (IS_ERR(pwm->bus_clk)) {
+-		if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++		if (PTR_ERR(pwm->bus_clk) != -EPROBE_DEFER)
+ 			dev_err(&pdev->dev, "get bus clock failed %pe\n",
+ 				pwm->bus_clk);
+ 		return PTR_ERR(pwm->bus_clk);
+-- 
+2.23.0
