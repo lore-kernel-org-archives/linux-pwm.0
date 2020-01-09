@@ -1,44 +1,51 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: sun4i: Fix inconsistent IS_ERR and PTR_ERR
-Date: Thu, 9 Jan 2020 14:18:25 +0100
-Message-ID: <20200109131825.beaspmfaxh4gpcx5@pengutronix.de>
-References: <20200109072735.GA22886@embeddedor>
- <20200109074445.73n3vapjl4vfjtsu@pengutronix.de>
- <CAJiuCcdFiXVtECtVGz3N9oUM38ca=MDmdK4+T+peUKKzNr_5KQ@mail.gmail.com>
+From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+Subject: [PATCH] [RFC] pwm: sun4i: Move pwm_calculate out of spin_lock
+Date: Fri, 10 Jan 2020 00:31:06 +0100
+Message-ID: <20200109233106.17060-1-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAJiuCcdFiXVtECtVGz3N9oUM38ca=MDmdK4+T+peUKKzNr_5KQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@siol.net>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>, Alex Mobigo <alex.mobigo@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
-
-On Thu, Jan 09, 2020 at 10:14:00AM +0100, Clément Péron wrote:
-> On Thu, 9 Jan 2020 at 08:44, Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> >
-> > Hello Gustavo,
-> >
-> > On Thu, Jan 09, 2020 at 01:27:35AM -0600, Gustavo A. R. Silva wrote:
-> > > Fix inconsistent IS_ERR and PTR_ERR in sun4i_pwm_probe().
-> > >
-> > > The proper pointers to be passed as arguments are pwm->clk and pwm->bus_clk.
-> 
-> Thanks for the catch.
-> 
-> As these patches are still in next should we update them or apply a fix ?
-
-That's for Thierry to answer.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+cHdtX2NhbGN1bGF0ZSBjYWxscyBjbGtfZ2V0X3JhdGUgd2hpbGUgaG9sZGluZyBhIHNwaW5fbG9j
+ay4KClRoaXMgY3JlYXRlIGFuIGlzc3VlIGFzIGNsa19nZXRfcmF0ZSgpIG1heSBzbGVlcC4KCk1v
+dmUgcHdtX2NhbGN1bGF0ZSBvdXQgb2YgdGhpcyBzcGluX2xvY2suCgpGaXhlczogYzMyYzVjNTBk
+NGZlICgicHdtOiBzdW40aTogU3dpdGNoIHRvIGF0b21pYyBQV00iKQpSZXBvcnRlZC1ieTogQWxl
+eCBNb2JpZ28gPGFsZXgubW9iaWdvQGdtYWlsLmNvbT4KU3VnZ2VzdGVkLWJ5OiBWYXNpbHkgS2hv
+cnV6aGljayA8YW5hcnNvdWxAZ21haWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBDbMOpbWVudCBQw6ly
+b24gPHBlcm9uLmNsZW1AZ21haWwuY29tPgotLS0KCkhpLAoKdGhpcyBpc3N1ZSBoYXMgYmVlbiBy
+ZXBvcnRlZCBvbiBsaW51eC1zdW54aSBHb29nbGUgZ3JvdXBzLgoKSSBkb24ndCBoYXZlIGEgYm9h
+cmQgd2l0aCBQV00gdG8gY29uZmlybSBpdC4KClBsZWFzZSB3YWl0IGEgdGVzdGVkLWJ5LgoKVGhh
+bmtzLApDbMOpbWVudAoKIGRyaXZlcnMvcHdtL3B3bS1zdW40aS5jIHwgNyArKystLS0tCiAxIGZp
+bGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jIGIvZHJpdmVycy9wd20vcHdtLXN1bjRpLmMKaW5kZXgg
+MWFmZDQxZWJkM2ZkLi42YjIzMDAyOWRjNDkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1z
+dW40aS5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jCkBAIC0yNDgsMTkgKzI0OCwxOCBA
+QCBzdGF0aWMgaW50IHN1bjRpX3B3bV9hcHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVj
+dCBwd21fZGV2aWNlICpwd20sCiAJCX0KIAl9CiAKLQlzcGluX2xvY2soJnN1bjRpX3B3bS0+Y3Ry
+bF9sb2NrKTsKLQljdHJsID0gc3VuNGlfcHdtX3JlYWRsKHN1bjRpX3B3bSwgUFdNX0NUUkxfUkVH
+KTsKLQogCXJldCA9IHN1bjRpX3B3bV9jYWxjdWxhdGUoc3VuNGlfcHdtLCBzdGF0ZSwgJmR1dHks
+ICZwZXJpb2QsICZwcmVzY2FsZXIsCiAJCQkJICAmYnlwYXNzKTsKIAlpZiAocmV0KSB7CiAJCWRl
+dl9lcnIoY2hpcC0+ZGV2LCAicGVyaW9kIGV4Y2VlZHMgdGhlIG1heGltdW0gdmFsdWVcbiIpOwot
+CQlzcGluX3VubG9jaygmc3VuNGlfcHdtLT5jdHJsX2xvY2spOwogCQlpZiAoIWNzdGF0ZS5lbmFi
+bGVkKQogCQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKHN1bjRpX3B3bS0+Y2xrKTsKIAkJcmV0dXJu
+IHJldDsKIAl9CiAKKwlzcGluX2xvY2soJnN1bjRpX3B3bS0+Y3RybF9sb2NrKTsKKwljdHJsID0g
+c3VuNGlfcHdtX3JlYWRsKHN1bjRpX3B3bSwgUFdNX0NUUkxfUkVHKTsKKwogCWlmIChzdW40aV9w
+d20tPmRhdGEtPmhhc19kaXJlY3RfbW9kX2Nsa19vdXRwdXQpIHsKIAkJaWYgKGJ5cGFzcykgewog
+CQkJY3RybCB8PSBCSVRfQ0goUFdNX0JZUEFTUywgcHdtLT5od3B3bSk7Ci0tIAoyLjIwLjEKCgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0t
+a2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcK
+aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
+bmVsCg==
