@@ -1,51 +1,57 @@
-From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
-Subject: [PATCH] [RFC] pwm: sun4i: Move pwm_calculate out of spin_lock
-Date: Fri, 10 Jan 2020 00:31:06 +0100
-Message-ID: <20200109233106.17060-1-peron.clem@gmail.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
+Subject: [PATCH -next] pwm: sun4i: Fix wrong pointer passed to PTR_ERR()
+Date: Fri, 10 Jan 2020 01:25:15 +0000
+Message-ID: <20200110012515.32965-1-weiyongjun1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>, Alex Mobigo <alex.mobigo@gmail.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8688 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730567AbgAJB3g (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 9 Jan 2020 20:29:36 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, mripard@kernel.org, wens@csie.org, p.zabel@pengutronix.de, Jernej Skrabec <jernej.skrabec@siol.net>
+Cc: Wei Yongjun <weiyongjun1@huawei.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel-janitors@vger.kernel.org
 
-cHdtX2NhbGN1bGF0ZSBjYWxscyBjbGtfZ2V0X3JhdGUgd2hpbGUgaG9sZGluZyBhIHNwaW5fbG9j
-ay4KClRoaXMgY3JlYXRlIGFuIGlzc3VlIGFzIGNsa19nZXRfcmF0ZSgpIG1heSBzbGVlcC4KCk1v
-dmUgcHdtX2NhbGN1bGF0ZSBvdXQgb2YgdGhpcyBzcGluX2xvY2suCgpGaXhlczogYzMyYzVjNTBk
-NGZlICgicHdtOiBzdW40aTogU3dpdGNoIHRvIGF0b21pYyBQV00iKQpSZXBvcnRlZC1ieTogQWxl
-eCBNb2JpZ28gPGFsZXgubW9iaWdvQGdtYWlsLmNvbT4KU3VnZ2VzdGVkLWJ5OiBWYXNpbHkgS2hv
-cnV6aGljayA8YW5hcnNvdWxAZ21haWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBDbMOpbWVudCBQw6ly
-b24gPHBlcm9uLmNsZW1AZ21haWwuY29tPgotLS0KCkhpLAoKdGhpcyBpc3N1ZSBoYXMgYmVlbiBy
-ZXBvcnRlZCBvbiBsaW51eC1zdW54aSBHb29nbGUgZ3JvdXBzLgoKSSBkb24ndCBoYXZlIGEgYm9h
-cmQgd2l0aCBQV00gdG8gY29uZmlybSBpdC4KClBsZWFzZSB3YWl0IGEgdGVzdGVkLWJ5LgoKVGhh
-bmtzLApDbMOpbWVudAoKIGRyaXZlcnMvcHdtL3B3bS1zdW40aS5jIHwgNyArKystLS0tCiAxIGZp
-bGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jIGIvZHJpdmVycy9wd20vcHdtLXN1bjRpLmMKaW5kZXgg
-MWFmZDQxZWJkM2ZkLi42YjIzMDAyOWRjNDkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1z
-dW40aS5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jCkBAIC0yNDgsMTkgKzI0OCwxOCBA
-QCBzdGF0aWMgaW50IHN1bjRpX3B3bV9hcHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVj
-dCBwd21fZGV2aWNlICpwd20sCiAJCX0KIAl9CiAKLQlzcGluX2xvY2soJnN1bjRpX3B3bS0+Y3Ry
-bF9sb2NrKTsKLQljdHJsID0gc3VuNGlfcHdtX3JlYWRsKHN1bjRpX3B3bSwgUFdNX0NUUkxfUkVH
-KTsKLQogCXJldCA9IHN1bjRpX3B3bV9jYWxjdWxhdGUoc3VuNGlfcHdtLCBzdGF0ZSwgJmR1dHks
-ICZwZXJpb2QsICZwcmVzY2FsZXIsCiAJCQkJICAmYnlwYXNzKTsKIAlpZiAocmV0KSB7CiAJCWRl
-dl9lcnIoY2hpcC0+ZGV2LCAicGVyaW9kIGV4Y2VlZHMgdGhlIG1heGltdW0gdmFsdWVcbiIpOwot
-CQlzcGluX3VubG9jaygmc3VuNGlfcHdtLT5jdHJsX2xvY2spOwogCQlpZiAoIWNzdGF0ZS5lbmFi
-bGVkKQogCQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKHN1bjRpX3B3bS0+Y2xrKTsKIAkJcmV0dXJu
-IHJldDsKIAl9CiAKKwlzcGluX2xvY2soJnN1bjRpX3B3bS0+Y3RybF9sb2NrKTsKKwljdHJsID0g
-c3VuNGlfcHdtX3JlYWRsKHN1bjRpX3B3bSwgUFdNX0NUUkxfUkVHKTsKKwogCWlmIChzdW40aV9w
-d20tPmRhdGEtPmhhc19kaXJlY3RfbW9kX2Nsa19vdXRwdXQpIHsKIAkJaWYgKGJ5cGFzcykgewog
-CQkJY3RybCB8PSBCSVRfQ0goUFdNX0JZUEFTUywgcHdtLT5od3B3bSk7Ci0tIAoyLjIwLjEKCgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0t
-a2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcK
-aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
-bmVsCg==
+PTR_ERR should access the value just tested by IS_ERR, otherwise
+the wrong error code will be returned.
+
+Fixes: 5b090b430d75 ("pwm: sun4i: Add an optional probe for bus clock")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/pwm/pwm-sun4i.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 1afd41ebd3fd..a805c347ee84 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -423,7 +423,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	 */
+ 	pwm->clk = devm_clk_get_optional(&pdev->dev, "mod");
+ 	if (IS_ERR(pwm->clk)) {
+-		if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++		if (PTR_ERR(pwm->clk) != -EPROBE_DEFER)
+ 			dev_err(&pdev->dev, "get mod clock failed %pe\n",
+ 				pwm->clk);
+ 		return PTR_ERR(pwm->clk);
+@@ -432,7 +432,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	if (!pwm->clk) {
+ 		pwm->clk = devm_clk_get(&pdev->dev, NULL);
+ 		if (IS_ERR(pwm->clk)) {
+-			if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++			if (PTR_ERR(pwm->clk) != -EPROBE_DEFER)
+ 				dev_err(&pdev->dev, "get unnamed clock failed %pe\n",
+ 					pwm->clk);
+ 			return PTR_ERR(pwm->clk);
+@@ -441,7 +441,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 
+ 	pwm->bus_clk = devm_clk_get_optional(&pdev->dev, "bus");
+ 	if (IS_ERR(pwm->bus_clk)) {
+-		if (PTR_ERR(pwm->rst) != -EPROBE_DEFER)
++		if (PTR_ERR(pwm->bus_clk) != -EPROBE_DEFER)
+ 			dev_err(&pdev->dev, "get bus clock failed %pe\n",
+ 				pwm->bus_clk);
+ 		return PTR_ERR(pwm->bus_clk);
