@@ -1,92 +1,94 @@
-From: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 4/7] pwm: Add support for Azoteq IQS620A PWM generator
-Date: Fri, 10 Jan 2020 04:29:08 +0000
-Message-ID: <20200110042851.GA23906@labundy.com>
-References: <20191210000252.GA6361@labundy.com>
- <20191210072227.434hyv5wl3rwztqx@pengutronix.de>
- <20191215203607.GA31390@labundy.com>
- <20191216091912.r4onikojbkbmguag@pengutronix.de>
- <20191220031924.GA2658@labundy.com>
- <20191220085948.iagsdpjqd6ixdo7j@pengutronix.de>
- <20191221032755.GA3051@labundy.com>
- <20191222214851.kapsro6b6qylke43@pengutronix.de>
- <20200101223933.GB14339@labundy.com>
- <20200107111940.ymiey7npx6rrppqz@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] [RFC] pwm: sun4i: Move pwm_calculate out of spin_lock
+Date: Fri, 10 Jan 2020 08:13:06 +0100
+Message-ID: <20200110071306.uyqcyftb4bt7b2gw@pengutronix.de>
+References: <20200109233106.17060-1-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200107111940.ymiey7npx6rrppqz-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Content-Language: en-US
-Content-ID: <0BD0E6A2A1A1C145924E6F804C26EE79-UmvZKMv7CrqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org" <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, "pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org" <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "knaack.h-Mmb7MZpHnFY@public.gmane.org" <knaack.h-Mmb7MZpHnFY@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:44925 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbgAJHNO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jan 2020 02:13:14 -0500
+Content-Disposition: inline
+In-Reply-To: <20200109233106.17060-1-peron.clem@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alex Mobigo <alex.mobigo@gmail.com>, Vasily Khoruzhick <anarsoul@gmail.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org
 
-Hi Uwe,
+Hello Clément,
 
-On Tue, Jan 07, 2020 at 12:19:40PM +0100, Uwe Kleine-K=F6nig wrote:
-> Hi Jeff,
->=20
-> On Wed, Jan 01, 2020 at 10:39:36PM +0000, Jeff LaBundy wrote:
-> > On Sun, Dec 22, 2019 at 10:48:51PM +0100, Uwe Kleine-K=F6nig wrote:
-> > > On Sat, Dec 21, 2019 at 03:28:01AM +0000, Jeff LaBundy wrote:
-> > > > Based on your other feedback, I'm moving forward under the impressi=
-on that
-> > > > you'll still accept option (2); please let me know if I have misund=
-erstood
-> > > > (thank you for being flexible).
-> > >=20
-> > > Yeah, that's fine. If in the end it shows that this is a bad idea we =
-can
-> > > still change to (3).
-> >=20
-> > Sounds great. As soon as 5.5-rc5 lands this weekend, I'll rebase v3 and
-> > send it out.
-> >=20
-> > I failed to catch this in my previous reply, but the comment I've added
-> > to iqs620_pwm_get_state actually reads as follows:
-> >=20
-> > /*
-> >  * Since the device cannot generate a 0% duty cycle, requests to do so
-> >  * force subsequent calls to iqs620_pwm_get_state to report the output
-> >  * as disabled with duty cycle equal to that which was in use prior to
-> >  * the request. This is not ideal, but is the best compromise based on
-> >  * the capabilities of the device.
-> >  */
-> >=20
-> > This matches the present implementation, not your proposed comment that
-> > claims duty cycle is clamped to 1 / 256 ms following a request for a 0%
-> > duty cycle.
->=20
-> Yeah, if that's the mechanism that is actually implemented, that's fine
-> of course.
->=20
-> > This seems OK since the concept of a duty cycle or period aren't really
-> > relevant if the output is disabled in my opinion. However if you prefer
-> > I update iqs620_pwm_apply to clamp duty cycle to 1 / 256 ms (instead of
-> > leaving it untouched) in this case, please let me know.
->=20
-> For a disabled PWM the duty_cycle and period are not relevant, for an
-> enabled PWM running with 0% the period matters (at least in theory)
-> however.
->=20
+On Fri, Jan 10, 2020 at 12:31:06AM +0100, Clément Péron wrote:
+> pwm_calculate calls clk_get_rate while holding a spin_lock.
+> 
+> This create an issue as clk_get_rate() may sleep.
 
-Agreed in full. We should be covered here since we report the (fixed)
-period in all cases.
+Slightly orthogonal to this issue, it might be a good idea to add a
+might_sleep() to clk_get_rate(). (Added clk maintainers to Cc: for this
+suggestion.)
 
-> Best regards
-> Uwe
->=20
-> --=20
-> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
-  |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
-|
+> Move pwm_calculate out of this spin_lock.
+> 
+> Fixes: c32c5c50d4fe ("pwm: sun4i: Switch to atomic PWM")
+> Reported-by: Alex Mobigo <alex.mobigo@gmail.com>
+> Suggested-by: Vasily Khoruzhick <anarsoul@gmail.com>
+> Signed-off-by: Clément Péron <peron.clem@gmail.com>
+> ---
+> 
+> Hi,
+> 
+> this issue has been reported on linux-sunxi Google groups.
+> 
+> I don't have a board with PWM to confirm it.
+> 
+> Please wait a tested-by.
+> 
+> Thanks,
+> Clément
+> 
+>  drivers/pwm/pwm-sun4i.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 1afd41ebd3fd..6b230029dc49 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -248,19 +248,18 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		}
+>  	}
+>  
+> -	spin_lock(&sun4i_pwm->ctrl_lock);
+> -	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> -
+>  	ret = sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &prescaler,
+>  				  &bypass);
+>  	if (ret) {
+>  		dev_err(chip->dev, "period exceeds the maximum value\n");
+> -		spin_unlock(&sun4i_pwm->ctrl_lock);
+>  		if (!cstate.enabled)
+>  			clk_disable_unprepare(sun4i_pwm->clk);
+>  		return ret;
+>  	}
+>  
+> +	spin_lock(&sun4i_pwm->ctrl_lock);
+> +	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> +
+>  	if (sun4i_pwm->data->has_direct_mod_clk_output) {
+>  		if (bypass) {
+>  			ctrl |= BIT_CH(PWM_BYPASS, pwm->hwpwm);
 
-I managed to send out v3 this past weekend; please let me know if you
-have any further feedback or you find it to be satisfactory.
+As sun4i_pwm_calculate does nothing that depends on (or modifies)
+hardware state (apart from clk_get_rate(sun4i_pwm->clk) which can be
+assumed to be constant) the change looks good.
 
-Kind regards,
-Jeff LaBundy
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
