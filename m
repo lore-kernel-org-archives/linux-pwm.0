@@ -1,83 +1,138 @@
-Return-path: <kernel-bounces@pengutronix.de>
-Date: Tue, 7 Jan 2020 12:19:40 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 4/7] pwm: Add support for Azoteq IQS620A PWM generator
-Message-ID: <20200107111940.ymiey7npx6rrppqz@pengutronix.de>
-References: <20191209073206.6pftsak5v25jdepz@pengutronix.de>
- <20191210000252.GA6361@labundy.com>
- <20191210072227.434hyv5wl3rwztqx@pengutronix.de>
- <20191215203607.GA31390@labundy.com>
- <20191216091912.r4onikojbkbmguag@pengutronix.de>
- <20191220031924.GA2658@labundy.com>
- <20191220085948.iagsdpjqd6ixdo7j@pengutronix.de>
- <20191221032755.GA3051@labundy.com>
- <20191222214851.kapsro6b6qylke43@pengutronix.de>
- <20200101223933.GB14339@labundy.com>
+Return-path: <alex.mobigo@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20200101223933.GB14339@labundy.com>
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Jeff LaBundy <jeff@labundy.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lars@metafoo.de" <lars@metafoo.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>
+References: <20200109233106.17060-1-peron.clem@gmail.com>
+In-Reply-To: <20200109233106.17060-1-peron.clem@gmail.com>
+From: Alexander <alex.mobigo@gmail.com>
+Date: Sun, 12 Jan 2020 21:37:15 -0300
+Message-ID: <CAGfOxi0pAYO7VorX6gT7scrYfLTh9V7-TkJXriD8Fp+EY3rPcw@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000f727a9059bfaad38"
+Subject: Re: [PATCH] [RFC] pwm: sun4i: Move pwm_calculate out of spin_lock
+To: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vasily Khoruzhick <anarsoul@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
 
-Hi Jeff,
+--000000000000f727a9059bfaad38
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 01, 2020 at 10:39:36PM +0000, Jeff LaBundy wrote:
-> On Sun, Dec 22, 2019 at 10:48:51PM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Sat, Dec 21, 2019 at 03:28:01AM +0000, Jeff LaBundy wrote:
-> > > Based on your other feedback, I'm moving forward under the impression=
- that
-> > > you'll still accept option (2); please let me know if I have misunder=
-stood
-> > > (thank you for being flexible).
-> >=20
-> > Yeah, that's fine. If in the end it shows that this is a bad idea we can
-> > still change to (3).
->=20
-> Sounds great. As soon as 5.5-rc5 lands this weekend, I'll rebase v3 and
-> send it out.
->=20
-> I failed to catch this in my previous reply, but the comment I've added
-> to iqs620_pwm_get_state actually reads as follows:
->=20
-> /*
->  * Since the device cannot generate a 0% duty cycle, requests to do so
->  * force subsequent calls to iqs620_pwm_get_state to report the output
->  * as disabled with duty cycle equal to that which was in use prior to
->  * the request. This is not ideal, but is the best compromise based on
->  * the capabilities of the device.
->  */
->=20
-> This matches the present implementation, not your proposed comment that
-> claims duty cycle is clamped to 1 / 256 ms following a request for a 0%
-> duty cycle.
+On Thu, Jan 9, 2020 at 8:31 PM Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.co=
+m> wrote:
+>
+> pwm_calculate calls clk_get_rate while holding a spin_lock.
+>
+> This create an issue as clk_get_rate() may sleep.
+>
+> Move pwm_calculate out of this spin_lock.
+>
+> Fixes: c32c5c50d4fe ("pwm: sun4i: Switch to atomic PWM")
+> Reported-by: Alex Mobigo <alex.mobigo@gmail.com>
+> Suggested-by: Vasily Khoruzhick <anarsoul@gmail.com>
+> Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
+> ---
+>
+> Hi,
+>
+> this issue has been reported on linux-sunxi Google groups.
+>
+> I don't have a board with PWM to confirm it.
+>
+> Please wait a tested-by.
+>
+> Thanks,
+> Cl=C3=A9ment
+>
+>  drivers/pwm/pwm-sun4i.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 1afd41ebd3fd..6b230029dc49 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -248,19 +248,18 @@ static int sun4i_pwm_apply(struct pwm_chip *chip,
+struct pwm_device *pwm,
+>                 }
+>         }
+>
+> -       spin_lock(&sun4i_pwm->ctrl_lock);
+> -       ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> -
+>         ret =3D sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period,
+&prescaler,
+>                                   &bypass);
+>         if (ret) {
+>                 dev_err(chip->dev, "period exceeds the maximum value\n");
+> -               spin_unlock(&sun4i_pwm->ctrl_lock);
+>                 if (!cstate.enabled)
+>                         clk_disable_unprepare(sun4i_pwm->clk);
+>                 return ret;
+>         }
+>
+> +       spin_lock(&sun4i_pwm->ctrl_lock);
+> +       ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> +
+>         if (sun4i_pwm->data->has_direct_mod_clk_output) {
+>                 if (bypass) {
+>                         ctrl |=3D BIT_CH(PWM_BYPASS, pwm->hwpwm);
+> --
+> 2.20.1
+"""""""""""""""""
+Tested on my board Pine64+, problems occurs before the patch but not
+after...
 
-Yeah, if that's the mechanism that is actually implemented, that's fine
-of course.
+Tested-By: Alexander Finger <alex.mobigo@gmail.com>
+"""""""""""""""
 
-> This seems OK since the concept of a duty cycle or period aren't really
-> relevant if the output is disabled in my opinion. However if you prefer
-> I update iqs620_pwm_apply to clamp duty cycle to 1 / 256 ms (instead of
-> leaving it untouched) in this case, please let me know.
+--000000000000f727a9059bfaad38
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-For a disabled PWM the duty_cycle and period are not relevant, for an
-enabled PWM running with 0% the period matters (at least in theory)
-however.
+<div dir=3D"ltr"><br><br>On Thu, Jan 9, 2020 at 8:31 PM Cl=C3=A9ment P=C3=
+=A9ron &lt;<a href=3D"mailto:peron.clem@gmail.com">peron.clem@gmail.com</a>=
+&gt; wrote:<br>&gt;<br>&gt; pwm_calculate calls clk_get_rate while holding =
+a spin_lock.<br>&gt;<br>&gt; This create an issue as clk_get_rate() may sle=
+ep.<br>&gt;<br>&gt; Move pwm_calculate out of this spin_lock.<br>&gt;<br>&g=
+t; Fixes: c32c5c50d4fe (&quot;pwm: sun4i: Switch to atomic PWM&quot;)<br>&g=
+t; Reported-by: Alex Mobigo &lt;<a href=3D"mailto:alex.mobigo@gmail.com">al=
+ex.mobigo@gmail.com</a>&gt;<br>&gt; Suggested-by: Vasily Khoruzhick &lt;<a =
+href=3D"mailto:anarsoul@gmail.com">anarsoul@gmail.com</a>&gt;<br>&gt; Signe=
+d-off-by: Cl=C3=A9ment P=C3=A9ron &lt;<a href=3D"mailto:peron.clem@gmail.co=
+m">peron.clem@gmail.com</a>&gt;<br>&gt; ---<br>&gt;<br>&gt; Hi,<br>&gt;<br>=
+&gt; this issue has been reported on linux-sunxi Google groups.<br>&gt;<br>=
+&gt; I don&#39;t have a board with PWM to confirm it.<br>&gt;<br>&gt; Pleas=
+e wait a tested-by.<br>&gt;<br>&gt; Thanks,<br>&gt; Cl=C3=A9ment<br>&gt;<br=
+>&gt; =C2=A0drivers/pwm/pwm-sun4i.c | 7 +++----<br>&gt; =C2=A01 file change=
+d, 3 insertions(+), 4 deletions(-)<br>&gt;<br>&gt; diff --git a/drivers/pwm=
+/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c<br>&gt; index 1afd41ebd3fd..6b230029=
+dc49 100644<br>&gt; --- a/drivers/pwm/pwm-sun4i.c<br>&gt; +++ b/drivers/pwm=
+/pwm-sun4i.c<br>&gt; @@ -248,19 +248,18 @@ static int sun4i_pwm_apply(struc=
+t pwm_chip *chip, struct pwm_device *pwm,<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>=
+&gt;<br>&gt; - =C2=A0 =C2=A0 =C2=A0 spin_lock(&amp;sun4i_pwm-&gt;ctrl_lock)=
+;<br>&gt; - =C2=A0 =C2=A0 =C2=A0 ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CT=
+RL_REG);<br>&gt; -<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D sun4i_pwm_ca=
+lculate(sun4i_pwm, state, &amp;duty, &amp;period, &amp;prescaler,<br>&gt; =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &amp;bypass);<br>&gt; =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 if (ret) {<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 dev_err(chip-&gt;dev, &quot;period exceeds the maximum=
+ value\n&quot;);<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ spin_unlock(&amp;sun4i_pwm-&gt;ctrl_lock);<br>&gt; =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!cstate.enabled)<br>&gt; =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 c=
+lk_disable_unprepare(sun4i_pwm-&gt;clk);<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>&gt; =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 }<br>&gt;<br>&gt; + =C2=A0 =C2=A0 =C2=A0 spin_lock(&amp;sun4i_pwm-&g=
+t;ctrl_lock);<br>&gt; + =C2=A0 =C2=A0 =C2=A0 ctrl =3D sun4i_pwm_readl(sun4i=
+_pwm, PWM_CTRL_REG);<br>&gt; +<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (sun4=
+i_pwm-&gt;data-&gt;has_direct_mod_clk_output) {<br>&gt; =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (bypass) {<br>&gt; =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ctrl =
+|=3D BIT_CH(PWM_BYPASS, pwm-&gt;hwpwm);<br>&gt; --<br>&gt; 2.20.1<br>&quot;=
+&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&qu=
+ot;&quot;&quot;&quot;<br>Tested on my board Pine64+, problems occurs before=
+ the patch but not after...<br><br>Tested-By: Alexander Finger &lt;<a href=
+=3D"mailto:alex.mobigo@gmail.com">alex.mobigo@gmail.com</a>&gt;<br>&quot;&q=
+uot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot=
+;&quot;</div>
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+--000000000000f727a9059bfaad38--
