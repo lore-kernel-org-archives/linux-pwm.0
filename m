@@ -1,44 +1,88 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 4/7] pwm: Add support for Azoteq IQS620A PWM generator
-Date: Fri, 10 Jan 2020 08:25:06 +0100
-Message-ID: <20200110072506.dsp3xxhmvq4s4st6@pengutronix.de>
-References: <20191210072227.434hyv5wl3rwztqx@pengutronix.de>
- <20191215203607.GA31390@labundy.com>
- <20191216091912.r4onikojbkbmguag@pengutronix.de>
- <20191220031924.GA2658@labundy.com>
- <20191220085948.iagsdpjqd6ixdo7j@pengutronix.de>
- <20191221032755.GA3051@labundy.com>
- <20191222214851.kapsro6b6qylke43@pengutronix.de>
- <20200101223933.GB14339@labundy.com>
- <20200107111940.ymiey7npx6rrppqz@pengutronix.de>
- <20200110042851.GA23906@labundy.com>
+From: Alexander <alex.mobigo@gmail.com>
+Subject: Re: [PATCH] [RFC] pwm: sun4i: Move pwm_calculate out of spin_lock
+Date: Sun, 12 Jan 2020 21:39:55 -0300
+Message-ID: <CAGfOxi2vUVLv1_PGynu_53=DvuMBKFE6UTFUoTPTqjW1VvotLg@mail.gmail.com>
+References: <20200109233106.17060-1-peron.clem@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:49131 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbgAJHZQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jan 2020 02:25:16 -0500
-Content-Disposition: inline
-In-Reply-To: <20200110042851.GA23906@labundy.com>
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:34766 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387514AbgAMAkH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 12 Jan 2020 19:40:07 -0500
+Received: by mail-yw1-f66.google.com with SMTP id b186so4875947ywc.1
+        for <linux-pwm@vger.kernel.org>; Sun, 12 Jan 2020 16:40:07 -0800 (PST)
+In-Reply-To: <20200109233106.17060-1-peron.clem@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jeff LaBundy <jeff@labundy.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lars@metafoo.de" <lars@metafoo.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "jic23@kernel.org" <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>
+To: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vasily Khoruzhick <anarsoul@gmail.com>
 
-Hello Jeff,
+On Thu, Jan 9, 2020 at 8:31 PM Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.co=
+m> wrote:
+>
+> pwm_calculate calls clk_get_rate while holding a spin_lock.
+>
+> This create an issue as clk_get_rate() may sleep.
+>
+> Move pwm_calculate out of this spin_lock.
+>
+> Fixes: c32c5c50d4fe ("pwm: sun4i: Switch to atomic PWM")
+> Reported-by: Alex Mobigo <alex.mobigo@gmail.com>
+> Suggested-by: Vasily Khoruzhick <anarsoul@gmail.com>
+> Signed-off-by: Cl=C3=A9ment P=C3=A9ron <peron.clem@gmail.com>
+> ---
+>
+> Hi,
+>
+> this issue has been reported on linux-sunxi Google groups.
+>
+> I don't have a board with PWM to confirm it.
+>
+> Please wait a tested-by.
+>
+> Thanks,
+> Cl=C3=A9ment
+>
+>  drivers/pwm/pwm-sun4i.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 1afd41ebd3fd..6b230029dc49 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -248,19 +248,18 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, s=
+truct pwm_device *pwm,
+>                 }
+>         }
+>
+> -       spin_lock(&sun4i_pwm->ctrl_lock);
+> -       ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> -
+>         ret =3D sun4i_pwm_calculate(sun4i_pwm, state, &duty, &period, &pr=
+escaler,
+>                                   &bypass);
+>         if (ret) {
+>                 dev_err(chip->dev, "period exceeds the maximum value\n");
+> -               spin_unlock(&sun4i_pwm->ctrl_lock);
+>                 if (!cstate.enabled)
+>                         clk_disable_unprepare(sun4i_pwm->clk);
+>                 return ret;
+>         }
+>
+> +       spin_lock(&sun4i_pwm->ctrl_lock);
+> +       ctrl =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> +
+>         if (sun4i_pwm->data->has_direct_mod_clk_output) {
+>                 if (bypass) {
+>                         ctrl |=3D BIT_CH(PWM_BYPASS, pwm->hwpwm);
+> --
+> 2.20.1
+>
+"""""""""""""""""
+Tested on my board Pine64+, problems occurs before the patch but not after.=
+..
 
-On Fri, Jan 10, 2020 at 04:29:08AM +0000, Jeff LaBundy wrote:
-> I managed to send out v3 this past weekend; please let me know if you
-> have any further feedback or you find it to be satisfactory.
-
-Yeah, I'm aware. It's on my todo list to take a deeper look.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Tested-By: Alexander Finger <alex.mobigo@gmail.com>
+"""""""""""""""
