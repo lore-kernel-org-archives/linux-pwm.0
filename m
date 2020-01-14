@@ -1,53 +1,79 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v4 0/1] Convert period and duty cycle to u64
-Date: Mon, 13 Jan 2020 15:53:30 -0800
-Message-ID: <cover.1578959442.git.gurus@codeaurora.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4 1/1] pwm: Convert period and duty cycle to u64
+Date: Tue, 14 Jan 2020 08:47:10 +0100
+Message-ID: <20200114074710.kxkz4664oap3r752@pengutronix.de>
+References: <cover.1578959442.git.gurus@codeaurora.org>
+ <21a1431edfa86e061528b80021351c25c76976a9.1578959442.git.gurus@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:13327 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728802AbgAMXxg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Jan 2020 18:53:36 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41979 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728801AbgANHrT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jan 2020 02:47:19 -0500
+Content-Disposition: inline
+In-Reply-To: <21a1431edfa86e061528b80021351c25c76976a9.1578959442.git.gurus@codeaurora.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
 
-Reworked the change pushed upstream earlier [1] so as to not add an extension
-to an obsolete API. With this change, pwm_ops->apply() can be used to set
-pwm_state parameters as usual.
+On Mon, Jan 13, 2020 at 03:53:31PM -0800, Guru Das Srinagesh wrote:
+> Because period and duty cycle are defined as ints with units of
+> nanoseconds, the maximum time duration that can be set is limited to
+> ~2.147 seconds. Change their definitions to u64 in the structs of the
+> PWM framework so that higher durations may be set.
+> 
+> Also make the relevant fixes to those drivers that use the period and
+> duty_cycle struct members in division operations, viz. replacing the
+> division operations with 64-bit division macros as appropriate.
 
-[1] https://lore.kernel.org/lkml/20190916140048.GB7488@ulmo/
+I like the goal of this patch (i.e. expanding the domain of period and
+duty-cycle). I wonder however if we need a more sophisticated approach
+here. The problem I see is that if something breaks (and the fix isn't
+easy) we will have to revert the whole patch touching (now) 15 files.
 
-Changes from v1:
-  - Fixed compilation errors seen when compiling for different archs.
+I didn't thought about that much, but it would be great if we could
+prepare the affected drivers to work with both, int and u64 and switch
+in a separate commit. Reverting would then become cheaper.
+The conversion to 64-bit division macros could be done even without
+actually converting period and duty cycle, couldn't it?
 
-Changes from v2:
-  - Fixed %u -> %llu in a dev_dbg in pwm-stm32-lp.c, thanks to kbuild test robot
-  - Added a couple of fixes to pwm-imx-tpm.c and pwm-sifive.c
+> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> Reported-by: kbuild test robot <lkp@intel.com>
 
-Changes from v3:
-  - Rebased to current tip of for-next.
+This Reported-by: looks wrong. It gave some hints about what had to be
+improved in an earlier revision of this patch, but usually this means
+that the patch is a fix for an earlier commit. So I would put this in
+the text, something like:
 
-Guru Das Srinagesh (1):
-  pwm: Convert period and duty cycle to u64
+	The kbuild test robot helped to improve this patch series to
+	(hopefully) catch all code sites having to be adapted.
 
- drivers/clk/clk-pwm.c                      |  2 +-
- drivers/gpu/drm/i915/display/intel_panel.c |  2 +-
- drivers/hwmon/pwm-fan.c                    |  2 +-
- drivers/media/rc/ir-rx51.c                 |  3 ++-
- drivers/pwm/core.c                         |  4 ++--
- drivers/pwm/pwm-clps711x.c                 |  2 +-
- drivers/pwm/pwm-imx-tpm.c                  |  2 +-
- drivers/pwm/pwm-imx27.c                    |  5 ++---
- drivers/pwm/pwm-sifive.c                   |  2 +-
- drivers/pwm/pwm-sti.c                      |  4 ++--
- drivers/pwm/pwm-stm32-lp.c                 |  2 +-
- drivers/pwm/pwm-sun4i.c                    |  2 +-
- drivers/pwm/sysfs.c                        | 10 +++++-----
- drivers/video/backlight/pwm_bl.c           |  3 ++-
- include/linux/pwm.h                        | 16 ++++++++--------
- 15 files changed, 31 insertions(+), 30 deletions(-)
+> [...]
+> diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> index 924d39a..ba9500a 100644
+> --- a/drivers/pwm/pwm-clps711x.c
+> +++ b/drivers/pwm/pwm-clps711x.c
+> @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+>  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+>  {
+>  	/* Duty cycle 0..15 max */
+> -	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> +	return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+>  }
+
+In ir-rx51.c you used DIV_ROUND_CLOSEST_ULL to replace
+DIV_ROUND_CLOSEST, here it is DIV64_U64_ROUND_CLOSEST. Maybe it is worth
+to describe the relevant difference shortly in the commit log.
+
+>  static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+
+Best regards
+Uwe
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
