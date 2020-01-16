@@ -1,14 +1,16 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 053/205] pwm: sun4i: Fix incorrect calculation of
- duty_cycle/period
-Date: Thu, 16 Jan 2020 11:40:28 -0500
-Message-ID: <20200116164300.6705-53-sashal@kernel.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH AUTOSEL 5.4 053/205] pwm: sun4i: Fix incorrect
+ calculation of duty_cycle/period
+Date: Thu, 16 Jan 2020 17:56:14 +0100
+Message-ID: <20200116165614.a3u5x7g4qxxrm6s4@pengutronix.de>
 References: <20200116164300.6705-1-sashal@kernel.org>
+ <20200116164300.6705-53-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200116164300.6705-53-sashal@kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,38 +20,51 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Ondrej Jirman <megous@megous.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+To: Sasha Levin <sashal@kernel.org>
+Cc: Ondrej Jirman <megous@megous.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogT25kcmVqIEppcm1hbiA8bWVnb3VzQG1lZ291cy5jb20+CgpbIFVwc3RyZWFtIGNvbW1p
-dCA1MGNjN2UzZTRmMjZlM2JmNWVkNzRhOGQwNjExOTVjNGQyMTYxYjhiIF0KClNpbmNlIDUuNC1y
-YzEsIHB3bV9hcHBseV9zdGF0ZSBjYWxscyAtPmdldF9zdGF0ZSBhZnRlciAtPmFwcGx5CmlmIGF2
-YWlsYWJsZSwgYW5kIHRoaXMgcmV2ZWFsZWQgYW4gaXNzdWUgd2l0aCBpbnRlZ2VyIHByZWNpc2lv
-bgp3aGVuIGNhbGN1bGF0aW5nIGR1dHlfY3ljbGUgYW5kIHBlcmlvZCBmb3IgdGhlIGN1cnJlbnRs
-eSBzZXQKc3RhdGUgaW4gLT5nZXRfc3RhdGUgY2FsbGJhY2suCgpUaGlzIGlzc3VlIG1hbmlmZXN0
-ZWQgaW4gYnJva2VuIGJhY2tsaWdodCBvbiBzZXZlcmFsIEFsbHdpbm5lcgpiYXNlZCBkZXZpY2Vz
-LgoKUHJldmlvdXNseSB0aGlzIHdvcmtlZCwgYmVjYXVzZSAtPmFwcGx5IHVwZGF0ZWQgdGhlIHBh
-c3NlZCBzdGF0ZQpkaXJlY3RseS4KCkZpeGVzOiBkZWI5YzQ2MmY0ZTUzICgicHdtOiBzdW40aTog
-RG9uJ3QgdXBkYXRlIHRoZSBzdGF0ZSBmb3IgdGhlIGNhbGxlciBvZiBwd21fYXBwbHlfc3RhdGUi
-KQpTaWduZWQtb2ZmLWJ5OiBPbmRyZWogSmlybWFuIDxtZWdvdXNAbWVnb3VzLmNvbT4KQWNrZWQt
-Ynk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+ClNp
-Z25lZC1vZmYtYnk6IFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+ClNp
-Z25lZC1vZmYtYnk6IFNhc2hhIExldmluIDxzYXNoYWxAa2VybmVsLm9yZz4KLS0tCiBkcml2ZXJz
-L3B3bS9wd20tc3VuNGkuYyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygr
-KSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tc3VuNGkuYyBi
-L2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jCmluZGV4IDZmNTg0MGExYTgyZC4uMDUyNzM3MjVhOWZm
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9wd20tc3VuNGkuYworKysgYi9kcml2ZXJzL3B3bS9w
-d20tc3VuNGkuYwpAQCAtMTM3LDEwICsxMzcsMTAgQEAgc3RhdGljIHZvaWQgc3VuNGlfcHdtX2dl
-dF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAKIAl2YWwgPSBzdW40aV9wd21fcmVhZGwo
-c3VuNGlfcHdtLCBQV01fQ0hfUFJEKHB3bS0+aHdwd20pKTsKIAotCXRtcCA9IHByZXNjYWxlciAq
-IE5TRUNfUEVSX1NFQyAqIFBXTV9SRUdfRFRZKHZhbCk7CisJdG1wID0gKHU2NClwcmVzY2FsZXIg
-KiBOU0VDX1BFUl9TRUMgKiBQV01fUkVHX0RUWSh2YWwpOwogCXN0YXRlLT5kdXR5X2N5Y2xlID0g
-RElWX1JPVU5EX0NMT1NFU1RfVUxMKHRtcCwgY2xrX3JhdGUpOwogCi0JdG1wID0gcHJlc2NhbGVy
-ICogTlNFQ19QRVJfU0VDICogUFdNX1JFR19QUkQodmFsKTsKKwl0bXAgPSAodTY0KXByZXNjYWxl
-ciAqIE5TRUNfUEVSX1NFQyAqIFBXTV9SRUdfUFJEKHZhbCk7CiAJc3RhdGUtPnBlcmlvZCA9IERJ
-Vl9ST1VORF9DTE9TRVNUX1VMTCh0bXAsIGNsa19yYXRlKTsKIH0KIAotLSAKMi4yMC4xCgoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtl
-cm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0
-dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5l
-bAo=
+On Thu, Jan 16, 2020 at 11:40:28AM -0500, Sasha Levin wrote:
+> From: Ondrej Jirman <megous@megous.com>
+> =
+
+> [ Upstream commit 50cc7e3e4f26e3bf5ed74a8d061195c4d2161b8b ]
+> =
+
+> Since 5.4-rc1, pwm_apply_state calls ->get_state after ->apply
+> if available, and this revealed an issue with integer precision
+> when calculating duty_cycle and period for the currently set
+> state in ->get_state callback.
+> =
+
+> This issue manifested in broken backlight on several Allwinner
+> based devices.
+> =
+
+> Previously this worked, because ->apply updated the passed state
+> directly.
+> =
+
+> Fixes: deb9c462f4e53 ("pwm: sun4i: Don't update the state for the caller =
+of pwm_apply_state")
+> Signed-off-by: Ondrej Jirman <megous@megous.com>
+> Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+Note that while the patch is still correct, the problem isn't that bad
+any more since commit 01ccf903edd65f6421612321648fa5a7f4b7cb10 was
+reverted.
+
+So .get_state is only called once during boot where the breakage doesn't
+hurt that much.
+
+I let you decide if you still want to apply this patch.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
