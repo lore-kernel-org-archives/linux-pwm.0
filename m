@@ -1,56 +1,58 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 012/371] pwm: lpss: Release runtime-pm reference from the driver's remove callback
-Date: Thu, 16 Jan 2020 12:11:20 -0500
-Message-ID: <20200116171719.16965-12-sashal@kernel.org>
-References: <20200116171719.16965-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 350/671] pwm: meson: Consider 128 a valid
+ pre-divider
+Date: Thu, 16 Jan 2020 11:59:48 -0500
+Message-ID: <20200116170509.12787-87-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43058 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391242AbgAPRRg (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:17:36 -0500
-In-Reply-To: <20200116171719.16965-1-sashal@kernel.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Hans de Goede <hdegoede@redhat.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+List-Id: linux-pwm@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
-
-[ Upstream commit 42885551cedb45961879d2fc3dc3c4dc545cc23e ]
-
-For each pwm output which gets enabled through pwm_lpss_apply(), we do a
-pm_runtime_get_sync().
-
-This commit adds pm_runtime_put() calls to pwm_lpss_remove() to balance
-these when the driver gets removed with some of the outputs still enabled.
-
-Fixes: f080be27d7d9 ("pwm: lpss: Add support for runtime PM")
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pwm/pwm-lpss.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 1e69c1c9ec09..7a4a6406cf69 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -216,6 +216,12 @@ EXPORT_SYMBOL_GPL(pwm_lpss_probe);
- 
- int pwm_lpss_remove(struct pwm_lpss_chip *lpwm)
- {
-+	int i;
-+
-+	for (i = 0; i < lpwm->info->npwm; i++) {
-+		if (pwm_is_enabled(&lpwm->chip.pwms[i]))
-+			pm_runtime_put(lpwm->chip.dev);
-+	}
- 	return pwmchip_remove(&lpwm->chip);
- }
- EXPORT_SYMBOL_GPL(pwm_lpss_remove);
--- 
-2.20.1
+RnJvbTogTWFydGluIEJsdW1lbnN0aW5nbCA8bWFydGluLmJsdW1lbnN0aW5nbEBnb29nbGVtYWls
+LmNvbT4KClsgVXBzdHJlYW0gY29tbWl0IDUxNDk2ZTQ0NDY4NzU3MjZkNTBhNTYxN2E2ZTBlMGRh
+YmJjMmU2ZGEgXQoKVGhlIHByZS1kaXZpZGVyIGFsbG93cyBjb25maWd1cmluZyBsb25nZXIgUFdN
+IHBlcmlvZHMgY29tcGFyZWQgdG8gdXNpbmcKdGhlIGlucHV0IGNsb2NrIGRpcmVjdGx5LiBUaGUg
+cHJlLWRpdmlkZXIgaXMgNyBiaXQgd2lkZSwgbWVhbmluZyBpdCdzCm1heGltdW0gdmFsdWUgaXMg
+MTI4ICh0aGUgcmVnaXN0ZXIgdmFsdWUgaXMgb2ZmLWJ5LW9uZTogMHg3ZiBvciAxMjcpLgoKQ2hh
+bmdlIHRoZSBsb29wIHRvIGFsc28gYWxsb3cgZm9yIHRoZSBtYXhpbXVtIHBvc3NpYmxlIHZhbHVl
+IHRvIGJlCmNvbnNpZGVyZWQgdmFsaWQuCgpGaXhlczogMjExZWQ2MzA3NTNkMmYgKCJwd206IEFk
+ZCBzdXBwb3J0IGZvciBNZXNvbiBQV00gQ29udHJvbGxlciIpClNpZ25lZC1vZmYtYnk6IE1hcnRp
+biBCbHVtZW5zdGluZ2wgPG1hcnRpbi5ibHVtZW5zdGluZ2xAZ29vZ2xlbWFpbC5jb20+CkFja2Vk
+LWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgpS
+ZXZpZXdlZC1ieTogTmVpbCBBcm1zdHJvbmcgPG5hcm1zdHJvbmdAYmF5bGlicmUuY29tPgpTaWdu
+ZWQtb2ZmLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgpTaWdu
+ZWQtb2ZmLWJ5OiBTYXNoYSBMZXZpbiA8c2FzaGFsQGtlcm5lbC5vcmc+Ci0tLQogZHJpdmVycy9w
+d20vcHdtLW1lc29uLmMgfCA0ICsrLS0KIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyks
+IDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLW1lc29uLmMgYi9k
+cml2ZXJzL3B3bS9wd20tbWVzb24uYwppbmRleCBmNmU3MzhhZDdiZDkuLjRiNzA4YzFmY2IxZCAx
+MDA2NDQKLS0tIGEvZHJpdmVycy9wd20vcHdtLW1lc29uLmMKKysrIGIvZHJpdmVycy9wd20vcHdt
+LW1lc29uLmMKQEAgLTE4OCw3ICsxODgsNyBAQCBzdGF0aWMgaW50IG1lc29uX3B3bV9jYWxjKHN0
+cnVjdCBtZXNvbl9wd20gKm1lc29uLAogCWRvX2RpdihmaW5fcHMsIGZpbl9mcmVxKTsKIAogCS8q
+IENhbGMgcHJlX2RpdiB3aXRoIHRoZSBwZXJpb2QgKi8KLQlmb3IgKHByZV9kaXYgPSAwOyBwcmVf
+ZGl2IDwgTUlTQ19DTEtfRElWX01BU0s7IHByZV9kaXYrKykgeworCWZvciAocHJlX2RpdiA9IDA7
+IHByZV9kaXYgPD0gTUlTQ19DTEtfRElWX01BU0s7IHByZV9kaXYrKykgewogCQljbnQgPSBESVZf
+Uk9VTkRfQ0xPU0VTVF9VTEwoKHU2NClwZXJpb2QgKiAxMDAwLAogCQkJCQkgICAgZmluX3BzICog
+KHByZV9kaXYgKyAxKSk7CiAJCWRldl9kYmcobWVzb24tPmNoaXAuZGV2LCAiZmluX3BzPSVsbHUg
+cHJlX2Rpdj0ldSBjbnQ9JXVcbiIsCkBAIC0xOTcsNyArMTk3LDcgQEAgc3RhdGljIGludCBtZXNv
+bl9wd21fY2FsYyhzdHJ1Y3QgbWVzb25fcHdtICptZXNvbiwKIAkJCWJyZWFrOwogCX0KIAotCWlm
+IChwcmVfZGl2ID09IE1JU0NfQ0xLX0RJVl9NQVNLKSB7CisJaWYgKHByZV9kaXYgPiBNSVNDX0NM
+S19ESVZfTUFTSykgewogCQlkZXZfZXJyKG1lc29uLT5jaGlwLmRldiwgInVuYWJsZSB0byBnZXQg
+cGVyaW9kIHByZV9kaXZcbiIpOwogCQlyZXR1cm4gLUVJTlZBTDsKIAl9Ci0tIAoyLjIwLjEKCgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0t
+a2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcK
+aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
+bmVsCg==
