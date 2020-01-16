@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 199/371] pwm: meson: Don't disable PWM when setting duty repeatedly
-Date: Thu, 16 Jan 2020 12:21:11 -0500
-Message-ID: <20200116172403.18149-142-sashal@kernel.org>
-References: <20200116172403.18149-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 138/251] pwm: meson: Don't disable PWM when setting duty repeatedly
+Date: Thu, 16 Jan 2020 12:34:47 -0500
+Message-ID: <20200116173641.22137-98-sashal@kernel.org>
+References: <20200116173641.22137-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
+In-Reply-To: <20200116173641.22137-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Bichao Zheng <bichao.zheng@amlogic.com>, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Neil Armstrong <narmstrong@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org
@@ -32,10 +32,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 deletions(-)
 
 diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 9551f896dd6f..3d2c36963a4f 100644
+index f58a4867b519..a196439ee14c 100644
 --- a/drivers/pwm/pwm-meson.c
 +++ b/drivers/pwm/pwm-meson.c
-@@ -325,11 +325,6 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -320,11 +320,6 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	if (state->period != channel->state.period ||
  	    state->duty_cycle != channel->state.duty_cycle ||
  	    state->polarity != channel->state.polarity) {
