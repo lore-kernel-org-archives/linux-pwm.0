@@ -1,70 +1,99 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH AUTOSEL 5.4 053/205] pwm: sun4i: Fix incorrect
- calculation of duty_cycle/period
-Date: Thu, 16 Jan 2020 17:56:14 +0100
-Message-ID: <20200116165614.a3u5x7g4qxxrm6s4@pengutronix.de>
-References: <20200116164300.6705-1-sashal@kernel.org>
- <20200116164300.6705-53-sashal@kernel.org>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 438/671] backlight: pwm_bl: Fix heuristic to determine number of brightness levels
+Date: Thu, 16 Jan 2020 12:01:16 -0500
+Message-ID: <20200116170509.12787-175-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20200116164300.6705-53-sashal@kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Sasha Levin <sashal@kernel.org>
-Cc: Ondrej Jirman <megous@megous.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:44864 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389646AbgAPRJS (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:09:18 -0500
+In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Matthias Kaehlcke <mka@chromium.org>, Daniel Thompson <daniel.thompson@linaro.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
 
-On Thu, Jan 16, 2020 at 11:40:28AM -0500, Sasha Levin wrote:
-> From: Ondrej Jirman <megous@megous.com>
-> =
+From: Matthias Kaehlcke <mka@chromium.org>
 
-> [ Upstream commit 50cc7e3e4f26e3bf5ed74a8d061195c4d2161b8b ]
-> =
+[ Upstream commit 73fbfc499448455f1e1c77717040e09e25f1d976 ]
 
-> Since 5.4-rc1, pwm_apply_state calls ->get_state after ->apply
-> if available, and this revealed an issue with integer precision
-> when calculating duty_cycle and period for the currently set
-> state in ->get_state callback.
-> =
+With commit 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of
+LED linearly to human eye") the number of set bits (aka hweight())
+in the PWM period is used in the heuristic to determine the number
+of brightness levels, when the brightness table isn't specified in
+the DT. The number of set bits doesn't provide a reliable clue about
+the length of the period, instead change the heuristic to:
 
-> This issue manifested in broken backlight on several Allwinner
-> based devices.
-> =
+ nlevels = period / fls(period)
 
-> Previously this worked, because ->apply updated the passed state
-> directly.
-> =
+Also limit the maximum number of brightness levels to 4096 to avoid
+excessively large tables.
 
-> Fixes: deb9c462f4e53 ("pwm: sun4i: Don't update the state for the caller =
-of pwm_apply_state")
-> Signed-off-by: Ondrej Jirman <megous@megous.com>
-> Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+With this the number of levels increases monotonically with the PWM
+period, until the maximum of 4096 levels is reached:
 
-Note that while the patch is still correct, the problem isn't that bad
-any more since commit 01ccf903edd65f6421612321648fa5a7f4b7cb10 was
-reverted.
+period (ns)    # levels
 
-So .get_state is only called once during boot where the breakage doesn't
-hurt that much.
+100    	       16
+500	       62
+1000	       111
+5000	       416
+10000	       769
+50000	       3333
+100000	       4096
 
-I let you decide if you still want to apply this patch.
+Fixes: 88ba95bedb79 ("backlight: pwm_bl: Compute brightness of LED linearly to human eye")
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/backlight/pwm_bl.c | 24 ++++++------------------
+ 1 file changed, 6 insertions(+), 18 deletions(-)
 
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 7ddc0930e98c..3a3098d4873b 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -199,29 +199,17 @@ int pwm_backlight_brightness_default(struct device *dev,
+ 				     struct platform_pwm_backlight_data *data,
+ 				     unsigned int period)
+ {
+-	unsigned int counter = 0;
+-	unsigned int i, n;
++	unsigned int i;
+ 	u64 retval;
+ 
+ 	/*
+-	 * Count the number of bits needed to represent the period number. The
+-	 * number of bits is used to calculate the number of levels used for the
+-	 * brightness-levels table, the purpose of this calculation is have a
+-	 * pre-computed table with enough levels to get linear brightness
+-	 * perception. The period is divided by the number of bits so for a
+-	 * 8-bit PWM we have 255 / 8 = 32 brightness levels or for a 16-bit PWM
+-	 * we have 65535 / 16 = 4096 brightness levels.
+-	 *
+-	 * Note that this method is based on empirical testing on different
+-	 * devices with PWM of 8 and 16 bits of resolution.
++	 * Once we have 4096 levels there's little point going much higher...
++	 * neither interactive sliders nor animation benefits from having
++	 * more values in the table.
+ 	 */
+-	n = period;
+-	while (n) {
+-		counter += n % 2;
+-		n >>= 1;
+-	}
++	data->max_brightness =
++		min((int)DIV_ROUND_UP(period, fls(period)), 4096);
+ 
+-	data->max_brightness = DIV_ROUND_UP(period, counter);
+ 	data->levels = devm_kcalloc(dev, data->max_brightness,
+ 				    sizeof(*data->levels), GFP_KERNEL);
+ 	if (!data->levels)
+-- 
+2.20.1
