@@ -1,58 +1,55 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v4 1/1] pwm: Convert period and duty cycle to u64
-Date: Thu, 16 Jan 2020 09:06:33 +0100
-Message-ID: <20200116080633.nikynj7jguu3c2br@pengutronix.de>
-References: <cover.1578959442.git.gurus@codeaurora.org>
- <21a1431edfa86e061528b80021351c25c76976a9.1578959442.git.gurus@codeaurora.org>
- <20200114074710.kxkz4664oap3r752@pengutronix.de>
- <20200116005503.GA8559@codeaurora.org>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 053/205] pwm: sun4i: Fix incorrect calculation of
+ duty_cycle/period
+Date: Thu, 16 Jan 2020 11:40:28 -0500
+Message-ID: <20200116164300.6705-53-sashal@kernel.org>
+References: <20200116164300.6705-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52893 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726845AbgAPIGi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Jan 2020 03:06:38 -0500
-Content-Disposition: inline
-In-Reply-To: <20200116005503.GA8559@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Ondrej Jirman <megous@megous.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
 
-Hi,
-
-[added linux-pwm to Cc:]
-
-On Wed, Jan 15, 2020 at 04:55:03PM -0800, Guru Das Srinagesh wrote:
-> On Tue, Jan 14, 2020 at 08:47:10AM +0100, Uwe Kleine-König wrote:
-> > I didn't thought about that much, but it would be great if we could
-> > prepare the affected drivers to work with both, int and u64 and switch
-> > in a separate commit. Reverting would then become cheaper.
-> > The conversion to 64-bit division macros could be done even without
-> > actually converting period and duty cycle, couldn't it?
-> 
-> I do agree that with such a two-step process the reverting (should the
-> need arise) would be much cheaper. I tried out your suggestion and saw
-> that this is not possible as the patch stands currently due to
-> compilation warning and errors that arise for various architectures:
-> 
-> warning: comparison of distinct pointer types lacks a cast
-> warning: right shift count >= width of type [-Wshift-count-overflow]
-> error: passing argument 1 of '__div64_32' from incompatible pointer type [-Werror=incompatible-pointer-types]
-> note: expected 'uint64_t *' {aka 'long long unsigned int *'} but argument is of type 'unsigned int *'
-> warning: format '%llu' expects argument of type 'long long unsigned int', but argument 4 has type 'unsigned int' [-Wformat=]
-
-This should be managable with appropriate casting. Maybe it's also a
-good idea to add a greppable keyword (e.g. "PWM-TYPE-CONVERSION") and a
-short comment at the places that are expected to be touched again after
-the conversion is known to last. (e.g. to remuch such casts).
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+RnJvbTogT25kcmVqIEppcm1hbiA8bWVnb3VzQG1lZ291cy5jb20+CgpbIFVwc3RyZWFtIGNvbW1p
+dCA1MGNjN2UzZTRmMjZlM2JmNWVkNzRhOGQwNjExOTVjNGQyMTYxYjhiIF0KClNpbmNlIDUuNC1y
+YzEsIHB3bV9hcHBseV9zdGF0ZSBjYWxscyAtPmdldF9zdGF0ZSBhZnRlciAtPmFwcGx5CmlmIGF2
+YWlsYWJsZSwgYW5kIHRoaXMgcmV2ZWFsZWQgYW4gaXNzdWUgd2l0aCBpbnRlZ2VyIHByZWNpc2lv
+bgp3aGVuIGNhbGN1bGF0aW5nIGR1dHlfY3ljbGUgYW5kIHBlcmlvZCBmb3IgdGhlIGN1cnJlbnRs
+eSBzZXQKc3RhdGUgaW4gLT5nZXRfc3RhdGUgY2FsbGJhY2suCgpUaGlzIGlzc3VlIG1hbmlmZXN0
+ZWQgaW4gYnJva2VuIGJhY2tsaWdodCBvbiBzZXZlcmFsIEFsbHdpbm5lcgpiYXNlZCBkZXZpY2Vz
+LgoKUHJldmlvdXNseSB0aGlzIHdvcmtlZCwgYmVjYXVzZSAtPmFwcGx5IHVwZGF0ZWQgdGhlIHBh
+c3NlZCBzdGF0ZQpkaXJlY3RseS4KCkZpeGVzOiBkZWI5YzQ2MmY0ZTUzICgicHdtOiBzdW40aTog
+RG9uJ3QgdXBkYXRlIHRoZSBzdGF0ZSBmb3IgdGhlIGNhbGxlciBvZiBwd21fYXBwbHlfc3RhdGUi
+KQpTaWduZWQtb2ZmLWJ5OiBPbmRyZWogSmlybWFuIDxtZWdvdXNAbWVnb3VzLmNvbT4KQWNrZWQt
+Ynk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+ClNp
+Z25lZC1vZmYtYnk6IFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+ClNp
+Z25lZC1vZmYtYnk6IFNhc2hhIExldmluIDxzYXNoYWxAa2VybmVsLm9yZz4KLS0tCiBkcml2ZXJz
+L3B3bS9wd20tc3VuNGkuYyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygr
+KSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tc3VuNGkuYyBi
+L2RyaXZlcnMvcHdtL3B3bS1zdW40aS5jCmluZGV4IDZmNTg0MGExYTgyZC4uMDUyNzM3MjVhOWZm
+IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9wd20tc3VuNGkuYworKysgYi9kcml2ZXJzL3B3bS9w
+d20tc3VuNGkuYwpAQCAtMTM3LDEwICsxMzcsMTAgQEAgc3RhdGljIHZvaWQgc3VuNGlfcHdtX2dl
+dF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAKIAl2YWwgPSBzdW40aV9wd21fcmVhZGwo
+c3VuNGlfcHdtLCBQV01fQ0hfUFJEKHB3bS0+aHdwd20pKTsKIAotCXRtcCA9IHByZXNjYWxlciAq
+IE5TRUNfUEVSX1NFQyAqIFBXTV9SRUdfRFRZKHZhbCk7CisJdG1wID0gKHU2NClwcmVzY2FsZXIg
+KiBOU0VDX1BFUl9TRUMgKiBQV01fUkVHX0RUWSh2YWwpOwogCXN0YXRlLT5kdXR5X2N5Y2xlID0g
+RElWX1JPVU5EX0NMT1NFU1RfVUxMKHRtcCwgY2xrX3JhdGUpOwogCi0JdG1wID0gcHJlc2NhbGVy
+ICogTlNFQ19QRVJfU0VDICogUFdNX1JFR19QUkQodmFsKTsKKwl0bXAgPSAodTY0KXByZXNjYWxl
+ciAqIE5TRUNfUEVSX1NFQyAqIFBXTV9SRUdfUFJEKHZhbCk7CiAJc3RhdGUtPnBlcmlvZCA9IERJ
+Vl9ST1VORF9DTE9TRVNUX1VMTCh0bXAsIGNsa19yYXRlKTsKIH0KIAotLSAKMi4yMC4xCgoKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtl
+cm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0
+dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5l
+bAo=
