@@ -1,430 +1,397 @@
 From: Jeff LaBundy <jeff@labundy.com>
-Subject: [PATCH v4 3/7] input: keyboard: Add support for Azoteq
- IQS620A/621/622/624/625
-Date: Fri, 17 Jan 2020 02:35:46 +0000
-Message-ID: <1579228475-6681-4-git-send-email-jeff@labundy.com>
+Subject: [PATCH v4 4/7] pwm: Add support for Azoteq IQS620A PWM generator
+Date: Fri, 17 Jan 2020 02:35:57 +0000
+Message-ID: <1579228475-6681-5-git-send-email-jeff@labundy.com>
 References: <1579228475-6681-1-git-send-email-jeff@labundy.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-mw2nam10on2089.outbound.protection.outlook.com ([40.107.94.89]:9723
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729113AbgAQCfx (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 16 Jan 2020 21:35:53 -0500
+Return-path: <linux-input-owner@vger.kernel.org>
 In-Reply-To: <1579228475-6681-1-git-send-email-jeff@labundy.com>
 Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-input-owner@vger.kernel.org
 To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jeff LaBundy <jeff@labundy.com>
+List-Id: linux-pwm@vger.kernel.org
 
-This patch adds key and switch support for the Azoteq IQS620A,
-IQS621, IQS622, IQS624 and IQS625 multi-function sensors.
+This patch adds support for the Azoteq IQS620A, capable of generating
+a 1-kHz PWM output with duty cycle between ~0.4% and 100% (inclusive).
 
 Signed-off-by: Jeff LaBundy <jeff@labundy.com>
 ---
 Changes in v4:
-  - None
+  - Updated iqs620_pwm_apply and iqs620_pwm_get_state to hold the lock arou=
+nd
+    only the minimum necessary code
+  - Removed the completion protecting against early use of chip->pwms[0] fr=
+om
+    inside iqs620_pwm_notifier in favor of cached register values
+  - Updated iqs620_pwm_get_state to use the cached register values instead =
+of
+    reading IQS620_PWR_SETTINGS_PWM_OUT and IQS620_PWM_DUTY_CYCLE (both equ=
+al
+    to zero by default)
+  - Added a comment in iqs620_pwm_notifier to note that the parent MFD driv=
+er
+    prints an error message in the event of a device reset
 
 Changes in v3:
-  - None
+  - Updated the commit message to say "~0.4%" instead of "0.4%"
+  - Clarified the effect of duty cycle and state changes in the 'Limitation=
+s'
+    section and added a restriction regarding 0% duty cycle
+  - Added a comment in iqs620_pwm_apply to explain how duty cycle is derive=
+d
+  - Updated iqs620_pwm_apply to disable the output first and enable it last=
+ to
+    prevent temporarily driving a stale duty cycle
+  - Rounded the calculation for duty cycle up and down in iqs620_pwm_get_st=
+ate
+    and iqs620_pwm_apply, respectively
+  - Added a comment in iqs620_pwm_get_state to explain what it reports foll=
+ow-
+    ing requests to set duty cycle to 0%
+  - Added a lock to prevent back-to-back access of IQS620_PWR_SETTINGS_PWM_=
+OUT
+    and IQS620_PWM_DUTY_CYCLE from being interrupted
+  - Updated iqs620_pwm_notifier to reference pwm->state directly as opposed=
+ to
+    calling pwm_get_state
+  - Moved notifier unregistration back to a device-managed action
+  - Added a completion to prevent iqs620_pwm_notifier from referencing the
+    pwm_chip structure until it has been initialized by pwmchip_add
 
 Changes in v2:
   - Merged 'Copyright' and 'Author' lines into one in introductory comments
+  - Added 'Limitations' section to introductory comments
   - Replaced 'error' with 'ret' throughout
-  - Updated iqs62x_keys_parse_prop to use unified device property interface
-  - Clarified the comment in iqs62x_keys_notifier to state that wheel up or
-    down events elicit an emulated release cycle
-  - Eliminated tabbed alignment of platform_driver struct members
+  - Added const qualifier to state argument of iqs620_pwm_apply and removed=
+ all
+    modifications to the variable's contents
+  - Updated iqs620_pwm_apply to return -ENOTSUPP or -EINVAL if the requeste=
+d
+    polarity is inverted or the requested period is below 1 ms, respectivel=
+y
+  - Updated iqs620_pwm_apply to disable the PWM output if duty cycle is zer=
+o
+  - Added iqs620_pwm_get_state
+  - Eliminated tabbed alignment of pwm_ops and platform_driver struct membe=
+rs
+  - Moved notifier unregistration to already present iqs620_pwm_remove, whi=
+ch
+    eliminated the need for a device-managed action and ready flag
+  - Added a comment in iqs620_pwm_probe to explain the order of operations
+  - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
 
- drivers/input/keyboard/Kconfig       |  10 ++
- drivers/input/keyboard/Makefile      |   1 +
- drivers/input/keyboard/iqs62x-keys.c | 340 +++++++++++++++++++++++++++++++=
+ drivers/pwm/Kconfig       |  10 ++
+ drivers/pwm/Makefile      |   1 +
+ drivers/pwm/pwm-iqs620a.c | 258 ++++++++++++++++++++++++++++++++++++++++++=
 ++++
- 3 files changed, 351 insertions(+)
- create mode 100644 drivers/input/keyboard/iqs62x-keys.c
+ 3 files changed, 269 insertions(+)
+ create mode 100644 drivers/pwm/pwm-iqs620a.c
 
-diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfi=
-g
-index 4706ff0..28de965 100644
---- a/drivers/input/keyboard/Kconfig
-+++ b/drivers/input/keyboard/Kconfig
-@@ -663,6 +663,16 @@ config KEYBOARD_IPAQ_MICRO
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ipaq-micro-keys.
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index bd21655..60bcf6c 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -222,6 +222,16 @@ config PWM_IMX_TPM
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-imx-tpm.
 
-+config KEYBOARD_IQS62X
-+	tristate "Azoteq IQS620A/621/622/624/625 keys and switches"
-+	depends on MFD_IQS62X
++config PWM_IQS620A
++	tristate "Azoteq IQS620A PWM support"
++	depends on MFD_IQS62X || COMPILE_TEST
 +	help
-+	  Say Y here to enable key and switch support for the Azoteq IQS620A,
-+	  IQS621, IQS622, IQS624 and IQS625 multi-function sensors.
++	  Generic PWM framework driver for the Azoteq IQS620A multi-function
++	  sensor.
 +
 +	  To compile this driver as a module, choose M here: the module will
-+	  be called iqs62x-keys.
++	  be called pwm-iqs620a.
 +
- config KEYBOARD_OMAP
- 	tristate "TI OMAP keypad support"
- 	depends on ARCH_OMAP1
-diff --git a/drivers/input/keyboard/Makefile b/drivers/input/keyboard/Makef=
-ile
-index f5b1752..1d689fd 100644
---- a/drivers/input/keyboard/Makefile
-+++ b/drivers/input/keyboard/Makefile
-@@ -28,6 +28,7 @@ obj-$(CONFIG_KEYBOARD_TCA8418)		+=3D tca8418_keypad.o
- obj-$(CONFIG_KEYBOARD_HIL)		+=3D hil_kbd.o
- obj-$(CONFIG_KEYBOARD_HIL_OLD)		+=3D hilkbd.o
- obj-$(CONFIG_KEYBOARD_IPAQ_MICRO)	+=3D ipaq-micro-keys.o
-+obj-$(CONFIG_KEYBOARD_IQS62X)		+=3D iqs62x-keys.o
- obj-$(CONFIG_KEYBOARD_IMX)		+=3D imx_keypad.o
- obj-$(CONFIG_KEYBOARD_IMX_SC_KEY)	+=3D imx_sc_key.o
- obj-$(CONFIG_KEYBOARD_HP6XX)		+=3D jornada680_kbd.o
-diff --git a/drivers/input/keyboard/iqs62x-keys.c b/drivers/input/keyboard/=
-iqs62x-keys.c
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+ 	depends on MACH_INGENIC
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 9a47507..a59c710 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_PWM_IMG)		+=3D pwm-img.o
+ obj-$(CONFIG_PWM_IMX1)		+=3D pwm-imx1.o
+ obj-$(CONFIG_PWM_IMX27)		+=3D pwm-imx27.o
+ obj-$(CONFIG_PWM_IMX_TPM)	+=3D pwm-imx-tpm.o
++obj-$(CONFIG_PWM_IQS620A)	+=3D pwm-iqs620a.o
+ obj-$(CONFIG_PWM_JZ4740)	+=3D pwm-jz4740.o
+ obj-$(CONFIG_PWM_LP3943)	+=3D pwm-lp3943.o
+ obj-$(CONFIG_PWM_LPC18XX_SCT)	+=3D pwm-lpc18xx-sct.o
+diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
 new file mode 100644
-index 0000000..b477334
+index 0000000..75ca482
 --- /dev/null
-+++ b/drivers/input/keyboard/iqs62x-keys.c
-@@ -0,0 +1,340 @@
++++ b/drivers/pwm/pwm-iqs620a.c
+@@ -0,0 +1,258 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
-+ * Azoteq IQS620A/621/622/624/625 Keys and Switches
++ * Azoteq IQS620A PWM Generator
 + *
 + * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
++ *
++ * Limitations:
++ * - The period is fixed to 1 ms and is generated continuously despite cha=
+nges
++ *   to the duty cycle or enable/disable state.
++ * - Changes to the duty cycle or enable/disable state take effect immedia=
+tely
++ *   and may result in a glitch during the period in which the change is m=
+ade.
++ * - The device cannot generate a 0% duty cycle. For duty cycles below 1 /=
+ 256
++ *   ms, the output is disabled and relies upon an external pull-down resi=
+stor
++ *   to hold the GPIO3/LTX pin low.
 + */
 +
 +#include <linux/device.h>
-+#include <linux/input.h>
 +#include <linux/kernel.h>
 +#include <linux/mfd/iqs62x.h>
 +#include <linux/module.h>
++#include <linux/mutex.h>
 +#include <linux/notifier.h>
 +#include <linux/platform_device.h>
-+#include <linux/property.h>
++#include <linux/pwm.h>
 +#include <linux/regmap.h>
 +#include <linux/slab.h>
 +
-+enum {
-+	IQS62X_SW_HALL_N,
-+	IQS62X_SW_HALL_S,
-+};
++#define IQS620_PWR_SETTINGS			0xD2
++#define IQS620_PWR_SETTINGS_PWM_OUT		BIT(7)
 +
-+static const char * const iqs62x_switch_names[] =3D {
-+	[IQS62X_SW_HALL_N] =3D "hall-switch-north",
-+	[IQS62X_SW_HALL_S] =3D "hall-switch-south",
-+};
++#define IQS620_PWM_DUTY_CYCLE			0xD8
 +
-+struct iqs62x_switch_desc {
-+	enum iqs62x_event_flag flag;
-+	unsigned int code;
-+	bool enabled;
-+};
++#define IQS620_PWM_PERIOD_NS			1000000
 +
-+struct iqs62x_keys_private {
++struct iqs620_pwm_private {
 +	struct iqs62x_core *iqs62x;
-+	struct input_dev *input;
++	struct pwm_chip chip;
 +	struct notifier_block notifier;
-+	struct iqs62x_switch_desc switches[ARRAY_SIZE(iqs62x_switch_names)];
-+	unsigned int keycode[IQS62X_NUM_KEYS];
-+	unsigned int keycodemax;
-+	u8 interval;
++	struct mutex lock;
++	bool out_en;
++	u8 duty_val;
 +};
 +
-+static int iqs62x_keys_parse_prop(struct platform_device *pdev,
-+				  struct iqs62x_keys_private *iqs62x_keys)
++static int iqs620_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			    const struct pwm_state *state)
 +{
-+	struct fwnode_handle *child;
-+	unsigned int val;
-+	int ret, i;
++	struct iqs620_pwm_private *iqs620_pwm;
++	struct iqs62x_core *iqs62x;
++	int duty_scale, ret;
 +
-+	ret =3D device_property_read_u32_array(&pdev->dev, "linux,keycodes",
-+					     NULL, 0);
-+	if (ret > IQS62X_NUM_KEYS) {
-+		dev_err(&pdev->dev, "Too many keycodes present\n");
++	if (state->polarity !=3D PWM_POLARITY_NORMAL)
++		return -ENOTSUPP;
++
++	if (state->period < IQS620_PWM_PERIOD_NS)
 +		return -EINVAL;
-+	} else if (ret < 0) {
-+		dev_err(&pdev->dev, "Failed to count keycodes: %d\n", ret);
-+		return ret;
-+	}
-+	iqs62x_keys->keycodemax =3D ret;
 +
-+	ret =3D device_property_read_u32_array(&pdev->dev, "linux,keycodes",
-+					     iqs62x_keys->keycode,
-+					     iqs62x_keys->keycodemax);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to read keycodes: %d\n", ret);
-+		return ret;
-+	}
-+
-+	for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++) {
-+		child =3D device_get_named_child_node(&pdev->dev,
-+						    iqs62x_switch_names[i]);
-+		if (!child)
-+			continue;
-+
-+		ret =3D fwnode_property_read_u32(child, "linux,code", &val);
-+		if (ret) {
-+			dev_err(&pdev->dev, "Failed to read switch code: %d\n",
-+				ret);
-+			return ret;
-+		}
-+		iqs62x_keys->switches[i].code =3D val;
-+		iqs62x_keys->switches[i].enabled =3D true;
-+
-+		if (fwnode_property_present(child, "azoteq,use-prox"))
-+			iqs62x_keys->switches[i].flag =3D (i =3D=3D IQS62X_SW_HALL_N ?
-+							 IQS62X_EVENT_HALL_N_P :
-+							 IQS62X_EVENT_HALL_S_P);
-+		else
-+			iqs62x_keys->switches[i].flag =3D (i =3D=3D IQS62X_SW_HALL_N ?
-+							 IQS62X_EVENT_HALL_N_T :
-+							 IQS62X_EVENT_HALL_S_T);
-+	}
-+
-+	return 0;
-+}
-+
-+static int iqs62x_keys_init(struct iqs62x_keys_private *iqs62x_keys)
-+{
-+	struct iqs62x_core *iqs62x =3D iqs62x_keys->iqs62x;
-+	enum iqs62x_event_flag flag;
-+	unsigned int event_mask_reg;
-+	unsigned int event_mask =3D 0;
-+	unsigned int val;
-+	int ret, i;
-+
-+	switch (iqs62x->dev_desc->prod_num) {
-+	case IQS620_PROD_NUM:
-+	case IQS621_PROD_NUM:
-+	case IQS622_PROD_NUM:
-+		event_mask_reg =3D IQS620_GLBL_EVENT_MASK;
-+
-+		/*
-+		 * Discreet button, hysteresis and SAR UI flags represent keys
-+		 * and are unmasked if mapped to a valid keycode.
-+		 */
-+		for (i =3D 0; i < iqs62x_keys->keycodemax; i++) {
-+			if (iqs62x_keys->keycode[i] =3D=3D KEY_RESERVED)
-+				continue;
-+
-+			if (iqs62x_events[i].reg =3D=3D IQS62X_EVENT_PROX)
-+				event_mask |=3D iqs62x->dev_desc->prox_mask;
-+			else if (iqs62x_events[i].reg =3D=3D IQS62X_EVENT_HYST)
-+				event_mask |=3D (iqs62x->dev_desc->hyst_mask |
-+					       iqs62x->dev_desc->sar_mask);
-+		}
-+
-+		ret =3D regmap_read(iqs62x->map, iqs62x->dev_desc->hall_flags,
-+				  &val);
-+		if (ret)
-+			return ret;
-+
-+		/*
-+		 * Hall UI flags represent switches and are unmasked if their
-+		 * corresponding child nodes are present.
-+		 */
-+		for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++) {
-+			if (!(iqs62x_keys->switches[i].enabled))
-+				continue;
-+
-+			flag =3D iqs62x_keys->switches[i].flag;
-+
-+			if (iqs62x_events[flag].reg !=3D IQS62X_EVENT_HALL)
-+				continue;
-+
-+			event_mask |=3D iqs62x->dev_desc->hall_mask;
-+
-+			input_report_switch(iqs62x_keys->input,
-+					    iqs62x_keys->switches[i].code,
-+					    (val & iqs62x_events[flag].mask) =3D=3D
-+					    iqs62x_events[flag].val);
-+		}
-+
-+		input_sync(iqs62x_keys->input);
-+		break;
-+
-+	case IQS624_PROD_NUM:
-+		event_mask_reg =3D IQS624_HALL_UI;
-+
-+		/*
-+		 * Interval change events represent keys and are unmasked if
-+		 * either wheel movement flag is mapped to a valid keycode.
-+		 */
-+		if (iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_UP] !=3D KEY_RESERVED)
-+			event_mask |=3D IQS624_HALL_UI_INT_EVENT;
-+
-+		if (iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_DN] !=3D KEY_RESERVED)
-+			event_mask |=3D IQS624_HALL_UI_INT_EVENT;
-+
-+		ret =3D regmap_read(iqs62x->map, iqs62x->dev_desc->interval,
-+				  &val);
-+		if (ret)
-+			return ret;
-+
-+		iqs62x_keys->interval =3D val;
-+		break;
-+
-+	default:
-+		return 0;
-+	}
-+
-+	return regmap_update_bits(iqs62x->map, event_mask_reg, event_mask, 0);
-+}
-+
-+static int iqs62x_keys_notifier(struct notifier_block *notifier,
-+				unsigned long event_flags, void *context)
-+{
-+	struct iqs62x_event_data *event_data =3D context;
-+	struct iqs62x_keys_private *iqs62x_keys;
-+	int ret, i;
-+
-+	iqs62x_keys =3D container_of(notifier, struct iqs62x_keys_private,
-+				   notifier);
-+
-+	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
-+		ret =3D iqs62x_keys_init(iqs62x_keys);
-+		if (ret) {
-+			dev_err(iqs62x_keys->input->dev.parent,
-+				"Failed to re-initialize device: %d\n", ret);
-+			return NOTIFY_BAD;
-+		}
-+
-+		return NOTIFY_OK;
-+	}
-+
-+	for (i =3D 0; i < iqs62x_keys->keycodemax; i++) {
-+		if (iqs62x_events[i].reg =3D=3D IQS62X_EVENT_WHEEL &&
-+		    event_data->interval =3D=3D iqs62x_keys->interval)
-+			continue;
-+
-+		input_report_key(iqs62x_keys->input, iqs62x_keys->keycode[i],
-+				 event_flags & BIT(i));
-+	}
-+
-+	for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++)
-+		if (iqs62x_keys->switches[i].enabled)
-+			input_report_switch(iqs62x_keys->input,
-+					    iqs62x_keys->switches[i].code,
-+					    event_flags &
-+					    BIT(iqs62x_keys->switches[i].flag));
-+
-+	input_sync(iqs62x_keys->input);
-+
-+	if (event_data->interval =3D=3D iqs62x_keys->interval)
-+		return NOTIFY_OK;
++	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
++	iqs62x =3D iqs620_pwm->iqs62x;
 +
 +	/*
-+	 * Each frame contains at most one wheel event (up or down), in which
-+	 * case a complementary release cycle is emulated.
++	 * The duty cycle generated by the device is calculated as follows:
++	 *
++	 * duty_cycle =3D (IQS620_PWM_DUTY_CYCLE + 1) / 256 * 1 ms
++	 *
++	 * ...where IQS620_PWM_DUTY_CYCLE is a register value between 0 and 255
++	 * (inclusive). Therefore the lowest duty cycle the device can generate
++	 * while the output is enabled is 1 / 256 ms.
++	 *
++	 * For lower duty cycles (e.g. 0), the PWM output is simply disabled to
++	 * allow an on-board pull-down resistor to hold the GPIO3/LTX pin low.
 +	 */
-+	if (event_flags & BIT(IQS62X_EVENT_WHEEL_UP)) {
-+		input_report_key(iqs62x_keys->input,
-+				 iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_UP],
-+				 0);
-+		input_sync(iqs62x_keys->input);
-+	} else if (event_flags & BIT(IQS62X_EVENT_WHEEL_DN)) {
-+		input_report_key(iqs62x_keys->input,
-+				 iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_DN],
-+				 0);
-+		input_sync(iqs62x_keys->input);
++	duty_scale =3D state->duty_cycle * 256 / IQS620_PWM_PERIOD_NS;
++
++	mutex_lock(&iqs620_pwm->lock);
++
++	if (!state->enabled || !duty_scale) {
++		ret =3D regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
++					 IQS620_PWR_SETTINGS_PWM_OUT, 0);
++		if (ret)
++			goto err_mutex;
 +	}
 +
-+	iqs62x_keys->interval =3D event_data->interval;
++	if (duty_scale) {
++		u8 duty_val =3D min(duty_scale - 1, 0xFF);
++
++		ret =3D regmap_write(iqs62x->map, IQS620_PWM_DUTY_CYCLE,
++				   duty_val);
++		if (ret)
++			goto err_mutex;
++
++		iqs620_pwm->duty_val =3D duty_val;
++	}
++
++	if (state->enabled && duty_scale) {
++		ret =3D regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
++					 IQS620_PWR_SETTINGS_PWM_OUT, 0xFF);
++		if (ret)
++			goto err_mutex;
++	}
++
++	iqs620_pwm->out_en =3D state->enabled;
++
++err_mutex:
++	mutex_unlock(&iqs620_pwm->lock);
++
++	return ret;
++}
++
++static void iqs620_pwm_get_state(struct pwm_chip *chip, struct pwm_device =
+*pwm,
++				 struct pwm_state *state)
++{
++	struct iqs620_pwm_private *iqs620_pwm;
++
++	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
++
++	mutex_lock(&iqs620_pwm->lock);
++
++	/*
++	 * Since the device cannot generate a 0% duty cycle, requests to do so
++	 * cause subsequent calls to iqs620_pwm_get_state to report the output
++	 * as disabled with duty cycle equal to that which was in use prior to
++	 * the request. This is not ideal, but is the best compromise based on
++	 * the capabilities of the device.
++	 */
++	state->enabled =3D iqs620_pwm->out_en;
++	state->duty_cycle =3D DIV_ROUND_UP((iqs620_pwm->duty_val + 1) *
++					 IQS620_PWM_PERIOD_NS, 256);
++
++	mutex_unlock(&iqs620_pwm->lock);
++
++	state->period =3D IQS620_PWM_PERIOD_NS;
++}
++
++static int iqs620_pwm_notifier(struct notifier_block *notifier,
++			       unsigned long event_flags, void *context)
++{
++	struct iqs620_pwm_private *iqs620_pwm;
++	struct iqs62x_core *iqs62x;
++	int ret;
++
++	if (!(event_flags & BIT(IQS62X_EVENT_SYS_RESET)))
++		return NOTIFY_DONE;
++
++	iqs620_pwm =3D container_of(notifier, struct iqs620_pwm_private,
++				  notifier);
++	iqs62x =3D iqs620_pwm->iqs62x;
++
++	mutex_lock(&iqs620_pwm->lock);
++
++	/*
++	 * The parent MFD driver already prints an error message in the event
++	 * of a device reset, so nothing else is printed here unless there is
++	 * an additional failure.
++	 */
++	ret =3D regmap_write(iqs62x->map, IQS620_PWM_DUTY_CYCLE,
++			   iqs620_pwm->duty_val);
++	if (ret)
++		goto err_mutex;
++
++	ret =3D regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
++				 IQS620_PWR_SETTINGS_PWM_OUT,
++				 iqs620_pwm->out_en ? 0xFF : 0);
++
++err_mutex:
++	mutex_unlock(&iqs620_pwm->lock);
++
++	if (ret) {
++		dev_err(iqs620_pwm->chip.dev,
++			"Failed to re-initialize device: %d\n", ret);
++		return NOTIFY_BAD;
++	}
 +
 +	return NOTIFY_OK;
 +}
 +
-+static int iqs62x_keys_probe(struct platform_device *pdev)
++static const struct pwm_ops iqs620_pwm_ops =3D {
++	.apply =3D iqs620_pwm_apply,
++	.get_state =3D iqs620_pwm_get_state,
++	.owner =3D THIS_MODULE,
++};
++
++static void iqs620_pwm_notifier_unregister(void *context)
 +{
-+	struct iqs62x_core *iqs62x =3D dev_get_drvdata(pdev->dev.parent);
-+	struct iqs62x_keys_private *iqs62x_keys;
-+	struct input_dev *input;
-+	int ret, i;
-+
-+	iqs62x_keys =3D devm_kzalloc(&pdev->dev, sizeof(*iqs62x_keys),
-+				   GFP_KERNEL);
-+	if (!iqs62x_keys)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, iqs62x_keys);
-+
-+	ret =3D iqs62x_keys_parse_prop(pdev, iqs62x_keys);
-+	if (ret)
-+		return ret;
-+
-+	input =3D devm_input_allocate_device(&pdev->dev);
-+	if (!input)
-+		return -ENOMEM;
-+
-+	input->keycodemax =3D iqs62x_keys->keycodemax;
-+	input->keycode =3D iqs62x_keys->keycode;
-+	input->keycodesize =3D sizeof(*iqs62x_keys->keycode);
-+
-+	input->name =3D iqs62x->dev_desc->dev_name;
-+	input->id.bustype =3D BUS_I2C;
-+
-+	__set_bit(EV_KEY, input->evbit);
-+
-+	for (i =3D 0; i < iqs62x_keys->keycodemax; i++)
-+		__set_bit(iqs62x_keys->keycode[i], input->keybit);
-+
-+	__clear_bit(KEY_RESERVED, input->keybit);
-+
-+	for (i =3D 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++)
-+		if (iqs62x_keys->switches[i].enabled) {
-+			__set_bit(EV_SW, input->evbit);
-+			__set_bit(iqs62x_keys->switches[i].code, input->swbit);
-+		}
-+
-+	iqs62x_keys->iqs62x =3D iqs62x;
-+	iqs62x_keys->input =3D input;
-+
-+	ret =3D iqs62x_keys_init(iqs62x_keys);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to initialize device: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret =3D input_register_device(iqs62x_keys->input);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to register device: %d\n", ret);
-+		return ret;
-+	}
-+
-+	iqs62x_keys->notifier.notifier_call =3D iqs62x_keys_notifier;
-+	ret =3D blocking_notifier_chain_register(&iqs62x_keys->iqs62x->nh,
-+					       &iqs62x_keys->notifier);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int iqs62x_keys_remove(struct platform_device *pdev)
-+{
-+	struct iqs62x_keys_private *iqs62x_keys =3D platform_get_drvdata(pdev);
++	struct iqs620_pwm_private *iqs620_pwm =3D context;
 +	int ret;
 +
-+	ret =3D blocking_notifier_chain_unregister(&iqs62x_keys->iqs62x->nh,
-+						 &iqs62x_keys->notifier);
++	ret =3D blocking_notifier_chain_unregister(&iqs620_pwm->iqs62x->nh,
++						 &iqs620_pwm->notifier);
 +	if (ret)
-+		dev_err(&pdev->dev, "Failed to unregister notifier: %d\n", ret);
++		dev_err(iqs620_pwm->chip.dev,
++			"Failed to unregister notifier: %d\n", ret);
++}
++
++static int iqs620_pwm_probe(struct platform_device *pdev)
++{
++	struct iqs620_pwm_private *iqs620_pwm;
++	int ret;
++
++	iqs620_pwm =3D devm_kzalloc(&pdev->dev, sizeof(*iqs620_pwm), GFP_KERNEL);
++	if (!iqs620_pwm)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, iqs620_pwm);
++	iqs620_pwm->iqs62x =3D dev_get_drvdata(pdev->dev.parent);
++
++	iqs620_pwm->chip.dev =3D &pdev->dev;
++	iqs620_pwm->chip.ops =3D &iqs620_pwm_ops;
++	iqs620_pwm->chip.base =3D -1;
++	iqs620_pwm->chip.npwm =3D 1;
++
++	mutex_init(&iqs620_pwm->lock);
++
++	iqs620_pwm->notifier.notifier_call =3D iqs620_pwm_notifier;
++	ret =3D blocking_notifier_chain_register(&iqs620_pwm->iqs62x->nh,
++					       &iqs620_pwm->notifier);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret);
++		return ret;
++	}
++
++	ret =3D devm_add_action_or_reset(&pdev->dev,
++				       iqs620_pwm_notifier_unregister,
++				       iqs620_pwm);
++	if (ret)
++		return ret;
++
++	ret =3D pwmchip_add(&iqs620_pwm->chip);
++	if (ret)
++		dev_err(&pdev->dev, "Failed to add device: %d\n", ret);
 +
 +	return ret;
 +}
 +
-+static struct platform_driver iqs62x_keys_platform_driver =3D {
++static int iqs620_pwm_remove(struct platform_device *pdev)
++{
++	struct iqs620_pwm_private *iqs620_pwm =3D platform_get_drvdata(pdev);
++	int ret;
++
++	ret =3D pwmchip_remove(&iqs620_pwm->chip);
++	if (ret)
++		dev_err(&pdev->dev, "Failed to remove device: %d\n", ret);
++
++	return ret;
++}
++
++static struct platform_driver iqs620_pwm_platform_driver =3D {
 +	.driver =3D {
-+		.name =3D IQS62X_DRV_NAME_KEYS,
++		.name =3D IQS620_DRV_NAME_PWM,
 +	},
-+	.probe =3D iqs62x_keys_probe,
-+	.remove =3D iqs62x_keys_remove,
++	.probe =3D iqs620_pwm_probe,
++	.remove =3D iqs620_pwm_remove,
 +};
-+module_platform_driver(iqs62x_keys_platform_driver);
++module_platform_driver(iqs620_pwm_platform_driver);
 +
 +MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
-+MODULE_DESCRIPTION("Azoteq IQS620A/621/622/624/625 Keys and Switches");
++MODULE_DESCRIPTION("Azoteq IQS620A PWM Generator");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:" IQS62X_DRV_NAME_KEYS);
++MODULE_ALIAS("platform:" IQS620_DRV_NAME_PWM);
+--
+2.7.4
