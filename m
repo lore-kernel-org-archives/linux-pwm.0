@@ -1,397 +1,185 @@
-From: Jeff LaBundy <jeff@labundy.com>
-Subject: [PATCH v4 4/7] pwm: Add support for Azoteq IQS620A PWM generator
-Date: Fri, 17 Jan 2020 02:35:57 +0000
-Message-ID: <1579228475-6681-5-git-send-email-jeff@labundy.com>
+From: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v4 5/7] iio: temperature: Add support for Azoteq IQS620AT
+ temperature sensor
+Date: Fri, 17 Jan 2020 02:36:08 +0000
+Message-ID: <1579228475-6681-6-git-send-email-jeff@labundy.com>
 References: <1579228475-6681-1-git-send-email-jeff@labundy.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-input-owner@vger.kernel.org>
-In-Reply-To: <1579228475-6681-1-git-send-email-jeff@labundy.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1579228475-6681-1-git-send-email-jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
 Content-Language: en-US
-Sender: linux-input-owner@vger.kernel.org
-To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jeff LaBundy <jeff@labundy.com>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "knaack.h-Mmb7MZpHnFY@public.gmane.org" <knaack.h-Mmb7MZpHnFY@public.gmane.org>, "lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org" <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, "pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org" <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds support for the Azoteq IQS620A, capable of generating
-a 1-kHz PWM output with duty cycle between ~0.4% and 100% (inclusive).
+This patch adds support for the Azoteq IQS620AT temperature sensor,
+capable of reporting its absolute die temperature.
 
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Signed-off-by: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
 Changes in v4:
-  - Updated iqs620_pwm_apply and iqs620_pwm_get_state to hold the lock arou=
-nd
-    only the minimum necessary code
-  - Removed the completion protecting against early use of chip->pwms[0] fr=
-om
-    inside iqs620_pwm_notifier in favor of cached register values
-  - Updated iqs620_pwm_get_state to use the cached register values instead =
-of
-    reading IQS620_PWR_SETTINGS_PWM_OUT and IQS620_PWM_DUTY_CYCLE (both equ=
-al
-    to zero by default)
-  - Added a comment in iqs620_pwm_notifier to note that the parent MFD driv=
-er
-    prints an error message in the event of a device reset
+  - None
 
 Changes in v3:
-  - Updated the commit message to say "~0.4%" instead of "0.4%"
-  - Clarified the effect of duty cycle and state changes in the 'Limitation=
-s'
-    section and added a restriction regarding 0% duty cycle
-  - Added a comment in iqs620_pwm_apply to explain how duty cycle is derive=
-d
-  - Updated iqs620_pwm_apply to disable the output first and enable it last=
- to
-    prevent temporarily driving a stale duty cycle
-  - Rounded the calculation for duty cycle up and down in iqs620_pwm_get_st=
-ate
-    and iqs620_pwm_apply, respectively
-  - Added a comment in iqs620_pwm_get_state to explain what it reports foll=
-ow-
-    ing requests to set duty cycle to 0%
-  - Added a lock to prevent back-to-back access of IQS620_PWR_SETTINGS_PWM_=
-OUT
-    and IQS620_PWM_DUTY_CYCLE from being interrupted
-  - Updated iqs620_pwm_notifier to reference pwm->state directly as opposed=
- to
-    calling pwm_get_state
-  - Moved notifier unregistration back to a device-managed action
-  - Added a completion to prevent iqs620_pwm_notifier from referencing the
-    pwm_chip structure until it has been initialized by pwmchip_add
+  - Added Reviewed-by trailer
 
 Changes in v2:
+  - Moved the driver from hwmon to iio
   - Merged 'Copyright' and 'Author' lines into one in introductory comments
-  - Added 'Limitations' section to introductory comments
   - Replaced 'error' with 'ret' throughout
-  - Added const qualifier to state argument of iqs620_pwm_apply and removed=
- all
-    modifications to the variable's contents
-  - Updated iqs620_pwm_apply to return -ENOTSUPP or -EINVAL if the requeste=
-d
-    polarity is inverted or the requested period is below 1 ms, respectivel=
-y
-  - Updated iqs620_pwm_apply to disable the PWM output if duty cycle is zer=
-o
-  - Added iqs620_pwm_get_state
-  - Eliminated tabbed alignment of pwm_ops and platform_driver struct membe=
-rs
-  - Moved notifier unregistration to already present iqs620_pwm_remove, whi=
-ch
-    eliminated the need for a device-managed action and ready flag
-  - Added a comment in iqs620_pwm_probe to explain the order of operations
+  - Eliminated tabbed alignment of platform_driver struct members
   - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
 
- drivers/pwm/Kconfig       |  10 ++
- drivers/pwm/Makefile      |   1 +
- drivers/pwm/pwm-iqs620a.c | 258 ++++++++++++++++++++++++++++++++++++++++++=
+ drivers/iio/temperature/Kconfig         | 10 ++++
+ drivers/iio/temperature/Makefile        |  1 +
+ drivers/iio/temperature/iqs620at-temp.c | 97 +++++++++++++++++++++++++++++=
 ++++
- 3 files changed, 269 insertions(+)
- create mode 100644 drivers/pwm/pwm-iqs620a.c
+ 3 files changed, 108 insertions(+)
+ create mode 100644 drivers/iio/temperature/iqs620at-temp.c
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index bd21655..60bcf6c 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -222,6 +222,16 @@ config PWM_IMX_TPM
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-imx-tpm.
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kcon=
+fig
+index e1ccb40..f1f2a14 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -4,6 +4,16 @@
+ #
+ menu "Temperature sensors"
 
-+config PWM_IQS620A
-+	tristate "Azoteq IQS620A PWM support"
++config IQS620AT_TEMP
++	tristate "Azoteq IQS620AT temperature sensor"
 +	depends on MFD_IQS62X || COMPILE_TEST
 +	help
-+	  Generic PWM framework driver for the Azoteq IQS620A multi-function
-+	  sensor.
++	  Say Y here if you want to build support for the Azoteq IQS620AT
++	  temperature sensor.
 +
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called pwm-iqs620a.
++	  To compile this driver as a module, choose M here: the module
++	  will be called iqs620at-temp.
 +
- config PWM_JZ4740
- 	tristate "Ingenic JZ47xx PWM support"
- 	depends on MACH_INGENIC
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 9a47507..a59c710 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_PWM_IMG)		+=3D pwm-img.o
- obj-$(CONFIG_PWM_IMX1)		+=3D pwm-imx1.o
- obj-$(CONFIG_PWM_IMX27)		+=3D pwm-imx27.o
- obj-$(CONFIG_PWM_IMX_TPM)	+=3D pwm-imx-tpm.o
-+obj-$(CONFIG_PWM_IQS620A)	+=3D pwm-iqs620a.o
- obj-$(CONFIG_PWM_JZ4740)	+=3D pwm-jz4740.o
- obj-$(CONFIG_PWM_LP3943)	+=3D pwm-lp3943.o
- obj-$(CONFIG_PWM_LPC18XX_SCT)	+=3D pwm-lpc18xx-sct.o
-diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
+ config LTC2983
+ 	tristate "Analog Devices Multi-Sensor Digital Temperature Measurement Sys=
+tem"
+ 	depends on SPI
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Mak=
+efile
+index d6b850b..90c1131 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -3,6 +3,7 @@
+ # Makefile for industrial I/O temperature drivers
+ #
+
++obj-$(CONFIG_IQS620AT_TEMP) +=3D iqs620at-temp.o
+ obj-$(CONFIG_LTC2983) +=3D ltc2983.o
+ obj-$(CONFIG_HID_SENSOR_TEMP) +=3D hid-sensor-temperature.o
+ obj-$(CONFIG_MAXIM_THERMOCOUPLE) +=3D maxim_thermocouple.o
+diff --git a/drivers/iio/temperature/iqs620at-temp.c b/drivers/iio/temperat=
+ure/iqs620at-temp.c
 new file mode 100644
-index 0000000..75ca482
+index 0000000..d20cb6ad
 --- /dev/null
-+++ b/drivers/pwm/pwm-iqs620a.c
-@@ -0,0 +1,258 @@
++++ b/drivers/iio/temperature/iqs620at-temp.c
+@@ -0,0 +1,97 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
-+ * Azoteq IQS620A PWM Generator
++ * Azoteq IQS620AT Temperature Sensor
 + *
-+ * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
-+ *
-+ * Limitations:
-+ * - The period is fixed to 1 ms and is generated continuously despite cha=
-nges
-+ *   to the duty cycle or enable/disable state.
-+ * - Changes to the duty cycle or enable/disable state take effect immedia=
-tely
-+ *   and may result in a glitch during the period in which the change is m=
-ade.
-+ * - The device cannot generate a 0% duty cycle. For duty cycles below 1 /=
- 256
-+ *   ms, the output is disabled and relies upon an external pull-down resi=
-stor
-+ *   to hold the GPIO3/LTX pin low.
++ * Copyright (C) 2019 Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
 + */
 +
 +#include <linux/device.h>
++#include <linux/iio/iio.h>
 +#include <linux/kernel.h>
 +#include <linux/mfd/iqs62x.h>
 +#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/notifier.h>
 +#include <linux/platform_device.h>
-+#include <linux/pwm.h>
 +#include <linux/regmap.h>
-+#include <linux/slab.h>
 +
-+#define IQS620_PWR_SETTINGS			0xD2
-+#define IQS620_PWR_SETTINGS_PWM_OUT		BIT(7)
++#define IQS620_TEMP_UI_OUT			0x1A
 +
-+#define IQS620_PWM_DUTY_CYCLE			0xD8
++#define IQS620_TEMP_SCALE			1000
++#define IQS620_TEMP_OFFSET			(-100)
 +
-+#define IQS620_PWM_PERIOD_NS			1000000
-+
-+struct iqs620_pwm_private {
-+	struct iqs62x_core *iqs62x;
-+	struct pwm_chip chip;
-+	struct notifier_block notifier;
-+	struct mutex lock;
-+	bool out_en;
-+	u8 duty_val;
-+};
-+
-+static int iqs620_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    const struct pwm_state *state)
++static int iqs620_temp_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
 +{
-+	struct iqs620_pwm_private *iqs620_pwm;
-+	struct iqs62x_core *iqs62x;
-+	int duty_scale, ret;
++	struct iqs62x_core *iqs62x =3D iio_device_get_drvdata(indio_dev);
++	int ret;
++	__le16 val_buf;
 +
-+	if (state->polarity !=3D PWM_POLARITY_NORMAL)
-+		return -ENOTSUPP;
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret =3D regmap_raw_read(iqs62x->map, IQS620_TEMP_UI_OUT, &val_buf,
++				      sizeof(val_buf));
++		if (ret)
++			return ret;
 +
-+	if (state->period < IQS620_PWM_PERIOD_NS)
++		*val =3D le16_to_cpu(val_buf);
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val =3D IQS620_TEMP_SCALE;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_OFFSET:
++		*val =3D IQS620_TEMP_OFFSET;
++		return IIO_VAL_INT;
++
++	default:
 +		return -EINVAL;
-+
-+	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
-+	iqs62x =3D iqs620_pwm->iqs62x;
-+
-+	/*
-+	 * The duty cycle generated by the device is calculated as follows:
-+	 *
-+	 * duty_cycle =3D (IQS620_PWM_DUTY_CYCLE + 1) / 256 * 1 ms
-+	 *
-+	 * ...where IQS620_PWM_DUTY_CYCLE is a register value between 0 and 255
-+	 * (inclusive). Therefore the lowest duty cycle the device can generate
-+	 * while the output is enabled is 1 / 256 ms.
-+	 *
-+	 * For lower duty cycles (e.g. 0), the PWM output is simply disabled to
-+	 * allow an on-board pull-down resistor to hold the GPIO3/LTX pin low.
-+	 */
-+	duty_scale =3D state->duty_cycle * 256 / IQS620_PWM_PERIOD_NS;
-+
-+	mutex_lock(&iqs620_pwm->lock);
-+
-+	if (!state->enabled || !duty_scale) {
-+		ret =3D regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
-+					 IQS620_PWR_SETTINGS_PWM_OUT, 0);
-+		if (ret)
-+			goto err_mutex;
 +	}
-+
-+	if (duty_scale) {
-+		u8 duty_val =3D min(duty_scale - 1, 0xFF);
-+
-+		ret =3D regmap_write(iqs62x->map, IQS620_PWM_DUTY_CYCLE,
-+				   duty_val);
-+		if (ret)
-+			goto err_mutex;
-+
-+		iqs620_pwm->duty_val =3D duty_val;
-+	}
-+
-+	if (state->enabled && duty_scale) {
-+		ret =3D regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
-+					 IQS620_PWR_SETTINGS_PWM_OUT, 0xFF);
-+		if (ret)
-+			goto err_mutex;
-+	}
-+
-+	iqs620_pwm->out_en =3D state->enabled;
-+
-+err_mutex:
-+	mutex_unlock(&iqs620_pwm->lock);
-+
-+	return ret;
 +}
 +
-+static void iqs620_pwm_get_state(struct pwm_chip *chip, struct pwm_device =
-*pwm,
-+				 struct pwm_state *state)
-+{
-+	struct iqs620_pwm_private *iqs620_pwm;
-+
-+	iqs620_pwm =3D container_of(chip, struct iqs620_pwm_private, chip);
-+
-+	mutex_lock(&iqs620_pwm->lock);
-+
-+	/*
-+	 * Since the device cannot generate a 0% duty cycle, requests to do so
-+	 * cause subsequent calls to iqs620_pwm_get_state to report the output
-+	 * as disabled with duty cycle equal to that which was in use prior to
-+	 * the request. This is not ideal, but is the best compromise based on
-+	 * the capabilities of the device.
-+	 */
-+	state->enabled =3D iqs620_pwm->out_en;
-+	state->duty_cycle =3D DIV_ROUND_UP((iqs620_pwm->duty_val + 1) *
-+					 IQS620_PWM_PERIOD_NS, 256);
-+
-+	mutex_unlock(&iqs620_pwm->lock);
-+
-+	state->period =3D IQS620_PWM_PERIOD_NS;
-+}
-+
-+static int iqs620_pwm_notifier(struct notifier_block *notifier,
-+			       unsigned long event_flags, void *context)
-+{
-+	struct iqs620_pwm_private *iqs620_pwm;
-+	struct iqs62x_core *iqs62x;
-+	int ret;
-+
-+	if (!(event_flags & BIT(IQS62X_EVENT_SYS_RESET)))
-+		return NOTIFY_DONE;
-+
-+	iqs620_pwm =3D container_of(notifier, struct iqs620_pwm_private,
-+				  notifier);
-+	iqs62x =3D iqs620_pwm->iqs62x;
-+
-+	mutex_lock(&iqs620_pwm->lock);
-+
-+	/*
-+	 * The parent MFD driver already prints an error message in the event
-+	 * of a device reset, so nothing else is printed here unless there is
-+	 * an additional failure.
-+	 */
-+	ret =3D regmap_write(iqs62x->map, IQS620_PWM_DUTY_CYCLE,
-+			   iqs620_pwm->duty_val);
-+	if (ret)
-+		goto err_mutex;
-+
-+	ret =3D regmap_update_bits(iqs62x->map, IQS620_PWR_SETTINGS,
-+				 IQS620_PWR_SETTINGS_PWM_OUT,
-+				 iqs620_pwm->out_en ? 0xFF : 0);
-+
-+err_mutex:
-+	mutex_unlock(&iqs620_pwm->lock);
-+
-+	if (ret) {
-+		dev_err(iqs620_pwm->chip.dev,
-+			"Failed to re-initialize device: %d\n", ret);
-+		return NOTIFY_BAD;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+static const struct pwm_ops iqs620_pwm_ops =3D {
-+	.apply =3D iqs620_pwm_apply,
-+	.get_state =3D iqs620_pwm_get_state,
-+	.owner =3D THIS_MODULE,
++static const struct iio_info iqs620_temp_info =3D {
++	.read_raw =3D &iqs620_temp_read_raw,
 +};
 +
-+static void iqs620_pwm_notifier_unregister(void *context)
++static const struct iio_chan_spec iqs620_temp_channels[] =3D {
++	{
++		.type =3D IIO_TEMP,
++		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OFFSET),
++	},
++};
++
++static int iqs620_temp_probe(struct platform_device *pdev)
 +{
-+	struct iqs620_pwm_private *iqs620_pwm =3D context;
-+	int ret;
++	struct iqs62x_core *iqs62x =3D dev_get_drvdata(pdev->dev.parent);
++	struct iio_dev *indio_dev;
 +
-+	ret =3D blocking_notifier_chain_unregister(&iqs620_pwm->iqs62x->nh,
-+						 &iqs620_pwm->notifier);
-+	if (ret)
-+		dev_err(iqs620_pwm->chip.dev,
-+			"Failed to unregister notifier: %d\n", ret);
-+}
-+
-+static int iqs620_pwm_probe(struct platform_device *pdev)
-+{
-+	struct iqs620_pwm_private *iqs620_pwm;
-+	int ret;
-+
-+	iqs620_pwm =3D devm_kzalloc(&pdev->dev, sizeof(*iqs620_pwm), GFP_KERNEL);
-+	if (!iqs620_pwm)
++	indio_dev =3D devm_iio_device_alloc(&pdev->dev, 0);
++	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	platform_set_drvdata(pdev, iqs620_pwm);
-+	iqs620_pwm->iqs62x =3D dev_get_drvdata(pdev->dev.parent);
++	iio_device_set_drvdata(indio_dev, iqs62x);
 +
-+	iqs620_pwm->chip.dev =3D &pdev->dev;
-+	iqs620_pwm->chip.ops =3D &iqs620_pwm_ops;
-+	iqs620_pwm->chip.base =3D -1;
-+	iqs620_pwm->chip.npwm =3D 1;
++	indio_dev->modes =3D INDIO_DIRECT_MODE;
++	indio_dev->dev.parent =3D &pdev->dev;
++	indio_dev->channels =3D iqs620_temp_channels;
++	indio_dev->num_channels =3D ARRAY_SIZE(iqs620_temp_channels);
++	indio_dev->name =3D iqs62x->dev_desc->dev_name;
++	indio_dev->info =3D &iqs620_temp_info;
 +
-+	mutex_init(&iqs620_pwm->lock);
-+
-+	iqs620_pwm->notifier.notifier_call =3D iqs620_pwm_notifier;
-+	ret =3D blocking_notifier_chain_register(&iqs620_pwm->iqs62x->nh,
-+					       &iqs620_pwm->notifier);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to register notifier: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret =3D devm_add_action_or_reset(&pdev->dev,
-+				       iqs620_pwm_notifier_unregister,
-+				       iqs620_pwm);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D pwmchip_add(&iqs620_pwm->chip);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to add device: %d\n", ret);
-+
-+	return ret;
++	return devm_iio_device_register(&pdev->dev, indio_dev);
 +}
 +
-+static int iqs620_pwm_remove(struct platform_device *pdev)
-+{
-+	struct iqs620_pwm_private *iqs620_pwm =3D platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret =3D pwmchip_remove(&iqs620_pwm->chip);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to remove device: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver iqs620_pwm_platform_driver =3D {
++static struct platform_driver iqs620_temp_platform_driver =3D {
 +	.driver =3D {
-+		.name =3D IQS620_DRV_NAME_PWM,
++		.name =3D IQS620_DRV_NAME_TEMP,
 +	},
-+	.probe =3D iqs620_pwm_probe,
-+	.remove =3D iqs620_pwm_remove,
++	.probe =3D iqs620_temp_probe,
 +};
-+module_platform_driver(iqs620_pwm_platform_driver);
++module_platform_driver(iqs620_temp_platform_driver);
 +
-+MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
-+MODULE_DESCRIPTION("Azoteq IQS620A PWM Generator");
++MODULE_AUTHOR("Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>");
++MODULE_DESCRIPTION("Azoteq IQS620AT Temperature Sensor");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:" IQS620_DRV_NAME_PWM);
++MODULE_ALIAS("platform:" IQS620_DRV_NAME_TEMP);
 --
 2.7.4
