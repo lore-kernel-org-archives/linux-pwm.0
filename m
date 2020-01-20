@@ -1,63 +1,61 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-Subject: [PATCH] ARM: s3c24xx/rx1950: switch to atomic pwm API
-Date: Mon, 20 Jan 2020 20:33:28 +0100
-Message-ID: <20200120193328.17007-1-uwe@kleine-koenig.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: sun4i: Initialize variables before use
+Date: Mon, 20 Jan 2020 21:09:17 +0100
+Message-ID: <20200120200917.gvua5h2egoznwd4h@pengutronix.de>
+References: <20200120143206.710666-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:58693 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726843AbgATUJW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 15:09:22 -0500
+Content-Disposition: inline
+In-Reply-To: <20200120143206.710666-1-thierry.reding@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Maxime Ripard <mripard@kernel.org>, Jernej Skrabec <jernej.skrabec@siol.net>, =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>, linux-pwm@vger.kernel.org
 
-U3RvcCB1c2luZyB0aGUgbGVnYWN5IFBXTSBBUEkgd2hpY2ggb25seSBzdGlsbCBleGlzdHMgYmVj
-YXVzZSB0aGVyZSBhcmUKc29tZSB1c2VycyBsZWZ0LgoKTm90ZSB0aGlzIGNoYW5nZSBtYWtlIHVz
-ZSBvZiB0aGUgZmFjdCB0aGF0IHRoZSB2YWx1ZSBvZiBzdHJ1Y3QKcHdtX3N0YXRlOjpkdXR5X2N5
-Y2xlIGRvZXNuJ3QgbWF0dGVyIGZvciBhIGRpc2FibGVkIFBXTSBhbmQgc28gaXRzIHZhbHVlCmNh
-biBzdGF5IGNvbnN0YW50IHNpbXBsaWZ5aW5nIHRoZSBjb2RlIGEgYml0LgoKQSBzaWRlIGVmZmVj
-dCBvZiB0aGUgY29udmVyc2lvbiBpcyB0aGF0IHRoZSBwd20gaXNuJ3Qgc3RvcHBlZCBpbgpyeDE5
-NTBfYmFja2xpZ2h0X2luaXQoKSBieSB0aGUgY2FsbCB0byBwd21fYXBwbHlfYXJncygpIGp1c3Qg
-YmVmb3JlCnJlZW5hYmxpbmcgaXQgd2hlbiByeDE5NTBfbGNkX3Bvd2VyKDEpIGlzIGNhbGxlZC4K
-ClNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1d2VAa2xlaW5lLWtvZW5pZy5vcmc+
-Ci0tLQogYXJjaC9hcm0vbWFjaC1zM2MyNHh4L21hY2gtcngxOTUwLmMgfCAxOSArKysrKysrKysr
-KystLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMo
-LSkKCmRpZmYgLS1naXQgYS9hcmNoL2FybS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAuYyBiL2Fy
-Y2gvYXJtL21hY2gtczNjMjR4eC9tYWNoLXJ4MTk1MC5jCmluZGV4IDI5ZjliMzQ1YTUzMS4uMDNk
-OGYyN2NkYzMyIDEwMDY0NAotLS0gYS9hcmNoL2FybS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAu
-YworKysgYi9hcmNoL2FybS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAuYwpAQCAtMzc3LDYgKzM3
-Nyw3IEBAIHN0YXRpYyBzdHJ1Y3QgcHdtX2xvb2t1cCByeDE5NTBfcHdtX2xvb2t1cFtdID0gewog
-fTsKIAogc3RhdGljIHN0cnVjdCBwd21fZGV2aWNlICpsY2RfcHdtOworc3RhdGljIHN0cnVjdCBw
-d21fc3RhdGUgbGNkX3B3bV9zdGF0ZTsKIAogc3RhdGljIHZvaWQgcngxOTUwX2xjZF9wb3dlcihp
-bnQgZW5hYmxlKQogewpAQCAtNDI5LDE1ICs0MzAsMTYgQEAgc3RhdGljIHZvaWQgcngxOTUwX2xj
-ZF9wb3dlcihpbnQgZW5hYmxlKQogCiAJCS8qIEdQQjEtPk9VVFBVVCwgR1BCMS0+MCAqLwogCQln
-cGlvX2RpcmVjdGlvbl9vdXRwdXQoUzNDMjQxMF9HUEIoMSksIDApOwotCQlwd21fY29uZmlnKGxj
-ZF9wd20sIDAsIExDRF9QV01fUEVSSU9EKTsKLQkJcHdtX2Rpc2FibGUobGNkX3B3bSk7CisKKwkJ
-bGNkX3B3bV9zdGF0ZS5lbmFibGVkID0gZmFsc2U7CisJCXB3bV9hcHBseV9zdGF0ZShsY2RfcHdt
-LCAmbGNkX3B3bV9zdGF0ZSk7CiAKIAkJLyogR1BDMC0+MCwgR1BDMTAtPjAgKi8KIAkJZ3Bpb19k
-aXJlY3Rpb25fb3V0cHV0KFMzQzI0MTBfR1BDKDApLCAwKTsKIAkJZ3Bpb19kaXJlY3Rpb25fb3V0
-cHV0KFMzQzI0MTBfR1BDKDEwKSwgMCk7CiAJfSBlbHNlIHsKLQkJcHdtX2NvbmZpZyhsY2RfcHdt
-LCBMQ0RfUFdNX0RVVFksIExDRF9QV01fUEVSSU9EKTsKLQkJcHdtX2VuYWJsZShsY2RfcHdtKTsK
-KwkJbGNkX3B3bV9zdGF0ZS5lbmFibGVkID0gdHJ1ZTsKKwkJcHdtX2FwcGx5X3N0YXRlKGxjZF9w
-d20sICZsY2RfcHdtX3N0YXRlKTsKIAogCQlncGlvX2RpcmVjdGlvbl9vdXRwdXQoUzNDMjQxMF9H
-UEMoMCksIDEpOwogCQlncGlvX2RpcmVjdGlvbl9vdXRwdXQoUzNDMjQxMF9HUEMoNSksIDEpOwpA
-QCAtNDkzLDEwICs0OTUsMTMgQEAgc3RhdGljIGludCByeDE5NTBfYmFja2xpZ2h0X2luaXQoc3Ry
-dWN0IGRldmljZSAqZGV2KQogCX0KIAogCS8qCi0JICogRklYTUU6IHB3bV9hcHBseV9hcmdzKCkg
-c2hvdWxkIGJlIHJlbW92ZWQgd2hlbiBzd2l0Y2hpbmcgdG8KLQkgKiB0aGUgYXRvbWljIFBXTSBB
-UEkuCisJICogVGhpcyBpcyBvbmx5IHJlcXVpcmVkIHRvIGluaXRpYWxpemUgLnBvbGFyaXR5OyBh
-bGwgb3RoZXIgdmFsdWVzIGFyZQorCSAqIGZpeGVkIGluIHRoaXMgZHJpdmVyLgogCSAqLwotCXB3
-bV9hcHBseV9hcmdzKGxjZF9wd20pOworCXB3bV9pbml0X3N0YXRlKGxjZF9wd20sICZsY2RfcHdt
-X3N0YXRlKTsKKworCWxjZF9wd21fc3RhdGUucGVyaW9kID0gTENEX1BXTV9QRVJJT0Q7CisJbGNk
-X3B3bV9zdGF0ZS5kdXR5X2N5Y2xlID0gTENEX1BXTV9EVVRZOwogCiAJcngxOTUwX2xjZF9wb3dl
-cigxKTsKIAlyeDE5NTBfYmxfcG93ZXIoMSk7Ci0tIAoyLjI0LjAKCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcg
-bGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmlu
-ZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+Hello Thierry,
+
+On Mon, Jan 20, 2020 at 03:32:06PM +0100, Thierry Reding wrote:
+> GCC can't always determine that the duty, period and prescaler values
+> are initialized when returning from sun4i_pwm_calculate(), so help out a
+> little by initializing them to 0.
+
+Is it worth mentioning the gcc version you're using?
+
+> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+> ---
+>  drivers/pwm/pwm-sun4i.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 0decc7cde133..3e3efa6c768f 100644
+
+I don't find this object (0decc7cde133) in my tree or next. Which
+version is this?
+
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -234,9 +234,9 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  {
+>  	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
+>  	struct pwm_state cstate;
+> -	u32 ctrl, duty, period, val;
+> +	u32 ctrl, duty = 0, period = 0, val;
+
++     u32 ctrl, uninitialized_var(duty), uninitialized_var(period), val;
+
+should fix the warnings, too, and additionally explicitly documents that
+it's just the compiler that doesn't see there is no problem.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
