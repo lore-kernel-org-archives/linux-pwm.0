@@ -1,44 +1,56 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: remove set but not set variable 'pwm'
-Date: Mon, 20 Jan 2020 12:48:32 +0100
-Message-ID: <20200120114832.uqa4dthodltu6xdv@pengutronix.de>
-References: <20200119122202.14502-1-yukuai3@huawei.com>
- <20200120073407.ck2fmk7qdvqsfqsy@pengutronix.de>
- <55871ad5-4cb0-f3c8-a408-2c1be894126a@huawei.com>
+From: yu kuai <yukuai3@huawei.com>
+Subject: [PATCH V2] pwm: remove set but not set variable 'pwm'
+Date: Mon, 20 Jan 2020 19:51:43 +0800
+Message-ID: <20200120115143.35571-1-yukuai3@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55871ad5-4cb0-f3c8-a408-2c1be894126a@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "yukuai (C)" <yukuai3@huawei.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, zhengbin13@huawei.com, yi.zhang@huawei.com
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from szxga07-in.huawei.com ([45.249.212.35]:57310 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726573AbgATLwj (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 20 Jan 2020 06:52:39 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, yukuai3@huawei.com, zhengbin13@huawei.com, yi.zhang@huawei.com
 
-On Mon, Jan 20, 2020 at 07:40:37PM +0800, yukuai (C) wrote:
-> On 2020/1/20 15:34, Uwe Kleine-K�nig wrote:
-> > Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
-> 
-> Thank you for your advise! I'll add 'Fixes' in a V2 patch.
-> 
-> > Did you check that dropping the locking is save? (I didn't)
-> > 
-> > I'd assume that no harm is introduced, but mentioning that in the commit
-> > log would be good.
-> 
-> I think dropping the lock is safe since there is nothing to be done
-> inside the lock. However, I didn't run a full test. By the way, I'll
-> mentioning it in a V2 patch.
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-There are (rare) situations where taking and dropping a lock might make
-sense. For example if you have a another context and want to make sure
-that a shared resource isn't about to be used.
+drivers/pwm/pwm-pca9685.c: In function ‘pca9685_pwm_gpio_free’:
+drivers/pwm/pwm-pca9685.c:162:21: warning: variable ‘pwm’ set but
+not used [-Wunused-but-set-variable]
 
-Best regards
-Uwe
+It is never used, and so can be removed. In that case, hold and release
+the lock 'pac->lock' can be removed since nothing will be done between
+them.
 
+Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+Signed-off-by: yu kuai <yukuai3@huawei.com>
+---
+Changes in V2:
+ Add Fixes and some commit message about dropping the lock 'pca->loc'.
+
+ drivers/pwm/pwm-pca9685.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 168684b02ebc..b07bdca3d510 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -159,13 +159,9 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+ static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
+ {
+ 	struct pca9685 *pca = gpiochip_get_data(gpio);
+-	struct pwm_device *pwm;
+ 
+ 	pca9685_pwm_gpio_set(gpio, offset, 0);
+ 	pm_runtime_put(pca->chip.dev);
+-	mutex_lock(&pca->lock);
+-	pwm = &pca->chip.pwms[offset];
+-	mutex_unlock(&pca->lock);
+ }
+ 
+ static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.17.2
