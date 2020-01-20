@@ -1,56 +1,63 @@
-From: "Prof, William Roberts" <eco.bank1204@gmail.com>
-Subject: Contact Diplomatic Agent, Mr. Mcclaine John to receive your ATM CARD
- valued the sum of $12.8Million United States Dollars
-Date: Mon, 20 Jan 2020 20:32:40 +0100
-Message-ID: <CAOE+jABpcHQWZWhtskhDFbtTqfBe7h065WE2kC1G+jQD+tQiTA__23236.0697745875$1579548769$gmane$org@mail.gmail.com>
-Reply-To: mcclainejohn.13@gmail.com
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+Subject: [PATCH] ARM: s3c24xx/rx1950: switch to atomic pwm API
+Date: Mon, 20 Jan 2020 20:33:28 +0100
+Message-ID: <20200120193328.17007-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:34811 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728596AbgATTcn (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 14:32:43 -0500
-Received: by mail-ed1-f65.google.com with SMTP id l8so632822edw.1
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Jan 2020 11:32:42 -0800 (PST)
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Attn: Dear Beneficiary,
-
-I wish to inform you that the diplomatic agent conveying your ATM CARD
-valued the sum of $12.8Million United States Dollars has misplaced
-your address and he is currently stranded at (George Bush
-International Airport) Houston Texas USA now
-We required you to reconfirm the following information's below to him
-so that he can deliver your Payment CARD to you today or tomorrow
-morning as information provided with open communications via email and
-telephone for security reasons.
-HERE IS THE DETAILS  HE NEED FROM YOU URGENT
-YOUR FULL NAME:========
-ADDRESS:========
-MOBILE NO:========
-NAME OF YOUR NEAREST AIRPORT:========
-A COPY OF YOUR IDENTIFICATION :========
-
-Note; do contact the diplomatic agent immediately through the
-information's listed below
-Contact Person: Diplomatic Agent, Mr. Mcclaine John
-EMAIL: mcclainejohn.13@gmail.com
-Tel:(223) 777-7518
-
-Contact the diplomatic agent immediately
-because he is waiting to hear from you today with the needed information's.
-
-NOTE: The Diplomatic agent does not know that the content of the
-consignment box is $12.800,000,00 Million United States Dollars and on
-no circumstances should you let him know the content. The consignment
-was moved from here as family treasures, so never allow him to open
-the box. Please I have paid delivery fees for you but the only money
-you must send to Mcclaine John is your ATM CARD delivery fee $25.00
-only. text Him as you contact Him Immediately
-
-Thanks,
-with Regards.
-Prof, William Roberts
-Director DHL COURIER SERVICES-Benin
+U3RvcCB1c2luZyB0aGUgbGVnYWN5IFBXTSBBUEkgd2hpY2ggb25seSBzdGlsbCBleGlzdHMgYmVj
+YXVzZSB0aGVyZSBhcmUKc29tZSB1c2VycyBsZWZ0LgoKTm90ZSB0aGlzIGNoYW5nZSBtYWtlIHVz
+ZSBvZiB0aGUgZmFjdCB0aGF0IHRoZSB2YWx1ZSBvZiBzdHJ1Y3QKcHdtX3N0YXRlOjpkdXR5X2N5
+Y2xlIGRvZXNuJ3QgbWF0dGVyIGZvciBhIGRpc2FibGVkIFBXTSBhbmQgc28gaXRzIHZhbHVlCmNh
+biBzdGF5IGNvbnN0YW50IHNpbXBsaWZ5aW5nIHRoZSBjb2RlIGEgYml0LgoKQSBzaWRlIGVmZmVj
+dCBvZiB0aGUgY29udmVyc2lvbiBpcyB0aGF0IHRoZSBwd20gaXNuJ3Qgc3RvcHBlZCBpbgpyeDE5
+NTBfYmFja2xpZ2h0X2luaXQoKSBieSB0aGUgY2FsbCB0byBwd21fYXBwbHlfYXJncygpIGp1c3Qg
+YmVmb3JlCnJlZW5hYmxpbmcgaXQgd2hlbiByeDE5NTBfbGNkX3Bvd2VyKDEpIGlzIGNhbGxlZC4K
+ClNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1d2VAa2xlaW5lLWtvZW5pZy5vcmc+
+Ci0tLQogYXJjaC9hcm0vbWFjaC1zM2MyNHh4L21hY2gtcngxOTUwLmMgfCAxOSArKysrKysrKysr
+KystLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMo
+LSkKCmRpZmYgLS1naXQgYS9hcmNoL2FybS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAuYyBiL2Fy
+Y2gvYXJtL21hY2gtczNjMjR4eC9tYWNoLXJ4MTk1MC5jCmluZGV4IDI5ZjliMzQ1YTUzMS4uMDNk
+OGYyN2NkYzMyIDEwMDY0NAotLS0gYS9hcmNoL2FybS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAu
+YworKysgYi9hcmNoL2FybS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAuYwpAQCAtMzc3LDYgKzM3
+Nyw3IEBAIHN0YXRpYyBzdHJ1Y3QgcHdtX2xvb2t1cCByeDE5NTBfcHdtX2xvb2t1cFtdID0gewog
+fTsKIAogc3RhdGljIHN0cnVjdCBwd21fZGV2aWNlICpsY2RfcHdtOworc3RhdGljIHN0cnVjdCBw
+d21fc3RhdGUgbGNkX3B3bV9zdGF0ZTsKIAogc3RhdGljIHZvaWQgcngxOTUwX2xjZF9wb3dlcihp
+bnQgZW5hYmxlKQogewpAQCAtNDI5LDE1ICs0MzAsMTYgQEAgc3RhdGljIHZvaWQgcngxOTUwX2xj
+ZF9wb3dlcihpbnQgZW5hYmxlKQogCiAJCS8qIEdQQjEtPk9VVFBVVCwgR1BCMS0+MCAqLwogCQln
+cGlvX2RpcmVjdGlvbl9vdXRwdXQoUzNDMjQxMF9HUEIoMSksIDApOwotCQlwd21fY29uZmlnKGxj
+ZF9wd20sIDAsIExDRF9QV01fUEVSSU9EKTsKLQkJcHdtX2Rpc2FibGUobGNkX3B3bSk7CisKKwkJ
+bGNkX3B3bV9zdGF0ZS5lbmFibGVkID0gZmFsc2U7CisJCXB3bV9hcHBseV9zdGF0ZShsY2RfcHdt
+LCAmbGNkX3B3bV9zdGF0ZSk7CiAKIAkJLyogR1BDMC0+MCwgR1BDMTAtPjAgKi8KIAkJZ3Bpb19k
+aXJlY3Rpb25fb3V0cHV0KFMzQzI0MTBfR1BDKDApLCAwKTsKIAkJZ3Bpb19kaXJlY3Rpb25fb3V0
+cHV0KFMzQzI0MTBfR1BDKDEwKSwgMCk7CiAJfSBlbHNlIHsKLQkJcHdtX2NvbmZpZyhsY2RfcHdt
+LCBMQ0RfUFdNX0RVVFksIExDRF9QV01fUEVSSU9EKTsKLQkJcHdtX2VuYWJsZShsY2RfcHdtKTsK
+KwkJbGNkX3B3bV9zdGF0ZS5lbmFibGVkID0gdHJ1ZTsKKwkJcHdtX2FwcGx5X3N0YXRlKGxjZF9w
+d20sICZsY2RfcHdtX3N0YXRlKTsKIAogCQlncGlvX2RpcmVjdGlvbl9vdXRwdXQoUzNDMjQxMF9H
+UEMoMCksIDEpOwogCQlncGlvX2RpcmVjdGlvbl9vdXRwdXQoUzNDMjQxMF9HUEMoNSksIDEpOwpA
+QCAtNDkzLDEwICs0OTUsMTMgQEAgc3RhdGljIGludCByeDE5NTBfYmFja2xpZ2h0X2luaXQoc3Ry
+dWN0IGRldmljZSAqZGV2KQogCX0KIAogCS8qCi0JICogRklYTUU6IHB3bV9hcHBseV9hcmdzKCkg
+c2hvdWxkIGJlIHJlbW92ZWQgd2hlbiBzd2l0Y2hpbmcgdG8KLQkgKiB0aGUgYXRvbWljIFBXTSBB
+UEkuCisJICogVGhpcyBpcyBvbmx5IHJlcXVpcmVkIHRvIGluaXRpYWxpemUgLnBvbGFyaXR5OyBh
+bGwgb3RoZXIgdmFsdWVzIGFyZQorCSAqIGZpeGVkIGluIHRoaXMgZHJpdmVyLgogCSAqLwotCXB3
+bV9hcHBseV9hcmdzKGxjZF9wd20pOworCXB3bV9pbml0X3N0YXRlKGxjZF9wd20sICZsY2RfcHdt
+X3N0YXRlKTsKKworCWxjZF9wd21fc3RhdGUucGVyaW9kID0gTENEX1BXTV9QRVJJT0Q7CisJbGNk
+X3B3bV9zdGF0ZS5kdXR5X2N5Y2xlID0gTENEX1BXTV9EVVRZOwogCiAJcngxOTUwX2xjZF9wb3dl
+cigxKTsKIAlyeDE5NTBfYmxfcG93ZXIoMSk7Ci0tIAoyLjI0LjAKCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcg
+bGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmlu
+ZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
