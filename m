@@ -1,96 +1,69 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v4 4/7] pwm: Add support for Azoteq IQS620A PWM generator
-Date: Mon, 20 Jan 2020 08:27:39 +0100
-Message-ID: <20200120072739.sixr5e76uckrugvu@pengutronix.de>
-References: <1579228475-6681-1-git-send-email-jeff@labundy.com>
- <1579228475-6681-5-git-send-email-jeff@labundy.com>
- <20200117073427.ufrduwagvppeasgr@pengutronix.de>
- <20200119233234.GB28865@labundy.com>
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: remove set but not set variable 'pwm'
+Date: Mon, 20 Jan 2020 08:34:07 +0100
+Message-ID: <20200120073407.ck2fmk7qdvqsfqsy@pengutronix.de>
+References: <20200119122202.14502-1-yukuai3@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:46859 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725872AbgATHeJ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 02:34:09 -0500
 Content-Disposition: inline
-In-Reply-To: <20200119233234.GB28865-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
-Cc: "lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "knaack.h-Mmb7MZpHnFY@public.gmane.org" <knaack.h-Mmb7MZpHnFY@public.gmane.org>, "lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org" <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, "pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org" <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+In-Reply-To: <20200119122202.14502-1-yukuai3@huawei.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: yu kuai <yukuai3@huawei.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, zhengbin13@huawei.com, yi.zhang@huawei.com
 
-Hello Jeff,
+Hello,
 
-On Sun, Jan 19, 2020 at 11:32:39PM +0000, Jeff LaBundy wrote:
-> On Fri, Jan 17, 2020 at 08:34:27AM +0100, Uwe Kleine-K�nig wrote:
-> > On Fri, Jan 17, 2020 at 02:35:57AM +0000, Jeff LaBundy wrote:
-> > > +static void iqs620_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-> > > +				 struct pwm_state *state)
-> > > +{
-> > > +	struct iqs620_pwm_private *iqs620_pwm;
-> > > +
-> > > +	iqs620_pwm = container_of(chip, struct iqs620_pwm_private, chip);
-> > > +
-> > > +	mutex_lock(&iqs620_pwm->lock);
-> > > +
-> > > +	/*
-> > > +	 * Since the device cannot generate a 0% duty cycle, requests to do so
-> > > +	 * cause subsequent calls to iqs620_pwm_get_state to report the output
-> > > +	 * as disabled with duty cycle equal to that which was in use prior to
-> > > +	 * the request. This is not ideal, but is the best compromise based on
-> > > +	 * the capabilities of the device.
-> > > +	 */
-> > > +	state->enabled = iqs620_pwm->out_en;
-> > 
-> > Hmm, when .get_state is called first (before the first invokation of
-> > .apply) .out_en doesn't represent the hardware's state but is false
-> > unconditionally. This makes it hard to take over a running PWM setup by
-> > the bootloader.
+$Subject ~= s/not set/not used/
+
+On Sun, Jan 19, 2020 at 08:22:02PM +0800, yu kuai wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
 > 
-> This was intentional, albeit poorly documented on my part. When the parent
-> MFD driver probes the device, it issues a soft reset (which returns all of
-> its registers to their default state). It then loads firmware (essentially
-> tuning/calibration register settings) and then triggers the device's self-
-> calibration sequence.
+> drivers/pwm/pwm-pca9685.c: In function ‘pca9685_pwm_gpio_free’:
+> drivers/pwm/pwm-pca9685.c:162:21: warning: variable ‘pwm’ set but
+> not used [-Wunused-but-set-variable]
 > 
-> Both IQS620_PWR_SETTINGS_PWM_OUT and IQS620_PWM_DUTY_CYCLE default to zero,
-> and the firmware does not modify these. Therefore out_en and duty_val match
-> the hardware even before iqs620_pwm_apply is called, as they're initialized
-> to zero as well.
+> It is never used, and so can be removed.
 > 
-> I would be happy to add a comment in iqs620_pwm_get_state describing this
-> behavior; I should have described it there rather than the review history
-> (sorry about that).
+> Signed-off-by: yu kuai <yukuai3@huawei.com>
 
-I didn't saw that mentioned in the review history, just skimmed through
-the driver.
+Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
 
-> However, you bring up a really interesting point about preserving what may
-> have been done by the bootloader. The device holds itself in POR until its
-> supply reaches a sufficient level, so there isn't necessarily a functional
-> reason to manually issue a soft reset from the parent MFD driver.
+> ---
+>  drivers/pwm/pwm-pca9685.c | 4 ----
+>  1 file changed, 4 deletions(-)
 > 
-> I could get rid of the manual soft reset, and then simply sync both out_en
-> and duty_val in iqs620_pwm_probe which would allow iqs620_pwm_get_state to
-> pick up any changes made by the bootloader prior to the kernel coming up.
+> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+> index 168684b02ebc..b07bdca3d510 100644
+> --- a/drivers/pwm/pwm-pca9685.c
+> +++ b/drivers/pwm/pwm-pca9685.c
+> @@ -159,13 +159,9 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+>  static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
+>  {
+>  	struct pca9685 *pca = gpiochip_get_data(gpio);
+> -	struct pwm_device *pwm;
+>  
+>  	pca9685_pwm_gpio_set(gpio, offset, 0);
+>  	pm_runtime_put(pca->chip.dev);
+> -	mutex_lock(&pca->lock);
+> -	pwm = &pca->chip.pwms[offset];
+> -	mutex_unlock(&pca->lock);
 
-That sounds good. This way the PWM driver is independent of the MFD
-driver and does the right thing no matter if parent resets the chip or
-not.
- 
-> The only problem is that leds-pwm disables the pwm at start-up, so the end
-> result is the same anyway. Regardless of the behavior of any one consumer,
-> however, I'm slightly inclined to go with the second option as it seems to
-> be less restrictive and more maintainable. Let me know if you disagree.
+Did you check that dropping the locking is save? (I didn't)
 
-With
-
-	default-state = "keep";
-
-in your dt the LED shouldn't get disabled.
+I'd assume that no harm is introduced, but mentioning that in the commit
+log would be good.
 
 Best regards
 Uwe
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
+Pengutronix e.K.                           | Uwe Kleine-König            |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
