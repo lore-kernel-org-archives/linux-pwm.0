@@ -1,102 +1,90 @@
-From: Vasily Khoruzhick <anarsoul@gmail.com>
-Subject: Re: [PATCH] ARM: s3c24xx/rx1950: switch to atomic pwm API
-Date: Mon, 20 Jan 2020 18:01:04 -0800
-Message-ID: <CA+E=qVeEscYryOjD4FB+EH=JqFg6bVA3PHbx7sWrR7=9Zn003g@mail.gmail.com>
-References: <20200120193328.17007-1-uwe@kleine-koenig.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2] hwmon: (pwm-fan) stop fan on shutdown
+Date: Mon, 20 Jan 2020 18:16:23 -0800
+Message-ID: <20200121021623.GA32430@roeck-us.net>
+References: <1579534344-11694-1-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35971 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726935AbgAUCAR (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 21:00:17 -0500
-In-Reply-To: <20200120193328.17007-1-uwe@kleine-koenig.org>
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:55856 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726890AbgAUCQ0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 21:16:26 -0500
+Content-Disposition: inline
+In-Reply-To: <1579534344-11694-1-git-send-email-akinobu.mita@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
-Cc: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, arm-linux <linux-arm-kernel@lists.infradead.org>
+To: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Kamil Debski <kamil@wypas.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 
-On Mon, Jan 20, 2020 at 11:33 AM Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.o=
-rg> wrote:
->
-> Stop using the legacy PWM API which only still exists because there are
-> some users left.
->
-> Note this change make use of the fact that the value of struct
-> pwm_state::duty_cycle doesn't matter for a disabled PWM and so its value
-> can stay constant simplifying the code a bit.
->
-> A side effect of the conversion is that the pwm isn't stopped in
-> rx1950_backlight_init() by the call to pwm_apply_args() just before
-> reenabling it when rx1950_lcd_power(1) is called.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
+On Tue, Jan 21, 2020 at 12:32:24AM +0900, Akinobu Mita wrote:
+> The pwm-fan driver stops the fan in suspend but leaves the fan on in
+> shutdown.  It seems strange to leave the fan on in shutdown because there
+> is no use case in my mind and the gpio-fan driver on the other hand stops
+> in shutdown.
+> 
+> This change turns off the fan in shutdown.  If anyone complains then we'll
+> add an optional property to switch the behavior.
+> 
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Kamil Debski <kamil@wypas.org>
+> Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 
-Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Applied.
+
+Thanks,
+Guenter
 
 > ---
->  arch/arm/mach-s3c24xx/mach-rx1950.c | 19 ++++++++++++-------
->  1 file changed, 12 insertions(+), 7 deletions(-)
->
-> diff --git a/arch/arm/mach-s3c24xx/mach-rx1950.c b/arch/arm/mach-s3c24xx/=
-mach-rx1950.c
-> index 29f9b345a531..03d8f27cdc32 100644
-> --- a/arch/arm/mach-s3c24xx/mach-rx1950.c
-> +++ b/arch/arm/mach-s3c24xx/mach-rx1950.c
-> @@ -377,6 +377,7 @@ static struct pwm_lookup rx1950_pwm_lookup[] =3D {
->  };
->
->  static struct pwm_device *lcd_pwm;
-> +static struct pwm_state lcd_pwm_state;
->
->  static void rx1950_lcd_power(int enable)
+> * v2
+> - remove optional property and just turn off the fan in shutdown
+> 
+>  drivers/hwmon/pwm-fan.c | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+> index 42ffd2e..30b7b3e 100644
+> --- a/drivers/hwmon/pwm-fan.c
+> +++ b/drivers/hwmon/pwm-fan.c
+> @@ -390,8 +390,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> -#ifdef CONFIG_PM_SLEEP
+> -static int pwm_fan_suspend(struct device *dev)
+> +static int pwm_fan_disable(struct device *dev)
 >  {
-> @@ -429,15 +430,16 @@ static void rx1950_lcd_power(int enable)
->
->                 /* GPB1->OUTPUT, GPB1->0 */
->                 gpio_direction_output(S3C2410_GPB(1), 0);
-> -               pwm_config(lcd_pwm, 0, LCD_PWM_PERIOD);
-> -               pwm_disable(lcd_pwm);
+>  	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
+>  	struct pwm_args args;
+> @@ -418,6 +417,17 @@ static int pwm_fan_suspend(struct device *dev)
+>  	return 0;
+>  }
+>  
+> +static void pwm_fan_shutdown(struct platform_device *pdev)
+> +{
+> +	pwm_fan_disable(&pdev->dev);
+> +}
 > +
-> +               lcd_pwm_state.enabled =3D false;
-> +               pwm_apply_state(lcd_pwm, &lcd_pwm_state);
->
->                 /* GPC0->0, GPC10->0 */
->                 gpio_direction_output(S3C2410_GPC(0), 0);
->                 gpio_direction_output(S3C2410_GPC(10), 0);
->         } else {
-> -               pwm_config(lcd_pwm, LCD_PWM_DUTY, LCD_PWM_PERIOD);
-> -               pwm_enable(lcd_pwm);
-> +               lcd_pwm_state.enabled =3D true;
-> +               pwm_apply_state(lcd_pwm, &lcd_pwm_state);
->
->                 gpio_direction_output(S3C2410_GPC(0), 1);
->                 gpio_direction_output(S3C2410_GPC(5), 1);
-> @@ -493,10 +495,13 @@ static int rx1950_backlight_init(struct device *dev=
-)
->         }
->
->         /*
-> -        * FIXME: pwm_apply_args() should be removed when switching to
-> -        * the atomic PWM API.
-> +        * This is only required to initialize .polarity; all other value=
-s are
-> +        * fixed in this driver.
->          */
-> -       pwm_apply_args(lcd_pwm);
-> +       pwm_init_state(lcd_pwm, &lcd_pwm_state);
+> +#ifdef CONFIG_PM_SLEEP
+> +static int pwm_fan_suspend(struct device *dev)
+> +{
+> +	return pwm_fan_disable(dev);
+> +}
 > +
-> +       lcd_pwm_state.period =3D LCD_PWM_PERIOD;
-> +       lcd_pwm_state.duty_cycle =3D LCD_PWM_DUTY;
->
->         rx1950_lcd_power(1);
->         rx1950_bl_power(1);
-> --
-> 2.24.0
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>  static int pwm_fan_resume(struct device *dev)
+>  {
+>  	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
+> @@ -455,6 +465,7 @@ MODULE_DEVICE_TABLE(of, of_pwm_fan_match);
+>  
+>  static struct platform_driver pwm_fan_driver = {
+>  	.probe		= pwm_fan_probe,
+> +	.shutdown	= pwm_fan_shutdown,
+>  	.driver	= {
+>  		.name		= "pwm-fan",
+>  		.pm		= &pwm_fan_pm,
