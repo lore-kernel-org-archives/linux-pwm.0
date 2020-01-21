@@ -1,102 +1,102 @@
-From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
-Subject: Re: [PATCH] pwm: sun4i: Initialize variables before use
-Date: Mon, 20 Jan 2020 21:23:38 +0100
-Message-ID: <CAJiuCce6rs7QkxRhAjmoTrN1VBAYpZO5DHnEDzk+ynAea2JT2Q@mail.gmail.com>
-References: <20200120143206.710666-1-thierry.reding@gmail.com> <20200120200917.gvua5h2egoznwd4h@pengutronix.de>
+From: Vasily Khoruzhick <anarsoul@gmail.com>
+Subject: Re: [PATCH] ARM: s3c24xx/rx1950: switch to atomic pwm API
+Date: Mon, 20 Jan 2020 18:01:04 -0800
+Message-ID: <CA+E=qVeEscYryOjD4FB+EH=JqFg6bVA3PHbx7sWrR7=9Zn003g@mail.gmail.com>
+References: <20200120193328.17007-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37547 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbgATUXw (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 15:23:52 -0500
-Received: by mail-wm1-f68.google.com with SMTP id f129so673150wmf.2
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Jan 2020 12:23:50 -0800 (PST)
-In-Reply-To: <20200120200917.gvua5h2egoznwd4h@pengutronix.de>
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35971 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726935AbgAUCAR (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2020 21:00:17 -0500
+In-Reply-To: <20200120193328.17007-1-uwe@kleine-koenig.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <mripard@kernel.org>, Jernej Skrabec <jernej.skrabec@siol.net>, Linux PWM List <linux-pwm@vger.kernel.org>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
+Cc: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, arm-linux <linux-arm-kernel@lists.infradead.org>
 
-Hi Uwe, Thierry
+On Mon, Jan 20, 2020 at 11:33 AM Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.o=
+rg> wrote:
+>
+> Stop using the legacy PWM API which only still exists because there are
+> some users left.
+>
+> Note this change make use of the fact that the value of struct
+> pwm_state::duty_cycle doesn't matter for a disabled PWM and so its value
+> can stay constant simplifying the code a bit.
+>
+> A side effect of the conversion is that the pwm isn't stopped in
+> rx1950_backlight_init() by the call to pwm_apply_args() just before
+> reenabling it when rx1950_lcd_power(1) is called.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
 
-On Mon, 20 Jan 2020 at 21:09, Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> Hello Thierry,
->
-> On Mon, Jan 20, 2020 at 03:32:06PM +0100, Thierry Reding wrote:
-> > GCC can't always determine that the duty, period and prescaler values
-> > are initialized when returning from sun4i_pwm_calculate(), so help out =
-a
-> > little by initializing them to 0.
->
-> Is it worth mentioning the gcc version you're using?
+Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
 
-This issue has been trig by kbuild test robot.
-I planned to submit a patch for it as it's due to my modification but
-forget to submit it...
-
-Original report
-[linux-next:master 6586/9861] drivers/pwm/pwm-sun4i.c:57:34: warning:
-'prescaler' may be used uninitialized in this function
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-master
-head:   de970dffa7d19eae1d703c3534825308ef8d5dec
-commit: 9f28e95b5286fce63a3d0d90dc7ca43eca8dda58 [6586/9861] pwm:
-sun4i: Add support to output source clock directly
-config: microblaze-randconfig-a001-20200118 (attached as .config)
-compiler: microblaze-linux-gcc (GCC) 7.5.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/=
-make.cross
--O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git checkout 9f28e95b5286fce63a3d0d90dc7ca43eca8dda58
-        # save the attached .config to linux build tree
-        GCC_VERSION=3D7.5.0 make.cross ARCH=3Dmicroblaze
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-Note: it may well be a FALSE warning. FWIW you are at least aware of it now=
-.
-http://gcc.gnu.org/wiki/Better_Uninitialized_Warnings
-
+> ---
+>  arch/arm/mach-s3c24xx/mach-rx1950.c | 19 ++++++++++++-------
+>  1 file changed, 12 insertions(+), 7 deletions(-)
 >
-> > Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> > ---
-> >  drivers/pwm/pwm-sun4i.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> > index 0decc7cde133..3e3efa6c768f 100644
+> diff --git a/arch/arm/mach-s3c24xx/mach-rx1950.c b/arch/arm/mach-s3c24xx/=
+mach-rx1950.c
+> index 29f9b345a531..03d8f27cdc32 100644
+> --- a/arch/arm/mach-s3c24xx/mach-rx1950.c
+> +++ b/arch/arm/mach-s3c24xx/mach-rx1950.c
+> @@ -377,6 +377,7 @@ static struct pwm_lookup rx1950_pwm_lookup[] =3D {
+>  };
 >
-> I don't find this object (0decc7cde133) in my tree or next. Which
-> version is this?
+>  static struct pwm_device *lcd_pwm;
+> +static struct pwm_state lcd_pwm_state;
 >
-> > --- a/drivers/pwm/pwm-sun4i.c
-> > +++ b/drivers/pwm/pwm-sun4i.c
-> > @@ -234,9 +234,9 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, s=
-truct pwm_device *pwm,
-> >  {
-> >       struct sun4i_pwm_chip *sun4i_pwm =3D to_sun4i_pwm_chip(chip);
-> >       struct pwm_state cstate;
-> > -     u32 ctrl, duty, period, val;
-> > +     u32 ctrl, duty =3D 0, period =3D 0, val;
+>  static void rx1950_lcd_power(int enable)
+>  {
+> @@ -429,15 +430,16 @@ static void rx1950_lcd_power(int enable)
 >
-> +     u32 ctrl, uninitialized_var(duty), uninitialized_var(period), val;
+>                 /* GPB1->OUTPUT, GPB1->0 */
+>                 gpio_direction_output(S3C2410_GPB(1), 0);
+> -               pwm_config(lcd_pwm, 0, LCD_PWM_PERIOD);
+> -               pwm_disable(lcd_pwm);
+> +
+> +               lcd_pwm_state.enabled =3D false;
+> +               pwm_apply_state(lcd_pwm, &lcd_pwm_state);
 >
-> should fix the warnings, too, and additionally explicitly documents that
-> it's just the compiler that doesn't see there is no problem.
+>                 /* GPC0->0, GPC10->0 */
+>                 gpio_direction_output(S3C2410_GPC(0), 0);
+>                 gpio_direction_output(S3C2410_GPC(10), 0);
+>         } else {
+> -               pwm_config(lcd_pwm, LCD_PWM_DUTY, LCD_PWM_PERIOD);
+> -               pwm_enable(lcd_pwm);
+> +               lcd_pwm_state.enabled =3D true;
+> +               pwm_apply_state(lcd_pwm, &lcd_pwm_state);
 >
-> Best regards
-> Uwe
+>                 gpio_direction_output(S3C2410_GPC(0), 1);
+>                 gpio_direction_output(S3C2410_GPC(5), 1);
+> @@ -493,10 +495,13 @@ static int rx1950_backlight_init(struct device *dev=
+)
+>         }
 >
+>         /*
+> -        * FIXME: pwm_apply_args() should be removed when switching to
+> -        * the atomic PWM API.
+> +        * This is only required to initialize .polarity; all other value=
+s are
+> +        * fixed in this driver.
+>          */
+> -       pwm_apply_args(lcd_pwm);
+> +       pwm_init_state(lcd_pwm, &lcd_pwm_state);
+> +
+> +       lcd_pwm_state.period =3D LCD_PWM_PERIOD;
+> +       lcd_pwm_state.duty_cycle =3D LCD_PWM_DUTY;
+>
+>         rx1950_lcd_power(1);
+>         rx1950_bl_power(1);
 > --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
-|
+> 2.24.0
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
