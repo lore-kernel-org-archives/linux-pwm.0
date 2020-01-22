@@ -1,64 +1,79 @@
 From: Jeff LaBundy <jeff@labundy.com>
-Subject: Re: [PATCH v4 5/7] iio: temperature: Add support for Azoteq IQS620AT
- temperature sensor
-Date: Wed, 22 Jan 2020 03:28:28 +0000
-Message-ID: <20200122032821.GA29969@labundy.com>
+Subject: Re: [PATCH v4 4/7] pwm: Add support for Azoteq IQS620A PWM generator
+Date: Wed, 22 Jan 2020 03:56:14 +0000
+Message-ID: <20200122035608.GA1455@labundy.com>
 References: <1579228475-6681-1-git-send-email-jeff@labundy.com>
- <1579228475-6681-6-git-send-email-jeff@labundy.com>
+ <1579228475-6681-5-git-send-email-jeff@labundy.com>
+ <20200117073427.ufrduwagvppeasgr@pengutronix.de>
+ <20200119233234.GB28865@labundy.com>
+ <20200120072739.sixr5e76uckrugvu@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-input-owner@vger.kernel.org>
-In-Reply-To: <1579228475-6681-6-git-send-email-jeff@labundy.com>
+In-Reply-To: <20200120072739.sixr5e76uckrugvu@pengutronix.de>
 Content-Language: en-US
-Content-ID: <7F2C989C4E0F6B46B9CC1A0A730BEEE0@namprd08.prod.outlook.com>
+Content-ID: <6BD2F8EB27C13248B19AE6EAD595CEA2@namprd08.prod.outlook.com>
 Sender: linux-input-owner@vger.kernel.org
-To: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "lee.jones@linaro.org" <lee.jones@linaro.org>, "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Jonathan,
+Hi Uwe,
 
-I just wanted to give a heads up that I'm making a couple of very minor
-changes to the lot of IIO patches in this series in response to changes
-to include/linux/mfd/iqs62x.h for v5, namely:
+> > However, you bring up a really interesting point about preserving what =
+may
+> > have been done by the bootloader. The device holds itself in POR until =
+its
+> > supply reaches a sufficient level, so there isn't necessarily a functio=
+nal
+> > reason to manually issue a soft reset from the parent MFD driver.
+> >=20
+> > I could get rid of the manual soft reset, and then simply sync both out=
+_en
+> > and duty_val in iqs620_pwm_probe which would allow iqs620_pwm_get_state=
+ to
+> > pick up any changes made by the bootloader prior to the kernel coming u=
+p.
+>=20
+> That sounds good. This way the PWM driver is independent of the MFD
+> driver and does the right thing no matter if parent resets the chip or
+> not.
 
-- Replaced iqs62x->map with iqs62x->regmap
-- Dropped #defines for platform_driver name and alias in favor of the
-  actual string names (e.g. IQS620_DRV_NAME_TEMP --> "iqs620at-temp")
+Agreed on all counts.
 
-For small changes like these, I plan to retain your Reviewed-by trailer
-when I send out v5 even though the file would have changed slightly. If
-you would prefer I let you re-review first, please let me know.
+> =20
+> > The only problem is that leds-pwm disables the pwm at start-up, so the =
+end
+> > result is the same anyway. Regardless of the behavior of any one consum=
+er,
+> > however, I'm slightly inclined to go with the second option as it seems=
+ to
+> > be less restrictive and more maintainable. Let me know if you disagree.
+>=20
+> With
+>=20
+> 	default-state =3D "keep";
+>=20
+> in your dt the LED shouldn't get disabled.
 
-On Thu, Jan 16, 2020 at 08:36:08PM -0600, Jeff LaBundy wrote:
-> This patch adds support for the Azoteq IQS620AT temperature sensor,
-> capable of reporting its absolute die temperature.
+I see default-state defined as a common LED property, but leds-pwm doesn't
+seem to use it unfortunately. Looking through its code, brightness is just
+initialized to zero unconditionally.
+
+This doesn't change what is the right thing to do, nor do I imagine it to
+be a problem for typical use cases, just noting for completeness (however
+if I am mistaken please let me know).
+
 >=20
-> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
-> Changes in v4:
->   - None
+> Best regards
+> Uwe
 >=20
-> Changes in v3:
->   - Added Reviewed-by trailer
->=20
-> Changes in v2:
->   - Moved the driver from hwmon to iio
->   - Merged 'Copyright' and 'Author' lines into one in introductory commen=
-ts
->   - Replaced 'error' with 'ret' throughout
->   - Eliminated tabbed alignment of platform_driver struct members
->   - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
->=20
->  drivers/iio/temperature/Kconfig         | 10 ++++
->  drivers/iio/temperature/Makefile        |  1 +
->  drivers/iio/temperature/iqs620at-temp.c | 97 +++++++++++++++++++++++++++=
-++++++
->  3 files changed, 108 insertions(+)
->  create mode 100644 drivers/iio/temperature/iqs620at-temp.c
->=20
+> --=20
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
 
 Kind regards,
 Jeff LaBundy
