@@ -1,33 +1,48 @@
-From: Jeff LaBundy <jeff@labundy.com>
-Subject: Re: [PATCH v4 2/7] mfd: Add support for Azoteq
- IQS620A/621/622/624/625
-Date: Wed, 22 Jan 2020 04:00:37 +0000
-Message-ID: <20200122040034.GB1455@labundy.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v4 4/7] pwm: Add support for Azoteq IQS620A PWM generator
+Date: Wed, 22 Jan 2020 08:02:21 +0100
+Message-ID: <20200122070221.mq6a5lejsepnajgf@pengutronix.de>
 References: <1579228475-6681-1-git-send-email-jeff@labundy.com>
- <1579228475-6681-3-git-send-email-jeff@labundy.com>
- <20200117132143.GK15507@dell> <20200120042303.GC28865@labundy.com>
- <20200120080025.GP15507@dell>
+ <1579228475-6681-5-git-send-email-jeff@labundy.com>
+ <20200117073427.ufrduwagvppeasgr@pengutronix.de>
+ <20200119233234.GB28865@labundy.com>
+ <20200120072739.sixr5e76uckrugvu@pengutronix.de>
+ <20200122035608.GA1455@labundy.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-input-owner@vger.kernel.org>
-In-Reply-To: <20200120080025.GP15507@dell>
-Content-Language: en-US
-Content-ID: <45CB669215DDD74BBE895395E0D0A969@namprd08.prod.outlook.com>
-Sender: linux-input-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200122035608.GA1455-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Cc: "lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "knaack.h-Mmb7MZpHnFY@public.gmane.org" <knaack.h-Mmb7MZpHnFY@public.gmane.org>, "lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org" <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, "pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org" <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgTGVlLA0KDQpPbiBNb24sIEphbiAyMCwgMjAyMCBhdCAwODowMDoyNUFNICswMDAwLCBMZWUg
-Sm9uZXMgd3JvdGU6DQoNClsuLi5dDQoNCj4gSW4gZnV0dXJlLCBjb3VsZCB5b3UgdHJpbSBhbGwg
-dW5uZWNlc3NhcnkgcGFydHMgb2YgdGhlIHJldmlldywNCj4gc25pcHBpbmcgb3V0IGFsbCBvZiB0
-aGUgcGFydHMgeW91IGFncmVlIHdpdGgsIGxlYXZpbmcgb25seSB0aGUNCj4gY29udGVudGlvdXMg
-Y29udGV4dCBwbGVhc2U/ICBJdCBzYXZlcyBhbiBhd2Z1bCBsb3Qgb2Ygc2Nyb2xsaW5nIG9uDQo+
-IGJlaGFsZiBvZiB0aGUgcmVhZGVyL3Jldmlld2VyLiAgVGhhbmtzLg0KPiANCj4gLS0gDQo+IExl
-ZSBKb25lcyBb5p2O55C85pavXQ0KPiBMaW5hcm8gU2VydmljZXMgVGVjaG5pY2FsIExlYWQNCj4g
-TGluYXJvLm9yZyDilIIgT3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFSTSBTb0NzDQo+IEZvbGxv
-dyBMaW5hcm86IEZhY2Vib29rIHwgVHdpdHRlciB8IEJsb2cNCg0KU3VyZSB0aGluZzsgSSdtIGhh
-cHB5IHRvIGRvIHRoYXQgbW92aW5nIGZvcndhcmQuIFRoYW5rIHlvdSBhZ2FpbiBmb3INCmFsbCBv
-ZiB5b3VyIGZlZWRiYWNrLg0KDQpJJ2xsIHNlbmQgdjUgYWZ0ZXIgdGhlIHVwY29taW5nIG1lcmdl
-IHdpbmRvdyBjbG9zZXMuDQoNCktpbmQgcmVnYXJkcywNCkplZmYgTGFCdW5keQ0K
+Hello Jeff,
+
+On Wed, Jan 22, 2020 at 03:56:14AM +0000, Jeff LaBundy wrote:
+> > > The only problem is that leds-pwm disables the pwm at start-up, so the end
+> > > result is the same anyway. Regardless of the behavior of any one consumer,
+> > > however, I'm slightly inclined to go with the second option as it seems to
+> > > be less restrictive and more maintainable. Let me know if you disagree.
+> > 
+> > With
+> > 
+> > 	default-state = "keep";
+> > 
+> > in your dt the LED shouldn't get disabled.
+> 
+> I see default-state defined as a common LED property, but leds-pwm doesn't
+> seem to use it unfortunately. Looking through its code, brightness is just
+> initialized to zero unconditionally.
+
+Sounds like a bug.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
