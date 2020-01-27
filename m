@@ -1,66 +1,105 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 3/3] leds: pwm: don't set the brightness during .probe
-Date: Mon, 27 Jan 2020 08:41:21 +0100
-Message-ID: <20200127074121.n2qawknactfjqvkr@pengutronix.de>
-References: <20200124165409.12422-1-uwe@kleine-koenig.org>
- <20200124165409.12422-4-uwe@kleine-koenig.org>
- <20200126194236.GC2569@labundy.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Subject: [PATCH] dt-bindings: convert google,cros-ec-pwm.txt to yaml format
+Date: Mon, 27 Jan 2020 11:34:41 +0100
+Message-ID: <20200127103441.4618-1-dafna.hirschfeld@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:34275 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbgA0Hl3 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Jan 2020 02:41:29 -0500
-Content-Disposition: inline
-In-Reply-To: <20200126194236.GC2569@labundy.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, robh+dt@kernel.org, mark.rutland@arm.com, bleung@chromium.org, enric.balletbo@collabora.com, groeck@chromium.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dafna.hirschfeld@collabora.com, helen.koike@collabora.com, ezequiel@collabora.com, kernel@collabora.com, dafna3@gmail.com
 List-Id: linux-pwm@vger.kernel.org
-To: Jeff LaBundy <jeff@labundy.com>
-Cc: Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>, Thierry Reding <thierry.reding@gmail.com>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-Hello Jeff,
+Convert the binding file google,cros-ec-pwm.txt to yaml format.
 
-On Sun, Jan 26, 2020 at 07:42:39PM +0000, Jeff LaBundy wrote:
-> My only concern here is whether or not there happen to be some hardware
-> out in the world whose PWM-related registers power on to a random state
-> and unknowingly depended on brightness being forced to zero.
+This was tested and verified on ARM64 with:
 
-This might happen, and is (AFAIK) the same for other LED drivers.
+make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
 
-> The other folks on the thread probably have some better view into this,
-> but I wonder if the safest option would be to adopt the "default-state"
-> property from leds/common.txt, and only forgo the call to led_pwm_set()
-> if the property is set to "keep".
+Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+---
+ .../bindings/pwm/google,cros-ec-pwm.txt       | 23 -----------
+ .../bindings/pwm/google,cros-ec-pwm.yaml      | 40 +++++++++++++++++++
+ 2 files changed, 40 insertions(+), 23 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
 
-I think it would be sane to add support for parsing the default-state
-property to the LED core. I was surprised to learn that this for now is
-only implemented in a few LED drivers.
-
-> I did test this and can confirm that the LED's state prior to the driver
-> being loaded is preserved. However as you've warned, the brightness read
-> back from user space is zero and does not match the actual brightness of
-> the LED.
-
-That is something that the core should handle, too. If there is no
-.get_brightness callback and 0 is assumed, calling .set_brightness to 0
-to ensure a right assumption sounds like the right thing to me.
- 
-> Understanding that it's more work, I wonder if this patch is not safe if
-> we don't also add a brightness_get callback in case there were any cases
-> where user space makes some decisions based on brightness == 0?
-> 
-> At any rate this patch does what is advertised, and so:
-> 
-> Tested-by: Jeff LaBundy <jeff@labundy.com>
-
-Thanks for your feedback.
-
-Best regards
-Uwe
-
+diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+deleted file mode 100644
+index 472bd46ab5a4..000000000000
+--- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
++++ /dev/null
+@@ -1,23 +0,0 @@
+-* PWM controlled by ChromeOS EC
+-
+-Google's ChromeOS EC PWM is a simple PWM attached to the Embedded Controller
+-(EC) and controlled via a host-command interface.
+-
+-An EC PWM node should be only found as a sub-node of the EC node (see
+-Documentation/devicetree/bindings/mfd/cros-ec.txt).
+-
+-Required properties:
+-- compatible: Must contain "google,cros-ec-pwm"
+-- #pwm-cells: Should be 1. The cell specifies the PWM index.
+-
+-Example:
+-	cros-ec@0 {
+-		compatible = "google,cros-ec-spi";
+-
+-		...
+-
+-		cros_ec_pwm: ec-pwm {
+-			compatible = "google,cros-ec-pwm";
+-			#pwm-cells = <1>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+new file mode 100644
+index 000000000000..24c217b76580
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/google,cros-ec-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: PWM controlled by ChromeOS EC
++
++maintainers:
++  - Thierry Reding <thierry.reding@gmail.com>
++  - '"Uwe Kleine-KÃ¶nig" <u.kleine-koenig@pengutronix.de>'
++
++description: |
++  Google's ChromeOS EC PWM is a simple PWM attached to the Embedded Controller
++  (EC) and controlled via a host-command interface.
++  An EC PWM node should be only found as a sub-node of the EC node (see
++  Documentation/devicetree/bindings/mfd/cros-ec.txt).
++
++properties:
++  compatible:
++    const: google,cros-ec-pwm
++  "#pwm-cells":
++    description: The cell specifies the PWM index.
++    const: 1
++
++required:
++  - compatible
++  - '#pwm-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    cros-ec@0 {
++        compatible = "google,cros-ec-spi";
++        cros_ec_pwm: ec-pwm {
++            compatible = "google,cros-ec-pwm";
++            #pwm-cells = <1>;
++        };
++    };
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.17.1
