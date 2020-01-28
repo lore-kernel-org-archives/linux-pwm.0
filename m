@@ -1,105 +1,68 @@
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Subject: [PATCH] dt-bindings: convert google,cros-ec-pwm.txt to yaml format
-Date: Mon, 27 Jan 2020 11:34:41 +0100
-Message-ID: <20200127103441.4618-1-dafna.hirschfeld@collabora.com>
+From: Jonathan Cameron <Jonathan.Cameron-aYUidmrrA3LQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 5/7] iio: temperature: Add support for Azoteq
+ IQS620AT temperature sensor
+Date: Tue, 28 Jan 2020 09:10:01 +0000
+Message-ID: <20200128091001.00001e1d@Huawei.com>
+References: <1579228475-6681-1-git-send-email-jeff@labundy.com>
+        <1579228475-6681-6-git-send-email-jeff@labundy.com>
+        <20200122032821.GA29969@labundy.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, robh+dt@kernel.org, mark.rutland@arm.com, bleung@chromium.org, enric.balletbo@collabora.com, groeck@chromium.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dafna.hirschfeld@collabora.com, helen.koike@collabora.com, ezequiel@collabora.com, kernel@collabora.com, dafna3@gmail.com
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200122032821.GA29969-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Cc: "lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "knaack.h-Mmb7MZpHnFY@public.gmane.org" <knaack.h-Mmb7MZpHnFY@public.gmane.org>, "lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org" <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, "pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org" <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Convert the binding file google,cros-ec-pwm.txt to yaml format.
+On Wed, 22 Jan 2020 03:28:28 +0000
+Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org> wrote:
 
-This was tested and verified on ARM64 with:
+> Hi Jonathan,
+> 
+> I just wanted to give a heads up that I'm making a couple of very minor
+> changes to the lot of IIO patches in this series in response to changes
+> to include/linux/mfd/iqs62x.h for v5, namely:
+> 
+> - Replaced iqs62x->map with iqs62x->regmap
+> - Dropped #defines for platform_driver name and alias in favor of the
+>   actual string names (e.g. IQS620_DRV_NAME_TEMP --> "iqs620at-temp")
+> 
+> For small changes like these, I plan to retain your Reviewed-by trailer
+> when I send out v5 even though the file would have changed slightly. If
+> you would prefer I let you re-review first, please let me know.
 
-make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+I'm fine with you keeping it.  Thanks for checking though.
 
-Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
----
- .../bindings/pwm/google,cros-ec-pwm.txt       | 23 -----------
- .../bindings/pwm/google,cros-ec-pwm.yaml      | 40 +++++++++++++++++++
- 2 files changed, 40 insertions(+), 23 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-
-diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-deleted file mode 100644
-index 472bd46ab5a4..000000000000
---- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-+++ /dev/null
-@@ -1,23 +0,0 @@
--* PWM controlled by ChromeOS EC
--
--Google's ChromeOS EC PWM is a simple PWM attached to the Embedded Controller
--(EC) and controlled via a host-command interface.
--
--An EC PWM node should be only found as a sub-node of the EC node (see
--Documentation/devicetree/bindings/mfd/cros-ec.txt).
--
--Required properties:
--- compatible: Must contain "google,cros-ec-pwm"
--- #pwm-cells: Should be 1. The cell specifies the PWM index.
--
--Example:
--	cros-ec@0 {
--		compatible = "google,cros-ec-spi";
--
--		...
--
--		cros_ec_pwm: ec-pwm {
--			compatible = "google,cros-ec-pwm";
--			#pwm-cells = <1>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-new file mode 100644
-index 000000000000..24c217b76580
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-@@ -0,0 +1,40 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/google,cros-ec-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: PWM controlled by ChromeOS EC
-+
-+maintainers:
-+  - Thierry Reding <thierry.reding@gmail.com>
-+  - '"Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>'
-+
-+description: |
-+  Google's ChromeOS EC PWM is a simple PWM attached to the Embedded Controller
-+  (EC) and controlled via a host-command interface.
-+  An EC PWM node should be only found as a sub-node of the EC node (see
-+  Documentation/devicetree/bindings/mfd/cros-ec.txt).
-+
-+properties:
-+  compatible:
-+    const: google,cros-ec-pwm
-+  "#pwm-cells":
-+    description: The cell specifies the PWM index.
-+    const: 1
-+
-+required:
-+  - compatible
-+  - '#pwm-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    cros-ec@0 {
-+        compatible = "google,cros-ec-spi";
-+        cros_ec_pwm: ec-pwm {
-+            compatible = "google,cros-ec-pwm";
-+            #pwm-cells = <1>;
-+        };
-+    };
--- 
-2.17.1
+Jonathan
+> 
+> On Thu, Jan 16, 2020 at 08:36:08PM -0600, Jeff LaBundy wrote:
+> > This patch adds support for the Azoteq IQS620AT temperature sensor,
+> > capable of reporting its absolute die temperature.
+> > 
+> > Signed-off-by: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > ---
+> > Changes in v4:
+> >   - None
+> > 
+> > Changes in v3:
+> >   - Added Reviewed-by trailer
+> > 
+> > Changes in v2:
+> >   - Moved the driver from hwmon to iio
+> >   - Merged 'Copyright' and 'Author' lines into one in introductory comments
+> >   - Replaced 'error' with 'ret' throughout
+> >   - Eliminated tabbed alignment of platform_driver struct members
+> >   - Changed Kconfig "depends on" logic to MFD_IQS62X || COMPILE_TEST
+> > 
+> >  drivers/iio/temperature/Kconfig         | 10 ++++
+> >  drivers/iio/temperature/Makefile        |  1 +
+> >  drivers/iio/temperature/iqs620at-temp.c | 97 +++++++++++++++++++++++++++++++++
+> >  3 files changed, 108 insertions(+)
+> >  create mode 100644 drivers/iio/temperature/iqs620at-temp.c
+> >   
+> 
+> Kind regards,
+> Jeff LaBundy
