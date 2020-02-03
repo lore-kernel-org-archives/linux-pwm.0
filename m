@@ -1,125 +1,38 @@
-From: Prashant Malani <pmalani@chromium.org>
-Subject: Re: [PATCH 13/17] pwm: cros-ec: Remove cros_ec_cmd_xfer_status()
-Date: Mon, 3 Feb 2020 10:39:39 -0800
-Message-ID: <CACeCKacLSYF_MWqTxidQW5m__vDXSnPVgKttLcLU4X_4xfrJAQ@mail.gmail.com>
-References: <20200130203106.201894-1-pmalani@chromium.org> <20200130203106.201894-14-pmalani@chromium.org>
- <5d7cbb93-dfa0-11d3-1374-2e4044ead524@collabora.com> <CACeCKac=WyYZqnP=OqG9CoMWUfJzE=RwE+CtXhAbu7G5gmBfCA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:40574 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729013AbgBCSjv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 3 Feb 2020 13:39:51 -0500
-Received: by mail-qv1-f67.google.com with SMTP id dp13so7293189qvb.7
-        for <linux-pwm@vger.kernel.org>; Mon, 03 Feb 2020 10:39:50 -0800 (PST)
-In-Reply-To: <CACeCKac=WyYZqnP=OqG9CoMWUfJzE=RwE+CtXhAbu7G5gmBfCA@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH] pwm: bcm2835: Dynamically allocate base
+Date: Mon,  3 Feb 2020 13:35:35 -0800
+Message-ID: <20200203213536.32226-1-f.fainelli@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Florian Fainelli <f.fainelli@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, "maintainer:BROADCOM
+        BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE..." <bcm-kernel-feedback-list@broadcom.com>, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>, Bart Tanghe <bart.tanghe@thomasmore.be>, Stephen Warren <swarren@wwwdotorg.org>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "moderated list:BROADCOM
+        BCM2711/BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>, "moderated list:BROADCOM
+        BCM2711/BCM2835 ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
 
-Hi Enric,
+The newer 2711 and 7211 chips have two PWM controllers and failure to
+dynamically allocate the PWM base would prevent the second PWM
+controller instance being probed for succeeding with an -EEXIST error
+from alloc_pwms().
 
-On Mon, Feb 3, 2020 at 10:26 AM Prashant Malani <pmalani@chromium.org> wrote:
->
-> On Mon, Feb 3, 2020 at 7:33 AM Enric Balletbo i Serra
-> <enric.balletbo@collabora.com> wrote:
-> >
-> >
-> > On 30/1/20 21:31, Prashant Malani wrote:
-> > > Convert one existing usage of cros_ec_cmd_xfer_status() to
-> > > cros_ec_send_cmd_msg(), which accomplishes the same thing but also does
-> > > the EC message struct setup,and is defined in platform/chrome and is
-> > > accessible by other modules.
-> > >
-> > > For the other usage, switch it to using cros_ec_cmd_xfer(), since the
-> > > calling functions rely on the result field of the struct cros_ec_command
-> > > struct that is used.
-> > >
-> > > Signed-off-by: Prashant Malani <pmalani@chromium.org>
-> > > ---
-> > >  drivers/pwm/pwm-cros-ec.c | 27 +++++++++------------------
-> > >  1 file changed, 9 insertions(+), 18 deletions(-)
-> > >
-> > > diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-> > > index 89497448d21775..8bf610a6529e7e 100644
-> > > --- a/drivers/pwm/pwm-cros-ec.c
-> > > +++ b/drivers/pwm/pwm-cros-ec.c
-> > > @@ -32,25 +32,14 @@ static inline struct cros_ec_pwm_device *pwm_to_cros_ec_pwm(struct pwm_chip *c)
-> > >
-> > >  static int cros_ec_pwm_set_duty(struct cros_ec_device *ec, u8 index, u16 duty)
-> > >  {
-> > > -     struct {
-> > > -             struct cros_ec_command msg;
-> > > -             struct ec_params_pwm_set_duty params;
-> > > -     } __packed buf;
-> > > -     struct ec_params_pwm_set_duty *params = &buf.params;
-> > > -     struct cros_ec_command *msg = &buf.msg;
-> > > -
-> > > -     memset(&buf, 0, sizeof(buf));
-> > > +     struct ec_params_pwm_set_duty params = {0};
-> > >
-> > > -     msg->version = 0;
-> > > -     msg->command = EC_CMD_PWM_SET_DUTY;
-> > > -     msg->insize = 0;
-> > > -     msg->outsize = sizeof(*params);
-> > > -
-> > > -     params->duty = duty;
-> > > -     params->pwm_type = EC_PWM_TYPE_GENERIC;
-> > > -     params->index = index;
-> > > +     params.duty = duty;
-> > > +     params.pwm_type = EC_PWM_TYPE_GENERIC;
-> > > +     params.index = index;
-> > >
-> > > -     return cros_ec_cmd_xfer_status(ec, msg);
-> > > +     return cros_ec_send_cmd_msg(ec, 0, EC_CMD_PWM_SET_DUTY, &params,
-> > > +                                 sizeof(params), NULL, 0);
-> > >  }
-> > >
-> > >  static int __cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index,
-> > > @@ -78,11 +67,13 @@ static int __cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index,
-> > >       params->pwm_type = EC_PWM_TYPE_GENERIC;
-> > >       params->index = index;
-> > >
-> > > -     ret = cros_ec_cmd_xfer_status(ec, msg);
-> > > +     ret = cros_ec_cmd_xfer(ec, msg);
-> >
-> > Why? There is a good reason we introduced the cros_ec_cmd_xfer_status.
-> >
-> > IMO the purpose of introduce the new wrapper only makes sense if we can cover
-> > _all_ the cases, so we can remove cros_ec_cmd_xfer_status and make
-> > cros_ec_cmd_xfer private to cros_ec_proto.
-I'm hoping for that too, but as we saw below (and some in some other
-drivers), some callers of cros_ec_cmd_xfer() actually use the
-msg->result.
-Should we change the new wrapper to return the message via a pointer
-(if not NULL), so something like this ? :
+Fixes: e5a06dc5ac1f ("pwm: Add BCM2835 PWM driver")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/pwm/pwm-bcm2835.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-int cros_ec_send_cmd_msg(struct cros_ec_device *ec, unsigned int
-version, uint32_t command, void *outdata, unsigned int outsize,
-void *indata, unsigned int insize, uint32_t *result) ?
-
-> >
-> > Is not possible to use the new wrapper here?
-> >
-> > >       if (result)
-> > >               *result = msg->result;
-> >
-> > Hmm, I see, that's the problem ...
-> >
-> > This driver will need a bit of rework but I think could be possible to use the
-> > wrapper.
-> Yeah, I looked around, and it seems to use msg->result.
-> Perhaps we should work on reworking this driver before doing the large
-> patch series? I would be happy to work on it, unless you feel there is
-> someone else who'd be better suited. Kindly let me know.
-> >
-> > >       if (ret < 0)
-> > >               return ret;
-> > > +     else if (msg->result != EC_RES_SUCCESS)
-> > > +             return -EPROTO;
-> > >
-> > >       return resp->duty;
-> > >  }
-> > >
+diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+index 91e24f01b54e..d78f86f8e462 100644
+--- a/drivers/pwm/pwm-bcm2835.c
++++ b/drivers/pwm/pwm-bcm2835.c
+@@ -166,6 +166,7 @@ static int bcm2835_pwm_probe(struct platform_device *pdev)
+ 
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &bcm2835_pwm_ops;
++	pc->chip.base = -1;
+ 	pc->chip.npwm = 2;
+ 	pc->chip.of_xlate = of_pwm_xlate_with_flags;
+ 	pc->chip.of_pwm_n_cells = 3;
+-- 
+2.17.1
