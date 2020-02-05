@@ -1,33 +1,24 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: convert google,cros-ec-pwm.txt to yaml
- format
-Date: Wed, 5 Feb 2020 17:03:25 +0000
-Message-ID: <20200205170325.GA19200@bogus>
-References: <20200127103441.4618-1-dafna.hirschfeld@collabora.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: pr-tracker-bot@kernel.org
+Subject: Re: [GIT PULL] pwm: Changes for v5.6-rc1
+Date: Wed, 05 Feb 2020 18:20:17 +0000
+Message-ID: <158092681758.14135.10923863172785841060.pr-tracker-bot@kernel.org>
+References: <20200205142511.2172050-1-thierry.reding@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20200127103441.4618-1-dafna.hirschfeld@collabora.com>
+In-Reply-To: <20200205142511.2172050-1-thierry.reding@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, robh+dt@kernel.org, mark.rutland@arm.com, bleung@chromium.org, enric.balletbo@collabora.com, groeck@chromium.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dafna.hirschfeld@collabora.com, helen.koike@collabora.com, ezequiel@collabora.com, kernel@collabora.com, dafna3@gmail.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 27 Jan 2020 11:34:41 +0100, Dafna Hirschfeld wrote:
-> Convert the binding file google,cros-ec-pwm.txt to yaml format.
-> 
-> This was tested and verified on ARM64 with:
-> 
-> make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-> make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-> 
-> Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-> ---
->  .../bindings/pwm/google,cros-ec-pwm.txt       | 23 -----------
->  .../bindings/pwm/google,cros-ec-pwm.yaml      | 40 +++++++++++++++++++
->  2 files changed, 40 insertions(+), 23 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-> 
+The pull request you sent on Wed,  5 Feb 2020 15:25:11 +0100:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.6-rc1
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4c7d00ccf40db99bfb7bd1857bcbf007275704d8
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
