@@ -1,34 +1,47 @@
-From: "Mr. Theophilus Odadudu" <cristinamedina0010@gmail.com>
-Subject: LETTER OF INQUIRY
-Date: Fri, 7 Feb 2020 15:44:08 -0500
-Message-ID: <CAPNvSTj-8q7w5QPmnH26+_3xCKjEWyE+9xcb8QyQs9Xie+iYgg__46138.2224618987$1581108255$gmane$org@mail.gmail.com>
-Reply-To: auch197722@gmail.com
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] pwm: imx27: fix clk handling in pwm_imx27_apply()
+Date: Sun,  9 Feb 2020 22:31:06 +0100
+Message-ID: <20200209213106.5067-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:44525 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727123AbgBGUoJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Feb 2020 15:44:09 -0500
-Received: by mail-ot1-f65.google.com with SMTP id h9so567341otj.11
-        for <linux-pwm@vger.kernel.org>; Fri, 07 Feb 2020 12:44:09 -0800 (PST)
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:34661 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726626AbgBIVbT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 9 Feb 2020 16:31:19 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Shawn Guo <shawnguo@kernel.org>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Good Day,
+pwm_imx27_apply() enables the clocks if the previous PWM state was
+disabled. Given that the clocks are supposed to be left on iff the PWM
+is running, the decision to disable the clocks at the end of the
+function must not depend on the previous state.
 
-I work as a clerk in a Bank here in Nigeria, I have a very
-confidential Business Proposition for you. There is a said amount of
-money floating in the bank unclaimed, belonging to the bank Foreign
-customer who die with his family in the Ethiopian Airline crash of
-March 11, 2019.
+Without this fix the enable count of the two affected clocks increases
+by one whenever pwm_apply changes from one disabled state to another.
 
-I seek your good collaboration to move the fund for our benefit. we
-have agreed that 40% be yours once you help claim.
+Fixes: bd88d319abe9 ("pwm: imx27: Unconditionally write state to hardware")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-imx27.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Do get back to with 1) Your Full Name: (2) Residential Address: (3)
-Phone, Mobile  (4) Scan Copy of Your ID. to apply for claims of the
-funds.
-
-Regards
-Theophilus Odadudu
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index 35a7ac42269c..7e5ed0152977 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -289,7 +289,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	writel(cr, imx->mmio_base + MX3_PWMCR);
+ 
+-	if (!state->enabled && cstate.enabled)
++	if (!state->enabled)
+ 		pwm_imx27_clk_disable_unprepare(chip);
+ 
+ 	return 0;
+-- 
+2.24.0
