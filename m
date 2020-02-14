@@ -1,91 +1,113 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [RESEND v5 2/2] pwm: core: Convert period and duty cycle to u64
-Date: Thu, 13 Feb 2020 14:38:09 -0800
-Message-ID: <20200213223806.GA12212@codeaurora.org>
-References: <cover.1581533161.git.gurus@codeaurora.org>
- <f7986df5d54b2bb84ee14e80d0c1225444608f32.1581533161.git.gurus@codeaurora.org>
- <20200213101802.owpluhixtpor3qi3@pengutronix.de>
- <20200213193926.GA20183@codeaurora.org>
- <20200213202804.pqgbqtphuboqo6af@pengutronix.de>
- <20200213210648.GA12663@codeaurora.org>
- <20200213215857.uq4f44jqlayhbiqh@pengutronix.de>
+From: Roy Im <roy.im.opensource@diasemi.com>
+Subject: RE: [RESEND PATCH V8 3/3] Input: new da7280 haptic driver
+Date: Fri, 14 Feb 2020 01:35:50 +0000
+Message-ID: <VE1PR10MB3085C12BDD9B0713A5A1772785150@VE1PR10MB3085.EURPRD10.PROD.OUTLOOK.COM>
+References: <cover.1581383604.git.Roy.Im@diasemi.com>
+ <ba04fc95afbf3d77a49ad6d52ade20fe79a4b7eb.1581383604.git.Roy.Im@diasemi.com>
+ <20200211142622.5vt34ftdt242agaq@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:59924 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727594AbgBMWiK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Feb 2020 17:38:10 -0500
-Content-Disposition: inline
-In-Reply-To: <20200213215857.uq4f44jqlayhbiqh@pengutronix.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <20200211142622.5vt34ftdt242agaq@pengutronix.de>
+Content-Language: en-US
+Sender: linux-input-owner@vger.kernel.org
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Roy Im <roy.im.opensource@diasemi.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 10:58:57PM +0100, Uwe Kleine-König wrote:
-> On Thu, Feb 13, 2020 at 01:06:49PM -0800, Guru Das Srinagesh wrote:
-> > On Thu, Feb 13, 2020 at 09:28:04PM +0100, Uwe Kleine-König wrote:
-> > > On Thu, Feb 13, 2020 at 11:39:26AM -0800, Guru Das Srinagesh wrote:
-> > > > On Thu, Feb 13, 2020 at 11:18:02AM +0100, Uwe Kleine-König wrote:
-> > > > > Hello,
-> > > > > 
-> > > > > On Wed, Feb 12, 2020 at 10:54:08AM -0800, Guru Das Srinagesh wrote:
-> > > > > > @@ -305,8 +305,8 @@ struct pwm_chip {
-> > > > > >   * @duty_cycle: duty cycle of the PWM signal (in nanoseconds)
-> > > > > >   */
-> > > > > >  struct pwm_capture {
-> > > > > > -	unsigned int period;
-> > > > > > -	unsigned int duty_cycle;
-> > > > > > +	u64 period;
-> > > > > > +	u64 duty_cycle;
-> > > > > >  };
-> > > > > 
-> > > > > Is this last hunk a separate change?
-> > > > > 
-> > > > > Otherwise looks fine.
-> > > > 
-> > > > No, this is very much a part of the change and not a separate one.
-> > > 
-> > > Not sure we understand each other. I wondered if conversion of the
-> > > pwm_capture stuff should be done separately. (OTOH I wonder if this is
-> > > used at all and already considered deleting it.)
-> > 
-> > I see. Could you please elaborate on your concerns? I think this hunk's
-> > being in this patch makes sense as duty and period should be converted
-> > to u64 throughout the file in one go.
-> 
-> I guess that capturing isn't much used if at all. So keeping it as
-> limited as it is today doesn't seem like a bad idea to me. (OK, you
-> could also accidentally break it such that we can say in a few years
-> time: This is broken since v5.6, obviously nobody cares and we remove it
-> for good :-))
-> 
-> > Also, it looks like pwm_capture is being used by pwm-sti.c and
-> > pwm-stm32.c currently.
-> 
-> Yeah, these two drivers provide the needed callback. That doesn't
-> necessarily mean there are active users. Also I'm convinced that there
-> are implementation problems. For example the commit that added capture
-> support for stm32 has in its commit log:
-> 
-> 	Capture requires exclusive access (e.g. no pwm output running at
-> 	the same time, to protect common prescaler).
-> 
-> but the capture callback doesn't even check if the PWMs are in use (but
-> I only looked quickly, so I might have missed something).
-> 
-> Apart from that I think that the capturing stuff doesn't really fit into
-> the PWM framework which is (apart from the capture callback and API
-> function) about PWM *outputs* and most hardware's I know about either
-> don't support capturing or it is located in a different IP than the PWM
-> output. (And it is not even possible today to register a driver that can
-> only capture but not drive a PWM output.)
+On Tuesday, February 11, 2020 11:26 PM, Uwe Kleine-K=F6nig wrote
 
-Thanks for the explanation. So what would you recommend - dropping that
-hunk entirely or separating that out in a separate patch?
+> On Tue, Feb 11, 2020 at 10:13:24AM +0900, Roy Im wrote:
+> > diff --git a/drivers/input/misc/da7280.c b/drivers/input/misc/da7280.c
+> > new file mode 100644 index 0000000..4d1d1fc
+> > --- /dev/null
+> > +++ b/drivers/input/misc/da7280.c
+> > @@ -0,0 +1,1688 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
+> > +/*
+> > + * DA7280 Haptic device driver
+> > + *
+> > + * Copyright (c) 2019 Dialog Semiconductor.
+> > + * Author: Roy Im <Roy.Im.Opensource@diasemi.com>  */
+> > +
+> > +#include <linux/err.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/input.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/module.h>
+> > +#include <linux/pwm.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/workqueue.h>
+> > +#include <linux/uaccess.h>
+> > +#include "da7280.h"
+>=20
+> Don't introduce a header file that is only used once. Better put the defi=
+nitions into the c file then.
 
-Thank you.
+I will put the definitions into the c file.
 
-Guru Das.
+>=20
+> > [...]
+> > +static int da7280_haptic_set_pwm(struct da7280_haptic *haptics) {
+> > +	struct pwm_args pargs;
+> > +	u64 period_mag_multi;
+> > +	unsigned int pwm_duty;
+> > +	int error;
+> > +
+> > +	pwm_get_args(haptics->pwm_dev, &pargs);
+> > +	period_mag_multi =3D
+> > +		(u64)(pargs.period * haptics->gain);
+>=20
+> This cast does not do anything, does it?
+
+I will remove this.
+
+>=20
+> > +	if (haptics->acc_en)
+> > +		pwm_duty =3D
+> > +			(unsigned int)(period_mag_multi >> 16);
+> > +	else
+> > +		pwm_duty =3D
+> > +			(unsigned int)((period_mag_multi >> 16)
+> > +				+ pargs.period) / 2;
+> > +
+> > +	error =3D pwm_config(haptics->pwm_dev,
+> > +			   pwm_duty, pargs.period);
+> > +	if (error) {
+> > +		dev_err(haptics->dev,
+> > +			"failed to configure pwm : %d\n", error);
+> > +		return error;
+> > +	}
+> > +
+> > +	error =3D pwm_enable(haptics->pwm_dev);
+> > +	if (error) {
+> > +		pwm_disable(haptics->pwm_dev);
+> > +		dev_err(haptics->dev,
+> > +			"failed to enable haptics pwm device : %d\n", error);
+> > +	}
+>=20
+> You should not use the legacy pwm API. Please stick to pwm_apply_state().
+>=20
+> Also consider using %pE for more expressive error messages.
+
+I will replace the legacy pwm API and stick to pwm_apply_state() and consid=
+er using the %pE.
+
+>=20
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
+
+Hello Uwe,
+
+Thanks for your comments.
+I will try to update as you advise.
+
+Best regards,
+Roy
