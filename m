@@ -1,95 +1,65 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.5 087/542] pwm: omap-dmtimer: Simplify error handling
-Date: Fri, 14 Feb 2020 10:41:19 -0500
-Message-ID: <20200214154854.6746-87-sashal@kernel.org>
-References: <20200214154854.6746-1-sashal@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:55232 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729872AbgBNPur (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:50:47 -0500
-In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: [PATCH v6 0/2] Convert period and duty cycle to u64
+Date: Fri, 14 Feb 2020 11:22:15 -0800
+Message-ID: <cover.1581706694.git.gurus@codeaurora.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reworked the change pushed upstream earlier [1] so as to not add an extension
+to an obsolete API. With this change, pwm_ops->apply() can be used to set
+pwm_state parameters as usual.
 
-[ Upstream commit c4cf7aa57eb83b108d2d9c6c37c143388fee2a4d ]
+[1] https://lore.kernel.org/lkml/20190916140048.GB7488@ulmo/
 
-Instead of doing error handling in the middle of ->probe(), move error
-handling and freeing the reference to timer to the end.
+Changes from v1:
+  - Fixed compilation errors seen when compiling for different archs.
 
-This fixes a resource leak as dm_timer wasn't freed when allocating
-*omap failed.
+Changes from v2:
+  - Fixed %u -> %llu in a dev_dbg in pwm-stm32-lp.c, thanks to kbuild test robot
+  - Added a couple of fixes to pwm-imx-tpm.c and pwm-sifive.c
 
-Implementation note: The put: label was never reached without a goto and
-ret being unequal to 0, so the removed return statement is fine.
+Changes from v3:
+  - Rebased to current tip of for-next.
 
-Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pwm/pwm-omap-dmtimer.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+Changes from v4:
+  - Split the patch into two: one for changes to the drivers, and the actual
+    switch to u64 for ease of reverting should the need arise.
+  - Re-examined the patch and made the following corrections:
+      * intel_panel.c:
+	DIV64_U64_ROUND_UP -> DIV_ROUND_UP_ULL (as only the numerator would be
+	64-bit in this case).
+      * pwm-sti.c:
+	do_div -> div_u64 (do_div is optimized only for x86 architectures, and
+	div_u64's comment block suggests to use this as much as possible).
 
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index 00772fc534906..6cfeb0e1cc679 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -298,15 +298,10 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 		goto put;
- 	}
- 
--put:
--	of_node_put(timer);
--	if (ret < 0)
--		return ret;
--
- 	omap = devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
- 	if (!omap) {
--		pdata->free(dm_timer);
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto err_alloc_omap;
- 	}
- 
- 	omap->pdata = pdata;
-@@ -339,13 +334,28 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 	ret = pwmchip_add(&omap->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM\n");
--		omap->pdata->free(omap->dm_timer);
--		return ret;
-+		goto err_pwmchip_add;
- 	}
- 
-+	of_node_put(timer);
-+
- 	platform_set_drvdata(pdev, omap);
- 
- 	return 0;
-+
-+err_pwmchip_add:
-+
-+	/*
-+	 * *omap is allocated using devm_kzalloc,
-+	 * so no free necessary here
-+	 */
-+err_alloc_omap:
-+
-+	pdata->free(dm_timer);
-+put:
-+	of_node_put(timer);
-+
-+	return ret;
- }
- 
- static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
+Changes from v5:
+  - Dropped the conversion of struct pwm_capture to u64 for reasons mentioned
+    in https://www.spinics.net/lists/linux-pwm/msg11541.html.
+
+Guru Das Srinagesh (2):
+  pwm: Convert drivers to use 64-bit period and duty cycle
+  pwm: core: Convert period and duty cycle to u64
+
+ drivers/clk/clk-pwm.c                      |  2 +-
+ drivers/gpu/drm/i915/display/intel_panel.c |  2 +-
+ drivers/hwmon/pwm-fan.c                    |  2 +-
+ drivers/media/rc/ir-rx51.c                 |  3 ++-
+ drivers/pwm/core.c                         |  4 ++--
+ drivers/pwm/pwm-clps711x.c                 |  2 +-
+ drivers/pwm/pwm-imx-tpm.c                  |  2 +-
+ drivers/pwm/pwm-imx27.c                    |  5 ++---
+ drivers/pwm/pwm-sifive.c                   |  2 +-
+ drivers/pwm/pwm-sti.c                      |  5 +++--
+ drivers/pwm/pwm-stm32-lp.c                 |  2 +-
+ drivers/pwm/pwm-sun4i.c                    |  2 +-
+ drivers/pwm/sysfs.c                        |  8 ++++----
+ drivers/video/backlight/pwm_bl.c           |  3 ++-
+ include/linux/pwm.h                        | 12 ++++++------
+ 15 files changed, 29 insertions(+), 27 deletions(-)
+
 -- 
-2.20.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
