@@ -1,58 +1,57 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 105/141] pwm: omap-dmtimer: Remove PWM chip in .remove before making it unfunctional
-Date: Fri, 14 Feb 2020 11:20:45 -0500
-Message-ID: <20200214162122.19794-105-sashal@kernel.org>
-References: <20200214162122.19794-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 193/252] pwm: Remove set but not set variable 'pwm'
+Date: Fri, 14 Feb 2020 11:10:48 -0500
+Message-ID: <20200214161147.15842-193-sashal@kernel.org>
+References: <20200214161147.15842-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200214161147.15842-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Cc: yu kuai <yukuai3@huawei.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: yu kuai <yukuai3@huawei.com>
 
-[ Upstream commit 43efdc8f0e6d7088ec61bd55a73bf853f002d043 ]
+[ Upstream commit 9871abffc81048e20f02e15d6aa4558a44ad53ea ]
 
-In the old code (e.g.) mutex_destroy() was called before
-pwmchip_remove(). Between these two calls it is possible that a PWM
-callback is used which tries to grab the mutex.
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+	drivers/pwm/pwm-pca9685.c: In function ‘pca9685_pwm_gpio_free’:
+	drivers/pwm/pwm-pca9685.c:162:21: warning: variable ‘pwm’ set but not used [-Wunused-but-set-variable]
+
+It is never used, and so can be removed. In that case, hold and release
+the lock 'pca->lock' can be removed since nothing will be done between
+them.
+
+Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+Signed-off-by: yu kuai <yukuai3@huawei.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-omap-dmtimer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-pca9685.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index 5ad42f33e70c1..2e15acf13893d 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -337,6 +337,11 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 567f5e2771c47..e1e5dfcb16f36 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -170,13 +170,9 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+ static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
  {
- 	struct pwm_omap_dmtimer_chip *omap = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&omap->chip);
-+	if (ret)
-+		return ret;
+ 	struct pca9685 *pca = gpiochip_get_data(gpio);
+-	struct pwm_device *pwm;
  
- 	if (pm_runtime_active(&omap->dm_timer_pdev->dev))
- 		omap->pdata->stop(omap->dm_timer);
-@@ -345,7 +350,7 @@ static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
- 
- 	mutex_destroy(&omap->mutex);
- 
--	return pwmchip_remove(&omap->chip);
-+	return 0;
+ 	pca9685_pwm_gpio_set(gpio, offset, 0);
+ 	pm_runtime_put(pca->chip.dev);
+-	mutex_lock(&pca->lock);
+-	pwm = &pca->chip.pwms[offset];
+-	mutex_unlock(&pca->lock);
  }
  
- static const struct of_device_id pwm_omap_dmtimer_of_match[] = {
+ static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
 -- 
 2.20.1
