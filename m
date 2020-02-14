@@ -1,42 +1,57 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RESEND v5 2/2] pwm: core: Convert period and duty cycle to u64
-Date: Fri, 14 Feb 2020 08:05:07 +0100
-Message-ID: <20200214070507.twzclobc6uzsxjoq@pengutronix.de>
-References: <cover.1581533161.git.gurus@codeaurora.org>
- <f7986df5d54b2bb84ee14e80d0c1225444608f32.1581533161.git.gurus@codeaurora.org>
- <20200213101802.owpluhixtpor3qi3@pengutronix.de>
- <20200213193926.GA20183@codeaurora.org>
- <20200213202804.pqgbqtphuboqo6af@pengutronix.de>
- <20200213210648.GA12663@codeaurora.org>
- <20200213215857.uq4f44jqlayhbiqh@pengutronix.de>
- <20200213223806.GA12212@codeaurora.org>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 358/459] pwm: Remove set but not set variable 'pwm'
+Date: Fri, 14 Feb 2020 11:00:08 -0500
+Message-ID: <20200214160149.11681-358-sashal@kernel.org>
+References: <20200214160149.11681-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:46063 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbgBNHFL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Feb 2020 02:05:11 -0500
-Content-Disposition: inline
-In-Reply-To: <20200213223806.GA12212@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: yu kuai <yukuai3@huawei.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org
 
-Hello,
+From: yu kuai <yukuai3@huawei.com>
 
-On Thu, Feb 13, 2020 at 02:38:09PM -0800, Guru Das Srinagesh wrote:
-> Thanks for the explanation. So what would you recommend - dropping that
-> hunk entirely or separating that out in a separate patch?
+[ Upstream commit 9871abffc81048e20f02e15d6aa4558a44ad53ea ]
 
-I'd drop that hunk.
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-Best regards
-Uwe
+	drivers/pwm/pwm-pca9685.c: In function ‘pca9685_pwm_gpio_free’:
+	drivers/pwm/pwm-pca9685.c:162:21: warning: variable ‘pwm’ set but not used [-Wunused-but-set-variable]
 
+It is never used, and so can be removed. In that case, hold and release
+the lock 'pca->lock' can be removed since nothing will be done between
+them.
+
+Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
+Signed-off-by: yu kuai <yukuai3@huawei.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pwm/pwm-pca9685.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 168684b02ebce..b07bdca3d510d 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -159,13 +159,9 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
+ static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
+ {
+ 	struct pca9685 *pca = gpiochip_get_data(gpio);
+-	struct pwm_device *pwm;
+ 
+ 	pca9685_pwm_gpio_set(gpio, offset, 0);
+ 	pm_runtime_put(pca->chip.dev);
+-	mutex_lock(&pca->lock);
+-	pwm = &pca->chip.pwms[offset];
+-	mutex_unlock(&pca->lock);
+ }
+ 
+ static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.20.1
