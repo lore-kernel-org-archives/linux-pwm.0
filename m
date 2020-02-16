@@ -1,76 +1,77 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH AUTOSEL 5.5 418/542] pwm: Remove set but not set variable
- 'pwm'
-Date: Fri, 14 Feb 2020 16:46:00 -0500
-Message-ID: <20200214214600.GB4193448@kroah.com>
-References: <20200214154854.6746-1-sashal@kernel.org>
- <20200214154854.6746-418-sashal@kernel.org>
- <20200214174014.lfnhsl6d7nyfkfbm@pengutronix.de>
+From: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v5 0/7] Add support for Azoteq IQS620A/621/622/624/625
+Date: Sun, 16 Feb 2020 17:32:04 -0600
+Message-ID: <1581895931-6056-1-git-send-email-jeff@labundy.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:59432 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730578AbgBNVyb (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 14 Feb 2020 16:54:31 -0500
-Content-Disposition: inline
-In-Reply-To: <20200214174014.lfnhsl6d7nyfkfbm@pengutronix.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org, stable@vger.kernel.org, yu kuai <yukuai3@huawei.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 06:40:14PM +0100, Uwe Kleine-König wrote:
-> Hello Sasha,
-> 
-> On Fri, Feb 14, 2020 at 10:46:50AM -0500, Sasha Levin wrote:
-> > From: yu kuai <yukuai3@huawei.com>
-> > 
-> > [ Upstream commit 9871abffc81048e20f02e15d6aa4558a44ad53ea ]
-> > 
-> > Fixes gcc '-Wunused-but-set-variable' warning:
-> > 
-> > 	drivers/pwm/pwm-pca9685.c: In function ‘pca9685_pwm_gpio_free’:
-> > 	drivers/pwm/pwm-pca9685.c:162:21: warning: variable ‘pwm’ set but not used [-Wunused-but-set-variable]
-> > 
-> > It is never used, and so can be removed. In that case, hold and release
-> > the lock 'pca->lock' can be removed since nothing will be done between
-> > them.
-> > 
-> > Fixes: e926b12c611c ("pwm: Clear chip_data in pwm_put()")
-> > Signed-off-by: yu kuai <yukuai3@huawei.com>
-> > Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>
-> > ---
-> >  drivers/pwm/pwm-pca9685.c | 4 ----
-> >  1 file changed, 4 deletions(-)
-> > 
-> > diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-> > index 168684b02ebce..b07bdca3d510d 100644
-> > --- a/drivers/pwm/pwm-pca9685.c
-> > +++ b/drivers/pwm/pwm-pca9685.c
-> > @@ -159,13 +159,9 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
-> >  static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
-> >  {
-> >  	struct pca9685 *pca = gpiochip_get_data(gpio);
-> > -	struct pwm_device *pwm;
-> >  
-> >  	pca9685_pwm_gpio_set(gpio, offset, 0);
-> >  	pm_runtime_put(pca->chip.dev);
-> > -	mutex_lock(&pca->lock);
-> > -	pwm = &pca->chip.pwms[offset];
-> > -	mutex_unlock(&pca->lock);
-> 
-> Even though I bet this change won't introduce a regression, it only
-> fixes a harmless warning. So I wonder if it objectively qualifies to be
-> applied for stable.
+This series adds support for the Azoteq IQS620A, IQS621, IQS622, IQS624 and
+IQS625 multi-function sensors. Each device integrates numerous sensing tech-
+nologies in a single package.
 
-See my response to another one of these types of patches.  In order
-words, I agree, these aren't needed unless they are prereqs for other
-real fixes.
+A multi-function device (MFD) driver supports core functions common to all
+devices, including device identification, firmware, interrupt handling and
+runtime power management. The MFD driver is also responsible for adding all
+product-specific sub-devices.
 
-thanks,
+Each device supports self-capacitive, Hall-effect, and (in some cases) mutual-
+inductive sensing. These functions represent keys or switches and are supported
+by an input driver that covers all five devices. An assortment of pwm and iio
+drivers supports device-specific functions including ambient light and angular
+position sensing.
 
-greg k-h
+This series was tested using the following development hardware: IQS620AEV04,
+IQS621EV04, IQS622EV04 and IQS624/5EV04. A demonstration of the series can be
+seen at the following link: https://youtu.be/7hJZPeFT0aY
+
+Jeff LaBundy (7):
+  dt-bindings: Add bindings for Azoteq IQS620A/621/622/624/625
+  mfd: Add support for Azoteq IQS620A/621/622/624/625
+  input: keyboard: Add support for Azoteq IQS620A/621/622/624/625
+  pwm: Add support for Azoteq IQS620A PWM generator
+  iio: temperature: Add support for Azoteq IQS620AT temperature sensor
+  iio: light: Add support for Azoteq IQS621/622 ambient light sensors
+  iio: position: Add support for Azoteq IQS624/625 angle sensors
+
+ .../devicetree/bindings/input/iqs62x-keys.yaml     |  132 +++
+ Documentation/devicetree/bindings/mfd/iqs62x.yaml  |  179 ++++
+ .../devicetree/bindings/pwm/iqs620a-pwm.yaml       |   32 +
+ drivers/iio/Kconfig                                |    1 +
+ drivers/iio/Makefile                               |    1 +
+ drivers/iio/light/Kconfig                          |   10 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/iio/light/iqs621-als.c                     |  617 ++++++++++++
+ drivers/iio/position/Kconfig                       |   19 +
+ drivers/iio/position/Makefile                      |    7 +
+ drivers/iio/position/iqs624-pos.c                  |  284 ++++++
+ drivers/iio/temperature/Kconfig                    |   10 +
+ drivers/iio/temperature/Makefile                   |    1 +
+ drivers/iio/temperature/iqs620at-temp.c            |   97 ++
+ drivers/input/keyboard/Kconfig                     |   10 +
+ drivers/input/keyboard/Makefile                    |    1 +
+ drivers/input/keyboard/iqs62x-keys.c               |  335 ++++++
+ drivers/mfd/Kconfig                                |   13 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/iqs62x.c                               | 1063 ++++++++++++++++++++
+ drivers/pwm/Kconfig                                |   10 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-iqs620a.c                          |  270 +++++
+ include/linux/mfd/iqs62x.h                         |  139 +++
+ 24 files changed, 3234 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/iqs62x-keys.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/iqs62x.yaml
+ create mode 100644 Documentation/devicetree/bindings/pwm/iqs620a-pwm.yaml
+ create mode 100644 drivers/iio/light/iqs621-als.c
+ create mode 100644 drivers/iio/position/Kconfig
+ create mode 100644 drivers/iio/position/Makefile
+ create mode 100644 drivers/iio/position/iqs624-pos.c
+ create mode 100644 drivers/iio/temperature/iqs620at-temp.c
+ create mode 100644 drivers/input/keyboard/iqs62x-keys.c
+ create mode 100644 drivers/mfd/iqs62x.c
+ create mode 100644 drivers/pwm/pwm-iqs620a.c
+ create mode 100644 include/linux/mfd/iqs62x.h
