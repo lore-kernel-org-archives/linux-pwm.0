@@ -1,7 +1,7 @@
 From: Anson Huang <Anson.Huang@nxp.com>
-Subject: [PATCH 2/3] pwm: imx27: Remove unused include of of_device.h
-Date: Fri, 21 Feb 2020 15:45:28 +0800
-Message-ID: <1582271129-13589-2-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH 3/3] pwm: mxs: Remove unused include of of_address.h
+Date: Fri, 21 Feb 2020 15:45:29 +0800
+Message-ID: <1582271129-13589-3-git-send-email-Anson.Huang@nxp.com>
 References: <1582271129-13589-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,22 +21,22 @@ To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, shawnguo@kernel.or
 Cc: Linux-imx@nxp.com
 List-Id: linux-pwm@vger.kernel.org
 
-There is nothing in use from of_device.h, remove it.
+There is nothing in use from of_address.h, remove it.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
- drivers/pwm/pwm-imx27.c | 1 -
+ drivers/pwm/pwm-mxs.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index 35a7ac42..704c38e 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -18,7 +18,6 @@
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index f2e57fc..7ce6169 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -9,7 +9,6 @@
  #include <linux/kernel.h>
  #include <linux/module.h>
  #include <linux/of.h>
--#include <linux/of_device.h>
+-#include <linux/of_address.h>
  #include <linux/platform_device.h>
  #include <linux/pwm.h>
  #include <linux/slab.h>
