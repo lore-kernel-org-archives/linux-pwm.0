@@ -1,60 +1,94 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] regulator: pwm: Don't warn on probe deferral
-Date: Wed, 26 Feb 2020 16:39:05 +0000
-Message-ID: <20200226163905.GH4136@sirena.org.uk>
-References: <20200224144048.6587-1-jonathanh@nvidia.com>
- <20200224165859.GJ6215@sirena.org.uk>
- <20200226161757.idpzbs3jmayt7ya6@pengutronix.de>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: (EXT) Re: [PATCH 1/4] pwm: pca9685: remove unused duty_cycle
+ struct element
+Date: Wed, 26 Feb 2020 18:03:02 +0100
+Message-ID: <32ec35c2b3da119dd2c7bc09742796a0d8a9607e.camel@ew.tq-group.com>
+References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
+         <20200226151034.7i3h5blmrwre2yzg@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nOM8ykUjac0mNN89"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20200226161757.idpzbs3jmayt7ya6-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200226151034.7i3h5blmrwre2yzg@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
+On Wed, 2020-02-26 at 16:10 +0100, Uwe Kleine-König wrote:
+> Hello Matthias,
+> 
+> as you seem to have this hardware on your desk, it would be great if
+> you
+> could answer the following questions:
+> 
+>  - Does the hardware complete the currently running period before
+>    applying a new setting?
 
---nOM8ykUjac0mNN89
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The datasheet claims:
 
-On Wed, Feb 26, 2020 at 05:17:57PM +0100, Uwe Kleine-K=F6nig wrote:
-> On Mon, Feb 24, 2020 at 04:58:59PM +0000, Mark Brown wrote:
+> Because the loading of the LEDn_ON and LEDn_OFF registers is via the
+> I 2 C-bus, and
+> asynchronous to the internal oscillator, we want to ensure that we do
+> not see any visual
+> artifacts of changing the ON and OFF values. This is achieved by
+> updating the changes at
+> the end of the LOW cycle.
 
-> > This then means that there's no way for users to determine why the
-> > driver has failed to instantiate which can be frustrating.  It'd be
-> > better to at least have some dev_dbg() output when deferring so that
-> > there's something for people to go on without having to instrument the
-> > code.
+My interpretation is that the hardware will complete its period before
+applying the new settings. I might check with a scope tomorrow-ish.
 
-> Not printing an error message is quite usual however. I think a generic
 
-Usual yet also frustraing.
+>  - Is this racy somehow (i.e. can it happen that when going from
+>    duty_cycle/period = 1000/5000 to duty_cycle/period = 4000/10000
+> the
+>    output is 1000/10000 (or 4000/5000) for one cycle)?
 
-> approach that for example makes the list of devices that should be
-> retried to probe on the next opportunity inspectable would be nice.
+It currently is racy. It should be possible to fix that either by
+updating all 4 registers in a single I2C write, or by using the "update
+on ACK" mode which requires all 4 registers to be updated before the
+new setting is applied (I'm not sure if this mode would require using a
+single I2C write as well though).
 
-That's not really the issue, the bigger issue is trying to figure out
-why things are stuck - what exactly caused things to fail to
-instantiate.
 
---nOM8ykUjac0mNN89
-Content-Type: application/pgp-signature; name="signature.asc"
+>  - Does the hardware complete the currently running period before
+>    .enabled = false is configured?
 
------BEGIN PGP SIGNATURE-----
+As my interpretation is that new settings are applied asynchronously, I
+assume that the final running period is completed after .enabled is set
+to false.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5WnygACgkQJNaLcl1U
-h9C0mQf+Je+yXfq6X/+OPbN4ayVYuPYE2Jogk4VoMhPMPWkBhvvwkMwaer0tCd3p
-3fjLqb+JrBNj/HDM7DuLyAp/gh9KvTeMOvkat713Rtn3N41DhMBykaKzSAHRPRQm
-P4DZJiD1AjacRHfVyFhW0n2HGbQdDCNivbk+JYVyfrkneoY9+d/LbEaKn+P2aoxY
-VSPCIPXT9zmdnfym2UVxjAZXvDbY/PjVE6SOlRapjkkUTlyxMINV12lwC3aLM9ni
-tyLBcvKHXcJMZdh+Mn+YofFOhvCMsC8HbMLTZwNZaAkv9yVpuOEyI7lu7Z87TUpo
-M7XsPuQZQOrPqpCA3pf3fucaux9Dhg==
-=RL9B
------END PGP SIGNATURE-----
+>  - How does the output pin behave on a disabled PWM. (Usual
+> candidates
+>    are: freeze where is just happens to be, constant inactive and
+>    High-Z).
 
---nOM8ykUjac0mNN89--
+Constant inactive. This is also the case when the chip is put into
+sleep mode. Note that the interpretation of "inactive" depends in the
+invert flag in the MODE2 register.
+
+As it turns out, this driver is broken in yet another way I didn't find
+before: For changing the global prescaler the chip needs to be put into
+sleep mode, but the driver doesn't follow the restart sequence
+described in the datasheet when waking it back up. In consequence,
+changing the period of one PWM does not only modify the period of all
+PWMs (which is bad enough, but can't be avoided with this hardware),
+but it also leaves all PWMs disabled...
+
+As this hardware only has a single prescaler for all PWMs, should
+changing the period for individual PWMs even be allowed at all? Maybe
+only when all other PWMs are inactive?
+
+I could imagine setting it in DTS instead (but I'm not sure what to do
+about non-OF users of this driver, for example when configured via
+ACPI).
+
+Regards,
+Matthias
+
+
+
+> 
+> Best regards
+> Uwe
+> 
