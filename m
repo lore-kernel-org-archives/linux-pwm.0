@@ -1,45 +1,54 @@
 From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: [PATCH v2 3/5] clocksource: timer-ti-dm: Do not update counter on updating the period
-Date: Fri, 28 Feb 2020 15:23:44 +0530
-Message-ID: <20200228095346.32177-4-lokeshvutla@ti.com>
-References: <20200228095346.32177-1-lokeshvutla@ti.com>
+Subject: [PATCH v2 0/5] pwm: omap-dmtimer: Allow for dynamic pwm period updates
+Date: Fri, 28 Feb 2020 15:26:45 +0530
+Message-ID: <20200228095651.32464-1-lokeshvutla@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20200228095346.32177-1-lokeshvutla@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>, Tony Lindgren <tony@atomide.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:55508 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbgB1J5w (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Feb 2020 04:57:52 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>
 
-Write to trigger register(OMAP_TIMER_TRIGGER_REG) will load the value
-in Load register(OMAP_TIMER_LOAD_REG) into Counter register
-(OMAP_TIMER_COUNTER_REG).
+This series fixes minor issues in config callback and allows for on the
+fly updates for pwm period and duty cycle. This is mainly intended to
+allow pwm omap dmtimer to be used for generating a 1PPS signal that can be
+syncronized to PTP clock in CPTS module available in AM335x and AM57xx SoCs.
 
-omap_dm_timer_set_load() writes into trigger register every time load
-register is updated. When timer is configured in pwm mode, this causes
-disruption in current pwm cycle, which is not expected especially when
-pwm is used as PPS signal for synchronized PTP clocks. So do not write
-into trigger register on updating the period.
+Series depends on the following series:
+- https://patchwork.kernel.org/patch/11379875/
+- https://patchwork.kernel.org/project/linux-omap/list/?series=248929 
 
-Tested-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
----
- drivers/clocksource/timer-ti-dm.c | 1 -
- 1 file changed, 1 deletion(-)
+Full dependencies can be seen here:
+https://github.com/lokeshvutla/linux/tree/devel/pwm-1pps-generation-v2
 
-diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
-index 9606103b92e0..4c32ee41339a 100644
---- a/drivers/clocksource/timer-ti-dm.c
-+++ b/drivers/clocksource/timer-ti-dm.c
-@@ -544,7 +544,6 @@ static int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
- 	omap_dm_timer_write_reg(timer, OMAP_TIMER_CTRL_REG, l);
- 	omap_dm_timer_write_reg(timer, OMAP_TIMER_LOAD_REG, load);
- 
--	omap_dm_timer_write_reg(timer, OMAP_TIMER_TRIGGER_REG, 0);
- 	omap_dm_timer_disable(timer);
- 	return 0;
- }
+Changes since v1:
+- Updated commit description in PATCH 1
+- Added a brief about PWM generation using OMAP DM timer.
+- Updated the pwm stop callback to allow for completing the current pwm
+  cycle.
+- Added the limitaitons of hardware.
+- Used hw status instead of relying on pwm framework for state update.
+
+Lokesh Vutla (6):
+  pwm: omap-dmtimer: Drop unused header file
+  pwm: omap-dmtimer: Update description for pwm omap dm timer
+  pwm: omap-dmtimer: Fix pwm enabling sequence
+  pwm: omap-dmtimer: Fix pwm disabling sequence
+  pwm: omap-dmtimer: Do not disable pwm before changing
+    period/duty_cycle
+  pwm: omap-dmtimer: Implement .apply callback
+
+ drivers/pwm/pwm-omap-dmtimer.c                | 248 +++++++++++++-----
+ include/clocksource/timer-ti-dm.h             |   3 +-
+ .../linux/platform_data/pwm_omap_dmtimer.h    |  90 -------
+ 3 files changed, 178 insertions(+), 163 deletions(-)
+ delete mode 100644 include/linux/platform_data/pwm_omap_dmtimer.h
+
 -- 
 2.23.0
