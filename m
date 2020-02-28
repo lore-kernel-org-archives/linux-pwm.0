@@ -1,7 +1,7 @@
 From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: [PATCH v2 3/6] pwm: omap-dmtimer: Fix pwm enabling sequence
-Date: Fri, 28 Feb 2020 15:26:48 +0530
-Message-ID: <20200228095651.32464-4-lokeshvutla@ti.com>
+Subject: [PATCH v2 4/6] pwm: omap-dmtimer: Fix pwm disabling sequence
+Date: Fri, 28 Feb 2020 15:26:49 +0530
+Message-ID: <20200228095651.32464-5-lokeshvutla@ti.com>
 References: <20200228095651.32464-1-lokeshvutla@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -13,49 +13,38 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
-To configure DM timer in pwm mode the following needs to be set in
-OMAP_TIMER_CTRL_REG using set_pwm callback:
-- Set toggle mode on PORTIMERPWM output pin
-- Set trigger on overflow and match on PORTIMERPWM output pin.
-- Set auto reload
-
-This is a one time configuration and needs to be set before the start of
-the dm timer. But the current driver tries to set the same configuration
-for every period/duty cycle update, which is not needed. So move the pwm
-setup before enabling timer and do not update it in pwm_omap_dmtimer_config.
+pwm_omap_dmtimer_disable() calls .stop callback which abruptly stops the
+timer counter. This doesn't complete the current pwm cycle and
+immediately disables the pwm. Instead disable the auto reload
+functionality which allows to complete the current pwm cycle and then
+disables the timer.
 
 Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
 ---
- drivers/pwm/pwm-omap-dmtimer.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/pwm/pwm-omap-dmtimer.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index a24a630ccdb9..bc338619232d 100644
+index bc338619232d..89b3c25d02b8 100644
 --- a/drivers/pwm/pwm-omap-dmtimer.c
 +++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -77,6 +77,11 @@ static int pwm_omap_dmtimer_enable(struct pwm_chip *chip,
+@@ -93,8 +93,16 @@ static void pwm_omap_dmtimer_disable(struct pwm_chip *chip,
+ {
  	struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
  
++	/*
++	 * Disable auto reload so that the current cycle gets completed and
++	 * then the counter stops.
++	 */
  	mutex_lock(&omap->mutex);
+-	omap->pdata->stop(omap->dm_timer);
 +	omap->pdata->set_pwm(omap->dm_timer,
 +			     pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED,
 +			     true, OMAP_TIMER_TRIGGER_OVERFLOW_AND_COMPARE,
-+			     true);
++			     false);
 +
- 	pwm_omap_dmtimer_start(omap);
  	mutex_unlock(&omap->mutex);
+ }
  
-@@ -193,11 +198,6 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
- 	dev_dbg(chip->dev, "load value: %#08x (%d), match value: %#08x (%d)\n",
- 		load_value, load_value,	match_value, match_value);
- 
--	omap->pdata->set_pwm(omap->dm_timer,
--			     pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED,
--			     true, OMAP_TIMER_TRIGGER_OVERFLOW_AND_COMPARE,
--			     true);
--
- 	/* If config was called while timer was running it must be reenabled. */
- 	if (timer_active)
- 		pwm_omap_dmtimer_start(omap);
 -- 
 2.23.0
