@@ -1,36 +1,43 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v5 4/7] pwm: Add support for Azoteq IQS620A PWM generator
-Date: Fri, 28 Feb 2020 10:22:34 +0100
-Message-ID: <20200228092234.owlqvpuwu4hk3vog@pengutronix.de>
-References: <1581895931-6056-1-git-send-email-jeff@labundy.com>
- <1581895931-6056-5-git-send-email-jeff@labundy.com>
+From: Lokesh Vutla <lokeshvutla@ti.com>
+Subject: [PATCH v2 0/5] clocksource: timer-ti-dm: Prepare for dynamic pwm period updates
+Date: Fri, 28 Feb 2020 15:23:41 +0530
+Message-ID: <20200228095346.32177-1-lokeshvutla@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1581895931-6056-5-git-send-email-jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
-Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:34120 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726440AbgB1Jy6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Feb 2020 04:54:58 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>
 
-Hello Jeff,
+This series fixes dm_timer_ops used for enabling the pwm and enables
+cpu_pm notifier for context save and restore. This acts as a preparatory
+series for enabling dynamic period updates for pwm omap dm timer driver.
 
-On Sun, Feb 16, 2020 at 05:32:08PM -0600, Jeff LaBundy wrote:
-> This patch adds support for the Azoteq IQS620A, capable of generating
-> a 1-kHz PWM output with duty cycle between ~0.4% and 100% (inclusive).
-> 
-> Signed-off-by: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Changes since v1:
+- Updated License header to use SPDX identifier
+- Implemented cpu_pm notfier
+- Added support for getting pwm current status
+- Extended set_pwm functionality.
 
-I like it,
+Lokesh Vutla (5):
+  clocksource: timer-ti-dm: Convert to SPDX identifier
+  clocksource: timer-ti-dm: Implement cpu_pm notifier for context save
+    and restore
+  clocksource: timer-ti-dm: Do not update counter on updating the period
+  clocksource: timer-ti-dm: Add support to get pwm current status
+  clocksource: timer-ti-dm: Enable autoreload in set_pwm
 
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-
-Best regards
-Uwe
+ drivers/clocksource/timer-ti-dm.c          | 136 ++++++++++-----------
+ drivers/pwm/pwm-omap-dmtimer.c             |   8 +-
+ include/clocksource/timer-ti-dm.h          |   3 +-
+ include/linux/platform_data/dmtimer-omap.h |   6 +-
+ 4 files changed, 75 insertions(+), 78 deletions(-)
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.23.0
