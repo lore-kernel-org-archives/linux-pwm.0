@@ -1,59 +1,32 @@
-From: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] pwm: tegra: Add support for Tegra194
-Date: Thu, 5 Mar 2020 16:57:33 +0530
-Message-ID: <1583407653-30059-1-git-send-email-spatra@nvidia.com>
+From: ''Michael Weirsky'' <alex.zari@11d02.mspz7.gob.ec>
+Subject: =?utf-8?q?Wohlt=C3=A4tigkeitsspende_von_2=2E000=2E000_Millionen_Euro?=
+Date: Thu, 05 Mar 2020 11:26:41 +0200
+Message-ID: <20200305093344.0E441146B24@mail.11d02.mspz7.gob.ec>
+Reply-To: mikeweirskyspende@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
-Cc: bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.11d02.mspz7.gob.ec ([181.211.254.254]:45182 "EHLO
+        mail.11d02.mspz7.gob.ec" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727112AbgCEMDy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Mar 2020 07:03:54 -0500
+Content-Description: Mail message body
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Recipients <alex.zari@11d02.mspz7.gob.ec>
 
-Tegra194 has multiple PWM controllers with each having only one output.
+Lieber Freund,
 
-Also the maxmimum frequency is higher than earlier SoCs.
+Ich bin Herr Mike Weirsky, New Jersey, Vereinigte Staaten von Amerika, der Mega-Gewinner von $ 273million In Mega Millions Jackpot, spende ich an 5 zufällige Personen, wenn Sie diese E-Mail erhalten, dann wurde Ihre E-Mail nach einem Spinball ausgewählt.Ich habe den größten Teil meines Vermögens auf eine Reihe von Wohltätigkeitsorganisationen und Organisationen verteilt.Ich habe mich freiwillig dazu entschieden, die Summe von € 2.000.000,00 an Sie als eine der ausgewählten 5 zu spenden, um meine Gewinne zu überprüfen.
+Das ist dein Spendencode: [MW530342019]
+www.youtube.com/watch?v=un8yRTmrYMY
 
-Add support for Tegra194 and specify the number of PWM outputs and
-maximum supported frequency using device tree match data.
+Antworten Sie mit dem SPENDE-CODE an diese 
 
-Signed-off-by: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 1 +
- drivers/pwm/pwm-tegra.c                                      | 6 ++++++
- 2 files changed, 7 insertions(+)
+E-Mail:mikeweirskyspende@gmail.com
 
-diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-index 0a69ead..74c41e3 100644
---- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-@@ -9,6 +9,7 @@ Required properties:
-   - "nvidia,tegra132-pwm", "nvidia,tegra20-pwm": for Tegra132
-   - "nvidia,tegra210-pwm", "nvidia,tegra20-pwm": for Tegra210
-   - "nvidia,tegra186-pwm": for Tegra186
-+  - "nvidia,tegra194-pwm": for Tegra194
- - reg: physical base address and length of the controller's registers
- - #pwm-cells: should be 2. See pwm.yaml in this directory for a description of
-   the cells format.
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index aa12fb3..d26ed8f 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -282,9 +282,15 @@ static const struct tegra_pwm_soc tegra186_pwm_soc = {
- 	.max_frequency = 102000000UL,
- };
- 
-+static const struct tegra_pwm_soc tegra194_pwm_soc = {
-+	.num_channels = 1,
-+	.max_frequency = 408000000UL,
-+};
-+
- static const struct of_device_id tegra_pwm_of_match[] = {
- 	{ .compatible = "nvidia,tegra20-pwm", .data = &tegra20_pwm_soc },
- 	{ .compatible = "nvidia,tegra186-pwm", .data = &tegra186_pwm_soc },
-+	{ .compatible = "nvidia,tegra194-pwm", .data = &tegra194_pwm_soc },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
--- 
-2.7.4
+Ich hoffe, Sie und Ihre Familie glücklich zu machen.
+
+Grüße
+Herr Mike Weirsky
