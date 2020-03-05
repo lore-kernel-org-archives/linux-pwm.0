@@ -1,135 +1,59 @@
-From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: [PATCH v3 6/6] clocksource: timer-ti-dm: Enable autoreload in set_pwm
-Date: Thu, 5 Mar 2020 13:57:15 +0530
-Message-ID: <20200305082715.15861-7-lokeshvutla@ti.com>
-References: <20200305082715.15861-1-lokeshvutla@ti.com>
+From: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] pwm: tegra: Add support for Tegra194
+Date: Thu, 5 Mar 2020 16:57:33 +0530
+Message-ID: <1583407653-30059-1-git-send-email-spatra@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200305082715.15861-1-lokeshvutla@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-dm timer ops set_load() api allows to configure the load value and to
-set the auto reload feature. But auto reload feature is independent of
-load value and should be part of configuring pwm. This way pwm can be
-disabled by disabling auto reload feature using set_pwm() so that the
-current pwm cycle will be completed. Else pwm disabling causes the
-cycle to be stopped abruptly.
+Tegra194 has multiple PWM controllers with each having only one output.
 
-Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
+Also the maxmimum frequency is higher than earlier SoCs.
+
+Add support for Tegra194 and specify the number of PWM outputs and
+maximum supported frequency using device tree match data.
+
+Signed-off-by: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/clocksource/timer-ti-dm.c          | 16 +++++-----------
- drivers/pwm/pwm-omap-dmtimer.c             |  8 +++++---
- include/linux/platform_data/dmtimer-omap.h |  5 ++---
- 3 files changed, 12 insertions(+), 17 deletions(-)
+ Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 1 +
+ drivers/pwm/pwm-tegra.c                                      | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
-index 10e1d08bfc4c..1f210ef60b22 100644
---- a/drivers/clocksource/timer-ti-dm.c
-+++ b/drivers/clocksource/timer-ti-dm.c
-@@ -531,21 +531,13 @@ static int omap_dm_timer_stop(struct omap_dm_timer *timer)
- 	return 0;
- }
+diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+index 0a69ead..74c41e3 100644
+--- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+@@ -9,6 +9,7 @@ Required properties:
+   - "nvidia,tegra132-pwm", "nvidia,tegra20-pwm": for Tegra132
+   - "nvidia,tegra210-pwm", "nvidia,tegra20-pwm": for Tegra210
+   - "nvidia,tegra186-pwm": for Tegra186
++  - "nvidia,tegra194-pwm": for Tegra194
+ - reg: physical base address and length of the controller's registers
+ - #pwm-cells: should be 2. See pwm.yaml in this directory for a description of
+   the cells format.
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index aa12fb3..d26ed8f 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -282,9 +282,15 @@ static const struct tegra_pwm_soc tegra186_pwm_soc = {
+ 	.max_frequency = 102000000UL,
+ };
  
--static int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
-+static int omap_dm_timer_set_load(struct omap_dm_timer *timer,
- 				  unsigned int load)
- {
--	u32 l;
--
- 	if (unlikely(!timer))
- 		return -EINVAL;
- 
- 	omap_dm_timer_enable(timer);
--	l = omap_dm_timer_read_reg(timer, OMAP_TIMER_CTRL_REG);
--	if (autoreload)
--		l |= OMAP_TIMER_CTRL_AR;
--	else
--		l &= ~OMAP_TIMER_CTRL_AR;
--	omap_dm_timer_write_reg(timer, OMAP_TIMER_CTRL_REG, l);
- 	omap_dm_timer_write_reg(timer, OMAP_TIMER_LOAD_REG, load);
- 
- 	omap_dm_timer_disable(timer);
-@@ -574,7 +566,7 @@ static int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable,
- }
- 
- static int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
--				 int toggle, int trigger)
-+				 int toggle, int trigger, int autoreload)
- {
- 	u32 l;
- 
-@@ -584,12 +576,14 @@ static int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
- 	omap_dm_timer_enable(timer);
- 	l = omap_dm_timer_read_reg(timer, OMAP_TIMER_CTRL_REG);
- 	l &= ~(OMAP_TIMER_CTRL_GPOCFG | OMAP_TIMER_CTRL_SCPWM |
--	       OMAP_TIMER_CTRL_PT | (0x03 << 10));
-+	       OMAP_TIMER_CTRL_PT | (0x03 << 10) | OMAP_TIMER_CTRL_AR);
- 	if (def_on)
- 		l |= OMAP_TIMER_CTRL_SCPWM;
- 	if (toggle)
- 		l |= OMAP_TIMER_CTRL_PT;
- 	l |= trigger << 10;
-+	if (autoreload)
-+		l |= OMAP_TIMER_CTRL_AR;
- 	omap_dm_timer_write_reg(timer, OMAP_TIMER_CTRL_REG, l);
- 
- 	omap_dm_timer_disable(timer);
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index 88a3c5690fea..9e4378dc6897 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -183,7 +183,7 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
- 	if (timer_active)
- 		omap->pdata->stop(omap->dm_timer);
- 
--	omap->pdata->set_load(omap->dm_timer, true, load_value);
-+	omap->pdata->set_load(omap->dm_timer, load_value);
- 	omap->pdata->set_match(omap->dm_timer, true, match_value);
- 
- 	dev_dbg(chip->dev, "load value: %#08x (%d), match value: %#08x (%d)\n",
-@@ -192,7 +192,8 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
- 	omap->pdata->set_pwm(omap->dm_timer,
- 			      pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED,
- 			      true,
--			      PWM_OMAP_DMTIMER_TRIGGER_OVERFLOW_AND_COMPARE);
-+			      PWM_OMAP_DMTIMER_TRIGGER_OVERFLOW_AND_COMPARE,
-+			      true);
- 
- 	/* If config was called while timer was running it must be reenabled. */
- 	if (timer_active)
-@@ -222,7 +223,8 @@ static int pwm_omap_dmtimer_set_polarity(struct pwm_chip *chip,
- 	omap->pdata->set_pwm(omap->dm_timer,
- 			      polarity == PWM_POLARITY_INVERSED,
- 			      true,
--			      PWM_OMAP_DMTIMER_TRIGGER_OVERFLOW_AND_COMPARE);
-+			      PWM_OMAP_DMTIMER_TRIGGER_OVERFLOW_AND_COMPARE,
-+			      true);
- 	mutex_unlock(&omap->mutex);
- 
- 	return 0;
-diff --git a/include/linux/platform_data/dmtimer-omap.h b/include/linux/platform_data/dmtimer-omap.h
-index 3173b7b6ff6f..95d852aef130 100644
---- a/include/linux/platform_data/dmtimer-omap.h
-+++ b/include/linux/platform_data/dmtimer-omap.h
-@@ -30,12 +30,11 @@ struct omap_dm_timer_ops {
- 	int	(*stop)(struct omap_dm_timer *timer);
- 	int	(*set_source)(struct omap_dm_timer *timer, int source);
- 
--	int	(*set_load)(struct omap_dm_timer *timer, int autoreload,
--			    unsigned int value);
-+	int	(*set_load)(struct omap_dm_timer *timer, unsigned int value);
- 	int	(*set_match)(struct omap_dm_timer *timer, int enable,
- 			     unsigned int match);
- 	int	(*set_pwm)(struct omap_dm_timer *timer, int def_on,
--			   int toggle, int trigger);
-+			   int toggle, int trigger, int autoreload);
- 	int	(*get_pwm_status)(struct omap_dm_timer *timer);
- 	int	(*set_prescaler)(struct omap_dm_timer *timer, int prescaler);
- 
++static const struct tegra_pwm_soc tegra194_pwm_soc = {
++	.num_channels = 1,
++	.max_frequency = 408000000UL,
++};
++
+ static const struct of_device_id tegra_pwm_of_match[] = {
+ 	{ .compatible = "nvidia,tegra20-pwm", .data = &tegra20_pwm_soc },
+ 	{ .compatible = "nvidia,tegra186-pwm", .data = &tegra186_pwm_soc },
++	{ .compatible = "nvidia,tegra194-pwm", .data = &tegra194_pwm_soc },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
 -- 
-2.23.0
+2.7.4
