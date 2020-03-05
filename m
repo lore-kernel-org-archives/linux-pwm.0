@@ -1,32 +1,67 @@
-From: ''Michael Weirsky'' <alex.zari@11d02.mspz7.gob.ec>
-Subject: =?utf-8?q?Wohlt=C3=A4tigkeitsspende_von_2=2E000=2E000_Millionen_Euro?=
-Date: Thu, 05 Mar 2020 11:26:41 +0200
-Message-ID: <20200305093344.0E441146B24@mail.11d02.mspz7.gob.ec>
-Reply-To: mikeweirskyspende@gmail.com
+From: Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>
+Subject: Inverted PWM output on iMX6
+Date: Thu, 5 Mar 2020 13:22:32 +0000
+Message-ID: <20200305132232.1aced378@ub1910>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.11d02.mspz7.gob.ec ([181.211.254.254]:45182 "EHLO
-        mail.11d02.mspz7.gob.ec" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbgCEMDy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Mar 2020 07:03:54 -0500
-Content-Description: Mail message body
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?UTF-8?B?S2xlaW5lLUs=?= =?UTF-8?B?w7ZuaWc=?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Recipients <alex.zari@11d02.mspz7.gob.ec>
 
-Lieber Freund,
+Hi folks,
 
-Ich bin Herr Mike Weirsky, New Jersey, Vereinigte Staaten von Amerika, der Mega-Gewinner von $ 273million In Mega Millions Jackpot, spende ich an 5 zufällige Personen, wenn Sie diese E-Mail erhalten, dann wurde Ihre E-Mail nach einem Spinball ausgewählt.Ich habe den größten Teil meines Vermögens auf eine Reihe von Wohltätigkeitsorganisationen und Organisationen verteilt.Ich habe mich freiwillig dazu entschieden, die Summe von € 2.000.000,00 an Sie als eine der ausgewählten 5 zu spenden, um meine Gewinne zu überprüfen.
-Das ist dein Spendencode: [MW530342019]
-www.youtube.com/watch?v=un8yRTmrYMY
+I recently ran into an issue using the pwm-fan driver with an inverted
+PWM output on iMX6.
 
-Antworten Sie mit dem SPENDE-CODE an diese 
+The fan is defined in the device tree as follows:
 
-E-Mail:mikeweirskyspende@gmail.com
+	fan0: pwm-fan {
+		compatible = "pwm-fan";
+		pwms = <&pwm2 0 25000 PWM_POLARITY_INVERTED>;
+		...
+	}
 
-Ich hoffe, Sie und Ihre Familie glücklich zu machen.
+In pwm_imx27_probe() the support for a third `flags` argument in a pwm
+reference is enabled:
 
-Grüße
-Herr Mike Weirsky
+	imx->chip.of_xlate = of_pwm_xlate_with_flags;
+	imx->chip.of_pwm_n_cells = 3;
+
+However, the flag is ignored and the output is not inverted.
+
+By adding some prints I saw that when of_pwm_xlate_with_flags() is
+called, args->args_count is 2 instead of 3.
+
+Looking at the definition of the pwm device itself in imx6qdl.dtsi I
+can see that the number of cells in a pwm reference is set to 2 not 3:
+
+	pwm2: pwm@2084000 {
+		#pwm-cells = <2>;
+		...
+	};
+
+That seems to be preventing a third argument from being passed.
+
+I can change `#pwm-cells` to <3> and then everything works for my
+device but I'm not sure that is the correct solution for everyone. That
+would require all pwm references on iMX6 devices to use 3 cells. The
+code in of_pwm_xlate_with_flags() seems to be built to handle either 2
+or 3 argument cells but I can't see any way to allow this choice in the
+device tree.
+
+If the solution is to set `#pwm-cells` to <3> I'm happy to send a patch
+which does this and updates all pwm references in device trees which
+include `imx6dql.dtsi`. Before I do that I'd like to know that it's the
+correct approach though.
+
+For context I've confirmed this is the case in Linux 5.4 and that the
+relevant files haven't changed between that release and 5.6.0-rc4.
+
+Thanks,
+
+-- 
+Paul Barker
+Konsulko Group
