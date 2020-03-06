@@ -1,46 +1,66 @@
-From: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: Re: [PATCH] pwm: tegra: Add support for Tegra194
-Date: Fri, 6 Mar 2020 14:33:02 +0530
-Message-ID: <cc4daacd-c9fb-8057-dad3-7411476e4757@nvidia.com>
-References: <1583407653-30059-1-git-send-email-spatra@nvidia.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH] regulator: pwm: Don't warn on probe deferral
+Date: Fri, 6 Mar 2020 12:35:30 +0000
+Message-ID: <20200306123530.GA4114@sirena.org.uk>
+References: <20200224144048.6587-1-jonathanh@nvidia.com>
+ <20200224165859.GJ6215@sirena.org.uk>
+ <20200226161757.idpzbs3jmayt7ya6@pengutronix.de>
+ <20200226163905.GH4136@sirena.org.uk>
+ <20200306075129.mzs22yjitkmgrthh@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1583407653-30059-1-git-send-email-spatra@nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sandipan Patra <spatra@nvidia.com>, treding@nvidia.com, robh+dt@kernel.org, u.kleine-koenig@pengutronix.de, jonathanh@nvidia.com
-Cc: bbasu@nvidia.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="AqsLC8rIMeq19msA"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from foss.arm.com ([217.140.110.172]:60654 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726182AbgCFMfd (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 6 Mar 2020 07:35:33 -0500
+Content-Disposition: inline
+In-Reply-To: <20200306075129.mzs22yjitkmgrthh@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Jon Hunter <jonathanh@nvidia.com>, Liam Girdwood <lgirdwood@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org
 
 
+--AqsLC8rIMeq19msA
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thursday 05 March 2020 04:57 PM, Sandipan Patra wrote:
-> Tegra194 has multiple PWM controllers with each having only one output.
->
-> Also the maxmimum frequency is higher than earlier SoCs.
->
-> Add support for Tegra194 and specify the number of PWM outputs and
-> maximum supported frequency using device tree match data.
->
-> Signed-off-by: Sandipan Patra <spatra@nvidia.com>
-> ---
->   Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 1 +
->   drivers/pwm/pwm-tegra.c                                      | 6 ++++++
->   2 files changed, 7 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-> index 0a69ead..74c41e3 100644
-> --- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-> @@ -9,6 +9,7 @@ Required properties:
->     - "nvidia,tegra132-pwm", "nvidia,tegra20-pwm": for Tegra132
->     - "nvidia,tegra210-pwm", "nvidia,tegra20-pwm": for Tegra210
->     - "nvidia,tegra186-pwm": for Tegra186
-> +  - "nvidia,tegra194-pwm": for Tegra194
->   - reg: physical base address and length of the controller's registers
->   - #pwm-cells: should be 2. See pwm.yaml in this directory for a description of
->     the cells format.
->
+On Fri, Mar 06, 2020 at 08:51:29AM +0100, Uwe Kleine-K=F6nig wrote:
 
-Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
+> I wonder if we should do something like:
+
+> 	ret =3D some_call(some, args);
+> 	if (ret) {
+> 		if (emit_errmsg_for_err(ret))
+> 			dev_err(dev, "some_call failed: %pE\n", ERR_PTR(ret));
+> 		return ret;
+> 	}
+
+> and have emit_errmsg_for_err return true if ret !=3D -EPROBE_DEFER or some
+> kernel parameter is given.
+
+There was some effort in the past to have a dev_probe_err() or something
+which could have a similar implementation but that didn't end up going
+anywhere I think.  I do prefer the debug level log since it's much
+easier to have the information there without having to ask for it, that
+design would've supported that.
+
+--AqsLC8rIMeq19msA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5iQ5IACgkQJNaLcl1U
+h9BuHwf+PVNL4Sk9lvVXj3uZGPvOjvQ5AISnSi54O7gsRBhc+yGdANxc1ZpuIcxc
+URs2Khp5haI6dPXVVexp1Y0l/fHAi2k93GMep+8uQhosrQUZ7q08qdzrN54g1THK
+Y19+hSRF3KmBdoZPk3oqsTmX2j5Uq+Z6QU/U5WCO/j64WJJcAiR7zu35qEF7dDe2
+0SDzkQUvzz/EOqcPdt460hMXXhVrcKT/iqDD09cJXUjdWteEGbJfHFt845qPbR6o
+LEwoCZInR3P3q8bN2nwtkQa7BQESTjh4s/vNIq4QDYfbzdJ05WAqGZsETzb8/Vwr
+bYfbQDO11C3REAo8rUIj+i5yXdl9bQ==
+=uQ0f
+-----END PGP SIGNATURE-----
+
+--AqsLC8rIMeq19msA--
