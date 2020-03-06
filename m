@@ -1,82 +1,78 @@
-From: =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
-Subject: Re: Inverted PWM output on iMX6
-Date: Fri, 6 Mar 2020 08:43:45 +0100
-Message-ID: <619c279c-5dd7-8d81-3527-dc37f8827104@ysoft.com>
-References: <20200305132232.1aced378@ub1910>
- <20200305133649.bx7r7d4ntwi75qqb@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RESEND v6 1/2] pwm: Convert drivers to use 64-bit period and
+ duty cycle
+Date: Fri, 6 Mar 2020 08:44:40 +0100
+Message-ID: <20200306074440.ykekwwlvnbodxkjc@pengutronix.de>
+References: <cover.1583177501.git.gurus@codeaurora.org>
+ <28090aef9900ad483cbfbe77883e5ffcd8745907.1583177501.git.gurus@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200305133649.bx7r7d4ntwi75qqb@pengutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Paul Barker <pbarker@konsulko.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55167 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725853AbgCFHop (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Mar 2020 02:44:45 -0500
+Content-Disposition: inline
+In-Reply-To: <28090aef9900ad483cbfbe77883e5ffcd8745907.1583177501.git.gurus@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 
-T24gMDUuIDAzLiAyMCAxNDozNiwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gSGVsbG8sCj4g
-Cj4gT24gVGh1LCBNYXIgMDUsIDIwMjAgYXQgMDE6MjI6MzJQTSArMDAwMCwgUGF1bCBCYXJrZXIg
-d3JvdGU6Cj4+IEkgcmVjZW50bHkgcmFuIGludG8gYW4gaXNzdWUgdXNpbmcgdGhlIHB3bS1mYW4g
-ZHJpdmVyIHdpdGggYW4gaW52ZXJ0ZWQKPj4gUFdNIG91dHB1dCBvbiBpTVg2Lgo+Pgo+PiBUaGUg
-ZmFuIGlzIGRlZmluZWQgaW4gdGhlIGRldmljZSB0cmVlIGFzIGZvbGxvd3M6Cj4+Cj4+IAlmYW4w
-OiBwd20tZmFuIHsKPj4gCQljb21wYXRpYmxlID0gInB3bS1mYW4iOwo+PiAJCXB3bXMgPSA8JnB3
-bTIgMCAyNTAwMCBQV01fUE9MQVJJVFlfSU5WRVJURUQ+Owo+PiAJCS4uLgo+PiAJfQo+Pgo+PiBJ
-biBwd21faW14MjdfcHJvYmUoKSB0aGUgc3VwcG9ydCBmb3IgYSB0aGlyZCBgZmxhZ3NgIGFyZ3Vt
-ZW50IGluIGEgcHdtCj4+IHJlZmVyZW5jZSBpcyBlbmFibGVkOgo+Pgo+PiAJaW14LT5jaGlwLm9m
-X3hsYXRlID0gb2ZfcHdtX3hsYXRlX3dpdGhfZmxhZ3M7Cj4+IAlpbXgtPmNoaXAub2ZfcHdtX25f
-Y2VsbHMgPSAzOwo+Pgo+PiBIb3dldmVyLCB0aGUgZmxhZyBpcyBpZ25vcmVkIGFuZCB0aGUgb3V0
-cHV0IGlzIG5vdCBpbnZlcnRlZC4KPj4KPj4gQnkgYWRkaW5nIHNvbWUgcHJpbnRzIEkgc2F3IHRo
-YXQgd2hlbiBvZl9wd21feGxhdGVfd2l0aF9mbGFncygpIGlzCj4+IGNhbGxlZCwgYXJncy0+YXJn
-c19jb3VudCBpcyAyIGluc3RlYWQgb2YgMy4KPj4KPj4gTG9va2luZyBhdCB0aGUgZGVmaW5pdGlv
-biBvZiB0aGUgcHdtIGRldmljZSBpdHNlbGYgaW4gaW14NnFkbC5kdHNpIEkKPj4gY2FuIHNlZSB0
-aGF0IHRoZSBudW1iZXIgb2YgY2VsbHMgaW4gYSBwd20gcmVmZXJlbmNlIGlzIHNldCB0byAyIG5v
-dCAzOgo+Pgo+PiAJcHdtMjogcHdtQDIwODQwMDAgewo+PiAJCSNwd20tY2VsbHMgPSA8Mj47Cj4+
-IAkJLi4uCj4+IAl9Owo+Pgo+PiBUaGF0IHNlZW1zIHRvIGJlIHByZXZlbnRpbmcgYSB0aGlyZCBh
-cmd1bWVudCBmcm9tIGJlaW5nIHBhc3NlZC4KPj4KPj4gSSBjYW4gY2hhbmdlIGAjcHdtLWNlbGxz
-YCB0byA8Mz4gYW5kIHRoZW4gZXZlcnl0aGluZyB3b3JrcyBmb3IgbXkKPj4gZGV2aWNlIGJ1dCBJ
-J20gbm90IHN1cmUgdGhhdCBpcyB0aGUgY29ycmVjdCBzb2x1dGlvbiBmb3IgZXZlcnlvbmUuIFRo
-YXQKPj4gd291bGQgcmVxdWlyZSBhbGwgcHdtIHJlZmVyZW5jZXMgb24gaU1YNiBkZXZpY2VzIHRv
-IHVzZSAzIGNlbGxzLiBUaGUKPj4gY29kZSBpbiBvZl9wd21feGxhdGVfd2l0aF9mbGFncygpIHNl
-ZW1zIHRvIGJlIGJ1aWx0IHRvIGhhbmRsZSBlaXRoZXIgMgo+PiBvciAzIGFyZ3VtZW50IGNlbGxz
-IGJ1dCBJIGNhbid0IHNlZSBhbnkgd2F5IHRvIGFsbG93IHRoaXMgY2hvaWNlIGluIHRoZQo+PiBk
-ZXZpY2UgdHJlZS4KPj4KPj4gSWYgdGhlIHNvbHV0aW9uIGlzIHRvIHNldCBgI3B3bS1jZWxsc2Ag
-dG8gPDM+IEknbSBoYXBweSB0byBzZW5kIGEgcGF0Y2gKPj4gd2hpY2ggZG9lcyB0aGlzIGFuZCB1
-cGRhdGVzIGFsbCBwd20gcmVmZXJlbmNlcyBpbiBkZXZpY2UgdHJlZXMgd2hpY2gKPj4gaW5jbHVk
-ZSBgaW14NmRxbC5kdHNpYC4gQmVmb3JlIEkgZG8gdGhhdCBJJ2QgbGlrZSB0byBrbm93IHRoYXQg
-aXQncyB0aGUKPj4gY29ycmVjdCBhcHByb2FjaCB0aG91Z2guCj4+Cj4+IEZvciBjb250ZXh0IEkn
-dmUgY29uZmlybWVkIHRoaXMgaXMgdGhlIGNhc2UgaW4gTGludXggNS40IGFuZCB0aGF0IHRoZQo+
-PiByZWxldmFudCBmaWxlcyBoYXZlbid0IGNoYW5nZWQgYmV0d2VlbiB0aGF0IHJlbGVhc2UgYW5k
-IDUuNi4wLXJjNC4KPiAKPiBJIHRoaW5rIGNoYW5naW5nIHRoYXQgaXMgZmluZS4gSG93ZXZlciB5
-b3UnZCBoYXZlIHRvIGNhcmUgdGhhdCBhbGwKPiBpbi10cmVlIHVzZXJzIHRoYXQgcmVseSBvbiAj
-cHdtLWNlbGxzID0gPDI+IGFyZSBmaXhlZCBhY2NvcmRpbmdseS4KPiAKPiBJJ2QgZG86IGFkZCAj
-cHdtLWNlbGxzID0gPDM+IGluIHRoZSBjcHUuZHRzaSBhbmQgdGhlbiBhZGFwdCBhbGwKPiBtYWNo
-aW5lLmR0cyB0byBhZGQgI3B3bS1jZWxscyA9IDwyPiB1bnRpbCB0aGVyZSBhcmUgbm8gbW9yZSBj
-aGFuZ2VzIHRvCj4gdGhlIGdlbmVyYXRlZCBmaWxlcyBjb21wYXJlZCB0byB0aGUgY3VycmVudCBz
-dGF0ZS4KCkkgc29sdmVkIHRoYXQgaW4gdGhlIHBhc3Qgb24gb3VyIGJvYXJkIHRoZSBzYW1lIHdh
-eSBhcyBvdGhlciBpbXg2IGJvYXJkcwpkaWQuIEp1c3Qgb3ZlcnJpZGUgdGhlICNwd20tY2VsbHMg
-cHJvcGVydHkgaW4geW91ciBib2FyZCBzcGVjaWZpYyBkZXZpY2V0cmVlCmFuZCB5b3UgYXJlIGZp
-bmU6CgogICBsaW51eC1zcmMkIGdpdCBncmVwIHB3bS1jZWxscyAtLSBhcmNoL2FybS9ib290L2R0
-cy9pbXg2Ki0qCiAgIGFyY2gvYXJtL2Jvb3QvZHRzL2lteDZkbC15YXBwNC1jb21tb24uZHRzaTog
-ICAgICNwd20tY2VsbHMgPSA8Mz47CiAgIGFyY2gvYXJtL2Jvb3QvZHRzL2lteDZxLWRpc3BsYXk1
-LmR0c2k6ICAjcHdtLWNlbGxzID0gPDM+OwogICBhcmNoL2FybS9ib290L2R0cy9pbXg2cS1tY2Nt
-b242LmR0czogICAgI3B3bS1jZWxscyA9IDwzPjsKICAgYXJjaC9hcm0vYm9vdC9kdHMvaW14NnFk
-bC10eDYuZHRzaTogICAgICNwd20tY2VsbHMgPSA8Mz47CiAgIGFyY2gvYXJtL2Jvb3QvZHRzL2lt
-eDZxZGwtdHg2LmR0c2k6ICAgICAjcHdtLWNlbGxzID0gPDM+OwogICBhcmNoL2FybS9ib290L2R0
-cy9pbXg2dWwtdHg2dWwuZHRzaTogICAgI3B3bS1jZWxscyA9IDwzPjsKICAgYXJjaC9hcm0vYm9v
-dC9kdHMvaW14NnVsbC1jb2xpYnJpLmR0c2k6ICNwd20tY2VsbHMgPSA8Mz47CiAgIGFyY2gvYXJt
-L2Jvb3QvZHRzL2lteDZ1bGwtY29saWJyaS5kdHNpOiAjcHdtLWNlbGxzID0gPDM+OwogICBhcmNo
-L2FybS9ib290L2R0cy9pbXg2dWxsLWNvbGlicmkuZHRzaTogI3B3bS1jZWxscyA9IDwzPjsKICAg
-YXJjaC9hcm0vYm9vdC9kdHMvaW14NnVsbC1jb2xpYnJpLmR0c2k6ICNwd20tY2VsbHMgPSA8Mz47
-CgpNaWNoYWwKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5m
-cmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xp
-bnV4LWFybS1rZXJuZWwK
+Hello,
+
+On Mon, Mar 02, 2020 at 11:34:22AM -0800, Guru Das Srinagesh wrote:
+> Because period and duty cycle are defined in the PWM framework structs
+> as ints with units of nanoseconds, the maximum time duration that can be
+> set is limited to ~2.147 seconds. Redefining them as u64 values will
+> enable larger time durations to be set.
+> 
+> As a first step, prepare drivers to handle the switch to u64 period and
+> duty_cycle by making the relevant fixes to those drivers that use the
+> period and duty_cycle pwm struct members in division operations, viz.
+> replacing the division operations with 64-bit division macros as
+> appropriate. The actual switch to u64 period and duty_cycle follows as a
+> separate patch.
+> 
+> Where the dividend is 64-bit but the divisor is 32-bit, use *_ULL
+> macros:
+> - DIV_ROUND_UP_ULL
+> - DIV_ROUND_CLOSEST_ULL
+> - div_u64
+> 
+> Where the divisor is 64-bit (dividend may be 32-bit or 64-bit), use
+> DIV64_* macros:
+> - DIV64_U64_ROUND_CLOSEST
+> - div64_u64
+> 
+> The kbuild test robot helped to improve this patch by catching a couple
+> of code sites that had to be adapted.
+> 
+> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> ---
+>  drivers/clk/clk-pwm.c                      | 2 +-
+>  drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
+>  drivers/hwmon/pwm-fan.c                    | 2 +-
+>  drivers/media/rc/ir-rx51.c                 | 3 ++-
+>  drivers/pwm/pwm-clps711x.c                 | 2 +-
+>  drivers/pwm/pwm-imx-tpm.c                  | 2 +-
+>  drivers/pwm/pwm-imx27.c                    | 5 ++---
+>  drivers/pwm/pwm-sifive.c                   | 2 +-
+>  drivers/pwm/pwm-sti.c                      | 5 +++--
+>  drivers/pwm/pwm-stm32-lp.c                 | 2 +-
+>  drivers/pwm/pwm-sun4i.c                    | 2 +-
+>  drivers/video/backlight/pwm_bl.c           | 3 ++-
+
+I guess we need acks from the affected maintainers. While I think the
+changes are fine I think you won't evade having to expand the audience
+of your patch and (depending on feedback) maybe split this patch up
+further.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
