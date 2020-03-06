@@ -1,66 +1,145 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] regulator: pwm: Don't warn on probe deferral
-Date: Fri, 6 Mar 2020 12:35:30 +0000
-Message-ID: <20200306123530.GA4114@sirena.org.uk>
-References: <20200224144048.6587-1-jonathanh@nvidia.com>
- <20200224165859.GJ6215@sirena.org.uk>
- <20200226161757.idpzbs3jmayt7ya6@pengutronix.de>
- <20200226163905.GH4136@sirena.org.uk>
- <20200306075129.mzs22yjitkmgrthh@pengutronix.de>
+From: Roy Im <roy.im.opensource@diasemi.com>
+Subject: RE: [PATCH V10 3/3] Input: new da7280 haptic driver
+Date: Fri, 6 Mar 2020 14:37:21 +0000
+Message-ID: <VE1PR10MB30852BA3A8166D475940694985E30@VE1PR10MB3085.EURPRD10.PROD.OUTLOOK.COM>
+References: <cover.1583425388.git.Roy.Im@diasemi.com>
+ <fd7066d21e994de56b331d9320f9671356fac408.1583425388.git.Roy.Im@diasemi.com>
+ <20200306070544.7rj5y44e23kiz65e@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="AqsLC8rIMeq19msA"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from foss.arm.com ([217.140.110.172]:60654 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726182AbgCFMfd (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 6 Mar 2020 07:35:33 -0500
-Content-Disposition: inline
-In-Reply-To: <20200306075129.mzs22yjitkmgrthh@pengutronix.de>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Jon Hunter <jonathanh@nvidia.com>, Liam Girdwood <lgirdwood@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org
-
-
---AqsLC8rIMeq19msA
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200306070544.7rj5y44e23kiz65e@pengutronix.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Roy Im <roy.im.opensource@diasemi.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Mar 06, 2020 at 08:51:29AM +0100, Uwe Kleine-K=F6nig wrote:
+Friday, Mar 06, 2020 at 4:06 PM, Uwe Kleine-K=F6nig wrote
+> On Fri, Mar 06, 2020 at 01:23:08AM +0900, Roy Im wrote:
+> > +static int da7280_haptic_set_pwm(struct da7280_haptic *haptics, bool
+> > +enabled) {
+> > +	struct pwm_state state;
+> > +	u64 period_mag_multi;
+> > +	int error;
+> > +
+> > +	if (!haptics->gain) {
+> > +		dev_err(haptics->dev,
+> > +			"Please set the gain first for the pwm mode\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	pwm_get_state(haptics->pwm_dev, &state);
+> > +	state.enabled =3D enabled;
+> > +	if (enabled) {
+> > +		period_mag_multi =3D state.period * haptics->gain;
+> > +		period_mag_multi >>=3D MAX_MAGNITUDE_SHIFT;
+> > +
+> > +		/* The interpretation of duty cycle depends on the acc_en,
+> > +		 * it should be form 50% to 100% for acc_en =3D 0.
+>=20
+> At least s/form/from/, but maybe better: it should be between 50% and 100=
+% ...
+Okay, got it and sorry for the typo, I will update as you advise..
 
-> I wonder if we should do something like:
+> > +		 * See datasheet 'PWM mode' section.
+> > +		 */
+> > +		if (!haptics->acc_en) {
+> > +			period_mag_multi +=3D state.period;
+> > +			period_mag_multi /=3D 2;
+> > +		}
+> > +
+> > +		state.duty_cycle  =3D (unsigned int)period_mag_multi;
+>=20
+> This cast is not needed. (Also it seems struct pwm_state::duty_cycle beco=
+mes u64 soon, after this happens the cast even
+> hurts.)
+Okay, I will remove the cast.
 
-> 	ret =3D some_call(some, args);
-> 	if (ret) {
-> 		if (emit_errmsg_for_err(ret))
-> 			dev_err(dev, "some_call failed: %pE\n", ERR_PTR(ret));
-> 		return ret;
-> 	}
+> > [...]
+> > +	struct device *dev =3D &client->dev;
+> > +	struct da7280_haptic *haptics;
+> > +	struct input_dev *input_dev;
+> > +	struct ff_device *ff;
+> > +	struct pwm_state state;
+> > +	unsigned int period2freq;
+> > +	int error;
+> > +
+> > +	haptics =3D devm_kzalloc(dev, sizeof(*haptics), GFP_KERNEL);
+> > +	if (!haptics)
+> > +		return -ENOMEM;
+> > +	haptics->dev =3D dev;
+> > +
+> > +	if (!client->irq) {
+> > +		dev_err(dev, "No IRQ configured\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	da7280_parse_properties(dev, haptics);
+> > +
+> > +	if (haptics->const_op_mode =3D=3D DA7280_PWM_MODE) {
+> > +		haptics->pwm_dev =3D devm_pwm_get(dev, NULL);
+> > +		if (IS_ERR(haptics->pwm_dev)) {
+> > +			dev_err(dev, "failed to get PWM device\n");
+>=20
+> Please use %pE to show the actual error and don't print if it is EPROBE_D=
+EFER.
+Okay, I will change as following:
+		if (IS_ERR(haptics->pwm_dev)) {
+			error =3D PTR_ERR(haptics->pwm_dev);
+			if (error !=3D -EPROBE_DEFER)
+				dev_err(dev, "unable to request PWM: %pE\n",
+					ERR_PTR(error));
+			return error;
+		}
+Do you still see anything on this changes?
 
-> and have emit_errmsg_for_err return true if ret !=3D -EPROBE_DEFER or some
-> kernel parameter is given.
+> > +			return PTR_ERR(haptics->pwm_dev);
+> > +		}
+> > +
+> > +		pwm_init_state(haptics->pwm_dev, &state);
+> > +		state.enabled =3D false;
+>=20
+> This usuage is strange (which might be because pwm_init_state() is strang=
+e). I assume the goal here is to disable the PWM
+> with the right polarity set, right? Ah, and initialize .period as this is=
+n't touched later on. Hmm, no better idea, I guess we have to
+> leave it as is for now.
+>=20
+> Can it be that the PWM is already on at probe time and it might be useful=
+l to keep it running as is?
 
-There was some effort in the past to have a dev_probe_err() or something
-which could have a similar implementation but that didn't end up going
-anywhere I think.  I do prefer the debug level log since it's much
-easier to have the information there without having to ask for it, that
-design would've supported that.
+Yes, that's right. I think so too..
+Although it may not be that the PWM is already on at probe time but it may =
+be useful to ensure that it is off for something unexpected.
+Also I will add this comments on the pwm_init_state():
 
---AqsLC8rIMeq19msA
-Content-Type: application/pgp-signature; name="signature.asc"
+	/* Sync up PWM state and ensure it is off. */
+	pwm_init_state(haptics->pwm_dev, &state);
 
------BEGIN PGP SIGNATURE-----
+Do you have any comments more on this?
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5iQ5IACgkQJNaLcl1U
-h9BuHwf+PVNL4Sk9lvVXj3uZGPvOjvQ5AISnSi54O7gsRBhc+yGdANxc1ZpuIcxc
-URs2Khp5haI6dPXVVexp1Y0l/fHAi2k93GMep+8uQhosrQUZ7q08qdzrN54g1THK
-Y19+hSRF3KmBdoZPk3oqsTmX2j5Uq+Z6QU/U5WCO/j64WJJcAiR7zu35qEF7dDe2
-0SDzkQUvzz/EOqcPdt460hMXXhVrcKT/iqDD09cJXUjdWteEGbJfHFt845qPbR6o
-LEwoCZInR3P3q8bN2nwtkQa7BQESTjh4s/vNIq4QDYfbzdJ05WAqGZsETzb8/Vwr
-bYfbQDO11C3REAo8rUIj+i5yXdl9bQ==
-=uQ0f
------END PGP SIGNATURE-----
+> > +		error =3D pwm_apply_state(haptics->pwm_dev, &state);
+> > +		if (error) {
+> > +			dev_err(dev,
+> > +				"failed to apply initial PWM state: %pE\n",
+> > +				ERR_PTR(error));
+> > +			return error;
+> > +		}
+>=20
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
 
---AqsLC8rIMeq19msA--
+Hello Uwe,
+
+Thanks for your comments.
+
+Kind regards,
+Roy
