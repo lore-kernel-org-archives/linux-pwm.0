@@ -1,93 +1,64 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v2 4/6] pwm: omap-dmtimer: Fix pwm disabling sequence
-Date: Mon, 9 Mar 2020 11:01:23 -0700
-Message-ID: <20200309180123.GP37466@atomide.com>
-References: <20200228095651.32464-1-lokeshvutla@ti.com>
- <20200228095651.32464-5-lokeshvutla@ti.com>
- <20200306181443.GJ37466@atomide.com>
- <9129d4fe-a17e-2fa6-764c-6a746fa5096d@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9129d4fe-a17e-2fa6-764c-6a746fa5096d@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Lokesh Vutla <lokeshvutla@ti.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, Sebastian Reichel <sre@kernel.org>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: [PATCH v7 03/13] hwmon: pwm-fan: Use 64-bit division macros for period and duty cycle
+Date: Mon,  9 Mar 2020 12:35:06 -0700
+Message-ID: <b503833e0f58bd6dd9fe84d866124e7c457e099e.1583782035.git.gurus@codeaurora.org>
+References: <cover.1583782035.git.gurus@codeaurora.org>
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+In-Reply-To: <cover.1583782035.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1583782035.git.gurus@codeaurora.org>
+References: <cover.1583782035.git.gurus@codeaurora.org>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Kamil Debski <kamil@wypas.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-* Lokesh Vutla <lokeshvutla@ti.com> [200309 04:53]:
-> Hi Tony,
-> 
-> On 06/03/20 11:44 PM, Tony Lindgren wrote:
-> > * Lokesh Vutla <lokeshvutla@ti.com> [200228 09:58]:
-> >> pwm_omap_dmtimer_disable() calls .stop callback which abruptly stops the
-> >> timer counter. This doesn't complete the current pwm cycle and
-> >> immediately disables the pwm. Instead disable the auto reload
-> >> functionality which allows to complete the current pwm cycle and then
-> >> disables the timer.
-> >>
-> >> Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
-> >> ---
-> >>  drivers/pwm/pwm-omap-dmtimer.c | 10 +++++++++-
-> >>  1 file changed, 9 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-> >> index bc338619232d..89b3c25d02b8 100644
-> >> --- a/drivers/pwm/pwm-omap-dmtimer.c
-> >> +++ b/drivers/pwm/pwm-omap-dmtimer.c
-> >> @@ -93,8 +93,16 @@ static void pwm_omap_dmtimer_disable(struct pwm_chip *chip,
-> >>  {
-> >>  	struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
-> >>  
-> >> +	/*
-> >> +	 * Disable auto reload so that the current cycle gets completed and
-> >> +	 * then the counter stops.
-> >> +	 */
-> >>  	mutex_lock(&omap->mutex);
-> >> -	omap->pdata->stop(omap->dm_timer);
-> >> +	omap->pdata->set_pwm(omap->dm_timer,
-> >> +			     pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED,
-> >> +			     true, OMAP_TIMER_TRIGGER_OVERFLOW_AND_COMPARE,
-> >> +			     false);
-> >> +
-> >>  	mutex_unlock(&omap->mutex);
-> >>  }
-> > 
-> > I'm seeing an issue with this patch where after use something is
-> > left on and power consumption stays higher by about 30 mW after
-> > use.
-> 
-> Interesting...What is the PWM period and duty cycle in the test case?
-> Can you dump the following registers before and after disabling:
-> - TLDR
-> - TMAR
-> - TCLR
+Because period and duty cycle are defined in the PWM framework structs
+as ints with units of nanoseconds, the maximum time duration that can be
+set is limited to ~2.147 seconds. Redefining them as u64 values will
+enable larger time durations to be set.
 
-Here's the state dumped before and after in omap_dm_timer_set_pwm():
+As a first step, prepare drivers to handle the switch to u64 period and
+duty_cycle by replacing division operations involving pwm period and duty cycle
+with their 64-bit equivalents as appropriate. The actual switch to u64 period
+and duty_cycle follows as a separate patch.
 
-omap_timer 4803e000.timer: XXX set_pwm before: tldr: fffffeb8 tmar: fffffffe tclr: 00000040
-omap_timer 4803e000.timer: XXX set_pwm after: tldr: fffffeb8 tmar: fffffffe tclr: 00001842
-omap_timer 4013e000.timer: XXX set_pwm before: tldr: fffffeb8 tmar: fffffffe tclr: 00000040
-omap_timer 4013e000.timer: XXX set_pwm after: tldr: fffffeb8 tmar: fffffffe tclr: 00001842
-omap_timer 4013e000.timer: XXX set_pwm before: tldr: fffffeb8 tmar: fffffffe tclr: 00001843
-omap_timer 4013e000.timer: XXX set_pwm after: tldr: fffffeb8 tmar: fffffffe tclr: 00001841
-omap_timer 4803e000.timer: XXX set_pwm before: tldr: fffffeb8 tmar: fffffffe tclr: 00001843
-omap_timer 4803e000.timer: XXX set_pwm after: tldr: fffffeb8 tmar: fffffffe tclr: 00001841
+Where the dividend is 64-bit but the divisor is 32-bit, use *_ULL
+macros:
+- DIV_ROUND_UP_ULL
+- DIV_ROUND_CLOSEST_ULL
+- div_u64
 
-So looks like the start bit is still enabled after use?
+Where the divisor is 64-bit (dividend may be 32-bit or 64-bit), use
+DIV64_* macros:
+- DIV64_U64_ROUND_CLOSEST
+- div64_u64
 
-I think the duty cycle depends on the strength set for rumble-test.c.
+Cc: Kamil Debski <kamil@wypas.org>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Jean Delvare <jdelvare@suse.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: linux-hwmon@vger.kernel.org
 
-> > I can reproduce this easily on droid4 with Sebastian's rumble-test
-> > app[0]. After use, I sometimes also hear the vibrator keep chirping
-> > quietly, so there seems to be some pwm still happening after disable :)
-> 
-> hmm..The line clearly goes down on the scope after the current pwm duty cycle is
-> done and never comes back.
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+---
+ drivers/hwmon/pwm-fan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-OK
-
-Regards,
-
-Tony
+diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+index 42ffd2e..283423a 100644
+--- a/drivers/hwmon/pwm-fan.c
++++ b/drivers/hwmon/pwm-fan.c
+@@ -437,7 +437,7 @@ static int pwm_fan_resume(struct device *dev)
+ 		return 0;
+ 
+ 	pwm_get_args(ctx->pwm, &pargs);
+-	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
++	duty = DIV_ROUND_UP_ULL(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
+ 	ret = pwm_config(ctx->pwm, duty, pargs.period);
+ 	if (ret)
+ 		return ret;
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
