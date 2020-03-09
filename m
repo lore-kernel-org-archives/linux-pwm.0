@@ -1,84 +1,62 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v7 00/13] Convert period and duty cycle to u64
-Date: Mon,  9 Mar 2020 12:35:03 -0700
-Message-ID: <cover.1583782035.git.gurus@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH v7 06/13] pwm: pwm-imx-tpm: Use 64-bit division macros for period and duty cycle
+Date: Mon,  9 Mar 2020 12:35:09 -0700
+Message-ID: <e429fdb80dd6a77c57798a9c317c2206f37bc01f.1583782035.git.gurus@codeaurora.org>
+References: <cover.1583782035.git.gurus@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1583782035.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1583782035.git.gurus@codeaurora.org>
+References: <cover.1583782035.git.gurus@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Changes from v6:
-  - Split out the driver changes out into separate patches, one patch per file
-    for ease of reviewing.
+Because period and duty cycle are defined in the PWM framework structs
+as ints with units of nanoseconds, the maximum time duration that can be
+set is limited to ~2.147 seconds. Redefining them as u64 values will
+enable larger time durations to be set.
 
-Changes from v5:
-  - Dropped the conversion of struct pwm_capture to u64 for reasons mentioned
-    in https://www.spinics.net/lists/linux-pwm/msg11541.html
+As a first step, prepare drivers to handle the switch to u64 period and
+duty_cycle by replacing division operations involving pwm period and duty cycle
+with their 64-bit equivalents as appropriate. The actual switch to u64 period
+and duty_cycle follows as a separate patch.
 
-Changes from v4:
-  - Split the patch into two: one for changes to the drivers, and the actual
-    switch to u64 for ease of reverting should the need arise.
-  - Re-examined the patch and made the following corrections:
-      * intel_panel.c:
-	DIV64_U64_ROUND_UP -> DIV_ROUND_UP_ULL (as only the numerator would be
-	64-bit in this case).
-      * pwm-sti.c:
-	do_div -> div_u64 (do_div is optimized only for x86 architectures, and
-	div_u64's comment block suggests to use this as much as possible).
+Where the dividend is 64-bit but the divisor is 32-bit, use *_ULL
+macros:
+- DIV_ROUND_UP_ULL
+- DIV_ROUND_CLOSEST_ULL
+- div_u64
 
-Changes from v3:
-  - Rebased to current tip of for-next.
+Where the divisor is 64-bit (dividend may be 32-bit or 64-bit), use
+DIV64_* macros:
+- DIV64_U64_ROUND_CLOSEST
+- div64_u64
 
-Changes from v2:
-  - Fixed %u -> %llu in a dev_dbg in pwm-stm32-lp.c, thanks to kbuild test robot
-  - Added a couple of fixes to pwm-imx-tpm.c and pwm-sifive.c
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
 
-Changes from v1:
-  - Fixed compilation errors seen when compiling for different archs.
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+---
+ drivers/pwm/pwm-imx-tpm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reworked the change pushed upstream earlier [1] so as to not add an extension
-to an obsolete API. With this change, pwm_ops->apply() can be used to set
-pwm_state parameters as usual.
-
-[1] https://lore.kernel.org/lkml/20190916140048.GB7488@ulmo/
-
-Guru Das Srinagesh (13):
-  clk: pwm: Use 64-bit division macros for period and duty cycle
-  drm/i915: Use 64-bit division macros for period and duty cycle
-  hwmon: pwm-fan: Use 64-bit division macros for period and duty cycle
-  ir-rx51: Use 64-bit division macros for period and duty cycle
-  pwm: clps711x: Use 64-bit division macros for period and duty cycle
-  pwm: pwm-imx-tpm: Use 64-bit division macros for period and duty cycle
-  pwm: imx27: Use 64-bit division macros for period and duty cycle
-  pwm: sifive: Use 64-bit division macros for period and duty cycle
-  pwm: sti: Use 64-bit division macros for period and duty cycle
-  pwm: stm32-lp: Use %llu format specifier for period
-  pwm: sun4i: Use 64-bit division macros for period and duty cycle
-  backlight: pwm_bl: Use 64-bit division macros for period and duty
-    cycle
-  pwm: core: Convert period and duty cycle to u64
-
- drivers/clk/clk-pwm.c                      |  2 +-
- drivers/gpu/drm/i915/display/intel_panel.c |  2 +-
- drivers/hwmon/pwm-fan.c                    |  2 +-
- drivers/media/rc/ir-rx51.c                 |  3 ++-
- drivers/pwm/core.c                         |  4 ++--
- drivers/pwm/pwm-clps711x.c                 |  2 +-
- drivers/pwm/pwm-imx-tpm.c                  |  2 +-
- drivers/pwm/pwm-imx27.c                    |  5 ++---
- drivers/pwm/pwm-sifive.c                   |  2 +-
- drivers/pwm/pwm-sti.c                      |  5 +++--
- drivers/pwm/pwm-stm32-lp.c                 |  2 +-
- drivers/pwm/pwm-sun4i.c                    |  2 +-
- drivers/pwm/sysfs.c                        |  8 ++++----
- drivers/video/backlight/pwm_bl.c           |  3 ++-
- include/linux/pwm.h                        | 12 ++++++------
- 15 files changed, 29 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+index 9145f61..53bf364 100644
+--- a/drivers/pwm/pwm-imx-tpm.c
++++ b/drivers/pwm/pwm-imx-tpm.c
+@@ -126,7 +126,7 @@ static int pwm_imx_tpm_round_state(struct pwm_chip *chip,
+ 		real_state->duty_cycle = state->duty_cycle;
+ 
+ 	tmp = (u64)p->mod * real_state->duty_cycle;
+-	p->val = DIV_ROUND_CLOSEST_ULL(tmp, real_state->period);
++	p->val = DIV64_U64_ROUND_CLOSEST(tmp, real_state->period);
+ 
+ 	real_state->polarity = state->polarity;
+ 	real_state->enabled = state->enabled;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
