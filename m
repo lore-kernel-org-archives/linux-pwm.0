@@ -1,43 +1,65 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [RESEND v6 1/2] pwm: Convert drivers to use 64-bit period and
- duty cycle
-Date: Mon, 9 Mar 2020 12:41:48 -0700
-Message-ID: <20200309194148.GA30211@codeaurora.org>
-References: <cover.1583177501.git.gurus@codeaurora.org>
- <28090aef9900ad483cbfbe77883e5ffcd8745907.1583177501.git.gurus@codeaurora.org>
- <20200306074440.ykekwwlvnbodxkjc@pengutronix.de>
- <20200306185252.GA2758@codeaurora.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] dts: imx6: Allow flags argument in pwms reference
+Date: Mon, 9 Mar 2020 22:23:29 +0100
+Message-ID: <20200309212329.j5y7j7s46fjjscv3@pengutronix.de>
+References: <20200309145558.16098-1-pbarker@konsulko.com>
+ <d1c950a83d3aa0520df696033bb0a038e2de1f66.camel@toradex.com>
+ <20200309170751.vzffq5gmsaw3tsbp@pengutronix.de>
+ <20200309173506.GA4916@pendragon.ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:47591 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725992AbgCITlt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Mar 2020 15:41:49 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:42921 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgCIVXc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Mar 2020 17:23:32 -0400
 Content-Disposition: inline
-In-Reply-To: <20200306185252.GA2758@codeaurora.org>
+In-Reply-To: <20200309173506.GA4916@pendragon.ideasonboard.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Philippe Schenker <philippe.schenker@toradex.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "pbarker@konsulko.com" <pbarker@konsulko.com>, "pantelis.antoniou@konsulko.com" <pantelis.antoniou@konsulko.com>, "laurent.pinchart+renesas@ideasonboard.com" <laurent.pinchart+renesas@ideasonboard.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "matt.ranostay@konsulko.com" <matt.ranostay@konsulko.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 
-Hi Uwe,
-
-On Fri, Mar 06, 2020 at 10:56:59AM -0800, Guru Das Srinagesh wrote:
-> On Fri, Mar 06, 2020 at 08:44:40AM +0100, Uwe Kleine-KÃ¶nig wrote:
-> > I guess we need acks from the affected maintainers. While I think the
-> > changes are fine I think you won't evade having to expand the audience
-> > of your patch and (depending on feedback) maybe split this patch up
-> > further.
+On Mon, Mar 09, 2020 at 07:35:06PM +0200, Laurent Pinchart wrote:
+> On Mon, Mar 09, 2020 at 06:07:51PM +0100, Uwe Kleine-König wrote:
+> > On Mon, Mar 09, 2020 at 04:45:05PM +0000, Philippe Schenker wrote:
+> > > On Mon, 2020-03-09 at 14:55 +0000, Paul Barker wrote:
+> > >> diff --git a/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
+> > >> b/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
+> > >> index 37f80ab8ccd0..f87ac95b70bc 100644
+> > >> --- a/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
+> > >> +++ b/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
+> > >> @@ -14,7 +14,7 @@
+> > >>  
+> > >>  	backlight {
+> > >>  		compatible = "pwm-backlight";
+> > >> -		pwms = <&pwm1 0 5000000>;
+> > >> +		pwms = <&pwm1 0 5000000 0>;
+> > > 
+> > > There is a header file existing that has PWM_POLARITY_INVERTED defined
+> > > in include/dt-bindings/pwm/pwm.h. I feel we should add there a
+> > > PWM_POLARITY_NORMAL instead of just using 0.
+> > 
+> > ack.
+> > 
+> > > But then I'm asking myself if we can't get rid of the file include/dt-
+> > > bindings/pwm/pwm.h and instead use include/linux/pwm.h everywhere.
+> > > 
+> > > Or shouldn't we use defines in devicetrees from there?
+> > 
+> > devicetrees are supposed to be stand-alone. So yes indeed, no linux
+> > includes in device tree files.
 > 
-> Sure. I'll split up this patch into one per file and add the respective
-> maintainers for ease of reviewing.
+> Correct. I don't mind adding PWM_POLARITY_NORMAL to
+> include/dt-bindings/pwm/pwm.h, I think it would increase readability.
 
-I used the get_maintainer.pl script to add the respective maintainers of
-the files. Could you please provide feedback on whether v7 what you had
-in mind in your comment above?
++1 from me. Who cares enough to come up with a patch?
 
-Thank you.
+Best regards
+Uwe
 
-Guru Das.
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
