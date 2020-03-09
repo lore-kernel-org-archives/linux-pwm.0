@@ -1,62 +1,43 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v7 05/13] pwm: clps711x: Use 64-bit division macros for period and duty cycle
-Date: Mon,  9 Mar 2020 12:35:08 -0700
-Message-ID: <3c2c8d50bfba2555e3f94c6aa43ae0ac9a0d3d7d.1583782035.git.gurus@codeaurora.org>
-References: <cover.1583782035.git.gurus@codeaurora.org>
+Subject: Re: [RESEND v6 1/2] pwm: Convert drivers to use 64-bit period and
+ duty cycle
+Date: Mon, 9 Mar 2020 12:41:48 -0700
+Message-ID: <20200309194148.GA30211@codeaurora.org>
+References: <cover.1583177501.git.gurus@codeaurora.org>
+ <28090aef9900ad483cbfbe77883e5ffcd8745907.1583177501.git.gurus@codeaurora.org>
+ <20200306074440.ykekwwlvnbodxkjc@pengutronix.de>
+ <20200306185252.GA2758@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:22379 "EHLO
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:47591 "EHLO
         alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725992AbgCITfW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Mar 2020 15:35:22 -0400
-In-Reply-To: <cover.1583782035.git.gurus@codeaurora.org>
-In-Reply-To: <cover.1583782035.git.gurus@codeaurora.org>
-References: <cover.1583782035.git.gurus@codeaurora.org>
+        by vger.kernel.org with ESMTP id S1725992AbgCITlt (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Mar 2020 15:41:49 -0400
+Content-Disposition: inline
+In-Reply-To: <20200306185252.GA2758@codeaurora.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Alexander Shiyan <shc_work@mail.ru>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 
-Because period and duty cycle are defined in the PWM framework structs
-as ints with units of nanoseconds, the maximum time duration that can be
-set is limited to ~2.147 seconds. Redefining them as u64 values will
-enable larger time durations to be set.
+Hi Uwe,
 
-As a first step, prepare drivers to handle the switch to u64 period and
-duty_cycle by replacing division operations involving pwm period and duty cycle
-with their 64-bit equivalents as appropriate. The actual switch to u64 period
-and duty_cycle follows as a separate patch.
+On Fri, Mar 06, 2020 at 10:56:59AM -0800, Guru Das Srinagesh wrote:
+> On Fri, Mar 06, 2020 at 08:44:40AM +0100, Uwe Kleine-König wrote:
+> > I guess we need acks from the affected maintainers. While I think the
+> > changes are fine I think you won't evade having to expand the audience
+> > of your patch and (depending on feedback) maybe split this patch up
+> > further.
+> 
+> Sure. I'll split up this patch into one per file and add the respective
+> maintainers for ease of reviewing.
 
-Where the dividend is 64-bit but the divisor is 32-bit, use *_ULL
-macros:
-- DIV_ROUND_UP_ULL
-- DIV_ROUND_CLOSEST_ULL
-- div_u64
+I used the get_maintainer.pl script to add the respective maintainers of
+the files. Could you please provide feedback on whether v7 what you had
+in mind in your comment above?
 
-Where the divisor is 64-bit (dividend may be 32-bit or 64-bit), use
-DIV64_* macros:
-- DIV64_U64_ROUND_CLOSEST
-- div64_u64
+Thank you.
 
-Cc: Alexander Shiyan <shc_work@mail.ru>
-
-Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
----
- drivers/pwm/pwm-clps711x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-index 924d39a..ba9500a 100644
---- a/drivers/pwm/pwm-clps711x.c
-+++ b/drivers/pwm/pwm-clps711x.c
-@@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
- static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
- {
- 	/* Duty cycle 0..15 max */
--	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
-+	return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
- }
- 
- static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Guru Das.
