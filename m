@@ -1,65 +1,44 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] dts: imx6: Allow flags argument in pwms reference
-Date: Mon, 9 Mar 2020 22:23:29 +0100
-Message-ID: <20200309212329.j5y7j7s46fjjscv3@pengutronix.de>
-References: <20200309145558.16098-1-pbarker@konsulko.com>
- <d1c950a83d3aa0520df696033bb0a038e2de1f66.camel@toradex.com>
- <20200309170751.vzffq5gmsaw3tsbp@pengutronix.de>
- <20200309173506.GA4916@pendragon.ideasonboard.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v7 03/13] hwmon: pwm-fan: Use 64-bit division macros for
+ period and duty cycle
+Date: Mon, 9 Mar 2020 14:48:22 -0700
+Message-ID: <20200309214822.GA19773@roeck-us.net>
+References: <cover.1583782035.git.gurus@codeaurora.org>
+ <b503833e0f58bd6dd9fe84d866124e7c457e099e.1583782035.git.gurus@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:42921 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbgCIVXc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Mar 2020 17:23:32 -0400
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-hwmon-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200309173506.GA4916@pendragon.ideasonboard.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <b503833e0f58bd6dd9fe84d866124e7c457e099e.1583782035.git.gurus@codeaurora.org>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Kamil Debski <kamil@wypas.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jean Delvare <jdelvare@suse.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Philippe Schenker <philippe.schenker@toradex.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "pbarker@konsulko.com" <pbarker@konsulko.com>, "pantelis.antoniou@konsulko.com" <pantelis.antoniou@konsulko.com>, "laurent.pinchart+renesas@ideasonboard.com" <laurent.pinchart+renesas@ideasonboard.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "matt.ranostay@konsulko.com" <matt.ranostay@konsulko.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 
-On Mon, Mar 09, 2020 at 07:35:06PM +0200, Laurent Pinchart wrote:
-> On Mon, Mar 09, 2020 at 06:07:51PM +0100, Uwe Kleine-König wrote:
-> > On Mon, Mar 09, 2020 at 04:45:05PM +0000, Philippe Schenker wrote:
-> > > On Mon, 2020-03-09 at 14:55 +0000, Paul Barker wrote:
-> > >> diff --git a/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
-> > >> b/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
-> > >> index 37f80ab8ccd0..f87ac95b70bc 100644
-> > >> --- a/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
-> > >> +++ b/arch/arm/boot/dts/imx6dl-aristainetos_4.dts
-> > >> @@ -14,7 +14,7 @@
-> > >>  
-> > >>  	backlight {
-> > >>  		compatible = "pwm-backlight";
-> > >> -		pwms = <&pwm1 0 5000000>;
-> > >> +		pwms = <&pwm1 0 5000000 0>;
-> > > 
-> > > There is a header file existing that has PWM_POLARITY_INVERTED defined
-> > > in include/dt-bindings/pwm/pwm.h. I feel we should add there a
-> > > PWM_POLARITY_NORMAL instead of just using 0.
-> > 
-> > ack.
-> > 
-> > > But then I'm asking myself if we can't get rid of the file include/dt-
-> > > bindings/pwm/pwm.h and instead use include/linux/pwm.h everywhere.
-> > > 
-> > > Or shouldn't we use defines in devicetrees from there?
-> > 
-> > devicetrees are supposed to be stand-alone. So yes indeed, no linux
-> > includes in device tree files.
+On Mon, Mar 09, 2020 at 12:35:06PM -0700, Guru Das Srinagesh wrote:
+> Because period and duty cycle are defined in the PWM framework structs
+> as ints with units of nanoseconds, the maximum time duration that can be
+> set is limited to ~2.147 seconds. Redefining them as u64 values will
+> enable larger time durations to be set.
 > 
-> Correct. I don't mind adding PWM_POLARITY_NORMAL to
-> include/dt-bindings/pwm/pwm.h, I think it would increase readability.
+> As a first step, prepare drivers to handle the switch to u64 period and
+> duty_cycle by replacing division operations involving pwm period and duty cycle
+> with their 64-bit equivalents as appropriate. The actual switch to u64 period
+> and duty_cycle follows as a separate patch.
+> 
+> Where the dividend is 64-bit but the divisor is 32-bit, use *_ULL
+> macros:
+> - DIV_ROUND_UP_ULL
+> - DIV_ROUND_CLOSEST_ULL
+> - div_u64
+> 
+> Where the divisor is 64-bit (dividend may be 32-bit or 64-bit), use
+> DIV64_* macros:
+> - DIV64_U64_ROUND_CLOSEST
+> - div64_u64
+> 
+There is no explanation why this is necessary. What is the use case ?
+It is hard to imagine a real-world use case with a duty cycle of more
+than 2 seconds.
 
-+1 from me. Who cares enough to come up with a patch?
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Guenter
