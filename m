@@ -1,37 +1,36 @@
-From: Rishi Gupta <gupt21@gmail.com>
-Subject: [PATCH 1/1] pwm: pca9685: use gpio core provided macro GPIO_LINE_DIRECTION_OUT
-Date: Wed, 11 Mar 2020 21:22:20 +0530
-Message-ID: <1583941940-17194-1-git-send-email-gupt21@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/1] pwm: pca9685: use gpio core provided macro
+ GPIO_LINE_DIRECTION_OUT
+Date: Wed, 11 Mar 2020 17:43:57 +0100
+Message-ID: <20200311164357.44bfscijrjfnjymk@pengutronix.de>
+References: <1583941940-17194-1-git-send-email-gupt21@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41642 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729841AbgCKPwe (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Mar 2020 11:52:34 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:49743 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729809AbgCKQn7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Mar 2020 12:43:59 -0400
+Content-Disposition: inline
+In-Reply-To: <1583941940-17194-1-git-send-email-gupt21@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, s.trumtrar@pengutronix.de
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Rishi Gupta <gupt21@gmail.com>
+To: Rishi Gupta <gupt21@gmail.com>
+Cc: thierry.reding@gmail.com, s.trumtrar@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-GPIO core recently added macro to uniformly specify direction
-of a GPIO Line, so use it.
+On Wed, Mar 11, 2020 at 09:22:20PM +0530, Rishi Gupta wrote:
+> GPIO core recently added macro to uniformly specify direction
+> of a GPIO Line, so use it.
+> 
+> Signed-off-by: Rishi Gupta <gupt21@gmail.com>
 
-Signed-off-by: Rishi Gupta <gupt21@gmail.com>
----
- drivers/pwm/pwm-pca9685.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index b2a9e77..e2bac1e 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -168,7 +168,7 @@ static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
- 					  unsigned int offset)
- {
- 	/* Always out */
--	return 0;
-+	return GPIO_LINE_DIRECTION_OUT;
- }
- 
- static int pca9685_pwm_gpio_direction_input(struct gpio_chip *gpio,
+Best regards and thanks
+Uwe
+
 -- 
-2.7.4
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
