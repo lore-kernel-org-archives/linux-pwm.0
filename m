@@ -1,42 +1,77 @@
-From: Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
- changing period/duty_cycle
-Date: Thu, 12 Mar 2020 07:21:26 -0700
-Message-ID: <20200312142126.GB2466@localhost>
-References: <20200312042210.17344-1-lokeshvutla@ti.com>
- <20200312042210.17344-5-lokeshvutla@ti.com>
- <20200312064042.p7himm3odxjyzroi@pengutronix.de>
- <f250549f-1e7c-06d6-b2a4-7ae01c06725b@ti.com>
- <20200312084739.isixgdo3txr6rjzg@pengutronix.de>
- <2a5a06cd-7aca-c450-b048-33329d058eca@ti.com>
+From: Pascal Roeleven <dev@pascalroeleven.nl>
+Subject: Re: pwm: sun4i: pwm-backlight not working since 5.6-rc1
+Date: Thu, 12 Mar 2020 16:06:07 +0100
+Message-ID: <6e995c4c22c4e6c93acb1f491e5aa109@pascalroeleven.nl>
+References: <6185b5540ca082d887d7d13330c9d938@pascalroeleven.nl>
+ <20200312132942.2kfspvmoc3mxkdx4@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <2a5a06cd-7aca-c450-b048-33329d058eca@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Lokesh Vutla <lokeshvutla@ti.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, kernel@pengutronix.de
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200312132942.2kfspvmoc3mxkdx4@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 04:14:34PM +0530, Lokesh Vutla wrote:
-> But the problem here is that inactive breaks between two periods is not desired.
-> Because the pwm is used to generate a 1PPS signal and is continuously
-> synchronized with PTP clock.
+On 2020-03-12 14:29, Uwe Kleine-König wrote:
+> On Thu, Mar 12, 2020 at 01:22:13PM +0100, Pascal Roeleven wrote:
+>> Hi all,
+>> 
+>> I am working on adding an old A10 device to mainline and noticed an 
+>> issue
+>> when testing on 5.5.8 vs master.
+>> 
+>> Since 5.6-rc1, I can't control the brightness of my LCD backlight 
+>> anymore.
+>> The backlight stays on full brightness instead. I am controlling the
+>> brightness value via sysfs for testing.
+>> 
+>> I am not sure if this is a general pwm-sun4i issue or if it is related 
+>> to
+>> the backlight. However I narrowed it down to one commit for pwm-sun4i:
+>> 
+>> fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
+>> 
+>> If I use pwm-sun4i.c from 5b090b430d750961305030232314b6acdb0102aa on
+>> master, the backlight works fine. Unfortunately, due to my lack of 
+>> kernel
+>> experience, I can't see how the commit above broke it.
+> 
+> Hmm, I cannot see how fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5 breaks
+> this. Looking at the output of
+> 
+> 	git show -b fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
+> 
+> (i.e. ignoring whitespace changes) I don't see how the behaviour you're
+> reporting can be explained.
+> 
+> Are you sure that fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5 is the bad
+> commit?
+> 
+> Can you install a tool to inspect register values and check how the
+> affected registers change if you switch kernel versions and/or pwm
+> settings?
+> 
+> (e.g.
+> 	memtool md 0x1c20e00+0xc
+> )
+> 
+> Best regards
+> Uwe
 
-The 1-PPS case is the "easy" one.  If the PWM is adjustable on the
-fly, then people will use it with higher frequency signals.
- 
-> I am up if this can be solved generically. But updating period is very specific
-> to hardware implementation. Not sure what generic solution can be brought out of
-> this. Please correct me if I am wrong.
+Thanks for your response.
 
-What happens today when the PWM frequency or duty cycle are changed
-while the signal is enabled?
+Yes I am sure that is the commit. If I am on master, and replace 
+pwm-sun4i.c with the one from 5b090b43, everything works. If I then 
+apply fa4d8178, it stops working.
 
-Do different PWM devices/drivers behave the same way?
+And strangely the output of the registers is exactly the same before and 
+after fa4d8178:
 
-Does this series change the behavior of the am335x and friends?
+01c20e00: 00000050 00130014 00000000 (full brightness)
+01c20e00: 00000050 00130006 00000000 (min brightness)
 
-Thanks,
-Richard
+Even when I'm on 5b090b43 and cherry-pick fa4d8178 can I reproduce the 
+issue.
