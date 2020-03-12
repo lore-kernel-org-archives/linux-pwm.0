@@ -1,65 +1,42 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: pwm: sun4i: pwm-backlight not working since 5.6-rc1
-Date: Thu, 12 Mar 2020 14:29:42 +0100
-Message-ID: <20200312132942.2kfspvmoc3mxkdx4@pengutronix.de>
-References: <6185b5540ca082d887d7d13330c9d938@pascalroeleven.nl>
+From: Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
+ changing period/duty_cycle
+Date: Thu, 12 Mar 2020 07:21:26 -0700
+Message-ID: <20200312142126.GB2466@localhost>
+References: <20200312042210.17344-1-lokeshvutla@ti.com>
+ <20200312042210.17344-5-lokeshvutla@ti.com>
+ <20200312064042.p7himm3odxjyzroi@pengutronix.de>
+ <f250549f-1e7c-06d6-b2a4-7ae01c06725b@ti.com>
+ <20200312084739.isixgdo3txr6rjzg@pengutronix.de>
+ <2a5a06cd-7aca-c450-b048-33329d058eca@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:41497 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725978AbgCLN3x (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2020 09:29:53 -0400
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6185b5540ca082d887d7d13330c9d938@pascalroeleven.nl>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <2a5a06cd-7aca-c450-b048-33329d058eca@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Lokesh Vutla <lokeshvutla@ti.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
-To: Pascal Roeleven <dev@pascalroeleven.nl>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
 
-On Thu, Mar 12, 2020 at 01:22:13PM +0100, Pascal Roeleven wrote:
-> Hi all,
-> 
-> I am working on adding an old A10 device to mainline and noticed an issue
-> when testing on 5.5.8 vs master.
-> 
-> Since 5.6-rc1, I can't control the brightness of my LCD backlight anymore.
-> The backlight stays on full brightness instead. I am controlling the
-> brightness value via sysfs for testing.
-> 
-> I am not sure if this is a general pwm-sun4i issue or if it is related to
-> the backlight. However I narrowed it down to one commit for pwm-sun4i:
-> 
-> fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
-> 
-> If I use pwm-sun4i.c from 5b090b430d750961305030232314b6acdb0102aa on
-> master, the backlight works fine. Unfortunately, due to my lack of kernel
-> experience, I can't see how the commit above broke it.
+On Thu, Mar 12, 2020 at 04:14:34PM +0530, Lokesh Vutla wrote:
+> But the problem here is that inactive breaks between two periods is not desired.
+> Because the pwm is used to generate a 1PPS signal and is continuously
+> synchronized with PTP clock.
 
-Hmm, I cannot see how fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5 breaks
-this. Looking at the output of
+The 1-PPS case is the "easy" one.  If the PWM is adjustable on the
+fly, then people will use it with higher frequency signals.
+ 
+> I am up if this can be solved generically. But updating period is very specific
+> to hardware implementation. Not sure what generic solution can be brought out of
+> this. Please correct me if I am wrong.
 
-	git show -b fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
+What happens today when the PWM frequency or duty cycle are changed
+while the signal is enabled?
 
-(i.e. ignoring whitespace changes) I don't see how the behaviour you're
-reporting can be explained.
+Do different PWM devices/drivers behave the same way?
 
-Are you sure that fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5 is the bad
-commit?
+Does this series change the behavior of the am335x and friends?
 
-Can you install a tool to inspect register values and check how the
-affected registers change if you switch kernel versions and/or pwm
-settings?
-
-(e.g.
-	memtool md 0x1c20e00+0xc
-)
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Thanks,
+Richard
