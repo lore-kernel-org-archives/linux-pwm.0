@@ -1,65 +1,62 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v8 01/12] clk: pwm: Use 64-bit division function
-Date: Wed, 11 Mar 2020 19:09:40 -0700
-Message-ID: <20200312020938.GA14827@codeaurora.org>
-References: <cover.1583889178.git.gurus@codeaurora.org>
- <338966686a673c241905716c90049993e7bb7d6a.1583889178.git.gurus@codeaurora.org>
- <7506bc2972324fd286dac6327ec73a3a@AcuMS.aculab.com>
+From: Lokesh Vutla <lokeshvutla@ti.com>
+Subject: [PATCH v3 0/5] pwm: omap-dmtimer: Allow for dynamic pwm period updates
+Date: Thu, 12 Mar 2020 09:52:05 +0530
+Message-ID: <20200312042210.17344-1-lokeshvutla@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <7506bc2972324fd286dac6327ec73a3a@AcuMS.aculab.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Laight <David.Laight@ACULAB.COM>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:55496 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726534AbgCLEXL (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2020 00:23:11 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>
 
-On Wed, Mar 11, 2020 at 04:58:24PM +0000, David Laight wrote:
-> From: Guru Das Srinagesh
-> > Sent: 11 March 2020 01:41
-> > 
-> > Since the PWM framework is switching struct pwm_args.period's datatype
-> > to u64, prepare for this transition by using div64_u64 to handle a
-> > 64-bit divisor.
-> > 
-> > Cc: Michael Turquette <mturquette@baylibre.com>
-> > Cc: Stephen Boyd <sboyd@kernel.org>
-> > Cc: linux-clk@vger.kernel.org
-> > 
-> > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-> > ---
-> >  drivers/clk/clk-pwm.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/clk/clk-pwm.c b/drivers/clk/clk-pwm.c
-> > index 87fe0b0e..7b1f7a0 100644
-> > --- a/drivers/clk/clk-pwm.c
-> > +++ b/drivers/clk/clk-pwm.c
-> > @@ -89,7 +89,7 @@ static int clk_pwm_probe(struct platform_device *pdev)
-> >  	}
-> > 
-> >  	if (of_property_read_u32(node, "clock-frequency", &clk_pwm->fixed_rate))
-> > -		clk_pwm->fixed_rate = NSEC_PER_SEC / pargs.period;
-> > +		clk_pwm->fixed_rate = div64_u64(NSEC_PER_SEC, pargs.period);
-> 
-> That cannot be needed, a 32 bit division is fine.
+This series fixes minor issues in config callback and allows for on the
+fly updates for pwm period and duty cycle. This is mainly intended to
+allow pwm omap dmtimer to be used for generating a 1PPS signal that can be
+syncronized to PTP clock in CPTS module available in AM335x and AM57xx SoCs.
 
-Could you please explain why? I think the use of this function is
-warranted in order to handle the division properly with a 64-bit
-divisor.
+Series depends on the following series:
+- https://patchwork.kernel.org/patch/11379875/
+- https://patchwork.kernel.org/project/linux-omap/list/?series=251691
 
-> More interesting would be whether pargs.period is sane (eg not zero).
+Full dependencies can be seen here:
+https://github.com/lokeshvutla/linux/tree/devel/pwm-dynamic-period-updates-v3
 
-There is a non-zero check for pargs.period just prior to this line, so
-the code is handling this case already.
+Changes since v2:
+- Restored the existing behavior on pwm stop. PWM stops immediately when
+  .stop is called as timer counter stops immediately. If just the
+  autoreload is disabled as in v2, there is a possibility that pwm is
+  never stopped.
+- Added the above limitation in the driver description
+- Rebased on top of v5.6-rc5
 
-> I'd assign pargs.period to an 'unsigned int' variable
-> prior to the division (I hate casts - been bitten by them in the past.).
+Changes since v1:
+- Updated commit description in PATCH 1
+- Added a brief about PWM generation using OMAP DM timer.
+- Updated the pwm stop callback to allow for completing the current pwm
+  cycle.
+- Added the limitaitons of hardware.
+- Used hw status instead of relying on pwm framework for state update.
 
-Wouldn't this truncate the 64-bit value? The intention behind this patch
-is to allow the processing of 64-bit values in full.
 
-Thank you.
+Lokesh Vutla (5):
+  pwm: omap-dmtimer: Drop unused header file
+  pwm: omap-dmtimer: Update description for pwm omap dm timer
+  pwm: omap-dmtimer: Fix pwm enabling sequence
+  pwm: omap-dmtimer: Do not disable pwm before changing
+    period/duty_cycle
+  pwm: omap-dmtimer: Implement .apply callback
 
-Guru Das.
+ drivers/pwm/pwm-omap-dmtimer.c                | 219 ++++++++++++------
+ include/clocksource/timer-ti-dm.h             |   3 +-
+ .../linux/platform_data/pwm_omap_dmtimer.h    |  90 -------
+ 3 files changed, 149 insertions(+), 163 deletions(-)
+ delete mode 100644 include/linux/platform_data/pwm_omap_dmtimer.h
+
+-- 
+2.23.0
