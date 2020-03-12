@@ -1,59 +1,48 @@
-From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
- changing period/duty_cycle
-Date: Thu, 12 Mar 2020 22:44:08 +0530
-Message-ID: <b8750b79-8703-5d8f-eacf-b3a67cedd252@ti.com>
-References: <20200312042210.17344-1-lokeshvutla@ti.com>
- <20200312042210.17344-5-lokeshvutla@ti.com>
- <20200312064042.p7himm3odxjyzroi@pengutronix.de>
- <f250549f-1e7c-06d6-b2a4-7ae01c06725b@ti.com>
- <20200312084739.isixgdo3txr6rjzg@pengutronix.de>
- <2a5a06cd-7aca-c450-b048-33329d058eca@ti.com>
- <20200312142126.GB2466@localhost>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v3 0/6] clocksource: timer-ti-dm: Prepare for dynamic pwm
+ period updates
+Date: Thu, 12 Mar 2020 10:26:59 -0700
+Message-ID: <20200312172659.GZ37466@atomide.com>
+References: <20200305082715.15861-1-lokeshvutla@ti.com>
+ <20200306171917.GF37466@atomide.com>
+ <f40cd563-c05b-90b6-c526-196fcd4fa146@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20200312142126.GB2466@localhost>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: Richard Cochran <richardcochran@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, kernel@pengutronix.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from muru.com ([72.249.23.125]:59944 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726328AbgCLR1E (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 12 Mar 2020 13:27:04 -0400
+Content-Disposition: inline
+In-Reply-To: <f40cd563-c05b-90b6-c526-196fcd4fa146@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Lokesh Vutla <lokeshvutla@ti.com>, Thomas Gleixner <tglx@linutronix.de>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>
 
-Hi Richard,
+Hi,
 
-On 12/03/20 7:51 PM, Richard Cochran wrote:
-> On Thu, Mar 12, 2020 at 04:14:34PM +0530, Lokesh Vutla wrote:
->> But the problem here is that inactive breaks between two periods is not desired.
->> Because the pwm is used to generate a 1PPS signal and is continuously
->> synchronized with PTP clock.
+* Daniel Lezcano <daniel.lezcano@linaro.org> [200312 11:11]:
+> On 06/03/2020 18:19, Tony Lindgren wrote:
+> > * Lokesh Vutla <lokeshvutla@ti.com> [200305 08:29]:
+> >> This series fixes dm_timer_ops used for enabling the pwm and enables
+> >> cpu_pm notifier for context save and restore. This acts as a preparatory
+> >> series for enabling dynamic period updates for pwm omap dm timer driver.
+> >>
+> >> Changes since v2:
+> >> - Incorporated changes from Tony
+> > 
+> > I just gave this series another try here and it still works
+> > for me just fine and is good to go as far as I'm concerned.
 > 
-> The 1-PPS case is the "easy" one.  If the PWM is adjustable on the
-> fly, then people will use it with higher frequency signals.
-
-Yes, PWM can be adjusted on the fly. TRM does specify that corresponding
-registers(TLDR, TMAR, TCRR) registers can be updated when timer is active.
-
->  
->> I am up if this can be solved generically. But updating period is very specific
->> to hardware implementation. Not sure what generic solution can be brought out of
->> this. Please correct me if I am wrong.
+> How do you want this series to be merged?
 > 
-> What happens today when the PWM frequency or duty cycle are changed
-> while the signal is enabled?
+> Shall I pick the patches falling under drivers/clocksource or ack them?
 
-Today, PWM is stopped and then period/duty_cycle are updated.
+I think best would be if you picked them and applied them into
+an immutable branch against v5.6-rc1 that can also be merged
+into pwm driver branch as needed.
 
-> 
-> Do different PWM devices/drivers behave the same way?
-> 
-> Does this series change the behavior of the am335x and friends?
+Regards,
 
-Yes, this series  is applicable on all TI OMAP2+ devices with DMTIMER.
-
-[0] http://www.ti.com/lit/ug/spruh73q/spruh73q.pdf Section 20.1.1.1 DMTIMER
-overview Page 4436.
-
-Thanks and regards,
-Lokesh
+Tony
