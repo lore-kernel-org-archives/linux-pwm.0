@@ -1,69 +1,64 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
- changing period/duty_cycle
-Date: Thu, 12 Mar 2020 09:47:39 +0100
-Message-ID: <20200312084739.isixgdo3txr6rjzg@pengutronix.de>
-References: <20200312042210.17344-1-lokeshvutla@ti.com>
- <20200312042210.17344-5-lokeshvutla@ti.com>
- <20200312064042.p7himm3odxjyzroi@pengutronix.de>
- <f250549f-1e7c-06d6-b2a4-7ae01c06725b@ti.com>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH v8 01/12] clk: pwm: Use 64-bit division function
+Date: Thu, 12 Mar 2020 09:14:09 +0000
+Message-ID: <fea86a43b28f4493abe0826654369513@AcuMS.aculab.com>
+References: <cover.1583889178.git.gurus@codeaurora.org>
+ <338966686a673c241905716c90049993e7bb7d6a.1583889178.git.gurus@codeaurora.org>
+ <7506bc2972324fd286dac6327ec73a3a@AcuMS.aculab.com>
+ <20200312020938.GA14827@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <f250549f-1e7c-06d6-b2a4-7ae01c06725b@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lokesh Vutla <lokeshvutla@ti.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, kernel@pengutronix.de
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:23334 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726000AbgCLJOO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2020 05:14:14 -0400
+In-Reply-To: <20200312020938.GA14827@codeaurora.org>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: 'Guru Das Srinagesh' <gurus@codeaurora.org>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
 
-On Thu, Mar 12, 2020 at 01:35:32PM +0530, Lokesh Vutla wrote:
-> On 12/03/20 12:10 PM, Uwe Kleine-König wrote:
-> > On Thu, Mar 12, 2020 at 09:52:09AM +0530, Lokesh Vutla wrote:
-> >> Only the Timer control register(TCLR) cannot be updated when the timer
-> >> is running. Registers like Counter register(TCRR), loader register(TLDR),
-> >> match register(TMAR) can be updated when the counter is running. Since
-> >> TCLR is not updated in pwm_omap_dmtimer_config(), do not stop the
-> >> timer for period/duty_cycle update.
-> > 
-> > I'm not sure what is sensible here. Stopping the PWM for a short period
-> > is bad, but maybe emitting a wrong period isn't better. You can however
-> > optimise it if only one of period or duty_cycle changes.
-> > 
-> > @Thierry, what is your position here? I tend to say a short stop is
-> > preferable.
+From: Guru Das Srinagesh
+> Sent: 12 March 2020 02:10
+> On Wed, Mar 11, 2020 at 04:58:24PM +0000, David Laight wrote:
+> > From: Guru Das Srinagesh
+> > > Sent: 11 March 2020 01:41
+> > >
+> > > Since the PWM framework is switching struct pwm_args.period's datatype
+> > > to u64, prepare for this transition by using div64_u64 to handle a
+> > > 64-bit divisor.
+> > >
+...
+> > > --- a/drivers/clk/clk-pwm.c
+> > > +++ b/drivers/clk/clk-pwm.c
+> > > @@ -89,7 +89,7 @@ static int clk_pwm_probe(struct platform_device *pdev)
+> > >  	}
+> > >
+> > >  	if (of_property_read_u32(node, "clock-frequency", &clk_pwm->fixed_rate))
+> > > -		clk_pwm->fixed_rate = NSEC_PER_SEC / pargs.period;
+> > > +		clk_pwm->fixed_rate = div64_u64(NSEC_PER_SEC, pargs.period);
+> >
+> > That cannot be needed, a 32 bit division is fine.
 > 
-> Short stop has side effects especially in the case where 1PPS is generated using
-> this PWM. In this case where PWM period is continuously synced with PTP clock,
-> cannot expect any breaks in PWM. This doesn't fall in the above limitations as
-> well. as duty_cycle is not a worry and only the rising edge is all that matters.
+> Could you please explain why? I think the use of this function is
+> warranted in order to handle the division properly with a 64-bit
+> divisor.
+...
+> > I'd assign pargs.period to an 'unsigned int' variable
+> > prior to the division (I hate casts - been bitten by them in the past.).
 > 
-> Also any specific reason why you wanted to stop rather than having the mentioned
-> limitation? it is just a corner anyway and doesn't happen all the time.
+> Wouldn't this truncate the 64-bit value? The intention behind this patch
+> is to allow the processing of 64-bit values in full.
 
-I'm a bit torn here. Which of the two steps out of line is worse depends
-on what is driven by the PWM in question. And also I think ignoring
-"just corner cases" is a reliable way into trouble.
+You are dividing a 32bit constant by a value.
+If pargs.period is greater than 2^32 the result is zero.
+I think you divide by 'fixed_rate' a bit later on - better not be zero.
 
-The usual PWM contributer (understandably) cares mostly about their own
-problem they have to solve. If however you take a step back and care
-about the PWM framework as a whole to be capable to solve problems in
-general, such that any consumer just has to know that there is a PWM and
-start requesting specific settings for their work to get done, it gets
-obvious that you want some kind of uniform behaviour of each hardware
-driver. And then a short inactive break between two periods is more
-common and better understandable than a mixed period.
+	David
 
-Also being a corner case that only happens (say) once in 100000 cases
-isn't a clear upside. This just results in a machine leaving the development
-department, passing the production test and then behave unexpected once
-per year in the field.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
