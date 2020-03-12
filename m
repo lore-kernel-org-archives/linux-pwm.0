@@ -1,48 +1,49 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v3 0/6] clocksource: timer-ti-dm: Prepare for dynamic pwm
- period updates
-Date: Thu, 12 Mar 2020 12:10:57 +0100
-Message-ID: <f40cd563-c05b-90b6-c526-196fcd4fa146@linaro.org>
-References: <20200305082715.15861-1-lokeshvutla@ti.com>
- <20200306171917.GF37466@atomide.com>
+From: Pascal Roeleven <dev@pascalroeleven.nl>
+Subject: pwm: sun4i: pwm-backlight not working since 5.6-rc1
+Date: Thu, 12 Mar 2020 13:22:13 +0100
+Message-ID: <6185b5540ca082d887d7d13330c9d938@pascalroeleven.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20200306171917.GF37466@atomide.com>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K?= =?UTF-8?Q?=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 06/03/2020 18:19, Tony Lindgren wrote:
-> * Lokesh Vutla <lokeshvutla@ti.com> [200305 08:29]:
->> This series fixes dm_timer_ops used for enabling the pwm and enables
->> cpu_pm notifier for context save and restore. This acts as a preparatory
->> series for enabling dynamic period updates for pwm omap dm timer driver.
->>
->> Changes since v2:
->> - Incorporated changes from Tony
-> 
-> I just gave this series another try here and it still works
-> for me just fine and is good to go as far as I'm concerned.
+Hi all,
 
-How do you want this series to be merged?
+I am working on adding an old A10 device to mainline and noticed an 
+issue when testing on 5.5.8 vs master.
 
-Shall I pick the patches falling under drivers/clocksource or ack them?
+Since 5.6-rc1, I can't control the brightness of my LCD backlight 
+anymore. The backlight stays on full brightness instead. I am 
+controlling the brightness value via sysfs for testing.
 
-> Thanks for doing this.
-> 
-> Regards,
-> 
-> Tony
-> 
+I am not sure if this is a general pwm-sun4i issue or if it is related 
+to the backlight. However I narrowed it down to one commit for 
+pwm-sun4i:
 
+fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
 
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+If I use pwm-sun4i.c from 5b090b430d750961305030232314b6acdb0102aa on 
+master, the backlight works fine. Unfortunately, due to my lack of 
+kernel experience, I can't see how the commit above broke it.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Not sure if it helps, but the binding for the backlight is as follows:
+
+backlight: backlight {
+     compatible = "pwm-backlight";
+     pwms = <&pwm 0 100000 PWM_POLARITY_INVERTED>;
+     power-supply = <&reg_vbat>;
+     enable-gpios = <&pio 7 7 GPIO_ACTIVE_HIGH>; /* PH7 */
+     brightness-levels = <0 30 40 50 60 70 80 90 100>;
+     default-brightness-level = <8>;
+};
+
+Please let me know if there is anything else which might be helpful to 
+know or anything I can test.
+
+Regards,
+Pascal
