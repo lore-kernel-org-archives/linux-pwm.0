@@ -1,58 +1,28 @@
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH] gpio: mvebu: avoid error message for optional IRQ
-Date: Fri, 13 Mar 2020 16:07:49 +0100
-Message-ID: <CAMpxmJVmspJG9tnv7tTrCP4DA5v4H_3P_4n-O-ZHkOKXgtXhLQ@mail.gmail.com>
-References: <20200313034244.26336-1-chris.packham@alliedtelesis.co.nz>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v3 5/5] pwm: omap-dmtimer: Implement .apply callback
+Date: Fri, 13 Mar 2020 08:31:42 -0700
+Message-ID: <20200313153142.GC37466@atomide.com>
+References: <20200312042210.17344-1-lokeshvutla@ti.com>
+ <20200312042210.17344-6-lokeshvutla@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:38465 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726911AbgCMPIE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Mar 2020 11:08:04 -0400
-Received: by mail-qv1-f67.google.com with SMTP id p60so4727290qva.5
-        for <linux-pwm@vger.kernel.org>; Fri, 13 Mar 2020 08:08:03 -0700 (PDT)
-In-Reply-To: <20200313034244.26336-1-chris.packham@alliedtelesis.co.nz>
+Received: from muru.com ([72.249.23.125]:60044 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726637AbgCMPbq (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 13 Mar 2020 11:31:46 -0400
+Content-Disposition: inline
+In-Reply-To: <20200312042210.17344-6-lokeshvutla@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, linux-gpio <linux-gpio@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+To: Lokesh Vutla <lokeshvutla@ti.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
 
-pt., 13 mar 2020 o 04:42 Chris Packham
-<chris.packham@alliedtelesis.co.nz> napisa=C5=82(a):
->
-> platform_get_irq() will generate an error message if the requested irq
-> is not present
->
->   mvebu-gpio f1010140.gpio: IRQ index 3 not found
->
-> use platform_get_irq_optional() to avoid the error message being
-> generated.
->
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> ---
->  drivers/gpio/gpio-mvebu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-> index d2b999c7987f..3c9f4fb3d5a2 100644
-> --- a/drivers/gpio/gpio-mvebu.c
-> +++ b/drivers/gpio/gpio-mvebu.c
-> @@ -1247,7 +1247,7 @@ static int mvebu_gpio_probe(struct platform_device =
-*pdev)
->          * pins.
->          */
->         for (i =3D 0; i < 4; i++) {
-> -               int irq =3D platform_get_irq(pdev, i);
-> +               int irq =3D platform_get_irq_optional(pdev, i);
->
->                 if (irq < 0)
->                         continue;
-> --
-> 2.25.1
->
+* Lokesh Vutla <lokeshvutla@ti.com> [200312 04:24]:
+> Implement .apply callback and drop the legacy callbacks(enable, disable,
+> config, set_polarity). In .apply() check for the current hardware status
+> before changing the pwm configuration.
 
-Patch applied, thanks!
+This set works just fine for me thanks, so for this patch too:
 
-Bartosz
+Tested-by: Tony Lindgren <tony@atomide.com>
