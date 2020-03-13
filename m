@@ -1,45 +1,44 @@
-From: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH] gpio: mvebu: avoid error message for optional IRQ
-Date: Fri, 13 Mar 2020 16:42:44 +1300
-Message-ID: <20200313034244.26336-1-chris.packham@alliedtelesis.co.nz>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] gpio: mvebu: avoid error message for optional IRQ
+Date: Fri, 13 Mar 2020 07:45:01 +0100
+Message-ID: <20200313064501.43h5htrebbgceudj@pengutronix.de>
+References: <20200313034244.26336-1-chris.packham@alliedtelesis.co.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:37054 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726254AbgCMDmw (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2020 23:42:52 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:58141 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726001AbgCMGpO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Mar 2020 02:45:14 -0400
+Content-Disposition: inline
+In-Reply-To: <20200313034244.26336-1-chris.packham@alliedtelesis.co.nz>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linus.walleij@linaro.org, bgolaszewski@baylibre.com
-Cc: linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, Chris Packham <chris.packham@alliedtelesis.co.nz>
+To: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc: thierry.reding@gmail.com, linus.walleij@linaro.org, bgolaszewski@baylibre.com, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
 
-platform_get_irq() will generate an error message if the requested irq
-is not present
+Hello,
 
-  mvebu-gpio f1010140.gpio: IRQ index 3 not found
+On Fri, Mar 13, 2020 at 04:42:44PM +1300, Chris Packham wrote:
+> platform_get_irq() will generate an error message if the requested irq
+> is not present
+> 
+>   mvebu-gpio f1010140.gpio: IRQ index 3 not found
+> 
+> use platform_get_irq_optional() to avoid the error message being
+> generated.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 
-use platform_get_irq_optional() to avoid the error message being
-generated.
+LGTM
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
----
- drivers/gpio/gpio-mvebu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index d2b999c7987f..3c9f4fb3d5a2 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -1247,7 +1247,7 @@ static int mvebu_gpio_probe(struct platform_device =
-*pdev)
- 	 * pins.
- 	 */
- 	for (i =3D 0; i < 4; i++) {
--		int irq =3D platform_get_irq(pdev, i);
-+		int irq =3D platform_get_irq_optional(pdev, i);
-=20
- 		if (irq < 0)
- 			continue;
---=20
-2.25.1
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
