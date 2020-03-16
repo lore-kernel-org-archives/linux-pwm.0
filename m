@@ -1,65 +1,67 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] dt-bindings: pwm: renesas-tpu: Document more R-Car Gen2
- support
-Date: Mon, 16 Mar 2020 12:30:56 +0200
-Message-ID: <20200316103056.GU4732@pendragon.ideasonboard.com>
-References: <20200316101453.27745-1-geert+renesas@glider.be>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 2/3] pwm: renesas-tpu: Fix late Runtime PM enablement
+Date: Mon, 16 Mar 2020 11:32:15 +0100
+Message-ID: <20200316103216.29383-3-geert+renesas@glider.be>
+References: <20200316103216.29383-1-geert+renesas@glider.be>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([213.167.242.64]:34952 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730565AbgCPKbE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Mar 2020 06:31:04 -0400
-Content-Disposition: inline
-In-Reply-To: <20200316101453.27745-1-geert+renesas@glider.be>
+Received: from andre.telenet-ops.be ([195.130.132.53]:54968 "EHLO
+        andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730622AbgCPKcT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Mar 2020 06:32:19 -0400
+In-Reply-To: <20200316103216.29383-1-geert+renesas@glider.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 
-Hi Geert,
+Runtime PM should be enabled before calling pwmchip_add(), as PWM users
+can appear immediately after the PWM chip has been added.
+Likewise, Runtime PM should always be disabled after the removal of the
+PWM chip, even if the latter failed.
 
-Thank you for the patch.
+Fixes: 99b82abb0a35b073 ("pwm: Add Renesas TPU PWM driver")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/pwm/pwm-renesas-tpu.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-On Mon, Mar 16, 2020 at 11:14:53AM +0100, Geert Uytterhoeven wrote:
-> All R-Car Gen2 SoCs have a Renesas Timer Pulse Unit.
-> Document support for the missing variants.
-> 
-> No driver change is needed due to the fallback compatible string.
-
-I think this sentence doesn't belong to the bindings patch.
-
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-> ---
-> Tested on R-Car M2-W.
-
-What do you mean by tested, how do you test bindings on hardware ? :-)
-
-> ---
->  Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
-> index 4969a954993cb693..4bf62a3d5bba8e3a 100644
-> --- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
-> @@ -19,6 +19,10 @@ properties:
->            - renesas,tpu-r8a7744   # RZ/G1N
->            - renesas,tpu-r8a7745   # RZ/G1E
->            - renesas,tpu-r8a7790   # R-Car H2
-> +          - renesas,tpu-r8a7791   # R-Car M2-W
-> +          - renesas,tpu-r8a7792   # R-Car V2H
-> +          - renesas,tpu-r8a7793   # R-Car M2-N
-> +          - renesas,tpu-r8a7794   # R-Car E2
->            - renesas,tpu-r8a7795   # R-Car H3
->            - renesas,tpu-r8a7796   # R-Car M3-W
->            - renesas,tpu-r8a77965  # R-Car M3-N
-
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 4a855a21b782dea3..8032acc84161a9dd 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -415,16 +415,17 @@ static int tpu_probe(struct platform_device *pdev)
+ 	tpu->chip.base = -1;
+ 	tpu->chip.npwm = TPU_CHANNEL_MAX;
+ 
++	pm_runtime_enable(&pdev->dev);
++
+ 	ret = pwmchip_add(&tpu->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to register PWM chip\n");
++		pm_runtime_disable(&pdev->dev);
+ 		return ret;
+ 	}
+ 
+ 	dev_info(&pdev->dev, "TPU PWM %d registered\n", tpu->pdev->id);
+ 
+-	pm_runtime_enable(&pdev->dev);
+-
+ 	return 0;
+ }
+ 
+@@ -434,12 +435,10 @@ static int tpu_remove(struct platform_device *pdev)
+ 	int ret;
+ 
+ 	ret = pwmchip_remove(&tpu->chip);
+-	if (ret)
+-		return ret;
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ #ifdef CONFIG_OF
 -- 
-Regards,
-
-Laurent Pinchart
+2.17.1
