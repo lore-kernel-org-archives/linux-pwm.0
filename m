@@ -1,50 +1,30 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH] pwm: meson: Fix confusing indentation
-Date: Sun, 15 Mar 2020 13:21:40 +0100
-Message-ID: <658d2096-8a2d-7cd0-b4fd-88f4516ac7a9@baylibre.com>
-References: <20200314113524.23031-1-krzk@kernel.org>
- <20200314214347.dun6ith5zamaa3m6@pengutronix.de>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH] dts: imx6: Allow flags argument in pwms reference
+Date: Mon, 16 Mar 2020 08:55:37 +0800
+Message-ID: <20200316005536.GF17221@dragon>
+References: <20200309145558.16098-1-pbarker@konsulko.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52938 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728475AbgCOMV7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 15 Mar 2020 08:21:59 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 11so14624054wmo.2
-        for <linux-pwm@vger.kernel.org>; Sun, 15 Mar 2020 05:21:58 -0700 (PDT)
-In-Reply-To: <20200314214347.dun6ith5zamaa3m6@pengutronix.de>
+Received: from mail.kernel.org ([198.145.29.99]:53406 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729303AbgCPAzo (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 15 Mar 2020 20:55:44 -0400
+Content-Disposition: inline
+In-Reply-To: <20200309145558.16098-1-pbarker@konsulko.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+To: Paul Barker <pbarker@konsulko.com>
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Matt Ranostay <matt.ranostay@konsulko.com>, Pantelis Antoniou <pantelis.antoniou@konsulko.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
 
-
-
-Le 14/03/2020 à 22:43, Uwe Kleine-König a écrit :
-> On Sat, Mar 14, 2020 at 12:35:24PM +0100, Krzysztof Kozlowski wrote:
->> Fix indentation of return block.  Smatch warning:
->>     drivers/pwm/pwm-meson.c:139 meson_pwm_request() warn: inconsistent indenting
->>
->> Reported-by: kbuild test robot <lkp@intel.com>
->> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+On Mon, Mar 09, 2020 at 02:55:58PM +0000, Paul Barker wrote:
+> The pwm-imx27 driver supports a third argument in a pwms reference to
+> provide flags. However #pwm-cells needs to be set to <3> in the pwm node
+> so that these flags can be passed through to the driver. Once #pwm-cells
+> is <3>, all pwms references need to use the 3-cell form.
 > 
-> This exists since commit 211ed630753d ("pwm: Add support for Meson PWM
-> Controller") in 2016. Added Neil to Cc:.
-> 
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> Thanks
-> Uwe
-> 
+> Signed-off-by: Paul Barker <pbarker@konsulko.com>
 
-Missing
+'ARM: dts: imx6: ...' to be prefix please.
 
-Fixes: 211ed630753d ("pwm: Add support for Meson PWM Controller")
-
-With that
-
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-
-Neil
+Shawn
