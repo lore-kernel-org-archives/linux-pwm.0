@@ -1,98 +1,34 @@
-From: Pascal Roeleven <dev@pascalroeleven.nl>
-Subject: [RFC PATCH 3/4] pwm: sun4i: Move delay to function
-Date: Tue, 17 Mar 2020 16:59:05 +0100
-Message-ID: <20200317155906.31288-4-dev@pascalroeleven.nl>
-References: <20200317155906.31288-1-dev@pascalroeleven.nl>
+From: Miquel Raynal <miquel.raynal-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 05/12] docs: dt: fix references to
+ ap806-system-controller.txt
+Date: Tue, 17 Mar 2020 17:12:56 +0100
+Message-ID: <20200317171256.7d56dcd6@xps13>
+References: <cover.1584450500.git.mchehab+huawei@kernel.org>
+        <cf60ef88712e4f46f4e4bf40b2c646451d921827.1584450500.git.mchehab+huawei@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from web0081.zxcs.nl ([185.104.29.10]:55080 "EHLO web0081.zxcs.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726647AbgCQQAI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 17 Mar 2020 12:00:08 -0400
-In-Reply-To: <20200317155906.31288-1-dev@pascalroeleven.nl>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <cf60ef88712e4f46f4e4bf40b2c646451d921827.1584450500.git.mchehab+huawei-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mauro Carvalho Chehab <mchehab+huawei-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Linux Doc Mailing List <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Amit Kucheria <amit.kucheria-LY4KaoCqKrnby3iVrkZq2A@public.gmane.org>, Ben Peled <bpeled-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Gregory CLEMENT <gregory.clement-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: linux-sunxi@googlegroups.com, Pascal Roeleven <dev@pascalroeleven.nl>
 
-Move the delay to a function so we can reuse it.
+Hi Mauro,
 
-Signed-off-by: Pascal Roeleven <dev@pascalroeleven.nl>
----
- drivers/pwm/pwm-sun4i.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+Mauro Carvalho Chehab <mchehab+huawei-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote on Tue, 17 Mar
+2020 14:10:44 +0100:
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 56942036b..a11d00f96 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -89,7 +89,6 @@ struct sun4i_pwm_chip {
- 	void __iomem *base;
- 	spinlock_t ctrl_lock;
- 	const struct sun4i_pwm_data *data;
--	unsigned long next_period[2];
- };
- 
- static inline struct sun4i_pwm_chip *to_sun4i_pwm_chip(struct pwm_chip *chip)
-@@ -228,6 +227,20 @@ static int sun4i_pwm_calculate(struct sun4i_pwm_chip *sun4i_pwm,
- 	return 0;
- }
- 
-+static void sun4i_pwm_wait(unsigned long next_period) {
-+	unsigned int delay_us;
-+	unsigned long now;
-+
-+	now = jiffies;
-+	if (time_before(now, next_period)) {
-+		delay_us = jiffies_to_usecs(next_period - now);
-+		if ((delay_us / 500) > MAX_UDELAY_MS)
-+			msleep(delay_us / 1000 + 1);
-+		else
-+			usleep_range(delay_us, delay_us * 2);
-+	}
-+}
-+
- static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   const struct pwm_state *state)
- {
-@@ -235,8 +248,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_state cstate;
- 	u32 ctrl, duty = 0, period = 0, val;
- 	int ret;
--	unsigned int delay_us, prescaler = 0;
--	unsigned long now;
-+	unsigned int prescaler = 0;
-+	unsigned long next_period;
- 	bool bypass;
- 
- 	pwm_get_state(pwm, &cstate);
-@@ -284,8 +297,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	val = (duty & PWM_DTY_MASK) | PWM_PRD(period);
- 	sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
--	sun4i_pwm->next_period[pwm->hwpwm] = jiffies +
--		usecs_to_jiffies(cstate.period / 1000 + 1);
-+	next_period = jiffies + usecs_to_jiffies(cstate.period / 1000 + 1);
- 
- 	if (state->polarity != PWM_POLARITY_NORMAL)
- 		ctrl &= ~BIT_CH(PWM_ACT_STATE, pwm->hwpwm);
-@@ -308,15 +320,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return 0;
- 
- 	/* We need a full period to elapse before disabling the channel. */
--	now = jiffies;
--	if (time_before(now, sun4i_pwm->next_period[pwm->hwpwm])) {
--		delay_us = jiffies_to_usecs(sun4i_pwm->next_period[pwm->hwpwm] -
--					   now);
--		if ((delay_us / 500) > MAX_UDELAY_MS)
--			msleep(delay_us / 1000 + 1);
--		else
--			usleep_range(delay_us, delay_us * 2);
--	}
-+	sun4i_pwm_wait(next_period);
- 
- 	spin_lock(&sun4i_pwm->ctrl_lock);
- 	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
--- 
-2.20.1
+> ap806-system-controller.txt was renamed to ap80x-system-controller.txt.
+> 
+> Update its references accordingly.
+> 
+> Fixes: 2537831bbc19 ("dt-bindings: ap80x: replace AP806 with AP80x")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> ---
+
+Reviewed-by: Miquel Raynal <miquel.raynal-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
+
+Thanks,
+Miquèl
