@@ -1,65 +1,46 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [RFC PATCH 4/7] dt-bindings: pwm: add description of PWM polarity
-Date: Wed, 18 Mar 2020 01:01:15 +0200
-Message-ID: <20200317230115.GM2527@pendragon.ideasonboard.com>
-References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-5-oleksandr.suvorov@toradex.com>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH v9 04/11] pwm: clps711x: Use 64-bit division macro
+Date: Tue, 17 Mar 2020 16:30:05 -0700
+Message-ID: <20200317233003.GA11350@codeaurora.org>
+References: <cover.1584473399.git.gurus@codeaurora.org>
+ <587f9ccae68ad7e1ce97fa8da6037292af1a5095.1584473399.git.gurus@codeaurora.org>
+ <CAK8P3a2Hi_AoRC3g7qKth4e_Y1jZrbBDhWUb3YPZm10FWMu-ig@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([213.167.242.64]:59474 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726735AbgCQXBW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 19:01:22 -0400
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:48641 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727150AbgCQXaG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 19:30:06 -0400
 Content-Disposition: inline
-In-Reply-To: <20200317123231.2843297-5-oleksandr.suvorov@toradex.com>
+In-Reply-To: <CAK8P3a2Hi_AoRC3g7qKth4e_Y1jZrbBDhWUb3YPZm10FWMu-ig@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>
 
-Hi Oleksandr,
-
-Thank you for the patch.
-
-On Tue, Mar 17, 2020 at 02:32:28PM +0200, Oleksandr Suvorov wrote:
-> Move the description of the PWM signal polarity from
-> <linux/pwm.h>, prepare for removing the polarity
-> definition from <linux/pwm.h>.
+On Tue, Mar 17, 2020 at 11:22:06PM +0100, Arnd Bergmann wrote:
+> > diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> > index 924d39a..ba9500a 100644
+> > --- a/drivers/pwm/pwm-clps711x.c
+> > +++ b/drivers/pwm/pwm-clps711x.c
+> > @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+> >  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+> >  {
+> >         /* Duty cycle 0..15 max */
+> > -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> > +       return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> >  }
 > 
-> Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-> ---
-> 
->  include/dt-bindings/pwm/pwm.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
-> index 6b58caa6385e..c07da2088a61 100644
-> --- a/include/dt-bindings/pwm/pwm.h
-> +++ b/include/dt-bindings/pwm/pwm.h
-> @@ -10,7 +10,16 @@
->  #ifndef _DT_BINDINGS_PWM_PWM_H
->  #define _DT_BINDINGS_PWM_PWM_H
->  
-> +/**
-> + * a high signal for the duration of the duty-cycle, followed by a low signal
-> + * for the remainder of the pulse period.
-> + */
+> Is it actually going to exceed U32_MAX? If not, a type cast may be
+> more appropriate here than the expensive 64-bit division.
 
-Last time I checked, kernedoc didn't support documenting macros (enums
-are supported).
+With the final change in this patch series, the framework will support
+periods that exceed U32_MAX. My concern is that using a typecast would
+mean that in those cases, this driver will not support > U32_MAX values.
+Using DIV64_U64_ROUND_CLOSEST makes the driver future proof and able to
+handle > U32_MAX values correctly. What do you think?
 
->  #define PWM_POLARITY_NORMAL			0
-> +
-> +/**
-> + * a low signal for the duration of the duty-cycle, followed by a high signal
-> + * for the remainder of the pulse period.
-> + */
->  #define PWM_POLARITY_INVERTED			(1 << 0)
->  
->  #endif
+Thank you.
 
--- 
-Regards,
-
-Laurent Pinchart
+Guru Das.
