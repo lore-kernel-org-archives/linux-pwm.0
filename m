@@ -1,49 +1,73 @@
-From: Michael Walle <michael@walle.cc>
-Subject: [PATCH 02/18] mfd: mfd-core: Don't overwrite the dma_mask of the child device
-Date: Tue, 17 Mar 2020 21:50:01 +0100
-Message-ID: <20200317205017.28280-3-michael@walle.cc>
-References: <20200317205017.28280-1-michael@walle.cc>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RFC PATCH 1/7] pwm: rename the PWM_POLARITY_INVERSED enum
+Date: Tue, 17 Mar 2020 22:00:42 +0100
+Message-ID: <20200317210042.ryrof3amr7fxp4w5@pengutronix.de>
+References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
+ <20200317123231.2843297-2-oleksandr.suvorov@toradex.com>
+ <20200317174043.GA1464607@ulmo>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
-In-Reply-To: <20200317205017.28280-1-michael@walle.cc>
-Sender: linux-hwmon-owner@vger.kernel.org
-To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Michael Walle <michael@walle.cc>, Robin Murphy <robin.murphy@arm.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:46209 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbgCQVBZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 17:01:25 -0400
+Content-Disposition: inline
+In-Reply-To: <20200317174043.GA1464607@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Claudiu Beznea <claudiu.beznea@microchip.com>, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Kevin Hilman <khilman@baylibre.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Maxime Ripard <mripard@kernel.org>, NXP Linux Team <linux-imx@nxp.com>, Nicolas Ferre <nicolas.f>
 
-Commit cdfee5623290 ("driver core: initialize a default DMA mask for
-platform device") initialize the DMA of a platform device. But if the
-parent doesn't have a dma_mask set, for example if it's an I2C device,
-the dma_mask of the child platform device will be set to zero again.
-Which leads to many "DMA mask not set" warnings, if the MFD cell has the
-of_compatible property set.
+Hello,
 
-[    1.877937] sl28cpld-pwm sl28cpld-pwm: DMA mask not set
-[    1.883282] sl28cpld-pwm sl28cpld-pwm.0: DMA mask not set
-[    1.888795] sl28cpld-gpio sl28cpld-gpio: DMA mask not set
+On Tue, Mar 17, 2020 at 06:40:43PM +0100, Thierry Reding wrote:
+> On Tue, Mar 17, 2020 at 02:32:25PM +0200, Oleksandr Suvorov wrote:
+> > The polarity enum definition PWM_POLARITY_INVERSED is misspelled.
+> > Rename it to PWM_POLARITY_INVERTED.
+> 
+> It isn't misspelled. "inversed" is a synonym for "inverted". Both
+> spellings are correct.
 
-Thus don't overwrite the dma_mask of the children. Instead set the
-dma_mask of the platform device.
+Some time ago I stumbled about "inversed", too. My spell checker doesn't
+know it and I checked some dictionaries and none of them knew that word:
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/mfd/mfd-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+https://www.lexico.com/search?utf8=%E2%9C%93&filter=dictionary&dictionary=en&query=inversed
+https://de.pons.com/%C3%BCbersetzung/englisch-deutsch/inversed
+https://dictionary.cambridge.org/spellcheck/english-german/?q=inversed
 
-diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-index f5a73af60dd4..e735565969b3 100644
---- a/drivers/mfd/mfd-core.c
-+++ b/drivers/mfd/mfd-core.c
-@@ -138,7 +138,7 @@ static int mfd_add_device(struct device *parent, int id,
+https://en.wiktionary.org/wiki/inverse#Verb mentions "inverse" as a verb
+having "inversed" as past participle.
+
+Having said this I think (independent of the question if "inversed"
+exists) using two similar terms for the same thing just results in
+confusion. I hit that in the past already and I like it being addressed.
+
+> And as you noted in the cover letter, there's a conflict between the
+> macro defined in dt-bindings/pwm/pwm.txt. If they end up being included
+> in the wrong order you'll get a compile error.
+
+There are also other symbols that exist twice (GPIO_ACTIVE_HIGH was the
+first to come to my mind). I'm not aware of any problems related to
+these. What am I missing?
  
- 	pdev->dev.parent = parent;
- 	pdev->dev.type = &mfd_dev_type;
--	pdev->dev.dma_mask = parent->dma_mask;
-+	pdev->platform_dma_mask = parent->dma_mask ? *parent->dma_mask : 0;
- 	pdev->dev.dma_parms = parent->dma_parms;
- 	pdev->dev.coherent_dma_mask = parent->coherent_dma_mask;
- 
+> The enum was named this way on purpose to make it separate from the
+> definition for the DT bindings.
+
+Then please let's make it different by picking a different prefix or
+something like that.
+
+> Note that DT bindings are an ABI and can
+> never change, whereas the enum pwm_polarity is part of a Linux internal
+> API and doesn't have the same restrictions as an ABI.
+
+I thought only binary device trees (dtb) are supposed to be ABI.
+
+Best regards
+Uwe
+
 -- 
-2.20.1
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
