@@ -1,128 +1,52 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v9 11/11] pwm: core: Convert period and duty cycle to u64
-Date: Tue, 17 Mar 2020 13:05:26 -0700
-Message-ID: <ecc35a71d489baa0dd46d1a583edafa8399a0a64.1584473399.git.gurus@codeaurora.org>
+Subject: [PATCH v9 02/11] hwmon: pwm-fan: Use 64-bit division macro
+Date: Tue, 17 Mar 2020 13:05:17 -0700
+Message-ID: <9b0166fa9b86c01001291cdb1eb5c33609589965.1584473399.git.gurus@codeaurora.org>
 References: <cover.1584473399.git.gurus@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:40974 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726756AbgCQUFg (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 16:05:36 -0400
 In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
 References: <cover.1584473399.git.gurus@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Kamil Debski <kamil@wypas.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org
 
-Because period and duty cycle are defined as ints with units of
-nanoseconds, the maximum time duration that can be set is limited to
-~2.147 seconds. Change their definitions to u64 in the structs of the
-PWM framework so that higher durations may be set.
+Since the PWM framework is switching struct pwm_args.period's datatype
+to u64, prepare for this transition by using DIV_ROUND_UP_ULL to handle
+a 64-bit dividend.
+
+Cc: Kamil Debski <kamil@wypas.org>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Jean Delvare <jdelvare@suse.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: linux-hwmon@vger.kernel.org
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/pwm/core.c  |  4 ++--
- drivers/pwm/sysfs.c |  8 ++++----
- include/linux/pwm.h | 12 ++++++------
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/hwmon/pwm-fan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 5a7f659..81aa3c2 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -1163,8 +1163,8 @@ static void pwm_dbg_show(struct pwm_chip *chip, struct seq_file *s)
- 		if (state.enabled)
- 			seq_puts(s, " enabled");
+diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+index 42ffd2e..283423a 100644
+--- a/drivers/hwmon/pwm-fan.c
++++ b/drivers/hwmon/pwm-fan.c
+@@ -437,7 +437,7 @@ static int pwm_fan_resume(struct device *dev)
+ 		return 0;
  
--		seq_printf(s, " period: %u ns", state.period);
--		seq_printf(s, " duty: %u ns", state.duty_cycle);
-+		seq_printf(s, " period: %llu ns", state.period);
-+		seq_printf(s, " duty: %llu ns", state.duty_cycle);
- 		seq_printf(s, " polarity: %s",
- 			   state.polarity ? "inverse" : "normal");
- 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 2389b86..449dbc0 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -42,7 +42,7 @@ static ssize_t period_show(struct device *child,
- 
- 	pwm_get_state(pwm, &state);
- 
--	return sprintf(buf, "%u\n", state.period);
-+	return sprintf(buf, "%llu\n", state.period);
- }
- 
- static ssize_t period_store(struct device *child,
-@@ -52,10 +52,10 @@ static ssize_t period_store(struct device *child,
- 	struct pwm_export *export = child_to_pwm_export(child);
- 	struct pwm_device *pwm = export->pwm;
- 	struct pwm_state state;
--	unsigned int val;
-+	u64 val;
- 	int ret;
- 
--	ret = kstrtouint(buf, 0, &val);
-+	ret = kstrtou64(buf, 0, &val);
+ 	pwm_get_args(ctx->pwm, &pargs);
+-	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
++	duty = DIV_ROUND_UP_ULL(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
+ 	ret = pwm_config(ctx->pwm, duty, pargs.period);
  	if (ret)
  		return ret;
- 
-@@ -77,7 +77,7 @@ static ssize_t duty_cycle_show(struct device *child,
- 
- 	pwm_get_state(pwm, &state);
- 
--	return sprintf(buf, "%u\n", state.duty_cycle);
-+	return sprintf(buf, "%llu\n", state.duty_cycle);
- }
- 
- static ssize_t duty_cycle_store(struct device *child,
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 0ef808d..b53f13d 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -39,7 +39,7 @@ enum pwm_polarity {
-  * current PWM hardware state.
-  */
- struct pwm_args {
--	unsigned int period;
-+	u64 period;
- 	enum pwm_polarity polarity;
- };
- 
-@@ -56,8 +56,8 @@ enum {
-  * @enabled: PWM enabled status
-  */
- struct pwm_state {
--	unsigned int period;
--	unsigned int duty_cycle;
-+	u64 period;
-+	u64 duty_cycle;
- 	enum pwm_polarity polarity;
- 	bool enabled;
- };
-@@ -105,13 +105,13 @@ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
- 	return state.enabled;
- }
- 
--static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
-+static inline void pwm_set_period(struct pwm_device *pwm, u64 period)
- {
- 	if (pwm)
- 		pwm->state.period = period;
- }
- 
--static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
-+static inline u64 pwm_get_period(const struct pwm_device *pwm)
- {
- 	struct pwm_state state;
- 
-@@ -126,7 +126,7 @@ static inline void pwm_set_duty_cycle(struct pwm_device *pwm, unsigned int duty)
- 		pwm->state.duty_cycle = duty;
- }
- 
--static inline unsigned int pwm_get_duty_cycle(const struct pwm_device *pwm)
-+static inline u64 pwm_get_duty_cycle(const struct pwm_device *pwm)
- {
- 	struct pwm_state state;
- 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
