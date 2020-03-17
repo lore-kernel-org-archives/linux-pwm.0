@@ -1,54 +1,63 @@
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
-Date: Wed, 18 Mar 2020 00:58:56 +0200
-Message-ID: <20200317225856.GL2527@pendragon.ideasonboard.com>
+Subject: Re: [RFC PATCH 4/7] dt-bindings: pwm: add description of PWM polarity
+Date: Wed, 18 Mar 2020 01:01:15 +0200
+Message-ID: <20200317230115.GM2527@pendragon.ideasonboard.com>
 References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
+ <20200317123231.2843297-5-oleksandr.suvorov@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([213.167.242.64]:59460 "EHLO
+Received: from perceval.ideasonboard.com ([213.167.242.64]:59474 "EHLO
         perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726476AbgCQW7D (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 18:59:03 -0400
+        with ESMTP id S1726735AbgCQXBW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 19:01:22 -0400
 Content-Disposition: inline
-In-Reply-To: <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
+In-Reply-To: <20200317123231.2843297-5-oleksandr.suvorov@toradex.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
 
 Hi Oleksandr,
 
 Thank you for the patch.
 
-On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
-> Add the description of PWM_POLARITY_NORMAL flag.
+On Tue, Mar 17, 2020 at 02:32:28PM +0200, Oleksandr Suvorov wrote:
+> Move the description of the PWM signal polarity from
+> <linux/pwm.h>, prepare for removing the polarity
+> definition from <linux/pwm.h>.
 > 
 > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 > ---
 > 
->  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  include/dt-bindings/pwm/pwm.h | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
-> index 084886bd721e..440c6b9a6a4e 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
-> @@ -46,6 +46,7 @@ period in nanoseconds.
->  Optionally, the pwm-specifier can encode a number of flags (defined in
->  <dt-bindings/pwm/pwm.h>) in a third cell:
->  - PWM_POLARITY_INVERTED: invert the PWM signal polarity
-> +- PWM_POLARITY_NORMAL: don't invert the PWM signal polarity
-
-With the previous line mentioning that the pwm-specifier can encode a
-number of *flags*, this becomes confusing: reading the documentation
-only and not pwm.h, one could wonder what happens if none or both of
-PWM_POLARITY_INVERTED and PWM_POLARITY_NORMAL are specified :-(
-
+> diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
+> index 6b58caa6385e..c07da2088a61 100644
+> --- a/include/dt-bindings/pwm/pwm.h
+> +++ b/include/dt-bindings/pwm/pwm.h
+> @@ -10,7 +10,16 @@
+>  #ifndef _DT_BINDINGS_PWM_PWM_H
+>  #define _DT_BINDINGS_PWM_PWM_H
 >  
->  Example with optional PWM specifier for inverse polarity
+> +/**
+> + * a high signal for the duration of the duty-cycle, followed by a low signal
+> + * for the remainder of the pulse period.
+> + */
+
+Last time I checked, kernedoc didn't support documenting macros (enums
+are supported).
+
+>  #define PWM_POLARITY_NORMAL			0
+> +
+> +/**
+> + * a low signal for the duration of the duty-cycle, followed by a high signal
+> + * for the remainder of the pulse period.
+> + */
+>  #define PWM_POLARITY_INVERTED			(1 << 0)
 >  
+>  #endif
 
 -- 
 Regards,
