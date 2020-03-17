@@ -1,52 +1,98 @@
 From: Pascal Roeleven <dev@pascalroeleven.nl>
-Subject: [RFC PATCH 4/4] pwm: sun4i: Delay after writing the period
-Date: Tue, 17 Mar 2020 16:59:06 +0100
-Message-ID: <20200317155906.31288-5-dev@pascalroeleven.nl>
+Subject: [RFC PATCH 3/4] pwm: sun4i: Move delay to function
+Date: Tue, 17 Mar 2020 16:59:05 +0100
+Message-ID: <20200317155906.31288-4-dev@pascalroeleven.nl>
 References: <20200317155906.31288-1-dev@pascalroeleven.nl>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from web0081.zxcs.nl ([185.104.29.10]:55122 "EHLO web0081.zxcs.nl"
+Received: from web0081.zxcs.nl ([185.104.29.10]:55080 "EHLO web0081.zxcs.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726833AbgCQQAJ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 17 Mar 2020 12:00:09 -0400
+        id S1726647AbgCQQAI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 17 Mar 2020 12:00:08 -0400
 In-Reply-To: <20200317155906.31288-1-dev@pascalroeleven.nl>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linux-sunxi@googlegroups.com, Pascal Roeleven <dev@pascalroeleven.nl>
 
-When disabling, ensure the period write is complete before continuing.
-This fixes an issue on some devices when the write isn't complete before
-the panel is turned off but the clock gate is still on.
+Move the delay to a function so we can reuse it.
 
 Signed-off-by: Pascal Roeleven <dev@pascalroeleven.nl>
 ---
- drivers/pwm/pwm-sun4i.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pwm/pwm-sun4i.c | 32 ++++++++++++++++++--------------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index a11d00f96..75250fd4c 100644
+index 56942036b..a11d00f96 100644
 --- a/drivers/pwm/pwm-sun4i.c
 +++ b/drivers/pwm/pwm-sun4i.c
-@@ -299,6 +299,10 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
- 	next_period = jiffies + usecs_to_jiffies(cstate.period / 1000 + 1);
+@@ -89,7 +89,6 @@ struct sun4i_pwm_chip {
+ 	void __iomem *base;
+ 	spinlock_t ctrl_lock;
+ 	const struct sun4i_pwm_data *data;
+-	unsigned long next_period[2];
+ };
  
-+	/* When disabling, make sure the period register is written first */
-+	if (!state->enabled && cstate.enabled)
-+		sun4i_pwm_wait(next_period);
+ static inline struct sun4i_pwm_chip *to_sun4i_pwm_chip(struct pwm_chip *chip)
+@@ -228,6 +227,20 @@ static int sun4i_pwm_calculate(struct sun4i_pwm_chip *sun4i_pwm,
+ 	return 0;
+ }
+ 
++static void sun4i_pwm_wait(unsigned long next_period) {
++	unsigned int delay_us;
++	unsigned long now;
 +
++	now = jiffies;
++	if (time_before(now, next_period)) {
++		delay_us = jiffies_to_usecs(next_period - now);
++		if ((delay_us / 500) > MAX_UDELAY_MS)
++			msleep(delay_us / 1000 + 1);
++		else
++			usleep_range(delay_us, delay_us * 2);
++	}
++}
++
+ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			   const struct pwm_state *state)
+ {
+@@ -235,8 +248,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct pwm_state cstate;
+ 	u32 ctrl, duty = 0, period = 0, val;
+ 	int ret;
+-	unsigned int delay_us, prescaler = 0;
+-	unsigned long now;
++	unsigned int prescaler = 0;
++	unsigned long next_period;
+ 	bool bypass;
+ 
+ 	pwm_get_state(pwm, &cstate);
+@@ -284,8 +297,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	val = (duty & PWM_DTY_MASK) | PWM_PRD(period);
+ 	sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
+-	sun4i_pwm->next_period[pwm->hwpwm] = jiffies +
+-		usecs_to_jiffies(cstate.period / 1000 + 1);
++	next_period = jiffies + usecs_to_jiffies(cstate.period / 1000 + 1);
+ 
  	if (state->polarity != PWM_POLARITY_NORMAL)
  		ctrl &= ~BIT_CH(PWM_ACT_STATE, pwm->hwpwm);
- 	else
-@@ -320,6 +324,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -308,15 +320,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  		return 0;
  
  	/* We need a full period to elapse before disabling the channel. */
-+	next_period = jiffies + usecs_to_jiffies(cstate.period / 1000 + 1);
- 	sun4i_pwm_wait(next_period);
+-	now = jiffies;
+-	if (time_before(now, sun4i_pwm->next_period[pwm->hwpwm])) {
+-		delay_us = jiffies_to_usecs(sun4i_pwm->next_period[pwm->hwpwm] -
+-					   now);
+-		if ((delay_us / 500) > MAX_UDELAY_MS)
+-			msleep(delay_us / 1000 + 1);
+-		else
+-			usleep_range(delay_us, delay_us * 2);
+-	}
++	sun4i_pwm_wait(next_period);
  
  	spin_lock(&sun4i_pwm->ctrl_lock);
+ 	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
 -- 
 2.20.1
