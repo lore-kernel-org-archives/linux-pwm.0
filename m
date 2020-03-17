@@ -1,54 +1,48 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [RFC PATCH 3/7] dt-bindings: pwm: add normal PWM polarity flag
-Date: Tue, 17 Mar 2020 22:36:28 +0100
-Message-ID: <20200317213627.i2w5a7togr5gh6co@pengutronix.de>
-References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-4-oleksandr.suvorov@toradex.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v9 04/11] pwm: clps711x: Use 64-bit division macro
+Date: Tue, 17 Mar 2020 23:22:06 +0100
+Message-ID: <CAK8P3a2Hi_AoRC3g7qKth4e_Y1jZrbBDhWUb3YPZm10FWMu-ig@mail.gmail.com>
+References: <cover.1584473399.git.gurus@codeaurora.org> <587f9ccae68ad7e1ce97fa8da6037292af1a5095.1584473399.git.gurus@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20200317123231.2843297-4-oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Marcel Ziswiler <marcel.ziswiler-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Igor Opaniuk <igor.opaniuk-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Philippe Schenker <philippe.schenker-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.131]:37297 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbgCQWWZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 18:22:25 -0400
+In-Reply-To: <587f9ccae68ad7e1ce97fa8da6037292af1a5095.1584473399.git.gurus@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>
 
-On Tue, Mar 17, 2020 at 02:32:27PM +0200, Oleksandr Suvorov wrote:
-> PWM can have a normal polarity and a reverted one. The reverted polarity
-> value is defined.
-> Define the PWM_POLARITY_NORMAL to be used further.
-> 
-> Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+On Tue, Mar 17, 2020 at 9:05 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+>
+> Since the PWM framework is switching struct pwm_args.period's datatype
+> to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
+> handle a 64-bit divisor.
+>
+> Cc: Alexander Shiyan <shc_work@mail.ru>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+>
+> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
 > ---
-> 
->  include/dt-bindings/pwm/pwm.h | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
-> index ab9a077e3c7d..6b58caa6385e 100644
-> --- a/include/dt-bindings/pwm/pwm.h
-> +++ b/include/dt-bindings/pwm/pwm.h
-> @@ -10,6 +10,7 @@
->  #ifndef _DT_BINDINGS_PWM_PWM_H
->  #define _DT_BINDINGS_PWM_PWM_H
->  
-> +#define PWM_POLARITY_NORMAL			0
->  #define PWM_POLARITY_INVERTED			(1 << 0)
+>  drivers/pwm/pwm-clps711x.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> index 924d39a..ba9500a 100644
+> --- a/drivers/pwm/pwm-clps711x.c
+> +++ b/drivers/pwm/pwm-clps711x.c
+> @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+>  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+>  {
+>         /* Duty cycle 0..15 max */
+> -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> +       return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+>  }
 
-Maybe define PWM_POLARITY_NORMAL as (0 << 0) to make it more obvious
-that it is the inverse of PWM_POLARITY_INVERTED?
+Is it actually going to exceed U32_MAX? If not, a type cast may be
+more appropriate here than the expensive 64-bit division.
 
-But even when kept as is I like hafing PWM_POLARITY_NORMAL in the
-binding definitions.
-
-Acked-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+       Arnd
