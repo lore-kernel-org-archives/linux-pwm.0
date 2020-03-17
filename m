@@ -1,54 +1,127 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v9 07/11] pwm: sifive: Use 64-bit division macro
-Date: Tue, 17 Mar 2020 13:05:22 -0700
-Message-ID: <c6a4191f4e0d75f086100f9f667e8894f6f7bef6.1584473399.git.gurus@codeaurora.org>
+Subject: [PATCH v9 11/11] pwm: core: Convert period and duty cycle to u64
+Date: Tue, 17 Mar 2020 13:05:26 -0700
+Message-ID: <ecc35a71d489baa0dd46d1a583edafa8399a0a64.1584473399.git.gurus@codeaurora.org>
 References: <cover.1584473399.git.gurus@codeaurora.org>
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
 References: <cover.1584473399.git.gurus@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-pwm@vger.kernel.org
-Cc: Guru Das Srinagesh <gurus@codeaurora.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Ding Xiang <dingxiang@cmss.chinamobile.com>, "Wesley W. Terpstra" <wesley@sifive.com>, linux-kernel@vger.kernel.org, Atish Patra <atish.patra@wdc.com>, Yash Shah <yash.shah@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-riscv@lists.infradead.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_args.period's datatype
-to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
-handle a 64-bit divisor.
-
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: linux-riscv@lists.infradead.org
-Cc: Yash Shah <yash.shah@sifive.com>
-Cc: Atish Patra <atish.patra@wdc.com>
-Cc: Ding Xiang <dingxiang@cmss.chinamobile.com>
-Cc: Wesley W. Terpstra <wesley@sifive.com>
+Because period and duty cycle are defined as ints with units of
+nanoseconds, the maximum time duration that can be set is limited to
+~2.147 seconds. Change their definitions to u64 in the structs of the
+PWM framework so that higher durations may be set.
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
 ---
- drivers/pwm/pwm-sifive.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/core.c  |  4 ++--
+ drivers/pwm/sysfs.c |  8 ++++----
+ include/linux/pwm.h | 12 ++++++------
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index cc63f9b..62de0bb 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -181,7 +181,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * consecutively
- 	 */
- 	num = (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
--	frac = DIV_ROUND_CLOSEST_ULL(num, state->period);
-+	frac = DIV64_U64_ROUND_CLOSEST(num, state->period);
- 	/* The hardware cannot generate a 100% duty cycle */
- 	frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 5a7f659..81aa3c2 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -1163,8 +1163,8 @@ static void pwm_dbg_show(struct pwm_chip *chip, struct seq_file *s)
+ 		if (state.enabled)
+ 			seq_puts(s, " enabled");
+ 
+-		seq_printf(s, " period: %u ns", state.period);
+-		seq_printf(s, " duty: %u ns", state.duty_cycle);
++		seq_printf(s, " period: %llu ns", state.period);
++		seq_printf(s, " duty: %llu ns", state.duty_cycle);
+ 		seq_printf(s, " polarity: %s",
+ 			   state.polarity ? "inverse" : "normal");
+ 
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 2389b86..449dbc0 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -42,7 +42,7 @@ static ssize_t period_show(struct device *child,
+ 
+ 	pwm_get_state(pwm, &state);
+ 
+-	return sprintf(buf, "%u\n", state.period);
++	return sprintf(buf, "%llu\n", state.period);
+ }
+ 
+ static ssize_t period_store(struct device *child,
+@@ -52,10 +52,10 @@ static ssize_t period_store(struct device *child,
+ 	struct pwm_export *export = child_to_pwm_export(child);
+ 	struct pwm_device *pwm = export->pwm;
+ 	struct pwm_state state;
+-	unsigned int val;
++	u64 val;
+ 	int ret;
+ 
+-	ret = kstrtouint(buf, 0, &val);
++	ret = kstrtou64(buf, 0, &val);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -77,7 +77,7 @@ static ssize_t duty_cycle_show(struct device *child,
+ 
+ 	pwm_get_state(pwm, &state);
+ 
+-	return sprintf(buf, "%u\n", state.duty_cycle);
++	return sprintf(buf, "%llu\n", state.duty_cycle);
+ }
+ 
+ static ssize_t duty_cycle_store(struct device *child,
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 0ef808d..b53f13d 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -39,7 +39,7 @@ enum pwm_polarity {
+  * current PWM hardware state.
+  */
+ struct pwm_args {
+-	unsigned int period;
++	u64 period;
+ 	enum pwm_polarity polarity;
+ };
+ 
+@@ -56,8 +56,8 @@ enum {
+  * @enabled: PWM enabled status
+  */
+ struct pwm_state {
+-	unsigned int period;
+-	unsigned int duty_cycle;
++	u64 period;
++	u64 duty_cycle;
+ 	enum pwm_polarity polarity;
+ 	bool enabled;
+ };
+@@ -105,13 +105,13 @@ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
+ 	return state.enabled;
+ }
+ 
+-static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
++static inline void pwm_set_period(struct pwm_device *pwm, u64 period)
+ {
+ 	if (pwm)
+ 		pwm->state.period = period;
+ }
+ 
+-static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
++static inline u64 pwm_get_period(const struct pwm_device *pwm)
+ {
+ 	struct pwm_state state;
+ 
+@@ -126,7 +126,7 @@ static inline void pwm_set_duty_cycle(struct pwm_device *pwm, unsigned int duty)
+ 		pwm->state.duty_cycle = duty;
+ }
+ 
+-static inline unsigned int pwm_get_duty_cycle(const struct pwm_device *pwm)
++static inline u64 pwm_get_duty_cycle(const struct pwm_device *pwm)
+ {
+ 	struct pwm_state state;
  
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
