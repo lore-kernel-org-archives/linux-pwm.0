@@ -1,44 +1,64 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v9 09/11] pwm: sun4i: Use 64-bit division function
-Date: Tue, 17 Mar 2020 13:05:24 -0700
-Message-ID: <6eb88c090aae7f18cdbb0621fb94b2a19a6bc879.1584473399.git.gurus@codeaurora.org>
+Subject: [PATCH v9 06/11] pwm: imx27: Use 64-bit division macro and function
+Date: Tue, 17 Mar 2020 13:05:21 -0700
+Message-ID: <89be55e621a1acce96f1eb1ab5e949ea575e8af8.1584473399.git.gurus@codeaurora.org>
 References: <cover.1584473399.git.gurus@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
 References: <cover.1584473399.git.gurus@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Anson Huang <Anson.Huang@nxp.com>, =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>, Adam Ford <aford173@gmail.com>, Mukesh Ojha <mojha@codeaurora.org>, Dan Carpenter <dan.carpenter@oracle.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_state.period's datatype
-to u64, prepare for this transition by using div_u64 to handle a 64-bit
-dividend instead of a straight division operation.
+Since the PWM framework is switching struct pwm_state.period's
+datatype to u64, prepare for this transition by using
+DIV_ROUND_UP_ULL to handle a 64-bit dividend, and div64_u64 to handle a
+64-bit divisor.
 
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Chen-Yu Tsai <wens@csie.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Anson Huang <Anson.Huang@nxp.com>
+Cc: Michal Vokáč <michal.vokac@ysoft.com>
+Cc: Adam Ford <aford173@gmail.com>
+Cc: Mukesh Ojha <mojha@codeaurora.org>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/pwm/pwm-sun4i.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-imx27.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 3e3efa6..772fdf4 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -286,7 +286,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	val = (duty & PWM_DTY_MASK) | PWM_PRD(period);
- 	sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
- 	sun4i_pwm->next_period[pwm->hwpwm] = jiffies +
--		usecs_to_jiffies(cstate.period / 1000 + 1);
-+		usecs_to_jiffies(div_u64(cstate.period, 1000) + 1);
- 	sun4i_pwm->needs_delay[pwm->hwpwm] = true;
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index 35a7ac42..b7d38d0 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -208,7 +208,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
+ 	sr = readl(imx->mmio_base + MX3_PWMSR);
+ 	fifoav = FIELD_GET(MX3_PWMSR_FIFOAV, sr);
+ 	if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
+-		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
++		period_ms = DIV_ROUND_UP_ULL(pwm_get_period(pwm),
+ 					 NSEC_PER_MSEC);
+ 		msleep(period_ms);
  
- 	if (state->polarity != PWM_POLARITY_NORMAL)
+@@ -240,8 +240,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	period_cycles /= prescale;
+ 	c = (unsigned long long)period_cycles * state->duty_cycle;
+-	do_div(c, state->period);
+-	duty_cycles = c;
++	duty_cycles = div64_u64(c, state->period);
+ 
+ 	/*
+ 	 * according to imx pwm RM, the real period value should be PERIOD
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
