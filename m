@@ -1,73 +1,120 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
-Date: Tue, 17 Mar 2020 18:43:44 +0100
-Message-ID: <20200317174344.GB1464607@ulmo>
-References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
+From: Pascal Roeleven <dev@pascalroeleven.nl>
+Subject: Re: pwm: sun4i: pwm-backlight not working since 5.6-rc1
+Date: Tue, 17 Mar 2020 18:52:50 +0100
+Message-ID: <ddd9b9c5b3d28a30c888fdcfc1ac6d64@pascalroeleven.nl>
+References: <6185b5540ca082d887d7d13330c9d938@pascalroeleven.nl>
+ <20200312132942.2kfspvmoc3mxkdx4@pengutronix.de>
+ <6e995c4c22c4e6c93acb1f491e5aa109@pascalroeleven.nl>
+ <20200316072613.37lnjfloac4npudf@pengutronix.de>
+ <20200317173208.t5s63pfz3byxsgzi@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20200317123231.2843297-3-oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Marcel Ziswiler <marcel.ziswiler-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Igor Opaniuk <igor.opaniuk-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Philippe Schenker <philippe.schenker-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from web0081.zxcs.nl ([185.104.29.10]:36948 "EHLO web0081.zxcs.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726386AbgCQRw7 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 17 Mar 2020 13:52:59 -0400
+In-Reply-To: <20200317173208.t5s63pfz3byxsgzi@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
 
+On 2020-03-17 18:32, Uwe Kleine-König wrote:
+> Hello Pascal,
+> 
+> On Mon, Mar 16, 2020 at 08:26:13AM +0100, Uwe Kleine-König wrote:
+>> On Thu, Mar 12, 2020 at 04:06:07PM +0100, Pascal Roeleven wrote:
+>> > On 2020-03-12 14:29, Uwe Kleine-König wrote:
+>> > > On Thu, Mar 12, 2020 at 01:22:13PM +0100, Pascal Roeleven wrote:
+>> > > > Hi all,
+>> > > >
+>> > > > I am working on adding an old A10 device to mainline and noticed an
+>> > > > issue
+>> > > > when testing on 5.5.8 vs master.
+>> > > >
+>> > > > Since 5.6-rc1, I can't control the brightness of my LCD backlight
+>> > > > anymore.
+>> > > > The backlight stays on full brightness instead. I am controlling the
+>> > > > brightness value via sysfs for testing.
+>> > > >
+>> > > > I am not sure if this is a general pwm-sun4i issue or if it is
+>> > > > related to
+>> > > > the backlight. However I narrowed it down to one commit for pwm-sun4i:
+>> > > >
+>> > > > fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
+>> > > >
+>> > > > If I use pwm-sun4i.c from 5b090b430d750961305030232314b6acdb0102aa on
+>> > > > master, the backlight works fine. Unfortunately, due to my lack of
+>> > > > kernel
+>> > > > experience, I can't see how the commit above broke it.
+>> > >
+>> > > Hmm, I cannot see how fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5 breaks
+>> > > this. Looking at the output of
+>> > >
+>> > > 	git show -b fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5
+>> > >
+>> > > (i.e. ignoring whitespace changes) I don't see how the behaviour you're
+>> > > reporting can be explained.
+>> > >
+>> > > Are you sure that fa4d81784681a26bcf7d2a43c6ac5cf991ef28f5 is the bad
+>> > > commit?
+>> > >
+>> > > Can you install a tool to inspect register values and check how the
+>> > > affected registers change if you switch kernel versions and/or pwm
+>> > > settings?
+>> > >
+>> > > (e.g.
+>> > > 	memtool md 0x1c20e00+0xc
+>> > > )
+>> > >
+>> > > Best regards
+>> > > Uwe
+>> >
+>> > Thanks for your response.
+>> >
+>> > Yes I am sure that is the commit. If I am on master, and replace pwm-sun4i.c
+>> > with the one from 5b090b43, everything works. If I then apply fa4d8178, it
+>> > stops working.
+>> >
+>> > And strangely the output of the registers is exactly the same before and
+>> > after fa4d8178:
+>> >
+>> > 01c20e00: 00000050 00130014 00000000 (full brightness)
+>> > 01c20e00: 00000050 00130006 00000000 (min brightness)
+>> >
+>> > Even when I'm on 5b090b43 and cherry-pick fa4d8178 can I reproduce the
+>> > issue.
+>> 
+>> Very strange. I'm out of sensible ideas. The remaining ones are:
+>> 
+>> - enable tracing in the kernel and boot with
+>> 
+>> 	trace_event=pwm
+>> 
+>>   And then check after the problem occurred in
+>>   /sys/kernel/debug/tracing/trace if something sticks out.
+>> 
+>> - Try modifying the registers using memtool. E.g.
+>> 
+>> 	memtool mw 0x01c20e04 0x00130012
+>> 
+>> - Do you have equipment to check the actual output of the PWM 
+>> hardware?
+>>   If so, what do you see?
+> 
+> I assume the sun4i-series you sent earlier today resolves the problems
+> you reported here?
+> 
+> Best regards
+> Uwe
 
---i9LlY+UWpKt15+FH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Uwe,
 
-On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
-> Add the description of PWM_POLARITY_NORMAL flag.
->=20
-> Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-> ---
->=20
->  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentatio=
-n/devicetree/bindings/pwm/pwm.txt
-> index 084886bd721e..440c6b9a6a4e 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
-> @@ -46,6 +46,7 @@ period in nanoseconds.
->  Optionally, the pwm-specifier can encode a number of flags (defined in
->  <dt-bindings/pwm/pwm.h>) in a third cell:
->  - PWM_POLARITY_INVERTED: invert the PWM signal polarity
-> +- PWM_POLARITY_NORMAL: don't invert the PWM signal polarity
+Yes it does, but as Emil mentioned it's probably not complete. It's just 
+an RFC for now to make sure it doesn't cause a regression. Turns out the 
+Allwinner PWM controller is even more pickier than I thought.
 
-This doesn't make sense. PWM_POLARITY_NORMAL is not part of the DT ABI.
-The third cell of the specifier is a bitmask of flags.
-
-PWM_POLARITY_NORMAL is an enumeration value that evaluates to 0, so it
-makes absolutely no sense as a flag. PWM signals are considered to be
-"normal" by default, so no flag is necessary to specify that.
-
-Thierry
-
---i9LlY+UWpKt15+FH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5xDFAACgkQ3SOs138+
-s6Hc2BAAoZZlHyfYsr0Ak2f2q9OT3sqed38ZxCtTlrr7nV0EMRX9lArVOG/WYqZU
-j6UFpsHK5VeEVd7g0+AmwlGNMuCSkh8Fago7cFqKwIWgrYlk0P4MAOdrt1CLf5ky
-KO2B+YLCLiV3Jc9TYFridWcCAR1XCU9xkvVVBs2DM6j7FqSG3zLXe1OklBM1mnTL
-ha6UdP8Nr46AodyfFh9H+1xEzNf+BGnycoN+c3k0AfI2QEvntJywgb+v+V6ELIUd
-nf22MsydZCIRYbrl74154RESKQ8wPtDtz/XaXAiGxJAd76K5+PBFNIEY8TJHXdQm
-uEQVC7g3OUNANYaTdDLtn8EmmK41UqZOK9T8Hc9zr14zh1asoPkALoPQv/6aY7At
-19uamsnrxupfTmneh7K064G7InxbeecxPo9H20aS2QVYNegA5ZvCYLjcjASOfesj
-AGxze1cMvK38uD0Ujq8n7hLerMBGZ4IBH4S9Kt68iCbClF5XwWZQy5yhVywqtEs+
-1D2HpCWtcImoEnBywcAiA8eE8Bp6ByZkz0PscumS03TOiy1xI/IRbqCaUMnNkYC2
-cKnkghSEsn+Ilg9rzXNS9gvNVj4v3e+2GBFaF7rHUBs8+TOzn1dcB5iubq+55RLW
-Y8uyGklJGKA8NyVXF+0u4At8XhYGzCR1296yga0NPv3GzHEyqlo=
-=+U+H
------END PGP SIGNATURE-----
-
---i9LlY+UWpKt15+FH--
+Again, thank you for your help.
