@@ -1,69 +1,73 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RFC PATCH 1/7] pwm: rename the PWM_POLARITY_INVERSED enum
-Date: Tue, 17 Mar 2020 18:40:43 +0100
-Message-ID: <20200317174043.GA1464607@ulmo>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
+Date: Tue, 17 Mar 2020 18:43:44 +0100
+Message-ID: <20200317174344.GB1464607@ulmo>
 References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-2-oleksandr.suvorov@toradex.com>
+ <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35236 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbgCQRkt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 13:40:49 -0400
+        protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20200317123231.2843297-2-oleksandr.suvorov@toradex.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20200317123231.2843297-3-oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Marcel Ziswiler <marcel.ziswiler-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Igor Opaniuk <igor.opaniuk-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Philippe Schenker <philippe.schenker-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Claudiu Beznea <claudiu.beznea@microchip.com>, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Kevin Hilman <khilman@baylibre.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Maxime Ripard <mripard@kernel.org>, NXP Linux Team <linux-imx@nxp.com>
 
 
---sdtB3X0nJg68CQEu
+--i9LlY+UWpKt15+FH
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 17, 2020 at 02:32:25PM +0200, Oleksandr Suvorov wrote:
-> The polarity enum definition PWM_POLARITY_INVERSED is misspelled.
-> Rename it to PWM_POLARITY_INVERTED.
+On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
+> Add the description of PWM_POLARITY_NORMAL flag.
+>=20
+> Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+> ---
+>=20
+>  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentatio=
+n/devicetree/bindings/pwm/pwm.txt
+> index 084886bd721e..440c6b9a6a4e 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+> @@ -46,6 +46,7 @@ period in nanoseconds.
+>  Optionally, the pwm-specifier can encode a number of flags (defined in
+>  <dt-bindings/pwm/pwm.h>) in a third cell:
+>  - PWM_POLARITY_INVERTED: invert the PWM signal polarity
+> +- PWM_POLARITY_NORMAL: don't invert the PWM signal polarity
 
-It isn't misspelled. "inversed" is a synonym for "inverted". Both
-spellings are correct.
+This doesn't make sense. PWM_POLARITY_NORMAL is not part of the DT ABI.
+The third cell of the specifier is a bitmask of flags.
 
-And as you noted in the cover letter, there's a conflict between the
-macro defined in dt-bindings/pwm/pwm.txt. If they end up being included
-in the wrong order you'll get a compile error.
-
-The enum was named this way on purpose to make it separate from the
-definition for the DT bindings. Note that DT bindings are an ABI and can
-never change, whereas the enum pwm_polarity is part of a Linux internal
-API and doesn't have the same restrictions as an ABI.
-
-As far as I'm concerned this is completely unnecessary churn that's
-potentially going to come back and bite us, so I see no reason to accept
-this.
+PWM_POLARITY_NORMAL is an enumeration value that evaluates to 0, so it
+makes absolutely no sense as a flag. PWM signals are considered to be
+"normal" by default, so no flag is necessary to specify that.
 
 Thierry
 
---sdtB3X0nJg68CQEu
+--i9LlY+UWpKt15+FH
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5xC5cACgkQ3SOs138+
-s6Fzrg//W6eAtrfA02CGekiB6CchW1v901SEIXd0i/BUbGhUbBXgNAk0CdFr1oZF
-oWh3FArEd2Ugq3qvpgf4UqWlO/2IptBucOUVSwQ5Imuc+eS/JKxC3lriUcpyI519
-b5+MI+QPztSa8Nae3cVvDVd1zs+s5QE1J9TOJTINsayE0yxs2QDk7px+T2hP6S5y
-fZmxD7DxmhzzTjY9pUb7B8Km/c+g3iLZ2dOrjizHPQ0D6gjni2sAljxJXKBkExBG
-nSSO7pOuxA1Koi0/lKAQGtxKl1QbfH5aerdiSj8wi74C4DXTG/yHIU0x4YKpbu1d
-C0nSwCafh3P/dIz0ja7iv+8y02HB43gdu9tyA6dlVzIs7UAS/upZfwtLCI49zdOL
-Qq28oqgpytPujRWyFSdT7EisrlmqA4TlG6jvndwdhKiurjM98oNob5FiUYz/QebP
-cX0mZQFNM8UJjzhu51wkfu3NwtdIBXMWv+EhD8Kh7Ash60aI7LE2HltEC5Y/KqiW
-uprdNVNa09YyyZLgE0W1rDU4rsdPw+yxp/XR/vzPWR4eivXlrbPtkBxcZcZfHAmj
-Yg13OeYRbxUgR1Jx4vGYyRgV2wSNSyDcwqZ0vU0Z8C4C3qLFNqQPllTPonTSdcnX
-gQU9NZOlpo00W4TwrlO7I+3Ww9qNIvnHhMwcaOQGIca6+ZVYyfQ=
-=EuQk
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5xDFAACgkQ3SOs138+
+s6Hc2BAAoZZlHyfYsr0Ak2f2q9OT3sqed38ZxCtTlrr7nV0EMRX9lArVOG/WYqZU
+j6UFpsHK5VeEVd7g0+AmwlGNMuCSkh8Fago7cFqKwIWgrYlk0P4MAOdrt1CLf5ky
+KO2B+YLCLiV3Jc9TYFridWcCAR1XCU9xkvVVBs2DM6j7FqSG3zLXe1OklBM1mnTL
+ha6UdP8Nr46AodyfFh9H+1xEzNf+BGnycoN+c3k0AfI2QEvntJywgb+v+V6ELIUd
+nf22MsydZCIRYbrl74154RESKQ8wPtDtz/XaXAiGxJAd76K5+PBFNIEY8TJHXdQm
+uEQVC7g3OUNANYaTdDLtn8EmmK41UqZOK9T8Hc9zr14zh1asoPkALoPQv/6aY7At
+19uamsnrxupfTmneh7K064G7InxbeecxPo9H20aS2QVYNegA5ZvCYLjcjASOfesj
+AGxze1cMvK38uD0Ujq8n7hLerMBGZ4IBH4S9Kt68iCbClF5XwWZQy5yhVywqtEs+
+1D2HpCWtcImoEnBywcAiA8eE8Bp6ByZkz0PscumS03TOiy1xI/IRbqCaUMnNkYC2
+cKnkghSEsn+Ilg9rzXNS9gvNVj4v3e+2GBFaF7rHUBs8+TOzn1dcB5iubq+55RLW
+Y8uyGklJGKA8NyVXF+0u4At8XhYGzCR1296yga0NPv3GzHEyqlo=
+=+U+H
 -----END PGP SIGNATURE-----
 
---sdtB3X0nJg68CQEu--
+--i9LlY+UWpKt15+FH--
