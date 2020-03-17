@@ -1,7 +1,7 @@
 From: Michael Walle <michael@walle.cc>
-Subject: [PATCH 16/18] arm64: dts: freescale: sl28: map GPIOs to input events
-Date: Tue, 17 Mar 2020 21:50:15 +0100
-Message-ID: <20200317205017.28280-17-michael@walle.cc>
+Subject: [PATCH 15/18] arm64: dts: freescale: sl28: enable sl28cpld
+Date: Tue, 17 Mar 2020 21:50:14 +0100
+Message-ID: <20200317205017.28280-16-michael@walle.cc>
 References: <20200317205017.28280-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,66 +12,117 @@ To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.ke
 Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Michael Walle <michael@walle.cc>
 List-Id: linux-pwm@vger.kernel.org
 
-Now that we have support for GPIO lines of the SMARC connector, map the
-sleep, power and lid switch signals to the corresponding keys using the
-gpio-keys and gpio-keys-polled drivers. The power and sleep signals have
-dedicated interrupts, thus we use these ones. The lid switch is just
-mapped to a GPIO input and needs polling.
+Add the board management controller node.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- .../freescale/fsl-ls1028a-kontron-sl28.dts    | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ .../freescale/fsl-ls1028a-kontron-sl28.dts    | 87 +++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-index b74d9ac0c388..f92a2b1b6628 100644
+index 1648a04ea79f..b74d9ac0c388 100644
 --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
 +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-@@ -9,6 +9,8 @@
+@@ -8,6 +8,7 @@
+ 
  /dts-v1/;
  #include "fsl-ls1028a.dtsi"
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
++#include <dt-bindings/interrupt-controller/irq.h>
  
  / {
  	model = "Kontron SMARC-sAL28";
-@@ -22,6 +24,36 @@
- 		spi1 = &dspi2;
+@@ -165,6 +166,92 @@
+ 		reg = <0x32>;
  	};
  
-+	buttons0 {
-+		compatible = "gpio-keys";
++	sl28cpld: sl28cpld@4a {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "kontron,sl28cpld";
++		reg = <0x4a>;
++		interrupts-extended = <&gpio2 6 IRQ_TYPE_EDGE_FALLING>;
 +
-+		power-button {
-+			interrupts-extended = <&sl28cpld
-+					       4 IRQ_TYPE_EDGE_BOTH>;
-+			linux,code = <KEY_POWER>;
-+			label = "Power";
++		interrupt-controller;
++		#interrupt-cells = <2>;
++
++		cpld_gpio0: gpio@0 {
++			compatible = "kontron,sl28cpld-gpio";
++			reg = <0>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-line-names =
++				"GPIO0_CAM0_PWR_N", "GPIO1_CAM1_PWR_N",
++				"GPIO2_CAM0_RST_N", "GPIO3_CAM1_RST_N",
++				"GPIO4_HDA_RST_N", "GPIO5_PWM_OUT",
++				"GPIO6_TACHIN", "GPIO7";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
 +		};
 +
-+		sleep-button {
-+			interrupts-extended = <&sl28cpld
-+					       5 IRQ_TYPE_EDGE_BOTH>;
-+			linux,code = <KEY_SLEEP>;
-+			label = "Sleep";
++		cpld_gpio1: gpio@1 {
++			compatible = "kontron,sl28cpld-gpio";
++			reg = <1>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-line-names =
++				"GPIO8", "GPIO9", "GPIO10", "GPIO11",
++				"", "", "", "";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++
++		cpld_gpo: gpo {
++			compatible = "kontron,sl28cpld-gpo";
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-line-names =
++				"LCD0 voltage enable",
++				"LCD0 backlight enable",
++				"eMMC reset", "LVDS bridge reset",
++				"LVDS bridge power-down",
++				"SDIO power enable",
++				"", "";
++		};
++
++		cpld_gpi: gpi {
++			compatible = "kontron,sl28cpld-gpi";
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-line-names =
++				"Power button", "Force recovery", "Sleep",
++				"Battery low", "Lid state", "Charging",
++				"Charger present", "";
++		};
++
++		hwmon {
++			compatible = "kontron,sl28cpld-fan";
++		};
++
++		pwm0: pwm@0 {
++			#pwm-cells = <2>;
++			compatible = "kontron,sl28cpld-pwm";
++			reg = <0>;
++		};
++
++		pwm1: pwm@1 {
++			#pwm-cells = <2>;
++			compatible = "kontron,sl28cpld-pwm";
++			reg = <1>;
++		};
++
++		watchdog {
++			compatible = "kontron,sl28cpld-wdt";
 +		};
 +	};
 +
-+	buttons1 {
-+		compatible = "gpio-keys-polled";
-+		poll-interval = <200>;
-+
-+		lid-switch {
-+			linux,input-type = <EV_SW>;
-+			linux,code = <SW_LID>;
-+			gpios = <&cpld_gpi 4 GPIO_ACTIVE_LOW>;
-+			label = "Lid";
-+		};
-+	};
-+
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
+ 	eeprom@50 {
+ 		compatible = "atmel,24c32";
+ 		reg = <0x50>;
 -- 
 2.20.1
