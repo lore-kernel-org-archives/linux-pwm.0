@@ -1,120 +1,52 @@
-From: Emil Lenngren <emil.lenngren@gmail.com>
-Subject: Re: [RFC PATCH 0/4] pwm: sun4i: Properly turn pwm off and fix stuck
- output state
-Date: Tue, 17 Mar 2020 20:35:51 +0100
-Message-ID: <CAO1O6sd=RdopKxun8R-0-MGt_UP=MWFPAd5PQF3DPTCxDYt+ow@mail.gmail.com>
-References: <20200317155906.31288-1-dev@pascalroeleven.nl> <CAO1O6sccq7c_S8ZMsChBKcVcCn-DDv6awZzNr2BEnh8TH6ZxGg@mail.gmail.com>
- <f96002831730bf262ee61df38642e042@pascalroeleven.nl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: [PATCH v9 03/11] ir-rx51: Use 64-bit division macro
+Date: Tue, 17 Mar 2020 13:05:18 -0700
+Message-ID: <f57ccf7a30d2af5111f979947100ec57c8fc5979.1584473399.git.gurus@codeaurora.org>
+References: <cover.1584473399.git.gurus@codeaurora.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:46501 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726575AbgCQTgD (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 15:36:03 -0400
-In-Reply-To: <f96002831730bf262ee61df38642e042@pascalroeleven.nl>
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:40974 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726452AbgCQUFf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Mar 2020 16:05:35 -0400
+In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1584473399.git.gurus@codeaurora.org>
+References: <cover.1584473399.git.gurus@codeaurora.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Pascal Roeleven <dev@pascalroeleven.nl>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, linux-sunxi@googlegroups.com
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Richard Fontana <rfontana@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Allison Randal <allison@lohutok.net>, linux-media@vger.kernel.org
 
-Hi,
+Since the PWM framework is switching struct pwm_state.period's datatype
+to u64, prepare for this transition by using DIV_ROUND_CLOSEST_ULL to
+handle a 64-bit dividend.
 
-Den tis 17 mars 2020 19:16Pascal Roeleven <dev@pascalroeleven.nl> skrev:
->
-> On 2020-03-17 17:45, Emil Lenngren wrote:
-> > Hi all,
-> >
-> > Den tis 17 mars 2020 kl 17:00 skrev Pascal Roeleven
-> > <dev@pascalroeleven.nl>:
-> >>
-> >> Hi all,
-> >>
-> >> For the last few days I've been debugging a lot to get pwm working
-> >> again since
-> >> recent changes in 5.6-rc1 broke it for me.
-> >>
-> >> Testing shows the pwm controller crashes (or the output gets stuck)
-> >> when the
-> >> period register is written when the channel is disabled while the
-> >> clock gate is
-> >> still on. Usually after multiple writes, but one write can also lead
-> >> to
-> >> unpredictable behaviour. Patch 3 and 4 fix this.
-> >>
-> >> Patch 2 contains a fix which wouldn't completely turn off the pwm if
-> >> the
-> >> output is disabled. The clock gate needs to stay on for at least one
-> >> more
-> >> period to ensure the output is properly disabled. This issue has been
-> >> around
-> >> for a long time but has probably stayed unnoticed because if the
-> >> duty_cycle is
-> >> also changed to 0, you can't tell the difference.
-> >>
-> >> Patch 1 removes some leftovers which aren't needed anymore.
-> >>
-> >> Obviously these patches work for my device, but I'd like to hear your
-> >> opinion
-> >> if any of these changes make sense. After days, this one is a bit
-> >> blurry for me.
-> >>
-> >> Thanks to Uwe for some help with debugging.
-> >>
-> >> Pascal.
-> >>
-> >> Pascal Roeleven (4):
-> >>   pwm: sun4i: Remove redundant needs_delay
-> >>   pwm: sun4i: Disable pwm before turning off clock gate
-> >>   pwm: sun4i: Move delay to function
-> >>   pwm: sun4i: Delay after writing the period
-> >>
-> >>  drivers/pwm/pwm-sun4i.c | 53
-> >> ++++++++++++++++++++---------------------
-> >>  1 file changed, 26 insertions(+), 27 deletions(-)
-> >>
-> >> --
-> >> 2.20.1
-> >>
-> >
-> > I also worked on sun4i-pwm some time ago, fixing a bunch of issues.
-> > One was that disabling the pwm sometimes didn't turn off the signal,
-> > because the gate and enable bit were modified in the same clock cycle.
-> > Another was that the current code used an unnecessary sleep of a whole
-> > period length (or more?) in case of an update to the period, which
-> > could be very time-consuming if it's a very long interval, like 2
-> > seconds.
-> >
-> > Note that the behaviour is not unpredictable, if you know how it works
-> > ;)
-> > I fiddled around a long time with devmem2, an oscilloscope and the
-> > prescaler set to max to figure out how works internally.
-> >
-> > Please try my version I just posted at https://pastebin.com/GWrhWzPJ.
-> > It is based on this version from May 28, 2019:
-> > https://github.com/torvalds/linux/blob/f50a7f3d9225dd374455f28138f79ae3074a7a3d/drivers/pwm/pwm-sun4i.c.
-> > Sorry for not posting it inline, but GMail would break the formatting.
-> > It contains quite many comments about how it works internally. I also
-> > wrote a section at http://linux-sunxi.org/PWM_Controller, but it might
-> > be a bit old (two years), so please rather look at the code and the
-> > comments.
-> >
-> > /Emil
->
-> Hi Emil,
->
-> Thank you very much, this is helpful. Ah it was your note on the wiki.
-> That is indeed where I took the idea of keeping the gate on and
-> disabling the panel from. As a scope is still on my wishlist, the rest
-> was just trial-and-error. Judging from your code, there are more edge
-> cases which might occur. I will test your code and try to integrate it.
-> If it's okay with you, I can post it on your behalf?
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Richard Fontana <rfontana@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Allison Randal <allison@lohutok.net>
+Cc: linux-media@vger.kernel.org
 
-Sure! I was thinking of sending a patch last year but never got the time :/
-The devices I have tested on are Allwinner GR8 (A13) and V3s.
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+Acked-by: Sean Young <sean@mess.org>
+---
+ drivers/media/rc/ir-rx51.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
->
-> If you ask me, it's really unfortunate Allwinner didn't provide a timing
-> diagram for such a picky controller.
-
-/Emil
+diff --git a/drivers/media/rc/ir-rx51.c b/drivers/media/rc/ir-rx51.c
+index 8574eda..9a5dfd7 100644
+--- a/drivers/media/rc/ir-rx51.c
++++ b/drivers/media/rc/ir-rx51.c
+@@ -241,7 +241,8 @@ static int ir_rx51_probe(struct platform_device *dev)
+ 	}
+ 
+ 	/* Use default, in case userspace does not set the carrier */
+-	ir_rx51.freq = DIV_ROUND_CLOSEST(pwm_get_period(pwm), NSEC_PER_SEC);
++	ir_rx51.freq = DIV_ROUND_CLOSEST_ULL(pwm_get_period(pwm),
++			NSEC_PER_SEC);
+ 	pwm_put(pwm);
+ 
+ 	hrtimer_init(&ir_rx51.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
