@@ -1,211 +1,134 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 06/18] irqchip: add sl28cpld interrupt controller support
-Date: Wed, 18 Mar 2020 13:35:51 -0700
-Message-ID: <d2ede8b3-75ab-36f3-bc7e-8f7169977fb7@roeck-us.net>
-References: <20200317205017.28280-1-michael@walle.cc>
- <20200317205017.28280-7-michael@walle.cc>
- <d204c3b0-c3d0-0422-75d9-07718ba2134e@roeck-us.net>
- <b9661afeda9fc6413b2fe392f254c685@walle.cc>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RFC PATCH 1/7] pwm: rename the PWM_POLARITY_INVERSED enum
+Date: Wed, 18 Mar 2020 23:59:53 +0100
+Message-ID: <20200318225953.GA2874972@ulmo>
+References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
+ <20200317123231.2843297-2-oleksandr.suvorov@toradex.com>
+ <20200317174043.GA1464607@ulmo>
+ <20200317210042.ryrof3amr7fxp4w5@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <b9661afeda9fc6413b2fe392f254c685@walle.cc>
-Content-Language: en-US
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Guenter Roeck <groeck7@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37657 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbgCRW76 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Mar 2020 18:59:58 -0400
+Content-Disposition: inline
+In-Reply-To: <20200317210042.ryrof3amr7fxp4w5@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Claudiu Beznea <claudiu.beznea@microchip.com>, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Kevin Hilman <khilman@baylibre.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Maxime Ripard <mripard@kernel.org>, NXP Linux Team <linux-imx@nxp.com>, Nicolas Ferre <nicolas.f>
 
-On 3/18/20 10:06 AM, Michael Walle wrote:
-> Am 2020-03-18 17:53, schrieb Guenter Roeck:
->> On 3/17/20 1:50 PM, Michael Walle wrote:
->>> This patch adds support for the interrupt controller inside the sl28
->>> CPLD management controller.
->>>
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>  drivers/irqchip/Kconfig        |  3 ++
->>>  drivers/irqchip/Makefile       |  1 +
->>>  drivers/irqchip/irq-sl28cpld.c | 92 ++++++++++++++++++++++++++++++++++
->>>  drivers/mfd/Kconfig            |  4 +-
->>>  4 files changed, 98 insertions(+), 2 deletions(-)
->>>  create mode 100644 drivers/irqchip/irq-sl28cpld.c
->>>
->>> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
->>> index 24fe08702ef7..3fd7415c8b55 100644
->>> --- a/drivers/irqchip/Kconfig
->>> +++ b/drivers/irqchip/Kconfig
->>> @@ -246,6 +246,9 @@ config RENESAS_RZA1_IRQC
->>>        Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
->>>        to 8 external interrupts with configurable sense select.
->>>
->>> +config SL28CPLD_INTC
->>> +    bool
->>> +
->>>  config ST_IRQCHIP
->>>      bool
->>>      select REGMAP
->>> diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
->>> index eae0d78cbf22..0f4a37782609 100644
->>> --- a/drivers/irqchip/Makefile
->>> +++ b/drivers/irqchip/Makefile
->>> @@ -105,3 +105,4 @@ obj-$(CONFIG_MADERA_IRQ)        += irq-madera.o
->>>  obj-$(CONFIG_LS1X_IRQ)            += irq-ls1x.o
->>>  obj-$(CONFIG_TI_SCI_INTR_IRQCHIP)    += irq-ti-sci-intr.o
->>>  obj-$(CONFIG_TI_SCI_INTA_IRQCHIP)    += irq-ti-sci-inta.o
->>> +obj-$(CONFIG_SL28CPLD_INTC)        += irq-sl28cpld.o
->>> diff --git a/drivers/irqchip/irq-sl28cpld.c b/drivers/irqchip/irq-sl28cpld.c
->>> new file mode 100644
->>> index 000000000000..fa52ed79137b
->>> --- /dev/null
->>> +++ b/drivers/irqchip/irq-sl28cpld.c
->>> @@ -0,0 +1,92 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/*
->>> + * SMARC-sAL28 Interrupt core driver.
->>> + *
->>> + * Copyright 2019 Kontron Europe GmbH
->>> + */
->>> +
->>> +#include <linux/kernel.h>
->>> +#include <linux/module.h>
->>> +#include <linux/of.h>
->>> +#include <linux/of_address.h>
->>> +#include <linux/of_platform.h>
->>> +#include <linux/i2c.h>
->>> +#include <linux/regmap.h>
->>> +#include <linux/interrupt.h>
->>> +#include <linux/mfd/core.h>
->>> +
->>> +#define INTC_IE 0
->>> +#define INTC_IP 1
->>> +
->>> +static const struct regmap_irq sl28cpld_irqs[] = {
->>> +    REGMAP_IRQ_REG_LINE(0, 8),
->>> +    REGMAP_IRQ_REG_LINE(1, 8),
->>> +    REGMAP_IRQ_REG_LINE(2, 8),
->>> +    REGMAP_IRQ_REG_LINE(3, 8),
->>> +    REGMAP_IRQ_REG_LINE(4, 8),
->>> +    REGMAP_IRQ_REG_LINE(5, 8),
->>> +    REGMAP_IRQ_REG_LINE(6, 8),
->>> +    REGMAP_IRQ_REG_LINE(7, 8),
->>> +};
->>> +
->>> +struct sl28cpld_intc {
->>> +    struct regmap *regmap;
->>> +    struct regmap_irq_chip chip;
->>> +    struct regmap_irq_chip_data *irq_data;
->>> +};
->>> +
->>> +static int sl28cpld_intc_probe(struct platform_device *pdev)
->>> +{
->>> +    struct sl28cpld_intc *irqchip;
->>> +    struct resource *res;
->>> +    unsigned int irq;
->>> +    int ret;
->>> +
->>> +    irqchip = devm_kzalloc(&pdev->dev, sizeof(*irqchip), GFP_KERNEL);
->>> +    if (!irqchip)
->>> +        return -ENOMEM;
->>> +
->>> +    if (!pdev->dev.parent)
->>> +        return -ENODEV;
->>> +
->>> +    irqchip->regmap = dev_get_regmap(pdev->dev.parent, NULL);
->>> +    if (!irqchip->regmap)
->>> +        return -ENODEV;
->>> +
->>> +    irq = platform_get_irq(pdev, 0);
->>> +    if (irq < 0)
->>> +        return irq;
->>> +
->>> +    res = platform_get_resource(pdev, IORESOURCE_REG, 0);
->>> +    if (!res)
->>> +        return -EINVAL;
->>> +
->>> +    irqchip->chip.name = "sl28cpld-intc";
->>> +    irqchip->chip.irqs = sl28cpld_irqs;
->>> +    irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
->>> +    irqchip->chip.num_regs = 1;
->>> +    irqchip->chip.status_base = res->start + INTC_IP;
->>> +    irqchip->chip.mask_base = res->start + INTC_IE;
->>> +    irqchip->chip.mask_invert = true,
->>> +    irqchip->chip.ack_base = res->start + INTC_IP;
->>> +
->>> +    ret = devm_regmap_add_irq_chip(&pdev->dev, irqchip->regmap, irq,
->>> +                       IRQF_SHARED | IRQF_ONESHOT, 0,
->>> +                       &irqchip->chip, &irqchip->irq_data);
->>> +    if (ret)
->>> +        return ret;
->>> +    dev_info(&pdev->dev, "registered IRQ %d\n", irq);
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static struct platform_driver sl28cpld_intc_driver = {
->>> +    .probe    = sl28cpld_intc_probe,
->>> +    .driver = {
->>> +        .name = "sl28cpld-intc",
->>> +    }
->>> +};
->>> +module_platform_driver(sl28cpld_intc_driver);
->>> +
->>> +MODULE_DESCRIPTION("sl28cpld Interrupt Controller Driver");
->>> +MODULE_LICENSE("GPL");
->>> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
->>> index 01588c366476..4f741d640705 100644
->>> --- a/drivers/mfd/Kconfig
->>> +++ b/drivers/mfd/Kconfig
->>> @@ -2060,12 +2060,12 @@ config SGI_MFD_IOC3
->>>        then say Y. Otherwise say N.
->>>
->>>  config MFD_SL28CPLD
->>> -    tristate "Kontron sl28 core driver"
->>> +    bool "Kontron sl28 core driver"
->>
->> This is .... unusual. Why declare it tristate only to re-declare it
->> bool in the next patch ?
-> 
-> I though it was a good idea to have that gradually build up, esp. since
-> these patches might go through different reviewers/trees. That being said,
-> I'll change it though.
-> 
 
-Gradually build up is fine, but that doesn't mean to do it one way first and
-change it later. This only results in feedback like mine - I2C=y just
-didn't make sense in the previous patch. Please keep in mind that doing
-things one way first and then changing them later only wastes people's time.
-It would be much better to mention in the previous patch that the symbol is
-declared bool because a subsequent patch introduces an interrupt controller
-driver which needs to be built-in.
+--ReaqsoxgOBHFXBhH
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Guenter
+On Tue, Mar 17, 2020 at 10:00:42PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello,
+>=20
+> On Tue, Mar 17, 2020 at 06:40:43PM +0100, Thierry Reding wrote:
+> > On Tue, Mar 17, 2020 at 02:32:25PM +0200, Oleksandr Suvorov wrote:
+> > > The polarity enum definition PWM_POLARITY_INVERSED is misspelled.
+> > > Rename it to PWM_POLARITY_INVERTED.
+> >=20
+> > It isn't misspelled. "inversed" is a synonym for "inverted". Both
+> > spellings are correct.
+>=20
+> Some time ago I stumbled about "inversed", too. My spell checker doesn't
+> know it and I checked some dictionaries and none of them knew that word:
+>=20
+> https://www.lexico.com/search?utf8=3D%E2%9C%93&filter=3Ddictionary&dictio=
+nary=3Den&query=3Dinversed
+> https://de.pons.com/%C3%BCbersetzung/englisch-deutsch/inversed
+> https://dictionary.cambridge.org/spellcheck/english-german/?q=3Dinversed
+>=20
+> https://en.wiktionary.org/wiki/inverse#Verb mentions "inverse" as a verb
+> having "inversed" as past participle.
 
->> It does explain the I2C=y, but I really think it should be bool from
->> the start if it ends up
->> there.
-> 
-> Ok.
-> 
->>
->>>      depends on I2C=y
->>>      depends on OF
->>>      select REGMAP_I2C
->>>      select REGMAP_IRQ
->>> -    select SL28CPLD_IRQ
->>> +    select SL28CPLD_INTC
->>
->> What is the point of introducing SL28CPLD_IRQ in the first place ?
-> 
-> oh damn. this is a left-over which slipped through. There should just
-> be a SL28CPLD_INTC.
-> 
-> -michael
-> 
->>
->>>      select MFD_CORE
->>>      help
->>>        This option enables support for the board management controller
->>>
+Here are the first three results from a Google query:
+
+	https://www.yourdictionary.com/inversed
+	https://www.dictionary.com/browse/inversed
+	https://en.wiktionary.org/wiki/inversed
+
+> Having said this I think (independent of the question if "inversed"
+> exists) using two similar terms for the same thing just results in
+> confusion. I hit that in the past already and I like it being addressed.
+
+I don't know. It's pretty common to use different words for the same
+thing. They're called synonyms.
+
+> > And as you noted in the cover letter, there's a conflict between the
+> > macro defined in dt-bindings/pwm/pwm.txt. If they end up being included
+> > in the wrong order you'll get a compile error.
+>=20
+> There are also other symbols that exist twice (GPIO_ACTIVE_HIGH was the
+> first to come to my mind). I'm not aware of any problems related to
+> these. What am I missing?
+
+There's currently no problem, obviously. But if for some reason the
+include files end up being included in a different order (i.e. the
+dt-bindings header is included before linux/pwm.h) then the macro will
+be evaluated and result in something like:
+
+	enum pwm_polarity {
+		PWM_POLARITY_NORMAL,
+		1,
+	};
+
+and that's not valid C, so will cause a build error.
+
+> > The enum was named this way on purpose to make it separate from the
+> > definition for the DT bindings.
+>=20
+> Then please let's make it different by picking a different prefix or
+> something like that.
+
+Again, seems to me like unnecessary churn. Feel free to propose
+something, but I recall being in the same position at the time and this
+was the best I could come up with.
+
+> > Note that DT bindings are an ABI and can
+> > never change, whereas the enum pwm_polarity is part of a Linux internal
+> > API and doesn't have the same restrictions as an ABI.
+>=20
+> I thought only binary device trees (dtb) are supposed to be ABI.
+
+Yes, the DTB is the ABI. dt-bindings/pwm/pwm.h is used to generate DTBs,
+which basically makes it ABI as well. Yes, the symbol name may not be
+part of the ABI, but changing the symbol becomes very inconvenient
+because everyone that depends on it would have to change. Why bother?
+
+My point is that enum pwm_polarity is an API in the kernel and hence its
+easy to change or extend. But since that is not the same for the DTB, we
+need to be careful what from the internal kernel API leaks into the DTB.
+That's why they are different symbols, so that it is clear that what's
+in dt-bindings/pwm/pwm.h is the ABI.
+
+Thierry
+
+--ReaqsoxgOBHFXBhH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5yp+UACgkQ3SOs138+
+s6FO/BAApA+hyvKBdtCzUbodbVNOnFlAivhVCo+N5zGSec6fjuALlAnGB/kYeWlt
+XpSwooECx8G2j+mO9LmKjQi4ZmZxFGhO790xo3Q4CHNE+c/DNU0iP3cTXlJYhrAm
+fBpMAsDBwuyrcJCuavVIDuM0okLAQ2XlmZFFT3WNCuC7NmmwkvVr0lJeg1/9lIsp
+mivS6EuLEwXH0H03avpu3+o6+RAIKdO7jKegMHGQNWnBNg1bj+dCMvnKrxAKEjby
+27HuFhm4cMsd5DQQE2RlB7iWZD1aLpk/S7n98LvGti8PiXAtfVzPjUhIXFrvJXi/
+3A7ZwL7jHyaCmMMD3BJHa3/f3SlJMPU31ABixFS4R1t8LyLW4yw47jvZeznRqy8m
+4EkQcdl5EQ4bdDyVOgyWTJTjuPLqahDFFjZGapLbvpM6nj9FTAX+PTDhAvi+QQ4F
+XYkRpbO23Vw9bkE5hHNnD1lYMUgBE0WYTYZVgxEhVbV8Tte3qvnidjlEiNdVFznM
+uYBZv0Ks0r5LAWq2EAwy6JlfzbfdP42dlj5ZRgqNqhTbybFhtwpZ1qhE/XfG0k4L
+gfJt9ZXUHn81TWBrKoUC3YNbjJtTF2cl7l2JKft6+S3W93CV50lTzycJp/iy3srI
+qigCThG2YlpsInS8ZEfww4p47i5+Uje0uHDaoT07uEukyjNAYkQ=
+=Nsfz
+-----END PGP SIGNATURE-----
+
+--ReaqsoxgOBHFXBhH--
