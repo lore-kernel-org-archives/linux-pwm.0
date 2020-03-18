@@ -1,134 +1,111 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RFC PATCH 1/7] pwm: rename the PWM_POLARITY_INVERSED enum
-Date: Wed, 18 Mar 2020 23:59:53 +0100
-Message-ID: <20200318225953.GA2874972@ulmo>
+Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
+Date: Thu, 19 Mar 2020 00:05:39 +0100
+Message-ID: <20200318230539.GB2874972@ulmo>
 References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-2-oleksandr.suvorov@toradex.com>
- <20200317174043.GA1464607@ulmo>
- <20200317210042.ryrof3amr7fxp4w5@pengutronix.de>
+ <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
+ <20200317174344.GB1464607@ulmo>
+ <20200317213056.futfiwn4qgr2njye@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:37657 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbgCRW76 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Mar 2020 18:59:58 -0400
+        protocol="application/pgp-signature"; boundary="H+4ONPRPur6+Ovig"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200317210042.ryrof3amr7fxp4w5@pengutronix.de>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+In-Reply-To: <20200317213056.futfiwn4qgr2njye@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Claudiu Beznea <claudiu.beznea@microchip.com>, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Kevin Hilman <khilman@baylibre.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Maxime Ripard <mripard@kernel.org>, NXP Linux Team <linux-imx@nxp.com>, Nicolas Ferre <nicolas.f>
+Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 
 
---ReaqsoxgOBHFXBhH
+--H+4ONPRPur6+Ovig
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 17, 2020 at 10:00:42PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
+On Tue, Mar 17, 2020 at 10:30:56PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello Thierry,
 >=20
-> On Tue, Mar 17, 2020 at 06:40:43PM +0100, Thierry Reding wrote:
-> > On Tue, Mar 17, 2020 at 02:32:25PM +0200, Oleksandr Suvorov wrote:
-> > > The polarity enum definition PWM_POLARITY_INVERSED is misspelled.
-> > > Rename it to PWM_POLARITY_INVERTED.
+> On Tue, Mar 17, 2020 at 06:43:44PM +0100, Thierry Reding wrote:
+> > On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
+> > > Add the description of PWM_POLARITY_NORMAL flag.
+> > >=20
+> > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+> > > ---
+> > >=20
+> > >  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Document=
+ation/devicetree/bindings/pwm/pwm.txt
+> > > index 084886bd721e..440c6b9a6a4e 100644
+> > > --- a/Documentation/devicetree/bindings/pwm/pwm.txt
+> > > +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+> > > @@ -46,6 +46,7 @@ period in nanoseconds.
+> > >  Optionally, the pwm-specifier can encode a number of flags (defined =
+in
+> > >  <dt-bindings/pwm/pwm.h>) in a third cell:
+> > >  - PWM_POLARITY_INVERTED: invert the PWM signal polarity
+> > > +- PWM_POLARITY_NORMAL: don't invert the PWM signal polarity
 > >=20
-> > It isn't misspelled. "inversed" is a synonym for "inverted". Both
-> > spellings are correct.
+> > This doesn't make sense. PWM_POLARITY_NORMAL is not part of the DT ABI.
 >=20
-> Some time ago I stumbled about "inversed", too. My spell checker doesn't
-> know it and I checked some dictionaries and none of them knew that word:
+> "is not part of the DT ABI" is hardly a good reason. If it's sensible to
+> be used, it is sensible to define it.
+
+That's exactly it. It's not sensible at all to use it. If you define it
+here it means people are allowed to do stuff like this:
+
+	pwms =3D <&pwm 1234 PWM_POLARITY_INVERTED | PWM_POLARITY_NORMAL>;
+
+which doesn't make sense. What's more, it impossible for the code to
+even notice that you're being silly because | PWM_POLARITY_NORMAL is
+just | 0 and that's just a nop.
+
+> (And as far as I understand it, the term PWM_POLARITY_INVERTED isn't
+> part of the DT ABI either. Only the value 1 has a meaning (for some PWM
+> controlers).)
 >=20
-> https://www.lexico.com/search?utf8=3D%E2%9C%93&filter=3Ddictionary&dictio=
-nary=3Den&query=3Dinversed
-> https://de.pons.com/%C3%BCbersetzung/englisch-deutsch/inversed
-> https://dictionary.cambridge.org/spellcheck/english-german/?q=3Dinversed
+> > The third cell of the specifier is a bitmask of flags.
+> >=20
+> > PWM_POLARITY_NORMAL is an enumeration value that evaluates to 0, so it
+> > makes absolutely no sense as a flag.
 >=20
-> https://en.wiktionary.org/wiki/inverse#Verb mentions "inverse" as a verb
-> having "inversed" as past participle.
-
-Here are the first three results from a Google query:
-
-	https://www.yourdictionary.com/inversed
-	https://www.dictionary.com/browse/inversed
-	https://en.wiktionary.org/wiki/inversed
-
-> Having said this I think (independent of the question if "inversed"
-> exists) using two similar terms for the same thing just results in
-> confusion. I hit that in the past already and I like it being addressed.
-
-I don't know. It's pretty common to use different words for the same
-thing. They're called synonyms.
-
-> > And as you noted in the cover letter, there's a conflict between the
-> > macro defined in dt-bindings/pwm/pwm.txt. If they end up being included
-> > in the wrong order you'll get a compile error.
+> Using 0 or PWM_POLARITY_NORMAL doesn't have an effect on the compiled
+> device tree, that's true. But having the term PWM_POLARITY_NORMAL (in
+> contrast to a plain 0) in a dts file is useful in my eyes for human
+> readers.
 >=20
-> There are also other symbols that exist twice (GPIO_ACTIVE_HIGH was the
-> first to come to my mind). I'm not aware of any problems related to
-> these. What am I missing?
-
-There's currently no problem, obviously. But if for some reason the
-include files end up being included in a different order (i.e. the
-dt-bindings header is included before linux/pwm.h) then the macro will
-be evaluated and result in something like:
-
-	enum pwm_polarity {
-		PWM_POLARITY_NORMAL,
-		1,
-	};
-
-and that's not valid C, so will cause a build error.
-
-> > The enum was named this way on purpose to make it separate from the
-> > definition for the DT bindings.
+> > PWM signals are considered to be "normal" by default, so no flag is
+> > necessary to specify that.
 >=20
-> Then please let's make it different by picking a different prefix or
-> something like that.
+> GPIOs are considered to be active high by default, still there is
+> GPIO_ACTIVE_HIGH (which also evaluates to 0). Also there is
+> IRQ_TYPE_NONE.
 
-Again, seems to me like unnecessary churn. Feel free to propose
-something, but I recall being in the same position at the time and this
-was the best I could come up with.
-
-> > Note that DT bindings are an ABI and can
-> > never change, whereas the enum pwm_polarity is part of a Linux internal
-> > API and doesn't have the same restrictions as an ABI.
->=20
-> I thought only binary device trees (dtb) are supposed to be ABI.
-
-Yes, the DTB is the ABI. dt-bindings/pwm/pwm.h is used to generate DTBs,
-which basically makes it ABI as well. Yes, the symbol name may not be
-part of the ABI, but changing the symbol becomes very inconvenient
-because everyone that depends on it would have to change. Why bother?
-
-My point is that enum pwm_polarity is an API in the kernel and hence its
-easy to change or extend. But since that is not the same for the DTB, we
-need to be careful what from the internal kernel API leaks into the DTB.
-That's why they are different symbols, so that it is clear that what's
-in dt-bindings/pwm/pwm.h is the ABI.
+I'm aware of those. That doesn't mean that everything needs to have
+symbolic names.
 
 Thierry
 
---ReaqsoxgOBHFXBhH
+--H+4ONPRPur6+Ovig
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5yp+UACgkQ3SOs138+
-s6FO/BAApA+hyvKBdtCzUbodbVNOnFlAivhVCo+N5zGSec6fjuALlAnGB/kYeWlt
-XpSwooECx8G2j+mO9LmKjQi4ZmZxFGhO790xo3Q4CHNE+c/DNU0iP3cTXlJYhrAm
-fBpMAsDBwuyrcJCuavVIDuM0okLAQ2XlmZFFT3WNCuC7NmmwkvVr0lJeg1/9lIsp
-mivS6EuLEwXH0H03avpu3+o6+RAIKdO7jKegMHGQNWnBNg1bj+dCMvnKrxAKEjby
-27HuFhm4cMsd5DQQE2RlB7iWZD1aLpk/S7n98LvGti8PiXAtfVzPjUhIXFrvJXi/
-3A7ZwL7jHyaCmMMD3BJHa3/f3SlJMPU31ABixFS4R1t8LyLW4yw47jvZeznRqy8m
-4EkQcdl5EQ4bdDyVOgyWTJTjuPLqahDFFjZGapLbvpM6nj9FTAX+PTDhAvi+QQ4F
-XYkRpbO23Vw9bkE5hHNnD1lYMUgBE0WYTYZVgxEhVbV8Tte3qvnidjlEiNdVFznM
-uYBZv0Ks0r5LAWq2EAwy6JlfzbfdP42dlj5ZRgqNqhTbybFhtwpZ1qhE/XfG0k4L
-gfJt9ZXUHn81TWBrKoUC3YNbjJtTF2cl7l2JKft6+S3W93CV50lTzycJp/iy3srI
-qigCThG2YlpsInS8ZEfww4p47i5+Uje0uHDaoT07uEukyjNAYkQ=
-=Nsfz
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5yqUMACgkQ3SOs138+
+s6GPcg/+N73P7VPsn68ABt9OMpT62+RvFprrJJFPeRfRvnxjtQfvnfdV5KblV8Z2
+Cq2KKBVSeFkWWLLXWQHsBZYJ9oXXgkBHfIU4vdlkW55L8DWMyAztCu+0gob8tufk
+u9AoYhvAfZN4hWa03WweDIFpX7jfbqeQCQ5LOygJDAcRb426xowyzNwGtMtXpHo4
+Sl4KI08IN5WUFqG78ywvGIcogQ7Y4YTVYmU/wbPDrN2I65kqEn4YIZLWRes0t2gp
+CF8DaJfUXPMPiutTpCqiq19Tvr95RbrIPaYCAOW9jdH6oo51q148ghg/03WuDuxD
+Q3Q/B7ElsGw5Pw19jBGcVVXVOs60iZbkkMqtRWRGAvM+HKbADDYNyl1dVLH0yG9U
+6Ac912W/rhdGsT6wSgZk3k+ecl4QhKfvxGrDqKzZ9zuVs8qDMYIiUPWzLxLolljG
+bScb9XRW0O2ToPjGSQKZlKJj7vdC9eHwP3EM1/84oetS5AOajIL7DXhPtjtnOhhP
+1T8sI2JT6uLoy9kQ5X9jQRi1yAkGfXGlHH8MyM5lr6kUFkoe2KBrV5hp6wDhi81b
+AvYpL1vUilGov/jpaap4Z5Kx1KupIFvKmWWkGwsxFtCec5Onpvs9dpEOSXU7HWTE
+rpN4N0KeMiUqd+NTCK3OV9R/OidbZMy5ewERSyxPVR7oGL3JpM8=
+=VpZF
 -----END PGP SIGNATURE-----
 
---ReaqsoxgOBHFXBhH--
+--H+4ONPRPur6+Ovig--
