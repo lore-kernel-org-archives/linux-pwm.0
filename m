@@ -1,59 +1,72 @@
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Subject: Re: [RFC PATCH 1/7] pwm: rename the PWM_POLARITY_INVERSED enum
-Date: Wed, 18 Mar 2020 13:47:40 +0200
-Message-ID: <CAGgjyvGDTD=ZgEjU540HLApQXCoM1a8bk_-eQbS44sge+GpeAg@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [RFC PATCH 4/7] dt-bindings: pwm: add description of PWM polarity
+Date: Wed, 18 Mar 2020 14:29:42 +0200
+Message-ID: <20200318122942.GA7833@pendragon.ideasonboard.com>
 References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-2-oleksandr.suvorov@toradex.com> <20200317174043.GA1464607@ulmo>
+ <20200317123231.2843297-5-oleksandr.suvorov@toradex.com>
+ <20200317230115.GM2527@pendragon.ideasonboard.com>
+ <CAGgjyvEneCwFM8_tnKfNprqw2qkL_94rpsGF=ZgW-m75JBvegw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-db8eur05on2124.outbound.protection.outlook.com ([40.107.20.124]:44416
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726616AbgCRLsB (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 18 Mar 2020 07:48:01 -0400
-In-Reply-To: <20200317174043.GA1464607@ulmo>
+Received: from perceval.ideasonboard.com ([213.167.242.64]:44994 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726546AbgCRM3u (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Mar 2020 08:29:50 -0400
+Content-Disposition: inline
+In-Reply-To: <CAGgjyvEneCwFM8_tnKfNprqw2qkL_94rpsGF=ZgW-m75JBvegw@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Claudiu Beznea <claudiu.beznea@microchip.com>, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Kevin Hilman <khilman@baylibre.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Maxime Ripard <mripard@kernel.org>, NXP Linux Team <linux-imx@nxp.com>
+To: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 7:41 PM Thierry Reding <thierry.reding@gmail.com> wrote:
->
-> On Tue, Mar 17, 2020 at 02:32:25PM +0200, Oleksandr Suvorov wrote:
-> > The polarity enum definition PWM_POLARITY_INVERSED is misspelled.
-> > Rename it to PWM_POLARITY_INVERTED.
->
-> It isn't misspelled. "inversed" is a synonym for "inverted". Both
-> spellings are correct.
+Hi Oleksandr,
 
-> And as you noted in the cover letter, there's a conflict between the
-> macro defined in dt-bindings/pwm/pwm.txt. If they end up being included
-> in the wrong order you'll get a compile error.
+On Wed, Mar 18, 2020 at 01:37:00PM +0200, Oleksandr Suvorov wrote:
+> On Wed, Mar 18, 2020 at 1:02 AM Laurent Pinchart wrote:
+> > On Tue, Mar 17, 2020 at 02:32:28PM +0200, Oleksandr Suvorov wrote:
+> > > Move the description of the PWM signal polarity from
+> > > <linux/pwm.h>, prepare for removing the polarity
+> > > definition from <linux/pwm.h>.
+> > >
+> > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+> > > ---
+> > >
+> > >  include/dt-bindings/pwm/pwm.h | 9 +++++++++
+> > >  1 file changed, 9 insertions(+)
+> > >
+> > > diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
+> > > index 6b58caa6385e..c07da2088a61 100644
+> > > --- a/include/dt-bindings/pwm/pwm.h
+> > > +++ b/include/dt-bindings/pwm/pwm.h
+> > > @@ -10,7 +10,16 @@
+> > >  #ifndef _DT_BINDINGS_PWM_PWM_H
+> > >  #define _DT_BINDINGS_PWM_PWM_H
+> > >
+> > > +/**
+> > > + * a high signal for the duration of the duty-cycle, followed by a low signal
+> > > + * for the remainder of the pulse period.
+> > > + */
+> >
+> > Last time I checked, kernedoc didn't support documenting macros (enums
+> > are supported).
+> 
+> That's why I dropped the kerneldoc tags leaving the descriptions only.
 
-This patch is a part of the patchset, which in result removes enum at all,
-so there will be no definition conflict.
+But you forgot to replace /** with /* :-) Sorry for not being clear
+about what I meant.
 
-> The enum was named this way on purpose to make it separate from the
-> definition for the DT bindings. Note that DT bindings are an ABI and can
-> never change, whereas the enum pwm_polarity is part of a Linux internal
-> API and doesn't have the same restrictions as an ABI.
+> > >  #define PWM_POLARITY_NORMAL                  0
+> > > +
+> > > +/**
+> > > + * a low signal for the duration of the duty-cycle, followed by a high signal
+> > > + * for the remainder of the pulse period.
+> > > + */
+> > >  #define PWM_POLARITY_INVERTED                        (1 << 0)
+> > >
+> > >  #endif
 
-AFAIU, DTS files are not a part of ABI.
+-- 
+Regards,
 
-I understand that enums are better than macros for some reasons.
-However, I think it is dangerous to use duplicate definitions in
-different places when values of these definitions use in the same
-code.
-So, given that the enum cannot be used in DT, I left only macros.
-
-You personally wrote that the enum pwm_polarity can change, so the
-desynchronization I quite possible.
-
-> As far as I'm concerned this is completely unnecessary churn that's
-> potentially going to come back and bite us, so I see no reason to accept
-> this.
-
-
->
-> Thierry
+Laurent Pinchart
