@@ -1,24 +1,24 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
-Date: Thu, 19 Mar 2020 00:05:39 +0100
-Message-ID: <20200318230539.GB2874972@ulmo>
+Date: Thu, 19 Mar 2020 00:19:10 +0100
+Message-ID: <20200318231910.GA2885069@ulmo>
 References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
  <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
  <20200317174344.GB1464607@ulmo>
  <20200317213056.futfiwn4qgr2njye@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="H+4ONPRPur6+Ovig"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20200317213056.futfiwn4qgr2njye@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
+In-Reply-To: <20200317213056.futfiwn4qgr2njye-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Marcel Ziswiler <marcel.ziswiler-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Igor Opaniuk <igor.opaniuk-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Philippe Schenker <philippe.schenker-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---H+4ONPRPur6+Ovig
+--J/dobhs11T7y2rNN
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -30,7 +30,7 @@ On Tue, Mar 17, 2020 at 10:30:56PM +0100, Uwe Kleine-K=C3=B6nig wrote:
 > > On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
 > > > Add the description of PWM_POLARITY_NORMAL flag.
 > > >=20
-> > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+> > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
 > > > ---
 > > >=20
 > > >  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
@@ -62,10 +62,8 @@ which doesn't make sense. What's more, it impossible for the code to
 even notice that you're being silly because | PWM_POLARITY_NORMAL is
 just | 0 and that's just a nop.
 
-> (And as far as I understand it, the term PWM_POLARITY_INVERTED isn't
-> part of the DT ABI either. Only the value 1 has a meaning (for some PWM
-> controlers).)
->=20
+Thierry
+
 > > The third cell of the specifier is a bitmask of flags.
 > >=20
 > > PWM_POLARITY_NORMAL is an enumeration value that evaluates to 0, so it
@@ -75,7 +73,9 @@ just | 0 and that's just a nop.
 > device tree, that's true. But having the term PWM_POLARITY_NORMAL (in
 > contrast to a plain 0) in a dts file is useful in my eyes for human
 > readers.
->=20
+
+Yes, I suppose that's true.
+
 > > PWM signals are considered to be "normal" by default, so no flag is
 > > necessary to specify that.
 >=20
@@ -83,29 +83,40 @@ just | 0 and that's just a nop.
 > GPIO_ACTIVE_HIGH (which also evaluates to 0). Also there is
 > IRQ_TYPE_NONE.
 
-I'm aware of those. That doesn't mean that everything needs to have
-symbolic names.
+I'm aware of these. They carry the same risks as I mentioned above,
+though. You can easily make mistakes that no software will be able to
+detect. If you make a GPIO GPIO_ACTIVE_HIGH | GPIO_ACTIVE_LOW, it
+becomes really confusing as to what that means. It really means that the
+GPIO will be active-low because GPIO_ACTIVE_HIGH doesn't do anything.
+But just reading that may make you think that perhaps HIGH is better
+(because, well, it's high, or perhaps because it is listed first).
+Having both may also be interpreted as "don't care".
+
+In my opinion things become much easier when you don't have any of the
+alternatives. If you don't specify PWM_POLARITY_INVERTED, well, it's
+just not going to be inverted, it's going to be normal. No need to be
+extra verbose about that.
 
 Thierry
 
---H+4ONPRPur6+Ovig
+--J/dobhs11T7y2rNN
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5yqUMACgkQ3SOs138+
-s6GPcg/+N73P7VPsn68ABt9OMpT62+RvFprrJJFPeRfRvnxjtQfvnfdV5KblV8Z2
-Cq2KKBVSeFkWWLLXWQHsBZYJ9oXXgkBHfIU4vdlkW55L8DWMyAztCu+0gob8tufk
-u9AoYhvAfZN4hWa03WweDIFpX7jfbqeQCQ5LOygJDAcRb426xowyzNwGtMtXpHo4
-Sl4KI08IN5WUFqG78ywvGIcogQ7Y4YTVYmU/wbPDrN2I65kqEn4YIZLWRes0t2gp
-CF8DaJfUXPMPiutTpCqiq19Tvr95RbrIPaYCAOW9jdH6oo51q148ghg/03WuDuxD
-Q3Q/B7ElsGw5Pw19jBGcVVXVOs60iZbkkMqtRWRGAvM+HKbADDYNyl1dVLH0yG9U
-6Ac912W/rhdGsT6wSgZk3k+ecl4QhKfvxGrDqKzZ9zuVs8qDMYIiUPWzLxLolljG
-bScb9XRW0O2ToPjGSQKZlKJj7vdC9eHwP3EM1/84oetS5AOajIL7DXhPtjtnOhhP
-1T8sI2JT6uLoy9kQ5X9jQRi1yAkGfXGlHH8MyM5lr6kUFkoe2KBrV5hp6wDhi81b
-AvYpL1vUilGov/jpaap4Z5Kx1KupIFvKmWWkGwsxFtCec5Onpvs9dpEOSXU7HWTE
-rpN4N0KeMiUqd+NTCK3OV9R/OidbZMy5ewERSyxPVR7oGL3JpM8=
-=VpZF
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5yrGsACgkQ3SOs138+
+s6GzIg//UvHOxZqlcH1vZ9Mk4woahJF0Ehmg2m0b721XHppS/6hPoiKUnJfZqdbm
+Hu5rFUsxIo01XT33yNQtyojogLEvT1JHAaBCxkcBlVc43Dee/2nsf5SehFBtUE7z
+suJ7rZVOQpC73QYpLTrDgHcexR4KDjqS2Lxiv9PcY+VCAYW+M2GruTmjKfTB87hU
+ApZRs24AfFywg8hX48tsPRQwNA3SkOO8sl2gsDKeSRlwFMTtL4aTCIGKXmQyYydv
+Eyjz9NR1GIt95FPh5MeKR5SwrzIrau3qZm1KAcvUydrkP908H28/plRG0/I2FJCa
+7bqlsavzrQFeFlal70N/+lPtnsB2SXVVPjCxa3yD5x4a+Gm0CGT3F2wXLdWhXP/T
+Wpw9NoQi4SwzBiobOv+TgqjOU5eb7kJ5a+AHU58PCz1bIQZq4jMExU9pCb9N9KAz
+SDSsKHX9GrLLuTf6xO/sbctvo8vnoUS2pxWxhWnxCoNP04TzJzjewWRu/wLpnzPC
++R4QaSeEJOBLORqA9skXqqLPY3hD/s1vU0au54a+S2nEZtZCNjdMevQd3pisLghX
+pm2htChiGjHBCvrZhc4GeW1BHHZ1qdLuSzPAZdYiz8Tl9/BJ2PvIwgrsj2ejmtPI
+9mKe9+bB4fAK1MvN+N7hFEkNKPdyK2dPaoV4NGULSwJEoHcGSSU=
+=CkUz
 -----END PGP SIGNATURE-----
 
---H+4ONPRPur6+Ovig--
+--J/dobhs11T7y2rNN--
