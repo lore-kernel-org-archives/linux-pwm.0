@@ -1,65 +1,49 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [RFC PATCH 3/7] dt-bindings: pwm: add normal PWM polarity flag
-Date: Wed, 18 Mar 2020 10:20:47 +0100
-Message-ID: <20200318092047.25gjkx43jwfyywsl@pengutronix.de>
-References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-4-oleksandr.suvorov@toradex.com>
- <20200317225656.GK2527@pendragon.ideasonboard.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v9 04/11] pwm: clps711x: Use 64-bit division macro
+Date: Wed, 18 Mar 2020 10:49:34 +0100
+Message-ID: <CAK8P3a2a-QEwFfDE5FbFCVdDS+t9jirgbHWJQQv0i5_OMCYXJg@mail.gmail.com>
+References: <cover.1584473399.git.gurus@codeaurora.org> <587f9ccae68ad7e1ce97fa8da6037292af1a5095.1584473399.git.gurus@codeaurora.org>
+ <CAK8P3a2Hi_AoRC3g7qKth4e_Y1jZrbBDhWUb3YPZm10FWMu-ig@mail.gmail.com> <20200317233003.GA11350@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:51595 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbgCRJUz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Mar 2020 05:20:55 -0400
-Content-Disposition: inline
-In-Reply-To: <20200317225656.GK2527@pendragon.ideasonboard.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200317233003.GA11350@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>
 List-Id: linux-pwm@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
 
-Hello Laurent,
+On Wed, Mar 18, 2020 at 12:30 AM Guru Das Srinagesh
+<gurus@codeaurora.org> wrote:
+>
+> On Tue, Mar 17, 2020 at 11:22:06PM +0100, Arnd Bergmann wrote:
+> > > diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> > > index 924d39a..ba9500a 100644
+> > > --- a/drivers/pwm/pwm-clps711x.c
+> > > +++ b/drivers/pwm/pwm-clps711x.c
+> > > @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+> > >  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+> > >  {
+> > >         /* Duty cycle 0..15 max */
+> > > -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> > > +       return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> > >  }
+> >
+> > Is it actually going to exceed U32_MAX? If not, a type cast may be
+> > more appropriate here than the expensive 64-bit division.
+>
+> With the final change in this patch series, the framework will support
+> periods that exceed U32_MAX. My concern is that using a typecast would
+> mean that in those cases, this driver will not support > U32_MAX values.
+> Using DIV64_U64_ROUND_CLOSEST makes the driver future proof and able to
+> handle > U32_MAX values correctly. What do you think?
 
-On Wed, Mar 18, 2020 at 12:56:56AM +0200, Laurent Pinchart wrote:
-> On Tue, Mar 17, 2020 at 02:32:27PM +0200, Oleksandr Suvorov wrote:
-> > PWM can have a normal polarity and a reverted one. The reverted polarity
-> > value is defined.
-> 
-> I would squash this patch with 2/7, apart from that it looks fine.
-> However, I also agree with Thierry that the PWM cell that contains this
-> value is a bitmask, so once we get more flags it may get a bit awkward.
+Ah, so if the period can actually be larger than U32_MAX, you need to
+handle that case. However, I see that the divident in this code (v * 0xf)
+is still a 32-bit number, so a correct and efficient implementation could be
 
-For me the usefulness of PWM_POLARITY_NORMAL increases with more bits
-used. That's because if there are 5 things that can be set there and the
-patch author mentions only the two that are non-zero, I as a reviewer
-don't know if the author actually know and thought about the other
-three. If however they spell out PWM_POLARITY_NORMAL it's quite sure
-they want normal polarity.
+   if (pwm->args.period > (UINT_MAX / 0xf))
+          return 0;
+   return DIV_ROUND_CLOSEST(v * 0xf, (u32)pwm->args.period);
 
-> Will we have one macro for each flag that will evaluate to 0 to report
-> that the flag isn't set ?
-
-Yes. Given the above mentioned advantage this is cheap enough in my
-eyes.
-
-> Or should we define a single PWM_FLAG_NONE (or
-> similarly named) macro ?
-
-I like one macro for each bit field better for the above mentioned
-reason.
-
-> In retrospect, maybe PWM_POLARITY_INVERTED
-> should have been named PWM_FLAG_POLARITY_INVERTED.
-
-Seems to be subjective. I don't see much added semantic that justifies
-the longer name.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+        Arnd
