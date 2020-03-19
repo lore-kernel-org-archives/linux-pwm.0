@@ -1,67 +1,230 @@
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [RFC PATCH 1/7] pwm: rename the PWM_POLARITY_INVERSED enum
-Date: Thu, 19 Mar 2020 14:57:07 +0200
-Message-ID: <CAGgjyvFebxXaKkhy-UR1-kaYWozpP67YtVf5mp4mTHFQRhsjKg@mail.gmail.com>
+Date: Thu, 19 Mar 2020 17:37:00 +0100
+Message-ID: <20200319163700.GA3354541@ulmo>
 References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
  <20200317123231.2843297-2-oleksandr.suvorov@toradex.com>
  <20200317174043.GA1464607@ulmo>
  <20200317210042.ryrof3amr7fxp4w5@pengutronix.de>
  <20200318225953.GA2874972@ulmo>
- <CAGgjyvGd4y8M0L1sFMvQ1=gPcKfUPoR13dVS7F5WZx=333KG6g@mail.gmail.com>
- <20200319121026.3rzcxdknfyhtkryi@pengutronix.de>
+ <20200319065039.szhh5dm6v3ejwijd@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200319121026.3rzcxdknfyhtkryi@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-riscv@lists.infradead.org, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Kevin Hilman <khilman@baylibre.com>, Chen-Yu Tsai <wens@csie.org>, linux-rockchip@lists.infradead.org, Ludovic Desroches <ludovic.desroches@microchip.com>, bcm-kernel-feedback-list@broadcom.com, NXP Linux Team <linux-imx@nxp.com>, devicetree@vger.kernel.org, Ray Jui <rjui@broadcom.com>, Sascha Hauer <s.hauer@pengutronix.de>, Maxime Ripard <mripard@kernel.org>, Philippe Schenker <philippe.schenker@toradex.com>, Paul Barker <pbarker@konsulko.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="LZvS9be/3tNcYl/X"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44283 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727222AbgCSQhF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 12:37:05 -0400
+Content-Disposition: inline
+In-Reply-To: <20200319065039.szhh5dm6v3ejwijd@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Claudiu Beznea <claudiu.beznea@microchip.com>, Fabio Estevam <festevam@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Kevin Hilman <khilman@baylibre.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, Maxime Ripard <mripard@kernel.org>, NXP Linux Team <linux-imx@nxp.com>, Nicolas Ferre <nicolas.f>
 
-T24gVGh1LCBNYXIgMTksIDIwMjAgYXQgMjoxMSBQTSBVd2UgS2xlaW5lLUvDtm5pZwo8dS5rbGVp
-bmUta29lbmlnQHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPgo+IEhlbGxvLAo+Cj4gW2Ryb3BwaW5n
-IFRvbnkgUHJpc2sgPGxpbnV4QHByaXNrdGVjaC5jby5uej4gZnJvbSByZWNpcGllbnRzXQo+Cj4g
-T24gVGh1LCBNYXIgMTksIDIwMjAgYXQgMDE6NDA6MjhQTSArMDIwMCwgT2xla3NhbmRyIFN1dm9y
-b3Ygd3JvdGU6Cj4gPiBUaGllcnJ5LCBJIHNlZSB0aGUgUFdNIGNvcmUgY29udmVydHMgdGhlIGJp
-dCBmaWVsZCAidGhpcmQgY2VsbCIgaW50bwo+ID4gdGhlIHBvbGFyaXR5IHZhcmlhYmxlLgo+ID4g
-Tm93IEkgcHJvYmFibHkgdW5kZXJzdGFuZCB5b3VyIHNpZ2h0IGFuZCBhZ3JlZSB0aGF0IHdlIHNo
-b3VsZG4ndCBnaXZlCj4gPiB0aGUgc2FtZSBuYW1lcyB0byBiaXRzIGluIGJpdGZpZWxkIChkdHMp
-IGFuZCB2YWx1ZXMgb2YgYSB2YXJpYWJsZS4KPiA+Cj4gPiBCdXQgdGhlcmUgYXJlIGxvdHMgb2Yg
-dXNlbGVzcyAiMCIgdmFsdWVzIG9mIHRoaXJkIGNlbGwgb2YgInB3bXMiCj4gPiBvcHRpb24gaW4g
-ZHRzIGZpbGVzLgo+ID4KPiA+IEkgc2VlIDIgd2F5cyBub3c6Cj4gPiAtIGp1c3QgcmVtb3ZlIGFs
-bCAiMCIgInRoaXJkIGNlbGwiIGZyb20gInB3bXMiIG9wdGlvbnMgaW4gZHRzIGZpbGVzLiBJCj4g
-PiBzZWUgdGhpcyAiMCIgY29uZnVzZXMgc29tZSBwZW9wbGUuCj4KPiBUaGVuIHlvdSBoYXZlIHRv
-IG92ZXJ3cml0ZSBwd20tY2VsbHMgb2YgdGhlIHByb3ZpZGVyLiBJZiB0aGVyZSBhcmUgdHdvCj4g
-UFdNcyB1c2VkIGZyb20gdGhlIHNhbWUgcHJvdmlkZXIgYW5kIG9ubHkgb25lIGlzIGludmVydGVk
-IHRoaXMgd29uJ3QKPiB3b3JrLiAoTm90IGVudGlyZWx5IHN1cmUgSSB1bmRlcnN0b29kIHlvdXIg
-c3VnZ2VzdGlvbi4pIFNvIEkgZG9uJ3QgbGlrZQo+IHRoaXMgc3VnZ2VzdGlvbi4KCkdvb2QgcG9p
-bnQsIGFncmVlLiBCdXQgd2Ugc3RpbGwgaGF2ZSB0aGUgdW5uYW1lZCAiMCIuCgpXaGF0IGFib3V0
-IHJlbmFtaW5nIHRoZSBkdC1iaW5kaW5ncyBtYWNybyBQV01fUE9MQVJJVFlfSU5WRVJURUQKYW5k
-IGFkZCB0aGUgbmV3IG9uZSBmb3IgdGhlIG5vcm1hbCBwb2xhcml0eT8KTGlrZSBQV01fRkxBR19Q
-T0xBUklUWV9OT1JNQUwgLyBQV01fRkxBR19QT0xBUklUWV9JTlZFUlRFRCBvcgpEVF9QV01fUE9M
-QVJJVFlfTk9STUFMIC8gRFRfUFdNX1BPTEFSSVRZX0lOVkVSVEVEPwoKVXNpbmcgZGlmZmVyZW50
-IHByZWZpeCB3aWxsIHByZXZlbnQgaW50ZXJmZXJpbmcgbmFtZXMgb2YgZW51bSBhbmQKbWFjcm9z
-IGluIHRoZSBmdXR1cmUKYW5kIHdpbGwgYWxsb3cgdXNpbmcgdGhlIG5hbWVkIG5vcC1mbGFnIFBX
-TV9GTEFHX1BPTEFSSVRZX05PUk1BTCBpbiBkdHMuCgo+IEFuZCBhbHNvIGluIG15IGV5ZXMgdGhp
-cyBpc24ndCBjbGVhcmVyLCBqdXN0IG1vcmUgY29tcGxpY2F0ZWQgdG8gdXNlLgo+Cj4gPiAtIGNv
-bnZlcnQgcHdtX3N0YXRlLnBvbGFyaXR5IGludG8gcHdtX3N0YXRlLmZsYWdzIGFuZCB1c2UgYml0
-ZmllbGQKPiA+ICAgZGlyZWN0bHkgZnJvbSBkdGIuCj4gPiAgIEl0IHNpbXBsaWZpZXMgdGhlIHBh
-cnNpbmcgbG9naWMgYW5kIG1ha2VzIGFkZGluZyBuZXcgZmxhZ3MgZWFzaWVyLgo+Cj4gKnNocnVn
-KiwgSSBkb24ndCBjYXJlIG11Y2guCj4KPiBCZXN0IHJlZ2FyZHMKPiBVd2UKPgo+IC0tCj4gUGVu
-Z3V0cm9uaXggZS5LLiAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgVXdlIEtsZWluZS1Lw7Zu
-aWcgICAgICAgICAgICB8Cj4gSW5kdXN0cmlhbCBMaW51eCBTb2x1dGlvbnMgICAgICAgICAgICAg
-ICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0cm9uaXguZGUvIHwKCgoKLS0gCkJlc3QgcmVnYXJkcwpP
-bGVrc2FuZHIgU3V2b3JvdgoKVG9yYWRleCBBRwpFYmVuYXVzdHJhc3NlIDEwIHwgNjA0OCBIb3J3
-IHwgU3dpdHplcmxhbmQgfCBUOiArNDEgNDEgNTAwIDQ4IDAwCgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlz
-dApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJh
-ZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+
+--LZvS9be/3tNcYl/X
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Mar 19, 2020 at 07:50:39AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+>=20
+> [Dropped Tony Prisk from recipients as the address bounces]
+>=20
+> Hello,
+>=20
+> On Wed, Mar 18, 2020 at 11:59:53PM +0100, Thierry Reding wrote:
+> > On Tue, Mar 17, 2020 at 10:00:42PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> > > Hello,
+> > >=20
+> > > On Tue, Mar 17, 2020 at 06:40:43PM +0100, Thierry Reding wrote:
+> > > > On Tue, Mar 17, 2020 at 02:32:25PM +0200, Oleksandr Suvorov wrote:
+> > > > > The polarity enum definition PWM_POLARITY_INVERSED is misspelled.
+> > > > > Rename it to PWM_POLARITY_INVERTED.
+> > > >=20
+> > > > It isn't misspelled. "inversed" is a synonym for "inverted". Both
+> > > > spellings are correct.
+> > >=20
+> > > Some time ago I stumbled about "inversed", too. My spell checker does=
+n't
+> > > know it and I checked some dictionaries and none of them knew that wo=
+rd:
+> > >=20
+> > > https://www.lexico.com/search?utf8=3D%E2%9C%93&filter=3Ddictionary&di=
+ctionary=3Den&query=3Dinversed
+> > > https://de.pons.com/%C3%BCbersetzung/englisch-deutsch/inversed
+> > > https://dictionary.cambridge.org/spellcheck/english-german/?q=3Dinver=
+sed
+> > >=20
+> > > https://en.wiktionary.org/wiki/inverse#Verb mentions "inverse" as a v=
+erb
+> > > having "inversed" as past participle.
+> >=20
+> > Here are the first three results from a Google query:
+> >=20
+> > 	https://www.yourdictionary.com/inversed
+>=20
+> There is something fishy. In the Verb section it says indeed, that it is
+> the past participle and simple past of inverse. The entry for inverse
+> however only has sections that identify this word as adjective or noun;
+> not a verb.
+>=20
+> > 	https://www.dictionary.com/browse/inversed
+>=20
+> Not sure I'd count this as hint that inversed exists. The entry shown to
+> me under this URL is about "inverse" and it has
+>=20
+> 	verb (used with object), in=C2=B7versed, in=C2=B7vers=C2=B7ing.
+> 		? to invert.
+>=20
+> Does this mean: "Did you mean invert instead?"
+>=20
+> > 	https://en.wiktionary.org/wiki/inversed
+>=20
+> Yeah, that's the one I found, too.
+>=20
+> I still have the impression that "inversed" is in use because people
+> don't know better and understand the intended meaning. And this results
+> in leaking of this word into the references.
+>=20
+> > > Having said this I think (independent of the question if "inversed"
+> > > exists) using two similar terms for the same thing just results in
+> > > confusion. I hit that in the past already and I like it being address=
+ed.
+> >=20
+> > I don't know. It's pretty common to use different words for the same
+> > thing. They're called synonyms.
+>=20
+> In literature yes, I agree. In a novel it is annoying to repeat the same
+> words over and over again and some variation is good. In programming
+> however the goal is a different one. There the goal should be to be
+> precise and consistent.
+
+We also need to make sure that things don't break. It's a very bad idea
+to have a macro with the same name as an enum value for reasons I stated
+before. I think that's the most important thing here.
+
+Also, if inversed is a synonym of inverted, we don't loose any precision
+at all. All you have to remember is that you're dealing with a device
+tree constant in one case and an API enumeration in the other.
+
+So I think the current form is actually more precise, though I guess it
+could be confusing if you don't care about the difference.
+
+> > > > And as you noted in the cover letter, there's a conflict between the
+> > > > macro defined in dt-bindings/pwm/pwm.txt. If they end up being incl=
+uded
+> > > > in the wrong order you'll get a compile error.
+> > >=20
+> > > There are also other symbols that exist twice (GPIO_ACTIVE_HIGH was t=
+he
+> > > first to come to my mind). I'm not aware of any problems related to
+> > > these. What am I missing?
+> >=20
+> > There's currently no problem, obviously. But if for some reason the
+> > include files end up being included in a different order (i.e. the
+> > dt-bindings header is included before linux/pwm.h) then the macro will
+> > be evaluated and result in something like:
+> >=20
+> > 	enum pwm_polarity {
+> > 		PWM_POLARITY_NORMAL,
+> > 		1,
+> > 	};
+> >=20
+> > and that's not valid C, so will cause a build error.
+>=20
+> I admit I didn't look closely here and I assume you are right. If I
+> understand Oleksandr right this is only an intermediate step and when
+> the series is applied completely this issue is gone. Still it might be
+> worth to improve the series here.
+
+	$ gcc -o /dev/null -x c - <<- EOF
+	>     #define PWM_POLARITY_INVERTED (1 << 0)
+	>
+	>     enum pwm_polarity {
+	>         PWM_POLARITY_NORMAL,
+	>         PWM_POLARITY_INVERTED,
+	>     };
+	> EOF
+	<stdin>:1:35: error: expected identifier before =E2=80=98(=E2=80=99 token
+	<stdin>:5:9: note: in expansion of macro =E2=80=98PWM_POLARITY_INVERTED=E2=
+=80=99
+
+Q.E.D.
+
+> My original question was about similar problems with GPIO_ACTIVE_HIGH.
+> Are you aware of problems there?
+
+The problem exists there equally. We're probably not running into it
+because drivers don't end up including dt-bindings/gpio/gpio.h and
+include/linux/gpio/machine.h at the same time. Or they end up always
+including them in the right order.
+
+For PWM the situation is slightly more complicated because we only have
+one header for the kernel API, so the likelihood of including it along
+with the dt-bindings header is increased compared to GPIO.
+
+> > > > Note that DT bindings are an ABI and can
+> > > > never change, whereas the enum pwm_polarity is part of a Linux inte=
+rnal
+> > > > API and doesn't have the same restrictions as an ABI.
+> > >=20
+> > > I thought only binary device trees (dtb) are supposed to be ABI.
+> >=20
+> > Yes, the DTB is the ABI. dt-bindings/pwm/pwm.h is used to generate DTBs,
+> > which basically makes it ABI as well.
+>=20
+> We disagree here. With this argument you could fix quite some things as
+> ABI.
+
+I don't understand what you're trying to say.
+
+> > Yes, the symbol name may not be part of the ABI, but changing the
+> > symbol becomes very inconvenient because everyone that depends on it
+> > would have to change.
+>=20
+> Oleksandr adapted all in-tree users, so it only affects out-of-tree
+> users. In my book this is fine.
+
+There used to be a time when it was assumed that eventually device tree
+sources would live outside of the kernel tree. Given that they are a HW
+description, they really ought not to be relying on the Linux kernel
+tree as a way of keeping them consistent. That's really only out of
+convenience.
+
+> > Why bother?
+>=20
+> To make the API more precise and consistent. That's a good goal in my
+> eyes.
+
+PWM_POLARITY_INVERTED is not part of the API. It doesn't exist for
+anything other than to make the device tree more readable.
+
+I now regret that we ever introduced this in the first place. Perhaps it
+would've been better to just deal with raw numbers instead.
+
+Thierry
+
+--LZvS9be/3tNcYl/X
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl5zn6kACgkQ3SOs138+
+s6G0qA//TRbmBTBaIgA8loJnEh1oNwlzPblJdiH8lXKLSVxfyTXfaFGDQcOzMyBg
+DkLtpO51Rah1o+3yB/j6b8TXA9amdpD65SP2FBL2dFLyBn8K5Ot5ZWuvTapyclcz
+2TI8cG1Du/xLWxMDDX+Rylj+9XTlQxu3lGssuCM56hF0VXmhyvEzD3/aLlA/MjeY
+QQky3apxaRT+lnGsAzRLGbLHZufTV+OaZ9ZYZZGTlsXR1VAUsyR44TGM+290Ut6p
+Ds8bLPjI3xTa6uy66MlsUcYAAo1/jCQMAS+Nr/B0XGRPJdtK2G+MY3vtTZENSvqr
+VKDulCTAEGE/uP+7qZVOmxOZIhX7n1zBdwSdZS5FgjCok6QjfOUa9SlT77O4bGAM
+lGaeG9h8gBYpE2wk+9Wd6V9vm8UoJXPujpsyJXRHpQa5nJhgqr/VNYCeHlYhKXuQ
+ymd6V9cwXRk/0xoRKR8WnRl5ZgfZtTYDfh/dGD7CdUBcyfCFZVcYEI01iO54m5Dr
+/kakaDhUXRLv+xBGk4CocrSgo92DQeFUWyb2QnoW/5yYbHEOYEsfz+pWUicxin/y
+Yf9ZNfDh5MPRidZyJ5b/wy3xz2OHEkyGKGGIb2em5E5AwvDZiDXhQkjhf5hzb2fD
+xgjBAa+LbbBZYCs2a4Y85i+tpsJpp72cE4Xamu4rr3Pz7URiAnw=
+=VES6
+-----END PGP SIGNATURE-----
+
+--LZvS9be/3tNcYl/X--
