@@ -1,56 +1,77 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v10 01/12] drm/i915: Use 64-bit division macro
-Date: Thu, 19 Mar 2020 13:50:04 -0700
-Message-ID: <2403a87f9b6443401eac96a3c50d4beca63dcba2.1584650604.git.gurus@codeaurora.org>
-References: <cover.1584650604.git.gurus@codeaurora.org>
+Subject: Re: [PATCH v9 04/11] pwm: clps711x: Use 64-bit division macro
+Date: Thu, 19 Mar 2020 13:51:17 -0700
+Message-ID: <20200319205117.GA17255@codeaurora.org>
+References: <cover.1584473399.git.gurus@codeaurora.org>
+ <587f9ccae68ad7e1ce97fa8da6037292af1a5095.1584473399.git.gurus@codeaurora.org>
+ <CAK8P3a2Hi_AoRC3g7qKth4e_Y1jZrbBDhWUb3YPZm10FWMu-ig@mail.gmail.com>
+ <20200317233003.GA11350@codeaurora.org>
+ <CAK8P3a2a-QEwFfDE5FbFCVdDS+t9jirgbHWJQQv0i5_OMCYXJg@mail.gmail.com>
+ <20200318170010.GA26509@codeaurora.org>
+ <CAK8P3a2A3RuRu3bOSvq58Unb=vpnYnkxKsxJdLqkS=hPFDgM2Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:27920 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727159AbgCSUuU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 16:50:20 -0400
-In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
-In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
-References: <cover.1584650604.git.gurus@codeaurora.org>
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:14562 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727141AbgCSUvS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 16:51:18 -0400
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2A3RuRu3bOSvq58Unb=vpnYnkxKsxJdLqkS=hPFDgM2Q@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Chris Wilson <chris@chris-wilson.co.uk>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>
 
-Since the PWM framework is switching struct pwm_state.duty_cycle's
-datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
-to handle a 64-bit dividend.
+On Wed, Mar 18, 2020 at 08:38:29PM +0100, Arnd Bergmann wrote:
+> On Wed, Mar 18, 2020 at 6:00 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+> >
+> > On Wed, Mar 18, 2020 at 10:49:34AM +0100, Arnd Bergmann wrote:
+> > > On Wed, Mar 18, 2020 at 12:30 AM Guru Das Srinagesh
+> > > <gurus@codeaurora.org> wrote:
+> > > >
+> > > > On Tue, Mar 17, 2020 at 11:22:06PM +0100, Arnd Bergmann wrote:
+> > > > > > diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> > > > > > index 924d39a..ba9500a 100644
+> > > > > > --- a/drivers/pwm/pwm-clps711x.c
+> > > > > > +++ b/drivers/pwm/pwm-clps711x.c
+> > > > > > @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+> > > > > >  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+> > > > > >  {
+> > > > > >         /* Duty cycle 0..15 max */
+> > > > > > -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> > > > > > +       return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> > > > > >  }
+> > > > >
+> > > > > Is it actually going to exceed U32_MAX? If not, a type cast may be
+> > > > > more appropriate here than the expensive 64-bit division.
+> > > >
+> > > > With the final change in this patch series, the framework will support
+> > > > periods that exceed U32_MAX. My concern is that using a typecast would
+> > > > mean that in those cases, this driver will not support > U32_MAX values.
+> > > > Using DIV64_U64_ROUND_CLOSEST makes the driver future proof and able to
+> > > > handle > U32_MAX values correctly. What do you think?
+> > >
+> > > Ah, so if the period can actually be larger than U32_MAX, you need to
+> > > handle that case. However, I see that the divident in this code (v * 0xf)
+> > > is still a 32-bit number, so a correct and efficient implementation could be
+> > >
+> > >    if (pwm->args.period > (UINT_MAX / 0xf))
+> >
+> > Shouldn't the if condition be the following? Or am I missing
+> > something here?
+> >
+> >      if (pwm->args.period > (UINT_MAX / (v * 0xf)))
+> >                                         ^^^^^^^^^
+> 
+> That would require performing a division, which is an external function
+> call on ARMv4. My version just checks for an upper bound and completely
+> avoids the division. You could also just check for ">UINT_MAX" if you
+> find that clearer.
 
-Cc: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: "Ville Syrjälä" <ville.syrjala@linux.intel.com>
-Cc: intel-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
+Thanks, have checked for UINT_MAX in v10 of my patchset that I just
+uploaded. Could you please review it?
 
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
----
- drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you.
 
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index bc14e9c..843cac1 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1868,7 +1868,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 
- 	panel->backlight.min = 0; /* 0% */
- 	panel->backlight.max = 100; /* 100% */
--	panel->backlight.level = DIV_ROUND_UP(
-+	panel->backlight.level = DIV_ROUND_UP_ULL(
- 				 pwm_get_duty_cycle(panel->backlight.pwm) * 100,
- 				 CRC_PMIC_PWM_PERIOD_NS);
- 	panel->backlight.enabled = panel->backlight.level != 0;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Guru Das.
