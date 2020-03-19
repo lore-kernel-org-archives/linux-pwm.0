@@ -1,76 +1,77 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v9 04/11] pwm: clps711x: Use 64-bit division macro
-Date: Thu, 19 Mar 2020 13:51:17 -0700
-Message-ID: <20200319205117.GA17255@codeaurora.org>
-References: <cover.1584473399.git.gurus@codeaurora.org>
- <587f9ccae68ad7e1ce97fa8da6037292af1a5095.1584473399.git.gurus@codeaurora.org>
- <CAK8P3a2Hi_AoRC3g7qKth4e_Y1jZrbBDhWUb3YPZm10FWMu-ig@mail.gmail.com>
- <20200317233003.GA11350@codeaurora.org>
- <CAK8P3a2a-QEwFfDE5FbFCVdDS+t9jirgbHWJQQv0i5_OMCYXJg@mail.gmail.com>
- <20200318170010.GA26509@codeaurora.org>
- <CAK8P3a2A3RuRu3bOSvq58Unb=vpnYnkxKsxJdLqkS=hPFDgM2Q@mail.gmail.com>
+Subject: Re: [PATCH v8 01/12] clk: pwm: Use 64-bit division function
+Date: Thu, 19 Mar 2020 13:53:07 -0700
+Message-ID: <20200319205307.GB17255@codeaurora.org>
+References: <cover.1583889178.git.gurus@codeaurora.org>
+ <338966686a673c241905716c90049993e7bb7d6a.1583889178.git.gurus@codeaurora.org>
+ <7506bc2972324fd286dac6327ec73a3a@AcuMS.aculab.com>
+ <20200312020938.GA14827@codeaurora.org>
+ <fea86a43b28f4493abe0826654369513@AcuMS.aculab.com>
+ <20200312190859.GA19605@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:14562 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727141AbgCSUvS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 16:51:18 -0400
+Return-path: <linux-clk-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a2A3RuRu3bOSvq58Unb=vpnYnkxKsxJdLqkS=hPFDgM2Q@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20200312190859.GA19605@codeaurora.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: David Laight <David.Laight@ACULAB.COM>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>
 
-On Wed, Mar 18, 2020 at 08:38:29PM +0100, Arnd Bergmann wrote:
-> On Wed, Mar 18, 2020 at 6:00 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
-> >
-> > On Wed, Mar 18, 2020 at 10:49:34AM +0100, Arnd Bergmann wrote:
-> > > On Wed, Mar 18, 2020 at 12:30 AM Guru Das Srinagesh
-> > > <gurus@codeaurora.org> wrote:
-> > > >
-> > > > On Tue, Mar 17, 2020 at 11:22:06PM +0100, Arnd Bergmann wrote:
-> > > > > > diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-> > > > > > index 924d39a..ba9500a 100644
-> > > > > > --- a/drivers/pwm/pwm-clps711x.c
-> > > > > > +++ b/drivers/pwm/pwm-clps711x.c
-> > > > > > @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
-> > > > > >  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
-> > > > > >  {
-> > > > > >         /* Duty cycle 0..15 max */
-> > > > > > -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
-> > > > > > +       return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
-> > > > > >  }
+On Thu, Mar 12, 2020 at 12:09:12PM -0700, Guru Das Srinagesh wrote:
+> On Thu, Mar 12, 2020 at 09:14:09AM +0000, David Laight wrote:
+> > From: Guru Das Srinagesh
+> > > Sent: 12 March 2020 02:10
+> > > On Wed, Mar 11, 2020 at 04:58:24PM +0000, David Laight wrote:
+> > > > From: Guru Das Srinagesh
+> > > > > Sent: 11 March 2020 01:41
 > > > > >
-> > > > > Is it actually going to exceed U32_MAX? If not, a type cast may be
-> > > > > more appropriate here than the expensive 64-bit division.
+> > > > > Since the PWM framework is switching struct pwm_args.period's datatype
+> > > > > to u64, prepare for this transition by using div64_u64 to handle a
+> > > > > 64-bit divisor.
+> > > > >
+> > ...
+> > > > > --- a/drivers/clk/clk-pwm.c
+> > > > > +++ b/drivers/clk/clk-pwm.c
+> > > > > @@ -89,7 +89,7 @@ static int clk_pwm_probe(struct platform_device *pdev)
+> > > > >  	}
+> > > > >
+> > > > >  	if (of_property_read_u32(node, "clock-frequency", &clk_pwm->fixed_rate))
+> > > > > -		clk_pwm->fixed_rate = NSEC_PER_SEC / pargs.period;
+> > > > > +		clk_pwm->fixed_rate = div64_u64(NSEC_PER_SEC, pargs.period);
 > > > >
-> > > > With the final change in this patch series, the framework will support
-> > > > periods that exceed U32_MAX. My concern is that using a typecast would
-> > > > mean that in those cases, this driver will not support > U32_MAX values.
-> > > > Using DIV64_U64_ROUND_CLOSEST makes the driver future proof and able to
-> > > > handle > U32_MAX values correctly. What do you think?
-> > >
-> > > Ah, so if the period can actually be larger than U32_MAX, you need to
-> > > handle that case. However, I see that the divident in this code (v * 0xf)
-> > > is still a 32-bit number, so a correct and efficient implementation could be
-> > >
-> > >    if (pwm->args.period > (UINT_MAX / 0xf))
-> >
-> > Shouldn't the if condition be the following? Or am I missing
-> > something here?
-> >
-> >      if (pwm->args.period > (UINT_MAX / (v * 0xf)))
-> >                                         ^^^^^^^^^
+> > > > That cannot be needed, a 32 bit division is fine.
+> > > 
+> > > Could you please explain why? I think the use of this function is
+> > > warranted in order to handle the division properly with a 64-bit
+> > > divisor.
+> > ...
+> > > > I'd assign pargs.period to an 'unsigned int' variable
+> > > > prior to the division (I hate casts - been bitten by them in the past.).
+> > > 
+> > > Wouldn't this truncate the 64-bit value? The intention behind this patch
+> > > is to allow the processing of 64-bit values in full.
+> > 
+> > You are dividing a 32bit constant by a value.
+> > If pargs.period is greater than 2^32 the result is zero.
 > 
-> That would require performing a division, which is an external function
-> call on ARMv4. My version just checks for an upper bound and completely
-> avoids the division. You could also just check for ">UINT_MAX" if you
-> find that clearer.
+> Thanks for the explanation. 
+> 
+> > I think you divide by 'fixed_rate' a bit later on - better not be zero.
+> 
+> Good point, but this issue exists with or without this patch, and fixing
+> it is beyond this patch's scope.
+> 
+> Just to check if this patch can be dropped, I tested out compilation
+> with this patch reverted and there were no errors, so I'm leaning
+> towards dropping this patch unless you have any further comments on how
+> to proceed.
 
-Thanks, have checked for UINT_MAX in v10 of my patchset that I just
-uploaded. Could you please review it?
+Turns out I couldn't drop this patch after all - kbuild test robot
+complained [1]. Accordingly, I've brought this patch back in my v10
+patchset with the modifications you suggested. Could you kindly review it?
+
+[1] https://www.spinics.net/lists/linux-pwm/msg11906.html
 
 Thank you.
 
