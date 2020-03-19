@@ -1,49 +1,47 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v10 05/12] pwm: pwm-imx-tpm: Use 64-bit division macro
-Date: Thu, 19 Mar 2020 13:50:08 -0700
-Message-ID: <619f314957c7fa3267a2a4dcece31f4a02b82780.1584650604.git.gurus@codeaurora.org>
+Subject: [PATCH v10 03/12] ir-rx51: Use 64-bit division macro
+Date: Thu, 19 Mar 2020 13:50:06 -0700
+Message-ID: <c1d7722bdb6a6640cba64f430b81a67a95ab4204.1584650604.git.gurus@codeaurora.org>
 References: <cover.1584650604.git.gurus@codeaurora.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:14450 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727141AbgCSUuU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 16:50:20 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
 References: <cover.1584650604.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Richard Fontana <rfontana@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Allison Randal <allison@lohutok.net>, linux-media@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 
 Since the PWM framework is switching struct pwm_state.period's datatype
-to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
-handle a 64-bit divisor.
+to u64, prepare for this transition by using DIV_ROUND_CLOSEST_ULL to
+handle a 64-bit dividend.
 
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Richard Fontana <rfontana@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Allison Randal <allison@lohutok.net>
+Cc: linux-media@vger.kernel.org
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
 ---
- drivers/pwm/pwm-imx-tpm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/rc/ir-rx51.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
-index 9145f61..53bf364 100644
---- a/drivers/pwm/pwm-imx-tpm.c
-+++ b/drivers/pwm/pwm-imx-tpm.c
-@@ -126,7 +126,7 @@ static int pwm_imx_tpm_round_state(struct pwm_chip *chip,
- 		real_state->duty_cycle = state->duty_cycle;
+diff --git a/drivers/media/rc/ir-rx51.c b/drivers/media/rc/ir-rx51.c
+index 8574eda..9a5dfd7 100644
+--- a/drivers/media/rc/ir-rx51.c
++++ b/drivers/media/rc/ir-rx51.c
+@@ -241,7 +241,8 @@ static int ir_rx51_probe(struct platform_device *dev)
+ 	}
  
- 	tmp = (u64)p->mod * real_state->duty_cycle;
--	p->val = DIV_ROUND_CLOSEST_ULL(tmp, real_state->period);
-+	p->val = DIV64_U64_ROUND_CLOSEST(tmp, real_state->period);
+ 	/* Use default, in case userspace does not set the carrier */
+-	ir_rx51.freq = DIV_ROUND_CLOSEST(pwm_get_period(pwm), NSEC_PER_SEC);
++	ir_rx51.freq = DIV_ROUND_CLOSEST_ULL(pwm_get_period(pwm),
++			NSEC_PER_SEC);
+ 	pwm_put(pwm);
  
- 	real_state->polarity = state->polarity;
- 	real_state->enabled = state->enabled;
+ 	hrtimer_init(&ir_rx51.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
