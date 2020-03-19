@@ -1,55 +1,52 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v9 01/11] drm/i915: Use 64-bit division macro
-Date: Thu, 19 Mar 2020 12:35:52 -0700
-Message-ID: <20200319193551.GA23396@codeaurora.org>
-References: <cover.1584473399.git.gurus@codeaurora.org>
- <19661821c8eb32291e72ec091c267f915c365c52.1584473399.git.gurus@codeaurora.org>
- <87h7yleb0i.fsf@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH v10 04/12] pwm: clps711x: Cast period to u32 before use as divisor
+Date: Thu, 19 Mar 2020 13:50:07 -0700
+Message-ID: <8822fc43463039744581398be844f4417f62abcd.1584650604.git.gurus@codeaurora.org>
+References: <cover.1584650604.git.gurus@codeaurora.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:51104 "EHLO
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:27920 "EHLO
         alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726974AbgCSTfx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 15:35:53 -0400
-Content-Disposition: inline
-In-Reply-To: <87h7yleb0i.fsf@intel.com>
+        by vger.kernel.org with ESMTP id S1725787AbgCSUuT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 16:50:19 -0400
+In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
+References: <cover.1584650604.git.gurus@codeaurora.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Chris Wilson <chris@chris-wilson.co.uk>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, Rodrigo Vivi <rodrigo.vivi@intel.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Alexander Shiyan <shc_work@mail.ru>, Arnd Bergmann <arnd@arndb.de>
 
-On Wed, Mar 18, 2020 at 09:08:45PM +0200, Jani Nikula wrote:
-> On Tue, 17 Mar 2020, Guru Das Srinagesh <gurus@codeaurora.org> wrote:
-> > Since the PWM framework is switching struct pwm_state.duty_cycle's
-> > datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
-> > to handle a 64-bit dividend.
-> >
-> > Cc: Jani Nikula <jani.nikula@linux.intel.com>
-> > Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> > Cc: David Airlie <airlied@linux.ie>
-> > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > Cc: Chris Wilson <chris@chris-wilson.co.uk>
-> > Cc: "Ville Syrjälä" <ville.syrjala@linux.intel.com>
-> > Cc: intel-gfx@lists.freedesktop.org
-> > Cc: dri-devel@lists.freedesktop.org
-> > Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> > Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> >
-> > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-> 
-> Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Since the PWM framework is switching struct pwm_args.period's datatype
+to u64, prepare for this transition by typecasting it to u32.
 
-Thanks!
+Also, since the dividend is still a 32-bit number, any divisor greater
+than UINT_MAX will cause the quotient to be zero, so return 0 in that
+case to efficiently skip the division.
 
-> Also ack for merging this via whichever tree you prefer; please let me
-> know if you want me to take this via drm-intel.
+Cc: Alexander Shiyan <shc_work@mail.ru>
+Cc: Arnd Bergmann <arnd@arndb.de>
 
-I'm not sure if this patch can be taken via drm-intel in isolation as it
-is part of a series... Will let you know if I need to make such a
-request.
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+---
+ drivers/pwm/pwm-clps711x.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Thank you.
-
-Guru Das.
+diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+index 924d39a..f34f1f3 100644
+--- a/drivers/pwm/pwm-clps711x.c
++++ b/drivers/pwm/pwm-clps711x.c
+@@ -43,7 +43,10 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+ static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+ {
+ 	/* Duty cycle 0..15 max */
+-	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
++	if (pwm->args.period > UINT_MAX)
++		return 0;
++
++	return DIV_ROUND_CLOSEST(v * 0xf, (u32)pwm->args.period);
+ }
+ 
+ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
