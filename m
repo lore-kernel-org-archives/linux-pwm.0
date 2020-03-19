@@ -1,78 +1,61 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v8 01/12] clk: pwm: Use 64-bit division function
-Date: Thu, 19 Mar 2020 13:53:07 -0700
-Message-ID: <20200319205307.GB17255@codeaurora.org>
-References: <cover.1583889178.git.gurus@codeaurora.org>
- <338966686a673c241905716c90049993e7bb7d6a.1583889178.git.gurus@codeaurora.org>
- <7506bc2972324fd286dac6327ec73a3a@AcuMS.aculab.com>
- <20200312020938.GA14827@codeaurora.org>
- <fea86a43b28f4493abe0826654369513@AcuMS.aculab.com>
- <20200312190859.GA19605@codeaurora.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v10 02/12] hwmon: pwm-fan: Use 64-bit division macro
+Date: Thu, 19 Mar 2020 14:12:02 -0700
+Message-ID: <4c99e36b-4705-a6a2-0769-301b5e9b5006@roeck-us.net>
+References: <cover.1584650604.git.gurus@codeaurora.org>
+ <b8d8e51723f99844abc6a3f637ac42be3e084709.1584650604.git.gurus@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20200312190859.GA19605@codeaurora.org>
-Sender: linux-clk-owner@vger.kernel.org
-To: David Laight <David.Laight@ACULAB.COM>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:39250 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbgCSVMH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 17:12:07 -0400
+In-Reply-To: <b8d8e51723f99844abc6a3f637ac42be3e084709.1584650604.git.gurus@codeaurora.org>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>, linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Kamil Debski <kamil@wypas.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jean Delvare <jdelvare@suse.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 12:09:12PM -0700, Guru Das Srinagesh wrote:
-> On Thu, Mar 12, 2020 at 09:14:09AM +0000, David Laight wrote:
-> > From: Guru Das Srinagesh
-> > > Sent: 12 March 2020 02:10
-> > > On Wed, Mar 11, 2020 at 04:58:24PM +0000, David Laight wrote:
-> > > > From: Guru Das Srinagesh
-> > > > > Sent: 11 March 2020 01:41
-> > > > >
-> > > > > Since the PWM framework is switching struct pwm_args.period's datatype
-> > > > > to u64, prepare for this transition by using div64_u64 to handle a
-> > > > > 64-bit divisor.
-> > > > >
-> > ...
-> > > > > --- a/drivers/clk/clk-pwm.c
-> > > > > +++ b/drivers/clk/clk-pwm.c
-> > > > > @@ -89,7 +89,7 @@ static int clk_pwm_probe(struct platform_device *pdev)
-> > > > >  	}
-> > > > >
-> > > > >  	if (of_property_read_u32(node, "clock-frequency", &clk_pwm->fixed_rate))
-> > > > > -		clk_pwm->fixed_rate = NSEC_PER_SEC / pargs.period;
-> > > > > +		clk_pwm->fixed_rate = div64_u64(NSEC_PER_SEC, pargs.period);
-> > > >
-> > > > That cannot be needed, a 32 bit division is fine.
-> > > 
-> > > Could you please explain why? I think the use of this function is
-> > > warranted in order to handle the division properly with a 64-bit
-> > > divisor.
-> > ...
-> > > > I'd assign pargs.period to an 'unsigned int' variable
-> > > > prior to the division (I hate casts - been bitten by them in the past.).
-> > > 
-> > > Wouldn't this truncate the 64-bit value? The intention behind this patch
-> > > is to allow the processing of 64-bit values in full.
-> > 
-> > You are dividing a 32bit constant by a value.
-> > If pargs.period is greater than 2^32 the result is zero.
+On 3/19/20 1:50 PM, Guru Das Srinagesh wrote:
+> Since the PWM framework is switching struct pwm_args.period's datatype
+> to u64, prepare for this transition by using DIV_ROUND_UP_ULL to handle
+> a 64-bit dividend.
 > 
-> Thanks for the explanation. 
+> Cc: Kamil Debski <kamil@wypas.org>
+> Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: linux-hwmon@vger.kernel.org
 > 
-> > I think you divide by 'fixed_rate' a bit later on - better not be zero.
+> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+
+https://patchwork.kernel.org/patch/11430549/
+
+includes my previous Ack. v9 included it, in v10 it is dropped.
+I don't see a change in the patch. Please explain.
+
+Guenter
+
+> ---
+>  drivers/hwmon/pwm-fan.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Good point, but this issue exists with or without this patch, and fixing
-> it is beyond this patch's scope.
+> diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+> index 42ffd2e..283423a 100644
+> --- a/drivers/hwmon/pwm-fan.c
+> +++ b/drivers/hwmon/pwm-fan.c
+> @@ -437,7 +437,7 @@ static int pwm_fan_resume(struct device *dev)
+>  		return 0;
+>  
+>  	pwm_get_args(ctx->pwm, &pargs);
+> -	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
+> +	duty = DIV_ROUND_UP_ULL(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
+>  	ret = pwm_config(ctx->pwm, duty, pargs.period);
+>  	if (ret)
+>  		return ret;
 > 
-> Just to check if this patch can be dropped, I tested out compilation
-> with this patch reverted and there were no errors, so I'm leaning
-> towards dropping this patch unless you have any further comments on how
-> to proceed.
-
-Turns out I couldn't drop this patch after all - kbuild test robot
-complained [1]. Accordingly, I've brought this patch back in my v10
-patchset with the modifications you suggested. Could you kindly review it?
-
-[1] https://www.spinics.net/lists/linux-pwm/msg11906.html
-
-Thank you.
-
-Guru Das.
