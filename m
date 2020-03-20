@@ -1,56 +1,48 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v11 01/12] drm/i915: Use 64-bit division macro
-Date: Thu, 19 Mar 2020 18:41:12 -0700
-Message-ID: <2403a87f9b6443401eac96a3c50d4beca63dcba2.1584667964.git.gurus@codeaurora.org>
+Subject: [PATCH v11 04/12] pwm: clps711x: Cast period to u32 before use as divisor
+Date: Thu, 19 Mar 2020 18:41:15 -0700
+Message-ID: <3dc95ebc6539066cc58bc44c0e6e53ac979fe9a9.1584667964.git.gurus@codeaurora.org>
 References: <cover.1584667964.git.gurus@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:61032 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727473AbgCTBl0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Mar 2020 21:41:26 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1584667964.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1584667964.git.gurus@codeaurora.org>
 References: <cover.1584667964.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Chris Wilson <chris@chris-wilson.co.uk>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Alexander Shiyan <shc_work@mail.ru>, Arnd Bergmann <arnd@arndb.de>
+List-Id: linux-pwm@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_state.duty_cycle's
-datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
-to handle a 64-bit dividend.
+Since the PWM framework is switching struct pwm_args.period's datatype
+to u64, prepare for this transition by typecasting it to u32.
 
-Cc: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: "Ville Syrjälä" <ville.syrjala@linux.intel.com>
-Cc: intel-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
+Also, since the dividend is still a 32-bit number, any divisor greater
+than UINT_MAX will cause the quotient to be zero, so return 0 in that
+case to efficiently skip the division.
 
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Cc: Alexander Shiyan <shc_work@mail.ru>
+Cc: Arnd Bergmann <arnd@arndb.de>
+
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
 ---
- drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-clps711x.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index bc14e9c..843cac1 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1868,7 +1868,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+index 924d39a..f34f1f3 100644
+--- a/drivers/pwm/pwm-clps711x.c
++++ b/drivers/pwm/pwm-clps711x.c
+@@ -43,7 +43,10 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+ static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+ {
+ 	/* Duty cycle 0..15 max */
+-	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
++	if (pwm->args.period > UINT_MAX)
++		return 0;
++
++	return DIV_ROUND_CLOSEST(v * 0xf, (u32)pwm->args.period);
+ }
  
- 	panel->backlight.min = 0; /* 0% */
- 	panel->backlight.max = 100; /* 100% */
--	panel->backlight.level = DIV_ROUND_UP(
-+	panel->backlight.level = DIV_ROUND_UP_ULL(
- 				 pwm_get_duty_cycle(panel->backlight.pwm) * 100,
- 				 CRC_PMIC_PWM_PERIOD_NS);
- 	panel->backlight.enabled = panel->backlight.level != 0;
+ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
