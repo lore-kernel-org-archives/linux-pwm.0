@@ -1,39 +1,33 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH v11 08/12] pwm: stm32-lp: Use %llu format specifier for
- period
-Date: Fri, 20 Mar 2020 03:45:35 -0700
-Message-ID: <f957b11abb70457e7bd8c2652d41e7f07024e301.camel@perches.com>
-References: <cover.1584667964.git.gurus@codeaurora.org>
-         <5ea1fa27dd036ce732c1c7a1a5d84362752a911f.1584667964.git.gurus@codeaurora.org>
+From: federa bureau of inteligence <federabureauofinteligence@gmail.com>
+Subject: HAPPY SURVIVAL OF CORONAVIRUS
+Date: Fri, 20 Mar 2020 11:09:13 +0000
+Message-ID: <CAE9o6LD3GzT4Rkb2THZW91daVaY9W6Zw9KihN06KeUNNJTfWTQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5ea1fa27dd036ce732c1c7a1a5d84362752a911f.1584667964.git.gurus@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>, linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-kernel@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:36642 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727241AbgCTLJP (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Mar 2020 07:09:15 -0400
+Received: by mail-ot1-f65.google.com with SMTP id 39so5571265otu.3
+        for <linux-pwm@vger.kernel.org>; Fri, 20 Mar 2020 04:09:14 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 2020-03-19 at 18:41 -0700, Guru Das Srinagesh wrote:
-> Since the PWM framework is switching struct pwm_args.period's
-> datatype to u64, prepare for this transition by using the right
-> specifier for printing a 64-bit value.
-[]
-> diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-[]
-> @@ -61,7 +61,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  	do_div(div, NSEC_PER_SEC);
->  	if (!div) {
->  		/* Clock is too slow to achieve requested period. */
-> -		dev_dbg(priv->chip.dev, "Can't reach %u ns\n",	state->period);
-> +		dev_dbg(priv->chip.dev, "Can't reach %llu ns\n", state->period);
->  		return -EINVAL;
->  	}
+Dear Sir,
 
-Doesn't this introduce a warning now without the
-actual change to the type of state->period?
+HAPPY SURVIVAL OF CORONAVIRUS
 
-Likely these patches should either not be separated
-or this should also use a cast to avoid introducing
-intermediate compilation warnings.
+We are reaching for a very interesting business transaction which we
+feel will of great benefit.We the FBI unit in the western subregion of
+Africa have a fund which we confiscated and lodge it in a bank
+
+This fund is worth of $12.5 million dollars.We will need your
+assistance to recieve this fund into your account for investment in
+your country.
+
+We will need your urgent response for details
+
+Inspector Greg Adams,
+For and on behalf of Cote D'Ivoire FBI
+Tel 00225 6716 6756
