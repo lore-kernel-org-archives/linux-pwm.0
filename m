@@ -1,36 +1,77 @@
-From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: Re: [PATCH v3 0/5] pwm: omap-dmtimer: Allow for dynamic pwm period
- updates
-Date: Mon, 23 Mar 2020 17:00:13 +0530
-Message-ID: <09dac13d-44b0-80c6-fdbb-54bfc6f48e36@ti.com>
-References: <20200312042210.17344-1-lokeshvutla@ti.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH] pwm: tegra: Add support for Tegra194
+Date: Mon, 23 Mar 2020 11:36:07 +0000
+Message-ID: <1e40daf7-e5f8-7b79-cabe-8aceef6dda58@nvidia.com>
+References: <1583407653-30059-1-git-send-email-spatra@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20200312042210.17344-1-lokeshvutla@ti.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:4416 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728115AbgCWLgN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Mar 2020 07:36:13 -0400
+In-Reply-To: <1583407653-30059-1-git-send-email-spatra@nvidia.com>
 Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sandipan Patra <spatra@nvidia.com>, treding@nvidia.com, robh+dt@kernel.org, u.kleine-koenig@pengutronix.de
+Cc: bbasu@nvidia.com, ldewangan@nvidia.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi All,
 
-On 12/03/20 9:52 AM, Lokesh Vutla wrote:
-> This series fixes minor issues in config callback and allows for on the
-> fly updates for pwm period and duty cycle. This is mainly intended to
-> allow pwm omap dmtimer to be used for generating a 1PPS signal that can be
-> syncronized to PTP clock in CPTS module available in AM335x and AM57xx SoCs.
+On 05/03/2020 11:27, Sandipan Patra wrote:
+> Tegra194 has multiple PWM controllers with each having only one output.
 > 
-> Series depends on the following series:
-> - https://patchwork.kernel.org/patch/11379875/
-> - https://patchwork.kernel.org/project/linux-omap/list/?series=251691
+> Also the maxmimum frequency is higher than earlier SoCs.
+> 
+> Add support for Tegra194 and specify the number of PWM outputs and
+> maximum supported frequency using device tree match data.
+> 
+> Signed-off-by: Sandipan Patra <spatra@nvidia.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 1 +
+>  drivers/pwm/pwm-tegra.c                                      | 6 ++++++
+>  2 files changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+> index 0a69ead..74c41e3 100644
+> --- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+> @@ -9,6 +9,7 @@ Required properties:
+>    - "nvidia,tegra132-pwm", "nvidia,tegra20-pwm": for Tegra132
+>    - "nvidia,tegra210-pwm", "nvidia,tegra20-pwm": for Tegra210
+>    - "nvidia,tegra186-pwm": for Tegra186
+> +  - "nvidia,tegra194-pwm": for Tegra194
+>  - reg: physical base address and length of the controller's registers
+>  - #pwm-cells: should be 2. See pwm.yaml in this directory for a description of
+>    the cells format.
+> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+> index aa12fb3..d26ed8f 100644
+> --- a/drivers/pwm/pwm-tegra.c
+> +++ b/drivers/pwm/pwm-tegra.c
+> @@ -282,9 +282,15 @@ static const struct tegra_pwm_soc tegra186_pwm_soc = {
+>  	.max_frequency = 102000000UL,
+>  };
+>  
+> +static const struct tegra_pwm_soc tegra194_pwm_soc = {
+> +	.num_channels = 1,
+> +	.max_frequency = 408000000UL,
+> +};
+> +
+>  static const struct of_device_id tegra_pwm_of_match[] = {
+>  	{ .compatible = "nvidia,tegra20-pwm", .data = &tegra20_pwm_soc },
+>  	{ .compatible = "nvidia,tegra186-pwm", .data = &tegra186_pwm_soc },
+> +	{ .compatible = "nvidia,tegra194-pwm", .data = &tegra194_pwm_soc },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
+> 
 
-Gentle ping on this series :) The above dependencies are merged into timer tree
-and below is the immutable branch:
 
-https://git.linaro.org/people/dlezcano/linux.git/log/?h=timers/drivers/timer-ti-dm
+Acked-by: Jon Hunter <jonathanh@nvidia.com>
 
-Thanks and regards,
-Lokesh
+Cheers
+Jon
+
+-- 
+nvpublic
