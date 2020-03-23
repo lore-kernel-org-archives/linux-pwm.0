@@ -1,31 +1,81 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH v10 00/12] Convert PWM period and duty cycle to u64
-Date: Sat, 21 Mar 2020 14:47:03 +0300
-Message-ID: <20200321114703.GB4672@kadam>
-References: <cover.1584650604.git.gurus@codeaurora.org>
+From: Jeff LaBundy <jeff@labundy.com>
+Subject: Re: [PATCH v5 2/7] mfd: Add support for Azoteq
+ IQS620A/621/622/624/625
+Date: Sun, 22 Mar 2020 21:16:05 -0500
+Message-ID: <20200323021605.GA2731@labundy.com>
+References: <1581895931-6056-1-git-send-email-jeff@labundy.com>
+ <1581895931-6056-3-git-send-email-jeff@labundy.com>
+ <20200224111448.GS3494@dell>
+ <20200228034220.GA3510@labundy.com>
+ <20200302120458.GY3494@dell>
+ <20200302141117.GA11787@labundy.com>
+ <20200302142405.GA3494@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-input-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1584650604.git.gurus@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, "Wesley W. Terpstra" <wesley@sifive.com>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Atish Patra <atish.patra@wdc.com>, Thierry Reding <thierry.reding@gmail.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>, Alexandre Torgue <alexandre.torgue@st.com>, Daniel Thompson <daniel.thompson@linaro.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Axel Lin <axel.lin@ingics.com>, Arnd Bergmann <arnd@arndb.de>, Alexander
+In-Reply-To: <20200302142405.GA3494@dell>
+Sender: linux-input-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: dmitry.torokhov@gmail.com, thierry.reding@gmail.com, jic23@kernel.org, devicetree@vger.kernel.org, linux-input@vger.kernel.org, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
 List-Id: linux-pwm@vger.kernel.org
 
-This is a giant CC list.
+Hi Lee,
 
-There was one version where you CC'd me on patch 6/12 but after that you
-just CC'd me on the cover page.  Something is messed up in your scripts
-because Cc'ing me on just the cover is pointless.
+On Mon, Mar 02, 2020 at 02:24:05PM +0000, Lee Jones wrote:
+> On Mon, 02 Mar 2020, Jeff LaBundy wrote:
+> 
+> > Hi Lee,
+> > 
+> > On Mon, Mar 02, 2020 at 12:04:58PM +0000, Lee Jones wrote:
+> > > On Thu, 27 Feb 2020, Jeff LaBundy wrote:
+> > > 
+> > > > Hi Lee,
+> > > > 
+> > > > On Mon, Feb 24, 2020 at 11:14:48AM +0000, Lee Jones wrote:
+> > > > 
+> > > > [...]
+> > > > 
+> > > > > 
+> > > > > Well done Jeff.  Good job.
+> > > > > 
+> > > > > Applied, thanks.
+> > > > > 
+> > > > 
+> > > > Thank you for your kind words as well as your support in fleshing out this
+> > > > series.
+> > > > 
+> > > > Just to confirm, does your offer to take the remainder (once everything is
+> > > > approved) through immutable branches still stand?
+> > > 
+> > > Depends how quickly you can get the other drivers turned around.
+> > 
+> > With Uwe's approval from Friday, all five drivers are complete. Dmitry and
+> > Jonathan's approvals were given in previous review cycles and were carried
+> > forward with their permission. If anything else is required, please let me
+> > know.
+> 
+> Does Uwe's review mean that Thierry's is not required?
 
-regards,
-dan carpenter
+Sorry about that; I was jumping the gun (thank you Uwe for clarifying).
+The pwm patch still needs an Ack from Thierry before it can be applied.
+
+I have not received any feedback from Thierry throughout this patch set,
+and I'd like to unblock the remainder if possible. In case Thierry does
+not respond by the time you elect to send your next pull request, would
+you be willing to drop the pwm patch and take the input and iio patches
+through your tree?
+
+If so, I'll re-send the pwm patch on its own to Thierry during a future
+cycle so that he can take it through his tree at his convenience.
+
+> 
+> -- 
+> Lee Jones [李琼斯]
+> Linaro Services Technical Lead
+> Linaro.org │ Open source software for ARM SoCs
+> Follow Linaro: Facebook | Twitter | Blog
+
+Kind regards,
+Jeff LaBundy
