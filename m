@@ -1,71 +1,84 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v4 4/4] pwm: jz4740: Allow selection of PWM channels 0 and 1
-Date: Mon, 23 Mar 2020 15:24:21 +0100
-Message-ID: <20200323142421.42817-4-paul@crapouillou.net>
-References: <20200323142421.42817-1-paul@crapouillou.net>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 2/7] mfd: Add support for Azoteq
+ IQS620A/621/622/624/625
+Date: Tue, 24 Mar 2020 08:16:51 +0000
+Message-ID: <20200324081651.GG5477@dell>
+References: <1581895931-6056-1-git-send-email-jeff@labundy.com>
+ <1581895931-6056-3-git-send-email-jeff@labundy.com>
+ <20200224111448.GS3494@dell>
+ <20200228034220.GA3510@labundy.com>
+ <20200302120458.GY3494@dell>
+ <20200302141117.GA11787@labundy.com>
+ <20200302142405.GA3494@dell>
+ <20200323021605.GA2731@labundy.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from outils.crapouillou.net ([89.234.176.41]:44366 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726976AbgCWOYt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Mar 2020 10:24:49 -0400
-In-Reply-To: <20200323142421.42817-1-paul@crapouillou.net>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200323021605.GA2731-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jeff LaBundy <jeff-Sk+WRT7NHmFBDgjK7y7TUQ@public.gmane.org>
+Cc: dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 
-The TCU channels 0 and 1 were previously reserved for system tasks, and
-thus unavailable for PWM.
+On Sun, 22 Mar 2020, Jeff LaBundy wrote:
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Tested-by: Mathieu Malaterre <malat@debian.org>
-Tested-by: Artur Rojek <contact@artur-rojek.eu>
----
+> Hi Lee,
+> 
+> On Mon, Mar 02, 2020 at 02:24:05PM +0000, Lee Jones wrote:
+> > On Mon, 02 Mar 2020, Jeff LaBundy wrote:
+> > 
+> > > Hi Lee,
+> > > 
+> > > On Mon, Mar 02, 2020 at 12:04:58PM +0000, Lee Jones wrote:
+> > > > On Thu, 27 Feb 2020, Jeff LaBundy wrote:
+> > > > 
+> > > > > Hi Lee,
+> > > > > 
+> > > > > On Mon, Feb 24, 2020 at 11:14:48AM +0000, Lee Jones wrote:
+> > > > > 
+> > > > > [...]
+> > > > > 
+> > > > > > 
+> > > > > > Well done Jeff.  Good job.
+> > > > > > 
+> > > > > > Applied, thanks.
+> > > > > > 
+> > > > > 
+> > > > > Thank you for your kind words as well as your support in fleshing out this
+> > > > > series.
+> > > > > 
+> > > > > Just to confirm, does your offer to take the remainder (once everything is
+> > > > > approved) through immutable branches still stand?
+> > > > 
+> > > > Depends how quickly you can get the other drivers turned around.
+> > > 
+> > > With Uwe's approval from Friday, all five drivers are complete. Dmitry and
+> > > Jonathan's approvals were given in previous review cycles and were carried
+> > > forward with their permission. If anything else is required, please let me
+> > > know.
+> > 
+> > Does Uwe's review mean that Thierry's is not required?
+> 
+> Sorry about that; I was jumping the gun (thank you Uwe for clarifying).
+> The pwm patch still needs an Ack from Thierry before it can be applied.
+> 
+> I have not received any feedback from Thierry throughout this patch set,
+> and I'd like to unblock the remainder if possible. In case Thierry does
+> not respond by the time you elect to send your next pull request, would
+> you be willing to drop the pwm patch and take the input and iio patches
+> through your tree?
+> 
+> If so, I'll re-send the pwm patch on its own to Thierry during a future
+> cycle so that he can take it through his tree at his convenience.
 
-Notes:
-    v2-v4: No change
+Hopefully we hear fro Thierry.
 
- drivers/pwm/pwm-jz4740.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+If not, yes I can apply the set without the PWM patch.
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index df6906c51b8d..c12c43eb2506 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -33,6 +33,19 @@ static inline struct jz4740_pwm_chip *to_jz4740(struct pwm_chip *chip)
- 	return container_of(chip, struct jz4740_pwm_chip, chip);
- }
- 
-+static bool jz4740_pwm_can_use_chn(struct jz4740_pwm_chip *jz,
-+				   unsigned int channel)
-+{
-+	/* Enable all TCU channels for PWM use by default except channels 0/1 */
-+	u32 pwm_channels_mask = GENMASK(NUM_PWM - 1, 2);
-+
-+	device_property_read_u32(jz->chip.dev->parent,
-+				 "ingenic,pwm-channels-mask",
-+				 &pwm_channels_mask);
-+
-+	return !!(pwm_channels_mask & BIT(channel));
-+}
-+
- static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct jz4740_pwm_chip *jz = to_jz4740(chip);
-@@ -40,11 +53,7 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	char clk_name[16];
- 	int ret;
- 
--	/*
--	 * Timers 0 and 1 are used for system tasks, so they are unavailable
--	 * for use as PWMs.
--	 */
--	if (pwm->hwpwm < 2)
-+	if (!jz4740_pwm_can_use_chn(jz, pwm->hwpwm))
- 		return -EBUSY;
- 
- 	snprintf(clk_name, sizeof(clk_name), "timer%u", pwm->hwpwm);
 -- 
-2.25.1
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
