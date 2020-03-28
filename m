@@ -1,27 +1,60 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
 Subject: Re: [PATCH 12/18] gpio: add support for the sl28cpld GPIO controller
-Date: Fri, 27 Mar 2020 20:01:44 +0100
-Message-ID: <CACRpkdYwqReW+UcY=4S3ZnC+jFeVr=e+Ns12A_CK6o7VBUXHbA@mail.gmail.com>
-References: <20200317205017.28280-1-michael@walle.cc> <20200317205017.28280-13-michael@walle.cc>
+Date: Sat, 28 Mar 2020 13:04:50 +0100
+Message-ID: <ef10a6f07f093c282df7fe94057cc7c7@walle.cc>
+References: <20200317205017.28280-1-michael@walle.cc>
+ <20200317205017.28280-13-michael@walle.cc>
  <CAMpxmJW770v6JLdveEe1hkgNEJByVyArhorSyUZBYOyFiVyOeg@mail.gmail.com>
- <9c310f2a11913d4d089ef1b07671be00@walle.cc> <CAMpxmJXmD-M+Wbj6=wgFgP2aDxbqDN=ceHi1XDun4iwdLm55Zg@mail.gmail.com>
- <22944c9b62aa69da418de7766b7741bd@walle.cc> <CACRpkdbJ3DBO+W4P0n-CfZ1T3L8d_L0Nizra8frkv92XPXR4WA@mail.gmail.com>
- <4d8d3bc26bdf73eb5c0e5851589fe085@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4d8d3bc26bdf73eb5c0e5851589fe085-QKn5cuLxLXY@public.gmane.org>
+In-Reply-To: <CAMpxmJW770v6JLdveEe1hkgNEJByVyArhorSyUZBYOyFiVyOeg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Cc: Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, linux-gpio <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LINUXWATCHDOG <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, arm-soc <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
+To: Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Cc: linux-gpio <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LINUXWATCHDOG <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, arm-soc <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 4:28 PM Michael Walle <michael-QKn5cuLxLXY@public.gmane.org> wrote:
+Hi Bartosz,
 
-> For starters, would that be a drivers/gpio/gpio-regmap.c or a
-> drivers/base/regmap/regmap-gpio.c? I would assume the first,
+Am 2020-03-18 10:14, schrieb Bartosz Golaszewski:
+> wt., 17 mar 2020 o 21:50 Michael Walle <michael-QKn5cuLxLXY@public.gmane.org> napisał(a):
+>> 
+>> This adds support for the GPIO controller of the sl28 board management
+>> controller. This driver is part of a multi-function device.
+>> 
+>> Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+> 
+> Hi Michael,
+> 
+> thanks for the driver. Please take a look at some comments below.
+> 
+>> ---
 
-Yeah I would name it like that. gpio-regmap.c.
+[..]
 
-Yours,
-Linus Walleij
+>> +#define GPIO_REG_DIR   0
+>> +#define GPIO_REG_OUT   1
+>> +#define GPIO_REG_IN    2
+>> +#define GPIO_REG_IE    3
+>> +#define GPIO_REG_IP    4
+> 
+> These values would be more clear if they were defined as hex.
+> 
+>> +
+>> +#define GPI_REG_IN     0
+>> +
+>> +#define GPO_REG_OUT    0
+> 
+> Please also use a common prefix even for defines.
+
+The GPIO_, GPI_ and GPO_ prefixes corresponds to the different
+flavours. Do they still need a common prefix? Ie. the GPI_REG_IN
+has nothing to do with GPO_REG_OUT, nor has both something
+to do with the GPIO_REG_IN and GPIO_REG_OUT. I could prefix them
+with SL28CPLD_ though. But I don't know if that is what you had
+in mind because then they would be SL28CPLD_GPIO_REG_IN and
+SL28CPLD_GPI_REG_IN for example.
+
+-michael
