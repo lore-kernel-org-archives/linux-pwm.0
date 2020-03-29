@@ -1,40 +1,63 @@
-From: Russell King <rmk+kernel-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Subject: [PATCH RFC 5/6] arm64: dts: clearfog-gt-8k: add pwm-fan
-Date: Sun, 29 Mar 2020 11:48:25 +0100
-Message-ID: <E1jIVUP-0005hc-6g@rmk-PC.armlinux.org.uk>
+From: Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH RFC 4/6] arm64: dts: armada-cp11x: add pwm support to GPIO
+ blocks
+Date: Sun, 29 Mar 2020 11:48:20 +0100
+Message-ID: <E1jIVUK-0005hJ-33@rmk-PC.armlinux.org.uk>
 References: <20200329104549.GX25745@shell.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200329104549.GX25745-QEMnZ+CodIVURfEZ8mYm6t73F7V6hmMc@public.gmane.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20200329104549.GX25745@shell.armlinux.org.uk>
 Content-Disposition: inline
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gregory Clement <gregory.clement-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe Kleine-Konig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Andrew Lunn <andrew@lunn.ch>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, devicetree@vger.kernel.org, Gregory Clement <gregory.clement@bootlin.com>, Jason Cooper <jason@lakedaemon.net>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-Add pwm-fan support for controlling the fan speed.
+Add PWM support to the GPIO blocks.
 
-Signed-off-by: Russell King <rmk+kernel-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm64/boot/dts/marvell/armada-cp11x.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
-index dc531d136273..a514ae51ccbf 100644
---- a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
-@@ -31,6 +31,11 @@
- 		ethernet2 = &cp1_eth2;
- 	};
+diff --git a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+index 024073edfc1c..dfd251acc194 100644
+--- a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+@@ -311,6 +311,7 @@
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				gpio-ranges = <&CP11X_LABEL(pinctrl) 0 0 32>;
+ 				interrupt-controller;
+ 				interrupts = <86 IRQ_TYPE_LEVEL_HIGH>,
+@@ -319,6 +320,8 @@
+ 					<83 IRQ_TYPE_LEVEL_HIGH>;
+ 				#interrupt-cells = <2>;
+ 				status = "disabled";
++				clock-names = "core";
++				clocks = <&CP11X_LABEL(clk) 1 21>;
+ 			};
  
-+	pwm {
-+		compatible = "pwm-fan";
-+		pwms = <&cp0_gpio2 16 40000>;
-+	};
-+
- 	v_3_3: regulator-3-3v {
- 		compatible = "regulator-fixed";
- 		regulator-name = "v_3_3";
+ 			CP11X_LABEL(gpio2): gpio@140 {
+@@ -327,6 +330,7 @@
+ 				ngpios = <31>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				gpio-ranges = <&CP11X_LABEL(pinctrl) 0 32 31>;
+ 				interrupt-controller;
+ 				interrupts = <82 IRQ_TYPE_LEVEL_HIGH>,
+@@ -335,6 +339,8 @@
+ 					<79 IRQ_TYPE_LEVEL_HIGH>;
+ 				#interrupt-cells = <2>;
+ 				status = "disabled";
++				clock-names = "core";
++				clocks = <&CP11X_LABEL(clk) 1 21>;
+ 			};
+ 		};
+ 
 -- 
 2.20.1
