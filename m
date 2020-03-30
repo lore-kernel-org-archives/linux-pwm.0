@@ -1,77 +1,88 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 0/5] pwm: omap-dmtimer: Allow for dynamic pwm period
- updates
-Date: Mon, 30 Mar 2020 16:04:23 +0200
-Message-ID: <20200330140423.GF2431644@ulmo>
+Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
+ changing period/duty_cycle
+Date: Mon, 30 Mar 2020 16:14:36 +0200
+Message-ID: <20200330141436.GG2431644@ulmo>
 References: <20200312042210.17344-1-lokeshvutla@ti.com>
- <09dac13d-44b0-80c6-fdbb-54bfc6f48e36@ti.com>
+ <20200312042210.17344-5-lokeshvutla@ti.com>
+ <20200312064042.p7himm3odxjyzroi@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="twz1s1Hj1O0rHoT0"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54499 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727191AbgC3OEa (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 10:04:30 -0400
+        protocol="application/pgp-signature"; boundary="NY6JkbSqL3W9mApi"
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <09dac13d-44b0-80c6-fdbb-54bfc6f48e36@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20200312064042.p7himm3odxjyzroi@pengutronix.de>
+Sender: linux-omap-owner@vger.kernel.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Lokesh Vutla <lokeshvutla@ti.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Lokesh Vutla <lokeshvutla@ti.com>
-Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
 
 
---twz1s1Hj1O0rHoT0
-Content-Type: text/plain; charset=us-ascii
+--NY6JkbSqL3W9mApi
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 23, 2020 at 05:00:13PM +0530, Lokesh Vutla wrote:
-> Hi All,
+On Thu, Mar 12, 2020 at 07:40:42AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> On Thu, Mar 12, 2020 at 09:52:09AM +0530, Lokesh Vutla wrote:
+> > Only the Timer control register(TCLR) cannot be updated when the timer
+> > is running. Registers like Counter register(TCRR), loader register(TLDR=
+),
+> > match register(TMAR) can be updated when the counter is running. Since
+> > TCLR is not updated in pwm_omap_dmtimer_config(), do not stop the
+> > timer for period/duty_cycle update.
 >=20
-> On 12/03/20 9:52 AM, Lokesh Vutla wrote:
-> > This series fixes minor issues in config callback and allows for on the
-> > fly updates for pwm period and duty cycle. This is mainly intended to
-> > allow pwm omap dmtimer to be used for generating a 1PPS signal that can=
- be
-> > syncronized to PTP clock in CPTS module available in AM335x and AM57xx =
-SoCs.
-> >=20
-> > Series depends on the following series:
-> > - https://patchwork.kernel.org/patch/11379875/
-> > - https://patchwork.kernel.org/project/linux-omap/list/?series=3D251691
+> I'm not sure what is sensible here. Stopping the PWM for a short period
+> is bad, but maybe emitting a wrong period isn't better. You can however
+> optimise it if only one of period or duty_cycle changes.
 >=20
-> Gentle ping on this series :) The above dependencies are merged into time=
-r tree
-> and below is the immutable branch:
->=20
-> https://git.linaro.org/people/dlezcano/linux.git/log/?h=3Dtimers/drivers/=
-timer-ti-dm
+> @Thierry, what is your position here? I tend to say a short stop is
+> preferable.
 
-I've pulled in the above branch into the PWM tree and applied your
-series on top.
+It's not clear to me from the above description how exactly the device
+behaves, but I suspect that it may latch the values in those registers
+and only update the actual signal output once a period has finished. I
+know of a couple of other devices that do that, so it wouldn't be
+surprising.
 
-Thanks,
+Even if that was not the case, I think this is just the kind of thing
+that we have to live with. Sometimes it just isn't possible to have all
+supported devices adhere strictly to an API. So I think the best we can
+do is have an API that loosely defines what's supposed to happen and
+make a best effort to implement those semantics. If a device deviates
+slightly from those expectations, we can always cross fingers and hope
+that things still work. And it looks like they are.
+
+So I think if Lokesh and Tony agree that this is the right thing to do
+and have verified that things still work after this, that's about as
+good as it's going to get.
+
+I know this is perhaps cheating a little, or turning a blind eye, but I
+don't know what the alternative would be. Do we want to tell people that
+a given PWM controller can't be used if it doesn't work according to our
+expectations? That's hard to argue if that controller works just fine
+for all known use-cases.
+
 Thierry
 
---twz1s1Hj1O0rHoT0
+--NY6JkbSqL3W9mApi
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6B/GUACgkQ3SOs138+
-s6FvOA/9Gr3hcoCrG6rJzKPDh9OZhNjoRSw02ZKI8wgR62o5OYcs8bUR+7RuFMie
-4IPrbHIuN+3AlJnNW3692BLEWc63qXa6dKV9a/C+GkAZcRDwSmHid6qgtGgoYrVY
-zzDi5AI4FxWn5o8THICTf1tGZcNWYl6/yA1Pww8Cwzp9DNt4Fr/5+1seICFVRNFR
-D/U209f361OwuppU5Q0dOccSsYfNs1t6Ej3gXlk82qdKwpAyjR1h1rkwjUMFxAUs
-bUXMgOezWwlc5AT5zZlNAL38Xhm16zzBf5SdILIndj1znVvM8SFGwVJmBNFm6DjB
-mjiY3ySqQOzRVZJX4d+tMJi5uQx3LrqJQsXOKNRxO1d9azRJHGWBhap00jCsw/Nb
-WSAek8uE4vMcWMnk9EfqWSQvD+8aw0Xd/Z0eaegflK9BPivdIEafqVNTVJ5cf+BK
-Nbqj4Pr+uqVzPZQDfL/sKx5BdgyG3wPoCr1VZNpAeZrzNg1YnLeQgIlxTi5hE4Ay
-2Z/IudEMftbK1d/8JGhBtw1y6VZ4/yONbnWyQGNsxShdR0VUCKe+33VQxxYFTNy+
-mccl5NI51zODEuS8DBv3HH16KUri+RE7vFych0L7Ouwv8/kvdchjx6iBRWKey3Oa
-LG5De04F6662oEXnkaD+L9gNMW5ilDLUnW+pOpqrKkUuIcZ/aTE=
-=1Yxb
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6B/soACgkQ3SOs138+
+s6F2WxAAp3bIGtRCKqt67F7d3JG708w1+creHUOXONHOapSQCaWuU1SSJgI73p2P
+AHdNHXR/YURCBKVTVrLizfkqAR6rQ1EE3ovlSuu5ZkaCMx1brw92l6MoVIHxlLQ1
+XchiOycQgdI4BM03ENpihJi73/HHm30/SeAJ/pTgFMr3S0pr7iNvxI+AzLfiD0c/
+7Y8tNjcDtMOesdLym/jMNelCxYovlQyB1gDYGPm65xrFb4cqWHuzuro1s71OqJzX
+l3J9qYjcKF7XPNHze3Q75BP/wZc0+aztBja4N6ZqoR1nvkKLPAAuDBDPI87RD5LR
+j4xBM/J7QSUhlh/anUfdbPxOx9YJswvfCswcifzIEwmzb7EOwpq2Yqh3BVyp4DoS
+4027Z5g3sRwdR4OiNkTYHezpwp/qz1Wxrh9LWP8wqpoounrCYqTX5QDhiHSu9cr+
+jfAaQGi0EgILeQjsAv3BqjoHnVjgMSVAtNV720U40J0MxkZKSf73Ak2/Jduk1dQv
+j1jTJL+WYGZtFBBojS73HOkSHRk4sFNvab5iotVYaro8JaCTYGNWLohJvhG+bw5X
+AfLthkohTXarCOkcHET4YI6PcDtzhU++HiCSfRZ+TBAiE5W2ZF5rKjFYCcBQuPCo
+dnAbijxeDHJ33fRP905WbK6B+GhvcgyWIDI9mJxm3FhZf+1onT0=
+=T9wd
 -----END PGP SIGNATURE-----
 
---twz1s1Hj1O0rHoT0--
+--NY6JkbSqL3W9mApi--
