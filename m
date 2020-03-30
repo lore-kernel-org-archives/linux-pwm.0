@@ -1,117 +1,32 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
-Date: Mon, 30 Mar 2020 15:00:44 -0600
-Message-ID: <20200330210044.GA16928@bogus>
-References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
- <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
- <20200317174344.GB1464607@ulmo>
- <20200317213056.futfiwn4qgr2njye@pengutronix.de>
- <20200318230539.GB2874972@ulmo>
- <20200319070510.gc6hr53gn7n2osvb@pengutronix.de>
- <20200319170455.GC3354541@ulmo>
+Subject: Re: [PATCH 05/12] docs: dt: fix references to
+ ap806-system-controller.txt
+Date: Mon, 30 Mar 2020 15:06:37 -0600
+Message-ID: <20200330210637.GA9233@bogus>
+References: <cover.1584450500.git.mchehab+huawei@kernel.org>
+ <cf60ef88712e4f46f4e4bf40b2c646451d921827.1584450500.git.mchehab+huawei@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-il1-f194.google.com ([209.85.166.194]:38405 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728317AbgC3VAs (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 17:00:48 -0400
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200319170455.GC3354541@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <cf60ef88712e4f46f4e4bf40b2c646451d921827.1584450500.git.mchehab+huawei@kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+Cc: Linux Doc Mailing List <linux-doc@vger.kernel.org>, Mauro Carvalho Chehab <mchehab+huawei@kernel.org>, linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Zhang Rui <rui.zhang@intel.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Amit Kucheria <amit.kucheria@verdurent.com>, Ben Peled <bpeled@marvell.com>, Miquel Raynal <miquel.raynal@bootlin.com>, Gregory CLEMENT <gregory.clement@bootlin.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-pm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, linux-kernel@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 06:04:55PM +0100, Thierry Reding wrote:
-> On Thu, Mar 19, 2020 at 08:05:10AM +0100, Uwe Kleine-König wrote:
-> > On Thu, Mar 19, 2020 at 12:05:39AM +0100, Thierry Reding wrote:
-> > > On Tue, Mar 17, 2020 at 10:30:56PM +0100, Uwe Kleine-König wrote:
-> > > > Hello Thierry,
-> > > > 
-> > > > On Tue, Mar 17, 2020 at 06:43:44PM +0100, Thierry Reding wrote:
-> > > > > On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
-> > > > > > Add the description of PWM_POLARITY_NORMAL flag.
-> > > > > > 
-> > > > > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-> > > > > > ---
-> > > > > > 
-> > > > > >  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
-> > > > > >  1 file changed, 1 insertion(+)
-> > > > > > 
-> > > > > > diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
-> > > > > > index 084886bd721e..440c6b9a6a4e 100644
-> > > > > > --- a/Documentation/devicetree/bindings/pwm/pwm.txt
-> > > > > > +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
-> > > > > > @@ -46,6 +46,7 @@ period in nanoseconds.
-> > > > > >  Optionally, the pwm-specifier can encode a number of flags (defined in
-> > > > > >  <dt-bindings/pwm/pwm.h>) in a third cell:
-> > > > > >  - PWM_POLARITY_INVERTED: invert the PWM signal polarity
-> > > > > > +- PWM_POLARITY_NORMAL: don't invert the PWM signal polarity
-> > > > > 
-> > > > > This doesn't make sense. PWM_POLARITY_NORMAL is not part of the DT ABI.
-> > > > 
-> > > > "is not part of the DT ABI" is hardly a good reason. If it's sensible to
-> > > > be used, it is sensible to define it.
-> > > 
-> > > That's exactly it. It's not sensible at all to use it.
-> > 
-> > If you think the argument is "It is not sensible to be used." then please
-> > say so and don't add "PWM_POLARITY_NORMAL is not part of the DT ABI."
-> > which seems to be irrelevant now.
+On Tue, 17 Mar 2020 14:10:44 +0100, Mauro Carvalho Chehab wrote:
+> ap806-system-controller.txt was renamed to ap80x-system-controller.txt.
 > 
-> I did say that, didn't I? I said that it doesn't make sense because it
-> isn't part of the ABI. And since this is the document that defines the
-> DT ABI, why should we add something that isn't part of the ABI?
+> Update its references accordingly.
 > 
-> Now, if you want to make this part of the ABI, then that should be done
-> as part of this patch so that the patch is actually consistent.
+> Fixes: 2537831bbc19 ("dt-bindings: ap80x: replace AP806 with AP80x")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/gpio/gpio-mvebu.txt        | 2 +-
+>  Documentation/devicetree/bindings/thermal/armada-thermal.txt | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> > > If you define it here it means people are allowed to do stuff like
-> > > this:
-> > > 
-> > > 	pwms = <&pwm 1234 PWM_POLARITY_INVERTED | PWM_POLARITY_NORMAL>;
-> > > 
-> > > which doesn't make sense.
-> > 
-> > I would hope that a human reader would catch this.
-> 
-> Maybe. At the same time we're now moving towards automatic checking of
-> device trees against a binding. These tools will only ever see the
-> binary representation, so won't be able to spot this nonsense. The whole
-> purpose of having these tools is so that we don't have to do the tedious
-> work of manually inspecting all device tree files. It's also not
-> guaranteed that we'll even be seeing all of the device tree files ever
-> written against these bindings.
-> 
-> > 
-> > > What's more, it impossible for the code to even notice that you're
-> > > being silly because | PWM_POLARITY_NORMAL is just | 0 and that's just
-> > > a nop.
-> > 
-> > I think this argument is a bad one. Whenever you introduce a
-> > function or symbol you can use it in a wrong way. With this argument you
-> > can also say GPIO_ACTIVE_LOW doesn't make sense because
-> > 
-> > 	pwms = <&pwm 1234 GPIO_ACTIVE_LOW>;
-> > 
-> > is silly.
-> 
-> Yes, it's also obviously silly to try and eat a hammer. I was assuming
-> people have at least /some/ sense and try not to use GPIO related flags
-> with PWM specifiers. And because I think that people aren't totally
-> stupid, I think they'll be capable of understanding that by default a
-> PWM will be "normal" and only if they want to deviate from "normal" do
-> they need to do something special, like specify PWM_POLARITY_INVERTED.
-> 
-> I'm growing tired of this discussion, to be honest. So if you really
-> absolutely must have PWM_POLARITY_NORMAL so that you can read DT files
-> without having to think, then fine, I'll take a patch that adds that.
-> But please let's not confuse the definitions for DT with the polarity
-> enum in the API.
 
-I agree with Thierry here. I'd give my reasons, but I've got 200 other 
-patches to review.
+Applied, thanks.
 
 Rob
