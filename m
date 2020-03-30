@@ -1,57 +1,117 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v10 00/12] Convert PWM period and duty cycle to u64
-Date: Mon, 30 Mar 2020 14:00:12 -0700
-Message-ID: <20200330210012.GA27611@codeaurora.org>
-References: <cover.1584650604.git.gurus@codeaurora.org>
- <20200321114703.GB4672@kadam>
- <20200330191506.GA29534@codeaurora.org>
- <20200330202636.njjo4savgzf3g6yx@holly.lan>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH 2/7] dt-bindings: pwm: document the PWM polarity flag
+Date: Mon, 30 Mar 2020 15:00:44 -0600
+Message-ID: <20200330210044.GA16928@bogus>
+References: <20200317123231.2843297-1-oleksandr.suvorov@toradex.com>
+ <20200317123231.2843297-3-oleksandr.suvorov@toradex.com>
+ <20200317174344.GB1464607@ulmo>
+ <20200317213056.futfiwn4qgr2njye@pengutronix.de>
+ <20200318230539.GB2874972@ulmo>
+ <20200319070510.gc6hr53gn7n2osvb@pengutronix.de>
+ <20200319170455.GC3354541@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-il1-f194.google.com ([209.85.166.194]:38405 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728317AbgC3VAs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 17:00:48 -0400
 Content-Disposition: inline
-In-Reply-To: <20200330202636.njjo4savgzf3g6yx@holly.lan>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, "Wesley W. Terpstra" <wesley@sifive.com>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Atish Patra <atish.patra@wdc.com>, Thierry Reding <thierry.reding@gmail.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, Alexandre Torgue <alexandre.torgue@st.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Axel Lin <axel.lin@ingics.com>, Arnd Bergmann <arnd@arndb.de>, Alexander Shiyan <shc_work@mail.ru>, Fabio Estevam <festevam@gma>
+In-Reply-To: <20200319170455.GC3354541@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Oleksandr Suvorov <oleksandr.suvorov@toradex.com>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, linux-kernel@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 09:26:36PM +0100, Daniel Thompson wrote:
-> On Mon, Mar 30, 2020 at 12:15:07PM -0700, Guru Das Srinagesh wrote:
-> > On Sat, Mar 21, 2020 at 02:47:03PM +0300, Dan Carpenter wrote:
-> > > This is a giant CC list.
+On Thu, Mar 19, 2020 at 06:04:55PM +0100, Thierry Reding wrote:
+> On Thu, Mar 19, 2020 at 08:05:10AM +0100, Uwe Kleine-König wrote:
+> > On Thu, Mar 19, 2020 at 12:05:39AM +0100, Thierry Reding wrote:
+> > > On Tue, Mar 17, 2020 at 10:30:56PM +0100, Uwe Kleine-König wrote:
+> > > > Hello Thierry,
+> > > > 
+> > > > On Tue, Mar 17, 2020 at 06:43:44PM +0100, Thierry Reding wrote:
+> > > > > On Tue, Mar 17, 2020 at 02:32:26PM +0200, Oleksandr Suvorov wrote:
+> > > > > > Add the description of PWM_POLARITY_NORMAL flag.
+> > > > > > 
+> > > > > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+> > > > > > ---
+> > > > > > 
+> > > > > >  Documentation/devicetree/bindings/pwm/pwm.txt | 1 +
+> > > > > >  1 file changed, 1 insertion(+)
+> > > > > > 
+> > > > > > diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
+> > > > > > index 084886bd721e..440c6b9a6a4e 100644
+> > > > > > --- a/Documentation/devicetree/bindings/pwm/pwm.txt
+> > > > > > +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+> > > > > > @@ -46,6 +46,7 @@ period in nanoseconds.
+> > > > > >  Optionally, the pwm-specifier can encode a number of flags (defined in
+> > > > > >  <dt-bindings/pwm/pwm.h>) in a third cell:
+> > > > > >  - PWM_POLARITY_INVERTED: invert the PWM signal polarity
+> > > > > > +- PWM_POLARITY_NORMAL: don't invert the PWM signal polarity
+> > > > > 
+> > > > > This doesn't make sense. PWM_POLARITY_NORMAL is not part of the DT ABI.
+> > > > 
+> > > > "is not part of the DT ABI" is hardly a good reason. If it's sensible to
+> > > > be used, it is sensible to define it.
+> > > 
+> > > That's exactly it. It's not sensible at all to use it.
 > > 
-> > Yes, this is because I received feedback [1] on an earlier patchset
-> > directing me to add the reviewers of patches to the cover letter as
-> > well so that they get some context for the patch.
-> > ...
-> > [1] https://www.spinics.net/lists/linux-pwm/msg11735.html
+> > If you think the argument is "It is not sensible to be used." then please
+> > say so and don't add "PWM_POLARITY_NORMAL is not part of the DT ABI."
+> > which seems to be irrelevant now.
 > 
-> Strictly speaking I only asked for backlight maintainers to be Cc:ed.
-> I was fairly careful to be specific since I'm aware there are a variety
-> of differing habits when putting together the Cc: list for covering
-> letters.
+> I did say that, didn't I? I said that it doesn't make sense because it
+> isn't part of the ABI. And since this is the document that defines the
+> DT ABI, why should we add something that isn't part of the ABI?
 > 
-> With the original patch header the purpose of the patch I was Cc:ed on
-> was impossible to determine without the covering letter.
+> Now, if you want to make this part of the ABI, then that should be done
+> as part of this patch so that the patch is actually consistent.
+> 
+> > > If you define it here it means people are allowed to do stuff like
+> > > this:
+> > > 
+> > > 	pwms = <&pwm 1234 PWM_POLARITY_INVERTED | PWM_POLARITY_NORMAL>;
+> > > 
+> > > which doesn't make sense.
+> > 
+> > I would hope that a human reader would catch this.
+> 
+> Maybe. At the same time we're now moving towards automatic checking of
+> device trees against a binding. These tools will only ever see the
+> binary representation, so won't be able to spot this nonsense. The whole
+> purpose of having these tools is so that we don't have to do the tedious
+> work of manually inspecting all device tree files. It's also not
+> guaranteed that we'll even be seeing all of the device tree files ever
+> written against these bindings.
+> 
+> > 
+> > > What's more, it impossible for the code to even notice that you're
+> > > being silly because | PWM_POLARITY_NORMAL is just | 0 and that's just
+> > > a nop.
+> > 
+> > I think this argument is a bad one. Whenever you introduce a
+> > function or symbol you can use it in a wrong way. With this argument you
+> > can also say GPIO_ACTIVE_LOW doesn't make sense because
+> > 
+> > 	pwms = <&pwm 1234 GPIO_ACTIVE_LOW>;
+> > 
+> > is silly.
+> 
+> Yes, it's also obviously silly to try and eat a hammer. I was assuming
+> people have at least /some/ sense and try not to use GPIO related flags
+> with PWM specifiers. And because I think that people aren't totally
+> stupid, I think they'll be capable of understanding that by default a
+> PWM will be "normal" and only if they want to deviate from "normal" do
+> they need to do something special, like specify PWM_POLARITY_INVERTED.
+> 
+> I'm growing tired of this discussion, to be honest. So if you really
+> absolutely must have PWM_POLARITY_NORMAL so that you can read DT files
+> without having to think, then fine, I'll take a patch that adds that.
+> But please let's not confuse the definitions for DT with the polarity
+> enum in the API.
 
-I suspect this might be the case for all the other reviewers as well -
-that they also would appreciate context for the specific patch they are
-being added to review.
+I agree with Thierry here. I'd give my reasons, but I've got 200 other 
+patches to review.
 
-I wasn't entirely sure what the convention was, so I applied your
-suggestion to all the files. How do you suggest I handle this in my next
-patchset? I fully agree that such a large CC list does look really
-ungainly.
-
-Thank you.
-
-Guru Das.
+Rob
