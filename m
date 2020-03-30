@@ -1,63 +1,48 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v4 3/4] pwm: jz4740: Obtain regmap from parent node
-Date: Mon, 30 Mar 2020 18:41:04 +0200
-Message-ID: <GCM08Q.D2GF67F5O2R03@crapouillou.net>
-References: <20200323142421.42817-1-paul@crapouillou.net>
-        <20200323142421.42817-3-paul@crapouillou.net>
-        <20200330143716.GI2431644@ulmo>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH v10 00/12] Convert PWM period and duty cycle to u64
+Date: Mon, 30 Mar 2020 12:15:07 -0700
+Message-ID: <20200330191506.GA29534@codeaurora.org>
+References: <cover.1584650604.git.gurus@codeaurora.org>
+ <20200321114703.GB4672@kadam>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from outils.crapouillou.net ([89.234.176.41]:53590 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbgC3QlU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 12:41:20 -0400
-In-Reply-To: <20200330143716.GI2431644@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20200321114703.GB4672@kadam>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>, Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, "Wesley W. Terpstra" <wesley@sifive.com>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Atish Patra <atish.patra@wdc.com>, Thierry Reding <thierry.reding@gmail.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, Alexandre Torgue <alexandre.torgue@st.com>, Daniel Thompson <daniel.thompson@linaro.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Axel Lin <axel.lin@ingics.com>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 
-Hi Thierry,
+On Sat, Mar 21, 2020 at 02:47:03PM +0300, Dan Carpenter wrote:
+> This is a giant CC list.
 
-Le lun. 30 mars 2020 =E0 16:37, Thierry Reding=20
-<thierry.reding@gmail.com> a =E9crit :
-> On Mon, Mar 23, 2020 at 03:24:20PM +0100, Paul Cercueil wrote:
-> [...]
->>  diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-> [...]
->>  @@ -196,12 +208,19 @@ static const struct pwm_ops jz4740_pwm_ops =3D {
->>   static int jz4740_pwm_probe(struct platform_device *pdev)
->>   {
->>   	struct jz4740_pwm_chip *jz4740;
->>  +	struct device *dev =3D &pdev->dev;
->>=20
->>  -	jz4740 =3D devm_kzalloc(&pdev->dev, sizeof(*jz4740), GFP_KERNEL);
->>  +	jz4740 =3D devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
->>   	if (!jz4740)
->>   		return -ENOMEM;
->>=20
->>  -	jz4740->chip.dev =3D &pdev->dev;
->>  +	jz4740->map =3D device_node_to_regmap(dev->parent->of_node);
->>  +	if (!jz4740->map) {
->=20
-> This seems wrong. According to the code, device_node_to_regmap()=20
-> returns
-> an ERR_PTR()-encoded error code on failure, so I think this should be:
->=20
-> 	if (IS_ERR(jz4740->map)) {
-> 		...
-> 		return PTR_ERR(jz4740->map);
-> 	}
->=20
-> No need to resend for that, I can take care of that when applying. Let
-> me know if that doesn't work.
+Yes, this is because I received feedback [1] on an earlier patchset
+directing me to add the reviewers of patches to the cover letter as
+well so that they get some context for the patch.
 
-Yes, that works for me. Good catch.
+> There was one version where you CC'd me on patch 6/12 but after that you
 
-Thanks,
--Paul
+Yes, that would be v9 [2].
 
->=20
-> Thierry
+> just CC'd me on the cover page.  Something is messed up in your scripts
+> because Cc'ing me on just the cover is pointless.
+
+Sorry about that - was initially adding reviewers only to the final
+email being sent out instead of listing them in the commit message
+directly, which I now realize is untenable and have subsequently fixed.
+
+[1] https://www.spinics.net/lists/linux-pwm/msg11735.html
+[2] https://www.spinics.net/lists/linux-pwm/msg11852.html
+
+Thank you.
+
+Guru Das.
