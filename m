@@ -1,88 +1,44 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
- changing period/duty_cycle
-Date: Mon, 30 Mar 2020 16:14:36 +0200
-Message-ID: <20200330141436.GG2431644@ulmo>
-References: <20200312042210.17344-1-lokeshvutla@ti.com>
- <20200312042210.17344-5-lokeshvutla@ti.com>
- <20200312064042.p7himm3odxjyzroi@pengutronix.de>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 1/4] pwm: sun4i: Remove redundant needs_delay
+Date: Mon, 30 Mar 2020 16:16:57 +0200
+Message-ID: <20200330141657.GH2431644@ulmo>
+References: <20200317155906.31288-1-dev@pascalroeleven.nl>
+ <20200317155906.31288-2-dev@pascalroeleven.nl>
+Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="NY6JkbSqL3W9mApi"
-Return-path: <linux-omap-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="v2Uk6McLiE8OV1El"
+Return-path: <linux-sunxi+bncBDTKFPPJUEHRBXP6Q72AKGQEVR6BHJQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
-In-Reply-To: <20200312064042.p7himm3odxjyzroi@pengutronix.de>
-Sender: linux-omap-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Lokesh Vutla <lokeshvutla@ti.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
+In-Reply-To: <20200317155906.31288-2-dev-/1Tg0gxlrOS4ObxHbWkkimZHpeb/A1Y/@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Pascal Roeleven <dev-/1Tg0gxlrOS4ObxHbWkkimZHpeb/A1Y/@public.gmane.org>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---NY6JkbSqL3W9mApi
-Content-Type: text/plain; charset=utf-8
+--v2Uk6McLiE8OV1El
+Content-Type: text/plain; charset="UTF-8"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 12, 2020 at 07:40:42AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> On Thu, Mar 12, 2020 at 09:52:09AM +0530, Lokesh Vutla wrote:
-> > Only the Timer control register(TCLR) cannot be updated when the timer
-> > is running. Registers like Counter register(TCRR), loader register(TLDR=
-),
-> > match register(TMAR) can be updated when the counter is running. Since
-> > TCLR is not updated in pwm_omap_dmtimer_config(), do not stop the
-> > timer for period/duty_cycle update.
->=20
-> I'm not sure what is sensible here. Stopping the PWM for a short period
-> is bad, but maybe emitting a wrong period isn't better. You can however
-> optimise it if only one of period or duty_cycle changes.
->=20
-> @Thierry, what is your position here? I tend to say a short stop is
-> preferable.
+On Tue, Mar 17, 2020 at 04:59:03PM +0100, Pascal Roeleven wrote:
+> 'needs_delay' does now always evaluate to true, so remove all
+> occurrences.
+> 
+> Signed-off-by: Pascal Roeleven <dev-/1Tg0gxlrOS4ObxHbWkkimZHpeb/A1Y/@public.gmane.org>
+> ---
+>  drivers/pwm/pwm-sun4i.c | 13 ++-----------
+>  1 file changed, 2 insertions(+), 11 deletions(-)
 
-It's not clear to me from the above description how exactly the device
-behaves, but I suspect that it may latch the values in those registers
-and only update the actual signal output once a period has finished. I
-know of a couple of other devices that do that, so it wouldn't be
-surprising.
-
-Even if that was not the case, I think this is just the kind of thing
-that we have to live with. Sometimes it just isn't possible to have all
-supported devices adhere strictly to an API. So I think the best we can
-do is have an API that loosely defines what's supposed to happen and
-make a best effort to implement those semantics. If a device deviates
-slightly from those expectations, we can always cross fingers and hope
-that things still work. And it looks like they are.
-
-So I think if Lokesh and Tony agree that this is the right thing to do
-and have verified that things still work after this, that's about as
-good as it's going to get.
-
-I know this is perhaps cheating a little, or turning a blind eye, but I
-don't know what the alternative would be. Do we want to tell people that
-a given PWM controller can't be used if it doesn't work according to our
-expectations? That's hard to argue if that controller works just fine
-for all known use-cases.
+I've applied this one since it's obviously correct. I'll hold off on the
+others until it can be more broadly tested. Hopefully Maxime or Chen-Yu
+can help review the remainder of this series as well.
 
 Thierry
-
---NY6JkbSqL3W9mApi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6B/soACgkQ3SOs138+
-s6F2WxAAp3bIGtRCKqt67F7d3JG708w1+creHUOXONHOapSQCaWuU1SSJgI73p2P
-AHdNHXR/YURCBKVTVrLizfkqAR6rQ1EE3ovlSuu5ZkaCMx1brw92l6MoVIHxlLQ1
-XchiOycQgdI4BM03ENpihJi73/HHm30/SeAJ/pTgFMr3S0pr7iNvxI+AzLfiD0c/
-7Y8tNjcDtMOesdLym/jMNelCxYovlQyB1gDYGPm65xrFb4cqWHuzuro1s71OqJzX
-l3J9qYjcKF7XPNHze3Q75BP/wZc0+aztBja4N6ZqoR1nvkKLPAAuDBDPI87RD5LR
-j4xBM/J7QSUhlh/anUfdbPxOx9YJswvfCswcifzIEwmzb7EOwpq2Yqh3BVyp4DoS
-4027Z5g3sRwdR4OiNkTYHezpwp/qz1Wxrh9LWP8wqpoounrCYqTX5QDhiHSu9cr+
-jfAaQGi0EgILeQjsAv3BqjoHnVjgMSVAtNV720U40J0MxkZKSf73Ak2/Jduk1dQv
-j1jTJL+WYGZtFBBojS73HOkSHRk4sFNvab5iotVYaro8JaCTYGNWLohJvhG+bw5X
-AfLthkohTXarCOkcHET4YI6PcDtzhU++HiCSfRZ+TBAiE5W2ZF5rKjFYCcBQuPCo
-dnAbijxeDHJ33fRP905WbK6B+GhvcgyWIDI9mJxm3FhZf+1onT0=
-=T9wd
------END PGP SIGNATURE-----
-
---NY6JkbSqL3W9mApi--
+--v2Uk6McLiE8OV1El--
