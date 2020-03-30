@@ -1,89 +1,89 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 2/4] pwm: pca9685: remove ALL_LED PWM channel
-Date: Mon, 30 Mar 2020 17:38:10 +0200
-Message-ID: <20200330153810.GA2817345@ulmo>
+Date: Mon, 30 Mar 2020 17:40:36 +0200
+Message-ID: <20200330154036.GB2817345@ulmo>
 References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
  <20200226135229.24929-2-matthias.schiffer@ew.tq-group.com>
  <20200330130757.GC2431644@ulmo>
- <CAHp75VeY9ZGUD_=N=R2vsJFY-4P5-L1+ZzjKHU2cygcbML0zOw@mail.gmail.com>
+ <20200330133450.GA1530@workstation.tuxnet>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
+        protocol="application/pgp-signature"; boundary="oLBj+sq0vYjzfsbl"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55247 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725978AbgC3Piq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 11:38:46 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53956 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725978AbgC3Pkk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 11:40:40 -0400
 Content-Disposition: inline
-In-Reply-To: <CAHp75VeY9ZGUD_=N=R2vsJFY-4P5-L1+ZzjKHU2cygcbML0zOw@mail.gmail.com>
+In-Reply-To: <20200330133450.GA1530@workstation.tuxnet>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com
 
 
---yrj/dFKFPuw6o+aM
+--oLBj+sq0vYjzfsbl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 30, 2020 at 04:19:55PM +0300, Andy Shevchenko wrote:
-> On Mon, Mar 30, 2020 at 4:10 PM Thierry Reding <thierry.reding@gmail.com>=
- wrote:
-> >
+On Mon, Mar 30, 2020 at 03:34:50PM +0200, Clemens Gruber wrote:
+> Hi,
+>=20
+> On Mon, Mar 30, 2020 at 03:07:57PM +0200, Thierry Reding wrote:
 > > On Wed, Feb 26, 2020 at 02:52:27PM +0100, Matthias Schiffer wrote:
 > > > The interaction of the ALL_LED PWM channel with the other channels was
 > > > not well-defined. As the ALL_LED feature does not seem very useful and
 > > > it was making the code significantly more complex, simply remove it.
-> > >
+> > >=20
 > > > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 > > > ---
 > > >  drivers/pwm/pwm-pca9685.c | 115 ++++++------------------------------=
 --
 > > >  1 file changed, 17 insertions(+), 98 deletions(-)
-> >
+> >=20
 > > Applied, thanks.
+> >=20
+> > Thierry
 >=20
-> This seems to be ABI breakage.
+> I was not reading the mailing list in the last weeks, so I only saw the
+> patch today.
+>=20
+> We are using the ALL_LED channel in production to reduce the delay when
+> all 16 PWM outputs need to be set to the same duty cycle.
+>=20
+> I am not sure it is a good idea to remove this feature.
 
-Nothing seemed to be using that feature. As a matter of fact, I don't
-really see anyone using this chip in an upstream kernel, so it's
-difficult to understand what the dependencies are.
+Can you specify what platform this is and where the code is that does
+this. I can't really find any device tree users of this and I don't know
+if there's a good way to find out what other users there are, but this
+isn't the first time this driver has created confusion, so please help
+collect some more information about it's use so we can avoid this in the
+future.
 
-> Thierry, do you have hardware to test?
-
-No, I don't. Do you?
-
-Does anybody have a good understanding of where the users of this are
-and where the code is? There seems to be a lot of confusion around this
-driver/chip and how it's being used and it keeps causing a lot of this
-back and forth, so can we please gather some basic information and then
-I'll add that to the driver along with perhaps a list of contacts that
-want to be involved.
-
-As it is, it seems like applying patches as I see fit is the only way to
-get people to object, which is a suboptimal way to do things. =3D)
+I'll back out this particular patch since you're using it. Can you give
+the other three patches a try to see if they work for you?
 
 Thierry
 
---yrj/dFKFPuw6o+aM
+--oLBj+sq0vYjzfsbl
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6CEmAACgkQ3SOs138+
-s6GhMA//QXptmnJALfUYiX+M0Q8w8ZlqrU3s3Zth8HvqhMnhoYTCsuwQ6Keqpb7s
-ZlMGD21yL8fcL8spiI/cGA3SqrNKdVV9/Ejy4sUteXB5JPDi4n/fU1Ed1+bLMuJF
-7yTY8FL58Z3C/Z0FIWfxjJ+wBGbsO9cSNYuswdKBhzSeVxGR3sDDEmFZSXQ2EKr5
-MgFq/Icb4tR5JykUlojHenbYd6ocfZqfUKKpRG4VUd4hHR5oG5zH8VjNBgkhNYRl
-62ojPYdJ3/WhW6YOcYObFJrH4eQ0fC99FovDc0JfqsSuF4kaM/EAqdqOXs01v5xM
-K5ELLsS0oXlUz/N+u7JCfGgFKg7eiSnT6DJm8SKzoOq+H/Qzc/C31oAG3e1C9yHt
-hjZw8rhTz4EuqhBtctFAQG5ZrLyNV4w8dMBhRclOFVCfLBWYrzc2U5Faqsp2HsNX
-9TVPu9PBvBTi0teUOtmXTCWCB9SbwRemoEwQRSh1UbEUXQeTThUjCnz76j/wR6D3
-4mz2A0RRvtGFiS4DtAF9v108AcfAiGkFyoKEFKNj4xchttpaII9blX47OPaH79C5
-zk7/X5ULp3dUKMnavSSkSW6A7y4Oa641UZoc6LdFhIc1a+KFhwVUsgVG6VBbTwsP
-RJ/0I7RWzfHHnpLmEgBW/NnfGUM+7FvbGI4FjEnmsVMrsK+7PMs=
-=m4iH
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6CEvQACgkQ3SOs138+
+s6EB/w/9FDGfvq1biq0AqLk1jc2iemdcmBqomC0BRENdlU/leyP5qoI41XFsa8Da
+TFYA+/4LD/3wfiT0wG9bwUxNIaywETrZgNFW/Ps2lahE/QbtDGNO05E/2hs3Lsjt
+3KHzYiCpC4Bgz3prl/lHhQEfqyV2lZABA19+JG/Xn6+4iIWBn5dl2eJDpRH60Fcn
+AWnReeAqSs/dhsH010bpF9UVgenqTYM4/N6S5L+EsJ4MuDIpCEaHtLXTUCcnGVIS
+ZCi8CRXSLS1Hr1P1sXtrCri9SJyV4AjI/eWVsDL9D2JJINAO2L6Gy3PhkN9IBa+t
+t2OocGZ3IdrVpvgJs5g7ji0OFkbnJof67i7SrUpgZy9kFhrrc7pMdcM72jIKo7GE
+V6n5SZIoWuAuyX4fKh+tKDEsVJ56j6t/+JS6s/ipg5X0SZMp4+NLX1pjiU3nij6/
+3orBfvt/xt/xOqFpdp9e3m4MeiH3y06VjE77ih9uP3LXM7ZS//XCG4SVNOEn6VEd
+RJoJ37zawE9BiTrjmU1fhgzzJBlMoMkwff8OyTOpC+bTPldKeOxUzj7aNgjdiIkJ
+rgfjUPFzezEdTXd/u/PpFR5soC1c3g3y1WFumNzdCDoq04jZO2PBdu4GSrcCxuBq
+QGiSG4veVm1jtfo4VSaLrptJXpk5jsgg4qxhj3Encnbhq3o5Sto=
+=96AW
 -----END PGP SIGNATURE-----
 
---yrj/dFKFPuw6o+aM--
+--oLBj+sq0vYjzfsbl--
