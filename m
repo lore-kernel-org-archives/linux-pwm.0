@@ -1,45 +1,50 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v10 00/12] Convert PWM period and duty cycle to u64
-Date: Mon, 30 Mar 2020 21:26:36 +0100
-Message-ID: <20200330202636.njjo4savgzf3g6yx@holly.lan>
-References: <cover.1584650604.git.gurus@codeaurora.org>
- <20200321114703.GB4672@kadam>
- <20200330191506.GA29534@codeaurora.org>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and
+ function
+Date: Mon, 30 Mar 2020 13:43:59 -0700
+Message-ID: <20200330204359.GB5107@codeaurora.org>
+References: <cover.1584667964.git.gurus@codeaurora.org>
+ <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
+ <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:4960 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728123AbgC3UoU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 16:44:20 -0400
 Content-Disposition: inline
-In-Reply-To: <20200330191506.GA29534@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, "Wesley W. Terpstra" <wesley@sifive.com>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Atish Patra <atish.patra@wdc.com>, Thierry Reding <thierry.reding@gmail.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, Alexandre Torgue <alexandre.torgue@st.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Axel Lin <axel.lin@ingics.com>, Arnd Bergmann <arnd@arndb.de>, Alexander Shiyan <shc_work@mail.ru>, Fabio Estevam <festevam@gma>
+In-Reply-To: <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
 
-On Mon, Mar 30, 2020 at 12:15:07PM -0700, Guru Das Srinagesh wrote:
-> On Sat, Mar 21, 2020 at 02:47:03PM +0300, Dan Carpenter wrote:
-> > This is a giant CC list.
+On Fri, Mar 20, 2020 at 06:09:39PM +0100, Arnd Bergmann wrote:
+> On Fri, Mar 20, 2020 at 2:42 AM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
 > 
-> Yes, this is because I received feedback [1] on an earlier patchset
-> directing me to add the reviewers of patches to the cover letter as
-> well so that they get some context for the patch.
-> ...
-> [1] https://www.spinics.net/lists/linux-pwm/msg11735.html
+> > @@ -240,8 +240,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> >
+> >         period_cycles /= prescale;
+> >         c = (unsigned long long)period_cycles * state->duty_cycle;
+> > -       do_div(c, state->period);
+> > -       duty_cycles = c;
+> > +       duty_cycles = div64_u64(c, state->period);
+> >
+> 
+> This change looks fine, but I wonder if the code directly above it
+> 
+>         c = clk_get_rate(imx->clk_per);
+>         c *= state->period;
+>         do_div(c, 1000000000);
+>         period_cycles = c;
+> 
+> might run into an overflow when both the clock rate and the period
+> are large numbers.
 
-Strictly speaking I only asked for backlight maintainers to be Cc:ed.
-I was fairly careful to be specific since I'm aware there are a variety
-of differing habits when putting together the Cc: list for covering
-letters.
+Hmm. Seems to me like addressing this would be outside the scope of this
+patch series.
 
-With the original patch header the purpose of the patch I was Cc:ed on
-was impossible to determine without the covering letter.
+Thank you.
 
-
-Daniel.
+Guru Das.
