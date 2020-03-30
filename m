@@ -1,44 +1,80 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH 1/4] pwm: sun4i: Remove redundant needs_delay
-Date: Mon, 30 Mar 2020 16:16:57 +0200
-Message-ID: <20200330141657.GH2431644@ulmo>
-References: <20200317155906.31288-1-dev@pascalroeleven.nl>
- <20200317155906.31288-2-dev@pascalroeleven.nl>
-Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v4 3/4] pwm: jz4740: Obtain regmap from parent node
+Date: Mon, 30 Mar 2020 16:37:16 +0200
+Message-ID: <20200330143716.GI2431644@ulmo>
+References: <20200323142421.42817-1-paul@crapouillou.net>
+ <20200323142421.42817-3-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="v2Uk6McLiE8OV1El"
-Return-path: <linux-sunxi+bncBDTKFPPJUEHRBXP6Q72AKGQEVR6BHJQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+        protocol="application/pgp-signature"; boundary="5uO961YFyoDlzFnP"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35247 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728091AbgC3OhV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Mar 2020 10:37:21 -0400
 Content-Disposition: inline
-In-Reply-To: <20200317155906.31288-2-dev-/1Tg0gxlrOS4ObxHbWkkimZHpeb/A1Y/@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Pascal Roeleven <dev-/1Tg0gxlrOS4ObxHbWkkimZHpeb/A1Y/@public.gmane.org>
-Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Maxime Ripard <mripard-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20200323142421.42817-3-paul@crapouillou.net>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mathieu Malaterre <malat@debian.org>, Artur Rojek <contact@artur-rojek.eu>
 
 
---v2Uk6McLiE8OV1El
-Content-Type: text/plain; charset="UTF-8"
+--5uO961YFyoDlzFnP
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 17, 2020 at 04:59:03PM +0100, Pascal Roeleven wrote:
-> 'needs_delay' does now always evaluate to true, so remove all
-> occurrences.
-> 
-> Signed-off-by: Pascal Roeleven <dev-/1Tg0gxlrOS4ObxHbWkkimZHpeb/A1Y/@public.gmane.org>
-> ---
->  drivers/pwm/pwm-sun4i.c | 13 ++-----------
->  1 file changed, 2 insertions(+), 11 deletions(-)
+On Mon, Mar 23, 2020 at 03:24:20PM +0100, Paul Cercueil wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+[...]
+> @@ -196,12 +208,19 @@ static const struct pwm_ops jz4740_pwm_ops =3D {
+>  static int jz4740_pwm_probe(struct platform_device *pdev)
+>  {
+>  	struct jz4740_pwm_chip *jz4740;
+> +	struct device *dev =3D &pdev->dev;
+> =20
+> -	jz4740 =3D devm_kzalloc(&pdev->dev, sizeof(*jz4740), GFP_KERNEL);
+> +	jz4740 =3D devm_kzalloc(dev, sizeof(*jz4740), GFP_KERNEL);
+>  	if (!jz4740)
+>  		return -ENOMEM;
+> =20
+> -	jz4740->chip.dev =3D &pdev->dev;
+> +	jz4740->map =3D device_node_to_regmap(dev->parent->of_node);
+> +	if (!jz4740->map) {
 
-I've applied this one since it's obviously correct. I'll hold off on the
-others until it can be more broadly tested. Hopefully Maxime or Chen-Yu
-can help review the remainder of this series as well.
+This seems wrong. According to the code, device_node_to_regmap() returns
+an ERR_PTR()-encoded error code on failure, so I think this should be:
+
+	if (IS_ERR(jz4740->map)) {
+		...
+		return PTR_ERR(jz4740->map);
+	}
+
+No need to resend for that, I can take care of that when applying. Let
+me know if that doesn't work.
 
 Thierry
---v2Uk6McLiE8OV1El--
+
+--5uO961YFyoDlzFnP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6CBBkACgkQ3SOs138+
+s6HtCw/+ObsrCeW3Qpro0kEkUAgc55EE8fppGxsicDBZs+p64q4N3XCH0iduAZuc
+3yeXxtv5jLhz5x9/kwq+h61+UzAqrPbCOWBOBOTq5s2srhrr6WSi9zCYUR6AaTjv
+Ooq6wm0rNJzuIvfWp/+EoLl/MTuJOD/WauAT01rvygN9b7i+fgSORlsDkoKptiJ2
+C7KwuvhqGlHRcAoHtOfgLub6jca/kWwifSWQ1gBkc312IcKuW6ZLHfu7ijLf8+bc
+oH8C/FNuC++mjT13lLJoqc1yIB1y0h1asX2VYUgsQPQGT1ioKjNsgUFqdEKIq49S
+HVzvpIGMsQKiDyO9ka++tMItvLz/L8oMBCCYgHp0zNX8FiSqWqsK/RliMZSHiQFj
+WMyYMbJZPp1Bbxjy4lz8bQz2pQQMbC9dSKlU4PI/hG9JVo/GsM/m1Eu7iUKW7+KB
+P1yJKlG5PqOlPpumyb+vkNOysYbAV4hiSAQt440ga7+SkObdUK+sh6vv7zHMsa2T
+ULjANwIcBiyFR4C0jicNqehIqCql4u/GvNpY2plagzm8kIt7woyTHkWNF12utnJO
+rgAUY75J6QWWmXmzetmVMiqg2fVyzIyrJwhS8xt8SoJM/XWnSf4AuHAkpIBaXuGb
+eQ/hGqkwSHcs+KHgVoyvN9Yu5uIUS2Vtq46NthNGHFMphaxR0fc=
+=SgmS
+-----END PGP SIGNATURE-----
+
+--5uO961YFyoDlzFnP--
