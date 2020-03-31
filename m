@@ -1,225 +1,112 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH 04/18] dt-bindings: mfd: Add bindings for sl28cpld
-Date: Tue, 31 Mar 2020 09:40:33 +0200
-Message-ID: <538e5e51e59594a39064841509395fdb@walle.cc>
-References: <20200317205017.28280-1-michael@walle.cc>
- <20200317205017.28280-5-michael@walle.cc> <20200330223535.GA31402@bogus>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: (EXT) Re: [PATCH 2/4] pwm: pca9685: remove ALL_LED PWM channel
+Date: Tue, 31 Mar 2020 14:09:37 +0200
+Message-ID: <452f4e03cc2a998c7a903251f99931935b1f872f.camel@ew.tq-group.com>
+References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
+         <20200226135229.24929-2-matthias.schiffer@ew.tq-group.com>
+         <20200330130757.GC2431644@ulmo> <20200330133450.GA1530@workstation.tuxnet>
+         <20200330154036.GB2817345@ulmo> <20200330160744.GA777@workstation.tuxnet>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20200330223535.GA31402@bogus>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.tq-group.com ([62.157.118.193]:25824 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729997AbgCaMJr (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 31 Mar 2020 08:09:47 -0400
+In-Reply-To: <20200330160744.GA777@workstation.tuxnet>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com
 
-Am 2020-03-31 00:35, schrieb Rob Herring:
-> On Tue, Mar 17, 2020 at 09:50:03PM +0100, Michael Walle wrote:
->> This adds device tree bindings for the board management controller 
->> found
->> on the Kontron SMARC-sAL28 board.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
->> ---
->>  .../bindings/mfd/kontron,sl28cpld.yaml        | 143 
->> ++++++++++++++++++
->>  1 file changed, 143 insertions(+)
->>  create mode 100644 
->> Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
->> 
->> diff --git 
->> a/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml 
->> b/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
->> new file mode 100644
->> index 000000000000..3b9cca49d2d6
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
->> @@ -0,0 +1,143 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/mfd/kontron,sl28cpld.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Kontron's sl28cpld board management controller
->> +
->> +maintainers:
->> +  - Michael Walle <michael@walle.cc>
->> +
->> +description: |
->> +  The board management controller may contain different IP blocks 
->> like
->> +  watchdog, fan monitoring, PWM controller, interrupt controller and 
->> a
->> +  GPIO controller.
->> +
->> +properties:
->> +  compatible:
->> +    const: kontron,sl28cpld
->> +
->> +  reg:
->> +    description:
->> +      I2C device address.
->> +    maxItems: 1
->> +
->> +  "#address-cells":
->> +    const: 1
->> +
->> +  "#size-cells":
->> +    const: 0
->> +
->> +  "#interrupt-cells":
->> +    const: 2
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  interrupt-controller: true
->> +
->> +patternProperties:
->> +  "^gp(io|i|o)(@[0-9]+)?$":
+On Mon, 2020-03-30 at 18:07 +0200, Clemens Gruber wrote:
+> On Mon, Mar 30, 2020 at 05:40:36PM +0200, Thierry Reding wrote:
+> > On Mon, Mar 30, 2020 at 03:34:50PM +0200, Clemens Gruber wrote:
+> > > Hi,
+> > > 
+> > > On Mon, Mar 30, 2020 at 03:07:57PM +0200, Thierry Reding wrote:
+> > > > On Wed, Feb 26, 2020 at 02:52:27PM +0100, Matthias Schiffer
+> > > > wrote:
+> > > > > The interaction of the ALL_LED PWM channel with the other
+> > > > > channels was
+> > > > > not well-defined. As the ALL_LED feature does not seem very
+> > > > > useful and
+> > > > > it was making the code significantly more complex, simply
+> > > > > remove it.
+> > > > > 
+> > > > > Signed-off-by: Matthias Schiffer <
+> > > > > matthias.schiffer@ew.tq-group.com>
+> > > > > ---
+> > > > >  drivers/pwm/pwm-pca9685.c | 115 ++++++--------------------
+> > > > > ------------
+> > > > >  1 file changed, 17 insertions(+), 98 deletions(-)
+> > > > 
+> > > > Applied, thanks.
+> > > > 
+> > > > Thierry
+> > > 
+> > > I was not reading the mailing list in the last weeks, so I only
+> > > saw the
+> > > patch today.
+> > > 
+> > > We are using the ALL_LED channel in production to reduce the
+> > > delay when
+> > > all 16 PWM outputs need to be set to the same duty cycle.
+> > > 
+> > > I am not sure it is a good idea to remove this feature.
+> > 
+> > Can you specify what platform this is and where the code is that
+> > does
+> > this. I can't really find any device tree users of this and I don't
+> > know
+> > if there's a good way to find out what other users there are, but
+> > this
+> > isn't the first time this driver has created confusion, so please
+> > help
+> > collect some more information about it's use so we can avoid this
+> > in the
+> > future.
 > 
-> Just 'gpio'. We don't need that level of distinguishing in node names.
+> The platform is ARM, it's a custom board with an NXP i.MX6. The
+> device
+> tree is not upstreamed. As there are multiple companies involved
+> in changes to this driver, I assume that it is in use, even though
+> there
+> are no in-tree users.
+> Also: As you can set the ALL channel from userspace, it will be very
+> difficult to find out how often the ALL feature is being used
+> somewhere.
 > 
->> +    $ref: ../gpio/kontron,sl28cpld-gpio.yaml
->> +
->> +  "^hwmon(@[0-9]+)?$":
->> +    $ref: ../hwmon/kontron,sl28cpld-hwmon.yaml
->> +
->> +  "^pwm(@[0-9]+)?$":
->> +    $ref: ../pwm/kontron,sl28cpld-pwm.yaml
->> +
->> +  "^watchdog(@[0-9]+)?$":
->> +    $ref: ../watchdog/kontron,sl28cpld-wdt.yaml
+> > 
+> > I'll back out this particular patch since you're using it. Can you
+> > give
+> > the other three patches a try to see if they work for you?
 > 
-> The patches for these files need to come first or validating this file
-> fails. Really, you can just make all five files 1 patch.
+> Thanks! I saw your other mail. Patch 1 looks good to me. I will look
+> at
+> the new version of patches 3 and 4 and test them when they appear on
+> the
+> list.
 > 
->> +
->> +required:
->> +  - "#address-cells"
->> +  - "#size-cells"
->> +  - compatible
->> +  - reg
->> +  - "#interrupt-cells"
->> +  - interrupt-controller
->> +
->> +oneOf:
->> +  - required:
->> +    - interrupts
->> +  - required:
->> +    - interrupts-extended
-> 
-> Don't need to do this. Just make 'interrupts' required and you'll get
-> interrupts-extended for free.
-> 
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/irq.h>
->> +    i2c {
->> +        #address-cells = <1>;
->> +        #size-cells = <0>;
->> +
->> +        sl28cpld@4a {
->> +            #address-cells = <1>;
->> +            #size-cells = <0>;
->> +            compatible = "kontron,sl28cpld";
->> +            reg = <0x4a>;
->> +            interrupts-extended = <&gpio2 6 IRQ_TYPE_EDGE_FALLING>;
->> +
->> +            #interrupt-cells = <2>;
->> +            interrupt-controller;
->> +
->> +            gpio@0 {
->> +                compatible = "kontron,sl28cpld-gpio";
->> +                reg = <0>;
->> +
->> +                gpio-controller;
->> +                #gpio-cells = <2>;
->> +
->> +                interrupt-controller;
->> +                #interrupt-cells = <2>;
->> +            };
->> +
->> +            gpio@1 {
->> +                compatible = "kontron,sl28cpld-gpio";
->> +                reg = <1>;
->> +
->> +                gpio-controller;
->> +                #gpio-cells = <2>;
->> +
->> +                interrupt-controller;
->> +                #interrupt-cells = <2>;
->> +            };
->> +
->> +            gpo {
->> +                compatible = "kontron,sl28cpld-gpo";
->> +
->> +                gpio-controller;
->> +                #gpio-cells = <2>;
->> +                gpio-line-names = "a", "b", "c";
->> +            };
->> +
->> +            gpi {
->> +                compatible = "kontron,sl28cpld-gpi";
->> +
->> +                gpio-controller;
->> +                #gpio-cells = <2>;
->> +            };
->> +
->> +            hwmon {
->> +                compatible = "kontron,sl28cpld-fan";
->> +            };
->> +
->> +            pwm@0 {
-> 
-> You already used the '0' address. You can't have 2 things at the
-> same address. There's only one number space at a given level.
+> Clemens
 
-There was a reason for having duplicate unit-addresses. See here
-for my reasoning:
-https://lore.kernel.org/linux-devicetree/e55d59a68f497c8f2eb406d40ae878b9@walle.cc/
+Thanks for the feedback, I'll have to respin my cleanup patches without
+removing this feature.
 
-But I've already noticed that it shouldn't be done it this way. The
-DT check is already complaining.
+I wonder if we can come up with a sane semantics of how ALL_LED is
+supposed to interact with the individual channels? Optimally, changes
+made via ALL_LED should be reflected in the state of the other channels
+including their sysfs files, but I'm not sure if current APIs can
+support this cleanly. It might make sense to make requesting/exporting
+individual channels and ALL_LED mutually exclusive, so the state of a
+requested PWM can't change when it's supposed to be under exclusive
+control of one user. Of course, such a change can break existing users
+as well...
 
+And what about state propagation in the other direction - how should
+the ALL_LED state reflect changes made to the other channels' settings?
+On the hardware side, the ALL_LED registers are write-only, as there
+aren't any sane values that could be returned.
 
-> All these child devices don't have any DT resources, so you don't 
-> really
-> need them. The parent node could be a gpio and pwm provider and that's
-> all you need in DT. Aside from DT resources, the only other reason
-> to have all these child nodes are if the child blocks are going to get
-> assembled in different combinations across a variety of h/w.
-
-What do you mean by DT resources? There is a new patch series in 
-preparation
-where for example the watchdog has a new property
-"kontron,assert-wdt-timeout-pin". Which IMHO should be go under the 
-watchdog
-node.
-Besides from that, there are actually three interrupt controllers, ie. 
-the
-two full featured gpio controllers and one interrupt controller. Do you 
-think
-it makes sense to combine that into the parent node eg. merging 
-different
-thinks like an interrupt controller and the gpio controllers into a 
-single
-interrupt mapping in the parent node.
-See also:
-https://lore.kernel.org/linux-devicetree/0e3e8204ab992d75aa07fc36af7e4ab2@walle.cc/
-
-Also please keep in mind, that these are only the current available 
-building
-blocks of a sl28cpld. They are likely to be extended for other 
-functionalities.
-So while it might be possible to merge the current nodes into the parent 
-I don't
-know it that is possible for future blocks.
-
--michael
+Matthias
