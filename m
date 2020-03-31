@@ -1,77 +1,107 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v10 00/12] Convert PWM period and duty cycle to u64
-Date: Tue, 31 Mar 2020 12:59:40 -0700
-Message-ID: <20200331195939.GA25781@codeaurora.org>
-References: <cover.1584650604.git.gurus@codeaurora.org>
- <20200321114703.GB4672@kadam>
- <20200330191506.GA29534@codeaurora.org>
- <20200330202636.njjo4savgzf3g6yx@holly.lan>
- <20200330210012.GA27611@codeaurora.org>
- <20200331134804.xxrjaestztcazalc@holly.lan>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
+ changing period/duty_cycle
+Date: Tue, 31 Mar 2020 22:10:14 +0200
+Message-ID: <20200331201014.GA2954599@ulmo>
+References: <20200312042210.17344-1-lokeshvutla@ti.com>
+ <20200312042210.17344-5-lokeshvutla@ti.com>
+ <20200312064042.p7himm3odxjyzroi@pengutronix.de>
+ <20200330141436.GG2431644@ulmo>
+ <638d7136-6a74-8069-5331-b2248c948ed4@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="BOKacYhQ+x31HxR3"
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200331134804.xxrjaestztcazalc@holly.lan>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, "Wesley W. Terpstra" <wesley@sifive.com>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Atish Patra <atish.patra@wdc.com>, Thierry Reding <thierry.reding@gmail.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, Alexandre Torgue <alexandre.torgue@st.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Axel Lin <axel.lin@ingics.com>, Arnd Bergmann <arnd@arndb.de>, Alexander Shiyan <shc_work@mail.ru>, Fabio Estevam <festevam@gma>
+In-Reply-To: <638d7136-6a74-8069-5331-b2248c948ed4@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Lokesh Vutla <lokeshvutla@ti.com>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Mar 31, 2020 at 02:48:04PM +0100, Daniel Thompson wrote:
-> On Mon, Mar 30, 2020 at 02:00:12PM -0700, Guru Das Srinagesh wrote:
-> > On Mon, Mar 30, 2020 at 09:26:36PM +0100, Daniel Thompson wrote:
-> > > On Mon, Mar 30, 2020 at 12:15:07PM -0700, Guru Das Srinagesh wrote:
-> > > > On Sat, Mar 21, 2020 at 02:47:03PM +0300, Dan Carpenter wrote:
-> > > > > This is a giant CC list.
-> > > > 
-> > > > Yes, this is because I received feedback [1] on an earlier patchset
-> > > > directing me to add the reviewers of patches to the cover letter as
-> > > > well so that they get some context for the patch.
-> > > > ...
-> > > > [1] https://www.spinics.net/lists/linux-pwm/msg11735.html
-> > > 
-> > > Strictly speaking I only asked for backlight maintainers to be Cc:ed.
-> > > I was fairly careful to be specific since I'm aware there are a variety
-> > > of differing habits when putting together the Cc: list for covering
-> > > letters.
-> > > 
-> > > With the original patch header the purpose of the patch I was Cc:ed on
-> > > was impossible to determine without the covering letter.
-> > 
-> > I suspect this might be the case for all the other reviewers as well -
-> > that they also would appreciate context for the specific patch they are
-> > being added to review.
-> > 
-> > I wasn't entirely sure what the convention was, so I applied your
-> > suggestion to all the files. How do you suggest I handle this in my next
-> > patchset? I fully agree that such a large CC list does look really
-> > ungainly.
-> 
-> IHMO there should not be a mechanical convention. Instead your goal
-> needs to be how to make it as easy as possible to review your patches.
-> 
-> Think about it this way: Each person in the To: of a patch (and maybe
-> also Cc: depending on how you construct things) is a person you are
-> asking to review and comment on the patch. If that person will find it
-> easier to review the patch if they are included in the cover letter then
-> either they should be included or you should improve the patch
-> description of the patch itself (sometimes both).
-> 
-> Either way it is about optimizing the patchset for readability. More
-> people read them than write them.
 
-Thank you for the explanation! I shall keep your suggestions in mind
-while sending out future patchsets.
+--BOKacYhQ+x31HxR3
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thank you.
+On Tue, Mar 31, 2020 at 08:59:47PM +0530, Lokesh Vutla wrote:
+> Hi Thierry,
+>=20
+> On 30/03/20 7:44 PM, Thierry Reding wrote:
+> > On Thu, Mar 12, 2020 at 07:40:42AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> >> On Thu, Mar 12, 2020 at 09:52:09AM +0530, Lokesh Vutla wrote:
+> >>> Only the Timer control register(TCLR) cannot be updated when the timer
+> >>> is running. Registers like Counter register(TCRR), loader register(TL=
+DR),
+> >>> match register(TMAR) can be updated when the counter is running. Since
+> >>> TCLR is not updated in pwm_omap_dmtimer_config(), do not stop the
+> >>> timer for period/duty_cycle update.
+> >>
+> >> I'm not sure what is sensible here. Stopping the PWM for a short period
+> >> is bad, but maybe emitting a wrong period isn't better. You can however
+> >> optimise it if only one of period or duty_cycle changes.
+> >>
+> >> @Thierry, what is your position here? I tend to say a short stop is
+> >> preferable.
+> >=20
+> > It's not clear to me from the above description how exactly the device
+> > behaves, but I suspect that it may latch the values in those registers
+> > and only update the actual signal output once a period has finished. I
+> > know of a couple of other devices that do that, so it wouldn't be
+> > surprising.
+> >=20
+> > Even if that was not the case, I think this is just the kind of thing
+> > that we have to live with. Sometimes it just isn't possible to have all
+> > supported devices adhere strictly to an API. So I think the best we can
+> > do is have an API that loosely defines what's supposed to happen and
+> > make a best effort to implement those semantics. If a device deviates
+> > slightly from those expectations, we can always cross fingers and hope
+> > that things still work. And it looks like they are.
+> >=20
+> > So I think if Lokesh and Tony agree that this is the right thing to do
+> > and have verified that things still work after this, that's about as
+> > good as it's going to get.
+>=20
+> Yes this is needed especially in the use-case[0] that I am trying to enab=
+le
+> using PWM. In this case PWM cannot be stopped in between and needs to be =
+updated
+> dynamically. Also hardware doesn't provide any restrictions on updating t=
+he
+> period. So IMHO, this might be the right thing to do.
+>=20
+> Tony did provide tested-by and I measured PWM signals on scope with these
+> changes. Let me know if any thing else is required?
+>=20
+> [0] https://sourceforge.net/p/linuxptp/mailman/message/36943248/
 
-Guru Das.
+=46rom you measurements, can you tell whether or not the signal actually
+gets updated in the middle of a period, or does it only get updated at
+the end of a full period?
+
+Does the reference manual document this?
+
+Thierry
+
+--BOKacYhQ+x31HxR3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6Do6YACgkQ3SOs138+
+s6GpWw/9En4Lm+RFouT2oX8bU3PqB2/Osqii7EKJN3vMtai+xafLPW9dtxA4SKqv
++YwY883PKm0oRZZIdXu7Ul+3d01c+oMD4BA6DqQkUbi9UUd4an+Dk+lYLsy6iIjc
+4xx2ntB7GD5zpNXBqMJuU91nQ5bDiaKhp7UuwE+unO4QslHephbnyV5QGxWAUEOC
+FP+f8WBPIm/xmwNGWkgVVOrmWDPptJFLSL0j0nBGB4En9Gm7hAaNnVPJUNUeuUE2
+iNBV27uNrREKX6zUumZvTWzSABA8Cx6zd8/nA2Hra+PO2LmmDfdpl3dKqZDXuu8b
+luR+Cm0DFXpAC+3xuTD50pYqN0fWB5POvXvqBb3eZxpXd8z8vAdypgvmJi/gqb4P
+8jPgMdkeO/6ilLphZMLfyvl1AfcBp5XtZ0V70Uj75mC6MgOZAvbVqcRAT2U4ZGnn
+HI1YY8Ae/QfVqZetuK4sjIrt9h4a60RZ45CFX/+2uAo1imzYHItsk+9NtWSxr2nh
+DrzNK5RW6MfRPfyRMNhpcsbOH0wHuHAhFCDjNSzRpYmXc4C4qb1JFnkzbZng+XP+
+KcYJ1mDsJ1IfU9+mGVowb5QDPb4xo9mfn4TIqNzN0nBLFYInI/bGEz2gRtdfAT+X
+BBimFPPVbr1udSQJGTJ7Ei9wh89lmBdKW39XnVvsjI0407anivQ=
+=SKaG
+-----END PGP SIGNATURE-----
+
+--BOKacYhQ+x31HxR3--
