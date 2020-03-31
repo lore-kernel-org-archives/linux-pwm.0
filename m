@@ -1,134 +1,73 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: (EXT) Re: [PATCH 2/4] pwm: pca9685: remove ALL_LED PWM channel
-Date: Tue, 31 Mar 2020 15:14:52 +0200
-Message-ID: <20200331131452.GA6448@workstation.tuxnet>
-References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
- <20200226135229.24929-2-matthias.schiffer@ew.tq-group.com>
- <20200330130757.GC2431644@ulmo>
- <20200330133450.GA1530@workstation.tuxnet>
- <20200330154036.GB2817345@ulmo>
- <20200330160744.GA777@workstation.tuxnet>
- <452f4e03cc2a998c7a903251f99931935b1f872f.camel@ew.tq-group.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH v10 00/12] Convert PWM period and duty cycle
+ to u64
+Date: Tue, 31 Mar 2020 14:48:04 +0100
+Message-ID: <20200331134804.xxrjaestztcazalc@holly.lan>
+References: <cover.1584650604.git.gurus@codeaurora.org>
+ <20200321114703.GB4672@kadam>
+ <20200330191506.GA29534@codeaurora.org>
+ <20200330202636.njjo4savgzf3g6yx@holly.lan>
+ <20200330210012.GA27611@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([52.59.78.55]:43248 "EHLO mail.pqgruber.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730543AbgCaNO4 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 31 Mar 2020 09:14:56 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <452f4e03cc2a998c7a903251f99931935b1f872f.camel@ew.tq-group.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20200330210012.GA27611@codeaurora.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>, linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, "Wesley W. Terpstra" <wesley@sifive.com>, Michael Turquette <mturquette@baylibre.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Liam Girdwood <lgirdwood@gmail.com>, Atish Patra <atish.patra@wdc.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Alexandre Torgue <alexandre.torgue@st.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Axel Lin <axel.lin@ingics.com>, Arnd Bergmann <arnd@arndb.de>, Alexander Shiyan <shc_work@mail.ru>, Fabio Estevam <festevam@gmail.com>, Chen-Yu Tsai <wens@csie.org>, NXP Linux Team <linux-imx@nxp.com>, Mukesh Ojha <mojha@codeaurora.org>, Gerald Baeza <gerald.baeza@st.com>, intel-gfx@lists.freedesktop.org, Dan
 List-Id: linux-pwm@vger.kernel.org
-To: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com
 
-On Tue, Mar 31, 2020 at 02:09:37PM +0200, Matthias Schiffer wrote:
-> On Mon, 2020-03-30 at 18:07 +0200, Clemens Gruber wrote:
-> > On Mon, Mar 30, 2020 at 05:40:36PM +0200, Thierry Reding wrote:
-> > > On Mon, Mar 30, 2020 at 03:34:50PM +0200, Clemens Gruber wrote:
-> > > > Hi,
-> > > > 
-> > > > On Mon, Mar 30, 2020 at 03:07:57PM +0200, Thierry Reding wrote:
-> > > > > On Wed, Feb 26, 2020 at 02:52:27PM +0100, Matthias Schiffer
-> > > > > wrote:
-> > > > > > The interaction of the ALL_LED PWM channel with the other
-> > > > > > channels was
-> > > > > > not well-defined. As the ALL_LED feature does not seem very
-> > > > > > useful and
-> > > > > > it was making the code significantly more complex, simply
-> > > > > > remove it.
-> > > > > > 
-> > > > > > Signed-off-by: Matthias Schiffer <
-> > > > > > matthias.schiffer@ew.tq-group.com>
-> > > > > > ---
-> > > > > >  drivers/pwm/pwm-pca9685.c | 115 ++++++--------------------
-> > > > > > ------------
-> > > > > >  1 file changed, 17 insertions(+), 98 deletions(-)
-> > > > > 
-> > > > > Applied, thanks.
-> > > > > 
-> > > > > Thierry
-> > > > 
-> > > > I was not reading the mailing list in the last weeks, so I only
-> > > > saw the
-> > > > patch today.
-> > > > 
-> > > > We are using the ALL_LED channel in production to reduce the
-> > > > delay when
-> > > > all 16 PWM outputs need to be set to the same duty cycle.
-> > > > 
-> > > > I am not sure it is a good idea to remove this feature.
+On Mon, Mar 30, 2020 at 02:00:12PM -0700, Guru Das Srinagesh wrote:
+> On Mon, Mar 30, 2020 at 09:26:36PM +0100, Daniel Thompson wrote:
+> > On Mon, Mar 30, 2020 at 12:15:07PM -0700, Guru Das Srinagesh wrote:
+> > > On Sat, Mar 21, 2020 at 02:47:03PM +0300, Dan Carpenter wrote:
+> > > > This is a giant CC list.
 > > > 
-> > > Can you specify what platform this is and where the code is that
-> > > does
-> > > this. I can't really find any device tree users of this and I don't
-> > > know
-> > > if there's a good way to find out what other users there are, but
-> > > this
-> > > isn't the first time this driver has created confusion, so please
-> > > help
-> > > collect some more information about it's use so we can avoid this
-> > > in the
-> > > future.
+> > > Yes, this is because I received feedback [1] on an earlier patchset
+> > > directing me to add the reviewers of patches to the cover letter as
+> > > well so that they get some context for the patch.
+> > > ...
+> > > [1] https://www.spinics.net/lists/linux-pwm/msg11735.html
 > > 
-> > The platform is ARM, it's a custom board with an NXP i.MX6. The
-> > device
-> > tree is not upstreamed. As there are multiple companies involved
-> > in changes to this driver, I assume that it is in use, even though
-> > there
-> > are no in-tree users.
-> > Also: As you can set the ALL channel from userspace, it will be very
-> > difficult to find out how often the ALL feature is being used
-> > somewhere.
+> > Strictly speaking I only asked for backlight maintainers to be Cc:ed.
+> > I was fairly careful to be specific since I'm aware there are a variety
+> > of differing habits when putting together the Cc: list for covering
+> > letters.
 > > 
-> > > 
-> > > I'll back out this particular patch since you're using it. Can you
-> > > give
-> > > the other three patches a try to see if they work for you?
-> > 
-> > Thanks! I saw your other mail. Patch 1 looks good to me. I will look
-> > at
-> > the new version of patches 3 and 4 and test them when they appear on
-> > the
-> > list.
-> > 
-> > Clemens
+> > With the original patch header the purpose of the patch I was Cc:ed on
+> > was impossible to determine without the covering letter.
 > 
-> Thanks for the feedback, I'll have to respin my cleanup patches without
-> removing this feature.
+> I suspect this might be the case for all the other reviewers as well -
+> that they also would appreciate context for the specific patch they are
+> being added to review.
 > 
-> I wonder if we can come up with a sane semantics of how ALL_LED is
-> supposed to interact with the individual channels? Optimally, changes
-> made via ALL_LED should be reflected in the state of the other channels
-> including their sysfs files, but I'm not sure if current APIs can
-> support this cleanly. It might make sense to make requesting/exporting
-> individual channels and ALL_LED mutually exclusive, so the state of a
-> requested PWM can't change when it's supposed to be under exclusive
-> control of one user. Of course, such a change can break existing users
-> as well...
+> I wasn't entirely sure what the convention was, so I applied your
+> suggestion to all the files. How do you suggest I handle this in my next
+> patchset? I fully agree that such a large CC list does look really
+> ungainly.
 
-I agree that it would be a good idea to make this exclusive. This change
-would at least not break our application, because we unexport the
-ALL_LED channel before requesting an individual channel.
-Not sure about other users, but using both individual and ALL channels
-at the same time is probably not a reasonable/sane usecase..
+IHMO there should not be a mechanical convention. Instead your goal
+needs to be how to make it as easy as possible to review your patches.
 
-> And what about state propagation in the other direction - how should
-> the ALL_LED state reflect changes made to the other channels' settings?
-> On the hardware side, the ALL_LED registers are write-only, as there
-> aren't any sane values that could be returned.
+Think about it this way: Each person in the To: of a patch (and maybe
+also Cc: depending on how you construct things) is a person you are
+asking to review and comment on the patch. If that person will find it
+easier to review the patch if they are included in the cover letter then
+either they should be included or you should improve the patch
+description of the patch itself (sometimes both).
 
-According to the datashet (7.3.4) the individual registers are filled if
-the ALL_LED channel is used. However, in .disable, the OFF registers are
-reset to 0. (And the ON registers are not used, except for the FULL_ON
-bit)
-So there should not be any side effects, as long as the access to the
-ALL_LED channel is made exclusive and the user has to free it before he
-can request individual channels.
+Either way it is about optimizing the patchset for readability. More
+people read them than write them.
 
-Another quirk is the same prescaler/period for all channels. But I am
-not sure what we can do about that. Applications might already depend on
-the fact that the last set period wins.
 
-Clemens
+Daniel.
