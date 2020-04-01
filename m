@@ -1,112 +1,180 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and
- function
-Date: Tue, 31 Mar 2020 22:49:29 +0200
-Message-ID: <20200331204929.GC2954599@ulmo>
-References: <cover.1584667964.git.gurus@codeaurora.org>
- <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
- <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
- <20200330204359.GB5107@codeaurora.org>
- <CAK8P3a1VC6+0Tydm=BoK2NvHB1ZCPjE1Gfi-sTE5O-xnu3Ya3A@mail.gmail.com>
- <20200331202058.GB25781@codeaurora.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
+ changing period/duty_cycle
+Date: Wed, 1 Apr 2020 10:22:27 +0200
+Message-ID: <20200401082227.sxtarbttsmmhs2of@pengutronix.de>
+References: <20200312042210.17344-1-lokeshvutla@ti.com>
+ <20200312042210.17344-5-lokeshvutla@ti.com>
+ <20200312064042.p7himm3odxjyzroi@pengutronix.de>
+ <20200330141436.GG2431644@ulmo>
+ <20200330191654.waoocllctanh5nk5@pengutronix.de>
+ <20200331204559.GB2954599@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="PuGuTyElPB9bOcsM"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:37638 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727852AbgCaUtj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 31 Mar 2020 16:49:39 -0400
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-omap-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200331202058.GB25781@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20200331204559.GB2954599@ulmo>
+Sender: linux-omap-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Lokesh Vutla <lokeshvutla@ti.com>, Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linux PWM List <linux-pwm@vger.kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
 
+Hello Thierry,
 
---PuGuTyElPB9bOcsM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Mar 31, 2020 at 10:45:59PM +0200, Thierry Reding wrote:
+> On Mon, Mar 30, 2020 at 09:16:54PM +0200, Uwe Kleine-König wrote:
+> > On Mon, Mar 30, 2020 at 04:14:36PM +0200, Thierry Reding wrote:
+> > > On Thu, Mar 12, 2020 at 07:40:42AM +0100, Uwe Kleine-König wrote:
+> > > > On Thu, Mar 12, 2020 at 09:52:09AM +0530, Lokesh Vutla wrote:
+> > > > > Only the Timer control register(TCLR) cannot be updated when the timer
+> > > > > is running. Registers like Counter register(TCRR), loader register(TLDR),
+> > > > > match register(TMAR) can be updated when the counter is running. Since
+> > > > > TCLR is not updated in pwm_omap_dmtimer_config(), do not stop the
+> > > > > timer for period/duty_cycle update.
+> > > > 
+> > > > I'm not sure what is sensible here. Stopping the PWM for a short period
+> > > > is bad, but maybe emitting a wrong period isn't better. You can however
+> > > > optimise it if only one of period or duty_cycle changes.
+> > > > 
+> > > > @Thierry, what is your position here? I tend to say a short stop is
+> > > > preferable.
+> > > 
+> > > It's not clear to me from the above description how exactly the device
+> > > behaves, but I suspect that it may latch the values in those registers
+> > > and only update the actual signal output once a period has finished. I
+> > > know of a couple of other devices that do that, so it wouldn't be
+> > > surprising.
+> > > 
+> > > Even if that was not the case, I think this is just the kind of thing
+> > > that we have to live with. Sometimes it just isn't possible to have all
+> > > supported devices adhere strictly to an API. So I think the best we can
+> > > do is have an API that loosely defines what's supposed to happen and
+> > > make a best effort to implement those semantics. If a device deviates
+> > > slightly from those expectations, we can always cross fingers and hope
+> > > that things still work. And it looks like they are.
+> > > 
+> > > So I think if Lokesh and Tony agree that this is the right thing to do
+> > > and have verified that things still work after this, that's about as
+> > > good as it's going to get.
+> > 
+> > I'd say this isn't for the platform people to decide. My position here
+> > is that the PWM drivers should behave as uniform as possible to minimize
+> > surprises for consumers. And so it's a "PWM decision" that is to be made
+> > here, not an "omap decision".
+> 
+> I think there's a fine line to be walked here. I agree that we should
+> aim to have as much consistency between drivers as possible. At the same
+> time I think we need to be pragmatic. As Lokesh said, the particular use
+> case here requires this type of on-the-fly adjustment of the PWM period
+> without stopping and restarting the PWM. It doesn't work otherwise. So
+> th alternative that you're proposing is to say that we don't support
+> that use-case, even though it works just fine given this particular
+> hardware. That's not really an option.
 
-On Tue, Mar 31, 2020 at 01:20:58PM -0700, Guru Das Srinagesh wrote:
-> On Tue, Mar 31, 2020 at 05:24:52PM +0200, Arnd Bergmann wrote:
-> > On Mon, Mar 30, 2020 at 10:44 PM Guru Das Srinagesh
-> > <gurus@codeaurora.org> wrote:
-> > >
-> > > On Fri, Mar 20, 2020 at 06:09:39PM +0100, Arnd Bergmann wrote:
-> > > > On Fri, Mar 20, 2020 at 2:42 AM Guru Das Srinagesh <gurus@codeauror=
-a.org> wrote:
-> > > >
-> > > > > @@ -240,8 +240,7 @@ static int pwm_imx27_apply(struct pwm_chip *c=
-hip, struct pwm_device *pwm,
-> > > > >
-> > > > >         period_cycles /=3D prescale;
-> > > > >         c =3D (unsigned long long)period_cycles * state->duty_cyc=
-le;
-> > > > > -       do_div(c, state->period);
-> > > > > -       duty_cycles =3D c;
-> > > > > +       duty_cycles =3D div64_u64(c, state->period);
-> > > > >
-> > > >
-> > > > This change looks fine, but I wonder if the code directly above it
-> > > >
-> > > >         c =3D clk_get_rate(imx->clk_per);
-> > > >         c *=3D state->period;
-> > > >         do_div(c, 1000000000);
-> > > >         period_cycles =3D c;
-> > > >
-> > > > might run into an overflow when both the clock rate and the period
-> > > > are large numbers.
-> > >
-> > > Hmm. Seems to me like addressing this would be outside the scope of t=
-his
-> > > patch series.
-> >=20
-> > I think it should be part of the same series, addressing bugs that
-> > were introduced
-> > by the change to 64-bit period. If it's not getting fixed along with
-> > the other regressions,
-> > I fear nobody is going to go back and fix it later.
->=20
-> Makes sense, I agree. Would this be an acceptable fix?
->=20
-> Instead of multiplying c and state->period first and then dividing by
-> 10^9, first divide state->period by 10^9 and then multiply the quotient
-> of that division with c and assign it to period_cycles. Like so:
->=20
-> 	c =3D clk_get_rate(imx->clk_per);
-> 	c *=3D div_u64(state->period, 1000000000);
-> 	period_cycles =3D c;
->=20
-> This should take care of overflow not happening because state->period is
-> converted from nanoseconds to seconds early on and so becomes a small
-> number.
+I understand your opinion here. The situation now is that in current
+mainline the driver stops the hardware for reconfiguration and it
+doesn't fit Lokesh's use case so he changed to on-the-fly update
+(accepting that maybe a wrong period is emitted). What if someone relies
+on the old behaviour? What if in a year someone comes and claims the
+wrong period is bad for their usecase and changes back to
+stop-to-update?
 
-Doesn't that mean that anything below a 1 second period will be clamped
-to just 0?
+When I write a consumer driver, do I have a chance to know how the PWM,
+that I happen to use, behaves? To be able to get my consumer driver
+reliable I might need to know that however.
 
-Thierry
+> > > I know this is perhaps cheating a little, or turning a blind eye, but I
+> > > don't know what the alternative would be. Do we want to tell people that
+> > > a given PWM controller can't be used if it doesn't work according to our
+> > > expectations? That's hard to argue if that controller works just fine
+> > > for all known use-cases.
+> > 
+> > I'd like have some official policy here which of the alternatives is the
+> > preferred cheat.
+> > 
+> > The situation here is that period and duty_cycle cannot be updated
+> > atomically. So the two options are:
+> > 
+> >  - stop shortly
+> >  - update with hardware running and maybe emit a broken period
+> 
+> I think we can already support both of those with the existing API. If
+> a consumer wants to stop the PWM while reconfiguring, they should be
+> able to do pwm_enable(), pwm_config(), pwm_enable() (or the atomic
+> equivalent) and for the second case they can just do pwm_config() (or
+> the atomic equivalent).
 
---PuGuTyElPB9bOcsM
-Content-Type: application/pgp-signature; name="signature.asc"
+Yes, the consumer can force the stop and update. But assume I'm "only" a
+consumer driver author and I want: atomic update and if this is not
+possible I prefer "stop-to-update" over "on-the-fly-and-maybe-faulty".
+So I cannot benefit from a good driver/hardware that can do atomic
+updates? Or I have to patch each driver that I actually use to use
+stop-to-update?
 
------BEGIN PGP SIGNATURE-----
+> Some hardware may actually require the PWM to be disabled before
+> reconfiguring, so they won't be able to strictly adhere to the second
+> use-case.
+> 
+> But as discussed above, I don't want to strive for a lowest common
+> denominator that would preclude some more specific use-cases from
+> working if the hardware supports it.
+> 
+> So I think we should aim for drivers to implement the semantics as
+> closely as possible. If the hardware doesn't support some of these
+> requirements strictly while a particular use-case depends on that, then
+> that just means that the hardware isn't compatible with that use-case.
+> Chances are that the system just isn't going to be designed to support
+> that use-case in the first place if the hardware can't do it.
+> 
+> The sysfs interface is a bit of a special case here because it isn't
+> possible to know what use-cases people are going to come up with.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6DrNkACgkQ3SOs138+
-s6F2rRAArLSEhXAhgvFqFz7p1Jyl3a2QkW2gk0K5vu5cqJQzOMB/CGTnJlkpte4r
-OPEsS/IrnNJjMNvLMLZQ/92OqmWdK1ve0y8aFlhLAhGn5KdelcOcnf8Id/rxV2YJ
-BV7oMSVS9dZa5+gNJaFARNkYs+5dWAFQoKKvSxpaTMBMMMzN9TgoKZKa0W7xZQmh
-CbJve7ZWx/MsubZTneoudgf3Vi+SYak6kFEHhw/rqE9lFWb5pfKXwyVxpPHqW0uk
-ooJ1g5VkQxKPnaUtz3N2EK4+K4gUlh87myfPiH0k35FCJ9N+ENOIe9vtepJ33+u9
-UFD/GJUtPimSBDHKAcZyc0Gtvw4Cka4dmDeAgIMe+QviRjEd/pvI4MS+s8KCAYKk
-kn4AG2KDeC0w5bufJQnlXuziYw95gUYQ2nrRPFgI0yJMtdwvd+Pch5skoklz6GSZ
-2Q7Ao5wGRoRpV/cXb28lBNOgD4w0R1upufK/7I4lSwTRMBWXzBK57ItEXfeTO7V7
-2HEiAXYXt6oqM27RxedshqKGe9d5gwvdGLIy6NjfnQkJ4QySu13nLTas4yPlz3Lx
-ZTv+Cl8EElQnC7n2erxOjTcCPQaM14MslHRFhk+wtacQ3+Escb2lPndAzD8lQinS
-ncFajYcMWrIYy3l0rK0o6juMpEqV2vxl7Y8x04xvV/vr88q9OKY=
-=Ht11
------END PGP SIGNATURE-----
+In my eyes the sysfs interface isn't special here. You also don't know
+what the OMAP PWM hardware is used for.
 
---PuGuTyElPB9bOcsM--
+> It's most likely that they'll try something and if it doesn't work
+> they can see if a driver patch can improve things.
+
+So either the group who prefers "stop-to-update" or the group who
+prefers "on-the-fly-and-maybe-faulty" has to carry a system specific
+driver patch?
+
+> One possible extension that I can imagine would be to introduce some
+> sort of capability structure that drivers can fill in to describe the
+> behaviour of the hardware. Drivers like pwm-omap-dmtimer, for example,
+> could describe that they are able to change the period and/or duty cycle
+> while the PWM is on. There could be another capability bit that says
+> that the current period will finish before new settings are applied. Yet
+> another capability could describe that duty-cycle and period can be
+> applied atomically. Consumers could then check those capabilities to see
+> if they match their requirements.
+> 
+> But then again, I think that would just make things overly complicated.
+> None of the existing consumers need that, so it doesn't seem like there
+> is much demand for that feature. In practice I suspect most consumers
+> work fine despite potentially small deviations in how the PWM behaves.
+
+I think the status quo is what I asked about above: People use sysfs and
+if the PWM behaves different than needed, the driver is patched and most
+of the time not mainlined. If your focus is to support a certain
+industrial system with a defined use case, this is fine. If however you
+target for an universal framework that works for any combination of
+consumer + lowlevel driver without patching (that at least is able to
+diagnose: This PWM cannot provide what my consumer needs), this is bad.
+Also this means that whenever a system designer changes something on
+their machine (kernel update, different hardware, an new usecase for a
+PWM) they might have to reverify if the given PWM driver behaves as
+needed.
+
+My suggestion for now is to start documenting how the drivers behave
+expanding how limitations are documented in some drivers. So maybe
+change from "Limitations" to "Implementation and Hardware Details"?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
