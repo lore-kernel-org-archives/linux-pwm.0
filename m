@@ -1,142 +1,147 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: [PATCH v2 03/16] mfd: mfd-core: match device tree node against reg property
-Date: Thu,  2 Apr 2020 22:36:43 +0200
-Message-ID: <20200402203656.27047-4-michael@walle.cc>
-References: <20200402203656.27047-1-michael@walle.cc>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and
+ function
+Date: Thu, 2 Apr 2020 13:55:18 -0700
+Message-ID: <20200402205518.GA20261@codeaurora.org>
+References: <cover.1584667964.git.gurus@codeaurora.org>
+ <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
+ <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
+ <20200330204359.GB5107@codeaurora.org>
+ <CAK8P3a1VC6+0Tydm=BoK2NvHB1ZCPjE1Gfi-sTE5O-xnu3Ya3A@mail.gmail.com>
+ <20200331202058.GB25781@codeaurora.org>
+ <20200331204929.GC2954599@ulmo>
+ <20200402201654.GA9191@codeaurora.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200402203656.27047-1-michael-QKn5cuLxLXY@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200402201654.GA9191@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Linux PWM List <linux-pwm@vger.kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, David Collins <collinsd@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
 
-There might be multiple children with the device tree compatible, for
-example if a MFD has multiple instances of the same function. In this
-case only the first is matched and the other children get a wrong
-of_node reference.
-Add a new option to match also against the unit address of the child
-node. Additonally, a new helper OF_MFD_CELL_REG is added.
+On Thu, Apr 02, 2020 at 01:16:54PM -0700, Guru Das Srinagesh wrote:
+> On Tue, Mar 31, 2020 at 10:49:29PM +0200, Thierry Reding wrote:
+> > On Tue, Mar 31, 2020 at 01:20:58PM -0700, Guru Das Srinagesh wrote:
+> > > On Tue, Mar 31, 2020 at 05:24:52PM +0200, Arnd Bergmann wrote:
+> > > > On Mon, Mar 30, 2020 at 10:44 PM Guru Das Srinagesh
+> > > > <gurus@codeaurora.org> wrote:
+> > > > >
+> > > > > On Fri, Mar 20, 2020 at 06:09:39PM +0100, Arnd Bergmann wrote:
+> > > > > > On Fri, Mar 20, 2020 at 2:42 AM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+> > > > > >
+> > > > > > > @@ -240,8 +240,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> > > > > > >
+> > > > > > >         period_cycles /= prescale;
+> > > > > > >         c = (unsigned long long)period_cycles * state->duty_cycle;
+> > > > > > > -       do_div(c, state->period);
+> > > > > > > -       duty_cycles = c;
+> > > > > > > +       duty_cycles = div64_u64(c, state->period);
+> > > > > > >
+> > > > > >
+> > > > > > This change looks fine, but I wonder if the code directly above it
+> > > > > >
+> > > > > >         c = clk_get_rate(imx->clk_per);
+> > > > > >         c *= state->period;
+> > > > > >         do_div(c, 1000000000);
+> > > > > >         period_cycles = c;
+> > > > > >
+> > > > > > might run into an overflow when both the clock rate and the period
+> > > > > > are large numbers.
+> > > > >
+> > > > > Hmm. Seems to me like addressing this would be outside the scope of this
+> > > > > patch series.
+> > > > 
+> > > > I think it should be part of the same series, addressing bugs that
+> > > > were introduced
+> > > > by the change to 64-bit period. If it's not getting fixed along with
+> > > > the other regressions,
+> > > > I fear nobody is going to go back and fix it later.
+> > > 
+> > > Makes sense, I agree. Would this be an acceptable fix?
+> > > 
+> > > Instead of multiplying c and state->period first and then dividing by
+> > > 10^9, first divide state->period by 10^9 and then multiply the quotient
+> > > of that division with c and assign it to period_cycles. Like so:
+> > > 
+> > > 	c = clk_get_rate(imx->clk_per);
+> > > 	c *= div_u64(state->period, 1000000000);
+> > > 	period_cycles = c;
+> > > 
+> > > This should take care of overflow not happening because state->period is
+> > > converted from nanoseconds to seconds early on and so becomes a small
+> > > number.
+> > 
+> > Doesn't that mean that anything below a 1 second period will be clamped
+> > to just 0?
+> 
+> True. How about this then?
+> 
+> int pwm_imx27_calc_period_cycles(struct pwm_state state,
+> 				 unsigned long clk_rate,
+> 				 unsigned long *period_cycles)
+> {
+> 	u64 c1, c2;
+> 
+> 	c1 = clk_rate;
+> 	c2 = state->period;
+> 	if (c2 > c1) {
+> 		c2 = c1;
+> 		c1 = state->period;
+> 	}
+> 
+> 	if (!c1 || !c2) {
+> 		pr_err("clk rate and period should be nonzero\n");
+> 		return -EINVAL;
+> 	}
+> 
+> 	if (c2 <= div64_u64(U64_MAX, c1)) {
+> 		c = c1 * c2;
+> 		do_div(c, 1000000000);
+> 	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000))) {
+> 		do_div(c1, 1000);
+> 		c = c1 * c2;
+> 		do_div(c, 1000000);
+> 	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000))) {
+> 		do_div(c1, 1000000);
+> 		c = c1 * c2;
+> 		do_div(c, 1000);
+> 	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000000))) {
+> 		do_div(c1, 1000000000);
+> 		c = c1 * c2;
+> 	}
+> 
+> 	*period_cycles = c;
+> 
+> 	return 0;
+> }
+> 
+> ...
+> 
+> ret = pwm_imx27_calc_period_cycles(state, clk_get_rate(imx->clk_per),
+> 				   &period_cycles);
+> if (ret)
+> 	return ret;
+> 
+> I unit tested this logic out by calculating period_cycles using both the
+> existing logic and the proposed one, and the results are as below.
+> 
+> --------------------------------------------------------------------------------
+>  clk_rate		period		  existing 	      proposed
+> --------------------------------------------------------------------------------
+> 1000000000	18446744073709551615	 18446744072 	18446744073000000000
+>                       (U64_MAX)
+> --------------------------------------------------------------------------------
+> 1000000000	     4294967291		 4294967291	    4294967291
+> --------------------------------------------------------------------------------
+> 
+> Overflow occurs in the first case with the existing logic, whereas the
+> proposed logic handles it correctly. 
 
-Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
----
- drivers/mfd/mfd-core.c   | 29 ++++++++++++++++++++---------
- include/linux/mfd/core.h | 26 ++++++++++++++++++++------
- 2 files changed, 40 insertions(+), 15 deletions(-)
+Well, not "correctly" exactly, but a best-effort attempt to handle the
+overflow with som loss of precision.
 
-diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-index e735565969b3..4ecb376338f7 100644
---- a/drivers/mfd/mfd-core.c
-+++ b/drivers/mfd/mfd-core.c
-@@ -117,6 +117,7 @@ static int mfd_add_device(struct device *parent, int id,
- 	struct device_node *np = NULL;
- 	int ret = -ENOMEM;
- 	int platform_id;
-+	u32 of_reg;
- 	int r;
- 
- 	if (id == PLATFORM_DEVID_AUTO)
-@@ -151,16 +152,26 @@ static int mfd_add_device(struct device *parent, int id,
- 
- 	if (parent->of_node && cell->of_compatible) {
- 		for_each_child_of_node(parent->of_node, np) {
--			if (of_device_is_compatible(np, cell->of_compatible)) {
--				if (!of_device_is_available(np)) {
--					/* Ignore disabled devices error free */
--					ret = 0;
--					goto fail_alias;
--				}
--				pdev->dev.of_node = np;
--				pdev->dev.fwnode = &np->fwnode;
--				break;
-+			if (!of_device_is_compatible(np, cell->of_compatible))
-+				continue;
-+
-+			/* also match the unit address if set */
-+			if (cell->of_reg & MFD_OF_REG_VALID) {
-+				if (of_property_read_u32(np, "reg", &of_reg))
-+					continue;
-+				if ((cell->of_reg & MFD_OF_REG_MASK) != of_reg)
-+					continue;
- 			}
-+
-+			if (!of_device_is_available(np)) {
-+				/* Ignore disabled devices error free */
-+				ret = 0;
-+				goto fail_alias;
-+			}
-+
-+			pdev->dev.of_node = np;
-+			pdev->dev.fwnode = &np->fwnode;
-+			break;
- 		}
- 	}
- 
-diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
-index d01d1299e49d..c2c0ad6b14f3 100644
---- a/include/linux/mfd/core.h
-+++ b/include/linux/mfd/core.h
-@@ -13,8 +13,11 @@
- #include <linux/platform_device.h>
- 
- #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
-+#define MFD_OF_REG_VALID	BIT(31)
-+#define MFD_OF_REG_MASK		GENMASK(30, 0)
- 
--#define MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat, _match)\
-+#define MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
-+		     _of_reg, _match)					\
- 	{								\
- 		.name = (_name),					\
- 		.resources = (_res),					\
-@@ -22,24 +25,32 @@
- 		.platform_data = (_pdata),				\
- 		.pdata_size = (_pdsize),				\
- 		.of_compatible = (_compat),				\
-+		.of_reg = (_of_reg),					\
- 		.acpi_match = (_match),					\
- 		.id = (_id),						\
- 	}
- 
-+#define OF_MFD_CELL_REG(_name, _res, _pdata, _pdsize, _id, _compat,	\
-+			_of_reg)					\
-+	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
-+		     ((_of_reg) | MFD_OF_REG_VALID), NULL)		\
-+
- #define OF_MFD_CELL(_name, _res, _pdata, _pdsize,_id, _compat)		\
--	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat, NULL)	\
-+	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
-+		     0, NULL)						\
- 
- #define ACPI_MFD_CELL(_name, _res, _pdata, _pdsize, _id, _match)	\
--	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, _match)	\
-+	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, 0,	\
-+		     _match)						\
- 
- #define MFD_CELL_BASIC(_name, _res, _pdata, _pdsize, _id)		\
--	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, NULL)	\
-+	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, 0, NULL) \
- 
- #define MFD_CELL_RES(_name, _res)					\
--	MFD_CELL_ALL(_name, _res, NULL, 0, 0, NULL, NULL)		\
-+	MFD_CELL_ALL(_name, _res, NULL, 0, 0, NULL, 0, NULL)		\
- 
- #define MFD_CELL_NAME(_name)						\
--	MFD_CELL_ALL(_name, NULL, NULL, 0, 0, NULL, NULL)		\
-+	MFD_CELL_ALL(_name, NULL, NULL, 0, 0, NULL, 0, NULL)		\
- 
- struct irq_domain;
- struct property_entry;
-@@ -78,6 +89,9 @@ struct mfd_cell {
- 	 */
- 	const char		*of_compatible;
- 
-+	/* matching the reg property if set */
-+	unsigned int		of_reg;
-+
- 	/* Matches ACPI */
- 	const struct mfd_cell_acpi_match	*acpi_match;
- 
--- 
-2.20.1
+Thank you.
+
+Guru Das.
