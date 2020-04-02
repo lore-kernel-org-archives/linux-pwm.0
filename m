@@ -1,102 +1,274 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and function
-Date: Thu, 2 Apr 2020 23:16:22 +0200
-Message-ID: <CAK8P3a3mc_sYczyKiaDoQLTTwDj2odwHJ5LFNAOb4RaRyh0YLQ@mail.gmail.com>
-References: <cover.1584667964.git.gurus@codeaurora.org> <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
- <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
- <20200330204359.GB5107@codeaurora.org> <CAK8P3a1VC6+0Tydm=BoK2NvHB1ZCPjE1Gfi-sTE5O-xnu3Ya3A@mail.gmail.com>
- <20200331202058.GB25781@codeaurora.org> <20200331204929.GC2954599@ulmo> <20200402201654.GA9191@codeaurora.org>
+From: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Subject: Re: [PATCH v2 12/16] hwmon: add support for the sl28cpld hardware
+ monitoring controller
+Date: Thu, 2 Apr 2020 14:30:51 -0700
+Message-ID: <20200402213051.GA129260@roeck-us.net>
+References: <20200402203656.27047-1-michael@walle.cc>
+ <20200402203656.27047-13-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([217.72.192.73]:52329 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbgDBVQl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Apr 2020 17:16:41 -0400
-In-Reply-To: <20200402201654.GA9191@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200402203656.27047-13-michael-QKn5cuLxLXY@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, David Collins <collinsd@codeaurora.org>
 
-On Thu, Apr 2, 2020 at 10:16 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
-> On Tue, Mar 31, 2020 at 10:49:29PM +0200, Thierry Reding wrote:
-> > Doesn't that mean that anything below a 1 second period will be clamped
-> > to just 0?
->
-> True. How about this then?
->
-> int pwm_imx27_calc_period_cycles(struct pwm_state state,
->                                  unsigned long clk_rate,
->                                  unsigned long *period_cycles)
-> {
->         u64 c1, c2;
->
->         c1 = clk_rate;
->         c2 = state->period;
->         if (c2 > c1) {
->                 c2 = c1;
->                 c1 = state->period;
->         }
->
->         if (!c1 || !c2) {
->                 pr_err("clk rate and period should be nonzero\n");
->                 return -EINVAL;
->         }
->
->         if (c2 <= div64_u64(U64_MAX, c1)) {
->                 c = c1 * c2;
->                 do_div(c, 1000000000);
->         } else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000))) {
->                 do_div(c1, 1000);
->                 c = c1 * c2;
->                 do_div(c, 1000000);
->         } else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000))) {
->                 do_div(c1, 1000000);
->                 c = c1 * c2;
->                 do_div(c, 1000);
->         } else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000000))) {
->                 do_div(c1, 1000000000);
->                 c = c1 * c2;
->         }
->
->         *period_cycles = c;
->
->         return 0;
-> }
->
-> ...
->
-> ret = pwm_imx27_calc_period_cycles(state, clk_get_rate(imx->clk_per),
->                                    &period_cycles);
-> if (ret)
->         return ret;
->
-> I unit tested this logic out by calculating period_cycles using both the
-> existing logic and the proposed one, and the results are as below.
->
-> --------------------------------------------------------------------------------
->  clk_rate               period            existing            proposed
-> --------------------------------------------------------------------------------
-> 1000000000      18446744073709551615     18446744072    18446744073000000000
->                       (U64_MAX)
-> --------------------------------------------------------------------------------
-> 1000000000           4294967291          4294967291         4294967291
-> --------------------------------------------------------------------------------
->
-> Overflow occurs in the first case with the existing logic, whereas the
-> proposed logic handles it correctly. As for the second case where there are
-> more typical values of period, the proposed logic handles that correctly
-> too.
+On Thu, Apr 02, 2020 at 10:36:52PM +0200, Michael Walle wrote:
+> This adds support for the hardware monitoring controller of the sl28cpld
+> board management controller. This driver is part of a multi-function
+> device.
+> 
+> Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+> ---
+>  Documentation/hwmon/sl28cpld.rst |  36 ++++++++
 
-This looks correct, but very expensive, and you don't really have to
-go this far, given that c1 is guaranteed to be a 32-bit number, and
-you divide by a constant in the end.
+Needs to be added to Documentation.hwmon/index.rst.
+Otherwise looks good. With that fixed, please feel free to add
 
-Why not do something like
+Acked-by: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
 
-#define SHIFT 41 /* arbitrarily picked, not too big, not too small */
-#define MUL 2199 /* 2^SHIFT / NSEC_PER_SEC */
-period_cycles = clk_get_rate(imx->clk_per) * ((state->period * MUL) >> SHIFT);
+in the next version.
 
-        Arnd
+Guenter
+
+>  drivers/hwmon/Kconfig            |  10 ++
+>  drivers/hwmon/Makefile           |   1 +
+>  drivers/hwmon/sl28cpld-hwmon.c   | 151 +++++++++++++++++++++++++++++++
+>  4 files changed, 198 insertions(+)
+>  create mode 100644 Documentation/hwmon/sl28cpld.rst
+>  create mode 100644 drivers/hwmon/sl28cpld-hwmon.c
+> 
+> diff --git a/Documentation/hwmon/sl28cpld.rst b/Documentation/hwmon/sl28cpld.rst
+> new file mode 100644
+> index 000000000000..7ed65f78250c
+> --- /dev/null
+> +++ b/Documentation/hwmon/sl28cpld.rst
+> @@ -0,0 +1,36 @@
+> +.. SPDX-License-Identifier: GPL-2.0-only
+> +
+> +Kernel driver sl28cpld
+> +======================
+> +
+> +Supported chips:
+> +
+> +   * Kontron sl28cpld
+> +
+> +     Prefix: 'sl28cpld'
+> +
+> +     Datasheet: not available
+> +
+> +Authors: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+> +
+> +Description
+> +-----------
+> +
+> +The sl28cpld is a board management controller which also exposes a hardware
+> +monitoring controller. At the moment this controller supports a single fan
+> +supervisor. In the future there might be other flavours and additional
+> +hardware monitoring might be supported.
+> +
+> +The fan supervisor has a 7 bit counter register and a counter period of 1
+> +second. If the 7 bit counter overflows, the supervisor will automatically
+> +switch to x8 mode to support a wider input range at the loss of
+> +granularity.
+> +
+> +Sysfs entries
+> +-------------
+> +
+> +The following attributes are supported.
+> +
+> +======================= ========================================================
+> +fan1_input		Fan RPM. Assuming 2 pulses per revolution.
+> +======================= ========================================================
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index 05a30832c6ba..c98716f78cfa 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -1412,6 +1412,16 @@ config SENSORS_RASPBERRYPI_HWMON
+>  	  This driver can also be built as a module. If so, the module
+>  	  will be called raspberrypi-hwmon.
+>  
+> +config SENSORS_SL28CPLD
+> +	tristate "Kontron's SMARC-sAL28 hardware monitoring driver"
+> +	depends on MFD_SL28CPLD
+> +	help
+> +	  If you say yes here you get support for a fan connected to the
+> +	  input of the SMARC connector of Kontron's SMARC-sAL28 module.
+> +
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called sl28cpld-hwmon.
+> +
+>  config SENSORS_SHT15
+>  	tristate "Sensiron humidity and temperature sensors. SHT15 and compat."
+>  	depends on GPIOLIB || COMPILE_TEST
+> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+> index b0b9c8e57176..dfb0f8cda2dd 100644
+> --- a/drivers/hwmon/Makefile
+> +++ b/drivers/hwmon/Makefile
+> @@ -155,6 +155,7 @@ obj-$(CONFIG_SENSORS_S3C)	+= s3c-hwmon.o
+>  obj-$(CONFIG_SENSORS_SCH56XX_COMMON)+= sch56xx-common.o
+>  obj-$(CONFIG_SENSORS_SCH5627)	+= sch5627.o
+>  obj-$(CONFIG_SENSORS_SCH5636)	+= sch5636.o
+> +obj-$(CONFIG_SENSORS_SL28CPLD)	+= sl28cpld-hwmon.o
+>  obj-$(CONFIG_SENSORS_SHT15)	+= sht15.o
+>  obj-$(CONFIG_SENSORS_SHT21)	+= sht21.o
+>  obj-$(CONFIG_SENSORS_SHT3x)	+= sht3x.o
+> diff --git a/drivers/hwmon/sl28cpld-hwmon.c b/drivers/hwmon/sl28cpld-hwmon.c
+> new file mode 100644
+> index 000000000000..c79bdfed8332
+> --- /dev/null
+> +++ b/drivers/hwmon/sl28cpld-hwmon.c
+> @@ -0,0 +1,151 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * sl28cpld hardware monitoring driver.
+> + *
+> + * Copyright 2019 Kontron Europe GmbH
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/hwmon.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +
+> +#define FAN_INPUT		0x00
+> +#define   FAN_SCALE_X8		BIT(7)
+> +#define   FAN_VALUE_MASK	GENMASK(6, 0)
+> +
+> +struct sl28cpld_hwmon {
+> +	struct regmap *regmap;
+> +	u32 offset;
+> +};
+> +
+> +static umode_t sl28cpld_hwmon_is_visible(const void *data,
+> +					 enum hwmon_sensor_types type,
+> +					 u32 attr, int channel)
+> +{
+> +	return 0444;
+> +}
+> +
+> +static int sl28cpld_hwmon_read(struct device *dev,
+> +			       enum hwmon_sensor_types type, u32 attr,
+> +			       int channel, long *input)
+> +{
+> +	struct sl28cpld_hwmon *hwmon = dev_get_drvdata(dev);
+> +	unsigned int value;
+> +	int ret;
+> +
+> +	switch (attr) {
+> +	case hwmon_fan_input:
+> +		ret = regmap_read(hwmon->regmap, hwmon->offset + FAN_INPUT,
+> +				  &value);
+> +		if (ret)
+> +			return ret;
+> +		/*
+> +		 * The register has a 7 bit value and 1 bit which indicates the
+> +		 * scale. If the MSB is set, then the lower 7 bit has to be
+> +		 * multiplied by 8, to get the correct reading.
+> +		 */
+> +		if (value & FAN_SCALE_X8)
+> +			value = FIELD_GET(FAN_VALUE_MASK, value) << 3;
+> +
+> +		/*
+> +		 * The counter period is 1000ms and the sysfs specification
+> +		 * says we should asssume 2 pulses per revolution.
+> +		 */
+> +		value *= 60 / 2;
+> +
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	*input = value;
+> +	return 0;
+> +}
+> +
+> +static const u32 sl28cpld_hwmon_fan_config[] = {
+> +	HWMON_F_INPUT,
+> +	0
+> +};
+> +
+> +static const struct hwmon_channel_info sl28cpld_hwmon_fan = {
+> +	.type = hwmon_fan,
+> +	.config = sl28cpld_hwmon_fan_config,
+> +};
+> +
+> +static const struct hwmon_channel_info *sl28cpld_hwmon_info[] = {
+> +	&sl28cpld_hwmon_fan,
+> +	NULL
+> +};
+> +
+> +static const struct hwmon_ops sl28cpld_hwmon_ops = {
+> +	.is_visible = sl28cpld_hwmon_is_visible,
+> +	.read = sl28cpld_hwmon_read,
+> +};
+> +
+> +static const struct hwmon_chip_info sl28cpld_hwmon_chip_info = {
+> +	.ops = &sl28cpld_hwmon_ops,
+> +	.info = sl28cpld_hwmon_info,
+> +};
+> +
+> +static int sl28cpld_hwmon_probe(struct platform_device *pdev)
+> +{
+> +	struct device *hwmon_dev;
+> +	struct sl28cpld_hwmon *hwmon;
+> +	struct resource *res;
+> +
+> +	if (!pdev->dev.parent)
+> +		return -ENODEV;
+> +
+> +	hwmon = devm_kzalloc(&pdev->dev, sizeof(*hwmon), GFP_KERNEL);
+> +	if (!hwmon)
+> +		return -ENOMEM;
+> +
+> +	hwmon->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+> +	if (!hwmon->regmap)
+> +		return -ENODEV;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+> +	if (!res)
+> +		return -EINVAL;
+> +	hwmon->offset = res->start;
+> +
+> +	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev,
+> +				"sl28cpld_hwmon", hwmon,
+> +				&sl28cpld_hwmon_chip_info, NULL);
+> +	if (IS_ERR(hwmon_dev)) {
+> +		dev_err(&pdev->dev, "failed to register as hwmon device");
+> +		return PTR_ERR(hwmon_dev);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id sl28cpld_hwmon_of_match[] = {
+> +	{ .compatible = "kontron,sl28cpld-fan" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, sl28cpld_hwmon_of_match);
+> +
+> +static const struct platform_device_id sl28cpld_hwmon_id_table[] = {
+> +	{ "sl28cpld-fan" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(platform, sl28cpld_hwmon_id_table);
+> +
+> +static struct platform_driver sl28cpld_hwmon_driver = {
+> +	.probe = sl28cpld_hwmon_probe,
+> +	.id_table = sl28cpld_hwmon_id_table,
+> +	.driver = {
+> +		.name = KBUILD_MODNAME,
+> +		.of_match_table = sl28cpld_hwmon_of_match,
+> +	},
+> +};
+> +module_platform_driver(sl28cpld_hwmon_driver);
+> +
+> +MODULE_DESCRIPTION("sl28cpld Hardware Monitoring Driver");
+> +MODULE_AUTHOR("Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>");
+> +MODULE_LICENSE("GPL");
