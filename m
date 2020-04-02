@@ -1,262 +1,494 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: [PATCH v2 12/16] hwmon: add support for the sl28cpld hardware monitoring controller
-Date: Thu,  2 Apr 2020 22:36:52 +0200
-Message-ID: <20200402203656.27047-13-michael@walle.cc>
+From: Michael Walle <michael@walle.cc>
+Subject: [PATCH v2 10/16] gpio: add a reusable generic gpio_chip using regmap
+Date: Thu,  2 Apr 2020 22:36:50 +0200
+Message-ID: <20200402203656.27047-11-michael@walle.cc>
 References: <20200402203656.27047-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200402203656.27047-1-michael-QKn5cuLxLXY@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from ssl.serverraum.org ([176.9.125.105]:43695 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389651AbgDBUhT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Apr 2020 16:37:19 -0400
+In-Reply-To: <20200402203656.27047-1-michael@walle.cc>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Walle <michael@walle.cc>
 
-This adds support for the hardware monitoring controller of the sl28cpld
-board management controller. This driver is part of a multi-function
-device.
+There are quite a lot simple GPIO controller which are using regmap to
+access the hardware. This driver tries to be a base to unify existing
+code into one place. This won't cover everything but it should be a good
+starting point.
 
-Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+It does not implement its own irq_chip because there is already a
+generic one for regmap based devices. Instead, the irq_chip will be
+instanciated in the parent driver and its irq domain will be associate
+to this driver.
+
+For now it consists of the usual registers, like set (and an optional
+clear) data register, an input register and direction registers.
+Out-of-the-box, it supports consecutive register mappings and mappings
+where the registers have gaps between them with a linear mapping between
+GPIO offset and bit position. For weirder mappings the user can register
+its own .xlate().
+
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- Documentation/hwmon/sl28cpld.rst |  36 ++++++++
- drivers/hwmon/Kconfig            |  10 ++
- drivers/hwmon/Makefile           |   1 +
- drivers/hwmon/sl28cpld-hwmon.c   | 151 +++++++++++++++++++++++++++++++
- 4 files changed, 198 insertions(+)
- create mode 100644 Documentation/hwmon/sl28cpld.rst
- create mode 100644 drivers/hwmon/sl28cpld-hwmon.c
+ drivers/gpio/Kconfig        |   4 +
+ drivers/gpio/Makefile       |   1 +
+ drivers/gpio/gpio-regmap.c  | 320 ++++++++++++++++++++++++++++++++++++
+ include/linux/gpio-regmap.h |  88 ++++++++++
+ 4 files changed, 413 insertions(+)
+ create mode 100644 drivers/gpio/gpio-regmap.c
+ create mode 100644 include/linux/gpio-regmap.h
 
-diff --git a/Documentation/hwmon/sl28cpld.rst b/Documentation/hwmon/sl28cpld.rst
-new file mode 100644
-index 000000000000..7ed65f78250c
---- /dev/null
-+++ b/Documentation/hwmon/sl28cpld.rst
-@@ -0,0 +1,36 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+Kernel driver sl28cpld
-+======================
-+
-+Supported chips:
-+
-+   * Kontron sl28cpld
-+
-+     Prefix: 'sl28cpld'
-+
-+     Datasheet: not available
-+
-+Authors: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-+
-+Description
-+-----------
-+
-+The sl28cpld is a board management controller which also exposes a hardware
-+monitoring controller. At the moment this controller supports a single fan
-+supervisor. In the future there might be other flavours and additional
-+hardware monitoring might be supported.
-+
-+The fan supervisor has a 7 bit counter register and a counter period of 1
-+second. If the 7 bit counter overflows, the supervisor will automatically
-+switch to x8 mode to support a wider input range at the loss of
-+granularity.
-+
-+Sysfs entries
-+-------------
-+
-+The following attributes are supported.
-+
-+======================= ========================================================
-+fan1_input		Fan RPM. Assuming 2 pulses per revolution.
-+======================= ========================================================
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 05a30832c6ba..c98716f78cfa 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1412,6 +1412,16 @@ config SENSORS_RASPBERRYPI_HWMON
- 	  This driver can also be built as a module. If so, the module
- 	  will be called raspberrypi-hwmon.
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index 1b96169d84f7..a8e148f4b2e0 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -73,6 +73,10 @@ config GPIO_GENERIC
+ 	depends on HAS_IOMEM # Only for IOMEM drivers
+ 	tristate
  
-+config SENSORS_SL28CPLD
-+	tristate "Kontron's SMARC-sAL28 hardware monitoring driver"
-+	depends on MFD_SL28CPLD
-+	help
-+	  If you say yes here you get support for a fan connected to the
-+	  input of the SMARC connector of Kontron's SMARC-sAL28 module.
++config GPIO_REGMAP
++	depends on REGMAP
++	tristate
 +
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called sl28cpld-hwmon.
-+
- config SENSORS_SHT15
- 	tristate "Sensiron humidity and temperature sensors. SHT15 and compat."
- 	depends on GPIOLIB || COMPILE_TEST
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index b0b9c8e57176..dfb0f8cda2dd 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -155,6 +155,7 @@ obj-$(CONFIG_SENSORS_S3C)	+= s3c-hwmon.o
- obj-$(CONFIG_SENSORS_SCH56XX_COMMON)+= sch56xx-common.o
- obj-$(CONFIG_SENSORS_SCH5627)	+= sch5627.o
- obj-$(CONFIG_SENSORS_SCH5636)	+= sch5636.o
-+obj-$(CONFIG_SENSORS_SL28CPLD)	+= sl28cpld-hwmon.o
- obj-$(CONFIG_SENSORS_SHT15)	+= sht15.o
- obj-$(CONFIG_SENSORS_SHT21)	+= sht21.o
- obj-$(CONFIG_SENSORS_SHT3x)	+= sht3x.o
-diff --git a/drivers/hwmon/sl28cpld-hwmon.c b/drivers/hwmon/sl28cpld-hwmon.c
+ # put drivers in the right section, in alphabetical order
+ 
+ # This symbol is selected by both I2C and SPI expanders
+diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+index b2cfc21a97f3..93e139fdfa57 100644
+--- a/drivers/gpio/Makefile
++++ b/drivers/gpio/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_GPIO_SYSFS)	+= gpiolib-sysfs.o
+ obj-$(CONFIG_GPIO_ACPI)		+= gpiolib-acpi.o
+ 
+ # Device drivers. Generally keep list sorted alphabetically
++obj-$(CONFIG_GPIO_REGMAP)	+= gpio-regmap.o
+ obj-$(CONFIG_GPIO_GENERIC)	+= gpio-generic.o
+ 
+ # directly supported by gpio-generic
+diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
 new file mode 100644
-index 000000000000..c79bdfed8332
+index 000000000000..cc4437dc0521
 --- /dev/null
-+++ b/drivers/hwmon/sl28cpld-hwmon.c
-@@ -0,0 +1,151 @@
++++ b/drivers/gpio/gpio-regmap.c
+@@ -0,0 +1,320 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * sl28cpld hardware monitoring driver.
++ * regmap based generic GPIO driver
 + *
-+ * Copyright 2019 Kontron Europe GmbH
++ * Copyright 2019 Michael Walle <michael@walle.cc>
 + */
 +
-+#include <linux/bitfield.h>
-+#include <linux/hwmon.h>
++#include <linux/gpio/driver.h>
++#include <linux/gpio-regmap.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
 +#include <linux/regmap.h>
 +
-+#define FAN_INPUT		0x00
-+#define   FAN_SCALE_X8		BIT(7)
-+#define   FAN_VALUE_MASK	GENMASK(6, 0)
-+
-+struct sl28cpld_hwmon {
-+	struct regmap *regmap;
-+	u32 offset;
++struct gpio_regmap_data {
++	struct gpio_chip gpio_chip;
++	struct gpio_regmap *gpio;
 +};
 +
-+static umode_t sl28cpld_hwmon_is_visible(const void *data,
-+					 enum hwmon_sensor_types type,
-+					 u32 attr, int channel)
++/**
++ * gpio_regmap_simple_xlate() - translate base/offset to reg/mask
++ *
++ * Use a simple linear mapping to translate the offset to the bitmask.
++ */
++int gpio_regmap_simple_xlate(struct gpio_regmap *gpio, unsigned int base,
++			     unsigned int offset,
++			     unsigned int *reg, unsigned int *mask)
 +{
-+	return 0444;
-+}
++	unsigned int line = offset % gpio->ngpio_per_reg;
++	unsigned int stride = offset / gpio->ngpio_per_reg;
 +
-+static int sl28cpld_hwmon_read(struct device *dev,
-+			       enum hwmon_sensor_types type, u32 attr,
-+			       int channel, long *input)
++	*reg = base + stride * gpio->reg_stride;
++	*mask = BIT(line);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(gpio_regmap_simple_xlate);
++
++static int gpio_regmap_get(struct gpio_chip *chip, unsigned int offset)
 +{
-+	struct sl28cpld_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int value;
++	struct gpio_regmap_data *data = gpiochip_get_data(chip);
++	struct gpio_regmap *gpio = data->gpio;
++	unsigned int base;
++	unsigned int val, reg, mask;
 +	int ret;
 +
-+	switch (attr) {
-+	case hwmon_fan_input:
-+		ret = regmap_read(hwmon->regmap, hwmon->offset + FAN_INPUT,
-+				  &value);
-+		if (ret)
-+			return ret;
-+		/*
-+		 * The register has a 7 bit value and 1 bit which indicates the
-+		 * scale. If the MSB is set, then the lower 7 bit has to be
-+		 * multiplied by 8, to get the correct reading.
-+		 */
-+		if (value & FAN_SCALE_X8)
-+			value = FIELD_GET(FAN_VALUE_MASK, value) << 3;
++	/* we might not have an output register if we are input only */
++	if (gpio->reg_dat_base.valid)
++		base = gpio->reg_dat_base.addr;
++	else
++		base = gpio->reg_set_base.addr;
 +
-+		/*
-+		 * The counter period is 1000ms and the sysfs specification
-+		 * says we should asssume 2 pulses per revolution.
-+		 */
-+		value *= 60 / 2;
++	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
++	if (ret)
++		return ret;
 +
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
++	ret = regmap_read(gpio->regmap, reg, &val);
++	if (ret)
++		return ret;
 +
-+	*input = value;
-+	return 0;
++	return (val & mask) ? 1 : 0;
 +}
 +
-+static const u32 sl28cpld_hwmon_fan_config[] = {
-+	HWMON_F_INPUT,
-+	0
-+};
-+
-+static const struct hwmon_channel_info sl28cpld_hwmon_fan = {
-+	.type = hwmon_fan,
-+	.config = sl28cpld_hwmon_fan_config,
-+};
-+
-+static const struct hwmon_channel_info *sl28cpld_hwmon_info[] = {
-+	&sl28cpld_hwmon_fan,
-+	NULL
-+};
-+
-+static const struct hwmon_ops sl28cpld_hwmon_ops = {
-+	.is_visible = sl28cpld_hwmon_is_visible,
-+	.read = sl28cpld_hwmon_read,
-+};
-+
-+static const struct hwmon_chip_info sl28cpld_hwmon_chip_info = {
-+	.ops = &sl28cpld_hwmon_ops,
-+	.info = sl28cpld_hwmon_info,
-+};
-+
-+static int sl28cpld_hwmon_probe(struct platform_device *pdev)
++static void gpio_regmap_set(struct gpio_chip *chip, unsigned int offset,
++			    int val)
 +{
-+	struct device *hwmon_dev;
-+	struct sl28cpld_hwmon *hwmon;
-+	struct resource *res;
++	struct gpio_regmap_data *data = gpiochip_get_data(chip);
++	struct gpio_regmap *gpio = data->gpio;
++	unsigned int base = gpio->reg_set_base.addr;
++	unsigned int reg, mask;
 +
-+	if (!pdev->dev.parent)
-+		return -ENODEV;
++	gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
++	if (val)
++		regmap_update_bits(gpio->regmap, reg, mask, mask);
++	else
++		regmap_update_bits(gpio->regmap, reg, mask, 0);
++}
 +
-+	hwmon = devm_kzalloc(&pdev->dev, sizeof(*hwmon), GFP_KERNEL);
-+	if (!hwmon)
++static void gpio_regmap_set_with_clear(struct gpio_chip *chip,
++				       unsigned int offset, int val)
++{
++	struct gpio_regmap_data *data = gpiochip_get_data(chip);
++	struct gpio_regmap *gpio = data->gpio;
++	unsigned int base;
++	unsigned int reg, mask;
++
++	if (val)
++		base = gpio->reg_set_base.addr;
++	else
++		base = gpio->reg_clr_base.addr;
++
++	gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
++	regmap_write(gpio->regmap, reg, mask);
++}
++
++static int gpio_regmap_get_direction(struct gpio_chip *chip,
++				     unsigned int offset)
++{
++	struct gpio_regmap_data *data = gpiochip_get_data(chip);
++	struct gpio_regmap *gpio = data->gpio;
++	unsigned int val, reg, mask;
++	unsigned int base;
++	int invert;
++	int ret;
++
++	if (gpio->reg_dir_out_base.valid) {
++		base = gpio->reg_dir_out_base.addr;
++		invert = 0;
++	} else if (gpio->reg_dir_in_base.valid) {
++		base = gpio->reg_dir_in_base.addr;
++		invert = 1;
++	} else {
++		return GPIO_LINE_DIRECTION_IN;
++	}
++
++	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(gpio->regmap, reg, &val);
++	if (ret)
++		return ret;
++
++	if (!!(val & mask) ^ invert)
++		return GPIO_LINE_DIRECTION_OUT;
++	else
++		return GPIO_LINE_DIRECTION_IN;
++}
++
++static int gpio_regmap_set_direction(struct gpio_chip *chip,
++				     unsigned int offset, bool output)
++{
++	struct gpio_regmap_data *data = gpiochip_get_data(chip);
++	struct gpio_regmap *gpio = data->gpio;
++	unsigned int val, reg, mask;
++	unsigned int base;
++	int invert;
++	int ret;
++
++	if (gpio->reg_dir_out_base.valid) {
++		base = gpio->reg_dir_out_base.addr;
++		invert = 0;
++	} else if (gpio->reg_dir_in_base.valid) {
++		base = gpio->reg_dir_in_base.addr;
++		invert = 1;
++	} else {
++		return 0;
++	}
++
++	ret = gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
++	if (ret)
++		return ret;
++
++	if (!invert)
++		val = (output) ? mask : 0;
++	else
++		val = (output) ? 0 : mask;
++
++	return regmap_update_bits(gpio->regmap, reg, mask, val);
++}
++
++static int gpio_regmap_direction_input(struct gpio_chip *chip,
++				       unsigned int offset)
++{
++	return gpio_regmap_set_direction(chip, offset, false);
++}
++
++static int gpio_regmap_direction_output(struct gpio_chip *chip,
++					unsigned int offset, int value)
++{
++	gpio_regmap_set(chip, offset, value);
++	return gpio_regmap_set_direction(chip, offset, true);
++}
++
++static int gpio_regmap_to_irq(struct gpio_chip *chip, unsigned int offset)
++{
++	struct gpio_regmap_data *data = gpiochip_get_data(chip);
++	struct gpio_regmap *gpio = data->gpio;
++
++	/* the user might have its own .to_irq callback */
++	if (gpio->to_irq)
++		return gpio->to_irq(gpio, offset);
++
++	return irq_create_mapping(gpio->irq_domain, offset);
++}
++
++/**
++ * gpio_regmap_register() - Register a generic regmap GPIO controller
++ *
++ * @gpio: gpio_regmap device to register
++ *
++ * Returns 0 on success or an errno on failure.
++ */
++int gpio_regmap_register(struct gpio_regmap *gpio)
++{
++	struct gpio_regmap_data *d;
++	struct gpio_chip *chip;
++	int ret;
++
++	if (!gpio->parent)
++		return -EINVAL;
++
++	if (!gpio->ngpio)
++		return -EINVAL;
++
++	/* we need at least one */
++	if (!gpio->reg_dat_base.valid && !gpio->reg_set_base.valid)
++		return -EINVAL;
++
++	/* we don't support having both registers simulaniously for now */
++	if (gpio->reg_dir_out_base.valid && gpio->reg_dir_in_base.valid)
++		return -EINVAL;
++
++	/* if not set, assume they are consecutive */
++	if (!gpio->reg_stride)
++		gpio->reg_stride = 1;
++
++	/* if not set, assume there is only one register */
++	if (!gpio->ngpio_per_reg)
++		gpio->ngpio_per_reg = gpio->ngpio;
++
++	if (!gpio->reg_mask_xlate)
++		gpio->reg_mask_xlate = gpio_regmap_simple_xlate;
++
++	d = kzalloc(sizeof(*d), GFP_KERNEL);
++	if (!d)
 +		return -ENOMEM;
 +
-+	hwmon->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!hwmon->regmap)
-+		return -ENODEV;
++	gpio->data = d;
++	d->gpio = gpio;
 +
-+	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-+	if (!res)
-+		return -EINVAL;
-+	hwmon->offset = res->start;
++	chip = &d->gpio_chip;
++	chip->parent = gpio->parent;
++	chip->label = gpio->label;
++	chip->base = -1;
++	chip->ngpio = gpio->ngpio;
++	chip->can_sleep = true;
++	chip->get = gpio_regmap_get;
 +
-+	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev,
-+				"sl28cpld_hwmon", hwmon,
-+				&sl28cpld_hwmon_chip_info, NULL);
-+	if (IS_ERR(hwmon_dev)) {
-+		dev_err(&pdev->dev, "failed to register as hwmon device");
-+		return PTR_ERR(hwmon_dev);
++	if (!chip->label)
++		chip->label = dev_name(gpio->parent);
++
++	if (gpio->reg_set_base.valid && gpio->reg_clr_base.valid)
++		chip->set = gpio_regmap_set_with_clear;
++	else if (gpio->reg_set_base.valid)
++		chip->set = gpio_regmap_set;
++
++	if (gpio->reg_dir_in_base.valid || gpio->reg_dir_out_base.valid) {
++		chip->get_direction = gpio_regmap_get_direction;
++		chip->direction_input = gpio_regmap_direction_input;
++		chip->direction_output = gpio_regmap_direction_output;
 +	}
++
++	if (gpio->irq_domain)
++		chip->to_irq = gpio_regmap_to_irq;
++
++	ret = gpiochip_add_data(chip, d);
++	if (ret < 0)
++		goto err_alloc;
++
++	return 0;
++
++err_alloc:
++	kfree(d);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gpio_regmap_register);
++
++/**
++ * gpio_regmap_unregister() - Unregister a generic regmap GPIO controller
++ *
++ * @gpio: gpio_regmap device to unregister
++ */
++void gpio_regmap_unregister(struct gpio_regmap *gpio)
++{
++	gpiochip_remove(&gpio->data->gpio_chip);
++	kfree(gpio->data);
++}
++EXPORT_SYMBOL_GPL(gpio_regmap_unregister);
++
++static void devm_gpio_regmap_unregister(struct device *dev, void *res)
++{
++	gpio_regmap_unregister(*(struct gpio_regmap **)res);
++}
++
++/**
++ * devm_gpio_regmap_register() - resource managed gpio_regmap_register()
++ *
++ * @dev: device that is registering this GPIO device
++ * @gpio: gpio_regmap device to register
++ *
++ * Managed gpio_regmap_register(). For generic regmap GPIO device registered by
++ * this function, gpio_regmap_unregister() is automatically called on driver
++ * detach. See gpio_regmap_register() for more information.
++ */
++int devm_gpio_regmap_register(struct device *dev, struct gpio_regmap *gpio)
++{
++	struct gpio_regmap **ptr;
++	int ret;
++
++	ptr = devres_alloc(devm_gpio_regmap_unregister, sizeof(*ptr),
++			   GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
++
++	ret = gpio_regmap_register(gpio);
++	if (ret) {
++		devres_free(ptr);
++		return ret;
++	}
++
++	*ptr = gpio;
++	devres_add(dev, ptr);
 +
 +	return 0;
 +}
++EXPORT_SYMBOL_GPL(devm_gpio_regmap_register);
 +
-+static const struct of_device_id sl28cpld_hwmon_of_match[] = {
-+	{ .compatible = "kontron,sl28cpld-fan" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, sl28cpld_hwmon_of_match);
-+
-+static const struct platform_device_id sl28cpld_hwmon_id_table[] = {
-+	{ "sl28cpld-fan" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(platform, sl28cpld_hwmon_id_table);
-+
-+static struct platform_driver sl28cpld_hwmon_driver = {
-+	.probe = sl28cpld_hwmon_probe,
-+	.id_table = sl28cpld_hwmon_id_table,
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = sl28cpld_hwmon_of_match,
-+	},
-+};
-+module_platform_driver(sl28cpld_hwmon_driver);
-+
-+MODULE_DESCRIPTION("sl28cpld Hardware Monitoring Driver");
-+MODULE_AUTHOR("Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>");
++MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
++MODULE_DESCRIPTION("GPIO generic regmap driver core");
 +MODULE_LICENSE("GPL");
+diff --git a/include/linux/gpio-regmap.h b/include/linux/gpio-regmap.h
+new file mode 100644
+index 000000000000..ad63955e0e43
+--- /dev/null
++++ b/include/linux/gpio-regmap.h
+@@ -0,0 +1,88 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef _LINUX_GPIO_REGMAP_H
++#define _LINUX_GPIO_REGMAP_H
++
++struct gpio_regmap_addr {
++	unsigned int addr;
++	bool valid;
++};
++#define GPIO_REGMAP_ADDR(_addr) \
++	((struct gpio_regmap_addr) { .addr = _addr, .valid = true })
++
++/**
++ * struct gpio_regmap - Description of a generic regmap gpio_chip.
++ *
++ * @parent:		The parent device
++ * @regmap:		The regmap use to access the registers
++ *			given, the name of the device is used
++ * @label:		(Optional) Descriptive name for GPIO controller.
++ *			If not given, the name of the device is used.
++ * @ngpio:		Number of GPIOs
++ * @reg_dat_base:	(Optional) (in) register base address
++ * @reg_set_base:	(Optional) set register base address
++ * @reg_clr_base:	(Optional) clear register base address
++ * @reg_dir_in_base:	(Optional) out setting register base address
++ * @reg_dir_out_base:	(Optional) in setting register base address
++ * @reg_stride:		(Optional) May be set if the registers (of the
++ *			same type, dat, set, etc) are not consecutive.
++ * @ngpio_per_reg:	Number of GPIOs per register
++ * @irq_domain:		(Optional) IRQ domain if the controller is
++ *			interrupt-capable
++ * @reg_mask_xlate:     (Optional) Translates base address and GPIO
++ *			offset to a register/bitmask pair. If not
++ *			given the default gpio_regmap_simple_xlate()
++ *			is used.
++ * @to_irq:		(Optional) Maps GPIO offset to a irq number.
++ *			By default assumes a linear mapping of the
++ *			given irq_domain.
++ * @driver_data:	Pointer to the drivers private data. Not used by
++ *			gpio-regmap.
++ *
++ * The reg_mask_xlate translates a given base address and GPIO offset to
++ * register and mask pair. The base address is one of the given reg_*_base.
++ */
++struct gpio_regmap {
++	struct device *parent;
++	struct regmap *regmap;
++	struct gpio_regmap_data *data;
++
++	const char *label;
++	int ngpio;
++
++	struct gpio_regmap_addr reg_dat_base;
++	struct gpio_regmap_addr reg_set_base;
++	struct gpio_regmap_addr reg_clr_base;
++	struct gpio_regmap_addr reg_dir_in_base;
++	struct gpio_regmap_addr reg_dir_out_base;
++	int reg_stride;
++	int ngpio_per_reg;
++	struct irq_domain *irq_domain;
++
++	int (*reg_mask_xlate)(struct gpio_regmap *gpio, unsigned int base,
++			      unsigned int offset, unsigned int *reg,
++			      unsigned int *mask);
++	int (*to_irq)(struct gpio_regmap *gpio, unsigned int offset);
++
++	void *driver_data;
++};
++
++static inline void gpio_regmap_set_drvdata(struct gpio_regmap *gpio,
++					   void *data)
++{
++	gpio->driver_data = data;
++}
++
++static inline void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio)
++{
++	return gpio->driver_data;
++}
++
++int gpio_regmap_register(struct gpio_regmap *gpio);
++void gpio_regmap_unregister(struct gpio_regmap *gpio);
++int devm_gpio_regmap_register(struct device *dev, struct gpio_regmap *gpio);
++int gpio_regmap_simple_xlate(struct gpio_regmap *gpio, unsigned int base,
++			     unsigned int offset,
++			     unsigned int *reg, unsigned int *mask);
++
++#endif /* _LINUX_GPIO_REGMAP_H */
 -- 
 2.20.1
