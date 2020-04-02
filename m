@@ -1,171 +1,142 @@
-From: Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 07/16] irqchip: add sl28cpld interrupt controller support
-Date: Thu,  2 Apr 2020 22:36:47 +0200
-Message-ID: <20200402203656.27047-8-michael@walle.cc>
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Subject: [PATCH v2 03/16] mfd: mfd-core: match device tree node against reg property
+Date: Thu,  2 Apr 2020 22:36:43 +0200
+Message-ID: <20200402203656.27047-4-michael@walle.cc>
 References: <20200402203656.27047-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from ssl.serverraum.org ([176.9.125.105]:38109 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389514AbgDBUhR (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Apr 2020 16:37:17 -0400
-In-Reply-To: <20200402203656.27047-1-michael@walle.cc>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200402203656.27047-1-michael-QKn5cuLxLXY@public.gmane.org>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Walle <michael@walle.cc>
 
-This patch adds support for the interrupt controller inside the sl28
-CPLD management controller.
+There might be multiple children with the device tree compatible, for
+example if a MFD has multiple instances of the same function. In this
+case only the first is matched and the other children get a wrong
+of_node reference.
+Add a new option to match also against the unit address of the child
+node. Additonally, a new helper OF_MFD_CELL_REG is added.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
 ---
- drivers/irqchip/Kconfig        |  3 ++
- drivers/irqchip/Makefile       |  1 +
- drivers/irqchip/irq-sl28cpld.c | 97 ++++++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig            |  2 +
- 4 files changed, 103 insertions(+)
- create mode 100644 drivers/irqchip/irq-sl28cpld.c
+ drivers/mfd/mfd-core.c   | 29 ++++++++++++++++++++---------
+ include/linux/mfd/core.h | 26 ++++++++++++++++++++------
+ 2 files changed, 40 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index a85aada04a64..234db932e7cf 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -246,6 +246,9 @@ config RENESAS_RZA1_IRQC
- 	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
- 	  to 8 external interrupts with configurable sense select.
+diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
+index e735565969b3..4ecb376338f7 100644
+--- a/drivers/mfd/mfd-core.c
++++ b/drivers/mfd/mfd-core.c
+@@ -117,6 +117,7 @@ static int mfd_add_device(struct device *parent, int id,
+ 	struct device_node *np = NULL;
+ 	int ret = -ENOMEM;
+ 	int platform_id;
++	u32 of_reg;
+ 	int r;
  
-+config SL28CPLD_INTC
-+	bool
+ 	if (id == PLATFORM_DEVID_AUTO)
+@@ -151,16 +152,26 @@ static int mfd_add_device(struct device *parent, int id,
+ 
+ 	if (parent->of_node && cell->of_compatible) {
+ 		for_each_child_of_node(parent->of_node, np) {
+-			if (of_device_is_compatible(np, cell->of_compatible)) {
+-				if (!of_device_is_available(np)) {
+-					/* Ignore disabled devices error free */
+-					ret = 0;
+-					goto fail_alias;
+-				}
+-				pdev->dev.of_node = np;
+-				pdev->dev.fwnode = &np->fwnode;
+-				break;
++			if (!of_device_is_compatible(np, cell->of_compatible))
++				continue;
 +
- config ST_IRQCHIP
- 	bool
- 	select REGMAP
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index 37bbe39bf909..e3c6b94f7b0a 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -107,3 +107,4 @@ obj-$(CONFIG_TI_SCI_INTR_IRQCHIP)	+= irq-ti-sci-intr.o
- obj-$(CONFIG_TI_SCI_INTA_IRQCHIP)	+= irq-ti-sci-inta.o
- obj-$(CONFIG_LOONGSON_LIOINTC)		+= irq-loongson-liointc.o
- obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
-+obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
-diff --git a/drivers/irqchip/irq-sl28cpld.c b/drivers/irqchip/irq-sl28cpld.c
-new file mode 100644
-index 000000000000..88de71d32b09
---- /dev/null
-+++ b/drivers/irqchip/irq-sl28cpld.c
-@@ -0,0 +1,97 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * sl28cpld interrupt controller driver.
-+ *
-+ * Copyright 2019 Kontron Europe GmbH
-+ */
++			/* also match the unit address if set */
++			if (cell->of_reg & MFD_OF_REG_VALID) {
++				if (of_property_read_u32(np, "reg", &of_reg))
++					continue;
++				if ((cell->of_reg & MFD_OF_REG_MASK) != of_reg)
++					continue;
+ 			}
 +
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
++			if (!of_device_is_available(np)) {
++				/* Ignore disabled devices error free */
++				ret = 0;
++				goto fail_alias;
++			}
 +
-+#define INTC_IE 0x00
-+#define INTC_IP 0x01
++			pdev->dev.of_node = np;
++			pdev->dev.fwnode = &np->fwnode;
++			break;
+ 		}
+ 	}
+ 
+diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
+index d01d1299e49d..c2c0ad6b14f3 100644
+--- a/include/linux/mfd/core.h
++++ b/include/linux/mfd/core.h
+@@ -13,8 +13,11 @@
+ #include <linux/platform_device.h>
+ 
+ #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
++#define MFD_OF_REG_VALID	BIT(31)
++#define MFD_OF_REG_MASK		GENMASK(30, 0)
+ 
+-#define MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat, _match)\
++#define MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
++		     _of_reg, _match)					\
+ 	{								\
+ 		.name = (_name),					\
+ 		.resources = (_res),					\
+@@ -22,24 +25,32 @@
+ 		.platform_data = (_pdata),				\
+ 		.pdata_size = (_pdsize),				\
+ 		.of_compatible = (_compat),				\
++		.of_reg = (_of_reg),					\
+ 		.acpi_match = (_match),					\
+ 		.id = (_id),						\
+ 	}
+ 
++#define OF_MFD_CELL_REG(_name, _res, _pdata, _pdsize, _id, _compat,	\
++			_of_reg)					\
++	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
++		     ((_of_reg) | MFD_OF_REG_VALID), NULL)		\
 +
-+static const struct regmap_irq sl28cpld_irqs[] = {
-+	REGMAP_IRQ_REG_LINE(0, 8),
-+	REGMAP_IRQ_REG_LINE(1, 8),
-+	REGMAP_IRQ_REG_LINE(2, 8),
-+	REGMAP_IRQ_REG_LINE(3, 8),
-+	REGMAP_IRQ_REG_LINE(4, 8),
-+	REGMAP_IRQ_REG_LINE(5, 8),
-+	REGMAP_IRQ_REG_LINE(6, 8),
-+	REGMAP_IRQ_REG_LINE(7, 8),
-+};
+ #define OF_MFD_CELL(_name, _res, _pdata, _pdsize,_id, _compat)		\
+-	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat, NULL)	\
++	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
++		     0, NULL)						\
+ 
+ #define ACPI_MFD_CELL(_name, _res, _pdata, _pdsize, _id, _match)	\
+-	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, _match)	\
++	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, 0,	\
++		     _match)						\
+ 
+ #define MFD_CELL_BASIC(_name, _res, _pdata, _pdsize, _id)		\
+-	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, NULL)	\
++	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, 0, NULL) \
+ 
+ #define MFD_CELL_RES(_name, _res)					\
+-	MFD_CELL_ALL(_name, _res, NULL, 0, 0, NULL, NULL)		\
++	MFD_CELL_ALL(_name, _res, NULL, 0, 0, NULL, 0, NULL)		\
+ 
+ #define MFD_CELL_NAME(_name)						\
+-	MFD_CELL_ALL(_name, NULL, NULL, 0, 0, NULL, NULL)		\
++	MFD_CELL_ALL(_name, NULL, NULL, 0, 0, NULL, 0, NULL)		\
+ 
+ struct irq_domain;
+ struct property_entry;
+@@ -78,6 +89,9 @@ struct mfd_cell {
+ 	 */
+ 	const char		*of_compatible;
+ 
++	/* matching the reg property if set */
++	unsigned int		of_reg;
 +
-+struct sl28cpld_intc {
-+	struct regmap *regmap;
-+	struct regmap_irq_chip chip;
-+	struct regmap_irq_chip_data *irq_data;
-+};
-+
-+static int sl28cpld_intc_probe(struct platform_device *pdev)
-+{
-+	struct sl28cpld_intc *irqchip;
-+	struct resource *res;
-+	unsigned int irq;
-+	int ret;
-+
-+	if (!pdev->dev.parent)
-+		return -ENODEV;
-+
-+	irqchip = devm_kzalloc(&pdev->dev, sizeof(*irqchip), GFP_KERNEL);
-+	if (!irqchip)
-+		return -ENOMEM;
-+
-+	irqchip->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!irqchip->regmap)
-+		return -ENODEV;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-+	if (!res)
-+		return -EINVAL;
-+
-+	irqchip->chip.name = "sl28cpld-intc";
-+	irqchip->chip.irqs = sl28cpld_irqs;
-+	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
-+	irqchip->chip.num_regs = 1;
-+	irqchip->chip.status_base = res->start + INTC_IP;
-+	irqchip->chip.mask_base = res->start + INTC_IE;
-+	irqchip->chip.mask_invert = true,
-+	irqchip->chip.ack_base = res->start + INTC_IP;
-+
-+	ret = devm_regmap_add_irq_chip(&pdev->dev, irqchip->regmap, irq,
-+				       IRQF_SHARED | IRQF_ONESHOT, 0,
-+				       &irqchip->chip, &irqchip->irq_data);
-+	if (ret)
-+		return ret;
-+	dev_info(&pdev->dev, "registered IRQ %d\n", irq);
-+
-+	return 0;
-+}
-+
-+static const struct platform_device_id sl28cpld_intc_id_table[] = {
-+	{ "sl28cpld-intc" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(platform, sl28cpld_intc_id_table);
-+
-+static struct platform_driver sl28cpld_intc_driver = {
-+	.probe	= sl28cpld_intc_probe,
-+	.id_table = sl28cpld_intc_id_table,
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+	}
-+};
-+module_platform_driver(sl28cpld_intc_driver);
-+
-+MODULE_DESCRIPTION("sl28cpld Interrupt Controller Driver");
-+MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 7c6761161f7a..4f741d640705 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -2064,6 +2064,8 @@ config MFD_SL28CPLD
- 	depends on I2C=y
- 	depends on OF
- 	select REGMAP_I2C
-+	select REGMAP_IRQ
-+	select SL28CPLD_INTC
- 	select MFD_CORE
- 	help
- 	  This option enables support for the board management controller
+ 	/* Matches ACPI */
+ 	const struct mfd_cell_acpi_match	*acpi_match;
+ 
 -- 
 2.20.1
