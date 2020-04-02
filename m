@@ -1,147 +1,102 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and
- function
-Date: Thu, 2 Apr 2020 13:55:18 -0700
-Message-ID: <20200402205518.GA20261@codeaurora.org>
-References: <cover.1584667964.git.gurus@codeaurora.org>
- <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and function
+Date: Thu, 2 Apr 2020 23:16:22 +0200
+Message-ID: <CAK8P3a3mc_sYczyKiaDoQLTTwDj2odwHJ5LFNAOb4RaRyh0YLQ@mail.gmail.com>
+References: <cover.1584667964.git.gurus@codeaurora.org> <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
  <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
- <20200330204359.GB5107@codeaurora.org>
- <CAK8P3a1VC6+0Tydm=BoK2NvHB1ZCPjE1Gfi-sTE5O-xnu3Ya3A@mail.gmail.com>
- <20200331202058.GB25781@codeaurora.org>
- <20200331204929.GC2954599@ulmo>
- <20200402201654.GA9191@codeaurora.org>
+ <20200330204359.GB5107@codeaurora.org> <CAK8P3a1VC6+0Tydm=BoK2NvHB1ZCPjE1Gfi-sTE5O-xnu3Ya3A@mail.gmail.com>
+ <20200331202058.GB25781@codeaurora.org> <20200331204929.GC2954599@ulmo> <20200402201654.GA9191@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([217.72.192.73]:52329 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727412AbgDBVQl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Apr 2020 17:16:41 -0400
 In-Reply-To: <20200402201654.GA9191@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linux PWM List <linux-pwm@vger.kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, David Collins <collinsd@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, David Collins <collinsd@codeaurora.org>
 
-On Thu, Apr 02, 2020 at 01:16:54PM -0700, Guru Das Srinagesh wrote:
+On Thu, Apr 2, 2020 at 10:16 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
 > On Tue, Mar 31, 2020 at 10:49:29PM +0200, Thierry Reding wrote:
-> > On Tue, Mar 31, 2020 at 01:20:58PM -0700, Guru Das Srinagesh wrote:
-> > > On Tue, Mar 31, 2020 at 05:24:52PM +0200, Arnd Bergmann wrote:
-> > > > On Mon, Mar 30, 2020 at 10:44 PM Guru Das Srinagesh
-> > > > <gurus@codeaurora.org> wrote:
-> > > > >
-> > > > > On Fri, Mar 20, 2020 at 06:09:39PM +0100, Arnd Bergmann wrote:
-> > > > > > On Fri, Mar 20, 2020 at 2:42 AM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
-> > > > > >
-> > > > > > > @@ -240,8 +240,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> > > > > > >
-> > > > > > >         period_cycles /= prescale;
-> > > > > > >         c = (unsigned long long)period_cycles * state->duty_cycle;
-> > > > > > > -       do_div(c, state->period);
-> > > > > > > -       duty_cycles = c;
-> > > > > > > +       duty_cycles = div64_u64(c, state->period);
-> > > > > > >
-> > > > > >
-> > > > > > This change looks fine, but I wonder if the code directly above it
-> > > > > >
-> > > > > >         c = clk_get_rate(imx->clk_per);
-> > > > > >         c *= state->period;
-> > > > > >         do_div(c, 1000000000);
-> > > > > >         period_cycles = c;
-> > > > > >
-> > > > > > might run into an overflow when both the clock rate and the period
-> > > > > > are large numbers.
-> > > > >
-> > > > > Hmm. Seems to me like addressing this would be outside the scope of this
-> > > > > patch series.
-> > > > 
-> > > > I think it should be part of the same series, addressing bugs that
-> > > > were introduced
-> > > > by the change to 64-bit period. If it's not getting fixed along with
-> > > > the other regressions,
-> > > > I fear nobody is going to go back and fix it later.
-> > > 
-> > > Makes sense, I agree. Would this be an acceptable fix?
-> > > 
-> > > Instead of multiplying c and state->period first and then dividing by
-> > > 10^9, first divide state->period by 10^9 and then multiply the quotient
-> > > of that division with c and assign it to period_cycles. Like so:
-> > > 
-> > > 	c = clk_get_rate(imx->clk_per);
-> > > 	c *= div_u64(state->period, 1000000000);
-> > > 	period_cycles = c;
-> > > 
-> > > This should take care of overflow not happening because state->period is
-> > > converted from nanoseconds to seconds early on and so becomes a small
-> > > number.
-> > 
 > > Doesn't that mean that anything below a 1 second period will be clamped
 > > to just 0?
-> 
+>
 > True. How about this then?
-> 
+>
 > int pwm_imx27_calc_period_cycles(struct pwm_state state,
-> 				 unsigned long clk_rate,
-> 				 unsigned long *period_cycles)
+>                                  unsigned long clk_rate,
+>                                  unsigned long *period_cycles)
 > {
-> 	u64 c1, c2;
-> 
-> 	c1 = clk_rate;
-> 	c2 = state->period;
-> 	if (c2 > c1) {
-> 		c2 = c1;
-> 		c1 = state->period;
-> 	}
-> 
-> 	if (!c1 || !c2) {
-> 		pr_err("clk rate and period should be nonzero\n");
-> 		return -EINVAL;
-> 	}
-> 
-> 	if (c2 <= div64_u64(U64_MAX, c1)) {
-> 		c = c1 * c2;
-> 		do_div(c, 1000000000);
-> 	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000))) {
-> 		do_div(c1, 1000);
-> 		c = c1 * c2;
-> 		do_div(c, 1000000);
-> 	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000))) {
-> 		do_div(c1, 1000000);
-> 		c = c1 * c2;
-> 		do_div(c, 1000);
-> 	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000000))) {
-> 		do_div(c1, 1000000000);
-> 		c = c1 * c2;
-> 	}
-> 
-> 	*period_cycles = c;
-> 
-> 	return 0;
+>         u64 c1, c2;
+>
+>         c1 = clk_rate;
+>         c2 = state->period;
+>         if (c2 > c1) {
+>                 c2 = c1;
+>                 c1 = state->period;
+>         }
+>
+>         if (!c1 || !c2) {
+>                 pr_err("clk rate and period should be nonzero\n");
+>                 return -EINVAL;
+>         }
+>
+>         if (c2 <= div64_u64(U64_MAX, c1)) {
+>                 c = c1 * c2;
+>                 do_div(c, 1000000000);
+>         } else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000))) {
+>                 do_div(c1, 1000);
+>                 c = c1 * c2;
+>                 do_div(c, 1000000);
+>         } else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000))) {
+>                 do_div(c1, 1000000);
+>                 c = c1 * c2;
+>                 do_div(c, 1000);
+>         } else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000000))) {
+>                 do_div(c1, 1000000000);
+>                 c = c1 * c2;
+>         }
+>
+>         *period_cycles = c;
+>
+>         return 0;
 > }
-> 
+>
 > ...
-> 
+>
 > ret = pwm_imx27_calc_period_cycles(state, clk_get_rate(imx->clk_per),
-> 				   &period_cycles);
+>                                    &period_cycles);
 > if (ret)
-> 	return ret;
-> 
+>         return ret;
+>
 > I unit tested this logic out by calculating period_cycles using both the
 > existing logic and the proposed one, and the results are as below.
-> 
+>
 > --------------------------------------------------------------------------------
->  clk_rate		period		  existing 	      proposed
+>  clk_rate               period            existing            proposed
 > --------------------------------------------------------------------------------
-> 1000000000	18446744073709551615	 18446744072 	18446744073000000000
+> 1000000000      18446744073709551615     18446744072    18446744073000000000
 >                       (U64_MAX)
 > --------------------------------------------------------------------------------
-> 1000000000	     4294967291		 4294967291	    4294967291
+> 1000000000           4294967291          4294967291         4294967291
 > --------------------------------------------------------------------------------
-> 
+>
 > Overflow occurs in the first case with the existing logic, whereas the
-> proposed logic handles it correctly. 
+> proposed logic handles it correctly. As for the second case where there are
+> more typical values of period, the proposed logic handles that correctly
+> too.
 
-Well, not "correctly" exactly, but a best-effort attempt to handle the
-overflow with som loss of precision.
+This looks correct, but very expensive, and you don't really have to
+go this far, given that c1 is guaranteed to be a 32-bit number, and
+you divide by a constant in the end.
 
-Thank you.
+Why not do something like
 
-Guru Das.
+#define SHIFT 41 /* arbitrarily picked, not too big, not too small */
+#define MUL 2199 /* 2^SHIFT / NSEC_PER_SEC */
+period_cycles = clk_get_rate(imx->clk_per) * ((state->period * MUL) >> SHIFT);
+
+        Arnd
