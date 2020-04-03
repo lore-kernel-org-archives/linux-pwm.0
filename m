@@ -1,59 +1,65 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v11 06/12] pwm: imx27: Use 64-bit division macro and function
-Date: Fri, 3 Apr 2020 21:13:18 +0200
-Message-ID: <CAK8P3a2Ua5v67vLLzQxsLPZfX9z5D7o-sfFpurQVWVykRK8sEQ@mail.gmail.com>
-References: <cover.1584667964.git.gurus@codeaurora.org> <5aae102e21c0e63ad2588ae1e174b48b06d25e96.1584667964.git.gurus@codeaurora.org>
- <CAK8P3a0qUMMMDmbp2FM-7D-U0Ys_zv0paYguFeyifafZurndEw@mail.gmail.com>
- <20200330204359.GB5107@codeaurora.org> <CAK8P3a1VC6+0Tydm=BoK2NvHB1ZCPjE1Gfi-sTE5O-xnu3Ya3A@mail.gmail.com>
- <20200331202058.GB25781@codeaurora.org> <20200331204929.GC2954599@ulmo>
- <20200402201654.GA9191@codeaurora.org> <CAK8P3a3mc_sYczyKiaDoQLTTwDj2odwHJ5LFNAOb4RaRyh0YLQ@mail.gmail.com>
- <20200403173719.GA6169@codeaurora.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH -next] pwm: make pwm_apply_state_debug static
+Date: Fri, 3 Apr 2020 21:43:31 +0200
+Message-ID: <20200403194331.GA201060@ulmo>
+References: <20200402065718.32433-1-yanaijie@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="YiEDa0DAkWCtVeE4"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:47575 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728352AbgDCTNj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Apr 2020 15:13:39 -0400
-In-Reply-To: <20200403173719.GA6169@codeaurora.org>
+Received: from mail-wm1-f50.google.com ([209.85.128.50]:35729 "EHLO
+        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727792AbgDCTng (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Apr 2020 15:43:36 -0400
+Received: by mail-wm1-f50.google.com with SMTP id i19so9021492wmb.0
+        for <linux-pwm@vger.kernel.org>; Fri, 03 Apr 2020 12:43:34 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20200402065718.32433-1-yanaijie@huawei.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, David Collins <collinsd@codeaurora.org>
+To: Jason Yan <yanaijie@huawei.com>
+Cc: u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
 
-On Fri, Apr 3, 2020 at 7:37 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
->
-> On Thu, Apr 02, 2020 at 11:16:22PM +0200, Arnd Bergmann wrote:
-> > This looks correct, but very expensive, and you don't really have to
-> > go this far, given that c1 is guaranteed to be a 32-bit number, and
-> > you divide by a constant in the end.
-> >
-> > Why not do something like
-> >
-> > #define SHIFT 41 /* arbitrarily picked, not too big, not too small */
-> > #define MUL 2199 /* 2^SHIFT / NSEC_PER_SEC */
-> > period_cycles = clk_get_rate(imx->clk_per) * ((state->period * MUL) >> SHIFT);
->
-> I have two concerns with this:
->
-> 1. This actually results in the division by 1000010575.5125057 instead
->    of NSECS_PER_SEC whereas both the existing as well as the proposed logic
->    divide exactly by NSECS_PER_SEC.
-> 2. What method shall be used to pick the SHIFT value? How is this to be
->    chosen?
 
-I picked one that would result in a fairly accurate rounding and did not
-seem too likely to overflow.
+--YiEDa0DAkWCtVeE4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Also, this seems sort of similar to my initial attempt at this
-> problem, where period was being pre-divided prior to the multiplication,
-> which was (rightly) NACKed.
->
->         c *= div_u64(state->period, 1000000000);
+On Thu, Apr 02, 2020 at 02:57:18PM +0800, Jason Yan wrote:
+> Fix the following gcc warning:
+>=20
+> drivers/pwm/core.c:467:6: warning: symbol 'pwm_apply_state_debug' was
+> not declared. Should it be static?
+>=20
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> ---
+>  drivers/pwm/core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Ah, right, I did make the same mistake here. What I actually indended
-was to do two separate shifts that add up to 41. I suppose there is also still
-the fundamental problem that without bounds checking the calculation can
-always overflow for large inputs.
+Applied, thanks.
 
-       Arnd
+Thierry
+
+--YiEDa0DAkWCtVeE4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6HkeAACgkQ3SOs138+
+s6HyVBAAtZfqkAbBTNmDItMz7Hg9MfpiGTj9ySzWgkyJXEG97AdvuIxvsvv64MyL
+nu/bTHnvCti5d024RGET7ymfgkmrBF/jt4WDWUE0tSsFNc2Bh9LtLZDB8L5Mqqtd
+YufpMDVhr4VRDLDtS8/APGiK7Wwlhlx6OKphC2JSMWOxXaZOxZ95oqHxgt6S4Y4K
+z4PxEI86eDmg9BGEdQLCI7adxASKMpbobkRIe9GrIMq8tl00LICRgm4F5nauXOSA
+scFl25EmcTrbCPEmOrjQpHrXZsw26aUKgK7Ch6uwAfMA44aCtccKx1SOEcex8IrX
+NfF0c0wg1kwQ1JZ0sgPgIWcO8lhiyntzOzORgcofNAeV5gk4EiN4ViuLyARYcVKD
+mrs9OkOwQJJL876tug6BR7Cc5KHFNJYW5+XD37pdPgnXDDa2ixwbkzme/7m8a+9b
+WdUkzRoyjDvTZAa/XHaLDF2PAOn8gfLhPTmWkahPDesFNugpd+DIeqW3MeY3bt06
+6iMsxjKGaEl+NsUS8JYDLE4o787tnQoF4ky1Qmvj/LbE0ZJdYrTYvDGBk8mqIEPi
+rgQjCTIkPBnRkoyCKEDLoj1I7FZpb2mMkfDpN9lQ61pVsQXQzO0Ve4JxkPmKg9r9
+FOSVGtXLJ1aCRYcjvPWjO7w4ETSvDJ87hqMol7Mzq2G3AzM9EaQ=
+=ZJEc
+-----END PGP SIGNATURE-----
+
+--YiEDa0DAkWCtVeE4--
