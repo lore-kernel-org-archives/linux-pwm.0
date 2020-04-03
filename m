@@ -1,122 +1,107 @@
-From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: Re: [PATCH v3 4/5] pwm: omap-dmtimer: Do not disable pwm before
- changing period/duty_cycle
-Date: Fri, 3 Apr 2020 14:21:38 +0530
-Message-ID: <5dbdbc15-ff29-f577-0632-6a28378b0104@ti.com>
-References: <20200312042210.17344-1-lokeshvutla@ti.com>
- <20200312042210.17344-5-lokeshvutla@ti.com>
- <20200312064042.p7himm3odxjyzroi@pengutronix.de>
- <20200330141436.GG2431644@ulmo>
- <20200330191654.waoocllctanh5nk5@pengutronix.de>
- <20200331204559.GB2954599@ulmo>
- <20200401082227.sxtarbttsmmhs2of@pengutronix.de>
- <20200401182833.GB2978178@ulmo>
- <20200401203156.d7x5ynnnhob3jyoo@pengutronix.de>
- <20200401213738.GA3052587@ulmo>
- <20200402140221.bjbol77uegjma6oz@pengutronix.de>
+From: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] pwm: tegra: dynamic clk freq configuration by PWM driver
+Date: Fri, 3 Apr 2020 18:05:03 +0530
+Message-ID: <1585917303-10573-1-git-send-email-spatra@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <20200402140221.bjbol77uegjma6oz@pengutronix.de>
-Content-Language: en-US
-Sender: linux-omap-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, kernel@pengutronix.de
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
+Added support for dynamic clock freq configuration in pwm kernel driver.
+Earlier the pwm driver used to cache boot time clock rate by pwm clock
+parent during probe. Hence dynamically changing pwm frequency was not
+possible for all the possible ranges. With this change, dynamic calculation
+is enabled and it is able to set the requested period from sysfs knob
+provided the value is supported by clock source.
 
+Changes mainly have 2 parts:
+  - T186 and later chips [1]
+  - T210 and prior chips [2]
 
-On 02/04/20 7:32 PM, Uwe Kleine-König wrote:
-> Hello Thierry,
-> 
-> On Wed, Apr 01, 2020 at 11:37:38PM +0200, Thierry Reding wrote:
->> On Wed, Apr 01, 2020 at 10:31:56PM +0200, Uwe Kleine-König wrote:
->>> There are people out there that are more demanding. If you have 1000000
->>> machines in the field and only then find out that they all fail to
->>> operate correctly with a certain small but positive probability and you
->>> have to send someone to each machine to fix that, that's bad.
->>
->> Agreed. But that's not really what we're talking about here, right? This
->> isn't some undefined behaviour that would spontaneously trigger.
->> We're still talking about deterministic behaviour that's going to be
->> the same whether you do it once in a test lab or a million times in
->> the field. A PWM-controlled backlight that you adjust the brightness
->> of in the lab is going to work the same way as in the field. Any
->> potential glitch would be happening in the lab as well. It would in
->> fact, constantly happen.
-> 
-> The glitch we're talking about really doesn't happen that often that we
-> should rely on this problem popping up during testing. To change both
-> period and duty_cycle two register writes are necessary. The hickup only
-> happens if after the first register write a period ends before the
-> second register write hits the hardware. (For the omap driver it might
-> happen a bit more often, don't remember the details, but I think the
-> above is what could be reached theoretically.)
-> 
->> For the rare cases where you can't fake it, it doesn't really matter
->> whether the framework refuses to do something because it knows that the
->> hardware isn't capable of doing it, or whether the driver will simply
->> try its best to do what it was asked to do and fails to deliver. You'll
->> notice one way or another and then you need to go back to the drawing
->> board and redo the design.
-> 
-> I think you didn't understand up to now that the glitch depends on
-> timing between register access and the PWM period and so is really hard
-> to actually reproduce. In the hope you understood that now, I assume you
-> see that your argumentation is incomplete.
-> 
-> And I think to assume that somebody would complain about a race
-> condition in a patch that just hit next is quite optimistic.
-> 
-> Having said that I don't know how critical this really is. Given that
-> the PWM under discussion doesn't complete periods on stop, it probably
-> isn't.
+For [1] - Changes implemented to set pwm period dynamically and
+          also checks added to allow only if requested period(ns) is
+          below or equals to higher range.
 
-It is a limitation with the existing driver as well. Nothing is being changed
-regarding stopping of PWM. The same is marked under the limitations in the driver.
+For [2] - Only checks if the requested period(ns) is below or equals
+          to higher range defined by max clock limit. The limitation
+          in T210 or prior chips are due to the reason of having only
+          one pwm-controller supporting multiple channels. But later
+          chips have multiple pwm controller instances each having
+	  single channel support.
 
-> 
-> I spend some time thinking about when the glitch actually happens.
-> Currently the load value is written first and then the match value.
-> If no period ends between the two writes there is only a problem when in
-> the currently running period the match event didn't happen yet. Then we
-> see a cycle with
-> 
->    .period = oldperiod + newperiod
->    .dutycycle = oldperiod + newdutycycle
-> 
-> (if the new match value isn't hit in the current cycle) or one with
-> 
->    .period = oldperiod
->    .duty_cycle = newdutycycle + (oldperiod - newperiod)
-> 
-> (if the new match value is hit in the current cycle). The probability
-> that one of the two happen is: olddutycycle / oldperiod which is quite
-> probable. (With olddutycycle = oldperiod there is no problem though.)
-> 
-> If after writing the new load value and before writing the new match
-> value a period ends it might happen that we see a cycle with
-> 
->   .period = newperiod
->   .dutycycle = olddutycycle + (newperiod - oldperiod)
-> 
-> (if the previous match value is used) or one with
-> 
->   .period = 2 * newperiod
->   .dutycycle = newperiod + newdutycycle
-> 
-> (if new match value is written too late for the first cycle with the new
-> period).
+Signed-off-by: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/pwm/pwm-tegra.c | 45 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
-
-That's exactly why we have marked in the Limitations sections that the current
-period might produce a cycle with mixed settings.  Frankly, I'm a bit torn here.
-There are other PWMs inside Linux with  similar limitations and documented
-similarly. If there is an overall objection for such hardware, the entire policy
-should be changed or the framework should be updated to allow user to choose for
-dynamic updates. IMHO, this series should not be blocked for this decision.
-Please consider it for the coming merge window.
-
-Thanks and regards,
-Lokesh
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index aa12fb3..d3ba33c 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -4,7 +4,7 @@
+  *
+  * Tegra pulse-width-modulation controller driver
+  *
+- * Copyright (c) 2010, NVIDIA Corporation.
++ * Copyright (c) 2010-2020, NVIDIA Corporation.
+  * Based on arch/arm/plat-mxc/pwm.c by Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+  */
+ 
+@@ -83,10 +83,51 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	val = (u32)c << PWM_DUTY_SHIFT;
+ 
+ 	/*
++	 * Its okay to ignore the fraction part since we will be trying to set
++	 * slightly lower value to rate than the actual required rate
++	 */
++	rate = NSEC_PER_SEC/period_ns;
++
++	/*
++	 *  Period in nano second has to be <= highest allowed period
++	 *  based on the max clock rate of the pwm controller.
++	 *
++	 *  higher limit = max clock limit >> PWM_DUTY_WIDTH
++	 */
++	if (rate > (pc->soc->max_frequency >> PWM_DUTY_WIDTH))
++		return -EINVAL;
++
++	/*
+ 	 * Compute the prescaler value for which (1 << PWM_DUTY_WIDTH)
+ 	 * cycles at the PWM clock rate will take period_ns nanoseconds.
+ 	 */
+-	rate = pc->clk_rate >> PWM_DUTY_WIDTH;
++	if (pc->soc->num_channels == 1) {
++		/*
++		 * Rate is multiplied with 2^PWM_DUTY_WIDTH so that it matches
++		 * with the hieghest applicable rate that the controller can
++		 * provide. Any further lower value can be derived by setting
++		 * PFM bits[0:12].
++		 * Higher mark is taken since BPMP has round-up mechanism
++		 * implemented.
++		 */
++		rate = rate << PWM_DUTY_WIDTH;
++
++		err = clk_set_rate(pc->clk, rate);
++		if (err < 0)
++			return -EINVAL;
++
++		rate = clk_get_rate(pc->clk) >> PWM_DUTY_WIDTH;
++	} else {
++		/*
++		 * This is the case for SoCs who support multiple channels:
++		 *
++		 * clk_set_rate() can not be called again in config because
++		 * T210 or any prior chip supports one pwm-controller and
++		 * multiple channels. Hence in this case cached clock rate
++		 * will be considered which was stored during probe.
++		 */
++		rate = pc->clk_rate >> PWM_DUTY_WIDTH;
++	}
+ 
+ 	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
+ 	hz = DIV_ROUND_CLOSEST_ULL(100ULL * NSEC_PER_SEC, period_ns);
+-- 
+2.7.4
