@@ -1,67 +1,105 @@
 From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: (EXT) Re: [PATCH 1/4] pwm: pca9685: remove unused duty_cycle
- struct element
-Date: Sat, 4 Apr 2020 19:35:46 +0200
-Message-ID: <20200404173546.GA55833@workstation.tuxnet>
-References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
- <20200226151034.7i3h5blmrwre2yzg@pengutronix.de>
- <32ec35c2b3da119dd2c7bc09742796a0d8a9607e.camel@ew.tq-group.com>
- <20200330151231.GA1650@workstation.tuxnet>
- <CAGngYiUe-tihBJUcXQ738_5aA9pzgp_-NSs4iCrz3eWO6rMukA@mail.gmail.com>
+Subject: Re: [PATCH v1] pwm: pca9685: re-enable active pwm channels on pwm
+ period change
+Date: Sat, 4 Apr 2020 19:58:36 +0200
+Message-ID: <20200404175836.GB55833@workstation.tuxnet>
+References: <20200403235324.27437-1-TheSven73@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([52.59.78.55]:33482 "EHLO mail.pqgruber.com"
+Received: from mail.pqgruber.com ([52.59.78.55]:33680 "EHLO mail.pqgruber.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726207AbgDDRft (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 4 Apr 2020 13:35:49 -0400
+        id S1726207AbgDDR6k (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sat, 4 Apr 2020 13:58:40 -0400
 Content-Disposition: inline
-In-Reply-To: <CAGngYiUe-tihBJUcXQ738_5aA9pzgp_-NSs4iCrz3eWO6rMukA@mail.gmail.com>
+In-Reply-To: <20200403235324.27437-1-TheSven73@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Sven Van Asbroeck <thesven73@gmail.com>
-Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Matthias Schiffer <matthias.schiffer@ew.tq-group.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 Hi,
 
-On Fri, Apr 03, 2020 at 07:50:07PM -0400, Sven Van Asbroeck wrote:
-> On Mon, Mar 30, 2020 at 11:12 AM Clemens Gruber
-> <clemens.gruber@pqgruber.com> wrote:
-> >
-> > On Wed, Feb 26, 2020 at 06:03:02PM +0100, Matthias Schiffer wrote:
-> > > As it turns out, this driver is broken in yet another way I didn't find
-> > > before: For changing the global prescaler the chip needs to be put into
-> > > sleep mode, but the driver doesn't follow the restart sequence
-> > > described in the datasheet when waking it back up. In consequence,
-> > > changing the period of one PWM does not only modify the period of all
-> > > PWMs (which is bad enough, but can't be avoided with this hardware),
-> > > but it also leaves all PWMs disabled...
-> >
-> > I am unable to reproduce this: If I set a specific duty cycle on a
-> > channel and then change the period, the channel stays active.
-> > I can see the brightness of an LED decrease if I increase the period.
+On Fri, Apr 03, 2020 at 07:53:24PM -0400, Sven Van Asbroeck wrote:
+> In order to change the pwm period, this chip must be put in sleep
+> mode. However, when coming out of sleep mode, the pwm channel
+> state is not completely restored: all pwm channels are off by
+> default.
 > 
-> What happens when pwm channels 0 and 1 are both enabled, and
-> you change the pwm period of channel 0. Does channel 1 remain
-> on?
+> This results in a bug in this driver: when the pwm period is changed
+> on a pwm channel, all other pwm channels will be deactivated.
+> 
+> Fix by clearing the RESTART bit when coming out of sleep mode - this
+> will restore all pwm channels to their pre-sleep on/off state.
+> 
+> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> Cc: Clemens Gruber <clemens.gruber@pqgruber.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: linux-pwm@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Link: https://lore.kernel.org/lkml/32ec35c2b3da119dd2c7bc09742796a0d8a9607e.camel@ew.tq-group.com/
+> Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+> ---
+> 
+> I no longer have access to pca9685 hardware, so I'm unable to test:
+> - if this is indeed a bug
+> - if this patch fixes it
+> 
+> Made against:
+> Tree-repo: git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
+> Tree-branch: for-next
+> Tree-git-id: 9cc5f232a4b6a0ef6e9b57876d61b88f61bdd7c2
+> 
+>  drivers/pwm/pwm-pca9685.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+> index 76cd22bd6614..0a16f0122e0e 100644
+> --- a/drivers/pwm/pwm-pca9685.c
+> +++ b/drivers/pwm/pwm-pca9685.c
+> @@ -59,6 +59,7 @@
+>  
+>  #define LED_FULL		(1 << 4)
+>  #define MODE1_SLEEP		(1 << 4)
+> +#define MODE1_RESTART		(1 << 7)
+>  #define MODE2_INVRT		(1 << 4)
+>  #define MODE2_OUTDRV		(1 << 2)
+>  
+> @@ -271,6 +272,15 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  			/* Wake the chip up */
+>  			pca9685_set_sleep_mode(pca, false);
+>  
+> +			/* If any pwm channels were active when the chip was put
+> +			 * in sleep mode, re-activate them.
+> +			 */
+> +			if (!regmap_read(pca->regmap, PCA9685_MODE1, &reg) &&
+> +			    reg & MODE1_RESTART)
+> +				regmap_update_bits(pca->regmap, PCA9685_MODE1,
+> +						   MODE1_RESTART,
+> +						   MODE1_RESTART);
+> +
+>  			pca->period_ns = period_ns;
+>  		} else {
+>  			dev_err(chip->dev,
+> -- 
+> 2.17.1
+> 
 
-Yes. Both channels remain on.
+According to the PCA9685 datasheet revision 4, page 15, the RESTART bit
+is not only cleared by writing a 1 to it, but also by other actions like
+a write to any of the PWM registers.
 
-Let's say I configure a period of 5ms for both channels 0 and 1, as well
-as a duty cycle of 4ms, meaning a relative duty cycle of 80%.
-If I then increase the period of channel 0 to 10ms, there will be a
-relative duty cycle of 40% on channel 0, but channel 1 will remain at a
-relative duty cycle of 80%.
-This is due to the relative nature of the internal ON/OFF times. For
-the channel with the period change however, we recalculate the duty_ns
-to period_ns ratio and reprogram the ON/OFF registers, because the user
-might have already given us a different duty cycle in .config / .apply.
+This seems to be the reason why I could not reproduce the reported
+problem.
 
-As the user is setting the duty cycle in nanoseconds, it makes sense
-that the relative duty cycle decreases in an absolute period increase.
-As for the behavior that the other channels remain at the same relative
-duty cycle: Not sure how we can avoid this, other than reprogramming all
-15 other channels if one of them is changed and that's not really
-acceptable, I think.
+If I understand this correctly, clearing the RESTART bit would only be
+necessary if we wanted every ON/OFF register to stay the same, but in
+.config we might also get a different duty_ns value, so we have to
+reprogram the ON/OFF time regs.
+(Optimization: We could check if duty_ns to period_ns ratio stayed the
+same and if so, clear the RESTART bit and return without reg writes)
 
 Clemens
