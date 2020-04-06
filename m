@@ -1,20 +1,19 @@
 From: Kamel Bouhara <kamel.bouhara@bootlin.com>
 Subject: [PATCH 02/11] pwm: atmel-tcb: switch to new binding
-Date: Mon,  6 Apr 2020 10:55:49 +0200
-Message-ID: <20200406085558.990617-3-kamel.bouhara@bootlin.com>
-References: <20200406085558.990617-1-kamel.bouhara@bootlin.com>
+Date: Mon,  6 Apr 2020 10:58:25 +0200
+Message-ID: <20200406085834.992521-3-kamel.bouhara@bootlin.com>
+References: <20200406085834.992521-1-kamel.bouhara@bootlin.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:40675 "EHLO
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:57405 "EHLO
         relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726475AbgDFI4K (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Apr 2020 04:56:10 -0400
-In-Reply-To: <20200406085558.990617-1-kamel.bouhara@bootlin.com>
+        with ESMTP id S1726622AbgDFI6o (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Apr 2020 04:58:44 -0400
+In-Reply-To: <20200406085834.992521-1-kamel.bouhara@bootlin.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
 
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
