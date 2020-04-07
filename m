@@ -1,69 +1,72 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 2/6] dt-bindings: pwm: document the PWM no-flag
-Date: Tue, 7 Apr 2020 13:18:42 +0200
-Message-ID: <20200407111842.hp7mhrlsuesa74ep@pengutronix.de>
-References: <20200405192246.3741784-1-oleksandr.suvorov@toradex.com>
- <20200405192246.3741784-3-oleksandr.suvorov@toradex.com>
- <20200407061646.pcglaw43kfmrag6a@pengutronix.de>
- <CAGgjyvH5nmnXH068QTNPKzsjocNXfEP_yh0HO=L-oGaqQdYRuA@mail.gmail.com>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: (EXT) Re: (EXT) Re: [PATCH 1/4] pwm: pca9685: remove unused
+ duty_cycle struct element
+Date: Tue, 07 Apr 2020 15:00:43 +0200
+Message-ID: <189a1fb7f7aee153151f46fe3bb0f754160472e7.camel@ew.tq-group.com>
+References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
+         <20200226151034.7i3h5blmrwre2yzg@pengutronix.de>
+         <32ec35c2b3da119dd2c7bc09742796a0d8a9607e.camel@ew.tq-group.com>
+         <20200330151231.GA1650@workstation.tuxnet>
+         <CAGngYiUe-tihBJUcXQ738_5aA9pzgp_-NSs4iCrz3eWO6rMukA@mail.gmail.com>
+         <20200404173546.GA55833@workstation.tuxnet>
+         <CAGngYiWpO_N+t74k-==RNaXkZcp6TZvVOJzXPOi84cpQ6PHbhw@mail.gmail.com>
+         <20200406095124.GA475759@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAGgjyvH5nmnXH068QTNPKzsjocNXfEP_yh0HO=L-oGaqQdYRuA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Marcel Ziswiler <marcel.ziswiler-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Igor Opaniuk <igor.opaniuk-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Philippe Schenker <philippe.schenker-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200406095124.GA475759@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Clemens Gruber <clemens.gruber@pqgruber.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sven Van Asbroeck <thesven73@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 01:51:42PM +0300, Oleksandr Suvorov wrote:
-> On Tue, Apr 7, 2020 at 9:17 AM Uwe Kleine-König
-> <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
-> >
-> > On Sun, Apr 05, 2020 at 10:22:42PM +0300, Oleksandr Suvorov wrote:
-> > > Add the description of PWM_NOFLAGS flag property.
-> > >
-> > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
-> >
-> > As I already wrote in reply to the v1 series I'd prefer a name for 0
-> > that explicitly handles normal polarity.
+On Mon, 2020-04-06 at 11:51 +0200, Thierry Reding wrote:
 > 
-> Uwe, AFAIU, there is no flag that forces normal polarity, the normal polarity
-> is the default state if there is no flag to invert the polarity is set.
+> On Sat, Apr 04, 2020 at 04:17:00PM -0400, Sven Van Asbroeck wrote:
+> > 
+> > It does look like we have a square peg (this chip) in a round hole
+> > (the
+> > standard assumptions the pwm core makes) ?
+> 
+> There are other chips where a single period is shared across multiple
+> PWM channels. Typically what we do there is once a period is
+> configured
+> for a given channel, all subsequent PWM channel configurations must
+> use
+> the same period, or otherwise the driver will return an error code.
+> 
+> See for example:
+> 
+>   - stm32_pwm_config() in drivers/pwm/pwm-stm32.c
+>   - lpc18xx_pwm_config() in drivers/pwm/pwm-lpc18xx-sct.c
+>   - pwm_imx_tpm_apply_hw() in drivers/pwm/pwm-imx-tpm.c
+>   - fsl_pwm_apply_config() in drivers/pwm/pwm-fsl-ftm.c
+> 
+> The rationale behind that is that we must not change a PWM
+> configuration
+> without a consumer having explicitly requested it.
 
-Yes, that's the status quo.
+These implementations don't deal with the issue in a consistent way
+either though:
 
-> '0' value in the bit flags cell really means there are no flags set
-> for the PWM instance.
+1) stm32_pwm_config() only checks for channels that are actually
+enabled, regardless if they're requested
 
-For me the relevance of giving 0 a name is mostly for human consumption.
-Currently there is only a single flag encoded in the number in question.
-But as soon as we add another, say PWM_AUTOSTART we have the following
-possible settings:
+2) lpc18xx_pwm_config() checks requested channels instead
 
-	PWM_NOFLAGS
-	PWM_POLARITY_INVERTED
-	PWM_AUTOSTART
-	PWM_POLARITY_INVERTED | PWM_AUTOSTART
+"2)" seems more correct to me, as the parameters of a requested channel
+can't be changed by another user, but it seems to prevent certain
+sequences. I don't have a good grasp of the the usual PWM request
+control flow - is it correct that the PWM state is not updated with the
+PWM args from OF when the PWM is requested? I only see
+pwm_adjust_config() doing something like that, which is not used in
+many places (and nothing preventing races) - but I might be overlooking
+something.
 
-Then for the first two a reader doesn't see if autostart is not in use
-because the dt author doesn't know this feature (e.g. because autostart
-is too new) or if they don't want autostart at all.
+Meaning, is it possible that two drivers request PWMs from the same
+pwmchip of type "2)" (or even a single driver using two PWMs) without
+configuring them right away may get into a situation where neither can
+set up a period at all even when all users want to use the same period?
 
-If however we had PWM_POLARITY_NORMAL and PWM_NO_AUTOSTART to complement
-PWM_POLARITY_INVERTED and PWM_AUTOSTART every flag's setting could be
-explicit and if there is a device tree that only has
-
-	PWM_POLARITY_NORMAL
-
-it would be obvious that nobody thought enough about autostarting to
-explicitly mention it.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Matthias
