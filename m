@@ -1,44 +1,32 @@
-From: SANDRA DEWI <sdewisandra@gmail.com>
-Subject: whether this is your correct email address or not
-Date: Tue, 7 Apr 2020 05:15:12 +0000
-Message-ID: <CALe9-EdG2aBp2yBY=t79ZuBObzzfY6nuVfAsra6+wc2BAYMhcg__4186.52876266918$1586236528$gmane$org@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [RFC PATCH v2 2/6] dt-bindings: pwm: document the PWM no-flag
+Date: Tue, 7 Apr 2020 08:16:46 +0200
+Message-ID: <20200407061646.pcglaw43kfmrag6a@pengutronix.de>
+References: <20200405192246.3741784-1-oleksandr.suvorov@toradex.com>
+ <20200405192246.3741784-3-oleksandr.suvorov@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:37589 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726992AbgDGFPP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Apr 2020 01:15:15 -0400
-Received: by mail-vs1-f66.google.com with SMTP id o3so1434749vsd.4
-        for <linux-pwm@vger.kernel.org>; Mon, 06 Apr 2020 22:15:14 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200405192246.3741784-3-oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Barker <pbarker-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Marcel Ziswiler <marcel.ziswiler-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Igor Opaniuk <igor.opaniuk-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Philippe Schenker <philippe.schenker-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Dear ,Pastor
+On Sun, Apr 05, 2020 at 10:22:42PM +0300, Oleksandr Suvorov wrote:
+> Add the description of PWM_NOFLAGS flag property.
+> 
+> Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
 
+As I already wrote in reply to the v1 series I'd prefer a name for 0
+that explicitly handles normal polarity.
 
+Best regards
+Uwe
 
-I have a client who is an oil business man and he made a fixed deposit
-of $26 million USD in my bank, where I am the director of the branch,
-My client died with his entire family in Jordanian
-
-50% of the fund will be for the church  for the work of God,the
-balance 50% we share it in the ratio of 50/50. Meaning 50% to you and
-50% for me
-
-intervention in the Syrian Civil War 2014 leaving behind no next of
-kin. I Propose to present you as next of kin to claim the funds, if
-interested reply me for full details and how we are to
-
-
-
-proceed to close this deal.
-
-
-
-
-Mrs. Sandra Dewi
-
-
-
-Email  mrsdewi@gmx.com
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
