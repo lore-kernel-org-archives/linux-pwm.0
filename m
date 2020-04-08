@@ -1,95 +1,93 @@
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Subject: Re: [RFC PATCH v2 2/6] dt-bindings: pwm: document the PWM no-flag
-Date: Tue, 7 Apr 2020 17:55:18 +0300
-Message-ID: <CAGgjyvEP8q9AmXr5nnHiw6zEhoTwFNOW4=wP8eeALfsxtj7L-g@mail.gmail.com>
-References: <20200405192246.3741784-1-oleksandr.suvorov@toradex.com>
- <20200405192246.3741784-3-oleksandr.suvorov@toradex.com> <20200407061646.pcglaw43kfmrag6a@pengutronix.de>
- <CAGgjyvH5nmnXH068QTNPKzsjocNXfEP_yh0HO=L-oGaqQdYRuA@mail.gmail.com> <20200407111842.hp7mhrlsuesa74ep@pengutronix.de>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: Re: (EXT) Re: (EXT) Re: [PATCH 1/4] pwm: pca9685: remove unused
+ duty_cycle struct element
+Date: Wed, 08 Apr 2020 10:00:22 +0200
+Message-ID: <405fa9612b52ee9a7c550d2ac5a2df86acb223c1.camel@ew.tq-group.com>
+References: <20200226135229.24929-1-matthias.schiffer@ew.tq-group.com>
+         <20200226151034.7i3h5blmrwre2yzg@pengutronix.de>
+         <32ec35c2b3da119dd2c7bc09742796a0d8a9607e.camel@ew.tq-group.com>
+         <CAGngYiUinGeppRdnsWvX4DBLVcHFBSGWamUKdTC+rTY3kpFWcQ@mail.gmail.com>
+         <3ec5c2bd67cd714f86178a1e7143cd247759aaf8.camel@ew.tq-group.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200407111842.hp7mhrlsuesa74ep@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: devicetree@vger.kernel.org, Paul Barker <pbarker@konsulko.com>, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Igor Opaniuk <igor.opaniuk@toradex.com>, Philippe Schenker <philippe.schenker@toradex.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.tq-group.com ([62.157.118.193]:52846 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726436AbgDHIA1 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 8 Apr 2020 04:00:27 -0400
+In-Reply-To: <3ec5c2bd67cd714f86178a1e7143cd247759aaf8.camel@ew.tq-group.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Clemens Gruber <clemens.gruber@pqgruber.com>
 
-On Tue, Apr 7, 2020 at 2:19 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> On Tue, Apr 07, 2020 at 01:51:42PM +0300, Oleksandr Suvorov wrote:
-> > On Tue, Apr 7, 2020 at 9:17 AM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > >
-> > > On Sun, Apr 05, 2020 at 10:22:42PM +0300, Oleksandr Suvorov wrote:
-> > > > Add the description of PWM_NOFLAGS flag property.
-> > > >
-> > > > Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-> > >
-> > > As I already wrote in reply to the v1 series I'd prefer a name for 0
-> > > that explicitly handles normal polarity.
-> >
-> > Uwe, AFAIU, there is no flag that forces normal polarity, the normal po=
-larity
-> > is the default state if there is no flag to invert the polarity is set.
->
-> Yes, that's the status quo.
->
-> > '0' value in the bit flags cell really means there are no flags set
-> > for the PWM instance.
->
-> For me the relevance of giving 0 a name is mostly for human consumption.
-> Currently there is only a single flag encoded in the number in question.
-> But as soon as we add another, say PWM_AUTOSTART we have the following
-> possible settings:
->
->         PWM_NOFLAGS
->         PWM_POLARITY_INVERTED
->         PWM_AUTOSTART
->         PWM_POLARITY_INVERTED | PWM_AUTOSTART
->
-> Then for the first two a reader doesn't see if autostart is not in use
-> because the dt author doesn't know this feature (e.g. because autostart
-> is too new) or if they don't want autostart at all.
->
-> If however we had PWM_POLARITY_NORMAL and PWM_NO_AUTOSTART to complement
-> PWM_POLARITY_INVERTED and PWM_AUTOSTART
+On Tue, 2020-04-07 at 16:46 +0200, Matthias Schiffer wrote:
+> On Fri, 2020-04-03 at 19:47 -0400, Sven Van Asbroeck wrote:
+> > On Wed, Feb 26, 2020 at 12:04 PM Matthias Schiffer
+> > <matthias.schiffer@ew.tq-group.com> wrote:
+> > > 
+> > > >  - Is this racy somehow (i.e. can it happen that when going
+> > > > from
+> > > >    duty_cycle/period = 1000/5000 to duty_cycle/period =
+> > > > 4000/10000
+> > > > the
+> > > >    output is 1000/10000 (or 4000/5000) for one cycle)?
+> > > 
+> > > It currently is racy. It should be possible to fix that either by
+> > > updating all 4 registers in a single I2C write, or by using the
+> > > "update
+> > > on ACK" mode which requires all 4 registers to be updated before
+> > > the
+> > > new setting is applied (I'm not sure if this mode would require
+> > > using a
+> > > single I2C write as well though).
+> > 
+> > Matthias, did you verify experimentally that changing the period is
+> > racy?
+> > 
+> > Looking at the datasheet and driver code, it shouldn't be. This is
+> > because
+> > the OFF time is set as a proportion of the counter range. When the
+> > period
+> > changes from 5000 to 10000, then 5000*20%/5000 and 10000*20%/10000
+> > will result in the same 20% ratio (disregarding rounding errors).
+> > 
+> > This is documented at the beginning of the driver:
+> > 
+> 
+> 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/pwm/pwm-pca9685.c?h=v5.6#n25
+> > 
+> > Should we move that comment to pwm_config(), so future versions of
+> > ourselves won't overlook it?
+> 
+> You are right, this results in the same ratio - the absolute on/off
+> times may be wrong for a moment though when the period is changed.
+> 
+> In the attached image, I have changed the period, but kept the
+> absolute
+> duty cycle fixed (note: this is in inverted mode, so the duty cycle
+> controls the low time). It can be seen that after a too long high
+> time
+> (chip is in sleep mode) one period with too long low time follows
+> (new
+> period, old relative duty cycle), before the counter is reprogrammed
+> to
+> match the previous absolute duty cycle.
+> 
+> I don't care too much about the details of the behaviour, as I only
+> control LEDs using this chip and don't need to change the period
+> after
+> initial setup, but we should accurately document the shortcomings of
+> the hardware and the driver (when we have decided how to fix some of
+> the driver issues).
+> 
+> Matthias
 
-So using this approach, in theory, we'll have several flags that all
-just equals to 0 (0 << 0, 0 << 1, 0 << 2 ...).
-What if just describe default states for each flag in the DT documentation?
+And another kind of race condition that should be possible, although I
+haven't seen it in practice:
 
-> every flag's setting could be explicit and if there is a device tree that=
- only has
->
->         PWM_POLARITY_NORMAL
->
-> it would be obvious that nobody thought enough about autostarting to
-> explicitly mention it.
-
-If you insist on the flag complement model, I have another suggestion.
-As the normal polarity is the default state, can we use PWM_NO_POLARITY_INV=
-ERTED
-instead of PWM_POLARITY_NORMAL?
-It gives us 2 benefits:
-1. The name will not interfere with enum PWM_POLARITY_NORMAL in <linux/pmw.=
-h>
-2. Each flag complement will be made with the same scheme:
-PWM_flagA -> PWM_NO_flagA...
-
-> Best regards
-> Uwe
->
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
-|
-
---
-Best regards
-Oleksandr Suvorov
-
-Toradex AG
-Ebenaustrasse 10 | 6048 Horw | Switzerland | T: +41 41 500 48 00
+High and low bits of the OFF counter currently aren't programmed
+atomically, so with unlucky timing we get a cycle using new lower 8
+bits with old upper 4 bits of the duty cycle.
