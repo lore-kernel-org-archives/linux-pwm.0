@@ -1,52 +1,67 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v12 02/11] hwmon: pwm-fan: Use 64-bit division macro
-Date: Wed,  8 Apr 2020 23:52:31 -0700
-Message-ID: <57dc832db730c7bdbc8ab20a9099bcff3c890a32.1586414867.git.gurus@codeaurora.org>
-References: <cover.1586414867.git.gurus@codeaurora.org>
+From: Felipe Balbi <balbi@kernel.org>
+Subject: Re: [PATCH] pwm: Add DesignWare PWM Controller Driver
+Date: Thu, 09 Apr 2020 10:09:27 +0300
+Message-ID: <87k12pgmoo.fsf@kernel.org>
+References: <20200408125404.527090-1-jarkko.nikula@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:47343 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725795AbgDIGwz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Apr 2020 02:52:55 -0400
-In-Reply-To: <cover.1586414867.git.gurus@codeaurora.org>
-In-Reply-To: <cover.1586414867.git.gurus@codeaurora.org>
-References: <cover.1586414867.git.gurus@codeaurora.org>
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:33694 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgDIHJf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Apr 2020 03:09:35 -0400
+Received: by mail-lf1-f65.google.com with SMTP id h6so7152509lfc.0
+        for <linux-pwm@vger.kernel.org>; Thu, 09 Apr 2020 00:09:34 -0700 (PDT)
+In-Reply-To: <20200408125404.527090-1-jarkko.nikula@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Kamil Debski <kamil@wypas.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K?= =?utf-8?Q?=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Raymond Tan <raymond.tan@intel.com>, Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
-Since the PWM framework is switching struct pwm_args.period's datatype
-to u64, prepare for this transition by using DIV_ROUND_UP_ULL to handle
-a 64-bit dividend.
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Cc: Kamil Debski <kamil@wypas.org>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: linux-hwmon@vger.kernel.org
 
-Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/hwmon/pwm-fan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Jarkko,
 
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index 30b7b3e..17bb642 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -447,7 +447,7 @@ static int pwm_fan_resume(struct device *dev)
- 		return 0;
- 
- 	pwm_get_args(ctx->pwm, &pargs);
--	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
-+	duty = DIV_ROUND_UP_ULL(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
- 	ret = pwm_config(ctx->pwm, duty, pargs.period);
- 	if (ret)
- 		return ret;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Jarkko Nikula <jarkko.nikula@linux.intel.com> writes:
+
+> Introduce driver for Synopsys DesignWare PWM Controller used on Intel
+> Elkhart Lake.
+>
+> Initial implementation is done by Felipe Balbi while he was working at
+> Intel with later changes from Raymond Tan and me.
+>
+> Co-developed-by: Raymond Tan <raymond.tan@intel.com>
+> Signed-off-by: Raymond Tan <raymond.tan@intel.com>
+> Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+
+Thanks for sending this. FWIW:
+
+Signed-off-by: Felipe Balbi <balbi@kernel.org>
+
+=2D-=20
+balbi
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl6OyicACgkQzL64meEa
+mQbpjg//evPIzO34GFt9Fosbe23C3xoa6XP4xIwIKOAeoDnTJsgEA5fDjjlysbP0
+g85gtb2CklkiEIbXtbT5cDIkCwGE6otxg9fudUMfjEfDxRRuYn94YdycYe5fMPkk
+t0I45tehq7McnJTtDV7XfuOrzXlKonphLoobxoopbQ/DwZi461g5Gu4rRLOpwzJG
+AKesWhXSzZ6NzXpQwVBH7Tf+dDpCv0HFkB0E+R2bsQdrDPbE5Qk+ClPSCOcK/cnp
+qFfv1cgo7GVW0rrN6kg0VehUmBEN8d5Hd/NZ/O+WYx9JzApkab+oicaIxYSxN4Ij
+yp4juc/xsiixktj5qLzqLtSmlfGdjnQ4S0E0exPZvSGL0DavmhHLwZiD2/kO/1kB
+Me7GMPpo1rRAYcCRiHsULJIY7lv5bdJqRe6v7UhWK4aTK3aOZH/bZjbsDzHe4nfk
+tii30QnNOG+K9jz61XcegE4wnm1v0qVw65cBiovn8ciUJOS8dkK2FQyDqpYgiDrD
+QPYlPrLG8AcrxveOF21CNOye3s/fle61lywe9OMzdGiTmrE1uMpKvocHbsI8y9Yb
+P4PXmtdrHjqeqdlfijZnf/PNVsGpE7Vqkg0hHkxUycxpkM+wcUfBLBK8nNQD0hWE
+6FGkyx07/EUgSSjplegkWCITdtpfmDBvtahoaZf0nRXgL1dyZE8=
+=CKGr
+-----END PGP SIGNATURE-----
+--=-=-=--
