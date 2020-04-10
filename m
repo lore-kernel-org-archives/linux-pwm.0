@@ -1,31 +1,32 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] dt-bindings: pwm: rcar: add r8a77961 support
-Date: Fri, 10 Apr 2020 18:14:17 +0900
-Message-ID: <1586510057-31562-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] dt-bindings: pwm: rcar: add r8a77961 support
+Date: Fri, 10 Apr 2020 11:52:49 +0200
+Message-ID: <CAMuHMdXGtHsiO3h-ToJjQz6yedAV6oTkpar0ro1tw3Q3TMf1Kg@mail.gmail.com>
+References: <1586510057-31562-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1586510057-31562-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Add support for r8a77961 (R-Car M3-W+).
+On Fri, Apr 10, 2020 at 11:15 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Add support for r8a77961 (R-Car M3-W+).
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
----
- Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-index 945c14e..620a2ff 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-+++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-@@ -27,6 +27,7 @@ properties:
-           - renesas,pwm-r8a7794   # R-Car E2
-           - renesas,pwm-r8a7795   # R-Car H3
-           - renesas,pwm-r8a7796   # R-Car M3-W
-+          - renesas,pwm-r8a77961  # R-Car M3-W+
-           - renesas,pwm-r8a77965  # R-Car M3-N
-           - renesas,pwm-r8a77970  # R-Car V3M
-           - renesas,pwm-r8a77980  # R-Car V3H
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.7.4
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
