@@ -1,31 +1,35 @@
-From: Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH v12 08/11] pwm: sun4i: Use nsecs_to_jiffies to avoid a division
-Date: Sat, 11 Apr 2020 13:49:02 +0800
-Message-ID: <CAGb2v67r_esaqANauo7YOVjSVVt5z+jyuneZe0FLrjgDxnDjzA@mail.gmail.com>
-References: <cover.1586414867.git.gurus@codeaurora.org> <436e1a50e603eefb24c8e7b2bd7f7e4838b90e12.1586414867.git.gurus@codeaurora.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] pwm: Add missing '\n' in log messages
+Date: Sat, 11 Apr 2020 17:35:28 +0200
+Message-ID: <20200411153528.30130-1-christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39120 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbgDKFtO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 11 Apr 2020 01:49:14 -0400
-In-Reply-To: <436e1a50e603eefb24c8e7b2bd7f7e4838b90e12.1586414867.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 List-Id: linux-pwm@vger.kernel.org
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel <linux-kernel@vger.kernel.org>, Maxime Ripard <mripard@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
 
-On Thu, Apr 9, 2020 at 2:53 PM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
->
-> Since the PWM framework is switching struct pwm_state.period's datatype
-> to u64, prepare for this transition by using nsecs_to_jiffies() which
-> does away with the need for a division operation.
->
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
->
-> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+Message logged by 'dev_xxx()' or 'pr_xxx()' should end with a '\n'.
 
-Acked-by: Chen-Yu Tsai <wens@csie.org>
+Fixes: 3ad1f3a33286 ("pwm: Implement some checks for lowlevel drivers")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/pwm/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 9973c442b455..bca04965bfe6 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -537,7 +537,7 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
+ 
+ 	if (!state->enabled && s2.enabled && s2.duty_cycle > 0)
+ 		dev_warn(chip->dev,
+-			 "requested disabled, but yielded enabled with duty > 0");
++			 "requested disabled, but yielded enabled with duty > 0\n");
+ 
+ 	/* reapply the state that the driver reported being configured. */
+ 	err = chip->ops->apply(chip, pwm, &s1);
+-- 
+2.20.1
