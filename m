@@ -1,74 +1,59 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: Add missing '\n' in log messages
-Date: Tue, 14 Apr 2020 15:58:27 +0200
-Message-ID: <20200414135827.GB3593749@ulmo>
-References: <20200411153528.30130-1-christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] dt-bindings: pwm: rcar: add r8a77961 support
+Date: Tue, 14 Apr 2020 15:58:57 +0200
+Message-ID: <20200414135857.GC3593749@ulmo>
+References: <1586510057-31562-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="/WwmFnJnmDyWGHa4"
-Return-path: <kernel-janitors-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="XWOWbaMNXpFDWE00"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388513AbgDNN7B (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Apr 2020 09:59:01 -0400
 Content-Disposition: inline
-In-Reply-To: <20200411153528.30130-1-christophe.jaillet@wanadoo.fr>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+In-Reply-To: <1586510057-31562-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: u.kleine-koenig@pengutronix.de, robh+dt@kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 
 
---/WwmFnJnmDyWGHa4
+--XWOWbaMNXpFDWE00
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 11, 2020 at 05:35:28PM +0200, Christophe JAILLET wrote:
-> Message logged by 'dev_xxx()' or 'pr_xxx()' should end with a '\n'.
+On Fri, Apr 10, 2020 at 06:14:17PM +0900, Yoshihiro Shimoda wrote:
+> Add support for r8a77961 (R-Car M3-W+).
 >=20
-> Fixes: 3ad1f3a33286 ("pwm: Implement some checks for lowlevel drivers")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 > ---
->  drivers/pwm/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 9973c442b455..bca04965bfe6 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -537,7 +537,7 @@ static void pwm_apply_state_debug(struct pwm_device *=
-pwm,
-> =20
->  	if (!state->enabled && s2.enabled && s2.duty_cycle > 0)
->  		dev_warn(chip->dev,
-> -			 "requested disabled, but yielded enabled with duty > 0");
-> +			 "requested disabled, but yielded enabled with duty > 0\n");
-> =20
->  	/* reapply the state that the driver reported being configured. */
->  	err =3D chip->ops->apply(chip, pwm, &s1);
+>  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-I don't think this is strictly necessary any longer since the logging
-functions are supposed to add these themselves nowadays. But I like the
-consistency of this, so I'll apply this anyway.
+Applied, thanks.
 
-Thanks,
 Thierry
 
---/WwmFnJnmDyWGHa4
+--XWOWbaMNXpFDWE00
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6VwYMACgkQ3SOs138+
-s6Fzlg//b9ON8vAP4sRTnLHsUC0mCmY2XcrY0P5eCKvrjAivAAswf7qGNpzKcBN1
-FUzY74P+qLClXRXFcciVxdGCaPzb+dynFkizSZC5wqBathkkFK3WMAjfFkjH2fe5
-2pLX7gpMvlrlneBVM52ZrR2KK4fAonlQe7Xq07vKQ6K8stWmQblhGZNKXlCaK4fi
-gkzWQKzHvWML6Bzu5Zrk21Z/BxPeT4gHl0jxo3ZnsHhv1ZveNkDHDLB1ybDjTaEj
-p+faT8bCf4bSPp8OlpnJpP6d0yzAxcDO6gDRCEH/jaBUaZDkHEgjsSDxkL5H+lkp
-s8N/kJ9q+0qSivxQyFLPTGyUoUm5C/xkT81UrwWEQMbouN7FVBelXVs9SLKfUSbA
-noAYtOMxz8V4AxtUNniYyzo1ir8gqB4kZTUmr+cn0mP68WJHvmTHe/ElmC/bn8uK
-N92cuJnV0s4A+5SrPi4mDpLA4FP8m2MBAsEDKd5j1tPfBY7HrHgdgZkNxSIiehNQ
-+5rzl2LyBfx8rnz/Ljw02TpgJX/pNELNrM/Oa4jy3QoDiIlaUpoL5/d9QrIbt71d
-UlGep4cyvSvRlsY0CZDJhABtsjb6zLix/Rc6x0jCL45rwGVLilLbKgoHedCEllvu
-ueo5JO9bxbeHxPi+II1uGQ07LNd3TJyRZMVjSggpscDcfmfJCTc=
-=cwju
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl6VwaEACgkQ3SOs138+
+s6Fe9Q//fr0nAlK4lEV73Mu5TBQST85GbYfF00kdpEgT6q9qy1T9yinF3arvJwjV
+WH5+983n/26B2bNLkhF+ATUpxVIeoSetfPATFJmNtEUguBTlrpnSOJa4yFHmBzyN
+cfGXRFdprtXSHV4L4qctvaWJgOcyEYQYCK6E+Z2x+seNo77C20wM9M/mPKiu8mBe
+aEo48oqEvmhvEBEA4oUQydBos9yUlPEtanI7Dizwjj8ER6GY+poAR3HzRryMbCo9
+mQkLkk4S5uttWAdyAnlumXzRwiNN2cOxPJBKlDTcrOXY88GvFl1ZeYRwI8YznY8J
+I3Ba3drdvweftAK8Zw34OBPCXGUBmhd1ClPSKPFB0+AMud1DY4q13yv7zSJTUB5I
+ScKiWFdiB9uZbPjot0Q0CNIGSylh7JYFSH+D+nklou0NkJk2/iEUiT1vr11PrOgh
+B2ey8UvJI2o+Dzw1eV328EfXo+I4p1etFT4r5fgV2MDVF1rZybJ9UFEL6xSzbRVK
+ArqtKyYkFogm8/sAufcAfO47QAAFTP1jM96AnCHb7eZbPOSgJFD/7+abB9qpP02L
+6IgUih+xDg8ei+iilFLzMvrXcBnEeYKO1oSXXpLcuTwQVAAdSqMVhPbq2cyl+ryq
+s/0zV+gfYJIL8NofnnfuwFsVBZb1eDD+3qLgcRuaqxg3owU/ccw=
+=n1RL
 -----END PGP SIGNATURE-----
 
---/WwmFnJnmDyWGHa4--
+--XWOWbaMNXpFDWE00--
