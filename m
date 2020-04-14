@@ -1,245 +1,45 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Applied "regmap-irq: make it possible to add irq_chip do a specific device node" to the regmap tree
-Date: Tue, 14 Apr 2020 16:37:49 +0100
-Message-ID: <applied-20200402203656.27047-5-michael@walle.cc>
-References: <20200402203656.27047-5-michael@walle.cc>
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20200402203656.27047-5-michael@walle.cc>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Jason Cooper <jason@lakedaemon.net>, Jean Delvare <jdelvare@suse.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, Li Yang <leoyang.li@nxp.com>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, =?utf-8?q?Uwe_Kleine-K=C3
+From: Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2 10/16] gpio: add a reusable generic gpio_chip using regmap
+Date: Tue, 14 Apr 2020 19:00:30 +0200
+Message-ID: <CAMpxmJW1x4Orh1BZ4TUoCsYeaAAZ4NBUNvoMG9JgP0iLvXTOtg@mail.gmail.com>
+References: <20200402203656.27047-1-michael@walle.cc> <20200402203656.27047-11-michael@walle.cc>
+ <CAMpxmJVE3PgVCxkQ-ryc5=KSrKcpdmk1cnJUxJBz9QFCx-e_+A@mail.gmail.com>
+ <80bd8661ec8a1f5eda3f09a267846eaa@walle.cc> <CAMpxmJVC7e9JnHzBo-h8M1+KmcA32=Rvxo7+znH=-kAbcCr_LQ@mail.gmail.com>
+ <e0388a2137e23d76b2415a7549c01dd1@walle.cc>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <e0388a2137e23d76b2415a7549c01dd1-QKn5cuLxLXY@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Cc: linux-gpio <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LINUXWATCHDOG <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, arm-soc <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The patch
+wt., 14 kwi 2020 o 12:07 Michael Walle <michael-QKn5cuLxLXY@public.gmane.org> napisa=C5=82(a):
+> >>
+> >> So the best from a user perspective I've could come up with was:
+> >>
+> >>    ->base_reg =3D GPIO_REGMAP_ADDR(addr);
+> >>
+> >> I'm open for suggestions.
+> >>
+> >
+> > Maybe setting the pointer to ERR_PTR(-ENOENT) which will result in
+> > IS_ERR() returning true?
+>
+> Unfortunatly, its not a pointer, but only a regular unsigned int (ie
+> the type the regmap API has for its "reg" property). It could be a
+> pointer of course but then the user would have to allocate additional
+> memory.
+>
+> -michael
+>
 
-   regmap-irq: make it possible to add irq_chip do a specific device node
+Eek, of course it's not a pointer. If possible I'd like to avoid this
+GPIO_REGMAP_ADDR() macro, so how about having some separate field for
+invalid offsets making every offset 'valid' by default?
 
-has been applied to the regmap tree at
+Linus: do you have a better idea?
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git 
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.  
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
-
-From 12479382877dcf6623af4676caa8d3c647469a1b Mon Sep 17 00:00:00 2001
-From: Michael Walle <michael@walle.cc>
-Date: Thu, 2 Apr 2020 22:36:44 +0200
-Subject: [PATCH] regmap-irq: make it possible to add irq_chip do a specific
- device node
-
-Add a new function regmap_add_irq_chip_np() with its corresponding
-devm_regmap_add_irq_chip_np() variant. Sometimes one want to register
-the IRQ domain on a different device node that the one of the regmap
-node. For example when using a MFD where there are different interrupt
-controllers and particularly for the generic regmap gpio_chip/irq_chip
-driver. In this case it is not desireable to have the IRQ domain on
-the parent node.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20200402203656.27047-5-michael@walle.cc
-Signed-off-by: Mark Brown <broonie@kernel.org>
----
- drivers/base/regmap/regmap-irq.c | 84 ++++++++++++++++++++++++++------
- include/linux/regmap.h           | 10 ++++
- 2 files changed, 78 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index 3d64c9331a82..4340e1d268b6 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -541,8 +541,9 @@ static const struct irq_domain_ops regmap_domain_ops = {
- };
- 
- /**
-- * regmap_add_irq_chip() - Use standard regmap IRQ controller handling
-+ * regmap_add_irq_chip_np() - Use standard regmap IRQ controller handling
-  *
-+ * @np: The device_node where the IRQ domain should be added to.
-  * @map: The regmap for the device.
-  * @irq: The IRQ the device uses to signal interrupts.
-  * @irq_flags: The IRQF_ flags to use for the primary interrupt.
-@@ -556,9 +557,10 @@ static const struct irq_domain_ops regmap_domain_ops = {
-  * register cache.  The chip driver is responsible for restoring the
-  * register values used by the IRQ controller over suspend and resume.
-  */
--int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
--			int irq_base, const struct regmap_irq_chip *chip,
--			struct regmap_irq_chip_data **data)
-+int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
-+			   int irq_flags, int irq_base,
-+			   const struct regmap_irq_chip *chip,
-+			   struct regmap_irq_chip_data **data)
- {
- 	struct regmap_irq_chip_data *d;
- 	int i;
-@@ -769,12 +771,10 @@ int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
- 	}
- 
- 	if (irq_base)
--		d->domain = irq_domain_add_legacy(map->dev->of_node,
--						  chip->num_irqs, irq_base, 0,
--						  &regmap_domain_ops, d);
-+		d->domain = irq_domain_add_legacy(np, chip->num_irqs, irq_base,
-+						  0, &regmap_domain_ops, d);
- 	else
--		d->domain = irq_domain_add_linear(map->dev->of_node,
--						  chip->num_irqs,
-+		d->domain = irq_domain_add_linear(np, chip->num_irqs,
- 						  &regmap_domain_ops, d);
- 	if (!d->domain) {
- 		dev_err(map->dev, "Failed to create IRQ domain\n");
-@@ -808,6 +808,30 @@ int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
- 	kfree(d);
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(regmap_add_irq_chip_np);
-+
-+/**
-+ * regmap_add_irq_chip() - Use standard regmap IRQ controller handling
-+ *
-+ * @map: The regmap for the device.
-+ * @irq: The IRQ the device uses to signal interrupts.
-+ * @irq_flags: The IRQF_ flags to use for the primary interrupt.
-+ * @irq_base: Allocate at specific IRQ number if irq_base > 0.
-+ * @chip: Configuration for the interrupt controller.
-+ * @data: Runtime data structure for the controller, allocated on success.
-+ *
-+ * Returns 0 on success or an errno on failure.
-+ *
-+ * This is the same as regmap_add_irq_chip_np, except that the device
-+ * node of the regmap is used.
-+ */
-+int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
-+			int irq_base, const struct regmap_irq_chip *chip,
-+			struct regmap_irq_chip_data **data)
-+{
-+	return regmap_add_irq_chip_np(map->dev->of_node, map, irq, irq_flags,
-+				      irq_base, chip, data);
-+}
- EXPORT_SYMBOL_GPL(regmap_add_irq_chip);
- 
- /**
-@@ -875,9 +899,10 @@ static int devm_regmap_irq_chip_match(struct device *dev, void *res, void *data)
- }
- 
- /**
-- * devm_regmap_add_irq_chip() - Resource manager regmap_add_irq_chip()
-+ * devm_regmap_add_irq_chip_np() - Resource manager regmap_add_irq_chip_np()
-  *
-  * @dev: The device pointer on which irq_chip belongs to.
-+ * @np: The device_node where the IRQ domain should be added to.
-  * @map: The regmap for the device.
-  * @irq: The IRQ the device uses to signal interrupts
-  * @irq_flags: The IRQF_ flags to use for the primary interrupt.
-@@ -890,10 +915,11 @@ static int devm_regmap_irq_chip_match(struct device *dev, void *res, void *data)
-  * The &regmap_irq_chip_data will be automatically released when the device is
-  * unbound.
-  */
--int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
--			     int irq_flags, int irq_base,
--			     const struct regmap_irq_chip *chip,
--			     struct regmap_irq_chip_data **data)
-+int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
-+				struct regmap *map, int irq, int irq_flags,
-+				int irq_base,
-+				const struct regmap_irq_chip *chip,
-+				struct regmap_irq_chip_data **data)
- {
- 	struct regmap_irq_chip_data **ptr, *d;
- 	int ret;
-@@ -903,8 +929,8 @@ int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
- 	if (!ptr)
- 		return -ENOMEM;
- 
--	ret = regmap_add_irq_chip(map, irq, irq_flags, irq_base,
--				  chip, &d);
-+	ret = regmap_add_irq_chip_np(np, map, irq, irq_flags, irq_base,
-+				     chip, &d);
- 	if (ret < 0) {
- 		devres_free(ptr);
- 		return ret;
-@@ -915,6 +941,32 @@ int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
- 	*data = d;
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip_np);
-+
-+/**
-+ * devm_regmap_add_irq_chip() - Resource manager regmap_add_irq_chip()
-+ *
-+ * @dev: The device pointer on which irq_chip belongs to.
-+ * @map: The regmap for the device.
-+ * @irq: The IRQ the device uses to signal interrupts
-+ * @irq_flags: The IRQF_ flags to use for the primary interrupt.
-+ * @irq_base: Allocate at specific IRQ number if irq_base > 0.
-+ * @chip: Configuration for the interrupt controller.
-+ * @data: Runtime data structure for the controller, allocated on success
-+ *
-+ * Returns 0 on success or an errno on failure.
-+ *
-+ * The &regmap_irq_chip_data will be automatically released when the device is
-+ * unbound.
-+ */
-+int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
-+			     int irq_flags, int irq_base,
-+			     const struct regmap_irq_chip *chip,
-+			     struct regmap_irq_chip_data **data)
-+{
-+	return devm_regmap_add_irq_chip_np(dev, map->dev->of_node, map, irq,
-+					   irq_flags, irq_base, chip, data);
-+}
- EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip);
- 
- /**
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index 40b07168fd8e..ae5034b2d7c3 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -21,6 +21,7 @@
- struct module;
- struct clk;
- struct device;
-+struct device_node;
- struct i2c_client;
- struct i3c_device;
- struct irq_domain;
-@@ -1310,12 +1311,21 @@ struct regmap_irq_chip_data;
- int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
- 			int irq_base, const struct regmap_irq_chip *chip,
- 			struct regmap_irq_chip_data **data);
-+int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
-+			   int irq_flags, int irq_base,
-+			   const struct regmap_irq_chip *chip,
-+			   struct regmap_irq_chip_data **data);
- void regmap_del_irq_chip(int irq, struct regmap_irq_chip_data *data);
- 
- int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
- 			     int irq_flags, int irq_base,
- 			     const struct regmap_irq_chip *chip,
- 			     struct regmap_irq_chip_data **data);
-+int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
-+				struct regmap *map, int irq, int irq_flags,
-+				int irq_base,
-+				const struct regmap_irq_chip *chip,
-+				struct regmap_irq_chip_data **data);
- void devm_regmap_del_irq_chip(struct device *dev, int irq,
- 			      struct regmap_irq_chip_data *data);
- 
--- 
-2.20.1
+Bart
