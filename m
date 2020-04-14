@@ -1,75 +1,54 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 2/3] pwm: jz4740: Make PWM start with the active part
-Date: Mon, 13 Apr 2020 14:14:44 +0200
-Message-ID: <20200413121445.72996-2-paul@crapouillou.net>
-References: <20200413121445.72996-1-paul@crapouillou.net>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: About rounding in the clk framework [Was: Re: [PATCH 4/7] pwm:
+ jz4740: Improve algorithm of clock calculation]
+Date: Tue, 14 Apr 2020 11:24:12 +0200
+Message-ID: <20200414092412.scsl6sekikc2tsv5@pengutronix.de>
+References: <1565648183.2007.3@crapouillou.net>
+ <20190813052726.g37upws5rlvrszc4@pengutronix.de>
+ <1565694066.1856.1@crapouillou.net>
+ <20190813123331.m4ttfhcgt6wyrcfi@pengutronix.de>
+ <1565700448.1856.2@crapouillou.net>
+ <20190813140903.rdwy7p3mhwetmlnt@pengutronix.de>
+ <1565799035.1984.0@crapouillou.net>
+ <20190814173218.zhg4se3pppano5m3@pengutronix.de>
+ <1571662077.3.1@crapouillou.net>
+ <20200212072911.nstwj7dgpvceebpy@pengutronix.de>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from outils.crapouillou.net ([89.234.176.41]:52970 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729429AbgDMMPh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Apr 2020 08:15:37 -0400
-In-Reply-To: <20200413121445.72996-1-paul@crapouillou.net>
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:58351 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437562AbgDNJYk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Apr 2020 05:24:40 -0400
+Content-Disposition: inline
+In-Reply-To: <20200212072911.nstwj7dgpvceebpy@pengutronix.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+To: Stephen Boyd <sboyd@kernel.org>, Michael Turquette <mturquette@baylibre.com>
+Cc: linux-pwm@vger.kernel.org, od@zcrc.me, Artur Rojek <contact@artur-rojek.eu>, Mathieu Malaterre <malat@debian.org>, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, linux-clk@vger.kernel.org
 
-The PWM would previously always start with the inactive part.
-To counter that, the common trick is to use an inverted duty as the
-real duty (as in, 'period - duty'), and invert the polarity when the
-PWM is enabled.
+Hello Stephen, hello Michael,
 
-However, for some reason the driver was already configuring the hardware
-for an inverted duty, so inverting it again means we do configure the
-hardware with the actual duty value.
+On Wed, Feb 12, 2020 at 08:29:11AM +0100, Uwe Kleine-König wrote:
+> Can you please explain what is the reason why clk_round_rate_up/down()
+> is a bad idea? Would it help to create a patch that introduces these
+> functions to get the discussion going?
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/pwm/pwm-jz4740.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+I didn't get any feedback on my mail. Are you to busy working on more
+important stuff? Is the answer so obvious that you don't consider it
+worth your time to answer?
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index 3cd5c054ad9a..f566f9d248d6 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -6,7 +6,6 @@
-  * Limitations:
-  * - The .apply callback doesn't complete the currently running period before
-  *   reconfiguring the hardware.
-- * - Each period starts with the inactive part.
-  */
- 
- #include <linux/clk.h>
-@@ -163,7 +162,7 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* Calculate duty value */
- 	tmp = (unsigned long long)period * state->duty_cycle;
- 	do_div(tmp, state->period);
--	duty = period - tmp;
-+	duty = (unsigned long)tmp;
- 
- 	if (duty >= period)
- 		duty = period - 1;
-@@ -190,17 +189,13 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   TCU_TCSR_PWM_SD, TCU_TCSR_PWM_SD);
- 
- 	/* Set polarity */
--	switch (state->polarity) {
--	case PWM_POLARITY_NORMAL:
-+	if ((state->polarity != PWM_POLARITY_INVERSED) ^ state->enabled)
- 		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
- 				   TCU_TCSR_PWM_INITL_HIGH, 0);
--		break;
--	case PWM_POLARITY_INVERSED:
-+	else
- 		regmap_update_bits(jz4740->map, TCU_REG_TCSRc(pwm->hwpwm),
- 				   TCU_TCSR_PWM_INITL_HIGH,
- 				   TCU_TCSR_PWM_INITL_HIGH);
--		break;
--	}
- 
- 	if (state->enabled)
- 		jz4740_pwm_enable(chip, pwm);
+Looking a bit through the code I see there are two callbacks hwclks can
+provide to implement rounding (determine_rate and round_rate). The docs
+for both use the term "return the closes rate actually supported". Does
+that mean "round-closest" is already the official policy and other
+strategies in lowlevel drivers are a bug?
+
+Best regards
+Uwe
+
 -- 
-2.25.1
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
