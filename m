@@ -1,68 +1,73 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v2 10/16] gpio: add a reusable generic gpio_chip using
- regmap
-Date: Tue, 14 Apr 2020 18:21:29 +0100
-Message-ID: <20200414172129.GJ5412@sirena.org.uk>
-References: <20200402203656.27047-1-michael@walle.cc>
- <20200402203656.27047-11-michael@walle.cc>
- <CAMpxmJVE3PgVCxkQ-ryc5=KSrKcpdmk1cnJUxJBz9QFCx-e_+A@mail.gmail.com>
- <80bd8661ec8a1f5eda3f09a267846eaa@walle.cc>
- <CAMpxmJVC7e9JnHzBo-h8M1+KmcA32=Rvxo7+znH=-kAbcCr_LQ@mail.gmail.com>
- <e0388a2137e23d76b2415a7549c01dd1@walle.cc>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] pwm: Add missing '\n' in log messages
+Date: Tue, 14 Apr 2020 20:30:04 +0200
+Message-ID: <f13a8754-3866-d3d2-eaff-29cb6d14ff8d@wanadoo.fr>
+References: <20200411153528.30130-1-christophe.jaillet@wanadoo.fr>
+ <20200414135827.GB3593749@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LQAwcd5tHl0Qlnzi"
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52880 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407622AbgDNRVd (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 14 Apr 2020 13:21:33 -0400
-Content-Disposition: inline
-In-Reply-To: <e0388a2137e23d76b2415a7549c01dd1@walle.cc>
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:30329 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503995AbgDNSaJ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Apr 2020 14:30:09 -0400
+In-Reply-To: <20200414135827.GB3593749@ulmo>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-gpio <linux-gpio@vger.kernel.org>, linux-devicetree <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, arm-soc <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.d>
+To: Thierry Reding <thierry.reding@gmail.com>, paul@crapouillou.net, Joe Perches <joe@perches.com>, Dan Carpenter <dan.carpenter@oracle.com>
+Cc: u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+
+Le 14/04/2020 à 15:58, Thierry Reding a écrit :
+> On Sat, Apr 11, 2020 at 05:35:28PM +0200, Christophe JAILLET wrote:
+>> Message logged by 'dev_xxx()' or 'pr_xxx()' should end with a '\n'.
+>>
+>> Fixes: 3ad1f3a33286 ("pwm: Implement some checks for lowlevel drivers")
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>>   drivers/pwm/core.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+>> index 9973c442b455..bca04965bfe6 100644
+>> --- a/drivers/pwm/core.c
+>> +++ b/drivers/pwm/core.c
+>> @@ -537,7 +537,7 @@ static void pwm_apply_state_debug(struct pwm_device *pwm,
+>>   
+>>   	if (!state->enabled && s2.enabled && s2.duty_cycle > 0)
+>>   		dev_warn(chip->dev,
+>> -			 "requested disabled, but yielded enabled with duty > 0");
+>> +			 "requested disabled, but yielded enabled with duty > 0\n");
+>>   
+>>   	/* reapply the state that the driver reported being configured. */
+>>   	err = chip->ops->apply(chip, pwm, &s1);
+> I don't think this is strictly necessary any longer since the logging
+> functions are supposed to add these themselves nowadays. But I like the
+> consistency of this, so I'll apply this anyway.
+>
+> Thanks,
+> Thierry
+
+Hi Thierry,
+
+I've sent more or less 10 similar patches against files updated 
+recently, that is to say against files which are actively maintained.
+
+I've done it to get feedback on the acceptances rate of such proposals.
+The goal is not to flood everyone with such patches, but rather to see 
+if adding a new kind of test to checkpatch.pl makes sense.
+
+Being able to detect early missing trailing '\n' would help maintainers 
+and patch providers.
+
+You are the 2nd person (I've added Paul Cercueil in copy of my reply) 
+who reports that he is thinking that it is no more required to add a '\n'.
 
 
---LQAwcd5tHl0Qlnzi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+If you have any pointer about it, it would be much appreciated.
 
-On Tue, Apr 14, 2020 at 12:07:01PM +0200, Michael Walle wrote:
-> Am 2020-04-14 11:50, schrieb Bartosz Golaszewski:
+It would mean, that either this additional checkpatch test is useless, 
+or maybe that it should be reversed and spot *un*needed '\n'.
 
-> > Maybe setting the pointer to ERR_PTR(-ENOENT) which will result in
-> > IS_ERR() returning true?
-
-> Unfortunatly, its not a pointer, but only a regular unsigned int (ie
-> the type the regmap API has for its "reg" property). It could be a
-> pointer of course but then the user would have to allocate additional
-> memory.
-
-You could define REGMAP_INVALID_ADDR to be (unsigned int)(-1) or some
-other suitably implausible address and use that as a value.  It's
-possible that there might be a collision with a real address on some
-device but it should be sufficiently unlikely to be useful, especially
-if it's not something regmap in general goes and evaluates.  For extra
-safety we could have an API for allowing users to query the register
-validity information regmap has (or can be given) and gpiolib could then
-use that to figure out if the value was actually a dummy value but
-that's probably overdoing it.
-
---LQAwcd5tHl0Qlnzi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6V8RkACgkQJNaLcl1U
-h9AnZwf8CXCh0WrZ2WtwfdTJ1yX5W12AkMOk5xoWSFXC9PzRicdAquQGHN0U0Qan
-v2iy9fXKFP9/vjkpNOP0q8hzXFoFbxcDvTTPUcPJV9Xd/bJ/X2OTXn7qKKLxIA0q
-8i5t5KXA1+3upDL3nzJvH/dZULUUz7vP7m1SrwkowgS4asnOJVMfa8vGJLbnxhT5
-m9MjUO206PwDS/sUpsK36S+4ccbV5Nzdq50Ce9sWr4szpQnKtAFb0Z8Q9eriTl15
-hJxwRBCZJLqzXLYIGVC0eJPv9YrbG3YLM+x+Hb6oxzOuHRWU5B/Kv8n01YeHW5A1
-Zk21Hdv+mJcVD0qTQ1dNFzb4QzAp5Q==
-=mDDb
------END PGP SIGNATURE-----
-
---LQAwcd5tHl0Qlnzi--
+CJ
