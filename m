@@ -1,64 +1,29 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v2 10/16] gpio: add a reusable generic gpio_chip using
- regmap
-Date: Tue, 14 Apr 2020 20:41:45 +0200
-Message-ID: <62d157198a75a59ada15c496deeab49b@walle.cc>
-References: <20200402203656.27047-1-michael@walle.cc>
- <20200402203656.27047-11-michael@walle.cc>
- <CAMpxmJVE3PgVCxkQ-ryc5=KSrKcpdmk1cnJUxJBz9QFCx-e_+A@mail.gmail.com>
- <80bd8661ec8a1f5eda3f09a267846eaa@walle.cc>
- <CAMpxmJVC7e9JnHzBo-h8M1+KmcA32=Rvxo7+znH=-kAbcCr_LQ@mail.gmail.com>
- <e0388a2137e23d76b2415a7549c01dd1@walle.cc>
- <CAMpxmJW1x4Orh1BZ4TUoCsYeaAAZ4NBUNvoMG9JgP0iLvXTOtg@mail.gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH] pwm: Add missing '\n' in log messages
+Date: Tue, 14 Apr 2020 21:49:25 +0300
+Message-ID: <20200414184925.GA12862@kadam>
+References: <20200411153528.30130-1-christophe.jaillet@wanadoo.fr>
+ <20200414135827.GB3593749@ulmo>
+ <f13a8754-3866-d3d2-eaff-29cb6d14ff8d@wanadoo.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
-In-Reply-To: <CAMpxmJW1x4Orh1BZ4TUoCsYeaAAZ4NBUNvoMG9JgP0iLvXTOtg@mail.gmail.com>
-Sender: linux-hwmon-owner@vger.kernel.org
-To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc: linux-gpio <linux-gpio@vger.kernel.org>, linux-devicetree <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, arm-soc <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <f13a8754-3866-d3d2-eaff-29cb6d14ff8d@wanadoo.fr>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Thierry Reding <thierry.reding@gmail.com>, paul@crapouillou.net, Joe Perches <joe@perches.com>, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Am 2020-04-14 19:00, schrieb Bartosz Golaszewski:
-> wt., 14 kwi 2020 o 12:07 Michael Walle <michael@walle.cc> napisał(a):
->> >>
->> >> So the best from a user perspective I've could come up with was:
->> >>
->> >>    ->base_reg = GPIO_REGMAP_ADDR(addr);
->> >>
->> >> I'm open for suggestions.
->> >>
->> >
->> > Maybe setting the pointer to ERR_PTR(-ENOENT) which will result in
->> > IS_ERR() returning true?
->> 
->> Unfortunatly, its not a pointer, but only a regular unsigned int (ie
->> the type the regmap API has for its "reg" property). It could be a
->> pointer of course but then the user would have to allocate additional
->> memory.
->> 
->> -michael
->> 
-> 
-> Eek, of course it's not a pointer. If possible I'd like to avoid this
-> GPIO_REGMAP_ADDR() macro, so how about having some separate field for
-> invalid offsets making every offset 'valid' by default?
+Huh...
 
-IMHO this has the same problems as mentioned in the response to Mark's
-idea. Normally, the user sets only some addresses, thus he has to mark
-all other as invalid. And if you add another address, you have to touch
-all the drivers to mark it as invalid.
+If you look at dev_vprintk_emit().  It looks like if
+create_syslog_header() returns a string then vprintk_store() will add
+a newline.
 
-We could add some force bits like the "use_ack" flag in the bgpio 
-driver,
-where you can force the use of the value 0. But I'd really like to find
-a better way..
+I guess that means that dev_printk() can't be used to pr_cont().  And
+probably that's deliberate because using pr_cont() after boot is racy
+anyway.
 
--michael
-
-> 
-> Linus: do you have a better idea?
-> 
-> Bart
+regards,
+dan carpenter
