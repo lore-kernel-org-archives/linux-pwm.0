@@ -1,87 +1,82 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] dt-bindings: pwm: Fix cros-ec-pwm example dtc 'reg'
- warning
-Date: Wed, 15 Apr 2020 21:29:28 +0200
-Message-ID: <20200415192928.tjmh2m6a63lmnp3b@pengutronix.de>
-References: <20200415182639.18534-1-robh@kernel.org>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] dt-bindings: pwm: Fix cros-ec-pwm example dtc 'reg' warning
+Date: Wed, 15 Apr 2020 15:35:46 -0500
+Message-ID: <CAL_JsqJs1mvJU53RFsv0PeGkzaX0xdryrqBA1SWm5Ka_a8uJ=Q@mail.gmail.com>
+References: <20200415182639.18534-1-robh@kernel.org> <20200415192928.tjmh2m6a63lmnp3b@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2437032AbgDOT3g (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Apr 2020 15:29:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B49C061A10
-        for <linux-pwm@vger.kernel.org>; Wed, 15 Apr 2020 12:29:36 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20200415182639.18534-1-robh@kernel.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200415192928.tjmh2m6a63lmnp3b-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Guenter Roeck <groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Guenter Roeck <groeck@chromium.org>, linux-pwm@vger.kernel.org
 
-Hello Rob,
+On Wed, Apr 15, 2020 at 2:29 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
+>
+> Hello Rob,
+>
+> On Wed, Apr 15, 2020 at 01:26:39PM -0500, Rob Herring wrote:
+> > The example for the CrOS EC PWM is incomplete and now generates a dtc
+> > warning:
+> >
+> > Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.example.dts:17=
+.11-23.11:
+> > Warning (unit_address_vs_reg): /example-0/cros-ec@0: node has a unit na=
+me, but no reg or ranges property
+> >
+> > Fixing this results in more warnings as a parent spi node is needed as
+> > well.
+> >
+> > Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Cc: "Uwe Kleine-K=C3=B6nig" <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> > Cc: Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> > Cc: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> > Cc: Guenter Roeck <groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> > Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> > ---
+> >  .../bindings/pwm/google,cros-ec-pwm.yaml        | 17 ++++++++++++-----
+> >  1 file changed, 12 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.y=
+aml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > index 24c217b76580..41ece1d85315 100644
+> > --- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > +++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > @@ -31,10 +31,17 @@ additionalProperties: false
+> >
+> >  examples:
+> >    - |
+> > -    cros-ec@0 {
+> > -        compatible =3D "google,cros-ec-spi";
+> > -        cros_ec_pwm: ec-pwm {
+> > -            compatible =3D "google,cros-ec-pwm";
+> > -            #pwm-cells =3D <1>;
+> > +    spi {
+> > +        #address-cells =3D <1>;
+> > +        #size-cells =3D <0>;
+> > +
+> > +        cros-ec@0 {
+> > +            compatible =3D "google,cros-ec-spi";
+> > +            reg =3D <0>;
+> > +
+> > +            cros_ec_pwm: ec-pwm {
+> > +                compatible =3D "google,cros-ec-pwm";
+> > +                #pwm-cells =3D <1>;
+> > +            };
+>
+> Looks reasonable
+>
+> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
-On Wed, Apr 15, 2020 at 01:26:39PM -0500, Rob Herring wrote:
-> The example for the CrOS EC PWM is incomplete and now generates a dtc
-> warning:
-> 
-> Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.example.dts:17.11-23.11:
-> Warning (unit_address_vs_reg): /example-0/cros-ec@0: node has a unit name, but no reg or ranges property
-> 
-> Fixing this results in more warnings as a parent spi node is needed as
-> well.
-> 
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: linux-pwm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/pwm/google,cros-ec-pwm.yaml        | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-> index 24c217b76580..41ece1d85315 100644
-> --- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
-> @@ -31,10 +31,17 @@ additionalProperties: false
->  
->  examples:
->    - |
-> -    cros-ec@0 {
-> -        compatible = "google,cros-ec-spi";
-> -        cros_ec_pwm: ec-pwm {
-> -            compatible = "google,cros-ec-pwm";
-> -            #pwm-cells = <1>;
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        cros-ec@0 {
-> +            compatible = "google,cros-ec-spi";
-> +            reg = <0>;
-> +
-> +            cros_ec_pwm: ec-pwm {
-> +                compatible = "google,cros-ec-pwm";
-> +                #pwm-cells = <1>;
-> +            };
+Thanks.
 
-Looks reasonable
+> Is this supposed to go via the pwm tree, or do you apply yourself via a
+> device-tree tree?
 
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+I'll take it for rc2.
 
-Is this supposed to go via the pwm tree, or do you apply yourself via a
-device-tree tree?
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Rob
