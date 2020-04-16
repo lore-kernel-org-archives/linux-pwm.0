@@ -1,135 +1,43 @@
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+From: Andrew Lunn <andrew@lunn.ch>
 Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
-Date: Thu, 16 Apr 2020 17:49:14 +0100
-Message-ID: <20200416164914.GM25745@shell.armlinux.org.uk>
+Date: Thu, 16 Apr 2020 18:49:44 +0200
+Message-ID: <20200416164944.GS657811@lunn.ch>
 References: <20200329104549.GX25745@shell.armlinux.org.uk>
  <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
  <20200416135039.GL657811@lunn.ch>
  <5c7cb0ff-bf49-640a-3c4a-ef71495af7b7@arm.com>
- <20200416145517.GK25745@shell.armlinux.org.uk>
- <010ccb32-42f1-cc32-0527-e608fc91a879@arm.com>
- <20200416163748.GL25745@shell.armlinux.org.uk>
+ <20200416144231.GP657811@lunn.ch>
+ <628cde2b-0e1b-4c07-4321-8b23d0b34384@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from vps0.lunn.ch ([185.16.172.187]:42144 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727784AbgDPQtx (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 16 Apr 2020 12:49:53 -0400
 Content-Disposition: inline
-In-Reply-To: <20200416163748.GL25745@shell.armlinux.org.uk>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Gregory Clement <gregory.clement@bootlin.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+In-Reply-To: <628cde2b-0e1b-4c07-4321-8b23d0b34384@arm.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Gregory Clement <gregory.clement@bootlin.com>, Russell King - ARM Linux admin <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 
-On Thu, Apr 16, 2020 at 05:37:48PM +0100, Russell King - ARM Linux admin wrote:
-> On Thu, Apr 16, 2020 at 04:55:44PM +0100, Robin Murphy wrote:
-> > On 2020-04-16 3:55 pm, Russell King - ARM Linux admin wrote:
-> > > On Thu, Apr 16, 2020 at 03:37:40PM +0100, Robin Murphy wrote:
-> > > > On 2020-04-16 2:50 pm, Andrew Lunn wrote:
-> > > > [...]
-> > > > > Clocking with Marvell devices has always been interesting. Core IP
-> > > > > like this gets reused between different generations of SoCs. The
-> > > > > original Orion5x had no clock control at all. Latter SoCs have had
-> > > > > more and more complex clock trees. So care has to be taken to not
-> > > > > change old behaviour when adding support for new clocks.
-> > > > 
-> > > > FWIW, that sounds like a good argument for encoding the clock requirements
-> > > > of each variant in the of_match_data, so the driver doesn't have to simply
-> > > > trust the DT and hope.
-> > > 
-> > > Please read my patches.  This is exactly what I'm doing.  I'm preserving
-> > > as closely as possible the current driver behaviour while adding support
-> > > for the Armada 8040 PWM while keeping compatibility with older DT.
-> > > 
-> > > And I'm doing that by keying off the match data, exactly as you're
-> > > suggesting above.
-> > 
-> > AFAICS you're encoding the *PWM capability* in the match data and using that
-> > to extend the existing behaviour, which comprises using soc_variant to maybe
-> > treat the stashed error code as fatal somewhere else much later if
-> > CONFIG_PWM happens to be enabled, and is subtle enough that at least two
-> > reviewers overlooked or failed to make sense of it.
-> > 
-> > Compare and contrast with how self-contained and obvious this is:
-> > 
-> > -	mvchip->clk = devm_clk_get(&pdev->dev, NULL);
-> > -	/* Not all SoCs require a clock.*/
-> > -	if (!IS_ERR(mvchip->clk))
-> > -		clk_prepare_enable(mvchip->clk);
-> > 
-> > +	/* Not all SoCs require a clock.*/
-> > +	if (data->needs_clock)
-> > +		mvchip->clk = devm_clk_get(&pdev->dev, NULL);
-> > +		if (IS_ERR(mvchip->clk))
-> > +			return PTR_ERR(mvchip_clk);
-> > +		clk_prepare_enable(mvchip->clk);
-> > +	}
-> > 
-> > If achieving the same end result by very different and roundabout means
-> > constitutes "exactly the same thing", does me having written this email mean
-> > that my house is exactly the same as the Arm office and someone else will be
-> > along to clean the kitchen shortly? Here's hoping... :D
+> > It is not really hope. It is very obvious when it is wrong, the whole
+> > machine stops dead when you are missing a clock. Very simple to test.
 > 
-> What if we have a platform where DT mentions the clock, and relies
-> on it being enabled as per how the driver is coded today?  I don't
-> know if that's true or not, I don't have the hardware to test.
-> 
-> So, while we can make improvements as you describe above, it's
-> dangerous to do so because we don't have the information to know
-> whether what's being proposed is correct or not.  Hence, it's safer
-> to do the minimum amount of changes, and not do gratuitous potential
-> regression causing cleanups as you're suggesting.
-> 
-> If we want to clean up the driver in potentially regression causing
-> ways, that can be done at a later date.
+> Heh, that's still what I meant - the driver hopes that carrying on will be
+> OK, and the end user is left to pick up the pieces when it isn't ;)
 
-And, here's proof that such an approach will cause a regression:
+> Obviously that's less of an issue when said end-user is a kernel developer
+> making a controlled change during SoC bringup, but perhaps more so for an
+> eager inexperienced hacker cobbling together DTS fragments to convince a
+> distro kernel to boot on some embedded device
 
-arch/arm/boot/dts/armada-375.dtsi:
+Clocks are SoC level stuff, so it is in the DTSI file, not the DTS
+file. An eager inexperienced hacker cobbling together DTS fragment is
+not effected. Experienced kernel hackers have put together the DTSI
+file and tested it. And if an eager inexperienced hacker does touch
+the DTSI file, they probably deserve to get their finger burnt, and
+will get a step closer to become an experience kernel hacker.
 
-gpio0: gpio@18100 {
-        compatible = "marvell,orion-gpio";
-        reg = <0x18100 0x40>;
-        ngpios = <32>;
-        gpio-controller;
-        #gpio-cells = <2>;
-        interrupt-controller;
-        #interrupt-cells = <2>;
-        interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>,
-                     <GIC_SPI 54 IRQ_TYPE_LEVEL_HIGH>,
-                     <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>,
-                     <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>;
-};
-
-Uses "marvell,orion-gpio" compatible, but no clock.
-
-arch/arm/boot/dts/kirkwood.dtsi:
-
-gpio0: gpio@10100 {
-        compatible = "marvell,orion-gpio";
-        #gpio-cells = <2>;
-        gpio-controller;
-        reg = <0x10100 0x40>;
-        ngpios = <32>;
-        interrupt-controller;
-        #interrupt-cells = <2>;
-        interrupts = <35>, <36>, <37>, <38>;
-        clocks = <&gate_clk 7>;
-};
-
-Uses "marvell,orion-gpio" compatible, but there is a clock, and the
-driver will enable this clock.
-
-So, if the decision about the clock is keyed off the compatible as
-you're suggesting it _will_ cause gratuitous regressions.
-
-Random changes to drivers, especially when they have a long history,
-always tends to end up causing regressions, which is why it's better
-to do as I've done when adding PWM support for the A8040, and only
-make the _minimum_ number of changes.  Not to clean up the driver in
-random ways to "improve" it, or make it taste better.  Because such
-things cause regressions.  As I've said several times in this thread.
-
-Point proven.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+     Andrew
