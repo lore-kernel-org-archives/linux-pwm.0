@@ -1,55 +1,50 @@
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
-Date: Thu, 16 Apr 2020 09:14:12 +0100
-Message-ID: <20200416081412.GG25745@shell.armlinux.org.uk>
-References: <20200329104549.GX25745@shell.armlinux.org.uk>
- <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 11/16] gpio: add support for the sl28cpld GPIO
+ controller
+Date: Thu, 16 Apr 2020 10:34:23 +0200
+Message-ID: <CACRpkdbANL_W3gcTwue5VUCWT95boMXjFSqTeFDZvJ6iSeNpJg@mail.gmail.com>
+References: <20200402203656.27047-1-michael@walle.cc>
+ <20200402203656.27047-12-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44266 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2441222AbgDPIPB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Apr 2020 04:15:01 -0400
-Content-Disposition: inline
-In-Reply-To: <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+In-Reply-To: <20200402203656.27047-12-michael@walle.cc>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Michael Walle <michael@walle.cc>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org, Jean Delvare <jdelvare@suse.com>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Mark Brown <broonie@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-hwmon@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Li Yang <leoyang.li@>
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Gregory Clement <gregory.clement@bootlin.com>, linux-pwm@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 
-On Thu, Apr 16, 2020 at 09:51:37AM +0200, Linus Walleij wrote:
-> On Sun, Mar 29, 2020 at 12:46 PM Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> 
-> > This series adds support for the fan PWM output on the Clearfog GT8K
-> > platform, and can potentially be extended to the Macchiatobin.
-> 
-> The gpio changes all look fine to me +/- fixes for review comments.
+Hi Michael,
 
-I think Uwe is incorrect for his GPIO comments; the clock is only
-optional on A8040.  We know this because A8040 has worked fine
-without PWM support without the clock, whereas for Armada 370,
-the driver has hard-failed if the clock is not present.
+this is looking good provided we can get the generic GPIO regmap
+helper reviewed and merged. Thanks!
 
-So, on Armada 370, I preserve this behaviour.  I also preserve the
-behaviour that on Armada 8040, we don't fail the driver if the
-clock is not present so that booting a newer kernel with older DT
-still works (which is a requirement.)  In that case, the driver
-today still tries to get the clock but never checks the result of
-getting the clock (which doesn't exist in current DT files.)
+On Thu, Apr 2, 2020 at 10:37 PM Michael Walle <michael@walle.cc> wrote:
 
-So no, I'm not going to fix Uwe's comments and potentially introduce
-regressions into this GPIO driver; I gave up trying to argue the
-point with Uwe, and I'm at the point of not giving a damn about this
-patch set if I'm to intentionally introduce regressions based on
-review comments.
+> This adds support for the GPIO controller of the sl28 board management
+> controller. This driver is part of a multi-function device.
+>
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-About the only change I would make is to move the check introduced
-in patch 2 into patch 3 instead, inside the MVEBU_PWM_SOC_VARIANT_A8K
-case, so that deferring for the clock works (which is necessary for
-the PWM driver to be useful.)
+> +       depends on MFD_SL28CPLD
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Apart from this depends it seems the patch is compile-time
+independent of the other patches so I'd suggest we just merge
+the generic regmap driver and this driver to the GPIO tree once
+we feel finished with them, optimistically assuming that the MFD
+driver will land and that we will not need any fundamental
+changes in the GPIO driver.
+
+Worst case we have to revert the driver and that is no disaster.
+
+Yours,
+Linus Walleij
