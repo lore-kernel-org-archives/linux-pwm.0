@@ -1,61 +1,55 @@
-From: Vinod Koul <vkoul@kernel.org>
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-Date: Thu, 16 Apr 2020 13:37:34 +0530
-Message-ID: <20200416080734.GJ72691@vkoul-mobl>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416005549.9683-2-robh@kernel.org>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
+Date: Thu, 16 Apr 2020 09:14:12 +0100
+Message-ID: <20200416081412.GG25745@shell.armlinux.org.uk>
+References: <20200329104549.GX25745@shell.armlinux.org.uk>
+ <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44266 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2441222AbgDPIPB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Apr 2020 04:15:01 -0400
 Content-Disposition: inline
-In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
-List-Post: <mailto:linux-mtd@lists.infradead.org>
-List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
-Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Sam Ravnborg <sam@ravnborg.org>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-pci@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-remoteproc@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, dri-devel@lists.freedesktop.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Pavel Machek <pavel@ucw.cz>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Fabio Estevam <festevam@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Gregory Clement <gregory.clement@bootlin.com>, linux-pwm@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 
-On 15-04-20, 19:55, Rob Herring wrote:
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords. The json-schema library doesn't yet support this, but the
-> tooling now does a fixup for this and either way works.
+On Thu, Apr 16, 2020 at 09:51:37AM +0200, Linus Walleij wrote:
+> On Sun, Mar 29, 2020 at 12:46 PM Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
 > 
-> This has been a constant source of review comments, so let's change this
-> treewide so everyone copies the simpler syntax.
+> > This series adds support for the fan PWM output on the Clearfog GT8K
+> > platform, and can potentially be extended to the Macchiatobin.
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/arm/cpus.yaml         |  81 +++---
->  .../devicetree/bindings/arm/l2c2x0.yaml       |  87 +++---
->  .../devicetree/bindings/arm/psci.yaml         |  15 +-
->  .../bindings/arm/samsung/exynos-chipid.yaml   |   5 +-
->  .../bus/allwinner,sun50i-a64-de2.yaml         |   5 +-
->  .../bindings/clock/fixed-factor-clock.yaml    |   5 +-
->  .../bindings/connector/usb-connector.yaml     |  28 +-
->  .../bindings/crypto/st,stm32-hash.yaml        |   9 +-
->  .../allwinner,sun4i-a10-display-engine.yaml   |   7 +-
->  .../display/allwinner,sun4i-a10-tcon.yaml     |   5 +-
->  .../bindings/display/panel/panel-common.yaml  |   5 +-
->  .../devicetree/bindings/dma/dma-common.yaml   |   3 +-
->  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  18 +-
+> The gpio changes all look fine to me +/- fixes for review comments.
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
+I think Uwe is incorrect for his GPIO comments; the clock is only
+optional on A8040.  We know this because A8040 has worked fine
+without PWM support without the clock, whereas for Armada 370,
+the driver has hard-failed if the clock is not present.
+
+So, on Armada 370, I preserve this behaviour.  I also preserve the
+behaviour that on Armada 8040, we don't fail the driver if the
+clock is not present so that booting a newer kernel with older DT
+still works (which is a requirement.)  In that case, the driver
+today still tries to get the clock but never checks the result of
+getting the clock (which doesn't exist in current DT files.)
+
+So no, I'm not going to fix Uwe's comments and potentially introduce
+regressions into this GPIO driver; I gave up trying to argue the
+point with Uwe, and I'm at the point of not giving a damn about this
+patch set if I'm to intentionally introduce regressions based on
+review comments.
+
+About the only change I would make is to move the check introduced
+in patch 2 into patch 3 instead, inside the MVEBU_PWM_SOC_VARIANT_A8K
+case, so that deferring for the clock works (which is necessary for
+the PWM driver to be useful.)
 
 -- 
-~Vinod
-
-______________________________________________________
-Linux MTD discussion mailing list
-http://lists.infradead.org/mailman/listinfo/linux-mtd/
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
