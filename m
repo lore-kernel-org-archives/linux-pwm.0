@@ -1,64 +1,46 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v2 11/16] gpio: add support for the sl28cpld GPIO
- controller
-Date: Thu, 16 Apr 2020 10:55:46 +0200
-Message-ID: <46eb76699a76b3feedccc70f1d1da1de@walle.cc>
-References: <20200402203656.27047-1-michael@walle.cc>
- <20200402203656.27047-12-michael@walle.cc>
- <CACRpkdbANL_W3gcTwue5VUCWT95boMXjFSqTeFDZvJ6iSeNpJg@mail.gmail.com>
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 10/16] gpio: add a reusable generic gpio_chip using regmap
+Date: Thu, 16 Apr 2020 11:20:38 +0200
+Message-ID: <CACRpkdZPZ4nFQ6B3tGG9wvceoTWqAkfY0r1UKs2pf_c=ZNBG=w@mail.gmail.com>
+References: <20200402203656.27047-1-michael@walle.cc> <20200402203656.27047-11-michael@walle.cc>
+ <CAMpxmJVE3PgVCxkQ-ryc5=KSrKcpdmk1cnJUxJBz9QFCx-e_+A@mail.gmail.com>
+ <80bd8661ec8a1f5eda3f09a267846eaa@walle.cc> <CAMpxmJVC7e9JnHzBo-h8M1+KmcA32=Rvxo7+znH=-kAbcCr_LQ@mail.gmail.com>
+ <e0388a2137e23d76b2415a7549c01dd1@walle.cc> <CAMpxmJW1x4Orh1BZ4TUoCsYeaAAZ4NBUNvoMG9JgP0iLvXTOtg@mail.gmail.com>
+ <62d157198a75a59ada15c496deeab49b@walle.cc> <eab972adf53bbac20b5a9e613fcfb5b0@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <CACRpkdbANL_W3gcTwue5VUCWT95boMXjFSqTeFDZvJ6iSeNpJg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: "open list:OPEN
- FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org, Jean Delvare <jdelvare@suse.com>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Mark Brown <broonie@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-hwmon@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kern>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <eab972adf53bbac20b5a9e613fcfb5b0-QKn5cuLxLXY@public.gmane.org>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Cc: Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, linux-gpio <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LINUXWATCHDOG <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, arm-soc <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, Apr 14, 2020 at 9:57 PM Michael Walle <michael-QKn5cuLxLXY@public.gmane.org> wrote:
 
-Hi Linus,
+> So what about the following:
+>
+> #define GPIO_REGMAP_ADDR_ZERO (unsigned int)(-1)
 
-Am 2020-04-16 10:34, schrieb Linus Walleij:
-> Hi Michael,
-> 
-> this is looking good provided we can get the generic GPIO regmap
-> helper reviewed and merged. Thanks!
-> 
-> On Thu, Apr 2, 2020 at 10:37 PM Michael Walle <michael@walle.cc> wrote:
-> 
->> This adds support for the GPIO controller of the sl28 board management
->> controller. This driver is part of a multi-function device.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
-> 
->> +       depends on MFD_SL28CPLD
-> 
-> Apart from this depends it seems the patch is compile-time
-> independent of the other patches
+Yeah with regmap explicitly using int I guess we can't use
+S32_MAX, so that is fair.
 
-correct. There are no common mfd headers or something like that.
+> So this way the user might assign the base addresses the normal way
+> except when he wants to use zero, in that case he has to use
+>
+>    ->base_adr = GPIO_REGMAP_ADDR_ZERO;
+>
+> gpio-regmap.c could use then:
+>
+> if (base_addr)
+>    something_useful(gpio_regmap_addr(base_addr));
+>
+> unsigned int gpio_regmap_addr(unsigned int addr)
+> {
+>    return (addr == GPIO_REGMAP_ADDR_ZERO) ? 0 : addr;
+> }
 
-> so I'd suggest we just merge
-> the generic regmap driver and this driver to the GPIO tree once
-> we feel finished with them, optimistically assuming that the MFD
-> driver will land and that we will not need any fundamental
-> changes in the GPIO driver.
-> 
-> Worst case we have to revert the driver and that is no disaster.
+That's reasonably clean.
 
-Sure. One major thing I'm waiting for is the decision/new ideas on
-how to handle the "register is not set or zero" problem, see the
-other thread on the generic regmap gpio. Then I'd respin an update
-of this whole series.
-
--michael
+Yours,
+Linus Walleij
