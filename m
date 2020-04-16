@@ -1,152 +1,51 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
-Date: Thu, 16 Apr 2020 09:37:50 -0500
-Message-ID: <CAL_JsqKYTRh-cgMQSD=DHS2aud9TnLjKepqd9z0F9Wj2oe=jDg@mail.gmail.com>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416124359.GB5785@ravnborg.org>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
+Date: Thu, 16 Apr 2020 15:41:14 +0100
+Message-ID: <20200416144114.GI25745@shell.armlinux.org.uk>
+References: <20200329104549.GX25745@shell.armlinux.org.uk>
+ <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
+ <20200416135039.GL657811@lunn.ch>
+ <20200416142944.GH25745@shell.armlinux.org.uk>
+ <20200416143645.GN657811@lunn.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200416124359.GB5785@ravnborg.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Sam Ravnborg <sam@ravnborg.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc@vger.kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, dri-devel <dri-devel@lists.freedesktop.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, MTD Maling List <linux-mtd@lists.infradead.org>, Linux I2C <linux-i2c@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>, linux-riscv <linux-riscv@lists.infradead.org>, Fabio Estevam <festevam@gmail.com>, linux-clk <linux-clk@vger.kernel.org>, Linux LED Subsystem <linux-leds@vger.kernel.org>, open list:REAL TIME CLOCK (
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20200416143645.GN657811@lunn.ch>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Mark Rutland <mark.rutland@arm.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Gregory Clement <gregory.clement@bootlin.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 7:44 AM Sam Ravnborg <sam@ravnborg.org> wrote:
->
-> Hi Rob.
->
-> On Wed, Apr 15, 2020 at 07:55:48PM -0500, Rob Herring wrote:
-> > Fix various inconsistencies in schema indentation. Most of these are
-> > list indentation which should be 2 spaces more than the start of the
-> > enclosing keyword. This doesn't matter functionally, but affects running
-> > scripts which do transforms on the schema files.
->
-> Are there any plans to improve the tooling so we get warnigns for this?
+On Thu, Apr 16, 2020 at 04:36:45PM +0200, Andrew Lunn wrote:
+> > I said in the cover message "The cooling maps are experimental".
+> > They work reasonably well for me with the fan I have (a noctua fan)
+> > but other people may find them to be problematical, so one of the
+> > reasons for sending it as RFC is to get people to test and see how
+> > well it works.
+> 
+> Hi Russell
+> 
+> Maybe split the PWM parts from the cooling maps? I don't see any
+> reason not to merge the PWM parts.
 
-I've been experimenting with yamllint some. I haven't figured out how
-to best integrate it in. Probably need to start with something minimal
-and warning free for the tree and then add to it.
+That's easy - the cooling maps are an entirely separate patch.
+However, one thing we need to be careful of is whether someone has a
+PWM fan plugged in, and whether not having any cooling maps results
+in the fan stopping, as I think PWMs default to being disabled on
+initialisation.
 
-There's also yaml-format in the dtschema repo which just reads in and
-writes out a yaml file using ruamel round trip yaml parser. That's
-what I used here.
+That could be a SoC-killing combination.
 
-> Otherwise I am afraid we will see a lot of patches that gets this wrong.
->
-> As a follow-up patch it would be good if example-schema.yaml
-> could gain some comments about the correct indentions.
-
-Sure, I can do that.
-
->
-> Some comments in the following.
->
-> > diff --git a/Documentation/devicetree/bindings/arm/altera.yaml b/Documentation/devicetree/bindings/arm/altera.yaml
-> > index 49e0362ddc11..b388c5aa7984 100644
-> > --- a/Documentation/devicetree/bindings/arm/altera.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/altera.yaml
-> > @@ -13,8 +13,8 @@ properties:
-> >    compatible:
-> >      items:
-> >        - enum:
-> > -        - altr,socfpga-cyclone5
-> > -        - altr,socfpga-arria5
-> > -        - altr,socfpga-arria10
-> > +          - altr,socfpga-cyclone5
-> > +          - altr,socfpga-arria5
-> > +          - altr,socfpga-arria10
-> >        - const: altr,socfpga
->
-> So here "- enum" do not need the extra indent.
-> Is it because this is not a list?
-
-Right. Indentation is 2 more spaces than the parent keyword ignoring
-any hyphen in the parent.
-
-> > diff --git a/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml b/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
-> > index 66213bd95e6e..6cc74523ebfd 100644
-> > --- a/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
-> > @@ -25,7 +25,7 @@ select:
-> >
-> >  properties:
-> >    compatible:
-> > -   items:
-> > +    items:
-> >        - const: amlogic,meson-gx-ao-secure
-> >        - const: syscon
->
-> This is something I had expected the tooling to notice.
-> I had expected the two "- const" to be indented with 4 spaces, not two.
-> So there is something I do not understand.
-
-As above, correct indenting is 2 spaces from the parent not counting
-any '-' in the parent, but the '-' counts for indenting the children.
-
-Arguably, this style is inconsistent that sometimes the '-' counts and
-sometimes it doesn't. However, I think this style is better because it
-distinguishes lists vs. dicts more clearly. It's easy to miss the '-'
-when the indentation is the same:
-
-- foo:
-  - bar
-  - baz
-
-- foo:
-    bar
-    baz
-
-Or worse:
-
-- foo:
-  - bar
-    baz
-
-Both styles are valid. It's just a tabs vs. spaces debate, and I just
-picked one.
-
-
-> > diff --git a/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml b/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml
-> > index 07f39d3eee7e..f7f024910e71 100644
-> > --- a/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml
-> > @@ -17,9 +17,8 @@ properties:
-> >            - nxp,lpc3230
-> >            - nxp,lpc3240
-> >        - items:
-> > -        - enum:
-> > -            - ea,ea3250
-> > -            - phytec,phy3250
-> > -        - const: nxp,lpc3250
-> > -
-> > +          - enum:
-> > +              - ea,ea3250
-> > +              - phytec,phy3250
-> > +          - const: nxp,lpc3250
-> >  ...
->
-> And here "- enum" receive extra indent.
->
-> I trust you know what you are doing - but I do not get it.
->
-> Some pointers or examples for the correct indention would be great.
-
-With this patch, the tree is all correct examples. :)
-
-> I cannot review this patch as long as I do not know the rules.
->
-> My request to update example-schema.yaml was one way to teach me.
-> (Some people will say that is difficult/impossible to teach me,
-> but thats another story:-) ).
->
->         Sam
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
