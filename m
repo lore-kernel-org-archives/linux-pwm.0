@@ -1,29 +1,66 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
-Date: Thu, 16 Apr 2020 09:51:37 +0200
-Message-ID: <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
-References: <20200329104549.GX25745@shell.armlinux.org.uk>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH] pwm: imx27: Fix rounding behavior
+Date: Thu, 16 Apr 2020 10:02:45 +0200
+Message-ID: <20200416080245.3203-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20200329104549.GX25745@shell.armlinux.org.uk>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Gregory Clement <gregory.clement@bootlin.com>, Jason Cooper <jason@lakedaemon.net>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, Mar 29, 2020 at 12:46 PM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
-
-> This series adds support for the fan PWM output on the Clearfog GT8K
-> platform, and can potentially be extended to the Macchiatobin.
-
-The gpio changes all look fine to me +/- fixes for review comments.
-
-Could the MVEBU maintainers provide some feedback?
-Curiously the file is only listed as a PWM driver in MAINTAINERS
-so formally Thierry & Uwe review it (and Uwe did), but surely
-the MVEBU platform maintainers should take a look too.
-
-Yours,
-Linus Walleij
+VG8gbm90IHRyaWdnZXIgdGhlIHdhcm5pbmdzIHByb3ZpZGVkIGJ5IENPTkZJR19QV01fREVCVUcK
+CiAtIHVzZSB1cC1yb3VuZGluZyBpbiAuZ2V0X3N0YXRlKCkKIC0gZG9uJ3QgZGl2aWRlIGJ5IHRo
+ZSByZXN1bHQgb2YgYSBkaXZpc2lvbgogLSBkb24ndCB1c2UgdGhlIHJvdW5kZWQgY291bnRlciB2
+YWx1ZSBmb3IgdGhlIHBlcmlvZCBsZW5ndGggdG8gY2FsY3VsYXRlCiAgIHRoZSBjb3VudGVyIHZh
+bHVlIGZvciB0aGUgZHV0eSBjeWNsZQoKU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcg
+PHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KLS0tCiBkcml2ZXJzL3B3bS9wd20taW14
+MjcuYyB8IDIwICsrKysrKysrKystLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0
+aW9ucygrKSwgMTAgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLWlt
+eDI3LmMgYi9kcml2ZXJzL3B3bS9wd20taW14MjcuYwppbmRleCBhNmU0MGQ0YzQ4NWYuLjczMmE2
+ZjM3MDFlOCAxMDA2NDQKLS0tIGEvZHJpdmVycy9wd20vcHdtLWlteDI3LmMKKysrIGIvZHJpdmVy
+cy9wd20vcHdtLWlteDI3LmMKQEAgLTE1MCwxMyArMTUwLDEyIEBAIHN0YXRpYyB2b2lkIHB3bV9p
+bXgyN19nZXRfc3RhdGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLAogCiAJcHJlc2NhbGVyID0gTVgz
+X1BXTUNSX1BSRVNDQUxFUl9HRVQodmFsKTsKIAlwd21fY2xrID0gY2xrX2dldF9yYXRlKGlteC0+
+Y2xrX3Blcik7Ci0JcHdtX2NsayA9IERJVl9ST1VORF9DTE9TRVNUX1VMTChwd21fY2xrLCBwcmVz
+Y2FsZXIpOwogCXZhbCA9IHJlYWRsKGlteC0+bW1pb19iYXNlICsgTVgzX1BXTVBSKTsKIAlwZXJp
+b2QgPSB2YWwgPj0gTVgzX1BXTVBSX01BWCA/IE1YM19QV01QUl9NQVggOiB2YWw7CiAKIAkvKiBQ
+V01PVVQgKEh6KSA9IFBXTUNMSyAvIChQV01QUiArIDIpICovCi0JdG1wID0gTlNFQ19QRVJfU0VD
+ICogKHU2NCkocGVyaW9kICsgMik7Ci0Jc3RhdGUtPnBlcmlvZCA9IERJVl9ST1VORF9DTE9TRVNU
+X1VMTCh0bXAsIHB3bV9jbGspOworCXRtcCA9IE5TRUNfUEVSX1NFQyAqICh1NjQpKHBlcmlvZCAr
+IDIpICogcHJlc2NhbGVyOworCXN0YXRlLT5wZXJpb2QgPSBESVZfUk9VTkRfVVBfVUxMKHRtcCwg
+cHdtX2Nsayk7CiAKIAkvKgogCSAqIFBXTVNBUiBjYW4gYmUgcmVhZCBvbmx5IGlmIFBXTSBpcyBl
+bmFibGVkLiBJZiB0aGUgUFdNIGlzIGRpc2FibGVkLApAQCAtMTY3LDggKzE2Niw4IEBAIHN0YXRp
+YyB2b2lkIHB3bV9pbXgyN19nZXRfc3RhdGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLAogCWVsc2UK
+IAkJdmFsID0gaW14LT5kdXR5X2N5Y2xlOwogCi0JdG1wID0gTlNFQ19QRVJfU0VDICogKHU2NCko
+dmFsKTsKLQlzdGF0ZS0+ZHV0eV9jeWNsZSA9IERJVl9ST1VORF9DTE9TRVNUX1VMTCh0bXAsIHB3
+bV9jbGspOworCXRtcCA9IE5TRUNfUEVSX1NFQyAqICh1NjQpKHZhbCkgKiBwcmVzY2FsZXI7CisJ
+c3RhdGUtPmR1dHlfY3ljbGUgPSBESVZfUk9VTkRfVVBfVUxMKHRtcCwgcHdtX2Nsayk7CiAKIAlw
+d21faW14MjdfY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGlteCk7CiB9CkBAIC0yMjAsMjIgKzIxOSwy
+MyBAQCBzdGF0aWMgaW50IHB3bV9pbXgyN19hcHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0
+cnVjdCBwd21fZGV2aWNlICpwd20sCiAJc3RydWN0IHB3bV9pbXgyN19jaGlwICppbXggPSB0b19w
+d21faW14MjdfY2hpcChjaGlwKTsKIAlzdHJ1Y3QgcHdtX3N0YXRlIGNzdGF0ZTsKIAl1bnNpZ25l
+ZCBsb25nIGxvbmcgYzsKKwl1bnNpZ25lZCBsb25nIGxvbmcgY2xrcmF0ZTsKIAlpbnQgcmV0Owog
+CXUzMiBjcjsKIAogCXB3bV9nZXRfc3RhdGUocHdtLCAmY3N0YXRlKTsKIAotCWMgPSBjbGtfZ2V0
+X3JhdGUoaW14LT5jbGtfcGVyKTsKLQljICo9IHN0YXRlLT5wZXJpb2Q7CisJY2xrcmF0ZSA9IGNs
+a19nZXRfcmF0ZShpbXgtPmNsa19wZXIpOworCWMgPSBjbGtyYXRlICogc3RhdGUtPnBlcmlvZDsK
+IAotCWRvX2RpdihjLCAxMDAwMDAwMDAwKTsKKwlkb19kaXYoYywgTlNFQ19QRVJfU0VDKTsKIAlw
+ZXJpb2RfY3ljbGVzID0gYzsKIAogCXByZXNjYWxlID0gcGVyaW9kX2N5Y2xlcyAvIDB4MTAwMDAg
+KyAxOwogCiAJcGVyaW9kX2N5Y2xlcyAvPSBwcmVzY2FsZTsKLQljID0gKHVuc2lnbmVkIGxvbmcg
+bG9uZylwZXJpb2RfY3ljbGVzICogc3RhdGUtPmR1dHlfY3ljbGU7Ci0JZG9fZGl2KGMsIHN0YXRl
+LT5wZXJpb2QpOworCWMgPSBjbGtyYXRlICogc3RhdGUtPmR1dHlfY3ljbGU7CisJZG9fZGl2KGMs
+IE5TRUNfUEVSX1NFQyAqIHByZXNjYWxlKTsKIAlkdXR5X2N5Y2xlcyA9IGM7CiAKIAkvKgotLSAK
+Mi4yNi4wLnJjMgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
+aW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2xpbnV4LWFybS1rZXJuZWwK
