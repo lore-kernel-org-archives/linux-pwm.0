@@ -1,56 +1,77 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-Date: Thu, 16 Apr 2020 08:55:21 -0500
-Message-ID: <CAL_JsqLcJrFow_+-o2CxoPRCv4U-ELb2FHSbUgG=Mzt8PFn_CA@mail.gmail.com>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416005549.9683-2-robh@kernel.org>
- <d93f90bbcc99967ed5ba458ba99d7e73de12e3b2.camel@perches.com>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
+Date: Thu, 16 Apr 2020 15:29:44 +0100
+Message-ID: <20200416142944.GH25745@shell.armlinux.org.uk>
+References: <20200329104549.GX25745@shell.armlinux.org.uk>
+ <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
+ <20200416135039.GL657811@lunn.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <d93f90bbcc99967ed5ba458ba99d7e73de12e3b2.camel@perches.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
-List-Post: <mailto:linux-mtd@lists.infradead.org>
-List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
-Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org
-To: Joe Perches <joe@perches.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Linux PWM List <linux-pwm@vger.kernel.org>, "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc@vger.kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, dri-devel <dri-devel@lists.freedesktop.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, MTD Maling List <linux-mtd@lists.infradead.org>, Linux I2C <linux-i2c@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>, linux-riscv <linux-riscv@lists.infradead.org>, Lee Jones <lee.jones@linaro.org>, linux-clk <linux-clk@vger.kernel.org>, Linux LED Subsystem <linux-leds@vger.kernel.org>, open list:REAL TIME CLOCK (RT
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200416135039.GL657811@lunn.ch>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Gregory Clement <gregory.clement@bootlin.com>, Jason Cooper <jason@lakedaemon.net>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 1:52 AM Joe Perches <joe@perches.com> wrote:
->
-> On Wed, 2020-04-15 at 19:55 -0500, Rob Herring wrote:
-> > json-schema versions draft7 and earlier have a weird behavior in that
-> > any keywords combined with a '$ref' are ignored (silently). The correct
-> > form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> > in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> > keywords. The json-schema library doesn't yet support this, but the
-> > tooling now does a fixup for this and either way works.
-> >
-> > This has been a constant source of review comments, so let's change this
-> > treewide so everyone copies the simpler syntax.
->
-> This is a large change.
->
-> Was this done manually or by some script?
+On Thu, Apr 16, 2020 at 03:50:39PM +0200, Andrew Lunn wrote:
+> On Thu, Apr 16, 2020 at 09:51:37AM +0200, Linus Walleij wrote:
+> > On Sun, Mar 29, 2020 at 12:46 PM Russell King - ARM Linux admin
+> > <linux@armlinux.org.uk> wrote:
+> > 
+> > > This series adds support for the fan PWM output on the Clearfog GT8K
+> > > platform, and can potentially be extended to the Macchiatobin.
+> > 
+> > The gpio changes all look fine to me +/- fixes for review comments.
+> > 
+> > Could the MVEBU maintainers provide some feedback?
+> 
+> Hi Linus
+> 
+> I took a quick look at this when it was first posted. I also wrote the
+> PWM support in this driver. The hardware is mostly a GPIO driver, but
+> it has some basic PWM facilities. It is not possible to cleanly split
+> it into two drivers, which is why it has the current structure. And
+> the PWM maintainers ask that the PWM parts be listed in MAINTAINERS as
+> such, so they got to know about any changes.
+> 
+> Clocking with Marvell devices has always been interesting. Core IP
+> like this gets reused between different generations of SoCs. The
+> original Orion5x had no clock control at all. Latter SoCs have had
+> more and more complex clock trees. So care has to be taken to not
+> change old behaviour when adding support for new clocks. So Russell
+> 2/6 patch looks good to me, and Uwe request could break on some
+> SoCs. It would need testing on a lot of SoCs, with and without PWM
+> support. 
+> 
+> I assume Russell will at some point repost without the RFC tag. At
+> that point i will take a second look and add Reviewed-by.
 
-Scripted with python ruamel yaml, but then I had to filter out all the
-re-formatting (hence the first patch to cut down some of that).
+I said in the cover message "The cooling maps are experimental".
+They work reasonably well for me with the fan I have (a noctua fan)
+but other people may find them to be problematical, so one of the
+reasons for sending it as RFC is to get people to test and see how
+well it works.
 
-> If it was done manually, how likely is it there are defects
-> in the conversion?
+I may have had greater success getting people to test if I'd added
+maps for the Macchiatobin, but that wasn't my target system. That's
+relatively easy to do - it's the same pin as on the gt8k, so merely
+putting the same DT changes onto Macchiatobin would allow testing
+with those settings.
 
-Either way, the schemas still have to pass the meta-schema checks.
+Whether that's correct for my Macchiatobin server setup is an
+entirely separate problem - where the fan PWM controls front panel
+fans and there's a bigger fanless heatsink on the Armada 8040 (as
+per the first revision of the Macchiatobin boards).  As the boards
+ship without a PWM controllable fan, it would be of limited use.
 
-Rob
+So, really, I think the DT configuration of the PWM parameters is
+"for the user" and not actually for mainline kernels - which
+brings with it the problems of understanding control systems,
+stability of such systems, feedback, and how to configure the
+thermal subsystem... which is not easy.
 
-______________________________________________________
-Linux MTD discussion mailing list
-http://lists.infradead.org/mailman/listinfo/linux-mtd/
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
