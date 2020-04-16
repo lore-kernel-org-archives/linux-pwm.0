@@ -1,43 +1,57 @@
-From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH RFC 0/6] PWM fan support on Clearfog gt8k
-Date: Thu, 16 Apr 2020 18:49:44 +0200
-Message-ID: <20200416164944.GS657811@lunn.ch>
-References: <20200329104549.GX25745@shell.armlinux.org.uk>
- <CACRpkdaL4-Z36aKOVW4o2MtCG9fbqm4gxZN3QjejVRPBZrzxxA@mail.gmail.com>
- <20200416135039.GL657811@lunn.ch>
- <5c7cb0ff-bf49-640a-3c4a-ef71495af7b7@arm.com>
- <20200416144231.GP657811@lunn.ch>
- <628cde2b-0e1b-4c07-4321-8b23d0b34384@arm.com>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH v12 09/11] backlight: pwm_bl: Use 64-bit division function
+Date: Thu, 16 Apr 2020 10:55:27 -0700
+Message-ID: <20200416175527.GA21388@codeaurora.org>
+References: <cover.1586414867.git.gurus@codeaurora.org>
+ <e2139a83008e9f301889f9384487c55de475a6a2.1586414867.git.gurus@codeaurora.org>
+ <20200416094420.GB2167633@dell>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from vps0.lunn.ch ([185.16.172.187]:42144 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727784AbgDPQtx (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 16 Apr 2020 12:49:53 -0400
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:37671 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728445AbgDPRzy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Apr 2020 13:55:54 -0400
 Content-Disposition: inline
-In-Reply-To: <628cde2b-0e1b-4c07-4321-8b23d0b34384@arm.com>
+In-Reply-To: <20200416094420.GB2167633@dell>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Gregory Clement <gregory.clement@bootlin.com>, Russell King - ARM Linux admin <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
 
-> > It is not really hope. It is very obvious when it is wrong, the whole
-> > machine stops dead when you are missing a clock. Very simple to test.
+On Thu, Apr 16, 2020 at 10:44:20AM +0100, Lee Jones wrote:
+> On Wed, 08 Apr 2020, Guru Das Srinagesh wrote:
 > 
-> Heh, that's still what I meant - the driver hopes that carrying on will be
-> OK, and the end user is left to pick up the pieces when it isn't ;)
+> > Since the PWM framework is switching struct pwm_state.period's datatype
+> > to u64, prepare for this transition by using div_u64 to handle a 64-bit
+> > dividend instead of a straight division operation.
+> > 
+> > Cc: Lee Jones <lee.jones@linaro.org>
+> > Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> > Cc: Jingoo Han <jingoohan1@gmail.com>
+> > Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> > Cc: linux-pwm@vger.kernel.org
+> > Cc: dri-devel@lists.freedesktop.org
+> > Cc: linux-fbdev@vger.kernel.org
+> > 
+> > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> > Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+> > ---
+> >  drivers/video/backlight/pwm_bl.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> I see that this is part of a large set, but the remainder of the
+> patches have been hidden from me.
 
-> Obviously that's less of an issue when said end-user is a kernel developer
-> making a controlled change during SoC bringup, but perhaps more so for an
-> eager inexperienced hacker cobbling together DTS fragments to convince a
-> distro kernel to boot on some embedded device
+Sorry about that, the full series is here: [1].
 
-Clocks are SoC level stuff, so it is in the DTSI file, not the DTS
-file. An eager inexperienced hacker cobbling together DTS fragment is
-not effected. Experienced kernel hackers have put together the DTSI
-file and tested it. And if an eager inexperienced hacker does touch
-the DTSI file, they probably deserve to get their finger burnt, and
-will get a step closer to become an experience kernel hacker.
+> Does this mean I can apply this patch on its own?
 
-     Andrew
+I'll defer to Uwe on this point as I am not sure of the implications of
+taking in this single patch and not the entire series.
+
+Thank you.
+
+Guru Das.
+
+[1] https://www.spinics.net/lists/linux-pwm/msg12131.html
