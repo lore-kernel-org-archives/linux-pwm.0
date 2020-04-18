@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 12/19] pwm: renesas-tpu: Fix late Runtime PM enablement
-Date: Sat, 18 Apr 2020 10:44:29 -0400
-Message-ID: <20200418144436.10818-12-sashal@kernel.org>
-References: <20200418144436.10818-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 14/23] pwm: renesas-tpu: Fix late Runtime PM enablement
+Date: Sat, 18 Apr 2020 10:43:56 -0400
+Message-ID: <20200418144405.10565-14-sashal@kernel.org>
+References: <20200418144405.10565-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200418144436.10818-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20200418144405.10565-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
