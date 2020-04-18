@@ -1,72 +1,71 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 07/28] pwm: rcar: Fix late Runtime PM enablement
-Date: Sat, 18 Apr 2020 10:43:07 -0400
-Message-ID: <20200418144328.10265-7-sashal@kernel.org>
-References: <20200418144328.10265-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 24/47] pwm: renesas-tpu: Fix late Runtime PM enablement
+Date: Sat, 18 Apr 2020 10:42:04 -0400
+Message-ID: <20200418144227.9802-24-sashal@kernel.org>
+References: <20200418144227.9802-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200418144328.10265-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20200418144227.9802-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 1451a3eed24b5fd6a604683f0b6995e0e7e16c79 ]
+[ Upstream commit d5a3c7a4536e1329a758e14340efd0e65252bd3d ]
 
 Runtime PM should be enabled before calling pwmchip_add(), as PWM users
 can appear immediately after the PWM chip has been added.
-Likewise, Runtime PM should be disabled after the removal of the PWM
-chip.
+Likewise, Runtime PM should always be disabled after the removal of the
+PWM chip, even if the latter failed.
 
-Fixes: ed6c1476bf7f16d5 ("pwm: Add support for R-Car PWM Timer")
+Fixes: 99b82abb0a35b073 ("pwm: Add Renesas TPU PWM driver")
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-rcar.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-renesas-tpu.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 0fcf94ffad321..c298bec25a90a 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -236,24 +236,28 @@ static int rcar_pwm_probe(struct platform_device *pdev)
- 	rcar_pwm->chip.base = -1;
- 	rcar_pwm->chip.npwm = 1;
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 29267d12fb4c9..9c7962f2f0aa4 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -423,16 +423,17 @@ static int tpu_probe(struct platform_device *pdev)
+ 	tpu->chip.base = -1;
+ 	tpu->chip.npwm = TPU_CHANNEL_MAX;
  
 +	pm_runtime_enable(&pdev->dev);
 +
- 	ret = pwmchip_add(&rcar_pwm->chip);
+ 	ret = pwmchip_add(&tpu->chip);
  	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", ret);
+ 		dev_err(&pdev->dev, "failed to register PWM chip\n");
 +		pm_runtime_disable(&pdev->dev);
  		return ret;
  	}
+ 
+ 	dev_info(&pdev->dev, "TPU PWM %d registered\n", tpu->pdev->id);
  
 -	pm_runtime_enable(&pdev->dev);
 -
  	return 0;
  }
  
- static int rcar_pwm_remove(struct platform_device *pdev)
- {
- 	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&rcar_pwm->chip);
+@@ -442,12 +443,10 @@ static int tpu_remove(struct platform_device *pdev)
+ 	int ret;
+ 
+ 	ret = pwmchip_remove(&tpu->chip);
+-	if (ret)
+-		return ret;
  
  	pm_runtime_disable(&pdev->dev);
  
--	return pwmchip_remove(&rcar_pwm->chip);
+-	return 0;
 +	return ret;
  }
  
- static const struct of_device_id rcar_pwm_of_table[] = {
+ #ifdef CONFIG_OF
 -- 
 2.20.1
