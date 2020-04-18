@@ -1,52 +1,71 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.5 42/75] pwm: bcm2835: Dynamically allocate base
-Date: Sat, 18 Apr 2020 10:08:37 -0400
-Message-ID: <20200418140910.8280-42-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 41/75] pwm: renesas-tpu: Fix late Runtime PM enablement
+Date: Sat, 18 Apr 2020 10:08:36 -0400
+Message-ID: <20200418140910.8280-41-sashal@kernel.org>
 References: <20200418140910.8280-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37912 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726798AbgDROKE (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 18 Apr 2020 10:10:04 -0400
+Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20200418140910.8280-1-sashal@kernel.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Florian Fainelli <f.fainelli@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 2c25b07e5ec119cab609e41407a1fb3fa61442f5 ]
+[ Upstream commit d5a3c7a4536e1329a758e14340efd0e65252bd3d ]
 
-The newer 2711 and 7211 chips have two PWM controllers and failure to
-dynamically allocate the PWM base would prevent the second PWM
-controller instance being probed for succeeding with an -EEXIST error
-from alloc_pwms().
+Runtime PM should be enabled before calling pwmchip_add(), as PWM users
+can appear immediately after the PWM chip has been added.
+Likewise, Runtime PM should always be disabled after the removal of the
+PWM chip, even if the latter failed.
 
-Fixes: e5a06dc5ac1f ("pwm: Add BCM2835 PWM driver")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Fixes: 99b82abb0a35b073 ("pwm: Add Renesas TPU PWM driver")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-bcm2835.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pwm/pwm-renesas-tpu.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
-index 91e24f01b54ed..d78f86f8e4621 100644
---- a/drivers/pwm/pwm-bcm2835.c
-+++ b/drivers/pwm/pwm-bcm2835.c
-@@ -166,6 +166,7 @@ static int bcm2835_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 4a855a21b782d..8032acc84161a 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -415,16 +415,17 @@ static int tpu_probe(struct platform_device *pdev)
+ 	tpu->chip.base = -1;
+ 	tpu->chip.npwm = TPU_CHANNEL_MAX;
  
- 	pc->chip.dev = &pdev->dev;
- 	pc->chip.ops = &bcm2835_pwm_ops;
-+	pc->chip.base = -1;
- 	pc->chip.npwm = 2;
- 	pc->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pc->chip.of_pwm_n_cells = 3;
++	pm_runtime_enable(&pdev->dev);
++
+ 	ret = pwmchip_add(&tpu->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to register PWM chip\n");
++		pm_runtime_disable(&pdev->dev);
+ 		return ret;
+ 	}
+ 
+ 	dev_info(&pdev->dev, "TPU PWM %d registered\n", tpu->pdev->id);
+ 
+-	pm_runtime_enable(&pdev->dev);
+-
+ 	return 0;
+ }
+ 
+@@ -434,12 +435,10 @@ static int tpu_remove(struct platform_device *pdev)
+ 	int ret;
+ 
+ 	ret = pwmchip_remove(&tpu->chip);
+-	if (ret)
+-		return ret;
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ #ifdef CONFIG_OF
 -- 
 2.20.1
