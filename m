@@ -1,21 +1,17 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 25/47] pwm: bcm2835: Dynamically allocate base
-Date: Sat, 18 Apr 2020 10:42:05 -0400
-Message-ID: <20200418144227.9802-25-sashal@kernel.org>
-References: <20200418144227.9802-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 19/28] pwm: bcm2835: Dynamically allocate base
+Date: Sat, 18 Apr 2020 10:43:19 -0400
+Message-ID: <20200418144328.10265-19-sashal@kernel.org>
+References: <20200418144328.10265-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728474AbgDROnA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 18 Apr 2020 10:43:00 -0400
-In-Reply-To: <20200418144227.9802-1-sashal@kernel.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20200418144328.10265-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Florian Fainelli <f.fainelli@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+List-Id: linux-pwm@vger.kernel.org
 
 From: Florian Fainelli <f.fainelli@gmail.com>
 
