@@ -1,7 +1,7 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 05/19] pwm: rcar: Fix late Runtime PM enablement
-Date: Sat, 18 Apr 2020 10:44:22 -0400
-Message-ID: <20200418144436.10818-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 13/19] pwm: bcm2835: Dynamically allocate base
+Date: Sat, 18 Apr 2020 10:44:30 -0400
+Message-ID: <20200418144436.10818-13-sashal@kernel.org>
 References: <20200418144436.10818-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10,63 +10,39 @@ Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20200418144436.10818-1-sashal@kernel.org>
 Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Cc: Florian Fainelli <f.fainelli@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 1451a3eed24b5fd6a604683f0b6995e0e7e16c79 ]
+[ Upstream commit 2c25b07e5ec119cab609e41407a1fb3fa61442f5 ]
 
-Runtime PM should be enabled before calling pwmchip_add(), as PWM users
-can appear immediately after the PWM chip has been added.
-Likewise, Runtime PM should be disabled after the removal of the PWM
-chip.
+The newer 2711 and 7211 chips have two PWM controllers and failure to
+dynamically allocate the PWM base would prevent the second PWM
+controller instance being probed for succeeding with an -EEXIST error
+from alloc_pwms().
 
-Fixes: ed6c1476bf7f16d5 ("pwm: Add support for R-Car PWM Timer")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Fixes: e5a06dc5ac1f ("pwm: Add BCM2835 PWM driver")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-rcar.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-bcm2835.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 6e99a63ffa290..df0723df1f997 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -232,24 +232,28 @@ static int rcar_pwm_probe(struct platform_device *pdev)
- 	rcar_pwm->chip.base = -1;
- 	rcar_pwm->chip.npwm = 1;
+diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+index b4c7f956b6fa6..388a9fa5c1d24 100644
+--- a/drivers/pwm/pwm-bcm2835.c
++++ b/drivers/pwm/pwm-bcm2835.c
+@@ -160,6 +160,7 @@ static int bcm2835_pwm_probe(struct platform_device *pdev)
  
-+	pm_runtime_enable(&pdev->dev);
-+
- 	ret = pwmchip_add(&rcar_pwm->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", ret);
-+		pm_runtime_disable(&pdev->dev);
- 		return ret;
- 	}
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &bcm2835_pwm_ops;
++	pc->chip.base = -1;
+ 	pc->chip.npwm = 2;
  
--	pm_runtime_enable(&pdev->dev);
--
- 	return 0;
- }
- 
- static int rcar_pwm_remove(struct platform_device *pdev)
- {
- 	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&rcar_pwm->chip);
- 
- 	pm_runtime_disable(&pdev->dev);
- 
--	return pwmchip_remove(&rcar_pwm->chip);
-+	return ret;
- }
- 
- static const struct of_device_id rcar_pwm_of_table[] = {
+ 	platform_set_drvdata(pdev, pc);
 -- 
 2.20.1
