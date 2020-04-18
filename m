@@ -1,66 +1,72 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH] pwm: tegra: dynamic clk freq configuration by PWM driver
-Date: Sat, 18 Apr 2020 10:23:00 +0200
-Message-ID: <20200418082300.mucrg2srysvvjbfn@pengutronix.de>
-References: <1585917303-10573-1-git-send-email-spatra@nvidia.com>
- <20200403151050.nh2mrffkqdqtkozq@pengutronix.de>
- <BYAPR12MB3014C0178A7360662C6FA8B7ADDB0@BYAPR12MB3014.namprd12.prod.outlook.com>
- <20200415141856.ck3w3gtae4bsxyfl@pengutronix.de>
- <BYAPR12MB30149D2715DC575A030A7F59ADD90@BYAPR12MB3014.namprd12.prod.outlook.com>
- <20200417135027.wkj6bxiplnehsa5s@pengutronix.de>
- <BYAPR12MB3014041BFFC43AF5EB3BC27CADD90@BYAPR12MB3014.namprd12.prod.outlook.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 16/73] pwm: rcar: Fix late Runtime PM enablement
+Date: Sat, 18 Apr 2020 09:47:18 -0400
+Message-ID: <20200418134815.6519-16-sashal@kernel.org>
+References: <20200418134815.6519-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <BYAPR12MB3014041BFFC43AF5EB3BC27CADD90-ZGDeBxoHBPnJoSvCh4fbtgdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Bibek Basu <bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20200418134815.6519-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello,
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-On Fri, Apr 17, 2020 at 02:53:22PM +0000, Sandipan Patra wrote:
-> > To put my expression in words: pick the maximum of the possible periods that
-> > are less or equal to the requested value.  Maybe this is better
-> > understandable:
-> > 
-> >         max { x ∊ implementablePeriods | x <= requestedPeriod }
-> > 
-> > ?
-> 
-> I think I got your question.
-> Should tegra_pwm_config() not return error (EINVAL) when the requested period is
-> invalid but it should configure to a nearest possible value?
+[ Upstream commit 1451a3eed24b5fd6a604683f0b6995e0e7e16c79 ]
 
-If you cannot configure according to the above rule, yes, return an
-error code. EINVAL is the usual one I think (some also return ERANGE).
+Runtime PM should be enabled before calling pwmchip_add(), as PWM users
+can appear immediately after the PWM chip has been added.
+Likewise, Runtime PM should be disabled after the removal of the PWM
+chip.
 
-> > > Yes, the output stops as soon as the PWM_ENABLE bit is cleared in
-> > > hardware. Then The output is set to 0 (which is inactive).
-> > > Once .disable() => tegra_pwm_disable() gets invoked, enable bit is
-> > > cleared and hence PWM will possess no output signal.
-> > > tegra_pwm_config() will be invoked for any new configuration request.
-> > 
-> > Some drivers already have a "Limitations" section in their header.
-> > Please take a look at the existing examples and provide something similar. (Note
-> > you still didn't answer "How does a running PWM behave when the register is
-> > updated? Does it complete the currently running period?". I assume the answer
-> > to the second question is "No" (and the first is only there for rhetoric reasons).)
-> >
->  
-> 1. I will add the below comments as Limitations:
-> -	When PWM is disabled, the output is driven to 0 and
+Fixes: ed6c1476bf7f16d5 ("pwm: Add support for R-Car PWM Timer")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pwm/pwm-rcar.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-In fact, this is a good property. So the only problem is, that for both
-stop and reconfiguration the currently running period isn't completed.
-
-Best regards
-Uwe
-
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 2685577b6dd45..7ab9eb6616d95 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -229,24 +229,28 @@ static int rcar_pwm_probe(struct platform_device *pdev)
+ 	rcar_pwm->chip.base = -1;
+ 	rcar_pwm->chip.npwm = 1;
+ 
++	pm_runtime_enable(&pdev->dev);
++
+ 	ret = pwmchip_add(&rcar_pwm->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", ret);
++		pm_runtime_disable(&pdev->dev);
+ 		return ret;
+ 	}
+ 
+-	pm_runtime_enable(&pdev->dev);
+-
+ 	return 0;
+ }
+ 
+ static int rcar_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
++	int ret;
++
++	ret = pwmchip_remove(&rcar_pwm->chip);
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 
+-	return pwmchip_remove(&rcar_pwm->chip);
++	return ret;
+ }
+ 
+ static const struct of_device_id rcar_pwm_of_table[] = {
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.20.1
