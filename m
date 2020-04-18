@@ -1,72 +1,50 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.6 16/73] pwm: rcar: Fix late Runtime PM enablement
-Date: Sat, 18 Apr 2020 09:47:18 -0400
-Message-ID: <20200418134815.6519-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 15/73] pwm: imx27: Fix clock handling in
+ pwm_imx27_apply()
+Date: Sat, 18 Apr 2020 09:47:17 -0400
+Message-ID: <20200418134815.6519-15-sashal@kernel.org>
 References: <20200418134815.6519-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 In-Reply-To: <20200418134815.6519-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-
-[ Upstream commit 1451a3eed24b5fd6a604683f0b6995e0e7e16c79 ]
-
-Runtime PM should be enabled before calling pwmchip_add(), as PWM users
-can appear immediately after the PWM chip has been added.
-Likewise, Runtime PM should be disabled after the removal of the PWM
-chip.
-
-Fixes: ed6c1476bf7f16d5 ("pwm: Add support for R-Car PWM Timer")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pwm/pwm-rcar.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 2685577b6dd45..7ab9eb6616d95 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -229,24 +229,28 @@ static int rcar_pwm_probe(struct platform_device *pdev)
- 	rcar_pwm->chip.base = -1;
- 	rcar_pwm->chip.npwm = 1;
- 
-+	pm_runtime_enable(&pdev->dev);
-+
- 	ret = pwmchip_add(&rcar_pwm->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", ret);
-+		pm_runtime_disable(&pdev->dev);
- 		return ret;
- 	}
- 
--	pm_runtime_enable(&pdev->dev);
--
- 	return 0;
- }
- 
- static int rcar_pwm_remove(struct platform_device *pdev)
- {
- 	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&rcar_pwm->chip);
- 
- 	pm_runtime_disable(&pdev->dev);
- 
--	return pwmchip_remove(&rcar_pwm->chip);
-+	return ret;
- }
- 
- static const struct of_device_id rcar_pwm_of_table[] = {
--- 
-2.20.1
+RnJvbTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4K
+ClsgVXBzdHJlYW0gY29tbWl0IDE1ZDRkYmQ2MDE1OTE4NTg2MTExODRmOWRkZWI1YmYyMTU2OTE1
+OWMgXQoKcHdtX2lteDI3X2FwcGx5KCkgZW5hYmxlcyB0aGUgY2xvY2tzIGlmIHRoZSBwcmV2aW91
+cyBQV00gc3RhdGUgd2FzCmRpc2FibGVkLiBHaXZlbiB0aGF0IHRoZSBjbG9ja3MgYXJlIHN1cHBv
+c2VkIHRvIGJlIGxlZnQgb24gaWZmIHRoZSBQV00KaXMgcnVubmluZywgdGhlIGRlY2lzaW9uIHRv
+IGRpc2FibGUgdGhlIGNsb2NrcyBhdCB0aGUgZW5kIG9mIHRoZQpmdW5jdGlvbiBtdXN0IG5vdCBk
+ZXBlbmQgb24gdGhlIHByZXZpb3VzIHN0YXRlLgoKV2l0aG91dCB0aGlzIGZpeCB0aGUgZW5hYmxl
+IGNvdW50IG9mIHRoZSB0d28gYWZmZWN0ZWQgY2xvY2tzIGluY3JlYXNlcwpieSBvbmUgd2hlbmV2
+ZXIgLT5hcHBseSgpIGNoYW5nZXMgZnJvbSBvbmUgZGlzYWJsZWQgc3RhdGUgdG8gYW5vdGhlci4K
+CkZpeGVzOiBiZDg4ZDMxOWFiZTkgKCJwd206IGlteDI3OiBVbmNvbmRpdGlvbmFsbHkgd3JpdGUg
+c3RhdGUgdG8gaGFyZHdhcmUiKQpTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5r
+bGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgpTaWduZWQtb2ZmLWJ5OiBUaGllcnJ5IFJlZGlu
+ZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBTYXNoYSBMZXZpbiA8
+c2FzaGFsQGtlcm5lbC5vcmc+Ci0tLQogZHJpdmVycy9wd20vcHdtLWlteDI3LmMgfCAyICstCiAx
+IGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQg
+YS9kcml2ZXJzL3B3bS9wd20taW14MjcuYyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jCmluZGV4
+IDM1YTdhYzQyMjY5YzIuLjdlNWVkMDE1Mjk3NzMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL3B3
+bS1pbXgyNy5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jCkBAIC0yODksNyArMjg5LDcg
+QEAgc3RhdGljIGludCBwd21faW14MjdfYXBwbHkoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1
+Y3QgcHdtX2RldmljZSAqcHdtLAogCiAJd3JpdGVsKGNyLCBpbXgtPm1taW9fYmFzZSArIE1YM19Q
+V01DUik7CiAKLQlpZiAoIXN0YXRlLT5lbmFibGVkICYmIGNzdGF0ZS5lbmFibGVkKQorCWlmICgh
+c3RhdGUtPmVuYWJsZWQpCiAJCXB3bV9pbXgyN19jbGtfZGlzYWJsZV91bnByZXBhcmUoY2hpcCk7
+CiAKIAlyZXR1cm4gMDsKLS0gCjIuMjAuMQoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFy
+bS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
