@@ -1,75 +1,83 @@
-From: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH] pwm: tegra: dynamic clk freq configuration by PWM driver
-Date: Mon, 20 Apr 2020 16:04:03 +0000
-Message-ID: <BYAPR12MB3014BF7668051E085B2844C9ADD40@BYAPR12MB3014.namprd12.prod.outlook.com>
-References: <1585917303-10573-1-git-send-email-spatra@nvidia.com>
- <20200403151050.nh2mrffkqdqtkozq@pengutronix.de>
- <BYAPR12MB3014C0178A7360662C6FA8B7ADDB0@BYAPR12MB3014.namprd12.prod.outlook.com>
- <20200415141856.ck3w3gtae4bsxyfl@pengutronix.de>
- <BYAPR12MB30149D2715DC575A030A7F59ADD90@BYAPR12MB3014.namprd12.prod.outlook.com>
- <20200417135027.wkj6bxiplnehsa5s@pengutronix.de>
- <BYAPR12MB3014041BFFC43AF5EB3BC27CADD90@BYAPR12MB3014.namprd12.prod.outlook.com>
- <20200418082300.mucrg2srysvvjbfn@pengutronix.de>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
+Date: Mon, 20 Apr 2020 18:27:47 +0200
+Message-ID: <20200420162747.GA3721@ninjato>
+References: <20200416005549.9683-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200418082300.mucrg2srysvvjbfn-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Bibek Basu <bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============6479079080126694960=="
+Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org>
+In-Reply-To: <20200416005549.9683-1-robh@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
+List-Post: <mailto:linux-mtd@lists.infradead.org>
+List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
+Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-pci@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-remoteproc@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, dri-devel@lists.freedesktop.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Pavel Machek <pavel@ucw.cz>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Sam Ravnborg <sam@ravnborg.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-ser
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgVXdlLA0KDQpUaGFua3MgZm9yIHJldmlld2luZyBhbmQgcHJvdmlkaW5nIHlvdXIgaW5wdXRz
-IHRvIHRoZSBjaGFuZ2VzLg0KDQpUaGUgcmV2aWV3IGNvbW1lbnRzIGFyZSBhZGRyZXNzZWQgaW4g
-dGhlIG5ldyBwYXRjaC4NClBhdGNoIChWMikgaXMgcmVhZHkgdG8gYmUgcmV2aWV3ZWQgYXQ6DQpo
-dHRwczovL3BhdGNod29yay5vemxhYnMub3JnL3Byb2plY3QvbGludXgtcHdtL3BhdGNoLzE1ODcz
-OTgwNDMtMTg3NjctMS1naXQtc2VuZC1lbWFpbC1zcGF0cmFAbnZpZGlhLmNvbS8NClBsZWFzZSBo
-ZWxwIHJldmlld2luZyBmdXJ0aGVyLg0KDQoNClRoYW5rcyAmIFJlZ2FyZHMsDQpTYW5kaXBhbg0K
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVXdlIEtsZWluZS1Lw7Zu
-aWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4NCj4gU2VudDogU2F0dXJkYXksIEFw
-cmlsIDE4LCAyMDIwIDE6NTMgUE0NCj4gVG86IFNhbmRpcGFuIFBhdHJhIDxzcGF0cmFAbnZpZGlh
-LmNvbT4NCj4gQ2M6IFRoaWVycnkgUmVkaW5nIDx0cmVkaW5nQG52aWRpYS5jb20+OyByb2JoK2R0
-QGtlcm5lbC5vcmc7IEpvbmF0aGFuDQo+IEh1bnRlciA8am9uYXRoYW5oQG52aWRpYS5jb20+OyBC
-aWJlayBCYXN1IDxiYmFzdUBudmlkaWEuY29tPjsgTGF4bWFuDQo+IERld2FuZ2FuIDxsZGV3YW5n
-YW5AbnZpZGlhLmNvbT47IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRldmljZXRyZWVA
-dmdlci5rZXJuZWwub3JnOyBsaW51eC10ZWdyYUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBr
-ZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHB3bTogdGVncmE6
-IGR5bmFtaWMgY2xrIGZyZXEgY29uZmlndXJhdGlvbiBieSBQV00gZHJpdmVyDQo+IA0KPiBFeHRl
-cm5hbCBlbWFpbDogVXNlIGNhdXRpb24gb3BlbmluZyBsaW5rcyBvciBhdHRhY2htZW50cw0KPiAN
-Cj4gDQo+IEhlbGxvLA0KPiANCj4gT24gRnJpLCBBcHIgMTcsIDIwMjAgYXQgMDI6NTM6MjJQTSAr
-MDAwMCwgU2FuZGlwYW4gUGF0cmEgd3JvdGU6DQo+ID4gPiBUbyBwdXQgbXkgZXhwcmVzc2lvbiBp
-biB3b3JkczogcGljayB0aGUgbWF4aW11bSBvZiB0aGUgcG9zc2libGUNCj4gPiA+IHBlcmlvZHMg
-dGhhdCBhcmUgbGVzcyBvciBlcXVhbCB0byB0aGUgcmVxdWVzdGVkIHZhbHVlLiAgTWF5YmUgdGhp
-cw0KPiA+ID4gaXMgYmV0dGVyDQo+ID4gPiB1bmRlcnN0YW5kYWJsZToNCj4gPiA+DQo+ID4gPiAg
-ICAgICAgIG1heCB7IHgg4oiKIGltcGxlbWVudGFibGVQZXJpb2RzIHwgeCA8PSByZXF1ZXN0ZWRQ
-ZXJpb2QgfQ0KPiA+ID4NCj4gPiA+ID8NCj4gPg0KPiA+IEkgdGhpbmsgSSBnb3QgeW91ciBxdWVz
-dGlvbi4NCj4gPiBTaG91bGQgdGVncmFfcHdtX2NvbmZpZygpIG5vdCByZXR1cm4gZXJyb3IgKEVJ
-TlZBTCkgd2hlbiB0aGUgcmVxdWVzdGVkDQo+ID4gcGVyaW9kIGlzIGludmFsaWQgYnV0IGl0IHNo
-b3VsZCBjb25maWd1cmUgdG8gYSBuZWFyZXN0IHBvc3NpYmxlIHZhbHVlPw0KPiANCj4gSWYgeW91
-IGNhbm5vdCBjb25maWd1cmUgYWNjb3JkaW5nIHRvIHRoZSBhYm92ZSBydWxlLCB5ZXMsIHJldHVy
-biBhbiBlcnJvciBjb2RlLg0KPiBFSU5WQUwgaXMgdGhlIHVzdWFsIG9uZSBJIHRoaW5rIChzb21l
-IGFsc28gcmV0dXJuIEVSQU5HRSkuDQo+IA0KPiA+ID4gPiBZZXMsIHRoZSBvdXRwdXQgc3RvcHMg
-YXMgc29vbiBhcyB0aGUgUFdNX0VOQUJMRSBiaXQgaXMgY2xlYXJlZCBpbg0KPiA+ID4gPiBoYXJk
-d2FyZS4gVGhlbiBUaGUgb3V0cHV0IGlzIHNldCB0byAwICh3aGljaCBpcyBpbmFjdGl2ZSkuDQo+
-ID4gPiA+IE9uY2UgLmRpc2FibGUoKSA9PiB0ZWdyYV9wd21fZGlzYWJsZSgpIGdldHMgaW52b2tl
-ZCwgZW5hYmxlIGJpdCBpcw0KPiA+ID4gPiBjbGVhcmVkIGFuZCBoZW5jZSBQV00gd2lsbCBwb3Nz
-ZXNzIG5vIG91dHB1dCBzaWduYWwuDQo+ID4gPiA+IHRlZ3JhX3B3bV9jb25maWcoKSB3aWxsIGJl
-IGludm9rZWQgZm9yIGFueSBuZXcgY29uZmlndXJhdGlvbiByZXF1ZXN0Lg0KPiA+ID4NCj4gPiA+
-IFNvbWUgZHJpdmVycyBhbHJlYWR5IGhhdmUgYSAiTGltaXRhdGlvbnMiIHNlY3Rpb24gaW4gdGhl
-aXIgaGVhZGVyLg0KPiA+ID4gUGxlYXNlIHRha2UgYSBsb29rIGF0IHRoZSBleGlzdGluZyBleGFt
-cGxlcyBhbmQgcHJvdmlkZSBzb21ldGhpbmcNCj4gPiA+IHNpbWlsYXIuIChOb3RlIHlvdSBzdGls
-bCBkaWRuJ3QgYW5zd2VyICJIb3cgZG9lcyBhIHJ1bm5pbmcgUFdNDQo+ID4gPiBiZWhhdmUgd2hl
-biB0aGUgcmVnaXN0ZXIgaXMgdXBkYXRlZD8gRG9lcyBpdCBjb21wbGV0ZSB0aGUgY3VycmVudGx5
-DQo+ID4gPiBydW5uaW5nIHBlcmlvZD8iLiBJIGFzc3VtZSB0aGUgYW5zd2VyIHRvIHRoZSBzZWNv
-bmQgcXVlc3Rpb24gaXMgIk5vIg0KPiA+ID4gKGFuZCB0aGUgZmlyc3QgaXMgb25seSB0aGVyZSBm
-b3IgcmhldG9yaWMgcmVhc29ucykuKQ0KPiA+ID4NCj4gPg0KPiA+IDEuIEkgd2lsbCBhZGQgdGhl
-IGJlbG93IGNvbW1lbnRzIGFzIExpbWl0YXRpb25zOg0KPiA+IC0gICAgIFdoZW4gUFdNIGlzIGRp
-c2FibGVkLCB0aGUgb3V0cHV0IGlzIGRyaXZlbiB0byAwIGFuZA0KPiANCj4gSW4gZmFjdCwgdGhp
-cyBpcyBhIGdvb2QgcHJvcGVydHkuIFNvIHRoZSBvbmx5IHByb2JsZW0gaXMsIHRoYXQgZm9yIGJv
-dGggc3RvcCBhbmQNCj4gcmVjb25maWd1cmF0aW9uIHRoZSBjdXJyZW50bHkgcnVubmluZyBwZXJp
-b2QgaXNuJ3QgY29tcGxldGVkLg0KPiANCj4gQmVzdCByZWdhcmRzDQo+IFV3ZQ0KPiANCj4gLS0N
-Cj4gUGVuZ3V0cm9uaXggZS5LLiAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgVXdlIEtsZWlu
-ZS1Lw7ZuaWcgICAgICAgICAgICB8DQo+IEluZHVzdHJpYWwgTGludXggU29sdXRpb25zICAgICAg
-ICAgICAgICAgICB8IGh0dHBzOi8vd3d3LnBlbmd1dHJvbml4LmRlLyB8DQo=
+
+--===============6479079080126694960==
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="tKW2IUtsqtDRztdT"
+Content-Disposition: inline
+
+
+--tKW2IUtsqtDRztdT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Apr 15, 2020 at 07:55:48PM -0500, Rob Herring wrote:
+> Fix various inconsistencies in schema indentation. Most of these are
+> list indentation which should be 2 spaces more than the start of the
+> enclosing keyword. This doesn't matter functionally, but affects running
+> scripts which do transforms on the schema files.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
+
+I see that people had comments but I can't judge the topics raised. So,
+I trust you guys that you find out when it is good to go and for that,
+here is my ack:
+
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+
+
+--tKW2IUtsqtDRztdT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl6dzX8ACgkQFA3kzBSg
+KbauIw//UsNN3sTG1Vo4Bgtp5Vw0s3m8ojCBjku/VuI/dnL/nKMqOKViAqP/ihOW
+epD4QCANZZ0InnhrhnkpKlsCZ3/i+OME4nuCopTRpWH5TUrX4T0f+1NLegcwoxw/
+UZ1N+HIQrTXUqpkvVw677OEH4fd4qO2mulRZYu7EPi1zhsQs8tyc0spdKvLPg8IR
+Wi165b1RDDsH6+ZFy9+KMDjPmklcrXxWRF/Qc5ATOmaSGMEFc3BTb2uVzVO64Oh0
+dZXGDontJcsz+7KQSXatmu38Xwys1bGGxhG7nvkSS/DmaFwnbkLx2jBZFz9GzVNm
+QZz3tC7olD6edfkgyL76W7dGYQfeA03MZZ88Sgq304Cgv0QwbTM26C0MXhpG1LZR
+sIxf8ZSbwOVUAuXRtABR6Pqu4xm9qbIXtth68kmF8KGPPXIaInqZPOaL0T0ApXm8
+ggBIcp2KoH117WlUDqmLOWlvSjecvUh5WxegsaGpmzxU/XTs9YxYvWvLNG5tGBs7
+Se2LAoLynrGy7LuUQYtRfbYSULgv0cyhO3V6oRjeqNpgekKCqpzStLFWVdCniiuq
+z3guYyMgQ13m1XwXHpeXwhUaak/dp7MvZeg9YxXn1g5MGCVQBMKBAak4aBGnxPLR
+OZq32nBakfGpLUy17vQXKQ0FsM9g8+mMc0xbGgzyyjca0mQuJCs=
+=5aFH
+-----END PGP SIGNATURE-----
+
+--tKW2IUtsqtDRztdT--
+
+
+--===============6479079080126694960==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+______________________________________________________
+Linux MTD discussion mailing list
+http://lists.infradead.org/mailman/listinfo/linux-mtd/
+
+--===============6479079080126694960==--
