@@ -1,229 +1,75 @@
 From: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH V2] pwm: tegra: dynamic clk freq configuration by PWM driver
-Date: Mon, 20 Apr 2020 21:24:03 +0530
-Message-ID: <1587398043-18767-1-git-send-email-spatra@nvidia.com>
+Subject: RE: [PATCH] pwm: tegra: dynamic clk freq configuration by PWM driver
+Date: Mon, 20 Apr 2020 16:04:03 +0000
+Message-ID: <BYAPR12MB3014BF7668051E085B2844C9ADD40@BYAPR12MB3014.namprd12.prod.outlook.com>
+References: <1585917303-10573-1-git-send-email-spatra@nvidia.com>
+ <20200403151050.nh2mrffkqdqtkozq@pengutronix.de>
+ <BYAPR12MB3014C0178A7360662C6FA8B7ADDB0@BYAPR12MB3014.namprd12.prod.outlook.com>
+ <20200415141856.ck3w3gtae4bsxyfl@pengutronix.de>
+ <BYAPR12MB30149D2715DC575A030A7F59ADD90@BYAPR12MB3014.namprd12.prod.outlook.com>
+ <20200417135027.wkj6bxiplnehsa5s@pengutronix.de>
+ <BYAPR12MB3014041BFFC43AF5EB3BC27CADD90@BYAPR12MB3014.namprd12.prod.outlook.com>
+ <20200418082300.mucrg2srysvvjbfn@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
-Cc: bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200418082300.mucrg2srysvvjbfn-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Bibek Basu <bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Added support for dynamic clock freq configuration in pwm kernel driver.
-Earlier the pwm driver used to cache boot time clock rate by pwm clock
-parent during probe. Hence dynamically changing pwm frequency was not
-possible for all the possible ranges. With this change, dynamic calculation
-is enabled and it is able to set the requested period from sysfs knob
-provided the value is supported by clock source.
-
-Changes mainly have 2 parts:
-  - T186 and later chips [1]
-  - T210 and prior chips [2]
-
-For [1] - Changes implemented to set pwm period dynamically and
-          also checks added to allow only if requested period(ns) is
-          below or equals to higher range.
-
-For [2] - Only checks if the requested period(ns) is below or equals
-          to higher range defined by max clock limit. The limitation
-          in T210 or prior chips are due to the reason of having only
-          one pwm-controller supporting multiple channels. But later
-          chips have multiple pwm controller instances each having
-	  single channel support.
-
-Signed-off-by: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-V2:
-1. Min period_ns calculation is moved to probe.
-2. Added descriptioins for PWM register bits and regarding behaviour
-   of the controller when new configuration is applied or pwm is disabled.
-3. Setting period with possible value when supplied period is below limit.
-4. Corrected the earlier code comment:
-   plus 1 instead of minus 1 during pwm calculation
-
- drivers/pwm/pwm-tegra.c | 110 +++++++++++++++++++++++++++++++++++++++++---=
-----
- 1 file changed, 94 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index d26ed8f..7a36325 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -4,8 +4,39 @@
-  *
-  * Tegra pulse-width-modulation controller driver
-  *
-- * Copyright (c) 2010, NVIDIA Corporation.
-- * Based on arch/arm/plat-mxc/pwm.c by Sascha Hauer <s.hauer@pengutronix.d=
-e>
-+ * Copyright (c) 2010-2020, NVIDIA Corporation.
-+ *
-+ * Overview of Tegra Pulse Width Modulator Register:
-+ * 1. 13-bit: Frequency division (SCALE)
-+ * 2. 8-bit : Puls division (DUTY)
-+ * 3. 1-bit : Enable bit
-+ *
-+ * The PWM clock frequency is divided by 256 before subdividing it based
-+ * on the programmable frequency division value to generate the required
-+ * frequency for PWM output. The maximum output frequency that can be
-+ * achieved is (max rate of source clock) / 256.
-+ * i.e. if source clock rate is 408 MHz, maximum output frequency cab be:
-+ * 408 MHz/256 =3D 1.6 MHz.
-+ * This 1.6 MHz frequency can further be divided using SCALE value in PWM.
-+ *
-+ * PWM pulse width: 8 bits are usable [23:16] for varying pulse width.
-+ * To achieve 100% duty cycle, program Bit [24] of this register to
-+ * 1=E2=80=99b1. In which case the other bits [23:16] are set to don't car=
-e.
-+ *
-+ * Limitations and known facts:
-+ * -	When PWM is disabled, the output is driven to 0.
-+ * -	It does not allow the current PWM period to complete and
-+ *	stops abruptly.
-+ *
-+ * -	If the register is reconfigured while pwm is running,
-+ *	It does not let the currently running period to complete.
-+ *
-+ * -	Pulse width of the pwm can never be out of bound.
-+ *	It's taken care at HW and SW
-+ * -	If the user input duty is below limit, then driver sets it to
-+ *	minimum possible value.
-+ * -	If anything else goes wrong for setting duty or period,
-+ *	-EINVAL is returned.
-  */
-=20
- #include <linux/clk.h>
-@@ -41,6 +72,7 @@ struct tegra_pwm_chip {
- 	struct reset_control*rst;
-=20
- 	unsigned long clk_rate;
-+	unsigned long min_period_ns;
-=20
- 	void __iomem *regs;
-=20
-@@ -67,8 +99,9 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct=
- pwm_device *pwm,
- 			    int duty_ns, int period_ns)
- {
- 	struct tegra_pwm_chip *pc =3D to_tegra_pwm_chip(chip);
--	unsigned long long c =3D duty_ns, hz;
--	unsigned long rate;
-+	unsigned long long p_width =3D duty_ns, period_hz;
-+	unsigned long rate, required_clk_rate;
-+	unsigned long pfm; /* Frequency divider */
- 	u32 val =3D 0;
- 	int err;
-=20
-@@ -77,37 +110,77 @@ static int tegra_pwm_config(struct pwm_chip *chip, str=
-uct pwm_device *pwm,
- 	 * per (1 << PWM_DUTY_WIDTH) cycles and make sure to round to the
- 	 * nearest integer during division.
- 	 */
--	c *=3D (1 << PWM_DUTY_WIDTH);
--	c =3D DIV_ROUND_CLOSEST_ULL(c, period_ns);
-+	p_width *=3D (1 << PWM_DUTY_WIDTH);
-+	p_width =3D DIV_ROUND_CLOSEST_ULL(p_width, period_ns);
-=20
--	val =3D (u32)c << PWM_DUTY_SHIFT;
-+	val =3D (u32)p_width << PWM_DUTY_SHIFT;
-+
-+	/*
-+	 *  Period in nano second has to be <=3D highest allowed period
-+	 *  based on max clock rate of the pwm controller.
-+	 *
-+	 *  higher limit =3D max clock limit >> PWM_DUTY_WIDTH
-+	 *  lower limit =3D min clock limit >> PWM_DUTY_WIDTH >> PWM_SCALE_WIDTH
-+	 */
-+	if (period_ns < pc->min_period_ns) {
-+		period_ns =3D pc->min_period_ns;
-+		pr_warn("Period is adjusted to allowed value (%d ns)\n",
-+				period_ns);
-+	}
-=20
- 	/*
- 	 * Compute the prescaler value for which (1 << PWM_DUTY_WIDTH)
- 	 * cycles at the PWM clock rate will take period_ns nanoseconds.
- 	 */
--	rate =3D pc->clk_rate >> PWM_DUTY_WIDTH;
-+	if (pc->soc->num_channels =3D=3D 1) {
-+		/*
-+		 * Rate is multiplied with 2^PWM_DUTY_WIDTH so that it matches
-+		 * with the hieghest applicable rate that the controller can
-+		 * provide. Any further lower value can be derived by setting
-+		 * PFM bits[0:12].
-+		 * Higher mark is taken since BPMP has round-up mechanism
-+		 * implemented.
-+		 */
-+		required_clk_rate =3D
-+			(NSEC_PER_SEC / period_ns) << PWM_DUTY_WIDTH;
-+
-+		err =3D clk_set_rate(pc->clk, required_clk_rate);
-+		if (err < 0)
-+			return -EINVAL;
-+
-+		rate =3D clk_get_rate(pc->clk) >> PWM_DUTY_WIDTH;
-+	} else {
-+		/*
-+		 * This is the case for SoCs who support multiple channels:
-+		 *
-+		 * clk_set_rate() can not be called again in config because
-+		 * T210 or any prior chip supports one pwm-controller and
-+		 * multiple channels. Hence in this case cached clock rate
-+		 * will be considered which was stored during probe.
-+		 */
-+		rate =3D pc->clk_rate >> PWM_DUTY_WIDTH;
-+	}
-=20
- 	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
--	hz =3D DIV_ROUND_CLOSEST_ULL(100ULL * NSEC_PER_SEC, period_ns);
--	rate =3D DIV_ROUND_CLOSEST_ULL(100ULL * rate, hz);
-+	period_hz =3D DIV_ROUND_CLOSEST_ULL(100ULL * NSEC_PER_SEC, period_ns);
-+	pfm =3D DIV_ROUND_CLOSEST_ULL(100ULL * rate, period_hz);
-=20
- 	/*
- 	 * Since the actual PWM divider is the register's frequency divider
--	 * field minus 1, we need to decrement to get the correct value to
-+	 * field plus 1, we need to decrement to get the correct value to
- 	 * write to the register.
- 	 */
--	if (rate > 0)
--		rate--;
-+	if (pfm > 0)
-+		pfm--;
-=20
- 	/*
--	 * Make sure that the rate will fit in the register's frequency
-+	 * Make sure that pfm will fit in the register's frequency
- 	 * divider field.
- 	 */
--	if (rate >> PWM_SCALE_WIDTH)
-+	if (pfm >> PWM_SCALE_WIDTH)
- 		return -EINVAL;
-=20
--	val |=3D rate << PWM_SCALE_SHIFT;
-+	val |=3D pfm << PWM_SCALE_SHIFT;
-=20
- 	/*
- 	 * If the PWM channel is disabled, make sure to turn on the clock
-@@ -205,6 +278,10 @@ static int tegra_pwm_probe(struct platform_device *pde=
-v)
- 	 */
- 	pwm->clk_rate =3D clk_get_rate(pwm->clk);
-=20
-+	/* Set minimum limit of PWM period for the IP */
-+	pwm->min_period_ns =3D
-+	    (NSEC_PER_SEC / (pwm->soc->max_frequency >> PWM_DUTY_WIDTH)) + 1;
-+
- 	pwm->rst =3D devm_reset_control_get_exclusive(&pdev->dev, "pwm");
- 	if (IS_ERR(pwm->rst)) {
- 		ret =3D PTR_ERR(pwm->rst);
-@@ -313,4 +390,5 @@ module_platform_driver(tegra_pwm_driver);
-=20
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("NVIDIA Corporation");
-+MODULE_AUTHOR("Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>");
- MODULE_ALIAS("platform:tegra-pwm");
---=20
-2.7.4
+SGkgVXdlLA0KDQpUaGFua3MgZm9yIHJldmlld2luZyBhbmQgcHJvdmlkaW5nIHlvdXIgaW5wdXRz
+IHRvIHRoZSBjaGFuZ2VzLg0KDQpUaGUgcmV2aWV3IGNvbW1lbnRzIGFyZSBhZGRyZXNzZWQgaW4g
+dGhlIG5ldyBwYXRjaC4NClBhdGNoIChWMikgaXMgcmVhZHkgdG8gYmUgcmV2aWV3ZWQgYXQ6DQpo
+dHRwczovL3BhdGNod29yay5vemxhYnMub3JnL3Byb2plY3QvbGludXgtcHdtL3BhdGNoLzE1ODcz
+OTgwNDMtMTg3NjctMS1naXQtc2VuZC1lbWFpbC1zcGF0cmFAbnZpZGlhLmNvbS8NClBsZWFzZSBo
+ZWxwIHJldmlld2luZyBmdXJ0aGVyLg0KDQoNClRoYW5rcyAmIFJlZ2FyZHMsDQpTYW5kaXBhbg0K
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVXdlIEtsZWluZS1Lw7Zu
+aWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4NCj4gU2VudDogU2F0dXJkYXksIEFw
+cmlsIDE4LCAyMDIwIDE6NTMgUE0NCj4gVG86IFNhbmRpcGFuIFBhdHJhIDxzcGF0cmFAbnZpZGlh
+LmNvbT4NCj4gQ2M6IFRoaWVycnkgUmVkaW5nIDx0cmVkaW5nQG52aWRpYS5jb20+OyByb2JoK2R0
+QGtlcm5lbC5vcmc7IEpvbmF0aGFuDQo+IEh1bnRlciA8am9uYXRoYW5oQG52aWRpYS5jb20+OyBC
+aWJlayBCYXN1IDxiYmFzdUBudmlkaWEuY29tPjsgTGF4bWFuDQo+IERld2FuZ2FuIDxsZGV3YW5n
+YW5AbnZpZGlhLmNvbT47IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRldmljZXRyZWVA
+dmdlci5rZXJuZWwub3JnOyBsaW51eC10ZWdyYUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBr
+ZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHB3bTogdGVncmE6
+IGR5bmFtaWMgY2xrIGZyZXEgY29uZmlndXJhdGlvbiBieSBQV00gZHJpdmVyDQo+IA0KPiBFeHRl
+cm5hbCBlbWFpbDogVXNlIGNhdXRpb24gb3BlbmluZyBsaW5rcyBvciBhdHRhY2htZW50cw0KPiAN
+Cj4gDQo+IEhlbGxvLA0KPiANCj4gT24gRnJpLCBBcHIgMTcsIDIwMjAgYXQgMDI6NTM6MjJQTSAr
+MDAwMCwgU2FuZGlwYW4gUGF0cmEgd3JvdGU6DQo+ID4gPiBUbyBwdXQgbXkgZXhwcmVzc2lvbiBp
+biB3b3JkczogcGljayB0aGUgbWF4aW11bSBvZiB0aGUgcG9zc2libGUNCj4gPiA+IHBlcmlvZHMg
+dGhhdCBhcmUgbGVzcyBvciBlcXVhbCB0byB0aGUgcmVxdWVzdGVkIHZhbHVlLiAgTWF5YmUgdGhp
+cw0KPiA+ID4gaXMgYmV0dGVyDQo+ID4gPiB1bmRlcnN0YW5kYWJsZToNCj4gPiA+DQo+ID4gPiAg
+ICAgICAgIG1heCB7IHgg4oiKIGltcGxlbWVudGFibGVQZXJpb2RzIHwgeCA8PSByZXF1ZXN0ZWRQ
+ZXJpb2QgfQ0KPiA+ID4NCj4gPiA+ID8NCj4gPg0KPiA+IEkgdGhpbmsgSSBnb3QgeW91ciBxdWVz
+dGlvbi4NCj4gPiBTaG91bGQgdGVncmFfcHdtX2NvbmZpZygpIG5vdCByZXR1cm4gZXJyb3IgKEVJ
+TlZBTCkgd2hlbiB0aGUgcmVxdWVzdGVkDQo+ID4gcGVyaW9kIGlzIGludmFsaWQgYnV0IGl0IHNo
+b3VsZCBjb25maWd1cmUgdG8gYSBuZWFyZXN0IHBvc3NpYmxlIHZhbHVlPw0KPiANCj4gSWYgeW91
+IGNhbm5vdCBjb25maWd1cmUgYWNjb3JkaW5nIHRvIHRoZSBhYm92ZSBydWxlLCB5ZXMsIHJldHVy
+biBhbiBlcnJvciBjb2RlLg0KPiBFSU5WQUwgaXMgdGhlIHVzdWFsIG9uZSBJIHRoaW5rIChzb21l
+IGFsc28gcmV0dXJuIEVSQU5HRSkuDQo+IA0KPiA+ID4gPiBZZXMsIHRoZSBvdXRwdXQgc3RvcHMg
+YXMgc29vbiBhcyB0aGUgUFdNX0VOQUJMRSBiaXQgaXMgY2xlYXJlZCBpbg0KPiA+ID4gPiBoYXJk
+d2FyZS4gVGhlbiBUaGUgb3V0cHV0IGlzIHNldCB0byAwICh3aGljaCBpcyBpbmFjdGl2ZSkuDQo+
+ID4gPiA+IE9uY2UgLmRpc2FibGUoKSA9PiB0ZWdyYV9wd21fZGlzYWJsZSgpIGdldHMgaW52b2tl
+ZCwgZW5hYmxlIGJpdCBpcw0KPiA+ID4gPiBjbGVhcmVkIGFuZCBoZW5jZSBQV00gd2lsbCBwb3Nz
+ZXNzIG5vIG91dHB1dCBzaWduYWwuDQo+ID4gPiA+IHRlZ3JhX3B3bV9jb25maWcoKSB3aWxsIGJl
+IGludm9rZWQgZm9yIGFueSBuZXcgY29uZmlndXJhdGlvbiByZXF1ZXN0Lg0KPiA+ID4NCj4gPiA+
+IFNvbWUgZHJpdmVycyBhbHJlYWR5IGhhdmUgYSAiTGltaXRhdGlvbnMiIHNlY3Rpb24gaW4gdGhl
+aXIgaGVhZGVyLg0KPiA+ID4gUGxlYXNlIHRha2UgYSBsb29rIGF0IHRoZSBleGlzdGluZyBleGFt
+cGxlcyBhbmQgcHJvdmlkZSBzb21ldGhpbmcNCj4gPiA+IHNpbWlsYXIuIChOb3RlIHlvdSBzdGls
+bCBkaWRuJ3QgYW5zd2VyICJIb3cgZG9lcyBhIHJ1bm5pbmcgUFdNDQo+ID4gPiBiZWhhdmUgd2hl
+biB0aGUgcmVnaXN0ZXIgaXMgdXBkYXRlZD8gRG9lcyBpdCBjb21wbGV0ZSB0aGUgY3VycmVudGx5
+DQo+ID4gPiBydW5uaW5nIHBlcmlvZD8iLiBJIGFzc3VtZSB0aGUgYW5zd2VyIHRvIHRoZSBzZWNv
+bmQgcXVlc3Rpb24gaXMgIk5vIg0KPiA+ID4gKGFuZCB0aGUgZmlyc3QgaXMgb25seSB0aGVyZSBm
+b3IgcmhldG9yaWMgcmVhc29ucykuKQ0KPiA+ID4NCj4gPg0KPiA+IDEuIEkgd2lsbCBhZGQgdGhl
+IGJlbG93IGNvbW1lbnRzIGFzIExpbWl0YXRpb25zOg0KPiA+IC0gICAgIFdoZW4gUFdNIGlzIGRp
+c2FibGVkLCB0aGUgb3V0cHV0IGlzIGRyaXZlbiB0byAwIGFuZA0KPiANCj4gSW4gZmFjdCwgdGhp
+cyBpcyBhIGdvb2QgcHJvcGVydHkuIFNvIHRoZSBvbmx5IHByb2JsZW0gaXMsIHRoYXQgZm9yIGJv
+dGggc3RvcCBhbmQNCj4gcmVjb25maWd1cmF0aW9uIHRoZSBjdXJyZW50bHkgcnVubmluZyBwZXJp
+b2QgaXNuJ3QgY29tcGxldGVkLg0KPiANCj4gQmVzdCByZWdhcmRzDQo+IFV3ZQ0KPiANCj4gLS0N
+Cj4gUGVuZ3V0cm9uaXggZS5LLiAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgVXdlIEtsZWlu
+ZS1Lw7ZuaWcgICAgICAgICAgICB8DQo+IEluZHVzdHJpYWwgTGludXggU29sdXRpb25zICAgICAg
+ICAgICAgICAgICB8IGh0dHBzOi8vd3d3LnBlbmd1dHJvbml4LmRlLyB8DQo=
