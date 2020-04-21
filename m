@@ -1,88 +1,136 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-Date: Mon, 20 Apr 2020 18:28:06 +0200
-Message-ID: <20200420162806.GB3721@ninjato>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416005549.9683-2-robh@kernel.org>
+From: Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v2 10/16] gpio: add a reusable generic gpio_chip using
+ regmap
+Date: Tue, 21 Apr 2020 12:50:59 +0200
+Message-ID: <3ef94b68893e2fb3075bd5236d0fa6ee@walle.cc>
+References: <20200402203656.27047-1-michael@walle.cc>
+ <20200402203656.27047-11-michael@walle.cc>
+ <CACRpkdaqgHhPwdKdUai4zvi21qR-cSQUKyzZ3SyfWBLPN9us3w@mail.gmail.com>
+ <f82706a8596436d13642c49e26233133@walle.cc>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8693415702863223177=="
-Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
-List-Post: <mailto:linux-mtd@lists.infradead.org>
-List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
-Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=m.gmane-mx.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-pci@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-remoteproc@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, dri-devel@lists.freedesktop.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Pavel Machek <pavel@ucw.cz>, linux-riscv@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, Sam Ravnborg <sam@ravnborg.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-ser
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+In-Reply-To: <f82706a8596436d13642c49e26233133@walle.cc>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Linus,
 
---===============8693415702863223177==
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="jq0ap7NbKX2Kqbes"
-Content-Disposition: inline
+Am 2020-04-17 08:34, schrieb Michael Walle:
+> Hi Linus,
+> 
+> Am 2020-04-16 11:27, schrieb Linus Walleij:
+>> On Thu, Apr 2, 2020 at 10:37 PM Michael Walle <michael@walle.cc> 
+>> wrote:
+>> 
+>>> There are quite a lot simple GPIO controller which are using regmap 
+>>> to
+>>> access the hardware. This driver tries to be a base to unify existing
+>>> code into one place. This won't cover everything but it should be a 
+>>> good
+>>> starting point.
+>>> 
+>>> It does not implement its own irq_chip because there is already a
+>>> generic one for regmap based devices. Instead, the irq_chip will be
+>>> instanciated in the parent driver and its irq domain will be 
+>>> associate
+>>> to this driver.
+>>> 
+>>> For now it consists of the usual registers, like set (and an optional
+>>> clear) data register, an input register and direction registers.
+>>> Out-of-the-box, it supports consecutive register mappings and 
+>>> mappings
+>>> where the registers have gaps between them with a linear mapping 
+>>> between
+>>> GPIO offset and bit position. For weirder mappings the user can 
+>>> register
+>>> its own .xlate().
+>>> 
+>>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> 
+>> Overall I really like this driver and I think we should merge is as 
+>> soon
+>> as it is in reasonable shape and then improve on top so we can start
+>> migrating drivers to it.
+>> 
+>>> +static int gpio_regmap_to_irq(struct gpio_chip *chip, unsigned int 
+>>> offset)
+>>> +{
+>>> +       struct gpio_regmap_data *data = gpiochip_get_data(chip);
+>>> +       struct gpio_regmap *gpio = data->gpio;
+>>> +
+>>> +       /* the user might have its own .to_irq callback */
+>>> +       if (gpio->to_irq)
+>>> +               return gpio->to_irq(gpio, offset);
+>>> +
+>>> +       return irq_create_mapping(gpio->irq_domain, offset);
+>> 
+>> I think that should at least be irq_find_mapping(), the mapping should
+>> definately not be created by the .to_irq() callback since that is just
+>> a convenience function.
+> 
+> what do you mean by conenience function? are there other ways? if you 
+> use
+> irq_find_mapping() who will create the mappings? most gpio drivers use 
+> a
+> similar function like gpio_regmap_to_irq().
+> 
+>> 
+>>> +       if (gpio->irq_domain)
+>>> +               chip->to_irq = gpio_regmap_to_irq;
+>> 
+>> I don't know about this.
+>> (...)
+>>> + * @irq_domain:                (Optional) IRQ domain if the 
+>>> controller is
+>>> + *                     interrupt-capable
+>> (...)
+>>> +       struct irq_domain *irq_domain;
+>> 
+>> I don't think this is a good storage place for the irqdomain, we 
+>> already have
+>> gpio_irq_chip inside gpio_chip and that has an irqdomain, we should
+>> strive to reuse that infrastructure also for regmap GPIO I think, for 
+>> now
+>> I would just leave .to_irq() out of this and let the driver deal with 
+>> any
+>> irqs.
+> 
+> How would a driver attach the to_irq callback then? At the moment, the
+> gpio_regmap doesn't expose the gpio_chip. So either we have to do that 
+> or
+> the config still have to have a .to_irq property.
 
+Also, if I move the interrupt hanling completely out of the gpio-regmap, 
+the
+driver would have to deal with "struct gpio_chip" which I would like to 
+avoid
+if possible and keep it private to gpio-regmap.
 
---jq0ap7NbKX2Kqbes
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Unfortunately, I don't have much experience how a good API for the 
+interrupt
+handling and the gpio-regmap might look like. And there seems to be some
+overlap between regmap-irq and the interrupt stuff in gpiolib. For 
+example,
+both provide and set the irq_domain_ops. Thus handing the domain over to
+gpio-regmap looked like a good idea to me. I get you point, that there 
+is
+already a irqdomain in gpiolib and also a _to_irq() which is the same as
+the current implementation in gpio-regmap. Maybe it makes sense to just
+have a new function
 
-On Wed, Apr 15, 2020 at 07:55:49PM -0500, Rob Herring wrote:
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords. The json-schema library doesn't yet support this, but the
-> tooling now does a fixup for this and either way works.
->=20
-> This has been a constant source of review comments, so let's change this
-> treewide so everyone copies the simpler syntax.
->=20
-> Signed-off-by: Rob Herring <robh@kernel.org>
+int gpiolib_add_irqdomain(struct gpio_chip *gc, struct irq_domain 
+domain)
+{
+   gc->irq.domain = domain;
+   gc->to_irq = gpiochip_to_irq;
+}
 
-Same preamble for my ack as in patch 1:
+which is called by gpio_regmap_register() if a config->irq_domain is 
+given.
 
-Acked-by: Wolfram Sang <wsa@the-dreams.de>
-
-
---jq0ap7NbKX2Kqbes
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl6dzZYACgkQFA3kzBSg
-KbZHYg//W5YxCeazbDM94E6YBsxW12FqWEDS34r8khleoxdl3PUw+iNq6ZW20vVf
-iukBEN6kySmVQjCoT4FHxxZSd3MuOxISlT7jpTr1qlWZAYjKBQ2hreJ53IoSwac5
-KLqfatKLSIIDvnPPOrvqqVOLCD998wpaLJlfoXiIPNwnaU7j+nB0lFjsv5gA+eeN
-jKUFY8cv0b3pY9aUhatVnodM421EWf9pH5K6hkhbxhtS2E/Sb+zw4v6ewUuxnMIH
-rJxcdnWBUtqDh26y7ezSSLNUgU7TDYnuT3v5Zi8m7HaZ1npdGb5EJwg7Jvr5yi2k
-qBeYtB5Ed9+IjPit/Y1GLJamCVdohdPxiPCzdqr5iSdH3+DsbmWJjxN7NjfJvnGu
-M5wmk4m3pSEcYGy7cRZQPzv2AjHPYgqxJIxBzXpejNT1U0BJpJEKXqDAJrRGBBOR
-Mb16mCEDGZZxw+m1DN6gftPiLMRFaqYgjkkdEMma9EbW2Of7y9gzdYqRU5HyaiBM
-WB3yUbcoM9ySLCQHX75Xg7UsLzVw2N5SA24diMdKPGhUfEpSgZ+DtlJZ3h4o4fos
-GC6i6hC0shFUcpoZM9XQs+ZhJ38/bfRxOqdy/K4Ali+0G7PZzf5/4fcyi7TvG7wc
-qXAYGaxFehFemV8oQZxLxFtvQYlCom+MLAVEbzF4P/9hI9PlcZk=
-=3u/Q
------END PGP SIGNATURE-----
-
---jq0ap7NbKX2Kqbes--
-
-
---===============8693415702863223177==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-______________________________________________________
-Linux MTD discussion mailing list
-http://lists.infradead.org/mailman/listinfo/linux-mtd/
-
---===============8693415702863223177==--
+-michael
