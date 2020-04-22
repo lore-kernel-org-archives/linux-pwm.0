@@ -1,54 +1,53 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v13 07/11] pwm: sifive: Use 64-bit division macro
-Date: Tue, 21 Apr 2020 19:57:19 -0700
-Message-ID: <7e1f06fb223c4c15ae50bf216351126cb6cc44e3.1587523702.git.gurus@codeaurora.org>
+Subject: [PATCH v13 09/11] backlight: pwm_bl: Use 64-bit division function
+Date: Tue, 21 Apr 2020 19:57:21 -0700
+Message-ID: <429c18e1e1461d7cd3ccb93f9093a6719744f6b0.1587523702.git.gurus@codeaurora.org>
 References: <cover.1587523702.git.gurus@codeaurora.org>
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:9490 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726490AbgDVC5a (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 21 Apr 2020 22:57:30 -0400
 In-Reply-To: <cover.1587523702.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1587523702.git.gurus@codeaurora.org>
 References: <cover.1587523702.git.gurus@codeaurora.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: linux-pwm@vger.kernel.org
-Cc: Guru Das Srinagesh <gurus@codeaurora.org>, David Collins <collinsd@codeaurora.org>, Paul Walmsley <paul.walmsley@sifive.com>, linux-kernel@vger.kernel.org, Atish Patra <atish.patra@wdc.com>, Yash Shah <yash.shah@sifive.com>, Thierry Reding <thierry.reding@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, linux-riscv@lists.infradead.org
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Guru Das Srinagesh <gurus@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_args.period's datatype
-to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
-handle a 64-bit divisor.
+Since the PWM framework is switching struct pwm_state.period's datatype
+to u64, prepare for this transition by using div_u64 to handle a 64-bit
+dividend instead of a straight division operation.
 
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: linux-riscv@lists.infradead.org
-Cc: Yash Shah <yash.shah@sifive.com>
-Cc: Atish Patra <atish.patra@wdc.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-pwm@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 ---
- drivers/pwm/pwm-sifive.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/backlight/pwm_bl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index cc63f9b..62de0bb 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -181,7 +181,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * consecutively
- 	 */
- 	num = (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
--	frac = DIV_ROUND_CLOSEST_ULL(num, state->period);
-+	frac = DIV64_U64_ROUND_CLOSEST(num, state->period);
- 	/* The hardware cannot generate a 100% duty cycle */
- 	frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 82b8d75..464baad 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -606,7 +606,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		pb->scale = data->max_brightness;
+ 	}
  
+-	pb->lth_brightness = data->lth_brightness * (state.period / pb->scale);
++	pb->lth_brightness = data->lth_brightness * (div_u64(state.period,
++				pb->scale));
+ 
+ 	props.type = BACKLIGHT_RAW;
+ 	props.max_brightness = data->max_brightness;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
