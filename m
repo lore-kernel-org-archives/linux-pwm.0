@@ -1,69 +1,59 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: [PATCH v3 09/16] gpiolib: Introduce gpiochip_irqchip_add_domain()
-Date: Thu, 23 Apr 2020 19:45:36 +0200
-Message-ID: <20200423174543.17161-10-michael@walle.cc>
+From: Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 02/16] mfd: mfd-core: Don't overwrite the dma_mask of the
+ child device
+Date: Thu, 23 Apr 2020 19:45:29 +0200
+Message-ID: <20200423174543.17161-3-michael@walle.cc>
 References: <20200423174543.17161-1-michael@walle.cc>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200423174543.17161-1-michael-QKn5cuLxLXY@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+In-Reply-To: <20200423174543.17161-1-michael@walle.cc>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Marc Zyngier <maz@kernel.org>, Jean Delvare <jdelvare@suse.com>, Jason Cooper <jason@lakedaemon.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shawn Guo <shawnguo@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Robin Murphy <robin.murphy@arm.com>, Li Yang <leoyang.li@nxp.com>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Lee Jones <lee.jones@linaro.org>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-pwm@vger.kernel.org
 
-This connects an IRQ domain to a gpiochip and reuses gpiochip_to_irq().
+Commit cdfee5623290 ("driver core: initialize a default DMA mask for
+platform device") initialize the DMA of a platform device. But if the
+parent doesn't have a dma_mask set, for example if it's an I2C device,
+the dma_mask of the child platform device will be set to zero again.
+Which leads to many "DMA mask not set" warnings, if the MFD cell has the
+of_compatible property set.
 
-Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+[    1.877937] sl28cpld-pwm sl28cpld-pwm: DMA mask not set
+[    1.883282] sl28cpld-pwm sl28cpld-pwm.0: DMA mask not set
+[    1.888795] sl28cpld-gpio sl28cpld-gpio: DMA mask not set
+
+Thus don't overwrite the dma_mask of the children. Instead set the
+dma_mask of the platform device.
+
+Signed-off-by: Michael Walle <michael@walle.cc>
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/gpio/gpiolib.c      | 20 ++++++++++++++++++++
- include/linux/gpio/driver.h |  3 +++
- 2 files changed, 23 insertions(+)
+ drivers/mfd/mfd-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 40f2d7f69be2..7b3d7f496b9a 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -2722,6 +2722,26 @@ int gpiochip_irqchip_add_key(struct gpio_chip *gc,
- }
- EXPORT_SYMBOL_GPL(gpiochip_irqchip_add_key);
+diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
+index f5a73af60dd4..e735565969b3 100644
+--- a/drivers/mfd/mfd-core.c
++++ b/drivers/mfd/mfd-core.c
+@@ -138,7 +138,7 @@ static int mfd_add_device(struct device *parent, int id,
  
-+/**
-+ * gpiochip_irqchip_add_key() - adds an irqdomain to a gpiochip
-+ * @gc: the gpiochip to add the irqchip to
-+ * @domain: the irqdomain to add to the gpiochip
-+ *
-+ * This function adds an IRQ domain to the gpiochip.
-+ */
-+int gpiochip_irqchip_add_domain(struct gpio_chip *gc,
-+				struct irq_domain *domain)
-+{
-+	if (!domain)
-+		return -EINVAL;
-+
-+	gc->to_irq = gpiochip_to_irq;
-+	gc->irq.domain = domain;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(gpiochip_irqchip_add_domain);
-+
- #else /* CONFIG_GPIOLIB_IRQCHIP */
+ 	pdev->dev.parent = parent;
+ 	pdev->dev.type = &mfd_dev_type;
+-	pdev->dev.dma_mask = parent->dma_mask;
++	pdev->platform_dma_mask = parent->dma_mask ? *parent->dma_mask : 0;
+ 	pdev->dev.dma_parms = parent->dma_parms;
+ 	pdev->dev.coherent_dma_mask = parent->coherent_dma_mask;
  
- static inline int gpiochip_add_irqchip(struct gpio_chip *gc,
-diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-index b8fc92c177eb..dfb1aa0ad4dc 100644
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -599,6 +599,9 @@ int gpiochip_irqchip_add_key(struct gpio_chip *gc,
- bool gpiochip_irqchip_irq_valid(const struct gpio_chip *gc,
- 				unsigned int offset);
- 
-+int gpiochip_irqchip_add_domain(struct gpio_chip *gc,
-+				struct irq_domain *domain);
-+
- #ifdef CONFIG_LOCKDEP
- 
- /*
 -- 
 2.20.1
