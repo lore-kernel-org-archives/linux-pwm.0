@@ -1,137 +1,44 @@
-From: Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 13/16] arm64: dts: freescale: sl28: enable sl28cpld
-Date: Thu, 23 Apr 2020 19:45:40 +0200
-Message-ID: <20200423174543.17161-14-michael@walle.cc>
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Subject: [PATCH v3 16/16] arm64: dts: freescale: sl28: enable fan support
+Date: Thu, 23 Apr 2020 19:45:43 +0200
+Message-ID: <20200423174543.17161-17-michael@walle.cc>
 References: <20200423174543.17161-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from ssl.serverraum.org ([176.9.125.105]:39037 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730048AbgDWRqm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Apr 2020 13:46:42 -0400
-In-Reply-To: <20200423174543.17161-1-michael@walle.cc>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200423174543.17161-1-michael-QKn5cuLxLXY@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Walle <michael@walle.cc>
 
-Add the board management controller node.
+Add a pwm-fan mapped to the PWM channel 0 which is connected to the
+fan connector of the carrier.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
 ---
- .../freescale/fsl-ls1028a-kontron-sl28.dts    | 92 +++++++++++++++++++
- 1 file changed, 92 insertions(+)
+ .../dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-index 41ba38adc906..b73794d57db4 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-@@ -8,6 +8,7 @@
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts
+index 0973a6a45217..c45d7b40e374 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts
+@@ -15,6 +15,15 @@
+ 	compatible = "kontron,sl28-var3-ads2", "kontron,sl28-var3",
+ 		     "kontron,sl28", "fsl,ls1028a";
  
- /dts-v1/;
- #include "fsl-ls1028a.dtsi"
-+#include <dt-bindings/interrupt-controller/irq.h>
- 
- / {
- 	model = "Kontron SMARC-sAL28";
-@@ -174,6 +175,97 @@
- 		reg = <0x32>;
- 	};
- 
-+	sl28cpld: sl28cpld@4a {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "kontron,sl28cpld";
-+		reg = <0x4a>;
-+		interrupts-extended = <&gpio2 6 IRQ_TYPE_EDGE_FALLING>;
-+
-+		interrupt-controller;
-+		#interrupt-cells = <2>;
-+
-+		watchdog@0 {
-+			compatible = "kontron,sl28cpld-wdt";
-+			reg = <0>;
-+			kontron,assert-wdt-timeout-pin;
-+		};
-+
-+		hwmon@4 {
-+			compatible = "kontron,sl28cpld-fan";
-+			reg = <1>;
-+		};
-+
-+		sl28cpld_pwm0: pwm@5 {
-+			#pwm-cells = <2>;
-+			compatible = "kontron,sl28cpld-pwm";
-+			reg = <2>;
-+		};
-+
-+		sl28cpld_pwm1: pwm@6 {
-+			#pwm-cells = <2>;
-+			compatible = "kontron,sl28cpld-pwm";
-+			reg = <3>;
-+		};
-+
-+		sl28cpld_gpio0: gpio@0 {
-+			compatible = "kontron,sl28cpld-gpio";
-+			reg = <4>;
-+
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-line-names =
-+				"GPIO0_CAM0_PWR_N", "GPIO1_CAM1_PWR_N",
-+				"GPIO2_CAM0_RST_N", "GPIO3_CAM1_RST_N",
-+				"GPIO4_HDA_RST_N", "GPIO5_PWM_OUT",
-+				"GPIO6_TACHIN", "GPIO7";
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+
-+		sl28cpld_gpio1: gpio@1 {
-+			compatible = "kontron,sl28cpld-gpio";
-+			reg = <5>;
-+
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-line-names =
-+				"GPIO8", "GPIO9", "GPIO10", "GPIO11",
-+				"", "", "", "";
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+
-+		sl28cpld_gpio2: gpio@2 {
-+			compatible = "kontron,sl28cpld-gpo";
-+			reg = <6>;
-+
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-line-names =
-+				"LCD0 voltage enable",
-+				"LCD0 backlight enable",
-+				"eMMC reset", "LVDS bridge reset",
-+				"LVDS bridge power-down",
-+				"SDIO power enable",
-+				"", "";
-+		};
-+
-+		sl28cpld_gpio3: gpio@3 {
-+			compatible = "kontron,sl28cpld-gpi";
-+			reg = <7>;
-+
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-line-names =
-+				"Power button", "Force recovery", "Sleep",
-+				"Battery low", "Lid state", "Charging",
-+				"Charger present", "";
-+		};
++	pwm-fan {
++		compatible = "pwm-fan";
++		cooling-min-state = <0>;
++		cooling-max-state = <3>;
++		#cooling-cells = <2>;
++		pwms = <&sl28cpld_pwm0 0 4000000>;
++		cooling-levels = <1 128 192 255>;
 +	};
 +
- 	eeprom@50 {
- 		compatible = "atmel,24c32";
- 		reg = <0x50>;
+ 	sound {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
 -- 
 2.20.1
