@@ -1,53 +1,60 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v13 00/11] Convert PWM period and duty cycle
- to u64
-Date: Thu, 23 Apr 2020 10:20:34 +0100
-Message-ID: <20200423092034.2yrzbuiay66fizkx@holly.lan>
-References: <cover.1587523702.git.gurus@codeaurora.org>
- <20200422084934.ajh6yzs5mkzzvop4@holly.lan>
- <20200422233755.GA11597@codeaurora.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v13 04/11] pwm: clps711x: Cast period to u32 before use as divisor
+Date: Thu, 23 Apr 2020 11:30:19 +0200
+Message-ID: <CAMuHMdVOPKWL9u_4QCvcBZKFrW-7aKZonXjODqUx9HwS=CF09g@mail.gmail.com>
+References: <cover.1587523702.git.gurus@codeaurora.org> <02ba64d8289bf84a8d140f5a3c38ed64a9474d3b.1587523702.git.gurus@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20200422233755.GA11597@codeaurora.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, linux-fbdev@vger.kernel.org, David Collins <collinsd@codeaurora.org>, Liam Girdwood <lgirdwood@gmail.com>, David Airlie <airlied@linux.ie>, Michael Turquette <mturquette@baylibre.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Atish Patra <atish.patra@wdc.com>, linux-riscv@lists.infradead.org, Fabio Estevam <festevam@gmail.com>, linux-clk@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Lee Jones <lee.jones@linaro.org>, Chen-Yu Tsai <wens@csie.org>, NXP Linux Team <linux-imx@nxp.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Philipp Zabel <p.zabel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-media@vger.kernel.org, linux-pwm@vger.kernel.or
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:35593 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbgDWJac (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Apr 2020 05:30:32 -0400
+In-Reply-To: <02ba64d8289bf84a8d140f5a3c38ed64a9474d3b.1587523702.git.gurus@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Arnd Bergmann <arnd@arndb.de>
 
-On Wed, Apr 22, 2020 at 04:37:55PM -0700, Guru Das Srinagesh wrote:
-> On Wed, Apr 22, 2020 at 09:49:34AM +0100, Daniel Thompson wrote:
-> > On Tue, Apr 21, 2020 at 07:57:12PM -0700, Guru Das Srinagesh wrote:
-> > > [REQUEST]
-> > > 
-> > > Would it be possible for the patches that have already received Acked-by's in
-> > > this series to be accepted and applied to the tree? I lost an Acked-by (in
-> > > intel-panel.c) because it had a merge conflict with a new change that came in
-> > > after I rebased to tip. I wasn't sure earlier about accepting single patches as
-> > > opposed to the entire series en masse, but this event has got me thinking.
-> > 
-> > Has there been a positive maintainer review of patch 11 at any point in
-> > the thread (most of the people you are asking to commit patches have
-> > not been able to see the discussion about the actual feature these
-> > patches are preparing for)?
-> 
-> Yes. Uwe had this to say [1] about a previous patchset (v5) of patch 11
-> which is essentially unchanged in this patchset save the dropping of the
-> pwm_capture change.
-> 
-> [1] https://www.spinics.net/lists/linux-pwm/msg11536.html
+On Wed, Apr 22, 2020 at 5:00 AM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+> Since the PWM framework is switching struct pwm_args.period's datatype
+> to u64, prepare for this transition by typecasting it to u32.
+>
+> Also, since the dividend is still a 32-bit number, any divisor greater
+> than the numerator will cause the quotient to be zero, so return 0 in
+> that case to efficiently skip the division.
+>
+> Cc: Alexander Shiyan <shc_work@mail.ru>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+>
+> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+> ---
+>  drivers/pwm/pwm-clps711x.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> index 924d39a..0d368ac 100644
+> --- a/drivers/pwm/pwm-clps711x.c
+> +++ b/drivers/pwm/pwm-clps711x.c
+> @@ -43,7 +43,10 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+>  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+>  {
+>         /* Duty cycle 0..15 max */
+> -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> +       if ((u32)pwm->args.period > (v * 0xf))
 
-Excellent. Thanks!
+Shouldn't the cast be removed from the expression above?
+Else a period larger than or equal to 2^32 may be accepted, but truncated
+silently.  And even cause a division by zero error.
 
 
-Daniel.
+> +               return 0;
+> +
+> +       return DIV_ROUND_CLOSEST(v * 0xf, (u32)pwm->args.period);
+>  }
+>
+>  static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+
+Gr{oetje,eeting}s,
+
+                        Geert
