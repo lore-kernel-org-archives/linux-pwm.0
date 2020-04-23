@@ -1,60 +1,166 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v13 00/11] Convert PWM period and duty cycle
- to u64
-Date: Thu, 23 Apr 2020 12:48:57 +0100
-Message-ID: <20200423114857.GG3612@dell>
-References: <cover.1587523702.git.gurus@codeaurora.org>
+From: Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 00/16] Add support for Kontron sl28cpld
+Date: Thu, 23 Apr 2020 19:45:27 +0200
+Message-ID: <20200423174543.17161-1-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <cover.1587523702.git.gurus@codeaurora.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Guru Das Srinagesh <gurus@codeaurora.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, linux-fbdev@vger.kernel.org, David Collins <collinsd@codeaurora.org>, Liam Girdwood <lgirdwood@gmail.com>, David Airlie <airlied@linux.ie>, Michael Turquette <mturquette@baylibre.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Atish Patra <atish.patra@wdc.com>, linux-riscv@lists.infradead.org, Fabio Estevam <festevam@gmail.com>, linux-clk@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Chen-Yu Tsai <wens@csie.org>, NXP Linux Team <linux-imx@nxp.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Philipp Zabel <p.zabel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-media@vger.kernel.org, linux-pwm
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Walle <michael@walle.cc>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCAyMSBBcHIgMjAyMCwgR3VydSBEYXMgU3JpbmFnZXNoIHdyb3RlOgoKPiBbUkVRVUVT
-VF0KPiAKPiBXb3VsZCBpdCBiZSBwb3NzaWJsZSBmb3IgdGhlIHBhdGNoZXMgdGhhdCBoYXZlIGFs
-cmVhZHkgcmVjZWl2ZWQgQWNrZWQtYnkncyBpbgo+IHRoaXMgc2VyaWVzIHRvIGJlIGFjY2VwdGVk
-IGFuZCBhcHBsaWVkIHRvIHRoZSB0cmVlPyBJIGxvc3QgYW4gQWNrZWQtYnkgKGluCj4gaW50ZWwt
-cGFuZWwuYykgYmVjYXVzZSBpdCBoYWQgYSBtZXJnZSBjb25mbGljdCB3aXRoIGEgbmV3IGNoYW5n
-ZSB0aGF0IGNhbWUgaW4KPiBhZnRlciBJIHJlYmFzZWQgdG8gdGlwLiBJIHdhc24ndCBzdXJlIGVh
-cmxpZXIgYWJvdXQgYWNjZXB0aW5nIHNpbmdsZSBwYXRjaGVzIGFzCj4gb3Bwb3NlZCB0byB0aGUg
-ZW50aXJlIHNlcmllcyBlbiBtYXNzZSwgYnV0IHRoaXMgZXZlbnQgaGFzIGdvdCBtZSB0aGlua2lu
-Zy4KPiAKPiBbQ09WRVIgTEVUVEVSXQo+IAo+IEJlY2F1c2UgcGVyaW9kIGFuZCBkdXR5IGN5Y2xl
-IGFyZSBkZWZpbmVkIGluIHRoZSBQV00gZnJhbWV3b3JrIHN0cnVjdHMgYXMgaW50cwo+IHdpdGgg
-dW5pdHMgb2YgbmFub3NlY29uZHMsIHRoZSBtYXhpbXVtIHRpbWUgZHVyYXRpb24gdGhhdCBjYW4g
-YmUgc2V0IGlzIGxpbWl0ZWQKPiB0byB+Mi4xNDcgc2Vjb25kcy4gQ29uc2VxdWVudGx5LCBhcHBs
-aWNhdGlvbnMgZGVzaXJpbmcgdG8gc2V0IGdyZWF0ZXIgdGltZQo+IHBlcmlvZHMgdmlhIHRoZSBQ
-V00gZnJhbWV3b3JrIGFyZSBub3QgYmUgYWJsZSB0byBkbyBzbyAtIGxpa2UsIGZvciBpbnN0YW5j
-ZSwKPiBjYXVzaW5nIGFuIExFRCB0byBibGluayBhdCBhbiBpbnRlcnZhbCBvZiA1IHNlY29uZHMu
-Cj4gCj4gUmVkZWZpbmluZyB0aGUgcGVyaW9kIGFuZCBkdXR5IGN5Y2xlIHN0cnVjdCBtZW1iZXJz
-IGluIHRoZSBjb3JlIFBXTSBmcmFtZXdvcmsKPiBzdHJ1Y3RzIGFzIHU2NCB2YWx1ZXMgd2lsbCBl
-bmFibGUgbGFyZ2VyIHRpbWUgZHVyYXRpb25zIHRvIGJlIHNldCBhbmQgc29sdmUKPiB0aGlzIHBy
-b2JsZW0uIFN1Y2ggYSBjaGFuZ2UgdG8gdGhlIGZyYW1ld29yayBtYW5kYXRlcyB0aGF0IGRyaXZl
-cnMgdXNpbmcgdGhlc2UKPiBzdHJ1Y3QgbWVtYmVycyAoYW5kIGNvcnJlc3BvbmRpbmcgaGVscGVy
-IGZ1bmN0aW9ucykgYWxzbyBiZSBtb2RpZmllZCBjb3JyZWN0bHkKPiBpbiBvcmRlciB0byBwcmV2
-ZW50IGNvbXBpbGF0aW9uIGVycm9ycy4KPiAKPiBUaGlzIHBhdGNoIHNlcmllcyBpbnRyb2R1Y2Vz
-IHRoZSBjaGFuZ2VzIHRvIGFsbCB0aGUgZHJpdmVycyBmaXJzdCwgZm9sbG93ZWQgYnkKPiB0aGUg
-ZnJhbWV3b3JrIGNoYW5nZSBhdCB0aGUgdmVyeSBlbmQgc28gdGhhdCB3aGVuIHRoZSBsYXR0ZXIg
-aXMgYXBwbGllZCwgYWxsCj4gdGhlIGRyaXZlcnMgYXJlIGluIGdvb2Qgc2hhcGUgYW5kIHRoZXJl
-IGFyZSBubyBjb21waWxhdGlvbiBlcnJvcnMuCgpXaGF0J3MgdGhlIG1lcmdlIHBsYW4gZm9yIHRo
-aXMgc2V0PwoKRllJLCBpdCdzIGJldHRlciB0byBzZW5kIGFsbCBwYXRjaGVzIHRvIGFsbCBwYXJ0
-aWVzLiAgVGhhdCB3YXkKbWFpbnRhaW5lcnMgYW5kIGludGVyZXN0ZWQgcGVyc29ucyBjYW4gZm9s
-bG93IHRoZSBkaXNjdXNzaW9uIGFuZApwcm9ncmVzcywgb3IgbGFjayB0aGVyZSBvZi4KCi0tIApM
-ZWUgSm9uZXMgW+adjueQvOaWr10KTGluYXJvIFNlcnZpY2VzIFRlY2huaWNhbCBMZWFkCkxpbmFy
-by5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJlIGZvciBBUk0gU29DcwpGb2xsb3cgTGluYXJv
-OiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3Rz
-LmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2ludGVsLWdmeAo=
+The Kontron sl28cpld is a board management chip providing gpio, pwm, fan
+monitoring and an interrupt controller. For now this controller is used on
+the Kontron SMARC-sAL28 board. But because of its flexible nature, it
+might also be used on other boards in the future. The individual blocks
+(like gpio, pwm, etc) are kept intentionally small. The MFD core driver
+then instantiates different (or multiple of the same) blocks. It also
+provides the register layout so it might be updated in the future without a
+device tree change; and support other boards with a different layout or
+functionalities.
+
+See also [1] for more information.
+
+This is my first take of a MFD driver. I don't know whether the subsystem
+maintainers should only be CCed on the patches which affect the subsystem
+or on all patches for this series. I've chosen the latter so you can get a
+more complete picture.
+
+[1] https://lore.kernel.org/linux-devicetree/0e3e8204ab992d75aa07fc36af7e4ab2@walle.cc/
+
+Changes since v2:
+As suggested by Guenter Roeck:
+ - added sl28cpld.rst to index.rst
+ - removed sl28cpld_wdt_status()
+ - reverse christmas tree local variable ordering
+ - assign device_property_read_bool() retval directly
+ - introduce WDT_DEFAULT_TIMEOUT and use it if the hardware reports
+   0 as timeout.
+ - set WDOG_HW_RUNNING if applicable
+ - remove platform_set_drvdata() leftover
+
+As suggested by Bartosz Golaszewski:
+ - don't export gpio_regmap_simple_xlate()
+ - combine local variable declaration of the same type
+ - drop the "struct gpio_regmap_addr", instead use -1 to force an address
+   offset of zero
+ - fix typo
+ - use "struct gpio_regmap_config" pattern, keep "struct gpio_regmap"
+   private. this also means we need a getter/setter for the driver_data
+   element.
+
+As suggested by Linus Walleij:
+ - don't store irq_domain in gpio-regmap. drop to_irq() altogether for now.
+   Instead there is now a new patch which lets us set the irqdomain of the
+   gpiochip_irqchip and use its .to_irq() function. This way we don't have
+   to expose the gpio_chip inside the gpio-regmap to the user.
+
+Changes since v1:
+ - use of_match_table in all drivers, needed for automatic module loading,
+   when using OF_MFD_CELL()
+ - add new gpio-regmap.c which adds a generic regmap gpio_chip
+   implementation
+ - new patch for reqmap_irq, so we can reuse its implementation
+ - remove almost any code from gpio-sl28cpld.c, instead use gpio-regmap and
+   regmap-irq
+ - change the handling of the mfd core vs device tree nodes; add a new
+   property "of_reg" to the mfd_cell struct which, when set, is matched to
+   the unit-address of the device tree nodes.
+ - fix sl28cpld watchdog when it is not initialized by the bootloader.
+   Explicitly set the operation mode.
+ - also add support for kontron,assert-wdt-timeout-pin in sl28cpld-wdt.
+
+As suggested by Bartosz Golaszewski:
+ - define registers as hex
+ - make gpio enum uppercase
+ - move parent regmap check before memory allocation
+ - use device_property_read_bool() instead of the of_ version
+ - mention the gpio flavors in the bindings documentation
+
+As suggested by Guenter Roeck:
+ - cleanup #includes and sort them
+ - use devm_watchdog_register_device()
+ - use watchdog_stop_on_reboot()
+ - provide a Documentation/hwmon/sl28cpld.rst
+ - cleaned up the weird tristate->bool and I2C=y issue. Instead mention
+   that the MFD driver is bool because of the following intc patch
+ - removed the SL28CPLD_IRQ typo
+
+As suggested by Rob Herring:
+ - combine all dt bindings docs into one patch
+ - change the node name for all gpio flavors to "gpio"
+ - removed the interrupts-extended rule
+ - cleaned up the unit-address space, see above
+
+Michael Walle (16):
+  include/linux/ioport.h: add helper to define REG resource constructs
+  mfd: mfd-core: Don't overwrite the dma_mask of the child device
+  mfd: mfd-core: match device tree node against reg property
+  dt-bindings: mfd: Add bindings for sl28cpld
+  mfd: Add support for Kontron sl28cpld management controller
+  irqchip: add sl28cpld interrupt controller support
+  watchdog: add support for sl28cpld watchdog
+  pwm: add support for sl28cpld PWM controller
+  gpiolib: Introduce gpiochip_irqchip_add_domain()
+  gpio: add a reusable generic gpio_chip using regmap
+  gpio: add support for the sl28cpld GPIO controller
+  hwmon: add support for the sl28cpld hardware monitoring controller
+  arm64: dts: freescale: sl28: enable sl28cpld
+  arm64: dts: freescale: sl28: map GPIOs to input events
+  arm64: dts: freescale: sl28: enable LED support
+  arm64: dts: freescale: sl28: enable fan support
+
+ .../bindings/gpio/kontron,sl28cpld-gpio.yaml  |  51 +++
+ .../hwmon/kontron,sl28cpld-hwmon.yaml         |  27 ++
+ .../bindings/mfd/kontron,sl28cpld.yaml        | 162 ++++++++
+ .../bindings/pwm/kontron,sl28cpld-pwm.yaml    |  35 ++
+ .../watchdog/kontron,sl28cpld-wdt.yaml        |  35 ++
+ Documentation/hwmon/index.rst                 |   1 +
+ Documentation/hwmon/sl28cpld.rst              |  36 ++
+ .../fsl-ls1028a-kontron-kbox-a-230-ls.dts     |  14 +
+ .../fsl-ls1028a-kontron-sl28-var3-ads2.dts    |   9 +
+ .../freescale/fsl-ls1028a-kontron-sl28.dts    | 124 +++++++
+ drivers/gpio/Kconfig                          |  15 +
+ drivers/gpio/Makefile                         |   2 +
+ drivers/gpio/gpio-regmap.c                    | 348 ++++++++++++++++++
+ drivers/gpio/gpio-sl28cpld.c                  | 184 +++++++++
+ drivers/gpio/gpiolib.c                        |  20 +
+ drivers/hwmon/Kconfig                         |  10 +
+ drivers/hwmon/Makefile                        |   1 +
+ drivers/hwmon/sl28cpld-hwmon.c                | 151 ++++++++
+ drivers/irqchip/Kconfig                       |   3 +
+ drivers/irqchip/Makefile                      |   1 +
+ drivers/irqchip/irq-sl28cpld.c                |  97 +++++
+ drivers/mfd/Kconfig                           |  21 ++
+ drivers/mfd/Makefile                          |   2 +
+ drivers/mfd/mfd-core.c                        |  31 +-
+ drivers/mfd/sl28cpld.c                        | 153 ++++++++
+ drivers/pwm/Kconfig                           |  10 +
+ drivers/pwm/Makefile                          |   1 +
+ drivers/pwm/pwm-sl28cpld.c                    | 203 ++++++++++
+ drivers/watchdog/Kconfig                      |  11 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/sl28cpld_wdt.c               | 233 ++++++++++++
+ include/linux/gpio-regmap.h                   |  69 ++++
+ include/linux/gpio/driver.h                   |   3 +
+ include/linux/ioport.h                        |   5 +
+ include/linux/mfd/core.h                      |  26 +-
+ 35 files changed, 2079 insertions(+), 16 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
+ create mode 100644 Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
+ create mode 100644 Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
+ create mode 100644 Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
+ create mode 100644 Documentation/hwmon/sl28cpld.rst
+ create mode 100644 drivers/gpio/gpio-regmap.c
+ create mode 100644 drivers/gpio/gpio-sl28cpld.c
+ create mode 100644 drivers/hwmon/sl28cpld-hwmon.c
+ create mode 100644 drivers/irqchip/irq-sl28cpld.c
+ create mode 100644 drivers/mfd/sl28cpld.c
+ create mode 100644 drivers/pwm/pwm-sl28cpld.c
+ create mode 100644 drivers/watchdog/sl28cpld_wdt.c
+ create mode 100644 include/linux/gpio-regmap.h
+
+-- 
+2.20.1
