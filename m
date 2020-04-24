@@ -1,56 +1,56 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v13 00/11] Convert PWM period and duty cycle to u64
-Date: Fri, 24 Apr 2020 15:14:22 -0700
-Message-ID: <20200424221422.GA31118@codeaurora.org>
+Subject: Re: [PATCH v13 01/11] drm/i915: Use 64-bit division macro
+Date: Fri, 24 Apr 2020 15:17:56 -0700
+Message-ID: <20200424221756.GB31118@codeaurora.org>
 References: <cover.1587523702.git.gurus@codeaurora.org>
- <20200423114857.GG3612@dell> <20200423215306.GA8670@codeaurora.org>
- <20200424064303.GJ3612@dell>
+ <4a3acf8673c08308848fb7ae73d992b6feb758d3.1587523702.git.gurus@codeaurora.org>
+ <87ftctbe5l.fsf@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:34019 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725874AbgDXWSH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Apr 2020 18:18:07 -0400
 Content-Disposition: inline
-In-Reply-To: <20200424064303.GJ3612@dell>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, linux-fbdev@vger.kernel.org, David Collins <collinsd@codeaurora.org>, Liam Girdwood <lgirdwood@gmail.com>, David Airlie <airlied@linux.ie>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Atish Patra <atish.patra@wdc.com>, Thierry Reding <thierry.reding@gmail.com>, linux-riscv@lists.infradead.org, Fabio Estevam <festevam@gmail.com>, linux-clk@vger.kernel.org, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, Daniel Thompson <daniel.thompson@linaro.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Chen-Yu Tsai <wens@csie.org>, NXP Linux Team <linux-imx@nxp.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+In-Reply-To: <87ftctbe5l.fsf@intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, David Collins <collinsd@codeaurora.org>, David Airlie <airlied@linux.ie>, intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>
 
-On Fri, Apr 24, 2020 at 07:43:03AM +0100, Lee Jones wrote:
-> A great deal of mailing lists contain numerous protections against
-> things like flooding and spamming.  One of those protections is a
-> check for "Too many recipients to the message".  Most of the time this
-> simply requires moderator intervention by way of review and approval,
-> but this ultimately depends on the ML's configuration.
+On Fri, Apr 24, 2020 at 09:17:58AM +0300, Jani Nikula wrote:
+> On Tue, 21 Apr 2020, Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+> > Since the PWM framework is switching struct pwm_state.duty_cycle's
+> > datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
+> > to handle a 64-bit dividend.
+> >
+> > To: Jani Nikula <jani.nikula@linux.intel.com>
+> > Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> > Cc: David Airlie <airlied@linux.ie>
+> > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > Cc: Chris Wilson <chris@chris-wilson.co.uk>
+> > Cc: "Ville Syrjälä" <ville.syrjala@linux.intel.com>
+> > Cc: intel-gfx@lists.freedesktop.org
+> > Cc: dri-devel@lists.freedesktop.org
+> >
 > 
-> The first thing to ascertain is why your recipients list is so large.
-> Have you added every reviewer, subsystem-maintainer, maintainer and
-> contributor suggested by get-maintainer.pl?  If so, consider pruning
-> that a little.  Contributors do not tend to care about subsequent
-> changes to a file.  As someone who receives a lot of patches, I tend
-> to get fed-up when receiving patches simply because I made a change X
-> years ago.  Stick to listed maintainers/reviewers in the first
-> instance and see how far that takes you.
+> Superfluous blank line.
 
-Thank you for the detailed reply. I did this in the first few patchsets
-and then when a few patches didn't get any attention, expanded the
-audience thus. Still, around 50% of the patches in this series remain
-unreviewed by anyone.
+Will remove.
 
-> If your recipients list is as succinct as reasonably possible, maybe
-> just accept that every version isn't going to be archived by every
-> ML.  It's still much more useful for the correct people to have
-> visibility into the set than for it to be archived multiple times.
+> 
+> Anyway, please preserve the existing acks and reviews [1] so people
+> don't have to do it again.
+> 
+> BR,
+> Jani.
+> 
+> [1] http://lore.kernel.org/r/87h7yleb0i.fsf@intel.com
 
-Thank you, will prune the list and remove past contributors from the
-Cc-list and add all parties to all patches.
+I dropped your Acked-by as the patch had to changed to resolve a merge
+conflict when I rebased to tip. Could you please re-review this patch?
 
 Thank you.
 
