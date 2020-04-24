@@ -1,65 +1,72 @@
-From: Jani Nikula <jani.nikula@linux.intel.com>
-Subject: Re: [PATCH v13 01/11] drm/i915: Use 64-bit division macro
-Date: Fri, 24 Apr 2020 09:17:58 +0300
-Message-ID: <87ftctbe5l.fsf@intel.com>
-References: <cover.1587523702.git.gurus@codeaurora.org> <4a3acf8673c08308848fb7ae73d992b6feb758d3.1587523702.git.gurus@codeaurora.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v13 00/11] Convert PWM period and duty cycle
+ to u64
+Date: Fri, 24 Apr 2020 07:43:03 +0100
+Message-ID: <20200424064303.GJ3612@dell>
+References: <cover.1587523702.git.gurus@codeaurora.org>
+ <20200423114857.GG3612@dell> <20200423215306.GA8670@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:24165 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725868AbgDXGSF (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 24 Apr 2020 02:18:05 -0400
-In-Reply-To: <4a3acf8673c08308848fb7ae73d992b6feb758d3.1587523702.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20200423215306.GA8670@codeaurora.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>, linux-fbdev@vger.kernel.org, David Collins <collinsd@codeaurora.org>, Liam Girdwood <lgirdwood@gmail.com>, David Airlie <airlied@linux.ie>, Michael Turquette <mturquette@baylibre.com>, Kamil Debski <kamil@wypas.org>, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Atish Patra <atish.patra@wdc.com>, linux-riscv@lists.infradead.org, Fabio Estevam <festevam@gmail.com>, linux-clk@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Chen-Yu Tsai <wens@csie.org>, NXP Linux Team <linux-imx@nxp.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Philipp Zabel <p.zabel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, Guenter Roeck <linux@roeck-us.net>, linux-media@vger.kernel.org, linux-pwm
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Guru Das Srinagesh <gurus@codeaurora.org>, David Collins <collinsd@codeaurora.org>, David Airlie <airlied@linux.ie>, intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6ni?= =?utf-8?Q?g?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>
 
-On Tue, 21 Apr 2020, Guru Das Srinagesh <gurus@codeaurora.org> wrote:
-> Since the PWM framework is switching struct pwm_state.duty_cycle's
-> datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
-> to handle a 64-bit dividend.
->
-> To: Jani Nikula <jani.nikula@linux.intel.com>
-> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Chris Wilson <chris@chris-wilson.co.uk>
-> Cc: "Ville Syrjälä" <ville.syrjala@linux.intel.com>
-> Cc: intel-gfx@lists.freedesktop.org
-> Cc: dri-devel@lists.freedesktop.org
->
-
-Superfluous blank line.
-
-Anyway, please preserve the existing acks and reviews [1] so people
-don't have to do it again.
-
-BR,
-Jani.
-
-[1] http://lore.kernel.org/r/87h7yleb0i.fsf@intel.com
-
-> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-> ---
->  drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-> index 276f438..81547a0 100644
-> --- a/drivers/gpu/drm/i915/display/intel_panel.c
-> +++ b/drivers/gpu/drm/i915/display/intel_panel.c
-> @@ -1920,7 +1920,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
->  		return retval;
->  	}
->  
-> -	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
-> +	level = DIV_ROUND_UP_ULL(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
->  			     CRC_PMIC_PWM_PERIOD_NS);
->  	panel->backlight.level =
->  		intel_panel_compute_brightness(connector, level);
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
+T24gVGh1LCAyMyBBcHIgMjAyMCwgR3VydSBEYXMgU3JpbmFnZXNoIHdyb3RlOgoKPiBPbiBUaHUs
+IEFwciAyMywgMjAyMCBhdCAxMjo0ODo1N1BNICswMTAwLCBMZWUgSm9uZXMgd3JvdGU6Cj4gPiBX
+aGF0J3MgdGhlIG1lcmdlIHBsYW4gZm9yIHRoaXMgc2V0Pwo+IAo+IEknbSBub3Qgc3VyZSB3aGF0
+IHlvdSBtZWFuLiBNeSBhc3N1bXB0aW9uIGlzIHRoYXQgZmlyc3QgYWxsIHRoZSBwYXRjaGVzCj4g
+bmVlZCB0byBnZXQgYW4gQWNrZWQtYnkgYW5kIG9ubHkgdGhlbiB3aWxsIHRoZSBzZXJpZXMgZ2V0
+IGFwcGxpZWQgYnkKPiBUaGllcnJ5Li4uIENvdWxkIFRoaWVycnkgb3IgVXdlIHdlaWdoIGluIG9u
+IHRoaXMgcG9pbnQgcGxlYXNlPwo+IAo+ID4gRllJLCBpdCdzIGJldHRlciB0byBzZW5kIGFsbCBw
+YXRjaGVzIHRvIGFsbCBwYXJ0aWVzLiAgVGhhdCB3YXkKPiA+IG1haW50YWluZXJzIGFuZCBpbnRl
+cmVzdGVkIHBlcnNvbnMgY2FuIGZvbGxvdyB0aGUgZGlzY3Vzc2lvbiBhbmQKPiA+IHByb2dyZXNz
+LCBvciBsYWNrIHRoZXJlIG9mLgo+IAo+IFNvbWV0aGluZyBJIG5vdGljZWQgd2l0aCBhZGRpbmcg
+YWxsIHRoZSB2YXJpb3VzIG1haWxpbmcgbGlzdHMgdG8gdGhlIENDCj4gbGlzdCBmb3IgdGhpcyBj
+b3ZlciBsZXR0ZXIgaXMgdGhhdCBpdCBpcyBjYXVzaW5nIHRoaXMgY292ZXIgbGV0dGVyIGVtYWls
+Cj4gYW5kIGFsbCBpdHMgcmVwbGllcyB0byBub3QgYmUgYXJjaGl2ZWQgcHJvcGVybHkgb24gc3Bp
+bmljcyBvciBsb3JlIC0KPiBpdCdzIHByb2JhYmx5IGdldHRpbmcgcmVqZWN0ZWQgYnkgZW1haWwg
+ZmlsdGVycyBzb21laG93LiBDb21wYXJlIHdpdGgKPiB2MTIgWzFdIHdoZXJlIEknZCBwcnVuZWQg
+dGhlIGxpc3QgY29uc2lkZXJhYmx5IGFzIGFuIGV4cGVyaW1lbnQgLSB0aGF0Cj4gZ290IGFyY2hp
+dmVkIGNvcnJlY3RseS4KPiAKPiBBbnkgaWRlYXMgb24gd2hhdCBtaWdodCBiZSBnb2luZyB3cm9u
+Zz8gT25jZSBJIGZpeCB0aGlzIEkgY2FuIGFkZCBhbGwKPiBwYXJ0aWVzIHRvIGFsbCBwYXRjaGVz
+IGtub3dpbmcgdGhhdCB0aGVyZSB3b3VsZCBiZSBubyBpc3N1ZXMgaW4gbWFpbAo+IGFyY2hpdmFs
+LgoKQSBncmVhdCBkZWFsIG9mIG1haWxpbmcgbGlzdHMgY29udGFpbiBudW1lcm91cyBwcm90ZWN0
+aW9ucyBhZ2FpbnN0CnRoaW5ncyBsaWtlIGZsb29kaW5nIGFuZCBzcGFtbWluZy4gIE9uZSBvZiB0
+aG9zZSBwcm90ZWN0aW9ucyBpcyBhCmNoZWNrIGZvciAiVG9vIG1hbnkgcmVjaXBpZW50cyB0byB0
+aGUgbWVzc2FnZSIuICBNb3N0IG9mIHRoZSB0aW1lIHRoaXMKc2ltcGx5IHJlcXVpcmVzIG1vZGVy
+YXRvciBpbnRlcnZlbnRpb24gYnkgd2F5IG9mIHJldmlldyBhbmQgYXBwcm92YWwsCmJ1dCB0aGlz
+IHVsdGltYXRlbHkgZGVwZW5kcyBvbiB0aGUgTUwncyBjb25maWd1cmF0aW9uLgoKVGhlIGZpcnN0
+IHRoaW5nIHRvIGFzY2VydGFpbiBpcyB3aHkgeW91ciByZWNpcGllbnRzIGxpc3QgaXMgc28gbGFy
+Z2UuCkhhdmUgeW91IGFkZGVkIGV2ZXJ5IHJldmlld2VyLCBzdWJzeXN0ZW0tbWFpbnRhaW5lciwg
+bWFpbnRhaW5lciBhbmQKY29udHJpYnV0b3Igc3VnZ2VzdGVkIGJ5IGdldC1tYWludGFpbmVyLnBs
+PyAgSWYgc28sIGNvbnNpZGVyIHBydW5pbmcKdGhhdCBhIGxpdHRsZS4gIENvbnRyaWJ1dG9ycyBk
+byBub3QgdGVuZCB0byBjYXJlIGFib3V0IHN1YnNlcXVlbnQKY2hhbmdlcyB0byBhIGZpbGUuICBB
+cyBzb21lb25lIHdobyByZWNlaXZlcyBhIGxvdCBvZiBwYXRjaGVzLCBJIHRlbmQKdG8gZ2V0IGZl
+ZC11cCB3aGVuIHJlY2VpdmluZyBwYXRjaGVzIHNpbXBseSBiZWNhdXNlIEkgbWFkZSBhIGNoYW5n
+ZSBYCnllYXJzIGFnby4gIFN0aWNrIHRvIGxpc3RlZCBtYWludGFpbmVycy9yZXZpZXdlcnMgaW4g
+dGhlIGZpcnN0Cmluc3RhbmNlIGFuZCBzZWUgaG93IGZhciB0aGF0IHRha2VzIHlvdS4KCklmIHlv
+dXIgcmVjaXBpZW50cyBsaXN0IGlzIGFzIHN1Y2NpbmN0IGFzIHJlYXNvbmFibHkgcG9zc2libGUs
+IG1heWJlCmp1c3QgYWNjZXB0IHRoYXQgZXZlcnkgdmVyc2lvbiBpc24ndCBnb2luZyB0byBiZSBh
+cmNoaXZlZCBieSBldmVyeQpNTC4gIEl0J3Mgc3RpbGwgbXVjaCBtb3JlIHVzZWZ1bCBmb3IgdGhl
+IGNvcnJlY3QgcGVvcGxlIHRvIGhhdmUKdmlzaWJpbGl0eSBpbnRvIHRoZSBzZXQgdGhhbiBmb3Ig
+aXQgdG8gYmUgYXJjaGl2ZWQgbXVsdGlwbGUgdGltZXMuCgo+IFsxXSBodHRwczovL3d3dy5zcGlu
+aWNzLm5ldC9saXN0cy9saW51eC1wd20vbXNnMTIxMzEuaHRtbAo+IAo+IFRoYW5rIHlvdS4KPiAK
+PiBHdXJ1IERhcy4KCi0tIApMZWUgSm9uZXMgW+adjueQvOaWr10KTGluYXJvIFNlcnZpY2VzIFRl
+Y2huaWNhbCBMZWFkCkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJlIGZvciBBUk0g
+U29DcwpGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxp
+c3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
+dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
