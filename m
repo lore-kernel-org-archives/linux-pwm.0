@@ -1,55 +1,303 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v13 04/11] pwm: clps711x: Cast period to u32 before use
- as divisor
-Date: Fri, 24 Apr 2020 15:21:29 -0700
-Message-ID: <20200424222129.GC31118@codeaurora.org>
-References: <cover.1587523702.git.gurus@codeaurora.org>
- <02ba64d8289bf84a8d140f5a3c38ed64a9474d3b.1587523702.git.gurus@codeaurora.org>
- <CAMuHMdVOPKWL9u_4QCvcBZKFrW-7aKZonXjODqUx9HwS=CF09g@mail.gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v3 07/16] watchdog: add support for sl28cpld watchdog
+Date: Sat, 25 Apr 2020 10:02:50 -0700
+Message-ID: <eaa00592-8b9b-458e-f445-c7f7b5bcd007@roeck-us.net>
+References: <20200423174543.17161-1-michael@walle.cc>
+ <20200423174543.17161-8-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdVOPKWL9u_4QCvcBZKFrW-7aKZonXjODqUx9HwS=CF09g@mail.gmail.com>
+In-Reply-To: <20200423174543.17161-8-michael@walle.cc>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Arnd Bergmann <arnd@arndb.de>
+To: Michael Walle <michael@walle.cc>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Apr 23, 2020 at 11:30:19AM +0200, Geert Uytterhoeven wrote:
-> On Wed, Apr 22, 2020 at 5:00 AM Guru Das Srinagesh <gurus@codeaurora.org> wrote:
-> > Since the PWM framework is switching struct pwm_args.period's datatype
-> > to u64, prepare for this transition by typecasting it to u32.
-> >
-> > Also, since the dividend is still a 32-bit number, any divisor greater
-> > than the numerator will cause the quotient to be zero, so return 0 in
-> > that case to efficiently skip the division.
-> >
-> > Cc: Alexander Shiyan <shc_work@mail.ru>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> >
-> > Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-> > ---
-> >  drivers/pwm/pwm-clps711x.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-> > index 924d39a..0d368ac 100644
-> > --- a/drivers/pwm/pwm-clps711x.c
-> > +++ b/drivers/pwm/pwm-clps711x.c
-> > @@ -43,7 +43,10 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
-> >  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
-> >  {
-> >         /* Duty cycle 0..15 max */
-> > -       return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
-> > +       if ((u32)pwm->args.period > (v * 0xf))
+On 4/23/20 10:45 AM, Michael Walle wrote:
+> This adds support for the watchdog of the sl28cpld board management
+> controller. This is part of a multi-function device driver.
 > 
-> Shouldn't the cast be removed from the expression above?
-> Else a period larger than or equal to 2^32 may be accepted, but truncated
-> silently.  And even cause a division by zero error.
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-I agree. Will remove the cast in the next patchset.
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-Thank you.
-
-Guru Das.
+> ---
+>  drivers/watchdog/Kconfig        |  11 ++
+>  drivers/watchdog/Makefile       |   1 +
+>  drivers/watchdog/sl28cpld_wdt.c | 233 ++++++++++++++++++++++++++++++++
+>  3 files changed, 245 insertions(+)
+>  create mode 100644 drivers/watchdog/sl28cpld_wdt.c
+> 
+> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+> index 0663c604bd64..6c53c1d0f348 100644
+> --- a/drivers/watchdog/Kconfig
+> +++ b/drivers/watchdog/Kconfig
+> @@ -340,6 +340,17 @@ config MLX_WDT
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called mlx-wdt.
+>  
+> +config SL28CPLD_WATCHDOG
+> +	tristate "Kontron sl28 watchdog"
+> +	depends on MFD_SL28CPLD
+> +	select WATCHDOG_CORE
+> +	help
+> +	  Say Y here to include support for the watchdog timer
+> +	  on the Kontron sl28 CPLD.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called sl28cpld_wdt.
+> +
+>  # ALPHA Architecture
+>  
+>  # ARM Architecture
+> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
+> index 6de2e4ceef19..b9ecdf2d7347 100644
+> --- a/drivers/watchdog/Makefile
+> +++ b/drivers/watchdog/Makefile
+> @@ -224,3 +224,4 @@ obj-$(CONFIG_MENF21BMC_WATCHDOG) += menf21bmc_wdt.o
+>  obj-$(CONFIG_MENZ069_WATCHDOG) += menz69_wdt.o
+>  obj-$(CONFIG_RAVE_SP_WATCHDOG) += rave-sp-wdt.o
+>  obj-$(CONFIG_STPMIC1_WATCHDOG) += stpmic1_wdt.o
+> +obj-$(CONFIG_SL28CPLD_WATCHDOG) += sl28cpld_wdt.o
+> diff --git a/drivers/watchdog/sl28cpld_wdt.c b/drivers/watchdog/sl28cpld_wdt.c
+> new file mode 100644
+> index 000000000000..2640084ace5c
+> --- /dev/null
+> +++ b/drivers/watchdog/sl28cpld_wdt.c
+> @@ -0,0 +1,233 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * sl28cpld watchdog driver.
+> + *
+> + * Copyright 2019 Kontron Europe GmbH
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/watchdog.h>
+> +
+> +/*
+> + * Watchdog timer block registers.
+> + */
+> +#define WDT_CTRL			0x00
+> +#define  WDT_CTRL_EN			BIT(0)
+> +#define  WDT_CTRL_LOCK			BIT(2)
+> +#define  WDT_CTRL_ASSERT_SYS_RESET	BIT(6)
+> +#define  WDT_CTRL_ASSERT_WDT_TIMEOUT	BIT(7)
+> +#define WDT_TIMEOUT			0x01
+> +#define WDT_KICK			0x02
+> +#define  WDT_KICK_VALUE			0x6b
+> +#define WDT_COUNT			0x03
+> +
+> +#define WDT_DEFAULT_TIMEOUT		10
+> +
+> +static bool nowayout = WATCHDOG_NOWAYOUT;
+> +module_param(nowayout, bool, 0);
+> +MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+> +				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
+> +
+> +static int timeout;
+> +module_param(timeout, int, 0);
+> +MODULE_PARM_DESC(timeout, "Initial watchdog timeout in seconds");
+> +
+> +struct sl28cpld_wdt {
+> +	struct watchdog_device wdd;
+> +	struct regmap *regmap;
+> +	u32 offset;
+> +	bool assert_wdt_timeout;
+> +};
+> +
+> +static int sl28cpld_wdt_ping(struct watchdog_device *wdd)
+> +{
+> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
+> +
+> +	return regmap_write(wdt->regmap, wdt->offset + WDT_KICK,
+> +			    WDT_KICK_VALUE);
+> +}
+> +
+> +static int sl28cpld_wdt_start(struct watchdog_device *wdd)
+> +{
+> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
+> +	unsigned int val;
+> +
+> +	val = WDT_CTRL_EN | WDT_CTRL_ASSERT_SYS_RESET;
+> +	if (wdt->assert_wdt_timeout)
+> +		val |= WDT_CTRL_ASSERT_WDT_TIMEOUT;
+> +	if (nowayout)
+> +		val |= WDT_CTRL_LOCK;
+> +
+> +	return regmap_update_bits(wdt->regmap, wdt->offset + WDT_CTRL,
+> +				  val, val);
+> +}
+> +
+> +static int sl28cpld_wdt_stop(struct watchdog_device *wdd)
+> +{
+> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
+> +
+> +	return regmap_update_bits(wdt->regmap, wdt->offset + WDT_CTRL,
+> +				  WDT_CTRL_EN, 0);
+> +}
+> +
+> +static unsigned int sl28cpld_wdt_get_timeleft(struct watchdog_device *wdd)
+> +{
+> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = regmap_read(wdt->regmap, wdt->offset + WDT_COUNT, &val);
+> +
+> +	return (ret < 0) ? 0 : val;
+> +}
+> +
+> +static int sl28cpld_wdt_set_timeout(struct watchdog_device *wdd,
+> +				    unsigned int timeout)
+> +{
+> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
+> +	int ret;
+> +
+> +	ret = regmap_write(wdt->regmap, wdt->offset + WDT_TIMEOUT, timeout);
+> +	if (!ret)
+> +		wdd->timeout = timeout;
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct watchdog_info sl28cpld_wdt_info = {
+> +	.options = WDIOF_MAGICCLOSE | WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
+> +	.identity = "sl28cpld watchdog",
+> +};
+> +
+> +static struct watchdog_ops sl28cpld_wdt_ops = {
+> +	.owner = THIS_MODULE,
+> +	.start = sl28cpld_wdt_start,
+> +	.stop = sl28cpld_wdt_stop,
+> +	.ping = sl28cpld_wdt_ping,
+> +	.set_timeout = sl28cpld_wdt_set_timeout,
+> +	.get_timeleft = sl28cpld_wdt_get_timeleft,
+> +};
+> +
+> +static int sl28cpld_wdt_probe(struct platform_device *pdev)
+> +{
+> +	struct watchdog_device *wdd;
+> +	struct sl28cpld_wdt *wdt;
+> +	struct resource *res;
+> +	unsigned int status;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	if (!pdev->dev.parent)
+> +		return -ENODEV;
+> +
+> +	wdt = devm_kzalloc(&pdev->dev, sizeof(*wdt), GFP_KERNEL);
+> +	if (!wdt)
+> +		return -ENOMEM;
+> +
+> +	wdt->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+> +	if (!wdt->regmap)
+> +		return -ENODEV;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+> +	if (!res)
+> +		return -EINVAL;
+> +	wdt->offset = res->start;
+> +
+> +	wdt->assert_wdt_timeout = device_property_read_bool(&pdev->dev,
+> +							    "kontron,assert-wdt-timeout-pin");
+> +
+> +	/* initialize struct watchdog_device */
+> +	wdd = &wdt->wdd;
+> +	wdd->parent = &pdev->dev;
+> +	wdd->info = &sl28cpld_wdt_info;
+> +	wdd->ops = &sl28cpld_wdt_ops;
+> +	wdd->min_timeout = 1;
+> +	wdd->max_timeout = 255;
+> +
+> +	watchdog_set_drvdata(wdd, wdt);
+> +	watchdog_stop_on_reboot(wdd);
+> +
+> +	/*
+> +	 * Read the status early, in case of an error, we haven't modified the
+> +	 * hardware.
+> +	 */
+> +	ret = regmap_read(wdt->regmap, wdt->offset + WDT_CTRL, &status);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/*
+> +	 * Initial timeout value, may be overwritten by device tree or module
+> +	 * parmeter in watchdog_init_timeout().
+> +	 *
+> +	 * Reading a zero here means that either the hardware has a default
+> +	 * value of zero (which is very unlikely and definitely a hardware
+> +	 * bug) or the bootloader set it to zero. In any case, we handle
+> +	 * this case gracefully and set out own timeout.
+> +	 */
+> +	ret = regmap_read(wdt->regmap, wdt->offset + WDT_TIMEOUT, &val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (val)
+> +		wdd->timeout = val;
+> +	else
+> +		wdd->timeout = WDT_DEFAULT_TIMEOUT;
+> +
+> +	watchdog_init_timeout(wdd, timeout, &pdev->dev);
+> +	sl28cpld_wdt_set_timeout(wdd, wdd->timeout);
+> +
+> +	/* if the watchdog is locked, we set nowayout */
+> +	if (status & WDT_CTRL_LOCK)
+> +		nowayout = true;
+> +	watchdog_set_nowayout(wdd, nowayout);
+> +
+> +	/*
+> +	 * If watchdog is already running, keep it enabled, but make
+> +	 * sure its mode is set correctly.
+> +	 */
+> +	if (status & WDT_CTRL_EN) {
+> +		sl28cpld_wdt_start(wdd);
+> +		set_bit(WDOG_HW_RUNNING, &wdd->status);
+> +	}
+> +
+> +	ret = devm_watchdog_register_device(&pdev->dev, wdd);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to register watchdog device\n");
+> +		return ret;
+> +	}
+> +
+> +	dev_info(&pdev->dev, "initial timeout %d sec%s\n",
+> +		 wdd->timeout, nowayout ? ", nowayout" : "");
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id sl28cpld_wdt_of_match[] = {
+> +	{ .compatible = "kontron,sl28cpld-wdt" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, sl28cpld_wdt_of_match);
+> +
+> +static const struct platform_device_id sl28cpld_wdt_id_table[] = {
+> +	{ "sl28cpld-wdt" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(platform, sl28cpld_wdt_id_table);
+> +
+> +static struct platform_driver sl28cpld_wdt_driver = {
+> +	.probe = sl28cpld_wdt_probe,
+> +	.id_table = sl28cpld_wdt_id_table,
+> +	.driver = {
+> +		.name = KBUILD_MODNAME,
+> +		.of_match_table = sl28cpld_wdt_of_match,
+> +	},
+> +};
+> +module_platform_driver(sl28cpld_wdt_driver);
+> +
+> +MODULE_DESCRIPTION("sl28cpld Watchdog Driver");
+> +MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
+> +MODULE_LICENSE("GPL");
+> 
