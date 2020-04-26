@@ -1,303 +1,79 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v3 07/16] watchdog: add support for sl28cpld watchdog
-Date: Sat, 25 Apr 2020 10:02:50 -0700
-Message-ID: <eaa00592-8b9b-458e-f445-c7f7b5bcd007@roeck-us.net>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-8-michael@walle.cc>
+From: Peter Vasil <peter.vasil@gmail.com>
+Subject: [PATCH] pwm: sun4i: direct clock output support for Allwinner A64
+Date: Sun, 26 Apr 2020 12:11:22 +0200
+Message-ID: <20200426101122.98318-1-peter.vasil@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200423174543.17161-8-michael@walle.cc>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726116AbgDZKLu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 26 Apr 2020 06:11:50 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: Peter Vasil <peter.vasil@gmail.com>
 
-On 4/23/20 10:45 AM, Michael Walle wrote:
-> This adds support for the watchdog of the sl28cpld board management
-> controller. This is part of a multi-function device driver.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+Allwinner A64 is capable of a direct clock output on PWM (see A64
+User Manual chapter 3.10). Add support for this in the sun4i PWM
+driver and adjust compatibility in sun50i-a64 base device tree.
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Peter Vasil <peter.vasil@gmail.com>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi | 6 ++----
+ drivers/pwm/pwm-sun4i.c                       | 9 +++++++++
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
-> ---
->  drivers/watchdog/Kconfig        |  11 ++
->  drivers/watchdog/Makefile       |   1 +
->  drivers/watchdog/sl28cpld_wdt.c | 233 ++++++++++++++++++++++++++++++++
->  3 files changed, 245 insertions(+)
->  create mode 100644 drivers/watchdog/sl28cpld_wdt.c
-> 
-> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-> index 0663c604bd64..6c53c1d0f348 100644
-> --- a/drivers/watchdog/Kconfig
-> +++ b/drivers/watchdog/Kconfig
-> @@ -340,6 +340,17 @@ config MLX_WDT
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called mlx-wdt.
->  
-> +config SL28CPLD_WATCHDOG
-> +	tristate "Kontron sl28 watchdog"
-> +	depends on MFD_SL28CPLD
-> +	select WATCHDOG_CORE
-> +	help
-> +	  Say Y here to include support for the watchdog timer
-> +	  on the Kontron sl28 CPLD.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called sl28cpld_wdt.
-> +
->  # ALPHA Architecture
->  
->  # ARM Architecture
-> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
-> index 6de2e4ceef19..b9ecdf2d7347 100644
-> --- a/drivers/watchdog/Makefile
-> +++ b/drivers/watchdog/Makefile
-> @@ -224,3 +224,4 @@ obj-$(CONFIG_MENF21BMC_WATCHDOG) += menf21bmc_wdt.o
->  obj-$(CONFIG_MENZ069_WATCHDOG) += menz69_wdt.o
->  obj-$(CONFIG_RAVE_SP_WATCHDOG) += rave-sp-wdt.o
->  obj-$(CONFIG_STPMIC1_WATCHDOG) += stpmic1_wdt.o
-> +obj-$(CONFIG_SL28CPLD_WATCHDOG) += sl28cpld_wdt.o
-> diff --git a/drivers/watchdog/sl28cpld_wdt.c b/drivers/watchdog/sl28cpld_wdt.c
-> new file mode 100644
-> index 000000000000..2640084ace5c
-> --- /dev/null
-> +++ b/drivers/watchdog/sl28cpld_wdt.c
-> @@ -0,0 +1,233 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * sl28cpld watchdog driver.
-> + *
-> + * Copyright 2019 Kontron Europe GmbH
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +#include <linux/watchdog.h>
-> +
-> +/*
-> + * Watchdog timer block registers.
-> + */
-> +#define WDT_CTRL			0x00
-> +#define  WDT_CTRL_EN			BIT(0)
-> +#define  WDT_CTRL_LOCK			BIT(2)
-> +#define  WDT_CTRL_ASSERT_SYS_RESET	BIT(6)
-> +#define  WDT_CTRL_ASSERT_WDT_TIMEOUT	BIT(7)
-> +#define WDT_TIMEOUT			0x01
-> +#define WDT_KICK			0x02
-> +#define  WDT_KICK_VALUE			0x6b
-> +#define WDT_COUNT			0x03
-> +
-> +#define WDT_DEFAULT_TIMEOUT		10
-> +
-> +static bool nowayout = WATCHDOG_NOWAYOUT;
-> +module_param(nowayout, bool, 0);
-> +MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
-> +				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
-> +
-> +static int timeout;
-> +module_param(timeout, int, 0);
-> +MODULE_PARM_DESC(timeout, "Initial watchdog timeout in seconds");
-> +
-> +struct sl28cpld_wdt {
-> +	struct watchdog_device wdd;
-> +	struct regmap *regmap;
-> +	u32 offset;
-> +	bool assert_wdt_timeout;
-> +};
-> +
-> +static int sl28cpld_wdt_ping(struct watchdog_device *wdd)
-> +{
-> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
-> +
-> +	return regmap_write(wdt->regmap, wdt->offset + WDT_KICK,
-> +			    WDT_KICK_VALUE);
-> +}
-> +
-> +static int sl28cpld_wdt_start(struct watchdog_device *wdd)
-> +{
-> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
-> +	unsigned int val;
-> +
-> +	val = WDT_CTRL_EN | WDT_CTRL_ASSERT_SYS_RESET;
-> +	if (wdt->assert_wdt_timeout)
-> +		val |= WDT_CTRL_ASSERT_WDT_TIMEOUT;
-> +	if (nowayout)
-> +		val |= WDT_CTRL_LOCK;
-> +
-> +	return regmap_update_bits(wdt->regmap, wdt->offset + WDT_CTRL,
-> +				  val, val);
-> +}
-> +
-> +static int sl28cpld_wdt_stop(struct watchdog_device *wdd)
-> +{
-> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
-> +
-> +	return regmap_update_bits(wdt->regmap, wdt->offset + WDT_CTRL,
-> +				  WDT_CTRL_EN, 0);
-> +}
-> +
-> +static unsigned int sl28cpld_wdt_get_timeleft(struct watchdog_device *wdd)
-> +{
-> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	ret = regmap_read(wdt->regmap, wdt->offset + WDT_COUNT, &val);
-> +
-> +	return (ret < 0) ? 0 : val;
-> +}
-> +
-> +static int sl28cpld_wdt_set_timeout(struct watchdog_device *wdd,
-> +				    unsigned int timeout)
-> +{
-> +	struct sl28cpld_wdt *wdt = watchdog_get_drvdata(wdd);
-> +	int ret;
-> +
-> +	ret = regmap_write(wdt->regmap, wdt->offset + WDT_TIMEOUT, timeout);
-> +	if (!ret)
-> +		wdd->timeout = timeout;
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct watchdog_info sl28cpld_wdt_info = {
-> +	.options = WDIOF_MAGICCLOSE | WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
-> +	.identity = "sl28cpld watchdog",
-> +};
-> +
-> +static struct watchdog_ops sl28cpld_wdt_ops = {
-> +	.owner = THIS_MODULE,
-> +	.start = sl28cpld_wdt_start,
-> +	.stop = sl28cpld_wdt_stop,
-> +	.ping = sl28cpld_wdt_ping,
-> +	.set_timeout = sl28cpld_wdt_set_timeout,
-> +	.get_timeleft = sl28cpld_wdt_get_timeleft,
-> +};
-> +
-> +static int sl28cpld_wdt_probe(struct platform_device *pdev)
-> +{
-> +	struct watchdog_device *wdd;
-> +	struct sl28cpld_wdt *wdt;
-> +	struct resource *res;
-> +	unsigned int status;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	if (!pdev->dev.parent)
-> +		return -ENODEV;
-> +
-> +	wdt = devm_kzalloc(&pdev->dev, sizeof(*wdt), GFP_KERNEL);
-> +	if (!wdt)
-> +		return -ENOMEM;
-> +
-> +	wdt->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> +	if (!wdt->regmap)
-> +		return -ENODEV;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-> +	if (!res)
-> +		return -EINVAL;
-> +	wdt->offset = res->start;
-> +
-> +	wdt->assert_wdt_timeout = device_property_read_bool(&pdev->dev,
-> +							    "kontron,assert-wdt-timeout-pin");
-> +
-> +	/* initialize struct watchdog_device */
-> +	wdd = &wdt->wdd;
-> +	wdd->parent = &pdev->dev;
-> +	wdd->info = &sl28cpld_wdt_info;
-> +	wdd->ops = &sl28cpld_wdt_ops;
-> +	wdd->min_timeout = 1;
-> +	wdd->max_timeout = 255;
-> +
-> +	watchdog_set_drvdata(wdd, wdt);
-> +	watchdog_stop_on_reboot(wdd);
-> +
-> +	/*
-> +	 * Read the status early, in case of an error, we haven't modified the
-> +	 * hardware.
-> +	 */
-> +	ret = regmap_read(wdt->regmap, wdt->offset + WDT_CTRL, &status);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * Initial timeout value, may be overwritten by device tree or module
-> +	 * parmeter in watchdog_init_timeout().
-> +	 *
-> +	 * Reading a zero here means that either the hardware has a default
-> +	 * value of zero (which is very unlikely and definitely a hardware
-> +	 * bug) or the bootloader set it to zero. In any case, we handle
-> +	 * this case gracefully and set out own timeout.
-> +	 */
-> +	ret = regmap_read(wdt->regmap, wdt->offset + WDT_TIMEOUT, &val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (val)
-> +		wdd->timeout = val;
-> +	else
-> +		wdd->timeout = WDT_DEFAULT_TIMEOUT;
-> +
-> +	watchdog_init_timeout(wdd, timeout, &pdev->dev);
-> +	sl28cpld_wdt_set_timeout(wdd, wdd->timeout);
-> +
-> +	/* if the watchdog is locked, we set nowayout */
-> +	if (status & WDT_CTRL_LOCK)
-> +		nowayout = true;
-> +	watchdog_set_nowayout(wdd, nowayout);
-> +
-> +	/*
-> +	 * If watchdog is already running, keep it enabled, but make
-> +	 * sure its mode is set correctly.
-> +	 */
-> +	if (status & WDT_CTRL_EN) {
-> +		sl28cpld_wdt_start(wdd);
-> +		set_bit(WDOG_HW_RUNNING, &wdd->status);
-> +	}
-> +
-> +	ret = devm_watchdog_register_device(&pdev->dev, wdd);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to register watchdog device\n");
-> +		return ret;
-> +	}
-> +
-> +	dev_info(&pdev->dev, "initial timeout %d sec%s\n",
-> +		 wdd->timeout, nowayout ? ", nowayout" : "");
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id sl28cpld_wdt_of_match[] = {
-> +	{ .compatible = "kontron,sl28cpld-wdt" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, sl28cpld_wdt_of_match);
-> +
-> +static const struct platform_device_id sl28cpld_wdt_id_table[] = {
-> +	{ "sl28cpld-wdt" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(platform, sl28cpld_wdt_id_table);
-> +
-> +static struct platform_driver sl28cpld_wdt_driver = {
-> +	.probe = sl28cpld_wdt_probe,
-> +	.id_table = sl28cpld_wdt_id_table,
-> +	.driver = {
-> +		.name = KBUILD_MODNAME,
-> +		.of_match_table = sl28cpld_wdt_of_match,
-> +	},
-> +};
-> +module_platform_driver(sl28cpld_wdt_driver);
-> +
-> +MODULE_DESCRIPTION("sl28cpld Watchdog Driver");
-> +MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
-> +MODULE_LICENSE("GPL");
-> 
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+index 31143fe64d91..c334fd106854 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+@@ -1069,8 +1069,7 @@ gic: interrupt-controller@1c81000 {
+ 		};
+ 
+ 		pwm: pwm@1c21400 {
+-			compatible = "allwinner,sun50i-a64-pwm",
+-				     "allwinner,sun5i-a13-pwm";
++			compatible = "allwinner,sun50i-a64-pwm";
+ 			reg = <0x01c21400 0x400>;
+ 			clocks = <&osc24M>;
+ 			pinctrl-names = "default";
+@@ -1252,8 +1251,7 @@ r_ir: ir@1f02000 {
+ 		};
+ 
+ 		r_pwm: pwm@1f03800 {
+-			compatible = "allwinner,sun50i-a64-pwm",
+-				     "allwinner,sun5i-a13-pwm";
++			compatible = "allwinner,sun50i-a64-pwm";
+ 			reg = <0x01f03800 0x400>;
+ 			clocks = <&osc24M>;
+ 			pinctrl-names = "default";
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 5c677c563349..18fbbe3277d0 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -352,6 +352,12 @@ static const struct sun4i_pwm_data sun4i_pwm_single_bypass = {
+ 	.npwm = 1,
+ };
+ 
++static const struct sun4i_pwm_data sun50i_a64_pwm_data = {
++	.has_prescaler_bypass = true,
++	.has_direct_mod_clk_output = true,
++	.npwm = 1,
++};
++
+ static const struct sun4i_pwm_data sun50i_h6_pwm_data = {
+ 	.has_prescaler_bypass = true,
+ 	.has_direct_mod_clk_output = true,
+@@ -374,6 +380,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] = {
+ 	}, {
+ 		.compatible = "allwinner,sun8i-h3-pwm",
+ 		.data = &sun4i_pwm_single_bypass,
++	}, {
++		.compatible = "allwinner,sun50i-a64-pwm",
++		.data = &sun50i_a64_pwm_data,
+ 	}, {
+ 		.compatible = "allwinner,sun50i-h6-pwm",
+ 		.data = &sun50i_h6_pwm_data,
+-- 
+2.25.1
