@@ -1,77 +1,63 @@
 From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v3 06/16] irqchip: add sl28cpld interrupt controller
- support
-Date: Mon, 27 Apr 2020 13:40:18 +0200
-Message-ID: <87pnbtqhr1.fsf@nanos.tec.linutronix.de>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-7-michael@walle.cc>
+Subject: Re: [PATCH v3 09/16] gpiolib: Introduce gpiochip_irqchip_add_domain()
+Date: Mon, 27 Apr 2020 13:42:09 +0200
+Message-ID: <87mu6xqhny.fsf@nanos.tec.linutronix.de>
+References: <20200423174543.17161-1-michael@walle.cc> <20200423174543.17161-10-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200423174543.17161-7-michael@walle.cc>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marc Zyngier <maz@kernel.org>, Jean Delvare <jdelvare@suse.com>, Jason Cooper <jason@lakedaemon.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shawn Guo <shawnguo@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Li Yang <leoyang.li@nxp.com>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Lee Jones <lee.jones@linaro.org>, Guenter Roeck <linux@roeck-us.net>
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727045AbgD0LmV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Apr 2020 07:42:21 -0400
+In-Reply-To: <20200423174543.17161-10-michael@walle.cc>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Walle <michael@walle.cc>
 
 Michael Walle <michael@walle.cc> writes:
+> This connects an IRQ domain to a gpiochip and reuses
+> gpiochip_to_irq().
 
-> This patch adds support for the interrupt controller inside the sl28
+A little bit more context and explanation why this function is useful
+would be appreciated.
 
-git grep 'This patch' Documentation/process/
-
-> CPLD management controller.
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  drivers/gpio/gpiolib.c      | 20 ++++++++++++++++++++
+>  include/linux/gpio/driver.h |  3 +++
+>  2 files changed, 23 insertions(+)
 >
-> +static int sl28cpld_intc_probe(struct platform_device *pdev)
+> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+> index 40f2d7f69be2..7b3d7f496b9a 100644
+> --- a/drivers/gpio/gpiolib.c
+> +++ b/drivers/gpio/gpiolib.c
+> @@ -2722,6 +2722,26 @@ int gpiochip_irqchip_add_key(struct gpio_chip *gc,
+>  }
+>  EXPORT_SYMBOL_GPL(gpiochip_irqchip_add_key);
+>  
+> +/**
+> + * gpiochip_irqchip_add_key() - adds an irqdomain to a gpiochip
+
+Copy & paste is wonderful
+
+> + * @gc: the gpiochip to add the irqchip to
+> + * @domain: the irqdomain to add to the gpiochip
+> + *
+> + * This function adds an IRQ domain to the gpiochip.
+> + */
+> +int gpiochip_irqchip_add_domain(struct gpio_chip *gc,
+> +				struct irq_domain *domain)
 > +{
-> +	struct sl28cpld_intc *irqchip;
-> +	struct resource *res;
-> +	unsigned int irq;
-> +	int ret;
-> +
-> +	if (!pdev->dev.parent)
-> +		return -ENODEV;
-> +
-> +	irqchip = devm_kzalloc(&pdev->dev, sizeof(*irqchip), GFP_KERNEL);
-> +	if (!irqchip)
-> +		return -ENOMEM;
-> +
-> +	irqchip->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> +	if (!irqchip->regmap)
-> +		return -ENODEV;
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq < 0)
-> +		return irq;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-> +	if (!res)
+> +	if (!domain)
 > +		return -EINVAL;
 > +
-> +	irqchip->chip.name = "sl28cpld-intc";
-> +	irqchip->chip.irqs = sl28cpld_irqs;
-> +	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
-> +	irqchip->chip.num_regs = 1;
-> +	irqchip->chip.status_base = res->start + INTC_IP;
-> +	irqchip->chip.mask_base = res->start + INTC_IE;
-> +	irqchip->chip.mask_invert = true,
-> +	irqchip->chip.ack_base = res->start + INTC_IP;
+> +	gc->to_irq = gpiochip_to_irq;
+> +	gc->irq.domain = domain;
 > +
-> +	ret = devm_regmap_add_irq_chip(&pdev->dev, irqchip->regmap, irq,
-> +				       IRQF_SHARED | IRQF_ONESHOT, 0,
-
-What's the point of IRQF_SHARED | IRQF_ONESHOT here?
-
-> +				       &irqchip->chip, &irqchip->irq_data);
+> +	return 0;
+> +}
 
 Thanks,
 
