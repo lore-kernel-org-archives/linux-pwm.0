@@ -1,54 +1,84 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 06/16] irqchip: add sl28cpld interrupt controller
- support
-Date: Mon, 27 Apr 2020 18:44:27 +0100
-Message-ID: <20200427174427.GE4383@sirena.org.uk>
+From: Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v3 09/16] gpiolib: Introduce gpiochip_irqchip_add_domain()
+Date: Mon, 27 Apr 2020 19:49:21 +0200
+Message-ID: <43af0bff6fee64687ac4e0d1ded14c4d@walle.cc>
 References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-7-michael@walle.cc>
- <87pnbtqhr1.fsf@nanos.tec.linutronix.de>
- <87f141bce0a4fda04b550647306be296@walle.cc>
+ <20200423174543.17161-10-michael@walle.cc>
+ <87mu6xqhny.fsf@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nHwqXXcoX0o6fKCv"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <87f141bce0a4fda04b550647306be296-QKn5cuLxLXY@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Jason
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+In-Reply-To: <87mu6xqhny.fsf@nanos.tec.linutronix.de>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@ke>
 List-Id: linux-pwm@vger.kernel.org
 
+Am 2020-04-27 13:42, schrieb Thomas Gleixner:
+> Michael Walle <michael@walle.cc> writes:
+>> This connects an IRQ domain to a gpiochip and reuses
+>> gpiochip_to_irq().
+> 
+> A little bit more context and explanation why this function is useful
+> would be appreciated.
 
---nHwqXXcoX0o6fKCv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Ok I'll try to be a bit more elaborate the in the next version, (if
+this function is still there).
 
-On Mon, Apr 27, 2020 at 07:40:11PM +0200, Michael Walle wrote:
+For now:
 
-> IRQF_ONESHOT, because its is a threaded interrupt with no primary
-> handler. But I just noticed, that regmap-irq will also set the
-> IRQF_ONESHOT. But that the commit 09cadf6e088b ("regmap-irq:
-> set IRQF_ONESHOT flag to ensure IRQ request") reads like it is
-> just there to be sure. So I don't know if it should also be set
-> here.
+gpiochip_irqchip_add_domain() allows to use reqmap-irq, which exports
+an irqdomain, with gpiolib while reusing gpiochip_to_irq(). Both
+gpiochip_irqchip_* and regmap_irq partially provides the same
+functionality. The new function will help to connect just the
+minimal functionality of the gpiochip_irqchip which is needed to
+work together with regmap-irq.
 
-Looking at the changelog there the "we can't be sure" bit is that
-coccinelle couldn't follow the flags through from the caller to make
-sure that IRQF_ONESHOT is set so we're just oring it in unconditionally.
+> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  drivers/gpio/gpiolib.c      | 20 ++++++++++++++++++++
+>>  include/linux/gpio/driver.h |  3 +++
+>>  2 files changed, 23 insertions(+)
+>> 
+>> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+>> index 40f2d7f69be2..7b3d7f496b9a 100644
+>> --- a/drivers/gpio/gpiolib.c
+>> +++ b/drivers/gpio/gpiolib.c
+>> @@ -2722,6 +2722,26 @@ int gpiochip_irqchip_add_key(struct gpio_chip 
+>> *gc,
+>>  }
+>>  EXPORT_SYMBOL_GPL(gpiochip_irqchip_add_key);
+>> 
+>> +/**
+>> + * gpiochip_irqchip_add_key() - adds an irqdomain to a gpiochip
+> 
+> Copy & paste is wonderful
 
---nHwqXXcoX0o6fKCv
-Content-Type: application/pgp-signature; name="signature.asc"
+whoops.
 
------BEGIN PGP SIGNATURE-----
+-michael
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6nGfoACgkQJNaLcl1U
-h9Bhuwf+MMHsfmI2RDYY6qZJmxPEgyN6UpeiPwIpozVnZsA0/TQuDxAvV7Iu9PfO
-+h9DTbgF3GzRsw9kiWlFgxriyJsdUwvxpYGjS3Rdr2HEWv275fEurdRRXceeeSHZ
-w5PoR+ALv2rs+6UVVekmkK3Ht9/eJlVGJyLEYOfddcXTjTs/eezYWZrFNKaLfETD
-fP1XXLYorJDv1ovH/P6R6zK+3aunlvBdBHIoQCSh5GoHkAAyNNhayWdKZX1BsIqA
-2bc5gQ2WCk83As3jtjwuDiPJRhETrcQT3y/1F7KDxn+SqRE5V51fQiwvbpLtGHsc
-XKfax9UH35Ornk7702asjugdC5kd9g==
-=+BYw
------END PGP SIGNATURE-----
-
---nHwqXXcoX0o6fKCv--
+> 
+>> + * @gc: the gpiochip to add the irqchip to
+>> + * @domain: the irqdomain to add to the gpiochip
+>> + *
+>> + * This function adds an IRQ domain to the gpiochip.
+>> + */
+>> +int gpiochip_irqchip_add_domain(struct gpio_chip *gc,
+>> +				struct irq_domain *domain)
+>> +{
+>> +	if (!domain)
+>> +		return -EINVAL;
+>> +
+>> +	gc->to_irq = gpiochip_to_irq;
+>> +	gc->irq.domain = domain;
+>> +
+>> +	return 0;
+>> +}
+> 
+> Thanks,
+> 
+>         tglx
