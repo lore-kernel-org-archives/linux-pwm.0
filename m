@@ -1,84 +1,40 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v3 11/16] gpio: add support for the sl28cpld GPIO
- controller
-Date: Mon, 27 Apr 2020 19:58:22 +0200
-Message-ID: <8acfbefeb9d7f59329f2899176059600@walle.cc>
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Subject: Re: [PATCH v3 06/16] irqchip: add sl28cpld interrupt controller
+ support
+Date: Mon, 27 Apr 2020 20:01:14 +0200
+Message-ID: <5d63026fc7c8700c2c7fb15267a9e441@walle.cc>
 References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-12-michael@walle.cc>
- <87k121qhj7.fsf@nanos.tec.linutronix.de>
+ <20200423174543.17161-7-michael@walle.cc>
+ <87pnbtqhr1.fsf@nanos.tec.linutronix.de>
+ <87f141bce0a4fda04b550647306be296@walle.cc>
+ <20200427174427.GE4383@sirena.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <87k121qhj7.fsf@nanos.tec.linutronix.de>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@ke>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200427174427.GE4383-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Jason Cooper <jason>
 List-Id: linux-pwm@vger.kernel.org
 
-Am 2020-04-27 13:45, schrieb Thomas Gleixner:
-> Michael Walle <michael@walle.cc> writes:
->> +struct sl28cpld_gpio {
->> +	struct regmap_irq_chip irq_chip;
->> +	struct regmap_irq_chip_data *irq_data;
->> +};
->> +
->> +static const struct regmap_irq sl28cpld_gpio_irqs[] = {
->> +	REGMAP_IRQ_REG_LINE(0, 8),
->> +	REGMAP_IRQ_REG_LINE(1, 8),
->> +	REGMAP_IRQ_REG_LINE(2, 8),
->> +	REGMAP_IRQ_REG_LINE(3, 8),
->> +	REGMAP_IRQ_REG_LINE(4, 8),
->> +	REGMAP_IRQ_REG_LINE(5, 8),
->> +	REGMAP_IRQ_REG_LINE(6, 8),
->> +	REGMAP_IRQ_REG_LINE(7, 8),
->> +};
+Am 2020-04-27 19:44, schrieb Mark Brown:
+> On Mon, Apr 27, 2020 at 07:40:11PM +0200, Michael Walle wrote:
 > 
-> This is exactly the same as the one in the irq chip patch.
-
-To my knowledge this boilerplate is just to describe this
-irqchip has 8 different IRQs.
-
->> +static int sl28cpld_gpio_irq_init(struct device *dev,
->> +				  struct sl28cpld_gpio *gpio,
->> +				  struct regmap *regmap, unsigned int base,
->> +				  int irq)
->> +{
->> +	struct regmap_irq_chip *irq_chip = &gpio->irq_chip;
->> +
->> +	irq_chip->name = "sl28cpld-gpio-irq",
->> +	irq_chip->irqs = sl28cpld_gpio_irqs;
->> +	irq_chip->num_irqs = ARRAY_SIZE(sl28cpld_gpio_irqs);
->> +	irq_chip->num_regs = 1;
->> +	irq_chip->status_base = base + GPIO_REG_IP;
->> +	irq_chip->mask_base = base + GPIO_REG_IE;
->> +	irq_chip->mask_invert = true,
->> +	irq_chip->ack_base = base + GPIO_REG_IP;
->> +
->> +	return devm_regmap_add_irq_chip_np(dev, dev_of_node(dev), regmap,
->> +					   irq, IRQF_SHARED | IRQF_ONESHOT, 0,
->> +					   irq_chip, &gpio->irq_data);
->> +}
+>> IRQF_ONESHOT, because its is a threaded interrupt with no primary
+>> handler. But I just noticed, that regmap-irq will also set the
+>> IRQF_ONESHOT. But that the commit 09cadf6e088b ("regmap-irq:
+>> set IRQF_ONESHOT flag to ensure IRQ request") reads like it is
+>> just there to be sure. So I don't know if it should also be set
+>> here.
 > 
-> And this looks pretty familiar as well. What's the point of duplicating
-> that code?
+> Looking at the changelog there the "we can't be sure" bit is that
+> coccinelle couldn't follow the flags through from the caller to make
+> sure that IRQF_ONESHOT is set so we're just oring it in 
+> unconditionally.
 
-this is also just boilerplate to configure the irqchip. But there are 
-two
-distinct blocks inside the board management controller:
-  - an interrupt controller (which has 8 interrupts)
-  - and gpio controllers which also happen to have 8 interrupts and
-    both have some shared semantics for now. But the GPIO building block
-    might be extended to provide interrupt type settings, i.e. falling/
-    rising/level triggered interrupts.
-
-So yes both look similar, but they are two different blocks, they use
-different registers and they might drift apart in the future.
+So it is correct that IRQF_ONESHOT is also set in the driver which is
+using regmap_add_irq_chip(), right?
 
 -michael
-
-> 
-> Thanks,
-> 
->         tglx
