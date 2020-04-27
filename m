@@ -1,71 +1,58 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v3 11/16] gpio: add support for the sl28cpld GPIO
- controller
-Date: Mon, 27 Apr 2020 13:45:00 +0200
-Message-ID: <87k121qhj7.fsf@nanos.tec.linutronix.de>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-12-michael@walle.cc>
+From: Jani Nikula <jani.nikula@linux.intel.com>
+Subject: Re: [PATCH v13 01/11] drm/i915: Use 64-bit division macro
+Date: Mon, 27 Apr 2020 16:48:39 +0300
+Message-ID: <87y2qh9gzs.fsf@intel.com>
+References: <cover.1587523702.git.gurus@codeaurora.org> <4a3acf8673c08308848fb7ae73d992b6feb758d3.1587523702.git.gurus@codeaurora.org> <87ftctbe5l.fsf@intel.com> <20200424221756.GB31118@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200423174543.17161-12-michael@walle.cc>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marc Zyngier <maz@kernel.org>, Jean Delvare <jdelvare@suse.com>, Jason Cooper <jason@lakedaemon.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shawn Guo <shawnguo@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Li Yang <leoyang.li@nxp.com>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Lee Jones <lee.jones@linaro.org>, Guenter Roeck <linux@roeck-us.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga06.intel.com ([134.134.136.31]:53448 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727001AbgD0Nsr (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 27 Apr 2020 09:48:47 -0400
+In-Reply-To: <20200424221756.GB31118@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-pwm@vger.kernel.org, David Collins <collinsd@codeaurora.org>, David Airlie <airlied@linux.ie>, intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>
 
-Michael Walle <michael@walle.cc> writes:
-> +struct sl28cpld_gpio {
-> +	struct regmap_irq_chip irq_chip;
-> +	struct regmap_irq_chip_data *irq_data;
-> +};
-> +
-> +static const struct regmap_irq sl28cpld_gpio_irqs[] = {
-> +	REGMAP_IRQ_REG_LINE(0, 8),
-> +	REGMAP_IRQ_REG_LINE(1, 8),
-> +	REGMAP_IRQ_REG_LINE(2, 8),
-> +	REGMAP_IRQ_REG_LINE(3, 8),
-> +	REGMAP_IRQ_REG_LINE(4, 8),
-> +	REGMAP_IRQ_REG_LINE(5, 8),
-> +	REGMAP_IRQ_REG_LINE(6, 8),
-> +	REGMAP_IRQ_REG_LINE(7, 8),
-> +};
+On Fri, 24 Apr 2020, Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+> On Fri, Apr 24, 2020 at 09:17:58AM +0300, Jani Nikula wrote:
+>> On Tue, 21 Apr 2020, Guru Das Srinagesh <gurus@codeaurora.org> wrote:
+>> > Since the PWM framework is switching struct pwm_state.duty_cycle's
+>> > datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
+>> > to handle a 64-bit dividend.
+>> >
+>> > To: Jani Nikula <jani.nikula@linux.intel.com>
+>> > Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+>> > Cc: David Airlie <airlied@linux.ie>
+>> > Cc: Daniel Vetter <daniel@ffwll.ch>
+>> > Cc: Chris Wilson <chris@chris-wilson.co.uk>
+>> > Cc: "Ville Syrjälä" <ville.syrjala@linux.intel.com>
+>> > Cc: intel-gfx@lists.freedesktop.org
+>> > Cc: dri-devel@lists.freedesktop.org
+>> >
+>> 
+>> Superfluous blank line.
+>
+> Will remove.
+>
+>> 
+>> Anyway, please preserve the existing acks and reviews [1] so people
+>> don't have to do it again.
+>> 
+>> BR,
+>> Jani.
+>> 
+>> [1] http://lore.kernel.org/r/87h7yleb0i.fsf@intel.com
+>
+> I dropped your Acked-by as the patch had to changed to resolve a merge
+> conflict when I rebased to tip. Could you please re-review this patch?
 
-This is exactly the same as the one in the irq chip patch.
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
 
-> +static int sl28cpld_gpio_irq_init(struct device *dev,
-> +				  struct sl28cpld_gpio *gpio,
-> +				  struct regmap *regmap, unsigned int base,
-> +				  int irq)
-> +{
-> +	struct regmap_irq_chip *irq_chip = &gpio->irq_chip;
-> +
-> +	irq_chip->name = "sl28cpld-gpio-irq",
-> +	irq_chip->irqs = sl28cpld_gpio_irqs;
-> +	irq_chip->num_irqs = ARRAY_SIZE(sl28cpld_gpio_irqs);
-> +	irq_chip->num_regs = 1;
-> +	irq_chip->status_base = base + GPIO_REG_IP;
-> +	irq_chip->mask_base = base + GPIO_REG_IE;
-> +	irq_chip->mask_invert = true,
-> +	irq_chip->ack_base = base + GPIO_REG_IP;
-> +
-> +	return devm_regmap_add_irq_chip_np(dev, dev_of_node(dev), regmap,
-> +					   irq, IRQF_SHARED | IRQF_ONESHOT, 0,
-> +					   irq_chip, &gpio->irq_data);
-> +}
 
-And this looks pretty familiar as well. What's the point of duplicating
-that code?
-
-Thanks,
-
-        tglx
+-- 
+Jani Nikula, Intel Open Source Graphics Center
