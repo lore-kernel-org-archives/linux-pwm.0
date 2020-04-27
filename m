@@ -1,55 +1,46 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 06/16] irqchip: add sl28cpld interrupt controller
- support
-Date: Mon, 27 Apr 2020 19:05:39 +0100
-Message-ID: <20200427180539.GF4383@sirena.org.uk>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-7-michael@walle.cc>
- <87pnbtqhr1.fsf@nanos.tec.linutronix.de>
- <87f141bce0a4fda04b550647306be296@walle.cc>
- <20200427174427.GE4383@sirena.org.uk>
- <5d63026fc7c8700c2c7fb15267a9e441@walle.cc>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v3 06/16] irqchip: add sl28cpld interrupt controller support
+Date: Mon, 27 Apr 2020 21:00:05 +0200
+Message-ID: <87sggopxe2.fsf@nanos.tec.linutronix.de>
+References: <20200423174543.17161-1-michael@walle.cc> <20200423174543.17161-7-michael@walle.cc> <87pnbtqhr1.fsf@nanos.tec.linutronix.de> <87f141bce0a4fda04b550647306be296@walle.cc>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qftxBdZWiueWNAVY"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5d63026fc7c8700c2c7fb15267a9e441@walle.cc>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Jason
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726688AbgD0TAh (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Apr 2020 15:00:37 -0400
+In-Reply-To: <87f141bce0a4fda04b550647306be296@walle.cc>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Michael Walle <michael@walle.cc>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Jason Cooper <jason@lakedaemon.net>, Marc
 
+Michael,
 
---qftxBdZWiueWNAVY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Michael Walle <michael@walle.cc> writes:
+> Am 2020-04-27 13:40, schrieb Thomas Gleixner:
+>>> +
+>>> +	ret = devm_regmap_add_irq_chip(&pdev->dev, irqchip->regmap, irq,
+>>> +				       IRQF_SHARED | IRQF_ONESHOT, 0,
+>> 
+>> What's the point of IRQF_SHARED | IRQF_ONESHOT here?
+>
+> IRQF_SHARED because this interrupt is shared with all the blocks
+> which can generate interrupts, i.e. the GPIO contollers.
 
-On Mon, Apr 27, 2020 at 08:01:14PM +0200, Michael Walle wrote:
-> Am 2020-04-27 19:44, schrieb Mark Brown:
+Why are people still designing hardware with shared interrupts? Shared
+interrupts are broken by design and that's well known for decades.
 
-> > Looking at the changelog there the "we can't be sure" bit is that
-> > coccinelle couldn't follow the flags through from the caller to make
-> > sure that IRQF_ONESHOT is set so we're just oring it in unconditionally.
+> IRQF_ONESHOT, because its is a threaded interrupt with no primary
+> handler. But I just noticed, that regmap-irq will also set the
+> IRQF_ONESHOT. But that the commit 09cadf6e088b ("regmap-irq:
+> set IRQF_ONESHOT flag to ensure IRQ request") reads like it is
+> just there to be sure. So I don't know if it should also be set
+> here.
 
-> So it is correct that IRQF_ONESHOT is also set in the driver which is
-> using regmap_add_irq_chip(), right?
+Ok. Wasn't aware of that magic threaded interrupt connection.
 
-It shouldn't break anything and my instinct is that it's better form.
+Thanks,
 
---qftxBdZWiueWNAVY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6nHvMACgkQJNaLcl1U
-h9ApOQf/S6MhJTO+bFChRr3cqXq9pRPnjvTfkt1e+TT+fIXOh2uMY8mRxXizy7En
-nNcSqd3id4MgeW/kEGX7lvy7/oekEZsIqZATQy0THN93fw1n/0t9u22LwLFW00/w
-MHfKqmnBMOv+o5aYUrJtsdspfhyS76FcRnaoe5gr6PPYtEbQnWRy4UV3HAPpp5mO
-3d+MFa4olzoLwjD7HKkcIbbuWy3QcYgSn7HWfkqRPl+g06FIivX0SqC7kKLvTMzw
-++5Oj+jFw8W3sfX0mcnF1U/PieOR5WYuy6PXUKcN4j2zy1XrEbfF3e9k/H6B710c
-UOuaJn2BH7J1F4zSNSNQlc4ihuaoPw==
-=Y8Z/
------END PGP SIGNATURE-----
-
---qftxBdZWiueWNAVY--
+        tglx
