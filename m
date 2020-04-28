@@ -1,48 +1,58 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v3 05/16] mfd: Add support for Kontron sl28cpld
- management controller
-Date: Tue, 28 Apr 2020 17:49:58 +0300
-Message-ID: <20200428144958.GZ185537@smile.fi.intel.com>
+From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 02/16] mfd: mfd-core: Don't overwrite the dma_mask of
+ the child device
+Date: Tue, 28 Apr 2020 16:25:43 +0100
+Message-ID: <20200428152543.GI5677@sirena.org.uk>
 References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-6-michael@walle.cc>
- <20200428125049.GU185537@smile.fi.intel.com>
- <5e2d486077f9e2ce8bd9b171cf806fd9@walle.cc>
+ <20200423174543.17161-3-michael@walle.cc>
+ <20200428124548.GS185537@smile.fi.intel.com>
+ <3cd3705a-4f48-6a46-e869-3ee11dc17323@arm.com>
+ <20200428142938.GX185537@smile.fi.intel.com>
+ <6ccad285-7b5f-3037-d4d5-ff4d9571b612@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="LYw3s/afESlflPpp"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5e2d486077f9e2ce8bd9b171cf806fd9@walle.cc>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel>
+In-Reply-To: <6ccad285-7b5f-3037-d4d5-ff4d9571b612-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 04:43:24PM +0200, Michael Walle wrote:
-> Am 2020-04-28 14:50, schrieb Andy Shevchenko:
-> > On Thu, Apr 23, 2020 at 07:45:32PM +0200, Michael Walle wrote:
-> > > This patch adds core support for the board management controller found
-> > > on the SMARC-sAL28 board. It consists of the following functions:
-> > >  - watchdog
-> > >  - GPIO controller
-> > >  - PWM controller
-> > >  - fan sensor
-> > >  - interrupt controller
-> > 
-> > ...
-> > 
-> > >  obj-$(CONFIG_MFD_STMFX) 	+= stmfx.o
-> > > 
-> > >  obj-$(CONFIG_SGI_MFD_IOC3)	+= ioc3.o
-> > > +
-> > > +obj-$(CONFIG_MFD_SL28CPLD)	+= sl28cpld.o
-> > 
-> > Perhaps keep an order?
-> 
-> I don't see any order in that makefile. Looked to me like every new
-> file was added at the end.
 
-Okay, just didn't note from above context.
+--LYw3s/afESlflPpp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
--- 
-With Best Regards,
-Andy Shevchenko
+On Tue, Apr 28, 2020 at 03:49:49PM +0100, Robin Murphy wrote:
+
+> For better or worse, the platform bus is the dumping ground for random crap,
+> so we just have to deal with all the abstraction breakage that leaks out of
+> that.
+
+The reason we're using the platform bus for this is that historically
+people were creating buses which were essentially carbon copies of the
+platform bus with the name changed and it was felt that rather than
+duplicate code it was better to just use platform devices with no MMIO
+ranges defined.  If there's some assumptions about DMA for platform
+devices floating about somewhere it might be reasonable to revisit this
+and create a non-DMA variant of platform devices since there is a
+meaningful difference.
+
+--LYw3s/afESlflPpp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6oSvYACgkQJNaLcl1U
+h9Bs4Qf/RCa5JW+qq8H0nchlRU4JeR7TBiAfPi1/fksL+W8k+qMkV0/KwPSMqloA
+CaWErSXTzc1Mk3WKIT7UxNlcK1QsuUfNZnyA3JhFXAg39xjWpt2vSM7A/zY5mnOm
+ZkujuFzw0NzNuBoxG+8OaBH1Ltitu/KpgCPJgrmwT09V5WuZ5uf8b3mjnEo0reaN
+DYcUgV/u3XkUeSbMd1iljqd8bt+jHFHoFlVOVtcw+xh20cKvQ6kOzIPYlDbuz9rM
+tGPZwlyojrQeFd8YYTh1hqSzqeB6E19JgdPEi9P34gi7rIctOcI6b9PwFO9er5fW
+ov2hgkFJC60dI+z5f9j70bLBQfMw/w==
+=hzNB
+-----END PGP SIGNATURE-----
+
+--LYw3s/afESlflPpp--
