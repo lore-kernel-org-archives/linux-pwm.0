@@ -1,296 +1,249 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V2] pwm: tegra: dynamic clk freq configuration by PWM
+From: Sandipan Patra <spatra@nvidia.com>
+Subject: RE: [PATCH V2] pwm: tegra: dynamic clk freq configuration by PWM
  driver
-Date: Mon, 4 May 2020 22:11:31 +0200
-Message-ID: <20200504201131.l5ofxem3owrl5siv@pengutronix.de>
+Date: Thu, 7 May 2020 08:09:53 +0000
+Message-ID: <MN2PR12MB3021278ADEBD123D56B91D1CADA50@MN2PR12MB3021.namprd12.prod.outlook.com>
 References: <1587398043-18767-1-git-send-email-spatra@nvidia.com>
+ <20200504201131.l5ofxem3owrl5siv@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726111AbgEDULt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 4 May 2020 16:11:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEACC061A0E
-        for <linux-pwm@vger.kernel.org>; Mon,  4 May 2020 13:11:49 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1587398043-18767-1-git-send-email-spatra@nvidia.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200504201131.l5ofxem3owrl5siv@pengutronix.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <treding@nvidia.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, Bibek Basu <bbasu@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Sandipan Patra <spatra@nvidia.com>
-Cc: treding@nvidia.com, robh+dt@kernel.org, jonathanh@nvidia.com, bbasu@nvidia.com, ldewangan@nvidia.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello,
-
-On Mon, Apr 20, 2020 at 09:24:03PM +0530, Sandipan Patra wrote:
-> Added support for dynamic clock freq configuration in pwm kernel driver.
-> Earlier the pwm driver used to cache boot time clock rate by pwm clock
-> parent during probe. Hence dynamically changing pwm frequency was not
-> possible for all the possible ranges. With this change, dynamic calculation
-> is enabled and it is able to set the requested period from sysfs knob
-> provided the value is supported by clock source.
-> 
-> Changes mainly have 2 parts:
->   - T186 and later chips [1]
->   - T210 and prior chips [2]
-> 
-> For [1] - Changes implemented to set pwm period dynamically and
->           also checks added to allow only if requested period(ns) is
->           below or equals to higher range.
-> 
-> For [2] - Only checks if the requested period(ns) is below or equals
->           to higher range defined by max clock limit. The limitation
->           in T210 or prior chips are due to the reason of having only
->           one pwm-controller supporting multiple channels. But later
->           chips have multiple pwm controller instances each having
-> 	  single channel support.
-> 
-> Signed-off-by: Sandipan Patra <spatra@nvidia.com>
-> ---
-> V2:
-> 1. Min period_ns calculation is moved to probe.
-> 2. Added descriptioins for PWM register bits and regarding behaviour
->    of the controller when new configuration is applied or pwm is disabled.
-> 3. Setting period with possible value when supplied period is below limit.
-> 4. Corrected the earlier code comment:
->    plus 1 instead of minus 1 during pwm calculation
-> 
->  drivers/pwm/pwm-tegra.c | 110 +++++++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 94 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-> index d26ed8f..7a36325 100644
-> --- a/drivers/pwm/pwm-tegra.c
-> +++ b/drivers/pwm/pwm-tegra.c
-> @@ -4,8 +4,39 @@
->   *
->   * Tegra pulse-width-modulation controller driver
->   *
-> - * Copyright (c) 2010, NVIDIA Corporation.
-> - * Based on arch/arm/plat-mxc/pwm.c by Sascha Hauer <s.hauer@pengutronix.de>
-> + * Copyright (c) 2010-2020, NVIDIA Corporation.
-> + *
-> + * Overview of Tegra Pulse Width Modulator Register:
-> + * 1. 13-bit: Frequency division (SCALE)
-> + * 2. 8-bit : Puls division (DUTY)
-> + * 3. 1-bit : Enable bit
-> + *
-> + * The PWM clock frequency is divided by 256 before subdividing it based
-> + * on the programmable frequency division value to generate the required
-> + * frequency for PWM output. The maximum output frequency that can be
-> + * achieved is (max rate of source clock) / 256.
-> + * i.e. if source clock rate is 408 MHz, maximum output frequency cab be:
-
-s/i.e./e.g./, s/cab/can/
-
-> + * 408 MHz/256 = 1.6 MHz.
-> + * This 1.6 MHz frequency can further be divided using SCALE value in PWM.
-> + *
-> + * PWM pulse width: 8 bits are usable [23:16] for varying pulse width.
-> + * To achieve 100% duty cycle, program Bit [24] of this register to
-> + * 1’b1. In which case the other bits [23:16] are set to don't care.
-> + *
-> + * Limitations and known facts:
-
-Please use "Limitations:" here to make this easier greppable.
-
-> + * -	When PWM is disabled, the output is driven to 0.
-
-0 or inactive?
-
-> + * -	It does not allow the current PWM period to complete and
-> + *	stops abruptly.
-> + *
-> + * -	If the register is reconfigured while pwm is running,
-
-s/pwm/PWM/
-
-> + *	It does not let the currently running period to complete.
-
-s/It/it/; s/let/complete/; s/ to complete//
-
-> + *
-> + * -	Pulse width of the pwm can never be out of bound.
-
-I don't understand that one.
-
-> + *	It's taken care at HW and SW
-> + * -	If the user input duty is below limit, then driver sets it to
-> + *	minimum possible value.
-
-that is 0? Do you mean "input period"? If so, better refuse the request.
-
-> + * -	If anything else goes wrong for setting duty or period,
-> + *	-EINVAL is returned.
-
-I wouldn't state this, too trivial. Instead the following are
-interesting:
-
- - The driver doesn't implement the right rounding rules
- - The driver needs updating to the atomic API
-
->   */
->  
->  #include <linux/clk.h>
-> @@ -41,6 +72,7 @@ struct tegra_pwm_chip {
->  	struct reset_control*rst;
->  
->  	unsigned long clk_rate;
-> +	unsigned long min_period_ns;
->  
->  	void __iomem *regs;
->  
-> @@ -67,8 +99,9 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  			    int duty_ns, int period_ns)
->  {
->  	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
-> -	unsigned long long c = duty_ns, hz;
-> -	unsigned long rate;
-> +	unsigned long long p_width = duty_ns, period_hz;
-> +	unsigned long rate, required_clk_rate;
-> +	unsigned long pfm; /* Frequency divider */
->  	u32 val = 0;
->  	int err;
->  
-> @@ -77,37 +110,77 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  	 * per (1 << PWM_DUTY_WIDTH) cycles and make sure to round to the
->  	 * nearest integer during division.
->  	 */
-> -	c *= (1 << PWM_DUTY_WIDTH);
-> -	c = DIV_ROUND_CLOSEST_ULL(c, period_ns);
-> +	p_width *= (1 << PWM_DUTY_WIDTH);
-> +	p_width = DIV_ROUND_CLOSEST_ULL(p_width, period_ns);
->  
-> -	val = (u32)c << PWM_DUTY_SHIFT;
-> +	val = (u32)p_width << PWM_DUTY_SHIFT;
-> +
-> +	/*
-> +	 *  Period in nano second has to be <= highest allowed period
-> +	 *  based on max clock rate of the pwm controller.
-> +	 *
-> +	 *  higher limit = max clock limit >> PWM_DUTY_WIDTH
-> +	 *  lower limit = min clock limit >> PWM_DUTY_WIDTH >> PWM_SCALE_WIDTH
-> +	 */
-> +	if (period_ns < pc->min_period_ns) {
-> +		period_ns = pc->min_period_ns;
-> +		pr_warn("Period is adjusted to allowed value (%d ns)\n",
-> +				period_ns);
-
-That pr_warn is a bad idea as it spams the kernel log when the
-configuration is changed frequently. Wouldn't it be easier to calculate
-the frequency that is needed to achieve period_ns and check that against
-max_frequency?
-
-> +	}
->  
->  	/*
->  	 * Compute the prescaler value for which (1 << PWM_DUTY_WIDTH)
->  	 * cycles at the PWM clock rate will take period_ns nanoseconds.
->  	 */
-> -	rate = pc->clk_rate >> PWM_DUTY_WIDTH;
-> +	if (pc->soc->num_channels == 1) {
-
-required_clk_rate could be defined here, which is better as it narrows
-its scope.
-
-> +		/*
-> +		 * Rate is multiplied with 2^PWM_DUTY_WIDTH so that it matches
-> +		 * with the hieghest applicable rate that the controller can
-
-s/hieghest/highest/
-
-> +		 * provide. Any further lower value can be derived by setting
-> +		 * PFM bits[0:12].
-> +		 * Higher mark is taken since BPMP has round-up mechanism
-> +		 * implemented.
-
-I don't understand the part with the round-up mechanism.
-
-> +		 */
-> +		required_clk_rate =
-> +			(NSEC_PER_SEC / period_ns) << PWM_DUTY_WIDTH;
-> +
-> +		err = clk_set_rate(pc->clk, required_clk_rate);
-> +		if (err < 0)
-> +			return -EINVAL;
-
-What happens if clk_set_rate configures a higher rate than requested?
-
-> +
-> +		rate = clk_get_rate(pc->clk) >> PWM_DUTY_WIDTH;
-> +	} else {
-> +		/*
-> +		 * This is the case for SoCs who support multiple channels:
-
-s/who/that/
-
-> +		 *
-> +		 * clk_set_rate() can not be called again in config because
-> +		 * T210 or any prior chip supports one pwm-controller and
-> +		 * multiple channels. Hence in this case cached clock rate
-> +		 * will be considered which was stored during probe.
-> +		 */
-> +		rate = pc->clk_rate >> PWM_DUTY_WIDTH;
-> +	}
->  
->  	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
-> -	hz = DIV_ROUND_CLOSEST_ULL(100ULL * NSEC_PER_SEC, period_ns);
-> -	rate = DIV_ROUND_CLOSEST_ULL(100ULL * rate, hz);
-> +	period_hz = DIV_ROUND_CLOSEST_ULL(100ULL * NSEC_PER_SEC, period_ns);
-> +	pfm = DIV_ROUND_CLOSEST_ULL(100ULL * rate, period_hz);
->  
->  	/*
->  	 * Since the actual PWM divider is the register's frequency divider
-> -	 * field minus 1, we need to decrement to get the correct value to
-> +	 * field plus 1, we need to decrement to get the correct value to
->  	 * write to the register.
->  	 */
-> -	if (rate > 0)
-> -		rate--;
-> +	if (pfm > 0)
-> +		pfm--;
->  
->  	/*
-> -	 * Make sure that the rate will fit in the register's frequency
-> +	 * Make sure that pfm will fit in the register's frequency
->  	 * divider field.
->  	 */
-> -	if (rate >> PWM_SCALE_WIDTH)
-> +	if (pfm >> PWM_SCALE_WIDTH)
->  		return -EINVAL;
->  
-> -	val |= rate << PWM_SCALE_SHIFT;
-> +	val |= pfm << PWM_SCALE_SHIFT;
->  
->  	/*
->  	 * If the PWM channel is disabled, make sure to turn on the clock
-> @@ -205,6 +278,10 @@ static int tegra_pwm_probe(struct platform_device *pdev)
->  	 */
->  	pwm->clk_rate = clk_get_rate(pwm->clk);
->  
-> +	/* Set minimum limit of PWM period for the IP */
-> +	pwm->min_period_ns =
-> +	    (NSEC_PER_SEC / (pwm->soc->max_frequency >> PWM_DUTY_WIDTH)) + 1;
-
-With my suggestion above, you can drop the min_period_ns field.
-
-> +
->  	pwm->rst = devm_reset_control_get_exclusive(&pdev->dev, "pwm");
->  	if (IS_ERR(pwm->rst)) {
->  		ret = PTR_ERR(pwm->rst);
-> @@ -313,4 +390,5 @@ module_platform_driver(tegra_pwm_driver);
->  
->  MODULE_LICENSE("GPL");
->  MODULE_AUTHOR("NVIDIA Corporation");
-> +MODULE_AUTHOR("Sandipan Patra <spatra@nvidia.com>");
->  MODULE_ALIAS("platform:tegra-pwm");
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+SGVsbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVXdlIEtsZWlu
+ZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4NCj4gU2VudDogVHVlc2Rh
+eSwgTWF5IDUsIDIwMjAgMTo0MiBBTQ0KPiBUbzogU2FuZGlwYW4gUGF0cmEgPHNwYXRyYUBudmlk
+aWEuY29tPg0KPiBDYzogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT47IHJvYmgr
+ZHRAa2VybmVsLm9yZzsgSm9uYXRoYW4NCj4gSHVudGVyIDxqb25hdGhhbmhAbnZpZGlhLmNvbT47
+IEJpYmVrIEJhc3UgPGJiYXN1QG52aWRpYS5jb20+OyBMYXhtYW4NCj4gRGV3YW5nYW4gPGxkZXdh
+bmdhbkBudmlkaWEuY29tPjsgbGludXgtcHdtQHZnZXIua2VybmVsLm9yZzsNCj4gZGV2aWNldHJl
+ZUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LXRlZ3JhQHZnZXIua2VybmVsLm9yZzsgbGludXgtDQo+
+IGtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCBWMl0gcHdtOiB0
+ZWdyYTogZHluYW1pYyBjbGsgZnJlcSBjb25maWd1cmF0aW9uIGJ5IFBXTQ0KPiBkcml2ZXINCj4g
+DQo+IEV4dGVybmFsIGVtYWlsOiBVc2UgY2F1dGlvbiBvcGVuaW5nIGxpbmtzIG9yIGF0dGFjaG1l
+bnRzDQo+IA0KPiANCj4gSGVsbG8sDQo+IA0KPiBPbiBNb24sIEFwciAyMCwgMjAyMCBhdCAwOToy
+NDowM1BNICswNTMwLCBTYW5kaXBhbiBQYXRyYSB3cm90ZToNCj4gPiBBZGRlZCBzdXBwb3J0IGZv
+ciBkeW5hbWljIGNsb2NrIGZyZXEgY29uZmlndXJhdGlvbiBpbiBwd20ga2VybmVsIGRyaXZlci4N
+Cj4gPiBFYXJsaWVyIHRoZSBwd20gZHJpdmVyIHVzZWQgdG8gY2FjaGUgYm9vdCB0aW1lIGNsb2Nr
+IHJhdGUgYnkgcHdtIGNsb2NrDQo+ID4gcGFyZW50IGR1cmluZyBwcm9iZS4gSGVuY2UgZHluYW1p
+Y2FsbHkgY2hhbmdpbmcgcHdtIGZyZXF1ZW5jeSB3YXMgbm90DQo+ID4gcG9zc2libGUgZm9yIGFs
+bCB0aGUgcG9zc2libGUgcmFuZ2VzLiBXaXRoIHRoaXMgY2hhbmdlLCBkeW5hbWljDQo+ID4gY2Fs
+Y3VsYXRpb24gaXMgZW5hYmxlZCBhbmQgaXQgaXMgYWJsZSB0byBzZXQgdGhlIHJlcXVlc3RlZCBw
+ZXJpb2QgZnJvbQ0KPiA+IHN5c2ZzIGtub2IgcHJvdmlkZWQgdGhlIHZhbHVlIGlzIHN1cHBvcnRl
+ZCBieSBjbG9jayBzb3VyY2UuDQo+ID4NCj4gPiBDaGFuZ2VzIG1haW5seSBoYXZlIDIgcGFydHM6
+DQo+ID4gICAtIFQxODYgYW5kIGxhdGVyIGNoaXBzIFsxXQ0KPiA+ICAgLSBUMjEwIGFuZCBwcmlv
+ciBjaGlwcyBbMl0NCj4gPg0KPiA+IEZvciBbMV0gLSBDaGFuZ2VzIGltcGxlbWVudGVkIHRvIHNl
+dCBwd20gcGVyaW9kIGR5bmFtaWNhbGx5IGFuZA0KPiA+ICAgICAgICAgICBhbHNvIGNoZWNrcyBh
+ZGRlZCB0byBhbGxvdyBvbmx5IGlmIHJlcXVlc3RlZCBwZXJpb2QobnMpIGlzDQo+ID4gICAgICAg
+ICAgIGJlbG93IG9yIGVxdWFscyB0byBoaWdoZXIgcmFuZ2UuDQo+ID4NCj4gPiBGb3IgWzJdIC0g
+T25seSBjaGVja3MgaWYgdGhlIHJlcXVlc3RlZCBwZXJpb2QobnMpIGlzIGJlbG93IG9yIGVxdWFs
+cw0KPiA+ICAgICAgICAgICB0byBoaWdoZXIgcmFuZ2UgZGVmaW5lZCBieSBtYXggY2xvY2sgbGlt
+aXQuIFRoZSBsaW1pdGF0aW9uDQo+ID4gICAgICAgICAgIGluIFQyMTAgb3IgcHJpb3IgY2hpcHMg
+YXJlIGR1ZSB0byB0aGUgcmVhc29uIG9mIGhhdmluZyBvbmx5DQo+ID4gICAgICAgICAgIG9uZSBw
+d20tY29udHJvbGxlciBzdXBwb3J0aW5nIG11bHRpcGxlIGNoYW5uZWxzLiBCdXQgbGF0ZXINCj4g
+PiAgICAgICAgICAgY2hpcHMgaGF2ZSBtdWx0aXBsZSBwd20gY29udHJvbGxlciBpbnN0YW5jZXMg
+ZWFjaCBoYXZpbmcNCj4gPiAgICAgICAgIHNpbmdsZSBjaGFubmVsIHN1cHBvcnQuDQo+ID4NCj4g
+PiBTaWduZWQtb2ZmLWJ5OiBTYW5kaXBhbiBQYXRyYSA8c3BhdHJhQG52aWRpYS5jb20+DQo+ID4g
+LS0tDQo+ID4gVjI6DQo+ID4gMS4gTWluIHBlcmlvZF9ucyBjYWxjdWxhdGlvbiBpcyBtb3ZlZCB0
+byBwcm9iZS4NCj4gPiAyLiBBZGRlZCBkZXNjcmlwdGlvaW5zIGZvciBQV00gcmVnaXN0ZXIgYml0
+cyBhbmQgcmVnYXJkaW5nIGJlaGF2aW91cg0KPiA+ICAgIG9mIHRoZSBjb250cm9sbGVyIHdoZW4g
+bmV3IGNvbmZpZ3VyYXRpb24gaXMgYXBwbGllZCBvciBwd20gaXMgZGlzYWJsZWQuDQo+ID4gMy4g
+U2V0dGluZyBwZXJpb2Qgd2l0aCBwb3NzaWJsZSB2YWx1ZSB3aGVuIHN1cHBsaWVkIHBlcmlvZCBp
+cyBiZWxvdyBsaW1pdC4NCj4gPiA0LiBDb3JyZWN0ZWQgdGhlIGVhcmxpZXIgY29kZSBjb21tZW50
+Og0KPiA+ICAgIHBsdXMgMSBpbnN0ZWFkIG9mIG1pbnVzIDEgZHVyaW5nIHB3bSBjYWxjdWxhdGlv
+bg0KPiA+DQo+ID4gIGRyaXZlcnMvcHdtL3B3bS10ZWdyYS5jIHwgMTEwDQo+ID4gKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFu
+Z2VkLCA5NCBpbnNlcnRpb25zKCspLCAxNiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3B3bS9wd20tdGVncmEuYyBiL2RyaXZlcnMvcHdtL3B3bS10ZWdyYS5jIGlu
+ZGV4DQo+ID4gZDI2ZWQ4Zi4uN2EzNjMyNSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3B3bS9w
+d20tdGVncmEuYw0KPiA+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS10ZWdyYS5jDQo+ID4gQEAgLTQs
+OCArNCwzOSBAQA0KPiA+ICAgKg0KPiA+ICAgKiBUZWdyYSBwdWxzZS13aWR0aC1tb2R1bGF0aW9u
+IGNvbnRyb2xsZXIgZHJpdmVyDQo+ID4gICAqDQo+ID4gLSAqIENvcHlyaWdodCAoYykgMjAxMCwg
+TlZJRElBIENvcnBvcmF0aW9uLg0KPiA+IC0gKiBCYXNlZCBvbiBhcmNoL2FybS9wbGF0LW14Yy9w
+d20uYyBieSBTYXNjaGEgSGF1ZXINCj4gPiA8cy5oYXVlckBwZW5ndXRyb25peC5kZT4NCj4gPiAr
+ICogQ29weXJpZ2h0IChjKSAyMDEwLTIwMjAsIE5WSURJQSBDb3Jwb3JhdGlvbi4NCj4gPiArICoN
+Cj4gPiArICogT3ZlcnZpZXcgb2YgVGVncmEgUHVsc2UgV2lkdGggTW9kdWxhdG9yIFJlZ2lzdGVy
+Og0KPiA+ICsgKiAxLiAxMy1iaXQ6IEZyZXF1ZW5jeSBkaXZpc2lvbiAoU0NBTEUpDQo+ID4gKyAq
+IDIuIDgtYml0IDogUHVscyBkaXZpc2lvbiAoRFVUWSkNCj4gPiArICogMy4gMS1iaXQgOiBFbmFi
+bGUgYml0DQo+ID4gKyAqDQo+ID4gKyAqIFRoZSBQV00gY2xvY2sgZnJlcXVlbmN5IGlzIGRpdmlk
+ZWQgYnkgMjU2IGJlZm9yZSBzdWJkaXZpZGluZyBpdA0KPiA+ICsgYmFzZWQNCj4gPiArICogb24g
+dGhlIHByb2dyYW1tYWJsZSBmcmVxdWVuY3kgZGl2aXNpb24gdmFsdWUgdG8gZ2VuZXJhdGUgdGhl
+DQo+ID4gKyByZXF1aXJlZA0KPiA+ICsgKiBmcmVxdWVuY3kgZm9yIFBXTSBvdXRwdXQuIFRoZSBt
+YXhpbXVtIG91dHB1dCBmcmVxdWVuY3kgdGhhdCBjYW4gYmUNCj4gPiArICogYWNoaWV2ZWQgaXMg
+KG1heCByYXRlIG9mIHNvdXJjZSBjbG9jaykgLyAyNTYuDQo+ID4gKyAqIGkuZS4gaWYgc291cmNl
+IGNsb2NrIHJhdGUgaXMgNDA4IE1IeiwgbWF4aW11bSBvdXRwdXQgZnJlcXVlbmN5IGNhYiBiZToN
+Cj4gDQo+IHMvaS5lLi9lLmcuLywgcy9jYWIvY2FuLw0KDQpOb3RlZCwgY29ycmVjdGlvbiBpbiBu
+ZXh0IHBhdGNoLg0KDQo+IA0KPiA+ICsgKiA0MDggTUh6LzI1NiA9IDEuNiBNSHouDQo+ID4gKyAq
+IFRoaXMgMS42IE1IeiBmcmVxdWVuY3kgY2FuIGZ1cnRoZXIgYmUgZGl2aWRlZCB1c2luZyBTQ0FM
+RSB2YWx1ZSBpbiBQV00uDQo+ID4gKyAqDQo+ID4gKyAqIFBXTSBwdWxzZSB3aWR0aDogOCBiaXRz
+IGFyZSB1c2FibGUgWzIzOjE2XSBmb3IgdmFyeWluZyBwdWxzZSB3aWR0aC4NCj4gPiArICogVG8g
+YWNoaWV2ZSAxMDAlIGR1dHkgY3ljbGUsIHByb2dyYW0gQml0IFsyNF0gb2YgdGhpcyByZWdpc3Rl
+ciB0bw0KPiA+ICsgKiAx4oCZYjEuIEluIHdoaWNoIGNhc2UgdGhlIG90aGVyIGJpdHMgWzIzOjE2
+XSBhcmUgc2V0IHRvIGRvbid0IGNhcmUuDQo+ID4gKyAqDQo+ID4gKyAqIExpbWl0YXRpb25zIGFu
+ZCBrbm93biBmYWN0czoNCj4gDQo+IFBsZWFzZSB1c2UgIkxpbWl0YXRpb25zOiIgaGVyZSB0byBt
+YWtlIHRoaXMgZWFzaWVyIGdyZXBwYWJsZS4NCg0KV2lsbCB1cGRhdGUgaW4gbmV4dCBwYXRjaC4N
+Cg0KPiANCj4gPiArICogLSBXaGVuIFBXTSBpcyBkaXNhYmxlZCwgdGhlIG91dHB1dCBpcyBkcml2
+ZW4gdG8gMC4NCj4gDQo+IDAgb3IgaW5hY3RpdmU/DQoNClllcywgSW5hY3RpdmUuIFdoZW4gaXQg
+aXMgMCwgaXQgaXMgZGlzYWJsZWQuDQpXaWxsIHVwZGF0ZSBpdCB0byAiaW5hY3RpdmUiLg0KDQo+
+IA0KPiA+ICsgKiAtIEl0IGRvZXMgbm90IGFsbG93IHRoZSBjdXJyZW50IFBXTSBwZXJpb2QgdG8g
+Y29tcGxldGUgYW5kDQo+ID4gKyAqICAgc3RvcHMgYWJydXB0bHkuDQo+ID4gKyAqDQo+ID4gKyAq
+IC0gSWYgdGhlIHJlZ2lzdGVyIGlzIHJlY29uZmlndXJlZCB3aGlsZSBwd20gaXMgcnVubmluZywN
+Cj4gDQo+IHMvcHdtL1BXTS8NCiANCk5vdGVkLCBjb3JyZWN0aW9uIGluIG5leHQgcGF0Y2guDQoN
+Cj4gDQo+ID4gKyAqICAgSXQgZG9lcyBub3QgbGV0IHRoZSBjdXJyZW50bHkgcnVubmluZyBwZXJp
+b2QgdG8gY29tcGxldGUuDQo+IA0KPiBzL0l0L2l0Lzsgcy9sZXQvY29tcGxldGUvOyBzLyB0byBj
+b21wbGV0ZS8vDQo+DQoNCk5vdGVkLCBjb3JyZWN0aW9uIGluIG5leHQgcGF0Y2gNCiANCj4gPiAr
+ICoNCj4gPiArICogLSBQdWxzZSB3aWR0aCBvZiB0aGUgcHdtIGNhbiBuZXZlciBiZSBvdXQgb2Yg
+Ym91bmQuDQo+IA0KPiBJIGRvbid0IHVuZGVyc3RhbmQgdGhhdCBvbmUuDQoNCkFzIEkgdW5kZXJz
+dGFuZDoNClB1bHNlIHdpZHRoIGlzIGNvbmZpZ3VyZWQgb24gYml0cyBbMjM6MTZdLiBTbyBhbnkg
+bWlzY29uZmlndXJhdGlvbiBvciBvdmVyZmxvdyBmcm9tDQpTb2Z0d2FyZSB3aWxsIGJlIHJlc3Ry
+aWN0ZWQgYnkgdGhlIGhhcmR3YXJlIGFuZCBvbmx5IHRoZSByZXNwZWN0aXZlIGJpdHMgd2lsbCBi
+ZSBjb25zaWRlcmVkLg0KQWxzbyB0aGUgZXhwbGFuYXRpb24gaXMgYWRkZWQgYWJvdmUgZHVyaW5n
+IHJlZ2lzdGVyIGJpdCBmaWVsZCBkZXNjcmlwdGlvbnMuDQpQbGVhc2UgYWR2aXNlIGlmIHRoYXQg
+ZG9lc24ndCBoZWxwLg0KIA0KPiANCj4gPiArICogICBJdCdzIHRha2VuIGNhcmUgYXQgSFcgYW5k
+IFNXDQo+ID4gKyAqIC0gSWYgdGhlIHVzZXIgaW5wdXQgZHV0eSBpcyBiZWxvdyBsaW1pdCwgdGhl
+biBkcml2ZXIgc2V0cyBpdCB0bw0KPiA+ICsgKiAgIG1pbmltdW0gcG9zc2libGUgdmFsdWUuDQo+
+IA0KPiB0aGF0IGlzIDA/IERvIHlvdSBtZWFuICJpbnB1dCBwZXJpb2QiPyBJZiBzbywgYmV0dGVy
+IHJlZnVzZSB0aGUgcmVxdWVzdC4NCg0KVGhpcyBpcyBmb3IgcHdtIGR1dHkuIElmIHVzZXIgcmVx
+dWVzdGVkIGR1dHkgaXMgYmVsb3cgbG93ZXIgYm91bmQsIHRoZW4NCnB3bSBkcml2ZXIgY29uZmln
+dXJlcyB0byB0aGUgbWluIHBvc3NpYmxlIGR1dHkuDQpMb3dlciBib3VuZCBhbmQgdXBwZXIgYm91
+bmQgdmFsdWVzIGFyZSBkZXJpdmVkIGJhc2VkIG9uIG1pbiBhbmQNCm1heCBjbG9jayByYXRlcyBy
+ZXNwZWN0aXZlbHkuDQoNCj4gDQo+ID4gKyAqIC0gSWYgYW55dGhpbmcgZWxzZSBnb2VzIHdyb25n
+IGZvciBzZXR0aW5nIGR1dHkgb3IgcGVyaW9kLA0KPiA+ICsgKiAgIC1FSU5WQUwgaXMgcmV0dXJu
+ZWQuDQo+IA0KPiBJIHdvdWxkbid0IHN0YXRlIHRoaXMsIHRvbyB0cml2aWFsLiBJbnN0ZWFkIHRo
+ZSBmb2xsb3dpbmcgYXJlDQo+IGludGVyZXN0aW5nOg0KPiANCj4gIC0gVGhlIGRyaXZlciBkb2Vz
+bid0IGltcGxlbWVudCB0aGUgcmlnaHQgcm91bmRpbmcgcnVsZXMNCj4gIC0gVGhlIGRyaXZlciBu
+ZWVkcyB1cGRhdGluZyB0byB0aGUgYXRvbWljIEFQSQ0KPiANCj4gPiAgICovDQo+ID4NCj4gPiAg
+I2luY2x1ZGUgPGxpbnV4L2Nsay5oPg0KPiA+IEBAIC00MSw2ICs3Miw3IEBAIHN0cnVjdCB0ZWdy
+YV9wd21fY2hpcCB7DQo+ID4gICAgICAgc3RydWN0IHJlc2V0X2NvbnRyb2wqcnN0Ow0KPiA+DQo+
+ID4gICAgICAgdW5zaWduZWQgbG9uZyBjbGtfcmF0ZTsNCj4gPiArICAgICB1bnNpZ25lZCBsb25n
+IG1pbl9wZXJpb2RfbnM7DQo+ID4NCj4gPiAgICAgICB2b2lkIF9faW9tZW0gKnJlZ3M7DQo+ID4N
+Cj4gPiBAQCAtNjcsOCArOTksOSBAQCBzdGF0aWMgaW50IHRlZ3JhX3B3bV9jb25maWcoc3RydWN0
+IHB3bV9jaGlwICpjaGlwLA0KPiBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KPiA+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgaW50IGR1dHlfbnMsIGludCBwZXJpb2RfbnMpICB7DQo+ID4gICAg
+ICAgc3RydWN0IHRlZ3JhX3B3bV9jaGlwICpwYyA9IHRvX3RlZ3JhX3B3bV9jaGlwKGNoaXApOw0K
+PiA+IC0gICAgIHVuc2lnbmVkIGxvbmcgbG9uZyBjID0gZHV0eV9ucywgaHo7DQo+ID4gLSAgICAg
+dW5zaWduZWQgbG9uZyByYXRlOw0KPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgbG9uZyBwX3dpZHRo
+ID0gZHV0eV9ucywgcGVyaW9kX2h6Ow0KPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgcmF0ZSwgcmVx
+dWlyZWRfY2xrX3JhdGU7DQo+ID4gKyAgICAgdW5zaWduZWQgbG9uZyBwZm07IC8qIEZyZXF1ZW5j
+eSBkaXZpZGVyICovDQo+ID4gICAgICAgdTMyIHZhbCA9IDA7DQo+ID4gICAgICAgaW50IGVycjsN
+Cj4gPg0KPiA+IEBAIC03NywzNyArMTEwLDc3IEBAIHN0YXRpYyBpbnQgdGVncmFfcHdtX2NvbmZp
+ZyhzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsDQo+IHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQo+ID4g
+ICAgICAgICogcGVyICgxIDw8IFBXTV9EVVRZX1dJRFRIKSBjeWNsZXMgYW5kIG1ha2Ugc3VyZSB0
+byByb3VuZCB0byB0aGUNCj4gPiAgICAgICAgKiBuZWFyZXN0IGludGVnZXIgZHVyaW5nIGRpdmlz
+aW9uLg0KPiA+ICAgICAgICAqLw0KPiA+IC0gICAgIGMgKj0gKDEgPDwgUFdNX0RVVFlfV0lEVEgp
+Ow0KPiA+IC0gICAgIGMgPSBESVZfUk9VTkRfQ0xPU0VTVF9VTEwoYywgcGVyaW9kX25zKTsNCj4g
+PiArICAgICBwX3dpZHRoICo9ICgxIDw8IFBXTV9EVVRZX1dJRFRIKTsNCj4gPiArICAgICBwX3dp
+ZHRoID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHBfd2lkdGgsIHBlcmlvZF9ucyk7DQo+ID4NCj4g
+PiAtICAgICB2YWwgPSAodTMyKWMgPDwgUFdNX0RVVFlfU0hJRlQ7DQo+ID4gKyAgICAgdmFsID0g
+KHUzMilwX3dpZHRoIDw8IFBXTV9EVVRZX1NISUZUOw0KPiA+ICsNCj4gPiArICAgICAvKg0KPiA+
+ICsgICAgICAqICBQZXJpb2QgaW4gbmFubyBzZWNvbmQgaGFzIHRvIGJlIDw9IGhpZ2hlc3QgYWxs
+b3dlZCBwZXJpb2QNCj4gPiArICAgICAgKiAgYmFzZWQgb24gbWF4IGNsb2NrIHJhdGUgb2YgdGhl
+IHB3bSBjb250cm9sbGVyLg0KPiA+ICsgICAgICAqDQo+ID4gKyAgICAgICogIGhpZ2hlciBsaW1p
+dCA9IG1heCBjbG9jayBsaW1pdCA+PiBQV01fRFVUWV9XSURUSA0KPiA+ICsgICAgICAqICBsb3dl
+ciBsaW1pdCA9IG1pbiBjbG9jayBsaW1pdCA+PiBQV01fRFVUWV9XSURUSCA+Pg0KPiBQV01fU0NB
+TEVfV0lEVEgNCj4gPiArICAgICAgKi8NCj4gPiArICAgICBpZiAocGVyaW9kX25zIDwgcGMtPm1p
+bl9wZXJpb2RfbnMpIHsNCj4gPiArICAgICAgICAgICAgIHBlcmlvZF9ucyA9IHBjLT5taW5fcGVy
+aW9kX25zOw0KPiA+ICsgICAgICAgICAgICAgcHJfd2FybigiUGVyaW9kIGlzIGFkanVzdGVkIHRv
+IGFsbG93ZWQgdmFsdWUgKCVkIG5zKVxuIiwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBwZXJpb2RfbnMpOw0KPiANCj4gVGhhdCBwcl93YXJuIGlzIGEgYmFkIGlkZWEgYXMgaXQg
+c3BhbXMgdGhlIGtlcm5lbCBsb2cgd2hlbiB0aGUgY29uZmlndXJhdGlvbiBpcw0KPiBjaGFuZ2Vk
+IGZyZXF1ZW50bHkuIFdvdWxkbid0IGl0IGJlIGVhc2llciB0byBjYWxjdWxhdGUgdGhlIGZyZXF1
+ZW5jeSB0aGF0IGlzDQo+IG5lZWRlZCB0byBhY2hpZXZlIHBlcmlvZF9ucyBhbmQgY2hlY2sgdGhh
+dCBhZ2FpbnN0IG1heF9mcmVxdWVuY3k/DQoNCkkgdGhpbmsgeW91IGFyZSBzdWdnZXN0aW5nIHdo
+aWNoIGlzIGRvbmUganVzdCBuZXh0Og0KcmVxdWlyZWRfY2xrX3JhdGUgPSAoTlNFQ19QRVJfU0VD
+IC8gcGVyaW9kX25zKSA8PCBQV01fRFVUWV9XSURUSDsNCmNsa19zZXRfcmF0ZShwYy0+Y2xrLCBy
+ZXF1aXJlZF9jbGtfcmF0ZSk7DQpQbGVhc2UgbGV0IG1lIGtub3cgaWYgSSBtaXNzZWQgd2hhdCB5
+b3UgbWVhbnQuDQoNCj4gDQo+ID4gKyAgICAgfQ0KPiA+DQo+ID4gICAgICAgLyoNCj4gPiAgICAg
+ICAgKiBDb21wdXRlIHRoZSBwcmVzY2FsZXIgdmFsdWUgZm9yIHdoaWNoICgxIDw8IFBXTV9EVVRZ
+X1dJRFRIKQ0KPiA+ICAgICAgICAqIGN5Y2xlcyBhdCB0aGUgUFdNIGNsb2NrIHJhdGUgd2lsbCB0
+YWtlIHBlcmlvZF9ucyBuYW5vc2Vjb25kcy4NCj4gPiAgICAgICAgKi8NCj4gPiAtICAgICByYXRl
+ID0gcGMtPmNsa19yYXRlID4+IFBXTV9EVVRZX1dJRFRIOw0KPiA+ICsgICAgIGlmIChwYy0+c29j
+LT5udW1fY2hhbm5lbHMgPT0gMSkgew0KPiANCj4gcmVxdWlyZWRfY2xrX3JhdGUgY291bGQgYmUg
+ZGVmaW5lZCBoZXJlLCB3aGljaCBpcyBiZXR0ZXIgYXMgaXQgbmFycm93cyBpdHMgc2NvcGUuDQo+
+IA0KDQpOb3RlZCwgd2lsbCBkZWZpbmUgaGVyZSB0byBsaW1pdCBpdHMgc2NvcGUuDQoNCj4gPiAr
+ICAgICAgICAgICAgIC8qDQo+ID4gKyAgICAgICAgICAgICAgKiBSYXRlIGlzIG11bHRpcGxpZWQg
+d2l0aCAyXlBXTV9EVVRZX1dJRFRIIHNvIHRoYXQgaXQgbWF0Y2hlcw0KPiA+ICsgICAgICAgICAg
+ICAgICogd2l0aCB0aGUgaGllZ2hlc3QgYXBwbGljYWJsZSByYXRlIHRoYXQgdGhlIGNvbnRyb2xs
+ZXINCj4gPiArIGNhbg0KPiANCj4gcy9oaWVnaGVzdC9oaWdoZXN0Lw0KDQpOb3RlZCwgY29ycmVj
+dGlvbiBpbiBuZXh0IHBhdGNoDQoNCj4gDQo+ID4gKyAgICAgICAgICAgICAgKiBwcm92aWRlLiBB
+bnkgZnVydGhlciBsb3dlciB2YWx1ZSBjYW4gYmUgZGVyaXZlZCBieSBzZXR0aW5nDQo+ID4gKyAg
+ICAgICAgICAgICAgKiBQRk0gYml0c1swOjEyXS4NCj4gPiArICAgICAgICAgICAgICAqIEhpZ2hl
+ciBtYXJrIGlzIHRha2VuIHNpbmNlIEJQTVAgaGFzIHJvdW5kLXVwIG1lY2hhbmlzbQ0KPiA+ICsg
+ICAgICAgICAgICAgICogaW1wbGVtZW50ZWQuDQo+IA0KPiBJIGRvbid0IHVuZGVyc3RhbmQgdGhl
+IHBhcnQgd2l0aCB0aGUgcm91bmQtdXAgbWVjaGFuaXNtLg0KDQpVbmRlcnN0b29kLiBUaGlzIGNv
+bW1lbnQgaXMgbWlzbGVhZGluZy4NCkkgdGhpbmsgaXQgY2FuIGJlIHVwZGF0ZWQgYXMgYmVsb3c6
+DQoicmVxdWlyZWRfY2xrX3JhdGUiIGlzIGEgcmVmZXJlbmNlIHJhdGUgZm9yIHNvdXJjZSBjbG9j
+ayBhbmQgaXQgaXMgZGVyaXZlZA0KYmFzZWQgb24gdXNlciByZXF1ZXN0ZWQgcGVyaW9kLg0KQnkg
+c3VjY2Vzc2Z1bGx5IHNldHRpbmcgdGhlIHNvdXJjZSBjbG9jayByYXRlIHRvIHJlcXVpcmVkX2Ns
+a19yYXRlLA0KcHdtIGNvbnRyb2xsZXIgY2FuIGNvbmZpZ3VyZSB0aGUgcmVxdWVzdGVkIHBlcmlv
+ZC4NCg0KPiANCj4gPiArICAgICAgICAgICAgICAqLw0KPiA+ICsgICAgICAgICAgICAgcmVxdWly
+ZWRfY2xrX3JhdGUgPQ0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAoTlNFQ19QRVJfU0VDIC8g
+cGVyaW9kX25zKSA8PCBQV01fRFVUWV9XSURUSDsNCj4gPiArDQo+ID4gKyAgICAgICAgICAgICBl
+cnIgPSBjbGtfc2V0X3JhdGUocGMtPmNsaywgcmVxdWlyZWRfY2xrX3JhdGUpOw0KPiA+ICsgICAg
+ICAgICAgICAgaWYgKGVyciA8IDApDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIHJldHVybiAt
+RUlOVkFMOw0KPiANCj4gV2hhdCBoYXBwZW5zIGlmIGNsa19zZXRfcmF0ZSBjb25maWd1cmVzIGEg
+aGlnaGVyIHJhdGUgdGhhbiByZXF1ZXN0ZWQ/DQoNClRoZSBjbG9jayBjb25maWd1cmF0aW9uIGlz
+IHRha2VuIGNhcmUgaW4gYSBzZXBhcmF0ZSBSNSBjYWxsZWQgQlBNUC4NCkJQTVAtRlcgZG9lcyBu
+b3Qgcm91bmQgdXAgdGhlIHJhdGUgb2YgUFdNIGNvbnRyb2xsZXIgY2xvY2suDQpJdCByb3VuZHMg
+ZG93biB0aGUgY2xvY2sgZGl2aWRlciB2YWx1ZSB0aGF0IGdlbmVyYXRlcyBQV00gY29udHJvbGxl
+ciBjbG9jay4NCiANCj4gDQo+ID4gKw0KPiA+ICsgICAgICAgICAgICAgcmF0ZSA9IGNsa19nZXRf
+cmF0ZShwYy0+Y2xrKSA+PiBQV01fRFVUWV9XSURUSDsNCj4gPiArICAgICB9IGVsc2Ugew0KPiA+
+ICsgICAgICAgICAgICAgLyoNCj4gPiArICAgICAgICAgICAgICAqIFRoaXMgaXMgdGhlIGNhc2Ug
+Zm9yIFNvQ3Mgd2hvIHN1cHBvcnQgbXVsdGlwbGUgY2hhbm5lbHM6DQo+IA0KPiBzL3doby90aGF0
+Lw0KDQpOb3RlZCwgY29ycmVjdGlvbiBpbiBuZXh0IHBhdGNoLg0KIA0KPiANCj4gPiArICAgICAg
+ICAgICAgICAqDQo+ID4gKyAgICAgICAgICAgICAgKiBjbGtfc2V0X3JhdGUoKSBjYW4gbm90IGJl
+IGNhbGxlZCBhZ2FpbiBpbiBjb25maWcgYmVjYXVzZQ0KPiA+ICsgICAgICAgICAgICAgICogVDIx
+MCBvciBhbnkgcHJpb3IgY2hpcCBzdXBwb3J0cyBvbmUgcHdtLWNvbnRyb2xsZXIgYW5kDQo+ID4g
+KyAgICAgICAgICAgICAgKiBtdWx0aXBsZSBjaGFubmVscy4gSGVuY2UgaW4gdGhpcyBjYXNlIGNh
+Y2hlZCBjbG9jayByYXRlDQo+ID4gKyAgICAgICAgICAgICAgKiB3aWxsIGJlIGNvbnNpZGVyZWQg
+d2hpY2ggd2FzIHN0b3JlZCBkdXJpbmcgcHJvYmUuDQo+ID4gKyAgICAgICAgICAgICAgKi8NCj4g
+PiArICAgICAgICAgICAgIHJhdGUgPSBwYy0+Y2xrX3JhdGUgPj4gUFdNX0RVVFlfV0lEVEg7DQo+
+ID4gKyAgICAgfQ0KPiA+DQo+ID4gICAgICAgLyogQ29uc2lkZXIgcHJlY2lzaW9uIGluIFBXTV9T
+Q0FMRV9XSURUSCByYXRlIGNhbGN1bGF0aW9uICovDQo+ID4gLSAgICAgaHogPSBESVZfUk9VTkRf
+Q0xPU0VTVF9VTEwoMTAwVUxMICogTlNFQ19QRVJfU0VDLCBwZXJpb2RfbnMpOw0KPiA+IC0gICAg
+IHJhdGUgPSBESVZfUk9VTkRfQ0xPU0VTVF9VTEwoMTAwVUxMICogcmF0ZSwgaHopOw0KPiA+ICsg
+ICAgIHBlcmlvZF9oeiA9IERJVl9ST1VORF9DTE9TRVNUX1VMTCgxMDBVTEwgKiBOU0VDX1BFUl9T
+RUMsDQo+IHBlcmlvZF9ucyk7DQo+ID4gKyAgICAgcGZtID0gRElWX1JPVU5EX0NMT1NFU1RfVUxM
+KDEwMFVMTCAqIHJhdGUsIHBlcmlvZF9oeik7DQo+ID4NCj4gPiAgICAgICAvKg0KPiA+ICAgICAg
+ICAqIFNpbmNlIHRoZSBhY3R1YWwgUFdNIGRpdmlkZXIgaXMgdGhlIHJlZ2lzdGVyJ3MgZnJlcXVl
+bmN5IGRpdmlkZXINCj4gPiAtICAgICAgKiBmaWVsZCBtaW51cyAxLCB3ZSBuZWVkIHRvIGRlY3Jl
+bWVudCB0byBnZXQgdGhlIGNvcnJlY3QgdmFsdWUgdG8NCj4gPiArICAgICAgKiBmaWVsZCBwbHVz
+IDEsIHdlIG5lZWQgdG8gZGVjcmVtZW50IHRvIGdldCB0aGUgY29ycmVjdCB2YWx1ZQ0KPiA+ICsg
+dG8NCj4gPiAgICAgICAgKiB3cml0ZSB0byB0aGUgcmVnaXN0ZXIuDQo+ID4gICAgICAgICovDQo+
+ID4gLSAgICAgaWYgKHJhdGUgPiAwKQ0KPiA+IC0gICAgICAgICAgICAgcmF0ZS0tOw0KPiA+ICsg
+ICAgIGlmIChwZm0gPiAwKQ0KPiA+ICsgICAgICAgICAgICAgcGZtLS07DQo+ID4NCj4gPiAgICAg
+ICAvKg0KPiA+IC0gICAgICAqIE1ha2Ugc3VyZSB0aGF0IHRoZSByYXRlIHdpbGwgZml0IGluIHRo
+ZSByZWdpc3RlcidzIGZyZXF1ZW5jeQ0KPiA+ICsgICAgICAqIE1ha2Ugc3VyZSB0aGF0IHBmbSB3
+aWxsIGZpdCBpbiB0aGUgcmVnaXN0ZXIncyBmcmVxdWVuY3kNCj4gPiAgICAgICAgKiBkaXZpZGVy
+IGZpZWxkLg0KPiA+ICAgICAgICAqLw0KPiA+IC0gICAgIGlmIChyYXRlID4+IFBXTV9TQ0FMRV9X
+SURUSCkNCj4gPiArICAgICBpZiAocGZtID4+IFBXTV9TQ0FMRV9XSURUSCkNCj4gPiAgICAgICAg
+ICAgICAgIHJldHVybiAtRUlOVkFMOw0KPiA+DQo+ID4gLSAgICAgdmFsIHw9IHJhdGUgPDwgUFdN
+X1NDQUxFX1NISUZUOw0KPiA+ICsgICAgIHZhbCB8PSBwZm0gPDwgUFdNX1NDQUxFX1NISUZUOw0K
+PiA+DQo+ID4gICAgICAgLyoNCj4gPiAgICAgICAgKiBJZiB0aGUgUFdNIGNoYW5uZWwgaXMgZGlz
+YWJsZWQsIG1ha2Ugc3VyZSB0byB0dXJuIG9uIHRoZQ0KPiA+IGNsb2NrIEBAIC0yMDUsNiArMjc4
+LDEwIEBAIHN0YXRpYyBpbnQgdGVncmFfcHdtX3Byb2JlKHN0cnVjdA0KPiBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpDQo+ID4gICAgICAgICovDQo+ID4gICAgICAgcHdtLT5jbGtfcmF0ZSA9IGNsa19n
+ZXRfcmF0ZShwd20tPmNsayk7DQo+ID4NCj4gPiArICAgICAvKiBTZXQgbWluaW11bSBsaW1pdCBv
+ZiBQV00gcGVyaW9kIGZvciB0aGUgSVAgKi8NCj4gPiArICAgICBwd20tPm1pbl9wZXJpb2RfbnMg
+PQ0KPiA+ICsgICAgICAgICAoTlNFQ19QRVJfU0VDIC8gKHB3bS0+c29jLT5tYXhfZnJlcXVlbmN5
+ID4+IFBXTV9EVVRZX1dJRFRIKSkNCj4gPiArICsgMTsNCj4gDQo+IFdpdGggbXkgc3VnZ2VzdGlv
+biBhYm92ZSwgeW91IGNhbiBkcm9wIHRoZSBtaW5fcGVyaW9kX25zIGZpZWxkLg0KDQpJIGhhdmUg
+YWRkZWQgc29tZSBjb21tZW50cyBhYm92ZS4gUGxlYXNlIGhlbHAgbWUgdW5kZXJzdGFuZCBpZiB0
+aGV5IGFyZSBub3QNCmFsaWduZWQgd2l0aCB3aGF0IHlvdSBtZWFudC4NCiANCj4gDQo+ID4gKw0K
+PiA+ICAgICAgIHB3bS0+cnN0ID0gZGV2bV9yZXNldF9jb250cm9sX2dldF9leGNsdXNpdmUoJnBk
+ZXYtPmRldiwgInB3bSIpOw0KPiA+ICAgICAgIGlmIChJU19FUlIocHdtLT5yc3QpKSB7DQo+ID4g
+ICAgICAgICAgICAgICByZXQgPSBQVFJfRVJSKHB3bS0+cnN0KTsgQEAgLTMxMyw0ICszOTAsNSBA
+QA0KPiA+IG1vZHVsZV9wbGF0Zm9ybV9kcml2ZXIodGVncmFfcHdtX2RyaXZlcik7DQo+ID4NCj4g
+PiAgTU9EVUxFX0xJQ0VOU0UoIkdQTCIpOw0KPiA+ICBNT0RVTEVfQVVUSE9SKCJOVklESUEgQ29y
+cG9yYXRpb24iKTsNCj4gPiArTU9EVUxFX0FVVEhPUigiU2FuZGlwYW4gUGF0cmEgPHNwYXRyYUBu
+dmlkaWEuY29tPiIpOw0KPiA+ICBNT0RVTEVfQUxJQVMoInBsYXRmb3JtOnRlZ3JhLXB3bSIpOw0K
+PiANCj4gQmVzdCByZWdhcmRzDQo+IFV3ZQ0KPiANCj4gLS0NCj4gUGVuZ3V0cm9uaXggZS5LLiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIHwgVXdlIEtsZWluZS1Lw7ZuaWcgICAgICAgICAgICB8
+DQo+IEluZHVzdHJpYWwgTGludXggU29sdXRpb25zICAgICAgICAgICAgICAgICB8IGh0dHBzOi8v
+d3d3LnBlbmd1dHJvbml4LmRlLyB8DQo=
