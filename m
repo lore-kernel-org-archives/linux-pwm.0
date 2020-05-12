@@ -1,181 +1,104 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v3 05/16] mfd: Add support for Kontron sl28cpld management
- controller
-Date: Tue, 12 May 2020 00:29:46 +0200
-Message-ID: <7acbb6d9b2240b1856136fa35c1318bf@walle.cc>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-6-michael@walle.cc> <20200511211359.GB3518@bogus>
- <f0fafa63047f00e912013b137e4db15c@walle.cc>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] pwm: lpss: Fix get_state runtime-pm reference handling
+Date: Tue, 12 May 2020 13:00:44 +0200
+Message-ID: <20200512110044.95984-1-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
-In-Reply-To: <f0fafa63047f00e912013b137e4db15c@walle.cc>
-Sender: linux-hwmon-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>Marc Zyngier <ma>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Hans de Goede <hdegoede@redhat.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Am 2020-05-11 23:44, schrieb Michael Walle:
-> Am 2020-05-11 23:13, schrieb Rob Herring:
->> On Thu, Apr 23, 2020 at 07:45:32PM +0200, Michael Walle wrote:
->>> This patch adds core support for the board management controller 
->>> found
->>> on the SMARC-sAL28 board. It consists of the following functions:
->>>  - watchdog
->>>  - GPIO controller
->>>  - PWM controller
->>>  - fan sensor
->>>  - interrupt controller
->>> 
->>> At the moment, this controller is used on the Kontron SMARC-sAL28 
->>> board.
->>> 
->>> Please note that the MFD driver is defined as bool in the Kconfig
->>> because the next patch will add interrupt support.
->>> 
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>  drivers/mfd/Kconfig    |  19 +++++
->>>  drivers/mfd/Makefile   |   2 +
->>>  drivers/mfd/sl28cpld.c | 153 
->>> +++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 174 insertions(+)
->>>  create mode 100644 drivers/mfd/sl28cpld.c
->>> 
->>> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
->>> index 0a59249198d3..be0c8d93c526 100644
->>> --- a/drivers/mfd/Kconfig
->>> +++ b/drivers/mfd/Kconfig
->>> @@ -2060,5 +2060,24 @@ config SGI_MFD_IOC3
->>>  	  If you have an SGI Origin, Octane, or a PCI IOC3 card,
->>>  	  then say Y. Otherwise say N.
->>> 
->>> +config MFD_SL28CPLD
->>> +	bool "Kontron sl28 core driver"
->>> +	depends on I2C=y
->>> +	depends on OF
->>> +	select REGMAP_I2C
->>> +	select MFD_CORE
->>> +	help
->>> +	  This option enables support for the board management controller
->>> +	  found on the Kontron sl28 CPLD. You have to select individual
->>> +	  functions, such as watchdog, GPIO, etc, under the corresponding 
->>> menus
->>> +	  in order to enable them.
->>> +
->>> +	  Currently supported boards are:
->>> +
->>> +		Kontron SMARC-sAL28
->>> +
->>> +	  To compile this driver as a module, choose M here: the module 
->>> will be
->>> +	  called sl28cpld.
->>> +
->>>  endmenu
->>>  endif
->>> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
->>> index f935d10cbf0f..9bc38863b9c7 100644
->>> --- a/drivers/mfd/Makefile
->>> +++ b/drivers/mfd/Makefile
->>> @@ -259,3 +259,5 @@ obj-$(CONFIG_MFD_ROHM_BD718XX)	+= rohm-bd718x7.o
->>>  obj-$(CONFIG_MFD_STMFX) 	+= stmfx.o
->>> 
->>>  obj-$(CONFIG_SGI_MFD_IOC3)	+= ioc3.o
->>> +
->>> +obj-$(CONFIG_MFD_SL28CPLD)	+= sl28cpld.o
->>> diff --git a/drivers/mfd/sl28cpld.c b/drivers/mfd/sl28cpld.c
->>> new file mode 100644
->>> index 000000000000..1e5860cc7ffc
->>> --- /dev/null
->>> +++ b/drivers/mfd/sl28cpld.c
->>> @@ -0,0 +1,153 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/*
->>> + * MFD core for the sl28cpld.
->>> + *
->>> + * Copyright 2019 Kontron Europe GmbH
->>> + */
->>> +
->>> +#include <linux/i2c.h>
->>> +#include <linux/interrupt.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/mfd/core.h>
->>> +#include <linux/module.h>
->>> +#include <linux/of_platform.h>
->>> +#include <linux/regmap.h>
->>> +
->>> +#define SL28CPLD_VERSION	0x03
->>> +#define SL28CPLD_WATCHDOG_BASE	0x04
->>> +#define SL28CPLD_HWMON_FAN_BASE	0x0b
->>> +#define SL28CPLD_PWM0_BASE	0x0c
->>> +#define SL28CPLD_PWM1_BASE	0x0e
->>> +#define SL28CPLD_GPIO0_BASE	0x10
->>> +#define SL28CPLD_GPIO1_BASE	0x15
->>> +#define SL28CPLD_GPO_BASE	0x1a
->>> +#define SL28CPLD_GPI_BASE	0x1b
->>> +#define SL28CPLD_INTC_BASE	0x1c
->> 
->> If you want to use 'reg' in the binding, these are the numbers you
->> should be using rather than making up numbering!
-> 
-> My motivation is that I don't want to hardcode the internal addresses
-> of the management controller in the device tree. For example if they
-> will move around with a later update of the controller, so a driver can
-> be compatible with both the old and the new version. If they are in the
-> device tree, only one register layout is possible.
-> 
->> However, I still don't think you need any child nodes. All the data in
->> the DT binding is right here in the driver already. There's no 
->> advantage
->> to putting child nodes in DT, because this driver still has to be
->> updated if you add more nodes.
-> 
-> But then any phandle will reference the mfd device. And for example 
-> there
-> are two different interrupt controllers, that is the INTC and the 
-> GPIO[01],
-> which will then be combined into one device tree node, right?
-> 
-> So the mfd node would be
-> 
-> cpld: sl28cpld@4a {
->   interrupt-controller;
->   #interrupt-cells = <2>;
->   gpio-controller;
->   #gpio-cells = <2>;
->   [..]
-> };
-> 
-> and then depending on the mapping one could use:
-> 
-> interrupts-extended = <&cpld 0 FLAGS>; /* gpio0 line 0 */
-> interrupts-extended = <&cpld 8 FLAGS>; /* gpio1 line 0 */
-> interrupts-extended = <&cpld 12 FLAGS>; /* irq0 */
-> 
-> gpios = <&cpld 0> /* gpio0 line 0 */
-> 
-> But there is also offset 12, but then it is the GPI controller:
-> 
-> gpios = <&cpld 12> /* gpi line 0, nothing to do with irq0 */
-> 
-> I don't know if this is good practice, I guess you have to tell me. And
-> is it possible to combine any sub device into the mfd node in that way?
+Before commit cfc4c189bc70 ("pwm: Read initial hardware state at request
+time"), a driver's get_state callback would get called once per PWM from
+pwmchip_add().
 
-Oh I don't think that will work for the watchdog. If you just have one
-watchdog it just looks odd.
+pwm-lpss' runtime-pm code was relying on this, getting a runtime-pm ref for
+PWMs which are enabled at probe time from within its get_state callback,
+before enabling runtime-pm.
 
-cpld: sl28cpld@4a {
-    interrupt-controller;
-    #interrupt-cells = <2>;
-    gpio-controller;
-    #gpio-cells = <2>;
-    timeout-sec = <10>; /* watchdog property */
-};
+The change to calling get_state at request time causes a number of
+problems:
 
-And won't pass the dtbindings check because the nodename is not
-"watchdog(@[0-9]+)?". But it really falls short if you want to have
-two watchdogs with different properties.
+1. PWMs enabled at probe time may get runtime suspended before they are
+requested, causing e.g. a LCD backlight controlled by the PWM to turn off.
 
--michael
+2. When the request happens when the PWM has been runtime suspended, the
+ctrl register will read all 1 / 0xffffffff, causing get_state to store
+bogus values in the pwm_state.
+
+3. get_state was using an async pm_runtime_get() call, because it assumed
+that runtime-pm has not been enabled yet. If shortly after the request an
+apply call is made, then the pwm_lpss_is_updating() check may trigger
+because the resume triggered by the pm_runtime_get() call is not complete
+yet, so the ctrl register still reads all 1 / 0xffffffff.
+
+This commit fixes these issues by moving the initial pm_runtime_get() call
+for PWMs which are enabled at probe time to the pwm_lpss_probe() function;
+and by making get_state take a runtime-pm ref before reading the ctrl reg.
+
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1828927
+Fixes: cfc4c189bc70 ("pwm: Read initial hardware state at request time")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/pwm/pwm-lpss.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 75bbfe5f3bc2..9d965ffe66d1 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -158,7 +158,6 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
+-/* This function gets called once from pwmchip_add to get the initial state */
+ static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			       struct pwm_state *state)
+ {
+@@ -167,6 +166,8 @@ static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long long base_unit, freq, on_time_div;
+ 	u32 ctrl;
+ 
++	pm_runtime_get_sync(chip->dev);
++
+ 	base_unit_range = BIT(lpwm->info->base_unit_bits);
+ 
+ 	ctrl = pwm_lpss_read(pwm);
+@@ -187,8 +188,7 @@ static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	state->polarity = PWM_POLARITY_NORMAL;
+ 	state->enabled = !!(ctrl & PWM_ENABLE);
+ 
+-	if (state->enabled)
+-		pm_runtime_get(chip->dev);
++	pm_runtime_put(chip->dev);
+ }
+ 
+ static const struct pwm_ops pwm_lpss_ops = {
+@@ -202,7 +202,8 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+ {
+ 	struct pwm_lpss_chip *lpwm;
+ 	unsigned long c;
+-	int ret;
++	int i, ret;
++	u32 ctrl;
+ 
+ 	if (WARN_ON(info->npwm > MAX_PWMS))
+ 		return ERR_PTR(-ENODEV);
+@@ -232,6 +233,12 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+ 		return ERR_PTR(ret);
+ 	}
+ 
++	for (i = 0; i < lpwm->info->npwm; i++) {
++		ctrl = pwm_lpss_read(&lpwm->chip.pwms[i]);
++		if (ctrl & PWM_ENABLE)
++			pm_runtime_get(dev);
++	}
++
+ 	return lpwm;
+ }
+ EXPORT_SYMBOL_GPL(pwm_lpss_probe);
+-- 
+2.26.0
