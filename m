@@ -1,7 +1,7 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [RESEND PATCH v14 04/11] pwm: clps711x: Cast period to u32 before use as divisor
-Date: Tue, 12 May 2020 17:39:38 -0700
-Message-ID: <1d6918c3fc2976bdbdb687bf54a2ef09fc1558db.1589330178.git.gurus@codeaurora.org>
+Subject: [RESEND PATCH v14 06/11] pwm: imx27: Use 64-bit division macro and function
+Date: Tue, 12 May 2020 17:39:40 -0700
+Message-ID: <de0bebdbfffd28c87f50bb6ef1751d352fb960a2.1589330178.git.gurus@codeaurora.org>
 References: <cover.1589330178.git.gurus@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
@@ -9,37 +9,127 @@ In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
 References: <cover.1589330178.git.gurus@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_args.period's datatype
-to u64, prepare for this transition by typecasting it to u32.
+Since the PWM framework is switching struct pwm_state.period's
+datatype to u64, prepare for this transition by using
+DIV_ROUND_UP_ULL to handle a 64-bit dividend, and div64_u64 to handle a
+64-bit divisor.
 
-Also, since the dividend is still a 32-bit number, any divisor greater
-than the numerator will cause the quotient to be zero, so return 0 in
-that case to efficiently skip the division.
+Also handle a possible overflow in the calculation of period_cycles when
+both clk_rate and period are large numbers. This logic was unit-tested
+out by calculating period_cycles using both the existing logic and the
+proposed one, and the results are as below.
 
+----------------------------------------------------------------------------
+ clk_rate            period           existing            proposed
+----------------------------------------------------------------------------
+1000000000   18446744073709551615    18446744072    18446744073000000000
+                   (U64_MAX)
+----------------------------------------------------------------------------
+1000000000        4294967291         4294967291         4294967291
+----------------------------------------------------------------------------
+
+Overflow occurs in the first case with the existing logic, whereas the
+proposed logic handles it better, sacrificing some precision in a best-effort
+attempt to handle overflow. As for the second case where there are
+more typical values of period, the proposed logic handles that correctly
+too.
+
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
 ---
- drivers/pwm/pwm-clps711x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-imx27.c | 53 +++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 45 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-index 924d39a..da771b1 100644
---- a/drivers/pwm/pwm-clps711x.c
-+++ b/drivers/pwm/pwm-clps711x.c
-@@ -43,7 +43,10 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
- static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
- {
- 	/* Duty cycle 0..15 max */
--	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
-+	if (pwm->args.period > (v * 0xf))
-+		return 0;
-+
-+	return DIV_ROUND_CLOSEST(v * 0xf, (u32)pwm->args.period);
+diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
+index a6e40d4..164cb65 100644
+--- a/drivers/pwm/pwm-imx27.c
++++ b/drivers/pwm/pwm-imx27.c
+@@ -203,7 +203,7 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
+ 	sr = readl(imx->mmio_base + MX3_PWMSR);
+ 	fifoav = FIELD_GET(MX3_PWMSR_FIFOAV, sr);
+ 	if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
+-		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
++		period_ms = DIV_ROUND_UP_ULL(pwm_get_period(pwm),
+ 					 NSEC_PER_MSEC);
+ 		msleep(period_ms);
+ 
+@@ -213,6 +213,45 @@ static void pwm_imx27_wait_fifo_slot(struct pwm_chip *chip,
+ 	}
  }
  
- static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
++static int pwm_imx27_calc_period_cycles(const struct pwm_state *state,
++					unsigned long clk_rate,
++					unsigned long *period_cycles)
++{
++	u64 c = 0, c1, c2;
++
++	c1 = clk_rate;
++	c2 = state->period;
++	if (c2 > c1) {
++		c2 = c1;
++		c1 = state->period;
++	}
++
++	if (!c1 || !c2) {
++		pr_err("clk rate and period should be nonzero\n");
++		return -EINVAL;
++	}
++
++	if (c2 <= div64_u64(U64_MAX, c1)) {
++		c = c1 * c2;
++		do_div(c, 1000000000);
++	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000))) {
++		do_div(c1, 1000);
++		c = c1 * c2;
++		do_div(c, 1000000);
++	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000))) {
++		do_div(c1, 1000000);
++		c = c1 * c2;
++		do_div(c, 1000);
++	} else if (c2 <= div64_u64(U64_MAX, div64_u64(c1, 1000000000))) {
++		do_div(c1, 1000000000);
++		c = c1 * c2;
++	}
++
++	*period_cycles = c;
++
++	return 0;
++}
++
+ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			   const struct pwm_state *state)
+ {
+@@ -225,18 +264,16 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	pwm_get_state(pwm, &cstate);
+ 
+-	c = clk_get_rate(imx->clk_per);
+-	c *= state->period;
+-
+-	do_div(c, 1000000000);
+-	period_cycles = c;
++	ret = pwm_imx27_calc_period_cycles(state, clk_get_rate(imx->clk_per),
++					   &period_cycles);
++	if (ret)
++		return ret;
+ 
+ 	prescale = period_cycles / 0x10000 + 1;
+ 
+ 	period_cycles /= prescale;
+ 	c = (unsigned long long)period_cycles * state->duty_cycle;
+-	do_div(c, state->period);
+-	duty_cycles = c;
++	duty_cycles = div64_u64(c, state->period);
+ 
+ 	/*
+ 	 * according to imx pwm RM, the real period value should be PERIOD
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
