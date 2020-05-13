@@ -1,154 +1,44 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 05/16] mfd: Add support for Kontron sl28cpld management controller
-Date: Tue, 12 May 2020 16:59:12 -0500
-Message-ID: <CAL_JsqJBAghgdKmH1OfpH0B508st7Gx3GMtjufjZvBWM_c6GAQ@mail.gmail.com>
-References: <20200423174543.17161-1-michael@walle.cc> <20200423174543.17161-6-michael@walle.cc>
- <20200511211359.GB3518@bogus> <f0fafa63047f00e912013b137e4db15c@walle.cc>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <f0fafa63047f00e912013b137e4db15c@walle.cc>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux HWMON List <linux-hwmon@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: [RESEND PATCH v14 02/11] hwmon: pwm-fan: Use 64-bit division macro
+Date: Tue, 12 May 2020 17:39:36 -0700
+Message-ID: <cc56a6017ecd1a8e8abba9ededf18d9e2311a4c2.1589330178.git.gurus@codeaurora.org>
+References: <cover.1589330178.git.gurus@codeaurora.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:62897 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726031AbgEMAjs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 May 2020 20:39:48 -0400
+In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
+References: <cover.1589330178.git.gurus@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
 
-On Mon, May 11, 2020 at 4:45 PM Michael Walle <michael@walle.cc> wrote:
->
-> Am 2020-05-11 23:13, schrieb Rob Herring:
-> > On Thu, Apr 23, 2020 at 07:45:32PM +0200, Michael Walle wrote:
-> >> This patch adds core support for the board management controller found
-> >> on the SMARC-sAL28 board. It consists of the following functions:
-> >>  - watchdog
-> >>  - GPIO controller
-> >>  - PWM controller
-> >>  - fan sensor
-> >>  - interrupt controller
-> >>
-> >> At the moment, this controller is used on the Kontron SMARC-sAL28
-> >> board.
-> >>
-> >> Please note that the MFD driver is defined as bool in the Kconfig
-> >> because the next patch will add interrupt support.
-> >>
-> >> Signed-off-by: Michael Walle <michael@walle.cc>
-> >> ---
-> >>  drivers/mfd/Kconfig    |  19 +++++
-> >>  drivers/mfd/Makefile   |   2 +
-> >>  drivers/mfd/sl28cpld.c | 153
-> >> +++++++++++++++++++++++++++++++++++++++++
-> >>  3 files changed, 174 insertions(+)
-> >>  create mode 100644 drivers/mfd/sl28cpld.c
-> >>
-> >> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> >> index 0a59249198d3..be0c8d93c526 100644
-> >> --- a/drivers/mfd/Kconfig
-> >> +++ b/drivers/mfd/Kconfig
-> >> @@ -2060,5 +2060,24 @@ config SGI_MFD_IOC3
-> >>        If you have an SGI Origin, Octane, or a PCI IOC3 card,
-> >>        then say Y. Otherwise say N.
-> >>
-> >> +config MFD_SL28CPLD
-> >> +    bool "Kontron sl28 core driver"
-> >> +    depends on I2C=y
-> >> +    depends on OF
-> >> +    select REGMAP_I2C
-> >> +    select MFD_CORE
-> >> +    help
-> >> +      This option enables support for the board management controller
-> >> +      found on the Kontron sl28 CPLD. You have to select individual
-> >> +      functions, such as watchdog, GPIO, etc, under the corresponding
-> >> menus
-> >> +      in order to enable them.
-> >> +
-> >> +      Currently supported boards are:
-> >> +
-> >> +            Kontron SMARC-sAL28
-> >> +
-> >> +      To compile this driver as a module, choose M here: the module will
-> >> be
-> >> +      called sl28cpld.
-> >> +
-> >>  endmenu
-> >>  endif
-> >> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> >> index f935d10cbf0f..9bc38863b9c7 100644
-> >> --- a/drivers/mfd/Makefile
-> >> +++ b/drivers/mfd/Makefile
-> >> @@ -259,3 +259,5 @@ obj-$(CONFIG_MFD_ROHM_BD718XX)   += rohm-bd718x7.o
-> >>  obj-$(CONFIG_MFD_STMFX)     += stmfx.o
-> >>
-> >>  obj-$(CONFIG_SGI_MFD_IOC3)  += ioc3.o
-> >> +
-> >> +obj-$(CONFIG_MFD_SL28CPLD)  += sl28cpld.o
-> >> diff --git a/drivers/mfd/sl28cpld.c b/drivers/mfd/sl28cpld.c
-> >> new file mode 100644
-> >> index 000000000000..1e5860cc7ffc
-> >> --- /dev/null
-> >> +++ b/drivers/mfd/sl28cpld.c
-> >> @@ -0,0 +1,153 @@
-> >> +// SPDX-License-Identifier: GPL-2.0-only
-> >> +/*
-> >> + * MFD core for the sl28cpld.
-> >> + *
-> >> + * Copyright 2019 Kontron Europe GmbH
-> >> + */
-> >> +
-> >> +#include <linux/i2c.h>
-> >> +#include <linux/interrupt.h>
-> >> +#include <linux/kernel.h>
-> >> +#include <linux/mfd/core.h>
-> >> +#include <linux/module.h>
-> >> +#include <linux/of_platform.h>
-> >> +#include <linux/regmap.h>
-> >> +
-> >> +#define SL28CPLD_VERSION    0x03
-> >> +#define SL28CPLD_WATCHDOG_BASE      0x04
-> >> +#define SL28CPLD_HWMON_FAN_BASE     0x0b
-> >> +#define SL28CPLD_PWM0_BASE  0x0c
-> >> +#define SL28CPLD_PWM1_BASE  0x0e
-> >> +#define SL28CPLD_GPIO0_BASE 0x10
-> >> +#define SL28CPLD_GPIO1_BASE 0x15
-> >> +#define SL28CPLD_GPO_BASE   0x1a
-> >> +#define SL28CPLD_GPI_BASE   0x1b
-> >> +#define SL28CPLD_INTC_BASE  0x1c
-> >
-> > If you want to use 'reg' in the binding, these are the numbers you
-> > should be using rather than making up numbering!
->
-> My motivation is that I don't want to hardcode the internal addresses
-> of the management controller in the device tree. For example if they
-> will move around with a later update of the controller, so a driver can
-> be compatible with both the old and the new version. If they are in the
-> device tree, only one register layout is possible.
+Since the PWM framework is switching struct pwm_args.period's datatype
+to u64, prepare for this transition by using DIV_ROUND_UP_ULL to handle
+a 64-bit dividend.
 
-I don't understand, if the addresses change, then the above defines
-have to change. So your driver is only compatible with 1 version. If
-you change the CPLD, then that's a h/w change and your h/w description
-(DT) should change. That can either be the compatible string changing
-and updating the driver with new match data such as register offsets
-or all the differences are in DT and there's no kernel change.
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/hwmon/pwm-fan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > However, I still don't think you need any child nodes. All the data in
-> > the DT binding is right here in the driver already. There's no
-> > advantage
-> > to putting child nodes in DT, because this driver still has to be
-> > updated if you add more nodes.
->
-> But then any phandle will reference the mfd device. And for example
-> there
-> are two different interrupt controllers, that is the INTC and the
-> GPIO[01],
-> which will then be combined into one device tree node, right?
-
-You either have to add a cell for 'bank' or divide the 1st cell into a
-bank and index. Both have been done before.
-
-To go the other direction, AIUI you shouldn't need OF_MFD_CELL_REG
-entries if you have the child devices in DT. Pick one way or the
-other. It's ultimately a judgement call. For a one-off device, sub
-devices in DT doesn't really buy you anything. If you have sub-blocks
-showing up multiple devices, then sub devices makes sense. If there's
-only 2-3 combinations, then it's a toss up.
-
-Rob
+diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+index 30b7b3e..17bb642 100644
+--- a/drivers/hwmon/pwm-fan.c
++++ b/drivers/hwmon/pwm-fan.c
+@@ -447,7 +447,7 @@ static int pwm_fan_resume(struct device *dev)
+ 		return 0;
+ 
+ 	pwm_get_args(ctx->pwm, &pargs);
+-	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
++	duty = DIV_ROUND_UP_ULL(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
+ 	ret = pwm_config(ctx->pwm, duty, pargs.period);
+ 	if (ret)
+ 		return ret;
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
