@@ -1,52 +1,52 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [RESEND PATCH v14 10/11] clk: pwm: Use 64-bit division function
-Date: Tue, 12 May 2020 17:39:44 -0700
-Message-ID: <70a0b215d4db4da8cec39ae02c5c2027e626b4b1.1589330178.git.gurus@codeaurora.org>
+Subject: [RESEND PATCH v14 03/11] ir-rx51: Use 64-bit division macro
+Date: Tue, 12 May 2020 17:39:37 -0700
+Message-ID: <68f17a69e1c818ee80d6c29c852df35a126b47c6.1589330178.git.gurus@codeaurora.org>
 References: <cover.1589330178.git.gurus@codeaurora.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:47113 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731889AbgEMAjv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 May 2020 20:39:51 -0400
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
 References: <cover.1589330178.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
 To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>, Daniel Thompson <daniel.thompson@linaro.org>, Arnd Bergmann <arnd@arndb.de>, David Collins <collinsd@codeaurora.org>, Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Dan Carpenter <dan.carpenter@oracle.com>, Joe Perches <joe@perches.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Guenter Roeck <linux@roeck-us.net>
+List-Id: linux-pwm@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_args.period's datatype
-to u64, prepare for this transition by using div64_u64() to handle a
-64-bit divisor.
-
-Also ensure that divide-by-zero (with fixed_rate as denominator) does
-not happen with an explicit check with probe failure as a consequence.
+Since the PWM framework is switching struct pwm_state.period's datatype
+to u64, prepare for this transition by using DIV_ROUND_CLOSEST_ULL to
+handle a 64-bit dividend.
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Sean Young <sean@mess.org>
 ---
- drivers/clk/clk-pwm.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/media/rc/ir-rx51.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/clk-pwm.c b/drivers/clk/clk-pwm.c
-index 87fe0b0e..86f2e2d 100644
---- a/drivers/clk/clk-pwm.c
-+++ b/drivers/clk/clk-pwm.c
-@@ -89,7 +89,12 @@ static int clk_pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/media/rc/ir-rx51.c b/drivers/media/rc/ir-rx51.c
+index 8574eda..9a5dfd7 100644
+--- a/drivers/media/rc/ir-rx51.c
++++ b/drivers/media/rc/ir-rx51.c
+@@ -241,7 +241,8 @@ static int ir_rx51_probe(struct platform_device *dev)
  	}
  
- 	if (of_property_read_u32(node, "clock-frequency", &clk_pwm->fixed_rate))
--		clk_pwm->fixed_rate = NSEC_PER_SEC / pargs.period;
-+		clk_pwm->fixed_rate = div64_u64(NSEC_PER_SEC, pargs.period);
-+
-+	if (!clk_pwm->fixed_rate) {
-+		dev_err(&pdev->dev, "fixed_rate cannot be zero\n");
-+		return -EINVAL;
-+	}
+ 	/* Use default, in case userspace does not set the carrier */
+-	ir_rx51.freq = DIV_ROUND_CLOSEST(pwm_get_period(pwm), NSEC_PER_SEC);
++	ir_rx51.freq = DIV_ROUND_CLOSEST_ULL(pwm_get_period(pwm),
++			NSEC_PER_SEC);
+ 	pwm_put(pwm);
  
- 	if (pargs.period != NSEC_PER_SEC / clk_pwm->fixed_rate &&
- 	    pargs.period != DIV_ROUND_UP(NSEC_PER_SEC, clk_pwm->fixed_rate)) {
+ 	hrtimer_init(&ir_rx51.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
