@@ -1,45 +1,104 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [RESEND PATCH v14 01/11] drm/i915: Use 64-bit division macro
-Date: Tue, 12 May 2020 17:39:35 -0700
-Message-ID: <4b56ba06f4f1e63cf50858d3e45c88057dc443e4.1589330178.git.gurus@codeaurora.org>
-References: <cover.1589330178.git.gurus@codeaurora.org>
+From: Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v3 05/16] mfd: Add support for Kontron sl28cpld management
+ controller
+Date: Thu, 14 May 2020 00:15:22 +0200
+Message-ID: <c170d7ad3874567e624bb827c1eac661@walle.cc>
+References: <20200423174543.17161-1-michael@walle.cc>
+ <20200423174543.17161-6-michael@walle.cc> <20200511211359.GB3518@bogus>
+ <f0fafa63047f00e912013b137e4db15c@walle.cc>
+ <CAL_JsqJBAghgdKmH1OfpH0B508st7Gx3GMtjufjZvBWM_c6GAQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:47113 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726031AbgEMAjt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 May 2020 20:39:49 -0400
-In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
-In-Reply-To: <cover.1589330178.git.gurus@codeaurora.org>
-References: <cover.1589330178.git.gurus@codeaurora.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730532AbgEMWP3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 May 2020 18:15:29 -0400
+In-Reply-To: <CAL_JsqJBAghgdKmH1OfpH0B508st7Gx3GMtjufjZvBWM_c6GAQ@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux HWMON List <linux-hwmon@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>
 
-Since the PWM framework is switching struct pwm_state.duty_cycle's
-datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
-to handle a 64-bit dividend.
+Am 2020-05-12 23:59, schrieb Rob Herring:
+> On Mon, May 11, 2020 at 4:45 PM Michael Walle <michael@walle.cc> wrote:
+>> 
+>> Am 2020-05-11 23:13, schrieb Rob Herring:
+>> > On Thu, Apr 23, 2020 at 07:45:32PM +0200, Michael Walle wrote:
+>> >> +#define SL28CPLD_VERSION    0x03
+>> >> +#define SL28CPLD_WATCHDOG_BASE      0x04
+>> >> +#define SL28CPLD_HWMON_FAN_BASE     0x0b
+>> >> +#define SL28CPLD_PWM0_BASE  0x0c
+>> >> +#define SL28CPLD_PWM1_BASE  0x0e
+>> >> +#define SL28CPLD_GPIO0_BASE 0x10
+>> >> +#define SL28CPLD_GPIO1_BASE 0x15
+>> >> +#define SL28CPLD_GPO_BASE   0x1a
+>> >> +#define SL28CPLD_GPI_BASE   0x1b
+>> >> +#define SL28CPLD_INTC_BASE  0x1c
+>> >
+>> > If you want to use 'reg' in the binding, these are the numbers you
+>> > should be using rather than making up numbering!
+>> 
+>> My motivation is that I don't want to hardcode the internal addresses
+>> of the management controller in the device tree. For example if they
+>> will move around with a later update of the controller, so a driver 
+>> can
+>> be compatible with both the old and the new version. If they are in 
+>> the
+>> device tree, only one register layout is possible.
+> 
+> I don't understand, if the addresses change, then the above defines
+> have to change. So your driver is only compatible with 1 version. If
+> you change the CPLD, then that's a h/w change and your h/w description
+> (DT) should change. That can either be the compatible string changing
+> and updating the driver with new match data such as register offsets
+> or all the differences are in DT and there's no kernel change.
 
-Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Acked-by: Jani Nikula <jani.nikula@intel.com>
----
- drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The CPLD and the board is designed in a way that it is possible to
+update and/or change its function (or parts of it). It must not be
+a hardware change, although I admit thats a bit of a grey area wether
+you treat it as hardware or "firmware". Anyway, yes you'd have to
+change the register offsets, but as this is code it might support
+different register offsets. For example you could dynamically add
+functionality, if there is a newer controller version while still
+being compatible with older versions.
 
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index 276f438..81547a0 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1920,7 +1920,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 		return retval;
- 	}
- 
--	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
-+	level = DIV_ROUND_UP_ULL(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
- 			     CRC_PMIC_PWM_PERIOD_NS);
- 	panel->backlight.level =
- 		intel_panel_compute_brightness(connector, level);
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+>> > However, I still don't think you need any child nodes. All the data in
+>> > the DT binding is right here in the driver already. There's no
+>> > advantage
+>> > to putting child nodes in DT, because this driver still has to be
+>> > updated if you add more nodes.
+>> 
+>> But then any phandle will reference the mfd device. And for example
+>> there
+>> are two different interrupt controllers, that is the INTC and the
+>> GPIO[01],
+>> which will then be combined into one device tree node, right?
+> 
+> You either have to add a cell for 'bank' or divide the 1st cell into a
+> bank and index. Both have been done before.
+
+But this won't work with watchdogs, correct? See
+https://lore.kernel.org/linux-devicetree/7acbb6d9b2240b1856136fa35c1318bf@walle.cc/
+
+> To go the other direction, AIUI you shouldn't need OF_MFD_CELL_REG
+> entries if you have the child devices in DT.
+
+This is a general problem IMHO. There are mfd drivers which have mfd
+cells and a device tree node associated with each cell. But it just
+works as long as there is only one sub device per unique compatible
+string. So you cannot have multiple mfd cells with the same
+compatible string.
+
+That being said, I can try to reimplement it using
+of_platform_populate() and its internal offset as its unit address.
+
+> Pick one way or the
+> other. It's ultimately a judgement call. For a one-off device, sub
+> devices in DT doesn't really buy you anything. If you have sub-blocks
+> showing up multiple devices, then sub devices makes sense. If there's
+> only 2-3 combinations, then it's a toss up.
+
+-michael
