@@ -1,120 +1,47 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v1 08/18] backlight: add backlight_is_blank()
-Date: Thu, 14 May 2020 22:03:49 +0200
-Message-ID: <20200514200349.GD206103@phenom.ffwll.local>
-References: <20200514191001.457441-1-sam@ravnborg.org>
- <20200514191001.457441-9-sam@ravnborg.org>
- <20200514194116.GB206103@phenom.ffwll.local>
- <20200514194646.GA460099@ravnborg.org>
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Subject: Re: [PATCH v3 02/16] mfd: mfd-core: Don't overwrite the dma_mask of
+ the child device
+Date: Thu, 14 May 2020 22:45:53 +0200
+Message-ID: <8fb998f882938680d98f1c2f6f8254c1@walle.cc>
+References: <20200423174543.17161-1-michael@walle.cc>
+ <20200423174543.17161-3-michael@walle.cc>
+ <20200428124548.GS185537@smile.fi.intel.com>
+ <3cd3705a-4f48-6a46-e869-3ee11dc17323@arm.com>
+ <20200428142938.GX185537@smile.fi.intel.com>
+ <6ccad285-7b5f-3037-d4d5-ff4d9571b612@arm.com>
+ <20200428152543.GI5677@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20200514194646.GA460099@ravnborg.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Sam Ravnborg <sam@ravnborg.org>
-Cc: Daniel Vetter <daniel@ffwll.ch>, Kate Stewart <kstewart@linuxfoundation.org>, Kefeng Wang <wangkefeng.wang@huawei.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, dri-devel@lists.freedesktop.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Russell King <linux@armlinux.org.uk>, Andy Gross <agross@kernel.org>, Uwe Kleine Konig <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Michael Hennerich <michael.hennerich@analog.com>, Bartlomiej Zolnierkiewicz <b.zo>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200428152543.GI5677-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tgl>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, May 14, 2020 at 09:46:46PM +0200, Sam Ravnborg wrote:
-> Hi Daniel.
+Am 2020-04-28 17:25, schrieb Mark Brown:
+> On Tue, Apr 28, 2020 at 03:49:49PM +0100, Robin Murphy wrote:
 > 
-> On Thu, May 14, 2020 at 09:41:16PM +0200, Daniel Vetter wrote:
-> > On Thu, May 14, 2020 at 09:09:51PM +0200, Sam Ravnborg wrote:
-> > > The backlight support has two properties that express the state:
-> > > - power
-> > > - state
-> > > 
-> > > It is un-documented and easy to get wrong.
-> > > Add backlight_is_blank() helper to make it simpler for drivers
-> > > to get the check of the state correct.
-> > > 
-> > > A lot of drivers also includes checks for fb_blank.
-> > > This check is redundant when the state is checked
-> > > as thus not needed in this helper function.
-> > > Rolling out this helper to all relevant backlight drivers
-> > > will eliminate almost all accesses to fb_blank.
-> > > 
-> > > Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-> > > Cc: Lee Jones <lee.jones@linaro.org>
-> > > Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> > > Cc: Jingoo Han <jingoohan1@gmail.com>
-> > > ---
-> > >  include/linux/backlight.h | 17 +++++++++++++++++
-> > >  1 file changed, 17 insertions(+)
-> > > 
-> > > diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-> > > index b7839ea9d00a..e67e926de1e2 100644
-> > > --- a/include/linux/backlight.h
-> > > +++ b/include/linux/backlight.h
-> > > @@ -165,6 +165,23 @@ static inline int backlight_disable(struct backlight_device *bd)
-> > >  	return backlight_update_status(bd);
-> > >  }
-> > >  
-> > > +/**
-> > > + * backlight_is_blank - Return true if display is expected to be blank
-> > > + * @bd: the backlight device
-> > > + *
-> > > + * Display is expected to be blank if any of these is true::
-> > > + *
-> > > + *   1) if power in not UNBLANK
-> > > + *   2) if state indicate BLANK or SUSPENDED
-> > > + *
-> > > + * Returns true if display is expected to be blank, false otherwise.
-> > > + */
-> > > +static inline bool backlight_is_blank(struct backlight_device *bd)
-> > > +{
-> > > +	return bd->props.power != FB_BLANK_UNBLANK ||
-> > > +	       bd->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK);
-> > 
-> > This definition here doesn't match backlight_enabled/disable() functions
-> > we added. I think to avoid lots of pondering and surprises we should try
-> > to make sure these are all matching, so that once we rolled them out
-> > everywhere, we can just replace the complicated state with one flag.
+>> For better or worse, the platform bus is the dumping ground for random 
+>> crap,
+>> so we just have to deal with all the abstraction breakage that leaks 
+>> out of
+>> that.
 > 
-> Will add it in v2. When all user of fb_blank is dropped we can
-> safely remove it then.
-> And as you said on irc, the risk of introducing regressions is lower
-> as we see some creative uses in the drivers today.
-> I already did some kind of audit - but I may have missed something.
+> The reason we're using the platform bus for this is that historically
+> people were creating buses which were essentially carbon copies of the
+> platform bus with the name changed and it was felt that rather than
+> duplicate code it was better to just use platform devices with no MMIO
+> ranges defined.  If there's some assumptions about DMA for platform
+> devices floating about somewhere it might be reasonable to revisit this
+> and create a non-DMA variant of platform devices since there is a
+> meaningful difference.
 
-btw one pattern I've seen in a few places with a few greps I've just done
-is maybe worth putting into a helper too:
-
-backlight_force_enable(bl)
-{
-	if (bl->brightness == 0)
-		bl->brightness = bl->max_brightness;
-	backlight_enable(backlight);
-}
-
-Just in case you run out of ideas anytime soon :-)
-
-Cheers, Daniel
-
-> 
-> 	Sam
-> 
-> > 
-> > > +}
-> > > +
-> > >  extern struct backlight_device *backlight_device_register(const char *name,
-> > >  	struct device *dev, void *devdata, const struct backlight_ops *ops,
-> > >  	const struct backlight_properties *props);
-> > > -- 
-> > > 2.25.1
-> > > 
-> > 
-> > -- 
-> > Daniel Vetter
-> > Software Engineer, Intel Corporation
-> > http://blog.ffwll.ch
-> > _______________________________________________
-> > dri-devel mailing list
-> > dri-devel@lists.freedesktop.org
-> > https://lists.freedesktop.org/mailman/listinfo/dri-devel
+Was there any conclusion? Should I keep or drop this patch in the next 
+version
+of this series?
 
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+-michael
