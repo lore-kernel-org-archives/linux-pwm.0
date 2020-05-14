@@ -1,113 +1,94 @@
-From: Anson Huang <Anson.Huang@nxp.com>
-Subject: [PATCH 2/2] dt-bindings: pwm: Convert imx tpm pwm to json-schema
-Date: Thu, 14 May 2020 14:54:19 +0800
-Message-ID: <1589439259-28510-2-git-send-email-Anson.Huang@nxp.com>
-References: <1589439259-28510-1-git-send-email-Anson.Huang@nxp.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1589439259-28510-1-git-send-email-Anson.Huang@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, p.zabel@pengutronix.de, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: Linux-imx@nxp.com
+From: Anson Huang <Anson.Huang-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH] dt-bindings: pwm: Convert mxs pwm to json-schema
+Date: Thu, 14 May 2020 19:41:10 +0800
+Message-ID: <1589456470-2658-1-git-send-email-Anson.Huang@nxp.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Linux-imx-3arQi8VN3Tc@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Convert the imx tpm pwm binding to DT schema format using json-schema.
+Convert the mxs pwm binding to DT schema format using json-schema.
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+Signed-off-by: Anson Huang <Anson.Huang-3arQi8VN3Tc@public.gmane.org>
 ---
- .../devicetree/bindings/pwm/imx-tpm-pwm.txt        | 22 ---------
- .../devicetree/bindings/pwm/imx-tpm-pwm.yaml       | 55 ++++++++++++++++++++++
- 2 files changed, 55 insertions(+), 22 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/imx-tpm-pwm.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/imx-tpm-pwm.yaml
+ Documentation/devicetree/bindings/pwm/mxs-pwm.txt  | 17 ---------
+ Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 43 ++++++++++++++++++++++
+ 2 files changed, 43 insertions(+), 17 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/mxs-pwm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
 
-diff --git a/Documentation/devicetree/bindings/pwm/imx-tpm-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-tpm-pwm.txt
+diff --git a/Documentation/devicetree/bindings/pwm/mxs-pwm.txt b/Documentation/devicetree/bindings/pwm/mxs-pwm.txt
 deleted file mode 100644
-index 5bf2095..0000000
---- a/Documentation/devicetree/bindings/pwm/imx-tpm-pwm.txt
+index a1b8a48..0000000
+--- a/Documentation/devicetree/bindings/pwm/mxs-pwm.txt
 +++ /dev/null
-@@ -1,22 +0,0 @@
--Freescale i.MX TPM PWM controller
+@@ -1,17 +0,0 @@
+-Freescale MXS PWM controller
 -
 -Required properties:
--- compatible : Should be "fsl,imx7ulp-pwm".
--- reg: Physical base address and length of the controller's registers.
--- #pwm-cells: Should be 3. See pwm.yaml in this directory for a description of the cells format.
--- clocks : The clock provided by the SoC to drive the PWM.
--- interrupts: The interrupt for the PWM controller.
--
--Note: The TPM counter and period counter are shared between multiple channels, so all channels
--should use same period setting.
+-- compatible: should be "fsl,imx23-pwm"
+-- reg: physical base address and length of the controller's registers
+-- #pwm-cells: should be 3. See pwm.yaml in this directory for a description of
+-  the cells format.
+-- fsl,pwm-number: the number of PWM devices
 -
 -Example:
 -
--tpm4: pwm@40250000 {
--	compatible = "fsl,imx7ulp-pwm";
--	reg = <0x40250000 0x1000>;
--	assigned-clocks = <&pcc2 IMX7ULP_CLK_LPTPM4>;
--	assigned-clock-parents = <&scg1 IMX7ULP_CLK_SOSC_BUS_CLK>;
--	clocks = <&pcc2 IMX7ULP_CLK_LPTPM4>;
+-pwm: pwm@80064000 {
+-	compatible = "fsl,imx28-pwm", "fsl,imx23-pwm";
+-	reg = <0x80064000 0x2000>;
 -	#pwm-cells = <3>;
+-	fsl,pwm-number = <8>;
 -};
-diff --git a/Documentation/devicetree/bindings/pwm/imx-tpm-pwm.yaml b/Documentation/devicetree/bindings/pwm/imx-tpm-pwm.yaml
+diff --git a/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
 new file mode 100644
-index 0000000..fe9ef42
+index 0000000..da68f4a
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/imx-tpm-pwm.yaml
-@@ -0,0 +1,55 @@
++++ b/Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
+@@ -0,0 +1,43 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/pwm/imx-tpm-pwm.yaml#
++$id: http://devicetree.org/schemas/pwm/mxs-pwm.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Freescale i.MX TPM PWM controller
++title: Freescale MXS PWM controller
 +
 +maintainers:
-+  - Anson Huang <anson.huang@nxp.com>
-+
-+description: |
-+  The TPM counter and period counter are shared between multiple
-+  channels, so all channels should use same period setting.
++  - Shawn Guo <shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
++  - Anson Huang <anson.huang-3arQi8VN3Tc@public.gmane.org>
 +
 +properties:
-+  "#pwm-cells":
-+    const: 3
-+
 +  compatible:
 +    enum:
-+      - fsl,imx7ulp-pwm
++      - fsl,imx23-pwm
 +
 +  reg:
 +    maxItems: 1
 +
-+  assigned-clocks:
-+    maxItems: 1
++  "#pwm-cells":
++    const: 3
 +
-+  assigned-clock-parents:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
++  fsl,pwm-number:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description: u32 value representing the number of PWM devices
 +
 +required:
-+  - "#pwm-cells"
 +  - compatible
 +  - reg
-+  - clocks
++  - "#pwm-cells"
++  - fsl,pwm-number
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/imx7ulp-clock.h>
-+
-+    pwm@40250000 {
-+        compatible = "fsl,imx7ulp-pwm";
-+        reg = <0x40250000 0x1000>;
-+        assigned-clocks = <&pcc2 IMX7ULP_CLK_LPTPM4>;
-+        assigned-clock-parents = <&scg1 IMX7ULP_CLK_SOSC_BUS_CLK>;
-+        clocks = <&pcc2 IMX7ULP_CLK_LPTPM4>;
++    pwm@80064000 {
++        compatible = "fsl,imx23-pwm";
++        reg = <0x80064000 0x2000>;
 +        #pwm-cells = <3>;
++        fsl,pwm-number = <8>;
 +    };
 -- 
 2.7.4
