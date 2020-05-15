@@ -1,176 +1,103 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
- reg property
-Date: Fri, 15 May 2020 11:28:48 +0100
-Message-ID: <20200515102848.GH271301@dell>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-4-michael@walle.cc>
- <67e90dafd67c285158c2c6f67f92edb7@walle.cc>
+From: Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v1 06/18] backlight: make of_find_backlight_by_node()
+ static
+Date: Fri, 15 May 2020 22:42:45 +0200
+Message-ID: <20200515204245.GA543522@ravnborg.org>
+References: <20200514191001.457441-1-sam@ravnborg.org>
+ <20200514191001.457441-7-sam@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from asavdk4.altibox.net ([109.247.116.15]:40020 "EHLO
+        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbgEOUm6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 15 May 2020 16:42:58 -0400
 Content-Disposition: inline
-In-Reply-To: <67e90dafd67c285158c2c6f67f92edb7-QKn5cuLxLXY@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TaqPxH82wqD4g@public.gmane.org
+In-Reply-To: <20200514191001.457441-7-sam@ravnborg.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Allison Randal <allison@lohutok.net>, Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Douglas Anderson <dianders@chromium.org>, Enrico Weigelt <info@metux.net>, Jani Nikula <jani.nikula@intel.com>, Jonathan Corbet <corbet@lwn.net>, Jyri Sarha <jsarha@ti.com>, Kate Stewart <kstewart@linuxfoundation.org>, Kefeng Wang <wangkefeng.wang@huawei.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael
 
-On Thu, 30 Apr 2020, Michael Walle wrote:
+Hi myself and others.
 
-> Hi Lee,
+On Thu, May 14, 2020 at 09:09:49PM +0200, Sam Ravnborg wrote:
+> There are no external users of of_find_backlight_by_node().
+> Make it static so we keep it that way.
 > 
-> Am 2020-04-23 19:45, schrieb Michael Walle:
-> > There might be multiple children with the device tree compatible, for
-> > example if a MFD has multiple instances of the same function. In this
-> > case only the first is matched and the other children get a wrong
-> > of_node reference.
-> > Add a new option to match also against the unit address of the child
-> > node. Additonally, a new helper OF_MFD_CELL_REG is added.
+> Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Jingoo Han <jingoohan1@gmail.com>
+> ---
+>  drivers/video/backlight/backlight.c | 22 +++++++++-------------
+>  include/linux/backlight.h           | 10 ----------
+>  2 files changed, 9 insertions(+), 23 deletions(-)
 > 
-> 
-> Do you think this is feasible? I guess this is the biggest uncertainty
-> for me at the moment in this patch series.
+> diff --git a/drivers/video/backlight/backlight.c b/drivers/video/backlight/backlight.c
+> index 547aa3e1a03a..91dfcf4a2087 100644
+> --- a/drivers/video/backlight/backlight.c
+> +++ b/drivers/video/backlight/backlight.c
+> @@ -577,19 +577,9 @@ static int of_parent_match(struct device *dev, const void *data)
+>  	return dev->parent && dev->parent->of_node == data;
+>  }
+>  
+> -/**
+> - * of_find_backlight_by_node() - find backlight device by device-tree node
+> - * @node: device-tree node of the backlight device
+> - *
+> - * Returns a pointer to the backlight device corresponding to the given DT
+> - * node or NULL if no such backlight device exists or if the device hasn't
+> - * been probed yet.
+> - *
+> - * This function obtains a reference on the backlight device and it is the
+> - * caller's responsibility to drop the reference by calling put_device() on
+> - * the backlight device's .dev field.
+> - */
+> -struct backlight_device *of_find_backlight_by_node(struct device_node *node)
+> +/* Find backlight device by device-tree node */
+> +static struct backlight_device *
+> +of_find_backlight_by_node(struct device_node *node)
+>  {
+>  	struct device *dev;
+>  
+> @@ -598,6 +588,12 @@ struct backlight_device *of_find_backlight_by_node(struct device_node *node)
+>  	return dev ? to_backlight_device(dev) : NULL;
+>  }
+>  EXPORT_SYMBOL(of_find_backlight_by_node);
+Dropped this EXPORT in v2.
 
-I think it sounds fine in principle.  So long as it doesn't change the
-existing behaviour when of_reg isn't set.
+	Sam
 
-> > Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-> > ---
-> >  drivers/mfd/mfd-core.c   | 29 ++++++++++++++++++++---------
-> >  include/linux/mfd/core.h | 26 ++++++++++++++++++++------
-> >  2 files changed, 40 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-> > index e735565969b3..4ecb376338f7 100644
-> > --- a/drivers/mfd/mfd-core.c
-> > +++ b/drivers/mfd/mfd-core.c
-> > @@ -117,6 +117,7 @@ static int mfd_add_device(struct device *parent, int
-> > id,
-> >  	struct device_node *np = NULL;
-> >  	int ret = -ENOMEM;
-> >  	int platform_id;
-> > +	u32 of_reg;
-> >  	int r;
-> > 
-> >  	if (id == PLATFORM_DEVID_AUTO)
-> > @@ -151,16 +152,26 @@ static int mfd_add_device(struct device *parent,
-> > int id,
-> > 
-> >  	if (parent->of_node && cell->of_compatible) {
-> >  		for_each_child_of_node(parent->of_node, np) {
-> > -			if (of_device_is_compatible(np, cell->of_compatible)) {
-> > -				if (!of_device_is_available(np)) {
-> > -					/* Ignore disabled devices error free */
-> > -					ret = 0;
-> > -					goto fail_alias;
-> > -				}
-> > -				pdev->dev.of_node = np;
-> > -				pdev->dev.fwnode = &np->fwnode;
-> > -				break;
-> > +			if (!of_device_is_compatible(np, cell->of_compatible))
-> > +				continue;
-> > +
-> > +			/* also match the unit address if set */
-
-Please use correct grammar in comments (leaving off the full-stop).
-
-> > +			if (cell->of_reg & MFD_OF_REG_VALID) {
-> > +				if (of_property_read_u32(np, "reg", &of_reg))
-> > +					continue;
-> > +				if ((cell->of_reg & MFD_OF_REG_MASK) != of_reg)
-> > +					continue;
-> >  			}
-> > +
-> > +			if (!of_device_is_available(np)) {
-> > +				/* Ignore disabled devices error free */
-> > +				ret = 0;
-> > +				goto fail_alias;
-> > +			}
-> > +
-> > +			pdev->dev.of_node = np;
-> > +			pdev->dev.fwnode = &np->fwnode;
-> > +			break;
-> >  		}
-> >  	}
-> > 
-> > diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
-> > index d01d1299e49d..c2c0ad6b14f3 100644
-> > --- a/include/linux/mfd/core.h
-> > +++ b/include/linux/mfd/core.h
-> > @@ -13,8 +13,11 @@
-> >  #include <linux/platform_device.h>
-> > 
-> >  #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
-> > +#define MFD_OF_REG_VALID	BIT(31)
-
-What about 64bit platforms?
-
-> > +#define MFD_OF_REG_MASK		GENMASK(30, 0)
-> > 
-> > -#define MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,
-> > _match)\
-> > +#define MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
-> > +		     _of_reg, _match)					\
-> >  	{								\
-> >  		.name = (_name),					\
-> >  		.resources = (_res),					\
-> > @@ -22,24 +25,32 @@
-> >  		.platform_data = (_pdata),				\
-> >  		.pdata_size = (_pdsize),				\
-> >  		.of_compatible = (_compat),				\
-> > +		.of_reg = (_of_reg),					\
-> >  		.acpi_match = (_match),					\
-> >  		.id = (_id),						\
-> >  	}
-> > 
-> > +#define OF_MFD_CELL_REG(_name, _res, _pdata, _pdsize, _id, _compat,	\
-> > +			_of_reg)					\
-> > +	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
-> > +		     ((_of_reg) | MFD_OF_REG_VALID), NULL)		\
-> > +
-> >  #define OF_MFD_CELL(_name, _res, _pdata, _pdsize,_id, _compat)		\
-> > -	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat, NULL)	\
-> > +	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, _compat,	\
-> > +		     0, NULL)						\
-> > 
-> >  #define ACPI_MFD_CELL(_name, _res, _pdata, _pdsize, _id, _match)	\
-> > -	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, _match)	\
-> > +	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, 0,	\
-> > +		     _match)						\
-> > 
-> >  #define MFD_CELL_BASIC(_name, _res, _pdata, _pdsize, _id)		\
-> > -	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, NULL)	\
-> > +	MFD_CELL_ALL(_name, _res, _pdata, _pdsize, _id, NULL, 0, NULL) \
-> > 
-> >  #define MFD_CELL_RES(_name, _res)					\
-> > -	MFD_CELL_ALL(_name, _res, NULL, 0, 0, NULL, NULL)		\
-> > +	MFD_CELL_ALL(_name, _res, NULL, 0, 0, NULL, 0, NULL)		\
-> > 
-> >  #define MFD_CELL_NAME(_name)						\
-> > -	MFD_CELL_ALL(_name, NULL, NULL, 0, 0, NULL, NULL)		\
-> > +	MFD_CELL_ALL(_name, NULL, NULL, 0, 0, NULL, 0, NULL)		\
-> > 
-> >  struct irq_domain;
-> >  struct property_entry;
-> > @@ -78,6 +89,9 @@ struct mfd_cell {
-> >  	 */
-> >  	const char		*of_compatible;
-> > 
-> > +	/* matching the reg property if set */
-
-Proper grammar please.
-
-"OF unit address for device matching"
-
-> > +	unsigned int		of_reg;
-> > +
-> >  	/* Matches ACPI */
-> >  	const struct mfd_cell_acpi_match	*acpi_match;
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> +#else
+> +static struct backlight_device *
+> +of_find_backlight_by_node(struct device_node *node)
+> +{
+> +	return NULL;
+> +}
+>  #endif
+>  
+>  static struct backlight_device *of_find_backlight(struct device *dev)
+> diff --git a/include/linux/backlight.h b/include/linux/backlight.h
+> index 3d757a850b88..b7839ea9d00a 100644
+> --- a/include/linux/backlight.h
+> +++ b/include/linux/backlight.h
+> @@ -198,16 +198,6 @@ struct generic_bl_info {
+>  	void (*kick_battery)(void);
+>  };
+>  
+> -#ifdef CONFIG_OF
+> -struct backlight_device *of_find_backlight_by_node(struct device_node *node);
+> -#else
+> -static inline struct backlight_device *
+> -of_find_backlight_by_node(struct device_node *node)
+> -{
+> -	return NULL;
+> -}
+> -#endif
+> -
+>  #if IS_ENABLED(CONFIG_BACKLIGHT_CLASS_DEVICE)
+>  struct backlight_device *devm_of_find_backlight(struct device *dev);
+>  #else
+> -- 
+> 2.25.1
