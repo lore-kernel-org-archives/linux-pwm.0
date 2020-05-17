@@ -1,50 +1,48 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v1 02/18] drm/tilcdc: use devm_of_find_backlight
-Date: Sun, 17 May 2020 14:58:28 +0200
-Message-ID: <20200517125828.GB620358@ravnborg.org>
-References: <20200514191001.457441-1-sam@ravnborg.org>
- <20200514191001.457441-3-sam@ravnborg.org>
- <9e234824-3cf6-ead4-561b-70c1966ac5fd@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from asavdk3.altibox.net ([109.247.116.14]:40530 "EHLO
-        asavdk3.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727989AbgEQM6e (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 17 May 2020 08:58:34 -0400
-Content-Disposition: inline
-In-Reply-To: <9e234824-3cf6-ead4-561b-70c1966ac5fd@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: vineetha.g.jaya.kumaran-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Subject: [PATCH 0/3] Add PWM support for Intel Keem Bay SoC
+Date: Sun, 17 May 2020 21:52:37 +0800
+Message-ID: <1589723560-5734-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wan.ahmad.zainie.wan.mohamad-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, vineetha.g.jaya.kumaran-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Kate Stewart <kstewart@linuxfoundation.org>, Kefeng Wang <wangkefeng.wang@huawei.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Bjorn Andersson <bjorn.andersson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Jonathan Corbet <corbet@lwn.net>, Russell King <linux@armlinux.org.uk>, Andy Gross <agross@kernel.org>, Uwe Kleine Konig <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Michael Hennerich <michael.hennerich@analog.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jani Nikula <jani.nikul>
 
-On Fri, May 15, 2020 at 11:25:47AM +0300, Tomi Valkeinen wrote:
-> On 14/05/2020 22:09, Sam Ravnborg wrote:
-> > Look up backlight device using devm_of_find_backlight().
-> > This simplifies the code and prevents us from hardcoding
-> > the node name in the driver.
-> > 
-> > Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-> > Cc: Jyri Sarha <jsarha@ti.com>
-> > Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-> > ---
-> >   drivers/gpu/drm/tilcdc/tilcdc_panel.c | 17 ++++++-----------
-> >   1 file changed, 6 insertions(+), 11 deletions(-)
-> 
-> Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
+From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Thanks, pushed to drm-misc-next.
+Hi,
 
-        Sam
+This patch set enables support for PWM on the Intel Keem Bay SoC.
+Keem Bay is an ARM based SoC, and the GPIO module allows
+configuration of 6 PWM outputs. Patch 1 adds a new count attribute to
+the sysfs, Patch 2 adds the PWM driver and Patch 3 is for the
+required Device Tree bindings documentation.
 
-> 
->  Tomi
-> 
-> -- 
-> Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki.
-> Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+This driver was tested on the Keem Bay evaluation module board.
+
+Thank you.
+
+Best regards,
+Vineetha
+
+Lai, Poey Seng (2):
+  pwm: Add count attribute in sysfs for Intel Keem Bay
+  pwm: Add PWM driver for Intel Keem Bay
+
+Vineetha G. Jaya Kumaran (1):
+  dt-bindings: pwm: keembay: Add bindings for Intel Keem Bay PWM
+
+ Documentation/ABI/testing/sysfs-class-pwm          |   9 +
+ .../devicetree/bindings/pwm/pwm-keembay.yaml       |  39 +++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/core.c                                 |   3 +-
+ drivers/pwm/pwm-keembay.c                          | 308 +++++++++++++++++++++
+ drivers/pwm/sysfs.c                                |  37 +++
+ include/linux/pwm.h                                |   2 +
+ 8 files changed, 407 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-keembay.yaml
+ create mode 100644 drivers/pwm/pwm-keembay.c
+
+-- 
+1.9.1
