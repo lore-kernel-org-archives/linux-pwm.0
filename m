@@ -1,36 +1,46 @@
-From: Aisheng Dong <aisheng.dong-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH] dt-bindings: pwm: Convert mxs pwm to json-schema
-Date: Mon, 18 May 2020 06:07:06 +0000
-Message-ID: <AM6PR04MB4966D0851412CE57C860B63C80B80@AM6PR04MB4966.eurprd04.prod.outlook.com>
-References: <1589456470-2658-1-git-send-email-Anson.Huang@nxp.com>
- <AM6PR04MB4966B92CFFA23DD77748C77680B80@AM6PR04MB4966.eurprd04.prod.outlook.com>
- <DB3PR0402MB3916B5980C0681BFF3C08FE5F5B80@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 01/16] video: amba-clcd: use devm_of_find_backlight
+Date: Mon, 18 May 2020 10:10:12 +0200
+Message-ID: <CACRpkdbogVA=12Xzh6jC0AaE7DrH8Z7iVuG3s_gS4MQBYF61Dw@mail.gmail.com>
+References: <20200517190139.740249-1-sam@ravnborg.org> <20200517190139.740249-2-sam@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <DB3PR0402MB3916B5980C0681BFF3C08FE5F5B80-RiGJ/uiH22/dnrWYgSyJ1I3W/0Ik+aLCnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Anson Huang <anson.huang-3arQi8VN3Tc@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: dl-linux-imx <linux-imx-3arQi8VN3Tc@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726676AbgERIKZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 May 2020 04:10:25 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83775C05BD09
+        for <linux-pwm@vger.kernel.org>; Mon, 18 May 2020 01:10:25 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id w10so8827935ljo.0
+        for <linux-pwm@vger.kernel.org>; Mon, 18 May 2020 01:10:25 -0700 (PDT)
+In-Reply-To: <20200517190139.740249-2-sam@ravnborg.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Douglas Anderson <dianders@chromium.org>, Jani Nikula <jani.nikula@intel.com>, Jonathan Corbet <corbet@lwn.net>, MSM <linux-arm-msm@vger.kernel.org>, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.>
 
-PiBGcm9tOiBBbnNvbiBIdWFuZyA8YW5zb24uaHVhbmdAbnhwLmNvbT4NCj4gU2VudDogTW9uZGF5
-LCBNYXkgMTgsIDIwMjAgMTozMiBQTQ0KPiANCj4gPiBTdWJqZWN0OiBSRTogW1BBVENIXSBkdC1i
-aW5kaW5nczogcHdtOiBDb252ZXJ0IG14cyBwd20gdG8ganNvbi1zY2hlbWENCj4gPg0KPiA+ID4g
-K3RpdGxlOiBGcmVlc2NhbGUgTVhTIFBXTSBjb250cm9sbGVyDQo+ID4gPiArDQo+ID4gPiArbWFp
-bnRhaW5lcnM6DQo+ID4gPiArICAtIFNoYXduIEd1byA8c2hhd24uZ3VvQGxpbmFyby5vcmc+DQo+
-ID4gPiArICAtIEFuc29uIEh1YW5nIDxhbnNvbi5odWFuZ0BueHAuY29tPg0KPiA+ID4gKw0KPiA+
-ID4gK3Byb3BlcnRpZXM6DQo+ID4gPiArICBjb21wYXRpYmxlOg0KPiA+ID4gKyAgICBlbnVtOg0K
-PiA+ID4gKyAgICAgIC0gZnNsLGlteDIzLXB3bQ0KPiA+ID4gKw0KPiA+ID4gKyAgcmVnOg0KPiA+
-ID4gKyAgICBtYXhJdGVtczogMQ0KPiA+ID4gKw0KPiA+ID4gKyAgIiNwd20tY2VsbHMiOg0KPiA+
-ID4gKyAgICBjb25zdDogMw0KPiA+DQo+ID4gU2VlbXMgeW91IG1pc3NlZCB0aGUgcmVmZXJlbmNl
-IHRvIHB3bS55YW1sLg0KPiANCj4gSXQgaXMgYmVjYXVzZSBtYW55IHB3bSB5YW1sIGZpbGVzIGFs
-c28gaGFzIG5vICIjcHdtLWNlbGxzIiByZWZlcmVuY2UsIHNvIEkgYW0NCj4gTk9UIHN1cmUgaWYg
-aXQgaXMgYSBNVVNUOg0KPiANCj4gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3
-bS9hbGx3aW5uZXIsc3VuNGktYTEwLXB3bS55YW1sDQo+IERvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9wd20vZ29vZ2xlLGNyb3MtZWMtcHdtLnlhbWwNCj4gRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pcXM2MjBhLXB3bS55YW1sDQo+IC4uLg0KDQpJIGd1ZXNz
-IHdlJ2QgYmV0dGVyIGFkZCBpdC4NCkxldCdzIHdhaXQgZm9yIFJvYidzIGZlZWRiYWNrLg0KDQpS
-ZWdhcmRzDQpBaXNoZW5nDQoNCj4gDQo+IEFuc29uDQo=
+On Sun, May 17, 2020 at 9:01 PM Sam Ravnborg <sam@ravnborg.org> wrote:
+
+> Look up backlight device using devm_of_find_backlight().
+> This simplifies the code and prevents us from hardcoding
+> the node name in the driver.
+>
+> v2:
+>   - Added Cc: Peter Ujfalusi
+>
+> Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Jani Nikula <jani.nikula@intel.com>
+> Cc: Douglas Anderson <dianders@chromium.org>
+
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
