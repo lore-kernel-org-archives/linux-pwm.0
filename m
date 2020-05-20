@@ -1,62 +1,116 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v2 15/16] backlight: make of_find_backlight_by_node()
- static
-Date: Mon, 18 May 2020 20:56:56 +0100
-Message-ID: <20200518195656.z2wag34mbr3e2hip@holly.lan>
-References: <20200517190139.740249-1-sam@ravnborg.org>
- <20200517190139.740249-16-sam@ravnborg.org>
- <20200518165648.ltgtofjsteyyse4j@holly.lan>
- <20200518181227.GC770425@ravnborg.org>
+From: Emil Velikov <emil.l.velikov@gmail.com>
+Subject: Re: [PATCH v2 02/16] backlight: refactor fb_notifier_callback()
+Date: Wed, 20 May 2020 11:41:46 +0100
+Message-ID: <CACvgo50p6M59C-cdwCUFYNE7pWBA-oTwa9EN90yrkOkW2S-BKA@mail.gmail.com>
+References: <20200517190139.740249-1-sam@ravnborg.org> <20200517190139.740249-3-sam@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbgERT5B (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 May 2020 15:57:01 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF17C061A0C
-        for <linux-pwm@vger.kernel.org>; Mon, 18 May 2020 12:57:01 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id k12so721202wmj.3
-        for <linux-pwm@vger.kernel.org>; Mon, 18 May 2020 12:57:01 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20200518181227.GC770425@ravnborg.org>
+        with ESMTP id S1726436AbgETKon (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 May 2020 06:44:43 -0400
+In-Reply-To: <20200517190139.740249-3-sam@ravnborg.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, dri-devel@lists.freedesktop.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Russell King <linux@armlinux.org.uk>, Andy Gross <agross@kernel.org>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Michael Hennerich <michael.hennerich@analog.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jani Nikula <jani.nikula@intel.com>, linux-arm-msm@vger.kernel.org, Support Opensource <support.opensource@diasemi.com>, Jingoo Han <jingoohan1@gmail.com>
+Cc: ML dri-devel <dri-devel@lists.freedesktop.org>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, Support Opensource <support.opensource@diasemi.com>, Michael Hennerich <michael.hennerich@analog.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Jonathan Corbet <corbet@lwn.net>, Douglas Anderson <dianders@chromium.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Andy Gross <agross@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Thomas
 
-On Mon, May 18, 2020 at 08:12:27PM +0200, Sam Ravnborg wrote:
-> On Mon, May 18, 2020 at 05:56:48PM +0100, Daniel Thompson wrote:
-> > On Sun, May 17, 2020 at 09:01:38PM +0200, Sam Ravnborg wrote:
-> > > There are no external users of of_find_backlight_by_node().
-> > > Make it static so we keep it that way.
-> > > 
-> > > v2:
-> > >   - drop EXPORT of of_find_backlight_by_node
-> > > 
-> > > Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-> > > Cc: Lee Jones <lee.jones@linaro.org>
-> > > Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> > > Cc: Jingoo Han <jingoohan1@gmail.com>
-> > 
-> > Assuming the 0day-ci comments are because some of the patches have
-> > already been sucked up in a different tree then:
-> Correct. For now only drm-misc-next have no users of
-> of_find_backlight_by_node() which is why the other trees failed.
-> 
->  
-> > Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Thanks for all your reviews!
-> I will shortly (within a few days) address the comments and send out a v3.
-> 
-> Is is correct that I assume you or Lee or Jingoo will apply the patches
-> to a backlight tree somewhere when they are ready?
-> If you have a tree you use for backlight patches I can base v3 on that,
-> given that I get a link and have access to pull from it.
+Hi Sam,
 
-Absent holidays and the like, Lee usually does that actual patch
-hoovering.
+On Sun, 17 May 2020 at 20:02, Sam Ravnborg <sam@ravnborg.org> wrote:
+>
+> Increase readability of fb_notifier_callback() by removing
+> a few indent levels.
+> No functional change.
+>
+> Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Jingoo Han <jingoohan1@gmail.com>
+> ---
+>  drivers/video/backlight/backlight.c | 43 +++++++++++++++--------------
+>  1 file changed, 22 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/video/backlight/backlight.c b/drivers/video/backlight/backlight.c
+> index cac3e35d7630..17f04cff50ab 100644
+> --- a/drivers/video/backlight/backlight.c
+> +++ b/drivers/video/backlight/backlight.c
+> @@ -58,28 +58,29 @@ static int fb_notifier_callback(struct notifier_block *self,
+>
+>         bd = container_of(self, struct backlight_device, fb_notif);
+>         mutex_lock(&bd->ops_lock);
+> -       if (bd->ops)
+> -               if (!bd->ops->check_fb ||
+> -                   bd->ops->check_fb(bd, evdata->info)) {
+> -                       fb_blank = *(int *)evdata->data;
+> -                       if (fb_blank == FB_BLANK_UNBLANK &&
+> -                           !bd->fb_bl_on[node]) {
+> -                               bd->fb_bl_on[node] = true;
+> -                               if (!bd->use_count++) {
+> -                                       bd->props.state &= ~BL_CORE_FBBLANK;
+> -                                       bd->props.fb_blank = FB_BLANK_UNBLANK;
+> -                                       backlight_update_status(bd);
+> -                               }
+> -                       } else if (fb_blank != FB_BLANK_UNBLANK &&
+> -                                  bd->fb_bl_on[node]) {
+> -                               bd->fb_bl_on[node] = false;
+> -                               if (!(--bd->use_count)) {
+> -                                       bd->props.state |= BL_CORE_FBBLANK;
+> -                                       bd->props.fb_blank = fb_blank;
+> -                                       backlight_update_status(bd);
+> -                               }
+> -                       }
+> +
+> +       if (!bd->ops)
+> +               goto out;
+> +       if (bd->ops->check_fb && !bd->ops->check_fb(bd, evdata->info))
+Mildly related: Would be a nice to define which ops are mandatory and
+which aren't.
+That plus enforcement in backlight_device_register.
 
+But that's for another patchset.
 
-Daniel.
+> +               goto out;
+> +
+> +       fb_blank = *(int *)evdata->data;
+> +       if (fb_blank == FB_BLANK_UNBLANK && !bd->fb_bl_on[node]) {
+> +               bd->fb_bl_on[node] = true;
+> +               if (!bd->use_count++) {
+> +                       bd->props.state &= ~BL_CORE_FBBLANK;
+> +                       bd->props.fb_blank = FB_BLANK_UNBLANK;
+> +                       backlight_update_status(bd);
+> +               }
+> +       } else if (fb_blank != FB_BLANK_UNBLANK && bd->fb_bl_on[node]) {
+> +               bd->fb_bl_on[node] = false;
+> +               if (!(--bd->use_count)) {
+> +                       bd->props.state |= BL_CORE_FBBLANK;
+> +                       bd->props.fb_blank = fb_blank;
+> +                       backlight_update_status(bd);
+>                 }
+Something like the following reads better, plus one could simplify it
+with follow-on patch.
+
+if (fb_blank == FB_BLANK_UNBLANK)
+    if (!bd->fb_bl_on[node] && !bd->use_count++) {
+        bd->props.state &= ~BL_CORE_FBBLANK;
+        bd->props.fb_blank = FB_BLANK_UNBLANK;
+        backlight_update_status(bd);
+        // above is backlight_enable()
+    }
+    bd->fb_bl_on[node] = true;
+} else {
+    if (bd->fb_bl_on[node] && !(--bd->use_count)) {
+        bd->props.state |= BL_CORE_FBBLANK;
+        bd->props.fb_blank = fb_blank;
+        backlight_update_status(bd);
+        // above is backlight_disable()
+   }
+    bd->fb_bl_on[node] = false;
+}
+
+As-is, one cannot use the backlight helpers indicated, since it
+touches .power. First one should ensure the drivers honour .power - by
+using the helper introduced later.
+
+-Emil
