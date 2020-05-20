@@ -1,48 +1,79 @@
-From: Emil Velikov <emil.l.velikov@gmail.com>
-Subject: Re: [PATCH v2 03/16] backlight: add backlight_is_blank()
-Date: Wed, 20 May 2020 11:45:06 +0100
-Message-ID: <CACvgo52AegdsmfOsVoTHH=oporeMMV8bShQMJC11JiO5bNXwrQ@mail.gmail.com>
-References: <20200517190139.740249-1-sam@ravnborg.org> <20200517190139.740249-4-sam@ravnborg.org>
+From: "G Jaya Kumaran, Vineetha" <vineetha.g.jaya.kumaran@intel.com>
+Subject: RE: [PATCH 3/3] dt-bindings: pwm: keembay: Add bindings for Intel
+ Keem Bay PWM
+Date: Wed, 20 May 2020 10:49:17 +0000
+Message-ID: <SN6PR11MB257539FDB99C0CA5A9668A84F6B60@SN6PR11MB2575.namprd11.prod.outlook.com>
+References: <1589723560-5734-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <1589723560-5734-4-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <20200518141842.GA3594@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgETKsC (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 May 2020 06:48:02 -0400
-In-Reply-To: <20200517190139.740249-4-sam@ravnborg.org>
+Received: from mga18.intel.com ([134.134.136.126]:55375 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726224AbgETKtW (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 20 May 2020 06:49:22 -0400
+In-Reply-To: <20200518141842.GA3594@bogus>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sam Ravnborg <sam@ravnborg.org>
-Cc: ML dri-devel <dri-devel@lists.freedesktop.org>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, Support Opensource <support.opensource@diasemi.com>, Michael Hennerich <michael.hennerich@analog.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Jonathan Corbet <corbet@lwn.net>, Douglas Anderson <dianders@chromium.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Andy Gross <agross@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Thomas
+To: Rob Herring <robh@kernel.org>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "Wan Mohamad, Wan Ahmad Zainie" <wan.ahmad.zainie.wan.mohamad@intel.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "Shevchenko, Andriy" <andriy.shevchenko@intel.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 
-On Sun, 17 May 2020 at 20:02, Sam Ravnborg <sam@ravnborg.org> wrote:
->
-> The backlight support has two properties that express the state:
-> - power
-> - state
->
-> It is un-documented and easy to get wrong.
-> Add backlight_is_blank() helper to make it simpler for drivers
-> to get the check of the state correct.
->
-> A lot of drivers also includes checks for fb_blank.
-> This check is redundant when the state is checked
-> and thus not needed in this helper function.
-> But added anyway to avoid introducing subtle bug
-> due to the creative use in some drivers.
->
-> Rolling out this helper to all relevant backlight drivers
-> will eliminate almost all accesses to fb_blank.
->
-Nit: please tweak your editor to wrap commit messages at 72 columns.
 
-> v2:
->   - Added fb_blank condition (Daniel)
->
-I was going to mention this, but Daniel beat me to it.
+> -----Original Message-----
+> From: Rob Herring <robh@kernel.org>
+> Sent: Monday, May 18, 2020 10:19 PM
+> To: G Jaya Kumaran, Vineetha <vineetha.g.jaya.kumaran@intel.com>
+> Cc: devicetree@vger.kernel.org; u.kleine-koenig@pengutronix.de; Wan
+> Mohamad, Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>;
+> robh+dt@kernel.org; linux-pwm@vger.kernel.org; Shevchenko, Andriy
+> <andriy.shevchenko@intel.com>; thierry.reding@gmail.com
+> Subject: Re: [PATCH 3/3] dt-bindings: pwm: keembay: Add bindings for Inte=
+l
+> Keem Bay PWM
+>=20
+> On Sun, 17 May 2020 21:52:40 +0800,  wrote:
+> > From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
+> >
+> > Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
+> >
+> > Signed-off-by: Vineetha G. Jaya Kumaran
+> > <vineetha.g.jaya.kumaran@intel.com>
+> > ---
+> >  .../devicetree/bindings/pwm/pwm-keembay.yaml       | 39
+> ++++++++++++++++++++++
+> >  1 file changed, 39 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/pwm/pwm-keembay.yaml
+> >
+>=20
+>=20
+> My bot found errors running 'make dt_binding_check' on your patch:
+>=20
+> Error: Documentation/devicetree/bindings/pwm/pwm-
+> keembay.example.dts:22.31-32 syntax error FATAL ERROR: Unable to parse
+> input tree
+> scripts/Makefile.lib:312: recipe for target
+> 'Documentation/devicetree/bindings/pwm/pwm-keembay.example.dt.yaml'
+> failed
+> make[1]: *** [Documentation/devicetree/bindings/pwm/pwm-
+> keembay.example.dt.yaml] Error 1
+> Makefile:1300: recipe for target 'dt_binding_check' failed
+> make: *** [dt_binding_check] Error 2
+>=20
+> See https://patchwork.ozlabs.org/patch/1292157
+>=20
+> If you already ran 'make dt_binding_check' and didn't see the above error=
+(s),
+> then make sure dt-schema is up to date:
+>=20
+> pip3 install git+https://github.com/devicetree-org/dt-schema.git@master -=
+-
+> upgrade
+>=20
+> Please check and re-submit.
 
-Please add an extra NOTE in the commit message. The fb_blank is a
-behaviour change, albeit in the right direction.
-
--Emil
+Thank you for reviewing. Will check this again and make sure it passes befo=
+re submitting v2.
