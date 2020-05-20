@@ -1,122 +1,58 @@
-From: "G Jaya Kumaran, Vineetha" <vineetha.g.jaya.kumaran@intel.com>
-Subject: RE: [PATCH 3/3] dt-bindings: pwm: keembay: Add bindings for Intel
- Keem Bay PWM
-Date: Wed, 20 May 2020 10:52:29 +0000
-Message-ID: <SN6PR11MB25752EA2FF75768D84C14360F6B60@SN6PR11MB2575.namprd11.prod.outlook.com>
-References: <1589723560-5734-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
- <1589723560-5734-4-git-send-email-vineetha.g.jaya.kumaran@intel.com>
- <20200518142143.GB3594@bogus>
+From: Emil Velikov <emil.l.velikov@gmail.com>
+Subject: Re: [PATCH v2 16/16] backlight: use backlight_is_blank() in all
+ backlight drivers
+Date: Wed, 20 May 2020 11:56:43 +0100
+Message-ID: <CACvgo51C6zb_K3DBwG-xhf9=baoxmcp8YeCFEyB3XvqA5p7r2A@mail.gmail.com>
+References: <20200517190139.740249-1-sam@ravnborg.org> <20200517190139.740249-17-sam@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga17.intel.com ([192.55.52.151]:18851 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726403AbgETKwd (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 20 May 2020 06:52:33 -0400
-In-Reply-To: <20200518142143.GB3594@bogus>
-Content-Language: en-US
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726435AbgETK7l (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 May 2020 06:59:41 -0400
+In-Reply-To: <20200517190139.740249-17-sam@ravnborg.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "Wan Mohamad, Wan Ahmad Zainie" <wan.ahmad.zainie.wan.mohamad@intel.com>, "Shevchenko, Andriy" <andriy.shevchenko@intel.com>
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: ML dri-devel <dri-devel@lists.freedesktop.org>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, Support Opensource <support.opensource@diasemi.com>, Michael Hennerich <michael.hennerich@analog.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Jonathan Corbet <corbet@lwn.net>, Douglas Anderson <dianders@chromium.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Andy Gross <agross@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Thomas
+
+Hi Sam,
+
+On Sun, 17 May 2020 at 20:02, Sam Ravnborg <sam@ravnborg.org> wrote:
+
+> --- a/drivers/video/backlight/88pm860x_bl.c
+> +++ b/drivers/video/backlight/88pm860x_bl.c
+> @@ -123,13 +123,7 @@ static int pm860x_backlight_update_status(struct backlight_device *bl)
+>  {
+>         int brightness = bl->props.brightness;
+>
+> -       if (bl->props.power != FB_BLANK_UNBLANK)
+> -               brightness = 0;
+> -
+> -       if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -               brightness = 0;
+> -
+> -       if (bl->props.state & BL_CORE_SUSPENDED)
+> +       if (backlight_is_blank(bl))
+>                 brightness = 0;
+Off the top of my head, the above two lines should really be in backlight core.
+There's nothing driver specific to them, plus it minimises the chances
+of next-driver getting it wrong.
 
 
-> -----Original Message-----
-> From: Rob Herring <robh@kernel.org>
-> Sent: Monday, May 18, 2020 10:22 PM
-> To: G Jaya Kumaran, Vineetha <vineetha.g.jaya.kumaran@intel.com>
-> Cc: thierry.reding@gmail.com; u.kleine-koenig@pengutronix.de; linux-
-> pwm@vger.kernel.org; devicetree@vger.kernel.org; Wan Mohamad, Wan
-> Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>; Shevchenko,
-> Andriy <andriy.shevchenko@intel.com>
-> Subject: Re: [PATCH 3/3] dt-bindings: pwm: keembay: Add bindings for Inte=
-l
-> Keem Bay PWM
->=20
-> On Sun, May 17, 2020 at 09:52:40PM +0800,
-> vineetha.g.jaya.kumaran@intel.com wrote:
-> > From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
-> >
-> > Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
-> >
-> > Signed-off-by: Vineetha G. Jaya Kumaran
-> > <vineetha.g.jaya.kumaran@intel.com>
-> > ---
-> >  .../devicetree/bindings/pwm/pwm-keembay.yaml       | 39
-> ++++++++++++++++++++++
-> >  1 file changed, 39 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/pwm/pwm-keembay.yaml
->=20
-> Use compatible string for filename: intel,keembay-pwn.yaml
->=20
+> --- a/drivers/video/backlight/as3711_bl.c
+> +++ b/drivers/video/backlight/as3711_bl.c
+> @@ -107,13 +107,11 @@ static int as3711_bl_update_status(struct backlight_device *bl)
+>         int brightness = bl->props.brightness;
+>         int ret = 0;
+>
+> -       dev_dbg(&bl->dev, "%s(): brightness %u, pwr %x, blank %x, state %x\n",
+> +       dev_dbg(&bl->dev, "%s(): brightness %u, pwr %x, state %x\n",
+>                 __func__, bl->props.brightness, bl->props.power,
+> -               bl->props.fb_blank, bl->props.state);
+> +               bl->props.state);
+>
+Let's also move this to backlight core.
 
-Will fix the filename in v2.
-
-> >
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-keembay.yaml
-> > b/Documentation/devicetree/bindings/pwm/pwm-keembay.yaml
-> > new file mode 100644
-> > index 0000000..00968d7
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-keembay.yaml
-> > @@ -0,0 +1,39 @@
-> > +# SPDX-License-Identifier: GPL-2.0
->=20
-> Dual license new bindings:
->=20
-> (GPL-2.0-only OR BSD-2-Clause)
->=20
-
-OK, will update the licensing info.
-
-> > +# Copyright (C) 2020 Intel Corporation %YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/pwm/pwm-keembay.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Intel Keem Bay PWM Device Tree Bindings
-> > +
-> > +maintainers:
-> > +  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-> > +
-> > +allOf:
-> > +  - $ref: pwm.yaml#
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - intel,keembay-pwm
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    description:
-> > +        phandle to the reference clock.
->=20
-> How many clocks? (maxItems: 1?)
->=20
-> You can drop the description.
->=20
-
-1 clock is needed for this case, will add in maxItems and drop the descript=
-ion.
-
-> > +
-> > +required:
-> > + - compatible
-> > + - reg
-> > + - clocks
-> > +
-> > +examples:
-> > +  - |
-> > +    pwm@203200a0 {
-> > +      compatible =3D "intel,keembay-pwm";
-> > +      reg =3D <0x0 0x203200a0 0x0 0xe8>;
-> > +      clocks =3D <&scmi_clk KEEM_BAY_A53_GPIO>;
-> > +    };
-> > --
-> > 1.9.1
-> >
+-Emil
