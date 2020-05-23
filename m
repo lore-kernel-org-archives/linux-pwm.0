@@ -1,75 +1,52 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] pwm: rockchip: simplify rockchip_pwm_get_state()
-Date: Sat, 23 May 2020 22:01:25 +0200
-Message-ID: <20200523200125.khdw3eau5eakxqy6@pengutronix.de>
-References: <20190919091728.24756-1-linux@rasmusvillemoes.dk>
- <20190919111115.5oraof2bdl4627xv@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH -next] pwm: pca9685: Remove set but not used variable
+ 'pwm'
+Date: Sat, 23 May 2020 22:17:30 +0200
+Message-ID: <20200523201730.o7y7pent4hjtgia3@pengutronix.de>
+References: <CAGngYiVDCCjo6VKt660Uz5mbEGOBOZpcUWeRHWx_L=TapZgv_w@mail.gmail.com>
+ <20190606151111.14237-1-TheSven73@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387834AbgEWURk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 23 May 2020 16:17:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCABC061A0E
+        for <linux-pwm@vger.kernel.org>; Sat, 23 May 2020 13:17:40 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20190919111115.5oraof2bdl4627xv@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: David Wu <david.wu@rock-chips.com>
-Cc: linux-pwm@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190606151111.14237-1-TheSven73@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, YueHaibing <yuehaibing@huawei.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-Hello David,
+On Thu, Jun 06, 2019 at 11:11:11AM -0400, Sven Van Asbroeck wrote:
+> I was able to test the patch [1] exclusion mechanism without access to actual
+> hardware - by giving it a dummy regmap. See patch below.
+> 
+> Test cases (all via sysfs):
+> 1. verify requested pwm cannot be requested as gpio
+> 2. verify requested gpio cannot be requested as pwm
+> 3. verify pwm "all LEDs" cannot be used if pwms/gpios in use
+> 4. verify pwms/gpios cannot be requested if pwm "all LEDs" in use
+> 
+> All test cases ok.
+>  Obviously, I could not test multi-threaded correctness.
+> 
+> [1] https://lkml.org/lkml/2019/6/4/1039
 
-On Thu, Sep 19, 2019 at 01:11:15PM +0200, oUwe Kleine-K=F6nig wrote:
-> On Thu, Sep 19, 2019 at 11:17:27AM +0200, Rasmus Villemoes wrote:
-> > The way state->enabled is computed is rather convoluted and hard to
-> > read - both branches of the if() actually do the exact same thing. So
-> > remove the if(), and further simplify "<boolean condition> ? true :
-> > false" to "<boolean condition>".
-> > =
-
-> > Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> > ---
-> > I stumbled on this while trying to understand how the pwm subsystem
-> > works. This patch is a semantic no-op, but it's also possible that,
-> > say, the first branch simply contains a "double negative" so either
-> > the !=3D should be =3D=3D or the "false : true" should be "true : false=
-".
-> =
-
-> The change looks obviously right, it's a noop.
-> =
-
-> I share your doubts however. The construct was introduced in commit =
-
-> 831b2790507b ("pwm: rockchip: Use same PWM ops for each IP") by David
-> Wu.
-> =
-
-> Before there were rockchip_pwm_get_state_v1 for the supports_polarity =3D
-> false case and rockchip_pwm_get_state_v2 for supports_polarity =3D true.
-> =
-
-> In both state->enabled was assigned true if ((val & enable_conf) =3D=3D
-> enable_conf). So I assume everything is fine.
-> =
-
-> A confirmation by David would be great though.
-
-This is still open. Can you please have a look at
-https://patchwork.ozlabs.org/project/linux-pwm/patch/20190919091728.24756-1=
--linux@rasmusvillemoes.dk/
-and verify it's correct?
+Is this patch still relevant? A patch similar to YueHaibing's one was
+merged in the meantime but I guess the underlying problem is still
+relevant. Sven, do you care enough to recheck and create a patch on top
+of a more recent tree?
 
 Best regards
 Uwe
 
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
