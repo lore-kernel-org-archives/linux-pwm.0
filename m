@@ -1,24 +1,24 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 22/32] pwm: bcm2835: convert to
+Subject: Re: [PATCH 21/32] pwm: tiecap: convert to
  devm_platform_ioremap_resource
-Date: Sat, 23 May 2020 19:18:49 +0200
-Message-ID: <20200523171849.uybbbpqwma4oqqai@pengutronix.de>
+Date: Sat, 23 May 2020 19:19:12 +0200
+Message-ID: <20200523171912.kbe7dbxfdf6s7v5m@pengutronix.de>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
- <20191229080610.7597-22-tiny.windzz@gmail.com>
+ <20191229080610.7597-21-tiny.windzz@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387571AbgEWRTL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 23 May 2020 13:19:11 -0400
+        with ESMTP id S2387571AbgEWRTf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 23 May 2020 13:19:35 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDB8C061A0E
-        for <linux-pwm@vger.kernel.org>; Sat, 23 May 2020 10:19:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC45C061A0E
+        for <linux-pwm@vger.kernel.org>; Sat, 23 May 2020 10:19:35 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20191229080610.7597-22-tiny.windzz@gmail.com>
+In-Reply-To: <20191229080610.7597-21-tiny.windzz@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Yangtao Li <tiny.windzz@gmail.com>
@@ -26,7 +26,7 @@ Cc: claudiu.beznea@microchip.com, thierry.reding@gmail.com, nicolas.ferre@microc
 
 Hello,
 
-On Sun, Dec 29, 2019 at 08:06:00AM +0000, Yangtao Li wrote:
+On Sun, Dec 29, 2019 at 08:05:59AM +0000, Yangtao Li wrote:
 > Use devm_platform_ioremap_resource() to simplify code.
 > 
 > Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
