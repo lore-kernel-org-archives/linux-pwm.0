@@ -1,27 +1,75 @@
-From: mrs chantal <mrs.chantalas1@gmail.com>
-Subject: jjCompliment
-Date: Sat, 23 May 2020 18:00:37 +0000
-Message-ID: <CAMdkyyDY_0O7YgysHCjgRTJ=8-B7XurK7o1razRHDVOjgr2V2g__11662.4870149948$1590256862$gmane$org@mail.gmail.com>
-Reply-To: mrs.chantala2055@gmail.com
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: rockchip: simplify rockchip_pwm_get_state()
+Date: Sat, 23 May 2020 22:01:25 +0200
+Message-ID: <20200523200125.khdw3eau5eakxqy6@pengutronix.de>
+References: <20190919091728.24756-1-linux@rasmusvillemoes.dk>
+ <20190919111115.5oraof2bdl4627xv@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388205AbgEWSAl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 23 May 2020 14:00:41 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BAAC02A198
-        for <linux-pwm@vger.kernel.org>; Sat, 23 May 2020 11:00:39 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id z18so10993471qto.2
-        for <linux-pwm@vger.kernel.org>; Sat, 23 May 2020 11:00:39 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190919111115.5oraof2bdl4627xv@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: David Wu <david.wu@rock-chips.com>
+Cc: linux-pwm@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-     Compliment of the day to you. I am Mrs.CHANTAL I am sending this brief
-    letter to solicit your partnership to transfer $13.5 Million US
-    Dollars.I shall send you more information and procedures when I receive
-    positive response From you. Please send me a message in My private
-    email address is ( mrschantal066@gmail.com  )
-    Best Regards
-    MrS.Chantal
+Hello David,
+
+On Thu, Sep 19, 2019 at 01:11:15PM +0200, oUwe Kleine-K=F6nig wrote:
+> On Thu, Sep 19, 2019 at 11:17:27AM +0200, Rasmus Villemoes wrote:
+> > The way state->enabled is computed is rather convoluted and hard to
+> > read - both branches of the if() actually do the exact same thing. So
+> > remove the if(), and further simplify "<boolean condition> ? true :
+> > false" to "<boolean condition>".
+> > =
+
+> > Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> > ---
+> > I stumbled on this while trying to understand how the pwm subsystem
+> > works. This patch is a semantic no-op, but it's also possible that,
+> > say, the first branch simply contains a "double negative" so either
+> > the !=3D should be =3D=3D or the "false : true" should be "true : false=
+".
+> =
+
+> The change looks obviously right, it's a noop.
+> =
+
+> I share your doubts however. The construct was introduced in commit =
+
+> 831b2790507b ("pwm: rockchip: Use same PWM ops for each IP") by David
+> Wu.
+> =
+
+> Before there were rockchip_pwm_get_state_v1 for the supports_polarity =3D
+> false case and rockchip_pwm_get_state_v2 for supports_polarity =3D true.
+> =
+
+> In both state->enabled was assigned true if ((val & enable_conf) =3D=3D
+> enable_conf). So I assume everything is fine.
+> =
+
+> A confirmation by David would be great though.
+
+This is still open. Can you please have a look at
+https://patchwork.ozlabs.org/project/linux-pwm/patch/20190919091728.24756-1=
+-linux@rasmusvillemoes.dk/
+and verify it's correct?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
