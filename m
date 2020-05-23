@@ -1,16 +1,16 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 27/32] pwm: clps711x: convert to
+Subject: Re: [PATCH 23/32] pwm: berlin: convert to
  devm_platform_ioremap_resource
-Date: Sat, 23 May 2020 19:17:03 +0200
-Message-ID: <20200523171703.hbwe2qzmlkemgc7a@pengutronix.de>
+Date: Sat, 23 May 2020 19:18:25 +0200
+Message-ID: <20200523171825.etlhz2fi7hjonkyq@pengutronix.de>
 References: <20191229080610.7597-1-tiny.windzz@gmail.com>
- <20191229080610.7597-27-tiny.windzz@gmail.com>
+ <20191229080610.7597-23-tiny.windzz@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20191229080610.7597-27-tiny.windzz@gmail.com>
+In-Reply-To: <20191229080610.7597-23-tiny.windzz@gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -26,7 +26,7 @@ List-Id: linux-pwm@vger.kernel.org
 
 Hello,
 
-On Sun, Dec 29, 2019 at 08:06:05AM +0000, Yangtao Li wrote:
+On Sun, Dec 29, 2019 at 08:06:01AM +0000, Yangtao Li wrote:
 > Use devm_platform_ioremap_resource() to simplify code.
 > =
 
