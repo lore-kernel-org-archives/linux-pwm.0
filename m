@@ -1,64 +1,79 @@
-From: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH 1/2] hwmon: pwm-fan: Add profile support and add remove
- module support
-Date: Tue, 26 May 2020 12:08:14 +0000
-Message-ID: <BYAPR12MB30145EC4578F64EAD1233357ADB00@BYAPR12MB3014.namprd12.prod.outlook.com>
-References: <1590469565-14953-1-git-send-email-spatra@nvidia.com>
- <53619c02-8c0f-3eec-cccc-16e779b8c425@roeck-us.net>
+From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH V3] pwm: tegra: dynamic clk freq configuration by PWM
+ driver
+Date: Tue, 26 May 2020 13:44:40 +0100
+Message-ID: <c83f7297-f3da-2b49-bc1a-42bffe7faabd@nvidia.com>
+References: <1590492335-25857-1-git-send-email-spatra@nvidia.com>
+ <81646862-8cbd-95f1-506d-ea375e365d69@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <53619c02-8c0f-3eec-cccc-16e779b8c425-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+In-Reply-To: <81646862-8cbd-95f1-506d-ea375e365d69-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "kamil-MZ2JYD8fkKLYtjvyW6yDsg@public.gmane.org" <kamil-MZ2JYD8fkKLYtjvyW6yDsg@public.gmane.org>, "jdelvare-IBi9RG/b67k@public.gmane.org" <jdelvare-IBi9RG/b67k@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Bibek Basu <bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Bitan Biswas <bbiswas-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Cc: bbasu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, kyarlagadda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGksDQoNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHdWVudGVyIFJv
-ZWNrIDxncm9lY2s3QGdtYWlsLmNvbT4gT24gQmVoYWxmIE9mIEd1ZW50ZXIgUm9lY2sNCj4gU2Vu
-dDogVHVlc2RheSwgTWF5IDI2LCAyMDIwIDU6MTIgUE0NCj4gVG86IFNhbmRpcGFuIFBhdHJhIDxz
-cGF0cmFAbnZpZGlhLmNvbT47IFRoaWVycnkgUmVkaW5nDQo+IDx0cmVkaW5nQG52aWRpYS5jb20+
-OyBKb25hdGhhbiBIdW50ZXIgPGpvbmF0aGFuaEBudmlkaWEuY29tPjsgdS5rbGVpbmUtDQo+IGtv
-ZW5pZ0BwZW5ndXRyb25peC5kZTsga2FtaWxAd3lwYXMub3JnOyBqZGVsdmFyZUBzdXNlLmNvbTsN
-Cj4gcm9iaCtkdEBrZXJuZWwub3JnDQo+IENjOiBCaWJlayBCYXN1IDxiYmFzdUBudmlkaWEuY29t
-PjsgQml0YW4gQmlzd2FzIDxiYmlzd2FzQG52aWRpYS5jb20+Ow0KPiBsaW51eC1wd21Admdlci5r
-ZXJuZWwub3JnOyBsaW51eC1od21vbkB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRldmljZXRyZWVAdmdl
-ci5rZXJuZWwub3JnOyBsaW51eC10ZWdyYUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJu
-ZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMS8yXSBod21vbjogcHdt
-LWZhbjogQWRkIHByb2ZpbGUgc3VwcG9ydCBhbmQgYWRkIHJlbW92ZQ0KPiBtb2R1bGUgc3VwcG9y
-dA0KPiANCj4gRXh0ZXJuYWwgZW1haWw6IFVzZSBjYXV0aW9uIG9wZW5pbmcgbGlua3Mgb3IgYXR0
-YWNobWVudHMNCj4gDQo+IA0KPiBPbiA1LzI1LzIwIDEwOjA2IFBNLCBTYW5kaXBhbiBQYXRyYSB3
-cm90ZToNCj4gPiBUaGlzIGNoYW5nZSBoYXMgMiBwYXJ0czoNCj4gPiAxLiBBZGQgc3VwcG9ydCBm
-b3IgcHJvZmlsZXMgbW9kZSBzZXR0aW5ncy4NCj4gPiAgICAgVGhpcyBhbGxvd3MgZGlmZmVyZW50
-IGZhbiBzZXR0aW5ncyBmb3IgdHJpcCBwb2ludCB0ZW1wL2h5c3QvcHdtLg0KPiA+ICAgICBUMTk0
-IGhhcyBtdWx0aXBsZSBmYW4tcHJvZmlsZXMgc3VwcG9ydC4NCj4gPg0KPiA+IDIuIEFkZCBwd20t
-ZmFuIHJlbW92ZSBzdXBwb3J0LiBUaGlzIGlzIGVzc2VudGlhbCBzaW5jZSB0aGUgY29uZmlnIGlz
-DQo+ID4gICAgIHRyaXN0YXRlIGNhcGFibGUuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBTYW5k
-aXBhbiBQYXRyYSA8c3BhdHJhQG52aWRpYS5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvaHdt
-b24vcHdtLWZhbi5jIHwgMTEyDQo+ID4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxMDAgaW5zZXJ0aW9ucygrKSwg
-MTIgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9od21vbi9wd20t
-ZmFuLmMgYi9kcml2ZXJzL2h3bW9uL3B3bS1mYW4uYyBpbmRleA0KPiA+IDMwYjdiM2UuLjI2ZGI1
-ODkgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9od21vbi9wd20tZmFuLmMNCj4gPiArKysgYi9k
-cml2ZXJzL2h3bW9uL3B3bS1mYW4uYw0KPiANCj4gWyAuLi4gXQ0KPiANCj4gPg0KPiA+ICtzdGF0
-aWMgaW50IHB3bV9mYW5fcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpIHsNCj4g
-PiArICAgICBzdHJ1Y3QgcHdtX2Zhbl9jdHggKmN0eCA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBk
-ZXYpOw0KPiA+ICsgICAgIHN0cnVjdCBwd21fYXJncyBhcmdzOw0KPiA+ICsNCj4gPiArICAgICBp
-ZiAoIWN0eCkNCj4gPiArICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOw0KPiA+ICsNCj4gPiAr
-ICAgICBpZiAoSVNfRU5BQkxFRChDT05GSUdfVEhFUk1BTCkpDQo+ID4gKyAgICAgICAgICAgICB0
-aGVybWFsX2Nvb2xpbmdfZGV2aWNlX3VucmVnaXN0ZXIoY3R4LT5jZGV2KTsNCj4gPiArDQo+ID4g
-KyAgICAgcHdtX2dldF9hcmdzKGN0eC0+cHdtLCAmYXJncyk7DQo+ID4gKyAgICAgcHdtX2NvbmZp
-ZyhjdHgtPnB3bSwgMCwgYXJncy5wZXJpb2QpOw0KPiA+ICsgICAgIHB3bV9kaXNhYmxlKGN0eC0+
-cHdtKTsNCj4gPiArDQo+ID4gKyAgICAgcmV0dXJuIDA7DQo+ID4gK30NCj4gPiArDQo+IA0KPiBJ
-IGRvbid0IHRoaW5rIHlvdSBhY3R1YWxseSB0ZXN0ZWQgdGhpcy4gSSB3b3VsZCBzdWdnZXN0IHRv
-IG1ha2UgeW91cnNlbGYgZmFtaWxpYXINCj4gd2l0aCAnZGV2bScgZnVuY3Rpb25zIGFuZCB0aGVp
-ciB1c2UsIGFuZCB0aGVuIHJlc3VibWl0Lg0KPiANCg0KVGhhbmtzIEd1ZW50ZXIuDQpJIG1pc3Nl
-ZCB0byBtZW50aW9uIGFib3V0IGRldm0gd2hpbGUgdW5yZWdpc3RlcmluZyB0aGUgY29vbGluZyBk
-ZXZpY2UuDQpUaGF0IHdvdWxkIGRlZmluaXRlbHkgY2F1c2UgYSBtaXN0YWtlIGluIGNvZGUuIEkg
-YW0gbm90aW5nIGl0IGZvciBmdXJ0aGVyIHBhdGNoLg0KDQpGb3IgYSBiZXR0ZXIgY2xhcml0eSwg
-SSB3aWxsIHB1c2ggbmV4dCB2ZXJzaW9uIG9mIHRoaXMgcGF0Y2ggdG8gaGFuZGxlIG9ubHkgbXVs
-dGlwbGUgcHJvZmlsZXMgc3VwcG9ydC4NCiJyZW1vdmUgZmFuIG1vZHVsZSIgd2lsbCBiZSBzdXBw
-b3J0ZWQgYnkgYSBzZXBhcmF0ZSBwYXRjaCBhbHRvZ2V0aGVyLg0KDQoNClRoYW5rcyAmIFJlZ2Fy
-ZHMsDQpTYW5kaXBhbg0KDQo+IFRoYW5rcywNCj4gR3VlbnRlcg0K
+
+On 26/05/2020 13:05, Jon Hunter wrote:
+> 
+> On 26/05/2020 12:25, Sandipan Patra wrote:
+>> Added support for dynamic clock freq configuration in pwm kernel driver.
+>> Earlier the pwm driver used to cache boot time clock rate by pwm clock
+>> parent during probe. Hence dynamically changing pwm frequency was not
+>> possible for all the possible ranges. With this change, dynamic calculation
+>> is enabled and it is able to set the requested period from sysfs knob
+>> provided the value is supported by clock source.
+>>
+>> Changes mainly have 2 parts:
+>>   - T186 and later chips [1]
+>>   - T210 and prior chips [2]
+>>
+>> For [1] - Changes implemented to set pwm period dynamically and
+>>           also checks added to allow only if requested period(ns) is
+>>           below or equals to higher range.
+>>
+>> For [2] - Only checks if the requested period(ns) is below or equals
+>>           to higher range defined by max clock limit. The limitation
+>>           in T210 or prior chips are due to the reason of having only
+>>           one pwm-controller supporting multiple channels. But later
+>>           chips have multiple pwm controller instances each having
+>> 	  single channel support.
+>>
+>> Signed-off-by: Sandipan Patra <spatra-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+...
+
+>>  	/*
+>> +	 *  Period in nano second has to be <= highest allowed period
+>> +	 *  based on max clock rate of the pwm controller.
+>> +	 *
+>> +	 *  higher limit = max clock limit >> PWM_DUTY_WIDTH
+>> +	 *  lower limit = min clock limit >> PWM_DUTY_WIDTH >> PWM_SCALE_WIDTH
+> 
+> Not sure why we mention the lower limit if we are not testing this
+> condition. Does not appear to be relevant here. Or should we be checking
+> this as well?
+
+The above comment appears to be incorrect. Looking further at the code,
+the code seems fine but the comment is confusing. I think you mean to
+say that 'the period needs to be greater than the minimum period' and
+that ...
+
+ min period = max clock limit >> PWM_DUTY_WIDTH
+ max period = min clock limit >> PWM_DUTY_WIDTH >> PWM_SCALE_WIDTH
+
+> 
+>> +	 */
+>> +	if (period_ns < pc->min_period_ns)
+>> +		return -EINVAL;
+> 
+> Something does not seem right here. If this is the highest allowed
+> period, shouldn't this variable be called 'max_period_ns'?
+
+Jon
+
+-- 
+nvpublic
