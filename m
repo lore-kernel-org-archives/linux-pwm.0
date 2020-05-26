@@ -1,45 +1,51 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v15 01/11] drm/i915: Use 64-bit division macro
-Date: Tue, 26 May 2020 10:35:01 -0700
-Message-ID: <4b56ba06f4f1e63cf50858d3e45c88057dc443e4.1590514331.git.gurus@codeaurora.org>
+Subject: [PATCH v15 07/11] pwm: sifive: Use 64-bit division macro
+Date: Tue, 26 May 2020 10:35:07 -0700
+Message-ID: <d0c834872cc4e162b2358f801aca783f7e1cc214.1590514331.git.gurus@codeaurora.org>
 References: <cover.1590514331.git.gurus@codeaurora.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:5422 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728064AbgEZRfO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 26 May 2020 13:35:14 -0400
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 In-Reply-To: <cover.1590514331.git.gurus@codeaurora.org>
 In-Reply-To: <cover.1590514331.git.gurus@codeaurora.org>
 References: <cover.1590514331.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
 To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
+Cc: linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>, Daniel Thompson <daniel.thompson@linaro.org>, Arnd Bergmann <arnd@arndb.de>, David Collins <collinsd@codeaurora.org>, Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Dan Carpenter <dan.carpenter@oracle.com>, Joe Perches <joe@perches.com>, Subbaraman Narayanamurthy <subbaram@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Guenter Roeck <linux@roeck-us.net>
+List-Id: linux-pwm@vger.kernel.org
 
-Since the PWM framework is switching struct pwm_state.duty_cycle's
-datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
-to handle a 64-bit dividend.
+Since the PWM framework is switching struct pwm_args.period's datatype
+to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
+handle a 64-bit divisor.
 
 Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Acked-by: Jani Nikula <jani.nikula@intel.com>
+Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
 ---
- drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
+ drivers/pwm/pwm-sifive.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index 276f438..81547a0 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1920,7 +1920,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 		return retval;
- 	}
+diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+index cc63f9b..62de0bb 100644
+--- a/drivers/pwm/pwm-sifive.c
++++ b/drivers/pwm/pwm-sifive.c
+@@ -181,7 +181,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * consecutively
+ 	 */
+ 	num = (u64)duty_cycle * (1U << PWM_SIFIVE_CMPWIDTH);
+-	frac = DIV_ROUND_CLOSEST_ULL(num, state->period);
++	frac = DIV64_U64_ROUND_CLOSEST(num, state->period);
+ 	/* The hardware cannot generate a 100% duty cycle */
+ 	frac = min(frac, (1U << PWM_SIFIVE_CMPWIDTH) - 1);
  
--	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
-+	level = DIV_ROUND_UP_ULL(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
- 			     CRC_PMIC_PWM_PERIOD_NS);
- 	panel->backlight.level =
- 		intel_panel_compute_brightness(connector, level);
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
