@@ -1,47 +1,45 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
- reg property
-Date: Tue, 26 May 2020 19:03:36 +0300
-Message-ID: <20200526160336.GV1634618@smile.fi.intel.com>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-4-michael@walle.cc>
- <67e90dafd67c285158c2c6f67f92edb7@walle.cc>
- <20200515102848.GH271301@dell>
- <159e68b4ce53630ef906b2fcbca925bd@walle.cc>
- <20200526072427.GC3628@dell>
- <f5704ce5a3e280f63c81fe35efb08234@walle.cc>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: [PATCH v15 01/11] drm/i915: Use 64-bit division macro
+Date: Tue, 26 May 2020 10:35:01 -0700
+Message-ID: <4b56ba06f4f1e63cf50858d3e45c88057dc443e4.1590514331.git.gurus@codeaurora.org>
+References: <cover.1590514331.git.gurus@codeaurora.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:3709 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728337AbgEZQDn (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 26 May 2020 12:03:43 -0400
-Content-Disposition: inline
-In-Reply-To: <f5704ce5a3e280f63c81fe35efb08234@walle.cc>
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:5422 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728064AbgEZRfO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 26 May 2020 13:35:14 -0400
+In-Reply-To: <cover.1590514331.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1590514331.git.gurus@codeaurora.org>
+References: <cover.1590514331.git.gurus@codeaurora.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pw
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
 
-On Tue, May 26, 2020 at 05:54:38PM +0200, Michael Walle wrote:
-> Am 2020-05-26 09:24, schrieb Lee Jones:
+Since the PWM framework is switching struct pwm_state.duty_cycle's
+datatype to u64, prepare for this transition by using DIV_ROUND_UP_ULL
+to handle a 64-bit dividend.
 
-...
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
+---
+ drivers/gpu/drm/i915/display/intel_panel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Like I said, in the long term I would like to have support for
-> different versions of the board management controller
-
-> without having to change the device tree and have device tree bindings for the
-> subdevices at the same time.
-
-But isn't device tree to describe *very specific platform* rather than *class
-of platforms*?
-
-> But it seems, that this is not possible
-> and I guess I have to bite the bullet and may need to provide another
-> device tree if the controller might be updated.
-
+diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
+index 276f438..81547a0 100644
+--- a/drivers/gpu/drm/i915/display/intel_panel.c
++++ b/drivers/gpu/drm/i915/display/intel_panel.c
+@@ -1920,7 +1920,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 		return retval;
+ 	}
+ 
+-	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
++	level = DIV_ROUND_UP_ULL(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
+ 			     CRC_PMIC_PWM_PERIOD_NS);
+ 	panel->backlight.level =
+ 		intel_panel_compute_brightness(connector, level);
 -- 
-With Best Regards,
-Andy Shevchenko
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
