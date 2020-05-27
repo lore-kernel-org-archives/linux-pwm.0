@@ -1,79 +1,49 @@
-From: "Tanwar, Rahul" <rahul.tanwar-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v1 2/2] Add PWM driver for LGM
-Date: Wed, 27 May 2020 14:28:53 +0800
-Message-ID: <3a1f1e83-2d9d-ddbf-e2e6-9c8bab87372b@linux.intel.com>
-References: <cover.1590132733.git.rahul.tanwar@linux.intel.com>
- <3c1d2343b034325dbc185ccd23a35b40a62a4e7b.1590132733.git.rahul.tanwar@linux.intel.com>
- <20200522085613.ktb2ruw2virj337v@pengutronix.de>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
+ reg property
+Date: Wed, 27 May 2020 07:53:44 +0100
+Message-ID: <20200527065344.GP3628@dell>
+References: <20200423174543.17161-1-michael@walle.cc>
+ <20200423174543.17161-4-michael@walle.cc>
+ <67e90dafd67c285158c2c6f67f92edb7@walle.cc>
+ <20200515102848.GH271301@dell>
+ <159e68b4ce53630ef906b2fcbca925bd@walle.cc>
+ <20200526072427.GC3628@dell>
+ <f5704ce5a3e280f63c81fe35efb08234@walle.cc>
+ <20200526160336.GV1634618@smile.fi.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200522085613.ktb2ruw2virj337v-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, songjun.Wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, cheol.yong.kim-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, qi-ming.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200526160336.GV1634618@smile.fi.intel.com>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Michael Walle <michael@walle.cc>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pw
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, 26 May 2020, Andy Shevchenko wrote:
 
-Hi Uwe,
+> On Tue, May 26, 2020 at 05:54:38PM +0200, Michael Walle wrote:
+> > Am 2020-05-26 09:24, schrieb Lee Jones:
+> 
+> ...
+> 
+> > Like I said, in the long term I would like to have support for
+> > different versions of the board management controller
+> 
+> > without having to change the device tree and have device tree bindings for the
+> > subdevices at the same time.
+> 
+> But isn't device tree to describe *very specific platform* rather than *class
+> of platforms*?
 
-Thanks for review.
+Yes.  Device Tree describes the hardware.
 
-On 22/5/2020 4:56 pm, Uwe Kleine-König wrote:
-> Hello,
->
-> On Fri, May 22, 2020 at 03:41:59PM +0800, Rahul Tanwar wrote:
->> Add PWM controller driver for Intel's Lightning Mountain(LGM) SoC.
->>
->> Signed-off-by: Rahul Tanwar <rahul.tanwar-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->> ---
->>  drivers/pwm/Kconfig         |   9 ++
->>  drivers/pwm/Makefile        |   1 +
->>  drivers/pwm/pwm-intel-lgm.c | 356 ++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 366 insertions(+)
->>  create mode 100644 drivers/pwm/pwm-intel-lgm.c
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index eebbc917ac97..a582214f50b2 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -232,6 +232,15 @@ config PWM_IMX_TPM
->>  	  To compile this driver as a module, choose M here: the module
->>  	  will be called pwm-imx-tpm.
->>  
->> +config PWM_INTEL_LGM
->> +	tristate "Intel LGM PWM support"
->> +	depends on X86 || COMPILE_TEST
->> +	help
->> +	  Generic PWM framework driver for LGM SoC.
-[...]
->> +};
->> +
->> +static void tach_work(struct work_struct *work)
->> +{
->> +	struct intel_pwm_chip *pc = container_of(work, struct intel_pwm_chip,
->> +						 work.work);
->> +	struct regmap *regmap = pc->regmap;
->> +	u32 fan_tach, fan_dc, val;
->> +	s32 diff;
->> +	static u32 fanspeed_err_cnt, time_window, delta_dc;
->> +
->> +	/*
->> +	 * Fan speed is tracked by reading the active duty cycle of PWM output
->> +	 * from the active duty cycle register. Some variance in the duty cycle
->> +	 * register value is expected. So we set a time window of 30 seconds and
->> +	 * if we detect inaccurate fan speed 6 times within 30 seconds then we
->> +	 * mark it as fan speed problem and fix it by readjusting the duty cycle.
->> +	 */
-> I'm a unhappy to have this in the PWM driver. The PWM driver is supposed
-> to be generic and I think this belongs into a dedicated driver.
+If the hardware changes, so must the Device Tree.
 
-Well noted about all other review concerns. I will rework the driver in v2.
-However, i am not very sure about the above point - of having a separate
-dedicated driver for tach_work because its logic is tightly coupled with
-this driver.
-
-Regards,
-Rahul
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
