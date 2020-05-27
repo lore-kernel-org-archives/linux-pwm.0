@@ -1,44 +1,79 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: [PATCH v15 02/11] hwmon: pwm-fan: Use 64-bit division macro
-Date: Tue, 26 May 2020 10:35:02 -0700
-Message-ID: <cc56a6017ecd1a8e8abba9ededf18d9e2311a4c2.1590514331.git.gurus@codeaurora.org>
-References: <cover.1590514331.git.gurus@codeaurora.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:5422 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388770AbgEZRfP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 26 May 2020 13:35:15 -0400
-In-Reply-To: <cover.1590514331.git.gurus@codeaurora.org>
-In-Reply-To: <cover.1590514331.git.gurus@codeaurora.org>
-References: <cover.1590514331.git.gurus@codeaurora.org>
-Sender: linux-pwm-owner@vger.kernel.org
+From: "Tanwar, Rahul" <rahul.tanwar-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v1 2/2] Add PWM driver for LGM
+Date: Wed, 27 May 2020 14:28:53 +0800
+Message-ID: <3a1f1e83-2d9d-ddbf-e2e6-9c8bab87372b@linux.intel.com>
+References: <cover.1590132733.git.rahul.tanwar@linux.intel.com>
+ <3c1d2343b034325dbc185ccd23a35b40a62a4e7b.1590132733.git.rahul.tanwar@linux.intel.com>
+ <20200522085613.ktb2ruw2virj337v@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200522085613.ktb2ruw2virj337v-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, songjun.Wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, cheol.yong.kim-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, qi-ming.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
 
-Since the PWM framework is switching struct pwm_args.period's datatype
-to u64, prepare for this transition by using DIV_ROUND_UP_ULL to handle
-a 64-bit dividend.
 
-Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/hwmon/pwm-fan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Uwe,
 
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index 30b7b3e..17bb642 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -447,7 +447,7 @@ static int pwm_fan_resume(struct device *dev)
- 		return 0;
- 
- 	pwm_get_args(ctx->pwm, &pargs);
--	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
-+	duty = DIV_ROUND_UP_ULL(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
- 	ret = pwm_config(ctx->pwm, duty, pargs.period);
- 	if (ret)
- 		return ret;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Thanks for review.
+
+On 22/5/2020 4:56 pm, Uwe Kleine-König wrote:
+> Hello,
+>
+> On Fri, May 22, 2020 at 03:41:59PM +0800, Rahul Tanwar wrote:
+>> Add PWM controller driver for Intel's Lightning Mountain(LGM) SoC.
+>>
+>> Signed-off-by: Rahul Tanwar <rahul.tanwar-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> ---
+>>  drivers/pwm/Kconfig         |   9 ++
+>>  drivers/pwm/Makefile        |   1 +
+>>  drivers/pwm/pwm-intel-lgm.c | 356 ++++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 366 insertions(+)
+>>  create mode 100644 drivers/pwm/pwm-intel-lgm.c
+>>
+>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+>> index eebbc917ac97..a582214f50b2 100644
+>> --- a/drivers/pwm/Kconfig
+>> +++ b/drivers/pwm/Kconfig
+>> @@ -232,6 +232,15 @@ config PWM_IMX_TPM
+>>  	  To compile this driver as a module, choose M here: the module
+>>  	  will be called pwm-imx-tpm.
+>>  
+>> +config PWM_INTEL_LGM
+>> +	tristate "Intel LGM PWM support"
+>> +	depends on X86 || COMPILE_TEST
+>> +	help
+>> +	  Generic PWM framework driver for LGM SoC.
+[...]
+>> +};
+>> +
+>> +static void tach_work(struct work_struct *work)
+>> +{
+>> +	struct intel_pwm_chip *pc = container_of(work, struct intel_pwm_chip,
+>> +						 work.work);
+>> +	struct regmap *regmap = pc->regmap;
+>> +	u32 fan_tach, fan_dc, val;
+>> +	s32 diff;
+>> +	static u32 fanspeed_err_cnt, time_window, delta_dc;
+>> +
+>> +	/*
+>> +	 * Fan speed is tracked by reading the active duty cycle of PWM output
+>> +	 * from the active duty cycle register. Some variance in the duty cycle
+>> +	 * register value is expected. So we set a time window of 30 seconds and
+>> +	 * if we detect inaccurate fan speed 6 times within 30 seconds then we
+>> +	 * mark it as fan speed problem and fix it by readjusting the duty cycle.
+>> +	 */
+> I'm a unhappy to have this in the PWM driver. The PWM driver is supposed
+> to be generic and I think this belongs into a dedicated driver.
+
+Well noted about all other review concerns. I will rework the driver in v2.
+However, i am not very sure about the above point - of having a separate
+dedicated driver for tach_work because its logic is tightly coupled with
+this driver.
+
+Regards,
+Rahul
