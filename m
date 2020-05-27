@@ -1,40 +1,48 @@
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v1 2/2] Add PWM driver for LGM
-Date: Wed, 27 May 2020 12:15:21 +0300
-Message-ID: <20200527091521.GH1634618@smile.fi.intel.com>
-References: <cover.1590132733.git.rahul.tanwar@linux.intel.com>
- <3c1d2343b034325dbc185ccd23a35b40a62a4e7b.1590132733.git.rahul.tanwar@linux.intel.com>
- <20200522085613.ktb2ruw2virj337v@pengutronix.de>
- <3a1f1e83-2d9d-ddbf-e2e6-9c8bab87372b@linux.intel.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v3 1/4] pwm: jz4740: Drop dependency on MACH_INGENIC
+Date: Wed, 27 May 2020 13:52:22 +0200
+Message-ID: <20200527115225.10069-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <3a1f1e83-2d9d-ddbf-e2e6-9c8bab87372b@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Tanwar, Rahul" <rahul.tanwar@linux.intel.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, thierry.reding@gmail.com, p.zabel@pengutronix.de, linux-pwm@vger.kernel.org, robh+dt@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, songjun.Wu@intel.com, cheol.yong.kim@intel.com, qi-ming.wu@intel.com
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from outils.crapouillou.net ([89.234.176.41]:40978 "EHLO
+        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgE0Lws (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 27 May 2020 07:52:48 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 
-On Wed, May 27, 2020 at 02:28:53PM +0800, Tanwar, Rahul wrote:
-> On 22/5/2020 4:56 pm, Uwe Kleine-König wrote:
-> > On Fri, May 22, 2020 at 03:41:59PM +0800, Rahul Tanwar wrote:
+Depending on MACH_INGENIC prevent us from creating a generic kernel that
+works on more than one MIPS board. Instead, we just depend on MIPS being
+set.
 
-...
+Acked-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
 
-> > I'm a unhappy to have this in the PWM driver. The PWM driver is supposed
-> > to be generic and I think this belongs into a dedicated driver.
-> 
-> Well noted about all other review concerns. I will rework the driver in v2.
-> However, i am not very sure about the above point - of having a separate
-> dedicated driver for tach_work because its logic is tightly coupled with
-> this driver.
+Notes:
+    v2: New patch. I don't consider this a fix but an enhancement, since the old
+    	behaviour was in place since the driver was born in ~2010, so no Fixes tag.
+    v3: Commit message changes (invert Acked-by / Signed-off-by)
 
-Actually I agree with Uwe.
-Here is layering violation, i.e. provider and consumer in the same pot. It's
-not good from design perspective.
+ drivers/pwm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index eebbc917ac97..7814e5b2cad7 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -234,7 +234,7 @@ config PWM_IMX_TPM
+ 
+ config PWM_JZ4740
+ 	tristate "Ingenic JZ47xx PWM support"
+-	depends on MACH_INGENIC
++	depends on MIPS
+ 	depends on COMMON_CLK
+ 	select MFD_SYSCON
+ 	help
 -- 
-With Best Regards,
-Andy Shevchenko
+2.26.2
