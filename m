@@ -1,32 +1,53 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: pwm: Convert mxs pwm to json-schema
-Date: Thu, 28 May 2020 09:17:59 -0600
-Message-ID: <20200528151759.GA91686@bogus>
-References: <1589456470-2658-1-git-send-email-Anson.Huang@nxp.com>
+From: Guru Das Srinagesh <gurus@codeaurora.org>
+Subject: Re: [PATCH v15 04/11] pwm: clps711x: Use 64-bit division macro
+Date: Thu, 28 May 2020 13:33:41 -0700
+Message-ID: <20200528203341.GA8065@codeaurora.org>
+References: <cover.1590514331.git.gurus@codeaurora.org>
+ <dd03cc467ac3fc470826aef523822b32e15dc929.1590514331.git.gurus@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-il1-f195.google.com ([209.85.166.195]:39661 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403988AbgE1PSC (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 May 2020 11:18:02 -0400
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:47667 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2407020AbgE1Udm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 May 2020 16:33:42 -0400
 Content-Disposition: inline
-In-Reply-To: <1589456470-2658-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <dd03cc467ac3fc470826aef523822b32e15dc929.1590514331.git.gurus@codeaurora.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Anson Huang <Anson.Huang@nxp.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, Linux-imx@nxp.com, u.kleine-koenig@pengutronix.de, festevam@gmail.com, devicetree@vger.kernel.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, robh+dt@kernel.org, linux-kernel@vger.kernel.org, shawnguo@kernel.org
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org
 
-On Thu, 14 May 2020 19:41:10 +0800, Anson Huang wrote:
-> Convert the mxs pwm binding to DT schema format using json-schema.
+On Tue, May 26, 2020 at 10:35:04AM -0700, Guru Das Srinagesh wrote:
+> Since the PWM framework is switching struct pwm_args.period's datatype
+> to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
+> handle a 64-bit divisor.
 > 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
 > ---
->  Documentation/devicetree/bindings/pwm/mxs-pwm.txt  | 17 ---------
->  Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 43 ++++++++++++++++++++++
->  2 files changed, 43 insertions(+), 17 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/mxs-pwm.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
+>  drivers/pwm/pwm-clps711x.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
+> diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+> index 924d39a..ba9500a 100644
+> --- a/drivers/pwm/pwm-clps711x.c
+> +++ b/drivers/pwm/pwm-clps711x.c
+> @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+>  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+>  {
+>  	/* Duty cycle 0..15 max */
+> -	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+> +	return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+>  }
+>  
+>  static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+> -- 
 
-Applied, thanks!
+Hi Daniel,
+
+Could you please review this patch when you get a chance to?
+
+Thank you.
+
+Guru Das.
