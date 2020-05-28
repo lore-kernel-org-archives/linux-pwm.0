@@ -1,53 +1,19 @@
-From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH v15 04/11] pwm: clps711x: Use 64-bit division macro
-Date: Thu, 28 May 2020 13:33:41 -0700
-Message-ID: <20200528203341.GA8065@codeaurora.org>
-References: <cover.1590514331.git.gurus@codeaurora.org>
- <dd03cc467ac3fc470826aef523822b32e15dc929.1590514331.git.gurus@codeaurora.org>
+From: "manuel franco" <manuel@info.com>
+Subject: Spende von 2.000.000,00 Euro
+Date: Thu, 28 May 2020 18:29:53 +0200
+Message-ID: <20200528163007.0621138E0A1B__17707.0922612742$1590704930$gmane$org@correo.bnv.gob.ve>
+Reply-To: manuelfrancospende11@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:47667 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2407020AbgE1Udm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 May 2020 16:33:42 -0400
-Content-Disposition: inline
-In-Reply-To: <dd03cc467ac3fc470826aef523822b32e15dc929.1590514331.git.gurus@codeaurora.org>
+Received: from mail.bnv.gob.ve ([201.249.200.115]:48574 "EHLO
+        correo.bnv.gob.ve" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2437098AbgE1W2U (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 May 2020 18:28:20 -0400
+Content-Description: Mail message body
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org
+To: Recipients <manuel@info.com>
 
-On Tue, May 26, 2020 at 10:35:04AM -0700, Guru Das Srinagesh wrote:
-> Since the PWM framework is switching struct pwm_args.period's datatype
-> to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
-> handle a 64-bit divisor.
-> 
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
-> ---
->  drivers/pwm/pwm-clps711x.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
-> index 924d39a..ba9500a 100644
-> --- a/drivers/pwm/pwm-clps711x.c
-> +++ b/drivers/pwm/pwm-clps711x.c
-> @@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
->  static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
->  {
->  	/* Duty cycle 0..15 max */
-> -	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
-> +	return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
->  }
->  
->  static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-> -- 
-
-Hi Daniel,
-
-Could you please review this patch when you get a chance to?
-
-Thank you.
-
-Guru Das.
+Ich bin Manuel Franco, ich spende Ihnen 2.000.000,00 Euro. Nehmen Sie jetzt Kontakt mit mir auf, damit wir fortfahren können.
