@@ -1,67 +1,32 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH v3 2/4] pwm: jz4740: Enhance precision in calculation of duty cycle
-Date: Thu, 28 May 2020 14:41:03 +0000
-Message-ID: <20200528144103.BF7C12089D__7997.23470570228$1590676875$gmane$org@mail.kernel.org>
-References: <20200527115225.10069-2-paul@crapouillou.net>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH] dt-bindings: pwm: Convert mxs pwm to json-schema
+Date: Thu, 28 May 2020 09:17:59 -0600
+Message-ID: <20200528151759.GA91686@bogus>
+References: <1589456470-2658-1-git-send-email-Anson.Huang@nxp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44546 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbgE1OlE (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 28 May 2020 10:41:04 -0400
-In-Reply-To: <20200527115225.10069-2-paul@crapouillou.net>
+Received: from mail-il1-f195.google.com ([209.85.166.195]:39661 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403988AbgE1PSC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 May 2020 11:18:02 -0400
+Content-Disposition: inline
+In-Reply-To: <1589456470-2658-1-git-send-email-Anson.Huang@nxp.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sasha Levin <sashal@kernel.org>, Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>
-Cc: od@zcrc.me, linux-pwm@vger.kernel.org, stable@vger.kernel.orgstable@vger.kernel.org
+To: Anson Huang <Anson.Huang@nxp.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, Linux-imx@nxp.com, u.kleine-koenig@pengutronix.de, festevam@gmail.com, devicetree@vger.kernel.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, robh+dt@kernel.org, linux-kernel@vger.kernel.org, shawnguo@kernel.org
 
-Hi
+On Thu, 14 May 2020 19:41:10 +0800, Anson Huang wrote:
+> Convert the mxs pwm binding to DT schema format using json-schema.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/mxs-pwm.txt  | 17 ---------
+>  Documentation/devicetree/bindings/pwm/mxs-pwm.yaml | 43 ++++++++++++++++++++++
+>  2 files changed, 43 insertions(+), 17 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/pwm/mxs-pwm.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/mxs-pwm.yaml
+> 
 
-[This is an automated email]
-
-This commit has been processed because it contains a "Fixes:" tag
-fixing commit: f6b8a5700057 ("pwm: Add Ingenic JZ4740 support").
-
-The bot has tested the following trees: v5.6.14, v5.4.42, v4.19.124, v4.14.181, v4.9.224, v4.4.224.
-
-v5.6.14: Failed to apply! Possible dependencies:
-    485b56f08f33 ("pwm: jz4740: Improve algorithm of clock calculation")
-    ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
-
-v5.4.42: Failed to apply! Possible dependencies:
-    485b56f08f33 ("pwm: jz4740: Improve algorithm of clock calculation")
-    ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
-
-v4.19.124: Failed to apply! Possible dependencies:
-    1ac99c58bda9 ("pwm: jz4740: Apply configuration atomically")
-    485b56f08f33 ("pwm: jz4740: Improve algorithm of clock calculation")
-    ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
-
-v4.14.181: Failed to apply! Possible dependencies:
-    174dcc8eaec5 ("pwm: jz4740: Implement ->set_polarity()")
-    1ac99c58bda9 ("pwm: jz4740: Apply configuration atomically")
-    485b56f08f33 ("pwm: jz4740: Improve algorithm of clock calculation")
-    b419006275db ("pwm: jz4740: Enable for all Ingenic SoCs")
-    ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
-
-v4.9.224: Failed to apply! Possible dependencies:
-    174dcc8eaec5 ("pwm: jz4740: Implement ->set_polarity()")
-    1ac99c58bda9 ("pwm: jz4740: Apply configuration atomically")
-    485b56f08f33 ("pwm: jz4740: Improve algorithm of clock calculation")
-    b419006275db ("pwm: jz4740: Enable for all Ingenic SoCs")
-    ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
-
-v4.4.224: Failed to apply! Possible dependencies:
-    174dcc8eaec5 ("pwm: jz4740: Implement ->set_polarity()")
-    1ac99c58bda9 ("pwm: jz4740: Apply configuration atomically")
-    485b56f08f33 ("pwm: jz4740: Improve algorithm of clock calculation")
-    b419006275db ("pwm: jz4740: Enable for all Ingenic SoCs")
-    ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
-
-
-NOTE: The patch will not be queued to stable trees until it is upstream.
-
-How should we proceed with this patch?
-
--- 
-Thanks
-Sasha
+Applied, thanks!
