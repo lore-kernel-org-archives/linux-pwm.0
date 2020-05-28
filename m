@@ -1,14 +1,18 @@
 From: Sasha Levin <sashal@kernel.org>
 Subject: Re: [PATCH v3 2/4] pwm: jz4740: Enhance precision in calculation of duty cycle
 Date: Thu, 28 May 2020 14:41:03 +0000
-Message-ID: <20200528144103.BF7C12089D@mail.kernel.org>
+Message-ID: <20200528144103.BF7C12089D__7997.23470570228$1590676875$gmane$org@mail.kernel.org>
 References: <20200527115225.10069-2-paul@crapouillou.net>
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:44546 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725948AbgE1OlE (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 28 May 2020 10:41:04 -0400
 In-Reply-To: <20200527115225.10069-2-paul@crapouillou.net>
-Sender: stable-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Sasha Levin <sashal@kernel.org>, Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>
 Cc: od@zcrc.me, linux-pwm@vger.kernel.org, stable@vger.kernel.orgstable@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
 
 Hi
 
