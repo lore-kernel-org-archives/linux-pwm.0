@@ -1,7 +1,7 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v3 05/13] backlight: improve backlight_device documentation
-Date: Mon,  1 Jun 2020 08:51:59 +0200
-Message-ID: <20200601065207.492614-6-sam@ravnborg.org>
+Subject: [PATCH v3 07/13] backlight: document enums in backlight.h
+Date: Mon,  1 Jun 2020 08:52:01 +0200
+Message-ID: <20200601065207.492614-8-sam@ravnborg.org>
 References: <20200601065207.492614-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,126 +12,133 @@ To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jone
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
 List-Id: linux-pwm@vger.kernel.org
 
-Improve the documentation for backlight_device and
-adapt it to kernel-doc style.
+Add kernel-doc documentation for the backlight enums
 
 v2:
-  - Add short intro to all fields (Daniel)
-  - Updated description of update_lock (Daniel)
+  - Add intro to each enum member (Daniel)
+    Except backlight type as line lenght was too long.
+    The generated HTML is the same.
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- include/linux/backlight.h | 72 ++++++++++++++++++++++++++-------------
- 1 file changed, 49 insertions(+), 23 deletions(-)
+ include/linux/backlight.h | 74 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-index 69a20da03035..cae1af95dd9d 100644
+index f99ca19cc3ec..c1c7b1666a9b 100644
 --- a/include/linux/backlight.h
 +++ b/include/linux/backlight.h
-@@ -14,21 +14,6 @@
+@@ -14,26 +14,98 @@
  #include <linux/mutex.h>
  #include <linux/notifier.h>
  
--/* Notes on locking:
-- *
-- * backlight_device->ops_lock is an internal backlight lock protecting the
-- * ops pointer and no code outside the core should need to touch it.
-- *
-- * Access to update_status() is serialised by the update_lock mutex since
-- * most drivers seem to need this and historically get it wrong.
-- *
-- * Most drivers don't need locking on their get_brightness() method.
-- * If yours does, you need to implement it in the driver. You can use the
-- * update_lock mutex if appropriate.
-- *
-- * Any other use of the locks below is probably wrong.
-- */
--
++/**
++ * enum backlight_update_reason - what method was used to update backlight
++ *
++ * A driver indicates the method (reason) used for updating the backlight
++ * when calling backlight_force_update().
++ */
  enum backlight_update_reason {
++	/**
++	 * @BACKLIGHT_UPDATE_HOTKEY: The backlight was updated using a hot-key.
++	 */
  	BACKLIGHT_UPDATE_HOTKEY,
++
++	/**
++	 * @BACKLIGHT_UPDATE_SYSFS: The backlight was updated using sysfs.
++	 */
  	BACKLIGHT_UPDATE_SYSFS,
-@@ -215,30 +200,71 @@ struct backlight_properties {
- 	enum backlight_scale scale;
  };
  
 +/**
-+ * struct backlight_device - backlight device data
++ * enum backlight_type - the type of backlight control
 + *
-+ * This structure holds all data required by a backlight device.
++ * The type of interface used to control the backlight.
 + */
- struct backlight_device {
--	/* Backlight properties */
+ enum backlight_type {
 +	/**
-+	 * @props: Backlight properties
-+	 */
- 	struct backlight_properties props;
- 
--	/* Serialise access to update_status method */
-+	/**
-+	 * @update_lock: The lock used when calling the update_status() operation.
++	 * @BACKLIGHT_RAW:
 +	 *
-+	 * update_lock is an internal backlight lock that serialise access
-+	 * to the update_status() operation. The backlight core holds the update_lock
-+	 * when calling the update_status() operation. The update_lock shall not
-+	 * be used by backlight drivers.
++	 * The backlight is controlled using hardware registers.
 +	 */
- 	struct mutex update_lock;
- 
--	/* This protects the 'ops' field. If 'ops' is NULL, the driver that
--	   registered this device has been unloaded, and if class_get_devdata()
--	   points to something in the body of that driver, it is also invalid. */
-+	/**
-+	 * @ops_lock: The lock used around everything related to backlight_ops.
-+	 *
-+	 * ops_lock is an internal backlight lock that protects the ops pointer
-+	 * and is used around all accesses to ops and when the operations are
-+	 * invoked. The ops_lock shall not be used by backlight drivers.
-+	 */
- 	struct mutex ops_lock;
+ 	BACKLIGHT_RAW = 1,
 +
 +	/**
-+	 * @ops: Pointer to the backlight operations.
++	 * @BACKLIGHT_PLATFORM:
 +	 *
-+	 * If ops is NULL, the driver that registered this device has been unloaded,
-+	 * and if class_get_devdata() points to something in the body of that driver,
-+	 * it is also invalid.
++	 * The backlight is controlled using a platform-specific interface.
 +	 */
- 	const struct backlight_ops *ops;
- 
--	/* The framebuffer notifier block */
+ 	BACKLIGHT_PLATFORM,
++
 +	/**
-+	 * @fb_notif: The framebuffer notifier block
-+	 */
- 	struct notifier_block fb_notif;
- 
--	/* list entry of all registered backlight devices */
-+	/**
-+	 * @entry: List entry of all registered backlight devices
-+	 */
- 	struct list_head entry;
- 
-+	/**
-+	 * @dev: Parent device.
-+	 */
- 	struct device dev;
- 
--	/* Multiple framebuffers may share one backlight device */
-+	/**
-+	 * @fb_bl_on: The state of individual fbdev's.
++	 * @BACKLIGHT_FIRMWARE:
 +	 *
-+	 * Multiple fbdev's may share one backlight device. The fb_bl_on
-+	 * records the state of the individual fbdev.
++	 * The backlight is controlled using a standard firmware interface.
 +	 */
- 	bool fb_bl_on[FB_MAX];
- 
+ 	BACKLIGHT_FIRMWARE,
++
 +	/**
-+	 * @use_count: The number of uses of fb_bl_on.
++	 * @BACKLIGHT_TYPE_MAX: Number of entries.
 +	 */
- 	int use_count;
+ 	BACKLIGHT_TYPE_MAX,
  };
  
++/**
++ * enum backlight_notification - the type of notification
++ *
++ * The notifications that is used for notification sent to the receiver
++ * that registered notifications using backlight_register_notifier().
++ */
+ enum backlight_notification {
++	/**
++	 * @BACKLIGHT_REGISTERED: The backlight device is registered.
++	 */
+ 	BACKLIGHT_REGISTERED,
++
++	/**
++	 * @BACKLIGHT_UNREGISTERED: The backlight revice is unregistered.
++	 */
+ 	BACKLIGHT_UNREGISTERED,
+ };
+ 
++/** enum backlight_scale - the type of scale used for brightness values
++ *
++ * The type of scale used for brightness values.
++ */
+ enum backlight_scale {
++	/**
++	 * @BACKLIGHT_SCALE_UNKNOWN: The scale is unknown.
++	 */
+ 	BACKLIGHT_SCALE_UNKNOWN = 0,
++
++	/**
++	 * @BACKLIGHT_SCALE_LINEAR: The scale is linear.
++	 *
++	 * The linear scale will increase brightness the same for each step.
++	 */
+ 	BACKLIGHT_SCALE_LINEAR,
++
++	/**
++	 * @BACKLIGHT_SCALE_NON_LINEAR: The scale is not linear.
++	 *
++	 * This is often used when the brightness values tries to adjust to
++	 * the relative perception of the eye demanding a non-linear scale.
++	 */
+ 	BACKLIGHT_SCALE_NON_LINEAR,
+ };
+ 
+@@ -149,7 +221,7 @@ struct backlight_properties {
+ 	/**
+ 	 * @fb_blank: The power state from the FBIOBLANK ioclt.
+ 	 *
+-	 * When the FBIOBLANK ioctl is called fb_blank is set to the
++	 * When the FBIOBLANK ioctl is called @fb_blank is set to the
+ 	 * blank parameter and the update_status() operation is called.
+ 	 *
+ 	 * When the backlight device is enabled @fb_blank is set
 -- 
 2.25.1
