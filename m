@@ -1,7 +1,7 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v3 11/13] backlight: wire up kernel-doc documentation
-Date: Mon,  1 Jun 2020 08:52:05 +0200
-Message-ID: <20200601065207.492614-12-sam@ravnborg.org>
+Subject: [PATCH v3 12/13] backlight: as3711_bl: introduce backlight_is_blank()
+Date: Mon,  1 Jun 2020 08:52:06 +0200
+Message-ID: <20200601065207.492614-13-sam@ravnborg.org>
 References: <20200601065207.492614-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,52 +12,40 @@ To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jone
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
 List-Id: linux-pwm@vger.kernel.org
 
-Include backlight so the documentation is now generated
-with make htmldocs and friends.
+Replaces the open-coded checks of the state, with the
+backlight_is_blank() helper. This increases readability
+of the code and aling the functionality across the drivers.
+
+Futhermore drop the debug prints in update_status().
+If we need debug printing then we can add it to the backlight core.
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>
+Cc: Emil Velikov <emil.l.velikov@gmail.com>
 ---
- Documentation/gpu/backlight.rst | 12 ++++++++++++
- Documentation/gpu/index.rst     |  1 +
- 2 files changed, 13 insertions(+)
- create mode 100644 Documentation/gpu/backlight.rst
+ drivers/video/backlight/as3711_bl.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/Documentation/gpu/backlight.rst b/Documentation/gpu/backlight.rst
-new file mode 100644
-index 000000000000..9ebfc9d0aced
---- /dev/null
-+++ b/Documentation/gpu/backlight.rst
-@@ -0,0 +1,12 @@
-+=================
-+Backlight support
-+=================
-+
-+.. kernel-doc:: drivers/video/backlight/backlight.c
-+   :doc: overview
-+
-+.. kernel-doc:: include/linux/backlight.h
-+   :internal:
-+
-+.. kernel-doc:: drivers/video/backlight/backlight.c
-+   :export:
-diff --git a/Documentation/gpu/index.rst b/Documentation/gpu/index.rst
-index 1fcf8e851e15..c9a51e3bfb5a 100644
---- a/Documentation/gpu/index.rst
-+++ b/Documentation/gpu/index.rst
-@@ -12,6 +12,7 @@ Linux GPU Driver Developer's Guide
-    drm-uapi
-    drm-client
-    drivers
-+   backlight
-    vga-switcheroo
-    vgaarbiter
-    todo
+diff --git a/drivers/video/backlight/as3711_bl.c b/drivers/video/backlight/as3711_bl.c
+index 33f0f0f2e8b3..cc5628beaffd 100644
+--- a/drivers/video/backlight/as3711_bl.c
++++ b/drivers/video/backlight/as3711_bl.c
+@@ -107,13 +107,7 @@ static int as3711_bl_update_status(struct backlight_device *bl)
+ 	int brightness = bl->props.brightness;
+ 	int ret = 0;
+ 
+-	dev_dbg(&bl->dev, "%s(): brightness %u, pwr %x, blank %x, state %x\n",
+-		__func__, bl->props.brightness, bl->props.power,
+-		bl->props.fb_blank, bl->props.state);
+-
+-	if (bl->props.power != FB_BLANK_UNBLANK ||
+-	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
+-	    bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
++	if (backlight_is_blank(bl))
+ 		brightness = 0;
+ 
+ 	if (data->type == AS3711_BL_SU1) {
 -- 
 2.25.1
