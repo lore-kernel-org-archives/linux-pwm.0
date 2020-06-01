@@ -1,85 +1,112 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v3 02/13] backlight: add backlight_is_blank()
-Date: Mon,  1 Jun 2020 08:51:56 +0200
-Message-ID: <20200601065207.492614-3-sam@ravnborg.org>
+Subject: [PATCH v3 03/13] backlight: improve backlight_ops documentation
+Date: Mon,  1 Jun 2020 08:51:57 +0200
+Message-ID: <20200601065207.492614-4-sam@ravnborg.org>
 References: <20200601065207.492614-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgFAGwY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 1 Jun 2020 02:52:24 -0400
 In-Reply-To: <20200601065207.492614-1-sam@ravnborg.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
-List-Id: linux-pwm@vger.kernel.org
 
-The backlight support has two properties that express the state:
-- power
-- state
-
-It is un-documented and easy to get wrong.
-Add backlight_is_blank() helper to make it simpler
-for drivers to get the check of the state correct.
-
-A lot of drivers also includes checks for fb_blank.
-This check is redundant when the state is checked
-and thus not needed in this helper function.
-But added anyway to avoid introducing subtle bugs
-due to the creative use of fb_blank in some drivers.
-Introducing this helper will for some drivers results in
-added support for fb_blank. This will be a change in
-functionality, which will improve the backlight driver.
-
-Rolling out this helper to all relevant backlight drivers
-will eliminate almost all accesses to fb_blank.
-
-v3:
-  - Clarified that the fb_blank support in
-    backlight_is_blank() may result in functionality
-    changes for the users (Emil)
+Improve the documentation for backlight_ops and
+adapt it to kernel-doc style.
 
 v2:
-  - Added fb_blank condition (Daniel)
+  - Add intro for each field (Daniel)
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
 Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Emil Velikov <emil.l.velikov@gmail.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- include/linux/backlight.h | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ include/linux/backlight.h | 59 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 53 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-index c7d6b2e8c3b5..a0a083b35c47 100644
+index a0a083b35c47..b6c1ab6c922a 100644
 --- a/include/linux/backlight.h
 +++ b/include/linux/backlight.h
-@@ -175,6 +175,25 @@ static inline void backlight_put(struct backlight_device *bd)
- 		put_device(&bd->dev);
- }
+@@ -55,19 +55,66 @@ enum backlight_scale {
+ struct backlight_device;
+ struct fb_info;
  
 +/**
-+ * backlight_is_blank - Return true if display is expected to be blank
-+ * @bd: the backlight device
++ * struct backlight_ops - backlight operations
 + *
-+ * Display is expected to be blank if any of these is true::
-+ *
-+ *   1) if power in not UNBLANK
-+ *   2) if fb_blank is not UNBLANK
-+ *   3) if state indicate BLANK or SUSPENDED
-+ *
-+ * Returns true if display is expected to be blank, false otherwise.
++ * The backlight operations are specifed when the backlight device is registered.
 + */
-+static inline bool backlight_is_blank(struct backlight_device *bd)
-+{
-+	return bd->props.power != FB_BLANK_UNBLANK ||
-+	       bd->props.fb_blank != FB_BLANK_UNBLANK ||
-+	       bd->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK);
-+}
+ struct backlight_ops {
++	/**
++	 * @options: Configure how operations are called from the core.
++	 *
++	 * The options parameter is used to adjust the behaviour of the core.
++	 * Set BL_CORE_SUSPENDRESUME to get the update_status() operation called
++	 * upon suspend and resume.
++	 */
+ 	unsigned int options;
+ 
+ #define BL_CORE_SUSPENDRESUME	(1 << 0)
+ 
+-	/* Notify the backlight driver some property has changed */
++	/**
++	 * @update_status: Operation called when properties have changed.
++	 *
++	 * Notify the backlight driver some property has changed.
++	 * The update_status operation is protected by the update_lock.
++	 *
++	 * The backlight driver is expected to use backlight_is_blank()
++	 * to check if the display is blanked and set brightness accordingly.
++	 * update_status() is called when any of the properties has changed.
++	 *
++	 * RETURNS:
++	 *
++	 * 0 on sucees, negative error code if any failure occured.
++	 */
+ 	int (*update_status)(struct backlight_device *);
+-	/* Return the current backlight brightness (accounting for power,
+-	   fb_blank etc.) */
 +
- extern struct backlight_device *backlight_device_register(const char *name,
- 	struct device *dev, void *devdata, const struct backlight_ops *ops,
- 	const struct backlight_properties *props);
++	/**
++	 * @get_brightness: Return the current backlight brightness.
++	 *
++	 * The driver may implement this as a readback from the HW.
++	 * This operation is optional and if not present then the current
++	 * brightness property value is used.
++	 *
++	 * RETURNS:
++	 *
++	 * A brightness value which is 0 or a positive numer.
++	 * On failure a negative error code is returned.
++	 */
+ 	int (*get_brightness)(struct backlight_device *);
+-	/* Check if given framebuffer device is the one bound to this backlight;
+-	   return 0 if not, !=0 if it is. If NULL, backlight always matches the fb. */
+-	int (*check_fb)(struct backlight_device *, struct fb_info *);
++
++	/**
++	 * @check_fb: Check the framebuffer device.
++	 *
++	 * Check if given framebuffer device is the one bound to this backlight.
++	 * This operation is optional and if not implemented it is assumed that the
++	 * fbdev is always the one bound to the backlight.
++	 *
++	 * RETURNS:
++	 *
++	 * If info is NULL or the info matches the fbdev bound to the backlight return true.
++	 * If info does not match the fbdev bound to the backlight return false.
++	 */
++	int (*check_fb)(struct backlight_device *bd, struct fb_info *info);
+ };
+ 
+ /* This structure defines all the properties of a backlight */
 -- 
 2.25.1
