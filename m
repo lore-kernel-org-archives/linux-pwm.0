@@ -1,85 +1,70 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: lpss: Fix get_state runtime-pm reference handling
-Date: Tue, 2 Jun 2020 14:40:45 +0200
-Message-ID: <20200602124045.GC3360525@ulmo>
-References: <20200512110044.95984-1-hdegoede@redhat.com>
+Subject: Re: [PATCH v3 1/4] pwm: jz4740: Drop dependency on MACH_INGENIC
+Date: Tue, 2 Jun 2020 14:41:26 +0200
+Message-ID: <20200602124126.GD3360525@ulmo>
+References: <20200527115225.10069-1-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="WplhKdTI2c8ulnbP"
-Return-path: <stable-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="VMt1DrMGOVs3KQwf"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725940AbgFBMlb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Jun 2020 08:41:31 -0400
 Content-Disposition: inline
-In-Reply-To: <20200512110044.95984-1-hdegoede@redhat.com>
-Sender: stable-owner@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org
+In-Reply-To: <20200527115225.10069-1-paul@crapouillou.net>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, od@zcrc.me, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---WplhKdTI2c8ulnbP
-Content-Type: text/plain; charset=us-ascii
+--VMt1DrMGOVs3KQwf
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 12, 2020 at 01:00:44PM +0200, Hans de Goede wrote:
-> Before commit cfc4c189bc70 ("pwm: Read initial hardware state at request
-> time"), a driver's get_state callback would get called once per PWM from
-> pwmchip_add().
+On Wed, May 27, 2020 at 01:52:22PM +0200, Paul Cercueil wrote:
+> Depending on MACH_INGENIC prevent us from creating a generic kernel that
+> works on more than one MIPS board. Instead, we just depend on MIPS being
+> set.
 >=20
-> pwm-lpss' runtime-pm code was relying on this, getting a runtime-pm ref f=
-or
-> PWMs which are enabled at probe time from within its get_state callback,
-> before enabling runtime-pm.
->=20
-> The change to calling get_state at request time causes a number of
-> problems:
->=20
-> 1. PWMs enabled at probe time may get runtime suspended before they are
-> requested, causing e.g. a LCD backlight controlled by the PWM to turn off.
->=20
-> 2. When the request happens when the PWM has been runtime suspended, the
-> ctrl register will read all 1 / 0xffffffff, causing get_state to store
-> bogus values in the pwm_state.
->=20
-> 3. get_state was using an async pm_runtime_get() call, because it assumed
-> that runtime-pm has not been enabled yet. If shortly after the request an
-> apply call is made, then the pwm_lpss_is_updating() check may trigger
-> because the resume triggered by the pm_runtime_get() call is not complete
-> yet, so the ctrl register still reads all 1 / 0xffffffff.
->=20
-> This commit fixes these issues by moving the initial pm_runtime_get() call
-> for PWMs which are enabled at probe time to the pwm_lpss_probe() function;
-> and by making get_state take a runtime-pm ref before reading the ctrl reg.
->=20
-> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=3D1828927
-> Fixes: cfc4c189bc70 ("pwm: Read initial hardware state at request time")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > ---
->  drivers/pwm/pwm-lpss.c | 15 +++++++++++----
->  1 file changed, 11 insertions(+), 4 deletions(-)
+>=20
+> Notes:
+>     v2: New patch. I don't consider this a fix but an enhancement, since =
+the old
+>     	behaviour was in place since the driver was born in ~2010, so no Fix=
+es tag.
+>     v3: Commit message changes (invert Acked-by / Signed-off-by)
+>=20
+>  drivers/pwm/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied, thanks.
+All four patches applied, thanks.
 
 Thierry
 
---WplhKdTI2c8ulnbP
+--VMt1DrMGOVs3KQwf
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl7WSM0ACgkQ3SOs138+
-s6FhRRAAuvaWzzTcka9pbQE9E0+InpTkaaM4jW+gV5eJAwbFAH/ggDepZsNJpRRy
-H1c3PubRZFR3XPJFMcrJKDOvCAZC2pkChaeTqjtwBBForNIt+AoRhF3hgmr3bhMZ
-Q7S3rahk9eDABzTNXWemesQfoyoNjnYAKqqRvPHG+rDIewOVBc6zY8lnQ3SS6Dy/
-HY1oQopujNaub1T2aKfufdLGlPzCzIG/ZxuMmx5i2hG7SMVnS/Z//tKNhLrIPxt4
-6fOun1F+2GgScUyjRz6tNIflHJ0B9emCZH6sc8J5vWtnXNtQ3XHft0YT7EQRpu7n
-h6A9434xaPSblA/FLXTGxdW2qwPvrxFQ4ZAA43CdGYka9Ibd8A7T3jQMYdQs6vr0
-r7z1s6dSVTQ+ai2+jds7GwU6v6TfQvlFb21nXz2cAbJBh0ZM9WrpFdaiXG//odXt
-HNGNn6O3XcsSThigBk+j+RmJ2MSeGsUiTVD9w3TBknyrpPOdaMikeVtDjaD6dnbA
-De9cIubENvTmEdsOp1MN2meImbPx9IrKYr/dPo+PSx01L6U550PiYg7L05rsulB1
-15qEC0FRjtxypAjDXKcu1ovYM8749OnXskMmW4Ybq1aEvJROwYXfQiiBbU6RrwWZ
-FBf5LQdD9ELqscfR70bcE/S0hrEgQ+jLAEdsr3OtpIXqrJuxN1s=
-=oZB2
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl7WSPYACgkQ3SOs138+
+s6FaCRAAnn+U7/uQz3zkEYTEbfnxMr8kVUv6gVcGH3Ix8HVWYWXpWh753iKyp8AP
+vwfWWrO1oy5hh5JuygD21z+Ax5Q80jdohC5q88WMX9XrGuxxtk0ZdU/vXUKr1Jq8
+XF9QGH6AyFVqqTmQb0vZfYpMqMIPmV2xOIosKvHr30MfxnzWgijcAQyCzqHDKKtn
+nZVMeZXwOzwfGM3ZFGy27z4o2CqFepCzwtqdFBkGLM3pHASuI36M8luC64dYgRzq
+/G4JRz22p2+0AJ1MurJmb7jTvujJbdBYKtm5hMJoDxjxONFqKEgfMPXbnVdSGWFW
+eBuQpws8toP4Rzd5VTJAZ2deC8cd4gWvKCHLip9EtuWqHgIwPrVSLmRw/DiVSVif
+r/Wex9A1iPHKAuo9yUAwph41N0qX6UegVSUV3yen9PZwduHGY2eJ0xhHsYQdlSLW
+xqdDga5hvavcrg62EPWAHch1z1vrRKC7tO+DbRSnaQV/mJEqhnf7+jM0dB8723F5
+9zirSWPQkWojhNPBE1dbMqeaitDoFOqHZ/U/OlMY6NHDFincfxk2jDQF32ehMfrm
+c4iDIaarl73UlGCtgNYO1/9SFrRcdKXeBLhFaLJyU/5+J+eSO/LOCdcHVKDXXTuM
+iGhac5iTre7gSZlU4CfS58AglrjmNMMbEbkt1Mh4PhxW++f20A4=
+=yUQX
 -----END PGP SIGNATURE-----
 
---WplhKdTI2c8ulnbP--
+--VMt1DrMGOVs3KQwf--
