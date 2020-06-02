@@ -1,44 +1,44 @@
 From: Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH] pwm: imx27: Fix rounding behavior
-Date: Tue, 2 Jun 2020 13:42:12 -0700
-Message-ID: <20200602204211.GA1693@codeaurora.org>
-References: <20200416080245.3203-1-u.kleine-koenig@pengutronix.de>
- <20200602124835.GF3360525@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20200602124835.GF3360525@ulmo>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v16 04/11] pwm: clps711x: Use 64-bit division macro
+Date: Tue,  2 Jun 2020 15:31:08 -0700
+Message-ID: <a3a7c5500c651b103cb2d1c4a48dd18ce72d9a45.1591136989.git.gurus@codeaurora.org>
+References: <cover.1591136989.git.gurus@codeaurora.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:65069 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726589AbgFBWbX (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Jun 2020 18:31:23 -0400
+In-Reply-To: <cover.1591136989.git.gurus@codeaurora.org>
+In-Reply-To: <cover.1591136989.git.gurus@codeaurora.org>
+References: <cover.1591136989.git.gurus@codeaurora.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Subbaraman Narayanamurthy <subbaram@codeaurora.org>, David Collins <collinsd@codeaurora.org>, linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>, Stephen Boyd <sboyd@kernel.org>, Lee Jones <lee.jones@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Guenter Roeck <linux@roeck-us.net>, Daniel Thompson <daniel.thompson@linaro.org>, Dan Carpenter <dan.carpenter@oracle.com>, linux-arm-kernel@lists.infradead.org, Guru Das Srinagesh <gurus@codeaurora.org>
 
-T24gVHVlLCBKdW4gMDIsIDIwMjAgYXQgMDI6NDg6MzVQTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcg
-d3JvdGU6Cj4gT24gVGh1LCBBcHIgMTYsIDIwMjAgYXQgMTA6MDI6NDVBTSArMDIwMCwgVXdlIEts
-ZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gPiBUbyBub3QgdHJpZ2dlciB0aGUgd2FybmluZ3MgcHJvdmlk
-ZWQgYnkgQ09ORklHX1BXTV9ERUJVRwo+ID4gCj4gPiAgLSB1c2UgdXAtcm91bmRpbmcgaW4gLmdl
-dF9zdGF0ZSgpCj4gPiAgLSBkb24ndCBkaXZpZGUgYnkgdGhlIHJlc3VsdCBvZiBhIGRpdmlzaW9u
-Cj4gPiAgLSBkb24ndCB1c2UgdGhlIHJvdW5kZWQgY291bnRlciB2YWx1ZSBmb3IgdGhlIHBlcmlv
-ZCBsZW5ndGggdG8gY2FsY3VsYXRlCj4gPiAgICB0aGUgY291bnRlciB2YWx1ZSBmb3IgdGhlIGR1
-dHkgY3ljbGUKPiA+IAo+ID4gU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xl
-aW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KPiA+IC0tLQo+ID4gIGRyaXZlcnMvcHdtL3B3bS1p
-bXgyNy5jIHwgMjAgKysrKysrKysrKy0tLS0tLS0tLS0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTAg
-aW5zZXJ0aW9ucygrKSwgMTAgZGVsZXRpb25zKC0pCj4gCj4gQXBwbGllZCwgdGhhbmtzLgo+IAo+
-IFRoaWVycnkKCkhpIFRoaWVycnksCgpKdXN0IEZZSSwgVGhpcyBjaGFuZ2UgY29uZmxpY3RzIHdp
-dGggb25lIG9mIG15IHBhdGNoZXMgWzFdIGluIHRoZSAiQ29udmVydApQV00gcGVyaW9kIGFuZCBk
-dXR5IGN5Y2xlIHRvIHU2NCIgc2VyaWVzLgoKWzFdOiBodHRwczovL3BhdGNod29yay5vemxhYnMu
-b3JnL3Byb2plY3QvbGludXgtcHdtL3BhdGNoLzg0ODQ5NDcyNWZkMTI0MGVkODc3ZDBhMTQ3MWRk
-MTFjY2VhMDFmZjUuMTU5MDUxNDMzMS5naXQuZ3VydXNAY29kZWF1cm9yYS5vcmcvCgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVs
-IG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDov
-L2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+Since the PWM framework is switching struct pwm_args.period's datatype
+to u64, prepare for this transition by using DIV64_U64_ROUND_CLOSEST to
+handle a 64-bit divisor.
+
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Guru Das Srinagesh <gurus@codeaurora.org>
+---
+ drivers/pwm/pwm-clps711x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-clps711x.c b/drivers/pwm/pwm-clps711x.c
+index 924d39a..ba9500a 100644
+--- a/drivers/pwm/pwm-clps711x.c
++++ b/drivers/pwm/pwm-clps711x.c
+@@ -43,7 +43,7 @@ static void clps711x_pwm_update_val(struct clps711x_chip *priv, u32 n, u32 v)
+ static unsigned int clps711x_get_duty(struct pwm_device *pwm, unsigned int v)
+ {
+ 	/* Duty cycle 0..15 max */
+-	return DIV_ROUND_CLOSEST(v * 0xf, pwm->args.period);
++	return DIV64_U64_ROUND_CLOSEST(v * 0xf, pwm->args.period);
+ }
+ 
+ static int clps711x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
