@@ -1,49 +1,75 @@
-From: David Wu <david.wu@rock-chips.com>
-Subject: Re: [PATCH] pwm: rockchip: simplify rockchip_pwm_get_state()
-Date: Wed, 3 Jun 2020 11:10:26 +0800
-Message-ID: <2f860dba-26c7-c670-58e2-9ef502881522@rock-chips.com>
-References: <20190919091728.24756-1-linux@rasmusvillemoes.dk>
- <20200602123914.GA3360525@ulmo>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] MAINTAINERS: Add Lee Jones as reviewer for the PWM
+ subsystem
+Date: Wed, 3 Jun 2020 14:37:18 +0200
+Message-ID: <20200603123718.6fwsbpnkbjlpq2bz@taurus.defre.kleine-koenig.org>
+References: <20200602123241.3363904-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200602123914.GA3360525@ulmo>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dd6x2d6hmbajhoiw"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725833AbgFCMhY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 3 Jun 2020 08:37:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E40C08C5C0
+        for <linux-pwm@vger.kernel.org>; Wed,  3 Jun 2020 05:37:23 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20200602123241.3363904-1-thierry.reding@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org
 
-VGhpcyBjaGFuZ2UgaXMgdmVyeSBnb29kLCB0aGFuayB5b3UuIFRoZSBjb2RlIGNvbnRpbnVlcyBm
-cm9tIHRoZSAKb3JpZ2luYWwgY29kZShnZXRfc3RhdGVfdjEgYW5kIGdldF9zdGF0ZV92MiksIGRp
-ZG7igJl0IG1ha2UgYW55IGNoYW5nZXMgYXQgCnRoYXQgdGltZSwgYW5kIHNvcnJ5IEkgaGF2ZSBu
-b3Qgc2VlbiBsaW51eC1yb2NrY2hpcEBsaXN0cy5pbmZyYWRlYWQub3JnIAptYWlsIHJlY2VudGx5
-LgoK5ZyoIDIwMjAvNi8yIOS4i+WNiDg6MzksIFRoaWVycnkgUmVkaW5nIOWGmemBkzoKPiBPbiBU
-aHUsIFNlcCAxOSwgMjAxOSBhdCAxMToxNzoyN0FNICswMjAwLCBSYXNtdXMgVmlsbGVtb2VzIHdy
-b3RlOgo+PiBUaGUgd2F5IHN0YXRlLT5lbmFibGVkIGlzIGNvbXB1dGVkIGlzIHJhdGhlciBjb252
-b2x1dGVkIGFuZCBoYXJkIHRvCj4+IHJlYWQgLSBib3RoIGJyYW5jaGVzIG9mIHRoZSBpZigpIGFj
-dHVhbGx5IGRvIHRoZSBleGFjdCBzYW1lIHRoaW5nLiBTbwo+PiByZW1vdmUgdGhlIGlmKCksIGFu
-ZCBmdXJ0aGVyIHNpbXBsaWZ5ICI8Ym9vbGVhbiBjb25kaXRpb24+ID8gdHJ1ZSA6Cj4+IGZhbHNl
-IiB0byAiPGJvb2xlYW4gY29uZGl0aW9uPiIuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IFJhc211cyBW
-aWxsZW1vZXMgPGxpbnV4QHJhc211c3ZpbGxlbW9lcy5kaz4KPj4gLS0tCj4+IEkgc3R1bWJsZWQg
-b24gdGhpcyB3aGlsZSB0cnlpbmcgdG8gdW5kZXJzdGFuZCBob3cgdGhlIHB3bSBzdWJzeXN0ZW0K
-Pj4gd29ya3MuIFRoaXMgcGF0Y2ggaXMgYSBzZW1hbnRpYyBuby1vcCwgYnV0IGl0J3MgYWxzbyBw
-b3NzaWJsZSB0aGF0LAo+PiBzYXksIHRoZSBmaXJzdCBicmFuY2ggc2ltcGx5IGNvbnRhaW5zIGEg
-ImRvdWJsZSBuZWdhdGl2ZSIgc28gZWl0aGVyCj4+IHRoZSAhPSBzaG91bGQgYmUgPT0gb3IgdGhl
-ICJmYWxzZSA6IHRydWUiIHNob3VsZCBiZSAidHJ1ZSA6IGZhbHNlIi4KPj4KPj4gICBkcml2ZXJz
-L3B3bS9wd20tcm9ja2NoaXAuYyB8IDcgKy0tLS0tLQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGlu
-c2VydGlvbigrKSwgNiBkZWxldGlvbnMoLSkKPiAKPiBJJ3ZlIGFwcGxpZWQgdGhpcy4gSXJyZXNw
-ZWN0aXZlIG9mIGFueSBmZWVkYmFjayBEYXZpZCB3b3VsZCBoYXZlIHRoaXMgaXMKPiBjb3JyZWN0
-IGFuZCBhIG5pY2Ugc2ltcGxpZmljYXRpb24uCj4gCj4gVGhpZXJyeQo+IAoKCgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1h
-aWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xp
-c3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+
+--dd6x2d6hmbajhoiw
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Jun 02, 2020 at 02:32:41PM +0200, Thierry Reding wrote:
+> Lee has kindly offered his help in sharing the patch review workload for
+> the PWM subsystem. If this works out well between Lee, Uwe and myself it
+> may be a good idea to maintain the subsystem as a group.
+>=20
+> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e64e5db31497..b8889bed5d1e 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13736,6 +13736,7 @@ F:	drivers/media/rc/pwm-ir-tx.c
+>  PWM SUBSYSTEM
+>  M:	Thierry Reding <thierry.reding@gmail.com>
+>  R:	Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> +M:	Lee Jones <lee.jones@linaro.org>
+
+I'm bit surprised that Lee got M: which I have a R:. The commit log
+talks about reviewer not maintainer.
+
+While I'm not sure that there is a practical difference it makes me a
+bit sad.
+
+Best regards
+Uwe
+
+--dd6x2d6hmbajhoiw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7XmXsACgkQwfwUeK3K
+7Am/Jgf/SVQaIi1ThR0VQ4yb76HNl570Bu4I9ZacE/SJEaNIQziVK/Q41pbrnBCm
+aQrzTR7+ZBj+G+exXfSt2Q5zvKkZHbreafiZdvXMO+Gy+Bylq6F23lwLt+1Q1XaP
+KqjCnEo/swsvJxapgiM2mR60dBnH/YfQeDElBJH233mxy6ytEbFLprOLScniXj5E
+cPFtn/Lfk8P1UhO5EzAto1D6XFs05gvLIazXBt0hN6uRX25fA/BqrE0zCnUdiGLX
+6dKjNjlT4cpNRogWtIysvLh5hB6pJy4/wSgQVip+pZ8aiyJErK4Tv8vy7RBovEyH
+S5GIZA3YKr72mtdqV8A9cwSDLVBO0Q==
+=Kcfa
+-----END PGP SIGNATURE-----
+
+--dd6x2d6hmbajhoiw--
