@@ -1,176 +1,171 @@
 From: Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 03/11] irqchip: add sl28cpld interrupt controller support
-Date: Thu,  4 Jun 2020 23:10:31 +0200
-Message-ID: <20200604211039.12689-4-michael@walle.cc>
+Subject: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld management
+ controller
+Date: Thu,  4 Jun 2020 23:10:30 +0200
+Message-ID: <20200604211039.12689-3-michael@walle.cc>
 References: <20200604211039.12689-1-michael@walle.cc>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 In-Reply-To: <20200604211039.12689-1-michael@walle.cc>
-Sender: linux-gpio-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
 To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Walle <michael@walle.cc>
+Cc: Marc Zyngier <maz@kernel.org>, Jean Delvare <jdelvare@suse.com>, Jason Cooper <jason@lakedaemon.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shawn Guo <shawnguo@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Li Yang <leoyang.li@nxp.com>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Lee Jones <lee.jones@linaro.org>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-pwm@vger.kernel.org
 
-Add support for the interrupt controller inside the sl28 CPLD management
-controller.
+Add the core support for the board management controller found on the
+SMARC-sAL28 board. It consists of the following functions:
+ - watchdog
+ - GPIO controller
+ - PWM controller
+ - fan sensor
+ - interrupt controller
 
-The interrupt controller can handle at most 8 interrupts and is really
-simplistic and consists only of an interrupt mask and an interrupt
-pending register.
+At the moment, this controller is used on the Kontron SMARC-sAL28 board.
+
+Please note that the MFD driver is defined as bool in the Kconfig
+because the next patch will add interrupt support.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/irqchip/Kconfig        |   3 +
- drivers/irqchip/Makefile       |   1 +
- drivers/irqchip/irq-sl28cpld.c | 102 +++++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig            |   2 +
- 4 files changed, 108 insertions(+)
- create mode 100644 drivers/irqchip/irq-sl28cpld.c
+ drivers/mfd/Kconfig    | 19 ++++++++++
+ drivers/mfd/Makefile   |  2 ++
+ drivers/mfd/sl28cpld.c | 79 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 100 insertions(+)
+ create mode 100644 drivers/mfd/sl28cpld.c
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 3e473f4eb175..c4b840bc982e 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -246,6 +246,9 @@ config RENESAS_RZA1_IRQC
- 	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
- 	  to 8 external interrupts with configurable sense select.
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 4f8b73d92df3..5c0cd514d197 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -2109,5 +2109,24 @@ config SGI_MFD_IOC3
+ 	  If you have an SGI Origin, Octane, or a PCI IOC3 card,
+ 	  then say Y. Otherwise say N.
  
-+config SL28CPLD_INTC
-+	bool
++config MFD_SL28CPLD
++	bool "Kontron sl28 core driver"
++	depends on I2C=y
++	depends on OF
++	select REGMAP_I2C
++	select MFD_CORE
++	help
++	  This option enables support for the board management controller
++	  found on the Kontron sl28 CPLD. You have to select individual
++	  functions, such as watchdog, GPIO, etc, under the corresponding menus
++	  in order to enable them.
 +
- config ST_IRQCHIP
- 	bool
- 	select REGMAP
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index 3a4ce283189a..bcd9797a5aed 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -110,3 +110,4 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
- obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
- obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
- obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
-+obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
-diff --git a/drivers/irqchip/irq-sl28cpld.c b/drivers/irqchip/irq-sl28cpld.c
++	  Currently supported boards are:
++
++		Kontron SMARC-sAL28
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called sl28cpld.
++
+ endmenu
+ endif
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 9367a92f795a..be59fb40aa28 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -264,3 +264,5 @@ obj-$(CONFIG_MFD_ROHM_BD718XX)	+= rohm-bd718x7.o
+ obj-$(CONFIG_MFD_STMFX) 	+= stmfx.o
+ 
+ obj-$(CONFIG_SGI_MFD_IOC3)	+= ioc3.o
++
++obj-$(CONFIG_MFD_SL28CPLD)	+= sl28cpld.o
+diff --git a/drivers/mfd/sl28cpld.c b/drivers/mfd/sl28cpld.c
 new file mode 100644
-index 000000000000..2151f1b390d7
+index 000000000000..a23194bb6efa
 --- /dev/null
-+++ b/drivers/irqchip/irq-sl28cpld.c
-@@ -0,0 +1,102 @@
++++ b/drivers/mfd/sl28cpld.c
+@@ -0,0 +1,79 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * sl28cpld interrupt controller driver.
++ * MFD core for the sl28cpld.
 + *
 + * Copyright 2019 Kontron Europe GmbH
 + */
 +
++#include <linux/i2c.h>
 +#include <linux/interrupt.h>
 +#include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
++#include <linux/mfd/core.h>
 +#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/property.h>
++#include <linux/of_platform.h>
 +#include <linux/regmap.h>
 +
-+#define INTC_IE 0x00
-+#define INTC_IP 0x01
++#define SL28CPLD_VERSION	0x03
++#define SL28CPLD_MIN_REQ_VERSION 14
 +
-+static const struct regmap_irq sl28cpld_irqs[] = {
-+	REGMAP_IRQ_REG_LINE(0, 8),
-+	REGMAP_IRQ_REG_LINE(1, 8),
-+	REGMAP_IRQ_REG_LINE(2, 8),
-+	REGMAP_IRQ_REG_LINE(3, 8),
-+	REGMAP_IRQ_REG_LINE(4, 8),
-+	REGMAP_IRQ_REG_LINE(5, 8),
-+	REGMAP_IRQ_REG_LINE(6, 8),
-+	REGMAP_IRQ_REG_LINE(7, 8),
-+};
-+
-+struct sl28cpld_intc {
++struct sl28cpld {
++	struct device *dev;
 +	struct regmap *regmap;
-+	struct regmap_irq_chip chip;
-+	struct regmap_irq_chip_data *irq_data;
 +};
 +
-+static int sl28cpld_intc_probe(struct platform_device *pdev)
++static const struct regmap_config sl28cpld_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.reg_stride = 1,
++};
++
++static int sl28cpld_probe(struct i2c_client *i2c)
 +{
-+	struct device *dev = &pdev->dev;
-+	struct sl28cpld_intc *irqchip;
-+	unsigned int irq;
-+	u32 base;
++	struct sl28cpld *sl28cpld;
++	struct device *dev = &i2c->dev;
++	unsigned int cpld_version;
 +	int ret;
 +
-+	if (!dev->parent)
-+		return -ENODEV;
-+
-+	irqchip = devm_kzalloc(dev, sizeof(*irqchip), GFP_KERNEL);
-+	if (!irqchip)
++	sl28cpld = devm_kzalloc(dev, sizeof(*sl28cpld), GFP_KERNEL);
++	if (!sl28cpld)
 +		return -ENOMEM;
 +
-+	irqchip->regmap = dev_get_regmap(dev->parent, NULL);
-+	if (!irqchip->regmap)
-+		return -ENODEV;
++	sl28cpld->regmap = devm_regmap_init_i2c(i2c, &sl28cpld_regmap_config);
++	if (IS_ERR(sl28cpld->regmap))
++		return PTR_ERR(sl28cpld->regmap);
 +
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	ret = device_property_read_u32(&pdev->dev, "reg", &base);
++	ret = regmap_read(sl28cpld->regmap, SL28CPLD_VERSION, &cpld_version);
 +	if (ret)
-+		return -EINVAL;
++		return ret;
 +
-+	irqchip->chip.name = "sl28cpld-intc";
-+	irqchip->chip.irqs = sl28cpld_irqs;
-+	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
-+	irqchip->chip.num_regs = 1;
-+	irqchip->chip.status_base = base + INTC_IP;
-+	irqchip->chip.mask_base = base + INTC_IE;
-+	irqchip->chip.mask_invert = true,
-+	irqchip->chip.ack_base = base + INTC_IP;
++	if (cpld_version < SL28CPLD_MIN_REQ_VERSION) {
++		dev_err(dev, "unsupported CPLD version %d\n", cpld_version);
++		return -ENODEV;
++	}
 +
-+	return devm_regmap_add_irq_chip_np(&pdev->dev, dev->of_node,
-+					   irqchip->regmap, irq,
-+					   IRQF_SHARED | IRQF_ONESHOT, 0,
-+					   &irqchip->chip, &irqchip->irq_data);
++	sl28cpld->dev = dev;
++	i2c_set_clientdata(i2c, sl28cpld);
++
++	dev_info(dev, "successfully probed. CPLD version %d\n", cpld_version);
++
++	return devm_of_platform_populate(&i2c->dev);
 +}
 +
-+static const struct of_device_id sl28cpld_intc_of_match[] = {
-+	{ .compatible = "kontron,sl28cpld-intc" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, sl28cpld_intc_of_match);
-+
-+static const struct platform_device_id sl28cpld_intc_id_table[] = {
-+	{ "sl28cpld-intc" },
++static const struct of_device_id sl28cpld_of_match[] = {
++	{ .compatible = "kontron,sl28cpld-r1", },
 +	{}
 +};
-+MODULE_DEVICE_TABLE(platform, sl28cpld_intc_id_table);
++MODULE_DEVICE_TABLE(of, sl28cpld_of_match);
 +
-+static struct platform_driver sl28cpld_intc_driver = {
-+	.probe	= sl28cpld_intc_probe,
-+	.id_table = sl28cpld_intc_id_table,
++static struct i2c_driver sl28cpld_driver = {
++	.probe_new = sl28cpld_probe,
 +	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = sl28cpld_intc_of_match,
-+	}
++		.name = "sl28cpld",
++		.of_match_table = of_match_ptr(sl28cpld_of_match),
++	},
 +};
-+module_platform_driver(sl28cpld_intc_driver);
++module_i2c_driver(sl28cpld_driver);
 +
-+MODULE_DESCRIPTION("sl28cpld Interrupt Controller Driver");
++MODULE_DESCRIPTION("sl28cpld MFD Core Driver");
 +MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 5c0cd514d197..9c84c5746698 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -2114,6 +2114,8 @@ config MFD_SL28CPLD
- 	depends on I2C=y
- 	depends on OF
- 	select REGMAP_I2C
-+	select REGMAP_IRQ
-+	select SL28CPLD_INTC
- 	select MFD_CORE
- 	help
- 	  This option enables support for the board management controller
 -- 
 2.20.1
