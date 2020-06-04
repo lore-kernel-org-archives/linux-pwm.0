@@ -1,274 +1,107 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: [PATCH v4 07/11] hwmon: add support for the sl28cpld hardware monitoring controller
-Date: Thu,  4 Jun 2020 23:10:35 +0200
-Message-ID: <20200604211039.12689-8-michael@walle.cc>
-References: <20200604211039.12689-1-michael@walle.cc>
+From: Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH] pwm: Add missing "CONFIG_" prefix
+Date: Thu, 4 Jun 2020 14:52:00 -0700
+Message-ID: <202006041451.19491ECA@keescook>
+References: <202006031539.4198EA6@keescook>
+ <b08611018fdb6d88757c6008a5c02fa0e07b32fb.camel@perches.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200604211039.12689-1-michael-QKn5cuLxLXY@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728394AbgFDVwD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Jun 2020 17:52:03 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C7A4C08C5C0
+        for <linux-pwm@vger.kernel.org>; Thu,  4 Jun 2020 14:52:02 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id a127so3860849pfa.12
+        for <linux-pwm@vger.kernel.org>; Thu, 04 Jun 2020 14:52:02 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <b08611018fdb6d88757c6008a5c02fa0e07b32fb.camel@perches.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Joe Perches <joe@perches.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
 
-Add support for the hardware monitoring controller of the sl28cpld board
-management controller. This driver is part of a multi-function device.
+On Wed, Jun 03, 2020 at 04:04:31PM -0700, Joe Perches wrote:
+> On Wed, 2020-06-03 at 15:40 -0700, Kees Cook wrote:
+> > The IS_ENABLED() use was missing the CONFIG_ prefix which would have
+> > lead to skipping this code.
+> > 
+> > Fixes: 3ad1f3a33286 ("pwm: Implement some checks for lowlevel drivers")
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  drivers/pwm/core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> > index 9973c442b455..6b3cbc0490c6 100644
+> > --- a/drivers/pwm/core.c
+> > +++ b/drivers/pwm/core.c
+> > @@ -121,7 +121,7 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
+> >  		pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
+> >  		trace_pwm_get(pwm, &pwm->state);
+> >  
+> > -		if (IS_ENABLED(PWM_DEBUG))
+> > +		if (IS_ENABLED(CONFIG_PWM_DEBUG))
+> >  			pwm->last = pwm->state;
+> >  	}
+> >  
+> > -- 
+> > 2.25.1
+> > 
+> 
+> more odd uses (mostly in comments)
+> 
+> $ git grep -P -oh '\bIS_ENABLED\s*\(\s*\w+\s*\)'| \
+>   sed -r 's/\s+//g'| \
+>   grep -v '(CONFIG_' | \
+>   sort | uniq -c | sort -rn
+>       7 IS_ENABLED(DEBUG)
+>       4 IS_ENABLED(DRM_I915_SELFTEST)
+>       4 IS_ENABLED(cfg)
+>       2 IS_ENABLED(opt_name)
+>       2 IS_ENABLED(DEBUG_PRINT_TRIE_GRAPHVIZ)
+>       2 IS_ENABLED(config)
+>       2 IS_ENABLED(cond)
+>       2 IS_ENABLED(__BIG_ENDIAN)
+>       1 IS_ENABLED(x)
+>       1 IS_ENABLED(STRICT_KERNEL_RWX)
+>       1 IS_ENABLED(PWM_DEBUG)
+>       1 IS_ENABLED(option)
+>       1 IS_ENABLED(ETHTOOL_NETLINK)
+>       1 IS_ENABLED(DEBUG_RANDOM_TRIE)
+>       1 IS_ENABLED(DEBUG_CHACHA20POLY1305_SLOW_CHUNK_TEST)
+> 
+> STRICT_KERNEL_RWX is misused here in ppc
+> 
+> ---
+> 
+> Fix pr_warn without newline too.
+> 
+>  arch/powerpc/mm/book3s64/hash_utils.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/powerpc/mm/book3s64/hash_utils.c b/arch/powerpc/mm/book3s64/hash_utils.c
+> index 51e3c15f7aff..dd60c5f2b991 100644
+> --- a/arch/powerpc/mm/book3s64/hash_utils.c
+> +++ b/arch/powerpc/mm/book3s64/hash_utils.c
+> @@ -660,11 +660,10 @@ static void __init htab_init_page_sizes(void)
+>  		 * Pick a size for the linear mapping. Currently, we only
+>  		 * support 16M, 1M and 4K which is the default
+>  		 */
+> -		if (IS_ENABLED(STRICT_KERNEL_RWX) &&
+> +		if (IS_ENABLED(CONFIG_STRICT_KERNEL_RWX) &&
+>  		    (unsigned long)_stext % 0x1000000) {
+>  			if (mmu_psize_defs[MMU_PAGE_16M].shift)
+> -				pr_warn("Kernel not 16M aligned, "
+> -					"disabling 16M linear map alignment");
+> +				pr_warn("Kernel not 16M aligned, disabling 16M linear map alignment\n");
+>  			aligned = false;
+>  		}
 
-Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Acked-by: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
----
- Documentation/hwmon/index.rst    |   1 +
- Documentation/hwmon/sl28cpld.rst |  36 ++++++++
- drivers/hwmon/Kconfig            |  10 +++
- drivers/hwmon/Makefile           |   1 +
- drivers/hwmon/sl28cpld-hwmon.c   | 150 +++++++++++++++++++++++++++++++
- 5 files changed, 198 insertions(+)
- create mode 100644 Documentation/hwmon/sl28cpld.rst
- create mode 100644 drivers/hwmon/sl28cpld-hwmon.c
+Joe, I was going to send all of the fixes for these issues, but your
+patch doesn't have a SoB. Shall I add one for the above patch?
 
-diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
-index 55ff4b7c5349..1f4beb7449c7 100644
---- a/Documentation/hwmon/index.rst
-+++ b/Documentation/hwmon/index.rst
-@@ -153,6 +153,7 @@ Hardware Monitoring Kernel Drivers
-    sht3x
-    shtc1
-    sis5595
-+   sl28cpld
-    smm665
-    smsc47b397
-    smsc47m192
-diff --git a/Documentation/hwmon/sl28cpld.rst b/Documentation/hwmon/sl28cpld.rst
-new file mode 100644
-index 000000000000..7ed65f78250c
---- /dev/null
-+++ b/Documentation/hwmon/sl28cpld.rst
-@@ -0,0 +1,36 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+Kernel driver sl28cpld
-+======================
-+
-+Supported chips:
-+
-+   * Kontron sl28cpld
-+
-+     Prefix: 'sl28cpld'
-+
-+     Datasheet: not available
-+
-+Authors: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-+
-+Description
-+-----------
-+
-+The sl28cpld is a board management controller which also exposes a hardware
-+monitoring controller. At the moment this controller supports a single fan
-+supervisor. In the future there might be other flavours and additional
-+hardware monitoring might be supported.
-+
-+The fan supervisor has a 7 bit counter register and a counter period of 1
-+second. If the 7 bit counter overflows, the supervisor will automatically
-+switch to x8 mode to support a wider input range at the loss of
-+granularity.
-+
-+Sysfs entries
-+-------------
-+
-+The following attributes are supported.
-+
-+======================= ========================================================
-+fan1_input		Fan RPM. Assuming 2 pulses per revolution.
-+======================= ========================================================
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 288ae9f63588..e1cab08e80ce 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1459,6 +1459,16 @@ config SENSORS_RASPBERRYPI_HWMON
- 	  This driver can also be built as a module. If so, the module
- 	  will be called raspberrypi-hwmon.
- 
-+config SENSORS_SL28CPLD
-+	tristate "Kontron sl28cpl hardware monitoring driver"
-+	depends on MFD_SL28CPLD
-+	help
-+	  If you say yes here you get support for the fan supervisor of the
-+	  sl28cpld board management controller.
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called sl28cpld-hwmon.
-+
- config SENSORS_SHT15
- 	tristate "Sensiron humidity and temperature sensors. SHT15 and compat."
- 	depends on GPIOLIB || COMPILE_TEST
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index 3e32c21f5efe..03822f6bf970 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -158,6 +158,7 @@ obj-$(CONFIG_SENSORS_S3C)	+= s3c-hwmon.o
- obj-$(CONFIG_SENSORS_SCH56XX_COMMON)+= sch56xx-common.o
- obj-$(CONFIG_SENSORS_SCH5627)	+= sch5627.o
- obj-$(CONFIG_SENSORS_SCH5636)	+= sch5636.o
-+obj-$(CONFIG_SENSORS_SL28CPLD)	+= sl28cpld-hwmon.o
- obj-$(CONFIG_SENSORS_SHT15)	+= sht15.o
- obj-$(CONFIG_SENSORS_SHT21)	+= sht21.o
- obj-$(CONFIG_SENSORS_SHT3x)	+= sht3x.o
-diff --git a/drivers/hwmon/sl28cpld-hwmon.c b/drivers/hwmon/sl28cpld-hwmon.c
-new file mode 100644
-index 000000000000..de24964a7322
---- /dev/null
-+++ b/drivers/hwmon/sl28cpld-hwmon.c
-@@ -0,0 +1,150 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * sl28cpld hardware monitoring driver.
-+ *
-+ * Copyright 2019 Kontron Europe GmbH
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/hwmon.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+
-+#define FAN_INPUT		0x00
-+#define   FAN_SCALE_X8		BIT(7)
-+#define   FAN_VALUE_MASK	GENMASK(6, 0)
-+
-+struct sl28cpld_hwmon {
-+	struct regmap *regmap;
-+	u32 offset;
-+};
-+
-+static umode_t sl28cpld_hwmon_is_visible(const void *data,
-+					 enum hwmon_sensor_types type,
-+					 u32 attr, int channel)
-+{
-+	return 0444;
-+}
-+
-+static int sl28cpld_hwmon_read(struct device *dev,
-+			       enum hwmon_sensor_types type, u32 attr,
-+			       int channel, long *input)
-+{
-+	struct sl28cpld_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int value;
-+	int ret;
-+
-+	switch (attr) {
-+	case hwmon_fan_input:
-+		ret = regmap_read(hwmon->regmap, hwmon->offset + FAN_INPUT,
-+				  &value);
-+		if (ret)
-+			return ret;
-+		/*
-+		 * The register has a 7 bit value and 1 bit which indicates the
-+		 * scale. If the MSB is set, then the lower 7 bit has to be
-+		 * multiplied by 8, to get the correct reading.
-+		 */
-+		if (value & FAN_SCALE_X8)
-+			value = FIELD_GET(FAN_VALUE_MASK, value) << 3;
-+
-+		/*
-+		 * The counter period is 1000ms and the sysfs specification
-+		 * says we should asssume 2 pulses per revolution.
-+		 */
-+		value *= 60 / 2;
-+
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	*input = value;
-+	return 0;
-+}
-+
-+static const u32 sl28cpld_hwmon_fan_config[] = {
-+	HWMON_F_INPUT,
-+	0
-+};
-+
-+static const struct hwmon_channel_info sl28cpld_hwmon_fan = {
-+	.type = hwmon_fan,
-+	.config = sl28cpld_hwmon_fan_config,
-+};
-+
-+static const struct hwmon_channel_info *sl28cpld_hwmon_info[] = {
-+	&sl28cpld_hwmon_fan,
-+	NULL
-+};
-+
-+static const struct hwmon_ops sl28cpld_hwmon_ops = {
-+	.is_visible = sl28cpld_hwmon_is_visible,
-+	.read = sl28cpld_hwmon_read,
-+};
-+
-+static const struct hwmon_chip_info sl28cpld_hwmon_chip_info = {
-+	.ops = &sl28cpld_hwmon_ops,
-+	.info = sl28cpld_hwmon_info,
-+};
-+
-+static int sl28cpld_hwmon_probe(struct platform_device *pdev)
-+{
-+	struct sl28cpld_hwmon *hwmon;
-+	struct device *hwmon_dev;
-+	int ret;
-+
-+	if (!pdev->dev.parent)
-+		return -ENODEV;
-+
-+	hwmon = devm_kzalloc(&pdev->dev, sizeof(*hwmon), GFP_KERNEL);
-+	if (!hwmon)
-+		return -ENOMEM;
-+
-+	hwmon->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!hwmon->regmap)
-+		return -ENODEV;
-+
-+	ret = device_property_read_u32(&pdev->dev, "reg", &hwmon->offset);
-+	if (ret)
-+		return -EINVAL;
-+
-+	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev,
-+				"sl28cpld_hwmon", hwmon,
-+				&sl28cpld_hwmon_chip_info, NULL);
-+	if (IS_ERR(hwmon_dev)) {
-+		dev_err(&pdev->dev, "failed to register as hwmon device");
-+		return PTR_ERR(hwmon_dev);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id sl28cpld_hwmon_of_match[] = {
-+	{ .compatible = "kontron,sl28cpld-fan" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, sl28cpld_hwmon_of_match);
-+
-+static const struct platform_device_id sl28cpld_hwmon_id_table[] = {
-+	{ "sl28cpld-fan" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(platform, sl28cpld_hwmon_id_table);
-+
-+static struct platform_driver sl28cpld_hwmon_driver = {
-+	.probe = sl28cpld_hwmon_probe,
-+	.id_table = sl28cpld_hwmon_id_table,
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = sl28cpld_hwmon_of_match,
-+	},
-+};
-+module_platform_driver(sl28cpld_hwmon_driver);
-+
-+MODULE_DESCRIPTION("sl28cpld Hardware Monitoring Driver");
-+MODULE_AUTHOR("Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>");
-+MODULE_LICENSE("GPL");
 -- 
-2.20.1
+Kees Cook
