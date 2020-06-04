@@ -1,429 +1,176 @@
 From: Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 01/11] dt-bindings: mfd: Add bindings for sl28cpld
-Date: Thu,  4 Jun 2020 23:10:29 +0200
-Message-ID: <20200604211039.12689-2-michael@walle.cc>
+Subject: [PATCH v4 03/11] irqchip: add sl28cpld interrupt controller support
+Date: Thu,  4 Jun 2020 23:10:31 +0200
+Message-ID: <20200604211039.12689-4-michael@walle.cc>
 References: <20200604211039.12689-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
 In-Reply-To: <20200604211039.12689-1-michael@walle.cc>
-Sender: linux-hwmon-owner@vger.kernel.org
+Sender: linux-gpio-owner@vger.kernel.org
 To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Walle <michael@walle.cc>
 List-Id: linux-pwm@vger.kernel.org
 
-Add a device tree bindings for the board management controller found on
-the Kontron SMARC-sAL28 board.
+Add support for the interrupt controller inside the sl28 CPLD management
+controller.
+
+The interrupt controller can handle at most 8 interrupts and is really
+simplistic and consists only of an interrupt mask and an interrupt
+pending register.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- .../bindings/gpio/kontron,sl28cpld-gpio.yaml  |  54 +++++++
- .../hwmon/kontron,sl28cpld-hwmon.yaml         |  27 ++++
- .../kontron,sl28cpld-intc.yaml                |  54 +++++++
- .../bindings/mfd/kontron,sl28cpld.yaml        | 153 ++++++++++++++++++
- .../bindings/pwm/kontron,sl28cpld-pwm.yaml    |  35 ++++
- .../watchdog/kontron,sl28cpld-wdt.yaml        |  35 ++++
- 6 files changed, 358 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
- create mode 100644 Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml
- create mode 100644 Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
- create mode 100644 Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
- create mode 100644 Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
+ drivers/irqchip/Kconfig        |   3 +
+ drivers/irqchip/Makefile       |   1 +
+ drivers/irqchip/irq-sl28cpld.c | 102 +++++++++++++++++++++++++++++++++
+ drivers/mfd/Kconfig            |   2 +
+ 4 files changed, 108 insertions(+)
+ create mode 100644 drivers/irqchip/irq-sl28cpld.c
 
-diff --git a/Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml b/Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 3e473f4eb175..c4b840bc982e 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -246,6 +246,9 @@ config RENESAS_RZA1_IRQC
+ 	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
+ 	  to 8 external interrupts with configurable sense select.
+ 
++config SL28CPLD_INTC
++	bool
++
+ config ST_IRQCHIP
+ 	bool
+ 	select REGMAP
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 3a4ce283189a..bcd9797a5aed 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -110,3 +110,4 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
+ obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
+ obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
+ obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
++obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
+diff --git a/drivers/irqchip/irq-sl28cpld.c b/drivers/irqchip/irq-sl28cpld.c
 new file mode 100644
-index 000000000000..9a63a158a796
+index 000000000000..2151f1b390d7
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gpio/kontron,sl28cpld-gpio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: GPIO driver for the sl28cpld board management controller
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description: |
-+  This module is part of the sl28cpld multi-function device. For more
-+  details see Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml.
-+
-+  There are three flavors of the GPIO controller, one full featured
-+  input/output with interrupt support (kontron,sl28cpld-gpio), one
-+  output-only (kontron,sl28-gpo) and one input-only (kontron,sl28-gpi).
-+
-+  Each controller supports 8 GPIO lines.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - kontron,sl28cpld-gpio
-+      - kontron,sl28cpld-gpi
-+      - kontron,sl28cpld-gpo
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  "#interrupt-cells":
-+    const: 2
-+
-+  interrupt-controller: true
-+
-+  "#gpio-cells":
-+    const: 2
-+
-+  gpio-controller: true
-+
-+  gpio-line-names:
-+      minItems: 1
-+      maxItems: 8
-+
-+required:
-+  - compatible
-+  - "#gpio-cells"
-+  - gpio-controller
-+
-+additionalProperties: false
-diff --git a/Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml b/Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
-new file mode 100644
-index 000000000000..1cebd61c6c32
---- /dev/null
-+++ b/Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/hwmon/kontron,sl28cpld-hwmon.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Hardware monitoring driver for the sl28cpld board management controller
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description: |
-+  This module is part of the sl28cpld multi-function device. For more
-+  details see Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - kontron,sl28cpld-fan
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml
-new file mode 100644
-index 000000000000..4c39e9ff9aea
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/kontron,sl28cpld-intc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Interrupt controller driver for the sl28cpld board management controller
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description: |
-+  This module is part of the sl28cpld multi-function device. For more
-+  details see Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml.
-+
-+  The following interrupts are available. All types and levels are fixed
-+  and handled by the board management controller.
-+
-+  ==== ============= ==================================
-+   IRQ line/device   description
-+  ==== ============= ==================================
-+    0  RTC_INT#      Interrupt line from on-board RTC
-+    1  SMB_ALERT#    Event on SMB_ALERT# line (P1)
-+    2  ESPI_ALERT0#  Event on ESPI_ALERT0# line (S43)
-+    3  ESPI_ALERT1#  Event on ESPI_ALERT1# line (S44)
-+    4  PWR_BTN#      Event on PWR_BTN# line (P128)
-+    5  SLEEP#        Event on SLEEP# line (S149)
-+    6  watchdog      Interrupt of the internal watchdog
-+    7  n/a           not used
-+  ==== ============= ==================================
-+
-+properties:
-+  compatible:
-+    enum:
-+      - kontron,sl28cpld-intc
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  "#interrupt-cells":
-+    const: 2
-+
-+  interrupt-controller: true
-+
-+required:
-+  - compatible
-+  - interrupts
-+  - "#interrupt-cells"
-+  - interrupt-controller
-+
-+additionalProperties: false
-diff --git a/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml b/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
-new file mode 100644
-index 000000000000..1d13bb24afb8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
-@@ -0,0 +1,153 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/kontron,sl28cpld.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Kontron's sl28cpld board management controller
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description: |
-+  The board management controller may contain different IP blocks like
-+  watchdog, fan monitoring, PWM controller, interrupt controller and a
-+  GPIO controller.
-+
-+properties:
-+  compatible:
-+    const: kontron,sl28cpld-r1
-+
-+  reg:
-+    description:
-+      I2C device address.
-+    maxItems: 1
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  "#interrupt-cells":
-+    const: 2
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+patternProperties:
-+  "^gpio(@[0-9]+)?$":
-+    $ref: ../gpio/kontron,sl28cpld-gpio.yaml
-+
-+  "^hwmon(@[0-9]+)?$":
-+    $ref: ../hwmon/kontron,sl28cpld-hwmon.yaml
-+
-+  "^interrupt-controller(@[0-9]+)?$":
-+    $ref: ../interrupt-controller/kontron,sl28cpld-intc.yaml
-+
-+  "^pwm(@[0-9]+)?$":
-+    $ref: ../pwm/kontron,sl28cpld-pwm.yaml
-+
-+  "^watchdog(@[0-9]+)?$":
-+    $ref: ../watchdog/kontron,sl28cpld-wdt.yaml
-+
-+required:
-+  - "#address-cells"
-+  - "#size-cells"
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        sl28cpld@4a {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            compatible = "kontron,sl28cpld-r1";
-+            reg = <0x4a>;
-+
-+            watchdog@4 {
-+                compatible = "kontron,sl28cpld-wdt";
-+                reg = <0x4>;
-+                kontron,assert-wdt-timeout-pin;
-+            };
-+
-+            hwmon@b {
-+                compatible = "kontron,sl28cpld-fan";
-+                reg = <0xb>;
-+            };
-+
-+            pwm@c {
-+                #pwm-cells = <2>;
-+                compatible = "kontron,sl28cpld-pwm";
-+                reg = <0xc>;
-+            };
-+
-+            pwm@e {
-+                #pwm-cells = <2>;
-+                compatible = "kontron,sl28cpld-pwm";
-+                reg = <0xe>;
-+            };
-+
-+            gpio@10 {
-+                compatible = "kontron,sl28cpld-gpio";
-+                reg = <0x10>;
-+                interrupts-extended = <&gpio2 6
-+                               IRQ_TYPE_EDGE_FALLING>;
-+
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+                gpio-line-names = "a", "b", "c";
-+
-+                interrupt-controller;
-+                #interrupt-cells = <2>;
-+            };
-+
-+            gpio@15 {
-+                compatible = "kontron,sl28cpld-gpio";
-+                reg = <0x15>;
-+                interrupts-extended = <&gpio2 6
-+                               IRQ_TYPE_EDGE_FALLING>;
-+
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+
-+                interrupt-controller;
-+                #interrupt-cells = <2>;
-+            };
-+
-+            gpio@1a {
-+                compatible = "kontron,sl28cpld-gpo";
-+                reg = <0x1a>;
-+
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+            };
-+
-+            gpio@1b {
-+                compatible = "kontron,sl28cpld-gpi";
-+                reg = <0x1b>;
-+
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+            };
-+
-+            interrupt-controller@1c {
-+                compatible = "kontron,sl28cpld-intc";
-+                reg = <0x1c>;
-+                interrupts-extended = <&gpio2 6
-+                               IRQ_TYPE_EDGE_FALLING>;
-+
-+                interrupt-controller;
-+                #interrupt-cells = <2>;
-+            };
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml b/Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
-new file mode 100644
-index 000000000000..02fe88c30233
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
-@@ -0,0 +1,35 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/kontron,sl28cpld-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: PWM driver for the sl28cpld board management controller
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description: |
-+  This module is part of the sl28cpld multi-function device. For more
-+  details see Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml.
-+
-+  The controller supports one PWM channel and supports only four distinct
-+  frequencies (250Hz, 500Hz, 1kHz, 2kHz).
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: kontron,sl28cpld-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-diff --git a/Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml b/Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
-new file mode 100644
-index 000000000000..dd6559f2973a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
-@@ -0,0 +1,35 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/kontron,sl28cpld-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Watchdog driver for the sl28cpld board management controller
-+
-+maintainers:
-+  - Michael Walle <michael@walle.cc>
-+
-+description: |
-+  This module is part of the sl28cpld multi-function device. For more
-+  details see Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml.
-+
-+allOf:
-+  - $ref: watchdog.yaml#
-+
-+properties:
-+  compatible:
-+    const: kontron,sl28cpld-wdt
-+
-+  reg:
-+    maxItems: 1
-+
-+  kontron,assert-wdt-timeout-pin:
-+    description: The SMARC standard defines a WDT_TIME_OUT# pin. If this
-+      property is set, this output will be pulsed when the watchdog bites
-+      and the system resets.
-+    type: boolean
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
++++ b/drivers/irqchip/irq-sl28cpld.c
+@@ -0,0 +1,102 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * sl28cpld interrupt controller driver.
++ *
++ * Copyright 2019 Kontron Europe GmbH
++ */
++
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/regmap.h>
++
++#define INTC_IE 0x00
++#define INTC_IP 0x01
++
++static const struct regmap_irq sl28cpld_irqs[] = {
++	REGMAP_IRQ_REG_LINE(0, 8),
++	REGMAP_IRQ_REG_LINE(1, 8),
++	REGMAP_IRQ_REG_LINE(2, 8),
++	REGMAP_IRQ_REG_LINE(3, 8),
++	REGMAP_IRQ_REG_LINE(4, 8),
++	REGMAP_IRQ_REG_LINE(5, 8),
++	REGMAP_IRQ_REG_LINE(6, 8),
++	REGMAP_IRQ_REG_LINE(7, 8),
++};
++
++struct sl28cpld_intc {
++	struct regmap *regmap;
++	struct regmap_irq_chip chip;
++	struct regmap_irq_chip_data *irq_data;
++};
++
++static int sl28cpld_intc_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct sl28cpld_intc *irqchip;
++	unsigned int irq;
++	u32 base;
++	int ret;
++
++	if (!dev->parent)
++		return -ENODEV;
++
++	irqchip = devm_kzalloc(dev, sizeof(*irqchip), GFP_KERNEL);
++	if (!irqchip)
++		return -ENOMEM;
++
++	irqchip->regmap = dev_get_regmap(dev->parent, NULL);
++	if (!irqchip->regmap)
++		return -ENODEV;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	ret = device_property_read_u32(&pdev->dev, "reg", &base);
++	if (ret)
++		return -EINVAL;
++
++	irqchip->chip.name = "sl28cpld-intc";
++	irqchip->chip.irqs = sl28cpld_irqs;
++	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
++	irqchip->chip.num_regs = 1;
++	irqchip->chip.status_base = base + INTC_IP;
++	irqchip->chip.mask_base = base + INTC_IE;
++	irqchip->chip.mask_invert = true,
++	irqchip->chip.ack_base = base + INTC_IP;
++
++	return devm_regmap_add_irq_chip_np(&pdev->dev, dev->of_node,
++					   irqchip->regmap, irq,
++					   IRQF_SHARED | IRQF_ONESHOT, 0,
++					   &irqchip->chip, &irqchip->irq_data);
++}
++
++static const struct of_device_id sl28cpld_intc_of_match[] = {
++	{ .compatible = "kontron,sl28cpld-intc" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, sl28cpld_intc_of_match);
++
++static const struct platform_device_id sl28cpld_intc_id_table[] = {
++	{ "sl28cpld-intc" },
++	{}
++};
++MODULE_DEVICE_TABLE(platform, sl28cpld_intc_id_table);
++
++static struct platform_driver sl28cpld_intc_driver = {
++	.probe	= sl28cpld_intc_probe,
++	.id_table = sl28cpld_intc_id_table,
++	.driver = {
++		.name = KBUILD_MODNAME,
++		.of_match_table = sl28cpld_intc_of_match,
++	}
++};
++module_platform_driver(sl28cpld_intc_driver);
++
++MODULE_DESCRIPTION("sl28cpld Interrupt Controller Driver");
++MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 5c0cd514d197..9c84c5746698 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -2114,6 +2114,8 @@ config MFD_SL28CPLD
+ 	depends on I2C=y
+ 	depends on OF
+ 	select REGMAP_I2C
++	select REGMAP_IRQ
++	select SL28CPLD_INTC
+ 	select MFD_CORE
+ 	help
+ 	  This option enables support for the board management controller
 -- 
 2.20.1
