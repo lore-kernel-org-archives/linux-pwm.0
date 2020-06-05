@@ -1,141 +1,74 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v4 06/11] gpio: add support for the sl28cpld GPIO
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld management
  controller
-Date: Fri, 05 Jun 2020 20:44:52 +0200
-Message-ID: <bf587fc3f907d58609a0ea3d65cd5b37@walle.cc>
+Date: Fri, 05 Jun 2020 22:07:36 +0200
+Message-ID: <c5632bfab3956265e90fc2fb6c0b3cae@walle.cc>
 References: <20200604211039.12689-1-michael@walle.cc>
- <20200604211039.12689-7-michael@walle.cc>
- <CAHp75VfRhL1f-XD=PMbqd3BLeJQzQMFAupSzqAvx0g7-X_2VhQ@mail.gmail.com>
- <216db3154b46bd80202873df055bb3f3@walle.cc>
- <20200605131525.GK2428291@smile.fi.intel.com>
+ <20200604211039.12689-3-michael@walle.cc> <20200605065709.GD3714@dell>
+ <20200605105026.GC5413@sirena.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
-In-Reply-To: <20200605131525.GK2428291@smile.fi.intel.com>
-Sender: linux-hwmon-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas
+Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200605105026.GC5413-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Am 2020-06-05 15:15, schrieb Andy Shevchenko:
-> On Fri, Jun 05, 2020 at 02:42:53PM +0200, Michael Walle wrote:
->> Am 2020-06-05 14:00, schrieb Andy Shevchenko:
->> > On Fri, Jun 5, 2020 at 12:14 AM Michael Walle <michael@walle.cc> wrote:
-> 
->> > > +       return devm_regmap_add_irq_chip_np(dev, dev_of_node(dev),
->> > > regmap,
->> >
->> > It seems regmap needs to be converted to use fwnode.
->> 
->> Mhh, this _np functions was actually part of this series in the
->> beginning.
-> 
-> Then, please, make them fwnode aware rather than OF centric.
+Hi,
 
-ok
+Am 2020-06-05 12:50, schrieb Mark Brown:
+> On Fri, Jun 05, 2020 at 07:57:09AM +0100, Lee Jones wrote:
+>> On Thu, 04 Jun 2020, Michael Walle wrote:
+> 
+>> > +	sl28cpld->regmap = devm_regmap_init_i2c(i2c, &sl28cpld_regmap_config);
+>> > +	if (IS_ERR(sl28cpld->regmap))
+>> > +		return PTR_ERR(sl28cpld->regmap);
+> 
+>> This is now a shared memory allocator and not an MFD at all.
+> 
+>> I'm clamping down on these type of drivers!
+> 
+>> Please find a better way to accomplish this.
+> 
+> What is the concern with this?  Looking at the patch I'm guessing the
+> concern would be that the driver isn't instantiating any MFD children
+> and instead requiring them to be put in the DT?
+> 
+>> Potentially using "simple-mfd" and "simple-regmap".
+> 
+>> The former already exists and does what you want.  The latter doesn't
+>> yet exist, but could solve your and lots of other contributor's
+>> issues.
+> 
+> I have no idea what you are thinking of when you say "simple-regmap" so
+> it is difficult to comment.
 
-> 
->> > > IRQF_ONESHOT, 0,
->> > > +                                          irq_chip, &gpio->irq_data);
-> 
-> ...
-> 
->> > > +       dev_id = platform_get_device_id(pdev);
->> > > +       if (dev_id)
->> > > +               type = dev_id->driver_data;
->> >
->> > Oh, no. In new code we don't need this. We have facilities to provide
->> > platform data in a form of fwnode.
->> 
->> Ok I'll look into that.
->> 
->> But I already have a question, so there are of_property_read_xx(), 
->> which
->> seems to be the old functions, then there is device_property_read_xx() 
->> and
->> fwnode_property_read_xx(). What is the difference between the latter 
->> two?
-> 
-> It's easy. device_*() requires struct device to be established for 
-> this, so,
-> operates only against devices, while the fwnode_*() operates on pure 
-> data which
-> might or might not be related to any devices. If you understand OF 
-> examples
-> better, consider device node vs. child of such node.
+I guess, Lee is suggesting to be able to create a regmap instance via
+device tree (and populate its child nodes?). Like
+   compatible = "syscon", "simple-mfd";
+but for any regmap, not just MMIO.
 
-Ahh thanks, got it.
+But, there is more in my driver:
+  (1) there is a version check
+  (2) there is another function for which there is no suitable linux
+      subsystem I'm aware of and thus which I'd like to us sysfs
+      attributes for: This controller supports 16 non-volatile
+      configuration bits. (this is still TBD)
 
-> 
-> ...
-> 
->> > > +       if (irq_support &&
->> >
->> > Why do you need this flag? Can't simple IRQ number be sufficient?
->> 
->> I want to make sure, the is no misconfiguration. Eg. only GPIO
->> flavors which has irq_support set, have the additional interrupt
->> registers.
-> 
-> In gpio-dwapb, for example, we simple check two things: a) hardware 
-> limitation
-> (if IRQ is assigned to a proper port) and b) if there is any IRQ comes 
-> from DT,
-> ACPI, etc.
+I don't see what is different between this driver and for example the
+gateworks-gsc.c. Just that mine doesn't use a global register set, but
+local offsets and a base for each component. From a hardware
+perspective its one device behind an I2C address providing different
+functions across multiple driver subsystems.
 
-I can't follow you here. irq_support is like your (a); or the
-"pp->idx == 0" in your example.
+Actually, I've tried to remove the devm_of_platform_populate() and
+instead added the "simple-mfd" to my mfd node:
+  compatible = "kontron,sl28cpld-r1", "simple-mfd";
 
->> > > +           device_property_read_bool(&pdev->dev,
->> > > "interrupt-controller")) {
->> > > +               irq = platform_get_irq(pdev, 0);
->> > > +               if (irq < 0)
->> > > +                       return irq;
->> > > +
->> > > +               ret = sl28cpld_gpio_irq_init(&pdev->dev, gpio, regmap,
->> > > +                                            base, irq);
->> > > +               if (ret)
->> > > +                       return ret;
->> > > +
->> > > +               config.irq_domain =
->> > > regmap_irq_get_domain(gpio->irq_data);
->> > > +       }
-> 
-> ...
-> 
->> > > +       { .compatible = "kontron,sl28cpld-gpio",
->> > > +         .data = (void *)SL28CPLD_GPIO },
->> > > +       { .compatible = "kontron,sl28cpld-gpi",
->> > > +         .data = (void *)SL28CPLD_GPI },
->> > > +       { .compatible = "kontron,sl28cpld-gpo",
->> > > +         .data = (void *)SL28CPLD_GPO },
->> >
->> > All above can be twice less LOCs.
->> 
->> They are longer than 80 chars. Or do I miss something?
-> 
-> We have 100 :-)
+I guess that doesn't work because the device is below the i2c bus?
 
-oh come on, since 6 days *g*
-
->> > > +               .name = KBUILD_MODNAME,
->> >
->> > This actually not good idea in long term. File name can change and break
->> > an ABI.
->> 
->> Ahh an explanation, why this is bad. Ok makes sense, although to be 
->> fair,
->> .id_table should be used for the driver name matching. I'm not sure if
->> this is used somewhere else, though.
-> 
-> I saw in my practice chain of renames for a driver. Now, if somebody
-> somewhere would like to instantiate a platform driver by its name...
-> Oops, ABI breakage.
-> 
-> And of course using platform data for such device makes less sense.
-
-i just removed the id_table from all drivers anyways.
-
+-- 
 -michael
