@@ -1,124 +1,83 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v4 06/11] gpio: add support for the sl28cpld GPIO
- controller
-Date: Fri, 5 Jun 2020 16:15:25 +0300
-Message-ID: <20200605131525.GK2428291@smile.fi.intel.com>
-References: <20200604211039.12689-1-michael@walle.cc>
- <20200604211039.12689-7-michael@walle.cc>
- <CAHp75VfRhL1f-XD=PMbqd3BLeJQzQMFAupSzqAvx0g7-X_2VhQ@mail.gmail.com>
- <216db3154b46bd80202873df055bb3f3@walle.cc>
+From: "G Jaya Kumaran, Vineetha" <vineetha.g.jaya.kumaran@intel.com>
+Subject: RE: [PATCH 1/3] pwm: Add count attribute in sysfs for Intel Keem Bay
+Date: Fri, 5 Jun 2020 13:49:02 +0000
+Message-ID: <SN6PR11MB257550F64750773C039956ECF6860@SN6PR11MB2575.namprd11.prod.outlook.com>
+References: <1589723560-5734-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <1589723560-5734-2-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <20200523210525.5ciw3lyafbwr26qn@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga07.intel.com ([134.134.136.100]:61808 "EHLO mga07.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:43354 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726711AbgFENP3 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 5 Jun 2020 09:15:29 -0400
-Content-Disposition: inline
-In-Reply-To: <216db3154b46bd80202873df055bb3f3@walle.cc>
+        id S1727049AbgFENtG (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 5 Jun 2020 09:49:06 -0400
+In-Reply-To: <20200523210525.5ciw3lyafbwr26qn@pengutronix.de>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thom
+To: "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "Wan Mohamad, Wan Ahmad Zainie" <wan.ahmad.zainie.wan.mohamad@intel.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "Shevchenko, Andriy" <andriy.shevchenko@intel.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 
-On Fri, Jun 05, 2020 at 02:42:53PM +0200, Michael Walle wrote:
-> Am 2020-06-05 14:00, schrieb Andy Shevchenko:
-> > On Fri, Jun 5, 2020 at 12:14 AM Michael Walle <michael@walle.cc> wrote:
 
-> > > +       return devm_regmap_add_irq_chip_np(dev, dev_of_node(dev),
-> > > regmap,
-> > 
-> > It seems regmap needs to be converted to use fwnode.
-> 
-> Mhh, this _np functions was actually part of this series in the
-> beginning.
+> -----Original Message-----
+> From: linux-pwm-owner@vger.kernel.org <linux-pwm-owner@vger.kernel.org>
+> On Behalf Of Uwe Kleine-K=F6nig
+> Sent: Sunday, May 24, 2020 5:05 AM
+> To: G Jaya Kumaran, Vineetha <vineetha.g.jaya.kumaran@intel.com>
+> Cc: thierry.reding@gmail.com; robh+dt@kernel.org; linux-
+> pwm@vger.kernel.org; devicetree@vger.kernel.org; Wan Mohamad, Wan
+> Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>; Shevchenko,
+> Andriy <andriy.shevchenko@intel.com>
+> Subject: Re: [PATCH 1/3] pwm: Add count attribute in sysfs for Intel Keem=
+ Bay
+>=20
+> On Sun, May 17, 2020 at 09:52:38PM +0800,
+> vineetha.g.jaya.kumaran@intel.com wrote:
+> > From: "Lai, Poey Seng" <poey.seng.lai@intel.com>
+> >
+> > In Keem Bay, the number of repetitions for the period/waveform can be
+> > configured from userspace. This requires addition of a sysfs attribute
+> > to get/set the repetition count. Setting this value to 0 will result
+> > in continuous repetition of the waveform until the channel is disabled
+> > or reconfigured.
+>=20
+> There is nothing specific for Keem Bay in this patch, the only special th=
+ing here is
+> that this driver is the first implementor.
+>=20
+> IMHO all drivers that don't support count should be changed to fail if a =
+count > 0
+> is passed and introducing support in the sysfs interface should be a sepa=
+rate
+> change.
+>=20
+> Having said that I'm not convinced this is a good idea given that only ve=
+ry few
+> driver can support this interface. Also this needs documentation, e.g. wh=
+at is
+> expected from .get_state().
+>=20
+> You should also motivate what this functionality is used for in the commi=
+t log
+> and I'd prefer to see an in-tree user (apart from sysfs which I don't cou=
+nt as
+> such).
+>=20
 
-Then, please, make them fwnode aware rather than OF centric.
+Agreed, the wording used here is not accurate as this is not specific for K=
+eem Bay.
+Before submitting v2, I will cross-check about the use-case for this functi=
+onality, and if it=20
+can be implemented in some other less intrusive way to the framework (perha=
+ps via a DT property?)
 
-> > > IRQF_ONESHOT, 0,
-> > > +                                          irq_chip, &gpio->irq_data);
-
-...
-
-> > > +       dev_id = platform_get_device_id(pdev);
-> > > +       if (dev_id)
-> > > +               type = dev_id->driver_data;
-> > 
-> > Oh, no. In new code we don't need this. We have facilities to provide
-> > platform data in a form of fwnode.
-> 
-> Ok I'll look into that.
-> 
-> But I already have a question, so there are of_property_read_xx(), which
-> seems to be the old functions, then there is device_property_read_xx() and
-> fwnode_property_read_xx(). What is the difference between the latter two?
-
-It's easy. device_*() requires struct device to be established for this, so,
-operates only against devices, while the fwnode_*() operates on pure data which
-might or might not be related to any devices. If you understand OF examples
-better, consider device node vs. child of such node.
-
-...
-
-> > > +       if (irq_support &&
-> > 
-> > Why do you need this flag? Can't simple IRQ number be sufficient?
-> 
-> I want to make sure, the is no misconfiguration. Eg. only GPIO
-> flavors which has irq_support set, have the additional interrupt
-> registers.
-
-In gpio-dwapb, for example, we simple check two things: a) hardware limitation
-(if IRQ is assigned to a proper port) and b) if there is any IRQ comes from DT,
-ACPI, etc.
-
-> > > +           device_property_read_bool(&pdev->dev,
-> > > "interrupt-controller")) {
-> > > +               irq = platform_get_irq(pdev, 0);
-> > > +               if (irq < 0)
-> > > +                       return irq;
-> > > +
-> > > +               ret = sl28cpld_gpio_irq_init(&pdev->dev, gpio, regmap,
-> > > +                                            base, irq);
-> > > +               if (ret)
-> > > +                       return ret;
-> > > +
-> > > +               config.irq_domain =
-> > > regmap_irq_get_domain(gpio->irq_data);
-> > > +       }
-
-...
-
-> > > +       { .compatible = "kontron,sl28cpld-gpio",
-> > > +         .data = (void *)SL28CPLD_GPIO },
-> > > +       { .compatible = "kontron,sl28cpld-gpi",
-> > > +         .data = (void *)SL28CPLD_GPI },
-> > > +       { .compatible = "kontron,sl28cpld-gpo",
-> > > +         .data = (void *)SL28CPLD_GPO },
-> > 
-> > All above can be twice less LOCs.
-> 
-> They are longer than 80 chars. Or do I miss something?
-
-We have 100 :-)
-
-...
-
-> > > +               .name = KBUILD_MODNAME,
-> > 
-> > This actually not good idea in long term. File name can change and break
-> > an ABI.
-> 
-> Ahh an explanation, why this is bad. Ok makes sense, although to be fair,
-> .id_table should be used for the driver name matching. I'm not sure if
-> this is used somewhere else, though.
-
-I saw in my practice chain of renames for a driver. Now, if somebody
-somewhere would like to instantiate a platform driver by its name...
-Oops, ABI breakage.
-
-And of course using platform data for such device makes less sense.
-
--- 
-With Best Regards,
-Andy Shevchenko
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
