@@ -1,99 +1,140 @@
 From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld management
- controller
-Date: Fri, 05 Jun 2020 12:09:15 +0200
-Message-ID: <8ed988b3e0bc48ea9219d0847c1b1b8e@walle.cc>
+Subject: Re: [PATCH v4 04/11] watchdog: add support for sl28cpld watchdog
+Date: Fri, 05 Jun 2020 12:24:54 +0200
+Message-ID: <8f042c2442852c29519c381833f3d289@walle.cc>
 References: <20200604211039.12689-1-michael@walle.cc>
- <20200604211039.12689-3-michael@walle.cc>
- <CAHp75Vd-R3yqhq88-whY6vdDhESpzvFCsbi-ygSTjfXfUzOrtg@mail.gmail.com>
+ <20200604211039.12689-5-michael@walle.cc>
+ <CAHp75VdeD6zDc--R4NPHsiqQerzfNGwUikLN+WHMiZZVsQ8QSA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vd-R3yqhq88-whY6vdDhESpzvFCsbi-ygSTjfXfUzOrtg@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+In-Reply-To: <CAHp75VdeD6zDc--R4NPHsiqQerzfNGwUikLN+WHMiZZVsQ8QSA@mail.gmail.com>
+Sender: linux-hwmon-owner@vger.kernel.org
 To: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Andy,
-
-Am 2020-06-05 10:01, schrieb Andy Shevchenko:
-> On Fri, Jun 5, 2020 at 12:16 AM Michael Walle <michael@walle.cc> wrote:
+Am 2020-06-05 10:14, schrieb Andy Shevchenko:
+> On Fri, Jun 5, 2020 at 12:14 AM Michael Walle <michael@walle.cc> wrote:
 >> 
->> Add the core support for the board management controller found on the
->> SMARC-sAL28 board. It consists of the following functions:
->>  - watchdog
->>  - GPIO controller
->>  - PWM controller
->>  - fan sensor
->>  - interrupt controller
->> 
->> At the moment, this controller is used on the Kontron SMARC-sAL28 
->> board.
->> 
->> Please note that the MFD driver is defined as bool in the Kconfig
->> because the next patch will add interrupt support.
+>> Add support for the watchdog of the sl28cpld board management
+>> controller. This is part of a multi-function device driver.
 > 
 > ...
 > 
->> +config MFD_SL28CPLD
->> +       bool "Kontron sl28 core driver"
->> +       depends on I2C=y
+>> +#include <linux/of_device.h>
 > 
-> Why not module?
+> Didn't find a user of this.
 
-There are users of the interupt lines provided by the interrupt 
-controller.
-For example, the gpio-button driver. If this is compiled into the kernel
-(which it is by default in the arm64 defconfig), probing will fail 
-because
-the interrupt is not found. Is there a better way for that? I guess the 
-same
-is true for the GPIO driver.
+I guess mod_devicetable.h then.
 
-> 
->> +       depends on OF
-> 
-> I didn't find an evidence this is needed.
-
-see below.
-
-> 
-> No Compile Test?
-
-ok
-
->> +       select REGMAP_I2C
->> +       select MFD_CORE
 > 
 > ...
 > 
->> +#include <linux/of_platform.h>
+>> +static bool nowayout = WATCHDOG_NOWAYOUT;
+>> +module_param(nowayout, bool, 0);
+>> +MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started 
+>> (default="
+>> +                               __MODULE_STRING(WATCHDOG_NOWAYOUT) 
+>> ")");
+>> +
+>> +static int timeout;
+>> +module_param(timeout, int, 0);
+>> +MODULE_PARM_DESC(timeout, "Initial watchdog timeout in seconds");
 > 
-> No evidence of user of this.
-> I think you meant mod_devicetable.h.
+> Guenter ACKed this, but I'm wondering why we still need module 
+> parameters...
 
-devm_of_platform_populate(), so I need CONFIG_OF, too right?
+How would a user change the nowayout or the timeout? For the latter 
+there is
+a device tree entry, but thats not easy changable by the user.
 
-
->> +static struct i2c_driver sl28cpld_driver = {
->> +       .probe_new = sl28cpld_probe,
->> +       .driver = {
->> +               .name = "sl28cpld",
->> +               .of_match_table = of_match_ptr(sl28cpld_of_match),
 > 
-> Drop of_match_ptr(). It has a little sense in this context (depends 
-> OF).
-> It will have a little sense even if you drop depends OF b/c you will
-> introduce a compiler warning.
+> ...
+> 
+>> +       int ret;
+>> +
+>> +       ret = regmap_read(wdt->regmap, wdt->offset + WDT_COUNT, &val);
+>> +
+>> +       return (ret < 0) ? 0 : val;
+> 
+> Besides extra parentheses and questionable ' < 0' part, the following
+> would look better I think
+> 
+> ret = ...
+> if (ret)
+>   return 0;
+> 
+> return val;
+
+yes, you're right.
+
+> 
+> ...
+> 
+>> +       int ret;
+>> +
+>> +       ret = regmap_write(wdt->regmap, wdt->offset + WDT_TIMEOUT, 
+>> timeout);
+>> +       if (!ret)
+>> +               wdd->timeout = timeout;
+>> +
+>> +       return ret;
+> 
+> Similar story here:
+> 
+> ret = ...
+> if (ret)
+>   return ret;
+> 
+> wdd->... = ...
+> return 0;
+> 
+> ...
 
 ok
 
 > 
->> +       },
->> +};
+>> +       ret = regmap_read(wdt->regmap, wdt->offset + WDT_CTRL, 
+>> &status);
+> 
+>> +       if (ret < 0)
+> 
+> What ' < 0' means? Do we have some positive return values?
+> Ditto for all your code.
+
+probably not, I'll go over all return values and change them.
+
+>> +               return ret;
+> 
+> ...
+> 
+>> +       if (status & WDT_CTRL_EN) {
+>> +               sl28cpld_wdt_start(wdd);
+> 
+>> +               set_bit(WDOG_HW_RUNNING, &wdd->status);
+> 
+> Do you need atomic op here? Why?
+
+I'd say consistency, all watchdog drivers do it like that. I just
+had a look at where this is used, but it looks like access from
+userspace is protected by a lock.
+
+> 
+>> +       }
+> 
+> ...
+> 
+>> +static const struct of_device_id sl28cpld_wdt_of_match[] = {
+>> +       { .compatible = "kontron,sl28cpld-wdt" },
+> 
+>> +       {},
+> 
+> No comma.
+
+yeah ;)
 
 -- 
 -michael
