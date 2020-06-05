@@ -1,108 +1,64 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH] pwm: Add missing "CONFIG_" prefix
-Date: Thu, 04 Jun 2020 21:07:46 -0700
-Message-ID: <2f93895709e5837c3b6f38a753057505a9d48ac4.camel@perches.com>
-References: <202006031539.4198EA6@keescook>
-         <b08611018fdb6d88757c6008a5c02fa0e07b32fb.camel@perches.com>
-         <202006041451.19491ECA@keescook>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 00/11] Add support for Kontron sl28cpld
+Date: Fri, 5 Jun 2020 07:13:50 +0100
+Message-ID: <20200605061350.GC3714@dell>
+References: <20200604211039.12689-1-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtprelay0145.hostedemail.com ([216.40.44.145]:40948 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726022AbgFEEHu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Jun 2020 00:07:50 -0400
-In-Reply-To: <202006041451.19491ECA@keescook>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200604211039.12689-1-michael@walle.cc>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Michael Walle <michael@walle.cc>
+Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Kees Cook <keescook@chromium.org>
-Cc: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
 
-On Thu, 2020-06-04 at 14:52 -0700, Kees Cook wrote:
-> On Wed, Jun 03, 2020 at 04:04:31PM -0700, Joe Perches wrote:
-> > On Wed, 2020-06-03 at 15:40 -0700, Kees Cook wrote:
-> > > The IS_ENABLED() use was missing the CONFIG_ prefix which would have
-> > > lead to skipping this code.
-> > > 
-> > > Fixes: 3ad1f3a33286 ("pwm: Implement some checks for lowlevel drivers")
-> > > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > > ---
-> > >  drivers/pwm/core.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > > index 9973c442b455..6b3cbc0490c6 100644
-> > > --- a/drivers/pwm/core.c
-> > > +++ b/drivers/pwm/core.c
-> > > @@ -121,7 +121,7 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
-> > >  		pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
-> > >  		trace_pwm_get(pwm, &pwm->state);
-> > >  
-> > > -		if (IS_ENABLED(PWM_DEBUG))
-> > > +		if (IS_ENABLED(CONFIG_PWM_DEBUG))
-> > >  			pwm->last = pwm->state;
-> > >  	}
-> > >  
-> > > -- 
-> > > 2.25.1
-> > > 
-> > 
-> > more odd uses (mostly in comments)
-> > 
-> > $ git grep -P -oh '\bIS_ENABLED\s*\(\s*\w+\s*\)'| \
-> >   sed -r 's/\s+//g'| \
-> >   grep -v '(CONFIG_' | \
-> >   sort | uniq -c | sort -rn
-> >       7 IS_ENABLED(DEBUG)
-> >       4 IS_ENABLED(DRM_I915_SELFTEST)
-> >       4 IS_ENABLED(cfg)
-> >       2 IS_ENABLED(opt_name)
-> >       2 IS_ENABLED(DEBUG_PRINT_TRIE_GRAPHVIZ)
-> >       2 IS_ENABLED(config)
-> >       2 IS_ENABLED(cond)
-> >       2 IS_ENABLED(__BIG_ENDIAN)
-> >       1 IS_ENABLED(x)
-> >       1 IS_ENABLED(STRICT_KERNEL_RWX)
-> >       1 IS_ENABLED(PWM_DEBUG)
-> >       1 IS_ENABLED(option)
-> >       1 IS_ENABLED(ETHTOOL_NETLINK)
-> >       1 IS_ENABLED(DEBUG_RANDOM_TRIE)
-> >       1 IS_ENABLED(DEBUG_CHACHA20POLY1305_SLOW_CHUNK_TEST)
-> > 
-> > STRICT_KERNEL_RWX is misused here in ppc
-> > 
-> > ---
-> > 
-> > Fix pr_warn without newline too.
-> > 
-> >  arch/powerpc/mm/book3s64/hash_utils.c | 5 ++---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/arch/powerpc/mm/book3s64/hash_utils.c b/arch/powerpc/mm/book3s64/hash_utils.c
-> > index 51e3c15f7aff..dd60c5f2b991 100644
-> > --- a/arch/powerpc/mm/book3s64/hash_utils.c
-> > +++ b/arch/powerpc/mm/book3s64/hash_utils.c
-> > @@ -660,11 +660,10 @@ static void __init htab_init_page_sizes(void)
-> >  		 * Pick a size for the linear mapping. Currently, we only
-> >  		 * support 16M, 1M and 4K which is the default
-> >  		 */
-> > -		if (IS_ENABLED(STRICT_KERNEL_RWX) &&
-> > +		if (IS_ENABLED(CONFIG_STRICT_KERNEL_RWX) &&
-> >  		    (unsigned long)_stext % 0x1000000) {
-> >  			if (mmu_psize_defs[MMU_PAGE_16M].shift)
-> > -				pr_warn("Kernel not 16M aligned, "
-> > -					"disabling 16M linear map alignment");
-> > +				pr_warn("Kernel not 16M aligned, disabling 16M linear map alignment\n");
-> >  			aligned = false;
-> >  		}
+On Thu, 04 Jun 2020, Michael Walle wrote:
+
+> The Kontron sl28cpld is a board management chip providing gpio, pwm, fan
+> monitoring and an interrupt controller. For now this controller is used on
+> the Kontron SMARC-sAL28 board. But because of its flexible nature, it
+> might also be used on other boards in the future. The individual blocks
+> (like gpio, pwm, etc) are kept intentionally small. The MFD core driver
+> then instantiates different (or multiple of the same) blocks. It also
+> provides the register layout so it might be updated in the future without a
+> device tree change; and support other boards with a different layout or
+> functionalities.
 > 
-> Joe, I was going to send all of the fixes for these issues, but your
-> patch doesn't have a SoB. Shall I add one for the above patch?
+> See also [1] for more information.
+> 
+> This is my first take of a MFD driver. I don't know whether the subsystem
+> maintainers should only be CCed on the patches which affect the subsystem
+> or on all patches for this series. I've chosen the latter so you can get a
+> more complete picture.
 
-<shrug> sure if you want, or submit it yourself.
+You chose wisely. :)
 
-My feeling about these types of changes is the maintainers
-of the subsystems, in this case ppc, should manage this
-themselves and shouldn't require anyone else to actually
-bother to send real patches.
+> [1] https://lore.kernel.org/linux-devicetree/0e3e8204ab992d75aa07fc36af7e4ab2@walle.cc/
+> 
+> Changes since v3:
+>  - use of_platform_populate() to populate internal devices using the
+>    internal register offsets as unit-addresses
+>  - because we don't use mfd_cells anymore, we cannot use IORESOURCE_REG,
+>    but instead parse the reg property in each individual driver
+>  - dropped the following patches because they were already merged:
+>      gpiolib: Introduce gpiochip_irqchip_add_domain()
+>      gpio: add a reusable generic gpio_chip using regmap
+>  - dropped the following patches because they are no longer needed:
+>      include/linux/ioport.h: add helper to define REG resource constructs
+>      mfd: mfd-core: Don't overwrite the dma_mask of the child device
+>      mfd: mfd-core: match device tree node against reg property
+>  - rephrase commit messages, as suggested by Thomas Gleixner
+
+It's great to have this changelog overview.
+
+However it's equally, if not arguably more important to have a more
+fine grained changelog in each of the patches, usually placed between
+the '---' and the diff stat.
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
