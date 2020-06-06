@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 07/16] pwm: crc: Fix period / duty_cycle times being off by a factor of 256
-Date: Sat,  6 Jun 2020 22:25:52 +0200
-Message-ID: <20200606202601.48410-8-hdegoede@redhat.com>
+Subject: [PATCH 13/16] drm/i915: panel: Add get_vbt_pwm_freq() helper
+Date: Sat,  6 Jun 2020 22:25:58 +0200
+Message-ID: <20200606202601.48410-14-hdegoede@redhat.com>
 References: <20200606202601.48410-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,69 +12,64 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-While looking into adding atomic-pwm support to the pwm-crc driver I
-noticed something odd, there is a PWM_BASE_CLK define of 6 MHz and
-there is a clock-divider which divides this with a value between 1-128,
-and there are 256 duty-cycle steps.
+Factor the code which checks and drm_dbg_kms-s the VBT PWM frequency
+out of get_backlight_max_vbt().
 
-The pwm-crc code before this commit assumed that a clock-divider
-setting of 1 means that the PWM output is running at 6 MHZ, if that
-is true, where do these 256 duty-cycle steps come from?
-
-This would require an internal frequency of 256 * 6 MHz = 1.5 GHz, that
-seems unlikely for a PMIC which is using a silicon process optimized for
-power-switching transistors. It is way more likely that there is an 8
-bit counter for the duty cycle which acts as an extra fixed divider
-wrt the PWM output frequency.
-
-The main user of the pwm-crc driver is the i915 GPU driver which uses it
-for backlight control. Lets compare the PWM register values set by the
-video-BIOS (the GOP), assuming the extra fixed divider is present versus
-the PWM frequency specified in the Video-BIOS-Tables:
-
-Device:		PWM Hz set by BIOS	PWM Hz specified in VBT
-Asus T100TA 	200			200
-Asus T100HA 	200			200
-Lenovo Miix 2 8	23437			20000
-Toshiba WT8-A	23437			20000
-
-So as we can see if we assume the extra division by 256 then the register
-values set by the GOP are an exact match for the VBT values, where as
-otherwise the values would be of by a factor of 256.
-
-This commit fixes the period / duty_cycle calculations to take the
-extra division by 256 into account.
+This is a preparation patch for honering the VBT PWM frequency for
+devices which use an external PWM controller (devices using
+pwm_setup_backlight()).
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-crc.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/display/intel_panel.c | 27 ++++++++++++++--------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index 272eeb071147..43fc912c1fe9 100644
---- a/drivers/pwm/pwm-crc.c
-+++ b/drivers/pwm/pwm-crc.c
-@@ -21,8 +21,10 @@
+diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
+index 3c5056dbf607..8efdd9f08a08 100644
+--- a/drivers/gpu/drm/i915/display/intel_panel.c
++++ b/drivers/gpu/drm/i915/display/intel_panel.c
+@@ -1543,18 +1543,9 @@ static u32 vlv_hz_to_pwm(struct intel_connector *connector, u32 pwm_freq_hz)
+ 	return DIV_ROUND_CLOSEST(clock, pwm_freq_hz * mul);
+ }
  
- #define PWM_MAX_LEVEL		0xFF
+-static u32 get_backlight_max_vbt(struct intel_connector *connector)
++static u16 get_vbt_pwm_freq(struct drm_i915_private *dev_priv)
+ {
+-	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
+-	struct intel_panel *panel = &connector->panel;
+ 	u16 pwm_freq_hz = dev_priv->vbt.backlight.pwm_freq_hz;
+-	u32 pwm;
+-
+-	if (!panel->backlight.hz_to_pwm) {
+-		drm_dbg_kms(&dev_priv->drm,
+-			    "backlight frequency conversion not supported\n");
+-		return 0;
+-	}
  
--#define PWM_BASE_CLK		6000000  /* 6 MHz */
--#define PWM_MAX_PERIOD_NS	21333    /* 46.875KHz */
-+#define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
-+#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
+ 	if (pwm_freq_hz) {
+ 		drm_dbg_kms(&dev_priv->drm,
+@@ -1567,6 +1558,22 @@ static u32 get_backlight_max_vbt(struct intel_connector *connector)
+ 			    pwm_freq_hz);
+ 	}
+ 
++	return pwm_freq_hz;
++}
 +
-+#define NSEC_PER_MHZ		1000
- 
- /**
-  * struct crystalcove_pwm - Crystal Cove PWM controller
-@@ -72,7 +74,7 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
- 
- 		/* changing the clk divisor, need to disable fisrt */
- 		crc_pwm_disable(c, pwm);
--		clk_div = PWM_BASE_CLK * period_ns / NSEC_PER_SEC;
-+		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
- 
- 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
- 					clk_div | PWM_OUTPUT_ENABLE);
++static u32 get_backlight_max_vbt(struct intel_connector *connector)
++{
++	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
++	struct intel_panel *panel = &connector->panel;
++	u16 pwm_freq_hz = get_vbt_pwm_freq(dev_priv);
++	u32 pwm;
++
++	if (!panel->backlight.hz_to_pwm) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "backlight frequency conversion not supported\n");
++		return 0;
++	}
++
+ 	pwm = panel->backlight.hz_to_pwm(connector, pwm_freq_hz);
+ 	if (!pwm) {
+ 		drm_dbg_kms(&dev_priv->drm,
 -- 
 2.26.2
