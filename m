@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 12/16] pwm: crc: Implement get_state() method
-Date: Sat,  6 Jun 2020 22:25:57 +0200
-Message-ID: <20200606202601.48410-13-hdegoede@redhat.com>
+Subject: [PATCH 07/16] pwm: crc: Fix period / duty_cycle times being off by a factor of 256
+Date: Sat,  6 Jun 2020 22:25:52 +0200
+Message-ID: <20200606202601.48410-8-hdegoede@redhat.com>
 References: <20200606202601.48410-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,55 +12,69 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Implement the pwm_ops.get_state() method to complete the support for the
-new atomic PWM API.
+While looking into adding atomic-pwm support to the pwm-crc driver I
+noticed something odd, there is a PWM_BASE_CLK define of 6 MHz and
+there is a clock-divider which divides this with a value between 1-128,
+and there are 256 duty-cycle steps.
+
+The pwm-crc code before this commit assumed that a clock-divider
+setting of 1 means that the PWM output is running at 6 MHZ, if that
+is true, where do these 256 duty-cycle steps come from?
+
+This would require an internal frequency of 256 * 6 MHz = 1.5 GHz, that
+seems unlikely for a PMIC which is using a silicon process optimized for
+power-switching transistors. It is way more likely that there is an 8
+bit counter for the duty cycle which acts as an extra fixed divider
+wrt the PWM output frequency.
+
+The main user of the pwm-crc driver is the i915 GPU driver which uses it
+for backlight control. Lets compare the PWM register values set by the
+video-BIOS (the GOP), assuming the extra fixed divider is present versus
+the PWM frequency specified in the Video-BIOS-Tables:
+
+Device:		PWM Hz set by BIOS	PWM Hz specified in VBT
+Asus T100TA 	200			200
+Asus T100HA 	200			200
+Lenovo Miix 2 8	23437			20000
+Toshiba WT8-A	23437			20000
+
+So as we can see if we assume the extra division by 256 then the register
+values set by the GOP are an exact match for the VBT values, where as
+otherwise the values would be of by a factor of 256.
+
+This commit fixes the period / duty_cycle calculations to take the
+extra division by 256 into account.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-crc.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/pwm/pwm-crc.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index 58c7e9ef7278..6c75a3470bc8 100644
+index 272eeb071147..43fc912c1fe9 100644
 --- a/drivers/pwm/pwm-crc.c
 +++ b/drivers/pwm/pwm-crc.c
-@@ -114,8 +114,37 @@ static int crc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	return 0;
- }
+@@ -21,8 +21,10 @@
  
-+static void crc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+			       struct pwm_state *state)
-+{
-+	struct crystalcove_pwm *crc_pwm = to_crc_pwm(chip);
-+	struct device *dev = crc_pwm->chip.dev;
-+	unsigned int clk_div, clk_div_reg, duty_cycle_reg;
-+	int error;
-+
-+	error = regmap_read(crc_pwm->regmap, PWM0_CLK_DIV, &clk_div_reg);
-+	if (error) {
-+		dev_err(dev, "Error reading PWM0_CLK_DIV %d\n", error);
-+		return;
-+	}
-+
-+	error = regmap_read(crc_pwm->regmap, PWM0_DUTY_CYCLE, &duty_cycle_reg);
-+	if (error) {
-+		dev_err(dev, "Error reading PWM0_DUTY_CYCLE %d\n", error);
-+		return;
-+	}
-+
-+	clk_div = (clk_div_reg & ~PWM_OUTPUT_ENABLE) + 1;
-+
-+	state->period     = clk_div * NSEC_PER_MHZ * 256 / PWM_BASE_CLK_MHZ;
-+	state->duty_cycle = duty_cycle_reg * state->period / PWM_MAX_LEVEL;
-+	state->polarity   = PWM_POLARITY_NORMAL;
-+	state->enabled    = !!(clk_div_reg & PWM_OUTPUT_ENABLE);
-+}
-+
- static const struct pwm_ops crc_pwm_ops = {
- 	.apply = crc_pwm_apply,
-+	.get_state = crc_pwm_get_state,
- };
+ #define PWM_MAX_LEVEL		0xFF
  
- static int crystalcove_pwm_probe(struct platform_device *pdev)
+-#define PWM_BASE_CLK		6000000  /* 6 MHz */
+-#define PWM_MAX_PERIOD_NS	21333    /* 46.875KHz */
++#define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
++#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
++
++#define NSEC_PER_MHZ		1000
+ 
+ /**
+  * struct crystalcove_pwm - Crystal Cove PWM controller
+@@ -72,7 +74,7 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ 
+ 		/* changing the clk divisor, need to disable fisrt */
+ 		crc_pwm_disable(c, pwm);
+-		clk_div = PWM_BASE_CLK * period_ns / NSEC_PER_SEC;
++		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
+ 
+ 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
+ 					clk_div | PWM_OUTPUT_ENABLE);
 -- 
 2.26.2
