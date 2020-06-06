@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 08/16] pwm: crc: Fix off-by-one error in the clock-divider calculations
-Date: Sat,  6 Jun 2020 22:25:53 +0200
-Message-ID: <20200606202601.48410-9-hdegoede@redhat.com>
+Subject: [PATCH 10/16] pwm: crc: Enable/disable PWM output on enable/disable
+Date: Sat,  6 Jun 2020 22:25:55 +0200
+Message-ID: <20200606202601.48410-11-hdegoede@redhat.com>
 References: <20200606202601.48410-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,50 +12,79 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The CRC PWM controller has a clock-divider which divides the clock with
-a value between 1-128. But as can seen from the PWM_DIV_CLK_xxx
-defines, this range maps to a register value of 0-127.
+The pwm-crc code is using 2 different enable bits:
+1. bit 7 of the PWM0_CLK_DIV (PWM_OUTPUT_ENABLE)
+2. bit 0 of the BACKLIGHT_EN register
 
-So after calculating the clock-divider we must subtract 1 to get the
-register value, unless the requested frequency was so high that the
-calculation has already resulted in a (rounded) divider value of 0.
+So far we've kept the PWM_OUTPUT_ENABLE bit set when disabling the PWM,
+this commit makes crc_pwm_disable() clear it on disable and makes
+crc_pwm_enable() set it again on re-enable.
 
-Note that before this fix, setting a period of PWM_MAX_PERIOD_NS which
-corresponds to the max. divider value of 128 could have resulted in a
-bug where the code would use 128 as divider-register value which would
-have resulted in an actual divider value of 0 (and the enable bit being
-set). A rounding error stopped this bug from actually happen. This
-same rounding error means that after the subtraction of 1 it is impossible
-to set the divider to 128. Also bump PWM_MAX_PERIOD_NS by 1 ns to allow
-setting a divider of 128 (register-value 127).
+This should disable the internal (divided) PWM clock and tri-state the
+PWM output pin when disabled, saving some power.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-crc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-crc.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index 43fc912c1fe9..5ba2a65c524c 100644
+index ef49a6e3c4d6..53734bcf67e1 100644
 --- a/drivers/pwm/pwm-crc.c
 +++ b/drivers/pwm/pwm-crc.c
-@@ -22,7 +22,7 @@
- #define PWM_MAX_LEVEL		0xFF
+@@ -41,10 +41,24 @@ static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
+ 	return container_of(pc, struct crystalcove_pwm, chip);
+ }
  
- #define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
--#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
-+#define PWM_MAX_PERIOD_NS	5461334	/* 183 Hz */
++static int crc_pwm_calc_clk_div(int period_ns)
++{
++	int clk_div;
++
++	clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
++	/* clk_div 1 - 128, maps to register values 0-127 */
++	if (clk_div > 0)
++		clk_div--;
++
++	return clk_div;
++}
++
+ static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+ {
+ 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
++	int div = crc_pwm_calc_clk_div(pwm_get_period(pwm));
  
- #define NSEC_PER_MHZ		1000
++	regmap_write(crc_pwm->regmap, PWM0_CLK_DIV, div | PWM_OUTPUT_ENABLE);
+ 	regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 1);
  
-@@ -75,6 +75,9 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
- 		/* changing the clk divisor, need to disable fisrt */
- 		crc_pwm_disable(c, pwm);
- 		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
-+		/* clk_div 1 - 128, maps to register values 0-127 */
-+		if (clk_div > 0)
-+			clk_div--;
+ 	return 0;
+@@ -53,8 +67,10 @@ static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+ static void crc_pwm_disable(struct pwm_chip *c, struct pwm_device *pwm)
+ {
+ 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
++	int div = crc_pwm_calc_clk_div(pwm_get_period(pwm));
  
+ 	regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 0);
++	regmap_write(crc_pwm->regmap, PWM0_CLK_DIV, div);
+ }
+ 
+ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+@@ -70,16 +86,10 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ 	}
+ 
+ 	if (pwm_get_period(pwm) != period_ns) {
+-		int clk_div;
++		int clk_div = crc_pwm_calc_clk_div(period_ns);
+ 
+ 		/* changing the clk divisor, clear PWM_OUTPUT_ENABLE first */
+ 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV, 0);
+-
+-		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
+-		/* clk_div 1 - 128, maps to register values 0-127 */
+-		if (clk_div > 0)
+-			clk_div--;
+-
  		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
  					clk_div | PWM_OUTPUT_ENABLE);
+ 	}
 -- 
 2.26.2
