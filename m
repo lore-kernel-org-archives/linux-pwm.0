@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 06/16] pwm: lpss: Add debug prints, test patch for moving i915 to atomic PWM
-Date: Sat,  6 Jun 2020 22:25:51 +0200
-Message-ID: <20200606202601.48410-7-hdegoede@redhat.com>
+Subject: [PATCH 08/16] pwm: crc: Fix off-by-one error in the clock-divider calculations
+Date: Sat,  6 Jun 2020 22:25:53 +0200
+Message-ID: <20200606202601.48410-9-hdegoede@redhat.com>
 References: <20200606202601.48410-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,53 +12,50 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add debug prints, test patch for moving i915 to atomic PWM.
+The CRC PWM controller has a clock-divider which divides the clock with
+a value between 1-128. But as can seen from the PWM_DIV_CLK_xxx
+defines, this range maps to a register value of 0-127.
+
+So after calculating the clock-divider we must subtract 1 to get the
+register value, unless the requested frequency was so high that the
+calculation has already resulted in a (rounded) divider value of 0.
+
+Note that before this fix, setting a period of PWM_MAX_PERIOD_NS which
+corresponds to the max. divider value of 128 could have resulted in a
+bug where the code would use 128 as divider-register value which would
+have resulted in an actual divider value of 0 (and the enable bit being
+set). A rounding error stopped this bug from actually happen. This
+same rounding error means that after the subtraction of 1 it is impossible
+to set the divider to 128. Also bump PWM_MAX_PERIOD_NS by 1 ns to allow
+setting a divider of 128 (register-value 127).
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-lpss.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/pwm/pwm-crc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 2cb0e2a9c08c..c1f8e6da0cd7 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -119,6 +119,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 		ctrl |= PWM_ENABLE;
+diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+index 43fc912c1fe9..5ba2a65c524c 100644
+--- a/drivers/pwm/pwm-crc.c
++++ b/drivers/pwm/pwm-crc.c
+@@ -22,7 +22,7 @@
+ #define PWM_MAX_LEVEL		0xFF
  
- 	if (orig_ctrl != ctrl) {
-+		dev_err(pwm->chip->dev, "prepare 0x%08x -> 0x%08lx\n",
-+			orig_ctrl, ctrl | PWM_SW_UPDATE);
- 		pwm_lpss_write(pwm, ctrl);
- 		pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
- 	}
-@@ -126,8 +128,15 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ #define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
+-#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
++#define PWM_MAX_PERIOD_NS	5461334	/* 183 Hz */
  
- static inline void pwm_lpss_cond_enable(struct pwm_device *pwm, bool cond)
- {
--	if (cond)
--		pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
-+	if (cond) {
-+		u32 orig_ctrl, ctrl;
-+
-+		orig_ctrl = ctrl = pwm_lpss_read(pwm);
-+		ctrl |= PWM_ENABLE;
-+		dev_err(pwm->chip->dev, "enable 0x%08x -> 0x%08x\n",
-+			orig_ctrl, ctrl);
-+		pwm_lpss_write(pwm, ctrl);
-+	}
- }
+ #define NSEC_PER_MHZ		1000
  
- static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -200,6 +209,9 @@ static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	state->enabled = !!(ctrl & PWM_ENABLE);
+@@ -75,6 +75,9 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ 		/* changing the clk divisor, need to disable fisrt */
+ 		crc_pwm_disable(c, pwm);
+ 		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
++		/* clk_div 1 - 128, maps to register values 0-127 */
++		if (clk_div > 0)
++			clk_div--;
  
- 	pm_runtime_put(chip->dev);
-+
-+	dev_err(pwm->chip->dev, "initial state 0x%08x period %d duty_cycle %d enabled %d\n",
-+		ctrl, state->period, state->duty_cycle, state->enabled);
- }
- 
- static const struct pwm_ops pwm_lpss_ops = {
+ 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
+ 					clk_div | PWM_OUTPUT_ENABLE);
 -- 
 2.26.2
