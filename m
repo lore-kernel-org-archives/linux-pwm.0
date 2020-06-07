@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v2 13/15] drm/i915: panel: Honor the VBT PWM frequency for devs with an external PWM controller
-Date: Sun,  7 Jun 2020 20:18:38 +0200
-Message-ID: <20200607181840.13536-14-hdegoede@redhat.com>
+Subject: [PATCH v2 15/15] drm/i915: panel: Use atomic PWM API for devs with an external PWM controller
+Date: Sun,  7 Jun 2020 20:18:40 +0200
+Message-ID: <20200607181840.13536-16-hdegoede@redhat.com>
 References: <20200607181840.13536-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,128 +12,167 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-So far for devices using an external PWM controller (devices using
-pwm_setup_backlight()), we have been hardcoding the period-time passed to
-pwm_config() to 21333 ns.
+Now that the PWM drivers which we use have been converted to the atomic
+PWM API, we can move the i915 panel code over to using the atomic PWM API.
 
-I suspect this was done because many VBTs set the PWM frequency to 200
-which corresponds to a period-time of 5000000 ns, which greatly exceeds
-the PWM_MAX_PERIOD_NS define in the Crystal Cove PMIC PWM driver, which
-used to be 21333.
-
-This PWM_MAX_PERIOD_NS define was actually based on a bug in the PWM
-driver where its period and duty-cycle times where off by a factor of 256.
-
-Due to this bug the hardcoded CRC_PMIC_PWM_PERIOD_NS value of 21333 would
-result in the PWM driver using its divider of 128, which would result in
-a PWM output frequency of 6000000 Hz / 256 / 128 = 183 Hz. So actually
-pretty close to the default VBT value of 200 Hz.
-
-Now that this bug in the pwm-crc driver is fixed, we can actually use
-the VBT defined frequency.
-
-This is important because:
-
-a) With the pwm-crc driver fixed it will now translate the hardcoded
-CRC_PMIC_PWM_PERIOD_NS value of 21333 ns / 46 Khz to a PWM output
-frequency of 23 KHz (the max it can do).
-
-b) The pwm-lpss driver used on many models has always honored the
-21333 ns / 46 Khz request
-
-Some panels do not like such high output frequencies. E.g. on a Terra
-Pad 1061 tablet, using the LPSS PWM controller, the backlight would go
-from off to max, when changing the sysfs backlight brightness value from
-90-100%, anything under aprox. 90% would turn the backlight fully off.
-
-Honoring the VBT specified PWM frequency will also hopefully fix the
-various bug reports which we have received about users perceiving the
-backlight to flicker after a suspend/resume cycle.
+The removes a long standing FIXME and this removes a flicker where
+the backlight brightness would jump to 100% when i915 loads even if
+using the fastset path.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- .../drm/i915/display/intel_display_types.h    |  1 +
- drivers/gpu/drm/i915/display/intel_panel.c    | 19 +++++++++++--------
- 2 files changed, 12 insertions(+), 8 deletions(-)
+ .../drm/i915/display/intel_display_types.h    |  3 +-
+ drivers/gpu/drm/i915/display/intel_panel.c    | 73 +++++++++----------
+ 2 files changed, 37 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/display/intel_display_types.h b/drivers/gpu/drm/i915/display/intel_display_types.h
-index b24266c624fa..24ea4a7b6dde 100644
+index 24ea4a7b6dde..48afb2925271 100644
 --- a/drivers/gpu/drm/i915/display/intel_display_types.h
 +++ b/drivers/gpu/drm/i915/display/intel_display_types.h
-@@ -223,6 +223,7 @@ struct intel_panel {
+@@ -28,6 +28,7 @@
+ 
+ #include <linux/async.h>
+ #include <linux/i2c.h>
++#include <linux/pwm.h>
+ #include <linux/sched/clock.h>
+ 
+ #include <drm/drm_atomic.h>
+@@ -223,7 +224,7 @@ struct intel_panel {
  		bool util_pin_active_low;	/* bxt+ */
  		u8 controller;		/* bxt+ only */
  		struct pwm_device *pwm;
-+		int pwm_period_ns;
+-		int pwm_period_ns;
++		struct pwm_state pwm_state;
  
  		/* DPCD backlight */
  		u8 pwmgen_bit_count;
 diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index 8efdd9f08a08..14e611c92194 100644
+index cb28b9908ca4..a0f76343f381 100644
 --- a/drivers/gpu/drm/i915/display/intel_panel.c
 +++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -40,8 +40,6 @@
- #include "intel_dsi_dcs_backlight.h"
- #include "intel_panel.h"
- 
--#define CRC_PMIC_PWM_PERIOD_NS	21333
--
- void
- intel_fixed_panel_mode(const struct drm_display_mode *fixed_mode,
- 		       struct drm_display_mode *adjusted_mode)
-@@ -597,7 +595,7 @@ static u32 pwm_get_backlight(struct intel_connector *connector)
- 	int duty_ns;
+@@ -592,10 +592,11 @@ static u32 bxt_get_backlight(struct intel_connector *connector)
+ static u32 pwm_get_backlight(struct intel_connector *connector)
+ {
+ 	struct intel_panel *panel = &connector->panel;
+-	int duty_ns;
++	int duty_ns, period_ns;
  
  	duty_ns = pwm_get_duty_cycle(panel->backlight.pwm);
--	return DIV_ROUND_UP(duty_ns * 100, CRC_PMIC_PWM_PERIOD_NS);
-+	return DIV_ROUND_UP(duty_ns * 100, panel->backlight.pwm_period_ns);
+-	return DIV_ROUND_UP(duty_ns * 100, panel->backlight.pwm_period_ns);
++	period_ns = pwm_get_period(panel->backlight.pwm);
++	return DIV_ROUND_UP(duty_ns * 100, period_ns);
  }
  
  static void lpt_set_backlight(const struct drm_connector_state *conn_state, u32 level)
-@@ -671,9 +669,10 @@ static void bxt_set_backlight(const struct drm_connector_state *conn_state, u32
+@@ -669,10 +670,10 @@ static void bxt_set_backlight(const struct drm_connector_state *conn_state, u32
  static void pwm_set_backlight(const struct drm_connector_state *conn_state, u32 level)
  {
  	struct intel_panel *panel = &to_intel_connector(conn_state->connector)->panel;
--	int duty_ns = DIV_ROUND_UP(level * CRC_PMIC_PWM_PERIOD_NS, 100);
-+	int duty_ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
+-	int duty_ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
  
--	pwm_config(panel->backlight.pwm, duty_ns, CRC_PMIC_PWM_PERIOD_NS);
-+	pwm_config(panel->backlight.pwm, duty_ns,
-+		   panel->backlight.pwm_period_ns);
+-	pwm_config(panel->backlight.pwm, duty_ns,
+-		   panel->backlight.pwm_period_ns);
++	panel->backlight.pwm_state.duty_cycle =
++		DIV_ROUND_UP(level * panel->backlight.pwm_state.period, 100);
++	pwm_apply_state(panel->backlight.pwm, &panel->backlight.pwm_state);
  }
  
  static void
-@@ -1917,6 +1916,9 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+@@ -841,10 +842,8 @@ static void pwm_disable_backlight(const struct drm_connector_state *old_conn_sta
+ 	struct intel_connector *connector = to_intel_connector(old_conn_state->connector);
+ 	struct intel_panel *panel = &connector->panel;
+ 
+-	/* Disable the backlight */
+-	intel_panel_actually_set_backlight(old_conn_state, 0);
+-	usleep_range(2000, 3000);
+-	pwm_disable(panel->backlight.pwm);
++	panel->backlight.pwm_state.enabled = false;
++	pwm_apply_state(panel->backlight.pwm, &panel->backlight.pwm_state);
+ }
+ 
+ void intel_panel_disable_backlight(const struct drm_connector_state *old_conn_state)
+@@ -1176,9 +1175,14 @@ static void pwm_enable_backlight(const struct intel_crtc_state *crtc_state,
+ {
+ 	struct intel_connector *connector = to_intel_connector(conn_state->connector);
+ 	struct intel_panel *panel = &connector->panel;
++	int level = panel->backlight.level;
+ 
+-	pwm_enable(panel->backlight.pwm);
+-	intel_panel_actually_set_backlight(conn_state, panel->backlight.level);
++	level = intel_panel_compute_brightness(connector, level);
++
++	panel->backlight.pwm_state.duty_cycle =
++		DIV_ROUND_UP(level * panel->backlight.pwm_state.period, 100);
++	panel->backlight.pwm_state.enabled = true;
++	pwm_apply_state(panel->backlight.pwm, &panel->backlight.pwm_state);
+ }
+ 
+ static void __intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
+@@ -1897,8 +1901,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 	struct drm_i915_private *dev_priv = to_i915(dev);
+ 	struct intel_panel *panel = &connector->panel;
+ 	const char *desc;
+-	u32 level, ns;
+-	int retval;
++	u32 level;
+ 
+ 	/* Get the right PWM chip for DSI backlight according to VBT */
+ 	if (dev_priv->vbt.dsi.config->pwm_blc == PPS_BLC_PMIC) {
+@@ -1916,36 +1919,30 @@ static int pwm_setup_backlight(struct intel_connector *connector,
  		return -ENODEV;
  	}
  
-+	panel->backlight.pwm_period_ns = NSEC_PER_SEC /
-+					 get_vbt_pwm_freq(dev_priv);
-+
- 	/*
- 	 * FIXME: pwm_apply_args() should be removed when switching to
- 	 * the atomic PWM API.
-@@ -1926,9 +1928,10 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 	panel->backlight.min = 0; /* 0% */
+-	panel->backlight.pwm_period_ns = NSEC_PER_SEC /
+-					 get_vbt_pwm_freq(dev_priv);
+-
+-	/*
+-	 * FIXME: pwm_apply_args() should be removed when switching to
+-	 * the atomic PWM API.
+-	 */
+-	pwm_apply_args(panel->backlight.pwm);
+-
  	panel->backlight.max = 100; /* 100% */
- 	level = intel_panel_compute_brightness(connector, 100);
--	ns = DIV_ROUND_UP(level * CRC_PMIC_PWM_PERIOD_NS, 100);
-+	ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
+ 	panel->backlight.min = get_backlight_min_vbt(connector);
+-	level = intel_panel_compute_brightness(connector, 100);
+-	ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
  
--	retval = pwm_config(panel->backlight.pwm, ns, CRC_PMIC_PWM_PERIOD_NS);
-+	retval = pwm_config(panel->backlight.pwm, ns,
-+			    panel->backlight.pwm_period_ns);
- 	if (retval < 0) {
- 		drm_err(&dev_priv->drm, "Failed to configure the pwm chip\n");
- 		pwm_put(panel->backlight.pwm);
-@@ -1937,7 +1940,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+-	retval = pwm_config(panel->backlight.pwm, ns,
+-			    panel->backlight.pwm_period_ns);
+-	if (retval < 0) {
+-		drm_err(&dev_priv->drm, "Failed to configure the pwm chip\n");
+-		pwm_put(panel->backlight.pwm);
+-		panel->backlight.pwm = NULL;
+-		return retval;
++	if (pwm_is_enabled(panel->backlight.pwm) &&
++	    pwm_get_period(panel->backlight.pwm)) {
++		/* PWM is already enabled, use existing settings */
++		pwm_get_state(panel->backlight.pwm, &panel->backlight.pwm_state);
++
++		level = DIV_ROUND_UP(panel->backlight.pwm_state.duty_cycle *
++					100, panel->backlight.pwm_state.period);
++		level = intel_panel_compute_brightness(connector, level);
++		panel->backlight.level = clamp(level, panel->backlight.min,
++					       panel->backlight.max);
++		panel->backlight.enabled = true;
++
++		drm_dbg_kms(&dev_priv->drm, "PWM already enabled at freq %ld, VBT freq %d, level %d\n",
++			    NSEC_PER_SEC / panel->backlight.pwm_state.period,
++			    get_vbt_pwm_freq(dev_priv), level);
++	} else {
++		/* Set period from VBT frequency, leave other setting at 0. */
++		panel->backlight.pwm_state.period =
++			NSEC_PER_SEC / get_vbt_pwm_freq(dev_priv);
  	}
  
- 	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
--			     CRC_PMIC_PWM_PERIOD_NS);
-+			     panel->backlight.pwm_period_ns);
- 	panel->backlight.level =
- 		intel_panel_compute_brightness(connector, level);
- 	panel->backlight.enabled = panel->backlight.level != 0;
+-	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
+-			     panel->backlight.pwm_period_ns);
+-	level = intel_panel_compute_brightness(connector, level);
+-	panel->backlight.level = clamp(level, panel->backlight.min,
+-				       panel->backlight.max);
+-	panel->backlight.enabled = panel->backlight.level != 0;
+-
+ 	drm_info(&dev_priv->drm, "Using %s PWM for LCD backlight control\n",
+ 		 desc);
+ 	return 0;
 -- 
 2.26.2
