@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v2 06/15] pwm: crc: Fix period / duty_cycle times being off by a factor of 256
-Date: Sun,  7 Jun 2020 20:18:31 +0200
-Message-ID: <20200607181840.13536-7-hdegoede@redhat.com>
+Subject: [PATCH v2 07/15] pwm: crc: Fix off-by-one error in the clock-divider calculations
+Date: Sun,  7 Jun 2020 20:18:32 +0200
+Message-ID: <20200607181840.13536-8-hdegoede@redhat.com>
 References: <20200607181840.13536-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,67 +12,48 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-While looking into adding atomic-pwm support to the pwm-crc driver I
-noticed something odd, there is a PWM_BASE_CLK define of 6 MHz and
-there is a clock-divider which divides this with a value between 1-128,
-and there are 256 duty-cycle steps.
+The CRC PWM controller has a clock-divider which divides the clock with
+a value between 1-128. But as can seen from the PWM_DIV_CLK_xxx
+defines, this range maps to a register value of 0-127.
 
-The pwm-crc code before this commit assumed that a clock-divider
-setting of 1 means that the PWM output is running at 6 MHZ, if that
-is true, where do these 256 duty-cycle steps come from?
+So after calculating the clock-divider we must subtract 1 to get the
+register value, unless the requested frequency was so high that the
+calculation has already resulted in a (rounded) divider value of 0.
 
-This would require an internal frequency of 256 * 6 MHz = 1.5 GHz, that
-seems unlikely for a PMIC which is using a silicon process optimized for
-power-switching transistors. It is way more likely that there is an 8
-bit counter for the duty cycle which acts as an extra fixed divider
-wrt the PWM output frequency.
-
-The main user of the pwm-crc driver is the i915 GPU driver which uses it
-for backlight control. Lets compare the PWM register values set by the
-video-BIOS (the GOP), assuming the extra fixed divider is present versus
-the PWM frequency specified in the Video-BIOS-Tables:
-
-Device:		PWM Hz set by BIOS	PWM Hz specified in VBT
-Asus T100TA 	200			200
-Asus T100HA 	200			200
-Lenovo Miix 2 8	23437			20000
-Toshiba WT8-A	23437			20000
-
-So as we can see if we assume the extra division by 256 then the register
-values set by the GOP are an exact match for the VBT values, where as
-otherwise the values would be of by a factor of 256.
-
-This commit fixes the period / duty_cycle calculations to take the
-extra division by 256 into account.
+Note that before this fix, setting a period of PWM_MAX_PERIOD_NS which
+corresponds to the max. divider value of 128 could have resulted in a
+bug where the code would use 128 as divider-register value which would
+have resulted in an actual divider value of 0 (and the enable bit being
+set). A rounding error stopped this bug from actually happen. This
+same rounding error means that after the subtraction of 1 it is impossible
+to set the divider to 128. Also bump PWM_MAX_PERIOD_NS by 1 ns to allow
+setting a divider of 128 (register-value 127).
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-crc.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-crc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index 272eeb071147..43fc912c1fe9 100644
+index 43fc912c1fe9..5ba2a65c524c 100644
 --- a/drivers/pwm/pwm-crc.c
 +++ b/drivers/pwm/pwm-crc.c
-@@ -21,8 +21,10 @@
- 
+@@ -22,7 +22,7 @@
  #define PWM_MAX_LEVEL		0xFF
  
--#define PWM_BASE_CLK		6000000  /* 6 MHz */
--#define PWM_MAX_PERIOD_NS	21333    /* 46.875KHz */
-+#define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
-+#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
-+
-+#define NSEC_PER_MHZ		1000
+ #define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
+-#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
++#define PWM_MAX_PERIOD_NS	5461334	/* 183 Hz */
  
- /**
-  * struct crystalcove_pwm - Crystal Cove PWM controller
-@@ -72,7 +74,7 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ #define NSEC_PER_MHZ		1000
  
+@@ -75,6 +75,9 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
  		/* changing the clk divisor, need to disable fisrt */
  		crc_pwm_disable(c, pwm);
--		clk_div = PWM_BASE_CLK * period_ns / NSEC_PER_SEC;
-+		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
+ 		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
++		/* clk_div 1 - 128, maps to register values 0-127 */
++		if (clk_div > 0)
++			clk_div--;
  
  		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
  					clk_div | PWM_OUTPUT_ENABLE);
