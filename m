@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v2 09/15] pwm: crc: Enable/disable PWM output on enable/disable
-Date: Sun,  7 Jun 2020 20:18:34 +0200
-Message-ID: <20200607181840.13536-10-hdegoede@redhat.com>
+Subject: [PATCH v2 11/15] pwm: crc: Implement get_state() method
+Date: Sun,  7 Jun 2020 20:18:36 +0200
+Message-ID: <20200607181840.13536-12-hdegoede@redhat.com>
 References: <20200607181840.13536-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,79 +12,55 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The pwm-crc code is using 2 different enable bits:
-1. bit 7 of the PWM0_CLK_DIV (PWM_OUTPUT_ENABLE)
-2. bit 0 of the BACKLIGHT_EN register
-
-So far we've kept the PWM_OUTPUT_ENABLE bit set when disabling the PWM,
-this commit makes crc_pwm_disable() clear it on disable and makes
-crc_pwm_enable() set it again on re-enable.
-
-This should disable the internal (divided) PWM clock and tri-state the
-PWM output pin when disabled, saving some power.
+Implement the pwm_ops.get_state() method to complete the support for the
+new atomic PWM API.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/pwm/pwm-crc.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-crc.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
 diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index ef49a6e3c4d6..53734bcf67e1 100644
+index 58c7e9ef7278..6c75a3470bc8 100644
 --- a/drivers/pwm/pwm-crc.c
 +++ b/drivers/pwm/pwm-crc.c
-@@ -41,10 +41,24 @@ static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
- 	return container_of(pc, struct crystalcove_pwm, chip);
+@@ -114,8 +114,37 @@ static int crc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
  }
  
-+static int crc_pwm_calc_clk_div(int period_ns)
++static void crc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++			       struct pwm_state *state)
 +{
-+	int clk_div;
++	struct crystalcove_pwm *crc_pwm = to_crc_pwm(chip);
++	struct device *dev = crc_pwm->chip.dev;
++	unsigned int clk_div, clk_div_reg, duty_cycle_reg;
++	int error;
 +
-+	clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
-+	/* clk_div 1 - 128, maps to register values 0-127 */
-+	if (clk_div > 0)
-+		clk_div--;
++	error = regmap_read(crc_pwm->regmap, PWM0_CLK_DIV, &clk_div_reg);
++	if (error) {
++		dev_err(dev, "Error reading PWM0_CLK_DIV %d\n", error);
++		return;
++	}
 +
-+	return clk_div;
++	error = regmap_read(crc_pwm->regmap, PWM0_DUTY_CYCLE, &duty_cycle_reg);
++	if (error) {
++		dev_err(dev, "Error reading PWM0_DUTY_CYCLE %d\n", error);
++		return;
++	}
++
++	clk_div = (clk_div_reg & ~PWM_OUTPUT_ENABLE) + 1;
++
++	state->period     = clk_div * NSEC_PER_MHZ * 256 / PWM_BASE_CLK_MHZ;
++	state->duty_cycle = duty_cycle_reg * state->period / PWM_MAX_LEVEL;
++	state->polarity   = PWM_POLARITY_NORMAL;
++	state->enabled    = !!(clk_div_reg & PWM_OUTPUT_ENABLE);
 +}
 +
- static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
- {
- 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
-+	int div = crc_pwm_calc_clk_div(pwm_get_period(pwm));
+ static const struct pwm_ops crc_pwm_ops = {
+ 	.apply = crc_pwm_apply,
++	.get_state = crc_pwm_get_state,
+ };
  
-+	regmap_write(crc_pwm->regmap, PWM0_CLK_DIV, div | PWM_OUTPUT_ENABLE);
- 	regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 1);
- 
- 	return 0;
-@@ -53,8 +67,10 @@ static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
- static void crc_pwm_disable(struct pwm_chip *c, struct pwm_device *pwm)
- {
- 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
-+	int div = crc_pwm_calc_clk_div(pwm_get_period(pwm));
- 
- 	regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 0);
-+	regmap_write(crc_pwm->regmap, PWM0_CLK_DIV, div);
- }
- 
- static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
-@@ -70,16 +86,10 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
- 	}
- 
- 	if (pwm_get_period(pwm) != period_ns) {
--		int clk_div;
-+		int clk_div = crc_pwm_calc_clk_div(period_ns);
- 
- 		/* changing the clk divisor, clear PWM_OUTPUT_ENABLE first */
- 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV, 0);
--
--		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_MHZ);
--		/* clk_div 1 - 128, maps to register values 0-127 */
--		if (clk_div > 0)
--			clk_div--;
--
- 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
- 					clk_div | PWM_OUTPUT_ENABLE);
- 	}
+ static int crystalcove_pwm_probe(struct platform_device *pdev)
 -- 
 2.26.2
