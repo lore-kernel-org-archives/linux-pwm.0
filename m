@@ -1,55 +1,36 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v2 14/15] drm/i915: panel: Honor the VBT PWM min setting for devs with an external PWM controller
-Date: Sun,  7 Jun 2020 20:18:39 +0200
-Message-ID: <20200607181840.13536-15-hdegoede@redhat.com>
-References: <20200607181840.13536-1-hdegoede@redhat.com>
+From: =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?=
+        <noltari@gmail.com>
+Subject: [PATCH 0/2] hwmon: Add SFR NeufBox 6 hwmon support
+Date: Sun,  7 Jun 2020 20:25:22 +0200
+Message-ID: <20200607182524.3221837-1-noltari@gmail.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20200607181840.13536-1-hdegoede@redhat.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbgFGSZ3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 7 Jun 2020 14:25:29 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: jdelvare@suse.com, linux@roeck-us.net, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= <noltari@gmail.com>
 
-So far for devices using an external PWM controller (devices using
-pwm_setup_backlight()), we have been hardcoding the minimum allowed
-PWM level to 0. But several of these devices specify a non 0 minimum
-setting in their VBT.
+SFR NeufBox 6 is equipped with an I2C connected chip to monitor voltage,
+temperature and other stats. It also has PWM LEDs that can be manually
+controlled or set to specific hardware monitoring modes.
 
-Change pwm_setup_backlight() to use get_backlight_min_vbt() to get
-the minimum level.
+Álvaro Fernández Rojas (2):
+  dt-bindings: hwmon: Add SFR NB6 sensor binding
+  hwmon: Add SFR NB6 sensor driver
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/gpu/drm/i915/display/intel_panel.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ .../bindings/hwmon/sfr,neufbox6.yaml          |  96 ++++
+ drivers/hwmon/Kconfig                         |  11 +
+ drivers/hwmon/Makefile                        |   1 +
+ drivers/hwmon/nb6-hwmon.c                     | 466 ++++++++++++++++++
+ 4 files changed, 574 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/sfr,neufbox6.yaml
+ create mode 100644 drivers/hwmon/nb6-hwmon.c
 
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index 14e611c92194..cb28b9908ca4 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1925,8 +1925,8 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 	 */
- 	pwm_apply_args(panel->backlight.pwm);
- 
--	panel->backlight.min = 0; /* 0% */
- 	panel->backlight.max = 100; /* 100% */
-+	panel->backlight.min = get_backlight_min_vbt(connector);
- 	level = intel_panel_compute_brightness(connector, 100);
- 	ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
- 
-@@ -1941,8 +1941,9 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 
- 	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
- 			     panel->backlight.pwm_period_ns);
--	panel->backlight.level =
--		intel_panel_compute_brightness(connector, level);
-+	level = intel_panel_compute_brightness(connector, level);
-+	panel->backlight.level = clamp(level, panel->backlight.min,
-+				       panel->backlight.max);
- 	panel->backlight.enabled = panel->backlight.level != 0;
- 
- 	drm_info(&dev_priv->drm, "Using %s PWM for LCD backlight control\n",
 -- 
 2.26.2
