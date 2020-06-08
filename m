@@ -1,104 +1,82 @@
-From: kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v4 03/11] irqchip: add sl28cpld interrupt controller
- support
-Date: Mon, 8 Jun 2020 23:12:47 +0800
-Message-ID: <20200608151247.GC31689@xsang-OptiPlex-9020>
-References: <20200604211039.12689-4-michael@walle.cc>
+From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
+ reg property
+Date: Mon, 08 Jun 2020 17:21:20 +0200
+Message-ID: <7566ef30fea9740f427f392aabde0eac@walle.cc>
+References: <20200423174543.17161-1-michael@walle.cc>
+ <20200423174543.17161-4-michael@walle.cc>
+ <67e90dafd67c285158c2c6f67f92edb7@walle.cc> <20200515102848.GH271301@dell>
+ <159e68b4ce53630ef906b2fcbca925bd@walle.cc> <20200608142413.GA4106@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20200604211039.12689-4-michael@walle.cc>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Michael Walle <michael@walle.cc>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, kbuild-all@lists.01.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200608142413.GA4106@dell>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Michael,
+Am 2020-06-08 16:24, schrieb Lee Jones:
+> On Mon, 25 May 2020, Michael Walle wrote:
+>> Am 2020-05-15 12:28, schrieb Lee Jones:
+>> > On Thu, 30 Apr 2020, Michael Walle wrote:
+>> >
+>> > > Hi Lee,
+>> > >
+>> > > Am 2020-04-23 19:45, schrieb Michael Walle:
+>> > > > There might be multiple children with the device tree compatible, for
+>> > > > example if a MFD has multiple instances of the same function. In this
+>> > > > case only the first is matched and the other children get a wrong
+>> > > > of_node reference.
+>> > > > Add a new option to match also against the unit address of the child
+>> > > > node. Additonally, a new helper OF_MFD_CELL_REG is added.
+> 
+> [...]
+> 
+>> > > > diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
+>> > > > index d01d1299e49d..c2c0ad6b14f3 100644
+>> > > > --- a/include/linux/mfd/core.h
+>> > > > +++ b/include/linux/mfd/core.h
+>> > > > @@ -13,8 +13,11 @@
+>> > > >  #include <linux/platform_device.h>
+>> > > >
+>> > > >  #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
+>> > > > +#define MFD_OF_REG_VALID	BIT(31)
+>> >
+>> > What about 64bit platforms?
+>> 
+>> The idea was to have this as a logical number. I.e. for now you may 
+>> only
+>> have one subdevice per unique compatible string. In fact, if you have 
+>> a
+>> look at the ab8500.c, there are multiple "stericsson,ab8500-pwm"
+>> subdevices. But there is only one DT node for all three of it. I guess
+>> this works as long as you don't use phandles to reference the pwm node
+>> in the device tree. Or you don't want to use device tree properties
+>> per subdevice (for example the "timeout-sec" of a watchdog device).
+> 
+> This is not a good example, as the "stericsson,ab8500-pwm" is
+> legitimate.  Here we are registering 3 potential devices, but only
+> instantiating 1 of them.
 
-I love your patch! Perhaps something to improve:
+Mh?
 
-[auto build test WARNING on next-20200604]
-[cannot apply to gpio/for-next hwmon/hwmon-next ljones-mfd/for-mfd-next shawnguo/for-next v5.7 v5.7-rc7 v5.7-rc6 v5.7]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+static const struct mfd_cell ab8500_devs[] = {
+..
+        OF_MFD_CELL("ab8500-pwm",
+                     NULL, NULL, 0, 1, "stericsson,ab8500-pwm"),
+         OF_MFD_CELL("ab8500-pwm",
+                     NULL, NULL, 0, 2, "stericsson,ab8500-pwm"),
+         OF_MFD_CELL("ab8500-pwm",
+                     NULL, NULL, 0, 3, "stericsson,ab8500-pwm"),
+..
+}
 
-url:    https://github.com/0day-ci/linux/commits/Michael-Walle/Add-support-for-Kontron-sl28cpld/20200605-051333
-base:    d4899e5542c15062cc55cac0ca99025bb64edc61
-:::::: branch date: 26 hours ago
-:::::: commit date: 26 hours ago
-compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
+And in pwm-ab8500.c there are three offsets based on the pdev->id.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Am I missing something here?
 
-
-cppcheck warnings: (new ones prefixed by >>)
-
->> drivers/irqchip/irq-sl28cpld.c:56:10: warning: Checking if unsigned variable 'irq' is less than zero. [unsignedLessThanZero]
-    if (irq < 0)
-            ^
-
-# https://github.com/0day-ci/linux/commit/b13743c1f1a52746beaa071e5d008c84d59fbd7f
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout b13743c1f1a52746beaa071e5d008c84d59fbd7f
-vim +/irq +56 drivers/irqchip/irq-sl28cpld.c
-
-b13743c1f1a527 Michael Walle 2020-06-04  35  
-b13743c1f1a527 Michael Walle 2020-06-04  36  static int sl28cpld_intc_probe(struct platform_device *pdev)
-b13743c1f1a527 Michael Walle 2020-06-04  37  {
-b13743c1f1a527 Michael Walle 2020-06-04  38  	struct device *dev = &pdev->dev;
-b13743c1f1a527 Michael Walle 2020-06-04  39  	struct sl28cpld_intc *irqchip;
-b13743c1f1a527 Michael Walle 2020-06-04  40  	unsigned int irq;
-b13743c1f1a527 Michael Walle 2020-06-04  41  	u32 base;
-b13743c1f1a527 Michael Walle 2020-06-04  42  	int ret;
-b13743c1f1a527 Michael Walle 2020-06-04  43  
-b13743c1f1a527 Michael Walle 2020-06-04  44  	if (!dev->parent)
-b13743c1f1a527 Michael Walle 2020-06-04  45  		return -ENODEV;
-b13743c1f1a527 Michael Walle 2020-06-04  46  
-b13743c1f1a527 Michael Walle 2020-06-04  47  	irqchip = devm_kzalloc(dev, sizeof(*irqchip), GFP_KERNEL);
-b13743c1f1a527 Michael Walle 2020-06-04  48  	if (!irqchip)
-b13743c1f1a527 Michael Walle 2020-06-04  49  		return -ENOMEM;
-b13743c1f1a527 Michael Walle 2020-06-04  50  
-b13743c1f1a527 Michael Walle 2020-06-04  51  	irqchip->regmap = dev_get_regmap(dev->parent, NULL);
-b13743c1f1a527 Michael Walle 2020-06-04  52  	if (!irqchip->regmap)
-b13743c1f1a527 Michael Walle 2020-06-04  53  		return -ENODEV;
-b13743c1f1a527 Michael Walle 2020-06-04  54  
-b13743c1f1a527 Michael Walle 2020-06-04  55  	irq = platform_get_irq(pdev, 0);
-b13743c1f1a527 Michael Walle 2020-06-04 @56  	if (irq < 0)
-b13743c1f1a527 Michael Walle 2020-06-04  57  		return irq;
-b13743c1f1a527 Michael Walle 2020-06-04  58  
-b13743c1f1a527 Michael Walle 2020-06-04  59  	ret = device_property_read_u32(&pdev->dev, "reg", &base);
-b13743c1f1a527 Michael Walle 2020-06-04  60  	if (ret)
-b13743c1f1a527 Michael Walle 2020-06-04  61  		return -EINVAL;
-b13743c1f1a527 Michael Walle 2020-06-04  62  
-b13743c1f1a527 Michael Walle 2020-06-04  63  	irqchip->chip.name = "sl28cpld-intc";
-b13743c1f1a527 Michael Walle 2020-06-04  64  	irqchip->chip.irqs = sl28cpld_irqs;
-b13743c1f1a527 Michael Walle 2020-06-04  65  	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
-b13743c1f1a527 Michael Walle 2020-06-04  66  	irqchip->chip.num_regs = 1;
-b13743c1f1a527 Michael Walle 2020-06-04  67  	irqchip->chip.status_base = base + INTC_IP;
-b13743c1f1a527 Michael Walle 2020-06-04  68  	irqchip->chip.mask_base = base + INTC_IE;
-b13743c1f1a527 Michael Walle 2020-06-04  69  	irqchip->chip.mask_invert = true,
-b13743c1f1a527 Michael Walle 2020-06-04  70  	irqchip->chip.ack_base = base + INTC_IP;
-b13743c1f1a527 Michael Walle 2020-06-04  71  
-b13743c1f1a527 Michael Walle 2020-06-04  72  	return devm_regmap_add_irq_chip_np(&pdev->dev, dev->of_node,
-b13743c1f1a527 Michael Walle 2020-06-04  73  					   irqchip->regmap, irq,
-b13743c1f1a527 Michael Walle 2020-06-04  74  					   IRQF_SHARED | IRQF_ONESHOT, 0,
-b13743c1f1a527 Michael Walle 2020-06-04  75  					   &irqchip->chip, &irqchip->irq_data);
-b13743c1f1a527 Michael Walle 2020-06-04  76  }
-b13743c1f1a527 Michael Walle 2020-06-04  77  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+-michael
