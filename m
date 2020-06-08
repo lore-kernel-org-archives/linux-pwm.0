@@ -1,170 +1,93 @@
-From: Sandipan Patra <spatra@nvidia.com>
-Subject: RE: [PATCH V4] pwm: tegra: dynamic clk freq configuration by PWM
- driver
-Date: Mon, 8 Jun 2020 12:36:48 +0000
-Message-ID: <BYAPR12MB3014C9298EDC011F4E98BE0FAD850@BYAPR12MB3014.namprd12.prod.outlook.com>
-References: <1590988836-11308-1-git-send-email-spatra@nvidia.com>
- <20200603162906.vyfynqtxa7mpjxxv@taurus.defre.kleine-koenig.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 03/15] pwm: lpss: Add range limit check
+ for the base_unit register value
+Date: Mon, 8 Jun 2020 15:51:56 +0300
+Message-ID: <20200608125156.GL2428291@smile.fi.intel.com>
+References: <20200607181840.13536-1-hdegoede@redhat.com>
+ <20200607181840.13536-4-hdegoede@redhat.com>
+ <20200608035023.GZ2428291@smile.fi.intel.com>
+ <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:13477 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgFHMgw (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Jun 2020 08:36:52 -0400
-In-Reply-To: <20200603162906.vyfynqtxa7mpjxxv@taurus.defre.kleine-koenig.org>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Len Brown <lenb@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <treding@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, Bibek Basu <bbasu@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-SGkgVXdlLA0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVXdlIEts
-ZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4NCj4gU2VudDogV2Vk
-bmVzZGF5LCBKdW5lIDMsIDIwMjAgOTo1OSBQTQ0KPiBUbzogU2FuZGlwYW4gUGF0cmEgPHNwYXRy
-YUBudmlkaWEuY29tPg0KPiBDYzogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT47
-IEpvbmF0aGFuIEh1bnRlcg0KPiA8am9uYXRoYW5oQG52aWRpYS5jb20+OyBCaWJlayBCYXN1IDxi
-YmFzdUBudmlkaWEuY29tPjsgTGF4bWFuIERld2FuZ2FuDQo+IDxsZGV3YW5nYW5AbnZpZGlhLmNv
-bT47IEtyaXNobmEgWWFybGFnYWRkYSA8a3lhcmxhZ2FkZGFAbnZpZGlhLmNvbT47DQo+IGxpbnV4
-LXB3bUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LXRlZ3JhQHZnZXIua2VybmVsLm9yZzsgbGludXgt
-DQo+IGtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCBWNF0gcHdt
-OiB0ZWdyYTogZHluYW1pYyBjbGsgZnJlcSBjb25maWd1cmF0aW9uIGJ5IFBXTQ0KPiBkcml2ZXIN
-Cj4gDQo+IEhlbGxvLA0KPiANCj4gT24gTW9uLCBKdW4gMDEsIDIwMjAgYXQgMTA6NTA6MzZBTSAr
-MDUzMCwgU2FuZGlwYW4gUGF0cmEgd3JvdGU6DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdt
-L3B3bS10ZWdyYS5jIGIvZHJpdmVycy9wd20vcHdtLXRlZ3JhLmMgaW5kZXgNCj4gPiBkMjZlZDhm
-Li4xZGFmNTkxIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS10ZWdyYS5jDQo+ID4g
-KysrIGIvZHJpdmVycy9wd20vcHdtLXRlZ3JhLmMNCj4gPiBAQCAtNCw4ICs0LDM2IEBADQo+ID4g
-ICAqDQo+ID4gICAqIFRlZ3JhIHB1bHNlLXdpZHRoLW1vZHVsYXRpb24gY29udHJvbGxlciBkcml2
-ZXINCj4gPiAgICoNCj4gPiAtICogQ29weXJpZ2h0IChjKSAyMDEwLCBOVklESUEgQ29ycG9yYXRp
-b24uDQo+ID4gKyAqIENvcHlyaWdodCAoYykgMjAxMC0yMDIwLCBOVklESUEgQ29ycG9yYXRpb24u
-DQo+ID4gICAqIEJhc2VkIG9uIGFyY2gvYXJtL3BsYXQtbXhjL3B3bS5jIGJ5IFNhc2NoYSBIYXVl
-cg0KPiA+IDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiA+ICsgKg0KPiA+ICsgKiBPdmVydmll
-dyBvZiBUZWdyYSBQdWxzZSBXaWR0aCBNb2R1bGF0b3IgUmVnaXN0ZXI6DQo+ID4gKyAqIDEuIDEz
-LWJpdDogRnJlcXVlbmN5IGRpdmlzaW9uIChTQ0FMRSkNCj4gPiArICogMi4gOC1iaXQgOiBQdWxz
-ZSBkaXZpc2lvbiAoRFVUWSkNCj4gPiArICogMy4gMS1iaXQgOiBFbmFibGUgYml0DQo+ID4gKyAq
-DQo+ID4gKyAqIFRoZSBQV00gY2xvY2sgZnJlcXVlbmN5IGlzIGRpdmlkZWQgYnkgMjU2IGJlZm9y
-ZSBzdWJkaXZpZGluZyBpdA0KPiA+ICsgYmFzZWQNCj4gPiArICogb24gdGhlIHByb2dyYW1tYWJs
-ZSBmcmVxdWVuY3kgZGl2aXNpb24gdmFsdWUgdG8gZ2VuZXJhdGUgdGhlDQo+ID4gKyByZXF1aXJl
-ZA0KPiA+ICsgKiBmcmVxdWVuY3kgZm9yIFBXTSBvdXRwdXQuIFRoZSBtYXhpbXVtIG91dHB1dCBm
-cmVxdWVuY3kgdGhhdCBjYW4gYmUNCj4gPiArICogYWNoaWV2ZWQgaXMgKG1heCByYXRlIG9mIHNv
-dXJjZSBjbG9jaykgLyAyNTYuDQo+ID4gKyAqIGUuZy4gaWYgc291cmNlIGNsb2NrIHJhdGUgaXMg
-NDA4IE1IeiwgbWF4aW11bSBvdXRwdXQgZnJlcXVlbmN5IGNhbiBiZToNCj4gPiArICogNDA4IE1I
-ei8yNTYgPSAxLjYgTUh6Lg0KPiA+ICsgKiBUaGlzIDEuNiBNSHogZnJlcXVlbmN5IGNhbiBmdXJ0
-aGVyIGJlIGRpdmlkZWQgdXNpbmcgU0NBTEUgdmFsdWUgaW4gUFdNLg0KPiA+ICsgKg0KPiA+ICsg
-KiBQV00gcHVsc2Ugd2lkdGg6IDggYml0cyBhcmUgdXNhYmxlIFsyMzoxNl0gZm9yIHZhcnlpbmcg
-cHVsc2Ugd2lkdGguDQo+ID4gKyAqIFRvIGFjaGlldmUgMTAwJSBkdXR5IGN5Y2xlLCBwcm9ncmFt
-IEJpdCBbMjRdIG9mIHRoaXMgcmVnaXN0ZXIgdG8NCj4gPiArICogMeKAmWIxLiBJbiB3aGljaCBj
-YXNlIHRoZSBvdGhlciBiaXRzIFsyMzoxNl0gYXJlIHNldCB0byBkb24ndCBjYXJlLg0KPiA+ICsg
-Kg0KPiA+ICsgKiBMaW1pdGF0aW9uczoNCj4gPiArICogLQlXaGVuIFBXTSBpcyBkaXNhYmxlZCwg
-dGhlIG91dHB1dCBpcyBkcml2ZW4gdG8gaW5hY3RpdmUuDQo+ID4gKyAqIC0JSXQgZG9lcyBub3Qg
-YWxsb3cgdGhlIGN1cnJlbnQgUFdNIHBlcmlvZCB0byBjb21wbGV0ZSBhbmQNCj4gPiArICoJc3Rv
-cHMgYWJydXB0bHkuDQo+ID4gKyAqDQo+IA0KPiBJJ2QgcHJlZmVyIHRvIGhhdmUgbm8gZW1wdHkg
-bGluZXMgaW4gdGhlIGluIExpbWl0YXRpb25zIHBhcmFncmFwaCB0byBiZSBhYmxlIHRvIGdldA0K
-PiBhbGwgaW5mb3MgdXNpbmcgc29tZXRoaW5nIGxpa2U6DQo+IA0KPiAJc2VkIC1ybiAnL1wqIExp
-bWl0YXRpb25zOi8sL14gXCpcLz8kL3AnIGRyaXZlcnMvcHdtL3B3bS10ZWdyYS5jDQo+IA0KDQpJ
-J2xsIHB1c2ggYSBjaGFuZ2UgZm9yIHRoaXMuDQoNCj4gPiArICogLQlJZiB0aGUgcmVnaXN0ZXIg
-aXMgcmVjb25maWd1cmVkIHdoaWxlIFBXTSBpcyBydW5uaW5nLA0KPiA+ICsgKglpdCBkb2VzIG5v
-dCBjb21wbGV0ZSB0aGUgY3VycmVudGx5IHJ1bm5pbmcgcGVyaW9kLg0KPiA+ICsgKg0KPiA+ICsg
-KiAtCUlmIHRoZSB1c2VyIGlucHV0IGR1dHkgaXMgYmV5b25kIGFjY2VwdGlibGUgbGltaXRzLA0K
-PiA+ICsgKgktRUlOVkFMIGlzIHJldHVybmVkLg0KPiANCj4gcy9hY2NlcHRpYmxlL2FjY2VwdGFi
-bGUvIChidXQgaW4gZmFjdCB0aGlzIGlzbid0IGEgbGltaXRhdGlvbiwgc28gSSdkIGRyb3AgdGhp
-cyBoZXJlLA0KPiBhcyBwb2ludGVkIG91dCBpbiB2MikuDQo+IA0KPiBJbiB2MiBJIG1lbnRpb25l
-ZCBhIGZldyB0aGluZ3MgdG8gYWRkIGhlcmUuDQoNCk9rLiBVbmRlcnN0b29kLiBJIHdpbGwgbWFr
-ZSBzdXJlIHRvIGZvbGxvdyB0aGlzIGluIG5ldyBjaGFuZ2UuDQoNCkluc3RlYWQgb2YgdGhpcw0K
-LSBJZiB0aGUgdXNlciBpbnB1dCBkdXR5IGlzIGJleW9uZCBhY2NlcHRpYmxlIGxpbWl0cywNCgkt
-RUlOVkFMIGlzIHJldHVybmVkLg0KSSB3aWxsIGFkZCBiZWxvdyBpbmZvIG5vdyBhbmQgZm9sbG93
-IHVwIG9uIHRoZSBhdG9taWMgQVBJIGltcGxlbWVudGF0aW9uIGV2ZW50dWFsbHkuDQotIFRoZSBk
-cml2ZXIgZG9lc24ndCBpbXBsZW1lbnQgdGhlIHJpZ2h0IHJvdW5kaW5nIHJ1bGVzDQotIFRoZSBk
-cml2ZXIgbmVlZHMgdXBkYXRpbmcgdG8gdGhlIGF0b21pYyBBUEkNCg0KPiANCj4gPiAgICovDQo+
-ID4NCj4gPiAgI2luY2x1ZGUgPGxpbnV4L2Nsay5oPg0KPiA+IEBAIC00MSw2ICs2OSw3IEBAIHN0
-cnVjdCB0ZWdyYV9wd21fY2hpcCB7DQo+ID4gIAlzdHJ1Y3QgcmVzZXRfY29udHJvbCpyc3Q7DQo+
-ID4NCj4gPiAgCXVuc2lnbmVkIGxvbmcgY2xrX3JhdGU7DQo+ID4gKwl1bnNpZ25lZCBsb25nIG1p
-bl9wZXJpb2RfbnM7DQo+ID4NCj4gPiAgCXZvaWQgX19pb21lbSAqcmVnczsNCj4gPg0KPiA+IEBA
-IC02OCw3ICs5Nyw3IEBAIHN0YXRpYyBpbnQgdGVncmFfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2No
-aXAgKmNoaXAsDQo+ID4gc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwgIHsNCj4gPiAgCXN0cnVjdCB0
-ZWdyYV9wd21fY2hpcCAqcGMgPSB0b190ZWdyYV9wd21fY2hpcChjaGlwKTsNCj4gPiAgCXVuc2ln
-bmVkIGxvbmcgbG9uZyBjID0gZHV0eV9ucywgaHo7DQo+ID4gLQl1bnNpZ25lZCBsb25nIHJhdGU7
-DQo+ID4gKwl1bnNpZ25lZCBsb25nIHJhdGUsIHJlcXVpcmVkX2Nsa19yYXRlOw0KPiANCj4gSW4g
-djIgSSByZXF1ZXN0ZWQgdG8gbW92ZSB0aGlzIGludG8gdGhlIGlmIGJsb2NrIGJlbG93LiBZb3Ug
-cmVwbGllZCB0byB3YW50IHRvDQo+IG1vdmUgaXQgYWNjb3JkaW5nbHkuDQoNClRoaXMgZ290IHNr
-aXBwZWQuIE15IG1pc3Rha2UuIEkgd2lsbCBwdXNoIGEgY2hhbmdlIHRvIG1vdmUgdGhlIGRlZmlu
-aXRpb24gb2YNCnJlcXVpcmVkX2Nsa19yYXRlIGluc2lkZSBpZi1ibG9jayBhcyBhIG5ldyBjaGFu
-Z2UuDQoNCj4gDQo+ID4gIAl1MzIgdmFsID0gMDsNCj4gPiAgCWludCBlcnI7DQo+ID4NCj4gPiBA
-QCAtODMsOSArMTEyLDQ3IEBAIHN0YXRpYyBpbnQgdGVncmFfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdt
-X2NoaXAgKmNoaXAsDQo+IHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQo+ID4gIAl2YWwgPSAodTMy
-KWMgPDwgUFdNX0RVVFlfU0hJRlQ7DQo+ID4NCj4gPiAgCS8qDQo+ID4gKwkgKiAgbWluIHBlcmlv
-ZCA9IG1heCBjbG9jayBsaW1pdCA+PiBQV01fRFVUWV9XSURUSA0KPiA+ICsJICovDQo+ID4gKwlp
-ZiAocGVyaW9kX25zIDwgcGMtPm1pbl9wZXJpb2RfbnMpDQo+ID4gKwkJcmV0dXJuIC1FSU5WQUw7
-DQo+ID4gKw0KPiA+ICsJLyoNCj4gPiAgCSAqIENvbXB1dGUgdGhlIHByZXNjYWxlciB2YWx1ZSBm
-b3Igd2hpY2ggKDEgPDwgUFdNX0RVVFlfV0lEVEgpDQo+ID4gIAkgKiBjeWNsZXMgYXQgdGhlIFBX
-TSBjbG9jayByYXRlIHdpbGwgdGFrZSBwZXJpb2RfbnMgbmFub3NlY29uZHMuDQo+ID4gKwkgKg0K
-PiA+ICsJICogbnVtX2NoYW5uZWxzOiBJZiBzaW5nbGUgaW5zdGFuY2Ugb2YgUFdNIGNvbnRyb2xs
-ZXIgaGFzIG11bHRpcGxlDQo+ID4gKwkgKiBjaGFubmVscyAoZS5nLiBUZWdyYTIxMCBvciBvbGRl
-cikgdGhlbiBpdCBpcyBub3QgcG9zc2libGUgdG8NCj4gPiArCSAqIGNvbmZpZ3VyZSBzZXBhcmF0
-ZSBjbG9jayByYXRlcyB0byBlYWNoIG9mIHRoZSBjaGFubmVscywgaW4gc3VjaA0KPiA+ICsJICog
-Y2FzZSB0aGUgdmFsdWUgc3RvcmVkIGR1cmluZyBwcm9iZSB3aWxsIGJlIHJlZmVycmVkLg0KPiA+
-ICsJICoNCj4gPiArCSAqIElmIGV2ZXJ5IFBXTSBjb250cm9sbGVyIGluc3RhbmNlIGhhcyBvbmUg
-Y2hhbm5lbCByZXNwZWN0aXZlbHksIGkuZS4NCj4gPiArCSAqIG51bXNfY2hhbm5lbHMgPT0gMSB0
-aGVuIG9ubHkgdGhlIGNsb2NrIHJhdGUgY2FuIGJlIG1vZGlmaWVkDQo+ID4gKwkgKiBkeW5hbWlj
-YWxseSAoZS5nLiBUZWdyYTE4NiBvciBUZWdyYTE5NCkuDQo+ID4gIAkgKi8NCj4gPiArCWlmIChw
-Yy0+c29jLT5udW1fY2hhbm5lbHMgPT0gMSkgew0KPiA+ICsJCS8qDQo+ID4gKwkJICogUmF0ZSBp
-cyBtdWx0aXBsaWVkIHdpdGggMl5QV01fRFVUWV9XSURUSCBzbyB0aGF0IGl0DQo+IG1hdGNoZXMN
-Cj4gPiArCQkgKiB3aXRoIHRoZSBtYXhpbXVtIHBvc3NpYmxlIHJhdGUgdGhhdCB0aGUgY29udHJv
-bGxlciBjYW4NCj4gPiArCQkgKiBwcm92aWRlLiBBbnkgZnVydGhlciBsb3dlciB2YWx1ZSBjYW4g
-YmUgZGVyaXZlZCBieSBzZXR0aW5nDQo+ID4gKwkJICogUEZNIGJpdHNbMDoxMl0uDQo+IA0KPiBJ
-dCBsb29rcyBhIGJpdCBzdHJhbmdlIHRoYXQgdGhlIGFsZ29yaXRobSB0byBjYWxjdWxhdGUgdGhl
-IGNsb2NrIHNldHRpbmdzIGRlcGVuZHMNCj4gb24gdGhlIG51bWJlciBvZiBjaGFubmVscy4gTG9v
-a3MgbGlrZSBhIHdyb25nIGFic3RyYWN0aW9uLg0KDQpUaGUgY2FsY3VsYXRpb24gaXMgYWRkZWQg
-YmFzZWQgb24gbnVtYmVyIG9mIGNoYW5uZWxzIHRvIHN1cHBvcnQgbGVnYWN5IEhXLg0KV2hlbiB0
-aGUgUFdNIGNvbnRyb2xsZXIgaGFzIG11bHRpcGxlIGNoYW5uZWxzIGFuZCBhbGwgb2YgdGhlbSBh
-cmUgc291cmNlZCBieQ0Kc2luZ2xlIGNsb2NrLCB0aGVuIGR5bmFtaWMgY2xvY2sgY29uZmlndXJh
-dGlvbiBjYW4gbm90IGJlIHN1cHBvcnRlZC4gU28gdGhlIGNoYW5nZXMgYXJlDQphbGxvd2VkIG9u
-bHkgd2hlbiBQV00gY29udHJvbGxlciBoYXMgb25lIGNoYW5uZWwuDQogDQo+IA0KPiA+ICsJCSAq
-DQo+ID4gKwkJICogcmVxdWlyZWRfY2xrX3JhdGUgaXMgYSByZWZlcmVuY2UgcmF0ZSBmb3Igc291
-cmNlIGNsb2NrIGFuZA0KPiA+ICsJCSAqIGl0IGlzIGRlcml2ZWQgYmFzZWQgb24gdXNlciByZXF1
-ZXN0ZWQgcGVyaW9kLiBCeSBzZXR0aW5nIHRoZQ0KPiA+ICsJCSAqIHNvdXJjZSBjbG9jayByYXRl
-IGFzIHJlcXVpcmVkX2Nsa19yYXRlLCBQV00gY29udHJvbGxlciB3aWxsDQo+ID4gKwkJICogYmUg
-YWJsZSB0byBjb25maWd1cmUgdGhlIHJlcXVlc3RlZCBwZXJpb2QuDQo+ID4gKwkJICovDQo+ID4g
-KwkJcmVxdWlyZWRfY2xrX3JhdGUgPQ0KPiA+ICsJCQkoTlNFQ19QRVJfU0VDIC8gcGVyaW9kX25z
-KSA8PCBQV01fRFVUWV9XSURUSDsNCj4gPiArDQo+ID4gKwkJZXJyID0gY2xrX3NldF9yYXRlKHBj
-LT5jbGssIHJlcXVpcmVkX2Nsa19yYXRlKTsNCj4gPiArCQlpZiAoZXJyIDwgMCkNCj4gPiArCQkJ
-cmV0dXJuIC1FSU5WQUw7DQo+ID4gKw0KPiA+ICsJCS8qIFN0b3JlIHRoZSBuZXcgcmF0ZSBmb3Ig
-ZnVydGhlciByZWZlcmVuY2VzICovDQo+ID4gKwkJcGMtPmNsa19yYXRlID0gY2xrX2dldF9yYXRl
-KHBjLT5jbGspOw0KPiA+ICsJfQ0KPiA+ICsNCj4gPiAgCXJhdGUgPSBwYy0+Y2xrX3JhdGUgPj4g
-UFdNX0RVVFlfV0lEVEg7DQo+ID4NCj4gPiAgCS8qIENvbnNpZGVyIHByZWNpc2lvbiBpbiBQV01f
-U0NBTEVfV0lEVEggcmF0ZSBjYWxjdWxhdGlvbiAqLyBAQA0KPiA+IC05NCw3ICsxNjEsNyBAQCBz
-dGF0aWMgaW50IHRlZ3JhX3B3bV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KPiA+IHN0
-cnVjdCBwd21fZGV2aWNlICpwd20sDQo+ID4NCj4gPiAgCS8qDQo+ID4gIAkgKiBTaW5jZSB0aGUg
-YWN0dWFsIFBXTSBkaXZpZGVyIGlzIHRoZSByZWdpc3RlcidzIGZyZXF1ZW5jeSBkaXZpZGVyDQo+
-ID4gLQkgKiBmaWVsZCBtaW51cyAxLCB3ZSBuZWVkIHRvIGRlY3JlbWVudCB0byBnZXQgdGhlIGNv
-cnJlY3QgdmFsdWUgdG8NCj4gPiArCSAqIGZpZWxkIHBsdXMgMSwgd2UgbmVlZCB0byBkZWNyZW1l
-bnQgdG8gZ2V0IHRoZSBjb3JyZWN0IHZhbHVlIHRvDQo+IA0KPiBJIHdvdWxkIGhhdmUgcHV0IHRo
-aXMgaW4gYSBzZXBhcmF0ZSBjaGFuZ2UuDQo+IA0KPiA+ICAJICogd3JpdGUgdG8gdGhlIHJlZ2lz
-dGVyLg0KPiA+ICAJICovDQo+ID4gIAlpZiAocmF0ZSA+IDApDQo+ID4gQEAgLTIwNSw2ICsyNzIs
-MTAgQEAgc3RhdGljIGludCB0ZWdyYV9wd21fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0K
-PiAqcGRldikNCj4gPiAgCSAqLw0KPiA+ICAJcHdtLT5jbGtfcmF0ZSA9IGNsa19nZXRfcmF0ZShw
-d20tPmNsayk7DQo+ID4NCj4gPiArCS8qIFNldCBtaW5pbXVtIGxpbWl0IG9mIFBXTSBwZXJpb2Qg
-Zm9yIHRoZSBJUCAqLw0KPiA+ICsJcHdtLT5taW5fcGVyaW9kX25zID0NCj4gPiArCSAgICAoTlNF
-Q19QRVJfU0VDIC8gKHB3bS0+c29jLT5tYXhfZnJlcXVlbmN5ID4+DQo+IFBXTV9EVVRZX1dJRFRI
-KSkgKw0KPiA+ICsxOw0KPiANCj4gVG8gZW5zdXJlIHRoYXQgcmVxdWlyZWRfY2xrX3JhdGUgaW4g
-dGVncmFfcHdtX2NvbmZpZyBkb2Vzbid0IGdldCBiaWdnZXIgdGhhbg0KPiBwd20tPnNvYy0+bWF4
-X2ZyZXF1ZW5jeSB0aGlzIGlzbid0IHRoZSByaWdodCBmb3JtdWxhIEkgdGhpbmsuIEknZCB1c2UN
-Cj4gDQo+IAlwd20tPm1pbl9wZXJpb2RfbnMgPSBESVZfUk9VTkRVUChOU0VDX1BFUl9TRUMsIHB3
-bS0+c29jLQ0KPiA+bWF4X2ZyZXF1ZW5jeSA+PiBQV01fRFVUWV9XSURUSCk7DQo+IA0KPiAuIENh
-biB5b3UgY29uZmlybT8NCg0KQXMgcGVyIGZvcm11bGEsICIrMSIgaXMgcmVxdWlyZWQgaW4gdGhl
-IGNhbGN1bGF0aW9uLg0KSGVuY2UgdG8gcmVmbGVjdCB0aGlzIGluIHRoZSBjb2RlLCBtYW51YWwg
-ZGl2aXNpb24gaXMgZG9uZSB3aGljaCBieSBkZWZhdWx0DQppZ25vcmVzIHRoZSBmcmFjdGlvbmFs
-IHBhcnQgb2YgdGhlIGludGVnZXIgZGl2aXNpb24uIEFuZCB0aGVuICsxIGlzIGFkZGVkLg0KDQpZ
-b3VyIHN1Z2dlc3Rpb24gdG8gdXNlIERJVl9ST1VORFVQIGlzIGZvciBhIGNyaXNwIGNhbGN1bGF0
-aW9uLg0KQnV0IGl0IG1hbmRhdGVzIHRvIGlnbm9yZSAiKzEiIHBhcnQgYXMgdGhlIGRpdmlzaW9u
-IGNhbGN1bGF0aW9uIGlzIHRha2VuIGNhcmUgYnkgY29uc2lkZXJpbmcgY2VsbGluZyB2YWx1ZS4N
-CldoZW4gdGhlIGRpdmlzaW9uIHlpZWxkcyBxdW90aWVudCB3aXRoIDAgZnJhY3Rpb24sIHRoZW4g
-KzEgaXMgbm90IGNvbnNpZGVyZWQuDQoNCkluIHRoaXMgcGF0Y2gsIHJhdyBjYWxjdWxhdGlvbiBp
-cyBrZXB0IGZvciBhIGJldHRlciByZWFkYWJpbGl0eSwgd2hpY2ggY2FuIGFsc28gaGVscCB1bmRl
-cnN0YW5kaW5nDQphYm91dCB0aGUgYWNjdXJhdGUgZGVyaXZhdGlvbiBvZiBtaW5fcGVyaW9kX25z
-IGFzIHBlciBzcGVjaWZpY2F0aW9uLg0KDQpQbGVhc2UgaGVscCBtZSB1bmRlcnN0YW5kaW5nIGlm
-IEkgYW0gbm90IGFsaWduZWQgd2l0aCB5b3VyIHN1Z2dlc3Rpb24gYW5kIGlmIGlzIHRoZXJlIGEg
-YmV0dGVyDQpjYXNlIHdoZXJlIERJVl9ST1VORFVQIGlzIHJlcXVpcmVkIGluIHRoaXMgY2FzZS4N
-Cg0KVGhhbmtzICYgUmVnYXJkcywNClNhbmRpcGFuDQoNCj4gDQo+IEJlc3QgcmVnYXJkcw0KPiBV
-d2UNCg==
+On Mon, Jun 08, 2020 at 01:07:12PM +0200, Hans de Goede wrote:
+> On 6/8/20 5:50 AM, Andy Shevchenko wrote:
+> > On Sun, Jun 07, 2020 at 08:18:28PM +0200, Hans de Goede wrote:
+> > > When the user requests a high enough period ns value, then the
+> > > calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
+> > > 
+> > > But according to the data-sheet the way the PWM controller works is that
+> > > each input clock-cycle the base_unit gets added to a N bit counter and
+> > > that counter overflowing determines the PWM output frequency. Adding 0
+> > > to the counter is a no-op. The data-sheet even explicitly states that
+> > > writing 0 to the base_unit bits will result in the PWM outputting a
+> > > continuous 0 signal.
+> > 
+> > So, and why it's a problem?
+> 
+> Lets sya the user requests a PWM output frequency of 100Hz on Cherry Trail
+> which has a 19200000 Hz clock this will result in 100 * 65536 / 19200000 =
+> 0.3 -> 0 as base-unit value. So instead of getting 100 Hz the user will
+> now get a pin which is always outputting low.
+> 
+> OTOH if we clamp to 1 as lowest value, the user will get 192000000 / 65536
+> = 292 Hz as output frequency which is as close to the requested value as
+> we can get while actually still working as a PWM controller.
+
+So, we should basically divide and round up, no?
+
+At least for 0 we will get 0.
+
+> > > base_unit values > (base_unit_range / 256), or iow base_unit values using
+> > > the 8 most significant bits, cause loss of resolution of the duty-cycle.
+> > > E.g. assuming a base_unit_range of 65536 steps, then a base_unit value of
+> > > 768 (256 * 3), limits the duty-cycle resolution to 65536 / 768 = 85 steps.
+> > > Clamp the max base_unit value to base_unit_range / 32 to ensure a
+> > > duty-cycle resolution of at least 32 steps. This limits the maximum
+> > > output frequency to 600 KHz / 780 KHz depending on the base clock.
+> > 
+> > This part I don't understand. Why we limiting base unit? I seems like a
+> > deliberate regression.
+> 
+> The way the PWM controller works is that the base-unit gets added to
+> say a 16 bit (on CHT) counter each input clock and then the highest 8
+> bits of that counter get compared to the value programmed into the
+> ON_TIME_DIV bits.
+> 
+> Lets say we do not clamp and allow any value and lets say the user
+> selects an output frequency of half the input clock, so base-unit
+> value is 32768, then the counter will only have 2 values:
+> 0 and 32768 after that it will wrap around again. So any on time-div
+> value < 128 will result in the output being always high and any
+> value > 128 will result in the output being high/low 50% of the time
+> and a value of 255 will make the output always low.
+> 
+> So in essence we now only have 3 duty cycle levels, which seems like
+> a bad idea to me / not what a pwm controller is supposed to do.
+
+It's exactly what is written in the documentation. I can't buy base unit clamp.
+Though, I can buy, perhaps, on time divisor granularity, i.e.
+  1/	0% - 25%-1 (0%)
+  2/	25% - 50% - 75% (50%)
+  3/	75%+1 - 100% (100%)
+And so on till we got a maximum resolution (8 bits).
+
+-- 
+With Best Regards,
+Andy Shevchenko
