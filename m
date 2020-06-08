@@ -1,121 +1,66 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 03/15] pwm: lpss: Add range limit check for the
- base_unit register value
-Date: Mon, 8 Jun 2020 16:19:08 +0200
-Message-ID: <ecb5ca16-91eb-d7b9-dbaf-ee18cb85d9f3@redhat.com>
-References: <20200607181840.13536-1-hdegoede@redhat.com>
- <20200607181840.13536-4-hdegoede@redhat.com>
- <20200608035023.GZ2428291@smile.fi.intel.com>
- <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
- <20200608125156.GL2428291@smile.fi.intel.com>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
+ reg property
+Date: Mon, 8 Jun 2020 15:24:13 +0100
+Message-ID: <20200608142413.GA4106@dell>
+References: <20200423174543.17161-1-michael@walle.cc>
+ <20200423174543.17161-4-michael@walle.cc>
+ <67e90dafd67c285158c2c6f67f92edb7@walle.cc>
+ <20200515102848.GH271301@dell>
+ <159e68b4ce53630ef906b2fcbca925bd@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20200608125156.GL2428291@smile.fi.intel.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <159e68b4ce53630ef906b2fcbca925bd-QKn5cuLxLXY@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TaqPxH82wqD4g@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+On Mon, 25 May 2020, Michael Walle wrote:
+> Am 2020-05-15 12:28, schrieb Lee Jones:
+> > On Thu, 30 Apr 2020, Michael Walle wrote:
+> > 
+> > > Hi Lee,
+> > > 
+> > > Am 2020-04-23 19:45, schrieb Michael Walle:
+> > > > There might be multiple children with the device tree compatible, for
+> > > > example if a MFD has multiple instances of the same function. In this
+> > > > case only the first is matched and the other children get a wrong
+> > > > of_node reference.
+> > > > Add a new option to match also against the unit address of the child
+> > > > node. Additonally, a new helper OF_MFD_CELL_REG is added.
 
-On 6/8/20 2:51 PM, Andy Shevchenko wrote:
-> On Mon, Jun 08, 2020 at 01:07:12PM +0200, Hans de Goede wrote:
->> On 6/8/20 5:50 AM, Andy Shevchenko wrote:
->>> On Sun, Jun 07, 2020 at 08:18:28PM +0200, Hans de Goede wrote:
->>>> When the user requests a high enough period ns value, then the
->>>> calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
->>>>
->>>> But according to the data-sheet the way the PWM controller works is that
->>>> each input clock-cycle the base_unit gets added to a N bit counter and
->>>> that counter overflowing determines the PWM output frequency. Adding 0
->>>> to the counter is a no-op. The data-sheet even explicitly states that
->>>> writing 0 to the base_unit bits will result in the PWM outputting a
->>>> continuous 0 signal.
->>>
->>> So, and why it's a problem?
->>
->> Lets sya the user requests a PWM output frequency of 100Hz on Cherry Trail
->> which has a 19200000 Hz clock this will result in 100 * 65536 / 19200000 =
->> 0.3 -> 0 as base-unit value. So instead of getting 100 Hz the user will
->> now get a pin which is always outputting low.
->>
->> OTOH if we clamp to 1 as lowest value, the user will get 192000000 / 65536
->> = 292 Hz as output frequency which is as close to the requested value as
->> we can get while actually still working as a PWM controller.
+[...]
+
+> > > > diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
+> > > > index d01d1299e49d..c2c0ad6b14f3 100644
+> > > > --- a/include/linux/mfd/core.h
+> > > > +++ b/include/linux/mfd/core.h
+> > > > @@ -13,8 +13,11 @@
+> > > >  #include <linux/platform_device.h>
+> > > >
+> > > >  #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
+> > > > +#define MFD_OF_REG_VALID	BIT(31)
+> > 
+> > What about 64bit platforms?
 > 
-> So, we should basically divide and round up, no?
+> The idea was to have this as a logical number. I.e. for now you may only
+> have one subdevice per unique compatible string. In fact, if you have a
+> look at the ab8500.c, there are multiple "stericsson,ab8500-pwm"
+> subdevices. But there is only one DT node for all three of it. I guess
+> this works as long as you don't use phandles to reference the pwm node
+> in the device tree. Or you don't want to use device tree properties
+> per subdevice (for example the "timeout-sec" of a watchdog device).
 
-Yes, that will work for the low limit of base_unit but it will make
-all the other requested period values less accurate.
+This is not a good example, as the "stericsson,ab8500-pwm" is
+legitimate.  Here we are registering 3 potential devices, but only
+instantiating 1 of them.
 
-> At least for 0 we will get 0.
-
-We're dealing with frequency here, but the API is dealing with period,
-so to get 0 HZ the API user would have to request a period of > 1s e.g.
-request 2s / 0.5 Hz but then the user is still not really requesting 0Hz
-(that would correspond with a period of infinity which integers cannot
-represent.
-
->>>> base_unit values > (base_unit_range / 256), or iow base_unit values using
->>>> the 8 most significant bits, cause loss of resolution of the duty-cycle.
->>>> E.g. assuming a base_unit_range of 65536 steps, then a base_unit value of
->>>> 768 (256 * 3), limits the duty-cycle resolution to 65536 / 768 = 85 steps.
->>>> Clamp the max base_unit value to base_unit_range / 32 to ensure a
->>>> duty-cycle resolution of at least 32 steps. This limits the maximum
->>>> output frequency to 600 KHz / 780 KHz depending on the base clock.
->>>
->>> This part I don't understand. Why we limiting base unit? I seems like a
->>> deliberate regression.
->>
->> The way the PWM controller works is that the base-unit gets added to
->> say a 16 bit (on CHT) counter each input clock and then the highest 8
->> bits of that counter get compared to the value programmed into the
->> ON_TIME_DIV bits.
->>
->> Lets say we do not clamp and allow any value and lets say the user
->> selects an output frequency of half the input clock, so base-unit
->> value is 32768, then the counter will only have 2 values:
->> 0 and 32768 after that it will wrap around again. So any on time-div
->> value < 128 will result in the output being always high and any
->> value > 128 will result in the output being high/low 50% of the time
->> and a value of 255 will make the output always low.
->>
->> So in essence we now only have 3 duty cycle levels, which seems like
->> a bad idea to me / not what a pwm controller is supposed to do.
-> 
-> It's exactly what is written in the documentation. I can't buy base unit clamp.
-> Though, I can buy, perhaps, on time divisor granularity, i.e.
->    1/	0% - 25%-1 (0%)
->    2/	25% - 50% - 75% (50%)
->    3/	75%+1 - 100% (100%)
-> And so on till we got a maximum resolution (8 bits).
-
-Note that the PWM API does not expose the granularity to the API user,
-which is why I went with just putting a minimum on it of 32 steps.
-
-Anyways I don't have a strong opinion on this, so I'm fine with not clamping
-the base-unit to preserve granularity. We should still clamp it to avoid
-overflow if the user us requesting a really high frequency though!
-
-The old code had:
-
-	base_unit &= base_unit_range;
-
-Which means that if the user requests a too high value, then we first
-overflow base_unit and then truncate it to fit leading to a random
-frequency.
-
-So if we forget my minimal granularity argument, then at a minimum
-we need to replace the above line with:
-
-	base_unit = clamp_t(unsigned long long, base_unit, 1, base_unit_range - 1);
-
-And since we need the clamp anyways we can then keep the current round-closest
-behavior.
-
-Regards,
-
-Hans
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
