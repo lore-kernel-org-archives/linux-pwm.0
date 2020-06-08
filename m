@@ -1,119 +1,87 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld management controller
-Date: Mon, 8 Jun 2020 13:02:21 +0300
-Message-ID: <CAHp75VdiH=J-ovCdh1RFJDW_bJM8=pbXRaHmB691GLb-5oBmYQ@mail.gmail.com>
-References: <20200604211039.12689-1-michael@walle.cc> <20200604211039.12689-3-michael@walle.cc>
- <20200605065709.GD3714@dell> <20200605105026.GC5413@sirena.org.uk>
- <c5632bfab3956265e90fc2fb6c0b3cae@walle.cc> <20200606114645.GB2055@sirena.org.uk>
- <dc052a5c77171014ecc465b1da8b7ef8@walle.cc> <20200608082827.GB3567@dell>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH v2 03/15] pwm: lpss: Add range limit check for the
+ base_unit register value
+Date: Mon, 8 Jun 2020 13:07:12 +0200
+Message-ID: <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
+References: <20200607181840.13536-1-hdegoede@redhat.com>
+ <20200607181840.13536-4-hdegoede@redhat.com>
+ <20200608035023.GZ2428291@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729240AbgFHKCe (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Jun 2020 06:02:34 -0400
-In-Reply-To: <20200608082827.GB3567@dell>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20200608035023.GZ2428291@smile.fi.intel.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Ranjani Sridharan <ranjani.sridharan@linux.intel.com>, david.m.ertman@intel.com, shiraz.saleem@intel.com
-Cc: Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>, Mark Brown <broonie@kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>
 
-+Cc: some Intel people WRT our internal discussion about similar
-problem and solutions.
+Hi,
 
-On Mon, Jun 8, 2020 at 11:30 AM Lee Jones <lee.jones@linaro.org> wrote:
-> On Sat, 06 Jun 2020, Michael Walle wrote:
-> > Am 2020-06-06 13:46, schrieb Mark Brown:
-> > > On Fri, Jun 05, 2020 at 10:07:36PM +0200, Michael Walle wrote:
-> > > > Am 2020-06-05 12:50, schrieb Mark Brown:
+On 6/8/20 5:50 AM, Andy Shevchenko wrote:
+> On Sun, Jun 07, 2020 at 08:18:28PM +0200, Hans de Goede wrote:
+>> When the user requests a high enough period ns value, then the
+>> calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
+>>
+>> But according to the data-sheet the way the PWM controller works is that
+>> each input clock-cycle the base_unit gets added to a N bit counter and
+>> that counter overflowing determines the PWM output frequency. Adding 0
+>> to the counter is a no-op. The data-sheet even explicitly states that
+>> writing 0 to the base_unit bits will result in the PWM outputting a
+>> continuous 0 signal.
+> 
+> So, and why it's a problem?
 
-...
+Lets sya the user requests a PWM output frequency of 100Hz on Cherry Trail
+which has a 19200000 Hz clock this will result in 100 * 65536 / 19200000 =
+0.3 -> 0 as base-unit value. So instead of getting 100 Hz the user will
+now get a pin which is always outputting low.
 
-> Right.  I'm suggesting a means to extrapolate complex shared and
-> sometimes intertwined batches of register sets to be consumed by
-> multiple (sub-)devices spanning different subsystems.
->
-> Actually scrap that.  The most common case I see is a single Regmap
-> covering all child-devices.
+OTOH if we clamp to 1 as lowest value, the user will get 192000000 / 65536
+= 292 Hz as output frequency which is as close to the requested value as
+we can get while actually still working as a PWM controller.
 
-Yes, because often we need a synchronization across the entire address
-space of the (parent) device in question.
+>> base_unit values > (base_unit_range / 256), or iow base_unit values using
+>> the 8 most significant bits, cause loss of resolution of the duty-cycle.
+>> E.g. assuming a base_unit_range of 65536 steps, then a base_unit value of
+>> 768 (256 * 3), limits the duty-cycle resolution to 65536 / 768 = 85 steps.
+>> Clamp the max base_unit value to base_unit_range / 32 to ensure a
+>> duty-cycle resolution of at least 32 steps. This limits the maximum
+>> output frequency to 600 KHz / 780 KHz depending on the base clock.
+> 
+> This part I don't understand. Why we limiting base unit? I seems like a
+> deliberate regression.
 
->  It would be great if there was a way in
-> which we could make an assumption that the entire register address
-> space for a 'tagged' (MFD) device is to be shared (via Regmap) between
-> each of the devices described by its child-nodes.  Probably by picking
-> up on the 'simple-mfd' compatible string in the first instance.
->
-> Rob, is the above something you would contemplate?
->
-> Michael, do your register addresses overlap i.e. are they intermingled
-> with one another?  Do multiple child devices need access to the same
-> registers i.e. are they shared?
->
-> > > > But, there is more in my driver:
-> > > >  (1) there is a version check
->
-> If we can rid the Regmap dependency, then creating an entire driver to
-> conduct a version check is unjustifiable.  This could become an inline
-> function which is called by each of the sub-devices instead, for
-> example.
->
-> > > >  (2) there is another function for which there is no suitable linux
-> > > >      subsystem I'm aware of and thus which I'd like to us sysfs
-> > > >      attributes for: This controller supports 16 non-volatile
-> > > >      configuration bits. (this is still TBD)
->
-> There is a place for everything in Linux.
->
-> What do these bits configure?
->
-> > > TBH I'd also say that the enumeration of the subdevices for this
-> > > device should be in the device rather than the DT, they don't
-> > > seem to be things that exist outside of this one device.
-> >
-> > We're going circles here, formerly they were enumerated in the MFD.
-> > Yes, they are devices which aren't likely be used outside a
-> > "sl28cpld", but there might there might be other versions of the
-> > sl28cpld with other components on different base addresses. I
-> > don't care if they are enumerated in DT or MFD, actually, I'd
-> > prefer the latter. _But_ I would like to have the device tree
-> > properties for its subdevices, e.g. the ones for the watchdog or
-> > whatever components there might be in the future.
->
-> [...]
->
-> > MFD core can
-> > match a device tree node today; but only one per unique compatible
-> > string. So what should I use to differentiate the different
-> > subdevices?
->
-> Right.  I have been aware of this issue.  The only suitable solution
-> to this would be to match on 'reg'.
->
-> FYI: I plan to fix this.
->
-> If your register map needs to change, then I suggest that this is
-> either a new device or at least a different version of the device and
-> would also have to be represented as different (sub-)mfd_cell.
->
-> > Rob suggested the internal offset, which I did here.
->
-> FWIW, I don't like this idea.  DTs should not have to be modified
-> (either in the first instance or subsequently) or specifically
-> designed to patch inadequacies in any given OS.
->
-> > But then, there is less use in duplicating the offsets in the MFD
-> > just to have the MFD enumerate the subdevices and then match
-> > the device tree nodes against it. I can just use
-> > of_platform_populate() to enumerate the children and I won't
-> > have to duplicate the base addresses.
->
-> Which is fine.  However this causes a different issue for you.  By
-> stripping out the MFD code you render the MFD portion seemingly
-> superfluous.  Another issue driver authors commonly contend with.
+The way the PWM controller works is that the base-unit gets added to
+say a 16 bit (on CHT) counter each input clock and then the highest 8
+bits of that counter get compared to the value programmed into the
+ON_TIME_DIV bits.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Lets say we do not clamp and allow any value and lets say the user
+selects an output frequency of half the input clock, so base-unit
+value is 32768, then the counter will only have 2 values:
+0 and 32768 after that it will wrap around again. So any on time-div
+value < 128 will result in the output being always high and any
+value > 128 will result in the output being high/low 50% of the time
+and a value of 255 will make the output always low.
+
+So in essence we now only have 3 duty cycle levels, which seems like
+a bad idea to me / not what a pwm controller is supposed to do.
+
+So I decided to put a cut of at having at least 32 steps.
+
+The mean reason I wrote this patch though is to avoid a base-unit
+value of 0 which really results in a completely non working PWM
+output. I personally believe clamping on the high side is a good
+idea too. But if you are against that I can drop that part.
+
+Note that the clamping on the high side will not affect the
+primary user of the LPSS-pwm driver which is the i915 backlight
+code, that never asks for such high frequencies.  But it could
+help to avoid an user shooting themselves in the foot when using
+the PWM on a dev board through the sysfs interface.
+
+Regards,
+
+Hans
