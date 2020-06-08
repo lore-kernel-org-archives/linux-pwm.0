@@ -1,93 +1,159 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
- reg property
-Date: Mon, 8 Jun 2020 19:45:07 +0100
-Message-ID: <20200608184507.GC4106@dell>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-4-michael@walle.cc>
- <67e90dafd67c285158c2c6f67f92edb7@walle.cc>
- <20200515102848.GH271301@dell>
- <159e68b4ce53630ef906b2fcbca925bd@walle.cc>
- <20200608142413.GA4106@dell>
- <7566ef30fea9740f427f392aabde0eac@walle.cc>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld
+ management controller
+Date: Mon, 8 Jun 2020 19:56:51 +0100
+Message-ID: <20200608185651.GD4106@dell>
+References: <20200604211039.12689-1-michael@walle.cc>
+ <20200604211039.12689-3-michael@walle.cc>
+ <20200605065709.GD3714@dell>
+ <20200605105026.GC5413@sirena.org.uk>
+ <c5632bfab3956265e90fc2fb6c0b3cae@walle.cc>
+ <20200606114645.GB2055@sirena.org.uk>
+ <dc052a5c77171014ecc465b1da8b7ef8@walle.cc>
+ <20200608082827.GB3567@dell>
+ <CAHp75VdiH=J-ovCdh1RFJDW_bJM8=pbXRaHmB691GLb-5oBmYQ@mail.gmail.com>
+ <7d7feb374cbf5a587dc1ce65fc3ad672@walle.cc>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-hwmon-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <7566ef30fea9740f427f392aabde0eac-QKn5cuLxLXY@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TaqPxH82wqD4g@public.gmane.org
+In-Reply-To: <7d7feb374cbf5a587dc1ce65fc3ad672@walle.cc>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Michael Walle <michael@walle.cc>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Ranjani Sridharan <ranjani.sridharan@linux.intel.com>, david.m.ertman@intel.com, shiraz.saleem@intel.com, Rob Herring <robh+dt@kernel.org>, Mark Brown <broonie@kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Uwe
 List-Id: linux-pwm@vger.kernel.org
 
 On Mon, 08 Jun 2020, Michael Walle wrote:
 
-> Am 2020-06-08 16:24, schrieb Lee Jones:
-> > On Mon, 25 May 2020, Michael Walle wrote:
-> > > Am 2020-05-15 12:28, schrieb Lee Jones:
-> > > > On Thu, 30 Apr 2020, Michael Walle wrote:
-> > > >
-> > > > > Hi Lee,
-> > > > >
-> > > > > Am 2020-04-23 19:45, schrieb Michael Walle:
-> > > > > > There might be multiple children with the device tree compatible, for
-> > > > > > example if a MFD has multiple instances of the same function. In this
-> > > > > > case only the first is matched and the other children get a wrong
-> > > > > > of_node reference.
-> > > > > > Add a new option to match also against the unit address of the child
-> > > > > > node. Additonally, a new helper OF_MFD_CELL_REG is added.
+> Am 2020-06-08 12:02, schrieb Andy Shevchenko:
+> > +Cc: some Intel people WRT our internal discussion about similar
+> > problem and solutions.
 > > 
-> > [...]
+> > On Mon, Jun 8, 2020 at 11:30 AM Lee Jones <lee.jones@linaro.org> wrote:
+> > > On Sat, 06 Jun 2020, Michael Walle wrote:
+> > > > Am 2020-06-06 13:46, schrieb Mark Brown:
+> > > > > On Fri, Jun 05, 2020 at 10:07:36PM +0200, Michael Walle wrote:
+> > > > > > Am 2020-06-05 12:50, schrieb Mark Brown:
 > > 
-> > > > > > diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
-> > > > > > index d01d1299e49d..c2c0ad6b14f3 100644
-> > > > > > --- a/include/linux/mfd/core.h
-> > > > > > +++ b/include/linux/mfd/core.h
-> > > > > > @@ -13,8 +13,11 @@
-> > > > > >  #include <linux/plataorm_device.h>
-> > > > > >
-> > > > > >  #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
-> > > > > > +#define MFD_OF_REG_VALID	BIT(31)
-> > > >
-> > > > What about 64bit platforms?
+> > ...
+> > 
+> > > Right.  I'm suggesting a means to extrapolate complex shared and
+> > > sometimes intertwined batches of register sets to be consumed by
+> > > multiple (sub-)devices spanning different subsystems.
 > > > 
-> > > The idea was to have this as a logical number. I.e. for now you may
-> > > only
-> > > have one subdevice per unique compatible string. In fact, if you
-> > > have a
-> > > look at the ab8500.c, there are multiple "stericsson,ab8500-pwm"
-> > > subdevices. But there is only one DT node for all three of it. I guess
-> > > this works as long as you don't use phandles to reference the pwm node
-> > > in the device tree. Or you don't want to use device tree properties
-> > > per subdevice (for example the "timeout-sec" of a watchdog device).
+> > > Actually scrap that.  The most common case I see is a single Regmap
+> > > covering all child-devices.
 > > 
-> > This is not a good example, as the "stericsson,ab8500-pwm" is
-> > legitimate.  Here we are registering 3 potential devices, but only
-> > instantiating 1 of them.
+> > Yes, because often we need a synchronization across the entire address
+> > space of the (parent) device in question.
+> > 
+> > >  It would be great if there was a way in
+> > > which we could make an assumption that the entire register address
+> > > space for a 'tagged' (MFD) device is to be shared (via Regmap) between
+> > > each of the devices described by its child-nodes.  Probably by picking
+> > > up on the 'simple-mfd' compatible string in the first instance.
+> > > 
+> > > Rob, is the above something you would contemplate?
+> > > 
+> > > Michael, do your register addresses overlap i.e. are they intermingled
+> > > with one another?  Do multiple child devices need access to the same
+> > > registers i.e. are they shared?
 > 
-> Mh?
-> 
-> static const struct mfd_cell ab8500_devs[] = {
-> ..
->        OF_MFD_CELL("ab8500-pwm",
->                     NULL, NULL, 0, 1, "stericsson,ab8500-pwm"),
->         OF_MFD_CELL("ab8500-pwm",
->                     NULL, NULL, 0, 2, "stericsson,ab8500-pwm"),
->         OF_MFD_CELL("ab8500-pwm",
->                     NULL, NULL, 0, 3, "stericsson,ab8500-pwm"),
-> ..
-> }
-> 
-> And in pwm-ab8500.c there are three offsets based on the pdev->id.
-> 
-> Am I missing something here?
+> No they don't overlap, expect for maybe the version register, which is
+> just there once and not per function block.
 
-Scrap what I said above.
+Then what's stopping you having each device Regmap their own space?
 
-For some reason I had of_platform_populate() in my head.
+The issues I wish to resolve using 'simple-mfd' are when sub-devices
+register maps overlap and intertwine.
 
-This will register and enumerate 3 devices.
+> > > > > > But, there is more in my driver:
+> > > > > >  (1) there is a version check
+> > > 
+> > > If we can rid the Regmap dependency, then creating an entire driver to
+> > > conduct a version check is unjustifiable.  This could become an inline
+> > > function which is called by each of the sub-devices instead, for
+> > > example.
+> 
+> sounds good to me. (although there would then be a probe fail per sub-device
+> if the version is not supported)
+
+I don't see an issue with that.  I would put that check inside a
+shared call though, complete with support for locking.
+
+> > > > > >  (2) there is another function for which there is no suitable linux
+> > > > > >      subsystem I'm aware of and thus which I'd like to us sysfs
+> > > > > >      attributes for: This controller supports 16 non-volatile
+> > > > > >      configuration bits. (this is still TBD)
+> > > 
+> > > There is a place for everything in Linux.
+> > > 
+> > > What do these bits configure?
+> 
+> - hardware strappings which have to be there before the board powers up,
+>   like clocking mode for different SerDes settings
+> - "keep-in-reset" bits for onboard peripherals if you want to save power
+> - disable watchdog bits (there is a watchdog which is active right from
+>   the start and supervises the bootloader start and switches to failsafe
+>   mode if it wasn't successfully started)
+> - special boot modes, like eMMC, etc.
+> 
+> Think of it as a 16bit configuration word.
+
+And you wish for users to be able to view these at run-time?
+
+Can they adapt any of them on-the-fly or will the be RO?
+
+> > > > > TBH I'd also say that the enumeration of the subdevices for this
+> > > > > device should be in the device rather than the DT, they don't
+> > > > > seem to be things that exist outside of this one device.
+> > > >
+> > > > We're going circles here, formerly they were enumerated in the MFD.
+> > > > Yes, they are devices which aren't likely be used outside a
+> > > > "sl28cpld", but there might there might be other versions of the
+> > > > sl28cpld with other components on different base addresses. I
+> > > > don't care if they are enumerated in DT or MFD, actually, I'd
+> > > > prefer the latter. _But_ I would like to have the device tree
+> > > > properties for its subdevices, e.g. the ones for the watchdog or
+> > > > whatever components there might be in the future.
+> > > 
+> > > [...]
+> > > 
+> > > > MFD core can
+> > > > match a device tree node today; but only one per unique compatible
+> > > > string. So what should I use to differentiate the different
+> > > > subdevices?
+> > > 
+> > > Right.  I have been aware of this issue.  The only suitable solution
+> > > to this would be to match on 'reg'.
+> 
+> see below (1)
+> 
+> > > 
+> > > FYI: I plan to fix this.
+> > > 
+> > > If your register map needs to change, then I suggest that this is
+> > > either a new device or at least a different version of the device and
+> > > would also have to be represented as different (sub-)mfd_cell.
+> > > 
+> > > > Rob suggested the internal offset, which I did here.
+> > > 
+> > > FWIW, I don't like this idea.  DTs should not have to be modified
+> > > (either in the first instance or subsequently) or specifically
+> > > designed to patch inadequacies in any given OS.
+> 
+> How does (1) play together with this? What do you propose the "reg"
+> property should contain?
+
+Whatever is in the 'reg' property contained in the Device Tree node.
+Either the full address or an offset would be suitable.
+
+Caveat: All this thinking has been done on-the-fly.  I would need to
+look at some examples of existing devices and start coding before I
+could really think the solution through.
+
+Happy to discuss and/or take recommendations though.
 
 -- 
 Lee Jones [李琼斯]
