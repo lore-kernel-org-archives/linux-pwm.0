@@ -1,66 +1,87 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 03/16] mfd: mfd-core: match device tree node against
- reg property
-Date: Mon, 8 Jun 2020 15:24:13 +0100
-Message-ID: <20200608142413.GA4106@dell>
-References: <20200423174543.17161-1-michael@walle.cc>
- <20200423174543.17161-4-michael@walle.cc>
- <67e90dafd67c285158c2c6f67f92edb7@walle.cc>
- <20200515102848.GH271301@dell>
- <159e68b4ce53630ef906b2fcbca925bd@walle.cc>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: pwm/i915: Convert pwm-crc and i915 driver's PWM code to use the
+ atomic PWM API
+Date: Mon, 8 Jun 2020 16:35:00 +0200
+Message-ID: <20200608143500.GX20149@phenom.ffwll.local>
+References: <20200606202601.48410-1-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <159e68b4ce53630ef906b2fcbca925bd-QKn5cuLxLXY@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TaqPxH82wqD4g@public.gmane.org
+In-Reply-To: <20200606202601.48410-1-hdegoede@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 25 May 2020, Michael Walle wrote:
-> Am 2020-05-15 12:28, schrieb Lee Jones:
-> > On Thu, 30 Apr 2020, Michael Walle wrote:
-> > 
-> > > Hi Lee,
-> > > 
-> > > Am 2020-04-23 19:45, schrieb Michael Walle:
-> > > > There might be multiple children with the device tree compatible, for
-> > > > example if a MFD has multiple instances of the same function. In this
-> > > > case only the first is matched and the other children get a wrong
-> > > > of_node reference.
-> > > > Add a new option to match also against the unit address of the child
-> > > > node. Additonally, a new helper OF_MFD_CELL_REG is added.
-
-[...]
-
-> > > > diff --git a/include/linux/mfd/core.h b/include/linux/mfd/core.h
-> > > > index d01d1299e49d..c2c0ad6b14f3 100644
-> > > > --- a/include/linux/mfd/core.h
-> > > > +++ b/include/linux/mfd/core.h
-> > > > @@ -13,8 +13,11 @@
-> > > >  #include <linux/platform_device.h>
-> > > >
-> > > >  #define MFD_RES_SIZE(arr) (sizeof(arr) / sizeof(struct resource))
-> > > > +#define MFD_OF_REG_VALID	BIT(31)
-> > 
-> > What about 64bit platforms?
+On Sat, Jun 06, 2020 at 10:25:45PM +0200, Hans de Goede wrote:
+> Hi All,
 > 
-> The idea was to have this as a logical number. I.e. for now you may only
-> have one subdevice per unique compatible string. In fact, if you have a
-> look at the ab8500.c, there are multiple "stericsson,ab8500-pwm"
-> subdevices. But there is only one DT node for all three of it. I guess
-> this works as long as you don't use phandles to reference the pwm node
-> in the device tree. Or you don't want to use device tree properties
-> per subdevice (for example the "timeout-sec" of a watchdog device).
+> This patch series converts the i915 driver's cpde for controlling the
+> panel's backlight with an external PWM controller to use the atomic PWM API.
+> 
+> Initially the plan was for this series to consist of 2 parts:
+> 1. convert the pwm-crc driver to support the atomic PWM API and
+> 2. convert the i915 driver's PWM code to use the atomic PWM API.
+> 
+> But during testing I've found a number of bugs in the pwm-lpss and I
+> found that the acpi_lpss code needs some special handling because of
+> some ugliness found in most Cherry Trail DSDTs.
+> 
+> So now this series has grown somewhat large and consists of 4 parts:
+> 
+> 1. acpi_lpss fixes workarounds for Cherry Trail DSTD nastiness
+> 2. various fixes to the pwm-lpss driver
+> 3. convert the pwm-crc driver to support the atomic PWM API and
+> 4. convert the i915 driver's PWM code to use the atomic PWM API
+> 
+> So we need to discuss how to merge this (once it passes review).
+> Although the inter-dependencies are only runtime I still think we should
+> make sure that 1-3 are in the drm-intel-next-queued (dinq) tree before
+> merging the i915 changes. Both to make sure that the intel-gfx CI system
+> does not become unhappy and for bisecting reasons.
 
-This is not a good example, as the "stericsson,ab8500-pwm" is
-legitimate.  Here we are registering 3 potential devices, but only
-instantiating 1 of them.
+Simplest is if acpi acks the acpi patches for merging through
+drm-intel.git. Second simplest is topic branch (drm-intel maintainers can
+do that) with the entire pile, which then acpi and drm-intel can both pull
+in.
+
+Up to the two maintainer teams to figure this one out.
+
+/me out
+
+Cheers, Daniel
+
+> 
+> The involved acpi_lpss and pwm drivers do not see a whole lot of churn,
+> so we could just merge everything through dinq, or we could use immutable
+> branch and merge those into dinq.
+> 
+> So Rafael and Thierry, can I either get your Acked-by for directly merging
+> this into dinq, or can you provide an immutable branch with these patches?
+> 
+> This series has been tested (and re-tested after adding various bug-fixes)
+> extensively. It has been tested on the following devices:
+> 
+> -Asus T100TA		BYT + CRC-PMIC PWM
+> -Toshiba WT8-A		BYT + CRC-PMIC PWM
+> -Thundersoft TS178	BYT + CRC-PMIC PWM, inverse PWM
+> -Asus T100HA		CHT + CRC-PMIC PWM
+> -Terra Pad 1061		BYT + LPSS PWM
+> -Trekstor Twin 10.1	BYT + LPSS PWM
+> -Asus T101HA		CHT + CRC-PMIC PWM
+> -GPD Pocket		CHT + CRC-PMIC PWM
+> 
+> Regards,
+> 
+> Hans
+> 
+> _______________________________________________
+> dri-devel mailing list
+> dri-devel@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/dri-devel
 
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
