@@ -1,140 +1,50 @@
-From: Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld management
- controller
-Date: Tue, 09 Jun 2020 17:30:06 +0200
-Message-ID: <95e6ec9bbdf6af7a9ff9c31786f743f2@walle.cc>
-References: <c5632bfab3956265e90fc2fb6c0b3cae@walle.cc>
- <20200606114645.GB2055@sirena.org.uk>
- <dc052a5c77171014ecc465b1da8b7ef8@walle.cc> <20200608082827.GB3567@dell>
- <CAHp75VdiH=J-ovCdh1RFJDW_bJM8=pbXRaHmB691GLb-5oBmYQ@mail.gmail.com>
- <7d7feb374cbf5a587dc1ce65fc3ad672@walle.cc> <20200608185651.GD4106@dell>
- <32231f26f7028d62aeda8fdb3364faf1@walle.cc> <20200609064735.GH4106@dell>
- <32287ac0488f7cbd5a7d1259c284e554@walle.cc> <20200609151941.GM4106@dell>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4 01/11] dt-bindings: mfd: Add bindings for sl28cpld
+Date: Tue, 9 Jun 2020 10:28:30 -0600
+Message-ID: <20200609162830.GA1019634@bogus>
+References: <20200604211039.12689-1-michael@walle.cc>
+ <20200604211039.12689-2-michael@walle.cc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
-In-Reply-To: <20200609151941.GM4106@dell>
-Sender: linux-hwmon-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Ranjani Sridharan <ranjani.sridharan@linux.intel.com>, david.m.ertman@intel.com, shiraz.saleem@intel.com, Rob Herring <robh+dt@kernel.org>, Mark Brown <broonie@kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K?=
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200604211039.12689-2-michael@walle.cc>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Michael Walle <michael@walle.cc>
+Cc: Mark Brown <broonie@kernel.org>, linux-watchdog@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, linux-hwmon@vger.kernel.org, Jean Delvare <jdelvare@suse.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jason Cooper <jason@lakedaemon.net>, Lee Jones <lee.jones@linaro.org>, Li Yang <leoyang.li@nxp.com>, linux-gpio@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org, Wim Van Sebroeck <wim@linux-watchdog.org>, Marc Zyngier <maz@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Bartosz
 List-Id: linux-pwm@vger.kernel.org
 
-Am 2020-06-09 17:19, schrieb Lee Jones:
-> On Tue, 09 Jun 2020, Michael Walle wrote:
+On Thu, 04 Jun 2020 23:10:29 +0200, Michael Walle wrote:
+> Add a device tree bindings for the board management controller found on
+> the Kontron SMARC-sAL28 board.
 > 
->> Am 2020-06-09 08:47, schrieb Lee Jones:
->> > On Mon, 08 Jun 2020, Michael Walle wrote:
->> >
->> > > Am 2020-06-08 20:56, schrieb Lee Jones:
->> > > > On Mon, 08 Jun 2020, Michael Walle wrote:
->> > > >
->> > > > > Am 2020-06-08 12:02, schrieb Andy Shevchenko:
->> > > > > > +Cc: some Intel people WRT our internal discussion about similar
->> > > > > > problem and solutions.
->> > > > > >
->> > > > > > On Mon, Jun 8, 2020 at 11:30 AM Lee Jones <lee.jones@linaro.org> wrote:
->> > > > > > > On Sat, 06 Jun 2020, Michael Walle wrote:
->> > > > > > > > Am 2020-06-06 13:46, schrieb Mark Brown:
->> > > > > > > > > On Fri, Jun 05, 2020 at 10:07:36PM +0200, Michael Walle wrote:
->> > > > > > > > > > Am 2020-06-05 12:50, schrieb Mark Brown:
->> > > > > >
->> > > > > > ...
->> > > > > >
->> > > > > > > Right.  I'm suggesting a means to extrapolate complex shared and
->> > > > > > > sometimes intertwined batches of register sets to be consumed by
->> > > > > > > multiple (sub-)devices spanning different subsystems.
->> > > > > > >
->> > > > > > > Actually scrap that.  The most common case I see is a single Regmap
->> > > > > > > covering all child-devices.
->> > > > > >
->> > > > > > Yes, because often we need a synchronization across the entire address
->> > > > > > space of the (parent) device in question.
->> > > > > >
->> > > > > > >  It would be great if there was a way in
->> > > > > > > which we could make an assumption that the entire register address
->> > > > > > > space for a 'tagged' (MFD) device is to be shared (via Regmap) between
->> > > > > > > each of the devices described by its child-nodes.  Probably by picking
->> > > > > > > up on the 'simple-mfd' compatible string in the first instance.
->> > > > > > >
->> > > > > > > Rob, is the above something you would contemplate?
->> > > > > > >
->> > > > > > > Michael, do your register addresses overlap i.e. are they intermingled
->> > > > > > > with one another?  Do multiple child devices need access to the same
->> > > > > > > registers i.e. are they shared?
->> > > > >
->> > > > > No they don't overlap, expect for maybe the version register, which is
->> > > > > just there once and not per function block.
->> > > >
->> > > > Then what's stopping you having each device Regmap their own space?
->> > >
->> > > Because its just one I2C device, AFAIK thats not possible, right?
->> >
->> > Not sure what (if any) the restrictions are.
->> 
->> You can only have one device per I2C address. Therefore, I need one 
->> device
->> which is enumerated by the I2C bus, which then enumerates its 
->> sub-devices.
->> I thought this was one of the use cases for MFD. (Regardless of how a
->> sub-device access its registers). So even in the "simple-regmap" case 
->> this
->> would need to be an i2c device.
-
-Here (see below)
-
->> 
->> E.g.
->> 
->> &i2cbus {
->>   mfd-device@10 {
->>     compatible = "simple-regmap", "simple-mfd";
->>     reg = <10>;
->>     regmap,reg-bits = <8>;
->>     regmap,val-bits = <8>;
->>     sub-device@0 {
->>       compatible = "vendor,sub-device0";
->>       reg = <0>;
->>     };
->>     ...
->> };
->> 
->> Or if you just want the regmap:
->> 
->> &soc {
->>   regmap: regmap@fff0000 {
->>     compatible = "simple-regmap";
->>     reg = <0xfff0000>;
->>     regmap,reg-bits = <16>;
->>     regmap,val-bits = <32>;
->>   };
->> 
->>   enet-which-needs-syscon-too@1000000 {
->>     vendor,ctrl-regmap = <&regmap>;
->>   };
->> };
->> 
->> Similar to the current syscon (which is MMIO only..).
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  .../bindings/gpio/kontron,sl28cpld-gpio.yaml  |  54 +++++++
+>  .../hwmon/kontron,sl28cpld-hwmon.yaml         |  27 ++++
+>  .../kontron,sl28cpld-intc.yaml                |  54 +++++++
+>  .../bindings/mfd/kontron,sl28cpld.yaml        | 153 ++++++++++++++++++
+>  .../bindings/pwm/kontron,sl28cpld-pwm.yaml    |  35 ++++
+>  .../watchdog/kontron,sl28cpld-wdt.yaml        |  35 ++++
+>  6 files changed, 358 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
+>  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml
+>  create mode 100644 Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
+>  create mode 100644 Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
 > 
-> We do not need a 'simple-regmap' solution for your use-case.
-> 
-> Since your device's registers are segregated, just split up the
-> register map and allocate each sub-device with it's own slice.
 
-I don't get it, could you make a device tree example for my
-use-case? (see also above)
 
--michael
+My bot found errors running 'make dt_binding_check' on your patch:
 
-> 
->> > I can't think of any reasons why not, off the top of my head.
->> >
->> > Does Regmap only deal with shared accesses from multiple devices
->> > accessing a single register map, or can it also handle multiple
->> > devices communicating over a single I2C channel?
->> >
->> > One for Mark perhaps.
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.example.dt.yaml: sl28cpld@4a: 'gpio@1a', 'gpio@1b', 'hwmon@b', 'interrupt-controller@1c', 'pwm@c', 'pwm@e' do not match any of the regexes: '^gpio(@[0-9]+)?$', '^hwmon(@[0-9]+)?$', '^interrupt-controller(@[0-9]+)?$', '^pwm(@[0-9]+)?$', '^watchdog(@[0-9]+)?$', 'pinctrl-[0-9]+'
 
--- 
--michael
+See https://patchwork.ozlabs.org/patch/1303780
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure dt-schema is up to date:
+
+pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
+
+Please check and re-submit.
