@@ -1,50 +1,135 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 01/11] dt-bindings: mfd: Add bindings for sl28cpld
-Date: Tue, 9 Jun 2020 10:28:30 -0600
-Message-ID: <20200609162830.GA1019634@bogus>
+Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld
+ management controller
+Date: Tue, 9 Jun 2020 10:54:01 -0600
+Message-ID: <20200609165401.GB1019634@bogus>
 References: <20200604211039.12689-1-michael@walle.cc>
- <20200604211039.12689-2-michael@walle.cc>
+ <20200604211039.12689-3-michael@walle.cc>
+ <20200605065709.GD3714@dell>
+ <20200605105026.GC5413@sirena.org.uk>
+ <c5632bfab3956265e90fc2fb6c0b3cae@walle.cc>
+ <20200606114645.GB2055@sirena.org.uk>
+ <dc052a5c77171014ecc465b1da8b7ef8@walle.cc>
+ <20200608082827.GB3567@dell>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-gpio-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200604211039.12689-2-michael@walle.cc>
+In-Reply-To: <20200608082827.GB3567@dell>
 Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Walle <michael@walle.cc>
-Cc: Mark Brown <broonie@kernel.org>, linux-watchdog@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, linux-hwmon@vger.kernel.org, Jean Delvare <jdelvare@suse.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jason Cooper <jason@lakedaemon.net>, Lee Jones <lee.jones@linaro.org>, Li Yang <leoyang.li@nxp.com>, linux-gpio@vger.kernel.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org, Wim Van Sebroeck <wim@linux-watchdog.org>, Marc Zyngier <maz@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Bartosz
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Michael Walle <michael@walle.cc>, Mark Brown <broonie@kernel.org>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 04 Jun 2020 23:10:29 +0200, Michael Walle wrote:
-> Add a device tree bindings for the board management controller found on
-> the Kontron SMARC-sAL28 board.
+On Mon, Jun 08, 2020 at 09:28:27AM +0100, Lee Jones wrote:
+> Rob, something for you below.
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  .../bindings/gpio/kontron,sl28cpld-gpio.yaml  |  54 +++++++
->  .../hwmon/kontron,sl28cpld-hwmon.yaml         |  27 ++++
->  .../kontron,sl28cpld-intc.yaml                |  54 +++++++
->  .../bindings/mfd/kontron,sl28cpld.yaml        | 153 ++++++++++++++++++
->  .../bindings/pwm/kontron,sl28cpld-pwm.yaml    |  35 ++++
->  .../watchdog/kontron,sl28cpld-wdt.yaml        |  35 ++++
->  6 files changed, 358 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/gpio/kontron,sl28cpld-gpio.yaml
->  create mode 100644 Documentation/devicetree/bindings/hwmon/kontron,sl28cpld-hwmon.yaml
->  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/kontron,sl28cpld-intc.yaml
->  create mode 100644 Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
->  create mode 100644 Documentation/devicetree/bindings/pwm/kontron,sl28cpld-pwm.yaml
->  create mode 100644 Documentation/devicetree/bindings/watchdog/kontron,sl28cpld-wdt.yaml
+> On Sat, 06 Jun 2020, Michael Walle wrote:
+> > Am 2020-06-06 13:46, schrieb Mark Brown:
+> > > On Fri, Jun 05, 2020 at 10:07:36PM +0200, Michael Walle wrote:
+> > > > Am 2020-06-05 12:50, schrieb Mark Brown:
+> > > 
+> > > > > I have no idea what you are thinking of when you say "simple-regmap" so
+> > > > > it is difficult to comment.
+> > > 
+> > > > I guess, Lee is suggesting to be able to create a regmap instance via
+> > > > device tree (and populate its child nodes?). Like
+> > > >   compatible = "syscon", "simple-mfd";
+> > > > but for any regmap, not just MMIO.
 > 
+> Bingo!
+> 
+> > > I don't understand why this would be anything separate to
+> > > simple-mfd.
+> > 
+> > Don't just simple-mfd tells the of core, to probe the children this
+> > node? Where does the regmap then come from?
+> 
+> Right.  I'm suggesting a means to extrapolate complex shared and
+> sometimes intertwined batches of register sets to be consumed by
+> multiple (sub-)devices spanning different subsystems.
+> 
+> Actually scrap that.  The most common case I see is a single Regmap
+> covering all child-devices.  It would be great if there was a way in
+> which we could make an assumption that the entire register address
+> space for a 'tagged' (MFD) device is to be shared (via Regmap) between
+> each of the devices described by its child-nodes.  Probably by picking
+> up on the 'simple-mfd' compatible string in the first instance.
+> 
+> Rob, is the above something you would contemplate?
 
+No. I'd like to just kill off syscon and simple-mfd really. Those are 
+just hints meaning a specific compatible is still needed, but I see them 
+all the time alone (or combined like above). 'syscon' just serves to 
+create a regmap. This could be accomplished just with a list of 
+compatibles to register a regmap for. That might be a longish list, but 
+wanting a regmap is really a kernel implementation detail and decision.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+> Michael, do your register addresses overlap i.e. are they intermingled
+> with one another?  Do multiple child devices need access to the same
+> registers i.e. are they shared?
+> 
+> > > > But, there is more in my driver:
+> > > >  (1) there is a version check
+> 
+> If we can rid the Regmap dependency, then creating an entire driver to
+> conduct a version check is unjustifiable.  This could become an inline
+> function which is called by each of the sub-devices instead, for
+> example.
+> 
+> > > >  (2) there is another function for which there is no suitable linux
+> > > >      subsystem I'm aware of and thus which I'd like to us sysfs
+> > > >      attributes for: This controller supports 16 non-volatile
+> > > >      configuration bits. (this is still TBD)
+> 
+> There is a place for everything in Linux.
+> 
+> What do these bits configure?
+> 
+> > > TBH I'd also say that the enumeration of the subdevices for this
+> > > device should be in the device rather than the DT, they don't
+> > > seem to be things that exist outside of this one device.
+> > 
+> > We're going circles here, formerly they were enumerated in the MFD.
+> > Yes, they are devices which aren't likely be used outside a
+> > "sl28cpld", but there might there might be other versions of the
+> > sl28cpld with other components on different base addresses. I
+> > don't care if they are enumerated in DT or MFD, actually, I'd
+> > prefer the latter. _But_ I would like to have the device tree
+> > properties for its subdevices, e.g. the ones for the watchdog or
+> > whatever components there might be in the future.
+> 
+> [...]
+> 
+> > MFD core can
+> > match a device tree node today; but only one per unique compatible
+> > string. So what should I use to differentiate the different
+> > subdevices?
+> 
+> Right.  I have been aware of this issue.  The only suitable solution
+> to this would be to match on 'reg'.
+> 
+> FYI: I plan to fix this.
+> 
+> If your register map needs to change, then I suggest that this is
+> either a new device or at least a different version of the device and
+> would also have to be represented as different (sub-)mfd_cell.
 
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.example.dt.yaml: sl28cpld@4a: 'gpio@1a', 'gpio@1b', 'hwmon@b', 'interrupt-controller@1c', 'pwm@c', 'pwm@e' do not match any of the regexes: '^gpio(@[0-9]+)?$', '^hwmon(@[0-9]+)?$', '^interrupt-controller(@[0-9]+)?$', '^pwm(@[0-9]+)?$', '^watchdog(@[0-9]+)?$', 'pinctrl-[0-9]+'
+The same register set at a different offset is the same (sub)device.
 
-See https://patchwork.ozlabs.org/patch/1303780
+> 
+> > Rob suggested the internal offset, which I did here.
+> 
+> FWIW, I don't like this idea.  DTs should not have to be modified
+> (either in the first instance or subsequently) or specifically
+> designed to patch inadequacies in any given OS.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure dt-schema is up to date:
+My understanding is there can be differing combinations or number of 
+instances of sub devices for this device. That's when having DT sub 
+devices makes sense. If the h/w changes, then the DT should change.
 
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
+Multiple instances of devices require an address to identify them and we 
+don't make up numbering if we can avoid it. The earlier revisions just 
+had made up indices for addresses.
 
-Please check and re-submit.
+Rob
