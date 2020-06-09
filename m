@@ -1,119 +1,61 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4 02/11] mfd: Add support for Kontron sl28cpld
- management controller
-Date: Tue, 9 Jun 2020 07:47:35 +0100
-Message-ID: <20200609064735.GH4106@dell>
-References: <20200605065709.GD3714@dell>
- <20200605105026.GC5413@sirena.org.uk>
- <c5632bfab3956265e90fc2fb6c0b3cae@walle.cc>
- <20200606114645.GB2055@sirena.org.uk>
- <dc052a5c77171014ecc465b1da8b7ef8@walle.cc>
- <20200608082827.GB3567@dell>
- <CAHp75VdiH=J-ovCdh1RFJDW_bJM8=pbXRaHmB691GLb-5oBmYQ@mail.gmail.com>
- <7d7feb374cbf5a587dc1ce65fc3ad672@walle.cc>
- <20200608185651.GD4106@dell>
- <32231f26f7028d62aeda8fdb3364faf1@walle.cc>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 06/15] pwm: crc: Fix period / duty_cycle times being
+ off by a factor of 256
+Date: Tue, 9 Jun 2020 14:29:05 +0300
+Message-ID: <20200609112905.GK2428291@smile.fi.intel.com>
+References: <20200607181840.13536-1-hdegoede@redhat.com>
+ <20200607181840.13536-7-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <32231f26f7028d62aeda8fdb3364faf1-QKn5cuLxLXY@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Cc: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ranjani Sridharan <ranjani.sridharan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, david.m.ertman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, shiraz.saleem-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:GPIO SUBSYSTEM" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe
+In-Reply-To: <20200607181840.13536-7-hdegoede@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 08 Jun 2020, Michael Walle wrote:
-
-> Am 2020-06-08 20:56, schrieb Lee Jones:
-> > On Mon, 08 Jun 2020, Michael Walle wrote:
-> > 
-> > > Am 2020-06-08 12:02, schrieb Andy Shevchenko:
-> > > > +Cc: some Intel people WRT our internal discussion about similar
-> > > > problem and solutions.
-> > > >
-> > > > On Mon, Jun 8, 2020 at 11:30 AM Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> > > > > On Sat, 06 Jun 2020, Michael Walle wrote:
-> > > > > > Am 2020-06-06 13:46, schrieb Mark Brown:
-> > > > > > > On Fri, Jun 05, 2020 at 10:07:36PM +0200, Michael Walle wrote:
-> > > > > > > > Am 2020-06-05 12:50, schrieb Mark Brown:
-> > > >
-> > > > ...
-> > > >
-> > > > > Right.  I'm suggesting a means to extrapolate complex shared and
-> > > > > sometimes intertwined batches of register sets to be consumed by
-> > > > > multiple (sub-)devices spanning different subsystems.
-> > > > >
-> > > > > Actually scrap that.  The most common case I see is a single Regmap
-> > > > > covering all child-devices.
-> > > >
-> > > > Yes, because often we need a synchronization across the entire address
-> > > > space of the (parent) device in question.
-> > > >
-> > > > >  It would be great if there was a way in
-> > > > > which we could make an assumption that the entire register address
-> > > > > space for a 'tagged' (MFD) device is to be shared (via Regmap) between
-> > > > > each of the devices described by its child-nodes.  Probably by picking
-> > > > > up on the 'simple-mfd' compatible string in the first instance.
-> > > > >
-> > > > > Rob, is the above something you would contemplate?
-> > > > >
-> > > > > Michael, do your register addresses overlap i.e. are they intermingled
-> > > > > with one another?  Do multiple child devices need access to the same
-> > > > > registers i.e. are they shared?
-> > > 
-> > > No they don't overlap, expect for maybe the version register, which is
-> > > just there once and not per function block.
-> > 
-> > Then what's stopping you having each device Regmap their own space?
+On Sun, Jun 07, 2020 at 08:18:31PM +0200, Hans de Goede wrote:
+> While looking into adding atomic-pwm support to the pwm-crc driver I
+> noticed something odd, there is a PWM_BASE_CLK define of 6 MHz and
+> there is a clock-divider which divides this with a value between 1-128,
+> and there are 256 duty-cycle steps.
 > 
-> Because its just one I2C device, AFAIK thats not possible, right?
-
-Not sure what (if any) the restrictions are.
-
-I can't think of any reasons why not, off the top of my head.
-
-Does Regmap only deal with shared accesses from multiple devices
-accessing a single register map, or can it also handle multiple
-devices communicating over a single I2C channel?
-
-One for Mark perhaps.
-
-> > The issues I wish to resolve using 'simple-mfd' are when sub-devices
-> > register maps overlap and intertwine.
-
-[...]
-
-> > > > > What do these bits configure?
-> > > 
-> > > - hardware strappings which have to be there before the board powers
-> > > up,
-> > >   like clocking mode for different SerDes settings
-> > > - "keep-in-reset" bits for onboard peripherals if you want to save
-> > > power
-> > > - disable watchdog bits (there is a watchdog which is active right
-> > > from
-> > >   the start and supervises the bootloader start and switches to
-> > > failsafe
-> > >   mode if it wasn't successfully started)
-> > > - special boot modes, like eMMC, etc.
-> > > 
-> > > Think of it as a 16bit configuration word.
-> > 
-> > And you wish for users to be able to view these at run-time?
+> The pwm-crc code before this commit assumed that a clock-divider
+> setting of 1 means that the PWM output is running at 6 MHZ, if that
+> is true, where do these 256 duty-cycle steps come from?
 > 
-> And esp. change them.
+> This would require an internal frequency of 256 * 6 MHz = 1.5 GHz, that
+> seems unlikely for a PMIC which is using a silicon process optimized for
+> power-switching transistors. It is way more likely that there is an 8
+> bit counter for the duty cycle which acts as an extra fixed divider
+> wrt the PWM output frequency.
 > 
-> > Can they adapt any of them on-the-fly or will the be RO?
+> The main user of the pwm-crc driver is the i915 GPU driver which uses it
+> for backlight control. Lets compare the PWM register values set by the
+> video-BIOS (the GOP), assuming the extra fixed divider is present versus
+> the PWM frequency specified in the Video-BIOS-Tables:
 > 
-> They are R/W but only will only affect the board behavior after a reset.
+> Device:		PWM Hz set by BIOS	PWM Hz specified in VBT
+> Asus T100TA 	200			200
+> Asus T100HA 	200			200
+> Lenovo Miix 2 8	23437			20000
+> Toshiba WT8-A	23437			20000
+> 
+> So as we can see if we assume the extra division by 256 then the register
+> values set by the GOP are an exact match for the VBT values, where as
+> otherwise the values would be of by a factor of 256.
+> 
+> This commit fixes the period / duty_cycle calculations to take the
+> extra division by 256 into account.
 
-I see.  Makes sense.  This is board controller territory.  Perhaps
-suitable for inclusion into drivers/soc or drivers/platform.
+...
+
+> +#define NSEC_PER_MHZ		1000
+
+This is against physics. What this cryptic name means actually?
+Existing NSEC_PER_USEC ?
 
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+With Best Regards,
+Andy Shevchenko
