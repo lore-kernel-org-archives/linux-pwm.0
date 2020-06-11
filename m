@@ -1,132 +1,95 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH] dt-bindings: Remove redundant 'maxItems'
-Date: Thu, 11 Jun 2020 13:47:38 -0600
-Message-ID: <20200611194738.1480393-1-robh@kernel.org>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: pwm/i915: Convert pwm-crc and i915 driver's PWM code to use the
+ atomic PWM API
+Date: Thu, 11 Jun 2020 23:21:44 +0200
+Message-ID: <20200611212144.i7ma7kriznidds4r@taurus.defre.kleine-koenig.org>
+References: <20200606202601.48410-1-hdegoede@redhat.com>
+ <20200608143500.GX20149@phenom.ffwll.local>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-clk-owner@vger.kernel.org>
-Sender: linux-clk-owner@vger.kernel.org
-To: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Anson Huang <Anson.Huang@nxp.com>, linux-clk@vger.kernel.org, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="um757tuptzwklztk"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726153AbgFKVVy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 Jun 2020 17:21:54 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE14C08C5C1
+        for <linux-pwm@vger.kernel.org>; Thu, 11 Jun 2020 14:21:54 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20200608143500.GX20149@phenom.ffwll.local>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 
-There's no need to specify 'maxItems' with the same value as the number
-of entries in 'items'. A meta-schema update will catch future cases.
 
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Anson Huang <Anson.Huang@nxp.com>
-Cc: linux-clk@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-usb@vger.kernel.org
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/clock/imx6q-clock.yaml     | 1 -
- Documentation/devicetree/bindings/clock/imx6sl-clock.yaml    | 1 -
- Documentation/devicetree/bindings/clock/imx6sll-clock.yaml   | 1 -
- Documentation/devicetree/bindings/clock/imx6sx-clock.yaml    | 1 -
- Documentation/devicetree/bindings/clock/imx6ul-clock.yaml    | 1 -
- Documentation/devicetree/bindings/pwm/imx-pwm.yaml           | 2 --
- Documentation/devicetree/bindings/usb/nvidia,tegra-xudc.yaml | 2 --
- 7 files changed, 9 deletions(-)
+--um757tuptzwklztk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/clock/imx6q-clock.yaml b/Documentation/devicetree/bindings/clock/imx6q-clock.yaml
-index 429e3b62b965..92a8e545e212 100644
---- a/Documentation/devicetree/bindings/clock/imx6q-clock.yaml
-+++ b/Documentation/devicetree/bindings/clock/imx6q-clock.yaml
-@@ -23,7 +23,6 @@ properties:
-     items:
-       - description: CCM interrupt request 1
-       - description: CCM interrupt request 2
--    maxItems: 2
- 
-   '#clock-cells':
-     const: 1
-diff --git a/Documentation/devicetree/bindings/clock/imx6sl-clock.yaml b/Documentation/devicetree/bindings/clock/imx6sl-clock.yaml
-index 135568c46350..c97bf95b4150 100644
---- a/Documentation/devicetree/bindings/clock/imx6sl-clock.yaml
-+++ b/Documentation/devicetree/bindings/clock/imx6sl-clock.yaml
-@@ -23,7 +23,6 @@ properties:
-     items:
-       - description: CCM interrupt request 1
-       - description: CCM interrupt request 2
--    maxItems: 2
- 
-   '#clock-cells':
-     const: 1
-diff --git a/Documentation/devicetree/bindings/clock/imx6sll-clock.yaml b/Documentation/devicetree/bindings/clock/imx6sll-clock.yaml
-index fa55f1ce3e57..de48924be191 100644
---- a/Documentation/devicetree/bindings/clock/imx6sll-clock.yaml
-+++ b/Documentation/devicetree/bindings/clock/imx6sll-clock.yaml
-@@ -23,7 +23,6 @@ properties:
-     items:
-       - description: CCM interrupt request 1
-       - description: CCM interrupt request 2
--    maxItems: 2
- 
-   '#clock-cells':
-     const: 1
-diff --git a/Documentation/devicetree/bindings/clock/imx6sx-clock.yaml b/Documentation/devicetree/bindings/clock/imx6sx-clock.yaml
-index 982d698e8c54..e50cddee43c3 100644
---- a/Documentation/devicetree/bindings/clock/imx6sx-clock.yaml
-+++ b/Documentation/devicetree/bindings/clock/imx6sx-clock.yaml
-@@ -23,7 +23,6 @@ properties:
-     items:
-       - description: CCM interrupt request 1
-       - description: CCM interrupt request 2
--    maxItems: 2
- 
-   '#clock-cells':
-     const: 1
-diff --git a/Documentation/devicetree/bindings/clock/imx6ul-clock.yaml b/Documentation/devicetree/bindings/clock/imx6ul-clock.yaml
-index 3c779eea6394..36ce7667c972 100644
---- a/Documentation/devicetree/bindings/clock/imx6ul-clock.yaml
-+++ b/Documentation/devicetree/bindings/clock/imx6ul-clock.yaml
-@@ -23,7 +23,6 @@ properties:
-     items:
-       - description: CCM interrupt request 1
-       - description: CCM interrupt request 2
--    maxItems: 2
- 
-   '#clock-cells':
-     const: 1
-diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.yaml b/Documentation/devicetree/bindings/pwm/imx-pwm.yaml
-index 4b62af27d4b3..01df06777cba 100644
---- a/Documentation/devicetree/bindings/pwm/imx-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/imx-pwm.yaml
-@@ -30,13 +30,11 @@ properties:
-     items:
-       - description: SoC PWM ipg clock
-       - description: SoC PWM per clock
--    maxItems: 2
- 
-   clock-names:
-     items:
-       - const: ipg
-       - const: per
--    maxItems: 2
- 
-   interrupts:
-     maxItems: 1
-diff --git a/Documentation/devicetree/bindings/usb/nvidia,tegra-xudc.yaml b/Documentation/devicetree/bindings/usb/nvidia,tegra-xudc.yaml
-index c4ddc0adf101..0073763a30d8 100644
---- a/Documentation/devicetree/bindings/usb/nvidia,tegra-xudc.yaml
-+++ b/Documentation/devicetree/bindings/usb/nvidia,tegra-xudc.yaml
-@@ -64,13 +64,11 @@ properties:
-      - const: hs_src
- 
-   power-domains:
--    maxItems: 2
-     items:
-       - description: XUSBB(device) power-domain
-       - description: XUSBA(superspeed) power-domain
- 
-   power-domain-names:
--    maxItems: 2
-     items:
-       - const: dev
-       - const: ss
--- 
-2.25.1
+Hello,
+
+On Mon, Jun 08, 2020 at 04:35:00PM +0200, Daniel Vetter wrote:
+> On Sat, Jun 06, 2020 at 10:25:45PM +0200, Hans de Goede wrote:
+> > Hi All,
+> >=20
+> > This patch series converts the i915 driver's cpde for controlling the
+> > panel's backlight with an external PWM controller to use the atomic PWM=
+ API.
+> >=20
+> > Initially the plan was for this series to consist of 2 parts:
+> > 1. convert the pwm-crc driver to support the atomic PWM API and
+> > 2. convert the i915 driver's PWM code to use the atomic PWM API.
+> >=20
+> > But during testing I've found a number of bugs in the pwm-lpss and I
+> > found that the acpi_lpss code needs some special handling because of
+> > some ugliness found in most Cherry Trail DSDTs.
+> >=20
+> > So now this series has grown somewhat large and consists of 4 parts:
+> >=20
+> > 1. acpi_lpss fixes workarounds for Cherry Trail DSTD nastiness
+> > 2. various fixes to the pwm-lpss driver
+> > 3. convert the pwm-crc driver to support the atomic PWM API and
+> > 4. convert the i915 driver's PWM code to use the atomic PWM API
+> >=20
+> > So we need to discuss how to merge this (once it passes review).
+> > Although the inter-dependencies are only runtime I still think we should
+> > make sure that 1-3 are in the drm-intel-next-queued (dinq) tree before
+> > merging the i915 changes. Both to make sure that the intel-gfx CI system
+> > does not become unhappy and for bisecting reasons.
+>=20
+> Simplest is if acpi acks the acpi patches for merging through
+> drm-intel.git. Second simplest is topic branch (drm-intel maintainers can
+> do that) with the entire pile, which then acpi and drm-intel can both pull
+> in.
+>=20
+> Up to the two maintainer teams to figure this one out.
+
+I'm unclear about the dependencies, but the changes to drivers/pwm need
+an ack (or processing) by the PWM team.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--um757tuptzwklztk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7ioGMACgkQwfwUeK3K
+7AlrPAgAhUE8d3GvXZoHPrmKHb+cPda0ce2u02QUj6/2tkjY86coGILKhleJhJto
+l/tBpJjC6ORuFRJDNIrCP3DYu+2f3kfMLlp3X5GoJqTmEoAcXaeuXYZuq+2KlFtX
+u+MVZnZYUjC1QvmNJTsW5j0pVbJB18J9xucYNK6TotZ6mnwg1bWOtrLq7ON6MXId
+W+LUiIrn7/foJGKHxkQeE6HuVMdvTk5RlCad3aGMerLSbgRQx9ylzvEn8u53Gfwb
+k94wKTmTgOGR0UnNl2Ae5scWRTPO3msjWBhQfGyKts0jwqVErqEqjv147CpClfn6
+bTOWIyzvJtnUmQav97PQpgvygfujbg==
+=95k0
+-----END PGP SIGNATURE-----
+
+--um757tuptzwklztk--
