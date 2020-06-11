@@ -1,69 +1,46 @@
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 03/15] pwm: lpss: Add range limit check for the
- base_unit register value
-Date: Fri, 12 Jun 2020 00:12:42 +0200
-Message-ID: <20200611221242.3bjqvnhcwwxaocxy@taurus.defre.kleine-koenig.org>
+Subject: Re: [PATCH v2 09/15] pwm: crc: Enable/disable PWM output on
+ enable/disable
+Date: Fri, 12 Jun 2020 00:20:29 +0200
+Message-ID: <20200611222029.csyo2wxof7nuhjws@taurus.defre.kleine-koenig.org>
 References: <20200607181840.13536-1-hdegoede@redhat.com>
- <20200607181840.13536-4-hdegoede@redhat.com>
- <20200608035023.GZ2428291@smile.fi.intel.com>
- <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
+ <20200607181840.13536-10-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hp7kq6gze6fyafh7"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbgFKWM5 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 Jun 2020 18:12:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD81C03E96F
-        for <linux-pwm@vger.kernel.org>; Thu, 11 Jun 2020 15:12:56 -0700 (PDT)
+        protocol="application/pgp-signature"; boundary="cab7bvsyn2ss63v7"
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+In-Reply-To: <20200607181840.13536-10-hdegoede@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
 To: Hans de Goede <hdegoede@redhat.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 
 
---hp7kq6gze6fyafh7
+--cab7bvsyn2ss63v7
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 08, 2020 at 01:07:12PM +0200, Hans de Goede wrote:
-> Hi,
+On Sun, Jun 07, 2020 at 08:18:34PM +0200, Hans de Goede wrote:
+> The pwm-crc code is using 2 different enable bits:
+> 1. bit 7 of the PWM0_CLK_DIV (PWM_OUTPUT_ENABLE)
+> 2. bit 0 of the BACKLIGHT_EN register
 >=20
-> On 6/8/20 5:50 AM, Andy Shevchenko wrote:
-> > On Sun, Jun 07, 2020 at 08:18:28PM +0200, Hans de Goede wrote:
-> > > When the user requests a high enough period ns value, then the
-> > > calculations in pwm_lpss_prepare() might result in a base_unit value =
-of 0.
-> > >=20
-> > > But according to the data-sheet the way the PWM controller works is t=
-hat
-> > > each input clock-cycle the base_unit gets added to a N bit counter and
-> > > that counter overflowing determines the PWM output frequency. Adding 0
-> > > to the counter is a no-op. The data-sheet even explicitly states that
-> > > writing 0 to the base_unit bits will result in the PWM outputting a
-> > > continuous 0 signal.
-> >=20
-> > So, and why it's a problem?
+> So far we've kept the PWM_OUTPUT_ENABLE bit set when disabling the PWM,
+> this commit makes crc_pwm_disable() clear it on disable and makes
+> crc_pwm_enable() set it again on re-enable.
 >=20
-> Lets sya the user requests a PWM output frequency of 100Hz on Cherry Trail
-> which has a 19200000 Hz clock this will result in 100 * 65536 / 19200000 =
-=3D
-> 0.3 -> 0 as base-unit value. So instead of getting 100 Hz the user will
-> now get a pin which is always outputting low.
+> This should disable the internal (divided) PWM clock and tri-state the
+> PWM output pin when disabled, saving some power.
 
-I didn't follow the complete discussion but note that the general rule
-is:
+It would be great if you could also document that disabling the PWM
+makes the output tri-state. There are a few drivers that have a
+"Limitations" section at their top. Describing that there (in the same
+format) would be the right place.
 
-	round period down to the next possible implementable period
-	round duty_cycle down to the next possible implementable duty_cycle
-
-so if a small enough period (and so a small duty_cycle) is requested it
-is expected that duty_cycle will be zero.
+Also note that according to Thierry's conception getting a (driven)
+inactive output is the right thing for a disabled PWM.
 
 Best regards
 Uwe
@@ -72,19 +49,19 @@ Uwe
 Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---hp7kq6gze6fyafh7
+--cab7bvsyn2ss63v7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7irFUACgkQwfwUeK3K
-7AnMUQf/aHewf+zp0iswwki725rW1yDFIDBTEXn8BJGshdgTgK7jVxnmeAnp68jL
-GrJUDVL2PD9tInqZkJmgQXpXDKJ2hToPm3qePnpFWRKsZX+wxIg5fJ/lOOnDzwYU
-xeh6Y5vp2nhtK7e9u+YhN9C77/SqmjOW9hYPuwlFSs5jTxFQZruS8AHnGw+//F5V
-KC2HwNoHwfUpiBIiUdITW3ZYHLotXRcqwI0wPZLCuOTIMAEqEWNH6WAtrHGU1BTn
-KMmpuHs8Q5Z+hM+pcZGiL09cI4wEhatYCPCFhik1wXOAwwAtxsowNnIpbFgftPFS
-e3MUGd4aKKhhexrR4pk5ODSfs2zhzA==
-=p0QV
+iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7irigACgkQwfwUeK3K
+7Am/ugf/dDb23XNKHboy/tUBXfvicttKMcJeA2J2xQLa2smBZBSW6Rf227uTjwYi
+LO+Kf0upcb1HCGqkE0t2BcTL6JwuMF6bIT8SONUYeHul6CyAYZTrberZhj/C6aoq
+ea1xFjJr8WyAPUhXl4ZbTLfWyiNb2VeTdtF9FkB2FTarSuWTZR543f5Jk0mt6Xey
+tMfjpCLepNvwDqYvfoqFgbhjzrSmIH8voI8IFGIOecEVpbc63L74FsNKQ3JNg8Ze
+teRAOKKFK1VFYCrmBis286R9boQH2C5kkwC3raILdtXaJvPtFBJ9CKjITH/hTDzi
++YDSdup1pgUjtnMrUlmULfHAisd2sQ==
+=JBUs
 -----END PGP SIGNATURE-----
 
---hp7kq6gze6fyafh7--
+--cab7bvsyn2ss63v7--
