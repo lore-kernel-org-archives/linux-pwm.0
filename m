@@ -1,83 +1,82 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 11/15] pwm: crc: Implement get_state() method
-Date: Fri, 12 Jun 2020 19:00:42 +0200
-Message-ID: <f2a268ef-2b65-d027-0b0c-b83e12a04f20@redhat.com>
-References: <20200607181840.13536-1-hdegoede@redhat.com>
- <20200607181840.13536-12-hdegoede@redhat.com>
- <20200611213744.6gg2oy45cende6ba@taurus.defre.kleine-koenig.org>
+Subject: Re: pwm/i915: Convert pwm-crc and i915 driver's PWM code to use the
+ atomic PWM API
+Date: Fri, 12 Jun 2020 19:04:51 +0200
+Message-ID: <58972efb-003d-ca87-0637-ece4c93aeeb5@redhat.com>
+References: <20200606202601.48410-1-hdegoede@redhat.com>
+ <20200608143500.GX20149@phenom.ffwll.local>
+ <20200611212144.i7ma7kriznidds4r@taurus.defre.kleine-koenig.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27223 "EHLO
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:39005 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726085AbgFLRAs (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2020 13:00:48 -0400
-Received: by mail-ej1-f70.google.com with SMTP id do21so4455706ejc.2
-        for <linux-pwm@vger.kernel.org>; Fri, 12 Jun 2020 10:00:45 -0700 (PDT)
-In-Reply-To: <20200611213744.6gg2oy45cende6ba@taurus.defre.kleine-koenig.org>
+        with ESMTP id S1726290AbgFLRFD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2020 13:05:03 -0400
+Received: by mail-ed1-f72.google.com with SMTP id 92so3154584edl.8
+        for <linux-pwm@vger.kernel.org>; Fri, 12 Jun 2020 10:04:54 -0700 (PDT)
+In-Reply-To: <20200611212144.i7ma7kriznidds4r@taurus.defre.kleine-koenig.org>
 Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Daniel Vetter <daniel@ffwll.ch>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 
 Hi,
 
-On 6/11/20 11:37 PM, Uwe Kleine-König wrote:
+On 6/11/20 11:21 PM, Uwe Kleine-König wrote:
 > Hello,
 > 
-> On Sun, Jun 07, 2020 at 08:18:36PM +0200, Hans de Goede wrote:
->> Implement the pwm_ops.get_state() method to complete the support for the
->> new atomic PWM API.
+> On Mon, Jun 08, 2020 at 04:35:00PM +0200, Daniel Vetter wrote:
+>> On Sat, Jun 06, 2020 at 10:25:45PM +0200, Hans de Goede wrote:
+>>> Hi All,
+>>>
+>>> This patch series converts the i915 driver's cpde for controlling the
+>>> panel's backlight with an external PWM controller to use the atomic PWM API.
+>>>
+>>> Initially the plan was for this series to consist of 2 parts:
+>>> 1. convert the pwm-crc driver to support the atomic PWM API and
+>>> 2. convert the i915 driver's PWM code to use the atomic PWM API.
+>>>
+>>> But during testing I've found a number of bugs in the pwm-lpss and I
+>>> found that the acpi_lpss code needs some special handling because of
+>>> some ugliness found in most Cherry Trail DSDTs.
+>>>
+>>> So now this series has grown somewhat large and consists of 4 parts:
+>>>
+>>> 1. acpi_lpss fixes workarounds for Cherry Trail DSTD nastiness
+>>> 2. various fixes to the pwm-lpss driver
+>>> 3. convert the pwm-crc driver to support the atomic PWM API and
+>>> 4. convert the i915 driver's PWM code to use the atomic PWM API
+>>>
+>>> So we need to discuss how to merge this (once it passes review).
+>>> Although the inter-dependencies are only runtime I still think we should
+>>> make sure that 1-3 are in the drm-intel-next-queued (dinq) tree before
+>>> merging the i915 changes. Both to make sure that the intel-gfx CI system
+>>> does not become unhappy and for bisecting reasons.
 >>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->> ---
->>   drivers/pwm/pwm-crc.c | 29 +++++++++++++++++++++++++++++
->>   1 file changed, 29 insertions(+)
+>> Simplest is if acpi acks the acpi patches for merging through
+>> drm-intel.git. Second simplest is topic branch (drm-intel maintainers can
+>> do that) with the entire pile, which then acpi and drm-intel can both pull
+>> in.
 >>
->> diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
->> index 58c7e9ef7278..6c75a3470bc8 100644
->> --- a/drivers/pwm/pwm-crc.c
->> +++ b/drivers/pwm/pwm-crc.c
->> @@ -114,8 +114,37 @@ static int crc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->>   	return 0;
->>   }
->>   
->> +static void crc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			       struct pwm_state *state)
->> +{
->> +	struct crystalcove_pwm *crc_pwm = to_crc_pwm(chip);
->> +	struct device *dev = crc_pwm->chip.dev;
->> +	unsigned int clk_div, clk_div_reg, duty_cycle_reg;
->> +	int error;
->> +
->> +	error = regmap_read(crc_pwm->regmap, PWM0_CLK_DIV, &clk_div_reg);
->> +	if (error) {
->> +		dev_err(dev, "Error reading PWM0_CLK_DIV %d\n", error);
->> +		return;
->> +	}
->> +
->> +	error = regmap_read(crc_pwm->regmap, PWM0_DUTY_CYCLE, &duty_cycle_reg);
->> +	if (error) {
->> +		dev_err(dev, "Error reading PWM0_DUTY_CYCLE %d\n", error);
->> +		return;
->> +	}
+>> Up to the two maintainer teams to figure this one out.
 > 
-> I assume that duty_cycle_reg cannot be bigger than 0xff? Would it make
-> sense to mask the value accordingly to get more robust code?
-> 
->> +	clk_div = (clk_div_reg & ~PWM_OUTPUT_ENABLE) + 1;
->> +
->> +	state->period     = clk_div * NSEC_PER_MHZ * 256 / PWM_BASE_CLK_MHZ;
->> +	state->duty_cycle = duty_cycle_reg * state->period / PWM_MAX_LEVEL;
->> +	state->polarity   = PWM_POLARITY_NORMAL;
->> +	state->enabled    = !!(clk_div_reg & PWM_OUTPUT_ENABLE);
-> 
-> These aligned = look strange (IMHO). If you don't feel strong here I'd
-> like to see a single space before a =.
+> I'm unclear about the dependencies
 
-Ok, will change for the next version.
+There is a runtime dependency of the i915 changes on the PWM changes
+and since the intel-gfx folks use a lot of CI, we this need to get the
+PWM changes into the drm-intel tree before the i915 changes can land.
+
+> , but the changes to drivers/pwm need
+> an ack (or processing) by the PWM team.
+
+Of course, I asked for an Acked-by from the PWM team
+(once this passes review) for merging this through
+the drm-intel tree, as the i915 driver is the main
+(only AFAIK) consumer of the PWMs controlled by these
+2 drivers.  Daniel <snip>-ed that bit when he replied.
 
 Regards,
 
