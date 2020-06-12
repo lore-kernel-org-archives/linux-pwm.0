@@ -1,22 +1,21 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 09/15] pwm: crc: Enable/disable PWM output on
- enable/disable
-Date: Fri, 12 Jun 2020 18:59:58 +0200
-Message-ID: <1af668ef-7b42-340a-8aa2-f66c266ac6ef@redhat.com>
+Subject: Re: [PATCH v2 11/15] pwm: crc: Implement get_state() method
+Date: Fri, 12 Jun 2020 19:00:42 +0200
+Message-ID: <f2a268ef-2b65-d027-0b0c-b83e12a04f20@redhat.com>
 References: <20200607181840.13536-1-hdegoede@redhat.com>
- <20200607181840.13536-10-hdegoede@redhat.com>
- <20200611222029.csyo2wxof7nuhjws@taurus.defre.kleine-koenig.org>
+ <20200607181840.13536-12-hdegoede@redhat.com>
+ <20200611213744.6gg2oy45cende6ba@taurus.defre.kleine-koenig.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:33432 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726085AbgFLRAF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2020 13:00:05 -0400
-Received: by mail-ed1-f71.google.com with SMTP id f13so3149708edv.11
-        for <linux-pwm@vger.kernel.org>; Fri, 12 Jun 2020 10:00:01 -0700 (PDT)
-In-Reply-To: <20200611222029.csyo2wxof7nuhjws@taurus.defre.kleine-koenig.org>
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27223 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726085AbgFLRAs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2020 13:00:48 -0400
+Received: by mail-ej1-f70.google.com with SMTP id do21so4455706ejc.2
+        for <linux-pwm@vger.kernel.org>; Fri, 12 Jun 2020 10:00:45 -0700 (PDT)
+In-Reply-To: <20200611213744.6gg2oy45cende6ba@taurus.defre.kleine-koenig.org>
 Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
@@ -25,31 +24,60 @@ Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.in
 
 Hi,
 
-On 6/12/20 12:20 AM, Uwe Kleine-König wrote:
-> On Sun, Jun 07, 2020 at 08:18:34PM +0200, Hans de Goede wrote:
->> The pwm-crc code is using 2 different enable bits:
->> 1. bit 7 of the PWM0_CLK_DIV (PWM_OUTPUT_ENABLE)
->> 2. bit 0 of the BACKLIGHT_EN register
->>
->> So far we've kept the PWM_OUTPUT_ENABLE bit set when disabling the PWM,
->> this commit makes crc_pwm_disable() clear it on disable and makes
->> crc_pwm_enable() set it again on re-enable.
->>
->> This should disable the internal (divided) PWM clock and tri-state the
->> PWM output pin when disabled, saving some power.
+On 6/11/20 11:37 PM, Uwe Kleine-König wrote:
+> Hello,
 > 
-> It would be great if you could also document that disabling the PWM
-> makes the output tri-state. There are a few drivers that have a
-> "Limitations" section at their top. Describing that there (in the same
-> format) would be the right place.
+> On Sun, Jun 07, 2020 at 08:18:36PM +0200, Hans de Goede wrote:
+>> Implement the pwm_ops.get_state() method to complete the support for the
+>> new atomic PWM API.
+>>
+>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+>> ---
+>>   drivers/pwm/pwm-crc.c | 29 +++++++++++++++++++++++++++++
+>>   1 file changed, 29 insertions(+)
+>>
+>> diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+>> index 58c7e9ef7278..6c75a3470bc8 100644
+>> --- a/drivers/pwm/pwm-crc.c
+>> +++ b/drivers/pwm/pwm-crc.c
+>> @@ -114,8 +114,37 @@ static int crc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>>   	return 0;
+>>   }
+>>   
+>> +static void crc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+>> +			       struct pwm_state *state)
+>> +{
+>> +	struct crystalcove_pwm *crc_pwm = to_crc_pwm(chip);
+>> +	struct device *dev = crc_pwm->chip.dev;
+>> +	unsigned int clk_div, clk_div_reg, duty_cycle_reg;
+>> +	int error;
+>> +
+>> +	error = regmap_read(crc_pwm->regmap, PWM0_CLK_DIV, &clk_div_reg);
+>> +	if (error) {
+>> +		dev_err(dev, "Error reading PWM0_CLK_DIV %d\n", error);
+>> +		return;
+>> +	}
+>> +
+>> +	error = regmap_read(crc_pwm->regmap, PWM0_DUTY_CYCLE, &duty_cycle_reg);
+>> +	if (error) {
+>> +		dev_err(dev, "Error reading PWM0_DUTY_CYCLE %d\n", error);
+>> +		return;
+>> +	}
 > 
-> Also note that according to Thierry's conception getting a (driven)
-> inactive output is the right thing for a disabled PWM.
+> I assume that duty_cycle_reg cannot be bigger than 0xff? Would it make
+> sense to mask the value accordingly to get more robust code?
+> 
+>> +	clk_div = (clk_div_reg & ~PWM_OUTPUT_ENABLE) + 1;
+>> +
+>> +	state->period     = clk_div * NSEC_PER_MHZ * 256 / PWM_BASE_CLK_MHZ;
+>> +	state->duty_cycle = duty_cycle_reg * state->period / PWM_MAX_LEVEL;
+>> +	state->polarity   = PWM_POLARITY_NORMAL;
+>> +	state->enabled    = !!(clk_div_reg & PWM_OUTPUT_ENABLE);
+> 
+> These aligned = look strange (IMHO). If you don't feel strong here I'd
+> like to see a single space before a =.
 
-Hmm, the tri-state thing is an assumption from my side and we
-don't have any docs for this PWM controller, so I'm not sure at
-all if that is true. So I think it will be better to just drop
-the tri-state bit from the commit msg for the next version.
+Ok, will change for the next version.
 
 Regards,
 
