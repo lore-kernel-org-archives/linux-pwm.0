@@ -1,60 +1,95 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 03/15] pwm: lpss: Add range limit check for the
- base_unit register value
-Date: Fri, 12 Jun 2020 14:57:32 +0300
-Message-ID: <20200612115732.GC2428291@smile.fi.intel.com>
-References: <20200607181840.13536-1-hdegoede@redhat.com>
- <20200607181840.13536-4-hdegoede@redhat.com>
- <20200608035023.GZ2428291@smile.fi.intel.com>
- <90769dc0-3174-195b-34e0-ef4bb9d9b982@redhat.com>
- <20200611221242.3bjqvnhcwwxaocxy@taurus.defre.kleine-koenig.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v5.8-rc1
+Date: Fri, 12 Jun 2020 15:50:49 +0200
+Message-ID: <20200612135049.2341678-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20200611221242.3bjqvnhcwwxaocxy@taurus.defre.kleine-koenig.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726089AbgFLNu4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2020 09:50:56 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 12:12:42AM +0200, Uwe Kleine-König wrote:
-> On Mon, Jun 08, 2020 at 01:07:12PM +0200, Hans de Goede wrote:
-> > On 6/8/20 5:50 AM, Andy Shevchenko wrote:
-> > > On Sun, Jun 07, 2020 at 08:18:28PM +0200, Hans de Goede wrote:
-> > > > When the user requests a high enough period ns value, then the
-> > > > calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
-> > > > 
-> > > > But according to the data-sheet the way the PWM controller works is that
-> > > > each input clock-cycle the base_unit gets added to a N bit counter and
-> > > > that counter overflowing determines the PWM output frequency. Adding 0
-> > > > to the counter is a no-op. The data-sheet even explicitly states that
-> > > > writing 0 to the base_unit bits will result in the PWM outputting a
-> > > > continuous 0 signal.
-> > > 
-> > > So, and why it's a problem?
-> > 
-> > Lets sya the user requests a PWM output frequency of 100Hz on Cherry Trail
-> > which has a 19200000 Hz clock this will result in 100 * 65536 / 19200000 =
-> > 0.3 -> 0 as base-unit value. So instead of getting 100 Hz the user will
-> > now get a pin which is always outputting low.
-> 
-> I didn't follow the complete discussion but note that the general rule
-> is:
-> 
-> 	round period down to the next possible implementable period
-> 	round duty_cycle down to the next possible implementable duty_cycle
-> 
-> so if a small enough period (and so a small duty_cycle) is requested it
-> is expected that duty_cycle will be zero.
+Hi Linus,
 
-...which brings me an idea that PWM framework should expose API to get a
-capabilities, like DMA Engine has.
+The following changes since commit 8f3d9f354286745c751374f5f1fcafee6b3f3136:
 
-In such capabilities, in particular, caller can get ranges of the correct
-frequencies of the underneath hardware.
+  Linux 5.7-rc1 (2020-04-12 12:35:55 -0700)
 
--- 
-With Best Regards,
-Andy Shevchenko
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.8-rc1
+
+for you to fetch changes up to f5641d053d46a9a18fe13f2ecb4a7b4a66d9cdf7:
+
+  pwm: Add missing "CONFIG_" prefix (2020-06-04 19:09:28 +0200)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v5.8-rc1
+
+Nothing too exciting for this cycle. A couple of fixes across the board,
+and Lee volunteered to help with patch review.
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      pwm: Add missing '\n' in log messages
+
+Hans de Goede (1):
+      pwm: lpss: Fix get_state runtime-pm reference handling
+
+Jeff LaBundy (1):
+      pwm: Add support for Azoteq IQS620A PWM generator
+
+Kees Cook (1):
+      pwm: Add missing "CONFIG_" prefix
+
+Navid Emamdoost (1):
+      pwm: img: Call pm_runtime_put() in pm_runtime_get_sync() failed case
+
+Paul Cercueil (4):
+      pwm: jz4740: Drop dependency on MACH_INGENIC
+      pwm: jz4740: Enhance precision in calculation of duty cycle
+      pwm: jz4740: Make PWM start with the active part
+      pwm: jz4740: Add support for the JZ4725B
+
+Peter Vasil (1):
+      pwm: sun4i: Support direct clock output on Allwinner A64
+
+Rasmus Villemoes (1):
+      pwm: rockchip: Simplify rockchip_pwm_get_state()
+
+Sandipan Patra (1):
+      pwm: tegra: Support dynamic clock frequency configuration
+
+Thierry Reding (1):
+      MAINTAINERS: Add Lee Jones as reviewer for the PWM subsystem
+
+Uwe Kleine-KÃ¶nig (1):
+      pwm: imx27: Fix rounding behavior
+
+Yoshihiro Shimoda (1):
+      dt-bindings: pwm: rcar: add r8a77961 support
+
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.yaml  |   1 +
+ MAINTAINERS                                        |   1 +
+ drivers/pwm/Kconfig                                |  12 +-
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/core.c                                 |   4 +-
+ drivers/pwm/pwm-img.c                              |   8 +-
+ drivers/pwm/pwm-imx27.c                            |  20 +-
+ drivers/pwm/pwm-iqs620a.c                          | 270 +++++++++++++++++++++
+ drivers/pwm/pwm-jz4740.c                           |  55 +++--
+ drivers/pwm/pwm-lpss.c                             |  15 +-
+ drivers/pwm/pwm-rockchip.c                         |   7 +-
+ drivers/pwm/pwm-sun4i.c                            |   9 +
+ drivers/pwm/pwm-tegra.c                            |  80 +++++-
+ 13 files changed, 438 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/pwm/pwm-iqs620a.c
