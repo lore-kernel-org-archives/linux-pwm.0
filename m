@@ -1,59 +1,49 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.7 087/388] pwm: img: Call pm_runtime_put() in pm_runtime_get_sync() failed case
-Date: Wed, 17 Jun 2020 21:03:04 -0400
-Message-ID: <20200618010805.600873-87-sashal@kernel.org>
-References: <20200618010805.600873-1-sashal@kernel.org>
+From: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Subject: [PATCH v2 0/2] pwm: intel: Add PWM driver for a new SoC
+Date: Thu, 18 Jun 2020 20:05:11 +0800
+Message-ID: <cover.1592474693.git.rahul.tanwar@linux.intel.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=yes
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Navid Emamdoost <navid.emamdoost@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:38097 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726919AbgFRMFY (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 18 Jun 2020 08:05:24 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, p.zabel@pengutronix.de, robh+dt@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, andriy.shevchenko@intel.com, songjun.Wu@intel.com, cheol.yong.kim@intel.com, qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Patch 1 adds dt binding document in YAML format.
+Patch 2 add PWM fan controller driver for LGM SoC.
 
-[ Upstream commit ca162ce98110b98e7d97b7157328d34dcfdd40a9 ]
+Patch series is baselined on linux 5.8-rc1.
 
-Even in failed case of pm_runtime_get_sync(), the usage_count is
-incremented. In order to keep the usage_count with correct value call
-appropriate pm_runtime_put().
+v2:
+- Address below review concerns from Uwe Kleine-König.
+  * Add notes and limitations about PWM HW.
+  * Rename all functions and structure to lgm_pwm_* 
+  * Readjust space aligninment in structure fields to single space.
+  * Switch to using apply instead of config/enable/disable.
+  * Address other code quality related concerns.
+  * Rebase to 5.8-rc1.
+- Address review concerns in dt binding YAML from Rob Herring.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pwm/pwm-img.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+v1:
+- Initial version.
 
-diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index c9e57bd109fb..599a0f66a384 100644
---- a/drivers/pwm/pwm-img.c
-+++ b/drivers/pwm/pwm-img.c
-@@ -129,8 +129,10 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
- 
- 	ret = pm_runtime_get_sync(chip->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put_autosuspend(chip->dev);
- 		return ret;
-+	}
- 
- 	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
- 	val &= ~(PWM_CTRL_CFG_DIV_MASK << PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm));
-@@ -331,8 +333,10 @@ static int img_pwm_remove(struct platform_device *pdev)
- 	int ret;
- 
- 	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put(&pdev->dev);
- 		return ret;
-+	}
- 
- 	for (i = 0; i < pwm_chip->chip.npwm; i++) {
- 		val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
+Rahul Tanwar (2):
+  Add DT bindings YAML schema for PWM fan controller of LGM SoC
+  Add PWM fan controller driver for LGM SoC
+
+ .../devicetree/bindings/pwm/intel,lgm-pwm.yaml     |  57 +++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-intel-lgm.c                        | 400 +++++++++++++++++++++
+ 4 files changed, 467 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml
+ create mode 100644 drivers/pwm/pwm-intel-lgm.c
+
 -- 
-2.25.1
+2.11.0
