@@ -1,87 +1,72 @@
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/2] video: ssd1307fb: Print PWM period using 64-bit
- format specifier
-Date: Wed, 17 Jun 2020 19:30:31 +0200
-Message-ID: <20200617173031.tzzpzihcxtf4e6t6@taurus.defre.kleine-koenig.org>
-References: <20200615141606.2814208-1-thierry.reding@gmail.com>
- <20200615141606.2814208-2-thierry.reding@gmail.com>
- <CAMuHMdWaKgNOz02eVXkFnGRpsjdNNGVtuCf0setigH31-9aXQg@mail.gmail.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 317/388] pwm: imx27: Fix rounding behavior
+Date: Wed, 17 Jun 2020 21:06:54 -0400
+Message-ID: <20200618010805.600873-317-sashal@kernel.org>
+References: <20200618010805.600873-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rxl2imxmh4ztjdin"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726558AbgFQRai (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 17 Jun 2020 13:30:38 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A175C06174E
-        for <linux-pwm@vger.kernel.org>; Wed, 17 Jun 2020 10:30:38 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWaKgNOz02eVXkFnGRpsjdNNGVtuCf0setigH31-9aXQg@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Lee Jones <lee.jones@linaro.org>, Guru Das Srinagesh <gurus@codeaurora.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Fbdev development list <linux-fbdev@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-
---rxl2imxmh4ztjdin
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jun 17, 2020 at 09:18:34AM +0200, Geert Uytterhoeven wrote:
-> Hi Thierry,
->=20
-> On Mon, Jun 15, 2020 at 4:17 PM Thierry Reding <thierry.reding@gmail.com>=
- wrote:
-> > The PWM core will soon change the duty cycle and period of PWMs to 64
-> > bits to allow for a broader range of values. Use a 64-bit format
-> > specifier to avoid a warning when that change is made.
-> >
-> > Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
->=20
-> > --- a/drivers/video/fbdev/ssd1307fb.c
-> > +++ b/drivers/video/fbdev/ssd1307fb.c
-> > @@ -312,7 +312,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
-> >                 /* Enable the PWM */
-> >                 pwm_enable(par->pwm);
-> >
-> > -               dev_dbg(&par->client->dev, "Using PWM%d with a %dns per=
-iod.\n",
-> > +               dev_dbg(&par->client->dev, "Using PWM%d with a %lluns p=
-eriod.\n",
-> >                         par->pwm->pwm, pwm_get_period(par->pwm));
-> >         }
->=20
-> This change must be done together with changing the return type of
-> pwm_get_period(), else you will get a compiler warning, and will print a
-> bogus value.
-
-Right, or we must change to passing (unsigned long
-long)pwm_get_period(par->pwm), then change the prototype and then drop
-the cast again.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---rxl2imxmh4ztjdin
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7qUzQACgkQwfwUeK3K
-7Al5CggAh8+r0Y0C/ThEZNWlCxMmhx0L8XAMh5KCzFqGs4RtUTs/gCzwKDD13y1o
-YOA7JbWwL44I06iFwXbFpYcEbnRR8Id9ZWsTjNQ9tdAyqu69Ms675Rcl+BOIAWtZ
-RZoc0OUnFc2JxTDUMomnk+lPNNqELa8U/MX6ipDfXFhKYOv83XI0/9Ili3yknjfO
-tl6couylxCAO7zcLoG6WEHXAjj+nHmtTTshlrNEg0yeLsrmGPVZX+QNwkR04nuiP
-CPe63DiY6BtaWhW9tsZ9BD0y2lio1SYHrQeb1t5eLpf52dk0SXl0hzAUOb1e8TS4
-C6vvvqC7ecm1+rPBEBDiW2479HVP4w==
-=laBW
------END PGP SIGNATURE-----
-
---rxl2imxmh4ztjdin--
+RnJvbTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4K
+ClsgVXBzdHJlYW0gY29tbWl0IGFlZjFhMzc5OWI1Y2IzYmE0ODQxZjYwMzQ0OTdiMTc5NjQ2Y2Nj
+NzAgXQoKVG8gbm90IHRyaWdnZXIgdGhlIHdhcm5pbmdzIHByb3ZpZGVkIGJ5IENPTkZJR19QV01f
+REVCVUcKCiAtIHVzZSB1cC1yb3VuZGluZyBpbiAuZ2V0X3N0YXRlKCkKIC0gZG9uJ3QgZGl2aWRl
+IGJ5IHRoZSByZXN1bHQgb2YgYSBkaXZpc2lvbgogLSBkb24ndCB1c2UgdGhlIHJvdW5kZWQgY291
+bnRlciB2YWx1ZSBmb3IgdGhlIHBlcmlvZCBsZW5ndGggdG8gY2FsY3VsYXRlCiAgIHRoZSBjb3Vu
+dGVyIHZhbHVlIGZvciB0aGUgZHV0eSBjeWNsZQoKU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1L
+w7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KU2lnbmVkLW9mZi1ieTogVGhp
+ZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KU2lnbmVkLW9mZi1ieTogU2Fz
+aGEgTGV2aW4gPHNhc2hhbEBrZXJuZWwub3JnPgotLS0KIGRyaXZlcnMvcHdtL3B3bS1pbXgyNy5j
+IHwgMjAgKysrKysrKysrKy0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25z
+KCspLCAxMCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20taW14Mjcu
+YyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jCmluZGV4IGE2ZTQwZDRjNDg1Zi4uNzMyYTZmMzcw
+MWU4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9wd20taW14MjcuYworKysgYi9kcml2ZXJzL3B3
+bS9wd20taW14MjcuYwpAQCAtMTUwLDEzICsxNTAsMTIgQEAgc3RhdGljIHZvaWQgcHdtX2lteDI3
+X2dldF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAKIAlwcmVzY2FsZXIgPSBNWDNfUFdN
+Q1JfUFJFU0NBTEVSX0dFVCh2YWwpOwogCXB3bV9jbGsgPSBjbGtfZ2V0X3JhdGUoaW14LT5jbGtf
+cGVyKTsKLQlwd21fY2xrID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHB3bV9jbGssIHByZXNjYWxl
+cik7CiAJdmFsID0gcmVhZGwoaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNUFIpOwogCXBlcmlvZCA9
+IHZhbCA+PSBNWDNfUFdNUFJfTUFYID8gTVgzX1BXTVBSX01BWCA6IHZhbDsKIAogCS8qIFBXTU9V
+VCAoSHopID0gUFdNQ0xLIC8gKFBXTVBSICsgMikgKi8KLQl0bXAgPSBOU0VDX1BFUl9TRUMgKiAo
+dTY0KShwZXJpb2QgKyAyKTsKLQlzdGF0ZS0+cGVyaW9kID0gRElWX1JPVU5EX0NMT1NFU1RfVUxM
+KHRtcCwgcHdtX2Nsayk7CisJdG1wID0gTlNFQ19QRVJfU0VDICogKHU2NCkocGVyaW9kICsgMikg
+KiBwcmVzY2FsZXI7CisJc3RhdGUtPnBlcmlvZCA9IERJVl9ST1VORF9VUF9VTEwodG1wLCBwd21f
+Y2xrKTsKIAogCS8qCiAJICogUFdNU0FSIGNhbiBiZSByZWFkIG9ubHkgaWYgUFdNIGlzIGVuYWJs
+ZWQuIElmIHRoZSBQV00gaXMgZGlzYWJsZWQsCkBAIC0xNjcsOCArMTY2LDggQEAgc3RhdGljIHZv
+aWQgcHdtX2lteDI3X2dldF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAJZWxzZQogCQl2
+YWwgPSBpbXgtPmR1dHlfY3ljbGU7CiAKLQl0bXAgPSBOU0VDX1BFUl9TRUMgKiAodTY0KSh2YWwp
+OwotCXN0YXRlLT5kdXR5X2N5Y2xlID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHRtcCwgcHdtX2Ns
+ayk7CisJdG1wID0gTlNFQ19QRVJfU0VDICogKHU2NCkodmFsKSAqIHByZXNjYWxlcjsKKwlzdGF0
+ZS0+ZHV0eV9jeWNsZSA9IERJVl9ST1VORF9VUF9VTEwodG1wLCBwd21fY2xrKTsKIAogCXB3bV9p
+bXgyN19jbGtfZGlzYWJsZV91bnByZXBhcmUoaW14KTsKIH0KQEAgLTIyMCwyMiArMjE5LDIzIEBA
+IHN0YXRpYyBpbnQgcHdtX2lteDI3X2FwcGx5KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0
+IHB3bV9kZXZpY2UgKnB3bSwKIAlzdHJ1Y3QgcHdtX2lteDI3X2NoaXAgKmlteCA9IHRvX3B3bV9p
+bXgyN19jaGlwKGNoaXApOwogCXN0cnVjdCBwd21fc3RhdGUgY3N0YXRlOwogCXVuc2lnbmVkIGxv
+bmcgbG9uZyBjOworCXVuc2lnbmVkIGxvbmcgbG9uZyBjbGtyYXRlOwogCWludCByZXQ7CiAJdTMy
+IGNyOwogCiAJcHdtX2dldF9zdGF0ZShwd20sICZjc3RhdGUpOwogCi0JYyA9IGNsa19nZXRfcmF0
+ZShpbXgtPmNsa19wZXIpOwotCWMgKj0gc3RhdGUtPnBlcmlvZDsKKwljbGtyYXRlID0gY2xrX2dl
+dF9yYXRlKGlteC0+Y2xrX3Blcik7CisJYyA9IGNsa3JhdGUgKiBzdGF0ZS0+cGVyaW9kOwogCi0J
+ZG9fZGl2KGMsIDEwMDAwMDAwMDApOworCWRvX2RpdihjLCBOU0VDX1BFUl9TRUMpOwogCXBlcmlv
+ZF9jeWNsZXMgPSBjOwogCiAJcHJlc2NhbGUgPSBwZXJpb2RfY3ljbGVzIC8gMHgxMDAwMCArIDE7
+CiAKIAlwZXJpb2RfY3ljbGVzIC89IHByZXNjYWxlOwotCWMgPSAodW5zaWduZWQgbG9uZyBsb25n
+KXBlcmlvZF9jeWNsZXMgKiBzdGF0ZS0+ZHV0eV9jeWNsZTsKLQlkb19kaXYoYywgc3RhdGUtPnBl
+cmlvZCk7CisJYyA9IGNsa3JhdGUgKiBzdGF0ZS0+ZHV0eV9jeWNsZTsKKwlkb19kaXYoYywgTlNF
+Q19QRVJfU0VDICogcHJlc2NhbGUpOwogCWR1dHlfY3ljbGVzID0gYzsKIAogCS8qCi0tIAoyLjI1
+LjEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
+eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
+ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
+cm0ta2VybmVsCg==
