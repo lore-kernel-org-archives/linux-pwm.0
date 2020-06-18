@@ -1,59 +1,50 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 069/266] pwm: img: Call pm_runtime_put() in pm_runtime_get_sync() failed case
-Date: Wed, 17 Jun 2020 21:13:14 -0400
-Message-ID: <20200618011631.604574-69-sashal@kernel.org>
-References: <20200618011631.604574-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 333/388] pwm: Add missing "CONFIG_" prefix
+Date: Wed, 17 Jun 2020 21:07:10 -0400
+Message-ID: <20200618010805.600873-333-sashal@kernel.org>
+References: <20200618010805.600873-1-sashal@kernel.org>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Navid Emamdoost <navid.emamdoost@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:45332 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729453AbgFRBPQ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:15:16 -0400
+In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Kees Cook <keescook@chromium.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit ca162ce98110b98e7d97b7157328d34dcfdd40a9 ]
+[ Upstream commit f5641d053d46a9a18fe13f2ecb4a7b4a66d9cdf7 ]
 
-Even in failed case of pm_runtime_get_sync(), the usage_count is
-incremented. In order to keep the usage_count with correct value call
-appropriate pm_runtime_put().
+The IS_ENABLED() use was missing the CONFIG_ prefix which would have
+lead to skipping this code.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Fixes: 3ad1f3a33286 ("pwm: Implement some checks for lowlevel drivers")
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-img.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/pwm/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index c9e57bd109fb..599a0f66a384 100644
---- a/drivers/pwm/pwm-img.c
-+++ b/drivers/pwm/pwm-img.c
-@@ -129,8 +129,10 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 9973c442b455..6b3cbc0490c6 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -121,7 +121,7 @@ static int pwm_device_request(struct pwm_device *pwm, const char *label)
+ 		pwm->chip->ops->get_state(pwm->chip, pwm, &pwm->state);
+ 		trace_pwm_get(pwm, &pwm->state);
  
- 	ret = pm_runtime_get_sync(chip->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put_autosuspend(chip->dev);
- 		return ret;
-+	}
+-		if (IS_ENABLED(PWM_DEBUG))
++		if (IS_ENABLED(CONFIG_PWM_DEBUG))
+ 			pwm->last = pwm->state;
+ 	}
  
- 	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
- 	val &= ~(PWM_CTRL_CFG_DIV_MASK << PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm));
-@@ -331,8 +333,10 @@ static int img_pwm_remove(struct platform_device *pdev)
- 	int ret;
- 
- 	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put(&pdev->dev);
- 		return ret;
-+	}
- 
- 	for (i = 0; i < pwm_chip->chip.npwm; i++) {
- 		val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
 -- 
 2.25.1
