@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 039/172] pwm: img: Call pm_runtime_put() in pm_runtime_get_sync() failed case
-Date: Wed, 17 Jun 2020 21:20:05 -0400
-Message-ID: <20200618012218.607130-39-sashal@kernel.org>
-References: <20200618012218.607130-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 069/266] pwm: img: Call pm_runtime_put() in pm_runtime_get_sync() failed case
+Date: Wed, 17 Jun 2020 21:13:14 -0400
+Message-ID: <20200618011631.604574-69-sashal@kernel.org>
+References: <20200618011631.604574-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200618012218.607130-1-sashal@kernel.org>
+In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Navid Emamdoost <navid.emamdoost@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
@@ -28,10 +28,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index 815f5333bb8f..da72b2866e88 100644
+index c9e57bd109fb..599a0f66a384 100644
 --- a/drivers/pwm/pwm-img.c
 +++ b/drivers/pwm/pwm-img.c
-@@ -132,8 +132,10 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -129,8 +129,10 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
  
  	ret = pm_runtime_get_sync(chip->dev);
@@ -43,7 +43,7 @@ index 815f5333bb8f..da72b2866e88 100644
  
  	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
  	val &= ~(PWM_CTRL_CFG_DIV_MASK << PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm));
-@@ -334,8 +336,10 @@ static int img_pwm_remove(struct platform_device *pdev)
+@@ -331,8 +333,10 @@ static int img_pwm_remove(struct platform_device *pdev)
  	int ret;
  
  	ret = pm_runtime_get_sync(&pdev->dev);
