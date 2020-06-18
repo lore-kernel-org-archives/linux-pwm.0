@@ -1,72 +1,59 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.7 317/388] pwm: imx27: Fix rounding behavior
-Date: Wed, 17 Jun 2020 21:06:54 -0400
-Message-ID: <20200618010805.600873-317-sashal@kernel.org>
-References: <20200618010805.600873-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 039/172] pwm: img: Call pm_runtime_put() in pm_runtime_get_sync() failed case
+Date: Wed, 17 Jun 2020 21:20:05 -0400
+Message-ID: <20200618012218.607130-39-sashal@kernel.org>
+References: <20200618012218.607130-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200618012218.607130-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Navid Emamdoost <navid.emamdoost@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4K
-ClsgVXBzdHJlYW0gY29tbWl0IGFlZjFhMzc5OWI1Y2IzYmE0ODQxZjYwMzQ0OTdiMTc5NjQ2Y2Nj
-NzAgXQoKVG8gbm90IHRyaWdnZXIgdGhlIHdhcm5pbmdzIHByb3ZpZGVkIGJ5IENPTkZJR19QV01f
-REVCVUcKCiAtIHVzZSB1cC1yb3VuZGluZyBpbiAuZ2V0X3N0YXRlKCkKIC0gZG9uJ3QgZGl2aWRl
-IGJ5IHRoZSByZXN1bHQgb2YgYSBkaXZpc2lvbgogLSBkb24ndCB1c2UgdGhlIHJvdW5kZWQgY291
-bnRlciB2YWx1ZSBmb3IgdGhlIHBlcmlvZCBsZW5ndGggdG8gY2FsY3VsYXRlCiAgIHRoZSBjb3Vu
-dGVyIHZhbHVlIGZvciB0aGUgZHV0eSBjeWNsZQoKU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1L
-w7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KU2lnbmVkLW9mZi1ieTogVGhp
-ZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KU2lnbmVkLW9mZi1ieTogU2Fz
-aGEgTGV2aW4gPHNhc2hhbEBrZXJuZWwub3JnPgotLS0KIGRyaXZlcnMvcHdtL3B3bS1pbXgyNy5j
-IHwgMjAgKysrKysrKysrKy0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25z
-KCspLCAxMCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20taW14Mjcu
-YyBiL2RyaXZlcnMvcHdtL3B3bS1pbXgyNy5jCmluZGV4IGE2ZTQwZDRjNDg1Zi4uNzMyYTZmMzcw
-MWU4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9wd20taW14MjcuYworKysgYi9kcml2ZXJzL3B3
-bS9wd20taW14MjcuYwpAQCAtMTUwLDEzICsxNTAsMTIgQEAgc3RhdGljIHZvaWQgcHdtX2lteDI3
-X2dldF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAKIAlwcmVzY2FsZXIgPSBNWDNfUFdN
-Q1JfUFJFU0NBTEVSX0dFVCh2YWwpOwogCXB3bV9jbGsgPSBjbGtfZ2V0X3JhdGUoaW14LT5jbGtf
-cGVyKTsKLQlwd21fY2xrID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHB3bV9jbGssIHByZXNjYWxl
-cik7CiAJdmFsID0gcmVhZGwoaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdNUFIpOwogCXBlcmlvZCA9
-IHZhbCA+PSBNWDNfUFdNUFJfTUFYID8gTVgzX1BXTVBSX01BWCA6IHZhbDsKIAogCS8qIFBXTU9V
-VCAoSHopID0gUFdNQ0xLIC8gKFBXTVBSICsgMikgKi8KLQl0bXAgPSBOU0VDX1BFUl9TRUMgKiAo
-dTY0KShwZXJpb2QgKyAyKTsKLQlzdGF0ZS0+cGVyaW9kID0gRElWX1JPVU5EX0NMT1NFU1RfVUxM
-KHRtcCwgcHdtX2Nsayk7CisJdG1wID0gTlNFQ19QRVJfU0VDICogKHU2NCkocGVyaW9kICsgMikg
-KiBwcmVzY2FsZXI7CisJc3RhdGUtPnBlcmlvZCA9IERJVl9ST1VORF9VUF9VTEwodG1wLCBwd21f
-Y2xrKTsKIAogCS8qCiAJICogUFdNU0FSIGNhbiBiZSByZWFkIG9ubHkgaWYgUFdNIGlzIGVuYWJs
-ZWQuIElmIHRoZSBQV00gaXMgZGlzYWJsZWQsCkBAIC0xNjcsOCArMTY2LDggQEAgc3RhdGljIHZv
-aWQgcHdtX2lteDI3X2dldF9zdGF0ZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAJZWxzZQogCQl2
-YWwgPSBpbXgtPmR1dHlfY3ljbGU7CiAKLQl0bXAgPSBOU0VDX1BFUl9TRUMgKiAodTY0KSh2YWwp
-OwotCXN0YXRlLT5kdXR5X2N5Y2xlID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHRtcCwgcHdtX2Ns
-ayk7CisJdG1wID0gTlNFQ19QRVJfU0VDICogKHU2NCkodmFsKSAqIHByZXNjYWxlcjsKKwlzdGF0
-ZS0+ZHV0eV9jeWNsZSA9IERJVl9ST1VORF9VUF9VTEwodG1wLCBwd21fY2xrKTsKIAogCXB3bV9p
-bXgyN19jbGtfZGlzYWJsZV91bnByZXBhcmUoaW14KTsKIH0KQEAgLTIyMCwyMiArMjE5LDIzIEBA
-IHN0YXRpYyBpbnQgcHdtX2lteDI3X2FwcGx5KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0
-IHB3bV9kZXZpY2UgKnB3bSwKIAlzdHJ1Y3QgcHdtX2lteDI3X2NoaXAgKmlteCA9IHRvX3B3bV9p
-bXgyN19jaGlwKGNoaXApOwogCXN0cnVjdCBwd21fc3RhdGUgY3N0YXRlOwogCXVuc2lnbmVkIGxv
-bmcgbG9uZyBjOworCXVuc2lnbmVkIGxvbmcgbG9uZyBjbGtyYXRlOwogCWludCByZXQ7CiAJdTMy
-IGNyOwogCiAJcHdtX2dldF9zdGF0ZShwd20sICZjc3RhdGUpOwogCi0JYyA9IGNsa19nZXRfcmF0
-ZShpbXgtPmNsa19wZXIpOwotCWMgKj0gc3RhdGUtPnBlcmlvZDsKKwljbGtyYXRlID0gY2xrX2dl
-dF9yYXRlKGlteC0+Y2xrX3Blcik7CisJYyA9IGNsa3JhdGUgKiBzdGF0ZS0+cGVyaW9kOwogCi0J
-ZG9fZGl2KGMsIDEwMDAwMDAwMDApOworCWRvX2RpdihjLCBOU0VDX1BFUl9TRUMpOwogCXBlcmlv
-ZF9jeWNsZXMgPSBjOwogCiAJcHJlc2NhbGUgPSBwZXJpb2RfY3ljbGVzIC8gMHgxMDAwMCArIDE7
-CiAKIAlwZXJpb2RfY3ljbGVzIC89IHByZXNjYWxlOwotCWMgPSAodW5zaWduZWQgbG9uZyBsb25n
-KXBlcmlvZF9jeWNsZXMgKiBzdGF0ZS0+ZHV0eV9jeWNsZTsKLQlkb19kaXYoYywgc3RhdGUtPnBl
-cmlvZCk7CisJYyA9IGNsa3JhdGUgKiBzdGF0ZS0+ZHV0eV9jeWNsZTsKKwlkb19kaXYoYywgTlNF
-Q19QRVJfU0VDICogcHJlc2NhbGUpOwogCWR1dHlfY3ljbGVzID0gYzsKIAogCS8qCi0tIAoyLjI1
-LjEKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
-eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
-ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
-cm0ta2VybmVsCg==
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+
+[ Upstream commit ca162ce98110b98e7d97b7157328d34dcfdd40a9 ]
+
+Even in failed case of pm_runtime_get_sync(), the usage_count is
+incremented. In order to keep the usage_count with correct value call
+appropriate pm_runtime_put().
+
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pwm/pwm-img.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
+index 815f5333bb8f..da72b2866e88 100644
+--- a/drivers/pwm/pwm-img.c
++++ b/drivers/pwm/pwm-img.c
+@@ -132,8 +132,10 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
+ 
+ 	ret = pm_runtime_get_sync(chip->dev);
+-	if (ret < 0)
++	if (ret < 0) {
++		pm_runtime_put_autosuspend(chip->dev);
+ 		return ret;
++	}
+ 
+ 	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
+ 	val &= ~(PWM_CTRL_CFG_DIV_MASK << PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm));
+@@ -334,8 +336,10 @@ static int img_pwm_remove(struct platform_device *pdev)
+ 	int ret;
+ 
+ 	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0)
++	if (ret < 0) {
++		pm_runtime_put(&pdev->dev);
+ 		return ret;
++	}
+ 
+ 	for (i = 0; i < pwm_chip->chip.npwm; i++) {
+ 		val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
+-- 
+2.25.1
