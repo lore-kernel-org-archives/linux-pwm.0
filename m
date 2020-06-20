@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v3 04/15] pwm: lpss: Add range limit check for the base_unit register value
-Date: Sat, 20 Jun 2020 14:17:47 +0200
-Message-ID: <20200620121758.14836-5-hdegoede@redhat.com>
+Subject: [PATCH v3 06/15] pwm: crc: Fix period / duty_cycle times being off by a factor of 256
+Date: Sat, 20 Jun 2020 14:17:49 +0200
+Message-ID: <20200620121758.14836-7-hdegoede@redhat.com>
 References: <20200620121758.14836-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,62 +12,70 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-When the user requests a high enough period ns value, then the
-calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
+While looking into adding atomic-pwm support to the pwm-crc driver I
+noticed something odd, there is a PWM_BASE_CLK define of 6 MHz and
+there is a clock-divider which divides this with a value between 1-128,
+and there are 256 duty-cycle steps.
 
-But according to the data-sheet the way the PWM controller works is that
-each input clock-cycle the base_unit gets added to a N bit counter and
-that counter overflowing determines the PWM output frequency. Adding 0
-to the counter is a no-op. The data-sheet even explicitly states that
-writing 0 to the base_unit bits will result in the PWM outputting a
-continuous 0 signal.
+The pwm-crc code before this commit assumed that a clock-divider
+setting of 1 means that the PWM output is running at 6 MHZ, if that
+is true, where do these 256 duty-cycle steps come from?
 
-When the user requestes a low enough period ns value, then the
-calculations in pwm_lpss_prepare() might result in a base_unit value
-which is bigger then base_unit_range - 1. Currently the codes for this
-deals with this by applying a mask:
+This would require an internal frequency of 256 * 6 MHz = 1.5 GHz, that
+seems unlikely for a PMIC which is using a silicon process optimized for
+power-switching transistors. It is way more likely that there is an 8
+bit counter for the duty cycle which acts as an extra fixed divider
+wrt the PWM output frequency.
 
-	base_unit &= (base_unit_range - 1);
+The main user of the pwm-crc driver is the i915 GPU driver which uses it
+for backlight control. Lets compare the PWM register values set by the
+video-BIOS (the GOP), assuming the extra fixed divider is present versus
+the PWM frequency specified in the Video-BIOS-Tables:
 
-But this means that we let the value overflow the range, we throw away the
-higher bits and store whatever value is left in the lower bits into the
-register leading to a random output frequency, rather then clamping the
-output frequency to the highest frequency which the hardware can do.
+Device:		PWM Hz set by BIOS	PWM Hz specified in VBT
+Asus T100TA 	200			200
+Asus T100HA 	200			200
+Lenovo Miix 2 8	23437			20000
+Toshiba WT8-A	23437			20000
 
-This commit fixes both issues by clamping the base_unit value to be
-between 1 and (base_unit_range - 1).
+So as we can see if we assume the extra division by 256 then the register
+values set by the GOP are an exact match for the VBT values, where as
+otherwise the values would be of by a factor of 256.
 
-Fixes: 684309e5043e ("pwm: lpss: Avoid potential overflow of base_unit")
+This commit fixes the period / duty_cycle calculations to take the
+extra division by 256 into account.
+
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
 Changes in v3:
-- Change upper limit of clamp to (base_unit_range - 1)
-- Add Fixes tag
+- Use NSEC_PER_USEC instead of adding a new (non-sensical) NSEC_PER_MHZ define
 ---
- drivers/pwm/pwm-lpss.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-crc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 43b1fc634af1..80d0f9c64f9d 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -97,6 +97,9 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	freq *= base_unit_range;
+diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+index 272eeb071147..c056eb9b858c 100644
+--- a/drivers/pwm/pwm-crc.c
++++ b/drivers/pwm/pwm-crc.c
+@@ -21,8 +21,8 @@
  
- 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
-+	/* base_unit must not be 0 and we also want to avoid overflowing it */
-+	base_unit = clamp_t(unsigned long long, base_unit, 1,
-+			    base_unit_range - 1);
+ #define PWM_MAX_LEVEL		0xFF
  
- 	on_time_div = 255ULL * duty_ns;
- 	do_div(on_time_div, period_ns);
-@@ -105,7 +108,6 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	orig_ctrl = ctrl = pwm_lpss_read(pwm);
- 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
- 	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
--	base_unit &= (base_unit_range - 1);
- 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
+-#define PWM_BASE_CLK		6000000  /* 6 MHz */
+-#define PWM_MAX_PERIOD_NS	21333    /* 46.875KHz */
++#define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
++#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
  
+ /**
+  * struct crystalcove_pwm - Crystal Cove PWM controller
+@@ -72,7 +72,7 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ 
+ 		/* changing the clk divisor, need to disable fisrt */
+ 		crc_pwm_disable(c, pwm);
+-		clk_div = PWM_BASE_CLK * period_ns / NSEC_PER_SEC;
++		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_USEC);
+ 
+ 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
+ 					clk_div | PWM_OUTPUT_ENABLE);
 -- 
 2.26.2
