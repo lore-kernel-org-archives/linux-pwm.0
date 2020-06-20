@@ -1,179 +1,301 @@
-From: =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-Subject: [RFC PATCH 08/10] rtc: New driver for RTC in Netronix embedded controller
-Date: Sun, 21 Jun 2020 00:42:19 +0200
-Message-ID: <20200620224222.1312520-7-j.neuschaefer@gmx.net>
+From: =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+Subject: [RFC PATCH 04/10] mfd: Add base driver for Netronix embedded controller
+Date: Sun, 21 Jun 2020 00:42:15 +0200
+Message-ID: <20200620224222.1312520-3-j.neuschaefer@gmx.net>
 References: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Sam Ravnborg <sam@ravnborg.org>, Linus Walleij <linus.walleij@linaro.org>, Heiko Stuebner <heiko.stuebner@theobroma-systems.com>, Stephan Gerhold <stephan@gerhold.net>, Lubomir Rintel <lkundrak@v3.sk>, Mark Brown <broonie@kernel.>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200620224222.1312520-1-j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie@kernel.>
 List-Id: linux-pwm@vger.kernel.org
 
-With this driver, mainline Linux can keep its time and date in sync with
-the vendor kernel.
+Third-party hardware documentation is available at
+https://github.com/neuschaefer/linux/wiki/Netronix-MSP430-embedded-control=
+ler
 
-Advanced functionality like alarm and automatic power-on is not yet
-supported.
+The EC supports interrupts, but the driver doesn't make use of them so
+far.
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Known problems:
+- The reboot handler is installed in such a way that it directly calls
+  into the i2c subsystem to send the reboot command to the EC. This
+  means that the reboot handler may sleep, which is not allowed.
+
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
 =2D--
- drivers/rtc/Kconfig     |   4 ++
- drivers/rtc/Makefile    |   1 +
- drivers/rtc/rtc-ntxec.c | 115 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 120 insertions(+)
- create mode 100644 drivers/rtc/rtc-ntxec.c
+ drivers/mfd/Kconfig       |   7 ++
+ drivers/mfd/Makefile      |   1 +
+ drivers/mfd/ntxec.c       | 188 ++++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/ntxec.h |  30 ++++++
+ 4 files changed, 226 insertions(+)
+ create mode 100644 drivers/mfd/ntxec.c
+ create mode 100644 include/linux/mfd/ntxec.h
 
-diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-index b54d87d45c89b..2310d08933f9c 100644
-=2D-- a/drivers/rtc/Kconfig
-+++ b/drivers/rtc/Kconfig
-@@ -1300,6 +1300,10 @@ config RTC_DRV_CROS_EC
- 	  This driver can also be built as a module. If so, the module
- 	  will be called rtc-cros-ec.
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index a37d7d1713820..78410b928648e 100644
+=2D-- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -978,6 +978,13 @@ config MFD_VIPERBOARD
+ 	  You need to select the mfd cell drivers separately.
+ 	  The drivers do not support all features the board exposes.
 
-+config RTC_DRV_NTXEC
-+	tristate "Netronix embedded controller RTC driver"
-+	depends on MFD_NTXEC
++config MFD_NTXEC
++	bool "Netronix Embedded Controller"
++	depends on I2C && OF
++	help
++	  Say yes here if you want to support the embedded controller of
++	  certain e-book readers designed by the ODM Netronix.
 +
- comment "on-CPU RTC drivers"
-
- config RTC_DRV_ASM9260
-diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
-index 0721752c6ed4c..8653d04aefa99 100644
-=2D-- a/drivers/rtc/Makefile
-+++ b/drivers/rtc/Makefile
-@@ -111,6 +111,7 @@ obj-$(CONFIG_RTC_DRV_MT7622)	+=3D rtc-mt7622.o
- obj-$(CONFIG_RTC_DRV_MV)	+=3D rtc-mv.o
- obj-$(CONFIG_RTC_DRV_MXC)	+=3D rtc-mxc.o
- obj-$(CONFIG_RTC_DRV_MXC_V2)	+=3D rtc-mxc_v2.o
-+obj-$(CONFIG_RTC_DRV_NTXEC)	+=3D rtc-ntxec.o
- obj-$(CONFIG_RTC_DRV_OMAP)	+=3D rtc-omap.o
- obj-$(CONFIG_RTC_DRV_OPAL)	+=3D rtc-opal.o
- obj-$(CONFIG_RTC_DRV_PALMAS)	+=3D rtc-palmas.o
-diff --git a/drivers/rtc/rtc-ntxec.c b/drivers/rtc/rtc-ntxec.c
+ config MFD_RETU
+ 	tristate "Nokia Retu and Tahvo multi-function device"
+ 	select MFD_CORE
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 9367a92f795a6..19d9391ed6f32 100644
+=2D-- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -218,6 +218,7 @@ obj-$(CONFIG_MFD_INTEL_MSIC)	+=3D intel_msic.o
+ obj-$(CONFIG_MFD_INTEL_PMC_BXT)	+=3D intel_pmc_bxt.o
+ obj-$(CONFIG_MFD_PALMAS)	+=3D palmas.o
+ obj-$(CONFIG_MFD_VIPERBOARD)    +=3D viperboard.o
++obj-$(CONFIG_MFD_NTXEC)		+=3D ntxec.o
+ obj-$(CONFIG_MFD_RC5T583)	+=3D rc5t583.o rc5t583-irq.o
+ obj-$(CONFIG_MFD_RK808)		+=3D rk808.o
+ obj-$(CONFIG_MFD_RN5T618)	+=3D rn5t618.o
+diff --git a/drivers/mfd/ntxec.c b/drivers/mfd/ntxec.c
 new file mode 100644
-index 0000000000000..44d5a5eedb597
+index 0000000000000..82adea34ea746
 =2D-- /dev/null
-+++ b/drivers/rtc/rtc-ntxec.c
-@@ -0,0 +1,115 @@
++++ b/drivers/mfd/ntxec.c
+@@ -0,0 +1,188 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +// Copyright 2020 Jonathan Neusch=C3=A4fer
++//
++// MFD driver for the usually MSP430-based embedded controller used in ce=
+rtain
++// Netronix ebook reader board designs
 +
-+#include <linux/rtc.h>
++#include <asm/unaligned.h>
++#include <linux/delay.h>
++#include <linux/errno.h>
++#include <linux/i2c.h>
 +#include <linux/mfd/ntxec.h>
-+#include <linux/platform_device.h>
++#include <linux/of_platform.h>
++#include <linux/pm.h>
++#include <linux/reboot.h>
 +#include <linux/types.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+
-+struct ntxec_rtc {
-+	struct device *dev;
-+	struct ntxec *ec;
-+};
-+
-+#define NTXEC_WRITE_YEAR	0x10
-+#define NTXEC_WRITE_MONTH	0x11
-+#define NTXEC_WRITE_DAY		0x12
-+#define NTXEC_WRITE_HOUR	0x13
-+#define NTXEC_WRITE_MINUTE	0x14
-+#define NTXEC_WRITE_SECOND	0x15
-+
-+#define NTXEC_READ_YM		0x20
-+#define NTXEC_READ_DH		0x21
-+#define NTXEC_READ_MS		0x22
 +
 +
-+static int ntxec_read_time(struct device *dev, struct rtc_time *tm)
++#define NTXEC_VERSION		0x00
++#define NTXEC_POWEROFF		0x50
++#define NTXEC_POWERKEEP		0x70
++#define NTXEC_RESET		0x90
++
++
++/* Register access */
++
++int ntxec_read16(struct ntxec *ec, u8 addr)
 +{
-+	struct ntxec_rtc *rtc =3D dev_get_drvdata(dev);
++	u8 request[1] =3D { addr };
++	u8 response[2];
 +	int res;
 +
-+	res =3D ntxec_read16(rtc->ec, NTXEC_READ_YM);
++	struct i2c_msg msgs[] =3D {
++		{
++			.addr =3D ec->client->addr,
++			.flags =3D ec->client->flags,
++			.len =3D sizeof(request),
++			.buf =3D request
++		}, {
++			.addr =3D ec->client->addr,
++			.flags =3D ec->client->flags | I2C_M_RD,
++			.len =3D sizeof(response),
++			.buf =3D response
++		}
++	};
++
++	res =3D i2c_transfer(ec->client->adapter, msgs, ARRAY_SIZE(msgs));
 +	if (res < 0)
 +		return res;
++	if (res !=3D ARRAY_SIZE(msgs))
++		return -EIO;
 +
-+	tm->tm_year =3D (res >> 8) + 100;
-+	tm->tm_mon =3D (res & 0xff) - 1;
++	return get_unaligned_be16(response);
++}
++EXPORT_SYMBOL(ntxec_read16);
 +
-+	res =3D ntxec_read16(rtc->ec, NTXEC_READ_DH);
++int ntxec_write16(struct ntxec *ec, u8 addr, u16 value)
++{
++	u8 request[3] =3D { addr, };
++	int res;
++
++	put_unaligned_be16(value, request + 1);
++
++	res =3D i2c_transfer_buffer_flags(ec->client, request, sizeof(request),
++					ec->client->flags);
 +	if (res < 0)
 +		return res;
-+
-+	tm->tm_mday =3D res >> 8;
-+	tm->tm_hour =3D res & 0xff;
-+
-+	res =3D ntxec_read16(rtc->ec, NTXEC_READ_MS);
-+	if (res < 0)
-+		return res;
-+
-+	tm->tm_min =3D res >> 8;
-+	tm->tm_sec =3D res & 0xff;
 +
 +	return 0;
 +}
++EXPORT_SYMBOL(ntxec_write16);
 +
-+static int ntxec_set_time(struct device *dev, struct rtc_time *tm)
++int ntxec_read8(struct ntxec *ec, u8 addr)
 +{
-+	struct ntxec_rtc *rtc =3D dev_get_drvdata(dev);
-+	int res =3D 0;
++	int res =3D ntxec_read16(ec, addr);
 +
-+	res |=3D ntxec_write8(rtc->ec, NTXEC_WRITE_YEAR, tm->tm_year - 100);
-+	res |=3D ntxec_write8(rtc->ec, NTXEC_WRITE_MONTH, tm->tm_mon + 1);
-+	res |=3D ntxec_write8(rtc->ec, NTXEC_WRITE_DAY, tm->tm_mday);
-+	res |=3D ntxec_write8(rtc->ec, NTXEC_WRITE_HOUR, tm->tm_hour);
-+	res |=3D ntxec_write8(rtc->ec, NTXEC_WRITE_MINUTE, tm->tm_min);
-+	res |=3D ntxec_write8(rtc->ec, NTXEC_WRITE_SECOND, tm->tm_sec);
++	if (res < 0)
++		return res;
 +
-+	return (res < 0)? -EIO : 0;
++	return (res >> 8) & 0xff;
++}
++EXPORT_SYMBOL(ntxec_read8);
++
++int ntxec_write8(struct ntxec *ec, u8 addr, u8 value)
++{
++	return ntxec_write16(ec, addr, value << 8);
++}
++EXPORT_SYMBOL(ntxec_write8);
++
++
++/* Reboot/poweroff handling */
++
++static struct ntxec *poweroff_restart_instance;
++
++static void ntxec_poweroff(void)
++{
++	ntxec_write8(poweroff_restart_instance, NTXEC_POWEROFF, 0x01);
++	msleep(5000);
 +}
 +
-+static const struct rtc_class_ops ntxec_rtc_ops =3D {
-+	.read_time		=3D ntxec_read_time,
-+	.set_time		=3D ntxec_set_time,
++static int ntxec_restart(struct notifier_block *nb,
++		unsigned long action, void *data)
++{
++	/* FIXME: The I2C driver sleeps, but restart handlers may not sleep */
++	ntxec_write8(poweroff_restart_instance, NTXEC_RESET, 0xff);
++	/* TODO: delay? */
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block ntxec_restart_handler =3D {
++	.notifier_call =3D ntxec_restart,
++	.priority =3D 128
 +};
 +
-+static int ntxec_rtc_probe(struct platform_device *pdev)
-+{
-+	struct rtc_device *rtcdev;
-+	struct ntxec_rtc *rtc;
 +
-+	rtc =3D devm_kzalloc(&pdev->dev, sizeof(*rtc), GFP_KERNEL);
-+	if (!rtc)
++/* Driver setup */
++
++static int ntxec_probe(struct i2c_client *client,
++			    const struct i2c_device_id *ids)
++{
++	struct ntxec *ec;
++	int res;
++
++	ec =3D devm_kmalloc(&client->dev, sizeof(*ec), GFP_KERNEL);
++	if (!ec)
 +		return -ENOMEM;
 +
-+	rtc->dev =3D &pdev->dev;
-+	rtc->ec =3D dev_get_drvdata(pdev->dev.parent);
-+	platform_set_drvdata(pdev, rtc);
++	ec->dev =3D &client->dev;
++	ec->client =3D client;
 +
-+	rtcdev =3D devm_rtc_device_register(&pdev->dev, "ntxec-rtc",
-+					  &ntxec_rtc_ops, THIS_MODULE);
-+	if (IS_ERR(rtcdev))
-+		return PTR_ERR(rtc);
++	/* Determine the firmware version */
++	res =3D ntxec_read16(ec, NTXEC_VERSION);
++	if (res < 0) {
++		dev_dbg(ec->dev, "Failed to read firmware version number\n");
++		return res;
++	}
++	ec->version =3D res;
 +
-+	return 0;
++	dev_info(ec->dev,
++		 "Netronix embedded controller version %04x detected.\n",
++		 ec->version);
++
++	/* For now, we don't support the new register layout. */
++	if (ntxec_has_new_layout(ec))
++		return -EOPNOTSUPP;
++
++	if (of_device_is_system_power_controller(ec->dev->of_node)) {
++		/*
++		 * Set the 'powerkeep' bit. This is necessary on some boards
++		 * in order to keep the system running.
++		 */
++		res =3D ntxec_write8(ec, NTXEC_POWERKEEP, 0x08);
++		if (res < 0)
++			return res;
++
++		/* Install poweroff handler */
++		WARN_ON(poweroff_restart_instance);
++		poweroff_restart_instance =3D ec;
++		if (pm_power_off !=3D NULL)
++			/* TODO: Refactor among all poweroff drivers */
++			dev_err(ec->dev, "pm_power_off already assigned\n");
++		else
++			pm_power_off =3D ntxec_poweroff;
++
++		/* Install board reset handler */
++		res =3D register_restart_handler(&ntxec_restart_handler);
++		if (res < 0)
++			dev_err(ec->dev,
++				"Failed to register restart handler: %d\n", res);
++	}
++
++	i2c_set_clientdata(client, ec);
++
++	return devm_of_platform_populate(ec->dev);
 +}
 +
-+static const struct of_device_id ntxec_rtc_of_match[] =3D {
-+	{ .compatible =3D "netronix,ntxec-rtc" },
-+	{ },
++static const struct of_device_id of_ntxec_match_table[] =3D {
++	{ .compatible =3D "netronix,ntxec", },
++	{}
 +};
-+MODULE_DEVICE_TABLE(of, ntxec_rtc_of_match);
 +
-+static struct platform_driver ntxec_rtc_driver =3D {
-+	.driver =3D {
-+		.name =3D "ntxec-rtc",
-+		.of_match_table =3D ntxec_rtc_of_match,
++static struct i2c_driver ntxec_driver =3D {
++	.driver	=3D {
++		.name	=3D "ntxec",
++		.of_match_table =3D of_ntxec_match_table,
 +	},
-+	.probe =3D ntxec_rtc_probe,
++	.probe		=3D ntxec_probe,
 +};
-+module_platform_driver(ntxec_rtc_driver);
++builtin_i2c_driver(ntxec_driver);
+diff --git a/include/linux/mfd/ntxec.h b/include/linux/mfd/ntxec.h
+new file mode 100644
+index 0000000000000..9f9d6f2141751
+=2D-- /dev/null
++++ b/include/linux/mfd/ntxec.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright 2020 Jonathan Neusch=C3=A4fer
++ *
++ * MFD access functions for the Netronix embedded controller.
++ */
 +
-+MODULE_AUTHOR("Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>");
-+MODULE_DESCRIPTION("RTC driver for Netronix EC");
-+MODULE_LICENSE("GPL");
++#ifndef NTXEC_H
++#define NTXEC_H
++
++#include <linux/types.h>
++
++struct ntxec {
++	struct device *dev;
++	struct i2c_client *client;
++	u16 version;
++	/* TODO: Add a mutex to protect actions consisting of multiple accesses?=
+ */
++};
++
++static inline bool ntxec_has_new_layout(struct ntxec *ec)
++{
++	return ec->version =3D=3D 0xe916;
++}
++
++int ntxec_read16(struct ntxec *ec, u8 addr);
++int ntxec_write16(struct ntxec *ec, u8 addr, u16 value);
++int ntxec_read8(struct ntxec *ec, u8 addr);
++int ntxec_write8(struct ntxec *ec, u8 addr, u8 value);
++
++#endif
 =2D-
 2.27.0
