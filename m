@@ -1,112 +1,95 @@
-From: =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-Subject: [RFC PATCH 05/10] dt-bindings: pwm: Add bindings for PWM function in Netronix EC
-Date: Sun, 21 Jun 2020 00:42:16 +0200
-Message-ID: <20200620224222.1312520-4-j.neuschaefer@gmx.net>
+From: =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Subject: [RFC PATCH 07/10] dt-bindings: rtc: Add bindings for Netronix embedded controller RTC
+Date: Sun, 21 Jun 2020 00:42:18 +0200
+Message-ID: <20200620224222.1312520-6-j.neuschaefer@gmx.net>
 References: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200620224222.1312520-1-j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie@kernel.>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Sam Ravnborg <sam@ravnborg.org>, Linus Walleij <linus.walleij@linaro.org>, Heiko Stuebner <heiko.stuebner@theobroma-systems.com>, Stephan Gerhold <stephan@gerhold.net>, Lubomir Rintel <lkundrak@v3.sk>, Mark Brown <broonie@kernel.>
 List-Id: linux-pwm@vger.kernel.org
 
-The Netronix embedded controller as found in Kobo Aura and Tolino Shine
-supports one PWM channel, which is used to control the frontlight
-brightness on these devices.
+The Netronix EC implements an RTC with the following functionality:
 
-Known problems:
-- `make dt_binding_check` shows the following warnings:
-  Documentation/devicetree/bindings/mfd/netronix,ntxec.example.dts:49.17-4=
-2:
-  Warning (pwms_property): /example-0/backlight:pwms: cell 2 is not a
-  phandle reference
-  Documentation/devicetree/bindings/mfd/netronix,ntxec.example.dts:49.17-4=
-2:
-  Warning (pwms_property): /example-0/backlight:pwms: Could not get
-  phandle node for (cell 2)
+- Calendar-based time keeping with single-second resolution
+- Automatic power-on with single-minute resolution
+- Alarm at single-second resolution
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+This binding only supports timekeeping for now.
+
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 =2D--
- .../bindings/mfd/netronix,ntxec.yaml          | 13 ++++++++
- .../bindings/pwm/netronix,ntxec-pwm.yaml      | 33 +++++++++++++++++++
- 2 files changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/netronix,ntxec-p=
-wm.yaml
+ .../bindings/mfd/netronix,ntxec.yaml          |  7 +++++
+ .../bindings/rtc/netronix,ntxec-rtc.yaml      | 27 +++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/rtc/netronix,ntxec-r=
+tc.yaml
 
 diff --git a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml b/D=
 ocumentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-index 596df460f98eb..6562c41c5a9a9 100644
+index 6562c41c5a9a9..f6a32f46f47bb 100644
 =2D-- a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
 +++ b/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-@@ -31,6 +31,9 @@ properties:
-     description:
-       The EC can signal interrupts via a GPIO line
+@@ -34,6 +34,9 @@ properties:
+   pwm:
+     $ref: ../pwm/netronix,ntxec-pwm.yaml
 
-+  pwm:
-+    $ref: ../pwm/netronix,ntxec-pwm.yaml
++  rtc:
++    $ref: ../rtc/netronix,ntxec-rtc.yaml
 +
  required:
    - compatible
    - reg
-@@ -53,5 +56,15 @@ examples:
-                     interrupts =3D <11 IRQ_TYPE_EDGE_FALLING>;
-                     interrupt-controller;
-                     #interrupt-cells =3D <1>;
+@@ -61,6 +64,10 @@ examples:
+                             compatible =3D "netronix,ntxec-pwm";
+                             #pwm-cells =3D <1>;
+                     };
 +
-+                    ec_pwm: pwm {
-+                            compatible =3D "netronix,ntxec-pwm";
-+                            #pwm-cells =3D <1>;
++                    rtc {
++                            compatible =3D "netronix,ntxec-rtc";
 +                    };
              };
      };
-+
-+    backlight {
-+            compatible =3D "pwm-backlight";
-+            pwms =3D <&ec_pwm 0 50000>;
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/netronix,ntxec-pwm.yaml=
- b/Documentation/devicetree/bindings/pwm/netronix,ntxec-pwm.yaml
+
+diff --git a/Documentation/devicetree/bindings/rtc/netronix,ntxec-rtc.yaml=
+ b/Documentation/devicetree/bindings/rtc/netronix,ntxec-rtc.yaml
 new file mode 100644
-index 0000000000000..1dc1b1aba081c
+index 0000000000000..4b301ef7319c8
 =2D-- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/netronix,ntxec-pwm.yaml
-@@ -0,0 +1,33 @@
++++ b/Documentation/devicetree/bindings/rtc/netronix,ntxec-rtc.yaml
+@@ -0,0 +1,27 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/pwm/netronix,ntxec-pwm.yaml#
++$id: http://devicetree.org/schemas/rtc/netronix,ntxec-rtc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: PWM functionality in Netronix embedded controller
++title: RTC functionality in Netronix embedded controller
 +
 +maintainers:
-+  - Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
++  - Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 +
 +description: |
 +  See also Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
 +
-+  The Netronix EC contains PWM functionality, which is usually used to dr=
-ive
-+  the backlight LED.
-+
-+  The following PWM channels are supported:
-+    - 0: The PWM channel controlled by registers 0xa1-0xa7
++  The Netronix EC contains an RTC, which can be used for time-keeping, al=
+arm,
++  and automatic power-on. Note that not all of this functionality is curr=
+ently
++  supported in this binding.
 +
 +allOf:
-+  - $ref: pwm.yaml#
++  - $ref: "rtc.yaml#"
 +
 +properties:
 +  compatible:
-+    const: netronix,ntxec-pwm
-+
-+  "#pwm-cells":
-+    const: 1
++    const: netronix,ntxec-rtc
 +
 +required:
 +  - compatible
-+  - "#pwm-cells"
 =2D-
 2.27.0
