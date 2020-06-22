@@ -1,134 +1,117 @@
-From: Andreas Kemnade <andreas-cLv4Z9ELZ06ZuzBka8ofvg@public.gmane.org>
-Subject: Re: [RFC PATCH 05/10] dt-bindings: pwm: Add bindings for PWM
- function in Netronix EC
-Date: Sun, 21 Jun 2020 20:41:23 +0200
-Message-ID: <20200621204123.6c761d98@aktux>
-References: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
-        <20200620224222.1312520-4-j.neuschaefer@gmx.net>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 03/15] pwm: lpss: Fix off by one error in base_unit
+ math in pwm_lpss_prepare()
+Date: Mon, 22 Jun 2020 09:25:54 +0200
+Message-ID: <20200622072554.qkuvf25xmy3vyjd2@taurus.defre.kleine-koenig.org>
+References: <20200620121758.14836-1-hdegoede@redhat.com>
+ <20200620121758.14836-4-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200620224222.1312520-4-j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, allen <allen.chen-4K37Az1KcQBeoWH0uzbU5w@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="s33yr6daqbbyscr3"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731354AbgFVH0Q (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Jun 2020 03:26:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DCBC061794
+        for <linux-pwm@vger.kernel.org>; Mon, 22 Jun 2020 00:26:16 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20200620121758.14836-4-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 
-On Sun, 21 Jun 2020 00:42:16 +0200
-Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org> wrote:
 
-> The Netronix embedded controller as found in Kobo Aura and Tolino Shine
-> supports one PWM channel, which is used to control the frontlight
-> brightness on these devices.
+--s33yr6daqbbyscr3
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat, Jun 20, 2020 at 02:17:46PM +0200, Hans de Goede wrote:
+> According to the data-sheet the way the PWM controller works is that
+> each input clock-cycle the base_unit gets added to a N bit counter and
+> that counter overflowing determines the PWM output frequency.
 >=20
-> Known problems:
-> - `make dt_binding_check` shows the following warnings:
->   Documentation/devicetree/bindings/mfd/netronix,ntxec.example.dts:49.17-=
-42:
->   Warning (pwms_property): /example-0/backlight:pwms: cell 2 is not a
->   phandle reference
->   Documentation/devicetree/bindings/mfd/netronix,ntxec.example.dts:49.17-=
-42:
->   Warning (pwms_property): /example-0/backlight:pwms: Could not get
->   phandle node for (cell 2)
+> So assuming e.g. a 16 bit counter this means that if base_unit is set to =
+1,
+> after 65535 input clock-cycles the counter has been increased from 0 to
+> 65535 and it will overflow on the next cycle, so it will overflow after
+> every 65536 clock cycles and thus the calculations done in
+> pwm_lpss_prepare() should use 65536 and not 65535.
 >=20
-In the tolino sources in ./drivers/misc/ntx-misc.c I find this line
-
-        if(4=3D=3DgptHWCFG->m_val.bFL_PWM) {
-
-No idea what it does but I would expect to have a kind of translation to
-a dt property?
-
-> Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+> This commit fixes this. Note this also aligns the calculations in
+> pwm_lpss_prepare() with those in pwm_lpss_get_state().
+>=20
+> Note this effectively reverts commit 684309e5043e ("pwm: lpss: Avoid
+> potential overflow of base_unit"). The next patch in this series really
+> fixes the potential overflow of the base_unit value.
+>=20
+> Fixes: 684309e5043e ("pwm: lpss: Avoid potential overflow of base_unit")
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 > ---
->  .../bindings/mfd/netronix,ntxec.yaml          | 13 ++++++++
->  .../bindings/pwm/netronix,ntxec-pwm.yaml      | 33 +++++++++++++++++++
->  2 files changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/netronix,ntxec-=
-pwm.yaml
+> Changes in v3:
+> - Add Fixes tag
+> - Add Reviewed-by: Andy Shevchenko tag
+> ---
+>  drivers/pwm/pwm-lpss.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >=20
-> diff --git a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml b/=
-Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> index 596df460f98eb..6562c41c5a9a9 100644
-> --- a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> @@ -31,6 +31,9 @@ properties:
->      description:
->        The EC can signal interrupts via a GPIO line
->=20
-> +  pwm:
-> +    $ref: ../pwm/netronix,ntxec-pwm.yaml
-> +
->  required:
->    - compatible
->    - reg
-> @@ -53,5 +56,15 @@ examples:
->                      interrupts =3D <11 IRQ_TYPE_EDGE_FALLING>;
->                      interrupt-controller;
->                      #interrupt-cells =3D <1>;
-> +
-> +                    ec_pwm: pwm {
-> +                            compatible =3D "netronix,ntxec-pwm";
-> +                            #pwm-cells =3D <1>;
-shouldn't that be 2?
-> +                    };
->              };
->      };
-> +
-> +    backlight {
-> +            compatible =3D "pwm-backlight";
-> +            pwms =3D <&ec_pwm 0 50000>;
-since you have 2 values after the &ec_pwm=20
+> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+> index 9d965ffe66d1..43b1fc634af1 100644
+> --- a/drivers/pwm/pwm-lpss.c
+> +++ b/drivers/pwm/pwm-lpss.c
+> @@ -93,7 +93,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm=
+, struct pwm_device *pwm,
+>  	 * The equation is:
+>  	 * base_unit =3D round(base_unit_range * freq / c)
+>  	 */
+> -	base_unit_range =3D BIT(lpwm->info->base_unit_bits) - 1;
+> +	base_unit_range =3D BIT(lpwm->info->base_unit_bits);
+>  	freq *=3D base_unit_range;
+> =20
+>  	base_unit =3D DIV_ROUND_CLOSEST_ULL(freq, c);
+> @@ -104,8 +104,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lp=
+wm, struct pwm_device *pwm,
+> =20
+>  	orig_ctrl =3D ctrl =3D pwm_lpss_read(pwm);
+>  	ctrl &=3D ~PWM_ON_TIME_DIV_MASK;
+> -	ctrl &=3D ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
+> -	base_unit &=3D base_unit_range;
+> +	ctrl &=3D ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
+> +	base_unit &=3D (base_unit_range - 1);
+>  	ctrl |=3D (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+>  	ctrl |=3D on_time_div;
 
-> +    };
-> diff --git a/Documentation/devicetree/bindings/pwm/netronix,ntxec-pwm.yam=
-l b/Documentation/devicetree/bindings/pwm/netronix,ntxec-pwm.yaml
-> new file mode 100644
-> index 0000000000000..1dc1b1aba081c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/netronix,ntxec-pwm.yaml
-> @@ -0,0 +1,33 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/netronix,ntxec-pwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: PWM functionality in Netronix embedded controller
-> +
-> +maintainers:
-> +  - Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-> +
-> +description: |
-> +  See also Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> +
-> +  The Netronix EC contains PWM functionality, which is usually used to d=
-rive
-> +  the backlight LED.
-> +
-> +  The following PWM channels are supported:
-> +    - 0: The PWM channel controlled by registers 0xa1-0xa7
-> +
-> +allOf:
-> +  - $ref: pwm.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: netronix,ntxec-pwm
-> +
-> +  "#pwm-cells":
-> +    const: 1
+I willing to believe your change is right, what I don't like is that the
+calculation is really hard to follow. But that's nothing I want to
+burden on you to improve. (If however you are motivated, adding some
+comments about the hardware would probably help.)
 
-shouln't that be 2?
-> +
-> +required:
-> +  - compatible
-> +  - "#pwm-cells"
-> --
-> 2.27.0
->=20
->=20
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-Regards,
-Andreas
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--s33yr6daqbbyscr3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7wXP8ACgkQwfwUeK3K
+7AnlQggAnmb/EK9bchCisGMTtET3A8MmMvsLrGaMsQG0BI4fWzS2SnYifvpSTs57
+BrrYG0y72GKb6hx7rxvlkTHRHIq9x0jMvcEan6ZFjVjdrX7cqKo3/yd399PmE0VB
+ewOY+xd2xKIT/NXtUdcsoU6jfNA9+NxVMZpNBuA9sPS+Bn3pXbeBWrl0w7gAefhs
+S08mgy7B9a+njGYt5wF1n3hhyrDZ7kJIUdS4jCczjgC8zQ6QciVRRoSw+cyWU58o
+AkvPSA/e99kHzkKTns/j2BTx7fKqyelpqTFy0+Sc4LEqr7H2N+1mToBYGiDgb87Q
+4uD50mRhYHbfRtzms/sOWvjRfPvsGQ==
+=qThH
+-----END PGP SIGNATURE-----
+
+--s33yr6daqbbyscr3--
