@@ -1,27 +1,78 @@
-From: Karim Zakari <kariim1960z@gmail.com>
-Subject: URGENT REPLY.
-Date: Mon, 22 Jun 2020 16:02:19 +0000 (UTC)
-Message-ID: <1507214802.1850985.1592841739314__22933.6046891817$1592841776$gmane$org@mail.yahoo.com>
-References: <1507214802.1850985.1592841739314.ref@mail.yahoo.com>
-Reply-To: kzakari04@gmail.com
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v3 01/15] ACPI / LPSS: Resume Cherry Trail PWM controller
+ in no-irq phase
+Date: Mon, 22 Jun 2020 18:03:17 +0200
+Message-ID: <CAJZ5v0hheU2SaebNiLgRdxwC_dV44uSFWgAx2pr3w5ENeEF7EQ@mail.gmail.com>
+References: <20200620121758.14836-1-hdegoede@redhat.com> <20200620121758.14836-2-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from sonic302-21.consmr.mail.ne1.yahoo.com ([66.163.186.147]:46029
-        "EHLO sonic302-21.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729696AbgFVQCW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Jun 2020 12:02:22 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20200620121758.14836-2-hdegoede@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel <dri-devel@lists.freedesktop.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
+On Sat, Jun 20, 2020 at 2:18 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> The DSDTs on most Cherry Trail devices have an ugly clutch where the PWM
+> controller gets poked from the _PS0 method of the graphics-card device:
+>
+>         Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
+>         If (((Local0 & 0x03) == 0x03))
+>         {
+>             PSAT &= 0xFFFFFFFC
+>             Local1 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
+>             RSTA = Zero
+>             RSTF = Zero
+>             RSTA = One
+>             RSTF = One
+>             PWMB |= 0xC0000000
+>             PWMC = PWMB /* \_SB_.PCI0.GFX0.PWMB */
+>         }
+>
+> Where PSAT is the power-status register of the PWM controller, so if it
+> is in D3 when the GFX0 device's PS0 method runs then it will turn it on
+> and restore the PWM ctrl register value it saved from its PS3 handler.
+> Note not only does it restore it, it ors it with 0xC0000000 turning it
+> on at a time where we may not want it to get turned on at all.
+>
+> The pwm_get call which the i915 driver does to get a reference to the
+> PWM controller, already adds a device-link making the GFX0 device a
+> consumer of the PWM device. So it should already have been resumed when
+> the above AML runs and the AML should thus not do its undesirable poking
+> of the PWM controller register.
+>
+> But the PCI core powers on PCI devices in the no-irq resume phase and
+> thus calls the troublesome PS0 method in the no-irq resume phase.
+> Where as LPSS devices by default are resumed in the early resume phase.
+>
+> This commit sets the resume_from_noirq flag in the bsw_pwm_dev_desc
+> struct, so that Cherry Trail PWM controllers will be resumed in the
+> no-irq phase. Together with the device-link added by the pwm-get this
+> ensures that the PWM controller will be on when the troublesome PS0
+> method runs, which stops it from poking the PWM controller.
+>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Good-Day Friend,
-
- Hope you are doing great Today. I have a proposed business deal worthy (US$16.5 Million Dollars) that will benefit both parties. This is legitimate' legal and your personality will not be compromised.
-
-Waiting for your response for more details, As you are willing to execute this business opportunity with me.
-
-Sincerely Yours,
-Mr. Karim Zakari.
+> ---
+>  drivers/acpi/acpi_lpss.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+> index c5a5a179f49d..446e666b3466 100644
+> --- a/drivers/acpi/acpi_lpss.c
+> +++ b/drivers/acpi/acpi_lpss.c
+> @@ -257,6 +257,7 @@ static const struct lpss_device_desc bsw_pwm_dev_desc = {
+>         .flags = LPSS_SAVE_CTX | LPSS_NO_D3_DELAY,
+>         .prv_offset = 0x800,
+>         .setup = bsw_pwm_setup,
+> +       .resume_from_noirq = true,
+>  };
+>
+>  static const struct lpss_device_desc byt_uart_dev_desc = {
+> --
+> 2.26.2
+>
