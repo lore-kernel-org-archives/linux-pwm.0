@@ -1,27 +1,128 @@
-From: YAVUZ BEKTER <bakert.jg@gmail.com>
-Subject: Hello.
-Date: Tue, 23 Jun 2020 05:08:46 -0700
-Message-ID: <CAAUSuTX7XcyzvNs6dUHSQo+tqg8k-FaST5fTtZtS-WP+pw6CSg@mail.gmail.com>
-Reply-To: bektery@outlook.com
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [RESEND PATCH V13 3/3] Input: new da7280 haptic driver
+Date: Tue, 23 Jun 2020 16:41:05 +0200
+Message-ID: <20200623144105.mxhcrtezbghjb2vb@taurus.defre.kleine-koenig.org>
+References: <cover.1592221223.git.Roy.Im@diasemi.com>
+ <135761fd309eb9424faeb631b6e6c66147b57666.1592221223.git.Roy.Im@diasemi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732333AbgFWMIr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Jun 2020 08:08:47 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8956C061755
-        for <linux-pwm@vger.kernel.org>; Tue, 23 Jun 2020 05:08:47 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id g11so9512450qvs.2
-        for <linux-pwm@vger.kernel.org>; Tue, 23 Jun 2020 05:08:47 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="sap42vwa5imj2ksw"
+Return-path: <linux-input-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <135761fd309eb9424faeb631b6e6c66147b57666.1592221223.git.Roy.Im@diasemi.com>
+Sender: linux-input-owner@vger.kernel.org
+To: Roy Im <roy.im.opensource@diasemi.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Support Opensource <support.opensource@diasemi.com>, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-I am the foreign operations director of Bank of Turkey.
-My name is Mr, Yavuz. I have a sensitive investment project to discuss
-with you, please reply now.
-________________________
-Ik ben de directeur buitenlandse activiteiten van de Bank of Turkey.
-Mijn naam is meneer Yavuz. Ik moet een gevoelig investeringsproject bespreken
-met u, antwoord dan nu.
+
+--sap42vwa5imj2ksw
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+On Mon, Jun 15, 2020 at 08:40:23PM +0900, Roy Im wrote:
+> Adds support for the Dialog DA7280 LRA/ERM Haptic Driver with
+> multiple mode and integrated waveform memory and wideband support.
+> It communicates via an I2C bus to the device.
+>=20
+> Signed-off-by: Roy Im <roy.im.opensource@diasemi.com>
+
+Just some picky comments below.
+
+> +	error =3D pwm_apply_state(haptics->pwm_dev, &state);
+> +	if (error)
+> +		dev_err(haptics->dev,
+> +			"failed to apply pwm state: %pE\n",
+> +			ERR_PTR(error));
+
+You can save some horizontal space here by dropping the \n after the
+first comma. (There are a few more occurences.)
+
+> +	return error;
+> +}
+> +[...]
+> +
+> +		/* Sync up PWM state and ensure it is off. */
+> +		pwm_init_state(haptics->pwm_dev, &state);
+> +		state.enabled =3D false;
+> +		error =3D pwm_apply_state(haptics->pwm_dev, &state);
+> +		if (error) {
+> +			dev_err(dev,
+> +				"failed to apply initial PWM state: %pE\n",
+> +				ERR_PTR(error));
+> +			return error;
+> +		}
+> +
+> +		/* Check PWM Period, it must be in 10k ~ 250kHz */
+
+The unit of a PWM period is in (nano)seconds, to it cannot be in the
+range [10kHz, 250kHz]. (Is this too picky?)
+
+> +		period2freq =3D 1000000 / state.period;
+> +		if (period2freq < DA7280_MIN_PWM_FREQ_KHZ ||
+> +		    period2freq > DA7280_MAX_PWM_FREQ_KHZ) {
+> +			dev_err(dev, "Not supported PWM frequency(%d)\n",
+> +				period2freq);
+
+Doesn't the compiler warn here about period2freq being unsigned and %d
+being for signed int values?
+
+For my (non-native) English ear s/Not supported/Unsupported/ sounds
+better. Also my eyes would be pleases by a space before the opening
+brace.
+
+> +			return -EINVAL;
+> +		}
+> +	}
+> +
+> +
+> +[...]
+> +static struct i2c_driver da7280_driver =3D {
+> +	.driver	=3D {
+> +		.name		=3D "da7280",
+> +		.of_match_table	=3D of_match_ptr(da7280_of_match),
+> +		.pm		=3D &da7280_pm_ops,
+
+I don't like alignment of =3D, but I'm aware this is a subjective thing.
+(The reason for me is that adding a new member that is longer than the
+already existing requires touching all lines. So I stick to a single
+space before a =3D.)
+
+> +	},
+> +	.probe	  =3D da7280_probe,
+> +	.id_table =3D da7280_i2c_id,
+> +};
+> +module_i2c_driver(da7280_driver);
+> +
+> +MODULE_DESCRIPTION("DA7280 haptics driver");
+> +MODULE_AUTHOR("Roy Im <Roy.Im.Opensource@diasemi.com>");
+> +MODULE_LICENSE("GPL");
+> --=20
+> end-of-patch for RESEND PATCH V13
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--sap42vwa5imj2ksw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7yFH4ACgkQwfwUeK3K
+7AkzyQgAinqodG7O9W0MXAaThAuQIllst+boEpiHowQfbTKPWIfhEtcsGoBNoQvb
+hySvg0WAH6jI6LNsfnM2uIabLaPjC9mVIFyG0YU2g4ulASEOrOSqZrxCGEJxZPEi
+57o7NJCw7RaXvH/QGP0zg/+NP0o/kWZlr6GFP/ZPBi5/Xa7Nonqws+DRNjPzdN9v
+pKhKf6QJhNTQuVCn6an+Uo9kl4F28kvx4DLDfW3ljZC+g+1PH/4uZi9iNy83V8Uo
+XlY6hqJ3b70fotLm2Oo7chj3dPAeerkxx5mezIQpgidqqct2PcPzfUbPx+xPBm59
+tZsRyjSeuO9u/M3kgOBYaKTPWQb8oQ==
+=j9ju
+-----END PGP SIGNATURE-----
+
+--sap42vwa5imj2ksw--
