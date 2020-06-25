@@ -1,83 +1,102 @@
-From: Roy Im <roy.im.opensource@diasemi.com>
-Subject: RE: [RESEND PATCH V13 3/3] Input: new da7280 haptic driver
-Date: Wed, 24 Jun 2020 16:56:31 +0000
-Message-ID: <DB8PR10MB3356FB869A14EA88AFB40F4885950@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
-References: <cover.1592221223.git.Roy.Im@diasemi.com>
- <135761fd309eb9424faeb631b6e6c66147b57666.1592221223.git.Roy.Im@diasemi.com>
- <20200623144105.mxhcrtezbghjb2vb@taurus.defre.kleine-koenig.org>
- <DB8PR10MB3356697B41C0FB97F5FD330185950@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
- <20200624133726.en7q52rpdtzvhajz@taurus.defre.kleine-koenig.org>
- <DB8PR10MB3356AFC38358881B471E76A285950@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
- <20200624162818.zjdtdlocxxndbsld@taurus.defre.kleine-koenig.org>
+From: "Tanwar, Rahul" <rahul.tanwar@linux.intel.com>
+Subject: Re: [PATCH v2 2/2] Add PWM fan controller driver for LGM SoC
+Date: Thu, 25 Jun 2020 12:23:54 +0800
+Message-ID: <25560ece-5d71-562d-359a-490d70cc5453@linux.intel.com>
+References: <cover.1592474693.git.rahul.tanwar@linux.intel.com>
+ <79fefda4aad5ebeb368129375bf128b74ed12224.1592474693.git.rahul.tanwar@linux.intel.com>
+ <41a3c509e8d72d1e1c45b6b87f52f0a75018e6b0.camel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-eopbgr40086.outbound.protection.outlook.com ([40.107.4.86]:48537
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404124AbgFXQ4h (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 24 Jun 2020 12:56:37 -0400
-In-Reply-To: <20200624162818.zjdtdlocxxndbsld@taurus.defre.kleine-koenig.org>
+Received: from mga09.intel.com ([134.134.136.24]:27978 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726058AbgFYEYA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 25 Jun 2020 00:24:00 -0400
+In-Reply-To: <41a3c509e8d72d1e1c45b6b87f52f0a75018e6b0.camel@pengutronix.de>
 Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Roy Im <roy.im.opensource@diasemi.com>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Philipp Zabel <p.zabel@pengutronix.de>, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, andriy.shevchenko@intel.com, songjun.Wu@intel.com, cheol.yong.kim@intel.com, qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com
 
-On Thu, June 25, 2020 1:28 AM, Uwe Kleine-K=F6nig
-> On Wed, Jun 24, 2020 at 03:39:52PM +0000, Roy Im wrote:
-> > On Wed, Jun 24, 2020 at 10:37 PM, Uwe Kleine-K=F6nig wrote:
-> > > On Wed, Jun 24, 2020 at 12:04:24PM +0900, Roy Im wrote:
-> > > > 		period2freq =3D 1000000 / state.period;
-> > > > 		if (period2freq < DA7280_MIN_PWM_FREQ_KHZ ||
-> > > > 		    period2freq > DA7280_MAX_PWM_FREQ_KHZ) {
-> > > > 			dev_err(dev, "Unsupported PWM frequency (%u)\n",
-> > > > 				period2freq);
-> > > > 			return -EINVAL;
-> > > > 		}
-> > > > If you look ok, let me update this so.
-> > >
-> > > looks fine.
-> > >
-> > > Note that you don't need the division if you check for:
-> > >
-> > > 	if (state.period > 100000 || state.period < 4000) {
-> > > 		...
-> > >
-> > > (maybe the compiler is already clever enough to get rid of the divisi=
-on for you, but then the check is:
-> > >
-> > > 	if (state.period > 100000 || state.period < 3985) {
-> > >
-> > > because of rounding errors.)
-> >
-> > OK, you are right, that will be better. So let me change that as below
-> > if you look fine.
->=20
-> I look fine, the code however is wrong. :-)
->=20
-> > 	/* Check PWM period, PWM freq =3D 1000000 / state.period.
-> > 	 * The valid PWM freq range: 10k ~ 250kHz.
-> > 	 */
-> > 	if (state.period > 100000 || state.period < 3985) {
->=20
-> You want 4000 here ---------------------------------^^^^, don't you?
 
-Yes, it is now based on period, not frequency. You are right.
-4000 is correct now. Thanks.
+Hi Philipp,
 
->=20
-> > 		dev_err(dev, "Unsupported PWM period (%u)\n",
-> > 			state.period);
-> > 		return -EINVAL;
-> > 	}
->=20
-> Best regards
-> Uwe
->=20
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
-  |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
-|
+On 18/6/2020 8:25 pm, Philipp Zabel wrote:
+> Hi Rahul,
+>
+> On Thu, 2020-06-18 at 20:05 +0800, Rahul Tanwar wrote:
+>> Intel Lightning Mountain(LGM) SoC contains a PWM fan controller.
+>> This PWM controller does not have any other consumer, it is a
+>> dedicated PWM controller for fan attached to the system. Add
+>> driver for this PWM fan controller.
+>>
+>> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+>> ---
+>>  drivers/pwm/Kconfig         |   9 +
+>>  drivers/pwm/Makefile        |   1 +
+>>  drivers/pwm/pwm-intel-lgm.c | 400 ++++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 410 insertions(+)
+>>  create mode 100644 drivers/pwm/pwm-intel-lgm.c
+>>
+> [...]
+>> diff --git a/drivers/pwm/pwm-intel-lgm.c b/drivers/pwm/pwm-intel-lgm.c
+>> new file mode 100644
+>> index 000000000000..3c7077acb161
+>> --- /dev/null
+>> +++ b/drivers/pwm/pwm-intel-lgm.c
+>> @@ -0,0 +1,400 @@
+> [...]
+>> +static int lgm_pwm_probe(struct platform_device *pdev)
+>> +{
+>> +	struct lgm_pwm_chip *pc;
+>> +	struct device *dev = &pdev->dev;
+>> +	void __iomem *io_base;
+>> +	int ret;
+>> +
+>> +	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+>> +	if (!pc)
+>> +		return -ENOMEM;
+>> +
+>> +	io_base = devm_platform_ioremap_resource(pdev, 0);
+>> +	if (IS_ERR(io_base))
+>> +		return PTR_ERR(io_base);
+>> +
+>> +	pc->regmap = devm_regmap_init_mmio(dev, io_base, &pwm_regmap_config);
+>> +	if (IS_ERR(pc->regmap)) {
+>> +		ret = PTR_ERR(pc->regmap);
+>> +		dev_err(dev, "failed to init register map: %pe\n", pc->regmap);
+>> +		return ret;
+>> +	}
+>> +
+>> +	pc->clk = devm_clk_get(dev, NULL);
+>> +	if (IS_ERR(pc->clk)) {
+>> +		ret = PTR_ERR(pc->clk);
+>> +		dev_err(dev, "failed to get clock: %pe\n", pc->clk);
+>> +		return ret;
+>> +	}
+>> +
+>> +	pc->rst = devm_reset_control_get(dev, NULL);
+>> +	if (IS_ERR(pc->rst)) {
+>> +		ret = PTR_ERR(pc->rst);
+>> +		dev_err(dev, "failed to get reset control: %pe\n", pc->rst);
+>> +		return ret;
+>> +	}
+> Please use devm_reset_control_get_exclusive() to make it explicit an
+> that exclusive reset control is requested. Given how the reset control
+> is used, I think this driver could also use
+> devm_reset_control_get_shared() to potentially allow sharing a reset
+> line with other devices.
+
+devm_reset_control_get() is a wrapper for devm_reset_control_get_exclusive().
+Code as below:
+static inline struct reset_control *devm_reset_control_get(
+                                struct device *dev, const char *id)
+{
+        return devm_reset_control_get_exclusive(dev, id);
+}
+Am i missing something else?
+
+Regards,
+Rahul
