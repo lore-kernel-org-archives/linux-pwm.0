@@ -1,68 +1,65 @@
-From: Andreas Kemnade <andreas-cLv4Z9ELZ06ZuzBka8ofvg@public.gmane.org>
-Subject: Re: [RFC PATCH 07/10] dt-bindings: rtc: Add bindings for Netronix
- embedded controller RTC
-Date: Fri, 26 Jun 2020 23:55:52 +0200
-Message-ID: <20200626235552.7820a999@kemnade.info>
-References: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
-        <20200620224222.1312520-6-j.neuschaefer@gmx.net>
-        <20200621000220.GB131826@piout.net>
+From: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+Subject: Re: [RFC PATCH 01/10] DT bindings in plain text format
+Date: Sat, 27 Jun 2020 02:07:57 +0200
+Message-ID: <20200627000757.GA2699@latitude>
+References: <20200620223915.1311485-1-j.neuschaefer@gmx.net>
+ <20200620223915.1311485-2-j.neuschaefer@gmx.net>
+ <20200622103243.GT954398@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ikeVEW9yuYc//A+q"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200621000220.GB131826-m++hUPXGwpdeoWH0uzbU5w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200622103243.GT954398@dell>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
-Cc: Jonathan =?ISO-8859-1?Q?Neusch=E4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, allen <allen.ch>
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>al
 List-Id: linux-pwm@vger.kernel.org
 
-On Sun, 21 Jun 2020 02:02:20 +0200
-Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org> wrote:
 
-> Hi,
->=20
-> On 21/06/2020 00:42:18+0200, Jonathan Neusch=E4fer wrote:
-> > The Netronix EC implements an RTC with the following functionality:
-> >=20
-> > - Calendar-based time keeping with single-second resolution
-> > - Automatic power-on with single-minute resolution
-> > - Alarm at single-second resolution
-> >=20
-> > This binding only supports timekeeping for now.
-> >=20
-> > Signed-off-by: Jonathan Neusch=E4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-> > ---
-> >  .../bindings/mfd/netronix,ntxec.yaml          |  7 +++++
-> >  .../bindings/rtc/netronix,ntxec-rtc.yaml      | 27 +++++++++++++++++++
-> >  2 files changed, 34 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/rtc/netronix,ntxe=
-c-rtc.yaml
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml =
-b/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> > index 6562c41c5a9a9..f6a32f46f47bb 100644
-> > --- a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> > +++ b/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-> > @@ -34,6 +34,9 @@ properties:
-> >    pwm:
-> >      $ref: ../pwm/netronix,ntxec-pwm.yaml
-> >=20
-> > +  rtc:
-> > +    $ref: ../rtc/netronix,ntxec-rtc.yaml
-> > + =20
->=20
-> Shouldn't the node simply be documented here?
->=20
-> Also, do you really need a compatible string to be able to proe the
-> driver? What are the chances that you'll get a similar EC without an
-> RTC?
->=20
-Tolino Shine 2 HD has the mentioned EC but the vendor kernel does not use
-its RTC (not checked whether it is present or functional).
-As a key for grepping in the vendor sources:=20
-gptNtxHwCfg->m_val.bPCB =3D 0x50
+--ikeVEW9yuYc//A+q
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tolino Shine 3  and Kobo Clara HD do not have that EC.
+On Mon, Jun 22, 2020 at 11:32:43AM +0100, Lee Jones wrote:
+> On Sun, 21 Jun 2020, Jonathan Neusch=C3=A4fer wrote:
+>=20
+> > For reference, here are the devicetree bindings in plaintext format.
+> > (Not for merge.)
+>=20
+> This would be better placed inside the relevant patch(es), rather than
+> in a separate non-mergeable extra/superfluous patch.
 
-Regrads,
-Andreas
+Ok, I'll put it in the patch descriptions (as long as the plaintext DT
+bindings are relevant for review).
+
+Thanks,
+Jonathan Neusch=C3=A4fer
+
+
+> >  .../bindings/mfd/netronix,ntxec.txt           | 58 +++++++++++++++++++
+> >  .../bindings/pwm/netronix,ntxec-pwm.txt       | 27 +++++++++
+> >  .../bindings/rtc/netronix,ntxec-rtc.txt       | 17 ++++++
+
+--ikeVEW9yuYc//A+q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl72jdUACgkQCDBEmo7z
+X9sVSQ//dO2mmSQ8irQcGq+ghniFyM5T/oE/AuJByz+DeR8rIh6vaaPtz9ECq8If
+BKOOwgL5IBJE2dUEYXjVwFy+jvW7dMUvPkOm7WOuzjGj1Rs3I4QvzcyhrPyeKinE
+CAi8mxQsggvq0ntaevbtvbgOBU/FQVmv58DKpkUOW0JIMpplDyne2tSUCSYjjZro
+czdeMhbA6Sd2UzK/2tuxgmF6n05KqgObgVQKUG7tiToAj9IuoS8OPn62MD9xm8Vv
+M4EO57heoLmtUDQl08ObZJ0esnsC5RyjcZgNruEKXta8f6BSik25/Z7w9aZcVybm
+8QqcX13GsM5DYJpmNZ6I/56BuxderNnrBsuLjaqnmBbXUgCugl6PYEAPPZ0MJKBK
+GFFimgrzG/H8p3Cy/Vp6yY5d9+Yb0DGhpl+XQnZRzwabKV18LwCmlgeb/m0fm/aB
+G09odAz3tZbMdeaU7aBRVIHctK/CAQb1O6LH/7IKLQNT0Lus+55amD4Fm6+gx+O4
+g0U74dcxrm3dAGD+bp3IVjPV09ZoNm0l+1Vl+83Qq6P0NE+y0lXnoRAUM5xSHaye
+srcAe6UJglI4qqu22unvkzv+uhMcZ0AqY65wGBA+LKazcCmZ6UnpwhcWdWrI5pva
+PWf8gqk3BXCySDeN+fVpPDidwrYr/r9DI4MGxZf/dnWJStmbgl4=
+=h4Re
+-----END PGP SIGNATURE-----
+
+--ikeVEW9yuYc//A+q--
