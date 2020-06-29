@@ -1,46 +1,54 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Mon, 29 Jun 2020 19:50:41 +0300
-Message-ID: <CAHp75Vehv_Cp1AhMPhk8ktyp-uHSkgweqnhhSq_7w2Kf9y=7XQ@mail.gmail.com>
-References: <20200503105453.23658-1-miquel.raynal@bootlin.com> <20200629160844.6ecf79c1@xps13>
+From: Scott Branden <scott.branden@broadcom.com>
+Subject: Re: [PATCH 1/4] pwm: bcm-iproc: Remove impossible comparison when
+ validating duty cycle
+Date: Mon, 29 Jun 2020 09:54:20 -0700
+Message-ID: <76a657ca-d30e-c5f2-f057-1c1bb7c8e1bf@broadcom.com>
+References: <20200629124752.1018358-1-lee.jones@linaro.org>
+ <20200629124752.1018358-2-lee.jones@linaro.org>
+ <3470e941-aa86-11a8-674b-5258a08fedb1@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200629160844.6ecf79c1@xps13>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732288AbgF2TWp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Jun 2020 15:22:45 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1B5C030F33
+        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2020 09:54:26 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id a6so14134130wmm.0
+        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2020 09:54:26 -0700 (PDT)
+In-Reply-To: <3470e941-aa86-11a8-674b-5258a08fedb1@gmail.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Florian Fainelli <f.fainelli@gmail.com>, Lee Jones <lee.jones@linaro.org>, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, bcm-kernel-feedback-list@broadcom.com
 
-On Mon, Jun 29, 2020 at 5:08 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> Miquel Raynal <miquel.raynal@bootlin.com> wrote on Sun,  3 May 2020
-> 12:54:53 +0200:
+
+
+On 2020-06-29 9:45 a.m., Florian Fainelli wrote:
 >
-> > The MAX7313 chip is fully compatible with the PCA9535 on its basic
-> > functions but can also manage the intensity on each of its ports with
-> > PWM. Each output is independent and may be tuned with 16 values (4
-> > bits per output). The period is always 32kHz, only the duty-cycle may
-> > be changed. One can use any output as GPIO or PWM.
-
-> Can I have a status on this patch please?
+> On 6/29/2020 5:47 AM, Lee Jones wrote:
+>> 'duty' here is an unsigned int, thus checking for <0 will always
+>> evaluate to false.
+>>
+>> Fixes the following W=1 warning:
+>>
+>>   drivers/pwm/pwm-bcm-iproc.c:147:12: warning: comparison of unsigned expression < 0 is always false [-Wtype-limits]
+>>
+>> Cc: Ray Jui <rjui@broadcom.com>
+>> Cc: Scott Branden <sbranden@broadcom.com>
+>> Cc: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+>> Cc: bcm-kernel-feedback-list@broadcom.com
+>> Cc: linux-pwm@vger.kernel.org
+>> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> And IPROC_PWM_DUTY_CYCLE_MIN is unused after remove this single use of
+> the define, if you also remove it you can add:
 >
-> If it was forgotten, I would be good to have it queued now, otherwise,
-> may I know the reason?
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+We actually made this same change internally recently but hadn't 
+upstreamed it yet.
 
-TWIMC, just my 2 cents about this patch.
-I don't like it in this form. On the constructive side I can propose
-at least two ways to solve:
-a) introduce a PWM as a pin mode; move pca953x to pin control; use
-this mode with PWM driver being separated from the pin control;
-b) introduce an MFD that provides two parts for this GPIO & PWM.
-
-Personally I would go with a) as I know at least one more pin
-controller which will get an advantage of this (and it's definitely
-not an MFD).
-
-If GPIO / pin control maintainers consider this okay, I will rest my
-case, but see above...
-
--- 
-With Best Regards,
-Andy Shevchenko
+Tested-by: Scott Branden <scott.branden@broadcom.com>
