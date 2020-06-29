@@ -1,75 +1,96 @@
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 2/2] Add PWM fan controller driver for LGM SoC
-Date: Mon, 29 Jun 2020 21:58:46 +0200
-Message-ID: <20200629195846.6fonhke5d2rs4mna@pengutronix.de>
-References: <cover.1593420979.git.rahul.tanwar@linux.intel.com>
- <df22a642083474e71f9f8274c033a6ef9757af5f.1593420979.git.rahul.tanwar@linux.intel.com>
+Subject: Re: [PATCH 4/4] pwm: omap-dmtimer: Repair pwm_omap_dmtimer_chip's
+ broken kerneldoc header
+Date: Mon, 29 Jun 2020 21:39:58 +0200
+Message-ID: <20200629193958.dasxmmkcexfxorfq@pengutronix.de>
+References: <20200629124752.1018358-1-lee.jones@linaro.org>
+ <20200629124752.1018358-5-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kjvrp6vjwce3kmbh"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="ktwuwrjs6xawhva4"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387478AbgF2TkC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Jun 2020 15:40:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EE3C03E979
+        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2020 12:40:01 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <df22a642083474e71f9f8274c033a6ef9757af5f.1593420979.git.rahul.tanwar@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, p.zabel@pengutronix.de, robh+dt@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, andriy.shevchenko@intel.com, songjun.Wu@intel.com, cheol.yong.kim@intel.com, qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com
+In-Reply-To: <20200629124752.1018358-5-lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>, NeilBrown <neilb@suse.de>, Grant Erickson <marathon96@gmail.com>
 
 
---kjvrp6vjwce3kmbh
+--ktwuwrjs6xawhva4
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hello,
 
-On Mon, Jun 29, 2020 at 05:03:47PM +0800, Rahul Tanwar wrote:
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index cb8d739067d2..a3303e22d5fa 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -232,6 +232,15 @@ config PWM_IMX_TPM
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-imx-tpm.
-> =20
-> +config PWM_INTEL_LGM
-> +	tristate "Intel LGM PWM support"
-> +	depends on X86 || COMPILE_TEST
+[dropped Joachim Eastwood <manabian@gmail.com> from recipents as his
+address bounces]
 
-Another thing I just noticed: You're using regmap, so I think you should
-have
+On Mon, Jun 29, 2020 at 01:47:52PM +0100, Lee Jones wrote:
+> Argument descriptions must be prepended with a '@' to be understood
+> by the kerneldoc tooling/parsers/validators.
+>=20
+> Fixes the following W=3D1 warning:
+>=20
+>   drivers/pwm/pwm-omap-dmtimer.c:70: warning: Function parameter or membe=
+r 'dm_timer_pdev' not described in 'pwm_omap_dmtimer_chip'
+>=20
+> Cc: Tony Lindgren <tony@atomide.com>
+> Cc: Joachim Eastwood <manabian@gmail.com>
+> Cc: NeilBrown <neilb@suse.de>
+> Cc: Grant Erickson <marathon96@gmail.com>
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/pwm/pwm-omap-dmtimer.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtime=
+r.c
+> index 0d31833db2e2c..75cea7f2aff5e 100644
+> --- a/drivers/pwm/pwm-omap-dmtimer.c
+> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+> @@ -58,7 +58,7 @@
+>   * @mutex:		Mutex to protect pwm apply state
+>   * @dm_timer:		Pointer to omap dm timer.
+>   * @pdata:		Pointer to omap dm timer ops.
+> - * dm_timer_pdev:	Pointer to omap dm timer platform device
+> + * @dm_timer_pdev:	Pointer to omap dm timer platform device
+>   */
+>  struct pwm_omap_dmtimer_chip {
+>  	struct pwm_chip chip;
 
-	select REGMAP_MMIO
+LGTM,
 
-here.
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-> +	help
-> +	  Generic PWM fan controller driver for LGM SoC.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-intel-lgm.
-> +
-
-Best regards
+Thanks
 Uwe
 
 --=20
 Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---kjvrp6vjwce3kmbh
+--ktwuwrjs6xawhva4
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl76R/IACgkQwfwUeK3K
-7AnSIwgAioBKgOURNuZlj2ZaOEbNv0Asga+afCAc5eCL1G1zoFg3nIUlLLtz0EUT
-MGLMD63sjZHvB3kkMZYwA5DZFs6prNaWoI2HxN6LA2SCNalwjIQvbxQMvwUh9vwD
-9sJfzQaubgGEawID/xOniJyuTOf66HFXQ9moU0VEf3NwTm2pfrapFrOzsKQP8a/K
-8VPsgHGCWrIchyhSyw+zOM36XccSSl/TXLWEspAoPh5dOLKKxlcpPsgAe37v7JGJ
-QXg09RtvP+ipfWdrPSrt/+2tOj2b5AgatzgBh0Gdt0JEO0SMprMwkl+8PIv7mqhF
-LrDM55V72Emp+3WPOdTJUwrR7zN+iQ==
-=J0cp
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl76Q4sACgkQwfwUeK3K
+7AmzWAf/Zj9Hhj4s99PZArypybzk5l2H7shVDnUei4T1aCiVqD9rL+QJitW3TzTZ
+HyhCa7plxP9BHXDPcQKagFjgnj/zj/tNPSst12WGmX6rc2omP5DHpzzMqAkCCAb+
+Iw3YHQPmQQOdFNYIgQ2CsIIJs4Yo+pkm+XswLVR7pRJpuHu8omfiK6BhklqjJ/IG
+nskRKoHfPpzmay1PlTmhDytmtpT6wlb67xbEzLv59kZlYabgWjTClYN14fHRpELe
+AgWX0v3tdwPZLcVRuRcv2aPWuayBGSnLUi4H8h42WpxuveHjkWJql/2ETbSqCaP3
+6rtluenkb9KLsjjeLxIatc3UjArhYg==
+=3KKv
 -----END PGP SIGNATURE-----
 
---kjvrp6vjwce3kmbh--
+--ktwuwrjs6xawhva4--
