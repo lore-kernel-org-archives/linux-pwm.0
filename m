@@ -1,54 +1,77 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH 1/4] pwm: bcm-iproc: Remove impossible comparison when
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 2/4] pwm: bcm-kona: Remove impossible comparison when
  validating duty cycle
-Date: Mon, 29 Jun 2020 09:54:20 -0700
-Message-ID: <76a657ca-d30e-c5f2-f057-1c1bb7c8e1bf@broadcom.com>
+Date: Mon, 29 Jun 2020 21:41:13 +0200
+Message-ID: <20200629194113.5ppu6fbolvk2ibkj@pengutronix.de>
 References: <20200629124752.1018358-1-lee.jones@linaro.org>
- <20200629124752.1018358-2-lee.jones@linaro.org>
- <3470e941-aa86-11a8-674b-5258a08fedb1@gmail.com>
+ <20200629124752.1018358-3-lee.jones@linaro.org>
+ <0db8ebc7-b75b-a74c-8852-b235daedaf82@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732288AbgF2TWp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Jun 2020 15:22:45 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1B5C030F33
-        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2020 09:54:26 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id a6so14134130wmm.0
-        for <linux-pwm@vger.kernel.org>; Mon, 29 Jun 2020 09:54:26 -0700 (PDT)
-In-Reply-To: <3470e941-aa86-11a8-674b-5258a08fedb1@gmail.com>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="iom6ccgswov23aih"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <0db8ebc7-b75b-a74c-8852-b235daedaf82@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Florian Fainelli <f.fainelli@gmail.com>, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com
 List-Id: linux-pwm@vger.kernel.org
-To: Florian Fainelli <f.fainelli@gmail.com>, Lee Jones <lee.jones@linaro.org>, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, bcm-kernel-feedback-list@broadcom.com
 
 
+--iom6ccgswov23aih
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2020-06-29 9:45 a.m., Florian Fainelli wrote:
->
+On Mon, Jun 29, 2020 at 09:45:31AM -0700, Florian Fainelli wrote:
+>=20
+>=20
 > On 6/29/2020 5:47 AM, Lee Jones wrote:
->> 'duty' here is an unsigned int, thus checking for <0 will always
->> evaluate to false.
->>
->> Fixes the following W=1 warning:
->>
->>   drivers/pwm/pwm-bcm-iproc.c:147:12: warning: comparison of unsigned expression < 0 is always false [-Wtype-limits]
->>
->> Cc: Ray Jui <rjui@broadcom.com>
->> Cc: Scott Branden <sbranden@broadcom.com>
->> Cc: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
->> Cc: bcm-kernel-feedback-list@broadcom.com
->> Cc: linux-pwm@vger.kernel.org
->> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> And IPROC_PWM_DUTY_CYCLE_MIN is unused after remove this single use of
-> the define, if you also remove it you can add:
->
+> > 'dc' here is an unsigned long, thus checking for <0 will always
+> > evaluate to false.
+> >=20
+> > Fixes the following W=3D1 warning:
+> >=20
+> >  drivers/pwm/pwm-bcm-kona.c:141:35: warning: comparison of unsigned exp=
+ression < 0 is always false [-Wtype-limits]
+> >=20
+> > Cc: Florian Fainelli <f.fainelli@gmail.com>
+> > Cc: Ray Jui <rjui@broadcom.com>
+> > Cc: Scott Branden <sbranden@broadcom.com>
+> > Cc: bcm-kernel-feedback-list@broadcom.com
+> > Cc: linux-pwm@vger.kernel.org
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+>=20
+> And similar to patch #1, DUTY_CYCLE_HIGH_MIN now gets unused, so if you
+> remove it as well, you can add:
+>=20
 > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-We actually made this same change internally recently but hadn't 
-upstreamed it yet.
 
-Tested-by: Scott Branden <scott.branden@broadcom.com>
+Even without removing DUTY_CYCLE_HIGH_MIN (which might still serve as
+documentation):
+
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--iom6ccgswov23aih
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl76Q9UACgkQwfwUeK3K
+7Al0CAf/Y4ZPaVHfhUvfydRJdCxxev03qoTCFtAzDTPaVB5uB2EoQY52OdKsixQ2
+ael/uUR1eKJKfQZ3YTgJisVG135iRhv4e9QAaPUAjNJ5c6NBsHd5vevPzMm5vjq9
+Pso3NLmhEcZk1qzn/SQJcjRCbUALSN9fXe7cORKeoJKH92ApyYxAz4T0ynURzwju
+cjW2fPgfBC1T0r15e0+AbUwuy/8cgg+RjVM1/DXrZC0YD/QIMVCfQ4mk4UHIlAWA
+WTNN/1J05XFWK5EmpsGgTnjYtGQYH//wLR0/jHG4TlhfbW9SdF4PYUkb4k93fNdr
+3iUPx7ZRd+DqvR9cFPX0W0jhYjGiig==
+=4PU7
+-----END PGP SIGNATURE-----
+
+--iom6ccgswov23aih--
