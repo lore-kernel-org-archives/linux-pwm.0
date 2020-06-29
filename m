@@ -1,46 +1,84 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 3/4] pwm: mediatek: Provide missing kerneldoc description for 'soc' arg
-Date: Mon, 29 Jun 2020 13:47:51 +0100
-Message-ID: <20200629124752.1018358-4-lee.jones@linaro.org>
-References: <20200629124752.1018358-1-lee.jones@linaro.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Subject: [PATCH v3 1/2] Add DT bindings YAML schema for PWM fan controller of LGM SoC
+Date: Mon, 29 Jun 2020 17:03:46 +0800
+Message-ID: <cd0692812e7f1bce365a7594b076ae0ed19d2b37.1593420979.git.rahul.tanwar@linux.intel.com>
+References: <cover.1593420979.git.rahul.tanwar@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200629124752.1018358-1-lee.jones@linaro.org>
+In-Reply-To: <cover.1593420979.git.rahul.tanwar@linux.intel.com>
+In-Reply-To: <cover.1593420979.git.rahul.tanwar@linux.intel.com>
+References: <cover.1593420979.git.rahul.tanwar@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>, John Crispin <blogic@openwrt.org>, Zhi Mao <zhi.mao@mediatek.com>, linux-mediatek@lists.infradead.org
+To: u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, p.zabel@pengutronix.de, robh+dt@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, andriy.shevchenko@intel.com, songjun.Wu@intel.com, cheol.yong.kim@intel.com, qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Kerneldoc syntax is used, but not complete.
+Intel's LGM(Lightning Mountain) SoC contains a PWM fan controller
+which is only used to control the fan attached to the system. This
+PWM controller does not have any other consumer other than fan.
+Add DT bindings documentation for this PWM fan controller.
 
-Descriptions are required for all arguments.
-
-Fixes the following W=1 build warning:
-
- drivers/pwm/pwm-mediatek.c:57: warning: Function parameter or member 'soc' not described in 'pwm_mediatek_chip'
-
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: John Crispin <blogic@openwrt.org>
-Cc: Zhi Mao <zhi.mao@mediatek.com>
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-mediatek@lists.infradead.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 ---
- drivers/pwm/pwm-mediatek.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/pwm/intel,lgm-pwm.yaml     | 51 ++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index b94e0d09c300f..ab001ce55178e 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -46,6 +46,7 @@ struct pwm_mediatek_of_data {
-  * @clk_main: the clock used by PWM core
-  * @clk_pwms: the clock used by each PWM channel
-  * @clk_freq: the fix clock frequency of legacy MIPS SoC
-+ * @soc: pointer to chip's platform data
-  */
- struct pwm_mediatek_chip {
- 	struct pwm_chip chip;
+diff --git a/Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml
+new file mode 100644
+index 000000000000..bc3fbc46ec5c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/intel,lgm-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: LGM SoC PWM fan controller
++
++maintainers:
++  - Rahul Tanwar <rahul.tanwar@intel.com>
++
++properties:
++  compatible:
++    const: intel,lgm-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  intel,fan-wire:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description: Specifies fan mode. Default when unspecified is 2.
++
++  intel,max-rpm:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description:
++      Specifies maximum RPM of fan attached to the system.
++      Default when unspecified is 4000.
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - resets
++
++additionalProperties: false
++
++examples:
++  - |
++    pwm: pwm@e0d00000 {
++        compatible = "intel,lgm-pwm";
++        reg = <0xe0d00000 0x30>;
++        #pwm-cells = <2>;
++        clocks = <&cgu0 126>;
++        resets = <&rcu0 0x30 21>;
++    };
 -- 
-2.25.1
+2.11.0
