@@ -1,106 +1,74 @@
-From: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
-Subject: Re: [RFC PATCH 04/10] mfd: Add base driver for Netronix embedded
- controller
-Date: Sun, 28 Jun 2020 10:29:06 +0200
-Message-ID: <20200628082906.GB2561@latitude>
-References: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
- <20200620224222.1312520-3-j.neuschaefer@gmx.net>
- <20200627101738.2fe4abc3@aktux>
+From: Roy Im <roy.im.opensource@diasemi.com>
+Subject: RE: [PATCH v14 3/3] Input: new da7280 haptic driver
+Date: Mon, 29 Jun 2020 00:29:21 +0000
+Message-ID: <DB8PR10MB33566ABB47A00C8A5F281BE1856E0@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
+References: <cover.1593017969.git.Roy.Im@diasemi.com>
+ <8b05f5bd46eac415c628e965f59b2b57aff86bbe.1593017969.git.Roy.Im@diasemi.com>
+ <20200626061853.hyb7dwta6ths2qo2@taurus.defre.kleine-koenig.org>
+ <DB8PR10MB33563278561DFC2E50420F1C85930@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
+ <20200626155604.poqryunm7fyqmgek@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="b5gNqxB1S1yM7hjW"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20200627101738.2fe4abc3@aktux>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andreas Kemnade <andreas-cLv4Z9ELZ06ZuzBka8ofvg@public.gmane.org>
-Cc: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>
-List-Id: linux-pwm@vger.kernel.org
-
-
---b5gNqxB1S1yM7hjW
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-vi1eur05on2053.outbound.protection.outlook.com ([40.107.21.53]:64703
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726395AbgF2A32 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 28 Jun 2020 20:29:28 -0400
+In-Reply-To: <20200626155604.poqryunm7fyqmgek@pengutronix.de>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Roy Im <roy.im.opensource@diasemi.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Sat, Jun 27, 2020 at 10:17:38AM +0200, Andreas Kemnade wrote:
-> On Sun, 21 Jun 2020 00:42:15 +0200
-> Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org> wrote:
+On Sat, June 27, 2020 12:56 AM, Uwe Kleine-K=F6nig wrote:
+> On Fri, Jun 26, 2020 at 01:17:29PM +0000, Roy Im wrote:
+> > > On Fri, June 26, 2020 3:19 PM, Uwe Kleine-K=F6nig wrote:
+> > > Hello,
+> > > from the PWM POV I'm happy now. Just a few minor comments that I noti=
+ced while checking the PWM details.
+> >
+> > Many thanks for your comments.
+> >
+> > >
+> > > On Thu, Jun 25, 2020 at 01:59:29AM +0900, Roy Im wrote:
+> > > > +		val =3D haptics->ps_seq_id << DA7280_PS_SEQ_ID_SHIFT |
+> > > > +			haptics->ps_seq_loop << DA7280_PS_SEQ_LOOP_SHIFT;
+> > >
+> > > If you write this as:
+> > >
+> > > 	val =3D FIELD_PREP(DA7280_PS_SEQ_ID_MASK, haptics->ps_seq_id) |
+> > > 		FIELD_PREP(DA7280_PS_SEQ_LOOP_MASK, haptics->ps_seq_loop);
+> > >
+> > > you get some additional checks for free and can drop all defines for =
+..._SHIFT .
+> >
+> > It is not difficult to update that as you advise, but I think having
+> > the shift there explicitly makes it more readable, so most of the
+> > drivers from my team have the defines(shift) up to now. I guess this
+> > is a kind of subjective thing.
+> > Do you think it is still necessary? Then I will update as you said.
 >=20
-> > Third-party hardware documentation is available at
-> > https://github.com/neuschaefer/linux/wiki/Netronix-MSP430-embedded-cont=
-roller
-> >=20
-> > The EC supports interrupts, but the driver doesn't make use of them so
-> > far.
-> >=20
-> > Known problems:
-> > - The reboot handler is installed in such a way that it directly calls
-> >   into the i2c subsystem to send the reboot command to the EC. This
-> >   means that the reboot handler may sleep, which is not allowed.
-> >=20
-> see
-> https://patchwork.ozlabs.org/project/linux-i2c/patch/20190415213432.8972-=
-3-contact-FE0fJ5eluzM67TsDOn+PKw@public.gmane.org/
+> No, from my side it's not a hard requirement (and after all I'm not the o=
+ne who will take your commit). I personally like it better
+> with FIELD_PREP, but I can still sleep if you don't agree :-)
 >=20
-> for a fix of such problems.=20
-
-So far, regmap isn't involved here, but I'll remember it when I switch
-to regmap.
-
-Between when I first wrote this driver and now, the I2C has added
-support for transfers in atomic contexts very late in the system's life
-(exactly what happens when you reset a system via PMIC/EC), so this
-problem seems to be gone from my driver, for now.
-(See commit 63b96983a5ddf ("i2c: core: introduce callbacks for atomic trans=
-fers"))
-
-
-[...]
-> > +int ntxec_write8(struct ntxec *ec, u8 addr, u8 value)
-> > +{
-> > +	return ntxec_write16(ec, addr, value << 8);
-> > +}
-> > +EXPORT_SYMBOL(ntxec_write8);
-> > +
+> What I don't like about having both ..._SHIFT and ..._MASK is that there =
+is some duplication as ..._SHIFT can be calculated
+> from ..._MASK:
 >=20
-> do we really need both 16bit and 8bit accessors?
+> 	#define LALA_SHIFT (ffs(LALA_MASK) - 1)
 
-No, the hardware/firmware doesn't care.
+OK, I got it and I will update.
 
-> If not, then simply use regmap_i2c_init and set val_bits accordingly.
-> Maybe just doing the << 8 in the constants?
-
-Thanks, I'll try this approach.
-
-The values are not always constants, for example in the PWM driver:
-
-	res |=3D ntxec_write8(pwm->ec, NTXEC_PERIOD_HIGH, period >> 8);
-	res |=3D ntxec_write8(pwm->ec, NTXEC_PERIOD_LOW, period);
-	res |=3D ntxec_write8(pwm->ec, NTXEC_DUTY_HIGH, duty >> 8);
-	res |=3D ntxec_write8(pwm->ec, NTXEC_DUTY_LOW, duty);
-
-
-Jonathan
-
---b5gNqxB1S1yM7hjW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl74VL8ACgkQCDBEmo7z
-X9vsEg//cjP0FgATqceA5CjhLzEVJxxLCujFQN03O2AvzBf5EdlAzS+Rbl8vmTqw
-aGm+JAhI0gHbQgTni2UFe58LXIjCY6PG1weU2Zge52QLRIFsfKnh2qz9sAJUPBXD
-vrJOSTrlxBy7j4kAg4vsWpo1y0a+hg7NVzaV4VLtnhb7iEPjnbjgupi28gx2ak/P
-gJrVyIJOLMiHAOpJe+TiZPVUphklEBC/tLOZkq70vw6PElkemNNC9ajufmf2V+D6
-kItW8NNCiOVXC6+1tklpoZlyttCPfVVv8XpTk+KtjEIghryk6aGbDxxD1HNOAUyz
-TqgtqsDwJh7Wr6YC6cDsiwD9YAzg2MvtplzHaOYpOEeXRT2ZjUxtz4MJ5YdxaXfl
-QApB1HpUzZvAECUOO4tRR+Olq1rB4y3g3pjn+NEH7XtKZiokxtT/8iCvcHIkIwLG
-LFiQ7E2Lha6nprVbGyiCG1l3uz8FZtqdrHzXxeVkkMvvFDSWXSNWKGogw6/SNGTc
-vB8tkxixvppfKlbS2j4kBXe1griaqSFPC6epS9VT1NpNGecekg+5M+6OEm+LTq+v
-XI4kTNYHd9GacgNzLbSQG3p0nNg6YGdyYXXID5jArsVOPbRThclnNLDajEQ9r2IZ
-3DAjcL/TTRxwmCiAFAoNMVRnBvGOxyrWJ5YuLslonkne5i2lAFE=
-=7+bu
------END PGP SIGNATURE-----
-
---b5gNqxB1S1yM7hjW--
+>=20
+> Best regards
+> Uwe
+>=20
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=F6nig          =
+  |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
