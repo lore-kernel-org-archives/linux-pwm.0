@@ -1,62 +1,77 @@
-From: Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Tue, 30 Jun 2020 08:58:28 +0200
-Message-ID: <20200630085828.1aebdf99@xps13>
-References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
-        <20200629160844.6ecf79c1@xps13>
-        <20200629195044.uvgma53cajiko3gf@pengutronix.de>
+From: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+Subject: Re: [RFC PATCH 00/10] Netronix embedded controller driver for Kobo
+ and Tolino ebook readers
+Date: Tue, 30 Jun 2020 09:15:23 +0200
+Message-ID: <20200630071523.GA2983@latitude>
+References: <20200620223915.1311485-1-j.neuschaefer@gmx.net>
+ <20200630084051.66feadea@aktux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20200629195044.uvgma53cajiko3gf@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="X1bOJ3K7DJ5YkBrT"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200630084051.66feadea@aktux>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andreas Kemnade <andreas-cLv4Z9ELZ06ZuzBka8ofvg@public.gmane.org>
+Cc: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Uwe,
 
-Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote on Mon, 29 Jun
-2020 21:50:44 +0200:
+--X1bOJ3K7DJ5YkBrT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Mon, Jun 29, 2020 at 04:08:44PM +0200, Miquel Raynal wrote:
-> > Hello Uwe, Thierry,
-> > 
-> > Miquel Raynal <miquel.raynal@bootlin.com> wrote on Sun,  3 May 2020
-> > 12:54:53 +0200:
-> >   
-> > > The MAX7313 chip is fully compatible with the PCA9535 on its basic
-> > > functions but can also manage the intensity on each of its ports with
-> > > PWM. Each output is independent and may be tuned with 16 values (4
-> > > bits per output). The period is always 32kHz, only the duty-cycle may
-> > > be changed. One can use any output as GPIO or PWM.
-> > > 
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---  
-> > 
-> > Can I have a status on this patch please?
-> > 
-> > If it was forgotten, I would be good to have it queued now, otherwise,
-> > may I know the reason?  
-> 
-> You could reply to my feedback ... If you could say there: "What you
-> want isn't possible" I'd count this as a strong indication to not ask to
-> implement Andy's suggestion. (Even if this would be possible, I'm not
-> sure this is a good idea, but still ...)
+On Tue, Jun 30, 2020 at 08:40:51AM +0200, Andreas Kemnade wrote:
+[...]
+> got a chance to test it on a Tolino Shine 2 HD.
+> It uses the RTC from the RC5T619 but backlight seems to go via MSP430
+> EC.
+>=20
+> I got this.
+>=20
+> [    1.453603] ntxec 0-0043: Netronix embedded controller version f110 de=
+tected.
+> [   10.723638] ntxec-rtc 21a0000.i2c:embedded-controller@43:rtc: register=
+ed as rtc0
+> [   10.775276] ntxec-pwm: probe of 21a0000.i2c:embedded-controller@43:pwm=
+ failed with error -5
 
-Sorry for the misunderstanding, but I already replied twice to Andy
-about this. Once in October, again in November, then I gave a shot to
-the idea of splitting the drivers (GPIO vs. PWM) in January. So I
-thought you were sharing your thoughts out loud but was not expecting
-any specific feedback on it.
+Hmm, -EIO from the PWM driver.
 
-So, no, even if the idea might make sense, it is not doable in a
-reasonable amount of time. I am not saying it is impossible, but someone
-has to think about it deeper and propose a core structure to handle it
-in a generic and clean way so that other drivers sharing the same
-properties can rely on it. I am not qualified enough to do it the proper
-way in a reasonable time frame.
+> [   10.850597] ntxec-rtc 21a0000.i2c:embedded-controller@43:rtc: hctosys:=
+ unable to read the hardware clock
+>=20
+> version number matchess with what the vendor kernel reports. Maybe we
+> should document which version is running on which devices?
 
-Thanks,
-Miquèl
+Good idea, I've added a table to the wiki page:
+
+  https://github.com/neuschaefer/linux/wiki/Netronix-MSP430-embedded-contro=
+ller
+
+
+
+Jonathan
+
+--X1bOJ3K7DJ5YkBrT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl765oMACgkQCDBEmo7z
+X9t4uQ//adw6WbhVY/ljNdI6evIOpehnVPm4JcX+Cq+FRgwzpcWAMvdXvmonOM86
+Gjy7liAoNDczuxg7kdDhCRwIVANhi3jHJeeeHqzUnki8TSvnWS1iu5xGWOx1RRWj
+YbwARZIU2L37uPys5ByF4RoqKp1tngfhL9B9o+e93x8RB16dxACG2qEb7Hdr55qI
+/lwk2zuuHwqdxOOGSVFrD40GA52Xc/nn3wr1orqxOIE0k8pOEslBiXq7MW+nKROZ
+Cdc1zGpqWnSlRc04jm1da1oJmmqZPCtiK7rMZcY98sbJgmdSflP2R5raXNggdBNQ
+jNmRTSsBIxYkdK6+3W3Fl/m8RMJe6gwKaQIqYu69gZbsrm8Ap826po3CkCve4kCJ
+w4mYJAxQfI34OrIga4mHru+qnFJEgMPkHwTI98LK7YHJT1ecWn8Ucblxd2dUQlGO
+TCcQL//WWRiD73DJ+vd0NstsmvgMSlnUGgmWcCGjEIR0sM3e7DquHbfeDoaSeV58
+ALjTBcTcoSyWKFMSO+3iws/kqmW3VlpHRqQrzRaiU9LqluBgK8PKXOopityTqG8K
+Mu7yTDOrFwJO2q1kNJP45cpl/2JBpK23MAMFo2U78IvhhjMeKe15m2P79z+fbUAZ
+ASFT4XWCVS+Ovv5HwrLoWdrTzNUYi50bl9vFimShNFr5qC9xCWM=
+=ozP0
+-----END PGP SIGNATURE-----
+
+--X1bOJ3K7DJ5YkBrT--
