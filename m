@@ -1,47 +1,35 @@
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Tue, 30 Jun 2020 11:08:06 +0200
-Message-ID: <20200630090806.6bgjgi34gtcrzfze@pengutronix.de>
+Date: Tue, 30 Jun 2020 11:13:31 +0200
+Message-ID: <CAMpxmJUHy+5ynmsU6FhX=MJR6XbwoNr65NGqzuAd0Bm-JS1kWw@mail.gmail.com>
 References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
- <20200629160844.6ecf79c1@xps13>
- <20200629195044.uvgma53cajiko3gf@pengutronix.de>
+ <20200629160844.6ecf79c1@xps13> <20200629195044.uvgma53cajiko3gf@pengutronix.de>
  <20200630085828.1aebdf99@xps13>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="q6efgvsv3vhhwcas"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731678AbgF3JIK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Jun 2020 05:08:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCD5C061755
-        for <linux-pwm@vger.kernel.org>; Tue, 30 Jun 2020 02:08:10 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20200630085828.1aebdf99@xps13>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org
-
-
---q6efgvsv3vhhwcas
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20200630085828.1aebdf99@xps13>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, LKML <linux-kernel@vger.kernel.org>
+List-Id: linux-pwm@vger.kernel.org
 
-Hello Miquel,
-
-On Tue, Jun 30, 2020 at 08:58:28AM +0200, Miquel Raynal wrote:
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote on Mon, 29 Jun
+On Tue, Jun 30, 2020 at 8:58 AM Miquel Raynal <miquel.raynal@bootlin.com> w=
+rote:
+>
+> Hi Uwe,
+>
+> Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote on Mon, 29 J=
+un
 > 2020 21:50:44 +0200:
->=20
+>
 > > On Mon, Jun 29, 2020 at 04:08:44PM +0200, Miquel Raynal wrote:
 > > > Hello Uwe, Thierry,
-> > >=20
+> > >
 > > > Miquel Raynal <miquel.raynal@bootlin.com> wrote on Sun,  3 May 2020
 > > > 12:54:53 +0200:
-> > >  =20
+> > >
 > > > > The MAX7313 chip is fully compatible with the PCA9535 on its basic
 > > > > functions but can also manage the intensity on each of its ports wi=
 th
@@ -49,53 +37,41 @@ th
 > > > > bits per output). The period is always 32kHz, only the duty-cycle m=
 ay
 > > > > be changed. One can use any output as GPIO or PWM.
-> > > >=20
+> > > >
 > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > --- =20
-> > >=20
+> > > > ---
+> > >
 > > > Can I have a status on this patch please?
-> > >=20
-> > > If it was forgotten, I would be good to have it queued now, otherwise,
-> > > may I know the reason? =20
-> >=20
+> > >
+> > > If it was forgotten, I would be good to have it queued now, otherwise=
+,
+> > > may I know the reason?
+> >
 > > You could reply to my feedback ... If you could say there: "What you
-> > want isn't possible" I'd count this as a strong indication to not ask to
+> > want isn't possible" I'd count this as a strong indication to not ask t=
+o
 > > implement Andy's suggestion. (Even if this would be possible, I'm not
 > > sure this is a good idea, but still ...)
->=20
+>
 > Sorry for the misunderstanding, but I already replied twice to Andy
 > about this. Once in October, again in November, then I gave a shot to
 > the idea of splitting the drivers (GPIO vs. PWM) in January. So I
 > thought you were sharing your thoughts out loud but was not expecting
 > any specific feedback on it.
+>
+> So, no, even if the idea might make sense, it is not doable in a
+> reasonable amount of time. I am not saying it is impossible, but someone
+> has to think about it deeper and propose a core structure to handle it
+> in a generic and clean way so that other drivers sharing the same
+> properties can rely on it. I am not qualified enough to do it the proper
+> way in a reasonable time frame.
+>
+> Thanks,
+> Miqu=C3=A8l
 
-Ah ok. Probably the discussion took too long already and was swapped out
-on my end.
+Hi Miqu=C3=A8l,
 
-I will take a look once more later this week. One thing I noticed while
-skimming the patch was, that the added defines could make use of a nice
-prefix. MAX_PWM for example sounds quite generic.
+I can't find anything in any of the previous threads. What was the
+reason to not go the MFD way here?
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---q6efgvsv3vhhwcas
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl77APMACgkQwfwUeK3K
-7AmdWwf+NJnKEOUjeeHA3Ud3w8l7E+nDL0RwEKeFDSjcFcoPKx+gC9VOj+8qFbA5
-rMEQZUXEY3sN5K36oVWQ4F6RU7e8LZwU1Q458H0t1+YK4wnVaT/lq4qisRejIot9
-1nuyfRuz4LfbAzERL5CIpCQu+LsfDbg6ZyUOiyR12N42wVYWGcdi/wS77eXPtS6C
-+R+vYVrZtwIW+xK5OeY8PXycziJeLkYTZ382yObdsN0y6+05oYpBe8HUgEp9IxHG
-6qEebvwI6Ta2p+SBo1WBbKqntOqDZDR0fRvGABLI9fRTDRC++fBXlNYVdepIP52C
-5pJbowCjeSdTZXZPI5VgbdQvMzoejw==
-=0bW1
------END PGP SIGNATURE-----
-
---q6efgvsv3vhhwcas--
+Bartosz
