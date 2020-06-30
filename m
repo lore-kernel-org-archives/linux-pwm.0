@@ -1,59 +1,64 @@
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Tue, 30 Jun 2020 14:45:00 +0200
-Message-ID: <20200630124500.m765t276atb3wqgy@pengutronix.de>
-References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
- <20200629160844.6ecf79c1@xps13>
- <20200629195044.uvgma53cajiko3gf@pengutronix.de>
- <20200630085828.1aebdf99@xps13>
- <CAMpxmJUHy+5ynmsU6FhX=MJR6XbwoNr65NGqzuAd0Bm-JS1kWw@mail.gmail.com>
+From: Andreas Kemnade <andreas-cLv4Z9ELZ06ZuzBka8ofvg@public.gmane.org>
+Subject: Re: [RFC PATCH 00/10] Netronix embedded controller driver for Kobo
+ and Tolino ebook readers
+Date: Tue, 30 Jun 2020 21:22:07 +0200
+Message-ID: <20200630212207.018ad355@aktux>
+References: <20200620223915.1311485-1-j.neuschaefer@gmx.net>
+        <20200630084051.66feadea@aktux>
+        <20200630071523.GA2983@latitude>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="krdjdadfcr2hiurd"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMpxmJUHy+5ynmsU6FhX=MJR6XbwoNr65NGqzuAd0Bm-JS1kWw@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200630071523.GA2983@latitude>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, allen <allen.chen-4K37Az1KcQBeoWH0uzbU5w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, 30 Jun 2020 09:15:23 +0200
+Jonathan Neusch=C3=A4fer <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org> wrote:
 
---krdjdadfcr2hiurd
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Tue, Jun 30, 2020 at 08:40:51AM +0200, Andreas Kemnade wrote:
+> [...]
+> > got a chance to test it on a Tolino Shine 2 HD.
+> > It uses the RTC from the RC5T619 but backlight seems to go via MSP430
+> > EC.
+> >=20
+> > I got this.
+> >=20
+> > [    1.453603] ntxec 0-0043: Netronix embedded controller version f110 =
+detected.
+> > [   10.723638] ntxec-rtc 21a0000.i2c:embedded-controller@43:rtc: regist=
+ered as rtc0
+> > [   10.775276] ntxec-pwm: probe of 21a0000.i2c:embedded-controller@43:p=
+wm failed with error -5 =20
+>=20
+> Hmm, -EIO from the PWM driver.
+>
+Weird...
+IOMUXC_SW_PAD_CTL_PAD_I2C1_SDA/SCL is identical between
+vendor kernel (heavily patched 3.0.35) and patched mainline.
+                       =20
+MX6SL_PAD_I2C1_SCL__I2C1_SCL     0x4001f8b1
+MX6SL_PAD_I2C1_SDA__I2C1_SDA     0x4001f8b1
 
-Hallo Bartosz,
+root@tolino2:~# i2cset -f 0 0x43 0xa3 0x0001 w
+WARNING! This program can confuse your I2C bus, cause data loss and worse!
+I will write to device file /dev/i2c-0, chip address 0x43, data address
+0xa3, data 0x01, mode word.
+Continue? [Y/n]=20
+Error: Write failed
+root@tolino2:~# i2cset -f 0 0x43 0xa3 0x0000 w
+WARNING! This program can confuse your I2C bus, cause data loss and worse!
+I will write to device file /dev/i2c-0, chip address 0x43, data address
+0xa3, data 0x00, mode word.
+Continue? [Y/n]=20
+Error: Write failed
 
-On Tue, Jun 30, 2020 at 11:13:31AM +0200, Bartosz Golaszewski wrote:
-> I can't find anything in any of the previous threads. What was the
-> reason to not go the MFD way here?
+but backlight gets toggled. Same behavior on vendor kernel and
+in vendor uboot.
+That smells.
 
-MFD doesn't work because the different "modes" are not orthogonal. So
-this is not a single device that provides several functions at the same
-time that can be used in parallel.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---krdjdadfcr2hiurd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl77M8kACgkQwfwUeK3K
-7All0Qf9GdnPCjEM0OlXRr7bI7rOuAhdap/1C3qSS/4I43TT+CcuEs+lztsEi5Tm
-DtpykD0ZiI0bhUI3SIJmS9gN4IAgQhAjYpNcgBt8/2OthVxkz8OgLDzxsan6kPIH
-2U8Dxa9hPsdW7VRnXmBqKC2eeR+PPKItUy7RzkV07Qs/SUTBO4xCLifwHT7WlOnA
-vBvicgmTboB6XlEfIWOq95QrZT3cchHlekcM9Qe3TGDLz2F+rj2PSWYe807G++W5
-JfIpwwh1rn1TTxUxpfnaq8tx8UuHoy2XTkUnKVN8FsMRHIKfDxH13FpOWJ7r/5CO
-WjYLxGth+0dO+cUZ5yDYqbbt4OZOyQ==
-=bp8M
------END PGP SIGNATURE-----
-
---krdjdadfcr2hiurd--
+Regards,
+Andreas
