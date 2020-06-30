@@ -1,43 +1,87 @@
-From: Roy Im <roy.im.opensource@diasemi.com>
-Subject: RE: [PATCH v15 3/3] Input: new da7280 haptic driver
-Date: Tue, 30 Jun 2020 03:39:26 +0000
-Message-ID: <DB8PR10MB3356EF71023E587911611C0C856F0@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
-References: <cover.1593435662.git.Roy.Im@diasemi.com>
- <c7b8cb993abe7bb771108bb94e5d9edbeb4f7103.1593435662.git.Roy.Im@diasemi.com>
- <602a5743-d27b-3e81-e917-d343f58d35e9@infradead.org>
+From: Andreas Kemnade <andreas@kemnade.info>
+Subject: Re: [RFC PATCH 00/10] Netronix embedded controller driver for Kobo
+ and Tolino ebook readers
+Date: Tue, 30 Jun 2020 08:40:51 +0200
+Message-ID: <20200630084051.66feadea@aktux>
+References: <20200620223915.1311485-1-j.neuschaefer@gmx.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-eopbgr80077.outbound.protection.outlook.com ([40.107.8.77]:20470
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728930AbgF3Dja (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 29 Jun 2020 23:39:30 -0400
-In-Reply-To: <602a5743-d27b-3e81-e917-d343f58d35e9@infradead.org>
-Content-Language: en-US
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730190AbgF3Gl1 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Jun 2020 02:41:27 -0400
+In-Reply-To: <20200620223915.1311485-1-j.neuschaefer@gmx.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer@gmx.net>
+Cc: linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Sam Ravnborg <sam@ravnborg.org>, Linus Walleij <linus.walleij@linaro.org>, Heiko Stuebner <heiko.stuebner@theobroma-systems.com>, Stephan Gerhold <stephan@gerhold.net>, Lubomir Rintel <lkundrak@v3.sk>, Mark Brown <broonie@kernel.org>, allen <allen.chen@ite.com.t>
 
-T24gVHVlLCBKdW5lIDMwLCAyMDIwIDEyOjE0IFBNLCBSYW5keSBEdW5sYXAgd3JvdGU6IA0KPiBP
-biA2LzI5LzIwIDY6MDEgQU0sIFJveSBJbSB3cm90ZToNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9pbnB1dC9taXNjL0tjb25maWcgYi9kcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZw0KPiA+IGlu
-ZGV4IDM2MmU4YTAuLjc5ZmJkZGIgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9pbnB1dC9taXNj
-L0tjb25maWcNCj4gPiArKysgYi9kcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZw0KPiA+IEBAIC04
-NjksNCArODY5LDE3IEBAIGNvbmZpZyBJTlBVVF9TVFBNSUMxX09OS0VZDQo+ID4gIAkgIFRvIGNv
-bXBpbGUgdGhpcyBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhlcmU6IHRoZQ0KPiA+ICAJ
-ICBtb2R1bGUgd2lsbCBiZSBjYWxsZWQgc3RwbWljMV9vbmtleS4NCj4gPg0KPiA+ICtjb25maWcg
-SU5QVVRfREE3MjgwX0hBUFRJQ1MNCj4gPiArCXRyaXN0YXRlICJEaWFsb2cgU2VtaWNvbmR1Y3Rv
-ciBEQTcyODAgaGFwdGljcyBzdXBwb3J0Ig0KPiA+ICsJZGVwZW5kcyBvbiBJTlBVVCAmJiBJMkMN
-Cj4gPiArCXNlbGVjdCBJTlBVVF9GRl9NRU1MRVNTDQo+ID4gKwlzZWxlY3QgUkVHTUFQX0kyQw0K
-PiA+ICsJaGVscA0KPiA+ICsJICBTYXkgWSB0byBlbmFibGUgc3VwcG9ydCBmb3IgdGhlIERpYWxv
-ZyBEQTcyODAgaGFwdGljcyBkcml2ZXIuDQo+ID4gKwkgIFRoZSBoYXB0aWNzIGNhbiBiZSBjb250
-cm9sbGVkIGJ5IGkyYyBjb21tdW5pY2F0aW9uLA0KPiANCj4gSWYgeW91IG1ha2UgYW55IG1vcmUg
-dXBkYXRlcywgbWFrZSB0aGlzOiAgIEkyQyBjb21tdW5pY2F0aW9uLA0KPiBwbGVhc2UuDQoNCk9L
-LCBJIHdpbGwgZG8uIFRoYW5rcyBmb3IgeW91ciBjb21tZW50Lg0KDQo+IA0KPiA+ICsJICBvciBi
-eSBQV00gaW5wdXQsIG9yIGJ5IEdQSS4NCj4gPiArDQo+ID4gKwkgIFRvIGNvbXBpbGUgdGhpcyBk
-cml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhlcmU6IHRoZQ0KPiA+ICsJICBtb2R1bGUgd2ls
-bCBiZSBjYWxsZWQgZGE3MjgwLg0KPiA+ICsNCj4gPiAgZW5kaWYNCj4gDQo+IHRoYW5rcy4NCj4g
-LS0NCj4gflJhbmR5DQoNCg==
+Hi,
+
+On Sun, 21 Jun 2020 00:39:04 +0200
+Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net> wrote:
+
+> Hi,
+>=20
+> This patchset adds basic support for the embedded controller found on
+> older ebook reader boards designed by/with the ODM Netronix Inc.[1] and
+> sold by Kobo or Tolino, for example the Kobo Aura and the Tolino Shine.
+> These drivers are based on the vendor kernel sources, but in order to
+> all information in a single place, I documented the register interface
+> of the EC on GitHub[4].
+>=20
+> A few things still needs to be ironed out, hence the RFC tag:
+>  - The reboot/reset handler in patch 3/10 calls into I2C code, which may
+>    sleep, but reboot handlers are apparently not allowed to sleep.
+>  - I'm not sure I got the YAML DT bindings right. I have also included
+>    the plain text DT bindings for reference.
+>=20
+>=20
+got a chance to test it on a Tolino Shine 2 HD.
+It uses the RTC from the RC5T619 but backlight seems to go via MSP430
+EC.
+
+I got this.
+
+[    1.453603] ntxec 0-0043: Netronix embedded controller version f110 dete=
+cted.
+[   10.723638] ntxec-rtc 21a0000.i2c:embedded-controller@43:rtc: registered=
+ as rtc0
+[   10.775276] ntxec-pwm: probe of 21a0000.i2c:embedded-controller@43:pwm f=
+ailed with error -5
+[   10.850597] ntxec-rtc 21a0000.i2c:embedded-controller@43:rtc: hctosys: u=
+nable to read the hardware clock
+
+version number matchess with what the vendor kernel reports. Maybe we
+should document which version is running on which devices?
+
+&i2c1 {
+        pinctrl-names =3D "default","sleep";
+        pinctrl-0 =3D <&pinctrl_i2c1>;
+        pinctrl-1 =3D <&pinctrl_i2c1_sleep>;
+        status =3D "okay";
+
+        embedded-controller@43 {
+//              pinctrl-names =3D "default";
+//              pinctrl-0 =3D <&pinctrl_ec>;
+                compatible =3D "netronix,ntxec";
+                reg =3D <0x43>;
+                interrupts-extended =3D <&gpio5 11 IRQ_TYPE_EDGE_FALLING>;
+                interrupt-controller;
+                #interrupt-cells =3D <1>;
+
+                ec_pwm: pwm {
+                        compatible =3D "netronix,ntxec-pwm";
+                        #pwm-cells =3D <2>;
+                };
+
+                rtc {
+                        compatible =3D "netronix,ntxec-rtc";
+                };
+        };
+};
+
+Regards,
+Andreas
