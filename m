@@ -1,8 +1,8 @@
 From: Andreas Kemnade <andreas-cLv4Z9ELZ06ZuzBka8ofvg@public.gmane.org>
 Subject: Re: [RFC PATCH 00/10] Netronix embedded controller driver for Kobo
  and Tolino ebook readers
-Date: Tue, 30 Jun 2020 21:22:07 +0200
-Message-ID: <20200630212207.018ad355@aktux>
+Date: Tue, 30 Jun 2020 22:14:47 +0200
+Message-ID: <20200630221447.3e03ae28@aktux>
 References: <20200620223915.1311485-1-j.neuschaefer@gmx.net>
         <20200630084051.66feadea@aktux>
         <20200630071523.GA2983@latitude>
@@ -35,30 +35,60 @@ ered as rtc0
 wm failed with error -5 =20
 >=20
 > Hmm, -EIO from the PWM driver.
->
-Weird...
-IOMUXC_SW_PAD_CTL_PAD_I2C1_SDA/SCL is identical between
-vendor kernel (heavily patched 3.0.35) and patched mainline.
-                       =20
-MX6SL_PAD_I2C1_SCL__I2C1_SCL     0x4001f8b1
-MX6SL_PAD_I2C1_SDA__I2C1_SDA     0x4001f8b1
+>=20
+turing debugging on:
 
-root@tolino2:~# i2cset -f 0 0x43 0xa3 0x0001 w
-WARNING! This program can confuse your I2C bus, cause data loss and worse!
-I will write to device file /dev/i2c-0, chip address 0x43, data address
-0xa3, data 0x01, mode word.
-Continue? [Y/n]=20
-Error: Write failed
-root@tolino2:~# i2cset -f 0 0x43 0xa3 0x0000 w
-WARNING! This program can confuse your I2C bus, cause data loss and worse!
-I will write to device file /dev/i2c-0, chip address 0x43, data address
-0xa3, data 0x00, mode word.
-Continue? [Y/n]=20
-Error: Write failed
-
-but backlight gets toggled. Same behavior on vendor kernel and
-in vendor uboot.
-That smells.
+[  330.330599] i2c i2c-0: <i2c_imx_xfer_common>
+[  330.330621] i2c i2c-0: <i2c_imx_start>
+[  330.332927] i2c i2c-0: <i2c_imx_bus_busy>
+[  330.332953] i2c i2c-0: <i2c_imx_xfer_common> transfer message: 0
+[  330.332971] i2c i2c-0: <i2c_imx_write> write slave address: addr=3D0x86
+[  330.334365] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.334386] i2c i2c-0: <i2c_imx_acked> ACK received
+[  330.334402] i2c i2c-0: <i2c_imx_write> write data
+[  330.334420] i2c i2c-0: <i2c_imx_write> write byte: B0=3D0xA3
+[  330.334756] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.334774] i2c i2c-0: <i2c_imx_acked> ACK received
+[  330.334790] i2c i2c-0: <i2c_imx_write> write byte: B1=3D0x0
+[  330.351573] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.351598] i2c i2c-0: <i2c_imx_acked> No ACK
+[  330.351613] i2c i2c-0: <i2c_imx_stop>
+[  330.351629] i2c i2c-0: <i2c_imx_bus_busy>
+[  330.351648] i2c i2c-0: <i2c_imx_xfer_common> exit with: error: -6
+[  330.351690] i2c i2c-0: <i2c_imx_xfer_common>
+[  330.351704] i2c i2c-0: <i2c_imx_start>
+[  330.352297] i2c i2c-0: <i2c_imx_bus_busy>
+[  330.352321] i2c i2c-0: <i2c_imx_xfer_common> transfer message: 0
+[  330.352339] i2c i2c-0: <i2c_imx_write> write slave address: addr=3D0x86
+[  330.362152] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.362176] i2c i2c-0: <i2c_imx_acked> ACK received
+[  330.362191] i2c i2c-0: <i2c_imx_write> write data
+[  330.362208] i2c i2c-0: <i2c_imx_write> write byte: B0=3D0xA1
+[  330.362442] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.362461] i2c i2c-0: <i2c_imx_acked> ACK received
+[  330.362479] i2c i2c-0: <i2c_imx_write> write byte: B1=3D0xFF
+[  330.362686] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.362705] i2c i2c-0: <i2c_imx_acked> No ACK
+[  330.362720] i2c i2c-0: <i2c_imx_stop>
+[  330.362735] i2c i2c-0: <i2c_imx_bus_busy>
+[  330.362753] i2c i2c-0: <i2c_imx_xfer_common> exit with: error: -6
+[  330.362794] i2c i2c-0: <i2c_imx_xfer_common>
+[  330.362808] i2c i2c-0: <i2c_imx_start>
+[  330.363071] i2c i2c-0: <i2c_imx_bus_busy>
+[  330.363094] i2c i2c-0: <i2c_imx_xfer_common> transfer message: 0
+[  330.363112] i2c i2c-0: <i2c_imx_write> write slave address: addr=3D0x86
+[  330.363313] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.363331] i2c i2c-0: <i2c_imx_acked> ACK received
+[  330.363346] i2c i2c-0: <i2c_imx_write> write data
+[  330.363362] i2c i2c-0: <i2c_imx_write> write byte: B0=3D0xA2
+[  330.363572] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.363591] i2c i2c-0: <i2c_imx_acked> ACK received
+[  330.363608] i2c i2c-0: <i2c_imx_write> write byte: B1=3D0xFF
+[  330.363822] i2c i2c-0: <i2c_imx_trx_complete> TRX complete
+[  330.363841] i2c i2c-0: <i2c_imx_acked> No ACK
+[  330.363854] i2c i2c-0: <i2c_imx_stop>
+[  330.363869] i2c i2c-0: <i2c_imx_bus_busy>
+[  330.363886] i2c i2c-0: <i2c_imx_xfer_common> exit with: error: -6
 
 Regards,
 Andreas
