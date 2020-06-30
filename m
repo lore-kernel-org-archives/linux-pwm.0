@@ -1,77 +1,111 @@
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Tue, 30 Jun 2020 11:13:31 +0200
-Message-ID: <CAMpxmJUHy+5ynmsU6FhX=MJR6XbwoNr65NGqzuAd0Bm-JS1kWw@mail.gmail.com>
-References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
- <20200629160844.6ecf79c1@xps13> <20200629195044.uvgma53cajiko3gf@pengutronix.de>
- <20200630085828.1aebdf99@xps13>
+From: Jani Nikula <jani.nikula@linux.intel.com>
+Subject: Re: [PATCH v3 00/15] acpi/pwm/i915: Convert pwm-crc and i915 driver's PWM code to use the atomic PWM API
+Date: Tue, 30 Jun 2020 16:51:50 +0300
+Message-ID: <874kqsmzk9.fsf@intel.com>
+References: <20200620121758.14836-1-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20200630085828.1aebdf99@xps13>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga07.intel.com ([134.134.136.100]:9541 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388508AbgF3Nv7 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 30 Jun 2020 09:51:59 -0400
+In-Reply-To: <20200620121758.14836-1-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 8:58 AM Miquel Raynal <miquel.raynal@bootlin.com> w=
-rote:
+On Sat, 20 Jun 2020, Hans de Goede <hdegoede@redhat.com> wrote:
+> Hi All,
 >
-> Hi Uwe,
+> Here is v3 of my patch series converting the i915 driver's code for
+> controlling the panel's backlight with an external PWM controller to
+> use the atomic PWM API. See below for the changelog.
 >
-> Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote on Mon, 29 J=
-un
-> 2020 21:50:44 +0200:
+> Initially the plan was for this series to consist of 2 parts:
+> 1. convert the pwm-crc driver to support the atomic PWM API and
+> 2. convert the i915 driver's PWM code to use the atomic PWM API.
 >
-> > On Mon, Jun 29, 2020 at 04:08:44PM +0200, Miquel Raynal wrote:
-> > > Hello Uwe, Thierry,
-> > >
-> > > Miquel Raynal <miquel.raynal@bootlin.com> wrote on Sun,  3 May 2020
-> > > 12:54:53 +0200:
-> > >
-> > > > The MAX7313 chip is fully compatible with the PCA9535 on its basic
-> > > > functions but can also manage the intensity on each of its ports wi=
-th
-> > > > PWM. Each output is independent and may be tuned with 16 values (4
-> > > > bits per output). The period is always 32kHz, only the duty-cycle m=
-ay
-> > > > be changed. One can use any output as GPIO or PWM.
-> > > >
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > >
-> > > Can I have a status on this patch please?
-> > >
-> > > If it was forgotten, I would be good to have it queued now, otherwise=
-,
-> > > may I know the reason?
-> >
-> > You could reply to my feedback ... If you could say there: "What you
-> > want isn't possible" I'd count this as a strong indication to not ask t=
-o
-> > implement Andy's suggestion. (Even if this would be possible, I'm not
-> > sure this is a good idea, but still ...)
+> But during testing I've found a number of bugs in the pwm-lpss and I
+> found that the acpi_lpss code needs some special handling because of
+> some ugliness found in most Cherry Trail DSDTs.
 >
-> Sorry for the misunderstanding, but I already replied twice to Andy
-> about this. Once in October, again in November, then I gave a shot to
-> the idea of splitting the drivers (GPIO vs. PWM) in January. So I
-> thought you were sharing your thoughts out loud but was not expecting
-> any specific feedback on it.
+> So now this series has grown somewhat large and consists of 4 parts:
 >
-> So, no, even if the idea might make sense, it is not doable in a
-> reasonable amount of time. I am not saying it is impossible, but someone
-> has to think about it deeper and propose a core structure to handle it
-> in a generic and clean way so that other drivers sharing the same
-> properties can rely on it. I am not qualified enough to do it the proper
-> way in a reasonable time frame.
+> 1. acpi_lpss fixes workarounds for Cherry Trail DSTD nastiness
+> 2. various fixes to the pwm-lpss driver
+> 3. convert the pwm-crc driver to support the atomic PWM API and
+> 4. convert the i915 driver's PWM code to use the atomic PWM API
 >
-> Thanks,
-> Miqu=C3=A8l
+> So we need to discuss how to merge this (once it passes review).
+> Although the inter-dependencies are only runtime I still think we should
+> make sure that 1-3 are in the drm-intel-next-queued (dinq) tree before
+> merging the i915 changes. Both to make sure that the intel-gfx CI system
+> does not become unhappy and for bisecting reasons.
+>
+> The involved acpi_lpss and pwm drivers do not see a whole lot of churn, so
+> it likely is the easiest to just merge everything through dinq.
+>
+> Rafael and Thierry, can I get your Acked-by for directly merging this into
+> dinq?
+>
+> This series has been tested (and re-tested after adding various bug-fixes)
+> extensively. It has been tested on the following devices:
+>
+> -Asus T100TA  BYT + CRC-PMIC PWM
+> -Toshiba WT8-A  BYT + CRC-PMIC PWM
+> -Thundersoft TS178 BYT + CRC-PMIC PWM, inverse PWM
+> -Asus T100HA  CHT + CRC-PMIC PWM
+> -Terra Pad 1061  BYT + LPSS PWM
+> -Trekstor Twin 10.1 BYT + LPSS PWM
+> -Asus T101HA  CHT + CRC-PMIC PWM
+> -GPD Pocket  CHT + CRC-PMIC PWM
 
-Hi Miqu=C3=A8l,
+For the drm/i915 patches 12-15,
 
-I can't find anything in any of the previous threads. What was the
-reason to not go the MFD way here?
+Acked-by: Jani Nikula <jani.nikula@intel.com>
 
-Bartosz
+I eyeballed through them, and didn't spot anything obviously wrong, but
+at the same time didn't have the time to do an in-depth review. That
+said, I do have a lot of trust in you testing this with all the above
+devices. I think that's enough for merging.
+
+As for that matter, I'm fine with merging this via whichever tree you
+find best. Kind of stating the obvious, but please do ensure you have
+the proper acks in place for this.
+
+
+BR,
+Jani.
+
+
+
+>
+> Changelog:
+>
+> Changes in v2:
+> - Fix coverletter subject
+> - Drop accidentally included debugging patch
+> - "[PATCH v3 02/15] ACPI / LPSS: Save Cherry Trail PWM ctx registers only once (
+>   - Move #define LPSS_SAVE_CTX_ONCE define to group it with LPSS_SAVE_CTX
+>
+> Changes in v3:
+> - "[PATCH v3 04/15] pwm: lpss: Add range limit check for the base_unit register value"
+>   - Use base_unit_range - 1 as maximum value for the clamp()
+> - "[PATCH v3 05/15] pwm: lpss: Use pwm_lpss_apply() when restoring state on resume"
+>   - This replaces the "pwm: lpss: Set SW_UPDATE bit when enabling the PWM"
+>     patch from previous versions of this patch-set, which really was a hack
+>     working around the resume issue which this patch fixes properly.
+> - PATCH v3 6 - 11 pwm-crc changes:
+>   - Various small changes resulting from the reviews by Andy and Uwe,
+>     including some refactoring of the patches to reduce the amount of churn
+>     in the patch-set
+>
+> Regards,
+>
+> Hans
+>
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
