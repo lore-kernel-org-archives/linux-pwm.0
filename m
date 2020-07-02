@@ -1,85 +1,45 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v2 1/8] dt-bindings: pwm: samsung: Do not require interrupts on Exynos SoCs
-Date: Thu,  2 Jul 2020 17:51:42 +0200
-Message-ID: <20200702155149.12854-1-krzk@kernel.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33394 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726028AbgGBPv6 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 2 Jul 2020 11:51:58 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2 2/8] arm64: dts: exynos: Describe PWM interrupts on Exynos7
+Date: Thu,  2 Jul 2020 17:51:43 +0200
+Message-ID: <20200702155149.12854-2-krzk@kernel.org>
+References: <20200702155149.12854-1-krzk@kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200702155149.12854-1-krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <snawrocki-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alim Akhtar <alim.akhtar-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Pankaj Dubey <pankaj.dubey-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sylwester Nawrocki <snawrocki@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, Pankaj Dubey <pankaj.dubey@samsung.com>
 
-The bindings required interrupts for all SoCs but actually only the PWM
-timer clocksource (for S3C/S5P SoCs) was using them.  This PWM timer
-clocksource driver is not used on Exynos SoCs thus the interrupts can be
-marked as optional.
+Add interrupts property to PWM node on Exynos7 to describe the hardware
+fully.  No functional change as the interrupts are not used by drivers.
 
-Reported-by: Alim Akhtar <alim.akhtar@samsung.com>
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
 ---
 
 Changes since v1:
-1. New patch
----
- .../devicetree/bindings/pwm/pwm-samsung.yaml  | 23 +++++++++++++++----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+1. Correct the interrupts, change message.
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-index fc799b0577d4..188679cb8b8c 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-+++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-@@ -18,9 +18,6 @@ description: |+
- 
-   Be aware that the clocksource driver supports only uniprocessor systems.
- 
--allOf:
--  - $ref: pwm.yaml#
--
- properties:
-   compatible:
-     enum:
-@@ -63,7 +60,8 @@ properties:
- 
-   interrupts:
-     description:
--      One interrupt per timer, starting at timer 0.
-+      One interrupt per timer, starting at timer 0. Necessary only for SoCs which
-+      use PWM clocksource.
-     minItems: 1
-     maxItems: 5
- 
-@@ -88,12 +86,27 @@ required:
-   - clocks
-   - clock-names
-   - compatible
--  - interrupts
-   - "#pwm-cells"
-   - reg
- 
- additionalProperties: false
- 
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - samsung,s3c2410-pwm
-+              - samsung,s3c6400-pwm
-+              - samsung,s5p6440-pwm
-+              - samsung,s5pc100-pwm
-+    then:
-+      required:
-+        - interrupts
-+
- examples:
-   - |
-     pwm@7f006000 {
+Not tested
+---
+ arch/arm64/boot/dts/exynos/exynos7.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/exynos/exynos7.dtsi b/arch/arm64/boot/dts/exynos/exynos7.dtsi
+index f590891efe25..709742b98c9c 100644
+--- a/arch/arm64/boot/dts/exynos/exynos7.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos7.dtsi
+@@ -581,6 +581,11 @@
+ 		pwm: pwm@136c0000 {
+ 			compatible = "samsung,exynos4210-pwm";
+ 			reg = <0x136c0000 0x100>;
++			interrupts = <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 453 IRQ_TYPE_LEVEL_HIGH>;
+ 			samsung,pwm-outputs = <0>, <1>, <2>, <3>;
+ 			#pwm-cells = <3>;
+ 			clocks = <&clock_peric0 PCLK_PWM>;
 -- 
 2.17.1
