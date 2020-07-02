@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v2 7/8] ARM: dts: exynos: Define fixed regulators in root node for consistency in Arndale
-Date: Thu,  2 Jul 2020 17:51:48 +0200
-Message-ID: <20200702155149.12854-7-krzk@kernel.org>
+Subject: [PATCH v2 8/8] ARM: dts: exynos: Define fixed regulators in root node for consistency in SMDK5420
+Date: Thu,  2 Jul 2020 17:51:49 +0200
+Message-ID: <20200702155149.12854-8-krzk@kernel.org>
 References: <20200702155149.12854-1-krzk@kernel.org>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20200702155149.12854-1-krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
@@ -11,8 +11,10 @@ Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bar
 List-Id: linux-pwm@vger.kernel.org
 
 Remove the regulators node and define fixed regulators directly under
-the root node.  This makes Exynos5250 Arndale board consistent with
-other Exynos boards.
+the root node.  This makes SMDK5420 board consistent with other Exynos
+boards.
+
+Name the fixed regulator nodes consistently.
 
 Suggested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
@@ -22,14 +24,14 @@ Signed-off-by: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 Changes since v1:
 1. New patch
 ---
- arch/arm/boot/dts/exynos5250-arndale.dts | 92 +++++++++++-------------
- 1 file changed, 43 insertions(+), 49 deletions(-)
+ arch/arm/boot/dts/exynos5420-smdk5420.dts | 56 ++++++++++-------------
+ 1 file changed, 25 insertions(+), 31 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250-arndale.dts b/arch/arm/boot/dts/exynos5250-arndale.dts
-index c4cc7611898c..7ccb3814bab6 100644
---- a/arch/arm/boot/dts/exynos5250-arndale.dts
-+++ b/arch/arm/boot/dts/exynos5250-arndale.dts
-@@ -84,60 +84,54 @@
+diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+index e3f2afe8359a..d703c603c45a 100644
+--- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
++++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+@@ -32,40 +32,34 @@
  		};
  	};
  
@@ -38,100 +40,70 @@ index c4cc7611898c..7ccb3814bab6 100644
 -		#address-cells = <1>;
 -		#size-cells = <0>;
 -
--		main_dc_reg: regulator@0 {
+-		vdd: fixed-regulator@0 {
 -			compatible = "regulator-fixed";
 -			reg = <0>;
--			regulator-name = "MAIN_DC";
--			regulator-always-on;
--		};
-+	main_dc_reg: regulator-0 {
-+		compatible = "regulator-fixed";
-+		reg = <0>;
-+		regulator-name = "MAIN_DC";
-+		regulator-always-on;
-+	};
- 
--		mmc_reg: regulator@1 {
--			compatible = "regulator-fixed";
--			reg = <1>;
--			regulator-name = "VDD_MMC";
--			regulator-min-microvolt = <2800000>;
--			regulator-max-microvolt = <2800000>;
--			regulator-always-on;
--		};
-+	mmc_reg: regulator-1 {
-+		compatible = "regulator-fixed";
-+		reg = <1>;
-+		regulator-name = "VDD_MMC";
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+		regulator-always-on;
-+	};
- 
--		reg_hdmi_en: regulator@2 {
--			compatible = "regulator-fixed";
--			reg = <2>;
--			regulator-name = "hdmi-en";
--			regulator-always-on;
--		};
-+	reg_hdmi_en: regulator-2 {
-+		compatible = "regulator-fixed";
-+		reg = <2>;
-+		regulator-name = "hdmi-en";
-+		regulator-always-on;
-+	};
- 
--		vcc_1v2_reg: regulator@3 {
--			compatible = "regulator-fixed";
--			reg = <3>;
--			regulator-name = "VCC_1V2";
--			regulator-min-microvolt = <1200000>;
--			regulator-max-microvolt = <1200000>;
--			regulator-always-on;
--		};
-+	vcc_1v2_reg: regulator-3 {
-+		compatible = "regulator-fixed";
-+		reg = <3>;
-+		regulator-name = "VCC_1V2";
-+		regulator-min-microvolt = <1200000>;
-+		regulator-max-microvolt = <1200000>;
-+		regulator-always-on;
-+	};
- 
--		vcc_1v8_reg: regulator@4 {
--			compatible = "regulator-fixed";
--			reg = <4>;
--			regulator-name = "VCC_1V8";
+-			regulator-name = "vdd-supply";
 -			regulator-min-microvolt = <1800000>;
 -			regulator-max-microvolt = <1800000>;
 -			regulator-always-on;
 -		};
-+	vcc_1v8_reg: regulator-4 {
++	vdd: regulator-0 {
 +		compatible = "regulator-fixed";
-+		reg = <4>;
-+		regulator-name = "VCC_1V8";
++		reg = <0>;
++		regulator-name = "vdd-supply";
 +		regulator-min-microvolt = <1800000>;
 +		regulator-max-microvolt = <1800000>;
 +		regulator-always-on;
 +	};
  
--		vcc_3v3_reg: regulator@5 {
+-		dbvdd: fixed-regulator@1 {
 -			compatible = "regulator-fixed";
--			reg = <5>;
--			regulator-name = "VCC_3V3";
+-			reg = <1>;
+-			regulator-name = "dbvdd-supply";
 -			regulator-min-microvolt = <3300000>;
 -			regulator-max-microvolt = <3300000>;
 -			regulator-always-on;
 -		};
-+	vcc_3v3_reg: regulator-5 {
++	dbvdd: regulator-1 {
 +		compatible = "regulator-fixed";
-+		reg = <5>;
-+		regulator-name = "VCC_3V3";
++		reg = <1>;
++		regulator-name = "dbvdd-supply";
 +		regulator-min-microvolt = <3300000>;
 +		regulator-max-microvolt = <3300000>;
 +		regulator-always-on;
++	};
+ 
+-		spkvdd: fixed-regulator@2 {
+-			compatible = "regulator-fixed";
+-			reg = <2>;
+-			regulator-name = "spkvdd-supply";
+-			regulator-min-microvolt = <5000000>;
+-			regulator-max-microvolt = <5000000>;
+-			regulator-always-on;
+-		};
++	spkvdd: regulator-2 {
++		compatible = "regulator-fixed";
++		reg = <2>;
++		regulator-name = "spkvdd-supply";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
  	};
  
- 	sound {
+-	usb300_vbus_reg: regulator-usb300 {
++	usb300_vbus_reg: regulator-3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "VBUS0";
+ 		regulator-min-microvolt = <5000000>;
+@@ -76,7 +70,7 @@
+ 		enable-active-high;
+ 	};
+ 
+-	usb301_vbus_reg: regulator-usb301 {
++	usb301_vbus_reg: regulator-4 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "VBUS1";
+ 		regulator-min-microvolt = <5000000>;
 -- 
 2.17.1
