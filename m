@@ -1,109 +1,106 @@
-From: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v2 8/8] ARM: dts: exynos: Define fixed regulators in root node for consistency in SMDK5420
-Date: Thu,  2 Jul 2020 17:51:49 +0200
-Message-ID: <20200702155149.12854-8-krzk@kernel.org>
-References: <20200702155149.12854-1-krzk@kernel.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200702155149.12854-1-krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <snawrocki-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alim Akhtar <alim.akhtar-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Pankaj Dubey <pankaj.dubey-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+From: Jes Sorensen <jes.sorensen@gmail.com>
+Subject: Re: [PATCH v15 3/3] Input: new da7280 haptic driver
+Date: Thu, 2 Jul 2020 14:01:55 -0400
+Message-ID: <31377d96-3e6d-e7b6-30de-0c7e9e6f9364@gmail.com>
+References: <cover.1593435662.git.Roy.Im@diasemi.com>
+ <c7b8cb993abe7bb771108bb94e5d9edbeb4f7103.1593435662.git.Roy.Im@diasemi.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727968AbgGBSB7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jul 2020 14:01:59 -0400
+In-Reply-To: <c7b8cb993abe7bb771108bb94e5d9edbeb4f7103.1593435662.git.Roy.Im@diasemi.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Support Opensource <support.opensource@diasemi.com>, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-Remove the regulators node and define fixed regulators directly under
-the root node.  This makes SMDK5420 board consistent with other Exynos
-boards.
+On 6/29/20 9:01 AM, Roy Im wrote:
+> Adds support for the Dialog DA7280 LRA/ERM Haptic Driver with
+> multiple mode and integrated waveform memory and wideband support.
+> It communicates via an I2C bus to the device.
+> 
+> Signed-off-by: Roy Im <roy.im.opensource@diasemi.com>
+> ---
+> v15:
+> 	- Removed some defines and updated some comments.
+> v14:
+> 	- Updated pwm related code, alignments and comments.
+> v13:
+> 	- Updated some conditions in pwm function and alignments.
+> v12: No changes.
+> v11: 
+> 	- Updated the pwm related code, comments and typo.
+> v10: 
+> 	- Updated the pwm related function and added some comments.
+> v9: 
+> 	- Removed the header file and put the definitions into the c file.
+> 	- Updated the pwm code and error logs with %pE
+> v8: 
+> 	- Added changes to support FF_PERIODIC/FF_CUSTOM and FF_CONSTANT.
+> 	- Updated the dt-related code.
+> 	- Removed memless related functions.
+> v7: 
+> 	- Added more attributes to handle one value per file.
+> 	- Replaced and updated the dt-related code and functions called.
+> 	- Fixed error/functions.
+> v6: No changes.
+> v5: Fixed errors in Kconfig file.
+> v4: Updated code as dt-bindings are changed.
+> v3: No changes.
+> v2: Fixed kbuild error/warning
+> 
+> 
+>  drivers/input/misc/Kconfig  |   13 +
+>  drivers/input/misc/Makefile |    1 +
+>  drivers/input/misc/da7280.c | 1838 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 1852 insertions(+)
+>  create mode 100644 drivers/input/misc/da7280.c
 
-Name the fixed regulator nodes consistently.
+[snip]
 
-Suggested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Signed-off-by: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> +static ssize_t
+> +patterns_store(struct device *dev,
+> +	       struct device_attribute *attr,
+> +	       const char *buf,
+> +	       size_t count)
+> +{
+> +	struct da7280_haptic *haptics = dev_get_drvdata(dev);
+> +	char cmd[MAX_USER_INPUT_LEN];
+> +	struct parse_data_t mem;
+> +	unsigned int val;
+> +	int error;
+> +
+> +	error = regmap_read(haptics->regmap, DA7280_MEM_CTL1, &val);
+> +	if (error)
+> +		return error;
+> +
+> +	if (count > MAX_USER_INPUT_LEN)
+> +		memcpy(cmd, buf, MAX_USER_INPUT_LEN);
+> +	else
+> +		memcpy(cmd, buf, count);
+> +
+> +	/* chop of '\n' introduced by echo at the end of the input */
+> +	if (cmd[count - 1] == '\n')
+> +		cmd[count - 1] = '\0';
 
----
+You have a potential memory corruption bug here for the case where
+ count > MAX_USER_INPUT_LEN. The code correctly clamps the memcpy()
+length, but it still is at risk of writing beyond the end of the cmd
+buffer when doing the \0 termination.
 
-Changes since v1:
-1. New patch
----
- arch/arm/boot/dts/exynos5420-smdk5420.dts | 56 ++++++++++-------------
- 1 file changed, 25 insertions(+), 31 deletions(-)
+If you change the code above to say
 
-diff --git a/arch/arm/boot/dts/exynos5420-smdk5420.dts b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-index e3f2afe8359a..d703c603c45a 100644
---- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
-+++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-@@ -32,40 +32,34 @@
- 		};
- 	};
- 
--	regulators {
--		compatible = "simple-bus";
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		vdd: fixed-regulator@0 {
--			compatible = "regulator-fixed";
--			reg = <0>;
--			regulator-name = "vdd-supply";
--			regulator-min-microvolt = <1800000>;
--			regulator-max-microvolt = <1800000>;
--			regulator-always-on;
--		};
-+	vdd: regulator-0 {
-+		compatible = "regulator-fixed";
-+		reg = <0>;
-+		regulator-name = "vdd-supply";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		regulator-always-on;
-+	};
- 
--		dbvdd: fixed-regulator@1 {
--			compatible = "regulator-fixed";
--			reg = <1>;
--			regulator-name = "dbvdd-supply";
--			regulator-min-microvolt = <3300000>;
--			regulator-max-microvolt = <3300000>;
--			regulator-always-on;
--		};
-+	dbvdd: regulator-1 {
-+		compatible = "regulator-fixed";
-+		reg = <1>;
-+		regulator-name = "dbvdd-supply";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-always-on;
-+	};
- 
--		spkvdd: fixed-regulator@2 {
--			compatible = "regulator-fixed";
--			reg = <2>;
--			regulator-name = "spkvdd-supply";
--			regulator-min-microvolt = <5000000>;
--			regulator-max-microvolt = <5000000>;
--			regulator-always-on;
--		};
-+	spkvdd: regulator-2 {
-+		compatible = "regulator-fixed";
-+		reg = <2>;
-+		regulator-name = "spkvdd-supply";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		regulator-always-on;
- 	};
- 
--	usb300_vbus_reg: regulator-usb300 {
-+	usb300_vbus_reg: regulator-3 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "VBUS0";
- 		regulator-min-microvolt = <5000000>;
-@@ -76,7 +70,7 @@
- 		enable-active-high;
- 	};
- 
--	usb301_vbus_reg: regulator-usb301 {
-+	usb301_vbus_reg: regulator-4 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "VBUS1";
- 		regulator-min-microvolt = <5000000>;
--- 
-2.17.1
+	if (count > MAX_USER_INPUT_LEN)
+		count = MAX_USER_INPUT_LEN
+	memcpy(cmd, buf, count);
+
+it should take care of it, and it will also return the actual count
+written to the caller.
+
+Cheers,
+Jes
