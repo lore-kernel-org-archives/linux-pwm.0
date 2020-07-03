@@ -1,37 +1,21 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v4 10/20] backlight: add overview and update existing doc
-Date: Fri,  3 Jul 2020 20:45:36 +0200
-Message-ID: <20200703184546.144664-11-sam@ravnborg.org>
+Subject: [PATCH v4 08/20] backlight: remove the unused backlight_bl driver
+Date: Fri,  3 Jul 2020 20:45:34 +0200
+Message-ID: <20200703184546.144664-9-sam@ravnborg.org>
 References: <20200703184546.144664-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbgGCSqZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jul 2020 14:46:25 -0400
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <20200703184546.144664-1-sam@ravnborg.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-arm-msm-owner@vger.kernel.org
 To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
+List-Id: linux-pwm@vger.kernel.org
 
-Add overview chapter to backlight.c.
-Update existing kernel-doc to follow a more consistent
-style and drop kernel-doc for deprecated functions.
-
-v4:
-  - Include updated devm_of_find_backlight doc
-    (was accidently included in a later patch)
-
-v3:
-  - Updated a few editorial details (Daniel)
-
-v2:
-  - Sevaral editorial corrections that makes reading
-    much easier (Daniel)
-  - Spelling fixes (Daniel)
-  - updated intro chapter with a little more info
+The backlight_bl driver required initialization using
+struct generic_bl_info. As there are no more references
+to this struct there is no users left.
+So it is safe to delete the driver.
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
 Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
@@ -40,252 +24,179 @@ Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- drivers/video/backlight/backlight.c | 143 +++++++++++++++++++---------
- 1 file changed, 100 insertions(+), 43 deletions(-)
+ drivers/video/backlight/Kconfig      |   8 --
+ drivers/video/backlight/Makefile     |   1 -
+ drivers/video/backlight/generic_bl.c | 110 ---------------------------
+ include/linux/backlight.h            |   9 ---
+ 4 files changed, 128 deletions(-)
+ delete mode 100644 drivers/video/backlight/generic_bl.c
 
-diff --git a/drivers/video/backlight/backlight.c b/drivers/video/backlight/backlight.c
-index 7e249aa90b0e..db8717581ec5 100644
---- a/drivers/video/backlight/backlight.c
-+++ b/drivers/video/backlight/backlight.c
-@@ -22,6 +22,47 @@
- #include <asm/backlight.h>
- #endif
+diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
+index 7d22d7377606..14abfeee8868 100644
+--- a/drivers/video/backlight/Kconfig
++++ b/drivers/video/backlight/Kconfig
+@@ -173,14 +173,6 @@ config BACKLIGHT_EP93XX
+ 	  To compile this driver as a module, choose M here: the module will
+ 	  be called ep93xx_bl.
  
-+/**
-+ * DOC: overview
-+ *
-+ * The backlight core supports implementing backlight drivers.
-+ *
-+ * A backlight driver registers a driver using
-+ * devm_backlight_device_register(). The properties of the backlight
-+ * driver such as type and max_brightness must be specified.
-+ * When the core detect changes in for example brightness or power state
-+ * the update_status() operation is called. The backlight driver shall
-+ * implement this operation and use it to adjust backlight.
-+ *
-+ * Several sysfs attributes are provided by the backlight core::
-+ *
-+ * - brightness         R/W, set the requested brightness level
-+ * - actual_brighness   RO, the brightness level used by the HW
-+ * - max_brightness     RO, the maximum  brightness level supported
-+ *
-+ * See Documentation/ABI/stable/sysfs-class-backlight for the full list.
-+ *
-+ * The backlight can be adjusted using the sysfs interface, and
-+ * the backlight driver may also support adjusting backlight using
-+ * a hot-key or some other platfrom or firmware specific way.
-+ *
-+ * The driver must implement the get_brightness() operation if
-+ * the HW do not support all the levels that can be specified in
-+ * brightness, thus providing user-space access to the actual level
-+ * via the actual_brightness attribute.
-+ *
-+ * When the backlight changes this is reported to user-space using
-+ * an uevent connected to the actual_brightness attribute.
-+ * When brightness is set by platform specific means, for example
-+ * a hot-key to adjust backlight, the driver must notify the backlight
-+ * core that brightness has changed using backlight_force_update().
-+ *
-+ * The backlight driver core receives notifications from fbdev and
-+ * if the event is FB_EVENT_BLANK and if the value of blank, from the
-+ * FBIOBLANK ioclt, results in a change in the backlight state the
-+ * update_status() operation is called.
-+ */
-+
- static struct list_head backlight_dev_list;
- static struct mutex backlight_dev_list_mutex;
- static struct blocking_notifier_head backlight_notifier;
-@@ -40,9 +81,17 @@ static const char *const backlight_scale_types[] = {
- 
- #if defined(CONFIG_FB) || (defined(CONFIG_FB_MODULE) && \
- 			   defined(CONFIG_BACKLIGHT_CLASS_DEVICE_MODULE))
--/* This callback gets called when something important happens inside a
-- * framebuffer driver. We're looking if that important event is blanking,
-- * and if it is and necessary, we're switching backlight power as well ...
-+/*
-+ * fb_notifier_callback
-+ *
-+ * This callback gets called when something important happens inside a
-+ * framebuffer driver. The backlight core only cares about FB_BLANK_UNBLANK
-+ * which is reported to the driver using backlight_update_status()
-+ * as a state change.
-+ *
-+ * There may be several fbdev's connected to the backlight device,
-+ * in which case they are kept track of. A state change is only reported
-+ * if there is a change in backlight for the specified fbdev.
-  */
- static int fb_notifier_callback(struct notifier_block *self,
- 				unsigned long event, void *data)
-@@ -318,12 +367,15 @@ static struct attribute *bl_device_attrs[] = {
- ATTRIBUTE_GROUPS(bl_device);
- 
- /**
-- * backlight_force_update - tell the backlight subsystem that hardware state
-- *   has changed
-+ * backlight_force_update - force an update due to a hardware change
-  * @bd: the backlight device to update
-+ * @reason: the method used for the backlight update
-  *
-  * Updates the internal state of the backlight in response to a hardware event,
-- * and generate a uevent to notify userspace
-+ * and generates an uevent to notify userspace. A backlight driver shall call
-+ * backlight_force_update() when the backlight is changed using, for example,
-+ * a hot-key. The updated brightness is read using get_brightness() and the
-+ * brightness value is reported using an uevent.
-  */
- void backlight_force_update(struct backlight_device *bd,
- 			    enum backlight_update_reason reason)
-@@ -336,19 +388,7 @@ void backlight_force_update(struct backlight_device *bd,
- }
- EXPORT_SYMBOL(backlight_force_update);
- 
--/**
-- * backlight_device_register - create and register a new object of
-- *   backlight_device class.
-- * @name: the name of the new object(must be the same as the name of the
-- *   respective framebuffer device).
-- * @parent: a pointer to the parent device
-- * @devdata: an optional pointer to be stored for private driver use. The
-- *   methods may retrieve it by using bl_get_data(bd).
-- * @ops: the backlight operations structure.
+-config BACKLIGHT_GENERIC
+-	tristate "Generic (aka Sharp Corgi) Backlight Driver"
+-	default y
+-	help
+-	  Say y to enable the generic platform backlight driver previously
+-	  known as the Corgi backlight driver. If you have a Sharp Zaurus
+-	  SL-C7xx, SL-Cxx00 or SL-6000x say y.
+-
+ config BACKLIGHT_IPAQ_MICRO
+ 	tristate "iPAQ microcontroller backlight driver"
+ 	depends on MFD_IPAQ_MICRO
+diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
+index 0c1a1524627a..9b998cfdc56d 100644
+--- a/drivers/video/backlight/Makefile
++++ b/drivers/video/backlight/Makefile
+@@ -31,7 +31,6 @@ obj-$(CONFIG_BACKLIGHT_CLASS_DEVICE)	+= backlight.o
+ obj-$(CONFIG_BACKLIGHT_DA903X)		+= da903x_bl.o
+ obj-$(CONFIG_BACKLIGHT_DA9052)		+= da9052_bl.o
+ obj-$(CONFIG_BACKLIGHT_EP93XX)		+= ep93xx_bl.o
+-obj-$(CONFIG_BACKLIGHT_GENERIC)		+= generic_bl.o
+ obj-$(CONFIG_BACKLIGHT_GPIO)		+= gpio_backlight.o
+ obj-$(CONFIG_BACKLIGHT_HP680)		+= hp680_bl.o
+ obj-$(CONFIG_BACKLIGHT_HP700)		+= jornada720_bl.o
+diff --git a/drivers/video/backlight/generic_bl.c b/drivers/video/backlight/generic_bl.c
+deleted file mode 100644
+index 8fe63dbc8590..000000000000
+--- a/drivers/video/backlight/generic_bl.c
++++ /dev/null
+@@ -1,110 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- *  Generic Backlight Driver
 - *
-- * Creates and registers new backlight device. Returns either an
-- * ERR_PTR() or a pointer to the newly allocated device.
+- *  Copyright (c) 2004-2008 Richard Purdie
 - */
-+/* deprecated - use devm_backlight_device_register() */
- struct backlight_device *backlight_device_register(const char *name,
- 	struct device *parent, void *devdata, const struct backlight_ops *ops,
- 	const struct backlight_properties *props)
-@@ -415,6 +455,15 @@ struct backlight_device *backlight_device_register(const char *name,
- }
- EXPORT_SYMBOL(backlight_device_register);
- 
-+/** backlight_device_get_by_type - find first backlight device of a type
-+ * @type: the type of backlight device
-+ *
-+ * Look up the first backlight device of the specified type
-+ *
-+ * RETURNS:
-+ *
-+ * Pointer to backlight device if any was found. Otherwise NULL.
-+ */
- struct backlight_device *backlight_device_get_by_type(enum backlight_type type)
- {
- 	bool found = false;
-@@ -454,12 +503,7 @@ struct backlight_device *backlight_device_get_by_name(const char *name)
- }
- EXPORT_SYMBOL(backlight_device_get_by_name);
- 
--/**
-- * backlight_device_unregister - unregisters a backlight device object.
-- * @bd: the backlight device object to be unregistered and freed.
-- *
-- * Unregisters a previously registered via backlight_device_register object.
-- */
-+/* deprecated - use devm_backlight_device_unregister() */
- void backlight_device_unregister(struct backlight_device *bd)
- {
- 	if (!bd)
-@@ -507,10 +551,12 @@ static int devm_backlight_device_match(struct device *dev, void *res,
-  * backlight_register_notifier - get notified of backlight (un)registration
-  * @nb: notifier block with the notifier to call on backlight (un)registration
-  *
-- * @return 0 on success, otherwise a negative error code
-- *
-  * Register a notifier to get notified when backlight devices get registered
-  * or unregistered.
-+ *
-+ * RETURNS:
-+ *
-+ * 0 on success, otherwise a negative error code
-  */
- int backlight_register_notifier(struct notifier_block *nb)
- {
-@@ -522,10 +568,12 @@ EXPORT_SYMBOL(backlight_register_notifier);
-  * backlight_unregister_notifier - unregister a backlight notifier
-  * @nb: notifier block to unregister
-  *
-- * @return 0 on success, otherwise a negative error code
-- *
-  * Register a notifier to get notified when backlight devices get registered
-  * or unregistered.
-+ *
-+ * RETURNS:
-+ *
-+ * 0 on success, otherwise a negative error code
-  */
- int backlight_unregister_notifier(struct notifier_block *nb)
- {
-@@ -534,20 +582,22 @@ int backlight_unregister_notifier(struct notifier_block *nb)
- EXPORT_SYMBOL(backlight_unregister_notifier);
- 
- /**
-- * devm_backlight_device_register - resource managed backlight_device_register()
-+ * devm_backlight_device_register - register a new backlight device
-  * @dev: the device to register
-  * @name: the name of the device
-- * @parent: a pointer to the parent device
-+ * @parent: a pointer to the parent device (often the same as @dev)
-  * @devdata: an optional pointer to be stored for private driver use
-  * @ops: the backlight operations structure
-  * @props: the backlight properties
-  *
-- * @return a struct backlight on success, or an ERR_PTR on error
-+ * Creates and registers new backlight device. When a backlight device
-+ * is registered the configuration must be specified in the @props
-+ * parameter. See description of &backlight_properties.
-  *
-- * Managed backlight_device_register(). The backlight_device returned
-- * from this function are automatically freed on driver detach.
-- * See backlight_device_register() for more information.
-- */
-+ * RETURNS:
-+ *
-+ * struct backlight on success, or an ERR_PTR on error
-+*/
- struct backlight_device *devm_backlight_device_register(struct device *dev,
- 	const char *name, struct device *parent, void *devdata,
- 	const struct backlight_ops *ops,
-@@ -574,13 +624,13 @@ struct backlight_device *devm_backlight_device_register(struct device *dev,
- EXPORT_SYMBOL(devm_backlight_device_register);
- 
- /**
-- * devm_backlight_device_unregister - resource managed backlight_device_unregister()
-+ * devm_backlight_device_unregister - unregister backlight device
-  * @dev: the device to unregister
-  * @bd: the backlight device to unregister
-  *
-- * Deallocated a backlight allocated with devm_backlight_device_register().
-+ * Deallocates a backlight allocated with devm_backlight_device_register().
-  * Normally this function will not need to be called and the resource management
-- * code will ensure that the resource is freed.
-+ * code will ensure that the resources are freed.
-  */
- void devm_backlight_device_unregister(struct device *dev,
- 				struct backlight_device *bd)
-@@ -671,12 +721,19 @@ static void devm_backlight_release(void *data)
+-
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/init.h>
+-#include <linux/platform_device.h>
+-#include <linux/mutex.h>
+-#include <linux/fb.h>
+-#include <linux/backlight.h>
+-
+-static int genericbl_intensity;
+-static struct backlight_device *generic_backlight_device;
+-static struct generic_bl_info *bl_machinfo;
+-
+-static int genericbl_send_intensity(struct backlight_device *bd)
+-{
+-	int intensity = bd->props.brightness;
+-
+-	if (bd->props.power != FB_BLANK_UNBLANK)
+-		intensity = 0;
+-	if (bd->props.state & BL_CORE_FBBLANK)
+-		intensity = 0;
+-	if (bd->props.state & BL_CORE_SUSPENDED)
+-		intensity = 0;
+-
+-	bl_machinfo->set_bl_intensity(intensity);
+-
+-	genericbl_intensity = intensity;
+-
+-	if (bl_machinfo->kick_battery)
+-		bl_machinfo->kick_battery();
+-
+-	return 0;
+-}
+-
+-static int genericbl_get_intensity(struct backlight_device *bd)
+-{
+-	return genericbl_intensity;
+-}
+-
+-static const struct backlight_ops genericbl_ops = {
+-	.options = BL_CORE_SUSPENDRESUME,
+-	.get_brightness = genericbl_get_intensity,
+-	.update_status  = genericbl_send_intensity,
+-};
+-
+-static int genericbl_probe(struct platform_device *pdev)
+-{
+-	struct backlight_properties props;
+-	struct generic_bl_info *machinfo = dev_get_platdata(&pdev->dev);
+-	const char *name = "generic-bl";
+-	struct backlight_device *bd;
+-
+-	bl_machinfo = machinfo;
+-	if (!machinfo->limit_mask)
+-		machinfo->limit_mask = -1;
+-
+-	if (machinfo->name)
+-		name = machinfo->name;
+-
+-	memset(&props, 0, sizeof(struct backlight_properties));
+-	props.type = BACKLIGHT_RAW;
+-	props.max_brightness = machinfo->max_intensity;
+-	bd = devm_backlight_device_register(&pdev->dev, name, &pdev->dev,
+-					NULL, &genericbl_ops, &props);
+-	if (IS_ERR(bd))
+-		return PTR_ERR(bd);
+-
+-	platform_set_drvdata(pdev, bd);
+-
+-	bd->props.power = FB_BLANK_UNBLANK;
+-	bd->props.brightness = machinfo->default_intensity;
+-	backlight_update_status(bd);
+-
+-	generic_backlight_device = bd;
+-
+-	dev_info(&pdev->dev, "Generic Backlight Driver Initialized.\n");
+-	return 0;
+-}
+-
+-static int genericbl_remove(struct platform_device *pdev)
+-{
+-	struct backlight_device *bd = platform_get_drvdata(pdev);
+-
+-	bd->props.power = 0;
+-	bd->props.brightness = 0;
+-	backlight_update_status(bd);
+-
+-	dev_info(&pdev->dev, "Generic Backlight Driver Unloaded\n");
+-	return 0;
+-}
+-
+-static struct platform_driver genericbl_driver = {
+-	.probe		= genericbl_probe,
+-	.remove		= genericbl_remove,
+-	.driver		= {
+-		.name	= "generic-bl",
+-	},
+-};
+-
+-module_platform_driver(genericbl_driver);
+-
+-MODULE_AUTHOR("Richard Purdie <rpurdie@rpsys.net>");
+-MODULE_DESCRIPTION("Generic Backlight Driver");
+-MODULE_LICENSE("GPL");
+diff --git a/include/linux/backlight.h b/include/linux/backlight.h
+index 0f425b32e6be..8f2005a6f8a9 100644
+--- a/include/linux/backlight.h
++++ b/include/linux/backlight.h
+@@ -454,15 +454,6 @@ static inline void * bl_get_data(struct backlight_device *bl_dev)
+ 	return dev_get_drvdata(&bl_dev->dev);
  }
  
- /**
-- * devm_of_find_backlight - Resource-managed of_find_backlight()
-- * @dev: Device
-+ * devm_of_find_backlight - find backlight for a device
-+ * @dev: the device
-  *
-- * Device managed version of of_find_backlight().
-- * The reference on the backlight device is automatically
-+ * This function looks for a property named 'backlight' on the DT node
-+ * connected to @dev and looks up the backlight device. The lookup is
-+ * device managed so the reference to the backlight device is automatically
-  * dropped on driver detach.
-+ *
-+ * RETURNS:
-+ *
-+ * A pointer to the backlight device if found.
-+ * Error pointer -EPROBE_DEFER if the DT property is set, but no backlight
-+ * device is found. NULL if there's no backlight property.
-  */
- struct backlight_device *devm_of_find_backlight(struct device *dev)
- {
+-struct generic_bl_info {
+-	const char *name;
+-	int max_intensity;
+-	int default_intensity;
+-	int limit_mask;
+-	void (*set_bl_intensity)(int intensity);
+-	void (*kick_battery)(void);
+-};
+-
+ #ifdef CONFIG_OF
+ struct backlight_device *of_find_backlight_by_node(struct device_node *node);
+ #else
 -- 
 2.25.1
