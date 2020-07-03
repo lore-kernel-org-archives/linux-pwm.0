@@ -1,71 +1,186 @@
-From: Roy Im <roy.im.opensource@diasemi.com>
-Subject: RE: [PATCH v15 3/3] Input: new da7280 haptic driver
-Date: Fri, 3 Jul 2020 06:50:47 +0000
-Message-ID: <DB8PR10MB3356C443A448F5B543C58BAC856A0@DB8PR10MB3356.EURPRD10.PROD.OUTLOOK.COM>
-References: <cover.1593435662.git.Roy.Im@diasemi.com>
- <c7b8cb993abe7bb771108bb94e5d9edbeb4f7103.1593435662.git.Roy.Im@diasemi.com>
- <31377d96-3e6d-e7b6-30de-0c7e9e6f9364@gmail.com>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
+Date: Fri, 3 Jul 2020 16:53:13 +0200
+Message-ID: <20200703145313.vwjsh5crdqx2u76a@pengutronix.de>
+References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-input-owner@vger.kernel.org>
-In-Reply-To: <31377d96-3e6d-e7b6-30de-0c7e9e6f9364@gmail.com>
-Content-Language: en-US
-Sender: linux-input-owner@vger.kernel.org
-To: Jes Sorensen <jes.sorensen@gmail.com>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qpoybkluvtfa4wj6"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726721AbgGCOxR (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jul 2020 10:53:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A848AC08C5C1
+        for <linux-pwm@vger.kernel.org>; Fri,  3 Jul 2020 07:53:17 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20200503105453.23658-1-miquel.raynal@bootlin.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org
 
-DQpPbiBGcmksIEp1bHkgMywgMjAyMCAzOjAyIEFNLCBKZXMgU29yZW5zZW4gd3JvdGU6DQo+IE9u
-IDYvMjkvMjAgOTowMSBBTSwgUm95IEltIHdyb3RlOg0KPiA+IEFkZHMgc3VwcG9ydCBmb3IgdGhl
-IERpYWxvZyBEQTcyODAgTFJBL0VSTSBIYXB0aWMgRHJpdmVyIHdpdGggbXVsdGlwbGUNCj4gPiBt
-b2RlIGFuZCBpbnRlZ3JhdGVkIHdhdmVmb3JtIG1lbW9yeSBhbmQgd2lkZWJhbmQgc3VwcG9ydC4N
-Cj4gPiBJdCBjb21tdW5pY2F0ZXMgdmlhIGFuIEkyQyBidXMgdG8gdGhlIGRldmljZS4NCj4gPg0K
-PiA+IFNpZ25lZC1vZmYtYnk6IFJveSBJbSA8cm95LmltLm9wZW5zb3VyY2VAZGlhc2VtaS5jb20+
-DQo+ID4gLS0tDQo+ID4gdjE1Og0KPiA+IAktIFJlbW92ZWQgc29tZSBkZWZpbmVzIGFuZCB1cGRh
-dGVkIHNvbWUgY29tbWVudHMuDQo+ID4gdjE0Og0KPiA+IAktIFVwZGF0ZWQgcHdtIHJlbGF0ZWQg
-Y29kZSwgYWxpZ25tZW50cyBhbmQgY29tbWVudHMuDQo+ID4gdjEzOg0KPiA+IAktIFVwZGF0ZWQg
-c29tZSBjb25kaXRpb25zIGluIHB3bSBmdW5jdGlvbiBhbmQgYWxpZ25tZW50cy4NCj4gPiB2MTI6
-IE5vIGNoYW5nZXMuDQo+ID4gdjExOg0KPiA+IAktIFVwZGF0ZWQgdGhlIHB3bSByZWxhdGVkIGNv
-ZGUsIGNvbW1lbnRzIGFuZCB0eXBvLg0KPiA+IHYxMDoNCj4gPiAJLSBVcGRhdGVkIHRoZSBwd20g
-cmVsYXRlZCBmdW5jdGlvbiBhbmQgYWRkZWQgc29tZSBjb21tZW50cy4NCj4gPiB2OToNCj4gPiAJ
-LSBSZW1vdmVkIHRoZSBoZWFkZXIgZmlsZSBhbmQgcHV0IHRoZSBkZWZpbml0aW9ucyBpbnRvIHRo
-ZSBjIGZpbGUuDQo+ID4gCS0gVXBkYXRlZCB0aGUgcHdtIGNvZGUgYW5kIGVycm9yIGxvZ3Mgd2l0
-aCAlcEUNCj4gPiB2ODoNCj4gPiAJLSBBZGRlZCBjaGFuZ2VzIHRvIHN1cHBvcnQgRkZfUEVSSU9E
-SUMvRkZfQ1VTVE9NIGFuZCBGRl9DT05TVEFOVC4NCj4gPiAJLSBVcGRhdGVkIHRoZSBkdC1yZWxh
-dGVkIGNvZGUuDQo+ID4gCS0gUmVtb3ZlZCBtZW1sZXNzIHJlbGF0ZWQgZnVuY3Rpb25zLg0KPiA+
-IHY3Og0KPiA+IAktIEFkZGVkIG1vcmUgYXR0cmlidXRlcyB0byBoYW5kbGUgb25lIHZhbHVlIHBl
-ciBmaWxlLg0KPiA+IAktIFJlcGxhY2VkIGFuZCB1cGRhdGVkIHRoZSBkdC1yZWxhdGVkIGNvZGUg
-YW5kIGZ1bmN0aW9ucyBjYWxsZWQuDQo+ID4gCS0gRml4ZWQgZXJyb3IvZnVuY3Rpb25zLg0KPiA+
-IHY2OiBObyBjaGFuZ2VzLg0KPiA+IHY1OiBGaXhlZCBlcnJvcnMgaW4gS2NvbmZpZyBmaWxlLg0K
-PiA+IHY0OiBVcGRhdGVkIGNvZGUgYXMgZHQtYmluZGluZ3MgYXJlIGNoYW5nZWQuDQo+ID4gdjM6
-IE5vIGNoYW5nZXMuDQo+ID4gdjI6IEZpeGVkIGtidWlsZCBlcnJvci93YXJuaW5nDQo+ID4NCj4g
-Pg0KPiA+ICBkcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZyAgfCAgIDEzICsNCj4gPiAgZHJpdmVy
-cy9pbnB1dC9taXNjL01ha2VmaWxlIHwgICAgMSArDQo+ID4gIGRyaXZlcnMvaW5wdXQvbWlzYy9k
-YTcyODAuYyB8IDE4MzgNCj4gPiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrDQo+ID4gIDMgZmlsZXMgY2hhbmdlZCwgMTg1MiBpbnNlcnRpb25zKCspDQo+ID4gIGNy
-ZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lucHV0L21pc2MvZGE3MjgwLmMNCj4gDQo+IFtzbmlw
-XQ0KPiANCj4gPiArc3RhdGljIHNzaXplX3QNCj4gPiArcGF0dGVybnNfc3RvcmUoc3RydWN0IGRl
-dmljZSAqZGV2LA0KPiA+ICsJICAgICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLA0K
-PiA+ICsJICAgICAgIGNvbnN0IGNoYXIgKmJ1ZiwNCj4gPiArCSAgICAgICBzaXplX3QgY291bnQp
-DQo+ID4gK3sNCj4gPiArCXN0cnVjdCBkYTcyODBfaGFwdGljICpoYXB0aWNzID0gZGV2X2dldF9k
-cnZkYXRhKGRldik7DQo+ID4gKwljaGFyIGNtZFtNQVhfVVNFUl9JTlBVVF9MRU5dOw0KPiA+ICsJ
-c3RydWN0IHBhcnNlX2RhdGFfdCBtZW07DQo+ID4gKwl1bnNpZ25lZCBpbnQgdmFsOw0KPiA+ICsJ
-aW50IGVycm9yOw0KPiA+ICsNCj4gPiArCWVycm9yID0gcmVnbWFwX3JlYWQoaGFwdGljcy0+cmVn
-bWFwLCBEQTcyODBfTUVNX0NUTDEsICZ2YWwpOw0KPiA+ICsJaWYgKGVycm9yKQ0KPiA+ICsJCXJl
-dHVybiBlcnJvcjsNCj4gPiArDQo+ID4gKwlpZiAoY291bnQgPiBNQVhfVVNFUl9JTlBVVF9MRU4p
-DQo+ID4gKwkJbWVtY3B5KGNtZCwgYnVmLCBNQVhfVVNFUl9JTlBVVF9MRU4pOw0KPiA+ICsJZWxz
-ZQ0KPiA+ICsJCW1lbWNweShjbWQsIGJ1ZiwgY291bnQpOw0KPiA+ICsNCj4gPiArCS8qIGNob3Ag
-b2YgJ1xuJyBpbnRyb2R1Y2VkIGJ5IGVjaG8gYXQgdGhlIGVuZCBvZiB0aGUgaW5wdXQgKi8NCj4g
-PiArCWlmIChjbWRbY291bnQgLSAxXSA9PSAnXG4nKQ0KPiA+ICsJCWNtZFtjb3VudCAtIDFdID0g
-J1wwJzsNCj4gDQo+IFlvdSBoYXZlIGEgcG90ZW50aWFsIG1lbW9yeSBjb3JydXB0aW9uIGJ1ZyBo
-ZXJlIGZvciB0aGUgY2FzZSB3aGVyZSAgY291bnQgPiBNQVhfVVNFUl9JTlBVVF9MRU4uIFRoZSBj
-b2RlDQo+IGNvcnJlY3RseSBjbGFtcHMgdGhlIG1lbWNweSgpIGxlbmd0aCwgYnV0IGl0IHN0aWxs
-IGlzIGF0IHJpc2sgb2Ygd3JpdGluZyBiZXlvbmQgdGhlIGVuZCBvZiB0aGUgY21kIGJ1ZmZlciB3
-aGVuIGRvaW5nIHRoZSBcMA0KPiB0ZXJtaW5hdGlvbi4NCj4gDQo+IElmIHlvdSBjaGFuZ2UgdGhl
-IGNvZGUgYWJvdmUgdG8gc2F5DQo+IA0KPiAJaWYgKGNvdW50ID4gTUFYX1VTRVJfSU5QVVRfTEVO
-KQ0KPiAJCWNvdW50ID0gTUFYX1VTRVJfSU5QVVRfTEVODQo+IAltZW1jcHkoY21kLCBidWYsIGNv
-dW50KTsNCj4gDQo+IGl0IHNob3VsZCB0YWtlIGNhcmUgb2YgaXQsIGFuZCBpdCB3aWxsIGFsc28g
-cmV0dXJuIHRoZSBhY3R1YWwgY291bnQgd3JpdHRlbiB0byB0aGUgY2FsbGVyLg0KDQpZb3UgYXJl
-IHJpZ2h0IGFuZCB0aGFua3MgZm9yIHlvdXIgY29tbWVudCwgSSB3aWxsIGNoYW5nZSB0aGUgY29k
-ZSBhcyB5b3Ugc3VnZ2VzdGVkLg0KDQpLaW5kIHJlZ2FyZHMsDQpSb3kNCg==
+
+--qpoybkluvtfa4wj6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Miquel,
+
+On Sun, May 03, 2020 at 12:54:53PM +0200, Miquel Raynal wrote:
+> +static u8 max7313_pwm_get_intensity(struct pca953x_chip *pca_chip,
+> +				    unsigned int idx)
+> +{
+> +	struct device *dev =3D &pca_chip->client->dev;
+> +	unsigned int reg, shift, val, output;
+> +	u8 intensity;
+> +	bool phase;
+> +	int ret;
+> +
+> +	/* Retrieve the intensity */
+> +	reg =3D MAX7313_INTENSITY + (idx / PWM_PER_REG);
+> +	shift =3D (idx % PWM_PER_REG) ? PWM_BITS_PER_REG : 0;
+
+I would find
+
+	shift =3D (idx % PWM_PER_REG) * PWM_BITS_PER_REG
+
+more natural here as your formula only works for PWM_PER_REG =3D 2.
+
+> +	mutex_lock(&pca_chip->i2c_lock);
+> +	ret =3D regmap_read(pca_chip->regmap, reg, &val);
+> +	mutex_unlock(&pca_chip->i2c_lock);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Cannot retrieve PWM intensity (%d)\n", ret);
+
+Please use %pe for error codes.
+
+> +		return 0;
+> +	}
+> +
+> +	val >>=3D shift;
+> +	val &=3D PWM_INTENSITY_MASK;
+> +
+> +	/* Retrieve the phase */
+> +	reg =3D pca953x_recalc_addr(pca_chip, pca_chip->regs->output, idx, 0, 0=
+);
+> +
+> +	mutex_lock(&pca_chip->i2c_lock);
+> +	ret =3D regmap_read(pca_chip->regmap, reg, &output);
+> +	mutex_unlock(&pca_chip->i2c_lock);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Cannot retrieve PWM phase (%d)\n", ret);
+> +		return 0;
+> +	}
+> +
+> +	phase =3D output & BIT(idx % BANK_SZ);
+
+Would it make sense to cache the phase value to reduce register access
+and locking here?
+
+> [...]
+> +static int max7313_pwm_apply(struct pwm_chip *chip,
+> +			     struct pwm_device *pwm,
+> +			     const struct pwm_state *state)
+> +{
+> +	struct max7313_pwm *max_pwm =3D to_max7313_pwm(chip);
+> +	struct pca953x_chip *pca_chip =3D to_pca953x(max_pwm);
+> +	unsigned int intensity, active;
+> +	int ret =3D 0;
+> +
+> +	if (!state->enabled ||
+> +	    state->period < PWM_PERIOD_NS ||
+> +	    state->polarity !=3D PWM_POLARITY_NORMAL)
+> +		return -EINVAL;
+
+You could simulate state->enabled =3D false using duty_cycle =3D 0.
+
+> +	/* Convert the duty-cycle to be in the [0;16] range */
+> +	intensity =3D max7313_pwm_duty_to_intensity(state->duty_cycle);
+
+This might return a value > 16 if state->duty_cycle > PWM_PERIOD_NS.
+I suggest to do
+
+	duty_cycle =3D min(state->duty_cycle, PWM_PERIOD_NS);
+
+and use that value instead of state->duty_cycle.
+
+> +	/*
+> +	 * The hardware is supposedly glitch-free when changing the intensity,
+> +	 * unless we need to flip the blink phase to reach an extremity or the
+> +	 * other of the spectrum (0/16 from phase 1, 16/16 from phase 0).
+
+s/other of/other end of/. I don't understand the difference between
+extremity and "other end of the spectrum".
+
+> +	 */
+> +	return max7313_pwm_set_state(pca_chip, pwm, intensity);
+> +}
+> +
+> +static void max7313_pwm_get_state(struct pwm_chip *chip,
+> +				  struct pwm_device *pwm,
+> +				  struct pwm_state *state)
+> +{
+> +	struct max7313_pwm *max_pwm =3D to_max7313_pwm(chip);
+> +	struct pca953x_chip *pca_chip =3D to_pca953x(max_pwm);
+> +	u8 intensity;
+> +
+> +	state->enabled =3D true;
+> +	state->period =3D PWM_PERIOD_NS;
+> +	state->polarity =3D PWM_POLARITY_NORMAL;
+> +
+> +	intensity =3D max7313_pwm_get_intensity(pca_chip, pwm->hwpwm);
+> +	state->duty_cycle =3D max7313_pwm_intensity_to_duty(intensity);
+
+Please round up the division in max7313_pwm_intensity_to_duty().
+
+(The reasoning is: with rounding down the following can happen:
+
+	/* this configures for 15/16 */
+	pwm_apply_state(pwm, { .duty_cycle =3D 31249, .period =3D 31250 });
+
+	/* assume this called your .get_state callback */
+	pwm_get_state(pwm, &state);
+
+	/*
+	 * we now have
+	 *	state.duty_cycle =3D 29296;
+	 *	state.period =3D 31250;
+	 * right?
+	 */
+=09
+	/* this configures for 14/16 because 29296 * 16 / 31250 < 15 */
+	pwm_apply_state(pwm, &state);
+
+But I want this to be idempotent, i.e. pwm_get_state has to round up and
+then return .duty_cycle =3D 29297 in the above example which is enough to
+let .apply_state() configure 15/16 again. Enabling PWM_DEBUG should
+catch this.)
+
+> +};
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--qpoybkluvtfa4wj6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl7/RlUACgkQwfwUeK3K
+7AnMFgf/ZWd0QN8FR23Bf9LgdIj/yRJX1ZfTwH8YSVGQYd0Y6uB5u9gaTVlE3zEU
+CwnSstJbOPSu9/roLxUFiGSi1O04tx7FjASPhtr4P31F8kLe7HhQfftgPw1TMzl/
+r3RT+8k4x+qUcP/wUrdM0wPUctD9Bk7y/Qk3OQ9YB8sHLOKVKAz0oGGjPsN2gf5i
+vCEH0nxTHjE16hLViVIpJh9Be9iG+03ajvI+1zkI0gXy02zoPg3v7v4lwnmhpLUH
+pdCgFxWrOgU5ZQKwWX6DvyUPq5TcOTVspRo252mIjiH3guOP/N8W9h6wslOoYiql
+NpN1gu54TLt5bRLvSFlosx7mMbGz5g==
+=e8Kb
+-----END PGP SIGNATURE-----
+
+--qpoybkluvtfa4wj6--
