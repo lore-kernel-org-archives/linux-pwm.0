@@ -1,156 +1,155 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v4 04/20] backlight: improve backlight_properties documentation
-Date: Fri,  3 Jul 2020 20:45:30 +0200
-Message-ID: <20200703184546.144664-5-sam@ravnborg.org>
+Subject: [PATCH v4 05/20] backlight: improve backlight_device documentation
+Date: Fri,  3 Jul 2020 20:45:31 +0200
+Message-ID: <20200703184546.144664-6-sam@ravnborg.org>
 References: <20200703184546.144664-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbgGCSqP (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jul 2020 14:46:15 -0400
 In-Reply-To: <20200703184546.144664-1-sam@ravnborg.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
-List-Id: linux-pwm@vger.kernel.org
 
-Improve the documentation for backlight_properties and
+Improve the documentation for backlight_device and
 adapt it to kernel-doc style.
 
+The updated documentation is more strict on how locking is used.
+With the update neither update_lock nor ops_lock may be used
+outside the backlight core.
+This restriction was introduced to keep the locking simple
+by keeping it in the core.
+It was verified that this documents the current state by renaming
+update_lock => bl_update_lock and ops_lock => bl_ops_lock.
+The rename did not reveal any uses outside the backlight core.
+The rename is NOT part of this patch.
+
 v3:
-  - Added missing '@' in kernel-doc
+  - Update changelog to explain locking details (Daniel)
 
 v2:
-  - Added into for each field (Daniel)
-  - Re-written some parts to explain what to do, rather
-    than what not to do.
-    Partly based on suggestions from the review (Daniel)
+  - Add short intro to all fields (Daniel)
+  - Updated description of update_lock (Daniel)
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- include/linux/backlight.h | 96 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 85 insertions(+), 11 deletions(-)
+ include/linux/backlight.h | 72 ++++++++++++++++++++++++++-------------
+ 1 file changed, 49 insertions(+), 23 deletions(-)
 
 diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-index dfb43ee02ea0..10518b00b059 100644
+index 10518b00b059..7654fe5f1589 100644
 --- a/include/linux/backlight.h
 +++ b/include/linux/backlight.h
-@@ -117,28 +117,102 @@ struct backlight_ops {
- 	int (*check_fb)(struct backlight_device *bd, struct fb_info *info);
+@@ -14,21 +14,6 @@
+ #include <linux/mutex.h>
+ #include <linux/notifier.h>
+ 
+-/* Notes on locking:
+- *
+- * backlight_device->ops_lock is an internal backlight lock protecting the
+- * ops pointer and no code outside the core should need to touch it.
+- *
+- * Access to update_status() is serialised by the update_lock mutex since
+- * most drivers seem to need this and historically get it wrong.
+- *
+- * Most drivers don't need locking on their get_brightness() method.
+- * If yours does, you need to implement it in the driver. You can use the
+- * update_lock mutex if appropriate.
+- *
+- * Any other use of the locks below is probably wrong.
+- */
+-
+ enum backlight_update_reason {
+ 	BACKLIGHT_UPDATE_HOTKEY,
+ 	BACKLIGHT_UPDATE_SYSFS,
+@@ -215,30 +200,71 @@ struct backlight_properties {
+ 	enum backlight_scale scale;
  };
  
--/* This structure defines all the properties of a backlight */
 +/**
-+ * struct backlight_properties - backlight properties
++ * struct backlight_device - backlight device data
 + *
-+ * This structure defines all the properties of a backlight.
++ * This structure holds all data required by a backlight device.
 + */
- struct backlight_properties {
--	/* Current User requested brightness (0 - max_brightness) */
+ struct backlight_device {
+-	/* Backlight properties */
 +	/**
-+	 * @brightness: The current brightness requested by the user.
-+	 *
-+	 * The backlight core makes sure the range is (0 to max_brightness)
-+	 * when the brightness is set via the sysfs attribute:
-+	 * /sys/class/backlight/<backlight>/brightness.
-+	 *
-+	 * This value can be set in the backlight_properties passed
-+	 * to devm_backlight_device_register() to set a default brightness
-+	 * value.
++	 * @props: Backlight properties
 +	 */
- 	int brightness;
--	/* Maximal value for brightness (read-only) */
-+
-+	/**
-+	 * @max_brightness: The maximum brightness value.
-+	 *
-+	 * This value must be set in the backlight_properties passed to
-+	 * devm_backlight_device_register() and shall not be modified by the
-+	 * driver after registration.
-+	 */
- 	int max_brightness;
--	/* Current FB Power mode (0: full on, 1..3: power saving
--	   modes; 4: full off), see FB_BLANK_XXX */
-+
-+	/**
-+	 * @power: The current power mode.
-+	 *
-+	 * User space can configure the power mode using the sysfs
-+	 * attribute: /sys/class/backlight/<backlight>/bl_power
-+	 * When the power property is updated update_status() is called.
-+	 *
-+	 * The possible values are: (0: full on, 1 to 3: power saving
-+	 * modes; 4: full off), see FB_BLANK_XXX.
-+	 *
-+	 * When the backlight device is enabled @power is set
-+	 * to FB_BLANK_UNBLANK. When the backlight device is disabled
-+	 * @power is set to FB_BLANK_POWERDOWN.
-+	 */
- 	int power;
--	/* FB Blanking active? (values as for power) */
--	/* Due to be removed, please use (state & BL_CORE_FBBLANK) */
-+
-+	/**
-+	 * @fb_blank: The power state from the FBIOBLANK ioclt.
-+	 *
-+	 * When the FBIOBLANK ioctl is called @fb_blank is set to the
-+	 * blank parameter and the update_status() operation is called.
-+	 *
-+	 * When the backlight device is enabled @fb_blank is set
-+	 * to FB_BLANK_UNBLANK. When the backlight device is disabled
-+	 * @fb_blank is set to FB_BLANK_POWERDOWN.
-+	 *
-+	 * Backlight drivers should avoid using this property. It has been
-+	 * replaced by state & BL_CORE_FBLANK (although most drivers should
-+	 * use backlight_is_blank() as the preferred means to get the blank
-+	 * state).
-+	 *
-+	 * fb_blank is deprecated and will be removed.
-+	 */
- 	int fb_blank;
--	/* Backlight type */
-+
-+	/**
-+	 * @type: The type of backlight supported.
-+	 *
-+	 * The backlight type allows userspace to make appropriate
-+	 * policy desicions based on the backlight type.
-+	 *
-+	 * This value must be set in the backlight_properties
-+	 * passed to devm_backlight_device_register().
-+	 */
- 	enum backlight_type type;
--	/* Flags used to signal drivers of state changes */
-+
-+	/**
-+	 * @state: The state of the backlight core.
-+	 *
-+	 * The state is a bitmask. BL_CORE_FBBLANK is set when the display
-+	 * is expected to be blank. BL_CORE_SUSPENDED is set when the
-+	 * driver is suspended.
-+	 *
-+	 * backlight drivers are excpected to use backlight_is_blank()
-+	 * in their update_status() operation rather than reading the
-+	 * state property.
-+	 *
-+	 * The state is maintained by the core and drivers may not modify it.
-+	 */
- 	unsigned int state;
--	/* Type of the brightness scale (linear, non-linear, ...) */
--	enum backlight_scale scale;
+ 	struct backlight_properties props;
  
- #define BL_CORE_SUSPENDED	(1 << 0)	/* backlight is suspended */
- #define BL_CORE_FBBLANK		(1 << 1)	/* backlight is under an fb blank event */
+-	/* Serialise access to update_status method */
++	/**
++	 * @update_lock: The lock used when calling the update_status() operation.
++	 *
++	 * update_lock is an internal backlight lock that serialise access
++	 * to the update_status() operation. The backlight core holds the update_lock
++	 * when calling the update_status() operation. The update_lock shall not
++	 * be used by backlight drivers.
++	 */
+ 	struct mutex update_lock;
+ 
+-	/* This protects the 'ops' field. If 'ops' is NULL, the driver that
+-	   registered this device has been unloaded, and if class_get_devdata()
+-	   points to something in the body of that driver, it is also invalid. */
++	/**
++	 * @ops_lock: The lock used around everything related to backlight_ops.
++	 *
++	 * ops_lock is an internal backlight lock that protects the ops pointer
++	 * and is used around all accesses to ops and when the operations are
++	 * invoked. The ops_lock shall not be used by backlight drivers.
++	 */
+ 	struct mutex ops_lock;
++
++	/**
++	 * @ops: Pointer to the backlight operations.
++	 *
++	 * If ops is NULL, the driver that registered this device has been unloaded,
++	 * and if class_get_devdata() points to something in the body of that driver,
++	 * it is also invalid.
++	 */
+ 	const struct backlight_ops *ops;
+ 
+-	/* The framebuffer notifier block */
++	/**
++	 * @fb_notif: The framebuffer notifier block
++	 */
+ 	struct notifier_block fb_notif;
+ 
+-	/* list entry of all registered backlight devices */
++	/**
++	 * @entry: List entry of all registered backlight devices
++	 */
+ 	struct list_head entry;
  
 +	/**
-+	 * @scale: The type of the brightness scale.
++	 * @dev: Parent device.
 +	 */
-+	enum backlight_scale scale;
+ 	struct device dev;
+ 
+-	/* Multiple framebuffers may share one backlight device */
++	/**
++	 * @fb_bl_on: The state of individual fbdev's.
++	 *
++	 * Multiple fbdev's may share one backlight device. The fb_bl_on
++	 * records the state of the individual fbdev.
++	 */
+ 	bool fb_bl_on[FB_MAX];
+ 
++	/**
++	 * @use_count: The number of uses of fb_bl_on.
++	 */
+ 	int use_count;
  };
  
- struct backlight_device {
 -- 
 2.25.1
