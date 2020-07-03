@@ -1,81 +1,61 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v4 09/20] backlight: drop extern from prototypes
-Date: Fri,  3 Jul 2020 20:45:35 +0200
-Message-ID: <20200703184546.144664-10-sam@ravnborg.org>
+Subject: [PATCH v4 14/20] backlight: cr_bllcd: introduce backlight_is_blank()
+Date: Fri,  3 Jul 2020 20:45:40 +0200
+Message-ID: <20200703184546.144664-15-sam@ravnborg.org>
 References: <20200703184546.144664-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbgGCSqX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jul 2020 14:46:23 -0400
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <20200703184546.144664-1-sam@ravnborg.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-arm-msm-owner@vger.kernel.org
 To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
+List-Id: linux-pwm@vger.kernel.org
 
-No need to put "extern" in front of prototypes.
-While touching the prototypes adjust indent to follow
-the kernel style.
+The cr_bllcd uses the FB_BLANK states as brightness.
+This results in brightness value equals 0 that turn on
+the display and 4 that turn off the display.
+Simplify the logic but keep current behaviour
+as userspace may expect brightness set to 0 to turn on the display.
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- include/linux/backlight.h | 35 +++++++++++++++++++----------------
- 1 file changed, 19 insertions(+), 16 deletions(-)
+ drivers/video/backlight/cr_bllcd.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-index 8f2005a6f8a9..c6ac4cbb9ddb 100644
---- a/include/linux/backlight.h
-+++ b/include/linux/backlight.h
-@@ -417,23 +417,26 @@ static inline bool backlight_is_blank(const struct backlight_device *bd)
- 	       bd->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK);
+diff --git a/drivers/video/backlight/cr_bllcd.c b/drivers/video/backlight/cr_bllcd.c
+index 4624b7b7c6a6..edca5fee9689 100644
+--- a/drivers/video/backlight/cr_bllcd.c
++++ b/drivers/video/backlight/cr_bllcd.c
+@@ -63,22 +63,16 @@ static int cr_backlight_set_intensity(struct backlight_device *bd)
+ 	u32 addr = gpio_bar + CRVML_PANEL_PORT;
+ 	u32 cur = inl(addr);
+ 
+-	if (bd->props.power == FB_BLANK_UNBLANK)
+-		intensity = FB_BLANK_UNBLANK;
+-	if (bd->props.fb_blank == FB_BLANK_UNBLANK)
+-		intensity = FB_BLANK_UNBLANK;
+-	if (bd->props.power == FB_BLANK_POWERDOWN)
+-		intensity = FB_BLANK_POWERDOWN;
+-	if (bd->props.fb_blank == FB_BLANK_POWERDOWN)
++	if (backlight_is_blank(bd))
+ 		intensity = FB_BLANK_POWERDOWN;
+ 
+-	if (intensity == FB_BLANK_UNBLANK) { /* FULL ON */
++	if (intensity != FB_BLANK_POWERDOWN) { /* FULL ON */
+ 		cur &= ~CRVML_BACKLIGHT_OFF;
+ 		outl(cur, addr);
+-	} else if (intensity == FB_BLANK_POWERDOWN) { /* OFF */
++	} else { /* OFF */
+ 		cur |= CRVML_BACKLIGHT_OFF;
+ 		outl(cur, addr);
+-	} /* anything else, don't bother */
++	}
+ 
+ 	return 0;
  }
- 
--extern struct backlight_device *backlight_device_register(const char *name,
--	struct device *dev, void *devdata, const struct backlight_ops *ops,
--	const struct backlight_properties *props);
--extern struct backlight_device *devm_backlight_device_register(
--	struct device *dev, const char *name, struct device *parent,
--	void *devdata, const struct backlight_ops *ops,
--	const struct backlight_properties *props);
--extern void backlight_device_unregister(struct backlight_device *bd);
--extern void devm_backlight_device_unregister(struct device *dev,
--					struct backlight_device *bd);
--extern void backlight_force_update(struct backlight_device *bd,
--				   enum backlight_update_reason reason);
--extern int backlight_register_notifier(struct notifier_block *nb);
--extern int backlight_unregister_notifier(struct notifier_block *nb);
--extern struct backlight_device *backlight_device_get_by_type(enum backlight_type type);
-+struct backlight_device *
-+backlight_device_register(const char *name, struct device *dev, void *devdata,
-+			  const struct backlight_ops *ops,
-+			  const struct backlight_properties *props);
-+struct backlight_device *
-+devm_backlight_device_register(struct device *dev, const char *name,
-+			       struct device *parent, void *devdata,
-+			       const struct backlight_ops *ops,
-+			       const struct backlight_properties *props);
-+void backlight_device_unregister(struct backlight_device *bd);
-+void devm_backlight_device_unregister(struct device *dev,
-+				      struct backlight_device *bd);
-+void backlight_force_update(struct backlight_device *bd,
-+			    enum backlight_update_reason reason);
-+int backlight_register_notifier(struct notifier_block *nb);
-+int backlight_unregister_notifier(struct notifier_block *nb);
- struct backlight_device *backlight_device_get_by_name(const char *name);
--extern int backlight_device_set_brightness(struct backlight_device *bd, unsigned long brightness);
-+struct backlight_device *backlight_device_get_by_type(enum backlight_type type);
-+int backlight_device_set_brightness(struct backlight_device *bd,
-+				    unsigned long brightness);
- 
- #define to_backlight_device(obj) container_of(obj, struct backlight_device, dev)
- 
 -- 
 2.25.1
