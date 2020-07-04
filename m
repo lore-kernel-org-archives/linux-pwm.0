@@ -1,69 +1,179 @@
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Sat, 4 Jul 2020 17:43:13 +0200
-Message-ID: <20200704154313.qjaxtlz62y6kjytj@pengutronix.de>
-References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
- <20200703145313.vwjsh5crdqx2u76a@pengutronix.de>
- <CAHp75Vdii+w4nNErG_z_YHwsTYWR9PeJsKk53szk4p-rop-Htw@mail.gmail.com>
+From: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>
+Subject: Re: [RFC PATCH 08/10] rtc: New driver for RTC in Netronix embedded
+ controller
+Date: Sat, 4 Jul 2020 21:23:23 +0200
+Message-ID: <20200704192323.GC2578@latitude>
+References: <20200620224222.1312520-1-j.neuschaefer@gmx.net>
+ <20200620224222.1312520-7-j.neuschaefer@gmx.net>
+ <20200621001106.GC131826@piout.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nbvhjrv6doy6cgjl"
-Return-path: <linux-gpio-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="eRtJSFbw+EEWtPj3"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75Vdii+w4nNErG_z_YHwsTYWR9PeJsKk53szk4p-rop-Htw@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <20200621001106.GC131826-m++hUPXGwpdeoWH0uzbU5w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexandre Belloni <alexandre.belloni-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
+Cc: Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Pengutronix Kernel Team <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, NXP Linux Team <linux-imx-3arQi8VN3Tc@public.gmane.org>, Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko.stuebner-SN7IsUiht6C/RdPyistoZJqQE7yCjDx5@public.gmane.org>, Stephan Gerhold <stephan-3XONVrnlUWDR7s880joybQ@public.gmane.org>, Lubomir Rintel <lkundrak-NGH9Lh4a5iE@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, allen <allen.chen@i>
 List-Id: linux-pwm@vger.kernel.org
 
 
---nbvhjrv6doy6cgjl
-Content-Type: text/plain; charset=iso-8859-1
+--eRtJSFbw+EEWtPj3
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jul 04, 2020 at 02:23:09PM +0300, Andy Shevchenko wrote:
-> On Fri, Jul 3, 2020 at 5:53 PM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Sun, May 03, 2020 at 12:54:53PM +0200, Miquel Raynal wrote:
+Hi,
+
+On Sun, Jun 21, 2020 at 02:11:06AM +0200, Alexandre Belloni wrote:
+> On 21/06/2020 00:42:19+0200, Jonathan Neusch=C3=A4fer wrote:
+> > With this driver, mainline Linux can keep its time and date in sync with
+> > the vendor kernel.
+> >=20
+> > Advanced functionality like alarm and automatic power-on is not yet
+> > supported.
+> >=20
 >=20
-> ...
+> Please report the results of rtctest (from the kernel tree) [...]
+
+  # ./rtctest
+  [=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D] Running 7 tests from 2 test cases.
+  [ RUN      ] rtc.date_read
+  ../../tools/testing/selftests/rtc/rtctest.c:49:date_read:Current RTC date=
+/time is 11/04/2006 23:11:23.
+  [       OK ] rtc.date_read
+  [ RUN      ] rtc.uie_read
+  [  180.651355] random: crng init done
+  uie_read: Test terminated by timeout
+  [     FAIL ] rtc.uie_read
+  [ RUN      ] rtc.uie_select
+  ../../tools/testing/selftests/rtc/rtctest.c:98:uie_select:Expected 0 (0) =
+!=3D rc (0)
+  uie_select: Test terminated by assertion
+  [     FAIL ] rtc.uie_select
+  [ RUN      ] rtc.alarm_alm_set
+  ../../tools/testing/selftests/rtc/rtctest.c:129:alarm_alm_set:skip alarms=
+ are not supported.
+  [       OK ] rtc.alarm_alm_set
+  [ RUN      ] rtc.alarm_wkalm_set
+  ../../tools/testing/selftests/rtc/rtctest.c:185:alarm_wkalm_set:skip alar=
+ms are not supported.
+  [       OK ] rtc.alarm_wkalm_set
+  [ RUN      ] rtc.alarm_alm_set_minute
+  ../../tools/testing/selftests/rtc/rtctest.c:231:alarm_alm_set_minute:skip=
+ alarms are not supported.
+  [       OK ] rtc.alarm_alm_set_minute
+  [ RUN      ] rtc.alarm_wkalm_set_minute
+  ../../tools/testing/selftests/rtc/rtctest.c:287:alarm_wkalm_set_minute:sk=
+ip alarms are not supported.
+  [       OK ] rtc.alarm_wkalm_set_minute
+  [=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D] 5 / 7 tests passed.
+  [  FAILED  ]
+
+> [...] and rtc-range
+> (https://git.kernel.org/pub/scm/linux/kernel/git/abelloni/rtc-tools.git/t=
+ree/rtc-range.c)
+
+  # ./rtc-range
+ =20
+  Testing 1970-01-01 00:00:00.
+  KO  Read back 2226-01-01 00:01:00.
+ =20
+  Testing 2000-02-28 23:59:59.
+  KO  Read back 2000-02-28 23:28:23.
+ =20
+  Testing 2020-02-28 23:59:59.
+  KO  Read back 2020-02-28 23:28:23.
+ =20
+  Testing 2038-01-19 03:14:07.
+  KO  Read back 2038-01-19 03:19:03.
+ =20
+  Testing 2069-12-31 23:59:59.
+  KO  Read back 2069-12-31 23:31:23.
+ =20
+  Testing 2079-12-31 23:59:59.
+  KO  Read back 2079-12-31 23:31:23.
+ =20
+  Testing 2099-12-31 23:59:59.
+  KO  Read back 2099-12-31 23:31:23.
+ =20
+  Testing 2255-12-31 23:59:59.
+  KO  Read back 2255-12-31 23:31:23.
+ =20
+  Testing 2100-02-28 23:59:59.
+  KO  Read back 2100-02-28 23:28:23.
+ =20
+  Testing 2106-02-07 06:28:15.
+  KO  Read back 2106-02-07 06:07:06.
+ =20
+  Testing 2262-04-11 23:47:16.
+  KO  Read back 2006-04-11 23:11:23.
+
+
+Something is very wrong here.
+
+I'll try to fix the failures in rtctest and the problems in rtc-range
+before version 2 of the patchset.
+
+(The 2255 date was my addition, because I suspect this to be the upper
+limit of the RTC's range.)
+
+
+[...]
+> > +config RTC_DRV_NTXEC
+> > +	tristate "Netronix embedded controller RTC driver"
+> > +	depends on MFD_NTXEC
+> > +
 >=20
-> > > +     ret =3D regmap_read(pca_chip->regmap, reg, &val);
-> > > +     mutex_unlock(&pca_chip->i2c_lock);
-> > > +     if (ret < 0) {
-> > > +             dev_err(dev, "Cannot retrieve PWM intensity (%d)\n", re=
-t);
-> >
-> > Please use %pe for error codes.
+> This should get an help section.
+
+Ok, I'll add one.
+
+
+[...]
+> > +#include <linux/rtc.h>
+> > +#include <linux/mfd/ntxec.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/types.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of_device.h>
 >=20
-> %pe is mainly for error pointers, with plain integers it will look
-> awkward a bit.
+> Please sort the includes.
 
-Yeah, the right usage is:
+Will do.
 
-	dev_err(dev, "Cannot retrieve PWM intensity (%pe)\n", ERR_PTR(ret));
 
-Best regards
-Uwe
+[...]
+> > +	rtcdev =3D devm_rtc_device_register(&pdev->dev, "ntxec-rtc",
+> > +					  &ntxec_rtc_ops, THIS_MODULE);
+>=20
+> Please use devm_rtc_allocate_device and rtc_register_device. Also, set
+> the supported range (->range_min and ->range_max).
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Ok, will do.
 
---nbvhjrv6doy6cgjl
+
+Thanks for the review and the testing tips.
+Jonathan Neusch=C3=A4fer
+
+--eRtJSFbw+EEWtPj3
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8Ao44ACgkQwfwUeK3K
-7AndkAf/VoVfxQww+BvyjBD+Vd05dYxw5ADB0MHirOdCfxKKnri7eYlXBGfEdlCB
-/MFlEhNXyr3sKDizZYtutASSaoncUhCRpxPMMWdRLo2B+ABWwbM0g/gWkLOyqDci
-RDaMvOYHkYSJrKsj05aDUUFLl3LsJP0Pd6Ie2F7ME1FtmElZ6RUL2+16OMEo1Mtu
-pEKjKy3ekggM4K94GtzboiFOPqf3OtExBCXnsNs8dZ0khSZVQXlrAQnd1WkKQRP8
-/i3VZ1Ak0RNWPJkC4zX3OcQC9j4BsvXFmlHpN8raGXhFqkhJlXL10+fYuZLdyN24
-z5XiVw9YzHcxhofr+108N7KU3Emt4A==
-=neRI
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl8A1yAACgkQCDBEmo7z
+X9tNnA/9H+BT9wwk5LCwgYRQGaCp/1zm7d962UhBAu5F59rAP2Ho8ioQNoJcCc0/
+xwAaeJYaRm7iOWjVdlL0wfnv8kJRDjYs4ml0arpTPFW4dmz4+zvFoZfIVIlUHy+1
+t/cY1k/KCTXqAXUmyVMMZ6b3Q7/mwjKYLQV2nRgW3sHiBoQI2q6cV69XQZM1JVo0
+NV+m7HGvL5AmPZGjLmbSC8PiOMlS35Tm6v0IKrYXHt3ASOF7ukMqTMT3+1aRCrzs
+zqtZHJdUfGA3DpkZTiLK+m8t5L4t6qsiyd+QX9jFg1KaSXapVF5nV+wNYgdebcqQ
+UqeA5ylgENA6WaYv5N8xl1MO6UZhYiH5Qw/mJZ0rG4pyf0Ad6nZJxd+l8eWseMFX
+LCOtTqRIKC6Oa2sKPUI/TN56GafA1cK+ZHljn/FjpI5CUQfHlcAz/QEkACPIs1S8
+WtMdsBfP3cjqGPapGbknlBi8KGnyL/qFj42PCOApXdNOczJAXMRfvvXYHfdnVxUx
+9pw9oAc06PijFOB72FUMYA3U2aiNz5Qk+zMmmsTFDAnRJmsnFc8hhooewHn4Ha3I
+AiJVhLvGrzVlSS8Yq7O2jm1SsRYKAO93YctBIxMfRJvd2a+72++4X7oPc1qKxCkQ
+U5YIMEbe4JyTCq0Bj6rbOd1k4+36LVMRT/jyGg7DK66PUgfB2dI=
+=jCx0
 -----END PGP SIGNATURE-----
 
---nbvhjrv6doy6cgjl--
+--eRtJSFbw+EEWtPj3--
