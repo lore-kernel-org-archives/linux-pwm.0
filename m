@@ -1,42 +1,69 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v6] gpio: pca953x: Add Maxim MAX7313 PWM support
-Date: Sat, 4 Jul 2020 14:23:09 +0300
-Message-ID: <CAHp75Vdii+w4nNErG_z_YHwsTYWR9PeJsKk53szk4p-rop-Htw@mail.gmail.com>
-References: <20200503105453.23658-1-miquel.raynal@bootlin.com> <20200703145313.vwjsh5crdqx2u76a@pengutronix.de>
+Date: Sat, 4 Jul 2020 17:43:13 +0200
+Message-ID: <20200704154313.qjaxtlz62y6kjytj@pengutronix.de>
+References: <20200503105453.23658-1-miquel.raynal@bootlin.com>
+ <20200703145313.vwjsh5crdqx2u76a@pengutronix.de>
+ <CAHp75Vdii+w4nNErG_z_YHwsTYWR9PeJsKk53szk4p-rop-Htw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726726AbgGDLX1 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 4 Jul 2020 07:23:27 -0400
-In-Reply-To: <20200703145313.vwjsh5crdqx2u76a@pengutronix.de>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nbvhjrv6doy6cgjl"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vdii+w4nNErG_z_YHwsTYWR9PeJsKk53szk4p-rop-Htw@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Miquel Raynal <miquel.raynal@bootlin.com>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Jul 3, 2020 at 5:53 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Sun, May 03, 2020 at 12:54:53PM +0200, Miquel Raynal wrote:
 
-...
+--nbvhjrv6doy6cgjl
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > +     ret =3D regmap_read(pca_chip->regmap, reg, &val);
-> > +     mutex_unlock(&pca_chip->i2c_lock);
-> > +     if (ret < 0) {
-> > +             dev_err(dev, "Cannot retrieve PWM intensity (%d)\n", ret)=
-;
->
-> Please use %pe for error codes.
+On Sat, Jul 04, 2020 at 02:23:09PM +0300, Andy Shevchenko wrote:
+> On Fri, Jul 3, 2020 at 5:53 PM Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Sun, May 03, 2020 at 12:54:53PM +0200, Miquel Raynal wrote:
+>=20
+> ...
+>=20
+> > > +     ret =3D regmap_read(pca_chip->regmap, reg, &val);
+> > > +     mutex_unlock(&pca_chip->i2c_lock);
+> > > +     if (ret < 0) {
+> > > +             dev_err(dev, "Cannot retrieve PWM intensity (%d)\n", re=
+t);
+> >
+> > Please use %pe for error codes.
+>=20
+> %pe is mainly for error pointers, with plain integers it will look
+> awkward a bit.
 
-%pe is mainly for error pointers, with plain integers it will look
-awkward a bit.
+Yeah, the right usage is:
 
-> > +             return 0;
-> > +     }
+	dev_err(dev, "Cannot retrieve PWM intensity (%pe)\n", ERR_PTR(ret));
+
+Best regards
+Uwe
 
 --=20
-With Best Regards,
-Andy Shevchenko
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--nbvhjrv6doy6cgjl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8Ao44ACgkQwfwUeK3K
+7AndkAf/VoVfxQww+BvyjBD+Vd05dYxw5ADB0MHirOdCfxKKnri7eYlXBGfEdlCB
+/MFlEhNXyr3sKDizZYtutASSaoncUhCRpxPMMWdRLo2B+ABWwbM0g/gWkLOyqDci
+RDaMvOYHkYSJrKsj05aDUUFLl3LsJP0Pd6Ie2F7ME1FtmElZ6RUL2+16OMEo1Mtu
+pEKjKy3ekggM4K94GtzboiFOPqf3OtExBCXnsNs8dZ0khSZVQXlrAQnd1WkKQRP8
+/i3VZ1Ak0RNWPJkC4zX3OcQC9j4BsvXFmlHpN8raGXhFqkhJlXL10+fYuZLdyN24
+z5XiVw9YzHcxhofr+108N7KU3Emt4A==
+=neRI
+-----END PGP SIGNATURE-----
+
+--nbvhjrv6doy6cgjl--
