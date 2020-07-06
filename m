@@ -1,7 +1,7 @@
 From: Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 11/13] arm64: dts: freescale: sl28: map GPIOs to input events
-Date: Mon,  6 Jul 2020 19:53:51 +0200
-Message-ID: <20200706175353.16404-12-michael@walle.cc>
+Subject: [PATCH v5 13/13] arm64: dts: freescale: sl28: enable fan support
+Date: Mon,  6 Jul 2020 19:53:53 +0200
+Message-ID: <20200706175353.16404-14-michael@walle.cc>
 References: <20200706175353.16404-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,11 +12,8 @@ To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.ke
 Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Walle <michael@walle.cc>
 List-Id: linux-pwm@vger.kernel.org
 
-Now that we have support for GPIO lines of the SMARC connector, map the
-sleep, power and lid switch signals to the corresponding keys using the
-gpio-keys and gpio-keys-polled drivers. The power and sleep signals have
-dedicated interrupts, thus we use these ones. The lid switch is just
-mapped to a GPIO input and needs polling.
+Add a pwm-fan mapped to the PWM channel 0 which is connected to the
+fan connector of the carrier.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
@@ -26,58 +23,28 @@ Changes since v4:
 Changes since v3:
  - see cover letter
 
- .../freescale/fsl-ls1028a-kontron-sl28.dts    | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ .../dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-index 8712fe82727b..c4fd99efdbba 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
-@@ -9,6 +9,8 @@
- /dts-v1/;
- #include "fsl-ls1028a.dtsi"
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts
+index 0973a6a45217..c45d7b40e374 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var3-ads2.dts
+@@ -15,6 +15,15 @@
+ 	compatible = "kontron,sl28-var3-ads2", "kontron,sl28-var3",
+ 		     "kontron,sl28", "fsl,ls1028a";
  
- / {
- 	model = "Kontron SMARC-sAL28";
-@@ -23,6 +25,36 @@
- 		spi1 = &dspi2;
- 	};
- 
-+	buttons0 {
-+		compatible = "gpio-keys";
-+
-+		power-button {
-+			interrupts-extended = <&sl28cpld_intc
-+					       4 IRQ_TYPE_EDGE_BOTH>;
-+			linux,code = <KEY_POWER>;
-+			label = "Power";
-+		};
-+
-+		sleep-button {
-+			interrupts-extended = <&sl28cpld_intc
-+					       5 IRQ_TYPE_EDGE_BOTH>;
-+			linux,code = <KEY_SLEEP>;
-+			label = "Sleep";
-+		};
++	pwm-fan {
++		compatible = "pwm-fan";
++		cooling-min-state = <0>;
++		cooling-max-state = <3>;
++		#cooling-cells = <2>;
++		pwms = <&sl28cpld_pwm0 0 4000000>;
++		cooling-levels = <1 128 192 255>;
 +	};
 +
-+	buttons1 {
-+		compatible = "gpio-keys-polled";
-+		poll-interval = <200>;
-+
-+		lid-switch {
-+			linux,input-type = <EV_SW>;
-+			linux,code = <SW_LID>;
-+			gpios = <&sl28cpld_gpio3 4 GPIO_ACTIVE_LOW>;
-+			label = "Lid";
-+		};
-+	};
-+
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
+ 	sound {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
 -- 
 2.20.1
