@@ -1,126 +1,215 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: [PATCH v5 02/13] mfd: add simple regmap based I2C driver
-Date: Mon,  6 Jul 2020 19:53:42 +0200
-Message-ID: <20200706175353.16404-3-michael@walle.cc>
+From: Michael Walle <michael@walle.cc>
+Subject: [PATCH v5 01/13] regmap-irq: use fwnode instead of device node in add_irq_chip()
+Date: Mon,  6 Jul 2020 19:53:41 +0200
+Message-ID: <20200706175353.16404-2-michael@walle.cc>
 References: <20200706175353.16404-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200706175353.16404-1-michael-QKn5cuLxLXY@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+In-Reply-To: <20200706175353.16404-1-michael@walle.cc>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Walle <michael@walle.cc>
 List-Id: linux-pwm@vger.kernel.org
 
-There are I2C devices which contain several different functions but
-doesn't require any special access functions. For these kind of drivers
-an I2C regmap should be enough.
+Convert the argument to the newer fwnode_handle instead a device tree
+node. Fortunately, there are no users for now. So this is an easy
+change.
 
-Create an I2C driver which creates an I2C regmap and enumerates its
-children. If a device wants to use this as its MFD core driver, it has
-to add an individual compatible string. It may provide its own regmap
-configuration.
-
-Subdevices can use dev_get_regmap() on the parent to get their regmap
-instance.
-
-Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
+Mark, after this patch is reviewed, could already pick it, so it is
+less likely, others will use the old regmap_add_irq_chip_np() variant?
+
 Changes since v4:
- - new patch. Lee, please bear with me. I didn't want to delay the
-   new version (where a lot of remarks on the other patches were
-   addressed) even more, just because we haven't figured out how
-   to deal with the MFD part. So for now, I've included this one.
+ - new patch, suggested by Andy
 
- drivers/mfd/Kconfig          |  9 +++++++
- drivers/mfd/Makefile         |  1 +
- drivers/mfd/simple-mfd-i2c.c | 50 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 60 insertions(+)
- create mode 100644 drivers/mfd/simple-mfd-i2c.c
+ drivers/base/regmap/regmap-irq.c | 53 +++++++++++++++++---------------
+ include/linux/regmap.h           | 21 +++++++------
+ 2 files changed, 41 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 33df0837ab41..f1536a710aca 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1162,6 +1162,15 @@ config MFD_SI476X_CORE
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called si476x-core.
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index 4340e1d268b6..369a57e6f89d 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -541,9 +541,9 @@ static const struct irq_domain_ops regmap_domain_ops = {
+ };
  
-+config MFD_SIMPLE_MFD_I2C
-+	tristate "Simple regmap based I2C devices"
-+	depends on I2C
-+	select MFD_CORE
-+	select REGMAP_I2C
-+	help
-+	  This is a consolidated driver for all MFD devices which are
-+	  basically just a regmap bus driver.
-+
- config MFD_SM501
- 	tristate "Silicon Motion SM501"
- 	depends on HAS_DMA
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index a60e5f835283..78d24a3e7c9e 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -264,3 +264,4 @@ obj-$(CONFIG_MFD_STMFX) 	+= stmfx.o
- obj-$(CONFIG_MFD_KHADAS_MCU) 	+= khadas-mcu.o
+ /**
+- * regmap_add_irq_chip_np() - Use standard regmap IRQ controller handling
++ * regmap_add_irq_chip_fwnode() - Use standard regmap IRQ controller handling
+  *
+- * @np: The device_node where the IRQ domain should be added to.
++ * @fwnode: The firmware node where the IRQ domain should be added to.
+  * @map: The regmap for the device.
+  * @irq: The IRQ the device uses to signal interrupts.
+  * @irq_flags: The IRQF_ flags to use for the primary interrupt.
+@@ -557,10 +557,11 @@ static const struct irq_domain_ops regmap_domain_ops = {
+  * register cache.  The chip driver is responsible for restoring the
+  * register values used by the IRQ controller over suspend and resume.
+  */
+-int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
+-			   int irq_flags, int irq_base,
+-			   const struct regmap_irq_chip *chip,
+-			   struct regmap_irq_chip_data **data)
++int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
++			       struct regmap *map, int irq,
++			       int irq_flags, int irq_base,
++			       const struct regmap_irq_chip *chip,
++			       struct regmap_irq_chip_data **data)
+ {
+ 	struct regmap_irq_chip_data *d;
+ 	int i;
+@@ -771,10 +772,12 @@ int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
+ 	}
  
- obj-$(CONFIG_SGI_MFD_IOC3)	+= ioc3.o
-+obj-$(CONFIG_MFD_SIMPLE_MFD_I2C)	+= simple-mfd-i2c.o
-diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
-new file mode 100644
-index 000000000000..1fdca89964b1
---- /dev/null
-+++ b/drivers/mfd/simple-mfd-i2c.c
-@@ -0,0 +1,49 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/regmap.h>
-+
-+struct simple_mfd_i2c_config {
-+	const struct regmap_config *regmap_config;
-+};
-+
-+static const struct regmap_config simple_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+static int simple_mfd_i2c_probe(struct i2c_client *i2c)
-+{
-+	const struct regmap_config *regmap_config = &simple_regmap_config;
-+	const struct simple_mfd_i2c_config *config;
-+	struct regmap *regmap;
-+
-+	config = device_get_match_data(&i2c->dev);
-+
-+	if (config && config->regmap_config)
-+		regmap_config = config->regmap_config;
-+
-+	regmap = devm_regmap_init_i2c(i2c, regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	return devm_of_platform_populate(&i2c->dev);
-+}
-+
-+static const struct of_device_id simple_mfd_i2c_of_match[] = {
-+	{}
-+};
-+
-+static struct i2c_driver simple_mfd_i2c_driver = {
-+	.probe_new = simple_mfd_i2c_probe,
-+	.driver = {
-+		.name = "simple-mfd-i2c",
-+		.of_match_table = simple_mfd_i2c_of_match,
-+	},
-+};
-+builtin_i2c_driver(simple_mfd_i2c_driver);
+ 	if (irq_base)
+-		d->domain = irq_domain_add_legacy(np, chip->num_irqs, irq_base,
++		d->domain = irq_domain_add_legacy(to_of_node(fwnode),
++						  chip->num_irqs, irq_base,
+ 						  0, &regmap_domain_ops, d);
+ 	else
+-		d->domain = irq_domain_add_linear(np, chip->num_irqs,
++		d->domain = irq_domain_add_linear(to_of_node(fwnode),
++						  chip->num_irqs,
+ 						  &regmap_domain_ops, d);
+ 	if (!d->domain) {
+ 		dev_err(map->dev, "Failed to create IRQ domain\n");
+@@ -808,7 +811,7 @@ int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
+ 	kfree(d);
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(regmap_add_irq_chip_np);
++EXPORT_SYMBOL_GPL(regmap_add_irq_chip_fwnode);
+ 
+ /**
+  * regmap_add_irq_chip() - Use standard regmap IRQ controller handling
+@@ -822,15 +825,15 @@ EXPORT_SYMBOL_GPL(regmap_add_irq_chip_np);
+  *
+  * Returns 0 on success or an errno on failure.
+  *
+- * This is the same as regmap_add_irq_chip_np, except that the device
++ * This is the same as regmap_add_irq_chip_fwnode, except that the firmware
+  * node of the regmap is used.
+  */
+ int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
+ 			int irq_base, const struct regmap_irq_chip *chip,
+ 			struct regmap_irq_chip_data **data)
+ {
+-	return regmap_add_irq_chip_np(map->dev->of_node, map, irq, irq_flags,
+-				      irq_base, chip, data);
++	return regmap_add_irq_chip_fwnode(dev_fwnode(map->dev), map, irq,
++					  irq_flags, irq_base, chip, data);
+ }
+ EXPORT_SYMBOL_GPL(regmap_add_irq_chip);
+ 
+@@ -899,10 +902,10 @@ static int devm_regmap_irq_chip_match(struct device *dev, void *res, void *data)
+ }
+ 
+ /**
+- * devm_regmap_add_irq_chip_np() - Resource manager regmap_add_irq_chip_np()
++ * devm_regmap_add_irq_chip_fwnode() - Resource managed regmap_add_irq_chip_fwnode()
+  *
+  * @dev: The device pointer on which irq_chip belongs to.
+- * @np: The device_node where the IRQ domain should be added to.
++ * @fwnode: The firmware node where the IRQ domain should be added to.
+  * @map: The regmap for the device.
+  * @irq: The IRQ the device uses to signal interrupts
+  * @irq_flags: The IRQF_ flags to use for the primary interrupt.
+@@ -915,11 +918,12 @@ static int devm_regmap_irq_chip_match(struct device *dev, void *res, void *data)
+  * The &regmap_irq_chip_data will be automatically released when the device is
+  * unbound.
+  */
+-int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
+-				struct regmap *map, int irq, int irq_flags,
+-				int irq_base,
+-				const struct regmap_irq_chip *chip,
+-				struct regmap_irq_chip_data **data)
++int devm_regmap_add_irq_chip_fwnode(struct device *dev,
++				    struct fwnode_handle *fwnode,
++				    struct regmap *map, int irq,
++				    int irq_flags, int irq_base,
++				    const struct regmap_irq_chip *chip,
++				    struct regmap_irq_chip_data **data)
+ {
+ 	struct regmap_irq_chip_data **ptr, *d;
+ 	int ret;
+@@ -929,8 +933,8 @@ int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
+ 	if (!ptr)
+ 		return -ENOMEM;
+ 
+-	ret = regmap_add_irq_chip_np(np, map, irq, irq_flags, irq_base,
+-				     chip, &d);
++	ret = regmap_add_irq_chip_fwnode(fwnode, map, irq, irq_flags, irq_base,
++					 chip, &d);
+ 	if (ret < 0) {
+ 		devres_free(ptr);
+ 		return ret;
+@@ -941,7 +945,7 @@ int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
+ 	*data = d;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip_np);
++EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip_fwnode);
+ 
+ /**
+  * devm_regmap_add_irq_chip() - Resource manager regmap_add_irq_chip()
+@@ -964,8 +968,9 @@ int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
+ 			     const struct regmap_irq_chip *chip,
+ 			     struct regmap_irq_chip_data **data)
+ {
+-	return devm_regmap_add_irq_chip_np(dev, map->dev->of_node, map, irq,
+-					   irq_flags, irq_base, chip, data);
++	return devm_regmap_add_irq_chip_fwnode(dev, dev_fwnode(map->dev), map,
++					       irq, irq_flags, irq_base, chip,
++					       data);
+ }
+ EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip);
+ 
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index f4917efed5c3..e3817c097791 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -18,6 +18,7 @@
+ #include <linux/bug.h>
+ #include <linux/lockdep.h>
+ #include <linux/iopoll.h>
++#include <linux/fwnode.h>
+ 
+ struct module;
+ struct clk;
+@@ -1376,21 +1377,23 @@ struct regmap_irq_chip_data;
+ int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
+ 			int irq_base, const struct regmap_irq_chip *chip,
+ 			struct regmap_irq_chip_data **data);
+-int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
+-			   int irq_flags, int irq_base,
+-			   const struct regmap_irq_chip *chip,
+-			   struct regmap_irq_chip_data **data);
++int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
++			       struct regmap *map, int irq,
++			       int irq_flags, int irq_base,
++			       const struct regmap_irq_chip *chip,
++			       struct regmap_irq_chip_data **data);
+ void regmap_del_irq_chip(int irq, struct regmap_irq_chip_data *data);
+ 
+ int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
+ 			     int irq_flags, int irq_base,
+ 			     const struct regmap_irq_chip *chip,
+ 			     struct regmap_irq_chip_data **data);
+-int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
+-				struct regmap *map, int irq, int irq_flags,
+-				int irq_base,
+-				const struct regmap_irq_chip *chip,
+-				struct regmap_irq_chip_data **data);
++int devm_regmap_add_irq_chip_fwnode(struct device *dev,
++				    struct fwnode_handle *fwnode,
++				    struct regmap *map, int irq,
++				    int irq_flags, int irq_base,
++				    const struct regmap_irq_chip *chip,
++				    struct regmap_irq_chip_data **data);
+ void devm_regmap_del_irq_chip(struct device *dev, int irq,
+ 			      struct regmap_irq_chip_data *data);
+ 
 -- 
 2.20.1
