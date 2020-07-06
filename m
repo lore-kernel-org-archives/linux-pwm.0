@@ -1,59 +1,251 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: [PATCH v5 12/13] arm64: dts: freescale: sl28: enable LED support
-Date: Mon,  6 Jul 2020 19:53:52 +0200
-Message-ID: <20200706175353.16404-13-michael@walle.cc>
+From: Michael Walle <michael@walle.cc>
+Subject: [PATCH v5 08/13] gpio: add support for the sl28cpld GPIO controller
+Date: Mon,  6 Jul 2020 19:53:48 +0200
+Message-ID: <20200706175353.16404-9-michael@walle.cc>
 References: <20200706175353.16404-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20200706175353.16404-1-michael-QKn5cuLxLXY@public.gmane.org>
-Sender: linux-watchdog-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from ssl.serverraum.org ([176.9.125.105]:41113 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729717AbgGFR5i (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Jul 2020 13:57:38 -0400
+In-Reply-To: <20200706175353.16404-1-michael@walle.cc>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Walle <michael@walle.cc>
 
-Now that we have support for GPIO lines of the SMARC connector, enable
-LED support on the KBox A-230-LS. There are two LEDs without fixed
-functions, one is yellow and one is green. Unfortunately, it is just one
-multi-color LED, thus while it is possible to enable both at the same
-time it is hard to tell the difference between "yellow only" and "yellow
-and green".
+Add support for the GPIO controller of the sl28 board management
+controller. This driver is part of a multi-function device.
 
-Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+A controller has 8 lines. There are three different flavors:
+full-featured GPIO with interrupt support, input-only and output-only.
+
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
 Changes since v4:
- - none
+ - update copyright year
+ - remove #include <linux/of_device.h>, suggested by Andy.
+ - use device_get_match_data(), suggested by Andy.
+ - drop the irq_support variable, instead call _init_irq() directly,
+   suggested by Andy.
+ - also move the irq code a bit around to make it look nicer
+ - drop "struct sl28cpld_gpio". We don't need to actually store the
+   irq_chip and irq_chip_data, everything is device resource managed.
+ - use 100 chars line limit, suggested by Andy.
+ - remove the platform device table
+ - don't use KBUID_MODNAME
 
 Changes since v3:
  - see cover letter
 
- .../fsl-ls1028a-kontron-kbox-a-230-ls.dts          | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/gpio/Kconfig         |  11 +++
+ drivers/gpio/Makefile        |   1 +
+ drivers/gpio/gpio-sl28cpld.c | 161 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 173 insertions(+)
+ create mode 100644 drivers/gpio/gpio-sl28cpld.c
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-index 4b4cc6a1573d..49cf4fe05c80 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-@@ -16,6 +16,20 @@
- 	model = "Kontron KBox A-230-LS";
- 	compatible = "kontron,kbox-a-230-ls", "kontron,sl28-var4",
- 		     "kontron,sl28", "fsl,ls1028a";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		user_yellow {
-+			label = "s1914:yellow:user";
-+			gpios = <&sl28cpld_gpio0 0 0>;
-+		};
-+
-+		user_green {
-+			label = "s1914:green:user";
-+			gpios = <&sl28cpld_gpio1 3 0>;
-+		};
-+	};
- };
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index 05e0801c6a78..f67df2b02de4 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -1215,6 +1215,17 @@ config GPIO_RC5T583
+ 	  This driver provides the support for driving/reading the gpio pins
+ 	  of RC5T583 device through standard gpio library.
  
- &enetc_mdio_pf3 {
++config GPIO_SL28CPLD
++	tristate "Kontron sl28cpld GPIO support"
++	select MFD_SIMPLE_MFD_I2C
++	select GPIO_REGMAP
++	select GPIOLIB_IRQCHIP
++	help
++	  This enables support for the GPIOs found on the Kontron sl28 CPLD.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called gpio-sl28cpld.
++
+ config GPIO_STMPE
+ 	bool "STMPE GPIOs"
+ 	depends on MFD_STMPE
+diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+index ef666cfef9d0..cb8ed4463265 100644
+--- a/drivers/gpio/Makefile
++++ b/drivers/gpio/Makefile
+@@ -131,6 +131,7 @@ obj-$(CONFIG_GPIO_SCH311X)		+= gpio-sch311x.o
+ obj-$(CONFIG_GPIO_SCH)			+= gpio-sch.o
+ obj-$(CONFIG_GPIO_SIFIVE)		+= gpio-sifive.o
+ obj-$(CONFIG_GPIO_SIOX)			+= gpio-siox.o
++obj-$(CONFIG_GPIO_SL28CPLD)		+= gpio-sl28cpld.o
+ obj-$(CONFIG_GPIO_SODAVILLE)		+= gpio-sodaville.o
+ obj-$(CONFIG_GPIO_SPEAR_SPICS)		+= gpio-spear-spics.o
+ obj-$(CONFIG_GPIO_SPRD)			+= gpio-sprd.o
+diff --git a/drivers/gpio/gpio-sl28cpld.c b/drivers/gpio/gpio-sl28cpld.c
+new file mode 100644
+index 000000000000..889b8f5622c2
+--- /dev/null
++++ b/drivers/gpio/gpio-sl28cpld.c
+@@ -0,0 +1,161 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * sl28cpld GPIO driver
++ *
++ * Copyright 2020 Michael Walle <michael@walle.cc>
++ */
++
++#include <linux/device.h>
++#include <linux/gpio/driver.h>
++#include <linux/gpio/regmap.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++
++/* GPIO flavor */
++#define GPIO_REG_DIR	0x00
++#define GPIO_REG_OUT	0x01
++#define GPIO_REG_IN	0x02
++#define GPIO_REG_IE	0x03
++#define GPIO_REG_IP	0x04
++
++/* input-only flavor */
++#define GPI_REG_IN	0x00
++
++/* output-only flavor */
++#define GPO_REG_OUT	0x00
++
++enum sl28cpld_gpio_type {
++	SL28CPLD_GPIO = 1,
++	SL28CPLD_GPI,
++	SL28CPLD_GPO,
++};
++
++static const struct regmap_irq sl28cpld_gpio_irqs[] = {
++	REGMAP_IRQ_REG_LINE(0, 8),
++	REGMAP_IRQ_REG_LINE(1, 8),
++	REGMAP_IRQ_REG_LINE(2, 8),
++	REGMAP_IRQ_REG_LINE(3, 8),
++	REGMAP_IRQ_REG_LINE(4, 8),
++	REGMAP_IRQ_REG_LINE(5, 8),
++	REGMAP_IRQ_REG_LINE(6, 8),
++	REGMAP_IRQ_REG_LINE(7, 8),
++};
++
++static int sl28cpld_gpio_irq_init(struct platform_device *pdev,
++				  unsigned int base,
++				  struct gpio_regmap_config *config)
++{
++	struct regmap_irq_chip_data *irq_data;
++	struct regmap_irq_chip *irq_chip;
++	struct device *dev = &pdev->dev;
++	int irq, ret;
++
++	if (!device_property_read_bool(dev, "interrupt-controller"))
++		return 0;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	irq_chip = devm_kzalloc(dev, sizeof(*irq_chip), GFP_KERNEL);
++	if (!irq_chip)
++		return -ENOMEM;
++
++	irq_chip->name = "sl28cpld-gpio-irq",
++	irq_chip->irqs = sl28cpld_gpio_irqs;
++	irq_chip->num_irqs = ARRAY_SIZE(sl28cpld_gpio_irqs);
++	irq_chip->num_regs = 1;
++	irq_chip->status_base = base + GPIO_REG_IP;
++	irq_chip->mask_base = base + GPIO_REG_IE;
++	irq_chip->mask_invert = true,
++	irq_chip->ack_base = base + GPIO_REG_IP;
++
++	ret = devm_regmap_add_irq_chip_fwnode(dev, dev_fwnode(dev),
++					      config->regmap, irq,
++					      IRQF_SHARED | IRQF_ONESHOT,
++					      0, irq_chip, &irq_data);
++	if (ret)
++		return ret;
++
++	config->irq_domain = regmap_irq_get_domain(irq_data);
++
++	return 0;
++}
++
++static int sl28cpld_gpio_probe(struct platform_device *pdev)
++{
++	struct gpio_regmap_config config = {0};
++	enum sl28cpld_gpio_type type;
++	struct regmap *regmap;
++	u32 base;
++	int ret;
++
++	if (!pdev->dev.parent)
++		return -ENODEV;
++
++	type = (uintptr_t)device_get_match_data(&pdev->dev);
++	if (!type)
++		return -ENODEV;
++
++	ret = device_property_read_u32(&pdev->dev, "reg", &base);
++	if (ret)
++		return -EINVAL;
++
++	regmap = dev_get_regmap(pdev->dev.parent, NULL);
++	if (!regmap)
++		return -ENODEV;
++
++	config.regmap = regmap;
++	config.parent = &pdev->dev;
++	config.ngpio = 8;
++
++	switch (type) {
++	case SL28CPLD_GPIO:
++		config.reg_dat_base = base + GPIO_REG_IN;
++		config.reg_set_base = base + GPIO_REG_OUT;
++		/* reg_dir_out_base might be zero */
++		config.reg_dir_out_base = GPIO_REGMAP_ADDR(base + GPIO_REG_DIR);
++
++		/* This type supports interrupts */
++		ret = sl28cpld_gpio_irq_init(pdev, base, &config);
++		if (ret)
++			return ret;
++		break;
++	case SL28CPLD_GPO:
++		config.reg_set_base = base + GPO_REG_OUT;
++		break;
++	case SL28CPLD_GPI:
++		config.reg_dat_base = base + GPI_REG_IN;
++		break;
++	default:
++		dev_err(&pdev->dev, "unknown type %d\n", type);
++		return -ENODEV;
++	}
++
++	return PTR_ERR_OR_ZERO(devm_gpio_regmap_register(&pdev->dev, &config));
++}
++
++static const struct of_device_id sl28cpld_gpio_of_match[] = {
++	{ .compatible = "kontron,sl28cpld-gpio", .data = (void *)SL28CPLD_GPIO },
++	{ .compatible = "kontron,sl28cpld-gpi", .data = (void *)SL28CPLD_GPI },
++	{ .compatible = "kontron,sl28cpld-gpo", .data = (void *)SL28CPLD_GPO },
++	{}
++};
++MODULE_DEVICE_TABLE(of, sl28cpld_gpio_of_match);
++
++static struct platform_driver sl28cpld_gpio_driver = {
++	.probe = sl28cpld_gpio_probe,
++	.driver = {
++		.name = "sl28cpld-gpio",
++		.of_match_table = sl28cpld_gpio_of_match,
++	},
++};
++module_platform_driver(sl28cpld_gpio_driver);
++
++MODULE_DESCRIPTION("sl28cpld GPIO Driver");
++MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
++MODULE_LICENSE("GPL");
 -- 
 2.20.1
