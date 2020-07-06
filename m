@@ -1,215 +1,83 @@
 From: Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 01/13] regmap-irq: use fwnode instead of device node in add_irq_chip()
-Date: Mon,  6 Jul 2020 19:53:41 +0200
-Message-ID: <20200706175353.16404-2-michael@walle.cc>
+Subject: [PATCH v5 11/13] arm64: dts: freescale: sl28: map GPIOs to input events
+Date: Mon,  6 Jul 2020 19:53:51 +0200
+Message-ID: <20200706175353.16404-12-michael@walle.cc>
 References: <20200706175353.16404-1-michael@walle.cc>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20200706175353.16404-1-michael@walle.cc>
-Sender: linux-hwmon-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc: Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Walle <michael@walle.cc>
 List-Id: linux-pwm@vger.kernel.org
 
-Convert the argument to the newer fwnode_handle instead a device tree
-node. Fortunately, there are no users for now. So this is an easy
-change.
+Now that we have support for GPIO lines of the SMARC connector, map the
+sleep, power and lid switch signals to the corresponding keys using the
+gpio-keys and gpio-keys-polled drivers. The power and sleep signals have
+dedicated interrupts, thus we use these ones. The lid switch is just
+mapped to a GPIO input and needs polling.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-Mark, after this patch is reviewed, could already pick it, so it is
-less likely, others will use the old regmap_add_irq_chip_np() variant?
-
 Changes since v4:
- - new patch, suggested by Andy
+ - none
 
- drivers/base/regmap/regmap-irq.c | 53 +++++++++++++++++---------------
- include/linux/regmap.h           | 21 +++++++------
- 2 files changed, 41 insertions(+), 33 deletions(-)
+Changes since v3:
+ - see cover letter
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index 4340e1d268b6..369a57e6f89d 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -541,9 +541,9 @@ static const struct irq_domain_ops regmap_domain_ops = {
- };
+ .../freescale/fsl-ls1028a-kontron-sl28.dts    | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+index 8712fe82727b..c4fd99efdbba 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+@@ -9,6 +9,8 @@
+ /dts-v1/;
+ #include "fsl-ls1028a.dtsi"
+ #include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
  
- /**
-- * regmap_add_irq_chip_np() - Use standard regmap IRQ controller handling
-+ * regmap_add_irq_chip_fwnode() - Use standard regmap IRQ controller handling
-  *
-- * @np: The device_node where the IRQ domain should be added to.
-+ * @fwnode: The firmware node where the IRQ domain should be added to.
-  * @map: The regmap for the device.
-  * @irq: The IRQ the device uses to signal interrupts.
-  * @irq_flags: The IRQF_ flags to use for the primary interrupt.
-@@ -557,10 +557,11 @@ static const struct irq_domain_ops regmap_domain_ops = {
-  * register cache.  The chip driver is responsible for restoring the
-  * register values used by the IRQ controller over suspend and resume.
-  */
--int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
--			   int irq_flags, int irq_base,
--			   const struct regmap_irq_chip *chip,
--			   struct regmap_irq_chip_data **data)
-+int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
-+			       struct regmap *map, int irq,
-+			       int irq_flags, int irq_base,
-+			       const struct regmap_irq_chip *chip,
-+			       struct regmap_irq_chip_data **data)
- {
- 	struct regmap_irq_chip_data *d;
- 	int i;
-@@ -771,10 +772,12 @@ int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
- 	}
+ / {
+ 	model = "Kontron SMARC-sAL28";
+@@ -23,6 +25,36 @@
+ 		spi1 = &dspi2;
+ 	};
  
- 	if (irq_base)
--		d->domain = irq_domain_add_legacy(np, chip->num_irqs, irq_base,
-+		d->domain = irq_domain_add_legacy(to_of_node(fwnode),
-+						  chip->num_irqs, irq_base,
- 						  0, &regmap_domain_ops, d);
- 	else
--		d->domain = irq_domain_add_linear(np, chip->num_irqs,
-+		d->domain = irq_domain_add_linear(to_of_node(fwnode),
-+						  chip->num_irqs,
- 						  &regmap_domain_ops, d);
- 	if (!d->domain) {
- 		dev_err(map->dev, "Failed to create IRQ domain\n");
-@@ -808,7 +811,7 @@ int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
- 	kfree(d);
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(regmap_add_irq_chip_np);
-+EXPORT_SYMBOL_GPL(regmap_add_irq_chip_fwnode);
- 
- /**
-  * regmap_add_irq_chip() - Use standard regmap IRQ controller handling
-@@ -822,15 +825,15 @@ EXPORT_SYMBOL_GPL(regmap_add_irq_chip_np);
-  *
-  * Returns 0 on success or an errno on failure.
-  *
-- * This is the same as regmap_add_irq_chip_np, except that the device
-+ * This is the same as regmap_add_irq_chip_fwnode, except that the firmware
-  * node of the regmap is used.
-  */
- int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
- 			int irq_base, const struct regmap_irq_chip *chip,
- 			struct regmap_irq_chip_data **data)
- {
--	return regmap_add_irq_chip_np(map->dev->of_node, map, irq, irq_flags,
--				      irq_base, chip, data);
-+	return regmap_add_irq_chip_fwnode(dev_fwnode(map->dev), map, irq,
-+					  irq_flags, irq_base, chip, data);
- }
- EXPORT_SYMBOL_GPL(regmap_add_irq_chip);
- 
-@@ -899,10 +902,10 @@ static int devm_regmap_irq_chip_match(struct device *dev, void *res, void *data)
- }
- 
- /**
-- * devm_regmap_add_irq_chip_np() - Resource manager regmap_add_irq_chip_np()
-+ * devm_regmap_add_irq_chip_fwnode() - Resource managed regmap_add_irq_chip_fwnode()
-  *
-  * @dev: The device pointer on which irq_chip belongs to.
-- * @np: The device_node where the IRQ domain should be added to.
-+ * @fwnode: The firmware node where the IRQ domain should be added to.
-  * @map: The regmap for the device.
-  * @irq: The IRQ the device uses to signal interrupts
-  * @irq_flags: The IRQF_ flags to use for the primary interrupt.
-@@ -915,11 +918,12 @@ static int devm_regmap_irq_chip_match(struct device *dev, void *res, void *data)
-  * The &regmap_irq_chip_data will be automatically released when the device is
-  * unbound.
-  */
--int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
--				struct regmap *map, int irq, int irq_flags,
--				int irq_base,
--				const struct regmap_irq_chip *chip,
--				struct regmap_irq_chip_data **data)
-+int devm_regmap_add_irq_chip_fwnode(struct device *dev,
-+				    struct fwnode_handle *fwnode,
-+				    struct regmap *map, int irq,
-+				    int irq_flags, int irq_base,
-+				    const struct regmap_irq_chip *chip,
-+				    struct regmap_irq_chip_data **data)
- {
- 	struct regmap_irq_chip_data **ptr, *d;
- 	int ret;
-@@ -929,8 +933,8 @@ int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
- 	if (!ptr)
- 		return -ENOMEM;
- 
--	ret = regmap_add_irq_chip_np(np, map, irq, irq_flags, irq_base,
--				     chip, &d);
-+	ret = regmap_add_irq_chip_fwnode(fwnode, map, irq, irq_flags, irq_base,
-+					 chip, &d);
- 	if (ret < 0) {
- 		devres_free(ptr);
- 		return ret;
-@@ -941,7 +945,7 @@ int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
- 	*data = d;
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip_np);
-+EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip_fwnode);
- 
- /**
-  * devm_regmap_add_irq_chip() - Resource manager regmap_add_irq_chip()
-@@ -964,8 +968,9 @@ int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
- 			     const struct regmap_irq_chip *chip,
- 			     struct regmap_irq_chip_data **data)
- {
--	return devm_regmap_add_irq_chip_np(dev, map->dev->of_node, map, irq,
--					   irq_flags, irq_base, chip, data);
-+	return devm_regmap_add_irq_chip_fwnode(dev, dev_fwnode(map->dev), map,
-+					       irq, irq_flags, irq_base, chip,
-+					       data);
- }
- EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip);
- 
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index f4917efed5c3..e3817c097791 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -18,6 +18,7 @@
- #include <linux/bug.h>
- #include <linux/lockdep.h>
- #include <linux/iopoll.h>
-+#include <linux/fwnode.h>
- 
- struct module;
- struct clk;
-@@ -1376,21 +1377,23 @@ struct regmap_irq_chip_data;
- int regmap_add_irq_chip(struct regmap *map, int irq, int irq_flags,
- 			int irq_base, const struct regmap_irq_chip *chip,
- 			struct regmap_irq_chip_data **data);
--int regmap_add_irq_chip_np(struct device_node *np, struct regmap *map, int irq,
--			   int irq_flags, int irq_base,
--			   const struct regmap_irq_chip *chip,
--			   struct regmap_irq_chip_data **data);
-+int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
-+			       struct regmap *map, int irq,
-+			       int irq_flags, int irq_base,
-+			       const struct regmap_irq_chip *chip,
-+			       struct regmap_irq_chip_data **data);
- void regmap_del_irq_chip(int irq, struct regmap_irq_chip_data *data);
- 
- int devm_regmap_add_irq_chip(struct device *dev, struct regmap *map, int irq,
- 			     int irq_flags, int irq_base,
- 			     const struct regmap_irq_chip *chip,
- 			     struct regmap_irq_chip_data **data);
--int devm_regmap_add_irq_chip_np(struct device *dev, struct device_node *np,
--				struct regmap *map, int irq, int irq_flags,
--				int irq_base,
--				const struct regmap_irq_chip *chip,
--				struct regmap_irq_chip_data **data);
-+int devm_regmap_add_irq_chip_fwnode(struct device *dev,
-+				    struct fwnode_handle *fwnode,
-+				    struct regmap *map, int irq,
-+				    int irq_flags, int irq_base,
-+				    const struct regmap_irq_chip *chip,
-+				    struct regmap_irq_chip_data **data);
- void devm_regmap_del_irq_chip(struct device *dev, int irq,
- 			      struct regmap_irq_chip_data *data);
- 
++	buttons0 {
++		compatible = "gpio-keys";
++
++		power-button {
++			interrupts-extended = <&sl28cpld_intc
++					       4 IRQ_TYPE_EDGE_BOTH>;
++			linux,code = <KEY_POWER>;
++			label = "Power";
++		};
++
++		sleep-button {
++			interrupts-extended = <&sl28cpld_intc
++					       5 IRQ_TYPE_EDGE_BOTH>;
++			linux,code = <KEY_SLEEP>;
++			label = "Sleep";
++		};
++	};
++
++	buttons1 {
++		compatible = "gpio-keys-polled";
++		poll-interval = <200>;
++
++		lid-switch {
++			linux,input-type = <EV_SW>;
++			linux,code = <SW_LID>;
++			gpios = <&sl28cpld_gpio3 4 GPIO_ACTIVE_LOW>;
++			label = "Lid";
++		};
++	};
++
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
 -- 
 2.20.1
