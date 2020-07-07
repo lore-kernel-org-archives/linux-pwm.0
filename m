@@ -1,37 +1,59 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v2 4/8] arm64: dts: exynos: Remove DMA controller bus
- node name to fix dtschema warnings
-Date: Tue, 7 Jul 2020 08:44:17 +0200
-Message-ID: <20200707064417.GB15031@kozik-lap>
-References: <20200702155149.12854-1-krzk@kernel.org>
- <20200702155149.12854-4-krzk@kernel.org>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 11/15] pwm: crc: Implement get_state() method
+Date: Tue, 7 Jul 2020 09:24:57 +0200
+Message-ID: <20200707072457.6bb6vqif355fbs26@pengutronix.de>
+References: <20200620121758.14836-1-hdegoede@redhat.com>
+ <20200620121758.14836-12-hdegoede@redhat.com>
+ <20200622075730.lenaflptqnemagff@taurus.defre.kleine-koenig.org>
+ <59babd32-9421-0b31-187f-ceff7c003f54@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55953 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726540AbgGGGoX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jul 2020 02:44:23 -0400
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5o57lf2673xp25na"
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200702155149.12854-4-krzk@kernel.org>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <59babd32-9421-0b31-187f-ceff7c003f54@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>, Kukjin Kim <kgene@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sylwester Nawrocki <snawrocki@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, Pankaj Dubey <pankaj.dubey@samsung.com>
 
-On Thu, Jul 02, 2020 at 05:51:45PM +0200, Krzysztof Kozlowski wrote:
-> There is no need to keep DMA controller nodes under AMBA bus node.
-> Remove the "amba" node to fix dtschema warnings like:
-> 
->     amba: $nodename:0: 'amba' does not match '^(bus|soc|axi|ahb|apb)(@[0-9a-f]+)?$'
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> 
-> ---
-> 
-> Changes since v1:
 
-Applied.
+--5o57lf2673xp25na
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Krzysztof
+Hello Hans,
+
+On Mon, Jul 06, 2020 at 11:05:20PM +0200, Hans de Goede wrote:
+> Before I post a new version of this patch-set, you have only responded
+> to some of the PWM patches in this set. Do you have any remarks on the
+> other PWM patches ?
+
+I stopped looking at them as I hoped someone would appear with a
+datasheet. Given that this probably won't happen I can take a look at
+the remaining patches.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--5o57lf2673xp25na
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8EI0YACgkQwfwUeK3K
+7Al5ygf/Vo2MCrxebQA7I8RHxSI5JD/fpUazpfqXoJruzxMkaR87VXdj0S1+ayNc
+mtVoPaEadgJc3Gwt7jEAqod7zUQA1lABJS47piDlaDE7v9Dq+ZBMp6KIqGTxKa4C
+i4XFpjD5ktWpuWU6c34yYkDDmyYUyzWZe1SxYcjWpfK6TnGAuJe78RmTyNcEnE61
+9cGSYyki+SQfIrQtbjQJIMi6Nhmt6c+yT7FgnbDAoJoGBsLY+UShQgSfWfxVre/r
+VUArL2ALscRIielEbRjKYg3Kx83TkfzRUdaonnLlmSw15x7cTjXEXQNBZXf7WG3a
+YXACfmrQaGmlrRETxX5y/PB1jbzrEQ==
+=8rxl
+-----END PGP SIGNATURE-----
+
+--5o57lf2673xp25na--
