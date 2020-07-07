@@ -1,94 +1,114 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v3 11/15] pwm: crc: Implement get_state()
- method
-Date: Mon, 6 Jul 2020 23:05:20 +0200
-Message-ID: <59babd32-9421-0b31-187f-ceff7c003f54@redhat.com>
-References: <20200620121758.14836-1-hdegoede@redhat.com>
- <20200620121758.14836-12-hdegoede@redhat.com>
- <20200622075730.lenaflptqnemagff@taurus.defre.kleine-koenig.org>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [PATCH v4 02/20] backlight: add backlight_is_blank()
+Date: Tue, 7 Jul 2020 07:42:16 +0200
+Message-ID: <20200707054216.GE3278063@phenom.ffwll.local>
+References: <20200703184546.144664-1-sam@ravnborg.org>
+ <20200703184546.144664-3-sam@ravnborg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; Format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20200622075730.lenaflptqnemagff@taurus.defre.kleine-koenig.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727928AbgGGFmV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jul 2020 01:42:21 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A3FC061794
+        for <linux-pwm@vger.kernel.org>; Mon,  6 Jul 2020 22:42:21 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id a6so934058wmm.0
+        for <linux-pwm@vger.kernel.org>; Mon, 06 Jul 2020 22:42:21 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20200703184546.144664-3-sam@ravnborg.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas
 
-Hi,
+On Fri, Jul 03, 2020 at 08:45:28PM +0200, Sam Ravnborg wrote:
+> The backlight support has two properties that express the state:
+> - power
+> - state
 
-On 6/22/20 9:57 AM, Uwe Kleine-K=C3=B6nig wrote:
-> On Sat, Jun 20, 2020 at 02:17:54PM +0200, Hans de Goede wrote:
->> Implement the pwm_ops.get_state() method to complete the support for the
->> new atomic PWM API.
->>
->> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->> ---
->> Changes in v3:
->> - Add Andy's Reviewed-by tag
->> - Remove extra whitespace to align some code after assignments (requeste=
-d by
->>    Uwe Kleine-K=C3=B6nig)
->> ---
->>   drivers/pwm/pwm-crc.c | 29 +++++++++++++++++++++++++++++
->>   1 file changed, 29 insertions(+)
->>
->> diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
->> index 8a7f4707279c..b311354d40a3 100644
->> --- a/drivers/pwm/pwm-crc.c
->> +++ b/drivers/pwm/pwm-crc.c
->> @@ -119,8 +119,37 @@ static int crc_pwm_apply(struct pwm_chip *chip, str=
-uct pwm_device *pwm,
->>   	return 0;
->>   }
->>   =
+Tiny nit, but please add "fb_blank" here too, commit message doesn't match
+the code anymore. With that:
 
->> +static void crc_pwm_get_state(struct pwm_chip *chip, struct pwm_device =
-*pwm,
->> +			       struct pwm_state *state)
->> +{
->> +	struct crystalcove_pwm *crc_pwm =3D to_crc_pwm(chip);
->> +	struct device *dev =3D crc_pwm->chip.dev;
->> +	unsigned int clk_div, clk_div_reg, duty_cycle_reg;
->> +	int error;
->> +
->> +	error =3D regmap_read(crc_pwm->regmap, PWM0_CLK_DIV, &clk_div_reg);
->> +	if (error) {
->> +		dev_err(dev, "Error reading PWM0_CLK_DIV %d\n", error);
->> +		return;
->> +	}
->> +
->> +	error =3D regmap_read(crc_pwm->regmap, PWM0_DUTY_CYCLE, &duty_cycle_re=
-g);
->> +	if (error) {
->> +		dev_err(dev, "Error reading PWM0_DUTY_CYCLE %d\n", error);
->> +		return;
->> +	}
->> +
->> +	clk_div =3D (clk_div_reg & ~PWM_OUTPUT_ENABLE) + 1;
->> +
->> +	state->period =3D clk_div * NSEC_PER_USEC * 256 / PWM_BASE_CLK_MHZ;
->> +	state->duty_cycle =3D duty_cycle_reg * state->period / PWM_MAX_LEVEL;
-> =
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-> Please round up here.
+> 
+> It is un-documented and easy to get wrong.
+> Add backlight_is_blank() helper to make it simpler
+> for drivers to get the check of the state correct.
+> 
+> A lot of drivers also includes checks for fb_blank.
+> This check is redundant when the state is checked
+> and thus not needed in this helper function.
+> But added anyway to avoid introducing subtle bugs
+> due to the creative use of fb_blank in some drivers.
+> Introducing this helper will for some drivers results in
+> added support for fb_blank. This will be a change in
+> functionality, which will improve the backlight driver.
+> 
+> Rolling out this helper to all relevant backlight drivers
+> will eliminate almost all accesses to fb_blank.
+> 
+> v4:
+>   - struct backlight_device * is now const
+> 
+> v3:
+>   - Clarified that the fb_blank support in
+>     backlight_is_blank() may result in functionality
+>     changes for the users (Emil)
+> 
+> v2:
+>   - Added fb_blank condition (Daniel)
+> 
+> Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+> Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Reviewed-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
+> Cc: Emil Velikov <emil.l.velikov@gmail.com>
+> Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Jingoo Han <jingoohan1@gmail.com>
+> ---
+>  include/linux/backlight.h | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/include/linux/backlight.h b/include/linux/backlight.h
+> index 56e4580d4f55..56e51ebab740 100644
+> --- a/include/linux/backlight.h
+> +++ b/include/linux/backlight.h
+> @@ -175,6 +175,25 @@ static inline void backlight_put(struct backlight_device *bd)
+>  		put_device(&bd->dev);
+>  }
+>  
+> +/**
+> + * backlight_is_blank - Return true if display is expected to be blank
+> + * @bd: the backlight device
+> + *
+> + * Display is expected to be blank if any of these is true::
+> + *
+> + *   1) if power in not UNBLANK
+> + *   2) if fb_blank is not UNBLANK
+> + *   3) if state indicate BLANK or SUSPENDED
+> + *
+> + * Returns true if display is expected to be blank, false otherwise.
+> + */
+> +static inline bool backlight_is_blank(const struct backlight_device *bd)
+> +{
+> +	return bd->props.power != FB_BLANK_UNBLANK ||
+> +	       bd->props.fb_blank != FB_BLANK_UNBLANK ||
+> +	       bd->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK);
+> +}
+> +
+>  extern struct backlight_device *backlight_device_register(const char *name,
+>  	struct device *dev, void *devdata, const struct backlight_ops *ops,
+>  	const struct backlight_properties *props);
+> -- 
+> 2.25.1
+> 
 
-Ok, I can fix that for the next version of this patch-set. Before I
-post a new version of this patch-set, you have only responded to
-some of the PWM patches in this set. Do you have any remarks on the
-other PWM patches ?
-
-Regards,
-
-Hans
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
