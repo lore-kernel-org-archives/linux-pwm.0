@@ -1,109 +1,454 @@
 From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v4 02/20] backlight: add backlight_is_blank()
-Date: Tue, 7 Jul 2020 07:42:16 +0200
-Message-ID: <20200707054216.GE3278063@phenom.ffwll.local>
+Subject: Re: [PATCH v4 17/20] backlight: use backligt_get_brightness()
+Date: Tue, 7 Jul 2020 07:48:20 +0200
+Message-ID: <20200707054820.GF3278063@phenom.ffwll.local>
 References: <20200703184546.144664-1-sam@ravnborg.org>
- <20200703184546.144664-3-sam@ravnborg.org>
+ <20200703184546.144664-18-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727928AbgGGFmV (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jul 2020 01:42:21 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A3FC061794
-        for <linux-pwm@vger.kernel.org>; Mon,  6 Jul 2020 22:42:21 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id a6so934058wmm.0
-        for <linux-pwm@vger.kernel.org>; Mon, 06 Jul 2020 22:42:21 -0700 (PDT)
+        with ESMTP id S1727038AbgGGFsZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jul 2020 01:48:25 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A313C061755
+        for <linux-pwm@vger.kernel.org>; Mon,  6 Jul 2020 22:48:25 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id o2so45097597wmh.2
+        for <linux-pwm@vger.kernel.org>; Mon, 06 Jul 2020 22:48:24 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20200703184546.144664-3-sam@ravnborg.org>
+In-Reply-To: <20200703184546.144664-18-sam@ravnborg.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Sam Ravnborg <sam@ravnborg.org>
 Cc: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas
 
-On Fri, Jul 03, 2020 at 08:45:28PM +0200, Sam Ravnborg wrote:
-> The backlight support has two properties that express the state:
-> - power
-> - state
-
-Tiny nit, but please add "fb_blank" here too, commit message doesn't match
-the code anymore. With that:
-
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-
+On Fri, Jul 03, 2020 at 08:45:43PM +0200, Sam Ravnborg wrote:
+> Introduce the backlight_get_brightness() helper in all
+> video/backlight/* drivers.
+> This simplifies the code and align the implementation of the
+> update_status() operation across the different backlight drivers.
 > 
-> It is un-documented and easy to get wrong.
-> Add backlight_is_blank() helper to make it simpler
-> for drivers to get the check of the state correct.
-> 
-> A lot of drivers also includes checks for fb_blank.
-> This check is redundant when the state is checked
-> and thus not needed in this helper function.
-> But added anyway to avoid introducing subtle bugs
-> due to the creative use of fb_blank in some drivers.
-> Introducing this helper will for some drivers results in
-> added support for fb_blank. This will be a change in
-> functionality, which will improve the backlight driver.
-> 
-> Rolling out this helper to all relevant backlight drivers
-> will eliminate almost all accesses to fb_blank.
-> 
-> v4:
->   - struct backlight_device * is now const
-> 
-> v3:
->   - Clarified that the fb_blank support in
->     backlight_is_blank() may result in functionality
->     changes for the users (Emil)
-> 
-> v2:
->   - Added fb_blank condition (Daniel)
+> Some of the drivers gains a little extra functionality by the change
+> as they now respect the fb_blank() ioctl.
 > 
 > Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-> Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Reviewed-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
-> Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
-> Cc: Emil Velikov <emil.l.velikov@gmail.com>
-> Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Jingoo Han <jingoohan1@gmail.com>
+
+This looks really nice!
+
+Since there's a pile more backlight drivers all over the tree, care to
+update the gpu/todo.rst entry with a note that conversions should use
+backlight_get_brightness?
+-Daniel
+
 > ---
->  include/linux/backlight.h | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
+>  drivers/video/backlight/88pm860x_bl.c | 13 +------------
+>  drivers/video/backlight/adp5520_bl.c  | 10 +---------
+>  drivers/video/backlight/adp8860_bl.c  | 10 +---------
+>  drivers/video/backlight/adp8870_bl.c  | 10 +---------
+>  drivers/video/backlight/bd6107.c      |  7 +------
+>  drivers/video/backlight/corgi_lcd.c   |  8 +-------
+>  drivers/video/backlight/da903x_bl.c   | 13 +------------
+>  drivers/video/backlight/ep93xx_bl.c   |  8 +-------
+>  drivers/video/backlight/hp680_bl.c    |  6 +-----
+>  drivers/video/backlight/kb3886_bl.c   |  6 +-----
+>  drivers/video/backlight/led_bl.c      |  7 +------
+>  drivers/video/backlight/lm3533_bl.c   |  8 +-------
+>  drivers/video/backlight/locomolcd.c   |  6 +-----
+>  drivers/video/backlight/lv5207lp.c    |  7 +------
+>  drivers/video/backlight/max8925_bl.c  | 13 +------------
+>  drivers/video/backlight/pwm_bl.c      |  7 +------
+>  drivers/video/backlight/qcom-wled.c   |  7 +------
+>  drivers/video/backlight/tps65217_bl.c | 10 +---------
+>  drivers/video/backlight/wm831x_bl.c   | 13 +------------
+>  19 files changed, 19 insertions(+), 150 deletions(-)
 > 
-> diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-> index 56e4580d4f55..56e51ebab740 100644
-> --- a/include/linux/backlight.h
-> +++ b/include/linux/backlight.h
-> @@ -175,6 +175,25 @@ static inline void backlight_put(struct backlight_device *bd)
->  		put_device(&bd->dev);
+> diff --git a/drivers/video/backlight/88pm860x_bl.c b/drivers/video/backlight/88pm860x_bl.c
+> index 20d96a5ac384..25e409bbb1a2 100644
+> --- a/drivers/video/backlight/88pm860x_bl.c
+> +++ b/drivers/video/backlight/88pm860x_bl.c
+> @@ -121,18 +121,7 @@ static int pm860x_backlight_set(struct backlight_device *bl, int brightness)
+>  
+>  static int pm860x_backlight_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.state & BL_CORE_SUSPENDED)
+> -		brightness = 0;
+> -
+> -	return pm860x_backlight_set(bl, brightness);
+> +	return pm860x_backlight_set(bl, backlight_get_brightness(bl));
 >  }
 >  
-> +/**
-> + * backlight_is_blank - Return true if display is expected to be blank
-> + * @bd: the backlight device
-> + *
-> + * Display is expected to be blank if any of these is true::
-> + *
-> + *   1) if power in not UNBLANK
-> + *   2) if fb_blank is not UNBLANK
-> + *   3) if state indicate BLANK or SUSPENDED
-> + *
-> + * Returns true if display is expected to be blank, false otherwise.
-> + */
-> +static inline bool backlight_is_blank(const struct backlight_device *bd)
-> +{
-> +	return bd->props.power != FB_BLANK_UNBLANK ||
-> +	       bd->props.fb_blank != FB_BLANK_UNBLANK ||
-> +	       bd->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK);
-> +}
-> +
->  extern struct backlight_device *backlight_device_register(const char *name,
->  	struct device *dev, void *devdata, const struct backlight_ops *ops,
->  	const struct backlight_properties *props);
+>  static int pm860x_backlight_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/adp5520_bl.c b/drivers/video/backlight/adp5520_bl.c
+> index 0f63f76723a5..686988c3df3a 100644
+> --- a/drivers/video/backlight/adp5520_bl.c
+> +++ b/drivers/video/backlight/adp5520_bl.c
+> @@ -65,15 +65,7 @@ static int adp5520_bl_set(struct backlight_device *bl, int brightness)
+>  
+>  static int adp5520_bl_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	return adp5520_bl_set(bl, brightness);
+> +	return adp5520_bl_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int adp5520_bl_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/adp8860_bl.c b/drivers/video/backlight/adp8860_bl.c
+> index 19968104fc47..ddc7f5f0401f 100644
+> --- a/drivers/video/backlight/adp8860_bl.c
+> +++ b/drivers/video/backlight/adp8860_bl.c
+> @@ -361,15 +361,7 @@ static int adp8860_bl_set(struct backlight_device *bl, int brightness)
+>  
+>  static int adp8860_bl_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	return adp8860_bl_set(bl, brightness);
+> +	return adp8860_bl_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int adp8860_bl_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/adp8870_bl.c b/drivers/video/backlight/adp8870_bl.c
+> index 4c0032010cfe..8b5213a39527 100644
+> --- a/drivers/video/backlight/adp8870_bl.c
+> +++ b/drivers/video/backlight/adp8870_bl.c
+> @@ -399,15 +399,7 @@ static int adp8870_bl_set(struct backlight_device *bl, int brightness)
+>  
+>  static int adp8870_bl_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	return adp8870_bl_set(bl, brightness);
+> +	return adp8870_bl_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int adp8870_bl_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/bd6107.c b/drivers/video/backlight/bd6107.c
+> index d5d5fb457e78..515184fbe33a 100644
+> --- a/drivers/video/backlight/bd6107.c
+> +++ b/drivers/video/backlight/bd6107.c
+> @@ -82,12 +82,7 @@ static int bd6107_write(struct bd6107 *bd, u8 reg, u8 data)
+>  static int bd6107_backlight_update_status(struct backlight_device *backlight)
+>  {
+>  	struct bd6107 *bd = bl_get_data(backlight);
+> -	int brightness = backlight->props.brightness;
+> -
+> -	if (backlight->props.power != FB_BLANK_UNBLANK ||
+> -	    backlight->props.fb_blank != FB_BLANK_UNBLANK ||
+> -	    backlight->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
+> -		brightness = 0;
+> +	int brightness = backlight_get_brightness(backlight);
+>  
+>  	if (brightness) {
+>  		bd6107_write(bd, BD6107_PORTSEL, BD6107_PORTSEL_LEDM(2) |
+> diff --git a/drivers/video/backlight/corgi_lcd.c b/drivers/video/backlight/corgi_lcd.c
+> index 25ef0cbd7583..33f5d80495e6 100644
+> --- a/drivers/video/backlight/corgi_lcd.c
+> +++ b/drivers/video/backlight/corgi_lcd.c
+> @@ -420,13 +420,7 @@ static int corgi_bl_set_intensity(struct corgi_lcd *lcd, int intensity)
+>  static int corgi_bl_update_status(struct backlight_device *bd)
+>  {
+>  	struct corgi_lcd *lcd = bl_get_data(bd);
+> -	int intensity = bd->props.brightness;
+> -
+> -	if (bd->props.power != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+> -
+> -	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+> +	int intensity = backlight_get_brightness(bd);
+>  
+>  	if (corgibl_flags & CORGIBL_SUSPENDED)
+>  		intensity = 0;
+> diff --git a/drivers/video/backlight/da903x_bl.c b/drivers/video/backlight/da903x_bl.c
+> index 62540e4bdedb..71f21bbc7a9f 100644
+> --- a/drivers/video/backlight/da903x_bl.c
+> +++ b/drivers/video/backlight/da903x_bl.c
+> @@ -77,18 +77,7 @@ static int da903x_backlight_set(struct backlight_device *bl, int brightness)
+>  
+>  static int da903x_backlight_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.state & BL_CORE_SUSPENDED)
+> -		brightness = 0;
+> -
+> -	return da903x_backlight_set(bl, brightness);
+> +	return da903x_backlight_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int da903x_backlight_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/ep93xx_bl.c b/drivers/video/backlight/ep93xx_bl.c
+> index 4149e0b2f83c..2387009d452d 100644
+> --- a/drivers/video/backlight/ep93xx_bl.c
+> +++ b/drivers/video/backlight/ep93xx_bl.c
+> @@ -36,13 +36,7 @@ static int ep93xxbl_set(struct backlight_device *bl, int brightness)
+>  
+>  static int ep93xxbl_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK ||
+> -	    bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	return ep93xxbl_set(bl, brightness);
+> +	return ep93xxbl_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int ep93xxbl_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/hp680_bl.c b/drivers/video/backlight/hp680_bl.c
+> index 8ea42b8d9bc8..9123c33def05 100644
+> --- a/drivers/video/backlight/hp680_bl.c
+> +++ b/drivers/video/backlight/hp680_bl.c
+> @@ -33,12 +33,8 @@ static void hp680bl_send_intensity(struct backlight_device *bd)
+>  {
+>  	unsigned long flags;
+>  	u16 v;
+> -	int intensity = bd->props.brightness;
+> +	int intensity = backlight_get_brightness(bd);
+>  
+> -	if (bd->props.power != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+> -	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+>  	if (hp680bl_suspended)
+>  		intensity = 0;
+>  
+> diff --git a/drivers/video/backlight/kb3886_bl.c b/drivers/video/backlight/kb3886_bl.c
+> index 1dfe13c18925..55794b239cff 100644
+> --- a/drivers/video/backlight/kb3886_bl.c
+> +++ b/drivers/video/backlight/kb3886_bl.c
+> @@ -87,12 +87,8 @@ static const struct dmi_system_id kb3886bl_device_table[] __initconst = {
+>  
+>  static int kb3886bl_send_intensity(struct backlight_device *bd)
+>  {
+> -	int intensity = bd->props.brightness;
+> +	int intensity = backlight_get_brightness(bd);
+>  
+> -	if (bd->props.power != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+> -	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+>  	if (kb3886bl_flags & KB3886BL_SUSPENDED)
+>  		intensity = 0;
+>  
+> diff --git a/drivers/video/backlight/led_bl.c b/drivers/video/backlight/led_bl.c
+> index 3f66549997c8..f54d256e2d54 100644
+> --- a/drivers/video/backlight/led_bl.c
+> +++ b/drivers/video/backlight/led_bl.c
+> @@ -54,12 +54,7 @@ static void led_bl_power_off(struct led_bl_data *priv)
+>  static int led_bl_update_status(struct backlight_device *bl)
+>  {
+>  	struct led_bl_data *priv = bl_get_data(bl);
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK ||
+> -	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
+> -	    bl->props.state & BL_CORE_FBBLANK)
+> -		brightness = 0;
+> +	int brightness = backlight_get_brightness(bl);
+>  
+>  	if (brightness > 0)
+>  		led_bl_set_brightness(priv, brightness);
+> diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
+> index ee09d1bd02b9..d07a2bd805fc 100644
+> --- a/drivers/video/backlight/lm3533_bl.c
+> +++ b/drivers/video/backlight/lm3533_bl.c
+> @@ -39,14 +39,8 @@ static inline int lm3533_bl_get_ctrlbank_id(struct lm3533_bl *bl)
+>  static int lm3533_bl_update_status(struct backlight_device *bd)
+>  {
+>  	struct lm3533_bl *bl = bl_get_data(bd);
+> -	int brightness = bd->props.brightness;
+>  
+> -	if (bd->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	return lm3533_ctrlbank_set_brightness(&bl->cb, (u8)brightness);
+> +	return lm3533_ctrlbank_set_brightness(&bl->cb, backlight_get_brightness(bd));
+>  }
+>  
+>  static int lm3533_bl_get_brightness(struct backlight_device *bd)
+> diff --git a/drivers/video/backlight/locomolcd.c b/drivers/video/backlight/locomolcd.c
+> index cdc02e04f89d..297ee2e1ab0b 100644
+> --- a/drivers/video/backlight/locomolcd.c
+> +++ b/drivers/video/backlight/locomolcd.c
+> @@ -111,12 +111,8 @@ static int current_intensity;
+>  
+>  static int locomolcd_set_intensity(struct backlight_device *bd)
+>  {
+> -	int intensity = bd->props.brightness;
+> +	int intensity = backlight_get_brightness(bd);
+>  
+> -	if (bd->props.power != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+> -	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
+> -		intensity = 0;
+>  	if (locomolcd_flags & LOCOMOLCD_SUSPENDED)
+>  		intensity = 0;
+>  
+> diff --git a/drivers/video/backlight/lv5207lp.c b/drivers/video/backlight/lv5207lp.c
+> index c6ad73a784e2..1842ae9a55f8 100644
+> --- a/drivers/video/backlight/lv5207lp.c
+> +++ b/drivers/video/backlight/lv5207lp.c
+> @@ -46,12 +46,7 @@ static int lv5207lp_write(struct lv5207lp *lv, u8 reg, u8 data)
+>  static int lv5207lp_backlight_update_status(struct backlight_device *backlight)
+>  {
+>  	struct lv5207lp *lv = bl_get_data(backlight);
+> -	int brightness = backlight->props.brightness;
+> -
+> -	if (backlight->props.power != FB_BLANK_UNBLANK ||
+> -	    backlight->props.fb_blank != FB_BLANK_UNBLANK ||
+> -	    backlight->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
+> -		brightness = 0;
+> +	int brightness = backlight_get_brightness(backlight);
+>  
+>  	if (brightness) {
+>  		lv5207lp_write(lv, LV5207LP_CTRL1,
+> diff --git a/drivers/video/backlight/max8925_bl.c b/drivers/video/backlight/max8925_bl.c
+> index 97cc260ff9d1..e607ec6fd4bf 100644
+> --- a/drivers/video/backlight/max8925_bl.c
+> +++ b/drivers/video/backlight/max8925_bl.c
+> @@ -64,18 +64,7 @@ static int max8925_backlight_set(struct backlight_device *bl, int brightness)
+>  
+>  static int max8925_backlight_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.state & BL_CORE_SUSPENDED)
+> -		brightness = 0;
+> -
+> -	return max8925_backlight_set(bl, brightness);
+> +	return max8925_backlight_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int max8925_backlight_get_brightness(struct backlight_device *bl)
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index 82b8d7594701..eff64db2e02e 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -108,14 +108,9 @@ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
+>  static int pwm_backlight_update_status(struct backlight_device *bl)
+>  {
+>  	struct pwm_bl_data *pb = bl_get_data(bl);
+> -	int brightness = bl->props.brightness;
+> +	int brightness = backlight_get_brightness(bl);
+>  	struct pwm_state state;
+>  
+> -	if (bl->props.power != FB_BLANK_UNBLANK ||
+> -	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
+> -	    bl->props.state & BL_CORE_FBBLANK)
+> -		brightness = 0;
+> -
+>  	if (pb->notify)
+>  		brightness = pb->notify(pb->dev, brightness);
+>  
+> diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+> index 4c8c34b99441..94d3b96244f0 100644
+> --- a/drivers/video/backlight/qcom-wled.c
+> +++ b/drivers/video/backlight/qcom-wled.c
+> @@ -433,14 +433,9 @@ static int wled5_ovp_delay(struct wled *wled)
+>  static int wled_update_status(struct backlight_device *bl)
+>  {
+>  	struct wled *wled = bl_get_data(bl);
+> -	u16 brightness = bl->props.brightness;
+> +	u16 brightness = backlight_get_brightness(bl);
+>  	int rc = 0;
+>  
+> -	if (bl->props.power != FB_BLANK_UNBLANK ||
+> -	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
+> -	    bl->props.state & BL_CORE_FBBLANK)
+> -		brightness = 0;
+> -
+>  	mutex_lock(&wled->lock);
+>  	if (brightness) {
+>  		rc = wled->wled_set_brightness(wled, brightness);
+> diff --git a/drivers/video/backlight/tps65217_bl.c b/drivers/video/backlight/tps65217_bl.c
+> index 762e3feed097..8457166f357f 100644
+> --- a/drivers/video/backlight/tps65217_bl.c
+> +++ b/drivers/video/backlight/tps65217_bl.c
+> @@ -77,15 +77,7 @@ static int tps65217_bl_update_status(struct backlight_device *bl)
+>  {
+>  	struct tps65217_bl *tps65217_bl = bl_get_data(bl);
+>  	int rc;
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.state & BL_CORE_SUSPENDED)
+> -		brightness = 0;
+> -
+> -	if ((bl->props.power != FB_BLANK_UNBLANK) ||
+> -		(bl->props.fb_blank != FB_BLANK_UNBLANK))
+> -		/* framebuffer in low power mode or blanking active */
+> -		brightness = 0;
+> +	int brightness = backlight_get_brightness(bl);
+>  
+>  	if (brightness > 0) {
+>  		rc = tps65217_reg_write(tps65217_bl->tps,
+> diff --git a/drivers/video/backlight/wm831x_bl.c b/drivers/video/backlight/wm831x_bl.c
+> index e55977d54c15..c5aaee205bdf 100644
+> --- a/drivers/video/backlight/wm831x_bl.c
+> +++ b/drivers/video/backlight/wm831x_bl.c
+> @@ -91,18 +91,7 @@ static int wm831x_backlight_set(struct backlight_device *bl, int brightness)
+>  
+>  static int wm831x_backlight_update_status(struct backlight_device *bl)
+>  {
+> -	int brightness = bl->props.brightness;
+> -
+> -	if (bl->props.power != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
+> -		brightness = 0;
+> -
+> -	if (bl->props.state & BL_CORE_SUSPENDED)
+> -		brightness = 0;
+> -
+> -	return wm831x_backlight_set(bl, brightness);
+> +	return wm831x_backlight_set(bl, backlight_get_brightness(bl));
+>  }
+>  
+>  static int wm831x_backlight_get_brightness(struct backlight_device *bl)
 > -- 
 > 2.25.1
 > 
