@@ -1,79 +1,42 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v3 04/15] pwm: lpss: Add range limit check for the
- base_unit register value
-Date: Tue, 7 Jul 2020 19:31:29 +0200
-Message-ID: <1496178b-ce39-9285-ff75-cd39bc0e9aa7@redhat.com>
-References: <20200620121758.14836-1-hdegoede@redhat.com>
- <20200620121758.14836-5-hdegoede@redhat.com>
- <20200622073554.wf3smq3tvnr6t2xy@taurus.defre.kleine-koenig.org>
- <e07a7dd6-c361-32b8-c4e7-91e022f9c21d@redhat.com>
- <20200707073424.w6vd6e4bhl56kosd@pengutronix.de>
+From: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/8] dt-bindings: pwm: samsung: Do not require
+ interrupts on Exynos SoCs
+Date: Tue, 7 Jul 2020 20:50:49 +0200
+Message-ID: <20200707185049.GA4698@kozik-lap>
+References: <20200702155149.12854-1-krzk@kernel.org>
+ <20200706094157.kyag7p5df3vo54wx@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20200707073424.w6vd6e4bhl56kosd@pengutronix.de>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20200706094157.kyag7p5df3vo54wx-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sylwester Nawrocki <snawrocki-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alim Akhtar <alim.akhtar-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Pankaj Dubey <pankaj.dubey-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+On Mon, Jul 06, 2020 at 11:41:57AM +0200, Uwe Kleine-König wrote:
+> On Thu, Jul 02, 2020 at 05:51:42PM +0200, Krzysztof Kozlowski wrote:
+> > The bindings required interrupts for all SoCs but actually only the PWM
+> > timer clocksource (for S3C/S5P SoCs) was using them.  This PWM timer
+> > clocksource driver is not used on Exynos SoCs thus the interrupts can be
+> > marked as optional.
+> > 
+> > Reported-by: Alim Akhtar <alim.akhtar-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > Signed-off-by: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> 
+> LGTM,
+> 
+> Acked-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> 
+> I'd expect it is ok to let this patch go in via whatever way the other
+> patches go. (But it's Thierry who has the authority here.)
 
-On 7/7/20 9:34 AM, Uwe Kleine-K�nig wrote:
-> On Mon, Jul 06, 2020 at 10:53:08PM +0200, Hans de Goede wrote:
->> Hi,
->>
->> Thank you for your review and sorry for the slow reply.
-> 
-> No problem for me, I didn't hold my breath :-)
->   
->>>> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
->>>> index 43b1fc634af1..80d0f9c64f9d 100644
->>>> --- a/drivers/pwm/pwm-lpss.c
->>>> +++ b/drivers/pwm/pwm-lpss.c
->>>> @@ -97,6 +97,9 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
->>>>    	freq *= base_unit_range;
->>>>    	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
->>>
->>> DIV_ROUND_CLOSEST_ULL is most probably wrong, too. But I didn't spend
->>> the time to actually confirm that.
->>
->> Yes I saw your comment elsewhere that the PWM API defines rounding
->> in a certain direction, but fixing that falls outside of this patch.
-> 
-> Yeah, sure.
-> 
->> [...]
->> I hope this helps to explain what is going on a bit.
-> 
-> I will try to make sense of that and reply to the patch directly when I
-> succeeded.
-> 
->> ###
->>
->> As for the behavior on base_unit==0 in the get_state method,
->> as mentioned above I wrote that when I did not fully understood
->> how the controller works.
->>
->> We really should never encounter this.
->>
->> But if we do then I think closest to the truth would be:
->>
->> state->period     = UINT_MAX;
->> state->duty_cycle = 0;
-> 
-> I'd say state->period = 1 & state->duty_cycle = 0 is a better
-> representation.
+This patch is independent so it can go either through PWM tree or DT
+bindings.  Usually the latter, so Rob was picking it up.
 
-But that would suggest the output is configured for an
-infinitely high output frequency, but the frequency is
-actually 0, the reason why get_state needs to treat a
-base_unit val of 0 special at all is to avoid a division
-by 0, and in math dividing by 0 gives infinite, isn't
-UINT_MAX a better way to represent infinity ?
+Thanks for ack.
 
-Regards,
-
-Hans
+Best regards,
+Krzysztof
