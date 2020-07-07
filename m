@@ -1,8 +1,8 @@
 From: Hans de Goede <hdegoede@redhat.com>
 Subject: Re: [PATCH v3 04/15] pwm: lpss: Add range limit check for the
  base_unit register value
-Date: Tue, 7 Jul 2020 10:04:58 +0200
-Message-ID: <c2143daa-cdc0-0a72-196f-f27d1677278f@redhat.com>
+Date: Tue, 7 Jul 2020 19:31:29 +0200
+Message-ID: <1496178b-ce39-9285-ff75-cd39bc0e9aa7@redhat.com>
 References: <20200620121758.14836-1-hdegoede@redhat.com>
  <20200620121758.14836-5-hdegoede@redhat.com>
  <20200622073554.wf3smq3tvnr6t2xy@taurus.defre.kleine-koenig.org>
@@ -50,24 +50,6 @@ On 7/7/20 9:34 AM, Uwe Kleine-König wrote:
 > 
 > I will try to make sense of that and reply to the patch directly when I
 > succeeded.
-
-In case it helps here is the datasheet for the LPSS PWM controller
-(somewhat hard to find if you don't know what you are looking for):
-
-https://cdrdv2.intel.com/v1/dl/getcontent/332065
-https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/atom-z8000-datasheet-vol-2.pdf
-
-The first link contains a description about how the PWM controller works in
-section 17.5  "SIO - Pulse Width Modulation (PWM)", the second link contains
-all register definitions for the SoC and is not all that interesting other
-then for verifying the existing register bits defines.
-
-Regards,
-
-Hans
-
-
-
 > 
 >> ###
 >>
@@ -84,7 +66,14 @@ Hans
 > 
 > I'd say state->period = 1 & state->duty_cycle = 0 is a better
 > representation.
-> 
-> Best regards
-> Uwe
-> 
+
+But that would suggest the output is configured for an
+infinitely high output frequency, but the frequency is
+actually 0, the reason why get_state needs to treat a
+base_unit val of 0 special at all is to avoid a division
+by 0, and in math dividing by 0 gives infinite, isn't
+UINT_MAX a better way to represent infinity ?
+
+Regards,
+
+Hans
