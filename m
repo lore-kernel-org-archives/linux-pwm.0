@@ -1,163 +1,70 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v4 02/16] ACPI / LPSS: Save Cherry Trail PWM ctx registers only once (at activation)
-Date: Wed,  8 Jul 2020 23:14:18 +0200
-Message-ID: <20200708211432.28612-3-hdegoede@redhat.com>
+Subject: [PATCH v4 03/16] pwm: lpss: Fix off by one error in base_unit math in pwm_lpss_prepare()
+Date: Wed,  8 Jul 2020 23:14:19 +0200
+Message-ID: <20200708211432.28612-4-hdegoede@redhat.com>
 References: <20200708211432.28612-1-hdegoede@redhat.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <20200708211432.28612-1-hdegoede@redhat.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The DSDTs on most Cherry Trail devices have an ugly clutch where the PWM
-controller gets turned off from the _PS3 method of the graphics-card dev:
+According to the data-sheet the way the PWM controller works is that
+each input clock-cycle the base_unit gets added to a N bit counter and
+that counter overflowing determines the PWM output frequency.
 
-            Method (_PS3, 0, Serialized)  // _PS3: Power State 3
-            {
-                ...
-                            PWMB = PWMC /* \_SB_.PCI0.GFX0.PWMC */
-                            PSAT |= 0x03
-                            Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
-                ...
-            }
+So assuming e.g. a 16 bit counter this means that if base_unit is set to 1,
+after 65535 input clock-cycles the counter has been increased from 0 to
+65535 and it will overflow on the next cycle, so it will overflow after
+every 65536 clock cycles and thus the calculations done in
+pwm_lpss_prepare() should use 65536 and not 65535.
 
-Where PSAT is the power-status register of the PWM controller.
+This commit fixes this. Note this also aligns the calculations in
+pwm_lpss_prepare() with those in pwm_lpss_get_state().
 
-Since the i915 driver will do a pwm_get on the pwm device as it uses it to
-control the LCD panel backlight, there is a device-link marking the i915
-device as a consumer of the pwm device. So that the PWM controller will
-always be suspended after the i915 driver suspends (which is the right
-thing to do). This causes the above GFX0 PS3 AML code to run before
-acpi_lpss.c calls acpi_lpss_save_ctx().
+Note this effectively reverts commit 684309e5043e ("pwm: lpss: Avoid
+potential overflow of base_unit"). The next patch in this series really
+fixes the potential overflow of the base_unit value.
 
-So on these devices the PWM controller will already be off when
-acpi_lpss_save_ctx() runs. This causes it to read/save all 1-s (0xffffffff)
-as ctx register values.
-
-When these bogus values get restored on resume the PWM controller actually
-keeps working, since most bits are reserved, but this does set bit 3 of
-the LPSS General purpose register, which for the PWM controller has the
-following function: "This bit is re-used to support 32kHz slow mode.
-Default is 19.2MHz as PWM source clock".
-
-This causes the clock of the PWM controller to switch from 19.2MHz to
-32KHz, which is a slow-down of a factor 600. Surprisingly enough so far
-there have been few bug reports about this. This is likely because the
-i915 driver was hardcoding the PWM frequency to 46 KHz, which divided
-by 600 would result in a PWM frequency of approx. 78 Hz, which mostly
-still works fine. There are some bug reports about the LCD backlight
-flickering after suspend/resume which are likely caused by this issue.
-
-But with the upcoming patch-series to finally switch the i915 drivers
-code for external PWM controllers to use the atomic API and to honor
-the PWM frequency specified in the video BIOS (VBT), this becomes a much
-bigger problem. On most cases the VBT specifies either 200 Hz or 20
-KHz as PWM frequency, which with the mentioned issue ends up being either
-1/3 Hz, where the backlight actually visible blinks on and off every 3s,
-or in 33 Hz and horrible flickering of the backlight.
-
-There are a number of possible solutions to this problem:
-
-1. Make acpi_lpss_save_ctx() run before GFX0._PS3
- Pro: Clean solution from pov of not medling with save/restore ctx code
- Con: As mentioned the current ordering is the right thing to do
- Con: Requires assymmetry in at what suspend/resume phase we do the save vs
-      restore, requiring more suspend/resume ordering hacks in already
-      convoluted acpi_lpss.c suspend/resume code.
-2. Do some sort of save once mode for the LPSS ctx
- Pro: Reasonably clean
- Con: Needs a new LPSS flag + code changes to handle the flag
-3. Detect we have failed to save the ctx registers and do not restore them
- Pro: Not PWM specific, might help with issues on other LPSS devices too
- Con: If we can get away with not restoring the ctx why bother with it at
-      all?
-4. Do not save the ctx for CHT PWM controllers
- Pro: Clean, as simple as dropping a flag?
- Con: Not so simple as dropping a flag, needs a new flag to ensure that
-      we still do lpss_deassert_reset() on device activation.
-5. Make the pwm-lpss code fixup the LPSS-context registers
- Pro: Keeps acpi_lpss.c code clean
- Con: Moves knowledge of LPSS-context into the pwm-lpss.c code
-
-1 and 5 both do not seem to be a desirable way forward.
-
-3 and 4 seem ok, but they both assume that restoring the LPSS-context
-registers is not necessary. I have done a couple of test and those do
-show that restoring the LPSS-context indeed does not seem to be necessary
-on devices using s2idle suspend (and successfully reaching S0i3). But I
-have no hardware to test deep / S3 suspend. So I'm not sure that not
-restoring the context is safe.
-
-That leaves solution 2, which is about as simple / clean as 3 and 4,
-so this commit fixes the described problem by implementing a new
-LPSS_SAVE_CTX_ONCE flag and setting that for the CHT PWM controllers.
-
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 684309e5043e ("pwm: lpss: Avoid potential overflow of base_unit")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v2:
-- Move #define LPSS_SAVE_CTX_ONCE define to group it with LPSS_SAVE_CTX
+Changes in v3:
+- Add Fixes tag
+- Add Reviewed-by: Andy Shevchenko tag
 ---
- drivers/acpi/acpi_lpss.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-lpss.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index 67892fc0b822..a8d7d83ac761 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -67,7 +67,15 @@ ACPI_MODULE_NAME("acpi_lpss");
- #define LPSS_CLK_DIVIDER		BIT(2)
- #define LPSS_LTR			BIT(3)
- #define LPSS_SAVE_CTX			BIT(4)
--#define LPSS_NO_D3_DELAY		BIT(5)
-+/*
-+ * For some devices the DSDT AML code for another device turns off the device
-+ * before our suspend handler runs, causing us to read/save all 1-s (0xffffffff)
-+ * as ctx register values.
-+ * Luckily these devices always use the same ctx register values, so we can
-+ * work around this by saving the ctx registers once on activation.
-+ */
-+#define LPSS_SAVE_CTX_ONCE		BIT(5)
-+#define LPSS_NO_D3_DELAY		BIT(6)
- 
- struct lpss_private_data;
- 
-@@ -254,7 +262,7 @@ static const struct lpss_device_desc byt_pwm_dev_desc = {
- };
- 
- static const struct lpss_device_desc bsw_pwm_dev_desc = {
--	.flags = LPSS_SAVE_CTX | LPSS_NO_D3_DELAY,
-+	.flags = LPSS_SAVE_CTX_ONCE | LPSS_NO_D3_DELAY,
- 	.prv_offset = 0x800,
- 	.setup = bsw_pwm_setup,
- 	.resume_from_noirq = true,
-@@ -885,9 +893,14 @@ static int acpi_lpss_activate(struct device *dev)
- 	 * we have to deassert reset line to be sure that ->probe() will
- 	 * recognize the device.
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 9d965ffe66d1..43b1fc634af1 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -93,7 +93,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	 * The equation is:
+ 	 * base_unit = round(base_unit_range * freq / c)
  	 */
--	if (pdata->dev_desc->flags & LPSS_SAVE_CTX)
-+	if (pdata->dev_desc->flags & (LPSS_SAVE_CTX | LPSS_SAVE_CTX_ONCE))
- 		lpss_deassert_reset(pdata);
+-	base_unit_range = BIT(lpwm->info->base_unit_bits) - 1;
++	base_unit_range = BIT(lpwm->info->base_unit_bits);
+ 	freq *= base_unit_range;
  
-+#ifdef CONFIG_PM
-+	if (pdata->dev_desc->flags & LPSS_SAVE_CTX_ONCE)
-+		acpi_lpss_save_ctx(dev, pdata);
-+#endif
-+
- 	return 0;
- }
+ 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
+@@ -104,8 +104,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
  
-@@ -1031,7 +1044,7 @@ static int acpi_lpss_resume(struct device *dev)
+ 	orig_ctrl = ctrl = pwm_lpss_read(pwm);
+ 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
+-	ctrl &= ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
+-	base_unit &= base_unit_range;
++	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
++	base_unit &= (base_unit_range - 1);
+ 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+ 	ctrl |= on_time_div;
  
- 	acpi_lpss_d3_to_d0_delay(pdata);
- 
--	if (pdata->dev_desc->flags & LPSS_SAVE_CTX)
-+	if (pdata->dev_desc->flags & (LPSS_SAVE_CTX | LPSS_SAVE_CTX_ONCE))
- 		acpi_lpss_restore_ctx(dev, pdata);
- 
- 	return 0;
 -- 
 2.26.2
