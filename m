@@ -1,43 +1,61 @@
-From: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
-Subject: Re: [PATCH v5 13/13] arm64: dts: freescale: sl28: enable fan support
-Date: Wed, 08 Jul 2020 09:56:13 +0200
-Message-ID: <d9a53ed9254a136a7bc161c2a93045b0@walle.cc>
+From: Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH v5 05/13] irqchip: add sl28cpld interrupt controller
+ support
+Date: Wed, 08 Jul 2020 10:37:39 +0100
+Message-ID: <30c8a3b40003f8805ba8ebacd328583c@kernel.org>
 References: <20200706175353.16404-1-michael@walle.cc>
- <20200706175353.16404-14-michael@walle.cc>
- <CACRpkdaPO7CGNrxmjL5QH1cxP5wqku1oMtQaQgJfeKiKqiGAOg@mail.gmail.com>
+ <20200706175353.16404-6-michael@walle.cc>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CACRpkdaPO7CGNrxmjL5QH1cxP5wqku1oMtQaQgJfeKiKqiGAOg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: "open list:GPIO SUBSYSTEM" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hwmon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LINUXWATCHDOG <linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Wim Van Sebroeck <wim-Q8PRGTgFL9WUCWQAtAn6Ix2eb7JE58TQ@public.gmane.org>, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Li Yang <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20200706175353.16404-6-michael@walle.cc>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Michael Walle <michael@walle.cc>
+Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Mark Brown <broonie@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Linus,
-
-Am 2020-07-08 09:39, schrieb Linus Walleij:
-> just a drive-by-comment:
+On 2020-07-06 18:53, Michael Walle wrote:
+> Add support for the interrupt controller inside the sl28 CPLD 
+> management
+> controller.
 > 
-> On Mon, Jul 6, 2020 at 7:57 PM Michael Walle <michael-QKn5cuLxLXY@public.gmane.org> wrote:
+> The interrupt controller can handle at most 8 interrupts and is really
+> simplistic and consists only of an interrupt mask and an interrupt
+> pending register.
 > 
->> Add a pwm-fan mapped to the PWM channel 0 which is connected to the
->> fan connector of the carrier.
->> 
->> Signed-off-by: Michael Walle <michael-QKn5cuLxLXY@public.gmane.org>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+> Changes since v4:
+>  - update copyright year
+>  - don't use "int irq" instead of "unsigne int irq", because
+>    platform_get_irq() might return a negative error code. Found by 
+> "kernel
+>    test robot <lkp@intel.com>
+>  - remove comma in terminator line of the compatible strings list,
+>    suggested by Andy
+>  - use newer devm_regmap_add_irq_chip_fwnode()
+>  - don't use KBUID_MODNAME, suggested by Andy
+>  - remove the platform device table
 > 
-> If you have a cooling device like this, do you also have a temperature
-> sensor? In that case it makes sense to add a thermal zone and a
-> policy, such as I did for a device in
-> 6e97f0aaca4ca778905dd1dc667cbf379f4cae15
+> Changes since v3:
+>  - see cover letter
+> 
+>  drivers/irqchip/Kconfig        |  8 +++
+>  drivers/irqchip/Makefile       |  1 +
+>  drivers/irqchip/irq-sl28cpld.c | 96 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 105 insertions(+)
+>  create mode 100644 drivers/irqchip/irq-sl28cpld.c
 
-Yep, the CPU and DDR controller have temperatur sensors and there are
-already thermal zones for them. We have the fan linked to the policies
-in our vendor DTS overlay. For now I didn't want to include that here,
-mainly because there are no labels in the fsl-ls1028a.dtsi for the
-thermal zone/cooling maps/trips. But this is still on my TODO, when
-this series finally make it into the kernel ;)
+Acked-by: Marc Zyngier <maz@kernel.org>
 
--michael
+Given the dependency on the MFD patches, I assume this will
+be routed to that subsystem. Please let me know if you want
+it to be handled differently.
+
+Thanks,
+
+         M.
+-- 
+Jazz is not dead. It just smells funny...
