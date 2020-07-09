@@ -1,127 +1,105 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v4 05/16] pwm: lpss: Use pwm_lpss_apply() when restoring
- state on resume
-Date: Thu, 9 Jul 2020 15:48:12 +0200
-Message-ID: <a003c79c-abe5-b812-1da8-3e67bfc31eb3@redhat.com>
+From: Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v4 00/15] acpi/pwm/i915: Convert pwm-crc and i915
+ driver's PWM code to use the atomic PWM API
+Date: Thu, 9 Jul 2020 16:14:07 +0200
+Message-ID: <20200709141407.GA226971@ravnborg.org>
 References: <20200708211432.28612-1-hdegoede@redhat.com>
- <20200708211432.28612-6-hdegoede@redhat.com>
- <20200709133609.GY3703480@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20200709133609.GY3703480@smile.fi.intel.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20200708211432.28612-1-hdegoede@redhat.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Hi Hans.
 
-On 7/9/20 3:36 PM, Andy Shevchenko wrote:
-> On Wed, Jul 08, 2020 at 11:14:21PM +0200, Hans de Goede wrote:
->> Before this commit a suspend + resume of the LPSS PWM controller
->> would result in the controller being reset to its defaults of
->> output-freq = clock/256, duty-cycle=100%, until someone changes
->> to the output-freq and/or duty-cycle are made.
->>
->> This problem has been masked so far because the main consumer
->> (the i915 driver) was always making duty-cycle changes on resume.
->> With the conversion of the i915 driver to the atomic PWM API the
->> driver now only disables/enables the PWM on suspend/resume leaving
->> the output-freq and duty as is, triggering this problem.
->>
->> The LPSS PWM controller has a mechanism where the ctrl register value
->> and the actual base-unit and on-time-div values used are latched. When
->> software sets the SW_UPDATE bit then at the end of the current PWM cycle,
->> the new values from the ctrl-register will be latched into the actual
->> registers, and the SW_UPDATE bit will be cleared.
->>
->> The problem is that before this commit our suspend/resume handling
->> consisted of simply saving the PWM ctrl register on suspend and
->> restoring it on resume, without setting the PWM_SW_UPDATE bit.
->> When the controller has lost its state over a suspend/resume and thus
->> has been reset to the defaults, just restoring the register is not
->> enough. We must also set the SW_UPDATE bit to tell the controller to
->> latch the restored values into the actual registers.
->>
->> Fixing this problem is not as simple as just or-ing in the value which
->> is being restored with SW_UPDATE. If the PWM was enabled before we must
->> write the new settings + PWM_SW_UPDATE before setting PWM_ENABLE.
->> We must also wait for PWM_SW_UPDATE to become 0 again and depending on the
->> model we must do this either before or after the setting of PWM_ENABLE.
->>
->> All the necessary logic for doing this is already present inside
->> pwm_lpss_apply(), so instead of duplicating this inside the resume
->> handler, this commit makes the resume handler use pwm_lpss_apply() to
->> restore the settings when necessary. This fixes the output-freq and
->> duty-cycle being reset to their defaults on resume.
+On Wed, Jul 08, 2020 at 11:14:16PM +0200, Hans de Goede wrote:
+> Hi All,
 > 
-> ...
-> 
->> +static int __pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			    const struct pwm_state *state, bool from_resume)
->>   {
->>   	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
->>   	int ret;
->>   
->>   	if (state->enabled) {
->>   		if (!pwm_is_enabled(pwm)) {
->> -			pm_runtime_get_sync(chip->dev);
->> +			if (!from_resume)
->> +				pm_runtime_get_sync(chip->dev);
->> +
->>   			ret = pwm_lpss_is_updating(pwm);
->>   			if (ret) {
->> -				pm_runtime_put(chip->dev);
->> +				if (!from_resume)
->> +					pm_runtime_put(chip->dev);
->> +
->>   				return ret;
->>   			}
->>   			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
->>   			pwm_lpss_cond_enable(pwm, lpwm->info->bypass == false);
->>   			ret = pwm_lpss_wait_for_update(pwm);
->>   			if (ret) {
->> -				pm_runtime_put(chip->dev);
->> +				if (!from_resume)
->> +					pm_runtime_put(chip->dev);
->> +
->>   				return ret;
->>   			}
->>   			pwm_lpss_cond_enable(pwm, lpwm->info->bypass == true);
-> 
->>   		}
->>   	} else if (pwm_is_enabled(pwm)) {
->>   		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
->> -		pm_runtime_put(chip->dev);
->> +
->> +		if (!from_resume)
->> +			pm_runtime_put(chip->dev);
->>   	}
-> 
-> I'm wondering if splitting more will make this look better, like:
-> 
-> 	...
-> 	if (from_resume) {
-> 		ret = pwm_lpss_prepare_enable(...); // whatever name you think suits better
-> 	} else {
-> 		pm_runtime_get_sync(...);
-> 		ret = pwm_lpss_prepare_enable(...);
-> 		if (ret)
-> 			pm_runtime_put(...);
-> 	}
-> 	...
-> 
+> Here is v4 of my patch series converting the i915 driver's code for
+> controlling the panel's backlight with an external PWM controller to
+> use the atomic PWM API. See below for the changelog.
 
-That is a good idea, I like it. We already had multiple pm_runtime_put() calls
-before for the error handlig and this patch did not make it any better.
+Why is it that i915 cannot use the pwm_bl driver for backlight?
+I have not studied the code - just wondering.
 
-So adding a pwm_lpss_prepare_enable() helper (the name works for)
-will also cleanup the original code. I will add this helper as
-a separate preparation patch for this one in v5 of the patch-set.
+	Sam
 
-Regards,
-
-Hans
+> 
+> Initially the plan was for this series to consist of 2 parts:
+> 1. convert the pwm-crc driver to support the atomic PWM API and
+> 2. convert the i915 driver's PWM code to use the atomic PWM API.
+> 
+> But during testing I've found a number of bugs in the pwm-lpss and I
+> found that the acpi_lpss code needs some special handling because of
+> some ugliness found in most Cherry Trail DSDTs.
+> 
+> So now this series has grown somewhat large and consists of 4 parts:
+> 
+> 1. acpi_lpss fixes workarounds for Cherry Trail DSTD nastiness
+> 2. various fixes to the pwm-lpss driver
+> 3. convert the pwm-crc driver to support the atomic PWM API and
+> 4. convert the i915 driver's PWM code to use the atomic PWM API
+> 
+> The involved acpi_lpss and pwm drivers do not see a whole lot of churn,
+> so the plan is to merge this all through drm-intel-next-queued (dinq)
+> once all the patches are reviewed / have acks.
+> 
+> In v4 the ACPI patches have been Acked by Rafael and the i915 patches
+> have been acked by Jani. So that just leaves the PWM patches.
+> 
+> Uwe can I get your ok / ack for merging this through the dinq branch
+> once you have acked al the PWM patches ?
+> 
+> This series has been tested (and re-tested after adding various bug-fixes)
+> extensively. It has been tested on the following devices:
+> 
+> -Asus T100TA  BYT + CRC-PMIC PWM
+> -Toshiba WT8-A  BYT + CRC-PMIC PWM
+> -Thundersoft TS178 BYT + CRC-PMIC PWM, inverse PWM
+> -Asus T100HA  CHT + CRC-PMIC PWM
+> -Terra Pad 1061  BYT + LPSS PWM
+> -Trekstor Twin 10.1 BYT + LPSS PWM
+> -Asus T101HA  CHT + CRC-PMIC PWM
+> -GPD Pocket  CHT + CRC-PMIC PWM
+> 
+> Changelog:
+> 
+> Changes in v2:
+> - Fix coverletter subject
+> - Drop accidentally included debugging patch
+> - "[PATCH v3 02/15] ACPI / LPSS: Save Cherry Trail PWM ctx registers only once (
+>   - Move #define LPSS_SAVE_CTX_ONCE define to group it with LPSS_SAVE_CTX
+> 
+> Changes in v3:
+> - "[PATCH v3 04/15] pwm: lpss: Add range limit check for the base_unit register value"
+>   - Use base_unit_range - 1 as maximum value for the clamp()
+> - "[PATCH v3 05/15] pwm: lpss: Use pwm_lpss_apply() when restoring state on resume"
+>   - This replaces the "pwm: lpss: Set SW_UPDATE bit when enabling the PWM"
+>     patch from previous versions of this patch-set, which really was a hack
+>     working around the resume issue which this patch fixes properly.
+> - PATCH v3 6 - 11 pwm-crc changes:
+>   - Various small changes resulting from the reviews by Andy and Uwe,
+>     including some refactoring of the patches to reduce the amount of churn
+>     in the patch-set
+> 
+> Changes in v4:
+> - "[PATCH v4 06/16] pwm: lpss: Correct get_state result for base_unit == 0"
+>   - This is a new patch in v4 of this patchset
+> - "[PATCH v4 12/16] pwm: crc: Implement get_state() method"
+>   - Use DIV_ROUND_UP when calculating the period and duty_cycle values
+> - "[PATCH v4 16/16] drm/i915: panel: Use atomic PWM API for devs with an external PWM controller"
+>   - Add a note to the commit message about the changes in pwm_disable_backlight()
+>   - Use the pwm_set/get_relative_duty_cycle() helpers
+> 
+> Regards,
+> 
+> Hans
+> 
+> _______________________________________________
+> dri-devel mailing list
+> dri-devel@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/dri-devel
