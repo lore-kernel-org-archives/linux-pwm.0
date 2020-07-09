@@ -1,67 +1,63 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v4 06/16] pwm: lpss: Correct get_state result for
- base_unit == 0
-Date: Thu, 9 Jul 2020 17:47:59 +0200
-Message-ID: <af7158c5-02bb-38ce-4b22-e469079dcccf@redhat.com>
-References: <20200708211432.28612-1-hdegoede@redhat.com>
- <20200708211432.28612-7-hdegoede@redhat.com>
- <20200709145013.GA3703480@smile.fi.intel.com>
+From: Paul Barker <pbarker@konsulko.com>
+Subject: Re: [PATCH] ARM: dts: imx: default to #pwm-cells = <3> in the SoC
+ dtsi files
+Date: Thu, 9 Jul 2020 18:30:31 +0100
+Message-ID: <CAM9ZRVt8V9mPwAtQ3pvPqGc-Zuxs-SkcoSNk49JipwvERByGdw@mail.gmail.com>
+References: <20200709144527.23528-1-uwe@kleine-koenig.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20200709145013.GA3703480@smile.fi.intel.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726615AbgGIRan (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Jul 2020 13:30:43 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB18C08C5CE
+        for <linux-pwm@vger.kernel.org>; Thu,  9 Jul 2020 10:30:43 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id h13so2274810otr.0
+        for <linux-pwm@vger.kernel.org>; Thu, 09 Jul 2020 10:30:43 -0700 (PDT)
+In-Reply-To: <20200709144527.23528-1-uwe@kleine-koenig.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
+Cc: Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Matt Ranostay <matt.ranostay@konsulko.com>, Pantelis Antoniou <pantelis.antoniou@konsulko.com>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 
-Hi,
+On Thu, 9 Jul 2020 at 15:45, Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org> =
+wrote:
+>
+> From: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+>
+> The imx-pwm driver supports 3 cells and this is the more flexible setting=
+.
+> So use it by default and overwrite it back to two for the files that
+> reference the PWMs with just 2 cells to minimize changes.
+>
+> This allows to drop explicit setting to 3 cells for the boards that alrea=
+dy
+> depend on this.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+> Hello,
+>
+> this picks up an old mail thread where Paul Barker started to work on
+> this in March. He got some feedback but didn't come up with a new
+> approach.
+>
+> Compared to his patch (Message-Id:
+> 20200309145558.16098-1-pbarker@konsulko.com) I overwrite back to
+> #pwm-cells =3D <2> in the board .dts files to minimize changes there.
+>
+> Best regards
+> Uwe
 
-On 7/9/20 4:50 PM, Andy Shevchenko wrote:
-> On Wed, Jul 08, 2020 at 11:14:22PM +0200, Hans de Goede wrote:
->> The datasheet specifies that programming the base_unit part of the
->> ctrl register to 0 results in a contineous low signal.
->>
->> Adjust the get_state method to reflect this by setting pwm_state.period
->> to 1 and duty_cycle to 0.
-> 
-> ...
-> 
->> +	if (freq == 0) {
->> +		/* In this case the PWM outputs a continous low signal */
-> 
->> +		state->period = 1;
-> 
-> I guess this should be something like half of the range (so base unit calc
-> will give 128). Because with period = 1 (too small) it will give too small
-> base unit (if apply) and as a result we get high frequency pulses.
+Thanks for picking this up Uwe, I must admit it fell off my todo list
+due to the coronavirus situation.
 
-You are right, that if after this the user only changes the duty-cycle
-things will work very poorly, we will end up with a base_unit value of
-e.g 65535 and then have almost no duty-cycle resolution at all.
+Is there a reason why imx23.dtsi, imx28.dtsi and imx51.dtsi have not
+been changed?
 
-How about using a value here which results in a base_unit value of
-256 (for 16 bit base-unit registers), that is the highest frequency we
-can do while still having full duty-cycle resolution and it also
-is the power-on-reset value, so using a higher period which translates
-to a base_unit value of 256 (the por calue) seems like a sensible thing to do.
-
-Uwe what do you think about this?
-
-Regards,
-
-Hans
-
-
-
-> 
->> +		state->duty_cycle = 0;
->> +	} else {
->>   		state->period = NSEC_PER_SEC / (unsigned long)freq;
->> +		on_time_div *= state->period;
->> +		do_div(on_time_div, 255);
->> +		state->duty_cycle = on_time_div;
->> +	}
-> 
+--=20
+Paul Barker
+Konsulko Group
