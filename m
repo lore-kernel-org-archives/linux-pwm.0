@@ -1,51 +1,82 @@
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH] Revert "pwm: jz4740: Enhance precision in calculation of duty cycle"
-Date: Fri, 10 Jul 2020 09:24:45 +0200
-Message-ID: <9335b924318fb36a882d5b46e8e9f2a10bb24daa.1594365885.git.hns@goldelico.com>
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] Revert "pwm: jz4740: Enhance precision in calculation of
+ duty cycle"
+Date: Fri, 10 Jul 2020 12:18:27 +0200
+Message-ID: <20200710101827.rkaxju7msco4mez7@pengutronix.de>
+References: <9335b924318fb36a882d5b46e8e9f2a10bb24daa.1594365885.git.hns@goldelico.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
-Sender: linux-mips-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org, linux-mips@vger.kernel.org, tsbogend@alpha.franken.de, "H. Nikolaus Schaller" <hns@goldelico.com>, stable@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="65yw67g3d563xquq"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <9335b924318fb36a882d5b46e8e9f2a10bb24daa.1594365885.git.hns@goldelico.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Paul Cercueil <paul@crapouillou.net>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org, linux-mips@vger.kernel.org, tsbogend@alpha.franken.de, stable@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-This reverts commit a6030d71e62d3e0e270bf3b7fb48d32a636732db.
 
-which was applied to v5.4.49. This ends in a compile issue:
+--65yw67g3d563xquq
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  CC      drivers/pwm/pwm-jz4740.o - due to target missing
-drivers/pwm/pwm-jz4740.c: In function 'jz4740_pwm_apply':
-drivers/pwm/pwm-jz4740.c:111:28: error: 'rate' undeclared (first use in this function)
-  tmp = (unsigned long long)rate * state->duty_cycle;
-                            ^
-drivers/pwm/pwm-jz4740.c:111:28: note: each undeclared identifier is reported only once for each function it appears in
-make[4]: *** [drivers/pwm/pwm-jz4740.o] Error 1
+On Fri, Jul 10, 2020 at 09:24:45AM +0200, H. Nikolaus Schaller wrote:
+> This reverts commit a6030d71e62d3e0e270bf3b7fb48d32a636732db.
+>=20
+> which was applied to v5.4.49. This ends in a compile issue:
+>=20
+>   CC      drivers/pwm/pwm-jz4740.o - due to target missing
+> drivers/pwm/pwm-jz4740.c: In function 'jz4740_pwm_apply':
+> drivers/pwm/pwm-jz4740.c:111:28: error: 'rate' undeclared (first use in t=
+his function)
+>   tmp =3D (unsigned long long)rate * state->duty_cycle;
+>                             ^
+> drivers/pwm/pwm-jz4740.c:111:28: note: each undeclared identifier is repo=
+rted only once for each function it appears in
+> make[4]: *** [drivers/pwm/pwm-jz4740.o] Error 1
+>=20
+> v5.5 and later include the required additional patches to define
+> the rate variable.
 
-v5.5 and later include the required additional patches to define
-the rate variable.
+So 9017dc4fbd59 ("pwm: jz4740: Enhance precision in calculation of duty
+cycle") which is in v5.8-rc1 was backported to stable:
 
-Fixes: a6030d71e62d ("pwm: jz4740: Enhance precision in calculation of duty cycle")
-Cc: stable@vger.kernel.org # v5.4.49
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/pwm/pwm-jz4740.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+	v5.4.49 (as commit a6030d71e62d3e0e270bf3b7fb48d32a636732db)
+	v5.7.5 (as commit e0e71bb7852142a18fb829da419013bb6da9ed3f)
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index d0f5c69930d0d9..9d78cc21cb1279 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -108,8 +108,8 @@ static int jz4740_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (prescaler == 6)
- 		return -EINVAL;
- 
--	tmp = (unsigned long long)rate * state->duty_cycle;
--	do_div(tmp, NSEC_PER_SEC);
-+	tmp = (unsigned long long)period * state->duty_cycle;
-+	do_div(tmp, state->period);
- 	duty = period - tmp;
- 
- 	if (duty >= period)
--- 
-2.26.2
+However 9017dc4fbd59 depends on
+
+	ce1f9cece057 ("pwm: jz4740: Use clocks from TCU driver")
+
+(which in mainline comes before 9017dc4fbd59 as it's included in
+v5.7-rc1).
+
+As ce1f9cece057 was not backported to v5.4.x, this must either be done, or
+we need to patch that. Will reply with a suggested change.
+
+In v5.7.x there is no problem.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--65yw67g3d563xquq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8IQHAACgkQwfwUeK3K
+7AlRlwf/Z1pKFJvwRVQyzLY8FCiUzLmHIEVQE6wSIUDz/od9UhdJK1PNIaN4KSvw
+++xOPZLBfzBlkFldFFJSqxfUB5s6ZsdUo+hC/jjEiumJHlJ0wOb96rrx0KS6IuqZ
+0Q0Xdk4ZY55ztqVAI1eESF006kfT+JL5uaAMXIvA2CTgiHg//j4es99/0aro8p/7
+W3anw6UAZ4U3Zk7hDuck2C7OkJ83+uBQwAb/A+nk4dSLZcE/icbQvfI7uluhLbK2
+hfcIc4PJUtu/xE8xKbVLdwN5kV0FNKy7H3cFrVQJ1JtO00FfTpJhrKZ1ux1W9tCX
+PBUMkBeNQ5VR9HbCoGLo0koT7/Ctmg==
+=UCTX
+-----END PGP SIGNATURE-----
+
+--65yw67g3d563xquq--
