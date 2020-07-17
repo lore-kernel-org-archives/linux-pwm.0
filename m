@@ -1,203 +1,49 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v5 16/16] drm/i915: panel: Use atomic PWM API
- for devs with an external PWM controller
-Date: Fri, 17 Jul 2020 15:44:30 +0200
-Message-ID: <20200717134430.127575-2-hdegoede@redhat.com>
-References: <20200717133753.127282-1-hdegoede@redhat.com>
- <20200717134430.127575-1-hdegoede@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20200717134430.127575-1-hdegoede@redhat.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Scott Branden <scott.branden@broadcom.com>
+Subject: [PATCH] pwm: bcm-iproc: handle clk_get_rate() return
+Date: Fri, 17 Jul 2020 10:07:43 -0700
+Message-ID: <20200717170743.25466-1-scott.branden@broadcom.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726820AbgGQRH5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jul 2020 13:07:57 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED37C0619D3
+        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 10:07:56 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id f18so18242913wml.3
+        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 10:07:56 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>, Scott Branden <scott.branden@broadcom.com>
 
-Now that the PWM drivers which we use have been converted to the atomic
-PWM API, we can move the i915 panel code over to using the atomic PWM API.
+From: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
 
-The removes a long standing FIXME and this removes a flicker where
-the backlight brightness would jump to 100% when i915 loads even if
-using the fastset path.
+Handle clk_get_rate() returning <= 0 condition to avoid
+possible division by zero.
 
-Note that this commit also simplifies pwm_disable_backlight(), by dropping
-the intel_panel_actually_set_backlight(..., 0) call. This call sets the
-PWM to 0% duty-cycle. I believe that this call was only present as a
-workaround for a bug in the pwm-crc.c driver where it failed to clear the
-PWM_OUTPUT_ENABLE bit. This is fixed by an earlier patch in this series.
-
-After the dropping of this workaround, the usleep call, which seems
-unnecessary to begin with, has no useful effect anymore, so drop that too.
-
-Acked-by: Jani Nikula <jani.nikula@intel.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: daa5abc41c80 ("pwm: Add support for Broadcom iProc PWM controller")
+Signed-off-by: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+Signed-off-by: Scott Branden <scott.branden@broadcom.com>
 ---
-Changes in v4:
-- Add a note to the commit message about the dropping of the
-  intel_panel_actually_set_backlight() and usleep() calls from
-  pwm_disable_backlight()
-- Use the pwm_set/get_relative_duty_cycle() helpers instead of using DIY code
-  for this
----
- .../drm/i915/display/intel_display_types.h    |  3 +-
- drivers/gpu/drm/i915/display/intel_panel.c    | 71 +++++++++----------
- 2 files changed, 34 insertions(+), 40 deletions(-)
+ drivers/pwm/pwm-bcm-iproc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_display_types.h b/drivers/gpu/drm/i915/display/intel_display_types.h
-index de32f9efb120..4bd9981e70a1 100644
---- a/drivers/gpu/drm/i915/display/intel_display_types.h
-+++ b/drivers/gpu/drm/i915/display/intel_display_types.h
-@@ -28,6 +28,7 @@
+diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
+index 1f829edd8ee7..72a8607b6c8d 100644
+--- a/drivers/pwm/pwm-bcm-iproc.c
++++ b/drivers/pwm/pwm-bcm-iproc.c
+@@ -86,6 +86,11 @@ static void iproc_pwmc_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	u32 value, prescale;
  
- #include <linux/async.h>
- #include <linux/i2c.h>
-+#include <linux/pwm.h>
- #include <linux/sched/clock.h>
+ 	rate = clk_get_rate(ip->clk);
++	if (rate == 0) {
++		state->period = 0;
++		state->duty_cycle = 0;
++		return;
++	}
  
- #include <drm/drm_atomic.h>
-@@ -223,7 +224,7 @@ struct intel_panel {
- 		bool util_pin_active_low;	/* bxt+ */
- 		u8 controller;		/* bxt+ only */
- 		struct pwm_device *pwm;
--		int pwm_period_ns;
-+		struct pwm_state pwm_state;
+ 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
  
- 		/* DPCD backlight */
- 		u8 pwmgen_bit_count;
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index cb28b9908ca4..3d97267c8238 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -592,10 +592,10 @@ static u32 bxt_get_backlight(struct intel_connector *connector)
- static u32 pwm_get_backlight(struct intel_connector *connector)
- {
- 	struct intel_panel *panel = &connector->panel;
--	int duty_ns;
-+	struct pwm_state state;
- 
--	duty_ns = pwm_get_duty_cycle(panel->backlight.pwm);
--	return DIV_ROUND_UP(duty_ns * 100, panel->backlight.pwm_period_ns);
-+	pwm_get_state(panel->backlight.pwm, &state);
-+	return pwm_get_relative_duty_cycle(&state, 100);
- }
- 
- static void lpt_set_backlight(const struct drm_connector_state *conn_state, u32 level)
-@@ -669,10 +669,9 @@ static void bxt_set_backlight(const struct drm_connector_state *conn_state, u32
- static void pwm_set_backlight(const struct drm_connector_state *conn_state, u32 level)
- {
- 	struct intel_panel *panel = &to_intel_connector(conn_state->connector)->panel;
--	int duty_ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
- 
--	pwm_config(panel->backlight.pwm, duty_ns,
--		   panel->backlight.pwm_period_ns);
-+	pwm_set_relative_duty_cycle(&panel->backlight.pwm_state, level, 100);
-+	pwm_apply_state(panel->backlight.pwm, &panel->backlight.pwm_state);
- }
- 
- static void
-@@ -841,10 +840,8 @@ static void pwm_disable_backlight(const struct drm_connector_state *old_conn_sta
- 	struct intel_connector *connector = to_intel_connector(old_conn_state->connector);
- 	struct intel_panel *panel = &connector->panel;
- 
--	/* Disable the backlight */
--	intel_panel_actually_set_backlight(old_conn_state, 0);
--	usleep_range(2000, 3000);
--	pwm_disable(panel->backlight.pwm);
-+	panel->backlight.pwm_state.enabled = false;
-+	pwm_apply_state(panel->backlight.pwm, &panel->backlight.pwm_state);
- }
- 
- void intel_panel_disable_backlight(const struct drm_connector_state *old_conn_state)
-@@ -1176,9 +1173,12 @@ static void pwm_enable_backlight(const struct intel_crtc_state *crtc_state,
- {
- 	struct intel_connector *connector = to_intel_connector(conn_state->connector);
- 	struct intel_panel *panel = &connector->panel;
-+	int level = panel->backlight.level;
- 
--	pwm_enable(panel->backlight.pwm);
--	intel_panel_actually_set_backlight(conn_state, panel->backlight.level);
-+	level = intel_panel_compute_brightness(connector, level);
-+	pwm_set_relative_duty_cycle(&panel->backlight.pwm_state, level, 100);
-+	panel->backlight.pwm_state.enabled = true;
-+	pwm_apply_state(panel->backlight.pwm, &panel->backlight.pwm_state);
- }
- 
- static void __intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
-@@ -1897,8 +1897,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 	struct drm_i915_private *dev_priv = to_i915(dev);
- 	struct intel_panel *panel = &connector->panel;
- 	const char *desc;
--	u32 level, ns;
--	int retval;
-+	u32 level;
- 
- 	/* Get the right PWM chip for DSI backlight according to VBT */
- 	if (dev_priv->vbt.dsi.config->pwm_blc == PPS_BLC_PMIC) {
-@@ -1916,36 +1915,30 @@ static int pwm_setup_backlight(struct intel_connector *connector,
- 		return -ENODEV;
- 	}
- 
--	panel->backlight.pwm_period_ns = NSEC_PER_SEC /
--					 get_vbt_pwm_freq(dev_priv);
--
--	/*
--	 * FIXME: pwm_apply_args() should be removed when switching to
--	 * the atomic PWM API.
--	 */
--	pwm_apply_args(panel->backlight.pwm);
--
- 	panel->backlight.max = 100; /* 100% */
- 	panel->backlight.min = get_backlight_min_vbt(connector);
--	level = intel_panel_compute_brightness(connector, 100);
--	ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
- 
--	retval = pwm_config(panel->backlight.pwm, ns,
--			    panel->backlight.pwm_period_ns);
--	if (retval < 0) {
--		drm_err(&dev_priv->drm, "Failed to configure the pwm chip\n");
--		pwm_put(panel->backlight.pwm);
--		panel->backlight.pwm = NULL;
--		return retval;
-+	if (pwm_is_enabled(panel->backlight.pwm) &&
-+	    pwm_get_period(panel->backlight.pwm)) {
-+		/* PWM is already enabled, use existing settings */
-+		pwm_get_state(panel->backlight.pwm, &panel->backlight.pwm_state);
-+
-+		level = pwm_get_relative_duty_cycle(&panel->backlight.pwm_state,
-+						    100);
-+		level = intel_panel_compute_brightness(connector, level);
-+		panel->backlight.level = clamp(level, panel->backlight.min,
-+					       panel->backlight.max);
-+		panel->backlight.enabled = true;
-+
-+		drm_dbg_kms(&dev_priv->drm, "PWM already enabled at freq %ld, VBT freq %d, level %d\n",
-+			    NSEC_PER_SEC / panel->backlight.pwm_state.period,
-+			    get_vbt_pwm_freq(dev_priv), level);
-+	} else {
-+		/* Set period from VBT frequency, leave other settings at 0. */
-+		panel->backlight.pwm_state.period =
-+			NSEC_PER_SEC / get_vbt_pwm_freq(dev_priv);
- 	}
- 
--	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
--			     panel->backlight.pwm_period_ns);
--	level = intel_panel_compute_brightness(connector, level);
--	panel->backlight.level = clamp(level, panel->backlight.min,
--				       panel->backlight.max);
--	panel->backlight.enabled = panel->backlight.level != 0;
--
- 	drm_info(&dev_priv->drm, "Using %s PWM for LCD backlight control\n",
- 		 desc);
- 	return 0;
 -- 
-2.26.2
+2.17.1
