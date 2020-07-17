@@ -1,64 +1,59 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: [PATCH v2] pwm: bcm-iproc: handle clk_get_rate() return
-Date: Fri, 17 Jul 2020 11:25:12 -0700
-Message-ID: <20200717182512.26001-1-scott.branden@broadcom.com>
+From: Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v5 12/13] arm64: dts: freescale: sl28: enable LED support
+Date: Fri, 17 Jul 2020 23:54:42 +0200
+Message-ID: <af0584da0f43cb6cfffeb8fcf2235acb@walle.cc>
+References: <20200706175353.16404-1-michael@walle.cc>
+ <20200706175353.16404-13-michael@walle.cc> <20200717083610.GC1027@bug>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbgGQSZ1 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jul 2020 14:25:27 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99F2C0619D3
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 11:25:27 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id n5so7075055pgf.7
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 11:25:27 -0700 (PDT)
+Received: from ssl.serverraum.org ([176.9.125.105]:37007 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726793AbgGQVyu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jul 2020 17:54:50 -0400
+In-Reply-To: <20200717083610.GC1027@bug>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>, Scott Branden <scott.branden@broadcom.com>
+To: Pavel Machek <pavel@ucw.cz>
+Cc: linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-K??nig <u.kleine-koenig@pengutronix.de>, Wim Van Sebroeck <wim@linux-watchdog.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@>
 
-From: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+Hi Pavel,
 
-Handle clk_get_rate() returning <= 0 condition to avoid
-possible division by zero.
+Am 2020-07-17 10:36, schrieb Pavel Machek:
+> Hi!
+> 
+>> Now that we have support for GPIO lines of the SMARC connector, enable
+>> LED support on the KBox A-230-LS. There are two LEDs without fixed
+>> functions, one is yellow and one is green. Unfortunately, it is just 
+>> one
+>> multi-color LED, thus while it is possible to enable both at the same
+>> time it is hard to tell the difference between "yellow only" and 
+>> "yellow
+>> and green".
+> 
+>> +		user_yellow {
+>> +			label = "s1914:yellow:user";
+>> +			gpios = <&sl28cpld_gpio0 0 0>;
+>> +		};
+>> +
+>> +		user_green {
+>> +			label = "s1914:green:user";
+>> +			gpios = <&sl28cpld_gpio1 3 0>;
+>> +		};
+> 
+> This is not suitable label for such LEDs... there's zero chance 
+> userland will
+> know what to do with these.
+> 
+> Do they have some kind of "usual" function?
 
-Fixes: daa5abc41c80 ("pwm: Add support for Broadcom iProc PWM controller")
-Signed-off-by: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
-Signed-off-by: Scott Branden <scott.branden@broadcom.com>
+Unfortunately, they do not. I guess the green one could be something 
+like
+"application ready" and the yellow one could be an indication that some
+fault occurred.
 
----
-Changes from v1: ensure  'polarity' and 'enabled' are populated
-when clk_get_rate is 0.
----
- drivers/pwm/pwm-bcm-iproc.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Do you have any suggestions?
 
-diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
-index 1f829edd8ee7..d392a828fc49 100644
---- a/drivers/pwm/pwm-bcm-iproc.c
-+++ b/drivers/pwm/pwm-bcm-iproc.c
-@@ -85,8 +85,6 @@ static void iproc_pwmc_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	u64 tmp, multi, rate;
- 	u32 value, prescale;
- 
--	rate = clk_get_rate(ip->clk);
--
- 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
- 
- 	if (value & BIT(IPROC_PWM_CTRL_EN_SHIFT(pwm->hwpwm)))
-@@ -99,6 +97,13 @@ static void iproc_pwmc_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	else
- 		state->polarity = PWM_POLARITY_INVERSED;
- 
-+	rate = clk_get_rate(ip->clk);
-+	if (rate == 0) {
-+		state->period = 0;
-+		state->duty_cycle = 0;
-+		return;
-+	}
-+
- 	value = readl(ip->base + IPROC_PWM_PRESCALE_OFFSET);
- 	prescale = value >> IPROC_PWM_PRESCALE_SHIFT(pwm->hwpwm);
- 	prescale &= IPROC_PWM_PRESCALE_MAX;
--- 
-2.17.1
+-michael
