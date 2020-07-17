@@ -1,61 +1,35 @@
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+From: Scott Branden <scott.branden@broadcom.com>
 Subject: Re: [PATCH v2] pwm: bcm-iproc: handle clk_get_rate() return
-Date: Sat, 18 Jul 2020 01:04:31 +0200
-Message-ID: <20200717230431.4oj44cfnkhkd2o6z@pengutronix.de>
+Date: Fri, 17 Jul 2020 16:11:40 -0700
+Message-ID: <61a62404-6a44-53c3-6d17-89fa7a4c8551@broadcom.com>
 References: <20200717182512.26001-1-scott.branden@broadcom.com>
+ <20200717230431.4oj44cfnkhkd2o6z@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5ahgp5eqlhd5enic"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726204AbgGQXEm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jul 2020 19:04:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DE5C0619D2
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 16:04:41 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20200717182512.26001-1-scott.branden@broadcom.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Scott Branden <scott.branden@broadcom.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200717230431.4oj44cfnkhkd2o6z@pengutronix.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+List-Id: linux-pwm@vger.kernel.org
 
 
---5ahgp5eqlhd5enic
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 17, 2020 at 11:25:12AM -0700, Scott Branden wrote:
-> From: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
->=20
-> Handle clk_get_rate() returning <=3D 0 condition to avoid
-> possible division by zero.
-
-You advertise handling <=3D 0, but in the code only =3D=3D 0 is checked. One
-of the two is wrong ...
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---5ahgp5eqlhd5enic
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8SLnwACgkQwfwUeK3K
-7AmfdwgAk8gWLxkwQKT9ApRiJ25C12PNu+T1nJQzle/itAdvq83W5gP6Lzud1iOh
-a8px2Q5xIP20aHy5Z21OCUOzxqDl7+9o6kczLPLvJesanMC0+DCwBzkyQp/Vs/Kq
-kSX+mdliVsMZGe0YVlXtuFtss1cs04KksXD0Ge1gMlciEXywgPMYhh0edJg53zKT
-9jJ5NtV7tiNKacdSODSfdK6Z8KTTqzK36V+ZFWVzFZkJ9nk1XS7y1rbuC6unlK7O
-2mPfE/QuKuP7tmslau5ejLlBZKoVS3qFeAFMzmaI/3HxMuML87XkMwz8ophU3TLl
-sEZOpcLNEK2sPvO1T0WVo+PBtnEpuQ==
-=6nzc
------END PGP SIGNATURE-----
-
---5ahgp5eqlhd5enic--
+On 2020-07-17 4:04 p.m., Uwe Kleine-König wrote:
+> On Fri, Jul 17, 2020 at 11:25:12AM -0700, Scott Branden wrote:
+>> From: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+>>
+>> Handle clk_get_rate() returning <= 0 condition to avoid
+>> possible division by zero.
+> You advertise handling <= 0, but in the code only == 0 is checked. One
+> of the two is wrong ...
+I checked - clk_get_rate can't return negative values.
+I'll update the commit message from <= to ==.
+>
+> Best regards
+> Uwe
+>
+Thanks,
+  Scott
