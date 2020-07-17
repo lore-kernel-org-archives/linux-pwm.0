@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v5 13/16] drm/i915: panel: Add get_vbt_pwm_freq() helper
-Date: Fri, 17 Jul 2020 15:37:50 +0200
-Message-ID: <20200717133753.127282-14-hdegoede@redhat.com>
+Subject: [PATCH v5 15/16] drm/i915: panel: Honor the VBT PWM min setting for devs with an external PWM controller
+Date: Fri, 17 Jul 2020 15:44:29 +0200
+Message-ID: <20200717134430.127575-1-hdegoede@redhat.com>
 References: <20200717133753.127282-1-hdegoede@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,65 +12,45 @@ To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Factor the code which checks and drm_dbg_kms-s the VBT PWM frequency
-out of get_backlight_max_vbt().
+So far for devices using an external PWM controller (devices using
+pwm_setup_backlight()), we have been hardcoding the minimum allowed
+PWM level to 0. But several of these devices specify a non 0 minimum
+setting in their VBT.
 
-This is a preparation patch for honering the VBT PWM frequency for
-devices which use an external PWM controller (devices using
-pwm_setup_backlight()).
+Change pwm_setup_backlight() to use get_backlight_min_vbt() to get
+the minimum level.
 
 Acked-by: Jani Nikula <jani.nikula@intel.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/gpu/drm/i915/display/intel_panel.c | 27 ++++++++++++++--------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/i915/display/intel_panel.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index 3c5056dbf607..8efdd9f08a08 100644
+index 14e611c92194..cb28b9908ca4 100644
 --- a/drivers/gpu/drm/i915/display/intel_panel.c
 +++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1543,18 +1543,9 @@ static u32 vlv_hz_to_pwm(struct intel_connector *connector, u32 pwm_freq_hz)
- 	return DIV_ROUND_CLOSEST(clock, pwm_freq_hz * mul);
- }
+@@ -1925,8 +1925,8 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 	 */
+ 	pwm_apply_args(panel->backlight.pwm);
  
--static u32 get_backlight_max_vbt(struct intel_connector *connector)
-+static u16 get_vbt_pwm_freq(struct drm_i915_private *dev_priv)
- {
--	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
--	struct intel_panel *panel = &connector->panel;
- 	u16 pwm_freq_hz = dev_priv->vbt.backlight.pwm_freq_hz;
--	u32 pwm;
--
--	if (!panel->backlight.hz_to_pwm) {
--		drm_dbg_kms(&dev_priv->drm,
--			    "backlight frequency conversion not supported\n");
--		return 0;
--	}
+-	panel->backlight.min = 0; /* 0% */
+ 	panel->backlight.max = 100; /* 100% */
++	panel->backlight.min = get_backlight_min_vbt(connector);
+ 	level = intel_panel_compute_brightness(connector, 100);
+ 	ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
  
- 	if (pwm_freq_hz) {
- 		drm_dbg_kms(&dev_priv->drm,
-@@ -1567,6 +1558,22 @@ static u32 get_backlight_max_vbt(struct intel_connector *connector)
- 			    pwm_freq_hz);
- 	}
+@@ -1941,8 +1941,9 @@ static int pwm_setup_backlight(struct intel_connector *connector,
  
-+	return pwm_freq_hz;
-+}
-+
-+static u32 get_backlight_max_vbt(struct intel_connector *connector)
-+{
-+	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
-+	struct intel_panel *panel = &connector->panel;
-+	u16 pwm_freq_hz = get_vbt_pwm_freq(dev_priv);
-+	u32 pwm;
-+
-+	if (!panel->backlight.hz_to_pwm) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "backlight frequency conversion not supported\n");
-+		return 0;
-+	}
-+
- 	pwm = panel->backlight.hz_to_pwm(connector, pwm_freq_hz);
- 	if (!pwm) {
- 		drm_dbg_kms(&dev_priv->drm,
+ 	level = DIV_ROUND_UP(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
+ 			     panel->backlight.pwm_period_ns);
+-	panel->backlight.level =
+-		intel_panel_compute_brightness(connector, level);
++	level = intel_panel_compute_brightness(connector, level);
++	panel->backlight.level = clamp(level, panel->backlight.min,
++				       panel->backlight.max);
+ 	panel->backlight.enabled = panel->backlight.level != 0;
+ 
+ 	drm_info(&dev_priv->drm, "Using %s PWM for LCD backlight control\n",
 -- 
 2.26.2
