@@ -1,66 +1,66 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: [PATCH v4] pwm: bcm-iproc: handle clk_get_rate() return
-Date: Fri, 17 Jul 2020 21:46:06 -0700
-Message-ID: <20200718044606.18739-1-scott.branden@broadcom.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgGREqU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 18 Jul 2020 00:46:20 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840AFC0619D2
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 21:46:20 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id dp18so12961047ejc.8
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jul 2020 21:46:20 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Jingoo Han <jingoohan1@gmail.com>
+Subject: Re: [PATCH v4 05/20] backlight: improve backlight_device
+ documentation
+Date: Sat, 18 Jul 2020 05:18:39 +0000
+Message-ID: <SL2P216MB0105B428FFAB66BDA245B814AA7D0@SL2P216MB0105.KORP216.PROD.OUTLOOK.COM>
+References: <20200703184546.144664-1-sam@ravnborg.org>
+ <20200703184546.144664-6-sam@ravnborg.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20200703184546.144664-6-sam@ravnborg.org>
+Content-Language: en-US
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Sam Ravnborg <sam@ravnborg.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, "patches@opensource.cirrus.com" <patches@opensource.cirrus.com>, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kle>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>, Scott Branden <scott.branden@broadcom.com>
 
-From: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+On 7/3/20, 2:46 PM, Sam Ravnborg wrote:
+>
+> Improve the documentation for backlight_device and
+> adapt it to kernel-doc style.
+>
+> The updated documentation is more strict on how locking is used.
+> With the update neither update_lock nor ops_lock may be used
+> outside the backlight core.
+> This restriction was introduced to keep the locking simple
+> by keeping it in the core.
+> It was verified that this documents the current state by renaming
+> update_lock =3D> bl_update_lock and ops_lock =3D> bl_ops_lock.
+> The rename did not reveal any uses outside the backlight core.
+> The rename is NOT part of this patch.
+>
+> v3:
+>   - Update changelog to explain locking details (Daniel)
+>
+> v2:
+>   - Add short intro to all fields (Daniel)
+>   - Updated description of update_lock (Daniel)
+>
+> Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+ > Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Jingoo Han <jingoohan1@gmail.com>
 
-Handle clk_get_rate() returning 0 to avoid possible division by zero.
+It looks good!
+Reviewed-by: Jingoo Han <jingoohan1@gmail.com>
 
-Fixes: daa5abc41c80 ("pwm: Add support for Broadcom iProc PWM controller")
-Signed-off-by: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
-Signed-off-by: Scott Branden <scott.branden@broadcom.com>
-Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+For the rebase, if you don't know which branch of maintainer's git can be u=
+sed,
+linux-next tree [1] is useful. The linux-next git collects all next branche=
+s from=20
+other maintainers' git every day.
 
----
-Changes from v3: fixed typo in commit message: Reviewed-off-by.
-Hopefully everything clean now.
-Changes from v2: update commit message to remove <= condition
-as clk_get_rate only returns value >= 0
----
- drivers/pwm/pwm-bcm-iproc.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/
 
-diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
-index 1f829edd8ee7..d392a828fc49 100644
---- a/drivers/pwm/pwm-bcm-iproc.c
-+++ b/drivers/pwm/pwm-bcm-iproc.c
-@@ -85,8 +85,6 @@ static void iproc_pwmc_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	u64 tmp, multi, rate;
- 	u32 value, prescale;
- 
--	rate = clk_get_rate(ip->clk);
--
- 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
- 
- 	if (value & BIT(IPROC_PWM_CTRL_EN_SHIFT(pwm->hwpwm)))
-@@ -99,6 +97,13 @@ static void iproc_pwmc_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	else
- 		state->polarity = PWM_POLARITY_INVERSED;
- 
-+	rate = clk_get_rate(ip->clk);
-+	if (rate == 0) {
-+		state->period = 0;
-+		state->duty_cycle = 0;
-+		return;
-+	}
-+
- 	value = readl(ip->base + IPROC_PWM_PRESCALE_OFFSET);
- 	prescale = value >> IPROC_PWM_PRESCALE_SHIFT(pwm->hwpwm);
- 	prescale &= IPROC_PWM_PRESCALE_MAX;
--- 
-2.17.1
+Thank you.
+
+Best regards,
+Jingoo Han
+
+> ---
+>  include/linux/backlight.h | 72 ++++++++++++++++++++++++++-------------
+>  1 file changed, 49 insertions(+), 23 deletions(-)
+.....
