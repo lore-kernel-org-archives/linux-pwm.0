@@ -1,84 +1,64 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v5 14/19] backlight: cr_bllcd: introduce gpio-backlight semantics
-Date: Sun, 19 Jul 2020 10:07:38 +0200
-Message-ID: <20200719080743.8560-15-sam@ravnborg.org>
+Subject: [PATCH v5 11/19] backlight: wire up kernel-doc documentation
+Date: Sun, 19 Jul 2020 10:07:35 +0200
+Message-ID: <20200719080743.8560-12-sam@ravnborg.org>
 References: <20200719080743.8560-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725836AbgGSIIZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 19 Jul 2020 04:08:25 -0400
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <20200719080743.8560-1-sam@ravnborg.org>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-arm-msm-owner@vger.kernel.org
 To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
+List-Id: linux-pwm@vger.kernel.org
 
-cr_bllcd can turn backlight ON or OFF.
-Fix semantitics so they equals what we know from gpio-backlight.
-brightness == 0   => backlight off
-brightness == 1   => backlight on
-
-Use the backlight_get_brightness() helper to simplify the code.
-
-v2:
-  - reworked to introduce gpio-backlight semantics (Daniel)
+Include backlight so the documentation is now generated
+with make htmldocs and friends.
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Jingoo Han <jingoohan1@gmail.com>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Jonathan Corbet <corbet@lwn.net>
 ---
- drivers/video/backlight/cr_bllcd.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+ Documentation/gpu/backlight.rst | 12 ++++++++++++
+ Documentation/gpu/index.rst     |  1 +
+ 2 files changed, 13 insertions(+)
+ create mode 100644 Documentation/gpu/backlight.rst
 
-diff --git a/drivers/video/backlight/cr_bllcd.c b/drivers/video/backlight/cr_bllcd.c
-index 4624b7b7c6a6..a24d42e1ea3c 100644
---- a/drivers/video/backlight/cr_bllcd.c
-+++ b/drivers/video/backlight/cr_bllcd.c
-@@ -63,22 +63,15 @@ static int cr_backlight_set_intensity(struct backlight_device *bd)
- 	u32 addr = gpio_bar + CRVML_PANEL_PORT;
- 	u32 cur = inl(addr);
- 
--	if (bd->props.power == FB_BLANK_UNBLANK)
--		intensity = FB_BLANK_UNBLANK;
--	if (bd->props.fb_blank == FB_BLANK_UNBLANK)
--		intensity = FB_BLANK_UNBLANK;
--	if (bd->props.power == FB_BLANK_POWERDOWN)
--		intensity = FB_BLANK_POWERDOWN;
--	if (bd->props.fb_blank == FB_BLANK_POWERDOWN)
--		intensity = FB_BLANK_POWERDOWN;
--
--	if (intensity == FB_BLANK_UNBLANK) { /* FULL ON */
--		cur &= ~CRVML_BACKLIGHT_OFF;
--		outl(cur, addr);
--	} else if (intensity == FB_BLANK_POWERDOWN) { /* OFF */
-+	if (backlight_get_brightness(bd) == 0) {
-+		/* OFF */
- 		cur |= CRVML_BACKLIGHT_OFF;
- 		outl(cur, addr);
--	} /* anything else, don't bother */
-+	} else {
-+		/* FULL ON */
-+		cur &= ~CRVML_BACKLIGHT_OFF;
-+		outl(cur, addr);
-+	}
- 
- 	return 0;
- }
-@@ -90,9 +83,9 @@ static int cr_backlight_get_intensity(struct backlight_device *bd)
- 	u8 intensity;
- 
- 	if (cur & CRVML_BACKLIGHT_OFF)
--		intensity = FB_BLANK_POWERDOWN;
-+		intensity = 0;
- 	else
--		intensity = FB_BLANK_UNBLANK;
-+		intensity = 1;
- 
- 	return intensity;
- }
+diff --git a/Documentation/gpu/backlight.rst b/Documentation/gpu/backlight.rst
+new file mode 100644
+index 000000000000..9ebfc9d0aced
+--- /dev/null
++++ b/Documentation/gpu/backlight.rst
+@@ -0,0 +1,12 @@
++=================
++Backlight support
++=================
++
++.. kernel-doc:: drivers/video/backlight/backlight.c
++   :doc: overview
++
++.. kernel-doc:: include/linux/backlight.h
++   :internal:
++
++.. kernel-doc:: drivers/video/backlight/backlight.c
++   :export:
+diff --git a/Documentation/gpu/index.rst b/Documentation/gpu/index.rst
+index 1fcf8e851e15..c9a51e3bfb5a 100644
+--- a/Documentation/gpu/index.rst
++++ b/Documentation/gpu/index.rst
+@@ -12,6 +12,7 @@ Linux GPU Driver Developer's Guide
+    drm-uapi
+    drm-client
+    drivers
++   backlight
+    vga-switcheroo
+    vgaarbiter
+    todo
 -- 
 2.25.1
