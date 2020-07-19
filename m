@@ -1,63 +1,140 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v5 12/19] backlight: introduce backlight_get_brightness()
-Date: Sun, 19 Jul 2020 10:07:36 +0200
-Message-ID: <20200719080743.8560-13-sam@ravnborg.org>
+Subject: [PATCH v5 07/19] backlight: document enums in backlight.h
+Date: Sun, 19 Jul 2020 10:07:31 +0200
+Message-ID: <20200719080743.8560-8-sam@ravnborg.org>
 References: <20200719080743.8560-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgGSIIO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 19 Jul 2020 04:08:14 -0400
 In-Reply-To: <20200719080743.8560-1-sam@ravnborg.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
-List-Id: linux-pwm@vger.kernel.org
 
-Based on an idea from Emil Velikov <emil.l.velikov@gmail.com>
-add a helper that checks backlight_is_blank() and return 0 as brightness
-if display is blank or the property value if not.
+Add kernel-doc documentation for the backlight enums
 
-This allows us to simplify the update_status() implementation
-in most of the backlight drivers.
+v2:
+  - Add intro to each enum member (Daniel)
+    Except backlight type as line lenght was too long.
+    The generated HTML is the same.
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
 Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Emil Velikov <emil.l.velikov@gmail.com>
+Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- include/linux/backlight.h | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ include/linux/backlight.h | 72 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
 diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-index c6ac4cbb9ddb..38db67588b16 100644
+index 7d6cb61e10f5..0f425b32e6be 100644
 --- a/include/linux/backlight.h
 +++ b/include/linux/backlight.h
-@@ -417,6 +417,25 @@ static inline bool backlight_is_blank(const struct backlight_device *bd)
- 	       bd->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK);
- }
+@@ -14,26 +14,98 @@
+ #include <linux/mutex.h>
+ #include <linux/notifier.h>
  
 +/**
-+ * backlight_get_brightness - Returns the current brightness value
-+ * @bd: the backlight device
++ * enum backlight_update_reason - what method was used to update backlight
 + *
-+ * Returns the current brightness value, taking in consideration the current
-+ * state. If backlight_is_blank() returns true then return 0 as brightness
-+ * otherwise return the current brightness property value.
-+ *
-+ * Backlight drivers are expected to use this function in their update_status()
-+ * operation to get the brightness value.
++ * A driver indicates the method (reason) used for updating the backlight
++ * when calling backlight_force_update().
 + */
-+static inline int backlight_get_brightness(const struct backlight_device *bd)
-+{
-+	if (backlight_is_blank(bd))
-+		return 0;
-+	else
-+		return bd->props.brightness;
-+}
+ enum backlight_update_reason {
++	/**
++	 * @BACKLIGHT_UPDATE_HOTKEY: The backlight was updated using a hot-key.
++	 */
+ 	BACKLIGHT_UPDATE_HOTKEY,
 +
- struct backlight_device *
- backlight_device_register(const char *name, struct device *dev, void *devdata,
- 			  const struct backlight_ops *ops,
++	/**
++	 * @BACKLIGHT_UPDATE_SYSFS: The backlight was updated using sysfs.
++	 */
+ 	BACKLIGHT_UPDATE_SYSFS,
+ };
+ 
++/**
++ * enum backlight_type - the type of backlight control
++ *
++ * The type of interface used to control the backlight.
++ */
+ enum backlight_type {
++	/**
++	 * @BACKLIGHT_RAW:
++	 *
++	 * The backlight is controlled using hardware registers.
++	 */
+ 	BACKLIGHT_RAW = 1,
++
++	/**
++	 * @BACKLIGHT_PLATFORM:
++	 *
++	 * The backlight is controlled using a platform-specific interface.
++	 */
+ 	BACKLIGHT_PLATFORM,
++
++	/**
++	 * @BACKLIGHT_FIRMWARE:
++	 *
++	 * The backlight is controlled using a standard firmware interface.
++	 */
+ 	BACKLIGHT_FIRMWARE,
++
++	/**
++	 * @BACKLIGHT_TYPE_MAX: Number of entries.
++	 */
+ 	BACKLIGHT_TYPE_MAX,
+ };
+ 
++/**
++ * enum backlight_notification - the type of notification
++ *
++ * The notifications that is used for notification sent to the receiver
++ * that registered notifications using backlight_register_notifier().
++ */
+ enum backlight_notification {
++	/**
++	 * @BACKLIGHT_REGISTERED: The backlight device is registered.
++	 */
+ 	BACKLIGHT_REGISTERED,
++
++	/**
++	 * @BACKLIGHT_UNREGISTERED: The backlight revice is unregistered.
++	 */
+ 	BACKLIGHT_UNREGISTERED,
+ };
+ 
++/** enum backlight_scale - the type of scale used for brightness values
++ *
++ * The type of scale used for brightness values.
++ */
+ enum backlight_scale {
++	/**
++	 * @BACKLIGHT_SCALE_UNKNOWN: The scale is unknown.
++	 */
+ 	BACKLIGHT_SCALE_UNKNOWN = 0,
++
++	/**
++	 * @BACKLIGHT_SCALE_LINEAR: The scale is linear.
++	 *
++	 * The linear scale will increase brightness the same for each step.
++	 */
+ 	BACKLIGHT_SCALE_LINEAR,
++
++	/**
++	 * @BACKLIGHT_SCALE_NON_LINEAR: The scale is not linear.
++	 *
++	 * This is often used when the brightness values tries to adjust to
++	 * the relative perception of the eye demanding a non-linear scale.
++	 */
+ 	BACKLIGHT_SCALE_NON_LINEAR,
+ };
+ 
 -- 
 2.25.1
