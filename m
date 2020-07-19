@@ -1,7 +1,7 @@
 From: Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v5 05/19] backlight: improve backlight_device documentation
-Date: Sun, 19 Jul 2020 10:07:29 +0200
-Message-ID: <20200719080743.8560-6-sam@ravnborg.org>
+Subject: [PATCH v5 03/19] backlight: improve backlight_ops documentation
+Date: Sun, 19 Jul 2020 10:07:27 +0200
+Message-ID: <20200719080743.8560-4-sam@ravnborg.org>
 References: <20200719080743.8560-1-sam@ravnborg.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,142 +12,98 @@ To: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jone
 Cc: Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Tomi Valkeinen <tomi.v>
 List-Id: linux-pwm@vger.kernel.org
 
-Improve the documentation for backlight_device and
+Improve the documentation for backlight_ops and
 adapt it to kernel-doc style.
 
-The updated documentation is more strict on how locking is used.
-With the update neither update_lock nor ops_lock may be used
-outside the backlight core.
-This restriction was introduced to keep the locking simple
-by keeping it in the core.
-It was verified that this documents the current state by renaming
-update_lock => bl_update_lock and ops_lock => bl_ops_lock.
-The rename did not reveal any uses outside the backlight core.
-The rename is NOT part of this patch.
-
-v3:
-  - Update changelog to explain locking details (Daniel)
-
 v2:
-  - Add short intro to all fields (Daniel)
-  - Updated description of update_lock (Daniel)
+  - Add intro for each field (Daniel)
 
 Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
 Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Jingoo Han <jingoohan1@gmail.com>
+Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
 Cc: Lee Jones <lee.jones@linaro.org>
 Cc: Daniel Thompson <daniel.thompson@linaro.org>
 Cc: Jingoo Han <jingoohan1@gmail.com>
 ---
- include/linux/backlight.h | 72 ++++++++++++++++++++++++++-------------
- 1 file changed, 49 insertions(+), 23 deletions(-)
+ include/linux/backlight.h | 59 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 53 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/backlight.h b/include/linux/backlight.h
-index 10518b00b059..7654fe5f1589 100644
+index 56e51ebab740..dfb43ee02ea0 100644
 --- a/include/linux/backlight.h
 +++ b/include/linux/backlight.h
-@@ -14,21 +14,6 @@
- #include <linux/mutex.h>
- #include <linux/notifier.h>
- 
--/* Notes on locking:
-- *
-- * backlight_device->ops_lock is an internal backlight lock protecting the
-- * ops pointer and no code outside the core should need to touch it.
-- *
-- * Access to update_status() is serialised by the update_lock mutex since
-- * most drivers seem to need this and historically get it wrong.
-- *
-- * Most drivers don't need locking on their get_brightness() method.
-- * If yours does, you need to implement it in the driver. You can use the
-- * update_lock mutex if appropriate.
-- *
-- * Any other use of the locks below is probably wrong.
-- */
--
- enum backlight_update_reason {
- 	BACKLIGHT_UPDATE_HOTKEY,
- 	BACKLIGHT_UPDATE_SYSFS,
-@@ -215,30 +200,71 @@ struct backlight_properties {
- 	enum backlight_scale scale;
- };
+@@ -55,19 +55,66 @@ enum backlight_scale {
+ struct backlight_device;
+ struct fb_info;
  
 +/**
-+ * struct backlight_device - backlight device data
++ * struct backlight_ops - backlight operations
 + *
-+ * This structure holds all data required by a backlight device.
++ * The backlight operations are specifed when the backlight device is registered.
 + */
- struct backlight_device {
--	/* Backlight properties */
+ struct backlight_ops {
 +	/**
-+	 * @props: Backlight properties
-+	 */
- 	struct backlight_properties props;
- 
--	/* Serialise access to update_status method */
-+	/**
-+	 * @update_lock: The lock used when calling the update_status() operation.
++	 * @options: Configure how operations are called from the core.
 +	 *
-+	 * update_lock is an internal backlight lock that serialise access
-+	 * to the update_status() operation. The backlight core holds the update_lock
-+	 * when calling the update_status() operation. The update_lock shall not
-+	 * be used by backlight drivers.
++	 * The options parameter is used to adjust the behaviour of the core.
++	 * Set BL_CORE_SUSPENDRESUME to get the update_status() operation called
++	 * upon suspend and resume.
 +	 */
- 	struct mutex update_lock;
+ 	unsigned int options;
  
--	/* This protects the 'ops' field. If 'ops' is NULL, the driver that
--	   registered this device has been unloaded, and if class_get_devdata()
--	   points to something in the body of that driver, it is also invalid. */
+ #define BL_CORE_SUSPENDRESUME	(1 << 0)
+ 
+-	/* Notify the backlight driver some property has changed */
 +	/**
-+	 * @ops_lock: The lock used around everything related to backlight_ops.
++	 * @update_status: Operation called when properties have changed.
 +	 *
-+	 * ops_lock is an internal backlight lock that protects the ops pointer
-+	 * and is used around all accesses to ops and when the operations are
-+	 * invoked. The ops_lock shall not be used by backlight drivers.
++	 * Notify the backlight driver some property has changed.
++	 * The update_status operation is protected by the update_lock.
++	 *
++	 * The backlight driver is expected to use backlight_is_blank()
++	 * to check if the display is blanked and set brightness accordingly.
++	 * update_status() is called when any of the properties has changed.
++	 *
++	 * RETURNS:
++	 *
++	 * 0 on sucees, negative error code if any failure occured.
 +	 */
- 	struct mutex ops_lock;
+ 	int (*update_status)(struct backlight_device *);
+-	/* Return the current backlight brightness (accounting for power,
+-	   fb_blank etc.) */
 +
 +	/**
-+	 * @ops: Pointer to the backlight operations.
++	 * @get_brightness: Return the current backlight brightness.
 +	 *
-+	 * If ops is NULL, the driver that registered this device has been unloaded,
-+	 * and if class_get_devdata() points to something in the body of that driver,
-+	 * it is also invalid.
-+	 */
- 	const struct backlight_ops *ops;
- 
--	/* The framebuffer notifier block */
-+	/**
-+	 * @fb_notif: The framebuffer notifier block
-+	 */
- 	struct notifier_block fb_notif;
- 
--	/* list entry of all registered backlight devices */
-+	/**
-+	 * @entry: List entry of all registered backlight devices
-+	 */
- 	struct list_head entry;
- 
-+	/**
-+	 * @dev: Parent device.
-+	 */
- 	struct device dev;
- 
--	/* Multiple framebuffers may share one backlight device */
-+	/**
-+	 * @fb_bl_on: The state of individual fbdev's.
++	 * The driver may implement this as a readback from the HW.
++	 * This operation is optional and if not present then the current
++	 * brightness property value is used.
 +	 *
-+	 * Multiple fbdev's may share one backlight device. The fb_bl_on
-+	 * records the state of the individual fbdev.
++	 * RETURNS:
++	 *
++	 * A brightness value which is 0 or a positive numer.
++	 * On failure a negative error code is returned.
 +	 */
- 	bool fb_bl_on[FB_MAX];
- 
+ 	int (*get_brightness)(struct backlight_device *);
+-	/* Check if given framebuffer device is the one bound to this backlight;
+-	   return 0 if not, !=0 if it is. If NULL, backlight always matches the fb. */
+-	int (*check_fb)(struct backlight_device *, struct fb_info *);
++
 +	/**
-+	 * @use_count: The number of uses of fb_bl_on.
++	 * @check_fb: Check the framebuffer device.
++	 *
++	 * Check if given framebuffer device is the one bound to this backlight.
++	 * This operation is optional and if not implemented it is assumed that the
++	 * fbdev is always the one bound to the backlight.
++	 *
++	 * RETURNS:
++	 *
++	 * If info is NULL or the info matches the fbdev bound to the backlight return true.
++	 * If info does not match the fbdev bound to the backlight return false.
 +	 */
- 	int use_count;
++	int (*check_fb)(struct backlight_device *bd, struct fb_info *info);
  };
  
+ /* This structure defines all the properties of a backlight */
 -- 
 2.25.1
