@@ -1,86 +1,49 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v5 0/19] backlight: backlight updates
-Date: Mon, 20 Jul 2020 13:01:12 +0200
-Message-ID: <20200720110112.GA147689@ravnborg.org>
-References: <20200719080743.8560-1-sam@ravnborg.org>
- <20200720093601.GA3368211@dell>
+From: Alexandru Stan <amstan-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH 0/3] PWM backlight interpolation adjustments
+Date: Mon, 20 Jul 2020 21:25:19 -0700
+Message-ID: <20200721042522.2403410-1-amstan@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from asavdk4.altibox.net ([109.247.116.15]:53528 "EHLO
-        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728232AbgGTLBU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2020 07:01:20 -0400
-Content-Disposition: inline
-In-Reply-To: <20200720093601.GA3368211@dell>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Matthias Kaehlcke <mka-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Alexandru Stan <amstan-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Andy Gross <agross@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, David Airlie <airlied@linux.ie>, Emil Velikov <emil.l.velikov@gmail.com>, Jonathan Corbet <corbet@lwn.net>, linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, Support Opensource <support.opensource@diasemi.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Zimmermann <tzimmermann@suse.de>
 
-Hi Lee.
+I was trying to adjust the brightness for a new chromebook:
+https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2291209
+Like a lot of panels, the low end needs to be cropped,
+and now that we have the interpolation stuff I wanted to make use of it
+and bake in even the curve.
 
-On Mon, Jul 20, 2020 at 10:36:01AM +0100, Lee Jones wrote:
-> On Sun, 19 Jul 2020, Sam Ravnborg wrote:
-> 
-> > Hi all.
-> > 
-> > Follow-up on v4 - with only a few changes listed below and
-> > in the individual patches.
-> > Thanks for all the reviews and the feedback on the patches!
-> > 
-> > I am planning a follow-up on this patchset to update the
-> > backlight drivers all over to use backlight_get_brightness()
-> > and backlight_is_blank() as appropriate.
-> 
-> [...]
-> 
-> > Sam Ravnborg (19):
-> >       backlight: refactor fb_notifier_callback()
-> >       backlight: add backlight_is_blank()
-> >       backlight: improve backlight_ops documentation
-> >       backlight: improve backlight_properties documentation
-> >       backlight: improve backlight_device documentation
-> >       backlight: document inline functions in backlight.h
-> >       backlight: document enums in backlight.h
-> >       backlight: remove the unused backlight_bl driver
-> >       backlight: drop extern from prototypes
-> >       backlight: add overview and update existing doc
-> >       backlight: wire up kernel-doc documentation
-> >       backlight: introduce backlight_get_brightness()
-> >       backlight: as3711_bl: simplify update_status
-> >       backlight: cr_bllcd: introduce gpio-backlight semantics
-> >       backlight: gpio_backlight: simplify update_status()
-> >       backlight: jornada720_bl: introduce backlight_is_blank()
-> >       backlight: use backlight_get_brightness()
-> >       backlight: drop backlight_put()
-> >       backlight: make of_find_backlight static
-> 
-> All applied, but to be honest, that was quite painful.
-That was not the intention :-(
+I found the behavior a little unintuitive and non-linear. See patch 1
+for a suggested fix for this.
 
-> 
-> A few notes for subsequent patches.
-> 
->  - Enable spell-checkers in your editors
->    - I fixed the issues up for you here - there were quite a few!
->  - Run ./checkpatch.pl before submitting - here's what I find useful
->    * .git/hooks/post-commit: https://pastebin.ubuntu.com/p/WpPFd6M2rB/
->  - Please keep the in-patch changelog below the '---' line, so that it
->    does not end up in the final commit log
->  - Cc: lines *above* the *-bys please
->  - Cc: lines dropped for any *-bys provided
->  - Lines wrapped ~72 chars (not 50)
->  - One whole empty line spacing between paragraphs
->  - Ensure you use the formatting expected of the subsystem - in the
->    case of Backlight it's:
-> 
->      <subsystem>: <file>: Subject beginning with an upper-case char
-> 
->    A `git log --oneline -- subsystem` would give you a good idea of
->    what's expected.
+Unfortunatelly a few veyron dts files were relying on this
+(perhaps weird) behavior. Those devices also want a minimum brightness.
+The issue is that they also want the 0% point for turning off the
+display.
+https://github.com/torvalds/linux/commit/6233269bce47bd450196a671ab28eb1ec5eb88d9#diff-e401ae20091bbfb311a062c464f4f47fL23
 
-Thanks for the input - I will use these points as guideline for the next
-batch of backlight patches.
+So the idea here is to change those dts files to only say <3 255> (patch
+3), and add in a virtual 0% point at the bottom of the scale (patch 2).
 
-	Sam
+We have to do this conditionally because it seems some devices like to
+have the scale inverted:
+  % git grep "brightness-levels\s*=\s*<\s*[1-9]"|cat
+  arch/arm/boot/dts/tegra124-apalis-eval.dts:             brightness-levels = <255 231 223 207 191 159 127 0>;
+
+
+Alexandru Stan (3):
+  backlight: pwm_bl: Fix interpolation
+  backlight: pwm_bl: Artificially add 0% during interpolation
+  ARM: dts: rockchip: Remove 0 point in backlight
+
+ arch/arm/boot/dts/rk3288-veyron-jaq.dts    |  2 +-
+ arch/arm/boot/dts/rk3288-veyron-minnie.dts |  2 +-
+ arch/arm/boot/dts/rk3288-veyron-tiger.dts  |  2 +-
+ drivers/video/backlight/pwm_bl.c           | 78 +++++++++++-----------
+ 4 files changed, 42 insertions(+), 42 deletions(-)
+
+-- 
+2.27.0
