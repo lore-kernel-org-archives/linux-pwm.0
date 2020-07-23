@@ -1,43 +1,95 @@
-From: "Konstantin Ryabitsev via RT"
-        <kernel-helpdesk@rt.linuxfoundation.org>
-Subject: Re: [Kernel.org Helpdesk #89942] Re: adding linux-pwm archives to lore.kernel.org?
-Date: Thu, 23 Jul 2020 17:38:45 +0000
-Message-ID: <010101737cc18b4b-3c78b41c-309e-4d62-b6af-fd0536291eab-000000@us-west-2.amazonses.com>
-References: <RT-Ticket-89942@linuxfoundation>
- <20200213102618.x5j6kfvqmdbx2pr2@pengutronix.de>
- <20200523170558.h2brqlf2jx4kee6y@pengutronix.de>
- <20200613141533.ak3nyo5hu636evwq@taurus.defre.kleine-koenig.org>
- <20200709092659.drrmvv53qs2q4lid@pengutronix.de>
- <rt-4.4.0-1686-1594286826-1167.89942-6-0@linuxfoundation>
- <010101734f397f00-39d54a81-d06d-4947-b9fc-332e9f9b46d5-000000@us-west-2.amazonses.com> <20200723172702.nirnet6tbmwuwd57@pengutronix.de> <010101737cb6d988-bb70d517-bbf8-44b0-aa3d-4f9eed9101f3-000000@us-west-2.amazonses.com> <20200723173841.4geg4blngc2fwp4z@chatter.i7.local>
-Reply-To: kernel-helpdesk@rt.linuxfoundation.org
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/2] dt-bindings: pwm: keembay: Add bindings for Intel
+ Keem Bay PWM
+Date: Thu, 23 Jul 2020 11:47:01 -0600
+Message-ID: <20200723174701.GA584130@bogus>
+References: <1595083628-20734-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <1595083628-20734-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from a27-45.smtp-out.us-west-2.amazonses.com ([54.240.27.45]:36964
-        "EHLO a27-45.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726814AbgGWRiq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jul 2020 13:38:46 -0400
-In-Reply-To: <20200723173841.4geg4blngc2fwp4z@chatter.i7.local>
+Received: from mail-io1-f66.google.com ([209.85.166.66]:34953 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726666AbgGWRrF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jul 2020 13:47:05 -0400
+Content-Disposition: inline
+In-Reply-To: <1595083628-20734-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: u.kleine-koenig@pengutronix.de
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
+To: vineetha.g.jaya.kumaran@intel.com
+Cc: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, wan.ahmad.zainie.wan.mohamad@intel.com, andriy.shevchenko@intel.com
 
-On Thu, Jul 23, 2020 at 05:27:04PM +0000, Uwe Kleine-König via RT wrote:
-> > I'm sorry, apparently I screwed up and didn't assign this ticket to
-> > anyone when it came in. I was dutifully ignoring follow-ups, as I'd
-> > assumed someone else would be responding.
-> > 
-> > Chris, I've properly assigned it to you now -- can you please
-> > prioritise this request, as time allows?
+On Sat, Jul 18, 2020 at 10:47:08PM +0800, vineetha.g.jaya.kumaran@intel.com wrote:
+> From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
 > 
-> Last week I thought this is a no-brainer now and will be done in a few
-> hours. It seems I was wrong :-|
+> Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
+> 
+> Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+> ---
+>  .../devicetree/bindings/pwm/intel,keembay-pwm.yaml | 45 ++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+> new file mode 100644
+> index 00000000..e9388a7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2020 Intel Corporation
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pwm/intel,keembay-pwm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Intel Keem Bay PWM Device Tree Bindings
+> +
+> +maintainers:
+> +  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+> +
+> +allOf:
+> +  - $ref: pwm.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - intel,keembay-pwm
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  "#pwm-cells":
+> +    const: 2
+> +
+> +required:
+> + - compatible
+> + - reg
+> + - clocks
+> + - '#pwm-cells'
 
-I do appreciate your patience. There is a lot of other work happening at 
-the IT team, so your request for adding a mailing list archive has to 
-contend for staff resources with many other ongoing projects.
+Add:
 
--K
+additionalProperties: false
+
+With that,
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+
+> +
+> +examples:
+> +  - |
+> +    #define KEEM_BAY_A53_GPIO
+> +
+> +    pwm@203200a0 {
+> +      compatible = "intel,keembay-pwm";
+> +      reg = <0x203200a0 0xe8>;
+> +      clocks = <&scmi_clk KEEM_BAY_A53_GPIO>;
+> +      #pwm-cells = <2>;
+> +    };
+> -- 
+> 1.9.1
+> 
