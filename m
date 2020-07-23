@@ -1,135 +1,84 @@
-From: Jes Sorensen <jes.sorensen@gmail.com>
-Subject: Re: [PATCH v16 3/3] Input: new da7280 haptic driver
-Date: Wed, 22 Jul 2020 11:23:45 -0400
-Message-ID: <bdc76da9-9223-b6d9-1fc1-2ef6e3b7afa7@gmail.com>
+From: Roy Im <roy.im.opensource@diasemi.com>
+Subject: RE: [PATCH v16 3/3] Input: new da7280 haptic driver
+Date: Thu, 23 Jul 2020 02:23:29 +0000
+Message-ID: <DB8PR10MB34362941F9428B498ED4B94E85760@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
 References: <cover.1594279649.git.Roy.Im@diasemi.com>
  <b02ba5b5dbd3d58f27440ba639d32e4405061df3.1594279649.git.Roy.Im@diasemi.com>
+ <bdc76da9-9223-b6d9-1fc1-2ef6e3b7afa7@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728812AbgGVPXt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 22 Jul 2020 11:23:49 -0400
-In-Reply-To: <b02ba5b5dbd3d58f27440ba639d32e4405061df3.1594279649.git.Roy.Im@diasemi.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <bdc76da9-9223-b6d9-1fc1-2ef6e3b7afa7@gmail.com>
 Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jes Sorensen <jes.sorensen@gmail.com>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Support Opensource <support.opensource@diasemi.com>, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On 7/9/20 3:27 AM, Roy Im wrote:
-> Adds support for the Dialog DA7280 LRA/ERM Haptic Driver with
-> multiple mode and integrated waveform memory and wideband support.
-> It communicates via an I2C bus to the device.
-> 
-> Signed-off-by: Roy Im <roy.im.opensource@diasemi.com>
-> ---
-> v16:
-> 	- Corrected some code and updated description in Kconfig.
-> v15:
-> 	- Removed some defines and updated some comments.
-> v14:
-> 	- Updated pwm related code, alignments and comments.
-> v13:
-> 	- Updated some conditions in pwm function and alignments.
-> v12: No changes.
-> v11: 
-> 	- Updated the pwm related code, comments and typo.
-> v10: 
-> 	- Updated the pwm related function and added some comments.
-> v9: 
-> 	- Removed the header file and put the definitions into the c file.
-> 	- Updated the pwm code and error logs with %pE
-> v8: 
-> 	- Added changes to support FF_PERIODIC/FF_CUSTOM and FF_CONSTANT.
-> 	- Updated the dt-related code.
-> 	- Removed memless related functions.
-> v7: 
-> 	- Added more attributes to handle one value per file.
-> 	- Replaced and updated the dt-related code and functions called.
-> 	- Fixed error/functions.
-> v6: No changes.
-> v5: Fixed errors in Kconfig file.
-> v4: Updated code as dt-bindings are changed.
-> v3: No changes.
-> v2: Fixed kbuild error/warning
-> 
-> 
->  drivers/input/misc/Kconfig  |   13 +
->  drivers/input/misc/Makefile |    1 +
->  drivers/input/misc/da7280.c | 1840 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 1854 insertions(+)
->  create mode 100644 drivers/input/misc/da7280.c
-
-Hi Roy,
-
-Overall the driver looks pretty good now. I did find one issue, see
-below. If you fix that I am happy to add a Reviewed-by line.
-
-Reviewed-By: Jes Sorensen <Jes.Sorensen@gmail.com>
-
-> diff --git a/drivers/input/misc/da7280.c b/drivers/input/misc/da7280.c
-> new file mode 100644
-> index 0000000..c8c42ac
-> --- /dev/null
-> +++ b/drivers/input/misc/da7280.c
-
-[snip]
-
-> +static int da7280_haptic_set_pwm(struct da7280_haptic *haptics, bool enabled)
-> +{
-> +	struct pwm_state state;
-> +	u64 period_mag_multi;
-> +	int error;
-> +
-> +	if (!haptics->gain && enabled) {
-> +		dev_err(haptics->dev,
-> +			"Please set the gain first for the pwm mode\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	pwm_get_state(haptics->pwm_dev, &state);
-> +	state.enabled = enabled;
-> +	if (enabled) {
-> +		period_mag_multi = state.period * haptics->gain;
-
-You are multiplying an unsigned int to a u16 and storing it in a u64.
-However, C doesn't promote the types, so you'll end up with an
-unexpected result here. You can fix it by promoting state.period to u64, ie:
-
-		period_mage_multi = (u64)state.period * haptics->gain;
-
-See the following example code which demonstrates the problem.
-
-#include <stdio.h>
-#include <stdint.h>
-
-uint64_t foo(unsigned int a, uint16_t b)
-{
-	uint64_t tmp = a * b;
-	return tmp;
-}
-
-uint64_t bar(unsigned int a, uint16_t b)
-{
-	uint64_t tmp = (uint64_t)a * b;
-	return tmp;
-}
-
-int main()
-{
-	uint64_t val;
-	unsigned int a = 0xff00ff00;
-	uint16_t b = 0x200;
-
-	val = foo(a, b);
-	printf("result(%0x, %0x) = %0llx\n", a, b, val);
-
-	val = bar(a, b);
-	printf("result(%0x, %0x) = %0llx\n", a, b, val);
-}
-
-Cheers,
-Jes
+T24gVGh1cnNkYXksIEp1bHkgMjMsIDIwMjAgMTI6MjQgQU0sIEplcyBTb3JlbnNlbiB3cm90ZToN
+Cj4gT24gNy85LzIwIDM6MjcgQU0sIFJveSBJbSB3cm90ZToNCj4gPiBBZGRzIHN1cHBvcnQgZm9y
+IHRoZSBEaWFsb2cgREE3MjgwIExSQS9FUk0gSGFwdGljIERyaXZlciB3aXRoIG11bHRpcGxlDQo+
+ID4gbW9kZSBhbmQgaW50ZWdyYXRlZCB3YXZlZm9ybSBtZW1vcnkgYW5kIHdpZGViYW5kIHN1cHBv
+cnQuDQo+ID4gSXQgY29tbXVuaWNhdGVzIHZpYSBhbiBJMkMgYnVzIHRvIHRoZSBkZXZpY2UuDQo+
+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBSb3kgSW0gPHJveS5pbS5vcGVuc291cmNlQGRpYXNlbWku
+Y29tPg0KPiA+IC0tLQ0KPiA+IHYxNjoNCj4gPiAJLSBDb3JyZWN0ZWQgc29tZSBjb2RlIGFuZCB1
+cGRhdGVkIGRlc2NyaXB0aW9uIGluIEtjb25maWcuDQo+ID4gdjE1Og0KPiA+IAktIFJlbW92ZWQg
+c29tZSBkZWZpbmVzIGFuZCB1cGRhdGVkIHNvbWUgY29tbWVudHMuDQo+ID4gdjE0Og0KPiA+IAkt
+IFVwZGF0ZWQgcHdtIHJlbGF0ZWQgY29kZSwgYWxpZ25tZW50cyBhbmQgY29tbWVudHMuDQo+ID4g
+djEzOg0KPiA+IAktIFVwZGF0ZWQgc29tZSBjb25kaXRpb25zIGluIHB3bSBmdW5jdGlvbiBhbmQg
+YWxpZ25tZW50cy4NCj4gPiB2MTI6IE5vIGNoYW5nZXMuDQo+ID4gdjExOg0KPiA+IAktIFVwZGF0
+ZWQgdGhlIHB3bSByZWxhdGVkIGNvZGUsIGNvbW1lbnRzIGFuZCB0eXBvLg0KPiA+IHYxMDoNCj4g
+PiAJLSBVcGRhdGVkIHRoZSBwd20gcmVsYXRlZCBmdW5jdGlvbiBhbmQgYWRkZWQgc29tZSBjb21t
+ZW50cy4NCj4gPiB2OToNCj4gPiAJLSBSZW1vdmVkIHRoZSBoZWFkZXIgZmlsZSBhbmQgcHV0IHRo
+ZSBkZWZpbml0aW9ucyBpbnRvIHRoZSBjIGZpbGUuDQo+ID4gCS0gVXBkYXRlZCB0aGUgcHdtIGNv
+ZGUgYW5kIGVycm9yIGxvZ3Mgd2l0aCAlcEUNCj4gPiB2ODoNCj4gPiAJLSBBZGRlZCBjaGFuZ2Vz
+IHRvIHN1cHBvcnQgRkZfUEVSSU9ESUMvRkZfQ1VTVE9NIGFuZCBGRl9DT05TVEFOVC4NCj4gPiAJ
+LSBVcGRhdGVkIHRoZSBkdC1yZWxhdGVkIGNvZGUuDQo+ID4gCS0gUmVtb3ZlZCBtZW1sZXNzIHJl
+bGF0ZWQgZnVuY3Rpb25zLg0KPiA+IHY3Og0KPiA+IAktIEFkZGVkIG1vcmUgYXR0cmlidXRlcyB0
+byBoYW5kbGUgb25lIHZhbHVlIHBlciBmaWxlLg0KPiA+IAktIFJlcGxhY2VkIGFuZCB1cGRhdGVk
+IHRoZSBkdC1yZWxhdGVkIGNvZGUgYW5kIGZ1bmN0aW9ucyBjYWxsZWQuDQo+ID4gCS0gRml4ZWQg
+ZXJyb3IvZnVuY3Rpb25zLg0KPiA+IHY2OiBObyBjaGFuZ2VzLg0KPiA+IHY1OiBGaXhlZCBlcnJv
+cnMgaW4gS2NvbmZpZyBmaWxlLg0KPiA+IHY0OiBVcGRhdGVkIGNvZGUgYXMgZHQtYmluZGluZ3Mg
+YXJlIGNoYW5nZWQuDQo+ID4gdjM6IE5vIGNoYW5nZXMuDQo+ID4gdjI6IEZpeGVkIGtidWlsZCBl
+cnJvci93YXJuaW5nDQo+ID4NCj4gPg0KPiA+ICBkcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZyAg
+fCAgIDEzICsNCj4gPiAgZHJpdmVycy9pbnB1dC9taXNjL01ha2VmaWxlIHwgICAgMSArDQo+ID4g
+IGRyaXZlcnMvaW5wdXQvbWlzYy9kYTcyODAuYyB8IDE4NDANCj4gPiArKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDMgZmlsZXMgY2hhbmdlZCwgMTg1NCBp
+bnNlcnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lucHV0L21pc2Mv
+ZGE3MjgwLmMNCj4gDQo+IEhpIFJveSwNCj4gDQo+IE92ZXJhbGwgdGhlIGRyaXZlciBsb29rcyBw
+cmV0dHkgZ29vZCBub3cuIEkgZGlkIGZpbmQgb25lIGlzc3VlLCBzZWUgYmVsb3cuIElmIHlvdSBm
+aXggdGhhdCBJIGFtIGhhcHB5IHRvIGFkZCBhIFJldmlld2VkLWJ5IGxpbmUuDQo+IA0KPiBSZXZp
+ZXdlZC1CeTogSmVzIFNvcmVuc2VuIDxKZXMuU29yZW5zZW5AZ21haWwuY29tPg0KDQpUaGFua3Mg
+YSBsb3QgYW5kIEkgd2lsbCBmaXggYXMgeW91IGFkdmlzZWQgYmVsb3csIHRoZW4gSSB3aWxsIGFk
+ZCBhIFJldmlld2VkLWxpbmUgaW4gdGhlIG5leHQgcGF0Y2guDQoNCj4gDQo+ID4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvaW5wdXQvbWlzYy9kYTcyODAuYyBiL2RyaXZlcnMvaW5wdXQvbWlzYy9kYTcy
+ODAuYw0KPiA+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0IGluZGV4IDAwMDAwMDAuLmM4YzQyYWMNCj4g
+PiAtLS0gL2Rldi9udWxsDQo+ID4gKysrIGIvZHJpdmVycy9pbnB1dC9taXNjL2RhNzI4MC5jDQo+
+IA0KPiBbc25pcF0NCj4gDQo+ID4gK3N0YXRpYyBpbnQgZGE3MjgwX2hhcHRpY19zZXRfcHdtKHN0
+cnVjdCBkYTcyODBfaGFwdGljICpoYXB0aWNzLCBib29sIGVuYWJsZWQpDQo+ID4gK3sNCj4gPiAr
+CXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7DQo+ID4gKwl1NjQgcGVyaW9kX21hZ19tdWx0aTsNCj4g
+PiArCWludCBlcnJvcjsNCj4gPiArDQo+ID4gKwlpZiAoIWhhcHRpY3MtPmdhaW4gJiYgZW5hYmxl
+ZCkgew0KPiA+ICsJCWRldl9lcnIoaGFwdGljcy0+ZGV2LA0KPiA+ICsJCQkiUGxlYXNlIHNldCB0
+aGUgZ2FpbiBmaXJzdCBmb3IgdGhlIHB3bSBtb2RlXG4iKTsNCj4gPiArCQlyZXR1cm4gLUVJTlZB
+TDsNCj4gPiArCX0NCj4gPiArDQo+ID4gKwlwd21fZ2V0X3N0YXRlKGhhcHRpY3MtPnB3bV9kZXYs
+ICZzdGF0ZSk7DQo+ID4gKwlzdGF0ZS5lbmFibGVkID0gZW5hYmxlZDsNCj4gPiArCWlmIChlbmFi
+bGVkKSB7DQo+ID4gKwkJcGVyaW9kX21hZ19tdWx0aSA9IHN0YXRlLnBlcmlvZCAqIGhhcHRpY3Mt
+PmdhaW47DQo+IA0KPiBZb3UgYXJlIG11bHRpcGx5aW5nIGFuIHVuc2lnbmVkIGludCB0byBhIHUx
+NiBhbmQgc3RvcmluZyBpdCBpbiBhIHU2NC4NCj4gSG93ZXZlciwgQyBkb2Vzbid0IHByb21vdGUg
+dGhlIHR5cGVzLCBzbyB5b3UnbGwgZW5kIHVwIHdpdGggYW4NCj4gdW5leHBlY3RlZCByZXN1bHQg
+aGVyZS4gWW91IGNhbiBmaXggaXQgYnkgcHJvbW90aW5nIHN0YXRlLnBlcmlvZCB0byB1NjQsIGll
+Og0KPiANCj4gCQlwZXJpb2RfbWFnZV9tdWx0aSA9ICh1NjQpc3RhdGUucGVyaW9kICogaGFwdGlj
+cy0+Z2FpbjsNCj4gDQo+IFNlZSB0aGUgZm9sbG93aW5nIGV4YW1wbGUgY29kZSB3aGljaCBkZW1v
+bnN0cmF0ZXMgdGhlIHByb2JsZW0uDQo+IA0KPiAjaW5jbHVkZSA8c3RkaW8uaD4NCj4gI2luY2x1
+ZGUgPHN0ZGludC5oPg0KPiANCj4gdWludDY0X3QgZm9vKHVuc2lnbmVkIGludCBhLCB1aW50MTZf
+dCBiKQ0KPiB7DQo+IAl1aW50NjRfdCB0bXAgPSBhICogYjsNCj4gCXJldHVybiB0bXA7DQo+IH0N
+Cj4gDQo+IHVpbnQ2NF90IGJhcih1bnNpZ25lZCBpbnQgYSwgdWludDE2X3QgYikNCj4gew0KPiAJ
+dWludDY0X3QgdG1wID0gKHVpbnQ2NF90KWEgKiBiOw0KPiAJcmV0dXJuIHRtcDsNCj4gfQ0KPiAN
+Cj4gaW50IG1haW4oKQ0KPiB7DQo+IAl1aW50NjRfdCB2YWw7DQo+IAl1bnNpZ25lZCBpbnQgYSA9
+IDB4ZmYwMGZmMDA7DQo+IAl1aW50MTZfdCBiID0gMHgyMDA7DQo+IA0KPiAJdmFsID0gZm9vKGEs
+IGIpOw0KPiAJcHJpbnRmKCJyZXN1bHQoJTB4LCAlMHgpID0gJTBsbHhcbiIsIGEsIGIsIHZhbCk7
+DQo+IA0KPiAJdmFsID0gYmFyKGEsIGIpOw0KPiAJcHJpbnRmKCJyZXN1bHQoJTB4LCAlMHgpID0g
+JTBsbHhcbiIsIGEsIGIsIHZhbCk7DQo+IH0NCj4gDQo+IENoZWVycywNCj4gSmVzDQoNClllcywg
+eW91IGFyZSByaWdodCwgSSBzZWUgdGhlIGRpZmZlcmVudCByZXN1bHQsIEkgd2lsbCBmaXggdGhp
+cy4NCg0KS2luZCByZWdhcmRzLA0KUm95DQoNCg==
