@@ -1,84 +1,100 @@
-From: Roy Im <roy.im.opensource@diasemi.com>
-Subject: RE: [PATCH v16 3/3] Input: new da7280 haptic driver
-Date: Thu, 23 Jul 2020 02:23:29 +0000
-Message-ID: <DB8PR10MB34362941F9428B498ED4B94E85760@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
-References: <cover.1594279649.git.Roy.Im@diasemi.com>
- <b02ba5b5dbd3d58f27440ba639d32e4405061df3.1594279649.git.Roy.Im@diasemi.com>
- <bdc76da9-9223-b6d9-1fc1-2ef6e3b7afa7@gmail.com>
+From: "Tanwar, Rahul" <rahul.tanwar-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 2/2] Add PWM fan controller driver for LGM SoC
+Date: Thu, 23 Jul 2020 12:16:18 +0800
+Message-ID: <409ee148-a6a6-327f-e4d7-455f98ef4c66@linux.intel.com>
+References: <cover.1593503228.git.rahul.tanwar@linux.intel.com>
+ <a74b18b68f26bf902c30a017050cc4ea070da887.1593503228.git.rahul.tanwar@linux.intel.com>
+ <20200713191059.zsokzvv3k2hyaxcl@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <bdc76da9-9223-b6d9-1fc1-2ef6e3b7afa7@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20200713191059.zsokzvv3k2hyaxcl-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jes Sorensen <jes.sorensen@gmail.com>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, songjun.Wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, cheol.yong.kim-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, qi-ming.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rahul.tanwar.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVGh1cnNkYXksIEp1bHkgMjMsIDIwMjAgMTI6MjQgQU0sIEplcyBTb3JlbnNlbiB3cm90ZToN
-Cj4gT24gNy85LzIwIDM6MjcgQU0sIFJveSBJbSB3cm90ZToNCj4gPiBBZGRzIHN1cHBvcnQgZm9y
-IHRoZSBEaWFsb2cgREE3MjgwIExSQS9FUk0gSGFwdGljIERyaXZlciB3aXRoIG11bHRpcGxlDQo+
-ID4gbW9kZSBhbmQgaW50ZWdyYXRlZCB3YXZlZm9ybSBtZW1vcnkgYW5kIHdpZGViYW5kIHN1cHBv
-cnQuDQo+ID4gSXQgY29tbXVuaWNhdGVzIHZpYSBhbiBJMkMgYnVzIHRvIHRoZSBkZXZpY2UuDQo+
-ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBSb3kgSW0gPHJveS5pbS5vcGVuc291cmNlQGRpYXNlbWku
-Y29tPg0KPiA+IC0tLQ0KPiA+IHYxNjoNCj4gPiAJLSBDb3JyZWN0ZWQgc29tZSBjb2RlIGFuZCB1
-cGRhdGVkIGRlc2NyaXB0aW9uIGluIEtjb25maWcuDQo+ID4gdjE1Og0KPiA+IAktIFJlbW92ZWQg
-c29tZSBkZWZpbmVzIGFuZCB1cGRhdGVkIHNvbWUgY29tbWVudHMuDQo+ID4gdjE0Og0KPiA+IAkt
-IFVwZGF0ZWQgcHdtIHJlbGF0ZWQgY29kZSwgYWxpZ25tZW50cyBhbmQgY29tbWVudHMuDQo+ID4g
-djEzOg0KPiA+IAktIFVwZGF0ZWQgc29tZSBjb25kaXRpb25zIGluIHB3bSBmdW5jdGlvbiBhbmQg
-YWxpZ25tZW50cy4NCj4gPiB2MTI6IE5vIGNoYW5nZXMuDQo+ID4gdjExOg0KPiA+IAktIFVwZGF0
-ZWQgdGhlIHB3bSByZWxhdGVkIGNvZGUsIGNvbW1lbnRzIGFuZCB0eXBvLg0KPiA+IHYxMDoNCj4g
-PiAJLSBVcGRhdGVkIHRoZSBwd20gcmVsYXRlZCBmdW5jdGlvbiBhbmQgYWRkZWQgc29tZSBjb21t
-ZW50cy4NCj4gPiB2OToNCj4gPiAJLSBSZW1vdmVkIHRoZSBoZWFkZXIgZmlsZSBhbmQgcHV0IHRo
-ZSBkZWZpbml0aW9ucyBpbnRvIHRoZSBjIGZpbGUuDQo+ID4gCS0gVXBkYXRlZCB0aGUgcHdtIGNv
-ZGUgYW5kIGVycm9yIGxvZ3Mgd2l0aCAlcEUNCj4gPiB2ODoNCj4gPiAJLSBBZGRlZCBjaGFuZ2Vz
-IHRvIHN1cHBvcnQgRkZfUEVSSU9ESUMvRkZfQ1VTVE9NIGFuZCBGRl9DT05TVEFOVC4NCj4gPiAJ
-LSBVcGRhdGVkIHRoZSBkdC1yZWxhdGVkIGNvZGUuDQo+ID4gCS0gUmVtb3ZlZCBtZW1sZXNzIHJl
-bGF0ZWQgZnVuY3Rpb25zLg0KPiA+IHY3Og0KPiA+IAktIEFkZGVkIG1vcmUgYXR0cmlidXRlcyB0
-byBoYW5kbGUgb25lIHZhbHVlIHBlciBmaWxlLg0KPiA+IAktIFJlcGxhY2VkIGFuZCB1cGRhdGVk
-IHRoZSBkdC1yZWxhdGVkIGNvZGUgYW5kIGZ1bmN0aW9ucyBjYWxsZWQuDQo+ID4gCS0gRml4ZWQg
-ZXJyb3IvZnVuY3Rpb25zLg0KPiA+IHY2OiBObyBjaGFuZ2VzLg0KPiA+IHY1OiBGaXhlZCBlcnJv
-cnMgaW4gS2NvbmZpZyBmaWxlLg0KPiA+IHY0OiBVcGRhdGVkIGNvZGUgYXMgZHQtYmluZGluZ3Mg
-YXJlIGNoYW5nZWQuDQo+ID4gdjM6IE5vIGNoYW5nZXMuDQo+ID4gdjI6IEZpeGVkIGtidWlsZCBl
-cnJvci93YXJuaW5nDQo+ID4NCj4gPg0KPiA+ICBkcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZyAg
-fCAgIDEzICsNCj4gPiAgZHJpdmVycy9pbnB1dC9taXNjL01ha2VmaWxlIHwgICAgMSArDQo+ID4g
-IGRyaXZlcnMvaW5wdXQvbWlzYy9kYTcyODAuYyB8IDE4NDANCj4gPiArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDMgZmlsZXMgY2hhbmdlZCwgMTg1NCBp
-bnNlcnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lucHV0L21pc2Mv
-ZGE3MjgwLmMNCj4gDQo+IEhpIFJveSwNCj4gDQo+IE92ZXJhbGwgdGhlIGRyaXZlciBsb29rcyBw
-cmV0dHkgZ29vZCBub3cuIEkgZGlkIGZpbmQgb25lIGlzc3VlLCBzZWUgYmVsb3cuIElmIHlvdSBm
-aXggdGhhdCBJIGFtIGhhcHB5IHRvIGFkZCBhIFJldmlld2VkLWJ5IGxpbmUuDQo+IA0KPiBSZXZp
-ZXdlZC1CeTogSmVzIFNvcmVuc2VuIDxKZXMuU29yZW5zZW5AZ21haWwuY29tPg0KDQpUaGFua3Mg
-YSBsb3QgYW5kIEkgd2lsbCBmaXggYXMgeW91IGFkdmlzZWQgYmVsb3csIHRoZW4gSSB3aWxsIGFk
-ZCBhIFJldmlld2VkLWxpbmUgaW4gdGhlIG5leHQgcGF0Y2guDQoNCj4gDQo+ID4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvaW5wdXQvbWlzYy9kYTcyODAuYyBiL2RyaXZlcnMvaW5wdXQvbWlzYy9kYTcy
-ODAuYw0KPiA+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0IGluZGV4IDAwMDAwMDAuLmM4YzQyYWMNCj4g
-PiAtLS0gL2Rldi9udWxsDQo+ID4gKysrIGIvZHJpdmVycy9pbnB1dC9taXNjL2RhNzI4MC5jDQo+
-IA0KPiBbc25pcF0NCj4gDQo+ID4gK3N0YXRpYyBpbnQgZGE3MjgwX2hhcHRpY19zZXRfcHdtKHN0
-cnVjdCBkYTcyODBfaGFwdGljICpoYXB0aWNzLCBib29sIGVuYWJsZWQpDQo+ID4gK3sNCj4gPiAr
-CXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7DQo+ID4gKwl1NjQgcGVyaW9kX21hZ19tdWx0aTsNCj4g
-PiArCWludCBlcnJvcjsNCj4gPiArDQo+ID4gKwlpZiAoIWhhcHRpY3MtPmdhaW4gJiYgZW5hYmxl
-ZCkgew0KPiA+ICsJCWRldl9lcnIoaGFwdGljcy0+ZGV2LA0KPiA+ICsJCQkiUGxlYXNlIHNldCB0
-aGUgZ2FpbiBmaXJzdCBmb3IgdGhlIHB3bSBtb2RlXG4iKTsNCj4gPiArCQlyZXR1cm4gLUVJTlZB
-TDsNCj4gPiArCX0NCj4gPiArDQo+ID4gKwlwd21fZ2V0X3N0YXRlKGhhcHRpY3MtPnB3bV9kZXYs
-ICZzdGF0ZSk7DQo+ID4gKwlzdGF0ZS5lbmFibGVkID0gZW5hYmxlZDsNCj4gPiArCWlmIChlbmFi
-bGVkKSB7DQo+ID4gKwkJcGVyaW9kX21hZ19tdWx0aSA9IHN0YXRlLnBlcmlvZCAqIGhhcHRpY3Mt
-PmdhaW47DQo+IA0KPiBZb3UgYXJlIG11bHRpcGx5aW5nIGFuIHVuc2lnbmVkIGludCB0byBhIHUx
-NiBhbmQgc3RvcmluZyBpdCBpbiBhIHU2NC4NCj4gSG93ZXZlciwgQyBkb2Vzbid0IHByb21vdGUg
-dGhlIHR5cGVzLCBzbyB5b3UnbGwgZW5kIHVwIHdpdGggYW4NCj4gdW5leHBlY3RlZCByZXN1bHQg
-aGVyZS4gWW91IGNhbiBmaXggaXQgYnkgcHJvbW90aW5nIHN0YXRlLnBlcmlvZCB0byB1NjQsIGll
-Og0KPiANCj4gCQlwZXJpb2RfbWFnZV9tdWx0aSA9ICh1NjQpc3RhdGUucGVyaW9kICogaGFwdGlj
-cy0+Z2FpbjsNCj4gDQo+IFNlZSB0aGUgZm9sbG93aW5nIGV4YW1wbGUgY29kZSB3aGljaCBkZW1v
-bnN0cmF0ZXMgdGhlIHByb2JsZW0uDQo+IA0KPiAjaW5jbHVkZSA8c3RkaW8uaD4NCj4gI2luY2x1
-ZGUgPHN0ZGludC5oPg0KPiANCj4gdWludDY0X3QgZm9vKHVuc2lnbmVkIGludCBhLCB1aW50MTZf
-dCBiKQ0KPiB7DQo+IAl1aW50NjRfdCB0bXAgPSBhICogYjsNCj4gCXJldHVybiB0bXA7DQo+IH0N
-Cj4gDQo+IHVpbnQ2NF90IGJhcih1bnNpZ25lZCBpbnQgYSwgdWludDE2X3QgYikNCj4gew0KPiAJ
-dWludDY0X3QgdG1wID0gKHVpbnQ2NF90KWEgKiBiOw0KPiAJcmV0dXJuIHRtcDsNCj4gfQ0KPiAN
-Cj4gaW50IG1haW4oKQ0KPiB7DQo+IAl1aW50NjRfdCB2YWw7DQo+IAl1bnNpZ25lZCBpbnQgYSA9
-IDB4ZmYwMGZmMDA7DQo+IAl1aW50MTZfdCBiID0gMHgyMDA7DQo+IA0KPiAJdmFsID0gZm9vKGEs
-IGIpOw0KPiAJcHJpbnRmKCJyZXN1bHQoJTB4LCAlMHgpID0gJTBsbHhcbiIsIGEsIGIsIHZhbCk7
-DQo+IA0KPiAJdmFsID0gYmFyKGEsIGIpOw0KPiAJcHJpbnRmKCJyZXN1bHQoJTB4LCAlMHgpID0g
-JTBsbHhcbiIsIGEsIGIsIHZhbCk7DQo+IH0NCj4gDQo+IENoZWVycywNCj4gSmVzDQoNClllcywg
-eW91IGFyZSByaWdodCwgSSBzZWUgdGhlIGRpZmZlcmVudCByZXN1bHQsIEkgd2lsbCBmaXggdGhp
-cy4NCg0KS2luZCByZWdhcmRzLA0KUm95DQoNCg==
+
+Hi Uwe,
+
+Thanks for the feedback.
+
+On 14/7/2020 3:10 am, Uwe Kleine-König wrote:
+> Hello,
+>
+> On Tue, Jun 30, 2020 at 03:55:32PM +0800, Rahul Tanwar wrote:
+>> Intel Lightning Mountain(LGM) SoC contains a PWM fan controller.
+>> This PWM controller does not have any other consumer, it is a
+>> dedicated PWM controller for fan attached to the system. Add
+>> driver for this PWM fan controller.
+>>
+>> Signed-off-by: Rahul Tanwar <rahul.tanwar-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> ---
+>>  drivers/pwm/Kconfig         |  11 ++
+>>  drivers/pwm/Makefile        |   1 +
+>>  drivers/pwm/pwm-intel-lgm.c | 266 ++++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 278 insertions(+)
+>>  create mode 100644 drivers/pwm/pwm-intel-lgm.c
+
+[...]
+
+>> +
+>> +static int lgm_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>> +			 const struct pwm_state *state)
+>> +{
+>> +	struct lgm_pwm_chip *pc = to_lgm_pwm_chip(chip);
+>> +	u32 duty_cycle, val;
+>> +	unsigned int period;
+>> +
+>> +	if (!state->enabled) {
+>> +		lgm_pwm_enable(chip, 0);
+>> +		return 0;
+>> +	}
+>> +
+>> +	period = min_t(u64, state->period, pc->period);
+>> +
+>> +	if (state->polarity != PWM_POLARITY_NORMAL ||
+>> +	    period < pc->period)
+>> +		return -EINVAL;
+> This check looks wrong. If you refuse period < pc->period there isn't
+> much configuration possible.
+
+I am kind of stuck here. I made this change of adding a check
+period < pc->period based on your feedback on v2 patch.
+In fact, you had specified this code in v2 review feedback
+and i used the same exact code.
+
+How should we handle it when the hardware supports fixed period.
+We don't want user to change period and allow just changing
+duty_cycle. With that intention, i had first added a strict check
+which refused configuration if period != pc->period. Period is
+intended to be a read only value.
+
+How do you suggest we handle the fixed period hardware support?
+Would you have any reference example of other drivers which also
+supports fixed period? Thanks.
+
+[...]
+>> +static int lgm_pwm_remove(struct platform_device *pdev)
+>> +{
+>> +	struct lgm_pwm_chip *pc = platform_get_drvdata(pdev);
+>> +	int ret;
+>> +
+>> +	ret = pwmchip_remove(&pc->chip);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	clk_disable_unprepare(pc->clk);
+>> +	reset_control_assert(pc->rst);
+> Please swap the two previous lines to match the error patch of .probe.
+
+Again, i had made this change based on your below review feedback
+for v1. IMO, reverse of probe makes more sense.
+
+"In .probe() you first release reset and then enable the clock. It's good
+style to do it the other way round in .remove()."
+
+Regards,
+Rahul
