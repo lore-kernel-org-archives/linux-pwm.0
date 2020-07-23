@@ -1,95 +1,58 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 2/2] dt-bindings: pwm: keembay: Add bindings for Intel
- Keem Bay PWM
-Date: Thu, 23 Jul 2020 11:47:01 -0600
-Message-ID: <20200723174701.GA584130@bogus>
-References: <1595083628-20734-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
- <1595083628-20734-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH V17 3/3] Input: new da7280 haptic driver
+Date: Thu, 23 Jul 2020 13:50:37 -0700
+Message-ID: <71818ab8-0020-77db-c412-8d35a541ead3@infradead.org>
+References: <cover.1595516501.git.Roy.Im@diasemi.com>
+ <c13d812871b7f09205c1f04e95f5bdf07f307eaf.1595516501.git.Roy.Im@diasemi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34953 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726666AbgGWRrF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jul 2020 13:47:05 -0400
-Content-Disposition: inline
-In-Reply-To: <1595083628-20734-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbgGWUur (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jul 2020 16:50:47 -0400
+In-Reply-To: <c13d812871b7f09205c1f04e95f5bdf07f307eaf.1595516501.git.Roy.Im@diasemi.com>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: vineetha.g.jaya.kumaran@intel.com
-Cc: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, wan.ahmad.zainie.wan.mohamad@intel.com, andriy.shevchenko@intel.com
+To: Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Support Opensource <support.opensource@diasemi.com>, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On Sat, Jul 18, 2020 at 10:47:08PM +0800, vineetha.g.jaya.kumaran@intel.com wrote:
-> From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
-> 
-> Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
-> 
-> Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-> ---
->  .../devicetree/bindings/pwm/intel,keembay-pwm.yaml | 45 ++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
-> new file mode 100644
-> index 00000000..e9388a7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
-> @@ -0,0 +1,45 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2020 Intel Corporation
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/intel,keembay-pwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Intel Keem Bay PWM Device Tree Bindings
-> +
-> +maintainers:
-> +  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-> +
-> +allOf:
-> +  - $ref: pwm.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - intel,keembay-pwm
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  "#pwm-cells":
-> +    const: 2
-> +
-> +required:
-> + - compatible
-> + - reg
-> + - clocks
-> + - '#pwm-cells'
+On 7/23/20 8:01 AM, Roy Im wrote:
+> diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+> index 362e8a0..06dc5a3 100644
+> --- a/drivers/input/misc/Kconfig
+> +++ b/drivers/input/misc/Kconfig
+> @@ -869,4 +869,17 @@ config INPUT_STPMIC1_ONKEY
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called stpmic1_onkey.
+>  
+> +config INPUT_DA7280_HAPTICS
+> +	tristate "Dialog Semiconductor DA7280 haptics support"
+> +	depends on INPUT && I2C
+> +	select INPUT_FF_MEMLESS
+> +	select REGMAP_I2C
+> +	help
+> +	  Say Y to enable support for the Dialog DA7280 haptics driver.
+> +	  The haptics can be controlled by I2C communication,
+> +	  or by PWM input, or by GPI.
 
-Add:
+	  Is that                GPIO.
+?
 
-additionalProperties: false
+Can the haptics be controlled only by PWM or only by GPI(O)?
 
-With that,
+Just curious: why is I2C required to build the driver if a user is
+only controlling the device by PWM or GPI?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
 
 > +
-> +examples:
-> +  - |
-> +    #define KEEM_BAY_A53_GPIO
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called da7280.
 > +
-> +    pwm@203200a0 {
-> +      compatible = "intel,keembay-pwm";
-> +      reg = <0x203200a0 0xe8>;
-> +      clocks = <&scmi_clk KEEM_BAY_A53_GPIO>;
-> +      #pwm-cells = <2>;
-> +    };
-> -- 
-> 1.9.1
-> 
+>  endif
+
+thanks.
+-- 
+~Randy
