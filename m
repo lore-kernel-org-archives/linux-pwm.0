@@ -1,71 +1,66 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH V17 3/3] Input: new da7280 haptic driver
-Date: Thu, 23 Jul 2020 19:56:32 -0700
-Message-ID: <f549102d-4e69-c903-1672-f50bdb7994a3@infradead.org>
+From: Roy Im <roy.im.opensource@diasemi.com>
+Subject: RE: [PATCH V17 3/3] Input: new da7280 haptic driver
+Date: Fri, 24 Jul 2020 05:47:04 +0000
+Message-ID: <DB8PR10MB343624BF003338E8B34439AC85770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
 References: <cover.1595516501.git.Roy.Im@diasemi.com>
  <c13d812871b7f09205c1f04e95f5bdf07f307eaf.1595516501.git.Roy.Im@diasemi.com>
  <71818ab8-0020-77db-c412-8d35a541ead3@infradead.org>
  <DB8PR10MB343644A6DADE61D62BEE157C85770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
+ <f549102d-4e69-c903-1672-f50bdb7994a3@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <DB8PR10MB343644A6DADE61D62BEE157C85770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <f549102d-4e69-c903-1672-f50bdb7994a3@infradead.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+Sender: linux-input-owner@vger.kernel.org
+To: Randy Dunlap <rdunlap@infradead.org>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
 Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 7/23/20 6:54 PM, Roy Im wrote:
-> On Fri, July 24, 2020 5:51 AM, Randy Dunlap wrote
->> On 7/23/20 8:01 AM, Roy Im wrote:
->>> diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
->>> index 362e8a0..06dc5a3 100644
->>> --- a/drivers/input/misc/Kconfig
->>> +++ b/drivers/input/misc/Kconfig
->>> @@ -869,4 +869,17 @@ config INPUT_STPMIC1_ONKEY
->>>  	  To compile this driver as a module, choose M here: the
->>>  	  module will be called stpmic1_onkey.
->>>
->>> +config INPUT_DA7280_HAPTICS
->>> +	tristate "Dialog Semiconductor DA7280 haptics support"
->>> +	depends on INPUT && I2C
->>> +	select INPUT_FF_MEMLESS
->>> +	select REGMAP_I2C
->>> +	help
->>> +	  Say Y to enable support for the Dialog DA7280 haptics driver.
->>> +	  The haptics can be controlled by I2C communication,
->>> +	  or by PWM input, or by GPI.
->>
->> 	  Is that                GPIO.
->> ?
-> The Haptics can be working by GPI(if see from the haptic device), but from the Host it is GPO. Do you think the GPIO is correct?
-
-To me it needs to represent what services/interfaces/facilities are used by this driver that are
-provided by the Linux kernel.  If it uses Linux GPIO services, then it should say GPIO --
-although I don't see it using any Linux GPIO services.
-
->>
->> Can the haptics be controlled only by PWM or only by GPI(O)?
->>
->> Just curious: why is I2C required to build the driver if a user is only controlling the device by PWM or GPI?
-> 
-> I2C is required to control registers and it can be triggered by I2C or PWM or GPI(controlled by host outside this driver), so PWM and GPI are optional.
-> With your comments, I think it's better to remove below lines(//remove) to avoid confusion and add PWM as below if you agree.
->          // remove
-> 	  The haptics can be controlled by I2C communication,
-> 	  or by PWM input, or by GPI.
->          // update, adding || PWM
->          depends on (INPUT && I2C) || PWM
-
-Since <linux/pwm.h> provides stubs for when CONFIG_PWM is not enabled,
-it appears that "depends on  PWM" is not required.
-
-I'll leave it up to you. I was just trying to understand better.
-It may be that no changes are needed.
-
-
-thanks.
--- 
-~Randy
+RnJpZGF5LCBKdWx5IDI0LCAyMDIwIDExOjU3IEFNLCBSYW5keSBEdW5sYXAgd3JvdGUgDQo+IE9u
+IDcvMjMvMjAgNjo1NCBQTSwgUm95IEltIHdyb3RlOg0KPiA+IE9uIEZyaSwgSnVseSAyNCwgMjAy
+MCA1OjUxIEFNLCBSYW5keSBEdW5sYXAgd3JvdGUNCj4gPj4gT24gNy8yMy8yMCA4OjAxIEFNLCBS
+b3kgSW0gd3JvdGU6DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbnB1dC9taXNjL0tjb25m
+aWcgYi9kcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZw0KPiA+Pj4gaW5kZXggMzYyZThhMC4uMDZk
+YzVhMyAxMDA2NDQNCj4gPj4+IC0tLSBhL2RyaXZlcnMvaW5wdXQvbWlzYy9LY29uZmlnDQo+ID4+
+PiArKysgYi9kcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZw0KPiA+Pj4gQEAgLTg2OSw0ICs4Njks
+MTcgQEAgY29uZmlnIElOUFVUX1NUUE1JQzFfT05LRVkNCj4gPj4+ICAJICBUbyBjb21waWxlIHRo
+aXMgZHJpdmVyIGFzIGEgbW9kdWxlLCBjaG9vc2UgTSBoZXJlOiB0aGUNCj4gPj4+ICAJICBtb2R1
+bGUgd2lsbCBiZSBjYWxsZWQgc3RwbWljMV9vbmtleS4NCj4gPj4+DQo+ID4+PiArY29uZmlnIElO
+UFVUX0RBNzI4MF9IQVBUSUNTDQo+ID4+PiArCXRyaXN0YXRlICJEaWFsb2cgU2VtaWNvbmR1Y3Rv
+ciBEQTcyODAgaGFwdGljcyBzdXBwb3J0Ig0KPiA+Pj4gKwlkZXBlbmRzIG9uIElOUFVUICYmIEky
+Qw0KPiA+Pj4gKwlzZWxlY3QgSU5QVVRfRkZfTUVNTEVTUw0KPiA+Pj4gKwlzZWxlY3QgUkVHTUFQ
+X0kyQw0KPiA+Pj4gKwloZWxwDQo+ID4+PiArCSAgU2F5IFkgdG8gZW5hYmxlIHN1cHBvcnQgZm9y
+IHRoZSBEaWFsb2cgREE3MjgwIGhhcHRpY3MgZHJpdmVyLg0KPiA+Pj4gKwkgIFRoZSBoYXB0aWNz
+IGNhbiBiZSBjb250cm9sbGVkIGJ5IEkyQyBjb21tdW5pY2F0aW9uLA0KPiA+Pj4gKwkgIG9yIGJ5
+IFBXTSBpbnB1dCwgb3IgYnkgR1BJLg0KPiA+Pg0KPiA+PiAJICBJcyB0aGF0ICAgICAgICAgICAg
+ICAgIEdQSU8uDQo+ID4+ID8NCj4gPiBUaGUgSGFwdGljcyBjYW4gYmUgd29ya2luZyBieSBHUEko
+aWYgc2VlIGZyb20gdGhlIGhhcHRpYyBkZXZpY2UpLCBidXQgZnJvbSB0aGUgSG9zdCBpdCBpcyBH
+UE8uIERvIHlvdSB0aGluayB0aGUgR1BJTyBpcw0KPiBjb3JyZWN0Pw0KPiANCj4gVG8gbWUgaXQg
+bmVlZHMgdG8gcmVwcmVzZW50IHdoYXQgc2VydmljZXMvaW50ZXJmYWNlcy9mYWNpbGl0aWVzIGFy
+ZSB1c2VkIGJ5IHRoaXMgZHJpdmVyIHRoYXQgYXJlIHByb3ZpZGVkIGJ5IHRoZSBMaW51eCBrZXJu
+ZWwuDQo+IElmIGl0IHVzZXMgTGludXggR1BJTyBzZXJ2aWNlcywgdGhlbiBpdCBzaG91bGQgc2F5
+IEdQSU8gLS0gYWx0aG91Z2ggSSBkb24ndCBzZWUgaXQgdXNpbmcgYW55IExpbnV4IEdQSU8gc2Vy
+dmljZXMuDQoNCk9LLCBsZXQgbWUgY2hhbmdlIHRvIEdQSU8uDQoNCj4gDQo+ID4+DQo+ID4+IENh
+biB0aGUgaGFwdGljcyBiZSBjb250cm9sbGVkIG9ubHkgYnkgUFdNIG9yIG9ubHkgYnkgR1BJKE8p
+Pw0KPiA+Pg0KPiA+PiBKdXN0IGN1cmlvdXM6IHdoeSBpcyBJMkMgcmVxdWlyZWQgdG8gYnVpbGQg
+dGhlIGRyaXZlciBpZiBhIHVzZXIgaXMgb25seSBjb250cm9sbGluZyB0aGUgZGV2aWNlIGJ5IFBX
+TSBvciBHUEk/DQo+ID4NCj4gPiBJMkMgaXMgcmVxdWlyZWQgdG8gY29udHJvbCByZWdpc3RlcnMg
+YW5kIGl0IGNhbiBiZSB0cmlnZ2VyZWQgYnkgSTJDIG9yIFBXTSBvciBHUEkoY29udHJvbGxlZCBi
+eSBob3N0IG91dHNpZGUgdGhpcyBkcml2ZXIpLA0KPiBzbyBQV00gYW5kIEdQSSBhcmUgb3B0aW9u
+YWwuDQo+ID4gV2l0aCB5b3VyIGNvbW1lbnRzLCBJIHRoaW5rIGl0J3MgYmV0dGVyIHRvIHJlbW92
+ZSBiZWxvdyBsaW5lcygvL3JlbW92ZSkgdG8gYXZvaWQgY29uZnVzaW9uIGFuZCBhZGQgUFdNIGFz
+IGJlbG93IGlmDQo+IHlvdSBhZ3JlZS4NCj4gPiAgICAgICAgICAvLyByZW1vdmUNCj4gPiAJICBU
+aGUgaGFwdGljcyBjYW4gYmUgY29udHJvbGxlZCBieSBJMkMgY29tbXVuaWNhdGlvbiwNCj4gPiAJ
+ICBvciBieSBQV00gaW5wdXQsIG9yIGJ5IEdQSS4NCj4gPiAgICAgICAgICAvLyB1cGRhdGUsIGFk
+ZGluZyB8fCBQV00NCj4gPiAgICAgICAgICBkZXBlbmRzIG9uIChJTlBVVCAmJiBJMkMpIHx8IFBX
+TQ0KPiANCj4gU2luY2UgPGxpbnV4L3B3bS5oPiBwcm92aWRlcyBzdHVicyBmb3Igd2hlbiBDT05G
+SUdfUFdNIGlzIG5vdCBlbmFibGVkLCBpdCBhcHBlYXJzIHRoYXQgImRlcGVuZHMgb24gIFBXTSIg
+aXMgbm90DQo+IHJlcXVpcmVkLg0KPiANCj4gSSdsbCBsZWF2ZSBpdCB1cCB0byB5b3UuIEkgd2Fz
+IGp1c3QgdHJ5aW5nIHRvIHVuZGVyc3RhbmQgYmV0dGVyLg0KPiBJdCBtYXkgYmUgdGhhdCBubyBj
+aGFuZ2VzIGFyZSBuZWVkZWQuDQoNCk9LLCB0aGFua3MgZm9yIHlvdXIgY29tbWVudHMuIFRvIGJl
+IGNsZWFyZXIsIEkgd291bGQgbGlrZSB0byB1cGRhdGUgYXMgYmVsb3cgaWYgeW91IGFncmVlDQoJ
+DQoJZGVwZW5kcyBvbiBJTlBVVCAmJiBJMkMNCi4uLg0KCVRoZSBoYXB0aWNzIGNhbiBiZSBjb250
+cm9sbGVkIGJ5IFBXTSBvciBHUElPDQoJd2l0aCBJMkMgY29tbXVuaWNhdGlvbi4NCj4gDQo+IA0K
+PiB0aGFua3MuDQo+IC0tDQo+IH5SYW5keQ0KDQpLaW5kIHJlZ2FyZHMsDQpSb3kNCg==
