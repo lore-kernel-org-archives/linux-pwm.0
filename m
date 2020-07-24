@@ -1,51 +1,69 @@
-Return-path: <broonie@kernel.org>
-Date: Wed, 08 Jul 2020 18:00:25 +0100
-From: Mark Brown <broonie@kernel.org>
-In-Reply-To: <20200706175353.16404-1-michael@walle.cc>
-References: <20200706175353.16404-1-michael@walle.cc>
-Message-Id: <159422762554.28767.4356365814640031762.b4-ty@kernel.org>
-Subject: Re: [PATCH v5 00/13] Add support for Kontron sl28cpld
-To: linux-watchdog@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Michael Walle <michael@walle.cc>
-Cc: Jason Cooper <jason@lakedaemon.net>, Lee Jones <lee.jones@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Wim Van Sebroeck <wim@linux-watchdog.org>, Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, u.kleine-koenig@pengutronix.de, Guenter Roeck <linux@roeck-us.net>, Thomas Gleixner <tglx@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Marc Zyngier <maz@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>
+Return-path: <martin.botka1@gmail.com>
+MIME-Version: 1.0
+References: <20200724213659.273599-1-martin.botka1@gmail.com> <20200724220516.GA21965@amd>
+In-Reply-To: <20200724220516.GA21965@amd>
+From: Martin Botka <martin.botka1@gmail.com>
+Date: Sat, 25 Jul 2020 00:20:17 +0200
+Message-ID: <CADQ2G_HbysJbiQKSRmA6HDRfjPYPiDjbZfeuUjM1mNV-BBBC-A@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000cf89a005ab376228"
+Subject: Re: [PATCH RFC 0/6] Add QCOM pwm-lpg and tri-led drivers
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Jacek Anaszewski <jacek.anaszewski@gmail.com>, Dan Murphy <dmurphy@ti.com>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 
-On Mon, 6 Jul 2020 19:53:40 +0200, Michael Walle wrote:
-> The Kontron sl28cpld is a board management chip providing gpio, pwm, fan
-> monitoring and an interrupt controller. For now this controller is used on
-> the Kontron SMARC-sAL28 board. But because of its flexible nature, it
-> might also be used on other boards in the future. The individual blocks
-> (like gpio, pwm, etc) are kept intentionally small. The MFD core driver
-> then instantiates different (or multiple of the same) blocks. It also
-> provides the register layout so it might be updated in the future without a
-> device tree change; and support other boards with a different layout or
-> functionalities.
-> 
-> [...]
+--000000000000cf89a005ab376228
+Content-Type: text/plain; charset="UTF-8"
 
-Applied to
+Hi,
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
+> Dalsi cech co hackuje LEDky?
 
-Thanks!
+Nie. Slovak.
 
-[1/1] regmap-irq: use fwnode instead of device node in add_irq_chip()
-      commit: 5cc2013bfeee756a1ee6da9bfbe42e52b4695035
+> Bindings should go first, they may need to be converted to yml
+> (devicetree people will know).
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+OK
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+> Can generic pwm driver be used here?
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+I have not tried to do that. But considering it's custom chip from Qualcomm
+then it's unlikely.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+>This is for RGB modules, right? It will need to use multicolor
+>framework.
 
-Thanks,
-Mark
+This is for RGB LEDs in phones that are connected via pmic.
+
+> Is this for phone, btw? If so, which one?
+
+Yes it is. And it's for many many phones actually. I have done this mainly
+for SONY phones (Xperia 10, 10 Plus, XA2, XA2 Plus, XA2 Ultra).
+All of them use these drivers for generating the PWM and controlling the
+LEDs.
+
+Best Regards,
+Martin
+
+--000000000000cf89a005ab376228
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><div>Hi,</div><div><br></div><div>&gt; Da=
+lsi cech co hackuje LEDky?</div><div><br></div><div>Nie. Slovak.<br></div><=
+div><br></div><div>&gt; Bindings should go first, they may need to be conve=
+rted to yml<br>
+&gt; (devicetree people will know).</div><div><br></div><div>OK</div><div><=
+br></div><div>&gt; Can generic pwm driver be used here?</div><div><br></div=
+><div>I have not tried to do that. But considering it&#39;s custom chip fro=
+m Qualcomm then it&#39;s unlikely.</div><div><br></div><div>&gt;This is for=
+ RGB modules, right? It will need to use multicolor<br>
+&gt;framework.</div><div><br></div><div>This is for RGB LEDs in phones that=
+ are connected via pmic.</div><div><br></div><div>&gt; Is this for phone, b=
+tw? If so, which one?</div><div><br></div><div>Yes it is. And it&#39;s for =
+many many phones actually. I have done this mainly for SONY phones (Xperia =
+10, 10 Plus, XA2, XA2 Plus, XA2 Ultra).</div><div>All of them use these dri=
+vers for generating the PWM and controlling the LEDs.</div><div><br></div><=
+div>Best Regards,</div><div>Martin<br></div></div></div>
+
+--000000000000cf89a005ab376228--
