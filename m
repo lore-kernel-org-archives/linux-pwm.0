@@ -1,112 +1,50 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH V17 3/3] Input: new da7280 haptic driver
-Date: Thu, 23 Jul 2020 13:55:02 -0700
-Message-ID: <ad4f8a07-9e78-ce97-021f-094210d99a3c@infradead.org>
+From: Roy Im <roy.im.opensource@diasemi.com>
+Subject: RE: [PATCH V17 3/3] Input: new da7280 haptic driver
+Date: Fri, 24 Jul 2020 01:54:35 +0000
+Message-ID: <DB8PR10MB343644A6DADE61D62BEE157C85770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
 References: <cover.1595516501.git.Roy.Im@diasemi.com>
  <c13d812871b7f09205c1f04e95f5bdf07f307eaf.1595516501.git.Roy.Im@diasemi.com>
+ <71818ab8-0020-77db-c412-8d35a541ead3@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbgGWUzK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jul 2020 16:55:10 -0400
-In-Reply-To: <c13d812871b7f09205c1f04e95f5bdf07f307eaf.1595516501.git.Roy.Im@diasemi.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <71818ab8-0020-77db-c412-8d35a541ead3@infradead.org>
 Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Sender: linux-input-owner@vger.kernel.org
+To: Randy Dunlap <rdunlap@infradead.org>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Support Opensource <support.opensource@diasemi.com>, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On 7/23/20 8:01 AM, Roy Im wrote:
-> Adds support for the Dialog DA7280 LRA/ERM Haptic Driver with
-> multiple mode and integrated waveform memory and wideband support.
-> It communicates via an I2C bus to the device.
-> 
-> Reviewed-by: Jes Sorensen <Jes.Sorensen@gmail.com>.
-> 
-> Signed-off-by: Roy Im <roy.im.opensource@diasemi.com>
-> 
-> ---
-> 
-> 
->  drivers/input/misc/Kconfig  |   13 +
->  drivers/input/misc/Makefile |    1 +
->  drivers/input/misc/da7280.c | 1840 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 1854 insertions(+)
->  create mode 100644 drivers/input/misc/da7280.c
-> 
-
-> diff --git a/drivers/input/misc/da7280.c b/drivers/input/misc/da7280.c
-> new file mode 100644
-> index 0000000..6e3ead5
-> --- /dev/null
-> +++ b/drivers/input/misc/da7280.c
-> @@ -0,0 +1,1840 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * DA7280 Haptic device driver
-> + *
-> + * Copyright (c) 2020 Dialog Semiconductor.
-> + * Author: Roy Im <Roy.Im.Opensource@diasemi.com>
-> + */
-> +
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/input.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/module.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regmap.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/uaccess.h>
-> +#include <linux/bitops.h>
-> +#include <linux/bitfield.h>
-> +
-
-...
-
-
-> +static int da7280_haptic_set_pwm(struct da7280_haptic *haptics, bool enabled)
-> +{
-> +	struct pwm_state state;
-> +	u64 period_mag_multi;
-> +	int error;
-> +
-> +	if (!haptics->gain && enabled) {
-> +		dev_err(haptics->dev,
-> +			"Please set the gain first for the pwm mode\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	pwm_get_state(haptics->pwm_dev, &state);
-> +	state.enabled = enabled;
-> +	if (enabled) {
-> +		period_mag_multi = (u64)state.period * haptics->gain;
-> +		period_mag_multi >>= MAX_MAGNITUDE_SHIFT;
-> +
-> +		/* The interpretation of duty cycle depends on the acc_en,
-> +		 * it should be between 50% and 100% for acc_en = 0.
-> +		 * See datasheet 'PWM mode' section.
-> +		 */
-
-from coding-style.rst:
-
-	/*
-	 * This is the preferred style for multi-line
-	 * comments in the Linux kernel source code.
-	 * Please use it consistently.
-	 *
-	 * Description:  A column of asterisks on the left side,
-	 * with beginning and ending almost-blank lines.
-	 */
-
-(except for networking code)
-
-Please fix multiple locations.
-
-
-thanks.
--- 
-~Randy
+T24gRnJpLCBKdWx5IDI0LCAyMDIwIDU6NTEgQU0sIFJhbmR5IER1bmxhcCB3cm90ZQ0KPiBPbiA3
+LzIzLzIwIDg6MDEgQU0sIFJveSBJbSB3cm90ZToNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
+bnB1dC9taXNjL0tjb25maWcgYi9kcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZw0KPiA+IGluZGV4
+IDM2MmU4YTAuLjA2ZGM1YTMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9pbnB1dC9taXNjL0tj
+b25maWcNCj4gPiArKysgYi9kcml2ZXJzL2lucHV0L21pc2MvS2NvbmZpZw0KPiA+IEBAIC04Njks
+NCArODY5LDE3IEBAIGNvbmZpZyBJTlBVVF9TVFBNSUMxX09OS0VZDQo+ID4gIAkgIFRvIGNvbXBp
+bGUgdGhpcyBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhlcmU6IHRoZQ0KPiA+ICAJICBt
+b2R1bGUgd2lsbCBiZSBjYWxsZWQgc3RwbWljMV9vbmtleS4NCj4gPg0KPiA+ICtjb25maWcgSU5Q
+VVRfREE3MjgwX0hBUFRJQ1MNCj4gPiArCXRyaXN0YXRlICJEaWFsb2cgU2VtaWNvbmR1Y3RvciBE
+QTcyODAgaGFwdGljcyBzdXBwb3J0Ig0KPiA+ICsJZGVwZW5kcyBvbiBJTlBVVCAmJiBJMkMNCj4g
+PiArCXNlbGVjdCBJTlBVVF9GRl9NRU1MRVNTDQo+ID4gKwlzZWxlY3QgUkVHTUFQX0kyQw0KPiA+
+ICsJaGVscA0KPiA+ICsJICBTYXkgWSB0byBlbmFibGUgc3VwcG9ydCBmb3IgdGhlIERpYWxvZyBE
+QTcyODAgaGFwdGljcyBkcml2ZXIuDQo+ID4gKwkgIFRoZSBoYXB0aWNzIGNhbiBiZSBjb250cm9s
+bGVkIGJ5IEkyQyBjb21tdW5pY2F0aW9uLA0KPiA+ICsJICBvciBieSBQV00gaW5wdXQsIG9yIGJ5
+IEdQSS4NCj4gDQo+IAkgIElzIHRoYXQgICAgICAgICAgICAgICAgR1BJTy4NCj4gPw0KVGhlIEhh
+cHRpY3MgY2FuIGJlIHdvcmtpbmcgYnkgR1BJKGlmIHNlZSBmcm9tIHRoZSBoYXB0aWMgZGV2aWNl
+KSwgYnV0IGZyb20gdGhlIEhvc3QgaXQgaXMgR1BPLiBEbyB5b3UgdGhpbmsgdGhlIEdQSU8gaXMg
+Y29ycmVjdD8NCg0KPiANCj4gQ2FuIHRoZSBoYXB0aWNzIGJlIGNvbnRyb2xsZWQgb25seSBieSBQ
+V00gb3Igb25seSBieSBHUEkoTyk/DQo+IA0KPiBKdXN0IGN1cmlvdXM6IHdoeSBpcyBJMkMgcmVx
+dWlyZWQgdG8gYnVpbGQgdGhlIGRyaXZlciBpZiBhIHVzZXIgaXMgb25seSBjb250cm9sbGluZyB0
+aGUgZGV2aWNlIGJ5IFBXTSBvciBHUEk/DQoNCkkyQyBpcyByZXF1aXJlZCB0byBjb250cm9sIHJl
+Z2lzdGVycyBhbmQgaXQgY2FuIGJlIHRyaWdnZXJlZCBieSBJMkMgb3IgUFdNIG9yIEdQSShjb250
+cm9sbGVkIGJ5IGhvc3Qgb3V0c2lkZSB0aGlzIGRyaXZlciksIHNvIFBXTSBhbmQgR1BJIGFyZSBv
+cHRpb25hbC4NCldpdGggeW91ciBjb21tZW50cywgSSB0aGluayBpdCdzIGJldHRlciB0byByZW1v
+dmUgYmVsb3cgbGluZXMoLy9yZW1vdmUpIHRvIGF2b2lkIGNvbmZ1c2lvbiBhbmQgYWRkIFBXTSBh
+cyBiZWxvdyBpZiB5b3UgYWdyZWUuDQogICAgICAgICAvLyByZW1vdmUNCgkgIFRoZSBoYXB0aWNz
+IGNhbiBiZSBjb250cm9sbGVkIGJ5IEkyQyBjb21tdW5pY2F0aW9uLA0KCSAgb3IgYnkgUFdNIGlu
+cHV0LCBvciBieSBHUEkuDQogICAgICAgICAvLyB1cGRhdGUsIGFkZGluZyB8fCBQV00NCiAgICAg
+ICAgIGRlcGVuZHMgb24gKElOUFVUICYmIEkyQykgfHwgUFdNDQo+IA0KPiANCj4gPiArDQo+ID4g
+KwkgIFRvIGNvbXBpbGUgdGhpcyBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhlcmU6IHRo
+ZQ0KPiA+ICsJICBtb2R1bGUgd2lsbCBiZSBjYWxsZWQgZGE3MjgwLg0KPiA+ICsNCj4gPiAgZW5k
+aWYNCj4gDQo+IHRoYW5rcy4NCj4gLS0NCj4gflJhbmR5DQoNCktpbmQgcmVnYXJkcywNClJveQ0K
