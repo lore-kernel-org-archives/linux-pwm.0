@@ -1,71 +1,71 @@
-From: Roy Im <roy.im.opensource@diasemi.com>
-Subject: RE: [PATCH V17 3/3] Input: new da7280 haptic driver
-Date: Fri, 24 Jul 2020 02:06:22 +0000
-Message-ID: <DB8PR10MB3436A78B153E566464AA07E085770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH V17 3/3] Input: new da7280 haptic driver
+Date: Thu, 23 Jul 2020 19:56:32 -0700
+Message-ID: <f549102d-4e69-c903-1672-f50bdb7994a3@infradead.org>
 References: <cover.1595516501.git.Roy.Im@diasemi.com>
  <c13d812871b7f09205c1f04e95f5bdf07f307eaf.1595516501.git.Roy.Im@diasemi.com>
- <ad4f8a07-9e78-ce97-021f-094210d99a3c@infradead.org>
+ <71818ab8-0020-77db-c412-8d35a541ead3@infradead.org>
+ <DB8PR10MB343644A6DADE61D62BEE157C85770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-eopbgr40041.outbound.protection.outlook.com ([40.107.4.41]:25572
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726976AbgGXCG0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 23 Jul 2020 22:06:26 -0400
-In-Reply-To: <ad4f8a07-9e78-ce97-021f-094210d99a3c@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <DB8PR10MB343644A6DADE61D62BEE157C85770@DB8PR10MB3436.EURPRD10.PROD.OUTLOOK.COM>
 Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>, Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Roy Im <roy.im.opensource@diasemi.com>, Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Brian Masney <masneyb@onstation.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Greg KH <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>, Maximilian Luz <luzmaximilian@gmail.com>, Pascal PAILLET-LME <p.paillet@st.com>, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
 Cc: Support Opensource <Support.Opensource@diasemi.com>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpIEp1bHkgMjQsIDIwMjAgNTo1NSBBTSwgUmFuZHkgRHVubGFwIHdyb3RlOiANCj4gT24g
-Ny8yMy8yMCA4OjAxIEFNLCBSb3kgSW0gd3JvdGU6DQo+ID4gQWRkcyBzdXBwb3J0IGZvciB0aGUg
-RGlhbG9nIERBNzI4MCBMUkEvRVJNIEhhcHRpYyBEcml2ZXIgd2l0aCBtdWx0aXBsZQ0KPiA+IG1v
-ZGUgYW5kIGludGVncmF0ZWQgd2F2ZWZvcm0gbWVtb3J5IGFuZCB3aWRlYmFuZCBzdXBwb3J0Lg0K
-PiA+IEl0IGNvbW11bmljYXRlcyB2aWEgYW4gSTJDIGJ1cyB0byB0aGUgZGV2aWNlLg0KPiA+DQo+
-ID4gUmV2aWV3ZWQtYnk6IEplcyBTb3JlbnNlbiA8SmVzLlNvcmVuc2VuQGdtYWlsLmNvbT4uDQo+
-ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBSb3kgSW0gPHJveS5pbS5vcGVuc291cmNlQGRpYXNlbWku
-Y29tPg0KPiA+DQo+ID4gLS0tDQo+ID4NCj4gPg0KPiA+ICBkcml2ZXJzL2lucHV0L21pc2MvS2Nv
-bmZpZyAgfCAgIDEzICsNCj4gPiAgZHJpdmVycy9pbnB1dC9taXNjL01ha2VmaWxlIHwgICAgMSAr
-DQo+ID4gIGRyaXZlcnMvaW5wdXQvbWlzYy9kYTcyODAuYyB8IDE4NDANCj4gPiArKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDMgZmlsZXMgY2hhbmdlZCwg
-MTg1NCBpbnNlcnRpb25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lucHV0
-L21pc2MvZGE3MjgwLmMNCj4gPg0KPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbnB1dC9t
-aXNjL2RhNzI4MC5jIGIvZHJpdmVycy9pbnB1dC9taXNjL2RhNzI4MC5jDQo+ID4gbmV3IGZpbGUg
-bW9kZSAxMDA2NDQgaW5kZXggMDAwMDAwMC4uNmUzZWFkNQ0KPiA+IC0tLSAvZGV2L251bGwNCj4g
-PiArKysgYi9kcml2ZXJzL2lucHV0L21pc2MvZGE3MjgwLmMNCj4gPiBAQCAtMCwwICsxLDE4NDAg
-QEANCj4gPiArLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjArDQo+ID4gKy8qDQo+
-ID4gKyAqIERBNzI4MCBIYXB0aWMgZGV2aWNlIGRyaXZlcg0KPiA+ICsgKg0KPiA+ICsgKiBDb3B5
-cmlnaHQgKGMpIDIwMjAgRGlhbG9nIFNlbWljb25kdWN0b3IuDQo+ID4gKyAqIEF1dGhvcjogUm95
-IEltIDxSb3kuSW0uT3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4gICovDQo+ID4gKw0KPiA+ICsjaW5j
-bHVkZSA8bGludXgvZXJyLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9pMmMuaD4NCj4gPiArI2lu
-Y2x1ZGUgPGxpbnV4L2lucHV0Lmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9pbnRlcnJ1cHQuaD4N
-Cj4gPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgvcHdt
-Lmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9yZWdtYXAuaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4
-L3dvcmtxdWV1ZS5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgvdWFjY2Vzcy5oPg0KPiA+ICsjaW5j
-bHVkZSA8bGludXgvYml0b3BzLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9iaXRmaWVsZC5oPg0K
-PiA+ICsNCj4gDQo+IC4uLg0KPiANCj4gDQo+ID4gK3N0YXRpYyBpbnQgZGE3MjgwX2hhcHRpY19z
-ZXRfcHdtKHN0cnVjdCBkYTcyODBfaGFwdGljICpoYXB0aWNzLCBib29sDQo+ID4gK2VuYWJsZWQp
-IHsNCj4gPiArCXN0cnVjdCBwd21fc3RhdGUgc3RhdGU7DQo+ID4gKwl1NjQgcGVyaW9kX21hZ19t
-dWx0aTsNCj4gPiArCWludCBlcnJvcjsNCj4gPiArDQo+ID4gKwlpZiAoIWhhcHRpY3MtPmdhaW4g
-JiYgZW5hYmxlZCkgew0KPiA+ICsJCWRldl9lcnIoaGFwdGljcy0+ZGV2LA0KPiA+ICsJCQkiUGxl
-YXNlIHNldCB0aGUgZ2FpbiBmaXJzdCBmb3IgdGhlIHB3bSBtb2RlXG4iKTsNCj4gPiArCQlyZXR1
-cm4gLUVJTlZBTDsNCj4gPiArCX0NCj4gPiArDQo+ID4gKwlwd21fZ2V0X3N0YXRlKGhhcHRpY3Mt
-PnB3bV9kZXYsICZzdGF0ZSk7DQo+ID4gKwlzdGF0ZS5lbmFibGVkID0gZW5hYmxlZDsNCj4gPiAr
-CWlmIChlbmFibGVkKSB7DQo+ID4gKwkJcGVyaW9kX21hZ19tdWx0aSA9ICh1NjQpc3RhdGUucGVy
-aW9kICogaGFwdGljcy0+Z2FpbjsNCj4gPiArCQlwZXJpb2RfbWFnX211bHRpID4+PSBNQVhfTUFH
-TklUVURFX1NISUZUOw0KPiA+ICsNCj4gPiArCQkvKiBUaGUgaW50ZXJwcmV0YXRpb24gb2YgZHV0
-eSBjeWNsZSBkZXBlbmRzIG9uIHRoZSBhY2NfZW4sDQo+ID4gKwkJICogaXQgc2hvdWxkIGJlIGJl
-dHdlZW4gNTAlIGFuZCAxMDAlIGZvciBhY2NfZW4gPSAwLg0KPiA+ICsJCSAqIFNlZSBkYXRhc2hl
-ZXQgJ1BXTSBtb2RlJyBzZWN0aW9uLg0KPiA+ICsJCSAqLw0KPiANCj4gZnJvbSBjb2Rpbmctc3R5
-bGUucnN0Og0KPiANCj4gCS8qDQo+IAkgKiBUaGlzIGlzIHRoZSBwcmVmZXJyZWQgc3R5bGUgZm9y
-IG11bHRpLWxpbmUNCj4gCSAqIGNvbW1lbnRzIGluIHRoZSBMaW51eCBrZXJuZWwgc291cmNlIGNv
-ZGUuDQo+IAkgKiBQbGVhc2UgdXNlIGl0IGNvbnNpc3RlbnRseS4NCj4gCSAqDQo+IAkgKiBEZXNj
-cmlwdGlvbjogIEEgY29sdW1uIG9mIGFzdGVyaXNrcyBvbiB0aGUgbGVmdCBzaWRlLA0KPiAJICog
-d2l0aCBiZWdpbm5pbmcgYW5kIGVuZGluZyBhbG1vc3QtYmxhbmsgbGluZXMuDQo+IAkgKi8NCj4g
-DQo+IChleGNlcHQgZm9yIG5ldHdvcmtpbmcgY29kZSkNCj4gDQo+IFBsZWFzZSBmaXggbXVsdGlw
-bGUgbG9jYXRpb25zLg0KT0ssIEkgd2lsbCBmaXggdGhlbS4NCg0KPiANCj4gDQo+IHRoYW5rcy4N
-Cj4gLS0NCj4gflJhbmR5DQoNCktpbmQgcmVnYXJkcywNClJveQ0K
+On 7/23/20 6:54 PM, Roy Im wrote:
+> On Fri, July 24, 2020 5:51 AM, Randy Dunlap wrote
+>> On 7/23/20 8:01 AM, Roy Im wrote:
+>>> diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+>>> index 362e8a0..06dc5a3 100644
+>>> --- a/drivers/input/misc/Kconfig
+>>> +++ b/drivers/input/misc/Kconfig
+>>> @@ -869,4 +869,17 @@ config INPUT_STPMIC1_ONKEY
+>>>  	  To compile this driver as a module, choose M here: the
+>>>  	  module will be called stpmic1_onkey.
+>>>
+>>> +config INPUT_DA7280_HAPTICS
+>>> +	tristate "Dialog Semiconductor DA7280 haptics support"
+>>> +	depends on INPUT && I2C
+>>> +	select INPUT_FF_MEMLESS
+>>> +	select REGMAP_I2C
+>>> +	help
+>>> +	  Say Y to enable support for the Dialog DA7280 haptics driver.
+>>> +	  The haptics can be controlled by I2C communication,
+>>> +	  or by PWM input, or by GPI.
+>>
+>> 	  Is that                GPIO.
+>> ?
+> The Haptics can be working by GPI(if see from the haptic device), but from the Host it is GPO. Do you think the GPIO is correct?
+
+To me it needs to represent what services/interfaces/facilities are used by this driver that are
+provided by the Linux kernel.  If it uses Linux GPIO services, then it should say GPIO --
+although I don't see it using any Linux GPIO services.
+
+>>
+>> Can the haptics be controlled only by PWM or only by GPI(O)?
+>>
+>> Just curious: why is I2C required to build the driver if a user is only controlling the device by PWM or GPI?
+> 
+> I2C is required to control registers and it can be triggered by I2C or PWM or GPI(controlled by host outside this driver), so PWM and GPI are optional.
+> With your comments, I think it's better to remove below lines(//remove) to avoid confusion and add PWM as below if you agree.
+>          // remove
+> 	  The haptics can be controlled by I2C communication,
+> 	  or by PWM input, or by GPI.
+>          // update, adding || PWM
+>          depends on (INPUT && I2C) || PWM
+
+Since <linux/pwm.h> provides stubs for when CONFIG_PWM is not enabled,
+it appears that "depends on  PWM" is not required.
+
+I'll leave it up to you. I was just trying to understand better.
+It may be that no changes are needed.
+
+
+thanks.
+-- 
+~Randy
