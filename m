@@ -4,42 +4,42 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7A0C43616
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE370C43616
 	for <linux-pwm@archiver.kernel.org>; Sat, 25 Jul 2020 23:19:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1F8D2207FC
+	by mail.kernel.org (Postfix) with ESMTP id A06C920825
 	for <linux-pwm@archiver.kernel.org>; Sat, 25 Jul 2020 23:19:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="pmucjxbz"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="oRTdPI3r"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728144AbgGYXTr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 25 Jul 2020 19:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S1728096AbgGYXTE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 25 Jul 2020 19:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728107AbgGYXTF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 25 Jul 2020 19:19:05 -0400
+        with ESMTP id S1727978AbgGYXTE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 25 Jul 2020 19:19:04 -0400
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9499CC08C5C0;
-        Sat, 25 Jul 2020 16:19:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0191C08C5C0;
+        Sat, 25 Jul 2020 16:19:03 -0700 (PDT)
 Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 716C823E44;
-        Sun, 26 Jul 2020 01:19:02 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 9ECEB23E40;
+        Sun, 26 Jul 2020 01:18:59 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1595719143;
+        t=1595719140;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8f+9wMUYIftgWhOFB1JTULU7e/DlL3E7X7hMoc+boKM=;
-        b=pmucjxbz11RDuWUvKHhmJMc5JNC9upNN/Arz6EJ5vpYzm24iMGLgo8NjG3IEbHZDAGg8ew
-        eaTmvyhhuGAO/DsQCB1s24FXPHWj2JBtel4jnxLsDBbD5MSEl0FfeNegsHpOv8bQAYdL2Z
-        gzeRT2Xq9YUrfqOpy6ElYWF1xa1PwKo=
+        bh=L1UADNJtfY19n1D4ai/YTAoIWOOZ5WFFaX6JGzp/f94=;
+        b=oRTdPI3rCiJrVnCY9/i7z3Qttf37uorwbIVDNQBzi8AZ5zWzAAm+SnRxdkoi46a+PpjPAZ
+        XfxnAGjP9VcTwo8beaYU8jQ4hdIaT0gOFJvphFflOmB3rJCmyq8YdpJLgYYcDMsszys038
+        yrF+OKIhAGuxKDncj53CtzQ/NDLeERg=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
@@ -64,9 +64,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v6 06/13] pwm: add support for sl28cpld PWM controller
-Date:   Sun, 26 Jul 2020 01:18:27 +0200
-Message-Id: <20200725231834.25642-7-michael@walle.cc>
+Subject: [PATCH v6 04/13] irqchip: add sl28cpld interrupt controller support
+Date:   Sun, 26 Jul 2020 01:18:25 +0200
+Message-Id: <20200725231834.25642-5-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200725231834.25642-1-michael@walle.cc>
 References: <20200725231834.25642-1-michael@walle.cc>
@@ -78,312 +78,167 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add support for the PWM controller of the sl28cpld board management
-controller. This is part of a multi-function device driver.
+Add support for the interrupt controller inside the sl28 CPLD management
+controller.
 
-The controller has one PWM channel and can just generate four distinct
-frequencies.
+The interrupt controller can handle at most 8 interrupts and is really
+simplistic and consists only of an interrupt mask and an interrupt
+pending register.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Marc Zyngier <maz@kernel.org>
 ---
 Changes since v5:
- - added brief description of the PWM hardware implementation
- - added hardware limitations
- - dropped the frequency mode table, instead calculate the prescaler
-   value on the fly.
- - round the requested parameters instead of support just distinct
-   periods.
- - prefix the macros by SL28CPLD_ to make them less generic
- - set polarity to PWM_POLARITY_NORMAL and reject inverted polarity
-   requests.
- - apply the workaround just for prescaler value of 0.
- - make errors during probing more verbose
+ - none
 
 Changes since v4:
  - update copyright year
- - remove #include <linux/of_device.h>, suggested by Andy.
- - make the pwm mode table look nicer, suggested by Lee.
- - use dev_get_drvdata(chip->dev) instead of container_of(), suggested by
-   Lee.
- - use whole sentence in comments, suggested by Lee.
- - renamed the local "struct sl28cpld_pwm" variable to "priv" everywhere,
-   suggested by Lee.
- - use pwm_{get,set}_relative_duty_cycle(), suggested by Andy.
- - make the comment about the 250Hz hardware limitation clearer
- - don't use "if (ret < 0)", but only "if (ret)", suggested by Andy.
- - don't use KBUID_MODNAME
- - remove comma in terminator line of the compatible strings list
+ - don't use "int irq" instead of "unsigne int irq", because
+   platform_get_irq() might return a negative error code. Found by "kernel
+   test robot <lkp@intel.com>
+ - remove comma in terminator line of the compatible strings list,
+   suggested by Andy
+ - use newer devm_regmap_add_irq_chip_fwnode()
+ - don't use KBUID_MODNAME, suggested by Andy
  - remove the platform device table
 
 Changes since v3:
  - see cover letter
 
- drivers/pwm/Kconfig        |  10 ++
- drivers/pwm/Makefile       |   1 +
- drivers/pwm/pwm-sl28cpld.c | 223 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 234 insertions(+)
- create mode 100644 drivers/pwm/pwm-sl28cpld.c
+ drivers/irqchip/Kconfig        |  8 +++
+ drivers/irqchip/Makefile       |  1 +
+ drivers/irqchip/irq-sl28cpld.c | 96 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 105 insertions(+)
+ create mode 100644 drivers/irqchip/irq-sl28cpld.c
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 7dbcf6973d33..a0d50d70c3b9 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -428,6 +428,16 @@ config PWM_SIFIVE
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-sifive.
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 216b3b8392b5..b23d23eed3a5 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -246,6 +246,14 @@ config RENESAS_RZA1_IRQC
+ 	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
+ 	  to 8 external interrupts with configurable sense select.
  
-+config PWM_SL28CPLD
-+	tristate "Kontron sl28cpld PWM support"
++config SL28CPLD_INTC
++	bool "Kontron sl28cpld IRQ controller"
 +	select MFD_SIMPLE_MFD_I2C
++	select REGMAP_IRQ
 +	help
-+	  Generic PWM framework driver for board management controller
++	  Interrupt controller driver for the board management controller
 +	  found on the Kontron sl28 CPLD.
 +
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-sl28cpld.
-+
- config PWM_SPEAR
- 	tristate "STMicroelectronics SPEAr PWM support"
- 	depends on PLAT_SPEAR || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 2c2ba0a03557..cbdcd55d69ee 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
- obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
- obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
-+obj-$(CONFIG_PWM_SL28CPLD)	+= pwm-sl28cpld.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
- obj-$(CONFIG_PWM_SPRD)		+= pwm-sprd.o
- obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
-diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
+ config ST_IRQCHIP
+ 	bool
+ 	select REGMAP
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 133f9c45744a..39af7d89204d 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -111,3 +111,4 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
+ obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
+ obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
+ obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
++obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
+diff --git a/drivers/irqchip/irq-sl28cpld.c b/drivers/irqchip/irq-sl28cpld.c
 new file mode 100644
-index 000000000000..956fa09f3aba
+index 000000000000..0aa50d025ef6
 --- /dev/null
-+++ b/drivers/pwm/pwm-sl28cpld.c
-@@ -0,0 +1,223 @@
++++ b/drivers/irqchip/irq-sl28cpld.c
+@@ -0,0 +1,96 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * sl28cpld PWM driver
++ * sl28cpld interrupt controller driver
 + *
-+ * Copyright (c) 2020 Michael Walle <michael@walle.cc>
-+ *
-+ * There is no public datasheet available for this PWM core. But it is easy
-+ * enough to be briefly explained. It consists of one 8-bit counter. The PWM
-+ * supports four distinct frequencies by selecting when to reset the counter.
-+ * With the prescaler setting you can select which bit of the counter is used
-+ * to reset it. This implies that the higher the frequency the less remaining
-+ * bits are available for the actual counter.
-+ *
-+ * Let cnt[7:0] be the counter, clocked at 32kHz:
-+ * +-----------+--------+--------------+-----------+
-+ * | prescaler |  reset | counter bits | frequency |
-+ * +-----------+--------+--------------+-----------+
-+ * |         0 | cnt[7] |     cnt[6:0] |     250Hz |
-+ * |         1 | cnt[6] |     cnt[5:0] |     500Hz |
-+ * |         2 | cnt[5] |     cnt[4:0] |      1kHz |
-+ * |         3 | cnt[4] |     cnt[3:0] |      2kHz |
-+ * +-----------+--------+--------------+-----------+
-+ *
-+ * Limitations:
-+ * - The hardware cannot generate a 100% duty cycle if the prescaler is 0.
-+ * - The hardware cannot atomically set the prescaler and the counter value,
-+ *   which might lead to glitches and inconsistent states if a write fails.
-+ * - The counter is not reset if you switch the prescaler which leads
-+ *   to glitches, too.
-+ * - The duty cycle will switch immediately and not after a complete cycle.
-+ * - Depending on the actual implementation, disabling the PWM might have
-+ *   side effects. For example, if the output pin is shared with a GPIO pin
-+ *   it will automatically switch back to GPIO mode.
++ * Copyright 2020 Kontron Europe GmbH
 + */
 +
-+#include <linux/bitfield.h>
++#include <linux/interrupt.h>
 +#include <linux/kernel.h>
 +#include <linux/mod_devicetable.h>
 +#include <linux/module.h>
 +#include <linux/platform_device.h>
-+#include <linux/pwm.h>
++#include <linux/property.h>
 +#include <linux/regmap.h>
 +
-+/*
-+ * PWM timer block registers.
-+ */
-+#define SL28CPLD_PWM_CTRL			0x00
-+#define   SL28CPLD_PWM_CTRL_ENABLE		BIT(7)
-+#define   SL28CPLD_PWM_CTRL_PRESCALER_MASK	GENMASK(1, 0)
-+#define SL28CPLD_PWM_CYCLE			0x01
-+#define   SL28CPLD_PWM_CYCLE_MAX		GENMASK(6, 0)
++#define INTC_IE 0x00
++#define INTC_IP 0x01
 +
-+#define SL28CPLD_PWM_CLK			32000 /* 32 kHz */
-+#define SL28CPLD_PWM_MAX_DUTY_CYCLE(prescaler)	(1 << (7 - (prescaler)))
-+#define SL28CPLD_PWM_PERIOD(prescaler) \
-+	(NSEC_PER_SEC / SL28CPLD_PWM_CLK * SL28CPLD_PWM_MAX_DUTY_CYCLE(prescaler))
++static const struct regmap_irq sl28cpld_irqs[] = {
++	REGMAP_IRQ_REG_LINE(0, 8),
++	REGMAP_IRQ_REG_LINE(1, 8),
++	REGMAP_IRQ_REG_LINE(2, 8),
++	REGMAP_IRQ_REG_LINE(3, 8),
++	REGMAP_IRQ_REG_LINE(4, 8),
++	REGMAP_IRQ_REG_LINE(5, 8),
++	REGMAP_IRQ_REG_LINE(6, 8),
++	REGMAP_IRQ_REG_LINE(7, 8),
++};
 +
-+/*
-+ * We calculate the duty cycle like this:
-+ *   duty_cycle_ns = pwm_cycle_reg * max_period_ns / max_duty_cycle
-+ *
-+ * With
-+ *   max_period_ns = (1 << 7 - prescaler) / pwm_clk * NSEC_PER_SEC
-+ *   max_duty_cycle = 1 << (7 - prescaler)
-+ * this then simplifies to:
-+ *   duty_cycle_ns = pwm_cycle_reg / pwm_clk * NSEC_PER_SEC
-+ */
-+#define SL28CPLD_PWM_TO_DUTY_CYCLE(reg) \
-+	(NSEC_PER_SEC / SL28CPLD_PWM_CLK * (reg))
-+#define SL28CPLD_PWM_FROM_DUTY_CYCLE(duty_cycle) \
-+	(DIV_ROUND_DOWN_ULL((duty_cycle), NSEC_PER_SEC / SL28CPLD_PWM_CLK))
-+
-+struct sl28cpld_pwm {
-+	struct pwm_chip pwm_chip;
++struct sl28cpld_intc {
 +	struct regmap *regmap;
-+	u32 offset;
++	struct regmap_irq_chip chip;
++	struct regmap_irq_chip_data *irq_data;
 +};
 +
-+static void sl28cpld_pwm_get_state(struct pwm_chip *chip,
-+				   struct pwm_device *pwm,
-+				   struct pwm_state *state)
++static int sl28cpld_intc_probe(struct platform_device *pdev)
 +{
-+	struct sl28cpld_pwm *priv = dev_get_drvdata(chip->dev);
-+	unsigned int reg;
-+	int prescaler;
-+
-+	regmap_read(priv->regmap, priv->offset + SL28CPLD_PWM_CTRL, &reg);
-+
-+	state->enabled = reg & SL28CPLD_PWM_CTRL_ENABLE;
-+
-+	prescaler = FIELD_GET(SL28CPLD_PWM_CTRL_PRESCALER_MASK, reg);
-+	state->period = SL28CPLD_PWM_PERIOD(prescaler);
-+
-+	regmap_read(priv->regmap, priv->offset + SL28CPLD_PWM_CYCLE, &reg);
-+	state->duty_cycle = SL28CPLD_PWM_TO_DUTY_CYCLE(reg);
-+	state->polarity = PWM_POLARITY_NORMAL;
-+}
-+
-+static int sl28cpld_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			      const struct pwm_state *state)
-+{
-+	struct sl28cpld_pwm *priv = dev_get_drvdata(chip->dev);
-+	unsigned int cycle, prescaler;
-+	int ret;
-+	u8 ctrl;
-+
-+	/* Polarity inversion is not supported */
-+	if (state->polarity != PWM_POLARITY_NORMAL)
-+		return -EINVAL;
-+
-+	/*
-+	 * Calculate the prescaler. Pick the the biggest period that isn't
-+	 * bigger than the requested period.
-+	 */
-+	prescaler = DIV_ROUND_UP_ULL(SL28CPLD_PWM_PERIOD(0), state->period);
-+	prescaler = order_base_2(prescaler);
-+
-+	if (prescaler > field_max(SL28CPLD_PWM_CTRL_PRESCALER_MASK))
-+		return -ERANGE;
-+
-+	ctrl = FIELD_PREP(SL28CPLD_PWM_CTRL_PRESCALER_MASK, prescaler);
-+	if (state->enabled)
-+		ctrl |= SL28CPLD_PWM_CTRL_ENABLE;
-+
-+	cycle = SL28CPLD_PWM_FROM_DUTY_CYCLE(state->duty_cycle);
-+	cycle = min_t(unsigned int, cycle, SL28CPLD_PWM_MAX_DUTY_CYCLE(prescaler));
-+
-+	/*
-+	 * Work around the hardware limitation. See also above. Trap 100% duty
-+	 * cycle if the prescaler is 0. Set prescaler to 1 instead. We don't
-+	 * care about the frequency because its "all-one" in either case.
-+	 *
-+	 * We don't need to check the actual prescaler setting, because only
-+	 * if the prescaler is 0 we can have this particular value.
-+	 */
-+	if (cycle == SL28CPLD_PWM_MAX_DUTY_CYCLE(0)) {
-+		ctrl &= ~SL28CPLD_PWM_CTRL_PRESCALER_MASK;
-+		ctrl |= FIELD_PREP(SL28CPLD_PWM_CTRL_PRESCALER_MASK, 1);
-+		cycle = SL28CPLD_PWM_MAX_DUTY_CYCLE(1);
-+	}
-+
-+	ret = regmap_write(priv->regmap, priv->offset + SL28CPLD_PWM_CTRL, ctrl);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(priv->regmap, priv->offset + SL28CPLD_PWM_CYCLE, (u8)cycle);
-+}
-+
-+static const struct pwm_ops sl28cpld_pwm_ops = {
-+	.apply = sl28cpld_pwm_apply,
-+	.get_state = sl28cpld_pwm_get_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int sl28cpld_pwm_probe(struct platform_device *pdev)
-+{
-+	struct sl28cpld_pwm *priv;
-+	struct pwm_chip *chip;
++	struct device *dev = &pdev->dev;
++	struct sl28cpld_intc *irqchip;
++	int irq;
++	u32 base;
 +	int ret;
 +
-+	if (!pdev->dev.parent)
++	if (!dev->parent)
 +		return -ENODEV;
 +
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
++	irqchip = devm_kzalloc(dev, sizeof(*irqchip), GFP_KERNEL);
++	if (!irqchip)
 +		return -ENOMEM;
 +
-+	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!priv->regmap)
++	irqchip->regmap = dev_get_regmap(dev->parent, NULL);
++	if (!irqchip->regmap)
 +		return -ENODEV;
 +
-+	ret = device_property_read_u32(&pdev->dev, "reg", &priv->offset);
-+	if (ret) {
-+		dev_err(&pdev->dev, "no 'reg' property found (%pe)\n",
-+			ERR_PTR(ret));
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	ret = device_property_read_u32(&pdev->dev, "reg", &base);
++	if (ret)
 +		return -EINVAL;
-+	}
 +
-+	/* Initialize the pwm_chip structure */
-+	chip = &priv->pwm_chip;
-+	chip->dev = &pdev->dev;
-+	chip->ops = &sl28cpld_pwm_ops;
-+	chip->base = -1;
-+	chip->npwm = 1;
++	irqchip->chip.name = "sl28cpld-intc";
++	irqchip->chip.irqs = sl28cpld_irqs;
++	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
++	irqchip->chip.num_regs = 1;
++	irqchip->chip.status_base = base + INTC_IP;
++	irqchip->chip.mask_base = base + INTC_IE;
++	irqchip->chip.mask_invert = true,
++	irqchip->chip.ack_base = base + INTC_IP;
 +
-+	ret = pwmchip_add(&priv->pwm_chip);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to add PWM chip (%pe)",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	return 0;
++	return devm_regmap_add_irq_chip_fwnode(dev, dev_fwnode(dev),
++					       irqchip->regmap, irq,
++					       IRQF_SHARED | IRQF_ONESHOT, 0,
++					       &irqchip->chip,
++					       &irqchip->irq_data);
 +}
 +
-+static int sl28cpld_pwm_remove(struct platform_device *pdev)
-+{
-+	struct sl28cpld_pwm *priv = platform_get_drvdata(pdev);
-+
-+	return pwmchip_remove(&priv->pwm_chip);
-+}
-+
-+static const struct of_device_id sl28cpld_pwm_of_match[] = {
-+	{ .compatible = "kontron,sl28cpld-pwm" },
++static const struct of_device_id sl28cpld_intc_of_match[] = {
++	{ .compatible = "kontron,sl28cpld-intc" },
 +	{}
 +};
-+MODULE_DEVICE_TABLE(of, sl28cpld_pwm_of_match);
++MODULE_DEVICE_TABLE(of, sl28cpld_intc_of_match);
 +
-+static struct platform_driver sl28cpld_pwm_driver = {
-+	.probe = sl28cpld_pwm_probe,
-+	.remove	= sl28cpld_pwm_remove,
++static struct platform_driver sl28cpld_intc_driver = {
++	.probe = sl28cpld_intc_probe,
 +	.driver = {
-+		.name = "sl28cpld-pwm",
-+		.of_match_table = sl28cpld_pwm_of_match,
-+	},
++		.name = "sl28cpld-intc",
++		.of_match_table = sl28cpld_intc_of_match,
++	}
 +};
-+module_platform_driver(sl28cpld_pwm_driver);
++module_platform_driver(sl28cpld_intc_driver);
 +
-+MODULE_DESCRIPTION("sl28cpld PWM Driver");
++MODULE_DESCRIPTION("sl28cpld Interrupt Controller Driver");
 +MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
 +MODULE_LICENSE("GPL");
 -- 
