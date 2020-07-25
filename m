@@ -2,87 +2,107 @@ Return-Path: <SRS0=eTc7=BE=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB156C433E1
-	for <linux-pwm@archiver.kernel.org>; Sat, 25 Jul 2020 15:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CBBC433E8
+	for <linux-pwm@archiver.kernel.org>; Sat, 25 Jul 2020 23:19:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AEA8A206D7
-	for <linux-pwm@archiver.kernel.org>; Sat, 25 Jul 2020 15:31:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E28F32070B
+	for <linux-pwm@archiver.kernel.org>; Sat, 25 Jul 2020 23:19:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AFUoYUJz"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="m+Ehso6C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbgGYPbf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 25 Jul 2020 11:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726567AbgGYPbf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 25 Jul 2020 11:31:35 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80FCC08C5C0;
-        Sat, 25 Jul 2020 08:31:34 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id g7so4587255ejw.12;
-        Sat, 25 Jul 2020 08:31:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FR6Dp1DwruwS2azPHTv2qb7tleyh4uVI6t5Ki9azlJY=;
-        b=AFUoYUJzlD0ujrfjmTQivGD3aK3f626Pvakeu4Sg3IfEIDnJ3m1LhvT5ayAJsphM/R
-         UMIWUNDCVbfgcqbAB9VZkQRWnx35an9XabgBXSNB271/oeqjYBZiBmDOEDjEunw0+sjD
-         C7mL43cwcaNnI+KaxNACIuCCaR1WlYOtbzc3LRXoiF/yOUtgEYmtFDbwa+oDSfvJZVJE
-         9j6hS5oTB6WTCTBkXs5zWCT9tvr4jjBEVeNDSU2dPr+oaf/4PA58BM99374omurbdj3+
-         nD9Aj5L7YTtcruqhFgN9b+E7XDDfoM9QJ2V2MixEbHeE8J8qQSmQGN33/7sP91maudu6
-         OI0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FR6Dp1DwruwS2azPHTv2qb7tleyh4uVI6t5Ki9azlJY=;
-        b=Rl2sxRSnEVVQEC/t4J3YhqqRF8IeGm4CGVG47dU98M0r71uiLJyULgXc5DM8oV/2+o
-         5EO03Q54sbN89ek0Hll6o4X5WyVvNRX9f1f2Yy/Y+luI3lNzNfl2qEdSg0nMKF4Fx78G
-         l5fkZyoP9eB3xgBtHBSiYxtGiPtnS8JeBtLnYGkx8CqDmDlqO3VxsP6cBt5Su/Ug2XkP
-         3A3rJhkT4O5Lv76CqW2drZV5n43+ibluDG18XB9jU1CpGhBw83BeNWqXu5S8nJj1pF5C
-         plxIXvPBCbb4kx5nD56+BuNg7ww3dfRUHOe7NHwgmnNHyeYJqDaooj1EUvTLcLLdhnrO
-         TCug==
-X-Gm-Message-State: AOAM533vJJ9dsTe0DTmXueU0TODFlRKwtYvNxpyxsIklSE5L2UbUChRX
-        PQ5O3xDU0lXbIj1uANc5H1rD9gjy6oNSdIlaYek=
-X-Google-Smtp-Source: ABdhPJwodSebe7Q/3rJdh2eDl+klzcVBlt0lFi0R8BZlsZYXjCOayE3PYJWUPAE+Fd7Kn3lUrHABclLwiMNPZ+3blY4=
-X-Received: by 2002:a17:906:f106:: with SMTP id gv6mr11788715ejb.221.1595691093472;
- Sat, 25 Jul 2020 08:31:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200724213659.273599-1-martin.botka1@gmail.com>
- <20200724213659.273599-3-martin.botka1@gmail.com> <CADQ2G_G7N_iH523urk3wOieZ0bT7O88Vnnbq6r_h9A4GLXQ5Nw@mail.gmail.com>
- <20200725152442.GA11424@duo.ucw.cz>
-In-Reply-To: <20200725152442.GA11424@duo.ucw.cz>
-From:   Martin Botka <martin.botka1@gmail.com>
-Date:   Sat, 25 Jul 2020 17:30:57 +0200
-Message-ID: <CADQ2G_FmvAS_fzDzENxgx+G0JUiktgRvKL=LLCc1cYE=nATUDw@mail.gmail.com>
-Subject: Re: [PATCH RFC 2/6] pwm: core: Add option to config PWM duty/period
- with u64 data length
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Fenglin Wu <fenglinw@codeaurora.org>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        id S1728062AbgGYXTD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 25 Jul 2020 19:19:03 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:55099 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727978AbgGYXTC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 25 Jul 2020 19:19:02 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D78DA23E3F;
+        Sun, 26 Jul 2020 01:18:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1595719139;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H2B8ttJ42dTzqVNdmFa3MX4YvKetSzzq/kFHiQy1AgA=;
+        b=m+Ehso6CLT/Ck9ZM3H3xskkzr3b0I/HsSi5C7c8W7/rhwwnKDCS9yUZHTqX1ixQdSkg76Q
+        7fvdoOusdlfr5U+dmdDTHxrezF70JkOR/v7TiXCFr/5lKUkqzq8+iLzlevnb1ak2ORh+DH
+        CgJW6zUpxsigEGELWzDqEcP/0F+07U8=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Lee Jones <lee.jones@linaro.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v6 03/13] mfd: simple-mfd-i2c: add sl28cpld support
+Date:   Sun, 26 Jul 2020 01:18:24 +0200
+Message-Id: <20200725231834.25642-4-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200725231834.25642-1-michael@walle.cc>
+References: <20200725231834.25642-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-> +#include <linux/math64.h>
-> -               gain_q23 = (gain_q23 * dmic->boost_gain) / 100;
-> +               gain_q23 = div_u64(gain_q23 * dmic->boost_gain, 100);
+Add the core support for the board management controller found on the
+SMARC-sAL28 board.
 
-Ok so using a macro.
+At the moment, this controller is used on the Kontron SMARC-sAL28 board.
 
-Thank you.
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+Changes since v5:
+ - none
+
+Changes since v4:
+ - new patch
+
+ drivers/mfd/simple-mfd-i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
+index 45090ddad104..dd19abd41d30 100644
+--- a/drivers/mfd/simple-mfd-i2c.c
++++ b/drivers/mfd/simple-mfd-i2c.c
+@@ -37,6 +37,7 @@ static int simple_mfd_i2c_probe(struct i2c_client *i2c)
+ }
+ 
+ static const struct of_device_id simple_mfd_i2c_of_match[] = {
++	{ .compatible = "kontron,sl28cpld-r1" },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
+-- 
+2.20.1
+
