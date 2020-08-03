@@ -7,39 +7,36 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D353C433E1
-	for <linux-pwm@archiver.kernel.org>; Mon,  3 Aug 2020 09:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32A2C433E3
+	for <linux-pwm@archiver.kernel.org>; Mon,  3 Aug 2020 09:43:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E1E052075A
-	for <linux-pwm@archiver.kernel.org>; Mon,  3 Aug 2020 09:43:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF35C20722
+	for <linux-pwm@archiver.kernel.org>; Mon,  3 Aug 2020 09:43:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="TJ4SGCWQ"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="q9Qu3btp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgHCJnK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 3 Aug 2020 05:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726725AbgHCJmp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 3 Aug 2020 05:42:45 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CBFC06174A;
-        Mon,  3 Aug 2020 02:42:45 -0700 (PDT)
+        id S1726770AbgHCJnS (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 3 Aug 2020 05:43:18 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:35247 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726119AbgHCJmo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 3 Aug 2020 05:42:44 -0400
 Received: from mwalle01.sab.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 76C4023E4D;
-        Mon,  3 Aug 2020 11:42:43 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2F58923E44;
+        Mon,  3 Aug 2020 11:42:38 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1596447763;
+        t=1596447758;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bvnsLyYf1JHOyd7YVGqjpgdfQ+WaLwamZw/gB4VpKLQ=;
-        b=TJ4SGCWQ49DWoiQHizJb9Cf9sLAlCj2QQfNQ6Fvp2lliM7dV5JbGSR1pOwi7iKx2axSYLq
-        JZQ7cRh2Hpq/JRl83kqOfZFTJ01S03/uDYf15OjN2+K7veewgkegfAo3vR8qWFf8KPwlg7
-        b5+GBhEgLcoeafY5sjdBjK27ct9P+BU=
+        bh=LTNURoT62lgE6Qd3OeqKKh+i+lgcL1aXrQtabBSYfcU=;
+        b=q9Qu3btpARtCQfdqlq66nrpW5/ij89PlMN8UntF+0Po6Y9KkuLTi+qgtqM4n7T8idim8QZ
+        yT+DGfvfwZmyN4wDJ5033vDePGY1XYoSXqPLJJK8FMqrQj4gtveVUW8VMETMWae0PZW2jC
+        uDtamjA3AHsLJH6NLSV4ZX/2LX8+Nlo=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
@@ -64,9 +61,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v7 11/13] arm64: dts: freescale: sl28: enable LED support
-Date:   Mon,  3 Aug 2020 11:35:57 +0200
-Message-Id: <20200803093559.12289-12-michael@walle.cc>
+Subject: [PATCH v7 04/13] irqchip: add sl28cpld interrupt controller support
+Date:   Mon,  3 Aug 2020 11:35:50 +0200
+Message-Id: <20200803093559.12289-5-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200803093559.12289-1-michael@walle.cc>
 References: <20200803093559.12289-1-michael@walle.cc>
@@ -78,55 +75,172 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Now that we have support for GPIO lines of the SMARC connector, enable
-LED support on the KBox A-230-LS. There are two LEDs without fixed
-functions, one is yellow and one is green. Unfortunately, it is just one
-multi-color LED, thus while it is possible to enable both at the same
-time it is hard to tell the difference between "yellow only" and "yellow
-and green".
+Add support for the interrupt controller inside the sl28 CPLD management
+controller.
+
+The interrupt controller can handle at most 8 interrupts and is really
+simplistic and consists only of an interrupt mask and an interrupt
+pending register.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Marc Zyngier <maz@kernel.org>
 ---
 Changes since v6:
  - none
 
 Changes since v5:
- - changed the label, suggested by Pavel Machek
+ - none
 
 Changes since v4:
- - none
+ - update copyright year
+ - don't use "int irq" instead of "unsigne int irq", because
+   platform_get_irq() might return a negative error code. Found by "kernel
+   test robot <lkp@intel.com>
+ - remove comma in terminator line of the compatible strings list,
+   suggested by Andy
+ - use newer devm_regmap_add_irq_chip_fwnode()
+ - don't use KBUID_MODNAME, suggested by Andy
+ - remove the platform device table
 
 Changes since v3:
  - see cover letter
 
- .../fsl-ls1028a-kontron-kbox-a-230-ls.dts          | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/irqchip/Kconfig        |  8 +++
+ drivers/irqchip/Makefile       |  1 +
+ drivers/irqchip/irq-sl28cpld.c | 96 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 105 insertions(+)
+ create mode 100644 drivers/irqchip/irq-sl28cpld.c
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-index 4b4cc6a1573d..01a17b3af5ba 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-@@ -16,6 +16,20 @@
- 	model = "Kontron KBox A-230-LS";
- 	compatible = "kontron,kbox-a-230-ls", "kontron,sl28-var4",
- 		     "kontron,sl28", "fsl,ls1028a";
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		alarm-led {
-+			label = "yellow:alarm";
-+			gpios = <&sl28cpld_gpio0 0 0>;
-+		};
-+
-+		power-led {
-+			label = "green:power";
-+			gpios = <&sl28cpld_gpio1 3 0>;
-+		};
-+	};
- };
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index bb70b7177f94..977bd7bcfe5c 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -246,6 +246,14 @@ config RENESAS_RZA1_IRQC
+ 	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
+ 	  to 8 external interrupts with configurable sense select.
  
- &enetc_mdio_pf3 {
++config SL28CPLD_INTC
++	bool "Kontron sl28cpld IRQ controller"
++	select MFD_SIMPLE_MFD_I2C
++	select REGMAP_IRQ
++	help
++	  Interrupt controller driver for the board management controller
++	  found on the Kontron sl28 CPLD.
++
+ config ST_IRQCHIP
+ 	bool
+ 	select REGMAP
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 133f9c45744a..39af7d89204d 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -111,3 +111,4 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
+ obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
+ obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
+ obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
++obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
+diff --git a/drivers/irqchip/irq-sl28cpld.c b/drivers/irqchip/irq-sl28cpld.c
+new file mode 100644
+index 000000000000..0aa50d025ef6
+--- /dev/null
++++ b/drivers/irqchip/irq-sl28cpld.c
+@@ -0,0 +1,96 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * sl28cpld interrupt controller driver
++ *
++ * Copyright 2020 Kontron Europe GmbH
++ */
++
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/regmap.h>
++
++#define INTC_IE 0x00
++#define INTC_IP 0x01
++
++static const struct regmap_irq sl28cpld_irqs[] = {
++	REGMAP_IRQ_REG_LINE(0, 8),
++	REGMAP_IRQ_REG_LINE(1, 8),
++	REGMAP_IRQ_REG_LINE(2, 8),
++	REGMAP_IRQ_REG_LINE(3, 8),
++	REGMAP_IRQ_REG_LINE(4, 8),
++	REGMAP_IRQ_REG_LINE(5, 8),
++	REGMAP_IRQ_REG_LINE(6, 8),
++	REGMAP_IRQ_REG_LINE(7, 8),
++};
++
++struct sl28cpld_intc {
++	struct regmap *regmap;
++	struct regmap_irq_chip chip;
++	struct regmap_irq_chip_data *irq_data;
++};
++
++static int sl28cpld_intc_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct sl28cpld_intc *irqchip;
++	int irq;
++	u32 base;
++	int ret;
++
++	if (!dev->parent)
++		return -ENODEV;
++
++	irqchip = devm_kzalloc(dev, sizeof(*irqchip), GFP_KERNEL);
++	if (!irqchip)
++		return -ENOMEM;
++
++	irqchip->regmap = dev_get_regmap(dev->parent, NULL);
++	if (!irqchip->regmap)
++		return -ENODEV;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	ret = device_property_read_u32(&pdev->dev, "reg", &base);
++	if (ret)
++		return -EINVAL;
++
++	irqchip->chip.name = "sl28cpld-intc";
++	irqchip->chip.irqs = sl28cpld_irqs;
++	irqchip->chip.num_irqs = ARRAY_SIZE(sl28cpld_irqs);
++	irqchip->chip.num_regs = 1;
++	irqchip->chip.status_base = base + INTC_IP;
++	irqchip->chip.mask_base = base + INTC_IE;
++	irqchip->chip.mask_invert = true,
++	irqchip->chip.ack_base = base + INTC_IP;
++
++	return devm_regmap_add_irq_chip_fwnode(dev, dev_fwnode(dev),
++					       irqchip->regmap, irq,
++					       IRQF_SHARED | IRQF_ONESHOT, 0,
++					       &irqchip->chip,
++					       &irqchip->irq_data);
++}
++
++static const struct of_device_id sl28cpld_intc_of_match[] = {
++	{ .compatible = "kontron,sl28cpld-intc" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, sl28cpld_intc_of_match);
++
++static struct platform_driver sl28cpld_intc_driver = {
++	.probe = sl28cpld_intc_probe,
++	.driver = {
++		.name = "sl28cpld-intc",
++		.of_match_table = sl28cpld_intc_of_match,
++	}
++};
++module_platform_driver(sl28cpld_intc_driver);
++
++MODULE_DESCRIPTION("sl28cpld Interrupt Controller Driver");
++MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
++MODULE_LICENSE("GPL");
 -- 
 2.20.1
 
