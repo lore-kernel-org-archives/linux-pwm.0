@@ -2,117 +2,143 @@ Return-Path: <SRS0=2R+9=BQ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B711AC433DF
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9922C433E0
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:38:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1C66F22D02
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:38:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0D99922C9F
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:38:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729716AbgHFShy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728261AbgHFSfp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 14:35:45 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51830C0611E0
-        for <linux-pwm@vger.kernel.org>; Thu,  6 Aug 2020 11:35:24 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k3kjS-0004BS-94; Thu, 06 Aug 2020 20:35:14 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k3kjR-0007aU-Sj; Thu, 06 Aug 2020 20:35:13 +0200
-Date:   Thu, 6 Aug 2020 20:35:13 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        id S1728012AbgHFSda (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 6 Aug 2020 14:33:30 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:51552 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728488AbgHFScK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 14:32:10 -0400
+X-IronPort-AV: E=Sophos;i="5.75,441,1589209200"; 
+   d="scan'208";a="53860050"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 07 Aug 2020 03:32:06 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 13638400C0AB;
+        Fri,  7 Aug 2020 03:32:03 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/7] pwm: cros-ec: Accept more error codes from
- cros_ec_cmd_xfer_status
-Message-ID: <20200806183513.nbaeonm5sevjvxkb@pengutronix.de>
-References: <20200806153308.204605-1-linux@roeck-us.net>
- <20200806153308.204605-5-linux@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="prp6ta2dfdqjn5v6"
-Content-Disposition: inline
-In-Reply-To: <20200806153308.204605-5-linux@roeck-us.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-renesas-soc@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 3/5] ARM: dts: r8a7742: Add PWM SoC support
+Date:   Thu,  6 Aug 2020 19:31:50 +0100
+Message-Id: <20200806183152.11809-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Add the definitions for pwm[0123456] to the SoC .dtsi.
 
---prp6ta2dfdqjn5v6
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+---
+ arch/arm/boot/dts/r8a7742.dtsi | 70 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
-Hello,
+diff --git a/arch/arm/boot/dts/r8a7742.dtsi b/arch/arm/boot/dts/r8a7742.dtsi
+index 9743b4242801..41c89e04cf17 100644
+--- a/arch/arm/boot/dts/r8a7742.dtsi
++++ b/arch/arm/boot/dts/r8a7742.dtsi
+@@ -917,6 +917,76 @@
+ 			status = "disabled";
+ 		};
+ 
++		pwm0: pwm@e6e30000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e30000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
++		pwm1: pwm@e6e31000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e31000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
++		pwm2: pwm@e6e32000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e32000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
++		pwm3: pwm@e6e33000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e33000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
++		pwm4: pwm@e6e34000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e34000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
++		pwm5: pwm@e6e35000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e35000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
++		pwm6: pwm@e6e36000 {
++			compatible = "renesas,pwm-r8a7742", "renesas,pwm-rcar";
++			reg = <0 0xe6e36000 0 0x8>;
++			clocks = <&cpg CPG_MOD 523>;
++			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
++			resets = <&cpg 523>;
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
++
+ 		rcar_sound: sound@ec500000 {
+ 			/*
+ 			 * #sound-dai-cells is required
+-- 
+2.17.1
 
-On Thu, Aug 06, 2020 at 08:33:05AM -0700, Guenter Roeck wrote:
-> Since commit c5cd2b47b203 ("platform/chrome: cros_ec_proto: Report command
-> not supported") we can no longer assume that cros_ec_cmd_xfer_status()
-> reports -EPROTO for all errors returned by the EC itself. A follow-up
-> patch will change cros_ec_cmd_xfer_status() to report additional errors
-> reported by the EC as distinguished Linux error codes.
->=20
-> Handle this change by no longer assuming that only -EPROTO is used
-> to report all errors returned by the EC itself. Instead, support both
-> the old and the new error codes.
->=20
-> Add a comment describing cros_ec_num_pwms() to explain its functionality.
->=20
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
-> Cc: Prashant Malani <pmalani@chromium.org>
-> Cc: Brian Norris <briannorris@chromium.org>
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---prp6ta2dfdqjn5v6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8sTV4ACgkQwfwUeK3K
-7Ak7Xwf/bIpQ0ms3aJzAL2lKasQAGjulu7pJpdL40M8US0eyiWsAEWMEbxFoO7Ha
-W2ICAFrAFn6KUTuSPzSOIWOxqcxKE4uDxXKTvh98I9FkFXAY7VKFn32Dbshh+hhZ
-7NxJfdO7YM1evP67JxWrADaNlKbRij0KSGRPFnJ3mzt4XaiDCdUJX3opo9cyDglP
-rX8m/vpdUF8GDgCyh9YjskLqEV56kEzb0WNEVc9jqwkuMEQ6g2silpvtmFnbPpa3
-ZmCPcH2eOqz61dAOdjPdCGAeQmTY7zrXBkw2I4zXWButDK4/9q7yelYOISMMkrO1
-qohHip3HBU5CTDOp52IMtEWlkZauTw==
-=x1Y7
------END PGP SIGNATURE-----
-
---prp6ta2dfdqjn5v6--
