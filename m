@@ -4,28 +4,28 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B59B8C433DF
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C918BC433E4
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:33:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 14171221E3
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:33:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2315D23128
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728715AbgHFSdD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:33:03 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:9539 "EHLO
+        id S1729024AbgHFSdd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 6 Aug 2020 14:33:33 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:18484 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728664AbgHFScO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 14:32:14 -0400
+        by vger.kernel.org with ESMTP id S1728381AbgHFScK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 14:32:10 -0400
 X-IronPort-AV: E=Sophos;i="5.75,441,1589209200"; 
-   d="scan'208";a="54073247"
+   d="scan'208";a="54073239"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 07 Aug 2020 03:32:13 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 07 Aug 2020 03:32:03 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 5B91240062A0;
-        Fri,  7 Aug 2020 03:32:10 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E662F400C0A8;
+        Fri,  7 Aug 2020 03:32:00 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Thierry Reding <thierry.reding@gmail.com>,
@@ -39,9 +39,9 @@ To:     Geert Uytterhoeven <geert+renesas@glider.be>,
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-pwm@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 5/5] ARM: dts: r8a7742: Add TPU support
-Date:   Thu,  6 Aug 2020 19:31:52 +0100
-Message-Id: <20200806183152.11809-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/5] dt-bindings: pwm: renesas,pwm-rcar: Add r8a7742 support
+Date:   Thu,  6 Aug 2020 19:31:49 +0100
+Message-Id: <20200806183152.11809-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -50,36 +50,26 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add TPU support to R8A7742 SoC DT.
+Document RZ/G1H (R8A7742) SoC bindings.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 ---
- arch/arm/boot/dts/r8a7742.dtsi | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/r8a7742.dtsi b/arch/arm/boot/dts/r8a7742.dtsi
-index 41c89e04cf17..4a8d27dff9f7 100644
---- a/arch/arm/boot/dts/r8a7742.dtsi
-+++ b/arch/arm/boot/dts/r8a7742.dtsi
-@@ -328,6 +328,17 @@
- 			reg = <0 0xe6060000 0 0x250>;
- 		};
- 
-+		tpu: pwm@e60f0000 {
-+			compatible = "renesas,tpu-r8a7742", "renesas,tpu";
-+			reg = <0 0xe60f0000 0 0x148>;
-+			interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 304>;
-+			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
-+			resets = <&cpg 304>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
-+
- 		cpg: clock-controller@e6150000 {
- 			compatible = "renesas,r8a7742-cpg-mssr";
- 			reg = <0 0xe6150000 0 0x1000>;
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
+index daadde9ff9c4..8b22cb110f3f 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
+@@ -13,6 +13,7 @@ properties:
+   compatible:
+     items:
+       - enum:
++          - renesas,pwm-r8a7742   # RZ/G1H
+           - renesas,pwm-r8a7743   # RZ/G1M
+           - renesas,pwm-r8a7744   # RZ/G1N
+           - renesas,pwm-r8a7745   # RZ/G1E
 -- 
 2.17.1
 
