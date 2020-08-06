@@ -2,290 +2,189 @@ Return-Path: <SRS0=2R+9=BQ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456B3C433E3
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 11:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFD2C433E0
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 16:51:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7FBDA22D2C
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 11:13:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A4AB12086A
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 16:51:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HKa7pqON"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728968AbgHFIkN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 6 Aug 2020 04:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52500 "EHLO
+        id S1729507AbgHFQvc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 6 Aug 2020 12:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728957AbgHFIkM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 04:40:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E15CC061575
-        for <linux-pwm@vger.kernel.org>; Thu,  6 Aug 2020 01:40:12 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k3bRW-0002CC-GQ; Thu, 06 Aug 2020 10:40:06 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k3bRQ-0007rq-G1; Thu, 06 Aug 2020 10:40:00 +0200
-Date:   Thu, 6 Aug 2020 10:40:00 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lee Jones <lee.jones@linaro.org>,
+        with ESMTP id S1729491AbgHFQvB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 12:51:01 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C18C0086B5;
+        Thu,  6 Aug 2020 08:33:21 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id l60so6885280pjb.3;
+        Thu, 06 Aug 2020 08:33:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=WjNGcySxRcaRcYcgPeVnxcihqjmgxQQKoyRxNRcejbY=;
+        b=HKa7pqONCRww+Pym08+/wilDVmxt8tFBK3SU1VngGvM2DtkUaCMf+tVVr+JF2AfGIV
+         JEP+aewH66rxzRomgohQzNlUClubnE1zNvjviZaf7wmNTEx+sXwPdo+5b9OjN+VlT9/4
+         CWVUn/AHhlr3GsdD387h7ffAKwBFeh3nlq7WepukH2iZIBWIZ8B06smfNCYXmPYIo66/
+         9gtymJbAptkIhXR7KUJOUxXzUTEjZbWRZ+dAYDWsYDwH83MPOYxqZMhVnltXTlU/Xk3n
+         Vt84AEX8hJkv/UptQ88VL/GJQrTasMuIN1iI35WO0QZ+0Vbp0/75FQ75vj4peOrlQ+P5
+         LwmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references;
+        bh=WjNGcySxRcaRcYcgPeVnxcihqjmgxQQKoyRxNRcejbY=;
+        b=gpXMK1e+i4PTjsWydhP2BugWoIyq1pd4+XNT/GX2WP3HR0gqFIytfR3eDYgdgLBQrc
+         5A39GajaWMvy+Xn4gt8VvHRYEsCq/itLJs/DwuWpLfl4vjRLNqrf6iVSe44YDQelM8f5
+         o9cWcHPx34h/oNieQgZiScRfctOcYKWWndQJiWcWgmXyas1zcqd8X3RpjNgS1UkF9Yaj
+         AvCCVynJHHjecQtLfyTuP0UdpprvBgjugmoCqPTQkG/WQSQkj56gcjVw1/UFTj8FRTbQ
+         ciOQm3vfWZBJp2oJYi7F2fsCVssi7bhQtcoMGzd+REAzTmXxTcIT90Yfj1shAVjCWhRT
+         O+aw==
+X-Gm-Message-State: AOAM530DB9I1hgsbDhZcJUAyZ9+QwMh0Xrtv1LSc6pL2+jqxXW7lSNxl
+        SmiEE+8Mlzkd8b1VRAtq55Q=
+X-Google-Smtp-Source: ABdhPJyAk+h5y35gNsqwwwFGNm8e3OHM/Chrw1Kie32e0jvdY0BXQJ9AbnDAsazimg4SL9OE7qshuw==
+X-Received: by 2002:a17:902:b20e:: with SMTP id t14mr8675313plr.58.1596728000737;
+        Thu, 06 Aug 2020 08:33:20 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 27sm7471068pgk.89.2020.08.06.08.33.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 06 Aug 2020 08:33:20 -0700 (PDT)
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v7 06/13] pwm: add support for sl28cpld PWM controller
-Message-ID: <20200806084000.k3aj5nmqdodmb35v@pengutronix.de>
-References: <20200803093559.12289-1-michael@walle.cc>
- <20200803093559.12289-7-michael@walle.cc>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vgnlsgd3pefacvw3"
-Content-Disposition: inline
-In-Reply-To: <20200803093559.12289-7-michael@walle.cc>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v4 6/7] platform/chrome: cros_ec_proto: Convert EC error codes to Linux error codes
+Date:   Thu,  6 Aug 2020 08:33:07 -0700
+Message-Id: <20200806153308.204605-7-linux@roeck-us.net>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200806153308.204605-1-linux@roeck-us.net>
+References: <20200806153308.204605-1-linux@roeck-us.net>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+The EC reports a variety of error codes. Most of those, with the exception
+of EC_RES_INVALID_VERSION, are converted to -EPROTO. As result, the actual
+EC error code gets lost. Introduce cros_ec_map_error() to map EC error
+codes to Linux error codes, and use it in cros_ec_cmd_xfer_status() to
+report more meaningful errors to the caller. With this change, callers of
+cros_ec_cmd_xfer_status() can implement a more distinguished action without
+having to rely on the EC error code. At the same time, debugging is improved
+in situations where the Linux error code is reported to userspace and/or in
+the kernel log.
 
---vgnlsgd3pefacvw3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
+Cc: Prashant Malani <pmalani@chromium.org>
+Cc: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+v4: Added Brian's Reviewed-by: tag
+v3: Use -ENOPROTOOPT for EC_RES_INVALID_VERSION
+    Implement function to convert error codes
+v2: No change
 
-Hello Michael,
+ drivers/platform/chrome/cros_ec_proto.c | 52 ++++++++++++++++++++-----
+ 1 file changed, 42 insertions(+), 10 deletions(-)
 
-I'm nearly happy now; see below.
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index e5bbec979a2a..a081b8245682 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -15,6 +15,43 @@
+ 
+ #define EC_COMMAND_RETRIES	50
+ 
++static const int cros_ec_error_map[] = {
++	[EC_RES_INVALID_COMMAND] = -EOPNOTSUPP,
++	[EC_RES_ERROR] = -EIO,
++	[EC_RES_INVALID_PARAM] = -EINVAL,
++	[EC_RES_ACCESS_DENIED] = -EACCES,
++	[EC_RES_INVALID_RESPONSE] = -EPROTO,
++	[EC_RES_INVALID_VERSION] = -ENOPROTOOPT,
++	[EC_RES_INVALID_CHECKSUM] = -EBADMSG,
++	[EC_RES_IN_PROGRESS] = -EINPROGRESS,
++	[EC_RES_UNAVAILABLE] = -ENODATA,
++	[EC_RES_TIMEOUT] = -ETIMEDOUT,
++	[EC_RES_OVERFLOW] = -EOVERFLOW,
++	[EC_RES_INVALID_HEADER] = -EBADR,
++	[EC_RES_REQUEST_TRUNCATED] = -EBADR,
++	[EC_RES_RESPONSE_TOO_BIG] = -EFBIG,
++	[EC_RES_BUS_ERROR] = -EFAULT,
++	[EC_RES_BUSY] = -EBUSY,
++	[EC_RES_INVALID_HEADER_VERSION] = -EBADMSG,
++	[EC_RES_INVALID_HEADER_CRC] = -EBADMSG,
++	[EC_RES_INVALID_DATA_CRC] = -EBADMSG,
++	[EC_RES_DUP_UNAVAILABLE] = -ENODATA,
++};
++
++static int cros_ec_map_error(uint32_t result)
++{
++	int ret = 0;
++
++	if (result != EC_RES_SUCCESS) {
++		if (result < ARRAY_SIZE(cros_ec_error_map) && cros_ec_error_map[result])
++			ret = cros_ec_error_map[result];
++		else
++			ret = -EPROTO;
++	}
++
++	return ret;
++}
++
+ static int prepare_packet(struct cros_ec_device *ec_dev,
+ 			  struct cros_ec_command *msg)
+ {
+@@ -555,8 +592,7 @@ EXPORT_SYMBOL(cros_ec_cmd_xfer);
+  *
+  * Return:
+  * >=0 - The number of bytes transferred
+- * -ENOPROTOOPT - Operation not supported
+- * -EPROTO - Protocol error
++ * <0 - Linux error code
+  */
+ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+ 			    struct cros_ec_command *msg)
+@@ -566,15 +602,11 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+ 	ret = cros_ec_cmd_xfer(ec_dev, msg);
+ 	if (ret < 0) {
+ 		dev_err(ec_dev->dev, "Command xfer error (err:%d)\n", ret);
+-	} else if (msg->result == EC_RES_INVALID_VERSION) {
+-		dev_dbg(ec_dev->dev, "Command invalid version (err:%d)\n",
+-			msg->result);
+-		return -ENOPROTOOPT;
+-	} else if (msg->result != EC_RES_SUCCESS) {
+-		dev_dbg(ec_dev->dev, "Command result (err: %d)\n", msg->result);
+-		return -EPROTO;
++	} else {
++		ret = cros_ec_map_error(msg->result);
++		if (ret)
++			dev_dbg(ec_dev->dev, "Command result (err: %d [%d])\n", msg->result, ret);
+ 	}
+-
+ 	return ret;
+ }
+ EXPORT_SYMBOL(cros_ec_cmd_xfer_status);
+-- 
+2.17.1
 
-On Mon, Aug 03, 2020 at 11:35:52AM +0200, Michael Walle wrote:
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 7dbcf6973d33..a0d50d70c3b9 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -428,6 +428,16 @@ config PWM_SIFIVE
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-sifive.
-> =20
-> +config PWM_SL28CPLD
-> +	tristate "Kontron sl28cpld PWM support"
-> +	select MFD_SIMPLE_MFD_I2C
-
-Is it sensible to present this option to everyone? Maybe
-
-	depends on SOME_SYMBOL_ONLY_TRUE_ON_SL28CPLD || COMPILE_TEST
-
-=2E
-
-> +	help
-> +	  Generic PWM framework driver for board management controller
-> +	  found on the Kontron sl28 CPLD.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-sl28cpld.
-> +
->  config PWM_SPEAR
->  	tristate "STMicroelectronics SPEAr PWM support"
->  	depends on PLAT_SPEAR || COMPILE_TEST
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 2c2ba0a03557..cbdcd55d69ee 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -40,6 +40,7 @@ obj-$(CONFIG_PWM_RENESAS_TPU)	+=3D pwm-renesas-tpu.o
->  obj-$(CONFIG_PWM_ROCKCHIP)	+=3D pwm-rockchip.o
->  obj-$(CONFIG_PWM_SAMSUNG)	+=3D pwm-samsung.o
->  obj-$(CONFIG_PWM_SIFIVE)	+=3D pwm-sifive.o
-> +obj-$(CONFIG_PWM_SL28CPLD)	+=3D pwm-sl28cpld.o
->  obj-$(CONFIG_PWM_SPEAR)		+=3D pwm-spear.o
->  obj-$(CONFIG_PWM_SPRD)		+=3D pwm-sprd.o
->  obj-$(CONFIG_PWM_STI)		+=3D pwm-sti.o
-> diff --git a/drivers/pwm/pwm-sl28cpld.c b/drivers/pwm/pwm-sl28cpld.c
-> new file mode 100644
-> index 000000000000..bb298af36f0b
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-sl28cpld.c
-> @@ -0,0 +1,235 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * sl28cpld PWM driver
-> + *
-> + * Copyright (c) 2020 Michael Walle <michael@walle.cc>
-> + *
-> + * There is no public datasheet available for this PWM core. But it is e=
-asy
-> + * enough to be briefly explained. It consists of one 8-bit counter. The=
- PWM
-> + * supports four distinct frequencies by selecting when to reset the cou=
-nter.
-> + * With the prescaler setting you can select which bit of the counter is=
- used
-> + * to reset it. This implies that the higher the frequency the less rema=
-ining
-> + * bits are available for the actual counter.
-> + *
-> + * Let cnt[7:0] be the counter, clocked at 32kHz:
-> + * +-----------+--------+--------------+-----------+---------------+
-> + * | prescaler |  reset | counter bits | frequency | period length |
-> + * +-----------+--------+--------------+-----------+---------------+
-> + * |         0 | cnt[7] |     cnt[6:0] |    250 Hz |    4000000 ns |
-> + * |         1 | cnt[6] |     cnt[5:0] |    500 Hz |    2000000 ns |
-> + * |         2 | cnt[5] |     cnt[4:0] |     1 kHz |    1000000 ns |
-> + * |         3 | cnt[4] |     cnt[3:0] |     2 kHz |     500000 ns |
-> + * +-----------+--------+--------------+-----------+---------------+
-> + *
-> + * Limitations:
-> + * - The hardware cannot generate a 100% duty cycle if the prescaler is =
-0.
-> + * - The hardware cannot atomically set the prescaler and the counter va=
-lue,
-> + *   which might lead to glitches and inconsistent states if a write fai=
-ls.
-> + * - The counter is not reset if you switch the prescaler which leads
-> + *   to glitches, too.
-> + * - The duty cycle will switch immediately and not after a complete cyc=
-le.
-> + * - Depending on the actual implementation, disabling the PWM might have
-> + *   side effects. For example, if the output pin is shared with a GPIO =
-pin
-> + *   it will automatically switch back to GPIO mode.
-
-Very nice.
-
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regmap.h>
-> +
-> +/*
-> + * PWM timer block registers.
-> + */
-> +#define SL28CPLD_PWM_CTRL			0x00
-> +#define   SL28CPLD_PWM_CTRL_ENABLE		BIT(7)
-> +#define   SL28CPLD_PWM_CTRL_PRESCALER_MASK	GENMASK(1, 0)
-> +#define SL28CPLD_PWM_CYCLE			0x01
-> +#define   SL28CPLD_PWM_CYCLE_MAX		GENMASK(6, 0)
-> +
-> +#define SL28CPLD_PWM_CLK			32000 /* 32 kHz */
-> +#define SL28CPLD_PWM_MAX_DUTY_CYCLE(prescaler)	(1 << (7 - (prescaler)))
-> +#define SL28CPLD_PWM_PERIOD(prescaler) \
-> +	(NSEC_PER_SEC / SL28CPLD_PWM_CLK * SL28CPLD_PWM_MAX_DUTY_CYCLE(prescale=
-r))
-> +
-> +/*
-> + * We calculate the duty cycle like this:
-> + *   duty_cycle_ns =3D pwm_cycle_reg * max_period_ns / max_duty_cycle
-> + *
-> + * With
-> + *   max_period_ns =3D 1 << (7 - prescaler) / pwm_clk * NSEC_PER_SEC
-> + *   max_duty_cycle =3D 1 << (7 - prescaler)
-> + * this then simplifies to:
-> + *   duty_cycle_ns =3D pwm_cycle_reg / pwm_clk * NSEC_PER_SEC
-> + *
-> + * NSEC_PER_SEC and SL28CPLD_PWM_CLK is integer here, so we're not losing
-> + * precision by doing the divison first.
-
-Apart from the grammatical issue (s/is/are/) this is not the relevant
-fact. The relevant thing is that NSEC_PER_SEC / SL28CPLD_PWM_CLK is
-integer.
-
-(In case this is not clear, assume SL28CPLD_PWM_CLK to be 30000 and reg
-0x12345.
-
-Then we have:=20
-
-	NSEC_PER_SEC / SL28CPLD_PWM_CLK * (reg) -> 0x94255749
-	NSEC_PER_SEC * (reg) / SL28CPLD_PWM_CLK -> 0x9425b860
-
-=2E)
-
-> + */
-> +#define SL28CPLD_PWM_TO_DUTY_CYCLE(reg) \
-> +	(NSEC_PER_SEC / SL28CPLD_PWM_CLK * (reg))
-> +#define SL28CPLD_PWM_FROM_DUTY_CYCLE(duty_cycle) \
-> +	(DIV_ROUND_DOWN_ULL((duty_cycle), NSEC_PER_SEC / SL28CPLD_PWM_CLK))
-> +
-> +#define sl28cpld_pwm_read(priv, reg, val) \
-> +	regmap_read((priv)->regmap, (priv)->offset + (reg), (val))
-> +#define sl28cpld_pwm_write(priv, reg, val) \
-> +	regmap_write((priv)->regmap, (priv)->offset + (reg), (val))
-> +
-> +struct sl28cpld_pwm {
-> +	struct pwm_chip pwm_chip;
-> +	struct regmap *regmap;
-> +	u32 offset;
-> +};
-> +
-> +static void sl28cpld_pwm_get_state(struct pwm_chip *chip,
-> +				   struct pwm_device *pwm,
-> +				   struct pwm_state *state)
-> +{
-> +	struct sl28cpld_pwm *priv =3D dev_get_drvdata(chip->dev);
-> +	unsigned int reg;
-> +	int prescaler;
-> +
-> +	sl28cpld_pwm_read(priv, SL28CPLD_PWM_CTRL, &reg);
-> +
-> +	state->enabled =3D reg & SL28CPLD_PWM_CTRL_ENABLE;
-> +
-> +	prescaler =3D FIELD_GET(SL28CPLD_PWM_CTRL_PRESCALER_MASK, reg);
-> +	state->period =3D SL28CPLD_PWM_PERIOD(prescaler);
-> +
-> +	sl28cpld_pwm_read(priv, SL28CPLD_PWM_CYCLE, &reg);
-> +	state->duty_cycle =3D SL28CPLD_PWM_TO_DUTY_CYCLE(reg);
-
-Should reg be masked to SL28CPLD_PWM_CYCLE_MAX, or is it guaranteed that
-the upper bits are zero?
-
-> +	state->polarity =3D PWM_POLARITY_NORMAL;
-> +}
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---vgnlsgd3pefacvw3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8rwd0ACgkQwfwUeK3K
-7AmfeAf9Gjs6d6RYl4cHjGm5WtyaW7dy/H/ZhBTXazWZi9T2vSKNCbP7eDdMWVqK
-mGWH4KuK60xZp0FN7GcX1LLw98U3NVz6SQGyQJKe9YbvFCX8mHsUI3L2R/vPprgb
-xLa89BSlnoaUd/KovXXGa++KHFfEqQ/9jTxBYqiLBnHhKK2TEL9QWVwLnzGo0b9T
-N4xzqBfInTCN10AaDNURikxMx1EmP9DaOp2X2LSLlBIkB47mt9jfsQiUy8SHcoF1
-xAx+Ryx0g3t3iXvbv6y9AbuUxaEteZQ8bn+2hP3PHaAo4NyvnaqPM/BFj/SL6RKj
-7d0IxQE5ptk05VI2zx0zwpDFPjk3ow==
-=OBgf
------END PGP SIGNATURE-----
-
---vgnlsgd3pefacvw3--
