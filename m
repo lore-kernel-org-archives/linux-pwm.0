@@ -2,215 +2,96 @@ Return-Path: <SRS0=2R+9=BQ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 647E2C433E0
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:41:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3115FC433DF
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 21:40:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B21C7221E3
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:41:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596739266;
-	bh=e1oSXjKRZ1/t6yaGmxeMpFJIIqxQuITtDtfD3fTgYtQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=dEWfiLMgghoYaGuNyenojAsXN0N9CrvfUG3bq/vHjHPrPZt2bYfOJa4fLwlyQ7HVa
-	 eWj7d3YUzXZYVLPwYmMd/Ftb4Vx5oG6Ld1tWQu6Q/iw1LBcB8z5pBDN7KkMfE9tkW3
-	 0LwOMvwP++83dZWLFpkpzT3uBLKZ38RAlADl+lio=
+	by mail.kernel.org (Postfix) with ESMTP id 247DA221E2
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 21:40:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="mWogffXa"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728888AbgHFSkX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:40:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33610 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729089AbgHFSkW (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 6 Aug 2020 14:40:22 -0400
-Received: from localhost.localdomain (unknown [194.230.155.117])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B4C522D70;
-        Thu,  6 Aug 2020 18:22:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596738173;
-        bh=e1oSXjKRZ1/t6yaGmxeMpFJIIqxQuITtDtfD3fTgYtQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RnJk8Nw20oovJGOtix16awmixT2stIdDZnn5cCpdsfoPL1ZDrAouFmfTXazZkBryt
-         U6+/C4sQrMYB7/RhwqVpMgQSY+Lnf776wVev3iQBKSSjccZfpKA0QCfvg58nAuJV/9
-         XLhS2JgfS/EMeK/1j1FFEu/fmUc6n1ay5mUcjoIg=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        id S1726050AbgHFVkX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 6 Aug 2020 17:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725812AbgHFVkW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 17:40:22 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AEEC061574
+        for <linux-pwm@vger.kernel.org>; Thu,  6 Aug 2020 14:40:22 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id s16so37527554qtn.7
+        for <linux-pwm@vger.kernel.org>; Thu, 06 Aug 2020 14:40:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d+76LXO14aNsx8i1gnsECIsp+iH10M2aik6HmT5GQNM=;
+        b=mWogffXazu8aVcQxrtz2BpdyrkCKOBfTzr9EAQaCeetZCb3M0J/y901nI1OnHvRvzS
+         Ban/20sVtB3RPaygay2NwTeW7yzd2JJwp4ETi01vtqE5Z7ZS5pxr/9pe8h+n0g2hqiSQ
+         6FVcv1v5O9PkmJizhozW8gSa0sSBZH1cuPWzw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d+76LXO14aNsx8i1gnsECIsp+iH10M2aik6HmT5GQNM=;
+        b=AyxdubuJvrE7SFHNlqtyw8OpCU03Y/qTGzbK7NZ5CglqANiW7k0ity2Co8dApyhwki
+         5zG+ctNa/aQFSt2h//xIRQzu10eYSiNNZL2MPMY3Sv0bWS+msBfGrGeGPmoIFOJ8iUz2
+         PcRwSlBXe3A6fytVKYEeKk5rpAsuBDbK2cH9ihTQFoKqcI8mV+Pu6J+jzRSukzUlLPJV
+         rGMIDco7aUN40BwqkwRZxXE9O4JLtgUG/np2bIriqxC9ZjGAqZKPt18dIfQFCBMKsztC
+         uyqRSPOnMzpOvn8ym+Y12q5jXPF1czNFKCpTGnrBSvZKLHJlgIPgqsiX5sQOTZfzSmhU
+         H1ow==
+X-Gm-Message-State: AOAM533cC3/DppPfARptcFi9FQvFcd8O0vgfh/UGgnm38LY0CIUUEiy9
+        vjl6j3QlRQKwnBVFurP4aIljXL5v8nU=
+X-Google-Smtp-Source: ABdhPJwl//tPyjmSRjFB5PM5wfxVJ3L29hgMEkwH/jluOePDyzGRZqbw6NH+8pLU12LmRIsmqPVy4A==
+X-Received: by 2002:ac8:6052:: with SMTP id k18mr10939766qtm.60.1596750021213;
+        Thu, 06 Aug 2020 14:40:21 -0700 (PDT)
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com. [209.85.222.180])
+        by smtp.gmail.com with ESMTPSA id x29sm5610833qtv.80.2020.08.06.14.40.20
+        for <linux-pwm@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Aug 2020 14:40:21 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id m7so14244641qki.12
+        for <linux-pwm@vger.kernel.org>; Thu, 06 Aug 2020 14:40:20 -0700 (PDT)
+X-Received: by 2002:a05:620a:1424:: with SMTP id k4mr10651380qkj.2.1596749651000;
+ Thu, 06 Aug 2020 14:34:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200806153308.204605-1-linux@roeck-us.net> <20200806153308.204605-8-linux@roeck-us.net>
+In-Reply-To: <20200806153308.204605-8-linux@roeck-us.net>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Thu, 6 Aug 2020 14:33:58 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXPkQKfXGzP3kr150VKDE0eGc+2CALEvbU+LGv3zwGyWLQ@mail.gmail.com>
+Message-ID: <CA+ASDXPkQKfXGzP3kr150VKDE0eGc+2CALEvbU+LGv3zwGyWLQ@mail.gmail.com>
+Subject: Re: [PATCH v4 7/7] pwm: cros-ec: Simplify EC error handling
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH v2 18/41] ARM: s5pv210: don't imply CONFIG_PLAT_SAMSUNG
-Date:   Thu,  6 Aug 2020 20:20:35 +0200
-Message-Id: <20200806182059.2431-18-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200806181932.2253-1-krzk@kernel.org>
-References: <20200806181932.2253-1-krzk@kernel.org>
+        Gwendal Grignou <gwendal@chromium.org>,
+        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-pwm <linux-pwm@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Thu, Aug 6, 2020 at 8:33 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> With enhanced error reporting from cros_ec_cmd_xfer_status() in place,
+> we can fully use it and no longer rely on EC error codes.
+>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 
-The plat-samsung directory and mach-s5pv210 can be build
-completely independently, so split the two Kconfig symbols
-CONFIG_PLAT_SAMSUNG and CONFIG_ARCH_S5PV210.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- arch/arm/Kconfig.debug        | 6 +++---
- arch/arm/Makefile             | 1 -
- arch/arm/plat-samsung/Kconfig | 2 +-
- drivers/mmc/host/Kconfig      | 2 +-
- drivers/pwm/Kconfig           | 2 +-
- drivers/spi/Kconfig           | 2 +-
- drivers/tty/serial/Kconfig    | 2 +-
- sound/soc/samsung/Kconfig     | 2 +-
- 8 files changed, 9 insertions(+), 10 deletions(-)
-
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 153a9a35dd20..b4b41f9d246b 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -1005,7 +1005,7 @@ choice
- 		  via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
- 
- 	config DEBUG_S3C_UART0
--		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
- 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
- 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-@@ -1017,7 +1017,7 @@ choice
- 		  by the boot-loader before use.
- 
- 	config DEBUG_S3C_UART1
--		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
- 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
- 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-@@ -1029,7 +1029,7 @@ choice
- 		  by the boot-loader before use.
- 
- 	config DEBUG_S3C_UART2
--		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
- 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
- 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 826613a20b7d..3997cec8848e 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -234,7 +234,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
- # by CONFIG_* macro name.
- plat-$(CONFIG_ARCH_OMAP)	+= omap
- plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
--plat-$(CONFIG_ARCH_S5PV210)	+= samsung
- plat-$(CONFIG_PLAT_ORION)	+= orion
- plat-$(CONFIG_PLAT_PXA)		+= pxa
- plat-$(CONFIG_PLAT_S3C24XX)	+= samsung
-diff --git a/arch/arm/plat-samsung/Kconfig b/arch/arm/plat-samsung/Kconfig
-index a7cb0db1d5cc..13b39684b582 100644
---- a/arch/arm/plat-samsung/Kconfig
-+++ b/arch/arm/plat-samsung/Kconfig
-@@ -4,7 +4,7 @@
- 
- config PLAT_SAMSUNG
- 	bool
--	depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210
-+	depends on PLAT_S3C24XX || ARCH_S3C64XX
- 	default y
- 	select GENERIC_IRQ_CHIP
- 	select NO_IOPORT_MAP
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index ddce8e62280c..9f387daa764a 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -289,7 +289,7 @@ config MMC_SDHCI_TEGRA
- 
- config MMC_SDHCI_S3C
- 	tristate "SDHCI support on Samsung S3C SoC"
--	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_EXYNOS)
-+	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS)
- 	help
- 	  This selects the Secure Digital Host Controller Interface (SDHCI)
- 	  often referrered to as the HSMMC block in some of the Samsung S3C
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 7dbcf6973d33..9448e4ca8c73 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -410,7 +410,7 @@ config PWM_ROCKCHIP
- 
- config PWM_SAMSUNG
- 	tristate "Samsung PWM support"
--	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
- 	help
- 	  Generic PWM framework driver for Samsung.
- 
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index c3008e423f59..85619ab64156 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -680,7 +680,7 @@ config SPI_S3C24XX_FIQ
- 
- config SPI_S3C64XX
- 	tristate "Samsung S3C64XX series type SPI"
--	depends on (PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST)
-+	depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
- 	help
- 	  SPI driver for Samsung S3C64XX and newer SoCs.
- 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 8a0352eb337c..10de494e808a 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -235,7 +235,7 @@ config SERIAL_CLPS711X_CONSOLE
- 
- config SERIAL_SAMSUNG
- 	tristate "Samsung SoC serial support"
--	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
-diff --git a/sound/soc/samsung/Kconfig b/sound/soc/samsung/Kconfig
-index 1431be4ed054..a2221ebb1b6a 100644
---- a/sound/soc/samsung/Kconfig
-+++ b/sound/soc/samsung/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- menuconfig SND_SOC_SAMSUNG
- 	tristate "ASoC support for Samsung"
--	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
- 	depends on COMMON_CLK
- 	select SND_SOC_GENERIC_DMAENGINE_PCM
- 	help
--- 
-2.17.1
-
+Reviewed-by: Brian Norris <briannorris@chromium.org>
