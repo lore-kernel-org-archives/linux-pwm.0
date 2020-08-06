@@ -2,126 +2,215 @@ Return-Path: <SRS0=2R+9=BQ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED4DC433E1
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 647E2C433E0
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:41:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C480B22C9F
-	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:40:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B21C7221E3
+	for <linux-pwm@archiver.kernel.org>; Thu,  6 Aug 2020 18:41:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1596739266;
+	bh=e1oSXjKRZ1/t6yaGmxeMpFJIIqxQuITtDtfD3fTgYtQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=dEWfiLMgghoYaGuNyenojAsXN0N9CrvfUG3bq/vHjHPrPZt2bYfOJa4fLwlyQ7HVa
+	 eWj7d3YUzXZYVLPwYmMd/Ftb4Vx5oG6Ld1tWQu6Q/iw1LBcB8z5pBDN7KkMfE9tkW3
+	 0LwOMvwP++83dZWLFpkpzT3uBLKZ38RAlADl+lio=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbgHFSkJ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:40:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729985AbgHFSkJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2020 14:40:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F4BC061574
-        for <linux-pwm@vger.kernel.org>; Thu,  6 Aug 2020 11:40:08 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k3ko2-0004cr-1P; Thu, 06 Aug 2020 20:39:58 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k3knz-0007gi-5v; Thu, 06 Aug 2020 20:39:55 +0200
-Date:   Thu, 6 Aug 2020 20:39:55 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        id S1728888AbgHFSkX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 6 Aug 2020 14:40:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33610 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729089AbgHFSkW (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 6 Aug 2020 14:40:22 -0400
+Received: from localhost.localdomain (unknown [194.230.155.117])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B4C522D70;
+        Thu,  6 Aug 2020 18:22:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596738173;
+        bh=e1oSXjKRZ1/t6yaGmxeMpFJIIqxQuITtDtfD3fTgYtQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RnJk8Nw20oovJGOtix16awmixT2stIdDZnn5cCpdsfoPL1ZDrAouFmfTXazZkBryt
+         U6+/C4sQrMYB7/RhwqVpMgQSY+Lnf776wVev3iQBKSSjccZfpKA0QCfvg58nAuJV/9
+         XLhS2JgfS/EMeK/1j1FFEu/fmUc6n1ay5mUcjoIg=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Subject: Re: [PATCH 2/5] dt-bindings: pwm: renesas,pwm-rcar: Add r8a7742
- support
-Message-ID: <20200806183955.lmlwhsdrcpccwrkz@pengutronix.de>
-References: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20200806183152.11809-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wi7zgoow7wajiuwc"
-Content-Disposition: inline
-In-Reply-To: <20200806183152.11809-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Sangbeom Kim <sbkim73@samsung.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [PATCH v2 18/41] ARM: s5pv210: don't imply CONFIG_PLAT_SAMSUNG
+Date:   Thu,  6 Aug 2020 20:20:35 +0200
+Message-Id: <20200806182059.2431-18-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200806181932.2253-1-krzk@kernel.org>
+References: <20200806181932.2253-1-krzk@kernel.org>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+From: Arnd Bergmann <arnd@arndb.de>
 
---wi7zgoow7wajiuwc
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The plat-samsung directory and mach-s5pv210 can be build
+completely independently, so split the two Kconfig symbols
+CONFIG_PLAT_SAMSUNG and CONFIG_ARCH_S5PV210.
 
-Hello,
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ arch/arm/Kconfig.debug        | 6 +++---
+ arch/arm/Makefile             | 1 -
+ arch/arm/plat-samsung/Kconfig | 2 +-
+ drivers/mmc/host/Kconfig      | 2 +-
+ drivers/pwm/Kconfig           | 2 +-
+ drivers/spi/Kconfig           | 2 +-
+ drivers/tty/serial/Kconfig    | 2 +-
+ sound/soc/samsung/Kconfig     | 2 +-
+ 8 files changed, 9 insertions(+), 10 deletions(-)
 
-On Thu, Aug 06, 2020 at 07:31:49PM +0100, Lad Prabhakar wrote:
-> Document RZ/G1H (R8A7742) SoC bindings.
->=20
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renes=
-as.com>
-> ---
->  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml =
-b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-> index daadde9ff9c4..8b22cb110f3f 100644
-> --- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
-> @@ -13,6 +13,7 @@ properties:
->    compatible:
->      items:
->        - enum:
-> +          - renesas,pwm-r8a7742   # RZ/G1H
->            - renesas,pwm-r8a7743   # RZ/G1M
->            - renesas,pwm-r8a7744   # RZ/G1N
->            - renesas,pwm-r8a7745   # RZ/G1E
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 153a9a35dd20..b4b41f9d246b 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -1005,7 +1005,7 @@ choice
+ 		  via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
+ 
+ 	config DEBUG_S3C_UART0
+-		depends on PLAT_SAMSUNG || ARCH_EXYNOS
++		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+ 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+ 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+ 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+@@ -1017,7 +1017,7 @@ choice
+ 		  by the boot-loader before use.
+ 
+ 	config DEBUG_S3C_UART1
+-		depends on PLAT_SAMSUNG || ARCH_EXYNOS
++		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+ 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+ 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+ 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+@@ -1029,7 +1029,7 @@ choice
+ 		  by the boot-loader before use.
+ 
+ 	config DEBUG_S3C_UART2
+-		depends on PLAT_SAMSUNG || ARCH_EXYNOS
++		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+ 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+ 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+ 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 826613a20b7d..3997cec8848e 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -234,7 +234,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
+ # by CONFIG_* macro name.
+ plat-$(CONFIG_ARCH_OMAP)	+= omap
+ plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
+-plat-$(CONFIG_ARCH_S5PV210)	+= samsung
+ plat-$(CONFIG_PLAT_ORION)	+= orion
+ plat-$(CONFIG_PLAT_PXA)		+= pxa
+ plat-$(CONFIG_PLAT_S3C24XX)	+= samsung
+diff --git a/arch/arm/plat-samsung/Kconfig b/arch/arm/plat-samsung/Kconfig
+index a7cb0db1d5cc..13b39684b582 100644
+--- a/arch/arm/plat-samsung/Kconfig
++++ b/arch/arm/plat-samsung/Kconfig
+@@ -4,7 +4,7 @@
+ 
+ config PLAT_SAMSUNG
+ 	bool
+-	depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210
++	depends on PLAT_S3C24XX || ARCH_S3C64XX
+ 	default y
+ 	select GENERIC_IRQ_CHIP
+ 	select NO_IOPORT_MAP
+diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+index ddce8e62280c..9f387daa764a 100644
+--- a/drivers/mmc/host/Kconfig
++++ b/drivers/mmc/host/Kconfig
+@@ -289,7 +289,7 @@ config MMC_SDHCI_TEGRA
+ 
+ config MMC_SDHCI_S3C
+ 	tristate "SDHCI support on Samsung S3C SoC"
+-	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_EXYNOS)
++	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS)
+ 	help
+ 	  This selects the Secure Digital Host Controller Interface (SDHCI)
+ 	  often referrered to as the HSMMC block in some of the Samsung S3C
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 7dbcf6973d33..9448e4ca8c73 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -410,7 +410,7 @@ config PWM_ROCKCHIP
+ 
+ config PWM_SAMSUNG
+ 	tristate "Samsung PWM support"
+-	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
++	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+ 	help
+ 	  Generic PWM framework driver for Samsung.
+ 
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index c3008e423f59..85619ab64156 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -680,7 +680,7 @@ config SPI_S3C24XX_FIQ
+ 
+ config SPI_S3C64XX
+ 	tristate "Samsung S3C64XX series type SPI"
+-	depends on (PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST)
++	depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
+ 	help
+ 	  SPI driver for Samsung S3C64XX and newer SoCs.
+ 
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 8a0352eb337c..10de494e808a 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -235,7 +235,7 @@ config SERIAL_CLPS711X_CONSOLE
+ 
+ config SERIAL_SAMSUNG
+ 	tristate "Samsung SoC serial support"
+-	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
++	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+diff --git a/sound/soc/samsung/Kconfig b/sound/soc/samsung/Kconfig
+index 1431be4ed054..a2221ebb1b6a 100644
+--- a/sound/soc/samsung/Kconfig
++++ b/sound/soc/samsung/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ menuconfig SND_SOC_SAMSUNG
+ 	tristate "ASoC support for Samsung"
+-	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
++	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+ 	depends on COMMON_CLK
+ 	select SND_SOC_GENERIC_DMAENGINE_PCM
+ 	help
+-- 
+2.17.1
 
-The typical dts has:
-
-	compatible =3D "renesas,pwm-r8a7742", "renesas,pwm-rcar";
-
-so there is no need for a driver adaption.
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---wi7zgoow7wajiuwc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8sTngACgkQwfwUeK3K
-7Ang/gf/VQ5o3nYBkW7YrJzYGx7rsiH9B/HWrwbVgpjOwQfNc1yCEfg1liZYHDFm
-feEMs3dkCO93YHZjdKGKeqIiXxdbHdEY94Cgmk8am1Ml9+koA79tHUD+UblJ9U28
-T9zl88KmyjU5BImc1AJSAvVRoMO6BopXbbqCKAh+PYrpspxLSHyQeEZHssl4FxXK
-ZRKfnjC3bJr0xas7F2EQ9lukFqr5wdQN+kJpkv1LIf1eDDKvimdOuCLW2710ES4O
-brIMcPs5PyJha1hcV2qVk1/5LXWlSilL2QB3mUhThWX7KtlGIlQj4DJFll/nlqyi
-SKrDlmoOl9sXyzrAAuj7K/VAz3pOZA==
-=8duc
------END PGP SIGNATURE-----
-
---wi7zgoow7wajiuwc--
