@@ -6,43 +6,43 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 437D7C433E0
-	for <linux-pwm@archiver.kernel.org>; Fri,  7 Aug 2020 08:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0792C433DF
+	for <linux-pwm@archiver.kernel.org>; Fri,  7 Aug 2020 08:41:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A51D22CAE
-	for <linux-pwm@archiver.kernel.org>; Fri,  7 Aug 2020 08:41:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9DF2122CAE
+	for <linux-pwm@archiver.kernel.org>; Fri,  7 Aug 2020 08:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbgHGIlr (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 7 Aug 2020 04:41:47 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:42896 "EHLO
+        id S1727074AbgHGIly (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 7 Aug 2020 04:41:54 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:39827 "EHLO
         mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbgHGIlr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Aug 2020 04:41:47 -0400
-Received: by mail-oi1-f195.google.com with SMTP id j7so1247007oij.9;
-        Fri, 07 Aug 2020 01:41:46 -0700 (PDT)
+        with ESMTP id S1726729AbgHGIly (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Aug 2020 04:41:54 -0400
+Received: by mail-oi1-f195.google.com with SMTP id a24so1263319oia.6;
+        Fri, 07 Aug 2020 01:41:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BwyADCKf5mmqBEeNJLdW13ewX7urPDOSehGQsA3CvSo=;
-        b=Ul0ZpYncie77uzrDplWSgzwvwntBLxqPK6Te2rSn/trPpueHHKoectie8bcRlwlRGB
-         01683Z/uGfVYiLORM5cwFKsqkxsKIbTIQdZyY6tXH4JjKxpslXS62LlZswIcnYzLeSrP
-         o01o8ZvvtadcYYfk5vjqKzP9+VM6t/ovsM5jbhUxbZ4Ob0am+Qns/57WHBR7gK7ZKGEe
-         Bx7rgKmIxcx1cXF0vasJHiQ4ToIKzDOz+E+Q+MGyiJpPU2GJjhpa87sHo/mQDC6lJqm3
-         LtkJ1rx/jj55bbFFC6DAu08YdioBOQeM2QBuXUPxORHMcengLiBm+dqoRn8ITcZQz4k1
-         T26Q==
-X-Gm-Message-State: AOAM531x7LiIngvmp+aPiRByO8wCEL0EeUpAULOtSY7ADH7sCiLoiPxk
-        B5LD1sbW8h875u2K/BmWmYO2JL1KGzpdKzH3gzg=
-X-Google-Smtp-Source: ABdhPJwO0HhS+ygyeQp5gCWMXwgPNODcLEhDyw5+l47YRQFuX8K1Yzx4Ge3KI3tAKQv8i7gINlqIvMKG8WQ/ihyBGVA=
-X-Received: by 2002:aca:b742:: with SMTP id h63mr9851770oif.148.1596789706388;
- Fri, 07 Aug 2020 01:41:46 -0700 (PDT)
+        bh=Zzp+K2GPyoIa4F9OZDb+rsNjP4lb5poRPhzq+1eL15Y=;
+        b=hR+k8YmTdh1FIc5sUQz6A/i65dIrvn0xB0L89LDC6RLAoa+PZuEhRHNfF13BSor8Bq
+         6tP8+7wRqdl+ADE7S0uVSzlTEEH2yiMgBF0PMTUA8hBX7ZPQU7qJeVT2SgNqoL4jOirq
+         +04E8NIgRrYfg33LzbHK3LTdKqNy1rJjn7b/a/+16NTBaDDFf+OnqMRSHvmSK4/npSyI
+         r/j5EKCYr/Pbd8mFwKLZ6fkYWqvok9EHr8bBJF5X/NtTwEAfaU7mdWuUkyvkmgegpbol
+         wFszRvbu7CYFFjWXrhU2QdFXrSw5lQm3ZLUKkLQnSU+aTl/mcuXMrnxfp+Q5tygoIQWM
+         YRQg==
+X-Gm-Message-State: AOAM532PbmX7dvZTbfQGeXk9ZriiHHR00ST99eRxQSPy0Ll0Mo+cZ72v
+        Iq4Y7YeREHFvV6e+JUiWwf0SGSZyBcUndZ8l8X0=
+X-Google-Smtp-Source: ABdhPJxZoihwBkNu0prCEBpXKmP9nlGBCfjAL6p1XSniby6Fpgu+SAlO+6dgCejY24aUTAcULPjp5/2hRgcMrAQw4Bc=
+X-Received: by 2002:aca:4b54:: with SMTP id y81mr10330712oia.54.1596789712893;
+ Fri, 07 Aug 2020 01:41:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20200806183152.11809-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20200806183152.11809-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20200806183152.11809-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20200806183152.11809-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 7 Aug 2020 10:41:34 +0200
-Message-ID: <CAMuHMdVJU+M_vDAVViWUPsde8cgOo6VZGOdqFFDKLO2=MpN0pA@mail.gmail.com>
-Subject: Re: [PATCH 5/5] ARM: dts: r8a7742: Add TPU support
+Date:   Fri, 7 Aug 2020 10:41:41 +0200
+Message-ID: <CAMuHMdUQckhhY-WHvOuqAD+qnsJwVEgvChsyCMXYQThZO=bdLw@mail.gmail.com>
+Subject: Re: [PATCH 1/5] ARM: dts: r8a7742-iwg21d-q7: Enable cmt0
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
@@ -65,7 +65,7 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 On Thu, Aug 6, 2020 at 8:32 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add TPU support to R8A7742 SoC DT.
+> Enable cmt0 support on r8a7742-iwg21d-q7 board.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
@@ -77,7 +77,8 @@ Gr{oetje,eeting}s,
 
                         Geert
 
--- 
+
+--
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
