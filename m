@@ -1,287 +1,128 @@
-Return-Path: <SRS0=J8L8=BZ=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=HNCL=B3=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EDCC433DF
-	for <linux-pwm@archiver.kernel.org>; Sat, 15 Aug 2020 22:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3A0C433DF
+	for <linux-pwm@archiver.kernel.org>; Mon, 17 Aug 2020 11:28:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 33AE7205CB
-	for <linux-pwm@archiver.kernel.org>; Sat, 15 Aug 2020 22:01:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 05CDD20789
+	for <linux-pwm@archiver.kernel.org>; Mon, 17 Aug 2020 11:28:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="RH5+iuOr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728745AbgHOWA6 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 15 Aug 2020 18:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728740AbgHOVvd (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 15 Aug 2020 17:51:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9326C03B3C7
-        for <linux-pwm@vger.kernel.org>; Sat, 15 Aug 2020 00:50:49 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k6qxZ-0008Au-Ql; Sat, 15 Aug 2020 09:50:37 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1k6qxW-0005H6-Cf; Sat, 15 Aug 2020 09:50:34 +0200
-Date:   Sat, 15 Aug 2020 09:50:32 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, kernel@axis.com,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, oliver@schinagl.nl
-Subject: Re: [PATCH 2/2] pwm: Add GPIO PWM driver
-Message-ID: <20200815075032.k2xyw75l56sbl7nx@pengutronix.de>
-References: <20200814155513.31936-1-vincent.whitchurch@axis.com>
- <20200814155513.31936-2-vincent.whitchurch@axis.com>
+        id S1726286AbgHQL2u (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 17 Aug 2020 07:28:50 -0400
+Received: from mail-eopbgr1300091.outbound.protection.outlook.com ([40.107.130.91]:8864
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726135AbgHQL2s (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 17 Aug 2020 07:28:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IxeyOosHre6MyH/BEHZqqzQrGRtoe4/OMobNl4kyl/X+mH38XM3Vw3YwUL21YYbk5ffyx+u1T2rybJobX3AB9ExMlGA4Tr8tHcxk78V2DEoV2YPbb2s1jfqM1EKuL62kCX/jl/h2DnDIaxdYeulQNwYuIbE06ep/jV3rmTQX4zQH6lRvX1r6hibyjVGWNCEKYBYGdy9y+osLEiuzpU9ozsg0X1pX50ff1huFD43KWHIUvDfa75wS6b32x25Bpid3dfLFVl+PLnM4HVcY7o8ap09cIuw1ruGaxZRNiYsmu0FyMncjyyA0rr++6rAO9IVZP0Ud7St4DRsdFThUexmseA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rn8JADMtXo+GTtizT0feGz+sNHaaOqJIV0GNlbmMXCE=;
+ b=Peuw0ibhfevIYEbZBLWH6JDbSWLKgKpZGs8/4Wfm9qwThDY1qb1khWb+BGmZTFJieSGlWk6VzQmdoCq4FatgiRg8PkdYV5szuBwjlj1CGurN88fFGxxjLBbZ8vOB44utjWrk+TO5ifBGDegRVZxbSjeU347TITHFKY1U9843mrdA7VLgfMNPa5RnC92h0QKz2KdHG83CFDFXdrKdqMbIbQKQfDezhLMYg4vBiYqfhDbI5N3Ro2LQ9cegENBnuvWiV+74wdujhOhlJpOnCCN+ikMSp8cZ0OY1i2QBt4OqJQ/xx/OpcddiEStvgc9CRdTF6yV3CRRxbbQIY2MjlbJr0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rn8JADMtXo+GTtizT0feGz+sNHaaOqJIV0GNlbmMXCE=;
+ b=RH5+iuOrLFQiydBZtunndTy77y5Au+eQda5nZd1N8TlFaN8QFJ7vrIYGydWRQSWE3iAKRqLtsUg/TeZDuq5HapaNdkf+u6qV7WJX5yIVIp2ZHSfxiJLzuIho1V5rid4Izbzaea9aSHld1TLAmJcqiVGQSrw59xPtpVMnspJs70k=
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
+ by TY2PR01MB4300.jpnprd01.prod.outlook.com (2603:1096:404:10b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.15; Mon, 17 Aug
+ 2020 11:28:43 +0000
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::9083:6001:8090:9f3]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::9083:6001:8090:9f3%6]) with mapi id 15.20.3283.027; Mon, 17 Aug 2020
+ 11:28:42 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH 2/5] dt-bindings: pwm: renesas,pwm-rcar: Add r8a7742
+ support
+Thread-Topic: [PATCH 2/5] dt-bindings: pwm: renesas,pwm-rcar: Add r8a7742
+ support
+Thread-Index: AQHWbB/iovw0ETBN5E6t+4f0EkNPa6k8OqdA
+Date:   Mon, 17 Aug 2020 11:28:42 +0000
+Message-ID: <TY2PR01MB36923FC9D99F2F088531086AD85F0@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+References: <20200806183152.11809-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200806183152.11809-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20200806183152.11809-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: bp.renesas.com; dkim=none (message not signed)
+ header.d=none;bp.renesas.com; dmarc=none action=none header.from=renesas.com;
+x-originating-ip: [240f:60:5f3e:1:3806:c8ab:968a:d05d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 840515d9-9c49-4956-5b30-08d842a0b281
+x-ms-traffictypediagnostic: TY2PR01MB4300:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <TY2PR01MB4300BCAA5BA8725C9EC430ABD85F0@TY2PR01MB4300.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1122;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lx7MlDyK0sL9QhtFYkuk/XnUIOYxvwzSCf7FoFXHgB+mQ4EPJW+12T4Z0KbXEZBphqjrP6fZ/OPN70NlTr+RERHFpBidq6Z3fJ/j4F3CXFuStl5QGN7F57/0vd6wwO73Hscnj44+hJJFMcLGvXrCqWB8QLT0eNdzQ/sUL+Axo3/zGgLHCwwlylS1Di3SO4hftOdTLjOkrZBcCmrDCwY+JYEVOZSZ+VYcAnnc5zuZNp0Cbvo+aigOUDjbQpnHlSnau51Qpqsj8hRhlXzB0Pmioc99ofDmglFT0fpqRmeNbqmq6w13dSJwTtBx/vl2wzopf5nggJyQ9MjTU2tjw6e8m0cLqFCsLqUpWUsxrVEjXxk6n0mBZCHbulgK2ZCQj8rD
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(346002)(136003)(366004)(396003)(4326008)(6506007)(5660300002)(33656002)(316002)(52536014)(66946007)(8936002)(55016002)(478600001)(66556008)(66476007)(64756008)(76116006)(86362001)(110136005)(9686003)(66446008)(186003)(8676002)(7416002)(2906002)(7696005)(107886003)(71200400001)(558084003)(54906003)(142933001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: cw9djeJ/88pL11pR3Z/gGEUCy7lJP+am3ywAEcdRp09ySgcRPdf1JXAsweXeStSudkPH6pnO6sI8Q1tfGa32VgBZFS+ExCcm7k65j1FWm3U6l85VW5aKsqVW0SxCjdbPK03fsICvLxYeKnZMRwdb8KODzKA5qMyZHr0QweY/+I8YMzyB3vEMZTaQf145e6nCwxorNTvMsRvkj0Kwj5ePIzdAnSai4Hb/6NRBBQ4IFLU6soy2qcTWjvmrS+dW2gJKlU5odx4hpSqxx91jhtzUyuN+XWpCJGOC+Zb2SAD809fy5bDL0x9q195nR9Io+LD6SXKI3oGMwZW4t2oLo6QPNvJSBKAj28b8PN4yoJg+vVfYs1p+1Q3cNHbMJcTr2WL2lrG8UTDHdOWyGkR4KJb9BYhq0S/PIaXH07Yf39oCui4FeE0odWM7hJ3sxen5Tp+OlmddY4xSSsggsYhQK3QpQBM35whNgUT/Rrlg2YLJ/FWPqWtVS7LxNr3F/KUQD0/LbvDBPCq0Y0b5C/6oX4sh8PtfaZv1v30qC6dikeKjPfRFqA+1zyJz+15NlNCIXdL8PwUWH0c+PwEXLDKwcjLM40Z5j2131ux3Qr+Z0dbPMbeENyszDVnkgFczf+UEMKPBOZcTlT78/SPKUFFYrF8+piPkgF/STshqW/y8fcsJyllZqS8urtNjmn0FWn+GdE4V7Tgsca620jrHxCrcWEDSZA==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rf5behupqocofi63"
-Content-Disposition: inline
-In-Reply-To: <20200814155513.31936-2-vincent.whitchurch@axis.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 840515d9-9c49-4956-5b30-08d842a0b281
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2020 11:28:42.8538
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mjc2QAPjyVkW9pjxXZf2PLQUPUclKOSb57JaRCYsfHRvnpqHYvlgxZrFCUOcDIWKY3DdT04AtIY9B2jXJzARuAtZ98h9gx7Z3nKYPitKVWek8+4ek8dlsl/8XcS3dx6N
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB4300
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi Lad-san,
 
---rf5behupqocofi63
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello,
-
-On Fri, Aug 14, 2020 at 05:55:13PM +0200, Vincent Whitchurch wrote:
-> Add a software PWM which toggles a GPIO from a high-resolution timer.
+> From: Lad Prabhakar, Sent: Friday, August 7, 2020 3:32 AM
 >=20
-> This will naturally not be as accurate or as efficient as a hardware
-> PWM, but it is useful in some cases.  I have for example used it for
-> evaluating LED brightness handling (via leds-pwm) on a board where the
-> LED was just hooked up to a GPIO, and for a simple verification of the
-> timer frequency on another platform.
+> Document RZ/G1H (R8A7742) SoC bindings.
 >=20
-> Since high-resolution timers are used, sleeping gpio chips are not
-> supported and are rejected in the probe function.
->=20
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renes=
+as.com>
 
-Nice idea. IMHO this can serve as example about what we expect from pwm
-drivers. There is some improvement necessary however to reach that
-state.
+Thank you for your patch!
 
-> ---
-> While preparing this driver for posting, I found a pwm-gpio driver posted=
- to
-> the lists way back in 2015 by Olliver Schinagl:
->=20
->  https://lore.kernel.org/linux-pwm/1445895161-2317-8-git-send-email-o.sch=
-inagl@ultimaker.com/
->=20
-> This driver was developed independently, but since both drivers are trivi=
-al
-> they are quite similar.  The main difference I see (apart from the usage =
-of
-> newer APIs and DT schemas) is that this driver only supports one PWM per
-> instance, which makes for simpler code.  I also reject sleeping GPIO chips
-> explicitly while that driver uses gpio_set_value_cansleep() from a hrtime=
-r,
-> which is a no-no.
->=20
->  drivers/pwm/Kconfig    |  10 ++++
->  drivers/pwm/Makefile   |   1 +
->  drivers/pwm/pwm-gpio.c | 123 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 134 insertions(+)
->  create mode 100644 drivers/pwm/pwm-gpio.c
->=20
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 7dbcf6973d33..20e4fda82e61 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -181,6 +181,16 @@ config PWM_FSL_FTM
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-fsl-ftm.
-> =20
-> +config PWM_GPIO
-> +	tristate "GPIO PWM support"
-> +	depends on OF && GPIOLIB
-> +	help
-> +	  Generic PWM framework driver for a software PWM toggling a GPIO pin
-> +	  from kernel high-resolution timers.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-gpio.
-> +
->  config PWM_HIBVT
->  	tristate "HiSilicon BVT PWM support"
->  	depends on ARCH_HISI || COMPILE_TEST
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 2c2ba0a03557..2e045f063cd1 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -15,6 +15,7 @@ obj-$(CONFIG_PWM_CRC)		+=3D pwm-crc.o
->  obj-$(CONFIG_PWM_CROS_EC)	+=3D pwm-cros-ec.o
->  obj-$(CONFIG_PWM_EP93XX)	+=3D pwm-ep93xx.o
->  obj-$(CONFIG_PWM_FSL_FTM)	+=3D pwm-fsl-ftm.o
-> +obj-$(CONFIG_PWM_GPIO)		+=3D pwm-gpio.o
->  obj-$(CONFIG_PWM_HIBVT)		+=3D pwm-hibvt.o
->  obj-$(CONFIG_PWM_IMG)		+=3D pwm-img.o
->  obj-$(CONFIG_PWM_IMX1)		+=3D pwm-imx1.o
-> diff --git a/drivers/pwm/pwm-gpio.c b/drivers/pwm/pwm-gpio.c
-> new file mode 100644
-> index 000000000000..e579aca0f937
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-gpio.c
-> @@ -0,0 +1,123 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (C) 2020 Axis Communications AB */
-> +
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/hrtimer.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/pwm.h>
-> +#include <linux/err.h>
-> +#include <linux/of.h>
-> +
-> +struct pwm_gpio {
-> +	struct pwm_chip chip;
-> +	struct hrtimer hrtimer;
-> +	struct gpio_desc *gpio;
-> +	ktime_t on_interval;
-> +	ktime_t off_interval;
-> +	bool invert;
-> +	bool on;
-> +};
-> +
-> +static enum hrtimer_restart pwm_gpio_timer(struct hrtimer *hrtimer)
-> +{
-> +	struct pwm_gpio *gpwm =3D container_of(hrtimer, struct pwm_gpio, hrtime=
-r);
-> +	bool newon =3D !gpwm->on;
-> +
-> +	gpwm->on =3D newon;
-> +	gpiod_set_value(gpwm->gpio, newon ^ gpwm->invert);
-> +
-> +	hrtimer_forward_now(hrtimer, newon ? gpwm->on_interval : gpwm->off_inte=
-rval);
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-If I understand correct this adds the new interval on top of "now" and
-not on top of the previous timestamp where an edge was expected. Would
-it make sense to change that?
+Best regards,
+Yoshihiro Shimoda
 
-> +
-> +	return HRTIMER_RESTART;
-> +}
-> +
-> +static int pwm_gpio_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			  const struct pwm_state *state)
-> +{
-> +	struct pwm_gpio *gpwm =3D container_of(chip, struct pwm_gpio, chip);
-> +
-> +	hrtimer_cancel(&gpwm->hrtimer);
-> +
-> +	if (!state->enabled) {
-> +		gpiod_set_value(gpwm->gpio, 0);
-> +		return 0;
-> +	}
-> +
-> +	gpwm->on_interval =3D ns_to_ktime(state->duty_cycle);
-> +	gpwm->off_interval =3D ns_to_ktime(state->period - state->duty_cycle);
-> +	gpwm->invert =3D state->polarity =3D=3D PWM_POLARITY_INVERSED;
-> +
-> +	gpwm->on =3D !!gpwm->on_interval;
-> +	gpiod_set_value(gpwm->gpio, gpwm->on ^ gpwm->invert);
-> +
-> +	if (gpwm->on_interval && gpwm->off_interval)
-> +		hrtimer_start(&gpwm->hrtimer, gpwm->on_interval, HRTIMER_MODE_REL);
-
-Ideally the currently running period is completed before a period with
-the new configuration starts. Would be nice switch only on the next
-period end if the current configuration is enabled.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct pwm_ops pwm_gpio_ops =3D {
-> +	.owner =3D THIS_MODULE,
-> +	.apply =3D pwm_gpio_apply,
-
-Usually a .get_state callback is nice. Does it make sense to do
-something like:
-
-	if (driver is up)
-		report current setting
-	else
-		val =3D gpio_get_value()
-		report(period=3D1, duty_cycle=3Dval, enabled=3Dval, polarity=3DNORMAL)
-
-?
-
-> +};
-> +
-> +static int pwm_gpio_probe(struct platform_device *pdev)
-> +{
-> +	struct pwm_gpio *gpwm;
-> +	int ret;
-> +
-> +	gpwm =3D devm_kzalloc(&pdev->dev, sizeof(*gpwm), GFP_KERNEL);
-> +	if (!gpwm)
-> +		return -ENOMEM;
-> +
-> +	gpwm->gpio =3D devm_gpiod_get(&pdev->dev, NULL, GPIOD_OUT_LOW);
-> +	if (IS_ERR(gpwm->gpio))
-> +		return PTR_ERR(gpwm->gpio);
-> +
-> +	if (gpiod_cansleep(gpwm->gpio))
-> +		return -EINVAL;
-> +
-> +	gpwm->chip.dev =3D &pdev->dev;
-> +	gpwm->chip.ops =3D &pwm_gpio_ops;
-> +	gpwm->chip.base =3D pdev->id;
-> +	gpwm->chip.npwm =3D 1;
-> +
-> +	hrtimer_init(&gpwm->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-> +	gpwm->hrtimer.function =3D pwm_gpio_timer;
-> +
-> +	ret =3D pwmchip_add(&gpwm->chip);
-> +	if (ret < 0)
-> +		return ret;
-
-Error messages in the error paths please (preferably using
-dev_err_probe).
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---rf5behupqocofi63
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl83k8UACgkQwfwUeK3K
-7AmO4ggAlGQT0fMUFlmyKSdE6QjeZrDtyDSIyjZWS+PoicZ3xRQvF6X/Dvg4+QIL
-Q9+oSCx0gZqFUvqId/giJYlzbb+LtGkGbdrTJFHs0Fhd6HaUHO1JHqjlqGH2zuEx
-ZmvlkCPzr/b+HBK2uNz8PT/mk5RzOb31aQAjREgUXxRCNa2jaw1ec7KKso/uoez8
-w03RzCO4MEhLBBmBkhcWhVGNMaZ/5VosDaEJCpsPfuft8JI808Ek6hMQE0JIXn16
-AMqITGVdyZYloabrMy+8KkcJHSEDDN/WOqR0Kqq2IbLgBKngMBwyQ0dcGrV1jTuF
-wfbek89lLGGgn5gHuXOoVLkYVQuGNQ==
-=xFtm
------END PGP SIGNATURE-----
-
---rf5behupqocofi63--
