@@ -7,22 +7,22 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A40EC433E1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B71D8C433E5
 	for <linux-pwm@archiver.kernel.org>; Thu, 20 Aug 2020 22:56:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 14901207DA
+	by mail.kernel.org (Postfix) with ESMTP id A1449207DA
 	for <linux-pwm@archiver.kernel.org>; Thu, 20 Aug 2020 22:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728615AbgHTW4C (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1728634AbgHTW4C (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 20 Aug 2020 18:56:02 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:42711 "EHLO
+Received: from relay11.mail.gandi.net ([217.70.178.231]:50013 "EHLO
         relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728368AbgHTW4A (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Aug 2020 18:56:00 -0400
+        with ESMTP id S1728611AbgHTW4B (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Aug 2020 18:56:01 -0400
 Received: from localhost (lfbn-lyo-1-1932-79.w90-66.abo.wanadoo.fr [90.66.108.79])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 0469A100003;
-        Thu, 20 Aug 2020 22:55:55 +0000 (UTC)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 74499100005;
+        Thu, 20 Aug 2020 22:55:58 +0000 (UTC)
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -30,11 +30,10 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
         linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH 1/4] dt-bindings: microchip: atmel,at91rm9200-tcb: add atmel,tcb-pwm
-Date:   Fri, 21 Aug 2020 00:55:43 +0200
-Message-Id: <20200820225546.2246517-2-alexandre.belloni@bootlin.com>
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 3/4] pwm: atmel-tcb: add sama5d2 support
+Date:   Fri, 21 Aug 2020 00:55:45 +0200
+Message-Id: <20200820225546.2246517-4-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200820225546.2246517-1-alexandre.belloni@bootlin.com>
 References: <20200820225546.2246517-1-alexandre.belloni@bootlin.com>
@@ -45,101 +44,98 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Move the TCB pwm nodes under their parent and move its documentation to the
-main file.
+Add sama5d2 support. The sama5d2 has a new clock input, its gclk. Index 0
+of the clock selector is the gclk instead of the peripheral clock divided
+by 2.
+
+For now, the gclk is not used because the peripheral clock divided by 8
+already gives a 9.6ns resolution which is enough for most use cases.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
-Cc: Rob Herring <robh+dt@kernel.org>
+ drivers/pwm/pwm-atmel-tcb.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
 
- .../devicetree/bindings/pwm/atmel-tcb-pwm.txt | 16 ----------
- .../soc/microchip/atmel,at91rm9200-tcb.yaml   | 31 ++++++++++++++++++-
- 2 files changed, 30 insertions(+), 17 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-
-diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-deleted file mode 100644
-index 985fcc65f8c4..000000000000
---- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-+++ /dev/null
-@@ -1,16 +0,0 @@
--Atmel TCB PWM controller
--
--Required properties:
--- compatible: should be "atmel,tcb-pwm"
--- #pwm-cells: should be 3. See pwm.yaml in this directory for a description of
--  the cells format. The only third cell flag supported by this binding is
--  PWM_POLARITY_INVERTED.
--- tc-block: The Timer Counter block to use as a PWM chip.
--
--Example:
--
--pwm {
--	compatible = "atmel,tcb-pwm";
--	#pwm-cells = <3>;
--	tc-block = <1>;
--};
-diff --git a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
-index 55fffae05dcf..a51adfdb58f6 100644
---- a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
-+++ b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
-@@ -59,6 +59,7 @@ patternProperties:
-         items:
-           - enum:
-               - atmel,tcb-timer
-+              - atmel,tcb-pwm
-               - microchip,tcb-capture
-       reg:
-         description:
-@@ -68,11 +69,33 @@ patternProperties:
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 82edb44fbbd8..5ccc3e7420e9 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -55,6 +55,7 @@ struct atmel_tcb_pwm_chip {
+ 	u8 width;
+ 	struct regmap *regmap;
+ 	struct clk *clk;
++	struct clk *gclk;
+ 	struct clk *slow_clk;
+ 	struct atmel_tcb_pwm_device *pwms[NPWM];
+ 	struct atmel_tcb_channel bkup;
+@@ -292,7 +293,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
+ 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
+ 	struct atmel_tcb_pwm_device *atcbpwm = NULL;
+-	int i;
++	int i = 0;
+ 	int slowclk = 0;
+ 	unsigned period;
+ 	unsigned duty;
+@@ -303,8 +304,11 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	/*
+ 	 * Find best clk divisor:
+ 	 * the smallest divisor which can fulfill the period_ns requirements.
++	 * If there is a gclk, the first divisor is actuallly the gclk selector
+ 	 */
+-	for (i = 0; i < ARRAY_SIZE(atmel_tcb_divisors); ++i) {
++	if (tcbpwmc->gclk)
++		i = 1;
++	for (; i < ARRAY_SIZE(atmel_tcb_divisors); ++i) {
+ 		if (atmel_tcb_divisors[i] == 0) {
+ 			slowclk = i;
+ 			continue;
+@@ -383,9 +387,15 @@ static struct atmel_tcb_config tcb_sam9x5_config = {
+ 	.counter_width = 32,
+ };
  
-         minItems: 1
-         maxItems: 3
-+    required:
-+      - compatible
-+      - reg
++static struct atmel_tcb_config tcb_sama5d2_config = {
++	.counter_width = 32,
++	.has_gclk = 1,
++};
 +
-+  "^pwm@[0-2]$":
-+    description: The timer block channels that are used as PWMs.
-+    $ref: ../../pwm/pwm.yaml#
-+    type: object
-+    properties:
-+      compatible:
-+        const: atmel,tcb-pwm
-+      reg:
-+        description:
-+          TCB channel to use for this PWM.
-+
-+        maxItems: 1
-+      "#pwm-cells":
-+        description:
-+          The only third cell flag supported by this binding is
-+          PWM_POLARITY_INVERTED.
-+        const: 3
+ static const struct of_device_id atmel_tcb_of_match[] = {
+ 	{ .compatible = "atmel,at91rm9200-tcb", .data = &tcb_rm9200_config, },
+ 	{ .compatible = "atmel,at91sam9x5-tcb", .data = &tcb_sam9x5_config, },
++	{ .compatible = "atmel,sama5d2-tcb", .data = &tcb_sama5d2_config, },
+ 	{ /* sentinel */ }
+ };
  
-     required:
-       - compatible
-       - reg
+@@ -396,7 +406,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	const struct atmel_tcb_config *config;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct regmap *regmap;
+-	struct clk *clk;
++	struct clk *clk, *gclk = NULL;
+ 	struct clk *slow_clk;
+ 	char clk_name[] = "t0_clk";
+ 	int err;
+@@ -428,6 +438,12 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	match = of_match_node(atmel_tcb_of_match, np->parent);
+ 	config = match->data;
  
++	if (config->has_gclk) {
++		gclk = of_clk_get_by_name(np->parent, "gclk");
++		if (IS_ERR(gclk))
++			return PTR_ERR(gclk);
++	}
 +
- allOf:
-   - if:
-       properties:
-@@ -158,7 +181,13 @@ examples:
-                         compatible = "atmel,tcb-timer";
-                         reg = <1>;
-                 };
--        };
-+
-+                pwm@2 {
-+                        compatible = "atmel,tcb-pwm";
-+                        reg = <2>;
-+                        #pwm-cells = <3>;
-+                };
-+         };
-     /* TCB0 Capture with QDEC: */
-         timer@f800c000 {
-                 compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
+ 	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
+ 	if (tcbpwm == NULL) {
+ 		err = -ENOMEM;
+@@ -443,6 +459,7 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	tcbpwm->channel = channel;
+ 	tcbpwm->regmap = regmap;
+ 	tcbpwm->clk = clk;
++	tcbpwm->gclk = gclk;
+ 	tcbpwm->slow_clk = slow_clk;
+ 	tcbpwm->width = config->counter_width;
+ 
 -- 
 2.26.2
 
