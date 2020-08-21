@@ -2,139 +2,91 @@ Return-Path: <SRS0=C8sR=B7=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C656DC433E3
-	for <linux-pwm@archiver.kernel.org>; Fri, 21 Aug 2020 09:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B32EC433E3
+	for <linux-pwm@archiver.kernel.org>; Fri, 21 Aug 2020 10:54:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B049D207BB
-	for <linux-pwm@archiver.kernel.org>; Fri, 21 Aug 2020 09:32:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7049D20656
+	for <linux-pwm@archiver.kernel.org>; Fri, 21 Aug 2020 10:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727846AbgHUJcU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 21 Aug 2020 05:32:20 -0400
-Received: from mga02.intel.com ([134.134.136.20]:7297 "EHLO mga02.intel.com"
+        id S1728183AbgHUKx1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 21 Aug 2020 06:53:27 -0400
+Received: from mga01.intel.com ([192.55.52.88]:2596 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727006AbgHUJcT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 21 Aug 2020 05:32:19 -0400
-IronPort-SDR: fgRQID+h9pfvbwTsHWnvMnunWunmjszIdXpPgNK5Z9TdICbzim7SS3wSJdjnmBAZtOeZ14A95k
- RZbVymq/XAsw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9719"; a="143288990"
+        id S1728058AbgHUKwy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 21 Aug 2020 06:52:54 -0400
+IronPort-SDR: 8aNO/msoBSpTqqCklOoI2JacQjPjJQO7YCLjMr1I3OOZV3lZ1AUJ5pD9elmREgbCIopPhUm8HQ
+ sEH1QZIVz28w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9719"; a="173557967"
 X-IronPort-AV: E=Sophos;i="5.76,335,1592895600"; 
-   d="scan'208";a="143288990"
+   d="scan'208";a="173557967"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 02:32:18 -0700
-IronPort-SDR: hvmJUp9IKl+Oil+/Rvte3tIZsqcosPkwVZiubcF0qfk5y9MsFabQxcgpNbw1RalMOxcBKFHASP
- WAHeoYDVkVNA==
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 03:52:53 -0700
+IronPort-SDR: O7Lz0ZnWt71v2rhcFMeN/ax6FCKFYVTkccb1vrG1j5ztBa9wkip6kUaRQ1nMEuIOPKHxS+3k0z
+ lLexMjyeq4Ug==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,335,1592895600"; 
-   d="scan'208";a="321202090"
-Received: from sgsxdev001.isng.intel.com (HELO localhost) ([10.226.88.11])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Aug 2020 02:32:14 -0700
-From:   Rahul Tanwar <rahul.tanwar@linux.intel.com>
-To:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
-        lee.jones@linaro.org
-Cc:     thierry.reding@gmail.com, p.zabel@pengutronix.de,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, andriy.shevchenko@intel.com,
+   d="scan'208";a="327731116"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga008.jf.intel.com with ESMTP; 21 Aug 2020 03:52:50 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1k94fA-00AK5B-Ke; Fri, 21 Aug 2020 13:52:48 +0300
+Date:   Fri, 21 Aug 2020 13:52:48 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     "Tanwar, Rahul" <rahul.tanwar@linux.intel.com>
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        lee.jones@linaro.org, thierry.reding@gmail.com,
+        p.zabel@pengutronix.de, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         songjun.Wu@intel.com, cheol.yong.kim@intel.com,
         qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com,
-        rtanwar@maxlinear.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Subject: [PATCH v9 0/2] pwm: intel: Add PWM driver for a new SoC
-Date:   Fri, 21 Aug 2020 17:32:09 +0800
-Message-Id: <cover.1598001442.git.rahul.tanwar@linux.intel.com>
-X-Mailer: git-send-email 2.11.0
+        rtanwar@maxlinear.com
+Subject: Re: [PATCH v8 2/2] Add PWM fan controller driver for LGM SoC
+Message-ID: <20200821105248.GM1891694@smile.fi.intel.com>
+References: <cover.1597898872.git.rahul.tanwar@linux.intel.com>
+ <b6d0a65625a2bc231c649c970c0a1af1ff3a5dd5.1597898872.git.rahul.tanwar@linux.intel.com>
+ <20200820105255.GB1891694@smile.fi.intel.com>
+ <56c2a40d-6872-8ae7-7214-420b8bb9f027@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56c2a40d-6872-8ae7-7214-420b8bb9f027@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Patch 1 adds dt binding document in YAML format.
-Patch 2 add PWM fan controller driver for LGM SoC.
+On Fri, Aug 21, 2020 at 05:14:29PM +0800, Tanwar, Rahul wrote:
+> On 20/8/2020 6:52 pm, Andy Shevchenko wrote:
+> > On Thu, Aug 20, 2020 at 12:50:46PM +0800, Rahul Tanwar wrote:
+> >> Intel Lightning Mountain(LGM) SoC contains a PWM fan controller.
+> >> This PWM controller does not have any other consumer, it is a
+> >> dedicated PWM controller for fan attached to the system. Add
+> >> driver for this PWM fan controller.
+> > ...
+> > +#include <linux/bitfield.h>
+> > +#include <linux/clk.h>
+> > +#include <linux/module.h>
+> >> +#include <linux/of_device.h>
+> > This should be mod_devicetable.h.
+> 
+> Inlcuding mod_devicetable.h instead of of_device.h results in
+> build failure related to all platform calls. Build is ok if
+> i remove it. Just FYI..
 
-v9:
-- Address code quality related review concerns (Andy Shevchenko)
-- Use devm_add_action_or_reset() instead of explicit unwind calls.
-
-v8:
-- Remove fan related optional properties usage, keep
-  them as default. If needed, change pwm-fan driver
-  separately in future to add them as generic properties.
-
-v7:
-- Address code quality related review concerns.
-- Rename fan related property to pwm-*.
-- Fix one make dt_binding_check reported error.
-
-v6:
-- Readjust .apply op as per review feedback.
-- Add back pwm-cells property to resolve make dt_binding_check error.
-  pwm-cells is a required property for PWM driver.
-- Add back fan related optional properties.
-
-v5:
-- Address below review concerns from Uwe Kleine-König.
-  * Improve comments about Limitations.
-  * Use return value of regmap_update_bits if container function returns
-    error code.
-  * Modify .apply op to have strict checking for fixed period supported
-    by PWM HW.
-  * Use u64 as type when use min_t for duty_cycle.
-  * Add reset_control_assert() in failure case in probe where it was missing
-    earlier.
-- Remove fan specific optional properties from pwm dt binding document (Rob Herring)
-
-v4:
-- Address below review concerns from Uwe Kleine-König.
-  * Improve notes and limitations comments.
-  * Add common prefixes for all #defines.
-  * Modify/Improve logic in .apply & .get_state ops as advised.
-  * Skip error messages in probe when error is -EPROBE_DEFER.
-  * Add dependencies in Kconfig (OF & HAS_IOMEM) and add select REGMAP_MMIO.
-  * Address other code quality related review concerns.
-- Fix make dt_binding_check reported error in YAML file.
-
-v3:
-- Address below review concerns from Uwe Kleine-König.
-  * Remove fan rpm calibration task from the driver.
-  * Modify apply op as per the review feedback.
-  * Add roundup & round down where necessary.
-  * Address other misc code quality related review concerns.
-  * Use devm_reset_control_get_exclusive(). (Philipp Zabel)
-  * Improve dt binding document.
-
-v2:
-- Address below review concerns from Uwe Kleine-König.
-  * Add notes and limitations about PWM HW.
-  * Rename all functions and structure to lgm_pwm_* 
-  * Readjust space aligninment in structure fields to single space.
-  * Switch to using apply instead of config/enable/disable.
-  * Address other code quality related concerns.
-  * Rebase to 5.8-rc1.
-- Address review concerns in dt binding YAML from Rob Herring.
-
-v1:
-- Initial version.
-
-
-Rahul Tanwar (2):
-  Add DT bindings YAML schema for PWM fan controller of LGM SoC
-  Add PWM fan controller driver for LGM SoC
-
- .../devicetree/bindings/pwm/intel,lgm-pwm.yaml     |  44 ++++
- drivers/pwm/Kconfig                                |  11 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-intel-lgm.c                        | 241 +++++++++++++++++++++
- 4 files changed, 297 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml
- create mode 100644 drivers/pwm/pwm-intel-lgm.c
+I didn't get what the change you performed, by there is no users of of_device.h
+in your code. If build fails it means you need to figure out proper list of
+what has to be included.
 
 -- 
-2.11.0
+With Best Regards,
+Andy Shevchenko
+
 
