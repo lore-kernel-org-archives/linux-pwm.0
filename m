@@ -1,567 +1,265 @@
-Return-Path: <SRS0=2tCM=B6=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=C8sR=B7=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D698C433E3
-	for <linux-pwm@archiver.kernel.org>; Thu, 20 Aug 2020 22:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E44B4C433E1
+	for <linux-pwm@archiver.kernel.org>; Fri, 21 Aug 2020 06:07:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3BC2C207DA
-	for <linux-pwm@archiver.kernel.org>; Thu, 20 Aug 2020 22:56:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C3F63207DA
+	for <linux-pwm@archiver.kernel.org>; Fri, 21 Aug 2020 06:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728571AbgHTW4R (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 20 Aug 2020 18:56:17 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:53949 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728608AbgHTW4C (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Aug 2020 18:56:02 -0400
-X-Originating-IP: 90.66.108.79
-Received: from localhost (lfbn-lyo-1-1932-79.w90-66.abo.wanadoo.fr [90.66.108.79])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id AD6071BF205;
-        Thu, 20 Aug 2020 22:55:57 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 2/4] pwm: atmel-tcb: switch to new binding
-Date:   Fri, 21 Aug 2020 00:55:44 +0200
-Message-Id: <20200820225546.2246517-3-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200820225546.2246517-1-alexandre.belloni@bootlin.com>
-References: <20200820225546.2246517-1-alexandre.belloni@bootlin.com>
+        id S1725951AbgHUGHz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 21 Aug 2020 02:07:55 -0400
+Received: from mga05.intel.com ([192.55.52.43]:28726 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725268AbgHUGHy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 21 Aug 2020 02:07:54 -0400
+IronPort-SDR: 01wy1fbkMkqI3AWfmxowQztTkZPf7EqAP6DupBgS/+42rYAb0BN6j4Zu+89gqzlPzHvRilD2Sq
+ iAeSo6BJU3Tg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9719"; a="240292014"
+X-IronPort-AV: E=Sophos;i="5.76,335,1592895600"; 
+   d="scan'208";a="240292014"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2020 23:07:53 -0700
+IronPort-SDR: zS3Q+hWnsEQSYSpZK5bV44jbsl8hcdicGfMIFVWItfHEDnDnloLkqbEVDEYMiTiPxuKugdxVF0
+ N2Ex83FLmAsw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,335,1592895600"; 
+   d="scan'208";a="335231840"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Aug 2020 23:07:54 -0700
+Received: from [10.214.149.100] (rtanwar-MOBL.gar.corp.intel.com [10.214.149.100])
+        by linux.intel.com (Postfix) with ESMTP id 7604E580279;
+        Thu, 20 Aug 2020 23:07:50 -0700 (PDT)
+Subject: Re: [PATCH v8 2/2] Add PWM fan controller driver for LGM SoC
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        lee.jones@linaro.org, thierry.reding@gmail.com,
+        p.zabel@pengutronix.de, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        songjun.Wu@intel.com, cheol.yong.kim@intel.com,
+        qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com,
+        rtanwar@maxlinear.com
+References: <cover.1597898872.git.rahul.tanwar@linux.intel.com>
+ <b6d0a65625a2bc231c649c970c0a1af1ff3a5dd5.1597898872.git.rahul.tanwar@linux.intel.com>
+ <20200820105255.GB1891694@smile.fi.intel.com>
+From:   "Tanwar, Rahul" <rahul.tanwar@linux.intel.com>
+Message-ID: <ae472e72-8727-b62b-4fc7-f62aa41cafbc@linux.intel.com>
+Date:   Fri, 21 Aug 2020 14:07:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <20200820105255.GB1891694@smile.fi.intel.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-The PWM is now a subnode of the used TCB. This is cleaner and it mainly
-allows to stop wasting TCB channels when only 2 or 4 PWMs are used.
+Hi Andy,
 
-This also removes the atmel_tclib dependency
+On 20/8/2020 6:52 pm, Andy Shevchenko wrote:
+> On Thu, Aug 20, 2020 at 12:50:46PM +0800, Rahul Tanwar wrote:
+>> Intel Lightning Mountain(LGM) SoC contains a PWM fan controller.
+>> This PWM controller does not have any other consumer, it is a
+>> dedicated PWM controller for fan attached to the system. Add
+>> driver for this PWM fan controller.
+> ...
+>
+>> +config PWM_INTEL_LGM
+>> +	tristate "Intel LGM PWM support"
+>> +	depends on OF && HAS_IOMEM
+>> +	depends on X86 || COMPILE_TEST
+> For better test coverage you may rewrite this
+>
+> 	depends on HAS_IOMEM
+> 	depends on (OF && X86) || COMPILE_TEST
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/pwm/Kconfig         |   3 +-
- drivers/pwm/pwm-atmel-tcb.c | 241 ++++++++++++++++++++----------------
- 2 files changed, 137 insertions(+), 107 deletions(-)
+Sure, will update.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 7dbcf6973d33..15cea751bd85 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -75,7 +75,8 @@ config PWM_ATMEL_HLCDC_PWM
- 
- config PWM_ATMEL_TCB
- 	tristate "Atmel TC Block PWM support"
--	depends on ATMEL_TCLIB && OF
-+	depends on OF
-+	select REGMAP_MMIO
- 	help
- 	  Generic PWM framework driver for Atmel Timer Counter Block.
- 
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 85c53701958c..82edb44fbbd8 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -16,13 +16,16 @@
- #include <linux/err.h>
- #include <linux/ioport.h>
- #include <linux/io.h>
-+#include <linux/mfd/syscon.h>
- #include <linux/platform_device.h>
- #include <linux/pwm.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
-+#include <linux/regmap.h>
- #include <linux/slab.h>
- #include <soc/at91/atmel_tcb.h>
- 
--#define NPWM	6
-+#define NPWM	2
- 
- #define ATMEL_TC_ACMR_MASK	(ATMEL_TC_ACPA | ATMEL_TC_ACPC |	\
- 				 ATMEL_TC_AEEVT | ATMEL_TC_ASWTRG)
-@@ -48,11 +51,17 @@ struct atmel_tcb_channel {
- struct atmel_tcb_pwm_chip {
- 	struct pwm_chip chip;
- 	spinlock_t lock;
--	struct atmel_tc *tc;
-+	u8 channel;
-+	u8 width;
-+	struct regmap *regmap;
-+	struct clk *clk;
-+	struct clk *slow_clk;
- 	struct atmel_tcb_pwm_device *pwms[NPWM];
--	struct atmel_tcb_channel bkup[NPWM / 2];
-+	struct atmel_tcb_channel bkup;
- };
- 
-+const u8 atmel_tcb_divisors[] = { 2, 8, 32, 128, 0, };
-+
- static inline struct atmel_tcb_pwm_chip *to_tcb_chip(struct pwm_chip *chip)
- {
- 	return container_of(chip, struct atmel_tcb_pwm_chip, chip);
-@@ -74,10 +83,6 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm;
--	struct atmel_tc *tc = tcbpwmc->tc;
--	void __iomem *regs = tc->regs;
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	unsigned cmr;
- 	int ret;
- 
-@@ -85,7 +90,7 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
- 	if (!tcbpwm)
- 		return -ENOMEM;
- 
--	ret = clk_prepare_enable(tc->clk[group]);
-+	ret = clk_prepare_enable(tcbpwmc->clk);
- 	if (ret) {
- 		devm_kfree(chip->dev, tcbpwm);
- 		return ret;
-@@ -98,28 +103,31 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
- 	tcbpwm->div = 0;
- 
- 	spin_lock(&tcbpwmc->lock);
--	cmr = __raw_readl(regs + ATMEL_TC_REG(group, CMR));
-+	regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), &cmr);
- 	/*
- 	 * Get init config from Timer Counter registers if
- 	 * Timer Counter is already configured as a PWM generator.
- 	 */
- 	if (cmr & ATMEL_TC_WAVE) {
--		if (index == 0)
--			tcbpwm->duty =
--				__raw_readl(regs + ATMEL_TC_REG(group, RA));
-+		if (pwm->hwpwm == 0)
-+			regmap_read(tcbpwmc->regmap,
-+				    ATMEL_TC_REG(tcbpwmc->channel, RA),
-+				    &tcbpwm->duty);
- 		else
--			tcbpwm->duty =
--				__raw_readl(regs + ATMEL_TC_REG(group, RB));
-+			regmap_read(tcbpwmc->regmap,
-+				    ATMEL_TC_REG(tcbpwmc->channel, RB),
-+				    &tcbpwm->duty);
- 
- 		tcbpwm->div = cmr & ATMEL_TC_TCCLKS;
--		tcbpwm->period = __raw_readl(regs + ATMEL_TC_REG(group, RC));
-+		regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, RC),
-+			    &tcbpwm->period);
- 		cmr &= (ATMEL_TC_TCCLKS | ATMEL_TC_ACMR_MASK |
- 			ATMEL_TC_BCMR_MASK);
- 	} else
- 		cmr = 0;
- 
- 	cmr |= ATMEL_TC_WAVE | ATMEL_TC_WAVESEL_UP_AUTO | ATMEL_TC_EEVT_XC0;
--	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), cmr);
- 	spin_unlock(&tcbpwmc->lock);
- 
- 	tcbpwmc->pwms[pwm->hwpwm] = tcbpwm;
-@@ -131,9 +139,8 @@ static void atmel_tcb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	struct atmel_tc *tc = tcbpwmc->tc;
- 
--	clk_disable_unprepare(tc->clk[pwm->hwpwm / 2]);
-+	clk_disable_unprepare(tcbpwmc->clk);
- 	tcbpwmc->pwms[pwm->hwpwm] = NULL;
- 	devm_kfree(chip->dev, tcbpwm);
- }
-@@ -142,10 +149,6 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	struct atmel_tc *tc = tcbpwmc->tc;
--	void __iomem *regs = tc->regs;
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	unsigned cmr;
- 	enum pwm_polarity polarity = tcbpwm->polarity;
- 
-@@ -161,10 +164,10 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		polarity = !polarity;
- 
- 	spin_lock(&tcbpwmc->lock);
--	cmr = __raw_readl(regs + ATMEL_TC_REG(group, CMR));
-+	regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), &cmr);
- 
- 	/* flush old setting and set the new one */
--	if (index == 0) {
-+	if (pwm->hwpwm == 0) {
- 		cmr &= ~ATMEL_TC_ACMR_MASK;
- 		if (polarity == PWM_POLARITY_INVERSED)
- 			cmr |= ATMEL_TC_ASWTRG_CLEAR;
-@@ -178,20 +181,22 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 			cmr |= ATMEL_TC_BSWTRG_SET;
- 	}
- 
--	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), cmr);
- 
- 	/*
- 	 * Use software trigger to apply the new setting.
- 	 * If both PWM devices in this group are disabled we stop the clock.
- 	 */
- 	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC))) {
--		__raw_writel(ATMEL_TC_SWTRG | ATMEL_TC_CLKDIS,
--			     regs + ATMEL_TC_REG(group, CCR));
--		tcbpwmc->bkup[group].enabled = 1;
-+		regmap_write(tcbpwmc->regmap,
-+			     ATMEL_TC_REG(tcbpwmc->channel, CCR),
-+			     ATMEL_TC_SWTRG | ATMEL_TC_CLKDIS);
-+		tcbpwmc->bkup.enabled = 1;
- 	} else {
--		__raw_writel(ATMEL_TC_SWTRG, regs +
--			     ATMEL_TC_REG(group, CCR));
--		tcbpwmc->bkup[group].enabled = 0;
-+		regmap_write(tcbpwmc->regmap,
-+			     ATMEL_TC_REG(tcbpwmc->channel, CCR),
-+			     ATMEL_TC_SWTRG);
-+		tcbpwmc->bkup.enabled = 0;
- 	}
- 
- 	spin_unlock(&tcbpwmc->lock);
-@@ -201,10 +206,6 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	struct atmel_tc *tc = tcbpwmc->tc;
--	void __iomem *regs = tc->regs;
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	u32 cmr;
- 	enum pwm_polarity polarity = tcbpwm->polarity;
- 
-@@ -220,12 +221,12 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		polarity = !polarity;
- 
- 	spin_lock(&tcbpwmc->lock);
--	cmr = __raw_readl(regs + ATMEL_TC_REG(group, CMR));
-+	regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), &cmr);
- 
- 	/* flush old setting and set the new one */
- 	cmr &= ~ATMEL_TC_TCCLKS;
- 
--	if (index == 0) {
-+	if (pwm->hwpwm == 0) {
- 		cmr &= ~ATMEL_TC_ACMR_MASK;
- 
- 		/* Set CMR flags according to given polarity */
-@@ -248,7 +249,7 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	 * this config till next config call.
- 	 */
- 	if (tcbpwm->duty != tcbpwm->period && tcbpwm->duty > 0) {
--		if (index == 0) {
-+		if (pwm->hwpwm == 0) {
- 			if (polarity == PWM_POLARITY_INVERSED)
- 				cmr |= ATMEL_TC_ACPA_SET | ATMEL_TC_ACPC_CLEAR;
- 			else
-@@ -263,19 +264,24 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 
- 	cmr |= (tcbpwm->div & ATMEL_TC_TCCLKS);
- 
--	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), cmr);
- 
--	if (index == 0)
--		__raw_writel(tcbpwm->duty, regs + ATMEL_TC_REG(group, RA));
-+	if (pwm->hwpwm == 0)
-+		regmap_write(tcbpwmc->regmap,
-+			     ATMEL_TC_REG(tcbpwmc->channel, RA),
-+			     tcbpwm->duty);
- 	else
--		__raw_writel(tcbpwm->duty, regs + ATMEL_TC_REG(group, RB));
-+		regmap_write(tcbpwmc->regmap,
-+			     ATMEL_TC_REG(tcbpwmc->channel, RB),
-+			     tcbpwm->duty);
- 
--	__raw_writel(tcbpwm->period, regs + ATMEL_TC_REG(group, RC));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, RC),
-+		     tcbpwm->period);
- 
- 	/* Use software trigger to apply the new setting */
--	__raw_writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
--		     regs + ATMEL_TC_REG(group, CCR));
--	tcbpwmc->bkup[group].enabled = 1;
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CCR),
-+		     ATMEL_TC_SWTRG | ATMEL_TC_CLKEN);
-+	tcbpwmc->bkup.enabled = 1;
- 	spin_unlock(&tcbpwmc->lock);
- 	return 0;
- }
-@@ -285,15 +291,12 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	struct atmel_tcb_pwm_device *atcbpwm = NULL;
--	struct atmel_tc *tc = tcbpwmc->tc;
- 	int i;
- 	int slowclk = 0;
- 	unsigned period;
- 	unsigned duty;
--	unsigned rate = clk_get_rate(tc->clk[group]);
-+	unsigned rate = clk_get_rate(tcbpwmc->clk);
- 	unsigned long long min;
- 	unsigned long long max;
- 
-@@ -301,13 +304,13 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * Find best clk divisor:
- 	 * the smallest divisor which can fulfill the period_ns requirements.
- 	 */
--	for (i = 0; i < 5; ++i) {
--		if (atmel_tc_divisors[i] == 0) {
-+	for (i = 0; i < ARRAY_SIZE(atmel_tcb_divisors); ++i) {
-+		if (atmel_tcb_divisors[i] == 0) {
- 			slowclk = i;
- 			continue;
- 		}
--		min = div_u64((u64)NSEC_PER_SEC * atmel_tc_divisors[i], rate);
--		max = min << tc->tcb_config->counter_width;
-+		min = div_u64((u64)NSEC_PER_SEC * atmel_tcb_divisors[i], rate);
-+		max = min << tcbpwmc->width;
- 		if (max >= period_ns)
- 			break;
- 	}
-@@ -316,11 +319,11 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * If none of the divisor are small enough to represent period_ns
- 	 * take slow clock (32KHz).
- 	 */
--	if (i == 5) {
-+	if (i == ARRAY_SIZE(atmel_tcb_divisors)) {
- 		i = slowclk;
--		rate = clk_get_rate(tc->slow_clk);
-+		rate = clk_get_rate(tcbpwmc->slow_clk);
- 		min = div_u64(NSEC_PER_SEC, rate);
--		max = min << tc->tcb_config->counter_width;
-+		max = min << tcbpwmc->width;
- 
- 		/* If period is too big return ERANGE error */
- 		if (max < period_ns)
-@@ -330,17 +333,13 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	duty = div_u64(duty_ns, min);
- 	period = div_u64(period_ns, min);
- 
--	if (index == 0)
--		atcbpwm = tcbpwmc->pwms[pwm->hwpwm + 1];
-+	if (pwm->hwpwm == 0)
-+		atcbpwm = tcbpwmc->pwms[1];
- 	else
--		atcbpwm = tcbpwmc->pwms[pwm->hwpwm - 1];
-+		atcbpwm = tcbpwmc->pwms[0];
- 
- 	/*
--	 * PWM devices provided by TCB driver are grouped by 2:
--	 * - group 0: PWM 0 & 1
--	 * - group 1: PWM 2 & 3
--	 * - group 2: PWM 4 & 5
--	 *
-+	 * PWM devices provided by the TCB driver are grouped by 2.
- 	 * PWM devices in a given group must be configured with the
- 	 * same period_ns.
- 	 *
-@@ -376,32 +375,63 @@ static const struct pwm_ops atmel_tcb_pwm_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static struct atmel_tcb_config tcb_rm9200_config = {
-+	.counter_width = 16,
-+};
-+
-+static struct atmel_tcb_config tcb_sam9x5_config = {
-+	.counter_width = 32,
-+};
-+
-+static const struct of_device_id atmel_tcb_of_match[] = {
-+	{ .compatible = "atmel,at91rm9200-tcb", .data = &tcb_rm9200_config, },
-+	{ .compatible = "atmel,at91sam9x5-tcb", .data = &tcb_sam9x5_config, },
-+	{ /* sentinel */ }
-+};
-+
- static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- {
-+	const struct of_device_id *match;
- 	struct atmel_tcb_pwm_chip *tcbpwm;
-+	const struct atmel_tcb_config *config;
- 	struct device_node *np = pdev->dev.of_node;
--	struct atmel_tc *tc;
-+	struct regmap *regmap;
-+	struct clk *clk;
-+	struct clk *slow_clk;
-+	char clk_name[] = "t0_clk";
- 	int err;
--	int tcblock;
-+	int channel;
- 
--	err = of_property_read_u32(np, "tc-block", &tcblock);
-+	err = of_property_read_u32(np, "reg", &channel);
- 	if (err < 0) {
- 		dev_err(&pdev->dev,
--			"failed to get Timer Counter Block number from device tree (error: %d)\n",
-+			"failed to get Timer Counter Block channel from device tree (error: %d)\n",
- 			err);
- 		return err;
- 	}
- 
--	tc = atmel_tc_alloc(tcblock);
--	if (tc == NULL) {
--		dev_err(&pdev->dev, "failed to allocate Timer Counter Block\n");
--		return -ENOMEM;
--	}
-+	regmap = syscon_node_to_regmap(np->parent);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	slow_clk = of_clk_get_by_name(np->parent, "slow_clk");
-+	if (IS_ERR(slow_clk))
-+		return PTR_ERR(slow_clk);
-+
-+	clk_name[1] += channel;
-+	clk = of_clk_get_by_name(np->parent, clk_name);
-+	if (IS_ERR(clk))
-+		clk = of_clk_get_by_name(np->parent, "t0_clk");
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	match = of_match_node(atmel_tcb_of_match, np->parent);
-+	config = match->data;
- 
- 	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
- 	if (tcbpwm == NULL) {
- 		err = -ENOMEM;
--		goto err_free_tc;
-+		goto err_slow_clk;
- 	}
- 
- 	tcbpwm->chip.dev = &pdev->dev;
-@@ -410,11 +440,15 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	tcbpwm->chip.of_pwm_n_cells = 3;
- 	tcbpwm->chip.base = -1;
- 	tcbpwm->chip.npwm = NPWM;
--	tcbpwm->tc = tc;
-+	tcbpwm->channel = channel;
-+	tcbpwm->regmap = regmap;
-+	tcbpwm->clk = clk;
-+	tcbpwm->slow_clk = slow_clk;
-+	tcbpwm->width = config->counter_width;
- 
--	err = clk_prepare_enable(tc->slow_clk);
-+	err = clk_prepare_enable(slow_clk);
- 	if (err)
--		goto err_free_tc;
-+		goto err_slow_clk;
- 
- 	spin_lock_init(&tcbpwm->lock);
- 
-@@ -427,10 +461,10 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_disable_clk:
--	clk_disable_unprepare(tcbpwm->tc->slow_clk);
-+	clk_disable_unprepare(tcbpwm->slow_clk);
- 
--err_free_tc:
--	atmel_tc_free(tc);
-+err_slow_clk:
-+	clk_put(slow_clk);
- 
- 	return err;
- }
-@@ -440,14 +474,14 @@ static int atmel_tcb_pwm_remove(struct platform_device *pdev)
- 	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
- 	int err;
- 
--	clk_disable_unprepare(tcbpwm->tc->slow_clk);
-+	clk_disable_unprepare(tcbpwm->slow_clk);
-+	clk_put(tcbpwm->slow_clk);
-+	clk_put(tcbpwm->clk);
- 
- 	err = pwmchip_remove(&tcbpwm->chip);
- 	if (err < 0)
- 		return err;
- 
--	atmel_tc_free(tcbpwm->tc);
--
- 	return 0;
- }
- 
-@@ -461,38 +495,33 @@ MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
- static int atmel_tcb_pwm_suspend(struct device *dev)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwm = dev_get_drvdata(dev);
--	void __iomem *base = tcbpwm->tc->regs;
--	int i;
-+	struct atmel_tcb_channel *chan = &tcbpwm->bkup;
-+	unsigned int channel = tcbpwm->channel;
- 
--	for (i = 0; i < (NPWM / 2); i++) {
--		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
-+	regmap_read(tcbpwm->regmap, ATMEL_TC_REG(channel, CMR), &chan->cmr);
-+	regmap_read(tcbpwm->regmap, ATMEL_TC_REG(channel, RA), &chan->ra);
-+	regmap_read(tcbpwm->regmap, ATMEL_TC_REG(channel, RB), &chan->rb);
-+	regmap_read(tcbpwm->regmap, ATMEL_TC_REG(channel, RC), &chan->rc);
- 
--		chan->cmr = readl(base + ATMEL_TC_REG(i, CMR));
--		chan->ra = readl(base + ATMEL_TC_REG(i, RA));
--		chan->rb = readl(base + ATMEL_TC_REG(i, RB));
--		chan->rc = readl(base + ATMEL_TC_REG(i, RC));
--	}
- 	return 0;
- }
- 
- static int atmel_tcb_pwm_resume(struct device *dev)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwm = dev_get_drvdata(dev);
--	void __iomem *base = tcbpwm->tc->regs;
--	int i;
-+	struct atmel_tcb_channel *chan = &tcbpwm->bkup;
-+	unsigned int channel = tcbpwm->channel;
- 
--	for (i = 0; i < (NPWM / 2); i++) {
--		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
-+	regmap_write(tcbpwm->regmap, ATMEL_TC_REG(channel, CMR), chan->cmr);
-+	regmap_write(tcbpwm->regmap, ATMEL_TC_REG(channel, RA), chan->ra);
-+	regmap_write(tcbpwm->regmap, ATMEL_TC_REG(channel, RB), chan->rb);
-+	regmap_write(tcbpwm->regmap, ATMEL_TC_REG(channel, RC), chan->rc);
-+
-+	if (chan->enabled)
-+		regmap_write(tcbpwm->regmap,
-+			     ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
-+			     ATMEL_TC_REG(channel, CCR));
- 
--		writel(chan->cmr, base + ATMEL_TC_REG(i, CMR));
--		writel(chan->ra, base + ATMEL_TC_REG(i, RA));
--		writel(chan->rb, base + ATMEL_TC_REG(i, RB));
--		writel(chan->rc, base + ATMEL_TC_REG(i, RC));
--		if (chan->enabled) {
--			writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
--				base + ATMEL_TC_REG(i, CCR));
--		}
--	}
- 	return 0;
- }
- #endif
--- 
-2.26.2
+>> +	select REGMAP_MMIO
+>> +	help
+>> +	  Generic PWM fan controller driver for LGM SoC.
+>> +
+>> +	  To compile this driver as a module, choose M here: the module
+>> +	  will be called pwm-intel-lgm.
+> ...
+>
+>> +#include <linux/bitfield.h>
+>> +#include <linux/clk.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of_device.h>
+> This should be mod_devicetable.h.
+
+Well noted.
+
+>> +#include <linux/pwm.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/reset.h>
+> ...
+>
+>> +#define LGM_PWM_PERIOD_2WIRE_NSECS	40000000
+> NSECS -> NS
+> 40000000 -> (40 * NSEC_PER_MSEC)
+
+Well noted.
+
+> ...
+>
+>> +	if (state->polarity != PWM_POLARITY_NORMAL ||
+>> +	    state->period < pc->period)
+> It can be one line.
+
+Ok.
+
+>> +		return -EINVAL;
+> ...
+>
+>> +	if (!state->enabled) {
+>> +		ret = lgm_pwm_enable(chip, 0);
+>> +		return ret;
+> What is the point?
+
+I guess you mean to change it to return lgm_pwm_enable(chip, 0);
+Will do, thanks.
+
+>> +	}
+> ...
+>
+>> +	ret = lgm_pwm_enable(chip, 1);
+>> +
+>> +	return ret;
+> Ditto.
+>
+> ...
+>
+>> +	state->duty_cycle = DIV_ROUND_UP(duty * pc->period,
+>> +					 LGM_PWM_MAX_DUTY_CYCLE);
+> One line?
+
+Ok.
+
+> ...
+>
+>> +	struct lgm_pwm_chip *pc;
+>> +	struct device *dev = &pdev->dev;
+> Use reversed xmas tree order.
+
+Sure, will update.
+
+>> +	void __iomem *io_base;
+>> +	int ret;
+> ...
+>
+>> +	pc->regmap = devm_regmap_init_mmio(dev, io_base, &lgm_pwm_regmap_config);
+>> +	if (IS_ERR(pc->regmap)) {
+>> +		ret = PTR_ERR(pc->regmap);
+>> +		if (ret != -EPROBE_DEFER)
+>> +			dev_err(dev, "failed to init register map: %pe\n",
+>> +				pc->regmap);
+>> +		return ret;
+> dev_err_probe()
+
+Will update. Thanks.
+
+>> +	}
+> ...
+>
+>> +	pc->clk = devm_clk_get(dev, NULL);
+>> +	if (IS_ERR(pc->clk)) {
+>> +		ret = PTR_ERR(pc->clk);
+>> +		if (ret != -EPROBE_DEFER)
+>> +			dev_err(dev, "failed to get clock: %pe\n", pc->clk);
+>> +		return ret;
+> Ditto.
+>
+>> +	}
+>> +
+>> +	pc->rst = devm_reset_control_get_exclusive(dev, NULL);
+>> +	if (IS_ERR(pc->rst)) {
+>> +		ret = PTR_ERR(pc->rst);
+>> +		if (ret != -EPROBE_DEFER)
+>> +			dev_err(dev, "failed to get reset control: %pe\n",
+>> +				pc->rst);
+>> +		return ret;
+> Ditto.
+>
+>> +	}
+>> +
+>> +	ret = reset_control_deassert(pc->rst);
+>> +	if (ret) {
+>> +		if (ret != -EPROBE_DEFER)
+>> +			dev_err(dev, "cannot deassert reset control: %pe\n",
+>> +				ERR_PTR(ret));
+>> +		return ret;
+> Ditto.
+>
+>> +	}
+> ...
+>
+>> +	ret = clk_prepare_enable(pc->clk);
+> Wrap it with devm_add_action_or_reset(). Same for reset_control_deassert().
+> You probably can even put them under one function.
+
+I did some study and research for using devm_add_action_or_reset(). But
+still i have some doubts. Below steps is what i intend to do in order to
+switch to using this API. Please do review and let me know it is ok and
+i am not missing anything else. Thanks.
+
+1. Call reset_control_assert()
+2. Call clk_prepare_enable()
+3. Call pwmchip_add()
+4. Call devm_add_action_or_reset(dev, my_action, pc)
+5. Remove explicit calls to unprepare/reset_control_assert from probe in
+failure cases.
+6. static void my_action(void *pc)
+   {
+      pwmchip_remove(&pc->chip);
+      clk_disable_upprepare(pc->clk);
+      reset_control_assert(pc->rst);
+   }
+7. Remove platform_driver.remove() entirely.
+
+>> +	if (ret) {
+>> +		dev_err(dev, "failed to enable clock\n");
+>> +		reset_control_assert(pc->rst);
+>> +		return ret;
+>> +	}
+> ...
+>
+>> +	ret = pwmchip_add(&pc->chip);
+>> +	if (ret < 0) {
+> Does ' < 0' have any meaning?
+
+I use < 0 because this API's return code is mentioned as below:
+Returns: 0 on success or a negative error code on failure.
+Also, all other PWM drivers check for <0 for this call.
+
+>> +		dev_err(dev, "failed to add PWM chip: %pe\n", ERR_PTR(ret));
+>> +		clk_disable_unprepare(pc->clk);
+>> +		reset_control_assert(pc->rst);
+>> +		return ret;
+>> +	}
+> ...
+>
+>> +	ret = pwmchip_remove(&pc->chip);
+>> +	if (ret < 0)
+> Ditto.
+
+Same as above.
+
+>> +		return ret;
+Thanks.
+
+Regards,
+Rahul
 
