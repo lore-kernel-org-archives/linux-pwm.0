@@ -2,181 +2,157 @@ Return-Path: <SRS0=iwzQ=CC=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85160C433E1
-	for <linux-pwm@archiver.kernel.org>; Mon, 24 Aug 2020 10:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3C3C433E1
+	for <linux-pwm@archiver.kernel.org>; Mon, 24 Aug 2020 12:01:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 540482071E
-	for <linux-pwm@archiver.kernel.org>; Mon, 24 Aug 2020 10:46:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0891B2078D
+	for <linux-pwm@archiver.kernel.org>; Mon, 24 Aug 2020 12:01:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UskvNm3E"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iO/p8b0h"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbgHXKqC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 24 Aug 2020 06:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbgHXKpz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Aug 2020 06:45:55 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275F0C061573;
-        Mon, 24 Aug 2020 03:45:49 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id md23so10502594ejb.6;
-        Mon, 24 Aug 2020 03:45:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=f6wdlEKoq+5Slr+UsziPsdyk2CY1PCYDCcZCpyAdvwo=;
-        b=UskvNm3ErsbR8Pp/wFDQea/LOjrsQ4lwIZJjMWNn1JqQJYresYEAPXPejRzFL60qex
-         VE2PGxG3z8KRswRMmM0oKcJxH4wfLw5UvtX4JnyAUPoKWu9sxdm0qD/ddj2zaeo5vMgE
-         KZeoYRVzeupKX/SneIEZ9AqQDO61XOR3UAzcYoPFcwipi1OS8bSVvAxM+lct67wWGrRQ
-         WoFGfSl7GIm+5MgTB/3tGzC54KHwQhZaDXdU/hYA/29sWSYgsMo2Xqb3cBh5O/NmY5R9
-         K9vbAnDlVC3IpZUgmny3LW/UUBYTGqa+eXFV+oY6U5DqQJs1C4JQPbuhL3NgHMj6ka9y
-         dPtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=f6wdlEKoq+5Slr+UsziPsdyk2CY1PCYDCcZCpyAdvwo=;
-        b=BOUAhbn+dwgjhScJXvuiz4Va037vSwo5yd/BDLejfqcvC0VaDZ2mt9vowBb7GZKo7V
-         N/uyQWbDQK8ATzkD3DLTD6NNPQoMretQFkENqTQLoIAo3NdwKVaUhQJ2ypHJLhwyg+AT
-         rUPxHqqLYPzlJmQvRRZsuvbrxVI2KAplyckVV6X7ZlIomwlMlw5D98kCFofGmqunFuKC
-         0wAQ/ZxgsE7jM2a6MFehnkCIZuTaKrWiMpmsHEdw6Bfoub23kFgMffh0w9hncAX+i4+k
-         L1KlAD4XvdwiXHkB9yfM/fcUTK7/XvCTZj/Xe1sVzjgqzlfrTZLw5K6qy+TenoiVrZND
-         i95w==
-X-Gm-Message-State: AOAM532enl1T4w0Q4fdYmU947gUZXkr3Nxynbgb1xUJBd2LvgG2t/8mh
-        YPznfxq8yHFQx/9qkPNFZY8Fo5k3riKia2wyo4o=
-X-Google-Smtp-Source: ABdhPJzEP44NtBFAfTFi6m+U0B8L72BF9hYGNpMJgnWY8VcgZq+4UR0vLLyZ7HOS1sZEFPyg+vJmWEtgQHp7weUp5fA=
-X-Received: by 2002:a17:906:2a04:: with SMTP id j4mr5218133eje.440.1598265947869;
- Mon, 24 Aug 2020 03:45:47 -0700 (PDT)
+        id S1726813AbgHXMBj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 24 Aug 2020 08:01:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34142 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726799AbgHXMBi (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Aug 2020 08:01:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598270497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HpcDUK52/UDxZyv8A9aeHTJ/qDjPZ77nKjdZsqv7cec=;
+        b=iO/p8b0hwNefaMTV5MNbdWuh+W1NcTau6Oyh8DWAS7T4f9IWyeQu07f0PE/25klCeIjzqh
+        5gh7YhbRr39Wiev5pFT8VgvrT+JeJjOBPSS1yFsYbMofOIerhowjoFwmGRXqKjIR1mT6Km
+        NKtvR6ugagNJfEm5ZcMV6mJJLCBuMXU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-58-ZCGUcaXJNWunUf1rkjsFeQ-1; Mon, 24 Aug 2020 08:01:35 -0400
+X-MC-Unique: ZCGUcaXJNWunUf1rkjsFeQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2E85D801AC9;
+        Mon, 24 Aug 2020 12:01:32 +0000 (UTC)
+Received: from x1.localdomain.com (ovpn-113-147.ams2.redhat.com [10.36.113.147])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E54F5D9DD;
+        Mon, 24 Aug 2020 12:01:28 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH v6 00/16] acpi/pwm/i915: Convert pwm-crc and i915 driver's PWM code to use the atomic PWM API
+Date:   Mon, 24 Aug 2020 14:01:10 +0200
+Message-Id: <20200824120126.7116-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-References: <20200823161550.3981-1-krzk@kernel.org> <20200823161550.3981-21-krzk@kernel.org>
- <AM6PR04MB49668B0F67B02B2A33603B4880560@AM6PR04MB4966.eurprd04.prod.outlook.com>
- <20200824091102.GA20819@kozik-lap> <CAA+hA=S=2SoF8egOq8h-eB9wZGDqrAw66VtW-bU9oBmzFSj9Bw@mail.gmail.com>
- <VI1PR04MB52949085DFA5D29C2858094290560@VI1PR04MB5294.eurprd04.prod.outlook.com>
- <20200824103237.GA26120@kozik-lap>
-In-Reply-To: <20200824103237.GA26120@kozik-lap>
-From:   Dong Aisheng <dongas86@gmail.com>
-Date:   Mon, 24 Aug 2020 18:30:33 +0800
-Message-ID: <CAA+hA=TD8bjmws7FXAP7zZR1dYgtLPzjFrhPg8XwZcpP2ef4ug@mail.gmail.com>
-Subject: Re: [PATCH 21/22] arm64: dts: imx8qxp: Remove i.MX7 compatible from USDHC
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Bough Chen <haibo.chen@nxp.com>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Anson Huang <anson.huang@nxp.com>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 6:32 PM Krzysztof Kozlowski <krzk@kernel.org> wrote=
-:
->
-> On Mon, Aug 24, 2020 at 10:31:31AM +0000, Bough Chen wrote:
-> > > -----Original Message-----
-> > > From: Dong Aisheng [mailto:dongas86@gmail.com]
-> > > Sent: 2020=E5=B9=B48=E6=9C=8824=E6=97=A5 17:45
-> > > To: Krzysztof Kozlowski <krzk@kernel.org>
-> > > Cc: Aisheng Dong <aisheng.dong@nxp.com>; devicetree@vger.kernel.org;
-> > > linux-serial@vger.kernel.org; Anson Huang <anson.huang@nxp.com>;
-> > > linux-gpio@vger.kernel.org; Fabio Estevam <festevam@gmail.com>; Linus
-> > > Walleij <linus.walleij@linaro.org>; linux-pm@vger.kernel.org;
-> > > linux-mmc@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > > linux-pwm@vger.kernel.org; Bartosz Golaszewski
-> > > <bgolaszewski@baylibre.com>; Rob Herring <robh+dt@kernel.org>;
-> > > linux-mtd@lists.infradead.org; dl-linux-imx <linux-imx@nxp.com>; Peng=
-utronix
-> > > Kernel Team <kernel@pengutronix.de>; Thierry Reding
-> > > <thierry.reding@gmail.com>; Shawn Guo <shawnguo@kernel.org>; Sascha
-> > > Hauer <s.hauer@pengutronix.de>; linux-arm-kernel@lists.infradead.org;
-> > > linux-watchdog@vger.kernel.org; Bough Chen <haibo.chen@nxp.com>
-> > > Subject: Re: [PATCH 21/22] arm64: dts: imx8qxp: Remove i.MX7 compatib=
-le
-> > > from USDHC
-> > >
-> > > On Mon, Aug 24, 2020 at 5:15 PM Krzysztof Kozlowski <krzk@kernel.org>
-> > > wrote:
-> > > >
-> > > > On Mon, Aug 24, 2020 at 09:00:19AM +0000, Aisheng Dong wrote:
-> > > > > > From: Krzysztof Kozlowski <krzk@kernel.org>
-> > > > > > Sent: Monday, August 24, 2020 12:16 AM
-> > > > > >
-> > > > > > The USDHC on i.MX 8QXP has its own compatible described in
-> > > > > > bindings and used in the driver (with its own quirks).  Remove
-> > > > > > additional fsl,imx7d-usdhc compatible to fix dtbs_check warning=
-s like:
-> > > > > >
-> > > > > >   arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml:
-> > > mmc@5b010000:
-> > > > > >     compatible: ['fsl,imx8qxp-usdhc', 'fsl,imx7d-usdhc'] is too=
- long
-> > > > > >     From schema:
-> > > > > > /ocumentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
-> > > > > >
-> > > > > >   arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml:
-> > > mmc@5b010000:
-> > > > > >     compatible: Additional items are not allowed
-> > > > > > ('fsl,imx7d-usdhc' was
-> > > > > > unexpected)
-> > > > > >
-> > > > > > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > > > >
-> > > > > For Patch 19-22, I think we should fix dt binding doc.
-> > > >
-> > > > Are you sure that these USDHC controllers are compatible with i.MX =
-7D?
-> > > > Could they really run with fsl,imx7d-usdhc compatible?
-> > >
-> > > AFAIK uSDHC on QXP is derived from the former platforms with adding a=
- few
-> > > more new features. e.g. HS400ES/CMDQ.
-> > > Let me loop in uSDHC driver owner Haibo Chen to double confirm.
-> >
-> > Yes, usdhc of imx8qxp can work by using the compatible "fsl, imx7d-usdh=
-c", but will not support HS400ES/Command Queue any more. Also imx8qxp suppo=
-rt Auto CMD23, but imx7d not.
-> > And imx8qxp need to re-config the clock rate after system PM, imx7d do =
-not need to do this.
->
-> Then we can leave the compatible in DTS and I will correct the device
-> tree schema.
+Hi All,
 
-Haibo,
+Here is v6 of my patch series converting the i915 driver's code for
+controlling the panel's backlight with an external PWM controller to
+use the atomic PWM API. See below for the changelog.
 
-As Krzysztof is helping fix uSDHC binding doc in Patch 12/22,
-please double check with IC for the whole uSDHC derive relationships on i.M=
-X
-and feedback to Krzysztof if anything is wrong.
+This version of the series has been rebased on 5.9-rc1 and has
+a Reviewed-by or Acked-by for all patches.
 
-Regards
-Aisheng
+The main purpose of sending this new version out is to allow the
+intel-gfx CI to play with it.
 
->
-> Best regards,
-> Krzysztof
+As discussed before, because of interdependencies of the patches
+I plan to push the entire series to drm-intel-next-queued once it
+has passed CI.
+
+Thierry, I believe from our previous discussion that you are ok with
+pushing the pwm-crc and pwm-lpss patches through the drm-intel tree,
+but you have not given your Acked-by for this. If you are not ok with
+me pushing these out this way please let me now ASAP. If you are ok
+with this an Acked-by would be appreciated.
+
+This series has been tested (and re-tested after adding various bug-fixes)
+extensively. It has been tested on the following devices:
+
+-Asus T100TA  BYT + CRC-PMIC PWM
+-Toshiba WT8-A  BYT + CRC-PMIC PWM
+-Thundersoft TS178 BYT + CRC-PMIC PWM, inverse PWM
+-Asus T100HA  CHT + CRC-PMIC PWM
+-Terra Pad 1061  BYT + LPSS PWM
+-Trekstor Twin 10.1 BYT + LPSS PWM
+-Asus T101HA  CHT + CRC-PMIC PWM
+-GPD Pocket  CHT + CRC-PMIC PWM
+
+Regards,
+
+Hans
+
+
+Changelog:
+
+Changes in v6:
+- Rebase on v5.9-rc1
+- Adjust pwm-crc patches for pwm_state.period and .duty_cycle now being u64
+
+Changes in v5:
+- Dropped the "pwm: lpss: Correct get_state result for base_unit == 0"
+  patch. The base_unit == 0 condition should never happen and sofar it is
+  unclear what the proper behavior / correct values to store in the
+  pwm_state should be when this does happen.  Since this patch was added as
+  an extra pwm-lpss fix in v4 of this patch-set and otherwise is orthogonal
+  to the of this patch-set just drop it (again).
+- "[PATCH 04/16] pwm: lpss: Add range limit check for the base_unit register value"
+  - Use clamp_val(... instead of clam_t(unsigned long long, ...
+- "[PATCH 05/16] pwm: lpss: Add pwm_lpss_prepare_enable() helper"
+  - This is a new patch in v5 of this patchset
+- [PATCH 06/16] pwm: lpss: Use pwm_lpss_apply() when restoring state on resume
+  - Use the new pwm_lpss_prepare_enable() helper
+
+Changes in v4:
+- "[PATCH v4 06/16] pwm: lpss: Correct get_state result for base_unit == 0"
+  - This is a new patch in v4 of this patchset
+- "[PATCH v4 12/16] pwm: crc: Implement get_state() method"
+  - Use DIV_ROUND_UP when calculating the period and duty_cycle values
+- "[PATCH v4 16/16] drm/i915: panel: Use atomic PWM API for devs with an external PWM controller"
+  - Add a note to the commit message about the changes in pwm_disable_backlight()
+  - Use the pwm_set/get_relative_duty_cycle() helpers
+
+Changes in v3:
+- "[PATCH v3 04/15] pwm: lpss: Add range limit check for the base_unit register value"
+  - Use base_unit_range - 1 as maximum value for the clamp()
+- "[PATCH v3 05/15] pwm: lpss: Use pwm_lpss_apply() when restoring state on resume"
+  - This replaces the "pwm: lpss: Set SW_UPDATE bit when enabling the PWM"
+    patch from previous versions of this patch-set, which really was a hack
+    working around the resume issue which this patch fixes properly.
+- PATCH v3 6 - 11 pwm-crc changes:
+  - Various small changes resulting from the reviews by Andy and Uwe,
+    including some refactoring of the patches to reduce the amount of churn
+    in the patch-set
+
+Changes in v2:
+- Fix coverletter subject
+- Drop accidentally included debugging patch
+- "[PATCH v3 02/15] ACPI / LPSS: Save Cherry Trail PWM ctx registers only once (
+  - Move #define LPSS_SAVE_CTX_ONCE define to group it with LPSS_SAVE_CTX
+
