@@ -2,30 +2,30 @@ Return-Path: <SRS0=r+z/=CD=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3263BC433DF
-	for <linux-pwm@archiver.kernel.org>; Tue, 25 Aug 2020 10:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A48C433E1
+	for <linux-pwm@archiver.kernel.org>; Tue, 25 Aug 2020 10:45:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 14E192071E
-	for <linux-pwm@archiver.kernel.org>; Tue, 25 Aug 2020 10:45:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3A602068E
+	for <linux-pwm@archiver.kernel.org>; Tue, 25 Aug 2020 10:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729861AbgHYKpB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 25 Aug 2020 06:45:01 -0400
+        id S1729888AbgHYKpI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 25 Aug 2020 06:45:08 -0400
 Received: from relmlor2.renesas.com ([210.160.252.172]:61687 "EHLO
         relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729797AbgHYKpB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Aug 2020 06:45:01 -0400
+        by vger.kernel.org with ESMTP id S1729876AbgHYKpC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Aug 2020 06:45:02 -0400
 X-IronPort-AV: E=Sophos;i="5.76,352,1592838000"; 
-   d="scan'208";a="55260239"
+   d="scan'208";a="55260245"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 25 Aug 2020 19:44:58 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 25 Aug 2020 19:45:01 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 720BF4001B7F;
-        Tue, 25 Aug 2020 19:44:56 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 405164001B7F;
+        Tue, 25 Aug 2020 19:44:59 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Thierry Reding <thierry.reding@gmail.com>,
@@ -38,35 +38,42 @@ To:     Geert Uytterhoeven <geert+renesas@glider.be>,
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 0/2] r8a774e1 add PWM support
-Date:   Tue, 25 Aug 2020 11:44:53 +0100
-Message-Id: <20200825104455.18000-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 1/2] dt-bindings: pwm: renesas,pwm-rcar: Add r8a774e1 support
+Date:   Tue, 25 Aug 2020 11:44:54 +0100
+Message-Id: <20200825104455.18000-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200825104455.18000-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20200825104455.18000-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi All,
+From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 
-This patch series adds PWM support to R8A774E1 (RZ/G2H) SoC.
+Document RZ/G2H (R8A774E1) SoC bindings.
 
-Patches apply on top of [1].
+No driver change is needed due to the fallback compatible value
+"renesas,pwm-rcar".
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/geert/
-    renesas-devel.git/log/?h=renesas-arm-dt-for-v5.10
+Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Cheers,
-Prabhakar
-
-Marian-Cristian Rotariu (2):
-  dt-bindings: pwm: renesas,pwm-rcar: Add r8a774e1 support
-  arm64: dts: renesas: r8a774e1: Add PWM device nodes
-
- .../bindings/pwm/renesas,pwm-rcar.yaml        |  1 +
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi     | 64 ++++++++++++++++++-
- 2 files changed, 64 insertions(+), 1 deletion(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
+index daadde9ff9c4..5407c11e92a4 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml
+@@ -20,6 +20,7 @@ properties:
+           - renesas,pwm-r8a774a1  # RZ/G2M
+           - renesas,pwm-r8a774b1  # RZ/G2N
+           - renesas,pwm-r8a774c0  # RZ/G2E
++          - renesas,pwm-r8a774e1  # RZ/G2H
+           - renesas,pwm-r8a7778   # R-Car M1A
+           - renesas,pwm-r8a7779   # R-Car H1
+           - renesas,pwm-r8a7790   # R-Car H2
 -- 
 2.17.1
 
