@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03191C433E1
-	for <linux-pwm@archiver.kernel.org>; Wed, 26 Aug 2020 14:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5B4C433E1
+	for <linux-pwm@archiver.kernel.org>; Wed, 26 Aug 2020 14:48:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D405C2078D
-	for <linux-pwm@archiver.kernel.org>; Wed, 26 Aug 2020 14:48:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BA2662078D
+	for <linux-pwm@archiver.kernel.org>; Wed, 26 Aug 2020 14:48:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598453298;
-	bh=zQ4wGhgAOWWJNtES+xKHpDaEtICXKkmp2wHN7FL1pdQ=;
+	s=default; t=1598453304;
+	bh=cabo5bmKA9S3Z+5Um9Eh1dxwPh2SCuYG74GJw0p4rDg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Re/GV7gf1sqpNA6MozfCXJRPBii/uW+5kQlh04iMvGUZpgiqDC9TBGIioIs0ai5sY
-	 e0RZ04zc79Vs71bPasymSnht3lXodS9meVCyWp5LyXDdNFP4rpWU/CfZ2StwKSRiN1
-	 2prfmDyAlXdSB0LjJHeTVT4Q4VSKu+NIJqtYpovc=
+	b=uuxX3Qbm2AHY8s0zxFkkp/1dcp/aW+IJzAAGzCuGkQsbwaiSF+m3fiLRfa3GfQjVo
+	 DOj+QgjNKkDzA1LDmaKCoJ8K5ipxHgFjjtt2OxiVrjrrFBuwmO+9CbiSKXMafcHzh8
+	 uEZlxb1yY7IcJTTx/1/5D+91bk8xR4g1/QOcY9Lk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgHZOsR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 26 Aug 2020 10:48:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59280 "EHLO mail.kernel.org"
+        id S1727774AbgHZOsV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 26 Aug 2020 10:48:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59456 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726843AbgHZOsO (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 26 Aug 2020 10:48:14 -0400
+        id S1727768AbgHZOsU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 26 Aug 2020 10:48:20 -0400
 Received: from localhost.localdomain (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30951221E2;
-        Wed, 26 Aug 2020 14:48:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C9ED42177B;
+        Wed, 26 Aug 2020 14:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598453294;
-        bh=zQ4wGhgAOWWJNtES+xKHpDaEtICXKkmp2wHN7FL1pdQ=;
+        s=default; t=1598453299;
+        bh=cabo5bmKA9S3Z+5Um9Eh1dxwPh2SCuYG74GJw0p4rDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gK150X70JBKf+I+P726abOJK3s7iZdBicWHGHWAiFXHp79cZa95M1ZNO87VXY7w2G
-         EF3MQEaAUAItPSSvLpsYnmpVBrNGWmD9awuFTjVM1hn3c1NkrJ3PFp97aZIDMLyuz5
-         ff/rhwwbnEFGMrQriWpK4oac3hlrbbCbgyG9m0YE=
+        b=zsdBJajz8wmzsUOxsIodz7vIvPB/ZBznlGLnIsKgNBBa3GWHti1ZqtGAllBtLnH4X
+         JEP2pBzOPmHv1xubmR+XvhnIj61z8JpLf9HoxkYCxL92cpUa5Slmy7/SPtGXwmBybz
+         rPGCt5qFkAURoM+CzgC8RK33ZqP1XzK5f8teQ6h0=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -60,9 +60,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-rockchip@lists.infradead.org, linux-riscv@lists.infradead.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 2/6] pwm: jz4740: Simplify with dev_err_probe()
-Date:   Wed, 26 Aug 2020 16:47:43 +0200
-Message-Id: <20200826144747.9436-2-krzk@kernel.org>
+Subject: [PATCH 3/6] pwm: rockchip: Simplify with dev_err_probe()
+Date:   Wed, 26 Aug 2020 16:47:44 +0200
+Message-Id: <20200826144747.9436-3-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200826144747.9436-1-krzk@kernel.org>
 References: <20200826144747.9436-1-krzk@kernel.org>
@@ -76,29 +76,30 @@ dev_err_probe().  Less code and also it prints the error value.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/pwm/pwm-jz4740.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/pwm/pwm-rockchip.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-index 5830ac2bdf6a..00c642fa2eed 100644
---- a/drivers/pwm/pwm-jz4740.c
-+++ b/drivers/pwm/pwm-jz4740.c
-@@ -60,12 +60,9 @@ static int jz4740_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	snprintf(name, sizeof(name), "timer%u", pwm->hwpwm);
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index eb8c9cb645a6..4773969346e0 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -306,13 +306,9 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	pc->clk = devm_clk_get(&pdev->dev, "pwm");
+ 	if (IS_ERR(pc->clk)) {
+ 		pc->clk = devm_clk_get(&pdev->dev, NULL);
+-		if (IS_ERR(pc->clk)) {
+-			ret = PTR_ERR(pc->clk);
+-			if (ret != -EPROBE_DEFER)
+-				dev_err(&pdev->dev, "Can't get bus clk: %d\n",
+-					ret);
+-			return ret;
+-		}
++		if (IS_ERR(pc->clk))
++			return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk),
++					     "Can't get bus clk\n");
+ 	}
  
- 	clk = clk_get(chip->dev, name);
--	if (IS_ERR(clk)) {
--		if (PTR_ERR(clk) != -EPROBE_DEFER)
--			dev_err(chip->dev, "Failed to get clock: %pe", clk);
--
--		return PTR_ERR(clk);
--	}
-+	if (IS_ERR(clk))
-+		return dev_err_probe(chip->dev, PTR_ERR(clk),
-+				     "Failed to get clock\n");
- 
- 	err = clk_prepare_enable(clk);
- 	if (err < 0) {
+ 	count = of_count_phandle_with_args(pdev->dev.of_node,
 -- 
 2.17.1
 
