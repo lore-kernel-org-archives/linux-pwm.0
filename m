@@ -4,86 +4,112 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A080C433E2
-	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 21:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EEBC43461
+	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 22:26:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DA0542078A
-	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 21:50:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C1C4620936
+	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 22:26:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598651452;
-	bh=c0oFMsA1O5Pk2FIlsZnCdtv0QkCZMVnLi1aqyfLV4zA=;
+	s=default; t=1598653613;
+	bh=KOedJTB7V0rOztsQ6QxA0KOLqglMRTolhOlhQ84RHGc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=WrxMvCJIxBIa5WWHXXUTjT4MX/uT7hf1HY9jtxHul4cWQ3v3sUliNEOTj2y9CUfMo
-	 7A5z32OkG9EpVbae643CZNk/772hH+ysvwrJ5D6jNhTJ9VHAzxapNkKaD0wsPi/NqS
-	 QteWjJ9pnKe8SEiqF758ZyedrC8BQ3lc8qcxws7o=
+	b=ARhZPUOkJuImwPhBNbWHIA68HjfIw04EJKJyr7zA0xk9VcUqtKzAAsVc6QoPRTROZ
+	 xYczrGDrdrjCg9sqmFTrB6tWmLQWBQQlK1OSQ6YU0xITo5K43eIFi21/gKppbquA9W
+	 AfRutRE/LY3wSDAiGjZZ6TTNrzgKTQxZo6TL5SNw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbgH1Vuw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 28 Aug 2020 17:50:52 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:33912 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgH1Vuv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Aug 2020 17:50:51 -0400
-Received: by mail-io1-f68.google.com with SMTP id w20so561803iom.1;
-        Fri, 28 Aug 2020 14:50:50 -0700 (PDT)
+        id S1727894AbgH1W0v (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 28 Aug 2020 18:26:51 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:33397 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727863AbgH1W0q (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Aug 2020 18:26:46 -0400
+Received: by mail-io1-f67.google.com with SMTP id g14so641578iom.0;
+        Fri, 28 Aug 2020 15:26:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=0roQvlk2we8ViOmNkNlFjgs4mr1pn/4U547TOwbQwGs=;
-        b=DZZg7NJ+53iQW0JOPTDSiLzrc2w76KFlnEAnqMU8MVI6XXM1+ptGjaYOCbyR6mZv4A
-         I1BZ804GU6Z3j++6Mr45kBJ7GpbVpTQpsIMMv147sbVuu1LY/BZukbwjPhYa2YbkjEsw
-         oOFoeiEq6xggitJ09ZNWds7RWvXrz6YP9O/qaIm90yEswTsIxWlKvH9c7YkpI2jbmPfB
-         AuQZ+T9/hUpQhPOMACRG9FhUveBg064W+OVRo+Xkjnd/durH5wVedq6bbYV5PLovjG61
-         uqpqccOPRYqcTWoieiuV4KxsS/TS8E0B5p+Ahdx4BZ3ILne72VMfFKC1A84flU2W/2tf
-         XWdA==
-X-Gm-Message-State: AOAM532Ib/zRwgQot5CPLb7f6RlLGN4jD/TLt9XqCkOu0DNU5DyrgT3p
-        3DFMhWhS13WJo2WpSO/j+w==
-X-Google-Smtp-Source: ABdhPJzrJi7is5WkCexaCeFBszVQDb9yHUjlIsPgQHlrp3pBr97/6Ei066osxzBoBKHpBO/xjq6zoQ==
-X-Received: by 2002:a05:6638:a9a:: with SMTP id 26mr3111326jas.21.1598651450494;
-        Fri, 28 Aug 2020 14:50:50 -0700 (PDT)
+        bh=beCKEWR+2oQoP1iLca7XLO6xgI6N1F/W6UJQBTH3DqY=;
+        b=Ko9KQpvKIsxNwtB/dhkjCgjWerfusOFduegC4KGLQVqH+uZgQepUt93NwpIm7UsC/G
+         Dgu8/fS0NWgFuZ1YcCYBve6GqovtONMwWxSabhj+oN5T6S0Abn2u4rs6ypSQjnaWB2OG
+         ZNyeyd5YKxq0hKXF1OmPXzKBxgvfjEkgvc90NkEB4BCFcW1Xyr4gVCI8E0bvsiEtck5p
+         36K3gVl6lCg/cnC/PHzz/KK1TY4e9kbd3GuFm09bZUp43tT3ryobADb9wc11yAn8iJun
+         q+TxRJcVo7mteMidGQvSkjp5chcb0SVASB3aKn2pDdty49bNSlW7xJliNN/eaNGGm0B5
+         I8bw==
+X-Gm-Message-State: AOAM532aXkoBA8WI8pBsEq8iDVYqpfMDvg/jMrBHkia2gTMhd3oLtrzi
+        VBrDCaMSMB7oMZMZcthFDg==
+X-Google-Smtp-Source: ABdhPJyDswgrN+BluIgdLCgk2oMwkfO3ihCsb+7kbjBf1nAUVnPwHEtq+pfxrTZ7lhQpsLVbL5AMYw==
+X-Received: by 2002:a05:6602:1589:: with SMTP id e9mr701184iow.85.1598653604968;
+        Fri, 28 Aug 2020 15:26:44 -0700 (PDT)
 Received: from xps15 ([64.188.179.249])
-        by smtp.gmail.com with ESMTPSA id p7sm289507ilj.56.2020.08.28.14.50.48
+        by smtp.gmail.com with ESMTPSA id b5sm317699ilr.58.2020.08.28.15.26.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2020 14:50:49 -0700 (PDT)
-Received: (nullmailer pid 3466509 invoked by uid 1000);
-        Fri, 28 Aug 2020 21:50:47 -0000
-Date:   Fri, 28 Aug 2020 15:50:47 -0600
+        Fri, 28 Aug 2020 15:26:43 -0700 (PDT)
+Received: (nullmailer pid 3515429 invoked by uid 1000);
+        Fri, 28 Aug 2020 22:26:39 -0000
+Date:   Fri, 28 Aug 2020 16:26:39 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc:     robh+dt@kernel.org, u.kleine-koenig@pengutronix.de,
-        andriy.shevchenko@intel.com, rahul.tanwar.linux@gmail.com,
-        thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-        lee.jones@linaro.org, qi-ming.wu@intel.com, songjun.Wu@intel.com,
-        cheol.yong.kim@intel.com, p.zabel@pengutronix.de,
-        linux-kernel@vger.kernel.org, rtanwar@maxlinear.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v11 1/2] Add DT bindings YAML schema for PWM fan
- controller of LGM SoC
-Message-ID: <20200828215047.GA3466454@bogus>
-References: <cover.1598331849.git.rahul.tanwar@linux.intel.com>
- <cb86a768550b592b5fc4713bd07689bf84ba044b.1598331849.git.rahul.tanwar@linux.intel.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Frank Li <frank.li@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mtd@lists.infradead.org,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Anson Huang <Anson.Huang@nxp.com>, linux-pwm@vger.kernel.org,
+        Han Xu <han.xu@nxp.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>,
+        Li Yang <leoyang.li@nxp.com>, Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH v3 17/19] dt-bindings: serial: fsl-lpuart: Fix compatible
+ matching
+Message-ID: <20200828222639.GA3515379@bogus>
+References: <20200825193536.7332-1-krzk@kernel.org>
+ <20200825193536.7332-18-krzk@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cb86a768550b592b5fc4713bd07689bf84ba044b.1598331849.git.rahul.tanwar@linux.intel.com>
+In-Reply-To: <20200825193536.7332-18-krzk@kernel.org>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, 25 Aug 2020 13:07:05 +0800, Rahul Tanwar wrote:
-> Intel's LGM(Lightning Mountain) SoC contains a PWM fan controller
-> which is only used to control the fan attached to the system. This
-> PWM controller does not have any other consumer other than fan.
-> Add DT bindings documentation for this PWM fan controller.
+On Tue, 25 Aug 2020 21:35:34 +0200, Krzysztof Kozlowski wrote:
+> The i.MX 8QXP DTSes use two compatibles so update the binding to fix
+> dtbs_check warnings like:
 > 
-> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+>   arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml: serial@5a060000:
+>     compatible: ['fsl,imx8qxp-lpuart', 'fsl,imx7ulp-lpuart'] is too long
+>     From schema: Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> 
+>   arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml: serial@5a060000:
+>     compatible: Additional items are not allowed ('fsl,imx7ulp-lpuart' was unexpected)
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> 
 > ---
->  .../devicetree/bindings/pwm/intel,lgm-pwm.yaml     | 44 ++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/intel,lgm-pwm.yaml
+> 
+> Changes since v2:
+> 1. Remove moved compatibles.
+> 
+> Changes since v1:
+> 1. New patch.
+> ---
+>  .../devicetree/bindings/serial/fsl-lpuart.yaml  | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
