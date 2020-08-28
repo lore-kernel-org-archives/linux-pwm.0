@@ -2,114 +2,104 @@ Return-Path: <SRS0=b+St=CG=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AD8C43461
-	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 12:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50BEC43461
+	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 12:52:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 57C032086A
-	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 12:14:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BFC982087D
+	for <linux-pwm@archiver.kernel.org>; Fri, 28 Aug 2020 12:52:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Pf4uaxGE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729155AbgH1MOn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 28 Aug 2020 08:14:43 -0400
-Received: from protonic.xs4all.nl ([83.163.252.89]:52828 "EHLO
-        protonic.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729195AbgH1MOd (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Aug 2020 08:14:33 -0400
-Received: from erd988.prtnl (erd988.prtnl [192.168.224.30])
-        by sparta.prtnl (Postfix) with ESMTP id 08BD344ACC17;
-        Fri, 28 Aug 2020 14:14:30 +0200 (CEST)
-From:   David Jander <david@protonic.nl>
-To:     Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        Clemens Gruber <clemens.gruber@pqgruber.com>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        linux-pwm@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>
-Subject: [PATCH v2 1/3] drivers: pwm: pwm-pcs9685.c: Make comments more consistent
-Date:   Fri, 28 Aug 2020 14:14:13 +0200
-Message-Id: <20200828121415.1292388-2-david@protonic.nl>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200828121415.1292388-1-david@protonic.nl>
-References: <20200828121415.1292388-1-david@protonic.nl>
+        id S1729487AbgH1Mv6 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 28 Aug 2020 08:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729490AbgH1Mvg (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Aug 2020 08:51:36 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AAFC061236
+        for <linux-pwm@vger.kernel.org>; Fri, 28 Aug 2020 05:51:34 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id t23so1178371ljc.3
+        for <linux-pwm@vger.kernel.org>; Fri, 28 Aug 2020 05:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RSrvv0FJmitf6q9JxmYipGO4Y6PZy6cFkX1VzqR3xEU=;
+        b=Pf4uaxGE3D9QkcwZ3m7v40UpPYGsLMXlPXzxXdofFxgCOrudLrDJjKqDtapXdZT1me
+         U/qpgdyHur4b2ylpfOmLYfGRbbgioYR4DE8hUX9n3OD1PsJjx4bY6DfOPPLZ+nR7uoPR
+         t2fPwIQzvGmoNipg0tib+zvmAuyzH0asX7NHoXYzOS+c1S9GjWZHK3ZfK4tTEAShELZn
+         UQgYkmIIjXX9+QwSVHsgwAXyE2t1Y98bukfmK6CGzaKFvQbixk0LvK3eWs+XS6UxLeZr
+         H6WwkkQfXpaJarmhsieD/FOJieotOGDuhvpWyJnLOHQ5bvJH2PkEoyOghCRX7loqwBdo
+         Wlxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RSrvv0FJmitf6q9JxmYipGO4Y6PZy6cFkX1VzqR3xEU=;
+        b=OYuOpM1t2aTslDz1EmUBRwCatkeVTcwjK3lLEnCNtGL0/ti/jANSvnH76GpOw99+Md
+         6nHGeeTee9oWC/pKHBYMjGeZL4RvbC8r7nIkrJdnpOP9uTqqAyODAuwZgP6xjSV2wazK
+         zRSWjh4DOM7dESLPcemm3iUHlNekKQR4eiVw2WwZujFi9bUh4Gk9+KWxiRjtdy6Yj0K/
+         bHISz6Yte8SfvwC2HdMkG8beY3U/Nhi3VFGx43lJeqi2/9Wco28Xwxw7FJtJ2e7zPVrm
+         bDFkEMp8hKBrDz8wTJ8CT1MxwcNrOHszfCEsce4HBecq9SURHOKbAqbdjbN7IMyhKiAy
+         giYA==
+X-Gm-Message-State: AOAM5303RKuaWXNZrVSYxf37l5mqrYaF/QP0yBoZDHkkfgJzk/JT/9iF
+        zmuoLPJItElZPALuQqrkgxPDgesxldd3jOlBspsmow==
+X-Google-Smtp-Source: ABdhPJzTyH+jeLvxiBsauaVxTH5hij7/x8BNA+Ly/857QQXdScYFOsf9kjoayIwSsdP0TIKRwlItOzGM4zkgBEGoiX8=
+X-Received: by 2002:a2e:b80b:: with SMTP id u11mr872506ljo.286.1598619091424;
+ Fri, 28 Aug 2020 05:51:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200825193536.7332-1-krzk@kernel.org>
+In-Reply-To: <20200825193536.7332-1-krzk@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 28 Aug 2020 14:51:20 +0200
+Message-ID: <CACRpkdb4j2kJvpY23G-os9gTktZW5HT287MsvMZxC=ovgn_9LQ@mail.gmail.com>
+Subject: Re: [PATCH v3 00/19] dt-bindings / arm64: Cleanup of i.MX 8 bindings
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Anson Huang <Anson.Huang@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>, Han Xu <han.xu@nxp.com>,
+        Frank Li <frank.li@nxp.com>, Fugang Duan <fugang.duan@nxp.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Make all explanatory comments start with an uppercase char.
+On Tue, Aug 25, 2020 at 9:35 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-Signed-off-by: David Jander <david@protonic.nl>
----
- drivers/pwm/pwm-pca9685.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+> This is a v3 of cleanup of i.XM 8 bindings and DTSes.
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 76cd22bd6614..0f1a3e07e501 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -91,7 +91,7 @@ static bool pca9685_pwm_test_and_set_inuse(struct pca9685 *pca, int pwm_idx)
- 	mutex_lock(&pca->lock);
- 	if (pwm_idx >= PCA9685_MAXCHAN) {
- 		/*
--		 * "all LEDs" channel:
-+		 * "All LEDs" channel:
- 		 * pretend already in use if any of the PWMs are requested
- 		 */
- 		if (!bitmap_empty(pca->pwms_inuse, PCA9685_MAXCHAN)) {
-@@ -100,7 +100,7 @@ static bool pca9685_pwm_test_and_set_inuse(struct pca9685 *pca, int pwm_idx)
- 		}
- 	} else {
- 		/*
--		 * regular channel:
-+		 * Regular channel:
- 		 * pretend already in use if the "all LEDs" channel is requested
- 		 */
- 		if (test_bit(PCA9685_MAXCHAN, pca->pwms_inuse)) {
-@@ -257,7 +257,7 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		if (prescale >= PCA9685_PRESCALE_MIN &&
- 			prescale <= PCA9685_PRESCALE_MAX) {
- 			/*
--			 * putting the chip briefly into SLEEP mode
-+			 * Putting the chip briefly into SLEEP mode
- 			 * at this point won't interfere with the
- 			 * pm_runtime framework, because the pm_runtime
- 			 * state is guaranteed active here.
-@@ -475,12 +475,12 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 
- 	regmap_write(pca->regmap, PCA9685_MODE2, mode2);
- 
--	/* clear all "full off" bits */
-+	/* Clear all "full off" bits */
- 	regmap_write(pca->regmap, PCA9685_ALL_LED_OFF_L, 0);
- 	regmap_write(pca->regmap, PCA9685_ALL_LED_OFF_H, 0);
- 
- 	pca->chip.ops = &pca9685_pwm_ops;
--	/* add an extra channel for ALL_LED */
-+	/* Add an extra channel for ALL_LED */
- 	pca->chip.npwm = PCA9685_MAXCHAN + 1;
- 
- 	pca->chip.dev = &client->dev;
-@@ -496,10 +496,10 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 		return ret;
- 	}
- 
--	/* the chip comes out of power-up in the active state */
-+	/* The chip comes out of power-up in the active state */
- 	pm_runtime_set_active(&client->dev);
- 	/*
--	 * enable will put the chip into suspend, which is what we
-+	 * Enable will put the chip into suspend, which is what we
- 	 * want as all outputs are disabled at this point
- 	 */
- 	pm_runtime_enable(&client->dev);
--- 
-2.25.1
+If you are going to be working a lot on Freescale SoC code going forward
+I wouldn't mind if you could add yourself as maintainer for the
+Freescale pin controller and GPIO at least, I already have high trust
+in you in general so if the Freescale maintainers also have that I think you
+should just sign up as maintainer. This makes it easier to do pull requests
+and things like that.
 
+Yours,
+Linus Walleij
