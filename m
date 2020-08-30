@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B68C2BB56
-	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA01C2BBDB
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 428F32087D
-	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF1862087D
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DCZ4xd3K"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Ae5uEN8l"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728828AbgH3M6g (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 30 Aug 2020 08:58:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40932 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728827AbgH3M6S (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Aug 2020 08:58:18 -0400
+        id S1728869AbgH3M6e (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 30 Aug 2020 08:58:34 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33906 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728877AbgH3M6R (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Aug 2020 08:58:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598792297;
+        s=mimecast20190719; t=1598792295;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3mqN9rDcCqr7nh6Hbhh29SJWkRViinBk1n4ManKQOrs=;
-        b=DCZ4xd3KNsAElw9fuVO7em5Yk6IRdAX+cyWtDgLcWlWoXfpR5xZlRjcNzclg0cLb2hdiSB
-        cliBiubh7N33GD2qEgDRM9CD4AS42ZXK3xvHC4nhEX+3akjO/iUfMD4w/AgeXCvUPSCXeN
-        sE1JCQr5o3irAmbRzKE2Rut+PJJyEPE=
+        bh=3rXccuABT6+C2AQXzwjNb04mRQTh+EDLI9eSXOti2cI=;
+        b=Ae5uEN8l+C+cQTRNstRmvPiWYzJrLapO5RiW7v0BzzhF4i09jEQknrBXTKFrOkGt1oFkkp
+        07qiamKWbaIZX1Zlf/wm84w4tOIfiAa0h8fX/PGBDglwBOkwbQsFyFN2Qax1KmcSPnD55K
+        K+of6SlVMiRDgrA/mD1nfXokIw9PzVU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-197-jz6kLySpPp6dLn2bYyqU8A-1; Sun, 30 Aug 2020 08:58:14 -0400
-X-MC-Unique: jz6kLySpPp6dLn2bYyqU8A-1
+ us-mta-363-XPZXeq87OWmSxMQ1V4Ve1g-1; Sun, 30 Aug 2020 08:58:11 -0400
+X-MC-Unique: XPZXeq87OWmSxMQ1V4Ve1g-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3027E801AC3;
-        Sun, 30 Aug 2020 12:58:12 +0000 (UTC)
-Received: from x1.localdomain.com (ovpn-112-77.ams2.redhat.com [10.36.112.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 92B64171C6;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4CF85801AC4;
         Sun, 30 Aug 2020 12:58:09 +0000 (UTC)
+Received: from x1.localdomain.com (ovpn-112-77.ams2.redhat.com [10.36.112.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AB906171C6;
+        Sun, 30 Aug 2020 12:58:06 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -60,12 +60,13 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: [PATCH v8 04/17] pwm: lpss: Add range limit check for the base_unit register value
-Date:   Sun, 30 Aug 2020 14:57:40 +0200
-Message-Id: <20200830125753.230420-5-hdegoede@redhat.com>
+Subject: [PATCH v8 03/17] pwm: lpss: Fix off by one error in base_unit math in pwm_lpss_prepare()
+Date:   Sun, 30 Aug 2020 14:57:39 +0200
+Message-Id: <20200830125753.230420-4-hdegoede@redhat.com>
 In-Reply-To: <20200830125753.230420-1-hdegoede@redhat.com>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: linux-pwm-owner@vger.kernel.org
@@ -73,63 +74,56 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-When the user requests a high enough period ns value, then the
-calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
-
-But according to the data-sheet the way the PWM controller works is that
+According to the data-sheet the way the PWM controller works is that
 each input clock-cycle the base_unit gets added to a N bit counter and
-that counter overflowing determines the PWM output frequency. Adding 0
-to the counter is a no-op. The data-sheet even explicitly states that
-writing 0 to the base_unit bits will result in the PWM outputting a
-continuous 0 signal.
+that counter overflowing determines the PWM output frequency.
 
-When the user requestes a low enough period ns value, then the
-calculations in pwm_lpss_prepare() might result in a base_unit value
-which is bigger then base_unit_range - 1. Currently the codes for this
-deals with this by applying a mask:
+So assuming e.g. a 16 bit counter this means that if base_unit is set to 1,
+after 65535 input clock-cycles the counter has been increased from 0 to
+65535 and it will overflow on the next cycle, so it will overflow after
+every 65536 clock cycles and thus the calculations done in
+pwm_lpss_prepare() should use 65536 and not 65535.
 
-	base_unit &= (base_unit_range - 1);
+This commit fixes this. Note this also aligns the calculations in
+pwm_lpss_prepare() with those in pwm_lpss_get_state().
 
-But this means that we let the value overflow the range, we throw away the
-higher bits and store whatever value is left in the lower bits into the
-register leading to a random output frequency, rather then clamping the
-output frequency to the highest frequency which the hardware can do.
-
-This commit fixes both issues by clamping the base_unit value to be
-between 1 and (base_unit_range - 1).
+Note this effectively reverts commit 684309e5043e ("pwm: lpss: Avoid
+potential overflow of base_unit"). The next patch in this series really
+fixes the potential overflow of the base_unit value.
 
 Fixes: 684309e5043e ("pwm: lpss: Avoid potential overflow of base_unit")
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v5:
-- Use clamp_val(... instead of clam_t(unsigned long long, ...
-
 Changes in v3:
-- Change upper limit of clamp to (base_unit_range - 1)
 - Add Fixes tag
+- Add Reviewed-by: Andy Shevchenko tag
 ---
- drivers/pwm/pwm-lpss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-lpss.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 43b1fc634af1..da9bc3d10104 100644
+index 9d965ffe66d1..43b1fc634af1 100644
 --- a/drivers/pwm/pwm-lpss.c
 +++ b/drivers/pwm/pwm-lpss.c
-@@ -97,6 +97,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+@@ -93,7 +93,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	 * The equation is:
+ 	 * base_unit = round(base_unit_range * freq / c)
+ 	 */
+-	base_unit_range = BIT(lpwm->info->base_unit_bits) - 1;
++	base_unit_range = BIT(lpwm->info->base_unit_bits);
  	freq *= base_unit_range;
  
  	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
-+	/* base_unit must not be 0 and we also want to avoid overflowing it */
-+	base_unit = clamp_val(base_unit, 1, base_unit_range - 1);
+@@ -104,8 +104,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
  
- 	on_time_div = 255ULL * duty_ns;
- 	do_div(on_time_div, period_ns);
-@@ -105,7 +107,6 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
  	orig_ctrl = ctrl = pwm_lpss_read(pwm);
  	ctrl &= ~PWM_ON_TIME_DIV_MASK;
- 	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
--	base_unit &= (base_unit_range - 1);
+-	ctrl &= ~(base_unit_range << PWM_BASE_UNIT_SHIFT);
+-	base_unit &= base_unit_range;
++	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
++	base_unit &= (base_unit_range - 1);
  	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
  	ctrl |= on_time_div;
  
