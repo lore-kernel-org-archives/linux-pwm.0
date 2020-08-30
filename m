@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02838C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B68C2BB56
 	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C57CF2087D
-	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 428F32087D
+	for <linux-pwm@archiver.kernel.org>; Sun, 30 Aug 2020 12:58:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eeScnwIQ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DCZ4xd3K"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728894AbgH3M63 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 30 Aug 2020 08:58:29 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:55804 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728869AbgH3M6O (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Aug 2020 08:58:14 -0400
+        id S1728828AbgH3M6g (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 30 Aug 2020 08:58:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40932 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728827AbgH3M6S (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 30 Aug 2020 08:58:18 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598792291;
+        s=mimecast20190719; t=1598792297;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Vz/DPJyK8Z7twHTt1MIA2s6MtCK9x+8KAwAMVF0PM/w=;
-        b=eeScnwIQO11SMDM6PLvVd0KZg7VgN3m6v3TnuIfxUEq/YT9iz+RDWOys6uYLJUsw+zKqoM
-        fF5bWlDgYMmslhYo28VmCIySqW1LCuNp+pQySTjbpAsiIESVt74uBGJf3qboJI0PN9PtCK
-        AOMevM4DVTVxvyplkEm5KuknGXXJNj0=
+        bh=3mqN9rDcCqr7nh6Hbhh29SJWkRViinBk1n4ManKQOrs=;
+        b=DCZ4xd3KNsAElw9fuVO7em5Yk6IRdAX+cyWtDgLcWlWoXfpR5xZlRjcNzclg0cLb2hdiSB
+        cliBiubh7N33GD2qEgDRM9CD4AS42ZXK3xvHC4nhEX+3akjO/iUfMD4w/AgeXCvUPSCXeN
+        sE1JCQr5o3irAmbRzKE2Rut+PJJyEPE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-315-JLPFpF0GNRyY2966uv_1cA-1; Sun, 30 Aug 2020 08:58:08 -0400
-X-MC-Unique: JLPFpF0GNRyY2966uv_1cA-1
+ us-mta-197-jz6kLySpPp6dLn2bYyqU8A-1; Sun, 30 Aug 2020 08:58:14 -0400
+X-MC-Unique: jz6kLySpPp6dLn2bYyqU8A-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6381E189E61D;
-        Sun, 30 Aug 2020 12:58:06 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3027E801AC3;
+        Sun, 30 Aug 2020 12:58:12 +0000 (UTC)
 Received: from x1.localdomain.com (ovpn-112-77.ams2.redhat.com [10.36.112.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C7F9171C6;
-        Sun, 30 Aug 2020 12:58:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 92B64171C6;
+        Sun, 30 Aug 2020 12:58:09 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -59,11 +59,10 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
         dri-devel@lists.freedesktop.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-acpi@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH v8 02/17] ACPI / LPSS: Save Cherry Trail PWM ctx registers only once (at activation)
-Date:   Sun, 30 Aug 2020 14:57:38 +0200
-Message-Id: <20200830125753.230420-3-hdegoede@redhat.com>
+        linux-acpi@vger.kernel.org
+Subject: [PATCH v8 04/17] pwm: lpss: Add range limit check for the base_unit register value
+Date:   Sun, 30 Aug 2020 14:57:40 +0200
+Message-Id: <20200830125753.230420-5-hdegoede@redhat.com>
 In-Reply-To: <20200830125753.230420-1-hdegoede@redhat.com>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -74,153 +73,66 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The DSDTs on most Cherry Trail devices have an ugly clutch where the PWM
-controller gets turned off from the _PS3 method of the graphics-card dev:
+When the user requests a high enough period ns value, then the
+calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
 
-            Method (_PS3, 0, Serialized)  // _PS3: Power State 3
-            {
-                ...
-                            PWMB = PWMC /* \_SB_.PCI0.GFX0.PWMC */
-                            PSAT |= 0x03
-                            Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
-                ...
-            }
+But according to the data-sheet the way the PWM controller works is that
+each input clock-cycle the base_unit gets added to a N bit counter and
+that counter overflowing determines the PWM output frequency. Adding 0
+to the counter is a no-op. The data-sheet even explicitly states that
+writing 0 to the base_unit bits will result in the PWM outputting a
+continuous 0 signal.
 
-Where PSAT is the power-status register of the PWM controller.
+When the user requestes a low enough period ns value, then the
+calculations in pwm_lpss_prepare() might result in a base_unit value
+which is bigger then base_unit_range - 1. Currently the codes for this
+deals with this by applying a mask:
 
-Since the i915 driver will do a pwm_get on the pwm device as it uses it to
-control the LCD panel backlight, there is a device-link marking the i915
-device as a consumer of the pwm device. So that the PWM controller will
-always be suspended after the i915 driver suspends (which is the right
-thing to do). This causes the above GFX0 PS3 AML code to run before
-acpi_lpss.c calls acpi_lpss_save_ctx().
+	base_unit &= (base_unit_range - 1);
 
-So on these devices the PWM controller will already be off when
-acpi_lpss_save_ctx() runs. This causes it to read/save all 1-s (0xffffffff)
-as ctx register values.
+But this means that we let the value overflow the range, we throw away the
+higher bits and store whatever value is left in the lower bits into the
+register leading to a random output frequency, rather then clamping the
+output frequency to the highest frequency which the hardware can do.
 
-When these bogus values get restored on resume the PWM controller actually
-keeps working, since most bits are reserved, but this does set bit 3 of
-the LPSS General purpose register, which for the PWM controller has the
-following function: "This bit is re-used to support 32kHz slow mode.
-Default is 19.2MHz as PWM source clock".
+This commit fixes both issues by clamping the base_unit value to be
+between 1 and (base_unit_range - 1).
 
-This causes the clock of the PWM controller to switch from 19.2MHz to
-32KHz, which is a slow-down of a factor 600. Surprisingly enough so far
-there have been few bug reports about this. This is likely because the
-i915 driver was hardcoding the PWM frequency to 46 KHz, which divided
-by 600 would result in a PWM frequency of approx. 78 Hz, which mostly
-still works fine. There are some bug reports about the LCD backlight
-flickering after suspend/resume which are likely caused by this issue.
-
-But with the upcoming patch-series to finally switch the i915 drivers
-code for external PWM controllers to use the atomic API and to honor
-the PWM frequency specified in the video BIOS (VBT), this becomes a much
-bigger problem. On most cases the VBT specifies either 200 Hz or 20
-KHz as PWM frequency, which with the mentioned issue ends up being either
-1/3 Hz, where the backlight actually visible blinks on and off every 3s,
-or in 33 Hz and horrible flickering of the backlight.
-
-There are a number of possible solutions to this problem:
-
-1. Make acpi_lpss_save_ctx() run before GFX0._PS3
- Pro: Clean solution from pov of not medling with save/restore ctx code
- Con: As mentioned the current ordering is the right thing to do
- Con: Requires assymmetry in at what suspend/resume phase we do the save vs
-      restore, requiring more suspend/resume ordering hacks in already
-      convoluted acpi_lpss.c suspend/resume code.
-2. Do some sort of save once mode for the LPSS ctx
- Pro: Reasonably clean
- Con: Needs a new LPSS flag + code changes to handle the flag
-3. Detect we have failed to save the ctx registers and do not restore them
- Pro: Not PWM specific, might help with issues on other LPSS devices too
- Con: If we can get away with not restoring the ctx why bother with it at
-      all?
-4. Do not save the ctx for CHT PWM controllers
- Pro: Clean, as simple as dropping a flag?
- Con: Not so simple as dropping a flag, needs a new flag to ensure that
-      we still do lpss_deassert_reset() on device activation.
-5. Make the pwm-lpss code fixup the LPSS-context registers
- Pro: Keeps acpi_lpss.c code clean
- Con: Moves knowledge of LPSS-context into the pwm-lpss.c code
-
-1 and 5 both do not seem to be a desirable way forward.
-
-3 and 4 seem ok, but they both assume that restoring the LPSS-context
-registers is not necessary. I have done a couple of test and those do
-show that restoring the LPSS-context indeed does not seem to be necessary
-on devices using s2idle suspend (and successfully reaching S0i3). But I
-have no hardware to test deep / S3 suspend. So I'm not sure that not
-restoring the context is safe.
-
-That leaves solution 2, which is about as simple / clean as 3 and 4,
-so this commit fixes the described problem by implementing a new
-LPSS_SAVE_CTX_ONCE flag and setting that for the CHT PWM controllers.
-
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 684309e5043e ("pwm: lpss: Avoid potential overflow of base_unit")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v2:
-- Move #define LPSS_SAVE_CTX_ONCE define to group it with LPSS_SAVE_CTX
----
- drivers/acpi/acpi_lpss.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+Changes in v5:
+- Use clamp_val(... instead of clam_t(unsigned long long, ...
 
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index 67892fc0b822..a8d7d83ac761 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -67,7 +67,15 @@ ACPI_MODULE_NAME("acpi_lpss");
- #define LPSS_CLK_DIVIDER		BIT(2)
- #define LPSS_LTR			BIT(3)
- #define LPSS_SAVE_CTX			BIT(4)
--#define LPSS_NO_D3_DELAY		BIT(5)
-+/*
-+ * For some devices the DSDT AML code for another device turns off the device
-+ * before our suspend handler runs, causing us to read/save all 1-s (0xffffffff)
-+ * as ctx register values.
-+ * Luckily these devices always use the same ctx register values, so we can
-+ * work around this by saving the ctx registers once on activation.
-+ */
-+#define LPSS_SAVE_CTX_ONCE		BIT(5)
-+#define LPSS_NO_D3_DELAY		BIT(6)
+Changes in v3:
+- Change upper limit of clamp to (base_unit_range - 1)
+- Add Fixes tag
+---
+ drivers/pwm/pwm-lpss.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 43b1fc634af1..da9bc3d10104 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -97,6 +97,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	freq *= base_unit_range;
  
- struct lpss_private_data;
+ 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
++	/* base_unit must not be 0 and we also want to avoid overflowing it */
++	base_unit = clamp_val(base_unit, 1, base_unit_range - 1);
  
-@@ -254,7 +262,7 @@ static const struct lpss_device_desc byt_pwm_dev_desc = {
- };
+ 	on_time_div = 255ULL * duty_ns;
+ 	do_div(on_time_div, period_ns);
+@@ -105,7 +107,6 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
+ 	orig_ctrl = ctrl = pwm_lpss_read(pwm);
+ 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
+ 	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
+-	base_unit &= (base_unit_range - 1);
+ 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+ 	ctrl |= on_time_div;
  
- static const struct lpss_device_desc bsw_pwm_dev_desc = {
--	.flags = LPSS_SAVE_CTX | LPSS_NO_D3_DELAY,
-+	.flags = LPSS_SAVE_CTX_ONCE | LPSS_NO_D3_DELAY,
- 	.prv_offset = 0x800,
- 	.setup = bsw_pwm_setup,
- 	.resume_from_noirq = true,
-@@ -885,9 +893,14 @@ static int acpi_lpss_activate(struct device *dev)
- 	 * we have to deassert reset line to be sure that ->probe() will
- 	 * recognize the device.
- 	 */
--	if (pdata->dev_desc->flags & LPSS_SAVE_CTX)
-+	if (pdata->dev_desc->flags & (LPSS_SAVE_CTX | LPSS_SAVE_CTX_ONCE))
- 		lpss_deassert_reset(pdata);
- 
-+#ifdef CONFIG_PM
-+	if (pdata->dev_desc->flags & LPSS_SAVE_CTX_ONCE)
-+		acpi_lpss_save_ctx(dev, pdata);
-+#endif
-+
- 	return 0;
- }
- 
-@@ -1031,7 +1044,7 @@ static int acpi_lpss_resume(struct device *dev)
- 
- 	acpi_lpss_d3_to_d0_delay(pdata);
- 
--	if (pdata->dev_desc->flags & LPSS_SAVE_CTX)
-+	if (pdata->dev_desc->flags & (LPSS_SAVE_CTX | LPSS_SAVE_CTX_ONCE))
- 		acpi_lpss_restore_ctx(dev, pdata);
- 
- 	return 0;
 -- 
 2.28.0
 
