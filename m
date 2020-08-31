@@ -5,60 +5,60 @@ X-Spam-Level:
 X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4877FC433E6
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E66C2BB4D
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:24:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 22D652073A
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:24:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E4C1E20866
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:24:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EKtSjKtz"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q2WuEbVx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727042AbgHaLYW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 Aug 2020 07:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        id S1727044AbgHaLYY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 Aug 2020 07:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727828AbgHaLWt (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:22:49 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBC4C0619CD;
-        Mon, 31 Aug 2020 04:14:01 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id w1so1408969edr.3;
-        Mon, 31 Aug 2020 04:14:01 -0700 (PDT)
+        with ESMTP id S1727833AbgHaLWv (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:22:51 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C349C09B047;
+        Mon, 31 Aug 2020 04:18:11 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id e23so2463214eja.3;
+        Mon, 31 Aug 2020 04:18:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=FExIKAHJpPJFM3Hd44tazabRIhwd+0VFgHYZYcprPmE=;
-        b=EKtSjKtzv24vUhMxF+gt7LwUCEObaU3gPowz0n9Rvrs8wdxgAIP+QWufXKZujYYBhU
-         Uo3CawjQpfdgFZBlGzpSwcubxyiiNXXVDUdNI9pGzCRScHb+9Bx0Wi6AFSI38OW/MVsW
-         mb5I7dO6ZerK1fHSeLbbvhUX8Mk7s4nXY26gGXR0ddg0f/1pkKMVDJ7n6HCmfyccD01O
-         TznDM/nTvjkVwovGVCCZqGsAi99CkHPtrA75S8+H4pbgxqW7Agw7EvCJ4jPhT3AO0jZR
-         VaBi0zdqGpEtCxJsbI8Y7bMV9TAgfmtiuqHV0OqjC1iMDTIKHeR6L+M0OzsqDwofuF2e
-         eWAQ==
+        bh=2UbH7nyi0AzxoN4/HtEDtyeYbzdgvbboDc5iNNOozuA=;
+        b=q2WuEbVxohARvB4Qoi9K1TlmUo3Tgr9p15PC50hyeczvRXO0i5nkPqtcDrhXfLq/hB
+         GT/EhUKQXWE1iyuvndV1Cp0YwAETUznP2jnQHFDVLTQQcMknNVnQtYkTiRpaigMaBUH/
+         rr9hfbpUgmW1xhaC1oP9L0Drb9fHj77gtwdL+zjK1uGxpplGsbqU4k+ykftDR97vYCoS
+         YaSYswZO5dYYfBI7mcWglU/g6YWbRoO+OXdlBtb9e7F33dnqMG4QK1ZswNVT3FFVX/ZV
+         C6J+P8WHY7YnaAc2d/JPES+3QSdz4yD28Eg1OyTzFAbZOux3v8ttPPBwDx+0UI1xoZ3p
+         CNSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FExIKAHJpPJFM3Hd44tazabRIhwd+0VFgHYZYcprPmE=;
-        b=fPwR34Ctgons79u596ymLdW3VpmeCHpJLICdaf3VBJ4vITwFgrVsef0b6bUFVKYL+M
-         vT39xWD3WwxOJHmggMsVvtp7P6VlkSakzhVTBOiTLaRWwr+XVmTLe3SUL0eol0aVi62G
-         Q+1/8SadJkM7dXw3ceJPMqs6CplrAs9pnZEioZO9PyfgZJREr0BZ90cLYLj898CYhytW
-         DEFzsHSywk6IhSEHj4mn9iCsHECgfherS94Xg7wP38rgZKagTbH6HNqNlPB7FE01qOwS
-         rfOrSu3BJ/S4hmpb/7i8fFpycQFaAvCWta50AsQNthF0VwfnVrhy83Pg4N4gkN8tq2Yv
-         A9Ug==
-X-Gm-Message-State: AOAM5321OD2yhBESZ0d6rom0AMBzisJ1Gv03sr0fERkvAfx3qkVQuV8s
-        S1TlhcMa8wo0QKodJIwg6ZI=
-X-Google-Smtp-Source: ABdhPJzSou1EakYOIg96I8GnoircE3Vn7kSNmn6F1/7zwYOg6k41dpCvAPKfpjEEd/aEdMlY9skw5w==
-X-Received: by 2002:aa7:d146:: with SMTP id r6mr720807edo.335.1598872440245;
-        Mon, 31 Aug 2020 04:14:00 -0700 (PDT)
+        bh=2UbH7nyi0AzxoN4/HtEDtyeYbzdgvbboDc5iNNOozuA=;
+        b=XGsE0yhWRzUYy0lh3VpF/ZFNAJoVJASGe3YAlkRSdoLOIfZB1mMhwfBlsJO9iOQqyp
+         9SpoGMW94RIzXE4A4PqSHdaBJ8I7Qh7mYMj2nUbCPNrcruFpoF4vVQbTka91sj/cfmh8
+         /DZTacoe80PuEthVemnvdm2OlRaMqtvEk3kwdUjAMGEjxyv8WcmjuFcENqGft6gx6vNq
+         LgVnkviqv0k9gOv/0yRix3a0cLiwKB6IjP7DbWnTk8E7ouVPd/yd1fG/5Po2QhdZbf8c
+         KtVlmXTZvpLjdfcVCLWlkCEHm/qnq3PM6MH1+Lx9CahvnveR/4Mn/EV2XUEsfNL+U+5O
+         vcRw==
+X-Gm-Message-State: AOAM530axSMw79HGOHWPK+m4+Js4TQDbK9eKW35kP+ZJSBYb6FdwwWqf
+        Qs6AOlLsMN/R3Yu7SC0lq+U=
+X-Google-Smtp-Source: ABdhPJybJO3HGYkWU9kdY1Mxc+UjAiVH4EAhTo9VGUWfQXMQrFBgj/2Mff1SFpVi3mp1OVhiDj++cQ==
+X-Received: by 2002:a17:906:7856:: with SMTP id p22mr643614ejm.262.1598872689810;
+        Mon, 31 Aug 2020 04:18:09 -0700 (PDT)
 Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id o7sm7165100edq.53.2020.08.31.04.13.58
+        by smtp.gmail.com with ESMTPSA id nh1sm3984880ejb.21.2020.08.31.04.18.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2020 04:13:59 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 13:13:58 +0200
+        Mon, 31 Aug 2020 04:18:08 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 13:18:07 +0200
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Hans de Goede <hdegoede@redhat.com>
 Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
@@ -74,16 +74,15 @@ Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v8 08/17] pwm: crc: Fix period / duty_cycle times being
- off by a factor of 256
-Message-ID: <20200831111358.GF1688464@ulmo>
+Subject: Re: [PATCH v8 13/17] pwm: crc: Implement get_state() method
+Message-ID: <20200831111807.GL1688464@ulmo>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
- <20200830125753.230420-9-hdegoede@redhat.com>
+ <20200830125753.230420-14-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="/QKKmeG/X/bPShih"
+        protocol="application/pgp-signature"; boundary="CgTrtGVSVGoxAIFj"
 Content-Disposition: inline
-In-Reply-To: <20200830125753.230420-9-hdegoede@redhat.com>
+In-Reply-To: <20200830125753.230420-14-hdegoede@redhat.com>
 User-Agent: Mutt/1.14.6 (2020-07-11)
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
@@ -91,75 +90,59 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---/QKKmeG/X/bPShih
-Content-Type: text/plain; charset=us-ascii
+--CgTrtGVSVGoxAIFj
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 30, 2020 at 02:57:44PM +0200, Hans de Goede wrote:
-> While looking into adding atomic-pwm support to the pwm-crc driver I
-> noticed something odd, there is a PWM_BASE_CLK define of 6 MHz and
-> there is a clock-divider which divides this with a value between 1-128,
-> and there are 256 duty-cycle steps.
->=20
-> The pwm-crc code before this commit assumed that a clock-divider
-> setting of 1 means that the PWM output is running at 6 MHZ, if that
-> is true, where do these 256 duty-cycle steps come from?
->=20
-> This would require an internal frequency of 256 * 6 MHz =3D 1.5 GHz, that
-> seems unlikely for a PMIC which is using a silicon process optimized for
-> power-switching transistors. It is way more likely that there is an 8
-> bit counter for the duty cycle which acts as an extra fixed divider
-> wrt the PWM output frequency.
->=20
-> The main user of the pwm-crc driver is the i915 GPU driver which uses it
-> for backlight control. Lets compare the PWM register values set by the
-> video-BIOS (the GOP), assuming the extra fixed divider is present versus
-> the PWM frequency specified in the Video-BIOS-Tables:
->=20
-> Device:		PWM Hz set by BIOS	PWM Hz specified in VBT
-> Asus T100TA 	200			200
-> Asus T100HA 	200			200
-> Lenovo Miix 2 8	23437			20000
-> Toshiba WT8-A	23437			20000
->=20
-> So as we can see if we assume the extra division by 256 then the register
-> values set by the GOP are an exact match for the VBT values, where as
-> otherwise the values would be of by a factor of 256.
->=20
-> This commit fixes the period / duty_cycle calculations to take the
-> extra division by 256 into account.
+On Sun, Aug 30, 2020 at 02:57:49PM +0200, Hans de Goede wrote:
+> Implement the pwm_ops.get_state() method to complete the support for the
+> new atomic PWM API.
 >=20
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 > ---
+> Changes in v6:
+> - Rebase on 5.9-rc1
+> - Use DIV_ROUND_UP_ULL because pwm_state.period and .duty_cycle are now u=
+64
+>=20
+> Changes in v5:
+> - Fix an indentation issue
+>=20
+> Changes in v4:
+> - Use DIV_ROUND_UP when calculating the period and duty_cycle from the
+>   controller's register values
+>=20
 > Changes in v3:
-> - Use NSEC_PER_USEC instead of adding a new (non-sensical) NSEC_PER_MHZ d=
-efine
+> - Add Andy's Reviewed-by tag
+> - Remove extra whitespace to align some code after assignments (requested=
+ by
+>   Uwe Kleine-K=C3=B6nig)
 > ---
->  drivers/pwm/pwm-crc.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  drivers/pwm/pwm-crc.c | 31 +++++++++++++++++++++++++++++++
+>  1 file changed, 31 insertions(+)
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
---/QKKmeG/X/bPShih
+--CgTrtGVSVGoxAIFj
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M23UACgkQ3SOs138+
-s6FFYg/+Mtzc1XwV7Zl1w99FCSgZyIrsahQ4SvPhVAXHLByxVW0Sgfi/z9K/bDcB
-Fjw3E5MB0XL4UD9DWtdCKefCLe/5kIlbsS/LK7BPplf1GNfctSYQ72L5soS7HKrn
-vBjHnIr5ohFn/EGf3RWeLczkUoFVhfbMYFgor/H1FjXo5OeHQ3Fkr2AVPsnyIYXZ
-Iuc7iGLT8lI57IoxRlJ7ZKu0IXImzrN7YU4a+pfZ77fBAu3B9D9jom+L+U0E+E6q
-Y+ZBnaRVz13j6OSRMtfu13/kATzx1HgJZfjmMiimldrXbucWCovYXK2GWz8RJp5J
-YrXCFi8WdHdxB/JxDSYsswynJtRiSmGTjQmvxy6GYXZe8IvSB3VkpaTkQS5bzA65
-QAYAclX3dnxT46eQ+yiNH4WEWlgL5gxsLeOMCvFWa5Lismv4q2gvxjBTF0RapKaD
-oncskpQfC4HlP1vQieYkUrYQUfAq+Gq2a6OU5qk0HES6N504YLAhS35xqHvWvT+9
-QT50ulvZJVyUzZN9HgmMphXKi0jTeJ5dAZjdf8RbzIXD8hBlFJbObnPl6Xk2VRh2
-kJSwxDm74OT4sD2IydJQQCBnOtf6MZ/HjfLa5M6UP34DyWKg5LTlUbBDjp5+cJcs
-jrZ53SdqyD8MbZ/0meG1wcRvneBbIEKkPtAkowDRt2wkQHEO6nc=
-=4Oyz
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M3G8ACgkQ3SOs138+
+s6E/+BAAocda+M6anWstR2+VY/j/fIRJqp9Uutp3/NB5Evzr7HJoJNH5vvaX0CRu
+XqzhdH7nr5WJwWuAXjWc9HLsWYOlVxD7cjQZp4mb/jDtO4p/JKjmY2x2lPoajMm7
+CzjyPXwOg+WBW0xcaJmgfxJE8acB7wRWK9HeJ/yfUNiaya0/gR0iNcZfAfr+9SlZ
+aXglvu1KK14kNRYZRgu+hZWooP1aPa330ldfzrh2nfV8lALUdpV0dbu4WhGrSudW
+wevvN4Ss9tynApqlWTY0o8HikNnwttIbMGx7XZnkrOyTvFLrSuXHi1YHGMMUIycl
+6rdsp0cdK9nrnxAFPZiYISgZAWEQPiDR//xTlSMCxbasYNAG+saK6EWM1chAW1vS
+BLQPfD0aOxD9wngV8SV7AedZcUoRy224s5ko/NQWy/EYYgWg73ta24hNkX1GqUp/
+2l66DbLyaFhGg3xTiUCk3E7yrFxbjgOrtpUhN6t9i6cPzDhJI8akbf2gS419EUjo
+uKJvEUa4YJERUbWp2KQgoZnOyTFpv/7xIblyHsujcFJ/t7hxLLVV14yHs1iBu2k5
+ZPmChGQaUO1eXAbCHThintTquvR+IvY+SeXceX1kCIe44JJYjm4nupX1gW33lLrl
+nIQCrgA5W5YtASdRZIQ2hwCInbabfpv0TVSjdQKLvHasrC2MPqE=
+=YZ0E
 -----END PGP SIGNATURE-----
 
---/QKKmeG/X/bPShih--
+--CgTrtGVSVGoxAIFj--
