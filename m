@@ -5,60 +5,60 @@ X-Spam-Level:
 X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252BCC433E7
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE318C433E7
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:23:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 044EB2073A
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:23:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE3AE214D8
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:23:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jUoOJFwV"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KJVm8zv0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbgHaLW5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 Aug 2020 07:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
+        id S1727853AbgHaLXa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 Aug 2020 07:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbgHaLEl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:04:41 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D23EC061236;
-        Mon, 31 Aug 2020 04:03:14 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id e23so2407522eja.3;
-        Mon, 31 Aug 2020 04:03:14 -0700 (PDT)
+        with ESMTP id S1727105AbgHaLV1 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:21:27 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55864C08EAD3;
+        Mon, 31 Aug 2020 04:17:36 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id p9so2225263ejf.6;
+        Mon, 31 Aug 2020 04:17:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=qiWf16bEkbIxIbt47pSSmSFJYYSoidLtqGuD+HmFqX4=;
-        b=jUoOJFwVgB8HUTapnyBOZFJbVgSUKZl/UWcPBcV1FrIZoZgHZYSDZhloU9z81Z0Asg
-         cN9MM2pOooJevU6dOAa2CrWeHvZ6FpaJls5JSUwJF1fMRQRMXfw3E4nXATmnGj0u13e3
-         sdjq515ETDQ7C+Sxpnd3Z9hsHJAmb/itrTm44c2k6vKWhaO/yrsKNYVreaNOFUHdg3GW
-         HBeTuXAFOLbuzOSYM79c2xlWkWLj88FQ2lmRliS4kQe1kbMTLxkYn16BBwhmb+CKIWo9
-         4ZMJTKQuOFyunHlXoTLeutzDeMCNq9YWOTe0RowQwtl0+9iiEtI4C7DYIgBvUQkEn1b3
-         Q0iw==
+        bh=DSSVd8p6/dHeCEBoP4aiz1EfuW8J6OaQI2DYqDCSq5c=;
+        b=KJVm8zv0+8kriTrjuETpgAnoY27wt07gGtULILLJX7MCS1Ed9W2T0Ba2cihQ4octqu
+         mU5WlmkWuDiXycn+pLJ8pLmvsTyGCWRBNIxFljC8ZR9Bi7ssUcOeG6hHyPNxz3SXdwpY
+         dbRd8bjqzcz/bMXTHBaqyQ8TK+T5ELY10qGCvLMJmQvKgb28O4e+NAlnRZY//ZdcwxPs
+         rWalvhMFcitabEYR0o+JjzWOvhKzEp3f81GnSsCjMuiHb+srpv7+jt0a9aqOeUJfSz41
+         +cFGIcAU9msGESVS1wuCLb72WisiJ0Q9L9t6BmeFOPSNrqTYvh9cuQl/LG4BoLko4/tU
+         UmCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qiWf16bEkbIxIbt47pSSmSFJYYSoidLtqGuD+HmFqX4=;
-        b=hlmDW3FpUGqUhc0KoY43fQLSRmdcxGc/C8UiDczubBCDWkn9BT6hZBS2r+jkr4lmRT
-         MEKKgVIM1RU0wu3nDqwZUEkndL7BPUhvjalL5UARKl7lik1jsd7f7Whkg3vZVDqErsKM
-         870aDeZ5NTAjOD2C1bIW7qIWXnGAE/LOH8AxWuWpKPqTdM8+NPFR5QIo83HN9Tsl5q1/
-         j7xlSeU6WMgbSbD8hYvITgfCuCRwd+3QSxcSdma8G0g6uFN6TPhX5RrZ/UY6x+bER0rw
-         XZClhMRrJ0jfXtFVupiYlAJ87K6OE8gHKKX/mYu7WFLuIpZLuBkZxKrvK7aMuug37hmP
-         uCIA==
-X-Gm-Message-State: AOAM530e4tIsqIwZoSwM9o/TSvzNwcytl7UbjikwmLfpOpxksoHP1pIA
-        v6l14f0Cje0YnkuaBAi5q3Y=
-X-Google-Smtp-Source: ABdhPJxpalZvGztc9OM/9Nrw8ULCaRGBBhIMcbzO/TmzeKrer6F4s8xg0IzOsJgoiV2F1GmjjYtweg==
-X-Received: by 2002:a17:906:12c7:: with SMTP id l7mr594853ejb.306.1598871793227;
-        Mon, 31 Aug 2020 04:03:13 -0700 (PDT)
+        bh=DSSVd8p6/dHeCEBoP4aiz1EfuW8J6OaQI2DYqDCSq5c=;
+        b=I+2O6fl/COooaNKjP56NbkG/WMlwzQ0CL6hPQxkn+7VNvxOboDNT5AOtF7u33IdGm8
+         0F36RA3LpSdJoZSR/vsCeU+z8xOiHx3PHsex++p5jxngEYdlTkog9Tn2XXd7gD49+IPB
+         M+oKVpIvrUR7PRhcdL6Zu0aWdiSREg7OMJSxpzd5ox8O4rwRoI3xuMEl31/nMdY9jHAk
+         F+Y+OEJTkW7Vlf2Goib4BMLrW3H3+AXq+oywDvTTdA7P33t9xz1fjB34EKDhFm8dWo5Z
+         ZHMtuuC9Xo6CrAABbXjHZzvv5Hh8l1zcOvI4IreHDhYQ2noWl7CwQ4yzusxIwknTgZvx
+         Obog==
+X-Gm-Message-State: AOAM531L6c/CEm728xP1wRLFRe+VBM++5InXZkms4uX9Fjv7J/yHyVao
+        8vOIU1RDI4QVQR3BFiwmCPA=
+X-Google-Smtp-Source: ABdhPJyQ5vu+8Qs6gYtaLvyhMSoJ9W6H5b5/CY8OKCToCH0O2wKCDeXkfoJz2rWxd0eEG9p8UH/bkA==
+X-Received: by 2002:a17:906:5246:: with SMTP id y6mr656291ejm.316.1598872655608;
+        Mon, 31 Aug 2020 04:17:35 -0700 (PDT)
 Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id w6sm8002543ejy.63.2020.08.31.04.03.11
+        by smtp.gmail.com with ESMTPSA id m12sm7211555eda.51.2020.08.31.04.17.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2020 04:03:11 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 13:03:10 +0200
+        Mon, 31 Aug 2020 04:17:34 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 13:17:33 +0200
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Hans de Goede <hdegoede@redhat.com>
 Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
@@ -74,15 +74,16 @@ Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v8 05/17] pwm: lpss: Add pwm_lpss_prepare_enable() helper
-Message-ID: <20200831110310.GC1688464@ulmo>
+Subject: Re: [PATCH v8 12/17] pwm: crc: Implement apply() method to support
+ the new atomic PWM API
+Message-ID: <20200831111733.GK1688464@ulmo>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
- <20200830125753.230420-6-hdegoede@redhat.com>
+ <20200830125753.230420-13-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tqI+Z3u+9OQ7kwn0"
+        protocol="application/pgp-signature"; boundary="2feizKym29CxAecD"
 Content-Disposition: inline
-In-Reply-To: <20200830125753.230420-6-hdegoede@redhat.com>
+In-Reply-To: <20200830125753.230420-13-hdegoede@redhat.com>
 User-Agent: Mutt/1.14.6 (2020-07-11)
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
@@ -90,54 +91,49 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---tqI+Z3u+9OQ7kwn0
+--2feizKym29CxAecD
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 30, 2020 at 02:57:41PM +0200, Hans de Goede wrote:
-> In the not-enabled -> enabled path pwm_lpss_apply() needs to get a
-> runtime-pm reference; and then on any errors it needs to release it
-> again.
+On Sun, Aug 30, 2020 at 02:57:48PM +0200, Hans de Goede wrote:
+> Replace the enable, disable and config pwm_ops with an apply op,
+> to support the new atomic PWM API.
 >=20
-> This leads to somewhat hard to read code. This commit introduces a new
-> pwm_lpss_prepare_enable() helper and moves all the steps necessary for
-> the not-enabled -> enabled transition there, so that we can error check
-> the entire transition in a single place and only have one pm_runtime_put()
-> on failure call site.
->=20
-> While working on this I noticed that the enabled -> enabled (update
-> settings) path was quite similar, so I've added an enable parameter to
-> the new pwm_lpss_prepare_enable() helper, which allows using it in that
-> path too.
->=20
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 > ---
->  drivers/pwm/pwm-lpss.c | 45 ++++++++++++++++++++++++------------------
->  1 file changed, 26 insertions(+), 19 deletions(-)
+> Changes in v6:
+> - Rebase on 5.9-rc1
+> - Use do_div when calculating level because pwm_state.period and .duty_cy=
+cle are now u64
+>=20
+> Changes in v3:
+> - Keep crc_pwm_calc_clk_div() helper to avoid needless churn
+> ---
+>  drivers/pwm/pwm-crc.c | 89 ++++++++++++++++++++++++++-----------------
+>  1 file changed, 54 insertions(+), 35 deletions(-)
 
 Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
---tqI+Z3u+9OQ7kwn0
+--2feizKym29CxAecD
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M2O4ACgkQ3SOs138+
-s6FcaBAAmahm7vjnpEjic+s1cnpr0uL01wcrb3qNbQNL6mIidS0z9E6STXPkY5f0
-qLpKaWjYR4iNTxu/Ygu4HhQY7z2ApkY/2L70fidb8uhac0o06DBmXXBgH5fkOq0r
-kjZ206Chh7gBwiD1BtW/Uvt1nK4VtBAWuxybt78oOGV2B5a35TW/PNdY0VGiP6KS
-kS7oPJctfvzevNcsyXNt2uiKfOWtDIgU/eLLLO0X/U3h90jDYghljDIUEA4dlG8/
-3RghmPV2pP5QuzfSXn7FCRZbbT9ZdrTCj9ZUcPIlrIIOQZEkaWsUOlkgmYewWPXq
-BcIlRqidHLQIlkJiodPo/A0MEncupBKnNh3zszR1XNquCBaRw05O3Z+y0KjKmXOT
-k2CerltsPRBVwEFLeaWuRlERlJCc3DY1bwD1NG9SbDmPlK4Y2pdIiz0llUNpe9gF
-PnMnbCxBoA0QmK6mJvbQJT3HZsIodDBqCzFyd2Smj5uA8fDRkYWrLCRnHIiGTvj4
-uqp0ysjaR54ZTMbbJ+swkgYOuP/TaHfHE3y7eIOZSPnePe+zC0k/LXQ/5QqF8MHm
-rKPHAYK+dKjiF7j/uCz+rUIkF63z6FSHjxRkPxVhfJSWicURqTKPI4sOweSqazr6
-lB4xqswBFHfWUJqRb+xqb/EXJPvWGMoE1sTqqKu/n0rWZk0p2AA=
-=xuNM
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M3E0ACgkQ3SOs138+
+s6FjbBAAtshiQemFYzlF29cpAiz3Y8sEV7441JLRKFgwbpreSRChITG83WrA/Wbp
+Ica8diIGjrL07RYcAnm6T+pLsXI2Ep0GyJ0QxQyk08KKXDIZQOaaW90F6P0iu1nK
+drHNm3bbHrAUM0Mjw+H8FQHqggFUr04ugC8y8b44fdUSdg2nwRtUbiKtSreGQWsu
+Jg/Zukj7QNod54XzQGtR6RVxlt/99B6g69zGhiwDVwNbuIuFs+SBiaTa7zhQWUdh
+qRjbbnLnUYELBa6Dn3oDXDCNUDFTG1zHNwJUVNoDmD4TMPBId6hStZkWVVSpRpZZ
+XZiiiv9K6JD9a94XwkQbHvf+oaL3xxazt2roDaLNtyHoIxuaMiMgkMFqk7VJLxil
+Jln+1PuEZF7IIqiKsoNTmFZ8bFAJWErv9grdDMNVqMRL8ThcS6vRN4j28oHn+GWA
+AlhzxP4kiIQ6Fgz9aUwJNqhbFQdInriBLQ5PIWFJONM4U0uPrfi3mwOARoGNFFFE
+SifX93MB7CdAZJCDKz1aQX4MvEUL9SDzcOGSpPGtZZHeCu+F3daJs2rNHK2wSeg9
+CMYULqOBSyQhzjbIqfocinzZNUNkW6h/YRazDuXU/tgnByCV/nYZFfMqPSN+aYSD
+vnDB5WvyzCI8xwGr0/8OjE8+e+LivnIMSIu/E77H+pBaLnJN2oE=
+=VWBE
 -----END PGP SIGNATURE-----
 
---tqI+Z3u+9OQ7kwn0--
+--2feizKym29CxAecD--
