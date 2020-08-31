@@ -2,63 +2,62 @@ Return-Path: <SRS0=1Pg/=CJ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E66C2BB4D
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ABBC433E2
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:26:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E4C1E20866
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:24:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C9FBB208CA
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:25:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q2WuEbVx"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oc3+dIiL"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727044AbgHaLYY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 Aug 2020 07:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44336 "EHLO
+        id S1727043AbgHaLZv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 Aug 2020 07:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727833AbgHaLWv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:22:51 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C349C09B047;
-        Mon, 31 Aug 2020 04:18:11 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id e23so2463214eja.3;
-        Mon, 31 Aug 2020 04:18:11 -0700 (PDT)
+        with ESMTP id S1726756AbgHaLXr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:23:47 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5858C061573;
+        Mon, 31 Aug 2020 04:10:10 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id nw23so6516879ejb.4;
+        Mon, 31 Aug 2020 04:10:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=2UbH7nyi0AzxoN4/HtEDtyeYbzdgvbboDc5iNNOozuA=;
-        b=q2WuEbVxohARvB4Qoi9K1TlmUo3Tgr9p15PC50hyeczvRXO0i5nkPqtcDrhXfLq/hB
-         GT/EhUKQXWE1iyuvndV1Cp0YwAETUznP2jnQHFDVLTQQcMknNVnQtYkTiRpaigMaBUH/
-         rr9hfbpUgmW1xhaC1oP9L0Drb9fHj77gtwdL+zjK1uGxpplGsbqU4k+ykftDR97vYCoS
-         YaSYswZO5dYYfBI7mcWglU/g6YWbRoO+OXdlBtb9e7F33dnqMG4QK1ZswNVT3FFVX/ZV
-         C6J+P8WHY7YnaAc2d/JPES+3QSdz4yD28Eg1OyTzFAbZOux3v8ttPPBwDx+0UI1xoZ3p
-         CNSw==
+        bh=hSMOrFIuB8KhU/CeTgamOD+l3UuVWWHZ0INs/jiXeLA=;
+        b=oc3+dIiLM3jDDv/0aloRcP+W6CFmE2gEP3Fxq9AQ3LTw1WP3Au5ZGB8CExeDFFcxVt
+         7cQjRPbhdiiQ6Atmu3d7+Ap6wm3mMQhcJzurZxWN0sM/Z+fvVnlqtCo6WRGWqX7BLUwT
+         A8gp7a3jtYiqI7CNkyRWZkWt5VdfnTvrUepG0zndqG+LbEKpxLfQE9DKm8jtcSnTVJWs
+         y4QFASOQUU5Nw36bwT+8JmDFluprN7uzCosTD8Dxf2OID6qqzDDE1lZLOgkH7RYOFAkA
+         L6fx+/9NsMWhzDyM1xJEOEFnkHiNMHxRlW6954S9inPdYf244Sem4yrLVX/slETFO9Ha
+         GYAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2UbH7nyi0AzxoN4/HtEDtyeYbzdgvbboDc5iNNOozuA=;
-        b=XGsE0yhWRzUYy0lh3VpF/ZFNAJoVJASGe3YAlkRSdoLOIfZB1mMhwfBlsJO9iOQqyp
-         9SpoGMW94RIzXE4A4PqSHdaBJ8I7Qh7mYMj2nUbCPNrcruFpoF4vVQbTka91sj/cfmh8
-         /DZTacoe80PuEthVemnvdm2OlRaMqtvEk3kwdUjAMGEjxyv8WcmjuFcENqGft6gx6vNq
-         LgVnkviqv0k9gOv/0yRix3a0cLiwKB6IjP7DbWnTk8E7ouVPd/yd1fG/5Po2QhdZbf8c
-         KtVlmXTZvpLjdfcVCLWlkCEHm/qnq3PM6MH1+Lx9CahvnveR/4Mn/EV2XUEsfNL+U+5O
-         vcRw==
-X-Gm-Message-State: AOAM530axSMw79HGOHWPK+m4+Js4TQDbK9eKW35kP+ZJSBYb6FdwwWqf
-        Qs6AOlLsMN/R3Yu7SC0lq+U=
-X-Google-Smtp-Source: ABdhPJybJO3HGYkWU9kdY1Mxc+UjAiVH4EAhTo9VGUWfQXMQrFBgj/2Mff1SFpVi3mp1OVhiDj++cQ==
-X-Received: by 2002:a17:906:7856:: with SMTP id p22mr643614ejm.262.1598872689810;
-        Mon, 31 Aug 2020 04:18:09 -0700 (PDT)
+        bh=hSMOrFIuB8KhU/CeTgamOD+l3UuVWWHZ0INs/jiXeLA=;
+        b=mb0d+C39KWNtb3V6O/pzt9DxEsP/fEzSnDpFc2HFonZvMtHOQb+K/A8r6KlBPC9wTf
+         +rR8AkViWQzqQtpwuHYw3se02+mfVCYyYUP/MYZxkQJZ0VqpP+CzszV2Hgaw9IKjHER5
+         QoADC0R8LeuyzneQQa+Fqjpk8//7F+RPefuhiYh6wGA8NhQcf3vTrwY07M7rXoDhgtAk
+         PW7k7Wl1T0imihMHx7JRZDowNCRjHtVUhoR50DRi7e1P76gVV064p7eEAN3u+GBUAm/W
+         /WoxIlNqinC3QjBrjEzg93atxbGBr06yBg1T4zmE8JPXNe2PDLekEjKpn/po4RLbM9ev
+         pNyQ==
+X-Gm-Message-State: AOAM532Zu8yXjKgV9qf7K0VXL6J+Vydj2CyndKoeCZzXtMgDEpYkmvgH
+        7e8u0iODsAk9x4hIRaOEfR8=
+X-Google-Smtp-Source: ABdhPJzfdgepShBDrS4mxIxiNzu3BtIBOSwtT1EE5Gebeeo8x5D8jxQlktyvYXtubOXAirSZ3b1X0A==
+X-Received: by 2002:a17:906:18a9:: with SMTP id c9mr627627ejf.294.1598872209418;
+        Mon, 31 Aug 2020 04:10:09 -0700 (PDT)
 Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id nh1sm3984880ejb.21.2020.08.31.04.18.08
+        by smtp.gmail.com with ESMTPSA id e4sm7130736edv.73.2020.08.31.04.10.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2020 04:18:08 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 13:18:07 +0200
+        Mon, 31 Aug 2020 04:10:07 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 13:10:06 +0200
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Hans de Goede <hdegoede@redhat.com>
 Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
@@ -74,15 +73,16 @@ Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v8 13/17] pwm: crc: Implement get_state() method
-Message-ID: <20200831111807.GL1688464@ulmo>
+Subject: Re: [PATCH v8 06/17] pwm: lpss: Use pwm_lpss_restore() when
+ restoring state on resume
+Message-ID: <20200831111006.GD1688464@ulmo>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
- <20200830125753.230420-14-hdegoede@redhat.com>
+ <20200830125753.230420-7-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="CgTrtGVSVGoxAIFj"
+        protocol="application/pgp-signature"; boundary="NtwzykIc2mflq5ck"
 Content-Disposition: inline
-In-Reply-To: <20200830125753.230420-14-hdegoede@redhat.com>
+In-Reply-To: <20200830125753.230420-7-hdegoede@redhat.com>
 User-Agent: Mutt/1.14.6 (2020-07-11)
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
@@ -90,59 +90,83 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---CgTrtGVSVGoxAIFj
-Content-Type: text/plain; charset=utf-8
+--NtwzykIc2mflq5ck
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 30, 2020 at 02:57:49PM +0200, Hans de Goede wrote:
-> Implement the pwm_ops.get_state() method to complete the support for the
-> new atomic PWM API.
+On Sun, Aug 30, 2020 at 02:57:42PM +0200, Hans de Goede wrote:
+> Before this commit a suspend + resume of the LPSS PWM controller
+> would result in the controller being reset to its defaults of
+> output-freq =3D clock/256, duty-cycle=3D100%, until someone changes
+> to the output-freq and/or duty-cycle are made.
 >=20
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Changes in v6:
-> - Rebase on 5.9-rc1
-> - Use DIV_ROUND_UP_ULL because pwm_state.period and .duty_cycle are now u=
-64
->=20
-> Changes in v5:
-> - Fix an indentation issue
->=20
-> Changes in v4:
-> - Use DIV_ROUND_UP when calculating the period and duty_cycle from the
->   controller's register values
->=20
-> Changes in v3:
-> - Add Andy's Reviewed-by tag
-> - Remove extra whitespace to align some code after assignments (requested=
- by
->   Uwe Kleine-K=C3=B6nig)
-> ---
->  drivers/pwm/pwm-crc.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
+> This problem has been masked so far because the main consumer
+> (the i915 driver) was always making duty-cycle changes on resume.
+> With the conversion of the i915 driver to the atomic PWM API the
+> driver now only disables/enables the PWM on suspend/resume leaving
+> the output-freq and duty as is, triggering this problem.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Doesn't this imply that there's another bug at play here? At the PWM API
+level you're applying a state and it's up to the driver to ensure that
+the hardware state after ->apply() is what the software has requested.
 
---CgTrtGVSVGoxAIFj
+If you only switch the enable state and that doesn't cause period and
+duty cycle to be updated it means that your driver isn't writing those
+registers when it should be.
+
+> The LPSS PWM controller has a mechanism where the ctrl register value
+> and the actual base-unit and on-time-div values used are latched. When
+> software sets the SW_UPDATE bit then at the end of the current PWM cycle,
+> the new values from the ctrl-register will be latched into the actual
+> registers, and the SW_UPDATE bit will be cleared.
+>=20
+> The problem is that before this commit our suspend/resume handling
+> consisted of simply saving the PWM ctrl register on suspend and
+> restoring it on resume, without setting the PWM_SW_UPDATE bit.
+> When the controller has lost its state over a suspend/resume and thus
+> has been reset to the defaults, just restoring the register is not
+> enough. We must also set the SW_UPDATE bit to tell the controller to
+> latch the restored values into the actual registers.
+>=20
+> Fixing this problem is not as simple as just or-ing in the value which
+> is being restored with SW_UPDATE. If the PWM was enabled before we must
+> write the new settings + PWM_SW_UPDATE before setting PWM_ENABLE.
+> We must also wait for PWM_SW_UPDATE to become 0 again and depending on the
+> model we must do this either before or after the setting of PWM_ENABLE.
+>=20
+> All the necessary logic for doing this is already present inside
+> pwm_lpss_apply(), so instead of duplicating this inside the resume
+> handler, this commit adds a new pwm_lpss_restore() helper which mirrors
+> pwm_lpss_apply() minus the runtime-pm reference handling (which we should
+> not change on resume).
+
+If this is all already implemented in pwm_lpss_apply(), why isn't it
+working for the suspend/resume case? It shouldn't matter that the
+consumer only changes the enable/disable state. After ->apply()
+successfully returns your hardware should be programmed with exactly
+the state that the consumer requested.
+
+Thierry
+
+--NtwzykIc2mflq5ck
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M3G8ACgkQ3SOs138+
-s6E/+BAAocda+M6anWstR2+VY/j/fIRJqp9Uutp3/NB5Evzr7HJoJNH5vvaX0CRu
-XqzhdH7nr5WJwWuAXjWc9HLsWYOlVxD7cjQZp4mb/jDtO4p/JKjmY2x2lPoajMm7
-CzjyPXwOg+WBW0xcaJmgfxJE8acB7wRWK9HeJ/yfUNiaya0/gR0iNcZfAfr+9SlZ
-aXglvu1KK14kNRYZRgu+hZWooP1aPa330ldfzrh2nfV8lALUdpV0dbu4WhGrSudW
-wevvN4Ss9tynApqlWTY0o8HikNnwttIbMGx7XZnkrOyTvFLrSuXHi1YHGMMUIycl
-6rdsp0cdK9nrnxAFPZiYISgZAWEQPiDR//xTlSMCxbasYNAG+saK6EWM1chAW1vS
-BLQPfD0aOxD9wngV8SV7AedZcUoRy224s5ko/NQWy/EYYgWg73ta24hNkX1GqUp/
-2l66DbLyaFhGg3xTiUCk3E7yrFxbjgOrtpUhN6t9i6cPzDhJI8akbf2gS419EUjo
-uKJvEUa4YJERUbWp2KQgoZnOyTFpv/7xIblyHsujcFJ/t7hxLLVV14yHs1iBu2k5
-ZPmChGQaUO1eXAbCHThintTquvR+IvY+SeXceX1kCIe44JJYjm4nupX1gW33lLrl
-nIQCrgA5W5YtASdRZIQ2hwCInbabfpv0TVSjdQKLvHasrC2MPqE=
-=YZ0E
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M2o4ACgkQ3SOs138+
+s6EVeA/8CVuiSoo0jeOSu2zC6wPJUTR1ytUmbQ9QPv3ZatYw/QjtlbntPzS1G/Ae
+xHn/dEoiPx8TpwoqPBaJlyWyDPdsvYk9/vB+JLixN5XdudQi5GDH3+RQSROdgq18
+wcWYBe3asLVnCbLUm5RH3OfbJX5ZFy4qXMudc2eWZ90l/dSRhKK3RoAEAqOWFduZ
+uKpe4of9pjBFtQ3vOVqYlUv+7gU0McNqZ4pElGwRT8aeuDl3ZB7Fq3c9tEPA+BW1
+fKU4uoGla8V9GYCc9Ydcm/xrr+zN6mdRv77hpkD/gPxePYrqkjx1AneWSalbCgjb
+PhDnBmgPBA1goanZfez6w31IYobty1ZF8fZIx2wG0qnyBizTxSpQW2mMxZqqlyky
+Tar5sbWbF/ahNh0xQbkpd18O4w2XRVyRZIvswc/8jrexmw8Ss7VdSQPNvH0EJcxI
+k82GQTi3O3fZ82Hg85T27OWonAYUnMU2l/L8jtH9LcdywM2JeIh+2aYJpUsPdcaQ
+VdT3o4gX1T1EZH0wHYHRgbG4qo/guM9a7AVmB1D0YwmDePXacGsj3eVkGK+S7AmB
+k+N19508vZebYHD/8pY++NHll3f6EjZVbKNQpd9bdAcUtmWILZPvb1Hq1TCfP5+a
+PV5Q71ZeFF9qQz+ifvPC0aHF6LOB02KnahdJ8JJvB4objo/dIbA=
+=x/LS
 -----END PGP SIGNATURE-----
 
---CgTrtGVSVGoxAIFj--
+--NtwzykIc2mflq5ck--
