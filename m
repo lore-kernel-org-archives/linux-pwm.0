@@ -2,183 +2,140 @@ Return-Path: <SRS0=1Pg/=CJ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2137C433E6
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 08:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E3DC433E6
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:21:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DA196206F0
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 08:56:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36C53207DA
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:21:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fNIzhqpT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726244AbgHaI47 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 Aug 2020 04:56:59 -0400
-Received: from mga05.intel.com ([192.55.52.43]:5987 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725978AbgHaI44 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 31 Aug 2020 04:56:56 -0400
-IronPort-SDR: 28Z6gUHx1DkRsYuybJS/tGT3eZgvj9GpbVwHcE5kWmoCQm9UHzKHNySOkSqjbVe4WLRcAGVnQo
- 3VdMSSF7+Xjw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9729"; a="241745504"
-X-IronPort-AV: E=Sophos;i="5.76,375,1592895600"; 
-   d="scan'208";a="241745504"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2020 01:56:55 -0700
-IronPort-SDR: 9yN/1yUHqKELgGxgDMn4zYS+tfQ0H1S1gvVgEktTHAZNke7hmJJp9nZHec9rRoqP0OkxoPRziL
- nwHRUbc8FLAA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,375,1592895600"; 
-   d="scan'208";a="330626277"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga008.jf.intel.com with ESMTP; 31 Aug 2020 01:56:52 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1kCfcP-00CvS5-HF; Mon, 31 Aug 2020 11:56:49 +0300
-Date:   Mon, 31 Aug 2020 11:56:49 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        id S1727088AbgHaLVU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 Aug 2020 07:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726756AbgHaLR6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:17:58 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB37C061A02;
+        Mon, 31 Aug 2020 04:16:30 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id b17so7924342ejq.8;
+        Mon, 31 Aug 2020 04:16:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZTtymY1waFOvQOwsLNqggU5bT+3mUvNOZsCRMAvPRas=;
+        b=fNIzhqpTsOH1zDgcqrkm6eT2FxZM5JptN/pSFYkSuN7E7tL762Y9OWPlfV59vPRMnN
+         KJWWbHqEbAvyD960uzowyBKQLXlYIrafYvajZ1RNHsRz5rLjpRI0C/6zIZZPil/UnVGz
+         +BHqFkr7QZKX+Ad2/qSOHU2MtWgpLmSx5fVGtCHQky6fpebjhkMQY1UXDVYUTiUB3hKt
+         XETdY7aZJlnM3eUVCw7/AgXzr45SBSgorQH4dqzWfkfNvn/2TTnN/JlIJFYZQSJqvCpc
+         TtzcTWxiiZa4x1x3gftJRZ5+pALECacgRqnPXi51vT20JwpQgpdWG4TgQQ4BRNDEWTL1
+         1fQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZTtymY1waFOvQOwsLNqggU5bT+3mUvNOZsCRMAvPRas=;
+        b=bGe4V+avMEFNADkmurUhteb6cVNMAz4pCYiPI0UTCmm5GKwswQNypPfixkBaPzKxVq
+         FmD3ad7L6X41wBrA4Y3JRKWsa7lxz94vXGLFPLeOaIdhI8hkc22cXPk7Imkyrg3hACLC
+         b1GjsqbcrGLd/vNePVg4dDqC8gg14JaMGPWm7sbSHM8olc+mIVy4xKqmP5XPTOYGsfYj
+         pXgy9b9j2nEE3v88e6yu0irfmhmWTOFzhW88o2cxtAfprQ1LiiMArzgelAtvYdBJ9kpC
+         J6ez9pRddbvt8ZRR/Af6P1KD3XD6nUyHQxZJWmsZhDtPmpaXjdY0cXYN2Xs2/nsqrYpL
+         meOg==
+X-Gm-Message-State: AOAM530greRk3W+Lwba8XLnqZhSydUHdstTEaVv+LeCeG/34J/w0OPn4
+        h/YhxqARGucWX7s6kvow5vs=
+X-Google-Smtp-Source: ABdhPJzotGlbD5NfItBcSRE3Z5cStQ3EuAjruXFrODvQJL9yNrHxXDF3A5ZTYht4Ids6e3qv76Arqg==
+X-Received: by 2002:a17:906:f957:: with SMTP id ld23mr621987ejb.187.1598872589352;
+        Mon, 31 Aug 2020 04:16:29 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id a26sm7956389eje.78.2020.08.31.04.16.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Aug 2020 04:16:28 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 13:16:27 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Ville =?iso-8859-1?Q?Syrj=E4l=E4?= 
-        <ville.syrjala@linux.intel.com>,
+        Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org,
         intel-gfx <intel-gfx@lists.freedesktop.org>,
         dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v8 07/17] pwm: lpss: Always update state and set update
- bit
-Message-ID: <20200831085649.GB1891694@smile.fi.intel.com>
+Subject: Re: [PATCH v8 11/17] pwm: crc: Enable/disable PWM output on
+ enable/disable
+Message-ID: <20200831111627.GJ1688464@ulmo>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
- <20200830125753.230420-8-hdegoede@redhat.com>
+ <20200830125753.230420-12-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="GlnCQLZWzqLRJED8"
 Content-Disposition: inline
-In-Reply-To: <20200830125753.230420-8-hdegoede@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200830125753.230420-12-hdegoede@redhat.com>
+User-Agent: Mutt/1.14.6 (2020-07-11)
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sun, Aug 30, 2020 at 02:57:43PM +0200, Hans de Goede wrote:
-> This commit removes a check where we would skip writing the ctrl register
-> and then setting the update bit in case the ctrl register already contains
-> the correct values.
-> 
-> In a perfect world skipping the update should be fine in these cases, but
-> on Cherry Trail devices the AML code in the GFX0 devices' PS0 and PS3
-> methods messes with the PWM controller.
-> 
-> The "ACPI / LPSS: Resume Cherry Trail PWM controller in no-irq phase" patch
-> earlier in this series stops the GFX0._PS0 method from messing with the PWM
-> controller and on the DSDT-s inspected sofar the _PS3 method only reads
-> from the PWM controller (and turns it off before we get a change to do so):
-> 
->     {
->         PWMB = PWMC /* \_SB_.PCI0.GFX0.PWMC */
->         PSAT |= 0x03
->         Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
->     }
-> 
-> The PWM controller getting turning off before we do this ourselves is
-> a bit annoying but not really an issue.
-> 
-> The problem this patch fixes comes from a new variant of the GFX0._PS3 code
-> messing with the PWM controller found on the Acer One 10 S1003 (1):
-> 
->     {
->         PWMB = PWMC /* \_SB_.PCI0.GFX0.PWMC */
->         PWMT = PWMC /* \_SB_.PCI0.GFX0.PWMC */
->         PWMT &= 0xFF0000FF
->         PWMT |= 0xC0000000
->         PWMC = PWMT /* \_SB_.PCI0.GFX0.PWMT */
->         PWMT = PWMC /* \_SB_.PCI0.GFX0.PWMC */
->         Sleep (0x64)
->         PWMB &= 0x3FFFFFFF
->         PWMC = PWMB /* \_SB_.PCI0.GFX0.PWMB */
->         PSAT |= 0x03
->         Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
->     }
-> 
-> This "beautiful" piece of code clears the base-unit part of the ctrl-reg,
-> which effectively disables the controller, and it sets the update flag
-> to apply this change. Then after this it restores the original ctrl-reg
-> value, so we do not see it has mucked with the controller.
-> 
-> *But* it does not set the update flag when restoring the original value.
-> So the check to see if we can skip writing the ctrl register succeeds
-> but since the update flag was not set, the old base-unit value of 0 is
-> still in use and the PWM controller is effectively disabled.
-> 
-> IOW this PWM controller poking means that we cannot trust the base-unit /
-> on-time-div value we read back from the PWM controller since it may not
-> have been applied/committed. Thus we must always update the ctrl-register
-> and set the update bit.
-> 
-> 1) And once I knew what to look for also in a bunch of other devices
-> including the popular Lenovo Ideapad Miix 310 and 320 models and
-> various Medion models.
 
-Despite the above mentioned issue I'm always in favour of not micro-optimizing I/O.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+--GlnCQLZWzqLRJED8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Sun, Aug 30, 2020 at 02:57:47PM +0200, Hans de Goede wrote:
+> The pwm-crc code is using 2 different enable bits:
+> 1. bit 7 of the PWM0_CLK_DIV (PWM_OUTPUT_ENABLE)
+> 2. bit 0 of the BACKLIGHT_EN register
+>=20
+> So far we've kept the PWM_OUTPUT_ENABLE bit set when disabling the PWM,
+> this commit makes crc_pwm_disable() clear it on disable and makes
+> crc_pwm_enable() set it again on re-enable.
+>=20
+> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 > ---
-> Changes in v8:
-> - New patch in v8 of this patch-set
+> Changes in v3:
+> - Remove paragraph about tri-stating the output from the commit message,
+>   we don't have a datasheet so this was just an unfounded guess
 > ---
->  drivers/pwm/pwm-lpss.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> index 9a7400c6fb6e..20f6b6d6f874 100644
-> --- a/drivers/pwm/pwm-lpss.c
-> +++ b/drivers/pwm/pwm-lpss.c
-> @@ -85,7 +85,7 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
->  	unsigned long long on_time_div;
->  	unsigned long c = lpwm->info->clk_rate, base_unit_range;
->  	unsigned long long base_unit, freq = NSEC_PER_SEC;
-> -	u32 orig_ctrl, ctrl;
-> +	u32 ctrl;
->  
->  	do_div(freq, period_ns);
->  
-> @@ -104,16 +104,14 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
->  	do_div(on_time_div, period_ns);
->  	on_time_div = 255ULL - on_time_div;
->  
-> -	orig_ctrl = ctrl = pwm_lpss_read(pwm);
-> +	ctrl = pwm_lpss_read(pwm);
->  	ctrl &= ~PWM_ON_TIME_DIV_MASK;
->  	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
->  	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
->  	ctrl |= on_time_div;
->  
-> -	if (orig_ctrl != ctrl) {
-> -		pwm_lpss_write(pwm, ctrl);
-> -		pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
-> -	}
-> +	pwm_lpss_write(pwm, ctrl);
-> +	pwm_lpss_write(pwm, ctrl | PWM_SW_UPDATE);
->  }
->  
->  static inline void pwm_lpss_cond_enable(struct pwm_device *pwm, bool cond)
-> -- 
-> 2.28.0
-> 
+>  drivers/pwm/pwm-crc.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 
--- 
-With Best Regards,
-Andy Shevchenko
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
+--GlnCQLZWzqLRJED8
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M3AoACgkQ3SOs138+
+s6EUhxAAqOyFk4YOHZ0q1M0s3MiWg2o5JRPl597Q/FuVMDlLNPSHqYQGo8XNsauY
+eTT7GKVu6y1mXSkc75KJi4FpBqnCepoCqtBEWqABNvjNGYsS/88m70kVmf73ZQBp
+/4W1yIxIpIli3s8YRyZweaFXrEA54qhokh2m7LNcxuqro6FaFjszUJ6CTqwdXf8m
+v6v3onrRov+vdt1vgBumJORDpfd/H02hUWcSL3V0aD6y2BeRAtrEj72QFqLbr2jo
+2pJpEa+gdFdLfgcOLnmzXciBDAtjB+foU7LcQTwMUfvPWnuUi2ltgNPWt000X21x
+hyCkjSWIxGQ9YdGryKgHETe3DVsJL0WCi04uI49H6sevupB1NEzp7/vj5gCfI38s
+c8aIH0B03Rn3K+pW4YfuQFGYDVjZV3Pt9Xtv/XMC+tWdv37hQyd055hBpi/bpPuD
+49usRQxckKeJ/pBplg3RT5EP8tQrjP0cOXFgnr25s2HaRlIUFHvtlVaZRtOs9n6J
+44e3XPWbRvDbXco341AkiffDUDvi7EYPRM5kxaX9TuSWB3idlGPKZPHohD+ENb/Q
+RW8o4qHRS4cfRyXchuq6WWoyXGrj9588+Dl3ueqAgE7YCq9j/aRVu+18q0H+VRVB
+JKavgjXYLZQBlFWDg3Fa+MXibEYCVnAaI5I5K7KPxZ3PP0NxyIQ=
+=fUlj
+-----END PGP SIGNATURE-----
+
+--GlnCQLZWzqLRJED8--
