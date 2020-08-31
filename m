@@ -2,71 +2,73 @@ Return-Path: <SRS0=1Pg/=CJ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA22C433E7
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C857AC433E2
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:30:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9034020866
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:29:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A78AD20DD4
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 Aug 2020 11:30:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kxNuPgHU"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Sc5ktREC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbgHaL3D (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 Aug 2020 07:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726722AbgHaL2J (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:28:09 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C0EC0619D1;
-        Mon, 31 Aug 2020 04:15:05 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id q21so5069171edv.1;
-        Mon, 31 Aug 2020 04:15:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=2rrQHLBYa1+tiZ8Q7iWizy3NNCeteIY8vsFlUNQofBI=;
-        b=kxNuPgHUfvNcf9tL5W+rXd6xrtB7YipguU0tt0fPSQljMG3UMCHXCRzutv3qAia288
-         sFwT1hEFtqvAdVQe8OuhzDKhz9GOGPOrrQobgDjU2Mzabc2k6Mczhjd4mu3+hnKbYHBf
-         ac/XbAfMZtjKZtL2/uXOSYjMOqHyMCwZiIx7tf4+IYejjaGP1dFwHWdjOlkq5mooXEgH
-         Uy7zT2rPm3VrDZrSuyNGy0kW0JZQO9ix+bOsDJIqCZHHgoYf0ak2gkhH5mzvo7b5QGVi
-         yC8jTv2EEqJsmNPSb6iso1Q6WK9e5TdgFCdIul1N+NQVlGxcZHrNrY4Av4rMl8GN0+No
-         SY2w==
+        id S1726224AbgHaL34 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 Aug 2020 07:29:56 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:24124 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726928AbgHaL1B (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 Aug 2020 07:27:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598873211;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fuaQ/Ta0zfzTBJPiJYMWIV501bVUz4gD20AOCLXdBj0=;
+        b=Sc5ktRECJMmJh2aw1Ve47gGTX3tv+CTCU3JabNPt0aXHKUZiZ6UBl48m25OPwlneNNWm93
+        Vpv3oeuqbSFthuMOtjT0e45DR5wzcJe0QWk6sbMPqe+LCX3XwiKDOQd1muj0GWBEyTxMYj
+        WGsB2aIR1ydtrKxU+9v3sF+J/HBjLPo=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-464-j0fw-lgMOXWOwHQmgjbVKQ-1; Mon, 31 Aug 2020 07:26:49 -0400
+X-MC-Unique: j0fw-lgMOXWOwHQmgjbVKQ-1
+Received: by mail-ej1-f71.google.com with SMTP id dr9so360932ejc.19
+        for <linux-pwm@vger.kernel.org>; Mon, 31 Aug 2020 04:26:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2rrQHLBYa1+tiZ8Q7iWizy3NNCeteIY8vsFlUNQofBI=;
-        b=BdC00WIqb37bukIngpgV6eCFt7x1Y2CkC6LsBk+pii4HQIU1KYIKLtEC8l12fAoAvM
-         fl8++CqbcZVPqrmLcnnuCF9MSJVwT5N30VmBYi9rdfYD3BgVR9xoEiSY3eqTYs41nHIg
-         MSQgcscgX78VmpElSogtnP1ugLHlEK7j6yi6mqzmCujdABBFD9GV0FWC8c6REJMuDHqQ
-         gZPuCaUGPkmRs8cBeZJp55zMy/WKYr3o0zKL+W69VSJerAAY7C1Xs9OuXYJv/YoLFC0Z
-         7wL/RFnA9h+Dm+G6rrPhi1IUcYGx4iZckfeCGYwGV37PZQoELsRVCKMOGFOu4nbBuYio
-         oxPA==
-X-Gm-Message-State: AOAM5322KJ2e+sccM2+AI767PS1TUxx+Iv9t0GZLPMoKCDev64+zB84u
-        k1sCVAdV3lvEeYjAfxLFgE8=
-X-Google-Smtp-Source: ABdhPJwsk4qn+3BRHDfqdQOc30c9nW4c0A3sudJ9mpSXWOHXX9O6dVsnd0LHjhATK3j7rKrC7tvg8Q==
-X-Received: by 2002:a05:6402:6d6:: with SMTP id n22mr717531edy.79.1598872504008;
-        Mon, 31 Aug 2020 04:15:04 -0700 (PDT)
-Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id g19sm7824486ejj.124.2020.08.31.04.15.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2020 04:15:02 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 13:15:01 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fuaQ/Ta0zfzTBJPiJYMWIV501bVUz4gD20AOCLXdBj0=;
+        b=eSePzbFmaM/yMgYXukL1DZa9hAHMxQ3QaWetL5w9zSFmsLoCqkyCtM2dYmayTvMxMa
+         KPVNsHVxJjIS+3bPK8eV/gjwhjv63ai24iaKufha2KqlCx5gWOXloHEAx+eyiGzSePG8
+         MRo+afPURwm1o8zL0zkGQTENDNPpXG88lBjTnJmsmw00NpRawN9gV6ya84YjQguyOrR3
+         n6O9b86+jZQ8uK0GwIbWdSor0Ltwz8dbCtq4CV5YzxxaBwVOCYsPM5tmNpHyvVFnm2d9
+         CCS/R5Thf9IWEiZo+VhYn8KNH8A5HRoqFIampTJa+xO+M8IbYN3OmOZG7GtXCWgTa4bh
+         zlMA==
+X-Gm-Message-State: AOAM530NJvcX+JT5j4qJOSK2dsphh4hFfdXNXlE+HLzA/JGJkp7g3ANq
+        UWP9e8UPAUJ3kDktmlXa3P/2QfhdQk6k8ziAeQa3ls+zHc9ixBRZCO9wgfeK2nexG8FLTcNnf1d
+        2HbKyf2JFfPHEJW9TrlGe
+X-Received: by 2002:a17:906:2d42:: with SMTP id e2mr690593eji.10.1598873208204;
+        Mon, 31 Aug 2020 04:26:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxeUuotkoeQnDKZksUQtCZDpV8lwHMl9QZwPIJyS7ooX1/0k7MtmpbRvZI8kZetJIA+SyDyYw==
+X-Received: by 2002:a17:906:2d42:: with SMTP id e2mr690574eji.10.1598873208015;
+        Mon, 31 Aug 2020 04:26:48 -0700 (PDT)
+Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
+        by smtp.gmail.com with ESMTPSA id jx22sm7877046ejb.36.2020.08.31.04.26.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Aug 2020 04:26:47 -0700 (PDT)
+Subject: Re: [PATCH v8 07/17] pwm: lpss: Always update state and set update
+ bit
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org,
         intel-gfx <intel-gfx@lists.freedesktop.org>,
@@ -74,76 +76,103 @@ Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v8 09/17] pwm: crc: Fix off-by-one error in the
- clock-divider calculations
-Message-ID: <20200831111501.GH1688464@ulmo>
 References: <20200830125753.230420-1-hdegoede@redhat.com>
- <20200830125753.230420-10-hdegoede@redhat.com>
+ <20200830125753.230420-8-hdegoede@redhat.com> <20200831111334.GE1688464@ulmo>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <ac7375d0-f59b-cc9e-576a-91969d0d7cfb@redhat.com>
+Date:   Mon, 31 Aug 2020 13:26:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="BXr400anF0jyguTS"
-Content-Disposition: inline
-In-Reply-To: <20200830125753.230420-10-hdegoede@redhat.com>
-User-Agent: Mutt/1.14.6 (2020-07-11)
+In-Reply-To: <20200831111334.GE1688464@ulmo>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi,
 
---BXr400anF0jyguTS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 8/31/20 1:13 PM, Thierry Reding wrote:
+> On Sun, Aug 30, 2020 at 02:57:43PM +0200, Hans de Goede wrote:
+>> This commit removes a check where we would skip writing the ctrl register
+>> and then setting the update bit in case the ctrl register already contains
+>> the correct values.
+>>
+>> In a perfect world skipping the update should be fine in these cases, but
+>> on Cherry Trail devices the AML code in the GFX0 devices' PS0 and PS3
+>> methods messes with the PWM controller.
+>>
+>> The "ACPI / LPSS: Resume Cherry Trail PWM controller in no-irq phase" patch
+>> earlier in this series stops the GFX0._PS0 method from messing with the PWM
+>> controller and on the DSDT-s inspected sofar the _PS3 method only reads
+>> from the PWM controller (and turns it off before we get a change to do so):
+>>
+>>      {
+>>          PWMB = PWMC /* \_SB_.PCI0.GFX0.PWMC */
+>>          PSAT |= 0x03
+>>          Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
+>>      }
+>>
+>> The PWM controller getting turning off before we do this ourselves is
+>> a bit annoying but not really an issue.
+>>
+>> The problem this patch fixes comes from a new variant of the GFX0._PS3 code
+>> messing with the PWM controller found on the Acer One 10 S1003 (1):
+>>
+>>      {
+>>          PWMB = PWMC /* \_SB_.PCI0.GFX0.PWMC */
+>>          PWMT = PWMC /* \_SB_.PCI0.GFX0.PWMC */
+>>          PWMT &= 0xFF0000FF
+>>          PWMT |= 0xC0000000
+>>          PWMC = PWMT /* \_SB_.PCI0.GFX0.PWMT */
+>>          PWMT = PWMC /* \_SB_.PCI0.GFX0.PWMC */
+>>          Sleep (0x64)
+>>          PWMB &= 0x3FFFFFFF
+>>          PWMC = PWMB /* \_SB_.PCI0.GFX0.PWMB */
+>>          PSAT |= 0x03
+>>          Local0 = PSAT /* \_SB_.PCI0.GFX0.PSAT */
+>>      }
+>>
+>> This "beautiful" piece of code clears the base-unit part of the ctrl-reg,
+>> which effectively disables the controller, and it sets the update flag
+>> to apply this change. Then after this it restores the original ctrl-reg
+>> value, so we do not see it has mucked with the controller.
+>>
+>> *But* it does not set the update flag when restoring the original value.
+>> So the check to see if we can skip writing the ctrl register succeeds
+>> but since the update flag was not set, the old base-unit value of 0 is
+>> still in use and the PWM controller is effectively disabled.
+>>
+>> IOW this PWM controller poking means that we cannot trust the base-unit /
+>> on-time-div value we read back from the PWM controller since it may not
+>> have been applied/committed. Thus we must always update the ctrl-register
+>> and set the update bit.
+> 
+> Doesn't this now make patch 6/17 obsolete?
 
-On Sun, Aug 30, 2020 at 02:57:45PM +0200, Hans de Goede wrote:
-> The CRC PWM controller has a clock-divider which divides the clock with
-> a value between 1-128. But as can seen from the PWM_DIV_CLK_xxx
-> defines, this range maps to a register value of 0-127.
->=20
-> So after calculating the clock-divider we must subtract 1 to get the
-> register value, unless the requested frequency was so high that the
-> calculation has already resulted in a (rounded) divider value of 0.
->=20
-> Note that before this fix, setting a period of PWM_MAX_PERIOD_NS which
-> corresponds to the max. divider value of 128 could have resulted in a
-> bug where the code would use 128 as divider-register value which would
-> have resulted in an actual divider value of 0 (and the enable bit being
-> set). A rounding error stopped this bug from actually happen. This
-> same rounding error means that after the subtraction of 1 it is impossible
-> to set the divider to 128. Also bump PWM_MAX_PERIOD_NS by 1 ns to allow
-> setting a divider of 128 (register-value 127).
->=20
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Changes in v3:
-> - Introduce crc_pwm_calc_clk_div() here instead of later in the patch-set
->   to reduce the amount of churn in the patch-set a bit
-> ---
->  drivers/pwm/pwm-crc.c | 17 ++++++++++++++---
->  1 file changed, 14 insertions(+), 3 deletions(-)
+No, there is no guarantee we will get any changes soon after resume,
+so we must restore the state properly on resume, before 5.17
+we were just blindly restoring the old ctrl reg state, but
+if either the freq-div or the duty-cycle changes, we should
+also set the update bit in that case to apply the new freq-div/
+duty-cycle.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+This actually also helps with that case since patch 6/17 uses
+pwm_lpss_prepare and this makes pwm_lpss_prepare set the
+update but unconditionally.
 
---BXr400anF0jyguTS
-Content-Type: application/pgp-signature; name="signature.asc"
+Also on resume we most do the set the enable bit vs set
+the update bit in the right order, depending on the
+generation of the SoC in which the PWM controller is
+embedded. 6/17 fixes all this by resume, by treating
+resume as a special case of apply() taking all the
+steps apply does.
 
------BEGIN PGP SIGNATURE-----
+Regards,
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9M27UACgkQ3SOs138+
-s6Gs7BAAkDVsNGuKpdYxyV/XBnq4T6ySPHcL3M15sN9QMC7UTr1DhcOGFHWlfC9E
-cJK7ctPCe74/xareIjriY3xTCumhIOj1dAYvFxJGiw4W6qzNG6bXUNrrn/QpGOTy
-tIUbrhj//YOgqwpzYvwwKbUjHtRRakOgAl6ayfXu1XggtVB2Tq/bf7wioyjNQGjy
-bFrN97KYyePQZ9dv9ig6/8Z4dsLaMNc1pcYSnOsixUewDxscC9rQYmtovoqyZTS2
-AWSNnCzp0YZqVhVFssYArwzMiimxESmAfTqsc9L9D3vVj6EYiJoc9CYsX46nkmbr
-xeggxecSNtrGMSS8uce2krUt9KkqTTl8Li2tVtJZQ6N+jsEKEREnUISVJ7jvWCVJ
-ygTtZahw6Qx/aafFFaXjPoivcWc40QJS3obin8hUV452ktoX7p9DjWtHDbeiW8s/
-wggeEy5ySja9kp1zzwz7Ijg3aW97wFvcAGHpGEpTCPXF4acWq6WbVLjWC3h+QQ9w
-II7rAObTNua3i+UDJ5JVS/bbxR9AwGMtYn3JwqLlXIUP7QvN8v8U8uCatj2Hg2Bd
-+C/jjZJeNM7TA8BayiZ9qUaXRjjD1V0cHM5h4GOSAQsBMA2emE8wY43PGwZCx3CW
-DgFi43ZSBldkZLZZQzm3CRXxWFWWdLv/k6rGHTy+B4Md1cqqIVw=
-=MFCA
------END PGP SIGNATURE-----
+Hans
 
---BXr400anF0jyguTS--
+
