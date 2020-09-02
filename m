@@ -2,109 +2,109 @@ Return-Path: <SRS0=V0Qt=CL=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E852DC433E7
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Sep 2020 12:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D5B9C433E2
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Sep 2020 12:12:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AEB91206F0
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Sep 2020 12:12:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F2282078B
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Sep 2020 12:12:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=axis.com header.i=@axis.com header.b="qF++Wjyt"
+	dkim=pass (2048-bit key) header.d=axis.com header.i=@axis.com header.b="Q8orBLxR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgIBMMH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 2 Sep 2020 08:12:07 -0400
-Received: from smtp1.axis.com ([195.60.68.17]:60944 "EHLO smtp1.axis.com"
+        id S1726674AbgIBMMt (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 2 Sep 2020 08:12:49 -0400
+Received: from smtp1.axis.com ([195.60.68.17]:61016 "EHLO smtp1.axis.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726124AbgIBML6 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 2 Sep 2020 08:11:58 -0400
+        id S1726310AbgIBMMn (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 2 Sep 2020 08:12:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; l=1557; q=dns/txt; s=axis-central1;
-  t=1599048716; x=1630584716;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=u6QS3JQEdnLbaY7gvazvmZqmKguQ72iSvGbf00nO/C0=;
-  b=qF++WjytMBe/zCYcPncawAGHRsZleh0dCM0zKFJJbWSm7y8M3eaMKoKc
-   nBLpHd+jKu8EQVPZxpmICU/2zxucqjVu2vj9fJxUcBRC7W28Le+LQi0FG
-   5bBdPQuF9bbWI97VJ/Ga6IYPd6BeDX97DiPbrAXSpSvQ8x3TZKkTa74LQ
-   iJI3vi++11HiagjezZgXFbW0D/2NAq1PO23zNj6s2KI9LufaKu3CX4HVf
-   kivs/Uy44xYNMBaZtbavI14bPg1+DztWzwmsGQaX8pDF6w3DyKGXXLgOG
-   ihlIAnaNMVohNi0a6VnxJWALT6yznnwCpi++LmCB2MJ7C2IyzkaTb03yt
-   A==;
-IronPort-SDR: E8yxxK6dGzeudcndqsHFgU/eEOfDfNX8BWMeMwdAJAGxCl0gNmalYztVPdnwcqBIkMroum8VFk
- TisfLSexOOXuGHwA8UYfYCLs5aEBJHcDD7SDFRfFjkC1IT5peBEyr9K9x3KzssynVseu7yVFIp
- laDdpCZ9nJSq6r3GeMNNmo/LF/vs6POuF8G9BFr1UTeMbkn5uFtaL/D793Dhw09GD3kHFp0Is8
- 8AgJBpH+PmQtG8Tug0k7luwK07M9UJ8jaFYUufpPJ/qUOtY9qQgO6S5lBfOrAAoIL6FHu5qxq0
- FBU=
+  d=axis.com; l=1099; q=dns/txt; s=axis-central1;
+  t=1599048762; x=1630584762;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fqy6o6NBpbsoyG7wpoKTmk2ahf6JpbKCxRq6p+fYp1I=;
+  b=Q8orBLxRc8SVwOF/lHV2Mc4X7K9SRes1uVbC97R/B8jdmpXSr95bFoL3
+   tWtIn30lhAm3Xn5aKfDjnCOs5wGBVr0pzDsbRr4Oy0BYTMcfELHJYifYd
+   lVRuP5Q17gyMB58ln14gEYSb1hxY3FMCbGyBOqGy2CRIAMnsLng8JDSG0
+   CCRBVBwg7ewIJBgAoGFLseXFTWC9HpeZCbyKn0OPDcUbddNySxZymABmQ
+   3/2babO9zByBXJprs0QlgrE/DRI1qV62DcYpoPkMLGU5gplVvFy+qXssh
+   u9kC4+FotRAL0zkQfmkE97aBdZAUXpuH3nK4PDMo/kYuuTVTdHEe/bsl3
+   g==;
+IronPort-SDR: jS3O1R222VaEqTvQKo6iIAxk1/VED7o5MPGsMIxLSs8mKFNTxAuvb7fM1f7aZQ8O1y5kKyXiQ8
+ 7vUm9k8FCvcYUg0tR6Hqe9la0MLRnUSWrDGTtR5w9oXkt3jzmDSvY9ddTa56EGoaDQQb3HhDnZ
+ tRcxtiac2orR4A9CCC67fT+F9KIxODEbCnC7FJfPr730ncxwsmd4AST+BBRLJ7s9nEJMBePIGP
+ 5C7xmf4LhpvdGp5G9hsUlwH+TCT38/Lu4hRu8ORb6IBETvW+00nToVm4JVaoGRn/sXnCUsRHyW
+ RF4=
 X-IronPort-AV: E=Sophos;i="5.76,383,1592863200"; 
-   d="scan'208";a="12474715"
-Date:   Wed, 2 Sep 2020 14:11:54 +0200
+   d="scan'208";a="12474749"
 From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-CC:     <thierry.reding@gmail.com>, <lee.jones@linaro.org>,
-        <kernel@axis.com>, <linux-pwm@vger.kernel.org>,
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>
+CC:     <kernel@axis.com>, <linux-pwm@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
-        <oliver@schinagl.nl>
-Subject: Re: [PATCH 2/2] pwm: Add GPIO PWM driver
-Message-ID: <20200902121154.6bb5d5sqxwf2tmgt@axis.com>
-References: <20200814155513.31936-1-vincent.whitchurch@axis.com>
- <20200814155513.31936-2-vincent.whitchurch@axis.com>
- <20200815075032.k2xyw75l56sbl7nx@pengutronix.de>
+        <oliver@schinagl.nl>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>
+Subject: [PATCH v2 1/2] dt-bindings: pwm: Add pwm-gpio
+Date:   Wed, 2 Sep 2020 14:12:35 +0200
+Message-ID: <20200902121236.20514-2-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200902121236.20514-1-vincent.whitchurch@axis.com>
+References: <20200902121236.20514-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200815075032.k2xyw75l56sbl7nx@pengutronix.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sat, Aug 15, 2020 at 09:50:32AM +0200, Uwe Kleine-König wrote:
-> On Fri, Aug 14, 2020 at 05:55:13PM +0200, Vincent Whitchurch wrote:
-> > Add a software PWM which toggles a GPIO from a high-resolution timer.
-> > 
-> > This will naturally not be as accurate or as efficient as a hardware
-> > PWM, but it is useful in some cases.  I have for example used it for
-> > evaluating LED brightness handling (via leds-pwm) on a board where the
-> > LED was just hooked up to a GPIO, and for a simple verification of the
-> > timer frequency on another platform.
-> > 
-> > Since high-resolution timers are used, sleeping gpio chips are not
-> > supported and are rejected in the probe function.
-> > 
-> > Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> 
-> Nice idea. IMHO this can serve as example about what we expect from pwm
-> drivers. There is some improvement necessary however to reach that
-> state.
+Add bindings for the pwm-gpio driver.
 
-Thank you for the comments.  I think I've fixed all of them in v2.  Just
-one point about this one:
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
+ .../devicetree/bindings/pwm/pwm-gpio.yaml     | 29 +++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-gpio.yaml
 
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct pwm_ops pwm_gpio_ops = {
-> > +	.owner = THIS_MODULE,
-> > +	.apply = pwm_gpio_apply,
-> 
-> Usually a .get_state callback is nice. Does it make sense to do
-> something like:
-> 
-> 	if (driver is up)
-> 		report current setting
-> 	else
-> 		val = gpio_get_value()
-> 		report(period=1, duty_cycle=val, enabled=val, polarity=NORMAL)
-> 
-> ?
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-gpio.yaml b/Documentation/devicetree/bindings/pwm/pwm-gpio.yaml
+new file mode 100644
+index 000000000000..85ae79d5dcff
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-gpio.yaml
+@@ -0,0 +1,29 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/pwm-gpio.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: GPIO-based PWM
++
++maintainers:
++  - Vincent Whitchurch <vincent.whitchurch@axis.com>
++
++properties:
++  compatible:
++    enum:
++      - pwm-gpio
++
++  "#pwm-cells":
++    const: 2
++
++  gpios:
++    maxItems: 1
++    description: GPIO to toggle.
++
++required:
++  - compatible
++  - "#pwm-cells"
++  - gpio
++
++additionalProperties: false
+-- 
+2.28.0
 
-I implemented get_state() but I didn't do the gpio_get_value() thing
-since the driver sets the gpio to a known value in probe().
