@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED209C43461
-	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 15:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41918C433E9
+	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 15:21:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C355B20786
-	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 15:21:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 179A220786
+	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 15:21:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UzfIJ8Yg"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iJFo0pUw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728465AbgICPVf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1728759AbgICPVf (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Thu, 3 Sep 2020 11:21:35 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:54624 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728456AbgICLYX (ORCPT
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41330 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728491AbgICLYX (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Sep 2020 07:24:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599132238;
+        s=mimecast20190719; t=1599132260;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZukzWkoKOICgMwClnkSHfjft9LoCEglKBEzHtiqOOV4=;
-        b=UzfIJ8Yg+GGJlz4Dm57uaPWRb+8+9tblrRDJ0Tz9XZaF7ncJ0IkcgbLep46S0ji3FuZMzV
-        u0Qe4BxJd56eQoW0nL7NI+QGgu7jsdLsLRwoKBPcht62Ykyt7RagHmkkWTmOgsKjJ0LW4G
-        017e2v/ePqDJBvW/5zDn2xza7PS9/eQ=
+        bh=Y73Fo+LL3s7ZWkvjroKn4rnnokL4shRdg8EOZEgl13g=;
+        b=iJFo0pUwq+PF4nvYWdcZW01y0up5OOOQdzsln/2HBSqWeUbfjnxuawMJBBQ0w29mSKpRTw
+        /DbMz722W5LR1f0sl86uPybvdTGvBxEHSSmDbUHlVPbUbRrN/loXCQr5QKeUGfrDOW/89e
+        Wqo2YCImoGQZ7Wqe9IDfV6zivP4wSxM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-10-pdpVvNiWPduzJMNpzU_yqA-1; Thu, 03 Sep 2020 07:23:56 -0400
-X-MC-Unique: pdpVvNiWPduzJMNpzU_yqA-1
+ us-mta-555-52q8BwU6PuGWcy1tNvY-QA-1; Thu, 03 Sep 2020 07:24:18 -0400
+X-MC-Unique: 52q8BwU6PuGWcy1tNvY-QA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A117C10ABDB8;
-        Thu,  3 Sep 2020 11:23:54 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2E5464087;
+        Thu,  3 Sep 2020 11:24:16 +0000 (UTC)
 Received: from x1.localdomain (ovpn-113-3.ams2.redhat.com [10.36.113.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EB0625C1C2;
-        Thu,  3 Sep 2020 11:23:51 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B6B505C1C2;
+        Thu,  3 Sep 2020 11:24:12 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -60,9 +60,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-acpi@vger.kernel.org
-Subject: [PATCH v10 04/17] pwm: lpss: Add range limit check for the base_unit register value
-Date:   Thu,  3 Sep 2020 13:23:24 +0200
-Message-Id: <20200903112337.4113-5-hdegoede@redhat.com>
+Subject: [PATCH v10 09/17] pwm: crc: Fix off-by-one error in the clock-divider calculations
+Date:   Thu,  3 Sep 2020 13:23:29 +0200
+Message-Id: <20200903112337.4113-10-hdegoede@redhat.com>
 In-Reply-To: <20200903112337.4113-1-hdegoede@redhat.com>
 References: <20200903112337.4113-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -73,67 +73,79 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-When the user requests a high enough period ns value, then the
-calculations in pwm_lpss_prepare() might result in a base_unit value of 0.
+The CRC PWM controller has a clock-divider which divides the clock with
+a value between 1-128. But as can seen from the PWM_DIV_CLK_xxx
+defines, this range maps to a register value of 0-127.
 
-But according to the data-sheet the way the PWM controller works is that
-each input clock-cycle the base_unit gets added to a N bit counter and
-that counter overflowing determines the PWM output frequency. Adding 0
-to the counter is a no-op. The data-sheet even explicitly states that
-writing 0 to the base_unit bits will result in the PWM outputting a
-continuous 0 signal.
+So after calculating the clock-divider we must subtract 1 to get the
+register value, unless the requested frequency was so high that the
+calculation has already resulted in a (rounded) divider value of 0.
 
-When the user requestes a low enough period ns value, then the
-calculations in pwm_lpss_prepare() might result in a base_unit value
-which is bigger then base_unit_range - 1. Currently the codes for this
-deals with this by applying a mask:
+Note that before this fix, setting a period of PWM_MAX_PERIOD_NS which
+corresponds to the max. divider value of 128 could have resulted in a
+bug where the code would use 128 as divider-register value which would
+have resulted in an actual divider value of 0 (and the enable bit being
+set). A rounding error stopped this bug from actually happen. This
+same rounding error means that after the subtraction of 1 it is impossible
+to set the divider to 128. Also bump PWM_MAX_PERIOD_NS by 1 ns to allow
+setting a divider of 128 (register-value 127).
 
-	base_unit &= (base_unit_range - 1);
-
-But this means that we let the value overflow the range, we throw away the
-higher bits and store whatever value is left in the lower bits into the
-register leading to a random output frequency, rather then clamping the
-output frequency to the highest frequency which the hardware can do.
-
-This commit fixes both issues by clamping the base_unit value to be
-between 1 and (base_unit_range - 1).
-
-Fixes: 684309e5043e ("pwm: lpss: Avoid potential overflow of base_unit")
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Acked-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v5:
-- Use clamp_val(... instead of clam_t(unsigned long long, ...
-
 Changes in v3:
-- Change upper limit of clamp to (base_unit_range - 1)
-- Add Fixes tag
+- Introduce crc_pwm_calc_clk_div() here instead of later in the patch-set
+  to reduce the amount of churn in the patch-set a bit
 ---
- drivers/pwm/pwm-lpss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-crc.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 43b1fc634af1..da9bc3d10104 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -97,6 +97,8 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	freq *= base_unit_range;
+diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+index c056eb9b858c..44ec7d5b63e1 100644
+--- a/drivers/pwm/pwm-crc.c
++++ b/drivers/pwm/pwm-crc.c
+@@ -22,7 +22,7 @@
+ #define PWM_MAX_LEVEL		0xFF
  
- 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
-+	/* base_unit must not be 0 and we also want to avoid overflowing it */
-+	base_unit = clamp_val(base_unit, 1, base_unit_range - 1);
+ #define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
+-#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
++#define PWM_MAX_PERIOD_NS	5461334	/* 183 Hz */
  
- 	on_time_div = 255ULL * duty_ns;
- 	do_div(on_time_div, period_ns);
-@@ -105,7 +107,6 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
- 	orig_ctrl = ctrl = pwm_lpss_read(pwm);
- 	ctrl &= ~PWM_ON_TIME_DIV_MASK;
- 	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
--	base_unit &= (base_unit_range - 1);
- 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
+ /**
+  * struct crystalcove_pwm - Crystal Cove PWM controller
+@@ -39,6 +39,18 @@ static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
+ 	return container_of(pc, struct crystalcove_pwm, chip);
+ }
  
++static int crc_pwm_calc_clk_div(int period_ns)
++{
++	int clk_div;
++
++	clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_USEC);
++	/* clk_div 1 - 128, maps to register values 0-127 */
++	if (clk_div > 0)
++		clk_div--;
++
++	return clk_div;
++}
++
+ static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+ {
+ 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
+@@ -68,11 +80,10 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ 	}
+ 
+ 	if (pwm_get_period(pwm) != period_ns) {
+-		int clk_div;
++		int clk_div = crc_pwm_calc_clk_div(period_ns);
+ 
+ 		/* changing the clk divisor, need to disable fisrt */
+ 		crc_pwm_disable(c, pwm);
+-		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_USEC);
+ 
+ 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
+ 					clk_div | PWM_OUTPUT_ENABLE);
 -- 
 2.28.0
 
