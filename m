@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D70C43461
-	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 10:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77222C433E2
+	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 10:52:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BEA192086A
-	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 10:52:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 453E9206A5
+	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 10:52:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Zhv38imz"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DPmlC5ZC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728337AbgICKwd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 3 Sep 2020 06:52:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26805 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726323AbgICKv4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Sep 2020 06:51:56 -0400
+        id S1728344AbgICKwg (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 3 Sep 2020 06:52:36 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:44279 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728343AbgICKwN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Sep 2020 06:52:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599130314;
+        s=mimecast20190719; t=1599130332;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Y73Fo+LL3s7ZWkvjroKn4rnnokL4shRdg8EOZEgl13g=;
-        b=Zhv38imzbw0ZatgwOfsJZsLb/Wpc5LPJZD/Pkyca87+NzSkYHUDLC+pfEgxBgz7NWb+V+A
-        NLs9c9tYzQ/PglzR0x8A9BcSABdQdU2BxarCOn87OrhImqN4ix7IuhoLUEKD1JyPOBrFy+
-        atssPNdVI3IBIurXHwuR+Wprte+sTfk=
+        bh=sVjx4EGfhRBDZlJyfOCPuAVbuYnQnae4/qIYiLWMT1M=;
+        b=DPmlC5ZC6j9Pkmvb/gj6q7SpMrogzrXBScwQvRB+f8ZxItT59j1r34mlUkiwy55/sXwOtp
+        4OvXS4TltJrB84Jvpj4INF6zwaWWirRL6s80oSoZmvuj7NNLLWceMYRo33uXST80rTNkH/
+        ayi8fiz/s3sNMTGbUJbM4RPvd4YOXsI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-13-JpXoQe4xM5O_XRNnz7lGjQ-1; Thu, 03 Sep 2020 06:51:50 -0400
-X-MC-Unique: JpXoQe4xM5O_XRNnz7lGjQ-1
+ us-mta-502-ZT1FRuTJP0CgqAb0bPZKZg-1; Thu, 03 Sep 2020 06:52:10 -0400
+X-MC-Unique: ZT1FRuTJP0CgqAb0bPZKZg-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 693CC801AEA;
-        Thu,  3 Sep 2020 10:51:48 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97F4B8030CB;
+        Thu,  3 Sep 2020 10:52:08 +0000 (UTC)
 Received: from x1.localdomain.com (ovpn-115-4.ams2.redhat.com [10.36.115.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A50767EEAE;
-        Thu,  3 Sep 2020 10:51:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D2FEC784A8;
+        Thu,  3 Sep 2020 10:52:05 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -59,10 +59,10 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
         dri-devel@lists.freedesktop.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH v9 09/17] pwm: crc: Fix off-by-one error in the clock-divider calculations
-Date:   Thu,  3 Sep 2020 12:51:06 +0200
-Message-Id: <20200903105114.9969-10-hdegoede@redhat.com>
+        linux-acpi@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>
+Subject: [PATCH v9 15/17] drm/i915: panel: Honor the VBT PWM frequency for devs with an external PWM controller
+Date:   Thu,  3 Sep 2020 12:51:12 +0200
+Message-Id: <20200903105114.9969-16-hdegoede@redhat.com>
 In-Reply-To: <20200903105114.9969-1-hdegoede@redhat.com>
 References: <20200903105114.9969-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -73,79 +73,130 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The CRC PWM controller has a clock-divider which divides the clock with
-a value between 1-128. But as can seen from the PWM_DIV_CLK_xxx
-defines, this range maps to a register value of 0-127.
+So far for devices using an external PWM controller (devices using
+pwm_setup_backlight()), we have been hardcoding the period-time passed to
+pwm_config() to 21333 ns.
 
-So after calculating the clock-divider we must subtract 1 to get the
-register value, unless the requested frequency was so high that the
-calculation has already resulted in a (rounded) divider value of 0.
+I suspect this was done because many VBTs set the PWM frequency to 200
+which corresponds to a period-time of 5000000 ns, which greatly exceeds
+the PWM_MAX_PERIOD_NS define in the Crystal Cove PMIC PWM driver, which
+used to be 21333.
 
-Note that before this fix, setting a period of PWM_MAX_PERIOD_NS which
-corresponds to the max. divider value of 128 could have resulted in a
-bug where the code would use 128 as divider-register value which would
-have resulted in an actual divider value of 0 (and the enable bit being
-set). A rounding error stopped this bug from actually happen. This
-same rounding error means that after the subtraction of 1 it is impossible
-to set the divider to 128. Also bump PWM_MAX_PERIOD_NS by 1 ns to allow
-setting a divider of 128 (register-value 127).
+This PWM_MAX_PERIOD_NS define was actually based on a bug in the PWM
+driver where its period and duty-cycle times where off by a factor of 256.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Due to this bug the hardcoded CRC_PMIC_PWM_PERIOD_NS value of 21333 would
+result in the PWM driver using its divider of 128, which would result in
+a PWM output frequency of 6000000 Hz / 256 / 128 = 183 Hz. So actually
+pretty close to the default VBT value of 200 Hz.
+
+Now that this bug in the pwm-crc driver is fixed, we can actually use
+the VBT defined frequency.
+
+This is important because:
+
+a) With the pwm-crc driver fixed it will now translate the hardcoded
+CRC_PMIC_PWM_PERIOD_NS value of 21333 ns / 46 Khz to a PWM output
+frequency of 23 KHz (the max it can do).
+
+b) The pwm-lpss driver used on many models has always honored the
+21333 ns / 46 Khz request
+
+Some panels do not like such high output frequencies. E.g. on a Terra
+Pad 1061 tablet, using the LPSS PWM controller, the backlight would go
+from off to max, when changing the sysfs backlight brightness value from
+90-100%, anything under aprox. 90% would turn the backlight fully off.
+
+Honoring the VBT specified PWM frequency will also hopefully fix the
+various bug reports which we have received about users perceiving the
+backlight to flicker after a suspend/resume cycle.
+
+Acked-by: Jani Nikula <jani.nikula@intel.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v3:
-- Introduce crc_pwm_calc_clk_div() here instead of later in the patch-set
-  to reduce the amount of churn in the patch-set a bit
----
- drivers/pwm/pwm-crc.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ .../drm/i915/display/intel_display_types.h    |  1 +
+ drivers/gpu/drm/i915/display/intel_panel.c    | 19 +++++++++++--------
+ 2 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
-index c056eb9b858c..44ec7d5b63e1 100644
---- a/drivers/pwm/pwm-crc.c
-+++ b/drivers/pwm/pwm-crc.c
-@@ -22,7 +22,7 @@
- #define PWM_MAX_LEVEL		0xFF
+diff --git a/drivers/gpu/drm/i915/display/intel_display_types.h b/drivers/gpu/drm/i915/display/intel_display_types.h
+index e8f809161c75..7171e7c8d928 100644
+--- a/drivers/gpu/drm/i915/display/intel_display_types.h
++++ b/drivers/gpu/drm/i915/display/intel_display_types.h
+@@ -223,6 +223,7 @@ struct intel_panel {
+ 		bool util_pin_active_low;	/* bxt+ */
+ 		u8 controller;		/* bxt+ only */
+ 		struct pwm_device *pwm;
++		int pwm_period_ns;
  
- #define PWM_BASE_CLK_MHZ	6	/* 6 MHz */
--#define PWM_MAX_PERIOD_NS	5461333	/* 183 Hz */
-+#define PWM_MAX_PERIOD_NS	5461334	/* 183 Hz */
+ 		/* DPCD backlight */
+ 		u8 pwmgen_bit_count;
+diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
+index df7472a3b9f8..5a13089d2fc0 100644
+--- a/drivers/gpu/drm/i915/display/intel_panel.c
++++ b/drivers/gpu/drm/i915/display/intel_panel.c
+@@ -40,8 +40,6 @@
+ #include "intel_dsi_dcs_backlight.h"
+ #include "intel_panel.h"
  
- /**
-  * struct crystalcove_pwm - Crystal Cove PWM controller
-@@ -39,6 +39,18 @@ static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
- 	return container_of(pc, struct crystalcove_pwm, chip);
+-#define CRC_PMIC_PWM_PERIOD_NS	21333
+-
+ void
+ intel_fixed_panel_mode(const struct drm_display_mode *fixed_mode,
+ 		       struct drm_display_mode *adjusted_mode)
+@@ -597,7 +595,7 @@ static u32 pwm_get_backlight(struct intel_connector *connector)
+ 	int duty_ns;
+ 
+ 	duty_ns = pwm_get_duty_cycle(panel->backlight.pwm);
+-	return DIV_ROUND_UP(duty_ns * 100, CRC_PMIC_PWM_PERIOD_NS);
++	return DIV_ROUND_UP(duty_ns * 100, panel->backlight.pwm_period_ns);
  }
  
-+static int crc_pwm_calc_clk_div(int period_ns)
-+{
-+	int clk_div;
-+
-+	clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_USEC);
-+	/* clk_div 1 - 128, maps to register values 0-127 */
-+	if (clk_div > 0)
-+		clk_div--;
-+
-+	return clk_div;
-+}
-+
- static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+ static void lpt_set_backlight(const struct drm_connector_state *conn_state, u32 level)
+@@ -671,9 +669,10 @@ static void bxt_set_backlight(const struct drm_connector_state *conn_state, u32
+ static void pwm_set_backlight(const struct drm_connector_state *conn_state, u32 level)
  {
- 	struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
-@@ -68,11 +80,10 @@ static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+ 	struct intel_panel *panel = &to_intel_connector(conn_state->connector)->panel;
+-	int duty_ns = DIV_ROUND_UP(level * CRC_PMIC_PWM_PERIOD_NS, 100);
++	int duty_ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
+ 
+-	pwm_config(panel->backlight.pwm, duty_ns, CRC_PMIC_PWM_PERIOD_NS);
++	pwm_config(panel->backlight.pwm, duty_ns,
++		   panel->backlight.pwm_period_ns);
+ }
+ 
+ static void
+@@ -1917,6 +1916,9 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 		return -ENODEV;
  	}
  
- 	if (pwm_get_period(pwm) != period_ns) {
--		int clk_div;
-+		int clk_div = crc_pwm_calc_clk_div(period_ns);
++	panel->backlight.pwm_period_ns = NSEC_PER_SEC /
++					 get_vbt_pwm_freq(dev_priv);
++
+ 	/*
+ 	 * FIXME: pwm_apply_args() should be removed when switching to
+ 	 * the atomic PWM API.
+@@ -1926,9 +1928,10 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 	panel->backlight.min = 0; /* 0% */
+ 	panel->backlight.max = 100; /* 100% */
+ 	level = intel_panel_compute_brightness(connector, 100);
+-	ns = DIV_ROUND_UP(level * CRC_PMIC_PWM_PERIOD_NS, 100);
++	ns = DIV_ROUND_UP(level * panel->backlight.pwm_period_ns, 100);
  
- 		/* changing the clk divisor, need to disable fisrt */
- 		crc_pwm_disable(c, pwm);
--		clk_div = PWM_BASE_CLK_MHZ * period_ns / (256 * NSEC_PER_USEC);
+-	retval = pwm_config(panel->backlight.pwm, ns, CRC_PMIC_PWM_PERIOD_NS);
++	retval = pwm_config(panel->backlight.pwm, ns,
++			    panel->backlight.pwm_period_ns);
+ 	if (retval < 0) {
+ 		drm_err(&dev_priv->drm, "Failed to configure the pwm chip\n");
+ 		pwm_put(panel->backlight.pwm);
+@@ -1937,7 +1940,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+ 	}
  
- 		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
- 					clk_div | PWM_OUTPUT_ENABLE);
+ 	level = DIV_ROUND_UP_ULL(pwm_get_duty_cycle(panel->backlight.pwm) * 100,
+-			     CRC_PMIC_PWM_PERIOD_NS);
++				 panel->backlight.pwm_period_ns);
+ 	panel->backlight.level =
+ 		intel_panel_compute_brightness(connector, level);
+ 	panel->backlight.enabled = panel->backlight.level != 0;
 -- 
 2.28.0
 
