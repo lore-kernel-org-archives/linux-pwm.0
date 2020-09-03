@@ -2,137 +2,143 @@ Return-Path: <SRS0=qm//=CM=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62596C433E2
-	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 10:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFA5C43461
+	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 11:15:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 37F8E206A5
-	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 10:53:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4957920716
+	for <linux-pwm@archiver.kernel.org>; Thu,  3 Sep 2020 11:15:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="aa9pL9Ta"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gTvX8FwX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726891AbgICKxA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 3 Sep 2020 06:53:00 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45083 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726368AbgICKwO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Sep 2020 06:52:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599130333;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1wMXBHDyyQ6t98T6xFtSD2movAwUy8KekR8cCyDYfqQ=;
-        b=aa9pL9Ta3rDloIHLfFSsaT2EB8urSnA2Y9vBebQOrI8Rz6/27QhF6nCGPtcmsLI9apJmO/
-        Z9SbrIWxs70LdChoee1Na3fH9xSr3Qiyf4oDzog1VMRtNPKsECWlyxayqqa1tL1XtCTQcd
-        QYjyq20zNcTNi9NPhGwzLM1MS7e3a2M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-533--_LT4ow9O3Sq7pwO4Ub6cg-1; Thu, 03 Sep 2020 06:52:07 -0400
-X-MC-Unique: -_LT4ow9O3Sq7pwO4Ub6cg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B7E31DE09;
-        Thu,  3 Sep 2020 10:52:05 +0000 (UTC)
-Received: from x1.localdomain.com (ovpn-115-4.ams2.redhat.com [10.36.115.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B6D21784A8;
-        Thu,  3 Sep 2020 10:52:02 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        id S1728073AbgICLPk (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 3 Sep 2020 07:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728407AbgICLLx (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Sep 2020 07:11:53 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4F0C061245;
+        Thu,  3 Sep 2020 04:00:16 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id i1so2074845edv.2;
+        Thu, 03 Sep 2020 04:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yYnEhusLXt+hTyNwij80s+Gh0oRryAwxqx+BI6vUKbE=;
+        b=gTvX8FwXfFQlpDzzVsS3ip59h/XuerPrvVdnqrG5HcIi0cwxOp/w/0CGVCLZiXunDa
+         Si4JRPhN46mTAW0harbqSN0VL6x4uD/uUbpUahC0z9lIAn9G998blexk8fAo0McVyy2q
+         J7iMSvDdzMXtnMx3ZO3cK9AgTQF1qPFxtYxyEcrDlQTimYuw6VSjxjSwIohmVkPS0jZ7
+         UWyAoP+0ISccomDzz9ok/mpEuW6NAk5wgeSNurjfk2MLkTUQmFUuWZ4jpfKkfyJs5Ff2
+         /oIF3cC7+96yKk25gXRHoMvtIpYK7wy/zEsu2WUrhJqLd1/b5SMEsXneE4qoSShVejDt
+         PT8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yYnEhusLXt+hTyNwij80s+Gh0oRryAwxqx+BI6vUKbE=;
+        b=GtYWgLI9im+Wvk8CDgDMtkfSTSxK5/jt3t4puZnW2jj1lZSayEGz7JYc0EBWBrKhgl
+         7idg2cTxv8ZqO7ulPN3NuXmTFNZIp/BMU4hsx7lES7PZ/Sf9JyuEHVAKRr+B7cgXRB7K
+         maXhCRUU8wAhe4j1Kjdx4ZLkJ7uk72/fDUcDOXoYQVU19/CSbT706HHgICK4X0ojFsP9
+         INWKAC4nX6Rryj5Jzz31CXslRv9owaF3sMmHHh3ztywcnDY4NylmG3D2l4A3zJyHSJP8
+         1WsTXijzaTe5cGPeh/HxyB6sHkZzfv0D7wYq4z99NRQyD7ViuLB/dEn00F0IoS5TeU02
+         MyZA==
+X-Gm-Message-State: AOAM5325OzmjtsD+UyLSoHHA8jw59QcUCHHu5NEztXCEAwg7LQP52aEc
+        vcB5XZRfrWxorfJMGwcqS+pauzZto95Osg==
+X-Google-Smtp-Source: ABdhPJwwigy71b9GHpZk/fZqbXWJuk42q2qwbW6hq0JrDrtGYE2aQTX2CZ9GJMutQVQv23fU0NgwLg==
+X-Received: by 2002:aa7:d417:: with SMTP id z23mr2362298edq.62.1599130815291;
+        Thu, 03 Sep 2020 04:00:15 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id c8sm2877359ejp.30.2020.09.03.04.00.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Sep 2020 04:00:14 -0700 (PDT)
+Date:   Thu, 3 Sep 2020 13:00:12 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
+        Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org,
+        Len Brown <lenb@kernel.org>, linux-pwm@vger.kernel.org,
         intel-gfx <intel-gfx@lists.freedesktop.org>,
         dri-devel@lists.freedesktop.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-acpi@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>
-Subject: [PATCH v9 14/17] drm/i915: panel: Add get_vbt_pwm_freq() helper
-Date:   Thu,  3 Sep 2020 12:51:11 +0200
-Message-Id: <20200903105114.9969-15-hdegoede@redhat.com>
-In-Reply-To: <20200903105114.9969-1-hdegoede@redhat.com>
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v9 07/17] pwm: lpss: Remove suspend/resume handlers
+Message-ID: <20200903110012.GB3756465@ulmo>
 References: <20200903105114.9969-1-hdegoede@redhat.com>
+ <20200903105114.9969-8-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UHN/qo2QbUvPLonB"
+Content-Disposition: inline
+In-Reply-To: <20200903105114.9969-8-hdegoede@redhat.com>
+User-Agent: Mutt/1.14.6 (2020-07-11)
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Factor the code which checks and drm_dbg_kms-s the VBT PWM frequency
-out of get_backlight_max_vbt().
 
-This is a preparation patch for honering the VBT PWM frequency for
-devices which use an external PWM controller (devices using
-pwm_setup_backlight()).
+--UHN/qo2QbUvPLonB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Jani Nikula <jani.nikula@intel.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/gpu/drm/i915/display/intel_panel.c | 27 ++++++++++++++--------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+On Thu, Sep 03, 2020 at 12:51:04PM +0200, Hans de Goede wrote:
+> PWM controller drivers should not restore the PWM state on resume. The
+> convention is that PWM consumers do this by calling pwm_apply_state(),
+> so that it can be done at the exact moment when the consumer needs
+> the state to be stored, avoiding e.g. backlight flickering.
+>=20
+> The only in kernel consumers of the pwm-lpss code, the i915 driver
+> and the pwm-class sysfs interface code both correctly restore the
+> state on resume, so there is no need to do this in the pwm-lpss code.
+>=20
+> More-over the removed resume handler is buggy, since it blindly
+> restores the ctrl-register contents without setting the update
+> bit, which is necessary to get the controller to actually use/apply
+> the restored base-unit and on-time-div values.
+>=20
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>  drivers/pwm/pwm-lpss-platform.c |  1 -
+>  drivers/pwm/pwm-lpss.c          | 24 ------------------------
+>  drivers/pwm/pwm-lpss.h          |  3 ---
+>  3 files changed, 28 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_panel.c b/drivers/gpu/drm/i915/display/intel_panel.c
-index 4072d7062efd..df7472a3b9f8 100644
---- a/drivers/gpu/drm/i915/display/intel_panel.c
-+++ b/drivers/gpu/drm/i915/display/intel_panel.c
-@@ -1543,18 +1543,9 @@ static u32 vlv_hz_to_pwm(struct intel_connector *connector, u32 pwm_freq_hz)
- 	return DIV_ROUND_CLOSEST(clock, pwm_freq_hz * mul);
- }
- 
--static u32 get_backlight_max_vbt(struct intel_connector *connector)
-+static u16 get_vbt_pwm_freq(struct drm_i915_private *dev_priv)
- {
--	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
--	struct intel_panel *panel = &connector->panel;
- 	u16 pwm_freq_hz = dev_priv->vbt.backlight.pwm_freq_hz;
--	u32 pwm;
--
--	if (!panel->backlight.hz_to_pwm) {
--		drm_dbg_kms(&dev_priv->drm,
--			    "backlight frequency conversion not supported\n");
--		return 0;
--	}
- 
- 	if (pwm_freq_hz) {
- 		drm_dbg_kms(&dev_priv->drm,
-@@ -1567,6 +1558,22 @@ static u32 get_backlight_max_vbt(struct intel_connector *connector)
- 			    pwm_freq_hz);
- 	}
- 
-+	return pwm_freq_hz;
-+}
-+
-+static u32 get_backlight_max_vbt(struct intel_connector *connector)
-+{
-+	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
-+	struct intel_panel *panel = &connector->panel;
-+	u16 pwm_freq_hz = get_vbt_pwm_freq(dev_priv);
-+	u32 pwm;
-+
-+	if (!panel->backlight.hz_to_pwm) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "backlight frequency conversion not supported\n");
-+		return 0;
-+	}
-+
- 	pwm = panel->backlight.hz_to_pwm(connector, pwm_freq_hz);
- 	if (!pwm) {
- 		drm_dbg_kms(&dev_priv->drm,
--- 
-2.28.0
+Nice!
 
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+
+--UHN/qo2QbUvPLonB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9QzLwACgkQ3SOs138+
+s6HB4w/7BWTWBa37E/k/JCj9g8/G5zhz6bPtbVQvfjK9uo2SR3Cw9i8ICbGP4kBz
+Hws/izNzkiZT1xylqpMH29fNoLekSTTmA8xxMMwGwbxlqEWdGXgOzKR5cgJ25rCb
+VmEvNxXpITvKR7PeHDrUspOtpZl3CscbScJDA2vxE7W0SeTF2iO19fgF8B//u/tu
+DUQ7aEiORHBGwnIMefulW3bYO2yq8iFG18Iq+vVnPIcak/YqYxKlDaDs+5jY/Oqa
+Jqh250h+36HM0cSYvSMxIqDV1pP6HarcgRavj5daC1V/ymQqZFfmmiq+XVplJSxO
++CPyioI2QcaRX2iQtOUFd5aAQSaj3E7sKCsv9APE2TqSushpoufrkwnKi1/1lIll
+YMzlXmVRivUg94dYeKWASJ5D9wWzCz5H67aBtu5V21oNcZc3L7Y1Xuztyxhp9ESH
+TDEIiFxqDyritfY+jqC4XXJiwtQYrI16310kEwi2wFA3PB4x2tRmWAi6BQuU5+tU
+y7hCBcSZZaOxbVlKG2dHsUawLT4pJ35G73YjsPzsJJLFfHN504aVSLIbZEogNt3r
+jq466Qm87cD0M6eqT8b338dmUffjZn+bJtp6b0i9FRny+i0Yy3z4KfaT7kh0EP79
+OsdzaUeoPDhyFupUt5Rai5wmOflTsqOupN4bA4OEKDwD8XM35f8=
+=hZTz
+-----END PGP SIGNATURE-----
+
+--UHN/qo2QbUvPLonB--
