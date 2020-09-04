@@ -2,120 +2,151 @@ Return-Path: <SRS0=AXb5=CN=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A71CC2D0A7
-	for <linux-pwm@archiver.kernel.org>; Fri,  4 Sep 2020 15:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A95B8C43461
+	for <linux-pwm@archiver.kernel.org>; Fri,  4 Sep 2020 20:26:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 59FA920772
-	for <linux-pwm@archiver.kernel.org>; Fri,  4 Sep 2020 15:27:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599233234;
-	bh=sKvZCsZobU7Bh4Xu+fGf9ZJCYmD7SquliyFmgqG50Oo=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=DlZMb635adeWy5BVR5Otvjv/9GhEYNlzaJSbv64l5wbtBTLWUKHzuol1h4SYqyIp2
-	 IwP/fufyqdW0tu/hVMqlBzdnYct231SSa/BZQ5pUXVw+K1PFsnBbbid5bv7HaVY0lz
-	 b0dBGwGyW7nlCRuhnXj3jUH3+L60ccwd60GTqrfQ=
+	by mail.kernel.org (Postfix) with ESMTP id 793282087C
+	for <linux-pwm@archiver.kernel.org>; Fri,  4 Sep 2020 20:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730913AbgIDPYV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 4 Sep 2020 11:24:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33060 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730829AbgIDPYU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 4 Sep 2020 11:24:20 -0400
-Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AB3F420770;
-        Fri,  4 Sep 2020 15:24:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599233059;
-        bh=sKvZCsZobU7Bh4Xu+fGf9ZJCYmD7SquliyFmgqG50Oo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sV58pfGmmWQn8uohb/hknW48UOzALop3pIk3iQCR4uyFQ0gZyZbkeRJ5Qu8MEqccx
-         Mkiwo6Wf3oJFhnVa4ToV7+vibP0Ihhvq3O5bvcBpigvWvC8sLMGLbJFQuBKgZhExcg
-         M/98mPuaOqB0LDnKCPaiqseidOtLyrZLK/gWkZYU=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-watchdog@vger.kernel.org
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3 00/14] dt-bindings: Cleanup of i.MX 8
-Date:   Fri,  4 Sep 2020 17:23:50 +0200
-Message-Id: <20200904152404.20636-1-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
+        id S1726441AbgIDU0b (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 4 Sep 2020 16:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726135AbgIDU0a (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Sep 2020 16:26:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFA7C061244
+        for <linux-pwm@vger.kernel.org>; Fri,  4 Sep 2020 13:26:30 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kEIHs-0006ZU-BG; Fri, 04 Sep 2020 22:26:20 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kEIHq-0003uC-F4; Fri, 04 Sep 2020 22:26:18 +0200
+Date:   Fri, 4 Sep 2020 22:26:18 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     "G Jaya Kumaran, Vineetha" <vineetha.g.jaya.kumaran@intel.com>
+Cc:     "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "Wan Mohamad, Wan Ahmad Zainie" 
+        <wan.ahmad.zainie.wan.mohamad@intel.com>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Raja Subramanian, Lakshmi Bai" 
+        <lakshmi.bai.raja.subramanian@intel.com>,
+        "mgross@linux.intel.com" <mgross@linux.intel.com>,
+        "Ayyathurai, Vijayakannan" <vijayakannan.ayyathurai@intel.com>
+Subject: Re: [PATCH v5 1/2] pwm: Add PWM driver for Intel Keem Bay
+Message-ID: <20200904202618.m72jkoco75zunabi@pengutronix.de>
+References: <1598437559-25828-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <1598437559-25828-2-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <20200902062543.hf5resp6yci2zojc@pengutronix.de>
+ <SN6PR11MB257504DDA3FA499D6740FD0FF62D0@SN6PR11MB2575.namprd11.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jszovevqpqvewkzk"
+Content-Disposition: inline
+In-Reply-To: <SN6PR11MB257504DDA3FA499D6740FD0FF62D0@SN6PR11MB2575.namprd11.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Rob,
 
-I am resending the series (v3) without actual changes.  You already
-reviewed many of them.  I think that subsystem maintainers are hesitant
-to pick them up, so maybe this could go via your tree (all of them)?
+--jszovevqpqvewkzk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes against previous revisions are in individual patches.
+Hello,
 
-Best regards,
-Krzysztof
+On Fri, Sep 04, 2020 at 09:42:37AM +0000, G Jaya Kumaran, Vineetha wrote:
+> > > +	clk_rate =3D clk_get_rate(priv->clk);
+> >=20
+> > clk_get_rate() must only be called when the clock is enabled. Unless I =
+miss
+> > something this isn't ensured here.
+>=20
+> My understanding is this would not be a problem, as according to
+> databook, the GPIO block clock is auto-enabled, and also we are not
+> doing any disabling in the driver for it.=20
 
+It might not be a problem on your hardware today. But this is an API
+requirement.
 
-Krzysztof Kozlowski (14):
-  dt-bindings: perf: fsl-imx-ddr: Add i.MX 8M compatibles
-  dt-bindings: pwm: imx-pwm: Add i.MX 8M compatibles
-  dt-bindings: serial: fsl-imx-uart: Add i.MX 8M compatibles
-  dt-bindings: serial: fsl-lpuart: Fix compatible matching
-  dt-bindings: watchdog: fsl-imx-wdt: Add i.MX 8M compatibles
-  dt-bindings: reset: fsl,imx7-src: Add i.MX 8M compatibles
-  dt-bindings: thermal: imx8mm-thermal: Add i.MX 8M Nano compatible
-  dt-bindings: nvmem: imx-ocotp: Update i.MX 8M compatibles
-  dt-bindings: mfd: rohm,bd71847-pmic: Correct clock properties
-    requirements
-  dt-bindings: interrupt-controller: fsl,irqsteer: Fix compatible
-    matching
-  dt-bindings: mtd: gpmi-nand: Add i.MX 8M compatibles
-  dt-bindings: mtd: gpmi-nand: Fix matching of clocks on different SoCs
-  dt-bindings: mtd: nand-controller: Fix matching with size-cells==1
-  dt-bindings: clock: imx8m: Integrate duplicated i.MX 8M schemas
+> > > +	 * The upper 16 bits of the KMB_PWM_HIGHLOW_OFFSET register contain
+> > > +	 * the high time of the waveform, while the last 16 bits contain
+> > > +	 * the low time of the waveform, in terms of clock cycles.
+> > > +	 *
+> > > +	 * high time =3D clock rate * duty cycle
+> > > +	 * low time =3D  clock rate * (period - duty cycle)
+> > > +	 *
+> > > +	 * e.g. For period 50us, duty cycle 30us, and clock rate 500MHz:
+> > > +	 * high time =3D 500MHz * 30us =3D 0x3A98
+> > > +	 * low time =3D 500MHz * 20us =3D 0x2710
+> > > +	 * Value written to KMB_PWM_HIGHLOW_OFFSET =3D 0x3A982710
+> > > +	 */
+> > > +
+> > > +	clk_rate =3D clk_get_rate(priv->clk);
+> > > +
+> > > +	/* Configure waveform high time */
+> > > +	div =3D clk_rate * state->duty_cycle;
+> >=20
+> > Since v5.9-rc1 (commit a9d887dc1c60ed67f2271d66560cdcf864c4a578)
+> > state->duty_cycle is a 64 bit type. So div being unsigned long isn't
+> > big enough on some platforms.
+>=20
+> div is 64-bit here, so I guess I can keep it as is?
 
- .../bindings/clock/imx8m-clock.yaml           | 125 ++++++++++++++++++
- .../bindings/clock/imx8mm-clock.yaml          |  68 ----------
- .../bindings/clock/imx8mn-clock.yaml          |  70 ----------
- .../bindings/clock/imx8mp-clock.yaml          |  70 ----------
- .../bindings/clock/imx8mq-clock.yaml          |  72 ----------
- .../interrupt-controller/fsl,irqsteer.yaml    |   8 +-
- .../bindings/mfd/rohm,bd71847-pmic.yaml       |   9 +-
- .../devicetree/bindings/mtd/gpmi-nand.yaml    |  94 ++++++++++---
- .../bindings/mtd/nand-controller.yaml         |   5 +-
- .../devicetree/bindings/nvmem/imx-ocotp.yaml  |  38 +++---
- .../devicetree/bindings/perf/fsl-imx-ddr.yaml |  16 ++-
- .../devicetree/bindings/pwm/imx-pwm.yaml      |  14 +-
- .../bindings/reset/fsl,imx7-src.yaml          |  19 ++-
- .../bindings/serial/fsl-imx-uart.yaml         |   4 +
- .../bindings/serial/fsl-lpuart.yaml           |  17 ++-
- .../bindings/thermal/imx8mm-thermal.yaml      |  10 +-
- .../bindings/watchdog/fsl-imx-wdt.yaml        |  11 +-
- 17 files changed, 303 insertions(+), 347 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/imx8m-clock.yaml
- delete mode 100644 Documentation/devicetree/bindings/clock/imx8mm-clock.yaml
- delete mode 100644 Documentation/devicetree/bindings/clock/imx8mn-clock.yaml
- delete mode 100644 Documentation/devicetree/bindings/clock/imx8mp-clock.yaml
- delete mode 100644 Documentation/devicetree/bindings/clock/imx8mq-clock.yaml
+unsigned long isn't 64 bits wide on all platforms.
 
--- 
-2.17.1
+> > > +	/* Ensure enable bit for each channel is cleared at boot */
+> > > +	for (ch =3D 0; ch < KMB_TOTAL_PWM_CHANNELS; ch++)
+> > > +		keembay_pwm_disable(priv, ch);
+> >=20
+> > .probe() is not supposed to change the state of the PWM.
+> >=20
+>=20
+> Sorry, I think misunderstood one of your comments in V2 and added this.
+> The reset value of the enable bit (and all other bits) in the LEADIN regi=
+ster is 0, so this may not be needed.=20
+> If it's ok, I'll remove it.
 
+I think the right approach is to set the LEADIN register to 0 in
+=2Eapply().
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--jszovevqpqvewkzk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl9SoucACgkQwfwUeK3K
+7AntWwgAhOeMJs7mvcbn6ZZDIBuBPD9Y8wdR2y8jpfmLEwkJvNUjtsiq5oZSkwM1
+ToJWsEx/aOV0TOv67Vm9BDAN+ts7TlHO8qrij5g3FurpOROVDB3bq7HXES5rteaK
+W37XDECgdQpE4tt6W2QrGQMk5r6eyD2+KpekP610KOSu7fhYhQcT1VhbspsuLcha
+qgQMHW/eWyfk84kNV6Zgb0XvjzBYARZVqe6SMNTIUvPyy1kuuRBGRK857O54hK9x
+YH5KDaxVuB5fPK63t7nKA0YzLTDz1HRCBtNIFyaz8mCpmT49Xs0IZ+7YdZNrxKV2
+M1EicEw5f1GmolpKnA0ieKatoiycRg==
+=mACI
+-----END PGP SIGNATURE-----
+
+--jszovevqpqvewkzk--
