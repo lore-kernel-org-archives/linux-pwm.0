@@ -2,95 +2,126 @@ Return-Path: <SRS0=BwSI=CQ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DDAC433E2
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 15:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C36C2D0E0
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 17:51:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DF68621481
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 15:26:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3A0992080A
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 17:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730173AbgIGP0U (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Sep 2020 11:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730129AbgIGPWG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Sep 2020 11:22:06 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A7EC061573
-        for <linux-pwm@vger.kernel.org>; Mon,  7 Sep 2020 08:22:06 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kFIy4-0001sZ-RA; Mon, 07 Sep 2020 17:22:04 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kFIy3-0000XG-Js; Mon, 07 Sep 2020 17:22:03 +0200
-Date:   Mon, 7 Sep 2020 17:22:03 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc:     linux-pwm@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Guru Das Srinagesh <gurus@codeaurora.org>
-Subject: Re: [PATCH] pwm: Allow store 64-bit duty cycle from sysfs interface
-Message-ID: <20200907152203.jau6smhesqlfvexm@pengutronix.de>
-References: <20200824145539.3160946-1-jarkko.nikula@linux.intel.com>
+        id S1729188AbgIGRvX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Sep 2020 13:51:23 -0400
+Received: from mga12.intel.com ([192.55.52.136]:27580 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729197AbgIGMJ2 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 7 Sep 2020 08:09:28 -0400
+IronPort-SDR: d+GOdd1IOIXAxfuz0ea3kxiBBNbArkKJzoUYIs+mg3NALdwdnb5KpvPazcBmebCYsw7alUXUuq
+ Q+onYDM3uBqg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9736"; a="137510250"
+X-IronPort-AV: E=Sophos;i="5.76,401,1592895600"; 
+   d="scan'208";a="137510250"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2020 05:09:25 -0700
+IronPort-SDR: YrpUto9u+wGBRh6zH4Nvu3BVnVTAt8O+ErPcssP1SJih6tnBdiYdZfso0elePasXrdbnaYGdEo
+ m+dGRNdhMNzA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,401,1592895600"; 
+   d="scan'208";a="328068181"
+Received: from vgjayaku-ilbpg7.png.intel.com ([10.88.227.96])
+  by fmsmga004.fm.intel.com with ESMTP; 07 Sep 2020 05:09:23 -0700
+From:   vineetha.g.jaya.kumaran@intel.com
+To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        robh+dt@kernel.org
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        wan.ahmad.zainie.wan.mohamad@intel.com,
+        andriy.shevchenko@linux.intel.com,
+        vijayakannan.ayyathurai@intel.com, mgross@linux.intel.com,
+        lakshmi.bai.raja.subramanian@intel.com
+Subject: [PATCH v6 2/2] dt-bindings: pwm: keembay: Add bindings for Intel Keem Bay PWM
+Date:   Mon,  7 Sep 2020 20:07:50 +0800
+Message-Id: <1599480470-5932-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1599480470-5932-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+References: <1599480470-5932-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6niw5vtvjtsmp353"
-Content-Disposition: inline
-In-Reply-To: <20200824145539.3160946-1-jarkko.nikula@linux.intel.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
 
---6niw5vtvjtsmp353
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
 
-On Mon, Aug 24, 2020 at 05:55:39PM +0300, Jarkko Nikula wrote:
-> PWM core was converted to u64 by the commit a9d887dc1c60 ("pwm: Convert
-> period and duty cycle to u64") but did not change the duty_cycle_store()
-> so it will error out if trying to pass a numeric string bigger than
-> 2^32-1.
->=20
-> Fix this by using u64 and kstrtou64() in duty_cycle_store().
->=20
-> Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+---
+ .../devicetree/bindings/pwm/intel,keembay-pwm.yaml | 47 ++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+diff --git a/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+new file mode 100644
+index 00000000..a374334
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2020 Intel Corporation
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/intel,keembay-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Intel Keem Bay PWM Device Tree Bindings
++
++maintainers:
++  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    enum:
++      - intel,keembay-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++required:
++ - compatible
++ - reg
++ - clocks
++ - '#pwm-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #define KEEM_BAY_A53_GPIO
++
++    pwm@203200a0 {
++      compatible = "intel,keembay-pwm";
++      reg = <0x203200a0 0xe8>;
++      clocks = <&scmi_clk KEEM_BAY_A53_GPIO>;
++      #pwm-cells = <2>;
++    };
+-- 
+1.9.1
 
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---6niw5vtvjtsmp353
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl9WUBgACgkQwfwUeK3K
-7AlUwAf8CKeSCFdwJ6Iag5/UayQwdXb4Xa9SStlIyYj3B+B3rMMTWPPhfMHBOHwJ
-VglByCZx9+UQ6M4zP2PbGzXfsQ+TZEIU6VI6b5V1K8Ha01AXIt1lnVbAyq6+bXdA
-ulcIoSLUJTTTK0jj/UomS/wecn7aoJHyDZ2AoPBO2O497/BXdSmNos2+oiZ1sFum
-mnEirZtvdGG1FHAsZHNeNayDP27+7n72lVDtTy8Wmw1MZfmay8EMdqkvVuNiYKlS
-EdkqEv4SThboD+Zm5SlZqTGMjtlPu71vgIlM+s6B9pcyPN9/pHVKw9Ze9L4t+NTZ
-rXghIGPBic/aysn2fXDTM0afstwkxw==
-=f4kB
------END PGP SIGNATURE-----
-
---6niw5vtvjtsmp353--
