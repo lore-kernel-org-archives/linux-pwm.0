@@ -2,343 +2,221 @@ Return-Path: <SRS0=BwSI=CQ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B12C2D0E1
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 17:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B572C433E2
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 21:38:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 50103208C7
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 17:51:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4342021919
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 21:38:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="CW8WWmVj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729048AbgIGRvV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Sep 2020 13:51:21 -0400
-Received: from mga12.intel.com ([192.55.52.136]:27577 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729190AbgIGMJ2 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 7 Sep 2020 08:09:28 -0400
-IronPort-SDR: 59HUBURn1jOmg6Wz3y5+A5OEtih+IFjn9UJ4iqll7ugUk4r/9bF2nu620c/ZQM9mGfFrrmtyQb
- vXnm7tWX9uQQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9736"; a="137510245"
-X-IronPort-AV: E=Sophos;i="5.76,401,1592895600"; 
-   d="scan'208";a="137510245"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2020 05:09:22 -0700
-IronPort-SDR: FHjNhxjqL0Wxga7Lsuxx3g/oppxw6S9BYSCq7eemCt7A0QlKZUpfqwn0zBgxRtzbjZvKPkIm1E
- dEKaJQUVkoaQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,401,1592895600"; 
-   d="scan'208";a="328068159"
-Received: from vgjayaku-ilbpg7.png.intel.com ([10.88.227.96])
-  by fmsmga004.fm.intel.com with ESMTP; 07 Sep 2020 05:09:19 -0700
-From:   vineetha.g.jaya.kumaran@intel.com
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        robh+dt@kernel.org
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        wan.ahmad.zainie.wan.mohamad@intel.com,
-        andriy.shevchenko@linux.intel.com,
-        vijayakannan.ayyathurai@intel.com, mgross@linux.intel.com,
-        lakshmi.bai.raja.subramanian@intel.com
-Subject: [PATCH v6 1/2] pwm: Add PWM driver for Intel Keem Bay
-Date:   Mon,  7 Sep 2020 20:07:49 +0800
-Message-Id: <1599480470-5932-2-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1599480470-5932-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-References: <1599480470-5932-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+        id S1727939AbgIGViZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Sep 2020 17:38:25 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:56691 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726926AbgIGViS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Sep 2020 17:38:18 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D119F23E3A;
+        Mon,  7 Sep 2020 23:38:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1599514694;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MEf5V9IfgXN6nFNiMGK2p6Rh4MEQjA/9gNdijfQDKpY=;
+        b=CW8WWmVjszNhJfEfcMjJ9LaWEFAc0WDCnJMFxc+/ru7hOUEQmu8SkV3tVmKT41do6o4Hm3
+        6Jp743Uzj67Dnmoy1J4MGXxDwUwOTaIAcDPB9cYRfyonhuXdMoo1y8NHLMiMFNp8LFFCQy
+        DtBDLytT21p1bvXKfJKB0/xRh6ZVAcs=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v9 01/13] mfd: add simple regmap based I2C driver
+Date:   Mon,  7 Sep 2020 23:37:50 +0200
+Message-Id: <20200907213802.26745-2-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200907213802.26745-1-michael@walle.cc>
+References: <20200907213802.26745-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: "Lai, Poey Seng" <poey.seng.lai@intel.com>
+There are I2C devices which contain several different functions but
+doesn't require any special access functions. For these kind of drivers
+an I2C regmap should be enough.
 
-The Intel Keem Bay SoC requires PWM support.
-Add the pwm-keembay driver to enable this.
+Create an I2C driver which creates an I2C regmap and enumerates its
+children. If a device wants to use this as its MFD core driver, it has
+to add an individual compatible string. It may provide its own regmap
+configuration.
 
-Co-developed-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-Signed-off-by: Lai, Poey Seng <poey.seng.lai@intel.com>
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+Subdevices can use dev_get_regmap() on the parent to get their regmap
+instance.
+
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/Kconfig       |   9 ++
- drivers/pwm/Makefile      |   1 +
- drivers/pwm/pwm-keembay.c | 232 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 242 insertions(+)
- create mode 100644 drivers/pwm/pwm-keembay.c
+Changes since v8:
+ - fixed typo
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 7dbcf69..4f1fdbc 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -254,6 +254,15 @@ config PWM_JZ4740
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-jz4740.
+Changes since v7:
+ - none
+
+Changes since v6:
+ - added SIMPLE_MFD_I2C help text
+ - revised description in module header
+
+Changes since v5:
+ - removed "select MFD_CORE" in Kconfig
+ - removed help text in Kconfig, we assume that the users of this
+   driver will have a "select MFD_SIMPLE_MFD_I2C". Instead added
+   a small description to the driver itself.
+ - removed "struct simple_mfd_i2c_config" and use regmap_config
+   directly
+ - changed builtin_i2c_driver() to module_i2c_driver(), added
+   MODULE_ boilerplate
+ - cleaned up the included files
+
+Changes since v4:
+ - new patch. Lee, please bear with me. I didn't want to delay the
+   new version (where a lot of remarks on the other patches were
+   addressed) even more, just because we haven't figured out how
+   to deal with the MFD part. So for now, I've included this one.
+
+ drivers/mfd/Kconfig          | 12 ++++++++
+ drivers/mfd/Makefile         |  1 +
+ drivers/mfd/simple-mfd-i2c.c | 56 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+)
+ create mode 100644 drivers/mfd/simple-mfd-i2c.c
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 231095933778..62f2838da66c 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -1162,6 +1162,18 @@ config MFD_SI476X_CORE
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called si476x-core.
  
-+config PWM_KEEMBAY
-+	tristate "Intel Keem Bay PWM driver"
-+	depends on ARM64 || COMPILE_TEST
++config MFD_SIMPLE_MFD_I2C
++	tristate
++	depends on I2C
++	select REGMAP_I2C
 +	help
-+	  The platform driver for Intel Keem Bay PWM controller.
++	  This driver creates a single register map with the intention for it
++	  to be shared by all sub-devices.
 +
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-keembay.
++	  Once the register map has been successfully initialised, any
++	  sub-devices represented by child nodes in Device Tree will be
++	  subsequently registered.
 +
- config PWM_LP3943
- 	tristate "TI/National Semiconductor LP3943 PWM support"
- 	depends on MFD_LP3943
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 2c2ba0a..a105112 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -22,6 +22,7 @@ obj-$(CONFIG_PWM_IMX27)		+= pwm-imx27.o
- obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
- obj-$(CONFIG_PWM_IQS620A)	+= pwm-iqs620a.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
-+obj-$(CONFIG_PWM_KEEMBAY)	+= pwm-keembay.o
- obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
- obj-$(CONFIG_PWM_LPC18XX_SCT)	+= pwm-lpc18xx-sct.o
- obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
-diff --git a/drivers/pwm/pwm-keembay.c b/drivers/pwm/pwm-keembay.c
+ config MFD_SM501
+ 	tristate "Silicon Motion SM501"
+ 	depends on HAS_DMA
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index a60e5f835283..78d24a3e7c9e 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -264,3 +264,4 @@ obj-$(CONFIG_MFD_STMFX) 	+= stmfx.o
+ obj-$(CONFIG_MFD_KHADAS_MCU) 	+= khadas-mcu.o
+ 
+ obj-$(CONFIG_SGI_MFD_IOC3)	+= ioc3.o
++obj-$(CONFIG_MFD_SIMPLE_MFD_I2C)	+= simple-mfd-i2c.o
+diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
 new file mode 100644
-index 00000000..6f41b1c
+index 000000000000..28e96a246be1
 --- /dev/null
-+++ b/drivers/pwm/pwm-keembay.c
-@@ -0,0 +1,232 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/drivers/mfd/simple-mfd-i2c.c
+@@ -0,0 +1,56 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Intel Keem Bay PWM driver
++ * Simple MFD - I2C
 + *
-+ * Copyright (C) 2020 Intel Corporation
-+ * Authors: Lai Poey Seng <poey.seng.lai@intel.com>
-+ *          Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
++ * This driver creates a single register map with the intention for it to be
++ * shared by all sub-devices.  Children can use their parent's device structure
++ * (dev.parent) in order to reference it.
 + *
-+ * Limitations:
-+ * - Upon disabling a channel, the currently running
-+ *   period will not be completed. However, upon
-+ *   reconfiguration of the duty cycle/period, the
-+ *   currently running period will be completed first.
++ * Once the register map has been successfully initialised, any sub-devices
++ * represented by child nodes in Device Tree will be subsequently registered.
 + */
 +
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/mod_devicetable.h>
++#include <linux/i2c.h>
++#include <linux/kernel.h>
 +#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
++#include <linux/of_platform.h>
 +#include <linux/regmap.h>
 +
-+#define KMB_TOTAL_PWM_CHANNELS		6
-+#define KMB_PWM_COUNT_MAX		0xffff
-+#define KMB_PWM_EN_BIT			BIT(31)
-+
-+/* Mask */
-+#define KMB_PWM_HIGH_MASK		GENMASK(31, 16)
-+#define KMB_PWM_LOW_MASK		GENMASK(15, 0)
-+#define KMB_PWM_LEADIN_MASK		GENMASK(30, 0)
-+
-+/* PWM Register offset */
-+#define KMB_PWM_LEADIN_OFFSET(ch)	(0x00 + 4 * (ch))
-+#define KMB_PWM_HIGHLOW_OFFSET(ch)	(0x20 + 4 * (ch))
-+
-+struct keembay_pwm {
-+	struct pwm_chip chip;
-+	struct device *dev;
-+	struct clk *clk;
-+	void __iomem *base;
++static const struct regmap_config simple_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
 +};
 +
-+static inline struct keembay_pwm *to_keembay_pwm_dev(struct pwm_chip *chip)
++static int simple_mfd_i2c_probe(struct i2c_client *i2c)
 +{
-+	return container_of(chip, struct keembay_pwm, chip);
++	const struct regmap_config *config;
++	struct regmap *regmap;
++
++	config = device_get_match_data(&i2c->dev);
++	if (!config)
++		config = &simple_regmap_config;
++
++	regmap = devm_regmap_init_i2c(i2c, config);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	return devm_of_platform_populate(&i2c->dev);
 +}
 +
-+static inline void keembay_pwm_update_bits(struct keembay_pwm *priv, u32 mask,
-+					   u32 val, u32 offset)
-+{
-+	u32 buff = readl(priv->base + offset);
-+
-+	buff = u32_replace_bits(buff, val, mask);
-+	writel(buff, priv->base + offset);
-+}
-+
-+static void keembay_pwm_enable(struct keembay_pwm *priv, int ch)
-+{
-+	keembay_pwm_update_bits(priv, KMB_PWM_EN_BIT, 1,
-+				KMB_PWM_LEADIN_OFFSET(ch));
-+}
-+
-+static void keembay_pwm_disable(struct keembay_pwm *priv, int ch)
-+{
-+	keembay_pwm_update_bits(priv, KMB_PWM_EN_BIT, 0,
-+				KMB_PWM_LEADIN_OFFSET(ch));
-+}
-+
-+static void keembay_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+				  struct pwm_state *state)
-+{
-+	struct keembay_pwm *priv = to_keembay_pwm_dev(chip);
-+	unsigned long long pwm_h_count, pwm_l_count;
-+	unsigned long clk_rate;
-+	u32 buff;
-+
-+	clk_rate = clk_get_rate(priv->clk);
-+
-+	/* Read channel enabled status */
-+	buff = readl(priv->base + KMB_PWM_LEADIN_OFFSET(pwm->hwpwm));
-+	if (buff & KMB_PWM_EN_BIT)
-+		state->enabled = true;
-+	else
-+		state->enabled = false;
-+
-+	/* Read period and duty cycle */
-+	buff = readl(priv->base + KMB_PWM_HIGHLOW_OFFSET(pwm->hwpwm));
-+	pwm_l_count = FIELD_GET(KMB_PWM_LOW_MASK, buff) * NSEC_PER_SEC;
-+	pwm_h_count = FIELD_GET(KMB_PWM_HIGH_MASK, buff) * NSEC_PER_SEC;
-+	state->duty_cycle = DIV_ROUND_UP_ULL(pwm_h_count, clk_rate);
-+	state->period = DIV_ROUND_UP_ULL(pwm_h_count + pwm_l_count, clk_rate);
-+}
-+
-+static int keembay_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			     const struct pwm_state *state)
-+{
-+	struct keembay_pwm *priv = to_keembay_pwm_dev(chip);
-+	struct pwm_state current_state;
-+	u16 pwm_h_count, pwm_l_count;
-+	unsigned long long div;
-+	unsigned long clk_rate;
-+	u32 pwm_count = 0;
-+
-+	if (state->polarity != PWM_POLARITY_NORMAL)
-+		return -ENOSYS;
-+
-+	keembay_pwm_update_bits(priv, KMB_PWM_LEADIN_MASK, 0,
-+				KMB_PWM_LEADIN_OFFSET(pwm->hwpwm));
-+
-+	keembay_pwm_get_state(chip, pwm, &current_state);
-+
-+	if (!state->enabled) {
-+		if (current_state.enabled)
-+			keembay_pwm_disable(priv, pwm->hwpwm);
-+		return 0;
-+	}
-+
-+	/*
-+	 * The upper 16 bits of the KMB_PWM_HIGHLOW_OFFSET register contain
-+	 * the high time of the waveform, while the last 16 bits contain
-+	 * the low time of the waveform, in terms of clock cycles.
-+	 *
-+	 * high time = clock rate * duty cycle
-+	 * low time =  clock rate * (period - duty cycle)
-+	 *
-+	 * e.g. For period 50us, duty cycle 30us, and clock rate 500MHz:
-+	 * high time = 500MHz * 30us = 0x3A98
-+	 * low time = 500MHz * 20us = 0x2710
-+	 * Value written to KMB_PWM_HIGHLOW_OFFSET = 0x3A982710
-+	 */
-+
-+	clk_rate = clk_get_rate(priv->clk);
-+
-+	/* Configure waveform high time */
-+	div = clk_rate * state->duty_cycle;
-+	div = DIV_ROUND_CLOSEST_ULL(div, NSEC_PER_SEC);
-+	if (div > KMB_PWM_COUNT_MAX)
-+		return -ERANGE;
-+
-+	pwm_h_count = div;
-+
-+	/* Configure waveform low time */
-+	div = clk_rate * (state->period - state->duty_cycle);
-+	div = DIV_ROUND_CLOSEST_ULL(div, NSEC_PER_SEC);
-+	if (div > KMB_PWM_COUNT_MAX)
-+		return -ERANGE;
-+
-+	pwm_l_count = div;
-+
-+	pwm_count = FIELD_PREP(KMB_PWM_HIGH_MASK, pwm_h_count) |
-+		    FIELD_PREP(KMB_PWM_LOW_MASK, pwm_l_count);
-+
-+	writel(pwm_count, priv->base + KMB_PWM_HIGHLOW_OFFSET(pwm->hwpwm));
-+
-+	if (state->enabled && !current_state.enabled)
-+		keembay_pwm_enable(priv, pwm->hwpwm);
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops keembay_pwm_ops = {
-+	.owner = THIS_MODULE,
-+	.apply = keembay_pwm_apply,
-+	.get_state = keembay_pwm_get_state,
++static const struct of_device_id simple_mfd_i2c_of_match[] = {
++	{}
 +};
++MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
 +
-+static int keembay_pwm_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct keembay_pwm *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(priv->clk))
-+		return dev_err_probe(dev, PTR_ERR(priv->clk), "Failed to get clock\n");
-+
-+	ret = clk_prepare_enable(priv->clk);
-+	if (ret)
-+		return ret;
-+
-+	priv->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->base))
-+		return PTR_ERR(priv->base);
-+
-+	priv->chip.base = -1;
-+	priv->chip.dev = dev;
-+	priv->chip.ops = &keembay_pwm_ops;
-+	priv->chip.npwm = KMB_TOTAL_PWM_CHANNELS;
-+
-+	ret = pwmchip_add(&priv->chip);
-+	if (ret) {
-+		dev_err(dev, "Failed to add PWM chip: %pe\n", ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	return 0;
-+}
-+
-+static int keembay_pwm_remove(struct platform_device *pdev)
-+{
-+	struct keembay_pwm *priv = platform_get_drvdata(pdev);
-+
-+	return pwmchip_remove(&priv->chip);
-+}
-+
-+static const struct of_device_id keembay_pwm_of_match[] = {
-+	{ .compatible = "intel,keembay-pwm" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, keembay_pwm_of_match);
-+
-+static struct platform_driver keembay_pwm_driver = {
-+	.probe	= keembay_pwm_probe,
-+	.remove	= keembay_pwm_remove,
-+	.driver	= {
-+		.name = "pwm-keembay",
-+		.of_match_table = keembay_pwm_of_match,
++static struct i2c_driver simple_mfd_i2c_driver = {
++	.probe_new = simple_mfd_i2c_probe,
++	.driver = {
++		.name = "simple-mfd-i2c",
++		.of_match_table = simple_mfd_i2c_of_match,
 +	},
 +};
-+module_platform_driver(keembay_pwm_driver);
++module_i2c_driver(simple_mfd_i2c_driver);
 +
-+MODULE_ALIAS("platform:pwm-keembay");
-+MODULE_DESCRIPTION("Intel Keem Bay PWM driver");
++MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
++MODULE_DESCRIPTION("Simple MFD - I2C driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-1.9.1
+2.20.1
 
