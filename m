@@ -2,183 +2,95 @@ Return-Path: <SRS0=Jcxp=CR=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38944C43461
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Sep 2020 20:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E441AC433E2
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Sep 2020 22:38:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E015A20936
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Sep 2020 20:48:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A407320757
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Sep 2020 22:38:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599598124;
-	bh=URzVYLuc8fJ+E9F+BgnOCbZZfli7rnm7jWK2J9mPdkE=;
+	s=default; t=1599604736;
+	bh=MA8vSrb2t66hlFTJXejAAYOGW3HFutbux6iXh1CMimw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=jqB0j0k3zqLtdM7JUKs5Qn9uR1j3NnNkQIk+DJchl1XDCaTCsDl95M+1QaLa7nBUp
-	 q3MrJmE6OlNHqG6GAN0e3YlIEsFHmSlz/tUspmvNaCNHP02q8l1d/xBnTTZ2ryJ0n3
-	 nGJksIKp65XjzV5LJ5iVtPr/SSozbXFibkx4OwBk=
+	b=1KcTHJZrOC7BB/xCVYaMySxrSrcUBC9YiaZlwOTl85hJyUmNFdYae7m2rgx7u1hB1
+	 H1+d+p2wJRomNPhrTGIAIWdAfI2Hv7jx47sd0eDPilsoUDSOxnIt0+RG8FQ4wXtcY9
+	 rtDj1MGjt5846m74dm6NDJQwTNJBwVfBRC+CufBE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729941AbgIHUsk (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 8 Sep 2020 16:48:40 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:41391 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729993AbgIHUsj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Sep 2020 16:48:39 -0400
-Received: by mail-il1-f195.google.com with SMTP id w8so233215ilj.8;
-        Tue, 08 Sep 2020 13:48:38 -0700 (PDT)
+        id S1728631AbgIHWiz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Sep 2020 18:38:55 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:46708 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726434AbgIHWiy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Sep 2020 18:38:54 -0400
+Received: by mail-io1-f68.google.com with SMTP id d18so1078397iop.13;
+        Tue, 08 Sep 2020 15:38:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=L9u+1Lk2Z2W+mvjM22ziguVUQXZzuFNOokZobOUqdHY=;
-        b=s6Zm8lCgqbSkr1cUk2P0gc0vKcX4344bGRUSq6BYZdelIdHrFDnEg1MCUTOLu9gHr2
-         dZ2GYc8n9fpFkXuVw8X8OlZRi2fNuRm32UUs6RwQC1TDff0pNxzkddk2vjINcMnlG+PN
-         wfq+T2Ul9Ml6O8k1OCucFxf7k01gFAQ8om7I6u0hASQZiO0vsie6tGMq66xGWjU/hDa9
-         FDtGW92GVD0YUuIF5875NXVAIvSAS99jVL8LlsL7k60IYlzlVvjDLeIKyQzP8rPVpzqw
-         y2gzdL7q/5grZcksU+9YTey1NDLqO6Nl+068BW3PvMHt77DTGTiZ2YHTTrs4Ej77GDb8
-         ZDdw==
-X-Gm-Message-State: AOAM533nHV0k2Vwo0l+oi8LTlPNU1OfYGKOJTyfNIrrJPV82nANJ1t9z
-        nMTGSxuMr+WCCULZ8AI6xQ==
-X-Google-Smtp-Source: ABdhPJzo2UJov8PXXJW5aMJngdajRHVncAYkVsO/Xj9gWLtftWvWC98MARoq/mot6KY+pWdHIRsPnA==
-X-Received: by 2002:a05:6e02:ef1:: with SMTP id j17mr574189ilk.211.1599598118339;
-        Tue, 08 Sep 2020 13:48:38 -0700 (PDT)
+        bh=p/1hHUSbtL14Ax0at2DUeNcr9Ny+Csoyhco21r35crE=;
+        b=cX9WwNRZsr5luGMsQG022wzXhNe0wv90a/nTbkgq2zxifC4HdfOxCbuy8lALVy1B8G
+         IM8irwkLf8EysjKOrpPGqsREoR6U3/LEN3SmgV06kYM0eohvaHM1HXI4ocRuye3/NVdP
+         OOboCnQbsy92B4jqu94PzbuFmbmzX/rvleEYVWTwn3+6qgnakBvq5bvlcLhosprm0nMU
+         q/ZGm+vSfBvxtKDqh0GCJb25MtCqmZlhqqLN51A6IOVr7x6n29x9tN2JWZd5cYUtPtbL
+         Ee6rhFnprkXwr6vCZIhiQg6NBq6Z3u8UVxCJQs+ypdvVXSdcDIrQBwOOm8cExODcLFkc
+         C4nw==
+X-Gm-Message-State: AOAM530swKCR+ZBLRNX5jvSACVROQbJnLxnIQGRvIUbPfVcK1xCXdMD+
+        FDhKMatJfcqpcvkdJN5P5A==
+X-Google-Smtp-Source: ABdhPJwocbAoceUdBVjvP517IFwXFz5vHn3glVCmHqzqVj0ZPDFrK4R2n3DaoP4Yy/j/0jNShnsB/g==
+X-Received: by 2002:a6b:3e06:: with SMTP id l6mr1023062ioa.160.1599604733487;
+        Tue, 08 Sep 2020 15:38:53 -0700 (PDT)
 Received: from xps15 ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id u18sm135827iln.78.2020.09.08.13.48.36
+        by smtp.gmail.com with ESMTPSA id a21sm337527ioh.12.2020.09.08.15.38.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 13:48:37 -0700 (PDT)
-Received: (nullmailer pid 892637 invoked by uid 1000);
-        Tue, 08 Sep 2020 20:48:34 -0000
-Date:   Tue, 8 Sep 2020 14:48:34 -0600
+        Tue, 08 Sep 2020 15:38:52 -0700 (PDT)
+Received: (nullmailer pid 1066114 invoked by uid 1000);
+        Tue, 08 Sep 2020 22:38:46 -0000
+Date:   Tue, 8 Sep 2020 16:38:46 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
         Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: microchip: atmel,at91rm9200-tcb: add
- atmel,tcb-pwm
-Message-ID: <20200908204834.GA886652@bogus>
-References: <20200820225546.2246517-1-alexandre.belloni@bootlin.com>
- <20200820225546.2246517-2-alexandre.belloni@bootlin.com>
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Magnus Damm <magnus.damm@gmail.com>, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: pwm: renesas,pwm-rcar: Add r8a774e1
+ support
+Message-ID: <20200908223846.GA1066007@bogus>
+References: <20200825104455.18000-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200825104455.18000-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200820225546.2246517-2-alexandre.belloni@bootlin.com>
+In-Reply-To: <20200825104455.18000-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 12:55:43AM +0200, Alexandre Belloni wrote:
-> Move the TCB pwm nodes under their parent and move its documentation to the
-> main file.
+On Tue, 25 Aug 2020 11:44:54 +0100, Lad Prabhakar wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Document RZ/G2H (R8A774E1) SoC bindings.
+> 
+> No driver change is needed due to the fallback compatible value
+> "renesas,pwm-rcar".
+> 
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > ---
-> Cc: Rob Herring <robh+dt@kernel.org>
+>  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
->  .../devicetree/bindings/pwm/atmel-tcb-pwm.txt | 16 ----------
->  .../soc/microchip/atmel,at91rm9200-tcb.yaml   | 31 ++++++++++++++++++-
->  2 files changed, 30 insertions(+), 17 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> deleted file mode 100644
-> index 985fcc65f8c4..000000000000
-> --- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> +++ /dev/null
-> @@ -1,16 +0,0 @@
-> -Atmel TCB PWM controller
-> -
-> -Required properties:
-> -- compatible: should be "atmel,tcb-pwm"
-> -- #pwm-cells: should be 3. See pwm.yaml in this directory for a description of
-> -  the cells format. The only third cell flag supported by this binding is
-> -  PWM_POLARITY_INVERTED.
-> -- tc-block: The Timer Counter block to use as a PWM chip.
 
-What happened to 'tc-block'? Commit message should mention why it is 
-gone.
-
-> -
-> -Example:
-> -
-> -pwm {
-> -	compatible = "atmel,tcb-pwm";
-> -	#pwm-cells = <3>;
-> -	tc-block = <1>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
-> index 55fffae05dcf..a51adfdb58f6 100644
-> --- a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
-> +++ b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
-> @@ -59,6 +59,7 @@ patternProperties:
->          items:
->            - enum:
->                - atmel,tcb-timer
-> +              - atmel,tcb-pwm
->                - microchip,tcb-capture
->        reg:
->          description:
-> @@ -68,11 +69,33 @@ patternProperties:
->  
->          minItems: 1
->          maxItems: 3
-> +    required:
-> +      - compatible
-> +      - reg
-> +
-> +  "^pwm@[0-2]$":
-> +    description: The timer block channels that are used as PWMs.
-> +    $ref: ../../pwm/pwm.yaml#
-> +    type: object
-> +    properties:
-> +      compatible:
-> +        const: atmel,tcb-pwm
-> +      reg:
-> +        description:
-> +          TCB channel to use for this PWM.
-
-enum: [ 0, 1, 2 ]
-
-> +
-> +        maxItems: 1
-> +      "#pwm-cells":
-> +        description:
-> +          The only third cell flag supported by this binding is
-> +          PWM_POLARITY_INVERTED.
-> +        const: 3
->  
->      required:
->        - compatible
->        - reg
-
-       additionalProperties: false
-
->  
-> +
->  allOf:
->    - if:
->        properties:
-> @@ -158,7 +181,13 @@ examples:
->                          compatible = "atmel,tcb-timer";
->                          reg = <1>;
->                  };
-> -        };
-> +
-> +                pwm@2 {
-> +                        compatible = "atmel,tcb-pwm";
-> +                        reg = <2>;
-> +                        #pwm-cells = <3>;
-> +                };
-> +         };
->      /* TCB0 Capture with QDEC: */
->          timer@f800c000 {
->                  compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-> -- 
-> 2.26.2
-> 
+Acked-by: Rob Herring <robh@kernel.org>
