@@ -1,55 +1,77 @@
-Return-Path: <SRS0=BwSI=CQ=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=Jcxp=CR=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 405A8C2D0E0
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 21:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B175CC2BBD0
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Sep 2020 07:42:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 106A3217BA
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Sep 2020 21:41:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 85D9621D43
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Sep 2020 07:42:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="uPshtjo/"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wfT5YyvY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727838AbgIGVk4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Sep 2020 17:40:56 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:36959 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727114AbgIGViT (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Sep 2020 17:38:19 -0400
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 1C85A23E3F;
-        Mon,  7 Sep 2020 23:38:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1599514696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9oaXYuQdxPh9VlCvAjj3novCGW4IyL0WbQroKGqFxtM=;
-        b=uPshtjo/GA3gIz12NiyRGmPuMj2pN9fkgbi5nT7kk76Gslx1bNwISSzsOWAvcGAzrtu5zz
-        4MwZAx3TVvnl61m/TYtvD/7l1WYfufRa0v/SRUUcLL8AfHkPm0/LBluD1PcCd5y2bB8AD3
-        GvcMnXw21iEl4wW5pilTN65oNaaKo0c=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        id S1729455AbgIHHmx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 8 Sep 2020 03:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729479AbgIHHm2 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Sep 2020 03:42:28 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBA7C061795
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Sep 2020 00:42:26 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id m6so18029413wrn.0
+        for <linux-pwm@vger.kernel.org>; Tue, 08 Sep 2020 00:42:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uLUFK28IISjx23/D2ml5l6aSZkYLMgDiXFORqFH61rQ=;
+        b=wfT5YyvYowSvPxHb+0/UENzgICebO//M3d0DIDWTaHQEJ5O8uHUUoMmrKzjeIMQqhp
+         NitiIv7XdDmxggV4H52sZ8GTfO2gx/qw5l/KSDtQ5k7j01HmFi8cILzZZTc1QulK7jLs
+         FJR7s1cQa4ABR9jisaKM+w4K4OH7nPjdA5yySjFdvPdEhKp9Pdb2E5jOhpoKyKzqADtF
+         9rvVG8SDZqY9Gexgx+Opxsg3NCd1mxoMtmv0mYlisOhyCFfTItVkvffAfsv2qI5glIoD
+         p6y8pTSLFo/DJ8Z8ql+PhihvnyiwtfryLTFJeF/3iqnz5513istkaHH5GvpZtlkejkLV
+         tDYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uLUFK28IISjx23/D2ml5l6aSZkYLMgDiXFORqFH61rQ=;
+        b=IVrTysjKlHCnuvqy26zgIcp7l1N3/VvSpTc3FLJ19C4TZD4VBWNvQh/lZcZ38YaFGC
+         H7w8bjk9N2DcQp0DHX6Wmgr3qteKIXg7+zwlH7Vw1McgtoWEDljseJl/dEGvBtkRn6bP
+         h4MJ8A9zmAVK0tMPS/xQsRX80VNW4eS4UPDK0hv4M7hgwgpDvPBTenc8aao5WzFQOV8O
+         ltfPQpdtoc9oUENfaHAVPXriUYtqqXC/ZAP99yoMMsOdRGrJAbSdcVtWMHakeRxsHH42
+         U73jKaq/6e0b3zyA9kpDS1PPOIKQxWAusWDCZ/mlYc6IxPeqJQCsu4u227ua+J4RIeBb
+         LJvA==
+X-Gm-Message-State: AOAM5322cQdH6RxB7PgKZsljVy+h7CTgs19tFMUHLXeUWKMb+dAyRyoa
+        VL6monVB4izWpsq6mL6gpbX4Cg==
+X-Google-Smtp-Source: ABdhPJwKj9M+NROzity0wbbtarhMYD1iO1A/RCqJwJa4QnCTCrNVQ7+USV3LfuKpabL5+WM8PcwegQ==
+X-Received: by 2002:adf:e6c2:: with SMTP id y2mr27381258wrm.117.1599550944553;
+        Tue, 08 Sep 2020 00:42:24 -0700 (PDT)
+Received: from dell ([91.110.221.204])
+        by smtp.gmail.com with ESMTPSA id i6sm36336964wra.1.2020.09.08.00.42.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Sep 2020 00:42:23 -0700 (PDT)
+Date:   Tue, 8 Sep 2020 08:42:21 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
         linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Rob Herring <robh+dt@kernel.org>,
         Jean Delvare <jdelvare@suse.com>,
         Guenter Roeck <linux@roeck-us.net>,
-        Lee Jones <lee.jones@linaro.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
         Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
@@ -59,87 +81,45 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v9 03/13] mfd: simple-mfd-i2c: add sl28cpld support
-Date:   Mon,  7 Sep 2020 23:37:52 +0200
-Message-Id: <20200907213802.26745-4-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200907213802.26745-1-michael@walle.cc>
+        Will Deacon <will@kernel.org>, Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v9 00/13] Add support for Kontron sl28cpld
+Message-ID: <20200908074221.GA4400@dell>
 References: <20200907213802.26745-1-michael@walle.cc>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+In-Reply-To: <20200907213802.26745-1-michael@walle.cc>
 Sender: linux-pwm-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add the core support for the board management controller found on the
-SMARC-sAL28 board.
+On Mon, 07 Sep 2020, Michael Walle wrote:
 
-Also add a virtual symbol which pulls in the simple-mfd-i2c driver and
-provide a common symbol on which the subdevice drivers can depend on.
+> The Kontron sl28cpld is a board management chip providing gpio, pwm, fan
+> monitoring and an interrupt controller. For now this controller is used on
+> the Kontron SMARC-sAL28 board. But because of its flexible nature, it
+> might also be used on other boards in the future. The individual blocks
+> (like gpio, pwm, etc) are kept intentionally small. The MFD core driver
+> then instantiates different (or multiple of the same) blocks. It also
+> provides the register layout so it might be updated in the future without a
+> device tree change; and support other boards with a different layout or
+> functionalities.
+> 
+> See also [1] for more information.
+> 
+> This is my first take of a MFD driver. I don't know whether the subsystem
+> maintainers should only be CCed on the patches which affect the subsystem
+> or on all patches for this series. I've chosen the latter so you can get a
+> more complete picture.
+> 
+> [1] https://lore.kernel.org/linux-devicetree/0e3e8204ab992d75aa07fc36af7e4ab2@walle.cc/
 
-At the moment, this controller is used on the Kontron SMARC-sAL28 board.
+I'll take all of the non-ARM patches later this week.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
----
-Changes since v8:
- - none
-
-Changes since v7:
- - added MFD_SL28CPLD virtual Kconfig symbol
- - Please note, that I intentionally removed the Acked-for-MFD-by
-   because of this change.
-
-Changes since v6:
- - renamed "sl28cpld-r1" to "sl28cpld"
-
-Changes since v5:
- - none
-
-Changes since v4:
- - new patch
-
- drivers/mfd/Kconfig          | 10 ++++++++++
- drivers/mfd/simple-mfd-i2c.c |  1 +
- 2 files changed, 11 insertions(+)
-
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 62f2838da66c..4b918fdcc7c7 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1174,6 +1174,16 @@ config MFD_SIMPLE_MFD_I2C
- 	  sub-devices represented by child nodes in Device Tree will be
- 	  subsequently registered.
- 
-+config MFD_SL28CPLD
-+	tristate "Kontron sl28cpld Board Management Controller"
-+	select MFD_SIMPLE_MFD_I2C
-+	help
-+	  Say yes here to enable support for the Kontron sl28cpld board
-+	  management controller.
-+
-+	  It can be found on the following boards:
-+		* SMARC-sAL28
-+
- config MFD_SM501
- 	tristate "Silicon Motion SM501"
- 	depends on HAS_DMA
-diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
-index 28e96a246be1..87f684cff9a1 100644
---- a/drivers/mfd/simple-mfd-i2c.c
-+++ b/drivers/mfd/simple-mfd-i2c.c
-@@ -38,6 +38,7 @@ static int simple_mfd_i2c_probe(struct i2c_client *i2c)
- }
- 
- static const struct of_device_id simple_mfd_i2c_of_match[] = {
-+	{ .compatible = "kontron,sl28cpld" },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
 -- 
-2.20.1
-
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
