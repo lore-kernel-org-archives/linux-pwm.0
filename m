@@ -2,38 +2,39 @@ Return-Path: <SRS0=w/5G=CS=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2586DC433E2
-	for <linux-pwm@archiver.kernel.org>; Wed,  9 Sep 2020 16:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B264EC43461
+	for <linux-pwm@archiver.kernel.org>; Wed,  9 Sep 2020 16:29:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CFEFE206B8
-	for <linux-pwm@archiver.kernel.org>; Wed,  9 Sep 2020 16:29:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 705D3207DE
+	for <linux-pwm@archiver.kernel.org>; Wed,  9 Sep 2020 16:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731128AbgIIQ3g (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 9 Sep 2020 12:29:36 -0400
+        id S1731137AbgIIQ3w (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 9 Sep 2020 12:29:52 -0400
 Received: from mga05.intel.com ([192.55.52.43]:4048 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731133AbgIIQ32 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 9 Sep 2020 12:29:28 -0400
-IronPort-SDR: ZcgQy0Fdv7buiWXjUt5soxTVXo5k89bZhOxMazzdpUlAe73mGsdNH8T0gNTp5ireHRR9QDR3Gm
- jFLkxTtaA33A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="243175891"
+        id S1730978AbgIIQ3b (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 9 Sep 2020 12:29:31 -0400
+IronPort-SDR: gV4oEhuq0jHlRbOy0fOzLL63uBw9g1D/xr0j37OgW9XbXisbKDuzfegA7HZnYeKvyq4sS2QYti
+ U5oHdPi5MXUA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="243175917"
 X-IronPort-AV: E=Sophos;i="5.76,409,1592895600"; 
-   d="scan'208";a="243175891"
+   d="scan'208";a="243175917"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 09:29:22 -0700
-IronPort-SDR: K0XKL7ErZAtNGRd2m9yZ9MujTkh7vnneu54tK/VXC63eTlwKuJ5+dofXiAMH6AUS1byh5Orcpp
- X0F20WNzhe6g==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 09:29:28 -0700
+IronPort-SDR: rUpC/Ggy4ojxN8XqqYd8DRB1SP5lkh08ZMVP5XrZkM3MTd8sLCJUsdV7FN7fL+03l9uX0ef+Ni
+ l5565xH7oHDw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,409,1592895600"; 
-   d="scan'208";a="343945082"
+   d="scan'208";a="343945127"
 Received: from ubuntu18.png.intel.com ([10.88.229.38])
-  by orsmga007.jf.intel.com with ESMTP; 09 Sep 2020 09:29:19 -0700
+  by orsmga007.jf.intel.com with ESMTP; 09 Sep 2020 09:29:25 -0700
 From:   vijayakannan.ayyathurai@intel.com
 To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
         robh+dt@kernel.org
@@ -41,10 +42,12 @@ Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
         wan.ahmad.zainie.wan.mohamad@intel.com,
         andriy.shevchenko@linux.intel.com, mgross@linux.intel.com,
         lakshmi.bai.raja.subramanian@intel.com
-Subject: [PATCH v7 0/2] Add PWM support for Intel Keem Bay SoC
-Date:   Thu, 10 Sep 2020 00:27:17 +0800
-Message-Id: <20200909162719.7585-1-vijayakannan.ayyathurai@intel.com>
+Subject: [PATCH v7 2/2] dt-bindings: pwm: keembay: Add bindings for Intel Keem Bay PWM
+Date:   Thu, 10 Sep 2020 00:27:19 +0800
+Message-Id: <20200909162719.7585-3-vijayakannan.ayyathurai@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200909162719.7585-1-vijayakannan.ayyathurai@intel.com>
+References: <20200909162719.7585-1-vijayakannan.ayyathurai@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,94 +58,70 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
 
-Hi,
+Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
 
-This patch set enables support for PWM on the Intel Keem Bay SoC.
-Keem Bay is an ARM based SoC, and the GPIO module allows
-configuration of 6 PWM outputs.
-
-Patch 1 adds the PWM driver and Patch 2 is for the required
-Device Tree bindings documentation.
-
-This driver was tested on the Keem Bay evaluation module board.
-
-Thank you.
-
-Regards,
-Vijay
-
-Changes since v6:
-- Add reviewed-by tag
-
-Changes since v5:
--Reorder symbols/Kconfig in drivers/pwm/Kconfig and drivers/pwm/Makefile
--Use "Limitations" for consistency
--Add clk_prepare_enable()
--Reorder keembay_pwm_get_state() function call
--Rework if conditional for channel disablement in .apply()
--Remove channel disabling from .probe(), and clear LEADIN register bits
-in .apply instead
--Update commit message for Patch 1
-
-Changes since v4:
--Add co-developed-by tag
--Include mod_devicetable.h and remove of.h
--Update comment with correct calulation for high/low time
--Fix missing return from dev_err_probe
-
-Changes since v3:
--Removed variable for address and calculate in place instead
--Utilized u32_replace_bits() when updating KMB_PWM_LEADIN_OFFSET
--Utilized dev_err_probe() for error reporting
--Updated comments to use physical units
--Updated error check for pwmchip_add()
-
-Changes since v2:
--Include documentation about HW limitation/behaviour
--Use hex values for KMB_PWM_COUNT_MAX
--Redefine register macros
--Utilize FIELD_GET/FIELD_PREP for calculating pwm_l/h_count and
-pwm_count
--Round up duty cycle/period values
--Get current hardware state in .apply instead of cached values
--Do a polarity check before .enabled
--Round high time/low time to closest value
--Set enable bit in KMB_PWM_LEADIN_OFFSET to 0 in probe
--Correct the naming for MODULE_ALIAS
--Add additionalProperties: false in DT bindings
-
-Changes since v1:
--Updated licensing info, "clocks" property and example in DT bindings
--Updated name of DT bindings document to match compatible string
--Removed 1 patch for addition of new sysfs attribute "count"
--Added support for COMPILE_TEST in Kconfig
--Updated naming of defines and regmap attribute
--Updated calculation of waveform high time and low time
--Added range checking for waveform high/low time
--Implemented .get_state
--Removed register writes for lead-in and count values (left to default)
--Updated register access to single-access
--Folded keembay_pwm_enable/disable_channel,
-keembay_pwm_config_period/duty_cycle,
- and keembay_pwm_config into keembay_pwm_apply
--Updated error messages/error codes
--Removed pwm_disable from keembay_pwm_remove
--Removed clk_prepare/clk_enable/clk_disable from driver
-
-Lai, Poey Seng (1):
-  pwm: Add PWM driver for Intel Keem Bay
-
-Vineetha G. Jaya Kumaran (1):
-  dt-bindings: pwm: keembay: Add bindings for Intel Keem Bay PWM
-
-.../bindings/pwm/intel,keembay-pwm.yaml       |  47 ++++
- drivers/pwm/Kconfig                           |   9 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-keembay.c                     | 232 ++++++++++++++++++
- 4 files changed, 289 insertions(+)
+Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ .../bindings/pwm/intel,keembay-pwm.yaml       | 47 +++++++++++++++++++
+ 1 file changed, 47 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
- create mode 100644 drivers/pwm/pwm-keembay.c
 
+diff --git a/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+new file mode 100644
+index 000000000000..a37433487632
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2020 Intel Corporation
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/intel,keembay-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Intel Keem Bay PWM Device Tree Bindings
++
++maintainers:
++  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    enum:
++      - intel,keembay-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++required:
++ - compatible
++ - reg
++ - clocks
++ - '#pwm-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #define KEEM_BAY_A53_GPIO
++
++    pwm@203200a0 {
++      compatible = "intel,keembay-pwm";
++      reg = <0x203200a0 0xe8>;
++      clocks = <&scmi_clk KEEM_BAY_A53_GPIO>;
++      #pwm-cells = <2>;
++    };
 -- 
 2.17.1
 
