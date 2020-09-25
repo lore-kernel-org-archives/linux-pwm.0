@@ -2,405 +2,258 @@ Return-Path: <SRS0=wUyB=DC=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BC2C47425
-	for <linux-pwm@archiver.kernel.org>; Fri, 25 Sep 2020 06:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 737BFC4727F
+	for <linux-pwm@archiver.kernel.org>; Fri, 25 Sep 2020 08:49:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 55F6F23447
-	for <linux-pwm@archiver.kernel.org>; Fri, 25 Sep 2020 06:31:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26568208B6
+	for <linux-pwm@archiver.kernel.org>; Fri, 25 Sep 2020 08:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbgIYGb2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 25 Sep 2020 02:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727110AbgIYGav (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 25 Sep 2020 02:30:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEE7C0613CE
-        for <linux-pwm@vger.kernel.org>; Thu, 24 Sep 2020 23:30:50 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kLhFh-0004L4-Nz; Fri, 25 Sep 2020 08:30:41 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kLhFe-0004uE-0b; Fri, 25 Sep 2020 08:30:38 +0200
-Date:   Fri, 25 Sep 2020 08:30:37 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>, linux-rtc@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Palmer <daniel@0x0f.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        allen <allen.chen@ite.com.tw>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Mark Brown <broonie@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Josua Mayer <josua.mayer@jm0.eu>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v3 4/7] pwm: ntxec: Add driver for PWM function in
- Netronix EC
-Message-ID: <20200925063037.fcrmqvpe5noi3ef4@pengutronix.de>
-References: <20200924192455.2484005-1-j.neuschaefer@gmx.net>
- <20200924192455.2484005-5-j.neuschaefer@gmx.net>
+        id S1727673AbgIYItq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 25 Sep 2020 04:49:46 -0400
+Received: from mga04.intel.com ([192.55.52.120]:52159 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727705AbgIYItn (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 25 Sep 2020 04:49:43 -0400
+IronPort-SDR: BR4YvuB2mwU8zmAs1xtN7hqH7wwdXTFb7stmxayQHaZzcRX5DOhBozwvEMgUYxXt3aDxONsjIQ
+ ULRYWNYZ1Vsw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9754"; a="158861197"
+X-IronPort-AV: E=Sophos;i="5.77,301,1596524400"; 
+   d="scan'208";a="158861197"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2020 01:49:43 -0700
+IronPort-SDR: SOCX4YkFqpFtyVmVKqxBwiim2OMbh+XB7z5F4jcvoJaGEpZe0qkVtK3e8SNoKbIPKosVLsmhDe
+ jId6rzeTma0w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,301,1596524400"; 
+   d="scan'208";a="413726937"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Sep 2020 01:49:42 -0700
+Received: from [10.215.249.131] (rtanwar-MOBL.gar.corp.intel.com [10.215.249.131])
+        by linux.intel.com (Postfix) with ESMTP id DB2B858043C;
+        Fri, 25 Sep 2020 01:49:38 -0700 (PDT)
+Subject: Re: [PATCH v13 2/2] Add PWM fan controller driver for LGM SoC
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     linux-pwm@vger.kernel.org, lee.jones@linaro.org,
+        thierry.reding@gmail.com, p.zabel@pengutronix.de,
+        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, andriy.shevchenko@intel.com,
+        songjun.Wu@intel.com, cheol.yong.kim@intel.com,
+        qi-ming.wu@intel.com, rahul.tanwar.linux@gmail.com,
+        rtanwar@maxlinear.com
+References: <cover.1600158087.git.rahul.tanwar@linux.intel.com>
+ <befa655d8beb326fc8aa405a25a8b3e62b7e6a4a.1600158087.git.rahul.tanwar@linux.intel.com>
+ <20200924065534.e2anwghhtysv63e7@pengutronix.de>
+From:   "Tanwar, Rahul" <rahul.tanwar@linux.intel.com>
+Message-ID: <7c424d83-f96b-4b0c-1fbb-b3ec7ef6f07d@linux.intel.com>
+Date:   Fri, 25 Sep 2020 16:49:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iyspp2jcs5lu5zk3"
-Content-Disposition: inline
-In-Reply-To: <20200924192455.2484005-5-j.neuschaefer@gmx.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <20200924065534.e2anwghhtysv63e7@pengutronix.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---iyspp2jcs5lu5zk3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Uwe,
 
-Hello Jonathan,
+Thanks for review & feedback.
 
-On Thu, Sep 24, 2020 at 09:24:52PM +0200, Jonathan Neusch=E4fer wrote:
-> The Netronix EC provides a PWM output which is used for the backlight
-> on some ebook readers. This patches adds a driver for the PWM output.
->=20
-> The .get_state callback is not implemented, because the PWM state can't
-> be read back from the hardware.
->=20
-> Signed-off-by: Jonathan Neusch=E4fer <j.neuschaefer@gmx.net>
-> ---
->=20
-> v3:
-> - Relicense as GPLv2 or later
-> - Add email address to copyright line
-> - Remove OF compatible string and don't include linux/of_device.h
-> - Fix bogus ?: in return line
-> - Don't use a comma after sentinels
-> - Avoid ret |=3D ... pattern
-> - Move 8-bit register conversion to ntxec.h
->=20
-> v2:
-> - https://lore.kernel.org/lkml/20200905133230.1014581-6-j.neuschaefer@gmx=
-=2Enet/
-> - Various grammar and style improvements, as suggested by Uwe Kleine-K=F6=
-nig,
->   Lee Jones, and Alexandre Belloni
-> - Switch to regmap
-> - Prefix registers with NTXEC_REG_
-> - Add help text to the Kconfig option
-> - Use the .apply callback instead of the old API
-> - Add a #define for the time base (125ns)
-> - Don't change device state in .probe; this avoids multiple problems
-> - Rework division and overflow check logic to perform divisions in 32 bits
-> - Avoid setting duty cycle to zero, to work around a hardware quirk
-> ---
->  drivers/pwm/Kconfig     |   8 ++
->  drivers/pwm/Makefile    |   1 +
->  drivers/pwm/pwm-ntxec.c | 161 ++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 170 insertions(+)
->  create mode 100644 drivers/pwm/pwm-ntxec.c
->=20
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 7dbcf6973d335..530dfda38d65e 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -350,6 +350,14 @@ config PWM_MXS
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-mxs.
->=20
-> +config PWM_NTXEC
-> +	tristate "Netronix embedded controller PWM support"
-> +	depends on MFD_NTXEC
-> +	help
-> +	  Say yes here if you want to support the PWM output of the embedded
-> +	  controller found in certain e-book readers designed by the ODM
-> +	  Netronix.
+On 24/9/2020 2:55 pm, Uwe Kleine-König wrote:
+> Hello,
+>
+> (hhm Thierry already announced to have taken this patch, so my review is
+> late.)
+>
+> On Tue, Sep 15, 2020 at 04:23:37PM +0800, Rahul Tanwar wrote:
+>> Intel Lightning Mountain(LGM) SoC contains a PWM fan controller.
+>> This PWM controller does not have any other consumer, it is a
+>> dedicated PWM controller for fan attached to the system. Add
+>> driver for this PWM fan controller.
+>>
+>> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+>> ---
+>>  drivers/pwm/Kconfig         |  11 ++
+>>  drivers/pwm/Makefile        |   1 +
+>>  drivers/pwm/pwm-intel-lgm.c | 246 ++++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 258 insertions(+)
+>>  create mode 100644 drivers/pwm/pwm-intel-lgm.c
+>>
+>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+>> index 7dbcf6973d33..4949c51fe90b 100644
+>> --- a/drivers/pwm/Kconfig
+>> +++ b/drivers/pwm/Kconfig
+>> @@ -232,6 +232,17 @@ config PWM_IMX_TPM
+>>  	  To compile this driver as a module, choose M here: the module
+>>  	  will be called pwm-imx-tpm.
+>>  
+>> +config PWM_INTEL_LGM
+>> +	tristate "Intel LGM PWM support"
+>> +	depends on HAS_IOMEM
+>> +	depends on (OF && X86) || COMPILE_TEST
+>> +	select REGMAP_MMIO
+>> +	help
+>> +	  Generic PWM fan controller driver for LGM SoC.
+>> +
+>> +	  To compile this driver as a module, choose M here: the module
+>> +	  will be called pwm-intel-lgm.
+>> +
+>>  config PWM_IQS620A
+>>  	tristate "Azoteq IQS620A PWM support"
+>>  	depends on MFD_IQS62X || COMPILE_TEST
+>> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+>> index 2c2ba0a03557..e9431b151694 100644
+>> --- a/drivers/pwm/Makefile
+>> +++ b/drivers/pwm/Makefile
+>> @@ -20,6 +20,7 @@ obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+>>  obj-$(CONFIG_PWM_IMX1)		+= pwm-imx1.o
+>>  obj-$(CONFIG_PWM_IMX27)		+= pwm-imx27.o
+>>  obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
+>> +obj-$(CONFIG_PWM_INTEL_LGM)	+= pwm-intel-lgm.o
+>>  obj-$(CONFIG_PWM_IQS620A)	+= pwm-iqs620a.o
+>>  obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+>>  obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+>> diff --git a/drivers/pwm/pwm-intel-lgm.c b/drivers/pwm/pwm-intel-lgm.c
+>> new file mode 100644
+>> index 000000000000..ea3df75a5971
+>> --- /dev/null
+>> +++ b/drivers/pwm/pwm-intel-lgm.c
+>> @@ -0,0 +1,246 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Copyright (C) 2020 Intel Corporation.
+>> + *
+>> + * Limitations:
+>> + * - The hardware supports fixed period which is dependent on 2/3 or 4
+>> + *   wire fan mode.
+> The driver now hardcodes 2-wire mode. IMHO that is worth mentioning.
 
-Is it only me who had to look up what ODM means? If not, maybe spell it
-out?
+Will update.
 
-> +
->  config PWM_OMAP_DMTIMER
->  	tristate "OMAP Dual-Mode Timer PWM support"
->  	depends on OF
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 2c2ba0a035577..1cc50dba22d1b 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -32,6 +32,7 @@ obj-$(CONFIG_PWM_MESON)		+=3D pwm-meson.o
->  obj-$(CONFIG_PWM_MEDIATEK)	+=3D pwm-mediatek.o
->  obj-$(CONFIG_PWM_MTK_DISP)	+=3D pwm-mtk-disp.o
->  obj-$(CONFIG_PWM_MXS)		+=3D pwm-mxs.o
-> +obj-$(CONFIG_PWM_NTXEC)		+=3D pwm-ntxec.o
->  obj-$(CONFIG_PWM_OMAP_DMTIMER)	+=3D pwm-omap-dmtimer.o
->  obj-$(CONFIG_PWM_PCA9685)	+=3D pwm-pca9685.o
->  obj-$(CONFIG_PWM_PXA)		+=3D pwm-pxa.o
-> diff --git a/drivers/pwm/pwm-ntxec.c b/drivers/pwm/pwm-ntxec.c
-> new file mode 100644
-> index 0000000000000..50da2dc14bb03
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-ntxec.c
-> @@ -0,0 +1,161 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * The Netronix embedded controller is a microcontroller found in some
-> + * e-book readers designed by the ODM Netronix, Inc. It contains RTC,
-> + * battery monitoring, system power management, and PWM functionality.
-> + *
-> + * This driver implements PWM output.
-> + *
-> + * Copyright 2020 Jonathan Neusch=E4fer <j.neuschaefer@gmx.net>
-> + */
-> +
-> +#include <linux/mfd/ntxec.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regmap.h>
-> +#include <linux/types.h>
-> +
-> +struct ntxec_pwm {
-> +	struct device *dev;
-> +	struct ntxec *ec;
-> +	struct pwm_chip chip;
-> +};
-> +
-> +static struct ntxec_pwm *pwmchip_to_pwm(struct pwm_chip *chip)
-> +{
-> +	return container_of(chip, struct ntxec_pwm, chip);
-> +}
-> +
-> +#define NTXEC_REG_AUTO_OFF_HI	0xa1
-> +#define NTXEC_REG_AUTO_OFF_LO	0xa2
-> +#define NTXEC_REG_ENABLE	0xa3
-> +#define NTXEC_REG_PERIOD_LOW	0xa4
-> +#define NTXEC_REG_PERIOD_HIGH	0xa5
-> +#define NTXEC_REG_DUTY_LOW	0xa6
-> +#define NTXEC_REG_DUTY_HIGH	0xa7
-> +
-> +/*
-> + * The time base used in the EC is 8MHz, or 125ns. Period and duty cycle=
- are
-> + * measured in this unit.
-> + */
-> +#define TIME_BASE_NS 125
-> +
-> +/*
-> + * The maximum input value (in nanoseconds) is determined by the time ba=
-se and
-> + * the range of the hardware registers that hold the converted value.
-> + * It fits into 32 bits, so we can do our calculations in 32 bits as wel=
-l.
-> + */
-> +#define MAX_PERIOD_NS (TIME_BASE_NS * 0x10000 - 1)
+>> +static void lgm_clk_disable(void *data)
+>> +{
+>> +	struct lgm_pwm_chip *pc = data;
+>> +
+>> +	clk_disable_unprepare(pc->clk);
+>> +}
+>> +
+>> +static int lgm_clk_enable(struct device *dev, struct lgm_pwm_chip *pc)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = clk_prepare_enable(pc->clk);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return devm_add_action_or_reset(dev, lgm_clk_disable, pc);
+>> +}
+> My first reflex here was to point out that lgm_clk_disable() isn't the
+> counter part to lgm_clk_enable() and so lgm_clk_disable() needs
+> adaption. On a second look this is correct and so I think the function
+> names are wrong. The usual naming would be to use _release instead of
+> _disable. Having said that the enable function could be named
+> devm_clk_enable and live in drivers/clk/clk-devres.c. (Or
+> devm_clk_get_enabled()?)
 
-The maximal configurable period length is 0xffff, so I would have
-expected MAX_PERIOD_NS to be 0xffff * TIME_BASE_NS?
 
-> +static int ntxec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm=
-_dev,
-> +			   const struct pwm_state *state)
-> +{
-> +	struct ntxec_pwm *pwm =3D pwmchip_to_pwm(pwm_dev->chip);
-> +	unsigned int duty =3D state->duty_cycle;
-> +	unsigned int period =3D state->period;
-> +	int res =3D 0;
-> +
+Will change function name from _disable to _release. But i think addition
+of a generic devm_clk_enable in drivers/clk/clk-devres.c can be taken as
+a separate task in a future patch (not clubbed with this driver)..
 
-I assume your device only supports normal polarity? If so, please check
-for it here and point out this limitation in the header (in the format
-that is for example used in pwm-sifive.c to make it easy to grep for
-that).
 
-> +	if (period > MAX_PERIOD_NS) {
-> +		dev_warn(pwm->dev,
-> +			 "Period is not representable in 16 bits after division by %u: %u\n",
-> +			 TIME_BASE_NS, period);
+>> +static void lgm_reset_control_assert(void *data)
+>> +{
+>> +	struct lgm_pwm_chip *pc = data;
+>> +
+>> +	reset_control_assert(pc->rst);
+>> +}
+>> +
+>> +static int lgm_reset_control_deassert(struct device *dev, struct lgm_pwm_chip *pc)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = reset_control_deassert(pc->rst);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return devm_add_action_or_reset(dev, lgm_reset_control_assert, pc);
+>> +}
+> A similar comment applies here.
+>
+>> +static int lgm_pwm_probe(struct platform_device *pdev)
+>> +{
+>> +	struct device *dev = &pdev->dev;
+>> +	struct lgm_pwm_chip *pc;
+>> +	void __iomem *io_base;
+>> +	int ret;
+>> +
+>> +	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+>> +	if (!pc)
+>> +		return -ENOMEM;
+>> +
+>> +	platform_set_drvdata(pdev, pc);
+>> +
+>> +	io_base = devm_platform_ioremap_resource(pdev, 0);
+>> +	if (IS_ERR(io_base))
+>> +		return PTR_ERR(io_base);
+>> +
+>> +	pc->regmap = devm_regmap_init_mmio(dev, io_base, &lgm_pwm_regmap_config);
+>> +	if (IS_ERR(pc->regmap))
+>> +		return dev_err_probe(dev, PTR_ERR(pc->regmap),
+>> +				     "failed to init register map\n");
+>> +
+>> +	pc->clk = devm_clk_get(dev, NULL);
+>> +	if (IS_ERR(pc->clk))
+>> +		return dev_err_probe(dev, PTR_ERR(pc->clk), "failed to get clock\n");
+>> +
+>> +	ret = lgm_clk_enable(dev, pc);
+>> +	if (ret) {
+>> +		dev_err(dev, "failed to enable clock\n");
+> You used dev_err_probe four times for six error paths. I wonder why you
+> didn't use it here (and below for a failing pwmchip_add()).
 
-No error messages in .apply() please; this might spam the kernel log.
+Well noted, will update.
 
-Also the expectation when a too big period is requested is to configure
-for the biggest possible period. So just do:
+>> +		return ret;
+>> +	}
+>> +
+>> +	pc->rst = devm_reset_control_get_exclusive(dev, NULL);
+>> +	if (IS_ERR(pc->rst))
+>> +		return dev_err_probe(dev, PTR_ERR(pc->rst),
+>> +				     "failed to get reset control\n");
+>> +
+>> +	ret = lgm_reset_control_deassert(dev, pc);
+>> +	if (ret)
+>> +		return dev_err_probe(dev, ret, "cannot deassert reset control\n");
+> After lgm_reset_control_deassert is called pc->rst is unused. So there
+> is no need to have this member in struct lgm_pwm_chip. The same applies
+> to ->clk. (You have to pass rst (or clk) to devm_add_action_or_reset for
+> that to work. Looks like a nice idea anyhow.)
 
-	if (period > MAX_PERIOD_NS) {
-		period =3D MAX_PERIOD_NS;
+Agreed, will update.
 
-		if (duty > period)
-			duty =3D period;
-	}
+>> +	pc->chip.dev = dev;
+>> +	pc->chip.ops = &lgm_pwm_ops;
+>> +	pc->chip.npwm = 1;
+> pc->chip.base should probably be set to -1.
 
-(or something equivalent).
+Got it, will update. Thanks.
 
-> +		return -ERANGE;
-> +	}
-> +
-> +	period /=3D TIME_BASE_NS;
-> +	duty /=3D TIME_BASE_NS;
-> +
-> +	res =3D regmap_write(pwm->ec->regmap, NTXEC_REG_PERIOD_HIGH, ntxec_reg8=
-(period >> 8));
-> +	if (res)
-> +		return res;
-> +
-> +	res =3D regmap_write(pwm->ec->regmap, NTXEC_REG_PERIOD_LOW, ntxec_reg8(=
-period));
-> +	if (res)
-> +		return res;
-> +
-> +	res =3D regmap_write(pwm->ec->regmap, NTXEC_REG_DUTY_HIGH, ntxec_reg8(d=
-uty >> 8));
-> +	if (res)
-> +		return res;
-> +
-> +	res =3D regmap_write(pwm->ec->regmap, NTXEC_REG_DUTY_LOW, ntxec_reg8(du=
-ty));
-> +	if (res)
-> +		return res;
-> +
-> +	/*
-> +	 * Writing a duty cycle of zone puts the device into a state where
+Regards,
+Rahul
 
-What is "zone"? A mixture of zero and one and so approximately 0.5?
+> Best regards
+> Uwe
+>
 
-> +	 * writing a higher duty cycle doesn't result in the brightness that it
-> +	 * usually results in. This can be fixed by cycling the ENABLE register.
-> +	 *
-> +	 * As a workaround, write ENABLE=3D0 when the duty cycle is zero.
-> +	 */
-> +	if (state->enabled && duty !=3D 0) {
-> +		res =3D regmap_write(pwm->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(1));
-> +		if (res)
-> +			return res;
-> +
-> +		/* Disable the auto-off timer */
-> +		res =3D regmap_write(pwm->ec->regmap, NTXEC_REG_AUTO_OFF_HI, ntxec_reg=
-8(0xff));
-> +		if (res)
-> +			return res;
-> +
-> +		return regmap_write(pwm->ec->regmap, NTXEC_REG_AUTO_OFF_LO, ntxec_reg8=
-(0xff));
-> +	} else {
-> +		return regmap_write(pwm->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(0));
-> +	}
-
-This code is wrong for state->enabled =3D false.
-
-How does the PWM behave when .apply is called? Does it complete the
-currently running period? Can it happen that when you switch from say
-
-	.duty_cycle =3D 900 * TIME_BASE_NS (0x384)
-	.period =3D 1800 * TIME_BASE_NS (0x708)
-
-to
-
-	.duty_cycle =3D 300 * TIME_BASE_NS (0x12c)
-	.period =3D 600 * TIME_BASE_NS (0x258)
-
-that a period with
-
-	.duty_cycle =3D 388 * TIME_BASE_NS (0x184)
-	.period =3D 1800 * TIME_BASE_NS (0x708)
-=09
-(because only NTXEC_REG_PERIOD_HIGH was written when the new period
-started) or something similar is emitted?
-
-> +}
-> +
-> +static struct pwm_ops ntxec_pwm_ops =3D {
-> +	.apply =3D ntxec_pwm_apply,
-
-Please implement a .get_state() callback. And enable PWM_DEBUG during
-your tests.
-
-> +	.owner =3D THIS_MODULE,
-> +};
-> +
-> +static int ntxec_pwm_probe(struct platform_device *pdev)
-> +{
-> +	struct ntxec *ec =3D dev_get_drvdata(pdev->dev.parent);
-> +	struct ntxec_pwm *pwm;
-
-Please don't call this variable pwm. I would expect that a variable with
-this name is of type pwm_device. I would have called it "ddata" (and the
-type would be named ntxec_pwm_ddata for me); another usual name is "priv".
-
-> +	struct pwm_chip *chip;
-> +	int res;
-> +
-> +	pwm =3D devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-> +	if (!pwm)
-> +		return -ENOMEM;
-> +
-> +	pwm->ec =3D ec;
-> +	pwm->dev =3D &pdev->dev;
-> +
-> +	chip =3D &pwm->chip;
-> +	chip->dev =3D &pdev->dev;
-> +	chip->ops =3D &ntxec_pwm_ops;
-> +	chip->base =3D -1;
-> +	chip->npwm =3D 1;
-> +
-> +	res =3D pwmchip_add(chip);
-> +	if (res < 0)
-> +		return res;
-> +
-> +	platform_set_drvdata(pdev, pwm);
-
-If you do the platform_set_drvdata earlier you can just do
-
-	return pwmchip_add(chip);
-
-> +
-> +	return 0;
-> +}
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---iyspp2jcs5lu5zk3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl9tjosACgkQwfwUeK3K
-7An6eQgAiyVqAnvWSzB6ypXG63i//HCOee0falc+84GtztQmatgUqLoO0aut1Qpn
-y/K+67THG0a3g+jEWn8jIlv+TiuK6ZjSZZYlGyJ6fl48d11QO3rPAn0lhSEy3xb7
-a/FKhKExJjMpQfKKUwIcqakv37fK5QEd5ZRQaULigi9TDdHHSVWmNOxVKjxp2KtL
-Q1xx0tCEVDS/7cjHtA3A5tpHbPIyTUeaeny/6YEiVzjlbaFBwzb00/d5cQE1Ls4s
-IQi/KS7CQCgmxba5xCE3ZClQ1Dswh5Ys2sAviSOozHTsp42mKWern5nsXrGYHuD8
-vmCiBkT9c4sk9BFRc2fYceTzEpP7Ow==
-=qy2w
------END PGP SIGNATURE-----
-
---iyspp2jcs5lu5zk3--
