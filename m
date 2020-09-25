@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA98C4741F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3928C47420
 	for <linux-pwm@archiver.kernel.org>; Fri, 25 Sep 2020 15:53:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8E7BD21D7A
+	by mail.kernel.org (Postfix) with ESMTP id B49F821D91
 	for <linux-pwm@archiver.kernel.org>; Fri, 25 Sep 2020 15:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728932AbgIYPxn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1729307AbgIYPxn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 25 Sep 2020 11:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729048AbgIYPxn (ORCPT
+        with ESMTP id S1729183AbgIYPxn (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Fri, 25 Sep 2020 11:53:43 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7BCC0613D3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BB4C0613CE
         for <linux-pwm@vger.kernel.org>; Fri, 25 Sep 2020 08:53:42 -0700 (PDT)
 Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1kLq2S-0000oS-Ke; Fri, 25 Sep 2020 17:53:36 +0200
+        id 1kLq2S-0000oU-Kd; Fri, 25 Sep 2020 17:53:36 +0200
 Received: from mfe by dude02.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1kLq2Q-0008QI-U5; Fri, 25 Sep 2020 17:53:34 +0200
+        id 1kLq2Q-0008QO-Uv; Fri, 25 Sep 2020 17:53:34 +0200
 From:   Marco Felsch <m.felsch@pengutronix.de>
 To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
         lee.jones@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
@@ -37,9 +37,9 @@ To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
         michal.vokac@ysoft.com, l.majewski@majess.pl
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 3/5] pwm: imx27: reset the PWM if it is not running
-Date:   Fri, 25 Sep 2020 17:53:28 +0200
-Message-Id: <20200925155330.32301-4-m.felsch@pengutronix.de>
+Subject: [PATCH v2 5/5] pwm: imx27: wait till the duty cycle is applied
+Date:   Fri, 25 Sep 2020 17:53:30 +0200
+Message-Id: <20200925155330.32301-6-m.felsch@pengutronix.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200925155330.32301-1-m.felsch@pengutronix.de>
 References: <20200925155330.32301-1-m.felsch@pengutronix.de>
@@ -53,76 +53,64 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Trigger a software reset during probe to clear the FIFO and reset the
-register values to their default. According the datasheet the DBGEN,
-STOPEN, DOZEN and WAITEN bits should be untouched by the software reset
-but this is not the case.
+Currently the driver don't check if the new state was applied or not.
+This can cause glitches on the output pin if the new state disables the
+PWM. In this case the PWM clocks are disabled before the new duty cycle
+value gets applied.
+
+The fix is to wait till the desired duty cycle was applied.
 
 Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 ---
 v2:
 - new patch
 
- drivers/pwm/pwm-imx27.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ drivers/pwm/pwm-imx27.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
 diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index b761764b8375..3b6bcd8d58b7 100644
+index 07c6a263a39c..ffa00bcd81da 100644
 --- a/drivers/pwm/pwm-imx27.c
 +++ b/drivers/pwm/pwm-imx27.c
-@@ -183,10 +183,8 @@ static void pwm_imx27_get_state(struct pwm_chip *chip,
- 	pwm_imx27_clk_disable_unprepare(imx);
+@@ -222,6 +222,26 @@ static int pwm_imx27_get_fifo_slot(struct pwm_chip *chip,
+ 	return fifoav;
  }
  
--static void pwm_imx27_sw_reset(struct pwm_chip *chip)
-+static void pwm_imx27_sw_reset(struct pwm_imx27_chip *imx, struct device *dev)
++static int pwm_imx27_wait_till_applied(struct pwm_chip *chip,
++				       struct pwm_device *pwm)
++{
++	unsigned int attempts = 4;
++	unsigned int period_ms;
++	int busy_slots;
++
++	do {
++		busy_slots = pwm_imx27_get_fifo_slot(chip, pwm);
++		if (busy_slots == 0)
++			return 0;
++
++		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
++					 NSEC_PER_MSEC);
++		msleep(period_ms);
++	} while (attempts--);
++
++	return -ETIMEDOUT;
++}
++
+ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			   const struct pwm_state *state)
  {
--	struct pwm_imx27_chip *imx = to_pwm_imx27_chip(chip);
--	struct device *dev = chip->dev;
- 	int wait_count = 0;
- 	u32 cr;
- 
-@@ -266,7 +264,7 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (imx->enabled)
- 		pwm_imx27_wait_fifo_slot(chip, pwm);
+@@ -277,6 +297,11 @@ static int pwm_imx27_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
  	else
--		pwm_imx27_sw_reset(chip);
-+		pwm_imx27_sw_reset(imx, chip->dev);
- 
- 	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+ 		writel(0, imx->mmio_base + MX3_PWMSAR);
++
++	ret = pwm_imx27_wait_till_applied(chip, pwm);
++	if (ret)
++		goto out;
++
  	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-@@ -370,19 +368,23 @@ static int pwm_imx27_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
  
--	mask = MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
--	       MX3_PWMCR_DBGEN;
--	pwmcr = MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
--		MX3_PWMCR_DBGEN;
--	pwm_imx27_update_bits(imx->mmio_base + MX3_PWMCR, mask, pwmcr);
--
- 	/* keep clks on and clk settings unchanged if pwm is running */
- 	pwmcr = readl(imx->mmio_base + MX3_PWMCR);
- 	if (!(pwmcr & MX3_PWMCR_EN)) {
--		mask = MX3_PWMCR_CLKSRC;
--		pwmcr = FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH);
-+		pwm_imx27_sw_reset(imx, &pdev->dev);
-+		mask = MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-+		       MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC;
-+		pwmcr = MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-+			MX3_PWMCR_DBGEN |
-+			FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH);
- 		pwm_imx27_update_bits(imx->mmio_base + MX3_PWMCR, mask, pwmcr);
- 		pwm_imx27_clk_disable_unprepare(imx);
-+	} else {
-+		mask = MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-+			MX3_PWMCR_DBGEN;
-+		pwmcr = MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
-+			MX3_PWMCR_DBGEN;
-+		pwm_imx27_update_bits(imx->mmio_base + MX3_PWMCR, mask, pwmcr);
- 	}
- 
- 	return pwmchip_add(&imx->chip);
+ 	/*
 -- 
 2.20.1
 
