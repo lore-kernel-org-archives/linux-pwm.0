@@ -2,126 +2,113 @@ Return-Path: <SRS0=9LRw=DI=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B277C4727C
-	for <linux-pwm@archiver.kernel.org>; Thu,  1 Oct 2020 05:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0B1C4727F
+	for <linux-pwm@archiver.kernel.org>; Thu,  1 Oct 2020 09:05:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4A2D021D7D
-	for <linux-pwm@archiver.kernel.org>; Thu,  1 Oct 2020 05:40:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D4ADB20B1F
+	for <linux-pwm@archiver.kernel.org>; Thu,  1 Oct 2020 09:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725937AbgJAFkV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 1 Oct 2020 01:40:21 -0400
-Received: from mga06.intel.com ([134.134.136.31]:19677 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725878AbgJAFkU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 1 Oct 2020 01:40:20 -0400
-IronPort-SDR: b0D8siVmXNaD3QLk17uSI5Vj15KRchiYcZ59BiI6wJ5jnV2Gi5bqxk3s8yuyTuMIYrnERdHrFl
- eozemEfAsF3w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="224244708"
-X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
-   d="scan'208";a="224244708"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2020 22:40:20 -0700
-IronPort-SDR: ZeQ/HmMGugdir6cS+MJc4G09CmF7OSw/ec7Bucckqe22Oy7TRXkBZ7TUr5WCe5lJYzmKPBAcSD
- 1MhuR02Wz8hg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; 
-   d="scan'208";a="514552266"
-Received: from ubuntu18.png.intel.com ([10.88.229.38])
-  by fmsmga006.fm.intel.com with ESMTP; 30 Sep 2020 22:40:18 -0700
-From:   vijayakannan.ayyathurai@intel.com
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        robh+dt@kernel.org
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        wan.ahmad.zainie.wan.mohamad@intel.com,
-        andriy.shevchenko@linux.intel.com, mgross@linux.intel.com,
-        lakshmi.bai.raja.subramanian@intel.com,
-        vijayakannan.ayyathurai@intel.com
-Subject: [PATCH v9 2/2] dt-bindings: pwm: keembay: Add bindings for Intel Keem Bay PWM
-Date:   Thu,  1 Oct 2020 13:37:51 +0800
-Message-Id: <20201001053751.10405-3-vijayakannan.ayyathurai@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201001053751.10405-1-vijayakannan.ayyathurai@intel.com>
-References: <20201001053751.10405-1-vijayakannan.ayyathurai@intel.com>
+        id S1731243AbgJAJFn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 1 Oct 2020 05:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725894AbgJAJFm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Oct 2020 05:05:42 -0400
+Received: from smtp3.goneo.de (smtp3.goneo.de [IPv6:2001:1640:5::8:37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D62C0613D0;
+        Thu,  1 Oct 2020 02:05:41 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by smtp3.goneo.de (Postfix) with ESMTP id F395E23F0F3;
+        Thu,  1 Oct 2020 11:05:38 +0200 (CEST)
+X-Virus-Scanned: by goneo
+Received: from smtp3.goneo.de ([127.0.0.1])
+        by localhost (smtp3.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id jn13Cqk_puzT; Thu,  1 Oct 2020 11:05:37 +0200 (CEST)
+Received: from lem-wkst-02.lemonage (hq.lemonage.de [87.138.178.34])
+        by smtp3.goneo.de (Postfix) with ESMTPSA id 1EEF22402AE;
+        Thu,  1 Oct 2020 11:05:37 +0200 (CEST)
+Date:   Thu, 1 Oct 2020 11:05:31 +0200
+From:   Lars Poeschel <poeschel@lemonage.de>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] pwm: sysfs: Set class on pwm devices
+Message-ID: <20201001090531.gubfwmznlto2ng6l@lem-wkst-02.lemonage>
+References: <20200929121953.2817843-1-poeschel@lemonage.de>
+ <20200930065726.fjcsm4pfh65medgl@pengutronix.de>
+ <20200930092056.maz5biy2ugr6yc3p@lem-wkst-02.lemonage>
+ <20200930094146.73s3qzvf5ekjeavc@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200930094146.73s3qzvf5ekjeavc@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+On Wed, Sep 30, 2020 at 11:41:46AM +0200, Uwe Kleine-König wrote:
+> Hello,
+> 
+> I added Greg Kroah-Hartman who I discussed this with via irc a bit to
+> Cc:.
+> 
+> On Wed, Sep 30, 2020 at 11:20:56AM +0200, Lars Poeschel wrote:
+> > thank you for your review!
+> > 
+> > On Wed, Sep 30, 2020 at 08:57:26AM +0200, Uwe Kleine-König wrote:
+> > > On Tue, Sep 29, 2020 at 02:19:53PM +0200, poeschel@lemonage.de wrote:
+> > > > From: Lars Poeschel <poeschel@lemonage.de>
+> > > > 
+> > > > This adds a class to exported pwm devices.
+> > > > Exporting a pwm through sysfs did not yield udev events. The
+> > > 
+> > > I wonder what is your use-case here. This for sure also has a place to
+> > > be mentioned in the commit log. I suspect there is a better way to
+> > > accomplish you way.
+> > 
+> > Use-case is to be able to use a pwm from a non-root userspace process.
+> > I use udev rules to adjust permissions.
+> 
+> Hmm, how do you trigger the export? Without being aware of all the
+> details in the sysfs code I would expect that the exported stuff is
+> available instantly once the write used to export the PWM is completed.
+> So changing the permissions can be done directly after triggering the
+> export in the same process.
 
-Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
+The export is triggered through the userspace process itself. Why can it
+do this ? Because there is another udev rule, that changes permissions
+when a pwmchip appears.
+Then I'd like to have the second udev rule, that changes permissions on
+the freshly exported pwm. The userspace process can't do this.
+You are right I could propably do everything from within udev: If a
+pwmchip appears, export certain pwms and right away change their
+permissions. It does not also not feel right. It'd require knowledge
+from the userspace application to be mapped to udev.
 
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
----
- .../bindings/pwm/intel,keembay-pwm.yaml       | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+> Out of interest: What do you use the pwm for? Isn't there a suitable
+> kernel driver that can do the required stuff? Compared to the kernel-API
+> the sysfs interface isn't atomic. Is this an annoyance?
 
-diff --git a/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
-new file mode 100644
-index 000000000000..a37433487632
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2020 Intel Corporation
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/intel,keembay-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Intel Keem Bay PWM Device Tree Bindings
-+
-+maintainers:
-+  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - intel,keembay-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+required:
-+ - compatible
-+ - reg
-+ - clocks
-+ - '#pwm-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #define KEEM_BAY_A53_GPIO
-+
-+    pwm@203200a0 {
-+      compatible = "intel,keembay-pwm";
-+      reg = <0x203200a0 0xe8>;
-+      clocks = <&scmi_clk KEEM_BAY_A53_GPIO>;
-+      #pwm-cells = <2>;
-+    };
--- 
-2.17.1
+Use-case is generating a voltage from the pwm. This voltage is used to
+signal different states and does not change very often. This is
+absolutely not annoying that this is not atomic. We just change the duty
+cycle on the fly. Everything else is configured one time at startup.
+I'd call what I need pwm-dac. I could not find a ready to use driver.
+Maybe I could misuse some kernel driver for this. Maybe I could use
+pwm-led or pwm-brightness or pwm-fan. Propably pwm-regulator could work,
+there is even a userspace facing part for this, but this is not
+devicetree ready.
+...and the worst, please don't blame me: The application is java, so
+ioctl is a problem.
+So, sysfs was quite a good choice for me.
 
+Regards,
+Lars
