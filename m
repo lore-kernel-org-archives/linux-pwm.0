@@ -2,490 +2,227 @@ Return-Path: <SRS0=IFWx=DJ=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F38C4363D
-	for <linux-pwm@archiver.kernel.org>; Fri,  2 Oct 2020 13:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 396B9C35257
+	for <linux-pwm@archiver.kernel.org>; Fri,  2 Oct 2020 22:55:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C4E1720672
-	for <linux-pwm@archiver.kernel.org>; Fri,  2 Oct 2020 13:56:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D7ACA206DD
+	for <linux-pwm@archiver.kernel.org>; Fri,  2 Oct 2020 22:55:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="TWl5+Tnb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726176AbgJBN41 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 2 Oct 2020 09:56:27 -0400
-Received: from mga06.intel.com ([134.134.136.31]:44232 "EHLO mga06.intel.com"
+        id S1725554AbgJBWzP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 2 Oct 2020 18:55:15 -0400
+Received: from mout.gmx.net ([212.227.17.21]:38939 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbgJBN41 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 2 Oct 2020 09:56:27 -0400
-IronPort-SDR: 3OJzLyfqkIhgBWCHx8tG1jB8LrPL5IC+Hc7ftjCcCPG9Xgo2yw1/mLiI+lOZ1LTmAkEdt6z+LN
- kTu/MFSBxI/w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9761"; a="224605055"
-X-IronPort-AV: E=Sophos;i="5.77,327,1596524400"; 
-   d="scan'208";a="224605055"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2020 06:56:21 -0700
-IronPort-SDR: 8mVMFlQxUTXYRx/i5ITEgZ8pUCS4zDIjocDahppeVXvim769XmpxoovBAsMOsVGTHexUmvYtKh
- QjDDhihvMU3g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,327,1596524400"; 
-   d="scan'208";a="341992394"
-Received: from mylly.fi.intel.com (HELO mylly.fi.intel.com.) ([10.237.72.56])
-  by orsmga008.jf.intel.com with ESMTP; 02 Oct 2020 06:56:17 -0700
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-To:     linux-pwm@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        id S1725283AbgJBWzP (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 2 Oct 2020 18:55:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1601679255;
+        bh=ifmQtRuT3dg6xtz/3ou+lH+WAmOOUez1iX/REx8JnI0=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=TWl5+Tnb6LW1l+v0w1mHFCjvwE1VhQiYviUzbZgOpskNa3W4wFZlHbfbNGlDi84qI
+         WuxRTKOXFnal4yUlvlJ2uA1qlj5D7KIlW9v3bclP6qPcZ3clm554t9yf/icJNfgkSf
+         JkQ0AzsOJPmGhuBrPQMe9zAL6XHk6MWNqtXoMt+U=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.195.151]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MybGX-1kcRLv2znR-00z0WA; Sat, 03
+ Oct 2020 00:54:14 +0200
+Date:   Sat, 3 Oct 2020 00:54:08 +0200
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Felipe Balbi <balbi@kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>
-Subject: [PATCH v4] pwm: Add DesignWare PWM Controller Driver
-Date:   Fri,  2 Oct 2020 16:56:13 +0300
-Message-Id: <20201002135613.999702-1-jarkko.nikula@linux.intel.com>
-X-Mailer: git-send-email 2.28.0
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Mark Brown <broonie@kernel.org>, allen <allen.chen@ite.com.tw>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-pwm@vger.kernel.org,
+        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
+        <linux-rtc@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Josua Mayer <josua.mayer@jm0.eu>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>
+Subject: Re: [PATCH v3 3/7] mfd: Add base driver for Netronix embedded
+ controller
+Message-ID: <20201002225408.GA500800@latitude>
+References: <20200924192455.2484005-1-j.neuschaefer@gmx.net>
+ <20200924192455.2484005-4-j.neuschaefer@gmx.net>
+ <CAHp75VdUHPsuvDPLnfP9sM2p1FDiCsjkCf1SSM-y02ZsQxSDWQ@mail.gmail.com>
+ <20200925213207.GA2510@latitude>
+ <CAHp75VchfQ-djkK6u+fLjq6kfqpzb0nqSLJOe76cb5S3J_F9GQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VchfQ-djkK6u+fLjq6kfqpzb0nqSLJOe76cb5S3J_F9GQ@mail.gmail.com>
+X-Provags-ID: V03:K1:UrsUGltGIkJV85rtkpSSHNGZVa7KQScWf3gXtGHd+DtPWbCV7xL
+ TV7J9pw2yhOV/5n9PO1RRNXvDO5RCJgYGCKVpnWL2/lbWJxRuFhhnRGvcu6DxlMyiIeVFjU
+ rdohUZnQT1AQA9gqw3uOGPgUn8KPYRsfLjbwdtw6CGGDkdYFy+vy1Qx03rpiZdQ5x0Wlyfe
+ LHzNGpsijNJRotmPwaVcw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:M1EZiit1jLw=:pCdHzy8gSeY/pMntYMC+cL
+ G05AVuGFzvoyXZ0ffU1uz9R53SOiFhWNKimeyP/m375sDSGkM8ovOpO2oPqCfnnb84Y+WQRGj
+ ZRMkm9HQMO6qt2dsYq6CZYd2k+2PDM6D/d93dxULRkX6+7ol2d7f0Dh859ds87FR+omotuS2s
+ 6ClKvV4QbHkzQqZGNqUp4YHpbzI9IyfChqYx7gilHOQ21wMMyzgXn/nohob/d5Jce2CtXcBCY
+ LLafngGp4Hm34Z3mznuanHWI3zUVdEg2fq4+NkEP7/4BPIpj5BNr3ejOSZlce6VEwRPJr8hH0
+ fDI+j3EwOBOSKHY3iO2xaHl9uQ7A8jUjqSMU4p2dgr68sqdpOYqahxrkHXZYgAKGUF44GyScO
+ +lKiY8ukubdUftM5VJLaL70LLDQuhPLzW1T9ibdvll70W+dD5tQTj1d2Z8E7GFeQwcNFUN2+H
+ R4/UtvlA0TXPAZRWOH73TCf6i9u2bVvUklY2PQKVqzePGOoUwN9/jExRpkoAWY5CE1/cPq1g5
+ ros+4k2HbJqzrRHS9zrNKSm8yEh9uWFYsEG/aYRp68g2uFUKurIycXJz6K+6gB08B05lAXFaj
+ hr27u0bvQzcIBo73OqDoGvAo0WOvdGyl+Ysm6cIzFFrUWCQAmCUUSjGc7lsfOHJpu1Bf03ft6
+ N1YKjFe6Xmu6UbJa1x1klgzW1Qw1RgsIpRUvYK7Mhu9Tx61ogbzFarjcL2wkwj4D9VPs5ZTim
+ OTro+TKmojff+PaeBoZ2PBT6jDYxsoV/yJtVGSv/qv27Nh6AixRQK6wMH3tQ6HFKTLwqblF78
+ 7yowgD2/rxZ1eaN53dVQQRqJcqkScXvsxNPUr982W0XC4BobrbnTKKckZ4UE6ico2g/YATMIh
+ jFrJaT03etyq6dOHjXbjodbl9uMw65ajQBIsObQqpl9iN7sWoKbRJ3ZAIgRjm5Ucdec7JK4FM
+ osFiKGjsGKEWD0KzPCPSNQlLCAxKqFAbrnapKLdZRzbYrev63GCKHXkKY89CG4zaK8GHgPurm
+ XgafGeD5vszcUC38uS26rLOYKyYNeK99hSym1S4EMgjPdzY9rO5wI7Ip6ET5lOJPCBJnEFMgy
+ s2qsbbG8/QDy5cXSKrM2zgeHRnY4YGMBdiFejdD24naAbi8RobAovjY8j5AjBeW7UJQjPEafs
+ UnFHfXSDnHScZPoSXwG6uHlSgHxSNRO0WOzOOQJhUYEwZisRtGzOv4FLAuxPRQTSmYM6idoVJ
+ 6oLZJN5Cq0VWa6VkJoYSpDN0c2ws2uEjuKnfzbQ==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Introduce driver for Synopsys DesignWare PWM Controller used on Intel
-Elkhart Lake.
 
-Initial implementation is done by Felipe Balbi while he was working at
-Intel with later changes from Raymond Tan and me.
+--azLHFNyN32YCQGCU
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Co-developed-by: Felipe Balbi (Intel) <balbi@kernel.org>
-Signed-off-by: Felipe Balbi (Intel) <balbi@kernel.org>
-Co-developed-by: Raymond Tan <raymond.tan@intel.com>
-Signed-off-by: Raymond Tan <raymond.tan@intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
----
-v4. Resend with a minor cleanup
-- I guess previous version got lost since it's not visible in list
-  archive. I was told we have had some email issues
-- Make dev pointer assignment oneliner in probe
-v3. Previous version: https://www.spinics.net/lists/linux-pwm/msg12363.html
-Changes:
-- I got confirmation specification is not publicly available
-- HW is actually fixed inversed polarity by the PWM framework
-  conventions: HW cycle begins with a low period. Fixed polarity and
-  low/high period calculation accordingly
-- Added range check to period and duty_cycle
-- Bogus '*' removed from head of the file comment
-- struct dwc_pwm * passed to readl/writel wrappers instead of __iomem *
-- %pe for error code prints
-- clk_period_ns removed from struct dwc_pwm and use DWC_CLK_PERIOD_NS instead
-- Device pointer removed from struct dwc_pwm, it's already carried in
-  struct pwm_chip
-- Added Limitations paragraph and commenting timer usage flow in code
-- duty_cycle and period capping to 32-bit removed from
-  dwc_pwm_get_state() since PWM core has been converted to 64-bit
-- s/DIV_ROUND_CLOSEST/DIV_ROUND_CLOSEST_ULL/ to fix a link error on
-  32-bit ARM and older GCC-9 build. Reported by kernel test robot
-  <lkp@intel.com> on an internal tree
-- Random cleanups, empty line removals etc
-v2. First version here https://www.spinics.net/lists/linux-pwm/msg12122.html
-Thanks to Uwe Kleine-König for good review comments, hopefully I captured
-them all.
-Changes:
-- Added Felipe's Signed-of-by. I added (Intel) to his kernel.org address
-  to highlight contribution was done while working at Intel
-- Version register read removed as result was unused
-- Order of dwc_pwm_writel() arguments changed to match with writel()
-- Structure initializers use one space instead of tab alignment
-- Error messages added to dwc_pwm_probe()
-- MODULE_LICENSE() Updated based on a review comment and commit bf7fbeeae6db
-  ("module: Cure the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity")
-- Polarity handled. HW supports only normal polarity and driver errors
-  out in case of wrong polarity in dwc_pwm_apply() and returns fixed
-  normal polarity in dwc_pwm_get_state()
-- Running timers are not stopped on probe and remove. Those may be set
-  running by a bootloader and driver should leave them runnning
-- pwm_is_enabled() call changed to pwm->state.enabled in wc_pwm_apply()
-- Co-authors added to MODULE_AUTHOR() and comment
-- mutex removed
-- Add struct dwc_pwm_ctx for register save/restore instead of word array
-- suspend prevented in case of active PWM consumers. Please note this
-  checks only PWMs enabled by Linux consumers and not the ones enabled
-  by bootloader
-- Duplicate linux/pm_runtime.h include removed
-- Only once used trivial functions moved to dwc_pwm_get_state()
-- struct dwc_pwm_driver_data removed and used hard coded properties
-  instead since currently driver supports single device type
-- Driver uses internally 64-bit duty and period calculation and caps
-  them to 32-bit ns max value for PWM core. HW supports 32-bit high and
-  low period counters with 10 ns resolution so HW can do ~42,9 s duty and
-  ~85.9 s period at maximum
----
- drivers/pwm/Kconfig   |   9 ++
- drivers/pwm/Makefile  |   1 +
- drivers/pwm/pwm-dwc.c | 319 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 329 insertions(+)
- create mode 100644 drivers/pwm/pwm-dwc.c
+On Tue, Sep 29, 2020 at 07:37:21PM +0300, Andy Shevchenko wrote:
+> On Sat, Sep 26, 2020 at 12:32 AM Jonathan Neusch=C3=A4fer
+> <j.neuschaefer@gmx.net> wrote:
+> > On Fri, Sep 25, 2020 at 12:29:45PM +0300, Andy Shevchenko wrote:
+> > > On Thu, Sep 24, 2020 at 10:26 PM Jonathan Neusch=C3=A4fer
+> > > <j.neuschaefer@gmx.net> wrote:
+>=20
+> ...
+>=20
+> > > > +               dev_alert(&poweroff_restart_client->dev,
+> > > > +                         "Failed to power off (err =3D %d)\n", res=
+);
+> > >
+> > > alert? This needs to be explained.
+> >
+> > I copied the dev_alert from drivers/mfd/rn5t618.c.
+> >
+> > Upon reconsideration, I'm not sure what the correct log level would be,
+> > but _warn seems enough, or maybe _err is better
+>=20
+> It's up to you to decide, but crit/alert and similar has to be
+> justified (commit message / comment in the code).
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 63be5362fd3a..75f9dd6e3617 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -160,6 +160,15 @@ config PWM_CROS_EC
- 	  PWM driver for exposing a PWM attached to the ChromeOS Embedded
- 	  Controller.
- 
-+config PWM_DWC
-+	tristate "DesignWare PWM Controller"
-+	depends on PCI
-+	help
-+	  PWM driver for Synopsys DWC PWM Controller attached to a PCI bus.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-dwc.
-+
- config PWM_EP93XX
- 	tristate "Cirrus Logic EP93xx PWM support"
- 	depends on ARCH_EP93XX || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index cbdcd55d69ee..74289a4bcbcb 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -13,6 +13,7 @@ obj-$(CONFIG_PWM_BRCMSTB)	+= pwm-brcmstb.o
- obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
- obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
- obj-$(CONFIG_PWM_CROS_EC)	+= pwm-cros-ec.o
-+obj-$(CONFIG_PWM_DWC)		+= pwm-dwc.o
- obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
- obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
- obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-new file mode 100644
-index 000000000000..f6c98e0d57c2
---- /dev/null
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -0,0 +1,319 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * DesignWare PWM Controller driver
-+ *
-+ * Copyright (C) 2018-2020 Intel Corporation
-+ *
-+ * Author: Felipe Balbi (Intel)
-+ * Author: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-+ * Author: Raymond Tan <raymond.tan@intel.com>
-+ *
-+ * Limitations:
-+ * - The hardware cannot generate a 0 % or 100 % duty cycle. Both high and low
-+ *   periods are one or more input clock periods long.
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/export.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/pwm.h>
-+
-+#define DWC_TIM_LD_CNT(n)	((n) * 0x14)
-+#define DWC_TIM_LD_CNT2(n)	(((n) * 4) + 0xb0)
-+#define DWC_TIM_CUR_VAL(n)	(((n) * 0x14) + 0x04)
-+#define DWC_TIM_CTRL(n)		(((n) * 0x14) + 0x08)
-+#define DWC_TIM_EOI(n)		(((n) * 0x14) + 0x0c)
-+#define DWC_TIM_INT_STS(n)	(((n) * 0x14) + 0x10)
-+
-+#define DWC_TIMERS_INT_STS	0xa0
-+#define DWC_TIMERS_EOI		0xa4
-+#define DWC_TIMERS_RAW_INT_STS	0xa8
-+#define DWC_TIMERS_COMP_VERSION	0xac
-+
-+#define DWC_TIMERS_TOTAL	8
-+#define DWC_CLK_PERIOD_NS	10
-+
-+/* Timer Control Register */
-+#define DWC_TIM_CTRL_EN		BIT(0)
-+#define DWC_TIM_CTRL_MODE	BIT(1)
-+#define DWC_TIM_CTRL_MODE_FREE	(0 << 1)
-+#define DWC_TIM_CTRL_MODE_USER	(1 << 1)
-+#define DWC_TIM_CTRL_INT_MASK	BIT(2)
-+#define DWC_TIM_CTRL_PWM	BIT(3)
-+
-+struct dwc_pwm_ctx {
-+	u32 cnt;
-+	u32 cnt2;
-+	u32 ctrl;
-+};
-+
-+struct dwc_pwm {
-+	struct pwm_chip chip;
-+	void __iomem *base;
-+	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
-+};
-+#define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
-+
-+static inline u32 dwc_pwm_readl(struct dwc_pwm *dwc, u32 offset)
-+{
-+	return readl(dwc->base + offset);
-+}
-+
-+static inline void dwc_pwm_writel(struct dwc_pwm *dwc, u32 value, u32 offset)
-+{
-+	writel(value, dwc->base + offset);
-+}
-+
-+static void __dwc_pwm_set_enable(struct dwc_pwm *dwc, int pwm, int enabled)
-+{
-+	u32 reg;
-+
-+	reg = dwc_pwm_readl(dwc, DWC_TIM_CTRL(pwm));
-+
-+	if (enabled)
-+		reg |= DWC_TIM_CTRL_EN;
-+	else
-+		reg &= ~DWC_TIM_CTRL_EN;
-+
-+	dwc_pwm_writel(dwc, reg, DWC_TIM_CTRL(pwm));
-+}
-+
-+static int __dwc_pwm_configure_timer(struct dwc_pwm *dwc,
-+				     struct pwm_device *pwm,
-+				     const struct pwm_state *state)
-+{
-+	u64 tmp;
-+	u32 ctrl;
-+	u32 high;
-+	u32 low;
-+
-+	/*
-+	 * Calculate width of low and high period in terms of input clock
-+	 * periods and check are the result within HW limits between 1 and
-+	 * 2^32 periods.
-+	 */
-+	tmp = DIV_ROUND_CLOSEST_ULL(state->duty_cycle, DWC_CLK_PERIOD_NS);
-+	if (tmp < 1 || tmp > (1ULL << 32))
-+		return -ERANGE;
-+	low = tmp - 1;
-+
-+	tmp = DIV_ROUND_CLOSEST_ULL(state->period - state->duty_cycle,
-+				    DWC_CLK_PERIOD_NS);
-+	if (tmp < 1 || tmp > (1ULL << 32))
-+		return -ERANGE;
-+	high = tmp - 1;
-+
-+	/*
-+	 * Specification says timer usage flow is to disable timer, then
-+	 * program it followed by enable. It also says Load Count is loaded
-+	 * into timer after it is enabled - either after a disable or
-+	 * a reset. Based on measurements it happens also without disable
-+	 * whenever Load Count is updated. But follow the specification.
-+	 */
-+	__dwc_pwm_set_enable(dwc, pwm->hwpwm, false);
-+
-+	/*
-+	 * Write Load Count and Load Count 2 registers. Former defines the
-+	 * width of low period and latter the width of high period in terms
-+	 * multiple of input clock periods:
-+	 * Width = ((Count + 1) * input clock period).
-+	 */
-+	dwc_pwm_writel(dwc, low, DWC_TIM_LD_CNT(pwm->hwpwm));
-+	dwc_pwm_writel(dwc, high, DWC_TIM_LD_CNT2(pwm->hwpwm));
-+
-+	/*
-+	 * Set user-defined mode, timer reloads from Load Count registers
-+	 * when it counts down to 0.
-+	 * Set PWM mode, it makes output to toggle and width of low and high
-+	 * periods are set by Load Count registers.
-+	 */
-+	ctrl = DWC_TIM_CTRL_MODE_USER | DWC_TIM_CTRL_PWM;
-+	dwc_pwm_writel(dwc, ctrl, DWC_TIM_CTRL(pwm->hwpwm));
-+
-+	/*
-+	 * Enable timer. Output starts from low period.
-+	 */
-+	__dwc_pwm_set_enable(dwc, pwm->hwpwm, state->enabled);
-+
-+	return 0;
-+}
-+
-+static int dwc_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			 const struct pwm_state *state)
-+{
-+	struct dwc_pwm *dwc = to_dwc_pwm(chip);
-+
-+	if (state->polarity != PWM_POLARITY_INVERSED)
-+		return -EINVAL;
-+
-+	if (state->enabled) {
-+		if (!pwm->state.enabled)
-+			pm_runtime_get_sync(chip->dev);
-+		return __dwc_pwm_configure_timer(dwc, pwm, state);
-+	} else {
-+		if (pwm->state.enabled) {
-+			__dwc_pwm_set_enable(dwc, pwm->hwpwm, false);
-+			pm_runtime_put_sync(chip->dev);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void dwc_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+			      struct pwm_state *state)
-+{
-+	struct dwc_pwm *dwc = to_dwc_pwm(chip);
-+	u64 duty, period;
-+
-+	pm_runtime_get_sync(chip->dev);
-+
-+	state->enabled = !!(dwc_pwm_readl(dwc,
-+				DWC_TIM_CTRL(pwm->hwpwm)) & DWC_TIM_CTRL_EN);
-+
-+	duty = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(pwm->hwpwm));
-+	duty += 1;
-+	duty *= DWC_CLK_PERIOD_NS;
-+	state->duty_cycle = duty;
-+
-+	period = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(pwm->hwpwm));
-+	period += 1;
-+	period *= DWC_CLK_PERIOD_NS;
-+	period += duty;
-+	state->period = period;
-+
-+	state->polarity = PWM_POLARITY_INVERSED;
-+
-+	pm_runtime_put_sync(chip->dev);
-+}
-+
-+static const struct pwm_ops dwc_pwm_ops = {
-+	.apply = dwc_pwm_apply,
-+	.get_state = dwc_pwm_get_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
-+{
-+	struct device *dev = &pci->dev;
-+	struct dwc_pwm *dwc;
-+	int ret;
-+
-+	dwc = devm_kzalloc(&pci->dev, sizeof(*dwc), GFP_KERNEL);
-+	if (!dwc)
-+		return -ENOMEM;
-+
-+	ret = pcim_enable_device(pci);
-+	if (ret) {
-+		dev_err(&pci->dev,
-+			"Failed to enable device (%pe)\n", ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	pci_set_master(pci);
-+
-+	ret = pcim_iomap_regions(pci, BIT(0), pci_name(pci));
-+	if (ret) {
-+		dev_err(&pci->dev,
-+			"Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	dwc->base = pcim_iomap_table(pci)[0];
-+	if (!dwc->base) {
-+		dev_err(&pci->dev, "Base address missing\n");
-+		return -ENOMEM;
-+	}
-+
-+	pci_set_drvdata(pci, dwc);
-+
-+	dwc->chip.dev = dev;
-+	dwc->chip.ops = &dwc_pwm_ops;
-+	dwc->chip.npwm = DWC_TIMERS_TOTAL;
-+	dwc->chip.base = -1;
-+
-+	ret = pwmchip_add(&dwc->chip);
-+	if (ret)
-+		return ret;
-+
-+	pm_runtime_put(dev);
-+	pm_runtime_allow(dev);
-+
-+	return 0;
-+}
-+
-+static void dwc_pwm_remove(struct pci_dev *pci)
-+{
-+	struct dwc_pwm *dwc = pci_get_drvdata(pci);
-+
-+	pm_runtime_forbid(&pci->dev);
-+	pm_runtime_get_noresume(&pci->dev);
-+
-+	pwmchip_remove(&dwc->chip);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int dwc_pwm_suspend(struct device *dev)
-+{
-+	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
-+	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
-+	int i;
-+
-+	for (i = 0; i < DWC_TIMERS_TOTAL; i++) {
-+		if (dwc->chip.pwms[i].state.enabled) {
-+			dev_err(dev, "PWM %u in use by consumer (%s)\n",
-+				i, dwc->chip.pwms[i].label);
-+			return -EBUSY;
-+		}
-+		dwc->ctx[i].cnt = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT(i));
-+		dwc->ctx[i].cnt2 = dwc_pwm_readl(dwc, DWC_TIM_LD_CNT2(i));
-+		dwc->ctx[i].ctrl = dwc_pwm_readl(dwc, DWC_TIM_CTRL(i));
-+	}
-+
-+	return 0;
-+}
-+
-+static int dwc_pwm_resume(struct device *dev)
-+{
-+	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
-+	struct dwc_pwm *dwc = pci_get_drvdata(pdev);
-+	int i;
-+
-+	for (i = 0; i < DWC_TIMERS_TOTAL; i++) {
-+		dwc_pwm_writel(dwc, dwc->ctx[i].cnt, DWC_TIM_LD_CNT(i));
-+		dwc_pwm_writel(dwc, dwc->ctx[i].cnt2, DWC_TIM_LD_CNT2(i));
-+		dwc_pwm_writel(dwc, dwc->ctx[i].ctrl, DWC_TIM_CTRL(i));
-+	}
-+
-+	return 0;
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(dwc_pwm_pm_ops, dwc_pwm_suspend, dwc_pwm_resume);
-+
-+static const struct pci_device_id dwc_pwm_id_table[] = {
-+	{ PCI_VDEVICE(INTEL, 0x4bb7) }, /* Elkhart Lake */
-+	{  }	/* Terminating Entry */
-+};
-+MODULE_DEVICE_TABLE(pci, dwc_pwm_id_table);
-+
-+static struct pci_driver dwc_pwm_driver = {
-+	.name = "pwm-dwc",
-+	.probe = dwc_pwm_probe,
-+	.remove = dwc_pwm_remove,
-+	.id_table = dwc_pwm_id_table,
-+	.driver = {
-+		.pm = &dwc_pwm_pm_ops,
-+	},
-+};
-+
-+module_pci_driver(dwc_pwm_driver);
-+
-+MODULE_AUTHOR("Felipe Balbi (Intel)");
-+MODULE_AUTHOR("Jarkko Nikula <jarkko.nikula@linux.intel.com>");
-+MODULE_AUTHOR("Raymond Tan <raymond.tan@intel.com>");
-+MODULE_DESCRIPTION("DesignWare PWM Controller");
-+MODULE_LICENSE("GPL");
--- 
-2.28.0
+Alright, thanks for explaining.
 
+> > > > +       /*
+> > > > +        * NOTE: The lower half of the reset value is not sent, bec=
+ause sending
+> > > > +        * it causes an error
+> > >
+> > > Why? Any root cause? Perhaps you need to send 0xffff ?
+> >
+> > Unknown, because I don't have the EC firmware for analysis. The vendor
+> > kernel sends 0xff00 and gets an error.
+> >
+> > Sending 0xffff doesn't help.
+>=20
+> Maybe a slightly elaborated comment that it's copied from the vendor
+> kernel (which is?).
+
+Good idea, I'll do that.
+
+> ...
+>=20
+> > > > +       dev_info(ec->dev,
+> > > > +                "Netronix embedded controller version %04x detecte=
+d.\n",
+> > > > +                version);
+> > >
+> > > This info level may confuse users if followed by an error path.
+> >
+> > Right. I suppose printing incompatible versions is still useful, so how
+> > about something like the following?
+> >
+> >
+> >        /* Bail out if we encounter an unknown firmware version */
+> >        switch (version) {
+> >        case 0xd726: /* found in Kobo Aura */
+> >                dev_info(ec->dev,
+> >                         "Netronix embedded controller version %04x dete=
+cted.\n",
+> >                         version);
+> >                break;
+> >        default:
+> >                dev_err(ec->dev,
+> >                         "Netronix embedded controller version %04x is n=
+ot supported.\n",
+> >                         version);
+> >                return -ENODEV;
+> >        }
+>=20
+> This is better.
+>=20
+> ...
+>=20
+> > > > +               WARN_ON(poweroff_restart_client);
+> > >
+> > > WARN_ON? All these alerts, WARNs, BUGs must be explained. Screaming to
+> > > the user is not good if it wasn't justified.
+> >
+> > poweroff_restart_client being already set is not a situation that should
+> > happen (and would indicate a bug in this driver, AFAICT), but I guess
+> > the log message could be better in that case...
+>=20
+> As per above.
+
+Okay, I'll rework the dev_alert/WARN_ON parts.
+
+
+
+Thanks,
+Jonathan Neusch=C3=A4fer
+
+--azLHFNyN32YCQGCU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl93r30ACgkQCDBEmo7z
+X9sFyA/+PxkayxMmWS6aZriR35iArW9FwzoI/FTynPwp7rIU9mEWM5LrusnWLV/k
+rgbasDHs6h2NLH7T7uDsc8ry8+rZ1TLSFvmfehJPCmKCnHBn6ffQqe9E1qXI5gQS
+Ua/o/7rEZDyAsMcTpm4yW1ffjE00H1dmevY9dQVKkr01SHo/ImtJKyxaCa/QpMKA
+4/UXEoHnKcGVd3CFEouiQG14KgWpzcodrqQLbfUNJfYLObMKs2ecZ1aYvjgCd0yR
+lYL/JeMhKNXyA4mj/Tx6AdOqfDs7dr3jpEsRXNWzeqJ8bMi2N9BLUJcHvefwP00V
+dxMqZF0sSTvXbthNs+Plr961rvzQYlI7HvfPPrWclBYvHNafaEZ//NIywX4drKUR
+Kp6Xi8kFR3wpCYwnbxt7bWmDz1npI5ZrDfDHwID8lZQcCqcTZqKGzRqbMJNjL56H
+n/CouOLei3LnY72vJaXTwzAT85/EBEOdx+VgKf3KLtEhMrXM3vtx7pYaAoOFDJ8a
+CLBv67rmInGfjdCNusox9yqs/NPpV0kBOxSqJaiCeIHNLLqEi1DgQx/J4PeKAF3K
+FqvtK7+XLx8lzhEykppPNWV57hzNJwZ6c2Vv/ucViTGlr19qvbd25YF4mEKMuAbp
+ZxhVx7DwbHFIoBpiqQ33+lX1FucFmZUrYwWezVTciwWbEf9YzVE=
+=1H3t
+-----END PGP SIGNATURE-----
+
+--azLHFNyN32YCQGCU--
