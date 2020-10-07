@@ -2,123 +2,128 @@ Return-Path: <SRS0=54Uu=DO=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B06B0C4727E
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Oct 2020 09:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED8AC47095
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Oct 2020 17:43:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5EA5A20870
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Oct 2020 09:46:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=z3ntu.xyz header.i=@z3ntu.xyz header.b="nssfBIoB";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=z3ntu.xyz header.i=@z3ntu.xyz header.b="KKS8sIN1"
+	by mail.kernel.org (Postfix) with ESMTP id 763232168B
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Oct 2020 17:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbgJGJqa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Oct 2020 05:46:30 -0400
-Received: from mail.z3ntu.xyz ([128.199.32.197]:60252 "EHLO mail.z3ntu.xyz"
+        id S1728142AbgJGRng (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Oct 2020 13:43:36 -0400
+Received: from mga14.intel.com ([192.55.52.115]:4177 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726411AbgJGJqa (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 7 Oct 2020 05:46:30 -0400
-X-Greylist: delayed 314 seconds by postgrey-1.27 at vger.kernel.org; Wed, 07 Oct 2020 05:46:28 EDT
-Received: by mail.z3ntu.xyz (Postfix, from userid 182)
-        id 8B5E3C7196; Wed,  7 Oct 2020 09:41:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1602063673; bh=G58nxDXR85aKAm9KZdsGVsJleTDCbz79NyrWb3uEyXY=;
-        h=Cc:Subject:From:To:Date:In-Reply-To;
-        b=nssfBIoByvP+3EH8HJuENhBQuGQTosfme+khCz5ttbYEyLd78Tns6n+r4cV4JfDxm
-         wy0lUjTBOkxGZizXrUTo/HZyCgQ6vgOmYd2Dl8Csxx1xkVPJIfCjkc6d4BIqDcVZ0I
-         2vy3Z8F7bZoZVY6eeB0nYQ9yX5E59hiF4rGCiHXc=
-Received: from localhost (arch-vps [128.199.32.197])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 56ED9C4CF4;
-        Wed,  7 Oct 2020 09:41:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1602063670; bh=G58nxDXR85aKAm9KZdsGVsJleTDCbz79NyrWb3uEyXY=;
-        h=Cc:Subject:From:To:Date:In-Reply-To;
-        b=KKS8sIN1+vS6ETBIO+nKA9RcB493ngK2y7IMwGZaazCBBxwrViO4xq7AtWUo/aYjo
-         cXV6RfG7Ouk0NCyObeT5ynmMRocAhiuz4TEmukpj+X4BMAbFGCEy0Gmo9iIrzIYpRX
-         eOTbzPqkkEVD23ITtVw0Llo5t2J9nm+UyQez7qtQ=
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+        id S1727828AbgJGRng (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 7 Oct 2020 13:43:36 -0400
+IronPort-SDR: jlwnUEokOHk//Bp+VpcPGlOinxC0m/WJqaRTtf1dOR5YUtpNAI4cqErAmgxwze+zejzyFkNmCl
+ 7kJqBOrUs4bg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="164265593"
+X-IronPort-AV: E=Sophos;i="5.77,347,1596524400"; 
+   d="scan'208";a="164265593"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 10:43:33 -0700
+IronPort-SDR: f4AIdtH12dpD6XgqFYtDQZkOav9nwhW21F96S/7ask2LhX7eSHAx1GzcTURV+fP6Vlcs42so2m
+ ZSayZ1HbQWoQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,347,1596524400"; 
+   d="scan'208";a="342989978"
+Received: from ubuntu18.png.intel.com ([10.88.229.38])
+  by fmsmga004.fm.intel.com with ESMTP; 07 Oct 2020 10:43:30 -0700
+From:   vijayakannan.ayyathurai@intel.com
+To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        robh+dt@kernel.org
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        wan.ahmad.zainie.wan.mohamad@intel.com,
+        andriy.shevchenko@linux.intel.com, mgross@linux.intel.com,
+        lakshmi.bai.raja.subramanian@intel.com,
+        vijayakannan.ayyathurai@intel.com
+Subject: [PATCH v10 2/2] dt-bindings: pwm: keembay: Add bindings for Intel Keem Bay PWM
+Date:   Thu,  8 Oct 2020 01:40:31 +0800
+Message-Id: <4ff2c01cf69b26de0efd8d78b4b87872fc7c5fed.1602090900.git.vijayakannan.ayyathurai@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1602090900.git.vijayakannan.ayyathurai@intel.com>
+References: <cover.1602090900.git.vijayakannan.ayyathurai@intel.com>
+In-Reply-To: <cover.1602090900.git.vijayakannan.ayyathurai@intel.com>
+References: <cover.1602090900.git.vijayakannan.ayyathurai@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Cc:     <linux-leds@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH v4 2/4] leds: Add driver for Qualcomm LPG
-From:   "Luca Weiss" <luca@z3ntu.xyz>
-To:     "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        "Pavel Machek" <pavel@ucw.cz>, "Dan Murphy" <dmurphy@ti.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Andy Gross" <agross@kernel.org>,
-        "Thierry Reding" <thierry.reding@gmail.com>,
-        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        "Lee Jones" <lee.jones@linaro.org>,
-        "Martin Botka" <martin.botka1@gmail.com>
-Date:   Wed, 07 Oct 2020 09:40:45 +0000
-Message-Id: <C66K5YFY5LGN.1S3H72H0QQQAI@arch-vps>
-In-Reply-To: <20200929031544.1000204-3-bjorn.andersson@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Bjorn,
+From: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
 
-On Mon Sep 28, 2020 at 8:15 PM, Bjorn Andersson wrote:
-> The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
-> PMICs from Qualcomm. It can operate on fixed parameters or based on a
-> lookup-table, altering the duty cycle over time - which provides the
-> means for e.g. hardware assisted transitions of LED brightness.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->
-> Changes since v3:
-> - Adopt multicolor model
-> - Simplified hw_pattern implementation
->
-> drivers/leds/Kconfig | 9 +
-> drivers/leds/Makefile | 1 +
-> drivers/leds/leds-qcom-lpg.c | 1213 ++++++++++++++++++++++++++++++++++
-> 3 files changed, 1223 insertions(+)
-> create mode 100644 drivers/leds/leds-qcom-lpg.c
+Add PWM Device Tree bindings documentation for the Intel Keem Bay SoC.
 
-<snip>
+Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+---
+ .../bindings/pwm/intel,keembay-pwm.yaml       | 47 +++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
 
-> +static int lpg_pwm_request(struct pwm_chip *chip, struct pwm_device
-> *pwm)
-> +{
-> + struct lpg *lpg =3D container_of(chip, struct lpg, pwm);
-> + struct lpg_channel *chan =3D &lpg->channels[pwm->hwpwm];
-> +
-> + return chan->in_use ? -EBUSY : 0;
-> +}
-> +
-> +static int lpg_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> + const struct pwm_state *state)
-> +{
-> + struct lpg *lpg =3D container_of(chip, struct lpg, pwm);
-> + struct lpg_channel *chan =3D &lpg->channels[pwm->hwpwm];
-> +
-> + lpg_calc_freq(chan, state->period / NSEC_PER_USEC);
-> + lpg_calc_duty(chan, state->duty_cycle / NSEC_PER_USEC);
+diff --git a/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+new file mode 100644
+index 000000000000..a37433487632
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2020 Intel Corporation
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/intel,keembay-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Intel Keem Bay PWM Device Tree Bindings
++
++maintainers:
++  - Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    enum:
++      - intel,keembay-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++required:
++ - compatible
++ - reg
++ - clocks
++ - '#pwm-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #define KEEM_BAY_A53_GPIO
++
++    pwm@203200a0 {
++      compatible = "intel,keembay-pwm";
++      reg = <0x203200a0 0xe8>;
++      clocks = <&scmi_clk KEEM_BAY_A53_GPIO>;
++      #pwm-cells = <2>;
++    };
+-- 
+2.17.1
 
-As written on IRC this has to be wrapped div_u64() to compile on arm32;
-should also fix the buildbot failure.
-
-> + chan->enabled =3D state->enabled;
-> +
-> + lpg_apply(chan);
-> +
-> + triled_set(lpg, chan->triled_mask, chan->enabled);
-> +
-> + return 0;
-> +}
-
-Other than that, this works great on msm8974-fairphone-fp2 (pm8941)
-with reg 7 (red), 6 (green) & 5 (blue). Thanks for updating this
-patchset!
-
-Regards
-Luca
