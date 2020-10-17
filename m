@@ -1,172 +1,169 @@
-Return-Path: <SRS0=wRCd=DX=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=ElQt=DY=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F8B9C433DF
-	for <linux-pwm@archiver.kernel.org>; Fri, 16 Oct 2020 19:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F198C433DF
+	for <linux-pwm@archiver.kernel.org>; Sat, 17 Oct 2020 05:29:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8AEAA20829
-	for <linux-pwm@archiver.kernel.org>; Fri, 16 Oct 2020 19:34:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 685B72076A
+	for <linux-pwm@archiver.kernel.org>; Sat, 17 Oct 2020 05:29:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="vgusvKWJ"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GgJ0F82R"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411084AbgJPTev (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 16 Oct 2020 15:34:51 -0400
-Received: from mga01.intel.com ([192.55.52.88]:44172 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404154AbgJPTev (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 16 Oct 2020 15:34:51 -0400
-IronPort-SDR: RJlNfLosXyKnlazZiOrlkXrsi3aGLmE4hCtrucIMoY7Hw3udASqryp2D0OWvwDenElAdp9l3M8
- biFQ4KI0qUfQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9776"; a="184255182"
-X-IronPort-AV: E=Sophos;i="5.77,383,1596524400"; 
-   d="scan'208";a="184255182"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2020 12:34:49 -0700
-IronPort-SDR: 80bhafxcWp51x+rPStdAP+/6mhMdjNSLNfN56PA7lP/dtt1jGEMnRodr7+awRLtG6bBOxeZXyZ
- Uuz9Qun4zWLQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,383,1596524400"; 
-   d="scan'208";a="347310878"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga008.jf.intel.com with ESMTP; 16 Oct 2020 12:34:48 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 16 Oct 2020 12:34:48 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 16 Oct 2020 12:34:48 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 16 Oct 2020 12:34:48 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.177)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Fri, 16 Oct 2020 12:34:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PTXGPzQxd6EWFndjgIPAl9D+dg56fs04CM9gfKJN81sphyrYEx/5qbP9KBHzrfjgZiS6dLbE3JHzGJGQdhirTsdW+84EgS3zaDZWx7eR9cV3R3Lb835QsSUtyul342SUNWtIp7wpfczCQF8gBmRC3mMONsnu3RHfsPvXUS1zz6e6qzv0oN3GkA8QUEFk0b+CWQnXgAUMksCuHDn1bZY2pg0cZHDduejLSkh6m6l5bgUau5Z11xRHuUQwWEsesi65Yd89bxgEKiAQ9QfoizsJOkSSsMZC1gtxvI2Yd5Dz7Del+YKidqb6BDKxMTh6meJe0b16YSPcXz2VDjD2zR7oIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=12nvQExtr50pOaTGi/DAIbLGO10do3DOCHYOhFg+m9E=;
- b=ZHGGIEvE4PijAyiYAyAOzY/R1Vhq7yF6ZU25K9Lxp/OiyMf4VLGmgIZzeiuHL2iRGlwMn1wlSRN26wJTIta511LgXHjVW7QCKGuw3ntWxR/fqnvRmELe7qt8uoykmy8a0Pk+t40XA5q8JpIMsxGQ//TMGeuDabu8+ukg5kNFnEDOQTRM9j2Iy5xKyKmclBLTDkv30Q4SpcYQkX1ECbju/NG494Ou4b7Bu671vZQkfkmPMlCQKNi/0u3uq8Ny2LLUswyIZzJ0n9a4Ao6KKY06XLhWdmmhBzK1y+i9zheC6FEuwt4Mjt4atedxK9EZ2PwbDhJCUhTnxXDaMjVH5fTdGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=12nvQExtr50pOaTGi/DAIbLGO10do3DOCHYOhFg+m9E=;
- b=vgusvKWJd2Gv+/4wnlqHK3Bh2dolwWgHy0m6zERFTfSvNa6Gkhi9v4sEXgoAgztTtCCWZoEvzTMx7mDpOgCVaG4brKhYIywBe5eYthAI2+gmf4CuKWcprg3n6cth34Kscv6JkapG9TfMLq1Pb4FXM5VCG7GWeb7nDIuOHk5oTXI=
-Received: from DM6PR11MB4250.namprd11.prod.outlook.com (2603:10b6:5:1df::18)
- by DM5PR11MB1529.namprd11.prod.outlook.com (2603:10b6:4:b::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3477.20; Fri, 16 Oct 2020 19:34:45 +0000
-Received: from DM6PR11MB4250.namprd11.prod.outlook.com
- ([fe80::7448:c067:e80d:3c09]) by DM6PR11MB4250.namprd11.prod.outlook.com
- ([fe80::7448:c067:e80d:3c09%3]) with mapi id 15.20.3477.021; Fri, 16 Oct 2020
- 19:34:45 +0000
-From:   "Ayyathurai, Vijayakannan" <vijayakannan.ayyathurai@intel.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "Raja Subramanian, Lakshmi Bai" 
-        <lakshmi.bai.raja.subramanian@intel.com>,
-        "mgross@linux.intel.com" <mgross@linux.intel.com>,
-        "Wan Mohamad, Wan Ahmad Zainie" 
-        <wan.ahmad.zainie.wan.mohamad@intel.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
-Subject: RE: [PATCH v12 2/2] dt-bindings: pwm: keembay: Add bindings for Intel
- Keem Bay PWM
-Thread-Topic: [PATCH v12 2/2] dt-bindings: pwm: keembay: Add bindings for
- Intel Keem Bay PWM
-Thread-Index: AQHWomCA7sFNiWVj5kmPMUKML01ry6maZzWAgAA5LmA=
-Date:   Fri, 16 Oct 2020 19:34:45 +0000
-Message-ID: <DM6PR11MB425044445E9997B8F8F3A5F2FB030@DM6PR11MB4250.namprd11.prod.outlook.com>
-References: <cover.1602703463.git.vijayakannan.ayyathurai@intel.com>
- <9cff78f955eb7b1f243380c79cdd48aa6d2ddc81.1602703463.git.vijayakannan.ayyathurai@intel.com>
- <20201016160409.GA1494813@bogus>
-In-Reply-To: <20201016160409.GA1494813@bogus>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [42.111.145.16]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f4dfb493-de67-454f-54e7-08d8720a89bb
-x-ms-traffictypediagnostic: DM5PR11MB1529:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR11MB1529CE5B487F4923D30DA9F3FB030@DM5PR11MB1529.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sA8H1kenvIBrNtT0KWrKjAZvl6rbsf81pH7ch9aLDMqEp3uJeyUQ/WADFhoBzvX+cQRDh4ZwnY9q0Ts8tj3l7JfQEbK6KQc8+L1PwYbp9+YLTqydayly5sfEzheNnho9imRxqMNKl7xQZ2D43SD2MXLRI/5Ya7hbGySJh3T/Cgek2HFRMmhysQzQ672s5ZImY1jFErAn0UaBHd29Ro53xPeOCm/BCdcUhn2SIPahFvg+C7zTBlfhLPp4Ohc8JyAEYPXG12RR5Pyqlqve9v+SBhcAV9maII98jrtEnXDExPYxy0PE6uOr+Kw/HeVxsIy9ZV9WujJsCWbr+n77W40nSIjBsZwHKKTtTE+pg1PEDsN+BCnzGC5AhvMex0Jt/y+bJIijWO92hjNePjUSyXsfsg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4250.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(39860400002)(376002)(346002)(396003)(66556008)(2906002)(55016002)(64756008)(54906003)(316002)(8676002)(86362001)(52536014)(33656002)(6916009)(4326008)(26005)(186003)(966005)(9686003)(478600001)(71200400001)(83380400001)(8936002)(7696005)(66476007)(66446008)(76116006)(5660300002)(4744005)(6506007)(66946007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 0tFvDqF5fI0CG1ksdmz4hfzpMmVIa36cMUDAsxtGAKTbxTpb79Fucm37og8x6AtXG2ei+5CImBTcsNbc/uIPAtBMq89pQiA560HAKhRH/o49knT7DLQ8/sbDhQHcSVhnCfzEVOxgHCigFKKpCUrMlguihonGglasZzZlpWneZf+ksyPyZpD0AY+jqHZOxh7ZRHWaMxPUCRsuhkkQVEYebaR4qkMDHTvZbj4gOLf5h8EO82VSSx+8kExctYbKhyG/L4WS1vPSTG3W8nADfklcm76fkQcHql+PP5uu7QfVnTf0nxXhs0zOTzs2o7p3AOxdk33GWFpsxJDGsZUnUFvYPjJqzMuAyk/d5d0DZOBAmrO/Y9P7/bqz3qLRNjS5G2OOlrIOo91Br3XkFnqsQSCslCkauqNPSCj8+FzVN8GQC/7pTHKBTmmhH/6beH/bR4lafeqTdH1/c9IEQ51yjPDspAt9bKWY74G9FHDkramTI6wly9TpBZptNjlADPGPJ3kHPrVFcvRi5WLDTAW+M+N6fx8us0k5nE5PC6PfxJVR96t4N9gmtnuIKb4zm7OLZETINSbNaAf75uKg+oH8dq3uYkIy7WKi2aqPXtWWaKBoqVtPXw5YYZLjkSyl1rnnbCqZCfOuzme26CZcus1DzUAAcQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2411655AbgJQF3p (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 17 Oct 2020 01:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2411631AbgJQF3n (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 17 Oct 2020 01:29:43 -0400
+Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367A0C05110B
+        for <linux-pwm@vger.kernel.org>; Fri, 16 Oct 2020 22:20:22 -0700 (PDT)
+Received: by mail-oo1-xc43.google.com with SMTP id v123so1153618ooa.5
+        for <linux-pwm@vger.kernel.org>; Fri, 16 Oct 2020 22:20:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Am11ttHsA0DQGqbaWBINshvKBjWKydVsOnpvVxHgLqA=;
+        b=GgJ0F82RgLNPenXfBHY3Yuam0WuUgNNRsHU3kZ9RxCI0cztz44uqB65UALb8JACGqO
+         b/kwohjUGJMdgoy5SuW5bvE3iO3PptyjJLvsTe0m4S2/wg3CdZPL6SbhmcafhKaf9uHq
+         BHr4kioSB89b1RaD2OIGaDnzaPowIRJ5nc+RtPJ7lJ37mAWueTfNfTzS+NSgN4cRGswd
+         y0xWxaTrNWDxU6W1vfI0PAezq1EFPRXarkP8uhYGcXGnoyH9/DQDyhB+qTzrODTZOJLG
+         QwWgQLdrOfUqNxzBvB+yWAxfD9Fn3bkPRvczHRfr5Y8vZMsMunwbr76YVbSuvUUbPUoZ
+         j1aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Am11ttHsA0DQGqbaWBINshvKBjWKydVsOnpvVxHgLqA=;
+        b=V7KAkKEgusth/Wp/1sy9DtLewmkor68WSnkqPAt1Vqh/haD2sgHi4+jU6LmOvu6G8+
+         rM4ThGN1CWsVo6rUlSwmEsF7W/omToe91LBUF4GCqgzCEuJRkV3DsD7KvI4RHXHke5zC
+         4vfwkSJ4l+7wNq4g3OY8gyyiDFgx9n2fFwNL0Ga3MXyx6C132NfI2/FnNA/0KRArPLJD
+         0dAvb3PLxQwCm3pA8oD8JuJ0cxMjEG7IyOYgur+EiTe/XEaIgrszyKaYWYwi8FR2LXPL
+         bM0fG1293ZQVhkB3ZuhCoQs/J2KS1aTMESK0DWdsBbvP6d1w+slHzM5+y7cpQSOTUchE
+         jWDg==
+X-Gm-Message-State: AOAM533do24vIZovGETufUNjsgUbQVjD2+7N02v1bQ0SySSBVYrHR1Z0
+        sMaE5/qhmx7SY5qSxcaJ0mgzkg==
+X-Google-Smtp-Source: ABdhPJylLggLu5AkxzhvDUwAo5oPqq2BFPVnonhOahpzng8sR+Z2KckCismnGoNPMyY4/Y0/5QJA6Q==
+X-Received: by 2002:a4a:b78f:: with SMTP id a15mr5211950oop.33.1602912021584;
+        Fri, 16 Oct 2020 22:20:21 -0700 (PDT)
+Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id f2sm1572769ots.64.2020.10.16.22.20.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 22:20:20 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Martin Botka <martin.botka1@gmail.com>
+Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: [PATCH v5 4/4] arm64: dts: qcom: Add user LEDs on db820c
+Date:   Fri, 16 Oct 2020 22:20:57 -0700
+Message-Id: <20201017052057.2698588-5-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201017052057.2698588-1-bjorn.andersson@linaro.org>
+References: <20201017052057.2698588-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4250.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4dfb493-de67-454f-54e7-08d8720a89bb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Oct 2020 19:34:45.5642
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: V1FlEKjICd0/aIc4xa3lVS992FxSF7ryVXaP1TCCZ0S70sYK73oU+vQDtbP54jnV+EtEQz01K+AqIc4/qughS5VscecT5IGn+F+mtrwW8XtYN45NQ51IkjjQTOEKNfdO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1529
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Rob,
+The db820c has 4 "user LEDs", all connected to the PMI8994. The first
+three are connected to the three current sinks provided by the TRILED
+and the fourth is connected to MPP2.
 
-> From: Rob Herring <robh@kernel.org>
-> Sent: Friday, 16 October, 2020 9:34 PM
->=20
-> My bot found errors running 'make dt_binding_check' on your patch:
+By utilizing the DTEST bus the MPP is fed the control signal from the
+fourth LPG block, providing a consistent interface to the user.
 
-Ok I will check again with upgraded schema and incorporate the fix in the n=
-ext version.
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
 
->=20
-> ./Documentation/devicetree/bindings/pwm/intel,keembay-pwm.yaml:31:2:
-> [warning] wrong indentation: expected 2 but found 1 (indentation)
->=20
->=20
-> See https://patchwork.ozlabs.org/patch/1382326
->=20
-> If you already ran 'make dt_binding_check' and didn't see the above error=
-(s),
-> then make sure dt-schema is up to date:
->=20
-> pip3 install git+https://github.com/devicetree-org/dt-schema.git@master -=
--
-> upgrade
->=20
-> Please check and re-submit.
+Changes since v4:
+- None
 
-Thanks,
-Vijay
+ arch/arm64/boot/dts/qcom/apq8096-db820c.dtsi | 49 ++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/apq8096-db820c.dtsi b/arch/arm64/boot/dts/qcom/apq8096-db820c.dtsi
+index defcbd15edf9..7e51677d256e 100644
+--- a/arch/arm64/boot/dts/qcom/apq8096-db820c.dtsi
++++ b/arch/arm64/boot/dts/qcom/apq8096-db820c.dtsi
+@@ -8,6 +8,7 @@
+ #include "pmi8994.dtsi"
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/leds/common.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ #include <dt-bindings/sound/qcom,q6afe.h>
+ #include <dt-bindings/sound/qcom,q6asm.h>
+@@ -682,6 +683,54 @@ pinconf {
+ 	};
+ };
+ 
++&pmi8994_mpps {
++	pmi8994_mpp2_userled4: mpp2-userled4 {
++		pins = "mpp2";
++		function = "sink";
++
++		output-low;
++		qcom,dtest = <4>;
++	};
++};
++
++&pmi8994_lpg {
++	qcom,power-source = <1>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&pmi8994_mpp2_userled4>;
++
++	status = "okay";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	led@1 {
++		reg = <1>;
++		label = "green:user1";
++
++		linux,default-trigger = "heartbeat";
++		default-state = "on";
++	};
++
++	led@2 {
++		reg = <2>;
++		label = "green:user0";
++		default-state = "on";
++	};
++
++	led@3 {
++		reg = <3>;
++		label = "green:user2";
++	};
++
++	led@4 {
++		reg = <4>;
++		label = "green:user3";
++
++		qcom,dtest = <4 1>;
++	};
++};
++
+ &pmi8994_spmi_regulators {
+ 	vdd_gfx: s2@1700 {
+ 		reg = <0x1700 0x100>;
+-- 
+2.28.0
 
