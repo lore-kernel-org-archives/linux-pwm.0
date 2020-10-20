@@ -1,360 +1,490 @@
-Return-Path: <SRS0=80uT=D2=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=+0DZ=D3=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F6DC433DF
-	for <linux-pwm@archiver.kernel.org>; Mon, 19 Oct 2020 17:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 798E0C43457
+	for <linux-pwm@archiver.kernel.org>; Tue, 20 Oct 2020 04:29:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6CF4E222EC
-	for <linux-pwm@archiver.kernel.org>; Mon, 19 Oct 2020 17:31:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 157B8208C3
+	for <linux-pwm@archiver.kernel.org>; Tue, 20 Oct 2020 04:29:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="b/SDVYpl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727255AbgJSRbs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 19 Oct 2020 13:31:48 -0400
-Received: from mga09.intel.com ([134.134.136.24]:48158 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725887AbgJSRbs (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 19 Oct 2020 13:31:48 -0400
-IronPort-SDR: Am5NNMIo1EMw8mfD4TXrV6XLOah+mi6vsgyemmRVm3ZQvsxQ0mAlBX3r7kNHf7L/vDlDmWJT2J
- zOBwx3YXvU1A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9779"; a="167184867"
-X-IronPort-AV: E=Sophos;i="5.77,395,1596524400"; 
-   d="scan'208";a="167184867"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2020 10:31:31 -0700
-IronPort-SDR: jR0WWeK7cN3+KuorQbVSbSUsV+5Ois7yZ+ZV/V9bW1cYJ+HKwiIMxPcyRtz+BZSfffPQDhZF/u
- dPmLQV7XXXKQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,395,1596524400"; 
-   d="scan'208";a="315737560"
-Received: from ubuntu18.png.intel.com ([10.88.229.38])
-  by orsmga003.jf.intel.com with ESMTP; 19 Oct 2020 10:31:28 -0700
-From:   vijayakannan.ayyathurai@intel.com
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        robh+dt@kernel.org
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        wan.ahmad.zainie.wan.mohamad@intel.com,
-        andriy.shevchenko@linux.intel.com, mgross@linux.intel.com,
-        lakshmi.bai.raja.subramanian@intel.com,
-        vijayakannan.ayyathurai@intel.com
-Subject: [PATCH v13 1/2] pwm: Add PWM driver for Intel Keem Bay
-Date:   Tue, 20 Oct 2020 01:28:46 +0800
-Message-Id: <5a7356e06c0b1527343228904a64a070b1c700d2.1603127898.git.vijayakannan.ayyathurai@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1603127898.git.vijayakannan.ayyathurai@intel.com>
-References: <cover.1603127898.git.vijayakannan.ayyathurai@intel.com>
-In-Reply-To: <cover.1603127898.git.vijayakannan.ayyathurai@intel.com>
-References: <cover.1603127898.git.vijayakannan.ayyathurai@intel.com>
+        id S2391509AbgJTE3N (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 20 Oct 2020 00:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391493AbgJTE3L (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 20 Oct 2020 00:29:11 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90615C0613D3
+        for <linux-pwm@vger.kernel.org>; Mon, 19 Oct 2020 21:29:09 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id w141so803903oia.2
+        for <linux-pwm@vger.kernel.org>; Mon, 19 Oct 2020 21:29:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Uo7/xKk6OiCydhv1k2dC1b5/6JAdwL9IQp4Nu6SKW0c=;
+        b=b/SDVYplJ9l/YwE0wst0UnsLrXEIw9PeEOMw9MEKyGmR3CAAudlITJLXFpiimCuZ2W
+         cF6bgdg6B8fZ3YyNkqHakdM0y2MyqUP2zaGQLx/jL419cietHSLlY29fl3C8FwnSnYgI
+         8gb5/9dCTouGJgSDVwbtL82fSk5a/koYyQQFg39gOQEhHCrf7xuE/LEMWJ6O0HwHZSNU
+         15BuypzJ12rSw3L8HcxPG8/1Zo5vnCggezU2A7Wv9LaD8kPRSnk/EdAR10VFrGGxjcfF
+         /iLUv1UvgjxmrrAjj2r3sHGoORVis2qfXswXKEvDqUa97GvX/+AIVnZvYJuvWLMogvUq
+         qGNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Uo7/xKk6OiCydhv1k2dC1b5/6JAdwL9IQp4Nu6SKW0c=;
+        b=Ly6rRxOxfnirDUIWz+ym3zwm2Ejr5QNZ/LPsah7VZumQhszhmfeJETzXsY0IYiPbiF
+         U2Z5xquh91116PLAGKHI6WScqJee3AGBpg8lmzETlTjWwduUbpoGJ96ICFHwTuJBAt8u
+         BhP7gwTq9GVx0h1gvt1JYvo+3ai/ewM1R8kFRRLIS25aPeGDrFrDUwVITqLWA0bWS+6f
+         zjaHjS+fO4nl9c5wd3QHiGxA1TqxWTimrjtG/rMwaM9QHrF5NGKFyT2gpyMi7jw0tBQs
+         jO6CBeh/YxpLa3cWN4d28UB7Edtk47/1d6NieV37XOWkjiVsyxchIDGEWd0v3xuT4KuW
+         LNSA==
+X-Gm-Message-State: AOAM532fWGT1yKWw74rSDF93hOSjURQA9DLmDcDSXYKgrPmonaMMeb5w
+        g3fY3zwD0xQAO4fiVsfKp+dkWA==
+X-Google-Smtp-Source: ABdhPJwI6I/W/3GeE15jq8w1RzZH5ZOCw6Qs1Xe2VLlMJ0QRFhSPKz3VfW9WIMcpYNj163ag+vM0Qw==
+X-Received: by 2002:aca:c7ca:: with SMTP id x193mr600305oif.8.1603168148627;
+        Mon, 19 Oct 2020 21:29:08 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id w125sm202336oib.48.2020.10.19.21.29.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 21:29:07 -0700 (PDT)
+Date:   Mon, 19 Oct 2020 23:24:03 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Martin Botka <martin.botka1@gmail.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v5 2/4] leds: Add driver for Qualcomm LPG
+Message-ID: <20201020042403.GE6705@builder.lan>
+References: <20201017052057.2698588-1-bjorn.andersson@linaro.org>
+ <20201017052057.2698588-3-bjorn.andersson@linaro.org>
+ <CAHp75VeVbK1Wx2BEPghtEbEghqDAF2jFFN9=ARLEw-rvTUZ3yw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VeVbK1Wx2BEPghtEbEghqDAF2jFFN9=ARLEw-rvTUZ3yw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
+On Sun 18 Oct 15:12 CDT 2020, Andy Shevchenko wrote:
 
-The Intel Keem Bay SoC requires PWM support.
-Add the pwm-keembay driver to enable this.
+> On Sat, Oct 17, 2020 at 8:41 AM Bjorn Andersson
+> <bjorn.andersson@linaro.org> wrote:
+> >
+> > The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
+> > PMICs from Qualcomm. It can operate on fixed parameters or based on a
+> > lookup-table, altering the duty cycle over time - which provides the
+> > means for e.g. hardware assisted transitions of LED brightness.
+> 
+> > +config LEDS_QCOM_LPG
+> > +       tristate "LED support for Qualcomm LPG"
+> > +       depends on LEDS_CLASS_MULTICOLOR
+> > +       depends on OF
+> > +       depends on SPMI
+> 
+> 
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> 
+> ...
+> 
+> > +struct lpg {
+> > +       struct device *dev;
+> > +       struct regmap *map;
+> 
+> Can't you derive the former from the latter?
+> 
 
-Signed-off-by: Lai, Poey Seng <poey.seng.lai@intel.com>
-Co-developed-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Co-developed-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
-Signed-off-by: Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/Kconfig       |   9 ++
- drivers/pwm/Makefile      |   1 +
- drivers/pwm/pwm-keembay.c | 240 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 250 insertions(+)
- create mode 100644 drivers/pwm/pwm-keembay.c
+No, because map->dev is actually the dev->parent.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 7dbcf6973d33..c4f4a1c0a049 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -254,6 +254,15 @@ config PWM_JZ4740
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-jz4740.
- 
-+config PWM_KEEMBAY
-+	tristate "Intel Keem Bay PWM driver"
-+	depends on ARCH_KEEMBAY || (ARM64 && COMPILE_TEST)
-+	help
-+	  The platform driver for Intel Keem Bay PWM controller.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-keembay.
-+
- config PWM_LP3943
- 	tristate "TI/National Semiconductor LP3943 PWM support"
- 	depends on MFD_LP3943
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 2c2ba0a03557..a1051122eb07 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -22,6 +22,7 @@ obj-$(CONFIG_PWM_IMX27)		+= pwm-imx27.o
- obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
- obj-$(CONFIG_PWM_IQS620A)	+= pwm-iqs620a.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
-+obj-$(CONFIG_PWM_KEEMBAY)	+= pwm-keembay.o
- obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
- obj-$(CONFIG_PWM_LPC18XX_SCT)	+= pwm-lpc18xx-sct.o
- obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
-diff --git a/drivers/pwm/pwm-keembay.c b/drivers/pwm/pwm-keembay.c
-new file mode 100644
-index 000000000000..27023677330c
---- /dev/null
-+++ b/drivers/pwm/pwm-keembay.c
-@@ -0,0 +1,240 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Intel Keem Bay PWM driver
-+ *
-+ * Copyright (C) 2020 Intel Corporation
-+ * Authors: Lai Poey Seng <poey.seng.lai@intel.com>
-+ *          Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-+ *
-+ * Limitations:
-+ * - Upon disabling a channel, the currently running
-+ *   period will not be completed. However, upon
-+ *   reconfiguration of the duty cycle/period, the
-+ *   currently running period will be completed first.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/regmap.h>
-+
-+#define KMB_TOTAL_PWM_CHANNELS		6
-+#define KMB_PWM_COUNT_MAX		U16_MAX
-+#define KMB_PWM_EN_BIT			BIT(31)
-+
-+/* Mask */
-+#define KMB_PWM_HIGH_MASK		GENMASK(31, 16)
-+#define KMB_PWM_LOW_MASK		GENMASK(15, 0)
-+#define KMB_PWM_LEADIN_MASK		GENMASK(30, 0)
-+
-+/* PWM Register offset */
-+#define KMB_PWM_LEADIN_OFFSET(ch)	(0x00 + 4 * (ch))
-+#define KMB_PWM_HIGHLOW_OFFSET(ch)	(0x20 + 4 * (ch))
-+
-+struct keembay_pwm {
-+	struct pwm_chip chip;
-+	struct device *dev;
-+	struct clk *clk;
-+	void __iomem *base;
-+};
-+
-+static inline struct keembay_pwm *to_keembay_pwm_dev(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct keembay_pwm, chip);
-+}
-+
-+static void keembay_clk_unprepare(void *data)
-+{
-+	clk_disable_unprepare(data);
-+}
-+
-+static int keembay_clk_enable(struct device *dev, struct clk *clk)
-+{
-+	int ret;
-+
-+	ret = clk_prepare_enable(clk);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(dev, keembay_clk_unprepare, clk);
-+}
-+
-+static inline void keembay_pwm_update_bits(struct keembay_pwm *priv, u32 mask,
-+					   u32 val, u32 offset)
-+{
-+	u32 buff = readl(priv->base + offset);
-+
-+	buff = u32_replace_bits(buff, val, mask);
-+	writel(buff, priv->base + offset);
-+}
-+
-+static void keembay_pwm_enable(struct keembay_pwm *priv, int ch)
-+{
-+	keembay_pwm_update_bits(priv, KMB_PWM_EN_BIT, 1,
-+				KMB_PWM_LEADIN_OFFSET(ch));
-+}
-+
-+static void keembay_pwm_disable(struct keembay_pwm *priv, int ch)
-+{
-+	keembay_pwm_update_bits(priv, KMB_PWM_EN_BIT, 0,
-+				KMB_PWM_LEADIN_OFFSET(ch));
-+}
-+
-+static void keembay_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+				  struct pwm_state *state)
-+{
-+	struct keembay_pwm *priv = to_keembay_pwm_dev(chip);
-+	unsigned long long high, low;
-+	unsigned long clk_rate;
-+	u32 highlow;
-+
-+	clk_rate = clk_get_rate(priv->clk);
-+
-+	/* Read channel enabled status */
-+	highlow = readl(priv->base + KMB_PWM_LEADIN_OFFSET(pwm->hwpwm));
-+	if (highlow & KMB_PWM_EN_BIT)
-+		state->enabled = true;
-+	else
-+		state->enabled = false;
-+
-+	/* Read period and duty cycle */
-+	highlow = readl(priv->base + KMB_PWM_HIGHLOW_OFFSET(pwm->hwpwm));
-+	low = FIELD_GET(KMB_PWM_LOW_MASK, highlow) * NSEC_PER_SEC;
-+	high = FIELD_GET(KMB_PWM_HIGH_MASK, highlow) * NSEC_PER_SEC;
-+	state->duty_cycle = DIV_ROUND_UP_ULL(high, clk_rate);
-+	state->period = DIV_ROUND_UP_ULL(high + low, clk_rate);
-+	state->polarity = PWM_POLARITY_NORMAL;
-+}
-+
-+static int keembay_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			     const struct pwm_state *state)
-+{
-+	struct keembay_pwm *priv = to_keembay_pwm_dev(chip);
-+	struct pwm_state current_state;
-+	unsigned long long div;
-+	unsigned long clk_rate;
-+	u32 pwm_count = 0;
-+	u16 high, low;
-+
-+	if (state->polarity != PWM_POLARITY_NORMAL)
-+		return -ENOSYS;
-+
-+	/*
-+	 * Configure the pwm repeat count as infinite at (15:0) and leadin
-+	 * low time as 0 at (30:16), which is in terms of clock cycles.
-+	 */
-+	keembay_pwm_update_bits(priv, KMB_PWM_LEADIN_MASK, 0,
-+				KMB_PWM_LEADIN_OFFSET(pwm->hwpwm));
-+
-+	keembay_pwm_get_state(chip, pwm, &current_state);
-+
-+	if (!state->enabled) {
-+		if (current_state.enabled)
-+			keembay_pwm_disable(priv, pwm->hwpwm);
-+		return 0;
-+	}
-+
-+	/*
-+	 * The upper 16 bits and lower 16 bits of the KMB_PWM_HIGHLOW_OFFSET
-+	 * register contain the high time and low time of waveform accordingly.
-+	 * All the values are in terms of clock cycles.
-+	 */
-+
-+	clk_rate = clk_get_rate(priv->clk);
-+	div = clk_rate * state->duty_cycle;
-+	div = DIV_ROUND_DOWN_ULL(div, NSEC_PER_SEC);
-+	if (div > KMB_PWM_COUNT_MAX)
-+		return -ERANGE;
-+
-+	high = div;
-+	div = clk_rate * state->period;
-+	div = DIV_ROUND_DOWN_ULL(div, NSEC_PER_SEC);
-+	div = div - high;
-+	if (div > KMB_PWM_COUNT_MAX)
-+		return -ERANGE;
-+
-+	low = div;
-+
-+	pwm_count = FIELD_PREP(KMB_PWM_HIGH_MASK, high) |
-+		    FIELD_PREP(KMB_PWM_LOW_MASK, low);
-+
-+	writel(pwm_count, priv->base + KMB_PWM_HIGHLOW_OFFSET(pwm->hwpwm));
-+
-+	if (state->enabled && !current_state.enabled)
-+		keembay_pwm_enable(priv, pwm->hwpwm);
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops keembay_pwm_ops = {
-+	.owner = THIS_MODULE,
-+	.apply = keembay_pwm_apply,
-+	.get_state = keembay_pwm_get_state,
-+};
-+
-+static int keembay_pwm_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct keembay_pwm *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(priv->clk))
-+		return dev_err_probe(dev, PTR_ERR(priv->clk), "Failed to get clock\n");
-+
-+	priv->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->base))
-+		return PTR_ERR(priv->base);
-+
-+	ret = keembay_clk_enable(dev, priv->clk);
-+	if (ret)
-+		return ret;
-+
-+	priv->chip.base = -1;
-+	priv->chip.dev = dev;
-+	priv->chip.ops = &keembay_pwm_ops;
-+	priv->chip.npwm = KMB_TOTAL_PWM_CHANNELS;
-+
-+	ret = pwmchip_add(&priv->chip);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	return 0;
-+}
-+
-+static int keembay_pwm_remove(struct platform_device *pdev)
-+{
-+	struct keembay_pwm *priv = platform_get_drvdata(pdev);
-+
-+	return pwmchip_remove(&priv->chip);
-+}
-+
-+static const struct of_device_id keembay_pwm_of_match[] = {
-+	{ .compatible = "intel,keembay-pwm" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, keembay_pwm_of_match);
-+
-+static struct platform_driver keembay_pwm_driver = {
-+	.probe	= keembay_pwm_probe,
-+	.remove	= keembay_pwm_remove,
-+	.driver	= {
-+		.name = "pwm-keembay",
-+		.of_match_table = keembay_pwm_of_match,
-+	},
-+};
-+module_platform_driver(keembay_pwm_driver);
-+
-+MODULE_ALIAS("platform:pwm-keembay");
-+MODULE_DESCRIPTION("Intel Keem Bay PWM driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.17.1
+> > +
+> > +       struct pwm_chip pwm;
+> > +
+> > +       const struct lpg_data *data;
+> > +
+> > +       u32 lut_base;
+> > +       u32 lut_size;
+> > +       unsigned long *lut_bitmap;
+> > +
+> > +       u32 triled_base;
+> > +       u32 triled_src;
+> > +
+> > +       struct lpg_channel *channels;
+> > +       unsigned int num_channels;
+> > +};
+> 
+> ...
+> 
+> > +static int lpg_lut_store(struct lpg *lpg, struct led_pattern *pattern,
+> > +                        size_t len, unsigned int *lo_idx, unsigned int *hi_idx)
+> > +{
+> > +       unsigned int idx;
+> > +       u8 val[2];
+> 
+> __be16 val;
+> 
+> > +       int i;
+> > +
+> > +       /* Hardware does not behave when LO_IDX == HI_IDX */
+> > +       if (len == 1)
+> > +               return -EINVAL;
+> > +
+> > +       idx = bitmap_find_next_zero_area(lpg->lut_bitmap, lpg->lut_size,
+> > +                                        0, len, 0);
+> > +       if (idx >= lpg->lut_size)
+> > +               return -ENOMEM;
+> > +
+> > +       for (i = 0; i < len; i++) {
+> > +               val[0] = pattern[i].brightness & 0xff;
+> > +               val[1] = pattern[i].brightness >> 8;
+> 
+> cpu_to_be16();
+> 
 
+I like it, but isn't that a le16?
+
+> > +
+> > +               regmap_bulk_write(lpg->map,
+> > +                                 lpg->lut_base + LPG_LUT_REG(idx + i), val, 2);
+> > +       }
+> > +
+> > +       bitmap_set(lpg->lut_bitmap, idx, len);
+> > +
+> > +       *lo_idx = idx;
+> > +       *hi_idx = idx + len - 1;
+> > +
+> > +       return 0;
+> > +}
+> 
+> ...
+> 
+> > +static void lpg_calc_freq(struct lpg_channel *chan, unsigned int period_us)
+> > +{
+> > +       int             n, m, clk, div;
+> > +       int             best_m, best_div, best_clk;
+> > +       unsigned int    last_err, cur_err, min_err;
+> > +       unsigned int    tmp_p, period_n;
+> > +
+> > +       if (period_us == chan->period_us)
+> > +               return;
+> > +
+> > +       /* PWM Period / N */
+> > +       if (period_us < ((unsigned int)(-1) / NSEC_PER_USEC)) {
+> 
+> Please, replace all these -1 with castings to unsigned types with
+> corresponding limits, like
+> UINT_MAX here.
+> 
+
+Sure thing.
+
+> > +               period_n = (period_us * NSEC_PER_USEC) >> 6;
+> > +               n = 6;
+> > +       } else {
+> > +               period_n = (period_us >> 9) * NSEC_PER_USEC;
+> > +               n = 9;
+> > +       }
+> 
+> Why inconsistency in branches? Can you rather derive n and calculate
+> only once like
+> 
+>            period_n = (period_us >> n) * NSEC_PER_USEC;
+> 
+> ?
+
+I inherited this piece from the downstream driver and I assume that the
+purpose was to avoid loss of precision. I will review this and if
+nothing else it seems like I would be able to cast period_us to more
+bits, do the multiply and then shift - in both cases.
+
+> 
+> > +       min_err = (unsigned int)(-1);
+> > +       last_err = (unsigned int)(-1);
+> > +       best_m = 0;
+> > +       best_clk = 0;
+> > +       best_div = 0;
+> > +       for (clk = 0; clk < NUM_PWM_CLK; clk++) {
+> > +               for (div = 0; div < NUM_PWM_PREDIV; div++) {
+> > +                       /* period_n = (PWM Period / N) */
+> > +                       /* tmp_p = (Pre-divide * Clock Period) * 2^m */
+> > +                       tmp_p = lpg_clk_table[div][clk];
+> > +                       for (m = 0; m <= NUM_EXP; m++) {
+> > +                               if (period_n > tmp_p)
+> > +                                       cur_err = period_n - tmp_p;
+> > +                               else
+> > +                                       cur_err = tmp_p - period_n;
+> > +
+> > +                               if (cur_err < min_err) {
+> > +                                       min_err = cur_err;
+> > +                                       best_m = m;
+> > +                                       best_clk = clk;
+> > +                                       best_div = div;
+> > +                               }
+> > +
+> > +                               if (m && cur_err > last_err)
+> > +                                       /* Break for bigger cur_err */
+> > +                                       break;
+> > +
+> > +                               last_err = cur_err;
+> > +                               tmp_p <<= 1;
+> > +                       }
+> > +               }
+> > +       }
+> > +
+> > +       /* Use higher resolution */
+> > +       if (best_m >= 3 && n == 6) {
+> > +               n += 3;
+> > +               best_m -= 3;
+> > +       }
+> > +
+> > +       chan->clk = best_clk;
+> > +       chan->pre_div = best_div;
+> > +       chan->pre_div_exp = best_m;
+> > +       chan->pwm_size = n;
+> > +
+> > +       chan->period_us = period_us;
+> > +}
+> > +
+> > +static void lpg_calc_duty(struct lpg_channel *chan, unsigned int duty_us)
+> > +{
+> > +       unsigned long max = (1 << chan->pwm_size) - 1;
+> 
+> BIT() ?
+> 
+> > +       unsigned long val;
+> > +
+> > +       /* Figure out pwm_value with overflow handling */
+> 
+> > +       if (duty_us < 1 << (sizeof(val) * 8 - chan->pwm_size))
+> 
+> BITS_PER_TYPE, but actually BITS_PER_LONG here.
+> 
+> BIT(BITS_PER_LONG - ...)
+> 
+
+Again, this seems to just be a question of avoiding overflow of the 32
+bit duty_us. I'll double check the math here as well.
+
+> > +               val = (duty_us << chan->pwm_size) / chan->period_us;
+> > +       else
+> > +               val = duty_us / (chan->period_us >> chan->pwm_size);
+> > +
+> > +       if (val > max)
+> > +               val = max;
+> > +
+> > +       chan->pwm_value = val;
+> > +}
+> 
+> ...
+> 
+> > +static void lpg_enable_glitch(struct lpg_channel *chan)
+> > +{
+> > +       struct lpg *lpg = chan->lpg;
+> > +
+> > +       regmap_update_bits(lpg->map, chan->base + PWM_TYPE_CONFIG_REG,
+> > +                          LPG_ENABLE_GLITCH_REMOVAL, 0);
+> > +}
+> 
+> Here and everywhere else when function declared as void there is no
+> possibility to know if we do something useful or already screwed up
+> the things.
+> 
+
+Ultimately these are all coming from led_classdev->brightness_set, which
+is a void function. So there isn't much benefit of propagating this
+error upwards, today.
+
+> > +static void lpg_apply_pwm_value(struct lpg_channel *chan)
+> > +{
+> > +       u8 val[] = { chan->pwm_value & 0xff, chan->pwm_value >> 8 };
+> 
+> 
+> __le16 and cpu_to_le16()
+> 
+
+Sounds good.
+
+> > +       struct lpg *lpg = chan->lpg;
+> > +
+> > +       if (!chan->enabled)
+> > +               return;
+> > +
+> > +       regmap_bulk_write(lpg->map, chan->base + PWM_VALUE_REG, val, 2);
+> > +}
+> 
+> > +#define LPG_PATTERN_CONFIG_LO_TO_HI    BIT(4)
+> > +#define LPG_PATTERN_CONFIG_REPEAT      BIT(3)
+> > +#define LPG_PATTERN_CONFIG_TOGGLE      BIT(2)
+> > +#define LPG_PATTERN_CONFIG_PAUSE_HI    BIT(1)
+> > +#define LPG_PATTERN_CONFIG_PAUSE_LO    BIT(0)
+> 
+> Did I miss bits.h inclusion at the beginning of the file?
+> 
+
+Will add this.
+
+> ...
+> 
+> > +static int lpg_blink_set(struct lpg_led *led,
+> > +                        unsigned long delay_on, unsigned long delay_off)
+> > +{
+> > +       struct lpg_channel *chan;
+> > +       unsigned int period_us;
+> > +       unsigned int duty_us;
+> > +       int i;
+> > +
+> > +       if (!delay_on && !delay_off) {
+> > +               delay_on = 500;
+> > +               delay_off = 500;
+> > +       }
+> 
+> Homegrown duty cycle?
+> I mean, why simply not to pass the duty cycle in percentage in the first place?
+> 
+
+Can you explain what you're saying here.
+
+> > +       duty_us = delay_on * USEC_PER_MSEC;
+> > +       period_us = (delay_on + delay_off) * USEC_PER_MSEC;
+> > +
+> > +       for (i = 0; i < led->num_channels; i++) {
+> > +               chan = led->channels[i];
+> > +
+> > +               lpg_calc_freq(chan, period_us);
+> > +               lpg_calc_duty(chan, duty_us);
+> > +
+> > +               chan->enabled = true;
+> > +               chan->ramp_enabled = false;
+> > +
+> > +               lpg_apply(chan);
+> > +       }
+> > +
+> > +       return 0;
+> > +}
+> 
+> > +#define interpolate(x1, y1, x2, y2, x) \
+> > +       ((y1) + ((y2) - (y1)) * ((x) - (x1)) / ((x2) - (x1)))
+> 
+> Can you rather create a generic one under lib/ or start include/linux/math.h ?
+> 
+
+Forgot about this, but I've seen one on LKML, will find it and work on
+getting that accepted.
+
+> https://elixir.bootlin.com/linux/latest/A/ident/interpolate
+> 
+> ...
+> 
+> > +out:
+> 
+> Useless label.
+> 
+> > +       return ret;
+> 
+> ...
+> 
+> > +       ret = of_property_read_u32(np, "color", &color);
+> > +       if (ret < 0 && ret != -EINVAL)
+> 
+> This check is fishy. Either you have optional property or not, in the
+> latter case return any error code.
+> 
+
+There's three possible outcomes here:
+1) We found _one_ integer in the property, color is assigned and 0 is
+returned.
+2) We found no property named "color", -EINVAL is returned without color
+being modified.
+3) We found a property but it wasn't a single u32 value so a negative
+error (not EINVAL) is returned.
+
+> > +               return ret;
+> > +
+> > +       chan->color = color;
+> 
+> So, it may be -EINVAL?!
+> 
+
+So color will either be the value or the property color, or if omitted
+LED_COLOR_ID_GREEN.
+
+> > +       ret = of_property_read_u32_array(np, "qcom,dtest", dtest, 2);
+> > +       if (ret < 0 && ret != -EINVAL) {
+> > +               dev_err(lpg->dev, "malformed qcom,dtest of %pOFn\n", np);
+> > +               return ret;
+> > +       } else if (!ret) {
+> > +               chan->dtest_line = dtest[0];
+> > +               chan->dtest_value = dtest[1];
+> > +       }
+> 
+> Ditto.
+> 
+
+We're in !ret and as such dtest is initialized.
+
+> ...
+> 
+> > +       ret = of_property_read_u32(np, "color", &color);
+> > +       if (ret < 0 && ret != -EINVAL)
+> > +               return ret;
+> 
+> Ditto.
+> 
+
+As above, if no property color is specified, color remains 0 here which
+is not LED_COLOR_ID_MULTI and this is a single channel LED without its
+color specified.
+
+> ...
+> 
+> > +       size = sizeof(*led) + num_channels * sizeof(struct lpg_channel *);
+> 
+> Use respective helpers from overflow.h.
+> 
+
+Will do, thanks.
+
+> > +       led = devm_kzalloc(lpg->dev, size, GFP_KERNEL);
+> > +       if (!led)
+> > +               return -ENOMEM;
+> 
+> ...
+> 
+> > +static const struct of_device_id lpg_of_table[] = {
+> > +       { .compatible = "qcom,pm8916-pwm", .data = &pm8916_pwm_data },
+> > +       { .compatible = "qcom,pm8941-lpg", .data = &pm8941_lpg_data },
+> > +       { .compatible = "qcom,pm8994-lpg", .data = &pm8994_lpg_data },
+> > +       { .compatible = "qcom,pmi8994-lpg", .data = &pmi8994_lpg_data },
+> > +       { .compatible = "qcom,pmi8998-lpg", .data = &pmi8998_lpg_data },
+> 
+> > +       {},
+> 
+> No comma needed for terminator lines.
+> 
+
+Will drop.
+
+> > +};
+
+Thank you Andy for the review!
+
+Regards,
+Bjorn
