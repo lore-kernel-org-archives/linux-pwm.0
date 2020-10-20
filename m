@@ -7,27 +7,27 @@ X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5ACCC433DF
-	for <linux-pwm@archiver.kernel.org>; Tue, 20 Oct 2020 05:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA5EC43457
+	for <linux-pwm@archiver.kernel.org>; Tue, 20 Oct 2020 05:46:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A7332225F
-	for <linux-pwm@archiver.kernel.org>; Tue, 20 Oct 2020 05:46:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 881EA22282
+	for <linux-pwm@archiver.kernel.org>; Tue, 20 Oct 2020 05:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391032AbgJTFqU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 20 Oct 2020 01:46:20 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:41312 "EHLO inva021.nxp.com"
+        id S2391721AbgJTFqZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 20 Oct 2020 01:46:25 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:49754 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730779AbgJTFqT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 20 Oct 2020 01:46:19 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5863C20194F;
-        Tue, 20 Oct 2020 07:46:17 +0200 (CEST)
+        id S2390986AbgJTFqV (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 20 Oct 2020 01:46:21 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A98531A0572;
+        Tue, 20 Oct 2020 07:46:18 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0119720053D;
-        Tue, 20 Oct 2020 07:46:13 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 48A131A073B;
+        Tue, 20 Oct 2020 07:46:14 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B6BA2402BE;
-        Tue, 20 Oct 2020 07:46:06 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 64F2F402F3;
+        Tue, 20 Oct 2020 07:46:08 +0200 (CEST)
 From:   Anson Huang <Anson.Huang@nxp.com>
 To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
         lee.jones@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
@@ -35,9 +35,9 @@ To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
         linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
 Cc:     Linux-imx@nxp.com
-Subject: [RESEND PATCH V2 2/3] pwm: imx27: Use dev_err_probe() to simplify error handling
-Date:   Tue, 20 Oct 2020 13:41:06 +0800
-Message-Id: <1603172467-19786-2-git-send-email-Anson.Huang@nxp.com>
+Subject: [RESEND PATCH V2 3/3] pwm: imx1: Use dev_err_probe() to simplify error handling
+Date:   Tue, 20 Oct 2020 13:41:07 +0800
+Message-Id: <1603172467-19786-3-git-send-email-Anson.Huang@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1603172467-19786-1-git-send-email-Anson.Huang@nxp.com>
 References: <1603172467-19786-1-git-send-email-Anson.Huang@nxp.com>
@@ -58,25 +58,21 @@ Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 changes since V1:
 	- remove redundant return value print.
 ---
- drivers/pwm/pwm-imx27.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+ drivers/pwm/pwm-imx1.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index c50d453..ceaed03 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -315,27 +315,14 @@ static int pwm_imx27_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-imx1.c b/drivers/pwm/pwm-imx1.c
+index f8b2c2e..4877734 100644
+--- a/drivers/pwm/pwm-imx1.c
++++ b/drivers/pwm/pwm-imx1.c
+@@ -145,23 +145,14 @@ static int pwm_imx1_probe(struct platform_device *pdev)
  	platform_set_drvdata(pdev, imx);
  
  	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
 -	if (IS_ERR(imx->clk_ipg)) {
--		int ret = PTR_ERR(imx->clk_ipg);
--
--		if (ret != -EPROBE_DEFER)
--			dev_err(&pdev->dev,
--				"getting ipg clock failed with %d\n",
--				ret);
--		return ret;
+-		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
+-				PTR_ERR(imx->clk_ipg));
+-		return PTR_ERR(imx->clk_ipg);
 -	}
 +	if (IS_ERR(imx->clk_ipg))
 +		return dev_err_probe(&pdev->dev, PTR_ERR(imx->clk_ipg),
@@ -97,7 +93,7 @@ index c50d453..ceaed03 100644
 +		return dev_err_probe(&pdev->dev, PTR_ERR(imx->clk_per),
 +				     "failed to get peripheral clock\n");
  
- 	imx->chip.ops = &pwm_imx27_ops;
+ 	imx->chip.ops = &pwm_imx1_ops;
  	imx->chip.dev = &pdev->dev;
 -- 
 2.7.4
