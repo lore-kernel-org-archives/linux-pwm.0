@@ -1,59 +1,48 @@
-Return-Path: <SRS0=p4Yd=D5=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=maO2=D6=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34756C388F7
-	for <linux-pwm@archiver.kernel.org>; Thu, 22 Oct 2020 20:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5C2C55178
+	for <linux-pwm@archiver.kernel.org>; Fri, 23 Oct 2020 05:41:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CD68F24682
-	for <linux-pwm@archiver.kernel.org>; Thu, 22 Oct 2020 20:10:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 72C9F21527
+	for <linux-pwm@archiver.kernel.org>; Fri, 23 Oct 2020 05:41:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1603397416;
-	bh=js1xVi8azsx4//F3LDMoMhOlgktwnKS5gIAhVHl2EFU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=N7JcxqtrN9OpOj2NoK5mBmReHwv3KyBdFirNALxNRHXzpNK1CyBcthTRW1sqDIUzn
-	 aNn5adwDpMMgsjermnZFKOsdXASxUlN/OTuKAOuUOPaxQUhR4b66196EeVM3mzN4jH
-	 Ch6hzpUZNqq02HwS/2O3F/wOW3qloenzT8V7ztgo=
+	s=default; t=1603431710;
+	bh=Oe/vLGsyhwfOt3LYK05Ez026hYbO1+/n1v+vRTwBy2s=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=Qk5BS3PotJQ5JRqdpVyyspYbr/Yh+uuQnViNZlrkiAycMN+mfxsFeVcla0vSCQxlI
+	 uFY34eZQsTuDIWmsCxaAX2HK5A3cDKqhTrSXCeXxCSLwjl8cB9OqBs+nyGzEx32l3k
+	 GG5prl2bOeXfZBul7dWOqyCcpwDREM0OToOYc3OM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2897310AbgJVUJd convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 22 Oct 2020 16:09:33 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39785 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2502779AbgJVUJa (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 22 Oct 2020 16:09:30 -0400
-Received: by mail-wr1-f68.google.com with SMTP id y12so4697084wrp.6;
-        Thu, 22 Oct 2020 13:09:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=pG/K91KXSZtDns2AvPosts1iq0wuPSbXqFIa1nMAu2w=;
-        b=N6WfAfaXGeTqPKErIbTwDhPl3VBZvktGZ/Xksp+FXeJP16OXkSTEyqZ7Npp8Mdnae8
-         s3b8rmu6w+BxuTiA5Bi4gSAyatg629Jb99VIMPb/37228LUC1A5AP7BoEHcTOhJK/njA
-         RNWmKEJ5Pz8mEiR0XMhGoapwU5sif+GjaW9ZSDncvtuTguIkxp2ka3I/nFDULrIrNFHE
-         hVxciUT5KjemIzJgVjzQExyH5fULRkO1ULN3bxlzMU9v082xIvSvvfdBmtOt8jUdD5eX
-         Fd3F8HBRuP1Ehxcxoj4mbWRWDWqn5HaFAYGkEqRktOEBJa0fg3sfJlj3PQdY2p9LP7AB
-         EeWQ==
-X-Gm-Message-State: AOAM530Za/PZw2ktAZxrhXM7xC3/uP/6jmryUgu8UDMyFV69ZJ4KBeUG
-        A0+RrVaIL0oFwRR39XrUzOo=
-X-Google-Smtp-Source: ABdhPJzUGE+RlNXwy0g9TwXZfxBn1ZcK5RdACIJ17IaoA7fVJ337UFCiXYdwy0tV3Mwcv7KXKaZwHw==
-X-Received: by 2002:adf:80cb:: with SMTP id 69mr4350348wrl.325.1603397368769;
-        Thu, 22 Oct 2020 13:09:28 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.171])
-        by smtp.googlemail.com with ESMTPSA id c18sm5874798wrq.5.2020.10.22.13.09.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 13:09:27 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 22:09:25 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Andrzej Hajda <a.hajda@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        id S371598AbgJWFlq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 23 Oct 2020 01:41:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57856 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S371576AbgJWFlq (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 23 Oct 2020 01:41:46 -0400
+Received: from coco.lan (ip5f5ad5a3.dynamic.kabel-deutschland.de [95.90.213.163])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 02DDD20BED;
+        Fri, 23 Oct 2020 05:41:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603431705;
+        bh=Oe/vLGsyhwfOt3LYK05Ez026hYbO1+/n1v+vRTwBy2s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=z/cbW75qPIw1uwojDU5DqSmvmGEQMYvz1ChR1phMrTkQPqGdMUiF1dUTIGwrP1V94
+         o5EO0Cpi1Tc00pMmPSkuJtvjprUMhxitTlAJnY0YyYmXGjfYiV4zbGtMqfRjl/b9Ii
+         +xt2lfCMKCqmnltSTi4ueEyl9xKcvVdinZc3MA6M=
+Date:   Fri, 23 Oct 2020 07:41:37 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andrzej Hajda <a.hajda@samsung.com>,
         Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         Jean Delvare <jdelvare@suse.com>,
@@ -69,32 +58,43 @@ Cc:     Andrzej Hajda <a.hajda@samsung.com>,
         linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org,
         Kamil Debski <kamil@wypas.org>
 Subject: Re: [PATCH 1/4] MAINTAINERS: move Kamil Debski to credits
-Message-ID: <20201022200925.GA2525@kozik-lap>
+Message-ID: <20201023074137.1034a8df@coco.lan>
+In-Reply-To: <20201022200925.GA2525@kozik-lap>
 References: <20201016151528.7553-1-krzk@kernel.org>
- <20201022191314.plesyizmczgdmodr@pengutronix.de>
+        <20201022191314.plesyizmczgdmodr@pengutronix.de>
+        <20201022200925.GA2525@kozik-lap>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20201022191314.plesyizmczgdmodr@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 09:13:14PM +0200, Uwe Kleine-König wrote:
-> Hello,
-> 
-> this series doesn't seem to be applied and looking at the list of people
-> this mail was sent "To:" it's not obvious who is expected to take it. I
-> assume it is not for us linux-pwm guys and will tag it as
-> "not-applicable" in our patchwork.
+Em Thu, 22 Oct 2020 22:09:25 +0200
+Krzysztof Kozlowski <krzk@kernel.org> escreveu:
 
-Hi Uwe,
+> On Thu, Oct 22, 2020 at 09:13:14PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> > Hello,
+> >=20
+> > this series doesn't seem to be applied and looking at the list of people
+> > this mail was sent "To:" it's not obvious who is expected to take it. I
+> > assume it is not for us linux-pwm guys and will tag it as
+> > "not-applicable" in our patchwork. =20
+>=20
+> Hi Uwe,
+>=20
+> All of the patches, including the one here, touch actually multiple
+> subsystems, so if this is OK with you, I could take them through
+> Samsung SoC.
 
-All of the patches, including the one here, touch actually multiple
-subsystems, so if this is OK with you, I could take them through
-Samsung SoC.
+Acked-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+>=20
+> Best regards,
+> Krzysztof
+>=20
 
-Best regards,
-Krzysztof
 
+
+Thanks,
+Mauro
