@@ -1,113 +1,79 @@
-Return-Path: <SRS0=maO2=D6=vger.kernel.org=linux-pwm-owner@kernel.org>
+Return-Path: <SRS0=OvPo=EB=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F457C55178
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Oct 2020 06:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E82F8C5517A
+	for <linux-pwm@archiver.kernel.org>; Mon, 26 Oct 2020 08:27:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3B74E2177B
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Oct 2020 06:12:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFDCF21BE5
+	for <linux-pwm@archiver.kernel.org>; Mon, 26 Oct 2020 08:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S372230AbgJWGMI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 23 Oct 2020 02:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S372229AbgJWGMG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Oct 2020 02:12:06 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97877C0613D2
-        for <linux-pwm@vger.kernel.org>; Thu, 22 Oct 2020 23:12:06 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kVqIe-00047x-IK; Fri, 23 Oct 2020 08:11:40 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kVqIc-0007Pm-9n; Fri, 23 Oct 2020 08:11:38 +0200
-Date:   Fri, 23 Oct 2020 08:11:36 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Andrzej Hajda <a.hajda@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
+        id S1771673AbgJZI1f (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 26 Oct 2020 04:27:35 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:37904 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1769975AbgJZI1f (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Oct 2020 04:27:35 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 32A6A1C0BA2; Mon, 26 Oct 2020 09:27:33 +0100 (CET)
+Date:   Mon, 26 Oct 2020 09:27:32 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Martin Botka <martin.botka1@gmail.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Dan Murphy <dmurphy@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Kamil Debski <kamil@wypas.org>
-Subject: Re: [PATCH 1/4] MAINTAINERS: move Kamil Debski to credits
-Message-ID: <20201023061136.cjhpuh5lye6sclf6@pengutronix.de>
-References: <20201016151528.7553-1-krzk@kernel.org>
- <20201022191314.plesyizmczgdmodr@pengutronix.de>
- <20201022200925.GA2525@kozik-lap>
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v5 2/4] leds: Add driver for Qualcomm LPG
+Message-ID: <20201026082732.GB8884@duo.ucw.cz>
+References: <20201017052057.2698588-1-bjorn.andersson@linaro.org>
+ <20201017052057.2698588-3-bjorn.andersson@linaro.org>
+ <CADQ2G_Exk7+uXMcoyFu-VOcSf48Qjvg9KUCm0P6yXdQn8K_3wQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="64of3vfnxriskdjj"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="24zk1gE8NUlDmwG9"
 Content-Disposition: inline
-In-Reply-To: <20201022200925.GA2525@kozik-lap>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <CADQ2G_Exk7+uXMcoyFu-VOcSf48Qjvg9KUCm0P6yXdQn8K_3wQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---64of3vfnxriskdjj
-Content-Type: text/plain; charset=iso-8859-1
+--24zk1gE8NUlDmwG9
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hello Krzysztof,
+Hi!
 
-On Thu, Oct 22, 2020 at 10:09:25PM +0200, Krzysztof Kozlowski wrote:
-> On Thu, Oct 22, 2020 at 09:13:14PM +0200, Uwe Kleine-K=F6nig wrote:
-> > this series doesn't seem to be applied and looking at the list of people
-> > this mail was sent "To:" it's not obvious who is expected to take it. I
-> > assume it is not for us linux-pwm guys and will tag it as
-> > "not-applicable" in our patchwork.
->=20
-> All of the patches, including the one here, touch actually multiple
-> subsystems, so if this is OK with you, I could take them through
-> Samsung SoC.
+> With the changes done to in V5 i have nothing to add.
 
-I don't object. And I failed to find where pwm is touched (I assume I
-didn't look carefully enough).
+Good way to say that is "Patches 7 and 28, Reviewed-by:"...
 
-Best regards
-Uwe
+Best regards,
+							Pavel
 
 --=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+http://www.livejournal.com/~pavelmachek
 
---64of3vfnxriskdjj
+--24zk1gE8NUlDmwG9
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+SdBUACgkQwfwUeK3K
-7AkxRQf7B5uGR0Tf8DzE82B5Uy0nOOhk7weuNjW+IHxy78ekhlyQxfjS0sJ0rYc9
-Z6G2m0AmEmMmDVq8u0FHZ9u6viBuXKfQ4CqlNd2UiR7olagr61pGbrSxjIwgIDA4
-zSEbNILuUqqenjp6m0FGSP6HUNfUbF6pNI0XWnZELus0wST2fdIUH508b4gtlTYX
-9wRzn7EMA1jzzZtqP1okoAa2C1B2CQvXXdD3YUByJruBhXGRpJ3rf26S6wW9r59x
-snDtRxeFWYxgPWbyehWse1Il0R5LgdBAYfdFK0NNFG2EltMzB8vstGKpd9AEI2ka
-Yn6pL8rsDumxeUoXxlK2dPArdLZwuw==
-=RZQR
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX5aIdAAKCRAw5/Bqldv6
+8iRmAJ4z+fRZ1vlEpQzMltk3jyClTjYu2gCfb+D61DMMnrWZohAPVlPfkcIyUNE=
+=T0VA
 -----END PGP SIGNATURE-----
 
---64of3vfnxriskdjj--
+--24zk1gE8NUlDmwG9--
