@@ -2,28 +2,29 @@ Return-Path: <SRS0=lQTM=EF=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9C5C00A89
-	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DC7DC00A89
+	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:45:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4A5B120729
-	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:37:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44AB3206DD
+	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727338AbgJ3ShT (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 30 Oct 2020 14:37:19 -0400
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:45253 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727282AbgJ3ShT (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2020 14:37:19 -0400
-X-Originating-IP: 86.194.74.19
+        id S1726061AbgJ3SpC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 30 Oct 2020 14:45:02 -0400
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:38910 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbgJ3SpB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2020 14:45:01 -0400
+Received: from relay10.mail.gandi.net (unknown [217.70.178.230])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 62AFC3B11EE
+        for <linux-pwm@vger.kernel.org>; Fri, 30 Oct 2020 18:37:32 +0000 (UTC)
 Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 8C3302000A;
-        Fri, 30 Oct 2020 18:37:15 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 9CF62240013;
+        Fri, 30 Oct 2020 18:37:08 +0000 (UTC)
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -31,113 +32,50 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
         linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Aubert <a.aubert@overkiz.com>
-Subject: [PATCH v2 4/4] ARM: dts: at91: kizbox: switch to new pwm-atmel-tcb binding
-Date:   Fri, 30 Oct 2020 19:36:58 +0100
-Message-Id: <20201030183658.1007395-5-alexandre.belloni@bootlin.com>
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v2 0/4] pwm: atmel-tcb: rework device tree binding
+Date:   Fri, 30 Oct 2020 19:36:54 +0100
+Message-Id: <20201030183658.1007395-1-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201030183658.1007395-1-alexandre.belloni@bootlin.com>
-References: <20201030183658.1007395-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Switch to the new pwm-atmel-tcb binding that avoid wasting TCB channels.
+Hello,
 
-Cc: Antoine Aubert <a.aubert@overkiz.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- arch/arm/boot/dts/at91-kizbox.dts | 45 ++++++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 15 deletions(-)
+This was sent as part of a 58 patches series back in 2017. The bindings
+were agreed upon back then:
 
-diff --git a/arch/arm/boot/dts/at91-kizbox.dts b/arch/arm/boot/dts/at91-kizbox.dts
-index 7add151f6250..cc9e87e48fe7 100644
---- a/arch/arm/boot/dts/at91-kizbox.dts
-+++ b/arch/arm/boot/dts/at91-kizbox.dts
-@@ -53,43 +53,32 @@ pwm_leds {
- 
- 		network_green {
- 			label = "pwm:green:network";
--			pwms = <&tcb_pwm 2 10000000 PWM_POLARITY_INVERTED>;
-+			pwms = <&tcb1_pwm1 0 10000000 PWM_POLARITY_INVERTED>;
- 			max-brightness = <255>;
- 			linux,default-trigger = "default-on";
- 		};
- 
- 		network_red {
- 			label = "pwm:red:network";
--			pwms = <&tcb_pwm 4 10000000 PWM_POLARITY_INVERTED>;
-+			pwms = <&tcb1_pwm2 0 10000000 PWM_POLARITY_INVERTED>;
- 			max-brightness = <255>;
- 			linux,default-trigger = "default-on";
- 		};
- 
- 		user_green {
- 			label = "pwm:green:user";
--			pwms = <&tcb_pwm 0 10000000 PWM_POLARITY_INVERTED>;
-+			pwms = <&tcb1_pwm0 0 10000000 PWM_POLARITY_INVERTED>;
- 			max-brightness = <255>;
- 			linux,default-trigger = "default-on";
- 		};
- 
- 		user_red {
- 			label = "pwm:red:user";
--			pwms = <&tcb_pwm 1 10000000 PWM_POLARITY_INVERTED>;
-+			pwms = <&tcb1_pwm0 1 10000000 PWM_POLARITY_INVERTED>;
- 			max-brightness = <255>;
- 			linux,default-trigger = "default-on";
- 		};
- 	};
--
--	tcb_pwm: pwm {
--		compatible = "atmel,tcb-pwm";
--		#pwm-cells = <3>;
--		tc-block = <1>;
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_tcb1_tioa0
--			     &pinctrl_tcb1_tioa1
--			     &pinctrl_tcb1_tioa2
--			     &pinctrl_tcb1_tiob0>;
--	};
- };
- 
- &tcb0 {
-@@ -104,6 +93,32 @@ timer@2 {
- 	};
- };
- 
-+&tcb1 {
-+	tcb1_pwm0: pwm@0 {
-+		compatible = "atmel,tcb-pwm";
-+		reg = <0>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_tcb1_tioa0 &pinctrl_tcb1_tiob0>;
-+	};
-+
-+	tcb1_pwm1: pwm@1 {
-+		compatible = "atmel,tcb-pwm";
-+		reg = <1>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_tcb1_tioa1>;
-+	};
-+
-+	tcb1_pwm2: pwm@2 {
-+		compatible = "atmel,tcb-pwm";
-+		reg = <2>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_tcb1_tioa2>;
-+	};
-+};
-+
- &ebi {
- 	status = "okay";
- };
+https://lore.kernel.org/linux-arm-kernel/20170607211752.avts3cofvac7ks3q@rob-hp-laptop/
+
+There is still only one user of atmel,tcb-pwm in the tree and I still
+think it is worth doing that change now.
+
+The various dependencies are now in v5.9-rc1 so it is ready to be
+applied.
+
+I have another series removing atmel_tclib once this is applied.
+
+Changes in v2:
+ - rework binding commit message
+ - use enum for the pwm node reg values
+
+Alexandre Belloni (4):
+  dt-bindings: microchip: atmel,at91rm9200-tcb: add atmel,tcb-pwm
+  pwm: atmel-tcb: switch to new binding
+  pwm: atmel-tcb: add sama5d2 support
+  ARM: dts: at91: kizbox: switch to new pwm-atmel-tcb binding
+
+ .../devicetree/bindings/pwm/atmel-tcb-pwm.txt |  16 --
+ .../soc/microchip/atmel,at91rm9200-tcb.yaml   |  34 ++-
+ arch/arm/boot/dts/at91-kizbox.dts             |  45 ++-
+ drivers/pwm/Kconfig                           |   3 +-
+ drivers/pwm/pwm-atmel-tcb.c                   | 264 ++++++++++--------
+ 5 files changed, 220 insertions(+), 142 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
+
 -- 
 2.26.2
 
