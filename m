@@ -2,80 +2,110 @@ Return-Path: <SRS0=lQTM=EF=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DC7DC00A89
-	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C887BC4741F
+	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 20:13:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44AB3206DD
-	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:45:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 69C862071A
+	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 20:13:23 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="ixHhZI2S"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726061AbgJ3SpC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 30 Oct 2020 14:45:02 -0400
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:38910 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbgJ3SpB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2020 14:45:01 -0400
-Received: from relay10.mail.gandi.net (unknown [217.70.178.230])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 62AFC3B11EE
-        for <linux-pwm@vger.kernel.org>; Fri, 30 Oct 2020 18:37:32 +0000 (UTC)
-Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 9CF62240013;
-        Fri, 30 Oct 2020 18:37:08 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+        id S1727520AbgJ3UNR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 30 Oct 2020 16:13:17 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:38714 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727362AbgJ3UNA (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2020 16:13:00 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09UKCtsd105958;
+        Fri, 30 Oct 2020 15:12:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1604088775;
+        bh=nWVRfmVC8p1aTgFeGwMeYBz7Vd7oRys8RCcXEhmnEG0=;
+        h=From:To:CC:Subject:Date;
+        b=ixHhZI2S2JENnML2Lsv40o0varPLvIaqC2mr+QJHx1UHVepdGsyS30n86sC8tE/3S
+         2E8v7t27RN6FK4pKxgX0D8juf5hwq5E8TK/GsaZrHOLv0dCToOsQgjwtgpaUyRWoV0
+         P53Vw69Y9kZVLGjKIw6YTHYWWzQSAuq0S07edaYQ=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09UKCtWx043603
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 30 Oct 2020 15:12:55 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 30
+ Oct 2020 15:12:55 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 30 Oct 2020 15:12:55 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09UKCsNG018741;
+        Fri, 30 Oct 2020 15:12:54 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH v2 0/4] pwm: atmel-tcb: rework device tree binding
-Date:   Fri, 30 Oct 2020 19:36:54 +0100
-Message-Id: <20201030183658.1007395-1-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.26.2
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-pwm@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH] pwm: tiehrpwm: handle deferred probe with dev_err_probe()
+Date:   Fri, 30 Oct 2020 22:12:54 +0200
+Message-ID: <20201030201254.24557-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hello,
+The devm_clk_get() may return -EPROBE_DEFER which is not handled properly
+by TI EHRPWM driver and causes unnecessary boot log messages.
 
-This was sent as part of a 58 patches series back in 2017. The bindings
-were agreed upon back then:
+Hence, add proper deferred probe handling with new dev_err_probe() API.
 
-https://lore.kernel.org/linux-arm-kernel/20170607211752.avts3cofvac7ks3q@rob-hp-laptop/
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/pwm/pwm-tiehrpwm.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-There is still only one user of atmel,tcb-pwm in the tree and I still
-think it is worth doing that change now.
-
-The various dependencies are now in v5.9-rc1 so it is ready to be
-applied.
-
-I have another series removing atmel_tclib once this is applied.
-
-Changes in v2:
- - rework binding commit message
- - use enum for the pwm node reg values
-
-Alexandre Belloni (4):
-  dt-bindings: microchip: atmel,at91rm9200-tcb: add atmel,tcb-pwm
-  pwm: atmel-tcb: switch to new binding
-  pwm: atmel-tcb: add sama5d2 support
-  ARM: dts: at91: kizbox: switch to new pwm-atmel-tcb binding
-
- .../devicetree/bindings/pwm/atmel-tcb-pwm.txt |  16 --
- .../soc/microchip/atmel,at91rm9200-tcb.yaml   |  34 ++-
- arch/arm/boot/dts/at91-kizbox.dts             |  45 ++-
- drivers/pwm/Kconfig                           |   3 +-
- drivers/pwm/pwm-atmel-tcb.c                   | 264 ++++++++++--------
- 5 files changed, 220 insertions(+), 142 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-
+diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+index 0846917ff2d2..14c8fdcfd607 100644
+--- a/drivers/pwm/pwm-tiehrpwm.c
++++ b/drivers/pwm/pwm-tiehrpwm.c
+@@ -437,10 +437,8 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	if (IS_ERR(clk)) {
+-		dev_err(&pdev->dev, "failed to get clock\n");
+-		return PTR_ERR(clk);
+-	}
++	if (IS_ERR(clk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(clk), "Failed to get fck\n");
+ 
+ 	pc->clk_rate = clk_get_rate(clk);
+ 	if (!pc->clk_rate) {
+@@ -462,10 +460,8 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+ 
+ 	/* Acquire tbclk for Time Base EHRPWM submodule */
+ 	pc->tbclk = devm_clk_get(&pdev->dev, "tbclk");
+-	if (IS_ERR(pc->tbclk)) {
+-		dev_err(&pdev->dev, "Failed to get tbclk\n");
+-		return PTR_ERR(pc->tbclk);
+-	}
++	if (IS_ERR(pc->tbclk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(pc->tbclk), "Failed to get tbclk\n");
+ 
+ 	ret = clk_prepare(pc->tbclk);
+ 	if (ret < 0) {
 -- 
-2.26.2
+2.17.1
 
