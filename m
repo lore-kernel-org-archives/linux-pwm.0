@@ -2,98 +2,150 @@ Return-Path: <SRS0=lQTM=EF=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9EBC55178
-	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 15:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96550C55179
+	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:37:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 81A5A2083B
-	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 15:37:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604072227;
-	bh=piDP34L7yDaL+NISKJuKg/cP0skP9zXEe8+3aMUTnr0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Ti5GXDRSj5I1LI+9lqma2ixvkB3Ne8JlbzYegoLd2D2uw0+QFlB/mhnXLGRVmz2IL
-	 4w/uxTI473ey3QBwciipxPFpzUMze1nfYvxjT3Gd4f4SH6mzG4VKrPXuJ+Lf2uFS9y
-	 91F9eP74IsNz0MzmWsXDKD0Ra2rblcHWonMjyCKI=
+	by mail.kernel.org (Postfix) with ESMTP id 57FFE206FA
+	for <linux-pwm@archiver.kernel.org>; Fri, 30 Oct 2020 18:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbgJ3PhF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 30 Oct 2020 11:37:05 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:39392 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgJ3PhE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2020 11:37:04 -0400
-Received: by mail-ot1-f65.google.com with SMTP id z16so726610otq.6;
-        Fri, 30 Oct 2020 08:37:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ofFXL9c4WfPJ0vh1CrcqW4yOOzqJ5jwhDnFefF3udus=;
-        b=oHPFOZlT419zlIqkVRtxWBQiD7ZTouxU45CvLFJHNo+doHw0eFGrUOshY4VtYlhK14
-         T6eZzvOdNgg/gp225vV/mPajIZ7F5dFmHHs0in/gU0FgHPAeLm/TrKjvA9JP+QS0GLid
-         IAVasBEjgrPG/TVSLRVxTGSawiUdMt7y5vYs8Oi8Y7MPADz3+iS1udp9eQqQz1kAR3QU
-         wZMVJsnva8PrOiKyv3UtkSaxA7WJLhyodqjlbdxhWASvRRjuW4aEt3NeiqjmPP3W+omG
-         MEpoql9yTfkNvayFuZVzHkhSxfQWBYZWi9VdOXaNzY8SuidcCSZfSILesW2Wv/SWFmlr
-         RNMg==
-X-Gm-Message-State: AOAM5331bKr6E1PiVH5FRg1ZGH8K1dOQC9x4hD0y2M8ZnpyDGba+ScHc
-        TJMbXQQ43oHskxwL9PSA/A==
-X-Google-Smtp-Source: ABdhPJycwUiV1vpf0o9YvAtnAVAgs/nLhIp6vbRgzxDr6FgbxTRz8AT2NZiGH5vGAw9RUdLMKfrjGg==
-X-Received: by 2002:a05:6830:1345:: with SMTP id r5mr2026633otq.6.1604072223527;
-        Fri, 30 Oct 2020 08:37:03 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id m13sm1363306otn.20.2020.10.30.08.37.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2020 08:37:02 -0700 (PDT)
-Received: (nullmailer pid 3888717 invoked by uid 1000);
-        Fri, 30 Oct 2020 15:37:01 -0000
-Date:   Fri, 30 Oct 2020 10:37:01 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc:     devel@driverdev.osuosl.org, linux-pwm@vger.kernel.org,
-        Scott Branden <sbranden@broadcom.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Eric Anholt <eric@anholt.net>, devicetree@vger.kernel.org,
-        linus.walleij@linaro.org, linux-clk@vger.kernel.org,
-        linux-input@vger.kernel.org, sboyd@kernel.org,
-        gregkh@linuxfoundation.org, Ray Jui <rjui@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, Stefan Wahren <wahrenst@gmx.net>,
-        u.kleine-koenig@pengutronix.de, p.zabel@pengutronix.de,
-        dmitry.torokhov@gmail.com
-Subject: Re: [PATCH v2 08/10] dt-bindings: pwm: Add binding for RPi firmware
- PWM bus
-Message-ID: <20201030153701.GA3888665@bogus>
-References: <20201022155858.20867-1-nsaenzjulienne@suse.de>
- <20201022155858.20867-9-nsaenzjulienne@suse.de>
+        id S1727307AbgJ3ShP (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 30 Oct 2020 14:37:15 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:42697 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727293AbgJ3ShO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2020 14:37:14 -0400
+X-Originating-IP: 86.194.74.19
+Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 6D742C0002;
+        Fri, 30 Oct 2020 18:37:10 +0000 (UTC)
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v2 1/4] dt-bindings: microchip: atmel,at91rm9200-tcb: add atmel,tcb-pwm
+Date:   Fri, 30 Oct 2020 19:36:55 +0100
+Message-Id: <20201030183658.1007395-2-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201030183658.1007395-1-alexandre.belloni@bootlin.com>
+References: <20201030183658.1007395-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201022155858.20867-9-nsaenzjulienne@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, 22 Oct 2020 17:58:55 +0200, Nicolas Saenz Julienne wrote:
-> The PWM bus controlling the fan in RPi's official PoE hat can only be
-> controlled by the board's co-processor.
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> 
-> ---
-> Changes since v1:
->  - Update bindings to use 2 #pwm-cells
-> 
->  .../arm/bcm/raspberrypi,bcm2835-firmware.yaml | 20 +++++++++++++++++++
->  .../pwm/raspberrypi,firmware-pwm.h            | 13 ++++++++++++
->  2 files changed, 33 insertions(+)
->  create mode 100644 include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
-> 
+Move the TCB pwm nodes under their parent. This removes the need for the
+tc-block property as there is now a child-parent relationship between the
+TC channel and the TC block.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Move the documentation to the main file.
+
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+Changes in v2:
+ - rework commit message
+ - use enum for the pwm node reg values as suggested by Rob.
+
+ .../devicetree/bindings/pwm/atmel-tcb-pwm.txt | 16 ---------
+ .../soc/microchip/atmel,at91rm9200-tcb.yaml   | 34 ++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 17 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
+
+diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
+deleted file mode 100644
+index 985fcc65f8c4..000000000000
+--- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
++++ /dev/null
+@@ -1,16 +0,0 @@
+-Atmel TCB PWM controller
+-
+-Required properties:
+-- compatible: should be "atmel,tcb-pwm"
+-- #pwm-cells: should be 3. See pwm.yaml in this directory for a description of
+-  the cells format. The only third cell flag supported by this binding is
+-  PWM_POLARITY_INVERTED.
+-- tc-block: The Timer Counter block to use as a PWM chip.
+-
+-Example:
+-
+-pwm {
+-	compatible = "atmel,tcb-pwm";
+-	#pwm-cells = <3>;
+-	tc-block = <1>;
+-};
+diff --git a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
+index 55fffae05dcf..597d67fba92f 100644
+--- a/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
++++ b/Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml
+@@ -59,6 +59,7 @@ patternProperties:
+         items:
+           - enum:
+               - atmel,tcb-timer
++              - atmel,tcb-pwm
+               - microchip,tcb-capture
+       reg:
+         description:
+@@ -68,10 +69,35 @@ patternProperties:
+ 
+         minItems: 1
+         maxItems: 3
++    required:
++      - compatible
++      - reg
++
++  "^pwm@[0-2]$":
++    description: The timer block channels that are used as PWMs.
++    $ref: ../../pwm/pwm.yaml#
++    type: object
++    properties:
++      compatible:
++        const: atmel,tcb-pwm
++      reg:
++        description:
++          TCB channel to use for this PWM.
++        enum: [ 0, 1, 2 ]
++
++      "#pwm-cells":
++        description:
++          The only third cell flag supported by this binding is
++          PWM_POLARITY_INVERTED.
++        const: 3
+ 
+     required:
+       - compatible
+       - reg
++      - "#pwm-cells"
++
++    additionalProperties: false
++
+ 
+ allOf:
+   - if:
+@@ -158,7 +184,13 @@ examples:
+                         compatible = "atmel,tcb-timer";
+                         reg = <1>;
+                 };
+-        };
++
++                pwm@2 {
++                        compatible = "atmel,tcb-pwm";
++                        reg = <2>;
++                        #pwm-cells = <3>;
++                };
++         };
+     /* TCB0 Capture with QDEC: */
+         timer@f800c000 {
+                 compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
+-- 
+2.26.2
+
