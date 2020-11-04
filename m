@@ -2,143 +2,143 @@ Return-Path: <SRS0=lBbK=EK=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 457E9C2D0A3
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 10:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0129C4742C
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 15:54:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EFDF32072C
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 10:40:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A6FB22250
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 15:54:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kmf1Z0ye"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729250AbgKDKju (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Nov 2020 05:39:50 -0500
-Received: from mx2.suse.de ([195.135.220.15]:58456 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726344AbgKDKju (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 4 Nov 2020 05:39:50 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id D8C74AD77;
-        Wed,  4 Nov 2020 10:39:47 +0000 (UTC)
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org
-Cc:     f.fainelli@gmail.com, linux-pwm@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        wahrenst@gmx.net, linux-input@vger.kernel.org,
-        dmitry.torokhov@gmail.com, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, p.zabel@pengutronix.de,
-        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
-        linux-clk@vger.kernel.org, sboyd@kernel.org,
-        linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
-        andy.shevchenko@gmail.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Eric Anholt <eric@anholt.net>
-Subject: [PATCH v3 00/11] Raspberry Pi PoE HAT fan support
-Date:   Wed,  4 Nov 2020 11:39:26 +0100
-Message-Id: <20201104103938.1286-1-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.29.1
+        id S1731294AbgKDPyV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 4 Nov 2020 10:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731252AbgKDPyR (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 10:54:17 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99495C061A4C
+        for <linux-pwm@vger.kernel.org>; Wed,  4 Nov 2020 07:54:16 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id w1so22625898wrm.4
+        for <linux-pwm@vger.kernel.org>; Wed, 04 Nov 2020 07:54:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=cpjrvx5xa5Fub2SmSs5NxCIt1AtREI63BVQTX9fsjLc=;
+        b=kmf1Z0yeNpYCwPXqysU9kiSujnzjdXKIk8+vE0x44SjNDiibKhNKdvM5DYwJvPv9BP
+         uyTmaIN6g08I7LE1TSotYiRlsqez5OlMd8VdA7Wvqt1o94N7yywzGxi18DlbPu2frcbU
+         UPX4K6ffl5hpw/wWewB4vegS9SjGz/YB1Sag9vLtCsmWpxdvdjJLW4LZUj09EXiUZd15
+         BCZWtGxHuAJBWzgOusXVeUzhNClzoyi4/4FJDp8BdlfPbeMW9yVwD21iRSg8e0O6iycV
+         QKF+XTr/zgsxmxz8jW9vwtA3usnrYac8tlSTIij782QzZwWQGrv1xkhb0om5/c81EElx
+         ZmwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cpjrvx5xa5Fub2SmSs5NxCIt1AtREI63BVQTX9fsjLc=;
+        b=exDZZsbsYBW5NfWZshZJ5RcqG/nTNGpStgAqkISRqF5zM42ne1wGne8qkGPlvttIzz
+         o6F/GqqoTeThfD55pTuIJDolHVsIOGTPh8Y1sYk+RzzdNn8ooRZJY9KwD/8MjdF5mEIv
+         r/PmLfPq9OhO65SGelMI0rxfrXVksscyScdnkWoNJ0h9Sv4gwlpgb/wQLAA6sRik1F7z
+         dy2Ao3S5YRi3xT7v2c0DrBf87Y7oFvM2r+HH8BkncMqOQFz7/p0L9UJlNhx4vCCvK+w0
+         zArXT/u7SCuskD1k1EgCdI/2QZY9LyorXlKBee3ks55PEMZe1bsLiqN/CWgSAOWYz786
+         TdlQ==
+X-Gm-Message-State: AOAM533j6GBz4TtdyineG9R3rFZxwK/yd9RhxAyP8hU3f0RfuF1gN4zG
+        updv9z+9TuFQZNYwTSNvqUw5Lg==
+X-Google-Smtp-Source: ABdhPJwrgUZlnu1TW1h3xBXhxKSzhI+viPcm0Js1YrAFKDpqC8wX2kbdVSVE5rj9s6G+jL0loLWHTA==
+X-Received: by 2002:adf:dd90:: with SMTP id x16mr19148018wrl.47.1604505255361;
+        Wed, 04 Nov 2020 07:54:15 -0800 (PST)
+Received: from dell ([91.110.221.242])
+        by smtp.gmail.com with ESMTPSA id w11sm3022885wmg.36.2020.11.04.07.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2020 07:54:14 -0800 (PST)
+Date:   Wed, 4 Nov 2020 15:54:12 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Alexandru Stan <amstan@chromium.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] backlight: pwm_bl: Fix interpolation
+Message-ID: <20201104155412.GR4488@dell>
+References: <20201022050445.930403-1-amstan@chromium.org>
+ <20201021220404.v3.3.I4dcea1c90e9da3902d466033aa73351e19e49c49@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201021220404.v3.3.I4dcea1c90e9da3902d466033aa73351e19e49c49@changeid>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The aim of this series is to add support to the fan found on RPi's PoE
-HAT. Some commentary on the design can be found below. But the imporant
-part to the people CC'd here not involved with PWM is that, in order to
-achieve this properly, we also have to fix the firmware interface the
-driver uses to communicate with the PWM bus (and many other low level
-functions). Specifically, we have to make sure the firmware interface
-isn't unbound while consumers are still up. So, patch #1 introduces
-reference counting in the firwmware interface driver and patches #2 to
-#7 update all firmware users. Patches #8 to #10 introduce the new PWM
-driver.
+On Wed, 21 Oct 2020, Alexandru Stan wrote:
 
-I sent everything as a single series as the final version of the PWM
-drivers depends on the firwmare fixes, but I'll be happy to split this
-into two separate series if you think it's better.
+> The previous behavior was a little unexpected, its properties/problems:
+> 1. It was designed to generate strictly increasing values (no repeats)
+> 2. It had quantization errors when calculating step size. Resulting in
+> unexpected jumps near the end of some segments.
+> 
+> Example settings:
+> 	brightness-levels = <0 1 2 4 8 16 32 64 128 256>;
+> 	num-interpolated-steps = <16>;
+> 
+> Whenever num-interpolated-steps was larger than the distance
+> between 2 consecutive brightness levels the table would get really
+> discontinuous. The slope of the interpolation would stick with
+> integers only and if it was 0 the whole line segment would get skipped.
+> 
+> The distances between 1 2 4 and 8 would be 1 (property #1 fighting us),
+> and only starting with 16 it would start to interpolate properly.
+> 
+> Property #1 is not enough. The goal here is more than just monotonically
+> increasing. We should still care about the shape of the curve. Repeated
+> points might be desired if we're in the part of the curve where we want
+> to go slow (aka slope near 0).
+> 
+> Problem #2 is plainly a bug. Imagine if the 64 entry was 63 instead,
+> the calculated slope on the 32-63 segment will be almost half as it
+> should be.
+> 
+> The most expected and simplest algorithm for interpolation is linear
+> interpolation, which would handle both problems.
+> Let's just implement that!
+> 
+> Take pairs of points from the brightness-levels array and linearly
+> interpolate between them. On the X axis (what userspace sees) we'll
+> now have equally sized intervals (num-interpolated-steps sized,
+> as opposed to before where we were at the mercy of quantization).
+> 
+> END
 
---- Original cover letter below ---
+I removed this.
 
-This series aims at adding support to RPi's official PoE HAT fan[1].
+> Signed-off-by: Alexandru Stan <amstan@chromium.org>
+> ---
+> 
+>  drivers/video/backlight/pwm_bl.c | 70 ++++++++++++++------------------
+>  1 file changed, 31 insertions(+), 39 deletions(-)
 
-The HW setup is the following:
-
-| Raspberry Pi                               | PoE HAT                    |
- arm core -> Mailbox -> RPi co-processor -> I2C -> Atmel MCU -> PWM -> FAN
-
-The arm cores have only access to the mailbox interface, as i2c0, even if
-physically accessible, is to be used solely by the co-processor
-(VideoCore 4/6).
-
-This series implements a PWM bus, and has pwm-fan sitting on top of it as per
-this discussion: https://lkml.org/lkml/2018/9/2/486. Although this design has a
-series of shortcomings:
-
-- It depends on a DT binding: it's not flexible if a new hat shows up with new
-  functionality, we're not 100% sure we'll be able to expand it without
-  breaking backwards compatibility. But without it we can't make use of DT
-  thermal-zones, which IMO is overkill.
-
-- We're using pwm-fan, writing a hwmon driver would, again, give us more
-  flexibility, but it's not really needed at the moment.
-
-I personally think that it's not worth the effort, it's unlikely we'll get
-things right in advance. And ultimately, if the RPi people come up with
-something new, we can always write a new driver/bindings from scratch (as in
-not reusing previous code).
-
-That said, I'm more than happy to change things if there is a consensus that
-another design will do the trick.
-
-[1] https://www.raspberrypi.org/blog/introducing-power-over-ethernet-poe-hat/
-
----
-
-Changes since v2:
- - Introduce devm_rpi_firmware_get()
- - Small cleanups in PWM driver
-
-Changes since v1:
- - Address PWM driver changes
- - Fix binding, now with 2 cells
- - Add reference count to rpi_firmware_get()
-
-Nicolas Saenz Julienne (11):
-  firmware: raspberrypi: Introduce devm_rpi_firmware_get()
-  clk: bcm: rpi: Release firmware handle on unbind
-  gpio: raspberrypi-exp: Release firmware handle on unbind
-  reset: raspberrypi: Release firmware handle on unbind
-  soc: bcm: raspberrypi-power: Release firmware handle on unbind
-  staging: vchiq: Release firmware handle on unbind
-  input: raspberrypi-ts: Release firmware handle when not needed
-  firmware: raspberrypi: Get rid of rpi_firmware_get()
-  dt-bindings: pwm: Add binding for RPi firmware PWM bus
-  DO NOT MERGE: ARM: dts: Add RPi's official PoE hat support
-  pwm: Add Raspberry Pi Firmware based PWM bus
-
- .../arm/bcm/raspberrypi,bcm2835-firmware.yaml |  20 ++
- arch/arm/boot/dts/bcm2711-rpi-4-b.dts         |  54 +++++
- drivers/clk/bcm/clk-raspberrypi.c             |   2 +-
- drivers/firmware/raspberrypi.c                |  37 ++-
- drivers/gpio/gpio-raspberrypi-exp.c           |   2 +-
- drivers/input/touchscreen/raspberrypi-ts.c    |   2 +-
- drivers/pwm/Kconfig                           |   9 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-raspberrypi-poe.c             | 216 ++++++++++++++++++
- drivers/reset/reset-raspberrypi.c             |   2 +-
- drivers/soc/bcm/raspberrypi-power.c           |   2 +-
- .../interface/vchiq_arm/vchiq_arm.c           |   2 +-
- .../pwm/raspberrypi,firmware-pwm.h            |  13 ++
- include/soc/bcm2835/raspberrypi-firmware.h    |   6 +-
- 14 files changed, 356 insertions(+), 12 deletions(-)
- create mode 100644 drivers/pwm/pwm-raspberrypi-poe.c
- create mode 100644 include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
+Applied, thanks.
 
 -- 
-2.29.1
-
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
