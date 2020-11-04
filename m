@@ -8,56 +8,56 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7FE5C2D0A3
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC32C388F7
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:49:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9640120BED
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:49:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 15CAB2075E
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:49:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qCfnEwxe"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ERKSO83J"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387704AbgKDXtQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Nov 2020 18:49:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
+        id S1733276AbgKDXtu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 4 Nov 2020 18:49:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733094AbgKDXpK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 18:45:10 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D81FC0613CF;
-        Wed,  4 Nov 2020 15:45:10 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id e27so160756lfn.7;
-        Wed, 04 Nov 2020 15:45:10 -0800 (PST)
+        with ESMTP id S1733075AbgKDXpG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 18:45:06 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFAB2C0613CF;
+        Wed,  4 Nov 2020 15:45:05 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id m16so307120ljo.6;
+        Wed, 04 Nov 2020 15:45:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XFGG01cA595FrKS40PcuSC81ebTEtiTSpfS/ywMG7UI=;
-        b=qCfnEwxe9a5udeJa2CYrqVZ5I2a9hmgiqZ2QaqEHjaKRgf2VXGvsewyVcIb28yZDc0
-         NJtW1jYdxYxihEwtJ1JhHLt9GCrLEFLun5Srgpe/bZELevxRnAmujiK304OirJi3UZ0h
-         OezhThzvVvw8gpQg9av4VU+hB8LuL1lQEpkLkPSBAJ44qZcPhCH6IpgDnyi1uDWq2TP8
-         RYuqmPWz/JIvDnAxVgHW78wUUMZny2+47MlJ+gq2nxNa+CFz2O475KuV1N/UI1JeRY6C
-         ieR4nU66wpG5FBdE1CzoaJ8S3Cn+p4XlpoQHf4l3Z7bAPbdtXXraV7xxJFeb1rAmopbi
-         NZug==
+        bh=yQimpkIRWNQnMpbdhCpUPNBZvo/GpufqvOqt4z0qAwA=;
+        b=ERKSO83J6tv0QUdt8vnWSOE1GpIwg7mIR1JUrs4PyfgPVzV1mH7mEpyAJOsSR12xY3
+         rsldAI/5QE2rxBoNdwYh3hxk/wzRAkSsKIoHuD22P4lN8jkkBxNCFgbBpKfwYVwMtiZk
+         hY1Z1gChPo7sDA1p9MxN+Mx1EdAo2nz8TwGsz+e38nVaIbWMWUcpVKqUAWxqflyFUc2z
+         zmVkx897k9/dL5uXgyLRVGwDyjmwfMJMHjINdfH3z7T1O6RmI6/62I+J/f3RaDIG1/F3
+         b5/NryfWaEyEXi653d2wn4BVQldGJhyt9pi+F4OHBx7bGp4zD1BVXptYQfB0SIoKU8RY
+         hraA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XFGG01cA595FrKS40PcuSC81ebTEtiTSpfS/ywMG7UI=;
-        b=bKDygx+mdm4k4btO5Hsi/u/V6m6qm4Fdwh7V9FGyHeOm9WPxEjx1h42s4qhfgfbLCx
-         /33b9LgrpOyv/QMeNyIqGvzpkldfrT4rOscwkP8lpq//ejTbHSCeiuZezRzxITXXWsBK
-         Jsd6kmZ4UH4OTscpYxogiQmuh78FCVDoI/55UimxgOltNZyClQqsEQ++U6gyYKJog/93
-         onXzsoHI5Or1pzCVuThq2j6Y6S8BUhdINO+O4dmnlWdXwnXSNmdNYigHKte/EjdVIXY+
-         5IC4fLETYizg9SVoB0YnEZy5Y2gJDIYaY4aLmyOehZV1/MA/CMWdMTATgkCZazSkbKAP
-         SA+g==
-X-Gm-Message-State: AOAM530t5lvImsbld2HUQBoXjhloBs5UbhzuEfOTiZZBEJgnyqKrNZk8
-        yumQJSmyAhUV20Ur9v0jQxM=
-X-Google-Smtp-Source: ABdhPJxQAtS5/q5gEZTmOVMhIUSEXN1Ufp90D/WwdUezL1q7/08kLqzAjVTVWhHK+ZA/8JqkDwT3GQ==
-X-Received: by 2002:a19:c55:: with SMTP id 82mr55638lfm.84.1604533508654;
-        Wed, 04 Nov 2020 15:45:08 -0800 (PST)
+        bh=yQimpkIRWNQnMpbdhCpUPNBZvo/GpufqvOqt4z0qAwA=;
+        b=IwgLlblmv4oEz0X8GFhXSi1NawTXzJBOmCqbT24O4Z/uou33FoZn6A2xIc686i6Byy
+         AWVsI2bhBn7Q/PVQNox+kKh0hMina6igFUtwQ5LKa/9OqXHXELDeY96PqtfLJuBrXlfX
+         /uT+cS+5VkPufQ/D/cZGygUyH6brjSCD4tJiXvT8r7hX3jF3bgrVkDKbI9dOvv1FoqO3
+         44CpLq6KkynYXK2O4VybELiyhEqowTyMvGSQyv4/t4g3e3Hen2E6FWTLO2Ajm6WO+Dko
+         42DnU+/W4fcUKeHOQNrwSOJbrjd52FAmyRKVHE0StPaOZAb6w+FecGuzjpKU9NrDOnZg
+         p4kg==
+X-Gm-Message-State: AOAM531/WLVHSJg+Vgvx261wVKzzp4y+FyLZ1ASQl80C8tPaM8o8UP2y
+        2P0EvjAdgGRCLg5a/hkTs18=
+X-Google-Smtp-Source: ABdhPJzqZV2lUSiNvg9T7GHr724oG0dGwDbtok/GVt9MVRYZxSxIwkdsf2v5hnfIaDwbq85V2zwywA==
+X-Received: by 2002:a2e:b169:: with SMTP id a9mr156579ljm.84.1604533504504;
+        Wed, 04 Nov 2020 15:45:04 -0800 (PST)
 Received: from localhost.localdomain (109-252-192-83.dynamic.spd-mgts.ru. [109.252.192.83])
-        by smtp.gmail.com with ESMTPSA id m6sm640725ljc.112.2020.11.04.15.45.07
+        by smtp.gmail.com with ESMTPSA id m6sm640725ljc.112.2020.11.04.15.45.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 15:45:08 -0800 (PST)
+        Wed, 04 Nov 2020 15:45:04 -0800 (PST)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -82,9 +82,9 @@ Cc:     linux-samsung-soc@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-media@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH v1 09/30] soc/tegra: regulators: Fix lockup when voltage-spread is out of range
-Date:   Thu,  5 Nov 2020 02:44:06 +0300
-Message-Id: <20201104234427.26477-10-digetx@gmail.com>
+Subject: [PATCH v1 06/30] dt-bindings: usb: tegra-ehci: Document OPP and voltage regulator properties
+Date:   Thu,  5 Nov 2020 02:44:03 +0300
+Message-Id: <20201104234427.26477-7-digetx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201104234427.26477-1-digetx@gmail.com>
 References: <20201104234427.26477-1-digetx@gmail.com>
@@ -94,34 +94,24 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Fix voltage coupler lockup which happens when voltage-spread is out
-of range due to a bug in the code. The max-spread requirement shall be
-accounted when CPU regulator doesn't have consumers. This problem is
-observed on Tegra30 Ouya game console once system-wide DVFS is enabled
-in a device-tree.
+Document new DVFS OPP table and voltage regulator properties of the
+Tegra EHCI controller.
 
-Fixes: 783807436f36 ("soc/tegra: regulators: Add regulators coupler for Tegra30")
-Cc: stable@vger.kernel.org
-Tested-by: Peter Geis <pgwipeout@gmail.com>
-Reported-by: Peter Geis <pgwipeout@gmail.com>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/soc/tegra/regulators-tegra30.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/usb/nvidia,tegra20-ehci.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/soc/tegra/regulators-tegra30.c b/drivers/soc/tegra/regulators-tegra30.c
-index f7a5260edffe..fcf824f73131 100644
---- a/drivers/soc/tegra/regulators-tegra30.c
-+++ b/drivers/soc/tegra/regulators-tegra30.c
-@@ -198,7 +198,7 @@ static int tegra30_voltage_update(struct tegra_regulator_coupler *tegra,
- 	 * survive the voltage drop if it's running on a higher frequency.
- 	 */
- 	if (!cpu_min_uV_consumers)
--		cpu_min_uV = cpu_uV;
-+		cpu_min_uV = max(cpu_uV, cpu_min_uV);
- 
- 	/*
- 	 * Bootloader shall set up voltages correctly, but if it
+diff --git a/Documentation/devicetree/bindings/usb/nvidia,tegra20-ehci.txt b/Documentation/devicetree/bindings/usb/nvidia,tegra20-ehci.txt
+index f60785f73d3d..e4070ae21fd9 100644
+--- a/Documentation/devicetree/bindings/usb/nvidia,tegra20-ehci.txt
++++ b/Documentation/devicetree/bindings/usb/nvidia,tegra20-ehci.txt
+@@ -21,3 +21,5 @@ Required properties :
+ Optional properties:
+  - nvidia,needs-double-reset : boolean is to be set for some of the Tegra20
+    USB ports, which need reset twice due to hardware issues.
++ - operating-points-v2: See ../bindings/opp/opp.txt for details.
++ - core-supply: Phandle of voltage regulator of the SoC "core" power domain.
 -- 
 2.27.0
 
