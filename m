@@ -7,24 +7,26 @@ X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4873FC5517A
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 10:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C764C4741F
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 10:40:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 043D320786
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 10:40:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 015E120786
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 10:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729796AbgKDKkA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Nov 2020 05:40:00 -0500
-Received: from mx2.suse.de ([195.135.220.15]:58646 "EHLO mx2.suse.de"
+        id S1729665AbgKDKk1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 4 Nov 2020 05:40:27 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58606 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729440AbgKDKjz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 4 Nov 2020 05:39:55 -0500
+        id S1729794AbgKDKkB (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 4 Nov 2020 05:40:01 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id B0E6AAD77;
-        Wed,  4 Nov 2020 10:39:53 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 2151CADC2;
+        Wed,  4 Nov 2020 10:40:00 +0000 (UTC)
 From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org
+To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Cc:     f.fainelli@gmail.com, linux-pwm@vger.kernel.org,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
@@ -34,11 +36,10 @@ Cc:     f.fainelli@gmail.com, linux-pwm@vger.kernel.org,
         linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
         linux-clk@vger.kernel.org, sboyd@kernel.org,
         linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
-        andy.shevchenko@gmail.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: [PATCH v3 05/11] soc: bcm: raspberrypi-power: Release firmware handle on unbind
-Date:   Wed,  4 Nov 2020 11:39:31 +0100
-Message-Id: <20201104103938.1286-6-nsaenzjulienne@suse.de>
+        andy.shevchenko@gmail.com
+Subject: [PATCH v3 10/11] DO NOT MERGE: ARM: dts: Add RPi's official PoE hat support
+Date:   Wed,  4 Nov 2020 11:39:36 +0100
+Message-Id: <20201104103938.1286-11-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.29.1
 In-Reply-To: <20201104103938.1286-1-nsaenzjulienne@suse.de>
 References: <20201104103938.1286-1-nsaenzjulienne@suse.de>
@@ -48,32 +49,98 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Use devm_rpi_firmware_get() so as to make sure we release RPi's firmware
-interface when unbinding the device.
+This is an example on how to enable the fan on top of RPi's official PoE
+hat.
 
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 
 ---
 
-Changes since v2:
- - Use devm_rpi_firmware_get(), instead of remove function
+Changes since v1:
+ - Update patch to use 2 pwm cells
 
- drivers/soc/bcm/raspberrypi-power.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/bcm2711-rpi-4-b.dts | 54 +++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-diff --git a/drivers/soc/bcm/raspberrypi-power.c b/drivers/soc/bcm/raspberrypi-power.c
-index 5d1aacdd84ef..068715d6e66d 100644
---- a/drivers/soc/bcm/raspberrypi-power.c
-+++ b/drivers/soc/bcm/raspberrypi-power.c
-@@ -177,7 +177,7 @@ static int rpi_power_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
+diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+index 09a1182c2936..361db82619a4 100644
+--- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
++++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+@@ -5,6 +5,7 @@
+ #include "bcm283x-rpi-usb-peripheral.dtsi"
  
--	rpi_domains->fw = rpi_firmware_get(fw_np);
-+	rpi_domains->fw = devm_rpi_firmware_get(&pdev->dev, fw_np);
- 	of_node_put(fw_np);
- 	if (!rpi_domains->fw)
- 		return -EPROBE_DEFER;
+ #include <dt-bindings/reset/raspberrypi,firmware-reset.h>
++#include <dt-bindings/pwm/raspberrypi,firmware-pwm.h>
+ 
+ / {
+ 	compatible = "raspberrypi,4-model-b", "brcm,bcm2711";
+@@ -68,6 +69,54 @@ sd_vcc_reg: sd_vcc_reg {
+ 		enable-active-high;
+ 		gpio = <&expgpio 6 GPIO_ACTIVE_HIGH>;
+ 	};
++
++	fan: pwm-fan {
++		compatible = "pwm-fan";
++		cooling-levels = <0 50 150 255>;
++		#cooling-cells = <2>;
++		pwms = <&fwpwm RASPBERRYPI_FIRMWARE_PWM_POE 80000>;
++	};
++
++	thermal-zones {
++		cpu_thermal: cpu-thermal {
++			trips {
++				threshold: trip-point@0 {
++					temperature = <45000>;
++					hysteresis = <5000>;
++					type = "active";
++				};
++
++				target: trip-point@1 {
++					temperature = <50000>;
++					hysteresis = <2000>;
++					type = "active";
++				};
++
++				cpu_hot: cpu_hot@0 {
++					temperature = <55000>;
++					hysteresis = <2000>;
++					type = "active";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&threshold>;
++					cooling-device = <&fan 0 1>;
++				};
++
++				map1 {
++					trip = <&target>;
++					cooling-device = <&fan 1 2>;
++				};
++
++				map2 {
++					trip = <&cpu_hot>;
++					cooling-device = <&fan 2 3>;
++				};
++			};
++		};
++	};
+ };
+ 
+ &ddc0 {
+@@ -103,6 +152,11 @@ reset: reset {
+ 		compatible = "raspberrypi,firmware-reset";
+ 		#reset-cells = <1>;
+ 	};
++
++	fwpwm: pwm {
++		compatible = "raspberrypi,firmware-pwm";
++		#pwm-cells = <2>;
++	};
+ };
+ 
+ &gpio {
 -- 
 2.29.1
 
