@@ -8,56 +8,56 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE363C388F7
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2980C55179
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:47:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 94AF720825
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:47:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 55E7920825
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:47:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eN4h8wmK"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tD610N2L"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732892AbgKDXq3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Nov 2020 18:46:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S1733293AbgKDXrS (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 4 Nov 2020 18:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733168AbgKDXpi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 18:45:38 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E74C0613D2;
-        Wed,  4 Nov 2020 15:45:37 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id i6so197369lfd.1;
-        Wed, 04 Nov 2020 15:45:37 -0800 (PST)
+        with ESMTP id S1733148AbgKDXpa (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 18:45:30 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CD4C0613CF;
+        Wed,  4 Nov 2020 15:45:29 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id 126so154664lfi.8;
+        Wed, 04 Nov 2020 15:45:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JWa430PVIqmJIbeD7KBt0TZCN2r4IZvUOeKukZUULSM=;
-        b=eN4h8wmKVmc98I8VpVQD05mgPsSKIV8roZRuvQUi3EOcizAEVMxhK4XcKenNODUP57
-         Rxze2zWAWjLCIfL2dNIRIGywZvC28Gu+MslIDgcQBiINpAIgA8ayEvdgAWeaNJS/UoUw
-         AF/ln6R+1zf+7IT8b1pPX6qDWo8FajvGF+vv4uuipo2sXIA3JUzx7p8u+ktEcwm1o1pg
-         8EzDhwuYDylAakt40bWirCp8sipi2Klh9G/IBYON5H8zDXGqS29eR/JqRCTc9dW4pVKR
-         y1mExIRa9//FQnuJ5e8gfTLqClqNg3UUpnvkCzqL0KLmGCs6gxB1ftFcHku0KNIwUxDo
-         VvhA==
+        bh=nN6bYFk4IWxOu+d/QHUvb5Vdquail4zOQtI7YW8kabg=;
+        b=tD610N2LtXl0A/xShg01YubajXnOhuEWWAyuR72lZg9Ds8ZFIwJxpGdVeQHfBVQ2Kj
+         p7wqBVm35lvdMWEqtwdl7LKaMYY69/bYvlQJKRefXH6Txqv9VIfoN/eru3nXimT1cgGc
+         aJLWnRCsDLjb5LFHHLiih35bvzicP3icoOeJ6QZhOPvdTEjIfcCdnZjfF14+CP7kgYCu
+         mIvGrWIR2h24M0xfzKZsgmDh7c9ZqLVsanS95avHsCTbAVBBRwjfXy0mSFI9wh7rBO71
+         xPprbWClr+RHceHpdVIlzCaoTTsHvolCzXoD+AkYq9Wp8c550XEbwgaBCALWsA+KfaSG
+         tTcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JWa430PVIqmJIbeD7KBt0TZCN2r4IZvUOeKukZUULSM=;
-        b=NJUutTGgR8RwypVHJLcSm5Y2Y48RPau6LXgiYq/Ov51mJ4IJYtz9/YMLf2bMebokUA
-         2+mE2hV6OOicjPedvV2xs/eMwzwkZGOhx9bRkhKVIX3skdvIQ6FB1wotTag11JeMI4Dh
-         n6b1YHYZaCkxe711w16iIcNt3K2nfkIHPPxRq2MNbnjlyPVZJ8lu4kFRZipHVjJgwLaS
-         I/3le7b7/2P5BtsA7FrUurg0OPkh35yi0iPBw5MI0JJDm+iJ+XyTRQpbzHHHa4f+Oxv+
-         5BKal+Due1LhQu2pxuZxGjyLaZV6V8JqVRCBlp8BcBvuHobq0WBa/z6iqqnVXnw5zy7N
-         pU6g==
-X-Gm-Message-State: AOAM5330L8GlKNXjfEpg8LfUsK6IuKAFJhdmbhP560/qqiA+n1koXEcR
-        7enXq0BOSzQ4nwcIcK8Pz2U=
-X-Google-Smtp-Source: ABdhPJz6df+Ge/OfH/yyY6XjwgEffIPjNRxtB5oKKiqUFuVW6jG9sorT54nuDmLv0xSqhkTx9fOGHg==
-X-Received: by 2002:a05:6512:3388:: with SMTP id h8mr60396lfg.318.1604533536417;
-        Wed, 04 Nov 2020 15:45:36 -0800 (PST)
+        bh=nN6bYFk4IWxOu+d/QHUvb5Vdquail4zOQtI7YW8kabg=;
+        b=ZmO/gG6GI+ChwBdgc44cr427olEQYnozeolVXcP/8sWS3v1czYjWeX0RPFlKJUA6YA
+         rkfCy3PsvPcXQf4qxJXZwj9wFSccDKDgWBwRDdZiOiKAUjXfWsOH+KQPGreevI9Qbnk9
+         o422w1VCw04+Zoxj1SV7HSw79jWlxkvwET88X0a9e9KeulrV8q05mqmfpRoXVvsYyZXx
+         HfyT+OCHa/iOrKDbaFV1C8/4zeouHgI7WpSxDTQzK6BrbJd3BW3C2C41m4YtxKF7GwSj
+         ofig2LMfbmJ4qwhXJJzTqoqHFm/C+hTxM2qXESB1r62Bl5tyMSpS0RRzEdRxO0Nudae0
+         e8dw==
+X-Gm-Message-State: AOAM531GSIDpLXaj6L/LbCBA7MeRZbSlcGBqNFEeBBe/Dklq4+suDFst
+        FlCP1MvewyUcc7kBIvaSqlc=
+X-Google-Smtp-Source: ABdhPJw14mWy3hZ5zhhgkxRLWuktqe/gXtUzbFW7RYvVSWvKRy6DLpTPn1wG6PiegG0MPpIECG+lPA==
+X-Received: by 2002:a19:e305:: with SMTP id a5mr36969lfh.549.1604533528154;
+        Wed, 04 Nov 2020 15:45:28 -0800 (PST)
 Received: from localhost.localdomain (109-252-192-83.dynamic.spd-mgts.ru. [109.252.192.83])
-        by smtp.gmail.com with ESMTPSA id m6sm640725ljc.112.2020.11.04.15.45.35
+        by smtp.gmail.com with ESMTPSA id m6sm640725ljc.112.2020.11.04.15.45.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 15:45:35 -0800 (PST)
+        Wed, 04 Nov 2020 15:45:27 -0800 (PST)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -82,9 +82,9 @@ Cc:     linux-samsung-soc@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-media@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH v1 29/30] ARM: tegra: cardhu-a04: Add voltage supplies to DVFS-capable devices
-Date:   Thu,  5 Nov 2020 02:44:26 +0300
-Message-Id: <20201104234427.26477-30-digetx@gmail.com>
+Subject: [PATCH v1 23/30] memory: tegra30-emc: Support Tegra SoC device state syncing
+Date:   Thu,  5 Nov 2020 02:44:20 +0300
+Message-Id: <20201104234427.26477-24-digetx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201104234427.26477-1-digetx@gmail.com>
 References: <20201104234427.26477-1-digetx@gmail.com>
@@ -94,76 +94,42 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add voltage supplies to DVFS-capable devices in order to enable
-system-wide voltage scaling.
+Sync driver state using the Tegra SoC device state syncing API, telling
+to regulators voltage coupler that EMC state is ready for DVFS. This is
+required for enabling system-wide DVFS on Tegra30.
 
+Tested-by: Peter Geis <pgwipeout@gmail.com>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- arch/arm/boot/dts/tegra30-cardhu-a04.dts | 44 ++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/memory/tegra/tegra30-emc.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/tegra30-cardhu-a04.dts b/arch/arm/boot/dts/tegra30-cardhu-a04.dts
-index c1c0ca628af1..7149e5594537 100644
---- a/arch/arm/boot/dts/tegra30-cardhu-a04.dts
-+++ b/arch/arm/boot/dts/tegra30-cardhu-a04.dts
-@@ -93,6 +93,34 @@ vdd_bl2_reg: regulator@106 {
- 		gpio = <&gpio TEGRA_GPIO(DD, 0) GPIO_ACTIVE_HIGH>;
- 	};
+diff --git a/drivers/memory/tegra/tegra30-emc.c b/drivers/memory/tegra/tegra30-emc.c
+index 6b20ce9f16af..dd7474065346 100644
+--- a/drivers/memory/tegra/tegra30-emc.c
++++ b/drivers/memory/tegra/tegra30-emc.c
+@@ -1666,6 +1666,12 @@ static int tegra_emc_resume(struct device *dev)
+ 	return 0;
+ }
  
-+	host1x@50000000 {
-+		core-supply = <&vddcore_reg>;
++static void tegra_emc_sync_state(struct device *dev)
++{
++	tegra_soc_device_sync_state(dev);
++	icc_sync_state(dev);
++}
 +
-+		gr2d@54140000 {
-+			core-supply = <&vddcore_reg>;
-+		};
-+
-+		gr3d@54180000 {
-+			core-supply = <&vddcore_reg>;
-+		};
-+
-+		dc@54200000 {
-+			core-supply = <&vddcore_reg>;
-+		};
-+
-+		dc@54240000 {
-+			core-supply = <&vddcore_reg>;
-+		};
-+	};
-+
-+	vde@6001a000 {
-+		core-supply = <&vddcore_reg>;
-+	};
-+
-+	pwm: pwm@7000a000 {
-+		core-supply = <&vddcore_reg>;
-+	};
-+
- 	i2c@7000d000 {
- 		pmic: tps65911@2d {
- 			regulators {
-@@ -117,6 +145,22 @@ vddcore_reg: tps62361@60 {
- 		};
- 	};
- 
-+	memory-controller@7000f400 {
-+		core-supply = <&vddcore_reg>;
-+	};
-+
-+	mmc@78000000 {
-+		core-supply = <&vddcore_reg>;
-+	};
-+
-+	mmc@78000600 {
-+		core-supply = <&vddcore_reg>;
-+	};
-+
-+	usb@7d008000 {
-+		core-supply = <&vddcore_reg>;
-+	};
-+
- 	cpus {
- 		cpu0: cpu@0 {
- 			cpu-supply = <&vddctrl_reg>;
+ static const struct dev_pm_ops tegra_emc_pm_ops = {
+ 	.suspend = tegra_emc_suspend,
+ 	.resume = tegra_emc_resume,
+@@ -1684,7 +1690,7 @@ static struct platform_driver tegra_emc_driver = {
+ 		.of_match_table = tegra_emc_of_match,
+ 		.pm = &tegra_emc_pm_ops,
+ 		.suppress_bind_attrs = true,
+-		.sync_state = icc_sync_state,
++		.sync_state = tegra_emc_sync_state,
+ 	},
+ };
+ module_platform_driver(tegra_emc_driver);
 -- 
 2.27.0
 
