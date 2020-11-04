@@ -8,56 +8,56 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06645C2D0A3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D07F6C63697
 	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:48:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AB94F2075E
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:48:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 88C1720825
+	for <linux-pwm@archiver.kernel.org>; Wed,  4 Nov 2020 23:48:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KXuUE5At"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZQMFC548"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387531AbgKDXsI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Nov 2020 18:48:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        id S2387525AbgKDXsH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 4 Nov 2020 18:48:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733130AbgKDXpU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 18:45:20 -0500
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D060C0613CF;
-        Wed,  4 Nov 2020 15:45:18 -0800 (PST)
-Received: by mail-lf1-x142.google.com with SMTP id 74so174021lfo.5;
-        Wed, 04 Nov 2020 15:45:18 -0800 (PST)
+        with ESMTP id S1733132AbgKDXpW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Nov 2020 18:45:22 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F13EC0613CF;
+        Wed,  4 Nov 2020 15:45:21 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id u18so148807lfd.9;
+        Wed, 04 Nov 2020 15:45:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Y282nJfAvr8vVLZChpZFCfyyX/0tuj7y7Sv22IVncUE=;
-        b=KXuUE5AtEQQwD5Ono7VTFez03/G1JD8vBervS34kptx+rvhr1VPOJKtT7+tZonOL0D
-         LYiql4lEs4GqTEMjuWMjwLYpFTuzD7peQA5Vfi9aqIs9BSwW3kmudaZudkIjvD3GG/19
-         35ZO/3Ss9TqW3Pu9IqRkKZAi9/OgCAGJSxlUFuLZ1vwjqCl6LSiIk6U8zGc3Rpst7ZBU
-         tSb27R9TT1BfZzPv4RaCODS/OrnSceZlO7o7PafTCOUpsPYAQYjH7YwoeCSVAvnna70u
-         UMigQgwIBHl5gUp2Vf4C9Cl2fch5QY2p74zsV8dYlmESyGtGEyNrKFOuJIfx0oI4pYyz
-         6omQ==
+        bh=SiMZXJPavVdA5iWrAG5s24KuYQ60OjfNxHzqyJK5EsM=;
+        b=ZQMFC548Tvz/UdDyQFnHjksr0tRAmfVl4BN+QGzygwbC/1g6BcNRHq0ChVxHTmLlgv
+         Q4KgPHWyW5yaNpRiGInuz8rjGVTjJiwlSvi68RHD2JbxD4VrbNRG0nirUu18yFlB64pN
+         1sGGT+hX9uNOODPR6RnmEnppSaTqmaN38nhkk+wFXiwJkR7mLQID+noXFH8tY0zh5cl+
+         0DX5nMxLE7U7YMFAb5ekFv3Ak0zp9ddUNQTmvp6SOf47XUuWn12lpZg8Z/JjHtL8tBgM
+         BhsDuC+VyY/4LOSfFmlVb7tBQ3AxqeOID9lSb5GqzCoUvn+/jMniiRoPjIsIRfEcN7cz
+         2qVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Y282nJfAvr8vVLZChpZFCfyyX/0tuj7y7Sv22IVncUE=;
-        b=jzwKErXFAH8BB4czzdZ1aIQy2NNfBiPzuJIJQbEkyekWSISckZ6czGLrXo7NfpTUPY
-         7BXU6UCDpI16VJvq00C1Sm1X19XeGbDcms98uNVtwnkDegufPspCM/HZkeaPgYRWKGeL
-         S8bpswk6dJOI+3YlkRCaTURc7vK3l6L3Q3xI9TVohRAHooLucfulN6Ke4xArfe0L2Rh1
-         4qIRMuzJrAOR7Jm1Vlf8M+JlKnb5spTj8DPJx4NQzzatbzZgFRG2JHxFtArkfKBtgbSm
-         38tizOsSB6SiTQxSHmjoLSfobTvePiw60SVMS+ALnhCGZ6YQngcddfT3nopG4pS+NU6q
-         kZaA==
-X-Gm-Message-State: AOAM532t2QGlqGmS6/IlSrJakmyDqQTY6tyIQYTN/QIBpU5oIgxBpfJy
-        16U07qKjCCMCgz3EjpZKDwY=
-X-Google-Smtp-Source: ABdhPJzT6zVFairbLiWCVf6U5lDlOHXMBLgiZgoTQaSae/l2568qpJolj1IwCGuZV8j/fEZhdbtdpA==
-X-Received: by 2002:a19:c6cc:: with SMTP id w195mr60492lff.24.1604533516983;
-        Wed, 04 Nov 2020 15:45:16 -0800 (PST)
+        bh=SiMZXJPavVdA5iWrAG5s24KuYQ60OjfNxHzqyJK5EsM=;
+        b=lQDPDIp5MHRtaI/Q+zliGUKDNQKNbMFN/jlTCwQqCauaYX70tQ6g/Zbz6kKoOUMIla
+         +Bv8Ft1Jeha6FkwHe41FhesK9nla3CvNSaUUDJ16N7mxk90WuM0d7d4M7whl6yAiJq1d
+         t7nQiVpy+aroM9rbaE8lFb+2iYX6bsOSJDEH8iS/4MKDdBZEDMoj2OQPBSCG9FJFYJ4L
+         z9cwxdVUHe9qzKRUrbAorY230MjPd5CZvtOJGAcmt2FowKJgJrRE3wmZCI8aBJ/5YnHp
+         9imcJtFUuBfFTulHe+aBG3sMgYmtifoxkGdEyJ7X5mYtv63yfBRFuTg1TgOsrOHEv7qz
+         8R2w==
+X-Gm-Message-State: AOAM531vA8DWinI4fvGbO9CTki7VWDadUXDVAMfAFUpDoSr6ROS+vSp3
+        rf5gP0UoIxLe40uJCNhl70g=
+X-Google-Smtp-Source: ABdhPJx8frc7rILYDyrQ7e/HdSjfS3VFNHPxEyzIQyqGuaOcFU1S/XE+OGCZV1OwLzUUJngXh+x4OQ==
+X-Received: by 2002:a19:5206:: with SMTP id m6mr38911lfb.367.1604533519754;
+        Wed, 04 Nov 2020 15:45:19 -0800 (PST)
 Received: from localhost.localdomain (109-252-192-83.dynamic.spd-mgts.ru. [109.252.192.83])
-        by smtp.gmail.com with ESMTPSA id m6sm640725ljc.112.2020.11.04.15.45.15
+        by smtp.gmail.com with ESMTPSA id m6sm640725ljc.112.2020.11.04.15.45.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2020 15:45:16 -0800 (PST)
+        Wed, 04 Nov 2020 15:45:19 -0800 (PST)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -82,9 +82,9 @@ Cc:     linux-samsung-soc@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-media@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH v1 15/30] drm/tegra: hdmi: Support OPP and SoC core voltage scaling
-Date:   Thu,  5 Nov 2020 02:44:12 +0300
-Message-Id: <20201104234427.26477-16-digetx@gmail.com>
+Subject: [PATCH v1 17/30] mmc: sdhci-tegra: Support OPP and core voltage scaling
+Date:   Thu,  5 Nov 2020 02:44:14 +0300
+Message-Id: <20201104234427.26477-18-digetx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201104234427.26477-1-digetx@gmail.com>
 References: <20201104234427.26477-1-digetx@gmail.com>
@@ -94,48 +94,73 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add OPP and SoC core voltage scaling support to the HDMI driver.
+Add OPP and SoC core voltage scaling support to the Tegra SDHCI driver.
 This is required for enabling system-wide DVFS on older Tegra SoCs.
 
+Tested-by: Peter Geis <pgwipeout@gmail.com>
+Tested-by: Nicolas Chauvet <kwizart@gmail.com>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/gpu/drm/tegra/hdmi.c | 63 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 62 insertions(+), 1 deletion(-)
+ drivers/mmc/host/Kconfig       |  1 +
+ drivers/mmc/host/sdhci-tegra.c | 70 ++++++++++++++++++++++++++++++++--
+ 2 files changed, 68 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/tegra/hdmi.c b/drivers/gpu/drm/tegra/hdmi.c
-index d09a24931c87..92e96990854b 100644
---- a/drivers/gpu/drm/tegra/hdmi.c
-+++ b/drivers/gpu/drm/tegra/hdmi.c
-@@ -11,6 +11,7 @@
- #include <linux/math64.h>
- #include <linux/module.h>
+diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+index 310e546e5898..7d719c81b917 100644
+--- a/drivers/mmc/host/Kconfig
++++ b/drivers/mmc/host/Kconfig
+@@ -293,6 +293,7 @@ config MMC_SDHCI_TEGRA
+ 	depends on MMC_SDHCI_PLTFM
+ 	select MMC_SDHCI_IO_ACCESSORS
+ 	select MMC_CQHCI
++	select PM_OPP
+ 	help
+ 	  This selects the Tegra SD/MMC controller. If you have a Tegra
+ 	  platform with SD or MMC devices, say Y or M here.
+diff --git a/drivers/mmc/host/sdhci-tegra.c b/drivers/mmc/host/sdhci-tegra.c
+index ed12aacb1c73..964709a3ccd6 100644
+--- a/drivers/mmc/host/sdhci-tegra.c
++++ b/drivers/mmc/host/sdhci-tegra.c
+@@ -14,6 +14,7 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
  #include <linux/of_device.h>
 +#include <linux/pm_opp.h>
- #include <linux/pm_runtime.h>
+ #include <linux/pinctrl/consumer.h>
  #include <linux/regulator/consumer.h>
  #include <linux/reset.h>
-@@ -1195,7 +1196,7 @@ static void tegra_hdmi_encoder_enable(struct drm_encoder *encoder)
- 	h_back_porch = mode->htotal - mode->hsync_end;
- 	h_front_porch = mode->hsync_start - mode->hdisplay;
+@@ -754,10 +755,15 @@ static void tegra_sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
+ {
+ 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+ 	struct sdhci_tegra *tegra_host = sdhci_pltfm_priv(pltfm_host);
++	struct device *dev = mmc_dev(host->mmc);
+ 	unsigned long host_clk;
  
--	err = clk_set_rate(hdmi->clk, hdmi->pixel_clock);
-+	err = dev_pm_opp_set_rate(hdmi->dev, hdmi->pixel_clock);
- 	if (err < 0) {
- 		dev_err(hdmi->dev, "failed to set HDMI clock frequency: %d\n",
- 			err);
-@@ -1499,6 +1500,7 @@ static int tegra_hdmi_runtime_suspend(struct host1x_client *client)
- 	usleep_range(1000, 2000);
+-	if (!clock)
+-		return sdhci_set_clock(host, clock);
++	/* disable clock and then remove OPP performance/voltage vote */
++	if (!clock) {
++		sdhci_set_clock(host, clock);
++		dev_pm_opp_set_rate(dev, clock);
++		return;
++	}
  
- 	clk_disable_unprepare(hdmi->clk);
-+	dev_pm_opp_set_rate(hdmi->dev, 0);
- 	pm_runtime_put_sync(dev);
- 
- 	return 0;
-@@ -1633,6 +1635,60 @@ static irqreturn_t tegra_hdmi_irq(int irq, void *data)
- 	return IRQ_HANDLED;
+ 	/*
+ 	 * In DDR50/52 modes the Tegra SDHCI controllers require the SDHCI
+@@ -772,7 +778,7 @@ static void tegra_sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
+ 	 * from clk_get_rate() is used.
+ 	 */
+ 	host_clk = tegra_host->ddr_signaling ? clock * 2 : clock;
+-	clk_set_rate(pltfm_host->clk, host_clk);
++	dev_pm_opp_set_rate(dev, host_clk);
+ 	tegra_host->curr_clk_rate = host_clk;
+ 	if (tegra_host->ddr_signaling)
+ 		host->max_clk = host_clk;
+@@ -1558,6 +1564,60 @@ static int sdhci_tegra_add_host(struct sdhci_host *host)
+ 	return ret;
  }
  
-+static void tegra_hdmi_deinit_opp_table(void *data)
++static void sdhci_tegra_deinit_opp_table(void *data)
 +{
 +	struct device *dev = data;
 +	struct opp_table *opp_table;
@@ -146,7 +171,7 @@ index d09a24931c87..92e96990854b 100644
 +	dev_pm_opp_put_opp_table(opp_table);
 +}
 +
-+static int devm_tegra_hdmi_init_opp_table(struct device *dev)
++static int devm_sdhci_tegra_init_opp_table(struct device *dev)
 +{
 +	struct opp_table *opp_table;
 +	const char *rname = "core";
@@ -175,7 +200,7 @@ index d09a24931c87..92e96990854b 100644
 +		}
 +	}
 +
-+	err = devm_add_action(dev, tegra_hdmi_deinit_opp_table, dev);
++	err = devm_add_action(dev, sdhci_tegra_deinit_opp_table, dev);
 +	if (err)
 +		goto remove_table;
 +
@@ -189,21 +214,20 @@ index d09a24931c87..92e96990854b 100644
 +	return err;
 +}
 +
- static int tegra_hdmi_probe(struct platform_device *pdev)
+ static int sdhci_tegra_probe(struct platform_device *pdev)
  {
- 	const char *level = KERN_ERR;
-@@ -1667,6 +1723,11 @@ static int tegra_hdmi_probe(struct platform_device *pdev)
- 	if (IS_ERR(hdmi->clk_parent))
- 		return PTR_ERR(hdmi->clk_parent);
+ 	const struct of_device_id *match;
+@@ -1621,6 +1681,10 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
+ 		goto err_power_req;
+ 	}
  
-+	err = devm_tegra_hdmi_init_opp_table(&pdev->dev);
-+	if (err)
-+		return dev_err_probe(&pdev->dev, err,
-+				     "failed to initialize OPP\n");
++	rc = devm_sdhci_tegra_init_opp_table(&pdev->dev);
++	if (rc)
++		goto err_parse_dt;
 +
- 	err = clk_set_parent(hdmi->clk, hdmi->clk_parent);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "failed to setup clocks: %d\n", err);
+ 	/*
+ 	 * Tegra210 has a separate SDMMC_LEGACY_TM clock used for host
+ 	 * timeout clock and SW can choose TMCLK or SDCLK for hardware
 -- 
 2.27.0
 
