@@ -5,21 +5,21 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB613C2D0A3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AEBC388F7
 	for <linux-pwm@archiver.kernel.org>; Mon,  9 Nov 2020 10:57:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 47C0620678
+	by mail.kernel.org (Postfix) with ESMTP id 86535206E5
 	for <linux-pwm@archiver.kernel.org>; Mon,  9 Nov 2020 10:57:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gptLYbK+"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="W67X4kqX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729228AbgKIK5l (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1727303AbgKIK5l (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Mon, 9 Nov 2020 05:57:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43613 "EHLO
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25615 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729168AbgKIK5k (ORCPT
+        by vger.kernel.org with ESMTP id S1729174AbgKIK5k (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Nov 2020 05:57:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1604919459;
@@ -27,22 +27,22 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KFQ3NXM+Ll2VDtzUJoZCbgvc0RCST66Ng0luYaRPOdM=;
-        b=gptLYbK+G0C4UhviJndoOgg4p3nbxPGU+zc7PxKaqgyF2pH40OtcxwP6xlpbg5ZLPyvZjd
-        LSyu9QmUdvsP5hztnLXsCoLAnWi9sM0pkptOS+huAY4qwvnYSDKJwLglLdy27vhyLf+ik6
-        U7lh4mfJMyr+THaqBnNBbgld4U/Lv8U=
+        bh=FUnSDl5AAM1g8EjGly5ChvnIAkG2lb2m5JffVoaZ1nk=;
+        b=W67X4kqXkGSKGWcZrP1shocpRw0AFwECCPJWcl4vgRw0qJh3ZVPYmXNg1k59Dor2MOEIXM
+        p0VTicqxAf6z/RvJy/Hkk+xKAdrRQ7BUhHkTYCY2OVgfCE8FE5674hogu5l5Hu4fSZSn4t
+        fksNBaN+sXjPdjWFykfOc2ZKSrGOiQI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-350--V8jmxqEMeSDz1gB4i3GwQ-1; Mon, 09 Nov 2020 05:57:37 -0500
-X-MC-Unique: -V8jmxqEMeSDz1gB4i3GwQ-1
+ us-mta-356-2f6ukMpxOlm5ufBosqpOrw-1; Mon, 09 Nov 2020 05:57:35 -0500
+X-MC-Unique: 2f6ukMpxOlm5ufBosqpOrw-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43FE357201;
-        Mon,  9 Nov 2020 10:57:36 +0000 (UTC)
-Received: from x1.localdomain (ovpn-114-3.ams2.redhat.com [10.36.114.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6A546EF45;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5FF9657205;
         Mon,  9 Nov 2020 10:57:34 +0000 (UTC)
+Received: from x1.localdomain (ovpn-114-3.ams2.redhat.com [10.36.114.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E50876EF4B;
+        Mon,  9 Nov 2020 10:57:32 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -51,9 +51,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         Andy Shevchenko <andy@infradead.org>,
         linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v2 3/3] pwm: lpss: Set DPM_FLAG_SMART_SUSPEND on Cherry Trail devices
-Date:   Mon,  9 Nov 2020 11:57:26 +0100
-Message-Id: <20201109105726.121512-4-hdegoede@redhat.com>
+Subject: [PATCH v2 2/3] pwm: lpss: Use DPM_FLAG_NO_DIRECT_COMPLETE instead of declaring a prepare handler
+Date:   Mon,  9 Nov 2020 11:57:25 +0100
+Message-Id: <20201109105726.121512-3-hdegoede@redhat.com>
 In-Reply-To: <20201109105726.121512-1-hdegoede@redhat.com>
 References: <20201109105726.121512-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -63,55 +63,81 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-As the comment above the code setting the DPM_FLAG_NO_DIRECT_COMPLETE
-flag explains:
+ACPI LPSS devices use direct-complete style suspend/resume handling by
+default. We set the DPM_FLAG_SMART_PREPARE and define a prepare handler
+to disable this on Cherry Trail devices.
 
-    /*
-     * On Cherry Trail devices the GFX0._PS0 AML checks if the controller
-     * is on and if it is not on it turns it on and restores what it
-     * believes is the correct state to the PWM controller.
-     * Because of this we must disallow direct-complete, which keeps the
-     * controller (runtime)suspended, on resume to avoid 2 issues:
-     * 1. The controller getting turned on without the linux-pm code
-     *    knowing about this. On devices where the controller is unused
-     *    this causes it to stay on during the next suspend causing high
-     *    battery drain (because S0i3 is not reached)
-     * 2. The state restoring code unexpectedly messing with the controller
-     */
+Clean this up a bit by setting the DPM_FLAG_NO_DIRECT_COMPLETE flag for
+Cherry Trail devices, instead of defining a prepare handler.
 
-The pm-core must not skip resume to avoid the GFX0._PS0 AML code messing
-with the PWM controller behind our back. But leaving the controller
-runtime-suspended (skipping runtime-resume + normal-suspend) during
-suspend is fine. Set the DPM_FLAG_SMART_SUSPEND flag to allow this.
+While at it also improve the comment explaining why this is necessary.
 
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
-Changes in v2:
-- Extend comment to explain why the DPM_FLAG_SMART_SUSPEND is set
----
- drivers/pwm/pwm-lpss-platform.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-lpss-platform.c | 35 ++++++++++++++-------------------
+ 1 file changed, 15 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index ac33861edb48..986786be1e49 100644
+index c6502cf7a7af..ac33861edb48 100644
 --- a/drivers/pwm/pwm-lpss-platform.c
 +++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -69,9 +69,13 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
- 	 *    this causes it to stay on during the next suspend causing high
- 	 *    battery drain (because S0i3 is not reached)
- 	 * 2. The state restoring code unexpectedly messing with the controller
-+	 *
-+	 * Leaving the controller runtime-suspended (skipping runtime-resume +
-+	 * normal-suspend) during suspend is fine.
- 	 */
- 	if (info->other_devices_aml_touches_pwm_regs)
--		dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
-+		dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE|
-+						    DPM_FLAG_SMART_SUSPEND);
+@@ -58,7 +58,21 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
  
+ 	platform_set_drvdata(pdev, lpwm);
+ 
+-	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_SMART_PREPARE);
++	/*
++	 * On Cherry Trail devices the GFX0._PS0 AML checks if the controller
++	 * is on and if it is not on it turns it on and restores what it
++	 * believes is the correct state to the PWM controller.
++	 * Because of this we must disallow direct-complete, which keeps the
++	 * controller (runtime)suspended on resume, to avoid 2 issues:
++	 * 1. The controller getting turned on without the linux-pm code
++	 *    knowing about this. On devices where the controller is unused
++	 *    this causes it to stay on during the next suspend causing high
++	 *    battery drain (because S0i3 is not reached)
++	 * 2. The state restoring code unexpectedly messing with the controller
++	 */
++	if (info->other_devices_aml_touches_pwm_regs)
++		dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
++
  	pm_runtime_set_active(&pdev->dev);
  	pm_runtime_enable(&pdev->dev);
+ 
+@@ -73,24 +87,6 @@ static int pwm_lpss_remove_platform(struct platform_device *pdev)
+ 	return pwm_lpss_remove(lpwm);
+ }
+ 
+-static int pwm_lpss_prepare(struct device *dev)
+-{
+-	struct pwm_lpss_chip *lpwm = dev_get_drvdata(dev);
+-
+-	/*
+-	 * If other device's AML code touches the PWM regs on suspend/resume
+-	 * force runtime-resume the PWM controller to allow this.
+-	 */
+-	if (lpwm->info->other_devices_aml_touches_pwm_regs)
+-		return 0; /* Force runtime-resume */
+-
+-	return 1; /* If runtime-suspended leave as is */
+-}
+-
+-static const struct dev_pm_ops pwm_lpss_platform_pm_ops = {
+-	.prepare = pwm_lpss_prepare,
+-};
+-
+ static const struct acpi_device_id pwm_lpss_acpi_match[] = {
+ 	{ "80860F09", (unsigned long)&pwm_lpss_byt_info },
+ 	{ "80862288", (unsigned long)&pwm_lpss_bsw_info },
+@@ -104,7 +100,6 @@ static struct platform_driver pwm_lpss_driver_platform = {
+ 	.driver = {
+ 		.name = "pwm-lpss",
+ 		.acpi_match_table = pwm_lpss_acpi_match,
+-		.pm = &pwm_lpss_platform_pm_ops,
+ 	},
+ 	.probe = pwm_lpss_probe_platform,
+ 	.remove = pwm_lpss_remove_platform,
 -- 
 2.28.0
 
