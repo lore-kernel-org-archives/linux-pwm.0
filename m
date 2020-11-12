@@ -2,130 +2,156 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD507C5519F
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB6DFC6369E
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:59:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8BF6F21D7F
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:47:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 49AF122240
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:59:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fHDLJ02X"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729116AbgKLQrL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Nov 2020 11:47:11 -0500
-Received: from mx2.suse.de ([195.135.220.15]:52330 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728487AbgKLQrL (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 12 Nov 2020 11:47:11 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id BD74CAEA3;
-        Thu, 12 Nov 2020 16:47:08 +0000 (UTC)
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Eric Anholt <eric@anholt.net>, Stefan Wahren <wahrenst@gmx.net>
-Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-input@vger.kernel.org,
-        dmitry.torokhov@gmail.com, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, p.zabel@pengutronix.de,
-        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
-        linux-clk@vger.kernel.org, sboyd@kernel.org,
-        linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
-        andy.shevchenko@gmail.com, Rob Herring <robh@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v4 09/11] dt-bindings: pwm: Add binding for RPi firmware PWM bus
-Date:   Thu, 12 Nov 2020 17:36:27 +0100
-Message-Id: <20201112163630.17177-10-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201112163630.17177-1-nsaenzjulienne@suse.de>
-References: <20201112163630.17177-1-nsaenzjulienne@suse.de>
+        id S1726082AbgKLQ7l (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Nov 2020 11:59:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgKLQ7l (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Nov 2020 11:59:41 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C78C0613D1;
+        Thu, 12 Nov 2020 08:59:40 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id y16so7019915ljk.1;
+        Thu, 12 Nov 2020 08:59:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Xt95colZf33mgot8tELeNlRansGBvck/Mt4yELIIDqY=;
+        b=fHDLJ02XfofqPoW/m/ty+7VMDDU5x/EGpHV/+Yy5G1qvgpLWH4Bj6qirnIfR2GOFHY
+         H2rsWty5fFNMq6aCx6XdDWhpV6BR3+tvp61A5zWYd6mxO3JGE39IAl69QXwXp/OPSLOc
+         dbjrfCbzaQBa8KcMu6SiyVtP5+MIJvDirOdjY9sY049RqEx6eY2eqm19yoWcz95sPsLg
+         NScSb7Br1t6cH2J6CRqeJIQlDccMferVM5GcIzWR9yGjzpka13Dd7CaUaJF4CwdiAUzW
+         byu4iX3gr3BVLIGe/LU4yPecdAgxDUtNUIthKeuggKFO5txc0jODLiR2lG9aCqUdXeXb
+         ScEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Xt95colZf33mgot8tELeNlRansGBvck/Mt4yELIIDqY=;
+        b=Quc5cZb8N4+lSjAXByxBevRjhOn/VQ2Thrux0j8xs6bVFAUTeqtv9SgrxK5/4P/ZQm
+         BM0ABVbCKLlQDSG2C3qu62ywTK8eWCuERI9B84iBATWsv8ujKu5EMW8HFnd4I3vvxnSf
+         Bszh8r3WtDjMFk1JZfaKCI3DWQuSalenbqtbgdcbM95CNeS1kTehqRXC9zQcvdtbgwAC
+         cYh4RaeIuuCJQtjuOvErAXiH0gcfZhrMniJIu//GRgzwDjWF1lVwEnlpGDm7V4u5bwWy
+         RkTNUnYqRT6cpl4BdnatDzQkwe0raEEu0zaPEf4ryEXsHq0QH5V750YBoBctnljBU3W9
+         5viA==
+X-Gm-Message-State: AOAM532B78c8CxzTjvVOmWdO915+aRw58/d2m59OVUEwXXbc7SvDqQ63
+        jbYG3IstePgOaAwD/vqnB4B0dvICp2E=
+X-Google-Smtp-Source: ABdhPJyl96aYzliFwkLljLShw56ErRaoK0Xab1vQjJi14A44PY75rTZLE8QOeBZnDRsExRlkCgmYqg==
+X-Received: by 2002:a2e:8315:: with SMTP id a21mr166883ljh.29.1605200379012;
+        Thu, 12 Nov 2020 08:59:39 -0800 (PST)
+Received: from [192.168.2.145] (109-252-193-159.dynamic.spd-mgts.ru. [109.252.193.159])
+        by smtp.googlemail.com with ESMTPSA id t5sm691068lfc.75.2020.11.12.08.59.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Nov 2020 08:59:38 -0800 (PST)
+Subject: Re: [PATCH v1 11/30] drm/tegra: dc: Support OPP and SoC core voltage
+ scaling
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Peter Chen <Peter.Chen@nxp.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Nicolas Chauvet <kwizart@gmail.com>,
+        linux-samsung-soc@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-usb@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-tegra@vger.kernel.org
+References: <20201104234427.26477-1-digetx@gmail.com>
+ <20201104234427.26477-12-digetx@gmail.com> <20201110202945.GF2375022@ulmo>
+ <20201110203257.GC5957@sirena.org.uk>
+ <72ae6462-13df-9fcb-510e-8e57eee0f035@gmail.com>
+ <20201111115534.GA4847@sirena.org.uk>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <dd26eb18-8ac4-22a6-29b0-dbbe5fa6075b@gmail.com>
+Date:   Thu, 12 Nov 2020 19:59:36 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
+In-Reply-To: <20201111115534.GA4847@sirena.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The PWM bus controlling the fan in RPi's official PoE hat can only be
-controlled by the board's co-processor.
+11.11.2020 14:55, Mark Brown пишет:
+> On Wed, Nov 11, 2020 at 12:23:41AM +0300, Dmitry Osipenko wrote:
+>> 10.11.2020 23:32, Mark Brown пишет:
+> 
+>>>>> +	if (!device_property_present(dc->dev, "core-supply"))
+>>>>> +		return;
+> 
+>>>> This is a potentially heavy operation, so I think we should avoid that
+>>>> here. How about you use devm_regulator_get_optional() in ->probe()? That
+>>>> returns -ENODEV if no regulator was specified, in which case you can set
+>>>> dc->core_reg = NULL and use that as the condition here.
+> 
+>>> Or enumerate the configurable voltages after getting the regulator and
+>>> handle that appropriately which would be more robust in case there's
+>>> missing or unusual constraints.
+> 
+>> I already changed that code to use regulator_get_optional() for v2.
+> 
+> That doesn't look entirely appropriate given that the core does most
+> likely require some kind of power to operate.
 
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
+We will need to do this because older DTBs won't have that regulator and
+we want to keep them working.
 
-Changes since v3:
- - Fix example
+Also, some device-trees won't have that regulator anyways because board
+schematics isn't available, and thus, we can't fix them.
 
-Changes since v1:
- - Update bindings to use 2 #pwm-cells
+>> Regarding the enumerating supported voltage.. I think this should be
+>> done by the OPP core, but regulator core doesn't work well if
+>> regulator_get() is invoked more than one time for the same device, at
+>> least there is a loud debugfs warning about an already existing
+> 
+> I don't understand why this would be an issue - if nothing else the core
+> could just offer an interface to trigger the check.
 
- .../arm/bcm/raspberrypi,bcm2835-firmware.yaml | 20 +++++++++++++++++++
- .../pwm/raspberrypi,firmware-pwm.h            | 13 ++++++++++++
- 2 files changed, 33 insertions(+)
- create mode 100644 include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
+It's not an issue, I just described what happens when device driver
+tries to get a regulator twice.
 
-diff --git a/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml b/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml
-index a2c63c8b1d10..38be3ff69609 100644
---- a/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml
-+++ b/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml
-@@ -64,6 +64,21 @@ properties:
-       - compatible
-       - "#reset-cells"
- 
-+  pwm:
-+    type: object
-+
-+    properties:
-+      compatible:
-+        const: raspberrypi,firmware-pwm
-+
-+      "#pwm-cells":
-+        # See pwm.yaml in this directory for a description of the cells format.
-+        const: 2
-+
-+    required:
-+      - compatible
-+      - "#pwm-cells"
-+
-     additionalProperties: false
- 
- required:
-@@ -87,5 +102,10 @@ examples:
-             compatible = "raspberrypi,firmware-reset";
-             #reset-cells = <1>;
-         };
-+
-+        pwm: pwm {
-+            compatible = "raspberrypi,firmware-pwm";
-+            #pwm-cells = <2>;
-+        };
-     };
- ...
-diff --git a/include/dt-bindings/pwm/raspberrypi,firmware-pwm.h b/include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
-new file mode 100644
-index 000000000000..27c5ce68847b
---- /dev/null
-+++ b/include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2020 Nicolas Saenz Julienne
-+ * Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-+ */
-+
-+#ifndef _DT_BINDINGS_RASPBERRYPI_FIRMWARE_PWM_H
-+#define _DT_BINDINGS_RASPBERRYPI_FIRMWARE_PWM_H
-+
-+#define RASPBERRYPI_FIRMWARE_PWM_POE		0
-+#define RASPBERRYPI_FIRMWARE_PWM_NUM		1
-+
-+#endif
--- 
-2.29.2
+There was an issue once that check is added to the regulator core code.
+But perhaps not worth to discuss it for now because I don't remember
+details.
 
+>> directory for a regulator. It's easy to check whether the debug
+>> directory exists before creating it, like thermal framework does it for
+>> example, but then there were some other more difficult issues.. I don't
+>> recall what they were right now. Perhaps will be easier to simply get a
+>> error from regulator_set_voltage() for now because it shouldn't ever
+>> happen in practice, unless device-tree has wrong constraints.
+> 
+> The constraints might not be wrong, there might be some board which has
+> a constraint somewhere for 
+> 
+
+In this case board's DT shouldn't specify unsupportable OPPs.
