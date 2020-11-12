@@ -2,128 +2,130 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D92C56202
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD507C5519F
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:47:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC6A321D91
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:45:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=pqgruber.com header.i=@pqgruber.com header.b="JmpRwnjn"
+	by mail.kernel.org (Postfix) with ESMTP id 8BF6F21D7F
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729265AbgKLQpm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Nov 2020 11:45:42 -0500
-Received: from mail.pqgruber.com ([52.59.78.55]:46386 "EHLO mail.pqgruber.com"
+        id S1729116AbgKLQrL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Nov 2020 11:47:11 -0500
+Received: from mx2.suse.de ([195.135.220.15]:52330 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729260AbgKLQpl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 12 Nov 2020 11:45:41 -0500
-Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id 6F0BDC7D0FA;
-        Thu, 12 Nov 2020 17:38:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1605199111;
-        bh=cIIJ3PiWJn6aNmb5SCNmZ1PfYOyHc3UB+Hid0B9eiTI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JmpRwnjnuXlSABAUlyHfI14K20P9aqUTBjtQftWBSZSnMSsfP/jMxKJ24PpLFnJ0d
-         WUInu+s3Cgh3N6BFfnpyzNYt2pZBX9ocvtIiXnJCErGi8PTcE/0gGd36bKswL6hiyv
-         64iQd6kfgD5l0YALHBBfDb954uUVDN/ceHS4m4FI=
-From:   Clemens Gruber <clemens.gruber@pqgruber.com>
-To:     linux-pwm@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        u.kleine-koenig@pengutronix.de, Lee Jones <lee.jones@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: [PATCH 2/2] pwm: pca9685: support staggered output ON times
-Date:   Thu, 12 Nov 2020 17:37:51 +0100
-Message-Id: <20201112163751.204187-2-clemens.gruber@pqgruber.com>
+        id S1728487AbgKLQrL (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 12 Nov 2020 11:47:11 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id BD74CAEA3;
+        Thu, 12 Nov 2020 16:47:08 +0000 (UTC)
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Eric Anholt <eric@anholt.net>, Stefan Wahren <wahrenst@gmx.net>
+Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+        dmitry.torokhov@gmail.com, gregkh@linuxfoundation.org,
+        devel@driverdev.osuosl.org, p.zabel@pengutronix.de,
+        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
+        linux-clk@vger.kernel.org, sboyd@kernel.org,
+        linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
+        andy.shevchenko@gmail.com, Rob Herring <robh@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v4 09/11] dt-bindings: pwm: Add binding for RPi firmware PWM bus
+Date:   Thu, 12 Nov 2020 17:36:27 +0100
+Message-Id: <20201112163630.17177-10-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201112163751.204187-1-clemens.gruber@pqgruber.com>
-References: <20201112163751.204187-1-clemens.gruber@pqgruber.com>
+In-Reply-To: <20201112163630.17177-1-nsaenzjulienne@suse.de>
+References: <20201112163630.17177-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The PCA9685 supports staggered LED output ON times to minimize current
-surges and reduce EMI.
-When this new option is enabled, the ON times of each channel are
-delayed by channel number x counter range / 16, which avoids asserting
-all enabled outputs at the same counter value while still maintaining
-the configured duty cycle of each output.
+The PWM bus controlling the fan in RPi's official PoE hat can only be
+controlled by the board's co-processor.
 
-Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/pwm/pwm-pca9685.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index df214758256e..b993231ebb5e 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -75,6 +75,7 @@ struct pca9685 {
- 	struct pwm_chip chip;
- 	struct regmap *regmap;
- 	int period_ns;
-+	bool staggered_outputs;
- #if IS_ENABLED(CONFIG_GPIOLIB)
- 	struct mutex lock;
- 	struct gpio_chip gpio;
-@@ -251,6 +252,7 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct pca9685 *pca = to_pca(chip);
- 	unsigned long long duty;
-+	unsigned int on, off;
- 	unsigned int reg;
- 	int prescale;
+Changes since v3:
+ - Fix example
+
+Changes since v1:
+ - Update bindings to use 2 #pwm-cells
+
+ .../arm/bcm/raspberrypi,bcm2835-firmware.yaml | 20 +++++++++++++++++++
+ .../pwm/raspberrypi,firmware-pwm.h            | 13 ++++++++++++
+ 2 files changed, 33 insertions(+)
+ create mode 100644 include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
+
+diff --git a/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml b/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml
+index a2c63c8b1d10..38be3ff69609 100644
+--- a/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml
++++ b/Documentation/devicetree/bindings/arm/bcm/raspberrypi,bcm2835-firmware.yaml
+@@ -64,6 +64,21 @@ properties:
+       - compatible
+       - "#reset-cells"
  
-@@ -286,6 +288,32 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	duty = (PCA9685_COUNTER_RANGE - 1) * (unsigned long long)duty_ns;
- 	duty = DIV_ROUND_UP_ULL(duty, period_ns);
++  pwm:
++    type: object
++
++    properties:
++      compatible:
++        const: raspberrypi,firmware-pwm
++
++      "#pwm-cells":
++        # See pwm.yaml in this directory for a description of the cells format.
++        const: 2
++
++    required:
++      - compatible
++      - "#pwm-cells"
++
+     additionalProperties: false
  
-+	if (pca->staggered_outputs && pwm->hwpwm < PCA9685_MAXCHAN) {
-+		if (duty_ns > 0) {
-+			/*
-+			 * To reduce EMI, the ON times of each channel are
-+			 * spread out evenly within the counter range, while
-+			 * still maintaining the configured duty cycle
-+			 */
-+			on = pwm->hwpwm * PCA9685_COUNTER_RANGE /
-+				PCA9685_MAXCHAN;
-+			off = (on + duty) % PCA9685_COUNTER_RANGE;
-+			regmap_write(pca->regmap, LED_N_ON_L(pwm->hwpwm),
-+				     on & 0xff);
-+			regmap_write(pca->regmap, LED_N_ON_H(pwm->hwpwm),
-+				     (on >> 8) & 0xf);
-+			regmap_write(pca->regmap, LED_N_OFF_L(pwm->hwpwm),
-+				     off & 0xff);
-+			regmap_write(pca->regmap, LED_N_OFF_H(pwm->hwpwm),
-+				     (off >> 8) & 0xf);
-+			return 0;
-+		}
+ required:
+@@ -87,5 +102,10 @@ examples:
+             compatible = "raspberrypi,firmware-reset";
+             #reset-cells = <1>;
+         };
 +
-+		/* Clear ON times */
-+		regmap_write(pca->regmap, LED_N_ON_L(pwm->hwpwm), 0);
-+		regmap_write(pca->regmap, LED_N_ON_H(pwm->hwpwm), 0);
-+	}
++        pwm: pwm {
++            compatible = "raspberrypi,firmware-pwm";
++            #pwm-cells = <2>;
++        };
+     };
+ ...
+diff --git a/include/dt-bindings/pwm/raspberrypi,firmware-pwm.h b/include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
+new file mode 100644
+index 000000000000..27c5ce68847b
+--- /dev/null
++++ b/include/dt-bindings/pwm/raspberrypi,firmware-pwm.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2020 Nicolas Saenz Julienne
++ * Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
++ */
 +
- 	if (pwm->hwpwm >= PCA9685_MAXCHAN)
- 		reg = PCA9685_ALL_LED_OFF_L;
- 	else
-@@ -416,6 +444,9 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 	reg &= ~(MODE1_ALLCALL | MODE1_SUB1 | MODE1_SUB2 | MODE1_SUB3);
- 	regmap_write(pca->regmap, PCA9685_MODE1, reg);
- 
-+	pca->staggered_outputs = device_property_read_bool(
-+		&client->dev, "staggered-outputs");
++#ifndef _DT_BINDINGS_RASPBERRYPI_FIRMWARE_PWM_H
++#define _DT_BINDINGS_RASPBERRYPI_FIRMWARE_PWM_H
 +
- 	/* Clear all "full off" bits */
- 	regmap_write(pca->regmap, PCA9685_ALL_LED_OFF_L, 0);
- 	regmap_write(pca->regmap, PCA9685_ALL_LED_OFF_H, 0);
++#define RASPBERRYPI_FIRMWARE_PWM_POE		0
++#define RASPBERRYPI_FIRMWARE_PWM_NUM		1
++
++#endif
 -- 
 2.29.2
 
