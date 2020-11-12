@@ -2,77 +2,191 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D793C5519F
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1453C63697
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:41:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8435B2100A
-	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:39:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=pqgruber.com header.i=@pqgruber.com header.b="Ac6FsiCR"
+	by mail.kernel.org (Postfix) with ESMTP id 605EE2100A
+	for <linux-pwm@archiver.kernel.org>; Thu, 12 Nov 2020 16:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728395AbgKLQjz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 12 Nov 2020 11:39:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728359AbgKLQjy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Nov 2020 11:39:54 -0500
-X-Greylist: delayed 109 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 Nov 2020 08:39:54 PST
-Received: from mail.pqgruber.com (mail.pqgruber.com [IPv6:2a05:d014:575:f70b:4f2c:8f1d:40c4:b13e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E05FC0613D1;
-        Thu, 12 Nov 2020 08:39:54 -0800 (PST)
-Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id CEE40C7D0FD;
-        Thu, 12 Nov 2020 17:39:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1605199192;
-        bh=vfy6iH8njtY0puGVd8sfT1IejW8lXGG1Yz4/aftKfdA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Ac6FsiCRs/g3dyb5vtVFP7+61HHzwXWRVmJXyuzabPtaWf/mPdtu37iVruQQoauWJ
-         8oMGK7O6j4NQy7LYr2lBEYf10us8d4Tcdr30/MWrepfWVhMPOU193R7brJiruhTa53
-         xc0M8/UakYksHXvCoNabVAauOBnxdHzXpxKqMb5Y=
-From:   Clemens Gruber <clemens.gruber@pqgruber.com>
-To:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        u.kleine-koenig@pengutronix.de, Lee Jones <lee.jones@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: [PATCH] dt-bindings: pwm: pca9685: add staggered-outputs property
-Date:   Thu, 12 Nov 2020 17:39:31 +0100
-Message-Id: <20201112163931.204243-1-clemens.gruber@pqgruber.com>
+        id S1728906AbgKLQlA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 12 Nov 2020 11:41:00 -0500
+Received: from mx2.suse.de ([195.135.220.15]:44752 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728263AbgKLQlA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 12 Nov 2020 11:41:00 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id B4473AB95;
+        Thu, 12 Nov 2020 16:40:57 +0000 (UTC)
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, wahrenst@gmx.net,
+        linux-input@vger.kernel.org, dmitry.torokhov@gmail.com,
+        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        p.zabel@pengutronix.de, linux-gpio@vger.kernel.org,
+        linus.walleij@linaro.org, linux-clk@vger.kernel.org,
+        sboyd@kernel.org, linux-rpi-kernel@lists.infradead.org,
+        bgolaszewski@baylibre.com, andy.shevchenko@gmail.com
+Subject: [PATCH v4 01/11] firmware: raspberrypi: Keep count of all consumers
+Date:   Thu, 12 Nov 2020 17:36:19 +0100
+Message-Id: <20201112163630.17177-2-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201112163630.17177-1-nsaenzjulienne@suse.de>
+References: <20201112163630.17177-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The pca9685 driver supports a new staggered-outputs property for reduced
-current surges and EMI. This adds documentation for the new DT property.
+When unbinding the firmware device we need to make sure it has no
+consumers left. Otherwise we'd leave them with a firmware handle
+pointing at freed memory.
 
-Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+Keep a reference count of all consumers and introduce rpi_firmware_put()
+which will permit automatically decrease the reference count upon
+unbinding consumer drivers.
+
+Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 ---
- Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt b/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt
-index f21b55c95738..911bbb65984e 100644
---- a/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt
-@@ -12,6 +12,8 @@ Optional properties:
-   - invert (bool): boolean to enable inverted logic
-   - open-drain (bool): boolean to configure outputs with open-drain structure;
- 		       if omitted use totem-pole structure
-+  - staggered-outputs (bool): boolean to enable staggered output ON times to
-+			      minimize current surges and EMI
+Changes since v3:
+- Use kref instead of waiting on refcount
+
+ drivers/firmware/raspberrypi.c             | 37 +++++++++++++++++++---
+ include/soc/bcm2835/raspberrypi-firmware.h |  2 ++
+ 2 files changed, 35 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
+index 2371d08bdd17..438e17074a97 100644
+--- a/drivers/firmware/raspberrypi.c
++++ b/drivers/firmware/raspberrypi.c
+@@ -7,6 +7,7 @@
+  */
  
- Example:
+ #include <linux/dma-mapping.h>
++#include <linux/kref.h>
+ #include <linux/mailbox_client.h>
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
+@@ -27,6 +28,8 @@ struct rpi_firmware {
+ 	struct mbox_chan *chan; /* The property channel. */
+ 	struct completion c;
+ 	u32 enabled;
++
++	struct kref consumers;
+ };
  
+ static DEFINE_MUTEX(transaction_lock);
+@@ -225,12 +228,27 @@ static void rpi_register_clk_driver(struct device *dev)
+ 						-1, NULL, 0);
+ }
+ 
++static void rpi_firmware_delete(struct kref *kref)
++{
++	struct rpi_firmware *fw = container_of(kref, struct rpi_firmware,
++					       consumers);
++
++	mbox_free_channel(fw->chan);
++	kfree(fw);
++}
++
++void rpi_firmware_put(struct rpi_firmware *fw)
++{
++	kref_put(&fw->consumers, rpi_firmware_delete);
++}
++EXPORT_SYMBOL_GPL(rpi_firmware_put);
++
+ static int rpi_firmware_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct rpi_firmware *fw;
+ 
+-	fw = devm_kzalloc(dev, sizeof(*fw), GFP_KERNEL);
++	fw = kzalloc(sizeof(*fw), GFP_KERNEL);
+ 	if (!fw)
+ 		return -ENOMEM;
+ 
+@@ -247,6 +265,7 @@ static int rpi_firmware_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	init_completion(&fw->c);
++	kref_init(&fw->consumers);
+ 
+ 	platform_set_drvdata(pdev, fw);
+ 
+@@ -275,25 +294,35 @@ static int rpi_firmware_remove(struct platform_device *pdev)
+ 	rpi_hwmon = NULL;
+ 	platform_device_unregister(rpi_clk);
+ 	rpi_clk = NULL;
+-	mbox_free_channel(fw->chan);
++
++	rpi_firmware_put(fw);
+ 
+ 	return 0;
+ }
+ 
+ /**
+- * rpi_firmware_get - Get pointer to rpi_firmware structure.
+  * @firmware_node:    Pointer to the firmware Device Tree node.
+  *
++ * The reference to rpi_firmware has to be released with rpi_firmware_put().
++ *
+  * Returns NULL is the firmware device is not ready.
+  */
+ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
+ {
+ 	struct platform_device *pdev = of_find_device_by_node(firmware_node);
++	struct rpi_firmware *fw;
+ 
+ 	if (!pdev)
+ 		return NULL;
+ 
+-	return platform_get_drvdata(pdev);
++	fw = platform_get_drvdata(pdev);
++	if (!fw)
++		return NULL;
++
++	if (!kref_get_unless_zero(&fw->consumers))
++		return NULL;
++
++	return fw;
+ }
+ EXPORT_SYMBOL_GPL(rpi_firmware_get);
+ 
+diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
+index cc9cdbc66403..fdfef7fe40df 100644
+--- a/include/soc/bcm2835/raspberrypi-firmware.h
++++ b/include/soc/bcm2835/raspberrypi-firmware.h
+@@ -140,6 +140,7 @@ int rpi_firmware_property(struct rpi_firmware *fw,
+ 			  u32 tag, void *data, size_t len);
+ int rpi_firmware_property_list(struct rpi_firmware *fw,
+ 			       void *data, size_t tag_size);
++void rpi_firmware_put(struct rpi_firmware *fw);
+ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node);
+ #else
+ static inline int rpi_firmware_property(struct rpi_firmware *fw, u32 tag,
+@@ -154,6 +155,7 @@ static inline int rpi_firmware_property_list(struct rpi_firmware *fw,
+ 	return -ENOSYS;
+ }
+ 
++static inline void rpi_firmware_put(struct rpi_firmware *fw) { }
+ static inline struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
+ {
+ 	return NULL;
 -- 
 2.29.2
 
