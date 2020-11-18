@@ -6,70 +6,134 @@ X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E65AC5519F
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC15C56202
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:54:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5D056221FC
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:51:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7246E221F8
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726015AbgKRJuz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 18 Nov 2020 04:50:55 -0500
-Received: from smtprelay0142.hostedemail.com ([216.40.44.142]:45286 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726249AbgKRJuz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Nov 2020 04:50:55 -0500
-X-Greylist: delayed 558 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Nov 2020 04:50:55 EST
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave04.hostedemail.com (Postfix) with ESMTP id ADAA418033F5D;
-        Wed, 18 Nov 2020 09:41:35 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 9A220837F24D;
-        Wed, 18 Nov 2020 09:41:34 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: sun17_590424827339
-X-Filterd-Recvd-Size: 1850
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf09.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 18 Nov 2020 09:41:33 +0000 (UTC)
-Message-ID: <ebe315dae8855ed2c55d6ce48f84aa4edd93e5fd.camel@perches.com>
-Subject: Re: [PATCH] pwm: core: Use octal permission
-From:   Joe Perches <joe@perches.com>
-To:     Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
-Cc:     Soham Biswas <sohambiswas41@gmail.com>, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 18 Nov 2020 01:41:31 -0800
-In-Reply-To: <20201118093506.srljfosnamxe5wwz@pengutronix.de>
-References: <20201117175452.26914-1-sohambiswas41@gmail.com>
-         <20201117181214.GK1869941@dell>
-         <CAMmt7eO5te05AuVC+MR-zLB-z+r9FCuJwtON=1QXXY2YwQG0eg@mail.gmail.com>
-         <20201118085113.GO1869941@dell>
-         <20201118093506.srljfosnamxe5wwz@pengutronix.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1727434AbgKRJyD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 18 Nov 2020 04:54:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726754AbgKRJyD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Nov 2020 04:54:03 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237EAC0613D4
+        for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2020 01:54:03 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kfK9t-0003br-T9; Wed, 18 Nov 2020 10:53:49 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kfK9p-00087c-1n; Wed, 18 Nov 2020 10:53:45 +0100
+Date:   Wed, 18 Nov 2020 10:53:42 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-tegra@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Alban Bedel <albeu@free.fr>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Kevin Hilman <khilman@kernel.org>, zhang.lyra@gmail.com,
+        Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        dl-linux-imx <linux-imx@nxp.com>, orsonzhai@gmail.com,
+        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+        linux-pwm@vger.kernel.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        Hoan Tran <hoan@os.amperecomputing.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Sascha Hauer <kernel@pengutronix.de>, baolin.wang7@gmail.com,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH] drivers: gpio: use of_match_ptr() and ACPI_PTR() macros
+Message-ID: <20201118095342.sviuxvfsbmmn22mo@pengutronix.de>
+References: <20201117154340.18216-1-info@metux.net>
+ <CAHp75VfPio=TacTTrY=vZp8vZ7qst_7zWeXKDpYvJ6q7oh2Hdw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jrmdeyhh5m52oxeb"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfPio=TacTTrY=vZp8vZ7qst_7zWeXKDpYvJ6q7oh2Hdw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, 2020-11-18 at 10:35 +0100, Uwe Kleine-König wrote:
 
-> Actually I'd prefer keeping the symbolic name because this is easier to
-> grep for. So to convince me a better reason than "checkpatch says so" is
-> needed.
+--jrmdeyhh5m52oxeb
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-https://lore.kernel.org/lkml/CA+55aFw5v23T-zvDZp-MmD_EYxF8WbafwwB59934FV7g21uMGQ@mail.gmail.com/
--------------------------------------------------------------------
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Tue, 2 Aug 2016 16:58:29 -0400
+On Tue, Nov 17, 2020 at 06:45:37PM +0200, Andy Shevchenko wrote:
+> On Tue, Nov 17, 2020 at 5:45 PM Enrico Weigelt, metux IT consult
+> <info@metux.net> wrote:
+> >
+> > The of_match_ptr(foo) macro evaluates to foo, only if
+> > CONFIG_OF is set, otherwise to NULL. Same does ACPI_PTR with
+> > CONFIG_ACPI. That's very helpful for drivers that can be used
+> > with or without oftree / acpi.
+> >
+> > Even though most of the drivers touched here probably don't
+> > actually need that, it's also nice for consistency to make it
+> > the de-facto standard and change all drivers to use the
+> > of_match_ptr() and ACPI_PTR() macros.
+> >
+> > A nice side effect: in some situations, when compiled w/o
+> > CONFIG_OF/CONFIG_ACPI, the corresponding match tables could
+> > automatically become unreferenced and optimized-away by the
+> > compiler, w/o explicitly cluttering the code w/ ifdef's.
+>=20
+> NAK.
+>=20
+> It prevents using DT-enabled drivers on ACPI based platforms.
 
-The symbolic names are good for the *other* bits (ie sticky bit, and
-the inode mode _type_ numbers etc), but for the permission bits, the
-symbolic names are just insane crap. Nobody sane should ever use them.
-Not in the kernel, not in user space.
+So a system without CONFIG_OF might still make use of .of_match_table?
 
-           Linus
+If so: TIL ...
 
+Best regards
+Uwe
 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--jrmdeyhh5m52oxeb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+07yIACgkQwfwUeK3K
+7Ak+4Af/S4LACdOy4WkgBIlg0vOjRAgAtSXuRqE7DZpYrEDA16Jf1/hvxQgwZgoQ
+2gZ2CszqBXhxH94X4GFtm7veiGfXquPsf0qlQ31Ou2yDIIv0+oXBBrSi78lwesD1
+1s6fYmYnp+Oijt1tRIg+euHAWOyIIyavCIBFkoFVIOvlux7JMc7pQZrdTGuiHJP1
+6c6F0G+G2nlLQtmwsR4Jm2vERKNDy3X87PdQANsH4ipSsIFyxTH/5Mgx4kLRZ/sg
+prSguvAIqgH+3KyVK9w454gWpqQJrGiCa7CEybzjNjAnjCAoxnnJ8SQ1/Ys27Y5L
+O0PgX1tM/ulriSZe+T5UUlYqGZyBAw==
+=A5vw
+-----END PGP SIGNATURE-----
+
+--jrmdeyhh5m52oxeb--
