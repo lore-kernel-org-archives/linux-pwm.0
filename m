@@ -7,22 +7,22 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0794DC56201
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 22:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE95C5519F
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 23:00:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B55C3246DC
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 22:47:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1ACDF246E7
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 23:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbgKRWrw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 18 Nov 2020 17:47:52 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36612 "EHLO vps0.lunn.ch"
+        id S1725822AbgKRW7u (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 18 Nov 2020 17:59:50 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36646 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725710AbgKRWrw (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 18 Nov 2020 17:47:52 -0500
+        id S1725947AbgKRW7u (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 18 Nov 2020 17:59:50 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kfWEl-007oZ6-BZ; Wed, 18 Nov 2020 23:47:39 +0100
-Date:   Wed, 18 Nov 2020 23:47:39 +0100
+        id 1kfWQd-007oeb-0s; Wed, 18 Nov 2020 23:59:55 +0100
+Date:   Wed, 18 Nov 2020 23:59:55 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Baruch Siach <baruch@tkos.co.il>
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
@@ -30,34 +30,36 @@ Cc:     Thierry Reding <thierry.reding@gmail.com>,
         <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Jason Cooper <jason@lakedaemon.net>,
         Gregory Clement <gregory.clement@bootlin.com>,
         Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Chris Packham <chris.packham@alliedtelesis.co.nz>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Ralph Sennhauser <ralph.sennhauser@gmail.com>,
         linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/5] gpio: mvebu: update Armada XP per-CPU comment
-Message-ID: <20201118224739.GF1853236@lunn.ch>
+Subject: Re: [PATCH 2/5] gpio: mvebu: switch pwm duration registers to regmap
+Message-ID: <20201118225955.GG1853236@lunn.ch>
 References: <cover.1605694661.git.baruch@tkos.co.il>
- <42dec69070e1f2b09b29606247635a57f780b765.1605694661.git.baruch@tkos.co.il>
+ <a461384f84682c212e276fdd7d33972e75b67fd9.1605694661.git.baruch@tkos.co.il>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <42dec69070e1f2b09b29606247635a57f780b765.1605694661.git.baruch@tkos.co.il>
+In-Reply-To: <a461384f84682c212e276fdd7d33972e75b67fd9.1605694661.git.baruch@tkos.co.il>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 12:30:42PM +0200, Baruch Siach wrote:
+On Wed, Nov 18, 2020 at 12:30:43PM +0200, Baruch Siach wrote:
 > Commit 2233bf7a92e ("gpio: mvebu: switch to regmap for register access")
-> introduced percpu_regs to replace percpu_membase. Update the comment to
-> match.
+> changed most readl/writel registers access calls to the regmap API in
+> preparation for Armada 7K/8K support. PWM duration registers were left using
+> readl/writel, as the driver does not support PWM for Armada 7K/8K.
 > 
-> Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-> Fixes: 2233bf7a92e7 ("gpio: mvebu: switch to regmap for register access")
+> Switch PWM duration registers to regmap as first step in adding Armada 7K/8K
+> PWM functionality support.
+> 
 > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
