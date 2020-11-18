@@ -2,119 +2,138 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2789C5519F
-	for <linux-pwm@archiver.kernel.org>; Tue, 17 Nov 2020 18:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9395C56202
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 08:51:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 92D4222210
-	for <linux-pwm@archiver.kernel.org>; Tue, 17 Nov 2020 18:21:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 76FA520719
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 08:51:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h2CSxUaN"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Gga3KWoY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730791AbgKQSVv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 17 Nov 2020 13:21:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49754 "EHLO
+        id S1726948AbgKRIvR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 18 Nov 2020 03:51:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730673AbgKQSVv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Nov 2020 13:21:51 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4EFC0613CF;
-        Tue, 17 Nov 2020 10:21:50 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id w24so4137129wmi.0;
-        Tue, 17 Nov 2020 10:21:50 -0800 (PST)
+        with ESMTP id S1726592AbgKRIvQ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Nov 2020 03:51:16 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C2BC061A4D
+        for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2020 00:51:16 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id 23so1319272wrc.8
+        for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2020 00:51:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lsPkuDxQwYWMGyO8nE94LMCfTZHp1ssgAlo/Bs3ZxK4=;
-        b=h2CSxUaN3C/Ngk8aQArmeYUShlnFesWWoPjm1vCOy7wQBNQC2HY0RrHUPlocg3tP9q
-         O3GtRDKAjzO1aDfhlszmnlqXx57btldVJpVNXU2dO38fBByyKs8AHs/HVHgFGhTROScW
-         apd/8hzb6d1d6H5ppyLQYw2zNWvjSW39IWQl/Lvarj2dG0KSBmppXkBEQaZQhhHmXFaD
-         vhSlx7eDTZiJ4H57MhbjzmPyGJZ7UcjXQ/BvJS0P8Ie0cIsz7WwRgA7qzUI/+Y3mlWW7
-         QQ0/L9rZZON4Z0ktWoLkHw0HxU8FXZe0bqvJCo8JYcJ4xWnL+iB2p9QvG8xOVXzcPPyb
-         Nx9w==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=cdTlLYpoqg49dJytKCngMw0Q/QviqDLm+/R80RdfooU=;
+        b=Gga3KWoYVZfDr07yxKSI+OzcScUs4GDiJQTw5BVHnFRVvdvIe3jmFXyOk/AC0jA1bF
+         mFzyVmgeVITsSycvHLBWC+NRbSBkgMXnnRVC2WG8+AT2p0qKzdnMJRrs2iye4hcZoO3E
+         NE5qJ7CO+t9obqci6xcSh7B/eMNfHCRlWDN6bRnUy8jUsYMuPLzCJkJCgAlocX98bOi0
+         aerNculhYVOSBkYIVqa2m8jMse+470XYeoZEyKFIwE/zGTUAnLIH88ET9jJ8beKNXr2k
+         yjdQA5QIrNpRgpaUIq9MF3W8ZS0i/mdxJDAtji5R2HwS+RrWSKWwPHh4/B3WVz+TxHdN
+         CR6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lsPkuDxQwYWMGyO8nE94LMCfTZHp1ssgAlo/Bs3ZxK4=;
-        b=lO+EEMCWW+bOcjhzpCxfETRbdz316UnTVjMtAmk46Y2EtiYtx+QvnyLFzRtygRdCTI
-         Cy+J6amfFJtA0eB7pWP1es8RuF3GralRTZflyl5v6Loc3pPJ2M5NdudjuVoutqebHYXe
-         REupQ+ccjjK9rlz1/JP7BDs4qu/nTXUQgOSZyAjaUnF4K9bOklW1pBWOSvHcn8Yv9CuL
-         4oUhODrfWAgTL1JXXdvB7lW89mVuKwhWmdqLThaAu2o9xPdmTcDGZAp0IXS9RiSChBOu
-         QAMuCPt+9/3KeycwVnTSnp4ICPbjjpP4fys4Znd2T457gw6sUx66Rjhnt7EIry02ruSr
-         opeQ==
-X-Gm-Message-State: AOAM531Td/k+vkTd/ihohnKcoytTKro4bqp7mfi8FrQzLXjIxgiia37C
-        9yYql/9/+Z1TvqVfNG7Wg7PMPU72AOEnUMnCRFs=
-X-Google-Smtp-Source: ABdhPJydtSf2Xvrne4xsro+k4ZMOn7mJM7ngTqoTDlG58EuQZD1DYGRl8136MhDdx2L7WbVaX/lApCUE//K0y0vt0aQ=
-X-Received: by 2002:a05:600c:22d3:: with SMTP id 19mr366287wmg.161.1605637309533;
- Tue, 17 Nov 2020 10:21:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20201117175452.26914-1-sohambiswas41@gmail.com> <20201117181214.GK1869941@dell>
-In-Reply-To: <20201117181214.GK1869941@dell>
-From:   Soham Biswas <sohambiswas41@gmail.com>
-Date:   Tue, 17 Nov 2020 23:51:38 +0530
-Message-ID: <CAMmt7eO5te05AuVC+MR-zLB-z+r9FCuJwtON=1QXXY2YwQG0eg@mail.gmail.com>
-Subject: Re: [PATCH] pwm: core: Use octal permission
-To:     Lee Jones <lee.jones@linaro.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cdTlLYpoqg49dJytKCngMw0Q/QviqDLm+/R80RdfooU=;
+        b=WrcXukKR5TeJ7On6X2EiwK59B85CM4vayg/cIGS4xzRK8qh18D9l2H54ETiU5MkCEd
+         B6KCSqW7eigyYzCApdksuW90OUP0k1x4677htL/xNvLSIsQE+45ThmDbjUXJkE2j/4ox
+         3iJwyh5cjJpHm0k+iZddapKjc4FWGXHGGCm1nLJrWmgRQs6Z+AZO6Y45hj2fAf3jxKjK
+         DEXSwjA4rMn0nzT38v8EXxd9L1ZK2AwJ+I5vfRbnlxDmXRBrkpKrGRpWjyNtCFC/o5ib
+         8nPSsW6Lt0+GhVo2cTAZ8Y01eImWu6jSc7ZNn8kYQenwdj7pDgQ2BGwkhpnYeAIVy+4w
+         iCeA==
+X-Gm-Message-State: AOAM532U8l0En9bsJMz1egYSvkb3sg1p4zKKgDuG8dR5mi5Gf5zgPQby
+        jRtszML4xL+HYY8in/bVDvGhxQ==
+X-Google-Smtp-Source: ABdhPJwWERf6qt3Q/4PwXA+tgR/h91DCBbx7+RMOUS5nVnmcEa0Rh+Bh6BZGr5p5uAhPdy3wtG1MAA==
+X-Received: by 2002:a5d:4f12:: with SMTP id c18mr3663146wru.304.1605689475334;
+        Wed, 18 Nov 2020 00:51:15 -0800 (PST)
+Received: from dell ([91.110.221.159])
+        by smtp.gmail.com with ESMTPSA id c2sm33963964wrf.68.2020.11.18.00.51.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 00:51:14 -0800 (PST)
+Date:   Wed, 18 Nov 2020 08:51:13 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Soham Biswas <sohambiswas41@gmail.com>
 Cc:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] pwm: core: Use octal permission
+Message-ID: <20201118085113.GO1869941@dell>
+References: <20201117175452.26914-1-sohambiswas41@gmail.com>
+ <20201117181214.GK1869941@dell>
+ <CAMmt7eO5te05AuVC+MR-zLB-z+r9FCuJwtON=1QXXY2YwQG0eg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMmt7eO5te05AuVC+MR-zLB-z+r9FCuJwtON=1QXXY2YwQG0eg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This fixes the following warning:
+On Tue, 17 Nov 2020, Soham Biswas wrote:
 
-`drivers/pwm/core.c:1341: WARNING: Symbolic permissions 'S_IRUGO' are
-not preferred. Consider using octal permissions '0444'.`
+> This fixes the following warning:
+> 
+> `drivers/pwm/core.c:1341: WARNING: Symbolic permissions 'S_IRUGO' are
+> not preferred. Consider using octal permissions '0444'.`
+> 
+> generated by the following script:
+> 
+> `./scripts/checkpatch.pl --file --terse drivers/pwm/core.c`
 
-generated by the following script:
+Oh, it's a checkpatch.pl thing.
 
-`./scripts/checkpatch.pl --file --terse drivers/pwm/core.c`
+You should definitely quote the warning and describe where it came
+from in the commit log.
 
+Not entirely sure what that warning is the result of.  Probably as
+they're sightly harder to read and easier to get wrong.  Still, I'll
+let Thierry decide whether the patch itself is suitable for inclusion
+into the PWM core.
 
-On Tue, 17 Nov 2020 at 23:42, Lee Jones <lee.jones@linaro.org> wrote:
->
-> On Tue, 17 Nov 2020, Soham Biswas wrote:
->
-> > Fixed Warning.
->
-> Which warning does this fix?
->
-> > Replaced symbolic permission 'S_IRUGO' with octal permission '0444'.
->
-> This is semantically equivalent.
->
-> Not sure what and/or how this fixes anything.
->
-> > Signed-off-by: Soham Biswas <sohambiswas41@gmail.com>
-> > ---
-> >  drivers/pwm/core.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> On Tue, 17 Nov 2020 at 23:42, Lee Jones <lee.jones@linaro.org> wrote:
 > >
-> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > index 1f16f5365d3c..a8eff4b3ee36 100644
-> > --- a/drivers/pwm/core.c
-> > +++ b/drivers/pwm/core.c
-> > @@ -1338,7 +1338,7 @@ DEFINE_SEQ_ATTRIBUTE(pwm_debugfs);
+> > On Tue, 17 Nov 2020, Soham Biswas wrote:
 > >
-> >  static int __init pwm_debugfs_init(void)
-> >  {
-> > -     debugfs_create_file("pwm", S_IFREG | S_IRUGO, NULL, NULL,
-> > +     debugfs_create_file("pwm", S_IFREG | 0444, NULL, NULL,
-> >                           &pwm_debugfs_fops);
+> > > Fixed Warning.
 > >
-> >       return 0;
->
-> --
-> Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
-> Senior Technical Lead - Developer Services
-> Linaro.org =E2=94=82 Open source software for Arm SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+> > Which warning does this fix?
+> >
+> > > Replaced symbolic permission 'S_IRUGO' with octal permission '0444'.
+> >
+> > This is semantically equivalent.
+> >
+> > Not sure what and/or how this fixes anything.
+> >
+> > > Signed-off-by: Soham Biswas <sohambiswas41@gmail.com>
+> > > ---
+> > >  drivers/pwm/core.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> > > index 1f16f5365d3c..a8eff4b3ee36 100644
+> > > --- a/drivers/pwm/core.c
+> > > +++ b/drivers/pwm/core.c
+> > > @@ -1338,7 +1338,7 @@ DEFINE_SEQ_ATTRIBUTE(pwm_debugfs);
+> > >
+> > >  static int __init pwm_debugfs_init(void)
+> > >  {
+> > > -     debugfs_create_file("pwm", S_IFREG | S_IRUGO, NULL, NULL,
+> > > +     debugfs_create_file("pwm", S_IFREG | 0444, NULL, NULL,
+> > >                           &pwm_debugfs_fops);
+> > >
+> > >       return 0;
+> >
+
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
