@@ -2,28 +2,28 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21225C63798
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 10:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE21CC5519F
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 10:47:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C622A22228
+	by mail.kernel.org (Postfix) with ESMTP id 97F07206A5
 	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 10:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgKRKqy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1727711AbgKRKqy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Wed, 18 Nov 2020 05:46:54 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:55915 "EHLO
+Received: from guitar.tcltek.co.il ([192.115.133.116]:55913 "EHLO
         mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727704AbgKRKqy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        id S1726466AbgKRKqy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
         Wed, 18 Nov 2020 05:46:54 -0500
+X-Greylist: delayed 612 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Nov 2020 05:46:53 EST
 Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id D6D06440DF9;
-        Wed, 18 Nov 2020 12:31:20 +0200 (IST)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 54FCC4406E6;
+        Wed, 18 Nov 2020 12:30:57 +0200 (IST)
 From:   Baruch Siach <baruch@tkos.co.il>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -41,52 +41,46 @@ Cc:     Baruch Siach <baruch@tkos.co.il>,
         Ralph Sennhauser <ralph.sennhauser@gmail.com>,
         linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 5/5] dt-bindings: ap806: document gpio pwm-offset property
-Date:   Wed, 18 Nov 2020 12:30:46 +0200
-Message-Id: <8e9c2730806e47524a30c52366edd67670736f0e.1605694661.git.baruch@tkos.co.il>
+Subject: [PATCH 0/5] gpio: mvebu: Armada 8K/7K PWM support
+Date:   Wed, 18 Nov 2020 12:30:41 +0200
+Message-Id: <cover.1605694661.git.baruch@tkos.co.il>
 X-Mailer: git-send-email 2.29.2
-In-Reply-To: <cover.1605694661.git.baruch@tkos.co.il>
-References: <cover.1605694661.git.baruch@tkos.co.il>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Update the example as well. Add the '#pwm-cells' and 'clocks' properties
-for a complete working example.
+The gpio-mvebu driver supports the PWM functionality of the GPIO block for 
+earlier Armada variants like XP, 370 and 38x. This series extends support to 
+newer Armada variants that use CP11x and AP80x, like Armada 8K and 7K.
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- .../bindings/arm/marvell/ap80x-system-controller.txt      | 8 ++++++++
- 1 file changed, 8 insertions(+)
+This series adds adds the 'pwm-offset' property to DT binding. 'pwm-offset' 
+points to the base of A/B counter registers that determine the PWM period and 
+duty cycle.
 
-diff --git a/Documentation/devicetree/bindings/arm/marvell/ap80x-system-controller.txt b/Documentation/devicetree/bindings/arm/marvell/ap80x-system-controller.txt
-index e31511255d8e..a754e8992450 100644
---- a/Documentation/devicetree/bindings/arm/marvell/ap80x-system-controller.txt
-+++ b/Documentation/devicetree/bindings/arm/marvell/ap80x-system-controller.txt
-@@ -80,6 +80,11 @@ Required properties:
- 
- - offset: offset address inside the syscon block
- 
-+Optional properties:
-+
-+- pwm-offset: offset address of PWM duration control registers inside the
-+  syscon block
-+
- Example:
- ap_syscon: system-controller@6f4000 {
- 	compatible = "syscon", "simple-mfd";
-@@ -101,6 +106,9 @@ ap_syscon: system-controller@6f4000 {
- 		gpio-controller;
- 		#gpio-cells = <2>;
- 		gpio-ranges = <&ap_pinctrl 0 0 19>;
-+		pwm-offset = <0x10c0>;
-+		#pwm-cells = <2>;
-+		clocks = <&ap_clk 3>;
- 	};
- };
- 
+The existing PWM DT binding reflects an arbitrary decision to allocate the A 
+counter to the first GPIO block, and B counter to the other one. In attempt to 
+provide better future flexibility, the new 'pwm-offset' property always points 
+to the base address of both A/B counters. The driver code still allocates the 
+counters in the same way, but this might change in the future with no change to
+the DT.
+
+Tested AP806 and CP110 (both) on Armada 8040 based system.
+
+Baruch Siach (5):
+  gpio: mvebu: update Armada XP per-CPU comment
+  gpio: mvebu: switch pwm duration registers to regmap
+  gpio: mvebu: add pwm support for Armada 8K/7K
+  arm64: dts: armada: add pwm offsets for ap/cp gpios
+  dt-bindings: ap806: document gpio pwm-offset property
+
+ .../arm/marvell/ap80x-system-controller.txt   |   8 +
+ arch/arm64/boot/dts/marvell/armada-ap80x.dtsi |   3 +
+ arch/arm64/boot/dts/marvell/armada-cp11x.dtsi |  10 ++
+ drivers/gpio/gpio-mvebu.c                     | 165 +++++++++++-------
+ 4 files changed, 124 insertions(+), 62 deletions(-)
+
 -- 
 2.29.2
 
