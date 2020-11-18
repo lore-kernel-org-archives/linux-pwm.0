@@ -2,50 +2,48 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F06FEC56202
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28ABDC56202
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:45:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8F30421D7E
-	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:35:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C9741221FE
+	for <linux-pwm@archiver.kernel.org>; Wed, 18 Nov 2020 09:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbgKRJfL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 18 Nov 2020 04:35:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
+        id S1725804AbgKRJpW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 18 Nov 2020 04:45:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726182AbgKRJfK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Nov 2020 04:35:10 -0500
+        with ESMTP id S1725964AbgKRJpW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Nov 2020 04:45:22 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CFEC0613D4
-        for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2020 01:35:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C08C061A4D
+        for <linux-pwm@vger.kernel.org>; Wed, 18 Nov 2020 01:45:22 -0800 (PST)
 Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
         by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1kfJro-0001VM-KB; Wed, 18 Nov 2020 10:35:08 +0100
+        id 1kfK1f-0002Sf-0T; Wed, 18 Nov 2020 10:45:19 +0100
 Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
         (envelope-from <ukl@pengutronix.de>)
-        id 1kfJro-0007Ua-3f; Wed, 18 Nov 2020 10:35:08 +0100
-Date:   Wed, 18 Nov 2020 10:35:06 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Soham Biswas <sohambiswas41@gmail.com>, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: core: Use octal permission
-Message-ID: <20201118093506.srljfosnamxe5wwz@pengutronix.de>
-References: <20201117175452.26914-1-sohambiswas41@gmail.com>
- <20201117181214.GK1869941@dell>
- <CAMmt7eO5te05AuVC+MR-zLB-z+r9FCuJwtON=1QXXY2YwQG0eg@mail.gmail.com>
- <20201118085113.GO1869941@dell>
+        id 1kfK1d-0007rF-Pu; Wed, 18 Nov 2020 10:45:17 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>
+Cc:     linux-pwm@vger.kernel.org
+Subject: [PATCH 2/2] pwm: lpss: make compilable with COMPILE_TEST
+Date:   Wed, 18 Nov 2020 10:45:09 +0100
+Message-Id: <20201118094509.365684-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201118094509.365684-1-u.kleine-koenig@pengutronix.de>
+References: <20201118094509.365684-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ohq2x4jqnsuhvgdo"
-Content-Disposition: inline
-In-Reply-To: <20201118085113.GO1869941@dell>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -54,88 +52,38 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+All used acpi functions have dummy implementations, and there is no hard
+dependency on x86.
 
---ohq2x4jqnsuhvgdo
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On Wed, Nov 18, 2020 at 08:51:13AM +0000, Lee Jones wrote:
-> On Tue, 17 Nov 2020, Soham Biswas wrote:
->=20
-> > This fixes the following warning:
-> >=20
-> > `drivers/pwm/core.c:1341: WARNING: Symbolic permissions 'S_IRUGO' are
-> > not preferred. Consider using octal permissions '0444'.`
-> >=20
-> > generated by the following script:
-> >=20
-> > `./scripts/checkpatch.pl --file --terse drivers/pwm/core.c`
->=20
-> Oh, it's a checkpatch.pl thing.
->=20
-> You should definitely quote the warning and describe where it came
-> from in the commit log.
->=20
-> Not entirely sure what that warning is the result of.  Probably as
-> they're sightly harder to read and easier to get wrong.  Still, I'll
-> let Thierry decide whether the patch itself is suitable for inclusion
-> into the PWM core.
->=20
-> > On Tue, 17 Nov 2020 at 23:42, Lee Jones <lee.jones@linaro.org> wrote:
-> > >
-> > > On Tue, 17 Nov 2020, Soham Biswas wrote:
-> > >
-> > > > Fixed Warning.
-> > >
-> > > Which warning does this fix?
-> > >
-> > > > Replaced symbolic permission 'S_IRUGO' with octal permission '0444'.
-> > >
-> > > This is semantically equivalent.
-> > >
-> > > Not sure what and/or how this fixes anything.
-> > >
-> > > > Signed-off-by: Soham Biswas <sohambiswas41@gmail.com>
-> > > > ---
-> > > >  drivers/pwm/core.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > > > index 1f16f5365d3c..a8eff4b3ee36 100644
-> > > > --- a/drivers/pwm/core.c
-> > > > +++ b/drivers/pwm/core.c
-> > > > @@ -1338,7 +1338,7 @@ DEFINE_SEQ_ATTRIBUTE(pwm_debugfs);
-> > > >
-> > > >  static int __init pwm_debugfs_init(void)
-> > > >  {
-> > > > -     debugfs_create_file("pwm", S_IFREG | S_IRUGO, NULL, NULL,
-> > > > +     debugfs_create_file("pwm", S_IFREG | 0444, NULL, NULL,
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 852aa128c30c..9e497e26aed5 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -301,8 +301,8 @@ config PWM_LPSS
+ 
+ config PWM_LPSS_PCI
+ 	tristate "Intel LPSS PWM PCI driver"
+-	depends on X86 && PCI
+-	depends on HAS_IOMEM
++	depends on X86 || COMPILE_TEST
++	depends on HAS_IOMEM && PCI
+ 	select PWM_LPSS
+ 	help
+ 	  The PCI driver for Intel Low Power Subsystem PWM controller.
+@@ -312,7 +312,7 @@ config PWM_LPSS_PCI
+ 
+ config PWM_LPSS_PLATFORM
+ 	tristate "Intel LPSS PWM platform driver"
+-	depends on X86 && ACPI
++	depends on (X86 && ACPI) || COMPILE_TEST
+ 	depends on HAS_IOMEM
+ 	select PWM_LPSS
+ 	help
+-- 
+2.28.0
 
-Actually I'd prefer keeping the symbolic name because this is easier to
-grep for. So to convince me a better reason than "checkpatch says so" is
-needed.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ohq2x4jqnsuhvgdo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl+06scACgkQwfwUeK3K
-7AlIXQgAgF8lWGCuUSzrwgut+6vGhG5KY6ME1zv3TbLjIqfz7pJ+Y3Umgc0SXkTV
-a6odi+6fKPG9TV9zZsDpUkra0wJq24pRw1+ilIa2B/WGDUBl7oIz8vd+jmZnHs+r
-uasgn/z3AxFXKeU9OS9suJGsCmnqGWsT6ciKy1ch70qf1ye7oyGzbggJrQC638d+
-s1qDjSGq63LsClzQc9hWng4ym3p36/NFpl2P5K6qxG0YIIWK3mvPWmedhZt5UMYJ
-VFW+ooMHPiLYIsvpiRWqomqOOls41bgiuCD78gnrjgseMH1a3mFXe3/sInBttw6a
-d6/5o2kNv5Jay7bxEdgJ6b3yF9W6uQ==
-=/okk
------END PGP SIGNATURE-----
-
---ohq2x4jqnsuhvgdo--
