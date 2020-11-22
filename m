@@ -2,143 +2,138 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5783FC388F9
-	for <linux-pwm@archiver.kernel.org>; Sat, 21 Nov 2020 22:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC92C64E69
+	for <linux-pwm@archiver.kernel.org>; Sun, 22 Nov 2020 22:29:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0C1E020882
-	for <linux-pwm@archiver.kernel.org>; Sat, 21 Nov 2020 22:00:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC84320789
+	for <linux-pwm@archiver.kernel.org>; Sun, 22 Nov 2020 22:29:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sH8eYt+n"
+	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="JvnfmawM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728584AbgKUWAY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 21 Nov 2020 17:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728541AbgKUWAX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 21 Nov 2020 17:00:23 -0500
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8799C0613CF;
-        Sat, 21 Nov 2020 14:00:22 -0800 (PST)
-Received: by mail-vs1-xe43.google.com with SMTP id u7so7068370vsq.11;
-        Sat, 21 Nov 2020 14:00:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MY8NzMGPcLXMY/ED4DpGvzZfCPFifC8yIRCCQIJaAG8=;
-        b=sH8eYt+nuILX4uSEZPd8QQEZZ1sJYsmp0hOBlQs2XgLAJFtvjAvNEPKSHY6tKzmARY
-         SqD6woaXcqAIK7niRps8kAehaeMYBgcbDmw1Yx7KxJukvQ/VLJyf1KvBGfM1VozUkA4K
-         3BgALZkFxDU1e+n+GSTt5EVe9oV9Tt9dq6kUjgO0hHUPHOowO1UTgkp+t8/Nbjh5mLOK
-         NkqvItf7XARVpIbGJfwLM5XhY9Yxcm1JgrSi+WlHy8xy0dRrcDcpelW0X7xL3in3RTZ9
-         VzSQiy8Ipv7QFY72BAs3MW5ezeToTuMxsdD6wrwDKfbfIlTno97yTcUW055yCnEdU/OT
-         81Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MY8NzMGPcLXMY/ED4DpGvzZfCPFifC8yIRCCQIJaAG8=;
-        b=Bv/aXmcBfK8gtZ9ep/pzObcK1+D0Cb3R63gq67lONMyeTSpfF+kwAzIkxqeSe5Rr+5
-         BEeph635gep18H9GeYCOpcTymnegSKJRPPJJsLEia8g7KX6WjN2CELuMxMUHvJp4pJK1
-         xoJEOwdK20rac7fffEz3fDjhlPayl/5Fd0AL+P4cUskL1jKre2sVhaMa+6N5d47G+63J
-         WC4t4o/E9W0V4iOtZ4BcytS0ywenw3QZPZIqOAShDop+p2HVPmYlUG9FMYbQLlOrEt25
-         q1DqLV0U/YfWXt/pAhqgaOsm2IUm3sO4Y2N5mdObYkpcdBmrYvy/VzdvUgOttVl9476v
-         VCEw==
-X-Gm-Message-State: AOAM5332lTyJZ0B4IQM7VixlyZJfWcEkLYTLwtLbRghqjMS0yqvGS7Uo
-        S+BTA7ys6PaJfAMiVgRTOTq+jtylfotZII3rHlo=
-X-Google-Smtp-Source: ABdhPJyM5fgCbpzyQBMLyFUj2jZYULdnUezsPW1i/hsn0T5zQd5HbyDJmLzm+qad0ideMIVov0zq3o8Sz6uTgDGucuE=
-X-Received: by 2002:a67:ff10:: with SMTP id v16mr15914156vsp.40.1605996021829;
- Sat, 21 Nov 2020 14:00:21 -0800 (PST)
-MIME-Version: 1.0
-References: <20201118174417.278011-1-clemens.gruber@pqgruber.com>
- <CAGngYiV+oDeagaCfpeACMzQyDHVzk9ERbSBjW_fW5hoQANHqog@mail.gmail.com>
- <20201119100005.GA703@workstation.tuxnet> <CAGngYiU7+X1AbadQ0kFBQOqxK-adowg6CTOMx260fyF1-rpO-Q@mail.gmail.com>
- <20201119160013.GA217674@workstation.tuxnet> <CAGngYiUELShMgFnvq6XzF0v=2UAwj7gJsPmbdGkmyAbzhM8OLA@mail.gmail.com>
- <X7krI+JkhCO5nYC+@workstation.tuxnet>
-In-Reply-To: <X7krI+JkhCO5nYC+@workstation.tuxnet>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Sat, 21 Nov 2020 17:00:10 -0500
-Message-ID: <CAGngYiWKwDoeM+Hgj-ehJBRp16u2_-dDULzvVbGEUQ2ZOY9w4A@mail.gmail.com>
-Subject: Re: [PATCH 1/3] pwm: pca9685: Switch to atomic API
-To:     Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc:     linux-pwm@vger.kernel.org,
+        id S1726339AbgKVW3G (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 22 Nov 2020 17:29:06 -0500
+Received: from mout.gmx.net ([212.227.15.15]:48899 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725964AbgKVW3F (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 22 Nov 2020 17:29:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1606084094;
+        bh=2b/jpxzeqaLVuVE3ul1wtEuNUT7aGevK/efjK6yAcks=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=JvnfmawMmfuCIV4LKLhQxhM96Kj5b7InDDOLQcng2Y5m1mt4RlnYYEu0HB0Qr/bTq
+         HXrFzfeutrPo7i5tUAlyU1ZRAwKqWqS3Dulp1b+W9OnJf5QudFcmu+7KNrF/5POGJ6
+         czrrrnG+Ze4k6o06d55O+A6KTlP/+GlrL/ckul40=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([37.201.214.162]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1McY8d-1k6o4Z1SCz-00czgp; Sun, 22
+ Nov 2020 23:28:14 +0100
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        David Jander <david@protonic.nl>
-Content-Type: text/plain; charset="UTF-8"
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Mark Brown <broonie@kernel.org>, allen <allen.chen@ite.com.tw>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        Josua Mayer <josua.mayer@jm0.eu>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Subject: [PATCH v4 1/7] dt-bindings: Add vendor prefix for Netronix, Inc.
+Date:   Sun, 22 Nov 2020 23:27:33 +0100
+Message-Id: <20201122222739.1455132-2-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201122222739.1455132-1-j.neuschaefer@gmx.net>
+References: <20201122222739.1455132-1-j.neuschaefer@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:zEN6Ybp/rxr6QJ2xW71Sa5SlULigJxIfPZ1yuxgJ91bOrAoGt6r
+ iu96T4pbbhmNhaqw1k1kTVFjg2PcftrSc1SURH+riGe0F0O5/xdbYqWsJoPPHWioGTDLtzT
+ fSApI0sLgNTyGyIlmLTmJ0PHgjFjdoFCc2fScHLEXhWq0HB3lQ1dWNjPDeOB5uxIoR/DHqY
+ eJQZCPRblPeq7+mDdoSZA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EAr8dmh+WW0=:i8ty95oYQZxVuP3cZBWe2+
+ oqvYIC63s+H2yTkWTZLhKiMwyKgn2k6b0Fg8O7CZfQWlkfB19ChW2YM1U3DZ+pmTke3CU8cmf
+ BIihbTuGu9t5CxjAD21Qx4DNbd6Sicc0UEJXsp9dgEHVv3M26x2N6rTjxrxDJZRNGckIEY+qY
+ l2iaxED3Dzj/RozWZ4bebylZiOjGtiK4aotKX3XYYMD/Pdgbx89zEVTx2ElKm64Awd1rgXylZ
+ Ke+vl+p9N9anXX/f3Br+KFESUYFLnRnPAAgB42Dn+7KFikwSk8YzrW3YJIvUwXdGgCerYRhPn
+ 7KoP2xkDI+xYfgj4H4OEhk3CkoueqLwd54MNUu9JE6H8ebp/gV9mbnq6nRyJhECDP0r8DwNy4
+ HTEcvW+gExYPqqEgXLsznbor1adjo+ZPXSwdBhZW2H3Sj+5wGlbAKm+GcOEojRnKYrAEBDwHN
+ 9lzsvEfi0+TEwRLyTve7lrcO0Y3mbGBP9b7zBIFxmiQc2LVBuxvhcW9tS/r9rtGsnpJdXzfVW
+ dUv7NG8L5RoxYeU+wSiR6h786MB3cUjXMluyA84e+YVHswBD0NUgpntY0pCLL0TKyZQ+2vLML
+ OdkkSfzy/PMztiqfRINqOf78pA+G0eoIXDJ7hQGFYavDPZfTYW3JmIqbIuG/u+VOW3hxx0OGn
+ zBP+aKJmPeX0aYf9/IK53PNDgsdWVYp0cRT3FoO3jKyrTq3NyWRboqDMooZjfMH41YXVH4yNC
+ R8Tzx8ocG+9VssTjwHQITB3a81i3jyvcnaRIBcC1YgX1hNmQ7URSBBbp7jLfLcAPCAcEXSwlD
+ KM2xUkKMUyOTqVB15Eq5UmcxeVQIPSsgXAqan8qwNvy9496YuolOPm7UMEvHtRvC076bm5PPj
+ 7EjfjXGDMfgjREO75nJA==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Sat, Nov 21, 2020 at 9:58 AM Clemens Gruber
-<clemens.gruber@pqgruber.com> wrote:
->
-> I'd rather continue supporting this driver with !CONFIG_PM. (In our
-> company we have a product with a !CONFIG_PM build using this driver)
+Netronix, Inc. (http://www.netronixinc.com/) makes ebook reader board
+designs, which are for example used in Kobo and Tolino devices.
 
-Absolutely, makes sense. If you do add support for !CONFIG_PM, then it's
-important that both PM and !PM cases get tested by you.
+An alternative prefix for Netronix would be "ntx", which is already used
+in code released by Netronix. It is shorter, but perhaps less clear.
 
->
-> I am thinking about the following solution:
-> #ifdef CONFIG_PM
->   /* Set runtime PM status according to chip sleep state */
->   if (reg & MODE1_SLEEP)
->     pm_runtime_set_suspended(..);
->   else
->     pm_runtime_set_active(..);
->
->   pm_runtime_enable(..);
-> #else
->   /* If in SLEEP state on non-PM environments, wake the chip up */
->   if (reg & MODE1_SLEEP)
->     pca9685_set_sleep_mode(.., false)
-> #endif
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Acked-by: Rob Herring <robh@kernel.org>
+=2D--
+v4:
+- No changes
 
-I don't think we need the #ifdef CONFIG_PM, because all pm_runtime_xxx
-functions become no-ops when !CONFIG_PM.
+v3:
+- https://lore.kernel.org/lkml/20200924192455.2484005-2-j.neuschaefer@gmx.=
+net/
+- Add Acked-by tag
 
-Also, I believe "if (IS_ENABLED(CONFIG_XXX))" is preferred, because
-it allows the compiler to syntax-check disabled code.
+v2:
+- No changes
+=2D--
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-How about the following? It should be correct, short, and easy to understand.
-Yes, there's one single unnecessary register write (+ 500us delay if !PM) when
-the chip is already active on probe(). But maybe that's worth it if it makes
-the code easier to understand?
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Docu=
+mentation/devicetree/bindings/vendor-prefixes.yaml
+index 2735be1a84709..cbf28f992b71e 100644
+=2D-- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -726,6 +726,8 @@ patternProperties:
+     description: Broadcom Corporation (formerly NetLogic Microsystems)
+   "^netron-dy,.*":
+     description: Netron DY
++  "^netronix,.*":
++    description: Netronix, Inc.
+   "^netxeon,.*":
+     description: Shenzhen Netxeon Technology CO., LTD
+   "^neweast,.*":
+=2D-
+2.29.2
 
-probe()
-{
-    ...
-    pm_runtime_set_active(&client->dev);
-    pm_runtime_enable(&client->dev);
-
-    if (!IS_ENABLED(CONFIG_PM))
-        pca9685_set_sleep_mode(pca, false);
-
-    return 0;
-}
-
-remove()
-{
-    ...
-    pm_runtime_disable(&client->dev);
-
-    if (!IS_ENABLED(CONFIG_PM))
-        pca9685_set_sleep_mode(pca, true);
-
-    return 0;
-}
-
->
-> About the regmap cache: I looked into it and think it is a good idea but
-> it's probably best to get these patches merged first and then rework the
-> driver to using the regmap cache?
-
-Good suggestion, I agree.
