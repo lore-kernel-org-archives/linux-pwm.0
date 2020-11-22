@@ -4,35 +4,35 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597D9C6379F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D1BC64E7C
 	for <linux-pwm@archiver.kernel.org>; Sun, 22 Nov 2020 22:29:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 25EE62075A
+	by mail.kernel.org (Postfix) with ESMTP id 8D50E20789
 	for <linux-pwm@archiver.kernel.org>; Sun, 22 Nov 2020 22:29:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="h/GRGXfb"
+	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="bE65ExyO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgKVW3C (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1726020AbgKVW3C (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Sun, 22 Nov 2020 17:29:02 -0500
-Received: from mout.gmx.net ([212.227.15.19]:57009 "EHLO mout.gmx.net"
+Received: from mout.gmx.net ([212.227.15.19]:36037 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725964AbgKVW3B (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        id S1725932AbgKVW3B (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
         Sun, 22 Nov 2020 17:29:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1606084084;
-        bh=dtj6W0yQf7os9N3ERREUeHWvsknYOOEdVVmOyejekNA=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=h/GRGXfbBiL+/lpTZgwrHt3pZF/wodtFXaF3v3pamkHQXUYtg+kXroip+WtBglXds
-         6lt5NC1hw30gcZr2B+GBzil7Zx106IaNYNm95Kjs1y9f/gePqtERCzAcYEKktgIR9u
-         9Sq+HsA6lP1NdlG0IAZ0BtMJHOhRooNgiusf3FtE=
+        s=badeba3b8450; t=1606084102;
+        bh=FkEwDMxgZLTHim30OmXS5VuBshTlz294C3jIoXfipxY=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=bE65ExyOQVzCGTQGoUiRsYFa+BC58jhf5CA77gayyIG60/mU+uLCkFBV542x+TjtX
+         hkKtnXO+oA3D611vtt+ln8tNXQ3/1dtl4+dC9zVSmwrSUnAT7b53fp9YHDzFB+Y8yb
+         d9UhksvPcq/VBdoTrY8vmKfl/AZ00bN5PUO6hDfk=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from longitude ([37.201.214.162]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1McpNo-1k753W0XfG-00ZxeN; Sun, 22
- Nov 2020 23:28:04 +0100
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mof5H-1jsUwx0sK9-00p84C; Sun, 22
+ Nov 2020 23:28:22 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
@@ -61,112 +61,156 @@ Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
         Josua Mayer <josua.mayer@jm0.eu>,
         Andreas Kemnade <andreas@kemnade.info>,
         Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v4 0/7] Netronix embedded controller driver for Kobo and Tolino ebook readers
-Date:   Sun, 22 Nov 2020 23:27:32 +0100
-Message-Id: <20201122222739.1455132-1-j.neuschaefer@gmx.net>
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 2/7] dt-bindings: mfd: Add binding for Netronix embedded controller
+Date:   Sun, 22 Nov 2020 23:27:34 +0100
+Message-Id: <20201122222739.1455132-3-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201122222739.1455132-1-j.neuschaefer@gmx.net>
+References: <20201122222739.1455132-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:9fi5cn1W4wIcwCMcrpIiO4wYE9TOSPxMlnZh0pqNYCi6ZkuOZOS
- FpNAVw0/CXpxZWSb9uyyO2BbA8nftnwSgEOfBGfQw4xNwEBM6wtqce3lmyvErhqhmyJiiuI
- rb/ylvH/d+i9pw4rrm8+DyYwhbAkVtu5zv/lF+C9XgM78YSLIvRwqnDbBRXuZRsO6K2dHoZ
- a5+vhcgSaapQh/eTPVWhw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:70fq3pGexNk=:VsRFl5purtQlQ5PHwaSKYR
- GLKpzbG+q7Ce+cUt3+XDjKktTLpgKhCHmjd8MDuqkP2uFCH6mxilTAteKF/Up4mL8Q61Tx1Og
- EZ0p94NeilOGJWsUwznmo5G3/CkareGLT9WJEtbziCqsuLYsq7thR0CNm8D01gmSQGiEI7bKu
- LRA06rv0f5CPlEMcOmROEVbvt/fo4pOyv3HFCdu5dVBoym3X/FecGEohpY6Ffq8seNh1Q31So
- qNGEM8GQ7J3U8PXcYg83/c1JAKIWag3DfKLOCWDInhzPAeOD18lkx1GynT9BMndCXedXCzZQY
- EcGrye8feArmieWZwEdHnvoCmuORJyzYa6a8Vumgt97gQ+G3+fNEf5GJhM5garEP/gvDVX0Vk
- gXQhpyp7g5KHSA3uXKmb0wYSmWfX+Vm1tteOBq/WNVzgmEDDFD4P6tGpJ7y6fkCJSqVgOcX03
- 1iHLR1znUH/cEArRTO+cGyc/LaR+WoAX71md1Jh6xS96j0r0InLPCpJ6M7h9c6uf69DeXR6hn
- qewxhdzTysc0D1Yzcuo6gTANmgD1cvCZOgwI8UsQfokY8azNRfMU3D9KiRIjTTv86FE620ODf
- 51i9rm9Y2NTovwyl0K4YWxpxNOaGQeFuyyjmy3v+qwLjeJs0ty/4qR+tmAc1YXf1qu7NSDdsH
- Xleq9QaWohOnrO4eUJ7hKJL78vTpphd4ZULT4C+Yprr2buYAsBP14ZbMtVqBGZzI+r9N9bH8J
- t8uWbZmhg39hacvZ2vfXChlSUJWsgRxn/1lxsPnaYmx7WweGjdt9Hlk4iyDNAPyyHGVZ4cPen
- 0an7RqIWBWF5mNMxn2bGp7vlKRlGAlmf+5fhmvgKuGmbFEClvihB5iNWEZJyOse0XSPchix1X
- OcOISfXqyyOwTS6iG3+Q==
+X-Provags-ID: V03:K1:nF3kkwMmgt9OIwH8iqvES5UGpX6cz3/hWNyTI5w7mqGWydvJ8Mc
+ 1noR+XyHeLXC6lce+wgyZqWWRXqc2XOIkXI79SqB1acVaKQKwdHqYjKF2Qo9pDvnlXgWT/y
+ 4s6Yj25dYUbIkMCUG3xGzwz/inb8EGTFD4fPtPY3rRAOOe94PofEQ31pM8rCRvtdN1igAQd
+ enBL8osT0OUNVofvLmm8Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:nEuwsUuSLow=:zQBob9Q6ol5V3Z8hqZvFGh
+ pfluGE579FA+K3JHGdBPbVKQ95bS8GtltwPGupjqIeWGC6E6Bdt1e+cIJ8olKbIXT51WOk0OG
+ 1riIRIcFwUm9V5B5687dvFyyW5jabp8LuEJxuGGvNOLLDrgYzj46aYXunZ6AOlAmSCLmlCSOx
+ M4WG1NC+eLKTJIZZFFUuQ4Y5XIyBLmAWBYl1blBoKgan/olKILh3WvkrYmYyZsM9aJkJxr5Aw
+ FgC+pVvdgp5T2AL6PnPQJvzKXhdJDjW1bENKw8Dp9FQaIWY1zo2A6u/jKREk2fEYxJdtU0/Pl
+ /9sxqWtmEQmokSEIpisjwM/Z9PnvZpab4COSfvIvbkNxdijGu5svMNrMI1RyOEjXH+Qiha0om
+ FnriutIxNoUduezogkG7kEJ7s211AnKaeEiJYJqsPUYEItjP/dBjmkAR+3OwKVurtUS1pTK8I
+ V9IAbh7fTOtQAL0GGYI/UGQFzr179piHsuJ84L+Iv8gsCkJPSP6A0KPgnZNgh1jCYn8kzcsNW
+ 6LibGm0dKX0SlRozcNsnKBEJ/zcZpykV/KtSfGZesfYmoR1GjND2BuA6X3H4oIONUIJG5BvXn
+ hKspwPOJtxr7r7ukpzkWMMGO7Tpbd75pXFTpfwqegtZWFCl+/UBaXytiPi3UIns/nXggBVf6t
+ Zeba9lYAP7CgHu49V+AbhXgYew261mlxN8qIaq+Q9TtQubT6IwbP/JSP5kvlznFHEKTVX87IN
+ SIOYVRisi4lb9NmECLisrR3XbxImAkZYUYynI6ixMmvXu3N9c6lRFq799Ef8Y69b+MBiz9SoA
+ sRdUHQT0d52mvq9n+xPXv0sdHfEDdGDtqjYMNDxqqKTWPzPzB3QJ352kmx3+f6xpwXi1Mx/QX
+ 8JV1vjxGxCspwAlCwF2A==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This patchset adds basic support for the embedded controller found on
-older ebook reader boards designed by/with the ODM Netronix Inc.[1] and
-sold by Kobo or Tolino, for example the Kobo Aura and the Tolino Shine.
-These drivers are based on information contained in the vendor kernel
-sources, but in order to all information in a single place, I documented
-the register interface of the EC on GitHub[2].
+This EC is found in e-book readers of multiple brands (e.g. Kobo,
+Tolino), and is typically implemented as a TI MSP430 microcontroller.
 
-[1]: http://www.netronixinc.com/products.aspx?ID=3D1
-[2]: https://github.com/neuschaefer/linux/wiki/Netronix-MSP430-embedded-co=
-ntroller
+It controls different functions of the system, such as power on/off,
+RTC, PWM for the backlight. The exact functionality provided can vary
+between boards.
+
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
+=2D--
 
 v4:
-- Spell out ODM (original design manufacturer)
-- Solve corner cases in the RTC driver
-- Clean up use of log levels vs. error codes
-- Add more comments explaining some peculiarities
-- Add missing MODULE_ALIAS lines
-- Various other cleanups
-
+- Add R-b tag
 
 v3:
-- https://lore.kernel.org/lkml/20200924192455.2484005-1-j.neuschaefer@gmx.=
+- https://lore.kernel.org/lkml/20200924192455.2484005-3-j.neuschaefer@gmx.=
 net/
-- A few code cleanups
-- A few devicetree related cleanups
-- PWM and RTC functionality were moved from subnodes in the devicetree to
-  the main node. This also means that the subdrivers no longer need DT
-  compatible strings, but are instead loaded via the mfd_cell mechanism.
-- The drivers are now published under GPLv2-or-later rather than GPLv2-onl=
-y.
-
+- Remove binding in text form patch description again
+- Add additionalProperties: false
+- Remove interrupt-controller property from example
+- Merge pwm/rtc nodes into main node
 
 v2:
-- https://lore.kernel.org/lkml/20200905133230.1014581-1-j.neuschaefer@gmx.=
+- https://lore.kernel.org/lkml/20200905133230.1014581-3-j.neuschaefer@gmx.=
 net/
-- Moved txt DT bindings to patch descriptions and removed patch 1/10
-  "DT bindings in plain text format"
-- New patch 7/10 "rtc: Introduce RTC_TIMESTAMP_END_2255"
-- Rebased on 5.9-rc3
-- Various other changes which are documented in each patch
-
-v1:
-- https://lore.kernel.org/lkml/20200620223915.1311485-1-j.neuschaefer@gmx.=
-net/
-
-Jonathan Neusch=C3=A4fer (7):
-  dt-bindings: Add vendor prefix for Netronix, Inc.
-  dt-bindings: mfd: Add binding for Netronix embedded controller
-  mfd: Add base driver for Netronix embedded controller
-  pwm: ntxec: Add driver for PWM function in Netronix EC
-  rtc: New driver for RTC in Netronix embedded controller
-  MAINTAINERS: Add entry for Netronix embedded controller
-  ARM: dts: imx50-kobo-aura: Add Netronix embedded controller
-
- .../bindings/mfd/netronix,ntxec.yaml          |  76 ++++++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- MAINTAINERS                                   |   9 +
- arch/arm/boot/dts/imx50-kobo-aura.dts         |  16 +-
- drivers/mfd/Kconfig                           |  11 +
- drivers/mfd/Makefile                          |   1 +
- drivers/mfd/ntxec.c                           | 216 ++++++++++++++++++
- drivers/pwm/Kconfig                           |   8 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-ntxec.c                       | 166 ++++++++++++++
- drivers/rtc/Kconfig                           |   8 +
- drivers/rtc/Makefile                          |   1 +
- drivers/rtc/rtc-ntxec.c                       | 158 +++++++++++++
- include/linux/mfd/ntxec.h                     |  34 +++
- 14 files changed, 706 insertions(+), 1 deletion(-)
+- Add the plaintext DT binding for comparison
+=2D--
+ .../bindings/mfd/netronix,ntxec.yaml          | 76 +++++++++++++++++++
+ 1 file changed, 76 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/mfd/netronix,ntxec.y=
 aml
- create mode 100644 drivers/mfd/ntxec.c
- create mode 100644 drivers/pwm/pwm-ntxec.c
- create mode 100644 drivers/rtc/rtc-ntxec.c
- create mode 100644 include/linux/mfd/ntxec.h
 
+diff --git a/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml b/D=
+ocumentation/devicetree/bindings/mfd/netronix,ntxec.yaml
+new file mode 100644
+index 0000000000000..59a630025f52f
+=2D-- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
+@@ -0,0 +1,76 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/netronix,ntxec.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Netronix Embedded Controller
++
++maintainers:
++  - Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
++
++description: |
++  This EC is found in e-book readers of multiple brands (e.g. Kobo, Tolin=
+o), and
++  is typically implemented as a TI MSP430 microcontroller.
++
++properties:
++  compatible:
++    const: netronix,ntxec
++
++  reg:
++    items:
++      - description: The I2C address of the EC
++
++  system-power-controller:
++    type: boolean
++    description: See Documentation/devicetree/bindings/power/power-contro=
+ller.txt
++
++  interrupts:
++    minItems: 1
++    description:
++      The EC can signal interrupts via a GPIO line
++
++  "#pwm-cells":
++    const: 2
++    description: |
++      Number of cells in a PWM specifier.
++
++      The following PWM channels are supported:
++        - 0: The PWM channel controlled by registers 0xa1-0xa7
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++            #address-cells =3D <1>;
++            #size-cells =3D <0>;
++
++            ec: embedded-controller@43 {
++                    pinctrl-names =3D "default";
++                    pinctrl-0 =3D <&pinctrl_ntxec>;
++
++                    compatible =3D "netronix,ntxec";
++                    reg =3D <0x43>;
++                    system-power-controller;
++                    interrupt-parent =3D <&gpio4>;
++                    interrupts =3D <11 IRQ_TYPE_EDGE_FALLING>;
++                    #pwm-cells =3D <2>;
++            };
++    };
++
++    backlight {
++            compatible =3D "pwm-backlight";
++            pwms =3D <&ec 0 50000>;
++            power-supply =3D <&backlight_regulator>;
++    };
++
++    backlight_regulator: regulator-dummy {
++            compatible =3D "regulator-fixed";
++            regulator-name =3D "backlight";
++    };
 =2D-
 2.29.2
 
