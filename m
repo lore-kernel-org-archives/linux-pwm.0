@@ -2,134 +2,262 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F14C8301F
-	for <linux-pwm@archiver.kernel.org>; Sat, 28 Nov 2020 22:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA4FC3E8C5
+	for <linux-pwm@archiver.kernel.org>; Sun, 29 Nov 2020 12:04:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B7CE02344C
-	for <linux-pwm@archiver.kernel.org>; Sat, 28 Nov 2020 22:06:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="gFbNIdOw"
+	by mail.kernel.org (Postfix) with ESMTP id 43D83206E3
+	for <linux-pwm@archiver.kernel.org>; Sun, 29 Nov 2020 12:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbgK1VuW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:50:22 -0500
-Received: from mout.gmx.net ([212.227.17.21]:39991 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729523AbgK1S1m (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:27:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1606587970;
-        bh=fTNcahD5C5mIibbD0BONpKqc5JTcNDDIjg8VN6MVM/A=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=gFbNIdOwltij+vHFkKwdItVku53ydIOJPgOeJ6PTFhl6VGuEqBPewC87VsbCi/A8t
-         n+4pPdJCVagLfbhnGTo6Eji5+4Po7ujwPOtxSy3yI6bRXH/JGReXhYovp+qtcOAj+D
-         zUEgBW5WDwD+ao6Vfo7FpOc95jCT9NxskkyCo77M=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([78.42.220.31]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MTzb8-1kZfWP46l8-00R1QV; Sat, 28
- Nov 2020 13:02:16 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     thierry.reding@gmail.com
-Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        nsaenzjulienne@suse.de, f.fainelli@gmail.com, rjui@broadcom.com,
-        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v2] pwm: bcm2835: Support apply function for atomic configuration
-Date:   Sat, 28 Nov 2020 13:02:06 +0100
-Message-Id: <1606564926-19555-1-git-send-email-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <202011281128.54eLfMWr-lkp@intel.com>
-References: <202011281128.54eLfMWr-lkp@intel.com>
+        id S1726218AbgK2MEH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 29 Nov 2020 07:04:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbgK2MEH (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 29 Nov 2020 07:04:07 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E36EC0613CF
+        for <linux-pwm@vger.kernel.org>; Sun, 29 Nov 2020 04:03:27 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kjLQH-0005Bh-Sg; Sun, 29 Nov 2020 13:03:21 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kjLQG-0000Oq-6V; Sun, 29 Nov 2020 13:03:20 +0100
+Date:   Sun, 29 Nov 2020 13:03:18 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jeff LaBundy <jeff@labundy.com>
+Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
+        linux-pwm@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, kernel@pengutronix.de
+Subject: Re: [PATCH v2] pwm: iqs620a: Fix overflow and optimize calculations
+Message-ID: <20201129120318.gh2vv2x44amk3di2@pengutronix.de>
+References: <20201127201051.GA32257@labundy.com>
+ <20201127203244.3439478-1-uwe@kleine-koenig.org>
+ <20201128010040.GA9235@labundy.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:og7aglZ3Q+zHmb8EXfjZyCFzh8Ae5o38SlBuTifQqzoXN2JffJR
- dqmvC5FywZBF4ubQoLkvsXZqbPjAbEKapFnoupSXKXcTlHvuAXXUvjmQ8pqiV4mL3WqHjF1
- oXE5JpJErxtKwPFphUY1y30bdXGMo/vd6Eo2oGUcG/WKGGwPLkhMNEHw3bZSSTWk7gEJEqs
- HHdyD/AJTIR5Ql0alVb7g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ryDjOyhw8zQ=:W/pMlI3oC5HBuQaB/Nt6zX
- 8Gky4dp6vUJmx4ZgSagIn4kTBT1sFV5oWBjzHOSNTLUZlCkjUudWR4OKOyGyu2GSvLhrPGg3/
- CAWw0YVP4SXUuIgxeNJf21PUg5qrShmeXcCXiDCH0IzJGimhtIttnbE0PgyCgCba4so5gthq5
- xSykNEJ0q3cdg9werMu+EXRoZJcz1dW7uaBcJ2cmIRKSkP1r/KU53dVFdQXJyNgroFy8/1HAt
- Ef2/GHrkzOUqs8c1CzLiSy1UDpfZm5fGZizwXH6uqCCTXdzzc7VoP5DbbWk1HQlik/+EeY1ht
- j0HuCvyxnosGv7Z0mMILDAQ5/Rb3yjctGfWPgbG0IdFi+2XluMDVhXpQ+G1D7BeDd9UFYNSW+
- y6v/Yv6fT2YIy3suYFyr8lLsQyMXF7/0noS179HVH2Cx2U+wWqfi9lnMX9tyjFXw4LSZoNrA2
- KipLi70jcjUnoXiZ1HWo8qhRUijM9mQr9SCxiFbPPyMeWKospK2mvjbD+pbONoIpgGKK71VfR
- BNqivL1nw3xkmIPFR/3p5wmV+ly3nuJzM/+fqSg0PSXjokgofNuj+KI4c7hQ8Fc+MTgWLd1Th
- cJ7wfzpbKsgTLEaopgyuYEvL5Kppaq59rFv3hmIiYs7uyu7rMYw3INfNuTFzcVmXoflpJTw3A
- NtkSseHQ0FzEaq7C3Cc4aE19QFhJT/Ee3Ym/gCe/MmMnEGzrYiWBePyY9KmRs+kUVaqYiHXOV
- 0yD8LLvSYM8oDYWE2bc9hZ/+JCooFcNreOJ09KNDvs42BGH/UqqzRse38mzEq1E3K9ErkxSd7
- G4sjKQns+yslosXtPIhScHtrMV4n76ZRUG1srMBshbfj1r+B/N5dgvWGKeArSz2He0RryIeg4
- cWETfO4CHeyA2Wnr6CJA==
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="u6tsexjosjofhvql"
+Content-Disposition: inline
+In-Reply-To: <20201128010040.GA9235@labundy.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-VXNlIHRoZSBuZXdlciBhcHBseSBmdW5jdGlvbiBvZiBwd21fb3BzIGluc3RlYWQgb2YgY29uZmln
-LCBlbmFibGUsIGRpc2FibGUKYW5kIHNldF9wb2xhcml0eS4KClRoaXMgZ3VhcmFudGVlcyBhdG9t
-aWMgY2hhbmdlcyBvZiB0aGUgcHdtIGNvbnRyb2xsZXIgY29uZmlndXJhdGlvbi4gSXQgYWxzbwpy
-ZWR1Y2VzIHRoZSBzaXplIG9mIHRoZSBkcml2ZXIuCgpUaGlzIGhhcyBiZWVuIHRlc3RlZCBvbiBh
-IFJhc3BiZXJyeSBQSSA0LgoKdjI6IEZpeGVkIGNvbXBpbGVyIGVycm9yCgpTaWduZWQtb2ZmLWJ5
-OiBMaW5vIFNhbmZpbGlwcG8gPExpbm9TYW5maWxpcHBvQGdteC5kZT4KLS0tCiBkcml2ZXJzL3B3
-bS9wd20tYmNtMjgzNS5jIHwgNjQgKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAyMSBpbnNlcnRpb25zKCspLCA0MyBkZWxldGlv
-bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tYmNtMjgzNS5jIGIvZHJpdmVycy9w
-d20vcHdtLWJjbTI4MzUuYwppbmRleCA2ODQxZGNmLi5kYWQ3NDQzIDEwMDY0NAotLS0gYS9kcml2
-ZXJzL3B3bS9wd20tYmNtMjgzNS5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1iY20yODM1LmMKQEAg
-LTU4LDEzICs1OCwxNCBAQCBzdGF0aWMgdm9pZCBiY20yODM1X3B3bV9mcmVlKHN0cnVjdCBwd21f
-Y2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSkKIAl3cml0ZWwodmFsdWUsIHBjLT5i
-YXNlICsgUFdNX0NPTlRST0wpOwogfQogCi1zdGF0aWMgaW50IGJjbTI4MzVfcHdtX2NvbmZpZyhz
-dHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sCi0JCQkgICAgICBp
-bnQgZHV0eV9ucywgaW50IHBlcmlvZF9ucykKK3N0YXRpYyBpbnQgYmNtMjgzNV9wd21fYXBwbHko
-c3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLAorCQkJICAgICBj
-b25zdCBzdHJ1Y3QgcHdtX3N0YXRlICpzdGF0ZSkKIHsKKwogCXN0cnVjdCBiY20yODM1X3B3bSAq
-cGMgPSB0b19iY20yODM1X3B3bShjaGlwKTsKIAl1bnNpZ25lZCBsb25nIHJhdGUgPSBjbGtfZ2V0
-X3JhdGUocGMtPmNsayk7CiAJdW5zaWduZWQgbG9uZyBzY2FsZXI7Ci0JdTMyIHBlcmlvZDsKKwl1
-MzIgdmFsdWU7CiAKIAlpZiAoIXJhdGUpIHsKIAkJZGV2X2VycihwYy0+ZGV2LCAiZmFpbGVkIHRv
-IGdldCBjbG9jayByYXRlXG4iKTsKQEAgLTcyLDY1ICs3Myw0MiBAQCBzdGF0aWMgaW50IGJjbTI4
-MzVfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpw
-d20sCiAJfQogCiAJc2NhbGVyID0gRElWX1JPVU5EX0NMT1NFU1QoTlNFQ19QRVJfU0VDLCByYXRl
-KTsKLQlwZXJpb2QgPSBESVZfUk9VTkRfQ0xPU0VTVChwZXJpb2RfbnMsIHNjYWxlcik7CisJLyog
-c2V0IHBlcmlvZCAqLworCXZhbHVlID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHN0YXRlLT5wZXJp
-b2QsIHNjYWxlcik7CiAKLQlpZiAocGVyaW9kIDwgUEVSSU9EX01JTikKKwlpZiAodmFsdWUgPCBQ
-RVJJT0RfTUlOKQogCQlyZXR1cm4gLUVJTlZBTDsKIAotCXdyaXRlbChESVZfUk9VTkRfQ0xPU0VT
-VChkdXR5X25zLCBzY2FsZXIpLAotCSAgICAgICBwYy0+YmFzZSArIERVVFkocHdtLT5od3B3bSkp
-OwotCXdyaXRlbChwZXJpb2QsIHBjLT5iYXNlICsgUEVSSU9EKHB3bS0+aHdwd20pKTsKLQotCXJl
-dHVybiAwOwotfQorCXdyaXRlbCh2YWx1ZSwgcGMtPmJhc2UgKyBQRVJJT0QocHdtLT5od3B3bSkp
-OwogCi1zdGF0aWMgaW50IGJjbTI4MzVfcHdtX2VuYWJsZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAs
-IHN0cnVjdCBwd21fZGV2aWNlICpwd20pCi17Ci0Jc3RydWN0IGJjbTI4MzVfcHdtICpwYyA9IHRv
-X2JjbTI4MzVfcHdtKGNoaXApOwotCXUzMiB2YWx1ZTsKKwkvKiBzZXQgZHV0eSBjeWNsZSAqLwor
-CXZhbHVlID0gRElWX1JPVU5EX0NMT1NFU1RfVUxMKHN0YXRlLT5kdXR5X2N5Y2xlLCBzY2FsZXIp
-OworCXdyaXRlbCh2YWx1ZSwgcGMtPmJhc2UgKyBEVVRZKHB3bS0+aHdwd20pKTsKIAorCS8qIHNl
-dCBwb2xhcml0eSAqLwogCXZhbHVlID0gcmVhZGwocGMtPmJhc2UgKyBQV01fQ09OVFJPTCk7Ci0J
-dmFsdWUgfD0gUFdNX0VOQUJMRSA8PCBQV01fQ09OVFJPTF9TSElGVChwd20tPmh3cHdtKTsKLQl3
-cml0ZWwodmFsdWUsIHBjLT5iYXNlICsgUFdNX0NPTlRST0wpOwotCi0JcmV0dXJuIDA7Ci19CiAK
-LXN0YXRpYyB2b2lkIGJjbTI4MzVfcHdtX2Rpc2FibGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBz
-dHJ1Y3QgcHdtX2RldmljZSAqcHdtKQotewotCXN0cnVjdCBiY20yODM1X3B3bSAqcGMgPSB0b19i
-Y20yODM1X3B3bShjaGlwKTsKLQl1MzIgdmFsdWU7Ci0KLQl2YWx1ZSA9IHJlYWRsKHBjLT5iYXNl
-ICsgUFdNX0NPTlRST0wpOwotCXZhbHVlICY9IH4oUFdNX0VOQUJMRSA8PCBQV01fQ09OVFJPTF9T
-SElGVChwd20tPmh3cHdtKSk7Ci0Jd3JpdGVsKHZhbHVlLCBwYy0+YmFzZSArIFBXTV9DT05UUk9M
-KTsKLX0KLQotc3RhdGljIGludCBiY20yODM1X3NldF9wb2xhcml0eShzdHJ1Y3QgcHdtX2NoaXAg
-KmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sCi0JCQkJZW51bSBwd21fcG9sYXJpdHkgcG9s
-YXJpdHkpCi17Ci0Jc3RydWN0IGJjbTI4MzVfcHdtICpwYyA9IHRvX2JjbTI4MzVfcHdtKGNoaXAp
-OwotCXUzMiB2YWx1ZTsKLQotCXZhbHVlID0gcmVhZGwocGMtPmJhc2UgKyBQV01fQ09OVFJPTCk7
-Ci0KLQlpZiAocG9sYXJpdHkgPT0gUFdNX1BPTEFSSVRZX05PUk1BTCkKKwlpZiAoc3RhdGUtPnBv
-bGFyaXR5ID09IFBXTV9QT0xBUklUWV9OT1JNQUwpCiAJCXZhbHVlICY9IH4oUFdNX1BPTEFSSVRZ
-IDw8IFBXTV9DT05UUk9MX1NISUZUKHB3bS0+aHdwd20pKTsKIAllbHNlCiAJCXZhbHVlIHw9IFBX
-TV9QT0xBUklUWSA8PCBQV01fQ09OVFJPTF9TSElGVChwd20tPmh3cHdtKTsKIAorCS8qIGVuYWJs
-ZS9kaXNhYmxlICovCisJaWYgKHN0YXRlLT5lbmFibGVkKQorCQl2YWx1ZSB8PSBQV01fRU5BQkxF
-IDw8IFBXTV9DT05UUk9MX1NISUZUKHB3bS0+aHdwd20pOworCWVsc2UKKwkJdmFsdWUgJj0gfihQ
-V01fRU5BQkxFIDw8IFBXTV9DT05UUk9MX1NISUZUKHB3bS0+aHdwd20pKTsKKwogCXdyaXRlbCh2
-YWx1ZSwgcGMtPmJhc2UgKyBQV01fQ09OVFJPTCk7CiAKIAlyZXR1cm4gMDsKIH0KIAorCiBzdGF0
-aWMgY29uc3Qgc3RydWN0IHB3bV9vcHMgYmNtMjgzNV9wd21fb3BzID0gewogCS5yZXF1ZXN0ID0g
-YmNtMjgzNV9wd21fcmVxdWVzdCwKIAkuZnJlZSA9IGJjbTI4MzVfcHdtX2ZyZWUsCi0JLmNvbmZp
-ZyA9IGJjbTI4MzVfcHdtX2NvbmZpZywKLQkuZW5hYmxlID0gYmNtMjgzNV9wd21fZW5hYmxlLAot
-CS5kaXNhYmxlID0gYmNtMjgzNV9wd21fZGlzYWJsZSwKLQkuc2V0X3BvbGFyaXR5ID0gYmNtMjgz
-NV9zZXRfcG9sYXJpdHksCisJLmFwcGx5ID0gYmNtMjgzNV9wd21fYXBwbHksCiAJLm93bmVyID0g
-VEhJU19NT0RVTEUsCiB9OwogCi0tIAoyLjcuNAoK
+
+--u6tsexjosjofhvql
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Nov 27, 2020 at 07:00:40PM -0600, Jeff LaBundy wrote:
+> Hi Uwe,
+>=20
+> Thank you for your work on this; a few comments below.
+>=20
+> On Fri, Nov 27, 2020 at 09:32:44PM +0100, Uwe Kleine-K=F6nig wrote:
+> > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> >=20
+> > If state->duty_cycle is 0x100000000000000, the previous calculation of
+> > duty_scale overflows and yields a duty cycle ratio of 0% instead of
+> > 100%. Fix this by comparing the requested duty cycle against the maximal
+> > possible duty cycle first. This way it is possible to use a native
+> > integer division instead of a (depending on the architecture) more
+> > expensive 64bit division. Also duty_val cannot be bigger than 0xff which
+> > allows to simplify the code a bit further down.
+> >=20
+> > Fixes: 6f0841a8197b ("pwm: Add support for Azoteq IQS620A PWM generator=
+")
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> > Hello Jeff,
+> >=20
+> > On Fri, Nov 27, 2020 at 02:10:51PM -0600, Jeff LaBundy wrote:
+> > > I tested this patch on actual hardware but the newly calculated regis=
+ter
+> > > values are incorrect. We used to get:
+> > >
+> > > [...]
+> > > >                     goto err_mutex;
+> > > >     }
+> > > > =20
+> > > > -   if (duty_scale) {
+> > > > -           u8 duty_val =3D min_t(u64, duty_scale - 1, 0xff);
+> > > > -
+> > > > +   if (duty_val) {
+> > >=20
+> > > This is part of the problem; the device's formula for duty cycle has a
+> > > plus one that is getting dropped now (see comments in iqs620_pwm_appl=
+y).
+> >=20
+> > Good catch, I indeed missed that - 1.
+> >=20
+> > This patch should be better in this regard.
+> >=20
+> > Thanks for particular attention and testing,
+> > Uwe
+> >=20
+> >  drivers/pwm/pwm-iqs620a.c | 18 ++++++++++--------
+> >  1 file changed, 10 insertions(+), 8 deletions(-)
+> >=20
+> > diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
+> > index 7d33e3646436..6789e117f123 100644
+> > --- a/drivers/pwm/pwm-iqs620a.c
+> > +++ b/drivers/pwm/pwm-iqs620a.c
+> > @@ -46,7 +46,7 @@ static int iqs620_pwm_apply(struct pwm_chip *chip, st=
+ruct pwm_device *pwm,
+> >  {
+> >  	struct iqs620_pwm_private *iqs620_pwm;
+> >  	struct iqs62x_core *iqs62x;
+> > -	u64 duty_scale;
+> > +	u8 duty_val;
+> >  	int ret;
+> > =20
+> >  	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+> > @@ -70,29 +70,31 @@ static int iqs620_pwm_apply(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+> >  	 * For lower duty cycles (e.g. 0), the PWM output is simply disabled =
+to
+> >  	 * allow an external pull-down resistor to hold the GPIO3/LTX pin low.
+> >  	 */
+> > -	duty_scale =3D div_u64(state->duty_cycle * 256, IQS620_PWM_PERIOD_NS);
+> > +
+> > +	if (state->duty_cycle < IQS620_PWM_PERIOD_NS)
+> > +		duty_val =3D ((unsigned int)state->duty_cycle * 256) / IQS620_PWM_PE=
+RIOD_NS;
+> > +	else
+> > +		duty_val =3D 256;
+>=20
+> The build gives a warning here since duty_val is a u8. Actually, I'm not
+> a fan of calling this 'duty_val' since it has a different meaning than
+> iqs620_pwm->duty_val (the cached version restored if the watchdog bites).
+
+Argh, that's what you get if you want to just quickly get out a patch
+:-\ Thanks again for your attention.
+
+> >  	mutex_lock(&iqs620_pwm->lock);
+> > =20
+> > -	if (!state->enabled || !duty_scale) {
+> > +	if (!state->enabled || !duty_val) {
+> >  		ret =3D regmap_update_bits(iqs62x->regmap, IQS620_PWR_SETTINGS,
+> >  					 IQS620_PWR_SETTINGS_PWM_OUT, 0);
+> >  		if (ret)
+> >  			goto err_mutex;
+> >  	}
+> > =20
+> > -	if (duty_scale) {
+> > -		u8 duty_val =3D min_t(u64, duty_scale - 1, 0xff);
+> > -
+> > +	if (duty_val) {
+> >  		ret =3D regmap_write(iqs62x->regmap, IQS620_PWM_DUTY_CYCLE,
+> > -				   duty_val);
+> > +				   duty_val - 1);
+> >  		if (ret)
+> >  			goto err_mutex;
+> > =20
+> >  		iqs620_pwm->duty_val =3D duty_val;
+> >  	}
+>=20
+> This would need to change to iqs620_pwm->duty_val =3D duty_val - 1, other=
+wise
+> the wrong duty cycle will get restored in iqs620_pwm_notifier. However th=
+is
+> starts to look confusing.
+>=20
+> > =20
+> > -	if (state->enabled && duty_scale) {
+> > +	if (state->enabled && duty_val) {
+> >  		ret =3D regmap_update_bits(iqs62x->regmap, IQS620_PWR_SETTINGS,
+> >  					 IQS620_PWR_SETTINGS_PWM_OUT, 0xff);
+> >  		if (ret)
+> > --=20
+> > 2.29.2
+> >=20
+>=20
+> How about the patch below instead? It solves the overflow problem you fou=
+nd,
+> is minimally invasive and preserves the original intent. We still avoid t=
+he
+> 64-bit division which is unnecessary anyway given this device's fixed per=
+iod
+> of only 1 ms.
+>=20
+> Kind regards,
+> Jeff LaBundy
+>=20
+> diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
+> index 7d33e36..a15a2aa 100644
+> --- a/drivers/pwm/pwm-iqs620a.c
+> +++ b/drivers/pwm/pwm-iqs620a.c
+> @@ -46,7 +46,7 @@ static int iqs620_pwm_apply(struct pwm_chip *chip, stru=
+ct pwm_device *pwm,
+>  {
+>  	struct iqs620_pwm_private *iqs620_pwm;
+>  	struct iqs62x_core *iqs62x;
+> -	u64 duty_scale;
+> +	unsigned int duty_scale;
+>  	int ret;
+> =20
+>  	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+> @@ -70,7 +70,9 @@ static int iqs620_pwm_apply(struct pwm_chip *chip, stru=
+ct pwm_device *pwm,
+>  	 * For lower duty cycles (e.g. 0), the PWM output is simply disabled to
+>  	 * allow an external pull-down resistor to hold the GPIO3/LTX pin low.
+>  	 */
+> -	duty_scale =3D div_u64(state->duty_cycle * 256, IQS620_PWM_PERIOD_NS);
+> +	duty_scale =3D (unsigned int)min_t(u64, state->duty_cycle,
+> +					 IQS620_PWM_PERIOD_NS) * 256 /
+> +					 IQS620_PWM_PERIOD_NS;
+
+I had problems parsing this. I'd prefer:
+
+	if (state->duty_cycle < IQS620_PWM_PERIOD_NS) {
+		unsigned int duty_cycle =3D state->duty_cycle;
+		duty_scale =3D state->duty_cycle * 256 / IQS620_PWM_PERIOD_NS;
+	} else {
+		duty_scale =3D 256;
+	}
+
+or maybe:
+
+	unsigned int duty_cycle =3D min_t(u64, state->duty_cycle, IQS620_PWM_PERIO=
+D_NS);
+	duty_scale =3D state->duty_cycle * 256 / IQS620_PWM_PERIOD_NS;
+
+(which depending on how clever the compiler is might be less effective
+than the first suggestion).
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--u6tsexjosjofhvql
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/DjgMACgkQwfwUeK3K
+7An4SQf/V/yCY5U3mK2jJWf43VaeG/koaGj9wyA1OhFkK/yM6Upq+4LiYeplDR1C
+SjGN+7Ep7i3SFluvmouIt5TlUXvhWHjtsD5LDG5DNUPo6SoytyIn9VbpVHHZ1afe
+n7ORnK8k/alPSzUVT9wG1dMcwh+dDuCF7vySR21PvYZiFGgBStnE8OQsny28XHwj
+fz5Z3eVUoX3ksNSog9cMTZLzRLn02++YmQThMfuYvZMXXo/gYvDPExSUWRuINL1d
+DSnLz1Yya50EFh/NP/g5buUORnRppoPouy6gFsxh6j0x1V1OtwDdCObHQ67ks4yy
+2uuklv7/3fyuyeB7ytdEF+QP8/mlAA==
+=QToN
+-----END PGP SIGNATURE-----
+
+--u6tsexjosjofhvql--
