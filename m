@@ -1,197 +1,52 @@
-Return-path: <kever.yang@gmail.com>
+Return-path: <broonie@kernel.org>
+From: Mark Brown <broonie@kernel.org>
+In-Reply-To: <20201104234427.26477-1-digetx@gmail.com>
+References: <20201104234427.26477-1-digetx@gmail.com>
+Message-Id: <160683107675.35139.13466076210885462180.b4-ty@kernel.org>
+Date: Tue, 01 Dec 2020 13:57:56 +0000
 MIME-Version: 1.0
-From: Kever Yang <kever.yang@rock-chips.com>
-Date: Fri, 25 Dec 2020 15:15:12 +0800
-Message-ID: <CAKUh=Rw=9u-hhjRv6cFMLuq0+od=gAGedbv-on1rgGweWu_SeA@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="00000000000016b26905b744b0ea"
-Subject: Re: [PATCH v3 7/7] pwm: rockchip: Enable clock before calling clk_get_rate()
-To: Simon South <simon@simonsouth.net>
-Cc: tpiepho@gmail.com, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, Robin Murphy <robin.murphy@arm.com>, lee.jones@linaro.org, Heiko Stuebner <heiko@sntech.de>, bbrezillon@kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, David Wu <david.wu@rock-chips.com>, steven.liu@rock-chips.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v1 00/30] Introduce core voltage scaling for NVIDIA Tegra20/30 SoCs
+To: Liam Girdwood <lgirdwood@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, Peter Chen <Peter.Chen@nxp.com>, Jonathan Hunter <jonathanh@nvidia.com>, u.kleine-koenig@pengutronix.de, Ulf Hansson <ulf.hansson@linaro.org>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Adrian Hunter <adrian.hunter@intel.com>, Peter Geis <pgwipeout@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Dmitry Osipenko <digetx@gmail.com>, Nicolas Chauvet <kwizart@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-mmc@vger.kernel.org, devel@driverdev.osuosl.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 
---00000000000016b26905b744b0ea
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Thu, 5 Nov 2020 02:43:57 +0300, Dmitry Osipenko wrote:
+> Introduce core voltage scaling for NVIDIA Tegra20/30 SoCs, which reduces
+> power consumption and heating of the Tegra chips. Tegra SoC has multiple
+> hardware units which belong to a core power domain of the SoC and share
+> the core voltage. The voltage must be selected in accordance to a minimum
+> requirement of every core hardware unit.
+> 
+> The minimum core voltage requirement depends on:
+> 
+> [...]
 
-+ David and Steven,
+Applied to
 
-Hi Steven,
-    please help to review this patch set.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Thanks
-- Kever
+Thanks!
 
-Simon South <simon@simonsouth.net> =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=
-=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A
+[1/1] regulator: Allow skipping disabled regulators in regulator_check_consumers()
+      (no commit info)
 
-> The documentation for clk_get_rate() in include/linux/clk.h states the
-> function's result is valid only for a clock source that has been
-> enabled. However, the Rockchip PWM driver uses this function in two place=
-s
-> to query the rate of a clock without first ensuring it is enabled.
->
-> Fix this by modifying rockchip_pwm_get_state() and rockchip_pwm_apply() s=
-o
-> they enable a device's PWM clock before querying its rate (in the latter
-> case, the querying is actually done in rockchip_pwm_config()) and disable
-> the clock again before returning.
->
-> Reported-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Simon South <simon@simonsouth.net>
-> ---
->  drivers/pwm/pwm-rockchip.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-> index 02da7370db70..44425eeb4e81 100644
-> --- a/drivers/pwm/pwm-rockchip.c
-> +++ b/drivers/pwm/pwm-rockchip.c
-> @@ -72,6 +72,10 @@ static void rockchip_pwm_get_state(struct pwm_chip
-> *chip,
->         if (ret)
->                 return;
->
-> +       ret =3D clk_enable(pc->clk);
-> +       if (ret)
-> +               return;
-> +
->         clk_rate =3D clk_get_rate(pc->clk);
->
->         tmp =3D readl_relaxed(pc->base + pc->data->regs.period);
-> @@ -90,6 +94,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chi=
-p,
->         else
->                 state->polarity =3D PWM_POLARITY_NORMAL;
->
-> +       clk_disable(pc->clk);
->         clk_disable(pc->pclk);
->  }
->
-> @@ -189,6 +194,10 @@ static int rockchip_pwm_apply(struct pwm_chip *chip,
-> struct pwm_device *pwm,
->         if (ret)
->                 return ret;
->
-> +       ret =3D clk_enable(pc->clk);
-> +       if (ret)
-> +               return ret;
-> +
->         pwm_get_state(pwm, &curstate);
->         enabled =3D curstate.enabled;
->
-> @@ -208,6 +217,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip,
-> struct pwm_device *pwm,
->         }
->
->  out:
-> +       clk_disable(pc->clk);
->         clk_disable(pc->pclk);
->
->         return ret;
-> --
-> 2.29.2
->
->
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
->
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
---00000000000016b26905b744b0ea
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>+ David and Steven,=
-<br></div><div><br></div><div>Hi Steven,</div><div>=C2=A0 =C2=A0 please hel=
-p to review this patch set.</div><div><br></div>Thanks<div>- Kever</div></d=
-iv><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Sim=
-on South &lt;<a href=3D"mailto:simon@simonsouth.net">simon@simonsouth.net</=
-a>&gt; =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=97=A5=E5=91=A8=E5=9B=9B =E4=
-=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
-b(204,204,204);padding-left:1ex">The documentation for clk_get_rate() in in=
-clude/linux/clk.h states the<br>
-function&#39;s result is valid only for a clock source that has been<br>
-enabled. However, the Rockchip PWM driver uses this function in two places<=
-br>
-to query the rate of a clock without first ensuring it is enabled.<br>
-<br>
-Fix this by modifying rockchip_pwm_get_state() and rockchip_pwm_apply() so<=
-br>
-they enable a device&#39;s PWM clock before querying its rate (in the latte=
-r<br>
-case, the querying is actually done in rockchip_pwm_config()) and disable<b=
-r>
-the clock again before returning.<br>
-<br>
-Reported-by: Uwe Kleine-K=C3=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pe=
-ngutronix.de" target=3D"_blank">u.kleine-koenig@pengutronix.de</a>&gt;<br>
-Signed-off-by: Simon South &lt;<a href=3D"mailto:simon@simonsouth.net" targ=
-et=3D"_blank">simon@simonsouth.net</a>&gt;<br>
----<br>
-=C2=A0drivers/pwm/pwm-rockchip.c | 10 ++++++++++<br>
-=C2=A01 file changed, 10 insertions(+)<br>
-<br>
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c<br>
-index 02da7370db70..44425eeb4e81 100644<br>
---- a/drivers/pwm/pwm-rockchip.c<br>
-+++ b/drivers/pwm/pwm-rockchip.c<br>
-@@ -72,6 +72,10 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip=
-,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;<br>
-<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D clk_enable(pc-&gt;clk);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>
-+<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 clk_rate =3D clk_get_rate(pc-&gt;clk);<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 tmp =3D readl_relaxed(pc-&gt;base + pc-&gt;data=
--&gt;regs.period);<br>
-@@ -90,6 +94,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,=
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 state-&gt;polarity =
-=3D PWM_POLARITY_NORMAL;<br>
-<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0clk_disable(pc-&gt;clk);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 clk_disable(pc-&gt;pclk);<br>
-=C2=A0}<br>
-<br>
-@@ -189,6 +194,10 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, s=
-truct pwm_device *pwm,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>
-<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D clk_enable(pc-&gt;clk);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return ret;<br>
-+<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 pwm_get_state(pwm, &amp;curstate);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 enabled =3D curstate.enabled;<br>
-<br>
-@@ -208,6 +217,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, st=
-ruct pwm_device *pwm,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
-=C2=A0out:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0clk_disable(pc-&gt;clk);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 clk_disable(pc-&gt;pclk);<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>
--- <br>
-2.29.2<br>
-<br>
-<br>
-_______________________________________________<br>
-Linux-rockchip mailing list<br>
-<a href=3D"mailto:Linux-rockchip@lists.infradead.org" target=3D"_blank">Lin=
-ux-rockchip@lists.infradead.org</a><br>
-<a href=3D"http://lists.infradead.org/mailman/listinfo/linux-rockchip" rel=
-=3D"noreferrer" target=3D"_blank">http://lists.infradead.org/mailman/listin=
-fo/linux-rockchip</a><br>
-</blockquote></div></div></div>
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
---00000000000016b26905b744b0ea--
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
