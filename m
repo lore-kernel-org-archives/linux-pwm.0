@@ -7,23 +7,23 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DC3C83013
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 07:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0D8C83018
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 07:16:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 075522222E
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 07:16:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BFEB522206
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 07:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387605AbgLBHQi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S2387617AbgLBHQi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Wed, 2 Dec 2020 02:16:38 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:50252 "EHLO
+Received: from guitar.tcltek.co.il ([192.115.133.116]:50272 "EHLO
         mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728569AbgLBHQh (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 2 Dec 2020 02:16:37 -0500
+        id S1728731AbgLBHQi (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 2 Dec 2020 02:16:38 -0500
 Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 095A944013A;
-        Wed,  2 Dec 2020 09:15:54 +0200 (IST)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 68B174405CF;
+        Wed,  2 Dec 2020 09:15:55 +0200 (IST)
 From:   Baruch Siach <baruch@tkos.co.il>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -39,79 +39,187 @@ Cc:     Baruch Siach <baruch@tkos.co.il>, Andrew Lunn <andrew@lunn.ch>,
         Ralph Sennhauser <ralph.sennhauser@gmail.com>,
         linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH v3 1/6] gpio: mvebu: fix potential user-after-free on probe
-Date:   Wed,  2 Dec 2020 09:15:32 +0200
-Message-Id: <f6248a894264d9bc3af3ca040f7cebe5465b67f0.1606892239.git.baruch@tkos.co.il>
+Subject: [PATCH v3 3/6] gpio: mvebu: switch pwm duration registers to regmap
+Date:   Wed,  2 Dec 2020 09:15:34 +0200
+Message-Id: <26483baebd362c9f0ded574854ab7834b9a72bb1.1606892239.git.baruch@tkos.co.il>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <cover.1606892239.git.baruch@tkos.co.il>
 References: <cover.1606892239.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-When mvebu_pwm_probe() fails IRQ domain is not released. Move pwm probe
-before IRQ domain allocation. Add pwm cleanup code to the failure path.
+Commit 2233bf7a92e ("gpio: mvebu: switch to regmap for register access")
+changed most readl/writel registers access calls to the regmap API in
+preparation for Armada 7K/8K support. PWM duration registers were left using
+readl/writel, as the driver does not support PWM for Armada 7K/8K.
 
-Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
-Reported-by: Andrew Lunn <andrew@lunn.ch>
+Switch PWM duration registers to regmap as first step in adding Armada 7K/8K
+PWM functionality support.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 ---
-v3: Move pwm back before irq so that irq_alloc_domain_generic_chips()
-    fails last, and we don't need to clean after it
-
-v2: Don't leak pwm resources (Uwe Kleine-König)
----
- drivers/gpio/gpio-mvebu.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/gpio/gpio-mvebu.c | 68 +++++++++++++++++++++------------------
+ 1 file changed, 36 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 433e2c3f3fd5..2f245594a90a 100644
+index b32cd39fda33..672681a976f5 100644
 --- a/drivers/gpio/gpio-mvebu.c
 +++ b/drivers/gpio/gpio-mvebu.c
-@@ -1197,6 +1197,13 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
+@@ -92,7 +92,7 @@
+ #define MVEBU_MAX_GPIO_PER_BANK		32
  
- 	devm_gpiochip_add_data(&pdev->dev, &mvchip->chip, mvchip);
- 
-+	/* Some MVEBU SoCs have simple PWM support for GPIO lines */
-+	if (IS_ENABLED(CONFIG_PWM)) {
-+		err = mvebu_pwm_probe(pdev, mvchip, id);
-+		if (err)
-+			return err;
-+	}
-+
- 	/* Some gpio controllers do not provide irq support */
- 	if (!have_irqs)
- 		return 0;
-@@ -1206,7 +1213,8 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
- 	if (!mvchip->domain) {
- 		dev_err(&pdev->dev, "couldn't allocate irq domain %s (DT).\n",
- 			mvchip->chip.label);
--		return -ENODEV;
-+		err = -ENODEV;
-+		goto err_pwm;
- 	}
- 
- 	err = irq_alloc_domain_generic_chips(
-@@ -1254,14 +1262,12 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
- 						 mvchip);
- 	}
- 
--	/* Some MVEBU SoCs have simple PWM support for GPIO lines */
--	if (IS_ENABLED(CONFIG_PWM))
--		return mvebu_pwm_probe(pdev, mvchip, id);
--
- 	return 0;
- 
- err_domain:
- 	irq_domain_remove(mvchip->domain);
-+err_pwm:
-+	pwmchip_remove(&mvchip->mvpwm->chip);
- 
- 	return err;
+ struct mvebu_pwm {
+-	void __iomem		*membase;
++	struct regmap		*regs;
+ 	unsigned long		 clk_rate;
+ 	struct gpio_desc	*gpiod;
+ 	struct pwm_chip		 chip;
+@@ -278,17 +278,17 @@ mvebu_gpio_write_level_mask(struct mvebu_gpio_chip *mvchip, u32 val)
  }
+ 
+ /*
+- * Functions returning addresses of individual registers for a given
++ * Functions returning offsets of individual registers for a given
+  * PWM controller.
+  */
+-static void __iomem *mvebu_pwmreg_blink_on_duration(struct mvebu_pwm *mvpwm)
++static unsigned int mvebu_pwmreg_blink_on_duration(struct mvebu_pwm *mvpwm)
+ {
+-	return mvpwm->membase + PWM_BLINK_ON_DURATION_OFF;
++	return PWM_BLINK_ON_DURATION_OFF;
+ }
+ 
+-static void __iomem *mvebu_pwmreg_blink_off_duration(struct mvebu_pwm *mvpwm)
++static unsigned int mvebu_pwmreg_blink_off_duration(struct mvebu_pwm *mvpwm)
+ {
+-	return mvpwm->membase + PWM_BLINK_OFF_DURATION_OFF;
++	return PWM_BLINK_OFF_DURATION_OFF;
+ }
+ 
+ /*
+@@ -599,6 +599,13 @@ static void mvebu_gpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_exit(chip, desc);
+ }
+ 
++static const struct regmap_config mvebu_gpio_regmap_config = {
++	.reg_bits = 32,
++	.reg_stride = 4,
++	.val_bits = 32,
++	.fast_io = true,
++};
++
+ /*
+  * Functions implementing the pwm_chip methods
+  */
+@@ -659,9 +666,8 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+ 
+ 	spin_lock_irqsave(&mvpwm->lock, flags);
+ 
+-	val = (unsigned long long)
+-		readl_relaxed(mvebu_pwmreg_blink_on_duration(mvpwm));
+-	val *= NSEC_PER_SEC;
++	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_on_duration(mvpwm), &u);
++	val = (unsigned long long) u * NSEC_PER_SEC;
+ 	do_div(val, mvpwm->clk_rate);
+ 	if (val > UINT_MAX)
+ 		state->duty_cycle = UINT_MAX;
+@@ -670,9 +676,8 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+ 	else
+ 		state->duty_cycle = 1;
+ 
+-	val = (unsigned long long)
+-		readl_relaxed(mvebu_pwmreg_blink_off_duration(mvpwm));
+-	val *= NSEC_PER_SEC;
++	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm), &u);
++	val = (unsigned long long) u * NSEC_PER_SEC;
+ 	do_div(val, mvpwm->clk_rate);
+ 	if (val < state->duty_cycle) {
+ 		state->period = 1;
+@@ -725,8 +730,8 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	spin_lock_irqsave(&mvpwm->lock, flags);
+ 
+-	writel_relaxed(on, mvebu_pwmreg_blink_on_duration(mvpwm));
+-	writel_relaxed(off, mvebu_pwmreg_blink_off_duration(mvpwm));
++	regmap_write(mvpwm->regs, mvebu_pwmreg_blink_on_duration(mvpwm), on);
++	regmap_write(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm), off);
+ 	if (state->enabled)
+ 		mvebu_gpio_blink(&mvchip->chip, pwm->hwpwm, 1);
+ 	else
+@@ -751,10 +756,10 @@ static void __maybe_unused mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
+ 
+ 	regmap_read(mvchip->regs, GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset,
+ 		    &mvpwm->blink_select);
+-	mvpwm->blink_on_duration =
+-		readl_relaxed(mvebu_pwmreg_blink_on_duration(mvpwm));
+-	mvpwm->blink_off_duration =
+-		readl_relaxed(mvebu_pwmreg_blink_off_duration(mvpwm));
++	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_on_duration(mvpwm),
++		    &mvpwm->blink_on_duration);
++	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm),
++		    &mvpwm->blink_off_duration);
+ }
+ 
+ static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
+@@ -763,10 +768,10 @@ static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
+ 
+ 	regmap_write(mvchip->regs, GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset,
+ 		     mvpwm->blink_select);
+-	writel_relaxed(mvpwm->blink_on_duration,
+-		       mvebu_pwmreg_blink_on_duration(mvpwm));
+-	writel_relaxed(mvpwm->blink_off_duration,
+-		       mvebu_pwmreg_blink_off_duration(mvpwm));
++	regmap_write(mvpwm->regs, mvebu_pwmreg_blink_on_duration(mvpwm),
++		     mvpwm->blink_on_duration);
++	regmap_write(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm),
++		     mvpwm->blink_off_duration);
+ }
+ 
+ static int mvebu_pwm_probe(struct platform_device *pdev,
+@@ -775,6 +780,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct mvebu_pwm *mvpwm;
++	void __iomem *base;
+ 	u32 set;
+ 
+ 	if (!of_device_is_compatible(mvchip->chip.of_node,
+@@ -812,9 +818,14 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+ 	mvchip->mvpwm = mvpwm;
+ 	mvpwm->mvchip = mvchip;
+ 
+-	mvpwm->membase = devm_platform_ioremap_resource_byname(pdev, "pwm");
+-	if (IS_ERR(mvpwm->membase))
+-		return PTR_ERR(mvpwm->membase);
++	base = devm_platform_ioremap_resource_byname(pdev, "pwm");
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	mvpwm->regs = devm_regmap_init_mmio(&pdev->dev, base,
++					    &mvebu_gpio_regmap_config);
++	if (IS_ERR(mvpwm->regs))
++		return PTR_ERR(mvpwm->regs);
+ 
+ 	mvpwm->clk_rate = clk_get_rate(mvchip->clk);
+ 	if (!mvpwm->clk_rate) {
+@@ -1021,13 +1032,6 @@ static int mvebu_gpio_resume(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static const struct regmap_config mvebu_gpio_regmap_config = {
+-	.reg_bits = 32,
+-	.reg_stride = 4,
+-	.val_bits = 32,
+-	.fast_io = true,
+-};
+-
+ static int mvebu_gpio_probe_raw(struct platform_device *pdev,
+ 				struct mvebu_gpio_chip *mvchip)
+ {
 -- 
 2.29.2
 
