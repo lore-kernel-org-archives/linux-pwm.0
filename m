@@ -2,126 +2,82 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0D2C71156
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 06:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7CDC83014
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 07:16:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9A1CA22202
-	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 06:04:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CBB74206C0
+	for <linux-pwm@archiver.kernel.org>; Wed,  2 Dec 2020 07:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727450AbgLBGEi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 2 Dec 2020 01:04:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgLBGEh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Dec 2020 01:04:37 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937CCC0613CF;
-        Tue,  1 Dec 2020 22:03:51 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id r20so407280pjp.1;
-        Tue, 01 Dec 2020 22:03:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sdg6m13JCDegZRe+NmQ9epCCrqdVuQ58ZPfdb2g7nwk=;
-        b=pCJA7Ta3XJljluS9z7yOcbr2jUsDThZD9M6lRMzlsYVGvFOkg0wP3wWBlshqdNcCUj
-         5uZvn95iyp309exveaPBLaEodgH692I7dBiok0BwlFyBzxW+KxVBKBsaJ3YAqmT67zP+
-         vT7IV6YGmGZXgrQL1P+KbMMk6BkHeNmyXgmsLs8wEBYPoHSWIIV0zS+oIMq3EZ18VhHl
-         v/jVjHYd64fR99K99JDgwRDqJ8llL6f+7U5Vea88QnSVhKT9CDR5uMs8nAOZPE5v31wN
-         8E6sSyJ5FNYSKCxnTg66FyMyGZaitBT0IHC39PlWgV35Rae1pxdg2a75c0p5lOK7kqV3
-         FibQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sdg6m13JCDegZRe+NmQ9epCCrqdVuQ58ZPfdb2g7nwk=;
-        b=fM4ZfHjlYLSJvqgn+MI/+HFIt0ZTkuSvt7EE28og0HyZ4fOyXRROAQoE6JvcT9ksrb
-         sjg8AqbLUWmxLR5Gom1XpDyjEwe3EpZ9Adh1SS7dqlkV4Ula/bPCCLENMEAlLZUwoWEu
-         dL7KGguMY9aNBs20FR+upv0OG66xch8IrIIX7oawJ7NS2VgchFu602XD/5Bpv1bv6iqw
-         Rsg3bW9dhhMm7vkSRVhOSyoItyrsw3jhKILAMNxbXZg7Sd2tvTbLlwuqQctEM55jrVBB
-         jf16YFy7Aljif0/EvMCjVyp9X79WSw/4VNFdrgFpAAqvjH/0pz8hG+FVgMFcAKMa5GDz
-         TT9A==
-X-Gm-Message-State: AOAM531lHwWxtXeTMx30wykALfrm6zeyH+hBA7jjNerH7ekpk41Ec4/C
-        HtSnc7MsbnwVbA9PwKQZfzs=
-X-Google-Smtp-Source: ABdhPJzZ+izHWO3gM6iPbafcGZ1JHYrclBHjBVqhKWL05Il/SE7A6c1xDfh20W3Ydj+C/+H6a3Wb5g==
-X-Received: by 2002:a17:902:bf0b:b029:d8:f677:30f2 with SMTP id bi11-20020a170902bf0bb02900d8f67730f2mr1209361plb.25.1606889030866;
-        Tue, 01 Dec 2020 22:03:50 -0800 (PST)
-Received: from dtor-ws ([2620:15c:202:201:a6ae:11ff:fe11:fcc3])
-        by smtp.gmail.com with ESMTPSA id x16sm600470pjh.39.2020.12.01.22.03.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 22:03:50 -0800 (PST)
-Date:   Tue, 1 Dec 2020 22:03:47 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        f.fainelli@gmail.com, linux-pwm@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        wahrenst@gmx.net, linux-input@vger.kernel.org,
-        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        p.zabel@pengutronix.de, linux-gpio@vger.kernel.org,
-        linus.walleij@linaro.org, linux-clk@vger.kernel.org,
-        sboyd@kernel.org, linux-rpi-kernel@lists.infradead.org,
-        bgolaszewski@baylibre.com, andy.shevchenko@gmail.com
-Subject: Re: [PATCH v5 08/11] input: raspberrypi-ts: Release firmware handle
- when not needed
-Message-ID: <20201202060347.GA2034289@dtor-ws>
-References: <20201123183833.18750-1-nsaenzjulienne@suse.de>
- <20201123183833.18750-9-nsaenzjulienne@suse.de>
+        id S2387600AbgLBHQi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 2 Dec 2020 02:16:38 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:50262 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728717AbgLBHQh (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 2 Dec 2020 02:16:37 -0500
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id ADF674404B9;
+        Wed,  2 Dec 2020 09:15:54 +0200 (IST)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc:     Baruch Siach <baruch@tkos.co.il>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
+        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH v3 2/6] gpio: mvebu: update Armada XP per-CPU comment
+Date:   Wed,  2 Dec 2020 09:15:33 +0200
+Message-Id: <c6137b777841669f1ef422795e4fb09aaa735989.1606892239.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <cover.1606892239.git.baruch@tkos.co.il>
+References: <cover.1606892239.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201123183833.18750-9-nsaenzjulienne@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Nicolas,
+Commit 2233bf7a92e ("gpio: mvebu: switch to regmap for register access")
+introduced percpu_regs to replace percpu_membase. Update the comment to
+match.
 
-On Mon, Nov 23, 2020 at 07:38:29PM +0100, Nicolas Saenz Julienne wrote:
-> Use devm_rpi_firmware_get() so as to make sure we release RPi's firmware
-> interface when unbinding the device.
+Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Fixes: 2233bf7a92e7 ("gpio: mvebu: switch to regmap for register access")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ drivers/gpio/gpio-mvebu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I do not believe this comment is correct any longer. Otherwise:
-
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> 
-> ---
-> 
-> Changes since v3:
->  - Release firmware handle in probe function
-> 
-> Changes since v2:
->  - Use devm_rpi_firmware_get(), instead of remove function
-> 
->  drivers/input/touchscreen/raspberrypi-ts.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/input/touchscreen/raspberrypi-ts.c b/drivers/input/touchscreen/raspberrypi-ts.c
-> index ef6aaed217cf..5000f5fd9ec3 100644
-> --- a/drivers/input/touchscreen/raspberrypi-ts.c
-> +++ b/drivers/input/touchscreen/raspberrypi-ts.c
-> @@ -160,7 +160,7 @@ static int rpi_ts_probe(struct platform_device *pdev)
->  	touchbuf = (u32)ts->fw_regs_phys;
->  	error = rpi_firmware_property(fw, RPI_FIRMWARE_FRAMEBUFFER_SET_TOUCHBUF,
->  				      &touchbuf, sizeof(touchbuf));
-> -
-> +	rpi_firmware_put(fw);
->  	if (error || touchbuf != 0) {
->  		dev_warn(dev, "Failed to set touchbuf, %d\n", error);
->  		return error;
-> -- 
-> 2.29.2
-> 
-
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 2f245594a90a..b32cd39fda33 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -78,8 +78,7 @@
+ 
+ /*
+  * The Armada XP has per-CPU registers for interrupt cause, interrupt
+- * mask and interrupt level mask. Those are relative to the
+- * percpu_membase.
++ * mask and interrupt level mask. Those are in percpu_regs range.
+  */
+ #define GPIO_EDGE_CAUSE_ARMADAXP_OFF(cpu) ((cpu) * 0x4)
+ #define GPIO_EDGE_MASK_ARMADAXP_OFF(cpu)  (0x10 + (cpu) * 0x4)
 -- 
-Dmitry
+2.29.2
+
