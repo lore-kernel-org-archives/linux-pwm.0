@@ -2,35 +2,35 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-20.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29539C0018C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F04FC47434
 	for <linux-pwm@archiver.kernel.org>; Tue,  8 Dec 2020 01:13:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0917523A40
+	by mail.kernel.org (Postfix) with ESMTP id 701FC23AA8
 	for <linux-pwm@archiver.kernel.org>; Tue,  8 Dec 2020 01:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726423AbgLHBNB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Dec 2020 20:13:01 -0500
-Received: from mout.gmx.net ([212.227.15.18]:33695 "EHLO mout.gmx.net"
+        id S1726535AbgLHBNI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Dec 2020 20:13:08 -0500
+Received: from mout.gmx.net ([212.227.17.21]:50343 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726247AbgLHBM7 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 7 Dec 2020 20:12:59 -0500
+        id S1726147AbgLHBNH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 7 Dec 2020 20:13:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1607389844;
-        bh=HfmzY+mOEYx4C4wVfJ2StsJL7j0bNVmAjOXr6dVo5/c=;
+        s=badeba3b8450; t=1607389839;
+        bh=pnWfE1q4e+S1NcScWWdH3l56DjjQYX0DB2eDmmG2Qmw=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=aMgANgnK9vAnNX4PehxIppysmwT30VWuQQAjJbUvAtj5VuxGrrijyXGYpelUZjBj5
-         kzvOwggB+S6Sz+n5Ndi69bKZdT2UUNlZGTl9UP9ol6CPvw0/l/ccUM2ulaZ4ddG9Gy
-         WMmD0RhS9bxX33UMhVYoMitxxvwsOPmr1Qe3nAtw=
+        b=AKQ2iQ0qyuboRtIt3wsgQEUHoMTJK7lz8W8pTBEWLwy6qkvyOghWfRmaQj0f2Vb2A
+         nkqAaMdN0O1K+7nnvck+SOrSmiRl76yu3a/VfLapbED0+DocT93LVNCbpmJIPfRJK5
+         gpeCjapk2bi1NGR6T4H4RXMyRfHU9Ap/5ej3oUmQ=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.214.162]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N1wlv-1k2MIP0egT-012KWP; Tue, 08
- Dec 2020 02:10:44 +0100
+Received: from longitude ([37.201.214.162]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MJmGP-1kSrP415kP-00K6ae; Tue, 08
+ Dec 2020 02:10:39 +0100
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
@@ -59,428 +59,79 @@ Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
         Josua Mayer <josua.mayer@jm0.eu>,
         Andreas Kemnade <andreas@kemnade.info>,
         Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v6 3/7] mfd: Add base driver for Netronix embedded controller
-Date:   Tue,  8 Dec 2020 02:09:56 +0100
-Message-Id: <20201208011000.3060239-4-j.neuschaefer@gmx.net>
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Subject: [PATCH v6 1/7] dt-bindings: Add vendor prefix for Netronix, Inc.
+Date:   Tue,  8 Dec 2020 02:09:54 +0100
+Message-Id: <20201208011000.3060239-2-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201208011000.3060239-1-j.neuschaefer@gmx.net>
 References: <20201208011000.3060239-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ghjPRhXHk+XvkGKeAkpudi9GejhOfY34NX/uPYorrYSM2x1DUHL
- Jwuq0Tg31ezODZwxjD02Pw+A+Aa2e1P1AE2YZytlneG/6KgESmUukLvOuUcFSWoD7oPjhZo
- +5xlSfwqoY5ehSCf7cVsB8GbvldznLX15xhnk1xes7oxQSQOWltNcRFSzQsYvNcj0ZwwAHG
- b51syXXwbp5tvPaL+4oGw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Dx5SIK4CN04=:QaSWBi+WFlMS8mXmNMiMxA
- WtVTQBs+LVTKTNhSC8HKSSqlbK4PXrgiOA5v2NSXZCmrTpkaffGqgfDANFkBww8mZr4JKzi5C
- GiXF28gQQ5LC2KWaYLNomiusGb6RGTOuAZ/LqERH763oYJWHExtsy6P3V6fQK9RE3BcXeGjka
- E/LZ73TtegG0SSmjJ6nJDCljW8EZfEoF8EUH9AKZ2wbkyuPtp201bLrr+kgpwnRqqdfr3gcaB
- uGGrmnogaqgZjeUrmhb/4aspw8OHWbBjOT2+SOGBPPD7OyOB3Bum5dmvFB4THjpXVaq34svKx
- NEE2XyiMKsQj9NY2gUKUn+ifErWVB9wSC2pOuG+he2lnfO/bwjqzW0ptbMobTKXvUtQLSUPct
- p63oovtyIGwUusVwlLrH7Qr7ntlolzfC++rqNUQ7b9nWxfGxYE2fxRsttirgfJlBXBXB2xlnt
- +YVqUSt71DIfEAiItX5ckZomTB13dMQekzIUFRmxrkxLFrA52EK4lIdapOz79Ektle8Yc/o0D
- y8WJeLWqgr3qLJJSIjh1M9Vor9Vye57F6FPW9hAHecqTTp5OlMzfGOqpCTs+Lgfbp9gtp4q1s
- QYAI2CXeljS4a2MFNc2sQrii9ow8WFQUWYoYffptBJZf9wzK2EKF3+WF3k4SArxD1J3Rogn3j
- X5HOBUTMKX2YLKmMIzTWkARspG08Fgs7U/VSeK4oPDUaxNuLY0sIWYig2Ts1BJTMpIKn2WL+V
- bzzvEYpUSFwTpylHBOL2iQ7zwRpUrYhxTUP1Wa5PcD6HKF5f2Y6nyXaEffRpU3IZHhdKR1f0f
- 4rdcW+hvGZ92ptWKH89QvigRB/3Aqu+gWAN6s3E+oNzejAx/bmhQN0dEwoJhms1lCVaciLXuD
- FADwhGWUAPBRLw0YserA==
+X-Provags-ID: V03:K1:jLNKQX72YE6HNCrjXmN3THj8hVdDQ5skL5MYyC79rsgWv1+w+CK
+ rKbCb9+26R5YFuwL0WD3Sn8gAxZL+wn8+LkQ5Jc73cZL8Je13kNw9BG+eeAwId6ucIb3+53
+ VGzRydEuYZl64RcZEB7ZeGnFqofNJHOEXOhYy155ixfJmg330iknjH3oR0mouqnS72Y2VXq
+ EAvLuMya4kPyfw9EnxCVA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:suINVp6qRSc=:Y4S+wKKlX+AzqPSZmgUBwl
+ Kkm/Gce0T1WYUPv1AfdeNSpRsGxIzDyirh5F37k1Zl9xl/1E0/zr7cIcGeG8hVpgHm/P3/bc2
+ vcplii5VushZiy04TTpi+PHc6NfPxCJYHN4b3wSVrExqoC5bTIpoTTBGslUuJSHFN6wJTAqsD
+ UUJGIKUw4qBk0G3OwTLODJJmgPmaQjL8Onk5CDektW0I0YXBJzojuBIkD8RMoGaKQL/tHoTKN
+ pcNWdzArPK36Jam35dzntOpzZyfaKYW2CjZvXIwYVmcqKk8tBoG514Fh+tBKVPnp1gjknDl9H
+ PECgsPPm6yo75HQKa8V1VGYwziKCxfPjvaaQmQzOf9HkF8wikspzIzTCy0rYiLSoNFBfXLgq8
+ e6vM49TxZ1RlCm1pjTihS7F1i/dmMG3cdAHhMHyTLd2tsJX419Kb1YSZe9kN+yPnexWLtXQAH
+ vMusuE+cY0u73P47AR+b90wBIfuX6b6GACmKsSlhO3mdWg8Fd7MfGrvjANYFHNZr5UPNiq4Z+
+ ocr+u2LC3mIN6090uN3GUvIfzWDbHvDDwgQRh7B10v2RelDffMNkBPXaH+pT21prdGE/Q+/7O
+ fZrQxG7BqOPDIwg1sxt76w7sTmarBJuq744+zlHMbVcP49d9mTVBV0fc6Qbdg//NMvo2rWfr4
+ H554fm8rI1YBwa7zqeMNU/fVnpAglU6KnKZHjAWHq6Nd/8kXgmqbo76rr1ElE8My3Fu1+1L0O
+ hr6C24U2KYEUdHAcMFhiHl0hHH7nX28KQscgdAQMGuj5WAr5SYK94Du5S4O7RD3lcfnnNA/I1
+ 7gflXmXX1HRQrccDqvGn/BOSNQrShzJI4u8l9Q/vG/b43NI2pFvYmGhejJy6NWU098jW0wVvJ
+ Agob6qs2Z4H5+CMdv1oQ==
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The Netronix embedded controller is a microcontroller found in some
-e-book readers designed by the original design manufacturer Netronix,
-Inc. It contains RTC, battery monitoring, system power management, and
-PWM functionality.
+Netronix, Inc. (http://www.netronixinc.com/) makes ebook reader board
+designs, which are for example used in Kobo and Tolino devices.
 
-This driver implements register access and version detection.
-
-Third-party hardware documentation is available at:
-
-  https://github.com/neuschaefer/linux/wiki/Netronix-MSP430-embedded-contr=
-oller
-
-The EC supports interrupts, but the driver doesn't make use of them so
-far.
+An alternative prefix for Netronix would be "ntx", which is already used
+in code released by Netronix. It is shorter, but perhaps less clear.
 
 Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
 =2D--
-v6:
-- Add Lee Jones' ACK
-
-v5:
-- no changes
-
-v4:
-- https://lore.kernel.org/lkml/20201122222739.1455132-4-j.neuschaefer@gmx.=
-net/
-- include asm/unaligned.h after linux/*
-- Use put_unaligned_be16 instead of open-coded big-endian packing
-- Clarify that 0x90=3D0xff00 causes an error in downstream kernel too
-- Add commas after non-sentinel positions
-- ntxec.h: declare structs device and regmap
-- Replace WARN_ON usage and add comments to explain errors
-- Replace dev_alert with dev_warn when the result isn't handled
-- Change subdevice registration error message to dev_err
-- Declare ntxec_reg8 as returning __be16
-- Restructure version detection code
-- Spell out ODM
+v4-v6:
+- No changes
 
 v3:
-- https://lore.kernel.org/lkml/20200924192455.2484005-4-j.neuschaefer@gmx.=
+- https://lore.kernel.org/lkml/20200924192455.2484005-2-j.neuschaefer@gmx.=
 net/
-- Add (EC) to CONFIG_MFD_NTXEC prompt
-- Relicense as GPLv2 or later
-- Add email address to copyright line
-- remove empty lines in ntxec_poweroff and ntxec_restart functions
-- Split long lines
-- Remove 'Install ... handler' comments
-- Make naming of struct i2c_client parameter consistent
-- Remove struct ntxec_info
-- Rework 'depends on' lines in Kconfig, hard-depend on I2C, select REGMAP_=
-I2C and
-  MFD_CORE
-- Register subdevices via mfd_cells
-- Move 8-bit register conversion to ntxec.h
+- Add Acked-by tag
 
 v2:
-- https://lore.kernel.org/lkml/20200905133230.1014581-4-j.neuschaefer@gmx.=
-net/
-- Add a description of the device to the patch text
-- Unify spelling as 'Netronix embedded controller'.
-  'Netronix' is the proper name of the manufacturer, but 'embedded control=
-ler'
-  is just a label that I have assigned to the device.
-- Switch to regmap, avoid regmap use in poweroff and reboot handlers.
-  Inspired by cf84dc0bb40f4 ("mfd: rn5t618: Make restart handler atomic sa=
-fe")
-- Use a list of known-working firmware versions instead of checking for a
-  known-incompatible version
-- Prefix registers with NTXEC_REG_
-- Define register values as constants
-- Various style cleanups as suggested by Lee Jones
-- Don't align =3D signs in struct initializers [Uwe Kleine-K=C3=B6nig]
-- Don't use dev_dbg for an error message
-- Explain sleep in poweroff handler
-- Remove (struct ntxec).client
-- Switch to .probe_new in i2c driver
-- Add .remove callback
-- Make CONFIG_MFD_NTXEC a tristate option
+- No changes
 =2D--
- drivers/mfd/Kconfig       |  11 ++
- drivers/mfd/Makefile      |   1 +
- drivers/mfd/ntxec.c       | 216 ++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/ntxec.h |  34 ++++++
- 4 files changed, 262 insertions(+)
- create mode 100644 drivers/mfd/ntxec.c
- create mode 100644 include/linux/mfd/ntxec.h
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 8b99a13669bfc..d96751f884dc6 100644
-=2D-- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -990,6 +990,17 @@ config MFD_VIPERBOARD
- 	  You need to select the mfd cell drivers separately.
- 	  The drivers do not support all features the board exposes.
-
-+config MFD_NTXEC
-+	tristate "Netronix embedded controller (EC)"
-+	depends on OF || COMPILE_TEST
-+	depends on I2C
-+	select REGMAP_I2C
-+	select MFD_CORE
-+	help
-+	  Say yes here if you want to support the embedded controller found in
-+	  certain e-book readers designed by the original design manufacturer
-+	  Netronix.
-+
- config MFD_RETU
- 	tristate "Nokia Retu and Tahvo multi-function device"
- 	select MFD_CORE
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 1780019d24748..815c99b84019e 100644
-=2D-- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -218,6 +218,7 @@ obj-$(CONFIG_MFD_INTEL_MSIC)	+=3D intel_msic.o
- obj-$(CONFIG_MFD_INTEL_PMC_BXT)	+=3D intel_pmc_bxt.o
- obj-$(CONFIG_MFD_PALMAS)	+=3D palmas.o
- obj-$(CONFIG_MFD_VIPERBOARD)    +=3D viperboard.o
-+obj-$(CONFIG_MFD_NTXEC)		+=3D ntxec.o
- obj-$(CONFIG_MFD_RC5T583)	+=3D rc5t583.o rc5t583-irq.o
- obj-$(CONFIG_MFD_RK808)		+=3D rk808.o
- obj-$(CONFIG_MFD_RN5T618)	+=3D rn5t618.o
-diff --git a/drivers/mfd/ntxec.c b/drivers/mfd/ntxec.c
-new file mode 100644
-index 0000000000000..c1510711d7363
-=2D-- /dev/null
-+++ b/drivers/mfd/ntxec.c
-@@ -0,0 +1,216 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * The Netronix embedded controller is a microcontroller found in some
-+ * e-book readers designed by the original design manufacturer Netronix, =
-Inc.
-+ * It contains RTC, battery monitoring, system power management, and PWM
-+ * functionality.
-+ *
-+ * This driver implements register access, version detection, and system
-+ * power-off/reset.
-+ *
-+ * Copyright 2020 Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/errno.h>
-+#include <linux/i2c.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mfd/ntxec.h>
-+#include <linux/module.h>
-+#include <linux/pm.h>
-+#include <linux/reboot.h>
-+#include <linux/regmap.h>
-+#include <linux/types.h>
-+#include <asm/unaligned.h>
-+
-+#define NTXEC_REG_VERSION	0x00
-+#define NTXEC_REG_POWEROFF	0x50
-+#define NTXEC_REG_POWERKEEP	0x70
-+#define NTXEC_REG_RESET		0x90
-+
-+#define NTXEC_POWEROFF_VALUE	0x0100
-+#define NTXEC_POWERKEEP_VALUE	0x0800
-+#define NTXEC_RESET_VALUE	0xff00
-+
-+static struct i2c_client *poweroff_restart_client;
-+
-+static void ntxec_poweroff(void)
-+{
-+	int res;
-+	u8 buf[3] =3D { NTXEC_REG_POWEROFF };
-+	struct i2c_msg msgs[] =3D {
-+		{
-+			.addr =3D poweroff_restart_client->addr,
-+			.flags =3D 0,
-+			.len =3D sizeof(buf),
-+			.buf =3D buf,
-+		},
-+	};
-+
-+	put_unaligned_be16(NTXEC_POWEROFF_VALUE, buf + 1);
-+
-+	res =3D i2c_transfer(poweroff_restart_client->adapter, msgs, ARRAY_SIZE(=
-msgs));
-+	if (res < 0)
-+		dev_warn(&poweroff_restart_client->dev,
-+			 "Failed to power off (err =3D %d)\n", res);
-+
-+	/*
-+	 * The time from the register write until the host CPU is powered off
-+	 * has been observed to be about 2.5 to 3 seconds. Sleep long enough to
-+	 * safely avoid returning from the poweroff handler.
-+	 */
-+	msleep(5000);
-+}
-+
-+static int ntxec_restart(struct notifier_block *nb,
-+			 unsigned long action, void *data)
-+{
-+	int res;
-+	u8 buf[3] =3D { NTXEC_REG_RESET };
-+	/*
-+	 * NOTE: The lower half of the reset value is not sent, because sending
-+	 * it causes an I2C error. (The reset handler in the downstream driver
-+	 * does send the full two-byte value, but doesn't check the result).
-+	 */
-+	struct i2c_msg msgs[] =3D {
-+		{
-+			.addr =3D poweroff_restart_client->addr,
-+			.flags =3D 0,
-+			.len =3D sizeof(buf) - 1,
-+			.buf =3D buf,
-+		},
-+	};
-+
-+	put_unaligned_be16(NTXEC_RESET_VALUE, buf + 1);
-+
-+	res =3D i2c_transfer(poweroff_restart_client->adapter, msgs, ARRAY_SIZE(=
-msgs));
-+	if (res < 0)
-+		dev_warn(&poweroff_restart_client->dev,
-+			 "Failed to restart (err =3D %d)\n", res);
-+
-+	return NOTIFY_DONE;
-+}
-+
-+static struct notifier_block ntxec_restart_handler =3D {
-+	.notifier_call =3D ntxec_restart,
-+	.priority =3D 128,
-+};
-+
-+static const struct regmap_config regmap_config =3D {
-+	.name =3D "ntxec",
-+	.reg_bits =3D 8,
-+	.val_bits =3D 16,
-+	.cache_type =3D REGCACHE_NONE,
-+	.val_format_endian =3D REGMAP_ENDIAN_BIG,
-+};
-+
-+static const struct mfd_cell ntxec_subdevices[] =3D {
-+	{ .name =3D "ntxec-rtc" },
-+	{ .name =3D "ntxec-pwm" },
-+};
-+
-+static int ntxec_probe(struct i2c_client *client)
-+{
-+	struct ntxec *ec;
-+	unsigned int version;
-+	int res;
-+
-+	ec =3D devm_kmalloc(&client->dev, sizeof(*ec), GFP_KERNEL);
-+	if (!ec)
-+		return -ENOMEM;
-+
-+	ec->dev =3D &client->dev;
-+
-+	ec->regmap =3D devm_regmap_init_i2c(client, &regmap_config);
-+	if (IS_ERR(ec->regmap)) {
-+		dev_err(ec->dev, "Failed to set up regmap for device\n");
-+		return res;
-+	}
-+
-+	/* Determine the firmware version */
-+	res =3D regmap_read(ec->regmap, NTXEC_REG_VERSION, &version);
-+	if (res < 0) {
-+		dev_err(ec->dev, "Failed to read firmware version number\n");
-+		return res;
-+	}
-+
-+	/* Bail out if we encounter an unknown firmware version */
-+	switch (version) {
-+	case 0xd726: /* found in Kobo Aura */
-+		break;
-+	default:
-+		dev_err(ec->dev,
-+			"Netronix embedded controller version %04x is not supported.\n",
-+			version);
-+		return -ENODEV;
-+	}
-+
-+	dev_info(ec->dev,
-+		 "Netronix embedded controller version %04x detected.\n", version);
-+
-+	if (of_device_is_system_power_controller(ec->dev->of_node)) {
-+		/*
-+		 * Set the 'powerkeep' bit. This is necessary on some boards
-+		 * in order to keep the system running.
-+		 */
-+		res =3D regmap_write(ec->regmap, NTXEC_REG_POWERKEEP,
-+				   NTXEC_POWERKEEP_VALUE);
-+		if (res < 0)
-+			return res;
-+
-+		if (poweroff_restart_client)
-+			/*
-+			 * Another instance of the driver already took
-+			 * poweroff/restart duties.
-+			 */
-+			dev_err(ec->dev, "poweroff_restart_client already assigned\n");
-+		else
-+			poweroff_restart_client =3D client;
-+
-+		if (pm_power_off)
-+			/* Another driver already registered a poweroff handler. */
-+			dev_err(ec->dev, "pm_power_off already assigned\n");
-+		else
-+			pm_power_off =3D ntxec_poweroff;
-+
-+		res =3D register_restart_handler(&ntxec_restart_handler);
-+		if (res)
-+			dev_err(ec->dev,
-+				"Failed to register restart handler: %d\n", res);
-+	}
-+
-+	i2c_set_clientdata(client, ec);
-+
-+	res =3D devm_mfd_add_devices(ec->dev, PLATFORM_DEVID_NONE, ntxec_subdevi=
-ces,
-+				   ARRAY_SIZE(ntxec_subdevices), NULL, 0, NULL);
-+	if (res)
-+		dev_err(ec->dev, "Failed to add subdevices: %d\n", res);
-+
-+	return res;
-+}
-+
-+static int ntxec_remove(struct i2c_client *client)
-+{
-+	if (client =3D=3D poweroff_restart_client) {
-+		poweroff_restart_client =3D NULL;
-+		pm_power_off =3D NULL;
-+		unregister_restart_handler(&ntxec_restart_handler);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id of_ntxec_match_table[] =3D {
-+	{ .compatible =3D "netronix,ntxec", },
-+	{}
-+};
-+
-+static struct i2c_driver ntxec_driver =3D {
-+	.driver =3D {
-+		.name =3D "ntxec",
-+		.of_match_table =3D of_ntxec_match_table,
-+	},
-+	.probe_new =3D ntxec_probe,
-+	.remove =3D ntxec_remove,
-+};
-+module_i2c_driver(ntxec_driver);
-diff --git a/include/linux/mfd/ntxec.h b/include/linux/mfd/ntxec.h
-new file mode 100644
-index 0000000000000..b1de91f4fdcad
-=2D-- /dev/null
-+++ b/include/linux/mfd/ntxec.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright 2020 Jonathan Neusch=C3=A4fer
-+ *
-+ * Register access and version information for the Netronix embedded
-+ * controller.
-+ */
-+
-+#ifndef NTXEC_H
-+#define NTXEC_H
-+
-+#include <linux/types.h>
-+
-+struct device;
-+struct regmap;
-+
-+struct ntxec {
-+	struct device *dev;
-+	struct regmap *regmap;
-+};
-+
-+/*
-+ * Some registers, such as the battery status register (0x41), are in
-+ * big-endian, but others only have eight significant bits, which are in =
-the
-+ * first byte transmitted over I2C (the MSB of the big-endian value).
-+ * This convenience function converts an 8-bit value to 16-bit for use in=
- the
-+ * second kind of register.
-+ */
-+static inline __be16 ntxec_reg8(u8 value)
-+{
-+	return value << 8;
-+}
-+
-+#endif
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Docu=
+mentation/devicetree/bindings/vendor-prefixes.yaml
+index 2735be1a84709..cbf28f992b71e 100644
+=2D-- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -726,6 +726,8 @@ patternProperties:
+     description: Broadcom Corporation (formerly NetLogic Microsystems)
+   "^netron-dy,.*":
+     description: Netron DY
++  "^netronix,.*":
++    description: Netronix, Inc.
+   "^netxeon,.*":
+     description: Shenzhen Netxeon Technology CO., LTD
+   "^neweast,.*":
 =2D-
 2.29.2
 
