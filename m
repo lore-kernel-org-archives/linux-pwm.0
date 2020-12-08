@@ -2,396 +2,383 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEC0C2D0E4
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Dec 2020 02:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CD3C433FE
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Dec 2020 04:41:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80D2E23A58
-	for <linux-pwm@archiver.kernel.org>; Tue,  8 Dec 2020 02:13:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 28FE923A58
+	for <linux-pwm@archiver.kernel.org>; Tue,  8 Dec 2020 04:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727863AbgLHCNN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Dec 2020 21:13:13 -0500
-Received: from mout.gmx.net ([212.227.17.22]:47989 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727179AbgLHCNM (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 7 Dec 2020 21:13:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1607393448;
-        bh=3bUR5RteUD84SV4r5mV8wbesUNH5mHlrCIlD61Ezsb8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=GpOxOKazJK2drKKsnFN1u0m80/I6HOd+1jHzm4pGyCJnZj3/rUm9HxFssVb7W00HP
-         yK5ttwZCmP8bDEzR6Vy3g0yy32Juxm+xPo57GpZwhUY/k5Ikt6blNQU0k0yB1Vn+20
-         6dlQp4U6J4AV1szC67bJrYf2ymDc6ffuvcJyrhZY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.214.162]) by mail.gmx.com (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MxUnp-1jxxNR2RZ3-00xow7; Tue, 08
- Dec 2020 03:10:48 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        id S1726340AbgLHElF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Dec 2020 23:41:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbgLHElF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Dec 2020 23:41:05 -0500
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD01C061793
+        for <linux-pwm@vger.kernel.org>; Mon,  7 Dec 2020 20:40:25 -0800 (PST)
+Received: by mail-ot1-x343.google.com with SMTP id h18so10798509otq.12
+        for <linux-pwm@vger.kernel.org>; Mon, 07 Dec 2020 20:40:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lzzz0sMutIoUKIzQvdI67+hBnQWL6SlfqnfoJgLUlFA=;
+        b=kqpKQtKxze5fiE4No1wPcG5xifpJt+yNFjr9kVOtED0h2UKsrI2PlOLw2dZjfENx5H
+         E7vZecSp0wQzv0yi8zTkJq9kXfBKC7Xm/0rRskz3KaZ6O1KK82YAd1aSc0YNXWEcCXG0
+         NZyWo1+7l1Q+arh0BqLGjZxmoGe65tHk04WPUXHVqsO6RzDCTFTI6yQC44esolSfv5X5
+         SDCxRXcU9M5OfRobG8bxrDcIp8rbWcI0J59pF6nGimL3sEELu3+SuvMT8lVL2RQH6fDW
+         gbmdM4uo9YQb2JFN5mqzy6bISejuf+LLTbcGRx+xTSLD7Gdrkhh/nilknYBWQNtbCQoT
+         7giw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lzzz0sMutIoUKIzQvdI67+hBnQWL6SlfqnfoJgLUlFA=;
+        b=H6auXiS0tXpF5dnbNxigjrodj3KHcTKCHbUSt0+Fjk2FUvqPjN9Gtp1EsW3HAS97hM
+         XgYCjO+AlhO1L940bzism7f/ZpMTxVjr/XVa9SpzGtkuNYNPcmoEMMfZ5BEppbSK29Mq
+         M5MVUU+UXtyWmNKBcYDaNZcLYpqqAnV9GP9M7OUPiV+ftSPU6iwuG3cZ7oBHs+veWDk9
+         g9ZERdL1UuyLr3jnvITcMUmMySBpt4Bo1W1tCDLYTI0qLukyuSoPzVtIchmEVtxLbdFV
+         vDJ7QNmV663MAT/Ew18dvlL/Fxw9UOVQ07NMFFFiXHyACgTR9MwihrVzF2d8dTcOJIgb
+         gVHw==
+X-Gm-Message-State: AOAM531HREBwROOAMUBppgSww+yXgdix9MVH/E1IDKfzdMn20PhWq4uH
+        9PkOjeB4CZ9ALAfLae4oVgieMA==
+X-Google-Smtp-Source: ABdhPJwaCl9gy4RvQYgksIVVraGRUDlEsehe5DzfjHOyQ+m8sIrhXdmZt6l6FlEUG4ZAqsgEBV+poA==
+X-Received: by 2002:a9d:72c4:: with SMTP id d4mr15744997otk.149.1607402424524;
+        Mon, 07 Dec 2020 20:40:24 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id t203sm1188995oib.34.2020.12.07.20.40.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 20:40:23 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Mark Brown <broonie@kernel.org>, allen <allen.chen@ite.com.tw>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Josua Mayer <josua.mayer@jm0.eu>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v6 4/7] pwm: ntxec: Add driver for PWM function in Netronix EC
-Date:   Tue,  8 Dec 2020 02:09:57 +0100
-Message-Id: <20201208011000.3060239-5-j.neuschaefer@gmx.net>
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Doug Anderson <dianders@chromium.org>
+Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: [PATCH] drm/bridge: ti-sn65dsi86: Implement the pwm_chip
+Date:   Mon,  7 Dec 2020 22:40:22 -0600
+Message-Id: <20201208044022.972872-1-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201208011000.3060239-1-j.neuschaefer@gmx.net>
-References: <20201208011000.3060239-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:lWxKGJoo4ovv72PsBhWyfkQEz3XncuYbVKUdDerj9SxbRXx8cEs
- BRwsimzOE9o9dmHlfjjMFMzYB0r7qixz9FIKhD4v83QmpzWRfCOeKUlsjP+WUM/OAuT1QTt
- C+BHt0HbNEHJM65wvTipykCkfAG1FsNP3wq9hdE5GBRzaLtMotlNLW+nN0XntQc+zbtw6vP
- +BHQ9+l23JMbVeMfzk8ag==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MCDXIrndLd4=:SHndr/Vcwfw55Ey8iZdX6x
- gMhcVeCi9cQd0sRhhWhp9TYyXYAn9+rgSzMzqF09W/M0uLS/UeZIUc48lwioaiEKQerPR3JpX
- YDAJ/aPg30K06hz8Xy/laOoHVG+Fqt2nLfzmSOBM54+UnZFMRcQVkfdiT0WY+Yam2+w8RPzuT
- djFpbu2HAir/XoHIZeKrtIdzqxCjhYYAz9XxqCFY9BBeXVGtzluveWkTpp3Sv0p1WSjqort8W
- TeZSrDmGLDkY+l+xJUBhm0Xxhbg/uEGMGoZ5AdIr02eUOynQYO67PHijbe5kebLu0lc8znCyD
- pI8yIgcUSYnc8/vOkve3hbmnotFNaNamRnHZKnfkAe7MqhZHjU0V/dEidtNZZZHELvhgWPGbp
- PfSYNOIBT7zPQvIRFHTU9pEnkAZdFRpzYagKGhTQPmT1ng36beJA6v3PpItBTwCq7nCFgvqaG
- /IoqD+etNDP+M7OJ3tzER3wUmR++btoNj6YhJtk+Ek1mxNIaeZ3RrHwD9vMSsr00DArbYHiWB
- PTFz8dG4xQDRq1K00C0hyNhn0R8izVk9WjTAEWnsLI8zo0XsUt/a+egFaqGFWo1qoQCAjl4Cx
- Yp/eFXhvuGfKfI6H+8k9zOdyrtJb8vpgCP8lGF2nx6ayueh5xfOVyBl6eBJbg5bcmvfaiP6Ov
- JN18PyI5vWm820X5zIXj6j8fIKAiXEJArbuCzp37igD+KAD64v23qi9jFTFE7KbfjnoxUq083
- X3ApuezylOD6nTVTfMGOX7/U5sORgquFGIbGRxUijDEuPC2mKtTvetXd6UIDA7agflkubnpEr
- J7qKgdvEo/pOg5TOO0ZkC8CBNgRNJoyCyvoWK5jFQAMM8edL5v+O6GEpd7NUcOaHi1VRicrTl
- 3URRkx2be8sFjmbxKgVQ==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The Netronix EC provides a PWM output which is used for the backlight
-on some ebook readers. This patches adds a driver for the PWM output.
+The SN65DSI86 provides the ability to supply a PWM signal on GPIO 4,
+with the primary purpose of controlling the backlight of the attached
+panel. Add an implementation that exposes this using the standard PWM
+framework, to allow e.g. pwm-backlight to expose this to the user.
 
-The .get_state callback is not implemented, because the PWM state can't
-be read back from the hardware.
+Special thanks to Doug Anderson for suggestions related to the involved
+math.
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
-v6:
-- Move period / duty cycle setting code to a function
-- Rename pwmchip_to_priv to ntxec_pwm_from_chip
-- Set period and duty cycle only before enabling the output
-- Mention that duty=3D0, enable=3D1 is assumed not to happen
-- Interleave writes to the period and duty cycle registers, to minimize th=
-e
-  window of time that an inconsistent state is configured
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 202 ++++++++++++++++++++++++++
+ 1 file changed, 202 insertions(+)
 
-v5:
-- https://lore.kernel.org/lkml/20201201011513.1627028-5-j.neuschaefer@gmx.=
-net/
-- Avoid truncation of period and duty cycle to 32 bits
-- Make ntxec_pwm_ops const
-- Use regmap_multi_reg_write
-- Add comment about get_state to ntxec_pwm_ops
-- Add comments about non-atomicity of (period, duty cycle) update
-
-v4:
-- https://lore.kernel.org/lkml/20201122222739.1455132-5-j.neuschaefer@gmx.=
-net/
-- Document hardware/driver limitations
-- Only accept normal polarity
-- Fix a typo ("zone" -> "zero")
-- change MAX_PERIOD_NS to 0xffff * 125
-- Clamp period to the maximum rather than returning an error
-- Rename private struct pointer to priv
-- Rearrage control flow in _probe to save a few lines and a temporary vari=
-able
-- Add missing MODULE_ALIAS line
-- Spell out ODM
-
-v3:
-- https://lore.kernel.org/lkml/20200924192455.2484005-5-j.neuschaefer@gmx.=
-net/
-- Relicense as GPLv2 or later
-- Add email address to copyright line
-- Remove OF compatible string and don't include linux/of_device.h
-- Fix bogus ?: in return line
-- Don't use a comma after sentinels
-- Avoid ret |=3D ... pattern
-- Move 8-bit register conversion to ntxec.h
-
-v2:
-- https://lore.kernel.org/lkml/20200905133230.1014581-6-j.neuschaefer@gmx.=
-net/
-- Various grammar and style improvements, as suggested by Uwe Kleine-K=C3=
-=B6nig,
-  Lee Jones, and Alexandre Belloni
-- Switch to regmap
-- Prefix registers with NTXEC_REG_
-- Add help text to the Kconfig option
-- Use the .apply callback instead of the old API
-- Add a #define for the time base (125ns)
-- Don't change device state in .probe; this avoids multiple problems
-- Rework division and overflow check logic to perform divisions in 32 bits
-- Avoid setting duty cycle to zero, to work around a hardware quirk
-=2D--
- drivers/pwm/Kconfig     |   8 ++
- drivers/pwm/Makefile    |   1 +
- drivers/pwm/pwm-ntxec.c | 182 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 191 insertions(+)
- create mode 100644 drivers/pwm/pwm-ntxec.c
-
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 63be5362fd3a5..815f329ed5b46 100644
-=2D-- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -350,6 +350,14 @@ config PWM_MXS
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-mxs.
-
-+config PWM_NTXEC
-+	tristate "Netronix embedded controller PWM support"
-+	depends on MFD_NTXEC
-+	help
-+	  Say yes here if you want to support the PWM output of the embedded
-+	  controller found in certain e-book readers designed by the original
-+	  design manufacturer Netronix.
-+
- config PWM_OMAP_DMTIMER
- 	tristate "OMAP Dual-Mode Timer PWM support"
- 	depends on OF
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index cbdcd55d69eef..1deb29e6ae8e5 100644
-=2D-- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -32,6 +32,7 @@ obj-$(CONFIG_PWM_MESON)		+=3D pwm-meson.o
- obj-$(CONFIG_PWM_MEDIATEK)	+=3D pwm-mediatek.o
- obj-$(CONFIG_PWM_MTK_DISP)	+=3D pwm-mtk-disp.o
- obj-$(CONFIG_PWM_MXS)		+=3D pwm-mxs.o
-+obj-$(CONFIG_PWM_NTXEC)		+=3D pwm-ntxec.o
- obj-$(CONFIG_PWM_OMAP_DMTIMER)	+=3D pwm-omap-dmtimer.o
- obj-$(CONFIG_PWM_PCA9685)	+=3D pwm-pca9685.o
- obj-$(CONFIG_PWM_PXA)		+=3D pwm-pxa.o
-diff --git a/drivers/pwm/pwm-ntxec.c b/drivers/pwm/pwm-ntxec.c
-new file mode 100644
-index 0000000000000..1db30a6caa3ad
-=2D-- /dev/null
-+++ b/drivers/pwm/pwm-ntxec.c
-@@ -0,0 +1,182 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * The Netronix embedded controller is a microcontroller found in some
-+ * e-book readers designed by the original design manufacturer Netronix, =
-Inc.
-+ * It contains RTC, battery monitoring, system power management, and PWM
-+ * functionality.
-+ *
-+ * This driver implements PWM output.
-+ *
-+ * Copyright 2020 Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-+ *
-+ * Limitations:
-+ * - The get_state callback is not implemented, because the current state=
- of
-+ *   the PWM output can't be read back from the hardware.
-+ * - The hardware can only generate normal polarity output.
-+ * - The period and duty cycle can't be changed together in one atomic ac=
-tion.
-+ */
-+
-+#include <linux/mfd/ntxec.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index f27306c51e4d..43c0acba57ab 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -4,6 +4,7 @@
+  * datasheet: https://www.ti.com/lit/ds/symlink/sn65dsi86.pdf
+  */
+ 
++#include <linux/atomic.h>
+ #include <linux/bits.h>
+ #include <linux/clk.h>
+ #include <linux/debugfs.h>
+@@ -14,6 +15,7 @@
+ #include <linux/module.h>
+ #include <linux/of_graph.h>
+ #include <linux/pm_runtime.h>
 +#include <linux/pwm.h>
-+#include <linux/regmap.h>
-+#include <linux/types.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ 
+@@ -89,6 +91,11 @@
+ #define SN_ML_TX_MODE_REG			0x96
+ #define  ML_TX_MAIN_LINK_OFF			0
+ #define  ML_TX_NORMAL_MODE			BIT(0)
++#define SN_PWM_PRE_DIV_REG			0xA0
++#define SN_BACKLIGHT_SCALE_REG			0xA1
++#define  BACKLIGHT_SCALE_MAX			0xFFFF
++#define SN_BACKLIGHT_REG			0xA3
++#define SN_PWM_EN_INV_REG			0xA5
+ #define SN_AUX_CMD_STATUS_REG			0xF4
+ #define  AUX_IRQ_STATUS_AUX_RPLY_TOUT		BIT(3)
+ #define  AUX_IRQ_STATUS_AUX_SHORT		BIT(5)
+@@ -111,6 +118,8 @@
+ 
+ #define SN_LINK_TRAINING_TRIES		10
+ 
++#define SN_PWM_GPIO			3
 +
-+struct ntxec_pwm {
-+	struct device *dev;
-+	struct ntxec *ec;
-+	struct pwm_chip chip;
-+};
+ /**
+  * struct ti_sn_bridge - Platform data for ti-sn65dsi86 driver.
+  * @dev:          Pointer to our device.
+@@ -162,6 +171,12 @@ struct ti_sn_bridge {
+ 	struct gpio_chip		gchip;
+ 	DECLARE_BITMAP(gchip_output, SN_NUM_GPIOS);
+ #endif
++#if defined(CONFIG_PWM)
++	struct pwm_chip			pchip;
++	bool				pwm_enabled;
++	unsigned int			pwm_refclk;
++	atomic_t			pwm_pin_busy;
++#endif
+ };
+ 
+ static const struct regmap_range ti_sn_bridge_volatile_ranges[] = {
+@@ -499,6 +514,14 @@ static void ti_sn_bridge_set_refclk_freq(struct ti_sn_bridge *pdata)
+ 
+ 	regmap_update_bits(pdata->regmap, SN_DPPLL_SRC_REG, REFCLK_FREQ_MASK,
+ 			   REFCLK_FREQ(i));
 +
-+static struct ntxec_pwm *ntxec_pwm_from_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct ntxec_pwm, chip);
-+}
-+
-+#define NTXEC_REG_AUTO_OFF_HI	0xa1
-+#define NTXEC_REG_AUTO_OFF_LO	0xa2
-+#define NTXEC_REG_ENABLE	0xa3
-+#define NTXEC_REG_PERIOD_LOW	0xa4
-+#define NTXEC_REG_PERIOD_HIGH	0xa5
-+#define NTXEC_REG_DUTY_LOW	0xa6
-+#define NTXEC_REG_DUTY_HIGH	0xa7
-+
-+/*
-+ * The time base used in the EC is 8MHz, or 125ns. Period and duty cycle =
-are
-+ * measured in this unit.
-+ */
-+#define TIME_BASE_NS 125
-+
-+/*
-+ * The maximum input value (in nanoseconds) is determined by the time bas=
-e and
-+ * the range of the hardware registers that hold the converted value.
-+ * It fits into 32 bits, so we can do our calculations in 32 bits as well=
-.
-+ */
-+#define MAX_PERIOD_NS (TIME_BASE_NS * 0xffff)
-+
-+static int ntxec_pwm_set_raw_period_and_duty_cycle(struct pwm_chip *chip,
-+						   int period, int duty)
-+{
-+	struct ntxec_pwm *priv =3D ntxec_pwm_from_chip(chip);
-+
++#if defined(CONFIG_PWM)
 +	/*
-+	 * Changes to the period and duty cycle take effect as soon as the
-+	 * corresponding low byte is written, so the hardware may be configured
-+	 * to an inconsistent state after the period is written and before the
-+	 * duty cycle is fully written. If, in such a case, the old duty cycle
-+	 * is longer than the new period, the EC may output 100% for a moment.
-+	 *
-+	 * To minimize the time between the changes to period and duty cycle
-+	 * taking effect, the writes are interleaved.
++	 * The PWM refclk is based on the value written to SN_DPPLL_SRC_REG,
++	 * regardless of its actual sourcing.
 +	 */
-+
-+	struct reg_sequence regs[] =3D {
-+		{ NTXEC_REG_PERIOD_HIGH, ntxec_reg8(period >> 8) },
-+		{ NTXEC_REG_DUTY_HIGH, ntxec_reg8(duty >> 8) },
-+		{ NTXEC_REG_PERIOD_LOW, ntxec_reg8(period) },
-+		{ NTXEC_REG_DUTY_LOW, ntxec_reg8(duty) },
-+	};
-+
-+	return regmap_multi_reg_write(priv->ec->regmap, regs, ARRAY_SIZE(regs));
++	pdata->pwm_refclk = ti_sn_bridge_refclk_lut[i];
++#endif
+ }
+ 
+ static void ti_sn_bridge_set_dsi_rate(struct ti_sn_bridge *pdata)
+@@ -981,6 +1004,161 @@ static int ti_sn_bridge_parse_dsi_host(struct ti_sn_bridge *pdata)
+ 	return 0;
+ }
+ 
++#if defined(CONFIG_PWM)
++static int ti_sn_pwm_pin_request(struct ti_sn_bridge *pdata)
++{
++	return atomic_xchg(&pdata->pwm_pin_busy, 1) ? -EBUSY : 0;
 +}
 +
-+static int ntxec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm_=
-dev,
++static void ti_sn_pwm_pin_release(struct ti_sn_bridge *pdata)
++{
++	atomic_set(&pdata->pwm_pin_busy, 0);
++}
++
++static struct ti_sn_bridge *
++pwm_chip_to_ti_sn_bridge(struct pwm_chip *chip)
++{
++	return container_of(chip, struct ti_sn_bridge, pchip);
++}
++
++static int ti_sn_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct ti_sn_bridge *pdata = pwm_chip_to_ti_sn_bridge(chip);
++
++	return ti_sn_pwm_pin_request(pdata);
++}
++
++static void ti_sn_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct ti_sn_bridge *pdata = pwm_chip_to_ti_sn_bridge(chip);
++
++	ti_sn_pwm_pin_release(pdata);
++}
++
++static int ti_sn_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 +			   const struct pwm_state *state)
 +{
-+	struct ntxec_pwm *priv =3D ntxec_pwm_from_chip(chip);
-+	unsigned int period, duty;
-+	int res;
++	struct ti_sn_bridge *pdata = pwm_chip_to_ti_sn_bridge(chip);
++	unsigned int pwm_en_inv;
++	unsigned int backlight;
++	unsigned int pwm_freq;
++	unsigned int pre_div;
++	unsigned int scale;
++	int ret;
 +
-+	if (state->polarity !=3D PWM_POLARITY_NORMAL)
-+		return -EINVAL;
++	if (!pdata->pwm_enabled) {
++		ret = pm_runtime_get_sync(pdata->dev);
++		if (ret < 0)
++			return ret;
 +
-+	period =3D min_t(u64, state->period, MAX_PERIOD_NS);
-+	duty   =3D min_t(u64, state->duty_cycle, period);
-+
-+	period /=3D TIME_BASE_NS;
-+	duty   /=3D TIME_BASE_NS;
-+
-+	/*
-+	 * Writing a duty cycle of zero puts the device into a state where
-+	 * writing a higher duty cycle doesn't result in the brightness that it
-+	 * usually results in. This can be fixed by cycling the ENABLE register.
-+	 *
-+	 * As a workaround, write ENABLE=3D0 when the duty cycle is zero.
-+	 * The case that something has previously set the duty cycle to zero
-+	 * but ENABLE=3D1, is not handled.
-+	 */
-+	if (state->enabled && duty !=3D 0) {
-+		res =3D ntxec_pwm_set_raw_period_and_duty_cycle(chip, period, duty);
-+		if (res)
-+			return res;
-+
-+		res =3D regmap_write(priv->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(1))=
-;
-+		if (res)
-+			return res;
-+
-+		/* Disable the auto-off timer */
-+		res =3D regmap_write(priv->ec->regmap, NTXEC_REG_AUTO_OFF_HI, ntxec_reg=
-8(0xff));
-+		if (res)
-+			return res;
-+
-+		return regmap_write(priv->ec->regmap, NTXEC_REG_AUTO_OFF_LO, ntxec_reg8=
-(0xff));
-+	} else {
-+		return regmap_write(priv->ec->regmap, NTXEC_REG_ENABLE, ntxec_reg8(0));
++		ret = regmap_update_bits(pdata->regmap, SN_GPIO_CTRL_REG,
++					 SN_GPIO_MUX_MASK << (2 * SN_PWM_GPIO),
++					 SN_GPIO_MUX_SPECIAL << (2 * SN_PWM_GPIO));
++		if (ret) {
++			dev_err(pdata->dev, "failed to mux in PWM function\n");
++			goto out;
++		}
 +	}
++
++	if (state->enabled) {
++		/*
++		 * Per the datasheet the PWM frequency is given by:
++		 *
++		 * PWM_FREQ = REFCLK_FREQ / (PWM_PRE_DIV * BACKLIGHT_SCALE + 1)
++		 *
++		 * In order to find the PWM_FREQ that best suits the requested
++		 * state->period, the PWM_PRE_DIV is calculated with the
++		 * maximum possible number of steps (BACKLIGHT_SCALE_MAX). The
++		 * actual BACKLIGHT_SCALE is then adjusted down to match the
++		 * requested period.
++		 *
++		 * The BACKLIGHT value is then calculated against the
++		 * BACKLIGHT_SCALE, based on the requested duty_cycle and
++		 * period.
++		 */
++		pwm_freq = NSEC_PER_SEC / state->period;
++		pre_div = DIV_ROUND_UP(pdata->pwm_refclk / pwm_freq - 1, BACKLIGHT_SCALE_MAX);
++		scale = (pdata->pwm_refclk / pwm_freq - 1) / pre_div;
++
++		backlight = scale * state->duty_cycle / state->period;
++
++		ret = regmap_write(pdata->regmap, SN_PWM_PRE_DIV_REG, pre_div);
++		if (ret) {
++			dev_err(pdata->dev, "failed to update PWM_PRE_DIV\n");
++			goto out;
++		}
++
++		ti_sn_bridge_write_u16(pdata, SN_BACKLIGHT_SCALE_REG, scale);
++		ti_sn_bridge_write_u16(pdata, SN_BACKLIGHT_REG, backlight);
++	}
++
++	pwm_en_inv = FIELD_PREP(BIT(1), !!state->enabled) |
++		     FIELD_PREP(BIT(0), state->polarity == PWM_POLARITY_INVERSED);
++	ret = regmap_write(pdata->regmap, SN_PWM_EN_INV_REG, pwm_en_inv);
++	if (ret) {
++		dev_err(pdata->dev, "failed to update PWM_EN/PWM_INV\n");
++		goto out;
++	}
++
++	pdata->pwm_enabled = !!state->enabled;
++out:
++
++	if (!pdata->pwm_enabled)
++		pm_runtime_put_sync(pdata->dev);
++
++	return ret;
 +}
 +
-+static const struct pwm_ops ntxec_pwm_ops =3D {
-+	.owner =3D THIS_MODULE,
-+	.apply =3D ntxec_pwm_apply,
-+	/*
-+	 * No .get_state callback, because the current state cannot be read
-+	 * back from the hardware.
-+	 */
++static const struct pwm_ops ti_sn_pwm_ops = {
++	.request = ti_sn_pwm_request,
++	.free = ti_sn_pwm_free,
++	.apply = ti_sn_pwm_apply,
++	.owner = THIS_MODULE,
 +};
 +
-+static int ntxec_pwm_probe(struct platform_device *pdev)
++static struct pwm_device *ti_sn_pwm_of_xlate(struct pwm_chip *pc,
++					     const struct of_phandle_args *args)
 +{
-+	struct ntxec *ec =3D dev_get_drvdata(pdev->dev.parent);
-+	struct ntxec_pwm *priv;
-+	struct pwm_chip *chip;
++	struct pwm_device *pwm;
 +
-+	priv =3D devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
++	if (args->args_count != 1)
++		return ERR_PTR(-EINVAL);
 +
-+	priv->ec =3D ec;
-+	priv->dev =3D &pdev->dev;
++	pwm = pwm_request_from_chip(pc, 0, NULL);
++	if (IS_ERR(pwm))
++		return pwm;
 +
-+	platform_set_drvdata(pdev, priv);
++	pwm->args.period = args->args[0];
 +
-+	chip =3D &priv->chip;
-+	chip->dev =3D &pdev->dev;
-+	chip->ops =3D &ntxec_pwm_ops;
-+	chip->base =3D -1;
-+	chip->npwm =3D 1;
-+
-+	return pwmchip_add(chip);
++	return pwm;
 +}
 +
-+static int ntxec_pwm_remove(struct platform_device *pdev)
++static int ti_sn_setup_pwmchip(struct ti_sn_bridge *pdata)
 +{
-+	struct ntxec_pwm *priv =3D platform_get_drvdata(pdev);
-+	struct pwm_chip *chip =3D &priv->chip;
++	pdata->pchip.dev = pdata->dev;
++	pdata->pchip.ops = &ti_sn_pwm_ops;
++	pdata->pchip.base = -1;
++	pdata->pchip.npwm = 1;
++	pdata->pchip.of_xlate = ti_sn_pwm_of_xlate;
++	pdata->pchip.of_pwm_n_cells = 1;
 +
-+	return pwmchip_remove(chip);
++	return pwmchip_add(&pdata->pchip);
 +}
 +
-+static struct platform_driver ntxec_pwm_driver =3D {
-+	.driver =3D {
-+		.name =3D "ntxec-pwm",
-+	},
-+	.probe =3D ntxec_pwm_probe,
-+	.remove =3D ntxec_pwm_remove,
-+};
-+module_platform_driver(ntxec_pwm_driver);
++static void ti_sn_remove_pwmchip(struct ti_sn_bridge *pdata)
++{
++	pwmchip_remove(&pdata->pchip);
 +
-+MODULE_AUTHOR("Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>");
-+MODULE_DESCRIPTION("PWM driver for Netronix EC");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:ntxec-pwm");
-=2D-
++	if (pdata->pwm_enabled)
++		pm_runtime_put_sync(pdata->dev);
++}
++#else
++static int ti_sn_pwm_pin_request(struct ti_sn_bridge *pdata) { return 0; }
++static void ti_sn_pwm_pin_release(struct ti_sn_bridge *pdata) {}
++static int ti_sn_setup_pwmchip(struct ti_sn_bridge *pdata) { return 0; }
++static void ti_sn_remove_pwmchip(struct ti_sn_bridge *pdata) {}
++#endif
++
+ #if defined(CONFIG_OF_GPIO)
+ 
+ static int tn_sn_bridge_of_xlate(struct gpio_chip *chip,
+@@ -1113,10 +1291,25 @@ static int ti_sn_bridge_gpio_direction_output(struct gpio_chip *chip,
+ 	return ret;
+ }
+ 
++static int ti_sn_bridge_gpio_request(struct gpio_chip *chip, unsigned int offset)
++{
++	struct ti_sn_bridge *pdata = gpiochip_get_data(chip);
++
++	if (offset == SN_PWM_GPIO)
++		return ti_sn_pwm_pin_request(pdata);
++
++	return 0;
++}
++
+ static void ti_sn_bridge_gpio_free(struct gpio_chip *chip, unsigned int offset)
+ {
++	struct ti_sn_bridge *pdata = gpiochip_get_data(chip);
++
+ 	/* We won't keep pm_runtime if we're input, so switch there on free */
+ 	ti_sn_bridge_gpio_direction_input(chip, offset);
++
++	if (offset == SN_PWM_GPIO)
++		ti_sn_pwm_pin_release(pdata);
+ }
+ 
+ static const char * const ti_sn_bridge_gpio_names[SN_NUM_GPIOS] = {
+@@ -1136,6 +1329,7 @@ static int ti_sn_setup_gpio_controller(struct ti_sn_bridge *pdata)
+ 	pdata->gchip.owner = THIS_MODULE;
+ 	pdata->gchip.of_xlate = tn_sn_bridge_of_xlate;
+ 	pdata->gchip.of_gpio_n_cells = 2;
++	pdata->gchip.request = ti_sn_bridge_gpio_request;
+ 	pdata->gchip.free = ti_sn_bridge_gpio_free;
+ 	pdata->gchip.get_direction = ti_sn_bridge_gpio_get_direction;
+ 	pdata->gchip.direction_input = ti_sn_bridge_gpio_direction_input;
+@@ -1282,6 +1476,12 @@ static int ti_sn_bridge_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
++	ret = ti_sn_setup_pwmchip(pdata);
++	if (ret)  {
++		pm_runtime_disable(pdata->dev);
++		return ret;
++	}
++
+ 	i2c_set_clientdata(client, pdata);
+ 
+ 	pdata->aux.name = "ti-sn65dsi86-aux";
+@@ -1320,6 +1520,8 @@ static int ti_sn_bridge_remove(struct i2c_client *client)
+ 
+ 	drm_bridge_remove(&pdata->bridge);
+ 
++	ti_sn_remove_pwmchip(pdata);
++
+ 	return 0;
+ }
+ 
+-- 
 2.29.2
 
