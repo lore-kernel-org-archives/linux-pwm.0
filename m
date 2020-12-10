@@ -2,222 +2,103 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6450BC0018C
-	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 12:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB161C433FE
+	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 12:59:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2E12723380
-	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 12:17:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A54BA23D50
+	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 12:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728921AbgLJMRV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 10 Dec 2020 07:17:21 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:58280 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388199AbgLJMRE (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 10 Dec 2020 07:17:04 -0500
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id BEB1F44013A;
-        Thu, 10 Dec 2020 14:16:11 +0200 (IST)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Baruch Siach <baruch@tkos.co.il>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
-        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH v4 1/3] gpio: mvebu: add pwm support for Armada 8K/7K
-Date:   Thu, 10 Dec 2020 14:15:58 +0200
-Message-Id: <61a022834dce86eefa3144e696078946f332bdfe.1607601615.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <cover.1607601615.git.baruch@tkos.co.il>
-References: <cover.1607601615.git.baruch@tkos.co.il>
+        id S2388325AbgLJM7A (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 10 Dec 2020 07:59:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732630AbgLJM6u (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Dec 2020 07:58:50 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC05C0613CF
+        for <linux-pwm@vger.kernel.org>; Thu, 10 Dec 2020 04:58:09 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1knLWE-00063I-Pt; Thu, 10 Dec 2020 13:58:02 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1knLWD-0004ic-4E; Thu, 10 Dec 2020 13:58:01 +0100
+Date:   Thu, 10 Dec 2020 13:58:00 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
+        nsaenzjulienne@suse.de, f.fainelli@gmail.com, rjui@broadcom.com,
+        sean@mess.org, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] pwm: bcm2835: Support apply function for atomic
+ configuration
+Message-ID: <20201210125800.gj4f4rioq7df4hbl@pengutronix.de>
+References: <1607546905-20549-1-git-send-email-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6tvo3blcdefqpmbe"
+Content-Disposition: inline
+In-Reply-To: <1607546905-20549-1-git-send-email-LinoSanfilippo@gmx.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Use the marvell,pwm-offset DT property to store the location of PWM
-signal duration registers.
 
-Since we have more than two GPIO chips per system, we can't use the
-alias id to differentiate between them. Use the offset value for that.
+--6tvo3blcdefqpmbe
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
-v3: Split mvebu_pwm_probe() move out of this patch into a separate fix
-    (Andrew Lunn)
----
- drivers/gpio/gpio-mvebu.c | 101 +++++++++++++++++++++++++-------------
- 1 file changed, 68 insertions(+), 33 deletions(-)
+On Wed, Dec 09, 2020 at 09:48:25PM +0100, Lino Sanfilippo wrote:
+> Use the newer .apply function of pwm_ops instead of .config, .enable,
+> .disable and .set_polarity. This guarantees atomic changes of the pwm
+> controller configuration. It also reduces the size of the driver.
+>=20
+> Since now period is a 64 bit value, add an extra check to reject periods
+> that exceed the possible max value for the 32 bit register.
+>=20
+> This has been tested on a Raspberry PI 4.
+>=20
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 672681a976f5..7019ad79ae37 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -70,7 +70,12 @@
-  */
- #define PWM_BLINK_ON_DURATION_OFF	0x0
- #define PWM_BLINK_OFF_DURATION_OFF	0x4
-+#define PWM_BLINK_COUNTER_B_OFF		0x8
- 
-+/* Armada 8k variant gpios register offsets */
-+#define AP80X_GPIO0_OFF_A8K		0x1040
-+#define CP11X_GPIO0_OFF_A8K		0x100
-+#define CP11X_GPIO1_OFF_A8K		0x140
- 
- /* The MV78200 has per-CPU registers for edge mask and level mask */
- #define GPIO_EDGE_MASK_MV78200_OFF(cpu)	  ((cpu) ? 0x30 : 0x18)
-@@ -93,6 +98,7 @@
- 
- struct mvebu_pwm {
- 	struct regmap		*regs;
-+	u32			 offset;
- 	unsigned long		 clk_rate;
- 	struct gpio_desc	*gpiod;
- 	struct pwm_chip		 chip;
-@@ -283,12 +289,12 @@ mvebu_gpio_write_level_mask(struct mvebu_gpio_chip *mvchip, u32 val)
-  */
- static unsigned int mvebu_pwmreg_blink_on_duration(struct mvebu_pwm *mvpwm)
- {
--	return PWM_BLINK_ON_DURATION_OFF;
-+	return mvpwm->offset + PWM_BLINK_ON_DURATION_OFF;
- }
- 
- static unsigned int mvebu_pwmreg_blink_off_duration(struct mvebu_pwm *mvpwm)
- {
--	return PWM_BLINK_OFF_DURATION_OFF;
-+	return mvpwm->offset + PWM_BLINK_OFF_DURATION_OFF;
- }
- 
- /*
-@@ -781,51 +787,80 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
- 	struct device *dev = &pdev->dev;
- 	struct mvebu_pwm *mvpwm;
- 	void __iomem *base;
-+	u32 offset;
- 	u32 set;
- 
--	if (!of_device_is_compatible(mvchip->chip.of_node,
--				     "marvell,armada-370-gpio"))
--		return 0;
--
--	/*
--	 * There are only two sets of PWM configuration registers for
--	 * all the GPIO lines on those SoCs which this driver reserves
--	 * for the first two GPIO chips. So if the resource is missing
--	 * we can't treat it as an error.
--	 */
--	if (!platform_get_resource_byname(pdev, IORESOURCE_MEM, "pwm"))
-+	if (of_device_is_compatible(mvchip->chip.of_node,
-+				    "marvell,armada-370-gpio")) {
-+		/*
-+		 * There are only two sets of PWM configuration registers for
-+		 * all the GPIO lines on those SoCs which this driver reserves
-+		 * for the first two GPIO chips. So if the resource is missing
-+		 * we can't treat it as an error.
-+		 */
-+		if (!platform_get_resource_byname(pdev, IORESOURCE_MEM, "pwm"))
-+			return 0;
-+		offset = 0;
-+	} else if (mvchip->soc_variant == MVEBU_GPIO_SOC_VARIANT_A8K) {
-+		int ret = of_property_read_u32(dev->of_node,
-+					       "marvell,pwm-offset", &offset);
-+		if (ret < 0)
-+			return 0;
-+	} else {
- 		return 0;
-+	}
- 
- 	if (IS_ERR(mvchip->clk))
- 		return PTR_ERR(mvchip->clk);
- 
--	/*
--	 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
--	 * with id 1. Don't allow further GPIO chips to be used for PWM.
--	 */
--	if (id == 0)
--		set = 0;
--	else if (id == 1)
--		set = U32_MAX;
--	else
--		return -EINVAL;
--	regmap_write(mvchip->regs,
--		     GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset, set);
--
- 	mvpwm = devm_kzalloc(dev, sizeof(struct mvebu_pwm), GFP_KERNEL);
- 	if (!mvpwm)
- 		return -ENOMEM;
- 	mvchip->mvpwm = mvpwm;
- 	mvpwm->mvchip = mvchip;
-+	mvpwm->offset = offset;
-+
-+	if (mvchip->soc_variant == MVEBU_GPIO_SOC_VARIANT_A8K) {
-+		mvpwm->regs = mvchip->regs;
-+
-+		switch (mvchip->offset) {
-+		case AP80X_GPIO0_OFF_A8K:
-+		case CP11X_GPIO0_OFF_A8K:
-+			/* Blink counter A */
-+			set = 0;
-+			break;
-+		case CP11X_GPIO1_OFF_A8K:
-+			/* Blink counter B */
-+			set = U32_MAX;
-+			mvpwm->offset += PWM_BLINK_COUNTER_B_OFF;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+	} else {
-+		base = devm_platform_ioremap_resource_byname(pdev, "pwm");
-+		if (IS_ERR(base))
-+			return PTR_ERR(base);
- 
--	base = devm_platform_ioremap_resource_byname(pdev, "pwm");
--	if (IS_ERR(base))
--		return PTR_ERR(base);
-+		mvpwm->regs = devm_regmap_init_mmio(&pdev->dev, base,
-+						    &mvebu_gpio_regmap_config);
-+		if (IS_ERR(mvpwm->regs))
-+			return PTR_ERR(mvpwm->regs);
- 
--	mvpwm->regs = devm_regmap_init_mmio(&pdev->dev, base,
--					    &mvebu_gpio_regmap_config);
--	if (IS_ERR(mvpwm->regs))
--		return PTR_ERR(mvpwm->regs);
-+		/*
-+		 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
-+		 * with id 1. Don't allow further GPIO chips to be used for PWM.
-+		 */
-+		if (id == 0)
-+			set = 0;
-+		else if (id == 1)
-+			set = U32_MAX;
-+		else
-+			return -EINVAL;
-+	}
-+
-+	regmap_write(mvchip->regs,
-+		     GPIO_BLINK_CNT_SELECT_OFF + mvchip->offset, set);
- 
- 	mvpwm->clk_rate = clk_get_rate(mvchip->clk);
- 	if (!mvpwm->clk_rate) {
--- 
-2.29.2
+I replied to v3 earlier, this was supposed to go to this v4 of course.
+Still had v3 open for comparing the two. So to ensure it is picked up:
 
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--6tvo3blcdefqpmbe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/SG1UACgkQwfwUeK3K
+7AlHQQf/Vw6TeRvt4v1Bz3mRlclNw2+/Tcu0VHY8orK2+FYUzUZ4c1ywNmdycxsQ
+9FSssC5fW3kLq1rTZnXe0m2dcvj1whY6PIprRo+BSrS5gmF7uc5py5NjstFxA0Z6
+aSgMu/L6irP/g8dQUFvzMzSMEhCmqSVqOKGwFGKsMxGbzbp5J6peztQJp0/CxtQo
+1G2GGbVKtSnGQsAgO3x3ePXrUj11J9UHtTOSJFDIwIp/DWjm1zatDK4yEsjI2NU1
+tdpv2fFpUe/CUfpNqLW31ZJrez8QkJic1LGQ4b/FVbD3LOUQEw7zjDFpGr7XQ5un
+xnlbU/YWSJmZ7I77pfLgiZzu2w2iOg==
+=DB1h
+-----END PGP SIGNATURE-----
+
+--6tvo3blcdefqpmbe--
