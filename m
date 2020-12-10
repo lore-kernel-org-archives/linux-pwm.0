@@ -2,108 +2,245 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283ACC1B0D8
-	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 04:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF36DC433FE
+	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 09:02:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0CCB023BC7
-	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 04:08:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A4C5A22D50
+	for <linux-pwm@archiver.kernel.org>; Thu, 10 Dec 2020 09:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731718AbgLJD5h (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 9 Dec 2020 22:57:37 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:35946 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730364AbgLJD53 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Dec 2020 22:57:29 -0500
-Received: by mail-ot1-f68.google.com with SMTP id y24so3669747otk.3;
-        Wed, 09 Dec 2020 19:57:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XtgXKp72oglbFgMKvdSmrdvqmjrEw3HulhGPrudWit8=;
-        b=IWbk8i5VhOBGLVYq5OhDtkoiJMO+tJsNfzYVyCmzIb6BztyFYZJb16aAaaClzVHXSW
-         FK8Ncb+5mZbBW+qz8B0yzTivpw+6aCsJGFnn1VsCfoNjYImRXnbSHQqbQlzeaY2D8nM6
-         fRymueUW0bmoASbk3UdyvbOgQyAASHRpPlciWcpf2hUXMlsVau3e+F8EG80kqy44tA6r
-         +rj4FwtjwQI3iB7KzrqlwMylbNodXmgRReH+7NQ0Lw0A83Y/BsHHQ3qTdJoSqroXBhcI
-         sPBP6cB639PW4Tm7abtoMVomliY5ZNsFoEIdPeNAFws5TgqmVTNBdy/aYqNFA+rBifwH
-         mYNw==
-X-Gm-Message-State: AOAM530XuPRUu8LuK8T47yi5KAbpcz/k3y4a6Q0G9g+U04q9Q2NNCX5B
-        nJH7skkCrJSOwnCK22z/Zg==
-X-Google-Smtp-Source: ABdhPJwF+nB/RMncluIRA2teA/Ygf1vGV5BQp4zYvTL+YR0/LAFf2ZKZWtKezQ2tAQo45UiQ9rIG5g==
-X-Received: by 2002:a05:6830:1d0:: with SMTP id r16mr4509553ota.54.1607572607747;
-        Wed, 09 Dec 2020 19:56:47 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id q18sm763803ood.35.2020.12.09.19.56.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 19:56:46 -0800 (PST)
-Received: (nullmailer pid 1634187 invoked by uid 1000);
-        Thu, 10 Dec 2020 03:56:45 -0000
-Date:   Wed, 9 Dec 2020 21:56:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Yash Shah <yash.shah@sifive.com>
-Cc:     linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
-        broonie@kernel.org, gregkh@linuxfoundation.org,
-        aou@eecs.berkeley.edu, lee.jones@linaro.org,
-        u.kleine-koenig@pengutronix.de, thierry.reding@gmail.com,
-        andrew@lunn.ch, peter@korsgaard.com, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, bgolaszewski@baylibre.com,
-        linus.walleij@linaro.org
-Subject: Re: [PATCH v2 3/9] dt-bindings: pwm: Update DT binding docs to
- support SiFive FU740 SoC
-Message-ID: <20201210035645.GA1633151@robh.at.kernel.org>
-References: <1607403341-57214-1-git-send-email-yash.shah@sifive.com>
- <1607403341-57214-4-git-send-email-yash.shah@sifive.com>
+        id S1726278AbgLJJCJ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 10 Dec 2020 04:02:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbgLJJCI (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Dec 2020 04:02:08 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E5AC0613CF
+        for <linux-pwm@vger.kernel.org>; Thu, 10 Dec 2020 01:01:27 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1knHpF-0000qm-E3; Thu, 10 Dec 2020 10:01:25 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1knHpE-00078H-D5; Thu, 10 Dec 2020 10:01:24 +0100
+Date:   Thu, 10 Dec 2020 10:01:24 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Clemens Gruber <clemens.gruber@pqgruber.com>,
+        linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH v4 1/4] pwm: pca9685: Switch to atomic API
+Message-ID: <20201210090124.rfswkrcttsg5gszp@pengutronix.de>
+References: <20201207193629.493241-1-clemens.gruber@pqgruber.com>
+ <20201207220025.42b6g76wq7ph5nvb@pengutronix.de>
+ <X863KNo0IaekkU7q@workstation.tuxnet>
+ <20201208091033.bxzrlad7mjbe3dsp@pengutronix.de>
+ <X89RgpTb3sBBI++w@workstation.tuxnet>
+ <X8+DI7ZN7mXtsxv9@ulmo>
+ <CAGngYiXgVbEXj-yR=DTeA4pO-N3=WhiHjQhknFsbfXBeD_yRbw@mail.gmail.com>
+ <X8+waLH58pOaMI06@ulmo>
+ <20201208182637.hm5uzuw5ueelo26k@pengutronix.de>
+ <X9EDGHySNYb7CxcW@ulmo>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jvnay2irizxwzhrs"
 Content-Disposition: inline
-In-Reply-To: <1607403341-57214-4-git-send-email-yash.shah@sifive.com>
+In-Reply-To: <X9EDGHySNYb7CxcW@ulmo>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, Dec 08, 2020 at 10:25:35AM +0530, Yash Shah wrote:
-> Add new compatible strings to the DT binding documents to support SiFive
-> FU740-C000.
-> 
-> Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-sifive.yaml | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml b/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
-> index 5ac2527..84e6691 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
-> @@ -25,12 +25,15 @@ description:
->  properties:
->    compatible:
->      items:
-> -      - const: sifive,fu540-c000-pwm
-> +      - enum:
-> +          - sifive,fu540-c000-pwm
-> +          - sifive,fu740-c000-pwm
->        - const: sifive,pwm0
->      description:
->        Should be "sifive,<chip>-pwm" and "sifive,pwm<version>". Supported
-> -      compatible strings are "sifive,fu540-c000-pwm" for the SiFive PWM v0
-> -      as integrated onto the SiFive FU540 chip, and "sifive,pwm0" for the
-> +      compatible strings are "sifive,fu540-c000-pwm" and
-> +      "sifive,fu740-c000-pwm" for the SiFive PWM v0 as integrated onto the
-> +      SiFive FU540 and FU740 chip respectively, and "sifive,pwm0" for the
 
-Better if you reword this so we don't have to update it for every new 
-compatible.
+--jvnay2irizxwzhrs
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->        SiFive PWM v0 IP block with no chip integration tweaks.
->        Please refer to sifive-blocks-ip-versioning.txt for details.
->  
-> -- 
-> 2.7.4
-> 
+Hello Thierry,
+
+On Wed, Dec 09, 2020 at 06:02:16PM +0100, Thierry Reding wrote:
+> On Tue, Dec 08, 2020 at 07:26:37PM +0100, Uwe Kleine-K=F6nig wrote:
+> > Hello Thierry, hello Sven,
+> >=20
+> > On Tue, Dec 08, 2020 at 05:57:12PM +0100, Thierry Reding wrote:
+> > > On Tue, Dec 08, 2020 at 09:44:42AM -0500, Sven Van Asbroeck wrote:
+> > > > Which brings us to an even trickier question: what happens if a pwm=
+ output
+> > > > is set to 0% or 100% duty cycle? In that case, it'll behave like a =
+gpio output.
+> > > > So when it's enabled, it does not use the prescaler.
+> > > > But! what happens if we now set that output to a different duty cyc=
+le?
+> > > >=20
+> > > > Example:
+> > > > 1. output 1: set pwm mode (enabled=3Dtrue, duty_cycle=3D50%,  perio=
+d=3D1/200Hz)
+> > > > 2. output 2: set pwm mode (enabled=3Dtrue, duty_cycle=3D100%, perio=
+d=3D1/400Hz)
+> > > >   fail? no, because it's not actually using the period (it's full o=
+n)
+> > > > 3. output 2: set pwm mode (enabled=3Dtrue, duty_cycle=3D100%, perio=
+d=3D1/200Hz)
+> > > >   fail? no, because it's not actually using the period (it's full o=
+n)
+> > > > 4. output 1: set pwm mode (enabled=3Dtrue, duty_cycle=3D50%,  perio=
+d=3D1/400Hz)
+> > > >   fail? no, because only output 1 is using the prescaler
+> > > > 5. output 2: set pwm mode (enabled=3Dtrue, duty_cycle=3D50%, period=
+=3D1/400Hz)
+> > > >   fail? no, because output 2 is not changing the prescaler
+> > > > 6. output 2: set pwm mode (enabled=3Dtrue, duty_cycle=3D50%, period=
+=3D1/200Hz)
+> > > >   fail? yes, because output 2 is changing prescaler and it's alread=
+y in use
+> > > >=20
+> > > > IMHO all this can get very complicated and tricky.
+> > >=20
+> > > Is this really that complicated?
+> >=20
+> > I think it is.
+>=20
+> Care to specify what exactly is complicated about it? You're just saying
+> that you don't like the restrictions that this implements, but there's
+> really nothing we can do about that because the hardware just doesn't
+> give you that flexibility.
+
+The complicated thing is to chose how to map the hardware imposed
+limitations to the consumers of the two (or more?) channels. And the
+problem is there is no golden way that is objectively better than all
+others.
+
+> > > I sounds to me like the only thing that you need is to have some sort
+> > > of usage count for the prescaler. Whenever you want to use the
+> > > prescaler you check that usage count. If it is zero, then you can just
+> > > set it to whatever you need. If it isn't zero, that means somebody
+> > > else is already using it and you can't change it, which means you have
+> > > to check if you're trying to request the value that's already set. If
+> > > so, you can succeed, but otherwise you'll have to fail.
+> >=20
+> > With this abstraction Sven's questions are changed to:
+> >=20
+> > Does a PWM that runs at 0% or 100% use the prescaler?
+> >=20
+> > If yes, you limit the possibilities of the brother channels. And if not,
+> > it will not be possible to go to a 50% relative duty cycle while
+> > retaining the period. Both sounds not optimal.
+>=20
+> Again, this is a restriction imposed by the hardware design and there's
+> nothing in software that we can do about that. The only thing I proposed
+> was a simple way to detect the circumstances and make sure we can deal
+> with it.
+
+The point I want to make is, that with the usage counter you suggested
+you just shifted the problem and didn't solve it. I agree we need a
+usage counter, but you still have to think about how you want to answer
+the original questions by Sven. Depending on that you have to
+consider a channel running at 0% or 100% a user, or not.  (Or the other
+way round: You select a policy if you consider 0% and 100% a use and
+implicitly answer the questions with it.)
+
+> And that's obviously subject to the kind of policy we want to implement.
+> I don't think it's necessarily a bad thing to give people the most
+> flexibility. If they know that one PWM channel is only ever going to be
+> full-on/full-off, then they can still use that other channel in whatever
+> way they want. If, on the other hand, we assume that the prescaler is
+> always going to be used we limit the flexibility even if we don't
+> necessarily have to.
+
+I think we agree here, just with different words. The only thing I doubt
+is: You wrote: "If they know $X, then they can still use that other
+channel in whatever way they want." Who is "they"? How can they know
+that $X is valid for someone else, or anyone else? Or is it enough that
+"they" know this about their own use? Now Clemens wants to improve the
+driver, does he need to consider "them" in the mainline driver
+implementation? If Clemens chooses one way or the other, will there be
+someone who then will produce a use case contradicting the implemented
+policy? How will you (or who will then) decide which use-case is more
+important?
+
+> Obviously if you want to use both channels at partial duty-cycles there
+> isn't much you can do and you really have to make sure they both run at
+> the same frequency/period. But that's usually something that you can
+> deal with by just choosing a period that works for both.
+>
+> And if that's not possible, well, then you better just use a different
+> PWM controller to begin with, because you just can't make it work.
+
+Yes.
+
+> > > > We can of course make this much simpler by assumung that gpio or on=
+/off pwms
+> > > > are actually using the prescaler. But then we'd be limiting this ch=
+ip's
+> > > > functionality.
+> > >=20
+> > > Yeah, this is obviously much simpler, but the cost is a bit high, in =
+my
+> > > opinion. I'm fine with this alternative if there aren't any use-cases
+> > > where multiple outputs are actually used.
+> >=20
+> > This metric is wishy-washy; of course you can construct a use-case. I'd
+> > still go for this simpler option and assume the prescaler used if the
+> > PWM runs at 0% or 100%, but not when it is a GPIO.
+>=20
+> I don't understand what you're saying here. On one hand you seem to
+> object to what I was saying, but then you agree with it?
+>=20
+> And I'm not asking anyone to make up any artificial use-case. What I'm
+> saying is that if there aren't any existing use-cases that would break
+> if we assume a pre-scaler is used for full-on/full-off, then I'm okay
+> with making that assumption and simplifying the driver. If there were
+> use-cases, then that assumption would break existing users and that's
+> not something I'm willing to accept.
+>=20
+> Anything wrong with that metric in your opinion?
+
+The part I called wishy-washy is: "[....] if there aren't any use-cases
+where [...]". Who should decide what are (relevant) use-cases? We
+already agreed above that we talk about a hardware that doesn't allow us
+to consider it consisting of 2 independent channels and so we somehow
+have to limit their capabilities exposed by the PWM API. And whatever
+compromise we make, it's not hard to find a more or less realistic use
+case where the compromise hurts. So my interpretation of your words are:
+"I'm fine with this alternative if $somethingimpossible" which is not
+helpful.
+
+So yes, there is something wrong with your metric because it's IMHO
+impossible for a driver author to actually use it.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--jvnay2irizxwzhrs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/R4+EACgkQwfwUeK3K
+7An6XQf/Q6W4v75Dba37mA2OYGJRHkRZOawo1huxfYDShUbciDr5+6vcOgaFUgUs
+HJ1TSkAVmgxpGKGwlgTMghrY8AlQ7d9HS79HNbZhhY7YtUtCHW6zWHfcGitGhaUO
+80HjcF6v6I0YU7OFoSBXxP5DEatYWC3XzcPxk2r0hNKVlFpHHjdUQ3+UetUHtg86
+WzM+vKS7lSSK6ZMcyB+u8IvoEuGenZce1s+z82Wtjf4EE7zz0PEC/a0RPKQWeE55
+NXMztsglbULv2TdmFaZ2gl25XSTtq7o3xu7l8h3HRcLjuW/ayqaNZIaMFpxVKC/R
+1FQR4q01cOt0AB9Mx3B3WmMj79TFHA==
+=oaKN
+-----END PGP SIGNATURE-----
+
+--jvnay2irizxwzhrs--
