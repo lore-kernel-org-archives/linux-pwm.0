@@ -2,128 +2,144 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E1BC4361B
-	for <linux-pwm@archiver.kernel.org>; Fri, 11 Dec 2020 10:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E14C9C433FE
+	for <linux-pwm@archiver.kernel.org>; Fri, 11 Dec 2020 17:50:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 61B6E23F2B
-	for <linux-pwm@archiver.kernel.org>; Fri, 11 Dec 2020 10:46:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BB90E23EF5
+	for <linux-pwm@archiver.kernel.org>; Fri, 11 Dec 2020 17:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389339AbgLKKpv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 11 Dec 2020 05:45:51 -0500
-Received: from foss.arm.com ([217.140.110.172]:49030 "EHLO foss.arm.com"
+        id S2390219AbgLKQtc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 11 Dec 2020 11:49:32 -0500
+Received: from mx2.suse.de ([195.135.220.15]:34310 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728740AbgLKKpf (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 11 Dec 2020 05:45:35 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A98FC31B;
-        Fri, 11 Dec 2020 02:44:49 -0800 (PST)
-Received: from [10.57.61.6] (unknown [10.57.61.6])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F0CA63F68F;
-        Fri, 11 Dec 2020 02:44:47 -0800 (PST)
-Subject: Re: [PATCH] pwm: rockchip: Eliminate potential race condition when
- probing
-To:     Trent Piepho <tpiepho@gmail.com>,
-        Simon South <simon@simonsouth.net>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     linux-pwm@vger.kernel.org, heiko@sntech.de, bbrezillon@kernel.org,
-        linux-rockchip@lists.infradead.org, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
-References: <875z5nof46.fsf@simonsouth.net>
- <20201130004419.1714-1-simon@simonsouth.net> <X9JfbpTnfqUVk6iN@ulmo>
- <2304095.iZASKD2KPV@zen.local>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <07807886-0abc-52a2-d3b5-d994b0d7c701@arm.com>
-Date:   Fri, 11 Dec 2020 10:44:46 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S2389792AbgLKQsx (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 11 Dec 2020 11:48:53 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 5FB31B066;
+        Fri, 11 Dec 2020 16:48:10 +0000 (UTC)
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, wahrenst@gmx.net,
+        linux-input@vger.kernel.org, dmitry.torokhov@gmail.com,
+        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        p.zabel@pengutronix.de, linux-gpio@vger.kernel.org,
+        linus.walleij@linaro.org, linux-clk@vger.kernel.org,
+        sboyd@kernel.org, linux-rpi-kernel@lists.infradead.org,
+        bgolaszewski@baylibre.com, andy.shevchenko@gmail.com
+Subject: [PATCH v6 02/11] firmware: raspberrypi: Introduce devm_rpi_firmware_get()
+Date:   Fri, 11 Dec 2020 17:47:51 +0100
+Message-Id: <20201211164801.7838-3-nsaenzjulienne@suse.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201211164801.7838-1-nsaenzjulienne@suse.de>
+References: <20201211164801.7838-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <2304095.iZASKD2KPV@zen.local>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 2020-12-10 21:00, Trent Piepho wrote:
-> On Thursday, December 10, 2020 9:48:30 AM PST Thierry Reding wrote:
->> On Sun, Nov 29, 2020 at 07:44:19PM -0500, Simon South wrote:
->>> @@ -326,21 +329,38 @@ static int rockchip_pwm_probe(struct
->>> platform_device *pdev)>
->>>   		return ret;
->>>   	
->>>   	}
->>>
->>> -	ret = clk_prepare_enable(pc->clk);
->>> +	ret = clk_prepare(pc->clk);
->>>
->>>   	if (ret) {
->>>
->>> -		dev_err(&pdev->dev, "Can't prepare enable bus clk: %d\n", ret);
->>> +		dev_err(&pdev->dev, "Can't prepare bus clk: %d\n", ret);
->>>
->>>   		return ret;
->>>   	
->>>   	}
->>>
->>> +	/*
->>> +	 * If it appears the PWM has already been enabled, perhaps by a
->>> +	 * bootloader, re-enable its clock to increment the clock's enable
->>> +	 * counter and ensure it is kept running (particularly in the case
->>> +	 * where there is no separate APB clock).
->>> +	 */
->>> +	enable_conf = pc->data->enable_conf;
->>> +	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
->>> +	enabled = (ctrl & enable_conf) == enable_conf;
->>
->> Given that we don't enable the bus clock before this, is it even safe to
->> access registers on the bus if the clock is disabled? I've seen a lot of
->> cases where accesses to an unclocked bus either lead to silent hangs or
->> very noisy crashes, and I would expect something like that (or something
->> in between) to happen on Rockchip SoCs.
-> 
-> I would also assume register access with the clock disabled would hang or
-> otherwise fail.  There are possibly two clocks, one called "bus clock" and
-> the other "APB clock".  APB being Advanced Peripheral Bus.  Not the greatest
-> choice of names.  I assume the APB clock is needed for register access and
-> the "bus clock" is used to generate the PWM signal and does not need to be
-> enabled for register access.  Unfortunately the RK3399 docs do not have a
-> clock diagram for the PWM or include details such as these.
-> 
-> There is a low power mode bit in the control register that disables the PWM
-> signal's clock.  And which clock does that disabled, the "ABP clock" or the
-> "bus clock"?  I quote §18.6.4, "the APB bus clock … is gated…"  It's like
-> they're being intentional ambiguous.
+It'll simplify the firmware handling for most consumers.
 
-FWIW I think it becomes clear enough if you read the DT binding in 
-parallel with the code - if devm_clk_get(&pdev->dev, "pwm") fails, the 
-driver falls back to assuming the RK3399-or-earlier case of a single 
-unnamed clock, so "Can't get bus clk" is referring specifically to the 
-devm_clk_get(&pdev->dev, NULL) call where that clock *is* also the APB 
-clock.
+Suggested-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
 
-Possibly the driver could do with a slightly clearer structure here, but 
-compatibility fallbacks are inevitably messy to some degree.
+Changes since v4:
+ - Rearrange function calls for clarity, same functionality
 
-Robin.
+Changes since v2:
+- Create devm_rpi_firmware_get()
 
-> Anyway, from the existing code, it seems clear that pc->pclk needs to be
-> enabled for register access and pc->clk to generate a signal.  The call to
-> clk_prepare(pc->pclk) should become clk_prepare_enable(pc->pclk) and moved
-> to before the enabled_conf check.  Then clk_disable(pc->pclk) afterward.
-> The existing code will disable pclk even if the PWM is enabled, so unless
-> that is also a bug, it should be ok to disable pc->pclk after enabling
-> pc->clk.
-> 
-> 
-> 
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
-> 
+ drivers/firmware/raspberrypi.c             | 29 ++++++++++++++++++++++
+ include/soc/bcm2835/raspberrypi-firmware.h |  8 ++++++
+ 2 files changed, 37 insertions(+)
+
+diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
+index b65e4c495772..250e01680742 100644
+--- a/drivers/firmware/raspberrypi.c
++++ b/drivers/firmware/raspberrypi.c
+@@ -243,6 +243,13 @@ void rpi_firmware_put(struct rpi_firmware *fw)
+ }
+ EXPORT_SYMBOL_GPL(rpi_firmware_put);
+ 
++static void devm_rpi_firmware_put(void *data)
++{
++	struct rpi_firmware *fw = data;
++
++	rpi_firmware_put(fw);
++}
++
+ static int rpi_firmware_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -331,6 +338,28 @@ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
+ }
+ EXPORT_SYMBOL_GPL(rpi_firmware_get);
+ 
++/**
++ * devm_rpi_firmware_get - Get pointer to rpi_firmware structure.
++ * @firmware_node:    Pointer to the firmware Device Tree node.
++ *
++ * Returns NULL is the firmware device is not ready.
++ */
++struct rpi_firmware *devm_rpi_firmware_get(struct device *dev,
++					   struct device_node *firmware_node)
++{
++	struct rpi_firmware *fw;
++
++	fw = rpi_firmware_get(firmware_node);
++	if (!fw)
++		return NULL;
++
++	if (devm_add_action_or_reset(dev, devm_rpi_firmware_put, fw))
++		return NULL;
++
++	return fw;
++}
++EXPORT_SYMBOL_GPL(devm_rpi_firmware_get);
++
+ static const struct of_device_id rpi_firmware_of_match[] = {
+ 	{ .compatible = "raspberrypi,bcm2835-firmware", },
+ 	{},
+diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
+index fdfef7fe40df..73ad784fca96 100644
+--- a/include/soc/bcm2835/raspberrypi-firmware.h
++++ b/include/soc/bcm2835/raspberrypi-firmware.h
+@@ -142,6 +142,8 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
+ 			       void *data, size_t tag_size);
+ void rpi_firmware_put(struct rpi_firmware *fw);
+ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node);
++struct rpi_firmware *devm_rpi_firmware_get(struct device *dev,
++					   struct device_node *firmware_node);
+ #else
+ static inline int rpi_firmware_property(struct rpi_firmware *fw, u32 tag,
+ 					void *data, size_t len)
+@@ -160,6 +162,12 @@ static inline struct rpi_firmware *rpi_firmware_get(struct device_node *firmware
+ {
+ 	return NULL;
+ }
++
++static inline struct rpi_firmware *devm_rpi_firmware_get(struct device *dev,
++					struct device_node *firmware_node)
++{
++	return NULL;
++}
+ #endif
+ 
+ #endif /* __SOC_RASPBERRY_FIRMWARE_H__ */
+-- 
+2.29.2
+
