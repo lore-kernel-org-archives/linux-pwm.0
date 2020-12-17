@@ -1,132 +1,142 @@
 Return-path: <tpgalchenko@gmail.com>
 MIME-Version: 1.0
-References: <20201216174309.1604658-1-thierry.reding@gmail.com>
-In-Reply-To: <20201216174309.1604658-1-thierry.reding@gmail.com>
+References: <20201216174309.1604658-1-thierry.reding@gmail.com> <20201217113123.v3jialznqipzerne@pengutronix.de>
+In-Reply-To: <20201217113123.v3jialznqipzerne@pengutronix.de>
 From: Taras Galchenko <tpgalchenko@gmail.com>
-Date: Thu, 17 Dec 2020 10:46:53 +0300
-Message-ID: <CADO=Lw57JwaY1gjaBOLtPiBQAXhr38AZGB=GLCMhjMp0PsYGHA@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="000000000000a6ad2505b6a4329f"
+Date: Thu, 17 Dec 2020 15:10:05 +0300
+Message-ID: <CADO=Lw4g=9pPy9Mpg6AevHo9F-TS3RXT_B+Y+wg899uaXDHKDw@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000ecfc5405b6a7dfda"
 Subject: Re: [PATCH] pwm: sun4i: Remove erroneous else branch
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 
---000000000000a6ad2505b6a4329f
+--000000000000ecfc5405b6a7dfda
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Taras Galchenko <tpgalchenko@gmail.com>
+Uwe,
 
-=D1=81=D1=80, 16 =D0=B4=D0=B5=D0=BA. 2020 =D0=B3. =D0=B2 20:43, Thierry Red=
-ing <thierry.reding@gmail.com>:
+It was my fault, I contacted Thierry directly when reporting the problem
+and did not write to the list.
 
-> Commit d3817a647059 ("pwm: sun4i: Remove redundant needs_delay") changed
-> the logic of an else branch so that the PWM_EN and PWM_CLK_GATING bits
-> are now cleared if the PWM is to be disabled, whereas previously the
-> condition was always false, and hence the branch never got executed.
+The problem I saw is that the backlight never gets turned off on A20 SOC no
+matter what commands I send to /sys/class/backlight/backlight/bl_power .
+I've investigated the origin of the problem, that was not present in the
+kernel 5.6.14, and traced out the patch that broke the function.
+
+Best regards
+Taras
+
+=D1=87=D1=82, 17 =D0=B4=D0=B5=D0=BA. 2020 =D0=B3. =D0=B2 14:31, Uwe Kleine-=
+K=C3=B6nig <
+u.kleine-koenig@pengutronix.de>:
+
+> On Wed, Dec 16, 2020 at 06:43:09PM +0100, Thierry Reding wrote:
+> > Commit d3817a647059 ("pwm: sun4i: Remove redundant needs_delay") change=
+d
+> > the logic of an else branch so that the PWM_EN and PWM_CLK_GATING bits
+> > are now cleared if the PWM is to be disabled, whereas previously the
+> > condition was always false, and hence the branch never got executed.
+> >
+> > This code is reported causing backlight issues on boards based on the
+> > Allwinner A20 SoC. Fix this by removing the else branch, which restores
+> > the behaviour prior to the offending commit.
+> >
+> > Note that the PWM_EN and PWM_CLK_GATING bits still get cleared later in
+> > sun4i_pwm_apply() if the PWM is to be disabled.
+> >
+> > Fixes: d3817a647059 ("pwm: sun4i: Remove redundant needs_delay")
+> > Reported-by: Taras Galchenko <tpgalchenko@gmail.com>
 >
-> This code is reported causing backlight issues on boards based on the
-> Allwinner A20 SoC. Fix this by removing the else branch, which restores
-> the behaviour prior to the offending commit.
+> This report didn't happen on the linux-pwm list, or did I miss it?
 >
-> Note that the PWM_EN and PWM_CLK_GATING bits still get cleared later in
-> sun4i_pwm_apply() if the PWM is to be disabled.
+> What is the reported problem? I would expect a short time where the
+> backlight goes off completely (or on depending on polarity?) when only a
+> small continuous change is expected.
 >
-> Fixes: d3817a647059 ("pwm: sun4i: Remove redundant needs_delay")
-> Reported-by: Taras Galchenko <tpgalchenko@gmail.com>
-> Suggested-by: Taras Galchenko <tpgalchenko@gmail.com>
-> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-> ---
->  drivers/pwm/pwm-sun4i.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
+> > Suggested-by: Taras Galchenko <tpgalchenko@gmail.com>
+> > Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 >
-> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> index cc1eb0818648..ce5c4fc8da6f 100644
-> --- a/drivers/pwm/pwm-sun4i.c
-> +++ b/drivers/pwm/pwm-sun4i.c
-> @@ -294,12 +294,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip,
-> struct pwm_device *pwm,
+> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 >
->         ctrl |=3D BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
->
-> -       if (state->enabled) {
-> +       if (state->enabled)
->                 ctrl |=3D BIT_CH(PWM_EN, pwm->hwpwm);
-> -       } else {
-> -               ctrl &=3D ~BIT_CH(PWM_EN, pwm->hwpwm);
-> -               ctrl &=3D ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-> -       }
->
->         sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
+> Best regards
+> Uwe
 >
 > --
-> 2.29.2
->
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
 >
 
---000000000000a6ad2505b6a4329f
+--000000000000ecfc5405b6a7dfda
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><br></div><div>
-Tested-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.com">tpg=
-alchenko@gmail.com</a>&gt;</div></div><br><div class=3D"gmail_quote"><div d=
-ir=3D"ltr" class=3D"gmail_attr">=D1=81=D1=80, 16 =D0=B4=D0=B5=D0=BA. 2020 =
-=D0=B3. =D0=B2 20:43, Thierry Reding &lt;<a href=3D"mailto:thierry.reding@g=
-mail.com">thierry.reding@gmail.com</a>&gt;:<br></div><blockquote class=3D"g=
-mail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204=
-,204,204);padding-left:1ex">Commit d3817a647059 (&quot;pwm: sun4i: Remove r=
-edundant needs_delay&quot;) changed<br>
-the logic of an else branch so that the PWM_EN and PWM_CLK_GATING bits<br>
-are now cleared if the PWM is to be disabled, whereas previously the<br>
-condition was always false, and hence the branch never got executed.<br>
+<div dir=3D"ltr"><div>Uwe,</div><div><br></div><div>It was my fault, I cont=
+acted Thierry directly when reporting the problem and did not write to the =
+list.</div><div><br></div><div>The problem I saw is that the backlight neve=
+r gets turned off on A20 SOC no matter what commands I send to /sys/class/b=
+acklight/backlight/bl_power . I&#39;ve investigated the origin of the probl=
+em, that was not present in the kernel 5.6.14, and traced out the patch tha=
+t broke the function.</div><div><br></div><div>Best regards<br></div><div>T=
+aras<br></div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=
+=3D"gmail_attr">=D1=87=D1=82, 17 =D0=B4=D0=B5=D0=BA. 2020 =D0=B3. =D0=B2 14=
+:31, Uwe Kleine-K=C3=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pengutroni=
+x.de">u.kleine-koenig@pengutronix.de</a>&gt;:<br></div><blockquote class=3D=
+"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(2=
+04,204,204);padding-left:1ex">On Wed, Dec 16, 2020 at 06:43:09PM +0100, Thi=
+erry Reding wrote:<br>
+&gt; Commit d3817a647059 (&quot;pwm: sun4i: Remove redundant needs_delay&qu=
+ot;) changed<br>
+&gt; the logic of an else branch so that the PWM_EN and PWM_CLK_GATING bits=
 <br>
-This code is reported causing backlight issues on boards based on the<br>
-Allwinner A20 SoC. Fix this by removing the else branch, which restores<br>
-the behaviour prior to the offending commit.<br>
-<br>
-Note that the PWM_EN and PWM_CLK_GATING bits still get cleared later in<br>
-sun4i_pwm_apply() if the PWM is to be disabled.<br>
-<br>
-Fixes: d3817a647059 (&quot;pwm: sun4i: Remove redundant needs_delay&quot;)<=
+&gt; are now cleared if the PWM is to be disabled, whereas previously the<b=
+r>
+&gt; condition was always false, and hence the branch never got executed.<b=
+r>
+&gt; <br>
+&gt; This code is reported causing backlight issues on boards based on the<=
 br>
-Reported-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.com" t=
-arget=3D"_blank">tpgalchenko@gmail.com</a>&gt;<br>
-Suggested-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.com" =
-target=3D"_blank">tpgalchenko@gmail.com</a>&gt;<br>
-Signed-off-by: Thierry Reding &lt;<a href=3D"mailto:thierry.reding@gmail.co=
-m" target=3D"_blank">thierry.reding@gmail.com</a>&gt;<br>
----<br>
-=C2=A0drivers/pwm/pwm-sun4i.c | 6 +-----<br>
-=C2=A01 file changed, 1 insertion(+), 5 deletions(-)<br>
+&gt; Allwinner A20 SoC. Fix this by removing the else branch, which restore=
+s<br>
+&gt; the behaviour prior to the offending commit.<br>
+&gt; <br>
+&gt; Note that the PWM_EN and PWM_CLK_GATING bits still get cleared later i=
+n<br>
+&gt; sun4i_pwm_apply() if the PWM is to be disabled.<br>
+&gt; <br>
+&gt; Fixes: d3817a647059 (&quot;pwm: sun4i: Remove redundant needs_delay&qu=
+ot;)<br>
+&gt; Reported-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.c=
+om" target=3D"_blank">tpgalchenko@gmail.com</a>&gt;<br>
 <br>
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c<br>
-index cc1eb0818648..ce5c4fc8da6f 100644<br>
---- a/drivers/pwm/pwm-sun4i.c<br>
-+++ b/drivers/pwm/pwm-sun4i.c<br>
-@@ -294,12 +294,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, stru=
-ct pwm_device *pwm,<br>
+This report didn&#39;t happen on the linux-pwm list, or did I miss it?<br>
 <br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 ctrl |=3D BIT_CH(PWM_CLK_GATING, pwm-&gt;hwpwm)=
-;<br>
+What is the reported problem? I would expect a short time where the<br>
+backlight goes off completely (or on depending on polarity?) when only a<br=
+>
+small continuous change is expected.<br>
 <br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0if (state-&gt;enabled) {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0if (state-&gt;enabled)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ctrl |=3D BIT_CH(PW=
-M_EN, pwm-&gt;hwpwm);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0} else {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ctrl &amp;=3D ~BIT_=
-CH(PWM_EN, pwm-&gt;hwpwm);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ctrl &amp;=3D ~BIT_=
-CH(PWM_CLK_GATING, pwm-&gt;hwpwm);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+&gt; Suggested-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.=
+com" target=3D"_blank">tpgalchenko@gmail.com</a>&gt;<br>
+&gt; Signed-off-by: Thierry Reding &lt;<a href=3D"mailto:thierry.reding@gma=
+il.com" target=3D"_blank">thierry.reding@gmail.com</a>&gt;<br>
 <br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG)=
-;<br>
+Reviewed-by: Uwe Kleine-K=C3=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pe=
+ngutronix.de" target=3D"_blank">u.kleine-koenig@pengutronix.de</a>&gt;<br>
+<br>
+Best regards<br>
+Uwe<br>
 <br>
 -- <br>
-2.29.2<br>
-<br>
+Pengutronix e.K.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| Uwe Kleine-K=C3=B6nig=C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 |<br>
+Industrial Linux Solutions=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0| <a href=3D"https://www.pengutronix.de/" rel=3D"noreferrer" t=
+arget=3D"_blank">https://www.pengutronix.de/</a> |<br>
 </blockquote></div>
 
---000000000000a6ad2505b6a4329f--
+--000000000000ecfc5405b6a7dfda--
