@@ -5,32 +5,32 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0385C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECCFC4361B
 	for <linux-pwm@archiver.kernel.org>; Sat, 19 Dec 2020 20:45:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 697CF2388E
+	by mail.kernel.org (Postfix) with ESMTP id 4FDEC22D72
 	for <linux-pwm@archiver.kernel.org>; Sat, 19 Dec 2020 20:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726385AbgLSUpl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 19 Dec 2020 15:45:41 -0500
-Received: from mailout.easymail.ca ([64.68.200.34]:37442 "EHLO
+        id S1727370AbgLSUp1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 19 Dec 2020 15:45:27 -0500
+Received: from mailout.easymail.ca ([64.68.200.34]:35238 "EHLO
         mailout.easymail.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726238AbgLSUpl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 19 Dec 2020 15:45:41 -0500
+        with ESMTP id S1726385AbgLSUp0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 19 Dec 2020 15:45:26 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by mailout.easymail.ca (Postfix) with ESMTP id 26F2DC2537;
-        Sat, 19 Dec 2020 20:45:00 +0000 (UTC)
+        by mailout.easymail.ca (Postfix) with ESMTP id AE147C14EC;
+        Sat, 19 Dec 2020 20:44:45 +0000 (UTC)
 X-Virus-Scanned: Debian amavisd-new at emo04-pco.easydns.vpn
 Received: from mailout.easymail.ca ([127.0.0.1])
         by localhost (emo04-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Hmgycagr5TIp; Sat, 19 Dec 2020 20:44:59 +0000 (UTC)
+        with ESMTP id 6iHPlRxqbfHc; Sat, 19 Dec 2020 20:44:45 +0000 (UTC)
 Received: from localhost.localdomain (unknown [108.162.141.195])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mailout.easymail.ca (Postfix) with ESMTPSA id E5D59BFBC9;
-        Sat, 19 Dec 2020 20:44:45 +0000 (UTC)
+        by mailout.easymail.ca (Postfix) with ESMTPSA id 67458BFBC9;
+        Sat, 19 Dec 2020 20:44:29 +0000 (UTC)
 From:   Simon South <simon@simonsouth.net>
 To:     tpiepho@gmail.com, thierry.reding@gmail.com,
         u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
@@ -38,9 +38,9 @@ To:     tpiepho@gmail.com, thierry.reding@gmail.com,
         linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org
 Cc:     simon@simonsouth.net
-Subject: [PATCH v2 2/3] pwm: rockchip: Eliminate potential race condition when probing
-Date:   Sat, 19 Dec 2020 15:44:09 -0500
-Message-Id: <fcfb96fd2fd860ae3f08cb563c74eb864cdab41a.1608407584.git.simon@simonsouth.net>
+Subject: [PATCH v2 1/3] pwm: rockchip: Enable APB clock during register access while probing
+Date:   Sat, 19 Dec 2020 15:44:08 -0500
+Message-Id: <49ceda3def13f6186073745e99d7315c974bfa81.1608407584.git.simon@simonsouth.net>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <cover.1608407584.git.simon@simonsouth.net>
 References: <cover.1608407584.git.simon@simonsouth.net>
@@ -50,89 +50,54 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Commit 48cf973cae33 ("pwm: rockchip: Avoid glitches on already running
-PWMs") introduced a potential race condition in rockchip_pwm_probe() as the
-function could disable the clock of a PWM device after having registered it
-through a call to pwmchip_add().
+Commit 457f74abbed0 ("pwm: rockchip: Keep enabled PWMs running while
+probing") modified rockchip_pwm_probe() to access a PWM device's registers
+directly to check whether or not the device is running, but did not also
+change the function to first enable the device's APB clock to be certain
+the device can respond. This risks hanging the kernel on systems with PWM
+devices that use more than a single clock.
 
-Eliminate this possibility by moving the code that disables the clock of a
-non-enabled PWM ahead of the code that registers the device.
+Avoid this by enabling the device's APB clock before accessing its
+registers (and disabling the clock when register access is complete).
 
-Also refactor the code slightly to eliminate goto targets as the error
-handlers no longer share any recovery steps.
-
-Fixes: 48cf973cae33 ("pwm: rockchip: Avoid glitches on already running PWMs")
 Fixes: 457f74abbed0 ("pwm: rockchip: Keep enabled PWMs running while probing")
-Reported-by: Trent Piepho <tpiepho@gmail.com>
+Reported-by: Thierry Reding <thierry.reding@gmail.com>
+Suggested-by: Trent Piepho <tpiepho@gmail.com>
 Signed-off-by: Simon South <simon@simonsouth.net>
 ---
- drivers/pwm/pwm-rockchip.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ drivers/pwm/pwm-rockchip.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index d2058138ce1e..f286a498b82c 100644
+index 77c23a2c6d71..d2058138ce1e 100644
 --- a/drivers/pwm/pwm-rockchip.c
 +++ b/drivers/pwm/pwm-rockchip.c
-@@ -289,6 +289,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	struct rockchip_pwm_chip *pc;
- 	struct resource *r;
- 	u32 enable_conf, ctrl;
-+	bool enabled;
- 	int ret, count;
+@@ -332,9 +332,9 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
- 	id = of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
-@@ -335,7 +336,8 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(pc->pclk);
+-	ret = clk_prepare(pc->pclk);
++	ret = clk_prepare_enable(pc->pclk);
  	if (ret) {
- 		dev_err(&pdev->dev, "Can't enable APB clk: %d\n", ret);
--		goto err_clk;
-+		clk_disable_unprepare(pc->clk);
-+		return ret;
+-		dev_err(&pdev->dev, "Can't prepare APB clk: %d\n", ret);
++		dev_err(&pdev->dev, "Can't enable APB clk: %d\n", ret);
+ 		goto err_clk;
  	}
  
- 	platform_set_drvdata(pdev, pc);
-@@ -351,29 +353,26 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 		pc->chip.of_pwm_n_cells = 3;
- 	}
- 
--	ret = pwmchip_add(&pc->chip);
--	if (ret < 0) {
--		clk_unprepare(pc->clk);
--		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
--		goto err_pclk;
--	}
--
- 	/* Keep the PWM clk enabled if the PWM appears to be up and running. */
- 	enable_conf = pc->data->enable_conf;
- 	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
--	if ((ctrl & enable_conf) != enable_conf)
-+	enabled = ((ctrl & enable_conf) == enable_conf);
-+	if (!enabled)
+@@ -364,10 +364,12 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	if ((ctrl & enable_conf) != enable_conf)
  		clk_disable(pc->clk);
  
- 	clk_disable(pc->pclk);
++	clk_disable(pc->pclk);
++
+ 	return 0;
  
--	return 0;
--
--err_pclk:
--	clk_disable_unprepare(pc->pclk);
--err_clk:
--	clk_disable_unprepare(pc->clk);
-+	ret = pwmchip_add(&pc->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-+		if (enabled)
-+			clk_disable(pc->clk);
-+		clk_unprepare(pc->clk);
-+		clk_unprepare(pc->pclk);
-+		return ret;
-+	}
+ err_pclk:
+-	clk_unprepare(pc->pclk);
++	clk_disable_unprepare(pc->pclk);
+ err_clk:
+ 	clk_disable_unprepare(pc->clk);
  
--	return ret;
-+	return 0;
- }
- 
- static int rockchip_pwm_remove(struct platform_device *pdev)
 -- 
 2.29.2
 
