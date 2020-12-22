@@ -2,128 +2,125 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F81AC433E0
-	for <linux-pwm@archiver.kernel.org>; Tue, 22 Dec 2020 16:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 849E5C433DB
+	for <linux-pwm@archiver.kernel.org>; Tue, 22 Dec 2020 17:24:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CFBD0230FC
-	for <linux-pwm@archiver.kernel.org>; Tue, 22 Dec 2020 16:36:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D72C22D73
+	for <linux-pwm@archiver.kernel.org>; Tue, 22 Dec 2020 17:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbgLVQft (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 22 Dec 2020 11:35:49 -0500
-Received: from mout.gmx.net ([212.227.17.21]:49887 "EHLO mout.gmx.net"
+        id S1727306AbgLVRYB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 22 Dec 2020 12:24:01 -0500
+Received: from foss.arm.com ([217.140.110.172]:38122 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726931AbgLVQft (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 22 Dec 2020 11:35:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1608654841;
-        bh=2qHrVeF0hspGHjAMpPkADCdAp3z6v/tgvY4qkHKeB3A=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=NDmQXScjqf4YMa2Eg+jXOnbAMaXMEjbNhRKHPtBg5V4GbVeMbn5ZK8I0Io+v90yZP
-         8G4d8awAgWvZ6njEGiOAEdVcgfnfgpii07dinRzYuZ90FAgxftfPmOjX0XRF+A4aYz
-         2zhRM5pvhtZ8bmw3W0aR8TYZfey0flxBfiuri2ko=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.51] ([78.42.220.31]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mo6ux-1kGDic2wvL-00pc3M; Tue, 22
- Dec 2020 17:34:01 +0100
-Subject: Re: [PATCH] pwm: bcm2835: Improve period and duty cycle calculation
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Sean Young <sean@mess.org>
-Cc:     bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, kernel@pengutronix.de
-References: <20201221165501.717101-1-u.kleine-koenig@pengutronix.de>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <3e202765-d747-148c-160d-21bacede6f13@gmx.de>
-Date:   Tue, 22 Dec 2020 17:34:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726889AbgLVRYA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 22 Dec 2020 12:24:00 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C532E30E;
+        Tue, 22 Dec 2020 09:23:14 -0800 (PST)
+Received: from [10.57.34.90] (unknown [10.57.34.90])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 50D9F3F66E;
+        Tue, 22 Dec 2020 09:23:13 -0800 (PST)
+Subject: Re: [PATCH v2 3/3] pwm: rockchip: Do not start PWMs not already
+ running
+To:     Simon South <simon@simonsouth.net>, tpiepho@gmail.com,
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        lee.jones@linaro.org, heiko@sntech.de, bbrezillon@kernel.org,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+References: <cover.1608407584.git.simon@simonsouth.net>
+ <0acdf3a78f670a2678e03b0bbbb01aa58a11ce9a.1608407584.git.simon@simonsouth.net>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <ff2bf1bb-e95f-138c-df5a-12ed73568572@arm.com>
+Date:   Tue, 22 Dec 2020 17:23:12 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20201221165501.717101-1-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:XWI8AJaKpUXc05bqwVIrlD9oz7zBdyackPExuJu3XqiWpirY2Fd
- SseTwFZCgrULp9eLRfA6Iv44iRhREuVfSJnDFZOtwl89+w/m5/wPAVM+FZojDaBkOC80iRB
- nxDdSSMaiT8dixOMvuL92tQOJBvZFV3OpmHpL/vEL2zuUcDfMcE5Rxbw67TlTL2rulxOx70
- ROA4qFk03mOLhEHC/P/IQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UtrId62g7UU=:ZQzpBKdMzPlq641I5Q3QiQ
- KGwHLM5vFeFQMoAzk2gEguJ2jy1o1uR6nWxYKDuKJ4ZHgVLuR2YzVuoOYRcc8dmwjoFxWKoT7
- W2TwrvPJQYGPY0VY7j7Z+tQ8VeKMYEXCt4MMtYDLUsx7Wvg+VAaHstFUtxUH7gVrZPsWV9lTG
- LK+vHuKMPzr/ytsG0vq4A6tAX/Qb5sa8omCijeV3tFcc6ytr4rBEKRFfeO5FhCg2xr66dr3hr
- z2GK18lGkkbmqmnB3vznJ2infCJLLTCcYncNqo6ptMG3DBbmJCG5Ikt20NHfF5ahF1KiVjIO6
- 2mz/kGLwR2UxporI6L7d1mzlym3TWXkM7j3JxEJROLkphHDz5lJlgqHVxbSNcO4aLHFxEMkK1
- Qe9xxSqlvxLmgXWcxXNYyE2SVyte/31CljV/eA9xM0Toi3OWRFu1KHX5lSVsX/R3gLo4MeNs4
- MH4h8fUKzGBjIww4ooq7dLcVk9vkv0XSDijKLXaumZD+nwBrAB68UZGuVIEVVwpJf5776ccfD
- mf3J+zr46kob8PRb7X0R3gq9pEsULVoEAggJMnTlA7mpK8qyKpa669zWHesYbTS4RkLzllH4a
- u8vF3S1GFZWt1+GF7QBB3/SWKTR+6rzihI19Jy+r7xsowkrO9hAtaK0Tt1HGAQJNaGpNBpsse
- pPkM4658q+vlvg/oVyK1KzodjFdoCF3eythPT1Uifl8IBEQIwCUDmVKvK4ASA+nq1nNmyMPuZ
- qIfl5hlMiUqKFVPFQf4fbdpb0YabQi7skqT7s7++BJ32hcZZIkiYW2RYinulIxH7TsUMMqVq4
- KZUIPgJtWkcRPBcmNmHVr+pm0gEuCZFtUNh2njZKX6G0K/sd4PlQ6I9UudO4ETdXPR8wxoUcy
- DYA3GxgBg5TviMI1tUww==
+In-Reply-To: <0acdf3a78f670a2678e03b0bbbb01aa58a11ce9a.1608407584.git.simon@simonsouth.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
-
-On 21.12.20 at 17:55, Uwe Kleine-K=C3=B6nig wrote:
-> With an input clk rate bigger than 2000000000, scaler would have been
-> zero which then would have resulted in a division by zero.
->
-> Also the originally implemented algorithm divided by the result of a
-> division. This nearly always looses precision. Consider a requested peri=
-od
-> of 1000000 ns. With an input clock frequency of 32786885 Hz the hardware
-> was configured with an actual period of 983869.007 ns (PERIOD =3D 32258)
-> while the hardware can provide 1000003.508 ns (PERIOD =3D 32787).
-> And note if the input clock frequency was 32786886 Hz instead, the hardw=
-are
-> was configured to 1016656.477 ns (PERIOD =3D 33333) while the optimal
-> setting results in 1000003.477 ns (PERIOD =3D 32787).
->
-> This patch implements proper range checking and only divides once for
-> the calculation of period (and similar for duty_cycle).
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+On 2020-12-19 20:44, Simon South wrote:
+> Currently the Rockchip PWM driver enables the signal ("bus") clock for
+> every PWM device it finds during probing, then disables it for any device
+> that was not already enabled (such as by a bootloader) when the kernel
+> started.
+> 
+> Instead of starting PWMs unnecessarily, check first to see whether a device
+> has already been enabled and if not, do not enable its signal clock.
+> 
+> Signed-off-by: Simon South <simon@simonsouth.net>
 > ---
-> Hello,
->
-> during review of the bcm2835 driver I noticed this double division.
->
-> I think the practical relevance is low however because the clock rate is
-> fixed to 10 MHz on this platform which doesn't result in these
-> deviations. (Is this right, what is the actual rate?)
-
-clk_get_rate() on my Raspberry Pi 4 returns 9999999.
-
->
-> Having said that this patch is only compile tested.
-
-I tested this on the RP and everything still works so far, so FWIW
-Tested-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-
-
+>   drivers/pwm/pwm-rockchip.c | 28 +++++++++++++---------------
+>   1 file changed, 13 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index f286a498b82c..b9faef3e9954 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -327,19 +327,6 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>   		return ret;
+>   	}
+>   
+> -	ret = clk_prepare_enable(pc->clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Can't prepare enable bus clk: %d\n", ret);
+> -		return ret;
+> -	}
+> -
+> -	ret = clk_prepare_enable(pc->pclk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Can't enable APB clk: %d\n", ret);
+> -		clk_disable_unprepare(pc->clk);
+> -		return ret;
+> -	}
+> -
+>   	platform_set_drvdata(pdev, pc);
+>   
+>   	pc->data = id->data;
+> @@ -353,12 +340,23 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>   		pc->chip.of_pwm_n_cells = 3;
+>   	}
+>   
+> +	ret = clk_prepare_enable(pc->pclk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Can't enable APB clk: %d\n", ret);
+> +		return ret;
+> +	}
 > +
-> +	if (state->period > max_period)
-> +		period =3D max_period;
-> +	else
-> +		period =3D state->period;
+>   	/* Keep the PWM clk enabled if the PWM appears to be up and running. */
+>   	enable_conf = pc->data->enable_conf;
+>   	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
+>   	enabled = ((ctrl & enable_conf) == enable_conf);
+> -	if (!enabled)
+> -		clk_disable(pc->clk);
 > +
+> +	ret = enabled ? clk_prepare_enable(pc->clk) : clk_prepare(pc->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Can't prepare bus clk: %d\n", ret);
 
-We return EINVAL if the value for period is too small, so should we not do=
- the
-same for the case that the value is too high?
+Since you're touching it, I guess it might be a good idea to update this 
+message to say "PWM clk" for clarity.
 
-Regards,
-Lino
+I suspect there might also have been some historical confounding in the 
+fact that when there is only one clock (pclk_pwm), it's merely a gate 
+whose parent is pclk_bus, which serves all the peripherals in the 
+usefully-named PD_BUS domain...
+
+Robin.
+
+> +		clk_disable_unprepare(pc->pclk);
+> +		return ret;
+> +	}
+>   
+>   	clk_disable(pc->pclk);
+>   
+> 
