@@ -1,142 +1,186 @@
-Return-path: <tpgalchenko@gmail.com>
+Return-path: <kever.yang@gmail.com>
 MIME-Version: 1.0
-References: <20201216174309.1604658-1-thierry.reding@gmail.com> <20201217113123.v3jialznqipzerne@pengutronix.de>
-In-Reply-To: <20201217113123.v3jialznqipzerne@pengutronix.de>
-From: Taras Galchenko <tpgalchenko@gmail.com>
-Date: Thu, 17 Dec 2020 15:10:05 +0300
-Message-ID: <CADO=Lw4g=9pPy9Mpg6AevHo9F-TS3RXT_B+Y+wg899uaXDHKDw@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="000000000000ecfc5405b6a7dfda"
-Subject: Re: [PATCH] pwm: sun4i: Remove erroneous else branch
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org
+From: Kever Yang <kever.yang@rock-chips.com>
+Date: Fri, 25 Dec 2020 15:11:56 +0800
+Message-ID: <CAKUh=RykcMcbuQ0gAgTL0PyCHO6aqck4NdwgpmHaz6mwyLdxQg@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000623b8805b744a45e"
+Subject: Re: [PATCH v3 1/7] pwm: rockchip: Enable APB clock during register
+ access while probing
+In-Reply-To: <49ceda3def13f6186073745e99d7315c974bfa81.1608735481.git.simon@simonsouth.net>
+To: Simon South <simon@simonsouth.net>
+Cc: tpiepho@gmail.com, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, Robin Murphy <robin.murphy@arm.com>, lee.jones@linaro.org, Heiko Stuebner <heiko@sntech.de>, bbrezillon@kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, David Wu <david.wu@rock-chips.com>, steven.liu@rock-chips.com
 List-ID: <linux-pwm.vger.kernel.org>
 
---000000000000ecfc5405b6a7dfda
+--000000000000623b8805b744a45e
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Uwe,
++ David and Steven,
 
-It was my fault, I contacted Thierry directly when reporting the problem
-and did not write to the list.
+Hi Steven,
+    please help to review this patch set.
 
-The problem I saw is that the backlight never gets turned off on A20 SOC no
-matter what commands I send to /sys/class/backlight/backlight/bl_power .
-I've investigated the origin of the problem, that was not present in the
-kernel 5.6.14, and traced out the patch that broke the function.
+Thanks
+- Kever
 
-Best regards
-Taras
+Simon South <simon@simonsouth.net> =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=
+=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A
 
-=D1=87=D1=82, 17 =D0=B4=D0=B5=D0=BA. 2020 =D0=B3. =D0=B2 14:31, Uwe Kleine-=
-K=C3=B6nig <
-u.kleine-koenig@pengutronix.de>:
-
-> On Wed, Dec 16, 2020 at 06:43:09PM +0100, Thierry Reding wrote:
-> > Commit d3817a647059 ("pwm: sun4i: Remove redundant needs_delay") change=
-d
-> > the logic of an else branch so that the PWM_EN and PWM_CLK_GATING bits
-> > are now cleared if the PWM is to be disabled, whereas previously the
-> > condition was always false, and hence the branch never got executed.
-> >
-> > This code is reported causing backlight issues on boards based on the
-> > Allwinner A20 SoC. Fix this by removing the else branch, which restores
-> > the behaviour prior to the offending commit.
-> >
-> > Note that the PWM_EN and PWM_CLK_GATING bits still get cleared later in
-> > sun4i_pwm_apply() if the PWM is to be disabled.
-> >
-> > Fixes: d3817a647059 ("pwm: sun4i: Remove redundant needs_delay")
-> > Reported-by: Taras Galchenko <tpgalchenko@gmail.com>
+> Commit 457f74abbed0 ("pwm: rockchip: Keep enabled PWMs running while
+> probing") modified rockchip_pwm_probe() to access a PWM device's register=
+s
+> directly to check whether or not the device is running, but did not also
+> change the function to first enable the device's APB clock to be certain
+> the device can respond. This risks hanging the kernel on systems with PWM
+> devices that use more than a single clock.
 >
-> This report didn't happen on the linux-pwm list, or did I miss it?
+> Avoid this by enabling the device's APB clock before accessing its
+> registers (and disabling the clock when register access is complete).
 >
-> What is the reported problem? I would expect a short time where the
-> backlight goes off completely (or on depending on polarity?) when only a
-> small continuous change is expected.
+> Fixes: 457f74abbed0 ("pwm: rockchip: Keep enabled PWMs running while
+> probing")
+> Reported-by: Thierry Reding <thierry.reding@gmail.com>
+> Suggested-by: Trent Piepho <tpiepho@gmail.com>
+> Signed-off-by: Simon South <simon@simonsouth.net>
+> ---
+>  drivers/pwm/pwm-rockchip.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 >
-> > Suggested-by: Taras Galchenko <tpgalchenko@gmail.com>
-> > Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index 77c23a2c6d71..d2058138ce1e 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -332,9 +332,9 @@ static int rockchip_pwm_probe(struct platform_device
+> *pdev)
+>                 return ret;
+>         }
 >
-> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> -       ret =3D clk_prepare(pc->pclk);
+> +       ret =3D clk_prepare_enable(pc->pclk);
+>         if (ret) {
+> -               dev_err(&pdev->dev, "Can't prepare APB clk: %d\n", ret);
+> +               dev_err(&pdev->dev, "Can't enable APB clk: %d\n", ret);
+>                 goto err_clk;
+>         }
 >
-> Best regards
-> Uwe
+> @@ -364,10 +364,12 @@ static int rockchip_pwm_probe(struct platform_devic=
+e
+> *pdev)
+>         if ((ctrl & enable_conf) !=3D enable_conf)
+>                 clk_disable(pc->clk);
+>
+> +       clk_disable(pc->pclk);
+> +
+>         return 0;
+>
+>  err_pclk:
+> -       clk_unprepare(pc->pclk);
+> +       clk_disable_unprepare(pc->pclk);
+>  err_clk:
+>         clk_disable_unprepare(pc->clk);
 >
 > --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
-|
+> 2.29.2
+>
+>
+> _______________________________________________
+> Linux-rockchip mailing list
+> Linux-rockchip@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+>
+>
+>
 >
 
---000000000000ecfc5405b6a7dfda
+--000000000000623b8805b744a45e
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Uwe,</div><div><br></div><div>It was my fault, I cont=
-acted Thierry directly when reporting the problem and did not write to the =
-list.</div><div><br></div><div>The problem I saw is that the backlight neve=
-r gets turned off on A20 SOC no matter what commands I send to /sys/class/b=
-acklight/backlight/bl_power . I&#39;ve investigated the origin of the probl=
-em, that was not present in the kernel 5.6.14, and traced out the patch tha=
-t broke the function.</div><div><br></div><div>Best regards<br></div><div>T=
-aras<br></div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=
-=3D"gmail_attr">=D1=87=D1=82, 17 =D0=B4=D0=B5=D0=BA. 2020 =D0=B3. =D0=B2 14=
-:31, Uwe Kleine-K=C3=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pengutroni=
-x.de">u.kleine-koenig@pengutronix.de</a>&gt;:<br></div><blockquote class=3D=
-"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(2=
-04,204,204);padding-left:1ex">On Wed, Dec 16, 2020 at 06:43:09PM +0100, Thi=
-erry Reding wrote:<br>
-&gt; Commit d3817a647059 (&quot;pwm: sun4i: Remove redundant needs_delay&qu=
-ot;) changed<br>
-&gt; the logic of an else branch so that the PWM_EN and PWM_CLK_GATING bits=
-<br>
-&gt; are now cleared if the PWM is to be disabled, whereas previously the<b=
-r>
-&gt; condition was always false, and hence the branch never got executed.<b=
-r>
-&gt; <br>
-&gt; This code is reported causing backlight issues on boards based on the<=
-br>
-&gt; Allwinner A20 SoC. Fix this by removing the else branch, which restore=
-s<br>
-&gt; the behaviour prior to the offending commit.<br>
-&gt; <br>
-&gt; Note that the PWM_EN and PWM_CLK_GATING bits still get cleared later i=
-n<br>
-&gt; sun4i_pwm_apply() if the PWM is to be disabled.<br>
-&gt; <br>
-&gt; Fixes: d3817a647059 (&quot;pwm: sun4i: Remove redundant needs_delay&qu=
-ot;)<br>
-&gt; Reported-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.c=
-om" target=3D"_blank">tpgalchenko@gmail.com</a>&gt;<br>
-<br>
-This report didn&#39;t happen on the linux-pwm list, or did I miss it?<br>
-<br>
-What is the reported problem? I would expect a short time where the<br>
-backlight goes off completely (or on depending on polarity?) when only a<br=
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>+ David and Steven,=
+<br></div><div><br></div><div>Hi Steven,</div><div>=C2=A0 =C2=A0 please hel=
+p to review this patch set.</div><div><br></div>Thanks<div>- Kever</div></d=
+iv><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Sim=
+on South &lt;<a href=3D"mailto:simon@simonsouth.net">simon@simonsouth.net</=
+a>&gt; =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=97=A5=E5=91=A8=E5=9B=9B =E4=
+=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex">Commit 457f74abbed0 (&quot;pwm: rockchip: =
+Keep enabled PWMs running while<br>
+probing&quot;) modified rockchip_pwm_probe() to access a PWM device&#39;s r=
+egisters<br>
+directly to check whether or not the device is running, but did not also<br=
 >
-small continuous change is expected.<br>
+change the function to first enable the device&#39;s APB clock to be certai=
+n<br>
+the device can respond. This risks hanging the kernel on systems with PWM<b=
+r>
+devices that use more than a single clock.<br>
 <br>
-&gt; Suggested-by: Taras Galchenko &lt;<a href=3D"mailto:tpgalchenko@gmail.=
-com" target=3D"_blank">tpgalchenko@gmail.com</a>&gt;<br>
-&gt; Signed-off-by: Thierry Reding &lt;<a href=3D"mailto:thierry.reding@gma=
-il.com" target=3D"_blank">thierry.reding@gmail.com</a>&gt;<br>
+Avoid this by enabling the device&#39;s APB clock before accessing its<br>
+registers (and disabling the clock when register access is complete).<br>
 <br>
-Reviewed-by: Uwe Kleine-K=C3=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pe=
-ngutronix.de" target=3D"_blank">u.kleine-koenig@pengutronix.de</a>&gt;<br>
+Fixes: 457f74abbed0 (&quot;pwm: rockchip: Keep enabled PWMs running while p=
+robing&quot;)<br>
+Reported-by: Thierry Reding &lt;<a href=3D"mailto:thierry.reding@gmail.com"=
+ target=3D"_blank">thierry.reding@gmail.com</a>&gt;<br>
+Suggested-by: Trent Piepho &lt;<a href=3D"mailto:tpiepho@gmail.com" target=
+=3D"_blank">tpiepho@gmail.com</a>&gt;<br>
+Signed-off-by: Simon South &lt;<a href=3D"mailto:simon@simonsouth.net" targ=
+et=3D"_blank">simon@simonsouth.net</a>&gt;<br>
+---<br>
+=C2=A0drivers/pwm/pwm-rockchip.c | 8 +++++---<br>
+=C2=A01 file changed, 5 insertions(+), 3 deletions(-)<br>
 <br>
-Best regards<br>
-Uwe<br>
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c<br>
+index 77c23a2c6d71..d2058138ce1e 100644<br>
+--- a/drivers/pwm/pwm-rockchip.c<br>
++++ b/drivers/pwm/pwm-rockchip.c<br>
+@@ -332,9 +332,9 @@ static int rockchip_pwm_probe(struct platform_device *p=
+dev)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D clk_prepare(pc-&gt;pclk);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D clk_prepare_enable(pc-&gt;pclk);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret) {<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_err(&amp;pdev-&=
+gt;dev, &quot;Can&#39;t prepare APB clk: %d\n&quot;, ret);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_err(&amp;pdev-&=
+gt;dev, &quot;Can&#39;t enable APB clk: %d\n&quot;, ret);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 goto err_clk;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+<br>
+@@ -364,10 +364,12 @@ static int rockchip_pwm_probe(struct platform_device =
+*pdev)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if ((ctrl &amp; enable_conf) !=3D enable_conf)<=
+br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 clk_disable(pc-&gt;=
+clk);<br>
+<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0clk_disable(pc-&gt;pclk);<br>
++<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 return 0;<br>
+<br>
+=C2=A0err_pclk:<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0clk_unprepare(pc-&gt;pclk);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0clk_disable_unprepare(pc-&gt;pclk);<br>
+=C2=A0err_clk:<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 clk_disable_unprepare(pc-&gt;clk);<br>
 <br>
 -- <br>
-Pengutronix e.K.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| Uwe Kleine-K=C3=B6nig=C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 |<br>
-Industrial Linux Solutions=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0| <a href=3D"https://www.pengutronix.de/" rel=3D"noreferrer" t=
-arget=3D"_blank">https://www.pengutronix.de/</a> |<br>
-</blockquote></div>
+2.29.2<br>
+<br>
+<br>
+_______________________________________________<br>
+Linux-rockchip mailing list<br>
+<a href=3D"mailto:Linux-rockchip@lists.infradead.org" target=3D"_blank">Lin=
+ux-rockchip@lists.infradead.org</a><br>
+<a href=3D"http://lists.infradead.org/mailman/listinfo/linux-rockchip" rel=
+=3D"noreferrer" target=3D"_blank">http://lists.infradead.org/mailman/listin=
+fo/linux-rockchip</a><br>
+<br>
+<br>
+<br>
+</blockquote></div></div></div>
 
---000000000000ecfc5405b6a7dfda--
+--000000000000623b8805b744a45e--
