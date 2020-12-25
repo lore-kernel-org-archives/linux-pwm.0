@@ -1,52 +1,160 @@
-Return-path: <broonie@kernel.org>
-From: Mark Brown <broonie@kernel.org>
-In-Reply-To: <20201104234427.26477-1-digetx@gmail.com>
-References: <20201104234427.26477-1-digetx@gmail.com>
-Message-Id: <160683107675.35139.13466076210885462180.b4-ty@kernel.org>
-Date: Tue, 01 Dec 2020 13:57:56 +0000
+Return-path: <kever.yang@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 00/30] Introduce core voltage scaling for NVIDIA Tegra20/30 SoCs
-To: Liam Girdwood <lgirdwood@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, Peter Chen <Peter.Chen@nxp.com>, Jonathan Hunter <jonathanh@nvidia.com>, u.kleine-koenig@pengutronix.de, Ulf Hansson <ulf.hansson@linaro.org>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Adrian Hunter <adrian.hunter@intel.com>, Peter Geis <pgwipeout@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Dmitry Osipenko <digetx@gmail.com>, Nicolas Chauvet <kwizart@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-mmc@vger.kernel.org, devel@driverdev.osuosl.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org
+References: <cover.1608735481.git.simon@simonsouth.net> <1c2f85dafab03d6f5cdbcac37e7288de8f90e6d8.1608735481.git.simon@simonsouth.net>
+In-Reply-To: <1c2f85dafab03d6f5cdbcac37e7288de8f90e6d8.1608735481.git.simon@simonsouth.net>
+From: Kever Yang <kever.yang@rock-chips.com>
+Date: Fri, 25 Dec 2020 15:13:05 +0800
+Message-ID: <CAKUh=Rx2OhPnARJFEcK6difu1p5hnSHLEQbDghWUKs7zJA-6dQ@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000800ad905b744a876"
+Subject: Re: [PATCH v3 3/7] pwm: rockchip: Replace "bus clk" with "PWM clk"
+To: Simon South <simon@simonsouth.net>
+Cc: tpiepho@gmail.com, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, Robin Murphy <robin.murphy@arm.com>, lee.jones@linaro.org, Heiko Stuebner <heiko@sntech.de>, bbrezillon@kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, David Wu <david.wu@rock-chips.com>, steven.liu@rock-chips.com
 List-ID: <linux-pwm.vger.kernel.org>
 
-On Thu, 5 Nov 2020 02:43:57 +0300, Dmitry Osipenko wrote:
-> Introduce core voltage scaling for NVIDIA Tegra20/30 SoCs, which reduces
-> power consumption and heating of the Tegra chips. Tegra SoC has multiple
-> hardware units which belong to a core power domain of the SoC and share
-> the core voltage. The voltage must be selected in accordance to a minimum
-> requirement of every core hardware unit.
-> 
-> The minimum core voltage requirement depends on:
-> 
-> [...]
+--000000000000800ad905b744a876
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Applied to
++ David and Steven,
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Hi Steven,
+    please help to review this patch set.
 
-Thanks!
+Thanks
+- Kever
 
-[1/1] regulator: Allow skipping disabled regulators in regulator_check_consumers()
-      (no commit info)
+Simon South <simon@simonsouth.net> =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=
+=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+> Clarify the Rockchip PWM driver's error messages by referring to the cloc=
+k
+> that operates a PWM device as the "PWM" clock, rather than the "bus"
+> clock (which is especially misleading in the case of devices that also us=
+e
+> a separate clock for bus access).
+>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Simon South <simon@simonsouth.net>
+> ---
+>  drivers/pwm/pwm-rockchip.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index 0c940c7508ea..3b1aa5daafff 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -309,7 +309,7 @@ static int rockchip_pwm_probe(struct platform_device
+> *pdev)
+>                 pc->clk =3D devm_clk_get(&pdev->dev, NULL);
+>                 if (IS_ERR(pc->clk))
+>                         return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk)=
+,
+> -                                            "Can't get bus clk\n");
+> +                                            "Can't get PWM clk\n");
+>         }
+>
+>         count =3D of_count_phandle_with_args(pdev->dev.of_node,
+> @@ -328,7 +328,7 @@ static int rockchip_pwm_probe(struct platform_device
+> *pdev)
+>
+>         ret =3D clk_prepare_enable(pc->clk);
+>         if (ret) {
+> -               dev_err(&pdev->dev, "Can't prepare enable bus clk: %d\n",
+> ret);
+> +               dev_err(&pdev->dev, "Can't prepare enable PWM clk: %d\n",
+> ret);
+>                 return ret;
+>         }
+>
+> --
+> 2.29.2
+>
+>
+> _______________________________________________
+> Linux-rockchip mailing list
+> Linux-rockchip@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+>
+>
+>
+>
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+--000000000000800ad905b744a876
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>+ David and Steven,=
+<br></div><div><br></div><div>Hi Steven,</div><div>=C2=A0 =C2=A0 please hel=
+p to review this patch set.</div><div><br></div>Thanks<div>- Kever</div></d=
+iv><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Sim=
+on South &lt;<a href=3D"mailto:simon@simonsouth.net">simon@simonsouth.net</=
+a>&gt; =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=97=A5=E5=91=A8=E5=9B=9B =E4=
+=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex">Clarify the Rockchip PWM driver&#39;s erro=
+r messages by referring to the clock<br>
+that operates a PWM device as the &quot;PWM&quot; clock, rather than the &q=
+uot;bus&quot;<br>
+clock (which is especially misleading in the case of devices that also use<=
+br>
+a separate clock for bus access).<br>
+<br>
+Suggested-by: Robin Murphy &lt;<a href=3D"mailto:robin.murphy@arm.com" targ=
+et=3D"_blank">robin.murphy@arm.com</a>&gt;<br>
+Signed-off-by: Simon South &lt;<a href=3D"mailto:simon@simonsouth.net" targ=
+et=3D"_blank">simon@simonsouth.net</a>&gt;<br>
+---<br>
+=C2=A0drivers/pwm/pwm-rockchip.c | 4 ++--<br>
+=C2=A01 file changed, 2 insertions(+), 2 deletions(-)<br>
+<br>
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c<br>
+index 0c940c7508ea..3b1aa5daafff 100644<br>
+--- a/drivers/pwm/pwm-rockchip.c<br>
++++ b/drivers/pwm/pwm-rockchip.c<br>
+@@ -309,7 +309,7 @@ static int rockchip_pwm_probe(struct platform_device *p=
+dev)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pc-&gt;clk =3D devm=
+_clk_get(&amp;pdev-&gt;dev, NULL);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (IS_ERR(pc-&gt;c=
+lk))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 return dev_err_probe(&amp;pdev-&gt;dev, PTR_ERR(pc-&gt;clk),<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 &quot;Can&#39;t get bus clk\n&quot;);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 &quot;Can&#39;t get PWM clk\n&quot;);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 count =3D of_count_phandle_with_args(pdev-&gt;d=
+ev.of_node,<br>
+@@ -328,7 +328,7 @@ static int rockchip_pwm_probe(struct platform_device *p=
+dev)<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D clk_prepare_enable(pc-&gt;clk);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret) {<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_err(&amp;pdev-&=
+gt;dev, &quot;Can&#39;t prepare enable bus clk: %d\n&quot;, ret);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_err(&amp;pdev-&=
+gt;dev, &quot;Can&#39;t prepare enable PWM clk: %d\n&quot;, ret);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+<br>
+-- <br>
+2.29.2<br>
+<br>
+<br>
+_______________________________________________<br>
+Linux-rockchip mailing list<br>
+<a href=3D"mailto:Linux-rockchip@lists.infradead.org" target=3D"_blank">Lin=
+ux-rockchip@lists.infradead.org</a><br>
+<a href=3D"http://lists.infradead.org/mailman/listinfo/linux-rockchip" rel=
+=3D"noreferrer" target=3D"_blank">http://lists.infradead.org/mailman/listin=
+fo/linux-rockchip</a><br>
+<br>
+<br>
+<br>
+</blockquote></div></div></div>
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+--000000000000800ad905b744a876--
