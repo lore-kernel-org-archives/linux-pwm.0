@@ -2,27 +2,28 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F429C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78190C43381
 	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:24:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C4007233A2
-	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:24:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2BC11233A2
+	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726017AbhAMJYI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S1725796AbhAMJYI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Wed, 13 Jan 2021 04:24:08 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:45691 "EHLO
+Received: from guitar.tcltek.co.il ([192.115.133.116]:45702 "EHLO
         mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725796AbhAMJYH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 13 Jan 2021 04:24:07 -0500
+        id S1726207AbhAMJYI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 13 Jan 2021 04:24:08 -0500
 Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 53CA1440458;
-        Wed, 13 Jan 2021 11:23:24 +0200 (IST)
+        by mx.tkos.co.il (Postfix) with ESMTPS id BB8AE44056C;
+        Wed, 13 Jan 2021 11:23:25 +0200 (IST)
 From:   Baruch Siach <baruch@tkos.co.il>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -39,10 +40,12 @@ Cc:     Baruch Siach <baruch@tkos.co.il>, Andrew Lunn <andrew@lunn.ch>,
         Ralph Sennhauser <ralph.sennhauser@gmail.com>,
         linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 0/5] gpio: mvebu: pwm fixes and improvements
-Date:   Wed, 13 Jan 2021 11:22:40 +0200
-Message-Id: <cover.1610529002.git.baruch@tkos.co.il>
+Subject: [PATCH v2 2/5] gpio: mvebu: improve pwm period calculation accuracy
+Date:   Wed, 13 Jan 2021 11:22:42 +0200
+Message-Id: <8be9177df5081ccfbbb5ec6e2fabf5937801f453.1610529002.git.baruch@tkos.co.il>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <cover.1610529002.git.baruch@tkos.co.il>
+References: <cover.1610529002.git.baruch@tkos.co.il>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,41 +53,39 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This series adds a few related fixes to the pwm .apply and .get_state 
-callbacks.
+Change 'off' register value calculation from
 
-The first patch was originally part of the series adding Armada 8K/7K pwm 
-support. I split it out to a separate series following review comments from 
-Uwe Kleine-König who spotted a few more issues. There is no dependency between 
-this and the Armada 8K/7K series.
+  $off = (period - duty_cycle) * clkrate / NSEC_PER_SEC
 
-v2:
+to
 
-Address Uwe Kleine-König comments.
+  $off = (period * clkrate / NSEC_PER_SEC) - $on
 
-  * Improve patch 1/5 summary line
+That is, divide the full period value to reduce rounding error.
 
-  * Add more information to patch 1/5 description
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ drivers/gpio/gpio-mvebu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-  * Add more information to patch 2/5 description
-
-  * Don't round period/duty_cycle up in .apply (patch 3/5)
-
-  * Expand the comment in path 5/5 based on RMK's analysis of hardware 
-    behaviour
-
-  * Add Uwe's Reviewed-by tags
-
-Baruch Siach (5):
-  gpio: mvebu: fix pwm .get_state period calculation
-  gpio: mvebu: improve pwm period calculation accuracy
-  gpio: mvebu: make pwm .get_state closer to idempotent
-  gpio: mvebu: don't limit pwm period/duty_cycle to UINT_MAX
-  gpio: mvebu: document zero pwm duty cycle limitation
-
- drivers/gpio/gpio-mvebu.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
-
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index a912a8fed197..c424d88e9e2b 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -715,9 +715,9 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	else
+ 		on = 1;
+ 
+-	val = (unsigned long long) mvpwm->clk_rate *
+-		(state->period - state->duty_cycle);
++	val = (unsigned long long) mvpwm->clk_rate * state->period;
+ 	do_div(val, NSEC_PER_SEC);
++	val -= on;
+ 	if (val > UINT_MAX)
+ 		return -EINVAL;
+ 	if (val)
 -- 
 2.29.2
 
