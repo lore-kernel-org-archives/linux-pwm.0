@@ -2,102 +2,107 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E84C433DB
-	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B65D6C433DB
+	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:24:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA017233CE
-	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:20:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6DDA62339F
+	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727747AbhAMJUT (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 13 Jan 2021 04:20:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727716AbhAMJUT (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Jan 2021 04:20:19 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7911C061786
-        for <linux-pwm@vger.kernel.org>; Wed, 13 Jan 2021 01:19:38 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kzcJS-0003Pl-2T; Wed, 13 Jan 2021 10:19:34 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kzcJQ-0001dK-Ir; Wed, 13 Jan 2021 10:19:32 +0100
-Date:   Wed, 13 Jan 2021 10:19:32 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     David Wu <david.wu@rock-chips.com>
-Cc:     Kever Yang <kever.yang@rock-chips.com>,
-        Simon South <simon@simonsouth.net>, tpiepho@gmail.com,
-        thierry.reding@gmail.com, Robin Murphy <robin.murphy@arm.com>,
-        lee.jones@linaro.org, Heiko Stuebner <heiko@sntech.de>,
-        bbrezillon@kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, steven.liu@rock-chips.com
-Subject: Re: [PATCH v3 0/7] pwm: rockchip: Eliminate potential =?utf-8?Q?r?=
- =?utf-8?B?YWNlIGNvbmRpdGlvbiB3aGVuIHByb2JpbmfjgJDor7fms6jmhI/vvIzpgq4=?=
- =?utf-8?B?5Lu255Sxa2V2ZXIueWFuZ0BnbWFpbC5jb23ku6Plj5HjgJE=?=
-Message-ID: <20210113091932.k3l2ni2jkhyfa27t@pengutronix.de>
-References: <CAKUh=Ry7=WUmN5OYv5g_E1EHk8jNE-QcOtw_BrMbH+_aP68w8Q@mail.gmail.com>
- <fdd2b3c3-5eaf-bcad-ba57-54b13e891f4a@rock-chips.com>
+        id S1726262AbhAMJYI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 13 Jan 2021 04:24:08 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:45692 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726017AbhAMJYH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 13 Jan 2021 04:24:07 -0500
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 0A30844045F;
+        Wed, 13 Jan 2021 11:23:25 +0200 (IST)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc:     Baruch Siach <baruch@tkos.co.il>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
+        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 1/5] gpio: mvebu: fix pwm .get_state period calculation
+Date:   Wed, 13 Jan 2021 11:22:41 +0200
+Message-Id: <57860e4929a9d20d73f5e003a148b86a9f82310e.1610529002.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <cover.1610529002.git.baruch@tkos.co.il>
+References: <cover.1610529002.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ehrq7v2eww4meykk"
-Content-Disposition: inline
-In-Reply-To: <fdd2b3c3-5eaf-bcad-ba57-54b13e891f4a@rock-chips.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+The period is the sum of on and off values. That is, calculate period as
 
---ehrq7v2eww4meykk
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  ($on + $off) / clkrate
 
-Hi David,
+instead of
 
-On Tue, Jan 05, 2021 at 07:26:16PM +0800, David Wu wrote:
-> Hi Simon,
->=20
-> This series of patches are okay for me, simplify to read pwm
-> register to check pwm whether it is enabled. So,
->=20
-> Revieded-by: David Wu <david.wu@rock-chips.com>
+  $off / clkrate - $on / clkrate
 
-You might want to reply to each patch individually and use "Reviewed-by"
-instead of "Revieded-by" for the patch application tools (like patchwork
-and b4) to properly account for your effort checking the patches.
+that makes no sense.
 
-Best regards
-Uwe
+Reported-by: Russell King <linux@armlinux.org.uk>
+Fixes: 757642f9a584e ("gpio: mvebu: Add limited PWM support")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ drivers/gpio/gpio-mvebu.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 672681a976f5..a912a8fed197 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -676,20 +676,17 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+ 	else
+ 		state->duty_cycle = 1;
+ 
++	val = (unsigned long long) u; /* on duration */
+ 	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm), &u);
+-	val = (unsigned long long) u * NSEC_PER_SEC;
++	val += (unsigned long long) u; /* period = on + off duration */
++	val *= NSEC_PER_SEC;
+ 	do_div(val, mvpwm->clk_rate);
+-	if (val < state->duty_cycle) {
++	if (val > UINT_MAX)
++		state->period = UINT_MAX;
++	else if (val)
++		state->period = val;
++	else
+ 		state->period = 1;
+-	} else {
+-		val -= state->duty_cycle;
+-		if (val > UINT_MAX)
+-			state->period = UINT_MAX;
+-		else if (val)
+-			state->period = val;
+-		else
+-			state->period = 1;
+-	}
+ 
+ 	regmap_read(mvchip->regs, GPIO_BLINK_EN_OFF + mvchip->offset, &u);
+ 	if (u)
+-- 
+2.29.2
 
---ehrq7v2eww4meykk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/+uyEACgkQwfwUeK3K
-7AksIgf+NwFbI6WGzE5vCwhDV8y9kXsBJEgSXVeMXZAM+zOCAaEXINLfSLU9MDxV
-qfNufYi5f6OU61tn1DChNEArSZrk1JOfKYG1x88VKfnvOeMGwib/pkdKFeKuK0LQ
-X0Fb46tUBkBA2rPwPuqYmow/ymEGyo677565VLIF5MWI3DAkaZiSWTyCL/EkcTDc
-upbhbzqIICypuaYePfAsV5gaPW+fPL68WwPqJtUSZsVebZcMrpDvhZpMjbXAtKAe
-+g3x+Mjz6lC3zQrGbW4LUs2SIVgJIf2zL/8rpZcnk2vuN8AgFTueyhgRI+R+e8Ev
-meEXu0lt00YVUVTCBvkpzpwvVdHrXg==
-=3A/3
------END PGP SIGNATURE-----
-
---ehrq7v2eww4meykk--
