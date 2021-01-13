@@ -2,47 +2,61 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D6FC433E0
-	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E529C433DB
+	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:43:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3059723132
-	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:36:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E3D70233F6
+	for <linux-pwm@archiver.kernel.org>; Wed, 13 Jan 2021 09:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbhAMJgd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 13 Jan 2021 04:36:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        id S1727160AbhAMJnM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 13 Jan 2021 04:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727050AbhAMJgc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Jan 2021 04:36:32 -0500
+        with ESMTP id S1726862AbhAMJnM (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Jan 2021 04:43:12 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752C3C061575
-        for <linux-pwm@vger.kernel.org>; Wed, 13 Jan 2021 01:35:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F2AC061786
+        for <linux-pwm@vger.kernel.org>; Wed, 13 Jan 2021 01:42:31 -0800 (PST)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1kzcZD-0005eH-56; Wed, 13 Jan 2021 10:35:51 +0100
+        id 1kzcfa-0006Js-N5; Wed, 13 Jan 2021 10:42:26 +0100
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1kzcZC-0002IQ-Hi; Wed, 13 Jan 2021 10:35:50 +0100
-Date:   Wed, 13 Jan 2021 10:35:46 +0100
+        id 1kzcfL-0002YO-A8; Wed, 13 Jan 2021 10:42:11 +0100
+Date:   Wed, 13 Jan 2021 10:42:07 +0100
 From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Angelo Compagnucci <angelo.compagnucci@gmail.com>
-Cc:     linux-pwm@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] misc: servo-pwm: driver for controlling servo motors via
- PWM
-Message-ID: <20210113093546.5v7kbjoog64dfpij@pengutronix.de>
-References: <20201222213342.2657026-1-angelo.compagnucci@gmail.com>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
+        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 3/5] gpio: mvebu: make pwm .get_state closer to
+ idempotent
+Message-ID: <20210113094207.rh4u7zo7wf64p7uw@pengutronix.de>
+References: <cover.1610529002.git.baruch@tkos.co.il>
+ <1d376a3500e11d8fd2ecaf9ca345977f011079af.1610529002.git.baruch@tkos.co.il>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="g4n5oyrpsiu5y5mt"
+        protocol="application/pgp-signature"; boundary="yhwbnicy5okq5jkw"
 Content-Disposition: inline
-In-Reply-To: <20201222213342.2657026-1-angelo.compagnucci@gmail.com>
+In-Reply-To: <1d376a3500e11d8fd2ecaf9ca345977f011079af.1610529002.git.baruch@tkos.co.il>
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -52,21 +66,26 @@ List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---g4n5oyrpsiu5y5mt
+--yhwbnicy5okq5jkw
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-[Cc +=3D gregkh]
+On Wed, Jan 13, 2021 at 11:22:43AM +0200, Baruch Siach wrote:
+> Round up the result of division in period/duty_cycle calculation to make
+> the result closer to idempotent.
 
-On Tue, Dec 22, 2020 at 10:33:42PM +0100, Angelo Compagnucci wrote:
-> +static int servo_pwm_probe(struct platform_device *pdev)
-> +{
-> [...]
-> +	ret =3D devm_device_add_groups(&pdev->dev, servo_pwm_groups);
+Maybe:
 
-There are very little cases where calling this function is correct and
-I think in the probe function of a platform driver it's always wrong.
+Round up the divisions in .get_state() to make applying the read out
+configuration idempotent in most cases as .apply rounds down.
+
+> Reported-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+
+Other than that:
+
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
 Best regards
 Uwe
@@ -75,19 +94,19 @@ Uwe
 Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
 Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---g4n5oyrpsiu5y5mt
+--yhwbnicy5okq5jkw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/+vu8ACgkQwfwUeK3K
-7Ak+VAf/b2sOgGd10aCb7WVRTr28UQdC4BShes27wRwmKs4Dc7fiAb3BFlXryX5Q
-LqGwlohSG5XSbpHY0KSRX+b6N6+8/WXU1hhn5iHOxbauWNFob9HdFwCqVE7jJFAQ
-C63PRBpGgbdnvZgdlDBnc/QIuG3BvMOvRFwnw7UGnxV75IJGOIMDZxV8fOZouR0p
-d7/S+rVhypJSx5OVTalCmt1b6pylIuy3Se51EwcJ3q1jk7kzFowHzlMsyqwvJklF
-hqHay8cZrt4q8eM8szMvT9gQo/Wf83e2rKshGmYcPwqhAYNbKn1Yiqea/OpoziPo
-MglBXbGZwVvFNsot5T72S6FLPc0K7A==
-=pKyx
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/+wGwACgkQwfwUeK3K
+7AnWIQf/Qx8t1FUfpewVasD2TqeWdPKyYDLuPplQjt7C2YXvER+xYusEERrV7zth
+zNZ+1RYWJkNo+tpIKCH74kmm0qXm6aKauNB1L3Fb0j+lybDyKmwuu8iCXPo1ZTQJ
+/BqqGepqDHEG45U73KwbplTZ6OI95R4XRSmft9rr6AqmWQ27SQI98wGd8UYDxjZy
+LBHSERJ47bXJFVFVPbAzssFROuB6G7/LX9Orae7e6xkqElOfqyM8Mw8sC2d9zYXd
+qOGeYHeXiKGVsAhWv512YzI0zqas/mgMPbBsHZlTgzY6W6a26ysC1PbHctPNmgMX
+eKuO20tEcltYiPmxMW0iryzrwgYJcw==
+=JPRR
 -----END PGP SIGNATURE-----
 
---g4n5oyrpsiu5y5mt--
+--yhwbnicy5okq5jkw--
