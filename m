@@ -1,48 +1,34 @@
-Return-path: <thesven73@gmail.com>
+Date: Fri, 15 Jan 2021 16:47:38 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 1/5] gpio: mvebu: fix pwm .get_state period calculation
+Message-ID: <YAG40eoRhk3f1rlj@ulmo>
+References: <cover.1610529002.git.baruch@tkos.co.il>
+ <57860e4929a9d20d73f5e003a148b86a9f82310e.1610529002.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-References: <20201216125320.5277-1-clemens.gruber@pqgruber.com>
- <20201216125320.5277-2-clemens.gruber@pqgruber.com> <CAGngYiWkKZGkQ4TTTy8bQYvnGBK45V0A0JCe_+M5V+vuVU+zkQ@mail.gmail.com>
- <X9uYqGboZg5DuEtf@workstation.tuxnet> <20210111203532.m3yvq6e5bcpjs7mc@pengutronix.de>
-In-Reply-To: <20210111203532.m3yvq6e5bcpjs7mc@pengutronix.de>
-From: Sven Van Asbroeck <thesven73@gmail.com>
-Date: Fri, 29 Jan 2021 08:42:13 -0500
-Message-ID: <CAGngYiW=KhCOZX3tPMFykXzpWLpj3qusN2OXVPSfHLRcyts+wA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v5 2/7] pwm: pca9685: Support hardware readout
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Clemens Gruber <clemens.gruber@pqgruber.com>, Thierry Reding <thierry.reding@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org
+In-Reply-To: <57860e4929a9d20d73f5e003a148b86a9f82310e.1610529002.git.baruch@tkos.co.il>
 List-ID: <linux-pwm.vger.kernel.org>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@bootlin.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Chris Packham <chris.packham@alliedtelesis.co.nz>, Sascha Hauer <s.hauer@pengutronix.de>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, Jan 11, 2021 at 3:35 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> My position here is: A consumer should disable a PWM before calling
-> pwm_put. The driver should however not enforce this and so should not
-> modify the hardware state in .free().
->
-> Also .probe should not change the PWM configuration.
+On Wed, Jan 13, 2021 at 11:22:41AM +0200, Baruch Siach wrote:
+> The period is the sum of on and off values. That is, calculate period as
+>=20
+>   ($on + $off) / clkrate
+>=20
+> instead of
+>=20
+>   $off / clkrate - $on / clkrate
+>=20
+> that makes no sense.
+>=20
+> Reported-by: Russell King <linux@armlinux.org.uk>
+> Fixes: 757642f9a584e ("gpio: mvebu: Add limited PWM support")
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>  drivers/gpio/gpio-mvebu.c | 19 ++++++++-----------
+>  1 file changed, 8 insertions(+), 11 deletions(-)
 
-I agree that this is the most user-friendly behaviour.
-
-The problem however with the pca9685 is that it has many degrees of
-freedom: there are many possible register values which produce the same
-physical chip outputs.
-
-This could lead to a situation where, if .probe() does not reset the regist=
-er
-values, subsequent writes may lead to different outputs than expected.
-
-One possible solution is to write .get_state() so that it always reads the
-correct state, even if "unconventional" register settings are present, i.e.
-those written by an outside entity, e.g. a bootloader. Then write that
-state back using driver conventions.
-
-This may be trickier than it sounds - after all we've learnt that the pca96=
-85
-looks simple on the surface, but is actually quite challenging to get right=
-.
-
-Clemens, Uwe, what do you think?
-
-Sven
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
