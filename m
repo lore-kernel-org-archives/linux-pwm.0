@@ -2,136 +2,95 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC957C433E6
-	for <linux-pwm@archiver.kernel.org>; Sat, 16 Jan 2021 20:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6B9C433E0
+	for <linux-pwm@archiver.kernel.org>; Sun, 17 Jan 2021 08:01:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8953C22C97
-	for <linux-pwm@archiver.kernel.org>; Sat, 16 Jan 2021 20:57:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 281AF225A9
+	for <linux-pwm@archiver.kernel.org>; Sun, 17 Jan 2021 08:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726788AbhAPU4q (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 16 Jan 2021 15:56:46 -0500
-Received: from mout.gmx.net ([212.227.17.20]:42013 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726785AbhAPU4J (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 16 Jan 2021 15:56:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1610830439;
-        bh=8S9aI3ClrGBcFUY7dvHm0J6Z1DKlVcMmgEJFmYkG5Gw=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=URX2uOP0BbwciB1uYUiHWfahdeLR2+3LihSdeNF4CGyGHl66cao0oFH168KDg/Ke9
-         TonCUIh+VbS97H+Y3qOorDxqqmnnWI/Fcey6GRTHGL/O7bgB0SHRWXCMdUfpNHLVyB
-         zh3MuiCDAd8NBz3n+gxLx7fuAgKSK7iBVTJZ33zk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([37.201.215.209]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MQMyf-1lMWAh2ztR-00MHuL; Sat, 16
- Jan 2021 21:53:58 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        id S1728162AbhAQIBW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 17 Jan 2021 03:01:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728065AbhAQIAp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 17 Jan 2021 03:00:45 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BA1C061573
+        for <linux-pwm@vger.kernel.org>; Sun, 17 Jan 2021 00:00:05 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id q2so25178358iow.13
+        for <linux-pwm@vger.kernel.org>; Sun, 17 Jan 2021 00:00:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=z1Zmgy23OZU14Gtu/GVkoRjETwLoSMU8SPd/pgiAr2k=;
+        b=q9g6RIpIPuyYOpXh5BsAX6U1Q7xfEQcWoR137Y+OpfCW3dLlBbMH/mXSTYFd5wObOO
+         LnDZBttWZVCT6pauWU7eGiRP8NpTLoyzs/cbwG8I4NZOgt7FnAx+ZBTI5F15/9gntPC1
+         4XFOtbevUnCUsWe9m5OIXo8llAoKL7IVNAtcTOwJn+lwmjk4LjYoxJRwX4M96h/M02DV
+         72NBINYsCEIe9W1u0A7arAPHilJMCc5wLAQelnTkQc6joCgV6fDRoeChxmyPuY9iAZvR
+         oARBvYlM1K1apId6aqqZo+9hNNAsek8FRJVB7IQo2vlB5OTaKpOsVRGM0/fpi2newhLt
+         j6ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=z1Zmgy23OZU14Gtu/GVkoRjETwLoSMU8SPd/pgiAr2k=;
+        b=LR0w2jg6mZzS2jR/F39RoQZyXkxK07Cfq+moHI5mT6JSp4CICgC7UxY++CDchulrLV
+         3XotMocX9jB1NyKlCRweRjU4GxmNlBzKfbCh8mOC7NdPBmd30Rp81kwbWL1Bnyvacq1E
+         SfG4hQ9/Riu4qIZbNA99d6SnnZKDeFfgWJvJWLX4IiEyoAF6msPNfs1NERwWjt/hReYB
+         Ua1RZsMCHUZQi0UnrB/SbBC4PusIdUHHVk+6VVSdYy4T7mZkJ4TL8CtWaAMOm4oBN4Ze
+         44Sw+MfmCsTcBjWYREptx5nf0Jvsa2ha7b7mdXjuLKQwURyRSwOWCVCudFimMCzJZ8Cn
+         EsLg==
+X-Gm-Message-State: AOAM530dQHoelHTusb5yC7ZhYA0Tqi1qOSLXlNWGpW6rhcgZ+sYN/ozJ
+        bT1DHctI3EDAgMYEP8f2BPk=
+X-Google-Smtp-Source: ABdhPJyn2LaNYp/YkSpBCi3UIPmcSyRxi0siWPWZAtfoB2xTXuV+7vf3fVJZ9v0VS321wG+XKhLAeA==
+X-Received: by 2002:a02:494:: with SMTP id 142mr3053861jab.65.1610870404745;
+        Sun, 17 Jan 2021 00:00:04 -0800 (PST)
+Received: from einstein.dilieto.eu (smtp.dilieto.eu. [188.68.43.228])
+        by smtp.gmail.com with ESMTPSA id n11sm6289908ioh.37.2021.01.17.00.00.02
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 17 Jan 2021 00:00:04 -0800 (PST)
+Date:   Sun, 17 Jan 2021 08:59:59 +0100
+From:   Nicola Di Lieto <nicola.dilieto@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Mark Brown <broonie@kernel.org>, allen <allen.chen@ite.com.tw>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Josua Mayer <josua.mayer@jm0.eu>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v8 6/7] MAINTAINERS: Add entry for Netronix embedded controller
-Date:   Sat, 16 Jan 2021 20:48:25 +0100
-Message-Id: <20210116194826.3866540-7-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210116194826.3866540-1-j.neuschaefer@gmx.net>
-References: <20210116194826.3866540-1-j.neuschaefer@gmx.net>
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] pwm: pwm-gpio: Generic GPIO bit-banged PWM driver
+Message-ID: <20210117075959.gd7lyi47vuhy5ejf@einstein.dilieto.eu>
+References: <20201222213325.2656124-1-angelo.compagnucci@gmail.com>
+ <20210115081318.ig76unyfp3fqhu5z@pengutronix.de>
+ <CAL_JsqJpm28hvXepfE499Xrdt400sGN6+ZtTboVifi+hYqB44A@mail.gmail.com>
+ <CAL_Jsq+ArehEEnuwC1kfeYiO1UzPnSvfr+OqhkawiPkvyy_dGw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:u0DJpXh3/VFmATk3b2+OGivHMdWFxS49GuyPCDgWwI1vfQzSnhj
- MwJqQcar3AQsRv2J6UQ+nZVJUiSOfkckOLAa4iGnzlFoHiJmjRJO7dprHRgA+JICNl2OqbO
- CarA8SQvpw/oXYICpfTKHrGJOsiuy9KiptoV4E8YcS5FbZODN+jiFPXxHT0Bu0uuomS9k7d
- kiSrPUmJ048fn15i3Qveg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:g2JU5UqzKjE=:1RUtdlFmVSzHHrS6bfDh8r
- 6xeeBjYTHSB/Nhgked09r3Hy4cS1De2spa5tiOi12AuaCnkkapdwjqMuqyEkAx29Kps/448NU
- OgJA97W+IbVt5zuO7em3Ua5eM6dK+lBhTQT87hVTDtHUeckwRzn2klrU8w6pEl/3+1MUTQazb
- 5Bv6ipROkaVIWFUxAAE32NzeoEazDbWa8ogLC3SVPKiNopG110QC/R3sLbECn7oxUb7Vg3X9+
- N6KnjkC4/zyYxHFoUPmpmG4VKenG09+SYGekzud6ON9HGGG4eZ9G+kgHb2AzeaRzLxn6yY0YP
- 3nAWawFQMjWzAiw35W8Nb02A2Pfn21vUomzR1Bd0J8qomtMfrrdcSmbSPXz9lE8QBanNwbcZn
- HMDuljY5DE9WdhtTZ3RuHG5lxtfEHyfvyx+pN89uU8+lg59Eu//xDI2ZicCOTiDehVA8wf7sO
- 5nT68MLOWdvvitjp7mxrlBG3yHL09vS8fQjmKOrJwpmRpTfawQLlQWoc23hBPAZWPEB/bcgcW
- c2FNjorM/sfjZ8Tl2Z4vo43b/Op4Uji3qg1OzQpIiMZnZiHPgXQLN4sie/t1Wn3bmk21N9clt
- dXzNsqrwU+dAO72RkXhBOoVWWmG0WLmCxswxZHs3VTVjAEGJ0WVojDOwCW1juS7QCUx068UWG
- HpCQDV94RdBXdc0MCbyvRyfW+3GB6TZk8vzgho25Gg4WP1oMMit6xwE8Nx5k+S9U/pmuupdTy
- 42yqXaNUCti/iTCeCM4X0NTE/GSaRvVhISBW9+R+/6MquaULeZ0Ye4oLPUNZ67PbVWbZpuvB6
- C2PjXx52w+XAxL9FLqIuFb3oVKIw3IEaiI/NzpYHTP9iV/L1fX4cact7fyhS7wIfEYaziijIA
- F4+jaXqL6nRnNpKDonYA==
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAL_Jsq+ArehEEnuwC1kfeYiO1UzPnSvfr+OqhkawiPkvyy_dGw@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Let's make sure I'll notice when there are patches for the NTXEC
-drivers.
+On Fri, Jan 15, 2021 at 09:08:31AM -0600, Rob Herring wrote:
+>And there's a 3rd one from Vincent that I already reviewed:
+>
+>https://lore.kernel.org/linux-devicetree/20200902121236.20514-1-vincent.whitchurch@axis.com/
+>
+>And one from 5 years ago...:
+>
+>https://lore.kernel.org/patchwork/patch/612159/
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
-v4-v8:
-- no changes
+These 4 patches are in my opinion a clear indication that such a driver 
+is needed and useful. I hope it won't take that long to have at least 
+one merged upstream. You guys just have to choose which one...
 
-v3:
-- https://lore.kernel.org/lkml/20200924192455.2484005-7-j.neuschaefer@gmx.=
-net/
-- Remove pwm and rtc bindings
-
-v2:
-- https://lore.kernel.org/lkml/20200905144503.1067124-2-j.neuschaefer@gmx.=
-net/
-- No changes
-=2D--
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 546aa66428c9f..0c6e739e3afb7 100644
-=2D-- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12298,6 +12298,15 @@ F:	include/net/netrom.h
- F:	include/uapi/linux/netrom.h
- F:	net/netrom/
-
-+NETRONIX EMBEDDED CONTROLLER
-+M:	Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/mfd/netronix,ntxec.yaml
-+F:	drivers/mfd/ntxec.c
-+F:	drivers/pwm/pwm-ntxec.c
-+F:	drivers/rtc/rtc-ntxec.c
-+F:	include/linux/mfd/ntxec.h
-+
- NETRONOME ETHERNET DRIVERS
- M:	Simon Horman <simon.horman@netronome.com>
- R:	Jakub Kicinski <kuba@kernel.org>
-=2D-
-2.29.2
-
+Regards,
+Nicola
