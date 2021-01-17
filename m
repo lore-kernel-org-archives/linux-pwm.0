@@ -4,36 +4,35 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38758C4332D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99E44C43333
 	for <linux-pwm@archiver.kernel.org>; Sun, 17 Jan 2021 13:18:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE61E22226
-	for <linux-pwm@archiver.kernel.org>; Sun, 17 Jan 2021 13:18:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 610732222A
+	for <linux-pwm@archiver.kernel.org>; Sun, 17 Jan 2021 13:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728862AbhAQNSM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 17 Jan 2021 08:18:12 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:52023 "EHLO
+        id S1728976AbhAQNSR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 17 Jan 2021 08:18:17 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:52056 "EHLO
         mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728650AbhAQNSJ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 17 Jan 2021 08:18:09 -0500
+        id S1728650AbhAQNSQ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sun, 17 Jan 2021 08:18:16 -0500
 Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 2C38E440281;
-        Sun, 17 Jan 2021 15:17:17 +0200 (IST)
+        by mx.tkos.co.il (Postfix) with ESMTPS id E5F9E440820;
+        Sun, 17 Jan 2021 15:17:27 +0200 (IST)
 From:   Baruch Siach <baruch@tkos.co.il>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc:     Baruch Siach <baruch@tkos.co.il>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
+Cc:     Baruch Siach <baruch@tkos.co.il>, Andrew Lunn <andrew@lunn.ch>,
         Gregory Clement <gregory.clement@bootlin.com>,
+        Russell King <linux@armlinux.org.uk>,
         Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Chris Packham <chris.packham@alliedtelesis.co.nz>,
@@ -41,9 +40,9 @@ Cc:     Baruch Siach <baruch@tkos.co.il>,
         Ralph Sennhauser <ralph.sennhauser@gmail.com>,
         linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 1/5] gpio: mvebu: fix pwm .get_state period calculation
-Date:   Sun, 17 Jan 2021 15:17:02 +0200
-Message-Id: <588373a200d20da0fa6c2a6c7f1928b4818097e9.1610882271.git.baruch@tkos.co.il>
+Subject: [PATCH v4 4/5] gpio: mvebu: don't limit pwm period/duty_cycle to UINT_MAX
+Date:   Sun, 17 Jan 2021 15:17:05 +0200
+Message-Id: <d84e13d905b0ea578511a2439f825ed90c4ea2e5.1610882271.git.baruch@tkos.co.il>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <cover.1610882271.git.baruch@tkos.co.il>
 References: <cover.1610882271.git.baruch@tkos.co.il>
@@ -54,57 +53,43 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The period is the sum of on and off values. That is, calculate period as
+PWM on/off registers are limited to UINT_MAX. However the state period
+and duty_cycle fields are ns values of type u64. There is no reason to
+limit them to UINT_MAX.
 
-  ($on + $off) / clkrate
-
-instead of
-
-  $off / clkrate - $on / clkrate
-
-that makes no sense.
-
-Reported-by: Russell King <linux@armlinux.org.uk>
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Fixes: 757642f9a584e ("gpio: mvebu: Add limited PWM support")
 Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 ---
- drivers/gpio/gpio-mvebu.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+ drivers/gpio/gpio-mvebu.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 672681a976f5..a912a8fed197 100644
+index 8673ba77af5a..6b017854ce61 100644
 --- a/drivers/gpio/gpio-mvebu.c
 +++ b/drivers/gpio/gpio-mvebu.c
-@@ -676,20 +676,17 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+@@ -669,9 +669,7 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+ 	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_on_duration(mvpwm), &u);
+ 	val = (unsigned long long) u * NSEC_PER_SEC;
+ 	val = DIV_ROUND_UP_ULL(val, mvpwm->clk_rate);
+-	if (val > UINT_MAX)
+-		state->duty_cycle = UINT_MAX;
+-	else if (val)
++	if (val)
+ 		state->duty_cycle = val;
  	else
  		state->duty_cycle = 1;
- 
-+	val = (unsigned long long) u; /* on duration */
- 	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm), &u);
--	val = (unsigned long long) u * NSEC_PER_SEC;
-+	val += (unsigned long long) u; /* period = on + off duration */
-+	val *= NSEC_PER_SEC;
- 	do_div(val, mvpwm->clk_rate);
--	if (val < state->duty_cycle) {
-+	if (val > UINT_MAX)
-+		state->period = UINT_MAX;
-+	else if (val)
-+		state->period = val;
-+	else
+@@ -681,9 +679,7 @@ static void mvebu_pwm_get_state(struct pwm_chip *chip,
+ 	val += (unsigned long long) u; /* period = on + off duration */
+ 	val *= NSEC_PER_SEC;
+ 	val = DIV_ROUND_UP_ULL(val, mvpwm->clk_rate);
+-	if (val > UINT_MAX)
+-		state->period = UINT_MAX;
+-	else if (val)
++	if (val)
+ 		state->period = val;
+ 	else
  		state->period = 1;
--	} else {
--		val -= state->duty_cycle;
--		if (val > UINT_MAX)
--			state->period = UINT_MAX;
--		else if (val)
--			state->period = val;
--		else
--			state->period = 1;
--	}
- 
- 	regmap_read(mvchip->regs, GPIO_BLINK_EN_OFF + mvchip->offset, &u);
- 	if (u)
 -- 
 2.29.2
 
