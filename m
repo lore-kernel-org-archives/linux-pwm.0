@@ -2,75 +2,99 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CF8C433DB
-	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 13:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26AEEC433E6
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 13:49:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4940F206A3
-	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 13:25:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBCD522BE9
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 13:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404497AbhARNZV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 18 Jan 2021 08:25:21 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38236 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391257AbhARMdj (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 18 Jan 2021 07:33:39 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id C6AC5B93C;
-        Mon, 18 Jan 2021 12:32:57 +0000 (UTC)
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     u.kleine-koenig@pengutronix.de
-Cc:     f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        wahrenst@gmx.net, linux-input@vger.kernel.org,
-        dmitry.torokhov@gmail.com, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, p.zabel@pengutronix.de,
-        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
-        linux-clk@vger.kernel.org, sboyd@kernel.org,
-        linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
-        andy.shevchenko@gmail.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: [PATCH v7 03/11] clk: bcm: rpi: Release firmware handle on unbind
-Date:   Mon, 18 Jan 2021 13:32:36 +0100
-Message-Id: <20210118123244.13669-4-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210118123244.13669-1-nsaenzjulienne@suse.de>
-References: <20210118123244.13669-1-nsaenzjulienne@suse.de>
+        id S2404638AbhARNqg (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 18 Jan 2021 08:46:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392387AbhARNqI (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jan 2021 08:46:08 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0C3C061574
+        for <linux-pwm@vger.kernel.org>; Mon, 18 Jan 2021 05:45:28 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id o13so24170121lfr.3
+        for <linux-pwm@vger.kernel.org>; Mon, 18 Jan 2021 05:45:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8dQd7+A52ZDkGB40skQ+3yn5/wm8Y74liVTiwgQqK6c=;
+        b=DvMb96+PmIYvqidU8jRcOj+KZduBkXqQTdZVrL4fRnisM0ZffE9WsPkdPgUdSPDp+z
+         ja25+e1pHguWpjgqUh+a8JdXXB3uxs39pPWkF+dTYdW9IXkcQZI2k/tdwmHwTNWCLc5U
+         fYkddSjz/xdF3d9XE9cYf9lIfEk3P+U212ZbF0rRydxQr4w+8djC/WQIqZNnJvv24UVt
+         kRBjT46Ln0S77nNziNfJx2MGMVvRvto57PQr7YIXVAr1WbXnAtluavy2frrDq85D0pRp
+         ZUlzfoU1UvqWW6XZRPXM9P9v3MomAT7ujAgxXWCJR+LJJhdKFVBaFepNZ9b+QyLrXuNx
+         O7pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8dQd7+A52ZDkGB40skQ+3yn5/wm8Y74liVTiwgQqK6c=;
+        b=n6lCeqbD2R7sc1am3R3lnHeM3SmahtA7Opy4BnUCfuJAhqgu6PsC/SryrxAoxG2kBE
+         BYxOvTSyIfGVGbw1UBC+Jc9WTLdKlUvpuCAH3E5Y8jxav7dRFrN69SCFdRtF0h46+uvy
+         22Tv7QYbOJm9fQ0HHzM9SVOtU5YGUdOBwFm1c0Bopkmd9t93kzh9jzyy2G0WGWo/kU5E
+         4+h+z9LcL3OAjacuzIlh0t9yDhTglbOY2vveaVhZlQEKf081U83IVG78koliKTNsdU8Z
+         5Y2TIH+Kem0doLbdZHm31jyEV+gfjyZ+vPDClNbhwmaShTSE3Imseg6GTcAmcLIJr0uG
+         driw==
+X-Gm-Message-State: AOAM532CGJ+f20i0EMvUfr8KiiURdr2sHaZhPS10NtEZ3nenA/aIaO4w
+        uYczfgFtD6saN/paPF6wnzV+fpoQ7E4I3vGzlxIbPQ==
+X-Google-Smtp-Source: ABdhPJx//X8t9NvMhNYOIe0TB1JQRz1HUUgehXzN/xZmy/HlS8dQdG9msSKmENq2LaNRNGAaMs61U360V74Q0LelAig=
+X-Received: by 2002:a19:495d:: with SMTP id l29mr11055891lfj.465.1610977526746;
+ Mon, 18 Jan 2021 05:45:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1610529002.git.baruch@tkos.co.il>
+In-Reply-To: <cover.1610529002.git.baruch@tkos.co.il>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 18 Jan 2021 14:45:14 +0100
+Message-ID: <CACRpkdZvECD74V2+84+TJOW8cx-OUH-nHOouTxgNGSxkqPzsjw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] gpio: mvebu: pwm fixes and improvements
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
+        linux-pwm@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Use devm_rpi_firmware_get() so as to make sure we release RPi's firmware
-interface when unbinding the device.
+On Wed, Jan 13, 2021 at 10:23 AM Baruch Siach <baruch@tkos.co.il> wrote:
 
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
+> This series adds a few related fixes to the pwm .apply and .get_state
+> callbacks.
+>
+> The first patch was originally part of the series adding Armada 8K/7K pwm
+> support. I split it out to a separate series following review comments fr=
+om
+> Uwe Kleine-K=C3=B6nig who spotted a few more issues. There is no dependen=
+cy between
+> this and the Armada 8K/7K series.
 
- drivers/clk/bcm/clk-raspberrypi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This version looks really good and +/- minor tweaks as indicated by
+Uwe:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-diff --git a/drivers/clk/bcm/clk-raspberrypi.c b/drivers/clk/bcm/clk-raspberrypi.c
-index f89b9cfc4309..dd3b71eafabf 100644
---- a/drivers/clk/bcm/clk-raspberrypi.c
-+++ b/drivers/clk/bcm/clk-raspberrypi.c
-@@ -314,7 +314,7 @@ static int raspberrypi_clk_probe(struct platform_device *pdev)
- 		return -ENOENT;
- 	}
- 
--	firmware = rpi_firmware_get(firmware_node);
-+	firmware = devm_rpi_firmware_get(&pdev->dev, firmware_node);
- 	of_node_put(firmware_node);
- 	if (!firmware)
- 		return -EPROBE_DEFER;
--- 
-2.29.2
-
+Yours,
+Linus Walleij
