@@ -2,101 +2,117 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A09C433DB
-	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 13:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E757BC433DB
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 15:03:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80A1A22BEA
-	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 13:51:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2EE722BF3
+	for <linux-pwm@archiver.kernel.org>; Mon, 18 Jan 2021 15:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404028AbhARNu3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 18 Jan 2021 08:50:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
+        id S2405254AbhARPCt (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 18 Jan 2021 10:02:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404585AbhARNiW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jan 2021 08:38:22 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212ADC061573
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Jan 2021 05:37:42 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id p13so18276973ljg.2
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Jan 2021 05:37:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Bg93XL362AVXGunnCJTntg/2L6/UjPR4wDwgKIbKRBQ=;
-        b=tT22AFPQBXfYUpn4D4t95QOfHW9D9Qdxsp7EDC4Hw9jbXJfWW9Utn1wvM43MralR2g
-         xav95FkmswW7uI2tFYRCyb0t7Sp0HvHB2yW+G0z0Y6XiCsVWs/2GA08DRwH9Hfeit9Sg
-         IU5jWo0EcghY4h7VePzXhh4blu0K5uiAja2OsJCCZA0gz9Yt7vkHdDmAo3x0T6ALMpiE
-         urAQnHkiNGv6LI6emUBmqzhtX9OQDQN3LXWDOzGgQdiTHhP+628CGO6HxF8ScB6NG/D1
-         ahPcfntMi5Rtlx5hZ59i11e6yHfJ3zoaSUdrs0Oy+l78Cudy2QuHnKBUIBisQepssXi8
-         jNMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bg93XL362AVXGunnCJTntg/2L6/UjPR4wDwgKIbKRBQ=;
-        b=OKvNEqVIpRxm6nh6Ttyns3imnRm5Io9jPYSFUf7SjqdCicRJNnfAN2O8Dr9UDtnYFu
-         r3SW20w2kPcgWKGm44fIm0xnhc3PxNAt9XANQTCVouhvVEGGcNgUrZ3muWNsWOq3igsm
-         WjaS0smOpqdVJWqcnqc05LoPKtXeczeQeUPjy/DGOL03oJB7ZZJAx1qOr24xIzZNEGRn
-         86ZvOxJom40aRs0P0OdPwpcEcFrBQLAaZrDpNp28jR9H1bwTBjPkD0pqDsbB4g2bKQ1n
-         fEDsbrUrjASkGNpFuMg3I0yJGTWd0t+wQRVlbY88HQBC5nv395uHw22UAeOKO2L92aua
-         y9AQ==
-X-Gm-Message-State: AOAM533QIOeHcpscrcev4Bh4hT+c/jyqjybNfIdYdtGoPW+yTEXHafM6
-        ddMpc8Y3Tt5aBJIf8BFzZvbEJUGXjMjBUAOxumyCBA==
-X-Google-Smtp-Source: ABdhPJzeQHJVy3mdr4mA/ljVIdYckzrXSuZPp+/KA+MF5yoxp3x7Nk3Kr0MB38f+tIidfsdxYeUVZd9ovK/bH5Ox5QY=
-X-Received: by 2002:a2e:586:: with SMTP id 128mr10785631ljf.273.1610977060672;
- Mon, 18 Jan 2021 05:37:40 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1610364681.git.baruch@tkos.co.il> <5e1b119a51df19ead32561e87ce2ee1441b67154.1610364681.git.baruch@tkos.co.il>
- <CACRpkdZAHpcgzXSJKZyQjBOriALZUoXbw_hBpPa_zxa27=F0hg@mail.gmail.com> <20210112103617.GB1551@shell.armlinux.org.uk>
-In-Reply-To: <20210112103617.GB1551@shell.armlinux.org.uk>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 18 Jan 2021 14:37:29 +0100
-Message-ID: <CACRpkdYvPigW+VXmGg7Wy-K3qWP3Q3QHXu2d1aa=Gt=MQ68UQA@mail.gmail.com>
-Subject: Re: [PATCH v7 3/3] dt-bindings: ap806: document gpio
- marvell,pwm-offset property
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Baruch Siach <baruch@tkos.co.il>, Rob Herring <robh@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, linux-pwm@vger.kernel.org,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
+        with ESMTP id S2393222AbhARPBD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jan 2021 10:01:03 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0A2C061575
+        for <linux-pwm@vger.kernel.org>; Mon, 18 Jan 2021 07:00:23 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l1W0l-0003JB-LH; Mon, 18 Jan 2021 16:00:07 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l1W0V-0007WT-3p; Mon, 18 Jan 2021 15:59:51 +0100
+Date:   Mon, 18 Jan 2021 15:59:50 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Baruch Siach <baruch@tkos.co.il>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
         Sascha Hauer <s.hauer@pengutronix.de>,
+        Ralph Sennhauser <ralph.sennhauser@gmail.com>,
+        linux-pwm@vger.kernel.org,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2 0/5] gpio: mvebu: pwm fixes and improvements
+Message-ID: <20210118145950.57oojkpe2b6zjmsf@pengutronix.de>
+References: <cover.1610529002.git.baruch@tkos.co.il>
+ <CACRpkdZvECD74V2+84+TJOW8cx-OUH-nHOouTxgNGSxkqPzsjw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4tyzmw24tono5g4i"
+Content-Disposition: inline
+In-Reply-To: <CACRpkdZvECD74V2+84+TJOW8cx-OUH-nHOouTxgNGSxkqPzsjw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 11:36 AM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
 
-> In any case, these offsets are a function of how it was originally
-> chosen to describe the hardware in DT, rather than anything about the
-> hardware itself. The choice to use a syscon/regmap is purely an
-> implementation decision rather than something from the hardware, so
-> this DT description is already based around describing what is required
-> for the Linux implementation, rather than purely being a hardware
-> description.
+--4tyzmw24tono5g4i
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-OK I will not complain about it then, this kind of thing happens
-sometimes.
+Hello Linus,
 
-Thanks Russell!
-Linus Walleij
+On Mon, Jan 18, 2021 at 02:45:14PM +0100, Linus Walleij wrote:
+> On Wed, Jan 13, 2021 at 10:23 AM Baruch Siach <baruch@tkos.co.il> wrote:
+>=20
+> > This series adds a few related fixes to the pwm .apply and .get_state
+> > callbacks.
+> >
+> > The first patch was originally part of the series adding Armada 8K/7K p=
+wm
+> > support. I split it out to a separate series following review comments =
+=66rom
+> > Uwe Kleine-K=F6nig who spotted a few more issues. There is no dependenc=
+y between
+> > this and the Armada 8K/7K series.
+>=20
+> This version looks really good and +/- minor tweaks as indicated by
+> Uwe:
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+The most recent version of this series is v4.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--4tyzmw24tono5g4i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmAFomQACgkQwfwUeK3K
+7Aka3Af7Bt/IECK5Ip0iUiop1hHEluezWkLhf/SuXttl/HIkCPoB6m9amFHI68tl
+06Zn/DrJULPj2iVUAtt2x9zSb+cExW+FZDhrol3/Sotuu1ozr7AH4JH7tZIIK9E8
+Q0OL6b4vj6UT+i8rILONZ3tdpBMDNpf+hpucnVEpZIP2WaBlNcqQM3cUBtk+FcdU
+0zNeBiZtYL1O5TEjGyA4h2W/HjP22aKZH/kPJMDT7LS+Bh3w5GWEd5aH8SuRgGaQ
+GBbN0lm7BYNYaHRRaS9KmBe6Pec1UxcP4m1qDJZKCxJwaywlaLI7trEONb6hl27G
+Ask+CpBXZaC+zkYR+kCVp4NoTr6Ebw==
+=yrA0
+-----END PGP SIGNATURE-----
+
+--4tyzmw24tono5g4i--
