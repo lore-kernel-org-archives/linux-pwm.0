@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D5DC433E6
-	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 16:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F4DC433E0
+	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 16:16:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2390C2245C
-	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 16:14:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93AE22245C
+	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 16:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391653AbhASQOd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 19 Jan 2021 11:14:33 -0500
-Received: from mailout.easymail.ca ([64.68.200.34]:43752 "EHLO
+        id S2392147AbhASQO5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 19 Jan 2021 11:14:57 -0500
+Received: from mailout.easymail.ca ([64.68.200.34]:52118 "EHLO
         mailout.easymail.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392090AbhASQNy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Jan 2021 11:13:54 -0500
+        with ESMTP id S2392132AbhASQOu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Jan 2021 11:14:50 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by mailout.easymail.ca (Postfix) with ESMTP id A25C624FE5;
-        Tue, 19 Jan 2021 16:13:12 +0000 (UTC)
+        by mailout.easymail.ca (Postfix) with ESMTP id 707412508A;
+        Tue, 19 Jan 2021 16:14:07 +0000 (UTC)
 X-Virus-Scanned: Debian amavisd-new at emo06-pco.easydns.vpn
 Received: from mailout.easymail.ca ([127.0.0.1])
         by localhost (emo06-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 8UKaFe7EHaky; Tue, 19 Jan 2021 16:13:12 +0000 (UTC)
+        with ESMTP id XzNuQnkCdiqe; Tue, 19 Jan 2021 16:14:07 +0000 (UTC)
 Received: from localhost.localdomain (unknown [108.162.141.195])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mailout.easymail.ca (Postfix) with ESMTPSA id B14F32502E;
-        Tue, 19 Jan 2021 16:12:54 +0000 (UTC)
+        by mailout.easymail.ca (Postfix) with ESMTPSA id 4D8CD25085;
+        Tue, 19 Jan 2021 16:13:48 +0000 (UTC)
 From:   Simon South <simon@simonsouth.net>
 To:     tpiepho@gmail.com, thierry.reding@gmail.com,
         u.kleine-koenig@pengutronix.de, robin.murphy@arm.com,
@@ -39,46 +39,77 @@ To:     tpiepho@gmail.com, thierry.reding@gmail.com,
         linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org
 Cc:     simon@simonsouth.net
-Subject: [PATCH v4 2/5] pwm: rockchip: rockchip_pwm_probe(): Remove superfluous clk_unprepare()
-Date:   Tue, 19 Jan 2021 11:12:06 -0500
-Message-Id: <3c4fa376546368a04d1f35e2c79379cdffce32c2.1610976129.git.simon@simonsouth.net>
+Subject: [PATCH v4 5/5] pwm: rockchip: Enable clock before calling clk_get_rate()
+Date:   Tue, 19 Jan 2021 11:12:09 -0500
+Message-Id: <4924f18fea9b028cab92ad4e79d957f5cb336b9c.1610976129.git.simon@simonsouth.net>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <cover.1610976129.git.simon@simonsouth.net>
 References: <cover.1610976129.git.simon@simonsouth.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-If rockchip_pwm_probe() fails to register a PWM device it calls
-clk_unprepare() for the device's PWM clock, without having first disabled
-the clock and before jumping to an error handler that also unprepares
-it. This is likely to produce warnings from the kernel about the clock
-being unprepared when it is still enabled, and then being unprepared when
-it has already been unprepared.
+The documentation for clk_get_rate() in include/linux/clk.h states the
+function's result is valid only for a clock source that has been
+enabled. However, the Rockchip PWM driver uses this function in two places
+to query the rate of a clock without first ensuring it is enabled.
 
-Prevent these warnings by removing this unnecessary call to
-clk_unprepare().
+Fix this by modifying rockchip_pwm_get_state() and rockchip_pwm_apply() so
+they enable a device's PWM clock before querying its rate (in the latter
+case, the querying is actually done in rockchip_pwm_config()) and disable
+the clock again before returning.
 
-Fixes: 48cf973cae33 ("pwm: rockchip: Avoid glitches on already running PWMs")
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Simon South <simon@simonsouth.net>
 ---
- drivers/pwm/pwm-rockchip.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/pwm/pwm-rockchip.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index e6929bc73968..90f969f9f5e2 100644
+index 228147e9bc6e..6ad7d0a50aed 100644
 --- a/drivers/pwm/pwm-rockchip.c
 +++ b/drivers/pwm/pwm-rockchip.c
-@@ -351,7 +351,6 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+@@ -72,6 +72,10 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
+ 	if (ret)
+ 		return;
  
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
--		clk_unprepare(pc->clk);
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
- 		goto err_pclk;
++	ret = clk_enable(pc->clk);
++	if (ret)
++		return;
++
+ 	clk_rate = clk_get_rate(pc->clk);
+ 
+ 	tmp = readl_relaxed(pc->base + pc->data->regs.period);
+@@ -90,6 +94,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
+ 	else
+ 		state->polarity = PWM_POLARITY_NORMAL;
+ 
++	clk_disable(pc->clk);
+ 	clk_disable(pc->pclk);
+ }
+ 
+@@ -189,6 +194,10 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (ret)
+ 		return ret;
+ 
++	ret = clk_enable(pc->clk);
++	if (ret)
++		return ret;
++
+ 	pwm_get_state(pwm, &curstate);
+ 	enabled = curstate.enabled;
+ 
+@@ -208,6 +217,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  	}
+ 
+ out:
++	clk_disable(pc->clk);
+ 	clk_disable(pc->pclk);
+ 
+ 	return ret;
 -- 
 2.30.0
 
