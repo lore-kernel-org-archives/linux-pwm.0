@@ -2,118 +2,108 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEE6C433E0
-	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 18:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D380C433E0
+	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 19:30:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4D7D222DD3
-	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 18:27:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C97B23109
+	for <linux-pwm@archiver.kernel.org>; Tue, 19 Jan 2021 19:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727730AbhASQSN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 19 Jan 2021 11:18:13 -0500
-Received: from mailout.easymail.ca ([64.68.200.34]:36046 "EHLO
-        mailout.easymail.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391994AbhASQNX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Jan 2021 11:13:23 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mailout.easymail.ca (Postfix) with ESMTP id 31B8E2507D;
-        Tue, 19 Jan 2021 16:12:36 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at emo06-pco.easydns.vpn
-Received: from mailout.easymail.ca ([127.0.0.1])
-        by localhost (emo06-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Jj9WNVIByI26; Tue, 19 Jan 2021 16:12:35 +0000 (UTC)
-Received: from localhost.localdomain (unknown [108.162.141.195])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mailout.easymail.ca (Postfix) with ESMTPSA id CE5382502E;
-        Tue, 19 Jan 2021 16:12:18 +0000 (UTC)
-From:   Simon South <simon@simonsouth.net>
-To:     tpiepho@gmail.com, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, robin.murphy@arm.com,
+        id S1729686AbhASTaG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 19 Jan 2021 14:30:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729920AbhASTXv (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Jan 2021 14:23:51 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF51C061573
+        for <linux-pwm@vger.kernel.org>; Tue, 19 Jan 2021 11:23:10 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l1waj-0005sk-BM; Tue, 19 Jan 2021 20:23:01 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l1wae-00083D-0W; Tue, 19 Jan 2021 20:22:56 +0100
+Date:   Tue, 19 Jan 2021 20:22:55 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Simon South <simon@simonsouth.net>
+Cc:     tpiepho@gmail.com, thierry.reding@gmail.com, robin.murphy@arm.com,
         lee.jones@linaro.org, heiko@sntech.de, bbrezillon@kernel.org,
         david.wu@rock-chips.com, steven.liu@rock-chips.com,
         linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org
-Cc:     simon@simonsouth.net
-Subject: [PATCH v4 0/5] pwm: rockchip: Eliminate potential race condition when probing
-Date:   Tue, 19 Jan 2021 11:12:04 -0500
-Message-Id: <cover.1610976129.git.simon@simonsouth.net>
-X-Mailer: git-send-email 2.30.0
+Subject: Re: [PATCH v4 5/5] pwm: rockchip: Enable clock before calling
+ clk_get_rate()
+Message-ID: <20210119192255.jdhh3l64yp5whzzq@pengutronix.de>
+References: <cover.1610976129.git.simon@simonsouth.net>
+ <4924f18fea9b028cab92ad4e79d957f5cb336b9c.1610976129.git.simon@simonsouth.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="x6xuh3b7pchr56sb"
+Content-Disposition: inline
+In-Reply-To: <4924f18fea9b028cab92ad4e79d957f5cb336b9c.1610976129.git.simon@simonsouth.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This patch series eliminates the race condition Trent Piepho
-identified[0] in the Rockchip PWM driver's rockchip_pwm_probe()
-function, by moving code that checks whether a device is enabled ahead
-of the code that registers it via pwmchip_add().
 
-It includes several other small fixes and improvements to the driver
-as well: It also
+--x6xuh3b7pchr56sb
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-- Fixes a potential kernel hang introduced by my earlier commit
-  457f74abbed0 ("pwm: rockchip: Keep enabled PWMs running while
-  probing") by ensuring a device's APB clock is enabled before its
-  registers are accessed;
+Hello Simon,
 
-- Removes a superfluous call to clk_unprepare() that could produce
-  warnings from the kernel;
+On Tue, Jan 19, 2021 at 11:12:09AM -0500, Simon South wrote:
+> The documentation for clk_get_rate() in include/linux/clk.h states the
+> function's result is valid only for a clock source that has been
+> enabled. However, the Rockchip PWM driver uses this function in two places
+> to query the rate of a clock without first ensuring it is enabled.
+>=20
+> Fix this by modifying rockchip_pwm_get_state() and rockchip_pwm_apply() so
+> they enable a device's PWM clock before querying its rate (in the latter
+> case, the querying is actually done in rockchip_pwm_config()) and disable
+> the clock again before returning.
+>=20
+> Reported-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Simon South <simon@simonsouth.net>
 
-- Clarifies error messages from the driver by replacing "bus clk" with
-  "PWM clk"; and
+I already reviewed this patch in v3 and gave my
 
-- Ensures the driver enables a clock before querying its rate with
-  clk_get_rate(), as stated as a requirement in that function's
-  documentation.
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-This version of the series incorporates Uwe Kleine-König's feedback on
-v3 and includes these changes:
+You make it a bit easier if you add the received tags for new
+iterations.
 
-- Patch 1's commit message has been edited slightly to improve
-  readability, and the error message updated by the patch now reads
-  "prepare enable" rather than just "enable" for consistency with the
-  error message above it in the code.
+Best regards
+Uwe
 
-- Patch 3's commit message now mentions consistency with the device
-  tree.
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-- Patch 4 has been simplified and now just moves the device-enabled
-  check ahead of the call to pwmchip_add(). It no longers changes any
-  error-handling behaviour, and an extraneous pair of parentheses has
-  been removed.
+--x6xuh3b7pchr56sb
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Patches 2 and 5 are unchanged from v3, while the remaining 2 patches
-present in v3 (which removed goto targets from and reordered some
-operations in rockchip_pwm_probe()) have been dropped.
+-----BEGIN PGP SIGNATURE-----
 
-I've tested these changes on my Pinebook Pro (RK3399 with a PWM-driven
-backlight enabled by U-Boot) and ROCK64 (RK3328) and they appear to
-work fine.
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmAHMYwACgkQwfwUeK3K
+7Am37Af/XYu+pcSn5VpL3qw+4p3oSMKyA7rfVzksQ2nEe0rkaLgD35n84d1+uG8I
+aQik3B8P0JxmxreM0J/CJ+D2R+kWWfbc5/SbzTCCXDYdz7vwhBbA5ry+9RahzkII
+2DAWLTd6t1/+N6WF94o1dqVntZ/GlFbq0r+xluL9+aNnirGUnAi4gJajCyB79rI4
+PKxBZpMga/uEGHmNAVI+QnL7RSgGvjNGj7Anv3HyFZrh5yxyeDHZHac1NbO8y1V4
+saqiT/iHE4jrj2XUH276cbbQld/ZEXfZTpdrjNw/eFDmZlhpVqsLMUwG2+h4NDO6
+kErBTD07e0d4kV2j6ZWpRYB8x3X/xw==
+=+wY0
+-----END PGP SIGNATURE-----
 
-[0] https://www.spinics.net/lists/linux-pwm/msg14611.html
-
---
-Simon South
-simon@simonsouth.net
-
-
-Simon South (5):
-  pwm: rockchip: Enable APB clock during register access while probing
-  pwm: rockchip: rockchip_pwm_probe(): Remove superfluous
-    clk_unprepare()
-  pwm: rockchip: Replace "bus clk" with "PWM clk"
-  pwm: rockchip: Eliminate potential race condition when probing
-  pwm: rockchip: Enable clock before calling clk_get_rate()
-
- drivers/pwm/pwm-rockchip.c | 32 +++++++++++++++++++++++---------
- 1 file changed, 23 insertions(+), 9 deletions(-)
-
--- 
-2.30.0
-
+--x6xuh3b7pchr56sb--
