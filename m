@@ -2,72 +2,132 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C325BC433E0
-	for <linux-pwm@archiver.kernel.org>; Thu, 28 Jan 2021 15:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72BCAC433E0
+	for <linux-pwm@archiver.kernel.org>; Thu, 28 Jan 2021 20:58:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7F7FD64DF7
-	for <linux-pwm@archiver.kernel.org>; Thu, 28 Jan 2021 15:10:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3D83964D99
+	for <linux-pwm@archiver.kernel.org>; Thu, 28 Jan 2021 20:58:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232500AbhA1PKC (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 28 Jan 2021 10:10:02 -0500
-Received: from mleia.com ([178.79.152.223]:45828 "EHLO mail.mleia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232240AbhA1PJI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 28 Jan 2021 10:09:08 -0500
-X-Greylist: delayed 386 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 Jan 2021 10:09:07 EST
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 8680642F515;
-        Thu, 28 Jan 2021 15:01:49 +0000 (UTC)
-Subject: Re: [PATCH] pwm: fix semicolon.cocci warnings
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        id S229802AbhA1U6W (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 28 Jan 2021 15:58:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231196AbhA1U6K (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 Jan 2021 15:58:10 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02670C06174A
+        for <linux-pwm@vger.kernel.org>; Thu, 28 Jan 2021 12:57:30 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l5ELu-0001TJ-Ct; Thu, 28 Jan 2021 21:57:18 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l5ELs-0002Ax-DZ; Thu, 28 Jan 2021 21:57:16 +0100
+Date:   Thu, 28 Jan 2021 21:57:16 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
         Thierry Reding <thierry.reding@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel test robot <lkp@intel.com>
+        Vladimir Zapolskiy <vz@mleia.com>, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] pwm: fix semicolon.cocci warnings
+Message-ID: <20210128205716.j2afd32lcxh2l323@pengutronix.de>
 References: <202101282111.dfwxyPwI-lkp@intel.com>
  <20210128134537.GA54687@068c7b848bbb>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <71050e33-97cb-43f0-6ca2-ceb65505406f@mleia.com>
-Date:   Thu, 28 Jan 2021 17:01:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="b6z4cigldfqahqsy"
+Content-Disposition: inline
 In-Reply-To: <20210128134537.GA54687@068c7b848bbb>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20210128_150149_573529_01032E2A 
-X-CRM114-Status: UNSURE (   7.41  )
-X-CRM114-Notice: Please train this message. 
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 1/28/21 3:45 PM, kernel test robot wrote:
+
+--b6z4cigldfqahqsy
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+On Thu, Jan 28, 2021 at 09:45:37PM +0800, kernel test robot wrote:
 > From: kernel test robot <lkp@intel.com>
-> 
+>=20
 > drivers/pwm/pwm-lpc18xx-sct.c:292:2-3: Unneeded semicolon
-> 
-> 
->   Remove unneeded semicolon.
-> 
+>=20
+>=20
+>  Remove unneeded semicolon.
+>=20
 > Generated by: scripts/coccinelle/misc/semicolon.cocci
-> 
+>=20
 > Fixes: e96c0ff4b1e0 ("pwm: Enable compile testing for some of drivers")
+
+This looks wrong. e96c0ff4b1e0 only touches drivers/pwm/Kconfig.
+
+The ; was introduced by commit 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT
+driver")
+
+Best regards
+Uwe
+
 > CC: Krzysztof Kozlowski <krzk@kernel.org>
 > Reported-by: kernel test robot <lkp@intel.com>
 > Signed-off-by: kernel test robot <lkp@intel.com>
+> ---
+>=20
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t master
+> head:   76c057c84d286140c6c416c3b4ba832cd1d8984e
+> commit: e96c0ff4b1e013a4e9174344b0fcda0d566d3689 pwm: Enable compile test=
+ing for some of drivers
+>=20
+>  pwm-lpc18xx-sct.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> --- a/drivers/pwm/pwm-lpc18xx-sct.c
+> +++ b/drivers/pwm/pwm-lpc18xx-sct.c
+> @@ -289,7 +289,7 @@ static int lpc18xx_pwm_request(struct pw
+>  		dev_err(lpc18xx_pwm->dev,
+>  			"maximum number of simultaneous channels reached\n");
+>  		return -EBUSY;
+> -	};
+> +	}
+> =20
+>  	set_bit(event, &lpc18xx_pwm->event_map);
+>  	lpc18xx_data->duty_event =3D event;
+>=20
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---
-Best wishes,
-Vladimir
+--b6z4cigldfqahqsy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmATJSkACgkQwfwUeK3K
+7Al3Hwf+P8VVmOOf5rWtn9MKhYar3Xb7CAMRTa4T77hrdrcAjH7rCxafa4+JooXE
+kgH5pitjPAt41o2YkYmngoMuChVXRswnmRSTURKdSloHh6oqLl27hVhU1PIujPpD
+1nax9rMy/ltwYI0/VFIrDI6oFqMSA6fHmneTzws4QUlg/ANaUhRnnYyRCt89xO0W
+GL6Y0O80U06pjGh4s/PDIQOdiYLARuMBGScvB3xh+VuPWDEqU7BfpSHue7wbWSDs
+rumxGbO+ixaREEQkOR2el4KpQhasENxJ3rFO9jDvdd92Bhx+LFNZoi42RrQIli6m
+RTRr+RQzzis8PBVJKduRK0nUliYbng==
+=Y7CL
+-----END PGP SIGNATURE-----
+
+--b6z4cigldfqahqsy--
