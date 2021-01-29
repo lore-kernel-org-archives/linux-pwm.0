@@ -1,160 +1,102 @@
-Return-path: <kever.yang@gmail.com>
+Return-path: <gregory.clement@bootlin.com>
+From: Gregory CLEMENT <gregory.clement@bootlin.com>
+In-Reply-To: <75637257694de0d4a9e432e1d8270019a4e6328b.1610364681.git.baruch@tkos.co.il>
+References: <cover.1610364681.git.baruch@tkos.co.il>
+ <75637257694de0d4a9e432e1d8270019a4e6328b.1610364681.git.baruch@tkos.co.il>
+Date: Fri, 29 Jan 2021 16:55:10 +0100
+Message-ID: <87wnvvsppd.fsf@BL-laptop>
 MIME-Version: 1.0
-References: <cover.1608735481.git.simon@simonsouth.net> <1c2f85dafab03d6f5cdbcac37e7288de8f90e6d8.1608735481.git.simon@simonsouth.net>
-In-Reply-To: <1c2f85dafab03d6f5cdbcac37e7288de8f90e6d8.1608735481.git.simon@simonsouth.net>
-From: Kever Yang <kever.yang@rock-chips.com>
-Date: Fri, 25 Dec 2020 15:13:05 +0800
-Message-ID: <CAKUh=Rx2OhPnARJFEcK6difu1p5hnSHLEQbDghWUKs7zJA-6dQ@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="000000000000800ad905b744a876"
-Subject: Re: [PATCH v3 3/7] pwm: rockchip: Replace "bus clk" with "PWM clk"
-To: Simon South <simon@simonsouth.net>
-Cc: tpiepho@gmail.com, thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de, Robin Murphy <robin.murphy@arm.com>, lee.jones@linaro.org, Heiko Stuebner <heiko@sntech.de>, bbrezillon@kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, David Wu <david.wu@rock-chips.com>, steven.liu@rock-chips.com
+Content-Type: text/plain
+Subject: Re: [PATCH v7 2/3] arm64: dts: armada: add pwm offsets for ap/cp gpios
+To: Baruch Siach <baruch@tkos.co.il>, Thierry Reding <thierry.reding@gmail.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Baruch Siach <baruch@tkos.co.il>, Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Chris Packham <chris.packham@alliedtelesis.co.nz>, Sascha Hauer <s.hauer@pengutronix.de>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
 
---000000000000800ad905b744a876
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Baruch,
 
-+ David and Steven,
-
-Hi Steven,
-    please help to review this patch set.
-
-Thanks
-- Kever
-
-Simon South <simon@simonsouth.net> =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=
-=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A
-
-> Clarify the Rockchip PWM driver's error messages by referring to the cloc=
-k
-> that operates a PWM device as the "PWM" clock, rather than the "bus"
-> clock (which is especially misleading in the case of devices that also us=
-e
-> a separate clock for bus access).
+> The 'marvell,pwm-offset' property of both GPIO blocks (per CP component)
+> point to the same counter registers offset. The driver will decide how
+> to use counters A/B.
 >
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Simon South <simon@simonsouth.net>
+> This is different from the convention of pwm on earlier Armada series
+> (370/38x). On those systems the assignment of A/B counters to GPIO
+> blocks is coded in both DT and the driver. The actual behaviour of the
+> current driver on Armada 8K/7K is the same as earlier systems.
+>
+> Add also clock properties for base pwm frequency reference.
+>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+
+Applied on mvebu/dt64
+
+Thanks,
+
+Gregory
+
 > ---
->  drivers/pwm/pwm-rockchip.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  arch/arm64/boot/dts/marvell/armada-ap80x.dtsi |  3 +++
+>  arch/arm64/boot/dts/marvell/armada-cp11x.dtsi | 10 ++++++++++
+>  2 files changed, 13 insertions(+)
 >
-> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-> index 0c940c7508ea..3b1aa5daafff 100644
-> --- a/drivers/pwm/pwm-rockchip.c
-> +++ b/drivers/pwm/pwm-rockchip.c
-> @@ -309,7 +309,7 @@ static int rockchip_pwm_probe(struct platform_device
-> *pdev)
->                 pc->clk =3D devm_clk_get(&pdev->dev, NULL);
->                 if (IS_ERR(pc->clk))
->                         return dev_err_probe(&pdev->dev, PTR_ERR(pc->clk)=
-,
-> -                                            "Can't get bus clk\n");
-> +                                            "Can't get PWM clk\n");
->         }
->
->         count =3D of_count_phandle_with_args(pdev->dev.of_node,
-> @@ -328,7 +328,7 @@ static int rockchip_pwm_probe(struct platform_device
-> *pdev)
->
->         ret =3D clk_prepare_enable(pc->clk);
->         if (ret) {
-> -               dev_err(&pdev->dev, "Can't prepare enable bus clk: %d\n",
-> ret);
-> +               dev_err(&pdev->dev, "Can't prepare enable PWM clk: %d\n",
-> ret);
->                 return ret;
->         }
->
-> --
+> diff --git a/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi b/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
+> index 12e477f1aeb9..6614472100c2 100644
+> --- a/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
+> +++ b/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
+> @@ -281,6 +281,9 @@ ap_gpio: gpio@1040 {
+>  					gpio-controller;
+>  					#gpio-cells = <2>;
+>  					gpio-ranges = <&ap_pinctrl 0 0 20>;
+> +					marvell,pwm-offset = <0x10c0>;
+> +					#pwm-cells = <2>;
+> +					clocks = <&ap_clk 3>;
+>  				};
+>  			};
+>  
+> diff --git a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+> index 994a2fce449a..d774a39334d9 100644
+> --- a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+> +++ b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+> @@ -234,12 +234,17 @@ CP11X_LABEL(gpio1): gpio@100 {
+>  				gpio-controller;
+>  				#gpio-cells = <2>;
+>  				gpio-ranges = <&CP11X_LABEL(pinctrl) 0 0 32>;
+> +				marvell,pwm-offset = <0x1f0>;
+> +				#pwm-cells = <2>;
+>  				interrupt-controller;
+>  				interrupts = <86 IRQ_TYPE_LEVEL_HIGH>,
+>  					<85 IRQ_TYPE_LEVEL_HIGH>,
+>  					<84 IRQ_TYPE_LEVEL_HIGH>,
+>  					<83 IRQ_TYPE_LEVEL_HIGH>;
+>  				#interrupt-cells = <2>;
+> +				clock-names = "core", "axi";
+> +				clocks = <&CP11X_LABEL(clk) 1 21>,
+> +					 <&CP11X_LABEL(clk) 1 17>;
+>  				status = "disabled";
+>  			};
+>  
+> @@ -250,12 +255,17 @@ CP11X_LABEL(gpio2): gpio@140 {
+>  				gpio-controller;
+>  				#gpio-cells = <2>;
+>  				gpio-ranges = <&CP11X_LABEL(pinctrl) 0 32 31>;
+> +				marvell,pwm-offset = <0x1f0>;
+> +				#pwm-cells = <2>;
+>  				interrupt-controller;
+>  				interrupts = <82 IRQ_TYPE_LEVEL_HIGH>,
+>  					<81 IRQ_TYPE_LEVEL_HIGH>,
+>  					<80 IRQ_TYPE_LEVEL_HIGH>,
+>  					<79 IRQ_TYPE_LEVEL_HIGH>;
+>  				#interrupt-cells = <2>;
+> +				clock-names = "core", "axi";
+> +				clocks = <&CP11X_LABEL(clk) 1 21>,
+> +					 <&CP11X_LABEL(clk) 1 17>;
+>  				status = "disabled";
+>  			};
+>  		};
+> -- 
 > 2.29.2
 >
->
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
->
->
->
->
 
---000000000000800ad905b744a876
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>+ David and Steven,=
-<br></div><div><br></div><div>Hi Steven,</div><div>=C2=A0 =C2=A0 please hel=
-p to review this patch set.</div><div><br></div>Thanks<div>- Kever</div></d=
-iv><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Sim=
-on South &lt;<a href=3D"mailto:simon@simonsouth.net">simon@simonsouth.net</=
-a>&gt; =E4=BA=8E2020=E5=B9=B412=E6=9C=8824=E6=97=A5=E5=91=A8=E5=9B=9B =E4=
-=B8=8A=E5=8D=8812:01=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
-b(204,204,204);padding-left:1ex">Clarify the Rockchip PWM driver&#39;s erro=
-r messages by referring to the clock<br>
-that operates a PWM device as the &quot;PWM&quot; clock, rather than the &q=
-uot;bus&quot;<br>
-clock (which is especially misleading in the case of devices that also use<=
-br>
-a separate clock for bus access).<br>
-<br>
-Suggested-by: Robin Murphy &lt;<a href=3D"mailto:robin.murphy@arm.com" targ=
-et=3D"_blank">robin.murphy@arm.com</a>&gt;<br>
-Signed-off-by: Simon South &lt;<a href=3D"mailto:simon@simonsouth.net" targ=
-et=3D"_blank">simon@simonsouth.net</a>&gt;<br>
----<br>
-=C2=A0drivers/pwm/pwm-rockchip.c | 4 ++--<br>
-=C2=A01 file changed, 2 insertions(+), 2 deletions(-)<br>
-<br>
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c<br>
-index 0c940c7508ea..3b1aa5daafff 100644<br>
---- a/drivers/pwm/pwm-rockchip.c<br>
-+++ b/drivers/pwm/pwm-rockchip.c<br>
-@@ -309,7 +309,7 @@ static int rockchip_pwm_probe(struct platform_device *p=
-dev)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pc-&gt;clk =3D devm=
-_clk_get(&amp;pdev-&gt;dev, NULL);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (IS_ERR(pc-&gt;c=
-lk))<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 return dev_err_probe(&amp;pdev-&gt;dev, PTR_ERR(pc-&gt;clk),<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 &quot;Can&#39;t get bus clk\n&quot;);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 &quot;Can&#39;t get PWM clk\n&quot;);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 count =3D of_count_phandle_with_args(pdev-&gt;d=
-ev.of_node,<br>
-@@ -328,7 +328,7 @@ static int rockchip_pwm_probe(struct platform_device *p=
-dev)<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D clk_prepare_enable(pc-&gt;clk);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret) {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_err(&amp;pdev-&=
-gt;dev, &quot;Can&#39;t prepare enable bus clk: %d\n&quot;, ret);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dev_err(&amp;pdev-&=
-gt;dev, &quot;Can&#39;t prepare enable PWM clk: %d\n&quot;, ret);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return ret;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
--- <br>
-2.29.2<br>
-<br>
-<br>
-_______________________________________________<br>
-Linux-rockchip mailing list<br>
-<a href=3D"mailto:Linux-rockchip@lists.infradead.org" target=3D"_blank">Lin=
-ux-rockchip@lists.infradead.org</a><br>
-<a href=3D"http://lists.infradead.org/mailman/listinfo/linux-rockchip" rel=
-=3D"noreferrer" target=3D"_blank">http://lists.infradead.org/mailman/listin=
-fo/linux-rockchip</a><br>
-<br>
-<br>
-<br>
-</blockquote></div></div></div>
-
---000000000000800ad905b744a876--
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
