@@ -2,62 +2,95 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA77C433E0
-	for <linux-pwm@archiver.kernel.org>; Wed,  3 Feb 2021 02:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B990C433E0
+	for <linux-pwm@archiver.kernel.org>; Wed,  3 Feb 2021 07:46:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 314E264F68
-	for <linux-pwm@archiver.kernel.org>; Wed,  3 Feb 2021 02:51:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2CA264E3E
+	for <linux-pwm@archiver.kernel.org>; Wed,  3 Feb 2021 07:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbhBCCuw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 2 Feb 2021 21:50:52 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:37022 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230286AbhBCCuv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Feb 2021 21:50:51 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UNizxU5_1612320606;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UNizxU5_1612320606)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 03 Feb 2021 10:50:07 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     thierry.reding@gmail.com
-Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org, vz@mleia.com,
+        id S232223AbhBCHqu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 3 Feb 2021 02:46:50 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55401 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231956AbhBCHqt (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 3 Feb 2021 02:46:49 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l7CpO-0000ZG-Mn; Wed, 03 Feb 2021 08:43:54 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1l7CpN-0005Dj-QG; Wed, 03 Feb 2021 08:43:53 +0100
+Date:   Wed, 3 Feb 2021 08:43:53 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, vz@mleia.com,
         linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH] pwm: lpc18xx-sct: remove unneeded semicolon
-Date:   Wed,  3 Feb 2021 10:50:05 +0800
-Message-Id: <1612320605-6430-1-git-send-email-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pwm: lpc18xx-sct: remove unneeded semicolon
+Message-ID: <20210203074353.judxqscjba6ph7qu@pengutronix.de>
+References: <1612320605-6430-1-git-send-email-yang.lee@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xoijghsafgj7dcgf"
+Content-Disposition: inline
+In-Reply-To: <1612320605-6430-1-git-send-email-yang.lee@linux.alibaba.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Eliminate the following coccicheck warning:
-./drivers/pwm/pwm-lpc18xx-sct.c:292:2-3: Unneeded semicolon
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/pwm/pwm-lpc18xx-sct.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--xoijghsafgj7dcgf
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index dc5133b..7ef4024 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -289,7 +289,7 @@ static int lpc18xx_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 		dev_err(lpc18xx_pwm->dev,
- 			"maximum number of simultaneous channels reached\n");
- 		return -EBUSY;
--	};
-+	}
- 
- 	set_bit(event, &lpc18xx_pwm->event_map);
- 	lpc18xx_data->duty_event = event;
--- 
-1.8.3.1
+On Wed, Feb 03, 2021 at 10:50:05AM +0800, Yang Li wrote:
+> Eliminate the following coccicheck warning:
+> ./drivers/pwm/pwm-lpc18xx-sct.c:292:2-3: Unneeded semicolon
+>=20
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+But this is prior art:
+https://lore.kernel.org/r/20210128134537.GA54687@068c7b848bbb
+
+This patch is better though as it doesn't have a bogus Fixes: line.
+
+*shrug*, I let Thierry decide which one to pick up.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--xoijghsafgj7dcgf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmAaVDYACgkQwfwUeK3K
+7AnY3QgAnhJW6xrm1dfNxyfMToFJ7FJ+D8AVVWp18RLDoVCvXTNcdNonJz87C3Yz
+kGYGjBvqPNBJY3ad6UP3VbPKpx6ZCDS452eYMHwG5CgCz1GgFheR8kVL/0HneTnD
+ea/ezvGVO1ntjtlkadaXRObP/lVh3alYDduUHqWmS33sxF+M/BccKEiMMFee1S6X
+q/6qXxQ7Pz44l/spdASPtnogWcPmWMx+7/5qjDyx8Ir215DXgCSAlfnEFgbSGHa2
+rKrOzj2i/qsw2k8/a+xfHk6kOLI5F8v3U29iWVdXSiHSwHJK2mUhfYSLn6LW9OoV
+pIDO5Y1XWQdMwCSjXBDlBVSVzbXGPw==
+=c/Sp
+-----END PGP SIGNATURE-----
+
+--xoijghsafgj7dcgf--
