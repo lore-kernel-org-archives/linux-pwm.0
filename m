@@ -2,123 +2,229 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FB6C433E6
-	for <linux-pwm@archiver.kernel.org>; Thu,  4 Feb 2021 22:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1B3C43381
+	for <linux-pwm@archiver.kernel.org>; Fri,  5 Feb 2021 22:19:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4B3BC64DBA
-	for <linux-pwm@archiver.kernel.org>; Thu,  4 Feb 2021 22:06:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8A55E64F9F
+	for <linux-pwm@archiver.kernel.org>; Fri,  5 Feb 2021 22:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbhBDWGW (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 4 Feb 2021 17:06:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbhBDWGU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Feb 2021 17:06:20 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FCFC061786;
-        Thu,  4 Feb 2021 14:05:39 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id b3so5374358wrj.5;
-        Thu, 04 Feb 2021 14:05:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=56KnJBwSfnG6kpXjFMHfjWJrXx2nsGISNcSRtvkICbk=;
-        b=j0LJWJrEJZl/2L4lmFs/WK4VFs0R/IZYeUDqj+UC7DF/V82JPz8qeZGM/pBaUlW0Wr
-         P6EaTSoGTRhjv/9WvQd4q/V4WFPOIxy0BZVKEB+QPf7nMvvm1jyiBSe8CfFIwb/bU+fu
-         eJgSFiYGNUGFfsliaHNYkPe/amEvn0LVVuyEM1UVDmVCpP47l+aktMFWsD7siwP7TuUO
-         0G48alBlF/g0UJ4Z7CrxYwS7POL904kYqcCehTkZQ9wtHyO2Q2FZphecyOD0iNbXXEzy
-         Jetq92xlNhiSLkZ3piDX3gqEJ+0SYcTnCAZIqSEt/d13RR7SgucPH3D8Yy6Uf58f05ou
-         Gf5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=56KnJBwSfnG6kpXjFMHfjWJrXx2nsGISNcSRtvkICbk=;
-        b=qk6ew+UNBMgxOI+lKI6X0uVOCCcROLWD2YV53EymUUjtdN9/Z7fD7kyGuu4IEiOdpj
-         LvQUQYptGtrCNkOh97AVXgbh+glj2ibwHOHMKQZvynPT05G5YP4Jbw17skT/MdRT398T
-         QtIEGagLst6d4fTzoEl4HmIDxj1fCnsPUD/r08JG+1+QNLBdtHnGbpzEOJpJsLlQD98W
-         XHE2YwQ0drWgsXI//0yrVtT7KVxsZQi0MHqcPLHhXuqX8yTGz68Jr2kGR/Rfp4JpIiho
-         YD8i7y/lfEPF/br59iHNrEBSl1KeK2FBGIU1L48swkbOw3O8EFt3W/9b7wHuKdEYZnkO
-         KxHA==
-X-Gm-Message-State: AOAM533sxBZtpLEX8/svTl76etEejOFaKsH9k13dH8xRpwbctxunce+Z
-        VIRgKn8KSw6q8aqaCpF9agtCTV6a2GA=
-X-Google-Smtp-Source: ABdhPJy15nkmlprftfAKohKK05Ozo9o6pS4CvgmFwCu1N7Nm/Ju/NtyLyD9IJ+uuVH9B4dMLJBCM/w==
-X-Received: by 2002:a5d:560c:: with SMTP id l12mr1425234wrv.417.1612476338544;
-        Thu, 04 Feb 2021 14:05:38 -0800 (PST)
-Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id u142sm7561283wmu.3.2021.02.04.14.05.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Feb 2021 14:05:37 -0800 (PST)
-Date:   Thu, 4 Feb 2021 23:05:35 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, Ban Tao <fengzheng923@gmail.com>,
-        linux-kernel@vger.kernel.org, mripard@kernel.org, wens@csie.org,
-        kernel@pengutronix.de
+        id S232609AbhBEWS0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 5 Feb 2021 17:18:26 -0500
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:44351 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232710AbhBEOeG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 Feb 2021 09:34:06 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id A71127DA;
+        Fri,  5 Feb 2021 11:12:01 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Fri, 05 Feb 2021 11:12:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:content-transfer-encoding:in-reply-to; s=fm2; bh=P
+        RZqKf7lsxMpUiRCiHe2f26y9RuSEPh83D4t+a5YnDI=; b=O9WE39yuJimMdhmEK
+        Oh7kP+0ctQ0BbS0Gzg4CCtNU/EhOTAM6VDNVnPpgeYLyO8QEZKBGETWjAWIKRz5u
+        C8b+PXuwuFo9hCGjnG90rL66U93CxIa7kVQKdd1kkCwuYrKciEY9kwFrg9I9dJ7d
+        70STTT7wbu122UYlDN3l45xNpJRZ4Fixo4uDcKbAXnjE7/Dx58sauRbq54dWPHxk
+        1tFe00BJHBCnYq3i94K/Y4jM9GdvSXm5JoN7X1K1wjiIfLHniU5kHMgYlA6Hvgrl
+        F6Yn6qgkaXHMHg0sk7ALhwNH7wJKfiiVubWshmgwBM5xTXwIg3EH8iST+4BaELTl
+        FAGrw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=PRZqKf7lsxMpUiRCiHe2f26y9RuSEPh83D4t+a5Yn
+        DI=; b=HvZ4TyXYoBJjChzAjp3LsoVIFGD5X20D5V/Q8mPiaKvWHBr+VF7EOMRyW
+        0MTbwiPPFOWxysTHf0lsgX+dT7i49w4BDjrWDbJjAQb8ECqNXDL9RjBKf0iN4e+g
+        vvvNoUXUGfL5gDimuQwOX6Aer4FoKo1wh8TELN9wkeVQh7+Bvv3mShB3GLG/3Cdg
+        H5bMTkPWZctNEh70RvxZNO5BC82SSL/TuVtDz2OQspGctBzPBjJI2B6e3dMv1sVz
+        3PWOdRxkcgZEfo9jCehUFXeowOqIiSfe1mbhRUMGOPdeFh0bJvvgd1gZl0FG8sLS
+        rlqXxXXg9CCoAFct6laH5k2S7GExg==
+X-ME-Sender: <xms:UG4dYFwmsp1RaDLckf2VZIU-JwkMHrvybMRk1-7W1bKvZampdLjPCw>
+    <xme:UG4dYFN-lsDLS8uvU77R3udQ7S4ARSz2vHg4jv8oTEx0Qp2kcxYRkFIP6WvL5cJ0k
+    oVJu59QP20alFCQiGQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrgeeigdejudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtugfgjgesthhqre
+    dttddtjeenucfhrhhomhepofgrgihimhgvucftihhprghrugcuoehmrgigihhmvgestggv
+    rhhnohdrthgvtghhqeenucggtffrrghtthgvrhhnpefgjeejkeejtddtteehtdefleetfe
+    ffuddvvedvhfdtieduteeljeegleeffeeuvdenucfkphepledtrdekledrieekrdejieen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigih
+    hmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:UG4dYMNQO0U0KI1IxfR8IgNIw_avqnycneeuA7m_S7058DnF3FOJkQ>
+    <xmx:UG4dYPSBPxQIQI4849S5dE9nJB2k6lMebff34WHqaweaPsNTpybeuQ>
+    <xmx:UG4dYGCWuiH4HEdCR1a_Ifw98FBxQ5qGqERdgNfz9XEQJ6S_yeLdFw>
+    <xmx:UW4dYBdSqng_4wvBTrT9OO2eSjIJ1hL3ntUY0TrsiK3smG1qFJFqQg>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7848324005A;
+        Fri,  5 Feb 2021 11:12:00 -0500 (EST)
+Date:   Fri, 5 Feb 2021 17:11:58 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     =?utf-8?B?54+t5rab?= <fengzheng923@gmail.com>
+Cc:     thierry.reding@gmail.com,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, wens@csie.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 Subject: Re: [PATCH v2] pwm: sunxi: Add Allwinner SoC PWM controller driver
-Message-ID: <YBxvr9WFlZac8rlO@ulmo>
+Message-ID: <20210205161158.gqinjayxcihtiofe@gilmour>
 References: <20210203125317.1975-1-fengzheng923@gmail.com>
- <20210203151200.fdzzq23teoypbxad@pengutronix.de>
- <YBrQTM5iADZgA2v1@ulmo>
- <20210203205913.dvmppahnkmcj2dac@pengutronix.de>
- <YBv44P71Z0cD1BSG@ulmo>
- <20210204135436.xkxkp6qxjpcnfxgg@pengutronix.de>
+ <20210203154628.infi5jnlofdrysvs@gilmour>
+ <CAE=m61-oXn8CkzUpSxkuS-gLkxjwd8wSeL42Q5T+27_V89xgNw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zbXPBPsjyzoUiVCH"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210204135436.xkxkp6qxjpcnfxgg@pengutronix.de>
-User-Agent: Mutt/2.0.5 (da5e3282) (2021-01-21)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAE=m61-oXn8CkzUpSxkuS-gLkxjwd8wSeL42Q5T+27_V89xgNw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi,
 
---zbXPBPsjyzoUiVCH
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Feb 04, 2021 at 02:54:36PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Thierry,
+On Thu, Feb 04, 2021 at 11:47:34AM +0800, =E7=8F=AD=E6=B6=9B wrote:
+> Maxime Ripard <maxime@cerno.tech> =E4=BA=8E2021=E5=B9=B42=E6=9C=883=E6=97=
+=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=8811:46=E5=86=99=E9=81=93=EF=BC=9A
 >=20
-> On Thu, Feb 04, 2021 at 02:38:40PM +0100, Thierry Reding wrote:
-> > All I'm saying is that I don't think we need to require everyone to
-> > adopt a prefix, especially if this hasn't been followed consistently,
-> > because then we don't actually gain anything.
+> > Hi,
+> >
+> > On Wed, Feb 03, 2021 at 08:53:17PM +0800, Ban Tao wrote:
+> > > From: Ban Tao <fengzheng923@gmail.com>
+> > >
+> > > The Allwinner R818, A133, R329, V536 and V833 has a new PWM controller
+> > > IP compared to the older Allwinner SoCs.
+> > >
+> > > Signed-off-by: Ban Tao <fengzheng923@gmail.com>
+> >
+> > Thanks for your patch. There's a bunch of warnings reported by
+> > checkpatch --strict, they should be addressed.
+> >
+> > > ---
+> > > v1->v2:
+> > > 1.delete unnecessary code.
+> > > 2.using a named define for some constants.
+> > > 3.Add comment in sun50i_pwm_config function.
+> > > 4.using dev_err_probe() for error handling.
+> > > 5.disable the clock after pwmchip_remove().
+> > > ---
+> > >  MAINTAINERS              |   6 +
+> > >  drivers/pwm/Kconfig      |  11 ++
+> > >  drivers/pwm/Makefile     |   1 +
+> > >  drivers/pwm/pwm-sun50i.c | 348 +++++++++++++++++++++++++++++++++++++=
+++
+> > >  4 files changed, 366 insertions(+)
+> > >  create mode 100644 drivers/pwm/pwm-sun50i.c
+> > >
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index e73636b75f29..d33cf1b69b43 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -737,6 +737,12 @@ L:       linux-media@vger.kernel.org
+> > >  S:   Maintained
+> > >  F:   drivers/staging/media/sunxi/cedrus/
+> > >
+> > > +ALLWINNER PWM DRIVER
+> > > +M:   Ban Tao <fengzheng923@gmail.com>
+> > > +L:   linux-pwm@vger.kernel.org
+> > > +S:   Maintained
+> > > +F:   drivers/pwm/pwm-sun50i.c
+> > > +
+> > >  ALPHA PORT
+> > >  M:   Richard Henderson <rth@twiddle.net>
+> > >  M:   Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> > > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > > index 9a4f66ae8070..17635a8f2ed3 100644
+> > > --- a/drivers/pwm/Kconfig
+> > > +++ b/drivers/pwm/Kconfig
+> > > @@ -552,6 +552,17 @@ config PWM_SUN4I
+> > >         To compile this driver as a module, choose M here: the module
+> > >         will be called pwm-sun4i.
+> > >
+> > > +config PWM_SUN50I
+> > > +     tristate "Allwinner enhanced PWM support"
+> > > +     depends on ARCH_SUNXI || COMPILE_TEST
+> > > +     depends on HAS_IOMEM && COMMON_CLK
+> > > +     help
+> > > +       Enhanced PWM framework driver for Allwinner R818, A133, R329,
+> > > +       V536 and V833 SoCs.
+> > > +
+> > > +       To compile this driver as a module, choose M here: the module
+> > > +       will be called pwm-sun50i.
+> > > +
+> >
+> > Even though it's unfortunate, there's a bunch of other SoCs part of the
+> > sun50i family that are supported by the sun4i driver.
+> >
+> > Which SoC introduced that new design? It's usually the name we pick up
+> > then.
+> >
 >=20
-> Is "we didn't do this consistently in the past" a reason to never
-> improve here? I hope it's not ...
+> In fact, some SoCs has not been supported by the sun4i driver, such as v8=
+33,
+> v536, r818, a133 and r329.
+> v833 and v536 are part of the sun8i family, but r818, a133 and r329 are
+> part of the sun50i family.
 
-You're implying that consistently using a prefix is an improvement. I
-don't agree, so I don't see a need to introduce any new rules for this.
+Indeed, I missed that sorry.=20
 
-Thierry
+> So,I'm confused, how do choose the name of this driver?
 
---zbXPBPsjyzoUiVCH
-Content-Type: application/pgp-signature; name="signature.asc"
+Just go for the earliest SoC that introduced that design. What was the
+first SoC to use it?
 
------BEGIN PGP SIGNATURE-----
+> > > +static const struct sun50i_pwm_data sun8i_pwm_data_c9 =3D {
+> > > +     .npwm =3D 9,
+> > > +};
+> > > +
+> > > +static const struct sun50i_pwm_data sun50i_pwm_data_c16 =3D {
+> > > +     .npwm =3D 16,
+> > > +};
+> > > +
+> > > +static const struct of_device_id sun50i_pwm_dt_ids[] =3D {
+> > > +     {
+> > > +             .compatible =3D "allwinner,sun8i-v833-pwm",
+> > > +             .data =3D &sun8i_pwm_data_c9,
+> > > +     }, {
+> > > +             .compatible =3D "allwinner,sun8i-v536-pwm",
+> > > +             .data =3D &sun8i_pwm_data_c9,
+> > > +     }, {
+> > > +             .compatible =3D "allwinner,sun50i-r818-pwm",
+> > > +             .data =3D &sun50i_pwm_data_c16,
+> > > +     }, {
+> > > +             .compatible =3D "allwinner,sun50i-a133-pwm",
+> > > +             .data =3D &sun50i_pwm_data_c16,
+> > > +     }, {
+> > > +             .compatible =3D "allwinner,sun50i-r329-pwm",
+> > > +             .data =3D &sun8i_pwm_data_c9,
+> > > +     }, {
+> > > +             /* sentinel */
+> > > +     },
+> > > +};
+> > > +MODULE_DEVICE_TABLE(of, sun50i_pwm_dt_ids);
+> >
+> > What are the differences between all these SoCs? If there's none between
+> > the v833, v536 and R329, and between the r818 and the A133, you should
+> > use the same compatible.
+>=20
+> Compared with the sun4i driver, this patch is a completely different PWM =
+IP
+> controller.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmAcb6wACgkQ3SOs138+
-s6HnlA/+O4I3Ic/hHwHv24pmoOwjrXfNBCbW5xETutQq3l6YecKxSIfMniy7S/V1
-TjMKYp181CYpumXIPAk1KJWEcbgLQbyJMKqVPWF3AJvzX7ImTUFpJb87NRGt1Yh0
-fTAh9DB4EtpOo2lW0YUsix8rtjoBws2WB7+yvkDV093HaGJ2MadL4UWl3SUw6x93
-+VgfUW/y66blcnSW3lW+mXjKjj7R7ArO45QmU0VhKDyFpGdcTAdk2hzTQqeygqWb
-GnGKps5ce8/rViEbvr1DvyytGp8voPSt7NMg0jnaQqcrA2dgsH/A3bY1HF5S3K15
-+ev0+Jq+PThhUA8SsDQiK3eL+uQ0TvfZrqBvYU4Lk9ASBh97+BmBQFIl9xgqDbcc
-jHZM00icitCQAObwWQFnZD50sZtSkfDZ6RweiReMTboSMBvI2BtpF04jkFPWzjU0
-wgx18jLtNAl0jautotaQfYv3FLBNHBL35kgf29Slrc17fFv7vLrPS/OLTrPkZXgV
-VS96pULfFDI//4XgYRt6T6lFxvyBjXGfkc4Gk8dM5RaW4pXyEz8ApgpU+OLNIaMt
-wU8H84tX0nSuFohBmfouw1Bzc5bHOJp2CaKlW9B5RRjF6JJ8F48G3DR5JELWQVSf
-WKisWSVVujHOnQlfFIhOXVjqEOzYQfxjZTSb/Fx76Bo/+m5em3s=
-=R7MP
------END PGP SIGNATURE-----
+Sure, I didn't mean to compare it to sun4i. What I meant was that as far
+as these struct goes, the A133 and the R818 look to have the same PWM
+controller. Just like the v833, v536 and R329.
 
---zbXPBPsjyzoUiVCH--
+If the PWM controllers are indeed identical across those SoCs, you can
+just use two compatibles, one for the PWM with 9 channels (again, the
+earliest SoC among the V833, v536 and r329), and one for the PWM with 16
+channels.
+
+None of those SoCs are supported at the moment in Linux though, so it
+would make more sense to support them first before adding a new driver
+for those SoCs, it's gonna be dead code otherwise.
+
+Maxime
