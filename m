@@ -2,81 +2,89 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F29C433DB
-	for <linux-pwm@archiver.kernel.org>; Sun,  7 Feb 2021 11:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19465C433E0
+	for <linux-pwm@archiver.kernel.org>; Mon,  8 Feb 2021 20:57:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F01A764E43
-	for <linux-pwm@archiver.kernel.org>; Sun,  7 Feb 2021 11:13:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C0CDD64E7A
+	for <linux-pwm@archiver.kernel.org>; Mon,  8 Feb 2021 20:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbhBGLN1 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 7 Feb 2021 06:13:27 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:12081 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbhBGLN0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 7 Feb 2021 06:13:26 -0500
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DYRKY3MdlzMWRN;
-        Sun,  7 Feb 2021 19:10:57 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.498.0; Sun, 7 Feb 2021 19:12:37 +0800
-From:   Tian Tao <tiantao6@hisilicon.com>
-To:     <jdelvare@suse.com>, <linux@roeck-us.net>,
-        <thierry.reding@gmail.com>, <lee.jones@linaro.org>
-CC:     <openbmc@lists.ozlabs.org>, <linux-hwmon@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-Subject: [PATCH] hwmon: (npcm750-pwm-fan): replace spin_lock_irqsave by spin_lock in hard IRQ
-Date:   Sun, 7 Feb 2021 19:12:13 +0800
-Message-ID: <1612696333-50502-1-git-send-email-tiantao6@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
+        id S234397AbhBHU4p (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 8 Feb 2021 15:56:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:40120 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230305AbhBHUyp (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 8 Feb 2021 15:54:45 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id BAD3EAE57;
+        Mon,  8 Feb 2021 20:53:54 +0000 (UTC)
+Message-ID: <5c69d62a7b4479d184b0ee8b8e5168e43cd494a0.camel@suse.de>
+Subject: Re: [PATCH v7 11/11] pwm: Add Raspberry Pi Firmware based PWM bus
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     u.kleine-koenig@pengutronix.de
+Cc:     f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        wahrenst@gmx.net, linux-input@vger.kernel.org,
+        dmitry.torokhov@gmail.com, gregkh@linuxfoundation.org,
+        devel@driverdev.osuosl.org, p.zabel@pengutronix.de,
+        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
+        linux-clk@vger.kernel.org, sboyd@kernel.org,
+        linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
+        andy.shevchenko@gmail.com
+Date:   Mon, 08 Feb 2021 21:53:52 +0100
+In-Reply-To: <20210118123244.13669-12-nsaenzjulienne@suse.de>
+References: <20210118123244.13669-1-nsaenzjulienne@suse.de>
+         <20210118123244.13669-12-nsaenzjulienne@suse.de>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-oVNnO66HmWqHkepYu506"
+User-Agent: Evolution 3.38.3 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The code has been in a irq-disabled context since it is hard IRQ. There
-is no necessity to do it again.
 
-Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
----
- drivers/hwmon/npcm750-pwm-fan.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+--=-oVNnO66HmWqHkepYu506
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/hwmon/npcm750-pwm-fan.c b/drivers/hwmon/npcm750-pwm-fan.c
-index 11a2860..6c27af1 100644
---- a/drivers/hwmon/npcm750-pwm-fan.c
-+++ b/drivers/hwmon/npcm750-pwm-fan.c
-@@ -481,12 +481,11 @@ static inline void npcm7xx_check_cmp(struct npcm7xx_pwm_fan_data *data,
- static irqreturn_t npcm7xx_fan_isr(int irq, void *dev_id)
- {
- 	struct npcm7xx_pwm_fan_data *data = dev_id;
--	unsigned long flags;
- 	int module;
- 	u8 flag;
- 
- 	module = irq - data->fan_irq[0];
--	spin_lock_irqsave(&data->fan_lock[module], flags);
-+	spin_lock(&data->fan_lock[module]);
- 
- 	flag = ioread8(NPCM7XX_FAN_REG_TICTRL(data->fan_base, module));
- 	if (flag > 0) {
-@@ -496,7 +495,7 @@ static irqreturn_t npcm7xx_fan_isr(int irq, void *dev_id)
- 		return IRQ_HANDLED;
- 	}
- 
--	spin_unlock_irqrestore(&data->fan_lock[module], flags);
-+	spin_unlock(&data->fan_lock[module]);
- 
- 	return IRQ_NONE;
- }
--- 
-2.7.4
+On Mon, 2021-01-18 at 13:32 +0100, Nicolas Saenz Julienne wrote:
+> Adds support to control the PWM bus available in official Raspberry Pi
+> PoE HAT. Only RPi's co-processor has access to it, so commands have to
+> be sent through RPi's firmware mailbox interface.
+>=20
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+>=20
+> ---
+
+ping :)
+
+Regards,
+Nicolas
+
+
+--=-oVNnO66HmWqHkepYu506
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAmAhpOEACgkQlfZmHno8
+x/5Kegf+M/oVJydAlzbsZjeRxmVcRPlY/aU1YOdpfuIQyx991ny1JYSYaGMZ8b9g
+lJ4nBwIeNjAbsPMc0Th89250D6UkOhRb5L7C6grd0B++Ue01IMyQ2mA8UzxxhzYI
+aP/E3P1iwlnTpd/UbvgBr2xd2XBBEYEZ+CEeQohVX51Z/En4bEofLxQloVCwrAQ9
+z+4AWH9ZQDX3ItJ1zmdJGzmNuZjuNQV2igYjp0UuWY01wIkeau20FxDqFMweN9ul
+xMKBZ8zaX3T85TLQcYtj29KNQQGvUwV5xs8P36KJ5OfVUw4Ay4M5mSpb6nHb0GiU
+9YqIJIOQ+gzZH+tFpYr93phGwLoI7Q==
+=bPaD
+-----END PGP SIGNATURE-----
+
+--=-oVNnO66HmWqHkepYu506--
 
