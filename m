@@ -2,114 +2,118 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4AEC433E9
-	for <linux-pwm@archiver.kernel.org>; Fri, 12 Feb 2021 13:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B98EC433E0
+	for <linux-pwm@archiver.kernel.org>; Fri, 12 Feb 2021 15:05:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8483064E57
-	for <linux-pwm@archiver.kernel.org>; Fri, 12 Feb 2021 13:22:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC72264E6C
+	for <linux-pwm@archiver.kernel.org>; Fri, 12 Feb 2021 15:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231553AbhBLNWA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 12 Feb 2021 08:22:00 -0500
-Received: from mo-csw1114.securemx.jp ([210.130.202.156]:36692 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231522AbhBLNVu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Feb 2021 08:21:50 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1114) id 11CDJS4j014513; Fri, 12 Feb 2021 22:19:28 +0900
-X-Iguazu-Qid: 2wGqn5DuWpbZZCpp4q
-X-Iguazu-QSIG: v=2; s=0; t=1613135968; q=2wGqn5DuWpbZZCpp4q; m=Z20x/stw9IjYjNipnTj02kjN3WwyptGZtjzUyhmYWYQ=
-Received: from imx2.toshiba.co.jp (imx2.toshiba.co.jp [106.186.93.51])
-        by relay.securemx.jp (mx-mr1110) id 11CDJR6o026389;
-        Fri, 12 Feb 2021 22:19:27 +0900
-Received: from enc01.toshiba.co.jp ([106.186.93.100])
-        by imx2.toshiba.co.jp  with ESMTP id 11CDJRA3018973;
-        Fri, 12 Feb 2021 22:19:27 +0900 (JST)
-Received: from hop001.toshiba.co.jp ([133.199.164.63])
-        by enc01.toshiba.co.jp  with ESMTP id 11CDJQRC001989;
-        Fri, 12 Feb 2021 22:19:26 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
-Cc:     devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH v2 1/2] dt-bindings: pwm: Add bindings for Toshiba Visconti PWM Controller
-Date:   Fri, 12 Feb 2021 22:19:09 +0900
-X-TSB-HOP: ON
-Message-Id: <20210212131910.557581-2-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.30.0.rc2
-In-Reply-To: <20210212131910.557581-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-References: <20210212131910.557581-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+        id S229493AbhBLPF0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 12 Feb 2021 10:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229478AbhBLPFV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Feb 2021 10:05:21 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2F1C061574;
+        Fri, 12 Feb 2021 07:04:41 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id y11so8641890otq.1;
+        Fri, 12 Feb 2021 07:04:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xRzerL37rg751TyU6bwXPn/hRqxwdJLt22EE4yM78/4=;
+        b=j0WkHcMOOzWY/E3hEIbBqWVhP61NJS+ElQp3uyCDAaBTrsRTvWtVMlar/6dldtCW6w
+         za+krt4gwUcQwrJ9CmHgvH4hQzTx2JcDDcpI8alfHRvEQg6Io8BPG2KMLtBgDNx72sVr
+         ep1LdF/xlc4gHDCXqpvyKI0AkEPG5NlLJllerkYO8OSFEBPsUQuUtCbyAXGk1ihAOkDg
+         D4GgArL+3pGLhJKGqSDD1KDo+FYGnUj3c4qOlfpFQ7X72oUTlv9uNYrFlsW9qoS+n26a
+         LzmmWBSZKUdV3Z0RegIvYcPQjCy6z0bokX0XZ2uPSiFZUSvmLIDQaDCqFJPXzuM03lgz
+         SsWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xRzerL37rg751TyU6bwXPn/hRqxwdJLt22EE4yM78/4=;
+        b=D70OESNNXOt6KuL+NzaUcinQ9l6y0G4+kcooS1MnGdXvIXWJD3l9JVSstbQMK9So0B
+         wnPjHJdVoXWzQ6juTZ2Mu5ZI+rYeTf7DWi8tExgQ8CsrqtvFv/IpOnyTF7w/fbtQVqOo
+         YZKf+M5zjsHS3miIspLpBhpwNjX2zw8xdQwQM1cyU4ZoyHcEfITuKySiL01cMyhHShAl
+         cCU2IGmhi+nAIm1BJdP5w9ruNVDxFEdnh+NRHKIh8hYwLWWW8FqtDWVa+TSbQqWaLUR+
+         AiVHnEodaEzoML9KFIS6Ub+CFMv+0vLDnssxzxLaV+ILOswwHMvgYq9GqW8/PaTdZHZ0
+         5kLQ==
+X-Gm-Message-State: AOAM533fij7rV7QJGHlDARpBUleF9HCftjLdpz55SMVSCYrwTvjOcGc4
+        utW6ZuPKB6L5aOXU+fiu6Qb8i6zD1PY=
+X-Google-Smtp-Source: ABdhPJxf3Qr9yjbuYZKxXoTyvphmL4Ozh4W7q4PN+aSXIhb1tq4VcD2KjSIvAttFzuA8f5/xd2OYIg==
+X-Received: by 2002:a9d:6f93:: with SMTP id h19mr2285387otq.236.1613142280425;
+        Fri, 12 Feb 2021 07:04:40 -0800 (PST)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 18sm1698700oti.30.2021.02.12.07.04.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 12 Feb 2021 07:04:39 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 12 Feb 2021 07:04:38 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Tian Tao <tiantao6@hisilicon.com>
+Cc:     jdelvare@suse.com, thierry.reding@gmail.com, lee.jones@linaro.org,
+        openbmc@lists.ozlabs.org, linux-hwmon@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (npcm750-pwm-fan): replace spin_lock_irqsave by
+ spin_lock in hard IRQ
+Message-ID: <20210212150438.GA32815@roeck-us.net>
+References: <1612696333-50502-1-git-send-email-tiantao6@hisilicon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1612696333-50502-1-git-send-email-tiantao6@hisilicon.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add bindings for the Toshiba Visconti PWM Controller.
+On Sun, Feb 07, 2021 at 07:12:13PM +0800, Tian Tao wrote:
+> The code has been in a irq-disabled context since it is hard IRQ. There
+> is no necessity to do it again.
+> 
+> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- .../bindings/pwm/toshiba,pwm-visconti.yaml    | 43 +++++++++++++++++++
- 1 file changed, 43 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
+Now dropped. Quite obviously you have not even compile tested,
+much less runtime tested this patch.
 
-diff --git a/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
-new file mode 100644
-index 000000000000..f11558cdc32f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
-@@ -0,0 +1,43 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/toshiba,pwm-visconti.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Toshiba Visconti PWM Controller
-+
-+maintainers:
-+  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: toshiba,pwm-visconti
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#pwm-cells':
-+    const: 2
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#pwm-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        pwm: pwm@241c0000 {
-+            compatible = "toshiba,pwm-visconti";
-+            reg = <0 0x241c0000 0 0x1000>;
-+            pinctrl-names = "default";
-+            pinctrl-0 = <&pwm_mux>;
-+            #pwm-cells = <2>;
-+        };
-+    };
--- 
-2.30.0.rc2
+Guenter
 
+> ---
+>  drivers/hwmon/npcm750-pwm-fan.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hwmon/npcm750-pwm-fan.c b/drivers/hwmon/npcm750-pwm-fan.c
+> index 11a2860..6c27af1 100644
+> --- a/drivers/hwmon/npcm750-pwm-fan.c
+> +++ b/drivers/hwmon/npcm750-pwm-fan.c
+> @@ -481,12 +481,11 @@ static inline void npcm7xx_check_cmp(struct npcm7xx_pwm_fan_data *data,
+>  static irqreturn_t npcm7xx_fan_isr(int irq, void *dev_id)
+>  {
+>  	struct npcm7xx_pwm_fan_data *data = dev_id;
+> -	unsigned long flags;
+>  	int module;
+>  	u8 flag;
+>  
+>  	module = irq - data->fan_irq[0];
+> -	spin_lock_irqsave(&data->fan_lock[module], flags);
+> +	spin_lock(&data->fan_lock[module]);
+>  
+>  	flag = ioread8(NPCM7XX_FAN_REG_TICTRL(data->fan_base, module));
+>  	if (flag > 0) {
+> @@ -496,7 +495,7 @@ static irqreturn_t npcm7xx_fan_isr(int irq, void *dev_id)
+>  		return IRQ_HANDLED;
+>  	}
+>  
+> -	spin_unlock_irqrestore(&data->fan_lock[module], flags);
+> +	spin_unlock(&data->fan_lock[module]);
+>  
+>  	return IRQ_NONE;
+>  }
