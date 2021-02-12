@@ -2,283 +2,118 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 538D6C433E9
-	for <linux-pwm@archiver.kernel.org>; Wed, 10 Feb 2021 09:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA3AC433DB
+	for <linux-pwm@archiver.kernel.org>; Fri, 12 Feb 2021 04:31:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1DAC464DEE
-	for <linux-pwm@archiver.kernel.org>; Wed, 10 Feb 2021 09:37:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 753FE64DD1
+	for <linux-pwm@archiver.kernel.org>; Fri, 12 Feb 2021 04:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbhBJJhA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 10 Feb 2021 04:37:00 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:56877 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229729AbhBJJep (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Feb 2021 04:34:45 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 8D315C2E;
-        Wed, 10 Feb 2021 04:33:37 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 10 Feb 2021 04:33:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=cxgVaZyeQcRV136PQAdY6FtdPMM
-        ky7qQ3FT9Bt8v7KM=; b=HXz7ulgpuoMBPBZbWTIjoiowLkkhe9I22rr7o3oIHLf
-        NqRGICRg9WR94TwgeY3rUB9sJxZ9fb9xy2wAzc/Er54iuDFNyu80bGUb2lvy+SZ+
-        2T18X2VhB6MYSkwM+2BcU49WzlWW9GoterUXC6TEzOLypW6osA2F+5a3MNXgVqaT
-        uenzLneJ7E6Y3TpLGWNyUP3+IQz3eoWFyt5l+LJYleAftmfYK6rHyFKOMyrq4wms
-        UiEeHyHHvvmPy+VRVGSHvU8Cyg3GfTtdF9i9jVTRVnDe/g0r6+nB+fL7POl04mC6
-        YYjL5momAoqPu3sW71oBPjQWoWaxunuws5KMqhy9fsg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=cxgVaZ
-        yeQcRV136PQAdY6FtdPMMky7qQ3FT9Bt8v7KM=; b=KBTC6L44sAcs8swG3EG4wW
-        LjpubOk4Vbp257nkyA5Y5LRPf120xlrOgzVOUV3ejn9e47xyY2u3M3oIf0JmROgh
-        bLJdTPPgS5RSHt6CQiC3uYqqzsb6elh/Pcr/tCH+w5aiwihqM/z9Vesk9svBpKNc
-        AWmWd59G8+eKWxg/nBPVzr3n/1RmOeNW36bpmV11PUufTB0o3i2gQFKmWXcxzHe/
-        Y49tlzToiX/3Zq6dlwNdH7JEoV0Boal3LtplZ33D7CFsPKy29EzSxgbjN/roE9NL
-        z48t/MQ0jxeTb1ljCDJdgBRvT5XQvZoA2B6KVmjjmV4cgw+EHin0zvN5x1ORv9mw
-        ==
-X-ME-Sender: <xms:cKgjYKKyzT9yR4LmtZ-JKDnAmfm1tdTnvO6SkYXITVXVz7CAVcWCmQ>
-    <xme:cKgjYCK3YGpKZuH5lkaQv4zV7DIXGAj-zFFIRCwQAqiHpFUWLqDlIAhgVsX5rkqjY
-    uBWffzbkCn4yNuXYgc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrheejgddtgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehgtderre
-    dttdejnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghr
-    nhhordhtvggthheqnecuggftrfgrthhtvghrnhepuedtgfejueduheevgfevvdettddule
-    ffgfffkeeltdffkeegudekjeeuveeigedunecukfhppeeltddrkeelrdeikedrjeeinecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimh
-    gvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:cKgjYKvdbnYAEMXZTsuWYNynEP3QmooRrqG9ttjcZ-P1f0_Hs64R_g>
-    <xmx:cKgjYPZv4_B_QgZRWFGDxsGXppHHu_nlVeIYhFJqaos4aS1F8F9zlw>
-    <xmx:cKgjYBZ0ea4CiwI6XwIfIlNv1JVPp0R0D0z8TLR48s-SuHzu4g0jzw>
-    <xmx:cagjYFE5I2cnN1TlE0TPb5RGU8D2Yp4KSr6_rjKLE3K_wplyS8XkTQ>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0DBE41080059;
-        Wed, 10 Feb 2021 04:33:35 -0500 (EST)
-Date:   Wed, 10 Feb 2021 10:33:33 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     =?utf-8?B?54+t5rab?= <fengzheng923@gmail.com>
-Cc:     thierry.reding@gmail.com,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, wens@csie.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2] pwm: sunxi: Add Allwinner SoC PWM controller driver
-Message-ID: <20210210093333.twjnglabtcbecoku@gilmour>
-References: <20210203125317.1975-1-fengzheng923@gmail.com>
- <20210203154628.infi5jnlofdrysvs@gilmour>
- <CAE=m61-oXn8CkzUpSxkuS-gLkxjwd8wSeL42Q5T+27_V89xgNw@mail.gmail.com>
- <20210205161158.gqinjayxcihtiofe@gilmour>
- <CAE=m6190zD55EL_VOmq=yKw471bxiRwZdjpVTyvNAAvofn9UPQ@mail.gmail.com>
+        id S229499AbhBLEbA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 11 Feb 2021 23:31:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229497AbhBLEa7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 Feb 2021 23:30:59 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A9BC061574;
+        Thu, 11 Feb 2021 20:30:18 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id s23so935340oot.12;
+        Thu, 11 Feb 2021 20:30:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aOeCDqDzBA3dsZYfJecar357cM/2/of0V8qDCALwWfY=;
+        b=i4f4fMqcZZXCsUdY9/WeSgZIgObL9iEP6Bvy0U7zXUmBUNtk8UWtFI0rF1fxusFDtp
+         kjN9lvIQ1AkzCPHWpnbpOXpFO83pq4182mSK+uEVXR8pkdLyN/XJMc043TPXDC5yejii
+         OvnhGe0TaHiWDZeJ8x7ZGEAbJ5HzWYxYIQXTCgTYaWAcdg7M6g+FUmwx7GmphOOeuSs/
+         LH6IhGDoPD0PXCSRRd9qvkX4wOUoVq2U14IZQdMXnnHeP0muEomAyuiLCM53MlpoPltX
+         QMDFtL46QVeFsxVQWSUDGPyMQs+XT4c/VxG59SNIoHbFVAyz1l++eYseWyyLT+2wpXVe
+         vE/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aOeCDqDzBA3dsZYfJecar357cM/2/of0V8qDCALwWfY=;
+        b=PV1Ai0lNQnQY2NVJL8cE74+y33mzlq5oo/GLOyLnusTie1Ok6v2alsavjxGgYPJaq7
+         7PoXirU9g2GWnp804CDi6O/xPIpEJzFfGEThdDbiZLKETi+GjRlfPVmO+yaTpSjUcQ8X
+         LKZ2I/ldc/KnpxnpiyUi1LMALJa1viKhxeBk7J39UI1SGhXNiZizE8voLZkhpyd/7gLz
+         nNnbjDqNdu3Co4ako8ux59tOILSsgPh1c+dtFimIIzeZ9qCx7yPTJGMlWUx292Pl9Mzg
+         IuwFHSn93Erhk5De38/kXyAJRSSppuY9jsLrj7kN38/3DucHlnt2Tox0Jrr2FcXauIdO
+         WOyA==
+X-Gm-Message-State: AOAM532FhZR8o8ncM4Vf9PHmsVV/5RYaLV0cvU1J+gjfbn0pHfur38vj
+        l0NSSfxlAAHFQPu0N+aLAZY=
+X-Google-Smtp-Source: ABdhPJzxdhJXCakra3xPLLVyujacVXook4u1jf93dBk65e5glZOkHxhDKOK61G5iCM81gs4+m4teoQ==
+X-Received: by 2002:a4a:4958:: with SMTP id z85mr775192ooa.38.1613104218273;
+        Thu, 11 Feb 2021 20:30:18 -0800 (PST)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 88sm1449171otx.15.2021.02.11.20.30.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 11 Feb 2021 20:30:17 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 11 Feb 2021 20:30:16 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Tian Tao <tiantao6@hisilicon.com>
+Cc:     jdelvare@suse.com, thierry.reding@gmail.com, lee.jones@linaro.org,
+        openbmc@lists.ozlabs.org, linux-hwmon@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (npcm750-pwm-fan): replace spin_lock_irqsave by
+ spin_lock in hard IRQ
+Message-ID: <20210212043016.GA104680@roeck-us.net>
+References: <1612696333-50502-1-git-send-email-tiantao6@hisilicon.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zerufqrg326oioaz"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAE=m6190zD55EL_VOmq=yKw471bxiRwZdjpVTyvNAAvofn9UPQ@mail.gmail.com>
+In-Reply-To: <1612696333-50502-1-git-send-email-tiantao6@hisilicon.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+On Sun, Feb 07, 2021 at 07:12:13PM +0800, Tian Tao wrote:
+> The code has been in a irq-disabled context since it is hard IRQ. There
+> is no necessity to do it again.
+> 
+> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
 
---zerufqrg326oioaz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied.
 
-On Sat, Feb 06, 2021 at 09:27:30PM +0800, =E7=8F=AD=E6=B6=9B wrote:
-> Maxime Ripard <maxime@cerno.tech> =E4=BA=8E2021=E5=B9=B42=E6=9C=886=E6=97=
-=A5=E5=91=A8=E5=85=AD =E4=B8=8A=E5=8D=8812:12=E5=86=99=E9=81=93=EF=BC=9A
->=20
-> > Hi,
-> >
-> > On Thu, Feb 04, 2021 at 11:47:34AM +0800, =E7=8F=AD=E6=B6=9B wrote:
-> > > Maxime Ripard <maxime@cerno.tech> =E4=BA=8E2021=E5=B9=B42=E6=9C=883=
-=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=8811:46=E5=86=99=E9=81=93=EF=BC=
-=9A
-> > >
-> > > > Hi,
-> > > >
-> > > > On Wed, Feb 03, 2021 at 08:53:17PM +0800, Ban Tao wrote:
-> > > > > From: Ban Tao <fengzheng923@gmail.com>
-> > > > >
-> > > > > The Allwinner R818, A133, R329, V536 and V833 has a new PWM
-> > controller
-> > > > > IP compared to the older Allwinner SoCs.
-> > > > >
-> > > > > Signed-off-by: Ban Tao <fengzheng923@gmail.com>
-> > > >
-> > > > Thanks for your patch. There's a bunch of warnings reported by
-> > > > checkpatch --strict, they should be addressed.
-> > > >
-> > > > > ---
-> > > > > v1->v2:
-> > > > > 1.delete unnecessary code.
-> > > > > 2.using a named define for some constants.
-> > > > > 3.Add comment in sun50i_pwm_config function.
-> > > > > 4.using dev_err_probe() for error handling.
-> > > > > 5.disable the clock after pwmchip_remove().
-> > > > > ---
-> > > > >  MAINTAINERS              |   6 +
-> > > > >  drivers/pwm/Kconfig      |  11 ++
-> > > > >  drivers/pwm/Makefile     |   1 +
-> > > > >  drivers/pwm/pwm-sun50i.c | 348
-> > +++++++++++++++++++++++++++++++++++++++
-> > > > >  4 files changed, 366 insertions(+)
-> > > > >  create mode 100644 drivers/pwm/pwm-sun50i.c
-> > > > >
-> > > > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > > > index e73636b75f29..d33cf1b69b43 100644
-> > > > > --- a/MAINTAINERS
-> > > > > +++ b/MAINTAINERS
-> > > > > @@ -737,6 +737,12 @@ L:       linux-media@vger.kernel.org
-> > > > >  S:   Maintained
-> > > > >  F:   drivers/staging/media/sunxi/cedrus/
-> > > > >
-> > > > > +ALLWINNER PWM DRIVER
-> > > > > +M:   Ban Tao <fengzheng923@gmail.com>
-> > > > > +L:   linux-pwm@vger.kernel.org
-> > > > > +S:   Maintained
-> > > > > +F:   drivers/pwm/pwm-sun50i.c
-> > > > > +
-> > > > >  ALPHA PORT
-> > > > >  M:   Richard Henderson <rth@twiddle.net>
-> > > > >  M:   Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> > > > > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > > > > index 9a4f66ae8070..17635a8f2ed3 100644
-> > > > > --- a/drivers/pwm/Kconfig
-> > > > > +++ b/drivers/pwm/Kconfig
-> > > > > @@ -552,6 +552,17 @@ config PWM_SUN4I
-> > > > >         To compile this driver as a module, choose M here: the mo=
-dule
-> > > > >         will be called pwm-sun4i.
-> > > > >
-> > > > > +config PWM_SUN50I
-> > > > > +     tristate "Allwinner enhanced PWM support"
-> > > > > +     depends on ARCH_SUNXI || COMPILE_TEST
-> > > > > +     depends on HAS_IOMEM && COMMON_CLK
-> > > > > +     help
-> > > > > +       Enhanced PWM framework driver for Allwinner R818, A133, R=
-329,
-> > > > > +       V536 and V833 SoCs.
-> > > > > +
-> > > > > +       To compile this driver as a module, choose M here: the mo=
-dule
-> > > > > +       will be called pwm-sun50i.
-> > > > > +
-> > > >
-> > > > Even though it's unfortunate, there's a bunch of other SoCs part of=
- the
-> > > > sun50i family that are supported by the sun4i driver.
-> > > >
-> > > > Which SoC introduced that new design? It's usually the name we pick=
- up
-> > > > then.
-> > > >
-> > >
-> > > In fact, some SoCs has not been supported by the sun4i driver, such as
-> > v833,
-> > > v536, r818, a133 and r329.
-> > > v833 and v536 are part of the sun8i family, but r818, a133 and r329 a=
-re
-> > > part of the sun50i family.
-> >
-> > Indeed, I missed that sorry.
-> >
-> > > So,I'm confused, how do choose the name of this driver?
-> >
-> > Just go for the earliest SoC that introduced that design. What was the
-> > first SoC to use it?
-> >
->
-> The V536 SOC first used this design, so, we should use the name
-> "sun8i-pwm.c"?
+Thanks,
+Guenter
 
-sun8i-pwm would be too generic, but sun8i-v536-pwm would be great then
-
->=20
-> > > > > +static const struct sun50i_pwm_data sun8i_pwm_data_c9 =3D {
-> > > > > +     .npwm =3D 9,
-> > > > > +};
-> > > > > +
-> > > > > +static const struct sun50i_pwm_data sun50i_pwm_data_c16 =3D {
-> > > > > +     .npwm =3D 16,
-> > > > > +};
-> > > > > +
-> > > > > +static const struct of_device_id sun50i_pwm_dt_ids[] =3D {
-> > > > > +     {
-> > > > > +             .compatible =3D "allwinner,sun8i-v833-pwm",
-> > > > > +             .data =3D &sun8i_pwm_data_c9,
-> > > > > +     }, {
-> > > > > +             .compatible =3D "allwinner,sun8i-v536-pwm",
-> > > > > +             .data =3D &sun8i_pwm_data_c9,
-> > > > > +     }, {
-> > > > > +             .compatible =3D "allwinner,sun50i-r818-pwm",
-> > > > > +             .data =3D &sun50i_pwm_data_c16,
-> > > > > +     }, {
-> > > > > +             .compatible =3D "allwinner,sun50i-a133-pwm",
-> > > > > +             .data =3D &sun50i_pwm_data_c16,
-> > > > > +     }, {
-> > > > > +             .compatible =3D "allwinner,sun50i-r329-pwm",
-> > > > > +             .data =3D &sun8i_pwm_data_c9,
-> > > > > +     }, {
-> > > > > +             /* sentinel */
-> > > > > +     },
-> > > > > +};
-> > > > > +MODULE_DEVICE_TABLE(of, sun50i_pwm_dt_ids);
-> > > >
-> > > > What are the differences between all these SoCs? If there's none
-> > between
-> > > > the v833, v536 and R329, and between the r818 and the A133, you sho=
-uld
-> > > > use the same compatible.
-> > >
-> > > Compared with the sun4i driver, this patch is a completely different =
-PWM
-> > IP
-> > > controller.
-> >
-> > Sure, I didn't mean to compare it to sun4i. What I meant was that as far
-> > as these struct goes, the A133 and the R818 look to have the same PWM
-> > controller. Just like the v833, v536 and R329.
-> >
-> > If the PWM controllers are indeed identical across those SoCs, you can
-> > just use two compatibles, one for the PWM with 9 channels (again, the
-> > earliest SoC among the V833, v536 and r329), and one for the PWM with 16
-> > channels.
-> >
-> Ok i see what you mean.
->  static const struct of_device_id sun50i_pwm_dt_ids[] =3D {
->         {
->                 .compatible =3D "allwinner,sun8i-v536-pwm",
->                 .data =3D &sun8i_pwm_data_c9,
->         }, {
->                 .compatible =3D "allwinner,sun50i-r818-pwm",
->                 .data =3D &sun50i_pwm_data_c16,
->         }, {
->                 /* sentinel */
->         },
-> };
-> is this OK? Just write two SoC for the " compatible "=EF=BC=9F
-
-Yes, this is perfect :)
-
-Maxime
-
---zerufqrg326oioaz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYCOobQAKCRDj7w1vZxhR
-xSPcAQCkk2tN5ozZ9vemaaEu2p0nHHReG9lkzoBaC3FGwGPchgEAhIwn+ZApgFIm
-X4u4MA62tJDDEqywskzfZn18ROi5xgM=
-=8JMs
------END PGP SIGNATURE-----
-
---zerufqrg326oioaz--
+> ---
+>  drivers/hwmon/npcm750-pwm-fan.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hwmon/npcm750-pwm-fan.c b/drivers/hwmon/npcm750-pwm-fan.c
+> index 11a2860..6c27af1 100644
+> --- a/drivers/hwmon/npcm750-pwm-fan.c
+> +++ b/drivers/hwmon/npcm750-pwm-fan.c
+> @@ -481,12 +481,11 @@ static inline void npcm7xx_check_cmp(struct npcm7xx_pwm_fan_data *data,
+>  static irqreturn_t npcm7xx_fan_isr(int irq, void *dev_id)
+>  {
+>  	struct npcm7xx_pwm_fan_data *data = dev_id;
+> -	unsigned long flags;
+>  	int module;
+>  	u8 flag;
+>  
+>  	module = irq - data->fan_irq[0];
+> -	spin_lock_irqsave(&data->fan_lock[module], flags);
+> +	spin_lock(&data->fan_lock[module]);
+>  
+>  	flag = ioread8(NPCM7XX_FAN_REG_TICTRL(data->fan_base, module));
+>  	if (flag > 0) {
+> @@ -496,7 +495,7 @@ static irqreturn_t npcm7xx_fan_isr(int irq, void *dev_id)
+>  		return IRQ_HANDLED;
+>  	}
+>  
+> -	spin_unlock_irqrestore(&data->fan_lock[module], flags);
+> +	spin_unlock(&data->fan_lock[module]);
+>  
+>  	return IRQ_NONE;
+>  }
