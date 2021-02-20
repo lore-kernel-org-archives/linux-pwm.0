@@ -4,9 +4,9 @@ References: <20210203125317.1975-1-fengzheng923@gmail.com>
  <20210203151200.fdzzq23teoypbxad@pengutronix.de>
 In-Reply-To: <20210203151200.fdzzq23teoypbxad@pengutronix.de>
 From: =?UTF-8?B?54+t5rab?= <fengzheng923@gmail.com>
-Date: Sat, 20 Feb 2021 09:47:42 +0800
-Message-ID: <CAE=m619MRw2=Tg5Vw5edmhxnZpx73kC4Ki5TD47qYa0W02OFHA@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="000000000000da2acd05bbbac1d1"
+Date: Sat, 20 Feb 2021 10:18:27 +0800
+Message-ID: <CAE=m618FY6_Qq1gNmkivswKjCB984WfV_Cr_Cw253ffGQmAS5Q@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000d05a8005bbbb2ff0"
 Subject: Re: [PATCH v2] pwm: sunxi: Add Allwinner SoC PWM controller driver
 List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
  <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
@@ -21,11 +21,9 @@ To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, mripard@kernel.org, wens@csie.org, thierry.reding@gmail.com, kernel@pengutronix.de
 List-ID: <linux-pwm.vger.kernel.org>
 
---000000000000da2acd05bbbac1d1
+--000000000000d05a8005bbbb2ff0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-
-Hi,
 
 Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> =E4=BA=8E2021=E5=B9=
 =B42=E6=9C=883=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=8811:12=E5=86=99=
@@ -38,6 +36,10 @@ Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> =E4=BA=8E2021=E5=B9=
 >
 > FTR: v1 wasn't sent to any list, so don't try to find it in some
 > archive.
+>
+
+Sorry, I understand. So is the next patch v3? Or v2?
+
 >
 > > diff --git a/drivers/pwm/pwm-sun50i.c b/drivers/pwm/pwm-sun50i.c
 > > new file mode 100644
@@ -66,10 +68,6 @@ Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> =E4=BA=8E2021=E5=B9=
 > Please stick to the format used in other drivers to simplify grepping,
 > see the Limitations section in drivers/pwm/pwm-sl28cpld.c for an
 > example.
->
-
-OK.
-
 >
 > > +
 > > +#include <linux/err.h>
@@ -177,9 +175,6 @@ OK.
 > For v1 I asked to test this driver with PWM_DEBUG enabled and to fix all
 > emitted warnings. This didn't happen :-\
 >
->
-OK, I will fix it in the next patch.
-
 > > +static int sun50i_pwm_config(struct pwm_chip *chip, struct pwm_device
 > *pwm,
 > > +             int duty_ns, int period_ns)
@@ -275,10 +270,6 @@ OK, I will fix it in the next patch.
 > > +      * So, active_cycles =3D entire_cycles * duty_ns / period_ns.
 >
 > active_cyles is the number of clock steps for duty_cycle, right?
->
-
-yes.
-
 >
 > > +      */
 > > +     c =3D (unsigned long long)entire_cycles * duty_ns;
@@ -482,24 +473,27 @@ L);
 |
 >
 
---000000000000da2acd05bbbac1d1
+--000000000000d05a8005bbbb2ff0
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<br></div><br><div class=3D"gmail_quot=
-e"><div dir=3D"ltr" class=3D"gmail_attr">Uwe Kleine-K=C3=B6nig &lt;<a href=
-=3D"mailto:u.kleine-koenig@pengutronix.de">u.kleine-koenig@pengutronix.de</=
-a>&gt; =E4=BA=8E2021=E5=B9=B42=E6=9C=883=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=
-=8B=E5=8D=8811:12=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">Hello Ban,<br>
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">Uwe Kleine-K=C3=B6nig &lt;<a href=3D"=
+mailto:u.kleine-koenig@pengutronix.de">u.kleine-koenig@pengutronix.de</a>&g=
+t; =E4=BA=8E2021=E5=B9=B42=E6=9C=883=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=
+=E5=8D=8811:12=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=3D"gma=
+il_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,2=
+04,204);padding-left:1ex">Hello Ban,<br>
 <br>
 On Wed, Feb 03, 2021 at 08:53:17PM +0800, Ban Tao wrote:<br>
 &gt; v1-&gt;v2:<br>
 <br>
 FTR: v1 wasn&#39;t sent to any list, so don&#39;t try to find it in some<br=
 >
-archive.<br>
+archive.<br></blockquote><div><br></div><div>Sorry, I understand. So is the=
+ next patch v3? Or v2?</div><blockquote class=3D"gmail_quote" style=3D"marg=
+in:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1e=
+x">
 <br>
 &gt; diff --git a/drivers/pwm/pwm-sun50i.c b/drivers/pwm/pwm-sun50i.c<br>
 &gt; new file mode 100644<br>
@@ -530,9 +524,7 @@ eriod=3D2000<br>
 <br>
 Please stick to the format used in other drivers to simplify grepping,<br>
 see the Limitations section in drivers/pwm/pwm-sl28cpld.c for an<br>
-example.<br></blockquote><div><br></div><div>OK.=C2=A0</div><blockquote cla=
-ss=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid =
-rgb(204,204,204);padding-left:1ex">
+example.<br>
 <br>
 &gt; +<br>
 &gt; +#include &lt;linux/err.h&gt;<br>
@@ -675,9 +667,7 @@ wm-&gt;hwpwm));<br>
 For v1 I asked to test this driver with PWM_DEBUG enabled and to fix all<br=
 >
 emitted warnings. This didn&#39;t happen :-\<br>
-<br></blockquote><div><br></div><div>OK, I will fix it in the next patch.=
-=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+<br>
 &gt; +static int sun50i_pwm_config(struct pwm_chip *chip, struct pwm_device=
  *pwm,<br>
 &gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0int duty_ns, int peri=
@@ -796,10 +786,7 @@ _cycles.<br>
 &gt; +=C2=A0 =C2=A0 =C2=A0 * So, active_cycles =3D entire_cycles * duty_ns =
 / period_ns.<br>
 <br>
-active_cyles is the number of clock steps for duty_cycle, right?<br></block=
-quote><div><br></div><div>yes.=C2=A0</div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
-adding-left:1ex">
+active_cyles is the number of clock steps for duty_cycle, right?<br>
 <br>
 &gt; +=C2=A0 =C2=A0 =C2=A0 */<br>
 &gt; +=C2=A0 =C2=A0 =C2=A0c =3D (unsigned long long)entire_cycles * duty_ns=
@@ -1055,4 +1042,4 @@ Industrial Linux Solutions=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
 arget=3D"_blank">https://www.pengutronix.de/</a> |<br>
 </blockquote></div></div>
 
---000000000000da2acd05bbbac1d1--
+--000000000000d05a8005bbbb2ff0--
