@@ -2,127 +2,135 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-20.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1394FC433DB
-	for <linux-pwm@archiver.kernel.org>; Mon, 22 Feb 2021 14:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 751F7C433E0
+	for <linux-pwm@archiver.kernel.org>; Thu, 25 Feb 2021 19:37:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D410364DF0
-	for <linux-pwm@archiver.kernel.org>; Mon, 22 Feb 2021 14:32:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 324A264F18
+	for <linux-pwm@archiver.kernel.org>; Thu, 25 Feb 2021 19:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbhBVOc2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 22 Feb 2021 09:32:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
+        id S234429AbhBYTg6 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 25 Feb 2021 14:36:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231660AbhBVOaX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Feb 2021 09:30:23 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9725BC06178C;
-        Mon, 22 Feb 2021 06:29:41 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id n10so14562647wmq.0;
-        Mon, 22 Feb 2021 06:29:41 -0800 (PST)
+        with ESMTP id S234934AbhBYTfO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 25 Feb 2021 14:35:14 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9933C061756;
+        Thu, 25 Feb 2021 11:34:33 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id n4so4399737wmq.3;
+        Thu, 25 Feb 2021 11:34:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=08zyHvZoEG/sqiEKTTXb/ZE6H1gD+YssvdQYgyBdOxY=;
-        b=VwEdznWfVJlZSWsEWm6FOVFH3mbb4RZPXPPs3gygoYSeMB2leyT6iMvncQG3h4IAFV
-         7BNlRnbv0/87MOWb7gpZbVZuXSyTY96MjC8LPhExk3GW8Gd35x3Tr6iy/XEQI6J92Twr
-         fz5ENjfRlM4rT60e4ud/wIPA7c5LCj9tZouay2PPhOe5mPs+KjJIUBqIEBKLNjIlp4jc
-         Ty722lQhcjcOW6JzhzsYDTzlnTi7OX8+Eua1Rwo8tlS1DG1EVHH2WLMFlCaP0jue5Ry2
-         ppgGLImXxAcXkvFIvupOpAU72CWJShV/RfTD7kqfIDBGD3ybTHuEYPADhNmL+Xy0cYkB
-         MYkg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lVZp14Mcd8FycajwzlQP/vuilnLXZoOgy0eCNqGJ0m4=;
+        b=J2OOoVb9u1EcBPPokPsurVn8KByV44J0ZX04iFk+WG9o0jK/+46MmhfxeokcEoOFq5
+         1SsNH8pYoGUiLpKHMQP86m42LwO3m5cqVkkTTMtEH3h9j3A1hDP2wjXxmGMw+VreIScx
+         QHIRtyPM302s6uvGDjg52bNin/2w++v8bV/rEK5Ehru6aC5aTw5w9nE4GLiDjD9mSTLM
+         FRitHNTceFI9JT2yIT7UAxteMmM1HyEkLXVIfxmdGGDaSrC9mT1wGsZorSOAW3XrPvNP
+         9ltDTJmirJrfXXpsJwMHWPa1JR27q6NA6dU+Lls+h/fvEYnxLLG7M/Az4+OEuvkLnH/Y
+         iL2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=08zyHvZoEG/sqiEKTTXb/ZE6H1gD+YssvdQYgyBdOxY=;
-        b=CKQSp+CgDYitmsDxWKjE94drW/Lh0l4ywNT+SgzkN7Xc1n1N8qlCbdf954HvoqcPdV
-         O8jNrivEGFgYEOXfBVsmsVR/WMQRK7kAptQZJp4PhGd6zoBPbNJSjM0A3C82wF5naLf6
-         vLLE7otKAVF/zB5YQCP5NCbTLUjvB7tN+HMlj0pMmipNjrqIrGsjltg1SyoU2cdWvLLI
-         IS6rxrAwgLPk95Z67K6N+w4RXrKT1xSfIB0hdXT7k9bOGTcMGYsFD8fCAtUJqmYuIFtZ
-         RiiW9DT7FMSa2Ek5CGVY7QrUCNPG5sh2K4ALXU6kfqjNJrDYc+P/VaQkposs6FX0Sc3P
-         k9kw==
-X-Gm-Message-State: AOAM533zrvAIZpCxb2TUwwZJzzwxoVZbXz6zQK6f1/XsmCZ+vLrWq/x1
-        jBxUa01WliPsh4q2P/yK6emRMzYfEks=
-X-Google-Smtp-Source: ABdhPJwJnopNAx8z65vXkOX33mUFv/6rm7XYKYtPdM/rvug0lHGJoQrCoatVgjrReM448ObplsNzUg==
-X-Received: by 2002:a1c:e446:: with SMTP id b67mr20642654wmh.65.1614004180402;
-        Mon, 22 Feb 2021 06:29:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lVZp14Mcd8FycajwzlQP/vuilnLXZoOgy0eCNqGJ0m4=;
+        b=qddflWq0/qRthxARGhzrgrJo1uwulMw3wWhHXQX0P30n8DMBqkU7bAEByw+54f8/Lv
+         QyJuf8gwps61wVys5qYlauulXL/r3tersKdEPpYvCZbwUvXsDqe/xDngO574tJgLjmxN
+         r/qccxITXfI1dDfgOBUtJYGKTPo3lITe6TFdptG3z2F7fNyNMWFmRU10P6flazL5LM6j
+         ifWNUeTVX+wgTn/6H7b8Vo4kMmTb8S0fqoPtBeBTN9zxi0vHTotg/KdY9S5loNRT9bvo
+         Ovj9TDPcaQH7+KlSP9+hD9ji5jAy+PmjDdNJb2p0hGZnZ8/yBGyNSf8TbmqD76g6T7Mh
+         JBzA==
+X-Gm-Message-State: AOAM532wTABxdZ7GZMJUkRMw2TbSdLE6LndI7hTPIc6mZC8JCZMK7JhA
+        0H3ktz9oayP6GNfeohFH798=
+X-Google-Smtp-Source: ABdhPJwi5c4JQV8ntU927+jDX4oN5q5lZTAZXC2Q5YRE4TxwY/2Geq592o1YkHgyFLECtmTfocsLmA==
+X-Received: by 2002:a05:600c:4f94:: with SMTP id n20mr4670107wmq.78.1614281672529;
+        Thu, 25 Feb 2021 11:34:32 -0800 (PST)
 Received: from localhost ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id t16sm10830487wrq.53.2021.02.22.06.29.38
+        by smtp.gmail.com with ESMTPSA id k15sm8417005wmj.6.2021.02.25.11.34.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Feb 2021 06:29:38 -0800 (PST)
-Date:   Mon, 22 Feb 2021 15:29:36 +0100
+        Thu, 25 Feb 2021 11:34:31 -0800 (PST)
 From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Jitao Shi <jitao.shi@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com,
-        eddie.huang@mediatek.com, cawa.cheng@mediatek.com,
-        bibby.hsieh@mediatek.com, ck.hu@mediatek.com, stonea168@163.com,
-        huijuan.xie@mediatek.com
-Subject: Re: [PATCH v2 1/3] pwm: mtk_disp: clear the clock operations
-Message-ID: <YDO/0Onf6a09YRsP@ulmo.localdomain>
-References: <20210130141226.25357-1-jitao.shi@mediatek.com>
- <20210130141226.25357-2-jitao.shi@mediatek.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] pwm: Changes for v5.12-rc1
+Date:   Thu, 25 Feb 2021 20:34:26 +0100
+Message-Id: <20210225193426.3679817-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="C/yvIL2pWg3hjnxv"
-Content-Disposition: inline
-In-Reply-To: <20210130141226.25357-2-jitao.shi@mediatek.com>
-User-Agent: Mutt/2.0.5 (da5e3282) (2021-01-21)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Hi Linus,
 
---C/yvIL2pWg3hjnxv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit 6eefb79d6f5bc4086bd02c76f1072dd4a8d9d9f6:
 
-On Sat, Jan 30, 2021 at 10:12:24PM +0800, Jitao Shi wrote:
-> Remove the clk_prepare from mtk_disp_pwm_probe.
-> Remove the clk_unprepare from mtk_disp_pwm_remove.
->=20
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  drivers/pwm/pwm-mtk-disp.c | 23 ++---------------------
->  1 file changed, 2 insertions(+), 21 deletions(-)
+  pwm: sun4i: Remove erroneous else branch (2020-12-17 14:23:49 +0100)
 
-It's not clear *why* you're doing this change. It's already obvious from
-the changes in this patch that you're removing the calls to
-clk_prepare() and clk_unprepare(), so instead of duplicating that
-information in the commit message, take this opportunity to describe why
-this change is needed. Without any further context, this would seem to
-just break operation of this chip because now these clocks are never
-enabled in the first place.
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.12-rc1
+
+for you to fetch changes up to 9a9dd7e473517b68412fd2da3da8a4aeb4ecb38a:
+
+  pwm: lpc18xx-sct: remove unneeded semicolon (2021-02-22 15:20:43 +0100)
+
+As I was generating the pull request I noticed that I forgot to fast-
+forward this to v5.11-rc1 after the last merge window. However, I did
+not think a last-minute rebase was appropriate. I did go back and ran
+my test builds on a rebase on top of v5.11-rc1 and everything checked
+out, so I think this is safe to merge. Also, linux-next would have
+caught any problems related to this. I'll make sure to properly roll
+forward the branch next time.
+
+Thanks,
 Thierry
 
---C/yvIL2pWg3hjnxv
-Content-Type: application/pgp-signature; name="signature.asc"
+----------------------------------------------------------------
+pwm: Changes for v5.12-rc1
 
------BEGIN PGP SIGNATURE-----
+The ZTE ZX platform is being removed, so the PWM driver is no longer
+needed and removed as well. Other than that this contains a small set of
+fixes and cleanups across a couple of drivers.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmAzv8sACgkQ3SOs138+
-s6GcPhAAmaYjEXbN1rSMvBmNnA5AzGixIFwjkZrW6KmtzXP0/GhhDKu/S4ExOHrX
-kIwYifz2tmYQxR9aLwRc5ZPq2lbUDq/2XX3oeN641O1Vjc6pHCkE4mBZEIC9XuLw
-XY1uKGkwEq7V2dK7j0L574RcMXEa0epWnGUROVVVMXWol6+lGzGsxHGWCi9dl7+D
-1V5bDvR4BAGAXPnTCsXa56zM3ChJ2bz6EcetF3lK0/mW93aeCQ8ArkeEHcZTcZok
-7RrbAN+gf19RTiVz3HPjyv5uHg89OM4No9Y6CNgzvKyP1lMYpf6p33rkcDMCX6OW
-/OQslfs/M6Fyxh4iCo+nf1gQU+xtJBjZKhBTLALncioaCfks19F1mxMy8dqOadKD
-Vdbz74tR99AY4J0txeoZVgsJSmVXt3+VNGUstn1dnzJZ0B6qKTFBV0p94rROjUAO
-JO/e3cC2V953JB0K7OGcaOW2uJDwHvWptRli3pz+10EF1xSz92GqEwxSbz0JHoN5
-Gc24Lotut5K9dAogZeGhbc8H2M4yyYaqH71c6BT+jaZxsNIWdP//QBOq7KqErn2s
-WNOo0Mh8itD8RrBx8YQRsf34hJ1tn1tnjWOL7ps1BfCAMWwlG5nGiLpYlpCkZkVB
-b+JcNRZrNchuGqZw7mR5qoLVBHiy2QQS4B7AmX8qTNnbwETqbow=
-=qfDp
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      pwm: Remove ZTE ZX driver
 
---C/yvIL2pWg3hjnxv--
+Jeff LaBundy (1):
+      pwm: iqs620a: Correct a stale state variable
+
+Simon South (5):
+      pwm: rockchip: Enable APB clock during register access while probing
+      pwm: rockchip: rockchip_pwm_probe(): Remove superfluous clk_unprepare()
+      pwm: rockchip: Replace "bus clk" with "PWM clk"
+      pwm: rockchip: Eliminate potential race condition when probing
+      pwm: rockchip: Enable clock before calling clk_get_rate()
+
+Uwe Kleine-König (1):
+      pwm: iqs620a: Fix overflow and optimize calculations
+
+Yang Li (1):
+      pwm: lpc18xx-sct: remove unneeded semicolon
+
+ Documentation/devicetree/bindings/pwm/pwm-zx.txt |  22 --
+ drivers/pwm/Kconfig                              |  10 -
+ drivers/pwm/Makefile                             |   1 -
+ drivers/pwm/pwm-iqs620a.c                        |  94 ++++----
+ drivers/pwm/pwm-lpc18xx-sct.c                    |   2 +-
+ drivers/pwm/pwm-rockchip.c                       |  32 ++-
+ drivers/pwm/pwm-zx.c                             | 278 -----------------------
+ 7 files changed, 65 insertions(+), 374 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-zx.txt
+ delete mode 100644 drivers/pwm/pwm-zx.c
