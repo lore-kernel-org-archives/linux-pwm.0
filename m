@@ -2,151 +2,136 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAA5C433DB
-	for <linux-pwm@archiver.kernel.org>; Sat, 27 Feb 2021 17:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A63EC433DB
+	for <linux-pwm@archiver.kernel.org>; Mon,  1 Mar 2021 10:15:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 001FA64E46
-	for <linux-pwm@archiver.kernel.org>; Sat, 27 Feb 2021 17:59:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 398B964DBA
+	for <linux-pwm@archiver.kernel.org>; Mon,  1 Mar 2021 10:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbhB0R6X (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 27 Feb 2021 12:58:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbhB0Rzi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 27 Feb 2021 12:55:38 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8605DC06174A
-        for <linux-pwm@vger.kernel.org>; Sat, 27 Feb 2021 09:46:26 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lG3fX-0000Kf-7b; Sat, 27 Feb 2021 18:46:19 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lG3fW-0007fZ-7D; Sat, 27 Feb 2021 18:46:18 +0100
-Date:   Sat, 27 Feb 2021 18:46:08 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org
-Subject: Re: [GIT PULL] pwm: Changes for v5.12-rc1
-Message-ID: <20210227174608.p5fha6j33gftt57i@pengutronix.de>
-References: <20210225193426.3679817-1-thierry.reding@gmail.com>
- <20210226095936.sc27f3un5vnc5o62@pengutronix.de>
- <YDjhQvv0vYU890Ol@ulmo.localdomain>
+        id S231991AbhCAKPZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 1 Mar 2021 05:15:25 -0500
+Received: from mout.gmx.net ([212.227.15.15]:32997 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232216AbhCAKPI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 1 Mar 2021 05:15:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1614593597;
+        bh=r393rC2gqKbOoEQyITdeiKG7xTX7wRI3Bq/NDLg2M6U=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=jwupeDfSkzdMrJgYDRi7FA2i7KBNiZ7sb5xhjzvaPLXzRzTghrdkeOLSBCyocDXeH
+         +19k6P/Vf6R0TrYktdYuEFIexIkmWRlawjcCNmr/qz8Xmy7XnQsjlgEh+jpCO7D7bl
+         RsoJ+HivDFndcCdbkExhd/ML7zLcw0xaeCeIDKic=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.130.101.138] ([87.130.101.138]) by web-mail.gmx.net
+ (3c-app-gmx-bs13.server.lan [172.19.170.65]) (via HTTP); Mon, 1 Mar 2021
+ 11:13:17 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dranukm4pkjhptg4"
-Content-Disposition: inline
-In-Reply-To: <YDjhQvv0vYU890Ol@ulmo.localdomain>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Message-ID: <trinity-1544ddd1-36d5-40f1-b110-373f1bbc776a-1614593597431@3c-app-gmx-bs13>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Sean Young <sean@mess.org>, linux-pwm@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org, kernel@pengutronix.de
+Subject: Aw: Re: [PATCH v3] pwm: bcm2835: Improve period and duty cycle
+ calculation
+Content-Type: text/plain; charset=UTF-8
+Date:   Mon, 1 Mar 2021 11:13:17 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <YDjhioD17ORWdo8B@ulmo.localdomain>
+References: <20210114204804.143892-1-u.kleine-koenig@pengutronix.de>
+ <YDjhioD17ORWdo8B@ulmo.localdomain>
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:cqSaNDo4CfaNy1u0AmAGJEMlEJHsB8BCd7Y6A6i5uZKNPL9+MVo1DXpsS23TyAskZRmIC
+ 9ePm1z7P16NaSkAdMbeMm5WSh2kkXcQusFKMjR7B6Makd/Ua0LspjV42CNOKZ9HXK59IRrtkWWJL
+ 9mSXvozA0CTSHQRCTxia6wP3hZHEAFxW/rJSYsU43aGUA4qwycngS86Gur5Ag6VPttUqymNInxD0
+ nic6OL8DCB7QX+zvKP/KPAJWWzq3DtGovH2H/ndUZ48P4b4HwdWh4whDMqRvh3ABHtYTVwbqriHh
+ 2w=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:GMfcDbXRNWg=:WnYieDc/QA56rm24kZITww
+ MgAf5NKzneYhBQTnLSKWr50zL7g+zdCN9I6DhUmngBUNCx3n7Zn+6h/hhTxldw9mdHmRIXnFf
+ zD0ta5P4tfwQVb4uGTodSGWlUBl5dUGQPaUsjYvp0t8Jb757lhMxgQ+VqkuUnv8Pt0BNnDwHa
+ k0xy67nuEsnUPaUATaOHjfLlG5zYmMbgTtGWKbgbQ24KN0WiWgRqJoZ46xvAnmQLWgPdfnfDC
+ JGqv3OLCpSVxc5993pVYBv7bF6db9eEzeHLMDWCFyANtDVoe7YMTBOUgKLW8CjWNkg1cttKAg
+ ZwXDmNkk18jS/qXNq8nQtEBCwcbsed2FLyvDqowPbQAlkrPmps2fQOzb4RJs89fNSVuJla1Q9
+ 9HHzo+6gvqv51yqV+sa8wuhVSOAdgu0J/5q93LLM3/dHWLK4yzvUqX7Q+kpqwUHH+Bt2AzQ2X
+ 4yl6A2fO5cAGqjP2msCCpXnXIsY1RChLLgh8qCZWpAjjaIYC9rdS8KwE6G1L5GmiXo49d30HZ
+ OB/5xx2K1n2n6F4P8NNddglxk6rR3Yg9gi2FRQYIubnTqEUu/h8y0oLPfBi3OSpedD0HybWA1
+ huYuZ+qgLokPA=
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
 
---dranukm4pkjhptg4
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Thierry, Hi Uwe
 
-On Fri, Feb 26, 2021 at 12:53:38PM +0100, Thierry Reding wrote:
-> On Fri, Feb 26, 2021 at 10:59:36AM +0100, Uwe Kleine-K=F6nig wrote:
-> > Hello Thierry,
+> On Thu, Jan 14, 2021 at 09:48:04PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> > With an input clk rate bigger than 2000000000, scaler would have been
+> > zero which then would have resulted in a division by zero=2E
 > >=20
-> > On Thu, Feb 25, 2021 at 08:34:26PM +0100, Thierry Reding wrote:
-> > > ----------------------------------------------------------------
-> > > pwm: Changes for v5.12-rc1
-> > >=20
-> > > The ZTE ZX platform is being removed, so the PWM driver is no longer
-> > > needed and removed as well. Other than that this contains a small set=
- of
-> > > fixes and cleanups across a couple of drivers.
+> > Also the originally implemented algorithm divided by the result of a
+> > division=2E This nearly always looses precision=2E Consider a requeste=
+d period
+> > of 1000000 ns=2E With an input clock frequency of 32786885 Hz the hard=
+ware
+> > was configured with an actual period of 983869=2E007 ns (PERIOD =3D 32=
+258)
+> > while the hardware can provide 1000003=2E508 ns (PERIOD =3D 32787)=2E
+> > And note if the input clock frequency was 32786886 Hz instead, the har=
+dware
+> > was configured to 1016656=2E477 ns (PERIOD =3D 33333) while the optima=
+l
+> > setting results in 1000003=2E477 ns (PERIOD =3D 32787)=2E
 > >=20
-> > patches I'd have liked to be seen additionally in this pull request are:
+> > This patch implements proper range checking and only divides once for
+> > the calculation of period (and similar for duty_cycle)=2E
 > >=20
-> >   pwm: bcm2835: Improve period and duty cycle calculation
-> >    https://patchwork.ozlabs.org/project/linux-pwm/patch/20210114204804.=
-143892-1-u.kleine-koenig@pengutronix.de/
+> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u=2Ekleine-koenig@pengutronix=2E=
+de>
+> > ---
+> > Hello,
+> >=20
+> > changes since v2 (Message-Id:
+> > 20201222221319=2E2101107-1-u=2Ekleine-koenig@pengutronix=2Ede):
+> >=20
+> >  - Add my calculation to the comment explaining the max_period formula
+> >    as discussed with Lino=2E
+> >=20
+> > Best regards
+> > Uwe
+> >=20
+> >  drivers/pwm/pwm-bcm2835=2Ec | 35 +++++++++++++++++++++++++++--------
+> >  1 file changed, 27 insertions(+), 8 deletions(-)
 >=20
-> There was discussion on earlier versions of this, so I was hoping that
-> Lino and/or Florian would provide a Reviewed-by/Acked-by/Tested-by on
-> this. I'll go ping them to see if we can get a reaction.
-
-Fine.
-
-> >   pwm: get rid of pwmchip_add_with_polarity()
-> >    https://patchwork.ozlabs.org/project/linux-pwm/list/?series=3D219012
+> Florian, Lino,
 >=20
-> From a quick look I'm not sure I understand what this is trying to do.
-> The goal of pwmchip_add_with_polarity() was initially to support chips
-> that support only PWM_POLARITY_INVERSED (or use inversed polarity by
-> default, rather than normal polarity). So without looking at it more
-> closely it doesn't seem quite right to drop it.
-
-This is at least not the effect of pwmchip_add_with_polarity. There is
-nothing in the core that ensures that apply with the other polarity
-fails.
-
-There are two drivers that make use of pwmchip_add_with_polarity(); both
-support both polarities.
-
-> >   pwm: add a config symbol for legacy drivers
-> >    https://patchwork.ozlabs.org/project/linux-pwm/patch/20200613155742.=
-31528-1-uwe@kleine-koenig.org/
+> care to give a Reviewed-by and/or Tested-by on this?
 >=20
-> I think we've discussed this in the past.
+> Thierry
 
-If so I don't remember and it wasn't on the list.
+this looks good to me, IMHO also the calculation now is comprehensible due=
+ to the comment, so FWIW:
 
-> I don't see the point in this because your patch marks 30 out of 58
-> drivers as legacy. Calling the majority "legacy" is a bit of a
-> stretch. Also, I don't see how this changes anything. It doesn't
-> actually simplify the core because legacy code can't be removed. It's
-> only "simplified" if we don't actually select the PWM_LEGACY_DRIVERS
-> symbol, but that's both not going to happen on most configurations and
-> doesn't actually simplify anything from a maintenance point of view.
-> If anything it further complicates things because now we have to test
-> that everything builds fine with or without PWM_LEGACY_DRIVERS. Also,
-> going forward I don't plan on merging any drivers that don't use the
-> atomic API, and I don't need a Kconfig option to remind me of that.
+Reviewed-by: Lino Sanfilippo <LinoSanfilippo@gmx=2Ede>
 
-My motivation is that it is obvious for people adding new drivers that
-they make something wrong when they need this symbol.
+Unfortunately I do not have the possibility to test this right now (I am c=
+urrently working on another project)
+but I will try to get the needed hardware and then do another test with th=
+is patch=2E
 
-> A better way forward would be to start converting some of these drivers
-> to the atomic API since there's apparently not enough incentive for the
-> driver maintainers to do that themselves.
+Best Regards,
+Lino
 
-That's fine, I can work on that.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---dranukm4pkjhptg4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmA6hVwACgkQwfwUeK3K
-7AnbaAf/bzgfotKCn1bef9JX0PzQUoU00O3KowODFavjmCFK0BJ2/pvqhN7Ulhqj
-OClO/tHVZ8a1Ojyss9gWuV0xe6nMzNVKsm18ZHRgZvi4dKo7jy6on9qZP89ipBVo
-EOa7smyIKhaa2lQcwiPUwyv1E3v+7L48qLj0ukgom54vqBV1kBlyLktlQpG1/PdV
-nle6y3u9iMLq/gcWeTCLwwUaA5YRF1hfuPN83vax5gEf2IigCHreW73xu1PeDN6n
-fYJcEnuN3GQirexjGV3NKTI3iHiV6EnqQXhrdMjY9Tm3yHgCX15Rw6y3hHceu1ZO
-pUmel/QCh3Pb6BPS7gefSVCXOKuiGA==
-=zct5
------END PGP SIGNATURE-----
-
---dranukm4pkjhptg4--
