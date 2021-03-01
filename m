@@ -2,115 +2,64 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E04A7C433E9
-	for <linux-pwm@archiver.kernel.org>; Mon,  1 Mar 2021 11:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B450C433DB
+	for <linux-pwm@archiver.kernel.org>; Mon,  1 Mar 2021 11:09:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A82D64D90
-	for <linux-pwm@archiver.kernel.org>; Mon,  1 Mar 2021 11:09:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6843D64DE3
+	for <linux-pwm@archiver.kernel.org>; Mon,  1 Mar 2021 11:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233404AbhCALJX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 1 Mar 2021 06:09:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233527AbhCALJU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 1 Mar 2021 06:09:20 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EF6C061786
-        for <linux-pwm@vger.kernel.org>; Mon,  1 Mar 2021 03:08:39 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lGgPk-0001Io-VD; Mon, 01 Mar 2021 12:08:36 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lGgPk-0002yX-Bg; Mon, 01 Mar 2021 12:08:36 +0100
+        id S233271AbhCALJY (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 1 Mar 2021 06:09:24 -0500
+Received: from antares.kleine-koenig.org ([94.130.110.236]:51084 "EHLO
+        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233514AbhCALJV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 1 Mar 2021 06:09:21 -0500
+Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
+        id 4F7E9B1A294; Mon,  1 Mar 2021 12:08:35 +0100 (CET)
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>
 Cc:     linux-pwm@vger.kernel.org, linux-clk@vger.kernel.org,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2 3/3] pwm: atmel: Simplify using devm_clk_get_prepared()
-Date:   Mon,  1 Mar 2021 12:08:21 +0100
-Message-Id: <20210301110821.1445756-4-uwe@kleine-koenig.org>
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/3] clk: provide new devm helpers for prepared and enabled clocks
+Date:   Mon,  1 Mar 2021 12:08:18 +0100
+Message-Id: <20210301110821.1445756-1-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210301110821.1445756-1-uwe@kleine-koenig.org>
-References: <20210301110821.1445756-1-uwe@kleine-koenig.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Hello,
 
-With devm_clk_get_prepared() caring to unprepare the clock the error
-path and remove callback can be simplified accordingly.
+compared to the (implicit) v1 sent with Message-Id:
+20201013082132.661993-1-u.kleine-koenig@pengutronix.de) I rebased
+(trivially) to v5.12-rc1, fixed a bug and split the first patch in two
+to make the series easier to review.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-atmel.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+I also stripped down the demo patch to a single driver.
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 5813339b597b..d65e23da2582 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -415,16 +415,10 @@ static int atmel_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(atmel_pwm->base))
- 		return PTR_ERR(atmel_pwm->base);
- 
--	atmel_pwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	atmel_pwm->clk = devm_clk_get_prepared(&pdev->dev, NULL);
- 	if (IS_ERR(atmel_pwm->clk))
- 		return PTR_ERR(atmel_pwm->clk);
- 
--	ret = clk_prepare(atmel_pwm->clk);
--	if (ret) {
--		dev_err(&pdev->dev, "failed to prepare PWM clock\n");
--		return ret;
--	}
--
- 	atmel_pwm->chip.dev = &pdev->dev;
- 	atmel_pwm->chip.ops = &atmel_pwm_ops;
- 	atmel_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-@@ -435,23 +429,18 @@ static int atmel_pwm_probe(struct platform_device *pdev)
- 	ret = pwmchip_add(&atmel_pwm->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add PWM chip %d\n", ret);
--		goto unprepare_clk;
-+		return ret;
- 	}
- 
- 	platform_set_drvdata(pdev, atmel_pwm);
- 
- 	return ret;
--
--unprepare_clk:
--	clk_unprepare(atmel_pwm->clk);
--	return ret;
- }
- 
- static int atmel_pwm_remove(struct platform_device *pdev)
- {
- 	struct atmel_pwm_chip *atmel_pwm = platform_get_drvdata(pdev);
- 
--	clk_unprepare(atmel_pwm->clk);
- 	mutex_destroy(&atmel_pwm->isr_lock);
- 
- 	return pwmchip_remove(&atmel_pwm->chip);
+Thanks for considering
+Uwe
+
+Uwe Kleine-König (3):
+  clk: generalize devm_clk_get() a bit
+  clk: Provide new devm_clk_helpers for prepared and enabled clocks
+  pwm: atmel: Simplify using devm_clk_get_prepared()
+
+ drivers/clk/clk-devres.c | 106 +++++++++++++++++++++++++++++++--------
+ drivers/pwm/pwm-atmel.c  |  15 +-----
+ include/linux/clk.h      |  87 +++++++++++++++++++++++++++++++-
+ 3 files changed, 173 insertions(+), 35 deletions(-)
+
+
+base-commit: fe07bfda2fb9cdef8a4d4008a409bb02f35f1bd8
 -- 
 2.30.0
 
