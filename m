@@ -2,118 +2,89 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC2CC433DB
-	for <linux-pwm@archiver.kernel.org>; Wed,  3 Mar 2021 06:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64212C43142
+	for <linux-pwm@archiver.kernel.org>; Thu,  4 Mar 2021 00:21:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 53E5F64EC0
-	for <linux-pwm@archiver.kernel.org>; Wed,  3 Mar 2021 06:04:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B55C64E60
+	for <linux-pwm@archiver.kernel.org>; Thu,  4 Mar 2021 00:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234368AbhCCFzm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 3 Mar 2021 00:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446785AbhCBMk4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Mar 2021 07:40:56 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E8EC061225;
-        Tue,  2 Mar 2021 04:40:30 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id d11so11953678plo.8;
-        Tue, 02 Mar 2021 04:40:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qhkq6ZVcFSkgquOTN6392bAr78oIYtqIjK8IaKcASCU=;
-        b=glkkuPuWN6uFklXx46KOFJlIY8j0NJqskfrZbLsFWQz3DHGeyAj4fktfGkhQ/PCvKc
-         QL36F/2CNGFlhMxi86i8PNu7DSWQ7yPjGIBe7CyXgjsdoxe6OqWrxxoLATyy9GvjUTBH
-         2bXm0xsbDXJ3bWciU0GPIM1mVllKGBlMXD0DzzZlvlTCy/2JYHVZ6Rm736sJD0ED+Wq0
-         PEMcH9DHoN5KnEoHk2DPThZC94Oc1P1Tsn16Y8N7PMKkvm+keQvy1Hlp3jjMjJ45fnah
-         WGRWQkQ+4FDY4qVKWryU0NgZt2/E1aHELue12txVpLMzDKVrwgkk4GgG6iChvm1G3a/8
-         8LGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qhkq6ZVcFSkgquOTN6392bAr78oIYtqIjK8IaKcASCU=;
-        b=belTmGWzHDNr36vH29GiB4tscGldMVtCrdE3/Fzp1XiqgwNsQXHz2zE1hr20P/tfPF
-         VFfpBSfbN7oN4X2qp3zetGwx29Nnn16Q7M2rZoGPoPPlazyQWPxg21+ty6BspcIYcqUZ
-         Iyg9ZE97UeZbCwtz+pOlw3oqPHkmMrz4GmAzi5pS/9NncIWyDmOrV2JGQ0uxX2LhQX44
-         vYQfuOomhzsIRW+AmUy8S/6Jb8v6m9xHVC4aTV6f6fo97nAThlm47AZarguBDR7OACJS
-         uYnGJI+fPwLUmsbvkWfSE6sXEbnpbLew/DEzJ2AbUiQtZWYJAYmA2SB0d1+M4n3S5phj
-         e0Zw==
-X-Gm-Message-State: AOAM533wvJC0UrMojK8Tpf5AG9T2yVNvYznZ5YqsOaMvih30FOzL5624
-        sfJ59Eg2/Mkk2C3tY6gPVanAAuvs7Q==
-X-Google-Smtp-Source: ABdhPJyBnHF0jEsF94l88b3zqhL5nSTi0rtSz3EAiVfaCdKkLH9nzDBJSg2ZUd50SCQLDTIDXt4ZTA==
-X-Received: by 2002:a17:90a:aa0d:: with SMTP id k13mr4474267pjq.210.1614688830525;
-        Tue, 02 Mar 2021 04:40:30 -0800 (PST)
-Received: from INTERNET-129.allwinnertech.com ([223.197.233.48])
-        by smtp.gmail.com with ESMTPSA id n10sm19778341pgk.91.2021.03.02.04.40.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Mar 2021 04:40:29 -0800 (PST)
-From:   Ban Tao <fengzheng923@gmail.com>
-X-Google-Original-From: Ban Tao
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org, robh+dt@kernel.org, mripard@kernel.org,
-        wens@csie.org
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ban Tao <fengzheng923@gmail.com>
-Subject: [PATCH v3 2/2] pwm: sun8i-v536: document device tree bindings
-Date:   Tue,  2 Mar 2021 20:40:23 +0800
-Message-Id: <20210302124023.1923-1-fengzheng923@gmail.com>
-X-Mailer: git-send-email 2.22.0.windows.1
+        id S239182AbhCDAVF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 3 Mar 2021 19:21:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44952 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1582388AbhCCICw (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 3 Mar 2021 03:02:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3BAAD64EAE;
+        Wed,  3 Mar 2021 07:59:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1614758358;
+        bh=JjnnxrV4J+6mEkOXKozS9ispJERNvaiOE044Pm3tY1I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OjSg/6HUPLnBmGdLAPNLFWk2dv8fx//IhKHY1qgtQvREnxAbbaJc5eBznrQxGzJl7
+         Q/rnIcMPPZoHcCWqt2RwNus+/idQDB/L5niWmLZ5KBiIL9nBKog6Ilo7wiKXOyafos
+         Crm4mGV2hrYJcVq8TTVpVpDiC/4eb0AtoO3dxOadkZ3G/uUEe51k5Pj8ryMu7p5yPx
+         ZzM7DswLHqzxdEJGeXe6Cuqy1VXT4hmtxbh8nU734Xw2EHYSNiG8sqfZdtfN6VquVW
+         swMjEE274n3KfE8FaKJiwH540tOljGFm9d9yvYD5vQlUEbn/s5UnPl4sJPkn2lHyVO
+         K2AXG7r2bpTgQ==
+Date:   Wed, 3 Mar 2021 15:59:08 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>
+Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Mark Brown <broonie@kernel.org>, allen <allen.chen@ite.com.tw>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        Josua Mayer <josua.mayer@jm0.eu>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        Arnd Bergmann <arnd@arndb.de>, Daniel Palmer <daniel@0x0f.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v9 7/7] ARM: dts: imx50-kobo-aura: Add Netronix embedded
+ controller
+Message-ID: <20210303075907.GB15865@dragon>
+References: <20210124214127.3631530-1-j.neuschaefer@gmx.net>
+ <20210124214127.3631530-8-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210124214127.3631530-8-j.neuschaefer@gmx.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Ban Tao <fengzheng923@gmail.com>
+On Sun, Jan 24, 2021 at 10:41:27PM +0100, Jonathan Neuschäfer wrote:
+> Enable the Netronix EC on the Kobo Aura ebook reader.
+> 
+> Several features are still missing:
+>  - Frontlight/backlight. The vendor kernel drives the frontlight LED
+>    using the PWM output of the EC and an additional boost pin that
+>    increases the brightness.
+>  - Battery monitoring
+>  - Interrupts for RTC alarm and low-battery events
+> 
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-This adds binding documentation for sun8i-v536 SoC PWM driver.
-
-Signed-off-by: Ban Tao <fengzheng923@gmail.com>
----
- .../bindings/pwm/pwm-sun8i-v536.txt           | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i-v536.txt
-
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun8i-v536.txt b/Documentation/devicetree/bindings/pwm/pwm-sun8i-v536.txt
-new file mode 100644
-index 000000000000..ab3f4fe0560a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sun8i-v536.txt
-@@ -0,0 +1,24 @@
-+Allwinner sun8i-v536 SoC PWM controller
-+
-+Required properties:
-+ - compatible: should be "allwinner,<name>-pwm"
-+   "allwinner,sun8i-v833-pwm"
-+   "allwinner,sun8i-v536-pwm"
-+   "allwinner,sun50i-r818-pwm"
-+   "allwinner,sun50i-a133-pwm"
-+   "allwinner,sun50i-r329-pwm"
-+ - reg: physical base address and length of the controller's registers
-+ - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-+   the cells format.
-+ - clocks: From common clock binding, handle to the parent clock.
-+ - resets: From reset clock binding, handle to the parent clock.
-+
-+Example:
-+
-+	pwm: pwm@300a0000 {
-+		compatible = "allwinner,sun50i-r818-pwm";
-+		reg = <0x0300a000 0x3ff>;
-+		clocks = <&ccu CLK_BUS_PWM>;
-+		resets = <&ccu RST_BUS_PWM>;
-+		#pwm-cells = <3>;
-+	};
--- 
-2.29.0
-
+Applied, thanks.
