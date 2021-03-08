@@ -2,33 +2,34 @@ Return-Path: <SRS0=ngNq=IG=vger.kernel.org=linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE25C433DB
-	for <linux-pwm@archiver.kernel.org>; Mon,  8 Mar 2021 09:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61110C43381
+	for <linux-pwm@archiver.kernel.org>; Mon,  8 Mar 2021 09:51:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6A7AF6504F
-	for <linux-pwm@archiver.kernel.org>; Mon,  8 Mar 2021 09:39:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2BE75651F7
+	for <linux-pwm@archiver.kernel.org>; Mon,  8 Mar 2021 09:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbhCHJia (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 8 Mar 2021 04:38:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        id S230517AbhCHJuu (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 8 Mar 2021 04:50:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbhCHJiK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Mar 2021 04:38:10 -0500
+        with ESMTP id S230476AbhCHJuW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Mar 2021 04:50:22 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F873C06174A
-        for <linux-pwm@vger.kernel.org>; Mon,  8 Mar 2021 01:38:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D41C06174A
+        for <linux-pwm@vger.kernel.org>; Mon,  8 Mar 2021 01:50:22 -0800 (PST)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lJCKx-0000Xx-Tx; Mon, 08 Mar 2021 10:38:03 +0100
+        id 1lJCWn-0001gb-Dd; Mon, 08 Mar 2021 10:50:17 +0100
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lJCKx-0001F2-8D; Mon, 08 Mar 2021 10:38:03 +0100
+        id 1lJCWm-00029S-U2; Mon, 08 Mar 2021 10:50:16 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
@@ -37,11 +38,12 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Ludovic Desroches <ludovic.desroches@microchip.com>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH] pwm: atmel-tcp: Implement .apply callback
-Date:   Mon,  8 Mar 2021 10:37:55 +0100
-Message-Id: <20210308093755.25580-1-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2] pwm: atmel-tcb: Implement .apply callback
+Date:   Mon,  8 Mar 2021 10:50:12 +0100
+Message-Id: <20210308095012.26529-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -54,12 +56,19 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 This is just pushing down the core's compat code down into the driver using
 the legacy callback nearly unchanged. The call to .enable() was just
 dropped from .config() because .apply() calls it unconditionally.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
+Changes since (implicit) v1:
+
+ - fix typo in Subject (s/tcp/tcb/)
+ - Add S-o-b
+
  drivers/pwm/pwm-atmel-tcb.c | 33 +++++++++++++++++++++++++--------
  1 file changed, 25 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 251c9f205ca0..8451d3e846be 100644
+index ee70a615532b..4d2253f3048c 100644
 --- a/drivers/pwm/pwm-atmel-tcb.c
 +++ b/drivers/pwm/pwm-atmel-tcb.c
 @@ -362,20 +362,37 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
