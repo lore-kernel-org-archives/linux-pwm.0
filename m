@@ -7,22 +7,22 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03149C46461
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22643C2BA1E
 	for <linux-pwm@archiver.kernel.org>; Fri, 12 Mar 2021 12:26:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E13FF64F6E
+	by mail.kernel.org (Postfix) with ESMTP id 019AC65014
 	for <linux-pwm@archiver.kernel.org>; Fri, 12 Mar 2021 12:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhCLMZn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S231764AbhCLMZn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 12 Mar 2021 07:25:43 -0500
-Received: from mx2.suse.de ([195.135.220.15]:57234 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:57346 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231450AbhCLMZ0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 12 Mar 2021 07:25:26 -0500
+        id S231223AbhCLMZZ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 12 Mar 2021 07:25:25 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 623F0B0B6;
-        Fri, 12 Mar 2021 12:25:24 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 9AF5EB0BA;
+        Fri, 12 Mar 2021 12:25:22 +0000 (UTC)
 From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To:     u.kleine-koenig@pengutronix.de
 Cc:     f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
@@ -36,9 +36,9 @@ Cc:     f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
         linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
         andy.shevchenko@gmail.com,
         Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: [PATCH v8 08/11] input: raspberrypi-ts: Release firmware handle when not needed
-Date:   Fri, 12 Mar 2021 13:24:51 +0100
-Message-Id: <20210312122454.24480-9-nsaenzjulienne@suse.de>
+Subject: [PATCH v8 06/11] soc: bcm: raspberrypi-power: Release firmware handle on unbind
+Date:   Fri, 12 Mar 2021 13:24:49 +0100
+Message-Id: <20210312122454.24480-7-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210312122454.24480-1-nsaenzjulienne@suse.de>
 References: <20210312122454.24480-1-nsaenzjulienne@suse.de>
@@ -48,39 +48,28 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-There is no use for the firmware interface after getting the touch
-buffer address, so release it.
+Use devm_rpi_firmware_get() so as to make sure we release RPi's firmware
+interface when unbinding the device.
 
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-
-Changes since v5:
- - Correct commit message
-
-Changes since v3:
- - Release firmware handle in probe function
-
-Changes since v2:
- - Use devm_rpi_firmware_get(), instead of remove function
-
- drivers/input/touchscreen/raspberrypi-ts.c | 2 +-
+ drivers/soc/bcm/raspberrypi-power.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/touchscreen/raspberrypi-ts.c b/drivers/input/touchscreen/raspberrypi-ts.c
-index ef6aaed217cf..5000f5fd9ec3 100644
---- a/drivers/input/touchscreen/raspberrypi-ts.c
-+++ b/drivers/input/touchscreen/raspberrypi-ts.c
-@@ -160,7 +160,7 @@ static int rpi_ts_probe(struct platform_device *pdev)
- 	touchbuf = (u32)ts->fw_regs_phys;
- 	error = rpi_firmware_property(fw, RPI_FIRMWARE_FRAMEBUFFER_SET_TOUCHBUF,
- 				      &touchbuf, sizeof(touchbuf));
--
-+	rpi_firmware_put(fw);
- 	if (error || touchbuf != 0) {
- 		dev_warn(dev, "Failed to set touchbuf, %d\n", error);
- 		return error;
+diff --git a/drivers/soc/bcm/raspberrypi-power.c b/drivers/soc/bcm/raspberrypi-power.c
+index 5d1aacdd84ef..068715d6e66d 100644
+--- a/drivers/soc/bcm/raspberrypi-power.c
++++ b/drivers/soc/bcm/raspberrypi-power.c
+@@ -177,7 +177,7 @@ static int rpi_power_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
+-	rpi_domains->fw = rpi_firmware_get(fw_np);
++	rpi_domains->fw = devm_rpi_firmware_get(&pdev->dev, fw_np);
+ 	of_node_put(fw_np);
+ 	if (!rpi_domains->fw)
+ 		return -EPROBE_DEFER;
 -- 
 2.30.1
 
