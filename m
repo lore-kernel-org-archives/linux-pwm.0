@@ -2,42 +2,45 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB6E0C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E23E0C433DB
 	for <linux-pwm@archiver.kernel.org>; Mon, 15 Mar 2021 11:12:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80B3364E10
+	by mail.kernel.org (Postfix) with ESMTP id B836964E90
 	for <linux-pwm@archiver.kernel.org>; Mon, 15 Mar 2021 11:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbhCOLLx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S229536AbhCOLLx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Mon, 15 Mar 2021 07:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbhCOLL2 (ORCPT
+        with ESMTP id S229818AbhCOLL2 (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Mon, 15 Mar 2021 07:11:28 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3589AC061574
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87769C061762
         for <linux-pwm@vger.kernel.org>; Mon, 15 Mar 2021 04:11:28 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lLl8A-0006Xt-7g; Mon, 15 Mar 2021 12:11:26 +0100
+        id 1lLl8A-0006Y5-Ih; Mon, 15 Mar 2021 12:11:26 +0100
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lLl89-000335-ES; Mon, 15 Mar 2021 12:11:25 +0100
+        id 1lLl8A-00033E-8u; Mon, 15 Mar 2021 12:11:26 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 0/4] pwm: Simplify drivers with of_pwm_n_cells = 3
-Date:   Mon, 15 Mar 2021 12:11:20 +0100
-Message-Id: <20210315111124.2475274-1-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 3/4] pwm: Autodetect default value for of_pwm_n_cells from device tree
+Date:   Mon, 15 Mar 2021 12:11:23 +0100
+Message-Id: <20210315111124.2475274-4-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20210315111124.2475274-1-u.kleine-koenig@pengutronix.de>
+References: <20210315111124.2475274-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,50 +52,38 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hello,
+This allows to simplify all drivers that use three pwm-cells.
+The only ugly side effect is that if a driver specified of_pwm_n_cells = 2
+it suddenly supports device trees that use #pwm-cells = <3>. This however
+isn't a bad thing because the driver doesn't need explicit support for
+three cells as the core handles all the details. Also there is no such
+in-tree driver.
 
-quite some drivers support the modern PWM binding with #pwm-cells = <3>.
-Make this still more normal by simplifying the core a bit which then
-allows to drop the explicit support for 3 cells from the drivers.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/core.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Best regards
-Uwe
-
-Uwe Kleine-König (4):
-  pwm: Make of_pwm_xlate_with_flags() work with #pwm-cells = <2>
-  pwm: Drop of_pwm_simple_xlate() in favour of of_pwm_xlate_with_flags()
-  pwm: Autodetect default value for of_pwm_n_cells from device tree
-  pwm: Simplify all drivers with explicit of_pwm_n_cells = 3
-
- drivers/pwm/core.c             | 41 +++++++++-------------------------
- drivers/pwm/pwm-atmel-hlcdc.c  |  2 --
- drivers/pwm/pwm-atmel-tcb.c    |  2 --
- drivers/pwm/pwm-atmel.c        |  2 --
- drivers/pwm/pwm-bcm-iproc.c    |  2 --
- drivers/pwm/pwm-bcm-kona.c     |  2 --
- drivers/pwm/pwm-bcm2835.c      |  2 --
- drivers/pwm/pwm-berlin.c       |  2 --
- drivers/pwm/pwm-fsl-ftm.c      |  2 --
- drivers/pwm/pwm-hibvt.c        |  2 --
- drivers/pwm/pwm-imx-tpm.c      |  2 --
- drivers/pwm/pwm-imx27.c        |  3 ---
- drivers/pwm/pwm-jz4740.c       |  2 --
- drivers/pwm/pwm-lpc18xx-sct.c  |  2 --
- drivers/pwm/pwm-meson.c        |  2 --
- drivers/pwm/pwm-mxs.c          |  2 --
- drivers/pwm/pwm-omap-dmtimer.c |  2 --
- drivers/pwm/pwm-renesas-tpu.c  |  2 --
- drivers/pwm/pwm-rockchip.c     |  5 -----
- drivers/pwm/pwm-samsung.c      |  3 ---
- drivers/pwm/pwm-sifive.c       |  2 --
- drivers/pwm/pwm-stm32-lp.c     |  2 --
- drivers/pwm/pwm-stm32.c        |  2 --
- drivers/pwm/pwm-sun4i.c        |  2 --
- drivers/pwm/pwm-tiecap.c       |  2 --
- drivers/pwm/pwm-tiehrpwm.c     |  2 --
- drivers/pwm/pwm-vt8500.c       |  2 --
- 27 files changed, 11 insertions(+), 87 deletions(-)
-
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 806d818d913f..399652f01eeb 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -157,8 +157,14 @@ static void of_pwmchip_add(struct pwm_chip *chip)
+ 		return;
+ 
+ 	if (!chip->of_xlate) {
++		u32 pwm_cells;
++
++		if (of_property_read_u32(chip->dev->of_node, "#pwm-cells",
++					 &pwm_cells))
++			pwm_cells = 2;
++
+ 		chip->of_xlate = of_pwm_xlate_with_flags;
+-		chip->of_pwm_n_cells = 2;
++		chip->of_pwm_n_cells = pwm_cells;
+ 	}
+ 
+ 	of_node_get(chip->dev->of_node);
 -- 
 2.30.1
 
