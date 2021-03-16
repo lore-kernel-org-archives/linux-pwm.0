@@ -2,126 +2,101 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8571EC433E9
-	for <linux-pwm@archiver.kernel.org>; Mon, 15 Mar 2021 16:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1506DC433E0
+	for <linux-pwm@archiver.kernel.org>; Tue, 16 Mar 2021 20:39:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3C20564F0E
-	for <linux-pwm@archiver.kernel.org>; Mon, 15 Mar 2021 16:13:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E1A8C64F83
+	for <linux-pwm@archiver.kernel.org>; Tue, 16 Mar 2021 20:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbhCOQMv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 15 Mar 2021 12:12:51 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37062 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229931AbhCOQMs (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 15 Mar 2021 12:12:48 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 1A270AE44;
-        Mon, 15 Mar 2021 16:12:46 +0000 (UTC)
-Message-ID: <1255e56c66c8704c93adad77f605357267de0231.camel@suse.de>
-Subject: Re: [PATCH v8 11/11] pwm: Add Raspberry Pi Firmware based PWM bus
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        wahrenst@gmx.net, linux-input@vger.kernel.org,
-        dmitry.torokhov@gmail.com, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, p.zabel@pengutronix.de,
-        linux-gpio@vger.kernel.org, linus.walleij@linaro.org,
-        linux-clk@vger.kernel.org, sboyd@kernel.org,
-        linux-rpi-kernel@lists.infradead.org, bgolaszewski@baylibre.com,
-        andy.shevchenko@gmail.com
-Date:   Mon, 15 Mar 2021 17:12:44 +0100
-In-Reply-To: <20210312201217.n2sav23swy7ii4uo@pengutronix.de>
-References: <20210312122454.24480-1-nsaenzjulienne@suse.de>
-         <20210312122454.24480-12-nsaenzjulienne@suse.de>
-         <20210312201217.n2sav23swy7ii4uo@pengutronix.de>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-JjHV4KNwgAtLbBPYBur8"
-User-Agent: Evolution 3.38.4 
+        id S231467AbhCPUiz (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 16 Mar 2021 16:38:55 -0400
+Received: from antares.kleine-koenig.org ([94.130.110.236]:53548 "EHLO
+        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231397AbhCPUiZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Mar 2021 16:38:25 -0400
+Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
+        id 2B2A7B3384C; Tue, 16 Mar 2021 21:38:19 +0100 (CET)
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Subject: [PATCH] input: misc: max8997: Switch to pwm_apply()
+Date:   Tue, 16 Mar 2021 21:38:13 +0100
+Message-Id: <20210316203813.48999-1-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+max8997_haptic_enable() is the only caller of
+max8997_haptic_set_duty_cycle(). For the non-external case the PWM is
+already enabled in max8997_haptic_set_duty_cycle(), so this can be done
+for the external case, too, and so the pwm_enable() call can be folded into
+max8997_haptic_set_duty_cycle()'s call to pwm_apply_state().
 
---=-JjHV4KNwgAtLbBPYBur8
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+With max8997_haptic_set_duty_cycle() now using pwm_init_state() the call to
+pwm_apply_args() can be dropped.
 
-Hi Uwe,
+Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+---
+ drivers/input/misc/max8997_haptic.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
-On Fri, 2021-03-12 at 21:12 +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Nicolas,
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright 2020 Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
->=20
-> 2021?
-
-Yes.
-
-> > + * For more information on Raspberry Pi's PoE hat see:
-> > + * https://www.raspberrypi.org/products/poe-hat/
->=20
-> Out of personal interest: Is this hat also able to power a RPi CM4?
-
-I haven't tested it, and can't at the moment (no PoE injector available). B=
-ut
-the physical pin layout, and routing in CM4's IO board fits the hat. So I'd=
- say
-yes.
-
-> > + * Limitations:
-> > + *  - No disable bit, so a disabled PWM is simulated by duty_cycle 0
-> > + *  - Only normal polarity
-> > + *  - Fixed 12.5 kHz period
-> > + *
-> > + * The current period is completed when HW is reconfigured.
-> > + */
->=20
-> Other than that as mentioned in the previous round: This looks good,
->=20
-> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-
-Thanks!
-
-> What is your thought about how to get this series merged?
-> At least input, staging, armsoc, clk, reset anf firmware are touched. Do =
-you
-> prepare a branch for merging in the relevant trees (once you have all the
-> necessary Acks)?
-
-As per Linusw suggestion I'll send a pull request myself into the SoC tree =
-and
-hope for the best. :)
-
-Regards,
-Nicolas
-
-
---=-JjHV4KNwgAtLbBPYBur8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAmBPh3wACgkQlfZmHno8
-x/53LQf/dUgfBEd6vbH95M6DCLvf5pt99cSCUEMCwlP7yqwyFwU0PwzaIaaWDZr6
-ndzNDlkPo08HzcPgZ4YenCX25lpjQNMsJ4XAmXsWNv+mmSfFTHlqyZPD9zlfvFe4
-uCxDMhTSdDOW6but1Qq5GoTIOWS49aU6v0ycjXPL6xky1xL6na9w4XuBI0fzQJa8
-cH3A/zt0sFSE6zedvH88o2JcKJqASiIC6M5P8dhShbpQFyJIZSzcebENxCt3AoeA
-Asui9I4P4auIKH3UlvuVYtr2q438+xMD24EpDeMVxeimtYrTcQyB7bwP4v+0cH49
-VTZL6KPpv5TbPD0BnhXJI0owDekNSQ==
-=RDjK
------END PGP SIGNATURE-----
-
---=-JjHV4KNwgAtLbBPYBur8--
+diff --git a/drivers/input/misc/max8997_haptic.c b/drivers/input/misc/max8997_haptic.c
+index 20ff087b8a44..c86966ea0f16 100644
+--- a/drivers/input/misc/max8997_haptic.c
++++ b/drivers/input/misc/max8997_haptic.c
+@@ -58,8 +58,12 @@ static int max8997_haptic_set_duty_cycle(struct max8997_haptic *chip)
+ 	int ret = 0;
+ 
+ 	if (chip->mode == MAX8997_EXTERNAL_MODE) {
+-		unsigned int duty = chip->pwm_period * chip->level / 100;
+-		ret = pwm_config(chip->pwm, duty, chip->pwm_period);
++		struct pwm_state state;
++		pwm_init_state(chip->pwm, &state);
++		state.enabled = true;
++		state.period = chip->pwm_period;
++		pwm_set_relative_duty_cycle(&state, chip->level, 100);
++		ret = pwm_apply_state(chip->pwm, &state);
+ 	} else {
+ 		int i;
+ 		u8 duty_index = 0;
+@@ -173,14 +177,6 @@ static void max8997_haptic_enable(struct max8997_haptic *chip)
+ 			goto out;
+ 		}
+ 		max8997_haptic_configure(chip);
+-		if (chip->mode == MAX8997_EXTERNAL_MODE) {
+-			error = pwm_enable(chip->pwm);
+-			if (error) {
+-				dev_err(chip->dev, "Failed to enable PWM\n");
+-				regulator_disable(chip->regulator);
+-				goto out;
+-			}
+-		}
+ 		chip->enabled = true;
+ 	}
+ 
+@@ -293,11 +289,6 @@ static int max8997_haptic_probe(struct platform_device *pdev)
+ 			goto err_free_mem;
+ 		}
+ 
+-		/*
+-		 * FIXME: pwm_apply_args() should be removed when switching to
+-		 * the atomic PWM API.
+-		 */
+-		pwm_apply_args(chip->pwm);
+ 		break;
+ 
+ 	default:
+-- 
+2.30.1
 
