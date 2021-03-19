@@ -3,45 +3,42 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D1FC433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5094AC433E6
 	for <linux-pwm@archiver.kernel.org>; Fri, 19 Mar 2021 10:29:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0AACD64F6B
+	by mail.kernel.org (Postfix) with ESMTP id 32C9364F6C
 	for <linux-pwm@archiver.kernel.org>; Fri, 19 Mar 2021 10:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbhCSK31 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S229873AbhCSK31 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Fri, 19 Mar 2021 06:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbhCSK3C (ORCPT
+        with ESMTP id S229914AbhCSK3C (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Fri, 19 Mar 2021 06:29:02 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D982C06175F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3A7C06174A
         for <linux-pwm@vger.kernel.org>; Fri, 19 Mar 2021 03:29:02 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lNCNI-0003hq-CO; Fri, 19 Mar 2021 11:29:00 +0100
+        id 1lNCNI-0003ho-8Z; Fri, 19 Mar 2021 11:29:00 +0100
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lNCNI-0001gO-2m; Fri, 19 Mar 2021 11:29:00 +0100
+        id 1lNCNH-0001gI-LG; Fri, 19 Mar 2021 11:28:59 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
-Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-Subject: [PATCH 02/14] pwm: bcm-kona: Use pwmchip_add() instead of pwmchip_add_with_polarity()
-Date:   Fri, 19 Mar 2021 11:28:40 +0100
-Message-Id: <20210319102852.101209-3-u.kleine-koenig@pengutronix.de>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 00/14] pwm: Patches I consider ready for the next merge window 
+Date:   Fri, 19 Mar 2021 11:28:38 +0100
+Message-Id: <20210319102852.101209-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210319102852.101209-1-u.kleine-koenig@pengutronix.de>
-References: <20210319102852.101209-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,38 +50,109 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Uwe Kleine-König <uwe@kleine-koenig.org>
+Hello,
 
-The only side effect of this change is that pwm->state.polarity is
-initialized to PWM_POLARITY_NORMAL instead of PWM_POLARITY_INVERSED.
-However all other members of pwm->state are uninitialized and consumers
-are expected to provide the right polarity (either by setting it explicitly
-or by using a helper like pwm_init_state() that overwrites .polarity
-anyhow with a value independent of the initial value).
+this is the set of patches that are open on the list for some time.
+Lee suggested to resend them.
 
-The eventual goal is to remove pwmchip_add_with_polarity() and so simplify
-the data flow in the PWM core.
+@Thierry: I'm unsure what is the best way to nag. Is it really
+resending? Or does this just result mostly in overhead because the
+patches are still open in patchwork and it adds copies to your mailbox?
+(Another downside is that taking the patches from this thread results in
+recording a newer Author Date compared to picking up the originals.)
 
-Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
-Link: https://lore.kernel.org/r/20201207134556.25217-2-uwe@kleine-koenig.org
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-bcm-kona.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Anhow, you can also find these patches applied on top of a pull of Lee's
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index 578b3621c97e..717b55677573 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -301,7 +301,7 @@ static int kona_pwmc_probe(struct platform_device *pdev)
- 
- 	clk_disable_unprepare(kp->clk);
- 
--	ret = pwmchip_add_with_polarity(&kp->chip, PWM_POLARITY_INVERSED);
-+	ret = pwmchip_add(&kp->chip);
- 	if (ret < 0)
- 		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
- 
+        git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-pwm-rtc-v5.13-1
+
+from https://lore.kernel.org/r/20210310110846.GL701493@dell at:
+
+        https://git.pengutronix.de/git/ukl/linux pwm-next
+
+if you prefer to just pull this series.
+
+Best regards
+Uwe
+
+Fabio Estevam (1):
+  pwm: imx-tpm: Use a single line for error message
+
+Uwe Kleine-König (13):
+  pwm: bcm2835: Improve period and duty cycle calculation
+  pwm: bcm-kona: Use pwmchip_add() instead of
+    pwmchip_add_with_polarity()
+  pwm: atmel-hlcdc: Use pwmchip_add() instead of
+    pwmchip_add_with_polarity()
+  pwm: Drop function pwmchip_add_with_polarity()
+  pwm: ab8500: Implement .apply instead of .config, .enable and .disable
+  pwm: Always allocate pwm id dynamically
+  pwm: Return -EINVAL for old-style drivers without .set_polarity
+    callback
+  pwm: Prevent a glitch in compat code
+  pwm: atmel-tcb: Implement .apply callback
+  pwm: atmel-tcb: Only free resources after pwm_chip_remove() returned
+  pwm: sprd: Refuse requests with unsupported polarity
+  pwm: cros-ec: Refuse requests with unsupported polarity
+  pwm: Soften potential loss of precision in compat code
+
+ drivers/pwm/core.c             | 81 +++++++++++++---------------------
+ drivers/pwm/pwm-ab8500.c       | 54 +++++++++++------------
+ drivers/pwm/pwm-atmel-hlcdc.c  |  3 +-
+ drivers/pwm/pwm-atmel-tcb.c    | 42 ++++++++++++------
+ drivers/pwm/pwm-atmel.c        |  1 -
+ drivers/pwm/pwm-bcm-iproc.c    |  1 -
+ drivers/pwm/pwm-bcm-kona.c     |  3 +-
+ drivers/pwm/pwm-bcm2835.c      | 36 +++++++++++----
+ drivers/pwm/pwm-berlin.c       |  1 -
+ drivers/pwm/pwm-brcmstb.c      |  1 -
+ drivers/pwm/pwm-clps711x.c     |  1 -
+ drivers/pwm/pwm-crc.c          |  1 -
+ drivers/pwm/pwm-cros-ec.c      |  4 +-
+ drivers/pwm/pwm-dwc.c          |  1 -
+ drivers/pwm/pwm-ep93xx.c       |  1 -
+ drivers/pwm/pwm-fsl-ftm.c      |  1 -
+ drivers/pwm/pwm-hibvt.c        |  1 -
+ drivers/pwm/pwm-img.c          |  1 -
+ drivers/pwm/pwm-imx-tpm.c      |  5 +--
+ drivers/pwm/pwm-imx1.c         |  1 -
+ drivers/pwm/pwm-imx27.c        |  1 -
+ drivers/pwm/pwm-intel-lgm.c    |  1 -
+ drivers/pwm/pwm-iqs620a.c      |  1 -
+ drivers/pwm/pwm-jz4740.c       |  1 -
+ drivers/pwm/pwm-keembay.c      |  1 -
+ drivers/pwm/pwm-lp3943.c       |  1 -
+ drivers/pwm/pwm-lpc18xx-sct.c  |  1 -
+ drivers/pwm/pwm-lpc32xx.c      |  1 -
+ drivers/pwm/pwm-lpss.c         |  1 -
+ drivers/pwm/pwm-mediatek.c     |  1 -
+ drivers/pwm/pwm-meson.c        |  1 -
+ drivers/pwm/pwm-mtk-disp.c     |  1 -
+ drivers/pwm/pwm-mxs.c          |  1 -
+ drivers/pwm/pwm-omap-dmtimer.c |  1 -
+ drivers/pwm/pwm-pca9685.c      |  1 -
+ drivers/pwm/pwm-pxa.c          |  1 -
+ drivers/pwm/pwm-rcar.c         |  1 -
+ drivers/pwm/pwm-renesas-tpu.c  |  1 -
+ drivers/pwm/pwm-rockchip.c     |  1 -
+ drivers/pwm/pwm-samsung.c      |  1 -
+ drivers/pwm/pwm-sifive.c       |  1 -
+ drivers/pwm/pwm-sl28cpld.c     |  1 -
+ drivers/pwm/pwm-spear.c        |  1 -
+ drivers/pwm/pwm-sprd.c         |  4 +-
+ drivers/pwm/pwm-sti.c          |  1 -
+ drivers/pwm/pwm-stm32-lp.c     |  1 -
+ drivers/pwm/pwm-stm32.c        |  1 -
+ drivers/pwm/pwm-stmpe.c        |  1 -
+ drivers/pwm/pwm-sun4i.c        |  1 -
+ drivers/pwm/pwm-tegra.c        |  1 -
+ drivers/pwm/pwm-tiecap.c       |  1 -
+ drivers/pwm/pwm-tiehrpwm.c     |  1 -
+ drivers/pwm/pwm-twl-led.c      |  1 -
+ drivers/pwm/pwm-twl.c          |  1 -
+ drivers/pwm/pwm-vt8500.c       |  1 -
+ include/linux/pwm.h            |  2 -
+ 56 files changed, 121 insertions(+), 159 deletions(-)
+
 -- 
 2.30.1
 
