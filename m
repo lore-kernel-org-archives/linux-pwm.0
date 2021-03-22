@@ -1,91 +1,248 @@
-Return-path: <fengzheng923@gmail.com>
+Return-path: <andy.shevchenko@gmail.com>
 MIME-Version: 1.0
-References: <20210302123737.1867-1-fengzheng923@gmail.com> <20210304160747.pblbugvgsa2oueqi@gilmour>
-In-Reply-To: <20210304160747.pblbugvgsa2oueqi@gilmour>
-From: =?UTF-8?B?54+t5rab?= <fengzheng923@gmail.com>
-Date: Mon, 8 Mar 2021 10:47:03 +0800
-Message-ID: <CAE=m61_X7YAZ_X5ZiWY4g04Mfk+AY0-TrvDsXmVk73kq0LPWCA@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="00000000000083a80805bcfd7316"
-Subject: Re: [PATCH v3 1/2] pwm: sunxi: Add Allwinner SoC PWM controller driver
-To: Maxime Ripard <maxime@cerno.tech>
-Cc: thierry.reding@gmail.com, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, wens@csie.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <YFhhGpiHDELxIo9V@orome.fritz.box>
+References: <20201216125320.5277-1-clemens.gruber@pqgruber.com>
+ <20201216125320.5277-2-clemens.gruber@pqgruber.com> <CAGngYiWkKZGkQ4TTTy8bQYvnGBK45V0A0JCe_+M5V+vuVU+zkQ@mail.gmail.com>
+ <X9uYqGboZg5DuEtf@workstation.tuxnet> <20210111203532.m3yvq6e5bcpjs7mc@pengutronix.de>
+ <CAGngYiW=KhCOZX3tPMFykXzpWLpj3qusN2OXVPSfHLRcyts+wA@mail.gmail.com>
+ <YBQ4c2cYYPDMjkeH@workstation.tuxnet> <CAGngYiWd0u=+DPhvK+8v9FT8Y1Evn1brWRheMNDXWFVVL-wNFw@mail.gmail.com>
+ <YBRyG0vv3gRzygSB@workstation.tuxnet> <YFhhGpiHDELxIo9V@orome.fritz.box>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 22 Mar 2021 11:38:40 +0200
+Message-ID: <CAHp75Ve2FFEMsAv8S18bUDFsH2UkiQ5UvgcRtZ=j30syQtEirw@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="000000000000be186205be1cd4ac"
+Subject: Re: [PATCH v5 2/7] pwm: pca9685: Support hardware readout
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Clemens Gruber <clemens.gruber@pqgruber.com>, Sven Van Asbroeck <thesven73@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 List-ID: <linux-pwm.vger.kernel.org>
 
---00000000000083a80805bcfd7316
+--000000000000be186205be1cd4ac
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,  Maxime
+On Monday, March 22, 2021, Thierry Reding <thierry.reding@gmail.com> wrote:
 
-Maxime Ripard <maxime@cerno.tech> =E4=BA=8E2021=E5=B9=B43=E6=9C=885=E6=97=
-=A5=E5=91=A8=E4=BA=94 =E4=B8=8A=E5=8D=8812:07=E5=86=99=E9=81=93=EF=BC=9A
-
-> Hi,
->
-> On Tue, Mar 02, 2021 at 08:37:37PM +0800, Ban Tao wrote:
-> > From: Ban Tao <fengzheng923@gmail.com>
+> On Fri, Jan 29, 2021 at 09:37:47PM +0100, Clemens Gruber wrote:
+> > Hi Sven,
 > >
-> > The Allwinner R818, A133, R329, V536 and V833 has a new PWM controller
-> > IP compared to the older Allwinner SoCs.
+> > On Fri, Jan 29, 2021 at 01:05:14PM -0500, Sven Van Asbroeck wrote:
+> > > Hi Clemens,
+> > >
+> > > On Fri, Jan 29, 2021 at 11:31 AM Clemens Gruber
+> > > <clemens.gruber@pqgruber.com> wrote:
+> > > >
+> > > > Ok, so you suggest we extend our get_state logic to deal with cases
+> > > > like the following:
+> > >
+> > > Kind of. We can't control how other actors (bootloaders etc) program
+> the
+> > > chip. As far as I know, there are many, many different register
+> settings that
+> > > result in the same physical chip outputs. So if .probe() wants to
+> preserve the
+> > > existing chip settings, .get_state() has to be able to deal with ever=
+y
+> possible
+> > > setting. Even invalid ones.
 > >
-> > Signed-off-by: Ban Tao <fengzheng923@gmail.com>
+> > Is the driver really responsible for bootloaders that program the chip
+> > with invalid values?
+> > The chip comes out of PoR with sane default values. If the bootloader o=
+f
+> > a user messes them up, isn't that a bootloader problem instead of a
+> > Linux kernel driver problem?
 >
-> Thanks for sending an update.
+> It is ultimately a problem of the bootloader and where possible the
+> bootloader should be fixed. However, fixing bootloaders sometimes isn't
+> possible, or impractical, so the kernel has to be able to deal with
+> hardware that's been badly programmed by the bootloader. Within reason,
+> of course. Sometimes this can't be done in any other way than forcing a
+> hard reset of the chip, but it should always be a last resort.
 >
-> Like I said in the previous version though, without proper SoC support
-> upstream, that driver would effectively be dead code
+> > > In addition, .apply() cannot make any assumptions as to which bits ar=
+e
+> > > already set/cleared on the chip. Including preserved, invalid setting=
+s.
+> > >
+> > > This might get quite complex.
+> > >
+> > > However if we reset the chip in .probe() to a known state (a
+> normalized state,
+> > > in the mathematical sense), then both .get_state() and .apply() becom=
+e
+> > > much simpler. because they only need to deal with known, normalized
+> states.
+> >
+> > Yes, I agree. This would however make it impossible to do a flicker-fre=
+e
+> > transition from bootloader to kernel, but that's not really a usecase I
+> > have so I can live without it.
+> >
+> > Another point in favor of resetting is that the driver already does it.
+> > Removing the reset of the OFF register may break some boards who rely o=
+n
+> > that behaviour.
+> > My version only extended the reset to include the ON register.
+> >
+> > >
+> > > In short, it's a tradeoff between code complexity, and user
+> friendliness/
+> > > features.
+> > >
+> > > Sven
+> >
+> > Thierry, Uwe, what's your take on this?
+> >
+> > Thierry: Would you accept it if we continue to reset the registers in
+> > .probe?
+>
+> Yes, I think it's fine to continue to reset the registers since that's
+> basically what the driver already does. It'd be great if you could
+> follow up with a patch that removes the reset and leaves the hardware in
+> whatever state the bootloader has set up. Then we can take that patch
+> for a ride and see if there are any complains about it breaking. If
+> there are we can always try to fix them, but as a last resort we can
+> also revert, which then may be something we have to live with. But I
+> think we should at least try to make this consistent with how other
+> drivers do this so that people don't stumble over this particular
+> driver's
+
+
+I guess we may miss (a PCB / silicon design flaw or warm boot case) when
+boot loader left device completely untouched and device either in wrong
+state because if failed reset (saw this on PCA9555 which has a
+corresponding errata), or simply we have done a warm reset of the system.
+So, we also have to understand how to properly exit.
+
+Another point, CCF has a bit =E2=80=9Cis critical=E2=80=9D, and u guess PWM=
+ may get the
+same and make the all assumptions much easier.
+
+
+>
+> Thierry
 >
 
-I'm not sure if the latest Linux code supports R818, A133, R329, V536 or
-V833,
-But the driver supports most of the sun50i family of SoCs and some of the
-sun8i SoCs.
-Maybe I shouldn't submit this code right now...
->
->
-> Maxime
->
 
---00000000000083a80805bcfd7316
+--=20
+With Best Regards,
+Andy Shevchenko
+
+--000000000000be186205be1cd4ac
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,=C2=A0=C2=A0Maxime<span style=3D"color=
-:rgb(32,33,36);font-size:0.875rem;font-weight:bold;letter-spacing:0.2px;fon=
-t-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;white-space:nowrap">=
-</span><table cellpadding=3D"0" class=3D"gmail-cf gmail-gJ" style=3D"border=
--collapse:collapse;margin-top:0px;width:auto;font-family:Roboto,RobotoDraft=
-,Helvetica,Arial,sans-serif;font-size:14px;letter-spacing:0.2px;display:blo=
-ck;color:rgb(119,119,119)"></table></div><br><div class=3D"gmail_quote"><di=
-v dir=3D"ltr" class=3D"gmail_attr">Maxime Ripard &lt;maxime@cerno.tech&gt; =
-=E4=BA=8E2021=E5=B9=B43=E6=9C=885=E6=97=A5=E5=91=A8=E4=BA=94 =E4=B8=8A=E5=
-=8D=8812:07=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=3D"gmail_=
-quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
-204);padding-left:1ex">Hi,<br>
-<br>
-On Tue, Mar 02, 2021 at 08:37:37PM +0800, Ban Tao wrote:<br>
-&gt; From: Ban Tao &lt;<a href=3D"mailto:fengzheng923@gmail.com" target=3D"=
-_blank">fengzheng923@gmail.com</a>&gt;<br>
+<br><br>On Monday, March 22, 2021, Thierry Reding &lt;<a href=3D"mailto:thi=
+erry.reding@gmail.com">thierry.reding@gmail.com</a>&gt; wrote:<br><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
+lid;padding-left:1ex">On Fri, Jan 29, 2021 at 09:37:47PM +0100, Clemens Gru=
+ber wrote:<br>
+&gt; Hi Sven,<br>
 &gt; <br>
-&gt; The Allwinner R818, A133, R329, V536 and V833 has a new PWM controller=
-<br>
-&gt; IP compared to the older Allwinner SoCs.<br>
+&gt; On Fri, Jan 29, 2021 at 01:05:14PM -0500, Sven Van Asbroeck wrote:<br>
+&gt; &gt; Hi Clemens,<br>
+&gt; &gt; <br>
+&gt; &gt; On Fri, Jan 29, 2021 at 11:31 AM Clemens Gruber<br>
+&gt; &gt; &lt;<a href=3D"mailto:clemens.gruber@pqgruber.com">clemens.gruber=
+@pqgruber.com</a>&gt; wrote:<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; Ok, so you suggest we extend our get_state logic to deal wit=
+h cases<br>
+&gt; &gt; &gt; like the following:<br>
+&gt; &gt; <br>
+&gt; &gt; Kind of. We can&#39;t control how other actors (bootloaders etc) =
+program the<br>
+&gt; &gt; chip. As far as I know, there are many, many different register s=
+ettings that<br>
+&gt; &gt; result in the same physical chip outputs. So if .probe() wants to=
+ preserve the<br>
+&gt; &gt; existing chip settings, .get_state() has to be able to deal with =
+every possible<br>
+&gt; &gt; setting. Even invalid ones.<br>
 &gt; <br>
-&gt; Signed-off-by: Ban Tao &lt;<a href=3D"mailto:fengzheng923@gmail.com" t=
-arget=3D"_blank">fengzheng923@gmail.com</a>&gt;<br>
+&gt; Is the driver really responsible for bootloaders that program the chip=
 <br>
-Thanks for sending an update.<br>
+&gt; with invalid values?<br>
+&gt; The chip comes out of PoR with sane default values. If the bootloader =
+of<br>
+&gt; a user messes them up, isn&#39;t that a bootloader problem instead of =
+a<br>
+&gt; Linux kernel driver problem?<br>
 <br>
-Like I said in the previous version though, without proper SoC support<br>
-upstream, that driver would effectively be dead code<br></blockquote><div><=
-br></div><div>I&#39;m not sure if the latest Linux code supports R818, A133=
-, R329, V536 or V833,=C2=A0</div><div>But the driver supports most of the s=
-un50i family of SoCs and some of the sun8i SoCs.</div>Maybe I shouldn&#39;t=
- submit this code right now...<blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
-1ex">
+It is ultimately a problem of the bootloader and where possible the<br>
+bootloader should be fixed. However, fixing bootloaders sometimes isn&#39;t=
 <br>
-Maxime<br>
-</blockquote></div></div>
+possible, or impractical, so the kernel has to be able to deal with<br>
+hardware that&#39;s been badly programmed by the bootloader. Within reason,=
+<br>
+of course. Sometimes this can&#39;t be done in any other way than forcing a=
+<br>
+hard reset of the chip, but it should always be a last resort.<br>
+<br>
+&gt; &gt; In addition, .apply() cannot make any assumptions as to which bit=
+s are<br>
+&gt; &gt; already set/cleared on the chip. Including preserved, invalid set=
+tings.<br>
+&gt; &gt; <br>
+&gt; &gt; This might get quite complex.<br>
+&gt; &gt; <br>
+&gt; &gt; However if we reset the chip in .probe() to a known state (a norm=
+alized state,<br>
+&gt; &gt; in the mathematical sense), then both .get_state() and .apply() b=
+ecome<br>
+&gt; &gt; much simpler. because they only need to deal with known, normaliz=
+ed states.<br>
+&gt; <br>
+&gt; Yes, I agree. This would however make it impossible to do a flicker-fr=
+ee<br>
+&gt; transition from bootloader to kernel, but that&#39;s not really a usec=
+ase I<br>
+&gt; have so I can live without it.<br>
+&gt; <br>
+&gt; Another point in favor of resetting is that the driver already does it=
+.<br>
+&gt; Removing the reset of the OFF register may break some boards who rely =
+on<br>
+&gt; that behaviour.<br>
+&gt; My version only extended the reset to include the ON register.<br>
+&gt; <br>
+&gt; &gt; <br>
+&gt; &gt; In short, it&#39;s a tradeoff between code complexity, and user f=
+riendliness/<br>
+&gt; &gt; features.<br>
+&gt; &gt; <br>
+&gt; &gt; Sven<br>
+&gt; <br>
+&gt; Thierry, Uwe, what&#39;s your take on this?<br>
+&gt; <br>
+&gt; Thierry: Would you accept it if we continue to reset the registers in<=
+br>
+&gt; .probe?<br>
+<br>
+Yes, I think it&#39;s fine to continue to reset the registers since that&#3=
+9;s<br>
+basically what the driver already does. It&#39;d be great if you could<br>
+follow up with a patch that removes the reset and leaves the hardware in<br=
+>
+whatever state the bootloader has set up. Then we can take that patch<br>
+for a ride and see if there are any complains about it breaking. If<br>
+there are we can always try to fix them, but as a last resort we can<br>
+also revert, which then may be something we have to live with. But I<br>
+think we should at least try to make this consistent with how other<br>
+drivers do this so that people don&#39;t stumble over this particular<br>
+driver&#39;s=C2=A0</blockquote><div><br></div><div>I guess we may miss (a P=
+CB / silicon design flaw or warm boot case) when boot loader left device co=
+mpletely untouched and device either in wrong state because if failed reset=
+ (saw this on PCA9555 which has a corresponding errata), or simply we have =
+done a warm reset of the system. So, we also have to understand how to prop=
+erly exit.</div><div><br></div><div>Another point, CCF has a bit =E2=80=9Ci=
+s critical=E2=80=9D, and u guess PWM may get the same and make the all assu=
+mptions much easier.</div><div>=C2=A0<br></div><blockquote class=3D"gmail_q=
+uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
+x">
+<br>
+Thierry<br>
+</blockquote><br><br>-- <br>With Best Regards,<br>Andy Shevchenko<br><br><b=
+r>
 
---00000000000083a80805bcfd7316--
+--000000000000be186205be1cd4ac--
