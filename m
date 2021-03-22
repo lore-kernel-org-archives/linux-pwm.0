@@ -2,146 +2,168 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEE0C433E1
-	for <linux-pwm@archiver.kernel.org>; Mon, 22 Mar 2021 12:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1EEBC433FB
+	for <linux-pwm@archiver.kernel.org>; Mon, 22 Mar 2021 12:53:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 582956196F
-	for <linux-pwm@archiver.kernel.org>; Mon, 22 Mar 2021 12:16:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BCF1F619A8
+	for <linux-pwm@archiver.kernel.org>; Mon, 22 Mar 2021 12:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbhCVMP4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 22 Mar 2021 08:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
+        id S231828AbhCVMx2 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 22 Mar 2021 08:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbhCVMPY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Mar 2021 08:15:24 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AE2C061574;
-        Mon, 22 Mar 2021 05:15:24 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id u19so8488934pgh.10;
-        Mon, 22 Mar 2021 05:15:24 -0700 (PDT)
+        with ESMTP id S231704AbhCVMva (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Mar 2021 08:51:30 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CB8C061756
+        for <linux-pwm@vger.kernel.org>; Mon, 22 Mar 2021 05:51:29 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id j18so16574404wra.2
+        for <linux-pwm@vger.kernel.org>; Mon, 22 Mar 2021 05:51:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vLVQEbCaZ+2sASCPIVc5025gzMbQRYGdD6fBiIA+ogw=;
-        b=YalbtbL5Ay1s/ZY6TELzy+l6vTrHk4GpwC/So/VQe+M9PKSXMfimPwO01NBzNedoAI
-         Yew7Ce6fMBMV0IJpQOxrk8jvF8dmgwlrIRC87/+3rbMyCYB38L4q/Po3To948VmTFjaq
-         fPJuIiYXjP8nKbgftyAxtAUyXDt9y4kwbVGSBVA0wXHvMQ4qM7Ba5ZYEQ/NEEg0ikw5S
-         VaRZLXWvWesNNdOHxTBqew3QIZJUPPU6b/gtXrmT5QSUXSL5XjzVkkm3zz0jhDQaP4n6
-         rrooTdjksXTNwEdAXQDndBD2bPlwmJrqBw/631TRMYYPJyq72UdIvBMG8Grv/QuVQ1mA
-         eexA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZZSiLY/GncxvtjYgYTO320JEPV0WjTf6ilZz0mnbEnU=;
+        b=Yx3NzexeucbsYKnju4Tdv8r2XrSne5c1UOECyPq9RbGVK1jydlEhdEOrYWdqfuaSGk
+         1qghgkvg0qYc/IUafK9o1RX51MpSk4Nj9uCe+kGnqpDwQSXz5rqAo2hYBWtNcvR81h0w
+         PFcJQQ+btQgqJmLlRAbm5Hoi/KrY2OiQyhV+8JnmSsum78BEqg9EyY5w9Nj0X2XyIkwL
+         ynNAwq88AZsOEiSlEMiJq+3BTvD0Y+1YpWdE6AJWM25MXI8F7VQWbyO2H2y3x5hBN44c
+         XwUwt3glG4rWqzXjwqmzCezks5MI6GzpMhHEAhv0BNf/nXfR5X85Q+IEg8DF5Z+zzO0D
+         lWDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vLVQEbCaZ+2sASCPIVc5025gzMbQRYGdD6fBiIA+ogw=;
-        b=DJnRB9j4WjEU1sAdlre3kunRP/KGOVzlqlsQ1f9kNTn6edzNL4AO4FPLb0UFq5MM2i
-         y/zv00/4FeJkgJFw3Utsb9H060uZzcQim3hcNVMDsx8bwjHhiizFDwDnaHEmVlE7Rtzc
-         oDr5dKV4ZQE2qf9EttOMRsgcPkcGW2rTzA62ZgXCHUWXOTfkZ0sLFBBOsX9xCOUMWWpT
-         a4mAKxM8U2yeIRCoT9EpYFi5b+dcY90ZUTXeUMWPVXRUvWxgilgbzv3eOGVE/8OAkzH/
-         XjiyRvohx+ejha4dNRcj1K6Dw5XPcATmoZ7v/zceJVWGPGBbSr0tMuFbkw+Sx4yE+6Xt
-         bs6g==
-X-Gm-Message-State: AOAM532g0/aI6bEoJSnG7mfRYmmGsigTX85nFpUAPB7Tb8+CM9ahpKkw
-        S1O3BSwOU3LhMj7NnU54HB+pvsdW6mTJ7a4OuAk=
-X-Google-Smtp-Source: ABdhPJzlKo/A09nKXiQQboNC8DZc588++KuJB0rfw2lzeEj9hNgD+0r20jDxOgfKccUB6QBb5dZyJvVycnGDab3Cgh4=
-X-Received: by 2002:a62:e50f:0:b029:214:8e4a:ae46 with SMTP id
- n15-20020a62e50f0000b02902148e4aae46mr12024153pff.73.1616415324021; Mon, 22
- Mar 2021 05:15:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZZSiLY/GncxvtjYgYTO320JEPV0WjTf6ilZz0mnbEnU=;
+        b=EBiAbr7MKKN+oobhppssXNq82vokxE/069z79p7Zdg5U4yhlxRrm8P6dDa8fXVs6HZ
+         27bg8W9msCiC9TMFPisUY9dkjremlDtKOOrWxmPcj5zegHMhM7nlGua9NSvn9JTtQPb2
+         CCEjuD8OiYYUAS/9l7PqOvl5EkbBj5r2Pgub4lDjbUjQ9sLRf7EOX+xzqFVgnbdnSIL8
+         Y8XA30HI9btO6tSi5NMyVc7duHVd/gzQBZkq0GY48NM8PHIq983hvMa55lqgpmy+Tgja
+         Z7+4y6xTUHWTc6+jhtJ54+aqZfkjit2UQoZ9wAnEoQIMbf+Njac1BbskZ0z5ckKP9hfc
+         +llg==
+X-Gm-Message-State: AOAM533IWDTy9Yo0Urlpu0ytcrnvuYguQCbC8C8SgtH2zAFDSKSmvgbq
+        RLr+uhA3StIzPVO01LXfavBU2h9sEx0=
+X-Google-Smtp-Source: ABdhPJwnqkeamsuQVNtNkv9Bmhbv7/JnTverp1AK3C4X63cSptD99DQ/Gx8CdJojGiEXBHX682KHLw==
+X-Received: by 2002:a5d:6103:: with SMTP id v3mr17525989wrt.375.1616417487717;
+        Mon, 22 Mar 2021 05:51:27 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id h20sm15809785wmp.38.2021.03.22.05.51.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 05:51:25 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 13:51:43 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        kernel@pengutronix.de
+Subject: Re: lifetime of pwm devices
+Message-ID: <YFiS31ZPBe+UwHbe@orome.fritz.box>
+References: <20210312083449.5htbbr2zgqfxc3wo@pengutronix.de>
+ <YEtAdbNA/c/FtVgX@kroah.com>
+ <20210312131531.wzstoal33gscr4ws@pengutronix.de>
 MIME-Version: 1.0
-References: <X9uYqGboZg5DuEtf@workstation.tuxnet> <20210111203532.m3yvq6e5bcpjs7mc@pengutronix.de>
- <CAGngYiW=KhCOZX3tPMFykXzpWLpj3qusN2OXVPSfHLRcyts+wA@mail.gmail.com>
- <YBQ4c2cYYPDMjkeH@workstation.tuxnet> <CAGngYiWd0u=+DPhvK+8v9FT8Y1Evn1brWRheMNDXWFVVL-wNFw@mail.gmail.com>
- <YBRyG0vv3gRzygSB@workstation.tuxnet> <YFhhGpiHDELxIo9V@orome.fritz.box>
- <CAHp75Ve2FFEMsAv8S18bUDFsH2UkiQ5UvgcRtZ=j30syQtEirw@mail.gmail.com>
- <20210322112254.5mjkajkq3wnhgnd5@pengutronix.de> <CAHp75VfedZyFF46koLOg13t_TzMbwj5zBYU2zBA52vRRtb202g@mail.gmail.com>
- <20210322114826.ahwhbqxjxfg3nmrf@pengutronix.de>
-In-Reply-To: <20210322114826.ahwhbqxjxfg3nmrf@pengutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 22 Mar 2021 14:15:08 +0200
-Message-ID: <CAHp75Vc6YnHJdt0HhV9AZtpLHLapHZb08O5ygg++PX+u04m--A@mail.gmail.com>
-Subject: Re: [PATCH v5 2/7] pwm: pca9685: Support hardware readout
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Clemens Gruber <clemens.gruber@pqgruber.com>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="dY01IpEK59SU+oST"
+Content-Disposition: inline
+In-Reply-To: <20210312131531.wzstoal33gscr4ws@pengutronix.de>
+User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 1:48 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Mon, Mar 22, 2021 at 01:40:57PM +0200, Andy Shevchenko wrote:
-> > On Mon, Mar 22, 2021 at 1:22 PM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > > On Mon, Mar 22, 2021 at 11:38:40AM +0200, Andy Shevchenko wrote:
-> > > > On Monday, March 22, 2021, Thierry Reding <thierry.reding@gmail.com=
-> wrote:
-> > > > > On Fri, Jan 29, 2021 at 09:37:47PM +0100, Clemens Gruber wrote:
-> > > > > > Thierry: Would you accept it if we continue to reset the regist=
-ers in
-> > > > > > .probe?
-> > > > >
-> > > > > Yes, I think it's fine to continue to reset the registers since t=
-hat's
-> > > > > basically what the driver already does. It'd be great if you coul=
-d
-> > > > > follow up with a patch that removes the reset and leaves the hard=
-ware in
-> > > > > whatever state the bootloader has set up. Then we can take that p=
-atch
-> > > > > for a ride and see if there are any complains about it breaking. =
-If
-> > > > > there are we can always try to fix them, but as a last resort we =
-can
-> > > > > also revert, which then may be something we have to live with. Bu=
-t I
-> > > > > think we should at least try to make this consistent with how oth=
-er
-> > > > > drivers do this so that people don't stumble over this particular
-> > > > > driver's
-> > > >
-> > > > I guess we may miss (a PCB / silicon design flaw or warm boot case)=
- when
-> > > > boot loader left device completely untouched and device either in w=
-rong
-> > > > state because if failed reset (saw this on PCA9555 which has a
-> > > > corresponding errata), or simply we have done a warm reset of the s=
-ystem.
-> > > > So, we also have to understand how to properly exit.
-> > >
-> > > I don't think that not resetting is a real problem. My argumentation
-> > > goes as follows:
-> > >
-> > > When the PWM driver is loaded and the PWM configuration is invalid, i=
-t
-> > > was already invalid for the time between power up (or warm start) and
-> > > PWM driver load time. Then it doesn't really hurt to keep the PWM
-> > > in this invalid state for a little moment longer until the consumer o=
-f
-> > > the PWM becomes active.
-> >
-> > But this won't work in the cases when we have a chip with a shared
-> > settings for period and/or duty cycle. You will never have a user come
-> > due to -EBUSY.
->
-> That's wrong, the first consumer to enable the PWM (in software) is
-> supposed to be able to change the settings.
 
-If it's a critical PWM, how can you be allowed to do that?
-And if so, what is the difference between resetting the device in this
-case? You may consider it as a change to the settings by the first
-consumer.
+--dY01IpEK59SU+oST
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
---=20
-With Best Regards,
-Andy Shevchenko
+On Fri, Mar 12, 2021 at 02:15:31PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> Hello,
+>=20
+> On Fri, Mar 12, 2021 at 11:20:37AM +0100, Greg Kroah-Hartman wrote:
+> > On Fri, Mar 12, 2021 at 09:34:49AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> > > Now I wonder if it is just harder to trigger such a crash or if the l=
+ink
+> > > is good enough to cover all corner cases.
+> > >=20
+> > > I wonder if the pretty approach would be to ensure that the pwmchip's
+> > > lifetime is tracked using a struct dev that ensures that the pwmchip
+> > > doesn't go away until the consumer releases it. Is there an urge to
+> > > address this?
+> >=20
+> > Preventing user-causable oopses is always good :)
+>=20
+> The key question is: Is the device link good enough to prevent all the
+> nasty things. Or is there an urge to address problems?
+
+Device links were specifically designed to address these problems, so
+yes, hopefully they are enough to prevent these issues.
+
+> > The driver model should solve this, if it is used properly, why isn't
+> > the pwm layer using a struct device today?
+>=20
+> I think this isn't used today because the PWM framework hasn't evolved
+> enough. I tried to do this already but I don't understand the driver
+> core and pwm code good enough yet to be done with that quickly. Ideally
+> without changing the uservisible sysfs stuff.
+
+It's not so much that the framework hasn't evolved enough. It's more
+that there was never a need for it, so there was never a need to evolve
+the framework. It was only until around the time when the need for
+device links was discovered that I realized PWM was in the same boat,
+but since device links were going to solve this anyway it didn't seem
+worth the effort to add a full-blown struct device to the framework.
+
+I recall that I had briefly looked at implementing proper struct device
+and the associated reference counting, but once you get into the details
+it all gets very tricky real quickly. If I recall correctly the place
+where things stalled at the time was that you can't really prevent a
+device from being unbound (consider devices on a hotpluggable bus like
+USB - we don't have any PWM controller on USB, at least not yet, but any
+solution would have to support that use-case, or it wouldn't be any
+good). So while you could keep around a struct device reference for each
+consumer, you'd still have to figure out how to operate (or rather, not
+operate) on the backing devices that have physically disappeared.
+Essentially you'd have to refuse every subsystem-level operation on the
+objects because the hardware has gone and can no longer be accessed. Any
+consumers would also have to learn how to deal with that situation.
+
+That's around the point where I reached out to Greg and Rafael at the
+time and Rafael came up with the idea (or had already been working on
+it, I don't recall exactly) for device links that would ensure that
+consumers would automatically be unbound when one of their resources
+goes away. It's a much more elegant solution, in my opinion, because it
+is both simpler and can be applied uniformly to a wide range of drivers
+and subsystems.
+
+So unless you have a very pressing need that device links don't solve, I
+don't think this is a very good use of your time.
+
+Thierry
+
+--dY01IpEK59SU+oST
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmBYkt0ACgkQ3SOs138+
+s6Erdw/+P1ywBK7YLgI1dcJe76gad8e1jyNU0i0aVql9l2J9Rehx+7AchLSzuQAj
+m1EVlfpWmS08PRa9oPA7PrtSfcYYQVFLfheqfUk4e2Komu8bC6kDbWom/qjJlM/S
+tNQ+IFhPM7F1uVhwUgcmPf5wgCwTcBizCzlsjRSN1RFyjROI7vJgyJK0fimr7pqZ
+VVgVR8vaoK+StxWTPvDR1DKVSmWUTwLL9cQy6U40x3RasMSkXrKrtez+tnVs2BUA
++XOyEUxGZMDimIGiLnbpDeSzICt4Dx+bZgySSKjAtpgMU357LZ5z7YagdxxrE9D2
+ZyEdvhfyKWkazD5hy+KGUkbL5SjDwU/fLvlUzndChSg9AJrPD0fEABmHGakT1YNa
+bVGLrEUIrsKUcgXxx9EfwtKpH0mATyriX1HZ5blFpRnrN3yr2awfiizHQVX8+u0d
++A/GL3JLJrVHya2wQUdpbkTqUjF/dsDx4oiMWyFBwqeZ3PlLICrl/TTjYSZyihA3
+UpFWu7Qx3gNcIT30s1Oc6/TgU1RF2c5rNqeF4cfmUs5BgOgB0PSq0m5oInJDbXMP
+eELd++X+L93knI8/lPokyACw6X7aOZKR9bf2zHtUDF0SuaeK2RpEupTVw1Co+77E
+Cr8yjIvCK73MjETUWq3Znd6Ks2SH2dEBnfRMiPz/KI6R5Antiuc=
+=M6Ig
+-----END PGP SIGNATURE-----
+
+--dY01IpEK59SU+oST--
