@@ -7,37 +7,40 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0201C433E3
-	for <linux-pwm@archiver.kernel.org>; Mon, 29 Mar 2021 12:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF786C433C1
+	for <linux-pwm@archiver.kernel.org>; Mon, 29 Mar 2021 13:00:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9DAF061938
-	for <linux-pwm@archiver.kernel.org>; Mon, 29 Mar 2021 12:59:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D57261920
+	for <linux-pwm@archiver.kernel.org>; Mon, 29 Mar 2021 13:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbhC2M7A (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 29 Mar 2021 08:59:00 -0400
-Received: from mail.pqgruber.com ([52.59.78.55]:55426 "EHLO mail.pqgruber.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229515AbhC2M6s (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 29 Mar 2021 08:58:48 -0400
+        id S230470AbhC2M7e (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 29 Mar 2021 08:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231442AbhC2M7J (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Mar 2021 08:59:09 -0400
+Received: from mail.pqgruber.com (mail.pqgruber.com [IPv6:2a05:d014:575:f70b:4f2c:8f1d:40c4:b13e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23ABC061574;
+        Mon, 29 Mar 2021 05:59:08 -0700 (PDT)
 Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id AF5ACC72850;
-        Mon, 29 Mar 2021 14:58:46 +0200 (CEST)
+        by mail.pqgruber.com (Postfix) with ESMTPSA id 43436C72850;
+        Mon, 29 Mar 2021 14:59:07 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1617022726;
-        bh=PSIXRmFBk+PjMaRg1ORkwMJsQqVzAdiySDzsAjkJOnA=;
+        s=mail; t=1617022747;
+        bh=uw06fKGhzNyZeekkFoiAIHG1nKO4El6D2kTF5dHnHfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlIEkXaEvoBe2BZDkrK+X2JJ/XanhIAIbz6GaJ90EvnyessGdY6ZEzrDeNRjHPJ3w
-         01TFniVcm8X1iSD2lN967IHMxWmiWo9c1PRovV5wUcRIInVJiuAO8VTZ+1YFFtfgbG
-         FGULS2rVJvThF/XUkd3p7Jho+CD3U/BjIEhMifu4=
+        b=R5Kd4n0sIRUewbFHBSMbrWtVIvEQ24tfRgNKPVKxgJH57xa3IEV088b5zff4g8Ugz
+         xNF8qX8ekFcAlZu3THeBc34npBFVTmeM5brUB6CGonNYGvdXVyANLlv03wqt9u5M8a
+         d1qxTfBIWEhdH18QJNyZG7eITfANyNW//06IOliw=
 From:   Clemens Gruber <clemens.gruber@pqgruber.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
         Sven Van Asbroeck <TheSven73@gmail.com>,
         u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
         Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: [PATCH v6 3/7] pwm: pca9685: Improve runtime PM behavior
-Date:   Mon, 29 Mar 2021 14:57:03 +0200
-Message-Id: <20210329125707.182732-3-clemens.gruber@pqgruber.com>
+Subject: [PATCH v6 5/7] dt-bindings: pwm: pca9685: Add nxp,staggered-outputs property
+Date:   Mon, 29 Mar 2021 14:57:05 +0200
+Message-Id: <20210329125707.182732-5-clemens.gruber@pqgruber.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210329125707.182732-1-clemens.gruber@pqgruber.com>
 References: <20210329125707.182732-1-clemens.gruber@pqgruber.com>
@@ -47,60 +50,27 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The chip does not come out of POR in active state but in sleep state.
-To be sure (in case the bootloader woke it up) we force it to sleep in
-probe.
-
-On kernels without CONFIG_PM, we wake the chip in .probe and put it to
-sleep in .remove.
+The pca9685 driver supports a new nxp,staggered-outputs property for
+reduced current surges and EMI. This adds documentation for the new DT
+property.
 
 Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
 ---
- drivers/pwm/pwm-pca9685.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index fb026a25fb61..4d6684b90819 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -469,14 +469,19 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 		return ret;
- 	}
+diff --git a/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt b/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt
+index f21b55c95738..fafe954369dc 100644
+--- a/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt
+@@ -12,6 +12,8 @@ Optional properties:
+   - invert (bool): boolean to enable inverted logic
+   - open-drain (bool): boolean to configure outputs with open-drain structure;
+ 		       if omitted use totem-pole structure
++  - nxp,staggered-outputs (bool): boolean to enable staggered output ON times to
++				  minimize current surges and EMI
  
--	/* The chip comes out of power-up in the active state */
--	pm_runtime_set_active(&client->dev);
- 	/*
--	 * Enable will put the chip into suspend, which is what we
--	 * want as all outputs are disabled at this point
-+	 * The chip comes out of power-up in the sleep state,
-+	 * but force it to sleep in case it was woken up before
- 	 */
-+	pca9685_set_sleep_mode(pca, true);
-+	pm_runtime_set_suspended(&client->dev);
- 	pm_runtime_enable(&client->dev);
- 
-+	if (!IS_ENABLED(CONFIG_PM)) {
-+		/* Wake the chip up on non-PM environments */
-+		pca9685_set_sleep_mode(pca, false);
-+	}
-+
- 	return 0;
- }
- 
-@@ -488,7 +493,14 @@ static int pca9685_pwm_remove(struct i2c_client *client)
- 	ret = pwmchip_remove(&pca->chip);
- 	if (ret)
- 		return ret;
-+
- 	pm_runtime_disable(&client->dev);
-+
-+	if (!IS_ENABLED(CONFIG_PM)) {
-+		/* Put chip in sleep state on non-PM environments */
-+		pca9685_set_sleep_mode(pca, true);
-+	}
-+
- 	return 0;
- }
+ Example:
  
 -- 
 2.31.1
