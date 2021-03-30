@@ -2,51 +2,48 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F70C433DB
-	for <linux-pwm@archiver.kernel.org>; Mon, 29 Mar 2021 18:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 699ABC433DB
+	for <linux-pwm@archiver.kernel.org>; Tue, 30 Mar 2021 12:38:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 409B561985
-	for <linux-pwm@archiver.kernel.org>; Mon, 29 Mar 2021 18:02:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3CCCA61584
+	for <linux-pwm@archiver.kernel.org>; Tue, 30 Mar 2021 12:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbhC2SCR (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 29 Mar 2021 14:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
+        id S231584AbhC3MiU (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 30 Mar 2021 08:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbhC2SCK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Mar 2021 14:02:10 -0400
+        with ESMTP id S231574AbhC3Mhs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Mar 2021 08:37:48 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A6AC061574
-        for <linux-pwm@vger.kernel.org>; Mon, 29 Mar 2021 11:02:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE24C061762
+        for <linux-pwm@vger.kernel.org>; Tue, 30 Mar 2021 05:37:48 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lQwDH-0004Gs-73; Mon, 29 Mar 2021 20:02:07 +0200
+        id 1lRDcw-0005AW-C3; Tue, 30 Mar 2021 14:37:46 +0200
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1lQwDG-0001XY-IO; Mon, 29 Mar 2021 20:02:06 +0200
-Date:   Mon, 29 Mar 2021 20:02:06 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc:     linux-pwm@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 4/7] pwm: pca9685: Support staggered output ON times
-Message-ID: <20210329180206.rejl32uajslpvbgi@pengutronix.de>
-References: <20210329125707.182732-1-clemens.gruber@pqgruber.com>
- <20210329125707.182732-4-clemens.gruber@pqgruber.com>
- <20210329170357.par7c3izvtmtovlj@pengutronix.de>
- <YGILdjZBCc2vVlRd@workstation.tuxnet>
+        id 1lRDcv-0003Kw-M2; Tue, 30 Mar 2021 14:37:45 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 2/2] pwm: sti: Free resources only after pwmchip_remove()
+Date:   Tue, 30 Mar 2021 14:37:42 +0200
+Message-Id: <20210330123742.190540-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210330123742.190540-1-u.kleine-koenig@pengutronix.de>
+References: <20210330123742.190540-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="noem5j55dbfdgb7z"
-Content-Disposition: inline
-In-Reply-To: <YGILdjZBCc2vVlRd@workstation.tuxnet>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -55,71 +52,32 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Before pwmchip_remove() returns the PWM is expected to be functional. So
+remove the pwmchip before disabling the clocks.
 
---noem5j55dbfdgb7z
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/pwm-sti.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Mon, Mar 29, 2021 at 07:16:38PM +0200, Clemens Gruber wrote:
-> On Mon, Mar 29, 2021 at 07:03:57PM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Mar 29, 2021 at 02:57:04PM +0200, Clemens Gruber wrote:
-> > > The PCA9685 supports staggered LED output ON times to minimize current
-> > > surges and reduce EMI.
-> > > When this new option is enabled, the ON times of each channel are
-> > > delayed by channel number x counter range / 16, which avoids asserting
-> > > all enabled outputs at the same counter value while still maintaining
-> > > the configured duty cycle of each output.
-> > >=20
-> > > Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
-> >=20
-> > Is there a reason to not want this staggered output? If it never hurts I
-> > suggest to always stagger and drop the dt property.
->=20
-> There might be applications where you want multiple outputs to assert at
-> the same time / to be synchronized.
-> With staggered outputs mode always enabled, this would no longer be
-> possible as they are spread out according to their channel number.
->=20
-> Not sure how often that usecase is required, but just enforcing the
-> staggered mode by default sounds risky to me.
+diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+index 3064b320df93..f491d56254d7 100644
+--- a/drivers/pwm/pwm-sti.c
++++ b/drivers/pwm/pwm-sti.c
+@@ -650,11 +650,12 @@ static int sti_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct sti_pwm_chip *pc = platform_get_drvdata(pdev);
+ 
++	pwmchip_remove(&pc->chip);
+ 
+ 	clk_unprepare(pc->pwm_clk);
+ 	clk_unprepare(pc->cpt_clk);
+ 
+-	return pwmchip_remove(&pc->chip);
++	return 0;
+ }
+ 
+ static const struct of_device_id sti_pwm_of_match[] = {
+-- 
+2.30.2
 
-There is no such guarantee in the PWM framework, so I don't think we
-need to fear breaking setups. Thierry?
-
-One reason we might not want staggering is if we have a consumer who
-cares about config transitions. (This however is moot it the hardware
-doesn't provide sane transitions even without staggering.)
-
-Did I already ask about races in this driver? I assume there is a
-free running counter and the ON and OFF registers just define where in
-the period the transitions happen, right? Given that changing ON and OFF
-needs two register writes probably all kind of strange things can
-happen, right? (Example thought: for simplicity's sake I assume ON is
-always 0. Then if you want to change from OFF =3D 0xaaa to OFF =3D 0xccc we
-might see a period with 0xacc. Depending on how the hardware works we
-might even see 4 edges in a single period then.)
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---noem5j55dbfdgb7z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBiFhoACgkQwfwUeK3K
-7AmvxQf+Kp1rfako1h3M55rltPehAc3AA2Mm7QgxbFli1DO8l1yv/rHyDhoWqVGW
-OnGEYoCJvn3mvjJVWPHgnjwFQBoHDgsrClihzVNX+2oqM9arkRnDbZ3QE6QnBIBI
-eGo+kSSfsQIv7uUEyL2m2CuHivqDIGsS8khw6LdoTHzvp13vK/ICGm5zVKiRBkE2
-bFSrKsuBn89LN+uYjULYcDs0nWtd61ah6ULENwttDvihVedCK55JxkFxLNUg5XRS
-0SYZBvuTwjQeepWttbVCiLtpHL+dbc39ZYNQcSo7G7lS1bgj2WGTVVdb+x5xuAeC
-jJwGG+TgKT6QA9h41S/8Y9lzUyWT1w==
-=QR6o
------END PGP SIGNATURE-----
-
---noem5j55dbfdgb7z--
