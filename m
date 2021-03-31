@@ -2,170 +2,54 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=0.0 required=3.0 tests=BAYES_50,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D0AC433FB
-	for <linux-pwm@archiver.kernel.org>; Tue, 30 Mar 2021 18:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A956C433E3
+	for <linux-pwm@archiver.kernel.org>; Wed, 31 Mar 2021 07:31:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0F9ED619CB
-	for <linux-pwm@archiver.kernel.org>; Tue, 30 Mar 2021 18:19:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F0998619DA
+	for <linux-pwm@archiver.kernel.org>; Wed, 31 Mar 2021 07:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232773AbhC3SSh (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 30 Mar 2021 14:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbhC3SSY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Mar 2021 14:18:24 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE5EC061764
-        for <linux-pwm@vger.kernel.org>; Tue, 30 Mar 2021 11:18:24 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lRIwK-0007ht-T8; Tue, 30 Mar 2021 20:18:08 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lRIwI-0000Dq-34; Tue, 30 Mar 2021 20:18:06 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, kernel@pengutronix.de,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-rtc@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        linux-spi@vger.kernel.org
-Subject: [PATCH v4 1/6] clk: generalize devm_clk_get() a bit
-Date:   Tue, 30 Mar 2021 20:17:50 +0200
-Message-Id: <20210330181755.204339-2-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210330181755.204339-1-u.kleine-koenig@pengutronix.de>
-References: <20210330181755.204339-1-u.kleine-koenig@pengutronix.de>
+        id S234083AbhCaHan convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 31 Mar 2021 03:30:43 -0400
+Received: from bizcloud-power.sawafuji.co.jp ([128.199.220.203]:46712 "EHLO
+        mta0.sawafuji.co.jp" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234050AbhCaHaN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 31 Mar 2021 03:30:13 -0400
+X-Greylist: delayed 636 seconds by postgrey-1.27 at vger.kernel.org; Wed, 31 Mar 2021 03:30:13 EDT
+From:   Albert Bourla <info@universalautomation.com.pk>
+To:     linux-pwm@vger.kernel.org
+Subject: Bidding invitation
+Date:   31 Mar 2021 09:14:53 +0200
+Message-ID: <20210331091453.8BE106E2938C8F12@universalautomation.com.pk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Allow to add an exit hook to devm managed clocks. Also use
-clk_get_optional() in devm_clk_get_optional instead of open coding it.
-The generalisation will be used in the next commit to add some more
-devm_clk helpers.
+Good Day Sir/Ms,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/clk/clk-devres.c | 67 ++++++++++++++++++++++++++++++----------
- 1 file changed, 50 insertions(+), 17 deletions(-)
+We are please to invite you or your company to quote the 
+following item listed below:
+ 
+Product/Model No: A702TH FYNE PRESSURE REGULATOR
+Model Number: A702TH
+Qty. 30 units
 
-diff --git a/drivers/clk/clk-devres.c b/drivers/clk/clk-devres.c
-index be160764911b..91c995815b57 100644
---- a/drivers/clk/clk-devres.c
-+++ b/drivers/clk/clk-devres.c
-@@ -4,39 +4,72 @@
- #include <linux/export.h>
- #include <linux/gfp.h>
- 
-+struct devm_clk_state {
-+	struct clk *clk;
-+	void (*exit)(struct clk *clk);
-+};
-+
- static void devm_clk_release(struct device *dev, void *res)
- {
--	clk_put(*(struct clk **)res);
-+	struct devm_clk_state *state = *(struct devm_clk_state **)res;
-+
-+	if (state->exit)
-+		state->exit(state->clk);
-+
-+	clk_put(state->clk);
- }
- 
--struct clk *devm_clk_get(struct device *dev, const char *id)
-+static struct clk *__devm_clk_get(struct device *dev, const char *id,
-+				  struct clk *(*get)(struct device *dev, const char *id),
-+				  int (*init)(struct clk *clk),
-+				  void (*exit)(struct clk *clk))
- {
--	struct clk **ptr, *clk;
-+	struct devm_clk_state *state;
-+	struct clk *clk;
-+	int ret;
- 
--	ptr = devres_alloc(devm_clk_release, sizeof(*ptr), GFP_KERNEL);
--	if (!ptr)
-+	state = devres_alloc(devm_clk_release, sizeof(*state), GFP_KERNEL);
-+	if (!state)
- 		return ERR_PTR(-ENOMEM);
- 
--	clk = clk_get(dev, id);
--	if (!IS_ERR(clk)) {
--		*ptr = clk;
--		devres_add(dev, ptr);
--	} else {
--		devres_free(ptr);
-+	clk = get(dev, id);
-+	if (IS_ERR(clk)) {
-+		ret = PTR_ERR(clk);
-+		goto err_clk_get;
- 	}
- 
-+	if (init) {
-+		ret = init(clk);
-+		if (ret)
-+			goto err_clk_init;
-+	}
-+
-+	state->clk = clk;
-+	state->exit = exit;
-+
-+	devres_add(dev, state);
-+
- 	return clk;
-+
-+err_clk_init:
-+
-+	clk_put(clk);
-+err_clk_get:
-+
-+	devres_free(state);
-+	return ERR_PTR(ret);
- }
--EXPORT_SYMBOL(devm_clk_get);
- 
--struct clk *devm_clk_get_optional(struct device *dev, const char *id)
-+struct clk *devm_clk_get(struct device *dev, const char *id)
- {
--	struct clk *clk = devm_clk_get(dev, id);
-+	return __devm_clk_get(dev, id, clk_get, NULL, NULL);
- 
--	if (clk == ERR_PTR(-ENOENT))
--		return NULL;
-+}
-+EXPORT_SYMBOL(devm_clk_get);
- 
--	return clk;
-+struct clk *devm_clk_get_optional(struct device *dev, const char *id)
-+{
-+	return __devm_clk_get(dev, id, clk_get_optional, NULL, NULL);
- }
- EXPORT_SYMBOL(devm_clk_get_optional);
- 
--- 
-2.30.2
 
+Compulsory,Kindly send your quotation to: 
+quotation@pfizerbvsupply.com 
+for immediate approval.
+
+Kind Regards,
+Albert Bourla
+PFIZER B.V Supply Chain Manager
+Tel: +31(0)208080 880
+ADDRESS: Rivium Westlaan 142, 2909 LD
+Capelle aan den IJssel, Netherlands
