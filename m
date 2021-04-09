@@ -2,107 +2,119 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B406C433ED
-	for <linux-pwm@archiver.kernel.org>; Fri,  9 Apr 2021 07:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FD1C433ED
+	for <linux-pwm@archiver.kernel.org>; Fri,  9 Apr 2021 09:07:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A7DF61186
-	for <linux-pwm@archiver.kernel.org>; Fri,  9 Apr 2021 07:45:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B1503611AE
+	for <linux-pwm@archiver.kernel.org>; Fri,  9 Apr 2021 09:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231811AbhDIHpT (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 9 Apr 2021 03:45:19 -0400
-Received: from mo-csw1516.securemx.jp ([210.130.202.155]:47362 "EHLO
+        id S231819AbhDIJIA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 9 Apr 2021 05:08:00 -0400
+Received: from mo-csw1514.securemx.jp ([210.130.202.153]:49828 "EHLO
         mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbhDIHpS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 9 Apr 2021 03:45:18 -0400
-Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 1397iWUC032283; Fri, 9 Apr 2021 16:44:32 +0900
-X-Iguazu-Qid: 34ts1PSq8uy9NsjtWP
-X-Iguazu-QSIG: v=2; s=0; t=1617954271; q=34ts1PSq8uy9NsjtWP; m=HQ4LwDPZhM5Lp0dULteRO76Vt1mbmgpcJ69yjzbLcY0=
+        with ESMTP id S232627AbhDIJHy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 9 Apr 2021 05:07:54 -0400
+Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 13997G3G003502; Fri, 9 Apr 2021 18:07:16 +0900
+X-Iguazu-Qid: 34trYlwXUHYU8LuKNF
+X-Iguazu-QSIG: v=2; s=0; t=1617959236; q=34trYlwXUHYU8LuKNF; m=rgpuDXC9Tg84Fb6+01b2/YRFlMpqIxHsYD4tFTKKXjQ=
 Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1510) id 1397iUh5015378
+        by relay.securemx.jp (mx-mr1510) id 13997FNv020594
         (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 9 Apr 2021 16:44:30 +0900
+        Fri, 9 Apr 2021 18:07:15 +0900
 Received: from enc02.toshiba.co.jp (enc02.toshiba.co.jp [61.202.160.51])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by imx12-a.toshiba.co.jp (Postfix) with ESMTPS id A6AEC1000B1;
-        Fri,  9 Apr 2021 16:44:30 +0900 (JST)
+        by imx12-a.toshiba.co.jp (Postfix) with ESMTPS id 130871000D7;
+        Fri,  9 Apr 2021 18:07:15 +0900 (JST)
 Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 1397iU8N007893;
-        Fri, 9 Apr 2021 16:44:30 +0900
-Date:   Fri, 9 Apr 2021 16:44:28 +0900
+        by enc02.toshiba.co.jp  with ESMTP id 13997EXm022667;
+        Fri, 9 Apr 2021 18:07:14 +0900
 From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
+To:     Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
         punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: pwm: Add bindings for Toshiba
- Visconti PWM Controller
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 1/2] dt-bindings: pwm: Add bindings for Toshiba Visconti PWM Controller
+Date:   Fri,  9 Apr 2021 18:07:08 +0900
 X-TSB-HOP: ON
-Message-ID: <20210409074428.hg7ys5he6iuqzhm6@toshiba.co.jp>
-References: <20210212131910.557581-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210212131910.557581-2-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210305202224.GA583007@robh.at.kernel.org>
+Message-Id: <20210409090709.1918021-2-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.30.0.rc2
+In-Reply-To: <20210409090709.1918021-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+References: <20210409090709.1918021-1-nobuhiro1.iwamatsu@toshiba.co.jp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210305202224.GA583007@robh.at.kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
+Add bindings for the Toshiba Visconti PWM Controller.
 
-On Fri, Mar 05, 2021 at 02:22:24PM -0600, Rob Herring wrote:
-> On Fri, Feb 12, 2021 at 10:19:09PM +0900, Nobuhiro Iwamatsu wrote:
-> > Add bindings for the Toshiba Visconti PWM Controller.
-> > 
-> > Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> > ---
-> >  .../bindings/pwm/toshiba,pwm-visconti.yaml    | 43 +++++++++++++++++++
-> >  1 file changed, 43 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
-> > new file mode 100644
-> > index 000000000000..f11558cdc32f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
-> > @@ -0,0 +1,43 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/pwm/toshiba,pwm-visconti.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Toshiba Visconti PWM Controller
-> > +
-> > +maintainers:
-> > +  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - const: toshiba,pwm-visconti
-> 
-> The 'normal' order is: toshiba,visconti-pwm
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/pwm/toshiba,visconti-pwm.yaml    | 43 +++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/toshiba,visconti-pwm.yaml
 
-I see, I will change to it.
+diff --git a/Documentation/devicetree/bindings/pwm/toshiba,visconti-pwm.yaml b/Documentation/devicetree/bindings/pwm/toshiba,visconti-pwm.yaml
+new file mode 100644
+index 000000000000..9e32e7dbb2f9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/toshiba,visconti-pwm.yaml
+@@ -0,0 +1,43 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/toshiba,visconti-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Toshiba Visconti PWM Controller
++
++maintainers:
++  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
++
++properties:
++  compatible:
++    items:
++      - const: toshiba,visconti-pwm
++
++  reg:
++    maxItems: 1
++
++  '#pwm-cells':
++    const: 2
++
++required:
++  - compatible
++  - reg
++  - '#pwm-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        pwm: pwm@241c0000 {
++            compatible = "toshiba,visconti-pwm";
++            reg = <0 0x241c0000 0 0x1000>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&pwm_mux>;
++            #pwm-cells = <2>;
++        };
++    };
+-- 
+2.30.0.rc2
 
-> 
-> Otherwise,
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> 
-
-Thanks!
-
-Best regards,
-  Nobuhiro
