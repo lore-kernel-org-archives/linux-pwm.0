@@ -5,56 +5,56 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23660C43600
-	for <linux-pwm@archiver.kernel.org>; Sun, 11 Apr 2021 13:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1608EC43611
+	for <linux-pwm@archiver.kernel.org>; Sun, 11 Apr 2021 13:10:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E7B3360FD8
-	for <linux-pwm@archiver.kernel.org>; Sun, 11 Apr 2021 13:10:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E9213610CB
+	for <linux-pwm@archiver.kernel.org>; Sun, 11 Apr 2021 13:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235671AbhDKNKl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 11 Apr 2021 09:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
+        id S235682AbhDKNKm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 11 Apr 2021 09:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235654AbhDKNKf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 11 Apr 2021 09:10:35 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A04CC06138D;
-        Sun, 11 Apr 2021 06:10:18 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id ba6so11803734edb.1;
-        Sun, 11 Apr 2021 06:10:18 -0700 (PDT)
+        with ESMTP id S235659AbhDKNKg (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 11 Apr 2021 09:10:36 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FB6C06138B;
+        Sun, 11 Apr 2021 06:10:20 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id g17so13025257ejp.8;
+        Sun, 11 Apr 2021 06:10:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+xTKglaTtBBnIwb4sWoIFa19QpsHo2j4/zd4VoY1yJc=;
-        b=TujKURGt1FeHGz4K0iqBb/VqGehpedpe2hXzNLdrqyv+CTmBYZOGuVQ/MHjTiJtx2L
-         WQ+Xr8qJxwXBLj6c/w5RqBSSzlLx5/nkwv4pzbojJ92hpa40mTx/tkvPidXov5qzIK3t
-         OoO7XRM33sQG4v6KfCdWk9fB3jge7TFjMYhIt17lW2mOYpH4Z+EqSlCca+4pUU+2OF6u
-         A24QMmTzndsdUyHnDrv9XV/1czyIf/V786efC3Ta1/wQmce8qof+54nPbkuV8a0z9Tre
-         jdREJcvJFZ5hMJ+adrSbdL4rP67v5Up9y5U476RrRaw5yXMVmULtufZCHrNKX2JH6T36
-         nhFw==
+        bh=dP6M+sgZMuzTEGYj0l4EYUpeVr19klo1MRRCTxVz25w=;
+        b=Rg+cSuaVmSjmTDibRXA8sdjDBMrmUwzphxaFPKrw1KrQju6roHl6S0t7yrl1ggfoim
+         pk9SaOEmOJFDha66VLsFbuSLCehvUNxNnL9K1c5zu58KcNDHwLwpkkm7V2b4MUc0punt
+         ME5rm32kVABTRbJ9wP/07zWYQhbe/G/ctzn+E8ZdDJhXnly5j1dvxgY2aVaAP6ZM2yq7
+         so/h8ZGUhOEPL5Ov8NznDUVaWa7EV7qeR+wYrVPazpvpEBBWEWoCXaZNK84zoJ6QM3Gs
+         GlBwoP5grqECVRTUTygT3Dq3OBIwYBaFDCztrJZocFQNygNDCuQMaRsuDOsZkFA8/zTQ
+         +cbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=+xTKglaTtBBnIwb4sWoIFa19QpsHo2j4/zd4VoY1yJc=;
-        b=B2twOtAJvVYiPwxGECkZLjQ1S3Nx7hNg/zHjk8cYMboFPWRZzI0jF8wVWsWoSd67I9
-         ds96Q86tic1TpKICaZeX+ffadULeL1th7VyQV2PWDuAP6eiqM5nODkuN/qSO4+uvFgiK
-         dTcF0EuNy7qndipldb6GzGxcF5n7UZgqnmaBeV8h7Bj70aEk9Ke0AE59acfpK/CW1f29
-         ZTNFj9vkDURneiRAZsq8QQObF6jDYbFvpIio3VvVikl2wQ2ReAXXEZwJmqhQUISpVXDw
-         rA/BdzZck7jkCvuTzp09zRIcKbdaTRz6LA8ThIKzGaQF+Q7EkhwKO36R8Y5sshnlUyLQ
-         ZKlg==
-X-Gm-Message-State: AOAM532fm1ypPz+4fArmzpJ037Ll1X7AOcG9C78FhtoMpnCaD5nCG9tN
-        Jw5sde9g95hH5n8JuLCHHqI=
-X-Google-Smtp-Source: ABdhPJxpWbRylv8hRSWy+Dl3+JQE8MDXnNeIdWg+QZ0c0yqg5G6HGyew3HpL9IuIVzF4jA1UVB+ddA==
-X-Received: by 2002:aa7:da46:: with SMTP id w6mr26215661eds.30.1618146617114;
-        Sun, 11 Apr 2021 06:10:17 -0700 (PDT)
+        bh=dP6M+sgZMuzTEGYj0l4EYUpeVr19klo1MRRCTxVz25w=;
+        b=Ayw00pZZ/5zj+TLZwowJwQxNcX30Aybkl2SHJYfM9vULU37xMBM2lxbv08slYe0X4G
+         Pft7xngTiNYnMgvUZThSYfbow7O0vl1eAvalpyP1Wj9l7nXLdaFCZUPrzUcMzVzbD5nx
+         7YuAk8+BZq+jckMch/16yXfctifJYd4WnIEBjaEHvmJ8qfV5oCOi26kqqVYiIwm6HO/z
+         URgibcqyNjMQxDw8lU8VHVo+yAwjqBts7NQr9905mONIzT+j3jC/145NjdgegcgvQv9+
+         wSXbD3c9rPHq2iHGGZ9ZL91PCyh7cdjeS8EWaidWNDeEyBEOzjqlieqiea9Ddkm+KJjg
+         yddA==
+X-Gm-Message-State: AOAM532wvIU2Yw+tP8SsqhKw0oSlHaukN66bsuqBY0W4OJp18yr4w29V
+        OkerHFWqrGAE99ZX95d7WkI=
+X-Google-Smtp-Source: ABdhPJzMrep/dqtmFqleBVmWlFLT358vORL48eeH9EjXxNOm5BPPYolk9ikhMRMe573T7MhPljHSFw==
+X-Received: by 2002:a17:906:b7ce:: with SMTP id fy14mr4002248ejb.261.1618146618908;
+        Sun, 11 Apr 2021 06:10:18 -0700 (PDT)
 Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id w2sm3983520eju.71.2021.04.11.06.10.16
+        by smtp.gmail.com with ESMTPSA id w2sm3983520eju.71.2021.04.11.06.10.17
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 11 Apr 2021 06:10:16 -0700 (PDT)
+        Sun, 11 Apr 2021 06:10:18 -0700 (PDT)
 From:   Johan Jonker <jbx6244@gmail.com>
 To:     heiko@sntech.de
 Cc:     robh+dt@kernel.org, thierry.reding@gmail.com,
@@ -62,9 +62,9 @@ Cc:     robh+dt@kernel.org, thierry.reding@gmail.com,
         linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/6] ARM: dts: rockchip: remove clock-names from pwm nodes
-Date:   Sun, 11 Apr 2021 15:10:05 +0200
-Message-Id: <20210411131007.21757-4-jbx6244@gmail.com>
+Subject: [PATCH v2 6/6] arm64: dts: rockchip: remove clock-names from pwm nodes
+Date:   Sun, 11 Apr 2021 15:10:07 +0200
+Message-Id: <20210411131007.21757-6-jbx6244@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20210411131007.21757-1-jbx6244@gmail.com>
 References: <20210411131007.21757-1-jbx6244@gmail.com>
@@ -74,91 +74,91 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 A test with the command below gives this error:
 
-/arch/arm/boot/dts/rk3036-evb.dt.yaml:
-pwm@20050030: clock-names: ['pwm'] is too short
+/arch/arm64/boot/dts/rockchip/rk3368-evb-act8846.dt.yaml:
+pwm@ff680030: clock-names: ['pwm'] is too short
 
 Devices with only one pwm clock use it to both
 to derive the functional clock for the device
 and as the bus clock. The driver does not need
 "clock-names" to get a handle, so remove them all.
 
-make ARCH=arm dtbs_check
+make ARCH=arm64 dtbs_check
 DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
 
 Signed-off-by: Johan Jonker <jbx6244@gmail.com>
 ---
- arch/arm/boot/dts/rk3036.dtsi | 4 ----
- arch/arm/boot/dts/rk3288.dtsi | 4 ----
+ arch/arm64/boot/dts/rockchip/rk3368.dtsi | 4 ----
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 4 ----
  2 files changed, 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3036.dtsi b/arch/arm/boot/dts/rk3036.dtsi
-index 47a787a12..e24230d50 100644
---- a/arch/arm/boot/dts/rk3036.dtsi
-+++ b/arch/arm/boot/dts/rk3036.dtsi
-@@ -355,7 +355,6 @@
- 		reg = <0x20050000 0x10>;
- 		#pwm-cells = <3>;
- 		clocks = <&cru PCLK_PWM>;
--		clock-names = "pwm";
+diff --git a/arch/arm64/boot/dts/rockchip/rk3368.dtsi b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
+index 61b0a2a90..7832e26a3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3368.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
+@@ -561,7 +561,6 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&pwm0_pin>;
- 		status = "disabled";
-@@ -366,7 +365,6 @@
- 		reg = <0x20050010 0x10>;
- 		#pwm-cells = <3>;
- 		clocks = <&cru PCLK_PWM>;
+ 		clocks = <&cru PCLK_PWM1>;
 -		clock-names = "pwm";
+ 		status = "disabled";
+ 	};
+ 
+@@ -572,7 +571,6 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&pwm1_pin>;
+ 		clocks = <&cru PCLK_PWM1>;
+-		clock-names = "pwm";
  		status = "disabled";
-@@ -377,7 +375,6 @@
- 		reg = <0x20050020 0x10>;
+ 	};
+ 
+@@ -581,7 +579,6 @@
+ 		reg = <0x0 0xff680020 0x0 0x10>;
  		#pwm-cells = <3>;
- 		clocks = <&cru PCLK_PWM>;
+ 		clocks = <&cru PCLK_PWM1>;
 -		clock-names = "pwm";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pwm2_pin>;
  		status = "disabled";
-@@ -388,7 +385,6 @@
- 		reg = <0x20050030 0x10>;
- 		#pwm-cells = <2>;
- 		clocks = <&cru PCLK_PWM>;
--		clock-names = "pwm";
+ 	};
+ 
+@@ -592,7 +589,6 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&pwm3_pin>;
+ 		clocks = <&cru PCLK_PWM1>;
+-		clock-names = "pwm";
  		status = "disabled";
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index ea7416c31..05557ad02 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -679,7 +679,6 @@
+ 	};
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index e93a5f320..6221b027e 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -1185,7 +1185,6 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&pwm0_pin>;
- 		clocks = <&cru PCLK_RKPWM>;
+ 		clocks = <&pmucru PCLK_RKPWM_PMU>;
 -		clock-names = "pwm";
  		status = "disabled";
  	};
  
-@@ -690,7 +689,6 @@
+@@ -1196,7 +1195,6 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&pwm1_pin>;
- 		clocks = <&cru PCLK_RKPWM>;
+ 		clocks = <&pmucru PCLK_RKPWM_PMU>;
 -		clock-names = "pwm";
  		status = "disabled";
  	};
  
-@@ -701,7 +699,6 @@
+@@ -1207,7 +1205,6 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&pwm2_pin>;
- 		clocks = <&cru PCLK_RKPWM>;
+ 		clocks = <&pmucru PCLK_RKPWM_PMU>;
 -		clock-names = "pwm";
  		status = "disabled";
  	};
  
-@@ -712,7 +709,6 @@
+@@ -1218,7 +1215,6 @@
  		pinctrl-names = "default";
- 		pinctrl-0 = <&pwm3_pin>;
- 		clocks = <&cru PCLK_RKPWM>;
+ 		pinctrl-0 = <&pwm3a_pin>;
+ 		clocks = <&pmucru PCLK_RKPWM_PMU>;
 -		clock-names = "pwm";
  		status = "disabled";
  	};
