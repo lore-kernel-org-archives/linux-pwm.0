@@ -2,229 +2,141 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7468FC433ED
-	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 07:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C3FC433ED
+	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 10:07:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 500276120B
-	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 07:02:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE35761288
+	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 10:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236711AbhDLHDG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 12 Apr 2021 03:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
+        id S239290AbhDLKHe (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 12 Apr 2021 06:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236705AbhDLHDF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Apr 2021 03:03:05 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB9BC061574
-        for <linux-pwm@vger.kernel.org>; Mon, 12 Apr 2021 00:02:48 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lVqah-0002Yf-Kn; Mon, 12 Apr 2021 09:02:35 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lVqae-00059Z-JF; Mon, 12 Apr 2021 09:02:32 +0200
-Date:   Mon, 12 Apr 2021 09:02:32 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S241264AbhDLKFc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Apr 2021 06:05:32 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64037C06134C;
+        Mon, 12 Apr 2021 03:03:30 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id h10so14306449edt.13;
+        Mon, 12 Apr 2021 03:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IecIer/Daj67JEJVhH+GPnEHHlaRlGiwgqpp2Q/YAIU=;
+        b=ln51gpRQqxs+aXEIsek0esHSItFg0Webv0LPtRTD2g0FmtU/iQPUd8sThf8D1iSel4
+         zwDkLyxXl4ytJMdasEVWhqEWwXgWLXzop/l06D5GK7a/ylDCpdbEQEgvURJ25qsVQ2Fn
+         /poXqgd6Gt0ZQK0VFY0dI3zwm35FeEgziFPsNKjYp9WdANyrO+PsLjAm7bSAA+s0Obsg
+         OemRwl/0IkyD8QMUYfUJLaErOm2jBvnEDkcyxGmcWYNjNQqEt4AMOTDQuQSEa5RePELp
+         t/iVc+YmVP/esBqgvjg+x8qM/w+81EGkWhvFsXSCmN7uwvJ2OR5WoY8V6wRuCwMjYIpe
+         7mwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IecIer/Daj67JEJVhH+GPnEHHlaRlGiwgqpp2Q/YAIU=;
+        b=eWQt2wjbgP4/IEIqbLXAjTO7g0O3zVViHXL751+Imym+HXAlCq3prC8HZ/oQ/fBtkX
+         83Bba6slPf0/RTyZ3dGa1s3bK89HnlSPDpKTvzcqRlmTsb3elmdc7lFXuawbFFjlJwDA
+         AQWsk25tsyiDt8ILn6JJ0Rfr9F91TRLSGPllAa4jLMYfnsH8YkCkAcbxoz1kC6pUDJ1x
+         9iRRZV69wM9fj+sJjeL4D+WuVtYnlChQurSEsuq3kk6cfYH/RWgiIX791Qz5VORba4Gu
+         R5jS7Tj6se922bwG0YEdu0j9fXtV4sjcEBaixJJP1fDdLAxSHFam85SkrOHHBYYXsCzy
+         9gsA==
+X-Gm-Message-State: AOAM532Rl+CBfTIo2Y9UsO6WqlllEDDWvtv2XRBtYaluKwOl9wNicVGT
+        hiok7lylVsxLvMbAYPe1kBwxkMB7B708Dw==
+X-Google-Smtp-Source: ABdhPJwsC2fOcR1VpuH/xWkjRQVk4aT58cqY4kGqC/1+OKqjTFeg+noo1vbd2uJIVw1TFGySTfCM+w==
+X-Received: by 2002:a05:6402:11c9:: with SMTP id j9mr28456381edw.348.1618221809192;
+        Mon, 12 Apr 2021 03:03:29 -0700 (PDT)
+Received: from [192.168.2.2] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id w25sm6172320edq.66.2021.04.12.03.03.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Apr 2021 03:03:28 -0700 (PDT)
+Subject: Re: [PATCH v2 3/6] ARM: dts: rockchip: remove interrupts properties
+ from pwm nodes rv1108.dtsi
+To:     wens@kernel.org
+Cc:     =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        Rob Herring <robh+dt@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
-        linux-pwm@vger.kernel.org, punit1.agrawal@toshiba.co.jp,
-        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] pwm: visconti: Add Toshiba Visconti SoC PWM
- support
-Message-ID: <20210412070232.6q3cgqvuj53p4cmi@pengutronix.de>
-References: <20210409230837.1919744-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210409230837.1919744-3-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210410135321.oissremqropvrpd3@pengutronix.de>
- <20210412025536.i5chpp6sighunvfx@toshiba.co.jp>
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210411131007.21757-1-jbx6244@gmail.com>
+ <20210411131007.21757-3-jbx6244@gmail.com>
+ <CAGb2v67s7a4GARfAnROKS40kaYQpdW_qWX=HX6GU09jV9wrbXw@mail.gmail.com>
+From:   Johan Jonker <jbx6244@gmail.com>
+Message-ID: <31b5ff50-afe5-b446-7d3c-943d148814d8@gmail.com>
+Date:   Mon, 12 Apr 2021 12:03:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dbinp4a6o4qjki4w"
-Content-Disposition: inline
-In-Reply-To: <20210412025536.i5chpp6sighunvfx@toshiba.co.jp>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <CAGb2v67s7a4GARfAnROKS40kaYQpdW_qWX=HX6GU09jV9wrbXw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+On 4/12/21 5:15 AM, Chen-Yu Tsai wrote:
+> On Sun, Apr 11, 2021 at 9:11 PM Johan Jonker <jbx6244@gmail.com> wrote:
+>>
+>> A test with the command below gives this error:
+>>
+>> /arch/arm/boot/dts/rv1108-evb.dt.yaml:
+>> pwm@10280000: 'interrupts' does not match any of the regexes:
+>> 'pinctrl-[0-9]+'
+>>
+>> "interrupts" is an undocumented property, so remove them
+>> from pwm nodes in rv1108.dtsi.
+>>
+>> make ARCH=arm dtbs_check
+>> DT_SCHEMA_FILES=Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
+>>
+>> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> 
+> Given that the interrupts were specified, meaning they are wired up in hardware,
+> shouldn't the solution be to add the interrupts property to the binding instead?
+> 
+> After all, the device tree describes the actual hardware, not just what the
+> implementations need.
+> 
+> ChenYu
+> 
 
---dbinp4a6o4qjki4w
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On Mon, Apr 12, 2021 at 11:55:36AM +0900, Nobuhiro Iwamatsu wrote:
-> Hi Uwe,
->=20
-> Thanks for your review.
->=20
-> On Sat, Apr 10, 2021 at 03:53:21PM +0200, Uwe Kleine-K=F6nig wrote:
-> > Hello,
-> >=20
-> > just a few small details left to criticize ...
-> >=20
-> > On Sat, Apr 10, 2021 at 08:08:37AM +0900, Nobuhiro Iwamatsu wrote:
-> > > diff --git a/drivers/pwm/pwm-visconti.c b/drivers/pwm/pwm-visconti.c
-> > > new file mode 100644
-> > > index 000000000000..99d83f94ed86
-> > > --- /dev/null
-> > > +++ b/drivers/pwm/pwm-visconti.c
-> > > @@ -0,0 +1,188 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * Toshiba Visconti pulse-width-modulation controller driver
-> > > + *
-> > > + * Copyright (c) 2020 TOSHIBA CORPORATION
-> > > + * Copyright (c) 2020 Toshiba Electronic Devices & Storage Corporati=
-on
-> > > + *
-> > > + * Authors: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> > > + *
-> > > + */
-> > > +
-> > > +#include <linux/err.h>
-> > > +#include <linux/io.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/of_device.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/pwm.h>
-> > > +
-> > > +#define PIPGM_PCSR(ch) (0x400 + 4 * (ch))
-> > > +#define PIPGM_PDUT(ch) (0x420 + 4 * (ch))
-> > > +#define PIPGM_PWMC(ch) (0x440 + 4 * (ch))
-> > > +
-> > > +#define PIPGM_PWMC_PWMACT		BIT(5)
-> > > +#define PIPGM_PWMC_CLK_MASK		GENMASK(1, 0)
-> > > +#define PIPGM_PWMC_POLARITY_MASK	GENMASK(5, 5)
-> > > +
-> > > +struct visconti_pwm_chip {
-> > > +	struct pwm_chip chip;
-> > > +	void __iomem *base;
-> > > +};
-> > > +
-> > > +static inline struct visconti_pwm_chip *to_visconti_chip(struct pwm_=
-chip *chip)
-> > > +{
-> > > +	return container_of(chip, struct visconti_pwm_chip, chip);
-> > > +}
-> > > +
-> > > +static int visconti_pwm_apply(struct pwm_chip *chip, struct pwm_devi=
-ce *pwm,
-> > > +			      const struct pwm_state *state)
-> > > +{
-> > > +	struct visconti_pwm_chip *priv =3D to_visconti_chip(chip);
-> > > +	u32 period, duty_cycle, pwmc0;
-> > > +
-> > > +	/*
-> > > +	 * pwmc is a 2-bit divider for the input clock running at 1 MHz.
-> > > +	 * When the settings of the PWM are modified, the new values are sh=
-adowed in hardware until
-> > > +	 * the period register (PCSR) is written and the currently running =
-period is completed. This
-> > > +	 * way the hardware switches atomically from the old setting to the=
- new.
-> > > +	 * Also, disabling the hardware completes the currently running per=
-iod and keeps the output
-> > > +	 * at low level at all times.
-> >=20
-> > Can you please put a paragraph analogous to the one in pwm-sifive in the
-> > same format. This simplified keeping an overview about the oddities of
-> > the various supported chips.
->=20
-> OK, I will check pwm-sifive's, and add.
->=20
-> >=20
-> > > +	 */
-> > > +	if (!state->enabled) {
-> > > +		writel(0, priv->base + PIPGM_PCSR(pwm->hwpwm));
-> > > +		return 0;
-> > > +	}
-> > > +
-> > > [...]
-> > > +
-> > > +static void visconti_pwm_get_state(struct pwm_chip *chip, struct pwm=
-_device *pwm,
-> > > +				   struct pwm_state *state)
-> > > +{
-> > > +	struct visconti_pwm_chip *priv =3D chip_to_priv(chip);
-> > > +	u32 period, duty, pwmc0, pwmc0_clk;
-> > > +
-> > > +	period =3D readl(priv->base + PIPGM_PCSR(pwm->hwpwm));
-> > > +	if (period)
-> > > +		state->enabled =3D true;
-> > > +	else
-> > > +		state->enabled =3D false;
-> >=20
-> > If PIPGM_PCSR is 0 the hardware is still active and setting a new
-> > configuration completes the currently running period, right? Then I
-> > think having always state->enabled =3D true is a better match.
->
-> If PIPGM_PCSR is 0, the hardware is stopped. Even if the settings of
-> other registers are written, the values of other registers will not work
-> unless PIPGM_PCSR is written.
+The question of what to do with it was asked in version 1, but no answer
+was given, so I made a proposal.
+The device tree description should be complete, but also as lean as
+possible. If someone manages to sneak in undocumented properties without
+reason then the ultimate consequence should be removal I think.
 
-Correct me if I'm wrong, but how I understand it, PCSR is special as the
-other registers are shadow until PCSR is written. (And that is
-irrespective of which value is active in PCSR or what is written to
-PCSR.)
-=20
-> However, as a logic, if PIPGM_PCSR becomes 0, it is only
-> visconti_pwm_apply () in this driver,
-> so I think that this process should always be state-> enabled =3D true
-> as you pointed out.
-> I wil drop this, thanks.
+Not sure about the (missing?) rv1108 TRM, but for rk3328 the interrupt
+is used for:
 
-For me the critical (and only) difference between "off" and
-"duty cycle =3D 0" is that when a new configuration is to be applied. In
-the "off" state a new period can (and should) start immediately, while
-with "duty_cycle =3D 0" the rising edge should be delayed until the
-currently running period is over.[1]
+PWM_INTSTS 0x0040 W 0x00000000 Interrupt Status Register
+  Channel Interrupt Polarity Flag
+    This bit is used in capture mode in order to identify the
+    transition of the input waveform when interrupt is generated.
+  Channel Interrupt Status
+    Interrupt generated
 
-So the thing to do here (IMHO) is:
+PWM_INT_EN 0x0044 W 0x00000000 Interrupt Enable Register
+  Channel Interrupt Enable
 
-Iff with PIPGM_PCSR =3D 0 configuring a new setting (that is finalized
-with writing a non-zero value to PIPGM_PCSR) completes the currently
-running period, then always assume the PWM as enabled.
+Is there any current realistic use/setup for it to convince rob+dt this
+should be added to pwm-rockchip.yaml?
 
-And so if the hardware is stopped and the counter is reset when 0 is
-written to PIPGM_PCSR, model that as enabled =3D false.
+The rk3328 interrupt rkpwm_int seems shared between channels, but only
+included to pwm3. What is the proper way for that?
 
-Best regards
-Uwe
-
-[1] In practise this is more difficult because several PWMs don't
-complete periods in general. But the hardware under discussion luckily
-isn't one of these. And (worse) there are other hardware implementations
-where off doesn't emit an inactive level.
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---dbinp4a6o4qjki4w
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmBz8IUACgkQwfwUeK3K
-7Anv+ggAgcYjZXZNUVrkCgcupmpCm3IMfKahkwjrc5xduTQHdRPMTqPrJhyuwF7a
-G8bOQ5pxUHH5MEqns/nG8HTPawjKDgy36NLfDdY7yDQdKT15PsvXkHD6wUydcXzd
-Hn41ovzjGJUi4bkqjI8iLwCARX6ypaKh66IVZ/yRjJA1B2FkCbqfRgE8PHu78NJd
-GU+OrhCgmXyJ5e7FAcfDn5dlMVTpHbzxyGouC8PXtCCFgC5YLy2+Ajp3Y2ldv5Qs
-ceQ7LOzHqJ4NsiBq74KTOUFo2lTMZW9kzLl/upBxEhh/7jLRlJHFmx4jyb/LJOKe
-V+HuRxtoXSlhoOcb2azTl12IPVESZw==
-=+9VN
------END PGP SIGNATURE-----
-
---dbinp4a6o4qjki4w--
+Johan
