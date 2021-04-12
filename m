@@ -2,98 +2,130 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DC0C43462
-	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 13:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6CFC433B4
+	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 13:29:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7781361367
-	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 13:20:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4945D61288
+	for <linux-pwm@archiver.kernel.org>; Mon, 12 Apr 2021 13:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240400AbhDLNUa (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 12 Apr 2021 09:20:30 -0400
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:37653 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239617AbhDLNU2 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Apr 2021 09:20:28 -0400
-Received: by mail-oi1-f182.google.com with SMTP id k25so13388248oic.4;
-        Mon, 12 Apr 2021 06:20:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=5n3lwv9EjfPJBx+21UO8C42pguWqHmFLoVLJG4Pmt/8=;
-        b=mUO4Tm/BauiG1P7td9TeoY1tkpLhT3ZV9oojGNA5z90atxO4o85V0Dq83FMVWfGPzH
-         enHwzcIFwLvYIFOu+ZRUCQ4faOBwuUnefZncZuWd9JDwG4dizIVofNRLyRp8qIroMsys
-         BnrqM+hOXeEmxVfVbu26HFJqvf9CSzp3Xc+2wk2w5hdhDOpowjLgaRKO97D346H9WvpR
-         KfyzSepG44W/UhOP9uhp1cEWbr4Cnta6xKj7k/o/tQxeoTfcGntPnVjkgFcRXJHGHqz8
-         48TMvPs48Qh5dwI+sx+qKtAPRvKrN7YbN3gSAENSrVpik2ErfIVN7QseVyUOGl0hBnL+
-         JuMA==
-X-Gm-Message-State: AOAM532e8owmAa7UCrmlZGFYibkDGLc1wenKrzSQ7nC57cnoB3CJYoGH
-        Z6TfbpMyFtYba9NFGcSkkg==
-X-Google-Smtp-Source: ABdhPJxkwQARah6Q/rf1DbNTOAJlUzHL9osoUKpq9VAyJPVrU6baUsVLQdOFRK5Og/wakyM83q8y4Q==
-X-Received: by 2002:a05:6808:b09:: with SMTP id s9mr19069272oij.36.1618233610277;
-        Mon, 12 Apr 2021 06:20:10 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 3sm2636995otw.58.2021.04.12.06.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 06:20:09 -0700 (PDT)
-Received: (nullmailer pid 3757980 invoked by uid 1000);
-        Mon, 12 Apr 2021 13:20:00 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Billy Tsai <billy_tsai@aspeedtech.com>
-Cc:     u.kleine-koenig@pengutronix.de, devicetree@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, andrew@aj.id.au,
-        linux-kernel@vger.kernel.org, billy_tasi@aspeedtech.com,
-        p.zabel@pengutronix.de, linux-pwm@vger.kernel.org, joel@jms.id.au,
-        thierry.reding@gmail.com, robh+dt@kernel.org,
-        BMC-SW@aspeedtech.com, linux-arm-kernel@lists.infradead.org,
-        lee.jones@linaro.org
-In-Reply-To: <20210412095457.15095-3-billy_tsai@aspeedtech.com>
-References: <20210412095457.15095-1-billy_tsai@aspeedtech.com> <20210412095457.15095-3-billy_tsai@aspeedtech.com>
-Subject: Re: [PATCH 2/4] dt-bindings: Add bindings for aspeed pwm
-Date:   Mon, 12 Apr 2021 08:20:00 -0500
-Message-Id: <1618233600.223110.3757979.nullmailer@robh.at.kernel.org>
+        id S239175AbhDLN3V (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 12 Apr 2021 09:29:21 -0400
+Received: from mail.pqgruber.com ([52.59.78.55]:59790 "EHLO mail.pqgruber.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237277AbhDLN3U (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 12 Apr 2021 09:29:20 -0400
+Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
+        by mail.pqgruber.com (Postfix) with ESMTPSA id 571D3C725CF;
+        Mon, 12 Apr 2021 15:29:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
+        s=mail; t=1618234140;
+        bh=ZtZXR9Xo6D9jGVtq6dWiereAvHIsaPXkSy2ICiAWTiE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kdGrCkLjji2lDl2QCGAPXiJ7sqEw/d9QcQ41mawFCMrU5Z+GtUG5eaUVWMx24rCFE
+         ufugomTXtHVePJM8xGpHYEuaHaTaSiYlC0w8z7w8BEtgtqwfBH7DfNirOv2Yn2inaA
+         sIjp1LqkIs6MThIUJufRSpeOPpLZXvJ3a1hOjefw=
+From:   Clemens Gruber <clemens.gruber@pqgruber.com>
+To:     linux-pwm@vger.kernel.org
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: [PATCH v8 2/8] pwm: pca9685: Support hardware readout
+Date:   Mon, 12 Apr 2021 15:27:39 +0200
+Message-Id: <20210412132745.76609-2-clemens.gruber@pqgruber.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210412132745.76609-1-clemens.gruber@pqgruber.com>
+References: <20210412132745.76609-1-clemens.gruber@pqgruber.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, 12 Apr 2021 17:54:55 +0800, Billy Tsai wrote:
-> This patch adds device bindings for aspeed pwm device which should be
-> the sub-node of aspeed,ast2600-pwm-tach.
-> 
-> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
-> ---
->  .../bindings/pwm/aspeed,ast2600-pwm.yaml      | 47 +++++++++++++++++++
->  1 file changed, 47 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-> 
+Implement .get_state to read-out the current hardware state.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+The hardware readout may return slightly different values than those
+that were set in apply due to the limited range of possible prescale and
+counter register values.
 
-yamllint warnings/errors:
+Also note that although the datasheet mentions 200 Hz as default
+frequency when using the internal 25 MHz oscillator, the calculated
+period from the default prescaler register setting of 30 is 5079040ns.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml: Additional properties are not allowed ('pwm-cells' was unexpected)
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml: Additional properties are not allowed ('pwm-cells' was unexpected)
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml: ignoring, error in schema: 
-warning: no schema found in file: ./Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.example.dt.yaml:0:0: /example-0/pwm_tach@1e610000: failed to match any schema with compatible: ['aspeed,ast2600-pwm-tach', 'simple-mfd', 'syscon']
-Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.example.dt.yaml:0:0: /example-0/pwm_tach@1e610000/pwm@0: failed to match any schema with compatible: ['aspeed,ast2600-pwm']
+Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+---
+Changes since v7:
+- Always return enabled=true for channels except "all LEDs" channel
+- Use DIV_ROUND_UP in .get_state
 
-See https://patchwork.ozlabs.org/patch/1465116
+Changes since v6:
+- Added a comment regarding the division (Suggested by Uwe)
+- Rebased
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+ drivers/pwm/pwm-pca9685.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 827b57ced3c2..b39c0ba701ab 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -329,6 +329,41 @@ static int pca9685_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++static void pca9685_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++				  struct pwm_state *state)
++{
++	struct pca9685 *pca = to_pca(chip);
++	unsigned long long duty;
++	unsigned int val = 0;
++
++	/* Calculate (chip-wide) period from prescale value */
++	regmap_read(pca->regmap, PCA9685_PRESCALE, &val);
++	/*
++	 * PCA9685_OSC_CLOCK_MHZ is 25, i.e. an integer divider of 1000.
++	 * The following calculation is therefore only a multiplication
++	 * and we are not losing precision.
++	 */
++	state->period = (PCA9685_COUNTER_RANGE * 1000 / PCA9685_OSC_CLOCK_MHZ) *
++			(val + 1);
++
++	/* The (per-channel) polarity is fixed */
++	state->polarity = PWM_POLARITY_NORMAL;
++
++	if (pwm->hwpwm >= PCA9685_MAXCHAN) {
++		/*
++		 * The "all LEDs" channel does not support HW readout
++		 * Return 0 and disabled for backwards compatibility
++		 */
++		state->duty_cycle = 0;
++		state->enabled = false;
++		return;
++	}
++
++	state->enabled = true;
++	duty = pca9685_pwm_get_duty(pca, pwm->hwpwm);
++	state->duty_cycle = DIV_ROUND_UP_ULL(duty * state->period, PCA9685_COUNTER_RANGE);
++}
++
+ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct pca9685 *pca = to_pca(chip);
+@@ -351,6 +386,7 @@ static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ static const struct pwm_ops pca9685_pwm_ops = {
+ 	.apply = pca9685_pwm_apply,
++	.get_state = pca9685_pwm_get_state,
+ 	.request = pca9685_pwm_request,
+ 	.free = pca9685_pwm_free,
+ 	.owner = THIS_MODULE,
+-- 
+2.31.1
 
