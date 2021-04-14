@@ -2,24 +2,25 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95439C433ED
-	for <linux-pwm@archiver.kernel.org>; Wed, 14 Apr 2021 10:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62559C433B4
+	for <linux-pwm@archiver.kernel.org>; Wed, 14 Apr 2021 10:49:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6EB0A61249
-	for <linux-pwm@archiver.kernel.org>; Wed, 14 Apr 2021 10:49:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2E0C06128E
+	for <linux-pwm@archiver.kernel.org>; Wed, 14 Apr 2021 10:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbhDNKuA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 14 Apr 2021 06:50:00 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:28499 "EHLO
+        id S233894AbhDNKuH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 14 Apr 2021 06:50:07 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:29180 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233894AbhDNKt6 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Apr 2021 06:49:58 -0400
+        with ESMTP id S231535AbhDNKuE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Apr 2021 06:50:04 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 13EAd1Si057543;
+        by twspam01.aspeedtech.com with ESMTP id 13EAd1LU057544;
         Wed, 14 Apr 2021 18:39:01 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
@@ -34,50 +35,153 @@ To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>, <joel@jms.id.au>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
         <linux-pwm@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v2 0/2] Support pwm driver for aspeed ast26xx
-Date:   Wed, 14 Apr 2021 18:49:37 +0800
-Message-ID: <20210414104939.1093-1-billy_tsai@aspeedtech.com>
+Subject: [v2 1/2] dt-bindings: Add bindings for aspeed pwm-tach and pwm.
+Date:   Wed, 14 Apr 2021 18:49:38 +0800
+Message-ID: <20210414104939.1093-2-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210414104939.1093-1-billy_tsai@aspeedtech.com>
+References: <20210414104939.1093-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 13EAd1Si057543
+X-MAIL: twspam01.aspeedtech.com 13EAd1LU057544
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The legacy driver of aspeed pwm is binding with tach controller and it
-doesn't follow the pwm framworks usage. In addition, the pwm register
-usage of the 6th generation of ast26xx has drastic change. So these
-patch serials add the new aspeed pwm driver to fix up the problem above.
+This patch adds device bindings for aspeed pwm-tach device which is a
+multi-function device include pwn and tach function and pwm device which
+should be the sub-node of pwm-tach device.
 
-Changes since v1:
-- Fix the dt_binding_check fail suggested by Rob Herring
-- Add depends to PWM_ASPEED_G6 configure suggested by Uwe Kleine-Konig
-- pwm-aspeed-g6.c suggested by Uwe Kleine-König
-  - Fix license header
-  - Use bitfiled.h macro to define register fields
-  - Implement .remove device function
-  - Implement .get_state pwm api
-
-Billy Tsai (2):
-  dt-bindings: Add bindings for aspeed pwm-tach and pwm.
-  pwm: Add Aspeed ast2600 PWM support
-
- .../bindings/mfd/aspeed,ast2600-pwm-tach.yaml |  60 ++++
- .../bindings/pwm/aspeed,ast2600-pwm.yaml      |  44 +++
- drivers/pwm/Kconfig                           |   7 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-aspeed-g6.c                   | 324 ++++++++++++++++++
- 5 files changed, 436 insertions(+)
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Change-Id: I18d9dea14c3a04e1b7e38ffecd49d45917b9b545
+---
+ .../bindings/mfd/aspeed,ast2600-pwm-tach.yaml | 60 +++++++++++++++++++
+ .../bindings/pwm/aspeed,ast2600-pwm.yaml      | 44 ++++++++++++++
+ 2 files changed, 104 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
  create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
- create mode 100644 drivers/pwm/pwm-aspeed-g6.c
 
+diff --git a/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
+new file mode 100644
+index 000000000000..eaf8bdf8d44e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2021 ASPEED, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/aspeed,ast2600-pwm-tach.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: PWM Tach controller Device Tree Bindings
++
++description: |
++  The PWM Tach controller is represented as a multi-function device which
++  includes:
++    PWM
++    Tach
++
++maintainers:
++  - Billy Tsai <billy_tsai@aspeedtech.com>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - aspeed,ast2600-pwm-tach
++      - const: syscon
++      - const: simple-mfd
++  reg:
++    maxItems: 1
++  "#address-cells":
++    const: 1
++  "#size-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties:
++  type: object
++
++examples:
++  - |
++    pwm_tach: pwm_tach@1e610000 {
++      compatible = "aspeed,ast2600-pwm-tach", "syscon", "simple-mfd";
++      #address-cells = <1>;
++      #size-cells = <1>;
++      reg = <0x1e610000 0x100>;
++
++      pwm: pwm@0 {
++        compatible = "aspeed,ast2600-pwm";
++        #pwm-cells = <3>;
++        reg = <0x0 0x100>;
++      };
++
++      tach: tach@1 {
++        compatible = "aspeed,ast2600-tach";
++        reg = <0x0 0x100>;
++      };
++    };
+diff --git a/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+new file mode 100644
+index 000000000000..97923e68ccb9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2021 ASPEED, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/aspeed,ast2600-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED AST2600 PWM controller
++
++maintainers:
++  - Billy Tsai <billy_tsai@aspeedtech.com>
++
++description: |
++  The ASPEED PWM controller can support upto 16 PWM outputs.
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2600-pwm
++
++  "#pwm-cells":
++    const: 3
++
++  reg:
++    maxItems: 1
++
++additionalProperties: false
++
++examples:
++  - |
++    // The PWM should be a subnode of a "aspeed,ast2600-pwm-tach" compatible
++    // node.
++    pwm_tach: pwm_tach@1e610000 {
++      compatible = "aspeed,ast2600-pwm-tach", "syscon", "simple-mfd";
++      #address-cells = <1>;
++      #size-cells = <1>;
++      reg = <0x1e610000 0x100>;
++
++      pwm: pwm@0 {
++        compatible = "aspeed,ast2600-pwm";
++        #pwm-cells = <3>;
++        reg = <0x0 0x100>;
++      };
++    };
 -- 
 2.25.1
 
