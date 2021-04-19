@@ -2,135 +2,94 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021BAC43460
-	for <linux-pwm@archiver.kernel.org>; Mon, 19 Apr 2021 00:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B47C43462
+	for <linux-pwm@archiver.kernel.org>; Mon, 19 Apr 2021 06:24:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B673A61029
-	for <linux-pwm@archiver.kernel.org>; Mon, 19 Apr 2021 00:01:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBCA761104
+	for <linux-pwm@archiver.kernel.org>; Mon, 19 Apr 2021 06:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237056AbhDSABv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 18 Apr 2021 20:01:51 -0400
-Received: from mo-csw1114.securemx.jp ([210.130.202.156]:38768 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236772AbhDSABl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 18 Apr 2021 20:01:41 -0400
-Received: by mo-csw.securemx.jp (mx-mo-csw1114) id 13J00pQR021687; Mon, 19 Apr 2021 09:00:51 +0900
-X-Iguazu-Qid: 2wHHQAoCK5XYSo4bGK
-X-Iguazu-QSIG: v=2; s=0; t=1618790451; q=2wHHQAoCK5XYSo4bGK; m=og7IFJUKyb7215psUxeUTVV/b9UvbMqd3VDJn/siVEY=
-Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
-        by relay.securemx.jp (mx-mr1113) id 13J00ox4029022
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 19 Apr 2021 09:00:50 +0900
-Received: from enc01.toshiba.co.jp (enc01.toshiba.co.jp [106.186.93.100])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by imx2-a.toshiba.co.jp (Postfix) with ESMTPS id 4A92E100096;
-        Mon, 19 Apr 2021 09:00:50 +0900 (JST)
-Received: from hop001.toshiba.co.jp ([133.199.164.63])
-        by enc01.toshiba.co.jp  with ESMTP id 13J00n4R025236;
-        Mon, 19 Apr 2021 09:00:49 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Rob Herring <robh+dt@kernel.org>,
+        id S232847AbhDSGYs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 19 Apr 2021 02:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229840AbhDSGYr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 19 Apr 2021 02:24:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25044C06174A
+        for <linux-pwm@vger.kernel.org>; Sun, 18 Apr 2021 23:24:18 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lYNKE-0001CT-97; Mon, 19 Apr 2021 08:24:02 +0200
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lYNK8-0006Ew-S7; Mon, 19 Apr 2021 08:23:56 +0200
+Date:   Mon, 19 Apr 2021 08:23:56 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
-Cc:     devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH v6 0/2] pwm: visconti: Add Toshiba Visconti SoC PWM support
-Date:   Mon, 19 Apr 2021 09:00:05 +0900
-X-TSB-HOP: ON
-Message-Id: <20210419000007.1944301-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.30.0.rc2
+        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, punit1.agrawal@toshiba.co.jp,
+        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] pwm: visconti: Add Toshiba Visconti SoC PWM
+ support
+Message-ID: <20210419062356.bfgkcdrceovdwkh5@pengutronix.de>
+References: <20210419000007.1944301-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+ <20210419000007.1944301-3-nobuhiro1.iwamatsu@toshiba.co.jp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zgu4pc5obhcggw3s"
+Content-Disposition: inline
+In-Reply-To: <20210419000007.1944301-3-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi,
 
-This series is the PWM driver for Toshiba's ARM SoC, Visconti[0].
-This provides DT binding documentation and device driver.
+--zgu4pc5obhcggw3s
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
+On Mon, Apr 19, 2021 at 09:00:07AM +0900, Nobuhiro Iwamatsu wrote:
+> Add driver for the PWM controller on Toshiba Visconti ARM SoC.
+>=20
+> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 
-Updates:
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-  dt-bindings: pwm: Add bindings for Toshiba Visconti PWM Controller
-    v5 -> v6:
-      - No update.
-    v4 -> v5:
-      - No update.
-    v3 -> v4:
-      - No update.
-    v2 -> v3:
-      - Change compatible to toshiba,visconti-pwm
-      - Change filename to toshiba,visconti-pwm.yaml.
-      - Add Reviewed-by tag from Rob.
-    v1 -> v2:
-      - Change SPDX-License-Identifier to GPL-2.0-only OR BSD-2-Clause.
-      - Set compatible toshiba,pwm-visconti only.
-      - Drop unnecessary comments.
+Thanks for your endurance to improve the driver
+Uwe
 
-  pwm: visconti: Add Toshiba Visconti SoC PWM support
-    v5 -> v6:
-     - Update year in copyright.
-     - Update limitations.
-     - Fix coding style, used braces for both branches.
-    v4 -> v5:
-      - Droped checking PIPGM_PCSR from visconti_pwm_get_state.
-      - Changed from to_visconti_chip to visconti_pwm_from_chip.
-      - Removed pwmchip_remove return value management.
-      - Add limitations of this device.
-      - Add 'state->enabled = true' to visconti_pwm_get_state().
-    v3 -> v4:
-      - Sorted alphabetically include files.
-      - Changed container_of to using static inline functions.
-      - Dropped unnecessary dev_dbg().
-      - Drop Initialization of chip.base.
-      - Drop commnet "period too small".
-      - Rebased for-next. 
-    v2 -> v3:
-      - Change compatible to toshiba,visconti-pwm.
-      - Fix MODULE_ALIAS to platform:pwm-visconti, again.
-      - Align continuation line to the opening parenthesis.
-      - Rewrite the contents of visconti_pwm_apply() based on the contents suggested by Uwe.
-    v1 -> v2:
-      - Change SPDX-License-Identifier to GPL-2.0-only.
-      - Add prefix for the register defines.
-      - Drop struct device from struct visconti_pwm_chip.
-      - Use '>>' instead of '/'.
-      - Drop error message by devm_platform_ioremap_resource().
-      - Use dev_err_probe instead of dev_err.
-      - Change dev_info to dev_dbg.
-      - Remove some empty lines.
-      - Fix MODULE_ALIAS to platform:pwm-visconti.
-      - Add .get_state() function.
-      - Use the author name and email address to MODULE_AUTHOR.
-      - Add more comment to function of the hardware.
-      - Support .get_status() function.
-      - Use NSEC_PER_USEC instead of 1000.
-      - Alphabetically sorted for Makefile and Kconfig.
-      - Added check for set value in visconti_pwm_apply().
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-Nobuhiro Iwamatsu (2):
-  dt-bindings: pwm: Add bindings for Toshiba Visconti PWM Controller
-  pwm: visconti: Add Toshiba Visconti SoC PWM support
+--zgu4pc5obhcggw3s
+Content-Type: application/pgp-signature; name="signature.asc"
 
- .../bindings/pwm/toshiba,pwm-visconti.yaml    |  43 ++++
- drivers/pwm/Kconfig                           |   9 +
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-visconti.c                    | 189 ++++++++++++++++++
- 4 files changed, 242 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/toshiba,pwm-visconti.yaml
- create mode 100644 drivers/pwm/pwm-visconti.c
+-----BEGIN PGP SIGNATURE-----
 
--- 
-2.30.0.rc2
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmB9IfkACgkQwfwUeK3K
+7AlgHwf+Nx79sbNY1GlGt+gijv/vJoNs1ZFqTScJnkczL704cUw0dg4phGRgFgb9
+f89mQTXKNPKmRFvEs2NbWKWLQ4wuvLb5V8VIf1h/0BxfFzqhOKWNxjBDbkRAZjzp
+02SfpghGEgFzGzOD0h/9CuwYCcb8kox51Vn4fkLYSvQGV1kvlBEVwAzgR3pXqzc9
+6+cMBOgGdkuQqmjPAB9IrlDK0UzJAVbORkC5ATJFzyWIHKp+FI29sk6cPjrBUMmA
+uMFRBW2LgEwCRZ/Vk0VXVdHIQhd2uW7gssU8E1F0ZB7ipnd7NnsdmXm/C60Pi7Yq
+ICOagB8h0YuiptPdst7kTok8nEW5gA==
+=Uaqc
+-----END PGP SIGNATURE-----
 
+--zgu4pc5obhcggw3s--
