@@ -2,107 +2,140 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C27FC43470
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Apr 2021 16:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D69A0C433ED
+	for <linux-pwm@archiver.kernel.org>; Fri, 23 Apr 2021 16:46:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E9AF5611BF
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Apr 2021 16:34:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9AF9861209
+	for <linux-pwm@archiver.kernel.org>; Fri, 23 Apr 2021 16:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbhDWQfQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 23 Apr 2021 12:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
+        id S229691AbhDWQqo (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 23 Apr 2021 12:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbhDWQfP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Apr 2021 12:35:15 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B439BC061574
-        for <linux-pwm@vger.kernel.org>; Fri, 23 Apr 2021 09:34:38 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lZylI-0005bs-Qk; Fri, 23 Apr 2021 18:34:36 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lZylI-0006Ja-9v; Fri, 23 Apr 2021 18:34:36 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
-        kernel@pengutronix.de, Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH v2] pwm: reword docs about pwm_apply_state()
-Date:   Fri, 23 Apr 2021 18:32:26 +0200
-Message-Id: <20210423163225.2438763-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210423074411.2167332-1-u.kleine-koenig@pengutronix.de>
-References: <20210423074411.2167332-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S229549AbhDWQqn (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Apr 2021 12:46:43 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993C7C061574;
+        Fri, 23 Apr 2021 09:46:04 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id n2so74785193ejy.7;
+        Fri, 23 Apr 2021 09:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AHxWAHKzzgsPEUP1uAuRKRHQkYrg/cUynVsUhlyd7mo=;
+        b=rYRjQ5F+ty+oKYZiIPFM5p9jzk+YE2WFTAxXJ8LeWxmyUVBMRRZObdZvpfSqlRmZaM
+         I+Qo5FFcZ3PNLCfAkPH6HAjRY2xKvuU2N8MNZ2j+l6vicf08vxXkK37kaqsUGKQdHHnN
+         WpUT7wFnBHPMgJemzeP1w5y/gIpDdv/qe11BBTKH6iicU8g1L4px6j/H0wrTim+YCdkl
+         PD2+3bNY8qKP3XUmxWUm/PAyl3hW+DVewZutOiM297aafP5KbabqTpy+8vD1QH2d2tFw
+         7L+mjrmGifZKfP+6MAMi6WC64DmbkAPv71JhWQubC3czDXRKTbzRctvFQFRnAyfKn/Jd
+         wQHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AHxWAHKzzgsPEUP1uAuRKRHQkYrg/cUynVsUhlyd7mo=;
+        b=T8kcjoRwSeztQXO1EobvxRHPR2TchFBlTnbKNpgW1HJpt/6dMBNfe3xkuPQR6dTKLT
+         VIUOKDZEcAwlpoED76MmHBLnXsd0bnbtAeYehR28emrG951C2vaG6k170Ak5gz1rQqpN
+         0N60+jxMsQY75ltcxXbAzZ3YAsryL7+FpFGCRi1vzshaM58uOFion514B6xzrlvsaZra
+         650nlinp9WKKvhJJ+XwSqZuYNRsboG3/bLk07QDkfkXU6BMdiYS8u4W2wIP4ILNl8bde
+         6ZF7Q3dz2WcdQTtj4I+kbkAgWQxJyaAc3Ift9yQEBcdWZJebOx56BChznwehkCojv0Ob
+         TTlQ==
+X-Gm-Message-State: AOAM530fQwRQdzjBctcTAeT6Alv51lInTFmQvauNa8DZvmZQPnY/oQaG
+        Jzn3yTwvI1BxDiYyhbF2l6A=
+X-Google-Smtp-Source: ABdhPJxq4mSEkj1z4E9JIJao50cbzCfwxiM8izC46qiCMjo6xjReLNrKV6yb7xsQzj3DjeF1Aa5foQ==
+X-Received: by 2002:a17:906:3c45:: with SMTP id i5mr5137885ejg.368.1619196363336;
+        Fri, 23 Apr 2021 09:46:03 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id f7sm4504353ejz.95.2021.04.23.09.46.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Apr 2021 09:46:01 -0700 (PDT)
+Date:   Fri, 23 Apr 2021 18:46:51 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc:     linux-pwm@vger.kernel.org,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 1/8] pwm: pca9685: Switch to atomic API
+Message-ID: <YIL5+xq+LP5/YGvO@orome.fritz.box>
+References: <20210415121455.39536-1-clemens.gruber@pqgruber.com>
+ <20210417195150.5fdcpxfbasp4y264@pengutronix.de>
+ <YIFgVZL4PBcIKvMp@workstation.tuxnet>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ag9QP45o/HG8VKU1"
+Content-Disposition: inline
+In-Reply-To: <YIFgVZL4PBcIKvMp@workstation.tuxnet>
+User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The main issue is that the current documentation talks about the
-non-existent function pwm_get_last_applied_state. (This was right in the
-context of
-https://lore.kernel.org/linux-pwm/20210406073036.26857-1-u.kleine-koenig@pengutronix.de/
-but was then missed to adapt when this patch was reduced to a
-documentation update.)
 
-While at is also clarify "last applied PWM state" to "PWM state that was
-passed to the last invocation of pwm_apply_state()" to better
-distinguish to the last actually implemented state and reword to drop a
-word repetition.
+--ag9QP45o/HG8VKU1
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 539ed98e2bd3 ("pwm: Clarify documentation about pwm_get_state()")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
+On Thu, Apr 22, 2021 at 01:39:01PM +0200, Clemens Gruber wrote:
+> On Sat, Apr 17, 2021 at 09:51:50PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> > On Thu, Apr 15, 2021 at 02:14:48PM +0200, Clemens Gruber wrote:
+> > > The switch to the atomic API goes hand in hand with a few fixes to
+> > > previously experienced issues:
+> > > - The duty cycle is no longer lost after disable/enable (previously t=
+he
+> > >   OFF registers were cleared in disable and the user was required to
+> > >   call config to restore the duty cycle settings)
+> > > - If one sets a period resulting in the same prescale register value,
+> > >   the sleep and write to the register is now skipped
+> > > - Previously, only the full ON bit was toggled in GPIO mode (and full
+> > >   OFF cleared if set to high), which could result in both full OFF and
+> > >   full ON not being set and on=3D0, off=3D0, which is not allowed acc=
+ording
+> > >   to the datasheet
+> > > - The OFF registers were reset to 0 in probe, which could lead to the
+> > >   forbidden on=3D0, off=3D0. Fixed by resetting to POR default (full =
+OFF)
+> > >=20
+> > > Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+> >=20
+> > (I sent my ack to v8 before, but indeed this was the version I intended
+> > to ack)
+> >=20
+> > Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+>=20
+> Thierry: Do you think we can get patches 1 to 3 into 5.13-rc1?
 
-the only change compared to v1 is that I didn't use --word-diff to
-create the patch. I just found out that git am cannot apply patches
-created with --word-diff.
+Applied patches 1-3, thanks.
 
-Best regards
-Uwe
+Thierry
 
- Documentation/driver-api/pwm.rst | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+--ag9QP45o/HG8VKU1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
-index 381f3c46cdac..a7ca4f58305a 100644
---- a/Documentation/driver-api/pwm.rst
-+++ b/Documentation/driver-api/pwm.rst
-@@ -55,11 +55,11 @@ several parameter at once. For example, if you see pwm_config() and
- pwm_{enable,disable}() calls in the same function, this probably means you
- should switch to pwm_apply_state().
- 
--The PWM user API also allows one to query the last applied PWM state with
--pwm_get_last_applied_state(). Note this is different to what the driver has
--actually implemented if the request cannot be implemented exactly with the
--hardware in use. There is currently no way for consumers to get the actually
--implemented settings.
-+The PWM user API also allows one to query the PWM state that was passed to the
-+last invocation of pwm_apply_state() using pwm_get_state(). Note this is
-+different to what the driver has actually implemented if the request cannot be
-+satisfied exactly with the hardware in use. There is currently no way for
-+consumers to get the actually implemented settings.
- 
- In addition to the PWM state, the PWM API also exposes PWM arguments, which
- are the reference PWM config one should use on this PWM.
+-----BEGIN PGP SIGNATURE-----
 
-base-commit: 64d7d074acd52e1bdff621f2cb86c0aae9bcef80
--- 
-2.30.2
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmCC+fkACgkQ3SOs138+
+s6Fieg//SNVP0ULVNLQOC9hJfKuwl/mEmbgGi2iVUyBEFtfwWeNrUptE9CZJQsz9
+G0ryShgxyEMi17pRNLH62D1p4DDtg0i2diEMrl3Cd+EQfPABMr6l2z67BwNxHfZZ
+MclaFxV/r4pzpOckuWyfPF/bwJXSIZlXvwRUsT3p3D6GFGCeu/PdMzm7/AUznrqJ
+4OqJ9PT2rnAABGpN8/NHLDeGi41j8AR7JbzruVh08TRU8bWu/o1TdxnL/WAlZB/k
+KsSdcCdWk0lNvflUJFiFYx5vpZoqrC85vhS/4ngYzaXiEN702/HY7zhxHd/QNLqZ
+XVsrUTLiIQRT/ypRaQuoUHrcjC/V9J3itiDMAyliev8lUB6CA83KOFMIkwdAh/lM
+JvEKMBon6/AFSvxfmQsFho9ktnKb5ecAw2QXBBI4hOYQiSwVkxS0uOsVSNRGO04s
+FuIBmcxdYpcfajjBzRtSB5TY7oJtMKcgJAPlUYLjEvS4xfr+zTlBVstJr6g5WVs7
+XRmfuyBl9gw6iLd3xnffij+9fru7qqQISB76K6V1df5uOFD90UsYCYJTgcjfBjmo
+hFyPvC5JTWAYrKwN/QkUNuRBKImCVjRlA541K4Xy4ry+A8rGx1V+3lFqZtJHPshT
+FONfZ6X/Qh98UiAMb9h7aw0+6HxCVVHPtdQ0xfiwDllcchMvggM=
+=1JEV
+-----END PGP SIGNATURE-----
 
+--ag9QP45o/HG8VKU1--
