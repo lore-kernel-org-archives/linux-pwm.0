@@ -2,47 +2,48 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF786C433ED
-	for <linux-pwm@archiver.kernel.org>; Sat, 24 Apr 2021 11:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDF4C433ED
+	for <linux-pwm@archiver.kernel.org>; Sat, 24 Apr 2021 21:07:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A5055613C4
-	for <linux-pwm@archiver.kernel.org>; Sat, 24 Apr 2021 11:32:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 601B8613CB
+	for <linux-pwm@archiver.kernel.org>; Sat, 24 Apr 2021 21:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233588AbhDXLcq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 24 Apr 2021 07:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
+        id S235872AbhDXVIL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 24 Apr 2021 17:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbhDXLcq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 24 Apr 2021 07:32:46 -0400
+        with ESMTP id S232708AbhDXVIK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 24 Apr 2021 17:08:10 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA2EC061574
-        for <linux-pwm@vger.kernel.org>; Sat, 24 Apr 2021 04:32:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B24C061756
+        for <linux-pwm@vger.kernel.org>; Sat, 24 Apr 2021 14:07:31 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1laGW5-0002hG-TH; Sat, 24 Apr 2021 13:32:05 +0200
+        id 1laPUs-000137-My; Sat, 24 Apr 2021 23:07:26 +0200
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1laGW5-0003yu-IV; Sat, 24 Apr 2021 13:32:05 +0200
-Date:   Sat, 24 Apr 2021 13:32:04 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] pwm: Introduce single-PWM of_xlate function
-Message-ID: <20210424113204.besr7gye2htzkbkr@pengutronix.de>
-References: <20210423213304.1371143-1-bjorn.andersson@linaro.org>
+        id 1laPUs-00034Y-0t; Sat, 24 Apr 2021 23:07:26 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>
+Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH v2 2/4] pwm: Drop of_pwm_simple_xlate() in favour of of_pwm_xlate_with_flags()
+Date:   Sat, 24 Apr 2021 23:07:16 +0200
+Message-Id: <20210424210718.2787498-3-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210424210718.2787498-1-u.kleine-koenig@pengutronix.de>
+References: <20210424210718.2787498-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="umx3eoqn4tuipz4y"
-Content-Disposition: inline
-In-Reply-To: <20210423213304.1371143-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -51,62 +52,58 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Since the previous commit the latter function can do everything that the
+former does. So simplify accordingly.
 
---umx3eoqn4tuipz4y
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/pwm/core.c | 27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
-Hello,
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 6d3a1c84b053..821ee1959816 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -152,38 +152,13 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
+ }
+ EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
+ 
+-static struct pwm_device *
+-of_pwm_simple_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+-{
+-	struct pwm_device *pwm;
+-
+-	/* sanity check driver support */
+-	if (pc->of_pwm_n_cells < 2)
+-		return ERR_PTR(-EINVAL);
+-
+-	/* all cells are required */
+-	if (args->args_count != pc->of_pwm_n_cells)
+-		return ERR_PTR(-EINVAL);
+-
+-	if (args->args[0] >= pc->npwm)
+-		return ERR_PTR(-EINVAL);
+-
+-	pwm = pwm_request_from_chip(pc, args->args[0], NULL);
+-	if (IS_ERR(pwm))
+-		return pwm;
+-
+-	pwm->args.period = args->args[1];
+-
+-	return pwm;
+-}
+-
+ static void of_pwmchip_add(struct pwm_chip *chip)
+ {
+ 	if (!chip->dev || !chip->dev->of_node)
+ 		return;
+ 
+ 	if (!chip->of_xlate) {
+-		chip->of_xlate = of_pwm_simple_xlate;
++		chip->of_xlate = of_pwm_xlate_with_flags;
+ 		chip->of_pwm_n_cells = 2;
+ 	}
+ 
+-- 
+2.30.2
 
-On Fri, Apr 23, 2021 at 04:33:04PM -0500, Bjorn Andersson wrote:
-> The existing pxa driver and the upcoming addition of PWM support in the
-> TI sn565dsi86 DSI/eDP bridge driver both has a single PWM channel and
-> thereby a need for a of_xlate function with the period as its single
-> argument.
->=20
-> Introduce a common helper function in the core that can be used as
-> of_xlate by such drivers and migrate the pxa driver to use this.
->=20
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-I'm OK with the idea as such. I'd like to see the semantic expanded a
-bit however such that the function can parse
-
-	pwms =3D <&mypwm 50000>;
-
-and also
-
-	pwms =3D <&mypwm 500000 PWM_POLARITY_INVERTED>;
-
-=2E You suggetion only covers the former.
-
-See
-https://lore.kernel.org/r/20210315111124.2475274-2-u.kleine-koenig@pengutro=
-nix.de
-for my first attempt to unify of_pwm_xlate_with_flags and
-of_pwm_simple_xlate accordingly.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---umx3eoqn4tuipz4y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmCEAbEACgkQwfwUeK3K
-7AllDwf7Bf7vhyQDoQiHxWV1r7kDGBePcnWCysh/Zbq2Cki5mCcx3N/Tg5M+SZJx
-+NstCe89990Rx9csl5vRkuHvja7Ng8l9PkxCEuw3JjDuzwoYGF5gZqFya6HaVwIa
-wQ6oMtypriYsxn9fy3E5CoGsO9TDOUIEhjFVLGezzMgLFnYgzLoqYcdmV7ZKLyyE
-wGYEZmqpmx8qRsoCoTKjwsVYXRXUPepUkHhDGyrqRcv0xQ1KG9mzTG1JNh9Owd7C
-pfw1/FmMzfYMyzU+hrnxp6SYO4UOjgZHOD57vg9HVj/S1+FFGuvmw7yhTZfwf4dn
-yvetfDwfqs8vVFT8UIODzBTb1EvhaA==
-=f0LX
------END PGP SIGNATURE-----
-
---umx3eoqn4tuipz4y--
