@@ -1,248 +1,118 @@
-Return-path: <andy.shevchenko@gmail.com>
+Return-path: <roman.beranek@prusa3d.cz>
 MIME-Version: 1.0
-In-Reply-To: <YFhhGpiHDELxIo9V@orome.fritz.box>
-References: <20201216125320.5277-1-clemens.gruber@pqgruber.com>
- <20201216125320.5277-2-clemens.gruber@pqgruber.com> <CAGngYiWkKZGkQ4TTTy8bQYvnGBK45V0A0JCe_+M5V+vuVU+zkQ@mail.gmail.com>
- <X9uYqGboZg5DuEtf@workstation.tuxnet> <20210111203532.m3yvq6e5bcpjs7mc@pengutronix.de>
- <CAGngYiW=KhCOZX3tPMFykXzpWLpj3qusN2OXVPSfHLRcyts+wA@mail.gmail.com>
- <YBQ4c2cYYPDMjkeH@workstation.tuxnet> <CAGngYiWd0u=+DPhvK+8v9FT8Y1Evn1brWRheMNDXWFVVL-wNFw@mail.gmail.com>
- <YBRyG0vv3gRzygSB@workstation.tuxnet> <YFhhGpiHDELxIo9V@orome.fritz.box>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 22 Mar 2021 11:38:40 +0200
-Message-ID: <CAHp75Ve2FFEMsAv8S18bUDFsH2UkiQ5UvgcRtZ=j30syQtEirw@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="000000000000be186205be1cd4ac"
-Subject: Re: [PATCH v5 2/7] pwm: pca9685: Support hardware readout
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Clemens Gruber <clemens.gruber@pqgruber.com>, Sven Van Asbroeck <thesven73@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+References: <20210428001946.1059426-1-roman.beranek@prusa3d.com> <20210428061357.725m72aikc52n4gg@pengutronix.de>
+In-Reply-To: <20210428061357.725m72aikc52n4gg@pengutronix.de>
+From: =?UTF-8?Q?Roman_Ber=C3=A1nek?= <roman.beranek@prusa3d.cz>
+Date: Wed, 28 Apr 2021 14:07:56 +0200
+Message-ID: <CAL8eAtopkMVmt8XDbzLRsJ_JgGNwZ-FgdNPOWkh-yboTqceUyw@mail.gmail.com>
+Content-Type: multipart/alternative; boundary="0000000000004cf6c005c1073b9b"
+Subject: Re: [PATCH] pwm: sun4i: Round delay time up to a nearest jiffy
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@siol.net>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, linux-sunxi@googlegroups.com, Roman Beranek <roman.beranek@prusa3d.com>
 List-ID: <linux-pwm.vger.kernel.org>
 
---000000000000be186205be1cd4ac
+--0000000000004cf6c005c1073b9b
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Monday, March 22, 2021, Thierry Reding <thierry.reding@gmail.com> wrote:
+Hello Uwe,
 
-> On Fri, Jan 29, 2021 at 09:37:47PM +0100, Clemens Gruber wrote:
-> > Hi Sven,
-> >
-> > On Fri, Jan 29, 2021 at 01:05:14PM -0500, Sven Van Asbroeck wrote:
-> > > Hi Clemens,
-> > >
-> > > On Fri, Jan 29, 2021 at 11:31 AM Clemens Gruber
-> > > <clemens.gruber@pqgruber.com> wrote:
-> > > >
-> > > > Ok, so you suggest we extend our get_state logic to deal with cases
-> > > > like the following:
-> > >
-> > > Kind of. We can't control how other actors (bootloaders etc) program
-> the
-> > > chip. As far as I know, there are many, many different register
-> settings that
-> > > result in the same physical chip outputs. So if .probe() wants to
-> preserve the
-> > > existing chip settings, .get_state() has to be able to deal with ever=
-y
-> possible
-> > > setting. Even invalid ones.
-> >
-> > Is the driver really responsible for bootloaders that program the chip
-> > with invalid values?
-> > The chip comes out of PoR with sane default values. If the bootloader o=
-f
-> > a user messes them up, isn't that a bootloader problem instead of a
-> > Linux kernel driver problem?
+Correct, the output may stay in an active state. I only discovered this
+bug as I investigated a report of unreliable screen timeout. The period
+we use the PWM with is 50 us.
+
+The PWMx_RDY bit stays 0 well after the last period ends, so if the bit
+has any function at all, this one is certainly not it.
+
+Cheers,
+Roman
+
+On Wed, Apr 28, 2021 at 8:14 AM Uwe Kleine-K=C3=B6nig <
+u.kleine-koenig@pengutronix.de> wrote:
+
+> Hello Roman,
 >
-> It is ultimately a problem of the bootloader and where possible the
-> bootloader should be fixed. However, fixing bootloaders sometimes isn't
-> possible, or impractical, so the kernel has to be able to deal with
-> hardware that's been badly programmed by the bootloader. Within reason,
-> of course. Sometimes this can't be done in any other way than forcing a
-> hard reset of the chip, but it should always be a last resort.
+> On Wed, Apr 28, 2021 at 02:19:46AM +0200, Roman Beranek wrote:
+> > More often than not, a PWM period may span nowhere near as far
+> > as 1 jiffy, yet it still must be waited upon before the channel
+> > is disabled.
 >
-> > > In addition, .apply() cannot make any assumptions as to which bits ar=
-e
-> > > already set/cleared on the chip. Including preserved, invalid setting=
-s.
-> > >
-> > > This might get quite complex.
-> > >
-> > > However if we reset the chip in .probe() to a known state (a
-> normalized state,
-> > > in the mathematical sense), then both .get_state() and .apply() becom=
-e
-> > > much simpler. because they only need to deal with known, normalized
-> states.
-> >
-> > Yes, I agree. This would however make it impossible to do a flicker-fre=
-e
-> > transition from bootloader to kernel, but that's not really a usecase I
-> > have so I can live without it.
-> >
-> > Another point in favor of resetting is that the driver already does it.
-> > Removing the reset of the OFF register may break some boards who rely o=
-n
-> > that behaviour.
-> > My version only extended the reset to include the ON register.
-> >
-> > >
-> > > In short, it's a tradeoff between code complexity, and user
-> friendliness/
-> > > features.
-> > >
-> > > Sven
-> >
-> > Thierry, Uwe, what's your take on this?
-> >
-> > Thierry: Would you accept it if we continue to reset the registers in
-> > .probe?
+> I wonder what happens if you don't wait long enough. Is this a
+> theoretical issue, or do you see an (occasional?) breakage that is fixed
+> by this patch?
 >
-> Yes, I think it's fine to continue to reset the registers since that's
-> basically what the driver already does. It'd be great if you could
-> follow up with a patch that removes the reset and leaves the hardware in
-> whatever state the bootloader has set up. Then we can take that patch
-> for a ride and see if there are any complains about it breaking. If
-> there are we can always try to fix them, but as a last resort we can
-> also revert, which then may be something we have to live with. But I
-> think we should at least try to make this consistent with how other
-> drivers do this so that people don't stumble over this particular
-> driver's
-
-
-I guess we may miss (a PCB / silicon design flaw or warm boot case) when
-boot loader left device completely untouched and device either in wrong
-state because if failed reset (saw this on PCA9555 which has a
-corresponding errata), or simply we have done a warm reset of the system.
-So, we also have to understand how to properly exit.
-
-Another point, CCF has a bit =E2=80=9Cis critical=E2=80=9D, and u guess PWM=
- may get the
-same and make the all assumptions much easier.
-
-
+> I guess the problem is that if you disable too early the output freezes
+> and that might be in a state where the output is still active? Would
+> polling the PWMx_RDY bit in the control register help here?
 >
-> Thierry
+> Best regards
+> Uwe
+>
+> --
+> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
+     |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
+|
 >
 
-
---=20
-With Best Regards,
-Andy Shevchenko
-
---000000000000be186205be1cd4ac
+--0000000000004cf6c005c1073b9b
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<br><br>On Monday, March 22, 2021, Thierry Reding &lt;<a href=3D"mailto:thi=
-erry.reding@gmail.com">thierry.reding@gmail.com</a>&gt; wrote:<br><blockquo=
-te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
-lid;padding-left:1ex">On Fri, Jan 29, 2021 at 09:37:47PM +0100, Clemens Gru=
-ber wrote:<br>
-&gt; Hi Sven,<br>
-&gt; <br>
-&gt; On Fri, Jan 29, 2021 at 01:05:14PM -0500, Sven Van Asbroeck wrote:<br>
-&gt; &gt; Hi Clemens,<br>
-&gt; &gt; <br>
-&gt; &gt; On Fri, Jan 29, 2021 at 11:31 AM Clemens Gruber<br>
-&gt; &gt; &lt;<a href=3D"mailto:clemens.gruber@pqgruber.com">clemens.gruber=
-@pqgruber.com</a>&gt; wrote:<br>
-&gt; &gt; &gt;<br>
-&gt; &gt; &gt; Ok, so you suggest we extend our get_state logic to deal wit=
-h cases<br>
-&gt; &gt; &gt; like the following:<br>
-&gt; &gt; <br>
-&gt; &gt; Kind of. We can&#39;t control how other actors (bootloaders etc) =
-program the<br>
-&gt; &gt; chip. As far as I know, there are many, many different register s=
-ettings that<br>
-&gt; &gt; result in the same physical chip outputs. So if .probe() wants to=
- preserve the<br>
-&gt; &gt; existing chip settings, .get_state() has to be able to deal with =
-every possible<br>
-&gt; &gt; setting. Even invalid ones.<br>
-&gt; <br>
-&gt; Is the driver really responsible for bootloaders that program the chip=
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:monospac=
+e,monospace"><div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,Roboto=
+Draft,Helvetica,Arial,sans-serif;font-size:14px">Hello Uwe,</div><div style=
+=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helvetica,Arial,s=
+ans-serif;font-size:14px"><br></div><div style=3D"color:rgba(0,0,0,0.87);fo=
+nt-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:14px">Cor=
+rect, the output may stay in an active state. I only discovered this<span s=
+tyle=3D"white-space:pre">	</span></div><div style=3D"color:rgba(0,0,0,0.87)=
+;font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:14px">=
+bug as I investigated a report of unreliable screen timeout. The period</di=
+v><div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helve=
+tica,Arial,sans-serif;font-size:14px">we use the PWM with is 50 us.</div><d=
+iv style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helvetica=
+,Arial,sans-serif;font-size:14px"><br></div><div style=3D"color:rgba(0,0,0,=
+0.87);font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:1=
+4px">The PWMx_RDY bit stays 0 well after the last period ends, so if the bi=
+t</div><div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,=
+Helvetica,Arial,sans-serif;font-size:14px">has any function at all, this on=
+e is certainly not it.</div><div style=3D"color:rgba(0,0,0,0.87);font-famil=
+y:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:14px"><br></div><=
+div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helvetic=
+a,Arial,sans-serif;font-size:14px">Cheers,</div><div style=3D"color:rgba(0,=
+0,0,0.87);font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-si=
+ze:14px">Roman</div></div></div><br><div class=3D"gmail_quote"><div dir=3D"=
+ltr" class=3D"gmail_attr">On Wed, Apr 28, 2021 at 8:14 AM Uwe Kleine-K=C3=
+=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pengutronix.de">u.kleine-koeni=
+g@pengutronix.de</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" =
+style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pa=
+dding-left:1ex">Hello Roman,<br>
 <br>
-&gt; with invalid values?<br>
-&gt; The chip comes out of PoR with sane default values. If the bootloader =
-of<br>
-&gt; a user messes them up, isn&#39;t that a bootloader problem instead of =
-a<br>
-&gt; Linux kernel driver problem?<br>
+On Wed, Apr 28, 2021 at 02:19:46AM +0200, Roman Beranek wrote:<br>
+&gt; More often than not, a PWM period may span nowhere near as far<br>
+&gt; as 1 jiffy, yet it still must be waited upon before the channel<br>
+&gt; is disabled.<br>
 <br>
-It is ultimately a problem of the bootloader and where possible the<br>
-bootloader should be fixed. However, fixing bootloaders sometimes isn&#39;t=
-<br>
-possible, or impractical, so the kernel has to be able to deal with<br>
-hardware that&#39;s been badly programmed by the bootloader. Within reason,=
-<br>
-of course. Sometimes this can&#39;t be done in any other way than forcing a=
-<br>
-hard reset of the chip, but it should always be a last resort.<br>
-<br>
-&gt; &gt; In addition, .apply() cannot make any assumptions as to which bit=
-s are<br>
-&gt; &gt; already set/cleared on the chip. Including preserved, invalid set=
-tings.<br>
-&gt; &gt; <br>
-&gt; &gt; This might get quite complex.<br>
-&gt; &gt; <br>
-&gt; &gt; However if we reset the chip in .probe() to a known state (a norm=
-alized state,<br>
-&gt; &gt; in the mathematical sense), then both .get_state() and .apply() b=
-ecome<br>
-&gt; &gt; much simpler. because they only need to deal with known, normaliz=
-ed states.<br>
-&gt; <br>
-&gt; Yes, I agree. This would however make it impossible to do a flicker-fr=
-ee<br>
-&gt; transition from bootloader to kernel, but that&#39;s not really a usec=
-ase I<br>
-&gt; have so I can live without it.<br>
-&gt; <br>
-&gt; Another point in favor of resetting is that the driver already does it=
-.<br>
-&gt; Removing the reset of the OFF register may break some boards who rely =
-on<br>
-&gt; that behaviour.<br>
-&gt; My version only extended the reset to include the ON register.<br>
-&gt; <br>
-&gt; &gt; <br>
-&gt; &gt; In short, it&#39;s a tradeoff between code complexity, and user f=
-riendliness/<br>
-&gt; &gt; features.<br>
-&gt; &gt; <br>
-&gt; &gt; Sven<br>
-&gt; <br>
-&gt; Thierry, Uwe, what&#39;s your take on this?<br>
-&gt; <br>
-&gt; Thierry: Would you accept it if we continue to reset the registers in<=
-br>
-&gt; .probe?<br>
-<br>
-Yes, I think it&#39;s fine to continue to reset the registers since that&#3=
-9;s<br>
-basically what the driver already does. It&#39;d be great if you could<br>
-follow up with a patch that removes the reset and leaves the hardware in<br=
+I wonder what happens if you don&#39;t wait long enough. Is this a<br>
+theoretical issue, or do you see an (occasional?) breakage that is fixed<br=
 >
-whatever state the bootloader has set up. Then we can take that patch<br>
-for a ride and see if there are any complains about it breaking. If<br>
-there are we can always try to fix them, but as a last resort we can<br>
-also revert, which then may be something we have to live with. But I<br>
-think we should at least try to make this consistent with how other<br>
-drivers do this so that people don&#39;t stumble over this particular<br>
-driver&#39;s=C2=A0</blockquote><div><br></div><div>I guess we may miss (a P=
-CB / silicon design flaw or warm boot case) when boot loader left device co=
-mpletely untouched and device either in wrong state because if failed reset=
- (saw this on PCA9555 which has a corresponding errata), or simply we have =
-done a warm reset of the system. So, we also have to understand how to prop=
-erly exit.</div><div><br></div><div>Another point, CCF has a bit =E2=80=9Ci=
-s critical=E2=80=9D, and u guess PWM may get the same and make the all assu=
-mptions much easier.</div><div>=C2=A0<br></div><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
-x">
+by this patch?<br>
 <br>
-Thierry<br>
-</blockquote><br><br>-- <br>With Best Regards,<br>Andy Shevchenko<br><br><b=
-r>
+I guess the problem is that if you disable too early the output freezes<br>
+and that might be in a state where the output is still active? Would<br>
+polling the PWMx_RDY bit in the control register help here?<br>
+<br>
+Best regards<br>
+Uwe<br>
+<br>
+-- <br>
+Pengutronix e.K.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| Uwe Kleine-K=C3=B6nig=C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 |<br>
+Industrial Linux Solutions=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0| <a href=3D"https://www.pengutronix.de/" rel=3D"noreferrer" t=
+arget=3D"_blank">https://www.pengutronix.de/</a> |<br>
+</blockquote></div>
 
---000000000000be186205be1cd4ac--
+--0000000000004cf6c005c1073b9b--
