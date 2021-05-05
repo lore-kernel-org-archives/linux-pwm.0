@@ -4,43 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D36C43470
-	for <linux-pwm@archiver.kernel.org>; Wed,  5 May 2021 16:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D060AC433B4
+	for <linux-pwm@archiver.kernel.org>; Wed,  5 May 2021 16:28:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 43BAB60FD9
-	for <linux-pwm@archiver.kernel.org>; Wed,  5 May 2021 16:19:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B68DD610A1
+	for <linux-pwm@archiver.kernel.org>; Wed,  5 May 2021 16:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233957AbhEEQUL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 5 May 2021 12:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        id S233826AbhEEQ3s (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 5 May 2021 12:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbhEEQUK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 5 May 2021 12:20:10 -0400
+        with ESMTP id S233794AbhEEQ3s (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 5 May 2021 12:29:48 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884CFC06174A
-        for <linux-pwm@vger.kernel.org>; Wed,  5 May 2021 09:19:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD35C061574
+        for <linux-pwm@vger.kernel.org>; Wed,  5 May 2021 09:28:51 -0700 (PDT)
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1leKEx-0001D7-Fi; Wed, 05 May 2021 18:19:11 +0200
+        id 1leKOG-0002T0-CW; Wed, 05 May 2021 18:28:48 +0200
 Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1leKEw-0000s6-Ms; Wed, 05 May 2021 18:19:10 +0200
+        id 1leKOE-0001Bc-NH; Wed, 05 May 2021 18:28:46 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 2/2] pwm: pxa: Always use the same variable name for driver data
-Date:   Wed,  5 May 2021 18:19:09 +0200
-Message-Id: <20210505161909.187452-2-u.kleine-koenig@pengutronix.de>
+To:     Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Cc:     linux-pwm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de
+Subject: [PATCH 2/2] pwm: stm32-lp: Don't check the return code of pwmchip_remove()
+Date:   Wed,  5 May 2021 18:28:43 +0200
+Message-Id: <20210505162843.188901-2-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210505161909.187452-1-u.kleine-koenig@pengutronix.de>
-References: <20210505161909.187452-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20210505162843.188901-1-u.kleine-koenig@pengutronix.de>
+References: <20210505162843.188901-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,90 +56,32 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-In most functions the driver data variable is called pc. Do the same in
-the two remaining functions.
+pwmchip_remove() always returns 0. Don't use the value to make it
+possible to eventually change the function to return void. This is a
+good thing as pwmchip_remove() is usually called from a remove function
+(mostly for platform devices) and their return value is ignored by the
+device core anyhow.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-pxa.c | 38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ drivers/pwm/pwm-stm32-lp.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index 31752640dcf7..e091a528e33c 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -165,7 +165,7 @@ pxa_pwm_of_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
- static int pwm_probe(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+index 2464f7a24983..58bc75857b80 100644
+--- a/drivers/pwm/pwm-stm32-lp.c
++++ b/drivers/pwm/pwm-stm32-lp.c
+@@ -224,7 +224,9 @@ static int stm32_pwm_lp_remove(struct platform_device *pdev)
  {
- 	const struct platform_device_id *id = platform_get_device_id(pdev);
--	struct pxa_pwm_chip *pwm;
-+	struct pxa_pwm_chip *pc;
- 	int ret = 0;
+ 	struct stm32_pwm_lp *priv = platform_get_drvdata(pdev);
  
- 	if (IS_ENABLED(CONFIG_OF) && id == NULL)
-@@ -174,44 +174,44 @@ static int pwm_probe(struct platform_device *pdev)
- 	if (id == NULL)
- 		return -EINVAL;
- 
--	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
--	if (pwm == NULL)
-+	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-+	if (pc == NULL)
- 		return -ENOMEM;
- 
--	pwm->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(pwm->clk))
--		return PTR_ERR(pwm->clk);
-+	pc->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(pc->clk))
-+		return PTR_ERR(pc->clk);
- 
--	pwm->chip.dev = &pdev->dev;
--	pwm->chip.ops = &pxa_pwm_ops;
--	pwm->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
-+	pc->chip.dev = &pdev->dev;
-+	pc->chip.ops = &pxa_pwm_ops;
-+	pc->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
- 
- 	if (IS_ENABLED(CONFIG_OF)) {
--		pwm->chip.of_xlate = pxa_pwm_of_xlate;
--		pwm->chip.of_pwm_n_cells = 1;
-+		pc->chip.of_xlate = pxa_pwm_of_xlate;
-+		pc->chip.of_pwm_n_cells = 1;
- 	}
- 
--	pwm->mmio_base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(pwm->mmio_base))
--		return PTR_ERR(pwm->mmio_base);
-+	pc->mmio_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(pc->mmio_base))
-+		return PTR_ERR(pc->mmio_base);
- 
--	ret = pwmchip_add(&pwm->chip);
-+	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
- 		return ret;
- 	}
- 
--	platform_set_drvdata(pdev, pwm);
-+	platform_set_drvdata(pdev, pc);
- 	return 0;
+-	return pwmchip_remove(&priv->chip);
++	pwmchip_remove(&priv->chip);
++
++	return 0;
  }
  
- static int pwm_remove(struct platform_device *pdev)
- {
--	struct pxa_pwm_chip *chip;
-+	struct pxa_pwm_chip *pc;
- 
--	chip = platform_get_drvdata(pdev);
-+	pc = platform_get_drvdata(pdev);
- 
--	return pwmchip_remove(&chip->chip);
-+	return pwmchip_remove(&pc->chip);
- }
- 
- static struct platform_driver pwm_driver = {
+ static int __maybe_unused stm32_pwm_lp_suspend(struct device *dev)
 -- 
 2.30.2
 
