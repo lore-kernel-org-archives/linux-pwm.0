@@ -2,153 +2,116 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8FDC433ED
-	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 15:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDD9C43460
+	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 22:22:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6F3F5610E7
-	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 15:48:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 566B46141F
+	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 22:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbhEGPtB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 7 May 2021 11:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbhEGPtB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 May 2021 11:49:01 -0400
-Received: from mail.pqgruber.com (mail.pqgruber.com [IPv6:2a05:d014:575:f70b:4f2c:8f1d:40c4:b13e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182FAC061574;
-        Fri,  7 May 2021 08:48:00 -0700 (PDT)
-Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id 83B16C7C83F;
-        Fri,  7 May 2021 17:47:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1620402479;
-        bh=D78XQuP9OmKTktvVwykbFr4BP1uaTHL4s+99yRdIE0U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lsXeHsM1DFRUM6MB4n48XeOl470Vi59GlqpwGEf7/wjatHf5xhlpErJgVIuBbvSS/
-         98JVtRL7oUl8kZd33r8Xt+gEdcFPU7Qa2oXshAN139IiZw/sbSBT5bCIKuZSFZZHmM
-         J+u/A6+//+qFxfqb+ndtY9gDFbraNpBUr47374xE=
-Date:   Fri, 7 May 2021 17:47:58 +0200
-From:   Clemens Gruber <clemens.gruber@pqgruber.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH 1/4] pwm: core: Support new usage_power setting in PWM
- state
-Message-ID: <YJVhLrkeNXBp6M1p@workstation.tuxnet>
-References: <20210507131845.37605-1-clemens.gruber@pqgruber.com>
- <20210507150317.bnluhqrqepde4xjm@pengutronix.de>
+        id S229780AbhEGWXD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 7 May 2021 18:23:03 -0400
+Received: from mail-ot1-f48.google.com ([209.85.210.48]:34454 "EHLO
+        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229470AbhEGWXD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 May 2021 18:23:03 -0400
+Received: by mail-ot1-f48.google.com with SMTP id u25-20020a0568302319b02902ac3d54c25eso9240144ote.1;
+        Fri, 07 May 2021 15:22:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wJE+TC+b5jLMRQ3EZL0NyaJOHHWlrS4m1edurMUIrWE=;
+        b=MIhLDolfsp+f/RFpcJwh8LacbmOvY4i7L/+iQTjK2DQUPAd2aMIu5HYiQRTHTnQXC8
+         EncsxGfTcRTbiUSIuY6lzaygbk3g1LC4pG5xIIjB507rvFcP6PgmHBOw6WUs7snKK937
+         d8vmcep1OlsfwEjZM6hhMkxO+XZNgZbADMLmDQhHCXTEQi0oq4QHfFpQ21iscF2ZlePO
+         7w9+dQS0IjmIBcmoEvV24V0CWzVToDLfDSHxfD/F0wu6yIIi5ex3+ah3Gm3VDzFaf764
+         Ptu7X+7aOt4wBQHP+i/MGnBrXpPbD4hsCqRbh6OpFSFCbW3VfJ+04KlDsZu3WhXaW9i3
+         SCLA==
+X-Gm-Message-State: AOAM532n65HcIosU/60GatY4a9mh0SV3pkarsUvcCBH9wCtxcueOWO21
+        tT8ewQ9UBrsYSqRB/s5iHA==
+X-Google-Smtp-Source: ABdhPJy+am6NARFsVfyMVq93tpVSfof2No3lbd73Pco+c4GCQHZ+rd7ceY+/jkcCkJUIgJ8gYXqAmA==
+X-Received: by 2002:a9d:6359:: with SMTP id y25mr10422588otk.103.1620426121281;
+        Fri, 07 May 2021 15:22:01 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id f30sm1366213ooh.10.2021.05.07.15.21.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 May 2021 15:21:59 -0700 (PDT)
+Received: (nullmailer pid 3004259 invoked by uid 1000);
+        Fri, 07 May 2021 22:21:57 -0000
+Date:   Fri, 7 May 2021 17:21:57 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        uclinux-h8-devel@lists.sourceforge.jp, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: pwm: renesas,tpu-pwm: Improve
+ json-schema
+Message-ID: <20210507222157.GA3000824@robh.at.kernel.org>
+References: <cover.1620375445.git.geert+renesas@glider.be>
+ <82dcf4b87f2b2149bb2e238c7fd654ca2397230e.1620375445.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210507150317.bnluhqrqepde4xjm@pengutronix.de>
+In-Reply-To: <82dcf4b87f2b2149bb2e238c7fd654ca2397230e.1620375445.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Uwe,
-
-On Fri, May 07, 2021 at 05:03:17PM +0200, Uwe Kleine-König wrote:
-> Hello,
+On Fri, May 07, 2021 at 10:25:12AM +0200, Geert Uytterhoeven wrote:
+>   - Include the general PWM controller schema,
+>   - Make clocks, power-domains, and resets properties required.
 > 
-> On Fri, May 07, 2021 at 03:18:42PM +0200, Clemens Gruber wrote:
-> > diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> > index 5bb90af4997e..5a73251d28e3 100644
-> > --- a/include/linux/pwm.h
-> > +++ b/include/linux/pwm.h
-> > @@ -54,12 +54,17 @@ enum {
-> >   * @duty_cycle: PWM duty cycle (in nanoseconds)
-> >   * @polarity: PWM polarity
-> >   * @enabled: PWM enabled status
-> > + * @usage_power: If set, the PWM driver is only required to maintain the power
-> > + *               output but has more freedom regarding signal form.
-> > + *               If supported, the signal can be optimized, for example to
-> > + *               improve EMI by phase shifting individual channels.
-> >   */
-> >  struct pwm_state {
-> >  	u64 period;
-> >  	u64 duty_cycle;
-> >  	enum pwm_polarity polarity;
-> >  	bool enabled;
-> > +	bool usage_power;
-> >  };
-> >  
-> >  /**
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  .../bindings/pwm/renesas,tpu-pwm.yaml         | 19 ++++++++++++++++++-
+>  1 file changed, 18 insertions(+), 1 deletion(-)
 > 
-> If we really want to support this usecase, I would prefer to not have it
-> in pwm_state because this concept is not a property of the wave form. So
-> for a driver it doesn't really make sense to set this flag in
-> .get_state().
+> diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+> index aa9a4570c9068226..3a072ee29815c695 100644
+> --- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+> @@ -58,8 +58,25 @@ required:
+>    - compatible
+>    - reg
+>    - '#pwm-cells'
+> +  - clocks
+> +  - power-domains
+>  
+> -additionalProperties: false
+> +allOf:
+> +  - $ref: pwm.yaml#
 
-It is related to the wave form in so far as it allows the driver to
-change the wave form as long as the power output remains the same.
+This doesn't add any other properties, so you can keep 
+'additionalProperties: false'. 
 
-> Maybe it makes more sense to put this in a separate argument for a
-> variant of pwm_apply_state? something like:
+> +
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              enum:
+> +                - renesas,tpu-r8a73a4
+> +                - renesas,tpu-r8a7740
+> +    then:
+> +      required:
+> +        - resets
+> +
+> +unevaluatedProperties: false
+>  
+>  examples:
+>    - |
+> -- 
+> 2.25.1
 > 
-> 	int pwm_apply_state_transition(struct pwm_device *pwm, const struct pwm_state *state, const struct pwm_state_transition *transition);
-> 
-> and pwm_state_transition can then contain something like this usage
-> power concept and maybe also a sync flag that requests that the call
-> should only return when the new setting is active and maybe also a
-> complete_period flag that requests that the currently running period
-> must be completed before the requested setting is implemented.
-> 
-> OTOH the information "I only care about the relative duty cycle" is
-> relevant longer than during the transition to a new setting. (So if
-> there are two consumers and one specified to be only interested in the
-> relative duty cycle, the other might be allowed to change the common
-> period.)
-
-As you said, usage_power does not only apply to one state transition.
-
-
-> Having said that, I don't like the proposed names. Neither "usage_power"
-> nor "pwm_apply_state_transition".
-> 
-> In a non-representative survey among two hardware engineers and one
-> software engineer who already contributed to PWM (!= me) I found out
-> that these three have an intuitive right understanding of
-> "allow-phase-shift" but have no idea what "usage-power" could mean.
-
-One advantage of usage_power is that it is not limited to phase
-shifting. Drivers could do other optimizations as long as the power
-output remains the same.
-
-
-> On a side note: The hardware guys noted that it might make sense to
-> align the shifted phases. i.e. instead of shifting channel i by i *
-> period/16, it might be better to let the 2nd channel get active when the
-> first gets inactive. (i.e. try to keep the count of active channels
-> constant).
-
-I am not sure what you mean exactly, because the duty cycles of the
-16 outputs are not necessarily the same and can all be active at the
-same time. The idea is to spread the edges out as evenly as possible.
-Shifting them by period/16 is the best way to smoothen the current
-spikes in my opinion and the implementation is also very simple.
-
-
-> And as already mentioned earlier I still think we should define the
-> concept of "usage power" better. It should be clearly defined for a
-> driver author which setting they should pick for a given request. This
-> removes surprises for consumers and guessing for lowlevel driver
-> authors. Also a uniform policy brings conflicts better to light.
-> (Something like driver A does the right thing for consumer C and driver
-> B makes it right for D. But once D tries to use A things break. (And
-> then maybe A is changed to fit D, and C doesn't object because they
-> don't read the pwm list resulting in a breakage for C later.))
-
-I added documentation and comments to the header file as a first step
-but we can always improve them.
-
-Thanks,
-Clemens
