@@ -2,240 +2,198 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3856C433B4
-	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 06:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE39C43461
+	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 08:25:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 894706112F
-	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 06:35:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C9CCF6143C
+	for <linux-pwm@archiver.kernel.org>; Fri,  7 May 2021 08:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbhEGGgx (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 7 May 2021 02:36:53 -0400
-Received: from mail-bn7nam10on2047.outbound.protection.outlook.com ([40.107.92.47]:13024
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231263AbhEGGgw (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 7 May 2021 02:36:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YYydbPvJoKyftEPBPotX80tzs6JJ7MkYLfMReDdybzmRasjnTFt+yICMCIIrtiRMx8uRCpSCilao4Xef/EvPjjErr14R52hnD8DGSg1FziwlP5fEZb6wde4X+2ymdnmeRQ4HwY54ozUqNb68V+lC3f4Ks/oJDXCb0zx/VNToG5OiwkVbsBKpbbToyCSBdL/jPXk0EctOnX1Iia4y+ORT8xly8TNhy8Fx0WxVol31l2vIQnpQ6Bmnd2pPb603tufQnHiUdikbF5v3APTlexYDjsKGUPqumjMGVnC8c8Za4Dg8P/3Rk3eiIUXnBZkHAk4MRjycGf2bK5s8i1O0vMIIng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kMMlV6sW7W6SS3KLLyX0pD6pTu9NbLGjxhalxaN4gk8=;
- b=JEx6MExQF+jH0CgmHemllGNSyUjk2ulGTnFTGKxhQZAMCJ18J6JcVNbH2zwNVVz/e5+IU98VVxnuTw7yESwH2K/qqEfaK4alrTI4LfnOJMjROGIrdZcVBVbFfdZDjAM6GJOKM/fyYNt5eREpeyeuQp95Y+wf5gbwmnsEk7BXzEuzvvKp6E1jwq+eQwcU6mdl+xWFrZc6Y7xlPrB8rGsJ2JJHczDHJ0gH2Koqb7uuWA7N1pWSx9ekdRdoAitDa4ORCWrLAoncOhTMdcNt80Il07eOP5QYNcBGW+LwqF0TVLRZsN2FPP1IAe5u9MfSs9kZKyGrEvlOjp6QVHkLNo7AbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=hazent.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kMMlV6sW7W6SS3KLLyX0pD6pTu9NbLGjxhalxaN4gk8=;
- b=JFmHmgS9sRBfJeplZjg98m3RpDyuhhWWnus7vissDz236JWDgL5sn2eHaVWDPX7+UDD+KOuM2zizcY+dUZ/2H08vjojs6PrnKlFRfiUP5J+A/d//eg8uNSrdtPNAlz9ol/7M0KMUnLyPG1dcP9TnEKd//ydI11vuCyFodgHxZw0=
-Received: from DS7PR03CA0178.namprd03.prod.outlook.com (2603:10b6:5:3b2::33)
- by BL0PR02MB4467.namprd02.prod.outlook.com (2603:10b6:208:48::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Fri, 7 May
- 2021 06:35:51 +0000
-Received: from DM3NAM02FT026.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:3b2:cafe::a5) by DS7PR03CA0178.outlook.office365.com
- (2603:10b6:5:3b2::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.24 via Frontend
- Transport; Fri, 7 May 2021 06:35:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; hazent.com; dkim=none (message not signed)
- header.d=none;hazent.com; dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT026.mail.protection.outlook.com (10.13.5.129) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4065.21 via Frontend Transport; Fri, 7 May 2021 06:35:50 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 6 May 2021 23:35:50 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Thu, 6 May 2021 23:35:50 -0700
-Envelope-to: alvaro.gamez@hazent.com,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org,
- linux-pwm@vger.kernel.org,
- robh@kernel.org,
- sean.anderson@seco.com
-Received: from [172.30.17.109] (port=38944)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1leu5V-0001KM-UL; Thu, 06 May 2021 23:35:50 -0700
-Subject: Re: [PATCH v2 1/2] dt-bindings: pwm: Add Xilinx AXI Timer
-To:     Sean Anderson <sean.anderson@seco.com>,
-        Rob Herring <robh@kernel.org>
-CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <michal.simek@xilinx.com>,
-        Alvaro Gamez <alvaro.gamez@hazent.com>
-References: <20210504184925.3399934-1-sean.anderson@seco.com>
- <20210506210527.GA789155@robh.at.kernel.org>
- <b736d78f-4eaa-1057-71bf-02c3b44ec51e@seco.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-Message-ID: <eb3a9e61-c474-696f-4d81-e655ce058082@xilinx.com>
-Date:   Fri, 7 May 2021 08:35:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S236128AbhEGI00 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 7 May 2021 04:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236130AbhEGI0X (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 May 2021 04:26:23 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01077C06138A
+        for <linux-pwm@vger.kernel.org>; Fri,  7 May 2021 01:25:23 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:f434:20f9:aa9e:b80c])
+        by xavier.telenet-ops.be with bizsmtp
+        id 1kRG2500L0ZPnBx01kRGAJ; Fri, 07 May 2021 10:25:21 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1levnP-003VSz-Op; Fri, 07 May 2021 10:25:15 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1levnP-006WUu-2d; Fri, 07 May 2021 10:25:15 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc:     devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        uclinux-h8-devel@lists.sourceforge.jp, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 2/2] dt-bindings: timer: renesas,tpu: Convert to json-schema
+Date:   Fri,  7 May 2021 10:25:13 +0200
+Message-Id: <29c1e39d396b0060213379264747ecf30d4c7ca8.1620375445.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1620375445.git.geert+renesas@glider.be>
+References: <cover.1620375445.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-In-Reply-To: <b736d78f-4eaa-1057-71bf-02c3b44ec51e@seco.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6aab2917-864c-45bb-1613-08d911225b60
-X-MS-TrafficTypeDiagnostic: BL0PR02MB4467:
-X-Microsoft-Antispam-PRVS: <BL0PR02MB44677CD55AE3EC82E5B71616C6579@BL0PR02MB4467.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ecOIzo1x995njpKYbhYKNRhTJkspFuyhayaZOa8MT6bkIAzaCy3kSk0k/9U5DbQxF9fEEDm0uPa6YeAwviOVmpguUUw+1cRoqwsfjxHCEPFMRH06TMXuN0NEoDzLVR8bLdmtFSiWxwesk8j0WT+ZUhaMisTP7BrOPG/gY/55UJUdbIavl+e7/uVyVePX340vdTKABV3yECIHF295ytLBFF2gTFDYsEv4G8kot8YSbTxWckuCA+nWN4omLL8QpmipEJbOUPZlcmNgG6Yf6LYpZRN9Bb4C4SPKf+enzmJ46zXgTEw78wKs59YC46fYb6Sv3Jj8yerqHQCl2KNwySnslbTaGif0Kcf6EiKpeSZ2lW3MSNHNnWXdt4gik7MYAXVwnBiw0sg+S3CyGQntdAdY4/+1Zlz4ijLKWuvRFFfB0TD1th0LDYa4TtTZkubr9zj/JFVVB2RW8/oI1KkpVuB6RnAZtL72vpw17gVKynr4N9qpD5RVZXnzz/1C1ZSracmxcs3SS9LAKnyLcdnKqF5dHmk45BiZ7COuUPS5HVbA3rc1L7BTpTDDNI0JC5sEOFQZWueVEF6g7EVcadeZ2akeDH4UL4j+fdwFClr2JcZzH2oVC0wsCyGKlENbcPqnjIM2RmDF+Pz7wUOCXbb+7NH4Hdcl7yFUqCLFmx5RYKVSKG93Ch1icV4VTyrALGtgHbGxPqgpnpI0pIbZ/8YfkcNsd7fhqyKizcdxv1olf02xMf6uAvdQsUzSuNBH0NTDTNgCtkiCaxt6cwXnY4/KrAI6h6WcdpcwM6d6quQra0hW/A8=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(136003)(346002)(39860400002)(396003)(376002)(46966006)(36840700001)(478600001)(4326008)(6666004)(2906002)(2616005)(31686004)(70206006)(44832011)(47076005)(70586007)(336012)(82310400003)(36860700001)(83380400001)(53546011)(26005)(186003)(36906005)(110136005)(9786002)(36756003)(54906003)(966005)(5660300002)(8676002)(356005)(7636003)(82740400003)(316002)(31696002)(426003)(8936002)(50156003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2021 06:35:50.8310
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6aab2917-864c-45bb-1613-08d911225b60
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT026.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB4467
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Convert the Renesas H8/300 Timer Pulse Unit Device Tree binding
+documentation to json-schema.
 
+Correct clock-names, as "peripheral_clk" is the name of the supplier,
+and all users use "fck".
 
-On 5/6/21 11:10 PM, Sean Anderson wrote:
-> 
-> 
-> On 5/6/21 5:05 PM, Rob Herring wrote:
->> On Tue, May 04, 2021 at 02:49:24PM -0400, Sean Anderson wrote:
->>> This adds a binding for the Xilinx LogiCORE IP AXI Timer. This device is
->>> a "soft" block, so it has many parameters which would not be
->>> configurable in most hardware. This binding is usually automatically
->>> generated by Xilinx's tools, so the names and values of properties
->>> must be kept as they are.
->>>
->>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
->>> ---
->>>
->>> Changes in v2:
->>> - Use 32-bit addresses for example binding
->>>
->>>   .../bindings/pwm/xlnx,axi-timer.yaml          | 91 +++++++++++++++++++
->>>   1 file changed, 91 insertions(+)
->>>   create mode 100644
-> Documentation/devicetree/bindings/pwm/xlnx,axi-timer.yaml
->>>
->>> diff --git
-> a/Documentation/devicetree/bindings/pwm/xlnx,axi-timer.yaml
-> b/Documentation/devicetree/bindings/pwm/xlnx,axi-timer.yaml
->>> new file mode 100644
->>> index 000000000000..bd014134c322
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/pwm/xlnx,axi-timer.yaml
->>> @@ -0,0 +1,91 @@
->>> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/pwm/xlnx,axi-timer.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Xilinx LogiCORE IP AXI Timer Device Tree Binding
->>> +
->>> +maintainers:
->>> +  - Sean Anderson <sean.anderson@seco.com>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    items:
->>> +      - const: xlnx,axi-timer-2.0
->>> +      - const: xlnx,xps-timer-1.00.a
->>> +
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  clock-names:
->>> +    const: s_axi_aclk
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  xlnx,count-width:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    minimum: 8
->>> +    maximum: 32
->>> +    description:
->>> +      The width of the counters, in bits.
->>> +
->>> +  xlnx,gen0-assert:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [ 0, 1 ]
->>> +    description:
->>> +      The polarity of the generateout0 signal. 0 for active-low, 1
-> for active-high.
->>> +
->>> +  xlnx,gen1-assert:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [ 0, 1 ]
->>> +    description:
->>> +      The polarity of the generateout1 signal. 0 for active-low, 1
-> for active-high.
->>> +
->>> +  xlnx,one-timer-only:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [ 0, 1 ]
->>> +    description:
->>> +      Whether only one timer is present in this block.
->>> +
->>> +  xlnx,trig0-assert:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [ 0, 1 ]
->>> +    description:
->>> +      The polarity of the capturetrig0 signal. 0 for active-low, 1
-> for active-high.
->>> +
->>> +  xlnx,trig1-assert:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [ 0, 1 ]
->>> +    description:
->>> +      The polarity of the capturetrig1 signal. 0 for active-low, 1
-> for active-high.
->>
->> Can't all these be boolean?
-> 
-> They could, but
-> 
->> This binding is usually automatically generated by Xilinx's tools, so
->> the names and values of properties must be kept as they are.
-> 
-> Because this is a soft device, the binding may be (very conveniently)
-> auto-generated. I am not opposed to adding additional properties which
-> could be used by new code, but we should still accept this auto-generated
-> output.
+Note that there are two different bindings for the TPU, both using
+"renesas,tpu": this one for using the TPU as a clock source (used on
+H8/300), and a second use for using the TPU as a PWM controller (used on
+ARM).  To avoid conflicts, both bindings are marked with the appropriate
+"select" logic, to check for the absence respectively presence of the
+"#pwm-cells" property.
 
-I think in this case you should described what it is used by current
-driver in Microblaze and these options are required. The rest are by
-design optional.
-If you want to change them to different value then current binding
-should be deprecated and have any transition time with code alignment.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+I have listed Sato-san as the maintainer, as he wrote the original
+driver and bindings.
+Sato-san: Please scream if this is inappropriate ;-)
+---
+ .../bindings/pwm/renesas,tpu-pwm.yaml         | 10 ++++
+ .../devicetree/bindings/timer/renesas,tpu.txt | 21 -------
+ .../bindings/timer/renesas,tpu.yaml           | 56 +++++++++++++++++++
+ 3 files changed, 66 insertions(+), 21 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/timer/renesas,tpu.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/renesas,tpu.yaml
 
-Thanks,
-Michal
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+index 3a072ee29815c695..f8bc8c5905daa14c 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+@@ -9,6 +9,16 @@ title: Renesas R-Car Timer Pulse Unit PWM Controller
+ maintainers:
+   - Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+ 
++select:
++  properties:
++    compatible:
++      contains:
++        const: renesas,tpu
++    '#pwm-cells': true
++  required:
++    - compatible
++    - '#pwm-cells'
++
+ properties:
+   compatible:
+     items:
+diff --git a/Documentation/devicetree/bindings/timer/renesas,tpu.txt b/Documentation/devicetree/bindings/timer/renesas,tpu.txt
+deleted file mode 100644
+index 1d46f9de4feb8a84..0000000000000000
+--- a/Documentation/devicetree/bindings/timer/renesas,tpu.txt
++++ /dev/null
+@@ -1,21 +0,0 @@
+-* Renesas H8/300 Timer Pulse Unit
+-
+-The TPU is a 16bit timer/counter with configurable clock inputs and
+-programmable compare match.
+-This implementation support only cascade mode.
+-
+-Required Properties:
+-
+-  - compatible: must contain "renesas,tpu"
+-  - reg: base address and length of the registers block in 2 channel.
+-  - clocks: a list of phandle, one for each entry in clock-names.
+-  - clock-names: must contain "peripheral_clk" for the functional clock.
+-
+-
+-Example:
+-	tpu: tpu@ffffe0 {
+-		compatible = "renesas,tpu";
+-		reg = <0xffffe0 16>, <0xfffff0 12>;
+-		clocks = <&pclk>;
+-		clock-names = "peripheral_clk";
+-	};
+diff --git a/Documentation/devicetree/bindings/timer/renesas,tpu.yaml b/Documentation/devicetree/bindings/timer/renesas,tpu.yaml
+new file mode 100644
+index 0000000000000000..01554dff23d8a954
+--- /dev/null
++++ b/Documentation/devicetree/bindings/timer/renesas,tpu.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/timer/renesas,tpu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Renesas H8/300 Timer Pulse Unit
++
++maintainers:
++  - Yoshinori Sato <ysato@users.sourceforge.jp>
++
++description:
++  The TPU is a 16bit timer/counter with configurable clock inputs and
++  programmable compare match.
++  This implementation supports only cascade mode.
++
++select:
++  properties:
++    compatible:
++      contains:
++        const: renesas,tpu
++    '#pwm-cells': false
++  required:
++    - compatible
++
++properties:
++  compatible:
++    const: renesas,tpu
++
++  reg:
++    items:
++      - description: First channel
++      - description: Second channel
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: fck
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    tpu: tpu@ffffe0 {
++            compatible = "renesas,tpu";
++            reg = <0xffffe0 16>, <0xfffff0 12>;
++            clocks = <&pclk>;
++            clock-names = "fck";
++    };
+-- 
+2.25.1
 
