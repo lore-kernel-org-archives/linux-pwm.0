@@ -2,120 +2,132 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D3A6C433ED
-	for <linux-pwm@archiver.kernel.org>; Mon, 10 May 2021 19:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F749C43461
+	for <linux-pwm@archiver.kernel.org>; Tue, 11 May 2021 07:58:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1AA2161139
-	for <linux-pwm@archiver.kernel.org>; Mon, 10 May 2021 19:09:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 242A661448
+	for <linux-pwm@archiver.kernel.org>; Tue, 11 May 2021 07:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbhEJTKw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 10 May 2021 15:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
+        id S230442AbhEKH71 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 11 May 2021 03:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbhEJTKv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 10 May 2021 15:10:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3221CC061574
-        for <linux-pwm@vger.kernel.org>; Mon, 10 May 2021 12:09:46 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lgBHj-0007Yu-Bt; Mon, 10 May 2021 21:09:43 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lgBHi-0003S1-Tm; Mon, 10 May 2021 21:09:42 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        with ESMTP id S230428AbhEKH70 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 11 May 2021 03:59:26 -0400
+Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607F9C061760
+        for <linux-pwm@vger.kernel.org>; Tue, 11 May 2021 00:58:19 -0700 (PDT)
+Received: by mail-ua1-x932.google.com with SMTP id h1so6084225uar.0
+        for <linux-pwm@vger.kernel.org>; Tue, 11 May 2021 00:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=deviqon.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PWykHEF/p6NwGSHpfqdT0ahXeKs26eIMYauFhcuYvYs=;
+        b=X4NGL3EXhHONloTO2d8GpmmbopovhciNQUA0iaEVqjrszgS+cbhwdBnLKF8OUVer7J
+         HVQA1aDGYRqlFctzvyxEzFm2+r5RcWejJaZLavQapvWisFZ8GcDu+7Aomj3cHv5oombr
+         bUUAxTdXwa20QyFrTn6wkuxXPlWEaiU8ZaFGkTmGkH531RpWkdFgKVlhRpWxoF+yh0T+
+         RJ72JKiFqdyPnYOMEd/JKpVo8O7OBHmogyRXTrp+XYtm5iLAyY8X7pqdihBgfI6N/9TX
+         ZtS8z9kdk6dAyxq0D8KeDKAEXjzVZOgQgR7gNJwG0PIwjnCrm8yh4qfnK+7Un15UqM7B
+         wpwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PWykHEF/p6NwGSHpfqdT0ahXeKs26eIMYauFhcuYvYs=;
+        b=q0Opbk+JflfVPeysZNpGMVHiEOEF96zdGidpQSrFn2sTmb9FQonF3gBQMWRhCl/5dl
+         V770maW48JfW2ps0CKLRo+OAelFFvJ74zxUcZEjN1DoWD46vtXiSCE2ZYQbJPn5JlPyB
+         L2Tk4JDYfmKV1OK92FudLQwwNYwEcZbbAvvFW81i+973pXEoFow+x/FlihxWyBCT1OD8
+         oSsaiG4Mca5sfNcZZc8qyIzPv8AmsmfAnBm0kQ/ItOb/62XhbhM6KrQjuLh4etg8PRsd
+         Xg7XT4TjymTtF7pxb5yXPbUf/3h1oXvoerAaCmPmbt+Ip9B/NWVikCFOLQWr7YmuwtuW
+         Zg7g==
+X-Gm-Message-State: AOAM533tNdvwZ/ry6Bn0u1Aiy7uaiI96Mx7LNeavCAheG9Aa731uRtYa
+        1FvnH+iGHX0g+xM1nUvpVCKJjRvlqhTkFlPlmi53aQ==
+X-Google-Smtp-Source: ABdhPJz1qn4vWXTypydfHbwRxov7+bqFPgxM3p17wb2yl0rDv8dYJmGDgoEb0YxK/aVVVkQjMptfvyFwRPAm2ggPW9o=
+X-Received: by 2002:ab0:260b:: with SMTP id c11mr24557170uao.42.1620719898512;
+ Tue, 11 May 2021 00:58:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210510174142.986250-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20210510174142.986250-1-u.kleine-koenig@pengutronix.de>
+From:   Alexandru Ardelean <aardelean@deviqon.com>
+Date:   Tue, 11 May 2021 10:58:07 +0300
+Message-ID: <CAASAkoZroYcCTa6A0PtNsBe-rRJrNzaa+qiO4YpNZoVMrTaYHQ@mail.gmail.com>
+Subject: Re: [PATCH v7 0/6] clk: provide new devm helpers for prepared and
+ enabled clocks
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Romain Perier <romain.perier@gmail.com>,
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kernel@pengutronix.de,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        kernel@pengutronix.de
-Subject: [PATCH v2] pwm: meson: Simplify using devm_pwmchip_add
-Date:   Mon, 10 May 2021 21:09:25 +0200
-Message-Id: <20210510190924.990912-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CABgxDoJbnFb+=oSMNrhbBGbFCRZWBQ54Dkyy02YnYm5bveD4gA@mail.gmail.com>
-References: <CABgxDoJbnFb+=oSMNrhbBGbFCRZWBQ54Dkyy02YnYm5bveD4gA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rtc@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        linux-spi@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
+On Mon, 10 May 2021 at 20:41, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> compared to v6 I rebased to v5.13-rc1 (which resulted in a conflict in
+> the pwm-atmel patch), reformated the doc comments in patch 2 (as
+> suggested by Jonathan Cameron) and added the two Reviewed-by tags for
+> Jonathan Cameron.
 
-Hi Romain,
+This will definitely cleanup a lot of boiler-plate code for probe()/remove(=
+).
+What I'm noticing, is that some remove hooks [in the drivers in this
+series] are being slightly re-ordered;
+i.e. the clk_disable/unprepare may happen in a slightly different
+order, but it doesn't look like those would be problematic.
 
-On Mon, May 10, 2021 at 08:42:07PM +0200, Romain Perier wrote:
-> The "struct device *" as first argument is missing, nop ?
+So, for the series:
+Reviewed-by: Alexandru Ardelean <aardelean@deviqon.com>
 
-Damn, you're right. Here comes v2 after enabling the meson driver in my
-test .config :-\
+Thanks
+Alex
 
-Best regards
-Uwe
-
-
- drivers/pwm/pwm-meson.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
-
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 9eb060613cb4..fc5a0acb7eb9 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -560,31 +560,21 @@ static int meson_pwm_probe(struct platform_device *pdev)
- 	if (err < 0)
- 		return err;
- 
--	err = pwmchip_add(&meson->chip);
-+	err = devm_pwmchip_add(&pdev->dev, &meson->chip);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "failed to register PWM chip: %d\n", err);
- 		return err;
- 	}
- 
--	platform_set_drvdata(pdev, meson);
--
- 	return 0;
- }
- 
--static int meson_pwm_remove(struct platform_device *pdev)
--{
--	struct meson_pwm *meson = platform_get_drvdata(pdev);
--
--	return pwmchip_remove(&meson->chip);
--}
--
- static struct platform_driver meson_pwm_driver = {
- 	.driver = {
- 		.name = "meson-pwm",
- 		.of_match_table = meson_pwm_matches,
- 	},
- 	.probe = meson_pwm_probe,
--	.remove = meson_pwm_remove,
- };
- module_platform_driver(meson_pwm_driver);
- 
-
-base-commit: 6efb943b8616ec53a5e444193dccf1af9ad627b5
-prerequisite-patch-id: fa39cd0c852d109ed957dc44dca5bdcf5dff0685
--- 
-2.30.2
-
+>
+> Best regards
+> Uwe
+>
+> Uwe Kleine-K=C3=B6nig (6):
+>   clk: generalize devm_clk_get() a bit
+>   clk: Provide new devm_clk_helpers for prepared and enabled clocks
+>   pwm: atmel: Simplify using devm_clk_get_prepared()
+>   rtc: at91sam9: Simplify using devm_clk_get_enabled()
+>   i2c: imx: Simplify using devm_clk_get_enabled()
+>   spi: davinci: Simplify using devm_clk_get_enabled()
+>
+>  drivers/clk/clk-devres.c     | 96 ++++++++++++++++++++++++++++++------
+>  drivers/i2c/busses/i2c-imx.c | 12 +----
+>  drivers/pwm/pwm-atmel.c      | 15 +-----
+>  drivers/rtc/rtc-at91sam9.c   | 22 ++-------
+>  drivers/spi/spi-davinci.c    | 11 +----
+>  include/linux/clk.h          | 90 ++++++++++++++++++++++++++++++++-
+>  6 files changed, 179 insertions(+), 67 deletions(-)
+>
+>
+> base-commit: 6efb943b8616ec53a5e444193dccf1af9ad627b5
+> --
+> 2.30.2
+>
