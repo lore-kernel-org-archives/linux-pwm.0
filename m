@@ -2,133 +2,105 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C296C433ED
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 May 2021 09:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C53C433ED
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 May 2021 10:07:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F310761177
-	for <linux-pwm@archiver.kernel.org>; Wed, 12 May 2021 09:18:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8FB89613F8
+	for <linux-pwm@archiver.kernel.org>; Wed, 12 May 2021 10:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbhELJTn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 12 May 2021 05:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbhELJTm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 May 2021 05:19:42 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165F3C061574
-        for <linux-pwm@vger.kernel.org>; Wed, 12 May 2021 02:18:35 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id 69-20020a9d0a4b0000b02902ed42f141e1so9803113otg.2
-        for <linux-pwm@vger.kernel.org>; Wed, 12 May 2021 02:18:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ilHpinXfJbBO00ILl8M3cL9co4ZLrs2Vn6MnmXJH7Ac=;
-        b=OpYb3E4eC+El3f8COSWswjpzDbG74EZU9suX/LZaPOWAmGPxMlcl3qy6UBzSRHICf0
-         Y2WOguxoF8nNew/YOA4M0/WLN9WRtZxPXf8zBnnPNinvB9EQMoUxK07ivCaTWzBSuTNU
-         Ut+yFn5yWNKnSWelekyNqx7tQ5pNtFVtjDmpN9jM87iVMLscahq2jLc6DIF4Y2Bw1WeY
-         qsN8283JRlxYbihv+OjKa11ci0flV/XdvTleu5y/xpp5fC3c+mkFS0aZV+N4Q+67ej+m
-         opSNyUzGiK1TMy+RtfXyM5QI4RDfECZTHlQciDgPdvNuKqoi8XfDWzfKRhMG77yBIIIr
-         t4Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ilHpinXfJbBO00ILl8M3cL9co4ZLrs2Vn6MnmXJH7Ac=;
-        b=TklagE2hRjtxMbSGtAjaBcLxLO5QXWLBiJDFhpF4Hc15va6VwBtTLLqpieoBOhRGE8
-         hD4qLVBOEG98h4/srgzFY/0X4N5GalQJfyodlNkV0V7XEKa4kBNZVwsUvUftTMdZreF4
-         2YIOnidwG3FhFqVAiiDAKJcv7tMMEQ2+AsTybGarQCZBIagHfHUK6144eDL+19yy8kA5
-         vgjWc3Pouj5Q8M0vwH+yuoKaHb6LrG1QdXOaCyoxL8tBzPVXux/hMWywdM/L5S0NMF91
-         G67FACzZ/RMX3u8YWygQHJxjDJPRLzct90ahQ6PfXTcmQNXN+291gQ/B9iR03sekQsKu
-         ialw==
-X-Gm-Message-State: AOAM531V0RZx8vXkC+mTrB6BbPQ8AfXSv84HnTjVgBmqVhu3SP/tnt4F
-        GdZz9Xlf+gmTexv9qXw2QcGaHTv19Hi4nylHPwRbdFQ9UtPZbw==
-X-Google-Smtp-Source: ABdhPJxL5e7JMKGEAMi+g54pI1yxPu1G+9tSMQnIgWLQZ0pKp4sbyHdu8tnX79kJNw/uYM4GtFc0VbCLWkaoTi0R2lE=
-X-Received: by 2002:a9d:e88:: with SMTP id 8mr28771453otj.239.1620811114262;
- Wed, 12 May 2021 02:18:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210511220014.1945519-1-roman.beranek@prusa3d.com>
- <CAO1O6seU7t==O=yCVBQK0iAkeEyO3dbRQ71obJh3Jm26xxWobw@mail.gmail.com> <20210512044133.6yfwyluzdx6yfh4c@pengutronix.de>
-In-Reply-To: <20210512044133.6yfwyluzdx6yfh4c@pengutronix.de>
-From:   Emil Lenngren <emil.lenngren@gmail.com>
-Date:   Wed, 12 May 2021 11:18:24 +0200
-Message-ID: <CAO1O6sfZ0O7JExw07UytBcNROc9TQsu9bBp-+zFF3824PxxvRA@mail.gmail.com>
-Subject: Re: [PATCH] pwm: sun4i: Avoid waiting until the next period
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Roman Beranek <roman.beranek@prusa3d.cz>,
+        id S230236AbhELKIy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 12 May 2021 06:08:54 -0400
+Received: from mail02.asahi-net.or.jp ([202.224.55.14]:54289 "EHLO
+        mail02.asahi-net.or.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230230AbhELKIy (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 May 2021 06:08:54 -0400
+X-Greylist: delayed 442 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 May 2021 06:08:49 EDT
+Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
+        (Authenticated sender: PQ4Y-STU)
+        by mail02.asahi-net.or.jp (Postfix) with ESMTPA id 61E06218E5;
+        Wed, 12 May 2021 19:00:41 +0900 (JST)
+Received: from yo-satoh-debian.ysato.ml (v096177.dynamic.ppp.asahi-net.or.jp [124.155.96.177])
+        by sakura.ysato.name (Postfix) with ESMTPSA id 186721C0077;
+        Wed, 12 May 2021 19:00:41 +0900 (JST)
+Date:   Wed, 12 May 2021 19:00:40 +0900
+Message-ID: <87h7j86zlj.wl-ysato@users.sourceforge.jp>
+From:   Yoshinori Sato <ysato@users.sourceforge.jp>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-sunxi@googlegroups.com,
-        Roman Beranek <roman.beranek@prusa3d.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: pwm: renesas,tpu-pwm: Improve json-schema
+In-Reply-To: <d36e3690ce8c5a1e53d054552e4fd8b90d6a5478.1620648868.git.geert+renesas@glider.be>
+References: <cover.1620648868.git.geert+renesas@glider.be>
+        <d36e3690ce8c5a1e53d054552e4fd8b90d6a5478.1620648868.git.geert+renesas@glider.be>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM/1.14.9 (=?ISO-8859-4?Q?Goj=F2?=) APEL/10.8 EasyPG/1.0.0 Emacs/27
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Uwe,
+On Mon, 10 May 2021 21:18:34 +0900,
+Geert Uytterhoeven wrote:
+> 
+>   - Include the general PWM controller schema,
+>   - Make clocks, power-domains, and resets properties required.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v2:
+>   - Keep additionalProperties, as pwm.yaml doesn't add any other
+>     properties.
+> ---
+>  .../bindings/pwm/renesas,tpu-pwm.yaml           | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+> index aa9a4570c9068226..7c99e42ad780c2cd 100644
+> --- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml
+> @@ -58,6 +58,23 @@ required:
+>    - compatible
+>    - reg
+>    - '#pwm-cells'
+> +  - clocks
+> +  - power-domains
+> +
+> +allOf:
+> +  - $ref: pwm.yaml#
+> +
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              enum:
+> +                - renesas,tpu-r8a73a4
+> +                - renesas,tpu-r8a7740
+> +    then:
+> +      required:
+> +        - resets
+>  
+>  additionalProperties: false
+>  
+> -- 
+> 2.25.1
+> 
 
-Den ons 12 maj 2021 kl 06:41 skrev Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de>:
->
-> Hello Emil,
->
-> On Wed, May 12, 2021 at 02:55:26AM +0200, Emil Lenngren wrote:
-> > Well that's one way of "solving it" ;)
-> >
-> > But on what hardware do you really need to wait until one full pulse
-> > cycle ends, before a disable command takes effect?
-> >
-> > On the hardware I've tested on (GR8 and V3s), it's enough to wait at
-> > most two clock cycles in order for it to take effect before we can
-> > close the gate. And with clock cycle I mean 24 MHz divided by the
-> > prescaler. With prescaler 1, that's 84 nanoseconds. By closing the
-> > gate when the pwm should be disabled, I guess we could save some
-> > nanoampere or microampere (is this important?)
->
-> If I understood correctly you really have to wait longer to achieve that
-> the output is inactive in the disabled state. Do you talk about the same
-> thing?
+Acked-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 
-Exactly, i.e. after writing 0 to the EN bit, we don't have to wait
-until the current period ends before we can observe that the output
-signal goes to the inactive state.
-
-Simple test:
-
-1. Set pwm interval to a long time like 2 seconds, and duty to 50%.
-2. Enable clock gating.
-3. Enable the pwm by writing 1 to the EN bit.
-4. Observe the LED blink once per second.
-5. Now at a random time write 0 to the EN bit in order to disable the
-pwm. Don't turn off the clock gating.
-6. If you just look with the eye it appears the LED turns off
-immediately, regardless of when in the pulse cycle we disabled it.
-
-Just tested the above using "devmem" on a V3s.
-
-By using a large prescaler and testing some different prescalers, I've
-concluded that it takes at least 1 and at most 2 clock cycles before
-we can safely turn off the gate and be certain that the output pin has
-changed to disabled.
-
-It would be good if people having other hardware could confirm this is
-correct there as well.
-
-Please take a look at some previous material I wrote:
-https://lkml.org/lkml/2020/3/17/1158
-https://linux-sunxi.org/PWM_Controller_Register_Guide (Observed
-behaviour on GR8 from NextThing)
-https://pastebin.com/GWrhWzPJ
-
-/Emil
+-- 
+Yosinori Sato
