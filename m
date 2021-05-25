@@ -2,309 +2,181 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE79C4707F
-	for <linux-pwm@archiver.kernel.org>; Tue, 25 May 2021 04:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB5EC2B9F8
+	for <linux-pwm@archiver.kernel.org>; Tue, 25 May 2021 06:11:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF0B0610C7
-	for <linux-pwm@archiver.kernel.org>; Tue, 25 May 2021 04:31:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2793A61413
+	for <linux-pwm@archiver.kernel.org>; Tue, 25 May 2021 06:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbhEYEdH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 25 May 2021 00:33:07 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:39731 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbhEYEdG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 May 2021 00:33:06 -0400
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 14P4INRO021133;
-        Tue, 25 May 2021 12:18:23 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 25 May
- 2021 12:31:20 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <p.zabel@pengutronix.de>,
-        <billy_tsai@aspeedtech.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [v7 1/2] dt-bindings: Add bindings for aspeed pwm-tach.
-Date:   Tue, 25 May 2021 12:32:23 +0800
-Message-ID: <20210525043224.27998-2-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210525043224.27998-1-billy_tsai@aspeedtech.com>
-References: <20210525043224.27998-1-billy_tsai@aspeedtech.com>
+        id S231136AbhEYGNN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 25 May 2021 02:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231134AbhEYGNJ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 May 2021 02:13:09 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03584C061756
+        for <linux-pwm@vger.kernel.org>; Mon, 24 May 2021 23:11:40 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1llQHu-0003jC-9d; Tue, 25 May 2021 08:11:34 +0200
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1llQHr-0001vZ-U0; Tue, 25 May 2021 08:11:31 +0200
+Date:   Tue, 25 May 2021 08:11:31 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Alvaro Gamez <alvaro.gamez@hazent.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>, kernel@pengutronix.de
+Subject: Re: [PATCH v3 2/2] clocksource: Add support for Xilinx AXI Timer
+Message-ID: <20210525061131.omrbcdewf4z75ib7@pengutronix.de>
+References: <20210511191239.774570-1-sean.anderson@seco.com>
+ <20210511191239.774570-2-sean.anderson@seco.com>
+ <d4bb7b5d-9f38-cf60-fb0b-18f8e0ca2b1e@xilinx.com>
+ <5f960034-174d-0ed8-9f52-3d5fde90e16a@seco.com>
+ <9f227f96-a310-0fbd-fd34-91eb386306b9@xilinx.com>
+ <7a06cf46-0f85-1edb-ca08-abd7b2543ad9@seco.com>
+ <41542760-3967-4f9a-0f0c-1206e03ff494@xilinx.com>
+ <d206a399-454e-d9c5-e2d3-337d098ed7aa@seco.com>
+ <2296d4e5-717a-0470-d487-e0924cf6c076@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 14P4INRO021133
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wn37yka2xnftryhr"
+Content-Disposition: inline
+In-Reply-To: <2296d4e5-717a-0470-d487-e0924cf6c076@xilinx.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This patch adds device binding for aspeed pwm-tach device which is a
-multi-function device include pwm and tach function and pwm/tach device
-bindings which should be the child-node of pwm-tach device.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- .../bindings/hwmon/aspeed,ast2600-tach.yaml   | 69 +++++++++++++++
- .../bindings/mfd/aspeed,ast2600-pwm-tach.yaml | 87 +++++++++++++++++++
- .../bindings/pwm/aspeed,ast2600-pwm.yaml      | 64 ++++++++++++++
- 3 files changed, 220 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+--wn37yka2xnftryhr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
-new file mode 100644
-index 000000000000..f44cc5591b27
---- /dev/null
-+++ b/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
-@@ -0,0 +1,69 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 ASPEED, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/hwmon/aspeed,ast2600-tach.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ASPEED AST2600 Tach controller
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+description: |
-+  The ASPEED Tach controller can support upto 16 fan input.
-+  This module is part of the ast2600-pwm-tach multi-function device. For more
-+  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-tach
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  pinctrl-0: true
-+
-+  pinctrl-names:
-+    const: default
-+
-+required:
-+  - compatible
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties:
-+  type: object
-+  properties:
-+    reg:
-+      description:
-+        The tach channel used for this fan.
-+      maxItems: 1
-+
-+    aspeed,min-rpm:
-+      description:
-+        define the minimal revolutions per minute of the measure fan
-+        used to calculate the sample period of tach
-+      default: 1000
-+
-+    aspeed,pulse-pr:
-+      description:
-+        Value specifying the number of pulses per revolution of the
-+        monitored FAN.
-+      default: 2
-+
-+    aspeed,tach-div:
-+      description:
-+        define the tachometer clock divider as an integer. Formula of
-+        tach clock = clock source / (2^tach-div)^2
-+      minimum: 0
-+      maximum: 15
-+      # The value that should be used if the property is not present
-+      default: 5
-+
-+  required:
-+    - reg
-diff --git a/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
-new file mode 100644
-index 000000000000..c6babf6573c6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
-@@ -0,0 +1,87 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 ASPEED, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/aspeed,ast2600-pwm-tach.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: PWM Tach controller Device Tree Bindings
-+
-+description: |
-+  The PWM Tach controller is represented as a multi-function device which
-+  includes:
-+    PWM
-+    Tach
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - aspeed,ast2600-pwm-tach
-+      - const: syscon
-+      - const: simple-mfd
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - resets
-+
-+patternProperties:
-+  "^pwm(@[0-9a-f]+)?$":
-+    $ref: ../pwm/aspeed,ast2600-pwm.yaml
-+
-+  "^tach(@[0-9a-f]+)?$":
-+    $ref: ../hwmon/aspeed,ast2600-tach.yaml
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/ast2600-clock.h>
-+    pwm_tach: pwm_tach@1e610000 {
-+      compatible = "aspeed,ast2600-pwm-tach", "syscon", "simple-mfd";
-+      reg = <0x1e610000 0x100>;
-+      clocks = <&syscon ASPEED_CLK_AHB>;
-+      resets = <&syscon ASPEED_RESET_PWM>;
-+
-+      pwm: pwm {
-+        compatible = "aspeed,ast2600-pwm";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        #pwm-cells = <3>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_pwm0_default>;
-+        pwm-ch@0 {
-+          reg = <0>;
-+          aspeed,wdt-reload-enable;
-+          aspeed,wdt-reload-duty-point = <32>;
-+        };
-+      };
-+
-+      tach: tach {
-+        compatible = "aspeed,ast2600-tach";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_tach0_default>;
-+        tach-ch@0 {
-+          reg = <0>;
-+          aspeed,min-rpm = <1000>;
-+          aspeed,pulse-pr = <2>;
-+          aspeed,tach-div = <5>;
-+        };
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-new file mode 100644
-index 000000000000..dcc09c784447
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 ASPEED, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/aspeed,ast2600-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ASPEED AST2600 PWM controller
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+description: |
-+  The ASPEED PWM controller can support upto 16 PWM outputs.
-+  This module is part of the ast2600-pwm-tach multi-function device. For more
-+  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-pwm
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  pinctrl-0: true
-+
-+  pinctrl-names:
-+    const: default
-+
-+required:
-+  - compatible
-+  - "#pwm-cells"
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties:
-+  description: Set extend properties for each pwm channel.
-+  type: object
-+  properties:
-+    reg:
-+      description:
-+        The pwm channel index.
-+      maxItems: 1
-+
-+    aspeed,wdt-reload-enable:
-+      type: boolean
-+      description:
-+        Enable the function of wdt reset reload duty point.
-+
-+    aspeed,wdt-reload-duty-point:
-+      description:
-+        Define the duty point after wdt reset, 0 = 100%
-+      minimum: 0
-+      maximum: 255
-+
-+  required:
-+    - reg
--- 
-2.25.1
+Hello Sean, hello Michal,
 
+On Mon, May 24, 2021 at 09:00:51AM +0200, Michal Simek wrote:
+> On 5/20/21 10:13 PM, Sean Anderson wrote:
+> > On 5/19/21 3:24 AM, Michal Simek wrote:
+> >> On 5/18/21 12:15 AM, Sean Anderson wrote:
+> >>> This could be deprecated, but cannot be removed since existing device
+> >>> trees (e.g. qemu) have neither clocks nor clock-frequency properties.
+> >>
+> >> Rob: Do we have any obligation to keep properties for other projects?
+
+If a binding is in the wild and used to be documented, it has to stay.
+
+> >>>> 4. Make driver as module
+> >>>> 5. Do whatever changes you want before adding pwm support
+> >>>> 6. Extend DT binding doc for PWM support
+> >>>> 7. Add PWM support
+> >>>
+> >>> Frankly, I am inclined to just leave the microblaze timer as-is. The =
+PWM
+> >>> driver is completely independent. I have already put too much effort =
+into
+> >>> this driver, and I don't have the energy to continue working on the
+> >>> microblaze timer.
+> >>
+> >> I understand. I am actually using axi timer as pwm driver in one of my
+> >> project but never had time to upstream it because of couple of steps a=
+bove.
+> >> We need to do it right based on steps listed above. If this is too much
+> >> work it will have to wait. I will NACK all attempts to add separate
+> >> driver for IP which we already support in the tree.
+> >=20
+> > 1. Many timers have separate clocksource and PWM drivers. E.g. samsung,
+> > =A0=A0 renesas TPU, etc. It is completely reasonable to keep separate
+> > =A0=A0 drivers for these purposes. There is no Linux requirement that e=
+ach
+> > =A0=A0 device have only one driver, especially if it has multiple funct=
+ions
+> > =A0=A0 or ways to be configured.
+>=20
+> It doesn't mean that it was done properly and correctly. Code
+> duplication is bad all the time.
+
+IMHO it's not so much about code duplication. Yes, code duplication is
+bad and should be prevented if possible. But it's more important to not
+introduce surprises. So I think it should be obvious from reading the
+device tree source which timer is used to provide the PWM. I don't care
+much if this is from an extra property (like xilinx,provide-pwm),
+overriding the compatible or some other explicit mechanism. IIUC in this
+suggested patch the selection is implicit and so this isn't so nice.
+
+> > 2. If you want to do work on a driver, I'm all for it. However, if you
+> > =A0=A0 have not yet submitted that work to the list, you should not gate
+> > =A0=A0 other work behind it. Saying that X feature must be gated behind=
+ Y
+> > =A0=A0 *even if X works completely independently of Y* is just stifling
+> > =A0=A0 development.
+>=20
+> I gave you guidance how I think this should be done. I am not gating you
+> from this work. Your patch is not working on Microblaze arch which is
+> what I maintain. And I don't want to go the route that we will have two
+> drivers for the same IP without integration. We were there in past and
+> it is just pain.
+> I am expecting that PWM guys will guide how this should be done
+> properly. I haven't heard any guidance on this yet.
+> Thierry/Uwe: Any comment?
+
+Not sure I can and want to provide guidance here. This is not Perl, but
+still TIMTOWTDI. If it was me who cared here, I'd look into the
+auxiliary bus (Documentation/driver-api/auxiliary_bus.rst) to check if
+it can help to solve this problem.
+=20
+> > 3. There is a clear desire for a PWM driver for this device. You, I, and
+> > =A0=A0 Alvaro have all written separate drivers for this device because=
+ we
+> > =A0=A0 want to use it as a PWM. By preventing merging this driver, you =
+are
+> > =A0=A0 encouraging duplicate effort by the next person who wants to use=
+ this
+> > =A0=A0 device as a PWM, and sees that there is no driver in the tree.
+>=20
+> We should do it cleanly that it will be easy to maintain which is not by
+> creating two separate drivers or by switching to completely new driver.
+
++1
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--wn37yka2xnftryhr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmCslRAACgkQwfwUeK3K
+7Ak7YQf/TpIJXkF7drwqBVWLD73Z149/8vSGvkDfPtqJrQq3/B+cxJ2dd9+ehIPH
+3HmLTLu2Uv/BUylaRgFZj8FH0vszNMgRyskYTdbyGgrXti63GhAJDad1C/o8xOax
+92rsl/YE6PqHz6htoyjjq3XxPjKZyeuWtYAQop+IsKYy06p+H0N3d5A+Rdx/YVwC
+IWYfKTrFejAIHADFJuWSesyr8AVjiz5hGq6l8BUd7vkpZ8QS3G3KV0j4aYhgPTpe
+Bai+4VHoArdJYF/jBIcBzT5Oxa8W8xtie1Nu5O5E3XTj6gXuzpxPxCwudML62K85
+dBVqeYouJgmtxoicWFMRXQ0dFmWWMQ==
+=DZ2s
+-----END PGP SIGNATURE-----
+
+--wn37yka2xnftryhr--
