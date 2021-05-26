@@ -2,48 +2,48 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-19.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF03C47089
-	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 08:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA7BC47089
+	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 08:43:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A3286613CD
-	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 08:43:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23A9761402
+	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 08:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbhEZIo4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 26 May 2021 04:44:56 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:44600 "EHLO
+        id S233167AbhEZIpD (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 26 May 2021 04:45:03 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:44616 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232824AbhEZIoz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 26 May 2021 04:44:55 -0400
+        with ESMTP id S233118AbhEZIo7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 26 May 2021 04:44:59 -0400
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14Q8hCG9050640;
-        Wed, 26 May 2021 03:43:12 -0500
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14Q8hLKx050671;
+        Wed, 26 May 2021 03:43:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1622018592;
-        bh=xz5M2jphu9cJZTHVb9oK3P7dVEJQMjcf/AMHdb2E6So=;
-        h=From:To:CC:Subject:Date;
-        b=kAvvGTL4aZaYQGprqXiRvK5491uhPtiGxmY1AT6YASTxv5mqqem3wAlSsX6/8itgB
-         6Y0n77Igot7TIe+7JMlVBegxt5GDYLZvknCPZy+XJ+ayyXkiAxQFvs68AU+8HVdQMP
-         ZGhjHSv7cGJvFWvrSoUuOehBsenk7qQ0txIScDng=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14Q8hCA9054763
+        s=ti-com-17Q1; t=1622018601;
+        bh=iqTgAH5lyTl4oLGQvR2G8gbqpeiHC7BoOJX4JeW4NDs=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=wTvgNktdG1ooY2WJktb2kUlG2qZjuJlKjelZB9NVMVqGI36ThKUjdjM5Ua/Bik0lu
+         84Z6xF5FFjMpeQvXkg9kfhOiOmAirc0tUuXr+IIP5TJi2wqE8l1UF4ailt6YOhpKhj
+         kFZN1QZHLqBbfoX4lFFDjYhqn+SjfRxKecNtYqao=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14Q8hLMr054934
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 26 May 2021 03:43:12 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 26 May 2021 03:43:21 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 26
- May 2021 03:43:12 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ May 2021 03:43:21 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Wed, 26 May 2021 03:43:12 -0500
+ Frontend Transport; Wed, 26 May 2021 03:43:21 -0500
 Received: from lokesh-ssd.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14Q8h75U049811;
-        Wed, 26 May 2021 03:43:07 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14Q8h75W049811;
+        Wed, 26 May 2021 03:43:17 -0500
 From:   Lokesh Vutla <lokeshvutla@ti.com>
 To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
         <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>
@@ -54,10 +54,12 @@ CC:     <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
         Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
         Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
         Lokesh Vutla <lokeshvutla@ti.com>
-Subject: [PATCH 0/4] dt-bindings: pwm: pwm-tiehrpwm: Convert to json schema
-Date:   Wed, 26 May 2021 14:13:02 +0530
-Message-ID: <20210526084306.6534-1-lokeshvutla@ti.com>
+Subject: [PATCH 2/4] dt-bindings: pwm: tiehrpwm: Make clock and clock-names as required properties
+Date:   Wed, 26 May 2021 14:13:04 +0530
+Message-ID: <20210526084306.6534-3-lokeshvutla@ti.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210526084306.6534-1-lokeshvutla@ti.com>
+References: <20210526084306.6534-1-lokeshvutla@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -66,27 +68,38 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This series:
-- drops a redundant compatible
-- converts tiehrpwn to DT schema format using json-schema
-- Add new compatible for AM64 SoC.
+Driver fails to probe when 'clock' and 'clock-names' properties are not
+populated in DT. But the binding documentation says these properties are
+optional. Fix this by making 'clock' and 'clock-names' properties as
+required.
 
-Lokesh Vutla (4):
-  arm: dts: ti: drop usage of redundant compatible
-  dt-bindings: pwm: tiehrpwm: Make clock and clock-names as required
-    properties
-  dt-bindings: pwm: pwm-tiehrpwm: Convert to json schema
-  dt-bindings: pwm: pwm-tiehrpwm: Add compatible string for AM64 SoC
+Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- .../devicetree/bindings/pwm/pwm-tiehrpwm.txt  | 50 --------------
- .../devicetree/bindings/pwm/pwm-tiehrpwm.yaml | 65 +++++++++++++++++++
- arch/arm/boot/dts/am33xx-l4.dtsi              |  9 +--
- arch/arm/boot/dts/am437x-l4.dtsi              | 18 ++---
- arch/arm/boot/dts/da850.dtsi                  |  6 +-
- 5 files changed, 76 insertions(+), 72 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.yaml
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+index e124e41418d8..8eae48c9c5cd 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+@@ -11,8 +11,6 @@ Required properties:
+   the cells format. The only third cell flag supported by this binding is
+   PWM_POLARITY_INVERTED.
+ - reg: physical base address and size of the registers map.
+-
+-Optional properties:
+ - clocks: Handle to the PWM's time-base and functional clock.
+ - clock-names: Must be set to "tbclk" and "fck".
+ 
+@@ -38,6 +36,8 @@ ehrpwm0: pwm@1f00000 { /* EHRPWM on da850 */
+ 	compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
+ 	#pwm-cells = <3>;
+ 	reg = <0x1f00000 0x2000>;
++	clocks = <&psc1 17>, <&ehrpwm_tbclk>;
++	clock-names = "fck", "tbclk";
+ };
+ 
+ ehrpwm0: pwm@4843e200 { /* EHRPWM on dra746 */
 -- 
 2.31.1
 
