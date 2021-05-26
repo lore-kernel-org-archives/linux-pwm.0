@@ -2,172 +2,259 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-19.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32330C4708A
-	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 02:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFD2C2B9F7
+	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 08:43:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 139B961430
-	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 02:49:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E10B5613B5
+	for <linux-pwm@archiver.kernel.org>; Wed, 26 May 2021 08:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232587AbhEZCud (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 25 May 2021 22:50:33 -0400
-Received: from Mailgw01.mediatek.com ([1.203.163.78]:16370 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232561AbhEZCuc (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 May 2021 22:50:32 -0400
-X-UUID: f5f7f8ec174f483e803cb28fa18a2102-20210526
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=8nbeH06NFP6eUTnDEu6NUPXmY+6twJtP65hfMHmJhSQ=;
-        b=oov1i1PiNE+MsINVbfIPyVyb4oTiynVHamErtYX31giLjoMyncru8+5ClM63Z+UPonKZnuSo2AvaZYKbHqdpllntNRvx+YY30hNlU27RiCWfSA2Wlsx8tZuz8xcs7UyQmwE6wEhzwqtQ5LYPARHLy+bmWieP9udFEwxDesrVlKA=;
-X-UUID: f5f7f8ec174f483e803cb28fa18a2102-20210526
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
-        (envelope-from <jitao.shi@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1997108282; Wed, 26 May 2021 10:48:59 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS33N2.mediatek.inc
- (172.27.4.76) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
- 2021 10:48:50 +0800
-Received: from mszsdclx1018.gcn.mediatek.inc (10.16.6.18) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 26 May 2021 10:48:49 +0800
-From:   Jitao Shi <jitao.shi@mediatek.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-pwm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
-        <cawa.cheng@mediatek.com>, <bibby.hsieh@mediatek.com>,
-        <ck.hu@mediatek.com>, <stonea168@163.com>,
-        <huijuan.xie@mediatek.com>, Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH v3 2/3] pwm: mtk_disp: implement atomic API .apply()
-Date:   Wed, 26 May 2021 10:48:45 +0800
-Message-ID: <20210526024846.120838-3-jitao.shi@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210526024846.120838-1-jitao.shi@mediatek.com>
-References: <20210526024846.120838-1-jitao.shi@mediatek.com>
+        id S233093AbhEZIo4 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 26 May 2021 04:44:56 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:44602 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232918AbhEZIoz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 26 May 2021 04:44:55 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14Q8hH7p050656;
+        Wed, 26 May 2021 03:43:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1622018597;
+        bh=OoFhCptIPab1wWjNKqETXIysZNtoiUpz9z0Sf7DMLwI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=rrgdliZoFsx+EeMb6Fb+r6cbcCFnUr2baarxK2xgQTHq30tzYDoRcg+islwITIMsi
+         aDiWwxVfeLqiaoiAVUcvt1blkKha25E8wfi2paIQQZcbQphlZif1LPL3vtpjBhwt/V
+         gZdcyaIv8YHtaf9Jz2WFAULJS+YTlOzeiUQcG+Z8=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14Q8hHXL067034
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 26 May 2021 03:43:17 -0500
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 26
+ May 2021 03:43:17 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Wed, 26 May 2021 03:43:17 -0500
+Received: from lokesh-ssd.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14Q8h75V049811;
+        Wed, 26 May 2021 03:43:13 -0500
+From:   Lokesh Vutla <lokeshvutla@ti.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>
+CC:     <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Vignesh R <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
+        <linux-pwm@vger.kernel.org>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        Lokesh Vutla <lokeshvutla@ti.com>
+Subject: [PATCH 1/4] arm: dts: ti: drop usage of redundant compatible
+Date:   Wed, 26 May 2021 14:13:03 +0530
+Message-ID: <20210526084306.6534-2-lokeshvutla@ti.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210526084306.6534-1-lokeshvutla@ti.com>
+References: <20210526084306.6534-1-lokeshvutla@ti.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-TM-SNTS-SMTP: 80BEA21B4CD8C9F0031E778334128608FA1B12B6D78293AE391449E7867A17C42000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Q2hhbmdlLUlkOiBJYzgyZTVhYmU4ZDVmOTIzMDJhNWZlOWU2NzM2Yjg0MjMyYjMyOGI2MQ0KU2ln
-bmVkLW9mZi1ieTogSml0YW8gU2hpIDxqaXRhby5zaGlAbWVkaWF0ZWsuY29tPg0KLS0tDQogZHJp
-dmVycy9wd20vcHdtLW10ay1kaXNwLmMgfCAxMTQgKysrKysrKysrKysrKysrKysrKy0tLS0tLS0t
-LS0tLS0tLS0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCA1OCBpbnNlcnRpb25zKCspLCA1NiBkZWxldGlv
-bnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jIGIvZHJpdmVy
-cy9wd20vcHdtLW10ay1kaXNwLmMNCmluZGV4IGJjMmZkYmU4NTNiYS4uOWM5NWI5YWY0MTdmIDEw
-MDY0NA0KLS0tIGEvZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMNCisrKyBiL2RyaXZlcnMvcHdt
-L3B3bS1tdGstZGlzcC5jDQpAQCAtMjAsNiArMjAsNyBAQA0KICNkZWZpbmUgUFdNX0NMS0RJVl9T
-SElGVAkxNg0KICNkZWZpbmUgUFdNX0NMS0RJVl9NQVgJCTB4M2ZmDQogI2RlZmluZSBQV01fQ0xL
-RElWX01BU0sJCShQV01fQ0xLRElWX01BWCA8PCBQV01fQ0xLRElWX1NISUZUKQ0KKyNkZWZpbmUg
-UFdNX1BPTEFSSVRZCUJJVCgyKQ0KIA0KICNkZWZpbmUgUFdNX1BFUklPRF9CSVRfV0lEVEgJMTIN
-CiAjZGVmaW5lIFBXTV9QRVJJT0RfTUFTSwkJKCgxIDw8IFBXTV9QRVJJT0RfQklUX1dJRFRIKSAt
-IDEpDQpAQCAtNDcsNiArNDgsNyBAQCBzdHJ1Y3QgbXRrX2Rpc3BfcHdtIHsNCiAJc3RydWN0IGNs
-ayAqY2xrX21haW47DQogCXN0cnVjdCBjbGsgKmNsa19tbTsNCiAJdm9pZCBfX2lvbWVtICpiYXNl
-Ow0KKwlib29sIGVuYWJsZWQ7DQogfTsNCiANCiBzdGF0aWMgaW5saW5lIHN0cnVjdCBtdGtfZGlz
-cF9wd20gKnRvX210a19kaXNwX3B3bShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXApDQpAQCAtNjYsMTEg
-KzY4LDExIEBAIHN0YXRpYyB2b2lkIG10a19kaXNwX3B3bV91cGRhdGVfYml0cyhzdHJ1Y3QgbXRr
-X2Rpc3BfcHdtICptZHAsIHUzMiBvZmZzZXQsDQogCXdyaXRlbCh2YWx1ZSwgYWRkcmVzcyk7DQog
-fQ0KIA0KLXN0YXRpYyBpbnQgbXRrX2Rpc3BfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2NoaXAgKmNo
-aXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQotCQkJICAgICAgIGludCBkdXR5X25zLCBpbnQg
-cGVyaW9kX25zKQ0KK3N0YXRpYyBpbnQgbXRrX2Rpc3BfcHdtX2VuYWJsZShzdHJ1Y3QgcHdtX2No
-aXAgKmNoaXAsDQorCQkJICAgICAgIGNvbnN0IHN0cnVjdCBwd21fc3RhdGUgKnN0YXRlKQ0KIHsN
-CiAJc3RydWN0IG10a19kaXNwX3B3bSAqbWRwID0gdG9fbXRrX2Rpc3BfcHdtKGNoaXApOw0KLQl1
-MzIgY2xrX2RpdiwgcGVyaW9kLCBoaWdoX3dpZHRoLCB2YWx1ZTsNCisJdTMyIGNsa19kaXYsIHBl
-cmlvZCwgaGlnaF93aWR0aCwgdmFsdWUsIHBvbGFyaXR5Ow0KIAl1NjQgZGl2LCByYXRlOw0KIAlp
-bnQgZXJyOw0KIA0KQEAgLTg0LDMzICs4Niw0NyBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9j
-b25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KIAkg
-KiBwZXJpb2QgPSAoUFdNX0NMS19SQVRFICogcGVyaW9kX25zKSAvICgxMF45ICogKGNsa19kaXYg
-KyAxKSkgLSAxDQogCSAqIGhpZ2hfd2lkdGggPSAoUFdNX0NMS19SQVRFICogZHV0eV9ucykgLyAo
-MTBeOSAqIChjbGtfZGl2ICsgMSkpDQogCSAqLw0KKwlpZiAoIW1kcC0+ZW5hYmxlZCkgew0KKwkJ
-ZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KKwkJaWYgKGVyciA8IDAp
-IHsNCisJCQlkZXZfZXJyKGNoaXAtPmRldiwgIkNhbid0IGVuYWJsZSBtZHAtPmNsa19tYWluOiAl
-ZFxuIiwNCisJCQkJZXJyKTsNCisJCQlyZXR1cm4gZXJyOw0KKwkJfQ0KKwkJZXJyID0gY2xrX3By
-ZXBhcmVfZW5hYmxlKG1kcC0+Y2xrX21tKTsNCisJCWlmIChlcnIgPCAwKSB7DQorCQkJZGV2X2Vy
-cihjaGlwLT5kZXYsICJDYW4ndCBlbmFibGUgbWRwLT5jbGtfbW06ICVkXG4iLA0KKwkJCQllcnIp
-Ow0KKwkJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tYWluKTsNCisJCQlyZXR1cm4g
-ZXJyOw0KKwkJfQ0KKwl9DQogCXJhdGUgPSBjbGtfZ2V0X3JhdGUobWRwLT5jbGtfbWFpbik7DQot
-CWNsa19kaXYgPSBkaXZfdTY0KHJhdGUgKiBwZXJpb2RfbnMsIE5TRUNfUEVSX1NFQykgPj4NCisJ
-Y2xrX2RpdiA9IGRpdl91NjQocmF0ZSAqIHN0YXRlLT5wZXJpb2QsIE5TRUNfUEVSX1NFQykgPj4N
-CiAJCQkgIFBXTV9QRVJJT0RfQklUX1dJRFRIOw0KLQlpZiAoY2xrX2RpdiA+IFBXTV9DTEtESVZf
-TUFYKQ0KKwlpZiAoY2xrX2RpdiA+IFBXTV9DTEtESVZfTUFYKSB7DQorCQlkZXZfZXJyKGNoaXAt
-PmRldiwgImNsb2NrIHJhdGUgaXMgdG9vIGhpZ2g6IHJhdGUgPSAlZCBIelxuIiwNCisJCQlyYXRl
-KTsNCisJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tbSk7DQorCQljbGtfZGlzYWJs
-ZV91bnByZXBhcmUobWRwLT5jbGtfbWFpbik7DQogCQlyZXR1cm4gLUVJTlZBTDsNCi0NCisJfQ0K
-IAlkaXYgPSBOU0VDX1BFUl9TRUMgKiAoY2xrX2RpdiArIDEpOw0KLQlwZXJpb2QgPSBkaXY2NF91
-NjQocmF0ZSAqIHBlcmlvZF9ucywgZGl2KTsNCisJcGVyaW9kID0gZGl2NjRfdTY0KHJhdGUgKiBz
-dGF0ZS0+cGVyaW9kLCBkaXYpOw0KIAlpZiAocGVyaW9kID4gMCkNCiAJCXBlcmlvZC0tOw0KIA0K
-LQloaWdoX3dpZHRoID0gZGl2NjRfdTY0KHJhdGUgKiBkdXR5X25zLCBkaXYpOw0KKwloaWdoX3dp
-ZHRoID0gZGl2NjRfdTY0KHJhdGUgKiBzdGF0ZS0+ZHV0eV9jeWNsZSwgZGl2KTsNCiAJdmFsdWUg
-PSBwZXJpb2QgfCAoaGlnaF93aWR0aCA8PCBQV01fSElHSF9XSURUSF9TSElGVCk7DQotDQotCWVy
-ciA9IGNsa19lbmFibGUobWRwLT5jbGtfbWFpbik7DQotCWlmIChlcnIgPCAwKQ0KLQkJcmV0dXJu
-IGVycjsNCi0NCi0JZXJyID0gY2xrX2VuYWJsZShtZHAtPmNsa19tbSk7DQotCWlmIChlcnIgPCAw
-KSB7DQotCQljbGtfZGlzYWJsZShtZHAtPmNsa19tYWluKTsNCi0JCXJldHVybiBlcnI7DQotCX0N
-CisJcG9sYXJpdHkgPSAwOw0KKwlpZiAoc3RhdGUtPnBvbGFyaXR5ID09IFBXTV9QT0xBUklUWV9J
-TlZFUlNFRCkNCisJCXBvbGFyaXR5ID0gUFdNX1BPTEFSSVRZOw0KIA0KIAltdGtfZGlzcF9wd21f
-dXBkYXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmNvbjAsDQogCQkJCSBQV01fQ0xLRElWX01BU0ss
-DQogCQkJCSBjbGtfZGl2IDw8IFBXTV9DTEtESVZfU0hJRlQpOw0KKwltdGtfZGlzcF9wd21fdXBk
-YXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmNvbjAsDQorCQkJCSBQV01fUE9MQVJJVFksIHBvbGFy
-aXR5KTsNCiAJbXRrX2Rpc3BfcHdtX3VwZGF0ZV9iaXRzKG1kcCwgbWRwLT5kYXRhLT5jb24xLA0K
-IAkJCQkgUFdNX1BFUklPRF9NQVNLIHwgUFdNX0hJR0hfV0lEVEhfTUFTSywNCiAJCQkJIHZhbHVl
-KTsNCkBAIC0xMjIsNTAgKzEzOCw0OSBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9jb25maWco
-c3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KIAkJbXRrX2Rp
-c3BfcHdtX3VwZGF0ZV9iaXRzKG1kcCwgbWRwLT5kYXRhLT5jb21taXQsDQogCQkJCQkgbWRwLT5k
-YXRhLT5jb21taXRfbWFzaywNCiAJCQkJCSAweDApOw0KKwl9IGVsc2Ugew0KKwkJbXRrX2Rpc3Bf
-cHdtX3VwZGF0ZV9iaXRzKG1kcCwgbWRwLT5kYXRhLT5ibHNfZGVidWcsDQorCQkJCQkgbWRwLT5k
-YXRhLT5ibHNfZGVidWdfbWFzaywNCisJCQkJCSBtZHAtPmRhdGEtPmJsc19kZWJ1Z19tYXNrKTsN
-CisJCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+Y29uMCwNCisJCQkJ
-CSBtZHAtPmRhdGEtPmNvbjBfc2VsLA0KKwkJCQkJIG1kcC0+ZGF0YS0+Y29uMF9zZWwpOw0KIAl9
-DQogDQotCWNsa19kaXNhYmxlKG1kcC0+Y2xrX21tKTsNCi0JY2xrX2Rpc2FibGUobWRwLT5jbGtf
-bWFpbik7DQotDQorCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIERJU1BfUFdNX0VOLCBt
-ZHAtPmRhdGEtPmVuYWJsZV9tYXNrLA0KKwkJCQkgbWRwLT5kYXRhLT5lbmFibGVfbWFzayk7DQor
-CW1kcC0+ZW5hYmxlZCA9IHRydWU7DQogCXJldHVybiAwOw0KIH0NCiANCi1zdGF0aWMgaW50IG10
-a19kaXNwX3B3bV9lbmFibGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2Rldmlj
-ZSAqcHdtKQ0KK3N0YXRpYyBpbnQgbXRrX2Rpc3BfcHdtX2Rpc2FibGUoc3RydWN0IHB3bV9jaGlw
-ICpjaGlwLA0KKwkJCQljb25zdCBzdHJ1Y3QgcHdtX3N0YXRlICpzdGF0ZSkNCiB7DQogCXN0cnVj
-dCBtdGtfZGlzcF9wd20gKm1kcCA9IHRvX210a19kaXNwX3B3bShjaGlwKTsNCi0JaW50IGVycjsN
-Ci0NCi0JZXJyID0gY2xrX2VuYWJsZShtZHAtPmNsa19tYWluKTsNCi0JaWYgKGVyciA8IDApDQot
-CQlyZXR1cm4gZXJyOw0KIA0KLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+Y2xrX21tKTsNCi0JaWYg
-KGVyciA8IDApIHsNCi0JCWNsa19kaXNhYmxlKG1kcC0+Y2xrX21haW4pOw0KLQkJcmV0dXJuIGVy
-cjsNCisJbXRrX2Rpc3BfcHdtX3VwZGF0ZV9iaXRzKG1kcCwgRElTUF9QV01fRU4sIG1kcC0+ZGF0
-YS0+ZW5hYmxlX21hc2ssDQorCQkJCSAweDApOw0KKwlpZiAobWRwLT5lbmFibGVkKSB7DQorCQlj
-bGtfZGlzYWJsZV91bnByZXBhcmUobWRwLT5jbGtfbW0pOw0KKwkJY2xrX2Rpc2FibGVfdW5wcmVw
-YXJlKG1kcC0+Y2xrX21haW4pOw0KIAl9DQogDQotCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyht
-ZHAsIERJU1BfUFdNX0VOLCBtZHAtPmRhdGEtPmVuYWJsZV9tYXNrLA0KLQkJCQkgbWRwLT5kYXRh
-LT5lbmFibGVfbWFzayk7DQorCW1kcC0+ZW5hYmxlZCA9IGZhbHNlOw0KIA0KIAlyZXR1cm4gMDsN
-CiB9DQogDQotc3RhdGljIHZvaWQgbXRrX2Rpc3BfcHdtX2Rpc2FibGUoc3RydWN0IHB3bV9jaGlw
-ICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKQ0KK3N0YXRpYyBpbnQgbXRrX2Rpc3BfcHdt
-X2FwcGx5KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCisJ
-CQkgICAgICBjb25zdCBzdHJ1Y3QgcHdtX3N0YXRlICpzdGF0ZSkNCiB7DQotCXN0cnVjdCBtdGtf
-ZGlzcF9wd20gKm1kcCA9IHRvX210a19kaXNwX3B3bShjaGlwKTsNCisJaWYgKCFzdGF0ZS0+ZW5h
-YmxlZCkNCisJCXJldHVybiBtdGtfZGlzcF9wd21fZGlzYWJsZShjaGlwLCBzdGF0ZSk7DQogDQot
-CW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIERJU1BfUFdNX0VOLCBtZHAtPmRhdGEtPmVu
-YWJsZV9tYXNrLA0KLQkJCQkgMHgwKTsNCi0NCi0JY2xrX2Rpc2FibGUobWRwLT5jbGtfbW0pOw0K
-LQljbGtfZGlzYWJsZShtZHAtPmNsa19tYWluKTsNCisJcmV0dXJuIG10a19kaXNwX3B3bV9lbmFi
-bGUoY2hpcCwgc3RhdGUpOw0KIH0NCiANCiBzdGF0aWMgY29uc3Qgc3RydWN0IHB3bV9vcHMgbXRr
-X2Rpc3BfcHdtX29wcyA9IHsNCi0JLmNvbmZpZyA9IG10a19kaXNwX3B3bV9jb25maWcsDQotCS5l
-bmFibGUgPSBtdGtfZGlzcF9wd21fZW5hYmxlLA0KLQkuZGlzYWJsZSA9IG10a19kaXNwX3B3bV9k
-aXNhYmxlLA0KKwkuYXBwbHkgPSBtdGtfZGlzcF9wd21fYXBwbHksDQogCS5vd25lciA9IFRISVNf
-TU9EVUxFLA0KIH07DQogDQpAQCAtMjA0LDE5ICsyMTksNiBAQCBzdGF0aWMgaW50IG10a19kaXNw
-X3B3bV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KIA0KIAlwbGF0Zm9ybV9z
-ZXRfZHJ2ZGF0YShwZGV2LCBtZHApOw0KIA0KLQkvKg0KLQkgKiBGb3IgTVQyNzAxLCBkaXNhYmxl
-IGRvdWJsZSBidWZmZXIgYmVmb3JlIHdyaXRpbmcgcmVnaXN0ZXINCi0JICogYW5kIHNlbGVjdCBt
-YW51YWwgbW9kZSBhbmQgdXNlIFBXTV9QRVJJT0QvUFdNX0hJR0hfV0lEVEguDQotCSAqLw0KLQlp
-ZiAoIW1kcC0+ZGF0YS0+aGFzX2NvbW1pdCkgew0KLQkJbXRrX2Rpc3BfcHdtX3VwZGF0ZV9iaXRz
-KG1kcCwgbWRwLT5kYXRhLT5ibHNfZGVidWcsDQotCQkJCQkgbWRwLT5kYXRhLT5ibHNfZGVidWdf
-bWFzaywNCi0JCQkJCSBtZHAtPmRhdGEtPmJsc19kZWJ1Z19tYXNrKTsNCi0JCW10a19kaXNwX3B3
-bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+Y29uMCwNCi0JCQkJCSBtZHAtPmRhdGEtPmNv
-bjBfc2VsLA0KLQkJCQkJIG1kcC0+ZGF0YS0+Y29uMF9zZWwpOw0KLQl9DQotDQogCXJldHVybiAw
-Ow0KIH0NCiANCi0tIA0KMi4yNS4xDQo=
+Commit 229110c1aa691 ("ARM: dts: am437x/am33xx/da850: Add new ECAP and
+EPWM bindings") added ti,am3352-ehrpwm compatible which is similar to
+ti,am33xx-ehrpwm but without out t,hwmod properties. But with commit
+58bfbea5b1c68 ("ARM: dts: am437x/am33xx: Remove hwmod entries for ECAP
+and EPWM nodes") dropped support for all ti,hwmod for ehrpwm, but
+missed deprecating ti,am33xx-ehrpwm compatible. So drop ti,am33xx-ehrpwm
+from DT as it is no longer needed.
+
+ti-ehrpwn driver still support ti,am33xx-ehrpwm in order to maintain
+backward compatibility.
+
+Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
+---
+ .../devicetree/bindings/pwm/pwm-tiehrpwm.txt   | 13 ++++++-------
+ arch/arm/boot/dts/am33xx-l4.dtsi               |  9 +++------
+ arch/arm/boot/dts/am437x-l4.dtsi               | 18 ++++++------------
+ arch/arm/boot/dts/da850.dtsi                   |  6 ++----
+ 4 files changed, 17 insertions(+), 29 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+index c7e28f6d28be..e124e41418d8 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+@@ -2,10 +2,10 @@ TI SOC EHRPWM based PWM controller
+ 
+ Required properties:
+ - compatible: Must be "ti,<soc>-ehrpwm".
+-  for am33xx  - compatible = "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
+-  for am4372  - compatible = "ti,am4372-ehrpwm", "ti-am3352-ehrpwm", "ti,am33xx-ehrpwm";
++  for am33xx  - compatible = "ti,am3352-ehrpwm";
++  for am4372  - compatible = "ti,am4372-ehrpwm", "ti-am3352-ehrpwm";
+   for am654   - compatible = "ti,am654-ehrpwm", "ti-am3352-ehrpwm";
+-  for da850   - compatible = "ti,da850-ehrpwm", "ti-am3352-ehrpwm", "ti,am33xx-ehrpwm";
++  for da850   - compatible = "ti,da850-ehrpwm", "ti-am3352-ehrpwm";
+   for dra746 - compatible = "ti,dra746-ehrpwm", "ti-am3352-ehrpwm";
+ - #pwm-cells: should be 3. See pwm.yaml in this directory for a description of
+   the cells format. The only third cell flag supported by this binding is
+@@ -19,7 +19,7 @@ Optional properties:
+ Example:
+ 
+ ehrpwm0: pwm@48300200 { /* EHRPWM on am33xx */
+-	compatible = "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
++	compatible = "ti,am3352-ehrpwm";
+ 	#pwm-cells = <3>;
+ 	reg = <0x48300200 0x100>;
+ 	clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
+@@ -27,16 +27,15 @@ ehrpwm0: pwm@48300200 { /* EHRPWM on am33xx */
+ };
+ 
+ ehrpwm0: pwm@48300200 { /* EHRPWM on am4372 */
+-	compatible = "ti,am4372-ehrpwm", "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
++	compatible = "ti,am4372-ehrpwm", "ti,am3352-ehrpwm";
+ 	#pwm-cells = <3>;
+ 	reg = <0x48300200 0x80>;
+ 	clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
+ 	clock-names = "tbclk", "fck";
+-	ti,hwmods = "ehrpwm0";
+ };
+ 
+ ehrpwm0: pwm@1f00000 { /* EHRPWM on da850 */
+-	compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
++	compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
+ 	#pwm-cells = <3>;
+ 	reg = <0x1f00000 0x2000>;
+ };
+diff --git a/arch/arm/boot/dts/am33xx-l4.dtsi b/arch/arm/boot/dts/am33xx-l4.dtsi
+index 039a9ab4c7ea..fbf3458ab246 100644
+--- a/arch/arm/boot/dts/am33xx-l4.dtsi
++++ b/arch/arm/boot/dts/am33xx-l4.dtsi
+@@ -2017,8 +2017,7 @@ eqep0: counter@180 {
+ 				};
+ 
+ 				ehrpwm0: pwm@200 {
+-					compatible = "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++					compatible = "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
+@@ -2078,8 +2077,7 @@ eqep1: counter@180 {
+ 				};
+ 
+ 				ehrpwm1: pwm@200 {
+-					compatible = "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++					compatible = "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm1_tbclk>, <&l4ls_gclk>;
+@@ -2139,8 +2137,7 @@ eqep2: counter@180 {
+ 				};
+ 
+ 				ehrpwm2: pwm@200 {
+-					compatible = "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++					compatible = "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm2_tbclk>, <&l4ls_gclk>;
+diff --git a/arch/arm/boot/dts/am437x-l4.dtsi b/arch/arm/boot/dts/am437x-l4.dtsi
+index e217ffc09770..e796b9bcc54e 100644
+--- a/arch/arm/boot/dts/am437x-l4.dtsi
++++ b/arch/arm/boot/dts/am437x-l4.dtsi
+@@ -1760,8 +1760,7 @@ ecap0: ecap@100 {
+ 
+ 				ehrpwm0: pwm@200 {
+ 					compatible = "ti,am4372-ehrpwm",
+-						     "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++						     "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
+@@ -1812,8 +1811,7 @@ ecap1: ecap@100 {
+ 
+ 				ehrpwm1: pwm@200 {
+ 					compatible = "ti,am4372-ehrpwm",
+-						     "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++						     "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm1_tbclk>, <&l4ls_gclk>;
+@@ -1864,8 +1862,7 @@ ecap2: ecap@100 {
+ 
+ 				ehrpwm2: pwm@200 {
+ 					compatible = "ti,am4372-ehrpwm",
+-						     "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++						     "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm2_tbclk>, <&l4ls_gclk>;
+@@ -1905,8 +1902,7 @@ epwmss3: epwmss@0 {
+ 
+ 				ehrpwm3: pwm@200 {
+ 					compatible = "ti,am4372-ehrpwm",
+-						     "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++						     "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm3_tbclk>, <&l4ls_gclk>;
+@@ -1946,8 +1942,7 @@ epwmss4: epwmss@0 {
+ 
+ 				ehrpwm4: pwm@48308200 {
+ 					compatible = "ti,am4372-ehrpwm",
+-						     "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++						     "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm4_tbclk>, <&l4ls_gclk>;
+@@ -1987,8 +1982,7 @@ epwmss5: epwmss@0 {
+ 
+ 				ehrpwm5: pwm@200 {
+ 					compatible = "ti,am4372-ehrpwm",
+-						     "ti,am3352-ehrpwm",
+-						     "ti,am33xx-ehrpwm";
++						     "ti,am3352-ehrpwm";
+ 					#pwm-cells = <3>;
+ 					reg = <0x200 0x80>;
+ 					clocks = <&ehrpwm5_tbclk>, <&l4ls_gclk>;
+diff --git a/arch/arm/boot/dts/da850.dtsi b/arch/arm/boot/dts/da850.dtsi
+index 7cf31b6e48b7..afdf3d3747ce 100644
+--- a/arch/arm/boot/dts/da850.dtsi
++++ b/arch/arm/boot/dts/da850.dtsi
+@@ -574,8 +574,7 @@ mmc1: mmc@21b000 {
+ 			status = "disabled";
+ 		};
+ 		ehrpwm0: pwm@300000 {
+-			compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm",
+-				     "ti,am33xx-ehrpwm";
++			compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
+ 			#pwm-cells = <3>;
+ 			reg = <0x300000 0x2000>;
+ 			clocks = <&psc1 17>, <&ehrpwm_tbclk>;
+@@ -584,8 +583,7 @@ ehrpwm0: pwm@300000 {
+ 			status = "disabled";
+ 		};
+ 		ehrpwm1: pwm@302000 {
+-			compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm",
+-				     "ti,am33xx-ehrpwm";
++			compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
+ 			#pwm-cells = <3>;
+ 			reg = <0x302000 0x2000>;
+ 			clocks = <&psc1 17>, <&ehrpwm_tbclk>;
+-- 
+2.31.1
 
