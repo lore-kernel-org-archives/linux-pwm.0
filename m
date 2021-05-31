@@ -7,34 +7,34 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED32C47082
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9144C47083
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:52:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9E8F5610A8
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:51:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C43B561263
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233736AbhEaPxQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 May 2021 11:53:16 -0400
-Received: from mga18.intel.com ([134.134.136.126]:36246 "EHLO mga18.intel.com"
+        id S233798AbhEaPxn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 May 2021 11:53:43 -0400
+Received: from mga17.intel.com ([192.55.52.151]:5456 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233180AbhEaPvJ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 31 May 2021 11:51:09 -0400
-IronPort-SDR: MpvyMqsvtIpjIlDMJnvf2eBaGviM2hCGBMTGq481XKdr8qPWjjXOy8qBIBGgFxi8LCIByu9pHP
- 9lNe4lZuyiHw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="190738553"
+        id S231151AbhEaPvc (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 31 May 2021 11:51:32 -0400
+IronPort-SDR: /LfIDPdao+dbiEowT+eGeEBaI/HQOVTXOGjnGQPoR/b+jumywikJmOQ2UFkaVJab5CvG2uwd9o
+ 5SRz5HZDb5bA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="183733374"
 X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
-   d="scan'208";a="190738553"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 08:43:45 -0700
-IronPort-SDR: XvaeebbE9UkQYRBPBMrq2G4FzkuMC2lPXkyCIEOFZ7ip8kl+H0vQaruxmjZRRuAGy83OQjsYtL
- XV5zeQxA9Hng==
+   d="scan'208";a="183733374"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 08:43:45 -0700
+IronPort-SDR: E2cRdlWDU8bCBCSGn0X40EqLjiY7bKk7LeaTpv7p8I5++9tIwWtMiu/FRHHC+WgEJO80mmVxpv
+ VASRv3BWhWVA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
-   d="scan'208";a="446639866"
+   d="scan'208";a="548783833"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 31 May 2021 08:43:42 -0700
+  by orsmga004.jf.intel.com with ESMTP; 31 May 2021 08:43:43 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 31A1F269; Mon, 31 May 2021 18:44:06 +0300 (EEST)
+        id 2548473; Mon, 31 May 2021 18:44:06 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Flavio Suligoi <f.suligoi@asem.it>,
@@ -45,9 +45,9 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pwm@vger.kernel.org
 Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v1 3/5] pwm: core: Convert to use fwnode for matching
-Date:   Mon, 31 May 2021 18:43:49 +0300
-Message-Id: <20210531154351.53614-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/5] pwm: core: Always require PWM flags to be provided
+Date:   Mon, 31 May 2021 18:43:48 +0300
+Message-Id: <20210531154351.53614-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
 References: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
@@ -57,44 +57,52 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-When we traverse the list of the registered PWM controllers,
-use fwnode to match. This will help for further cleanup.
+It makes little sense to make PWM flags optional since in case
+of multi-channel consumer the flags can be optional only for
+the last listed channel. Thus always require PWM flags to be
+provided.
 
+Fixes: 4a6ef8e37c4d ("pwm: Add support referencing PWMs from ACPI")
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pwm/core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/core.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 25f7b3370672..338d8ee369db 100644
+index c165c5822703..25f7b3370672 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -691,14 +691,14 @@ int pwm_adjust_config(struct pwm_device *pwm)
- }
- EXPORT_SYMBOL_GPL(pwm_adjust_config);
+@@ -852,8 +852,10 @@ static struct pwm_chip *device_to_pwmchip(struct device *dev)
+  *
+  * This is analogous to of_pwm_get() except con_id is not yet supported.
+  * ACPI entries must look like
+- * Package () {"pwms", Package ()
+- *     { <PWM device reference>, <PWM index>, <PWM period> [, <PWM flags>]}}
++ * Package () { "pwms", Package () {
++ *		<PWM device reference>, <PWM index>, <PWM period>, <PWM flags>,
++ *	}
++ * }
+  *
+  * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
+  * error code on failure.
+@@ -877,7 +879,7 @@ static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
+ 	if (!acpi)
+ 		return ERR_PTR(-EINVAL);
  
--static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
-+static struct pwm_chip *fwnode_to_pwmchip(struct fwnode_handle *fwnode)
- {
- 	struct pwm_chip *chip;
+-	if (args.nargs < 2)
++	if (args.nargs < 3)
+ 		return ERR_PTR(-EPROTO);
  
- 	mutex_lock(&pwm_lock);
+ 	chip = device_to_pwmchip(&acpi->dev);
+@@ -891,7 +893,7 @@ static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
+ 	pwm->args.period = args.args[1];
+ 	pwm->args.polarity = PWM_POLARITY_NORMAL;
  
- 	list_for_each_entry(chip, &pwm_chips, list)
--		if (chip->dev && chip->dev->of_node == np) {
-+		if (chip->dev && dev_fwnode(chip->dev) == fwnode) {
- 			mutex_unlock(&pwm_lock);
- 			return chip;
- 		}
-@@ -777,7 +777,7 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
- 		return ERR_PTR(err);
- 	}
+-	if (args.nargs > 2 && args.args[2] & PWM_POLARITY_INVERTED)
++	if (args.args[2] & PWM_POLARITY_INVERTED)
+ 		pwm->args.polarity = PWM_POLARITY_INVERSED;
+ #endif
  
--	pc = of_node_to_pwmchip(args.np);
-+	pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
- 	if (IS_ERR(pc)) {
- 		if (PTR_ERR(pc) != -EPROBE_DEFER)
- 			pr_err("%s(): PWM chip not found\n", __func__);
 -- 
 2.30.2
 
