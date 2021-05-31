@@ -2,137 +2,92 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CD1C47082
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FA6C47083
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 16:20:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ECD9C61263
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:56:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5100D61375
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 16:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbhEaP55 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 May 2021 11:57:57 -0400
-Received: from mga04.intel.com ([192.55.52.120]:56056 "EHLO mga04.intel.com"
+        id S232624AbhEaQV7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 May 2021 12:21:59 -0400
+Received: from mga07.intel.com ([134.134.136.100]:39760 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233472AbhEaPzy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 31 May 2021 11:55:54 -0400
-IronPort-SDR: s0FTc/YbxE7QzVi/bTxlK4RSQRdK+yP/N2Rypjl0kq1qvt9HOusIUm8pnoC/BZ6uMwS0CU7AZ/
- 9qVrB8dBsdOw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="201505433"
+        id S234751AbhEaQTv (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 31 May 2021 12:19:51 -0400
+IronPort-SDR: vR13DPA9US+xhesTuVmJyhtE5SaZenwQVQ4VqpbmgKrt4z9rcCRht9mxqrbq6I+0keJXDnDiQM
+ erYcoJ6hL5mg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="267261518"
 X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
-   d="scan'208";a="201505433"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 08:43:45 -0700
-IronPort-SDR: TXtl/zScOFPmQNPQ8sezJRx5zr1/C0bV8LKZJwh8ibbvi946550nEEK5gsUhzGa/2NbP2pls4Y
- 7wQnRp/8iy7g==
-X-ExtLoop1: 1
+   d="scan'208";a="267261518"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 09:09:19 -0700
+IronPort-SDR: 5adWyKVx44g8zdVr1QDZCDvNSJCXMyeMXe+JApXi3aIVVcfhFUiHuXW1DyxrZfcpLbBioauMRV
+ tJJTiW8+sGKQ==
 X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
-   d="scan'208";a="635194189"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 31 May 2021 08:43:44 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3AFA73B6; Mon, 31 May 2021 18:44:06 +0300 (EEST)
+   d="scan'208";a="446645810"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 09:09:15 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1lnkTZ-00G8y7-NV; Mon, 31 May 2021 19:09:13 +0300
+Date:   Mon, 31 May 2021 19:09:13 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Flavio Suligoi <f.suligoi@asem.it>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+To:     Flavio Suligoi <f.suligoi@asem.it>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Thierry Reding <thierry.reding@gmail.com>,
         linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-pwm@vger.kernel.org
 Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v1 4/5] pwm: core: Reuse fwnode_to_pwmchip() in ACPI case
-Date:   Mon, 31 May 2021 18:43:50 +0300
-Message-Id: <20210531154351.53614-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1 1/5] docs: firmware-guide: ACPI: Add a PWM example
+Message-ID: <YLUKKeltfJe+4X2k@smile.fi.intel.com>
 References: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-In ACPI case we may use matching by fwnode as provided via
-fwnode_to_pwmchip(). This makes device_to_pwmchip() not needed
-anymore.
+On Mon, May 31, 2021 at 06:43:47PM +0300, Andy Shevchenko wrote:
+> When PWM support for ACPI has been added into the kernel, it missed
+> the documentation update. Hence update documentation here.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/core.c | 31 +------------------------------
- 1 file changed, 1 insertion(+), 30 deletions(-)
+I am actually in doubt that original commit message provides that short period
+intentionally. Possibly it was misinterpretation of nanoseconds (which is
+expected by PWM framework) with microseconds than might sound logical for LED.
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 338d8ee369db..2223a9b6644b 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -819,28 +819,6 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
- }
- EXPORT_SYMBOL_GPL(of_pwm_get);
- 
--#if IS_ENABLED(CONFIG_ACPI)
--static struct pwm_chip *device_to_pwmchip(struct device *dev)
--{
--	struct pwm_chip *chip;
--
--	mutex_lock(&pwm_lock);
--
--	list_for_each_entry(chip, &pwm_chips, list) {
--		struct acpi_device *adev = ACPI_COMPANION(chip->dev);
--
--		if ((chip->dev == dev) || (adev && &adev->dev == dev)) {
--			mutex_unlock(&pwm_lock);
--			return chip;
--		}
--	}
--
--	mutex_unlock(&pwm_lock);
--
--	return ERR_PTR(-EPROBE_DEFER);
--}
--#endif
--
- /**
-  * acpi_pwm_get() - request a PWM via parsing "pwms" property in ACPI
-  * @fwnode: firmware node to get the "pwm" property from
-@@ -863,9 +841,7 @@ static struct pwm_chip *device_to_pwmchip(struct device *dev)
- static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
- {
- 	struct pwm_device *pwm = ERR_PTR(-ENODEV);
--#if IS_ENABLED(CONFIG_ACPI)
- 	struct fwnode_reference_args args;
--	struct acpi_device *acpi;
- 	struct pwm_chip *chip;
- 	int ret;
- 
-@@ -875,14 +851,10 @@ static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
- 	if (ret < 0)
- 		return ERR_PTR(ret);
- 
--	acpi = to_acpi_device_node(args.fwnode);
--	if (!acpi)
--		return ERR_PTR(-EINVAL);
--
- 	if (args.nargs < 3)
- 		return ERR_PTR(-EPROTO);
- 
--	chip = device_to_pwmchip(&acpi->dev);
-+	chip = fwnode_to_pwmchip(args.fwnode);
- 	if (IS_ERR(chip))
- 		return ERR_CAST(chip);
- 
-@@ -895,7 +867,6 @@ static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
- 
- 	if (args.args[2] & PWM_POLARITY_INVERTED)
- 		pwm->args.polarity = PWM_POLARITY_INVERSED;
--#endif
- 
- 	return pwm;
- }
+Perhaps we may add 000 to the value (1) and replace us by ms in the text (2).
+
+...
+
+> +                    Package () {
+> +                        "\\_SB.PCI0.PWM",  // <PWM device reference>
+> +                        0,                 // <PWM index>
+
+> +                        600000,            // <PWM period>
+
+(1)
+
+> +                        0,                 // <PWM flags>
+> +                    }
+
+> +In the above example the PWM-based LED driver references to the PWM channel 0
+> +of \_SB.PCI0.PWM device with initial period setting equal to 600 us (note that
+
+(2)
+
+> +value is given in nanoseconds).
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
