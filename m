@@ -2,216 +2,99 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE6AC47082
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 11:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED32C47082
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:51:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 78E5A61186
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 11:31:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E8F5610A8
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 15:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231360AbhEaLd3 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 May 2021 07:33:29 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:58062 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbhEaLd2 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 May 2021 07:33:28 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14VBVekk118205;
-        Mon, 31 May 2021 06:31:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1622460701;
-        bh=QMiPShgv6nZtDULFqU65PWsdkCE649yDBeldJD+1pwk=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=C+9FHbgpLGjgQav38+ZZ/Y9UMX8GfNoy2qF9NViQFurj/B+qfsjShNjckLDKnZ6Fy
-         HYOIqcFv5Cp4VViNglUupPnSjJ9jAii7WyxA6i91p899uMlXozzZiU/OwsENNGxoQO
-         gNDk4sykmVMXOQ3ZhrTfZblk3do1gByOnPKDr6oE=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14VBVedQ120128
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 31 May 2021 06:31:40 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 31
- May 2021 06:31:40 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Mon, 31 May 2021 06:31:40 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14VBVbX6003887;
-        Mon, 31 May 2021 06:31:38 -0500
-Subject: Re: [PATCH 1/4] arm: dts: ti: drop usage of redundant compatible
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Lokesh Vutla <lokeshvutla@ti.com>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
-        Vignesh R <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
-        <linux-pwm@vger.kernel.org>,
-        Device Tree Mailing List <devicetree@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux OMAP Mailing List <linux-omap@vger.kernel.org>
-References: <20210526084306.6534-1-lokeshvutla@ti.com>
- <20210526084306.6534-2-lokeshvutla@ti.com>
- <de96c176-1163-a6c4-54f2-a9924db6f9df@ti.com>
-Message-ID: <a8f7b1f8-5c57-8291-cfe2-c31968d905f4@ti.com>
-Date:   Mon, 31 May 2021 14:31:37 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S233736AbhEaPxQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 May 2021 11:53:16 -0400
+Received: from mga18.intel.com ([134.134.136.126]:36246 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233180AbhEaPvJ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 31 May 2021 11:51:09 -0400
+IronPort-SDR: MpvyMqsvtIpjIlDMJnvf2eBaGviM2hCGBMTGq481XKdr8qPWjjXOy8qBIBGgFxi8LCIByu9pHP
+ 9lNe4lZuyiHw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="190738553"
+X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
+   d="scan'208";a="190738553"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 08:43:45 -0700
+IronPort-SDR: XvaeebbE9UkQYRBPBMrq2G4FzkuMC2lPXkyCIEOFZ7ip8kl+H0vQaruxmjZRRuAGy83OQjsYtL
+ XV5zeQxA9Hng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
+   d="scan'208";a="446639866"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 31 May 2021 08:43:42 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 31A1F269; Mon, 31 May 2021 18:44:06 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Flavio Suligoi <f.suligoi@asem.it>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v1 3/5] pwm: core: Convert to use fwnode for matching
+Date:   Mon, 31 May 2021 18:43:49 +0300
+Message-Id: <20210531154351.53614-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
+References: <20210531154351.53614-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <de96c176-1163-a6c4-54f2-a9924db6f9df@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+When we traverse the list of the registered PWM controllers,
+use fwnode to match. This will help for further cleanup.
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pwm/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On 31/05/2021 14:17, Grygorii Strashko wrote:
-> 
-> 
-> On 26/05/2021 11:43, Lokesh Vutla wrote:
->> Commit 229110c1aa691 ("ARM: dts: am437x/am33xx/da850: Add new ECAP and
->> EPWM bindings") added ti,am3352-ehrpwm compatible which is similar to
->> ti,am33xx-ehrpwm but without out t,hwmod properties. But with commit
->> 58bfbea5b1c68 ("ARM: dts: am437x/am33xx: Remove hwmod entries for ECAP
->> and EPWM nodes") dropped support for all ti,hwmod for ehrpwm, but
->> missed deprecating ti,am33xx-ehrpwm compatible. So drop ti,am33xx-ehrpwm
->> from DT as it is no longer needed.
->>
->> ti-ehrpwn driver still support ti,am33xx-ehrpwm in order to maintain
->> backward compatibility.
->>
->> Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
->> ---
->>   .../devicetree/bindings/pwm/pwm-tiehrpwm.txt   | 13 ++++++-------
->>   arch/arm/boot/dts/am33xx-l4.dtsi               |  9 +++------
->>   arch/arm/boot/dts/am437x-l4.dtsi               | 18 ++++++------------
->>   arch/arm/boot/dts/da850.dtsi                   |  6 ++----
->>   4 files changed, 17 insertions(+), 29 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
->> index c7e28f6d28be..e124e41418d8 100644
->> --- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
->> @@ -2,10 +2,10 @@ TI SOC EHRPWM based PWM controller
->>   Required properties:
->>   - compatible: Must be "ti,<soc>-ehrpwm".
->> -  for am33xx  - compatible = "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
->> -  for am4372  - compatible = "ti,am4372-ehrpwm", "ti-am3352-ehrpwm", "ti,am33xx-ehrpwm";
->> +  for am33xx  - compatible = "ti,am3352-ehrpwm";
->> +  for am4372  - compatible = "ti,am4372-ehrpwm", "ti-am3352-ehrpwm";
-
-More over, this fix is incorrect by itself - there is no "ti-am3352-ehrpwm".
-
->>     for am654   - compatible = "ti,am654-ehrpwm", "ti-am3352-ehrpwm";
->> -  for da850   - compatible = "ti,da850-ehrpwm", "ti-am3352-ehrpwm", "ti,am33xx-ehrpwm";
->> +  for da850   - compatible = "ti,da850-ehrpwm", "ti-am3352-ehrpwm";
->>     for dra746 - compatible = "ti,dra746-ehrpwm", "ti-am3352-ehrpwm";
->>   - #pwm-cells: should be 3. See pwm.yaml in this directory for a description of
->>     the cells format. The only third cell flag supported by this binding is
->> @@ -19,7 +19,7 @@ Optional properties:
->>   Example:
->>   ehrpwm0: pwm@48300200 { /* EHRPWM on am33xx */
->> -    compatible = "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
->> +    compatible = "ti,am3352-ehrpwm";
->>       #pwm-cells = <3>;
->>       reg = <0x48300200 0x100>;
->>       clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
->> @@ -27,16 +27,15 @@ ehrpwm0: pwm@48300200 { /* EHRPWM on am33xx */
->>   };
->>   ehrpwm0: pwm@48300200 { /* EHRPWM on am4372 */
->> -    compatible = "ti,am4372-ehrpwm", "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
->> +    compatible = "ti,am4372-ehrpwm", "ti,am3352-ehrpwm";
->>       #pwm-cells = <3>;
->>       reg = <0x48300200 0x80>;
->>       clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
->>       clock-names = "tbclk", "fck";
->> -    ti,hwmods = "ehrpwm0";
->>   };
->>   ehrpwm0: pwm@1f00000 { /* EHRPWM on da850 */
->> -    compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm", "ti,am33xx-ehrpwm";
->> +    compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
->>       #pwm-cells = <3>;
->>       reg = <0x1f00000 0x2000>;
->>   };
->> diff --git a/arch/arm/boot/dts/am33xx-l4.dtsi b/arch/arm/boot/dts/am33xx-l4.dtsi
->> index 039a9ab4c7ea..fbf3458ab246 100644
->> --- a/arch/arm/boot/dts/am33xx-l4.dtsi
->> +++ b/arch/arm/boot/dts/am33xx-l4.dtsi
->> @@ -2017,8 +2017,7 @@ eqep0: counter@180 {
->>                   };
->>                   ehrpwm0: pwm@200 {
->> -                    compatible = "ti,am3352-ehrpwm",
->> -                             "ti,am33xx-ehrpwm";
->> +                    compatible = "ti,am3352-ehrpwm";
->>                       #pwm-cells = <3>;
->>                       reg = <0x200 0x80>;
->>                       clocks = <&ehrpwm0_tbclk>, <&l4ls_gclk>;
->> @@ -2078,8 +2077,7 @@ eqep1: counter@180 {
->>                   };
->>                   ehrpwm1: pwm@200 {
->> -                    compatible = "ti,am3352-ehrpwm",
->> -                             "ti,am33xx-ehrpwm";
->> +                    compatible = "ti,am3352-ehrpwm";
->>                       #pwm-cells = <3>;
->>                       reg = <0x200 0x80>;
->>                       clocks = <&ehrpwm1_tbclk>, <&l4ls_gclk>;
->> @@ -2139,8 +2137,7 @@ eqep2: counter@180 {
->>                   };
->>                   ehrpwm2: pwm@200 {
->> -                    compatible = "ti,am3352-ehrpwm",
->> -                             "ti,am33xx-ehrpwm";
->> +                    compatible = "ti,am3352-ehrpwm";
->>                       #pwm-cells = <3>;
->>                       reg = <0x200 0x80>;
->>                       clocks = <&ehrpwm2_tbclk>, <&l4ls_gclk>;
->> diff --git a/arch/arm/boot/dts/am437x-l4.dtsi b/arch/arm/boot/dts/am437x-l4.dtsi
-> 
-> [...]
-> 
->> diff --git a/arch/arm/boot/dts/da850.dtsi b/arch/arm/boot/dts/da850.dtsi
->> index 7cf31b6e48b7..afdf3d3747ce 100644
->> --- a/arch/arm/boot/dts/da850.dtsi
->> +++ b/arch/arm/boot/dts/da850.dtsi
->> @@ -574,8 +574,7 @@ mmc1: mmc@21b000 {
->>               status = "disabled";
->>           };
->>           ehrpwm0: pwm@300000 {
->> -            compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm",
->> -                     "ti,am33xx-ehrpwm";
->> +            compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
->>               #pwm-cells = <3>;
->>               reg = <0x300000 0x2000>;
->>               clocks = <&psc1 17>, <&ehrpwm_tbclk>;
->> @@ -584,8 +583,7 @@ ehrpwm0: pwm@300000 {
->>               status = "disabled";
->>           };
->>           ehrpwm1: pwm@302000 {
->> -            compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm",
->> -                     "ti,am33xx-ehrpwm";
->> +            compatible = "ti,da850-ehrpwm", "ti,am3352-ehrpwm";
->>               #pwm-cells = <3>;
->>               reg = <0x302000 0x2000>;
->>               clocks = <&psc1 17>, <&ehrpwm_tbclk>;
->>
-> 
-> I think, the DT changes can be split and posted standalone while bindings fixed
-> as part of yaml conversation.
-> Personally I do not see reasons for separate .txt bindings fix here as ymal conversation just
-> reveals inconsistency between DT bindings, DTBs and code which leads to DTBs fix.
-> 
-> But, of course, it's up to Rob first of all.
-> 
-
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 25f7b3370672..338d8ee369db 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -691,14 +691,14 @@ int pwm_adjust_config(struct pwm_device *pwm)
+ }
+ EXPORT_SYMBOL_GPL(pwm_adjust_config);
+ 
+-static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
++static struct pwm_chip *fwnode_to_pwmchip(struct fwnode_handle *fwnode)
+ {
+ 	struct pwm_chip *chip;
+ 
+ 	mutex_lock(&pwm_lock);
+ 
+ 	list_for_each_entry(chip, &pwm_chips, list)
+-		if (chip->dev && chip->dev->of_node == np) {
++		if (chip->dev && dev_fwnode(chip->dev) == fwnode) {
+ 			mutex_unlock(&pwm_lock);
+ 			return chip;
+ 		}
+@@ -777,7 +777,7 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+ 		return ERR_PTR(err);
+ 	}
+ 
+-	pc = of_node_to_pwmchip(args.np);
++	pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
+ 	if (IS_ERR(pc)) {
+ 		if (PTR_ERR(pc) != -EPROBE_DEFER)
+ 			pr_err("%s(): PWM chip not found\n", __func__);
 -- 
-Best regards,
-grygorii
+2.30.2
+
