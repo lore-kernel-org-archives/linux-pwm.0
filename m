@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F77FC4708F
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 04:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED1FC47096
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 04:46:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4AB9E60C40
-	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 04:46:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9157361009
+	for <linux-pwm@archiver.kernel.org>; Mon, 31 May 2021 04:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbhEaEsK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 31 May 2021 00:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
+        id S230032AbhEaEsL (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 31 May 2021 00:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbhEaEsA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 May 2021 00:48:00 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08A3C061760
-        for <linux-pwm@vger.kernel.org>; Sun, 30 May 2021 21:46:20 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id dg27so2219026edb.12
-        for <linux-pwm@vger.kernel.org>; Sun, 30 May 2021 21:46:20 -0700 (PDT)
+        with ESMTP id S230050AbhEaEsK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 31 May 2021 00:48:10 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81326C0613CE
+        for <linux-pwm@vger.kernel.org>; Sun, 30 May 2021 21:46:24 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id df21so11970265edb.3
+        for <linux-pwm@vger.kernel.org>; Sun, 30 May 2021 21:46:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=prusa3d-cz.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0wwG/Rn9um6zlw9r9jL8V2Q6hYDd1uPy7KH4n241Hsg=;
-        b=S5EbIKVLC9/WQtCT+GNBCYreMNg/ZC4D22aFdQse1Mj4FeXxIr7Sq6ZwK2pF+ZJ9Bg
-         GMpya0ctg+rtWwz6rYL5bFz4Q5KvxFtJS9t4aNhle/lGYi5NJTTdRTBWr7r+kjMSZxM5
-         tnIgQxuWzg++m+kQc6X/6jYjSxxqlLIQOIe0qEQNDI2SLFVvRXiNu6CYquzMTfDa9LAt
-         8QFh9mYUiYVwuyO2Elc6hpIgQy1T92vDiSG2RGztAc3lKjE7luG4s/G2Xbwbmtc2pfdJ
-         JJdBuUKDQHEMs3gNtDM5ndlPnLbkbpho3X2Xgrgwqhi14jv9DUM7kGJSwDbuzH/Q8JqQ
-         HPsQ==
+        bh=QVg7Hdl4/ZVFOwC3zdm+BtLAL/F8bdjWGF9QT4YTdO4=;
+        b=OD5S65QZS3iZyC4Zwlx2TkaDHQa6IzCi9DD8krUyi0osNRlwD/CF+7Q22MY+oOnnJa
+         lvo3pxndm9A+HqC/jvsLwMOrRpROf7oKOXPOzzcmmbdUG0asCnUy9LRmZXj+W3vcreqM
+         fqERsSCercBb8Dk0Y3aU/PfdrqFGpLFWS/VHgzV+IrcZGrDXL0YpQnPw2+kN2gTYRuPK
+         IAjoRdliJBA64SgjMWpXknEfJZ5nkL4Mw3h1pxIhAyc8jRYY3cHnzh8HccH7csXR543C
+         RseTB3a3ChOqipdWlv40xL5tFgkjznFX+XTnqDeELDLrqNmzKpN2C0zXeuSnAbRoeScb
+         /JMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0wwG/Rn9um6zlw9r9jL8V2Q6hYDd1uPy7KH4n241Hsg=;
-        b=UbnzmuYBSYIdeWG1hNH1SE3DG7hvZMnGg5X1KVF4skbVFjJnVYO3HpC1I+jKfygTEn
-         WwaAwsuB1RY1DkPp4t1PZdYehNSRmW0f6BdZREjxM+SvkMqRZHuuSrlkM/Yn6GV6IXv/
-         q7EjkEhVdctuxXzrk1jEbFQfAGmHkkw7WsIcn9pnZnyuCx/q7Solv+o7v5ER2+W0XAOx
-         iNVV04koxysEGogsiTNVo/cthLcUBlG+MYOWEBDqm1JD+j8kvZje+7jcVsHMV5SR9mbc
-         UumYL4aRtLvnOCEH+E8Ns3wpM9Far3wi+XCohYlq/CzcIL3E6IcUVZ5InB6Uw5EzkRER
-         XJ5Q==
-X-Gm-Message-State: AOAM533z21cZhtvC0OSrtmqdwhuJFSeqpY3lJonF+kjL892/ylOeCn6w
-        EUm/zHisWPScBUk6U0YD4SiZbw==
-X-Google-Smtp-Source: ABdhPJx1t3/XMRBY9LSzuPp4oCSFKs8ZpLoo0r7Idrq6tIlRFlYlZponr9ZqTFdRcuMqNtwVLlXEiA==
-X-Received: by 2002:a50:ee02:: with SMTP id g2mr7732330eds.333.1622436379476;
-        Sun, 30 May 2021 21:46:19 -0700 (PDT)
+        bh=QVg7Hdl4/ZVFOwC3zdm+BtLAL/F8bdjWGF9QT4YTdO4=;
+        b=nf79Vlbm1FtR7Q+0fUn4lWmqCSiU2vZoC4Uu40LNzQCBp4sw/7P7IJgtnHzAEiqgyy
+         wLj2iUYoh93+U561W8XvXWRcfh4DyRAYYTv6UvMUcnJUpBvuHQhsEXGLQxMg8lyd+BLS
+         48GAvpQuZ7Ca+cx+/Xns6/nLUVj51Jq+rx6vI/eVouEvnNNvHvoMk7yOXX4DAoApBfN3
+         4OoVl5e1TTOeAJjCUglxtO+Xk9Ir7u3hwMth+1Px/pPSYrOX3wPSeqwur3UMq4R5IfYH
+         6V17LnWv17oJVlfdDykRP3uWSsFtf5U8F06S5FUH3G0rI3OVkQPpNlMeb7XGvo+Oi9Sj
+         0mnQ==
+X-Gm-Message-State: AOAM532RKrgiJofdefLcU5YzFn3QOZ9BYqsZo3cMJnOurmmYfeJr3O04
+        qHtmEuTbGluQqrA0fkEEpm3tGA==
+X-Google-Smtp-Source: ABdhPJxsQ+/nHjpVQtyAxvH1LPlS/MyEUURoxZBF/XAqcXhXjL3TGweCjrGnBsD78Gk8GZai/gBaIg==
+X-Received: by 2002:a05:6402:b8c:: with SMTP id cf12mr23173772edb.61.1622436383155;
+        Sun, 30 May 2021 21:46:23 -0700 (PDT)
 Received: from zen.local (ip-89-103-215-157.net.upcbroadband.cz. [89.103.215.157])
-        by smtp.gmail.com with ESMTPSA id h9sm6238376edt.18.2021.05.30.21.46.18
+        by smtp.gmail.com with ESMTPSA id h9sm6238376edt.18.2021.05.30.21.46.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 May 2021 21:46:19 -0700 (PDT)
+        Sun, 30 May 2021 21:46:22 -0700 (PDT)
 From:   Roman Beranek <roman.beranek@prusa3d.cz>
 X-Google-Original-From: Roman Beranek <roman.beranek@prusa3d.com>
 To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -67,9 +67,9 @@ Cc:     Thierry Reding <thierry.reding@gmail.com>,
         Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-sunxi@googlegroups.com
-Subject: [PATCH 2/6] pwm: sun4i: disable EN bit prior to the delay
-Date:   Mon, 31 May 2021 06:46:04 +0200
-Message-Id: <20210531044608.1006024-3-roman.beranek@prusa3d.com>
+Subject: [PATCH 6/6] pwm: sun4i: don't delay if the PWM is already off
+Date:   Mon, 31 May 2021 06:46:08 +0200
+Message-Id: <20210531044608.1006024-7-roman.beranek@prusa3d.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210531044608.1006024-1-roman.beranek@prusa3d.com>
 References: <20210531044608.1006024-1-roman.beranek@prusa3d.com>
@@ -79,36 +79,24 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The reason why we wait before gating the clock is to allow for the PWM
-to finish its cycle and stop. But it won't stop unless the EN bit is
-disabled.
-
 Signed-off-by: Roman Beranek <roman.beranek@prusa3d.com>
 ---
- drivers/pwm/pwm-sun4i.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-sun4i.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 3721b9894cf6..2777abe66f79 100644
+index 6ab06b9749d0..88bd90498d1f 100644
 --- a/drivers/pwm/pwm-sun4i.c
 +++ b/drivers/pwm/pwm-sun4i.c
-@@ -303,6 +303,8 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	if (state->enabled)
- 		ctrl |= BIT_CH(PWM_EN, pwm->hwpwm);
-+	else
-+		ctrl &= ~BIT_CH(PWM_EN, pwm->hwpwm);
+@@ -304,7 +304,7 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  
  	sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
  
-@@ -325,7 +327,6 @@ static int sun4i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	spin_lock(&sun4i_pwm->ctrl_lock);
- 	ctrl = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 	ctrl &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
--	ctrl &= ~BIT_CH(PWM_EN, pwm->hwpwm);
- 	sun4i_pwm_writel(sun4i_pwm, ctrl, PWM_CTRL_REG);
- 	spin_unlock(&sun4i_pwm->ctrl_lock);
- 
+-	if (state->enabled) {
++	if (state->enabled || !cstate.enabled) {
+ 		mutex_unlock(&sun4i_pwm->ctrl_lock);
+ 		return 0;
+ 	}
 -- 
 2.31.1
 
