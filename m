@@ -7,34 +7,34 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEC1C47094
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42558C4743F
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 65368611C0
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2507061245
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbhFGM0h (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Jun 2021 08:26:37 -0400
-Received: from mga07.intel.com ([134.134.136.100]:57549 "EHLO mga07.intel.com"
+        id S230261AbhFGM0i (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Jun 2021 08:26:38 -0400
+Received: from mga03.intel.com ([134.134.136.65]:5348 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230145AbhFGM0g (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        id S230194AbhFGM0g (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
         Mon, 7 Jun 2021 08:26:36 -0400
-IronPort-SDR: vhxk3OgWXVw/8lcQsLliDTJPLAYQpOD334+9+62SA0m7RhJA35TtkWHHxnE9GGHRf1ZKUxI/tb
- qEerpf4tx1vQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="268466119"
+IronPort-SDR: Te+NDoBrmJ+PZ8oX7ByXX7MOjWmJOelAUr/0nHvvJEd4TphxkFeRhSFrO0igwWlDKADyUOeEvf
+ Cg5y/zwoBYpA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="204632410"
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="268466119"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 05:24:45 -0700
-IronPort-SDR: CgjSJ6TRwOHRmiqqOmtJQVsgP9VlrV5h7jC/DT7HPVSjq5QCEVW2vkYsGMWjZ6H/bdXI9arK1O
- BuLTRchJkKXw==
+   d="scan'208";a="204632410"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 05:24:45 -0700
+IronPort-SDR: UFOGLPxF5iZ7NZEeW5+x4A5cBVgKFeq828jFVXh1/oG9rsBry/voFp5zqnuBo4McPCDcRlyr8r
+ xkZvCsSeexUw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="476187978"
+   d="scan'208";a="418493326"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Jun 2021 05:24:42 -0700
+  by orsmga002.jf.intel.com with ESMTP; 07 Jun 2021 05:24:42 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id C6CC1A3; Mon,  7 Jun 2021 15:25:05 +0300 (EEST)
+        id D7D181CB; Mon,  7 Jun 2021 15:25:05 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -46,9 +46,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>,
         "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>
-Subject: [PATCH v3 2/6] pwm: core: Convert to use fwnode for matching
-Date:   Mon,  7 Jun 2021 15:24:54 +0300
-Message-Id: <20210607122458.40073-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 4/6] pwm: core: Unify fwnode checks in the module
+Date:   Mon,  7 Jun 2021 15:24:56 +0300
+Message-Id: <20210607122458.40073-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
 References: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
@@ -58,47 +58,64 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-When we traverse the list of the registered PWM controllers,
-use fwnode to match. This will help for further cleanup.
+Historically we have two different approaches on how to check type of fwnode.
+Unify them using the latest and greatest fwnode related APIs.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 v3: no change
-v2: no change
+v2: corrected property name in kernel doc
 
- drivers/pwm/core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/core.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index a42999f877d2..f26da1a6a376 100644
+index c63626c5266c..05a86060d430 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -692,14 +692,14 @@ int pwm_adjust_config(struct pwm_device *pwm)
- }
- EXPORT_SYMBOL_GPL(pwm_adjust_config);
+@@ -822,7 +822,7 @@ EXPORT_SYMBOL_GPL(of_pwm_get);
  
--static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
-+static struct pwm_chip *fwnode_to_pwmchip(struct fwnode_handle *fwnode)
+ /**
+  * acpi_pwm_get() - request a PWM via parsing "pwms" property in ACPI
+- * @fwnode: firmware node to get the "pwm" property from
++ * @fwnode: firmware node to get the "pwms" property from
+  *
+  * Returns the PWM device parsed from the fwnode and index specified in the
+  * "pwms" property or a negative error-code on failure.
+@@ -837,7 +837,7 @@ EXPORT_SYMBOL_GPL(of_pwm_get);
+  * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
+  * error code on failure.
+  */
+-static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
++static struct pwm_device *acpi_pwm_get(const struct fwnode_handle *fwnode)
  {
+ 	struct pwm_device *pwm = ERR_PTR(-ENODEV);
+ 	struct fwnode_reference_args args;
+@@ -921,6 +921,7 @@ void pwm_remove_table(struct pwm_lookup *table, size_t num)
+  */
+ struct pwm_device *pwm_get(struct device *dev, const char *con_id)
+ {
++	const struct fwnode_handle *fwnode = dev ? dev_fwnode(dev) : NULL;
+ 	const char *dev_id = dev ? dev_name(dev) : NULL;
+ 	struct pwm_device *pwm;
  	struct pwm_chip *chip;
+@@ -931,12 +932,12 @@ struct pwm_device *pwm_get(struct device *dev, const char *con_id)
+ 	int err;
  
- 	mutex_lock(&pwm_lock);
+ 	/* look up via DT first */
+-	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
+-		return of_pwm_get(dev, dev->of_node, con_id);
++	if (is_of_node(fwnode))
++		return of_pwm_get(dev, to_of_node(fwnode), con_id);
  
- 	list_for_each_entry(chip, &pwm_chips, list)
--		if (chip->dev && chip->dev->of_node == np) {
-+		if (chip->dev && dev_fwnode(chip->dev) == fwnode) {
- 			mutex_unlock(&pwm_lock);
- 			return chip;
- 		}
-@@ -778,7 +778,7 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
- 		return ERR_PTR(err);
+ 	/* then lookup via ACPI */
+-	if (dev && is_acpi_node(dev->fwnode)) {
+-		pwm = acpi_pwm_get(dev->fwnode);
++	if (is_acpi_node(fwnode)) {
++		pwm = acpi_pwm_get(fwnode);
+ 		if (!IS_ERR(pwm) || PTR_ERR(pwm) != -ENOENT)
+ 			return pwm;
  	}
- 
--	pc = of_node_to_pwmchip(args.np);
-+	pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
- 	if (IS_ERR(pc)) {
- 		if (PTR_ERR(pc) != -EPROBE_DEFER)
- 			pr_err("%s(): PWM chip not found\n", __func__);
 -- 
 2.30.2
 
