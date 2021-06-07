@@ -2,124 +2,103 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC85EC47094
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 11:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEC1C47094
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B7D12611AD
-	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 11:49:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 65368611C0
+	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231325AbhFGLu6 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Jun 2021 07:50:58 -0400
-Received: from mga06.intel.com ([134.134.136.31]:47165 "EHLO mga06.intel.com"
+        id S230239AbhFGM0h (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Jun 2021 08:26:37 -0400
+Received: from mga07.intel.com ([134.134.136.100]:57549 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231283AbhFGLu6 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 7 Jun 2021 07:50:58 -0400
-IronPort-SDR: wZgmnU9c3Jj/iwFIBNdjyA+3lOM3UpCHFqxlCpz1zYn9eGyXqJ8azfV6rzO1FA+xKYrPZ3jihU
- 9T+V2xp9Lrow==
-X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="265761217"
+        id S230145AbhFGM0g (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 7 Jun 2021 08:26:36 -0400
+IronPort-SDR: vhxk3OgWXVw/8lcQsLliDTJPLAYQpOD334+9+62SA0m7RhJA35TtkWHHxnE9GGHRf1ZKUxI/tb
+ qEerpf4tx1vQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="268466119"
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="265761217"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 04:49:06 -0700
-IronPort-SDR: u17BKXvx/hUR46TzWYEH1/SrBnug8cLVNtgUOpARTkwSnngROQ/OLo6pqeQujI435LdHyJ1dTj
- ScM475RMOI1A==
+   d="scan'208";a="268466119"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 05:24:45 -0700
+IronPort-SDR: CgjSJ6TRwOHRmiqqOmtJQVsgP9VlrV5h7jC/DT7HPVSjq5QCEVW2vkYsGMWjZ6H/bdXI9arK1O
+ BuLTRchJkKXw==
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="484747647"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 04:49:03 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1lqDkb-000FDV-3n; Mon, 07 Jun 2021 14:49:01 +0300
-Date:   Mon, 7 Jun 2021 14:49:01 +0300
+   d="scan'208";a="476187978"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Jun 2021 05:24:42 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id C6CC1A3; Mon,  7 Jun 2021 15:25:05 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Flavio Suligoi <f.suligoi@asem.it>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Lee Jones <lee.jones@linaro.org>,
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Flavio Suligoi <f.suligoi@asem.it>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Cc:     Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>,
         "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH v2 2/7] pwm: core: Always require PWM flags to be provided
-Message-ID: <YL4HrZTb+fmW4UTf@smile.fi.intel.com>
-References: <20210531194947.10770-1-andriy.shevchenko@linux.intel.com>
- <20210531194947.10770-2-andriy.shevchenko@linux.intel.com>
- <20210606213054.bmqgs5hehbowa62d@pengutronix.de>
- <YL3grTQ00lFCXyCp@smile.fi.intel.com>
- <20210607095324.yaiu5lzb5zgoejpa@pengutronix.de>
- <YL3xuJyAcbPLW7yG@smile.fi.intel.com>
- <YL3zDUWsY9mUW0eQ@smile.fi.intel.com>
+Subject: [PATCH v3 2/6] pwm: core: Convert to use fwnode for matching
+Date:   Mon,  7 Jun 2021 15:24:54 +0300
+Message-Id: <20210607122458.40073-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
+References: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YL3zDUWsY9mUW0eQ@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 01:21:01PM +0300, Andy Shevchenko wrote:
-> On Mon, Jun 07, 2021 at 01:15:20PM +0300, Andy Shevchenko wrote:
-> > On Mon, Jun 07, 2021 at 11:53:24AM +0200, Uwe Kleine-König wrote:
-> > > On Mon, Jun 07, 2021 at 12:02:37PM +0300, Andy Shevchenko wrote:
-> > > > On Sun, Jun 06, 2021 at 11:30:54PM +0200, Uwe Kleine-König wrote:
-> > > > > On Mon, May 31, 2021 at 10:49:42PM +0300, Andy Shevchenko wrote:
-> > > > > > It makes little sense to make PWM flags optional since in case
-> > > > > > of multi-channel consumer the flags can be optional only for
-> > > > > > the last listed channel.
-> > > > > 
-> > > > > I think the same holds true for dt references.
-> > > > 
-> > > > Can you elaborate this? I haven't got what you are talking about, not a DT
-> > > > expert here.
-> > > 
-> > > Ah no, I mixed that up. While the function that parses the phandle is
-> > > flexible, for each pwm controller the number of arguments is fixed, so
-> > > 
-> > > 	pwms = <&pwm1 100000 &pwm2 100000 &pwm3 1000000>;
-> > > 
-> > > cannot be interpreted as 3-argument references to two PWMs. This is
-> > > different to ACPI (I guess, not an ACPI expert here :-) because &pwm1
-> > > "knows" if it needs 1 or 2 additional parameters (#pwm-cells).
-> > 
-> > It's not about ACPI, it's about "the ACPI glue layer in Linux kernel".
-> > Used API is a part of it and it does allow only two cases, either NULL entry
-> > (by having 0 as an argument) or full-length supplied tuple (in case of PWM it's
-> > 3, so, means 4 parameters.
-> > 
-> > Let's consider examples:
-> > 
-> > (0, 0, x3, y3, z3, t3) // NULL, NULL, PWM3
-> > (x1, y1, z1, t1, 0, x3, y3, z3, t3) // PWM1, NULL, PWM3
-> > 
-> > So, making last parameter "flexible" will work only for the last tuple in the
-> > array.
-> > 
-> > Read this [1] for further information.
-> > 
-> > [1]: https://elixir.bootlin.com/linux/latest/source/drivers/acpi/property.c#L629
-> 
-> Hmm... I have read the actual implementation and it seems it's possible to have
-> flexible array, so this patch needs to be reconsidered.
+When we traverse the list of the registered PWM controllers,
+use fwnode to match. This will help for further cleanup.
 
-I was thinking more about it and what we have here is positional-dependent
-arguments. Either way we might end up in the same situation (when we need to
-parse arguments based on their positions, rather than always have them being
-present). So, while I won't change documentation example (to be more stricter
-there), I will drop this change.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v3: no change
+v2: no change
 
-Also, the PWM initial state doesn't include duty cycle. Any explanations why is
-that?
+ drivers/pwm/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index a42999f877d2..f26da1a6a376 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -692,14 +692,14 @@ int pwm_adjust_config(struct pwm_device *pwm)
+ }
+ EXPORT_SYMBOL_GPL(pwm_adjust_config);
+ 
+-static struct pwm_chip *of_node_to_pwmchip(struct device_node *np)
++static struct pwm_chip *fwnode_to_pwmchip(struct fwnode_handle *fwnode)
+ {
+ 	struct pwm_chip *chip;
+ 
+ 	mutex_lock(&pwm_lock);
+ 
+ 	list_for_each_entry(chip, &pwm_chips, list)
+-		if (chip->dev && chip->dev->of_node == np) {
++		if (chip->dev && dev_fwnode(chip->dev) == fwnode) {
+ 			mutex_unlock(&pwm_lock);
+ 			return chip;
+ 		}
+@@ -778,7 +778,7 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+ 		return ERR_PTR(err);
+ 	}
+ 
+-	pc = of_node_to_pwmchip(args.np);
++	pc = fwnode_to_pwmchip(of_fwnode_handle(args.np));
+ 	if (IS_ERR(pc)) {
+ 		if (PTR_ERR(pc) != -EPROBE_DEFER)
+ 			pr_err("%s(): PWM chip not found\n", __func__);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
