@@ -7,34 +7,34 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C63C48BD1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E164AC48BE0
 	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6644161245
+	by mail.kernel.org (Postfix) with ESMTP id CB3AB61278
 	for <linux-pwm@archiver.kernel.org>; Mon,  7 Jun 2021 12:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbhFGM0i (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 7 Jun 2021 08:26:38 -0400
-Received: from mga07.intel.com ([134.134.136.100]:57549 "EHLO mga07.intel.com"
+        id S230286AbhFGM0j (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 7 Jun 2021 08:26:39 -0400
+Received: from mga05.intel.com ([192.55.52.43]:65295 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230220AbhFGM0h (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        id S230241AbhFGM0h (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
         Mon, 7 Jun 2021 08:26:37 -0400
-IronPort-SDR: /oOR1/zpf2RvcPSG/9xqoUpxZjh8KwD9vovr5SAHKOJUUr/cH6wYMxmk/vpJA3i5OPwOC3jkOk
- Y8y97Kg5BiAQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="268466120"
+IronPort-SDR: X4Ty/k9GcdKKeuQeXCic1iwvTKQj0ijcz/FTjRE/8WW9Bv5NJRR0YhvBeFH3YBXE22d2X2G3SR
+ h39Qz9OWsHTw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="290236963"
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="268466120"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 05:24:45 -0700
-IronPort-SDR: /BnpQELrFgD7EelUh8e5waCyyXSA0pk/7S4Zet0m+z2MOlWiHiD3pbrpAQ0nvYQXJLiJvAp3hI
- pUssNbgtKwsQ==
+   d="scan'208";a="290236963"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 05:24:46 -0700
+IronPort-SDR: nivNo8rv/nlBVVlwLvcRKyP83Q92lUN4ObKZF+jVMGqQn5BAHf4q6eZOyywJAUrg1QloO6QcOR
+ fjcwYge4K/Eg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="476187979"
+   d="scan'208";a="481505770"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Jun 2021 05:24:42 -0700
+  by orsmga001.jf.intel.com with ESMTP; 07 Jun 2021 05:24:42 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id CF93218E; Mon,  7 Jun 2021 15:25:05 +0300 (EEST)
+        id BDE10C5; Mon,  7 Jun 2021 15:25:05 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -46,96 +46,70 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
 Cc:     Jonathan Corbet <corbet@lwn.net>, Lee Jones <lee.jones@linaro.org>,
         "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>
-Subject: [PATCH v3 3/6] pwm: core: Reuse fwnode_to_pwmchip() in ACPI case
-Date:   Mon,  7 Jun 2021 15:24:55 +0300
-Message-Id: <20210607122458.40073-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 1/6] docs: firmware-guide: ACPI: Add a PWM example
+Date:   Mon,  7 Jun 2021 15:24:53 +0300
+Message-Id: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
-References: <20210607122458.40073-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-In ACPI case we may use matching by fwnode as provided via
-fwnode_to_pwmchip(). This makes device_to_pwmchip() not needed
-anymore.
+When PWM support for ACPI has been added into the kernel, it missed
+the documentation update. Hence update documentation here.
 
+Fixes: 4a6ef8e37c4d ("pwm: Add support referencing PWMs from ACPI")
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v3: rebased on the tree without dropped patch 2/7
-v2: no change
- drivers/pwm/core.c | 31 +------------------------------
- 1 file changed, 1 insertion(+), 30 deletions(-)
+v3: despite flags being optional, don't alter it in the documentation
+v2: updated example to use 600 ms instead of 600 us (looks saner)
+ .../firmware-guide/acpi/enumeration.rst       | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index f26da1a6a376..c63626c5266c 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -820,28 +820,6 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
- }
- EXPORT_SYMBOL_GPL(of_pwm_get);
+diff --git a/Documentation/firmware-guide/acpi/enumeration.rst b/Documentation/firmware-guide/acpi/enumeration.rst
+index 9f0d5c854fa4..f588663ba906 100644
+--- a/Documentation/firmware-guide/acpi/enumeration.rst
++++ b/Documentation/firmware-guide/acpi/enumeration.rst
+@@ -258,6 +258,38 @@ input driver::
+ 		.id_table	= mpu3050_ids,
+ 	};
  
--#if IS_ENABLED(CONFIG_ACPI)
--static struct pwm_chip *device_to_pwmchip(struct device *dev)
--{
--	struct pwm_chip *chip;
--
--	mutex_lock(&pwm_lock);
--
--	list_for_each_entry(chip, &pwm_chips, list) {
--		struct acpi_device *adev = ACPI_COMPANION(chip->dev);
--
--		if ((chip->dev == dev) || (adev && &adev->dev == dev)) {
--			mutex_unlock(&pwm_lock);
--			return chip;
--		}
--	}
--
--	mutex_unlock(&pwm_lock);
--
--	return ERR_PTR(-EPROBE_DEFER);
--}
--#endif
--
- /**
-  * acpi_pwm_get() - request a PWM via parsing "pwms" property in ACPI
-  * @fwnode: firmware node to get the "pwm" property from
-@@ -862,9 +840,7 @@ static struct pwm_chip *device_to_pwmchip(struct device *dev)
- static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
- {
- 	struct pwm_device *pwm = ERR_PTR(-ENODEV);
--#if IS_ENABLED(CONFIG_ACPI)
- 	struct fwnode_reference_args args;
--	struct acpi_device *acpi;
- 	struct pwm_chip *chip;
- 	int ret;
++Reference to PWM device
++=======================
++
++Sometimes a device can be a consumer of PWM channel. Obviously OS would like
++to know which one. To provide this mapping the special property has been
++introduced, i.e.::
++
++    Device (DEV)
++    {
++        Name (_DSD, Package ()
++        {
++            ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++            Package () {
++                Package () { "compatible", Package () { "pwm-leds" } },
++                Package () { "label", "alarm-led" },
++                Package () { "pwms",
++                    Package () {
++                        "\\_SB.PCI0.PWM",  // <PWM device reference>
++                        0,                 // <PWM index>
++                        600000000,         // <PWM period>
++                        0,                 // <PWM flags>
++                    }
++                }
++            }
++
++        })
++        ...
++
++In the above example the PWM-based LED driver references to the PWM channel 0
++of \_SB.PCI0.PWM device with initial period setting equal to 600 ms (note that
++value is given in nanoseconds).
++
+ GPIO support
+ ============
  
-@@ -874,14 +850,10 @@ static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
- 	if (ret < 0)
- 		return ERR_PTR(ret);
- 
--	acpi = to_acpi_device_node(args.fwnode);
--	if (!acpi)
--		return ERR_PTR(-EINVAL);
--
- 	if (args.nargs < 2)
- 		return ERR_PTR(-EPROTO);
- 
--	chip = device_to_pwmchip(&acpi->dev);
-+	chip = fwnode_to_pwmchip(args.fwnode);
- 	if (IS_ERR(chip))
- 		return ERR_CAST(chip);
- 
-@@ -894,7 +866,6 @@ static struct pwm_device *acpi_pwm_get(struct fwnode_handle *fwnode)
- 
- 	if (args.nargs > 2 && args.args[2] & PWM_POLARITY_INVERTED)
- 		pwm->args.polarity = PWM_POLARITY_INVERSED;
--#endif
- 
- 	return pwm;
- }
 -- 
 2.30.2
 
