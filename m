@@ -1,118 +1,235 @@
-Return-path: <roman.beranek@prusa3d.cz>
+Return-path: <jitao.shi@mediatek.com>
+Message-ID: <1623377024.24490.6.camel@mszsdaap41>
+From: Jitao Shi <jitao.shi@mediatek.com>
+Date: Fri, 11 Jun 2021 10:03:44 +0800
+In-Reply-To: <20210606211146.eczg3skaor2jqtxi@pengutronix.de>
+References: <20210603100531.161901-1-jitao.shi@mediatek.com>
+	 <20210603100531.161901-2-jitao.shi@mediatek.com>
+	 <20210606211146.eczg3skaor2jqtxi@pengutronix.de>
+Content-Type: multipart/alternative; boundary="=-olBJLyFYKcvs0VxNS94I"
 MIME-Version: 1.0
-References: <20210428001946.1059426-1-roman.beranek@prusa3d.com> <20210428061357.725m72aikc52n4gg@pengutronix.de>
-In-Reply-To: <20210428061357.725m72aikc52n4gg@pengutronix.de>
-From: =?UTF-8?Q?Roman_Ber=C3=A1nek?= <roman.beranek@prusa3d.cz>
-Date: Wed, 28 Apr 2021 14:07:56 +0200
-Message-ID: <CAL8eAtopkMVmt8XDbzLRsJ_JgGNwZ-FgdNPOWkh-yboTqceUyw@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="0000000000004cf6c005c1073b9b"
-Subject: Re: [PATCH] pwm: sun4i: Round delay time up to a nearest jiffy
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@siol.net>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, linux-sunxi@googlegroups.com, Roman Beranek <roman.beranek@prusa3d.com>
+Subject: Re: [PATCH v4 1/3] pwm: mtk-disp: adjust the clocks to avoid them
+ mismatch
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, cawa.cheng@mediatek.com, bibby.hsieh@mediatek.com, ck.hu@mediatek.com, stonea168@163.com, huijuan.xie@mediatek.com
 List-ID: <linux-pwm.vger.kernel.org>
 
---0000000000004cf6c005c1073b9b
+--=-olBJLyFYKcvs0VxNS94I
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 
-Hello Uwe,
+SGksDQoNClRoYW5rcyBmb3IgeW91ciByZXZpZXcuDQoNCk9uIFN1biwgMjAyMS0wNi0wNiBhdCAy
+MzoxMSArMDIwMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQoNCj4gSGVsbG8sDQo+IA0KPiB5
+b3UgbWlzc2VkIHRvIGFkZHJlc3MgTGVlIGFuZCBtZSBmb3IgeW91ciBwYXRjaCBzZXJpZXMuIEkg
+anVzdCBoYXBwZW5kDQo+IHRvIHN0dW1ibGUgb3ZlciB0aGlzIHNlcmllcyBieSBhIGZsdWtlLg0K
+PiANCj4gT24gVGh1LCBKdW4gMDMsIDIwMjEgYXQgMDY6MDU6MjlQTSArMDgwMCwgSml0YW8gU2hp
+IHdyb3RlOg0KPiA+IFRoZSBjbGtfbWFpbiBhbmQgY2xrX21tIGNsb2NrcyBhcmUgc3RpbGwgb24g
+d2hlbiBzeXN0ZW0gZW50ZXINCj4gPiBzdXNwZW5kLiBUaGF0IHdpbGwgY2FzdWUgdGhlIHBvd2Vy
+IGNvbnN1bXB0aW9uLg0KPiA+IA0KPiA+IFRoZSBjbG9ja3MgY2FsbCB0aGUgY2xrX3ByZXBhcmUo
+KSBpbiBwcm9iZSgpLCBidXQgdGhlIGNsa191bnByZXBhcmUoKQ0KPiA+IGlzIGNhbGxlZCBpbiBy
+ZW1vdmUoKSwgaXQgaXNuJ3QgY2FsbGVkIHdoZW4gc3lzdGVtIHN1c3BlbmQuDQo+IA0KPiBUaGUg
+RW5nbGlzaCBjb3VsZCBiZSBpbXByb3ZlZCBoZXJlLiBTb21ldGhpbmcgbGlrZToNCj4gDQo+IAlU
+aGUgY2xrcyAibWFpbiIgYW5kICJtbSIgYXJlIHByZXBhcmVkIGluIC5wcm9iZSgpIChhbmQNCj4g
+CXVucHJlcGFyZWQgaW4gLnJlbW92ZSgpKS4gVGhpcyByZXN1bHRzIGluIHRoZSBjbG9ja3MgYmVp
+bmcgb24NCj4gCWR1cmluZyBzdXNwZW5kIHdoaWNoIHJlc3VsdHMgaW4gdW5uZWNlc3NhcmlseSBp
+bmNyZWFzZWQgcG93ZXINCj4gCWNvbnN1bXB0aW9uLg0KPiANCj4gPiBSZW1vdmUgdGhlIGNsY29r
+IG9wdGVyYXRpb25zIGZyb20gcHJvYmUoKSBhbmQgcmVtb3ZlLg0KPiANCj4gcy9jbGNvay9jbG9j
+ay8sIHMvZVwuL2UoKS8NCj4gDQoNCkknbGwgZml4IHRoZW0gbmV4dCB2ZXJpc29uLg0KDQoNCj4g
+PiBBZGQgdGhlIGNsa19wcmVwYXJlX2VuYWJsZSgpIGluIGNvbmZpZygpLg0KPiA+IEFkZCB0aGUg
+Y2xrX2Rpc2FibGVfdW5wcmVwYXJlKCkgaW4gZGlzYWJsZSgpLg0KPiA+IA0KPiA+IFNpZ25lZC1v
+ZmYtYnk6IEppdGFvIFNoaSA8aml0YW8uc2hpQG1lZGlhdGVrLmNvbT4NCj4gPiAtLS0NCj4gPiAg
+ZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMgfCA4MSArKysrKysrKysrKysrKysrLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKSwgNDgg
+ZGVsZXRpb25zKC0pDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1tdGst
+ZGlzcC5jIGIvZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMNCj4gPiBpbmRleCA5YjNiYTQwMWEz
+ZGIuLmI1NzcxZTJjNTRiOCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tbXRrLWRp
+c3AuYw0KPiA+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jDQo+ID4gQEAgLTQ3LDYg
+KzQ3LDcgQEAgc3RydWN0IG10a19kaXNwX3B3bSB7DQo+ID4gIAlzdHJ1Y3QgY2xrICpjbGtfbWFp
+bjsNCj4gPiAgCXN0cnVjdCBjbGsgKmNsa19tbTsNCj4gPiAgCXZvaWQgX19pb21lbSAqYmFzZTsN
+Cj4gPiArCWJvb2wgZW5hYmxlZDsNCj4gPiAgfTsNCj4gPiAgDQo+ID4gIHN0YXRpYyBpbmxpbmUg
+c3RydWN0IG10a19kaXNwX3B3bSAqdG9fbXRrX2Rpc3BfcHdtKHN0cnVjdCBwd21fY2hpcCAqY2hp
+cCkNCj4gPiBAQCAtNzQsNiArNzUsMjIgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21fY29uZmln
+KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCj4gPiAgCXU2
+NCBkaXYsIHJhdGU7DQo+ID4gIAlpbnQgZXJyOw0KPiA+ICANCj4gPiArCWlmICghbWRwLT5lbmFi
+bGVkKSB7DQo+ID4gKwkJZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0K
+PiA+ICsJCWlmIChlcnIgPCAwKSB7DQo+ID4gKwkJCWRldl9lcnIoY2hpcC0+ZGV2LCAiQ2FuJ3Qg
+ZW5hYmxlIG1kcC0+Y2xrX21haW46ICVkXG4iLA0KPiA+ICsJCQkJZXJyKTsNCj4gPiArCQkJcmV0
+dXJuIGVycjsNCj4gDQo+IFBsZWFzZSB1c2UgJXBlIHRvIGdldCBzeW1ib2xpYyBlcnJvciBuYW1l
+cyB3aGljaCBhcmUgYmV0dGVyDQo+IHVuZGVyc3RhbmRhYmxlLg0KPiANCg0KSSdsbCBmaXggdGhl
+bSBuZXh0IHZlcmlzb24uDQoNCg0KPiA+ICsJCX0NCj4gPiArCQllcnIgPSBjbGtfcHJlcGFyZV9l
+bmFibGUobWRwLT5jbGtfbW0pOw0KPiA+ICsJCWlmIChlcnIgPCAwKSB7DQo+ID4gKwkJCWRldl9l
+cnIoY2hpcC0+ZGV2LCAiQ2FuJ3QgZW5hYmxlIG1kcC0+Y2xrX21tOiAlZFxuIiwNCj4gPiArCQkJ
+CWVycik7DQo+ID4gKwkJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tYWluKTsNCj4g
+PiArCQkJcmV0dXJuIGVycjsNCj4gPiArCQl9DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICAJLyoNCj4g
+PiAgCSAqIEZpbmQgcGVyaW9kLCBoaWdoX3dpZHRoIGFuZCBjbGtfZGl2IHRvIHN1aXQgZHV0eV9u
+cyBhbmQgcGVyaW9kX25zLg0KPiA+ICAJICogQ2FsY3VsYXRlIHByb3BlciBkaXYgdmFsdWUgdG8g
+a2VlcCBwZXJpb2QgdmFsdWUgaW4gdGhlIGJvdW5kLg0KPiA+IEBAIC04Nyw5ICsxMDQsMTUgQEAg
+c3RhdGljIGludCBtdGtfZGlzcF9wd21fY29uZmlnKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3Ry
+dWN0IHB3bV9kZXZpY2UgKnB3bSwNCj4gPiAgCXJhdGUgPSBjbGtfZ2V0X3JhdGUobWRwLT5jbGtf
+bWFpbik7DQo+ID4gIAljbGtfZGl2ID0gZGl2X3U2NChyYXRlICogcGVyaW9kX25zLCBOU0VDX1BF
+Ul9TRUMpID4+DQo+ID4gIAkJCSAgUFdNX1BFUklPRF9CSVRfV0lEVEg7DQo+ID4gLQlpZiAoY2xr
+X2RpdiA+IFBXTV9DTEtESVZfTUFYKQ0KPiA+ICsJaWYgKGNsa19kaXYgPiBQV01fQ0xLRElWX01B
+WCkgew0KPiA+ICsJCWRldl9lcnIoY2hpcC0+ZGV2LCAiY2xvY2sgcmF0ZSBpcyB0b28gaGlnaDog
+cmF0ZSA9ICVkIEh6XG4iLA0KPiA+ICsJCQlyYXRlKTsNCj4gDQo+IEFkZGluZyBhbiBlcnJvciBt
+ZXNzYWdlIGhlcmUgaXMgb3J0aG9nb25hbCB0byB0aGlzIHBhdGNoLiBFaXRoZXIgZHJvcCBpdA0K
+PiBvciBtZW50aW9uIGl0IGluIHRoZSBjb21taXQgbG9nIHBsZWFzZS4NCj4gDQoNCg0KSSdsbCBm
+aXggdGhlbSBuZXh0IHZlcmlzb24uDQoNCg0KPiA+ICsJCWlmICghbWRwLT5lbmFibGVkKSB7DQo+
+ID4gKwkJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tbSk7DQo+ID4gKwkJCWNsa19k
+aXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tYWluKTsNCj4gPiArCQl9DQo+ID4gIAkJcmV0dXJu
+IC1FSU5WQUw7DQo+ID4gLQ0KPiA+ICsJfQ0KPiA+ICAJZGl2ID0gTlNFQ19QRVJfU0VDICogKGNs
+a19kaXYgKyAxKTsNCj4gPiAgCXBlcmlvZCA9IGRpdjY0X3U2NChyYXRlICogcGVyaW9kX25zLCBk
+aXYpOw0KPiA+ICAJaWYgKHBlcmlvZCA+IDApDQo+ID4gWy4uLl0NCj4gPiBAQCAtMTM1LDE4ICsx
+NDUsOSBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9lbmFibGUoc3RydWN0IHB3bV9jaGlwICpj
+aGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKQ0KPiA+ICAJc3RydWN0IG10a19kaXNwX3B3bSAq
+bWRwID0gdG9fbXRrX2Rpc3BfcHdtKGNoaXApOw0KPiA+ICAJaW50IGVycjsNCj4gPiAgDQo+ID4g
+LQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KPiA+IC0JaWYgKGVyciA8IDApDQo+
+ID4gLQkJcmV0dXJuIGVycjsNCj4gPiAtDQo+ID4gLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+Y2xr
+X21tKTsNCj4gPiAtCWlmIChlcnIgPCAwKSB7DQo+ID4gLQkJY2xrX2Rpc2FibGUobWRwLT5jbGtf
+bWFpbik7DQo+ID4gLQkJcmV0dXJuIGVycjsNCj4gPiAtCX0NCj4gPiAtDQo+ID4gIAltdGtfZGlz
+cF9wd21fdXBkYXRlX2JpdHMobWRwLCBESVNQX1BXTV9FTiwgbWRwLT5kYXRhLT5lbmFibGVfbWFz
+aywNCj4gPiAgCQkJCSBtZHAtPmRhdGEtPmVuYWJsZV9tYXNrKTsNCj4gPiArCW1kcC0+ZW5hYmxl
+ZCA9IHRydWU7DQo+IA0KPiBUaGUgbW9kaWZpY2F0aW9uIHRvIC5lbmFibGUoKSBsb29rcyB3cm9u
+Zy4gQWZ0ZXIgdGhlIFBXTSB3YXMgZGlzYWJsZWQNCj4gdGhlIGNsb2NrcyBhcmUgb2ZmLCBzbyAu
+ZW5hYmxlKCkgbXVzdCByZWVuYWJsZSB0aGVtLCBkb2Vzbid0IGl0Pw0KPiANCg0KDQpJJ2xsIGZp
+eCB0aGVtIG5leHQgdmVyaXNvbi4NCg0KDQo+ID4gIAlyZXR1cm4gMDsNCj4gPiAgfQ0KPiANCj4g
+QmVzdCByZWdhcmRzDQo+IFV3ZQ0KPiANCg0KDQo=
 
-Correct, the output may stay in an active state. I only discovered this
-bug as I investigated a report of unreliable screen timeout. The period
-we use the PWM with is 50 us.
+--=-olBJLyFYKcvs0VxNS94I
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-The PWMx_RDY bit stays 0 well after the last period ends, so if the bit
-has any function at all, this one is certainly not it.
+PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9XM0MvL0RURCBIVE1MIDQuMCBUUkFOU0lUSU9OQUwv
+L0VOIj4NCjxIVE1MPg0KPEhFQUQ+DQogIDxNRVRBIEhUVFAtRVFVSVY9IkNvbnRlbnQtVHlwZSIg
+Q09OVEVOVD0idGV4dC9odG1sOyBDSEFSU0VUPVVURi04Ij4NCiAgPE1FVEEgTkFNRT0iR0VORVJB
+VE9SIiBDT05URU5UPSJHdGtIVE1MLzQuNi42Ij4NCjwvSEVBRD4NCjxCT0RZPg0KSGksPEJSPg0K
+PEJSPg0KVGhhbmtzIGZvciB5b3VyIHJldmlldy48QlI+DQo8QlI+DQpPbiBTdW4sIDIwMjEtMDYt
+MDYgYXQgMjM6MTEgKzAyMDAsIFV3ZSBLbGVpbmUtSyYjMjQ2O25pZyB3cm90ZToNCjxCTE9DS1FV
+T1RFIFRZUEU9Q0lURT4NCjxQUkU+DQpIZWxsbywNCg0KeW91IG1pc3NlZCB0byBhZGRyZXNzIExl
+ZSBhbmQgbWUgZm9yIHlvdXIgcGF0Y2ggc2VyaWVzLiBJIGp1c3QgaGFwcGVuZA0KdG8gc3R1bWJs
+ZSBvdmVyIHRoaXMgc2VyaWVzIGJ5IGEgZmx1a2UuDQoNCk9uIFRodSwgSnVuIDAzLCAyMDIxIGF0
+IDA2OjA1OjI5UE0gKzA4MDAsIEppdGFvIFNoaSB3cm90ZToNCjxGT05UIENPTE9SPSIjNzM3Mzcz
+Ij4mZ3Q7IFRoZSBjbGtfbWFpbiBhbmQgY2xrX21tIGNsb2NrcyBhcmUgc3RpbGwgb24gd2hlbiBz
+eXN0ZW0gZW50ZXI8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyBzdXNwZW5kLiBU
+aGF0IHdpbGwgY2FzdWUgdGhlIHBvd2VyIGNvbnN1bXB0aW9uLjwvRk9OVD4NCjxGT05UIENPTE9S
+PSIjNzM3MzczIj4mZ3Q7IDwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7IFRoZSBj
+bG9ja3MgY2FsbCB0aGUgY2xrX3ByZXBhcmUoKSBpbiBwcm9iZSgpLCBidXQgdGhlIGNsa191bnBy
+ZXBhcmUoKTwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7IGlzIGNhbGxlZCBpbiBy
+ZW1vdmUoKSwgaXQgaXNuJ3QgY2FsbGVkIHdoZW4gc3lzdGVtIHN1c3BlbmQuPC9GT05UPg0KDQpU
+aGUgRW5nbGlzaCBjb3VsZCBiZSBpbXByb3ZlZCBoZXJlLiBTb21ldGhpbmcgbGlrZToNCg0KCVRo
+ZSBjbGtzICZxdW90O21haW4mcXVvdDsgYW5kICZxdW90O21tJnF1b3Q7IGFyZSBwcmVwYXJlZCBp
+biAucHJvYmUoKSAoYW5kDQoJdW5wcmVwYXJlZCBpbiAucmVtb3ZlKCkpLiBUaGlzIHJlc3VsdHMg
+aW4gdGhlIGNsb2NrcyBiZWluZyBvbg0KCWR1cmluZyBzdXNwZW5kIHdoaWNoIHJlc3VsdHMgaW4g
+dW5uZWNlc3NhcmlseSBpbmNyZWFzZWQgcG93ZXINCgljb25zdW1wdGlvbi4NCg0KPEZPTlQgQ09M
+T1I9IiM3MzczNzMiPiZndDsgUmVtb3ZlIHRoZSBjbGNvayBvcHRlcmF0aW9ucyBmcm9tIHByb2Jl
+KCkgYW5kIHJlbW92ZS48L0ZPTlQ+DQoNCnMvY2xjb2svY2xvY2svLCBzL2VcLi9lKCkvDQoNCjwv
+UFJFPg0KPC9CTE9DS1FVT1RFPg0KSSdsbCBmaXggdGhlbSBuZXh0IHZlcmlzb24uPEJSPg0KPEJS
+Pg0KPEJMT0NLUVVPVEUgVFlQRT1DSVRFPg0KPFBSRT4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4m
+Z3Q7IEFkZCB0aGUgY2xrX3ByZXBhcmVfZW5hYmxlKCkgaW4gY29uZmlnKCkuPC9GT05UPg0KPEZP
+TlQgQ09MT1I9IiM3MzczNzMiPiZndDsgQWRkIHRoZSBjbGtfZGlzYWJsZV91bnByZXBhcmUoKSBp
+biBkaXNhYmxlKCkuPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgPC9GT05UPg0K
+PEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgU2lnbmVkLW9mZi1ieTogSml0YW8gU2hpICZsdDs8
+QSBIUkVGPSJtYWlsdG86aml0YW8uc2hpQG1lZGlhdGVrLmNvbSI+aml0YW8uc2hpQG1lZGlhdGVr
+LmNvbTwvQT4mZ3Q7PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgLS0tPC9GT05U
+Pg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIGRyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5j
+IHwgODEgKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS08L0ZPTlQ+DQo8Rk9O
+VCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAgMSBmaWxlIGNoYW5nZWQsIDMzIGluc2VydGlvbnMoKyks
+IDQ4IGRlbGV0aW9ucygtKTwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7IDwvRk9O
+VD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9w
+d20tbXRrLWRpc3AuYyBiL2RyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jPC9GT05UPg0KPEZPTlQg
+Q09MT1I9IiM3MzczNzMiPiZndDsgaW5kZXggOWIzYmE0MDFhM2RiLi5iNTc3MWUyYzU0YjggMTAw
+NjQ0PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgLS0tIGEvZHJpdmVycy9wd20v
+cHdtLW10ay1kaXNwLmM8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyArKysgYi9k
+cml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYzwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4m
+Z3Q7IEBAIC00Nyw2ICs0Nyw3IEBAIHN0cnVjdCBtdGtfZGlzcF9wd20gezwvRk9OVD4NCjxGT05U
+IENPTE9SPSIjNzM3MzczIj4mZ3Q7ICAJc3RydWN0IGNsayAqY2xrX21haW47PC9GT05UPg0KPEZP
+TlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIAlzdHJ1Y3QgY2xrICpjbGtfbW07PC9GT05UPg0KPEZP
+TlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIAl2b2lkIF9faW9tZW0gKmJhc2U7PC9GT05UPg0KPEZP
+TlQgQ09MT1I9IiM3MzczNzMiPiZndDsgKwlib29sIGVuYWJsZWQ7PC9GT05UPg0KPEZPTlQgQ09M
+T1I9IiM3MzczNzMiPiZndDsgIH07PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsg
+IDwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICBzdGF0aWMgaW5saW5lIHN0cnVj
+dCBtdGtfZGlzcF9wd20gKnRvX210a19kaXNwX3B3bShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXApPC9G
+T05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgQEAgLTc0LDYgKzc1LDIyIEBAIHN0YXRp
+YyBpbnQgbXRrX2Rpc3BfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBw
+d21fZGV2aWNlICpwd20sPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIAl1NjQg
+ZGl2LCByYXRlOzwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICAJaW50IGVycjs8
+L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAgPC9GT05UPg0KPEZPTlQgQ09MT1I9
+IiM3MzczNzMiPiZndDsgKwlpZiAoIW1kcC0mZ3Q7ZW5hYmxlZCkgezwvRk9OVD4NCjxGT05UIENP
+TE9SPSIjNzM3MzczIj4mZ3Q7ICsJCWVyciA9IGNsa19wcmVwYXJlX2VuYWJsZShtZHAtJmd0O2Ns
+a19tYWluKTs8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyArCQlpZiAoZXJyICZs
+dDsgMCkgezwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCQlkZXZfZXJyKGNo
+aXAtJmd0O2RldiwgJnF1b3Q7Q2FuJ3QgZW5hYmxlIG1kcC0mZ3Q7Y2xrX21haW46ICVkXG4mcXVv
+dDssPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgKwkJCQllcnIpOzwvRk9OVD4N
+CjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCQlyZXR1cm4gZXJyOzwvRk9OVD4NCg0KUGxl
+YXNlIHVzZSAlcGUgdG8gZ2V0IHN5bWJvbGljIGVycm9yIG5hbWVzIHdoaWNoIGFyZSBiZXR0ZXIN
+CnVuZGVyc3RhbmRhYmxlLg0KDQo8L1BSRT4NCjwvQkxPQ0tRVU9URT4NCkknbGwgZml4IHRoZW0g
+bmV4dCB2ZXJpc29uLjxCUj4NCjxCUj4NCjxCTE9DS1FVT1RFIFRZUEU9Q0lURT4NCjxQUkU+DQo8
+Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyArCQl9PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3Mzcz
+NzMiPiZndDsgKwkJZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKG1kcC0mZ3Q7Y2xrX21tKTs8L0ZP
+TlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyArCQlpZiAoZXJyICZsdDsgMCkgezwvRk9O
+VD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCQlkZXZfZXJyKGNoaXAtJmd0O2Rldiwg
+JnF1b3Q7Q2FuJ3QgZW5hYmxlIG1kcC0mZ3Q7Y2xrX21tOiAlZFxuJnF1b3Q7LDwvRk9OVD4NCjxG
+T05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCQkJZXJyKTs8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0i
+IzczNzM3MyI+Jmd0OyArCQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKG1kcC0mZ3Q7Y2xrX21haW4p
+OzwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCQlyZXR1cm4gZXJyOzwvRk9O
+VD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCX08L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0i
+IzczNzM3MyI+Jmd0OyArCX08L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyArPC9G
+T05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIAkvKjwvRk9OVD4NCjxGT05UIENPTE9S
+PSIjNzM3MzczIj4mZ3Q7ICAJICogRmluZCBwZXJpb2QsIGhpZ2hfd2lkdGggYW5kIGNsa19kaXYg
+dG8gc3VpdCBkdXR5X25zIGFuZCBwZXJpb2RfbnMuPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3Mzcz
+NzMiPiZndDsgIAkgKiBDYWxjdWxhdGUgcHJvcGVyIGRpdiB2YWx1ZSB0byBrZWVwIHBlcmlvZCB2
+YWx1ZSBpbiB0aGUgYm91bmQuPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgQEAg
+LTg3LDkgKzEwNCwxNSBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9jb25maWcoc3RydWN0IHB3
+bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLDwvRk9OVD4NCjxGT05UIENPTE9S
+PSIjNzM3MzczIj4mZ3Q7ICAJcmF0ZSA9IGNsa19nZXRfcmF0ZShtZHAtJmd0O2Nsa19tYWluKTs8
+L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAgCWNsa19kaXYgPSBkaXZfdTY0KHJh
+dGUgKiBwZXJpb2RfbnMsIE5TRUNfUEVSX1NFQykgJmd0OyZndDs8L0ZPTlQ+DQo8Rk9OVCBDT0xP
+Uj0iIzczNzM3MyI+Jmd0OyAgCQkJICBQV01fUEVSSU9EX0JJVF9XSURUSDs8L0ZPTlQ+DQo8Rk9O
+VCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAtCWlmIChjbGtfZGl2ICZndDsgUFdNX0NMS0RJVl9NQVgp
+PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgKwlpZiAoY2xrX2RpdiAmZ3Q7IFBX
+TV9DTEtESVZfTUFYKSB7PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgKwkJZGV2
+X2VycihjaGlwLSZndDtkZXYsICZxdW90O2Nsb2NrIHJhdGUgaXMgdG9vIGhpZ2g6IHJhdGUgPSAl
+ZCBIelxuJnF1b3Q7LDwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCQlyYXRl
+KTs8L0ZPTlQ+DQoNCkFkZGluZyBhbiBlcnJvciBtZXNzYWdlIGhlcmUgaXMgb3J0aG9nb25hbCB0
+byB0aGlzIHBhdGNoLiBFaXRoZXIgZHJvcCBpdA0Kb3IgbWVudGlvbiBpdCBpbiB0aGUgY29tbWl0
+IGxvZyBwbGVhc2UuDQoNCjwvUFJFPg0KPC9CTE9DS1FVT1RFPg0KPEJSPg0KSSdsbCBmaXggdGhl
+bSBuZXh0IHZlcmlzb24uPEJSPg0KPEJSPg0KPEJMT0NLUVVPVEUgVFlQRT1DSVRFPg0KPFBSRT4N
+CjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJCWlmICghbWRwLSZndDtlbmFibGVkKSB7PC9G
+T05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgKwkJCWNsa19kaXNhYmxlX3VucHJlcGFy
+ZShtZHAtJmd0O2Nsa19tbSk7PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgKwkJ
+CWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtJmd0O2Nsa19tYWluKTs8L0ZPTlQ+DQo8Rk9OVCBD
+T0xPUj0iIzczNzM3MyI+Jmd0OyArCQl9PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZn
+dDsgIAkJcmV0dXJuIC1FSU5WQUw7PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsg
+LTwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICsJfTwvRk9OVD4NCjxGT05UIENP
+TE9SPSIjNzM3MzczIj4mZ3Q7ICAJZGl2ID0gTlNFQ19QRVJfU0VDICogKGNsa19kaXYgKyAxKTs8
+L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAgCXBlcmlvZCA9IGRpdjY0X3U2NChy
+YXRlICogcGVyaW9kX25zLCBkaXYpOzwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7
+ICAJaWYgKHBlcmlvZCAmZ3Q7IDApPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsg
+Wy4uLl08L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyBAQCAtMTM1LDE4ICsxNDUs
+OSBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9lbmFibGUoc3RydWN0IHB3bV9jaGlwICpjaGlw
+LCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKTwvRk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4m
+Z3Q7ICAJc3RydWN0IG10a19kaXNwX3B3bSAqbWRwID0gdG9fbXRrX2Rpc3BfcHdtKGNoaXApOzwv
+Rk9OVD4NCjxGT05UIENPTE9SPSIjNzM3MzczIj4mZ3Q7ICAJaW50IGVycjs8L0ZPTlQ+DQo8Rk9O
+VCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAgPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZn
+dDsgLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0mZ3Q7Y2xrX21haW4pOzwvRk9OVD4NCjxGT05UIENP
+TE9SPSIjNzM3MzczIj4mZ3Q7IC0JaWYgKGVyciAmbHQ7IDApPC9GT05UPg0KPEZPTlQgQ09MT1I9
+IiM3MzczNzMiPiZndDsgLQkJcmV0dXJuIGVycjs8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3
+MyI+Jmd0OyAtPC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgLQllcnIgPSBjbGtf
+ZW5hYmxlKG1kcC0mZ3Q7Y2xrX21tKTs8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0
+OyAtCWlmIChlcnIgJmx0OyAwKSB7PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsg
+LQkJY2xrX2Rpc2FibGUobWRwLSZndDtjbGtfbWFpbik7PC9GT05UPg0KPEZPTlQgQ09MT1I9IiM3
+MzczNzMiPiZndDsgLQkJcmV0dXJuIGVycjs8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+
+Jmd0OyAtCX08L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAtPC9GT05UPg0KPEZP
+TlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIAltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBE
+SVNQX1BXTV9FTiwgbWRwLSZndDtkYXRhLSZndDtlbmFibGVfbWFzayw8L0ZPTlQ+DQo8Rk9OVCBD
+T0xPUj0iIzczNzM3MyI+Jmd0OyAgCQkJCSBtZHAtJmd0O2RhdGEtJmd0O2VuYWJsZV9tYXNrKTs8
+L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyArCW1kcC0mZ3Q7ZW5hYmxlZCA9IHRy
+dWU7PC9GT05UPg0KDQpUaGUgbW9kaWZpY2F0aW9uIHRvIC5lbmFibGUoKSBsb29rcyB3cm9uZy4g
+QWZ0ZXIgdGhlIFBXTSB3YXMgZGlzYWJsZWQNCnRoZSBjbG9ja3MgYXJlIG9mZiwgc28gLmVuYWJs
+ZSgpIG11c3QgcmVlbmFibGUgdGhlbSwgZG9lc24ndCBpdD8NCg0KPC9QUkU+DQo8L0JMT0NLUVVP
+VEU+DQo8QlI+DQpJJ2xsIGZpeCB0aGVtIG5leHQgdmVyaXNvbi48QlI+DQo8QlI+DQo8QkxPQ0tR
+VU9URSBUWVBFPUNJVEU+DQo8UFJFPg0KPEZPTlQgQ09MT1I9IiM3MzczNzMiPiZndDsgIAlyZXR1
+cm4gMDs8L0ZPTlQ+DQo8Rk9OVCBDT0xPUj0iIzczNzM3MyI+Jmd0OyAgfTwvRk9OVD4NCg0KQmVz
+dCByZWdhcmRzDQpVd2UNCg0KPC9QUkU+DQo8L0JMT0NLUVVPVEU+DQo8QlI+DQo8L0JPRFk+DQo8
+L0hUTUw+DQo=
 
-Cheers,
-Roman
-
-On Wed, Apr 28, 2021 at 8:14 AM Uwe Kleine-K=C3=B6nig <
-u.kleine-koenig@pengutronix.de> wrote:
-
-> Hello Roman,
->
-> On Wed, Apr 28, 2021 at 02:19:46AM +0200, Roman Beranek wrote:
-> > More often than not, a PWM period may span nowhere near as far
-> > as 1 jiffy, yet it still must be waited upon before the channel
-> > is disabled.
->
-> I wonder what happens if you don't wait long enough. Is this a
-> theoretical issue, or do you see an (occasional?) breakage that is fixed
-> by this patch?
->
-> I guess the problem is that if you disable too early the output freezes
-> and that might be in a state where the output is still active? Would
-> polling the PWMx_RDY bit in the control register help here?
->
-> Best regards
-> Uwe
->
-> --
-> Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig       =
-     |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ =
-|
->
-
---0000000000004cf6c005c1073b9b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:monospac=
-e,monospace"><div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,Roboto=
-Draft,Helvetica,Arial,sans-serif;font-size:14px">Hello Uwe,</div><div style=
-=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helvetica,Arial,s=
-ans-serif;font-size:14px"><br></div><div style=3D"color:rgba(0,0,0,0.87);fo=
-nt-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:14px">Cor=
-rect, the output may stay in an active state. I only discovered this<span s=
-tyle=3D"white-space:pre">	</span></div><div style=3D"color:rgba(0,0,0,0.87)=
-;font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:14px">=
-bug as I investigated a report of unreliable screen timeout. The period</di=
-v><div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helve=
-tica,Arial,sans-serif;font-size:14px">we use the PWM with is 50 us.</div><d=
-iv style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helvetica=
-,Arial,sans-serif;font-size:14px"><br></div><div style=3D"color:rgba(0,0,0,=
-0.87);font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:1=
-4px">The PWMx_RDY bit stays 0 well after the last period ends, so if the bi=
-t</div><div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,=
-Helvetica,Arial,sans-serif;font-size:14px">has any function at all, this on=
-e is certainly not it.</div><div style=3D"color:rgba(0,0,0,0.87);font-famil=
-y:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-size:14px"><br></div><=
-div style=3D"color:rgba(0,0,0,0.87);font-family:Roboto,RobotoDraft,Helvetic=
-a,Arial,sans-serif;font-size:14px">Cheers,</div><div style=3D"color:rgba(0,=
-0,0,0.87);font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;font-si=
-ze:14px">Roman</div></div></div><br><div class=3D"gmail_quote"><div dir=3D"=
-ltr" class=3D"gmail_attr">On Wed, Apr 28, 2021 at 8:14 AM Uwe Kleine-K=C3=
-=B6nig &lt;<a href=3D"mailto:u.kleine-koenig@pengutronix.de">u.kleine-koeni=
-g@pengutronix.de</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" =
-style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pa=
-dding-left:1ex">Hello Roman,<br>
-<br>
-On Wed, Apr 28, 2021 at 02:19:46AM +0200, Roman Beranek wrote:<br>
-&gt; More often than not, a PWM period may span nowhere near as far<br>
-&gt; as 1 jiffy, yet it still must be waited upon before the channel<br>
-&gt; is disabled.<br>
-<br>
-I wonder what happens if you don&#39;t wait long enough. Is this a<br>
-theoretical issue, or do you see an (occasional?) breakage that is fixed<br=
->
-by this patch?<br>
-<br>
-I guess the problem is that if you disable too early the output freezes<br>
-and that might be in a state where the output is still active? Would<br>
-polling the PWMx_RDY bit in the control register help here?<br>
-<br>
-Best regards<br>
-Uwe<br>
-<br>
--- <br>
-Pengutronix e.K.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| Uwe Kleine-K=C3=B6nig=C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 |<br>
-Industrial Linux Solutions=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0| <a href=3D"https://www.pengutronix.de/" rel=3D"noreferrer" t=
-arget=3D"_blank">https://www.pengutronix.de/</a> |<br>
-</blockquote></div>
-
---0000000000004cf6c005c1073b9b--
+--=-olBJLyFYKcvs0VxNS94I--
