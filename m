@@ -2,176 +2,127 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC63C49361
-	for <linux-pwm@archiver.kernel.org>; Wed, 16 Jun 2021 08:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EACCFC49EA2
+	for <linux-pwm@archiver.kernel.org>; Wed, 16 Jun 2021 10:35:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 352FB61241
-	for <linux-pwm@archiver.kernel.org>; Wed, 16 Jun 2021 08:54:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8C0E6101B
+	for <linux-pwm@archiver.kernel.org>; Wed, 16 Jun 2021 10:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbhFPI4g (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 16 Jun 2021 04:56:36 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:55379 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232159AbhFPI4g (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Jun 2021 04:56:36 -0400
-X-UUID: fbc0b706b5b0402ab0827c526a2f2c51-20210616
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=2fHYRfRrWPoQ/PGZ/QJ/XHKUVVZ6p/fRoGO9QPqAsx0=;
-        b=K56jUNvJFaB+AOqMr9Eml+3trBAy8rteQKyha2UMdOK/blC+JFCIx73hTd8TKWDsYZzJrar9ztaEfX2K9f3hlqnUYHgTa88YmM3pS/l3cp07w7U4f0HfxzvHTIYRUTQyNewnYKk7A3OJzcoS3i0XyqDgvzbZiHHcxJV8SteBpFw=;
-X-UUID: fbc0b706b5b0402ab0827c526a2f2c51-20210616
-Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-        (envelope-from <jitao.shi@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 130685143; Wed, 16 Jun 2021 16:54:25 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS33N1.mediatek.inc
- (172.27.4.75) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Jun
- 2021 16:54:13 +0800
-Received: from mszsdclx1018.gcn.mediatek.inc (10.16.6.18) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 16 Jun 2021 16:54:12 +0800
-From:   Jitao Shi <jitao.shi@mediatek.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-pwm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
-        <cawa.cheng@mediatek.com>, <bibby.hsieh@mediatek.com>,
-        <ck.hu@mediatek.com>, <stonea168@163.com>,
-        <huijuan.xie@mediatek.com>, Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH v5 1/3] pwm: mtk-disp: adjust the clocks to avoid them mismatch
-Date:   Wed, 16 Jun 2021 16:52:22 +0800
-Message-ID: <20210616085224.157318-2-jitao.shi@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210616085224.157318-1-jitao.shi@mediatek.com>
-References: <20210616085224.157318-1-jitao.shi@mediatek.com>
+        id S232526AbhFPKhc (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 16 Jun 2021 06:37:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232370AbhFPKhA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 16 Jun 2021 06:37:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 998E661107;
+        Wed, 16 Jun 2021 10:34:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623839691;
+        bh=uJEv3OvJMqswalWvG2rx1DCmioR+VtUOrO7CZGR2Ajw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A6wsFevRhS9CeafwlT529v2rV3Gm9GGwn4GGkmYDghQBgvSltNdLhA2d1VwUgm9YV
+         V+BZ/Z7dkVuRC9jA+aF8uUIN4oppwPSoc0YE3UC/NPxsGiCugwhXT7XZEbbeh2pmB/
+         M4rdDOJ4s0X9LmiRn4axjJlxF+T4B+Wd1HYLAz0MgEG64RvZ+ZZaXxAxnqcCDwPJej
+         pW3zx7fe6lsVprl/vQScwg/OlH7/cEN61iAlussljsV2mRmi/pOkb0n3FbRiUdCHAK
+         H6X3SZGPBKP1nePHfXCLHq/6yaW3vQZyt5NRvZBipljaN3xhgyRVkvGP83STRQZ1Xh
+         jhhQBOeaewbeQ==
+Date:   Wed, 16 Jun 2021 16:04:47 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+        alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
+Message-ID: <YMnTx4GqTWu75o2n@vkoul-mobl>
+References: <20210615191543.1043414-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-SNTS-SMTP: E5FC59ED342820AA9A4C1012F3720C3B731276332062C45ABA72E263260499AB2000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210615191543.1043414-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-VGhlIGNsa3MgIm1haW4iIGFuZCAibW0iIGFyZSBwcmVwYXJlZCBpbiAucHJvYmUoKSAoYW5kDQp1
-bnByZXBhcmVkIGluIC5yZW1vdmUoKSkuIFRoaXMgcmVzdWx0cyBpbiB0aGUgY2xvY2tzIGJlaW5n
-IG9uDQpkdXJpbmcgc3VzcGVuZCB3aGljaCByZXN1bHRzIGluIHVubmVjZXNzYXJpbHkgaW5jcmVh
-c2VkIHBvd2VyDQpjb25zdW1wdGlvbi4NCg0KUmVtb3ZlIHRoZSBjbG9jayBvcGVyYXRpb25zIGZy
-b20gLnByb2JlKCkgYW5kIC5yZW1vdmUoKS4NCkFkZCB0aGUgY2xrX3ByZXBhcmVfZW5hYmxlKCkg
-aW4gLmNvbmZpZygpLg0KQWRkIHRoZSBjbGtfZGlzYWJsZV91bnByZXBhcmUoKSBpbiAuZGlzYWJs
-ZSgpLg0KUmVtb3ZlIHRoZSBNVDI3MDEgZG91YmxlIGJ1ZmZlciBjb21tZW50Lg0KDQpTaWduZWQt
-b2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5jb20+DQotLS0NCiBkcml2ZXJz
-L3B3bS9wd20tbXRrLWRpc3AuYyB8IDExNiArKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0t
-LS0tLS0tDQogMSBmaWxlIGNoYW5nZWQsIDU3IGluc2VydGlvbnMoKyksIDU5IGRlbGV0aW9ucygt
-KQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMgYi9kcml2ZXJzL3B3
-bS9wd20tbXRrLWRpc3AuYw0KaW5kZXggOWIzYmE0MDFhM2RiLi4yMDRkNzZiZWViMjYgMTAwNjQ0
-DQotLS0gYS9kcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYw0KKysrIGIvZHJpdmVycy9wd20vcHdt
-LW10ay1kaXNwLmMNCkBAIC00Nyw2ICs0Nyw3IEBAIHN0cnVjdCBtdGtfZGlzcF9wd20gew0KIAlz
-dHJ1Y3QgY2xrICpjbGtfbWFpbjsNCiAJc3RydWN0IGNsayAqY2xrX21tOw0KIAl2b2lkIF9faW9t
-ZW0gKmJhc2U7DQorCWJvb2wgZW5hYmxlZDsNCiB9Ow0KIA0KIHN0YXRpYyBpbmxpbmUgc3RydWN0
-IG10a19kaXNwX3B3bSAqdG9fbXRrX2Rpc3BfcHdtKHN0cnVjdCBwd21fY2hpcCAqY2hpcCkNCkBA
-IC03NCw2ICs3NSwyMiBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9jb25maWcoc3RydWN0IHB3
-bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KIAl1NjQgZGl2LCByYXRlOw0K
-IAlpbnQgZXJyOw0KIA0KKwlpZiAoIW1kcC0+ZW5hYmxlZCkgew0KKwkJZXJyID0gY2xrX3ByZXBh
-cmVfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KKwkJaWYgKGVyciA8IDApIHsNCisJCQlkZXZfZXJy
-KGNoaXAtPmRldiwgIkNhbid0IGVuYWJsZSBtZHAtPmNsa19tYWluOiAlcGVcbiIsDQorCQkJCUVS
-Ul9QVFIoZXJyKSk7DQorCQkJcmV0dXJuIGVycjsNCisJCX0NCisJCWVyciA9IGNsa19wcmVwYXJl
-X2VuYWJsZShtZHAtPmNsa19tbSk7DQorCQlpZiAoZXJyIDwgMCkgew0KKwkJCWRldl9lcnIoY2hp
-cC0+ZGV2LCAiQ2FuJ3QgZW5hYmxlIG1kcC0+Y2xrX21tOiAlcGVcbiIsDQorCQkJCUVSUl9QVFIo
-ZXJyKSk7DQorCQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKG1kcC0+Y2xrX21haW4pOw0KKwkJCXJl
-dHVybiBlcnI7DQorCQl9DQorCX0NCisNCiAJLyoNCiAJICogRmluZCBwZXJpb2QsIGhpZ2hfd2lk
-dGggYW5kIGNsa19kaXYgdG8gc3VpdCBkdXR5X25zIGFuZCBwZXJpb2RfbnMuDQogCSAqIENhbGN1
-bGF0ZSBwcm9wZXIgZGl2IHZhbHVlIHRvIGtlZXAgcGVyaW9kIHZhbHVlIGluIHRoZSBib3VuZC4N
-CkBAIC04Nyw5ICsxMDQsMTMgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21fY29uZmlnKHN0cnVj
-dCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCiAJcmF0ZSA9IGNsa19n
-ZXRfcmF0ZShtZHAtPmNsa19tYWluKTsNCiAJY2xrX2RpdiA9IGRpdl91NjQocmF0ZSAqIHBlcmlv
-ZF9ucywgTlNFQ19QRVJfU0VDKSA+Pg0KIAkJCSAgUFdNX1BFUklPRF9CSVRfV0lEVEg7DQotCWlm
-IChjbGtfZGl2ID4gUFdNX0NMS0RJVl9NQVgpDQorCWlmIChjbGtfZGl2ID4gUFdNX0NMS0RJVl9N
-QVgpIHsNCisJCWlmICghbWRwLT5lbmFibGVkKSB7DQorCQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJl
-KG1kcC0+Y2xrX21tKTsNCisJCQljbGtfZGlzYWJsZV91bnByZXBhcmUobWRwLT5jbGtfbWFpbik7
-DQorCQl9DQogCQlyZXR1cm4gLUVJTlZBTDsNCi0NCisJfQ0KIAlkaXYgPSBOU0VDX1BFUl9TRUMg
-KiAoY2xrX2RpdiArIDEpOw0KIAlwZXJpb2QgPSBkaXY2NF91NjQocmF0ZSAqIHBlcmlvZF9ucywg
-ZGl2KTsNCiAJaWYgKHBlcmlvZCA+IDApDQpAQCAtOTgsMTYgKzExOSw2IEBAIHN0YXRpYyBpbnQg
-bXRrX2Rpc3BfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21fZGV2
-aWNlICpwd20sDQogCWhpZ2hfd2lkdGggPSBkaXY2NF91NjQocmF0ZSAqIGR1dHlfbnMsIGRpdik7
-DQogCXZhbHVlID0gcGVyaW9kIHwgKGhpZ2hfd2lkdGggPDwgUFdNX0hJR0hfV0lEVEhfU0hJRlQp
-Ow0KIA0KLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KLQlpZiAoZXJyIDwgMCkN
-Ci0JCXJldHVybiBlcnI7DQotDQotCWVyciA9IGNsa19lbmFibGUobWRwLT5jbGtfbW0pOw0KLQlp
-ZiAoZXJyIDwgMCkgew0KLQkJY2xrX2Rpc2FibGUobWRwLT5jbGtfbWFpbik7DQotCQlyZXR1cm4g
-ZXJyOw0KLQl9DQotDQogCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+
-Y29uMCwNCiAJCQkJIFBXTV9DTEtESVZfTUFTSywNCiAJCQkJIGNsa19kaXYgPDwgUFdNX0NMS0RJ
-Vl9TSElGVCk7DQpAQCAtMTIyLDEwICsxMzMsMTkgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21f
-Y29uZmlnKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCiAJ
-CW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+Y29tbWl0LA0KIAkJCQkJ
-IG1kcC0+ZGF0YS0+Y29tbWl0X21hc2ssDQogCQkJCQkgMHgwKTsNCisJfSBlbHNlIHsNCisJCW10
-a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+YmxzX2RlYnVnLA0KKwkJCQkJ
-IG1kcC0+ZGF0YS0+YmxzX2RlYnVnX21hc2ssDQorCQkJCQkgbWRwLT5kYXRhLT5ibHNfZGVidWdf
-bWFzayk7DQorCQltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmNvbjAs
-DQorCQkJCQkgbWRwLT5kYXRhLT5jb24wX3NlbCwNCisJCQkJCSBtZHAtPmRhdGEtPmNvbjBfc2Vs
-KTsNCiAJfQ0KIA0KLQljbGtfZGlzYWJsZShtZHAtPmNsa19tbSk7DQotCWNsa19kaXNhYmxlKG1k
-cC0+Y2xrX21haW4pOw0KKwlpZiAoIW1kcC0+ZW5hYmxlZCkgew0KKwkJY2xrX2Rpc2FibGVfdW5w
-cmVwYXJlKG1kcC0+Y2xrX21tKTsNCisJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19t
-YWluKTsNCisJfQ0KIA0KIAlyZXR1cm4gMDsNCiB9DQpAQCAtMTM1LDE4ICsxNTUsMjUgQEAgc3Rh
-dGljIGludCBtdGtfZGlzcF9wd21fZW5hYmxlKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0
-IHB3bV9kZXZpY2UgKnB3bSkNCiAJc3RydWN0IG10a19kaXNwX3B3bSAqbWRwID0gdG9fbXRrX2Rp
-c3BfcHdtKGNoaXApOw0KIAlpbnQgZXJyOw0KIA0KLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+Y2xr
-X21haW4pOw0KLQlpZiAoZXJyIDwgMCkNCi0JCXJldHVybiBlcnI7DQotDQotCWVyciA9IGNsa19l
-bmFibGUobWRwLT5jbGtfbW0pOw0KLQlpZiAoZXJyIDwgMCkgew0KLQkJY2xrX2Rpc2FibGUobWRw
-LT5jbGtfbWFpbik7DQotCQlyZXR1cm4gZXJyOw0KKwlpZiAoIW1kcC0+ZW5hYmxlZCkgew0KKwkJ
-ZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KKwkJaWYgKGVyciA8IDAp
-IHsNCisJCQlkZXZfZXJyKGNoaXAtPmRldiwgIkNhbid0IGVuYWJsZSBtZHAtPmNsa19tYWluOiAl
-cGVcbiIsDQorCQkJCUVSUl9QVFIoZXJyKSk7DQorCQkJcmV0dXJuIGVycjsNCisJCX0NCisJCWVy
-ciA9IGNsa19wcmVwYXJlX2VuYWJsZShtZHAtPmNsa19tbSk7DQorCQlpZiAoZXJyIDwgMCkgew0K
-KwkJCWRldl9lcnIoY2hpcC0+ZGV2LCAiQ2FuJ3QgZW5hYmxlIG1kcC0+Y2xrX21tOiAlcGVcbiIs
-DQorCQkJCUVSUl9QVFIoZXJyKSk7DQorCQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKG1kcC0+Y2xr
-X21haW4pOw0KKwkJCXJldHVybiBlcnI7DQorCQl9DQogCX0NCiANCiAJbXRrX2Rpc3BfcHdtX3Vw
-ZGF0ZV9iaXRzKG1kcCwgRElTUF9QV01fRU4sIG1kcC0+ZGF0YS0+ZW5hYmxlX21hc2ssDQogCQkJ
-CSBtZHAtPmRhdGEtPmVuYWJsZV9tYXNrKTsNCisJbWRwLT5lbmFibGVkID0gdHJ1ZTsNCiANCiAJ
-cmV0dXJuIDA7DQogfQ0KQEAgLTE1OCw4ICsxODUsMTEgQEAgc3RhdGljIHZvaWQgbXRrX2Rpc3Bf
-cHdtX2Rpc2FibGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdt
-KQ0KIAltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBESVNQX1BXTV9FTiwgbWRwLT5kYXRh
-LT5lbmFibGVfbWFzaywNCiAJCQkJIDB4MCk7DQogDQotCWNsa19kaXNhYmxlKG1kcC0+Y2xrX21t
-KTsNCi0JY2xrX2Rpc2FibGUobWRwLT5jbGtfbWFpbik7DQorCWlmIChtZHAtPmVuYWJsZWQpIHsN
-CisJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tbSk7DQorCQljbGtfZGlzYWJsZV91
-bnByZXBhcmUobWRwLT5jbGtfbWFpbik7DQorCX0NCisJbWRwLT5lbmFibGVkID0gZmFsc2U7DQog
-fQ0KIA0KIHN0YXRpYyBjb25zdCBzdHJ1Y3QgcHdtX29wcyBtdGtfZGlzcF9wd21fb3BzID0gew0K
-QEAgLTE5Miw1OCArMjIyLDI2IEBAIHN0YXRpYyBpbnQgbXRrX2Rpc3BfcHdtX3Byb2JlKHN0cnVj
-dCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQogCWlmIChJU19FUlIobWRwLT5jbGtfbW0pKQ0KIAkJ
-cmV0dXJuIFBUUl9FUlIobWRwLT5jbGtfbW0pOw0KIA0KLQlyZXQgPSBjbGtfcHJlcGFyZShtZHAt
-PmNsa19tYWluKTsNCi0JaWYgKHJldCA8IDApDQotCQlyZXR1cm4gcmV0Ow0KLQ0KLQlyZXQgPSBj
-bGtfcHJlcGFyZShtZHAtPmNsa19tbSk7DQotCWlmIChyZXQgPCAwKQ0KLQkJZ290byBkaXNhYmxl
-X2Nsa19tYWluOw0KLQ0KIAltZHAtPmNoaXAuZGV2ID0gJnBkZXYtPmRldjsNCiAJbWRwLT5jaGlw
-Lm9wcyA9ICZtdGtfZGlzcF9wd21fb3BzOw0KIAltZHAtPmNoaXAubnB3bSA9IDE7DQogDQogCXJl
-dCA9IHB3bWNoaXBfYWRkKCZtZHAtPmNoaXApOw0KIAlpZiAocmV0IDwgMCkgew0KLQkJZGV2X2Vy
-cigmcGRldi0+ZGV2LCAicHdtY2hpcF9hZGQoKSBmYWlsZWQ6ICVkXG4iLCByZXQpOw0KLQkJZ290
-byBkaXNhYmxlX2Nsa19tbTsNCisJCWRldl9lcnIoJnBkZXYtPmRldiwgInB3bWNoaXBfYWRkKCkg
-ZmFpbGVkOiAlcGVcbiIsIEVSUl9QVFIocmV0KSk7DQorCQlyZXR1cm4gcmV0Ow0KIAl9DQogDQog
-CXBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIG1kcCk7DQogDQotCS8qDQotCSAqIEZvciBNVDI3
-MDEsIGRpc2FibGUgZG91YmxlIGJ1ZmZlciBiZWZvcmUgd3JpdGluZyByZWdpc3Rlcg0KLQkgKiBh
-bmQgc2VsZWN0IG1hbnVhbCBtb2RlIGFuZCB1c2UgUFdNX1BFUklPRC9QV01fSElHSF9XSURUSC4N
-Ci0JICovDQotCWlmICghbWRwLT5kYXRhLT5oYXNfY29tbWl0KSB7DQotCQltdGtfZGlzcF9wd21f
-dXBkYXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmJsc19kZWJ1ZywNCi0JCQkJCSBtZHAtPmRhdGEt
-PmJsc19kZWJ1Z19tYXNrLA0KLQkJCQkJIG1kcC0+ZGF0YS0+YmxzX2RlYnVnX21hc2spOw0KLQkJ
-bXRrX2Rpc3BfcHdtX3VwZGF0ZV9iaXRzKG1kcCwgbWRwLT5kYXRhLT5jb24wLA0KLQkJCQkJIG1k
-cC0+ZGF0YS0+Y29uMF9zZWwsDQotCQkJCQkgbWRwLT5kYXRhLT5jb24wX3NlbCk7DQotCX0NCi0N
-CiAJcmV0dXJuIDA7DQotDQotZGlzYWJsZV9jbGtfbW06DQotCWNsa191bnByZXBhcmUobWRwLT5j
-bGtfbW0pOw0KLWRpc2FibGVfY2xrX21haW46DQotCWNsa191bnByZXBhcmUobWRwLT5jbGtfbWFp
-bik7DQotCXJldHVybiByZXQ7DQogfQ0KIA0KIHN0YXRpYyBpbnQgbXRrX2Rpc3BfcHdtX3JlbW92
-ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KIHsNCiAJc3RydWN0IG10a19kaXNwX3B3
-bSAqbWRwID0gcGxhdGZvcm1fZ2V0X2RydmRhdGEocGRldik7DQotCWludCByZXQ7DQotDQotCXJl
-dCA9IHB3bWNoaXBfcmVtb3ZlKCZtZHAtPmNoaXApOw0KLQljbGtfdW5wcmVwYXJlKG1kcC0+Y2xr
-X21tKTsNCi0JY2xrX3VucHJlcGFyZShtZHAtPmNsa19tYWluKTsNCiANCi0JcmV0dXJuIHJldDsN
-CisJcmV0dXJuIHB3bWNoaXBfcmVtb3ZlKCZtZHAtPmNoaXApOw0KIH0NCiANCiBzdGF0aWMgY29u
-c3Qgc3RydWN0IG10a19wd21fZGF0YSBtdDI3MDFfcHdtX2RhdGEgPSB7DQotLSANCjIuMjUuMQ0K
+On 15-06-21, 13:15, Rob Herring wrote:
+> If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
+> same size as the list is redundant and can be dropped. Note that is DT
+> schema specific behavior and not standard json-schema behavior. The tooling
+> will fixup the final schema adding any unspecified minItems/maxItems.
+> 
+> This condition is partially checked with the meta-schema already, but
+> only if both 'minItems' and 'maxItems' are equal to the 'items' length.
+> An improved meta-schema is pending.
 
+>  .../devicetree/bindings/dma/renesas,rcar-dmac.yaml          | 1 -
+
+>  Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml    | 1 -
+>  Documentation/devicetree/bindings/phy/mediatek,tphy.yaml    | 2 --
+>  .../devicetree/bindings/phy/phy-cadence-sierra.yaml         | 2 --
+>  .../devicetree/bindings/phy/phy-cadence-torrent.yaml        | 4 ----
+>  .../devicetree/bindings/phy/qcom,ipq806x-usb-phy-hs.yaml    | 1 -
+>  .../devicetree/bindings/phy/qcom,ipq806x-usb-phy-ss.yaml    | 1 -
+>  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml     | 1 -
+>  Documentation/devicetree/bindings/phy/qcom,qusb2-phy.yaml   | 2 --
+>  Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml | 2 --
+>  Documentation/devicetree/bindings/phy/renesas,usb3-phy.yaml | 1 -
+
+Acked-By: Vinod Koul <vkoul@kernel.org>
+
+-- 
+~Vinod
