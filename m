@@ -2,84 +2,121 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DD4C49EA2
-	for <linux-pwm@archiver.kernel.org>; Tue, 22 Jun 2021 07:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C359C2B9F4
+	for <linux-pwm@archiver.kernel.org>; Tue, 22 Jun 2021 07:55:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AC8AA6112D
-	for <linux-pwm@archiver.kernel.org>; Tue, 22 Jun 2021 07:43:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60BD860234
+	for <linux-pwm@archiver.kernel.org>; Tue, 22 Jun 2021 07:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbhFVHqC convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 22 Jun 2021 03:46:02 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:53947 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbhFVHqB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Jun 2021 03:46:01 -0400
-Received: from mail-wm1-f49.google.com ([209.85.128.49]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M738r-1lulKA1g6B-008dTl for <linux-pwm@vger.kernel.org>; Tue, 22 Jun 2021
- 09:43:45 +0200
-Received: by mail-wm1-f49.google.com with SMTP id n35-20020a05600c3ba3b02901cdecb6bda8so1050578wms.5
-        for <linux-pwm@vger.kernel.org>; Tue, 22 Jun 2021 00:43:45 -0700 (PDT)
-X-Gm-Message-State: AOAM533byat7SXAC/Y+6zZggs/EsWG18g4grcLse0Xq2ZDJc5S9BMF6H
-        SUuT+xONJPgR14vGkZE0as6P6RHOg/30tjiKigw=
-X-Google-Smtp-Source: ABdhPJxe7FndZe4T1TjbMbkiKWnVqKhZWSL+17F7P/vjfO1rDtpMiK/YliI1otO7EtO7mLe4GKhqzMAvwlg7ptwnyCA=
-X-Received: by 2002:a7b:ca48:: with SMTP id m8mr2915370wml.75.1624347825075;
- Tue, 22 Jun 2021 00:43:45 -0700 (PDT)
+        id S229970AbhFVH5j (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 22 Jun 2021 03:57:39 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:57285 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229695AbhFVH5i (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 22 Jun 2021 03:57:38 -0400
+Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 725BB440583;
+        Tue, 22 Jun 2021 10:55:09 +0300 (IDT)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
+Cc:     Baruch Siach <baruch@tkos.co.il>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 2/3] dt-bindings: pwm: add IPQ6018 binding
+Date:   Tue, 22 Jun 2021 10:55:01 +0300
+Message-Id: <bf56a9968149a7a70e6ef747ff054ee3728b467c.1624348502.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <f97c32aa98c9cdd977fac22cd504ad97448949e9.1624348502.git.baruch@tkos.co.il>
+References: <f97c32aa98c9cdd977fac22cd504ad97448949e9.1624348502.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-References: <20210621130458.118530-1-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20210621130458.118530-1-u.kleine-koenig@pengutronix.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 22 Jun 2021 09:41:26 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2Ht9aRgG-AGqA4wNvVJG7tBXAoi1BDPtAHX6_JrDLKMQ@mail.gmail.com>
-Message-ID: <CAK8P3a2Ht9aRgG-AGqA4wNvVJG7tBXAoi1BDPtAHX6_JrDLKMQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] pwm: vt8500: Drop if with an always false condition
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:qZP/Rppax1f0I+1iB4fKf3PtXodRqMWcIG/pdgpHINjXLnE5z1O
- iMyHGyClPNC4bJlNfWo1Uc9H/zT5RpzK7jP2gEFQQHzdvg/qC0u9zhVFwcf0j/R7rb3tcyn
- EAoZ3X9p8LS0Cp5/64PG/8acCcad81pdIY4XzQIcahF53w7FnNRi2/fyIfaqxHKpVP2TzRR
- ZDVm39PMK+zLTQ1CxUuHQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UbI2eHYEgk0=:t+gRbqhD+bUqCbbC63j+4l
- UTU9a92tOB6VZUYZ9YDuXdNy1tveC7bizhSwoM9S/xSczp5Nbb/TFxaZU3g+eOeuNjCB0hF+k
- oE7awX/YnkPnwQok7IWMLI+hHguHgIlabxVuqeOB/YM4xW0qaexg5s4rOR5iSx1IEho3K5Nng
- m0yutWN2tx1o1hPRD/R1ISvi0IJzwpx+/0eI6FJ257HZighjfHuRGrx+yrGGuQF10Fojd1qWJ
- KiVsja5LCILDwpOGELLJTjVKVKQgwqUMdnMfkew2MKsFMpaW/z6tSGg/oyFLnb7zqaoPqQS6u
- vOtPyuKIQLs5EEv2uVYWXSWO3tNvQJpi6rsMq7s4zp5n/mllW+xg1aEOR0J6LbSPupqjIat0s
- mN+eO93g6h5gSmfzaedXUeJ1MkCmdeYjf5Y1/6DzUSwjK3D/4sNOJMnkKzYDeoZ/fnp6y/g+Q
- OG8rjbAspCs8YbCpd3IEddRjvwZHFNhSkl9uvS8c4lLx1Fq9H5kDTwUPw6SIEmw+574IF5Y7i
- uRu52eOvTEmumbbe4eBfBC++Xlh65QVu8UWxRI8ZFXqi1hiAi0KIjBmpkXFdNFkgeKcK43es8
- wCwRzvNcd2WEgbEfqYQFJvwxVy3BxJUghc4yUrxXioNUpqqKEfHIQ5qEIMVePRBqnafbMKW3P
- P5wg=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 3:04 PM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> vt8500_pwm_remove() is only called after vt8500_pwm_probe() returned
-> successfully. In this case driver data was set to a non-NULL value
-> and so chip can never be NULL.
->
-> While touching this code also put declaration and assignment in a single
-> line.
->
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
+DT binding for the PWM block in Qualcomm IPQ6018 SoC.
 
-Both patches
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+v2: Make #pwm-cells const (Rob Herring)
+---
+ .../devicetree/bindings/pwm/ipq-pwm.yaml      | 52 +++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+
+diff --git a/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+new file mode 100644
+index 000000000000..bc3299be3fc6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/ipq-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm IPQ6018 PWM controller
++
++maintainers:
++  - Baruch Siach <baruch@tkos.co.il>
++
++properties:
++  "#pwm-cells":
++    const: 2
++
++  compatible:
++    const: qcom,ipq6018-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: core
++
++required:
++  - "#pwm-cells"
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        pwm@1941010 {
++            #pwm-cells = <2>;
++            compatible = "qcom,pwm-ipq6018";
++            reg = <0x0 0x1941010 0x0 0x20>;
++            clocks = <&gcc GCC_ADSS_PWM_CLK>;
++            clock-names = "core";
++        };
++    };
+-- 
+2.30.2
+
