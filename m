@@ -2,280 +2,176 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C822C48BC2
-	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 14:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516A1C49EA5
+	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 22:20:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 14CB26108E
-	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 14:02:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 331496100A
+	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 22:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbhFWOFJ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 23 Jun 2021 10:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
+        id S229831AbhFWWWb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 23 Jun 2021 18:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231137AbhFWOFJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jun 2021 10:05:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C121BC061756
-        for <linux-pwm@vger.kernel.org>; Wed, 23 Jun 2021 07:02:51 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lw3Sq-0001lH-2L; Wed, 23 Jun 2021 16:02:48 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lw3So-0005pF-Gv; Wed, 23 Jun 2021 16:02:46 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Matthieu Crapet <mcrapet@gmail.com>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 2/2] pwm: ep93xx: unfold legacy callbacks into ep93xx_pwm_apply()
-Date:   Wed, 23 Jun 2021 16:02:40 +0200
-Message-Id: <20210623140240.170706-2-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210623140240.170706-1-u.kleine-koenig@pengutronix.de>
-References: <20210623140240.170706-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S229688AbhFWWWa (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jun 2021 18:22:30 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DCDC061574
+        for <linux-pwm@vger.kernel.org>; Wed, 23 Jun 2021 15:20:10 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id j184so9343655qkd.6
+        for <linux-pwm@vger.kernel.org>; Wed, 23 Jun 2021 15:20:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J0o69ZpxKlT1ALV6x4fn+6s1AcHCCKWZKDnuPxJmTV0=;
+        b=M32nuub7utJPjcnDhjTbeGhLaiYx37NognHb9zlFGO8qCxvDDxHTaeDCkfycW8V9jJ
+         l2LomWfxefoSUGDPirxMjo4GLgReQ2P2qYRSoj0lm1y5X1zu1ZesG703lbfwrtAcTVv9
+         cQ+dlMT0m3s2+Yg7gerWlJcWOAHGpKbzOjNgs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J0o69ZpxKlT1ALV6x4fn+6s1AcHCCKWZKDnuPxJmTV0=;
+        b=Qa8M7Qp2zG6LFQAsWtiafhLAGOAtd6FRJRJ+soV5xi+s7xZHRMMFBA12qow0blT3BG
+         2lxO5xxSWOQfZDFQOV9dxC+IQciUze3BZdZRfPMjp4bpgADwPqKmnWBAsBfvff3FW97H
+         P02wKVeI+YtqvrvmPeTk9QO9jlO6cXj6SYoSbGRpkq2noivnPcjDXqvDli6KA5ei2EPC
+         zufEWegA6WTjRyJ+phc/QFf6n/hZ1oEkuk7y+9IzWL0Ij6M/vlxl9ovpZ0zcv7ZqEamP
+         m/WTX0NftgOAKTrjnRv5z0jFvhao1NV80/2y0v3i+RGv7gsvhCJQjZrm9oLc4f4YBgt1
+         d4MQ==
+X-Gm-Message-State: AOAM533w0m2jlw3rfZJxBzaqoWWlq+BMpMUwlk2eIp3WbZtfm/MZcQVK
+        1g3XoI+Fflb52Uwn4M6aya0LKoKPrM4KEg==
+X-Google-Smtp-Source: ABdhPJwa8hvNHWYkS4PPo36oGdD4MzhVah3lHT9w1kNOzJeYJfuBypmOAwoJWkvDB8nEXKNtbctP0w==
+X-Received: by 2002:a37:b503:: with SMTP id e3mr2417417qkf.475.1624486809306;
+        Wed, 23 Jun 2021 15:20:09 -0700 (PDT)
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com. [209.85.222.169])
+        by smtp.gmail.com with ESMTPSA id y10sm929603qki.32.2021.06.23.15.20.07
+        for <linux-pwm@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Jun 2021 15:20:08 -0700 (PDT)
+Received: by mail-qk1-f169.google.com with SMTP id j184so9343474qkd.6
+        for <linux-pwm@vger.kernel.org>; Wed, 23 Jun 2021 15:20:07 -0700 (PDT)
+X-Received: by 2002:a25:60c1:: with SMTP id u184mr393689ybb.343.1624486807505;
+ Wed, 23 Jun 2021 15:20:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+References: <20210623032755.1170809-1-bjorn.andersson@linaro.org>
+In-Reply-To: <20210623032755.1170809-1-bjorn.andersson@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 23 Jun 2021 15:19:55 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VbWu-zK=uuuYRBnddao4X5ELT29L=Dn_mBLG57kzuK4A@mail.gmail.com>
+Message-ID: <CAD=FV=VbWu-zK=uuuYRBnddao4X5ELT29L=Dn_mBLG57kzuK4A@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] pwm: Introduce single-PWM of_xlate function
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-pwm <linux-pwm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This just puts the implementation of ep93xx_pwm_disable(),
-ep93xx_pwm_enable() and ep93xx_pwm_config() into their only caller.
+Hi,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-ep93xx.c | 177 ++++++++++++++++-----------------------
- 1 file changed, 71 insertions(+), 106 deletions(-)
+On Tue, Jun 22, 2021 at 8:28 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> The existing pxa driver and the upcoming addition of PWM support in the
+> TI sn565dsi86 DSI/eDP bridge driver both has a single PWM channel and
+> thereby a need for a of_xlate function with the period as its single
+> argument.
+>
+> Introduce a common helper function in the core that can be used as
+> of_xlate by such drivers and migrate the pxa driver to use this.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>
+> Changes since v3:
+> - None
+>
+> Changes since v2:
+> - None
+>
+>  drivers/pwm/core.c    | 26 ++++++++++++++++++++++++++
+>  drivers/pwm/pwm-pxa.c | 16 +---------------
+>  include/linux/pwm.h   |  2 ++
+>  3 files changed, 29 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index a42999f877d2..5e9c876fccc4 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -152,6 +152,32 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
+>  }
+>  EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
+>
+> +struct pwm_device *
+> +of_pwm_single_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
 
-diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
-index 3ef4b41bfd66..3354b734f28f 100644
---- a/drivers/pwm/pwm-ep93xx.c
-+++ b/drivers/pwm/pwm-ep93xx.c
-@@ -58,138 +58,103 @@ static void ep93xx_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	ep93xx_pwm_release_gpio(pdev);
- }
- 
--static int ep93xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			     int duty_ns, int period_ns)
--{
--	struct ep93xx_pwm *ep93xx_pwm = to_ep93xx_pwm(chip);
--	void __iomem *base = ep93xx_pwm->base;
--	unsigned long long c;
--	unsigned long period_cycles;
--	unsigned long duty_cycles;
--	unsigned long term;
--	int ret = 0;
--
--	/*
--	 * The clock needs to be enabled to access the PWM registers.
--	 * Configuration can be changed at any time.
--	 */
--	if (!pwm_is_enabled(pwm)) {
--		ret = clk_enable(ep93xx_pwm->clk);
--		if (ret)
--			return ret;
--	}
--
--	c = clk_get_rate(ep93xx_pwm->clk);
--	c *= period_ns;
--	do_div(c, 1000000000);
--	period_cycles = c;
--
--	c = period_cycles;
--	c *= duty_ns;
--	do_div(c, period_ns);
--	duty_cycles = c;
--
--	if (period_cycles < 0x10000 && duty_cycles < 0x10000) {
--		term = readw(base + EP93XX_PWMx_TERM_COUNT);
--
--		/* Order is important if PWM is running */
--		if (period_cycles > term) {
--			writew(period_cycles, base + EP93XX_PWMx_TERM_COUNT);
--			writew(duty_cycles, base + EP93XX_PWMx_DUTY_CYCLE);
--		} else {
--			writew(duty_cycles, base + EP93XX_PWMx_DUTY_CYCLE);
--			writew(period_cycles, base + EP93XX_PWMx_TERM_COUNT);
--		}
--	} else {
--		ret = -EINVAL;
--	}
--
--	if (!pwm_is_enabled(pwm))
--		clk_disable(ep93xx_pwm->clk);
--
--	return ret;
--}
--
--static int ep93xx_pwm_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
--			       enum pwm_polarity polarity)
--{
--	struct ep93xx_pwm *ep93xx_pwm = to_ep93xx_pwm(chip);
--	int ret;
--
--	/*
--	 * The clock needs to be enabled to access the PWM registers.
--	 * Polarity can only be changed when the PWM is disabled.
--	 */
--	ret = clk_enable(ep93xx_pwm->clk);
--	if (ret)
--		return ret;
--
--	if (polarity == PWM_POLARITY_INVERSED)
--		writew(0x1, ep93xx_pwm->base + EP93XX_PWMx_INVERT);
--	else
--		writew(0x0, ep93xx_pwm->base + EP93XX_PWMx_INVERT);
--
--	clk_disable(ep93xx_pwm->clk);
--
--	return 0;
--}
--
--static int ep93xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct ep93xx_pwm *ep93xx_pwm = to_ep93xx_pwm(chip);
--	int ret;
--
--	ret = clk_enable(ep93xx_pwm->clk);
--	if (ret)
--		return ret;
--
--	writew(0x1, ep93xx_pwm->base + EP93XX_PWMx_ENABLE);
--
--	return 0;
--}
--
--static void ep93xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct ep93xx_pwm *ep93xx_pwm = to_ep93xx_pwm(chip);
--
--	writew(0x0, ep93xx_pwm->base + EP93XX_PWMx_ENABLE);
--	clk_disable(ep93xx_pwm->clk);
--}
--
- static int ep93xx_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    const struct pwm_state *state)
- {
- 	int ret;
-+	struct ep93xx_pwm *ep93xx_pwm = to_ep93xx_pwm(chip);
- 	bool enabled = state->enabled;
- 
- 	if (state->polarity != pwm->state.polarity) {
- 		if (enabled) {
--			ep93xx_pwm_disable(chip, pwm);
-+			writew(0x0, ep93xx_pwm->base + EP93XX_PWMx_ENABLE);
-+			clk_disable(ep93xx_pwm->clk);
- 			enabled = false;
- 		}
- 
--		ret = ep93xx_pwm_polarity(chip, pwm, state->polarity);
-+		/*
-+		 * The clock needs to be enabled to access the PWM registers.
-+		 * Polarity can only be changed when the PWM is disabled.
-+		 */
-+		ret = clk_enable(ep93xx_pwm->clk);
- 		if (ret)
- 			return ret;
-+
-+		if (state->polarity == PWM_POLARITY_INVERSED)
-+			writew(0x1, ep93xx_pwm->base + EP93XX_PWMx_INVERT);
-+		else
-+			writew(0x0, ep93xx_pwm->base + EP93XX_PWMx_INVERT);
-+
-+		clk_disable(ep93xx_pwm->clk);
- 	}
- 
- 	if (!state->enabled) {
--		if (enabled)
--			ep93xx_pwm_disable(chip, pwm);
-+		if (enabled) {
-+			writew(0x0, ep93xx_pwm->base + EP93XX_PWMx_ENABLE);
-+			clk_disable(ep93xx_pwm->clk);
-+		}
- 
- 		return 0;
- 	}
- 
- 	if (state->period != pwm->state.period ||
- 	    state->duty_cycle != pwm->state.duty_cycle) {
--		ret = ep93xx_pwm_config(chip, pwm, (int)state->duty_cycle,
--					(int)state->period);
-+		struct ep93xx_pwm *ep93xx_pwm = to_ep93xx_pwm(chip);
-+		void __iomem *base = ep93xx_pwm->base;
-+		unsigned long long c;
-+		unsigned long period_cycles;
-+		unsigned long duty_cycles;
-+		unsigned long term;
-+
-+		/*
-+		 * The clock needs to be enabled to access the PWM registers.
-+		 * Configuration can be changed at any time.
-+		 */
-+		if (!pwm_is_enabled(pwm)) {
-+			ret = clk_enable(ep93xx_pwm->clk);
-+			if (ret)
-+				return ret;
-+		}
-+
-+		c = clk_get_rate(ep93xx_pwm->clk);
-+		c *= state->period;
-+		do_div(c, 1000000000);
-+		period_cycles = c;
-+
-+		c = period_cycles;
-+		c *= state->duty_cycle;
-+		do_div(c, state->period);
-+		duty_cycles = c;
-+
-+		if (period_cycles < 0x10000 && duty_cycles < 0x10000) {
-+			term = readw(base + EP93XX_PWMx_TERM_COUNT);
-+
-+			/* Order is important if PWM is running */
-+			if (period_cycles > term) {
-+				writew(period_cycles, base + EP93XX_PWMx_TERM_COUNT);
-+				writew(duty_cycles, base + EP93XX_PWMx_DUTY_CYCLE);
-+			} else {
-+				writew(duty_cycles, base + EP93XX_PWMx_DUTY_CYCLE);
-+				writew(period_cycles, base + EP93XX_PWMx_TERM_COUNT);
-+			}
-+		} else {
-+			ret = -EINVAL;
-+		}
-+
-+		if (!pwm_is_enabled(pwm))
-+			clk_disable(ep93xx_pwm->clk);
-+
- 		if (ret)
- 			return ret;
- 	}
- 
--	if (!enabled)
--		return ep93xx_pwm_enable(chip, pwm);
-+	if (!enabled) {
-+		ret = clk_enable(ep93xx_pwm->clk);
-+		if (ret)
-+			return ret;
-+
-+		writew(0x1, ep93xx_pwm->base + EP93XX_PWMx_ENABLE);
-+	}
- 
- 	return 0;
- }
--- 
-2.30.2
+It's probably up to PWM folks, but to make it symmetric to
+of_pwm_xlate_with_flags() I probably would have named it with the
+"_with_flags" suffix.
 
+
+> +{
+> +       struct pwm_device *pwm;
+> +
+> +       if (pc->of_pwm_n_cells < 1)
+> +               return ERR_PTR(-EINVAL);
+> +
+> +       /* validate that one cell is specified, optionally with flags */
+> +       if (args->args_count != 1 && args->args_count != 2)
+> +               return ERR_PTR(-EINVAL);
+
+I don't know all the rules for attempted forward compatibility, but
+unless there's a strong reason I'd expect to match the rules for
+of_pwm_xlate_with_flags(). That function doesn't consider it to be an
+error if either "pc->of_pwm_n_cells" or "args->args_count" is bigger
+than you need. Unless there's a reason to be inconsistent, it seems
+like we should be consistent between the two functions. That would
+make the test:
+
+if (args->args_count < 1)
+  return ERR_PTR(-EINVAL);
+
+
+> +
+> +       pwm = pwm_request_from_chip(pc, 0, NULL);
+> +       if (IS_ERR(pwm))
+> +               return pwm;
+> +
+> +       pwm->args.period = args->args[0];
+> +       pwm->args.polarity = PWM_POLARITY_NORMAL;
+> +
+> +       if (args->args_count == 2 && args->args[2] & PWM_POLARITY_INVERTED)
+
+Similar to above, should this be ">= 2" rather than "== 2" ?
+
+I also notice that in commit cf38c978cf1d ("pwm: Make
+of_pwm_xlate_with_flags() work with #pwm-cells = <2>") Uwe added a
+check for "pc->of_pwm_n_cells" in of_pwm_xlate_with_flags() right
+around here. You're not checking it in your function.
+
+I _think_ your code is fine because I can't see how "args->args_count"
+could ever be greater than "pc->of_pwm_n_cells" but maybe I'm not
+seeing something. Assuming your code is correct then maybe the right
+thing to do is to remove the extra check from
+of_pwm_xlate_with_flags() to make the two functions more similar.
+
+
+-Doug
