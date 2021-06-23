@@ -7,185 +7,268 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57122C48BE5
-	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 03:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A401C48BC2
+	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 03:51:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 400A16113B
-	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 03:28:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E86AD61026
+	for <linux-pwm@archiver.kernel.org>; Wed, 23 Jun 2021 03:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbhFWDaQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 22 Jun 2021 23:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
+        id S230130AbhFWDyE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 22 Jun 2021 23:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbhFWDaP (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Jun 2021 23:30:15 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32197C061756
-        for <linux-pwm@vger.kernel.org>; Tue, 22 Jun 2021 20:27:58 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id n99-20020a9d206c0000b029045d4f996e62so583966ota.4
-        for <linux-pwm@vger.kernel.org>; Tue, 22 Jun 2021 20:27:58 -0700 (PDT)
+        with ESMTP id S229890AbhFWDyD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Jun 2021 23:54:03 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F2CC061574
+        for <linux-pwm@vger.kernel.org>; Tue, 22 Jun 2021 20:51:46 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id f3-20020a0568301c23b029044ce5da4794so587802ote.11
+        for <linux-pwm@vger.kernel.org>; Tue, 22 Jun 2021 20:51:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JMuxhTYROjgx5QULq2BZS2oDybm62u2BvUDiK5gZyzc=;
-        b=YbNbLV/AthBTeNVil1kpX3c8VOgFAmopKeEmIfPIMPIPYZkoXtnlnfEQ0T/sNnMsf2
-         SYtNrDU17OYcxuO8gEDTh1N7YKbOc302add5Coep/i4R3fH1UocRi582IzdC1UomiaIo
-         UOgNN69DmXyTcba9boWIxksL17ifBydlbQkgPDxmFK1g7ylObkWYn0G51CeHvgXBPzwD
-         LcstrFIGUa7A7vOswuLzp+GxqSTlWd+xj1bm1AwTsfHxJOwOVKB4xBFjrd1fku8zfEI7
-         //NsRMqRRs48hrsX3G4vhhSNFaPCblxHaMtZzClLwhUb71dOrgbcE7Y3ujDJlR+J5UqT
-         84ig==
+        bh=DoiBj5BLfecwr4g0Pwg7h6z7bsywem+oXg3CJXF5nhU=;
+        b=tUIMuIFCiV9gVf0yoXJoUl31hlsuLwoYj1vnTE97Ek1ls22yDASkuCTcd3ejZ19CJF
+         kbwgjEGLSs29yWHy+BEjmI/qhnTgLEj1FC1mo6v4vfJtoLJdTYGePG806DBYXuMRQI/F
+         9E7WdNhdxSrVaYEuHJPaV1NFGL3cHb49BbynaDb4+fOxi73lJM7uwgjn4oNauUlGYs3F
+         6Vq1cmtH1HCDHKy9sY9xK5PbnJ3w2JWpyqdrmdBMlM6AudtTk7TwMknZ2wAx5ocYuF/p
+         gQ1iV0KKBO2gc8broKEweO2Wn5p0zac1FNv/uQUDnB/mLItnyJqvJpyl87mGvOMzXTO9
+         FO+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JMuxhTYROjgx5QULq2BZS2oDybm62u2BvUDiK5gZyzc=;
-        b=Z4qwathsC61s85b9LP0h60q0Qz6GJN8sG9Ttyk4LfjE3WB3ECpwRjPtyFKl6vBko2k
-         IuDDRZORa5JldfhTZzivaMC2jD1dvyw8Hq4IcTUI36JZUntD6XZtI9/XdSxu6tPxmtQ0
-         6MrhQLQJiHlfUFbBe0ysbz16VjVmCCRiToEzqTk1edFF4f/OSrGeDJ2i5UGa9lel4PvQ
-         ptVhKVsAfvdD7Bo+5SnCNP9aH/lq/gNed8bdzSj4fzEWWwdujlCW4Zbm0oYVEDGmEwFU
-         jhw8amFLI1ZRhf8LfggxYJmMcg5GcQff+MlZtsc9vFaowPgrtqljFNvCOxjLK0lodxbE
-         NdMg==
-X-Gm-Message-State: AOAM5332QNyKMIkYXfVWCLtHzvhh9JZPXSy37KiyubLQZdkz0gWQsFpy
-        7GTzYEV1XFPgkjTWSsG1uOnYpQ==
-X-Google-Smtp-Source: ABdhPJx5WmbQ9LFZ73FpteNTurW7aGLSMgScI2jKFBUXnJINs1Lb2bS5zsOsgaX5eD2Le60O+oUyQw==
-X-Received: by 2002:a05:6830:905:: with SMTP id v5mr6050659ott.280.1624418877306;
-        Tue, 22 Jun 2021 20:27:57 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id c205sm4708363oib.20.2021.06.22.20.27.56
+        bh=DoiBj5BLfecwr4g0Pwg7h6z7bsywem+oXg3CJXF5nhU=;
+        b=DksnKptZLTyUVHce1zCKq310HE3bG6/JbBnSpxmTyOK0toljUxdr7/MGbE1zOz9GV9
+         WrGMRYdOVjHnFHT9YQIo/ED4XlyM2nDg8G6GcY3UoCZwlMSubz/6GbmlFLcbjgO8M0SS
+         B16UhVENWqYvBPxuZKuxuNuXD222BpDy33QTwk3EhHWHFaTuCHg5pNSFIsKTKAGvfX23
+         jLAFjor8mHJqmyV69mr/BGwJjI739X0qDtk364h0QV7TjT8X8F8+SlISJnlRidCT8rS0
+         vR2icNWyA1Uuv0Zzeu4akB6esiRJCL7rUBlNL/rmWghmPft+AuMd+YnBScgkP7OYLf6j
+         Ss6w==
+X-Gm-Message-State: AOAM533EYLma0yoq+PABr8tXw4+W7ryTaKRIfDlI2nah36wIW8oPWgAK
+        w0XPhHzuZqaQrre5aWA5yLhSUQ==
+X-Google-Smtp-Source: ABdhPJygjzi3fqM0808AIObNgKqbHPwiPFa0cNqsqsfP37hRyERe4J6jo1bqaNHoRMSmjTvkRZcccw==
+X-Received: by 2002:a05:6830:1208:: with SMTP id r8mr6048717otp.155.1624420305361;
+        Tue, 22 Jun 2021 20:51:45 -0700 (PDT)
+Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id v82sm4752509oia.27.2021.06.22.20.51.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 20:27:56 -0700 (PDT)
+        Tue, 22 Jun 2021 20:51:44 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
+To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Doug Anderson <dianders@chromium.org>
-Cc:     Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: [PATCH v4 1/2] pwm: Introduce single-PWM of_xlate function
-Date:   Tue, 22 Jun 2021 22:27:54 -0500
-Message-Id: <20210623032755.1170809-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.31.0
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
+Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pwm@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Subbaraman Narayanamurthy <subbaram@codeaurora.org>
+Subject: [PATCH v9 1/2] dt-bindings: leds: Add Qualcomm Light Pulse Generator binding
+Date:   Tue, 22 Jun 2021 20:50:38 -0700
+Message-Id: <20210623035039.772660-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The existing pxa driver and the upcoming addition of PWM support in the
-TI sn565dsi86 DSI/eDP bridge driver both has a single PWM channel and
-thereby a need for a of_xlate function with the period as its single
-argument.
-
-Introduce a common helper function in the core that can be used as
-of_xlate by such drivers and migrate the pxa driver to use this.
+This adds the binding document describing the three hardware blocks
+related to the Light Pulse Generator found in a wide range of Qualcomm
+PMICs.
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
 
-Changes since v3:
+Changes since v8:
 - None
 
-Changes since v2:
-- None
+Changes since v7:
+- Added qcom,pmc8180c-lpg
+- Defined constraints for qcom,power-source
+- Changes qcom,dtest to matrix and added constraints
+- Changed example from LED_COLOR_ID_MULTI to LED_COLOR_ID_RGB
 
- drivers/pwm/core.c    | 26 ++++++++++++++++++++++++++
- drivers/pwm/pwm-pxa.c | 16 +---------------
- include/linux/pwm.h   |  2 ++
- 3 files changed, 29 insertions(+), 15 deletions(-)
+ .../bindings/leds/leds-qcom-lpg.yaml          | 164 ++++++++++++++++++
+ 1 file changed, 164 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index a42999f877d2..5e9c876fccc4 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -152,6 +152,32 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
- }
- EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
- 
-+struct pwm_device *
-+of_pwm_single_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
-+{
-+	struct pwm_device *pwm;
+diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+new file mode 100644
+index 000000000000..10aee61a7ffc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+@@ -0,0 +1,164 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	if (pc->of_pwm_n_cells < 1)
-+		return ERR_PTR(-EINVAL);
++title: Qualcomm Light Pulse Generator
 +
-+	/* validate that one cell is specified, optionally with flags */
-+	if (args->args_count != 1 && args->args_count != 2)
-+		return ERR_PTR(-EINVAL);
++maintainers:
++  - Bjorn Andersson <bjorn.andersson@linaro.org>
 +
-+	pwm = pwm_request_from_chip(pc, 0, NULL);
-+	if (IS_ERR(pwm))
-+		return pwm;
++description: >
++  The Qualcomm Light Pulse Generator consists of three different hardware blocks;
++  a ramp generator with lookup table, the light pulse generator and a three
++  channel current sink. These blocks are found in a wide range of Qualcomm PMICs.
 +
-+	pwm->args.period = args->args[0];
-+	pwm->args.polarity = PWM_POLARITY_NORMAL;
++properties:
++  compatible:
++    enum:
++      - qcom,pm8150b-lpg
++      - qcom,pm8150l-lpg
++      - qcom,pm8916-pwm
++      - qcom,pm8941-lpg
++      - qcom,pm8994-lpg
++      - qcom,pmc8180c-lpg
++      - qcom,pmi8994-lpg
++      - qcom,pmi8998-lpg
 +
-+	if (args->args_count == 2 && args->args[2] & PWM_POLARITY_INVERTED)
-+		pwm->args.polarity = PWM_POLARITY_INVERSED;
++  "#pwm-cells":
++    const: 2
 +
-+	return pwm;
-+}
-+EXPORT_SYMBOL_GPL(of_pwm_single_xlate);
++  "#address-cells":
++    const: 1
 +
- static void of_pwmchip_add(struct pwm_chip *chip)
- {
- 	if (!chip->dev || !chip->dev->of_node)
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index cfb683827d32..8cd82fb54483 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -148,20 +148,6 @@ static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
- 	return id ? id->data : NULL;
- }
- 
--static struct pwm_device *
--pxa_pwm_of_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
--{
--	struct pwm_device *pwm;
--
--	pwm = pwm_request_from_chip(pc, 0, NULL);
--	if (IS_ERR(pwm))
--		return pwm;
--
--	pwm->args.period = args->args[0];
--
--	return pwm;
--}
--
- static int pwm_probe(struct platform_device *pdev)
- {
- 	const struct platform_device_id *id = platform_get_device_id(pdev);
-@@ -187,7 +173,7 @@ static int pwm_probe(struct platform_device *pdev)
- 	pwm->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
- 
- 	if (IS_ENABLED(CONFIG_OF)) {
--		pwm->chip.of_xlate = pxa_pwm_of_xlate;
-+		pwm->chip.of_xlate = of_pwm_single_xlate;
- 		pwm->chip.of_pwm_n_cells = 1;
- 	}
- 
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 5a73251d28e3..6aff1fa4fe5d 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -411,6 +411,8 @@ struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
- 
- struct pwm_device *of_pwm_xlate_with_flags(struct pwm_chip *pc,
- 		const struct of_phandle_args *args);
-+struct pwm_device *of_pwm_single_xlate(struct pwm_chip *pc,
-+				       const struct of_phandle_args *args);
- 
- struct pwm_device *pwm_get(struct device *dev, const char *con_id);
- struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
++  "#size-cells":
++    const: 0
++
++  qcom,power-source:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      power-source used to drive the output, as defined in the datasheet.
++      Should be specified if the TRILED block is present
++    enum: [0, 1, 3]
++
++  qcom,dtest:
++    $ref: /schemas/types.yaml#/definitions/uint32-matrix
++    description: >
++      A list of integer pairs, where each pair represent the dtest line the
++      particular channel should be connected to and the flags denoting how the
++      value should be outputed, as defined in the datasheet. The number of
++      pairs should be the same as the number of channels.
++    items:
++      items:
++        - description: dtest line to attach
++        - description: flags for the attachment
++
++  multi-led:
++    type: object
++    $ref: leds-class-multicolor.yaml#
++    properties:
++      "#address-cells":
++        const: 1
++
++      "#size-cells":
++        const: 0
++
++      "^led@[0-9a-f]$":
++        type: object
++        $ref: common.yaml#
++
++patternProperties:
++  "^led@[0-9a-f]$":
++    type: object
++    $ref: common.yaml#
++
++    properties:
++      reg: true
++
++    required:
++      - reg
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/leds/common.h>
++
++    lpg {
++      compatible = "qcom,pmi8994-lpg";
++
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      qcom,power-source = <1>;
++
++      qcom,dtest = <0 0>,
++                   <0 0>,
++                   <0 0>,
++                   <4 1>;
++
++      led@1 {
++        reg = <1>;
++        label = "green:user1";
++      };
++
++      led@2 {
++        reg = <2>;
++        label = "green:user0";
++        default-state = "on";
++      };
++
++      led@3 {
++        reg = <3>;
++        label = "green:user2";
++      };
++
++      led@4 {
++        reg = <4>;
++        label = "green:user3";
++      };
++    };
++  - |
++    #include <dt-bindings/leds/common.h>
++
++    lpg {
++      compatible = "qcom,pmi8994-lpg";
++
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      qcom,power-source = <1>;
++
++      multi-led {
++        color = <LED_COLOR_ID_RGB>;
++        function = LED_FUNCTION_STATUS;
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        led@1 {
++          reg = <1>;
++          color = <LED_COLOR_ID_RED>;
++        };
++
++        led@2 {
++          reg = <2>;
++          color = <LED_COLOR_ID_GREEN>;
++        };
++
++        led@3 {
++          reg = <3>;
++          color = <LED_COLOR_ID_BLUE>;
++        };
++      };
++    };
++  - |
++    lpg {
++      compatible = "qcom,pm8916-pwm";
++      #pwm-cells = <2>;
++    };
++...
 -- 
-2.31.0
+2.29.2
 
