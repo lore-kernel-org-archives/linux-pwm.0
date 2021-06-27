@@ -2,378 +2,295 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494F6C49EBB
-	for <linux-pwm@archiver.kernel.org>; Sun, 27 Jun 2021 05:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66323C48BC2
+	for <linux-pwm@archiver.kernel.org>; Sun, 27 Jun 2021 18:19:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2BDDB61C31
-	for <linux-pwm@archiver.kernel.org>; Sun, 27 Jun 2021 05:24:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E38461C20
+	for <linux-pwm@archiver.kernel.org>; Sun, 27 Jun 2021 18:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbhF0F0j (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 27 Jun 2021 01:26:39 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:55845 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229472AbhF0F0i (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 27 Jun 2021 01:26:38 -0400
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 3A75C440432;
-        Sun, 27 Jun 2021 08:24:09 +0300 (IDT)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
-Cc:     Baruch Siach <baruch@tkos.co.il>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Balaji Prakash J <bjagadee@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 1/3] pwm: driver for qualcomm ipq6018 pwm block
-Date:   Sun, 27 Jun 2021 08:24:04 +0300
-Message-Id: <305eacc9c57c2404795b6be76a08915808e23108.1624771446.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.30.2
+        id S231416AbhF0SV5 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 27 Jun 2021 14:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231408AbhF0SV5 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 27 Jun 2021 14:21:57 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29002C061574
+        for <linux-pwm@vger.kernel.org>; Sun, 27 Jun 2021 11:19:33 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lxZNQ-0006uv-Sb; Sun, 27 Jun 2021 20:19:28 +0200
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1lxZNO-0002RM-SA; Sun, 27 Jun 2021 20:19:26 +0200
+Date:   Sun, 27 Jun 2021 20:19:19 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Emil Lenngren <emil.lenngren@gmail.com>,
+        michal.simek@xilinx.com, Alvaro Gamez <alvaro.gamez@hazent.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 3/3] pwm: Add support for Xilinx AXI Timer
+Message-ID: <20210627181919.iunagls4j67ignhh@pengutronix.de>
+References: <20210528214522.617435-1-sean.anderson@seco.com>
+ <20210528214522.617435-3-sean.anderson@seco.com>
+ <20210625061958.yeaxjltuq7q2t7i7@pengutronix.de>
+ <a748143d-f157-562e-795d-dcd9a0cf9d85@seco.com>
+ <20210625165642.5iuorl5guuq5c7gc@pengutronix.de>
+ <f1772da9-8bd8-57cf-6eba-3c16c58a903f@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ycistqidpnmvvrzs"
+Content-Disposition: inline
+In-Reply-To: <f1772da9-8bd8-57cf-6eba-3c16c58a903f@seco.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Driver for the PWM block in Qualcomm IPQ6018 line of SoCs. Based on
-driver from downstream Codeaurora kernel tree. Removed support for older
-(V1) variants because I have no access to that hardware.
 
-Tested on IPQ6010 based hardware.
+--ycistqidpnmvvrzs
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
-v4:
+Hello Sean,
 
-  Use div64_u64() to fix link for 32-bit targets ((kernel test robot
-  <lkp@intel.com>, Uwe Kleine-König)
+On Fri, Jun 25, 2021 at 01:46:26PM -0400, Sean Anderson wrote:
+> On 6/25/21 12:56 PM, Uwe Kleine-K=F6nig wrote:
+> > On Fri, Jun 25, 2021 at 11:13:33AM -0400, Sean Anderson wrote:
+> > > On 6/25/21 2:19 AM, Uwe Kleine-K=F6nig wrote:
+> > > > On Fri, May 28, 2021 at 05:45:22PM -0400, Sean Anderson wrote:
+> > > >> + * - Cannot produce 100% duty cycle.
+> > > >
+> > > > Can it produce a 0% duty cycle? Below you're calling
+> > > > xilinx_timer_tlr_period(..., ..., ..., 0) then which returns -ERANG=
+E.
+> > >=20
+> > > Yes. This is what you get when you try to specify 100% duty cycle (e.=
+g.
+> > > TLR0 =3D=3D TLR1).
+> >=20
+> > OK, so the hardware can do it, but your driver doesn't make use of it,
+> > right?
+>=20
+> So to clarify, I have observed the following behavior
+>=20
+> * When TCSR =3D=3D 0, the output is constant low.
+> * When TLR1 (duty_cycle) >=3D TLR0 (period), the output is constant low.
+>=20
+> It might be possible to achieve constant high output by stopping the
+> counters during the high time, but leaving the PWM bit set. However, I
+> do not have a use case for this. I think it might be a nice follow-up
+> for someone who wants that feature.
 
-v3:
+A typical use case is having an LED or a backlight connected to the PWM
+and and want it to be fully on.
 
-  s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
+> That being said, is there a standard way to specify 100% or 0% duty
+> cycle? It seems like one would have to detect these situations and use a
+> different code path.
 
-  Fix integer overflow on 32-bit targets (kernel test robot <lkp@intel.com>)
+I don't understand that question. If pwm_apply_state is called with a
+state having .duty_cycle =3D 0 (and .enabled =3D true) you're supposed to
+emit a 0% relative duty. If .duty_cycle =3D .period is passed you're
+supposed to emit a 100% relative duty.
 
-v2:
+> > > >> + * - Only produces "normal" output.
+> > > >
+> > > > Does the output emit a low level when it's disabled?
+> > >=20
+> > > I believe so.
+> >=20
+> > Is there a possibility to be sure? I'd like to know that to complete my
+> > picture about the behaviour of the supported PWMs.
+>=20
+> See above.
+>=20
+> > > >> +static int xilinx_pwm_apply(struct pwm_chip *chip, struct pwm_dev=
+ice *unused,
+> > > >> +			    const struct pwm_state *state)
+> > > >> +{
+> > > >> +	int ret;
+> > > >> +	struct xilinx_timer_priv *priv =3D xilinx_pwm_chip_to_priv(chip);
+> > > >> +	u32 tlr0, tlr1;
+> > > >> +	u32 tcsr0 =3D xilinx_timer_read(priv, TCSR0);
+> > > >> +	u32 tcsr1 =3D xilinx_timer_read(priv, TCSR1);
+> > > >> +	bool enabled =3D xilinx_timer_pwm_enabled(tcsr0, tcsr1);
+> > > >> +
+> > > >> +	if (state->polarity !=3D PWM_POLARITY_NORMAL)
+> > > >> +		return -EINVAL;
+> > > >> +
+> > > >> +	ret =3D xilinx_timer_tlr_period(priv, &tlr0, tcsr0, state->perio=
+d);
+> > > >> +	if (ret)
+> > > >> +		return ret;
+> > > >
+> > > > The implementation of xilinx_timer_tlr_period (in patch 2/3) returns
+> > > > -ERANGE for big periods. The good behaviour to implement is to cap =
+to
+> > > > the biggest period possible in this case.
+> > >=20
+> > > Ok. Is this documented anywhere?
+> >=20
+> > I tried but Thierry didn't like the result and I didn't retry. The
+> > problem is also that many drivers we already have in the tree don't
+> > behave like this (because for a long time nobody cared). That new
+> > drivers should behave this way is my effort to get some consistent
+> > behaviour.
+>=20
+> Do you have a link to the thread? IMO if you would like to specify
+> behavior like this, is is very helpful to write it down so new authors
+> don't have to get to v4 before finding out about it ;)
 
-Address Uwe Kleine-König review comments:
+I misremembered, the last time I wanted to improve the documentation I
+didn't write anything about the policy with the goal to improve the
+documentation without hitting the a bit controversial policy stuff. The
+thread is available at
 
-  Fix period calculation when out of range
+	https://lore.kernel.org/r/20191209213233.29574-2-u.kleine-koenig@pengutron=
+ix.de
 
-  Don't set period larger than requested
+=2E Thierry didn't reply to this thread yet.
 
-  Remove PWM disable on configuration change
+My intension was to build on this one and formulate the expected policy
+for new drivers.
 
-  Implement .apply instead of non-atomic .config/.enable/.disable
+The situation I'm in here wanting to install this policy is: On one hand
+Thierry argues that consumers don't care much about how .apply rounds
+because most consumers just don't have so exact requirements. And on the
+other hand he doesn't want to change the existing behaviour for already
+existing drivers to not break consumers. So the best I can currently to
+do work on a more consistent behaviour is to enforce this for new
+drivers.
 
-  Don't modify PWM on .request/.free
+> > > And wouldn't this result in the wrong duty cycle? E.g. say the max
+> > > value is 100 and I try to apply a period of 150 and a duty_cycle of 75
+> > > (for a 50% duty cycle). If we cap at 100, then I will instead have a
+> > > 75% duty cycle, and there will be no error.
+> >=20
+> > Yes that is right. That there is no feedback is a problem that we have
+> > for a long time. I have a prototype patch that implements a
+> > pwm_round_state() function that lets a consumer know the result of
+> > applying a certain pwm_state in advance. But we're not there yet.
+>=20
+> So for the moment, why not give an error? This will be legal code both
+> now and after round_state is implemented.
 
-  Check pwm_div underflow
+The problem is where to draw the line. To stay with your example: If a
+request for period =3D 150 ns comes in, and let X be the biggest period <=3D
+150 ns that the hardware can configure. For which values of X should an
+error be returned and for which values the setting should be
+implemented.
 
-  Fix various code and comment formatting issues
+In my eyes the only sensible thing to implement here is to tell the
+consumer about X and let it decide if it's good enough. If you have a
+better idea let me hear about it.
 
-Other changes:
+> > > So I will silently get the wrong duty cycle, even when that duty cycle
+> > > is probably more important than the period.
+> >=20
+> > It depends on the use case and every policy is wrong for some cases. So
+> > I picked the policy I already explained because it is a) easy to
+> > implement for lowlevel drivers and b) it's easy to work with for
+> > consumers once we have pwm_round_state().
+>=20
+> What about sysfs? Right now if you try to specify an inexpressible
+> period you get an error message. I saw [1], but unfortunately there do
+> not appear to be any patches associated with it. Do you have plans to
+> implement such an interface?
+>=20
+> [1] https://lore.kernel.org/linux-pwm/CAO1O6seyi+1amAY5YLz0K1dkNd7ewAvot4=
+K1eZMpAAQquz0-9g@mail.gmail.com/
 
-  Use u64 divisor safe division
+In my eyes we better implement a pwmctl interface that doesn't work via
+sysfs but using an ioctl; similar what gpio did with gpioctl for various
+reasons.
 
-  Remove now empty .request/.free
----
- drivers/pwm/Kconfig   |  12 +++
- drivers/pwm/Makefile  |   1 +
- drivers/pwm/pwm-ipq.c | 238 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 251 insertions(+)
- create mode 100644 drivers/pwm/pwm-ipq.c
+> > > > Also note that state->period is an u64 but it is casted to unsigned=
+ int
+> > > > as this is the type of the forth parameter of xilinx_timer_tlr_peri=
+od.
+> > >=20
+> > > Hm, it looks like I immediately cast period to a u64. I will change t=
+he
+> > > signature for this function next revision.
+> >=20
+> > Then note that period * clk_get_rate(priv->clk) might overflow.
+>=20
+> Ok, so is mult_frac the correct macro to use here?
+>=20
+> > > >> +	ret =3D xilinx_timer_tlr_period(priv, &tlr1, tcsr1, state->duty_=
+cycle);
+> > > >> +	if (ret)
+> > > >> +		return ret;
+>=20
+> Perhaps I should add
+>=20
+> 	if (tlr0 <=3D tlr1)
+> 		return -EINVAL;
+>=20
+> here to prevent accidentally getting 0% duty cycle.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index c76adedd58c9..08add845596f 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -260,6 +260,18 @@ config PWM_INTEL_LGM
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-intel-lgm.
- 
-+config PWM_IPQ
-+	tristate "IPQ PWM support"
-+	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on HAVE_CLK && HAS_IOMEM
-+	help
-+	  Generic PWM framework driver for IPQ PWM block which supports
-+	  4 pwm channels. Each of the these channels can be configured
-+	  independent of each other.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-ipq.
-+
- config PWM_IQS620A
- 	tristate "Azoteq IQS620A PWM support"
- 	depends on MFD_IQS62X || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 708840b7fba8..7402feae4b36 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -22,6 +22,7 @@ obj-$(CONFIG_PWM_IMX1)		+= pwm-imx1.o
- obj-$(CONFIG_PWM_IMX27)		+= pwm-imx27.o
- obj-$(CONFIG_PWM_IMX_TPM)	+= pwm-imx-tpm.o
- obj-$(CONFIG_PWM_INTEL_LGM)	+= pwm-intel-lgm.o
-+obj-$(CONFIG_PWM_IPQ)		+= pwm-ipq.o
- obj-$(CONFIG_PWM_IQS620A)	+= pwm-iqs620a.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
- obj-$(CONFIG_PWM_KEEMBAY)	+= pwm-keembay.o
-diff --git a/drivers/pwm/pwm-ipq.c b/drivers/pwm/pwm-ipq.c
-new file mode 100644
-index 000000000000..966b051573c8
---- /dev/null
-+++ b/drivers/pwm/pwm-ipq.c
-@@ -0,0 +1,238 @@
-+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-+/*
-+ * Copyright (c) 2016-2017, 2020 The Linux Foundation. All rights reserved.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/math64.h>
-+#include <linux/of_device.h>
-+
-+#define CLK_SRC_FREQ		(100*1000*1000)
-+#define MAX_PWM_DEVICES		4
-+
-+/*
-+ * Enable bit is set to enable output toggling in pwm device.
-+ * Update bit is set to reflect the changed divider and high duration
-+ * values in register.
-+ */
-+#define PWM_ENABLE		0x80000000
-+#define PWM_UPDATE		0x40000000
-+
-+/* The frequency range supported is 1Hz to 100MHz */
-+#define MIN_PERIOD_NS	10
-+#define MAX_PERIOD_NS	1000000000
-+
-+/*
-+ * The max value specified for each field is based on the number of bits
-+ * in the pwm control register for that field
-+ */
-+#define MAX_PWM_CFG		0xFFFF
-+
-+#define PWM_CTRL_HI_SHIFT	16
-+
-+#define PWM_CFG_REG0 0 /*PWM_DIV PWM_HI*/
-+#define PWM_CFG_REG1 1 /*ENABLE UPDATE PWM_PRE_DIV*/
-+
-+struct ipq_pwm_chip {
-+	struct pwm_chip chip;
-+	struct clk *clk;
-+	void __iomem *mem;
-+};
-+
-+static struct ipq_pwm_chip *to_ipq_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct ipq_pwm_chip, chip);
-+}
-+
-+static unsigned ipq_pwm_reg_offset(struct pwm_device *pwm, unsigned reg)
-+{
-+	return ((pwm->hwpwm * 2) + reg) * 4;
-+}
-+
-+static void config_div_and_duty(struct pwm_device *pwm, int pre_div,
-+			unsigned long long pwm_div, unsigned long period_ns,
-+			unsigned long long duty_ns)
-+{
-+	unsigned long hi_dur;
-+	unsigned long long quotient;
-+	unsigned long val = 0;
-+	struct ipq_pwm_chip *ipq_chip = to_ipq_pwm_chip(pwm->chip);
-+
-+	/*
-+	 * high duration = pwm duty * (pwm div + 1)
-+	 * pwm duty = duty_ns / period_ns
-+	 */
-+	quotient = (pwm_div + 1) * duty_ns;
-+	hi_dur = div64_u64(quotient, period_ns);
-+
-+	val |= ((hi_dur & MAX_PWM_CFG) << PWM_CTRL_HI_SHIFT);
-+	val |= (pwm_div & MAX_PWM_CFG);
-+	writel(val, ipq_chip->mem + ipq_pwm_reg_offset(pwm, PWM_CFG_REG0));
-+	val = pre_div & MAX_PWM_CFG;
-+	writel(val, ipq_chip->mem + ipq_pwm_reg_offset(pwm, PWM_CFG_REG1));
-+}
-+
-+static int ipq_pwm_enable(struct pwm_device *pwm)
-+{
-+	struct ipq_pwm_chip *ipq_chip = to_ipq_pwm_chip(pwm->chip);
-+	unsigned offset = ipq_pwm_reg_offset(pwm, PWM_CFG_REG1);
-+	unsigned long val;
-+
-+	val = readl(ipq_chip->mem + offset);
-+	val |= PWM_ENABLE | PWM_UPDATE;
-+	writel(val, ipq_chip->mem + offset);
-+
-+	return 0;
-+}
-+
-+static void ipq_pwm_disable(struct pwm_device *pwm)
-+{
-+	struct ipq_pwm_chip *ipq_chip = to_ipq_pwm_chip(pwm->chip);
-+	unsigned offset = ipq_pwm_reg_offset(pwm, PWM_CFG_REG1);
-+	unsigned long val;
-+
-+	val = readl(ipq_chip->mem + offset);
-+	val |= PWM_UPDATE;
-+	val &= ~PWM_ENABLE;
-+	writel(val, ipq_chip->mem + offset);
-+}
-+
-+static int ipq_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			 const struct pwm_state *state)
-+{
-+	struct ipq_pwm_chip *ipq_chip = to_ipq_pwm_chip(chip);
-+	unsigned long freq;
-+	int pre_div, close_pre_div, close_pwm_div;
-+	int pwm_div;
-+	long long diff;
-+	unsigned long rate = clk_get_rate(ipq_chip->clk);
-+	unsigned long min_diff = rate;
-+	uint64_t fin_ps;
-+	u64 period_ns, duty_ns;
-+
-+	if (state->period < MIN_PERIOD_NS)
-+		return -ERANGE;
-+
-+	period_ns = min_t(u64, state->period, MAX_PERIOD_NS);
-+	duty_ns = min_t(u64, state->duty_cycle, period_ns);
-+
-+	/* freq in Hz for period in nano second*/
-+	freq = div64_u64(NSEC_PER_SEC, period_ns);
-+	fin_ps = div64_u64(NSEC_PER_SEC * 1000ULL, rate);
-+	close_pre_div = MAX_PWM_CFG;
-+	close_pwm_div = MAX_PWM_CFG;
-+
-+	for (pre_div = 0; pre_div <= MAX_PWM_CFG; pre_div++) {
-+		pwm_div = DIV64_U64_ROUND_CLOSEST(period_ns * 1000,
-+						  fin_ps * (pre_div + 1));
-+		pwm_div--;
-+		if (pwm_div < 0 || pwm_div > MAX_PWM_CFG)
-+			continue;
-+
-+		diff = ((uint64_t)freq * (pre_div + 1) * (pwm_div + 1))
-+			- (uint64_t)rate;
-+
-+		if (diff < 0) /* period larger than requested */
-+			continue;
-+		if (diff == 0) { /* bingo */
-+			close_pre_div = pre_div;
-+			close_pwm_div = pwm_div;
-+			break;
-+		}
-+		if (diff < min_diff) {
-+			min_diff = diff;
-+			close_pre_div = pre_div;
-+			close_pwm_div = pwm_div;
-+		}
-+	}
-+
-+	/* config divider values for the closest possible frequency */
-+	config_div_and_duty(pwm, close_pre_div, close_pwm_div,
-+			    period_ns, duty_ns);
-+	if (state->enabled)
-+		ipq_pwm_enable(pwm);
-+	else
-+		ipq_pwm_disable(pwm);
-+
-+	return 0;
-+}
-+
-+static struct pwm_ops ipq_pwm_ops = {
-+	.apply = ipq_pwm_apply,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int ipq_pwm_probe(struct platform_device *pdev)
-+{
-+	struct ipq_pwm_chip *pwm;
-+	struct device *dev;
-+	int ret;
-+
-+	dev = &pdev->dev;
-+	pwm = devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
-+	if (!pwm)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, pwm);
-+
-+	pwm->mem = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(pwm->mem))
-+		return PTR_ERR(pwm->mem);
-+
-+	pwm->clk = devm_clk_get(dev, "core");
-+	if (IS_ERR(pwm->clk))
-+		return PTR_ERR(pwm->clk);
-+
-+	ret = clk_set_rate(pwm->clk, CLK_SRC_FREQ);
-+	if (ret)
-+		return ret;
-+	ret = clk_prepare_enable(pwm->clk);
-+	if (ret)
-+		return ret;
-+
-+	pwm->chip.dev = dev;
-+	pwm->chip.ops = &ipq_pwm_ops;
-+	pwm->chip.npwm = MAX_PWM_DEVICES;
-+
-+	ret = pwmchip_add(&pwm->chip);
-+	if (ret < 0) {
-+		dev_err_probe(dev, ret, "pwmchip_add() failed\n");
-+		clk_disable_unprepare(pwm->clk);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ipq_pwm_remove(struct platform_device *pdev)
-+{
-+	struct ipq_pwm_chip *pwm = platform_get_drvdata(pdev);
-+
-+	pwmchip_remove(&pwm->chip);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id pwm_ipq_dt_match[] = {
-+	{ .compatible = "qcom,ipq6018-pwm", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, pwm_ipq_dt_match);
-+
-+static struct platform_driver ipq_pwm_driver = {
-+	.driver = {
-+		.name = "ipq-pwm",
-+		.owner = THIS_MODULE,
-+		.of_match_table = pwm_ipq_dt_match,
-+	},
-+	.probe = ipq_pwm_probe,
-+	.remove = ipq_pwm_remove,
-+};
-+
-+module_platform_driver(ipq_pwm_driver);
-+
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.30.2
+You can assume that duty_cycle <=3D period when .apply is called.
 
+> > > >> +	else if (pwm_cells)
+> > > >> +		return dev_err_probe(dev, -EINVAL, "#pwm-cells must be 0\n");
+> > > >
+> > > > What is the rationale here to not support #pwm-cells =3D <2>?
+> > >=20
+> > > Only one PWM is supported. But otherwise there is no particular
+> > > reason.
+> >=20
+> > The usual binding is to have 3 additional parameters.
+> >   1) chip-local pwm number (which can only be 0 for a pwmchip having
+> >      .npwm =3D 1)
+> >   2) the "typical" period
+> >   3) some flags (like PWM_POLARITY_*)
+> >=20
+> > I don't care much if you implement it with or without 1), but 2) and 3)
+> > should IMHO be here. If you don't want 1),
+> > http://patchwork.ozlabs.org/project/linux-pwm/patch/20210622030948.9667=
+48-1-bjorn.andersson@linaro.org/
+> > might be interesting for you. (But note, Thierry didn't give feedback to
+> > this yet, it might be possible he wants 1)-3) for new drivers.)
+>=20
+> Ok, so since I let of_pwmchip_add set xlate, I don't need to change
+> anything in this driver? Then I will remove this check for v5.
+
+Yes.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--ycistqidpnmvvrzs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmDYwSMACgkQwfwUeK3K
+7AnIBggAlPOYEWVOy7ALmO1d8KGdldnfM/x9nBOHfJlFuz/Uu5L+Yy+jKMIJsWd4
+So+uy3ag4ONOOwQZQl0365dGa3BbYM5o9kwW0yoS/PrecqrvU1UpQ+CO/jLpgI0f
+mRqBQQobLQCP2dKKcLn6PCj+XskeCntT31j7ICtzOVWj6RT24yuLWcvLIswIZkFo
+SnI4a0+4hV1Ll69IRZEfdIKAbNHDHiER99HsdRqs8jvTFG0UEMUtE75c1bE/DiTS
+fDMR6ZG/bDrYsmlGb39qWcyr3oywtbADth3fpA74bxvYJF15kA5jsEuDPQua1QfR
+JUljjXE+BV8Xqim7TIwkt+usBtctsw==
+=2rGA
+-----END PGP SIGNATURE-----
+
+--ycistqidpnmvvrzs--
