@@ -4,33 +4,34 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5DBC11F67
-	for <linux-pwm@archiver.kernel.org>; Tue, 29 Jun 2021 19:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E646FC11F67
+	for <linux-pwm@archiver.kernel.org>; Tue, 29 Jun 2021 19:52:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9468061DE2
-	for <linux-pwm@archiver.kernel.org>; Tue, 29 Jun 2021 19:44:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C6F2F61D9A
+	for <linux-pwm@archiver.kernel.org>; Tue, 29 Jun 2021 19:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbhF2TrI (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 29 Jun 2021 15:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
+        id S234642AbhF2TzX (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 29 Jun 2021 15:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234381AbhF2TrI (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 29 Jun 2021 15:47:08 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68439C061766
-        for <linux-pwm@vger.kernel.org>; Tue, 29 Jun 2021 12:44:40 -0700 (PDT)
+        with ESMTP id S232615AbhF2TzX (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 29 Jun 2021 15:55:23 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8351C061766
+        for <linux-pwm@vger.kernel.org>; Tue, 29 Jun 2021 12:52:55 -0700 (PDT)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:7d95:f75f:5ece:4663])
-        by michel.telenet-ops.be with bizsmtp
-        id P7ke2500J4F6zkK067kepm; Tue, 29 Jun 2021 21:44:38 +0200
+        by albert.telenet-ops.be with bizsmtp
+        id P7st2500X4F6zkK067st1T; Tue, 29 Jun 2021 21:52:54 +0200
 Received: from geert (helo=localhost)
         by ramsan.of.borg with local-esmtp (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1lyJew-0050rI-2b; Tue, 29 Jun 2021 21:44:38 +0200
-Date:   Tue, 29 Jun 2021 21:44:38 +0200 (CEST)
+        id 1lyJmv-00511w-F7; Tue, 29 Jun 2021 21:52:53 +0200
+Date:   Tue, 29 Jun 2021 21:52:53 +0200 (CEST)
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
+X-X-Sender: geert@ramsan.of.borg
 To:     =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
 cc:     Thierry Reding <thierry.reding@gmail.com>,
@@ -39,11 +40,11 @@ cc:     Thierry Reding <thierry.reding@gmail.com>,
 Subject: Re: [PATCH v2] pwm: Ensure for legacy drivers that pwm->state stays
  consistent
 In-Reply-To: <20210501160943.108821-1-u.kleine-koenig@pengutronix.de>
-Message-ID: <alpine.DEB.2.22.394.2106292138100.1194476@ramsan.of.borg>
+Message-ID: <alpine.DEB.2.22.394.2106292151170.1195556@ramsan.of.borg>
 References: <20210411160451.1207799-1-u.kleine-koenig@pengutronix.de> <20210501160943.108821-1-u.kleine-koenig@pengutronix.de>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-657331818-1624995878=:1194476"
+Content-Type: multipart/mixed; boundary="8323329-140647764-1624996373=:1195556"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
@@ -51,7 +52,7 @@ X-Mailing-List: linux-pwm@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-657331818-1624995878=:1194476
+--8323329-140647764-1624996373=:1195556
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8BIT
 
@@ -280,4 +281,4 @@ Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 In personal conversations with technical people, I call myself a hacker. But
 when I'm talking to journalists I just say "programmer" or something like that.
  							    -- Linus Torvalds
---8323329-657331818-1624995878=:1194476--
+--8323329-140647764-1624996373=:1195556--
