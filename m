@@ -1,113 +1,97 @@
-Return-path: <andy.shevchenko@gmail.com>
+Return-Path: <linux-pwm-owner@kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DC1C07E98
+	for <linux-pwm@archiver.kernel.org>; Mon,  5 Jul 2021 06:42:07 +0000 (UTC)
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by mail.kernel.org (Postfix) with ESMTP id 6B419613B6
+	for <linux-pwm@archiver.kernel.org>; Mon,  5 Jul 2021 06:42:07 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229827AbhGEGon (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 5 Jul 2021 02:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229817AbhGEGon (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Jul 2021 02:44:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1DCC061574
+        for <linux-pwm@vger.kernel.org>; Sun,  4 Jul 2021 23:42:06 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m0IIt-0008Sy-6o; Mon, 05 Jul 2021 08:42:03 +0200
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1m0IIq-00038G-R2; Mon, 05 Jul 2021 08:42:00 +0200
+Date:   Mon, 5 Jul 2021 08:42:00 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Colin King <colin.king@canonical.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] pwm: ep93xx: Fix uninitialized variable bug in
+ ep93xx_pwm_apply()
+Message-ID: <20210705064200.adl72wngfidov7xn@pengutronix.de>
+References: <YNx1y8PlSLehZVIY@mwanda>
+ <20210630153600.327ff7vcrx76lw26@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210613233041.128961-1-alexander.sverdlin@gmail.com>
-References: <20210613233041.128961-1-alexander.sverdlin@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 14 Jun 2021 10:25:30 +0300
-Message-ID: <CAHp75VdMxns2GJf6WGVY=tsv=dwf_f++q2-Chw0CJLp_R8n09A@mail.gmail.com>
-Content-Type: multipart/alternative; boundary="00000000000029634e05c4b4c34e"
-Subject: Re: [PATCH 0/7] Prepare EP93xx drivers for Common Clock Framework
-To: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Nikita Shubin <nikita.shubin@maquefel.me>, Vinod Koul <vkoul@kernel.org>, Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kks4xpy4yqeqdftx"
+Content-Disposition: inline
+In-Reply-To: <20210630153600.327ff7vcrx76lw26@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
-
---00000000000029634e05c4b4c34e
-Content-Type: text/plain; charset="UTF-8"
-
-On Monday, June 14, 2021, Alexander Sverdlin <alexander.sverdlin@gmail.com>
-wrote:
-
-> Nikita posted a patch converting EP93xx to use Common Clock Framework. It
-> turns out some cleanup is necessary in the EP93xx drivers to avoid
-> "Enabling unprepared" clock warnings.
->
-> Patches with stack traces in the commit messages are tested on EP9302.
->
-> Link: https://lore.kernel.org/patchwork/patch/1435884/
->
->
-For all commit messages: please, reduce the noise in them as much as
-possible, i.e. leave only up to ~3-4 most significant lines out of
-trackbacks.
+X-Mailing-List: linux-pwm@vger.kernel.org
 
 
-
-> Alexander Sverdlin (7):
->   iio: ep93xx: Prepare clock before using it
->   spi: spi-ep93xx: Prepare clock before using it
->   Input: ep93xx_keypad: Prepare clock before using it
->   video: ep93xx: Prepare clock before using it
->   dmaengine: ep93xx: Prepare clock before using it
->   ASoC: cirrus: i2s: Prepare clock before using it
->   pwm: ep93xx: Prepare clock before using it
->
->  drivers/dma/ep93xx_dma.c               |  6 +++---
->  drivers/iio/adc/ep93xx_adc.c           |  6 +++---
->  drivers/input/keyboard/ep93xx_keypad.c |  4 ++--
->  drivers/pwm/pwm-ep93xx.c               | 12 ++++++------
->  drivers/spi/spi-ep93xx.c               |  4 ++--
->  drivers/video/fbdev/ep93xx-fb.c        |  4 ++--
->  sound/soc/cirrus/ep93xx-i2s.c          | 12 ++++++------
->  7 files changed, 24 insertions(+), 24 deletions(-)
->
-> --
-> 2.32.0
->
->
-
--- 
-With Best Regards,
-Andy Shevchenko
-
---00000000000029634e05c4b4c34e
-Content-Type: text/html; charset="UTF-8"
+--kks4xpy4yqeqdftx
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-<br><br>On Monday, June 14, 2021, Alexander Sverdlin &lt;<a href=3D"mailto:=
-alexander.sverdlin@gmail.com">alexander.sverdlin@gmail.com</a>&gt; wrote:<b=
-r><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
-1px #ccc solid;padding-left:1ex">Nikita posted a patch converting EP93xx to=
- use Common Clock Framework. It<br>
-turns out some cleanup is necessary in the EP93xx drivers to avoid<br>
-&quot;Enabling unprepared&quot; clock warnings.<br>
-<br>
-Patches with stack traces in the commit messages are tested on EP9302.<br>
-<br>
-Link: <a href=3D"https://lore.kernel.org/patchwork/patch/1435884/" target=
-=3D"_blank">https://lore.kernel.org/<wbr>patchwork/patch/1435884/</a><br>
-<br></blockquote><div><br></div><div>For all commit messages: please, reduc=
-e the noise in them as much as possible, i.e. leave only up to ~3-4 most si=
-gnificant lines out of trackbacks.</div><div><br></div><div>=C2=A0</div><bl=
-ockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #=
-ccc solid;padding-left:1ex">
-Alexander Sverdlin (7):<br>
-=C2=A0 iio: ep93xx: Prepare clock before using it<br>
-=C2=A0 spi: spi-ep93xx: Prepare clock before using it<br>
-=C2=A0 Input: ep93xx_keypad: Prepare clock before using it<br>
-=C2=A0 video: ep93xx: Prepare clock before using it<br>
-=C2=A0 dmaengine: ep93xx: Prepare clock before using it<br>
-=C2=A0 ASoC: cirrus: i2s: Prepare clock before using it<br>
-=C2=A0 pwm: ep93xx: Prepare clock before using it<br>
-<br>
-=C2=A0drivers/dma/ep93xx_dma.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0|=C2=A0 6 +++---<br>
-=C2=A0drivers/iio/adc/ep93xx_adc.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
-|=C2=A0 6 +++---<br>
-=C2=A0drivers/input/keyboard/ep93xx_<wbr>keypad.c |=C2=A0 4 ++--<br>
-=C2=A0drivers/pwm/pwm-ep93xx.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0| 12 ++++++------<br>
-=C2=A0drivers/spi/spi-ep93xx.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0|=C2=A0 4 ++--<br>
-=C2=A0drivers/video/fbdev/ep93xx-fb.<wbr>c=C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=
-=A0 4 ++--<br>
-=C2=A0sound/soc/cirrus/ep93xx-i2s.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 | 12 =
-++++++------<br>
-=C2=A07 files changed, 24 insertions(+), 24 deletions(-)<br>
-<br>
--- <br>
-2.32.0<br>
-<br>
-</blockquote><br><br>-- <br>With Best Regards,<br>Andy Shevchenko<br><br><b=
-r>
+Hello,
 
---00000000000029634e05c4b4c34e--
+On Wed, Jun 30, 2021 at 05:36:00PM +0200, Uwe Kleine-K=F6nig wrote:
+> this problem was found already earlier by Colin King:
+>=20
+> 	https://lore.kernel.org/r/20210629172253.43131-1-colin.king@canonical.com
+>=20
+> I'm fine with either change.
+
+FTR: Thierry applied Colin's patch, so I'm discarding this one from
+patchwork as not applicable.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--kks4xpy4yqeqdftx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmDiqa8ACgkQwfwUeK3K
+7AkIqAf+JkteW/uZUQyk1+Ob90zPhNWHL/Zs1ADVtXTLffha5f+XU3LmDxcvzGsg
+D+j0gfnClBIRFLEVnNh5+heuERDz7zmMZEyrDt28NPa3uEMHPBMh4RQLnM832vUY
+pzk8H0F8DFs6pin9ToDYsFIvo0jSruZl6WwGEtPoTSMab6wNAqaIOfJp4JetICC9
+EzJApcGhIHykl0RzRrfHGQzZxG5TdIRLvOCt588ybmcXopfnPmhzx1TKUKDfZTbn
+VDNDWMkC71zrUcybzhP5nF3xYcRlpyxO/VIOdNS0esZ/WjFD3HPenrcNY3+FUgkP
+R0Y+/DZNe3TUHViXDNacm2c4XP+jpw==
+=QLDn
+-----END PGP SIGNATURE-----
+
+--kks4xpy4yqeqdftx--
