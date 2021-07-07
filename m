@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13541C07E95
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 717A2C07E9C
 	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 014BE61C94
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5F86E613B2
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbhGGQbh (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Jul 2021 12:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
+        id S230299AbhGGQbi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Jul 2021 12:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbhGGQbh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:37 -0400
+        with ESMTP id S230168AbhGGQbi (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:38 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD96C061574
-        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:28:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46E5C061574
+        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:28:57 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APu-0004Nu-EF; Wed, 07 Jul 2021 18:28:54 +0200
+        id 1m1APv-0004Sb-IM; Wed, 07 Jul 2021 18:28:55 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APt-0002cz-Sx; Wed, 07 Jul 2021 18:28:53 +0200
+        id 1m1APu-0002d7-Tk; Wed, 07 Jul 2021 18:28:54 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APm-0006Jk-On; Wed, 07 Jul 2021 18:28:46 +0200
+        id 1m1APn-0006KF-R2; Wed, 07 Jul 2021 18:28:47 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 40/47] pwm: omap-dmtimer: Don't check the return code of pwmchip_remove()
-Date:   Wed,  7 Jul 2021 18:28:28 +0200
-Message-Id: <20210707162835.1772882-41-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 47/47] pwm: Make pwmchip_remove() return void
+Date:   Wed,  7 Jul 2021 18:28:35 +0200
+Message-Id: <20210707162835.1772882-48-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -56,34 +56,51 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-pwmchip_remove() returns always 0. Don't use the value to make it
-possible to eventually change the function to return void. Also the
-driver core ignores the return value of pwm_omap_dmtimer_remove()
-and considers the device removed anyhow. So returning early results
-in a resource leak.
+Since some time pwmchip_remove() always returns 0 so the return value
+isn't usefull. Now that all callers are converted to ignore its value
+the function can be changed to return void.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-omap-dmtimer.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/pwm/core.c  | 4 +---
+ include/linux/pwm.h | 2 +-
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index 507a2d945b90..fa800fcf31d4 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -444,11 +444,8 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index a28c8639af5b..cb08ebb39051 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -304,7 +304,7 @@ EXPORT_SYMBOL_GPL(pwmchip_add);
+  *
+  * Returns: 0 on success or a negative error code on failure.
+  */
+-int pwmchip_remove(struct pwm_chip *chip)
++void pwmchip_remove(struct pwm_chip *chip)
  {
- 	struct pwm_omap_dmtimer_chip *omap = platform_get_drvdata(pdev);
--	int ret;
+ 	pwmchip_sysfs_unexport(chip);
  
--	ret = pwmchip_remove(&omap->chip);
--	if (ret)
--		return ret;
-+	pwmchip_remove(&omap->chip);
+@@ -318,8 +318,6 @@ int pwmchip_remove(struct pwm_chip *chip)
+ 	free_pwms(chip);
  
- 	if (pm_runtime_active(&omap->dm_timer_pdev->dev))
- 		omap->pdata->stop(omap->dm_timer);
+ 	mutex_unlock(&pwm_lock);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL_GPL(pwmchip_remove);
+ 
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index a0b7e43049d5..725c9b784e60 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -404,7 +404,7 @@ int pwm_set_chip_data(struct pwm_device *pwm, void *data);
+ void *pwm_get_chip_data(struct pwm_device *pwm);
+ 
+ int pwmchip_add(struct pwm_chip *chip);
+-int pwmchip_remove(struct pwm_chip *chip);
++void pwmchip_remove(struct pwm_chip *chip);
+ 
+ int devm_pwmchip_add(struct device *dev, struct pwm_chip *chip);
+ 
 -- 
 2.30.2
 
