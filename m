@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FF6C07E9C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E75C07E9B
 	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0F34161C94
+	by mail.kernel.org (Postfix) with ESMTP id 4BB3061C94
 	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbhGGQbp (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Jul 2021 12:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
+        id S230249AbhGGQbq (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Jul 2021 12:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbhGGQbo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:44 -0400
+        with ESMTP id S230317AbhGGQbp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:45 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A2CC061574
-        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:29:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A48FC061574
+        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:29:05 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1AQ1-0004hc-M4; Wed, 07 Jul 2021 18:29:01 +0200
+        id 1m1AQ3-0004u7-HY; Wed, 07 Jul 2021 18:29:03 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1AQ0-0002eH-Q7; Wed, 07 Jul 2021 18:29:00 +0200
+        id 1m1AQ2-0002eX-Rf; Wed, 07 Jul 2021 18:29:02 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APl-0006JB-Af; Wed, 07 Jul 2021 18:28:45 +0200
+        id 1m1APn-0006K1-D1; Wed, 07 Jul 2021 18:28:47 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 30/47] pwm: tiecap: Simplify using devm_pwmchip_add()
-Date:   Wed,  7 Jul 2021 18:28:18 +0200
-Message-Id: <20210707162835.1772882-31-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 44/47] pwm: samsung: Don't check the return code of pwmchip_remove()
+Date:   Wed,  7 Jul 2021 18:28:32 +0200
+Message-Id: <20210707162835.1772882-45-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -56,40 +56,34 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-With devm_pwmchip_add() there is no need to explicitly call
-pwmchip_remove(), so this call can be dropped from the remove callback.
+pwmchip_remove() returns always 0. Don't use the value to make it
+possible to eventually change the function to return void. Also the
+driver core ignores the return value of pwm_samsung_remove()
+and considers the device removed anyhow. So returning early results
+in a resource leak.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-tiecap.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-samsung.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
-index dec3f1fb150c..85e3db2bff18 100644
---- a/drivers/pwm/pwm-tiecap.c
-+++ b/drivers/pwm/pwm-tiecap.c
-@@ -256,7 +256,7 @@ static int ecap_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pc->mmio_base))
- 		return PTR_ERR(pc->mmio_base);
- 
--	ret = pwmchip_add(&pc->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
- 		return ret;
-@@ -270,11 +270,9 @@ static int ecap_pwm_probe(struct platform_device *pdev)
- 
- static int ecap_pwm_remove(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index f6c528f02d43..dd94c4312a0c 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -580,11 +580,8 @@ static int pwm_samsung_probe(struct platform_device *pdev)
+ static int pwm_samsung_remove(struct platform_device *pdev)
  {
--	struct ecap_pwm_chip *pc = platform_get_drvdata(pdev);
--
- 	pm_runtime_disable(&pdev->dev);
+ 	struct samsung_pwm_chip *chip = platform_get_drvdata(pdev);
+-	int ret;
  
--	return pwmchip_remove(&pc->chip);
-+	return 0;
- }
+-	ret = pwmchip_remove(&chip->chip);
+-	if (ret < 0)
+-		return ret;
++	pwmchip_remove(&chip->chip);
  
- #ifdef CONFIG_PM_SLEEP
+ 	clk_disable_unprepare(chip->base_clk);
+ 
 -- 
 2.30.2
 
