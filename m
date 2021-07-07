@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5F2C07E9C
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1816CC11F68
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CBE7E61C94
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0614A613B2
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbhGGQbl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Jul 2021 12:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39276 "EHLO
+        id S230324AbhGGQbm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Jul 2021 12:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230312AbhGGQbk (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:40 -0400
+        with ESMTP id S230317AbhGGQbm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:42 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6152EC061760
-        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:29:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516A9C061574
+        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:29:02 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APy-0004b8-Bs; Wed, 07 Jul 2021 18:28:58 +0200
+        id 1m1AQ0-0004fl-AI; Wed, 07 Jul 2021 18:29:00 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APx-0002dT-Np; Wed, 07 Jul 2021 18:28:57 +0200
+        id 1m1APz-0002e9-PM; Wed, 07 Jul 2021 18:28:59 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APi-0006I1-AH; Wed, 07 Jul 2021 18:28:42 +0200
+        id 1m1APk-0006Io-9X; Wed, 07 Jul 2021 18:28:44 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 11/47] pwm: keembay: Improve compile coverage by allowing to enable on !ARM64
-Date:   Wed,  7 Jul 2021 18:27:59 +0200
-Message-Id: <20210707162835.1772882-12-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 24/47] pwm: mxs: Simplify using devm_pwmchip_add()
+Date:   Wed,  7 Jul 2021 18:28:12 +0200
+Message-Id: <20210707162835.1772882-25-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -56,27 +56,51 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-There are no arm64 specific constructs in this driver and it compiles
-just fine with ARCH=arm.
+This allows to drop the platform_driver's remove function. This is the
+only user of driver data so this can go away, too.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-mxs.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index ecbd91ee3c46..aa29841bbb79 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -284,7 +284,8 @@ config PWM_JZ4740
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index 558dc1de8f5d..766dbc58dad8 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -150,24 +150,15 @@ static int mxs_pwm_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return dev_err_probe(&pdev->dev, ret, "failed to reset PWM\n");
  
- config PWM_KEEMBAY
- 	tristate "Intel Keem Bay PWM driver"
--	depends on ARCH_KEEMBAY || (ARM64 && COMPILE_TEST)
-+	depends on ARCH_KEEMBAY || COMPILE_TEST
-+	depends on COMMON_CLK && HAS_IOMEM
- 	help
- 	  The platform driver for Intel Keem Bay PWM controller.
+-	ret = pwmchip_add(&mxs->chip);
++	ret = devm_pwmchip_add(&pdev->dev, &mxs->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
+ 		return ret;
+ 	}
+ 
+-	platform_set_drvdata(pdev, mxs);
+-
+ 	return 0;
+ }
+ 
+-static int mxs_pwm_remove(struct platform_device *pdev)
+-{
+-	struct mxs_pwm_chip *mxs = platform_get_drvdata(pdev);
+-
+-	return pwmchip_remove(&mxs->chip);
+-}
+-
+ static const struct of_device_id mxs_pwm_dt_ids[] = {
+ 	{ .compatible = "fsl,imx23-pwm", },
+ 	{ /* sentinel */ }
+@@ -180,7 +171,6 @@ static struct platform_driver mxs_pwm_driver = {
+ 		.of_match_table = mxs_pwm_dt_ids,
+ 	},
+ 	.probe = mxs_pwm_probe,
+-	.remove = mxs_pwm_remove,
+ };
+ module_platform_driver(mxs_pwm_driver);
  
 -- 
 2.30.2
