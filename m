@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1816CC11F68
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A6EC07E9E
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0614A613B2
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23B8861C94
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230324AbhGGQbm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        id S230305AbhGGQbm (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
         Wed, 7 Jul 2021 12:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230317AbhGGQbm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:42 -0400
+        with ESMTP id S230303AbhGGQbk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:40 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516A9C061574
-        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:29:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B27C061762
+        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:29:00 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1AQ0-0004fl-AI; Wed, 07 Jul 2021 18:29:00 +0200
+        id 1m1APy-0004b4-BP; Wed, 07 Jul 2021 18:28:58 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APz-0002e9-PM; Wed, 07 Jul 2021 18:28:59 +0200
+        id 1m1APx-0002dU-Np; Wed, 07 Jul 2021 18:28:57 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APk-0006Io-9X; Wed, 07 Jul 2021 18:28:44 +0200
+        id 1m1APi-0006I4-Ec; Wed, 07 Jul 2021 18:28:42 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 24/47] pwm: mxs: Simplify using devm_pwmchip_add()
-Date:   Wed,  7 Jul 2021 18:28:12 +0200
-Message-Id: <20210707162835.1772882-25-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 12/47] pwm: ab8500: Simplify using devm_pwmchip_add()
+Date:   Wed,  7 Jul 2021 18:28:00 +0200
+Message-Id: <20210707162835.1772882-13-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -61,46 +61,48 @@ only user of driver data so this can go away, too.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-mxs.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/pwm/pwm-ab8500.c | 18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index 558dc1de8f5d..766dbc58dad8 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -150,24 +150,15 @@ static int mxs_pwm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return dev_err_probe(&pdev->dev, ret, "failed to reset PWM\n");
+diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
+index 281f74a1c50b..ad37bc46f272 100644
+--- a/drivers/pwm/pwm-ab8500.c
++++ b/drivers/pwm/pwm-ab8500.c
+@@ -111,26 +111,11 @@ static int ab8500_pwm_probe(struct platform_device *pdev)
+ 	ab8500->chip.npwm = 1;
+ 	ab8500->hwid = pdev->id - 1;
  
--	ret = pwmchip_add(&mxs->chip);
-+	ret = devm_pwmchip_add(&pdev->dev, &mxs->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
- 		return ret;
- 	}
+-	err = pwmchip_add(&ab8500->chip);
++	err = devm_pwmchip_add(&pdev->dev, &ab8500->chip);
+ 	if (err < 0)
+ 		return dev_err_probe(&pdev->dev, err, "Failed to add pwm chip\n");
  
--	platform_set_drvdata(pdev, mxs);
+ 	dev_dbg(&pdev->dev, "pwm probe successful\n");
+-	platform_set_drvdata(pdev, ab8500);
 -
- 	return 0;
- }
- 
--static int mxs_pwm_remove(struct platform_device *pdev)
--{
--	struct mxs_pwm_chip *mxs = platform_get_drvdata(pdev);
--
--	return pwmchip_remove(&mxs->chip);
+-	return 0;
 -}
 -
- static const struct of_device_id mxs_pwm_dt_ids[] = {
- 	{ .compatible = "fsl,imx23-pwm", },
- 	{ /* sentinel */ }
-@@ -180,7 +171,6 @@ static struct platform_driver mxs_pwm_driver = {
- 		.of_match_table = mxs_pwm_dt_ids,
+-static int ab8500_pwm_remove(struct platform_device *pdev)
+-{
+-	struct ab8500_pwm_chip *ab8500 = platform_get_drvdata(pdev);
+-	int err;
+-
+-	err = pwmchip_remove(&ab8500->chip);
+-	if (err < 0)
+-		return err;
+-
+-	dev_dbg(&pdev->dev, "pwm driver removed\n");
+ 
+ 	return 0;
+ }
+@@ -140,7 +125,6 @@ static struct platform_driver ab8500_pwm_driver = {
+ 		.name = "ab8500-pwm",
  	},
- 	.probe = mxs_pwm_probe,
--	.remove = mxs_pwm_remove,
+ 	.probe = ab8500_pwm_probe,
+-	.remove = ab8500_pwm_remove,
  };
- module_platform_driver(mxs_pwm_driver);
+ module_platform_driver(ab8500_pwm_driver);
  
 -- 
 2.30.2
