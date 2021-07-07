@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA92C07E95
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A18EC07E9E
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:50:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F253661CBE
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:50:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2AC7561CC7
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbhGGQww (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Jul 2021 12:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44096 "EHLO
+        id S229975AbhGGQwy (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Jul 2021 12:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbhGGQwu (ORCPT
+        with ESMTP id S230259AbhGGQwu (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:52:50 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215D8C061760
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8DCC061764
         for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:50:09 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1AkQ-0007Bq-LO; Wed, 07 Jul 2021 18:50:06 +0200
+        id 1m1AkQ-0007Bu-LW; Wed, 07 Jul 2021 18:50:06 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1AkP-0002f6-JI; Wed, 07 Jul 2021 18:50:05 +0200
+        id 1m1AkP-0002f6-LQ; Wed, 07 Jul 2021 18:50:05 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APn-0006Jy-8H; Wed, 07 Jul 2021 18:28:47 +0200
+        id 1m1APm-0006Je-FX; Wed, 07 Jul 2021 18:28:46 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 43/47] pwm: renesas-tpu: Don't check the return code of pwmchip_remove()
-Date:   Wed,  7 Jul 2021 18:28:31 +0200
-Message-Id: <20210707162835.1772882-44-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 38/47] pwm: imx-tpm: Don't check the return code of pwmchip_remove()
+Date:   Wed,  7 Jul 2021 18:28:26 +0200
+Message-Id: <20210707162835.1772882-39-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -58,33 +58,32 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 pwmchip_remove() returns always 0. Don't use the value to make it
 possible to eventually change the function to return void. Also the
-driver core ignores the return value of tpu_remove().
+driver core ignores the return value of pwm_imx_tpm_remove().
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-renesas-tpu.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-imx-tpm.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
-index b853e7942605..4381df90a527 100644
---- a/drivers/pwm/pwm-renesas-tpu.c
-+++ b/drivers/pwm/pwm-renesas-tpu.c
-@@ -425,13 +425,12 @@ static int tpu_probe(struct platform_device *pdev)
- static int tpu_remove(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-imx-tpm.c b/drivers/pwm/pwm-imx-tpm.c
+index dbb50493abdd..e5e7b7c339a8 100644
+--- a/drivers/pwm/pwm-imx-tpm.c
++++ b/drivers/pwm/pwm-imx-tpm.c
+@@ -382,11 +382,12 @@ static int pwm_imx_tpm_probe(struct platform_device *pdev)
+ static int pwm_imx_tpm_remove(struct platform_device *pdev)
  {
- 	struct tpu_device *tpu = platform_get_drvdata(pdev);
--	int ret;
+ 	struct imx_tpm_pwm_chip *tpm = platform_get_drvdata(pdev);
+-	int ret = pwmchip_remove(&tpm->chip);
++
++	pwmchip_remove(&tpm->chip);
  
--	ret = pwmchip_remove(&tpu->chip);
-+	pwmchip_remove(&tpu->chip);
- 
- 	pm_runtime_disable(&pdev->dev);
+ 	clk_disable_unprepare(tpm->clk);
  
 -	return ret;
 +	return 0;
  }
  
- #ifdef CONFIG_OF
+ static int __maybe_unused pwm_imx_tpm_suspend(struct device *dev)
 -- 
 2.30.2
 
