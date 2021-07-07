@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D857C07E9C
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41482C07E95
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 85BEC61C94
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2CDB0613B2
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 16:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbhGGQba (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Jul 2021 12:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
+        id S230187AbhGGQbb (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Jul 2021 12:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbhGGQba (ORCPT
+        with ESMTP id S230173AbhGGQba (ORCPT
         <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 12:31:30 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95B2C061574
-        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:28:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AFEC061574
+        for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 09:28:50 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APn-000446-NI; Wed, 07 Jul 2021 18:28:47 +0200
+        id 1m1APo-000497-Db; Wed, 07 Jul 2021 18:28:48 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APm-0002c5-OZ; Wed, 07 Jul 2021 18:28:46 +0200
+        id 1m1APn-0002c8-OI; Wed, 07 Jul 2021 18:28:47 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APj-0006IX-N0; Wed, 07 Jul 2021 18:28:43 +0200
+        id 1m1APk-0006Iu-Mr; Wed, 07 Jul 2021 18:28:44 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 20/47] pwm: keembay: Simplify using devm_pwmchip_add()
-Date:   Wed,  7 Jul 2021 18:28:08 +0200
-Message-Id: <20210707162835.1772882-21-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 26/47] pwm: pxa: Simplify using devm_pwmchip_add()
+Date:   Wed,  7 Jul 2021 18:28:14 +0200
+Message-Id: <20210707162835.1772882-27-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -61,45 +61,47 @@ only user of driver data so this can go away, too.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-keembay.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/pwm/pwm-pxa.c | 13 +------------
+ 1 file changed, 1 insertion(+), 12 deletions(-)
 
-diff --git a/drivers/pwm/pwm-keembay.c b/drivers/pwm/pwm-keembay.c
-index 521a825c8ba0..733811b05721 100644
---- a/drivers/pwm/pwm-keembay.c
-+++ b/drivers/pwm/pwm-keembay.c
-@@ -207,22 +207,13 @@ static int keembay_pwm_probe(struct platform_device *pdev)
- 	priv->chip.ops = &keembay_pwm_ops;
- 	priv->chip.npwm = KMB_TOTAL_PWM_CHANNELS;
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index e091a528e33c..a9efdcf839ae 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -195,32 +195,21 @@ static int pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pc->mmio_base))
+ 		return PTR_ERR(pc->mmio_base);
  
--	ret = pwmchip_add(&priv->chip);
-+	ret = devm_pwmchip_add(dev, &priv->chip);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to add PWM chip\n");
+-	ret = pwmchip_add(&pc->chip);
++	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+ 		return ret;
+ 	}
  
--	platform_set_drvdata(pdev, priv);
--
+-	platform_set_drvdata(pdev, pc);
  	return 0;
  }
  
--static int keembay_pwm_remove(struct platform_device *pdev)
+-static int pwm_remove(struct platform_device *pdev)
 -{
--	struct keembay_pwm *priv = platform_get_drvdata(pdev);
+-	struct pxa_pwm_chip *pc;
 -
--	return pwmchip_remove(&priv->chip);
+-	pc = platform_get_drvdata(pdev);
+-
+-	return pwmchip_remove(&pc->chip);
 -}
 -
- static const struct of_device_id keembay_pwm_of_match[] = {
- 	{ .compatible = "intel,keembay-pwm" },
- 	{ }
-@@ -231,7 +222,6 @@ MODULE_DEVICE_TABLE(of, keembay_pwm_of_match);
+ static struct platform_driver pwm_driver = {
+ 	.driver		= {
+ 		.name	= "pxa25x-pwm",
+ 		.of_match_table = pwm_of_match,
+ 	},
+ 	.probe		= pwm_probe,
+-	.remove		= pwm_remove,
+ 	.id_table	= pwm_id_table,
+ };
  
- static struct platform_driver keembay_pwm_driver = {
- 	.probe	= keembay_pwm_probe,
--	.remove	= keembay_pwm_remove,
- 	.driver	= {
- 		.name = "pwm-keembay",
- 		.of_match_table = keembay_pwm_of_match,
 -- 
 2.30.2
 
