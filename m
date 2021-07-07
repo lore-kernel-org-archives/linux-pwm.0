@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1860FC07E9B
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 17:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1240BC07E9C
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 17:18:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 037F961CC0
-	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 17:17:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA46061C88
+	for <linux-pwm@archiver.kernel.org>; Wed,  7 Jul 2021 17:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230475AbhGGRUi (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 7 Jul 2021 13:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        id S230480AbhGGRUk (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Wed, 7 Jul 2021 13:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbhGGRUi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 13:20:38 -0400
+        with ESMTP id S230484AbhGGRUj (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jul 2021 13:20:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0635DC06175F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2456C061574
         for <linux-pwm@vger.kernel.org>; Wed,  7 Jul 2021 10:17:58 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1BBM-0002Rd-03; Wed, 07 Jul 2021 19:17:56 +0200
+        id 1m1BBM-0002Rw-J1; Wed, 07 Jul 2021 19:17:56 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1AkP-0002f6-Sg; Wed, 07 Jul 2021 18:50:05 +0200
+        id 1m1AkP-0002f6-Qw; Wed, 07 Jul 2021 18:50:05 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1m1APj-0006IL-4A; Wed, 07 Jul 2021 18:28:43 +0200
+        id 1m1APj-0006Ii-WE; Wed, 07 Jul 2021 18:28:44 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 16/47] pwm: imx27: Simplify using devm_pwmchip_add()
-Date:   Wed,  7 Jul 2021 18:28:04 +0200
-Message-Id: <20210707162835.1772882-17-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 22/47] pwm: lpc32xx: Simplify using devm_pwmchip_add()
+Date:   Wed,  7 Jul 2021 18:28:10 +0200
+Message-Id: <20210707162835.1772882-23-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
 References: <20210707162835.1772882-1-u.kleine-koenig@pengutronix.de>
@@ -61,47 +61,46 @@ only user of driver data so this can go away, too.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/pwm/pwm-imx27.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ drivers/pwm/pwm-lpc32xx.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx27.c b/drivers/pwm/pwm-imx27.c
-index f6588a96fbd9..ea91a2f81a9f 100644
---- a/drivers/pwm/pwm-imx27.c
-+++ b/drivers/pwm/pwm-imx27.c
-@@ -313,8 +313,6 @@ static int pwm_imx27_probe(struct platform_device *pdev)
- 	if (imx == NULL)
- 		return -ENOMEM;
+diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
+index 719e8e913656..ddeab5687cb8 100644
+--- a/drivers/pwm/pwm-lpc32xx.c
++++ b/drivers/pwm/pwm-lpc32xx.c
+@@ -122,24 +122,15 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+ 	val &= ~PWM_PIN_LEVEL;
+ 	writel(val, lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
  
--	platform_set_drvdata(pdev, imx);
--
- 	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(imx->clk_ipg))
- 		return dev_err_probe(&pdev->dev, PTR_ERR(imx->clk_ipg),
-@@ -342,16 +340,7 @@ static int pwm_imx27_probe(struct platform_device *pdev)
- 	if (!(pwmcr & MX3_PWMCR_EN))
- 		pwm_imx27_clk_disable_unprepare(imx);
+-	ret = pwmchip_add(&lpc32xx->chip);
++	ret = devm_pwmchip_add(&pdev->dev, &lpc32xx->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to add PWM chip, error %d\n", ret);
+ 		return ret;
+ 	}
  
--	return pwmchip_add(&imx->chip);
--}
+-	platform_set_drvdata(pdev, lpc32xx);
 -
--static int pwm_imx27_remove(struct platform_device *pdev)
--{
--	struct pwm_imx27_chip *imx;
--
--	imx = platform_get_drvdata(pdev);
--
--	return pwmchip_remove(&imx->chip);
-+	return devm_pwmchip_add(&pdev->dev, &imx->chip);
+ 	return 0;
  }
  
- static struct platform_driver imx_pwm_driver = {
-@@ -360,7 +349,6 @@ static struct platform_driver imx_pwm_driver = {
- 		.of_match_table = pwm_imx27_dt_ids,
+-static int lpc32xx_pwm_remove(struct platform_device *pdev)
+-{
+-	struct lpc32xx_pwm_chip *lpc32xx = platform_get_drvdata(pdev);
+-
+-	return pwmchip_remove(&lpc32xx->chip);
+-}
+-
+ static const struct of_device_id lpc32xx_pwm_dt_ids[] = {
+ 	{ .compatible = "nxp,lpc3220-pwm", },
+ 	{ /* sentinel */ }
+@@ -152,7 +143,6 @@ static struct platform_driver lpc32xx_pwm_driver = {
+ 		.of_match_table = lpc32xx_pwm_dt_ids,
  	},
- 	.probe = pwm_imx27_probe,
--	.remove = pwm_imx27_remove,
+ 	.probe = lpc32xx_pwm_probe,
+-	.remove = lpc32xx_pwm_remove,
  };
- module_platform_driver(imx_pwm_driver);
+ module_platform_driver(lpc32xx_pwm_driver);
  
 -- 
 2.30.2
