@@ -2,48 +2,47 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-19.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D80C11F6E
-	for <linux-pwm@archiver.kernel.org>; Sat, 10 Jul 2021 23:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F839C11F68
+	for <linux-pwm@archiver.kernel.org>; Sat, 10 Jul 2021 23:50:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DA3C161154
-	for <linux-pwm@archiver.kernel.org>; Sat, 10 Jul 2021 23:50:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F0659613E6
+	for <linux-pwm@archiver.kernel.org>; Sat, 10 Jul 2021 23:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233189AbhGJXxM (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 10 Jul 2021 19:53:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40226 "EHLO mail.kernel.org"
+        id S233095AbhGJXxj (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 10 Jul 2021 19:53:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232912AbhGJXwt (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 10 Jul 2021 19:52:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 120E36135E;
-        Sat, 10 Jul 2021 23:50:02 +0000 (UTC)
+        id S233127AbhGJXxH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sat, 10 Jul 2021 19:53:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1EAEF61356;
+        Sat, 10 Jul 2021 23:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625961003;
-        bh=djiJWBEnmSqH0yNdpQmj2nhgTBcf0CHr1UrpVaVvGLA=;
+        s=k20201202; t=1625961021;
+        bh=lwqM6PvVga1wrNPdaKICIzDas3E2Hl7kjyv++ULeiNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=suxeIESos0gqUMvGmac3TVaCvfoChR7jETvLdP8eU4T/VpO51zxRQmXQLPV6JPESD
-         nxy2VRRdsr1R6+LoL+DiSerFbkB0kZmcdCo65MOJ9CIs1vVkIsOUj86suqSKUTk0sv
-         74JuAhM3fsZ2RmWK/rd3i4Z5TuqgToHAtsLaN/w9tGbPvtUgPV3hDHMZ2M3ZEPbc9F
-         9UU5X9A/MJQnuLQAXrScTP87PxZj+z9mI3WR9XoKGTIdwEaIrK2+RNoKakuCJmkQmo
-         w54yBAde74QeOKC2Udo72srg0aiOOKqnvjIQKecgxP7gNacPGjnPl8LoIHqQv2esdf
-         Oo5iM0u9/FD1Q==
+        b=AZNNGv3OJOTvelv6KOWs1WwAfS8Vlf2OTh9LjaLyi+hzFQHN2g8UUL6HYjhULIyOV
+         0Pg7BVrOcpFbzoX93C3onxzNU0F22VCVoK2m3DABwcmmn95UfvkGasMPJ7zCUfW1Qf
+         orkakrB1ChkUsMGBTcyaixFNKx+NHFmXKn1PXgoNksZ5olaaEzBAFWK5eLS1E5rSWa
+         b3vat0cj7VmE/wO3nrGYUdHuBeKYQfT2vR+AtAX56FGkaCrFZBYGutlcHhZ34RzOpD
+         qP7nTRzQZRoPiAKCRr1FuK88aePWUnyFlA1jFo+IGxvFdunuG9CLqcwxK+i8ywrjr/
+         j9o3wzaM7M8jA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 34/43] pwm: tegra: Don't modify HW state in .remove callback
-Date:   Sat, 10 Jul 2021 19:49:06 -0400
-Message-Id: <20210710234915.3220342-34-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-pwm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 04/37] pwm: spear: Don't modify HW state in .remove callback
+Date:   Sat, 10 Jul 2021 19:49:42 -0400
+Message-Id: <20210710235016.3221124-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210710234915.3220342-1-sashal@kernel.org>
-References: <20210710234915.3220342-1-sashal@kernel.org>
+In-Reply-To: <20210710235016.3221124-1-sashal@kernel.org>
+References: <20210710235016.3221124-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
@@ -55,7 +54,7 @@ X-Mailing-List: linux-pwm@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 86f7fa71cd830d18d7ebcaf719dffd5ddfe1acdd ]
+[ Upstream commit b601a18f12383001e7a8da238de7ca1559ebc450 ]
 
 A consumer is expected to disable a PWM before calling pwm_put(). And if
 they didn't there is hopefully a good reason (or the consumer needs
@@ -69,40 +68,24 @@ Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-tegra.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/pwm/pwm-spear.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 55bc63d5a0ae..6d8e324864fa 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -301,7 +301,6 @@ static int tegra_pwm_probe(struct platform_device *pdev)
- static int tegra_pwm_remove(struct platform_device *pdev)
+diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
+index 6c6b44fd3f43..2d11ac277de8 100644
+--- a/drivers/pwm/pwm-spear.c
++++ b/drivers/pwm/pwm-spear.c
+@@ -231,10 +231,6 @@ static int spear_pwm_probe(struct platform_device *pdev)
+ static int spear_pwm_remove(struct platform_device *pdev)
  {
- 	struct tegra_pwm_chip *pc = platform_get_drvdata(pdev);
--	unsigned int i;
- 	int err;
+ 	struct spear_pwm_chip *pc = platform_get_drvdata(pdev);
+-	int i;
+-
+-	for (i = 0; i < NUM_PWM; i++)
+-		pwm_disable(&pc->chip.pwms[i]);
  
- 	if (WARN_ON(!pc))
-@@ -311,18 +310,6 @@ static int tegra_pwm_remove(struct platform_device *pdev)
- 	if (err < 0)
- 		return err;
- 
--	for (i = 0; i < pc->chip.npwm; i++) {
--		struct pwm_device *pwm = &pc->chip.pwms[i];
--
--		if (!pwm_is_enabled(pwm))
--			if (clk_prepare_enable(pc->clk) < 0)
--				continue;
--
--		pwm_writel(pc, i, 0);
--
--		clk_disable_unprepare(pc->clk);
--	}
--
- 	reset_control_assert(pc->rst);
- 	clk_disable_unprepare(pc->clk);
- 
+ 	/* clk was prepared in probe, hence unprepare it here */
+ 	clk_unprepare(pc->clk);
 -- 
 2.30.2
 
