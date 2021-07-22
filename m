@@ -2,94 +2,96 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A49C63798
-	for <linux-pwm@archiver.kernel.org>; Thu, 22 Jul 2021 10:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6658BC63798
+	for <linux-pwm@archiver.kernel.org>; Thu, 22 Jul 2021 10:11:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 042EE6124B
-	for <linux-pwm@archiver.kernel.org>; Thu, 22 Jul 2021 10:09:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D9CD61264
+	for <linux-pwm@archiver.kernel.org>; Thu, 22 Jul 2021 10:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230367AbhGVJ2V convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 22 Jul 2021 05:28:21 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:39339 "EHLO
+        id S231655AbhGVJas (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 22 Jul 2021 05:30:48 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:39349 "EHLO
         mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230365AbhGVJ2U (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 22 Jul 2021 05:28:20 -0400
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S231552AbhGVJar (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 22 Jul 2021 05:30:47 -0400
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 5C872440E85;
-        Thu, 22 Jul 2021 13:08:38 +0300 (IDT)
-References: <f79128fa287e37ee59cb03ae04b319ecb3d68c29.1626176145.git.baruch@tkos.co.il>
- <1173e7b0b58730fd187871d9e14a02cab85158cc.1626176145.git.baruch@tkos.co.il>
- <20210714201839.kfyqcyvowekc4ejs@pengutronix.de> <87eebyst5z.fsf@tarshish>
- <20210716070427.kv7w6imp2zoxhyz5@pengutronix.de>
-User-agent: mu4e 1.4.15; emacs 27.1
+        by mx.tkos.co.il (Postfix) with ESMTPS id 3EDA44407CE;
+        Thu, 22 Jul 2021 13:01:28 +0300 (IDT)
 From:   Baruch Siach <baruch@tkos.co.il>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>
+Cc:     Baruch Siach <baruch@tkos.co.il>, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>,
         Kathiravan T <kathirav@codeaurora.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        kernel@pengutronix.de, Robert Marko <robert.marko@sartura.hr>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Balaji Prakash J <bjagadee@codeaurora.org>
-Subject: Re: [PATCH v5 2/4] pwm: driver for qualcomm ipq6018 pwm block
-In-reply-to: <20210716070427.kv7w6imp2zoxhyz5@pengutronix.de>
-Date:   Thu, 22 Jul 2021 13:08:47 +0300
-Message-ID: <87k0lizmmo.fsf@tarshish>
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v6 1/4] arm64: dts: ipq6018: correct TCSR block area
+Date:   Thu, 22 Jul 2021 13:01:07 +0300
+Message-Id: <889aae1b88f120cb6281919d27164a959fbe69d0.1626948070.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Hi Uwe,
+According to Bjorn Andersson[1], &tcsr_q6 base is 0x01937000 with size
+0x21000. Adjust qcom,halt-regs offsets (add 0xe000) to match the new
+syscon base.
 
-On Fri, Jul 16 2021, Uwe Kleine-König wrote:
-> On Fri, Jul 16, 2021 at 08:51:20AM +0300, Baruch Siach wrote:
->> On Wed, Jul 14 2021, Uwe Kleine-König wrote:
->> > On Tue, Jul 13, 2021 at 02:35:43PM +0300, Baruch Siach wrote:
->> >> +	val = FIELD_PREP(IPQ_PWM_REG0_HI_DURATION, hi_dur) |
->> >> +		FIELD_PREP(IPQ_PWM_REG0_PWM_DIV, pwm_div);
->> >> +	ipq_pwm_reg_write(pwm, IPQ_PWM_CFG_REG0, val);
->> >> +
->> >> +	val = FIELD_PREP(IPQ_PWM_REG1_PRE_DIV, pre_div);
->> >> +	ipq_pwm_reg_write(pwm, IPQ_PWM_CFG_REG1, val);
->> >> +
->> >> +	/* Enable needs a separate write to REG1 */
->> >> +	val |= IPQ_PWM_REG1_UPDATE;
->> >
->> > Setting this bit results in the two writes above being configured
->> > atomically so that no mixed settings happen to the output, right?
->> 
->> I guess so. I have no access to hardware documentation, mind you. I
->> first tried to do only one write to REG1, but it had no effect. The
->> existence of the UPDATE bit also indicates that hardware works as you
->> suggest.
->
-> I wouldn't trust HW documentation here. If you have some means to
-> inspect the waveform this is easy to test. Depending on how long you can
-> make the periods an LED is enough. If you start with a slower parent
-> clk, a big pre_div and hi_dur = 0 the LED is supposed to be off. Then
-> set hi_dur = pwm_div/2 which either make the LED blink slowly or keeps
-> off. Then setting pre_div = 2 either increased the blink frequency or it
-> doesn't. ...
+Also, rename to just &tcsr as Kathiravan T suggested.
 
-I currently have only access to DVM to measure the PWM effect. I'll try
-to do more measures when I have access to better equipment.
+[1] https://lore.kernel.org/r/YLgO0Aj1d4w9EcPv@yoga
 
-baruch
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+v6:
 
+  Fix offset adjust (Kathiravan T)
+
+  Rename &tcsr_q6 to &tcsr (Kathiravan T)
+
+v5: New patch in this series
+---
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 6ee7b99c21ec..6bb262757cd9 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -270,9 +270,9 @@ tcsr_mutex_regs: syscon@1905000 {
+ 			reg = <0x0 0x01905000 0x0 0x8000>;
+ 		};
+ 
+-		tcsr_q6: syscon@1945000 {
++		tcsr: syscon@1937000 {
+ 			compatible = "syscon";
+-			reg = <0x0 0x01945000 0x0 0xe000>;
++			reg = <0x0 0x01937000 0x0 0x21000>;
+ 		};
+ 
+ 		blsp_dma: dma-controller@7884000 {
+@@ -615,7 +615,7 @@ q6v5_wcss: remoteproc@cd00000 {
+ 			clocks = <&gcc GCC_PRNG_AHB_CLK>;
+ 			clock-names = "prng";
+ 
+-			qcom,halt-regs = <&tcsr_q6 0xa000 0xd000 0x0>;
++			qcom,halt-regs = <&tcsr 0x18000 0x1b000 0xe000>;
+ 
+ 			qcom,smem-states = <&wcss_smp2p_out 0>,
+ 					   <&wcss_smp2p_out 1>;
 -- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+2.30.2
+
