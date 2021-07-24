@@ -2,183 +2,153 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E74C4338F
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Jul 2021 23:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BADC4338F
+	for <linux-pwm@archiver.kernel.org>; Sat, 24 Jul 2021 08:18:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 06CAD60F36
-	for <linux-pwm@archiver.kernel.org>; Fri, 23 Jul 2021 23:03:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6C48F60E8B
+	for <linux-pwm@archiver.kernel.org>; Sat, 24 Jul 2021 08:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbhGWWXG (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 23 Jul 2021 18:23:06 -0400
-Received: from mail-io1-f48.google.com ([209.85.166.48]:37877 "EHLO
-        mail-io1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231954AbhGWWXG (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Jul 2021 18:23:06 -0400
-Received: by mail-io1-f48.google.com with SMTP id r18so4416411iot.4;
-        Fri, 23 Jul 2021 16:03:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DW4bQw9bBu1BhDL+EWMhBLTiwn6MVnii4A/u2r0uOO4=;
-        b=ihIKncyVTDq4wTE8FoYN9zK3HA34IhaxvttAOwvSf4dlt/dfr8OoqDgWVyRduLDRAZ
-         uSz/c63/3fcK5gaGBMgFTaf8/eD0KrhapTJcn6D6dq51sA9pK/0bHPXie7JzzDQIrXP7
-         /uYGXaE9J5GoytxRo92FuvFBtkMen7rDgIMuFv7l+XNp2/WWosHCBDaIm8IdHSwGW5j8
-         cf7h/8dDDrgbOj3JONe+8tMj5UwE//HFIh1f9obD9kKOHnLYmE5RSPzphqNIgBkaZu8W
-         Xcx9bdrPE0PlXIRQRoW4/c5exb2Xxzam2S2pZiARHA2axmus93FQzuO6pqavC8GVzWH9
-         Yoiw==
-X-Gm-Message-State: AOAM530Fa2lZxduIwuxZwY+2VNQIolTHvn+AzrAPMx2oeUBDKHd029bq
-        k51KOrUE28UqlIJfGguk3Q==
-X-Google-Smtp-Source: ABdhPJzkKRM3SdTpwR7KsVQI2xc7VD6bxG1O9jkUH3Cu4HixVa3X3vQH5/ZVGWU5h977KexrakHw8w==
-X-Received: by 2002:a05:6638:25c7:: with SMTP id u7mr6034251jat.26.1627081418604;
-        Fri, 23 Jul 2021 16:03:38 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id v18sm17161933iln.49.2021.07.23.16.03.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 16:03:38 -0700 (PDT)
-Received: (nullmailer pid 2770149 invoked by uid 1000);
-        Fri, 23 Jul 2021 23:03:36 -0000
-Date:   Fri, 23 Jul 2021 17:03:36 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Balaji Prakash J <bjagadee@codeaurora.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Kathiravan T <kathirav@codeaurora.org>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v6 3/4] dt-bindings: pwm: add IPQ6018 binding
-Message-ID: <20210723230336.GA2764383@robh.at.kernel.org>
-References: <889aae1b88f120cb6281919d27164a959fbe69d0.1626948070.git.baruch@tkos.co.il>
- <70f0522a9394e9da2f31871442d47f6ad0ff41aa.1626948070.git.baruch@tkos.co.il>
+        id S234216AbhGXHi0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 24 Jul 2021 03:38:26 -0400
+Received: from Mailgw01.mediatek.com ([1.203.163.78]:10491 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234769AbhGXHi0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 24 Jul 2021 03:38:26 -0400
+X-UUID: 89ea0b8329ec4ce489906e507c84a3b0-20210724
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=+Z/S5gvgTbfuWoIv/+O6+a1edaRbLLjzRtmuVf/eXns=;
+        b=upwj7XVZgFBaG11z9GeXFnib4oDY+hJMXc94DcVnZAsI5xEr/FCVDUFEHH+1BxROSVSx3sxqNPu3i/blYeNPqEJQ2bl21aZT1Qlhy9E9bOapeBOFVgcMLnggm8CKG0ZX+ZIOY9UYvjtgSQa55VKcW8DHGROWXhctrYKQlD/gYLo=;
+X-UUID: 89ea0b8329ec4ce489906e507c84a3b0-20210724
+Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+        (envelope-from <jitao.shi@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1824439808; Sat, 24 Jul 2021 16:18:54 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS33N1.mediatek.inc
+ (172.27.4.75) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 24 Jul
+ 2021 16:18:52 +0800
+Received: from mszsdclx1018.gcn.mediatek.inc (10.16.6.18) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Sat, 24 Jul 2021 16:18:51 +0800
+From:   Jitao Shi <jitao.shi@mediatek.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <srv_heupstream@mediatek.com>,
+        <yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
+        <ck.hu@mediatek.com>, <stonea168@163.com>,
+        <huijuan.xie@mediatek.com>, <shuijing.li@mediatek.com>,
+        Jitao Shi <jitao.shi@mediatek.com>
+Subject: [PATCH v6 1/5] pwm: mtk-disp: adjust the clocks to avoid them mismatch
+Date:   Sat, 24 Jul 2021 16:18:45 +0800
+Message-ID: <20210724081849.182108-2-jitao.shi@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210724081849.182108-1-jitao.shi@mediatek.com>
+References: <20210724081849.182108-1-jitao.shi@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <70f0522a9394e9da2f31871442d47f6ad0ff41aa.1626948070.git.baruch@tkos.co.il>
+Content-Type: text/plain
+X-TM-SNTS-SMTP: A90330FC0C8287603ACA1E9C662D8BA2DF609B7628B7344C446CC8353D655CE12000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 01:01:09PM +0300, Baruch Siach wrote:
-> DT binding for the PWM block in Qualcomm IPQ6018 SoC.
-> 
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
-> v6:
-> 
->   Device node is child of TCSR; remove phandle (Rob Herring)
-> 
->   Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
-> 
-> v5: Use qcom,pwm-regs for phandle instead of direct regs (Bjorn
->     Andersson, Kathiravan T)
-> 
-> v4: Update the binding example node as well (Rob Herring's bot)
-> 
-> v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
-> 
-> v2: Make #pwm-cells const (Rob Herring)
-> ---
->  .../devicetree/bindings/pwm/ipq-pwm.yaml      | 69 +++++++++++++++++++
->  1 file changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
-> new file mode 100644
-> index 000000000000..ee2bb03a1223
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
-> @@ -0,0 +1,69 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/ipq-pwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm IPQ6018 PWM controller
-> +
-> +maintainers:
-> +  - Baruch Siach <baruch@tkos.co.il>
-> +
-> +properties:
-> +  "#pwm-cells":
-> +    const: 2
-> +
-> +  compatible:
-> +    const: qcom,ipq6018-pwm
-> +
-> +  offset:
-> +    description: |
-> +      Offset of PWM register in the TCSR block.
-> +    maxItems: 1
+VGhlIGNsa3MgIm1haW4iIGFuZCAibW0iIGFyZSBwcmVwYXJlZCBpbiAucHJvYmUoKSAoYW5kDQp1
+bnByZXBhcmVkIGluIC5yZW1vdmUoKSkuIFRoaXMgcmVzdWx0cyBpbiB0aGUgY2xvY2tzIGJlaW5n
+IG9uDQpkdXJpbmcgc3VzcGVuZCB3aGljaCByZXN1bHRzIGluIHVubmVjZXNzYXJpbHkgaW5jcmVh
+c2VkIHBvd2VyDQpjb25zdW1wdGlvbi4NCg0KUmVtb3ZlIHRoZSBjbG9jayBvcGVyYXRpb25zIGZy
+b20gLnByb2JlKCkgYW5kIC5yZW1vdmUoKS4NCkFkZCB0aGUgY2xrX3ByZXBhcmVfZW5hYmxlKCkg
+aW4gLmVuYWJsZSgpLg0KQWRkIHRoZSBjbGtfZGlzYWJsZV91bnByZXBhcmUoKSBpbiAuZGlzYWJs
+ZSgpLg0KDQpTaWduZWQtb2ZmLWJ5OiBKaXRhbyBTaGkgPGppdGFvLnNoaUBtZWRpYXRlay5jb20+
+DQotLS0NCiBkcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYyB8IDcyICsrKysrKysrKysrKysrKyst
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogMSBmaWxlIGNoYW5nZWQsIDMxIGluc2VydGlvbnMoKyks
+IDQxIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLW10ay1kaXNw
+LmMgYi9kcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYw0KaW5kZXggOWIzYmE0MDFhM2RiLi4zYWRl
+NTI1YWRjYzMgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYw0KKysrIGIv
+ZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMNCkBAIC03NCw2ICs3NCwxOSBAQCBzdGF0aWMgaW50
+IG10a19kaXNwX3B3bV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2Rl
+dmljZSAqcHdtLA0KIAl1NjQgZGl2LCByYXRlOw0KIAlpbnQgZXJyOw0KIA0KKwllcnIgPSBjbGtf
+cHJlcGFyZV9lbmFibGUobWRwLT5jbGtfbWFpbik7DQorCWlmIChlcnIgPCAwKSB7DQorCQlkZXZf
+ZXJyKGNoaXAtPmRldiwgIkNhbid0IGVuYWJsZSBtZHAtPmNsa19tYWluOiAlcGVcbiIsIEVSUl9Q
+VFIoZXJyKSk7DQorCQlyZXR1cm4gZXJyOw0KKwl9DQorDQorCWVyciA9IGNsa19wcmVwYXJlX2Vu
+YWJsZShtZHAtPmNsa19tbSk7DQorCWlmIChlcnIgPCAwKSB7DQorCQlkZXZfZXJyKGNoaXAtPmRl
+diwgIkNhbid0IGVuYWJsZSBtZHAtPmNsa19tbTogJXBlXG4iLCBFUlJfUFRSKGVycikpOw0KKwkJ
+Y2xrX2Rpc2FibGVfdW5wcmVwYXJlKG1kcC0+Y2xrX21haW4pOw0KKwkJcmV0dXJuIGVycjsNCisJ
+fQ0KKw0KIAkvKg0KIAkgKiBGaW5kIHBlcmlvZCwgaGlnaF93aWR0aCBhbmQgY2xrX2RpdiB0byBz
+dWl0IGR1dHlfbnMgYW5kIHBlcmlvZF9ucy4NCiAJICogQ2FsY3VsYXRlIHByb3BlciBkaXYgdmFs
+dWUgdG8ga2VlcCBwZXJpb2QgdmFsdWUgaW4gdGhlIGJvdW5kLg0KQEAgLTg3LDggKzEwMCwxMSBA
+QCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBz
+dHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KIAlyYXRlID0gY2xrX2dldF9yYXRlKG1kcC0+Y2xrX21h
+aW4pOw0KIAljbGtfZGl2ID0gZGl2X3U2NChyYXRlICogcGVyaW9kX25zLCBOU0VDX1BFUl9TRUMp
+ID4+DQogCQkJICBQV01fUEVSSU9EX0JJVF9XSURUSDsNCi0JaWYgKGNsa19kaXYgPiBQV01fQ0xL
+RElWX01BWCkNCisJaWYgKGNsa19kaXYgPiBQV01fQ0xLRElWX01BWCkgew0KKwkJY2xrX2Rpc2Fi
+bGVfdW5wcmVwYXJlKG1kcC0+Y2xrX21tKTsNCisJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAt
+PmNsa19tYWluKTsNCiAJCXJldHVybiAtRUlOVkFMOw0KKwl9DQogDQogCWRpdiA9IE5TRUNfUEVS
+X1NFQyAqIChjbGtfZGl2ICsgMSk7DQogCXBlcmlvZCA9IGRpdjY0X3U2NChyYXRlICogcGVyaW9k
+X25zLCBkaXYpOw0KQEAgLTk4LDE2ICsxMTQsNiBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9j
+b25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KIAlo
+aWdoX3dpZHRoID0gZGl2NjRfdTY0KHJhdGUgKiBkdXR5X25zLCBkaXYpOw0KIAl2YWx1ZSA9IHBl
+cmlvZCB8IChoaWdoX3dpZHRoIDw8IFBXTV9ISUdIX1dJRFRIX1NISUZUKTsNCiANCi0JZXJyID0g
+Y2xrX2VuYWJsZShtZHAtPmNsa19tYWluKTsNCi0JaWYgKGVyciA8IDApDQotCQlyZXR1cm4gZXJy
+Ow0KLQ0KLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+Y2xrX21tKTsNCi0JaWYgKGVyciA8IDApIHsN
+Ci0JCWNsa19kaXNhYmxlKG1kcC0+Y2xrX21haW4pOw0KLQkJcmV0dXJuIGVycjsNCi0JfQ0KLQ0K
+IAltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmNvbjAsDQogCQkJCSBQ
+V01fQ0xLRElWX01BU0ssDQogCQkJCSBjbGtfZGl2IDw8IFBXTV9DTEtESVZfU0hJRlQpOw0KQEAg
+LTEyNCw4ICsxMzAsOCBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9jb25maWcoc3RydWN0IHB3
+bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLA0KIAkJCQkJIDB4MCk7DQogCX0N
+CiANCi0JY2xrX2Rpc2FibGUobWRwLT5jbGtfbW0pOw0KLQljbGtfZGlzYWJsZShtZHAtPmNsa19t
+YWluKTsNCisJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKG1kcC0+Y2xrX21tKTsNCisJY2xrX2Rpc2Fi
+bGVfdW5wcmVwYXJlKG1kcC0+Y2xrX21haW4pOw0KIA0KIAlyZXR1cm4gMDsNCiB9DQpAQCAtMTM1
+LDEzICsxNDEsMTYgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21fZW5hYmxlKHN0cnVjdCBwd21f
+Y2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSkNCiAJc3RydWN0IG10a19kaXNwX3B3
+bSAqbWRwID0gdG9fbXRrX2Rpc3BfcHdtKGNoaXApOw0KIAlpbnQgZXJyOw0KIA0KLQllcnIgPSBj
+bGtfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KLQlpZiAoZXJyIDwgMCkNCisJZXJyID0gY2xrX3By
+ZXBhcmVfZW5hYmxlKG1kcC0+Y2xrX21haW4pOw0KKwlpZiAoZXJyIDwgMCkgew0KKwkJZGV2X2Vy
+cihjaGlwLT5kZXYsICJDYW4ndCBlbmFibGUgbWRwLT5jbGtfbWFpbjogJXBlXG4iLCBFUlJfUFRS
+KGVycikpOw0KIAkJcmV0dXJuIGVycjsNCisJfQ0KIA0KLQllcnIgPSBjbGtfZW5hYmxlKG1kcC0+
+Y2xrX21tKTsNCisJZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKG1kcC0+Y2xrX21tKTsNCiAJaWYg
+KGVyciA8IDApIHsNCi0JCWNsa19kaXNhYmxlKG1kcC0+Y2xrX21haW4pOw0KKwkJZGV2X2Vycihj
+aGlwLT5kZXYsICJDYW4ndCBlbmFibGUgbWRwLT5jbGtfbW06ICVwZVxuIiwgRVJSX1BUUihlcnIp
+KTsNCisJCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tYWluKTsNCiAJCXJldHVybiBl
+cnI7DQogCX0NCiANCkBAIC0xNTgsOCArMTY3LDggQEAgc3RhdGljIHZvaWQgbXRrX2Rpc3BfcHdt
+X2Rpc2FibGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKQ0K
+IAltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMobWRwLCBESVNQX1BXTV9FTiwgbWRwLT5kYXRhLT5l
+bmFibGVfbWFzaywNCiAJCQkJIDB4MCk7DQogDQotCWNsa19kaXNhYmxlKG1kcC0+Y2xrX21tKTsN
+Ci0JY2xrX2Rpc2FibGUobWRwLT5jbGtfbWFpbik7DQorCWNsa19kaXNhYmxlX3VucHJlcGFyZSht
+ZHAtPmNsa19tbSk7DQorCWNsa19kaXNhYmxlX3VucHJlcGFyZShtZHAtPmNsa19tYWluKTsNCiB9
+DQogDQogc3RhdGljIGNvbnN0IHN0cnVjdCBwd21fb3BzIG10a19kaXNwX3B3bV9vcHMgPSB7DQpA
+QCAtMTkyLDIyICsyMDEsMTQgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21fcHJvYmUoc3RydWN0
+IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiAJaWYgKElTX0VSUihtZHAtPmNsa19tbSkpDQogCQly
+ZXR1cm4gUFRSX0VSUihtZHAtPmNsa19tbSk7DQogDQotCXJldCA9IGNsa19wcmVwYXJlKG1kcC0+
+Y2xrX21haW4pOw0KLQlpZiAocmV0IDwgMCkNCi0JCXJldHVybiByZXQ7DQotDQotCXJldCA9IGNs
+a19wcmVwYXJlKG1kcC0+Y2xrX21tKTsNCi0JaWYgKHJldCA8IDApDQotCQlnb3RvIGRpc2FibGVf
+Y2xrX21haW47DQotDQogCW1kcC0+Y2hpcC5kZXYgPSAmcGRldi0+ZGV2Ow0KIAltZHAtPmNoaXAu
+b3BzID0gJm10a19kaXNwX3B3bV9vcHM7DQogCW1kcC0+Y2hpcC5ucHdtID0gMTsNCiANCiAJcmV0
+ID0gcHdtY2hpcF9hZGQoJm1kcC0+Y2hpcCk7DQogCWlmIChyZXQgPCAwKSB7DQotCQlkZXZfZXJy
+KCZwZGV2LT5kZXYsICJwd21jaGlwX2FkZCgpIGZhaWxlZDogJWRcbiIsIHJldCk7DQotCQlnb3Rv
+IGRpc2FibGVfY2xrX21tOw0KKwkJZGV2X2VycigmcGRldi0+ZGV2LCAicHdtY2hpcF9hZGQoKSBm
+YWlsZWQ6ICVwZVxuIiwgRVJSX1BUUihyZXQpKTsNCisJCXJldHVybiByZXQ7DQogCX0NCiANCiAJ
+cGxhdGZvcm1fc2V0X2RydmRhdGEocGRldiwgbWRwKTsNCkBAIC0yMjYsMjQgKzIyNywxMyBAQCBz
+dGF0aWMgaW50IG10a19kaXNwX3B3bV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2
+KQ0KIAl9DQogDQogCXJldHVybiAwOw0KLQ0KLWRpc2FibGVfY2xrX21tOg0KLQljbGtfdW5wcmVw
+YXJlKG1kcC0+Y2xrX21tKTsNCi1kaXNhYmxlX2Nsa19tYWluOg0KLQljbGtfdW5wcmVwYXJlKG1k
+cC0+Y2xrX21haW4pOw0KLQlyZXR1cm4gcmV0Ow0KIH0NCiANCiBzdGF0aWMgaW50IG10a19kaXNw
+X3B3bV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiB7DQogCXN0cnVjdCBt
+dGtfZGlzcF9wd20gKm1kcCA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOw0KLQlpbnQgcmV0
+Ow0KLQ0KLQlyZXQgPSBwd21jaGlwX3JlbW92ZSgmbWRwLT5jaGlwKTsNCi0JY2xrX3VucHJlcGFy
+ZShtZHAtPmNsa19tbSk7DQotCWNsa191bnByZXBhcmUobWRwLT5jbGtfbWFpbik7DQogDQotCXJl
+dHVybiByZXQ7DQorCXJldHVybiBwd21jaGlwX3JlbW92ZSgmbWRwLT5jaGlwKTsNCiB9DQogDQog
+c3RhdGljIGNvbnN0IHN0cnVjdCBtdGtfcHdtX2RhdGEgbXQyNzAxX3B3bV9kYXRhID0gew0KLS0g
+DQoyLjI1LjENCg==
 
-Use 'reg' here instead.
-
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: core
-> +
-> +  assigned-clocks:
-> +    maxItems: 1
-> +
-> +  assigned-clock-rates:
-> +    maxItems: 1
-> +
-> +required:
-> +  - "#pwm-cells"
-> +  - compatible
-> +  - clocks
-> +  - clock-names
-> +  - assigned-clocks
-> +  - assigned-clock-rates
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
-> +
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        tcsr: syscon@1937000 {
-> +            compatible = "syscon", "simple-mfd";
-
-This should really have a specific compatible string, but we don't warn 
-for that (yet).
-
-> +            reg = <0x0 0x01937000 0x0 0x21000>;
-> +
-> +            pwm: pwm {
-> +                #pwm-cells = <2>;
-> +                compatible = "qcom,ipq6018-pwm";
-> +                offset = <0xa010>;
-> +                clocks = <&gcc GCC_ADSS_PWM_CLK>;
-> +                clock-names = "core";
-> +                assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
-> +                assigned-clock-rates = <100000000>;
-> +                status = "disabled";
-
-Drop 'status'
-
-> +            };
-> +        };
-> +    };
-> -- 
-> 2.30.2
-> 
-> 
