@@ -2,96 +2,211 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DE7C432BE
-	for <linux-pwm@archiver.kernel.org>; Sat, 24 Jul 2021 08:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 035BEC4338F
+	for <linux-pwm@archiver.kernel.org>; Sun, 25 Jul 2021 18:27:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4DC5060EB6
-	for <linux-pwm@archiver.kernel.org>; Sat, 24 Jul 2021 08:19:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE34660F38
+	for <linux-pwm@archiver.kernel.org>; Sun, 25 Jul 2021 18:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234842AbhGXHig (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sat, 24 Jul 2021 03:38:36 -0400
-Received: from Mailgw01.mediatek.com ([1.203.163.78]:26670 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234853AbhGXHif (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 24 Jul 2021 03:38:35 -0400
-X-UUID: 66f4895c0d4b45ce8ae2212ca1067df7-20210724
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=oz8R6JzK/dsLcXIYjmpTj+oBt2JJQ5u816nXyN6D10Q=;
-        b=IInVGTfxFKK/kwhZh6NBWauSj7SH+RAMxhrDQxjLoAuFOr/MIWapDZ5uNQTlIcnXjWh0sFMVDmRch/hwFAcB0GrKGxc+hLdnfdVfLs0Hf9w9JnBbdd94v3yDspoGykawCOOw1B8M2uEegY7Ka3BLcRrQTECOAlt/r65ohM5nn0w=;
-X-UUID: 66f4895c0d4b45ce8ae2212ca1067df7-20210724
-Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
-        (envelope-from <jitao.shi@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 555332565; Sat, 24 Jul 2021 16:19:03 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS33N1.mediatek.inc
- (172.27.4.75) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 24 Jul
- 2021 16:18:55 +0800
-Received: from mszsdclx1018.gcn.mediatek.inc (10.16.6.18) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Sat, 24 Jul 2021 16:18:54 +0800
-From:   Jitao Shi <jitao.shi@mediatek.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
+        id S231145AbhGYRqs (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 25 Jul 2021 13:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230244AbhGYRqr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 25 Jul 2021 13:46:47 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D545FC061764
+        for <linux-pwm@vger.kernel.org>; Sun, 25 Jul 2021 11:27:16 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id q6so8294050oiw.7
+        for <linux-pwm@vger.kernel.org>; Sun, 25 Jul 2021 11:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=tjZy0yxM4bICaX53nnUwJplVpr2U4hx6m3PxNQuPd3g=;
+        b=WQeC84A+geBcNAHWJpZASnDakrpxpr1k50gczrFr+YSl4puCRmr1IL0MLrdOIVu/4v
+         aG8xU1hV3ZvJH29DLuCUywYnaC49kPcy3exkYOczdxBqFgJiWgLzu1iziKu/7y25orTT
+         JX9RztS5VzvMING7wAanV2xp0C9NVQ4U5kZ1mTlWPqWw2U2M1+L2xgRYjOkctMdBxJ9j
+         cSciDSBzJGZv0szPOjzpPfylXH2STON80QZSz7uhQI6PE4in/CG4RV7itiHc9I9DPOZu
+         gkgCMWGvub2kRzuqfGotCdmt2gGJeCJ7IoEpI4mBd0CQ23CkPKF94Rt+nIjVRE3oS8eF
+         fZJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=tjZy0yxM4bICaX53nnUwJplVpr2U4hx6m3PxNQuPd3g=;
+        b=umb00p6txemO34ZghxIfsee20EadNXradDzUWcPC2iwAJz/hZ5DLUD7pga4vInJbPl
+         iVBPRi6UuRAeEH9NAJ49WCezY9uzedcz+IS/8W7+1fMmZSXatROd6j6GMZXf/h7Aq958
+         1qKVFnQY7NwNsSKU7Rjq12Dg/sPOSRjkGSH/5PzvSM+IG1NJtWyyLJ0qY/lcbkAmltoa
+         1HlZuDl4p0YjpHNBjYySPYAWMVEpZ5q88zfavCcha0YznccxrykoVCkHwvXS65fYeM6E
+         038izFAENwdayzYZ2Mqo8NUsss011pyZeMjC/Ir3eYaKNkRnPPjehzox2i73Ks+Avtv7
+         XY4A==
+X-Gm-Message-State: AOAM532UKQRG3vfc2SQshmCvoq2uzaQ7zdkDYcRQzvcAfgU4gYHjxCo6
+        186ZlQGyrbkWE9fyNMImMTvkIRg/vSe0Ag==
+X-Google-Smtp-Source: ABdhPJwQHdnbIWUHBriC4kZkOhE6fOKo+sw2FqC+WTLU5+JDvcFE4VlXDjDOiGdqxSTKeWIQ+4ro0g==
+X-Received: by 2002:aca:1802:: with SMTP id h2mr14390070oih.146.1627237636142;
+        Sun, 25 Jul 2021 11:27:16 -0700 (PDT)
+Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id u7sm2263004oop.11.2021.07.25.11.27.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Jul 2021 11:27:15 -0700 (PDT)
+Date:   Sun, 25 Jul 2021 13:27:13 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Baruch Siach <baruch@tkos.co.il>, Rob Herring <robh+dt@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
         Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-pwm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
-        <ck.hu@mediatek.com>, <stonea168@163.com>,
-        <huijuan.xie@mediatek.com>, <shuijing.li@mediatek.com>,
-        Jitao Shi <jitao.shi@mediatek.com>
-Subject: [PATCH v6 4/5] pwm: mtk_disp: fix overflow in period and duty calcalation
-Date:   Sat, 24 Jul 2021 16:18:48 +0800
-Message-ID: <20210724081849.182108-5-jitao.shi@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210724081849.182108-1-jitao.shi@mediatek.com>
-References: <20210724081849.182108-1-jitao.shi@mediatek.com>
+        Andy Gross <agross@kernel.org>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Kathiravan T <kathirav@codeaurora.org>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v6 3/4] dt-bindings: pwm: add IPQ6018 binding
+Message-ID: <YP2tAR+zZgJZQOgG@yoga>
+References: <889aae1b88f120cb6281919d27164a959fbe69d0.1626948070.git.baruch@tkos.co.il>
+ <70f0522a9394e9da2f31871442d47f6ad0ff41aa.1626948070.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-SNTS-SMTP: 00542DEEE62E7D67BBB1D34FA5DE6387FF294617A841F8A5F6153D1AF11FE15A2000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <70f0522a9394e9da2f31871442d47f6ad0ff41aa.1626948070.git.baruch@tkos.co.il>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Q3VycmVudCBjYWxjdWxhdGlvbiBmb3IgcGVyaW9kIGFuZCBoaWdoX3dpZHRoIG1heSBoYXZlDQo2
-NC1iaXQgb3ZlcmZsb3cuIHN0YXRlLT5wZXJpb2QgYW5kIHJhdGUgYXJlIHU2NC4NCnJhdGUgKiBz
-dGF0ZS0+cGVyaW9kIHdpbGwgb3ZlcmZsb3cuDQoNCmNsa19kaXYgPSBkaXZfdTY0KHJhdGUgKiBz
-dGF0ZS0+cGVyaW9kLCBOU0VDX1BFUl9TRUMpDQpwZXJpb2QgPSBkaXY2NF91NjQocmF0ZSAqIHN0
-YXRlLT5wZXJpb2QsIGRpdik7DQpoaWdoX3dpZHRoID0gZGl2NjRfdTY0KHJhdGUgKiBzdGF0ZS0+
-ZHV0eV9jeWNsZSwgZGl2KTsNCg0KVGhpcyBwYXRjaCBpcyB0byByZXNvbHZlIGl0IGJ5IHVzaW5n
-IG11bF91NjRfdTY0X2Rpdl91NjQoKS4NCg0KU2lnbmVkLW9mZi1ieTogSml0YW8gU2hpIDxqaXRh
-by5zaGlAbWVkaWF0ZWsuY29tPg0KLS0tDQogZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMgfCA2
-ICsrKy0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0p
-DQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYyBiL2RyaXZlcnMvcHdt
-L3B3bS1tdGstZGlzcC5jDQppbmRleCA1OTlkN2RkOGVjYWIuLjRmNmRlNmYyNDQ4NCAxMDA2NDQN
-Ci0tLSBhL2RyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jDQorKysgYi9kcml2ZXJzL3B3bS9wd20t
-bXRrLWRpc3AuYw0KQEAgLTExNiw3ICsxMTYsNyBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9h
-cHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQogCSAq
-IGhpZ2hfd2lkdGggPSAoUFdNX0NMS19SQVRFICogZHV0eV9ucykgLyAoMTBeOSAqIChjbGtfZGl2
-ICsgMSkpDQogCSAqLw0KIAlyYXRlID0gY2xrX2dldF9yYXRlKG1kcC0+Y2xrX21haW4pOw0KLQlj
-bGtfZGl2ID0gZGl2X3U2NChyYXRlICogc3RhdGUtPnBlcmlvZCwgTlNFQ19QRVJfU0VDKSA+Pg0K
-KwljbGtfZGl2ID0gbXVsX3U2NF91NjRfZGl2X3U2NChzdGF0ZS0+cGVyaW9kLCByYXRlLCBOU0VD
-X1BFUl9TRUMpID4+DQogCQkJICBQV01fUEVSSU9EX0JJVF9XSURUSDsNCiAJaWYgKGNsa19kaXYg
-PiBQV01fQ0xLRElWX01BWCkgew0KIAkJaWYgKCFtZHAtPmVuYWJsZWQpIHsNCkBAIC0xMjcsMTEg
-KzEyNywxMSBAQCBzdGF0aWMgaW50IG10a19kaXNwX3B3bV9hcHBseShzdHJ1Y3QgcHdtX2NoaXAg
-KmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQogCX0NCiANCiAJZGl2ID0gTlNFQ19QRVJf
-U0VDICogKGNsa19kaXYgKyAxKTsNCi0JcGVyaW9kID0gZGl2NjRfdTY0KHJhdGUgKiBzdGF0ZS0+
-cGVyaW9kLCBkaXYpOw0KKwlwZXJpb2QgPSBtdWxfdTY0X3U2NF9kaXZfdTY0KHN0YXRlLT5wZXJp
-b2QsIHJhdGUsIGRpdik7DQogCWlmIChwZXJpb2QgPiAwKQ0KIAkJcGVyaW9kLS07DQogDQotCWhp
-Z2hfd2lkdGggPSBkaXY2NF91NjQocmF0ZSAqIHN0YXRlLT5kdXR5X2N5Y2xlLCBkaXYpOw0KKwlo
-aWdoX3dpZHRoID0gbXVsX3U2NF91NjRfZGl2X3U2NChzdGF0ZS0+ZHV0eV9jeWNsZSwgcmF0ZSwg
-ZGl2KTsNCiAJdmFsdWUgPSBwZXJpb2QgfCAoaGlnaF93aWR0aCA8PCBQV01fSElHSF9XSURUSF9T
-SElGVCk7DQogDQogCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+Y29u
-MCwNCi0tIA0KMi4yNS4xDQo=
+On Thu 22 Jul 05:01 CDT 2021, Baruch Siach wrote:
 
+> DT binding for the PWM block in Qualcomm IPQ6018 SoC.
+> 
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+> v6:
+> 
+>   Device node is child of TCSR; remove phandle (Rob Herring)
+> 
+>   Add assigned-clocks/assigned-clock-rates (Uwe Kleine-König)
+> 
+> v5: Use qcom,pwm-regs for phandle instead of direct regs (Bjorn
+>     Andersson, Kathiravan T)
+> 
+> v4: Update the binding example node as well (Rob Herring's bot)
+> 
+> v3: s/qcom,pwm-ipq6018/qcom,ipq6018-pwm/ (Rob Herring)
+> 
+> v2: Make #pwm-cells const (Rob Herring)
+> ---
+>  .../devicetree/bindings/pwm/ipq-pwm.yaml      | 69 +++++++++++++++++++
+>  1 file changed, 69 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+> new file mode 100644
+> index 000000000000..ee2bb03a1223
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/ipq-pwm.yaml
+> @@ -0,0 +1,69 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pwm/ipq-pwm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm IPQ6018 PWM controller
+> +
+> +maintainers:
+> +  - Baruch Siach <baruch@tkos.co.il>
+> +
+> +properties:
+> +  "#pwm-cells":
+> +    const: 2
+> +
+> +  compatible:
+> +    const: qcom,ipq6018-pwm
+> +
+> +  offset:
+> +    description: |
+
+'|' maintains the formatting of the text, you don't need that.
+
+> +      Offset of PWM register in the TCSR block.
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    const: core
+
+With a single clock, it's nice to skip the -names.
+
+> +
+> +  assigned-clocks:
+> +    maxItems: 1
+> +
+> +  assigned-clock-rates:
+> +    maxItems: 1
+
+These (assigned-*) are generic properties that may be used on a lot of
+nodes, should they really be part of the individual binding, Rob?
+
+> +
+> +required:
+> +  - "#pwm-cells"
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +  - assigned-clocks
+> +  - assigned-clock-rates
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,gcc-ipq6018.h>
+> +
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+
+Skip soc and *-cells...
+
+> +        tcsr: syscon@1937000 {
+> +            compatible = "syscon", "simple-mfd";
+> +            reg = <0x0 0x01937000 0x0 0x21000>;
+> +
+
+..and just make this "reg = <0x01937000 0x21000>", in the example. Then
+as we put this in the particular dts we adjust for whatever *-cells that
+has defined for the parent bus.
+
+> +            pwm: pwm {
+> +                #pwm-cells = <2>;
+
+I know it's important that this is a pwm thing, but I would prefer to
+see the node start with compatible, offset/reg, clocks. And then end
+with whatever is exposed (i.e. #pwm-cells)
+
+Regards,
+Bjorn
+
+> +                compatible = "qcom,ipq6018-pwm";
+> +                offset = <0xa010>;
+> +                clocks = <&gcc GCC_ADSS_PWM_CLK>;
+> +                clock-names = "core";
+> +                assigned-clocks = <&gcc GCC_ADSS_PWM_CLK>;
+> +                assigned-clock-rates = <100000000>;
+> +                status = "disabled";
+> +            };
+> +        };
+> +    };
+> -- 
+> 2.30.2
+> 
