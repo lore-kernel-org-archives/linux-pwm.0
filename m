@@ -2,144 +2,111 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A81C4338F
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Aug 2021 17:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12976C4338F
+	for <linux-pwm@archiver.kernel.org>; Fri,  6 Aug 2021 00:26:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 48C3161004
-	for <linux-pwm@archiver.kernel.org>; Wed,  4 Aug 2021 17:12:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E4D0961078
+	for <linux-pwm@archiver.kernel.org>; Fri,  6 Aug 2021 00:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239764AbhHDRNA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 4 Aug 2021 13:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36522 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbhHDRM7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Aug 2021 13:12:59 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0423C0613D5;
-        Wed,  4 Aug 2021 10:12:45 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id n12so3066345wrr.2;
-        Wed, 04 Aug 2021 10:12:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wqLm8EfM5SnlCMGedDjfLb4X4DuYoCJtVPMlQgV2X1o=;
-        b=sCWLSZhPyyln0hjThAJeHOhOHy8a6RC00Bq/oMZe5m93kzlDcsrqg/G4H92gS3D97B
-         T/PsmF5I3atptlop4Wm26nhRqEAywJlyjKVN+TMzzq6v7eMn6LfrcUwQ+T9VoJBc4eWE
-         q/+Xgig6ssBx/KqllcgCCOEjkvAgda6IzYengQqxNedQi5BikeA+h0prXQJDXaAEp9ZU
-         J9NPe7/yMBNQodFfyy1+ZwDwy/WmZ+j4Tw23Y2JAWOeX/SVdNU/kjX7SFv69cDuSE+20
-         8cWld46NjsQvAB2OSJ4F4VLzId9NdDVBXGvnXcNxKbQ7LaiJqzqdapt1lkCxaQOQ36+w
-         fMTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wqLm8EfM5SnlCMGedDjfLb4X4DuYoCJtVPMlQgV2X1o=;
-        b=DQEJmiVPNezEUzpU0yNMrF4j+HBexa0rq0qYyc/T3UWb/0zSrCB/ifls6S9hkBL6z3
-         SQgpxiqDfku4xEEd1iPRwxUa5Dnzz0z+Ahh3sT1nuk2/ow1h7H/WXOiL98ZgzvtzxWj7
-         1WXpeiGklmP6vxIxujWyNMhzWqHOrT2392KXlA3BPag+QEZjYbCK495fhlpMmNObUpB2
-         AbiBKKgeP4p+zFbfBhgHNmwEWKLwoy9l6zz58pAduTM9rSig6QbF9CrONf1iQ1iIZqXG
-         NcGSguncc7rTSq7bV2Xzkxw5j+oJy9Ti8g1rq+LVRVWF1ZkEm847pTnZGja0CLrot4zG
-         MgHA==
-X-Gm-Message-State: AOAM532ZLV+SYYAPqcDOFbKaLHzKRJsTCeduAgfy5UFX8DdDcDL6OtRG
-        3DwvelcUqapdTlB+Yd+xM8w=
-X-Google-Smtp-Source: ABdhPJxxDI3VKUUUZ99T3bf6+3VsvDiJd6y55gmL4NRjzXdT/gModQr8wE9WiovQVUjYZngMsrXvCA==
-X-Received: by 2002:adf:f302:: with SMTP id i2mr424571wro.186.1628097164373;
-        Wed, 04 Aug 2021 10:12:44 -0700 (PDT)
-Received: from ziggy.stardust (static-55-132-6-89.ipcom.comunitel.net. [89.6.132.55])
-        by smtp.gmail.com with ESMTPSA id j140sm2962191wmj.37.2021.08.04.10.12.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Aug 2021 10:12:44 -0700 (PDT)
-Subject: Re: [PATCH v6 2/5] pwm: mtk_disp: fix force reg to working reg.
-To:     Jitao Shi <jitao.shi@mediatek.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com,
-        eddie.huang@mediatek.com, ck.hu@mediatek.com, stonea168@163.com,
-        huijuan.xie@mediatek.com, shuijing.li@mediatek.com
-References: <20210724081849.182108-1-jitao.shi@mediatek.com>
- <20210724081849.182108-3-jitao.shi@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-Message-ID: <925e1dcb-1f6b-1762-8342-b102d5e928e8@gmail.com>
-Date:   Wed, 4 Aug 2021 19:12:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S237222AbhHFA0d (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 5 Aug 2021 20:26:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43216 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235480AbhHFA0c (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 5 Aug 2021 20:26:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C6C4D6103B;
+        Fri,  6 Aug 2021 00:26:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1628209577;
+        bh=YFtjL1PAXNXSdcZpSOdpjOpPtHM0Uq0mwmaKoBiv7Ng=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=nTBlAbLcMlktPMKTmuZWSwf8qZuNTuimEEJKAP/Jl70nzb4PuCp6jmXm8On/8rZ1e
+         bHd3PWXnDvVTCHCQVNFqLBoxRx+9WiplFvAARRKooeyFeoZhQGZY5iw5Ny+qO8Fqa5
+         rYC46cEsbkvsa/1RbsPZKrfbZLEjfoVhEE4Ue+/xAq8aIgEqmD9eoXeSQVBc//Kdie
+         hmgHunpMJQAq3sRgiUdkuydl0OV6ikTNVBmDP2Q1nKrHjQ2f4jD3anKK/Jy40PXPeG
+         ON3ASC7tam/ND04fURgRmqwi/Vb1kYry7MFHzvt2LrSGQzeU+NkmC5+yKOAxJL3DXL
+         4yEushO9353bA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210724081849.182108-3-jitao.shi@mediatek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210803104012.wf2buscbukxufesl@pengutronix.de>
+References: <20210723091331.wl33wtcvvnejuhau@pengutronix.de> <20210728202547.7uvfwflpruku7yps@pengutronix.de> <20210728204033.GF22278@shell.armlinux.org.uk> <162771727997.714452.2303764341103276867@swboyd.mtv.corp.google.com> <20210731120004.i3affxw7upl5y4c5@pengutronix.de> <20210802094810.GJ22278@shell.armlinux.org.uk> <20210802152755.ibisunvibmwhiyry@pengutronix.de> <20210802163824.GK22278@shell.armlinux.org.uk> <162797831443.714452.3551045763456936564@swboyd.mtv.corp.google.com> <20210803104012.wf2buscbukxufesl@pengutronix.de>
+Subject: Re: About clk maintainership [Was: Re: [PULL] Add variants of devm_clk_get for prepared and enabled clocks enabled clocks]
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        alexandre.belloni@bootlin.com,
+        Michael Turquette <mturquette@baylibre.com>,
+        thierry.reding@gmail.com, lee.jones@linaro.org,
+        linux-clk@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Ludovic.Desroches@microchip.com, o.rempel@pengutronix.de,
+        andy.shevchenko@gmail.com, aardelean@deviqon.com,
+        linux-pwm@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        broonie@kernel.org, Jonathan.Cameron@huawei.com,
+        linux-arm-kernel@lists.infradead.org, a.zummo@towertech.it,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        wsa@kernel.org, kernel@pengutronix.de, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, Claudiu.Beznea@microchip.com
+To:     <u.kleine-koenig@pengutronix.de>
+Date:   Thu, 05 Aug 2021 17:26:16 -0700
+Message-ID: <162820957661.19113.17221558053361108175@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9.1
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Quoting Uwe Kleine-K=C3=B6nig (2021-08-03 03:40:12)
+> On Tue, Aug 03, 2021 at 01:11:54AM -0700, Stephen Boyd wrote:
+> >=20
+> > Maybe this series would be more compelling if those various drivers that
+> > are hand rolling the devm action were converted to the consolidated
+> > official devm function. The truth is it's already happening in various
+> > subsystems so consolidating that logic into one place would be a win
+> > code size wise and very hard to ignore.
+> >=20
+> > Doing
+> >=20
+> >  $ git grep devm_add_action | grep clk
+> >=20
+> > seems to catch quite a few of them.
+>=20
+> Another upside is that grepping for these drivers with a potential for
+> further improvement become easier to grep for as
+> devm_clk_get_{prepared,enabled} is a much better hint :-)
 
+Sorry, but that's a pretty weak argument. I'd think grepping for the
+absence of pm_ops in drivers would be the same hint.
 
-On 24/07/2021 10:18, Jitao Shi wrote:
-> Disable reg double buffer before writing register.
+>=20
+> The changes to these drivers probably won't go through a clk tree, so
+> adding these patches before adding devm_clk_get_enabled() would only
+> help for the warm and cozy feeling that it is right to do so, correct?
 
-The commit message does not explain why you move this from probe to pwm_config.
-Can you please explain exactly why you need to do that.
+It isn't to feel warm and cozy. It's to demonstrate the need for
+consolidating code. Converting the i2c and spi drivers to use this is
+actively damaging the cause though. Those driver frameworks are more
+likely to encourage proper power management around bus transfers, so
+converting them to use the devm API moves them away from power
+management, not closer to it.
 
-Regards,
-Matthias
+This proves why this topic is always contentious. It's too easy to
+blindly convert drivers to get the clk and leave it enabled forever and
+then they never use power management. The janitors win and nobody else.
 
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> ---
->  drivers/pwm/pwm-mtk-disp.c | 24 +++++++++++-------------
->  1 file changed, 11 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
-> index 3ade525adcc3..1070d78d4940 100644
-> --- a/drivers/pwm/pwm-mtk-disp.c
-> +++ b/drivers/pwm/pwm-mtk-disp.c
-> @@ -128,6 +128,17 @@ static int mtk_disp_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  		mtk_disp_pwm_update_bits(mdp, mdp->data->commit,
->  					 mdp->data->commit_mask,
->  					 0x0);
-> +	} else {
-> +	/*
-> +	 * For MT2701, disable double buffer before writing register
-> +	 * and select manual mode and use PWM_PERIOD/PWM_HIGH_WIDTH.
-> +	 */
-> +		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
-> +					 mdp->data->bls_debug_mask,
-> +					 mdp->data->bls_debug_mask);
-> +		mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
-> +					 mdp->data->con0_sel,
-> +					 mdp->data->con0_sel);
->  	}
->  
->  	clk_disable_unprepare(mdp->clk_mm);
-> @@ -213,19 +224,6 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, mdp);
->  
-> -	/*
-> -	 * For MT2701, disable double buffer before writing register
-> -	 * and select manual mode and use PWM_PERIOD/PWM_HIGH_WIDTH.
-> -	 */
-> -	if (!mdp->data->has_commit) {
-> -		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
-> -					 mdp->data->bls_debug_mask,
-> -					 mdp->data->bls_debug_mask);
-> -		mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
-> -					 mdp->data->con0_sel,
-> -					 mdp->data->con0_sel);
-> -	}
-> -
->  	return 0;
->  }
->  
-> 
+Is there some way to avoid that trap? Maybe through some combination of
+a device PM function that indicates the driver has no runtime PM
+callbacks (pm_runtime_no_callbacks() perhaps?) and
+devm_clk_get_enabled() checking for that and returning the clk only when
+that call has been made (i.e. pm_runtime_has_no_callbacks())? This
+approach would fail to catch the case where system wide suspend/resume
+could turn the clk off but the driver doesn't do it. I'm not sure how
+much we care about that case though.
+
+>=20
+> As my focus is limited to (mostly) drivers/pwm and I already have quite
+> some other patch quests on my list:
+
+Don't we all? :)
