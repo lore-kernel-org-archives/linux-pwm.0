@@ -2,111 +2,98 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12976C4338F
-	for <linux-pwm@archiver.kernel.org>; Fri,  6 Aug 2021 00:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F09AC4338F
+	for <linux-pwm@archiver.kernel.org>; Sun,  8 Aug 2021 13:24:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E4D0961078
-	for <linux-pwm@archiver.kernel.org>; Fri,  6 Aug 2021 00:26:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 37AA460FC1
+	for <linux-pwm@archiver.kernel.org>; Sun,  8 Aug 2021 13:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbhHFA0d (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 5 Aug 2021 20:26:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43216 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235480AbhHFA0c (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Thu, 5 Aug 2021 20:26:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C6C4D6103B;
-        Fri,  6 Aug 2021 00:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628209577;
-        bh=YFtjL1PAXNXSdcZpSOdpjOpPtHM0Uq0mwmaKoBiv7Ng=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=nTBlAbLcMlktPMKTmuZWSwf8qZuNTuimEEJKAP/Jl70nzb4PuCp6jmXm8On/8rZ1e
-         bHd3PWXnDvVTCHCQVNFqLBoxRx+9WiplFvAARRKooeyFeoZhQGZY5iw5Ny+qO8Fqa5
-         rYC46cEsbkvsa/1RbsPZKrfbZLEjfoVhEE4Ue+/xAq8aIgEqmD9eoXeSQVBc//Kdie
-         hmgHunpMJQAq3sRgiUdkuydl0OV6ikTNVBmDP2Q1nKrHjQ2f4jD3anKK/Jy40PXPeG
-         ON3ASC7tam/ND04fURgRmqwi/Vb1kYry7MFHzvt2LrSGQzeU+NkmC5+yKOAxJL3DXL
-         4yEushO9353bA==
-Content-Type: text/plain; charset="utf-8"
+        id S230435AbhHHNZE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 8 Aug 2021 09:25:04 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:17761 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229608AbhHHNZD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 8 Aug 2021 09:25:03 -0400
+X-UUID: 9c0f9437c54a425ab2432bfb0bb6d092-20210808
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=k5h7Sp8+45ALsDZpvc+6t/C4ZwJ9c1vZDukf7Ox1N3U=;
+        b=DFTUxZp5dEEHBgbHjZOYuZDB5HU6cpHw+sxhOzuzB2I6MEsjcgThlnICI2APfwRWFUfaIHesB5ZMUlzQmLnycP6mkOMKl3w1ntt3LWa141PZ2n3z7iZF8kFeGeObAzK71zSM/3dCfKgk5TZOdtIpOr89dOofVsjgkf9lBtoke1Y=;
+X-UUID: 9c0f9437c54a425ab2432bfb0bb6d092-20210808
+Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <jitao.shi@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 188608094; Sun, 08 Aug 2021 21:24:40 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS33N2.mediatek.inc
+ (172.27.4.76) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 8 Aug
+ 2021 21:24:38 +0800
+Received: from mszsdclx1018.gcn.mediatek.inc (10.16.6.18) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Sun, 8 Aug 2021 21:24:37 +0800
+From:   Jitao Shi <jitao.shi@mediatek.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <srv_heupstream@mediatek.com>,
+        <yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
+        <ck.hu@mediatek.com>, <stonea168@163.com>,
+        <huijuan.xie@mediatek.com>, <shuijing.li@mediatek.com>,
+        Jitao Shi <jitao.shi@mediatek.com>
+Subject: [PATCH v7 2/5] pwm: mtk_disp: fix force reg to working reg.
+Date:   Sun, 8 Aug 2021 21:24:30 +0800
+Message-ID: <20210808132433.66037-3-jitao.shi@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210808132433.66037-1-jitao.shi@mediatek.com>
+References: <20210808132433.66037-1-jitao.shi@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20210803104012.wf2buscbukxufesl@pengutronix.de>
-References: <20210723091331.wl33wtcvvnejuhau@pengutronix.de> <20210728202547.7uvfwflpruku7yps@pengutronix.de> <20210728204033.GF22278@shell.armlinux.org.uk> <162771727997.714452.2303764341103276867@swboyd.mtv.corp.google.com> <20210731120004.i3affxw7upl5y4c5@pengutronix.de> <20210802094810.GJ22278@shell.armlinux.org.uk> <20210802152755.ibisunvibmwhiyry@pengutronix.de> <20210802163824.GK22278@shell.armlinux.org.uk> <162797831443.714452.3551045763456936564@swboyd.mtv.corp.google.com> <20210803104012.wf2buscbukxufesl@pengutronix.de>
-Subject: Re: About clk maintainership [Was: Re: [PULL] Add variants of devm_clk_get for prepared and enabled clocks enabled clocks]
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        alexandre.belloni@bootlin.com,
-        Michael Turquette <mturquette@baylibre.com>,
-        thierry.reding@gmail.com, lee.jones@linaro.org,
-        linux-clk@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Ludovic.Desroches@microchip.com, o.rempel@pengutronix.de,
-        andy.shevchenko@gmail.com, aardelean@deviqon.com,
-        linux-pwm@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        broonie@kernel.org, Jonathan.Cameron@huawei.com,
-        linux-arm-kernel@lists.infradead.org, a.zummo@towertech.it,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        wsa@kernel.org, kernel@pengutronix.de, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, Claudiu.Beznea@microchip.com
-To:     <u.kleine-koenig@pengutronix.de>
-Date:   Thu, 05 Aug 2021 17:26:16 -0700
-Message-ID: <162820957661.19113.17221558053361108175@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9.1
+Content-Type: text/plain
+X-TM-SNTS-SMTP: 18A5B4891099B2B45D34D74785DF50D17A01A8B23391E78F5AC7DDA4353EAA952000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Quoting Uwe Kleine-K=C3=B6nig (2021-08-03 03:40:12)
-> On Tue, Aug 03, 2021 at 01:11:54AM -0700, Stephen Boyd wrote:
-> >=20
-> > Maybe this series would be more compelling if those various drivers that
-> > are hand rolling the devm action were converted to the consolidated
-> > official devm function. The truth is it's already happening in various
-> > subsystems so consolidating that logic into one place would be a win
-> > code size wise and very hard to ignore.
-> >=20
-> > Doing
-> >=20
-> >  $ git grep devm_add_action | grep clk
-> >=20
-> > seems to catch quite a few of them.
->=20
-> Another upside is that grepping for these drivers with a potential for
-> further improvement become easier to grep for as
-> devm_clk_get_{prepared,enabled} is a much better hint :-)
+VGhlIHJlZyBjYW4ndCBhY2Nlc3Mgd2hlbiB0aGUgY2xvY2sgaXMgb2ZmLg0KQmVjYXVzZSB0aGUg
+Y2xvY2tzICJtbSIgYW5kICJtYWluIiBwcmVwYXJlKCkgYW5kIGVuYWJlbCgpIG1vdmUgdG8NCm10
+a19kaXNwX3B3bV9jb25maWcoKSBmcm9tIHByb2JlKCkuIFNvIG1vdmUgdGhlIHJlZyBhY2NyZXNz
+IG9mDQoicmVnIGRvdWJsZSBidWZmZXIiIHRvIG10a19kaXNwX3B3bV9jb25maWcoKSB0by4NCg0K
+U2lnbmVkLW9mZi1ieTogSml0YW8gU2hpIDxqaXRhby5zaGlAbWVkaWF0ZWsuY29tPg0KLS0tDQog
+ZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMgfCAyNCArKysrKysrKysrKy0tLS0tLS0tLS0tLS0N
+CiAxIGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25zKC0pDQoNCmRp
+ZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tbXRrLWRpc3AuYyBiL2RyaXZlcnMvcHdtL3B3bS1t
+dGstZGlzcC5jDQppbmRleCAzYWRlNTI1YWRjYzMuLjEwNzBkNzhkNDk0MCAxMDA2NDQNCi0tLSBh
+L2RyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jDQorKysgYi9kcml2ZXJzL3B3bS9wd20tbXRrLWRp
+c3AuYw0KQEAgLTEyOCw2ICsxMjgsMTcgQEAgc3RhdGljIGludCBtdGtfZGlzcF9wd21fY29uZmln
+KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwNCiAJCW10a19k
+aXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0YS0+Y29tbWl0LA0KIAkJCQkJIG1kcC0+
+ZGF0YS0+Y29tbWl0X21hc2ssDQogCQkJCQkgMHgwKTsNCisJfSBlbHNlIHsNCisJLyoNCisJICog
+Rm9yIE1UMjcwMSwgZGlzYWJsZSBkb3VibGUgYnVmZmVyIGJlZm9yZSB3cml0aW5nIHJlZ2lzdGVy
+DQorCSAqIGFuZCBzZWxlY3QgbWFudWFsIG1vZGUgYW5kIHVzZSBQV01fUEVSSU9EL1BXTV9ISUdI
+X1dJRFRILg0KKwkgKi8NCisJCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyhtZHAsIG1kcC0+ZGF0
+YS0+YmxzX2RlYnVnLA0KKwkJCQkJIG1kcC0+ZGF0YS0+YmxzX2RlYnVnX21hc2ssDQorCQkJCQkg
+bWRwLT5kYXRhLT5ibHNfZGVidWdfbWFzayk7DQorCQltdGtfZGlzcF9wd21fdXBkYXRlX2JpdHMo
+bWRwLCBtZHAtPmRhdGEtPmNvbjAsDQorCQkJCQkgbWRwLT5kYXRhLT5jb24wX3NlbCwNCisJCQkJ
+CSBtZHAtPmRhdGEtPmNvbjBfc2VsKTsNCiAJfQ0KIA0KIAljbGtfZGlzYWJsZV91bnByZXBhcmUo
+bWRwLT5jbGtfbW0pOw0KQEAgLTIxMywxOSArMjI0LDYgQEAgc3RhdGljIGludCBtdGtfZGlzcF9w
+d21fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCiANCiAJcGxhdGZvcm1fc2V0
+X2RydmRhdGEocGRldiwgbWRwKTsNCiANCi0JLyoNCi0JICogRm9yIE1UMjcwMSwgZGlzYWJsZSBk
+b3VibGUgYnVmZmVyIGJlZm9yZSB3cml0aW5nIHJlZ2lzdGVyDQotCSAqIGFuZCBzZWxlY3QgbWFu
+dWFsIG1vZGUgYW5kIHVzZSBQV01fUEVSSU9EL1BXTV9ISUdIX1dJRFRILg0KLQkgKi8NCi0JaWYg
+KCFtZHAtPmRhdGEtPmhhc19jb21taXQpIHsNCi0JCW10a19kaXNwX3B3bV91cGRhdGVfYml0cyht
+ZHAsIG1kcC0+ZGF0YS0+YmxzX2RlYnVnLA0KLQkJCQkJIG1kcC0+ZGF0YS0+YmxzX2RlYnVnX21h
+c2ssDQotCQkJCQkgbWRwLT5kYXRhLT5ibHNfZGVidWdfbWFzayk7DQotCQltdGtfZGlzcF9wd21f
+dXBkYXRlX2JpdHMobWRwLCBtZHAtPmRhdGEtPmNvbjAsDQotCQkJCQkgbWRwLT5kYXRhLT5jb24w
+X3NlbCwNCi0JCQkJCSBtZHAtPmRhdGEtPmNvbjBfc2VsKTsNCi0JfQ0KLQ0KIAlyZXR1cm4gMDsN
+CiB9DQogDQotLSANCjIuMjUuMQ0K
 
-Sorry, but that's a pretty weak argument. I'd think grepping for the
-absence of pm_ops in drivers would be the same hint.
-
->=20
-> The changes to these drivers probably won't go through a clk tree, so
-> adding these patches before adding devm_clk_get_enabled() would only
-> help for the warm and cozy feeling that it is right to do so, correct?
-
-It isn't to feel warm and cozy. It's to demonstrate the need for
-consolidating code. Converting the i2c and spi drivers to use this is
-actively damaging the cause though. Those driver frameworks are more
-likely to encourage proper power management around bus transfers, so
-converting them to use the devm API moves them away from power
-management, not closer to it.
-
-This proves why this topic is always contentious. It's too easy to
-blindly convert drivers to get the clk and leave it enabled forever and
-then they never use power management. The janitors win and nobody else.
-
-Is there some way to avoid that trap? Maybe through some combination of
-a device PM function that indicates the driver has no runtime PM
-callbacks (pm_runtime_no_callbacks() perhaps?) and
-devm_clk_get_enabled() checking for that and returning the clk only when
-that call has been made (i.e. pm_runtime_has_no_callbacks())? This
-approach would fail to catch the case where system wide suspend/resume
-could turn the clk off but the driver doesn't do it. I'm not sure how
-much we care about that case though.
-
->=20
-> As my focus is limited to (mostly) drivers/pwm and I already have quite
-> some other patch quests on my list:
-
-Don't we all? :)
