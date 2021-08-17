@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EB5C19F34
-	for <linux-pwm@archiver.kernel.org>; Tue, 17 Aug 2021 01:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21375C4320E
+	for <linux-pwm@archiver.kernel.org>; Tue, 17 Aug 2021 01:30:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7BDD560F55
-	for <linux-pwm@archiver.kernel.org>; Tue, 17 Aug 2021 01:30:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F2BC260F39
+	for <linux-pwm@archiver.kernel.org>; Tue, 17 Aug 2021 01:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236267AbhHQBan (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 16 Aug 2021 21:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
+        id S235974AbhHQBbF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 16 Aug 2021 21:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235967AbhHQBaj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Aug 2021 21:30:39 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FDEC061764;
-        Mon, 16 Aug 2021 18:30:06 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id q21so8672394ljj.6;
-        Mon, 16 Aug 2021 18:30:06 -0700 (PDT)
+        with ESMTP id S236354AbhHQBaq (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Aug 2021 21:30:46 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBE2C0613A4;
+        Mon, 16 Aug 2021 18:30:13 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id n6so30168065ljp.9;
+        Mon, 16 Aug 2021 18:30:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=azJO16PBS0aaEX5vOfJpmf9jn1x1mJqiJpQpMZ0azY4=;
-        b=hNWZ3lDQBB9G0NfTmCUH5K27tkGRQQ+XAmdCjgXsoLk44TVXnSV0rZZArfsM7BjMNQ
-         NzXAqYUV8bprqa1tDC9g84EyQd3o8jniWwkMjyQMMuqUkUkg6juIVGYjyUCbChTFmc7C
-         Y9kAvvDPB9tH2tyarHnY6QH7UIi/z4zffPnrrS03ZW5T6FXyCYoeQLuQKPtpL84Si2yR
-         MkQ+LN020YkVrk5A8hxNQQXfqHQiqTAV1n8zak/R17pXJIG49Dyerbvv/lIRePo4u9Cy
-         r4NoX8Q2wawaT0cFfMSzhTg/VWuRq5m8tSgtaZnX2c9Uv2OXGulLsD2BxcAnqIFKNTgY
-         /46w==
+        bh=l81mhnshT1jOAdUmVwFRhCr1kUhvtG3KJjdpKuzou0A=;
+        b=O20xXbpstS1K4NNNeIVcVXjBhGfcu2e5nNEJ5pDBYki1kIj4o5ZYIjru23tbYEGsyz
+         r52Hf/+40WfMUNMEhvN72pmXl0XoPmEVNOOv8yUg6XmPcR6PW6ztKlm3dNhyGBEbaa7Y
+         r09HKxsCu7pdY4G8ZxhjFl3L8Ms3XExvbjVxLlZReoy9dlFs4piRUc4FJoCVKmVfN6W+
+         DvcxU+uSjJq+dyj9XuEHRIqCDane++wPVshyPW0s4dKK/D0v5UTDlCWSDUB7FBD6VcAn
+         DSh/YDly+w0E3m8BW/O1X+usNpnRL02EHD/izGWDARukpTDuSfyZm9EWXzEP8jfQItxy
+         Nwjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=azJO16PBS0aaEX5vOfJpmf9jn1x1mJqiJpQpMZ0azY4=;
-        b=B2diAksiJhiTOsmJYI7qRxTlYl0N9S6K9v0YwNtXxdqi9LJXegRVp0GZpYBd95UUWC
-         fwqbs5UWQ/ZtG44PpNse7e6br/mG6w2o4gQkS8ICns67BV9s5u3iFt2KsVzpY5pD7BVJ
-         GX1XqUWNOmjjiStmMFwgFaBrZJx/RwVT2WIPgpdGSkpy1JCMCBT13JElOQdgOI8QWOS6
-         W3QIrkCp41Tn8mZOKT6BmBq2UqyGDv0/zWm3Rf+mOGMdk3E+rIaE6oU7FUjV/Jdt/7O4
-         VBXZRdYv2FwQfqDFi5VFXceQnQZLFRbvMfuQGbyAa6M5skCH7j0tkKsRJmdZtCgTsp4/
-         qFUA==
-X-Gm-Message-State: AOAM530fFLVrBvaI8sxvBwGT/ccfaCbEHtS7ot+68bn+znDMYkPBxYwR
-        QmJJQ94nnonMVDPqKQvQcvo=
-X-Google-Smtp-Source: ABdhPJw/eckx03zVOJf2hmuiHkhQYzKLMML9PEB8kcVT0ZNZolUJSB9HB3aBM4EeNCzEcW2W6988dw==
-X-Received: by 2002:a2e:9e04:: with SMTP id e4mr832311ljk.431.1629163805018;
-        Mon, 16 Aug 2021 18:30:05 -0700 (PDT)
+        bh=l81mhnshT1jOAdUmVwFRhCr1kUhvtG3KJjdpKuzou0A=;
+        b=XHRbwMOnA6vMyiRsCeSaRkSjiwyXH+9+p4aBh5fGDaJktwXH67WKcw4Ig3zq8mAg7p
+         M2iecjxhe63yjkBX2ZN3vixJD7ZnUqrflS+HpM4/ahu5PKxyjqmXk3zi8t9+iF/IKk+x
+         JiSdT1FqV5330CQPG05kLeS9catEyw1RSqs8W2ZNrzZXv4GpWM3u2Cj0LZiDemQl5NGi
+         qGcnnLwTJh2tgHqdoXgieo8nuS4/jH1qup1TRYlH01orAvkX2TopyffQakbOe59vjTmd
+         82nv0oe5N6/L1bk2tl0/da0OwnliDpXJ6Ew+8QM6OstvzfJLD9a6ax2linDALlqhG2IZ
+         V2yg==
+X-Gm-Message-State: AOAM532iZwnLwTQYOx7wZdXgNiip86ANZAYG3kv4S4PPg5FNEv3OmIP8
+        kmDSH/v2UC+vLeAPcy4SGtY=
+X-Google-Smtp-Source: ABdhPJxhuZkUDfR36UaYb9aumi6B1iVfEXbSXNsdxNHhblZQHD87dEi21/QGQqgVOj5+f/BnA4ZsHw==
+X-Received: by 2002:a2e:8147:: with SMTP id t7mr859862ljg.126.1629163812262;
+        Mon, 16 Aug 2021 18:30:12 -0700 (PDT)
 Received: from localhost.localdomain (46-138-85-91.dynamic.spd-mgts.ru. [46.138.85.91])
-        by smtp.gmail.com with ESMTPSA id g30sm46607lfj.298.2021.08.16.18.30.03
+        by smtp.gmail.com with ESMTPSA id g30sm46607lfj.298.2021.08.16.18.30.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 18:30:04 -0700 (PDT)
+        Mon, 16 Aug 2021 18:30:11 -0700 (PDT)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -84,9 +84,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-media@vger.kernel.org,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-clk@vger.kernel.org
-Subject: [PATCH v8 03/34] soc/tegra: Don't print error message when OPPs not available
-Date:   Tue, 17 Aug 2021 04:27:23 +0300
-Message-Id: <20210817012754.8710-4-digetx@gmail.com>
+Subject: [PATCH v8 09/34] dt-bindings: host1x: Document Memory Client resets of Host1x, GR2D and GR3D
+Date:   Tue, 17 Aug 2021 04:27:29 +0300
+Message-Id: <20210817012754.8710-10-digetx@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210817012754.8710-1-digetx@gmail.com>
 References: <20210817012754.8710-1-digetx@gmail.com>
@@ -96,33 +96,45 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Previously we assumed that devm_tegra_core_dev_init_opp_table() will
-be used only by drivers that will always have device with OPP table,
-but this is not true anymore. For example now Tegra30 will have OPP table
-for PWM, but Tegra20 not and both use the same driver. Hence let's not
-print the error message about missing OPP table in the common helper,
-we can print it elsewhere.
+Memory Client should be blocked before hardware reset is asserted in order
+to prevent memory corruption and hanging of memory controller.
+
+Document Memory Client resets of Host1x, GR2D and GR3D hardware units.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/soc/tegra/common.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ .../bindings/display/tegra/nvidia,tegra20-host1x.txt          | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/soc/tegra/common.c b/drivers/soc/tegra/common.c
-index cd33e99249c3..a42d4f98c078 100644
---- a/drivers/soc/tegra/common.c
-+++ b/drivers/soc/tegra/common.c
-@@ -111,9 +111,7 @@ int devm_tegra_core_dev_init_opp_table(struct device *dev,
- 	 */
- 	err = devm_pm_opp_of_add_table(dev);
- 	if (err) {
--		if (err == -ENODEV)
--			dev_err_once(dev, "OPP table not found, please update device-tree\n");
--		else
-+		if (err != -ENODEV)
- 			dev_err(dev, "failed to add OPP table: %d\n", err);
+diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
+index 62861a8fb5c6..07a08653798b 100644
+--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
++++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
+@@ -18,6 +18,7 @@ Required properties:
+ - resets: Must contain an entry for each entry in reset-names.
+   See ../reset/reset.txt for details.
+ - reset-names: Must include the following entries:
++  - mc
+   - host1x
  
- 		return err;
+ Optional properties:
+@@ -197,6 +198,7 @@ of the following host1x client modules:
+   - resets: Must contain an entry for each entry in reset-names.
+     See ../reset/reset.txt for details.
+   - reset-names: Must include the following entries:
++    - mc
+     - 2d
+ 
+   Optional properties:
+@@ -222,6 +224,8 @@ of the following host1x client modules:
+   - resets: Must contain an entry for each entry in reset-names.
+     See ../reset/reset.txt for details.
+   - reset-names: Must include the following entries:
++    - mc
++    - mc2 (Only required on SoCs with two 3D clocks)
+     - 3d
+     - 3d2 (Only required on SoCs with two 3D clocks)
+ 
 -- 
 2.32.0
 
