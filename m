@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5E8C4338F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB316C43214
 	for <linux-pwm@archiver.kernel.org>; Tue, 17 Aug 2021 01:32:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6595160EAF
+	by mail.kernel.org (Postfix) with ESMTP id C210E60E09
 	for <linux-pwm@archiver.kernel.org>; Tue, 17 Aug 2021 01:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239274AbhHQBcn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Mon, 16 Aug 2021 21:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
+        id S239011AbhHQBci (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 16 Aug 2021 21:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237138AbhHQBbC (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Aug 2021 21:31:02 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322B4C06129F;
-        Mon, 16 Aug 2021 18:30:29 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id g13so38108053lfj.12;
-        Mon, 16 Aug 2021 18:30:29 -0700 (PDT)
+        with ESMTP id S236895AbhHQBa6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Aug 2021 21:30:58 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F315C0612E7;
+        Mon, 16 Aug 2021 18:30:24 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id p38so38352633lfa.0;
+        Mon, 16 Aug 2021 18:30:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XL4BVrLk7WYd6afEPPAKr2OvrAlyWTvGqySuaSzvsoU=;
-        b=akMX2IQiN5C+wsFejbQ7AaZ+aEU812b5i7ElnI7gcJqxm1qRG/X5nkz7zPNl/SEuMH
-         QYUoyowBTGQltjI7rFnyUsvx1P3XCb2OTN8HMc5ZVPvu356dI6iNPo+FE1gI3G2skcAZ
-         zA06NlaJ0U14aSpiH7ZYOwXfSia2rN6scqCmOQTUapIIluAVOffKIxK+c1yKDRTvbUY2
-         3HH/mdwiEU/wLbJGKSQojE13f0Fb0t1wG+JFucgpENZr3k6Vt8XgEIqnJmTsyJD5X4NS
-         LYXnAFgRsIPnmTCV8x/cfPZl/+PqCsMY81oJpWDePTLH7Xxhs3PQ8mSYbT1yqTQ/4Y3Y
-         RO/g==
+        bh=kVewrQPLqMIzX/eUr1ccRXf6dVPwW04CHGi9g8P6H2I=;
+        b=Ngw0q21CDl+yxQ7xI6sFiWFDLy1/jXJWCzDmmHgTyR7UHFdWvRHsZx+fwwbTxV2Cyv
+         gN6KKIyDdmn9trt+zxJhnrKxJcVQ+dnkic/3q9GtmrOvXqnunqZ+3rLOZ5UuPH5SKRXQ
+         wHnnssBODCzWhAf3IXJsR51tcgLbdYamJQnd58q7DpKGQ4YxYliB2agkeVrrv0VQH3WD
+         yX57PPPDbCytK20teu7FFGxH65vic3f2b3gEAv0Mzw0Wl85PutrUYT2zIxxGhQmXSuej
+         il2Sc7DptAVhnwSP4QkipTWxTtJR6TstiShQkQRUQrPcr1noWm9NKLF1HbC63QkYiuH+
+         PRwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XL4BVrLk7WYd6afEPPAKr2OvrAlyWTvGqySuaSzvsoU=;
-        b=c/wXP+9ipz51ZJpp+QoM0kEgjToHlMXbVr5oFeuNhZ1HPe/JXQfmp8niX0d8XdzrBg
-         w/AD963gJt5rkzOx7y333fxAAWro+CABQGqEKeaSOpcTw4rm5kLvuDCJ3L2zMVyYarrH
-         I7JnNoUbrlvXYlXPQJFo4+SMMXGf4NqqrWgBaUlIJDacNA/gf6oh3qrDsFjR8XLnRPyi
-         YUCvabp4caEmJzCjzMGVH89GOOWufnTF9fFshWYyxwrDth9RImbMiBDpIr10tAAQDnvw
-         P5ZtMBLHy28cJ/TyS+R24xdODXtWdZ3bdO+KSHz7i4+SPffR8BgYIDJ/O/AIon17RE4S
-         cMFw==
-X-Gm-Message-State: AOAM533sCTFCuMO7pjXGxYNum9e6pTH2jircv/sTRhfIqM7H4r8LGcxu
-        4YHDfagCWGsPZbWnmTyFoi0=
-X-Google-Smtp-Source: ABdhPJw02p9RsEdccY59vWAtODBKBNtEXdwRJ/qwlwTWkchrOt3IUpFpHFlVjjDlgZH5cc57idRxWQ==
-X-Received: by 2002:a19:f009:: with SMTP id p9mr516594lfc.227.1629163827643;
-        Mon, 16 Aug 2021 18:30:27 -0700 (PDT)
+        bh=kVewrQPLqMIzX/eUr1ccRXf6dVPwW04CHGi9g8P6H2I=;
+        b=QCYs9zEBwtBKJNaYtyIPQH9Y7mDZi/ulwUbbFrDgZUiP4wBiFDtkD7pfhlahWmkVRC
+         fDE0MrLxnEY0xSJdo3Pl8s4eeSoqkw/42SpC5YXwwCb6rS7paQxS1mLzcFuhcuohXCOK
+         lchPPcHBWykzpnKKRtAHWSH0B1jczJja26gYZ6hraK7y5os7VfqKEiSakCkAMIP65hN6
+         8VnK9GlNoTVbX/GKpfvqyPOnj8CJHOwPCs4u8KcFKRzXRh8fVHtonIMXFcLCXUT5nTsN
+         vWbqOFJLRAoj3sle7pzNrgcpCVPWKau1yAslOpOKm5j5cTWggJvOopjSrDR3kvNJ+h3Y
+         nLfQ==
+X-Gm-Message-State: AOAM531o5J8njOSh+Y+sDUHpecN5sKNYsVl77ThltznDkkcwKZb7mGrw
+        sw4D/VQv01pIjqF5hhXFuqI=
+X-Google-Smtp-Source: ABdhPJwQhGPy+Iac60Z/w+/X1SqDXqcJNZewEFmLnX1JN/Qye3BOu6cFpYRzvaojzNHG7UQlI4Pj5A==
+X-Received: by 2002:a05:6512:304a:: with SMTP id b10mr522160lfb.442.1629163823026;
+        Mon, 16 Aug 2021 18:30:23 -0700 (PDT)
 Received: from localhost.localdomain (46-138-85-91.dynamic.spd-mgts.ru. [46.138.85.91])
-        by smtp.gmail.com with ESMTPSA id g30sm46607lfj.298.2021.08.16.18.30.26
+        by smtp.gmail.com with ESMTPSA id g30sm46607lfj.298.2021.08.16.18.30.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Aug 2021 18:30:27 -0700 (PDT)
+        Mon, 16 Aug 2021 18:30:22 -0700 (PDT)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -84,9 +84,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-media@vger.kernel.org,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-clk@vger.kernel.org
-Subject: [PATCH v8 22/34] spi: tegra20-slink: Add OPP support
-Date:   Tue, 17 Aug 2021 04:27:42 +0300
-Message-Id: <20210817012754.8710-23-digetx@gmail.com>
+Subject: [PATCH v8 18/34] bus: tegra-gmi: Add runtime PM and OPP support
+Date:   Tue, 17 Aug 2021 04:27:38 +0300
+Message-Id: <20210817012754.8710-19-digetx@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210817012754.8710-1-digetx@gmail.com>
 References: <20210817012754.8710-1-digetx@gmail.com>
@@ -96,70 +96,171 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-The SPI on Tegra belongs to the core power domain and we're going to
-enable GENPD support for the core domain. Now SPI driver must use OPP
-API for driving the controller's clock rate because OPP API takes care
-of reconfiguring the domain's performance state in accordance to the
-rate. Add OPP support to the driver.
+The GMI bus on Tegra belongs to the core power domain and we're going to
+enable GENPD support for the core domain. Now GMI must be resumed using
+runtime PM API in order to initialize the GMI power state. Add runtime PM
+and OPP support to the GMI driver.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/spi/spi-tegra20-slink.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/bus/tegra-gmi.c | 92 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 68 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
-index deff16ba6d58..37cb15dc59f7 100644
---- a/drivers/spi/spi-tegra20-slink.c
-+++ b/drivers/spi/spi-tegra20-slink.c
-@@ -18,12 +18,15 @@
- #include <linux/kthread.h>
+diff --git a/drivers/bus/tegra-gmi.c b/drivers/bus/tegra-gmi.c
+index a6570789f7af..51cac6822f20 100644
+--- a/drivers/bus/tegra-gmi.c
++++ b/drivers/bus/tegra-gmi.c
+@@ -13,8 +13,12 @@
+ #include <linux/io.h>
  #include <linux/module.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/pm_runtime.h>
- #include <linux/of.h>
  #include <linux/of_device.h>
++#include <linux/pm_opp.h>
++#include <linux/pm_runtime.h>
  #include <linux/reset.h>
- #include <linux/spi/spi.h>
  
 +#include <soc/tegra/common.h>
 +
- #define SLINK_COMMAND			0x000
- #define SLINK_BIT_LENGTH(x)		(((x) & 0x1f) << 0)
- #define SLINK_WORD_SIZE(x)		(((x) & 0x1f) << 5)
-@@ -683,7 +686,7 @@ static int tegra_slink_start_transfer_one(struct spi_device *spi,
- 	bits_per_word = t->bits_per_word;
- 	speed = t->speed_hz;
- 	if (speed != tspi->cur_speed) {
--		clk_set_rate(tspi->clk, speed * 4);
-+		dev_pm_opp_set_rate(tspi->dev, speed * 4);
- 		tspi->cur_speed = speed;
+ #define TEGRA_GMI_CONFIG		0x00
+ #define TEGRA_GMI_CONFIG_GO		BIT(31)
+ #define TEGRA_GMI_BUS_WIDTH_32BIT	BIT(30)
+@@ -54,36 +58,20 @@ static int tegra_gmi_enable(struct tegra_gmi *gmi)
+ {
+ 	int err;
+ 
+-	err = clk_prepare_enable(gmi->clk);
+-	if (err < 0) {
+-		dev_err(gmi->dev, "failed to enable clock: %d\n", err);
++	pm_runtime_enable(gmi->dev);
++	err = pm_runtime_resume_and_get(gmi->dev);
++	if (err) {
++		pm_runtime_disable(gmi->dev);
+ 		return err;
  	}
  
-@@ -1054,6 +1057,10 @@ static int tegra_slink_probe(struct platform_device *pdev)
- 		goto exit_free_master;
+-	reset_control_assert(gmi->rst);
+-	usleep_range(2000, 4000);
+-	reset_control_deassert(gmi->rst);
+-
+-	writel(gmi->snor_timing0, gmi->base + TEGRA_GMI_TIMING0);
+-	writel(gmi->snor_timing1, gmi->base + TEGRA_GMI_TIMING1);
+-
+-	gmi->snor_config |= TEGRA_GMI_CONFIG_GO;
+-	writel(gmi->snor_config, gmi->base + TEGRA_GMI_CONFIG);
+-
+ 	return 0;
+ }
+ 
+ static void tegra_gmi_disable(struct tegra_gmi *gmi)
+ {
+-	u32 config;
+-
+-	/* stop GMI operation */
+-	config = readl(gmi->base + TEGRA_GMI_CONFIG);
+-	config &= ~TEGRA_GMI_CONFIG_GO;
+-	writel(config, gmi->base + TEGRA_GMI_CONFIG);
+-
+-	reset_control_assert(gmi->rst);
+-	clk_disable_unprepare(gmi->clk);
++	pm_runtime_put(gmi->dev);
++	pm_runtime_disable(gmi->dev);
+ }
+ 
+ static int tegra_gmi_parse_dt(struct tegra_gmi *gmi)
+@@ -213,6 +201,7 @@ static int tegra_gmi_probe(struct platform_device *pdev)
+ 	if (!gmi)
+ 		return -ENOMEM;
+ 
++	platform_set_drvdata(pdev, gmi);
+ 	gmi->dev = dev;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -232,6 +221,10 @@ static int tegra_gmi_probe(struct platform_device *pdev)
+ 		return PTR_ERR(gmi->rst);
  	}
  
-+	ret = devm_tegra_core_dev_init_opp_table_simple(&pdev->dev);
-+	if (ret)
-+		return ret;
++	err = devm_tegra_core_dev_init_opp_table_simple(&pdev->dev);
++	if (err)
++		return err;
 +
- 	/* disabled clock may cause interrupt storm upon request */
- 	tspi->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(tspi->clk)) {
-@@ -1205,6 +1212,12 @@ static int tegra_slink_runtime_resume(struct device *dev)
- 	struct tegra_slink_data *tspi = spi_master_get_devdata(master);
- 	int ret;
+ 	err = tegra_gmi_parse_dt(gmi);
+ 	if (err)
+ 		return err;
+@@ -247,8 +240,6 @@ static int tegra_gmi_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
  
-+	ret = dev_pm_opp_sync(dev);
-+	if (ret) {
-+		dev_err(dev, "failed to sync OPP: %d\n", ret);
-+		return ret;
+-	platform_set_drvdata(pdev, gmi);
+-
+ 	return 0;
+ }
+ 
+@@ -262,6 +253,58 @@ static int tegra_gmi_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static int __maybe_unused tegra_gmi_runtime_resume(struct device *dev)
++{
++	struct tegra_gmi *gmi = dev_get_drvdata(dev);
++	int err;
++
++	err = dev_pm_opp_sync(gmi->dev);
++	if (err) {
++		dev_err(gmi->dev, "failed to sync OPP: %d\n", err);
++		return err;
 +	}
 +
- 	ret = clk_prepare_enable(tspi->clk);
- 	if (ret < 0) {
- 		dev_err(tspi->dev, "clk_prepare failed: %d\n", ret);
++	err = clk_prepare_enable(gmi->clk);
++	if (err < 0) {
++		dev_err(gmi->dev, "failed to enable clock: %d\n", err);
++		return err;
++	}
++
++	reset_control_assert(gmi->rst);
++	usleep_range(2000, 4000);
++	reset_control_deassert(gmi->rst);
++
++	writel(gmi->snor_timing0, gmi->base + TEGRA_GMI_TIMING0);
++	writel(gmi->snor_timing1, gmi->base + TEGRA_GMI_TIMING1);
++
++	gmi->snor_config |= TEGRA_GMI_CONFIG_GO;
++	writel(gmi->snor_config, gmi->base + TEGRA_GMI_CONFIG);
++
++	return 0;
++}
++
++static int __maybe_unused tegra_gmi_runtime_suspend(struct device *dev)
++{
++	struct tegra_gmi *gmi = dev_get_drvdata(dev);
++	u32 config;
++
++	/* stop GMI operation */
++	config = readl(gmi->base + TEGRA_GMI_CONFIG);
++	config &= ~TEGRA_GMI_CONFIG_GO;
++	writel(config, gmi->base + TEGRA_GMI_CONFIG);
++
++	reset_control_assert(gmi->rst);
++
++	clk_disable_unprepare(gmi->clk);
++
++	return 0;
++}
++
++static const struct dev_pm_ops tegra_gmi_pm = {
++	SET_RUNTIME_PM_OPS(tegra_gmi_runtime_suspend, tegra_gmi_runtime_resume,
++			   NULL)
++};
++
+ static const struct of_device_id tegra_gmi_id_table[] = {
+ 	{ .compatible = "nvidia,tegra20-gmi", },
+ 	{ .compatible = "nvidia,tegra30-gmi", },
+@@ -275,6 +318,7 @@ static struct platform_driver tegra_gmi_driver = {
+ 	.driver = {
+ 		.name		= "tegra-gmi",
+ 		.of_match_table	= tegra_gmi_id_table,
++		.pm = &tegra_gmi_pm,
+ 	},
+ };
+ module_platform_driver(tegra_gmi_driver);
 -- 
 2.32.0
 
