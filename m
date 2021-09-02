@@ -2,111 +2,79 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC2DC432BE
-	for <linux-pwm@archiver.kernel.org>; Wed,  1 Sep 2021 09:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85461C433EF
+	for <linux-pwm@archiver.kernel.org>; Thu,  2 Sep 2021 21:02:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D2996610C8
-	for <linux-pwm@archiver.kernel.org>; Wed,  1 Sep 2021 09:42:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 586DD60FC4
+	for <linux-pwm@archiver.kernel.org>; Thu,  2 Sep 2021 21:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243697AbhIAJnZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 1 Sep 2021 05:43:25 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:49642
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243021AbhIAJnY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Sep 2021 05:43:24 -0400
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C60E340190
-        for <linux-pwm@vger.kernel.org>; Wed,  1 Sep 2021 09:42:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1630489345;
-        bh=Y3RQ54Zm5OFe9AQSuUGmYtHrFrafqN10VZzfx08OW4s=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=ptEwrW+rV4ihnJssfFSdhJjffO4KlZ3CErO5I2fNT3tkhVC/nek8aIRQEP4JMgZOv
-         LoreR12QX0VFgQhAw5Ex7ei7zG8yeEPQmYOt7OfColIUPDGIvkpqjyd+2JtcTJFQB4
-         UiAMRZ91Jv6ClulUOX3R4vZmXXwlBlS80lnM9yz6/H43onTRYY5GiT5rqyOnLUjeQ0
-         hT20eYMNBeRE8MqXRrmv8z7+OHzqWFvaipIlirOgSo3VPvv4YlhcLHYcYqO1EtLWQw
-         rFYGztgDiKx4gE1cxvXokwANYTKuaor2ZEkp1g0yXyk5JTLUQL0gpIXRnNreE6MSbF
-         h/x52xI7FI/uQ==
-Received: by mail-wm1-f70.google.com with SMTP id x125-20020a1c3183000000b002e73f079eefso2594867wmx.0
-        for <linux-pwm@vger.kernel.org>; Wed, 01 Sep 2021 02:42:25 -0700 (PDT)
+        id S238888AbhIBVDN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 2 Sep 2021 17:03:13 -0400
+Received: from mail-oi1-f173.google.com ([209.85.167.173]:45609 "EHLO
+        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234242AbhIBVDN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Sep 2021 17:03:13 -0400
+Received: by mail-oi1-f173.google.com with SMTP id q39so4254683oiw.12;
+        Thu, 02 Sep 2021 14:02:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Y3RQ54Zm5OFe9AQSuUGmYtHrFrafqN10VZzfx08OW4s=;
-        b=RPnsEG8GYFokkhIdC1HXX8M2jG3L4WSxY5DNEI3I4JoT2e3DMzCOaph/ldWicB2Vsl
-         HkgV9UbVnckU6xuiukuke39V1ySdVwacLuAXDSqm/VGydOl317Bn7cPmjftmTTHAsrR2
-         2vvUo7EMww/mGa2v4ecbH4EoI2BUZ0mvKd7cKX4KdREEIrKJUpYain4r+EE6B99LFrFQ
-         gw+fifG+r2qASVPUKT3bpTXEBm+0C7rOjZljyCCk+nhST0y/LmXEzQqyAa6zX+aZe+Bn
-         pjc9r2pzW8QSXdjYWQYBKB05oT2+2mla0ve9TSJd0+oKwt4e480x1aIGDiEz3D3mtQhs
-         pmzg==
-X-Gm-Message-State: AOAM531EyBCYo7yWW+3UyYRLYYk2rVlsNBThHTrxSCVNzCLXsGnqnNch
-        ER8tGCLuCKcLNs5BT2350YTddU1dPM2039qJeGTNaGLp4dkhwNzMs+kBpiJxXuz5OwGBc9uSrwA
-        bJJHlRtkBun+Fe347EBExQUuGrHrV5Kh3MZQcjg==
-X-Received: by 2002:adf:d239:: with SMTP id k25mr9005598wrh.314.1630489344171;
-        Wed, 01 Sep 2021 02:42:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwR0Z0kzD+pLwVC4xGiQJns7caEYN8rRGrEFZPzMKL7gxFfjGtfCH/P6c84n/PyVciuzn525A==
-X-Received: by 2002:adf:d239:: with SMTP id k25mr9005583wrh.314.1630489344007;
-        Wed, 01 Sep 2021 02:42:24 -0700 (PDT)
-Received: from [192.168.3.211] ([79.98.113.172])
-        by smtp.gmail.com with ESMTPSA id y1sm5096157wmq.43.2021.09.01.02.42.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 02:42:23 -0700 (PDT)
-Subject: Re: [PATCH] pwm: samsung: Simplify using devm_pwmchip_add()
-To:     zhaoxiao <zhaoxiao@uniontech.com>, thierry.reding@gmail.com,
-        lee.jones@linaro.org
-Cc:     u.kleine-koenig@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210901054230.29678-1-zhaoxiao@uniontech.com>
- <79e46f2f-c3ed-d187-2553-e64e0aac4c13@canonical.com>
- <612f43cc.1c69fb81.205fc.d94bSMTPIN_ADDED_BROKEN@mx.google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <e4d04494-8c49-b1c5-c0f4-165fc59f516a@canonical.com>
-Date:   Wed, 1 Sep 2021 11:42:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IG8K7Ak73Pm6+oIzwqp5J2waDXTL9oO9Diu9ISkZy4o=;
+        b=GGCm6hYZTDdDa4GUnXp1lxZzLpEvdLCdPujg0H67qVM0HkcsQaaV6zXPrXA8n49om7
+         2LPdvsQHrrhU0aWWZVUdGlacVXbDCeq/ME+E1fMRhzCKDt8ZVQ3drp5mx37DA9DtDVHI
+         lb1p/yubuNt73N9D2w/I9ffV9YSHljnuTMf4F6Q/eQ/d4Rfd91vCB4FbgEnCUIWbstey
+         L4my/kaznfbzH31YVROvTah5tHYhEPlqMuVIaGvj8xlNaT8h7Cia1fjmsg5PrulNXB0b
+         JHt3B6Ewx7z8n9hsyxxYXActIbnEyv4hu0YbBWFEbL6Ttbp1aI1mIE3ht93j0wIRwS1S
+         HWEg==
+X-Gm-Message-State: AOAM5312H3mqECsjw7jfAt9jmd6Ba/FKa9jlgiFvhYC15s8co9p7W3Vj
+        HuXQ+IOu0oAEAjuNUiYYJg==
+X-Google-Smtp-Source: ABdhPJycAPaGXMQZQwQA6zRj5ZZ6eg7ysG9pNURlWAHTcxdaLDZMnVyOZFbf3yHxdVuQhmrWzWJTdQ==
+X-Received: by 2002:a05:6808:10c8:: with SMTP id s8mr188252ois.6.1630616533982;
+        Thu, 02 Sep 2021 14:02:13 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u27sm581943otj.6.2021.09.02.14.02.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Sep 2021 14:02:13 -0700 (PDT)
+Received: (nullmailer pid 1417644 invoked by uid 1000);
+        Thu, 02 Sep 2021 21:02:12 -0000
+Date:   Thu, 2 Sep 2021 16:02:12 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: Re: [PATCH] dt-bindings: pwm: tpu: Add R-Car V3U device tree bindings
+Message-ID: <YTE71AmRgTzhW2PZ@robh.at.kernel.org>
+References: <20210901090719.35375-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-In-Reply-To: <612f43cc.1c69fb81.205fc.d94bSMTPIN_ADDED_BROKEN@mx.google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210901090719.35375-1-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 01/09/2021 11:11, zhaoxiao wrote:
-> Thanks for your advices, This patch is modified with reference to the 
-> patch that has been submitted，example:
+On Wed, 01 Sep 2021 11:07:19 +0200, Wolfram Sang wrote:
+> From: Duc Nguyen <duc.nguyen.ub@renesas.com>
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=66a03c4fd9e95e192c574811a1f4ea8f62992358
+> Add device tree bindings for TPU with the PWM controller found
+> on R-Car V3U SoCs.
+> 
+> Signed-off-by: Duc Nguyen <duc.nguyen.ub@renesas.com>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
-The patch there looks correct, but you cannot apply one code pattern to
-entirely different code and hope it works.
-
-You reference a patch in a driver not using drvdata and having only
-pwmchip_remove() in its remove() callback.
-
-Now you apply it to other drivers and:
-1. Remove drvdata even though it is used,
-2. Delete additional code from remove() callback.
-
-Especially the point (2) is a proof that you don't understand the
-fundamental Linux driver model, so please do not convert code into
-devm-like() before learning it.
-
-
-Best regards,
-Krzysztof
+Acked-by: Rob Herring <robh@kernel.org>
