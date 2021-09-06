@@ -2,297 +2,127 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA34C433F5
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Sep 2021 02:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B062C433EF
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Sep 2021 09:30:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E826C60FBF
-	for <linux-pwm@archiver.kernel.org>; Mon,  6 Sep 2021 02:41:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1ACAE60F70
+	for <linux-pwm@archiver.kernel.org>; Mon,  6 Sep 2021 09:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238870AbhIFCnB (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 5 Sep 2021 22:43:01 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:39907 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbhIFCnA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 5 Sep 2021 22:43:00 -0400
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 1862MPra004632;
-        Mon, 6 Sep 2021 10:22:25 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 6 Sep
- 2021 10:41:45 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <p.zabel@pengutronix.de>,
-        <billy_tsai@aspeedtech.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [v12 1/2] dt-bindings: Add bindings for aspeed pwm-tach.
-Date:   Mon, 6 Sep 2021 10:43:38 +0800
-Message-ID: <20210906024339.21124-2-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210906024339.21124-1-billy_tsai@aspeedtech.com>
-References: <20210906024339.21124-1-billy_tsai@aspeedtech.com>
+        id S241333AbhIFJbn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 6 Sep 2021 05:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241279AbhIFJbn (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Sep 2021 05:31:43 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0F0C061575;
+        Mon,  6 Sep 2021 02:30:38 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id n13-20020a17090a4e0d00b0017946980d8dso3910621pjh.5;
+        Mon, 06 Sep 2021 02:30:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LjYsgygAO0K1MY/VaooktkjgOc7TVHV/8M0HRrCiZ9o=;
+        b=qGINo34jZzIe3ddUptsVSMZTPVfMpDQa1T8GU5Glzxf42LqmDQSCiE1Ye4gnSDc94t
+         ogCHzB4Zscgg4yFKCw3lPWc8Y1DYPUqxHdrFr305xiZ12lRT6zfluwzMh2EmJxWU4ES8
+         pcIbs5/INz69t6bya7yW0utgUuJb4+iPi0Dv0BuzleYHE0+FggejvABCB0rKRPDsrBPC
+         cRtq/zpXdXoKoRZIgIs2pmPJ0/ah6+nziSy8aVuM/Het6txCcqG7ieD80KTBZQ33D/kD
+         hgOkLK7+zsHEqsB6wsWYj2ZQIBhsiP98Pn/OTvOLWugtd7qsMj91vQnyg48yy/SKkYVh
+         9jMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LjYsgygAO0K1MY/VaooktkjgOc7TVHV/8M0HRrCiZ9o=;
+        b=CNVreI4W9jvAuchfyYFJG9Q345X8RZNADfZhL89Agz99oB13ecWm46O6q+TrihkeZh
+         AnYDDKPC62QdqtVycZ3McGamkZtSkEQW21y5U/gJ+TZq+dJoXRLbYRN6abQr/n9+G55q
+         dZMmg9DSgQAOrfWn1aj5fiBY+GLV9PWtESuZMVSfH1c39cd1mDQbTrzPZRPv0Io00Gxn
+         P8jnJGIQTHG4RKrfXqONP++vH4vI6+e5URcaiw5jJLRnaS9nOndSVCXXfipIDmZ7/X19
+         XcASGe3cUD4ft0Mp3uHuaM7mnJZxozT6bJ1/wyKOBxHuTlx65WFU06YjAcnrucJW2Zkh
+         us5w==
+X-Gm-Message-State: AOAM5300wLy0KuRPx1fwPWimgCOArvAeQEIprW39DBHw7GwfVAyq9Sog
+        J+aM8Wo67svvkyrv2qk3rdPkNsoTxGm/KRip
+X-Google-Smtp-Source: ABdhPJzSSp2bZxsFmV+MsX0O5bZuK0Ac9nFgFzjLb0XwxaxzfvF8a8BFu+DEkTbeABmkkcQoOW6euw==
+X-Received: by 2002:a17:90b:a48:: with SMTP id gw8mr13148112pjb.145.1630920637596;
+        Mon, 06 Sep 2021 02:30:37 -0700 (PDT)
+Received: from localhost.localdomain ([111.207.172.18])
+        by smtp.gmail.com with ESMTPSA id p30sm6989361pfh.116.2021.09.06.02.30.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 02:30:37 -0700 (PDT)
+From:   zhaoxiao <long870912@gmail.com>
+To:     thierry.reding@gmail.com, lee.jones@linaro.org,
+        matthias.bgg@gmail.com
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, zhaoxiao <long870912@gmail.com>
+Subject: [PATCH] pwm: mediatek: Simplify using devm_pwmchip_add()
+Date:   Mon,  6 Sep 2021 17:30:30 +0800
+Message-Id: <20210906093030.459-1-long870912@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 1862MPra004632
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-This patch adds device binding for aspeed pwm-tach device which is a
-multi-function device include pwm and tach function and pwm/tach device
-bindings which should be the child-node of pwm-tach device.
+With devm_pwmchip_add() we can drop pwmchip_remove() from the device
+remove callback. The latter can then go away, too and as this is the
+only user of platform_get_drvdata(), the respective call to
+platform_set_drvdata() can go, too.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Signed-off-by: zhaoxiao <long870912@gmail.com>
 ---
- .../bindings/hwmon/aspeed,ast2600-tach.yaml   | 68 +++++++++++++++++
- .../bindings/mfd/aspeed,ast2600-pwm-tach.yaml | 76 +++++++++++++++++++
- .../bindings/pwm/aspeed,ast2600-pwm.yaml      | 64 ++++++++++++++++
- 3 files changed, 208 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
- create mode 100644 Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
+ drivers/pwm/pwm-mediatek.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml b/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
-new file mode 100644
-index 000000000000..dded50a049fb
---- /dev/null
-+++ b/Documentation/devicetree/bindings/hwmon/aspeed,ast2600-tach.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 Aspeed, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/hwmon/aspeed,ast2600-tach.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Aspeed Ast2600 Tach controller
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+description: |
-+  The Aspeed Tach controller can support upto 16 fan input.
-+  This module is part of the ast2600-pwm-tach multi-function device. For more
-+  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-tach
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  pinctrl-0: true
-+
-+  pinctrl-names:
-+    const: default
-+
-+required:
-+  - compatible
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties:
-+  type: object
-+  properties:
-+    aspeed,tach-ch:
-+      description:
-+        The tach channel used for this node.
-+      maxItems: 1
-+
-+    aspeed,min-rpm:
-+      description:
-+        define the minimal revolutions per minute of the measure fan
-+        used to calculate the sample period of tach
-+      default: 1000
-+
-+    aspeed,pulse-pr:
-+      description:
-+        Value specifying the number of pulses per revolution of the
-+        monitored FAN.
-+      default: 2
-+
-+    aspeed,tach-div:
-+      description:
-+        define the tachometer clock divider as an integer. Formula of
-+        tach clock = clock source / (2^tach-div)^2
-+      minimum: 0
-+      maximum: 15
-+      default: 5
-+
-+  required:
-+    - reg
-diff --git a/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
-new file mode 100644
-index 000000000000..1eaf6fab2752
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/aspeed,ast2600-pwm-tach.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 Aspeed, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/aspeed,ast2600-pwm-tach.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: PWM Tach controller Device Tree Bindings
-+
-+description: |
-+  The PWM Tach controller is represented as a multi-function device which
-+  includes:
-+    PWM
-+    Tach
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - aspeed,ast2600-pwm-tach
-+      - const: syscon
-+      - const: simple-mfd
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - resets
-+
-+patternProperties:
-+  "^pwm(@[0-9a-f]+)?$":
-+    $ref: ../pwm/aspeed,ast2600-pwm.yaml
-+
-+  "^tach(@[0-9a-f]+)?$":
-+    $ref: ../hwmon/aspeed,ast2600-tach.yaml
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/ast2600-clock.h>
-+    pwm_tach: pwm_tach@1e610000 {
-+      compatible = "aspeed,ast2600-pwm-tach", "syscon", "simple-mfd";
-+      reg = <0x1e610000 0x100>;
-+      clocks = <&syscon ASPEED_CLK_AHB>;
-+      resets = <&syscon ASPEED_RESET_PWM>;
-+
-+      pwm: pwm {
-+        compatible = "aspeed,ast2600-pwm";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        #pwm-cells = <3>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_pwm0_default>;
-+      };
-+
-+      tach: tach {
-+        compatible = "aspeed,ast2600-tach";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_tach0_default>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-new file mode 100644
-index 000000000000..f501f8a769df
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/aspeed,ast2600-pwm.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2021 Aspeed, Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/aspeed,ast2600-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Aspeed Ast2600 PWM controller
-+
-+maintainers:
-+  - Billy Tsai <billy_tsai@aspeedtech.com>
-+
-+description: |
-+  The Aspeed PWM controller can support upto 16 PWM outputs.
-+  This module is part of the ast2600-pwm-tach multi-function device. For more
-+  details see ../mfd/aspeed,ast2600-pwm-tach.yaml.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-pwm
-+
-+  "#pwm-cells":
-+    const: 3
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  pinctrl-0: true
-+
-+  pinctrl-names:
-+    const: default
-+
-+required:
-+  - compatible
-+  - "#pwm-cells"
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties:
-+  description: Set extend properties for each pwm channel.
-+  type: object
-+  properties:
-+    reg:
-+      description:
-+        The pwm channel index.
-+      maxItems: 1
-+
-+    aspeed,wdt-reload-enable:
-+      type: boolean
-+      description:
-+        Enable the function of wdt reset reload duty point.
-+
-+    aspeed,wdt-reload-duty-point:
-+      description:
-+        Define the duty point after wdt reset, 0 = 100%
-+      minimum: 0
-+      maximum: 255
-+
-+  required:
-+    - reg
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index b4a31060bcd7..0d4dd80e9f07 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -253,13 +253,11 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	platform_set_drvdata(pdev, pc);
+-
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &pwm_mediatek_ops;
+ 	pc->chip.npwm = pc->soc->num_pwms;
+ 
+-	ret = pwmchip_add(&pc->chip);
++	ret = devm_pwmchip_add(&pdev->dev, &pc->chip);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+ 		return ret;
+@@ -268,13 +266,6 @@ static int pwm_mediatek_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static int pwm_mediatek_remove(struct platform_device *pdev)
+-{
+-	struct pwm_mediatek_chip *pc = platform_get_drvdata(pdev);
+-
+-	return pwmchip_remove(&pc->chip);
+-}
+-
+ static const struct pwm_mediatek_of_data mt2712_pwm_data = {
+ 	.num_pwms = 8,
+ 	.pwm45_fixup = false,
+@@ -335,7 +326,6 @@ static struct platform_driver pwm_mediatek_driver = {
+ 		.of_match_table = pwm_mediatek_of_match,
+ 	},
+ 	.probe = pwm_mediatek_probe,
+-	.remove = pwm_mediatek_remove,
+ };
+ module_platform_driver(pwm_mediatek_driver);
+ 
 -- 
-2.25.1
+2.20.1
 
