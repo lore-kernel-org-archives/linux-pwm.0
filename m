@@ -2,96 +2,100 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BABC433F5
-	for <linux-pwm@archiver.kernel.org>; Tue,  7 Sep 2021 13:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFA7C433EF
+	for <linux-pwm@archiver.kernel.org>; Wed,  8 Sep 2021 03:39:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B9CE361057
-	for <linux-pwm@archiver.kernel.org>; Tue,  7 Sep 2021 13:37:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6DD3E61108
+	for <linux-pwm@archiver.kernel.org>; Wed,  8 Sep 2021 03:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343628AbhIGNiw (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 7 Sep 2021 09:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
+        id S237516AbhIHDlA (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 7 Sep 2021 23:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344485AbhIGNis (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Sep 2021 09:38:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AD2C061575
-        for <linux-pwm@vger.kernel.org>; Tue,  7 Sep 2021 06:37:42 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mNbIB-00053L-T9; Tue, 07 Sep 2021 15:37:39 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mNbIA-000289-I1; Tue, 07 Sep 2021 15:37:38 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mNbIA-00088E-FT; Tue, 07 Sep 2021 15:37:38 +0200
-Date:   Tue, 7 Sep 2021 15:37:38 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     zhaoxiao <long870912@gmail.com>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pwm: twl: Simplify using devm_pwmchip_add()
-Message-ID: <20210907133738.s3l4w3csrdvuld6v@pengutronix.de>
-References: <20210907111518.15914-1-long870912@gmail.com>
+        with ESMTP id S234220AbhIHDlA (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Sep 2021 23:41:00 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58B9C061757
+        for <linux-pwm@vger.kernel.org>; Tue,  7 Sep 2021 20:39:52 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id q39so1324755oiw.12
+        for <linux-pwm@vger.kernel.org>; Tue, 07 Sep 2021 20:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=GZ0a+q1qXF7MfrjInrLnr5HFObJ3ogMjBmTjbogeVrw=;
+        b=dX9mbpXkrmh1LTKr1u17bTeswHB33lW+3ok9Bgv+zTTgo6UDGp6SKIJhxNX2bOS042
+         +1ue2wyoNZ9z4Z1lfeJCE3nRIJACi/onP6pdf/H8tGud4qRyk3Mflb3Axqqav7vVAP7B
+         6fPs9wFc6pOED/0ZtVJwISqOuYyc6kwk8eEgc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=GZ0a+q1qXF7MfrjInrLnr5HFObJ3ogMjBmTjbogeVrw=;
+        b=0KHcAeYNNdYMZfE46t0XiGMWFim/9pauXxoJAEsbZPvYSNP8ZNrIU3+6ctqLl18uZe
+         usodKTmnjIn210d018a4Zf1oiybAUMw9GR1bZJ6greClKF2kJiPIAyS80a2+pWZiMdz3
+         nToksKjt3Lig33TTzKGXGDhXbTEpEJhq+NJI37nFFLAEQVo7F4UlkqA4bpxocDb9ciEW
+         V/N1pMQbEtxKioUMSczv7bFAxzHw3Bh1LbLnI1WfKvK/0TXB5GC4G05+SxbGijglanYM
+         oPl9IJoTjzMUu50+xFSCFjLjGqn9BGkh/1xYaGH1hSl1Mlwo07r3DQtm1aPVX5UVx5kr
+         W5SQ==
+X-Gm-Message-State: AOAM531AFPMzQHYItgHF122wvVq2jYgCzZg+ZGjROr4ef9WP0jvePaxC
+        O2TCZ2xW1GV5lgs2kSlx6oyUJ1TqJBnvI9DE6v2a00Ad2Hg=
+X-Google-Smtp-Source: ABdhPJxdiiGjJ10TgqGvBQ1/7Lm6AUVwtj/VpCWil2bU6pYVcRN9bsCnM/aq8sDCvKEppqWfKKHKcnIE0NCcnfAWF34=
+X-Received: by 2002:a54:4419:: with SMTP id k25mr1090071oiw.32.1631072392333;
+ Tue, 07 Sep 2021 20:39:52 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 8 Sep 2021 03:39:51 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="g65mzlg4iurgudtc"
-Content-Disposition: inline
-In-Reply-To: <20210907111518.15914-1-long870912@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+In-Reply-To: <20210623035039.772660-1-bjorn.andersson@linaro.org>
+References: <20210623035039.772660-1-bjorn.andersson@linaro.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.9.1
+Date:   Wed, 8 Sep 2021 03:39:51 +0000
+Message-ID: <CAE-0n53SLqmXhJBPROeQj2HzShgYoFzDqsi-KCj3dgVHdDWUTA@mail.gmail.com>
+Subject: Re: [PATCH v9 1/2] dt-bindings: leds: Add Qualcomm Light Pulse
+ Generator binding
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>, Pavel Machek <pavel@ucw.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pwm@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Subbaraman Narayanamurthy <subbaram@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
+Quoting Bjorn Andersson (2021-06-22 20:50:38)
+> diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> new file mode 100644
+> index 000000000000..10aee61a7ffc
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> @@ -0,0 +1,164 @@
+[....]
+> +examples:
+> +  - |
+> +    #include <dt-bindings/leds/common.h>
+> +
+> +    lpg {
 
---g65mzlg4iurgudtc
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Should the node name be led or leds?
 
-On Tue, Sep 07, 2021 at 07:15:18PM +0800, zhaoxiao wrote:
-> With devm_pwmchip_add() we can drop pwmchip_remove() from the device
-> remove callback. The latter can then go away, too and as this is the
-> only user of platform_get_drvdata(), the respective call to
-> platform_set_drvdata() can go, too.
->=20
-> Signed-off-by: zhaoxiao <long870912@gmail.com>
+> +      compatible = "qcom,pmi8994-lpg";
 
-A similar patch is already in next as c9bb1c9e5460f6e84e95b65fe4c5bb09d5dff=
-10a
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---g65mzlg4iurgudtc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmE3ax8ACgkQwfwUeK3K
-7AmV6Af/b3do9EdB2z5/5NjmPplRGHlQks7W68yDofy/rL9S2672bXolBT5mckZn
-0+JHDJJbgQRH3k8OVD0w6dcp7fTNkp1x2HgJ8VTWYD8LhH6W/yJwJEUAV6TP1AAd
-38OtBXZ2+7kejeAHJcVPQGIbvxj6fo659M2x2/9JR4bNLaMwoMoPDNdPhn8+MhYO
-pAYzRS82EbQj2Um+GCqPr25UKABMHa2gGW8bzGWd+3oeaQMauH0gkE3gZ87KN/IA
-rmEZCOOpfZlrIdKNzQjenZ0sAtDOi/oKMxe1nMubpaUhVkwx4Xy249CE+Uljg4K8
-9tvAxJnfb8LjZ/k8lCCGuWTbcQKajg==
-=04po
------END PGP SIGNATURE-----
-
---g65mzlg4iurgudtc--
+Shouldn't there be a reg property? I see the driver has them hardcoded
+but if this is a child of the spmi node then it should have a reg
+property (or many reg properties).
