@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD81CC4332F
-	for <linux-pwm@archiver.kernel.org>; Sun, 12 Sep 2021 20:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2480EC433EF
+	for <linux-pwm@archiver.kernel.org>; Sun, 12 Sep 2021 20:09:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CD3F161050
-	for <linux-pwm@archiver.kernel.org>; Sun, 12 Sep 2021 20:09:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0DD2161039
+	for <linux-pwm@archiver.kernel.org>; Sun, 12 Sep 2021 20:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236459AbhILULH (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 12 Sep 2021 16:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S236499AbhILULJ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 12 Sep 2021 16:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236266AbhILUK4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 12 Sep 2021 16:10:56 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF830C061574;
-        Sun, 12 Sep 2021 13:09:41 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id v20-20020a1cf714000000b002e71f4d2026so4053786wmh.1;
-        Sun, 12 Sep 2021 13:09:41 -0700 (PDT)
+        with ESMTP id S236321AbhILULB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 12 Sep 2021 16:11:01 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7608DC06175F;
+        Sun, 12 Sep 2021 13:09:46 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id y132so5131056wmc.1;
+        Sun, 12 Sep 2021 13:09:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+whg/vR1lDDJUCWuilT5Vzp2lbX9lxYPieEOT99+gTQ=;
-        b=V5Aa4YrasEF2oAFxijDRlvhEgMLA7I6pw6CbcE3pvDx1ziFBju9LNloAq2VknotN7f
-         38aCc6QBuqukFCW3K57M5bZ36l0Re3YLoWL7GWh1vCHdifl5CmsmmBhF152dzXW923Fd
-         Fp4ybtVuWxeHS2oS4y2PC9JXwLwKhnOEdgMIFud5Oa/A1XKFvm5IYhQa3SfZOQGuIcsv
-         XhiBPEkkbdhzx8tuLkBpTD9Az/IRiOWEnOGwvP9Vab8oAbXKPyfW8t6pUhLIRAlv3P2g
-         RfDsnsJlGcDox4xCmFZ/Sa8ZiXr3G0n2BA9fjxFdYbhandYfEorXaDTWbWYKWeiEuhMr
-         fLxw==
+        bh=XIkaLltNAZEHFO/c9xmZHlt7cmXZw7U8aSqzSL63yiM=;
+        b=ijQ9VUVd3E+yAzhUW8LN+qmTp2ecRP2mmWkjTl8uAZSPA/zpjjwrm91O4PToKeDqC4
+         vFO3mTKegg4IVvavhdrn+MbBPEpbxDgUBdh7DqlctW88vqJAie0ybyRePtB0ZKvhjjSg
+         b/7a3Q6HAWJrkVAy2fywVfzvbX+UyY+AJRdulaqhxB5JkZguuPBwEVKs9rq+R7MQ8oTS
+         T2lYnk8I/S7QPhedjPhkp9y79Iqn8sPawMmPQZytgNJCLQ1cquISSJH4xb8LXTpwJI//
+         DMAae/2QaieRbscwgAfhPwKD2x6lrNKA7L32d8Qadur4oH0Po7NY3LnqcOAePA1x9BPV
+         5e9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+whg/vR1lDDJUCWuilT5Vzp2lbX9lxYPieEOT99+gTQ=;
-        b=4Q2BwsuoZVt5lTEIbN9j8uW3nJmFkKVDyZNi7kmtXzWx3xtulU2ml3ACLf02eUxEpG
-         XEYbOGuGcrcQUnDS73esboU9b3Eo0t8kNJTHmTTzCqbrfVZnELSa8OawD6PjGeqEkJm0
-         P1Dxi27KqAzpeYG+2X4R6ZVc8NgioIHS1LZiOH526abjaG5TEBWTT52ccms1F//pqxUR
-         OWYbU/9KWxKO2GlgfaxDCIuSQ98zbTxRWhH6/wnnbzNzDA7nifK/hp73SCyvWo8gR9RH
-         S481aEseGjg6iseOMJ8mLf3nSgiHay8Jtx0rrnMaHZlQfePqfdzeiffPQFZaE0bUFU9+
-         eYzQ==
-X-Gm-Message-State: AOAM5320wQpf4Rh5oJy/3DpkoUE6r5/TlPjrMsy4QqVPaNgaqRF8iysz
-        AQsAddIleG5DcAGREPTxBvY=
-X-Google-Smtp-Source: ABdhPJyUSupdqTypNZScVZTiK5D0yEZxdKj/mEB3TUIXMX8PnKbwR9X93zXb/+VgwZ4ZoDBHSQSkmA==
-X-Received: by 2002:a1c:28a:: with SMTP id 132mr7935009wmc.101.1631477380517;
-        Sun, 12 Sep 2021 13:09:40 -0700 (PDT)
+        bh=XIkaLltNAZEHFO/c9xmZHlt7cmXZw7U8aSqzSL63yiM=;
+        b=Q4wobvxc0kbr4gQiJ2YinfiPl3SZnFabRnqukYGQXvkIgj/eG6fHRS19Gqo9G59ztF
+         QyfCBJfVR2/lpINoSAygQrSicaRBNn+WP4TwOaE9h5psozT6oU9/TQ5jLgnAKcCaVUwY
+         MllCoIza5WlV89oPhajbMVIMvIPoXDe6NgD/GvjpqZcdnK/WYk2qCDZ3K5aD+lnyzFY+
+         G0PclpYSICVs1aPSjDqnWA5pGOKGCQnAxxaSqzqpqTS7AF9bzSeXVoTnUxAtUPwR82Iy
+         y78SKkRrKRfL6W8oi9jyygoyI2pXAfxkPxaNQ9i8FxniNDxWRFZ94epEgg3ZzWrkCIRD
+         KbhQ==
+X-Gm-Message-State: AOAM533qqj7L0x/NNQiSd/wj/EUHocb2ZURV7tYbTZAHB7jJekjcbGB7
+        Y+eW6OsKzHa7thM2JVtMGVQ=
+X-Google-Smtp-Source: ABdhPJxyxUlin+TcDC9SzEGP88oLSNh0QPSkbXUWBt5/tW6RXe2v6I0t3nNYmR/wNfym5p2nWbp1lw==
+X-Received: by 2002:a05:600c:354a:: with SMTP id i10mr1537846wmq.77.1631477385110;
+        Sun, 12 Sep 2021 13:09:45 -0700 (PDT)
 Received: from localhost.localdomain (46-138-83-36.dynamic.spd-mgts.ru. [46.138.83.36])
-        by smtp.gmail.com with ESMTPSA id v10sm5463476wrg.15.2021.09.12.13.09.38
+        by smtp.gmail.com with ESMTPSA id v10sm5463476wrg.15.2021.09.12.13.09.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Sep 2021 13:09:40 -0700 (PDT)
+        Sun, 12 Sep 2021 13:09:44 -0700 (PDT)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -84,9 +84,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-media@vger.kernel.org,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-clk@vger.kernel.org
-Subject: [PATCH v11 03/34] soc/tegra: pmc: Disable PMC state syncing
-Date:   Sun, 12 Sep 2021 23:08:01 +0300
-Message-Id: <20210912200832.12312-4-digetx@gmail.com>
+Subject: [PATCH v11 05/34] dt-bindings: clock: tegra-car: Document new clock sub-nodes
+Date:   Sun, 12 Sep 2021 23:08:03 +0300
+Message-Id: <20210912200832.12312-6-digetx@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210912200832.12312-1-digetx@gmail.com>
 References: <20210912200832.12312-1-digetx@gmail.com>
@@ -96,107 +96,73 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Disable PMC state syncing in order to ensure that we won't break older
-kernels once device-trees will be updated with the addition of the power
-domains. This also allows to apply device-tree PM patches independently
-from the driver patches.
+Document sub-nodes which describe Tegra SoC clocks that require a higher
+voltage of the core power domain in order to operate properly on a higher
+clock rates.  Each node contains a phandle to OPP table and power domain.
+
+The root PLLs and system clocks don't have any specific device dedicated
+to them, clock controller is in charge of managing power for them.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/soc/tegra/pmc.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ .../bindings/clock/nvidia,tegra20-car.yaml    | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/drivers/soc/tegra/pmc.c b/drivers/soc/tegra/pmc.c
-index 50091c4ec948..fb8faf7b226a 100644
---- a/drivers/soc/tegra/pmc.c
-+++ b/drivers/soc/tegra/pmc.c
-@@ -360,6 +360,7 @@ struct tegra_pmc_soc {
- 	unsigned int num_pmc_clks;
- 	bool has_blink_output;
- 	bool has_usb_sleepwalk;
-+	bool supports_core_domain;
- };
+diff --git a/Documentation/devicetree/bindings/clock/nvidia,tegra20-car.yaml b/Documentation/devicetree/bindings/clock/nvidia,tegra20-car.yaml
+index 459d2a525393..f832abb7f11a 100644
+--- a/Documentation/devicetree/bindings/clock/nvidia,tegra20-car.yaml
++++ b/Documentation/devicetree/bindings/clock/nvidia,tegra20-car.yaml
+@@ -42,6 +42,36 @@ properties:
+   "#reset-cells":
+     const: 1
  
- /**
-@@ -3041,6 +3042,7 @@ static void tegra20_pmc_setup_irq_polarity(struct tegra_pmc *pmc,
- }
- 
- static const struct tegra_pmc_soc tegra20_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = ARRAY_SIZE(tegra20_powergates),
- 	.powergates = tegra20_powergates,
- 	.num_cpu_powergates = 0,
-@@ -3101,6 +3103,7 @@ static const char * const tegra30_reset_sources[] = {
- };
- 
- static const struct tegra_pmc_soc tegra30_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = ARRAY_SIZE(tegra30_powergates),
- 	.powergates = tegra30_powergates,
- 	.num_cpu_powergates = ARRAY_SIZE(tegra30_cpu_powergates),
-@@ -3157,6 +3160,7 @@ static const u8 tegra114_cpu_powergates[] = {
- };
- 
- static const struct tegra_pmc_soc tegra114_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = ARRAY_SIZE(tegra114_powergates),
- 	.powergates = tegra114_powergates,
- 	.num_cpu_powergates = ARRAY_SIZE(tegra114_cpu_powergates),
-@@ -3273,6 +3277,7 @@ static const struct pinctrl_pin_desc tegra124_pin_descs[] = {
- };
- 
- static const struct tegra_pmc_soc tegra124_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = ARRAY_SIZE(tegra124_powergates),
- 	.powergates = tegra124_powergates,
- 	.num_cpu_powergates = ARRAY_SIZE(tegra124_cpu_powergates),
-@@ -3398,6 +3403,7 @@ static const struct tegra_wake_event tegra210_wake_events[] = {
- };
- 
- static const struct tegra_pmc_soc tegra210_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = ARRAY_SIZE(tegra210_powergates),
- 	.powergates = tegra210_powergates,
- 	.num_cpu_powergates = ARRAY_SIZE(tegra210_cpu_powergates),
-@@ -3555,6 +3561,7 @@ static const struct tegra_wake_event tegra186_wake_events[] = {
- };
- 
- static const struct tegra_pmc_soc tegra186_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = 0,
- 	.powergates = NULL,
- 	.num_cpu_powergates = 0,
-@@ -3689,6 +3696,7 @@ static const struct tegra_wake_event tegra194_wake_events[] = {
- };
- 
- static const struct tegra_pmc_soc tegra194_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = 0,
- 	.powergates = NULL,
- 	.num_cpu_powergates = 0,
-@@ -3757,6 +3765,7 @@ static const char * const tegra234_reset_sources[] = {
- };
- 
- static const struct tegra_pmc_soc tegra234_pmc_soc = {
-+	.supports_core_domain = false,
- 	.num_powergates = 0,
- 	.powergates = NULL,
- 	.num_cpu_powergates = 0,
-@@ -3803,6 +3812,14 @@ static void tegra_pmc_sync_state(struct device *dev)
- {
- 	int err;
- 
-+	/*
-+	 * Newer device-trees have power domains, but we need to prepare all
-+	 * device drivers with runtime PM and OPP support first, otherwise
-+	 * state syncing is unsafe.
-+	 */
-+	if (!pmc->soc->supports_core_domain)
-+		return;
++patternProperties:
++  "^(sclk)|(pll-[cem])$":
++    type: object
++    properties:
++      compatible:
++        enum:
++          - nvidia,tegra20-sclk
++          - nvidia,tegra30-sclk
++          - nvidia,tegra30-pllc
++          - nvidia,tegra30-plle
++          - nvidia,tegra30-pllm
 +
- 	/*
- 	 * Older device-trees don't have core PD, and thus, there are
- 	 * no dependencies that will block the state syncing. We shouldn't
++      operating-points-v2: true
++
++      clocks:
++        items:
++          - description: node's clock
++
++      power-domains:
++        maxItems: 1
++        description: phandle to the core SoC power domain
++
++    required:
++      - compatible
++      - operating-points-v2
++      - clocks
++      - power-domains
++
++    additionalProperties: false
++
+ required:
+   - compatible
+   - reg
+@@ -59,6 +89,13 @@ examples:
+         reg = <0x60006000 0x1000>;
+         #clock-cells = <1>;
+         #reset-cells = <1>;
++
++        sclk {
++            compatible = "nvidia,tegra20-sclk";
++            operating-points-v2 = <&opp_table>;
++            clocks = <&tegra_car TEGRA20_CLK_SCLK>;
++            power-domains = <&domain>;
++        };
+     };
+ 
+     usb-controller@c5004000 {
 -- 
 2.32.0
 
