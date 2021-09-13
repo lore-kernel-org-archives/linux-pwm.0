@@ -2,142 +2,125 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9EBC43217
-	for <linux-pwm@archiver.kernel.org>; Sun, 12 Sep 2021 20:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C599BC433EF
+	for <linux-pwm@archiver.kernel.org>; Mon, 13 Sep 2021 06:20:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DAB3761050
-	for <linux-pwm@archiver.kernel.org>; Sun, 12 Sep 2021 20:13:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 98A3960F4B
+	for <linux-pwm@archiver.kernel.org>; Mon, 13 Sep 2021 06:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbhILULF (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 12 Sep 2021 16:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53848 "EHLO
+        id S236244AbhIMGVl (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 13 Sep 2021 02:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236230AbhILUKy (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 12 Sep 2021 16:10:54 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECD7C061574;
-        Sun, 12 Sep 2021 13:09:39 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id c8-20020a7bc008000000b002e6e462e95fso5422328wmb.2;
-        Sun, 12 Sep 2021 13:09:39 -0700 (PDT)
+        with ESMTP id S230003AbhIMGVk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Sep 2021 02:21:40 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADEDC061574;
+        Sun, 12 Sep 2021 23:20:25 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id y17so7799521pfl.13;
+        Sun, 12 Sep 2021 23:20:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=b3yXsdmsWJbu2CaukGByuPBPrpPUHlzf8e1vIPRsAi8=;
-        b=mJdQKdvw/T1WHD6bQEjVMmBbN7DaWLQ8lzGUjo1vlIU+1gEWKCVQWRn15g/gnhI8W5
-         d2pStakMymWHTlgQZEJHbhgK7eIg/4Z+gQ1F1i8DAkWUmGISTIcu5/80zCjHmEb8+e8y
-         ODX+Ol6dM5QbrfOAs1Ajm/+NiMAlCsnZjSritBeeQfqYaEaZSvmlUbCmovGhHren2/dS
-         tV8Fm+3jKIXee5Yg+FuL2/hKt3ljmIbae8PatNYP9JAdrpNquETwVaTVy5uDSMdwlNWd
-         FZr+634a/OJXxW5Jx8TJnOhM2IWEVvUwyJg8neySduMfcuUOEaOSwCWfy9EUg59oTHhR
-         2zyw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MJZFP5k7d2O2P1gl9RWPWTU9kiXtHQ6xmLwf4B4cHAc=;
+        b=dWO6Vr1w1z/Y5cyRncMP28ZhnmG8SNYRD+5cWts5t4zwKh+N3m5+jrl3Nqe6zSSis4
+         KzqgKP429efnM2caaT8XS5hcH+Qo2YTKOFY37Ekz4Srvh3zR9upLXsdmuSv8Nx7X/jaF
+         LPuXdbJCfMU3bZLzvRey5coKIwDIwFJ3ckoMP1tPkvWupHPJCxe0Yo2mbq7gYPpzBm39
+         OQ56iT5SZmv+9r9+McdQDiBYeqQoy8dwrtCmdPofIsttfueDHztzIybGexrlfil4OY6c
+         M3iyl+uXNr55VAy+KRZFUZjsvBEj/ddtMOVgibtdAXn0KXMl43nalsHDBzrNQn6CYoQp
+         TiFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=b3yXsdmsWJbu2CaukGByuPBPrpPUHlzf8e1vIPRsAi8=;
-        b=CaMdrHmOP6AoDeyaD+/QXtNelmPeercv4cIPWVFb5FvCTSeA0BG7Oalru3tsKvrry/
-         KvVqoJ9ARZbtP8p761AIn1JtGNNUGlasv0THnMJtTki4o/ZWkx5Eun3bTQjFospzrgPe
-         N0VJ/0MGn0Wm8T1aVtSf1mGosnE402N+FziThXPNicRSX8BFAlsH9pcLR4KM3Bir5ESN
-         iOeq/AYRzbRqtQXPsWAtGxjMUE0qU73rq9eARI6bFiMPz4w8LhVhEAI7+xWenXaEunzy
-         YePnbpMHrb7FG20NmhKOhyvipYj6FzRhViiYIumtyzKuzOXO0AMNp8mQBhtyzmCSmZ5p
-         6XfQ==
-X-Gm-Message-State: AOAM530asENVyf1BdnSc3qlB4ahK/7fYtnH7WmfRr1dhbRwb9UUrAosz
-        TZVLfkjPrwANZgJRKLQLhrw=
-X-Google-Smtp-Source: ABdhPJwk0yn5bxHilmKllDmuRSmM3W8zuYlcPQEH5ywYTDKziHKI7nEbRLuXvtmZG0hMnn6QbSlSww==
-X-Received: by 2002:a1c:ed13:: with SMTP id l19mr8072480wmh.48.1631477378162;
-        Sun, 12 Sep 2021 13:09:38 -0700 (PDT)
-Received: from localhost.localdomain (46-138-83-36.dynamic.spd-mgts.ru. [46.138.83.36])
-        by smtp.gmail.com with ESMTPSA id v10sm5463476wrg.15.2021.09.12.13.09.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MJZFP5k7d2O2P1gl9RWPWTU9kiXtHQ6xmLwf4B4cHAc=;
+        b=niEBYWDpGauQmFeHKtxuWjBrcek9WNq6q/J7Xt05RBZYdI1OW9WSWo47ZrucQK1g9B
+         fBNIuizFO32DiPngeGDuwrAkWQB55Qh48HaXV8LwTAS1veWVbodY3NzSNjvRRfFQVnAs
+         k/hWdM9xAZr0HgF1/ihSQ7VR1ZGDKKwg3S/2wRIIQQ+ys0mLkh0TSSZsIgkI41kxH11N
+         1XeVmgaM/POJDxt8eR6YV0CTYZX4PsrItF3IBhj2aU/l+Sa0tRFSSJz3BNmINAr/cCkx
+         DcrMZwLFt7M+FRKqfxNiINBSqjUc1EJwAIahDEhjFhcaIvfgG8b+AMDsrLPvKULFyYVS
+         E02A==
+X-Gm-Message-State: AOAM532vRxzZg11e7/JS2WS0tTTcGLb6zgYVa625mjNTld2MNAweMZ0k
+        qDtEdGzqsaArwDX/YOdoNGA=
+X-Google-Smtp-Source: ABdhPJxydawtyrw408aHRADdQSSQtY4CoMrjVipz31NpqSnTyslm+Mek54wUlS+h5hosr6C61V6U/w==
+X-Received: by 2002:a63:7d04:: with SMTP id y4mr9854031pgc.131.1631514025291;
+        Sun, 12 Sep 2021 23:20:25 -0700 (PDT)
+Received: from localhost.localdomain ([111.207.172.18])
+        by smtp.gmail.com with ESMTPSA id f6sm5701659pfa.110.2021.09.12.23.20.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Sep 2021 13:09:37 -0700 (PDT)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Peter De Schrijver <pdeschrijver@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Richard Weinberger <richard@nod.at>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Lucas Stach <dev@lynxeye.de>, Stefan Agner <stefan@agner.ch>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-spi@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-mmc@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: [PATCH v11 02/34] soc/tegra: Add devm_tegra_core_dev_init_opp_table_common()
-Date:   Sun, 12 Sep 2021 23:08:00 +0300
-Message-Id: <20210912200832.12312-3-digetx@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210912200832.12312-1-digetx@gmail.com>
-References: <20210912200832.12312-1-digetx@gmail.com>
+        Sun, 12 Sep 2021 23:20:24 -0700 (PDT)
+From:   zhaoxiao <long870912@gmail.com>
+To:     thierry.reding@gmail.com, lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        zhaoxiao <long870912@gmail.com>
+Subject: [PATCH] pwm: visconti: Simplify using devm_pwmchip_add()
+Date:   Mon, 13 Sep 2021 14:15:53 +0800
+Message-Id: <20210913061553.21450-1-long870912@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Only couple drivers need to get the -ENODEV error code and majority of
-drivers need to explicitly initialize the performance state. Add new
-common helper which sets up OPP table for these drivers.
+This allows to drop the platform_driver's remove function. This is the
+only user of driver data so this can go away, too.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: zhaoxiao <long870912@gmail.com>
 ---
- include/soc/tegra/common.h | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/pwm/pwm-visconti.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/include/soc/tegra/common.h b/include/soc/tegra/common.h
-index af41ad80ec21..5b4a042f60fb 100644
---- a/include/soc/tegra/common.h
-+++ b/include/soc/tegra/common.h
-@@ -39,4 +39,28 @@ devm_tegra_core_dev_init_opp_table(struct device *dev,
- }
- #endif
+diff --git a/drivers/pwm/pwm-visconti.c b/drivers/pwm/pwm-visconti.c
+index af4e37d3e3a6..927c4cbb1daf 100644
+--- a/drivers/pwm/pwm-visconti.c
++++ b/drivers/pwm/pwm-visconti.c
+@@ -144,28 +144,17 @@ static int visconti_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->base))
+ 		return PTR_ERR(priv->base);
  
-+/*
-+ * This function should be invoked with the enabled runtime PM of the device
-+ * in order to initialize performance state properly. Most of Tegra devices
-+ * are assumed to be suspended at a probe time and GENPD require RPM to be
-+ * enabled to set up the rpm-resume state, otherwise device is active and
-+ * performance state is applied immediately. Note that it will initialize
-+ * OPP bandwidth if it's wired in a device-tree for this device, which is
-+ * undesirable for a suspended device.
-+ */
-+static inline int
-+devm_tegra_core_dev_init_opp_table_common(struct device *dev)
-+{
-+	struct tegra_core_opp_params opp_params = {};
-+	int err;
-+
-+	opp_params.init_state = true;
-+
-+	err = devm_tegra_core_dev_init_opp_table(dev, &opp_params);
-+	if (err != -ENODEV)
-+		return err;
-+
-+	return 0;
-+}
-+
- #endif /* __SOC_TEGRA_COMMON_H__ */
+-	platform_set_drvdata(pdev, priv);
+-
+ 	priv->chip.dev = dev;
+ 	priv->chip.ops = &visconti_pwm_ops;
+ 	priv->chip.npwm = 4;
+ 
+-	ret = pwmchip_add(&priv->chip);
++	ret = devm_pwmchip_add(&pdev->dev, &priv->chip);
+ 	if (ret < 0)
+ 		return dev_err_probe(&pdev->dev, ret, "Cannot register visconti PWM\n");
+ 
+ 	return 0;
+ }
+ 
+-static int visconti_pwm_remove(struct platform_device *pdev)
+-{
+-	struct visconti_pwm_chip *priv = platform_get_drvdata(pdev);
+-
+-	pwmchip_remove(&priv->chip);
+-
+-	return 0;
+-}
+-
+ static const struct of_device_id visconti_pwm_of_match[] = {
+ 	{ .compatible = "toshiba,visconti-pwm", },
+ 	{ }
+@@ -178,7 +167,6 @@ static struct platform_driver visconti_pwm_driver = {
+ 		.of_match_table = visconti_pwm_of_match,
+ 	},
+ 	.probe = visconti_pwm_probe,
+-	.remove = visconti_pwm_remove,
+ };
+ module_platform_driver(visconti_pwm_driver);
+ 
 -- 
-2.32.0
+2.20.1
 
