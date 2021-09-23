@@ -2,97 +2,99 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FSL_HELO_FAKE,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9CFC4332F
-	for <linux-pwm@archiver.kernel.org>; Wed, 22 Sep 2021 14:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BE4C43217
+	for <linux-pwm@archiver.kernel.org>; Thu, 23 Sep 2021 21:09:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BDEC26115A
-	for <linux-pwm@archiver.kernel.org>; Wed, 22 Sep 2021 14:10:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C26FD60EB2
+	for <linux-pwm@archiver.kernel.org>; Thu, 23 Sep 2021 21:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235600AbhIVOLn (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 22 Sep 2021 10:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235464AbhIVOLn (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 22 Sep 2021 10:11:43 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20BAC061574
-        for <linux-pwm@vger.kernel.org>; Wed, 22 Sep 2021 07:10:12 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id t8so7351350wri.1
-        for <linux-pwm@vger.kernel.org>; Wed, 22 Sep 2021 07:10:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=316eM28pK/8Y6ZPFwh3V4osKtYsZzbtNOZjPZ78hW2o=;
-        b=qgeTRI7MZLWaVeFQzGXTpSsFcyvmu7kjfYlSc+NPJCrhsXvE1fEn07XHZl63akX/A9
-         yQbXdXADzwP00MT27Hew7Q5+BXqnTnHMX2GPMy8eew9d5u8RXyglhqDuge9gsmwXrD8R
-         HAvFLaIw6+HC5YglZjYxDz9U1L+MwF/UV+iop1VTv+4b+TeLv+YtgqdgDzTRzzxMdQBi
-         kVYSpNyYlR+kdCs44djZFix4hbr60HjdLscIRa4b55RCcwpz1lxAKHoewcClaR6+Bjai
-         CEDO1S4JoEByQsW1f8EyZ+aN8rL1sGz/bP6WNU3H2x5Jzjl6OhYQ9HBAhlyBspTGsysg
-         sLHg==
+        id S243231AbhIWVLK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Thu, 23 Sep 2021 17:11:10 -0400
+Received: from mail-oi1-f177.google.com ([209.85.167.177]:43538 "EHLO
+        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243174AbhIWVLJ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Sep 2021 17:11:09 -0400
+Received: by mail-oi1-f177.google.com with SMTP id w19so11541174oik.10;
+        Thu, 23 Sep 2021 14:09:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=316eM28pK/8Y6ZPFwh3V4osKtYsZzbtNOZjPZ78hW2o=;
-        b=g9Ed17DSd+puMt+9wSx/PkgvMdom2iVjsb0foTWPW6O6d9cOrojmraYui3MZjkxDoj
-         kb/kXDO5RjpauucORTi98iLf3j8P+45Aj/B+/w29tliIgjFfUooWjGay7/T2FTKsd5Vz
-         YBTfkUM1TR0HoJ++gVi+i/Svq7gC9jtNkEuPAhdP1KvJMmDTlV/wpkTDMY01xB7GQO6r
-         7R8OCWL4E8UtgUYs35cE32MNfBpXNURYiu12FcLX1WORB0jnG3mBnhF11GApdDDtWZz0
-         gHx+R+kR2DdKAoE4rFqHfL008n2oBjgpINA7Wbyvm1HiMvmMMWpmVrF4Frlev1OdOPZg
-         ru3A==
-X-Gm-Message-State: AOAM531KoqXiBSndPYNyE2ZSQSVrqYDmrCb0bJeoWybRJzhYG3WoN4Uy
-        h9c7mw61L71jMkoi0QagPfQnVg==
-X-Google-Smtp-Source: ABdhPJwPWyPwb8fFPniP4WALIolIXo/0F86m+aaMDJzd9oMldjmXMowgEbhBdLf2fAEhdwOQkl2WeQ==
-X-Received: by 2002:a5d:64cd:: with SMTP id f13mr41907210wri.419.1632319811428;
-        Wed, 22 Sep 2021 07:10:11 -0700 (PDT)
-Received: from google.com ([95.148.6.233])
-        by smtp.gmail.com with ESMTPSA id i203sm5875577wma.7.2021.09.22.07.10.10
+         :mime-version:content-disposition:in-reply-to;
+        bh=ECAcJQ5j3b9V37w+5AU1dCjJzeuc06UOkYf0x/TJhHI=;
+        b=xIdLizm4aubTc3dGOr/JOOrmu/jGmoWQ1B+ry9dtYUiPsD6NfmRoN4HOihRT5Cyc+m
+         26xhWVWU5zolKwopYzzACSCyMQyPhWdae9KYinSfzPY5V2bUmsZtHQw253u+mXUwjWcz
+         hZ3KtcEaJ7G2AQo6VVgkHgs1IBpP9BcRnck4CkZnO85wIlE7eu5bb6ai3XjNu8f5jYq5
+         Vc8mP7zS1F+f+X30oCmD1y+uTkuD3rvthnLu+18HsnIjblgiJ+3d/z5A+JHeqv1LqEfh
+         dI5UbMrEeCVxS35KYOftBanaD2WRfDGWBceNepJmXAnA5kKf5mZTrTvWR3FyQkGAyc2u
+         NRcA==
+X-Gm-Message-State: AOAM5314M/Ns5HRCOV8AJMEoGbhkjzLYg4+Tk7O1cc5lV7jp7CS2BSMl
+        JK3KG9Ggu+n2Da6WjjxcI9fQA//FoA==
+X-Google-Smtp-Source: ABdhPJxgGB/F5m/HUdgfquhEQY/6qPe41K4exPARMH+1jXMEbOmyXEtt37OEluaLbFS8sOex0LCyaQ==
+X-Received: by 2002:aca:645:: with SMTP id 66mr5369149oig.145.1632431377021;
+        Thu, 23 Sep 2021 14:09:37 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id d10sm1701331ooj.24.2021.09.23.14.09.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Sep 2021 07:10:10 -0700 (PDT)
-Date:   Wed, 22 Sep 2021 15:10:08 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Balaji Prakash J <bjagadee@codeaurora.org>,
+        Thu, 23 Sep 2021 14:09:36 -0700 (PDT)
+Received: (nullmailer pid 3527425 invoked by uid 1000);
+        Thu, 23 Sep 2021 21:09:34 -0000
+Date:   Thu, 23 Sep 2021 16:09:34 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     linux-pm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Lucas Stach <dev@lynxeye.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        linux-kernel@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, David Heidelberg <david@ixit.cz>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Kathiravan T <kathirav@codeaurora.org>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v8 1/4] dt-bindings: mfd: qcom,tcsr: document ipq6018
- compatible
-Message-ID: <YUs5QAeQnPijfp7z@google.com>
-References: <5c95bcf62a9d08208a7da19f0b1cec0689502b9a.1630323987.git.baruch@tkos.co.il>
+        Stephen Boyd <sboyd@kernel.org>, linux-tegra@vger.kernel.org,
+        Richard Weinberger <richard@nod.at>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-usb@vger.kernel.org, linux-clk@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nishanth Menon <nm@ti.com>, linux-pwm@vger.kernel.org,
+        linux-staging@lists.linux.dev, Stefan Agner <stefan@agner.ch>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        dri-devel@lists.freedesktop.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Peter De Schrijver <pdeschrijver@nvidia.com>,
+        devicetree@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Subject: Re: [PATCH v12 05/35] dt-bindings: clock: tegra-car: Document new
+ clock sub-nodes
+Message-ID: <YUztDv/KbKVAY7cB@robh.at.kernel.org>
+References: <20210920181145.19543-1-digetx@gmail.com>
+ <20210920181145.19543-6-digetx@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5c95bcf62a9d08208a7da19f0b1cec0689502b9a.1630323987.git.baruch@tkos.co.il>
+In-Reply-To: <20210920181145.19543-6-digetx@gmail.com>
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On Mon, 30 Aug 2021, Baruch Siach wrote:
-
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+On Mon, 20 Sep 2021 21:11:15 +0300, Dmitry Osipenko wrote:
+> Document sub-nodes which describe Tegra SoC clocks that require a higher
+> voltage of the core power domain in order to operate properly on a higher
+> clock rates.  Each node contains a phandle to OPP table and power domain.
+> 
+> The root PLLs and system clocks don't have any specific device dedicated
+> to them, clock controller is in charge of managing power for them.
+> 
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 > ---
->  Documentation/devicetree/bindings/mfd/qcom,tcsr.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  .../bindings/clock/nvidia,tegra20-car.yaml    | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+> 
 
-Applied, thanks.
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Reviewed-by: Rob Herring <robh@kernel.org>
