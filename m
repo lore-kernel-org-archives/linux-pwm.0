@@ -2,54 +2,54 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3651C43219
-	for <linux-pwm@archiver.kernel.org>; Sun, 26 Sep 2021 22:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE76C433F5
+	for <linux-pwm@archiver.kernel.org>; Sun, 26 Sep 2021 22:45:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 94B4860E76
-	for <linux-pwm@archiver.kernel.org>; Sun, 26 Sep 2021 22:44:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7979560E76
+	for <linux-pwm@archiver.kernel.org>; Sun, 26 Sep 2021 22:45:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbhIZWqd (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 26 Sep 2021 18:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
+        id S231371AbhIZWoQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 26 Sep 2021 18:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232614AbhIZWp1 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 26 Sep 2021 18:45:27 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDFDC061250;
-        Sun, 26 Sep 2021 15:43:04 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id y28so68076547lfb.0;
-        Sun, 26 Sep 2021 15:43:04 -0700 (PDT)
+        with ESMTP id S231253AbhIZWoN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 26 Sep 2021 18:44:13 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C94C061570;
+        Sun, 26 Sep 2021 15:42:35 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id g41so68398990lfv.1;
+        Sun, 26 Sep 2021 15:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FznKzQKQJ4MMQZj8pZvJObnQXbFlBRNfTiwo4cIzZ9M=;
-        b=cLhWQFVnKIClWofQyydj9ek0nkxst6EMnrGe/fAWlpt6snYEAXPsPU5pprgmFmqP5q
-         OZ+Ah3P78ACMLHF/aerinTOa/0pPS9GPFn3gV6gS6F7HUScBk9ikWIL337FkzNtxCojG
-         y40lJaBahu300x4IL9RV5mpljStrz9C8k2TsQHwaYkURFjOCKWJwo8WlE/UFTnIlky1a
-         MWzypAlFcNxgNw0/QhNDpDaEpI9wZpjCMgiHDMFpneQqMDUavBiHTzrpSg54Ogb1w79F
-         42Q0U4s2eRwJWquOCkUTWGc8Op1NY41BL0tg2mBGO+4NHEjmQQcZTN8+CMe2WAvIi4dM
-         EoEA==
+        bh=+TXI1PsD2CP95PVSZQdBoUU6aVsve75rwezr3hbKqQc=;
+        b=AEzo2grBWd8RtPGCYLgW37xohRbafUJexvpBchhhjQfHpYuCWl/du5G6kPX2izR/VG
+         UwFgzA7nnZusQEnA+2WqMECKyp60I7oO+exN38s649kgWl3Grh5i7Yb2OMPPBxTKqK5B
+         avlMc362cvH44d9vADu6Gw0F6oVVybwhBWK0AG9Ik+fhI3N3XH9K1+/nHep0OYpODI14
+         txqBFw76potS/8mOSFI0woenVwQhMGpkpT8JUF7XbY53UfHLtpal/wSfXuiXSDP3VXuD
+         Ddsno/46Y3Lb7jy9MTZxiP8kSSi4BgKqX8DyjGBLBXEXDhuU3F3Zhw9i/C3V6giVXMfM
+         rmQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FznKzQKQJ4MMQZj8pZvJObnQXbFlBRNfTiwo4cIzZ9M=;
-        b=JFsJZJ3KMCl7GfXc5o2v2jyNKQ2OkjGs4gCoQTrw6xJMVUSaKYdpxhMV1sqRDxctSK
-         l6a6RNj7Px8IUjiJEJ9P6oxyILqwHetu4328GwrN4oU/uNUteaZ75OQAV1A4FUMXpaMb
-         XMpisM0N6cQAsJiish6aK/5+irm0nNj5dXV/Ke1xBsBRwhNtyKa9jFph8dgbx4jYQEcL
-         xdqa7Gxuql1YrnVZzQouv9H7qlZG1/JS5ZRCjoyoz3+ianA/ZcNvtGjvVw/+1CG2qIH7
-         Qr+tMtZiPXQO6JLPIQPgP6HRo6koOoXQxbZ4JTMXHtf8EGgmfZdPa4gxiHTCbc1/wnsh
-         gxeg==
-X-Gm-Message-State: AOAM530FmnTD0Ymqf6siVdNxvLjuaPPpfWhL081n6gEmorGhofv0eeDJ
-        K2D3C5oe6iRMVAK0KHs3H3w=
-X-Google-Smtp-Source: ABdhPJwGkeJb/MVkyYRRpwCLiQlKCtYS5BgPvmAYtR76r5rsiM37pNz9Nn+Nyie/n49eH77NtCoTPA==
-X-Received: by 2002:ac2:5387:: with SMTP id g7mr21179173lfh.541.1632696182812;
-        Sun, 26 Sep 2021 15:43:02 -0700 (PDT)
+        bh=+TXI1PsD2CP95PVSZQdBoUU6aVsve75rwezr3hbKqQc=;
+        b=sMOpNLUhVD6lOI6Id5nxHSbxLoiXj/KYDsfxiM8+OkN2oSGwzLmPTKmTBPCqAyo9pW
+         CMQ2KZusne9SSJF64Q6xvwEBIbT8kavMRDIqLpOZQD2Cl78+TsYNAEl7IlNStw/Zz8sv
+         DVPwzMqwvr5ZWbl75fZsN815H3ppSaHVxlxt/PRJhg3714+h4Wku/YRQ1g1F9tpK4J/U
+         2I3atJVHcExIYEka7Sttp51vwZir7iCABs0aVKFCidt/jqgpz8ZcAdTQCbK8PjOaCVz2
+         dGKIZsG+0hE38gAzDjfuCtouKdef/++iB77/RwXIKwVaqCkfIFj5oFpcbIONPmYjRjH5
+         2qow==
+X-Gm-Message-State: AOAM533TFRxWRR3nBWL+HPleKVG8yPtDBA+MBcRRSr5pq4kTUyEJBWai
+        D24hB2VpZAotawiKR/C5EoU=
+X-Google-Smtp-Source: ABdhPJxsFrmAZfn97FgJhfq3KFba8PBYSffykkTrTZoQA7ZqhmERKvPxL2bYanLEm2Nd7lYlyl65KA==
+X-Received: by 2002:a05:6512:118a:: with SMTP id g10mr21807169lfr.206.1632696154129;
+        Sun, 26 Sep 2021 15:42:34 -0700 (PDT)
 Received: from localhost.localdomain (46-138-80-108.dynamic.spd-mgts.ru. [46.138.80.108])
-        by smtp.gmail.com with ESMTPSA id m10sm1408899lfr.272.2021.09.26.15.43.01
+        by smtp.gmail.com with ESMTPSA id m10sm1408899lfr.272.2021.09.26.15.42.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Sep 2021 15:43:02 -0700 (PDT)
+        Sun, 26 Sep 2021 15:42:33 -0700 (PDT)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -76,9 +76,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
         Lucas Stach <dev@lynxeye.de>, Stefan Agner <stefan@agner.ch>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         David Heidelberg <david@ixit.cz>
-Subject: [PATCH v13 31/35] ARM: tegra: Add OPP tables and power domains to Tegra20 device-trees
-Date:   Mon, 27 Sep 2021 01:40:54 +0300
-Message-Id: <20210926224058.1252-32-digetx@gmail.com>
+Subject: [PATCH v13 07/35] dt-bindings: host1x: Document OPP and power domain properties
+Date:   Mon, 27 Sep 2021 01:40:30 +0300
+Message-Id: <20210926224058.1252-8-digetx@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210926224058.1252-1-digetx@gmail.com>
 References: <20210926224058.1252-1-digetx@gmail.com>
@@ -88,1512 +88,220 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Add OPP tables and power domains to all peripheral devices which
-support power management on Tegra20 SoC.
+Document new DVFS OPP table and power domain properties of the Host1x bus
+and devices sitting on the bus.
 
-Tested-by: Paul Fertser <fercerpav@gmail.com> # PAZ00 T20
-Tested-by: Nicolas Chauvet <kwizart@gmail.com> # PAZ00 T20
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- .../boot/dts/tegra20-acer-a500-picasso.dts    |   1 +
- arch/arm/boot/dts/tegra20-colibri.dtsi        |   3 +-
- arch/arm/boot/dts/tegra20-harmony.dts         |   3 +-
- arch/arm/boot/dts/tegra20-paz00.dts           |   1 +
- .../arm/boot/dts/tegra20-peripherals-opp.dtsi | 941 ++++++++++++++++++
- arch/arm/boot/dts/tegra20-seaboard.dts        |   3 +-
- arch/arm/boot/dts/tegra20-tamonten.dtsi       |   3 +-
- arch/arm/boot/dts/tegra20-trimslice.dts       |   9 +
- arch/arm/boot/dts/tegra20-ventana.dts         |   1 +
- arch/arm/boot/dts/tegra20.dtsi                | 100 ++
- 10 files changed, 1061 insertions(+), 4 deletions(-)
+ .../display/tegra/nvidia,tegra20-host1x.txt   | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/arch/arm/boot/dts/tegra20-acer-a500-picasso.dts b/arch/arm/boot/dts/tegra20-acer-a500-picasso.dts
-index 2280d75b66ab..1dbeabcb8b74 100644
---- a/arch/arm/boot/dts/tegra20-acer-a500-picasso.dts
-+++ b/arch/arm/boot/dts/tegra20-acer-a500-picasso.dts
-@@ -713,6 +713,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <458>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
- 	};
+diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
+index 8a6d3e1ee306..62861a8fb5c6 100644
+--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
++++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
+@@ -20,6 +20,18 @@ Required properties:
+ - reset-names: Must include the following entries:
+   - host1x
  
- 	usb@c5000000 {
-diff --git a/arch/arm/boot/dts/tegra20-colibri.dtsi b/arch/arm/boot/dts/tegra20-colibri.dtsi
-index 585a5b441cf6..4ec403aa5f2e 100644
---- a/arch/arm/boot/dts/tegra20-colibri.dtsi
-+++ b/arch/arm/boot/dts/tegra20-colibri.dtsi
-@@ -495,7 +495,7 @@ reg_3v3_vsys: sys {
- 					regulator-always-on;
- 				};
++Optional properties:
++- operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to HEG or core power domain.
++
++For each opp entry in 'operating-points-v2' table of host1x and its modules:
++- opp-supported-hw: One bitfield indicating:
++	On Tegra20: SoC process ID mask
++	On Tegra30+: SoC speedo ID mask
++
++	A bitwise AND is performed against the value and if any bit
++	matches, the OPP gets enabled.
++
+ Each host1x client module having to perform DMA through the Memory Controller
+ should have the interconnect endpoints set to the Memory Client and External
+ Memory respectively.
+@@ -45,6 +57,8 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to MPE power domain.
  
--				sm0 {
-+				vdd_core: sm0 {
- 					regulator-name = "VDD_CORE_1.2V";
- 					regulator-min-microvolt = <1200000>;
- 					regulator-max-microvolt = <1200000>;
-@@ -601,6 +601,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <3875>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
+ - vi: video input
  
- 		/* Set SLEEP MODE bit in SUPPLYENE register of TPS658643 PMIC */
- 		i2c-thermtrip {
-diff --git a/arch/arm/boot/dts/tegra20-harmony.dts b/arch/arm/boot/dts/tegra20-harmony.dts
-index ae4312eedcbd..b21bab437ebd 100644
---- a/arch/arm/boot/dts/tegra20-harmony.dts
-+++ b/arch/arm/boot/dts/tegra20-harmony.dts
-@@ -339,7 +339,7 @@ sys_reg: sys {
- 					regulator-always-on;
- 				};
+@@ -128,6 +142,8 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to VENC power domain.
  
--				sm0 {
-+				vdd_core: sm0 {
- 					regulator-name = "vdd_sm0,vdd_core";
- 					regulator-min-microvolt = <1200000>;
- 					regulator-max-microvolt = <1200000>;
-@@ -565,6 +565,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <3875>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
- 	};
+ - epp: encoder pre-processor
  
- 	pcie@80003000 {
-diff --git a/arch/arm/boot/dts/tegra20-paz00.dts b/arch/arm/boot/dts/tegra20-paz00.dts
-index acc816bfd233..c8e4439d3dfb 100644
---- a/arch/arm/boot/dts/tegra20-paz00.dts
-+++ b/arch/arm/boot/dts/tegra20-paz00.dts
-@@ -519,6 +519,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <0>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&core_vdd_reg>;
- 	};
+@@ -147,6 +163,8 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to HEG or core power domain.
  
- 	usb@c5000000 {
-diff --git a/arch/arm/boot/dts/tegra20-peripherals-opp.dtsi b/arch/arm/boot/dts/tegra20-peripherals-opp.dtsi
-index ef3ad2e5f270..ff8c3dcba8e9 100644
---- a/arch/arm/boot/dts/tegra20-peripherals-opp.dtsi
-+++ b/arch/arm/boot/dts/tegra20-peripherals-opp.dtsi
-@@ -1,6 +1,46 @@
- // SPDX-License-Identifier: GPL-2.0
+ - isp: image signal processor
  
- / {
-+	core_opp_table: core-power-domain-opp-table {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+
-+		core_opp_950: opp@950000 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-level = <950000>;
-+		};
-+
-+		core_opp_1000: opp@1000000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-level = <1000000>;
-+		};
-+
-+		core_opp_1100: opp@1100000 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-level = <1100000>;
-+		};
-+
-+		core_opp_1200: opp@1200000 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-level = <1200000>;
-+		};
-+
-+		core_opp_1225: opp@1225000 {
-+			opp-microvolt = <1225000 1225000 1300000>;
-+			opp-level = <1225000>;
-+		};
-+
-+		core_opp_1275: opp@1275000 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-level = <1275000>;
-+		};
-+
-+		core_opp_1300: opp@1300000 {
-+			opp-microvolt = <1300000 1300000 1300000>;
-+			opp-level = <1300000>;
-+		};
-+	};
-+
- 	emc_icc_dvfs_opp_table: emc-dvfs-opp-table {
- 		compatible = "operating-points-v2";
+@@ -166,6 +184,7 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - power-domains: Phandle to VENC or core power domain.
  
-@@ -8,66 +48,77 @@ opp@36000000 {
- 			opp-microvolt = <950000 950000 1300000>;
- 			opp-hz = /bits/ 64 <36000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
- 		};
+ - gr2d: 2D graphics engine
  
- 		opp@47500000 {
- 			opp-microvolt = <950000 950000 1300000>;
- 			opp-hz = /bits/ 64 <47500000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
- 		};
+@@ -185,6 +204,8 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to HEG or core power domain.
  
- 		opp@50000000 {
- 			opp-microvolt = <950000 950000 1300000>;
- 			opp-hz = /bits/ 64 <50000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
- 		};
+ - gr3d: 3D graphics engine
  
- 		opp@54000000 {
- 			opp-microvolt = <950000 950000 1300000>;
- 			opp-hz = /bits/ 64 <54000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
- 		};
+@@ -209,6 +230,8 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandles to 3D or core power domain.
  
- 		opp@57000000 {
- 			opp-microvolt = <950000 950000 1300000>;
- 			opp-hz = /bits/ 64 <57000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
- 		};
+ - dc: display controller
  
- 		opp@100000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <100000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+@@ -241,6 +264,8 @@ of the following host1x client modules:
+   - interconnect-names: Must include name of the interconnect path for each
+     interconnect entry. Consult TRM documentation for information about
+     available memory clients, see MEMORY CONTROLLER section.
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to core power domain.
  
- 		opp@108000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <108000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+ - hdmi: High Definition Multimedia Interface
  
- 		opp@126666000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <126666000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+@@ -267,6 +292,7 @@ of the following host1x client modules:
+   - nvidia,hpd-gpio: specifies a GPIO used for hotplug detection
+   - nvidia,edid: supplies a binary EDID blob
+   - nvidia,panel: phandle of a display panel
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
  
- 		opp@150000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <150000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+ - tvo: TV encoder output
  
- 		opp@190000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <190000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+@@ -277,6 +303,10 @@ of the following host1x client modules:
+   - clocks: Must contain one entry, for the module clock.
+     See ../clocks/clock-bindings.txt for details.
  
- 		opp@216000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <216000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 			opp-suspend;
- 		};
++  Optional properties:
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
++  - power-domains: Phandle to core power domain.
++
+ - dsi: display serial interface
  
-@@ -75,36 +126,926 @@ opp@300000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <300000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+   Required properties:
+@@ -305,6 +335,7 @@ of the following host1x client modules:
+   - nvidia,panel: phandle of a display panel
+   - nvidia,ganged-mode: contains a phandle to a second DSI controller to gang
+     up with in order to support up to 8 data lanes
++  - operating-points-v2: See ../bindings/opp/opp.txt for details.
  
- 		opp@333000000 {
- 			opp-microvolt = <1000000 1000000 1300000>;
- 			opp-hz = /bits/ 64 <333000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
- 		};
+ - sor: serial output resource
  
- 		opp@380000000 {
- 			opp-microvolt = <1100000 1100000 1300000>;
- 			opp-hz = /bits/ 64 <380000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
- 		};
- 
- 		opp@600000000 {
- 			opp-microvolt = <1200000 1200000 1300000>;
- 			opp-hz = /bits/ 64 <600000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
- 		};
- 
- 		opp@666000000 {
- 			opp-microvolt = <1200000 1200000 1300000>;
- 			opp-hz = /bits/ 64 <666000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
- 		};
- 
- 		opp@760000000 {
- 			opp-microvolt = <1300000 1300000 1300000>;
- 			opp-hz = /bits/ 64 <760000000>;
- 			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1300>;
-+		};
-+	};
-+
-+	gr2d_dvfs_opp_table: gr2d-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@133000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <133000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@171000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <171000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@247000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <247000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@300000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	gr3d_dvfs_opp_table: gr3d-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@114000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <114000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@161500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <161500000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@161500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <161500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@209000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <209000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@218500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <218500000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@247000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <247000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@247000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <247000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@256500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <256500000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@285000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <285000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@285000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <285000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@304000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <304000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@323000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <323000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@333500000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <333500000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@333500000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <333500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@351500000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <351500000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@361000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <361000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@380000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <380000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@400000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <400000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@400000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <400000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	disp1_dvfs_opp_table: disp1-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@158000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <158000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@190000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <190000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	disp2_dvfs_opp_table: disp2-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@158000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <158000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@190000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <190000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	dsi_dvfs_opp_table: dsi-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@100000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <100000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@500000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <500000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	epp_dvfs_opp_table: epp-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@133000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <133000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@171000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <171000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@247000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <247000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@300000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	hdmi_dvfs_opp_table: hdmi-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@148500000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <148500000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	host1x_dvfs_opp_table: host1x-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@104500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <104500000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@133000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <133000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@166000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <166000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	ide_dvfs_opp_table: ide-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@100000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <100000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	mipi_dvfs_opp_table: mipi-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@40000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <40000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@60000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <60000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+	};
-+
-+	mpe_dvfs_opp_table: mpe-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@104500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <104500000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@142500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <142500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@152000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <152000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@190000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <190000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@190000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <190000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@228000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <228000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@228000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <228000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@237500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <237500000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@266000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <266000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@275500000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <275500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@300000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x0003>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@300000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x000C>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	ndflash_dvfs_opp_table: ndflash-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@130000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <130000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@150000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <150000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@158000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <158000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@164000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <164000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	nor_dvfs_opp_table: nor-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@92000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <92000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+	};
-+
-+	pcie_dvfs_opp_table: pcie-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@250000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <250000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	sdmmc1_dvfs_opp_table: sdmmc1-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@44000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <44000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@52000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <52000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+	};
-+
-+	sdmmc2_dvfs_opp_table: sdmmc2-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@44000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <44000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@52000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <52000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+	};
-+
-+	sdmmc3_dvfs_opp_table: sdmmc3-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@44000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <44000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@52000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <52000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+	};
-+
-+	sdmmc4_dvfs_opp_table: sdmmc4-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@44000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <44000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@52000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <52000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+	};
-+
-+	sclk_dvfs_opp_table: sclk-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@95000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <95000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@123500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <123500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@133000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <133000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@152000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <152000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@159500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <159500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@171000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <171000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@180500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <180500000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@190000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <190000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@207000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <207000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@218500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <218500000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@222500000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <222500000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@229500000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <229500000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@240000000,1225 {
-+			opp-microvolt = <1225000 1225000 1300000>;
-+			opp-hz = /bits/ 64 <240000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1225>;
-+		};
-+
-+		opp@240000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <240000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@247000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <247000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@256500000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <256500000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@260000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <260000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@262000000,1300 {
-+			opp-microvolt = <1300000 1300000 1300000>;
-+			opp-hz = /bits/ 64 <262000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1300>;
-+		};
-+
-+		opp@264000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <264000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@277500000,1300 {
-+			opp-microvolt = <1300000 1300000 1300000>;
-+			opp-hz = /bits/ 64 <277500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1300>;
-+		};
-+
-+		opp@285000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <285000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@292500000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <292500000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@300000000,1300 {
-+			opp-microvolt = <1300000 1300000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1300>;
-+		};
-+
-+		opp@300000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+	};
-+
-+	tvo_dvfs_opp_table: tvo-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@250000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <250000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+	};
-+
-+	usbd_dvfs_opp_table: usbd-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@480000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <480000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	usb2_dvfs_opp_table: usb2-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@480000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <480000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	usb3_dvfs_opp_table: usb3-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@480000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <480000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	vde_dvfs_opp_table: vde-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@95000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <95000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@123500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <123500000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@123500000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <123500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@152000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <152000000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@152000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <152000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@171000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <171000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@209000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <209000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@209000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <209000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@218500000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <218500000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@237500000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <237500000>;
-+			opp-supported-hw = <0x0002>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@275500000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <275500000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@285000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <285000000>;
-+			opp-supported-hw = <0x0004>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+
-+		opp@300000000,1275 {
-+			opp-microvolt = <1275000 1275000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x0001>;
-+			required-opps = <&core_opp_1275>;
-+		};
-+
-+		opp@300000000,1200 {
-+			opp-microvolt = <1200000 1200000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x0006>;
-+			required-opps = <&core_opp_1200>;
-+		};
-+
-+		opp@300000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <300000000>;
-+			opp-supported-hw = <0x0008>;
-+			required-opps = <&core_opp_1100>;
-+		};
-+	};
-+
-+	vi_dvfs_opp_table: vi-opp-table {
-+		compatible = "operating-points-v2";
-+
-+		opp@85000000,950 {
-+			opp-microvolt = <950000 950000 1300000>;
-+			opp-hz = /bits/ 64 <85000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_950>;
-+		};
-+
-+		opp@100000000,1000 {
-+			opp-microvolt = <1000000 1000000 1300000>;
-+			opp-hz = /bits/ 64 <100000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1000>;
-+		};
-+
-+		opp@150000000,1100 {
-+			opp-microvolt = <1100000 1100000 1300000>;
-+			opp-hz = /bits/ 64 <150000000>;
-+			opp-supported-hw = <0x000F>;
-+			required-opps = <&core_opp_1100>;
- 		};
- 	};
- };
-diff --git a/arch/arm/boot/dts/tegra20-seaboard.dts b/arch/arm/boot/dts/tegra20-seaboard.dts
-index 92d494b8c3d2..5aeb7bb6c415 100644
---- a/arch/arm/boot/dts/tegra20-seaboard.dts
-+++ b/arch/arm/boot/dts/tegra20-seaboard.dts
-@@ -444,7 +444,7 @@ sys_reg: sys {
- 					regulator-always-on;
- 				};
- 
--				sm0 {
-+				vdd_core: sm0 {
- 					regulator-name = "vdd_sm0,vdd_core";
- 					regulator-min-microvolt = <1300000>;
- 					regulator-max-microvolt = <1300000>;
-@@ -689,6 +689,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <3875>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
- 	};
- 
- 	memory-controller@7000f400 {
-diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-index dd4d506683de..d5888d958175 100644
---- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
-+++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-@@ -357,7 +357,7 @@ sys_reg: sys {
- 					regulator-always-on;
- 				};
- 
--				sm0 {
-+				vdd_core: sm0 {
- 					regulator-name = "vdd_sys_sm0,vdd_core";
- 					regulator-min-microvolt = <1200000>;
- 					regulator-max-microvolt = <1200000>;
-@@ -477,6 +477,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <3875>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
- 	};
- 
- 	pcie@80003000 {
-diff --git a/arch/arm/boot/dts/tegra20-trimslice.dts b/arch/arm/boot/dts/tegra20-trimslice.dts
-index 4bc87bc0c2a4..582dc7910ff8 100644
---- a/arch/arm/boot/dts/tegra20-trimslice.dts
-+++ b/arch/arm/boot/dts/tegra20-trimslice.dts
-@@ -321,6 +321,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <3875>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
- 	};
- 
- 	pcie@80003000 {
-@@ -444,6 +445,14 @@ pci_vdd_reg: regulator@4 {
- 		regulator-always-on;
- 	};
- 
-+	vdd_core: regulator@5 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vdd_core";
-+		regulator-min-microvolt = <1300000>;
-+		regulator-max-microvolt = <1300000>;
-+		regulator-always-on;
-+	};
-+
- 	sound {
- 		compatible = "nvidia,tegra-audio-trimslice";
- 		nvidia,i2s-controller = <&tegra_i2s1>;
-diff --git a/arch/arm/boot/dts/tegra20-ventana.dts b/arch/arm/boot/dts/tegra20-ventana.dts
-index 5a2578b3707f..e41ce1b1ec3f 100644
---- a/arch/arm/boot/dts/tegra20-ventana.dts
-+++ b/arch/arm/boot/dts/tegra20-ventana.dts
-@@ -544,6 +544,7 @@ pmc@7000e400 {
- 		nvidia,core-pwr-good-time = <3845 3845>;
- 		nvidia,core-pwr-off-time = <458>;
- 		nvidia,sys-clock-req-active-high;
-+		core-supply = <&vdd_core>;
- 	};
- 
- 	usb@c5000000 {
-diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
-index 6ce498178105..ce38055a8952 100644
---- a/arch/arm/boot/dts/tegra20.dtsi
-+++ b/arch/arm/boot/dts/tegra20.dtsi
-@@ -42,6 +42,8 @@ host1x@50000000 {
- 		clock-names = "host1x";
+@@ -408,6 +439,8 @@ Example:
+ 		clocks = <&tegra_car TEGRA20_CLK_HOST1X>;
  		resets = <&tegra_car 28>;
  		reset-names = "host1x";
-+		operating-points-v2 = <&host1x_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
++		operating-points-v2 = <&dvfs_opp_table>;
++		power-domains = <&domain>;
  
  		#address-cells = <1>;
  		#size-cells = <1>;
-@@ -55,6 +57,8 @@ mpe@54040000 {
+@@ -421,6 +454,8 @@ Example:
  			clocks = <&tegra_car TEGRA20_CLK_MPE>;
  			resets = <&tegra_car 60>;
  			reset-names = "mpe";
-+			operating-points-v2 = <&mpe_dvfs_opp_table>;
-+			power-domains = <&pd_mpe>;
++			operating-points-v2 = <&dvfs_opp_table>;
++			power-domains = <&domain>;
  		};
  
  		vi@54080000 {
-@@ -64,6 +68,8 @@ vi@54080000 {
- 			clocks = <&tegra_car TEGRA20_CLK_VI>;
- 			resets = <&tegra_car 20>;
- 			reset-names = "vi";
-+			operating-points-v2 = <&vi_dvfs_opp_table>;
-+			power-domains = <&pd_venc>;
- 		};
+@@ -429,6 +464,7 @@ Example:
+ 			interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
+ 			assigned-clocks = <&tegra_car TEGRA210_CLK_VI>;
+ 			assigned-clock-parents = <&tegra_car TEGRA210_CLK_PLL_C4_OUT0>;
++			operating-points-v2 = <&dvfs_opp_table>;
  
- 		epp@540c0000 {
-@@ -73,6 +79,8 @@ epp@540c0000 {
+ 			clocks = <&tegra_car TEGRA210_CLK_VI>;
+ 			power-domains = <&pd_venc>;
+@@ -510,6 +546,8 @@ Example:
  			clocks = <&tegra_car TEGRA20_CLK_EPP>;
  			resets = <&tegra_car 19>;
  			reset-names = "epp";
-+			operating-points-v2 = <&epp_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
++			operating-points-v2 = <&dvfs_opp_table>;
++			power-domains = <&domain>;
  		};
  
- 		isp@54100000 {
-@@ -82,6 +90,7 @@ isp@54100000 {
- 			clocks = <&tegra_car TEGRA20_CLK_ISP>;
- 			resets = <&tegra_car 23>;
- 			reset-names = "isp";
-+			power-domains = <&pd_venc>;
- 		};
- 
- 		gr2d@54140000 {
-@@ -91,6 +100,8 @@ gr2d@54140000 {
+ 		isp {
+@@ -528,6 +566,8 @@ Example:
  			clocks = <&tegra_car TEGRA20_CLK_GR2D>;
  			resets = <&tegra_car 21>;
  			reset-names = "2d";
-+			operating-points-v2 = <&gr2d_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
++			operating-points-v2 = <&dvfs_opp_table>;
++			power-domains = <&domain>;
  		};
  
- 		gr3d@54180000 {
-@@ -99,6 +110,8 @@ gr3d@54180000 {
+ 		gr3d {
+@@ -536,6 +576,8 @@ Example:
  			clocks = <&tegra_car TEGRA20_CLK_GR3D>;
  			resets = <&tegra_car 24>;
  			reset-names = "3d";
-+			operating-points-v2 = <&gr3d_dvfs_opp_table>;
-+			power-domains = <&pd_3d>;
++			operating-points-v2 = <&dvfs_opp_table>;
++			power-domains = <&domain>;
  		};
  
  		dc@54200000 {
-@@ -110,6 +123,8 @@ dc@54200000 {
+@@ -547,6 +589,8 @@ Example:
  			clock-names = "dc", "parent";
  			resets = <&tegra_car 27>;
  			reset-names = "dc";
-+			operating-points-v2 = <&disp1_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
++			operating-points-v2 = <&dvfs_opp_table>;
++			power-domains = <&domain>;
  
- 			nvidia,head = <0>;
- 
-@@ -138,6 +153,8 @@ dc@54240000 {
+ 			interconnects = <&mc TEGRA20_MC_DISPLAY0A &emc>,
+ 					<&mc TEGRA20_MC_DISPLAY0B &emc>,
+@@ -571,6 +615,8 @@ Example:
  			clock-names = "dc", "parent";
  			resets = <&tegra_car 26>;
  			reset-names = "dc";
-+			operating-points-v2 = <&disp2_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
++			operating-points-v2 = <&dvfs_opp_table>;
++			power-domains = <&domain>;
  
- 			nvidia,head = <1>;
- 
-@@ -166,6 +183,8 @@ hdmi@54280000 {
- 			clock-names = "hdmi", "parent";
+ 			interconnects = <&mc TEGRA20_MC_DISPLAY0AB &emc>,
+ 					<&mc TEGRA20_MC_DISPLAY0BB &emc>,
+@@ -596,6 +642,7 @@ Example:
  			resets = <&tegra_car 51>;
  			reset-names = "hdmi";
-+			operating-points-v2 = <&hdmi_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
  			status = "disabled";
++			operating-points-v2 = <&dvfs_opp_table>;
  		};
  
-@@ -174,6 +193,8 @@ tvo@542c0000 {
- 			reg = <0x542c0000 0x00040000>;
- 			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
+ 		tvo {
+@@ -604,6 +651,7 @@ Example:
+ 			interrupts = <0 76 0x04>;
  			clocks = <&tegra_car TEGRA20_CLK_TVO>;
-+			operating-points-v2 = <&tvo_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
  			status = "disabled";
++			operating-points-v2 = <&dvfs_opp_table>;
  		};
  
-@@ -185,6 +206,8 @@ dsi@54300000 {
- 			clock-names = "dsi", "parent";
+ 		dsi {
+@@ -615,6 +663,7 @@ Example:
  			resets = <&tegra_car 48>;
  			reset-names = "dsi";
-+			operating-points-v2 = <&dsi_dvfs_opp_table>;
-+			power-domains = <&pd_core>;
  			status = "disabled";
++			operating-points-v2 = <&dvfs_opp_table>;
  		};
- 	};
-@@ -242,6 +265,13 @@ tegra_car: clock@60006000 {
- 		reg = <0x60006000 0x1000>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
-+
-+		sclk {
-+			compatible = "nvidia,tegra20-sclk";
-+			operating-points-v2 = <&sclk_dvfs_opp_table>;
-+			clocks = <&tegra_car TEGRA20_CLK_SCLK>;
-+			power-domains = <&pd_core>;
-+		};
- 	};
- 
- 	flow-controller@60007000 {
-@@ -319,6 +349,8 @@ vde@6001a000 {
- 		clocks = <&tegra_car TEGRA20_CLK_VDE>;
- 		reset-names = "vde", "mc";
- 		resets = <&tegra_car 61>, <&mc TEGRA20_MC_RESET_VDE>;
-+		operating-points-v2 = <&vde_dvfs_opp_table>;
-+		power-domains = <&pd_vde>;
- 	};
- 
- 	apbmisc@70000800 {
-@@ -460,6 +492,8 @@ nand-controller@70008000 {
- 		reset-names = "nand";
- 		assigned-clocks = <&tegra_car TEGRA20_CLK_NDFLASH>;
- 		assigned-clock-rates = <150000000>;
-+		operating-points-v2 = <&ndflash_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -473,6 +507,8 @@ gmi@70009000 {
- 		clock-names = "gmi";
- 		resets = <&tegra_car 42>;
- 		reset-names = "gmi";
-+		operating-points-v2 = <&nor_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -643,6 +679,52 @@ tegra_pmc: pmc@7000e400 {
- 		clocks = <&tegra_car TEGRA20_CLK_PCLK>, <&clk32k_in>;
- 		clock-names = "pclk", "clk32k_in";
- 		#clock-cells = <1>;
-+
-+		pd_core: core-domain {
-+			operating-points-v2 = <&core_opp_table>;
-+			#power-domain-cells = <0>;
-+		};
-+
-+		powergates {
-+			pd_3d: td {
-+				clocks = <&tegra_car TEGRA20_CLK_GR3D>;
-+				resets = <&mc TEGRA20_MC_RESET_3D>,
-+					 <&tegra_car TEGRA20_CLK_GR3D>;
-+				power-domains = <&pd_core>;
-+				#power-domain-cells = <0>;
-+			};
-+
-+			pd_venc: venc {
-+				clocks = <&tegra_car TEGRA20_CLK_ISP>,
-+					 <&tegra_car TEGRA20_CLK_VI>,
-+					 <&tegra_car TEGRA20_CLK_CSI>;
-+				resets = <&mc TEGRA20_MC_RESET_ISP>,
-+					 <&mc TEGRA20_MC_RESET_VI>,
-+					 <&tegra_car TEGRA20_CLK_ISP>,
-+					 <&tegra_car 20 /* VI */>,
-+					 <&tegra_car TEGRA20_CLK_CSI>;
-+				power-domains = <&pd_core>;
-+				#power-domain-cells = <0>;
-+			};
-+
-+			pd_vde: vdec {
-+				clocks = <&tegra_car TEGRA20_CLK_VDE>;
-+				resets = <&mc TEGRA20_MC_RESET_VDE>,
-+					 <&tegra_car TEGRA20_CLK_VDE>;
-+				power-domains = <&pd_core>;
-+				#power-domain-cells = <0>;
-+			};
-+
-+			pd_mpe: mpe {
-+				clocks = <&tegra_car TEGRA20_CLK_MPE>;
-+				resets = <&mc TEGRA20_MC_RESET_MPEA>,
-+					 <&mc TEGRA20_MC_RESET_MPEB>,
-+					 <&mc TEGRA20_MC_RESET_MPEC>,
-+					 <&tegra_car TEGRA20_CLK_MPE>;
-+				power-domains = <&pd_core>;
-+				#power-domain-cells = <0>;
-+			};
-+		};
- 	};
- 
- 	mc: memory-controller@7000f000 {
-@@ -662,6 +744,7 @@ emc: memory-controller@7000f400 {
- 		reg = <0x7000f400 0x400>;
- 		interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&tegra_car TEGRA20_CLK_EMC>;
-+		power-domains = <&pd_core>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 		#interconnect-cells = <0>;
-@@ -712,6 +795,9 @@ pcie@80003000 {
- 			 <&tegra_car 72>,
- 			 <&tegra_car 74>;
- 		reset-names = "pex", "afi", "pcie_x";
-+		operating-points-v2 = <&pcie_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
-+
- 		status = "disabled";
- 
- 		pci@1,0 {
-@@ -754,6 +840,8 @@ usb@c5000000 {
- 		reset-names = "usb";
- 		nvidia,needs-double-reset;
- 		nvidia,phy = <&phy1>;
-+		operating-points-v2 = <&usbd_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -791,6 +879,8 @@ usb@c5004000 {
- 		resets = <&tegra_car 58>;
- 		reset-names = "usb";
- 		nvidia,phy = <&phy2>;
-+		operating-points-v2 = <&usb2_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -817,6 +907,8 @@ usb@c5008000 {
- 		resets = <&tegra_car 59>;
- 		reset-names = "usb";
- 		nvidia,phy = <&phy3>;
-+		operating-points-v2 = <&usb3_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -851,6 +943,8 @@ mmc@c8000000 {
- 		clock-names = "sdhci";
- 		resets = <&tegra_car 14>;
- 		reset-names = "sdhci";
-+		operating-points-v2 = <&sdmmc1_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -862,6 +956,8 @@ mmc@c8000200 {
- 		clock-names = "sdhci";
- 		resets = <&tegra_car 9>;
- 		reset-names = "sdhci";
-+		operating-points-v2 = <&sdmmc2_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -873,6 +969,8 @@ mmc@c8000400 {
- 		clock-names = "sdhci";
- 		resets = <&tegra_car 69>;
- 		reset-names = "sdhci";
-+		operating-points-v2 = <&sdmmc3_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
- 	};
- 
-@@ -884,6 +982,8 @@ mmc@c8000600 {
- 		clock-names = "sdhci";
- 		resets = <&tegra_car 15>;
- 		reset-names = "sdhci";
-+		operating-points-v2 = <&sdmmc4_dvfs_opp_table>;
-+		power-domains = <&pd_core>;
- 		status = "disabled";
  	};
  
 -- 
