@@ -2,194 +2,409 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87294C433F5
-	for <linux-pwm@archiver.kernel.org>; Thu, 30 Sep 2021 21:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81ABBC433FE
+	for <linux-pwm@archiver.kernel.org>; Fri,  1 Oct 2021 12:33:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6329B61A51
-	for <linux-pwm@archiver.kernel.org>; Thu, 30 Sep 2021 21:35:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6089B61164
+	for <linux-pwm@archiver.kernel.org>; Fri,  1 Oct 2021 12:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350086AbhI3VhK (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Thu, 30 Sep 2021 17:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
+        id S231304AbhJAMep (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 1 Oct 2021 08:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349978AbhI3VhJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Sep 2021 17:37:09 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E17C06176D
-        for <linux-pwm@vger.kernel.org>; Thu, 30 Sep 2021 14:35:26 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id q16so9065371oiw.10
-        for <linux-pwm@vger.kernel.org>; Thu, 30 Sep 2021 14:35:26 -0700 (PDT)
+        with ESMTP id S1352756AbhJAMeo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Oct 2021 08:34:44 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4ADC06177C
+        for <linux-pwm@vger.kernel.org>; Fri,  1 Oct 2021 05:33:00 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id u18so38485485lfd.12
+        for <linux-pwm@vger.kernel.org>; Fri, 01 Oct 2021 05:33:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=e0NcfULf3wNNjVF33uwiRx+dy6Dmhwkfi1qdAZs9US4=;
-        b=DBjew3S0URka73F8hSVwAUYD20OGHDuGURaoBEn3oYxUADnCPbuh2AkHxd1rWzWBWb
-         CT67tzsTYkVTDq03fcfZAEdnq8OfBHkIzO8dVmgq8aXWXDO+dr0qKnWkYc/iInzciKrI
-         qf94lP+haQyQtcD/9YWmnGQz59MfjETnwL1VthNXS7D8tVXddyVGX8bxyasjYcZfATcC
-         fjasSaMS8S72GOuG5glNpDe3++79AAN+UBKQaI0He99CT4idFjPqVbxMMzrgwELHkBnn
-         ZxYBAVOCh0HJ+fgW1izeqqzlpAADFgXWh8RmiAIqS/5JHVLemV7NcIt5PHsXQfJ1dG6J
-         ebBg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MxegWTUqAg1wAtIssrheLi+x+LfQCMxJV5C3e9zY/So=;
+        b=vcJ2g2ALAm0IVx2Fp7EMGVafelLUrjG16muU1pmyzR8hwXe/c7kdMENPYG2cKj/WKw
+         BS+ZaaO+G4Uj5tvnRpwbititOE3WauKhPQkREVycG/Hvn9PHucIwhkZ/YUGB6qkv1U7f
+         1ae2JiP2HDu+Leu75eZhP4gJWxxvYNIu0f5oDf3KGrt2A4kayT/47nyueEjFDqAxQPI0
+         iTzo6lbag1DiAzbQ9jnlxf6WV5LlF4BTHECcT3A4vBoHPDuEldBEhV/YpniL1bV6yy2m
+         l7uOA4/tbztxL4Zph+77Sg+DntIuch0Ry+Gguy/mz8lrNGeYY+1Vyk1/7itYYlfM8hOX
+         BDkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=e0NcfULf3wNNjVF33uwiRx+dy6Dmhwkfi1qdAZs9US4=;
-        b=WN1tMZpGhp7LTFxAhiWQadIGYGfwiHlQpvGEai+gcIc3yDHFpHYa43TwIqJKCEwawJ
-         EAZmtL+y/nZcMOcEhSuMMTaWB+jiErpFjBzK4PRFXr3XifMJwwvK7YFPJl73e/8I3DCl
-         5og7bKbTZCdxq0rYL1Js477lO/s4Fk98iS4NIoFQWsyT2cwnwfHq2H56vZvyohBb6sdt
-         GOg7pxx/7qUW35XRl9SZLUoPPY2L9Xz4EaFJ1cQsIF+KQDruIhjd+FelNAc5scS2aTCJ
-         283pA02Ei9ohgpJ/x7IbmBbxs1d+Em6zl4N+mKK214pELPzHYwZt6bHHUet2lSmdDor5
-         w6Uw==
-X-Gm-Message-State: AOAM5300zDTGmNJ0dgW8fu231iy4q8Hm14bE4snl72m3Th24ccTio8Xb
-        JVZVagr4DuFhaz5inzJDrd96Mg==
-X-Google-Smtp-Source: ABdhPJz6lc6vrB1jwZXEZfb6aq4lDeyCWpNlrFW0PbVZaw3Sux9WhXMMhsglFjUCTTV3T9ZfmG/FKQ==
-X-Received: by 2002:a05:6808:107:: with SMTP id b7mr1237518oie.146.1633037725892;
-        Thu, 30 Sep 2021 14:35:25 -0700 (PDT)
-Received: from MacBook-Pro.hackershack.net (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id w17sm775133otu.54.2021.09.30.14.35.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Sep 2021 14:35:25 -0700 (PDT)
-Subject: Re: [PATCH v6 1/3] pwm: Introduce single-PWM of_xlate function
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Doug Anderson <dianders@google.com>
-References: <20210930030557.1426-1-bjorn.andersson@linaro.org>
-From:   Steev Klimaszewski <steev@kali.org>
-Message-ID: <aa563e12-4c3c-1854-ce91-efa7676d1676@kali.org>
-Date:   Thu, 30 Sep 2021 16:35:23 -0500
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MxegWTUqAg1wAtIssrheLi+x+LfQCMxJV5C3e9zY/So=;
+        b=YqNQI0anFUwqfMkA6WcHs3P2nOqlP4TDT7/OL4MRk7XhE69OQv3aGQMHADQKz3I7oN
+         HNituz9CYMYTPKhiWGkn65/iJrF93EBhZr8ZiM87sT9OXbAZIX7n6w/X83bHWxpCO5+I
+         6vrRLOfrAc1zvjR8M4zf6AhBXSXpAG+mKPDvJLcmY95HsuEC32rXRnYzzhNDKp0A1Bxk
+         1fIFYnqdWSEsBWcXtsmiLgFxBBqet3u5zxDzxC4emk1ZvcID9v6xfwMg/yRYQDoCshqJ
+         V9lNmhGAHgtcL0BEPGvrWP86+hX3X4XcTqu4M80qByoKWbSivW7TJfYIJDu3VI2DPkot
+         tMlg==
+X-Gm-Message-State: AOAM532wxF3XvkrzisNqRJHCl0yfJEaJp2j2xAMY4ADNLpSGaaasKU3y
+        CQEfRG8nJ1lXF7bxGXZYDLlZQVqeNt8e+BBX4v1/MA==
+X-Google-Smtp-Source: ABdhPJyfBm1RgU4LIN5CLjaq/tOmRfulY+xvfoc1wBqdFGGV+40L5VEoXJW9NfDQ0sTovAsPIzZgtcS+Jd2OZrom1nQ=
+X-Received: by 2002:a05:6512:3fa5:: with SMTP id x37mr5557500lfa.233.1633091578379;
+ Fri, 01 Oct 2021 05:32:58 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210930030557.1426-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20210926224058.1252-1-digetx@gmail.com> <20210926224058.1252-7-digetx@gmail.com>
+In-Reply-To: <20210926224058.1252-7-digetx@gmail.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Fri, 1 Oct 2021 14:32:21 +0200
+Message-ID: <CAPDyKFq+LS4Jr1GyC-a-tGWPzGH0JxfJ9wKY=uQEBGYm952azw@mail.gmail.com>
+Subject: Re: [PATCH v13 06/35] clk: tegra: Support runtime PM and power domain
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Peter De Schrijver <pdeschrijver@nvidia.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Peter Chen <peter.chen@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Nishanth Menon <nm@ti.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        linux-staging@lists.linux.dev, linux-pwm@vger.kernel.org,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Richard Weinberger <richard@nod.at>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Lucas Stach <dev@lynxeye.de>, Stefan Agner <stefan@agner.ch>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        David Heidelberg <david@ixit.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-
-On 9/29/21 10:05 PM, Bjorn Andersson wrote:
-> The existing pxa driver and the upcoming addition of PWM support in the
-> TI sn565dsi86 DSI/eDP bridge driver both has a single PWM channel and
-> thereby a need for a of_xlate function with the period as its single
-> argument.
+On Mon, 27 Sept 2021 at 00:42, Dmitry Osipenko <digetx@gmail.com> wrote:
 >
-> Introduce a common helper function in the core that can be used as
-> of_xlate by such drivers and migrate the pxa driver to use this.
+> The Clock-and-Reset controller resides in a core power domain on NVIDIA
+> Tegra SoCs.  In order to support voltage scaling of the core power domain,
+> we hook up DVFS-capable clocks to the core GENPD for managing of the
+> GENPD's performance state based on the clock changes.
 >
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Some clocks don't have any specific physical hardware unit that backs
+> them, like root PLLs and system clock and they have theirs own voltage
+> requirements.  This patch adds new clk-device driver that backs the clocks
+> and provides runtime PM functionality for them.  A virtual clk-device is
+> created for each such DVFS-capable clock at the clock's registration time
+> by the new tegra_clk_register() helper.  Driver changes clock's device
+> GENPD performance state based on clk-rate notifications.
+>
+> In result we have this sequence of events:
+>
+>   1. Clock driver creates virtual device for selective clocks, enables
+>      runtime PM for the created device and registers the clock.
+>   2. Clk-device driver starts to listen to clock rate changes.
+>   3. Something changes clk rate or enables/disables clk.
+>   4. CCF core propagates the change through the clk tree.
+>   5. Clk-device driver gets clock rate-change notification or GENPD core
+>      handles prepare/unprepare of the clock.
+>   6. Clk-device driver changes GENPD performance state on clock rate
+>      change.
+>   7. GENPD driver changes voltage regulator state change.
+>   8. The regulator state is committed to hardware via I2C.
+>
+> We rely on fact that DVFS is not needed for Tegra I2C and that Tegra I2C
+> driver already keeps clock always-prepared.  Hence I2C subsystem stays
+> independent from the clk power management and there are no deadlock spots
+> in the sequence.
+>
+> Currently all clocks are registered very early during kernel boot when the
+> device driver core isn't available yet.  The clk-device can't be created
+> at that time.  This patch splits the registration of the clocks in two
+> phases:
+>
+>   1. Register all essential clocks which don't use RPM and are needed
+>      during early boot.
+>
+>   2. Register at a later boot time the rest of clocks.
+>
+> This patch adds power management support for Tegra20 and Tegra30 clocks.
+>
+> Tested-by: Peter Geis <pgwipeout@gmail.com> # Ouya T30
+> Tested-by: Paul Fertser <fercerpav@gmail.com> # PAZ00 T20
+> Tested-by: Nicolas Chauvet <kwizart@gmail.com> # PAZ00 T20 and TK1 T124
+> Tested-by: Matt Merhar <mattmerhar@protonmail.com> # Ouya T30
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 > ---
+>  drivers/clk/tegra/Makefile      |   1 +
+>  drivers/clk/tegra/clk-device.c  | 230 ++++++++++++++++++++++++++++++++
+>  drivers/clk/tegra/clk-pll.c     |   2 +-
+>  drivers/clk/tegra/clk-super.c   |   2 +-
+>  drivers/clk/tegra/clk-tegra20.c |  77 ++++++++---
+>  drivers/clk/tegra/clk-tegra30.c | 116 +++++++++++-----
+>  drivers/clk/tegra/clk.c         |  75 ++++++++++-
+>  drivers/clk/tegra/clk.h         |   2 +
+>  8 files changed, 451 insertions(+), 54 deletions(-)
+>  create mode 100644 drivers/clk/tegra/clk-device.c
 >
-> Changes since v4:
-> - None
->
->  drivers/pwm/core.c    | 26 ++++++++++++++++++++++++++
->  drivers/pwm/pwm-pxa.c | 16 +---------------
->  include/linux/pwm.h   |  2 ++
->  3 files changed, 29 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 4527f09a5c50..2c6b155002a2 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -152,6 +152,32 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
->  }
->  EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
->  
-> +struct pwm_device *
-> +of_pwm_single_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+> diff --git a/drivers/clk/tegra/Makefile b/drivers/clk/tegra/Makefile
+> index 7b1816856eb5..a0715cdfc1a4 100644
+> --- a/drivers/clk/tegra/Makefile
+> +++ b/drivers/clk/tegra/Makefile
+> @@ -1,6 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  obj-y                                  += clk.o
+>  obj-y                                  += clk-audio-sync.o
+> +obj-y                                  += clk-device.o
+>  obj-y                                  += clk-dfll.o
+>  obj-y                                  += clk-divider.o
+>  obj-y                                  += clk-periph.o
+> diff --git a/drivers/clk/tegra/clk-device.c b/drivers/clk/tegra/clk-device.c
+> new file mode 100644
+> index 000000000000..830bc0ba25d3
+> --- /dev/null
+> +++ b/drivers/clk/tegra/clk-device.c
+> @@ -0,0 +1,230 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include <linux/clk.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/mutex.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pm_domain.h>
+> +#include <linux/pm_opp.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/slab.h>
+> +
+> +#include <soc/tegra/common.h>
+> +
+> +#include "clk.h"
+> +
+> +/*
+> + * This driver manages performance state of the core power domain for the
+> + * independent PLLs and system clocks.  We created a virtual clock device
+> + * for such clocks, see tegra_clk_dev_register().
+> + */
+> +
+> +struct tegra_clk_device {
+> +       struct notifier_block clk_nb;
+> +       struct device *dev;
+> +       struct clk_hw *hw;
+> +       struct mutex lock;
+> +};
+> +
+> +static int tegra_clock_set_pd_state(struct tegra_clk_device *clk_dev,
+> +                                   unsigned long rate)
 > +{
-> +	struct pwm_device *pwm;
+> +       struct device *dev = clk_dev->dev;
+> +       struct dev_pm_opp *opp;
+> +       unsigned int pstate;
 > +
-> +	if (pc->of_pwm_n_cells < 1)
-> +		return ERR_PTR(-EINVAL);
+> +       opp = dev_pm_opp_find_freq_ceil(dev, &rate);
+> +       if (opp == ERR_PTR(-ERANGE)) {
+> +               dev_dbg(dev, "failed to find ceil OPP for %luHz\n", rate);
+> +               opp = dev_pm_opp_find_freq_floor(dev, &rate);
+> +       }
 > +
-> +	/* validate that one cell is specified, optionally with flags */
-> +	if (args->args_count != 1 && args->args_count != 2)
-> +		return ERR_PTR(-EINVAL);
+> +       if (IS_ERR(opp)) {
+> +               dev_err(dev, "failed to find OPP for %luHz: %pe\n", rate, opp);
+> +               return PTR_ERR(opp);
+> +       }
 > +
-> +	pwm = pwm_request_from_chip(pc, 0, NULL);
-> +	if (IS_ERR(pwm))
-> +		return pwm;
+> +       pstate = dev_pm_opp_get_required_pstate(opp, 0);
+> +       dev_pm_opp_put(opp);
 > +
-> +	pwm->args.period = args->args[0];
-> +	pwm->args.polarity = PWM_POLARITY_NORMAL;
-> +
-> +	if (args->args_count == 2 && args->args[2] & PWM_POLARITY_INVERTED)
-> +		pwm->args.polarity = PWM_POLARITY_INVERSED;
-> +
-> +	return pwm;
+> +       return dev_pm_genpd_set_performance_state(dev, pstate);
+
+The above code certainly looks like it can be made generic through a
+common opp helper. I know we have discussed this before, so I am not
+saying you should change right now.
+
+Let's instead see what I think (and Viresh), when I have reviewed the
+entire series.
+
 > +}
-> +EXPORT_SYMBOL_GPL(of_pwm_single_xlate);
 > +
->  static void of_pwmchip_add(struct pwm_chip *chip)
->  {
->  	if (!chip->dev || !chip->dev->of_node)
-> diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-> index a9efdcf839ae..238ec88c130b 100644
-> --- a/drivers/pwm/pwm-pxa.c
-> +++ b/drivers/pwm/pwm-pxa.c
-> @@ -148,20 +148,6 @@ static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
->  	return id ? id->data : NULL;
->  }
->  
-> -static struct pwm_device *
-> -pxa_pwm_of_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
-> -{
-> -	struct pwm_device *pwm;
-> -
-> -	pwm = pwm_request_from_chip(pc, 0, NULL);
-> -	if (IS_ERR(pwm))
-> -		return pwm;
-> -
-> -	pwm->args.period = args->args[0];
-> -
-> -	return pwm;
-> -}
-> -
->  static int pwm_probe(struct platform_device *pdev)
->  {
->  	const struct platform_device_id *id = platform_get_device_id(pdev);
-> @@ -187,7 +173,7 @@ static int pwm_probe(struct platform_device *pdev)
->  	pc->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
->  
->  	if (IS_ENABLED(CONFIG_OF)) {
-> -		pc->chip.of_xlate = pxa_pwm_of_xlate;
-> +		pc->chip.of_xlate = of_pwm_single_xlate;
->  		pc->chip.of_pwm_n_cells = 1;
->  	}
->  
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index 725c9b784e60..dd51d4931fdc 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -414,6 +414,8 @@ struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
->  
->  struct pwm_device *of_pwm_xlate_with_flags(struct pwm_chip *pc,
->  		const struct of_phandle_args *args);
-> +struct pwm_device *of_pwm_single_xlate(struct pwm_chip *pc,
-> +				       const struct of_phandle_args *args);
->  
->  struct pwm_device *pwm_get(struct device *dev, const char *con_id);
->  struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
+> +static int tegra_clock_change_notify(struct notifier_block *nb,
+> +                                    unsigned long msg, void *data)
+> +{
+> +       struct clk_notifier_data *cnd = data;
+> +       struct tegra_clk_device *clk_dev;
+> +       int err = 0;
+> +
+> +       clk_dev = container_of(nb, struct tegra_clk_device, clk_nb);
+> +
+> +       mutex_lock(&clk_dev->lock);
+> +       switch (msg) {
+> +       case PRE_RATE_CHANGE:
+> +               if (cnd->new_rate > cnd->old_rate)
+> +                       err = tegra_clock_set_pd_state(clk_dev, cnd->new_rate);
+> +               break;
+> +
+> +       case ABORT_RATE_CHANGE:
+> +               err = tegra_clock_set_pd_state(clk_dev, cnd->old_rate);
+> +               break;
+> +
+> +       case POST_RATE_CHANGE:
+> +               if (cnd->new_rate < cnd->old_rate)
+> +                       err = tegra_clock_set_pd_state(clk_dev, cnd->new_rate);
+> +               break;
+> +
+> +       default:
+> +               break;
+> +       }
+> +       mutex_unlock(&clk_dev->lock);
+> +
+> +       return notifier_from_errno(err);
+> +}
+> +
+> +static int tegra_clock_sync_pd_state(struct tegra_clk_device *clk_dev)
+> +{
+> +       unsigned long rate;
+> +       int ret = 0;
+> +
+> +       mutex_lock(&clk_dev->lock);
+> +
+> +       if (!pm_runtime_status_suspended(clk_dev->dev)) {
+> +               rate = clk_hw_get_rate(clk_dev->hw);
+> +               ret = tegra_clock_set_pd_state(clk_dev, rate);
 
+Don't we need to sync the performance state even when the device is
+runtime suspended?
 
-I've tested these v6 all 3 patches on the Lenovo Yoga C630
+Perhaps the clock, via a child-clock for example, can get
+prepared/enabled (hence its device gets runtime resumed) before there
+is a clock rate update for it. Then there is no performance state set
+for it, right? Or maybe that isn't a problem?
 
-Tested-by: Steev Klimaszewski <steev@kali.org>
+> +       }
+> +
+> +       mutex_unlock(&clk_dev->lock);
+> +
+> +       return ret;
+> +}
+> +
+> +static int tegra_clock_probe(struct platform_device *pdev)
+> +{
+> +       struct tegra_core_opp_params opp_params = {};
+> +       struct tegra_clk_device *clk_dev;
+> +       struct device *dev = &pdev->dev;
+> +       struct clk *clk;
+> +       int err;
+> +
+> +       if (!dev->pm_domain)
+> +               return -EINVAL;
+> +
+> +       clk_dev = devm_kzalloc(dev, sizeof(*clk_dev), GFP_KERNEL);
+> +       if (!clk_dev)
+> +               return -ENOMEM;
+> +
+> +       clk = devm_clk_get(dev, NULL);
+> +       if (IS_ERR(clk))
+> +               return PTR_ERR(clk);
+> +
+> +       clk_dev->dev = dev;
+> +       clk_dev->hw = __clk_get_hw(clk);
+> +       clk_dev->clk_nb.notifier_call = tegra_clock_change_notify;
+> +       mutex_init(&clk_dev->lock);
+> +
+> +       platform_set_drvdata(pdev, clk_dev);
+> +
+> +       /*
+> +        * Runtime PM was already enabled for this device by the parent clk
+> +        * driver and power domain state should be synced under clk_dev lock,
+> +        * hence we don't use the common OPP helper that initializes OPP
+> +        * state. For some clocks common OPP helper may fail to find ceil
+> +        * rate, it's handled by this driver.
+> +        */
+> +       err = devm_tegra_core_dev_init_opp_table(dev, &opp_params);
+> +       if (err)
+> +               return err;
+> +
+> +       err = clk_notifier_register(clk, &clk_dev->clk_nb);
+> +       if (err) {
+> +               dev_err(dev, "failed to register clk notifier: %d\n", err);
+> +               return err;
+> +       }
+> +
+> +       /*
+> +        * The driver is attaching to a potentially active/resumed clock, hence
+> +        * we need to sync the power domain performance state in a accordance to
+> +        * the clock rate if clock is resumed.
+> +        */
+> +       err = tegra_clock_sync_pd_state(clk_dev);
+> +       if (err)
+> +               goto unreg_clk;
+> +
+> +       return 0;
+> +
+> +unreg_clk:
+> +       clk_notifier_unregister(clk, &clk_dev->clk_nb);
+> +
+> +       return err;
+> +}
+> +
+> +static __maybe_unused int tegra_clock_pm_suspend(struct device *dev)
+> +{
+> +       struct tegra_clk_device *clk_dev = dev_get_drvdata(dev);
+> +
+> +       /*
+> +        * Power management of the clock is entangled with the Tegra PMC
+> +        * GENPD because PMC driver enables/disables clocks for toggling
+> +        * of the PD's on/off state.
+> +        *
+> +        * The PMC GENPD is resumed in NOIRQ phase, before RPM of the clocks
+> +        * becomes available, hence PMC can't use clocks at the early resume
+> +        * phase if RPM is involved. For example when 3d clock is enabled,
+> +        * it may enable the parent PLL clock that needs to be RPM-resumed.
+> +        *
+> +        * Secondly, the PLL clocks may be enabled by the low level suspend
+> +        * code, so we need to assume that PLL is in enabled state during
+> +        * suspend.
+> +        *
+> +        * We will keep PLLs and system clock resumed during suspend time.
+> +        * All PLLs on all SoCs are low power and system clock is always-on,
+> +        * so practically not much is changed here.
+> +        */
+> +
+> +       return clk_prepare(clk_dev->hw->clk);
 
+I am trying to understand, more exactly, what you intend to achieve
+with the clk_prepare() here. It looks a bit weird, to me. Can you try
+to elaborate a bit more on the use case?
+
+Is this rather about making sure that the clock's corresponding PM
+domain stays powered on during system suspend? In that case, I think
+there may be an alternative option....
+
+> +}
+> +
+> +static __maybe_unused int tegra_clock_pm_resume(struct device *dev)
+> +{
+> +       struct tegra_clk_device *clk_dev = dev_get_drvdata(dev);
+> +
+> +       clk_unprepare(clk_dev->hw->clk);
+> +
+> +       return 0;
+> +}
+> +
+> +static void tegra_clock_shutdown(struct platform_device *pdev)
+> +{
+> +       struct tegra_clk_device *clk_dev = platform_get_drvdata(pdev);
+> +
+> +       clk_prepare(clk_dev->hw->clk);
+> +}
+> +
+> +static const struct dev_pm_ops tegra_clock_pm = {
+> +       SET_SYSTEM_SLEEP_PM_OPS(tegra_clock_pm_suspend,
+> +                               tegra_clock_pm_resume)
+> +};
+
+[...]
+
+Kind regards
+Uffe
