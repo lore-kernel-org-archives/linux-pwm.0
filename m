@@ -2,57 +2,56 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 639EAC4321E
-	for <linux-pwm@archiver.kernel.org>; Fri,  1 Oct 2021 21:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A7BC433F5
+	for <linux-pwm@archiver.kernel.org>; Sat,  2 Oct 2021 20:44:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4B3F661AED
-	for <linux-pwm@archiver.kernel.org>; Fri,  1 Oct 2021 21:25:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C0E261B06
+	for <linux-pwm@archiver.kernel.org>; Sat,  2 Oct 2021 20:44:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355377AbhJAV1U (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Fri, 1 Oct 2021 17:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
+        id S234022AbhJBUqh (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sat, 2 Oct 2021 16:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbhJAV1T (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Oct 2021 17:27:19 -0400
+        with ESMTP id S233975AbhJBUqg (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 2 Oct 2021 16:46:36 -0400
 Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF876C061775;
-        Fri,  1 Oct 2021 14:25:34 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id x27so43719879lfu.5;
-        Fri, 01 Oct 2021 14:25:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357FBC061714;
+        Sat,  2 Oct 2021 13:44:50 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id j5so48530857lfg.8;
+        Sat, 02 Oct 2021 13:44:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PCx+Mv1g2fXDWZ1yxKCufXcb8CGDrVVRus80Eavv7Ms=;
-        b=AoOrU/vzFMh0SeboIlXMtpNDGkYKn1nagDBoSx7YjB/QehXjY148G9jNUrxWmj+VLS
-         thqf3WTWyv2KgzuCKJgAZtvLfuVTKHVZvxZ6W/v3MpnV1knnxoAKmsgMXbYc8hQX6L4m
-         27bTEIknYqodxO1P46g5y8th3QuIbfdgGpCEWEBjBEI0bRGm4qAhzegrULVaAiivY+Mh
-         x+t6HwqOhcQgQuTMWHPo+FtI3bPeA65O68izCkj0O0dmOktC4XPdYvSp/C5mg+rlwHvZ
-         baqhRxdt1w4rGWw9l8GTpQxhVXx3W19ivPNG/b+kFePi3tvLX4ZgYZ2jb6Li8kajTdY4
-         hAdA==
+        bh=T5NA95fXjewFVQZ7RXmQGjvZaYL3KLG4ILjTuHYXm9E=;
+        b=VInxURP7xctDXfL0Dl1Z5iIuI8Z57STPldPnyJ+NEoakoMviQJJZLMTDvRJajSYeUA
+         L6hAx+33fXvlxHQdSLAb2swwYgCSXcm4IHTOs4QNGPXy0n+3kc1PaSRsPOeccYBdBeZd
+         i/GVKW6ch0QjgR5Al9izKnsKjtkLP9b6WFxxbgQj5xOtMJ+SSJ3vI3nxrqadHVRi/RnA
+         W6QxtWyfIbdShJzgMDhIpqfX5qzkmNQXHlvgGM11cFUopWEMKunpWxyqUcwKJKYvFAG5
+         +vztm6uVxmXOzcI8Wt5yVr3CSoQmJa2Le0PpZjwLrPdDyp4eM6GhDyuSByQAckD1zOgW
+         c3ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PCx+Mv1g2fXDWZ1yxKCufXcb8CGDrVVRus80Eavv7Ms=;
-        b=NIlFTU4KZtSGaa9ROP2zLnktTBr/rp2DmU0rRs8E2DLYGP7aVREEAbriZ6E9t6lTZ1
-         6zNPFZWVm0/FtRLDec3rSSNpMWWualS2/faz/qB2919hfgTkhqCSIwLMvwOaRt52rZrp
-         sMfgy1RJHaJnj7lax3lUqh49zOYvS+5tp3tYeoCxgkMxRiSpLFAzeUP/3R7IGdll9bR8
-         EzubxedCGYwHZTyp9htLuGjNHVH/GrbE9gYWiwzD6TtT5Y1qcZdjdV8me1bABMEVtE6c
-         /hQWiK4mSefPTSt4WJ3hVgitFEVs8oW0xg1l526zgVrlrIeScfnLPSY08poGu1cxHXhY
-         jLpg==
-X-Gm-Message-State: AOAM531/ORymA41U1r9ewl+QvHpG02Kv2l1zgCJaO9vvlWHioi7r7Ycp
-        k4jxrjMnxcxiOsJ6dHIuURk=
-X-Google-Smtp-Source: ABdhPJyBKnVQGEy++56pE3HiXi9tWCycvRfw9hdTpeQ3zwv+9sj//Y/axLqWUGErfO2svv3m5cLJIA==
-X-Received: by 2002:ac2:51a6:: with SMTP id f6mr310738lfk.150.1633123533086;
-        Fri, 01 Oct 2021 14:25:33 -0700 (PDT)
-Received: from [192.168.2.145] (79-139-163-198.dynamic.spd-mgts.ru. [79.139.163.198])
-        by smtp.googlemail.com with ESMTPSA id u4sm927755lfu.200.2021.10.01.14.25.31
+        bh=T5NA95fXjewFVQZ7RXmQGjvZaYL3KLG4ILjTuHYXm9E=;
+        b=o+AkgwIXTGmhQJOReVcp/TKkZzv7PXYcfMekTaitKUtIJwq9Jx49Ek3A6rzLNWnGDw
+         P14BK/n3ooXkpVEH9nCyL8FXZYN7ZEwDQcX/HwTKjBIRyMgJudlk3iv1sfciLtZTSdOR
+         vwOpvOwVQIenigGsvIM5EuTWq+4BDfs+q6YQF1gWnaCKscYOjk/MGgW3xBNn8ZhUdVCZ
+         7xYmRwRBj20i5ZIDmJzuKM5BziIPaasu+aA7E2ExtPF5uOYuwbOaw7T/wguPP+RgSZQ4
+         IMKvmtAHcPJB8dSJI9T5/DLw2qkb2FpwIt50gSksOXa8MP0ZwlDi4BPe4g+NLYlyBgjd
+         yb5A==
+X-Gm-Message-State: AOAM5320QoRG2UTT3/F5jVU3Ku5BPR/cGcwERvAogi3KnHxkjgIS1xsP
+        utURybmrqidGKVMJdilKdqs=
+X-Google-Smtp-Source: ABdhPJzClEAya5hcn4TqFZQoHIn0mpgv86q3zG4rhbGd/Hwr0saEHFeEJIpz6XM0cCQNRVK631z4Mw==
+X-Received: by 2002:a2e:80cd:: with SMTP id r13mr5454584ljg.415.1633207488462;
+        Sat, 02 Oct 2021 13:44:48 -0700 (PDT)
+Received: from [192.168.2.145] (94-29-52-238.dynamic.spd-mgts.ru. [94.29.52.238])
+        by smtp.googlemail.com with ESMTPSA id v27sm1233535lfp.0.2021.10.02.13.44.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Oct 2021 14:25:32 -0700 (PDT)
-Subject: Re: [PATCH v13 14/35] drm/tegra: gr3d: Support generic power domain
- and runtime PM
+        Sat, 02 Oct 2021 13:44:47 -0700 (PDT)
+Subject: Re: [PATCH v13 06/35] clk: tegra: Support runtime PM and power domain
 To:     Ulf Hansson <ulf.hansson@linaro.org>
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -83,15 +82,15 @@ Cc:     Thierry Reding <thierry.reding@gmail.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         David Heidelberg <david@ixit.cz>
 References: <20210926224058.1252-1-digetx@gmail.com>
- <20210926224058.1252-15-digetx@gmail.com>
- <CAPDyKFoZdmnmcdoWsD36uQesSjz8KJOq0JxY5tNbHgO_xMy+_g@mail.gmail.com>
+ <20210926224058.1252-7-digetx@gmail.com>
+ <CAPDyKFq+LS4Jr1GyC-a-tGWPzGH0JxfJ9wKY=uQEBGYm952azw@mail.gmail.com>
 From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <4281a6db-9875-7266-268a-a1639e7d01ff@gmail.com>
-Date:   Sat, 2 Oct 2021 00:25:31 +0300
+Message-ID: <24101cd6-d3f5-1e74-db39-145ecd30418b@gmail.com>
+Date:   Sat, 2 Oct 2021 23:44:46 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <CAPDyKFoZdmnmcdoWsD36uQesSjz8KJOq0JxY5tNbHgO_xMy+_g@mail.gmail.com>
+In-Reply-To: <CAPDyKFq+LS4Jr1GyC-a-tGWPzGH0JxfJ9wKY=uQEBGYm952azw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -99,25 +98,52 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-01.10.2021 17:06, Ulf Hansson пишет:
-> On Mon, 27 Sept 2021 at 00:42, Dmitry Osipenko <digetx@gmail.com> wrote:
->> Add runtime power management and support generic power domains.
->>
->> Tested-by: Peter Geis <pgwipeout@gmail.com> # Ouya T30
->> Tested-by: Paul Fertser <fercerpav@gmail.com> # PAZ00 T20
->> Tested-by: Nicolas Chauvet <kwizart@gmail.com> # PAZ00 T20 and TK1 T124
->> Tested-by: Matt Merhar <mattmerhar@protonmail.com> # Ouya T30
->> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
->> ---
->>  drivers/gpu/drm/tegra/gr3d.c | 388 ++++++++++++++++++++++++++++++-----
-> [...]
+01.10.2021 15:32, Ulf Hansson пишет:
+>> +static __maybe_unused int tegra_clock_pm_suspend(struct device *dev)
+>> +{
+>> +       struct tegra_clk_device *clk_dev = dev_get_drvdata(dev);
+>> +
+>> +       /*
+>> +        * Power management of the clock is entangled with the Tegra PMC
+>> +        * GENPD because PMC driver enables/disables clocks for toggling
+>> +        * of the PD's on/off state.
+>> +        *
+>> +        * The PMC GENPD is resumed in NOIRQ phase, before RPM of the clocks
+>> +        * becomes available, hence PMC can't use clocks at the early resume
+>> +        * phase if RPM is involved. For example when 3d clock is enabled,
+>> +        * it may enable the parent PLL clock that needs to be RPM-resumed.
+>> +        *
+>> +        * Secondly, the PLL clocks may be enabled by the low level suspend
+>> +        * code, so we need to assume that PLL is in enabled state during
+>> +        * suspend.
+>> +        *
+>> +        * We will keep PLLs and system clock resumed during suspend time.
+>> +        * All PLLs on all SoCs are low power and system clock is always-on,
+>> +        * so practically not much is changed here.
+>> +        */
+>> +
+>> +       return clk_prepare(clk_dev->hw->clk);
+> I am trying to understand, more exactly, what you intend to achieve
+> with the clk_prepare() here. It looks a bit weird, to me. Can you try
+> to elaborate a bit more on the use case?
 
+The Tegra GENPD driver enable/disable clocks when domain is turned on.
+This can't be done during early system resume, when domains are getting
+turned on by the drivers core, because when clock is enabled, it's
+getting prepared (RPM-resumed) and this preparation fails because
+performance state of the clock goes up and it doesn't work during the
+early resume time since I2C, which applies the state to hardware, is
+suspended and can't work at that early time.
+
+Secondly, Tegra has arch-specific low level assembly which touches
+clocks during last phase of system suspend and in the beginning of
+resume. Hence, clocks should stay prepared during suspend just because
+technically clock should be prepared before it can be enabled.
+
+> Is this rather about making sure that the clock's corresponding PM
+> domain stays powered on during system suspend? In that case, I think
+> there may be an alternative option....
 > 
-> I was looking for a call to dev_pm_opp_set_rate(), but couldn't find
-> it. Isn't that needed when changing the rate of the clock?
 
-That is another good catch! Previous versions of this patch were
-changing the rate, while the current version not. So the
-set_opp_helper() isn't needed for this patch anymore. It may become
-needed sometime later, but not for this series. I'll remove it in the
-next version, thanks!
+This is not about domain staying powered on, this is about keeping the
+performance state of the domain high during suspend.
