@@ -2,62 +2,63 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1695DC433F5
-	for <linux-pwm@archiver.kernel.org>; Sun, 31 Oct 2021 22:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 779F6C433FE
+	for <linux-pwm@archiver.kernel.org>; Mon,  1 Nov 2021 13:19:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E680760E0B
-	for <linux-pwm@archiver.kernel.org>; Sun, 31 Oct 2021 22:15:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A4D360EE9
+	for <linux-pwm@archiver.kernel.org>; Mon,  1 Nov 2021 13:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbhJaWSZ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 31 Oct 2021 18:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
+        id S232185AbhKANWE (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 1 Nov 2021 09:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbhJaWSZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 31 Oct 2021 18:18:25 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AA5C061764
-        for <linux-pwm@vger.kernel.org>; Sun, 31 Oct 2021 15:15:52 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id g125so22343548oif.9
-        for <linux-pwm@vger.kernel.org>; Sun, 31 Oct 2021 15:15:52 -0700 (PDT)
+        with ESMTP id S232360AbhKANWC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 1 Nov 2021 09:22:02 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A540C061764
+        for <linux-pwm@vger.kernel.org>; Mon,  1 Nov 2021 06:19:29 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id r8so2614936qkp.4
+        for <linux-pwm@vger.kernel.org>; Mon, 01 Nov 2021 06:19:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=usp.br; s=usp-google;
         h=date:from:to:cc:subject:message-id:mime-version:content-disposition
          :content-transfer-encoding;
-        bh=ahrGibv35CkHD9QWEzZtWa48R45ATn0IgOuUT3/eqfc=;
-        b=I97gDV02HD9z6GNpcuq/68Jzcnb6HUZMpT2BHnkvVS2hCs6TQ5wI/3DqovKI5s0F6c
-         qaHJ511JfWKPTjlsa86DzzY5cC7l4wVwCMS+YimfISlURspDxFXeITLRpTtNfDsadZmr
-         2/HJXF55Pk2j9q3S8FwUyZOvldfHEfLHZtMd9AZ0G+Skh074cy3aj8+aR85BwbqurUXd
-         J40XnlJFctPQ7OEGYmwoYIYRj1ari1zBmwGGuH2YgOBYaAW/CuN4wvwzQOyavsc0lhsX
-         FrSnmwpJ4zh04Uj6GYxuvyzvSue1FGS08CcTYXiNljc2UxWEI5o1epM6OP8MlcdlY7If
-         4sPA==
+        bh=TtX9VhCBKuhF3Ol7gnPYFLRhj5nFsqp3SrQe6dqQFXM=;
+        b=ZnSQtUuzlxpPJR1GQQpbQSUoHtb09P8H7VrR18O2ahTTXRWmIDnxQOQgnULadzL610
+         JTN6lYue33HVu7p8L3y+810xNbHrJ19Tbeg/nOHqdYm3ftynFUO/NzeHUfMkEmSBM0as
+         ixAQxM3YbNoJXyv6pSbwPGcTlgAAOJXCqc13eV7HVkg/mau8AHrgfsWxgHABcrz2rwRh
+         UeEIEFLjysCIxUATqgwwbyaCpZHBJytSLFFgeo2NtXcSey60XzPh+fJHD56twsIX7o+/
+         PaI3j9470t9hHKW9dYvhUboq8DOEMMJw2ouHi3SnG6XPpzRVJ/ugKM+EZj1UusPbJosC
+         Qq0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
          :content-disposition:content-transfer-encoding;
-        bh=ahrGibv35CkHD9QWEzZtWa48R45ATn0IgOuUT3/eqfc=;
-        b=dMzi7eGhbw4zlJuhPMwRYvjaTvDSta3j7ln3Xt6HpcFVezAPusuJvEgwEYbunWccxH
-         miwn9LTIp0y+2/hcrbmKnoXwysgjjFz1dhzZV7ZpXxLdR43SsM/B1u16Sw9SgMhFjYOt
-         EzLYvVPS6CTvmW1xUJP+x2RjgV+CPi3cElkAudon+zFZYSIVjv3Zwa1QmzjOI6uIGcN2
-         PO4TtNoJRAvt9EnAHJHPC+93HLY8qZ/TmLOyUyg9HOIZON42Yp8IKwr32+2aVWm0fx/u
-         Yy+cEPZkNbfpXV60H80bOArSgWRZSdz2tEZVr63pnoFUt/iErkbMzzorf+hkJas37Li+
-         JvkA==
-X-Gm-Message-State: AOAM532TdTkJ+MPkP6TVCVLAWBgev27z9BGKWtgFZdRZsxmBMCbwROZu
-        EO1RiMrO6buDjetmBM/2F/Z+tA==
-X-Google-Smtp-Source: ABdhPJxVS6VRoBWILO8RW1vB7P3ZlBMpyFzv8jVuUfrkUchFBWjd2yPxep/8okvJ3Hzbsnwz4weiTw==
-X-Received: by 2002:a05:6808:1996:: with SMTP id bj22mr2448052oib.69.1635718551756;
-        Sun, 31 Oct 2021 15:15:51 -0700 (PDT)
+        bh=TtX9VhCBKuhF3Ol7gnPYFLRhj5nFsqp3SrQe6dqQFXM=;
+        b=EVzMsFls7SNURpvEJGnWCXvezv11xu0Rop78RDJASVhNJDcmGyLF5+PPQTnzyRQTDv
+         6RZuaz33XQM8U0vmysmjgz0cFu0eC58h+z5K7uTIsXuAEzKvcip1+4ZREaja9KsyR3As
+         HxPi2xXYruzFh1/ZqK2W1TOmlqBixMLwQjapZFdExdRle7F8bPBsndRaTATVLddJ6J9B
+         503WbczpykC3AeGMsOvdLE4uYzM17rQk88DfpjFifqXkW3AC8TRXb5+TCwMvIHUxdv8e
+         NqbJTc/UZ5lZGbEagqIIMQZUXwoskCmiq1Y1l6x2p7WZga/nh8X8xtXpLZPhFGuKZyf+
+         yuoQ==
+X-Gm-Message-State: AOAM531a34QDQ6yMTUG8DxWGkH9DOeGsUCRA0dgT50nDY4fp/VVx06vy
+        d+VzWdk55H9IqhK47qJQhXdvCQ==
+X-Google-Smtp-Source: ABdhPJwRu8kRDMOftlvRTysjNpt3BbtoelDYP69+cdAc8RNpfvYVVPhdMVgDl11Rbi0bEU43xN5/Tg==
+X-Received: by 2002:a05:620a:1999:: with SMTP id bm25mr23030512qkb.40.1635772767335;
+        Mon, 01 Nov 2021 06:19:27 -0700 (PDT)
 Received: from fedora ([187.64.134.142])
-        by smtp.gmail.com with ESMTPSA id l27sm1066967oof.18.2021.10.31.15.15.48
+        by smtp.gmail.com with ESMTPSA id h17sm4185790qtx.64.2021.11.01.06.19.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Oct 2021 15:15:51 -0700 (PDT)
-Date:   Sun, 31 Oct 2021 19:15:45 -0300
+        Mon, 01 Nov 2021 06:19:27 -0700 (PDT)
+Date:   Mon, 1 Nov 2021 10:19:21 -0300
 From:   =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
-To:     sean@mess.org, mchehab@kernel.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: [PATCH v2] media: ir-rx51: Switch to atomic PWM API
-Message-ID: <YX8VkdCAe6coHC4w@fedora>
+To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: [PATCH v4] backlight: lp855x: Switch to atomic PWM API
+Message-ID: <YX/pWeXPv1bykg2g@fedora>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
@@ -71,62 +72,54 @@ replace it for the atomic PWM API.
 
 Signed-off-by: Maíra Canal <maira.canal@usp.br>
 ---
-V1 -> V2: remove conceptually wrong chunk of code and correct the position
-of pwm_init_state function
+V1 -> V2: Initialize variable and simply conditional loop
+V2 -> V3: Fix assignment of NULL variable
+V3 -> V4: Replace division for pwm_set_relative_duty_cycle
 ---
- drivers/media/rc/ir-rx51.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/video/backlight/lp855x_bl.c | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/media/rc/ir-rx51.c b/drivers/media/rc/ir-rx51.c
-index a0d9c02a7588..41d4a4338072 100644
---- a/drivers/media/rc/ir-rx51.c
-+++ b/drivers/media/rc/ir-rx51.c
-@@ -19,6 +19,7 @@
- struct ir_rx51 {
- 	struct rc_dev *rcdev;
+diff --git a/drivers/video/backlight/lp855x_bl.c b/drivers/video/backlight/lp855x_bl.c
+index e94932c69f54..bbf24564082a 100644
+--- a/drivers/video/backlight/lp855x_bl.c
++++ b/drivers/video/backlight/lp855x_bl.c
+@@ -233,9 +233,8 @@ static int lp855x_configure(struct lp855x *lp)
+ 
+ static void lp855x_pwm_ctrl(struct lp855x *lp, int br, int max_br)
+ {
+-	unsigned int period = lp->pdata->period_ns;
+-	unsigned int duty = br * period / max_br;
  	struct pwm_device *pwm;
-+	struct pwm_state *state;
- 	struct hrtimer timer;
- 	struct device	     *dev;
- 	wait_queue_head_t     wqueue;
-@@ -32,22 +33,22 @@ struct ir_rx51 {
++	struct pwm_state state;
  
- static inline void ir_rx51_on(struct ir_rx51 *ir_rx51)
- {
--	pwm_enable(ir_rx51->pwm);
-+	ir_rx51->state->enabled = true;
-+	pwm_apply_state(ir_rx51->pwm, ir_rx51->state);
+ 	/* request pwm device with the consumer name */
+ 	if (!lp->pwm) {
+@@ -245,18 +244,15 @@ static void lp855x_pwm_ctrl(struct lp855x *lp, int br, int max_br)
+ 
+ 		lp->pwm = pwm;
+ 
+-		/*
+-		 * FIXME: pwm_apply_args() should be removed when switching to
+-		 * the atomic PWM API.
+-		 */
+-		pwm_apply_args(pwm);
++		pwm_init_state(lp->pwm, &state);
++		state.period = lp->pdata->period_ns;
+ 	}
+ 
+-	pwm_config(lp->pwm, duty, period);
+-	if (duty)
+-		pwm_enable(lp->pwm);
+-	else
+-		pwm_disable(lp->pwm);
++	pwm_get_state(lp->pwm, &state);
++	pwm_set_relative_duty_cycle(&state, br, max_br);
++	state.enabled = state.duty_cycle;
++
++	pwm_apply_state(lp->pwm, &state);
  }
  
- static inline void ir_rx51_off(struct ir_rx51 *ir_rx51)
- {
--	pwm_disable(ir_rx51->pwm);
-+	ir_rx51->state->enabled = false;
-+	pwm_apply_state(ir_rx51->pwm, ir_rx51->state);
- }
- 
- static int init_timing_params(struct ir_rx51 *ir_rx51)
- {
--	struct pwm_device *pwm = ir_rx51->pwm;
--	int duty, period = DIV_ROUND_CLOSEST(NSEC_PER_SEC, ir_rx51->freq);
-+	struct pwm_state *state = ir_rx51->state;
- 
--	duty = DIV_ROUND_CLOSEST(ir_rx51->duty_cycle * period, 100);
--
--	pwm_config(pwm, duty, period);
-+	state->period = DIV_ROUND_CLOSEST(NSEC_PER_SEC, ir_rx51->freq);
-+	pwm_set_relative_duty_cycle(state, ir_rx51->duty_cycle, 100);
- 
- 	return 0;
- }
-@@ -242,6 +243,7 @@ static int ir_rx51_probe(struct platform_device *dev)
- 
- 	/* Use default, in case userspace does not set the carrier */
- 	ir_rx51.freq = DIV_ROUND_CLOSEST_ULL(pwm_get_period(pwm), NSEC_PER_SEC);
-+	pwm_init_state(pwm, ir_rx51.state);
- 	pwm_put(pwm);
- 
- 	hrtimer_init(&ir_rx51.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ static int lp855x_bl_update_status(struct backlight_device *bl)
 -- 
 2.31.1
 
