@@ -2,150 +2,117 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A0B3C433F5
-	for <linux-pwm@archiver.kernel.org>; Tue,  2 Nov 2021 09:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D387C433F5
+	for <linux-pwm@archiver.kernel.org>; Tue,  2 Nov 2021 11:37:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 60E4960EB4
-	for <linux-pwm@archiver.kernel.org>; Tue,  2 Nov 2021 09:28:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 018CE603E5
+	for <linux-pwm@archiver.kernel.org>; Tue,  2 Nov 2021 11:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbhKBJat (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 2 Nov 2021 05:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
+        id S230411AbhKBLk0 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 2 Nov 2021 07:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbhKBJas (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Nov 2021 05:30:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907BBC061766
-        for <linux-pwm@vger.kernel.org>; Tue,  2 Nov 2021 02:28:13 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mhq5T-000350-GW; Tue, 02 Nov 2021 10:28:11 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mhq5O-0008TL-CJ; Tue, 02 Nov 2021 10:28:06 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mhq5O-0005Ha-BS; Tue, 02 Nov 2021 10:28:06 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
-        Tony Prisk <linux@prisktech.co.nz>
-Subject: [PATCH 1/2] pwm: vt8500: Implement .apply() callback
-Date:   Tue,  2 Nov 2021 10:28:03 +0100
-Message-Id: <20211102092804.296089-2-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211102092804.296089-1-u.kleine-koenig@pengutronix.de>
-References: <20211102092804.296089-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S230128AbhKBLk0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Nov 2021 07:40:26 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D28BC061714
+        for <linux-pwm@vger.kernel.org>; Tue,  2 Nov 2021 04:37:51 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id t21so15633854plr.6
+        for <linux-pwm@vger.kernel.org>; Tue, 02 Nov 2021 04:37:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+LcalwcS+7iwU2Z06DjsWxGkhOqaOpX2CeRBZg6uNxI=;
+        b=u1T+gyQ5y9utIQAL69osfNb3bY8W18tAEGHKXB/yOTt4z6DVkjo0Tm9BVQLQYlQvmi
+         +RyAD+cAN0ZnryDgfEwhDomhWP5aHyg5Ddw+FwF0gZJTl/XAP/yxFxTYru4YWi1yyGvJ
+         Nyj3SvEFcTOcvzmYNQ0CoFLHMwyXenD/+RlY68vQyVJLDAzJrMq+x/p9kEwcpaxEik6P
+         WbrrqPpjnKVAB9bhIp9NOjCOgDYCVxAD9qfdxmvVHjjyUpYw53WETAy8gUPku20d08EZ
+         Mjm5PXINnW3OWZm3X+mTRbx7nnM77l1Hnq9RZ5CYtf9EDulCgVA5ot0Bz2ITNNcoxFE0
+         B+Gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+LcalwcS+7iwU2Z06DjsWxGkhOqaOpX2CeRBZg6uNxI=;
+        b=swOZsRmKl/VfL3nR5GwIC23CS1nFwBy1v9RdXeq9d3G1tDWPUVW1pr30vgA9NhEI1b
+         sbvtYxB2/1w09kvYkVKA+Bl6zlDqpQzoThNaAC4Awv2iDGVS9yU4i3lf7W2ylLele0jj
+         JfXVm1YNu3741grCbGf3B3b7d/+AOzzVmxKIJLz+gMuTZauLgK2JY5T6OnG3jp19kI/n
+         aZ6InSfpcdbzVknmTHxIHmKv6jlrb3bJFUGSqx1J9dbDDeISsD3fB5OBFybpRtJo12xs
+         zb7uOTIkb42li1wGk2XaJOWBaNX8dgUeEet9bfmwEkp5uhSfjbT/G6UqsrQIZWEqVZEp
+         86yw==
+X-Gm-Message-State: AOAM532sUNVA7M8GKst910K58rxeZ4jEagP+QH4aMgpnTRBDi8WWelWS
+        mLmZX5HAt0qHsrfSA7cYitlktr7OJvHz7OLGJLKnmg==
+X-Google-Smtp-Source: ABdhPJxlukTujJboXT4S57TaNSXOyAMkRW6XndNn4eisc8fX7Oczi13MU70tOQlUfeLfplvXUQ5IVMFqLcPTtBJr/Uo=
+X-Received: by 2002:a17:90b:3149:: with SMTP id ip9mr1957728pjb.232.1635853071054;
+ Tue, 02 Nov 2021 04:37:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=kUCY9L4JrDsDg/j7euSIYXyRiptGkOKO1yVlNu2XPRQ=; m=TzWDfn0QgyP4Qo0s0ELgUgvslQMmfgqYACV4fnO2KFo=; p=a2ymg8Cb6SrZGy75FqCYhS2mhx3DqAFdFafzg6kjHzE=; g=c83172edeea4810182ce0815168b009d2649768d
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGBBJwACgkQwfwUeK3K7Am5ogf9EaJ PRsxbCaIWMVHMXqBdJWQQ6MaVYCjr3tpfBTwJrz86k6N/uWbT6RsWzJalBqtdDEB+/YDxotWZYvSL ufZZTtDUNA+oj0ohlELTGLfHsI7ONrkNdoUpeVZeuNlddYfjzLP26Tjfhn6io321xodWnYmvHRsHy 1+DxN7hWT408omMinkizfpUwQzj4RkuLJb4pQfxDPnK5n5CZvF/88awVoEzr9dc3ZMMNqYJZ1sTdE w2K1Rau0RsE/914umoltZjen+/sPo+jBLqfkiUkKJYrujG8kOQbKM+4Ojnm57YhbhevKaom48JVQ+ a4YISbz0zF9WTPr4vpnB/lOXAihi+CQ==
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
+References: <20211025170925.3096444-1-bjorn.andersson@linaro.org>
+ <65243a98-61b9-3311-f41d-fa4782448baa@kali.org> <CAG3jFytmcFcA5W3vmcpWTWrc36-YFMPZ1wAB8gAJfiHHLWmaCA@mail.gmail.com>
+ <20211030092736.eam4ahzimiew7erg@pengutronix.de>
+In-Reply-To: <20211030092736.eam4ahzimiew7erg@pengutronix.de>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Tue, 2 Nov 2021 12:37:39 +0100
+Message-ID: <CAG3jFyuYE_=73LfkQ7KLL+6ZvrGAORT8z1Cw1kmssgn7ewTENQ@mail.gmail.com>
+Subject: Re: [PATCH v7 1/3] pwm: Introduce single-PWM of_xlate function
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Steev Klimaszewski <steev@kali.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-To eventually get rid of all legacy drivers convert this driver to the
-modern world implementing .apply(). This just pushes down a slightly
-optimized variant of how legacy drivers are handled in the core.
+Hey Uwe
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-vt8500.c | 57 +++++++++++++++++++++++++++++++++++-----
- 1 file changed, 50 insertions(+), 7 deletions(-)
+On Sat, 30 Oct 2021 at 11:27, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> On Wed, Oct 27, 2021 at 05:06:02PM +0200, Robert Foss wrote:
+> > On Tue, 26 Oct 2021 at 19:21, Steev Klimaszewski <steev@kali.org> wrote=
+:
+> > >
+> > >
+> > > On 10/25/21 12:09 PM, Bjorn Andersson wrote:
+> > > > The existing pxa driver and the upcoming addition of PWM support in=
+ the
+> > > > TI sn565dsi86 DSI/eDP bridge driver both has a single PWM channel a=
+nd
+> > > > thereby a need for a of_xlate function with the period as its singl=
+e
+> > > > argument.
+> > > >
+> > > > Introduce a common helper function in the core that can be used as
+> > > > of_xlate by such drivers and migrate the pxa driver to use this.
+> > > >
+> > > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > > Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > > > Tested-by: Steev Klimaszewski <steev@kali.org>
+> > > > ---
+> > > >
+> > [...]
+> >
+> > Applied to drm-misc-next.
+>
+> This is now 3ab7b6ac5d829e60c3b89d415811ff1c9f358c8e in next, the Link:
+> added in the commit trailer looks as follows:
+>
+>         Link: https://patchwork.freedesktop.org/patch/msgid/2021102517092=
+5.3096444-1-bjorn.andersson@linaro.org
+>
+> but this link doesn't work, for me at least. I wonder what's wrong with
+> it. If you want to fix it and rewrite the commit, you can also drop the
+> duplicated "Tested-by: Steev Klimaszewski <steev@kali.org>".
 
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index ea2aa151080a..3203ec1b0d24 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -70,7 +70,7 @@ static inline void pwm_busy_wait(struct vt8500_chip *vt8500, int nr, u8 bitmask)
- }
- 
- static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--		int duty_ns, int period_ns)
-+		u64 duty_ns, u64 period_ns)
- {
- 	struct vt8500_chip *vt8500 = to_vt8500_chip(chip);
- 	unsigned long long c;
-@@ -102,8 +102,8 @@ static int vt8500_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	}
- 
- 	c = (unsigned long long)pv * duty_ns;
--	do_div(c, period_ns);
--	dc = c;
-+
-+	dc = div64_u64(c, period_ns);
- 
- 	writel(prescale, vt8500->base + REG_SCALAR(pwm->hwpwm));
- 	pwm_busy_wait(vt8500, pwm->hwpwm, STATUS_SCALAR_UPDATE);
-@@ -176,11 +176,54 @@ static int vt8500_pwm_set_polarity(struct pwm_chip *chip,
- 	return 0;
- }
- 
-+static int vt8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    const struct pwm_state *state)
-+{
-+	int err;
-+	bool enabled = pwm->state.enabled;
-+
-+	if (state->polarity != pwm->state.polarity) {
-+		/*
-+		 * Changing the polarity of a running PWM is only allowed when
-+		 * the PWM driver implements ->apply().
-+		 */
-+		if (enabled) {
-+			vt8500_pwm_disable(chip, pwm);
-+
-+			enabled = false;
-+		}
-+
-+		err = vt8500_pwm_set_polarity(chip, pwm, state->polarity);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (!state->enabled) {
-+		if (enabled)
-+			vt8500_pwm_disable(chip, pwm);
-+
-+		return 0;
-+	}
-+
-+	/*
-+	 * We cannot skip calling ->config even if state->period ==
-+	 * pwm->state.period && state->duty_cycle == pwm->state.duty_cycle
-+	 * because we might have exited early in the last call to
-+	 * pwm_apply_state because of !state->enabled and so the two values in
-+	 * pwm->state might not be configured in hardware.
-+	 */
-+	err = vt8500_pwm_config(pwm->chip, pwm, state->duty_cycle, state->period);
-+	if (err)
-+		return err;
-+
-+	if (!enabled)
-+		err = vt8500_pwm_enable(chip, pwm);
-+
-+	return err;
-+}
-+
- static const struct pwm_ops vt8500_pwm_ops = {
--	.enable = vt8500_pwm_enable,
--	.disable = vt8500_pwm_disable,
--	.config = vt8500_pwm_config,
--	.set_polarity = vt8500_pwm_set_polarity,
-+	.apply = vt8500_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.30.2
+Weirdly patchwork.fd.o[1] doesn't seem to have the series, but does
+have previous versions.
 
+[1] https://patchwork.freedesktop.org/project/dri-devel/patches/?submitter=
+=3D&state=3D*&q=3D_xlate&archive=3Dboth&delegate=3D
