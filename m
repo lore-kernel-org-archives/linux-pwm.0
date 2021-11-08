@@ -2,117 +2,111 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE94FC433EF
-	for <linux-pwm@archiver.kernel.org>; Sun,  7 Nov 2021 17:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C64E3C433EF
+	for <linux-pwm@archiver.kernel.org>; Mon,  8 Nov 2021 11:04:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 955AD61029
-	for <linux-pwm@archiver.kernel.org>; Sun,  7 Nov 2021 17:24:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A4EF66101C
+	for <linux-pwm@archiver.kernel.org>; Mon,  8 Nov 2021 11:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbhKGR1X (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 7 Nov 2021 12:27:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        id S238931AbhKHLHO (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Mon, 8 Nov 2021 06:07:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231618AbhKGR1X (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 7 Nov 2021 12:27:23 -0500
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF4FC061570
-        for <linux-pwm@vger.kernel.org>; Sun,  7 Nov 2021 09:24:40 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4HnLhj59YMzQjmg;
-        Sun,  7 Nov 2021 18:24:37 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1636305875;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0qDrFbbUdva7Hj0vvtfgxHWkjVV1eDZ7/ERKfM0Dpvw=;
-        b=ptmGYqMARzQrj8m7tG2WZIQdDzhmJbLMTWQZxIGVaQF1BR56lqUxZNUnj4iN+11HNwERcL
-        d/hpyzqx/2rVBs/Zk8BbTIj85Q2+nFUnsc+ZyorwGw5m9mCjtcgKQK+IfJRmDC9fVPClkh
-        tKh9VQtV77Y0iU8n5HiV+4ZMZ3acWULxphqwGs0F6ggvV7HSUbpD8AgOUq8xTG2YJL7f5d
-        +ykRSqEjsPVstjCPcl27Ft1lewaPCkQopo3b9JkOXP0M3umPmLd0+P+TfZSAm4hQTRq3A5
-        Dkngyxtof56fIH2ocWmWB+jdR/d6iki0IChc0ZyL5IUq9eeNdUnCN/+TbChSZg==
-Subject: Re: [PATCH] pwm: img: Implement .apply() callback
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        with ESMTP id S238910AbhKHLHN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Nov 2021 06:07:13 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7918EC061570
+        for <linux-pwm@vger.kernel.org>; Mon,  8 Nov 2021 03:04:29 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mk2Rv-0003Ef-6Y; Mon, 08 Nov 2021 12:04:27 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mk2Ru-0005i2-5I; Mon, 08 Nov 2021 12:04:26 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1mk2Ru-0001nI-4M; Mon, 08 Nov 2021 12:04:26 +0100
+Date:   Mon, 8 Nov 2021 12:04:13 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
-Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-References: <20211029105617.210178-1-u.kleine-koenig@pengutronix.de>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Message-ID: <fd4c37fa-20a1-8883-21db-0905afff8422@hauke-m.de>
-Date:   Sun, 7 Nov 2021 18:24:33 +0100
+Cc:     Jisheng Zhang <jszhang@marvell.com>, linux-pwm@vger.kernel.org,
+        Thomas Hebb <tommyhebb@gmail.com>, kernel@pengutronix.de
+Subject: Re: [PATCH 2/4] pwm: berlin: Put channel config into driver data
+Message-ID: <20211108110413.6kfe6fguabvgclnd@pengutronix.de>
+References: <20210504132537.62072-1-u.kleine-koenig@pengutronix.de>
+ <20210504132537.62072-2-u.kleine-koenig@pengutronix.de>
+ <20210630061804.2qrsqbd4xl7wtunh@pengutronix.de>
+ <20210909141603.6u5p3dkgderru67x@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20211029105617.210178-1-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 7442222F
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="frssanxrxqfvtmoa"
+Content-Disposition: inline
+In-Reply-To: <20210909141603.6u5p3dkgderru67x@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-On 10/29/21 12:56 PM, Uwe Kleine-König wrote:
-> To eventually get rid of all legacy drivers convert this driver to the
-> modern world implementing .apply(). This just pushes down a slightly
-> optimized variant of how legacy drivers are handled in the core.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-I applied this patch on top of kernel 5.10 and the system still boots up 
-on the CI40 and I can make a LED blink.
+--frssanxrxqfvtmoa
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Hauke Mehrtens <hauke@hauke-m.de>
+Hello Thierry,
 
-> ---
->   drivers/pwm/pwm-img.c | 29 ++++++++++++++++++++++++++---
->   1 file changed, 26 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-> index f97f82548293..1f3d6346ab86 100644
-> --- a/drivers/pwm/pwm-img.c
-> +++ b/drivers/pwm/pwm-img.c
-> @@ -184,10 +184,33 @@ static void img_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->   	pm_runtime_put_autosuspend(chip->dev);
->   }
->   
-> +static int img_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			 const struct pwm_state *state)
-> +{
-> +	int err;
-> +
-> +	if (state->polarity != PWM_POLARITY_NORMAL)
-> +		return -EINVAL;
-> +
-> +	if (!state->enabled) {
-> +		if (pwm->state.enabled)
-> +			img_pwm_disable(chip, pwm);
-> +
-> +		return 0;
-> +	}
-> +
-> +	err = img_pwm_config(pwm->chip, pwm, state->duty_cycle, state->period);
-> +	if (err)
-> +		return err;
-> +
-> +	if (!pwm->state.enabled)
-> +		err = img_pwm_enable(chip, pwm);
-> +
-> +	return err;
-> +}
-> +
->   static const struct pwm_ops img_pwm_ops = {
-> -	.config = img_pwm_config,
-> -	.enable = img_pwm_enable,
-> -	.disable = img_pwm_disable,
-> +	.apply = img_pwm_apply,
->   	.owner = THIS_MODULE,
->   };
->   
-> 
-> base-commit: 3906fe9bb7f1a2c8667ae54e967dc8690824f4ea
-> 
+On Thu, Sep 09, 2021 at 04:16:03PM +0200, Uwe Kleine-K=F6nig wrote:
+> On Wed, Jun 30, 2021 at 08:18:04AM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Tue, May 04, 2021 at 03:25:35PM +0200, Uwe Kleine-K=F6nig wrote:
+> > > Instead of allocating extra data in .request() provide the needed mem=
+ory
+> > > in struct berlin_pwm_chip. This reduces the number of allocations. A =
+side
+> > > effect is that on suspend and resume the state for all four channels =
+is
+> > > always saved and restored. This is easier (and probably quicker) than
+> > > looking up the matching pwm_device and checking its PWMF_REQUESTED bi=
+t.
+> >=20
+> > I noticed you applied the other three patches in this series, but
+> > skipped this one and marked it as rejected.
+> >=20
+> > Please point out what you don't like about this patch instead of just
+> > dropping it without comment.
+>=20
+> Any news on this? I still consider the patch good and would like to know
+> your objections.
 
+This patch is still in my private working copy and I still don't know
+why you rejected it. :-\
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--frssanxrxqfvtmoa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGJBCQACgkQwfwUeK3K
+7AlDWwf/esdD5nB8vzANTCcwyKtAniTgqNS07dMEkoToKZeof/EYgDZXditzqYpc
+S7K5JY05lgesca2pNjn4jpmGOg1WRjeCCBVsnzkFl3nAr7Nx3I2gI9vnsSOftlVn
+UmgMcC1tuvgK728x4kd/5e8mzzznXzYXz4o/qVdr2XFQ+QQXTCmFE9vDFOYMAsSg
+QEwdgz16CAH20Ud2oVhktQzKK/zthC1fNWkq0QthVEHsjSW9W35uddiQlu2avQdV
+l7mbUwviNWqC/Z8ZyVZVAOePydZlOBIANgjCwaDhUD3X0VnfuUous+pWLrqKiWZn
+CrxryqSAsJ9k8oJ4zJock9Mb44y3OA==
+=nYbu
+-----END PGP SIGNATURE-----
+
+--frssanxrxqfvtmoa--
