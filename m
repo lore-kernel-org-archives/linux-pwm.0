@@ -2,123 +2,121 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6937DC433EF
-	for <linux-pwm@archiver.kernel.org>; Wed, 10 Nov 2021 08:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981B1C433EF
+	for <linux-pwm@archiver.kernel.org>; Fri, 12 Nov 2021 10:31:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 516B66112D
-	for <linux-pwm@archiver.kernel.org>; Wed, 10 Nov 2021 08:50:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 762FA60C4A
+	for <linux-pwm@archiver.kernel.org>; Fri, 12 Nov 2021 10:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbhKJIw7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Wed, 10 Nov 2021 03:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
+        id S234918AbhKLKeV (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Fri, 12 Nov 2021 05:34:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230340AbhKJIw5 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Nov 2021 03:52:57 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE9AC061767
-        for <linux-pwm@vger.kernel.org>; Wed, 10 Nov 2021 00:50:10 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mkjJ2-0000J4-8O; Wed, 10 Nov 2021 09:50:08 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mkjJ0-00034k-5i; Wed, 10 Nov 2021 09:50:06 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mkjJ0-00079i-4h; Wed, 10 Nov 2021 09:50:06 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Vladimir Zapolskiy <vz@mleia.com>
-Cc:     linux-pwm@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 1/3] pwm: lpc18xx-sct: Initialize driver data and hardware before pwmchip_add()
-Date:   Wed, 10 Nov 2021 09:49:48 +0100
-Message-Id: <20211110084950.1053426-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S234917AbhKLKeU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Nov 2021 05:34:20 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D312C061766;
+        Fri, 12 Nov 2021 02:31:30 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id c4so14622326wrd.9;
+        Fri, 12 Nov 2021 02:31:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GRId0R89X51NxidyOU+NSWQUAWm4NbnKVuU1z19yzt4=;
+        b=ZU/2z553bDzH+m3p+tYs90x6L9v3GNYm9JQIFO0yg0pkYU4ffz9BEs6VPoXegk3AkR
+         a7LjF5CGE++BwkfXdX0anqyZTg2Axkgana/DquGmQhgnZxm0uKMkzYHAcfUkAJW3Zpe4
+         he3mXF5rlzAymg/Ty2oiLYq1To40h3SiuaCEFlIKGgdDmwj82BfhoyCALDu8bg9UtWIo
+         3uA9Iv9fQi5GYBERTqFo/f751lunx12xFD9rlsHVT5rVrhLvatvGuPYuArs08+AkcZNm
+         ccbnP/c5MDFqUBDPPe5i0yBEcpzIapK774BtUKNDtQQJwNekdJKTYUZl54oEZzO/AMjn
+         tnKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GRId0R89X51NxidyOU+NSWQUAWm4NbnKVuU1z19yzt4=;
+        b=ZrQiojW5NQ4rbYm4jE53z5HOdkr3SR5AoLvQ98ziwDsE6iVVHsakVe+oFKcikBFlhD
+         9+bcQEv10HASoA1WzYY8BoZekw7VfXFfC/hfmNr9wufCigL92z+4Yz4fN5BsXwEYB4Pd
+         TD3kluMKLBNf0WL9HGo4LM1Mm4m8bX0mdzL5TcdMdNgjmW9Yfuy11zi+sRjhDUKC+8W4
+         /yLdZZX4v3gXcSsC6K5pjnaX9QZaApsvHgmz3+gsCa6WicVbMBLL1w5+xS3nrd/zDaQZ
+         EutuxfPkCNECEjZB5fplsg5lTOtcW5mH9zxVybA3wS98jU79EJidL/zsUSG0kSYHzBOZ
+         kV0Q==
+X-Gm-Message-State: AOAM531joMQ8jJfs8qtL8DKOQfnH+d1dnnlCku6TMioSwS7GLIHxn5ZP
+        Bu648b/IomZpOWCWqo+p+Kw=
+X-Google-Smtp-Source: ABdhPJxDqxg4v9yVykQ4C/B8MDUNjaPAb/R3xkxgNtav3U0DAlCgmaIQ/I5iXvNLWebmGepi6Pqz+g==
+X-Received: by 2002:a05:6000:1787:: with SMTP id e7mr16958321wrg.433.1636713088636;
+        Fri, 12 Nov 2021 02:31:28 -0800 (PST)
+Received: from localhost ([193.209.96.43])
+        by smtp.gmail.com with ESMTPSA id l4sm5163329wrv.94.2021.11.12.02.31.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Nov 2021 02:31:27 -0800 (PST)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] pwm: Changes for v5.16-rc1
+Date:   Fri, 12 Nov 2021 11:31:22 +0100
+Message-Id: <20211112103122.3664089-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=s2cYDTJSLv5f65wsqXuqp5/LSUW8Exp2celC+6b4LT8=; m=DugTeZi9JhSi2kctLOTV4g/YkRj8fm4qWld78j3UerE=; p=FxaIPaZ87G4Asv1mo4ayRgdalE52wrz92qDUaRGabnQ=; g=a95a649a89d8c6c20b57e9678e1447fa11f12c93
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGLh6IACgkQwfwUeK3K7AlN0Qf+L4i QaCYkAhTXeXlzgu/X+X7AD1Exe8JNcacfsgBAtTNL0+3v/58K6eIvzqxTDv4RlnWbt2ZP0STsZnJi 9EinvsDPl4umsAXxa49We1kACJoiUkkG/f31C8Goj36LC9gLFRLOye2WHgG/rB4rxmExbaCsg7XAL hY3ZuaTU2gR9keQCdQ07LX5N0NuTZBprv7XtzFulYvurS6nXDevwmC5uEkUom+fKvHjT41Lu3E7EE JGPQWXhaAKenBLc3J/qqnDSszFLVSWnzWaIL+5gEKneZW2eAbLPpTvd/gnCJ6pSA2U2+QMDg0FbNU UcOfF7jzHI3Vy4b8k22Iitxax9qyKRw==
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-pwm@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-When a driver calls pwmchip_add() it has to be prepared to immediately
-get its callbacks called. So move allocation of driver data and hardware
-initialization before the call to pwmchip_add().
+Hi Linus,
 
-This fixes a potential NULL pointer exception and a race condition on
-register writes.
+The following changes since commit 6880fa6c56601bb8ed59df6c30fd390cc5f6dd8f:
 
-Fixes: 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+  Linux 5.15-rc1 (2021-09-12 16:28:37 -0700)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 8e461f3baa05..8cc8ae16553c 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -395,12 +395,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
- 			   BIT(lpc18xx_pwm->period_event));
- 
--	ret = pwmchip_add(&lpc18xx_pwm->chip);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
--		goto disable_pwmclk;
--	}
--
- 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
- 		struct lpc18xx_pwm_data *data;
- 
-@@ -410,14 +404,12 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 				    GFP_KERNEL);
- 		if (!data) {
- 			ret = -ENOMEM;
--			goto remove_pwmchip;
-+			goto disable_pwmclk;
- 		}
- 
- 		pwm_set_chip_data(pwm, data);
- 	}
- 
--	platform_set_drvdata(pdev, lpc18xx_pwm);
--
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	val &= ~LPC18XX_PWM_BIDIR;
- 	val &= ~LPC18XX_PWM_CTRL_HALT;
-@@ -425,10 +417,16 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	val |= LPC18XX_PWM_PRE(0);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
- 
-+	ret = pwmchip_add(&lpc18xx_pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
-+		goto disable_pwmclk;
-+	}
-+
-+	platform_set_drvdata(pdev, lpc18xx_pwm);
-+
- 	return 0;
- 
--remove_pwmchip:
--	pwmchip_remove(&lpc18xx_pwm->chip);
- disable_pwmclk:
- 	clk_disable_unprepare(lpc18xx_pwm->pwm_clk);
- 	return ret;
+are available in the Git repository at:
 
-base-commit: d2f38a3c6507b2520101f9a3807ed98f1bdc545a
--- 
-2.30.2
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.16-rc1
 
+for you to fetch changes up to e9d866d5a6296c701e5b46a94c0bbd6e2c0e357e:
+
+  pwm: vt8500: Rename pwm_busy_wait() to make it obviously driver-specific (2021-11-05 11:57:13 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v5.16-rc1
+
+This set is mostly small fixes and cleanups, so more of a janitorial
+update for this cycle.
+
+----------------------------------------------------------------
+Duc Nguyen (1):
+      dt-bindings: pwm: tpu: Add R-Car V3U device tree bindings
+
+Krzysztof Kozlowski (1):
+      pwm: samsung: Describe driver in Kconfig
+
+Mårten Lindahl (1):
+      pwm: pwm-samsung: Trigger manual update when disabling PWM
+
+Uwe Kleine-König (4):
+      pwm: atmel: Drop unused header
+      pwm: Add might_sleep() annotations for !CONFIG_PWM API functions
+      pwm: Make it explicit that pwm_apply_state() might sleep
+      pwm: vt8500: Rename pwm_busy_wait() to make it obviously driver-specific
+
+Wolfram Sang (1):
+      dt-bindings: pwm: tpu: Add R-Car M3-W+ device tree bindings
+
+zhaoxiao (1):
+      pwm: visconti: Simplify using devm_pwmchip_add()
+
+ .../devicetree/bindings/pwm/renesas,tpu-pwm.yaml   |  2 ++
+ drivers/pwm/Kconfig                                |  4 ++-
+ drivers/pwm/core.c                                 |  9 +++++++
+ drivers/pwm/pwm-atmel.c                            |  1 -
+ drivers/pwm/pwm-samsung.c                          | 30 ++++++++++++++++------
+ drivers/pwm/pwm-visconti.c                         | 14 +---------
+ drivers/pwm/pwm-vt8500.c                           | 16 ++++++------
+ include/linux/pwm.h                                | 13 ++++++++++
+ 8 files changed, 58 insertions(+), 31 deletions(-)
