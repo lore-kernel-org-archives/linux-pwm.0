@@ -2,54 +2,54 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E00C433F5
-	for <linux-pwm@archiver.kernel.org>; Sun, 14 Nov 2021 19:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 043FFC433EF
+	for <linux-pwm@archiver.kernel.org>; Sun, 14 Nov 2021 19:40:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E3C0E60FD8
-	for <linux-pwm@archiver.kernel.org>; Sun, 14 Nov 2021 19:39:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DBF2060F55
+	for <linux-pwm@archiver.kernel.org>; Sun, 14 Nov 2021 19:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236297AbhKNTjQ (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Sun, 14 Nov 2021 14:39:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
+        id S236208AbhKNTmv (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Sun, 14 Nov 2021 14:42:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236203AbhKNTi7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 14 Nov 2021 14:38:59 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D33AC061767;
-        Sun, 14 Nov 2021 11:36:05 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id y26so37504004lfa.11;
-        Sun, 14 Nov 2021 11:36:04 -0800 (PST)
+        with ESMTP id S236319AbhKNTjS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 14 Nov 2021 14:39:18 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F14C061746;
+        Sun, 14 Nov 2021 11:36:23 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id t11so30718715ljh.6;
+        Sun, 14 Nov 2021 11:36:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uELYhg3LoYYilCBTSAEvuuZR4UEF9kvdsKmUqE/otlI=;
-        b=QhEZ8tLrd3loe2fHwxK6+51M7PXBhYl2Mb3I/CA3ScH2m6Kjyk6heV5l8nMCzW90HO
-         rTUwhpfLT4qom95awhIvBEd/ZCMV2yRJcNNBD6s9BrgbOYOsPjGybWYQvzslajFCIs8H
-         Afs5Rt6w3qQ+0XHhVE8DMtP7pFA9Qk9Wcjjh4PEe6XQWNenE/6xRSN8GZmslq1LB6Kn8
-         g3Qxc+QYbg/YgSuiY5Dpiu4dCOfXoDYfIyxSzJ902bqMc5XVe/9IIbpn1hUUN/0BvOu4
-         PjwMRCoROJqI2+8I7FJspdHzmDqhkgsG875PDL2/bpfUVroxNpoHzhSQ+WY/reTg7kGe
-         blMA==
+        bh=udxoZ5sHHyWoGGCNUpfDNLDNjJsYtsk9R/zPM+x/w7I=;
+        b=bck3HjaspmyKxtG2XJQb2huZEqs87VWwz6D0e7KxvYn8YcFOn8QYA3L6+FByaLSrql
+         pHdwfKYR6mRZWVJ7l5YE5kGiCqsylyJLRP+XTLh3t2HOnEYqL9/9c4oC2PMvZd27Ps4o
+         vqNwYNiHedCOn3uHvukItn1HcL9mOKPl5u12y7NJ7DlOeHK3ZZ9YJ4XA6lYOv3FlW4hQ
+         HJqvSUdcqYWN/WNYK2PZux9exfaVV9gxDUenuxL+MzqJbLu0eyiNfwuGabZ5pD/I28Wf
+         PTs8qzR3cWp5vc2i+w1Tc411s1UZXyLmFxHxNZ6XaBJofZqGUoZ0s6heNB8KLc6dWg01
+         WxHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uELYhg3LoYYilCBTSAEvuuZR4UEF9kvdsKmUqE/otlI=;
-        b=QDstXRFaeD8Y4XWKeaNPqa/OJ5qj/gqozodfc58T5CbkVmNOIA3RfmRq26t4jtLsTC
-         TgvSFR9bAWVNLIt7Sg2RI7bfmZfCgO7nuPqdECO0/folliu1pEKGc1uneE7kyPX/Cha6
-         l/SBZIikpa48hVlBvSQB9OSGWVqmjq/vPRmrIq0oABf0hsqV/8g8BysbnAR7w9H0uXbu
-         g8cDYqoZjZs0wV+VuiA3w3ZzAVdD+ItviA1oE+928pci9ia5iTMLpruvLzDtnzVTGZER
-         Pl8jwcUmOyyafX3JRbiD7Sv+qICcBJt6vN1r+T26G7hjZeZ41MA6L4sYj5bjpKVJQq6r
-         y2yg==
-X-Gm-Message-State: AOAM530FHCvzkhV0NEcPKTEGWGFHDENCgeozIwEIRr00nepT0EI/O+wq
-        iZZTQkFw0Rc0c431tutZ3NQ=
-X-Google-Smtp-Source: ABdhPJy78tsaHkTtXQkUANfdWprKBp3QKCSyznqTf+vgxWn5eWntkrq5cYbdV+7IaqR1XP1suHMkvA==
-X-Received: by 2002:a05:6512:23a4:: with SMTP id c36mr29320459lfv.634.1636918563468;
-        Sun, 14 Nov 2021 11:36:03 -0800 (PST)
+        bh=udxoZ5sHHyWoGGCNUpfDNLDNjJsYtsk9R/zPM+x/w7I=;
+        b=uIZ+2pwpZ2m5O2Jhg+f5HHRkrnRziCcOnad7QQwmXuUA+A1nwjqcl2k6qnVbmc/RJ7
+         8qlG6V1O4cW4RnmASFzaLIcCeVgfiB2LoNWA41bBjd6XgHwBqWyJY771ddSfPHYU2wem
+         eU3BeM5tWgw6K751TTajqRaNx3wCxR757iquMCBakGetdlw0zGiVIqJBv9jB4z4vtW1M
+         1UtxWdbFmtVvJPhppM5zA86YaK7PjzlBI+CqO+DgkZfJJ+o0SOZ49EBW49/rTrFfKD4q
+         mSwwQjgrqC8QrmPfyU4sRzn66gL1dzxTcucr+3ds3gDSJoR04j7OFoLQOxkggLSCIe3y
+         B2kg==
+X-Gm-Message-State: AOAM533ZDBcNM+CwdPd6y7Eij5mQgX1fhFdgXGCv8nfa86mFC1VLr0HC
+        KV6fqvEDH3JTJuRgHVipd90=
+X-Google-Smtp-Source: ABdhPJz1tIk9AYwqea+xWUflWiiRzudYtH0vHddFFESehtnCoDn2sB8BEHmj2PW+CcJ6xlZctpKgJQ==
+X-Received: by 2002:a05:651c:907:: with SMTP id e7mr31684358ljq.317.1636918581470;
+        Sun, 14 Nov 2021 11:36:21 -0800 (PST)
 Received: from localhost.localdomain (46-138-46-211.dynamic.spd-mgts.ru. [46.138.46.211])
-        by smtp.gmail.com with ESMTPSA id p18sm1191280lfu.127.2021.11.14.11.36.02
+        by smtp.gmail.com with ESMTPSA id p18sm1191280lfu.127.2021.11.14.11.36.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Nov 2021 11:36:03 -0800 (PST)
+        Sun, 14 Nov 2021 11:36:21 -0800 (PST)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
@@ -67,9 +67,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
         linux-mmc@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-clk@vger.kernel.org, David Heidelberg <david@ixit.cz>
-Subject: [PATCH v15 07/39] dt-bindings: host1x: Document Memory Client resets of Host1x, GR2D and GR3D
-Date:   Sun, 14 Nov 2021 22:34:03 +0300
-Message-Id: <20211114193435.7705-8-digetx@gmail.com>
+Subject: [PATCH v15 26/39] media: staging: tegra-vde: Support generic power domain
+Date:   Sun, 14 Nov 2021 22:34:22 +0300
+Message-Id: <20211114193435.7705-27-digetx@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211114193435.7705-1-digetx@gmail.com>
 References: <20211114193435.7705-1-digetx@gmail.com>
@@ -79,46 +79,144 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-Memory Client should be blocked before hardware reset is asserted in order
-to prevent memory corruption and hanging of memory controller.
+Currently driver supports legacy power domain API, this patch adds generic
+power domain support. This allows us to utilize a modern GENPD API for
+newer device-trees.
 
-Document Memory Client resets of Host1x, GR2D and GR3D hardware units.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Tested-by: Peter Geis <pgwipeout@gmail.com> # Ouya T30
+Tested-by: Paul Fertser <fercerpav@gmail.com> # PAZ00 T20
+Tested-by: Nicolas Chauvet <kwizart@gmail.com> # PAZ00 T20 and TK1 T124
+Tested-by: Matt Merhar <mattmerhar@protonmail.com> # Ouya T30
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- .../bindings/display/tegra/nvidia,tegra20-host1x.txt          | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/staging/media/tegra-vde/vde.c | 63 ++++++++++++++++++++++-----
+ 1 file changed, 52 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
-index 62861a8fb5c6..e61999ce54e9 100644
---- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
-+++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.txt
-@@ -19,6 +19,7 @@ Required properties:
-   See ../reset/reset.txt for details.
- - reset-names: Must include the following entries:
-   - host1x
-+  - mc
+diff --git a/drivers/staging/media/tegra-vde/vde.c b/drivers/staging/media/tegra-vde/vde.c
+index ed4c1250b303..859f60a70904 100644
+--- a/drivers/staging/media/tegra-vde/vde.c
++++ b/drivers/staging/media/tegra-vde/vde.c
+@@ -20,6 +20,7 @@
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
  
- Optional properties:
- - operating-points-v2: See ../bindings/opp/opp.txt for details.
-@@ -198,6 +199,7 @@ of the following host1x client modules:
-     See ../reset/reset.txt for details.
-   - reset-names: Must include the following entries:
-     - 2d
-+    - mc
++#include <soc/tegra/common.h>
+ #include <soc/tegra/pmc.h>
  
-   Optional properties:
-   - interconnects: Must contain entry for the GR2D memory clients.
-@@ -224,6 +226,8 @@ of the following host1x client modules:
-   - reset-names: Must include the following entries:
-     - 3d
-     - 3d2 (Only required on SoCs with two 3D clocks)
-+    - mc
-+    - mc2 (Only required on SoCs with two 3D clocks)
+ #include "uapi.h"
+@@ -920,13 +921,17 @@ static __maybe_unused int tegra_vde_runtime_suspend(struct device *dev)
+ 	struct tegra_vde *vde = dev_get_drvdata(dev);
+ 	int err;
  
-   Optional properties:
-   - interconnects: Must contain entry for the GR3D memory clients.
+-	err = tegra_powergate_power_off(TEGRA_POWERGATE_VDEC);
+-	if (err) {
+-		dev_err(dev, "Failed to power down HW: %d\n", err);
+-		return err;
++	if (!dev->pm_domain) {
++		err = tegra_powergate_power_off(TEGRA_POWERGATE_VDEC);
++		if (err) {
++			dev_err(dev, "Failed to power down HW: %d\n", err);
++			return err;
++		}
+ 	}
+ 
+ 	clk_disable_unprepare(vde->clk);
++	reset_control_release(vde->rst);
++	reset_control_release(vde->rst_mc);
+ 
+ 	return 0;
+ }
+@@ -936,14 +941,45 @@ static __maybe_unused int tegra_vde_runtime_resume(struct device *dev)
+ 	struct tegra_vde *vde = dev_get_drvdata(dev);
+ 	int err;
+ 
+-	err = tegra_powergate_sequence_power_up(TEGRA_POWERGATE_VDEC,
+-						vde->clk, vde->rst);
++	err = reset_control_acquire(vde->rst_mc);
+ 	if (err) {
+-		dev_err(dev, "Failed to power up HW : %d\n", err);
++		dev_err(dev, "Failed to acquire mc reset: %d\n", err);
+ 		return err;
+ 	}
+ 
++	err = reset_control_acquire(vde->rst);
++	if (err) {
++		dev_err(dev, "Failed to acquire reset: %d\n", err);
++		goto release_mc_reset;
++	}
++
++	if (!dev->pm_domain) {
++		err = tegra_powergate_sequence_power_up(TEGRA_POWERGATE_VDEC,
++							vde->clk, vde->rst);
++		if (err) {
++			dev_err(dev, "Failed to power up HW : %d\n", err);
++			goto release_reset;
++		}
++	} else {
++		/*
++		 * tegra_powergate_sequence_power_up() leaves clocks enabled,
++		 * while GENPD not.
++		 */
++		err = clk_prepare_enable(vde->clk);
++		if (err) {
++			dev_err(dev, "Failed to enable clock: %d\n", err);
++			goto release_reset;
++		}
++	}
++
+ 	return 0;
++
++release_reset:
++	reset_control_release(vde->rst);
++release_mc_reset:
++	reset_control_release(vde->rst_mc);
++
++	return err;
+ }
+ 
+ static int tegra_vde_probe(struct platform_device *pdev)
+@@ -1001,14 +1037,14 @@ static int tegra_vde_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
+-	vde->rst = devm_reset_control_get(dev, NULL);
++	vde->rst = devm_reset_control_get_exclusive_released(dev, NULL);
+ 	if (IS_ERR(vde->rst)) {
+ 		err = PTR_ERR(vde->rst);
+ 		dev_err(dev, "Could not get VDE reset %d\n", err);
+ 		return err;
+ 	}
+ 
+-	vde->rst_mc = devm_reset_control_get_optional(dev, "mc");
++	vde->rst_mc = devm_reset_control_get_optional_exclusive_released(dev, "mc");
+ 	if (IS_ERR(vde->rst_mc)) {
+ 		err = PTR_ERR(vde->rst_mc);
+ 		dev_err(dev, "Could not get MC reset %d\n", err);
+@@ -1026,6 +1062,12 @@ static int tegra_vde_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
++	err = devm_tegra_core_dev_init_opp_table_common(dev);
++	if (err) {
++		dev_err(dev, "Could initialize OPP table %d\n", err);
++		return err;
++	}
++
+ 	vde->iram_pool = of_gen_pool_get(dev->of_node, "iram", 0);
+ 	if (!vde->iram_pool) {
+ 		dev_err(dev, "Could not get IRAM pool\n");
+@@ -1133,8 +1175,7 @@ static void tegra_vde_shutdown(struct platform_device *pdev)
+ 	 * On some devices bootloader isn't ready to a power-gated VDE on
+ 	 * a warm-reboot, machine will hang in that case.
+ 	 */
+-	if (pm_runtime_status_suspended(&pdev->dev))
+-		tegra_vde_runtime_resume(&pdev->dev);
++	pm_runtime_get_sync(&pdev->dev);
+ }
+ 
+ static __maybe_unused int tegra_vde_pm_suspend(struct device *dev)
 -- 
 2.33.1
 
