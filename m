@@ -2,58 +2,45 @@ Return-Path: <linux-pwm-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF05CC433EF
-	for <linux-pwm@archiver.kernel.org>; Tue, 23 Nov 2021 09:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57722C433F5
+	for <linux-pwm@archiver.kernel.org>; Tue, 23 Nov 2021 17:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234917AbhKWJdN (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
-        Tue, 23 Nov 2021 04:33:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
+        id S234890AbhKWRS7 (ORCPT <rfc822;linux-pwm@archiver.kernel.org>);
+        Tue, 23 Nov 2021 12:18:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235007AbhKWJdN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Nov 2021 04:33:13 -0500
+        with ESMTP id S230176AbhKWRS7 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Nov 2021 12:18:59 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC38DC061714
-        for <linux-pwm@vger.kernel.org>; Tue, 23 Nov 2021 01:30:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D84C061574
+        for <linux-pwm@vger.kernel.org>; Tue, 23 Nov 2021 09:15:51 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mpS7f-0004zK-Ra; Tue, 23 Nov 2021 10:29:55 +0100
+        id 1mpZOX-0005aS-Ht; Tue, 23 Nov 2021 18:15:49 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mpS7b-000acE-Qa; Tue, 23 Nov 2021 10:29:51 +0100
+        id 1mpZOX-000dCy-5N; Tue, 23 Nov 2021 18:15:48 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mpS7a-0004Y4-RI; Tue, 23 Nov 2021 10:29:50 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     Sean Anderson <sean.anderson@seco.com>, kernel@pengutronix.de,
-        linux-pwm@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Ed Blake <ed.blake@sondrel.com>,
-        Naidu Tellapati <naidu.tellapati@imgtec.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-tegra@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 0/5] pwm: Cleanup of variable names used for driver data
-Date:   Tue, 23 Nov 2021 10:29:34 +0100
-Message-Id: <20211123092939.82705-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        id 1mpZOW-0005zG-5N; Tue, 23 Nov 2021 18:15:48 +0100
+Date:   Tue, 23 Nov 2021 18:15:48 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        kernel@pengutronix.de, Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 0/3] pwm: Some improvements for legacy drivers
+Message-ID: <20211123171548.sgn7dbkhiioejgds@pengutronix.de>
+References: <20210701072927.328254-1-u.kleine-koenig@pengutronix.de>
+ <YZUp4ZdTpXrpCKjg@orome.fritz.box>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5nefpe532k3tmwru"
+Content-Disposition: inline
+In-Reply-To: <YZUp4ZdTpXrpCKjg@orome.fritz.box>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -62,33 +49,61 @@ Precedence: bulk
 List-ID: <linux-pwm.vger.kernel.org>
 X-Mailing-List: linux-pwm@vger.kernel.org
 
-From: Uwe Kleine-König <uwe@kleine-koenig.org>
 
-Hello,
+--5nefpe532k3tmwru
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sean Anderson rightly pointed out that variables holding driver private
-data are named badly (in reply to my request to pick a better name than
-"pwm" in a new driver). A deeper look into the few that used "pwm" shows
-that this name isn't even used consistently.
+On Wed, Nov 17, 2021 at 05:12:17PM +0100, Thierry Reding wrote:
+> On Thu, Jul 01, 2021 at 09:29:24AM +0200, Uwe Kleine-K=F6nig wrote:
+> > Hello,
+> >=20
+> > this is the successor of my earlier patch "pwm: Ensure for legacy
+> > drivers that pwm->state stays consistent" that was applied shortly to
+> > next until Geert found a problem with it.
+> >=20
+> > I split the patch in three parts now: First the legacy handling is just
+> > moved to a separate function without any semantic change. Then a glitch
+> > is fixed, but without the regression I introduced initially. In the
+> > third and last patch the longstanding FIXME about breaking pwm->state if
+> > a callback fails is addressed.
+> >=20
+> > Uwe Kleine-K=F6nig (3):
+> >   pwm: Move legacy driver handling into a dedicated function
+> >   pwm: Prevent a glitch for legacy drivers
+> >   pwm: Restore initial state if a legacy callback fails
+> >=20
+> >  drivers/pwm/core.c | 139 ++++++++++++++++++++++++++-------------------
+> >  1 file changed, 79 insertions(+), 60 deletions(-)
+>=20
+> I've applied this to for-next, let's see if this blows up or not.
 
-This series updates these four drivers to use a better name and use that
-one consistently.
+Up to now for-next didn't blow up, but the simplest explanation isn't
+that my patches are fine but that for-next still points at
+pwm/for-5.16-rc1 which is already in Linus' tree. I suspect you forget
+to push?
 
-Uwe Kleine-König (5):
-  pwm: img: Rename variable pointing to driver private data
-  pwm: tegra: Rename variable pointing to driver private data
-  pwm: sun4i: Rename variable pointing to driver private data
-  pwm: stmpe: Drop unused setting of driver data
-  pwm: stmpe: Rename variable pointing to driver private data
+Best regards
+Uwe
 
- drivers/pwm/pwm-img.c   | 141 ++++++++++++++++++++--------------------
- drivers/pwm/pwm-stmpe.c |  18 +++--
- drivers/pwm/pwm-sun4i.c |  70 ++++++++++----------
- drivers/pwm/pwm-tegra.c |  58 ++++++++---------
- 4 files changed, 142 insertions(+), 145 deletions(-)
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
+--5nefpe532k3tmwru
+Content-Type: application/pgp-signature; name="signature.asc"
 
-base-commit: 136057256686de39cc3a07c2e39ef6bc43003ff6
--- 
-2.30.2
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmGdIcAACgkQwfwUeK3K
+7Am5lQf8D90Kk0esCmvw4eya7wEn0ynNZ111SAfPmxgEku+UJ3iR/i1+vYqR+C3G
+V5C/k8zFs3b2JfNcNqqEILahADzwlCU0BHHmW1h78v6pfB/YFrOSWoFoyAN8DmoN
+tikq8gI299m8hQUWhRyVAMjbgm2TGPGJnFj01NVmqabrtpUdlYx/0nOHeCH8w202
+CTOKEeNgoeV4q9RFSMVWhtLj2SC3ekTPhqvkMwvilHeeKb2IRTiJ96QO+QoFLqPH
+4elycrwKrGyEyhRXaMFJUqGOr3NddY9YufkJcY3yeOTh8yDtjwh4H1CvG9UdcBix
+q8m3G3aeNi3GHgrmL1Lbe2bWe1qyjQ==
+=NLW/
+-----END PGP SIGNATURE-----
+
+--5nefpe532k3tmwru--
